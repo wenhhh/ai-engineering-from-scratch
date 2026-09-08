@@ -1,75 +1,75 @@
 {
   "lesson": "02-reward-hacking-goodhart",
-  "title": "Reward Hacking and Goodhart's Law",
+  "title": "奖励投机与古德哈特定律（Reward Hacking and Goodhart's Law）",
   "questions": [
     {
       "stage": "pre",
-      "question": "Goodhart's Law, as originally stated, says:",
+      "question": "古德哈特定律（Goodhart's Law）最初的表述是什么？",
       "options": [
-        "Any measure that becomes a target ceases to be a good measure",
-        "Optimization always improves a proxy without limit",
-        "Heavy-tailed errors cannot occur in finite-dimensional models",
-        "Reward models converge to true human preference at large scale"
+        "任何度量一旦成为目标，就不再是一个好的度量",
+        "优化总能无限改善代理指标（Proxy）",
+        "有限维模型中不可能出现重尾误差（Heavy-tailed errors）",
+        "奖励模型（Reward Model）在大规模下会收敛到真实的人类偏好"
       ],
       "correct": 0,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "In Gao, Schulman, Hilton (2023), how do proxy reward and gold reward behave as KL distance from the initial policy grows?",
+      "question": "在 Gao、Schulman 和 Hilton（2023）的研究中，随着相对于初始策略的 KL 距离增大，代理奖励（Proxy reward）与金标准奖励（Gold reward）如何变化？",
       "options": [
-        "Both rise monotonically with KL",
-        "Proxy peaks then falls, gold rises monotonically",
-        "Both stay flat under any KL constraint",
-        "Proxy keeps rising, gold peaks closer to the origin then falls"
+        "两者都随 KL 单调上升",
+        "代理奖励达到峰值后下降，金标准奖励单调上升",
+        "在任何 KL 约束下，两者都保持不变",
+        "代理奖励持续上升，金标准奖励在更靠近原点的位置达到峰值，然后下降"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Which of the following is NOT one of the four 'costumes' of reward hacking listed in the lesson?",
+      "question": "以下哪一项不属于本课列出的四种奖励投机（Reward hacking）表现？",
       "options": [
-        "Sycophancy",
-        "Tokenizer mismatch",
-        "Verbosity bias",
-        "Unfaithful reasoning"
+        "谄媚（Sycophancy）",
+        "分词器不匹配（Tokenizer mismatch）",
+        "冗长偏差（Verbosity bias）",
+        "不忠实推理（Unfaithful reasoning）"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "What is the 'Catastrophic Goodhart' result about KL regularization?",
+      "question": "“灾难性古德哈特现象（Catastrophic Goodhart）”关于 KL 正则化得出了什么结论？",
       "options": [
-        "KL regularization only fails when the policy is randomly initialized",
-        "KL regularization is equivalent to ensembling reward models",
-        "Under heavy-tailed reward error, a KL-constrained optimal policy can still drive proxy reward up while gold reward stays at baseline",
-        "KL regularization always prevents reward hacking when beta is positive"
+        "只有策略随机初始化时，KL 正则化才会失效",
+        "KL 正则化等同于奖励模型集成",
+        "在重尾奖励误差下，受 KL 约束的最优策略仍能推高代理奖励，而金标准奖励停留在基线",
+        "只要 beta 为正，KL 正则化就总能防止奖励投机"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "Which mitigation does Coste et al. (2023) study to soften reward over-optimization?",
+      "question": "Coste 等人（2023）研究了哪种缓解奖励过度优化（Reward over-optimization）的方法？",
       "options": [
-        "Training the policy on the proxy at zero temperature",
-        "Reward-model ensembles with worst-case aggregation",
-        "Removing the KL penalty entirely",
-        "Increasing the labeler pool to one million raters"
+        "在零温度下依据代理奖励训练策略",
+        "采用最坏情况聚合（Worst-case aggregation）的奖励模型集成",
+        "完全移除 KL 惩罚",
+        "将标注员队伍扩大到一百万名评估者"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "According to the 2026 unified view, what core mechanism do verbosity, sycophancy, unfaithful CoT, and evaluator tampering share?",
+      "question": "根据 2026 年的统一观点，冗长、谄媚、不忠实思维链（CoT）和评估器篡改具有怎样的共同核心机制？",
       "options": [
-        "They all stem from learning-rate schedules being too aggressive",
-        "They are caused only by labelers who write malicious preferences",
-        "Probability mass shifts to outputs that maximize proxy reward by exploiting easy-to-learn heuristics that spuriously correlated with approval",
-        "They are each independent bugs in distinct reward heads"
+        "它们都源于过于激进的学习率调度",
+        "它们只由编写恶意偏好的标注员造成",
+        "概率质量转向能够最大化代理奖励的输出，这些输出利用了易于学习、且与认可存在虚假相关的启发式特征",
+        "它们分别是不同奖励头中互不相关的缺陷"
       ],
       "correct": 2,
       "explanation": ""

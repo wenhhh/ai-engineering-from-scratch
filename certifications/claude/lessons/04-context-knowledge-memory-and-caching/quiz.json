@@ -1,78 +1,78 @@
 {
   "lesson": "04-context-knowledge-memory-and-caching",
-  "title": "Put Each Fact in the Right Kind of Context",
+  "title": "将每项事实放入合适的上下文（Put Each Fact in the Right Kind of Context）",
   "questions": [
     {
       "stage": "pre",
-      "question": "Which mechanism should be treated as the authoritative source for a current operational policy?",
+      "question": "哪种机制应作为当前运营政策的权威来源？",
       "options": [
-        "An approved and maintained source of record",
-        "The latest complete policy chat",
-        "A remembered preference that has produced correct answers in prior sessions",
-        "A cached response generated while the policy source was known to be current"
+        "经过批准并持续维护的权威记录来源",
+        "最近一次包含完整政策的对话",
+        "曾在此前会话中产生正确回答的记忆偏好",
+        "政策来源当时仍最新时生成的缓存回答"
       ],
       "correct": 0,
-      "explanation": "Operational truth should come from an owned, approved, current source, not continuity or reuse mechanisms."
+      "explanation": "运营事实应来自有负责人、获批且最新的来源，而不是连续性或复用机制。"
     },
     {
       "stage": "check",
-      "question": "What does retrieval establish by itself?",
+      "question": "检索本身能确立什么？",
       "options": [
-        "That the top-ranked chunk is authoritative",
-        "That a selected chunk appears relevant to the query",
-        "That the source is complete, current, and applicable to the user's jurisdiction",
-        "That the authenticated user may perform any action described by the retrieved text"
+        "排名第一的片段具有权威性",
+        "所选片段看起来与查询相关",
+        "来源完整、最新，且适用于用户辖区",
+        "已认证用户可以执行检索文本描述的任何操作"
       ],
       "correct": 1,
-      "explanation": "Retrieval selects material. Authority, completeness, freshness, permission, and action rights require separate checks."
+      "explanation": "检索只是选择材料。权威性、完整性、时效性、访问权限和操作权限需要单独检查。"
     },
     {
       "stage": "check",
-      "question": "Which content is the strongest prompt-caching candidate?",
+      "question": "什么内容最适合提示词缓存？",
       "options": [
-        "A live inventory table refreshed every minute",
-        "A static credential block reused by integration code across several user sessions",
-        "A large stable instruction and reference prefix reused across many calls",
-        "A customer-specific request and account snapshot that changes on every call"
+        "每分钟刷新的实时库存表",
+        "集成代码跨多个用户会话复用的静态凭据块",
+        "在大量调用间复用的大型稳定指令和参考前缀",
+        "每次调用都变化的客户特定请求和账户快照"
       ],
       "correct": 2,
-      "explanation": "Caching is most useful for large stable prefixes that repeat. Dynamic or sensitive content needs different handling."
+      "explanation": "缓存最适合反复出现的大型稳定前缀。动态或敏感内容需要其他处理方式。"
     },
     {
       "stage": "check",
-      "question": "A long chat contains abandoned plans and corrected dates. What is the safest continuation?",
+      "question": "长对话包含已放弃计划和更正日期。怎样继续最安全？",
       "options": [
-        "Keep the full history but add a final instruction saying newer dates take precedence",
-        "Use an automatic summary that prefers repeated decisions",
-        "Move the same history to a larger-context model so no prior reasoning is discarded",
-        "Start a fresh context with a verified decision brief and required evidence"
+        "保留完整历史，最后加一条新日期优先的指令",
+        "使用偏向反复出现决策的自动摘要",
+        "将同一历史交给上下文更大的模型，不丢弃先前推理",
+        "用核实后的决策简报和必需证据开启新上下文"
       ],
       "correct": 3,
-      "explanation": "A verified brief removes contradictory history while preserving current decisions and evidence."
+      "explanation": "核实后的简报移除矛盾历史，同时保留当前决策与证据。"
     },
     {
       "stage": "post",
-      "question": "A connector returns a recent draft that conflicts with an older approved policy. What should the workflow do?",
+      "question": "连接器返回一份新草稿，与较旧的获批政策冲突。工作流应怎么办？",
       "options": [
-        "Apply the documented source hierarchy and expose the conflict",
-        "Combine non-overlapping clauses and silently choose the newer wording for conflicts",
-        "Prefer the draft because recency is the strongest default when sources disagree",
-        "Accept the draft because connector permissions imply that its contents are approved"
+        "遵循已记录的来源层级并呈现冲突",
+        "合并不重叠条款，冲突处默默选择新措辞",
+        "优先采用草稿，因为来源不一致时默认时效性最重要",
+        "接受草稿，因为连接器权限意味着内容已获批"
       ],
       "correct": 0,
-      "explanation": "Recency, access, and authority are distinct. The workflow should follow explicit governance and surface unresolved conflict."
+      "explanation": "时效性、访问能力和权威性各不相同。工作流应遵循明确治理，并呈现未解决冲突。"
     },
     {
       "stage": "post",
-      "question": "Which registry fields most directly support knowledge lifecycle control?",
+      "question": "哪些登记字段最直接支持知识生命周期控制？",
       "options": [
-        "Source format, page count, chunk size, retrieval score, and embedding version",
-        "Owner, authority, effective date, review date, sensitivity, and supersession",
-        "Conversation identifier, user role, writing tone, output format, and cache status",
-        "Model family, prompt version, temperature, output tokens, and response latency"
+        "来源格式、页数、片段大小、检索分数和嵌入版本",
+        "负责人、权威性、生效日期、复核日期、敏感度和替代关系",
+        "对话标识符、用户角色、文风、输出格式和缓存状态",
+        "模型家族、提示词版本、温度、输出词元和响应延迟"
       ],
       "correct": 1,
-      "explanation": "Those fields make approval, freshness, permissions, accountability, and retirement observable."
+      "explanation": "这些字段让批准、时效性、权限、责任与停用安排可观察。"
     }
   ]
 }

@@ -1,132 +1,132 @@
-# Critic Loop
+# 评审循环（Critic Loop）
 
-> A critic that returns "looks good" the first time is broken. A critic that always returns "needs work" is broken. The interesting critic is the one that converges, and you have to engineer convergence.
+> 第一次就回答“看起来不错”的评审器有问题；始终回答“需要改进”的评审器也有问题。值得构建的是能够收敛的评审器，而收敛需要通过工程设计来实现。
 
 **Type:** Build
 **Languages:** Python
-**Prerequisites:** Phase 19 lessons 50-53
-**Time:** ~90 minutes
+**Prerequisites:** 阶段 19 第 50–53 课
+**Time:** ~90 分钟
 
-## Learning Objectives
+## 学习目标（Learning Objectives）
 
-- Score a paper draft across five fixed dimensions: clarity, novelty, evidence, methodology, related-work.
-- Apply each round's critique as a structured revision diff rather than a freeform rewrite.
-- Detect convergence by comparing scores across rounds; stop on plateau, target met, or budget exhausted.
-- Cap rounds with a max-iteration budget so a non-converging critic does not run forever.
-- Emit a per-round trace so the dashboard or the next stage can render the score trajectory.
+- 从五个固定维度为论文草稿评分：清晰度、新颖性、证据、方法论和相关工作。
+- 将每轮评审应用为结构化修订差异（Revision Diff），而不是自由改写。
+- 通过比较各轮分数检测收敛；在进入平台期、达到目标或预算耗尽时停止。
+- 用最大迭代预算限制轮数，避免不收敛的评审器永远运行。
+- 输出逐轮追踪记录（Trace），让仪表盘或下一阶段可以绘制评分轨迹。
 
 ```figure
 ch-critic-converge
 ```
 
-## Why five fixed dimensions
+## 为什么使用五个固定维度（Why five fixed dimensions）
 
-A freeform critic is a model that returns a paragraph of suggestions. The next round's revision treats the paragraph as ambient context. Whether the rewrite addresses the criticism is unverifiable because the criticism never had structure.
+自由格式评审器是一个返回一段建议的模型。下一轮修订把这段文字当作背景上下文。改写是否回应了批评无法验证，因为批评从一开始就没有结构。
 
-Five dimensions give the harness a contract.
+五个维度为执行框架提供了一份契约（Contract）。
 
 ```mermaid
 flowchart LR
-    Draft[Paper draft] --> Critic[Critic]
-    Critic --> Scores
-    Scores --> Clar[clarity 0-10]
-    Scores --> Nov[novelty 0-10]
-    Scores --> Ev[evidence 0-10]
-    Scores --> Meth[methodology 0-10]
-    Scores --> Rel[related-work 0-10]
-    Scores --> Revs[revision suggestions]
+    Draft[论文草稿] --> Critic[评审器]
+    Critic --> Scores[评分]
+    Scores --> Clar[清晰度 0-10]
+    Scores --> Nov[新颖性 0-10]
+    Scores --> Ev[证据 0-10]
+    Scores --> Meth[方法论 0-10]
+    Scores --> Rel[相关工作 0-10]
+    Scores --> Revs[修订建议]
 ```
 
-The score is a vector. The harness watches each dimension across rounds. A revision that raises clarity but tanks evidence is a regression on evidence, and the convergence check sees it. A model-only critic cannot offer that guarantee.
+分数是一个向量。执行框架跨轮次观察每个维度。某次修订提高了清晰度，却大幅降低了证据评分，这就是证据维度的退步，收敛检查能够发现它。仅靠模型的评审器无法提供这种保证。
 
-## The Critique shape
+## 评审数据结构（The Critique shape）
 
 ```mermaid
 flowchart TB
-    Critique[Critique] --> Scores[scores dict]
-    Critique --> Sugg[suggestions list]
+    Critique[Critique 评审] --> Scores[scores 评分字典]
+    Critique --> Sugg[suggestions 建议列表]
     Sugg --> S1[Suggestion: dimension, target, edit]
-    Critique --> Round[round int]
-    Critique --> Reason[overall reason str]
+    Critique --> Round[round 轮次整数]
+    Critique --> Reason[overall reason 总体理由字符串]
 ```
 
-Every suggestion carries the dimension it improves, the section it targets, and an `edit` instruction the reviser can apply. The reviser is also a callable. The lesson ships a deterministic reviser that interprets the edit instruction as an append-to-section operation. A model-driven reviser would interpret the same field as a prompt. The contract does not change.
+每条建议都携带它要改善的维度、目标章节，以及修订器可执行的 `edit` 指令。修订器也是一个可调用对象（Callable）。本课提供一个确定性修订器，将编辑指令解释为向章节追加内容的操作。模型驱动的修订器则会将同一字段解释为提示词。契约不变。
 
-## Convergence rules, in order
+## 按优先级排列的收敛规则（Convergence rules, in order）
 
-The critic loop terminates when any one of three conditions fires.
+以下三个条件中的任意一个触发时，评审循环终止。
 
 ```mermaid
 flowchart TB
-    Start[Round n complete] --> A{All five dimensions ge target?}
-    A -- yes --> Stop1[converged: target]
-    A -- no --> B{Plateau detected?}
-    B -- yes --> Stop2[converged: plateau]
-    B -- no --> C{Round ge max?}
-    C -- yes --> Stop3[stopped: budget]
-    C -- no --> Next[Run round n plus 1]
+    Start[第 n 轮完成] --> A{五个维度均达到目标？}
+    A -- 是 --> Stop1[收敛: target]
+    A -- 否 --> B{检测到平台期？}
+    B -- 是 --> Stop2[收敛: plateau]
+    B -- 否 --> C{轮数达到上限？}
+    C -- 是 --> Stop3[停止: budget]
+    C -- 否 --> Next[运行第 n 加 1 轮]
 ```
 
-The target is the strictest case: every one of the five dimensions (clarity, novelty, evidence, methodology, related_work) must hit `>= target_score` (default `8.0`) before the loop returns success. A high mean with one weak dimension is not enough. Plateau detection compares the current round's mean to the previous round's mean. If the improvement is below `plateau_epsilon` (default `0.1`) for two consecutive rounds, the loop exits with `plateau`. The budget is a hard cap on rounds (default `5`) and exits with `budget`.
+达到目标是最严格的情形：五个维度（清晰度 clarity、新颖性 novelty、证据 evidence、方法论 methodology、相关工作 related_work）中的每一个，都必须满足 `>= target_score`（默认 `8.0`），循环才返回成功。均值很高但某一维度薄弱，并不足够。平台期（Plateau）检测将本轮均值与上一轮均值比较。如果连续两轮的改进量低于 `plateau_epsilon`（默认 `0.1`），循环以 `plateau` 退出。预算是轮数的硬上限（默认 `5`），达到后以 `budget` 退出。
 
-The order matters. Target wins over plateau wins over budget. If round three hits the target on the same iteration that would also trigger a plateau, the result is `target`, not `plateau`.
+顺序很重要：目标优先于平台期，平台期优先于预算。如果第三轮同时达到目标并触发平台期，结果应是 `target`，而不是 `plateau`。
 
-## Why plateau detection runs over two rounds
+## 为什么平台期检测需要两轮（Why plateau detection runs over two rounds）
 
-A one-round plateau is noise. A real critic returns a slightly different score each iteration even on a fixed draft, because deterministic scoring still depends on which suggestions were applied and in what order. Requiring two consecutive plateau rounds filters that noise out. If the harness reports a plateau, the draft has genuinely stopped improving.
+一轮没有进展可能是噪声。即使草稿固定，真实评审器每次迭代也会给出略有不同的评分，因为确定性评分仍然依赖应用了哪些建议以及应用顺序。要求连续两轮都处于平台期，可以过滤这种噪声。如果执行框架报告平台期，就说明草稿确实停止改善了。
 
-## The deterministic critic in this lesson
+## 本课中的确定性评审器（The deterministic critic in this lesson）
 
-The lesson does not call a model. The shipped critic is a callable that scores a draft based on three signals: average section body length (clarity), figure count and citation count (evidence), and an `originality_tag` field on the paper metadata (novelty). The reviser knows how to push each score upward.
+本课不调用模型。提供的评审器是一个可调用对象，根据三类信号为草稿评分：章节正文平均长度（清晰度）、图和文献引用的数量（证据），以及论文元数据中的 `originality_tag` 字段（新颖性）。修订器知道如何提高每项评分。
 
 ```text
-clarity      grows when the average section body length increases
-novelty      grows when originality_tag is set to "high"
-evidence     grows when a section's figure_refs is non-empty
-methodology  grows when a section titled "Method" exists with body
-related-work grows when a section titled "Related Work" exists with body
+clarity      随章节正文平均长度的增加而提高
+novelty      在 originality_tag 设为 "high" 时提高
+evidence     在章节的 figure_refs 非空时提高
+methodology  在存在标题为 "Method" 且有正文的章节时提高
+related-work 在存在标题为 "Related Work" 且有正文的章节时提高
 ```
 
-The reviser interprets each suggestion as a targeted append. After round one, the harness can observe the score going up. The tests use this property to assert the loop reduces the gap.
+修订器将每条建议解释为一次定向追加操作。第一轮之后，执行框架便能观察到分数上升。测试利用这一性质，断言循环会缩小与目标的差距。
 
-## The full loop contract
+## 完整循环契约（The full loop contract）
 
 ```mermaid
 sequenceDiagram
     autonumber
-    participant H as Harness
-    participant C as Critic
-    participant R as Reviser
+    participant H as 执行框架
+    participant C as 评审器
+    participant R as 修订器
     H->>C: critique(draft, round=1)
     C-->>H: Critique{scores, suggestions}
     H->>R: revise(draft, suggestions)
-    R-->>H: revised draft
-    H->>H: convergence check
-    alt converged
-        H-->>H: stop with reason
-    else continue
+    R-->>H: 修订后的草稿
+    H->>H: 收敛检查
+    alt 已收敛
+        H-->>H: 停止并记录原因
+    else 继续
         H->>C: critique(draft, round=2)
     end
 ```
 
-The harness owns the round counter, the trace, and the convergence check. The critic owns the score. The reviser owns the diff. None of the three touches the others' state.
+执行框架管理轮次计数器、追踪记录和收敛检查；评审器负责评分；修订器负责差异。三者都不触碰其他组件的状态。
 
-## The Trace output
+## 追踪输出（The Trace output）
 
-Every round emits one trace event with the round number, the score vector, the suggestion count, and the convergence verdict. The full trace is returned alongside the final draft. A downstream dashboard can render the score-per-round chart. The next lesson, the iteration scheduler, reads the trace to decide whether the branch is worth keeping.
+每轮输出一个追踪事件，包含轮次编号、评分向量、建议数量和收敛判定。完整追踪记录与最终草稿一起返回。下游仪表盘可以绘制逐轮评分图。下一课的迭代调度器读取追踪记录，判断该分支是否值得保留。
 
-## Budgets that protect against bad critics
+## 防止失效评审器耗尽资源的预算（Budgets that protect against bad critics）
 
-A critic that produces suggestions that never improve the score will lock the loop into the max-iteration ceiling. The trace makes that visible: five rounds, scores flat, verdict `budget`. The user reads that as a critic bug, not a draft bug. The alternative, surfacing only the final draft, hides the diagnosis. Trace-first design surfaces it.
+如果评审器提出的建议从不提高评分，循环就会一直运行到最大迭代上限。追踪记录会揭示这一点：五轮运行、分数不变、判定为 `budget`。用户会将其识别为评审器问题，而不是草稿问题。反之，如果只呈现最终草稿，就会隐藏诊断线索。追踪优先的设计能够将问题显露出来。
 
-## How to read the code
+## 如何阅读代码（How to read the code）
 
-`code/main.py` defines `Critique`, `Suggestion`, `Critic` protocol, `Reviser` protocol, `CriticLoop`, and a `make_deterministic_critic_pair` factory that returns the deterministic critic and a matching reviser. A minimal `Paper` shape is included so the lesson stands alone.
+`code/main.py` 定义了 `Critique`、`Suggestion`、`Critic` 协议、`Reviser` 协议、`CriticLoop`，以及返回确定性评审器和配套修订器的 `make_deterministic_critic_pair` 工厂。代码包含一个最小 `Paper` 结构，使本课可独立使用。
 
-`code/tests/test_critic_loop.py` covers: monotone improvement after round one, target convergence on a tuned draft, plateau detection after two flat rounds, budget exhaustion when no suggestion improves, suggestion application by the reviser, and trace shape.
+`code/tests/test_critic_loop.py` 覆盖：第一轮之后的单调改进、经过调整的草稿达到目标收敛、连续两轮持平后的平台期检测、没有建议带来改善时的预算耗尽、修订器应用建议，以及追踪记录结构。
 
-## Going further
+## 进一步探索（Going further）
 
-Two extensions a real implementation will want. First, dimension weights: a paper for a workshop weights novelty higher than methodology; a journal weights the inverse. The convergence check becomes a weighted mean. Second, paired critics: one critic scores, a second critic adjudicates the suggestions before the reviser sees them. Both add value, both compose on the same `Critique` shape.
+真实实现会需要两项扩展。第一，维度权重：面向研讨会的论文赋予新颖性比方法论更高的权重，期刊论文则相反。收敛检查因此改用加权均值。第二，双评审器（Paired Critics）：一个评审器打分，另一个在修订器收到建议之前裁定这些建议。两者都有价值，也都基于相同的 `Critique` 结构组合。
 
-The bet is the score vector. Once the critique is structured, every other improvement, convergence rule, dashboard, paired critic, drops in without changing the loop.
+这个方案的核心是评分向量。一旦评审被结构化，其他改进，无论是收敛规则、仪表盘还是双评审器，都可以在不改变循环的情况下接入。

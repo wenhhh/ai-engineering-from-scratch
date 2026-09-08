@@ -1,78 +1,78 @@
 {
   "lesson": "43-hdf5-tokenized-corpus",
-  "title": "HDF5 Tokenized Corpus",
+  "title": "HDF5 分词语料库（HDF5 Tokenized Corpus）",
   "questions": [
     {
       "stage": "pre",
-      "question": "Why store the tokenized corpus in a resizable, chunked HDF5 dataset rather than JSONL?",
+      "question": "为什么将分词语料存入可扩容、分块 HDF5 数据集，而非 JSONL？",
       "options": [
-        "HDF5 has a smaller logo",
-        "JSONL is deprecated",
-        "Random reasons",
-        "HDF5 offers chunked, integer-only, memory-mapped reads with O(1) random access; JSONL forces the parser onto every hot-path read"
+        "HDF5 标志更小",
+        "JSONL 已弃用",
+        "随意原因",
+        "HDF5 提供分块、纯整数、内存映射读取和 O(1) 随机访问；JSONL 每次热路径读取都需要解析器"
       ],
       "correct": 3,
-      "explanation": "The dataloader wants a flat token stream with addressable slices; HDF5 supplies that natively."
+      "explanation": "数据加载器需要切片可寻址的扁平词元流，HDF5 原生提供。"
     },
     {
       "stage": "check",
-      "question": "What is the right rule for sizing the HDF5 chunk vs the trainer's window_size?",
+      "question": "HDF5 块大小相对训练器 window_size 的正确规则是什么？",
       "options": [
-        "Pick the largest chunk that fits in RAM",
-        "Always pick chunk=1",
-        "Set chunk to a multiple of window_size so each sample lands inside one or two chunks and reads stay page-cache aligned",
-        "Pick chunk equal to the document length"
+        "选择内存能容纳的最大块",
+        "总选 chunk=1",
+        "将块设为 window_size 的倍数，使样本落在一或两个块内，读取与页缓存对齐",
+        "块大小等于文档长度"
       ],
       "correct": 2,
-      "explanation": "Mismatched chunks halve throughput because every sample straddles two chunks instead of one."
+      "explanation": "块大小不匹配会让每样本跨两个块而非一个，吞吐量减半。"
     },
     {
       "stage": "check",
-      "question": "Why is token_count stored as an HDF5 attribute and not implied from dataset shape?",
+      "question": "为什么 token_count 存为 HDF5 属性，而非从数据集形状推断？",
       "options": [
-        "The trailing chunk may be partially full; without the explicit attribute the reader walks past the real end into zero-padded tokens and the model learns to predict zero",
-        "Shapes are slow to read",
-        "Attributes are mandatory",
-        "Attributes are pretty"
+        "尾块可能未填满；没有显式属性，读取器会越过真实末尾读入零填充词元，让模型学习预测零",
+        "读取形状慢",
+        "属性是强制的",
+        "属性好看"
       ],
       "correct": 0,
-      "explanation": "The chunked layout sometimes leaves trailing slots; the attribute carries the truth."
+      "explanation": "分块布局有时留下尾部空位，属性记录真实数量。"
     },
     {
       "stage": "check",
-      "question": "What does the writer accomplish by buffering tokens to chunk_size before each resize?",
+      "question": "写入器在每次扩容前将词元缓冲到 chunk_size，实现了什么？",
       "options": [
-        "Writes are contiguous and chunk-aligned, avoiding the fragmentation that follows one-token-at-a-time resizes",
-        "Reduces vocabulary size",
-        "Speeds up sha256",
-        "Saves a few CPU cycles"
+        "写入连续且与块对齐，避免逐词元扩容造成的碎片化",
+        "减小词汇表",
+        "加快 sha256",
+        "节省少量 CPU 周期"
       ],
       "correct": 0,
-      "explanation": "Buffer-then-extend at chunk size is the only way to keep HDF5 chunks contiguous on disk."
+      "explanation": "按块大小先缓冲再扩展，是让 HDF5 块在磁盘保持连续的唯一方式。"
     },
     {
       "stage": "post",
-      "question": "Why is swmr=True opened on the reader side, not on the writer side?",
+      "question": "为什么在读取端而非写入端以 swmr=True 打开？",
       "options": [
-        "Security",
-        "Random preference",
-        "Performance",
-        "Single-Writer-Multiple-Reader mode lets dataloader workers share the file safely; the writer needs no special mode because it writes one shard per process"
+        "安全性",
+        "随意偏好",
+        "性能",
+        "单写多读模式让数据加载工作进程安全共享文件；写入器每进程写一个分片，因此不需要特殊模式"
       ],
       "correct": 3,
-      "explanation": "Mixing the two modes is the most common cause of 'file is locked' failures."
+      "explanation": "混淆两种模式是“文件被锁定”故障最常见的原因。"
     },
     {
       "stage": "post",
-      "question": "What does the boundary token id exist to make explicit?",
+      "question": "边界词元 ID 要明确表达什么？",
       "options": [
-        "Compression",
-        "Vocabulary size limits",
-        "Random data",
-        "Document boundaries within a packed window so the model is not silently trained on cross-document concatenation"
+        "压缩",
+        "词汇表大小限制",
+        "随机数据",
+        "打包窗口中的文档边界，避免模型在无提示的跨文档拼接上训练"
       ],
       "correct": 3,
-      "explanation": "Without an explicit boundary the trainer learns boundaries as noise; with it the boundary becomes a usable separator."
+      "explanation": "没有显式边界，训练器将边界当噪声学习；有了它，边界成为可用分隔符。"
     }
   ]
 }

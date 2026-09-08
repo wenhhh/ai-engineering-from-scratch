@@ -1,8 +1,8 @@
-"""Phase 13 Lesson 14: MCP Apps on the MCP 2026-07-28 wire.
-Lesson: phases/13-tools-and-protocols/14-mcp-apps/docs/en.md
-Spec: https://modelcontextprotocol.io/specification/2026-07-28
-Models discovery, tools, resources, and a self-contained MCP Apps UI.
-Lesson 09 owns the HTTP adapter; the UI pins its postMessage origin.
+"""阶段 13 第 14 课：MCP 2026-07-28 线上协议（Wire protocol）中的 MCP Apps。
+课程： phases/13-tools-and-protocols/14-mcp-apps/docs/en.md
+规范： https://modelcontextprotocol.io/specification/2026-07-28
+模拟发现（Discovery）、工具（Tools）、资源（Resources）与自包含的 MCP Apps 用户界面（UI）。
+HTTP 适配器见第 09 课；界面固定 postMessage 的源（Origin）。
 """
 
 from __future__ import annotations
@@ -25,8 +25,8 @@ RESOURCE_MIME = "text/html;profile=mcp-app"
 HOST_ORIGIN = "https://host.example"
 
 NOTES = [
-    {"id": "note-1", "title": "Discover", "created": "2026-07-28"},
-    {"id": "note-2", "title": "Per-request metadata", "created": "2026-07-29"},
+    {"id": "note-1", "title": "发现（Discover）", "created": "2026-07-28"},
+    {"id": "note-2", "title": "逐请求元数据（Per-request metadata）", "created": "2026-07-29"},
     {"id": "note-3", "title": "MCP Apps", "created": "2026-07-30"},
 ]
 
@@ -80,9 +80,9 @@ def timeline_html(notes: list[dict[str, str]]) -> str:
         for note in notes
     )
     return f"""<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><title>Notes timeline</title>
+<html lang="zh-CN"><head><meta charset="utf-8"><title>笔记时间线（Notes timeline）</title>
 <style>body{{font:16px system-ui;margin:1rem}}li{{display:flex;gap:1rem;margin:.5rem}}</style>
-</head><body><h1>Notes timeline</h1><ol>{items}</ol>
+</head><body><h1>笔记时间线（Notes timeline）</h1><ol>{items}</ol>
 <script>
 const hostOrigin = {json.dumps(HOST_ORIGIN)};
 let nextId = 0;
@@ -105,7 +105,7 @@ window.addEventListener("message", (event) => {{
 document.querySelectorAll("button").forEach((button) => {{
   button.addEventListener("click", () => callTool("notes_open", {{id: button.dataset.note}}));
 }});
-// ui/initialize belongs to the Apps postMessage dialect, not MCP core initialization.
+// ui/initialize 属于 Apps 的 postMessage 方言，不属于 MCP 核心初始化流程。
 window.parent.postMessage({{
   jsonrpc: "2.0", id: 0, method: "ui/initialize",
   params: {{
@@ -203,7 +203,7 @@ class McpAppServer:
             elif method == "tools/list":
                 tool: dict[str, Any] = {
                     "name": "notes_timeline",
-                    "description": "Render a timeline of notes.",
+                    "description": "渲染笔记时间线。",
                     "inputSchema": {"type": "object", "properties": {}},
                 }
                 if self._apps_enabled(meta):
@@ -213,7 +213,7 @@ class McpAppServer:
                 if params.get("name") != "notes_timeline":
                     raise ProtocolError(-32602, "Unknown tool")
                 result = {
-                    "content": [{"type": "text", "text": "Timeline ready."}],
+                    "content": [{"type": "text", "text": "时间线已就绪。"}],
                     "structuredContent": {"notes": NOTES},
                     "isError": False,
                 }
@@ -222,7 +222,7 @@ class McpAppServer:
                     "resources": [{
                         "uri": RESOURCE_URI,
                         "name": "notes-timeline",
-                        "description": "Interactive notes timeline for MCP Apps hosts.",
+                        "description": "供 MCP Apps 宿主使用的交互式笔记时间线。",
                         "mimeType": RESOURCE_MIME,
                     }],
                     "ttlMs": 60_000,

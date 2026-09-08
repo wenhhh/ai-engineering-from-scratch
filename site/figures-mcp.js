@@ -1,6 +1,6 @@
-/* figures-mcp.js - learner-controlled MCP protocol labs.
-   Loads after figures-tools3.js so these registrations replace selected
-   passive figures with inspectable, data-driven protocol decisions. */
+/* figures-mcp.js：由学习者控制的模型上下文协议（Model Context Protocol，MCP）实验。
+   在 figures-tools3.js 之后加载，将部分被动图表替换为可检查、由数据驱动的协议决策。
+   JSON 面板保留真实演示报文、语料和机器枚举；界面说明使用中文。 */
 (function () {
   'use strict';
 
@@ -18,12 +18,13 @@
     style.textContent = [
       '.mcp-lab{margin:0;border:0;background:transparent;color:var(--ink,#1a1a1a)}',
       '.mcp-lab *{box-sizing:border-box}',
-      '.mcp-lab__head{align-items:flex-start}',
+      '.mcp-lab__title,.mcp-lab button,.mcp-lab__stage-name,.mcp-lab__stage-detail{overflow-wrap:anywhere}',
+      '.mcp-lab__head{align-items:flex-start;flex-wrap:wrap;gap:8px}',
       '.mcp-lab__head .mcp-lab__title{color:var(--blueprint,#3553ff)}',
       '.mcp-lab__body{padding:16px;display:grid;gap:16px}',
       '.mcp-lab__prompt{margin:0!important;color:var(--ink-soft,#555)!important;font-family:var(--font-body,serif)!important;font-size:.96rem!important;line-height:1.55!important;text-align:left!important}',
       '.mcp-lab__control-block{display:grid;gap:8px}',
-      '.mcp-lab__control-label{font-family:var(--font-mono,monospace);font-size:.72rem;line-height:1.4;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-mute,#777)}',
+      '.mcp-lab__control-label{font-family:var(--font-mono,monospace);font-size:.72rem;line-height:1.4;letter-spacing:0;text-transform:uppercase;color:var(--ink-mute,#777)}',
       '.mcp-lab__scenarios,.mcp-lab__choices,.mcp-lab__actions{display:flex;flex-wrap:wrap;gap:8px}',
       '.mcp-lab button{min-height:40px;padding:8px 12px;border:1px solid var(--rule-soft,#ddd);background:var(--bg,#fafaf5);color:var(--ink,#1a1a1a);font-family:var(--font-mono,monospace);font-size:.76rem;line-height:1.35;text-align:left;cursor:pointer}',
       '.mcp-lab__scenario,.mcp-lab__choice,.mcp-lab__action{transition:transform var(--motion-press,160ms) var(--ease-out,cubic-bezier(.23,1,.32,1)),opacity var(--motion-feedback,180ms) var(--ease-out,cubic-bezier(.23,1,.32,1)),border-color var(--motion-feedback,180ms) ease,background-color var(--motion-feedback,180ms) ease}',
@@ -31,7 +32,7 @@
       '.mcp-lab button:hover{border-color:var(--blueprint,#3553ff);background:var(--blueprint-tint,rgba(53,83,255,.08))}',
       '.mcp-lab button:active{transform:scale(.97)}',
       '.mcp-lab button:focus-visible,.mcp-lab summary:focus-visible,.mcp-lab pre:focus-visible{outline:2px solid var(--blueprint,#3553ff);outline-offset:2px}',
-      '.mcp-lab__scenario[aria-pressed="true"],.mcp-lab__choice[aria-pressed="true"]{border-color:var(--blueprint,#3553ff);background:var(--blueprint,#3553ff);color:var(--bg,#fafaf5)}',
+      '.mcp-lab .mcp-lab__scenario[aria-pressed="true"],.mcp-lab .mcp-lab__choice[aria-pressed="true"]{border-color:var(--blueprint,#3553ff);background:var(--blueprint,#3553ff);color:var(--bg,#fafaf5)}',
       '.mcp-lab__action{border-color:var(--blueprint,#3553ff)!important;color:var(--blueprint,#3553ff)!important;background:var(--blueprint-tint,rgba(53,83,255,.08))!important}',
       '.mcp-lab__workspace{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:14px;align-items:start}',
       '.mcp-lab__pipeline{display:grid;gap:8px;min-width:0}',
@@ -44,10 +45,10 @@
       '.mcp-lab__stage-name{font-family:var(--font-mono,monospace);font-size:.78rem;font-weight:600;line-height:1.35;color:var(--ink,#1a1a1a);padding-right:28px}',
       '.mcp-lab__stage-detail{margin-top:4px;font-family:var(--font-body,serif);font-size:.86rem;line-height:1.4;color:var(--ink-soft,#555)}',
       '.mcp-lab__evidence{min-width:0;border:1px solid var(--rule-soft,#ddd);background:var(--code-bg,#f6f6f0)}',
-      '.mcp-lab__evidence summary{min-height:40px;padding:10px 12px;font-family:var(--font-mono,monospace);font-size:.72rem;line-height:1.4;letter-spacing:.08em;text-transform:uppercase;color:var(--blueprint,#3553ff);cursor:pointer}',
+      '.mcp-lab__evidence summary{min-height:40px;padding:10px 12px;font-family:var(--font-mono,monospace);font-size:.72rem;line-height:1.4;letter-spacing:0;text-transform:uppercase;color:var(--blueprint,#3553ff);cursor:pointer}',
       '.mcp-lab__evidence pre{max-width:100%;max-height:360px;margin:0!important;padding:12px!important;border:0!important;border-top:1px solid var(--rule-soft,#ddd)!important;background:var(--code-bg,#f6f6f0)!important;color:var(--ink,#1a1a1a)!important;font-family:var(--font-mono,monospace)!important;font-size:.76rem!important;line-height:1.55!important;white-space:pre;overflow:auto!important;-webkit-overflow-scrolling:touch}',
       '.mcp-lab__result{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;align-items:start;padding:12px;border:1px solid var(--rule-soft,#ddd);background:var(--bg-surface,#f1f1eb)}',
-      '.mcp-lab__status{display:inline-flex;align-items:center;min-height:28px;padding:4px 8px;border:1px solid var(--blueprint,#3553ff);color:var(--blueprint,#3553ff);font-family:var(--font-mono,monospace);font-size:.7rem;line-height:1.3;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}',
+      '.mcp-lab__status{display:inline-flex;align-items:center;min-height:28px;padding:4px 8px;border:1px solid var(--blueprint,#3553ff);color:var(--blueprint,#3553ff);font-family:var(--font-mono,monospace);font-size:.7rem;line-height:1.3;letter-spacing:0;text-transform:uppercase;white-space:normal;overflow-wrap:anywhere}',
       '.mcp-lab__status[data-tone="fail"]{border-color:var(--warn,#b8870f);color:var(--warn,#b8870f)}',
       '.mcp-lab__status[data-tone="warn"]{border-style:dashed;border-color:var(--warn,#b8870f);color:var(--warn,#b8870f)}',
       '.mcp-lab__verdict{min-height:28px;font-family:var(--font-body,serif);font-size:.94rem;line-height:1.5;color:var(--ink,#1a1a1a)}',
@@ -130,15 +131,68 @@
     return headers;
   }
 
+  // 只在显示边界翻译标签；协议值、检查名称与分支判断保留原值。
+  function displayTerm(value) {
+    var labels = {
+      'server/discover': '服务器发现（server/discover）',
+      'tools/list': '列出工具（tools/list）',
+      'tools/call': '调用工具（tools/call）',
+      'resources/read': '读取资源（resources/read）',
+      'subscriptions/listen': '监听订阅（subscriptions/listen）',
+      'tasks/update': '更新任务（tasks/update）',
+      'tasks/cancel': '取消任务（tasks/cancel）',
+      'tasks/get': '获取任务（tasks/get）',
+      'tool': '工具（tool）',
+      'resource': '资源（resource）',
+      'prompt': '提示词（prompt）',
+      'working': '执行中（working）',
+      'input_required': '需要输入（input_required）',
+      'completed': '已完成（completed）',
+      'failed': '失败（failed）',
+      'cancelled': '已取消（cancelled）',
+      'execute': '执行（execute）',
+      'refuse': '拒绝（refuse）',
+      'quarantine': '隔离（quarantine）',
+      'manual review': '人工审核（manual review）',
+      'unsafe execute': '不安全执行（unsafe execute）',
+      'admitted': '已准入（admitted）',
+      'deleted': '已删除（deleted）',
+      'revoked': '已撤销（revoked）',
+      'quarantined': '已隔离（quarantined）',
+      'strict': '严格匹配（strict）',
+      'review': '审核（review）',
+      'blind': '盲目信任（blind）',
+      'prefix': '添加前缀（prefix）',
+      'reject': '拒绝重复（reject）',
+      'valid complete result': '有效的完整结果（valid complete result）',
+      'protocol error': '协议错误（protocol error）',
+      'tool error': '工具错误（tool error）',
+      'redaction failure': '脱敏失败（redaction failure）',
+      'Protected resource': '受保护资源（Protected Resource）',
+      'Issuer discovery': '签发者发现（Issuer Discovery）',
+      'PKCE and state': 'PKCE 与 state',
+      'Returned iss': '返回的 iss',
+      'Token issuer': '令牌签发者（Token Issuer）',
+      'Token audience': '令牌受众（Token Audience）',
+      'Required scopes': '所需权限范围（Required Scopes）',
+      'Insufficient scope': '权限范围不足（Insufficient Scope）',
+      'Required client capability is missing': '缺少所需的客户端能力',
+      'MRTR retry must use a fresh JSON-RPC id': 'MRTR 重试必须使用新的 JSON-RPC id',
+      'Invalid requestState': 'requestState 无效',
+      'inputResponses do not match outstanding inputRequests': 'inputResponses 与待处理的 inputRequests 不匹配'
+    };
+    return Object.prototype.hasOwnProperty.call(labels, value) ? labels[value] : value;
+  }
+
   function stage(name, detail, state) {
-    return { name: name, detail: detail, state: state || '' };
+    return { name: displayTerm(name), detail: detail, state: state || '' };
   }
 
   function outcome(kind, tone, status, verdict, caption, evidence, stages) {
     return {
       kind: kind,
       tone: tone,
-      status: status,
+      status: displayTerm(status),
       verdict: verdict,
       caption: caption,
       evidence: evidence,
@@ -151,7 +205,7 @@
       type: 'button',
       class: className,
       'aria-pressed': pressed ? 'true' : 'false'
-    }, [label]);
+    }, [displayTerm(label)]);
   }
 
   function makeLab(host, spec) {
@@ -172,10 +226,10 @@
     var scenarioControls = el('div', {
       class: 'mcp-lab__scenarios',
       role: 'group',
-      'aria-label': spec.scenarioLabel || 'Scenario'
+      'aria-label': spec.scenarioLabel || '场景'
     });
     var scenarioBlock = el('div', { class: 'mcp-lab__control-block' }, [
-      el('div', { class: 'mcp-lab__control-label' }, [spec.scenarioLabel || 'Scenario']),
+      el('div', { class: 'mcp-lab__control-label' }, [spec.scenarioLabel || '场景']),
       scenarioControls
     ]);
 
@@ -185,10 +239,10 @@
       var choiceControls = el('div', {
         class: 'mcp-lab__choices',
         role: 'group',
-        'aria-label': spec.choiceLabel || 'Decision'
+        'aria-label': spec.choiceLabel || '决策'
       });
       choiceBlock = el('div', { class: 'mcp-lab__control-block' }, [
-        el('div', { class: 'mcp-lab__control-label' }, [spec.choiceLabel || 'Decision']),
+        el('div', { class: 'mcp-lab__control-label' }, [spec.choiceLabel || '决策']),
         choiceControls
       ]);
       spec.choices.forEach(function (choice) {
@@ -202,11 +256,11 @@
       });
     }
 
-    var pipeline = el('div', { class: 'mcp-lab__pipeline', 'aria-label': 'Protocol stages' });
+    var pipeline = el('div', { class: 'mcp-lab__pipeline', 'aria-label': '协议步骤（Protocol Stages）' });
     var stageViews = [];
     var evidencePre = el('pre', { tabindex: '0' });
     var evidence = el('details', { class: 'mcp-lab__evidence', open: 'open' }, [
-      el('summary', {}, [spec.evidenceLabel || 'Wire evidence']),
+      el('summary', {}, [spec.evidenceLabel || '传输证据（Wire Evidence）']),
       evidencePre
     ]);
     var workspace = el('div', { class: 'mcp-lab__workspace' }, [pipeline, evidence]);
@@ -218,7 +272,7 @@
       'aria-atomic': 'true'
     });
     var result = el('div', { class: 'mcp-lab__result' }, [status, verdict]);
-    var action = makeButton('mcp-lab__action', spec.actionLabel || 'Evaluate', false);
+    var action = makeButton('mcp-lab__action', spec.actionLabel || '执行评估', false);
     var actions = el('div', { class: 'mcp-lab__actions' }, [action]);
     var caption = el('figcaption');
     var bodyKids = [prompt, scenarioBlock];
@@ -314,8 +368,8 @@
     { id: 'tools-list', label: 'tools/list', method: 'tools/list', idValue: 2 },
     { id: 'tools-call', label: 'tools/call', method: 'tools/call', idValue: 3, name: 'notes_search' },
     { id: 'resource-read', label: 'resources/read', method: 'resources/read', idValue: 4, uri: 'notes://42' },
-    { id: 'unsupported', label: 'Unsupported version', method: 'tools/list', idValue: 5, bodyVersion: '2027-01-01', headerVersion: '2027-01-01' },
-    { id: 'mismatch', label: 'Header/body mismatch', method: 'tools/call', idValue: 6, name: 'notes_search', bodyVersion: '2027-01-01', headerVersion: VERSION }
+    { id: 'unsupported', label: '不支持的版本', method: 'tools/list', idValue: 5, bodyVersion: '2027-01-01', headerVersion: '2027-01-01' },
+    { id: 'mismatch', label: '请求头与正文不一致', method: 'tools/call', idValue: 6, name: 'notes_search', bodyVersion: '2027-01-01', headerVersion: VERSION }
   ];
 
   function evaluateRequestScenario(scenario) {
@@ -335,12 +389,12 @@
         body: bodyVersion
       });
       stages = [
-        stage('Course host', 'Sends one self-contained tools/call request.', 'pass'),
-        stage('HTTP edge', 'Detects version disagreement before routing.', 'fail'),
-        stage('Replica pool', 'No replica receives an ambiguous request.', ''),
-        stage('Response', 'HTTP 400 with JSON-RPC error -32020.', 'focus')
+        stage('课程宿主（Host）', '发送一条自包含的 tools/call 请求。', 'pass'),
+        stage('HTTP 边缘节点（Edge）', '在路由前发现版本不一致。', 'fail'),
+        stage('副本池（Replica Pool）', '不会将含义不明确的请求交给任何副本。', ''),
+        stage('响应（Response）', '返回 HTTP 400，携带 JSON-RPC 错误 -32020。', 'focus')
       ];
-      return outcome('protocol-error', 'fail', 'HTTP 400 · -32020', 'Reject before dispatch. A routing header cannot disagree with the authoritative request body.', 'The same request can reach any replica only after the edge proves the mirrored header and body fields are identical.', {
+      return outcome('protocol-error', 'fail', 'HTTP 400 · -32020', '在分发前拒绝请求。路由请求头必须与作为权威依据的请求正文一致。', '只有边缘节点确认镜像请求头与正文中的对应字段完全一致后，同一请求才可交给任意副本。', {
         request: { headers: headers, body: body },
         response: { httpStatus: 400, body: mismatchError }
       }, stages);
@@ -352,12 +406,12 @@
         supported: [VERSION]
       });
       stages = [
-        stage('Course host', 'Repeats version and capabilities on this request.', 'pass'),
-        stage('Replica B', 'Validates the requested revision independently.', 'fail'),
-        stage('Dispatcher', 'Does not run tools/list under an unknown contract.', ''),
-        stage('Response', 'HTTP 400 with supported revision data.', 'focus')
+        stage('课程宿主（Host）', '在本次请求中再次声明版本与能力（Capability）。', 'pass'),
+        stage('副本 B（Replica B）', '独立校验请求使用的协议修订版本。', 'fail'),
+        stage('分发器（Dispatcher）', '不会按未知契约执行 tools/list。', ''),
+        stage('响应（Response）', '返回 HTTP 400，并附上支持的修订版本信息。', 'focus')
       ];
-      return outcome('unsupported-version', 'fail', 'HTTP 400 · -32022', 'Retry with a new JSON-RPC id only after selecting a mutually supported revision.', 'Version negotiation is an ordinary error and retry, not a hidden initialization session.', {
+      return outcome('unsupported-version', 'fail', 'HTTP 400 · -32022', '先选择双方均支持的修订版本，再使用新的 JSON-RPC id 重试。', '版本协商（Version Negotiation）通过普通的错误响应与重试完成，不依赖隐藏的初始化会话。', {
         request: { headers: headers, body: body },
         response: { httpStatus: 400, body: versionError }
       }, stages);
@@ -402,12 +456,12 @@
     }
     var response = rpcResult(scenario.idValue, result);
     stages = [
-      stage('Course host', 'Sends version, capabilities, and client metadata.', 'pass'),
-      stage(scenario.idValue % 2 ? 'Replica B' : 'Replica A', 'Validates this request without connection history.', 'pass'),
-      stage('MCP dispatcher', 'Runs ' + scenario.method + ' with method-specific validation.', 'focus'),
-      stage('Typed result', 'Returns resultType complete and serving implementation metadata.', 'pass')
+      stage('课程宿主（Host）', '发送版本、能力及客户端元数据（Metadata）。', 'pass'),
+      stage(scenario.idValue % 2 ? '副本 B（Replica B）' : '副本 A（Replica A）', '无需连接历史即可校验本次请求。', 'pass'),
+      stage('MCP 分发器（Dispatcher）', '执行 ' + scenario.method + '，并按该方法的规则校验。', 'focus'),
+      stage('类型化结果（Typed Result）', '返回 resultType 为 complete 的结果，以及提供服务的实现元数据。', 'pass')
     ];
-    return outcome('complete', 'pass', 'resultType · complete', 'The request is portable across replicas because every protocol dependency is present in the envelope.', 'Discovery is optional before a call. Per-request metadata and typed results are the actual stateless boundary.', {
+    return outcome('complete', 'pass', '完整结果（resultType: complete）', '请求封装（Envelope）包含协议所需的全部依赖，因此可交由不同副本处理。', '调用前可以选择执行发现（Discovery）。每次请求携带的元数据与类型化结果才是真正的无状态（Stateless）边界。', {
       request: { headers: headers, body: body },
       response: { httpStatus: 200, body: response }
     }, stages);
@@ -415,23 +469,23 @@
 
   function requestExplorer(host) {
     makeLab(host, {
-      title: 'STATELESS REQUEST EXPLORER',
-      hint: 'one request, any replica',
-      prompt: 'Select a wire case. The validator compares mirrored metadata, checks the revision, dispatches one envelope, and derives the only legal response shape.',
-      scenarioLabel: 'Request case',
-      actionLabel: 'Validate request again',
-      evidenceLabel: 'HTTP and JSON-RPC transcript',
+      title: '无状态请求探索器（Stateless Request Explorer）',
+      hint: '一条请求，可交给任意副本',
+      prompt: '选择一种传输场景。校验器会比较镜像元数据、检查修订版本、分发请求封装，并推导唯一合法的响应结构。',
+      scenarioLabel: '请求场景',
+      actionLabel: '重新校验请求',
+      evidenceLabel: 'HTTP 与 JSON-RPC 通信记录（Transcript）',
       scenarios: requestScenarios,
       evaluate: evaluateRequestScenario
     });
   }
 
   var transportScenarios = [
-    { id: 'json', label: 'JSON response', method: 'tools/list', requestId: 21, mode: 'json', verb: 'POST' },
-    { id: 'request-sse', label: 'Request-scoped SSE', method: 'tools/call', requestId: 41, mode: 'request-sse', verb: 'POST', name: 'index_project' },
+    { id: 'json', label: 'JSON 响应', method: 'tools/list', requestId: 21, mode: 'json', verb: 'POST' },
+    { id: 'request-sse', label: '请求范围内的 SSE', method: 'tools/call', requestId: 41, mode: 'request-sse', verb: 'POST', name: 'index_project' },
     { id: 'listen', label: 'subscriptions/listen', method: 'subscriptions/listen', requestId: 'listen-1', mode: 'listen', verb: 'POST' },
-    { id: 'get', label: 'Invalid GET', method: 'server/discover', requestId: 51, mode: 'invalid', verb: 'GET' },
-    { id: 'delete', label: 'Invalid DELETE', method: 'server/discover', requestId: 52, mode: 'invalid', verb: 'DELETE' }
+    { id: 'get', label: '无效的 GET', method: 'server/discover', requestId: 51, mode: 'invalid', verb: 'GET' },
+    { id: 'delete', label: '无效的 DELETE', method: 'server/discover', requestId: 52, mode: 'invalid', verb: 'DELETE' }
   ];
 
   function evaluateTransport(scenario) {
@@ -445,12 +499,12 @@
 
     if (scenario.verb !== 'POST') {
       stages = [
-        stage('Course host', 'Attempts ' + scenario.verb + ' /mcp.', 'fail'),
-        stage('HTTP route', 'Allows modern protocol traffic only through POST.', 'focus'),
-        stage('MCP dispatcher', 'Never receives a JSON-RPC message.', ''),
-        stage('Response', 'Returns 405 with POST in Allow.', 'pass')
+        stage('课程宿主（Host）', '尝试调用 ' + scenario.verb + ' /mcp.', 'fail'),
+        stage('HTTP 路由（Route）', '现代协议的流量只允许通过 POST 进入。', 'focus'),
+        stage('MCP 分发器（Dispatcher）', '不会收到 JSON-RPC 消息。', ''),
+        stage('响应（Response）', '返回 405，并在 Allow 中声明 POST。', 'pass')
       ];
-      return outcome('method-not-allowed', 'fail', 'HTTP 405', 'Modern Streamable HTTP has no standalone ' + scenario.verb + ' control channel.', 'Use a POST request for each JSON-RPC message. Long-lived changes use subscriptions/listen on that POST response.', {
+      return outcome('method-not-allowed', 'fail', 'HTTP 405', '现代可流式 HTTP（Streamable HTTP）没有独立的 ' + scenario.verb + '控制通道。', '每条 JSON-RPC 消息都使用 POST 请求。持续接收变更时，使用 subscriptions/listen 对应的 POST 响应。', {
         request: { method: scenario.verb, path: '/mcp', headers: headers, body: scenario.verb === 'GET' ? null : body },
         response: { httpStatus: 405, headers: { Allow: 'POST' }, body: null }
       }, stages);
@@ -463,17 +517,17 @@
         isError: false
       }, 'indexer-replica-c'));
       stages = [
-        stage('Course host', 'POSTs tools/call id 41.', 'pass'),
-        stage('Replica C', 'Keeps only this response open.', 'pass'),
-        stage('SSE frames', 'Server sends progress related to request id 41.', 'focus'),
-        stage('Final frame', 'Returns id 41 then closes the stream.', 'pass')
+        stage('课程宿主（Host）', '通过 POST 发送 id 为 41 的 tools/call。', 'pass'),
+        stage('副本 C（Replica C）', '仅保持本次响应打开。', 'pass'),
+        stage('SSE 帧（Frame）', '服务器发送与请求 id 41 相关的进度。', 'focus'),
+        stage('最后一帧（Final Frame）', '返回 id 为 41 的响应，然后关闭流。', 'pass')
       ];
-      return outcome('request-sse', 'pass', '200 · text/event-stream', 'Progress and the final result belong to one request. Closing the response cancels that in-flight request.', 'Request-scoped SSE is a response format, not a reusable protocol session or reverse-request channel.', {
+      return outcome('request-sse', 'pass', '200 · text/event-stream', '进度与最终结果都属于同一个请求。关闭响应会取消这一正在处理的请求。', '请求范围内的 SSE 是响应格式，不是可复用的协议会话，也不是反向请求通道。', {
         request: { method: 'POST', path: '/mcp', headers: headers, body: body },
         response: {
           httpStatus: 200,
           contentType: 'text/event-stream',
-          progressDirection: 'server-to-client on the request-scoped response',
+          progressDirection: '在请求范围内的响应上，由服务器发往客户端',
           events: [
             { jsonrpc: '2.0', method: 'notifications/progress', params: { progressToken: 'index-41', progress: 0.5 } },
             final
@@ -486,12 +540,12 @@
     if (scenario.mode === 'listen') {
       var subscriptionMeta = { 'io.modelcontextprotocol/subscriptionId': 'listen-1' };
       stages = [
-        stage('Course host', 'POSTs subscriptions/listen id listen-1.', 'pass'),
-        stage('Replica A', 'Accepts only requested notification families.', 'pass'),
-        stage('SSE acknowledgement', 'Correlates events with subscription id.', 'focus'),
-        stage('Reconnect rule', 'New listen id plus resource refetch after a drop.', 'pass')
+        stage('课程宿主（Host）', '通过 POST 发送 id 为 listen-1 的 subscriptions/listen。', 'pass'),
+        stage('副本 A（Replica A）', '只接受请求中指定的通知类别（Notification Family）。', 'pass'),
+        stage('SSE 确认（Acknowledgement）', '通过订阅 id 关联事件。', 'focus'),
+        stage('重连规则（Reconnect Rule）', '连接中断后使用新的监听 id，并重新获取资源。', 'pass')
       ];
-      return outcome('subscription', 'pass', '200 · subscribed', 'The request id is the subscription id. Events never turn the stream into a protocol session.', 'A dropped subscription is re-opened as a new request, then affected data is fetched again under current authorization.', {
+      return outcome('subscription', 'pass', '200 · subscribed', '请求 id 就是订阅 id。事件不会让该流变成协议会话。', '订阅中断后，通过新请求重新建立订阅，再按当前授权重新获取受影响的数据。', {
         request: { method: 'POST', path: '/mcp', headers: headers, body: body },
         response: {
           httpStatus: 200,
@@ -507,12 +561,12 @@
 
     var listResponse = rpcResult(21, completeResult({ tools: [], ttlMs: 30000, cacheScope: 'public' }, 'catalog-replica-b'));
     stages = [
-      stage('Course host', 'POSTs one tools/list request.', 'pass'),
-      stage('Replica B', 'Validates version and capabilities on arrival.', 'pass'),
-      stage('Dispatcher', 'Builds a deterministic list result.', 'focus'),
-      stage('HTTP response', 'Returns application/json and closes.', 'pass')
+      stage('课程宿主（Host）', '通过 POST 发送一条 tools/list 请求。', 'pass'),
+      stage('副本 B（Replica B）', '收到请求时校验版本与能力。', 'pass'),
+      stage('分发器（Dispatcher）', '构造确定性的列表结果。', 'focus'),
+      stage('HTTP 响应（Response）', '返回 application/json，然后关闭响应。', 'pass')
     ];
-    return outcome('json', 'pass', '200 · application/json', 'A normal call is one POST and one complete JSON response.', 'No connection affinity is required. Another request may reach a different healthy replica.', {
+    return outcome('json', 'pass', '200 · application/json', '一次普通调用由一条 POST 请求和一条完整的 JSON 响应组成。', '无需连接亲和性（Connection Affinity）。下一条请求可以交给另一个健康副本。', {
       request: { method: 'POST', path: '/mcp', headers: headers, body: body },
       response: { httpStatus: 200, contentType: 'application/json', body: listResponse }
     }, stages);
@@ -520,23 +574,23 @@
 
   function transportLab(host) {
     makeLab(host, {
-      title: 'STATELESS STREAMABLE HTTP WIRE LAB',
-      hint: 'choose the response mode',
-      prompt: 'Change the HTTP case and inspect which response body or stream is legal. Every modern JSON-RPC message enters through POST /mcp.',
-      scenarioLabel: 'Transport case',
-      actionLabel: 'Inspect wire again',
-      evidenceLabel: 'Request and response',
+      title: '无状态可流式 HTTP 传输实验（Stateless Streamable HTTP Wire Lab）',
+      hint: '选择响应模式',
+      prompt: '切换 HTTP 场景，检查哪些响应正文或流合法。每条现代 JSON-RPC 消息都通过 POST /mcp 进入。',
+      scenarioLabel: '传输场景',
+      actionLabel: '重新检查传输',
+      evidenceLabel: '请求与响应',
       scenarios: transportScenarios,
       evaluate: evaluateTransport
     });
   }
 
   var primitiveScenarios = [
-    { id: 'issue-details', label: 'Issue details', expected: 'resource', chooser: 'Host or user', name: 'tracker://issues/184', reason: 'Stable URI-addressed content.' },
-    { id: 'create-issue', label: 'Create issue', expected: 'tool', chooser: 'Model or application', name: 'issues_create', reason: 'Performs a validated mutation.' },
-    { id: 'sprint-review', label: 'Sprint review template', expected: 'prompt', chooser: 'User through host UI', name: 'sprint_review', reason: 'Starts a reusable message workflow.' },
-    { id: 'project-policy', label: 'Project policy', expected: 'resource', chooser: 'Host or user', name: 'tracker://projects/atlas/policy', reason: 'Readable content with a stable address.' },
-    { id: 'close-issue', label: 'Close issue', expected: 'tool', chooser: 'Model or application', name: 'issues_close', reason: 'Changes external state.' }
+    { id: 'issue-details', label: '议题详情', expected: 'resource', chooser: '宿主（Host）或用户', name: 'tracker://issues/184', reason: '内容稳定，可通过 URI 寻址。' },
+    { id: 'create-issue', label: '创建议题', expected: 'tool', chooser: '模型或应用程序', name: 'issues_create', reason: '执行经过校验的变更（Mutation）。' },
+    { id: 'sprint-review', label: '迭代评审模板', expected: 'prompt', chooser: '通过宿主界面操作的用户', name: 'sprint_review', reason: '启动可复用的消息工作流。' },
+    { id: 'project-policy', label: '项目策略', expected: 'resource', chooser: '宿主（Host）或用户', name: 'tracker://projects/atlas/policy', reason: '内容可读取，且具有稳定地址。' },
+    { id: 'close-issue', label: '关闭议题', expected: 'tool', chooser: '模型或应用程序', name: 'issues_close', reason: '改变外部状态。' }
   ];
 
   function primitiveEvidence(scenario) {
@@ -575,12 +629,12 @@
   function evaluatePrimitive(scenario, choice) {
     var correct = choice === scenario.expected;
     var stages = [
-      stage('Learner intent', scenario.label + ' is selected.', 'pass'),
-      stage('Selection owner', scenario.chooser + ' chooses this capability.', 'pass'),
-      stage('Native surface', (choice || 'No choice') + ' selected.', correct ? 'focus' : 'fail'),
-      stage('Wire contract', correct ? 'Uses ' + scenario.expected + ' discovery and invocation.' : 'Would expose the wrong host interaction.', correct ? 'pass' : '')
+      stage('学习者意图', scenario.label + '已选中。', 'pass'),
+      stage('选择权归属', scenario.chooser + '选择此能力。', 'pass'),
+      stage('原生交互入口（Native Surface）', (displayTerm(choice) || '尚未选择') + '已选中。', correct ? 'focus' : 'fail'),
+      stage('传输契约（Wire Contract）', correct ? '使用 ' + displayTerm(scenario.expected) + '的发现与调用方式。' : '会向宿主暴露不合适的交互方式。', correct ? 'pass' : '')
     ];
-    return outcome(correct ? 'correct' : 'incorrect', correct ? 'pass' : 'fail', correct ? 'Correct · ' + scenario.expected : 'Try again', correct ? scenario.reason : 'Classify by who chooses and what the consumer expects, not by which handler is easiest to code.', 'The primitive determines discovery, invocation, caching, authorization, and the host surface. One capability should not be exposed three ways by default.', {
+    return outcome(correct ? 'correct' : 'incorrect', correct ? 'pass' : 'fail', correct ? '正确 · ' + displayTerm(scenario.expected) : '请重试', correct ? scenario.reason : '应按选择权归属与使用方的预期分类，而不是看哪个处理函数最容易编写。', '原语（Primitive）决定发现、调用、缓存、授权及宿主交互入口。不应默认将同一种能力同时以三种方式暴露。', {
       selectedPrimitive: choice,
       expectedPrimitive: scenario.expected,
       selectionOwner: scenario.chooser,
@@ -590,30 +644,30 @@
 
   function primitiveClassifier(host) {
     makeLab(host, {
-      title: 'MCP PRIMITIVE CLASSIFIER',
-      hint: 'classify by consumer intent',
-      prompt: 'Choose a project-tracker capability, then classify it as a Tool, Resource, or Prompt. The lab reveals the native wire only after deriving the expected primitive.',
-      scenarioLabel: 'Capability',
-      choiceLabel: 'Your classification',
+      title: 'MCP 原语分类器（Primitive Classifier）',
+      hint: '按使用方意图分类',
+      prompt: '选择项目跟踪器的一种能力，再将其归类为工具（Tool）、资源（Resource）或提示词（Prompt）。实验会先推导预期原语，再展示原生传输报文。',
+      scenarioLabel: '能力（Capability）',
+      choiceLabel: '你的分类',
       defaultChoice: 'tool',
       choices: [
-        { value: 'tool', label: 'Tool' },
-        { value: 'resource', label: 'Resource' },
-        { value: 'prompt', label: 'Prompt' }
+        { value: 'tool', label: '工具（Tool）' },
+        { value: 'resource', label: '资源（Resource）' },
+        { value: 'prompt', label: '提示词（Prompt）' }
       ],
-      actionLabel: 'Check classification again',
-      evidenceLabel: 'Derived native wire',
+      actionLabel: '重新检查分类',
+      evidenceLabel: '推导出的原生传输报文',
       scenarios: primitiveScenarios,
       evaluate: evaluatePrimitive
     });
   }
 
   var retryScenarios = [
-    { id: 'valid', label: 'Valid retry', mutation: 'none' },
-    { id: 'reused-id', label: 'Reused JSON-RPC id', mutation: 'id' },
-    { id: 'altered-state', label: 'Altered requestState', mutation: 'state' },
-    { id: 'missing-capability', label: 'Missing Sampling capability', mutation: 'capability' },
-    { id: 'wrong-key', label: 'Wrong response key', mutation: 'key' }
+    { id: 'valid', label: '有效重试', mutation: 'none' },
+    { id: 'reused-id', label: '重复使用 JSON-RPC id', mutation: 'id' },
+    { id: 'altered-state', label: '修改了 requestState', mutation: 'state' },
+    { id: 'missing-capability', label: '缺少采样（Sampling）能力', mutation: 'capability' },
+    { id: 'wrong-key', label: '响应键错误', mutation: 'key' }
   ];
 
   function retryTranscript(scenario) {
@@ -672,15 +726,15 @@
     }
 
     var stages = [
-      stage('Original request', 'tools/call id 101 repeats version and client capabilities.', 'pass'),
-      stage('Input required', 'Server embeds pick_files and an opaque requestState.', failureStage === 2 ? 'fail' : 'pass'),
-      stage('Host fulfillment', 'Host applies model and approval policy.', failureStage === 2 ? '' : 'pass'),
-      stage('Fresh retry', 'Same method and arguments, keyed response, exact state, new id.', failureStage === 4 ? 'fail' : 'focus'),
-      stage('Final result', failure ? 'Not reached.' : 'resultType complete under id 102.', failure ? '' : 'pass')
+      stage('原始请求', 'id 为 101 的 tools/call 再次声明版本和客户端能力。', 'pass'),
+      stage('需要输入（Input Required）', '服务器嵌入 pick_files 和不透明的 requestState。', failureStage === 2 ? 'fail' : 'pass'),
+      stage('宿主提供输入', '宿主执行模型策略与审批策略。', failureStage === 2 ? '' : 'pass'),
+      stage('全新重试', '方法与参数不变，响应按键对应，状态原样回传，使用新 id。', failureStage === 4 ? 'fail' : 'focus'),
+      stage('最终结果', failure ? '尚未到达此步骤。' : '返回 id 为 102、resultType 为 complete 的结果。', failure ? '' : 'pass')
     ];
 
     if (failure) {
-      return outcome('protocol-error', 'fail', 'Rejected · ' + failure.error.code, failure.error.message + '. No protocol session can repair a malformed retry.', 'MRTR integrity comes from a fresh request id, exact opaque state, declared capability, and response keys that match the outstanding inputRequests map.', {
+      return outcome('protocol-error', 'fail', '已拒绝 · ' + failure.error.code, displayTerm(failure.error.message) + '。协议会话无法修复格式错误的重试。', '多轮往返请求（Multi Round-Trip Requests，MRTR）的完整性依赖新的请求 id、原样回传的不透明状态、已声明的能力，以及与待处理 inputRequests 映射匹配的响应键。', {
         originalRequest: transcript.original,
         firstResponse: scenario.mutation === 'capability' ? failure : transcript.inputRequired,
         retryRequest: scenario.mutation === 'capability' ? null : transcript.retry,
@@ -693,7 +747,7 @@
       structuredContent: { filesUsed: ['README.md', 'server.py', 'docs/intro.md'] },
       isError: false
     }, 'repo-summary-server'));
-    return outcome('complete', 'pass', 'resultType · complete', 'The retry is a new request whose integrity-protected state reconnects it to the original operation.', 'The host owns model policy. The server owns the multi-round workflow and validates each round without keeping a protocol session.', {
+    return outcome('complete', 'pass', '完整结果（resultType: complete）', '重试是一条新请求，通过受到完整性保护的状态重新关联原始操作。', '宿主掌管模型策略，服务器掌管多轮工作流，并在不保留协议会话的情况下校验每一轮。', {
       originalRequest: transcript.original,
       firstResponse: transcript.inputRequired,
       retryRequest: transcript.retry,
@@ -703,23 +757,23 @@
 
   function retryInspector(host) {
     makeLab(host, {
-      title: 'MRTR RETRY-STATE INSPECTOR',
-      hint: 'mutate one invariant',
-      prompt: 'Change one retry property and inspect where the multi-round exchange stops. Valid state is echoed, never parsed or edited by the client.',
-      scenarioLabel: 'Retry mutation',
-      actionLabel: 'Validate retry again',
-      evidenceLabel: 'Multi-round transcript',
+      title: 'MRTR 重试状态检查器（Retry-State Inspector）',
+      hint: '改动一项不变量',
+      prompt: '改动一个重试属性，检查多轮交互在哪一步停止。有效状态必须原样回传，客户端不得解析或修改。',
+      scenarioLabel: '重试改动',
+      actionLabel: '重新校验重试',
+      evidenceLabel: '多轮通信记录',
       scenarios: retryScenarios,
       evaluate: evaluateRetry
     });
   }
 
   var driftScenarios = [
-    { id: 'aligned', label: 'Aligned release', version: VERSION, capability: true, digest: 'sha256:tool-v4', reachable: true },
-    { id: 'version', label: 'Unsupported live version', version: '2027-01-01', capability: true, digest: 'sha256:tool-v4', reachable: true },
-    { id: 'capability', label: 'Missing tools capability', version: VERSION, capability: false, digest: 'sha256:tool-v4', reachable: true },
-    { id: 'tool', label: 'Changed tool descriptor', version: VERSION, capability: true, digest: 'sha256:tool-v5-unreviewed', reachable: true },
-    { id: 'offline', label: 'Unreachable endpoint', version: VERSION, capability: true, digest: null, reachable: false }
+    { id: 'aligned', label: '一致的发布版本', version: VERSION, capability: true, digest: 'sha256:tool-v4', reachable: true },
+    { id: 'version', label: '线上版本不受支持', version: '2027-01-01', capability: true, digest: 'sha256:tool-v4', reachable: true },
+    { id: 'capability', label: '缺少 tools 能力', version: VERSION, capability: false, digest: 'sha256:tool-v4', reachable: true },
+    { id: 'tool', label: '工具描述符已变更', version: VERSION, capability: true, digest: 'sha256:tool-v5-unreviewed', reachable: true },
+    { id: 'offline', label: '端点无法访问', version: VERSION, capability: true, digest: null, reachable: false }
   ];
 
   function evaluateDrift(scenario) {
@@ -736,65 +790,65 @@
       cacheScope: 'public'
     }, 'notes-server-display-name') : null;
     var statusName = 'aligned';
-    var message = 'Publication metadata, live discovery, and the approved descriptor digest agree.';
+    var message = '发布元数据、实时发现（Live Discovery）与已批准的描述符摘要一致。';
     var failureDetail = '';
     if (!scenario.reachable) {
       statusName = 'unreachable';
-      message = 'Quarantine until live discovery can be fetched and validated.';
-      failureDetail = 'Connection failed before server/discover.';
+      message = '隔离该版本，直到能够获取并校验实时发现结果。';
+      failureDetail = '在调用 server/discover 前连接失败。';
     } else if (scenario.version !== VERSION) {
       statusName = 'unsupported-version';
-      message = 'Quarantine because the live endpoint does not support the gateway revision.';
-      failureDetail = 'supportedVersions excludes ' + VERSION + '.';
+      message = '线上端点不支持网关的修订版本，因此将其隔离。';
+      failureDetail = 'supportedVersions 不包含 ' + VERSION + '.';
     } else if (!scenario.capability) {
       statusName = 'missing-capability';
-      message = 'Quarantine because publication promises tools but live discovery does not advertise them.';
-      failureDetail = 'capabilities.tools is absent.';
+      message = '发布信息承诺提供工具，但实时发现并未声明工具能力，因此将其隔离。';
+      failureDetail = '缺少 capabilities.tools。';
     } else if (scenario.digest !== 'sha256:tool-v4') {
       statusName = 'descriptor-drift';
-      message = 'Remove the tool from discovery and require review before updating the descriptor pin.';
-      failureDetail = 'Live canonical descriptor digest changed.';
+      message = '从发现结果中移除该工具，并在更新描述符固定值（Descriptor Pin）前要求人工审核。';
+      failureDetail = '线上规范化描述符（Canonical Descriptor）的摘要已改变。';
     }
     var valid = statusName === 'aligned';
     var stages = [
-      stage('Registry record', 'Loads com.example/notes publication metadata.', 'pass'),
-      stage('Live endpoint', scenario.reachable ? 'Calls server/discover at the published endpoint.' : 'Cannot establish a live request.', scenario.reachable ? 'pass' : 'fail'),
-      stage('Contract comparison', valid ? 'Version, capability, and descriptor digest agree.' : failureDetail, valid ? 'focus' : 'fail'),
-      stage('Gateway decision', valid ? 'Expose the approved namespaced tool.' : 'Quarantine or remove the route.', valid ? 'pass' : '')
+      stage('注册表记录（Registry Record）', '加载 com.example/notes 的发布元数据。', 'pass'),
+      stage('线上端点（Live Endpoint）', scenario.reachable ? '在发布的端点调用 server/discover。' : '无法建立实时请求。', scenario.reachable ? 'pass' : 'fail'),
+      stage('契约比较', valid ? '版本、能力和描述符摘要一致。' : failureDetail, valid ? 'focus' : 'fail'),
+      stage('网关决策（Gateway Decision）', valid ? '暴露已批准、带命名空间的工具。' : '隔离或移除路由。', valid ? 'pass' : '')
     ];
-    return outcome(statusName, valid ? 'pass' : 'fail', valid ? 'Aligned · admit' : 'Drift · quarantine', message, 'Registry publication helps locate an implementation. Only current live discovery, provenance evidence, and approved descriptor pins decide admission.', {
+    return outcome(statusName, valid ? 'pass' : 'fail', valid ? '一致 · 准入' : '漂移 · 隔离', message, '注册表（Registry）的发布信息帮助定位实现。是否准入，取决于当前实时发现结果、来源证据（Provenance Evidence）与已批准的描述符固定值。', {
       publicationMetadata: published,
       liveDiscoveryRequest: scenario.reachable ? rpcRequest(201, 'server/discover', {}, {}) : null,
-      liveDiscoveryResponse: scenario.reachable ? rpcResult(201, liveResult) : { networkError: 'endpoint unreachable' },
+      liveDiscoveryResponse: scenario.reachable ? rpcResult(201, liveResult) : { networkError: '端点无法访问' },
       approvedDescriptorDigest: 'sha256:tool-v4',
       liveDescriptorDigest: scenario.digest,
-      identityRule: 'display name and serverInfo are not security identity',
+      identityRule: '显示名称和 serverInfo 不构成安全身份',
       decision: statusName
     }, stages);
   }
 
   function driftInspector(host) {
     makeLab(host, {
-      title: 'REGISTRY VERSUS LIVE DISCOVERY',
-      hint: 'publication is not admission',
-      prompt: 'Select a release condition. The gateway compares Registry metadata with a current server/discover result and its approved canonical descriptor digest.',
-      scenarioLabel: 'Release condition',
-      actionLabel: 'Compare sources again',
-      evidenceLabel: 'Publication, discovery, and pins',
+      title: '注册表与实时发现对照（Registry Versus Live Discovery）',
+      hint: '发布不等于准入',
+      prompt: '选择一种发布状态。网关将注册表元数据与当前 server/discover 结果及已批准的规范化描述符摘要进行比较。',
+      scenarioLabel: '发布状态',
+      actionLabel: '重新比较信息来源',
+      evidenceLabel: '发布、发现与固定值',
       scenarios: driftScenarios,
       evaluate: evaluateDrift
     });
   }
 
   var contractScenarios = [
-    { id: 'valid', label: 'Valid structured output' },
-    { id: 'scalar', label: 'Scalar structuredContent' },
-    { id: 'schema', label: 'outputSchema mismatch' },
-    { id: 'tool-error', label: 'Valid tool error' },
-    { id: 'secret', label: 'Sensitive routed header' },
-    { id: 'cursor', label: 'Opaque cursor continuation' },
-    { id: 'empty-cursor', label: 'Empty non-null cursor' },
-    { id: 'completion', label: 'Bounded completion/complete' }
+    { id: 'valid', label: '有效的结构化输出' },
+    { id: 'scalar', label: '标量 structuredContent' },
+    { id: 'schema', label: '不符合 outputSchema' },
+    { id: 'tool-error', label: '有效的工具错误' },
+    { id: 'secret', label: '路由请求头含敏感信息' },
+    { id: 'cursor', label: '使用不透明游标继续获取' },
+    { id: 'empty-cursor', label: '空字符串游标（非 null）' },
+    { id: 'completion', label: '有界的 completion/complete' }
   ];
 
   function contractBase() {
@@ -829,8 +883,8 @@
     }, 'reports-server');
     var kind = 'valid-complete';
     var tone = 'pass';
-    var statusText = 'Valid complete result';
-    var verdictText = 'The text fallback and object structuredContent describe the same output, and the object matches outputSchema.';
+    var statusText = '有效的完整结果';
+    var verdictText = '文本回退内容（Text Fallback）与 structuredContent 对象描述同一输出，且该对象符合 outputSchema。';
     var validation = { valid: true, classification: 'valid complete result' };
     var failureAt = 0;
     var continuationRequest = null;
@@ -838,8 +892,8 @@
     if (scenario.id === 'scalar') {
       base.definition.outputSchema = { type: 'string' };
       result.structuredContent = 'rep_83';
-      statusText = 'Valid scalar structuredContent';
-      verdictText = 'structuredContent may be any JSON value. This string is valid because it conforms to the declared string outputSchema.';
+      statusText = '有效的标量 structuredContent';
+      verdictText = 'structuredContent 可以是任意 JSON 值。此字符串符合已声明的字符串类型 outputSchema，因此有效。';
       validation = { valid: true, classification: 'valid complete result', outputSchemaMatched: true, jsonType: 'string' };
     } else if (scenario.id === 'schema') {
       result.structuredContent = { reportId: 'rep_83', riskCount: 'two' };
@@ -847,8 +901,8 @@
       result.content = [{ type: 'text', text: 'Report generator returned an invalid riskCount.' }];
       kind = 'protocol-error';
       tone = 'fail';
-      statusText = 'Protocol error · outputSchema';
-      verdictText = 'isError: true does not waive outputSchema. When structuredContent is present, it must still conform to the declared schema.';
+      statusText = '协议错误 · outputSchema';
+      verdictText = 'isError: true 并不免除 outputSchema 的要求。只要包含 structuredContent，它就必须符合已声明的模式（Schema）。';
       validation = { valid: false, classification: 'protocol error', outputSchemaMatched: false, isError: true, path: '$.result.structuredContent.riskCount', expected: 'integer', actual: 'string' };
       failureAt = 4;
     } else if (scenario.id === 'tool-error') {
@@ -857,29 +911,29 @@
       result.content = [{ type: 'text', text: 'The upstream report service is unavailable.' }];
       kind = 'tool-error';
       tone = 'warn';
-      statusText = 'Tool error · valid envelope';
-      verdictText = 'The tool reports an execution failure while its structuredContent still conforms to outputSchema.';
+      statusText = '工具错误 · 封装有效';
+      verdictText = '工具报告执行失败，但其 structuredContent 仍符合 outputSchema。';
       validation = { valid: true, classification: 'tool error', outputSchemaMatched: true, isError: true };
     } else if (scenario.id === 'secret') {
       call.transportHeaders = { Authorization: 'Bearer sk_live_course_secret', 'Mcp-Name': 'reports_generate' };
       kind = 'redaction-failure';
       tone = 'fail';
-      statusText = 'Redaction failure';
-      verdictText = 'Block the transcript from logs and traces. Routed security headers are inputs to policy, not diagnostic payload.';
+      statusText = '脱敏失败（Redaction Failure）';
+      verdictText = '禁止将这份通信记录写入日志和追踪记录。路由携带的安全请求头是策略输入，不是诊断载荷。';
       validation = { valid: false, classification: 'redaction failure', leakedFields: ['Authorization'] };
       failureAt = 3;
     } else if (scenario.id === 'cursor') {
       call = rpcRequest(303, 'tools/list', { cursor: 'cur_7Hq2opaque' }, {});
       result = completeResult({ tools: [base.definition], nextCursor: 'cur_J9opaque', ttlMs: 30000, cacheScope: 'private' }, 'reports-server');
-      statusText = 'Valid opaque continuation';
-      verdictText = 'The client echoes the opaque cursor without parsing it and treats nextCursor as the only continuation signal.';
+      statusText = '有效的不透明游标续取';
+      verdictText = '客户端原样回传不透明游标（Opaque Cursor），不解析其内容，并将 nextCursor 视为唯一的续取信号。';
       validation = { valid: true, classification: 'valid complete result', cursorOpaque: true, cursorPresent: true, cursorValue: 'cur_J9opaque', follow: true };
       continuationRequest = rpcRequest(306, 'tools/list', { cursor: 'cur_J9opaque' }, {});
     } else if (scenario.id === 'empty-cursor') {
       call = rpcRequest(304, 'tools/list', { cursor: 'cur_7Hq2opaque' }, {});
       result = completeResult({ tools: [base.definition], nextCursor: '', ttlMs: 30000, cacheScope: 'private' }, 'reports-server');
-      statusText = 'Valid empty cursor token';
-      verdictText = 'A non-null nextCursor is present and must be followed exactly, even when it is the empty string. Test presence, not truthiness.';
+      statusText = '有效的空游标令牌';
+      verdictText = '非 null 的 nextCursor 表示仍需续取，即使它是空字符串，也必须原样使用。应检查是否存在，而不是判断真假值（Truthiness）。';
       validation = { valid: true, classification: 'valid complete result', cursorPresent: true, cursorValue: '', follow: true };
       continuationRequest = rpcRequest(307, 'tools/list', { cursor: '' }, {});
     } else if (scenario.id === 'completion') {
@@ -889,16 +943,16 @@
         context: { arguments: {} }
       }, {});
       result = completeResult({ completion: { values: ['20', '21', '22'], total: 3, hasMore: false } }, 'reports-server');
-      statusText = 'Valid bounded completion';
-      verdictText = 'The completion response is bounded, typed as complete, and states whether more values exist.';
+      statusText = '有效的有界补全';
+      verdictText = '补全（Completion）响应的数量有界，类型标为 complete，并说明是否还有更多值。';
       validation = { valid: true, classification: 'valid complete result', returned: 3, total: 3, hasMore: false };
     }
 
     var stages = [
-      stage('Definition', 'inputSchema and outputSchema declare the JSON contract.', 'pass'),
-      stage('Discovery', 'tools/list exposes the same canonical definition.', 'pass'),
-      stage('Invocation', 'A self-contained request routes reports_generate.', failureAt === 3 ? 'fail' : 'pass'),
-      stage('Output validation', validation.classification + '.', failureAt === 4 ? 'fail' : failureAt === 3 ? '' : 'focus')
+      stage('定义（Definition）', 'inputSchema 与 outputSchema 声明 JSON 契约。', 'pass'),
+      stage('发现（Discovery）', 'tools/list 暴露相同的规范化定义。', 'pass'),
+      stage('调用（Invocation）', '自包含的请求路由到 reports_generate。', failureAt === 3 ? 'fail' : 'pass'),
+      stage('输出校验', displayTerm(validation.classification) + '。', failureAt === 4 ? 'fail' : failureAt === 3 ? '' : 'focus')
     ];
     var contractEvidence = {
       authoredDefinition: base.definition,
@@ -908,31 +962,31 @@
       validation: validation
     };
     if (continuationRequest) contractEvidence.continuationRequest = continuationRequest;
-    return outcome(kind, tone, statusText, verdictText, 'Validate at every boundary: authored definition, discovered descriptor, request arguments, result discriminator, content, structuredContent, pagination, and redaction.', contractEvidence, stages);
+    return outcome(kind, tone, statusText, verdictText, '每个边界都要校验：编写的定义、发现的描述符、请求参数、结果判别字段（Discriminator）、content、structuredContent、分页（Pagination）与脱敏（Redaction）。', contractEvidence, stages);
   }
 
   function contractPipeline(host) {
     makeLab(host, {
-      title: 'MCP CONTRACT PIPELINE',
-      hint: 'definition to validated output',
-      prompt: 'Switch one contract boundary and inspect whether the consumer receives a valid result, a tool error, a protocol error, or a redaction failure.',
-      scenarioLabel: 'Contract case',
-      actionLabel: 'Run validation again',
-      evidenceLabel: 'Definition, wire, and validator',
+      title: 'MCP 契约流水线（Contract Pipeline）',
+      hint: '从定义到通过校验的输出',
+      prompt: '切换契约边界场景，检查使用方收到的是有效结果、工具错误、协议错误，还是脱敏失败。',
+      scenarioLabel: '契约场景',
+      actionLabel: '重新运行校验',
+      evidenceLabel: '定义、传输报文与校验器',
       scenarios: contractScenarios,
       evaluate: evaluateContract
     });
   }
 
   var reliabilityScenarios = [
-    { id: 'cancel-before', label: 'Cancel before start', defaultChoice: 'request' },
-    { id: 'cancel-during', label: 'Cancel during work', defaultChoice: 'task' },
-    { id: 'completion-wins', label: 'Completion wins race', defaultChoice: 'task' },
-    { id: 'duplicate-read', label: 'Duplicate safe read', defaultChoice: 'observe' },
-    { id: 'duplicate-unsafe', label: 'Duplicate mutation, no key', defaultChoice: 'observe' },
-    { id: 'duplicate-keyed', label: 'Duplicate mutation, one key', defaultChoice: 'observe' },
-    { id: 'slow-consumer', label: 'Slow SSE consumer', defaultChoice: 'request' },
-    { id: 'reconnect', label: 'Reconnect and refetch', defaultChoice: 'observe' }
+    { id: 'cancel-before', label: '开始前取消', defaultChoice: 'request' },
+    { id: 'cancel-during', label: '执行中取消', defaultChoice: 'task' },
+    { id: 'completion-wins', label: '完成操作赢得竞态', defaultChoice: 'task' },
+    { id: 'duplicate-read', label: '重复执行安全读取', defaultChoice: 'observe' },
+    { id: 'duplicate-unsafe', label: '重复变更，无幂等键', defaultChoice: 'observe' },
+    { id: 'duplicate-keyed', label: '重复变更，共用幂等键', defaultChoice: 'observe' },
+    { id: 'slow-consumer', label: '缓慢的 SSE 消费方', defaultChoice: 'request' },
+    { id: 'reconnect', label: '重连并重新获取', defaultChoice: 'observe' }
   ];
 
   function reliabilityTaskFields(taskId, statusName, extra) {
@@ -955,30 +1009,30 @@
     var evidence = { selectedOperation: operation };
     var kind = 'observed';
     var tone = 'pass';
-    var statusText = 'Deterministic outcome';
+    var statusText = '确定性结果';
     var verdictText = '';
     var stages = [];
 
     if (scenario.id === 'cancel-before') {
       evidence.request = rpcRequest(401, 'tools/call', { name: 'reports_generate', arguments: { projectId: 'atlas' } }, { tasks: {} });
       if (operation === 'request') {
-        evidence.transportAction = 'close response before handler starts';
+        evidence.transportAction = '在处理函数启动前关闭响应';
         evidence.response = null;
-        verdictText = 'Closing the in-flight response cancels request work before a durable task exists.';
-        statusText = 'Request cancelled';
+        verdictText = '持久化任务（Durable Task）尚未创建时，关闭正在处理的响应即可取消请求工作。';
+        statusText = '请求已取消';
       } else if (operation === 'task') {
         evidence.cancelRequest = rpcRequest(402, 'tasks/cancel', { taskId: taskId }, { tasks: {} });
         evidence.cancelResponse = rpcError(402, -32602, 'Unknown taskId', { taskId: taskId });
-        kind = 'protocol-error'; tone = 'fail'; statusText = 'No durable task';
-        verdictText = 'tasks/cancel needs an issued durable task id. It cannot cancel work that never became a task.';
+        kind = 'protocol-error'; tone = 'fail'; statusText = '没有持久化任务';
+        verdictText = 'tasks/cancel 需要已签发的持久化任务 id，无法取消尚未成为任务的工作。';
       } else {
         evidence.response = rpcResult(401, (function () {
           var task = reliabilityTaskFields(taskId, 'working', { pollIntervalMs: 1000 });
           task.resultType = 'task';
           return task;
         }()));
-        statusText = 'Task issued';
-        verdictText = 'Without cancellation, the server durably records the task before returning its handle.';
+        statusText = '已签发任务';
+        verdictText = '若未取消，服务器会先持久化任务记录，再返回句柄（Handle）。';
       }
     } else if (scenario.id === 'cancel-during' || scenario.id === 'completion-wins') {
       evidence.taskResult = rpcResult(411, (function () {
@@ -987,10 +1041,10 @@
         return task;
       }()));
       if (operation === 'request') {
-        evidence.transportAction = 'close original POST response';
+        evidence.transportAction = '关闭原始 POST 响应';
         evidence.tasksGet = rpcResult(412, completeResult(reliabilityTaskFields(taskId, 'working', {}), 'reports-server'));
-        tone = 'warn'; statusText = 'Stream closed · task working';
-        verdictText = 'Closing the original response does not cancel durable work. Fetch or cancel the task explicitly.';
+        tone = 'warn'; statusText = '流已关闭 · 任务仍在执行';
+        verdictText = '关闭原始响应不会取消持久化工作。必须显式获取任务状态或取消任务。';
       } else if (operation === 'task') {
         evidence.cancelRequest = rpcRequest(413, 'tasks/cancel', { taskId: taskId }, { tasks: {} });
         evidence.cancelResponse = rpcResult(413, completeResult({}, 'reports-server'));
@@ -998,14 +1052,14 @@
         var terminalTask = reliabilityTaskFields(taskId, terminalStatus, {});
         if (terminalStatus === 'completed') terminalTask.result = completeResult({ structuredContent: { reportId: 'rep_91' }, isError: false }, 'reports-server');
         evidence.tasksGet = rpcResult(414, completeResult(terminalTask, 'reports-server'));
-        statusText = terminalStatus === 'completed' ? 'Completion won' : 'Cancel observed';
+        statusText = terminalStatus === 'completed' ? '完成操作先胜出' : '已观察到取消';
         verdictText = terminalStatus === 'completed'
-          ? 'tasks/cancel acknowledges intent, but a concurrent completion remains authoritative when it wins the durable state transition.'
-          : 'tasks/cancel records cooperative intent and tasks/get reveals the terminal state.';
+          ? 'tasks/cancel 仅确认取消意图；若并发的完成操作先完成持久化状态转换，完成状态仍是权威结果。'
+          : 'tasks/cancel 记录协作式取消意图，tasks/get 则揭示最终状态。';
       } else {
         evidence.tasksGet = rpcResult(415, completeResult(reliabilityTaskFields(taskId, 'working', {}), 'reports-server'));
-        statusText = 'Task still working';
-        verdictText = 'Observe durable state with tasks/get. Transport lifetime does not define task lifetime.';
+        statusText = '任务仍在执行';
+        verdictText = '使用 tasks/get 观察持久化状态。传输生命周期不决定任务生命周期。';
       }
     } else if (scenario.id === 'duplicate-read') {
       evidence.requests = [
@@ -1016,8 +1070,8 @@
         rpcResult(421, completeResult({ contents: [{ uri: 'notes://42', text: 'same snapshot' }], ttlMs: 0, cacheScope: 'private' }, 'notes-server')),
         rpcResult(422, completeResult({ contents: [{ uri: 'notes://42', text: 'same snapshot' }], ttlMs: 0, cacheScope: 'private' }, 'notes-server'))
       ];
-      statusText = 'Safe replay';
-      verdictText = 'The duplicate read has no side effect and both ids receive independently valid snapshots.';
+      statusText = '安全重放（Safe Replay）';
+      verdictText = '重复读取没有副作用，两个 id 分别收到各自有效的快照（Snapshot）。';
     } else if (scenario.id === 'duplicate-unsafe' || scenario.id === 'duplicate-keyed') {
       var keyed = scenario.id === 'duplicate-keyed';
       var argumentsOne = { issueId: 184, state: 'closed' };
@@ -1031,61 +1085,61 @@
         : [{ requestId: 431, effectCount: 1 }, { requestId: 432, effectCount: 1 }];
       tone = keyed ? 'pass' : 'fail';
       kind = keyed ? 'idempotent' : 'duplicate-side-effect';
-      statusText = keyed ? 'One effect' : 'Two effects';
+      statusText = keyed ? '产生一次副作用' : '产生两次副作用';
       verdictText = keyed
-        ? 'The application idempotency key collapses retries even though JSON-RPC ids differ.'
-        : 'A fresh JSON-RPC id is correlation, not idempotency. Retrying the mutation can apply it twice.';
+        ? '即使 JSON-RPC id 不同，应用层的幂等键（Idempotency Key）仍能合并重试。'
+        : '新 JSON-RPC id 用于关联请求，而不保证幂等性（Idempotency）。重试变更可能使其生效两次。';
     } else if (scenario.id === 'slow-consumer') {
       evidence.request = rpcRequest(441, 'tools/call', { name: 'export_project', arguments: { projectId: 'atlas' } }, { tasks: {} });
       evidence.responseStream = { bufferedEvents: 64, bufferLimit: 64, action: 'close slow response' };
       evidence.durableTask = rpcResult(442, completeResult(reliabilityTaskFields(taskId, 'working', {}), 'reports-server'));
-      tone = 'warn'; statusText = 'Stream bounded';
-      verdictText = 'Bound the SSE buffer and close a slow response. If work is durable, recover through tasks/get instead of unbounded buffering.';
+      tone = 'warn'; statusText = '流缓冲有界';
+      verdictText = '限制 SSE 缓冲区大小，并关闭消费缓慢的响应。如果工作已持久化，应通过 tasks/get 恢复，而不是无限缓冲。';
     } else {
       evidence.firstListen = rpcRequest('listen-8', 'subscriptions/listen', { notifications: { resourcesListChanged: true } }, {});
       evidence.disconnect = { reason: 'network drop', replayCursor: null };
       evidence.secondListen = rpcRequest('listen-9', 'subscriptions/listen', { notifications: { resourcesListChanged: true } }, {});
       evidence.refetch = rpcRequest(451, 'resources/list', {}, {});
-      statusText = 'New listen + refetch';
-      verdictText = 'Reconnect with a new subscriptions/listen request and refetch affected data. Do not replay from a hidden session cursor.';
+      statusText = '新建监听并重新获取';
+      verdictText = '使用新的 subscriptions/listen 请求重连，并重新获取受影响的数据。不要依靠隐藏的会话游标重放。';
     }
 
     stages = [
-      stage('Request boundary', 'One JSON-RPC id correlates one response.', 'pass'),
-      stage('Durability boundary', scenario.id.indexOf('duplicate') === 0 ? 'Application semantics decide replay safety.' : 'A task id exists only after durable recording.', tone === 'fail' ? 'fail' : 'pass'),
-      stage(operation === 'task' ? 'tasks/cancel' : operation === 'request' ? 'Transport close' : 'Observe', verdictText, tone === 'fail' ? 'fail' : 'focus'),
-      stage('Recovery', 'Read durable state or refetch current data.', tone === 'fail' ? '' : 'pass')
+      stage('请求边界（Request Boundary）', '一个 JSON-RPC id 关联一个响应。', 'pass'),
+      stage('持久化边界（Durability Boundary）', scenario.id.indexOf('duplicate') === 0 ? '是否能安全重放由应用语义决定。' : '只有完成持久化记录后，任务 id 才存在。', tone === 'fail' ? 'fail' : 'pass'),
+      stage(operation === 'task' ? 'tasks/cancel' : operation === 'request' ? '关闭传输' : '观察', verdictText, tone === 'fail' ? 'fail' : 'focus'),
+      stage('恢复（Recovery）', '读取持久化状态，或重新获取当前数据。', tone === 'fail' ? '' : 'pass')
     ];
-    return outcome(kind, tone, statusText, verdictText, 'Request cancellation, task cancellation, idempotency, backpressure, and reconnect are separate contracts. Make each boundary explicit.', evidence, stages);
+    return outcome(kind, tone, statusText, verdictText, '请求取消、任务取消、幂等性、背压（Backpressure）与重连是彼此独立的契约。必须明确每个边界。', evidence, stages);
   }
 
   function reliabilityRace(host) {
     makeLab(host, {
-      title: 'MCP RELIABILITY RACE WORKBENCH',
-      hint: 'transport lifetime is not task lifetime',
-      prompt: 'Choose a deterministic race, then choose whether to observe, close the in-flight request, or send tasks/cancel. The ledger exposes the resulting durable state.',
-      scenarioLabel: 'Reliability case',
-      choiceLabel: 'Operation',
+      title: 'MCP 可靠性竞态工作台（Reliability Race Workbench）',
+      hint: '传输生命周期不等于任务生命周期',
+      prompt: '选择一种确定性竞态（Race），再选择观察、关闭正在处理的请求或发送 tasks/cancel。台账会展示由此产生的持久化状态。',
+      scenarioLabel: '可靠性场景',
+      choiceLabel: '操作（Operation）',
       defaultChoice: 'observe',
       choices: [
-        { value: 'observe', label: 'Observe' },
-        { value: 'request', label: 'Close request stream' },
-        { value: 'task', label: 'Call tasks/cancel' }
+        { value: 'observe', label: '观察' },
+        { value: 'request', label: '关闭请求流' },
+        { value: 'task', label: '调用 tasks/cancel' }
       ],
-      actionLabel: 'Run race again',
-      evidenceLabel: 'Requests and durable ledger',
+      actionLabel: '重新运行竞态',
+      evidenceLabel: '请求与持久化台账',
       scenarios: reliabilityScenarios,
       evaluate: evaluateReliability
     });
   }
 
   var admissionScenarios = [
-    { id: 'admitted', label: 'Verified release' },
-    { id: 'namespace', label: 'Unverified namespace' },
-    { id: 'artifact', label: 'Artifact digest mismatch' },
-    { id: 'revoked', label: 'Revoked release' },
-    { id: 'deleted', label: 'Deleted Registry record' },
-    { id: 'rollback', label: 'Live descriptor drift' }
+    { id: 'admitted', label: '已核实的发布版本' },
+    { id: 'namespace', label: '未核实的命名空间' },
+    { id: 'artifact', label: '制品摘要不一致' },
+    { id: 'revoked', label: '已撤销的发布版本' },
+    { id: 'deleted', label: '已删除的注册表记录' },
+    { id: 'rollback', label: '线上描述符漂移' }
   ];
 
   function evaluateAdmission(scenario) {
@@ -1113,15 +1167,15 @@
 
     var decision = 'admitted';
     var tone = 'pass';
-    var message = 'All identity, provenance, status, discovery, and descriptor checks agree.';
+    var message = '身份、来源、状态、发现结果和描述符的全部检查均一致。';
     if (fields.deleted) {
-      decision = 'deleted'; tone = 'fail'; message = 'Remove the route and preserve only audit evidence. A deleted record is not installable.';
+      decision = 'deleted'; tone = 'fail'; message = '移除路由，仅保留审计证据。已删除的记录不可用于安装。';
     } else if (fields.revoked) {
-      decision = 'revoked'; tone = 'fail'; message = 'Disable the release immediately even when the artifact and live descriptor still match.';
+      decision = 'revoked'; tone = 'fail'; message = '即使制品（Artifact）与线上描述符仍然匹配，也应立即禁用该版本。';
     } else if (!fields.namespaceOwned || fields.expectedArtifactDigest !== fields.fetchedArtifactDigest) {
-      decision = 'quarantined'; tone = 'fail'; message = 'Quarantine until namespace ownership and artifact provenance are verified.';
+      decision = 'quarantined'; tone = 'fail'; message = '隔离该版本，直到命名空间所有权与制品来源得到核实。';
     } else if (fields.approvedDescriptorDigest !== fields.liveDescriptorDigest) {
-      decision = 'quarantined'; tone = 'fail'; message = 'Quarantine release 4.0.0 and remove it from active routing. Only the separately admitted, healthy 3.9.2 release is eligible for an explicit rollback.';
+      decision = 'quarantined'; tone = 'fail'; message = '隔离 4.0.0 版本，并将其移出活动路由。只有已独立获准准入且健康的 3.9.2 版本，才有资格作为显式回滚（Rollback）的目标。';
     }
 
     var liveDiscovery = rpcResult(501, completeResult({
@@ -1138,7 +1192,7 @@
       quarantined: decision === 'quarantined',
       activeRouting: acceptable
     };
-    if (descriptorDrift) currentReleaseState.quarantineReason = 'live descriptor digest does not match the admitted pin';
+    if (descriptorDrift) currentReleaseState.quarantineReason = '线上描述符摘要与准入时固定的值不匹配';
     var routingState = {
       releaseVersion: '4.0.0',
       active: acceptable,
@@ -1151,16 +1205,16 @@
       descriptorDigest: fields.previousAdmittedRelease.descriptorDigest,
       rollbackEligible: true,
       activeRouting: false,
-      activationRequires: 'explicit rollback decision'
+      activationRequires: '明确的回滚决策'
     } : null;
     var stages = [
-      stage('Publisher identity', fields.namespaceOwned ? 'Namespace proof verified.' : 'Self-reported display name only.', fields.namespaceOwned ? 'pass' : 'fail'),
-      stage('Artifact provenance', fields.expectedArtifactDigest === fields.fetchedArtifactDigest ? 'Fetched digest matches the admitted release.' : 'Fetched digest differs from the release ledger.', fields.expectedArtifactDigest === fields.fetchedArtifactDigest ? 'pass' : 'fail'),
-      stage('Registry and revocation', fields.deleted ? 'Record deleted.' : fields.revoked ? 'Release revoked.' : 'Record active and not revoked.', fields.deleted || fields.revoked ? 'fail' : 'pass'),
-      stage('Live contract pin', fields.approvedDescriptorDigest === fields.liveDescriptorDigest ? 'Current descriptor is approved.' : 'Live descriptor drifted from its pin.', fields.approvedDescriptorDigest === fields.liveDescriptorDigest ? 'focus' : 'fail'),
-      stage('Admission and routing', acceptable ? 'Release admitted and active.' : 'Current release is ' + decision + ' and absent from active routes.', acceptable ? 'pass' : 'fail')
+      stage('发布者身份（Publisher Identity）', fields.namespaceOwned ? '命名空间证明已核实。' : '只有自行声明的显示名称。', fields.namespaceOwned ? 'pass' : 'fail'),
+      stage('制品来源（Artifact Provenance）', fields.expectedArtifactDigest === fields.fetchedArtifactDigest ? '获取的摘要与获准准入的版本一致。' : '获取的摘要与发布台账不一致。', fields.expectedArtifactDigest === fields.fetchedArtifactDigest ? 'pass' : 'fail'),
+      stage('注册表与撤销状态', fields.deleted ? '记录已删除。' : fields.revoked ? '版本已撤销。' : '记录有效且未撤销。', fields.deleted || fields.revoked ? 'fail' : 'pass'),
+      stage('线上契约固定值', fields.approvedDescriptorDigest === fields.liveDescriptorDigest ? '当前描述符已获批准。' : '线上描述符偏离了固定值。', fields.approvedDescriptorDigest === fields.liveDescriptorDigest ? 'focus' : 'fail'),
+      stage('准入与路由（Admission and Routing）', acceptable ? '版本已准入且处于活动状态。' : '当前版本的状态为 ' + displayTerm(decision) + '，已不在活动路由中。', acceptable ? 'pass' : 'fail')
     ];
-    return outcome(decision, tone, decision, message, 'Display name and serverInfo remain diagnostics. Security identity comes from verified namespace control, provenance, admission records, revocation state, and pinned live contracts.', {
+    return outcome(decision, tone, decision, message, '显示名称与 serverInfo 仅用于诊断。安全身份来自已核实的命名空间控制权、来源、准入记录、撤销状态和固定的线上契约。', {
       publication: { name: 'com.example/notes', version: '4.0.0', status: fields.registryStatus },
       admissionInputs: fields,
       liveDiscovery: liveDiscovery,
@@ -1174,26 +1228,26 @@
 
   function registryAdmission(host) {
     makeLab(host, {
-      title: 'MCP REGISTRY ADMISSION LEDGER',
-      hint: 'discover, verify, admit',
-      prompt: 'Change one supply-chain fact, then run admission. The result is derived from publisher proof, artifact provenance, Registry state, revocation, live discovery, and descriptor pins.',
-      scenarioLabel: 'Supply-chain condition',
-      actionLabel: 'Run Admit',
-      evidenceLabel: 'Admission inputs and decision',
+      title: 'MCP 注册表准入台账（Registry Admission Ledger）',
+      hint: '发现、核实、准入',
+      prompt: '改动一项供应链（Supply Chain）事实，再运行准入检查。结果由发布者证明、制品来源、注册表状态、撤销情况、实时发现与描述符固定值共同推导。',
+      scenarioLabel: '供应链状态',
+      actionLabel: '执行准入检查',
+      evidenceLabel: '准入输入与决策',
       scenarios: admissionScenarios,
       evaluate: evaluateAdmission
     });
   }
 
   var conformanceScenarios = [
-    { id: 'strict', label: 'Current strict mode' },
-    { id: 'legacy', label: 'Explicit legacy fallback' },
-    { id: 'version', label: 'Version mismatch' },
-    { id: 'capability', label: 'Missing capability' },
-    { id: 'request-progress', label: 'Request-scoped progress' },
-    { id: 'unknown-result', label: 'Unknown resultType' },
-    { id: 'proxy-mismatch', label: 'Proxy header/body mismatch' },
-    { id: 'secret', label: 'Secret redaction' }
+    { id: 'strict', label: '当前严格模式' },
+    { id: 'legacy', label: '显式回退到旧版' },
+    { id: 'version', label: '版本不一致' },
+    { id: 'capability', label: '缺少能力' },
+    { id: 'request-progress', label: '请求范围内的进度' },
+    { id: 'unknown-result', label: '未知的 resultType' },
+    { id: 'proxy-mismatch', label: '代理请求头与正文不一致' },
+    { id: 'secret', label: '敏感信息脱敏' }
   ];
 
   function expectedFixture(scenario) {
@@ -1244,7 +1298,7 @@
     var expected = expectedFixture(scenario);
     var actual = actualFixture(scenario);
     var pass = pretty(expected) === pretty(actual);
-    var runnerLabel = runner === 'python' ? 'Python runner' : runner === 'typescript' ? 'TypeScript runner' : 'Differential comparison';
+    var runnerLabel = runner === 'python' ? 'Python 运行器（Runner）' : runner === 'typescript' ? 'TypeScript 运行器（Runner）' : '差分比较（Differential Comparison）';
     var transcript = {
       runner: runnerLabel,
       fixture: scenario.id,
@@ -1264,40 +1318,40 @@
       };
     }
     var stages = [
-      stage('Fixture input', 'Builds the exact request, response, or proxy case.', 'pass'),
-      stage(runnerLabel, 'Normalizes transport and JSON-RPC outcomes.', 'pass'),
-      stage('Transcript diff', pass ? 'No difference from the expected contract.' : 'Observed behavior differs from the fixture oracle.', pass ? 'focus' : 'fail'),
-      stage('Operational decision', pass ? 'Ship this fixture result.' : 'Block release and retain the normalized evidence.', pass ? 'pass' : '')
+      stage('测试用例输入（Fixture Input）', '构造精确的请求、响应或代理场景。', 'pass'),
+      stage(runnerLabel, '规范化传输与 JSON-RPC 结果。', 'pass'),
+      stage('通信记录差异（Transcript Diff）', pass ? '与预期契约没有差异。' : '观察到的行为与测试用例的判定基准（Oracle）不同。', pass ? 'focus' : 'fail'),
+      stage('运维决策', pass ? '可交付此测试用例的结果。' : '阻止发布，并保留规范化后的证据。', pass ? 'pass' : '')
     ];
-    return outcome(pass ? 'conformant' : 'nonconformant', pass ? 'pass' : 'fail', pass ? 'Conformant' : 'Release blocked', pass ? 'The implementation matches the fixture oracle for ' + scenario.label.toLowerCase() + '.' : 'The normalized transcript exposes a contract regression. Fix the implementation before changing the oracle.', 'Conformance fixtures must cover current strict behavior, opt-in legacy behavior, expected errors, request-scoped server progress, unknown variants, proxy integrity, and secret-safe evidence.', transcript, stages);
+    return outcome(pass ? 'conformant' : 'nonconformant', pass ? 'pass' : 'fail', pass ? '符合规范' : '已阻止发布', pass ? '此实现符合该场景的测试判定基准：' + scenario.label.toLowerCase() + '.' : '规范化后的通信记录暴露了契约回归。应先修复实现，而不是修改判定基准。', '一致性（Conformance）测试用例必须覆盖当前严格行为、显式启用的旧版行为、预期错误、请求范围内的服务器进度、未知变体、代理完整性，以及不泄露敏感信息的证据。', transcript, stages);
   }
 
   function conformanceOperations(host) {
     makeLab(host, {
-      title: 'MCP CONFORMANCE OPERATIONS MATRIX',
-      hint: 'normalize before comparing',
-      prompt: 'Select a fixture and a runner. The workbench normalizes the transcript, compares it with the contract oracle, and produces a release decision.',
-      scenarioLabel: 'Fixture',
-      choiceLabel: 'Runner',
+      title: 'MCP 一致性运维矩阵（Conformance Operations Matrix）',
+      hint: '先规范化，再比较',
+      prompt: '选择测试用例和运行器。工作台会规范化通信记录，将其与契约判定基准比较，并生成发布决策。',
+      scenarioLabel: '测试用例（Fixture）',
+      choiceLabel: '运行器（Runner）',
       defaultChoice: 'differential',
       choices: [
         { value: 'python', label: 'Python' },
         { value: 'typescript', label: 'TypeScript' },
-        { value: 'differential', label: 'Differential' }
+        { value: 'differential', label: '差分比较（Differential）' }
       ],
-      actionLabel: 'Run fixture again',
-      evidenceLabel: 'Normalized transcript diff',
+      actionLabel: '重新运行测试用例',
+      evidenceLabel: '规范化通信记录差异',
       scenarios: conformanceScenarios,
       evaluate: evaluateConformance
     });
   }
 
   var dispatchScenarios = [
-    { id: 'request', label: 'Request' },
-    { id: 'tools-list', label: 'tools/list request' },
-    { id: 'parse', label: 'Malformed JSON' },
-    { id: 'method', label: 'Missing method' },
-    { id: 'stdout', label: 'stdout pollution' }
+    { id: 'request', label: '请求（Request）' },
+    { id: 'tools-list', label: 'tools/list 请求' },
+    { id: 'parse', label: '格式错误的 JSON' },
+    { id: 'method', label: '缺少 method' },
+    { id: 'stdout', label: 'stdout 污染' }
   ];
 
   function evaluateDispatch(scenario) {
@@ -1305,11 +1359,11 @@
     var response;
     var kind = 'response';
     var tone = 'pass';
-    var statusText = 'One matched response';
-    var verdictText = 'The dispatcher writes exactly one JSON-RPC response carrying the request id.';
-    var parserState = 'Valid JSON object.';
-    var dispatchState = 'Route server/discover.';
-    var outputState = 'One JSON line on stdout.';
+    var statusText = '一条匹配的响应';
+    var verdictText = '分发器恰好写入一条 JSON-RPC 响应，并携带对应的请求 id。';
+    var parserState = '有效的 JSON 对象。';
+    var dispatchState = '路由到 server/discover。';
+    var outputState = '向 stdout 写入一行 JSON。';
 
     if (scenario.id === 'request') {
       input = pretty(rpcRequest(701, 'server/discover', {}, {}));
@@ -1317,25 +1371,25 @@
     } else if (scenario.id === 'tools-list') {
       input = pretty(rpcRequest(705, 'tools/list', {}, {}));
       response = rpcResult(705, completeResult({ tools: [], ttlMs: 30000, cacheScope: 'private' }, 'stdio-server'));
-      statusText = 'One tools/list response';
-      verdictText = 'The dispatcher validates tools/list and writes one response with the same id.';
-      dispatchState = 'Route tools/list.';
+      statusText = '一条 tools/list 响应';
+      verdictText = '分发器校验 tools/list，并写入一条具有相同 id 的响应。';
+      dispatchState = '路由到 tools/list。';
     } else if (scenario.id === 'parse') {
       input = '{"jsonrpc":"2.0","id":702,"method":';
       response = rpcError(null, -32700, 'Parse error');
-      kind = 'parse-error'; tone = 'fail'; statusText = 'Parse error · -32700';
-      verdictText = 'The frame is not valid JSON, so the error id is null and no method handler runs.';
-      parserState = 'JSON parse fails before an id can be trusted.';
-      dispatchState = 'No dispatch.';
-      outputState = 'One parse-error JSON line.';
+      kind = 'parse-error'; tone = 'fail'; statusText = '解析错误 · -32700';
+      verdictText = '此帧不是有效 JSON，因此错误响应的 id 为 null，且不运行任何方法处理函数。';
+      parserState = 'JSON 解析失败，此时尚不能信任 id。';
+      dispatchState = '不进行分发。';
+      outputState = '写入一行表示解析错误的 JSON。';
     } else if (scenario.id === 'method') {
       input = pretty({ jsonrpc: '2.0', id: 703, params: { _meta: requestMeta({}) } });
       response = rpcError(703, -32600, 'Invalid Request', { requiredField: 'method' });
-      kind = 'invalid-request'; tone = 'fail'; statusText = 'Invalid request · -32600';
-      verdictText = 'A parsed object without a string method is invalid and never reaches application dispatch.';
-      parserState = 'JSON parses, envelope validation fails.';
-      dispatchState = 'No dispatch.';
-      outputState = 'One matched error line.';
+      kind = 'invalid-request'; tone = 'fail'; statusText = '无效请求 · -32600';
+      verdictText = '解析后的对象若没有字符串类型的 method，则是无效请求，不会进入应用分发阶段。';
+      parserState = 'JSON 解析成功，但请求封装校验失败。';
+      dispatchState = '不进行分发。';
+      outputState = '写入一行匹配的错误响应。';
     } else {
       input = pretty(rpcRequest(704, 'tools/list', {}, {}));
       response = {
@@ -1343,44 +1397,44 @@
           'DEBUG loading tools',
           pretty(rpcResult(704, completeResult({ tools: [], ttlMs: 0, cacheScope: 'private' }, 'stdio-server')))
         ],
-        consumerError: 'first stdout line is not a JSON-RPC protocol message'
+        consumerError: 'stdout 的第一行不是 JSON-RPC 协议消息'
       };
-      kind = 'wire-corruption'; tone = 'fail'; statusText = 'Wire corrupted';
-      verdictText = 'Debug output on stdout becomes an unframed protocol message. Send diagnostics to stderr.';
-      dispatchState = 'tools/list succeeds internally.';
-      outputState = 'A debug line corrupts the protocol stream.';
+      kind = 'wire-corruption'; tone = 'fail'; statusText = '传输报文已损坏';
+      verdictText = 'stdout 上的调试输出会被当成缺少正确帧格式的协议消息。请将诊断信息写入 stderr。';
+      dispatchState = 'tools/list 在内部执行成功。';
+      outputState = '一行调试信息破坏了协议流。';
     }
 
-    return outcome(kind, tone, statusText, verdictText, 'stdio is a protocol wire. Each valid request produces one matched response, and every non-protocol stdout byte is observable corruption.', {
+    return outcome(kind, tone, statusText, verdictText, '标准输入输出（stdio）是协议传输通道。每个有效请求产生一条匹配响应，stdout 上任何不属于协议的字节都会造成可观察到的损坏。', {
       stdinLine: input,
       stdout: response,
-      stderrPolicy: 'diagnostics only'
+      stderrPolicy: '仅用于诊断信息'
     }, [
-      stage('stdin frame', 'Read one newline-delimited frame.', 'pass'),
-      stage('JSON parser', parserState, scenario.id === 'parse' ? 'fail' : 'pass'),
-      stage('Envelope dispatcher', dispatchState, scenario.id === 'method' ? 'fail' : scenario.id === 'parse' ? '' : 'focus'),
-      stage('stdout protocol', outputState, scenario.id === 'stdout' ? 'fail' : 'pass')
+      stage('stdin 帧', '读取一个以换行符分隔的帧。', 'pass'),
+      stage('JSON 解析器（Parser）', parserState, scenario.id === 'parse' ? 'fail' : 'pass'),
+      stage('请求封装分发器', dispatchState, scenario.id === 'method' ? 'fail' : scenario.id === 'parse' ? '' : 'focus'),
+      stage('stdout 协议输出', outputState, scenario.id === 'stdout' ? 'fail' : 'pass')
     ]);
   }
 
   function dispatchWorkbench(host) {
     makeLab(host, {
-      title: 'JSON-RPC DISPATCH WORKBENCH',
-      hint: 'protect the stdio wire',
-      prompt: 'Select one input frame. The parser and dispatcher compute whether stdout receives a matched result, a matched error, or a corrupted stream.',
-      scenarioLabel: 'Input frame',
-      actionLabel: 'Dispatch again',
-      evidenceLabel: 'stdin, stdout, and error policy',
+      title: 'JSON-RPC 分发工作台（Dispatch Workbench）',
+      hint: '保护 stdio 传输通道',
+      prompt: '选择一个输入帧。解析器与分发器将判定 stdout 输出的是匹配结果、匹配错误，还是损坏的流。',
+      scenarioLabel: '输入帧（Input Frame）',
+      actionLabel: '重新分发',
+      evidenceLabel: 'stdin、stdout 与错误策略',
       scenarios: dispatchScenarios,
       evaluate: evaluateDispatch
     });
   }
 
   var mergeScenarios = [
-    { id: 'unique', label: 'Unique names', defaultChoice: 'prefix' },
-    { id: 'collision', label: 'Exact search collision', defaultChoice: 'prefix' },
-    { id: 'route', label: 'Route issues/search', defaultChoice: 'prefix' },
-    { id: 'offline', label: 'Owning server offline', defaultChoice: 'prefix' }
+    { id: 'unique', label: '名称互不重复', defaultChoice: 'prefix' },
+    { id: 'collision', label: 'search 完全同名冲突', defaultChoice: 'prefix' },
+    { id: 'route', label: '路由 issues/search', defaultChoice: 'prefix' },
+    { id: 'offline', label: '所属服务器离线', defaultChoice: 'prefix' }
   ];
 
   function evaluateMerge(scenario, policy) {
@@ -1405,19 +1459,19 @@
     var offline = scenario.id === 'offline';
     var canRoute = !!owner && !offline && !(rejectedCollision && selectedName === 'search' && routeTable.search.peer !== 'issues');
     var tone = canRoute ? 'pass' : rejectedCollision && scenario.id === 'collision' ? 'warn' : 'fail';
-    var statusText = canRoute ? 'Routed to ' + owner.peer : rejectedCollision ? 'Collision rejected' : offline ? 'Owner unavailable' : 'No route';
+    var statusText = canRoute ? '已路由到 ' + owner.peer : rejectedCollision ? '已拒绝名称冲突' : offline ? '所属服务器不可用' : '没有路由';
     var verdictText;
     if (canRoute) {
-      verdictText = 'The canonical name resolves to one recorded peer and the outgoing tools/call uses that peer\'s local name.';
+      verdictText = '规范名称（Canonical Name）解析到唯一已记录的对端（Peer），发出的 tools/call 使用该对端的本地名称。';
     } else if (rejectedCollision) {
-      verdictText = 'Reject policy keeps the duplicate out of the model namespace and surfaces a configuration decision.';
+      verdictText = '拒绝策略将重复项排除在模型命名空间之外，并明确提示需要做出配置决策。';
     } else if (offline) {
-      verdictText = 'Do not silently send the call elsewhere. Reconnect the owning peer, rediscover, then retry only when operation policy permits.';
+      verdictText = '不要悄悄将调用发送到别处。应重新连接所属对端、重新执行发现，再仅在操作策略允许时重试。';
     } else {
-      verdictText = 'The selected canonical name is absent from the deterministic route table.';
+      verdictText = '确定性路由表中不存在选定的规范名称。';
     }
     var outgoing = canRoute ? rpcRequest(711, 'tools/call', { name: owner.localName, arguments: { query: 'MCP' } }, {}) : null;
-    return outcome(canRoute ? 'routed' : rejectedCollision ? 'rejected' : 'unroutable', tone, statusText, verdictText, 'A collision policy is part of the client contract. Silent overwrite is never an option because canonical names carry approval and audit meaning.', {
+    return outcome(canRoute ? 'routed' : rejectedCollision ? 'rejected' : 'unroutable', tone, statusText, verdictText, '冲突策略（Collision Policy）是客户端契约的一部分。规范名称承载审批与审计含义，因此绝不能静默覆盖。', {
       peerCatalogs: { notes: notesTools, issues: issuesTools },
       collisionPolicy: policy,
       collisions: collisions,
@@ -1426,38 +1480,38 @@
       selectedOwner: owner,
       outgoingRequest: outgoing
     }, [
-      stage('Discover peers', 'Call server/discover and tools/list for notes and issues.', 'pass'),
-      stage('Merge namespace', collisions.length ? 'Exact collision: ' + collisions.join(', ') + '.' : 'No duplicate canonical names.', collisions.length ? 'focus' : 'pass'),
-      stage('Apply ' + policy, rejectedCollision ? 'Duplicate is omitted with a configuration error.' : 'Later duplicate receives a deterministic peer prefix.', rejectedCollision ? 'focus' : 'pass'),
-      stage('Route call', canRoute ? selectedName + ' belongs to ' + owner.peer + '.' : statusText + '.', canRoute ? 'pass' : tone === 'fail' ? 'fail' : '')
+      stage('发现对端', '分别对 notes 和 issues 调用 server/discover 与 tools/list。', 'pass'),
+      stage('合并命名空间（Namespace）', collisions.length ? '完全同名冲突：' + collisions.join(', ') + '.' : '没有重复的规范名称。', collisions.length ? 'focus' : 'pass'),
+      stage('应用策略：' + displayTerm(policy), rejectedCollision ? '排除重复项，并报告配置错误。' : '为后出现的重复项添加确定性的对端前缀。', rejectedCollision ? 'focus' : 'pass'),
+      stage('路由调用', canRoute ? selectedName + '属于 ' + owner.peer + '.' : statusText + '.', canRoute ? 'pass' : tone === 'fail' ? 'fail' : '')
     ]);
   }
 
   function clientMergeLab(host) {
     makeLab(host, {
-      title: 'CLIENT NAMESPACE AND ROUTER',
-      hint: 'canonical name to owning peer',
-      prompt: 'Introduce a catalog collision, choose a policy, and inspect the route table before any tools/call is serialized.',
-      scenarioLabel: 'Catalog and call case',
-      choiceLabel: 'Collision policy',
+      title: '客户端命名空间与路由器（Client Namespace and Router）',
+      hint: '从规范名称定位所属对端',
+      prompt: '引入目录名称冲突，选择策略，并在任何 tools/call 序列化前检查路由表。',
+      scenarioLabel: '目录与调用场景',
+      choiceLabel: '冲突策略（Collision Policy）',
       defaultChoice: 'prefix',
       choices: [
-        { value: 'prefix', label: 'Prefix on collision' },
-        { value: 'reject', label: 'Reject duplicate' }
+        { value: 'prefix', label: '冲突时添加前缀' },
+        { value: 'reject', label: '拒绝重复项' }
       ],
-      actionLabel: 'Merge and route again',
-      evidenceLabel: 'Catalogs, route table, and call',
+      actionLabel: '重新合并并路由',
+      evidenceLabel: '目录、路由表与调用',
       scenarios: mergeScenarios,
       evaluate: evaluateMerge
     });
   }
 
   var boundaryScenarios = [
-    { id: 'allowed', label: 'Allowed workspace path' },
-    { id: 'traversal', label: 'Encoded traversal' },
-    { id: 'form', label: 'Explicit form support' },
-    { id: 'implicit-form', label: 'Implicit empty elicitation' },
-    { id: 'url-only', label: 'URL-only for required form' }
+    { id: 'allowed', label: '获准的工作区路径' },
+    { id: 'traversal', label: '编码后的路径穿越' },
+    { id: 'form', label: '显式支持表单' },
+    { id: 'implicit-form', label: '空 elicitation 的隐式声明' },
+    { id: 'url-only', label: '需要表单，但仅支持 URL' }
   ];
 
   function evaluateBoundary(scenario) {
@@ -1476,12 +1530,12 @@
     var capabilityPass = !needsForm || scenario.id === 'form' || scenario.id === 'implicit-form';
     if (scenario.id === 'traversal') {
       response = rpcError(721, -32602, 'Target URI escapes the authorized workspace', { workspaceUri: workspaceUri, normalizedTarget: 'file:///work/private/secret.md' });
-      tone = 'fail'; statusText = 'Traversal rejected';
-      verdictText = 'Normalize percent encoding and compare path components before any file access.';
+      tone = 'fail'; statusText = '已拒绝路径穿越';
+      verdictText = '在任何文件访问前，先规范化百分号编码（Percent Encoding），再比较路径组件。';
     } else if (!capabilityPass) {
       response = rpcError(721, -32021, 'Required client capability is missing', { requiredCapabilities: { elicitation: { form: {} } } });
-      tone = 'fail'; statusText = 'Missing form capability';
-      verdictText = 'URL-only elicitation cannot satisfy a form request. Capability evidence must exist on the current request.';
+      tone = 'fail'; statusText = '缺少表单能力';
+      verdictText = '仅支持 URL 模式的信息征询（Elicitation）无法满足表单请求。当前请求中必须包含能力证明。';
     } else if (needsForm) {
       response = rpcResult(721, {
         resultType: 'input_required',
@@ -1493,47 +1547,47 @@
         },
         requestState: 'rs-delete.hmac.bound-workspace-target-principal-expiry'
       });
-      statusText = 'Form request embedded';
-      verdictText = scenario.id === 'implicit-form' ? 'An empty elicitation object is the compatibility form-only declaration.' : 'Explicit form support allows the server to return a form inputRequest.';
+      statusText = '已嵌入表单请求';
+      verdictText = scenario.id === 'implicit-form' ? '空的 elicitation 对象是兼容性的“仅支持表单”声明。' : '显式声明表单支持后，服务器可返回表单类型的 inputRequest。';
     } else {
       response = rpcResult(721, completeResult({ contents: [{ uri: target, text: 'Authorized note.' }], ttlMs: 0, cacheScope: 'private' }, 'workspace-server'));
-      statusText = 'Contained and authorized';
-      verdictText = 'The explicit workspace is authorized, the normalized target stays inside it, and the sandbox remains a separate defense.';
+      statusText = '路径在范围内且已授权';
+      verdictText = '已显式指定并授权工作区，规范化后的目标仍位于其中；沙箱（Sandbox）则继续作为独立防线。';
     }
-    return outcome(tone === 'pass' ? needsForm ? 'input-required' : 'allowed' : 'rejected', tone, statusText, verdictText, 'Explicit resource scope improves visibility, but authorization, containment, capability negotiation, and the OS sandbox remain independent checks.', {
+    return outcome(tone === 'pass' ? needsForm ? 'input-required' : 'allowed' : 'rejected', tone, statusText, verdictText, '显式资源范围（Resource Scope）使边界更清楚，但授权、路径包含关系、能力协商和操作系统沙箱仍需独立检查。', {
       request: call,
       normalizedBoundary: { authorizedWorkspace: workspaceUri, requestedTarget: target },
       response: response
     }, [
-      stage('Authorize principal', 'Check access to ' + workspaceUri + '.', 'pass'),
-      stage('Normalize target', scenario.id === 'traversal' ? 'Decoded target escapes the workspace.' : 'Target remains within the path-component boundary.', scenario.id === 'traversal' ? 'fail' : 'pass'),
-      stage('Capability gate', needsForm ? (capabilityPass ? 'Current request supports form elicitation.' : 'Current request supports URL mode only.') : 'No elicitation required.', needsForm && !capabilityPass ? 'fail' : 'focus'),
-      stage('Protocol result', statusText + '.', tone === 'pass' ? 'pass' : '')
+      stage('授权主体（Principal）', '检查是否有权访问 ' + workspaceUri + '.', 'pass'),
+      stage('规范化目标', scenario.id === 'traversal' ? '解码后的目标越出工作区。' : '按路径组件判断，目标仍在边界内。', scenario.id === 'traversal' ? 'fail' : 'pass'),
+      stage('能力门禁（Capability Gate）', needsForm ? (capabilityPass ? '当前请求支持表单模式的信息征询。' : '当前请求仅支持 URL 模式。') : '无需信息征询。', needsForm && !capabilityPass ? 'fail' : 'focus'),
+      stage('协议结果', statusText + '.', tone === 'pass' ? 'pass' : '')
     ]);
   }
 
   function rootsBoundaryLab(host) {
     makeLab(host, {
-      title: 'RESOURCE SCOPE AND ELICITATION GATE',
-      hint: 'authorize, contain, negotiate',
-      prompt: 'Select a path or capability case. The server stops at the first boundary that cannot prove the requested operation is valid.',
-      scenarioLabel: 'Boundary case',
-      actionLabel: 'Resolve boundary again',
-      evidenceLabel: 'Request, normalized scope, and result',
+      title: '资源范围与信息征询门禁（Resource Scope and Elicitation Gate）',
+      hint: '授权、约束范围、协商能力',
+      prompt: '选择路径或能力场景。服务器在首个无法证明请求操作有效的边界停止。',
+      scenarioLabel: '边界场景',
+      actionLabel: '重新判定边界',
+      evidenceLabel: '请求、规范化范围与结果',
       scenarios: boundaryScenarios,
       evaluate: evaluateBoundary
     });
   }
 
   var taskScenarios = [
-    { id: 'working', label: 'tasks/get working' },
+    { id: 'working', label: 'tasks/get：执行中（working）' },
     { id: 'input', label: 'input_required' },
     { id: 'update', label: 'tasks/update' },
     { id: 'completed', label: 'completed' },
     { id: 'failed', label: 'failed' },
-    { id: 'cancelled', label: 'tasks/cancel to cancelled' },
-    { id: 'race', label: 'Completion wins cancel race' },
-    { id: 'illegal', label: 'Illegal terminal transition' }
+    { id: 'cancelled', label: 'tasks/cancel：转为已取消（cancelled）' },
+    { id: 'race', label: '完成操作在取消竞态中先胜出' },
+    { id: 'illegal', label: '非法终态转换' }
   ];
 
   function taskSnapshot(statusName) {
@@ -1564,7 +1618,7 @@
     var statusName = 'working';
     var tone = 'pass';
     var statusText = 'working';
-    var verdictText = 'tasks/get completes while the represented durable task remains working.';
+    var verdictText = 'tasks/get 调用已完成，但它代表的持久化任务仍处于执行中（working）。';
     if (scenario.id === 'working') {
       evidence.request = taskRequest(731, 'tasks/get', { taskId: 'tsk_786512e29e0d' });
       evidence.response = rpcResult(731, taskSnapshot('working'));
@@ -1572,62 +1626,62 @@
       statusName = 'input_required'; statusText = statusName;
       evidence.request = taskRequest(732, 'tasks/get', { taskId: 'tsk_786512e29e0d' });
       evidence.response = rpcResult(732, taskSnapshot(statusName));
-      verdictText = 'The client answers outstanding inputRequests with tasks/update, not by retrying the original tools/call.';
+      verdictText = '客户端使用 tasks/update 回答待处理的 inputRequests，而不是重试原始 tools/call。';
     } else if (scenario.id === 'update') {
-      statusName = 'working'; statusText = 'update acknowledged';
+      statusName = 'working'; statusText = '已确认收到更新';
       evidence.before = taskSnapshot('input_required');
       evidence.request = taskRequest(733, 'tasks/update', { taskId: 'tsk_786512e29e0d', inputResponses: { approve_outline: { action: 'accept', content: { approved: true } } } });
       evidence.response = rpcResult(733, completeResult({}, 'tasks-server'));
       evidence.after = taskSnapshot('working');
-      verdictText = 'The empty complete acknowledgement confirms receipt. Continue polling because the state transition may be eventually consistent.';
+      verdictText = '空的 complete 确认响应仅表示已收到更新。状态转换可能是最终一致的（Eventually Consistent），因此应继续轮询。';
     } else if (scenario.id === 'completed' || scenario.id === 'failed') {
       statusName = scenario.id; statusText = statusName;
       evidence.request = taskRequest(734, 'tasks/get', { taskId: 'tsk_786512e29e0d' });
       evidence.response = rpcResult(734, taskSnapshot(statusName));
-      verdictText = statusName === 'completed' ? 'The terminal snapshot inlines the original typed CallToolResult.' : 'A deferred JSON-RPC execution error is stored under error and makes the task failed.';
+      verdictText = statusName === 'completed' ? '终态快照内嵌原始的类型化 CallToolResult。' : '延后执行时发生的 JSON-RPC 错误保存在 error 下，并使任务进入失败（failed）状态。';
       if (statusName === 'failed') tone = 'fail';
     } else if (scenario.id === 'cancelled' || scenario.id === 'race') {
       statusName = scenario.id === 'race' ? 'completed' : 'cancelled'; statusText = statusName;
       evidence.request = taskRequest(735, 'tasks/cancel', { taskId: 'tsk_786512e29e0d' });
       evidence.response = rpcResult(735, completeResult({}, 'tasks-server'));
       evidence.after = taskSnapshot(statusName);
-      verdictText = scenario.id === 'race' ? 'Cancellation is cooperative. A concurrent completion can win and remains the durable terminal truth.' : 'The implementation observed cancellation and moved to cancelled; the acknowledgement alone did not prove that outcome.';
+      verdictText = scenario.id === 'race' ? '取消是协作式的（Cooperative）。并发完成操作可能先胜出，并成为持久化的权威终态。' : '实现已观察到取消并转为 cancelled；仅凭确认响应无法证明这一结果。';
     } else {
-      statusName = 'completed'; statusText = 'completed preserved'; tone = 'fail';
+      statusName = 'completed'; statusText = '保留已完成（completed）状态'; tone = 'fail';
       evidence.before = taskSnapshot('completed');
       evidence.attemptedTransition = { from: 'completed', to: 'working' };
       evidence.response = rpcError(736, -32602, 'Illegal task transition', { from: 'completed', to: 'working' });
       evidence.after = taskSnapshot('completed');
-      verdictText = 'Reject the illegal transition atomically and preserve the existing terminal snapshot.';
+      verdictText = '原子地拒绝非法转换，并保留现有终态快照。';
     }
     var terminal = statusName === 'completed' || statusName === 'failed' || statusName === 'cancelled';
-    return outcome(statusName, tone, statusText, verdictText, 'A task id is explicit durable application state. Every task method reauthorizes ownership, and terminal transitions are preserved across replicas and restarts.', evidence, [
-      stage('Durable record', 'taskId resolves before any handle is returned.', 'pass'),
-      stage('Task method', evidence.request ? evidence.request.method : 'atomic transition validator', 'pass'),
-      stage('Current snapshot', statusName + '.', tone === 'fail' ? 'fail' : 'focus'),
-      stage('Transition rule', terminal ? 'Terminal state cannot return to working.' : 'Only an allowed forward transition may commit.', tone === 'fail' ? '' : 'pass')
+    return outcome(statusName, tone, statusText, verdictText, '任务 id 代表显式的持久化应用状态。每次调用任务方法都重新校验所有权授权，终态转换在副本切换与重启后仍保持不变。', evidence, [
+      stage('持久化记录（Durable Record）', '返回任何句柄前，taskId 必须已能解析到任务记录。', 'pass'),
+      stage('任务方法', evidence.request ? evidence.request.method : '原子状态转换校验器', 'pass'),
+      stage('当前快照', displayTerm(statusName) + '。', tone === 'fail' ? 'fail' : 'focus'),
+      stage('转换规则（Transition Rule）', terminal ? '终态不能回到 working。' : '只有获准的向前状态转换才能提交。', tone === 'fail' ? '' : 'pass')
     ]);
   }
 
   function taskLifecycleLab(host) {
     makeLab(host, {
-      title: 'DURABLE TASK TRANSITION WORKBENCH',
-      hint: 'RPC result outside, task state inside',
-      prompt: 'Select a task method or transition. The outer RPC completes independently from the working, input_required, completed, failed, or cancelled task snapshot.',
-      scenarioLabel: 'Task operation',
-      actionLabel: 'Apply transition again',
-      evidenceLabel: 'Task request and durable snapshots',
+      title: '持久化任务状态转换工作台（Durable Task Transition Workbench）',
+      hint: '外层是 RPC 结果，内层是任务状态',
+      prompt: '选择任务方法或状态转换。外层 RPC 的完成与内层任务快照独立；快照状态可以是执行中（working）、需要输入（input_required）、已完成（completed）、失败（failed）或已取消（cancelled）。',
+      scenarioLabel: '任务操作',
+      actionLabel: '重新应用状态转换',
+      evidenceLabel: '任务请求与持久化快照',
       scenarios: taskScenarios,
       evaluate: evaluateTask
     });
   }
 
   var appScenarios = [
-    { id: 'lifecycle', label: 'Complete Apps lifecycle' },
-    { id: 'missing-binding', label: 'Missing pre-call binding' },
-    { id: 'action', label: 'Host-mediated action' },
-    { id: 'revoked', label: 'Capability revoked' },
-    { id: 'ambient', label: 'Ambient access attempt' }
+    { id: 'lifecycle', label: '完整的 Apps 生命周期' },
+    { id: 'missing-binding', label: '缺少调用前绑定' },
+    { id: 'action', label: '宿主中介操作' },
+    { id: 'revoked', label: '能力已撤销' },
+    { id: 'ambient', label: '尝试访问宿主环境' }
   ];
 
   function appDescriptor(includeBinding) {
@@ -1651,52 +1705,52 @@
       ] : []
     };
     var tone = 'pass';
-    var statusText = 'Sandbox rendered';
-    var verdictText = 'The host learns _meta.ui.resourceUri during tools/list, reviews the resource, completes the Apps bridge lifecycle, then renders structured data.';
+    var statusText = '已在沙箱中渲染';
+    var verdictText = '宿主在 tools/list 阶段获取 _meta.ui.resourceUri，审核资源，完成 Apps 桥接（Bridge）生命周期，再渲染结构化数据。';
     var kind = 'rendered';
     if (scenario.id === 'missing-binding') {
-      tone = 'fail'; kind = 'text-fallback'; statusText = 'No pre-call UI binding';
-      verdictText = 'Do not discover the view from a tool result. Without definition-time metadata, keep the useful text result and skip the iframe.';
+      tone = 'fail'; kind = 'text-fallback'; statusText = '没有调用前 UI 绑定';
+      verdictText = '不要从工具结果中发现视图。缺少定义时元数据，就保留有用的文本结果，不创建 iframe。';
     } else if (scenario.id === 'action') {
       evidence.hostMediatedAction = { bridgeMethod: 'tools/call', requestedTool: 'notes_open', hostApproval: 'granted', newCoreRequestId: 744, fullRequestMeta: requestMeta(appsCapabilities) };
-      statusText = 'Action mediated by host';
-      verdictText = 'The iframe asks through the bridge. The host applies consent and creates a new self-contained MCP request.';
+      statusText = '操作由宿主中介执行';
+      verdictText = 'iframe 通过桥接发出请求。宿主执行用户同意策略，并创建一条新的自包含 MCP 请求。';
     } else if (scenario.id === 'revoked') {
       evidence.hostMediatedAction = { bridgeMethod: 'tools/call', capabilityAtInitialize: true, capabilityNow: false, response: rpcError('ui-2', -32601, 'Bridge capability is no longer available') };
-      tone = 'fail'; kind = 'revoked'; statusText = 'Capability revoked';
-      verdictText = 'Recheck current host capability at action time. Bridge initialization is not a permanent grant.';
+      tone = 'fail'; kind = 'revoked'; statusText = '能力已撤销';
+      verdictText = '执行操作时重新检查宿主当前能力。桥接初始化不代表永久授权。';
     } else if (scenario.id === 'ambient') {
-      evidence.ambientAttempt = { target: 'host cookies and page DOM', sandboxResult: 'blocked', cspConnectDomains: [], inheritedCredentials: false };
-      tone = 'fail'; kind = 'blocked'; statusText = 'Ambient access blocked';
-      verdictText = 'The sandbox denies ambient host authority. Privileged work must cross a narrow host-mediated bridge.';
+      evidence.ambientAttempt = { target: '宿主 Cookie 与页面 DOM', sandboxResult: 'blocked', cspConnectDomains: [], inheritedCredentials: false };
+      tone = 'fail'; kind = 'blocked'; statusText = '已阻止宿主环境访问';
+      verdictText = '沙箱拒绝使用宿主环境隐含的权限（Ambient Authority）。特权工作必须经过权限范围有限、由宿主中介的桥接。';
     }
-    return outcome(kind, tone, statusText, verdictText, 'MCP core stays stateless. The local ui/initialize exchange belongs only to one iframe-to-host bridge and never creates a server protocol session.', evidence, [
-      stage('tools/list metadata', hasBinding ? '_meta.ui.resourceUri binds the view before invocation.' : 'No definition-time resource binding.', hasBinding ? 'pass' : 'fail'),
-      stage('Tool and resource', hasBinding ? 'Call returns data; host fetches the declared ui:// resource.' : 'Text result remains usable without a view.', hasBinding ? 'pass' : 'focus'),
-      stage('Apps bridge', hasBinding ? 'ui/initialize then ui/notifications/initialized.' : 'No iframe bridge is created.', scenario.id === 'revoked' ? 'fail' : hasBinding ? 'focus' : ''),
-      stage('Sandbox and action', verdictText, tone === 'fail' ? 'fail' : 'pass')
+    return outcome(kind, tone, statusText, verdictText, 'MCP 核心保持无状态。本地 ui/initialize 交互仅属于一个 iframe 与宿主之间的桥接，绝不会创建服务器协议会话。', evidence, [
+      stage('tools/list 元数据', hasBinding ? '_meta.ui.resourceUri 在调用前绑定视图。' : '定义时没有资源绑定。', hasBinding ? 'pass' : 'fail'),
+      stage('工具与资源', hasBinding ? '调用返回数据，宿主获取已声明的 ui:// 资源。' : '没有视图时，文本结果仍可使用。', hasBinding ? 'pass' : 'focus'),
+      stage('Apps 桥接（Bridge）', hasBinding ? '先执行 ui/initialize，再发送 ui/notifications/initialized。' : '不创建 iframe 桥接。', scenario.id === 'revoked' ? 'fail' : hasBinding ? 'focus' : ''),
+      stage('沙箱与操作', verdictText, tone === 'fail' ? 'fail' : 'pass')
     ]);
   }
 
   function appSandboxLab(host) {
     makeLab(host, {
-      title: 'MCP APPS BRIDGE LIFECYCLE',
-      hint: 'pre-call binding, sandboxed action',
-      prompt: 'Select a lifecycle or authority case. The evidence keeps MCP core requests, the ui:// resource, and the iframe postMessage bridge as separate contracts.',
-      scenarioLabel: 'Apps case',
-      actionLabel: 'Evaluate bridge again',
-      evidenceLabel: 'Tool metadata, resource, and bridge',
+      title: 'MCP Apps 桥接生命周期（Bridge Lifecycle）',
+      hint: '调用前绑定，在沙箱中操作',
+      prompt: '选择生命周期或权限场景。证据将 MCP 核心请求、ui:// 资源和 iframe 的 postMessage 桥接作为独立契约展示。',
+      scenarioLabel: 'Apps 场景',
+      actionLabel: '重新评估桥接',
+      evidenceLabel: '工具元数据、资源与桥接',
       scenarios: appScenarios,
       evaluate: evaluateApp
     });
   }
 
   var poisonScenarios = [
-    { id: 'stable', label: 'Pinned descriptor unchanged', defaultChoice: 'strict' },
-    { id: 'description', label: 'Description drift', defaultChoice: 'strict' },
-    { id: 'schema', label: 'Schema widened', defaultChoice: 'review' },
-    { id: 'unknown', label: 'Unknown qualified tool', defaultChoice: 'strict' },
-    { id: 'arguments', label: 'High-risk arguments', defaultChoice: 'strict' }
+    { id: 'stable', label: '固定的描述符未变', defaultChoice: 'strict' },
+    { id: 'description', label: '描述漂移', defaultChoice: 'strict' },
+    { id: 'schema', label: '模式范围扩大', defaultChoice: 'review' },
+    { id: 'unknown', label: '未知的限定名工具', defaultChoice: 'strict' },
+    { id: 'arguments', label: '高风险参数', defaultChoice: 'strict' }
   ];
 
   function poisonDescriptor(scenario) {
@@ -1723,13 +1777,13 @@
     else if (drift && policy === 'blind') { decision = 'unsafe execute'; tone = 'fail'; }
     var callArguments = scenario.id === 'arguments' ? { query: '*', destination: 'https://attacker.test/upload', path: '/' } : { query: 'project atlas', destination: 'archive' };
     var verdictText = decision === 'execute'
-      ? 'The qualified typed verb, approved descriptor pin, validated arguments, authorization, and audit record all agree.'
+      ? '限定名的类型化操作（Typed Verb）、已批准的描述符固定值、经过校验的参数、授权与审计记录全部一致。'
       : decision === 'manual review'
-        ? 'Keep the tool unavailable until a human reviews the complete canonical descriptor and updates the pin deliberately.'
+        ? '保持工具不可用，直到人工审核完整的规范化描述符，并明确更新固定值。'
         : decision === 'unsafe execute'
-          ? 'First-seen trust executes unreviewed authority. Block this policy for consequential tools.'
-          : 'Refuse before execution because the tool identity, descriptor, or arguments exceed approved authority.';
-    return outcome(decision, tone, decision, verdictText, 'Stateless transport does not create safety. Reduce authority with stable qualified names, complete descriptor pins, typed verbs, argument validation, explicit refusal, authorization, and audit.', {
+          ? '首次见到即信任（Trust on First Use）会执行未经审核的权限。对于会造成重要后果的工具，应禁止此策略。'
+          : '工具身份、描述符或参数超出已批准的权限，因此在执行前拒绝。';
+    return outcome(decision, tone, decision, verdictText, '无状态传输本身不保证安全。应通过稳定的限定名（Qualified Name）、完整描述符固定值、类型化操作、参数校验、显式拒绝、授权和审计来缩小权限。', {
       approvedDescriptor: pinned,
       liveDescriptor: live,
       approvedDigest: pinnedDigest,
@@ -1739,41 +1793,41 @@
       checks: { knownQualifiedName: known, descriptorStable: !drift, argumentsValid: argumentsValid, authorizedPrincipal: true },
       auditDecision: decision
     }, [
-      stage('Pinned authority', 'Load the approved canonical descriptor and publisher evidence.', 'pass'),
-      stage('Live discovery diff', drift ? 'Descriptor digest changed.' : 'Complete descriptor digest is stable.', drift ? 'fail' : 'pass'),
-      stage('Approval policy', policy + ' produces ' + decision + '.', tone === 'fail' ? 'fail' : 'focus'),
-      stage('Typed execution gate', argumentsValid && decision === 'execute' ? 'Authorized bounded arguments may execute.' : 'No external action is sent.', argumentsValid && decision === 'execute' ? 'pass' : '')
+      stage('固定的权限契约', '加载已批准的规范化描述符与发布者证据。', 'pass'),
+      stage('实时发现差异', drift ? '描述符摘要已变更。' : '完整描述符的摘要保持不变。', drift ? 'fail' : 'pass'),
+      stage('审批策略（Approval Policy）', displayTerm(policy) + '得出决策：' + displayTerm(decision) + '。', tone === 'fail' ? 'fail' : 'focus'),
+      stage('类型化执行门禁', argumentsValid && decision === 'execute' ? '已授权且受限的参数允许执行。' : '不发送任何外部操作。', argumentsValid && decision === 'execute' ? 'pass' : '')
     ]);
   }
 
   function toolAuthorityLab(host) {
     makeLab(host, {
-      title: 'DESCRIPTOR DIFF AND AUTHORITY LAB',
-      hint: 'pin the complete contract',
-      prompt: 'Change a discovered descriptor or call argument, then choose an approval policy. The authority gate computes execution, review, quarantine, or refusal.',
-      scenarioLabel: 'Live condition',
-      choiceLabel: 'Approval policy',
+      title: '描述符差异与权限实验（Descriptor Diff and Authority Lab）',
+      hint: '固定完整契约',
+      prompt: '改动发现的描述符或调用参数，再选择审批策略。权限门禁将判定执行、审核、隔离或拒绝。',
+      scenarioLabel: '线上状态',
+      choiceLabel: '审批策略（Approval Policy）',
       defaultChoice: 'strict',
       choices: [
-        { value: 'strict', label: 'Require exact approved pin' },
-        { value: 'review', label: 'Quarantine for review' },
-        { value: 'blind', label: 'Trust first seen (unsafe)' }
+        { value: 'strict', label: '必须精确匹配已批准固定值' },
+        { value: 'review', label: '隔离并等待审核' },
+        { value: 'blind', label: '首次见到即信任（不安全）' }
       ],
-      actionLabel: 'Evaluate authority again',
-      evidenceLabel: 'Descriptor diff, call, and audit',
+      actionLabel: '重新评估权限',
+      evidenceLabel: '描述符差异、调用与审计',
       scenarios: poisonScenarios,
       evaluate: evaluatePoison
     });
   }
 
   var oauthScenarios = [
-    { id: 'valid', label: 'Valid bound token' },
-    { id: 'issuer', label: 'Discovered issuer changed' },
-    { id: 'resource', label: 'Protected resource mismatch' },
-    { id: 'audience', label: 'Wrong token audience' },
+    { id: 'valid', label: '有效的绑定令牌' },
+    { id: 'issuer', label: '发现的签发者已变更' },
+    { id: 'resource', label: '受保护资源不一致' },
+    { id: 'audience', label: '令牌受众错误' },
     { id: 'scope', label: 'Insufficient scope' },
-    { id: 'pkce', label: 'Missing PKCE or state' },
-    { id: 'returned-iss', label: 'Returned iss mismatch' }
+    { id: 'pkce', label: '缺少 PKCE 或 state' },
+    { id: 'returned-iss', label: '返回的 iss 不一致' }
   ];
 
   function evaluateOAuth(scenario) {
@@ -1815,11 +1869,11 @@
       if (!checks[index].ok) { firstFailure = checks[index]; firstFailureIndex = index; break; }
     }
     var tone = firstFailure ? 'fail' : 'pass';
-    var statusText = firstFailure ? 'Stop at ' + firstFailure.name : 'Token accepted';
+    var statusText = firstFailure ? '停止于：' + displayTerm(firstFailure.name) : '令牌已接受';
     var newFlow = firstFailure && (firstFailure.name === 'Issuer discovery' || firstFailure.name === 'Required scopes');
     var verdictText = firstFailure
-      ? (newFlow ? 'Start a new authorization flow bound to the exact issuer, resource, and current scope need.' : 'Reject before using the authorization code or access token. Do not normalize an identity mismatch into agreement.')
-      : 'Issuer, protected resource, audience, scope, PKCE, state, and returned iss all bind the token to this MCP resource.';
+      ? (newFlow ? '发起新的授权流程（Authorization Flow），精确绑定签发者、资源及当前所需权限范围。' : '在使用授权码（Authorization Code）或访问令牌（Access Token）前拒绝。不要通过规范化将不匹配的身份强行视为一致。')
+      : '签发者（Issuer）、受保护资源（Protected Resource）、受众（Audience）、权限范围（Scope）、PKCE、state 和返回的 iss 共同将令牌绑定到此 MCP 资源。';
     var httpResponse = null;
     if (firstFailure && firstFailure.name === 'Required scopes') {
       httpResponse = { httpStatus: 403, headers: { 'WWW-Authenticate': 'Bearer error="insufficient_scope", scope="notes:delete", resource_metadata="https://mcp.example.test/.well-known/oauth-protected-resource/team/notes"' }, body: rpcError(761, -32001, 'Insufficient scope', { requiredScopes: ['notes:delete'] }) };
@@ -1833,11 +1887,11 @@
       return 'pass';
     }
     function groupDetail(start, end, validText, invalidText) {
-      if (firstFailureIndex >= 0 && firstFailureIndex < start) return 'Not evaluated after ' + firstFailure.name + ' failed.';
+      if (firstFailureIndex >= 0 && firstFailureIndex < start) return '未评估，因为前面的检查 ' + displayTerm(firstFailure.name) + '已失败。';
       if (firstFailureIndex >= start && firstFailureIndex <= end) return invalidText;
       return validText;
     }
-    return outcome(firstFailure ? 'rejected' : 'accepted', tone, statusText, verdictText, 'OAuth state is keyed by exact issuer and resource. A protocol request still repeats MCP metadata because token authority and protocol compatibility are different boundaries.', {
+    return outcome(firstFailure ? 'rejected' : 'accepted', tone, statusText, verdictText, 'OAuth 状态以精确的签发者和资源为键。协议请求仍需再次携带 MCP 元数据，因为令牌权限与协议兼容性属于不同边界。', {
       boundaryValues: values,
       orderedChecks: checks,
       stoppedAt: firstFailure ? firstFailure.name : null,
@@ -1845,36 +1899,36 @@
       mcpRequest: rpcRequest(761, 'tools/call', { name: 'notes.read', arguments: { id: 'note-7' } }, {}),
       httpResponse: httpResponse
     }, [
-      stage('Protected resource', groupDetail(0, 0, 'Canonical resource matches RFC 9728 metadata.', 'Resource metadata names another resource.'), groupState(0, 0, false)),
-      stage('Issuer and redirect', groupDetail(1, 3, 'Issuer, S256, state, and returned iss match exactly.', 'Issuer, PKCE/state, or returned iss failed.'), groupState(1, 3, false)),
-      stage('Token boundary', groupDetail(4, 5, 'iss and aud bind this token to the MCP resource.', 'Token issuer or audience is wrong.'), groupState(4, 5, true)),
-      stage('Scope decision', groupDetail(6, 6, 'Required current scopes are present.', '403 challenge names the smallest missing scope.'), groupState(6, 6, false))
+      stage('Protected resource', groupDetail(0, 0, '规范资源与 RFC 9728 元数据一致。', '资源元数据指定了另一个资源。'), groupState(0, 0, false)),
+      stage('签发者与重定向（Redirect）', groupDetail(1, 3, '签发者、S256、state 与返回的 iss 精确匹配。', '签发者、PKCE/state 或返回的 iss 检查失败。'), groupState(1, 3, false)),
+      stage('令牌边界（Token Boundary）', groupDetail(4, 5, 'iss 与 aud 将此令牌绑定到 MCP 资源。', '令牌签发者或受众错误。'), groupState(4, 5, true)),
+      stage('权限范围决策', groupDetail(6, 6, '当前所需权限范围均已具备。', '403 质询（Challenge）指出缺少的最小权限范围。'), groupState(6, 6, false))
     ]);
   }
 
   function oauthBoundaryLab(host) {
     makeLab(host, {
-      title: 'OAUTH TOKEN BOUNDARY RESOLVER',
-      hint: 'stop at the first invalid binding',
-      prompt: 'Change one issuer, resource, redirect, token, or scope fact. Validation runs in a fixed order and shows when a fresh authorization flow is required.',
-      scenarioLabel: 'OAuth condition',
-      actionLabel: 'Resolve boundary again',
-      evidenceLabel: 'Discovery, token, and ordered checks',
+      title: 'OAuth 令牌边界判定器（Token Boundary Resolver）',
+      hint: '在首个无效绑定处停止',
+      prompt: '改动一项签发者、资源、重定向、令牌或权限范围事实。校验按固定顺序执行，并展示何时需要新的授权流程。',
+      scenarioLabel: 'OAuth 状态',
+      actionLabel: '重新判定边界',
+      evidenceLabel: '发现、令牌与有序检查',
       scenarios: oauthScenarios,
       evaluate: evaluateOAuth
     });
   }
 
   var jwksScenarios = [
-    { id: 'hit', label: 'JWKS cache hit' },
-    { id: 'unknown', label: 'Unknown kid refresh' },
-    { id: 'singleflight', label: 'Concurrent unknown kid' },
-    { id: 'algorithm', label: 'Unsupported algorithm' },
-    { id: 'skew', label: 'Clock skew exceeded' },
-    { id: 'opaque', label: 'Opaque token introspection' },
-    { id: 'revoked', label: 'Revoked opaque token' },
-    { id: 'stale', label: 'Stale JWKS cache' },
-    { id: 'closed', label: 'Refresh failure, fail closed' }
+    { id: 'hit', label: 'JWKS 缓存命中' },
+    { id: 'unknown', label: '未知 kid 触发刷新' },
+    { id: 'singleflight', label: '并发请求遇到未知 kid' },
+    { id: 'algorithm', label: '不支持的算法' },
+    { id: 'skew', label: '超出时钟偏差容限' },
+    { id: 'opaque', label: '不透明令牌内省' },
+    { id: 'revoked', label: '已撤销的不透明令牌' },
+    { id: 'stale', label: '已过期的 JWKS 缓存' },
+    { id: 'closed', label: '刷新失败时拒绝访问' }
   ];
 
   function evaluateJwks(scenario) {
@@ -1883,44 +1937,44 @@
     var actions = [];
     var accepted = true;
     var tone = 'pass';
-    var statusText = 'Token valid';
-    var verdictText = 'The cached key, allowed algorithm, time claims, issuer, audience, and scopes validate.';
+    var statusText = '令牌有效';
+    var verdictText = '缓存密钥、允许的算法、时间声明（Time Claim）、签发者、受众和权限范围均通过校验。';
     if (scenario.id === 'unknown' || scenario.id === 'singleflight' || scenario.id === 'closed') {
       token.header.kid = 'k_2026_09';
-      actions.push('cache miss for kid k_2026_09');
-      actions.push(scenario.id === 'singleflight' ? 'singleflightRefresh: 25 requests join one issuer refresh' : 'refresh JWKS once');
+      actions.push('kid k_2026_09 未命中缓存');
+      actions.push(scenario.id === 'singleflight' ? 'singleflightRefresh：25 条请求共用一次签发者密钥刷新' : '刷新 JWKS 一次');
       if (scenario.id === 'closed') {
-        accepted = false; tone = 'fail'; statusText = 'Denied · refresh unavailable';
-        verdictText = 'Fail closed when an unknown kid cannot be resolved from a refreshed trusted JWKS.';
-        actions.push('refresh failed; stale key set cannot validate unknown kid');
+        accepted = false; tone = 'fail'; statusText = '已拒绝 · 无法刷新';
+        verdictText = '如果无法通过刷新的可信 JSON Web 密钥集（JSON Web Key Set，JWKS）解析未知 kid，应默认拒绝访问（Fail Closed）。';
+        actions.push('刷新失败；过期密钥集无法校验未知 kid');
       } else {
         cache.kids.push('k_2026_09');
-        actions.push('recheck kid after refresh');
-        verdictText = scenario.id === 'singleflight' ? 'Concurrent cache misses share one refresh, then every request rechecks the published key set.' : 'An unknown kid triggers one idempotent JWKS refresh, never key rotation at the resource server.';
+        actions.push('刷新后重新检查 kid');
+        verdictText = scenario.id === 'singleflight' ? '并发缓存未命中共用一次刷新，之后每条请求都重新检查已发布的密钥集。' : '未知 kid 触发一次幂等的 JWKS 刷新，而不是由资源服务器轮换密钥（Key Rotation）。';
       }
     } else if (scenario.id === 'algorithm') {
       token.header.alg = 'HS256';
-      accepted = false; tone = 'fail'; statusText = 'Denied · alg not allowed';
-      verdictText = 'Reject before signature work because the token algorithm is not in the resource server allowlist.';
+      accepted = false; tone = 'fail'; statusText = '已拒绝 · alg 不在允许列表';
+      verdictText = '令牌算法不在资源服务器的允许列表（Allowlist）中，因此在验证签名前拒绝。';
     } else if (scenario.id === 'skew') {
       token.claims.exp = 1787300000;
-      accepted = false; tone = 'fail'; statusText = 'Denied · expired beyond skew';
-      verdictText = 'Bounded clock skew is not an extension of token lifetime. Reject after the configured tolerance.';
+      accepted = false; tone = 'fail'; statusText = '已拒绝 · 过期超出偏差容限';
+      verdictText = '有界的时钟偏差（Clock Skew）容限不是延长令牌有效期。超过配置容限后应拒绝。';
     } else if (scenario.id === 'opaque' || scenario.id === 'revoked') {
       token = { format: 'opaque', value: 'otk_7f...redacted' };
       var active = scenario.id === 'opaque';
-      actions.push('introspection request authenticated to authorization server');
-      actions.push('introspection active=' + active);
-      if (!active) { accepted = false; tone = 'fail'; statusText = 'Denied · revoked'; verdictText = 'A cached or previously active opaque token is rejected when current introspection reports active false.'; }
-      else verdictText = 'Opaque tokens are validated through authenticated introspection, then issuer, audience, expiry, and scope checks still apply.';
+      actions.push('向授权服务器发送经过身份认证的内省请求');
+      actions.push('内省（Introspection）结果 active=' + active);
+      if (!active) { accepted = false; tone = 'fail'; statusText = '已拒绝 · 已撤销'; verdictText = '即使不透明令牌（Opaque Token）已有缓存或此前有效，只要当前内省返回 active 为 false，就应拒绝。'; }
+      else verdictText = '不透明令牌通过经过身份认证的内省进行校验，之后仍需检查签发者、受众、过期时间与权限范围。';
     } else if (scenario.id === 'stale') {
       cache.fetchedAt = '2026-08-21T08:00:00Z';
-      actions.push('scheduled refresh before validation');
-      actions.push('atomic cache overwrite for issuer');
-      verdictText = 'Refresh a stale cache from the authorization server and atomically replace the issuer key set before validation.';
+      actions.push('在校验前执行计划刷新');
+      actions.push('原子替换该签发者的缓存');
+      verdictText = '从授权服务器刷新过期缓存，并在校验前原子替换签发者密钥集。';
     }
     var httpResponse = accepted ? { httpStatus: 200, decision: 'authorized' } : { httpStatus: 401, headers: { 'WWW-Authenticate': 'Bearer error="invalid_token"' }, decision: 'denied' };
-    return outcome(accepted ? 'accepted' : 'denied', tone, statusText, verdictText, 'The authorization server rotates signing keys. The MCP resource server only refreshes trusted JWKS, bounds refresh concurrency, validates claims, and fails closed.', {
+    return outcome(accepted ? 'accepted' : 'denied', tone, statusText, verdictText, '授权服务器负责轮换签名密钥。MCP 资源服务器只负责刷新可信 JWKS、限制刷新并发量、校验声明，并在无法确认时拒绝访问。', {
       token: token,
       jwksCache: cache,
       allowedAlgorithms: ['RS256', 'ES256'],
@@ -1928,21 +1982,21 @@
       actions: actions,
       httpResponse: httpResponse
     }, [
-      stage('Token form', token.format === 'opaque' ? 'Use authenticated introspection.' : 'Parse JWT header and claims without trusting them yet.', 'pass'),
-      stage('Key source', scenario.id === 'algorithm' ? 'Algorithm rejected before key lookup.' : actions.length ? actions[0] : 'Trusted kid found in issuer cache.', accepted ? 'pass' : 'fail'),
-      stage('Refresh policy', actions.length > 1 ? actions[1] : 'No synchronous refresh needed.', scenario.id === 'closed' ? 'fail' : 'focus'),
-      stage('Claims and decision', statusText + '.', accepted ? 'pass' : 'fail')
+      stage('令牌形式', token.format === 'opaque' ? '使用经过身份认证的内省。' : '解析 JWT 头部（Header）与声明，但此时尚不信任其中内容。', 'pass'),
+      stage('密钥来源（Key Source）', scenario.id === 'algorithm' ? '在查找密钥前拒绝不允许的算法。' : actions.length ? actions[0] : '在签发者缓存中找到可信 kid。', accepted ? 'pass' : 'fail'),
+      stage('刷新策略', actions.length > 1 ? actions[1] : '无需同步刷新。', scenario.id === 'closed' ? 'fail' : 'focus'),
+      stage('声明与决策（Claims and Decision）', statusText + '.', accepted ? 'pass' : 'fail')
     ]);
   }
 
   function jwksTimelineLab(host) {
     makeLab(host, {
-      title: 'TOKEN AND JWKS VALIDATION TIMELINE',
-      hint: 'refresh keys, never rotate them here',
-      prompt: 'Select a token or cache event. The resource server follows one bounded validation path for cached keys, refresh, introspection, revocation, algorithms, time, and outages.',
-      scenarioLabel: 'Production event',
-      actionLabel: 'Validate token again',
-      evidenceLabel: 'Token, cache, actions, and decision',
+      title: '令牌与 JWKS 校验时间线（Validation Timeline）',
+      hint: '在此刷新密钥，而非轮换密钥',
+      prompt: '选择令牌或缓存事件。资源服务器沿着一条有界校验路径处理缓存密钥、刷新、内省、撤销、算法、时间和服务故障。',
+      scenarioLabel: '生产环境事件',
+      actionLabel: '重新校验令牌',
+      evidenceLabel: '令牌、缓存、操作与决策',
       scenarios: jwksScenarios,
       evaluate: evaluateJwks
     });

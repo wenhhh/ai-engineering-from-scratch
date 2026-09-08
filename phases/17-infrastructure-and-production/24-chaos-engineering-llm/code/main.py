@@ -1,6 +1,6 @@
-"""Chaos engineering runner with safety plane gates — stdlib Python.
+"""带安全平面（Safety Plane）关卡的混沌工程（Chaos Engineering）执行器，仅使用 Python 标准库。
 
-Runs three LLM-specific experiments and applies burn-rate + blast-radius safety gates.
+运行三项大语言模型（LLM）专用实验，以错误预算消耗速率（Burn Rate）和影响范围（Blast Radius）设置安全关卡。
 """
 
 from __future__ import annotations
@@ -8,7 +8,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 
-ERROR_BUDGET_PER_DAY = 0.001   # 99.9% SLO
+ERROR_BUDGET_PER_DAY = 0.001   # 服务等级目标（SLO）为 99.9%
 EXPECTED_ERROR_RATE = 0.0005
 
 
@@ -21,9 +21,9 @@ class Experiment:
 
 
 EXPERIMENTS = [
-    Experiment("pod kill (1 decode replica)",     5, 0.002, 0.05),
-    Experiment("provider 429 fallback",           5, 0.015, 0.30),
-    Experiment("malformed prompt tokenizer stall",3, 0.040, 0.10),
+    Experiment("终止 Pod，涉及 1 个解码副本",     5, 0.002, 0.05),
+    Experiment("供应商返回 429 后回退（Fallback）",           5, 0.015, 0.30),
+    Experiment("畸形提示词使分词器（Tokenizer）停滞",3, 0.040, 0.10),
 ]
 
 
@@ -37,19 +37,19 @@ def run_experiment(e: Experiment) -> dict:
         "burn_rate_x": burn_rate,
         "blast_radius": e.blast_radius_pct,
         "paused_by_safety_plane": paused,
-        "status": "ABORTED (burn-rate guard)" if paused else "COMPLETED",
+        "status": "已中止：消耗速率保护触发" if paused else "已完成",
     }
 
 
 def main() -> None:
     print("=" * 90)
-    print("CHAOS EXPERIMENT RUNNER — safety plane gates burn-rate × blast-radius")
+    print("混沌实验执行器：安全平面联合检查消耗速率与影响范围")
     print("=" * 90)
-    print(f"SLO error budget: {ERROR_BUDGET_PER_DAY*100:.2f}%/day")
-    print(f"Expected baseline error rate: {EXPECTED_ERROR_RATE*100:.3f}%")
-    print(f"Burn-rate gate: > 2.0x expected AND blast radius > 20%\n")
+    print(f"SLO 错误预算（Error Budget）：每日 {ERROR_BUDGET_PER_DAY*100:.2f}%")
+    print(f"预期基线错误率：{EXPECTED_ERROR_RATE*100:.3f}%")
+    print(f"消耗速率关卡：超过预期的 2.0 倍，并且影响范围超过 20%\n")
 
-    header = f"{'Experiment':38}  {'mins':>4}  {'err %':>6}  {'burn×':>6}  {'blast':>6}  Status"
+    header = f"{'实验':38}  {'分钟':>4}  {'错误率 %':>6}  {'消耗倍数':>6}  {'影响范围':>6}  状态"
     print(header)
     print("-" * len(header))
     for e in EXPERIMENTS:
@@ -60,9 +60,9 @@ def main() -> None:
               f"{r['blast_radius']*100:>5.0f}%  "
               f"{r['status']}")
 
-    print("\nRead: small-blast-radius experiments run to completion even at high burn rate.")
-    print("Large-blast-radius + high burn → abort. Suppression windows + trace-ID tags")
-    print("required to dedupe alerts during experiments.")
+    print("\n结果解读：影响范围较小的实验，即使消耗速率很高，也可以运行至完成。")
+    print("影响范围大且消耗速率高时则中止。实验期间需要告警抑制窗口（Suppression Window）")
+    print("与轨迹 ID（Trace ID）标签，对告警去重。")
 
 
 if __name__ == "__main__":

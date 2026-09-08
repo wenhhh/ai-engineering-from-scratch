@@ -1,61 +1,61 @@
-# Embedding Models — The 2026 Deep Dive
+# 嵌入模型：2026 年深入解析（Embedding Models — The 2026 Deep Dive）
 
-> Word2Vec gave you a vector per word. Modern embedding models give you a vector per passage, cross-lingual, with sparse, dense, and multi-vector views, sized to fit your index. Pick wrong and your RAG retrieves the wrong thing.
+> Word2Vec 为每个词提供向量。现代嵌入模型为每个段落提供跨语言向量，具有稀疏、稠密和多向量视角，并可调整大小以适配索引。选错模型，RAG 就会检索错内容。
 
 **Type:** Learn
 **Languages:** Python
-**Prerequisites:** Phase 5 · 03 (Word2Vec), Phase 5 · 14 (Information Retrieval)
-**Time:** ~60 minutes
+**Prerequisites:** 阶段 5 · 03（Word2Vec）、阶段 5 · 14（信息检索 Information Retrieval）
+**Time:** 约 60 分钟
 
-## The Problem
+## 问题（The Problem）
 
-Your RAG system retrieves the wrong passage 40% of the time. The culprit is rarely the vector database or the prompt. It is the embedding model.
+你的 RAG 系统有 40% 的时候检索到错误段落。问题很少出在向量数据库或提示词，而在嵌入模型。
 
-Choosing an embedding in 2026 means picking across five axes:
+2026 年选择嵌入模型，需要考虑五个维度：
 
-1. **Dense vs sparse vs multi-vector.** One vector per passage, or one per token, or a sparse weighted bag of words.
-2. **Language coverage.** Monolingual English models still win on English-only tasks. Multilingual models win when corpora are mixed.
-3. **Context length.** 512 tokens vs 8,192 vs 32,768 — and real effective capacity is often 60-70% of the advertised max.
-4. **Dimension budget.** 3,072 floats at full precision = 12 KB per vector. At 100M vectors, storage is $1,300/month. Matryoshka truncation cuts this 4×.
-5. **Open vs hosted.** Open-weight means you control the stack and data. Hosted means you trade control for always-latest.
+1. **稠密、稀疏或多向量（Dense / Sparse / Multi-Vector）。**每段一个向量、每词元一个向量，或稀疏加权词袋。
+2. **语言覆盖（Language Coverage）。**纯英语任务上，单语言英语模型仍胜出；语料混合多种语言时，多语言模型胜出。
+3. **上下文长度（Context Length）。**512、8,192 或 32,768 个词元，但真实有效容量通常只有标称最大值的 60–70%。
+4. **维度预算（Dimension Budget）。**全精度的 3,072 个浮点数等于每向量 12 KB。存储 100M 个向量时，每月费用为 1,300 美元。Matryoshka 截断可将其缩减 4 倍。
+5. **开放或托管（Open / Hosted）。**开放权重意味着掌控技术栈和数据，托管则用控制权换取始终使用最新模型。
 
-This lesson names the tradeoffs so you can pick on evidence, not on whatever was popular last quarter.
+本课说明这些权衡，让你基于证据选择，而不是跟随上季度的流行方案。
 
-## The Concept
+## 概念（The Concept）
 
-![Dense, sparse, and multi-vector embeddings](../assets/embedding-modes.svg)
+![稠密、稀疏与多向量嵌入](../assets/embedding-modes.svg)
 
-**Dense embeddings.** One vector per passage (usually 384-3,072 dimensions). Cosine similarity ranks passages by semantic proximity. OpenAI `text-embedding-3-large`, BGE-M3 dense mode, Voyage-3. Default choice.
+**稠密嵌入（Dense Embeddings）。**每段一个向量，通常为 384–3,072 维。余弦相似度按语义接近程度对段落排序。代表包括 OpenAI `text-embedding-3-large`、BGE-M3 稠密模式和 Voyage-3，是默认选择。
 
-**Sparse embeddings.** SPLADE-style. A transformer predicts a weight for every vocab token, then zeros out most of them. Result is a sparse vector of size |vocab|. Captures lexical matching (like BM25) but with learned term weights. Strong on keyword-heavy queries.
+**稀疏嵌入（Sparse Embeddings）。**SPLADE 风格：Transformer 为词表中每个词元预测权重，再将大部分置零，得到大小为 |vocab| 的稀疏向量。它像 BM25 一样捕获词汇匹配，但词权重通过学习得到，擅长关键词密集查询。
 
-**Multi-vector (late interaction).** ColBERTv2, Jina-ColBERT. One vector per token. Scoring with MaxSim: for each query token, find the most similar document token, sum the scores. More expensive to store and score, but wins on long queries and domain-specific corpora.
+**多向量（Multi-Vector，后期交互 Late Interaction）。**例如 ColBERTv2、Jina-ColBERT，每个词元一个向量。使用 MaxSim 评分：为每个查询词元找到最相似的文档词元，再对分数求和。存储与评分更昂贵，但在长查询和领域专用语料上更有优势。
 
-**BGE-M3: all three at once.** Single model outputs dense, sparse, and multi-vector representations simultaneously. Each can be queried independently; scores fuse via weighted sum. The 2026 default when you want flexibility from one checkpoint.
+**BGE-M3：同时提供三者。**单个模型同时输出稠密、稀疏和多向量表示。各自可独立查询，再通过加权求和融合分数。2026 年，希望一个检查点提供灵活性时，它是默认选择。
 
-**Matryoshka Representation Learning.** Trained so the first N dimensions of the vector form a useful standalone embedding. Truncate a 1,536-dim vector to 256 dim and pay ~1% accuracy for 6× storage savings. Supported by OpenAI text-3, Cohere v4, Voyage-4, Jina v5, Gemini Embedding 2, Nomic v1.5+.
+**套娃表示学习（Matryoshka Representation Learning）。**训练使向量的前 N 个维度能够独立构成有用的嵌入。将 1,536 维截到 256 维，只需付出约 1% 的准确率，就能节省 6 倍存储。OpenAI text-3、Cohere v4、Voyage-4、Jina v5、Gemini Embedding 2 和 Nomic v1.5+ 均支持。
 
-### The MTEB leaderboard tells a partial story
+### MTEB 排行榜只反映部分情况（The MTEB Leaderboard）
 
-Massive Text Embedding Benchmark — 56 tasks across 8 task types at launch (2022), expanded to 100+ tasks in MTEB v2. In early 2026, Gemini Embedding 2 tops retrieval (67.71 MTEB-R). Cohere embed-v4 leads general (65.2 MTEB). BGE-M3 leads open-weight multilingual (63.0). The leaderboard is necessary but not sufficient — always benchmark on your domain.
+大规模文本嵌入基准（Massive Text Embedding Benchmark）在 2022 年发布时包含 8 类任务中的 56 个任务，MTEB v2 扩展到 100 多个。2026 年初，Gemini Embedding 2 在检索上领先（67.71 MTEB-R），Cohere embed-v4 在通用任务领先（65.2 MTEB），BGE-M3 在开放权重多语言模型中领先（63.0）。排行榜必要但不充分，始终在自己的领域上做基准测试。
 
-### The three-tier pattern
+### 三层模式（The Three-Tier Pattern）
 
-| Use case | Pattern |
+| 用例 | 模式 |
 |----------|---------|
-| Fast first-pass | Dense bi-encoder (BGE-M3, text-3-small) |
-| Recall boost | Sparse (SPLADE, BGE-M3 sparse) + RRF fuse |
-| Precision on top-50 | Multi-vector (ColBERTv2) or cross-encoder reranker |
+| 快速首轮检索 | 稠密双编码器（BGE-M3、text-3-small） |
+| 提升召回 | 稀疏检索（SPLADE、BGE-M3 稀疏模式）+ RRF 融合 |
+| 提高前 50 项精度 | 多向量（ColBERTv2）或交叉编码器重排序器 |
 
-Most production stacks use all three.
+多数生产技术栈同时使用三者。
 
 ```figure
 gx-matryoshka
 ```
 
-## Build It
+## 动手实现（Build It）
 
-### Step 1: baseline — dense embeddings with Sentence-BERT
+### 步骤 1：基线，使用 Sentence-BERT 生成稠密嵌入
 
 ```python
 from sentence_transformers import SentenceTransformer
@@ -75,9 +75,9 @@ scores = emb @ q_emb
 print(sorted(enumerate(scores), key=lambda x: -x[1]))
 ```
 
-`normalize_embeddings=True` makes the dot product equal cosine similarity. Always set it.
+`normalize_embeddings=True` 让点积等于余弦相似度。始终设置它。
 
-### Step 2: Matryoshka truncation
+### 步骤 2：Matryoshka 截断（Truncation）
 
 ```python
 def truncate(vectors, dim):
@@ -88,9 +88,9 @@ emb_256 = truncate(emb, 256)
 emb_128 = truncate(emb, 128)
 ```
 
-Re-normalize after truncation. Nomic v1.5, OpenAI text-3, and Voyage-4 are trained so this is lossless for the first few levels. Non-Matryoshka models (original Sentence-BERT) degrade sharply when truncated.
+截断后重新归一化。Nomic v1.5、OpenAI text-3 和 Voyage-4 的训练让前几个层级的截断无损。未采用 Matryoshka 的模型，例如原始 Sentence-BERT，截断后效果会急剧下降。
 
-### Step 3: BGE-M3 multi-functionality
+### 步骤 3：BGE-M3 的多功能性（Multi-Functionality）
 
 ```python
 from FlagEmbedding import BGEM3FlagModel
@@ -108,7 +108,7 @@ output = model.encode(
 # output["colbert_vecs"]:  list of (n_tokens, 1024) arrays
 ```
 
-Three indexes, one inference call. Score fusion:
+三个索引，一次推理调用。分数融合如下：
 
 ```python
 dense_score = ... # cosine over dense_vecs
@@ -117,9 +117,9 @@ colbert_score = model.colbert_score(q_col, d_col)
 final = 0.4 * dense_score + 0.2 * sparse_score + 0.4 * colbert_score
 ```
 
-Tune the weights on your domain.
+在自己的领域上调优权重。
 
-### Step 4: MTEB eval on a custom task
+### 步骤 4：在自定义任务上进行 MTEB 评估
 
 ```python
 from mteb import MTEB
@@ -129,84 +129,84 @@ evaluation = MTEB(tasks=tasks)
 results = evaluation.run(encoder, output_folder="./mteb-results")
 ```
 
-Run your candidate models on a *representative* subset. Do not trust leaderboard rank alone — your domain matters.
+在*具有代表性*的子集上运行候选模型。不要只信排行榜名次，你的领域很重要。
 
-### Step 5: hand-rolled cosine from scratch
+### 步骤 5：从零手工实现余弦相似度
 
-See `code/main.py`. Averaged Hashing Trick embeddings (stdlib-only). Not competitive with transformer embeddings, but shows the shape: tokenize → vector → normalize → dot product.
+参见 `code/main.py`。使用仅依赖标准库的平均哈希技巧（Hashing Trick）嵌入。它无法与 Transformer 嵌入竞争，但展示了流程：分词 → 向量 → 归一化 → 点积。
 
-## Pitfalls
+## 陷阱（Pitfalls）
 
-- **Same model for query and doc.** Some models (Voyage, Jina-ColBERT) use asymmetric encoding — query and document pass through different paths. Always check the model card.
-- **Missing prefix.** `bge-*` models need `"Represent this sentence for searching relevant passages: "` prepended to queries. 3-5 point recall gap if you forget.
-- **Over-trimming Matryoshka.** 1,536 → 256 is usually safe. 1,536 → 64 is not. Validate on your eval set.
-- **Context truncation.** Most models silently truncate inputs over their max length. Long docs need chunking (see lesson 23).
-- **Ignoring latency tail.** MTEB scores hide p99 latency. A 600M model might beat a 335M model by 2 points but cost 3× more per query.
+- **查询与文档使用同一模型。**某些模型，例如 Voyage、Jina-ColBERT，采用非对称编码（Asymmetric Encoding），查询和文档经过不同路径。始终检查模型卡。
+- **缺少前缀（Missing Prefix）。**`bge-*` 模型要求在查询前加上 `"Represent this sentence for searching relevant passages: "`。忘记会导致召回率相差 3–5 点。
+- **Matryoshka 截断过度。**1,536 → 256 通常安全，1,536 → 64 则不然。应在自己的评估集上验证。
+- **上下文截断（Context Truncation）。**多数模型会静默截断超过最大长度的输入。长文档需要分块，见第 23 课。
+- **忽视延迟长尾（Latency Tail）。**MTEB 分数掩盖了 p99 延迟。600M 模型可能比 335M 模型高 2 点，但每次查询成本高 3 倍。
 
-## Use It
+## 实际应用（Use It）
 
-The 2026 stack:
+2026 年的技术栈：
 
-| Situation | Pick |
+| 场景 | 选择 |
 |-----------|------|
-| English-only, fast, API | `text-embedding-3-large` or `voyage-3-large` |
-| Open-weight, English | `BAAI/bge-large-en-v1.5` |
-| Open-weight, multilingual | `BAAI/bge-m3` or `Qwen3-Embedding-8B` |
-| Long context (32k+) | Voyage-3-large, Cohere embed-v4, Qwen3-Embedding-8B |
-| CPU-only deployment | Nomic Embed v2 (137M params, MoE) |
-| Storage-constrained | Matryoshka-truncated + int8 quantization |
-| Keyword-heavy queries | Add SPLADE sparse, RRF-fuse with dense |
+| 纯英语、快速、API | `text-embedding-3-large` 或 `voyage-3-large` |
+| 开放权重、英语 | `BAAI/bge-large-en-v1.5` |
+| 开放权重、多语言 | `BAAI/bge-m3` 或 `Qwen3-Embedding-8B` |
+| 长上下文（32k 以上） | Voyage-3-large、Cohere embed-v4、Qwen3-Embedding-8B |
+| 仅 CPU 部署 | Nomic Embed v2（137M 参数，MoE） |
+| 存储受限 | Matryoshka 截断 + int8 量化 |
+| 关键词密集查询 | 添加 SPLADE 稀疏检索，通过 RRF 与稠密检索融合 |
 
-2026 pattern: start with BGE-M3 or text-3-large, evaluate on your domain with MTEB, swap if a domain-specific model wins by more than 3 points.
+2026 年的模式：从 BGE-M3 或 text-3-large 开始，使用 MTEB 在自己的领域上评估；如果领域专用模型胜出超过 3 点，再替换。
 
-## Ship It
+## 交付成果（Ship It）
 
-Save as `outputs/skill-embedding-picker.md`:
+保存为 `outputs/skill-embedding-picker.md`：
 
 ```markdown
 ---
 name: embedding-picker
-description: Pick embedding model, dimension, and retrieval mode for a given corpus and deployment.
+description: 根据给定语料库和部署环境选择嵌入模型、维度与检索模式。
 version: 1.0.0
 phase: 5
 lesson: 22
 tags: [nlp, embeddings, retrieval]
 ---
 
-Given a corpus (size, languages, domain, avg length), deployment target (cloud / edge / on-prem), latency budget, and storage budget, output:
+给定语料库（规模、语言、领域、平均长度）、部署目标（云 / 边缘 / 本地机房）、延迟预算和存储预算，输出：
 
-1. Model. Named checkpoint or API. One-sentence reason.
-2. Dimension. Full / Matryoshka-truncated / int8-quantized. Reason tied to storage budget.
-3. Mode. Dense / sparse / multi-vector / hybrid. Reason.
-4. Query prefix / template if required by the model card.
-5. Evaluation plan. MTEB tasks relevant to domain + held-out domain eval with nDCG@10.
+1. 模型（Model）。具体检查点或 API，用一句话说明理由。
+2. 维度（Dimension）。完整维度、Matryoshka 截断或 int8 量化，结合存储预算说明理由。
+3. 模式（Mode）。稠密、稀疏、多向量或混合，说明理由。
+4. 若模型卡要求，给出查询前缀或模板。
+5. 评估计划（Evaluation Plan）。与领域相关的 MTEB 任务，加上使用 nDCG@10 的领域留出评估。
 
-Refuse recommendations that truncate Matryoshka to <64 dims without domain validation. Refuse ColBERTv2 for corpora under 10k passages (overhead not justified). Flag long-document corpora (>8k tokens) routed to models with 512-token windows.
+未经领域验证，拒绝推荐将 Matryoshka 截断到少于 64 维。语料不足 10k 个段落时拒绝 ColBERTv2，因为额外开销不合理。对将超过 8k 词元的长文档语料送入 512 词元窗口模型的方案提出警示。
 ```
 
-## Exercises
+## 练习（Exercises）
 
-1. **Easy.** Encode 100 sentences with `bge-small-en-v1.5` at full dim (384), then at Matryoshka 128. Measure MRR drop on 10 queries.
-2. **Medium.** Compare BGE-M3 dense, sparse, and colbert on 500 passages from your domain. Which wins on recall@10? Does RRF fusion beat the best single mode?
-3. **Hard.** Run MTEB on three candidate models across your top-2 domain tasks. Report MTEB score, p99 latency on a 100-query batch, and $/1M queries. Pick the Pareto-optimal one.
+1. **简单。**用 `bge-small-en-v1.5` 对 100 个句子按完整 384 维编码，再使用 Matryoshka 128 维。在 10 个查询上测量 MRR 下降。
+2. **中等。**在你的领域的 500 个段落上比较 BGE-M3 的稠密、稀疏和 colbert 模式。哪种 recall@10 最高？RRF 融合是否优于最佳单模式？
+3. **困难。**在你的两个最重要领域任务上，对三个候选模型运行 MTEB。报告 MTEB 分数、100 次查询批次的 p99 延迟，以及每 1M 次查询的美元成本，选择帕累托最优（Pareto-Optimal）方案。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语 | 常见说法 | 实际含义 |
 |------|-----------------|-----------------------|
-| Dense embedding | The vector | One fixed-size vector per text. Cosine similarity for ranking. |
-| Sparse embedding | Learned BM25 | One weight per vocab token; mostly zeros; trained end-to-end. |
-| Multi-vector | ColBERT-style | One vector per token; MaxSim scoring; bigger index, better recall. |
-| Matryoshka | Russian doll trick | First N dims are a valid smaller embedding on their own. |
-| MTEB | The benchmark | Massive Text Embedding Benchmark — 56 tasks at launch, 100+ in v2. |
-| BEIR | The retrieval benchmark | 18 zero-shot retrieval tasks; often cited for cross-domain robustness. |
-| Asymmetric encoding | Query ≠ doc path | Model uses different projections for queries and documents. |
+| 稠密嵌入（Dense Embedding） | 那个向量 | 每段文本一个固定大小向量，使用余弦相似度排序。 |
+| 稀疏嵌入（Sparse Embedding） | 学习型 BM25 | 每个词表词元一个权重，大多为零，端到端训练。 |
+| 多向量（Multi-Vector） | ColBERT 风格 | 每词元一个向量，MaxSim 评分，索引更大，召回更好。 |
+| Matryoshka | 俄罗斯套娃技巧 | 前 N 维本身就是有效的较小嵌入。 |
+| MTEB | 那个基准 | 大规模文本嵌入基准，发布时 56 个任务，v2 超过 100 个。 |
+| BEIR | 检索基准 | 18 个零样本检索任务，常用于说明跨领域鲁棒性。 |
+| 非对称编码（Asymmetric Encoding） | 查询路径 ≠ 文档路径 | 模型对查询和文档使用不同投影。 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [Reimers, Gurevych (2019). Sentence-BERT](https://arxiv.org/abs/1908.10084) — the bi-encoder paper.
-- [Muennighoff et al. (2022). MTEB: Massive Text Embedding Benchmark](https://arxiv.org/abs/2210.07316) — the leaderboard paper.
-- [Chen et al. (2024). BGE-M3: Multi-lingual, Multi-functionality, Multi-granularity](https://arxiv.org/abs/2402.03216) — the unified three-mode model.
-- [Kusupati et al. (2022). Matryoshka Representation Learning](https://arxiv.org/abs/2205.13147) — the dimension-ladder training objective.
-- [Santhanam et al. (2022). ColBERTv2: Effective and Efficient Retrieval via Lightweight Late Interaction](https://arxiv.org/abs/2112.01488) — late interaction in production.
-- [MTEB leaderboard on Hugging Face](https://huggingface.co/spaces/mteb/leaderboard) — live rankings.
+- [Reimers、Gurevych（2019）：Sentence-BERT](https://arxiv.org/abs/1908.10084)：双编码器论文。
+- [Muennighoff 等（2022）：MTEB：大规模文本嵌入基准（Massive Text Embedding Benchmark）](https://arxiv.org/abs/2210.07316)：排行榜论文。
+- [Chen 等（2024）：BGE-M3：多语言、多功能、多粒度（Multi-lingual, Multi-functionality, Multi-granularity）](https://arxiv.org/abs/2402.03216)：统一三模式模型。
+- [Kusupati 等（2022）：套娃表示学习（Matryoshka Representation Learning）](https://arxiv.org/abs/2205.13147)：维度阶梯训练目标。
+- [Santhanam 等（2022）：ColBERTv2：通过轻量后期交互实现有效且高效的检索（Effective and Efficient Retrieval via Lightweight Late Interaction）](https://arxiv.org/abs/2112.01488)：生产中的后期交互。
+- [Hugging Face 上的 MTEB 排行榜](https://huggingface.co/spaces/mteb/leaderboard)：实时排名。

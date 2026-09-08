@@ -1,6 +1,6 @@
-/* figures-math2.js - interactive math-foundations widgets (phase 01).
-   Loads after lesson-figures.js and registers through window.LF. Vanilla ES5,
-   no deps, theme via CSS vars. Each widget renders deterministically. */
+/* figures-math2.js：阶段 01 数学基础（Math Foundations）交互组件。
+   在 lesson-figures.js 之后加载，通过 window.LF 注册。原生 ES5，无依赖，
+   使用 CSS 变量适配主题，各组件确定性渲染。 */
 (function () {
   'use strict';
   var LF = window.LF;
@@ -8,10 +8,10 @@
   var el = LF.el, svgEl = LF.svgEl, slider = LF.slider, select = LF.select;
   var fmtInt = LF.fmtInt, clamp = LF.clamp;
 
-  // ── svd-rank-reconstruction: keep k singular values, watch energy return ──
+  // svd-rank-reconstruction：保留 k 个奇异值，观察保留能量。
   function svdRank(host) {
-    // A fixed 8x8 pattern. Its singular values are baked in (decreasing), so
-    // energy retained = sum(top-k sigma^2) / sum(all sigma^2) is exact.
+    // 固定的 8x8 图案，预置按降序排列的奇异值。
+    // 保留能量 = sum(top-k sigma^2) / sum(all sigma^2)，该比值可精确计算。
     var sigma = [9.0, 5.4, 3.1, 1.8, 1.0, 0.55, 0.28, 0.12];
     var n = sigma.length;
     var total = 0, i;
@@ -25,7 +25,7 @@
     var meta = el('div', { class: 'lf-meta' });
     var formula = el('div', { class: 'lf-formula' });
     function cell(r, c) {
-      // smooth low-rank-friendly target intensity in [0,1]
+      // [0,1] 范围内的平滑目标强度，适合低秩近似。
       return 0.5 + 0.5 * Math.cos((r + c) * Math.PI / (n - 1));
     }
     state._render = function () {
@@ -33,7 +33,7 @@
       var keep = state.k, energy = 0, j;
       for (j = 0; j < keep; j++) { energy += sigma[j] * sigma[j]; }
       var frac = energy / total;
-      // reconstruction quality scales with retained energy: blend cell toward grey
+      // 用保留能量表示重建质量：能量越低，单元格越趋于灰色。
       var r, c;
       for (r = 0; r < n; r++) {
         for (c = 0; c < n; c++) {
@@ -46,7 +46,7 @@
           }));
         }
       }
-      // singular-value spectrum bars on the right
+      // 右侧的奇异值谱条形图。
       var maxS = sigma[0], bw = 14, sx = GX;
       for (j = 0; j < n; j++) {
         var bh = sigma[j] / maxS * 120;
@@ -56,26 +56,26 @@
           fill: on ? 'var(--blueprint,#3553ff)' : 'var(--rule-soft,#ddd)'
         }));
       }
-      num.innerHTML = (frac * 100).toFixed(1) + ' <small>% energy</small>';
+      num.innerHTML = (frac * 100).toFixed(1) + ' <small>%：保留的能量（Energy）</small>';
       bar.style.width = (frac * 100).toFixed(1) + '%';
-      meta.textContent = 'rank ' + keep + ' of ' + n + '  ·  stores ' + (keep * (2 * n + 1)) +
-        ' numbers vs ' + (n * n) + ' full  ·  blue bars are the kept singular values';
-      formula.textContent = 'A_k = sum_{i<k} sigma_i u_i v_iT   ·   energy = sum top-k sigma^2 / sum all sigma^2';
+      meta.textContent = '秩（Rank）' + keep + ' / ' + n + '  ·  存储 ' + (keep * (2 * n + 1)) +
+        ' 个数，完整矩阵为 ' + (n * n) + ' 个 · 蓝色条形表示保留的奇异值（Singular Value）';
+      formula.textContent = 'A_k = sum_{i<k} sigma_i u_i v_iT   ·   能量（Energy）= 前 k 个 sigma^2 之和 / 全部 sigma^2 之和';
     };
-    var grid = el('div', {}, [slider(state, 'k', 'singular values kept (k)', 1, n, 1)]);
+    var grid = el('div', {}, [slider(state, 'k', '保留的奇异值（Singular Value）数量 k', 1, n, 1)]);
     host.appendChild(el('div', { class: 'lf' }, [
-      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['SVD LOW-RANK']), el('span', {}, ['drag the rank k'])]),
+      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['SVD 低秩近似（Low-rank）']), el('span', {}, ['调整秩 k'])]),
       el('div', { class: 'lf-body' }, [grid, el('div', { class: 'lf-out' }, [svg, el('div', { style: 'margin-top:10px' }, [num]), barWrap, meta, formula])]),
-      el('div', { class: 'lf-cap' }, ['Keeping the k largest singular values gives the best rank-k approximation of a matrix. The first few capture most of the energy, so a low rank reconstructs the pattern almost exactly while storing far fewer numbers. That is the whole idea behind compression and low-rank adapters.'])
+      el('div', { class: 'lf-cap' }, ['保留最大的 k 个奇异值（Singular Value），就能得到矩阵的最优秩 k 近似。前几个奇异值包含大部分能量，因此低秩（Low-rank）表示只需存储少得多的数，就能近乎完整地重建图案。这正是压缩（Compression）与低秩适配器（Low-rank Adapter）背后的思路。'])
     ]));
     state._render();
   }
 
-  // ── tensor-broadcast: do two shapes align trailing dims? ──────────────────
+  // tensor-broadcast：检查两个形状能否从尾部维度对齐并广播。
   function tensorBroadcast(host) {
     var state = { a0: 8, a1: 1, a2: 3, b0: 1, b1: 4, b2: 3 };
     var rows = el('div', {});
-    var status = el('span', { class: 'lf-num' });
+    var status = el('span', { class: 'lf-num lf-status' });
     var meta = el('div', { class: 'lf-meta' });
     var formula = el('div', { class: 'lf-formula' });
     state._render = function () {
@@ -87,13 +87,13 @@
         if (x === y) { out.push(x); }
         else if (x === 1) { out.push(y); }
         else if (y === 1) { out.push(x); }
-        else { ok = false; out.push('x'); if (!why) { why = 'dim ' + i + ': ' + x + ' vs ' + y + ' (neither is 1)'; } }
+        else { ok = false; out.push('x'); if (!why) { why = '维度（Dim）' + i + ': ' + x + ' 与 ' + y + '（两者都不是 1）'; } }
       }
       while (rows.firstChild) { rows.removeChild(rows.firstChild); }
       function shapeRow(label, vals, hi) {
         var cells = [];
         vals.forEach(function (v, idx) {
-          var stretched = hi && (a[idx] === 1 || b[idx] === 1) && a[idx] !== b[idx] && (label !== 'result');
+          var stretched = hi && (a[idx] === 1 || b[idx] === 1) && a[idx] !== b[idx] && (label !== '结果');
           cells.push(el('span', {
             class: 'lf-formula',
             style: 'display:inline-block;min-width:34px;text-align:center;padding:4px 6px;margin:2px;border:1px solid var(--rule-soft,#ddd);color:' +
@@ -101,44 +101,44 @@
           }, [String(v)]));
         });
         return el('div', { style: 'display:flex;align-items:center;gap:8px;margin:4px 0' },
-          [el('span', { class: 'lf-meta', style: 'min-width:62px' }, [label])].concat(cells));
+          [el('span', { class: 'lf-meta', style: 'width:100px;flex-shrink:0' }, [label])].concat(cells));
       }
-      rows.appendChild(shapeRow('shape A', a, true));
-      rows.appendChild(shapeRow('shape B', b, true));
-      rows.appendChild(shapeRow('result', out, false));
-      status.innerHTML = ok ? 'broadcasts' : 'mismatch';
-      meta.textContent = ok ? 'result shape (' + out.join(', ') + ')  ·  a 1 stretches to match the other'
-        : 'cannot broadcast  ·  ' + why;
-      formula.textContent = 'align trailing dims; each pair must be equal or one of them 1';
+      rows.appendChild(shapeRow('形状（Shape）A', a, true));
+      rows.appendChild(shapeRow('形状（Shape）B', b, true));
+      rows.appendChild(shapeRow('结果', out, false));
+      status.innerHTML = ok ? '可广播（Broadcast）' : '不匹配（Mismatch）';
+      meta.textContent = ok ? '结果形状（Shape）(' + out.join(', ') + ')  ·  大小为 1 的维度扩展到另一维度的大小'
+        : '无法广播（Broadcast）· ' + why;
+      formula.textContent = '从尾部对齐维度；每对维度必须相等，或其中一个为 1';
     };
     var grid = el('div', { class: 'lf-grid' }, [
-      slider(state, 'a0', 'A dim 0', 1, 8, 1), slider(state, 'b0', 'B dim 0', 1, 8, 1),
-      slider(state, 'a1', 'A dim 1', 1, 8, 1), slider(state, 'b1', 'B dim 1', 1, 8, 1),
-      slider(state, 'a2', 'A dim 2', 1, 8, 1), slider(state, 'b2', 'B dim 2', 1, 8, 1)
+      slider(state, 'a0', 'A 维度（Dim）0', 1, 8, 1), slider(state, 'b0', 'B 维度（Dim）0', 1, 8, 1),
+      slider(state, 'a1', 'A 维度（Dim）1', 1, 8, 1), slider(state, 'b1', 'B 维度（Dim）1', 1, 8, 1),
+      slider(state, 'a2', 'A 维度（Dim）2', 1, 8, 1), slider(state, 'b2', 'B 维度（Dim）2', 1, 8, 1)
     ]);
     host.appendChild(el('div', { class: 'lf' }, [
-      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['BROADCASTING']), el('span', {}, ['drag two shapes'])]),
+      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['广播（Broadcasting）']), el('span', {}, ['调整两个形状'])]),
       el('div', { class: 'lf-body' }, [grid, el('div', { class: 'lf-out' }, [rows, el('div', { style: 'margin-top:10px' }, [status]), meta, formula])]),
-      el('div', { class: 'lf-cap' }, ['Broadcasting lets arrays of different shapes combine without copying data. Line the shapes up from the right; each pair of dimensions must be equal, or one must be 1 and gets stretched. Any other clash is an error. This is why a bias vector adds cleanly to a whole batch.'])
+      el('div', { class: 'lf-cap' }, ['广播（Broadcasting）让形状不同的数组可以在不复制数据的情况下参与同一运算。从右向左对齐形状后，每对维度必须相等，或其中一个为 1 并被扩展；其他冲突都会报错。因此，偏置向量（Bias Vector）可以直接与整个批次（Batch）相加。'])
     ]));
     state._render();
   }
 
-  // ── logsumexp-stability: naive exp overflows, max-subtraction stays finite ─
+  // logsumexp-stability：直接求 exp 会溢出；先减最大值可保持有限结果。
   function logsumexpStability(host) {
     var base = [1.0, 0.5, -0.3];
     var state = { big: 700 };
     var rows = el('div', {});
-    var status = el('span', { class: 'lf-num' });
+    var status = el('span', { class: 'lf-num lf-status' });
     var meta = el('div', { class: 'lf-meta' });
     var formula = el('div', { class: 'lf-formula' });
     state._render = function () {
       var x = [state.big].concat(base);
-      // naive: log(sum(exp(x)))  -- exp(710+) overflows to Infinity in float64
+      // 直接计算 log(sum(exp(x)))：float64 中 exp(710+) 会溢出为 Infinity。
       var naiveSum = 0, i;
       for (i = 0; i < x.length; i++) { naiveSum += Math.exp(x[i]); }
       var naive = Math.log(naiveSum);
-      // stable: m + log(sum(exp(x - m)))
+      // 稳定形式：m + log(sum(exp(x - m)))。
       var m = x[0];
       for (i = 1; i < x.length; i++) { if (x[i] > m) { m = x[i]; } }
       var s = 0;
@@ -150,27 +150,27 @@
         return el('div', { style: 'display:flex;justify-content:space-between;margin:4px 0' }, [
           el('span', { class: 'lf-meta' }, [label]),
           el('span', { class: 'lf-formula', style: 'color:' + (warn ? 'var(--warn,#b8870f)' : 'var(--blueprint,#3553ff)') },
-            [isFinite(val) ? val.toFixed(4) : 'Infinity (overflow)'])
+            [isFinite(val) ? val.toFixed(4) : 'Infinity（溢出，Overflow）'])
         ]);
       }
-      rows.appendChild(line('naive log(sum exp x)', naive, overflow));
-      rows.appendChild(line('stable m + log(sum exp(x-m))', stable, false));
-      status.innerHTML = overflow ? 'naive overflows' : 'both agree';
+      rows.appendChild(line('直接计算 log(sum exp x)', naive, overflow));
+      rows.appendChild(line('稳定形式（Stable）m + log(sum exp(x-m))', stable, false));
+      status.innerHTML = overflow ? '直接计算发生溢出（Overflow）' : '两种结果一致';
       meta.textContent = overflow
-        ? 'exp(' + state.big + ') is beyond float64 range (~exp 709), so the naive sum is Infinity; the stable form returns ' + stable.toFixed(4)
-        : 'the two forms are algebraically equal and both finite here (max = ' + m + ')';
+        ? 'exp(' + state.big + ') 超过 float64 范围（约 exp 709），因此直接求和得到 Infinity；稳定形式返回 ' + stable.toFixed(4)
+        : '两种形式在代数上等价，此处结果都有限（max = ' + m + ')';
       formula.textContent = 'logsumexp(x) = m + log( sum exp(x - m) ),  m = max(x)';
     };
-    var grid = el('div', {}, [slider(state, 'big', 'largest logit value', 1, 1500, 1)]);
+    var grid = el('div', {}, [slider(state, 'big', '最大未归一化分数（Logit）', 1, 1500, 1)]);
     host.appendChild(el('div', { class: 'lf' }, [
-      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['LOG-SUM-EXP']), el('span', {}, ['drag the logit'])]),
+      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['对数指数和（Log-sum-exp）']), el('span', {}, ['调整未归一化分数（Logit）'])]),
       el('div', { class: 'lf-body' }, [grid, el('div', { class: 'lf-out' }, [rows, el('div', { style: 'margin-top:10px' }, [status]), meta, formula])]),
-      el('div', { class: 'lf-cap' }, ['Computing log(sum(exp(x))) directly overflows once any logit passes about 709, where exp exceeds the float64 range. Subtracting the maximum first shifts the largest term to exp(0) = 1, so the sum stays finite. The result is identical because the subtracted maximum is added back outside the log.'])
+      el('div', { class: 'lf-cap' }, ['直接计算 log(sum(exp(x))) 时，只要任一未归一化分数（Logit）超过约 709，exp 就超出 float64 范围并发生溢出（Overflow）。先减去最大值，会把最大项移到 exp(0) = 1，从而让总和保持有限。由于减去的最大值在 log 外加了回来，结果不变。'])
     ]));
     state._render();
   }
 
-  // ── norm-unit-balls: L1 diamond, L2 circle, Linf square; readout point norm ─
+  // norm-unit-balls：L1 菱形、L2 圆、Linf 正方形，并显示当前点的范数。
   function normUnitBalls(host) {
     var state = { which: 'l2', px: 0.6, py: 0.5 };
     var W = 260, H = 230, CX = 130, CY = 115, R = 90;
@@ -181,10 +181,10 @@
     function toY(v) { return CY - v * R; }
     state._render = function () {
       while (svg.firstChild) { svg.removeChild(svg.firstChild); }
-      // axes
+      // 坐标轴。
       svg.appendChild(svgEl('line', { x1: toX(-1.3), y1: CY, x2: toX(1.3), y2: CY, stroke: 'var(--rule-soft,#eee)', 'stroke-width': '1' }));
       svg.appendChild(svgEl('line', { x1: CX, y1: toY(-1.3), x2: CX, y2: toY(1.3), stroke: 'var(--rule-soft,#eee)', 'stroke-width': '1' }));
-      // unit ball
+      // 单位球（Unit Ball）。
       var shape;
       if (state.which === 'l1') {
         shape = svgEl('polygon', { points: [toX(1) + ',' + toY(0), toX(0) + ',' + toY(1), toX(-1) + ',' + toY(0), toX(0) + ',' + toY(-1)].join(' '), fill: 'none', stroke: 'var(--blueprint,#3553ff)', 'stroke-width': '2' });
@@ -194,30 +194,30 @@
         shape = svgEl('circle', { cx: CX, cy: CY, r: R, fill: 'none', stroke: 'var(--blueprint,#3553ff)', 'stroke-width': '2' });
       }
       svg.appendChild(shape);
-      // the point and its vector
+      // 当前点及其向量。
       svg.appendChild(svgEl('line', { x1: CX, y1: CY, x2: toX(state.px), y2: toY(state.py), stroke: 'var(--ink-mute,#999)', 'stroke-width': '1.5' }));
       svg.appendChild(svgEl('circle', { cx: toX(state.px), cy: toY(state.py), r: '5', fill: 'var(--warn,#b8870f)' }));
       var ax = Math.abs(state.px), ay = Math.abs(state.py);
       var norm = state.which === 'l1' ? ax + ay : state.which === 'linf' ? Math.max(ax, ay) : Math.sqrt(ax * ax + ay * ay);
       var nm = state.which === 'l1' ? 'L1' : state.which === 'linf' ? 'Linf' : 'L2';
-      num.innerHTML = norm.toFixed(3) + ' <small>' + nm + ' norm</small>';
+      num.innerHTML = norm.toFixed(3) + ' <small>' + nm + ' 范数（Norm）</small>';
       var formula = state.which === 'l1' ? '|x| + |y|' : state.which === 'linf' ? 'max(|x|, |y|)' : 'sqrt(x^2 + y^2)';
-      meta.textContent = nm + ' of (' + state.px.toFixed(2) + ', ' + state.py.toFixed(2) + ') = ' + formula + '  ·  the outline is every point of norm 1';
+      meta.textContent = nm + ' 范数，向量为 (' + state.px.toFixed(2) + ', ' + state.py.toFixed(2) + ') = ' + formula + '  ·  轮廓包含所有范数为 1 的点';
     };
     var grid = el('div', { class: 'lf-grid' }, [
-      select(state, 'which', 'norm', [['L2 (Euclidean)', 'l2'], ['L1 (Manhattan)', 'l1'], ['Linf (max)', 'linf']]),
-      slider(state, 'px', 'point x', -1.2, 1.2, 0.05),
-      slider(state, 'py', 'point y', -1.2, 1.2, 0.05)
+      select(state, 'which', '范数（Norm）', [['L2（欧几里得，Euclidean）', 'l2'], ['L1（曼哈顿，Manhattan）', 'l1'], ['Linf（最大值，Max）', 'linf']]),
+      slider(state, 'px', '点的 x 坐标', -1.2, 1.2, 0.05),
+      slider(state, 'py', '点的 y 坐标', -1.2, 1.2, 0.05)
     ]);
     host.appendChild(el('div', { class: 'lf' }, [
-      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['NORM UNIT BALLS']), el('span', {}, ['pick a norm'])]),
+      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['范数单位球（Norm Unit Balls）']), el('span', {}, ['选择范数（Norm）'])]),
       el('div', { class: 'lf-body' }, [grid, el('div', { class: 'lf-out' }, [svg, el('div', { style: 'margin-top:10px' }, [num]), meta])]),
-      el('div', { class: 'lf-cap' }, ['A norm measures length, and its unit ball is every vector of length one. L2 sums squares and gives a circle; L1 sums absolute values and gives a diamond; Linf takes the largest coordinate and gives a square. Which norm you choose changes what counts as close, which is why it shapes regularization and distance.'])
+      el('div', { class: 'lf-cap' }, ['范数（Norm）衡量长度，这里用所有长度为 1 的向量展示单位球（Unit Ball）的边界。L2 对平方求和，形成圆形；L1 对绝对值求和，形成菱形；Linf 取最大的坐标值，形成正方形。选择不同范数，就会改变“接近”的含义，因此范数决定了正则化（Regularization）和距离度量的形式。'])
     ]));
     state._render();
   }
 
-  // ── monte-carlo-pi: fraction inside the quarter circle estimates pi ────────
+  // monte-carlo-pi：用落在四分之一圆内的点所占比例估计 pi。
   function monteCarloPi(host) {
     var state = { n: 200 };
     var W = 230, H = 230, PAD = 14, S = 200;
@@ -225,8 +225,8 @@
     var num = el('span', { class: 'lf-num' });
     var meta = el('div', { class: 'lf-meta' });
     var formula = el('div', { class: 'lf-formula' });
-    // deterministic low-discrepancy points (additive recurrence with the golden
-    // ratio conjugate) so the figure renders the same every time.
+    // 使用确定性的低差异点（Low-discrepancy Points），按黄金比例共轭值做加法递推，
+    // 使每次渲染得到相同图形。
     var g1 = 0.7548776662466927, g2 = 0.5698402909980532;
     state._render = function () {
       while (svg.firstChild) { svg.removeChild(svg.firstChild); }
@@ -247,21 +247,21 @@
       }
       var est = 4 * inside / state.n;
       num.innerHTML = est.toFixed(4) + ' <small>~ pi</small>';
-      meta.textContent = inside + ' of ' + fmtInt(state.n) + ' inside  ·  error ' + Math.abs(est - Math.PI).toFixed(4) + '  ·  shrinks like 1/sqrt(N)';
-      formula.textContent = 'pi ~ 4 * (points inside quarter circle) / N   ·   true pi = 3.14159';
+      meta.textContent = inside + ' / ' + fmtInt(state.n) + ' 个点位于圆内 · 误差（Error）' + Math.abs(est - Math.PI).toFixed(4) + '  ·  按 1/sqrt(N) 缩小';
+      formula.textContent = 'pi ~ 4 * 四分之一圆内的点数 / N   ·   真实 pi = 3.14159';
     };
-    var grid = el('div', {}, [slider(state, 'n', 'samples N', 20, 5000, 20)]);
+    var grid = el('div', {}, [slider(state, 'n', '样本数（Samples）N', 20, 5000, 20)]);
     host.appendChild(el('div', { class: 'lf' }, [
-      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['MONTE CARLO PI']), el('span', {}, ['drag the sample count'])]),
+      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['蒙特卡洛估计 π（Monte Carlo Pi）']), el('span', {}, ['调整样本数'])]),
       el('div', { class: 'lf-body' }, [grid, el('div', { class: 'lf-out' }, [svg, el('div', { style: 'margin-top:10px' }, [num]), meta, formula])]),
-      el('div', { class: 'lf-cap' }, ['Scatter points in the unit square and count how many fall inside the quarter circle. That fraction is the ratio of areas, pi/4, so four times it estimates pi. More samples tighten the estimate, but the error only falls like one over the square root of N, the defining cost of Monte Carlo.'])
+      el('div', { class: 'lf-cap' }, ['在单位正方形内撒点，统计落入四分之一圆内的点数。该比例对应面积比 pi/4，因此乘以四就得到 pi 的估计值。样本越多，估计越精确，但误差只按 N 的平方根的倒数下降；这正是蒙特卡洛方法（Monte Carlo）的典型代价。'])
     ]));
     state._render();
   }
 
-  // ── linear-system-conditioning: two lines toward parallel, condition blows up ─
+  // linear-system-conditioning：两条直线趋近平行时，条件数急剧增大。
   function linearConditioning(host) {
-    // System: line1 x + y = 2 (fixed). line2 has slope controlled toward line1.
+    // 方程组：直线 1 固定为 x + y = 2，调整直线 2 的斜率使其趋近直线 1。
     var state = { tilt: 60 };
     var W = 260, H = 230, CX = 130, CY = 115, SC = 28;
     var svg = svgEl('svg', { viewBox: '0 0 ' + W + ' ' + H });
@@ -272,15 +272,15 @@
     function toY(y) { return CY - y * SC; }
     state._render = function () {
       while (svg.firstChild) { svg.removeChild(svg.firstChild); }
-      // Line 1: a1 x + b1 y = c1  ->  x + y = 2
+      // 直线 1：a1 x + b1 y = c1  ->  x + y = 2。
       var a1 = 1, b1 = 1, c1 = 2;
-      // Line 2 angle approaches line 1 as tilt -> 100. line1 direction angle 135deg.
+      // tilt -> 100 时，直线 2 的角度趋近直线 1；直线 1 的方向角为 135 度。
       var t = state.tilt / 100;
       var ang = (135 - 55 * t) * Math.PI / 180; // 80deg .. 135deg
       var a2 = Math.cos(ang), b2 = Math.sin(ang);
       var c2 = a2 * 1 + b2 * 1; // force both lines through the solution (1,1)
       var det = a1 * b2 - a2 * b1;
-      // condition number of the 2x2 matrix via singular values
+      // 通过奇异值计算 2x2 矩阵的条件数（Condition Number）。
       var M = [[a1, b1], [a2, b2]];
       var ata00 = M[0][0] * M[0][0] + M[1][0] * M[1][0];
       var ata01 = M[0][0] * M[0][1] + M[1][0] * M[1][1];
@@ -290,7 +290,7 @@
       var l1 = tr / 2 + disc, l2 = tr / 2 - disc;
       var cond = Math.sqrt(l1 / Math.max(l2, 1e-12));
       function drawLine(a, b, c, st) {
-        // a x + b y = c, sample x range
+        // 在 x 范围内采样，绘制 a x + b y = c。
         var pts = [], xx;
         for (xx = -4; xx <= 4.01; xx += 8) {
           if (Math.abs(b) > 1e-6) { pts.push([xx, (c - a * xx) / b]); }
@@ -304,21 +304,21 @@
       drawLine(a1, b1, c1, 'var(--ink-mute,#999)');
       drawLine(a2, b2, c2, 'var(--blueprint,#3553ff)');
       svg.appendChild(svgEl('circle', { cx: toX(1), cy: toY(1), r: '5', fill: 'var(--warn,#b8870f)' }));
-      num.innerHTML = (cond < 1000 ? cond.toFixed(1) : cond.toExponential(1)) + ' <small>cond number</small>';
-      meta.textContent = (cond > 50 ? 'ill-conditioned: ' : 'well-conditioned: ') +
-        'det = ' + det.toFixed(3) + '  ·  near-parallel lines make the intersection hypersensitive to noise';
-      formula.textContent = 'kappa = sigma_max / sigma_min   ·   small noise in b shifts the solution by up to kappa times';
+      num.innerHTML = (cond < 1000 ? cond.toFixed(1) : cond.toExponential(1)) + ' <small>条件数（Condition Number）</small>';
+      meta.textContent = (cond > 50 ? '病态（Ill-conditioned）：' : '良态（Well-conditioned）：') +
+        'det = ' + det.toFixed(3) + '  ·  直线近乎平行时，交点对噪声极其敏感';
+      formula.textContent = 'kappa = sigma_max / sigma_min   ·   b 中的微小噪声会使解的偏移最多放大 kappa 倍';
     };
-    var grid = el('div', {}, [slider(state, 'tilt', 'tilt line 2 toward line 1', 0, 98, 1)]);
+    var grid = el('div', {}, [slider(state, 'tilt', '使直线 2 向直线 1 倾斜', 0, 98, 1)]);
     host.appendChild(el('div', { class: 'lf' }, [
-      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['CONDITIONING']), el('span', {}, ['drag toward parallel'])]),
+      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['条件性（Conditioning）']), el('span', {}, ['调整到接近平行'])]),
       el('div', { class: 'lf-body' }, [grid, el('div', { class: 'lf-out' }, [svg, el('div', { style: 'margin-top:10px' }, [num]), meta, formula])]),
-      el('div', { class: 'lf-cap' }, ['A 2x2 system is the intersection of two lines. When the lines cross at a wide angle the solution is sharp and stable. As they tilt toward parallel the determinant shrinks, the condition number explodes, and a tiny change in the inputs swings the intersection far away. Ill-conditioned systems amplify noise.'])
+      el('div', { class: 'lf-cap' }, ['二元线性方程组的解对应两条直线的交点。两线以较大夹角相交时，解明确而稳定。随着两线趋近平行，行列式（Determinant）缩小，条件数（Condition Number）剧增，输入的微小变化也会使交点移到很远的位置。病态方程组（Ill-conditioned System）会放大噪声。'])
     ]));
     state._render();
   }
 
-  // ── random-walk-diffusion: spread of a 1D walk grows like sqrt(t) ──────────
+  // random-walk-diffusion：一维随机游走的扩散范围按 sqrt(t) 增长。
   function randomWalkDiffusion(host) {
     var state = { t: 50 };
     var W = 520, H = 220, PAD = 30;
@@ -327,10 +327,10 @@
     var meta = el('div', { class: 'lf-meta' });
     var formula = el('div', { class: 'lf-formula' });
     var TMAX = 200;
-    // a few deterministic sample paths via a fixed sign sequence per walker
+    // 每个游走者使用固定符号序列，生成几条确定性的采样路径。
     var walkers = 7;
     function step(seed, k) {
-      // deterministic pseudo-sign in {-1,+1}
+      // {-1,+1} 中的确定性伪随机符号。
       var v = Math.sin(seed * 12.9898 + k * 78.233) * 43758.5453;
       v = v - Math.floor(v);
       return v < 0.5 ? -1 : 1;
@@ -340,7 +340,7 @@
     state._render = function () {
       while (svg.firstChild) { svg.removeChild(svg.firstChild); }
       svg.appendChild(svgEl('line', { x1: PAD, y1: H / 2, x2: W - PAD, y2: H / 2, stroke: 'var(--rule-soft,#eee)', 'stroke-width': '1' }));
-      // theoretical +/- one std envelope: std = sqrt(t)
+      // 理论上的正负一个标准差包络：std = sqrt(t)。
       var dUp = '', dDn = '', i;
       for (i = 0; i <= 120; i++) {
         var s = TMAX * i / 120;
@@ -364,20 +364,20 @@
         svg.appendChild(svgEl('circle', { cx: px(state.t), cy: py(pos), r: '3', fill: 'var(--blueprint,#3553ff)' }));
       }
       var sdTheory = Math.sqrt(state.t);
-      num.innerHTML = sdTheory.toFixed(2) + ' <small>std = sqrt(t)</small>';
-      meta.textContent = 't = ' + state.t + ' steps  ·  endpoints spread out like sqrt(t), not t  ·  dashed orange is the +/- one std envelope';
-      formula.textContent = 'each step +/-1 with equal odds  ·  Var(position) = t,  std = sqrt(t)';
+      num.innerHTML = sdTheory.toFixed(2) + ' <small>标准差（Std）= sqrt(t)</small>';
+      meta.textContent = 't = ' + state.t + ' 步 · 终点按 sqrt(t) 而非 t 的尺度扩散 · 橙色虚线是正负一个标准差的包络线（Envelope）';
+      formula.textContent = '每步以相同概率取 +/-1   ·   Var(position) = t，标准差（Std）= sqrt(t)';
     };
-    var grid = el('div', {}, [slider(state, 't', 'steps t', 1, TMAX, 1)]);
+    var grid = el('div', {}, [slider(state, 't', '步数（Steps）t', 1, TMAX, 1)]);
     host.appendChild(el('div', { class: 'lf' }, [
-      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['RANDOM WALK']), el('span', {}, ['drag the step count'])]),
+      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['随机游走（Random Walk）']), el('span', {}, ['调整步数'])]),
       el('div', { class: 'lf-body' }, [grid, el('div', { class: 'lf-out' }, [svg, el('div', { style: 'margin-top:10px' }, [num]), meta, formula])]),
-      el('div', { class: 'lf-cap' }, ['A one-dimensional walk takes a plus-or-minus-one step each tick. Steps are independent so variances add: after t steps the variance is t and the typical distance from the start is the square root of t. Diffusion spreads slowly, which is why the walk wanders but rarely runs straight away.'])
+      el('div', { class: 'lf-cap' }, ['一维随机游走（Random Walk）每个时刻前进或后退一步。各步独立，因此方差（Variance）可相加：t 步后的方差为 t，与起点的典型距离为 t 的平方根。扩散（Diffusion）较慢，所以轨迹不断徘徊，却很少径直远离起点。'])
     ]));
     state._render();
   }
 
-  // ── roots-of-unity: n complex nth-roots evenly spaced on the unit circle ───
+  // roots-of-unity：n 个复数 n 次单位根均匀分布在单位圆上。
   function rootsOfUnity(host) {
     var state = { n: 5 };
     var W = 260, H = 240, CX = 130, CY = 120, R = 95;
@@ -404,20 +404,20 @@
         svg.appendChild(svgEl('line', { x1: CX, y1: CY, x2: c[0], y2: c[1], stroke: 'var(--rule-soft,#ddd)', 'stroke-width': '0.8' }));
         svg.appendChild(svgEl('circle', { cx: c[0], cy: c[1], r: k2 === 0 ? '5' : '4', fill: k2 === 0 ? 'var(--warn,#b8870f)' : 'var(--blueprint,#3553ff)' }));
       });
-      num.innerHTML = state.n + ' <small>roots</small>';
-      meta.textContent = 'spaced ' + (360 / state.n).toFixed(1) + ' deg apart  ·  k = 0 (orange) is always 1  ·  they sum to 0 for n > 1';
+      num.innerHTML = state.n + ' <small>个根（Roots）</small>';
+      meta.textContent = '角度间隔 ' + (360 / state.n).toFixed(1) + ' 度 · k = 0（橙色）始终对应 1 · n > 1 时所有根之和为 0';
       formula.textContent = 'z_k = exp(2*pi*i*k/n) = cos(2*pi*k/n) + i*sin(2*pi*k/n),  k = 0..n-1';
     };
-    var grid = el('div', {}, [slider(state, 'n', 'n (number of roots)', 1, 16, 1)]);
+    var grid = el('div', {}, [slider(state, 'n', 'n（根的数量，Number of Roots）', 1, 16, 1)]);
     host.appendChild(el('div', { class: 'lf' }, [
-      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['ROOTS OF UNITY']), el('span', {}, ['drag n'])]),
+      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['单位根（Roots of Unity）']), el('span', {}, ['调整 n'])]),
       el('div', { class: 'lf-body' }, [grid, el('div', { class: 'lf-out' }, [svg, el('div', { style: 'margin-top:10px' }, [num]), meta, formula])]),
-      el('div', { class: 'lf-cap' }, ['The n complex nth-roots of unity are the solutions of z to the n equals one. They sit evenly around the unit circle at angles two pi k over n, one of them always at 1. These evenly spaced points are the sampling frequencies behind the discrete Fourier transform.'])
+      el('div', { class: 'lf-cap' }, ['n 个复数 n 次单位根（Roots of Unity）是方程 z 的 n 次方等于 1 的解。它们以 2πk/n 的角度均匀分布在单位圆（Unit Circle）上，其中一个始终位于 1。这些等间距的点对应离散傅里叶变换（Discrete Fourier Transform，DFT）背后的采样频率。'])
     ]));
     state._render();
   }
 
-  // ── graph-degree-distribution: degrees sum to twice the edge count ─────────
+  // graph-degree-distribution：所有节点的度数之和等于边数的两倍。
   function graphDegrees(host) {
     var state = { nodes: 6, edges: 7 };
     var W = 260, H = 240, CX = 130, CY = 110, R = 80;
@@ -430,10 +430,10 @@
       var n = state.nodes;
       var maxEdges = n * (n - 1) / 2;
       var e = Math.min(state.edges, maxEdges);
-      // deterministic edge list: enumerate all pairs in a fixed order, take first e
+      // 确定性的边列表：按固定顺序枚举节点对，取前 e 对。
       var pairs = [], i, j;
       for (i = 0; i < n; i++) { for (j = i + 1; j < n; j++) { pairs.push([i, j]); } }
-      // interleave so early edges spread around the ring rather than clustering
+      // 交错排列，让先出现的边分散在环上，避免集中在局部。
       pairs.sort(function (a, b) { return ((a[1] - a[0]) - (b[1] - b[0])) || (a[0] - b[0]); });
       var deg = [];
       for (i = 0; i < n; i++) { deg.push(0); }
@@ -454,19 +454,19 @@
       });
       var sumDeg = 0;
       for (i = 0; i < n; i++) { sumDeg += deg[i]; }
-      num.innerHTML = sumDeg + ' <small>= 2 * ' + used.length + ' edges</small>';
-      meta.textContent = 'each node label is its degree  ·  average degree ' + (sumDeg / n).toFixed(2) +
-        (e < state.edges ? '  ·  capped at ' + maxEdges + ' (complete graph)' : '');
-      formula.textContent = 'handshake lemma: sum of degrees = 2 * (number of edges)';
+      num.innerHTML = sumDeg + ' <small>= 2 * ' + used.length + ' 条边（Edges）</small>';
+      meta.textContent = '每个节点标注其度（Degree）· 平均度 ' + (sumDeg / n).toFixed(2) +
+        (e < state.edges ? '  ·  上限为 ' + maxEdges + '（完全图，Complete Graph）' : '');
+      formula.textContent = '握手定理（Handshake Lemma）：度数总和 = 2 * 边数';
     };
     var grid = el('div', { class: 'lf-grid' }, [
-      slider(state, 'nodes', 'nodes', 3, 10, 1),
-      slider(state, 'edges', 'edges', 0, 20, 1)
+      slider(state, 'nodes', '节点数（Nodes）', 3, 10, 1),
+      slider(state, 'edges', '边数（Edges）', 0, 20, 1)
     ]);
     host.appendChild(el('div', { class: 'lf' }, [
-      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['GRAPH DEGREES']), el('span', {}, ['drag nodes and edges'])]),
+      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['图的度数（Graph Degrees）']), el('span', {}, ['调整节点数与边数'])]),
       el('div', { class: 'lf-body' }, [grid, el('div', { class: 'lf-out' }, [svg, el('div', { style: 'margin-top:10px' }, [num]), meta, formula])]),
-      el('div', { class: 'lf-cap' }, ['Every edge touches two nodes, so it adds one to each of their degrees. Add up the degrees of all nodes and you have counted every edge exactly twice. This handshake lemma holds for any graph and forces the number of odd-degree nodes to be even.'])
+      el('div', { class: 'lf-cap' }, ['每条边连接两个节点，使两端节点的度（Degree）各增加一。把所有节点的度相加，每条边恰好被计数两次。握手定理（Handshake Lemma）对任意图都成立，并由此要求奇数度节点的数量必须为偶数。'])
     ]));
     state._render();
   }

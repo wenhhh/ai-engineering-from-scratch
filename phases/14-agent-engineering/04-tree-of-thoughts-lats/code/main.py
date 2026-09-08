@@ -1,12 +1,12 @@
-"""Toy Tree-of-Thoughts BFS and LATS MCTS on a stylized arithmetic search.
+"""在简化算术搜索中演示思维树（Tree-of-Thoughts，ToT）的广度优先搜索（BFS）与 LATS 的蒙特卡洛树搜索（MCTS）。
 
-Task: given integers [4, 6, 4, 1], find an expression using +, -, *, / that
-evaluates to 24. This mirrors the Game of 24 benchmark from Yao et al.
+任务：给定整数 [4, 6, 4, 1]，用 +, -, *, / 构造结果为 24 的表达式。
+这对应 Yao 等人提出的 24 点游戏（Game of 24）基准测试。
 
-ToT is a BFS with a prompted value function. LATS is MCTS over the same
-search space with UCT selection.
+ToT 是配合提示词驱动的价值函数（Value function）的 BFS。LATS 在相同搜索空间
+使用 MCTS，并采用树上置信上界（UCT）选择。
 
-Stdlib only; no LLM. Value function is symbolic (distance from 24).
+仅使用标准库，不调用大语言模型（LLM）。价值函数是符号式的（与 24 的距离）。
 """
 
 from __future__ import annotations
@@ -150,18 +150,18 @@ def _all_leaves(node: Node) -> list[Node]:
 
 def main() -> None:
     print("=" * 70)
-    print("TREE OF THOUGHTS + LATS — Phase 14, Lesson 04")
+    print("思维树（Tree of Thoughts）+ LATS——第 14 阶段，第 04 课")
     print("=" * 70)
-    print(f"numbers: {NUMBERS}  target: {TARGET}")
+    print(f"数字：{NUMBERS}  目标：{TARGET}")
 
     root_tot = Node(state=tuple(sorted(NUMBERS, reverse=True)), trace=[])
     best_tot, n_tot = tot_bfs(root_tot)
-    print("\nToT BFS")
+    print("\nToT 广度优先搜索（BFS）")
     print("-" * 60)
     if best_tot is not None:
-        print(f"  best trace: {best_tot.trace}")
-        print(f"  final state: {best_tot.state}  value: {value(best_tot):.3f}")
-    print(f"  expansions: {n_tot}")
+        print(f"  最佳轨迹： {best_tot.trace}")
+        print(f"  最终状态： {best_tot.state}  价值： {value(best_tot):.3f}")
+    print(f"  扩展数： {n_tot}")
 
     rng = random.Random(7)
     root_lats = Node(state=tuple(sorted(NUMBERS, reverse=True)), trace=[])
@@ -169,17 +169,17 @@ def main() -> None:
     for ch in root_lats.children:
         ch.visits = 0
     best_lats, n_lats = mcts(root_lats, iterations=80, rng=rng)
-    print("\nLATS MCTS")
+    print("\nLATS 蒙特卡洛树搜索（MCTS）")
     print("-" * 60)
-    print(f"  best trace: {best_lats.trace}")
-    print(f"  final state: {best_lats.state}  value: {value(best_lats):.3f}")
-    print(f"  node expansions: {n_lats}")
+    print(f"  最佳轨迹： {best_lats.trace}")
+    print(f"  最终状态： {best_lats.state}  价值： {value(best_lats):.3f}")
+    print(f"  节点扩展数： {n_lats}")
 
     print()
-    print("Paper headlines (for reference):")
-    print("  ToT Game-of-24:  GPT-4 CoT 4%  -> ToT 74%")
-    print("  LATS HumanEval:  pass@1 92.7% with GPT-4 (SOTA at paper time)")
-    print("  Cost: ToT uses 100-1000x the tokens of CoT. Use with intent.")
+    print("论文主要结果（供参考）：")
+    print("  ToT 24 点游戏：GPT-4 思维链（CoT）4%  -> ToT 74%")
+    print("  LATS HumanEval：使用 GPT-4 时 pass@1 为 92.7%（论文发表时的最佳水平，SOTA）")
+    print("  成本：ToT 使用的词元（Token）是 CoT 的 100-1000 倍。请根据实际需求选择。")
 
 
 if __name__ == "__main__":

@@ -1,39 +1,39 @@
 ---
 name: mcp-transport-migrator
-description: Migrate legacy MCP HTTP transports to the stateless, POST-only 2026-07-28 contract.
+description: 将旧版 MCP HTTP 传输迁移到无状态、仅 POST 的 2026-07-28 契约。
 version: 2.0.0
 phase: 13
 lesson: 09
 tags: [mcp, streamable-http, stateless, migration, headers]
 ---
 
-Given a session-based Streamable HTTP or HTTP+SSE server, produce a migration runbook for MCP `2026-07-28`.
+给定基于会话的 Streamable HTTP 或 HTTP+SSE 服务器，生成 MCP `2026-07-28` 迁移操作手册（Migration runbook）。
 
-Produce:
+产出：
 
-1. Endpoint map. Define one modern MCP endpoint that accepts POST. Each JSON-RPC request or notification receives a new POST.
-2. Response map. Use `application/json` for one response or request-scoped `text/event-stream` for related notifications followed by the final response.
-3. Removed behavior. Return `405` for modern GET and DELETE. Ignore `Mcp-Session-Id` and `Last-Event-ID`; never mint, echo, revoke, or resume them.
-4. Request metadata. Require protocol version and client capabilities in every body `_meta`, with recommended client identity.
-5. Header validation. Require `MCP-Protocol-Version`, `Mcp-Method`, and conditional `Mcp-Name`. Decode the Base64 sentinel and compare headers with the body. Return `-32020` on mismatch. Return `-32022` on an unsupported matching version with exact data keys `supported` and `requested`.
-6. Subscription migration. Replace standalone GET, `resources/subscribe`, and `resources/unsubscribe` with POST `subscriptions/listen`. Tag the acknowledgement, every notification, and the final result with `io.modelcontextprotocol/subscriptionId` equal to the listen request id.
-7. State migration. Replace connection affinity with explicit, opaque application handles bound to the authenticated principal.
-8. Compatibility window. Keep older endpoints separate and clearly labeled. Modern POST errors must be inspected before any legacy fallback. Do not redirect POST with `301` or `302` because method and body preservation are unsafe.
-9. Verification. Test Origin rejection, POST media negotiation, body metadata, mirrored headers, JSON response, accepted notification `202` with no body, scoped SSE subscription metadata, GET and DELETE `405`, ignored removed headers, and broken-stream retry with a new id.
+1. 端点映射（Endpoint map）。定义一个接受 POST 的现代 MCP 端点。每条 JSON-RPC 请求或通知对应新的 POST。
+2. 响应映射（Response map）。单一响应使用 `application/json`；相关通知后跟最终响应用请求作用域的 `text/event-stream`。
+3. 移除行为（Removed behavior）。现代 GET 和 DELETE 返回 `405`。忽略 `Mcp-Session-Id` 与 `Last-Event-ID`，绝不签发、回传、撤销或恢复它们。
+4. 请求元数据（Request metadata）。要求每个正文 `_meta` 包含协议版本和客户端能力，推荐包含客户端身份。
+5. 头校验（Header validation）。要求 `MCP-Protocol-Version`、`Mcp-Method` 和条件性 `Mcp-Name`。解码 Base64 哨兵值并比较头与正文。不匹配返回 `-32020`。版本匹配但不受支持时返回 `-32022`，附确切数据键 `supported` 与 `requested`。
+6. 订阅迁移（Subscription migration）。用 POST `subscriptions/listen` 替代独立 GET、`resources/subscribe` 和 `resources/unsubscribe`。给确认、每条通知与最终结果标记 `io.modelcontextprotocol/subscriptionId`，等于监听请求 id。
+7. 状态迁移（State migration）。用绑定到已认证主体的显式不透明应用句柄替代连接亲和性。
+8. 兼容窗口（Compatibility window）。旧端点保持隔离并清楚标注。任何旧版回退前都必须检查现代 POST 错误。不要用 `301` 或 `302` 重定向 POST，因为不能安全保证方法与正文保留。
+9. 验证（Verification）。测试 Origin 拒绝、POST 媒体协商、正文元数据、镜像头、JSON 响应、无正文的接受通知 `202`、作用域 SSE 订阅元数据、GET 与 DELETE 的 `405`、忽略已移除头，以及断流后使用新 id 重试。
 
-Hard rejects:
+硬性拒绝条件：
 
-- Presenting session ids, standalone GET, DELETE, or replay as modern behavior.
-- Sharing per-request capabilities through process or connection memory.
-- Sending server-initiated JSON-RPC requests.
-- Resuming a modern SSE stream with `Last-Event-ID`.
-- Falling back to legacy after a recognized modern error.
-- Using a redirect to move a JSON-RPC POST during migration.
+- 把会话 id、独立 GET、DELETE 或重放呈现为现代行为。
+- 通过进程或连接内存共享逐请求能力。
+- 发送服务器发起的 JSON-RPC 请求。
+- 用 `Last-Event-ID` 恢复现代 SSE 流。
+- 遇到已识别现代错误后回退到旧版。
+- 迁移期间用重定向转移 JSON-RPC POST。
 
-Refusal rules:
+拒绝规则：
 
-- Refuse public exposure without authentication, authorization, and exact Origin policy.
-- Refuse hidden sticky routing as a replacement for explicit workflow state.
-- Refuse automatic retry of a non-idempotent operation without an application idempotency control.
+- 没有认证、授权和精确 Origin 策略时，拒绝公开暴露服务。
+- 拒绝用隐藏粘性路由替代显式工作流状态。
+- 非幂等操作没有应用幂等控制时，拒绝自动重试。
 
-Output a before-and-after endpoint table, staged rollout, rollback boundary, and executable conformance checklist. End with the exact date when legacy routes will be removed.
+输出迁移前后端点表、分阶段发布、回滚边界和可执行一致性检查清单。最后给出移除旧路由的确切日期。

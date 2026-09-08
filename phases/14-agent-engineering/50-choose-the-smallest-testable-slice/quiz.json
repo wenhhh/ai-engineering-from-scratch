@@ -1,48 +1,78 @@
 {
   "lesson": "50-choose-the-smallest-testable-slice",
-  "title": "Choose the Smallest Testable Slice",
+  "title": "选择最小可测试切片（Choose the Smallest Testable Slice）",
   "questions": [
     {
       "stage": "pre",
-      "question": "What makes a small slice useful?",
-      "options": ["It has little code", "It avoids real uncertainty", "It can change an important decision", "It has a polished UI"],
+      "question": "什么使小切片有用？",
+      "options": [
+        "代码少",
+        "避开真实不确定性",
+        "能改变重要决定",
+        "UI 精致"
+      ],
       "correct": 2,
-      "explanation": "Size matters only in relation to decisive evidence."
+      "explanation": "大小只有相对于决定性证据才有意义。"
     },
     {
       "stage": "check",
-      "question": "What must be defined before comparing candidate slices?",
-      "options": ["A release name", "A framework", "A final architecture", "The required proof set"],
+      "question": "比较候选切片前必须定义什么？",
+      "options": [
+        "发布名称",
+        "框架",
+        "最终架构",
+        "必需证明集合"
+      ],
       "correct": 3,
-      "explanation": "Eligibility depends on covering the risky assumptions that need evidence."
+      "explanation": "资格取决于能否覆盖需要证据的高风险假设。"
     },
     {
       "stage": "check",
-      "question": "Why can a cheap dashboard mockup be the wrong minimum?",
-      "options": ["It is too reversible", "It has users", "It may remove data and operational uncertainty from the test", "Dashboards are always bad"],
+      "question": "为什么便宜的仪表盘原型图可能是错误的最小方案？",
+      "options": [
+        "它太可逆",
+        "它有用户",
+        "它可能从测试中移除了数据与运营不确定性",
+        "仪表盘总是不好"
+      ],
       "correct": 2,
-      "explanation": "A slice that avoids the risky mechanism cannot answer the decision."
+      "explanation": "避开高风险机制的切片，无法回答决策问题。"
     },
     {
       "stage": "check",
-      "question": "What is the correct response to a high-scoring slice that misses required proof?",
-      "options": ["Reject it as ineligible", "Increase its score", "Select it", "Call it production"],
+      "question": "对评分高却遗漏必需证明的切片，正确处理是什么？",
+      "options": [
+        "以不合格为由拒绝",
+        "提高分数",
+        "选择它",
+        "称它为生产版本"
+      ],
       "correct": 0,
-      "explanation": "Coverage is a gate before optimization."
+      "explanation": "先满足覆盖关卡，再优化。"
     },
     {
       "stage": "post",
-      "question": "Why add a stop rule?",
-      "options": ["To avoid measurement", "To specify what evidence would cause reframe, revision, or abandonment", "To limit documentation", "To make every result support the idea"],
+      "question": "为什么添加停止规则？",
+      "options": [
+        "避免测量",
+        "明确什么证据会引发重新界定、修订或放弃",
+        "限制文档",
+        "让每个结果都支持想法"
+      ],
       "correct": 1,
-      "explanation": "An experiment must be capable of changing the decision."
+      "explanation": "实验必须能够改变决定。"
     },
     {
       "stage": "post",
-      "question": "Which slice is generally safer for testing diagnosis?",
-      "options": ["Production auto-remediation", "A read-only replay over representative incidents", "A migration", "A full platform"],
+      "question": "测试诊断时，哪个切片通常更安全？",
+      "options": [
+        "生产自动修复",
+        "对代表性事故进行只读回放",
+        "数据迁移",
+        "完整平台"
+      ],
       "correct": 1,
-      "explanation": "Replay can test the core unknown with lower consequence and high reversibility."
+      "explanation": "回放以较低后果和较高可逆性测试核心未知项。"
     }
   ]
 }

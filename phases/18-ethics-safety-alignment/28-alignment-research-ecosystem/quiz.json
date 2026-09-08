@@ -1,34 +1,34 @@
 {
   "lesson": "28-alignment-research-ecosystem",
-  "title": "Alignment Research Ecosystem - MATS, Redwood, Apollo, METR",
+  "title": "对齐研究生态（Alignment Research Ecosystem）— MATS、Redwood、Apollo、METR",
   "questions": [
     {
       "stage": "pre",
-      "question": "What does MATS do, and what is its rough scale?",
+      "question": "MATS 做什么，大致规模如何？",
       "options": [
-        "ML Alignment & Theory Scholars: a research mentorship program with 527+ scholars since 2021, 180+ papers, and roughly 80% of pre-2025 alumni working on safety/security",
-        "A reward-model training service",
-        "A frontier safety institute owned by the EU",
-        "A regulatory body that issues AI export licenses"
+        "ML Alignment & Theory Scholars：研究导师项目，自 2021 年以来有 527 名以上学员、180 篇以上论文，2025 年前校友约 80% 从事安全或安保工作",
+        "奖励模型训练服务",
+        "欧盟拥有的前沿安全研究所",
+        "发放 AI 出口许可证的监管机构"
       ],
       "correct": 0,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Which agenda did Redwood Research introduce?",
+      "question": "Redwood Research 提出了什么议程？",
       "options": [
-        "Differential privacy for LLMs",
-        "Watermarking via SynthID",
-        "Constitutional AI",
-        "AI Control (Lesson 10): safety despite subversion via U / T / H protocols"
+        "LLM 的差分隐私",
+        "通过 SynthID 实现水印",
+        "宪法式 AI",
+        "AI 控制（第 10 课）：通过 U / T / H 协议，在存在破坏行为时仍保持安全"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Which organisation authored the In-Context Scheming paper and the 'Towards Safety Cases for AI Scheming' framework?",
+      "question": "哪个组织发表了《上下文内密谋》论文和《迈向 AI 密谋安全论证》框架？",
       "options": [
         "Eleos AI",
         "METR",
@@ -40,36 +40,36 @@
     },
     {
       "stage": "check",
-      "question": "What is METR's distinctive methodological style in the alignment ecosystem?",
+      "question": "METR 在对齐生态中具有何种独特方法风格？",
       "options": [
-        "Adversarial training of base models",
-        "Hardware-attested verifiable inference",
-        "Closed-source red-teaming only",
-        "Task-based capability evaluations, autonomous-task time-horizon studies, and framework synthesis (e.g., 'Common Elements of Frontier AI Safety Policies')"
+        "基础模型的对抗训练",
+        "具有硬件证明的可验证推理",
+        "仅开展闭源红队测试",
+        "基于任务的能力评估、自主任务时间跨度研究和框架综合分析，例如《前沿 AI 安全政策的共同要素》"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "Why does multi-organisation co-authorship matter for safety claims?",
+      "question": "为什么多组织共同署名对安全声明很重要？",
       "options": [
-        "Labs evaluating their own models have a structural conflict of interest; external evaluators (Redwood, Apollo, METR, Eleos, UK AISI) can raise and validate failure modes the lab might underreport",
-        "It increases citation counts",
-        "It is mandated by the EU AI Act",
-        "It speeds up publication"
+        "实验室评估自己的模型存在结构性利益冲突；外部评估者，如 Redwood、Apollo、METR、Eleos 和英国 AISI，可以提出并验证实验室可能少报的失效模式",
+        "它会增加引用量",
+        "欧盟《人工智能法案》强制要求这样做",
+        "它能加快发表"
       ],
       "correct": 0,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "What is Eleos AI Research's primary contribution to the ecosystem?",
+      "question": "Eleos AI Research 对生态的主要贡献是什么？",
       "options": [
-        "California training-data law drafting",
-        "Watermarking standards",
-        "Pre-deployment model-welfare evaluations (Lesson 19), including the external welfare assessment in Claude Opus 4's system card",
-        "AI Control benchmarks"
+        "起草加利福尼亚州训练数据法律",
+        "水印标准",
+        "部署前模型福利评估（第 19 课），包括 Claude Opus 4 系统卡中的外部福利评估",
+        "AI 控制基准"
       ],
       "correct": 2,
       "explanation": ""

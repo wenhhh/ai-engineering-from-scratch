@@ -17,65 +17,65 @@
     </style>
   </defs>
 
-  <text x="480" y="26" text-anchor="middle" class="title">Mem0 — three stores in parallel, fused on retrieval</text>
+  <text x="480" y="26" text-anchor="middle" class="title">Mem0：三种存储并行写入，检索时融合</text>
 
   <rect x="40" y="50" width="200" height="46" class="box"/>
   <text x="140" y="74" text-anchor="middle" class="head">add(text, user_id, metadata)</text>
-  <text x="140" y="90" text-anchor="middle" class="small">extract facts  write to all three</text>
+  <text x="140" y="90" text-anchor="middle" class="small">抽取事实，写入全部三种存储</text>
 
   <rect x="40" y="120" width="280" height="260" class="vec"/>
-  <text x="180" y="142" text-anchor="middle" class="head">vector store</text>
-  <text x="60" y="166" class="small">semantic similarity; top-k by cosine</text>
-  <text x="60" y="186" class="small">best for: "what did we discuss"</text>
-  <text x="60" y="206" class="small">worst for: exact fact lookup</text>
+  <text x="180" y="142" text-anchor="middle" class="head">向量存储（Vector store）</text>
+  <text x="60" y="166" class="small">语义相似度；按余弦相似度取 top-k</text>
+  <text x="60" y="186" class="small">最适合：“我们讨论过什么”</text>
+  <text x="60" y="206" class="small">最不适合：精确事实查询</text>
   <rect x="60" y="220" width="240" height="60" class="box"/>
-  <text x="78" y="240" class="step">record: embedding(text), scope, user_id</text>
-  <text x="78" y="258" class="small">tags, importance, ts for fusion</text>
-  <text x="78" y="272" class="small">periodic re-embed on the top-used subset</text>
+  <text x="78" y="240" class="step" style="font-size:9px">记录：embedding(text), scope, user_id</text>
+  <text x="78" y="258" class="small">tags、importance、ts 用于融合</text>
+  <text x="78" y="272" class="small">定期为使用最多的子集重新嵌入</text>
   <rect x="60" y="290" width="240" height="76" class="box"/>
-  <text x="78" y="310" class="step">failure mode: embedding drift</text>
-  <text x="78" y="328" class="small">quality degrades as the corpus grows</text>
-  <text x="78" y="344" class="small">fix: schedule re-embed; monitor recall@k</text>
-  <text x="78" y="360" class="small">LoCoMo: 91.6 in the Mem0 paper</text>
+  <text x="78" y="310" class="step">故障：嵌入偏移</text>
+  <text x="78" y="328" class="small">质量随语料增长而退化</text>
+  <text x="78" y="344" class="small">修复：定期重新嵌入，监控 recall@k</text>
+  <text x="78" y="360" class="small">Mem0 论文中 LoCoMo：91.6</text>
 
   <rect x="340" y="120" width="280" height="260" class="kv"/>
-  <text x="480" y="142" text-anchor="middle" class="head">KV store</text>
-  <text x="360" y="166" class="small">O(1) lookup on (user_id, type, entity)</text>
-  <text x="360" y="186" class="small">best for: "what's the user's phone"</text>
-  <text x="360" y="206" class="small">worst for: semantic / fuzzy match</text>
+  <text x="480" y="142" text-anchor="middle" class="head">键值存储（KV store）</text>
+  <text x="360" y="166" class="small">按 (user_id, type, entity) 以 O(1) 查询</text>
+  <text x="360" y="186" class="small">最适合：“用户的电话是什么”</text>
+  <text x="360" y="206" class="small">最不适合：语义 / 模糊匹配</text>
   <rect x="360" y="220" width="240" height="60" class="box"/>
   <text x="378" y="240" class="step">key = (user_id, fact_type, entity)</text>
-  <text x="378" y="258" class="small">value = record id</text>
-  <text x="378" y="272" class="small">audit fact_type set quarterly</text>
+  <text x="378" y="258" class="small">value = 记录标识</text>
+  <text x="378" y="272" class="small">每季度审计 fact_type 集合</text>
   <rect x="360" y="290" width="240" height="76" class="box"/>
-  <text x="378" y="310" class="step">failure mode: schema creep</text>
-  <text x="378" y="328" class="small">every team invents a new fact_type</text>
-  <text x="378" y="344" class="small">fix: centralized type registry + review</text>
-  <text x="378" y="360" class="small">LongMemEval: 93.4 in the Mem0 paper</text>
+  <text x="378" y="310" class="step" style="font-size:10px">结构定义无序扩张（Schema creep）</text>
+  <text x="378" y="328" class="small">每个团队都发明新的 fact_type</text>
+  <text x="378" y="344" class="small">修复：集中类型注册表 + 评审</text>
+  <text x="378" y="360" class="small">Mem0 论文中 LongMemEval：93.4</text>
 
   <rect x="640" y="120" width="280" height="260" class="graph"/>
-  <text x="780" y="142" text-anchor="middle" class="head">graph store (Mem0g)</text>
-  <text x="660" y="166" class="small">typed edges; temporal validity</text>
-  <text x="660" y="186" class="small">best for: relationship reasoning</text>
-  <text x="660" y="206" class="small">worst for: unstructured prose</text>
+  <text x="780" y="142" text-anchor="middle" class="head">图存储（Graph store，Mem0g）</text>
+  <text x="660" y="166" class="small">带类型的边；时态有效性</text>
+  <text x="660" y="186" class="small">最适合：关系推理</text>
+  <text x="660" y="206" class="small">最不适合：非结构化自然语言</text>
   <rect x="660" y="220" width="240" height="60" class="box"/>
   <text x="678" y="240" class="step">(subject, relation, object, valid)</text>
-  <text x="678" y="258" class="small">conflict detector invalidates, not deletes</text>
-  <text x="678" y="272" class="small">temporal queries: valid-at-time subgraph</text>
+  <text x="678" y="258" class="small">冲突检测器使其失效，而非删除</text>
+  <text x="678" y="272" class="small">时态查询：指定时间有效的子图</text>
   <rect x="660" y="290" width="240" height="76" class="box"/>
-  <text x="678" y="310" class="step">failure mode: graph explosion</text>
-  <text x="678" y="328" class="small">noisy extractor adds 50 edges per message</text>
-  <text x="678" y="344" class="small">fix: cap edges per add; drop low-conf</text>
-  <text x="678" y="360" class="small">BEAM 1M: 64.1 in the Mem0 paper</text>
+  <text x="678" y="310" class="step">故障：图膨胀</text>
+  <text x="678" y="328" class="small">带噪抽取器每条消息添加 50 条边</text>
+  <text x="678" y="344" class="small">修复：限制每次 add 的边数，丢弃低置信边</text>
+  <text x="678" y="360" class="small">Mem0 论文中 BEAM 1M：64.1</text>
 
   <rect x="80" y="400" width="800" height="110" class="fuse"/>
-  <text x="480" y="422" text-anchor="middle" class="head">fusion scoring  score = w_rel * relevance + w_imp * importance + w_rec * recency</text>
-  <text x="100" y="448" class="small">relevance: vector cosine, KV exact, graph path weight</text>
-  <text x="100" y="468" class="small">importance: tagged at write time, or learned from usage</text>
-  <text x="100" y="488" class="small">recency: exponential decay since last write or read</text>
-  <text x="500" y="448" class="small">tune weights per product:</text>
-  <text x="500" y="468" class="small">voice agent  recency heavy; compliance  importance heavy</text>
-  <text x="500" y="488" class="small">retrieval agent  relevance heavy; same extractor, different policy</text>
+  <text x="480" y="422" text-anchor="middle" class="head">融合评分：score = w_rel * relevance + w_imp * importance + w_rec * recency</text>
+  <text x="100" y="448" class="small">相关性：向量余弦、KV 精确匹配、图路径权重</text>
+  <text x="100" y="468" class="small">重要性：写入时标注，或从使用情况中学习</text>
+  <text x="100" y="488" class="small">近期性：按距上次写入或读取时间指数衰减</text>
+  <text x="500" y="448" class="small">按产品调整权重：</text>
+  <text x="500" y="468" class="small">语音智能体侧重近期性；合规侧重重要性</text>
+  <text x="500" y="488" class="small">检索智能体侧重相关性；相同抽取器，不同策略</text>
 
-  <text x="480" y="540" text-anchor="middle" class="caption">scope: user / session / agent. every write picks one; retrieval queries weighted across scopes.</text>
+  <text x="480" y="540" text-anchor="middle" class="caption">作用域：user / session / agent。每次写入选择一个；检索跨作用域加权查询。</text>
 </svg>

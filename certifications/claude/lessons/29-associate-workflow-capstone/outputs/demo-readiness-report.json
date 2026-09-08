@@ -5,6 +5,6 @@
   "findings": [],
   "decision_owner": "operations-director",
   "source_snapshot": "regional-snapshot-w32",
-  "fallback": "Use the approved manual briefing template.",
-  "verification": "10 failure-first unit tests pass without network access"
+  "fallback": "使用已批准的人工简报模板。",
+  "verification": "10 项失败优先单元测试在无网络访问条件下通过"
 }

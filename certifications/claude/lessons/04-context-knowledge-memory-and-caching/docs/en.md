@@ -1,53 +1,53 @@
-# Put Each Fact in the Right Kind of Context
+# 将每项事实放入合适的上下文（Put Each Fact in the Right Kind of Context）
 
-> Context is temporary attention. Knowledge is maintained evidence. Memory is continuity. Caching is reuse. Mixing them creates confident stale answers.
+> 上下文（Context）承载临时注意力，知识（Knowledge）是持续维护的证据，记忆（Memory）提供连续性，缓存（Caching）用于复用。混淆它们，会生成自信却过时的答案。
 
 **Type:** Learn
 **Languages:** Python
-**Prerequisites:** [Turn a Request Into a Testable Contract](../../03-prompting-and-task-decomposition/), [Context Engineering](../../../../../phases/11-llm-engineering/05-context-engineering/)
-**Time:** ~105 minutes
+**Prerequisites:** [将请求转化为可测试的契约（Turn a Request Into a Testable Contract）](../../03-prompting-and-task-decomposition/), [上下文工程（Context Engineering）](../../../../../phases/11-llm-engineering/05-context-engineering/)
+**Time:** ~105 分钟
 
-## Learning Objectives
+## 学习目标（Learning Objectives）
 
-- Distinguish chat context, Project instructions, Project knowledge, memory, connectors, retrieval, and API prompt caching.
-- Choose what to persist, retrieve, summarize, refresh, or discard.
-- Build a source registry with authority, ownership, sensitivity, and freshness metadata.
-- Reduce context overload without deleting required evidence.
-- Explain which Claude product behaviors are changeable and must be verified in current documentation.
+- 区分对话上下文、Project 指令、Project 知识、记忆、连接器（Connector）、检索（Retrieval）和 API 提示词缓存（Prompt caching）。
+- 选择哪些内容应持久保存、检索、总结、刷新或丢弃。
+- 建立包含权威性、责任归属、敏感度和时效元数据的来源登记表（Source registry）。
+- 在不删除必需证据的前提下减少上下文过载。
+- 解释哪些 Claude 产品行为可能变化，必须在最新文档中核实。
 
-## The Problem
+## 问题背景（The Problem）
 
-A team creates a Claude Project for quarterly planning. They upload policy files, meeting notes, sales exports, and an old product roadmap. They also add Project instructions that say, "Use the latest approved plan."
+一个团队为季度规划创建 Claude Project，上传政策文件、会议笔记、销售导出数据和旧产品路线图，还添加 Project 指令：“使用最新获批计划。”
 
-Three months later, Claude recommends a launch date from the old roadmap. The date is present in Project knowledge, appears in several historical meeting notes, and conflicts with a newer decision stored in a connector. The response sounds certain because the context contains repeated evidence for the wrong answer.
+三个月后，Claude 根据旧路线图推荐上线日期。该日期存在于 Project 知识中，在多份历史会议笔记里出现，却与连接器中保存的新决策冲突。回答听起来很确定，因为上下文反复提供支持错误答案的证据。
 
-The team calls this a hallucination. It is mostly a knowledge-management failure. They treated a Project as a document warehouse, memory as an authority source, and retrieval as a guarantee of truth.
+团队称之为幻觉（Hallucination），但它主要是知识管理故障。他们把 Project 当成文档仓库，把记忆当成权威来源，把检索当成真实性保证。
 
-More context is not the same as better context. A trustworthy system knows which facts are temporary, which are authoritative, and who is responsible for keeping them current.
+更多上下文不等于更好上下文。可信系统知道哪些事实是临时的、哪些是权威的，以及谁负责保持它们最新。
 
-## The Concept
+## 核心概念（The Concept）
 
-### Seven mechanisms, seven jobs
+### 七种机制，各司其职（Seven mechanisms, seven jobs）
 
-Claude can receive or reuse information through several mechanisms. Their exact availability, limits, and names can change by plan and product. The durable distinction is their job.
+Claude 可以通过多种机制接收或复用信息。确切可用性、限制和名称可能随套餐及产品变化，但它们各自的用途是长期有效的区分。
 
-| Mechanism | Primary job | Main risk |
+| 机制（Mechanism） | 主要用途（Primary job） | 主要风险（Main risk） |
 |---|---|---|
-| Current chat context | Carry the present conversation | Old turns consume attention or conflict |
-| Project instructions | Set reusable behavior and constraints | Broad instructions become stale or ambiguous |
-| Project knowledge | Supply a maintained body of reference material | Files lack ownership or freshness controls |
-| Memory | Preserve useful continuity across conversations | Remembered preference is mistaken for approved fact |
-| Connectors | Access an external system under current permissions | Source permissions, sync, or freshness are misunderstood |
-| Retrieval | Select relevant chunks from a larger corpus | Relevant-looking text is incomplete or low authority |
-| Prompt caching | Reuse stable API prompt prefixes efficiently | Dynamic content is cached or invalidation is ignored |
+| 当前对话上下文（Current chat context） | 承载当前对话 | 旧轮次占用注意力或产生冲突 |
+| Project 指令（Project instructions） | 设置可复用行为和约束 | 宽泛指令变得过时或模糊 |
+| Project 知识（Project knowledge） | 提供持续维护的参考资料 | 文件缺少负责人或时效控制 |
+| 记忆（Memory） | 在对话之间保留有用连续性 | 将记住的偏好误认为获批事实 |
+| 连接器（Connectors） | 按当前权限访问外部系统 | 误解来源权限、同步或时效性 |
+| 检索（Retrieval） | 从大语料库中选择相关片段 | 看似相关的文本不完整或权威性低 |
+| 提示词缓存（Prompt caching） | 高效复用稳定 API 提示词前缀 | 缓存动态内容或忽略失效处理 |
 
-A feature can support more than one job, but the distinctions prevent category errors. Memory can remind Claude that you prefer concise reports. It should not silently become the source of the current refund policy. A connector can expose the latest file. It does not prove that the file is approved.
+一项功能可以服务多个用途，但明确区分可防止类别错误。记忆可以提醒 Claude 你喜欢简洁报告，却不应悄悄成为当前退款政策的来源。连接器可以提供最新文件，但不能证明文件已获批准。
 
-### Context has an attention budget
+### 上下文有注意力预算（Context has an attention budget）
 
-A large context window increases capacity, not certainty. Every extra document creates competition for attention and another opportunity for contradiction.
+大上下文窗口增加的是容量，不是确定性。每份额外文档都会争夺注意力，并增加一次产生矛盾的机会。
 
-Think in four layers:
+按四层思考：
 
 ```text
 context package = governing instructions
@@ -56,114 +56,114 @@ context package = governing instructions
                 + minimal continuity
 ```
 
-Keep stable instructions stable. Add only the task input required for the current decision. Retrieve evidence using metadata and authority rules. Carry prior conversation only when it changes the current task.
+保持稳定指令不变，只加入当前决策所需的任务输入，按元数据和权威规则检索证据。只有先前对话会影响当前任务时，才携带它。
 
-Long conversations often accumulate abandoned plans, corrected facts, and formatting experiments. Starting a fresh conversation with a verified brief can be safer than continuing indefinitely. Summarize only after separating decisions from discussion.
+长对话常积累已放弃的计划、更正过的事实和格式试验。用核实后的简报开启新对话，可能比无限继续更安全。先区分决策与讨论，再做总结。
 
-### Retrieval is selection, not verification
+### 检索是选择，不是验证（Retrieval is selection, not verification）
 
-Retrieval systems usually rank chunks by relevance. Relevance does not answer:
+检索系统通常按相关性排列片段。相关性无法回答：
 
-- Is this source approved?
-- Is it current?
-- Does it cover the entire rule or only an excerpt?
-- Does a higher-authority source conflict?
-- May this user access the source?
+- 来源是否获批？
+- 是否最新？
+- 覆盖完整规则，还是只有节选？
+- 是否与更高权威来源冲突？
+- 当前用户是否有权访问？
 
-Attach metadata to each source and filter before or alongside semantic relevance. A minimal registry includes:
+给每个来源附上元数据，在语义相关性筛选前或同时过滤。最小登记表包括：
 
-| Field | Question |
+| 字段（Field） | 问题（Question） |
 |---|---|
-| Source ID | Can a claim point back to it? |
-| Owner | Who is accountable for accuracy? |
-| Authority | Is it policy, procedure, note, or draft? |
-| Effective date | When did it become valid? |
-| Review date | When must it be checked again? |
-| Sensitivity | Who may process or view it? |
-| Supersedes | Which earlier source is no longer authoritative? |
-| Retrieval tags | Which tasks and regions does it cover? |
+| 来源 ID（Source ID） | 主张能否回溯到它？ |
+| 负责人（Owner） | 谁对准确性负责？ |
+| 权威性（Authority） | 它是政策、规程、笔记还是草稿？ |
+| 生效日期（Effective date） | 何时开始有效？ |
+| 复核日期（Review date） | 何时必须再次检查？ |
+| 敏感度（Sensitivity） | 谁可以处理或查看？ |
+| 替代关系（Supersedes） | 哪个早期来源不再具有权威性？ |
+| 检索标签（Retrieval tags） | 覆盖哪些任务和区域？ |
 
-Documents without an owner or review date are candidates for quarantine, not automatic ingestion.
+没有负责人或复核日期的文档应考虑隔离，而不是自动摄入。
 
-### Instructions and knowledge are different
+### 指令与知识不同（Instructions and knowledge are different）
 
-Instructions describe behavior. Knowledge supplies evidence.
+指令描述行为，知识提供证据。
 
-An instruction might say:
+指令可以这样写：
 
 ```text
-For refund questions, cite the governing section and expose regional conflicts.
+处理退款问题时，引用适用章节，并明确呈现区域冲突。
 ```
 
-Knowledge should contain the actual approved refund policy. Putting policy prose into behavioral instructions can make maintenance harder. Putting behavioral rules in random knowledge files can make them easy to miss.
+知识应包含实际获批的退款政策。把政策正文放进行为指令会增加维护难度；把行为规则放在零散知识文件里，则容易被遗漏。
 
-When Project instructions conflict with a user's request or a supplied source, the resolution depends on the product's instruction hierarchy and organizational policy. Do not invent a hierarchy. Test the actual surface and document the expected precedence.
+Project 指令与用户请求或给定来源冲突时，如何解决取决于产品的指令层级和组织政策。不要凭空编造层级，应测试实际产品形态，并记录预期优先顺序。
 
-### Memory is continuity, not a database of record
+### 记忆提供连续性，不是权威数据库（Memory is continuity, not a database of record）
 
-Memory is useful for stable preferences and ongoing context: preferred tone, recurring goals, or the fact that a project exists. It becomes dangerous when a remembered claim is treated as current operational truth.
+记忆适合稳定偏好和持续背景，例如偏好语气、周期性目标或某项目存在这一事实。把记住的主张当成当前运营真相，就会产生风险。
 
-Use three questions before relying on memory:
+依赖记忆前，问三个问题：
 
-1. Could this fact have changed?
-2. Is there an authoritative source that is cheap to check?
-3. What is the consequence if the remembered fact is wrong?
+1. 事实是否可能已经变化？
+2. 是否有核查成本低的权威来源？
+3. 记忆中的事实若错误，会造成什么后果？
 
-If drift is plausible and the consequence matters, verify. In a workflow, label memory-derived context and keep citations to the actual source of record.
+如果可能变化且后果重要，就核实。在工作流中标注来自记忆的上下文，并保留对实际权威记录来源的引用。
 
-### Prompt caching is an economic mechanism
+### 提示词缓存是一种经济机制（Prompt caching is an economic mechanism）
 
-API prompt caching can reduce repeated processing of a stable prefix. It does not improve truth and does not create long-term memory.
+API 提示词缓存可以减少稳定前缀的重复处理，但不会提高真实性，也不会创建长期记忆。
 
-Place reusable content before dynamic content when the current API's caching behavior supports that pattern:
+当前 API 缓存行为支持时，将可复用内容放在动态内容之前：
 
 ```text
 stable prefix: system rules + tool definitions + approved reference corpus
 dynamic suffix: user request + fresh retrieval + current state
 ```
 
-Candidates for caching are large, repeated, and stable. Poor candidates change per request or contain data that should not persist beyond its approved boundary.
+适合缓存的内容量大、重复且稳定。不合适的内容每次请求都变化，或包含不应超出获批边界持久保存的数据。
 
-Cache lifetime, minimum sizes, pricing, model support, and invalidation behavior are changeable product facts. Verify them in the current official documentation. Design correctness must not depend on a stale cache.
+缓存寿命、最小大小、价格、模型支持和失效行为都是可变产品事实，应在最新官方文档中核实。设计正确性不能依赖过时缓存。
 
-### Context quality needs lifecycle ownership
+### 上下文质量需要生命周期责任归属（Context quality needs lifecycle ownership）
 
-Knowledge has a lifecycle:
+知识有自己的生命周期（Lifecycle）：
 
 ```mermaid
 flowchart LR
-    A["Source created"] --> B["Classified and approved"]
-    B --> C["Indexed or uploaded"]
-    C --> D["Retrieved for a task"]
-    D --> E["Claims validated"]
-    E --> F["Reviewed on schedule"]
-    F -->|"still valid"| C
-    F -->|"superseded"| G["Archived and removed from active retrieval"]
+    A["创建来源"] --> B["分类并批准"]
+    B --> C["建立索引或上传"]
+    C --> D["为任务检索"]
+    D --> E["验证主张"]
+    E --> F["按计划复核"]
+    F -->|"仍有效"| C
+    F -->|"已被取代"| G["归档并从活动检索中移除"]
 ```
 
-The hard work is not uploading. It is approving, refreshing, and retiring.
+难点不是上传，而是批准、更新和停用。
 
-## Build It
+## 动手实现（Build It）
 
-### Step 1: Inventory the context
+### 第 1 步：盘点上下文（Step 1: Inventory the context）
 
-For one recurring workflow, list every information source and classify it:
+为一项周期性工作流列出每个信息来源并分类：
 
 ```text
-Behavioral instruction:
-Task input:
-Authoritative knowledge:
-Reference knowledge:
-Conversation continuity:
-External connected data:
-Temporary calculation:
+行为指令：
+任务输入：
+权威知识：
+参考知识：
+对话连续性：
+外部连接数据：
+临时计算：
 ```
 
-If one item appears in several categories, decide which copy is authoritative and how duplicates will be removed.
+如果某项出现在多个类别中，确定哪个副本是权威版本，以及如何删除重复副本。
 
-### Step 2: Create a source registry
+### 第 2 步：创建来源登记表（Step 2: Create a source registry）
 
-Build a simple table or JSON record for each source:
+为每个来源建立简单表格或 JSON 记录：
 
 ```json
 {
@@ -177,65 +177,65 @@ Build a simple table or JSON record for each source:
 }
 ```
 
-Dates here are illustrative. Use your actual records. Reject or flag sources with a past review date.
+这里的日期仅为示意，请使用实际记录。复核日期已过的来源应拒绝或标记。
 
-### Step 3: Design retrieval with abstention
+### 第 3 步：设计支持弃答的检索（Step 3: Design retrieval with abstention）
 
-Define the retrieval contract:
+定义检索契约：
 
-- Filter by user permission, region, product, and active status.
-- Prefer approved policy over discussion notes.
-- Retrieve enough surrounding text to preserve exceptions.
-- Return source IDs and effective dates with chunks.
-- Abstain when required authority is absent.
-- Expose conflicts instead of merging them invisibly.
+- 按用户权限、区域、产品和活动状态过滤。
+- 获批政策优先于讨论笔记。
+- 检索足够的周边文本，保留例外条款。
+- 片段一并返回来源 ID 和生效日期。
+- 缺少必需权威来源时弃答（Abstention）。
+- 明确暴露冲突，不要在不可见处合并。
 
-Test a normal case, a stale source, a permissions mismatch, a conflict, and an out-of-scope question.
+测试正常案例、过时来源、权限不匹配、冲突和范围外问题。
 
-### Step 4: Budget the prompt
+### 第 4 步：为提示词设预算（Step 4: Budget the prompt）
 
-Measure or estimate each context bucket. If the prompt is overloaded, reduce it in this order:
+测量或估算每类上下文。提示词过载时，按以下顺序缩减：
 
-1. Remove duplicate and superseded material.
-2. Exclude unrelated conversation turns.
-3. Retrieve narrower authoritative sections with adequate surrounding context.
-4. Replace discussion history with a verified decision record.
-5. Split the task at a verification boundary.
+1. 删除重复和已被取代的材料。
+2. 排除无关对话轮次。
+3. 检索范围更窄的权威章节，同时保留足够周边上下文。
+4. 用核实后的决策记录替代讨论历史。
+5. 在验证边界处分割任务。
 
-Do not begin by deleting safety constraints or required evidence.
+不要一开始就删除安全约束或必需证据。
 
-### Step 5: Establish maintenance
+### 第 5 步：建立维护机制（Step 5: Establish maintenance）
 
-Assign an owner and cadence:
+分配负责人和复核节奏：
 
-| Asset | Owner | Review trigger | Retirement rule |
+| 资产（Asset） | 负责人（Owner） | 复核触发条件（Review trigger） | 停用规则（Retirement rule） |
 |---|---|---|---|
-| Project instructions | Workflow owner | Process change | Replace old version |
-| Policy knowledge | Policy owner | Approval or review date | Remove superseded copy |
-| Retrieval index | Platform owner | Source update | Reindex and verify |
-| Evaluation set | Quality owner | New failure class | Add representative case |
+| Project 指令 | 工作流负责人 | 流程变更 | 替换旧版本 |
+| 政策知识 | 政策负责人 | 批准或到达复核日期 | 移除已被取代的副本 |
+| 检索索引 | 平台负责人 | 来源更新 | 重建索引并验证 |
+| 评估集 | 质量负责人 | 出现新故障类别 | 添加代表性案例 |
 
-Knowledge management is part of the product, not post-launch housekeeping.
+知识管理是产品的一部分，不是上线后的杂务。
 
-## Interactive Lab
+## 交互实验（Interactive Lab）
 
-Use the context-cache figure to change stable-prefix size, request volume, cache hit rate, source freshness, and invalidation behavior. Compare cost savings with the correctness boundary: a cache hit is useful only while the reused prefix remains approved.
+使用上下文缓存图调整稳定前缀大小、请求量、缓存命中率、来源时效和失效行为。将成本节省与正确性边界对比：只有复用前缀仍获批准时，缓存命中才有价值。
 
 ```figure
 04-context-cache
 ```
 
-## Practice Lab
+## 实践实验（Practice Lab）
 
-Run the context planner. Try to cache the dynamic account source, reactivate the superseded policy without a new approval, or overflow the prompt budget. The runner must keep correctness and lifecycle rules ahead of cache savings.
+运行上下文规划器。尝试缓存动态账户来源、未经新批准重新激活旧政策，或让提示词预算溢出。运行器必须优先遵守正确性和生命周期规则，再考虑缓存节省。
 
-## Shipped Artifact
+## 交付物（Shipped Artifact）
 
-`outputs/context-registry.json` is a filled source registry for a refund workflow. It separates behavioral instructions, approved policy, a superseded draft, conversation continuity, and dynamic connected data. It also contains a prompt budget and an explicit caching policy.
+`outputs/context-registry.json` 是填写完整的退款工作流来源登记表，区分行为指令、获批政策、已被取代的草稿、对话连续性和动态连接数据，还包含提示词预算及明确缓存政策。
 
-## Verify It
+## 验证结果（Verify It）
 
-Validate the registry:
+验证登记表：
 
 ```bash
 cd certifications/claude/lessons/04-context-knowledge-memory-and-caching/code
@@ -243,61 +243,61 @@ python3 main.py
 python3 -m unittest discover tests -v
 ```
 
-The validator checks unique source IDs, ISO dates, ownership, authority, active versus superseded state, budget totals, and that only stable non-secret sources enter the cached prefix.
+校验器检查来源 ID 唯一性、ISO 日期、责任归属、权威性、活动与已被取代状态、预算总数，以及是否只有稳定且非秘密的来源进入缓存前缀。
 
-## Capstone Connection
+## 与综合实践的联系（Capstone Connection）
 
-The quiz checks source authority, retrieval limits, caching fit, and context reset decisions. Use the registry and cache policy in capstones 29 through 32 as the provenance and context-budget artifact.
+测验检查来源权威性、检索限制、缓存适配和上下文重置决策。在第 29 至 32 课综合实践中，将登记表和缓存政策作为来源追溯（Provenance）与上下文预算交付物。
 
-## Use It
+## 实际应用（Use It）
 
-### Exam decision pattern
+### 考试决策模式（Exam decision pattern）
 
-When a scenario mentions repeated work, stale answers, or missing context:
+场景提到重复工作、过时答案或上下文缺失时：
 
-1. Identify whether the missing item is behavior, evidence, continuity, or external data.
-2. Put it in the mechanism designed for that job.
-3. Add authority, freshness, sensitivity, and ownership controls.
-4. Test retrieval and permission failures.
-5. Use caching only after correctness is established.
+1. 判断缺失项属于行为、证据、连续性还是外部数据。
+2. 将它放入为该用途设计的机制。
+3. 增加权威性、时效性、敏感度和责任归属控制。
+4. 测试检索和权限故障。
+5. 确立正确性后，再使用缓存。
 
-### Common traps
+### 常见陷阱（Common traps）
 
-- **Upload everything:** Volume increases contradiction and maintenance cost.
-- **Memory as truth:** Continuity is mistaken for a source of record.
-- **Connector as approval:** Access to a file is mistaken for authority.
-- **Retrieval as proof:** A relevant chunk is accepted without provenance or completeness checks.
-- **One endless chat:** Corrected and abandoned context remains active.
-- **Cache as memory:** An API optimization is expected to preserve durable user state.
-- **No retirement path:** Superseded files remain retrievable forever.
+- **上传所有内容（Upload everything）：** 数据量增加矛盾和维护成本。
+- **记忆就是真相（Memory as truth）：** 将连续性误当成权威记录来源。
+- **连接器等于批准（Connector as approval）：** 将文件访问能力误当成权威性。
+- **检索等于证明（Retrieval as proof）：** 不检查来源追溯和完整性，就接受相关片段。
+- **无尽对话（One endless chat）：** 已更正和已放弃的上下文仍保持活动。
+- **缓存当记忆（Cache as memory）：** 期待 API 优化机制保存持久用户状态。
+- **没有停用路径（No retirement path）：** 被取代的文件永远可以检索。
 
-### Exercises
+### 练习（Exercises）
 
-1. Classify ten items from a real workflow across the seven mechanisms.
-2. Create a registry for five sources and identify which should not enter active retrieval.
-3. Rewrite an overloaded prompt using the four-layer context package.
-4. Design five retrieval failure tests, including stale evidence and unauthorized access.
-5. Decide what to persist, summarize, or discard at the end of a project week. Explain each decision.
+1. 从真实工作流选十项内容，按七种机制分类。
+2. 为五个来源创建登记表，指出哪些不应进入活动检索。
+3. 使用四层上下文包重写一条过载提示词。
+4. 设计五个检索故障测试，包含过时证据和未授权访问。
+5. 决定项目一周结束时哪些内容持久保存、总结或丢弃，并解释每项决策。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-- **Context:** Information available to the model for the current request.
-- **Project instructions:** Reusable behavioral guidance associated with a Claude Project.
-- **Project knowledge:** Reference material associated with a Project.
-- **Memory:** Product-supported continuity across conversations, subject to current feature behavior.
-- **Connector:** An integration that exposes external data or capabilities under configured permissions.
-- **Retrieval:** Selecting relevant material from a larger corpus for a request.
-- **Prompt caching:** Reusing eligible prompt content to reduce repeated API processing.
-- **Source of record:** The authoritative system or document for a fact.
-- **Freshness:** Whether information is current enough for its intended use.
+- **上下文（Context）：** 模型当前请求可用的信息。
+- **Project 指令（Project instructions）：** 与 Claude Project 关联的可复用行为指导。
+- **Project 知识（Project knowledge）：** 与 Project 关联的参考资料。
+- **记忆（Memory）：** 产品支持的跨对话连续性，受当前功能行为约束。
+- **连接器（Connector）：** 按配置权限提供外部数据或能力的集成。
+- **检索（Retrieval）：** 为请求从大语料库中选择相关材料。
+- **提示词缓存（Prompt caching）：** 复用符合条件的提示词内容，减少重复 API 处理。
+- **权威记录来源（Source of record）：** 某项事实的权威系统或文档。
+- **时效性（Freshness）：** 信息是否足够新，能满足预期用途。
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [Anthropic Help Center: What are Projects?](https://support.claude.com/en/articles/9517075-what-are-projects)
-- [Anthropic Help Center: Use Claude's chat search and memory](https://support.claude.com/en/articles/11817273-use-claude-s-chat-search-and-memory-to-build-on-previous-context)
-- [Anthropic Help Center: Use connectors to extend Claude's capabilities](https://support.claude.com/en/articles/11176164-use-connectors-to-extend-claude-s-capabilities)
-- [Anthropic: Prompt caching](https://platform.claude.com/docs/en/build-with-claude/prompt-caching)
-- [AI Engineering from Scratch: Retrieval-Augmented Generation](../../../../../phases/11-llm-engineering/06-rag/)
-- [AI Engineering from Scratch: Repository Memory and State](../../../../../phases/14-agent-engineering/34-repo-memory-and-state/)
+- [Anthropic 帮助中心：什么是 Projects？](https://support.claude.com/en/articles/9517075-what-are-projects)
+- [Anthropic 帮助中心：使用 Claude 对话搜索和记忆](https://support.claude.com/en/articles/11817273-use-claude-s-chat-search-and-memory-to-build-on-previous-context)
+- [Anthropic 帮助中心：使用连接器扩展 Claude 能力](https://support.claude.com/en/articles/11176164-use-connectors-to-extend-claude-s-capabilities)
+- [Anthropic：提示词缓存](https://platform.claude.com/docs/en/build-with-claude/prompt-caching)
+- [AI Engineering from Scratch：检索增强生成（Retrieval-Augmented Generation，RAG）](../../../../../phases/11-llm-engineering/06-rag/)
+- [AI Engineering from Scratch：仓库记忆与状态](../../../../../phases/14-agent-engineering/34-repo-memory-and-state/)
 
-The names, availability, limits, retention behavior, and pricing of Projects, memory, connectors, retrieval modes, and prompt caching can change. These sources were checked on 2026-08-08. Verify current official product and privacy documentation before deployment or exam study.
+Projects、记忆、连接器、检索模式和提示词缓存的名称、可用性、限制、保留行为与价格都可能变化。这些来源核查于 2026-08-08。部署或备考前，应核实最新官方产品和隐私文档。

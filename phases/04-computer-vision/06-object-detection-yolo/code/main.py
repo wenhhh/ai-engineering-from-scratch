@@ -47,7 +47,7 @@ def encode(box_xyxy, cell_x, cell_y, stride, anchor_wh):
     cy = 0.5 * (y1 + y2)
     w = x2 - x1
     h = y2 - y1
-    # Offset within the cell in [0, 1], converted to logit so decode(sigmoid(tx)) round-trips.
+    # 网格内偏移（Offset）在 [0, 1] 内，转为对数几率（Logit），使 decode(sigmoid(tx)) 能往返还原。
     off_x = np.clip(cx / stride - cell_x, 1e-6, 1 - 1e-6)
     off_y = np.clip(cy / stride - cell_y, 1e-6, 1 - 1e-6)
     tx = float(np.log(off_x / (1 - off_x)))
@@ -104,8 +104,8 @@ def assign_targets(boxes_xyxy, classes, anchors, stride, grid_size, num_classes)
         best = int(np.argmax(ious))
         aw, ah = anchors[best]
 
-        # Store logit(offset) so the network's raw output matches post-sigmoid
-        # decode. Keeps target space aligned with decode()/postprocess().
+        # 存储 logit(offset)，使网络原始输出与经过 sigmoid 后的解码相匹配。
+        # 保持目标空间（Target space）与 decode()/postprocess() 一致。
         off_x = np.clip(cx / stride - gx, 1e-6, 1 - 1e-6)
         off_y = np.clip(cy / stride - gy, 1e-6, 1 - 1e-6)
         target[gy, gx, best, 0] = np.log(off_x / (1 - off_x))
@@ -170,7 +170,7 @@ def postprocess(pred_tensor, anchors, stride, conf_threshold=0.25, iou_threshold
                 cls_idx = int(np.argmax(cls_probs))
                 cx = (sigmoid(tx) + gx) * stride
                 cy = (sigmoid(ty) + gy) * stride
-                # Clamp tw/th to keep exp() finite on wild predictions.
+                # 限制 tw/th 的范围，使极端预测下的 exp() 仍为有限值。
                 w = anchors[a][0] * np.exp(np.clip(tw, -10.0, 10.0))
                 h = anchors[a][1] * np.exp(np.clip(th, -10.0, 10.0))
                 boxes.append([cx - w / 2, cy - h / 2, cx + w / 2, cy + h / 2])
@@ -189,17 +189,17 @@ def postprocess(pred_tensor, anchors, stride, conf_threshold=0.25, iou_threshold
 def main():
     rng = np.random.default_rng(0)
 
-    print("[iou] identical boxes should have iou=1")
+    print("[交并比（IoU）] 相同边界框应满足 iou=1")
     a = np.array([[10, 10, 50, 50]])
     b = np.array([[10, 10, 50, 50]])
     print(f"  iou={box_iou(a, b)[0, 0]:.3f}")
 
-    print("\n[iou] half-overlap boxes")
+    print("\n[交并比（IoU）] 重叠一半的边界框")
     a = np.array([[0, 0, 10, 10]])
     b = np.array([[5, 0, 15, 10]])
-    print(f"  iou={box_iou(a, b)[0, 0]:.3f}  (expected 1/3 = 0.333)")
+    print(f"  iou={box_iou(a, b)[0, 0]:.3f}  （预期 1/3 = 0.333）")
 
-    print("\n[nms] 5 overlapping boxes -> NMS keeps highest-score non-overlapping set")
+    print("\n[非极大值抑制（NMS）] 5 个重叠框 -> NMS 保留得分最高的不重叠框集合")
     boxes = np.array([
         [0, 0, 10, 10],
         [1, 1, 11, 11],
@@ -209,9 +209,9 @@ def main():
     ], dtype=float)
     scores = np.array([0.9, 0.8, 0.7, 0.85, 0.6])
     keep = nms(boxes, scores, iou_threshold=0.4)
-    print(f"  kept indices: {keep.tolist()}  (expected [0, 3])")
+    print(f"  保留的索引（Indices）: {keep.tolist()}  （预期 [0, 3]）")
 
-    print("\n[encode/decode] round-trip error")
+    print("\n[编码/解码（Encode/decode）] 往返误差（Round-trip error）")
     anchors = [(30, 60), (75, 170), (200, 380)]
     stride = 32
     grid_size = 13
@@ -223,11 +223,11 @@ def main():
     enc = encode(gt_box, cell_x, cell_y, stride, anchor)
     dec = decode(np.array([*enc[:2], enc[2], enc[3]]), cell_x, cell_y, stride, anchor)
     err = np.max(np.abs(np.array(gt_box) - dec))
-    print(f"  enc  ={enc.round(3)}")
-    print(f"  decoded={dec.round(2)}  (original {gt_box})")
-    print(f"  max|diff|={err:.3f}  (should round-trip to ~0 once encode applies logit)")
+    print(f"  编码（Encoded）  ={enc.round(3)}")
+    print(f"  解码（Decoded）={dec.round(2)}  （原始值 {gt_box}）")
+    print(f"  max|diff|={err:.3f}  （编码采用 logit 后，往返误差应接近 ~0）")
 
-    print("\n[assign + loss] one synthetic image")
+    print("\n[目标分配（Assignment）+ 损失（Loss）] 一张合成图像")
     gt_boxes = [(100, 80, 200, 220)]
     gt_classes = [2]
     target, has_obj = assign_targets(gt_boxes, gt_classes, anchors, stride, grid_size, num_classes)
@@ -236,14 +236,14 @@ def main():
     head = YOLOHead(in_c=128, num_anchors=3, num_classes=num_classes)
     feat = torch.randn(1, 128, grid_size, grid_size)
     pred = head(feat)
-    print(f"  pred shape: {tuple(pred.shape)}   target shape: {target.shape}")
+    print(f"  预测形状（Prediction shape）: {tuple(pred.shape)}   目标形状（Target shape）: {target.shape}")
     loss, parts = yolo_loss(pred, target, has_obj)
-    print(f"  loss={float(loss):.3f}  parts={parts}")
+    print(f"  损失（Loss）={float(loss):.3f}  各分量（Parts，键名保留原值）={parts}")
 
-    print("\n[postprocess] decode + NMS")
+    print("\n[后处理（Postprocessing）] 解码 + NMS")
     boxes, scores, classes = postprocess(pred, anchors, stride, conf_threshold=0.1)
-    print(f"  predictions after NMS: {len(boxes)}  scores range "
-          f"[{scores.min():.3f}, {scores.max():.3f}]" if len(boxes) else "  no predictions")
+    print(f"  NMS 后的预测数: {len(boxes)}  得分（Score）范围 "
+          f"[{scores.min():.3f}, {scores.max():.3f}]" if len(boxes) else "  无预测结果")
 
 
 if __name__ == "__main__":

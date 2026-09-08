@@ -148,7 +148,7 @@ def dpo_train(
     max_seq_len=128,
 ):
     print(
-        f"DPO Training: {len(preference_data)} pairs, {num_epochs} epochs, "
+        f"直接偏好优化（DPO）训练: {len(preference_data)} 对样本，{num_epochs} 个轮次，"
         f"lr={lr}, beta={beta}"
     )
     print()
@@ -212,8 +212,8 @@ def dpo_train(
         avg_margin = epoch_margin / max(num_examples, 1)
 
         print(
-            f"  Epoch {epoch + 1}/{num_epochs} | Loss: {avg_loss:.4f} | "
-            f"Avg Margin: {avg_margin:.4f}"
+            f"  轮次（Epoch）{epoch + 1}/{num_epochs} | 损失（Loss）: {avg_loss:.4f} | "
+            f"平均间隔（Avg Margin）: {avg_margin:.4f}"
         )
 
     return policy_model, losses, margins
@@ -256,10 +256,10 @@ def evaluate_preference_accuracy(
 def analyze_implicit_rewards(
     model, reference_model, preference_data, beta=0.1, max_seq_len=128
 ):
-    print("Implicit Reward Analysis:")
+    print("隐式奖励分析（Implicit Reward Analysis）:")
     print("-" * 65)
     print(
-        f"  {'Prompt':<30} {'Pref Reward':>12} {'Rej Reward':>12} {'Margin':>10}"
+        f"  {'提示词（Prompt）':<30} {'偏好回复奖励（Pref Reward）':>12} {'拒绝回复奖励（Rej Reward）':>12} {'间隔（Margin）':>10}"
     )
     print("  " + "-" * 60)
 
@@ -297,9 +297,9 @@ def analyze_implicit_rewards(
 
 
 def beta_sensitivity_analysis(sft_model, preference_data, betas, max_seq_len=128):
-    print("Beta Sensitivity Analysis")
+    print("Beta 敏感性分析（Sensitivity Analysis）")
     print("-" * 60)
-    print(f"  {'Beta':>8} {'Final Loss':>12} {'Final Margin':>14} {'Accuracy':>10}")
+    print(f"  {'Beta':>8} {'最终损失（Final Loss）':>12} {'最终间隔（Final Margin）':>14} {'准确率（Accuracy）':>10}")
     print("  " + "-" * 55)
 
     results = []
@@ -363,11 +363,11 @@ if __name__ == "__main__":
     np.random.seed(42)
 
     print("=" * 70)
-    print("DPO: DIRECT PREFERENCE OPTIMIZATION")
+    print("直接偏好优化（Direct Preference Optimization，DPO）")
     print("=" * 70)
     print()
 
-    print("STEP 1: Initialize SFT Model (from Lesson 06)")
+    print("步骤 1: 初始化监督微调（SFT）模型（来自第 06 课）")
     print("-" * 50)
     sft_model = MiniGPT(
         vocab_size=256,
@@ -377,10 +377,10 @@ if __name__ == "__main__":
         max_seq_len=128,
         ff_dim=512,
     )
-    print(f"  Parameters: {sft_model.count_parameters():,}")
+    print(f"  参数量（Parameters）: {sft_model.count_parameters():,}")
     print()
 
-    print("STEP 2: DPO Training")
+    print("步骤 2: DPO 训练")
     print("-" * 50)
 
     policy_model = MiniGPT(
@@ -408,7 +408,7 @@ if __name__ == "__main__":
     print()
 
     print("=" * 70)
-    print("STEP 3: Evaluate")
+    print("步骤 3: 评估（Evaluate）")
     print("=" * 70)
     print()
 
@@ -419,37 +419,37 @@ if __name__ == "__main__":
         policy_model, reference_model, PREFERENCE_DATA, beta=0.1
     )
 
-    print(f"  Preference accuracy (pre-DPO):  {pre_accuracy:.1%}")
-    print(f"  Preference accuracy (post-DPO): {post_accuracy:.1%}")
+    print(f"  偏好准确率（DPO 前）:  {pre_accuracy:.1%}")
+    print(f"  偏好准确率（DPO 后）: {post_accuracy:.1%}")
     print()
 
     analyze_implicit_rewards(policy_model, reference_model, PREFERENCE_DATA, beta=0.1)
 
     print("=" * 70)
-    print("STEP 4: Training Dynamics")
+    print("步骤 4: 训练动态（Training Dynamics）")
     print("=" * 70)
     print()
 
     if losses:
-        print("  Loss curve:")
+        print("  损失曲线（Loss curve）:")
         window = max(1, len(losses) // 5)
         for i in range(0, len(losses), window):
             chunk = losses[i : i + window]
             avg = sum(chunk) / len(chunk)
-            print(f"    Steps {i:3d}-{i + len(chunk) - 1:3d}: loss = {avg:.4f}")
+            print(f"    训练步 {i:3d}-{i + len(chunk) - 1:3d}: 损失（loss） = {avg:.4f}")
         print()
 
     if margins:
-        print("  Reward margin curve:")
+        print("  奖励间隔曲线（Reward margin curve）:")
         window = max(1, len(margins) // 5)
         for i in range(0, len(margins), window):
             chunk = margins[i : i + window]
             avg = sum(chunk) / len(chunk)
-            print(f"    Steps {i:3d}-{i + len(chunk) - 1:3d}: margin = {avg:.4f}")
+            print(f"    训练步 {i:3d}-{i + len(chunk) - 1:3d}: 间隔（margin） = {avg:.4f}")
         print()
 
     print("=" * 70)
-    print("STEP 5: Beta Sensitivity")
+    print("步骤 5: Beta 敏感性（Sensitivity）")
     print("=" * 70)
     print()
 
@@ -458,22 +458,22 @@ if __name__ == "__main__":
     )
 
     print("=" * 70)
-    print("DPO vs RLHF COMPARISON")
+    print("DPO 与 RLHF 比较")
     print("=" * 70)
     print()
-    print("  DPO advantages:")
-    print("    - 1 training loop (vs 3 for RLHF)")
-    print("    - 2 models in memory (vs 3-4 for RLHF)")
-    print("    - Supervised learning (vs RL, more stable)")
-    print("    - No reward model to train or maintain")
+    print("  DPO 的优势:")
+    print("    - 1 个训练循环（RLHF 为 3 个）")
+    print("    - 内存中保留 2 个模型（RLHF 为 3-4 个）")
+    print("    - 采用监督学习（Supervised learning），比强化学习（RL）更稳定")
+    print("    - 无需训练或维护奖励模型")
     print()
-    print("  RLHF advantages:")
-    print("    - Separate reward model captures complex preferences")
-    print("    - Online learning: generate, rate, retrain")
-    print("    - Better for multi-objective alignment")
-    print("    - Proven at largest scales (GPT-4, Claude)")
+    print("  RLHF 的优势:")
+    print("    - 独立的奖励模型可捕捉复杂偏好")
+    print("    - 在线学习（Online learning）: 生成、评分、重新训练")
+    print("    - 更适合多目标对齐（Multi-objective alignment）")
+    print("    - 已在最大规模模型中得到验证（GPT-4、Claude）")
     print()
-    print("  Practical guidance:")
-    print("    - Start with DPO. It's simpler and often sufficient.")
-    print("    - Switch to RLHF if DPO plateaus on your eval metrics.")
-    print("    - Many production systems use both: RLHF first, DPO to refine.")
+    print("  实践建议:")
+    print("    - 从 DPO 开始。它更简单，通常已足够。")
+    print("    - 若 DPO 的评估指标进入平台期，再改用 RLHF。")
+    print("    - 许多生产系统会结合两者: 先用 RLHF，再用 DPO 细化。")

@@ -1,90 +1,90 @@
 {
   "lesson": "20-benchmarks-webarena-osworld",
-  "title": "Benchmarks: WebArena and OSWorld",
+  "title": "基准测试：WebArena 与 OSWorld（Benchmarks: WebArena and OSWorld）",
   "questions": [
     {
       "stage": "pre",
-      "question": "Why does WebArena self-host its four target apps?",
+      "question": "WebArena 为什么自托管四个目标应用？",
       "options": [
-        "To avoid TLS",
-        "To pin reproducible versions so evaluation is execution-based and not flaky",
-        "To save money",
-        "To run on GPUs"
+        "避免 TLS",
+        "固定可复现版本，使基于执行的评估稳定可靠",
+        "节省费用",
+        "在 GPU 上运行"
       ],
       "correct": 1,
-      "explanation": "Pinned self-hosted apps make execution-based evaluation reliable and comparable over time."
+      "explanation": "固定版本的自托管应用，使基于执行的评估可靠，并可跨时间比较。"
     },
     {
       "stage": "pre",
-      "question": "Why does OSWorld use real OS screenshots rather than accessibility APIs?",
+      "question": "OSWorld 为什么使用真实操作系统截图，而非无障碍 API？",
       "options": [
-        "Screenshots cost less",
-        "Accessibility APIs leak PII",
-        "Accessibility APIs are too fast",
-        "Screenshots force the agent to do real GUI grounding in 1920x1080, matching production constraints"
+        "截图成本更低",
+        "无障碍 API 泄露 PII",
+        "无障碍 API 太快",
+        "截图迫使智能体在 1920x1080 画面中真正执行图形界面定位，与生产约束相符"
       ],
       "correct": 3,
-      "explanation": "Screenshot-driven evaluation forces pixel-to-element grounding, the actual production constraint."
+      "explanation": "截图驱动评估迫使智能体完成像素到元素的定位，这才是实际生产约束。"
     },
     {
       "stage": "check",
-      "question": "What two primary failure modes does OSWorld surface?",
+      "question": "OSWorld 揭示了哪两种主要失效模式？",
       "options": [
-        "Latency and bandwidth",
-        "Hallucination and refusal",
-        "Embedding drift and token leakage",
-        "GUI grounding and operational knowledge"
+        "延迟和带宽",
+        "幻觉和拒绝",
+        "嵌入漂移和词元泄漏",
+        "图形界面定位（GUI grounding）和操作知识（Operational knowledge）"
       ],
       "correct": 3,
-      "explanation": "Grounding (pixel-to-element) and operational knowledge (menus, shortcuts) are the headline blockers."
+      "explanation": "定位（像素到元素）和操作知识（菜单、快捷键）是主要障碍。"
     },
     {
       "stage": "check",
-      "question": "What does OSWorld-Human add on top of the base benchmark?",
+      "question": "OSWorld-Human 在基础基准之上增加了什么？",
       "options": [
-        "Manually curated gold action trajectories that surface a 1.4-2.7x agent step-inefficiency gap",
-        "A larger screen resolution",
-        "More tasks",
-        "A new OS"
+        "人工整理的黄金动作轨迹，揭示智能体步骤数的 1.4–2.7 倍低效差距",
+        "更高的屏幕分辨率",
+        "更多任务",
+        "一种新操作系统"
       ],
       "correct": 0,
-      "explanation": "Gold trajectories make trajectory efficiency measurable, not just success rate."
+      "explanation": "黄金轨迹使轨迹效率可衡量，而不只是成功率。"
     },
     {
       "stage": "check",
-      "question": "Which release-time number does the lesson cite for WebArena?",
+      "question": "本课引用的 WebArena 发布时数字是哪项？",
       "options": [
-        "Best agent at 50% with human at 50%",
-        "Best agent at 0% across the board",
-        "Best agent at 99% with human at 100%",
-        "Best GPT-4 agent 14.41% success vs human 78.24%"
+        "最佳智能体 50%，人类 50%",
+        "最佳智能体所有项目均为 0%",
+        "最佳智能体 99%，人类 100%",
+        "最佳 GPT-4 智能体成功率 14.41%，人类 78.24%"
       ],
       "correct": 3,
-      "explanation": "The 14.41% vs 78.24% gap is the WebArena release-time number."
+      "explanation": "14.41% 与 78.24% 的差距是 WebArena 发布时的数字。"
     },
     {
       "stage": "post",
-      "question": "What does the lesson warn happens with screenshot-only evaluation when the agent uses DOM or accessibility APIs?",
+      "question": "本课警告：当智能体使用 DOM 或无障碍 API 时，在仅截图评估中会发生什么？",
       "options": [
-        "Nothing changes",
-        "Tests pass trivially",
-        "You exceed the rate limit",
-        "You miss the grounding challenge OSWorld is designed to measure"
+        "没有变化",
+        "测试轻松通过",
+        "超过速率限制",
+        "漏掉 OSWorld 设计用来衡量的定位挑战"
       ],
       "correct": 3,
-      "explanation": "Evaluating an accessibility-API agent on screenshot-only benchmarks skips the grounding test."
+      "explanation": "在仅截图基准上评估无障碍 API 智能体，会跳过定位测试。"
     },
     {
       "stage": "post",
-      "question": "Why is ignoring trajectory length a benchmarking failure?",
+      "question": "为什么忽略轨迹长度是基准测试的失误？",
       "options": [
-        "Length is the only metric that matters",
-        "It hides cost and inefficiency that success rate alone misses (the 1.4-2.7x gap OSWorld-Human surfaces)",
-        "Trajectories are not measurable",
-        "Trajectory length always matches gold"
+        "长度是唯一重要指标",
+        "它掩盖了单看成功率无法发现的成本和低效，即 OSWorld-Human 揭示的 1.4–2.7 倍差距",
+        "轨迹不可测量",
+        "轨迹长度始终与黄金轨迹一致"
       ],
       "correct": 1,
-      "explanation": "Two agents at 60% success can differ 2-3x in steps; cost and efficiency only show up if you measure trajectory length."
+      "explanation": "两个成功率均为 60% 的智能体，步骤数可能相差 2–3 倍；只有测量轨迹长度才能看出成本与效率。"
     }
   ]
 }

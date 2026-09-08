@@ -1,75 +1,75 @@
 {
   "lesson": "14-prompt-semantic-caching",
-  "title": "Prompt Caching and Semantic Caching Economics",
+  "title": "提示词缓存与语义缓存经济性（Prompt Caching and Semantic Caching Economics）",
   "questions": [
     {
       "stage": "pre",
-      "question": "What is the difference between L1 semantic caching and L2 prompt/prefix caching?",
+      "question": "L1 语义缓存与 L2 提示词/前缀缓存有什么区别？",
       "options": [
-        "L2 stores embeddings; L1 stores attention KV",
-        "L1 is provider-side and L2 is client-side",
-        "L1 and L2 are the same",
-        "L1 skips the LLM entirely on embedding similarity hits; L2 reuses attention KV at the provider for repeated prefixes"
+        "L2 存嵌入，L1 存注意力 KV",
+        "L1 在服务商侧，L2 在客户端",
+        "L1 和 L2 相同",
+        "L1 在嵌入相似度命中时完全跳过 LLM，L2 在服务商侧为重复前缀复用注意力 KV"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Which Anthropic mechanism marks blocks as cacheable for L2 prompt caching?",
+      "question": "Anthropic 哪种机制为 L2 提示词缓存标记可缓存块？",
       "options": [
-        "Explicit cache_control attribute on the request blocks",
-        "Filename suffixes in tool definitions",
-        "An implicit prompt-length threshold",
-        "A separate /caches endpoint"
+        "请求块上的显式 cache_control 属性",
+        "工具定义中的文件名后缀",
+        "隐式提示词长度阈值",
+        "独立 /caches 端点"
       ],
       "correct": 0,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "How does the parallelization anti-pattern inflate the bill?",
+      "question": "并行化反模式如何推高账单？",
       "options": [
-        "Parallel requests bypass batching",
-        "Parallelization triggers a per-request guardrail charge",
-        "All parallel requests share one cache entry automatically",
-        "N parallel requests with the same prefix arrive before the first cache write completes, so each pays a write premium and gets zero discount"
+        "并行请求绕过批处理",
+        "并行化触发逐请求防护费用",
+        "所有并行请求自动共享一个缓存条目",
+        "同前缀的 N 个并行请求在首次写缓存完成前到达，每个都付写入溢价，没有折扣"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "What is the dynamic-content anti-pattern in cacheable prefixes?",
+      "question": "可缓存前缀中的动态内容反模式是什么？",
       "options": [
-        "Including content that changes every request (current time to the minute, request ID, randomized example order) inside the cacheable prefix, killing hit rate",
-        "Using too short a system prompt",
-        "Always streaming responses",
-        "Putting tool schemas in the prefix"
+        "将每请求变化的当前时间、请求 ID、随机示例顺序放入可缓存前缀，破坏命中率",
+        "系统提示词太短",
+        "始终流式响应",
+        "把工具模式放在前缀"
       ],
       "correct": 0,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "How can batch + cached input stack overnight to cut cost?",
+      "question": "夜间如何叠加批处理与缓存输入降低成本？",
       "options": [
-        "Batch is incompatible with caching",
-        "Caching disables batch eligibility",
-        "Batch only saves output cost",
-        "Batch APIs give 50% off; cached input adds another ~10x; combined, overnight pipelines drop to ~10% of synchronous-uncached cost"
+        "批处理不兼容缓存",
+        "缓存会取消批处理资格",
+        "批处理只节省输出费用",
+        "批处理 API 打五折，缓存输入再带来约 10 倍收益，组合后夜间流水线降至同步无缓存成本约 10%"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "What does the lesson say about semantic cache \"95% accuracy\" claims?",
+      "question": "本课如何解释语义缓存“95% 准确率”宣传？",
       "options": [
-        "95% means you should expect 95% cache hits",
-        "95% is the OpenAI default cache hit rate",
-        "95% is a vendor-documented hit-rate baseline",
-        "95% refers to match correctness, not hit rate; reported production hit rates range from ~10% (open chat) up to ~70% (structured FAQ)"
+        "意味着应有 95% 缓存命中",
+        "是 OpenAI 默认缓存命中率",
+        "是服务商文档命中率基线",
+        "指匹配正确率而非命中率，生产报告从开放聊天约 10% 到结构化 FAQ 最高约 70%"
       ],
       "correct": 3,
       "explanation": ""

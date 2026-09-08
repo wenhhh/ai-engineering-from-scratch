@@ -1,51 +1,51 @@
 ---
 name: skill-heatmap-to-coords
-description: Write the sub-pixel heatmap-to-coordinate routine used by every production pose model
+description: 编写各生产姿态模型使用的亚像素热图转坐标程序
 version: 1.0.0
 phase: 4
 lesson: 21
 tags: [keypoint, pose, subpixel, inference]
 ---
 
-# Heatmap to Coords
+# 热图转坐标（Heatmap to Coords）
 
-Turn raw keypoint heatmaps into sub-pixel precise coordinates. The cheapest accuracy upgrade in every pose pipeline.
+将原始关键点热图转换为亚像素（Sub-pixel）精度坐标。这是姿态流水线中成本最低的准确率提升手段。
 
-## When to use
+## 使用时机（When to use）
 
-- Deploying a heatmap-based keypoint model.
-- Benchmarking pose metrics — OKS is extremely sensitive to sub-pixel accuracy.
-- Porting pose code from one framework to another.
+- 部署基于热图的关键点模型。
+- 测试姿态指标，目标关键点相似度（Object Keypoint Similarity，OKS）对亚像素精度极其敏感。
+- 在不同框架间移植姿态代码。
 
-## Inputs
+## 输入（Inputs）
 
-- `heatmaps`: `(N, K, H, W)` tensor, per-keypoint heatmaps from the model.
-- `confidence_threshold`: discard keypoints whose peak is below this value.
+- `heatmaps`：`(N, K, H, W)` 张量，模型输出的逐关键点热图。
+- `confidence_threshold`：丢弃峰值低于该值的关键点。
 
-## Steps
+## 步骤（Steps）
 
-1. **Argmax** each heatmap to find the integer peak location.
-2. **First-difference offset** — estimate sub-pixel offset from neighbouring pixels. The `0.25` coefficient is a heuristic calibrated for Gaussian heatmaps with `sigma >= 1`; for principled sub-pixel recovery, use a full quadratic fit (DARK) or a Gaussian fit.
+1. 对每张热图**取最大值索引（Argmax）**，找到整数峰值位置。
+2. **一阶差分偏移（First-difference offset）**：根据邻近像素估计亚像素偏移。`0.25` 系数是针对 `sigma >= 1` 的高斯热图校准的启发式值；若需有原理依据的亚像素恢复，使用完整二次拟合（DARK）或高斯拟合。
 
 ```
 dx = 0.25 * sign(heatmap[y, x+1] - heatmap[y, x-1])
 dy = 0.25 * sign(heatmap[y+1, x] - heatmap[y-1, x])
 ```
 
-For the DARK / quadratic variant, approximate using a local quadratic:
+对于 DARK / 二次变体，使用局部二次函数近似：
 
 ```
 dx = -0.5 * (heatmap[y, x+1] - heatmap[y, x-1])
         / (heatmap[y, x+1] - 2 * heatmap[y, x] + heatmap[y, x-1] + eps)
 ```
 
-The quadratic fit is more accurate on peaked heatmaps; the sign-based offset is the safer default when heatmaps are noisy.
+二次拟合对峰值明确的热图更准确；热图有噪声时，基于符号的偏移是更稳妥的默认选择。
 
-3. **Add offset** to the integer peak.
-4. **Confidence** — return the peak value per keypoint; clients use it to mask low-confidence predictions.
-5. **Boundary case** — when the peak lands on the first or last pixel along an axis, one of the neighbours is clamped; the offset collapses to zero, which is the safest fallback.
+3. 向整数峰值**添加偏移（Add offset）**。
+4. **置信度（Confidence）**：返回每个关键点的峰值，客户端据此屏蔽低置信度预测。
+5. **边界情况（Boundary case）**：峰值落在某轴首末像素时，一个邻点会被限制，偏移归零，这是最稳妥的退回行为。
 
-## Output template
+## 输出模板（Output template）
 
 ```python
 import torch
@@ -89,18 +89,18 @@ def heatmap_to_coords_subpixel(heatmaps, threshold=0.2):
     return coords, conf, mask
 ```
 
-## Report
+## 报告（Report）
 
 ```
 [subpixel decode]
   keypoints:   K
   threshold:   <float>
-  valid_rate:  fraction of keypoints above threshold
+  valid_rate:  超过阈值的关键点占比
 ```
 
-## Rules
+## 规则（Rules）
 
-- Always clamp neighbour indices to valid range; off-edge keypoints have zero-difference offset but no crash.
-- Return confidence alongside coordinates so clients can mask low-confidence points.
-- Sub-pixel refinement only helps when the heatmap is smooth around the peak — check that training used a Gaussian target with sigma >= 1.
-- For very small heatmap resolutions (< 48x48), consider upsampling the heatmap to full image size before extracting coordinates; the sub-pixel offset scales with the stride.
+- 始终将邻点索引限制在有效范围；边缘关键点采用零差分偏移，不会崩溃。
+- 同时返回坐标与置信度，让客户端屏蔽低置信度点。
+- 只有峰值周围热图平滑时，亚像素细化才有帮助；检查训练是否使用 sigma >= 1 的高斯目标。
+- 热图分辨率很小，例如 < 48x48 时，考虑先上采样到完整图像大小，再提取坐标；亚像素偏移会随步幅缩放。

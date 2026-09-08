@@ -1,48 +1,78 @@
 {
   "lesson": "07-building-an-mcp-server",
-  "title": "Building an MCP Server: Stateless Python and TypeScript",
+  "title": "构建 MCP 服务器：无状态 Python 与 TypeScript（Building an MCP Server: Stateless Python and TypeScript）",
   "questions": [
     {
       "stage": "pre",
-      "question": "Where does a modern MCP server read client capabilities?",
-      "options": ["From Mcp-Session-Id", "From the first initialize call", "From every current request", "From the process environment"],
+      "question": "现代 MCP 服务器在哪里读取客户端能力？",
+      "options": [
+        "从 Mcp-Session-Id",
+        "从第一次 initialize 调用",
+        "从每个当前请求",
+        "从进程环境"
+      ],
       "correct": 2,
-      "explanation": "MCP 2026-07-28 carries client capabilities in every request's params._meta."
+      "explanation": "MCP 2026-07-28 在每个请求的 params._meta 中携带客户端能力。"
     },
     {
       "stage": "check",
-      "question": "Which method must a modern server implement?",
-      "options": ["initialize", "server/discover", "resources/subscribe", "shutdown"],
+      "question": "现代服务器必须实现哪个方法？",
+      "options": [
+        "initialize",
+        "server/discover",
+        "resources/subscribe",
+        "shutdown"
+      ],
       "correct": 1,
-      "explanation": "server/discover is mandatory on modern servers, although clients may call another method first."
+      "explanation": "现代服务器必须实现 server/discover，但客户端可以先调用其他方法。"
     },
     {
       "stage": "check",
-      "question": "Which successful result fields are required on tools/list?",
-      "options": ["protocolVersion and tools", "resultType, ttlMs, cacheScope, tools", "initialized and tools", "sessionId and tools"],
+      "question": "tools/list 的成功结果必须包含哪些字段？",
+      "options": [
+        "protocolVersion 和 tools",
+        "resultType、ttlMs、cacheScope、tools",
+        "initialized 和 tools",
+        "sessionId 和 tools"
+      ],
       "correct": 1,
-      "explanation": "Modern list results are typed and cacheable."
+      "explanation": "现代列表结果带类型且可缓存。"
     },
     {
       "stage": "check",
-      "question": "Why should a server sort tools deterministically?",
-      "options": ["To stabilize caches and model context", "To create a session", "To negotiate the protocol", "To replace authorization"],
+      "question": "服务器为什么应对工具进行确定性排序？",
+      "options": [
+        "稳定缓存和模型上下文",
+        "创建会话",
+        "协商协议",
+        "替代授权"
+      ],
       "correct": 0,
-      "explanation": "Stable ordering makes equivalent registries produce equivalent responses."
+      "explanation": "稳定顺序让等价注册表产生等价响应。"
     },
     {
       "stage": "post",
-      "question": "A valid tool call runs but the domain operation fails. Which shape fits?",
-      "options": ["notifications/initialized", "HTTP DELETE", "A complete tool result with isError true", "A new server request"],
+      "question": "有效工具调用已运行，但领域操作失败，哪种形态合适？",
+      "options": [
+        "notifications/initialized",
+        "HTTP DELETE",
+        "isError 为 true 的完整工具结果",
+        "一个新的服务器请求"
+      ],
       "correct": 2,
-      "explanation": "Tool-level failures stay visible to the model through content and isError."
+      "explanation": "工具级失败通过内容和 isError 对模型保持可见。"
     },
     {
       "stage": "post",
-      "question": "What should end a stdio server's transport lifetime?",
-      "options": ["EOF on stdin", "A GET request", "A mandatory shutdown RPC", "Mcp-Session-Id expiry"],
+      "question": "什么应结束 stdio 服务器的传输生命周期？",
+      "options": [
+        "stdin 上的 EOF",
+        "GET 请求",
+        "必需的 shutdown RPC",
+        "Mcp-Session-Id 到期"
+      ],
       "correct": 0,
-      "explanation": "EOF is the portable stdio shutdown signal. It does not close a modern protocol session."
+      "explanation": "EOF 是可移植的 stdio 关闭信号，不会关闭现代协议会话。"
     }
   ]
 }

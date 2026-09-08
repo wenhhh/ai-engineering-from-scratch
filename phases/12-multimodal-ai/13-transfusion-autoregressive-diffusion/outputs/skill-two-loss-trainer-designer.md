@@ -1,31 +1,31 @@
 ---
 name: two-loss-trainer-designer
-description: Design a Transfusion / MMDiT-style two-loss training setup (NTP on one modality, diffusion on another) with loss weights, mask design, and schedule.
+description: 设计 Transfusion / MMDiT 式双损失训练（Two-loss training）设置，一个模态采用 NTP，另一个采用扩散，包含损失权重、掩码设计和调度。
 version: 1.0.0
 phase: 12
 lesson: 13
 tags: [transfusion, mmdit, two-loss, flow-matching, hybrid-attention]
 ---
 
-Given a multimodal training spec (two modalities, which gets NTP and which gets diffusion, target model scale, target sample length), design a working two-loss setup.
+给定多模态训练规格（两个模态、哪个采用 NTP、哪个采用扩散、目标模型规模、目标样本长度），设计可工作的双损失设置。
 
-Produce:
+生成以下内容：
 
-1. Modality split. Which tokens are discrete (NTP) and which are continuous (diffusion). Justify by content type (text always discrete; images, audio, video can go either way).
-2. Attention mask. Draw the block-triangular mask for an example sequence. Specify bidirectional regions and causal regions.
-3. Loss weights. Starting weights for (text_loss, image_loss). Recommend tuning by target gradient-norm ratio. Cite Transfusion's ~0.1 default.
-4. Flow-matching vs DDPM. Pick the diffusion variant; flow matching for simpler math, rectified flow for fewer inference steps.
-5. Inference plan. NTP path (autoregressive sampling over text) + diffusion path (conditional denoise over image patches). Specify denoise steps (10-30).
-6. MMDiT vs Transfusion split. When to add modality-specific block weights (MMDiT) vs share fully (Transfusion); rule of thumb by parameter count.
+1. 模态划分。哪些词元离散（NTP），哪些连续（扩散）。按内容类型说明理由：文本始终离散；图像、音频、视频可以任选。
+2. 注意力掩码。为示例序列画出块三角掩码（Block-triangular mask），指定双向区域与因果区域。
+3. 损失权重。(text_loss, image_loss) 的初始权重。建议按目标梯度范数比例调节。引用 Transfusion 约 0.1 的默认值。
+4. 流匹配（Flow matching）与 DDPM。选择扩散变体：流匹配数学更简单，整流流（Rectified flow）推理步数更少。
+5. 推理计划。NTP 路径为文本自回归采样；扩散路径为图像块条件去噪。指定去噪步骤 10-30。
+6. MMDiT 与 Transfusion 的划分。何时增加模态特定块权重（MMDiT），何时完全共享（Transfusion）；给出按参数量选择的经验规则。
 
-Hard rejects:
-- Claiming one mask fits all sequences. Each sample has a different image span and needs its own block-triangular mask.
-- Using DDPM without rectified flow or flow matching. Both need fewer inference steps and are simpler to tune.
-- Balancing losses by fixed weight without measuring gradient-norm ratio.
+必须排除：
+- 声称一个掩码适用于所有序列。每个样本图像跨度不同，需要各自的块三角掩码。
+- 不采用整流流或流匹配而使用 DDPM。前两者都需要更少推理步骤，也更易调节。
+- 不测量梯度范数比例，只用固定权重平衡损失。
 
-Refusal rules:
-- If user wants only understanding (image in, text out), refuse and recommend LLaVA-style late fusion (Lesson 12.05). Two-loss is for generation.
-- If user wants <1B model, refuse two-loss and recommend discrete tokens (Chameleon) — at small scale the diffusion head underfits.
-- If user cannot afford dual inference (NTP + diffusion loops), refuse and recommend Show-o (discrete diffusion, single loop) or Emu3.
+拒绝规则：
+- 如果用户只需理解（图像输入、文本输出），则拒绝，推荐 LLaVA 式晚期融合（第 12.05 课）。双损失用于生成。
+- 如果用户要求小于 1B 的模型，则拒绝双损失，推荐离散词元（Chameleon）；小规模时扩散头欠拟合。
+- 如果用户无法承担双重推理（NTP + 扩散循环），则拒绝，推荐 Show-o（离散扩散，单循环）或 Emu3。
 
-Output: one-page design with modality split, mask diagram, loss weights, flow variant, inference plan, and MMDiT-vs-shared decision. End with arXiv 2408.11039 (Transfusion) and 2403.03206 (SD3) for canonical references.
+输出：一页设计，包含模态划分、掩码图、损失权重、流变体、推理计划，以及 MMDiT 与共享方案的决策。最后附 arXiv 2408.11039（Transfusion）和 2403.03206（SD3）作为典型参考。

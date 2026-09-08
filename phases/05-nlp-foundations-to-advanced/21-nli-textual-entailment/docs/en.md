@@ -1,58 +1,58 @@
-# Natural Language Inference — Textual Entailment
+# 自然语言推断：文本蕴含（Natural Language Inference — Textual Entailment）
 
-> "t entails h" means a human reading t would conclude h is true. NLI is the task of predicting entailment / contradiction / neutral. Boring on the surface, load-bearing in production.
+> “t 蕴含 h”意味着人类读完 t 会认为 h 为真。NLI 的任务是预测蕴含、矛盾或中立。表面平淡，却是生产系统的重要支撑。
 
 **Type:** Learn
 **Languages:** Python
-**Prerequisites:** Phase 5 · 05 (Sentiment Analysis), Phase 5 · 13 (Question Answering)
-**Time:** ~60 minutes
+**Prerequisites:** 阶段 5 · 05（情感分析 Sentiment Analysis）、阶段 5 · 13（问答 Question Answering）
+**Time:** 约 60 分钟
 
-## The Problem
+## 问题（The Problem）
 
-You built a summarizer. It produced a summary. How do you know the summary does not contain a hallucination?
+你构建了摘要器，它生成了摘要。如何知道其中没有幻觉？
 
-You built a chatbot. It answered "yes." How do you know the answer is supported by the retrieved passage?
+你构建了聊天机器人，它回答“是”。如何知道检索到的段落支持这个答案？
 
-You need to classify 10,000 news articles by topic. You have no training labels. Can you reuse a model?
+你需要按主题分类 10,000 篇新闻，却没有训练标签。能复用模型吗？
 
-All three problems reduce to Natural Language Inference. NLI asks: given a premise `t` and a hypothesis `h`, is `h` entailed by `t`, contradicted, or neutral (unrelated)?
+三个问题都可归约为自然语言推断（Natural Language Inference，NLI）。NLI 询问：给定前提 `t` 和假设 `h`，`h` 是被 `t` 蕴含、与其矛盾，还是中立（无关）？
 
-- **Hallucination check:** `t` = source document, `h` = summary claim. Not entailment = hallucination.
-- **Grounded QA:** `t` = retrieved passage, `h` = generated answer. Not entailment = fabrication.
-- **Zero-shot classification:** `t` = document, `h` = verbalized label ("This is about sports"). Entailment = predicted label.
+- **幻觉检查（Hallucination Check）：**`t` = 源文档，`h` = 摘要主张。不蕴含 = 幻觉。
+- **有依据的问答（Grounded QA）：**`t` = 检索段落，`h` = 生成答案。不蕴含 = 编造。
+- **零样本分类（Zero-Shot Classification）：**`t` = 文档，`h` = 用自然语言表述的标签，例如“这是关于体育的”。蕴含 = 预测标签。
 
-One task, three production uses. This is why every RAG evaluation framework ships an NLI model under the hood.
+一个任务，三个生产用途。因此每个 RAG 评估框架内部都带有 NLI 模型。
 
-## The Concept
+## 概念（The Concept）
 
-![NLI: three-way classification, premise vs hypothesis](../assets/nli.svg)
+![NLI：对前提与假设关系进行三分类](../assets/nli.svg)
 
-**The three labels.**
+**三个标签（Labels）。**
 
-- **Entailment.** `t` → `h`. "The cat is on the mat" entails "There is a cat."
-- **Contradiction.** `t` → ¬`h`. "The cat is on the mat" contradicts "There is no cat."
-- **Neutral.** No inference either way. "The cat is on the mat" is neutral to "The cat is hungry."
+- **蕴含（Entailment）。**`t` → `h`。“猫在垫子上”蕴含“有一只猫”。
+- **矛盾（Contradiction）。**`t` → ¬`h`。“猫在垫子上”与“没有猫”矛盾。
+- **中立（Neutral）。**两个方向都无法推断。“猫在垫子上”对“猫饿了”是中立的。
 
-**Not logical entailment.** NLI is *natural* language inference — what a typical human reader would infer, not strict logic. "John walked his dog" entails "John has a dog" in NLI, but strict first-order logic would only admit it if you axiomatize possession.
+**并非逻辑蕴含（Logical Entailment）。**NLI 是*自然*语言推断，判断普通读者会推断什么，而非严格逻辑。在 NLI 中，“John 遛了他的狗”蕴含“John 有一只狗”；但严格的一阶逻辑只有在将所有权关系公理化后才接受这个结论。
 
-**Datasets.**
+**数据集（Datasets）。**
 
-- **SNLI** (2015). 570k human-annotated pairs, image captions as premises. Narrow domain.
-- **MultiNLI** (2017). 433k pairs across 10 genres. The standard training corpus in 2026.
-- **ANLI** (2019). Adversarial NLI. Humans wrote examples specifically designed to break existing models. Harder.
-- **DocNLI, ConTRoL** (2020–21). Document-length premises. Tests multi-hop and long-range inference.
+- **SNLI**（2015）。570k 个人工标注句对，以图像描述为前提，领域狭窄。
+- **MultiNLI**（2017）。覆盖 10 种体裁的 433k 个句对，是 2026 年的标准训练语料。
+- **ANLI**（2019）。对抗式 NLI（Adversarial NLI）。人类专门编写用于击败现有模型的样本，难度更高。
+- **DocNLI、ConTRoL**（2020–2021）。文档长度的前提，测试多跳和长距离推断。
 
-**The architecture.** A transformer encoder (BERT, RoBERTa, DeBERTa) reads `[CLS] premise [SEP] hypothesis [SEP]`. The `[CLS]` representation feeds a 3-way softmax. Train on MNLI, evaluate on held-out benchmarks, get 90%+ accuracy on in-distribution pairs.
+**架构（Architecture）。**Transformer 编码器（BERT、RoBERTa、DeBERTa）读取 `[CLS] premise [SEP] hypothesis [SEP]`，将 `[CLS]` 表示送入三分类 softmax。在 MNLI 上训练，在留出基准上评估，可以在分布内句对上获得超过 90% 的准确率。
 
-**Zero-shot via NLI.** Given a document and candidate labels, turn each label into a hypothesis ("This text is about sports"). Compute entailment probability for each. Pick the max. This is the mechanism behind Hugging Face's `zero-shot-classification` pipeline.
+**通过 NLI 实现零样本。**给定文档和候选标签，将每个标签转为假设，例如“这段文本关于体育”，计算各自的蕴含概率并选取最大值。这就是 Hugging Face `zero-shot-classification` 流水线背后的机制。
 
 ```figure
 nli-router
 ```
 
-## Build It
+## 动手实现（Build It）
 
-### Step 1: run a pretrained NLI model
+### 步骤 1：运行预训练 NLI 模型
 
 ```python
 from transformers import pipeline
@@ -71,9 +71,9 @@ print(result)
 #  {'label': 'contradiction', 'score': 0.01}]
 ```
 
-For production NLI, `facebook/bart-large-mnli` and `microsoft/deberta-v3-large-mnli` are the open defaults. DeBERTa-v3 tops leaderboards.
+生产 NLI 的开放默认选择是 `facebook/bart-large-mnli` 和 `microsoft/deberta-v3-large-mnli`。DeBERTa-v3 位居排行榜前列。
 
-### Step 2: zero-shot classification
+### 步骤 2：零样本分类（Zero-Shot Classification）
 
 ```python
 zs = pipeline("zero-shot-classification", model="facebook/bart-large-mnli")
@@ -87,9 +87,9 @@ print(result)
 #  'scores': [0.92, 0.05, 0.02, 0.01]}
 ```
 
-The template is "This example is about {label}." by default. Customize with `hypothesis_template`. No training data required. No fine-tuning. Works out of the box.
+默认模板是“This example is about {label}.”，即“这个样本关于 {label}”。通过 `hypothesis_template` 自定义。无需训练数据或微调，开箱即用。
 
-### Step 3: faithfulness check for RAG
+### 步骤 3：RAG 忠实性检查（Faithfulness Check）
 
 ```python
 def is_faithful(answer, context, threshold=0.5):
@@ -98,81 +98,81 @@ def is_faithful(answer, context, threshold=0.5):
     return entail["score"] > threshold
 ```
 
-This is the core of RAGAS faithfulness. Split the generated answer into atomic claims. Check each claim against the retrieved context. Report the fraction that entail.
+这就是 RAGAS 忠实性的核心：将生成答案拆为原子主张（Atomic Claims），针对检索上下文检查每项主张，报告被蕴含的比例。
 
-### Step 4: hand-rolled NLI classifier (conceptual)
+### 步骤 4：手工实现 NLI 分类器（概念演示）
 
-See `code/main.py` for a stdlib-only toy: premise and hypothesis are compared via lexical overlap + negation detection. Not competitive with transformer models — but it shows the shape of the task: two texts in, 3-way label out, loss = cross-entropy over `{entail, contradict, neutral}`.
+仅用标准库实现的玩具示例见 `code/main.py`：通过词汇重叠和否定检测比较前提与假设。它无法与 Transformer 模型竞争，但展示了任务形态：输入两段文本，输出三分类标签，损失为 `{entail, contradict, neutral}` 上的交叉熵。
 
-## Pitfalls
+## 陷阱（Pitfalls）
 
-- **Hypothesis-only shortcuts.** Models can predict the label from the hypothesis alone at ~60% on SNLI because "not", "nobody", "never" correlate with contradiction. Strong baseline for detecting label leakage.
-- **Lexical overlap heuristic.** The subsequence heuristic ("every subsequence is entailed") passes SNLI but fails HANS/ANLI. Use adversarial benchmarks.
-- **Document-length degradation.** Single-sentence NLI models drop 20+ F1 on document-length premises. Use DocNLI-trained models for long context.
-- **Zero-shot template sensitivity.** "This example is about {label}" vs "{label}" vs "The topic is {label}" can swing accuracy by 10+ points. Tune the template.
-- **Domain mismatch.** MNLI trains on general English. Legal, medical, and scientific text need domain-specific NLI models (e.g., SciNLI, MedNLI).
+- **仅假设捷径（Hypothesis-Only Shortcuts）。**在 SNLI 上，模型只看假设就能以约 60% 的准确率预测标签，因为“not”“nobody”“never”等否定词与矛盾标签相关。这是检测标签泄漏的强基线。
+- **词汇重叠启发式（Lexical Overlap Heuristic）。**“每个子序列都被蕴含”的子序列启发式能通过 SNLI，却会在 HANS/ANLI 上失败。要使用对抗基准。
+- **文档长度退化（Document-Length Degradation）。**句级 NLI 模型在文档长度前提上的 F1 下降超过 20 点。长上下文应使用经过 DocNLI 训练的模型。
+- **零样本模板敏感性（Template Sensitivity）。**“This example is about {label}”“{label}”“The topic is {label}”等不同措辞可能使准确率变化超过 10 点。需要调优模板。
+- **领域不匹配（Domain Mismatch）。**MNLI 在通用英语上训练。法律、医学和科学文本需要 SciNLI、MedNLI 等领域专用 NLI 模型。
 
-## Use It
+## 实际应用（Use It）
 
-The 2026 stack:
+2026 年的技术栈：
 
-| Use case | Model |
+| 用例 | 模型 |
 |---------|-------|
-| General-purpose NLI | `microsoft/deberta-v3-large-mnli` |
-| Fast / edge | `cross-encoder/nli-deberta-v3-base` |
-| Zero-shot classification (lightweight) | `facebook/bart-large-mnli` |
-| Document-level NLI | `MoritzLaurer/DeBERTa-v3-large-mnli-fever-anli-ling-wanli` |
-| Multilingual | `MoritzLaurer/multilingual-MiniLMv2-L6-mnli-xnli` |
-| Hallucination detection in RAG | NLI layer inside RAGAS / DeepEval |
+| 通用 NLI | `microsoft/deberta-v3-large-mnli` |
+| 快速 / 边缘场景 | `cross-encoder/nli-deberta-v3-base` |
+| 轻量零样本分类 | `facebook/bart-large-mnli` |
+| 文档级 NLI | `MoritzLaurer/DeBERTa-v3-large-mnli-fever-anli-ling-wanli` |
+| 多语言 | `MoritzLaurer/multilingual-MiniLMv2-L6-mnli-xnli` |
+| RAG 幻觉检测 | RAGAS / DeepEval 内的 NLI 层 |
 
-The 2026 meta-pattern: NLI is the duct tape of text understanding. Whenever you need "does A support B?" or "does A contradict B?" — reach for NLI before you reach for another LLM call.
+2026 年的通用模式：NLI 是文本理解的通用连接工具。只要需要判断“A 是否支持 B”或“A 是否与 B 矛盾”，在增加一次 LLM 调用之前，先考虑 NLI。
 
-## Ship It
+## 交付成果（Ship It）
 
-Save as `outputs/skill-nli-picker.md`:
+保存为 `outputs/skill-nli-picker.md`：
 
 ```markdown
 ---
 name: nli-picker
-description: Pick an NLI model, label template, and evaluation setup for a classification / faithfulness / zero-shot task.
+description: 为分类、忠实性或零样本任务选择 NLI 模型、标签模板和评估配置。
 version: 1.0.0
 phase: 5
 lesson: 21
 tags: [nlp, nli, zero-shot]
 ---
 
-Given a use case (faithfulness check, zero-shot classification, document-level inference), output:
+给定用例（忠实性检查、零样本分类、文档级推断），输出：
 
-1. Model. Named NLI checkpoint. Reason tied to domain, length, language.
-2. Template (if zero-shot). Verbalization pattern. Example.
-3. Threshold. Entailment cutoff for the decision rule. Reason based on calibration.
-4. Evaluation. Accuracy on held-out labeled set, hypothesis-only baseline, adversarial subset.
+1. 模型（Model）。指出具体 NLI 检查点，并结合领域、长度、语言说明理由。
+2. 模板（Template，零样本时）。标签自然语言表述模式及示例。
+3. 阈值（Threshold）。决策规则中的蕴含概率截断值，依据校准说明理由。
+4. 评估（Evaluation）。留出标注集准确率、仅假设基线、对抗子集。
 
-Refuse to ship zero-shot classification without a 100-example labeled sanity check. Refuse to use a sentence-level NLI model on document-length premises. Flag any claim that NLI solves hallucination — it reduces it; it does not eliminate it.
+没有 100 个标注样本的合理性检查，就拒绝上线零样本分类。拒绝将句级 NLI 模型用于文档长度前提。对任何“NLI 解决了幻觉”的主张提出警示：它能减少幻觉，不能消除幻觉。
 ```
 
-## Exercises
+## 练习（Exercises）
 
-1. **Easy.** Run `facebook/bart-large-mnli` on 20 hand-crafted (premise, hypothesis, label) triples covering all three classes. Measure accuracy. Add adversarial "subsequence heuristic" traps ("I did not eat the cake" vs "I ate the cake") and see if it breaks.
-2. **Medium.** Compare the zero-shot template `"This text is about {label}"` against `"The topic is {label}"` and `"{label}"` on 100 AG News headlines. Report accuracy swing.
-3. **Hard.** Build a RAG faithfulness checker: atomic-claim decomposition + NLI per claim. Evaluate on 50 RAG-generated answers with gold context. Measure false-positive and false-negative rates vs hand labels.
+1. **简单。**在覆盖全部三类的 20 个人工构造的前提、假设、标签三元组上运行 `facebook/bart-large-mnli`，测量准确率。添加“我没有吃蛋糕”与“我吃了蛋糕”这样的对抗性子序列启发式陷阱，看看它是否失败。
+2. **中等。**在 100 个 AG News 标题上，比较零样本模板 `"This text is about {label}"`、`"The topic is {label}"` 和 `"{label}"`，报告准确率变化。
+3. **困难。**构建 RAG 忠实性检查器：原子主张分解，再逐主张执行 NLI。在带有标准上下文的 50 个 RAG 生成答案上评估，相对人工标签测量假阳性率和假阴性率。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语 | 常见说法 | 实际含义 |
 |------|-----------------|-----------------------|
-| NLI | Natural Language Inference | 3-way classification of premise-hypothesis relationship. |
-| RTE | Recognizing Textual Entailment | Older name for NLI; same task. |
-| Entailment | "t implies h" | A typical reader would conclude h is true given t. |
-| Contradiction | "t rules out h" | A typical reader would conclude h is false given t. |
-| Neutral | "undecided" | No inference from t to h either way. |
-| Zero-shot classification | NLI as classifier | Verbalize labels as hypotheses, pick max entailment. |
-| Faithfulness | Is the answer supported? | NLI over (retrieved context, generated answer). |
+| NLI | 自然语言推断（Natural Language Inference） | 对前提—假设关系进行三分类。 |
+| RTE | 文本蕴含识别（Recognizing Textual Entailment） | NLI 的旧称，任务相同。 |
+| 蕴含（Entailment） | “t 推出 h” | 给定 t，普通读者会认为 h 为真。 |
+| 矛盾（Contradiction） | “t 排除 h” | 给定 t，普通读者会认为 h 为假。 |
+| 中立（Neutral） | “未定” | 从 t 到 h 在任一方向上都无法推断。 |
+| 零样本分类（Zero-Shot Classification） | 用 NLI 分类 | 将标签表述为假设，选择最大蕴含概率。 |
+| 忠实性（Faithfulness） | 答案有支持吗？ | 对检索上下文与生成答案执行 NLI。 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [Bowman et al. (2015). A large annotated corpus for learning natural language inference](https://arxiv.org/abs/1508.05326) — SNLI.
-- [Williams, Nangia, Bowman (2017). A Broad-Coverage Challenge Corpus for Sentence Understanding through Inference](https://arxiv.org/abs/1704.05426) — MultiNLI.
-- [Nie et al. (2019). Adversarial NLI](https://arxiv.org/abs/1910.14599) — the ANLI benchmark.
-- [Yin, Hay, Roth (2019). Benchmarking Zero-shot Text Classification](https://arxiv.org/abs/1909.00161) — NLI-as-classifier.
-- [He et al. (2021). DeBERTa: Decoding-enhanced BERT with Disentangled Attention](https://arxiv.org/abs/2006.03654) — the 2026 NLI workhorse.
+- [Bowman 等（2015）：用于学习自然语言推断的大型标注语料（A large annotated corpus for learning natural language inference）](https://arxiv.org/abs/1508.05326)：SNLI。
+- [Williams、Nangia、Bowman（2017）：通过推断理解句子的广覆盖挑战语料（A Broad-Coverage Challenge Corpus for Sentence Understanding through Inference）](https://arxiv.org/abs/1704.05426)：MultiNLI。
+- [Nie 等（2019）：对抗式 NLI（Adversarial NLI）](https://arxiv.org/abs/1910.14599)：ANLI 基准。
+- [Yin、Hay、Roth（2019）：零样本文本分类基准评估（Benchmarking Zero-shot Text Classification）](https://arxiv.org/abs/1909.00161)：将 NLI 用作分类器。
+- [He 等（2021）：DeBERTa：采用解耦注意力的解码增强 BERT（DeBERTa: Decoding-enhanced BERT with Disentangled Attention）](https://arxiv.org/abs/2006.03654)：2026 年 NLI 主力模型。

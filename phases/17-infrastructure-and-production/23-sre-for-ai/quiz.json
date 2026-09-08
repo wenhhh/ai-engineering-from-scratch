@@ -1,75 +1,75 @@
 {
   "lesson": "23-sre-for-ai",
-  "title": "SRE for AI — Multi-Agent Incident Response, Runbooks, Predictive Detection",
+  "title": "AI 的站点可靠性工程：多智能体事件响应、运行手册与预测检测（SRE for AI — Multi-Agent Incident Response, Runbooks, Predictive Detection）",
   "questions": [
     {
       "stage": "pre",
-      "question": "What multi-agent shape does the lesson recommend for AI SRE?",
+      "question": "本课推荐 AI SRE 采用哪种多智能体结构？",
       "options": [
-        "Supervisor agent that breaks the incident into sub-queries for specialized log, metric, and runbook agents, then synthesizes and presents to a human",
-        "One monolithic agent owning everything",
-        "Random selection of one of three agents",
-        "Two agents in series with no supervisor"
+        "监督智能体将事件拆为子查询，交给日志、指标、运行手册专用智能体，再综合结果并呈现给人工",
+        "由一个单体智能体负责一切",
+        "从三个智能体中随机选一个",
+        "两个智能体串行运行，没有监督智能体"
       ],
       "correct": 0,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Which auto-remediation set does the lesson call safe?",
+      "question": "本课将哪组自动修复动作称为安全？",
       "options": [
-        "Modifying IAM policies",
-        "Altering databases",
-        "Re-architecting service topology",
-        "Restart pod, revert a specific deploy, scale a pool within pre-approved bounds, enable a pre-approved feature flag"
+        "修改 IAM 策略",
+        "变更数据库",
+        "重新设计服务拓扑",
+        "重启 Pod、恢复指定部署、在预批准范围内扩缩资源池、启用预批准功能开关"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "How does NeuBird Hawkeye use adversarial evaluation to filter hallucinated root causes?",
+      "question": "NeuBird Hawkeye 如何使用对抗式评估过滤虚构根因？",
       "options": [
-        "Picks the higher-confidence model's answer always",
-        "Runs the same model twice on the same input",
-        "Two models independently analyze the same incident; agreement = high confidence, disagreement = escalate to human with both hypotheses",
-        "Uses GAN-style training"
+        "始终选择置信度较高模型的答案",
+        "对相同输入运行同一模型两次",
+        "两个模型独立分析同一事件；一致意味着高置信度，不一致则将两种假设一起升级给人工",
+        "使用 GAN 式训练"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "What does operational memory solve in AI SRE?",
+      "question": "运维记忆解决 AI SRE 中的什么问题？",
       "options": [
-        "Loss of tribal knowledge when teams turn over — runbooks and post-mortems live in a vector DB that agents retrieve on every incident",
-        "Network egress filtering",
-        "Cold start of inference pods",
-        "Token cost attribution"
+        "团队流动导致经验知识流失：运行手册和复盘保存在向量数据库中，每次事件都供智能体检索",
+        "网络出站过滤",
+        "推理 Pod 冷启动",
+        "词元成本归因"
       ],
       "correct": 0,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "What MIT 2025 result does the lesson cite for pre-incident prediction?",
+      "question": "本课引用了 MIT 2025 年关于事前事件预测的什么结果？",
       "options": [
-        "Predictions remain unsolved",
-        "100% prediction with 1-second lead",
-        "89% of outages predicted 10-15 minutes early using logs + GPU temps + API error patterns",
-        "10% with no lead time"
+        "预测仍未解决",
+        "提前 1 秒预测 100% 故障",
+        "使用日志、GPU 温度和 API 错误模式，提前 10–15 分钟预测 89% 的故障",
+        "预测 10%，没有提前量"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "What operational constraint does the lesson stress about predictive detection?",
+      "question": "本课强调预测检测的什么运维约束？",
       "options": [
-        "Predictions replace runbooks",
-        "Predictions without actuation are just dashboards — the operational question is what action (pre-drain, page, auto-scale) the prediction triggers",
-        "Predictions should never be wired to action",
-        "Predictions are always accurate"
+        "预测替代运行手册",
+        "没有行动的预测只是仪表盘；运维问题是预测会触发什么动作，如提前排空、呼叫值班人员、自动扩容",
+        "预测绝不应连接到动作",
+        "预测总是准确"
       ],
       "correct": 1,
       "explanation": ""

@@ -123,8 +123,8 @@ def train_and_eval(model, train_loader, val_loader, device, epochs=2, base_lr=1e
                 va_total += x.size(0)
                 va_correct += (pred == y).sum().item()
         last_val = va_correct / va_total
-        print(f"  epoch {epoch}  train {tr_loss/tr_total:.3f}/{tr_correct/tr_total:.3f}  "
-              f"val {last_val:.3f}")
+        print(f"  轮次（Epoch） {epoch}  训练损失/准确率 {tr_loss/tr_total:.3f}/{tr_correct/tr_total:.3f}  "
+              f"验证准确率（Validation accuracy） {last_val:.3f}")
     return last_val
 
 
@@ -142,20 +142,20 @@ def main():
     val_loader = DataLoader(val_ds, batch_size=32, shuffle=False, num_workers=0)
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    print(f"device: {device}")
+    print(f"设备（Device）: {device}")
 
-    print("\n[feature extraction] freeze backbone, train head only")
+    print("\n[特征提取（Feature extraction）] 冻结骨干网络（Backbone），只训练头部（Head）")
     fe = make_feature_extractor()
-    print(f"  trainable params: {trainable_param_count(fe):,}")
+    print(f"  可训练参数（Trainable parameters）: {trainable_param_count(fe):,}")
     acc_fe = train_and_eval(fe, train_loader, val_loader, device, epochs=2, base_lr=3e-2)
 
-    print("\n[fine-tune] discriminative LR across stages")
+    print("\n[微调（Fine-tuning）] 各阶段采用差异化学习率（Discriminative LR）")
     ft = make_fine_tune()
     for g in discriminative_param_groups(ft, base_lr=1e-3):
-        print(f"  group {g['name']:>10s}  lr={g['lr']:.2e}")
+        print(f"  参数组（Group） {g['name']:>10s}  学习率（LR）={g['lr']:.2e}")
     acc_ft = train_and_eval(ft, train_loader, val_loader, device, epochs=2, base_lr=1e-3)
 
-    print(f"\nsummary  feature-extract val={acc_fe:.3f}   fine-tune val={acc_ft:.3f}")
+    print(f"\n汇总  特征提取验证准确率={acc_fe:.3f}   微调验证准确率={acc_ft:.3f}")
 
 
 if __name__ == "__main__":

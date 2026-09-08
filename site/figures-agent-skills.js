@@ -1,5 +1,5 @@
-/* figures-agent-skills.js: staged SVG explanations for the Agent Skills track.
-   Loads after lesson-figures.js and registers through window.LF. */
+/* figures-agent-skills.js：智能体技能（Agent Skills）学习路线的分步 SVG 讲解。
+   在 lesson-figures.js 之后加载，通过 window.LF 注册。 */
 (function () {
   'use strict';
 
@@ -18,6 +18,7 @@
       '.asf-shell{border:1px solid var(--rule-soft,#ddd);background:var(--bg,#fafaf5);margin:28px 0;font-family:var(--font-body,serif)}',
       '.asf-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:12px 16px;border-bottom:1px solid var(--rule-soft,#ddd);font-family:var(--font-mono,monospace);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-mute,#777)}',
       '.asf-head strong{color:var(--blueprint,#3553ff);font-weight:600}',
+      '.asf-head{flex-wrap:wrap;letter-spacing:0}.asf-head>*{min-width:0;overflow-wrap:anywhere}.asf-zone text,.asf-button,.asf-step-note strong{letter-spacing:0}',
       '.asf-body{padding:16px}',
       '.asf-controls{display:grid;grid-template-columns:auto auto auto minmax(150px,1fr);align-items:center;gap:8px;margin-bottom:14px}',
       '.asf-button{min-height:44px;padding:7px 11px;border:1px solid var(--rule-soft,#ddd);background:var(--bg,#fafaf5);color:var(--ink,#111);font-family:var(--font-mono,monospace);font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:transform var(--motion-press,160ms) var(--ease-out,cubic-bezier(.23,1,.32,1)),border-color var(--motion-feedback,180ms) ease,color var(--motion-feedback,180ms) ease,background-color var(--motion-feedback,180ms) ease}',
@@ -100,19 +101,26 @@
     return String(value || '').split('|');
   }
 
+  // 中文及全角字符按双倍等宽单元计算，避免 ASCII 字符数低估实际宽度。
+  function textUnits(value) {
+    return String(value).replace(/[^\x00-\x7f]/g, 'xx').length;
+  }
+
   function splitLongToken(token, maxChars) {
     var chunks = [];
     var rest = token;
-    while (rest.length > maxChars) {
+    while (textUnits(rest) > maxChars) {
+      var limit = 0;
+      while (limit < rest.length && textUnits(rest.slice(0, limit + 1)) <= maxChars) limit += 1;
       var minimum = Math.max(2, Math.floor(maxChars * 0.45));
       var cut = -1;
-      for (var index = maxChars; index >= minimum; index -= 1) {
+      for (var index = limit; index >= minimum; index -= 1) {
         if (/[-_/.+]/.test(rest.charAt(index - 1))) {
           cut = index;
           break;
         }
       }
-      if (cut < 0) cut = maxChars;
+      if (cut < 0) cut = limit;
       chunks.push(rest.slice(0, cut));
       rest = rest.slice(cut);
     }
@@ -128,7 +136,7 @@
     words.forEach(function (word) {
       splitLongToken(word, maxChars).forEach(function (chunk) {
         var candidate = current ? current + ' ' + chunk : chunk;
-        if (candidate.length <= maxChars) {
+        if (textUnits(candidate) <= maxChars) {
           current = candidate;
           return;
         }
@@ -150,8 +158,8 @@
     var available = Math.max(28, node.width - 24);
     var rawTitle = lines(node.title);
     var rawDetail = node.detail ? lines(node.detail) : [];
-    var compact = rawTitle.some(function (line) { return line.length * 8.4 > available; }) ||
-      rawDetail.some(function (line) { return line.length * 6.6 > available; });
+    var compact = rawTitle.some(function (line) { return textUnits(line) * 8.4 > available; }) ||
+      rawDetail.some(function (line) { return textUnits(line) * 6.6 > available; });
     if (!compact) {
       return {
         compact: false,
@@ -171,14 +179,18 @@
     var titleHeight = 15 + Math.max(0, title.length - 1) * titleStep;
     var detailHeight = detail.length ? 12 + Math.max(0, detail.length - 1) * detailStep : 0;
     var totalHeight = titleHeight + (detail.length ? 1 + detailHeight : 0);
-    var top = node.y + Math.max(2, (node.height - totalHeight) / 2);
-    var titleY = top + 12;
+    var scale = Math.min(1, (node.height - 8) / totalHeight);
+    titleStep *= scale;
+    detailStep *= scale;
+    var top = node.y + (node.height - totalHeight * scale) / 2;
+    var titleY = top + 12 * scale;
     return {
       compact: true,
+      scale: scale,
       title: title,
       detail: detail,
       titleY: titleY,
-      detailY: titleY + Math.max(0, title.length - 1) * titleStep + 14,
+      detailY: titleY + Math.max(0, title.length - 1) * titleStep + 14 * scale,
       titleStep: titleStep,
       detailStep: detailStep
     };
@@ -217,8 +229,9 @@
     return 'M' + x1 + ' ' + y1 + ' C' + x1 + ' ' + my + ' ' + x2 + ' ' + my + ' ' + x2 + ' ' + y2;
   }
 
-  function textBlock(node, className, value, startY, lineHeight) {
+  function textBlock(node, className, value, startY, lineHeight, scale) {
     var text = svgEl('text', { x: node.x + 12, y: startY, class: className });
+    if (scale < 1) text.style.fontSize = ((className === 'asf-title' ? 11.5 : 9.5) * scale) + 'px';
     lines(value).forEach(function (line, index) {
       text.appendChild(svgEl('tspan', {
         x: node.x + 12,
@@ -301,22 +314,22 @@
         var nodeClass = 'asf-node' + (node.kind === 'decision' ? ' is-decision' : '') + (node.kind === 'warning' ? ' is-warning' : '') + (layout.compact ? ' is-compact' : '');
         var group = svgEl('g', { class: nodeClass, 'data-node': node.id });
         group.appendChild(svgEl('rect', { x: node.x, y: node.y, width: node.width, height: node.height, rx: '0' }));
-        group.appendChild(textBlock(node, 'asf-title', layout.title, layout.titleY, layout.titleStep));
+        group.appendChild(textBlock(node, 'asf-title', layout.title, layout.titleY, layout.titleStep, layout.scale));
         if (layout.detail.length) {
-          group.appendChild(textBlock(node, 'asf-detail', layout.detail, layout.detailY, layout.detailStep));
+          group.appendChild(textBlock(node, 'asf-detail', layout.detail, layout.detailY, layout.detailStep, layout.scale));
         }
         svg.appendChild(group);
         nodeViews.push({ config: node, element: group });
       });
 
-      var previous = el('button', { class: 'asf-button', type: 'button' }, ['Previous']);
-      var next = el('button', { class: 'asf-button', type: 'button' }, ['Next']);
-      var replay = el('button', { class: 'asf-button', type: 'button' }, ['Replay']);
+      var previous = el('button', { class: 'asf-button', type: 'button' }, ['上一步']);
+      var next = el('button', { class: 'asf-button', type: 'button' }, ['下一步']);
+      var replay = el('button', { class: 'asf-button', type: 'button' }, ['重播']);
       var range = el('input', {
         class: 'asf-range', type: 'range', min: '0', max: String(maxStep), step: '1', value: '0',
-        'aria-label': 'Diagram step',
+        'aria-label': '图解步骤',
         'aria-describedby': noteDetailId,
-        'aria-valuetext': 'Step 1 of ' + config.steps.length + ': ' + config.steps[0].label
+        'aria-valuetext': '第 1 步，共 ' + config.steps.length + ' 步：' + config.steps[0].label
       });
       var count = el('span', { class: 'asf-count', 'aria-hidden': 'true' }, ['1 / ' + config.steps.length]);
       var noteTitle = el('strong');
@@ -345,7 +358,7 @@
           view.element.classList.toggle('is-visible', view.config.stage <= state.step);
         });
         range.value = String(state.step);
-        range.setAttribute('aria-valuetext', 'Step ' + (state.step + 1) + ' of ' + config.steps.length + ': ' + config.steps[state.step].label);
+        range.setAttribute('aria-valuetext', '第 ' + (state.step + 1) + ' 步，共 ' + config.steps.length + ' 步：' + config.steps[state.step].label);
         count.textContent = (state.step + 1) + ' / ' + config.steps.length;
         previous.disabled = state.step === 0;
         next.disabled = state.step === maxStep;
@@ -364,7 +377,7 @@
         status.textContent = '';
         announcementTimer = window.setTimeout(function () {
           announcementTimer = 0;
-          status.textContent = 'Step ' + (state.step + 1) + ' of ' + config.steps.length + ': ' + config.steps[state.step].label + '. ' + config.steps[state.step].detail;
+          status.textContent = '第 ' + (state.step + 1) + ' 步，共 ' + config.steps.length + ' 步：' + config.steps[state.step].label + '。' + config.steps[state.step].detail;
         }, 0);
       }
 
@@ -423,11 +436,11 @@
       var shell = el('section', { class: 'asf-shell' }, [
         el('div', { class: 'asf-head' }, [
           el('strong', {}, [config.title]),
-          el('span', {}, [config.hint || 'step through the boundary'])
+          el('span', {}, [config.hint || '逐步查看边界'])
         ]),
         el('div', { class: 'asf-body' }, [
           controls,
-          el('div', { class: 'asf-canvas', tabindex: '0', 'aria-label': 'Scrollable diagram canvas' }, [svg]),
+          el('div', { class: 'asf-canvas', tabindex: '0', 'aria-label': '可滚动的图解画布' }, [svg]),
           note,
           status
         ]),
@@ -445,340 +458,340 @@
 
   var figures = {
     'skill-package-anatomy': makeFigure({
-      title: 'Skill package anatomy',
-      hint: 'open the complete deployable unit',
-      description: 'A tree showing SKILL.md, references, scripts, and assets inside one release-readiness skill package.',
+      title: '技能包结构（Skill Package Anatomy）',
+      hint: '展开完整的可部署单元',
+      description: '树状图展示一个 release-readiness 技能包内的 SKILL.md、参考资料、脚本与素材。',
       viewBox: '0 0 760 430',
-      zones: [Z(18, 18, 724, 392, 'one deployable directory')],
+      zones: [Z(18, 18, 724, 392, '一个可部署目录')],
       nodes: [
-        N('bundle', 290, 42, 'release-readiness', 'package root', 0, '', 180, 58),
-        N('entry', 35, 150, 'SKILL.md', 'identity + procedure', 1, '', 140, 64),
-        N('refs', 205, 150, 'references/', 'branch rules', 1, '', 140, 64),
-        N('scripts', 375, 150, 'scripts/', 'deterministic helpers', 1, '', 140, 64),
-        N('assets', 545, 150, 'assets/', 'output material', 1, '', 140, 64),
-        N('policy', 185, 292, 'release-policy.md', 'domain constraint', 2, '', 150, 62),
-        N('format', 350, 292, 'changelog-format.md', 'format contract', 2, '', 160, 62),
-        N('inspect', 520, 292, 'inspect_release.py', 'evidence collector', 2, '', 150, 62),
-        N('checklist', 590, 342, 'release-checklist.md', 'deliverable template', 2, '', 145, 62)
+        N('bundle', 290, 42, 'release-readiness', '技能包根目录', 0, '', 180, 58),
+        N('entry', 35, 150, 'SKILL.md', '身份 + 操作流程', 1, '', 140, 64),
+        N('refs', 205, 150, 'references/', '分支规则', 1, '', 140, 64),
+        N('scripts', 375, 150, 'scripts/', '确定性辅助程序', 1, '', 140, 64),
+        N('assets', 545, 150, 'assets/', '输出素材', 1, '', 140, 64),
+        N('policy', 185, 292, 'release-policy.md', '领域约束', 2, '', 150, 62),
+        N('format', 350, 292, 'changelog-format.md', '格式契约', 2, '', 160, 62),
+        N('inspect', 520, 292, 'inspect_release.py', '证据收集器', 2, '', 150, 62),
+        N('checklist', 590, 342, 'release-checklist.md', '交付物模板', 2, '', 145, 62)
       ],
       edges: [
         E('bundle', 'entry', 1), E('bundle', 'refs', 1), E('bundle', 'scripts', 1), E('bundle', 'assets', 1),
         E('refs', 'policy', 2), E('refs', 'format', 2), E('scripts', 'inspect', 2), E('assets', 'checklist', 2)
       ],
       steps: [
-        S('The directory is the unit', 'Install, version, review, and remove the whole package root.', ['bundle']),
-        S('Four responsibilities', 'SKILL.md routes and instructs. References explain. Scripts compute. Assets become outputs.', ['entry', 'refs', 'scripts', 'assets']),
-        S('Every pointer must resolve', 'A copied entry file with missing companions is a broken package.', ['policy', 'format', 'inspect', 'checklist'])
+        S('以目录为单位', '安装、版本管理、审查和删除都应针对整个技能包根目录。', ['bundle']),
+        S('四项职责', 'SKILL.md 负责路由和指导；参考资料负责解释；脚本负责计算；素材用于生成输出。', ['entry', 'refs', 'scripts', 'assets']),
+        S('每个引用都必须能解析', '只复制入口文件却缺少配套文件，会得到不完整的技能包。', ['policy', 'format', 'inspect', 'checklist'])
       ],
-      caption: 'Package integrity includes every file the workflow names. Validate the tree before publishing the catalog entry.'
+      caption: '技能包完整性涵盖工作流提及的每个文件。发布目录条目前，先校验整个目录树。'
     }),
 
     'skill-runtime-lifecycle': makeFigure({
-      title: 'Skill runtime lifecycle',
-      hint: 'follow identity into verified work',
-      description: 'The skill lifecycle from package discovery through validation, selection, activation, execution, and verification.',
+      title: '技能运行时生命周期（Skill Runtime Lifecycle）',
+      hint: '沿技能身份追踪到经过验证的工作成果',
+      description: '技能从包发现开始，依次经历校验、选择、激活、执行和结果验证的生命周期。',
       viewBox: '0 0 920 500',
       nodes: [
-        N('discover', 30, 55, 'Discover', 'find package', 0, '', 130, 60),
-        N('validate', 190, 55, 'Validate', 'metadata + layout', 1, '', 140, 60),
-        N('catalog', 360, 55, 'Catalog', 'name + description', 2, '', 140, 60),
-        N('select', 535, 55, 'Select?', 'explicit or implicit', 3, 'decision', 140, 60),
-        N('unloaded', 730, 25, 'Leave unloaded', 'no match', 4, 'warning', 150, 54),
-        N('activate', 730, 125, 'Activate', 'body enters context', 4, '', 150, 60),
-        N('body', 535, 230, 'Load SKILL.md', 'working procedure', 5, '', 150, 60),
-        N('resources', 350, 230, 'Disclose resources', 'only required branch', 6, '', 155, 60),
-        N('execute', 165, 230, 'Request execution', 'host tools + policy', 7, '', 155, 60),
-        N('artifact', 30, 340, 'Artifact + evidence', 'observable result', 8, '', 155, 60),
-        N('verify', 250, 340, 'Verify', 'independent gate', 9, '', 135, 60)
+        N('discover', 30, 55, '发现', '查找技能包', 0, '', 130, 60),
+        N('validate', 190, 55, '校验', '元数据 + 目录布局', 1, '', 140, 60),
+        N('catalog', 360, 55, '技能目录（Catalog）', 'name + description', 2, '', 140, 60),
+        N('select', 535, 55, '是否选择？', '显式或隐式', 3, 'decision', 140, 60),
+        N('unloaded', 730, 25, '保持未加载', '无匹配', 4, 'warning', 150, 54),
+        N('activate', 730, 125, '激活（Activate）', '正文进入上下文', 4, '', 150, 60),
+        N('body', 535, 230, '加载 SKILL.md', '操作流程', 5, '', 150, 60),
+        N('resources', 350, 230, '按需提供资源', '仅限所需分支', 6, '', 155, 60),
+        N('execute', 165, 230, '请求执行', '宿主工具 + 策略', 7, '', 155, 60),
+        N('artifact', 30, 340, '交付物 + 证据', '可观察的结果', 8, '', 155, 60),
+        N('verify', 250, 340, '验证', '独立门禁', 9, '', 135, 60)
       ],
       edges: [
         E('discover', 'validate', 1), E('validate', 'catalog', 2), E('catalog', 'select', 3),
-        E('select', 'unloaded', 4, 'no match', 'warning'), E('select', 'activate', 4, 'selected'),
+        E('select', 'unloaded', 4, '无匹配', 'warning'), E('select', 'activate', 4, '已选择'),
         E('activate', 'body', 5), E('body', 'resources', 6), E('resources', 'execute', 7),
         E('execute', 'artifact', 8), E('artifact', 'verify', 9)
       ],
       steps: [
-        S('Discovery is not activation', 'The runtime first finds a possible package.', ['discover']),
-        S('Reject malformed packages early', 'Validation protects the catalog before the model sees an entry.', ['validate']),
-        S('Publish compact routing metadata', 'Only identity and trigger information need catalog space.', ['catalog']),
-        S('Selection is a separate decision', 'A host-specific explicit action or a description-driven model match can select the package.', ['select']),
-        S('Selection can abstain', 'No match leaves the body unloaded. A match activates it.', ['unloaded', 'activate']),
-        S('Activation loads procedure', 'The body enters model-visible context, but no tool authority appears.', ['body']),
-        S('Disclosure follows branches', 'Read only the references, scripts, or assets required now.', ['resources']),
-        S('Execution stays host-controlled', 'The agent requests tools or scripts under active policy.', ['execute']),
-        S('Return evidence with the artifact', 'A fluent claim is weaker than paths, observations, and exit results.', ['artifact']),
-        S('Verification closes the loop', 'Check the result independently of the model that produced it.', ['verify'])
+        S('发现不等于激活', '运行时先找到一个候选技能包。', ['discover']),
+        S('尽早拒绝格式错误的技能包', '在模型看到条目前，通过校验保护技能目录。', ['validate']),
+        S('发布精简的路由元数据', '只有身份和触发条件信息需要占用目录空间。', ['catalog']),
+        S('选择是独立决策', '宿主特有的显式操作，或模型根据描述进行的匹配，都可以选中技能包。', ['select']),
+        S('选择过程可以弃选（Abstain）', '没有匹配时保持正文未加载；匹配成功则激活技能。', ['unloaded', 'activate']),
+        S('激活会加载操作流程', '正文进入模型可见的上下文，但不会因此获得工具权限。', ['body']),
+        S('沿分支按需提供资源', '只读取当前所需的参考资料、脚本或素材。', ['resources']),
+        S('执行始终由宿主控制', '智能体（Agent）在当前生效的策略下请求工具或脚本。', ['execute']),
+        S('随交付物一起返回证据', '流畅的陈述不如路径、观测记录和退出结果有说服力。', ['artifact']),
+        S('通过验证闭合流程', '独立于生成结果的模型检查结果。', ['verify'])
       ],
-      caption: 'Diagnose failures by lifecycle stage. Discovered, selected, activated, executed, and verified are different states.'
+      caption: '按生命周期阶段诊断故障。已发现、已选择、已激活、已执行和已验证是不同状态。'
     }),
 
     'skill-tool-orthogonality': makeFigure({
-      title: 'Skill procedure and tool capability',
-      hint: 'separate how from what can run',
-      description: 'A feedback loop in which an activated skill guides procedure while a host tool returns observations for the final artifact.',
+      title: '技能流程与工具能力（Skill Procedure and Tool Capability）',
+      hint: '区分如何开展工作与可以执行什么',
+      description: '反馈循环中，已激活的技能指导操作流程，宿主工具返回观测结果，为最终交付物提供依据。',
       viewBox: '0 0 760 500',
-      zones: [Z(28, 22, 704, 450, 'procedure loop')],
+      zones: [Z(28, 22, 704, 450, '操作流程循环')],
       nodes: [
-        N('goal', 300, 42, 'User goal', 'defines outcome', 0, '', 160, 58),
-        N('skill', 300, 128, 'Activated skill', 'procedural knowledge', 1, '', 160, 60),
-        N('procedure', 300, 220, 'Decision rules', 'choose next action', 2, 'decision', 160, 60),
-        N('tool', 60, 220, 'MCP or local tool', 'typed capability', 3, '', 170, 60),
-        N('observation', 60, 330, 'Observation', 'evidence, not authority', 4, '', 170, 60),
-        N('artifact', 540, 220, 'Artifact', 'contracted output', 5, '', 150, 60),
-        N('verify', 540, 330, 'Verification', 'independent check', 6, '', 150, 60)
+        N('goal', 300, 42, '用户目标', '定义预期结果', 0, '', 160, 58),
+        N('skill', 300, 128, '已激活的技能', '过程性知识', 1, '', 160, 60),
+        N('procedure', 300, 220, '决策规则', '选择下一步操作', 2, 'decision', 160, 60),
+        N('tool', 60, 220, 'MCP 或本地工具', '有类型约束的能力', 3, '', 170, 60),
+        N('observation', 60, 330, '观测（Observation）', '证据，不是权限', 4, '', 170, 60),
+        N('artifact', 540, 220, '交付物（Artifact）', '契约规定的输出', 5, '', 150, 60),
+        N('verify', 540, 330, '验证（Verification）', '独立检查', 6, '', 150, 60)
       ],
       edges: [
         E('goal', 'skill', 1), E('skill', 'procedure', 2), E('procedure', 'tool', 3), E('tool', 'observation', 4),
-        E('observation', 'procedure', 4, 'feed evidence back', '', [[145, 330], [145, 300], [280, 300], [280, 250], [300, 250]]),
+        E('observation', 'procedure', 4, '反馈证据', '', [[145, 330], [145, 300], [280, 300], [280, 250], [300, 250]]),
         E('procedure', 'artifact', 5), E('artifact', 'verify', 6)
       ],
       steps: [
-        S('The user owns the goal', 'The task starts above both the skill and the tool.', ['goal']),
-        S('The skill contributes method', 'It supplies procedure and decision boundaries.', ['skill']),
-        S('Procedure chooses a capability', 'Naming a tool does not create or authorize it.', ['procedure']),
-        S('The host exposes the real tool', 'The tool contract defines what can actually be requested.', ['tool']),
-        S('Observations update judgment', 'Tool output returns as evidence, not as a higher-priority instruction.', ['observation', 'procedure']),
-        S('Procedure produces an artifact', 'The skill turns observations into the required output.', ['artifact']),
-        S('Verification stays independent', 'The artifact must pass a check beyond the model narrative.', ['verify'])
+        S('目标由用户决定', '任务的起点先于技能和工具的选择。', ['goal']),
+        S('技能提供方法', '技能提供操作流程和决策边界。', ['skill']),
+        S('流程选择所需能力', '提到工具名称不会创建该工具，也不会授予其使用权限。', ['procedure']),
+        S('宿主提供实际工具', '工具契约定义实际可以请求的操作。', ['tool']),
+        S('观测结果更新判断', '工具输出以证据形式返回，不是更高优先级的指令。', ['observation', 'procedure']),
+        S('流程产出交付物', '技能将观测结果转化为所需输出。', ['artifact']),
+        S('验证保持独立', '交付物必须通过模型陈述之外的检查。', ['verify'])
       ],
-      caption: 'A skill answers how to approach work. A tool answers which operation the host can perform.'
+      caption: '技能回答如何开展工作；工具回答宿主能够执行哪些操作。'
     }),
 
     'skill-validation-order': makeFigure({
-      title: 'Skill validation order',
-      hint: 'fail on the first broken invariant',
-      description: 'A left-to-right validation pipeline from frontmatter delimiters to body and resource rules.',
+      title: '技能校验顺序（Skill Validation Order）',
+      hint: '遇到首个不满足的不变量就报错',
+      description: '从左向右的校验流水线，从元数据头分隔符开始，直到正文和资源规则。',
       viewBox: '0 0 860 230',
       nodes: [
-        N('frontmatter', 20, 78, 'Frontmatter', 'delimiters', 0, '', 125, 62),
-        N('scalar', 160, 78, 'Scalar metadata', 'safe parse', 1, '', 125, 62),
-        N('name', 300, 78, 'Name = directory', 'stable identity', 2, '', 135, 62),
-        N('required', 450, 78, 'Required fields', 'name + description', 3, '', 135, 62),
-        N('extensions', 600, 78, 'Known extensions', 'adapter allowlist', 4, '', 125, 62),
-        N('body', 740, 78, 'Body + resources', 'deep rules', 5, '', 105, 62)
+        N('frontmatter', 20, 78, '元数据头（Frontmatter）', '分隔符', 0, '', 125, 62),
+        N('scalar', 160, 78, '标量元数据', '安全解析', 1, '', 125, 62),
+        N('name', 300, 78, '名称 = 目录名', '稳定身份', 2, '', 135, 62),
+        N('required', 450, 78, '必填字段', 'name + description', 3, '', 135, 62),
+        N('extensions', 600, 78, '已知扩展', '适配器允许列表', 4, '', 125, 62),
+        N('body', 740, 78, '正文 + 资源', '深入校验规则', 5, '', 105, 62)
       ],
       edges: [E('frontmatter', 'scalar', 1), E('scalar', 'name', 2), E('name', 'required', 3), E('required', 'extensions', 4), E('extensions', 'body', 5)],
       steps: [
-        S('Find the document boundary', 'Do not infer metadata from a malformed header.', ['frontmatter']),
-        S('Parse only the expected shape', 'Reject surprising metadata types before deeper checks.', ['scalar']),
-        S('Prove package identity', 'The declared name and containing directory must agree.', ['name']),
-        S('Require routing metadata', 'Missing identity or description prevents catalog publication.', ['required']),
-        S('Name host-specific semantics', 'Unknown extensions require an explicit adapter decision.', ['extensions']),
-        S('Then inspect body and resources', 'Deep checks are useful only after the cheap structure is sound.', ['body'])
+        S('定位文档边界', '不要从格式错误的头部推断元数据。', ['frontmatter']),
+        S('只解析预期结构', '在深入检查之前，拒绝非预期的元数据类型。', ['scalar']),
+        S('核实技能包身份', '声明的名称必须与所在目录名一致。', ['name']),
+        S('要求提供路由元数据', '缺少身份或描述时，不得发布到目录。', ['required']),
+        S('明确宿主特有语义', '未知扩展需要由适配器明确决定如何处理。', ['extensions']),
+        S('随后检查正文与资源', '只有低成本的结构检查通过后，深入检查才有意义。', ['body'])
       ],
-      caption: 'Cheap structural checks should fail before secondary content errors can hide the first broken invariant.'
+      caption: '应先用低成本结构检查发现错误，避免后续内容错误掩盖首个不满足的不变量。'
     }),
 
     'skill-discovery-pipeline': makeFigure({
-      title: 'Discovery compiler pipeline',
-      hint: 'compile filesystem candidates into a catalog',
-      description: 'Configured roots pass through enumeration, package validation, provenance, collision resolution, budgeting, and catalog publication.',
+      title: '发现编译流水线（Discovery Compiler Pipeline）',
+      hint: '将文件系统候选包编译为技能目录',
+      description: '从配置的根目录出发，依次完成枚举、包校验、来源记录、冲突消解、预算控制与目录发布。',
       viewBox: '0 0 980 250',
       nodes: [
-        N('roots', 20, 88, 'Configured roots', 'workspace, user, admin', 0, '', 130, 66),
-        N('enumerate', 165, 88, 'Enumerate', 'immediate skill dirs', 1, '', 120, 66),
-        N('entry', 300, 88, 'Find SKILL.md', 'one entry point', 2, '', 120, 66),
-        N('validate', 435, 88, 'Validate package', 'shape + limits', 3, '', 120, 66),
-        N('provenance', 570, 88, 'Attach provenance', 'scope + source', 4, '', 125, 66),
-        N('collision', 710, 88, 'Resolve collisions', 'declared policy', 5, 'decision', 120, 66),
-        N('budget', 845, 38, 'Apply budget', 'bounded catalog', 6, '', 120, 62),
-        N('publish', 845, 148, 'Publish entry', 'name + description + path', 7, '', 120, 62)
+        N('roots', 20, 88, '配置的根目录', '工作区、用户、管理员', 0, '', 130, 66),
+        N('enumerate', 165, 88, '枚举（Enumerate）', '直接下属技能目录', 1, '', 120, 66),
+        N('entry', 300, 88, '查找 SKILL.md', '单一入口', 2, '', 120, 66),
+        N('validate', 435, 88, '校验技能包', '结构 + 限制', 3, '', 120, 66),
+        N('provenance', 570, 88, '附加来源信息', '作用域 + 来源', 4, '', 125, 66),
+        N('collision', 710, 88, '消解命名冲突', '声明的策略', 5, 'decision', 120, 66),
+        N('budget', 845, 38, '应用预算', '限制目录大小', 6, '', 120, 62),
+        N('publish', 845, 148, '发布条目', 'name + description + path', 7, '', 120, 62)
       ],
       edges: [
         E('roots', 'enumerate', 1), E('enumerate', 'entry', 2), E('entry', 'validate', 3), E('validate', 'provenance', 4),
         E('provenance', 'collision', 5), E('collision', 'budget', 6), E('budget', 'publish', 7)
       ],
       steps: [
-        S('Start with declared roots', 'Discovery scope is runtime policy, not a package property.', ['roots']),
-        S('Preserve package boundaries', 'Inspect immediate skill directories instead of publishing every nested example.', ['enumerate']),
-        S('Locate one entry point', 'A directory becomes a candidate only when SKILL.md is present where expected.', ['entry']),
-        S('Validate before visibility', 'Malformed packages should not consume catalog space.', ['validate']),
-        S('Carry source identity', 'Scope and provenance make duplicate names diagnosable.', ['provenance']),
-        S('Resolve names by policy', 'Keep, qualify, reject, or choose precedence explicitly.', ['collision']),
-        S('Budget the exact serialization', 'Catalog size belongs to the host and active context is a separate budget.', ['budget']),
-        S('Publish compact metadata', 'The model sees routing identity, not the full package tree.', ['publish'])
+        S('从声明的根目录开始', '发现范围由运行时策略决定，不是技能包的属性。', ['roots']),
+        S('保留技能包边界', '检查直接下属的技能目录，不要把每个嵌套示例都发布出去。', ['enumerate']),
+        S('定位唯一入口', '只有在预期位置存在 SKILL.md 时，目录才成为候选技能包。', ['entry']),
+        S('展示前先校验', '格式错误的技能包不应占用目录空间。', ['validate']),
+        S('携带来源身份', '作用域与来源信息使重名问题能够被诊断。', ['provenance']),
+        S('按策略解析名称', '明确决定保留、添加限定名、拒绝，或按优先级选择。', ['collision']),
+        S('对实际序列化结果计算预算', '目录大小由宿主管理，活动上下文另有独立预算。', ['budget']),
+        S('发布精简元数据', '模型看到的是路由身份信息，而非完整技能包目录树。', ['publish'])
       ],
-      caption: 'Discovery is a deterministic compilation process. Preserve rejected and shadowed candidates in diagnostics.'
+      caption: '发现是确定性的编译过程。诊断信息中应保留被拒绝和被同名条目遮蔽的候选包。'
     }),
 
     'skill-disclosure-levels': makeFigure({
-      title: 'Three disclosure levels',
-      hint: 'admit context only when the task earns it',
-      description: 'Three stacked levels show catalog metadata, the active SKILL.md body, and branch-specific resources.',
+      title: '三级按需披露（Three Disclosure Levels）',
+      hint: '仅在任务需要时引入上下文',
+      description: '三个堆叠层级分别展示目录元数据、已激活的 SKILL.md 正文和分支专用资源。',
       viewBox: '0 0 760 470',
-      zones: [Z(65, 30, 630, 390, 'context admitted for one task')],
+      zones: [Z(65, 30, 630, 390, '为单个任务引入的上下文')],
       nodes: [
-        N('level1', 150, 62, 'Level 1: catalog metadata', 'name + description', 0, '', 460, 72),
-        N('level2', 150, 184, 'Level 2: SKILL.md body', 'workflow + decision map', 1, '', 460, 72),
-        N('level3', 150, 306, 'Level 3: supporting resources', 'references + scripts + assets', 2, '', 460, 72)
+        N('level1', 150, 62, '第 1 层：目录元数据', 'name + description', 0, '', 460, 72),
+        N('level2', 150, 184, '第 2 层：SKILL.md 正文', '工作流 + 决策映射', 1, '', 460, 72),
+        N('level3', 150, 306, '第 3 层：配套资源', '参考资料 + 脚本 + 素材', 2, '', 460, 72)
       ],
-      edges: [E('level1', 'level2', 1, 'skill selected'), E('level2', 'level3', 2, 'branch requires detail')],
+      edges: [E('level1', 'level2', 1, '技能已选中'), E('level2', 'level3', 2, '分支需要详细信息')],
       steps: [
-        S('Level 1 routes', 'Name and description let the model distinguish eligible skills without loading their bodies.', ['level1']),
-        S('Level 2 starts work', 'Activation loads enough procedure to choose a branch and begin safely.', ['level2']),
-        S('Level 3 supplies exact detail', 'Only the selected branch earns references, scripts, or assets in context.', ['level3'])
+        S('第 1 层负责路由', '名称和描述让模型无需加载正文，就能区分符合条件的技能。', ['level1']),
+        S('第 2 层启动工作', '激活时加载足够的操作流程，以便选择分支并安全开始工作。', ['level2']),
+        S('第 3 层提供具体细节', '只有选中的分支才需要将其参考资料、脚本或素材引入上下文。', ['level3'])
       ],
-      caption: 'Progressive disclosure is staged context admission, not permission escalation.'
+      caption: '渐进式披露（Progressive Disclosure）是分阶段引入上下文，不是提升权限。'
     }),
 
     'skill-reference-map': makeFigure({
-      title: 'One-hop reference map',
-      hint: 'make every branch directly reachable',
-      description: 'SKILL.md points directly to Python, container, documentation, and report-template references.',
+      title: '单跳引用映射（One-hop Reference Map）',
+      hint: '让每个分支都能直接到达',
+      description: 'SKILL.md 直接指向 Python、容器、文档和报告模板的参考文件。',
       viewBox: '0 0 760 390',
       nodes: [
-        N('skill', 300, 42, 'SKILL.md', 'decision map', 0, '', 160, 62),
-        N('python', 30, 245, 'python-release.md', 'Python branch', 1, '', 155, 62),
-        N('container', 210, 245, 'container-release.md', 'image branch', 1, '', 165, 62),
-        N('docs', 405, 245, 'docs-release.md', 'documentation branch', 1, '', 145, 62),
-        N('template', 575, 245, 'report-template.md', 'output contract', 1, '', 155, 62)
+        N('skill', 300, 42, 'SKILL.md', '决策映射', 0, '', 160, 62),
+        N('python', 30, 245, 'python-release.md', 'Python 分支', 1, '', 155, 62),
+        N('container', 210, 245, 'container-release.md', '镜像分支', 1, '', 165, 62),
+        N('docs', 405, 245, 'docs-release.md', '文档分支', 1, '', 145, 62),
+        N('template', 575, 245, 'report-template.md', '输出契约', 1, '', 155, 62)
       ],
-      edges: [E('skill', 'python', 1, 'Python'), E('skill', 'container', 1, 'container'), E('skill', 'docs', 1, 'docs'), E('skill', 'template', 1, 'all branches')],
+      edges: [E('skill', 'python', 1, 'Python'), E('skill', 'container', 1, '容器'), E('skill', 'docs', 1, '文档'), E('skill', 'template', 1, '所有分支')],
       steps: [
-        S('The body is the map', 'Activation should reveal the default workflow and every load condition.', ['skill']),
-        S('Branches point one hop away', 'Direct links make resource reachability observable and keep unrelated guides unloaded.', ['python', 'container', 'docs', 'template'])
+        S('正文就是导航图', '激活后应展示默认工作流及每项资源的加载条件。', ['skill']),
+        S('分支通过单跳链接直达资源', '直接链接使资源可达性能够被检查，并让无关指南保持未加载。', ['python', 'container', 'docs', 'template'])
       ],
-      caption: 'A direct decision map beats a topic dump. Every supporting file should have a stated load condition.'
+      caption: '直接的决策映射优于主题堆砌。每个配套文件都应声明加载条件。'
     }),
 
     'skill-resource-containment': makeFigure({
-      title: 'Resource containment gate',
-      hint: 'resolve the real target before reading',
-      description: 'A decision tree rejects absolute paths, parent traversal, symlink escape, wrong file types, and oversized resources.',
+      title: '资源边界门禁（Resource Containment Gate）',
+      hint: '读取前先解析真实目标',
+      description: '决策树拒绝绝对路径、父目录遍历、符号链接逃逸、错误文件类型及超大资源。',
       viewBox: '0 0 940 590',
       nodes: [
-        N('request', 35, 60, 'Requested path', 'relative package input', 0, '', 145, 62),
-        N('escape', 225, 60, 'Absolute or parent escape?', '../ or /root', 1, 'decision', 170, 62),
-        N('reject1', 470, 18, 'Reject', 'invalid input shape', 2, 'warning', 125, 52),
-        N('resolve', 470, 105, 'Resolve path', 'real package root', 2, '', 140, 60),
-        N('inside', 650, 105, 'Target under root?', 'after symlinks', 3, 'decision', 150, 62),
-        N('reject2', 815, 45, 'Reject', 'escaped root', 4, 'warning', 110, 52),
-        N('type', 650, 230, 'Expected file type?', 'regular allowed file', 4, 'decision', 150, 62),
-        N('reject3', 815, 230, 'Reject', 'wrong or special file', 5, 'warning', 110, 52),
-        N('limit', 455, 350, 'Within size limit?', 'bounded context read', 5, 'decision', 155, 62),
-        N('reject4', 670, 390, 'Reject', 'oversized resource', 6, 'warning', 130, 52),
-        N('load', 255, 455, 'Load resource', 'record reason + bytes', 6, '', 150, 62)
+        N('request', 35, 60, '请求的路径', '包内相对路径输入', 0, '', 145, 62),
+        N('escape', 225, 60, '绝对路径或向上逃逸？', '../ 或 /root', 1, 'decision', 170, 62),
+        N('reject1', 470, 18, '拒绝', '输入结构无效', 2, 'warning', 125, 52),
+        N('resolve', 470, 105, '解析路径', '真实技能包根目录', 2, '', 140, 60),
+        N('inside', 650, 105, '目标在根目录内？', '解析符号链接后', 3, 'decision', 150, 62),
+        N('reject2', 815, 45, '拒绝', '已逃出根目录', 4, 'warning', 110, 52),
+        N('type', 650, 230, '文件类型符合预期？', '允许的普通文件', 4, 'decision', 150, 62),
+        N('reject3', 815, 230, '拒绝', '错误类型或特殊文件', 5, 'warning', 110, 52),
+        N('limit', 455, 350, '大小未超限？', '限制上下文读取量', 5, 'decision', 155, 62),
+        N('reject4', 670, 390, '拒绝', '资源超大', 6, 'warning', 130, 52),
+        N('load', 255, 455, '加载资源', '记录原因 + 字节数', 6, '', 150, 62)
       ],
       edges: [
-        E('request', 'escape', 1), E('escape', 'reject1', 2, 'yes', 'warning'), E('escape', 'resolve', 2, 'no'),
-        E('resolve', 'inside', 3), E('inside', 'reject2', 4, 'no', 'warning'), E('inside', 'type', 4, 'yes'),
-        E('type', 'reject3', 5, 'no', 'warning'), E('type', 'limit', 5, 'yes'),
-        E('limit', 'reject4', 6, 'no', 'warning'), E('limit', 'load', 6, 'yes')
+        E('request', 'escape', 1), E('escape', 'reject1', 2, '是', 'warning'), E('escape', 'resolve', 2, '否'),
+        E('resolve', 'inside', 3), E('inside', 'reject2', 4, '否', 'warning'), E('inside', 'type', 4, '是'),
+        E('type', 'reject3', 5, '否', 'warning'), E('type', 'limit', 5, '是'),
+        E('limit', 'reject4', 6, '否', 'warning'), E('limit', 'load', 6, '是')
       ],
       steps: [
-        S('Start with an untrusted relative path', 'The request is data until containment proves otherwise.', ['request']),
-        S('Reject obvious escape syntax', 'Absolute paths and parent segments never reach filesystem resolution.', ['escape']),
-        S('Resolve against the package root', 'String prefixes cannot detect symlink or normalization escapes.', ['reject1', 'resolve']),
-        S('Compare resolved locations', 'The real target must remain inside the real package root.', ['inside']),
-        S('Check operation and file type', 'Containment alone does not make sockets, devices, or wrong suffixes valid.', ['reject2', 'type']),
-        S('Bound context admission', 'Reject unexpected types and files above the declared size limit.', ['reject3', 'limit']),
-        S('Load with evidence or reject', 'Record the resource, branch reason, and byte count without logging secrets.', ['reject4', 'load'])
+        S('从不可信的相对路径开始', '在边界检查证明路径合规之前，请求只是不可信数据。', ['request']),
+        S('拒绝明显的逃逸语法', '绝对路径和父目录片段不得进入文件系统解析环节。', ['escape']),
+        S('相对于技能包根目录解析', '字符串前缀检查无法检测符号链接或路径规范化造成的逃逸。', ['reject1', 'resolve']),
+        S('比较解析后的实际位置', '真实目标必须始终位于真实技能包根目录内。', ['inside']),
+        S('检查操作与文件类型', '仅仅位于边界内，并不能使套接字、设备或后缀错误的文件成为有效输入。', ['reject2', 'type']),
+        S('限制引入上下文的内容', '拒绝非预期类型，以及超过声明大小限制的文件。', ['reject3', 'limit']),
+        S('记录证据后加载，否则拒绝', '记录资源、分支选择原因和字节数，不要将秘密写入日志。', ['reject4', 'load'])
       ],
-      caption: 'Resolved containment protects the package boundary. It does not prove the in-package content is trustworthy.'
+      caption: '解析后的边界检查保护技能包边界，但不能证明包内内容可信。'
     }),
 
     'skill-invocation-stages': makeFigure({
-      title: 'Five invocation stages',
-      hint: 'name the exact boundary that failed',
-      description: 'A state path from discovered to completed with denied, not-selected, and blocked exits.',
+      title: '调用的五个阶段（Five Invocation Stages）',
+      hint: '明确指出失败发生在哪个边界',
+      description: '从已发现到已完成的状态路径，包含被拒绝、未选中和受阻的退出分支。',
       viewBox: '0 0 940 470',
       nodes: [
-        N('discovered', 25, 75, 'Discovered', 'package exists', 0, '', 125, 60),
-        N('eligible', 180, 75, 'Eligible', 'actor + policy allow', 1, '', 130, 60),
-        N('selected', 340, 75, 'Selected', 'host identity or description', 2, '', 130, 60),
-        N('activated', 500, 75, 'Activated', 'body in context', 3, '', 130, 60),
-        N('executing', 660, 75, 'Executing', 'work begins', 4, '', 130, 60),
-        N('completed', 820, 75, 'Completed', 'output verified', 5, '', 105, 60),
-        N('denied', 180, 245, 'Denied', 'actor or policy blocks', 1, 'warning', 130, 58),
-        N('notselected', 340, 330, 'Not selected', 'threshold not met', 2, 'warning', 130, 58),
-        N('blocked', 500, 245, 'Blocked', 'capability or approval absent', 4, 'warning', 150, 58)
+        N('discovered', 25, 75, '已发现（Discovered）', '技能包存在', 0, '', 125, 60),
+        N('eligible', 180, 75, '符合条件（Eligible）', '执行者与策略允许', 1, '', 130, 60),
+        N('selected', 340, 75, '已选中（Selected）', '宿主身份或描述', 2, '', 130, 60),
+        N('activated', 500, 75, '已激活（Activated）', '正文已进入上下文', 3, '', 130, 60),
+        N('executing', 660, 75, '执行中（Executing）', '工作开始', 4, '', 130, 60),
+        N('completed', 820, 75, '已完成（Completed）', '输出已验证', 5, '', 105, 60),
+        N('denied', 180, 245, '已拒绝（Denied）', '执行者或策略阻止', 1, 'warning', 130, 58),
+        N('notselected', 340, 330, '未选中（Not selected）', '未达到阈值', 2, 'warning', 130, 58),
+        N('blocked', 500, 245, '受阻（Blocked）', '缺少能力或批准', 4, 'warning', 150, 58)
       ],
       edges: [
-        E('discovered', 'eligible', 1), E('discovered', 'denied', 1, 'blocked by policy', 'warning'),
-        E('eligible', 'selected', 2), E('eligible', 'notselected', 2, 'router abstains', 'warning'),
-        E('selected', 'activated', 3), E('activated', 'executing', 4), E('activated', 'blocked', 4, 'missing authority', 'warning'),
+        E('discovered', 'eligible', 1), E('discovered', 'denied', 1, '被策略阻止', 'warning'),
+        E('eligible', 'selected', 2), E('eligible', 'notselected', 2, '路由器弃选', 'warning'),
+        E('selected', 'activated', 3), E('activated', 'executing', 4), E('activated', 'blocked', 4, '缺少权限', 'warning'),
         E('executing', 'completed', 5)
       ],
       steps: [
-        S('Discovered', 'The package exists in a configured scope. No actor has used it yet.', ['discovered']),
-        S('Eligible or denied', 'Policy decides whether this actor may request the skill.', ['eligible', 'denied']),
-        S('Selected or not selected', 'A host resolves explicit identity. Model routing compares catalog descriptions and may abstain.', ['selected', 'notselected']),
-        S('Activated', 'The body enters working context. This is still not tool execution.', ['activated']),
-        S('Executing or blocked', 'Work begins only when capability, permission, and approval are available.', ['executing', 'blocked']),
-        S('Completed', 'Independent verification turns an attempted workflow into a completed one.', ['completed'])
+        S('已发现（Discovered）', '技能包存在于配置的作用域中，但尚无执行者使用它。', ['discovered']),
+        S('符合条件或被拒绝', '策略决定该执行者是否可以请求此技能。', ['eligible', 'denied']),
+        S('选中或未选中', '宿主解析显式身份。模型路由比较目录描述，也可以弃选。', ['selected', 'notselected']),
+        S('已激活（Activated）', '正文进入工作上下文，但这仍不代表工具执行。', ['activated']),
+        S('开始执行或受阻', '只有具备能力、权限和批准时，工作才会开始。', ['executing', 'blocked']),
+        S('已完成（Completed）', '独立验证将一次工作流尝试变为已完成的工作。', ['completed'])
       ],
-      caption: 'A single skill_used flag hides the boundary where routing, policy, capability, or verification failed.'
+      caption: '单个 skill_used 标志会掩盖路由、策略、能力或验证究竟在哪个边界失败。'
     }),
 
     'skill-routing-abstention': makeFigure({
-      title: 'Routing with abstention',
-      hint: 'filter policy before comparing relevance',
-      description: 'A request passes actor eligibility and description comparison before a clear-match decision can activate, ask, or abstain.',
+      title: '支持弃选的路由（Routing with Abstention）',
+      hint: '先按策略筛选，再比较相关性',
+      description: '请求经过执行者资格筛选和描述比较后，由明确匹配判定决定激活、询问或弃选。',
       viewBox: '0 0 800 500',
       nodes: [
-        N('request', 40, 55, 'User request', 'task context', 0, '', 145, 60),
-        N('eligible', 235, 55, 'Filter eligibility', 'actor + host policy', 1, '', 155, 60),
-        N('compare', 445, 55, 'Compare descriptions', 'eligible catalog only', 2, '', 170, 60),
-        N('clear', 445, 180, 'One clear match?', 'threshold + margin', 3, 'decision', 170, 62),
-        N('activate', 75, 350, 'Activate skill', 'clear eligible winner', 4, '', 155, 60),
-        N('ask', 320, 350, 'Ask or reason normally', 'ambiguous near match', 4, 'warning', 180, 60),
-        N('none', 590, 350, 'Do not activate', 'no match', 4, 'warning', 155, 60)
+        N('request', 40, 55, '用户请求', '任务上下文', 0, '', 145, 60),
+        N('eligible', 235, 55, '筛选资格', '执行者 + 宿主策略', 1, '', 155, 60),
+        N('compare', 445, 55, '比较描述', '仅限符合条件的目录', 2, '', 170, 60),
+        N('clear', 445, 180, '存在唯一明确匹配？', '阈值 + 分数差距', 3, 'decision', 170, 62),
+        N('activate', 75, 350, '激活技能', '明确胜出的合格候选', 4, '', 155, 60),
+        N('ask', 320, 350, '询问或按常规推理', '接近但有歧义的匹配', 4, 'warning', 180, 60),
+        N('none', 590, 350, '不激活', '无匹配', 4, 'warning', 155, 60)
       ],
       edges: [
         E('request', 'eligible', 1), E('eligible', 'compare', 2), E('compare', 'clear', 3),
-        E('clear', 'activate', 4, 'yes'), E('clear', 'ask', 4, 'ambiguous', 'warning'), E('clear', 'none', 4, 'no match', 'warning')
+        E('clear', 'activate', 4, '是'), E('clear', 'ask', 4, '存在歧义', 'warning'), E('clear', 'none', 4, '无匹配', 'warning')
       ],
       steps: [
-        S('Begin with the request', 'Routing should preserve the task, not merely count keywords.', ['request']),
-        S('Filter by authority first', 'A blocked top match must not suppress a lower-scored eligible candidate.', ['eligible']),
-        S('Compare bounded descriptions', 'Capability, trigger, context, and exclusions shape relevance.', ['compare']),
-        S('Require a clear winner', 'The best eligible score still needs a threshold and ambiguity margin.', ['clear']),
-        S('Activate, ask, or abstain', 'No selection is a deliberate result when evidence is weak.', ['activate', 'ask', 'none'])
+        S('从请求本身出发', '路由应保留任务含义，而非仅统计关键词。', ['request']),
+        S('先按权限筛选', '被禁止的最高分匹配不能压制分数较低但符合条件的候选技能。', ['eligible']),
+        S('比较有界描述', '能力、触发条件、上下文和排除条件共同决定相关性。', ['compare']),
+        S('要求候选明确胜出', '符合条件的最高分候选仍须达到阈值，并满足消除歧义所需的分数差距。', ['clear']),
+        S('激活、询问或弃选', '证据不足时，不选择也是有意作出的结果。', ['activate', 'ask', 'none'])
       ],
-      caption: 'The router ranks only eligible skills and keeps an explicit abstain path.'
+      caption: '路由器只对符合条件的技能排序，并保留明确的弃选路径。'
     }),
 
     'skill-argument-boundaries': makeFigure({
-      title: 'Argument boundary transformations',
-      hint: 'preserve intent without executing text',
-      description: 'User text becomes parsed arguments, skill context, a typed tool call, and validated execution input.',
+      title: '参数边界转换（Argument Boundary Transformations）',
+      hint: '保留意图，不将文本当作代码执行',
+      description: '用户文本依次转化为解析后的参数、技能上下文、有类型约束的工具调用，以及经过校验的执行输入。',
       viewBox: '0 0 860 270',
-      zones: [Z(15, 30, 830, 190, 'text becomes data, then typed input')],
+      zones: [Z(15, 30, 830, 190, '文本先成为数据，再成为有类型约束的输入')],
       nodes: [
-        N('text', 35, 92, 'User text', 'quoted request', 0, '', 135, 62),
-        N('parser', 200, 92, 'Host parser', 'syntax + quoting', 1, '', 135, 62),
-        N('bound', 365, 92, 'Bound arguments', 'validated values', 2, '', 140, 62),
-        N('context', 535, 92, 'Skill context', 'procedure sees data', 3, '', 135, 62),
-        N('tool', 700, 92, 'Typed tool call', 'schema validates again', 4, '', 135, 62)
+        N('text', 35, 92, '用户文本', '带引号的请求', 0, '', 135, 62),
+        N('parser', 200, 92, '宿主解析器', '语法 + 引号规则', 1, '', 135, 62),
+        N('bound', 365, 92, '绑定后的参数', '已校验的值', 2, '', 140, 62),
+        N('context', 535, 92, '技能上下文', '流程读取数据', 3, '', 135, 62),
+        N('tool', 700, 92, '有类型约束的工具调用', '模式再次校验', 4, '', 135, 62)
       ],
       edges: [E('text', 'parser', 1), E('parser', 'bound', 2), E('bound', 'context', 3), E('context', 'tool', 4)],
       steps: [
-        S('User text is not a command string', 'Keep the original intent and quoting visible.', ['text']),
-        S('The host owns command syntax', 'Slash commands, variables, and quoting belong to the adapter.', ['parser']),
-        S('Bind and validate values', 'Required arguments, defaults, and allowed shapes become explicit data.', ['bound']),
-        S('Instructions consume data', 'The skill chooses a branch without interpolating raw text into a shell.', ['context']),
-        S('Typed tools validate again', 'Crossing into execution requires a schema and a bounded argument vector.', ['tool'])
+        S('用户文本不是命令字符串', '保留可检查的原始意图和引号。', ['text']),
+        S('命令语法由宿主管理', '斜杠命令、变量和引号规则属于适配器的职责。', ['parser']),
+        S('绑定并校验参数值', '必填参数、默认值和允许的结构都成为明确的数据。', ['bound']),
+        S('指令使用数据', '技能选择分支时，不将原始文本插入 shell 命令。', ['context']),
+        S('有类型约束的工具再次校验', '进入执行边界需要模式（Schema）以及范围受限的参数向量。', ['tool'])
       ],
-      caption: 'Every representation boundary should validate values without treating user-controlled text as code.'
+      caption: '每次跨越表示形式的边界都应校验值，不能把用户控制的文本当成代码。'
     }),
 
     'skill-host-adapter': makeFigure({
-      title: 'Portable core and host adapter',
-      hint: 'keep extensions outside the core contract',
-      description: 'A portable skill bundle and a host adapter contribute different inputs to one runtime activation boundary.',
+      title: '可移植核心与宿主适配器（Portable Core and Host Adapter）',
+      hint: '将扩展置于核心契约之外',
+      description: '可移植技能包与宿主适配器向同一个运行时激活边界提供不同输入。',
       viewBox: '0 0 860 500',
-      zones: [Z(25, 35, 365, 390, 'portable package'), Z(470, 35, 365, 390, 'host adapter')],
+      zones: [Z(25, 35, 365, 390, '可移植技能包'), Z(470, 35, 365, 390, '宿主适配器')],
       nodes: [
-        N('bundle', 130, 70, 'Portable bundle', 'cross-host directory', 0, '', 155, 60),
-        N('skill', 55, 180, 'SKILL.md', 'core procedure', 1, '', 130, 58),
-        N('refs', 205, 180, 'references/', 'branch detail', 1, '', 130, 58),
-        N('scripts', 130, 285, 'scripts/', 'helpers', 1, '', 130, 58),
-        N('adapter', 575, 70, 'Host adapter', 'runtime-specific code', 2, '', 155, 60),
-        N('discovery', 495, 180, 'Discovery path', 'where to search', 3, '', 135, 58),
-        N('api', 650, 180, 'Activation API', 'how to load', 3, '', 135, 58),
-        N('policy', 495, 285, 'Invocation policy', 'who may select', 3, '', 135, 58),
-        N('binding', 650, 285, 'Argument binding', 'host syntax', 3, '', 135, 58),
-        N('runtime', 345, 425, 'Runtime activation', 'core + adapter semantics', 4, '', 170, 58)
+        N('bundle', 130, 70, '可移植技能包', '跨宿主使用的目录', 0, '', 155, 60),
+        N('skill', 55, 180, 'SKILL.md', '核心流程', 1, '', 130, 58),
+        N('refs', 205, 180, 'references/', '分支细节', 1, '', 130, 58),
+        N('scripts', 130, 285, 'scripts/', '辅助程序', 1, '', 130, 58),
+        N('adapter', 575, 70, '宿主适配器', '运行时专用代码', 2, '', 155, 60),
+        N('discovery', 495, 180, '发现路径', '在哪里查找', 3, '', 135, 58),
+        N('api', 650, 180, '激活 API', '如何加载', 3, '', 135, 58),
+        N('policy', 495, 285, '调用策略', '谁可以选择', 3, '', 135, 58),
+        N('binding', 650, 285, '参数绑定', '宿主语法', 3, '', 135, 58),
+        N('runtime', 345, 425, '运行时激活', '核心 + 适配器语义', 4, '', 170, 58)
       ],
       edges: [
         E('bundle', 'skill', 1), E('bundle', 'refs', 1), E('bundle', 'scripts', 1),
@@ -786,234 +799,234 @@
         E('bundle', 'runtime', 4), E('adapter', 'runtime', 4)
       ],
       steps: [
-        S('Preserve a portable package', 'The entry file and companions should remain intelligible without one host.', ['bundle']),
-        S('Keep core responsibilities together', 'Procedure, references, and helpers travel as one directory.', ['skill', 'refs', 'scripts']),
-        S('Name the adapter', 'Runtime semantics need an explicit compatibility layer.', ['adapter']),
-        S('Host behavior stays host-specific', 'Discovery, activation APIs, policy fields, and argument syntax belong here.', ['discovery', 'api', 'policy', 'binding']),
-        S('Compose at the runtime boundary', 'The adapter activates the portable bundle without rewriting its core claims.', ['runtime'])
+        S('保留可移植的技能包', '入口文件及配套文件即使脱离某个宿主，也应保持可理解。', ['bundle']),
+        S('将核心职责放在一起', '流程、参考资料和辅助程序以同一目录整体分发。', ['skill', 'refs', 'scripts']),
+        S('明确适配器', '运行时语义需要明确的兼容层。', ['adapter']),
+        S('宿主行为保持宿主专用', '发现机制、激活 API、策略字段与参数语法都属于这一层。', ['discovery', 'api', 'policy', 'binding']),
+        S('在运行时边界组合', '适配器激活可移植技能包，而不改写其核心声明。', ['runtime'])
       ],
-      caption: 'Do not promote one host field into a fake universal standard. Test the adapter that gives it meaning.'
+      caption: '不要把某个宿主的字段冒充为通用标准。应测试赋予该字段实际语义的适配器。'
     }),
 
     'skill-authority-chain': makeFigure({
-      title: 'Authority and execution chain',
-      hint: 'activation proposes, the host authorizes',
-      description: 'An activated skill influences a model proposal that must pass capability, permission, approval, isolation, and verification.',
+      title: '权限与执行链（Authority and Execution Chain）',
+      hint: '激活影响提议，宿主负责授权',
+      description: '已激活技能影响模型提议，而提议必须通过能力、权限、批准、隔离与验证各层检查。',
       viewBox: '0 0 980 330',
       nodes: [
-        N('skill', 20, 105, 'Activated skill', 'procedural context', 0, '', 125, 62),
-        N('model', 165, 105, 'Model proposal', 'structured action', 1, '', 125, 62),
-        N('capability', 310, 105, 'Capability registry', 'operation exists', 2, '', 135, 62),
-        N('permission', 465, 105, 'Permission policy', 'actor + target', 3, '', 130, 62),
-        N('approval', 615, 105, 'Approval needed?', 'consequence gate', 4, 'decision', 135, 62),
-        N('executor', 775, 55, 'Isolated executor', 'bounded reach', 5, '', 140, 62),
-        N('stop', 775, 200, 'Stop and report', 'approval denied', 5, 'warning', 140, 58),
-        N('observe', 20, 245, 'Observation', 'execution evidence', 6, '', 125, 58),
-        N('verify', 180, 245, 'Verification gate', 'contract passes', 7, '', 135, 58)
+        N('skill', 20, 105, '已激活的技能', '流程上下文', 0, '', 125, 62),
+        N('model', 165, 105, '模型提议', '结构化操作', 1, '', 125, 62),
+        N('capability', 310, 105, '能力注册表', '操作存在', 2, '', 135, 62),
+        N('permission', 465, 105, '权限策略', '执行者 + 目标', 3, '', 130, 62),
+        N('approval', 615, 105, '需要批准？', '后果门禁', 4, 'decision', 135, 62),
+        N('executor', 775, 55, '隔离的执行器', '访问范围受限', 5, '', 140, 62),
+        N('stop', 775, 200, '停止并报告', '批准被拒绝', 5, 'warning', 140, 58),
+        N('observe', 20, 245, '观测（Observation）', '执行证据', 6, '', 125, 58),
+        N('verify', 180, 245, '验证门禁', '契约检查通过', 7, '', 135, 58)
       ],
       edges: [
         E('skill', 'model', 1), E('model', 'capability', 2), E('capability', 'permission', 3), E('permission', 'approval', 4),
-        E('approval', 'executor', 5, 'allowed or granted'), E('approval', 'stop', 5, 'denied', 'warning'),
+        E('approval', 'executor', 5, '策略允许或已批准'), E('approval', 'stop', 5, '已拒绝', 'warning'),
         E('executor', 'observe', 6, '', '', [[845, 117], [930, 117], [930, 275], [145, 275]]), E('observe', 'verify', 7)
       ],
       steps: [
-        S('Activation changes context', 'The skill can influence a proposal but grants no authority.', ['skill']),
-        S('Represent the action', 'Review argv, cwd, paths, network, credentials, and side effects before execution.', ['model']),
-        S('Expose only needed capabilities', 'An absent operation cannot be requested through the host.', ['capability']),
-        S('Authorize actor and target', 'Permission policy constrains this operation and scope.', ['permission']),
-        S('Ask for the actual consequence', 'Approval is meaningful only when target and effect are concrete.', ['approval']),
-        S('Execute or stop', 'Granted authority still runs inside isolation. Denial produces no side effect.', ['executor', 'stop']),
-        S('Capture observations', 'Exit codes, diffs, files, and tool results become evidence.', ['observe']),
-        S('Verify independently', 'Containment and authorization do not prove the result is correct.', ['verify'])
+        S('激活改变上下文', '技能可以影响提议，但不会授予任何权限。', ['skill']),
+        S('明确表示操作', '执行前审查 argv、cwd、路径、网络、凭据及副作用。', ['model']),
+        S('仅开放所需能力', '无法通过宿主请求不存在的操作。', ['capability']),
+        S('对执行者和目标授权', '权限策略约束该操作及其范围。', ['permission']),
+        S('针对实际后果请求批准', '只有目标与影响具体明确时，批准才有意义。', ['approval']),
+        S('执行或停止', '即使获得授权，执行仍须处于隔离环境中。拒绝后不得产生副作用。', ['executor', 'stop']),
+        S('收集观测结果', '退出码、差异、文件和工具结果都成为证据。', ['observe']),
+        S('独立验证', '边界约束与授权不能证明结果正确。', ['verify'])
       ],
-      caption: 'Capability, permission, approval, sandbox, and verification protect different properties. Keep every layer visible.'
+      caption: '能力、权限、批准、沙箱（Sandbox）和验证保护不同属性。应让每一层都可检查。'
     }),
 
     'skill-trust-surface': makeFigure({
-      title: 'Complete skill trust surface',
-      hint: 'mark who controls every edge',
-      description: 'Package instructions, references, task content, scripts, host tools, files, network, credentials, and external effects form one threat surface.',
+      title: '完整技能信任面（Complete Skill Trust Surface）',
+      hint: '标明每条连接由谁控制',
+      description: '包内指令、参考资料、任务内容、脚本、宿主工具、文件、网络、凭据及外部影响共同构成威胁面。',
       viewBox: '0 0 900 560',
       nodes: [
-        N('package', 30, 55, 'Skill package', 'publisher-controlled', 0, '', 145, 60),
-        N('resources', 30, 150, 'References + assets', 'supporting content', 0, '', 145, 60),
-        N('untrusted', 30, 245, 'Untrusted task content', 'issue, web, document', 0, 'warning', 160, 60),
-        N('instructions', 260, 135, 'Model instructions', 'mixed trust context', 1, 'decision', 160, 66),
-        N('scripts', 260, 285, 'Scripts + dependencies', 'code supply chain', 2, 'warning', 160, 64),
-        N('requests', 485, 190, 'Requested actions', 'structured proposal', 3, 'decision', 160, 66),
-        N('host', 690, 190, 'Host tools + executor', 'enforcement point', 4, '', 170, 66),
-        N('files', 620, 355, 'Files', 'read + write', 5, '', 110, 54),
-        N('network', 750, 355, 'Network', 'egress', 5, 'warning', 110, 54),
-        N('credentials', 620, 455, 'Environment + credentials', 'secret scope', 5, 'warning', 150, 58),
-        N('effects', 780, 455, 'External effects', 'publish, delete, bill', 5, 'warning', 110, 58)
+        N('package', 30, 55, '技能包', '由发布者控制', 0, '', 145, 60),
+        N('resources', 30, 150, '参考资料 + 素材', '配套内容', 0, '', 145, 60),
+        N('untrusted', 30, 245, '不可信任务内容', '工单、网页、文档', 0, 'warning', 160, 60),
+        N('instructions', 260, 135, '模型指令', '混合信任级别的上下文', 1, 'decision', 160, 66),
+        N('scripts', 260, 285, '脚本 + 依赖', '代码供应链', 2, 'warning', 160, 64),
+        N('requests', 485, 190, '请求的操作', '结构化提议', 3, 'decision', 160, 66),
+        N('host', 690, 190, '宿主工具 + 执行器', '策略执行点', 4, '', 170, 66),
+        N('files', 620, 355, '文件', '读取 + 写入', 5, '', 110, 54),
+        N('network', 750, 355, '网络（Network）', '出站访问', 5, 'warning', 110, 54),
+        N('credentials', 620, 455, '环境 + 凭据', '秘密的使用范围', 5, 'warning', 150, 58),
+        N('effects', 780, 455, '外部影响', '发布、删除、计费', 5, 'warning', 110, 58)
       ],
       edges: [
-        E('package', 'instructions', 1), E('resources', 'instructions', 1), E('untrusted', 'instructions', 1, 'data, not authority', 'warning'),
+        E('package', 'instructions', 1), E('resources', 'instructions', 1), E('untrusted', 'instructions', 1, '数据，不是权限', 'warning'),
         E('instructions', 'requests', 3), E('scripts', 'requests', 3), E('requests', 'host', 4),
         E('host', 'files', 5), E('host', 'network', 5, '', 'warning'), E('host', 'credentials', 5, '', 'warning'), E('host', 'effects', 5, '', 'warning')
       ],
       steps: [
-        S('Inventory every content source', 'Package files and task inputs can all influence the model, but they carry different authority.', ['package', 'resources', 'untrusted']),
-        S('Separate data from instructions', 'Prompt injection happens when untrusted content crosses this boundary.', ['instructions']),
-        S('Inspect code supply chains', 'Scripts and dependencies can request effects without appearing in prose.', ['scripts']),
-        S('Structure the proposed action', 'Review the operation before any executor begins.', ['requests']),
-        S('Enforce at the host boundary', 'The model cannot provide its own isolation or permission policy.', ['host']),
-        S('Constrain every consequence surface', 'Files, network, credentials, and external effects need separate policies.', ['files', 'network', 'credentials', 'effects'])
+        S('清点每个内容来源', '包内文件和任务输入都可能影响模型，但它们具有不同的权限地位。', ['package', 'resources', 'untrusted']),
+        S('区分数据与指令', '当不可信内容越过这一边界时，就会发生提示词注入（Prompt Injection）。', ['instructions']),
+        S('检查代码供应链', '脚本和依赖可以请求产生副作用，而这些请求未必出现在说明文字中。', ['scripts']),
+        S('结构化表示提议的操作', '在任何执行器启动之前审查操作。', ['requests']),
+        S('在宿主边界强制执行策略', '模型无法为自身提供隔离或权限策略。', ['host']),
+        S('约束每类后果涉及的范围', '文件、网络、凭据和外部影响需要各自独立的策略。', ['files', 'network', 'credentials', 'effects'])
       ],
-      caption: 'Trust is a chain of claims across package source, content, runtime, capability, isolation, credentials, and evidence.'
+      caption: '信任是一条声明链，跨越包来源、内容、运行时、能力、隔离、凭据和证据。'
     }),
 
     'skill-approval-decision': makeFigure({
-      title: 'Approval follows consequence',
-      hint: 'decide from reversibility, scope, and impact',
-      description: 'A decision tree routes local reversible actions to sandbox execution, out-of-scope actions to approval, and denied approvals to stop.',
+      title: '根据后果决定批准（Approval Follows Consequence）',
+      hint: '依据可逆性、范围与影响决策',
+      description: '决策树将本地可逆操作导向沙箱执行，将范围外操作导向批准流程，并在批准被拒绝时停止。',
       viewBox: '0 0 900 570',
       nodes: [
-        N('action', 35, 65, 'Proposed action', 'target + consequence', 0, '', 145, 60),
-        N('reversible', 225, 65, 'Reversible + local?', 'rollback possible', 1, 'decision', 165, 62),
-        N('scope', 470, 35, 'Inside pre-approved scope?', 'actor + operation + target', 2, 'decision', 185, 62),
-        N('impact', 470, 180, 'External, destructive, costly, or sensitive?', 'high consequence', 2, 'decision', 205, 76),
-        N('execute', 700, 35, 'Execute in sandbox', 'containment remains', 3, '', 165, 62),
-        N('ask', 700, 220, 'Ask scoped approval', 'show exact consequence', 3, 'warning', 165, 62),
-        N('granted', 500, 360, 'Granted', 'immutable action record', 4, '', 135, 58),
-        N('denied', 700, 360, 'Denied', 'stop', 4, 'warning', 135, 58),
-        N('result', 500, 470, 'Bounded execution', 'revalidate + verify', 5, '', 160, 60)
+        N('action', 35, 65, '提议的操作', '目标 + 后果', 0, '', 145, 60),
+        N('reversible', 225, 65, '可逆且限于本地？', '可以回滚', 1, 'decision', 165, 62),
+        N('scope', 470, 35, '处于预先批准的范围内？', '执行者 + 操作 + 目标', 2, 'decision', 185, 62),
+        N('impact', 470, 180, '涉及外部、破坏性、高成本或敏感影响？', '重大后果', 2, 'decision', 205, 76),
+        N('execute', 700, 35, '在沙箱中执行', '继续实施边界约束', 3, '', 165, 62),
+        N('ask', 700, 220, '请求限定范围的批准', '展示确切后果', 3, 'warning', 165, 62),
+        N('granted', 500, 360, '已批准（Granted）', '不可变的操作记录', 4, '', 135, 58),
+        N('denied', 700, 360, '已拒绝（Denied）', '停止', 4, 'warning', 135, 58),
+        N('result', 500, 470, '有界执行', '重新校验 + 验证', 5, '', 160, 60)
       ],
       edges: [
-        E('action', 'reversible', 1), E('reversible', 'scope', 2, 'yes'), E('reversible', 'impact', 2, 'no'),
-        E('scope', 'execute', 3, 'yes'), E('scope', 'ask', 3, 'no', 'warning'), E('impact', 'ask', 3, 'yes', 'warning'), E('impact', 'execute', 3, 'no'),
-        E('ask', 'granted', 4, 'granted'), E('ask', 'denied', 4, 'denied', 'warning'),
+        E('action', 'reversible', 1), E('reversible', 'scope', 2, '是'), E('reversible', 'impact', 2, '否'),
+        E('scope', 'execute', 3, '是'), E('scope', 'ask', 3, '否', 'warning'), E('impact', 'ask', 3, '是', 'warning'), E('impact', 'execute', 3, '否'),
+        E('ask', 'granted', 4, '已批准'), E('ask', 'denied', 4, '已拒绝', 'warning'),
         E('execute', 'result', 5), E('granted', 'result', 5)
       ],
       steps: [
-        S('Name the action', 'Approval cannot be evaluated from a vague request to allow a general shell.', ['action']),
-        S('Check reversibility and locality', 'Local reversible actions can often fit pre-authorized policy.', ['reversible']),
-        S('Check scope or consequence', 'Out-of-scope or high-impact work needs a deliberate authority decision.', ['scope', 'impact']),
-        S('Execute or ask', 'Approval is not a substitute for sandboxing, and sandboxing is not approval.', ['execute', 'ask']),
-        S('Honor the decision', 'A grant binds one action. A denial stops it.', ['granted', 'denied']),
-        S('Revalidate before launch', 'The executor checks the normalized target again and verifies the result afterward.', ['result'])
+        S('明确操作', '笼统地请求开放通用 shell，无法让人评估是否应当批准。', ['action']),
+        S('检查可逆性与本地性', '本地可逆操作通常可以纳入预先授权的策略。', ['reversible']),
+        S('检查范围或后果', '范围外或影响重大的工作，需要明确作出授权决策。', ['scope', 'impact']),
+        S('执行或请求批准', '批准不能替代沙箱隔离，沙箱隔离也不代表批准。', ['execute', 'ask']),
+        S('遵守决定', '一次批准绑定一个操作；拒绝意味着停止该操作。', ['granted', 'denied']),
+        S('启动前重新校验', '执行器再次检查规范化后的目标，并在执行后验证结果。', ['result'])
       ],
-      caption: 'Approval should show the exact target and consequence. It never disables isolation or authorizes later targets.'
+      caption: '批准请求应展示确切目标和后果。批准绝不意味着关闭隔离，也不会为后续目标授权。'
     }),
 
     'skill-workflow-extraction': makeFigure({
-      title: 'Judgment and deterministic work',
-      hint: 'put each behavior where it can be tested',
-      description: 'A task moves through model classification, branch references, deterministic evidence collection, model interpretation, an artifact contract, and verification.',
+      title: '判断与确定性工作（Judgment and Deterministic Work）',
+      hint: '将每项行为放到可测试的位置',
+      description: '任务依次经过模型分类、分支参考资料、确定性证据收集、模型解读、交付物契约与验证。',
       viewBox: '0 0 950 300',
-      zones: [Z(15, 25, 920, 225, 'observable workflow contract')],
+      zones: [Z(15, 25, 920, 225, '可观察的工作流契约')],
       nodes: [
-        N('task', 30, 100, 'Task request', 'trigger boundary', 0, '', 125, 62),
-        N('classify', 175, 100, 'Model judgment', 'classify + branch', 1, 'decision', 135, 62),
-        N('reference', 330, 100, 'Reference', 'branch-specific rules', 2, '', 135, 62),
-        N('script', 485, 100, 'Script or tool', 'collect evidence', 3, '', 135, 62),
-        N('interpret', 640, 100, 'Model judgment', 'interpret evidence', 4, 'decision', 135, 62),
-        N('artifact', 795, 55, 'Artifact contract', 'required output', 5, '', 135, 62),
-        N('verify', 795, 160, 'Verification', 'machine + human', 6, '', 135, 62)
+        N('task', 30, 100, '任务请求', '触发边界', 0, '', 125, 62),
+        N('classify', 175, 100, '模型判断', '分类 + 选择分支', 1, 'decision', 135, 62),
+        N('reference', 330, 100, '参考资料（Reference）', '分支专用规则', 2, '', 135, 62),
+        N('script', 485, 100, '脚本或工具', '收集证据', 3, '', 135, 62),
+        N('interpret', 640, 100, '模型判断', '解读证据', 4, 'decision', 135, 62),
+        N('artifact', 795, 55, '交付物契约', '必需输出', 5, '', 135, 62),
+        N('verify', 795, 160, '验证（Verification）', '机器 + 人工', 6, '', 135, 62)
       ],
       edges: [E('task', 'classify', 1), E('classify', 'reference', 2), E('reference', 'script', 3), E('script', 'interpret', 4), E('interpret', 'artifact', 5), E('artifact', 'verify', 6)],
       steps: [
-        S('Start from a real trigger', 'A workflow candidate begins with a bounded event and desired artifact.', ['task']),
-        S('Use judgment for ambiguity', 'The model classifies the task and chooses a branch.', ['classify']),
-        S('Load exact domain rules', 'References supply detail only for the selected branch.', ['reference']),
-        S('Automate deterministic evidence', 'Scripts and typed tools parse, count, query, and validate.', ['script']),
-        S('Interpret the observations', 'The model synthesizes evidence instead of simulating deterministic parsing.', ['interpret']),
-        S('Write to an artifact contract', 'Required fields and paths turn completion into an observable claim.', ['artifact']),
-        S('Verify by another mechanism', 'Machine checks and calibrated human review close the workflow.', ['verify'])
+        S('从真实触发条件开始', '候选工作流始于范围明确的事件和预期交付物。', ['task']),
+        S('用判断处理歧义', '模型对任务分类并选择分支。', ['classify']),
+        S('加载确切的领域规则', '参考资料只为选中的分支提供详细信息。', ['reference']),
+        S('自动收集确定性证据', '脚本与有类型约束的工具负责解析、计数、查询和校验。', ['script']),
+        S('解读观测结果', '模型综合证据，而不模拟确定性解析。', ['interpret']),
+        S('按交付物契约输出', '必填字段与路径让“完成”成为可观察的声明。', ['artifact']),
+        S('通过另一种机制验证', '机器检查与经过校准的人工审查共同闭合工作流。', ['verify'])
       ],
-      caption: 'Use model judgment for classification and synthesis. Use code for repeatable computation and invariants.'
+      caption: '用模型判断完成分类和综合；用代码完成可重复计算及不变量检查。'
     }),
 
     'skill-eval-layers': makeFigure({
-      title: 'Six-layer skill release gate',
-      hint: 'do not average away a hard failure',
-      description: 'Six evaluation layers feed a release gate: structure, routing, behavior, scripts, safety, and portability.',
+      title: '六层技能发布门禁（Six-layer Skill Release Gate）',
+      hint: '不要用平均分掩盖硬性失败',
+      description: '结构、路由、行为、脚本、安全和可移植性这六个评估层共同决定发布门禁是否通过。',
       viewBox: '0 0 780 590',
       nodes: [
-        N('structure', 210, 35, '1. Package structure', 'static contract', 0, '', 360, 58),
-        N('routing', 210, 115, '2. Trigger routing', 'precision + recall + abstain', 1, '', 360, 58),
-        N('behavior', 210, 195, '3. Artifact behavior', 'baseline vs treatment', 2, '', 360, 58),
-        N('scripts', 210, 275, '4. Script correctness', 'fixtures + edge cases', 3, '', 360, 58),
-        N('safety', 210, 355, '5. Safety + authority', 'hard boundary cases', 4, 'warning', 360, 58),
-        N('portability', 210, 435, '6. Packaging + portability', 'clean install + host matrix', 5, '', 360, 58),
-        N('gate', 270, 520, 'Release gate', 'all required layers pass', 6, 'decision', 240, 52)
+        N('structure', 210, 35, '1. 技能包结构', '静态契约', 0, '', 360, 58),
+        N('routing', 210, 115, '2. 触发路由', '精确率 + 召回率 + 弃选', 1, '', 360, 58),
+        N('behavior', 210, 195, '3. 交付物行为', '基线组与实验组', 2, '', 360, 58),
+        N('scripts', 210, 275, '4. 脚本正确性', '测试样本 + 边界用例', 3, '', 360, 58),
+        N('safety', 210, 355, '5. 安全 + 权限', '硬性边界用例', 4, 'warning', 360, 58),
+        N('portability', 210, 435, '6. 打包 + 可移植性', '干净安装 + 宿主矩阵', 5, '', 360, 58),
+        N('gate', 270, 520, '发布门禁', '所有必需层都通过', 6, 'decision', 240, 52)
       ],
       edges: [E('structure', 'routing', 1), E('routing', 'behavior', 2), E('behavior', 'scripts', 3), E('scripts', 'safety', 4), E('safety', 'portability', 5), E('portability', 'gate', 6)],
       steps: [
-        S('Structure', 'Lint package identity, files, links, limits, and required sections.', ['structure']),
-        S('Routing', 'Measure positives, negatives, near misses, competing skills, and abstention.', ['routing']),
-        S('Behavior', 'Compare the same model, tools, fixtures, and budgets with and without the skill.', ['behavior']),
-        S('Scripts', 'Test deterministic helpers outside model runs, including repeated and partial state.', ['scripts']),
-        S('Safety', 'Require every authority and containment case to pass. Strong prose cannot cancel a violation.', ['safety']),
-        S('Packaging and portability', 'Install the complete tree and test required host capabilities or declared fallbacks.', ['portability']),
-        S('Release only through the gate', 'Report the failing layer and evidence instead of collapsing everything into one score.', ['gate'])
+        S('结构', '静态检查技能包身份、文件、链接、限制及必需章节。', ['structure']),
+        S('路由（Routing）', '测量正例、负例、近似但不匹配的请求、竞争技能和弃选表现。', ['routing']),
+        S('行为（Behavior）', '固定模型、工具、测试样本和预算，比较使用与不使用技能的表现。', ['behavior']),
+        S('脚本（Scripts）', '在模型运行之外测试确定性辅助程序，包括重复执行及部分完成状态。', ['scripts']),
+        S('安全（Safety）', '每个权限与边界约束用例都必须通过。再有说服力的文字也不能抵消违规。', ['safety']),
+        S('打包与可移植性', '安装完整目录树，测试必需的宿主能力或声明的回退方案。', ['portability']),
+        S('只有通过门禁才发布', '报告失败层及证据，不要把所有结果压缩成一个分数。', ['gate'])
       ],
-      caption: 'Each eval layer answers a different question. Passing one never substitutes for another.'
+      caption: '每个评估（Evaluation）层回答不同问题。通过某一层绝不能替代另一层。'
     }),
 
     'skill-package-install': makeFigure({
-      title: 'Clean install integrity path',
-      hint: 'test the installed tree, not only the source',
-      description: 'A source skill bundle becomes a manifest, complete installed tree, verified package, discovered catalog entry, and eval smoke test.',
+      title: '干净安装完整性路径（Clean Install Integrity Path）',
+      hint: '测试安装后的目录树，不仅测试源码',
+      description: '源技能包依次形成清单、完整安装目录树、经校验的包、被发现的目录条目，最后运行评估冒烟测试。',
       viewBox: '0 0 900 270',
       nodes: [
-        N('source', 25, 92, 'Source bundle', 'reviewed tree', 0, '', 135, 62),
-        N('manifest', 190, 92, 'Build manifest', 'canonical paths + hashes', 1, '', 140, 62),
-        N('install', 360, 92, 'Install complete tree', 'clean destination', 2, '', 145, 62),
-        N('hash', 535, 92, 'Verify paths + hashes', 'detect loss or drift', 3, '', 145, 62),
-        N('discover', 710, 45, 'Discover installed skill', 'real scope', 4, '', 160, 62),
-        N('smoke', 710, 155, 'Run eval smoke test', 'installed copy', 5, '', 160, 62)
+        N('source', 25, 92, '源技能包', '已审查的目录树', 0, '', 135, 62),
+        N('manifest', 190, 92, '生成清单（Manifest）', '规范路径 + 哈希', 1, '', 140, 62),
+        N('install', 360, 92, '安装完整目录树', '干净的目标目录', 2, '', 145, 62),
+        N('hash', 535, 92, '校验路径 + 哈希', '检测缺失或偏移', 3, '', 145, 62),
+        N('discover', 710, 45, '发现已安装技能', '实际作用域', 4, '', 160, 62),
+        N('smoke', 710, 155, '运行评估冒烟测试', '已安装副本', 5, '', 160, 62)
       ],
       edges: [E('source', 'manifest', 1), E('manifest', 'install', 2), E('install', 'hash', 3), E('hash', 'discover', 4), E('discover', 'smoke', 5)],
       steps: [
-        S('Begin with the complete source tree', 'The release unit includes every referenced file, script, asset, and fixture.', ['source']),
-        S('Describe the intended bytes', 'Canonical relative paths and hashes make drift observable.', ['manifest']),
-        S('Install into an empty destination', 'A clean tree exposes omitted files and stale upgrade leftovers.', ['install']),
-        S('Verify before activation', 'Reject missing, added, rewritten, or mismatched package files.', ['hash']),
-        S('Probe real discovery', 'The installed scope and host catalog must find the expected identity.', ['discover']),
-        S('Execute the installed smoke test', 'Source-only success cannot prove installer or runtime behavior.', ['smoke'])
+        S('从完整源码树开始', '发布单元包含每个被引用的文件、脚本、素材和测试样本。', ['source']),
+        S('描述预期文件内容', '规范的相对路径与哈希使内容偏移可被检测。', ['manifest']),
+        S('安装到空目标目录', '干净目录树会暴露遗漏文件及升级遗留的旧文件。', ['install']),
+        S('激活前先校验', '发现包内文件缺失、多出、被改写或不匹配时，应拒绝使用。', ['hash']),
+        S('测试真实发现流程', '安装作用域与宿主目录必须能找到预期身份。', ['discover']),
+        S('执行安装副本的冒烟测试', '仅源码测试成功，不能证明安装器或运行时行为正确。', ['smoke'])
       ],
-      caption: 'Package tests should exercise the installed copy. Source-tree tests miss installer and upgrade failures.'
+      caption: '技能包测试应覆盖已安装副本。源码树测试会漏掉安装器和升级故障。'
     }),
 
     'skill-authoring-loop': makeFigure({
-      title: 'Skill authoring repair loop',
-      hint: 'change the layer responsible for the failure',
-      description: 'A workflow is observed, contracted, packaged, evaluated, classified by failure layer, repaired, and released only after the gate passes.',
+      title: '技能编写修复循环（Skill Authoring Repair Loop）',
+      hint: '修改真正导致失败的层',
+      description: '先观察工作流、定义契约、打包和评估，再按失败层分类并修复，只有通过门禁后才能发布。',
       viewBox: '0 0 980 610',
       nodes: [
-        N('observe', 30, 55, 'Observe workflow', 'real expert practice', 0, '', 145, 60),
-        N('contract', 210, 55, 'Define contract', 'trigger + artifact + safety', 1, '', 145, 60),
-        N('package', 390, 55, 'Package procedure', 'body + helpers', 2, '', 145, 60),
-        N('eval', 570, 55, 'Run layered evals', 'repeat + compare', 3, '', 145, 60),
-        N('failure', 750, 55, 'Failure class?', 'route repair correctly', 4, 'decision', 155, 60),
-        N('routing', 50, 250, 'Routing', 'description or policy', 5, '', 135, 58),
-        N('behavior', 210, 250, 'Behavior', 'body, refs, tools', 5, '', 135, 58),
-        N('script', 370, 250, 'Script', 'deterministic code', 5, '', 135, 58),
-        N('safety', 530, 250, 'Safety', 'authority + isolation', 5, 'warning', 135, 58),
-        N('portability', 690, 250, 'Portability', 'adapter or fallback', 5, '', 135, 58),
-        N('reeval', 370, 400, 'Re-run affected evals', 'preserve all traces', 6, '', 170, 60),
-        N('release', 625, 500, 'Release complete bundle', 'gate passed', 7, '', 190, 60)
+        N('observe', 30, 55, '观察工作流', '真实专家实践', 0, '', 145, 60),
+        N('contract', 210, 55, '定义契约', '触发条件 + 交付物 + 安全', 1, '', 145, 60),
+        N('package', 390, 55, '打包操作流程', '正文 + 辅助程序', 2, '', 145, 60),
+        N('eval', 570, 55, '运行分层评估', '重复 + 比较', 3, '', 145, 60),
+        N('failure', 750, 55, '失败属于哪一类？', '正确分派修复', 4, 'decision', 155, 60),
+        N('routing', 50, 250, '路由（Routing）', '描述或策略', 5, '', 135, 58),
+        N('behavior', 210, 250, '行为（Behavior）', '正文、参考资料、工具', 5, '', 135, 58),
+        N('script', 370, 250, '脚本（Script）', '确定性代码', 5, '', 135, 58),
+        N('safety', 530, 250, '安全（Safety）', '权限 + 隔离', 5, 'warning', 135, 58),
+        N('portability', 690, 250, '可移植性（Portability）', '适配器或回退方案', 5, '', 135, 58),
+        N('reeval', 370, 400, '重跑受影响评估', '保留所有轨迹', 6, '', 170, 60),
+        N('release', 625, 500, '发布完整技能包', '门禁已通过', 7, '', 190, 60)
       ],
       edges: [
         E('observe', 'contract', 1), E('contract', 'package', 2), E('package', 'eval', 3), E('eval', 'failure', 4),
-        E('failure', 'routing', 5, 'routing'), E('failure', 'behavior', 5, 'behavior'), E('failure', 'script', 5, 'script'),
-        E('failure', 'safety', 5, 'safety', 'warning'), E('failure', 'portability', 5, 'portability'),
+        E('failure', 'routing', 5, '路由'), E('failure', 'behavior', 5, '行为'), E('failure', 'script', 5, '脚本'),
+        E('failure', 'safety', 5, '安全', 'warning'), E('failure', 'portability', 5, '可移植性'),
         E('routing', 'reeval', 6), E('behavior', 'reeval', 6), E('script', 'reeval', 6), E('safety', 'reeval', 6), E('portability', 'reeval', 6),
-        E('reeval', 'eval', 6, 'new evidence', '', [[455, 400], [455, 355], [642, 355], [642, 115]]),
-        E('failure', 'release', 7, 'passes gate')
+        E('reeval', 'eval', 6, '新证据', '', [[455, 400], [455, 355], [642, 355], [642, 115]]),
+        E('failure', 'release', 7, '通过门禁')
       ],
       steps: [
-        S('Observe real work', 'Extract a stable procedure from evidence, not from a broad topic label.', ['observe']),
-        S('Define the observable contract', 'Write trigger, artifact, verification, and authority boundaries first.', ['contract']),
-        S('Package each responsibility', 'Put judgment, deterministic work, references, and outputs in testable places.', ['package']),
-        S('Run layered evals', 'Keep routing, behavior, scripts, safety, and portability as separate evidence.', ['eval']),
-        S('Classify the failure', 'A release gate should identify the layer that actually broke.', ['failure']),
-        S('Repair the responsible layer', 'Do not add prose when the failure is an installer, script, sandbox, or host adapter.', ['routing', 'behavior', 'script', 'safety', 'portability']),
-        S('Re-run with new evidence', 'Preserve per-run traces and check for regressions in untouched layers.', ['reeval']),
-        S('Release only after the gate passes', 'Ship the complete bundle and its compatibility evidence together.', ['release'])
+        S('观察真实工作', '从证据中提取稳定流程，而不是从宽泛的主题标签出发。', ['observe']),
+        S('定义可观察的契约', '先写明触发条件、交付物、验证方式和权限边界。', ['contract']),
+        S('分别组织各项职责', '将判断、确定性工作、参考资料和输出放到可测试的位置。', ['package']),
+        S('运行分层评估', '分别保留路由、行为、脚本、安全和可移植性的证据。', ['eval']),
+        S('对失败分类', '发布门禁应指出实际出错的层。', ['failure']),
+        S('修复责任层', '当故障来自安装器、脚本、沙箱或宿主适配器时，不要用增加说明文字代替修复。', ['routing', 'behavior', 'script', 'safety', 'portability']),
+        S('携带新证据重新评估', '保留每次运行轨迹，并检查未修改的层是否出现回归。', ['reeval']),
+        S('门禁通过后再发布', '将完整技能包与兼容性证据一起交付。', ['release'])
       ],
-      caption: 'Repair the layer responsible for the failure, then repeat the gate. Never let an average hide a hard safety regression.'
+      caption: '修复导致失败的层，然后重新执行门禁检查。绝不能让平均分掩盖硬性安全回归。'
     })
   };
 

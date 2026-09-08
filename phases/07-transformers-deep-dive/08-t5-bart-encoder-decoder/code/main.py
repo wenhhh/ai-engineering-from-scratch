@@ -1,7 +1,7 @@
-"""T5 span corruption + BART denoising noise functions.
+"""T5 片段破坏（Span corruption）+ BART 去噪（Denoising）噪声函数。
 
-Pure stdlib. Shows how encoder-decoder models turn any input into
-a supervised (corrupted_input -> clean_spans) training pair.
+仅用标准库。展示编码器-解码器（Encoder-decoder）模型如何将任意输入转为
+有监督的 (corrupted_input -> clean_spans) 训练样本对。
 """
 
 import random
@@ -12,16 +12,16 @@ def sentinel(i):
 
 
 def corrupt_spans(tokens, mask_rate=0.15, mean_span=3.0, rng=None):
-    """T5-style span corruption.
+    """T5 风格的片段破坏（Span corruption）。
 
-    Returns (corrupted_source, decoder_target) as lists of tokens (strings).
+    返回 (corrupted_source, decoder_target)，两者均为词元（字符串）列表。
     """
     if rng is None:
         rng = random.Random()
     n = len(tokens)
     n_mask = max(1, int(round(n * mask_rate)))
     n_spans = max(1, int(round(n_mask / mean_span)))
-    # Pick span start positions with no overlap.
+    # 选择片段起始位置，避免片段重叠。
     positions = list(range(n))
     rng.shuffle(positions)
     starts = []
@@ -31,14 +31,14 @@ def corrupt_spans(tokens, mask_rate=0.15, mean_span=3.0, rng=None):
     for _ in range(n_spans):
         if remaining <= 0:
             break
-        # pick a random starting point not yet used and with room
+        # 随机选择尚未使用且有剩余空间的起点
         random_order = list(range(n))
         rng.shuffle(random_order)
         chosen_start = None
         for start in random_order:
             if used[start]:
                 continue
-            # span length
+            # 片段长度（Span length）
             length = max(1, int(rng.gauss(mean_span, 1.0)))
             length = min(length, remaining, n - start)
             if length < 1:
@@ -67,13 +67,13 @@ def corrupt_spans(tokens, mask_rate=0.15, mean_span=3.0, rng=None):
         target.extend(tokens[start:start + length])
         prev_end = start + length
     source.extend(tokens[prev_end:])
-    target.append(sentinel(len(ordered)))  # closing sentinel
+    target.append(sentinel(len(ordered)))  # 结束哨兵（Sentinel）
     return source, target
 
 
 def round_trip(source, target):
-    """Reconstruct original by replacing sentinels in source with corresponding target spans."""
-    # Parse target into sentinel->span map
+    """用对应的目标片段替换源序列中的哨兵（Sentinels），重建原文。"""
+    # 将目标序列解析为 sentinel->span 映射
     spans = {}
     current_key = None
     current_span = []
@@ -85,7 +85,7 @@ def round_trip(source, target):
             current_span = []
         else:
             current_span.append(tok)
-    # Last sentinel in target has no following span (closing marker).
+    # 目标序列中最后一个哨兵之后没有片段（结束标记）。
     out = []
     for tok in source:
         if tok.startswith("<extra_id_"):
@@ -108,7 +108,7 @@ def token_delete(tokens, rate=0.15, rng=None):
 
 
 def text_infill(tokens, rate=0.15, mean_span=3.0, rng=None, mask_token="<mask>"):
-    """BART text infill: mask spans with a SINGLE mask; decoder infers length."""
+    """BART 文本填充（Text infill）：用单个掩码替换片段，由解码器推断长度。"""
     if rng is None:
         rng = random.Random()
     out = []
@@ -152,27 +152,27 @@ def main():
         "language models learn statistical patterns subword tokenization helps rare words"
     ).split()
 
-    print("=== T5 span corruption ===")
+    print("=== T5 片段破坏（Span corruption；英文样本保持原样）===")
     source, target = corrupt_spans(sentence, mask_rate=0.20, mean_span=3.0, rng=rng)
-    print("corrupted source:")
+    print("破坏后的源序列：")
     print("  " + " ".join(source))
     print()
-    print("decoder target:")
+    print("解码器目标序列：")
     print("  " + " ".join(target))
     print()
     reconstructed = round_trip(source, target)
-    print("reconstruction matches original:",
-          "YES" if reconstructed == sentence else "NO")
+    print("重建结果与原文一致：",
+          "是" if reconstructed == sentence else "否")
     if reconstructed != sentence:
-        print("  reconstructed: " + " ".join(reconstructed))
+        print("  重建结果： " + " ".join(reconstructed))
 
     print()
-    print("=== BART noise functions ===")
-    print("original: " + " ".join(sentence[:14]))
+    print("=== BART 噪声函数（Noise functions）===")
+    print("原文： " + " ".join(sentence[:14]))
     print()
-    print("token mask:     " + " ".join(token_mask(sentence[:14], rate=0.2, rng=random.Random(1))))
-    print("token delete:   " + " ".join(token_delete(sentence[:14], rate=0.2, rng=random.Random(2))))
-    print("text infill:    " + " ".join(text_infill(sentence[:14], rate=0.3, rng=random.Random(3))))
+    print("词元掩码（Token mask）：     " + " ".join(token_mask(sentence[:14], rate=0.2, rng=random.Random(1))))
+    print("词元删除（Token delete）：   " + " ".join(token_delete(sentence[:14], rate=0.2, rng=random.Random(2))))
+    print("文本填充（Text infill）：    " + " ".join(text_infill(sentence[:14], rate=0.3, rng=random.Random(3))))
 
     sentences = [
         ["the", "quick", "brown", "fox"],
@@ -180,12 +180,12 @@ def main():
         ["language", "models", "learn", "patterns"],
     ]
     perm = sentence_permute(sentences, rng=random.Random(4))
-    print("sentence permute:")
+    print("句子置换（Sentence permutation）：")
     for s in perm:
         print("  " + " ".join(s))
 
     print()
-    print("document rotate: " + " ".join(document_rotate(sentence[:14], rng=random.Random(5))))
+    print("文档旋转（Document rotation）： " + " ".join(document_rotate(sentence[:14], rng=random.Random(5))))
 
 
 if __name__ == "__main__":

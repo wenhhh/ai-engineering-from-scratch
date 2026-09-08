@@ -1,17 +1,17 @@
 ---
 name: checkpoint-save-resume
-description: Atomic, sharded checkpoints with full RNG capture so a killed run resumes mid-epoch with the same loss trajectory.
+description: 原子分片检查点，完整捕获 RNG，让被终止的运行在轮中恢复并保持相同损失轨迹。
 version: 1.0.0
 phase: 19
 lesson: 47
 tags: [training, durability, resume, sharded-state]
 ---
 
-## When to use
+## 何时使用（When to use）
 
-Any training run longer than the wallclock cap of the cluster, any run that must survive a node reboot, any model too large for a single payload.
+任何超过集群实际运行时限的训练、必须经受节点重启的运行，或大到无法放进单个载荷的模型。
 
-## Payload shape
+## 载荷结构（Payload shape）
 
 ```python
 {
@@ -25,28 +25,28 @@ Any training run longer than the wallclock cap of the cluster, any run that must
 }
 ```
 
-## Atomic save
+## 原子保存（Atomic save）
 
-1. Write the payload to a unique temp file in the same directory as the target.
-2. `os.replace(tmp, target)` to swap atomically.
-3. Never write directly to the target name.
+1. 将载荷写入与目标同目录的唯一临时文件。
+2. 用 `os.replace(tmp, target)` 原子替换。
+3. 绝不直接写目标名。
 
-## Sharded layout
+## 分片布局（Sharded layout）
 
-- `model.shard-NNN.pt` per shard, round robin on keys or split by parameter group.
-- `meta.pt` carries optimizer, scheduler, train state, RNG, and the shard manifest.
-- `index.json` carries `sha256` for every shard and for `meta.pt`.
-- Loader verifies every hash before merging.
+- 每分片一个 `model.shard-NNN.pt`，按键轮询或按参数组拆分。
+- `meta.pt` 保存优化器、调度器、训练状态、RNG 和分片清单。
+- `index.json` 保存每分片及 `meta.pt` 的 `sha256`。
+- 加载器合并前验证所有哈希。
 
-## Mid-epoch resume
+## 轮中恢复（Mid-epoch resume）
 
-- Save `(epoch, batch_in_epoch)` next to `step`.
-- Restore RNG state before the first batch of the resumed epoch.
-- Fast-forward the generator past consumed batches.
+- 在 `step` 旁保存 `(epoch, batch_in_epoch)`。
+- 恢复轮次的首批数据前恢复 RNG 状态。
+- 让生成器快进越过已处理批次。
 
-## Failure modes
+## 失败模式（Failure modes）
 
-- Cross-device rename: not atomic, lose the previous file. Put temp in same directory.
-- Forgetting RNG: resumed loss diverges from baseline. Run the demo's assertion.
-- Forgetting optimizer state: next step lurches. Same diff blows up.
-- Pruning the wrong checkpoint: keep last K plus best.
+- 跨设备重命名：不原子，丢失之前文件。临时文件应放同目录。
+- 忘记 RNG：恢复损失偏离基线。运行演示断言。
+- 忘记优化器状态：下一步突然偏移，同样导致差值暴增。
+- 清理错误检查点：保留最近 K 个及最佳检查点。

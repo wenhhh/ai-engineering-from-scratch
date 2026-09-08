@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
-# Shell aliases and functions for AI development.
-# Source this from your ~/.bashrc or ~/.zshrc:
+# 用于 AI 开发的 Shell 别名（Aliases）和函数。
+# 在 ~/.bashrc 或 ~/.zshrc 中用 source 加载此文件：
 #   source /path/to/shell_aliases.sh
 
 # --- GPU ---
@@ -11,28 +11,28 @@ alias gpuwatch='watch -n1 nvidia-smi'
 alias gpumem='nvidia-smi --query-gpu=memory.used,memory.total --format=csv,noheader'
 alias gpuprocs='nvidia-smi --query-compute-apps=pid,name,used_memory --format=csv'
 
-# --- Training control ---
+# --- 训练控制（Training control）---
 
 alias killtraining='pkill -f "python.*train"'
 
 killtrain() {
     if [ -z "$1" ]; then
         pkill -f "python.*train"
-        echo "Killed all python training processes"
+        echo "已终止所有 Python 训练进程"
     else
         pkill -f "$1"
-        echo "Killed processes matching: $1"
+        echo "已终止匹配以下模式的进程：$1"
     fi
 }
 
-# --- Virtual environments ---
+# --- 虚拟环境（Virtual environments）---
 
 alias ae='source .venv/bin/activate'
 alias de='deactivate'
 alias mkvenv='python -m venv .venv && source .venv/bin/activate'
 alias uvvenv='uv venv && source .venv/bin/activate'
 
-# --- Log watching ---
+# --- 日志监视（Log watching）---
 
 alias watchloss='tail -f logs/*.log | grep --line-buffered "loss"'
 alias watchacc='tail -f logs/*.log | grep --line-buffered "accuracy\|acc"'
@@ -43,19 +43,19 @@ taillog() {
     tail -f logs/*.log 2>/dev/null | grep --line-buffered "$pattern"
 }
 
-# --- Disk space (training data fills disks fast) ---
+# --- 磁盘空间（Disk space）：训练数据会迅速填满磁盘 ---
 
 alias diskuse='df -h .'
 alias bigfiles='find . -type f -size +100M | xargs du -h 2>/dev/null | sort -rh | head -20'
 alias bigmodels='find . \( -name "*.pt" -o -name "*.pth" -o -name "*.safetensors" -o -name "*.ckpt" -o -name "*.bin" \) | xargs du -h 2>/dev/null | sort -rh | head -20'
 
-# --- Quick environment checks ---
+# --- 快速环境检查（Environment checks）---
 
-alias checkgpu='python -c "import torch; print(f\"CUDA: {torch.cuda.is_available()}\"); print(f\"Device: {torch.cuda.get_device_name(0)}\") if torch.cuda.is_available() else None"'
+alias checkgpu='python -c "import torch; print(f\"CUDA: {torch.cuda.is_available()}\"); print(f\"设备（Device）：{torch.cuda.get_device_name(0)}\") if torch.cuda.is_available() else None"'
 alias checkcuda='env | grep -i cuda'
 alias checkenv='python --version && pip --version && python -c "import torch; print(f\"PyTorch {torch.__version__}, CUDA {torch.cuda.is_available()}\")" 2>/dev/null'
 
-# --- tmux shortcuts ---
+# --- tmux 快捷命令（Shortcuts）---
 
 alias ta='tmux attach -t'
 alias tls='tmux ls'
@@ -73,12 +73,12 @@ trainenv() {
     tmux attach -t "$name"
 }
 
-# --- SSH helpers ---
+# --- SSH 辅助函数（Helpers）---
 
 syncto() {
     if [ -z "$1" ] || [ -z "$2" ]; then
-        echo "Usage: syncto <host> <remote_path> [local_path]"
-        echo "Example: syncto gpu ~/data ./data"
+        echo "用法：syncto <host> <remote_path> [local_path]"
+        echo "示例：syncto gpu ~/data ./data"
         return 1
     fi
     local host="$1"
@@ -89,8 +89,8 @@ syncto() {
 
 syncfrom() {
     if [ -z "$1" ] || [ -z "$2" ]; then
-        echo "Usage: syncfrom <host> <remote_path> [local_path]"
-        echo "Example: syncfrom gpu ~/results ./results"
+        echo "用法：syncfrom <host> <remote_path> [local_path]"
+        echo "示例：syncfrom gpu ~/results ./results"
         return 1
     fi
     local host="$1"
@@ -99,13 +99,13 @@ syncfrom() {
     rsync -avz --progress "${host}:${remote}" "$local_path"
 }
 
-# --- Experiment management ---
+# --- 实验管理（Experiment management）---
 
 newexp() {
     local name="${1:-experiment}"
     local dir="experiments/${name}_$(date +%Y%m%d_%H%M%S)"
     mkdir -p "$dir/logs" "$dir/checkpoints" "$dir/configs"
-    echo "Created experiment directory: $dir"
+    echo "已创建实验目录：$dir"
     echo "$dir"
 }
 
@@ -113,12 +113,12 @@ lastexp() {
     ls -dt experiments/*/ 2>/dev/null | head -1
 }
 
-# --- Model download helpers ---
+# --- 模型下载辅助函数（Model download helpers）---
 
 hfdownload() {
     if [ -z "$1" ]; then
-        echo "Usage: hfdownload <model_id> [filename]"
-        echo "Example: hfdownload meta-llama/Llama-2-7b config.json"
+        echo "用法：hfdownload <model_id> [filename]"
+        echo "示例：hfdownload meta-llama/Llama-2-7b config.json"
         return 1
     fi
     local model="$1"
@@ -126,13 +126,13 @@ hfdownload() {
     if [ -n "$file" ]; then
         wget "https://huggingface.co/${model}/resolve/main/${file}"
     else
-        echo "Cloning full repo (use git-lfs)..."
+        echo "正在克隆整个仓库（使用 git-lfs）……"
         git lfs install
         git clone "https://huggingface.co/${model}"
     fi
 }
 
-# --- Process management ---
+# --- 进程管理（Process management）---
 
 memhogs() {
     ps aux --sort=-%mem 2>/dev/null | head -11 || ps aux -m | head -11

@@ -153,7 +153,7 @@ def main():
     num_classes = 3
     model = UNet(in_channels=3, num_classes=num_classes, base=16).to(device)
     optimizer = Adam(model.parameters(), lr=1e-3)
-    print(f"params: {sum(p.numel() for p in model.parameters()):,}")
+    print(f"参数（Parameters）: {sum(p.numel() for p in model.parameters()):,}")
 
     for epoch in range(8):
         model.train()
@@ -175,7 +175,7 @@ def main():
                 x, y = x.to(device), y.to(device)
                 iou_sum += iou_per_class(model(x), y, num_classes).nan_to_num(0)
         iou_mean = (iou_sum / len(val_loader)).tolist()
-        print(f"epoch {epoch}  train_loss {loss_sum/total:.3f}  iou {[f'{v:.2f}' for v in iou_mean]}")
+        print(f"轮次（Epoch） {epoch}  训练损失（Training loss） {loss_sum/total:.3f}  交并比（IoU） {[f'{v:.2f}' for v in iou_mean]}")
 
 
 if __name__ == "__main__":

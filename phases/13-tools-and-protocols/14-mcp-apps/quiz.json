@@ -1,78 +1,78 @@
 {
   "lesson": "14-mcp-apps",
-  "title": "MCP Apps on the Stateless Protocol",
+  "title": "无状态协议上的 MCP Apps（MCP Apps on the Stateless Protocol）",
   "questions": [
     {
       "stage": "pre",
-      "question": "Where should a modern MCP App bind its UI resource to a tool?",
+      "question": "现代 MCP App 应在哪里将 UI 资源绑定到工具？",
       "options": [
-        "Only in the final text result",
-        "In a standalone HTTP GET stream",
-        "In an MCP session cookie",
-        "In the tool definition returned by tools/list"
+        "仅在最终文本结果中",
+        "在独立的 HTTP GET 流中",
+        "在 MCP 会话 Cookie 中",
+        "在 tools/list 返回的工具定义中"
       ],
       "correct": 3,
-      "explanation": "Nested _meta.ui.resourceUri on the tool definition lets the host preload and review the UI before invocation."
+      "explanation": "工具定义中的嵌套 _meta.ui.resourceUri 让宿主可以在调用前预加载并审查 UI。"
     },
     {
       "stage": "check",
-      "question": "How does a 2026-07-28 client advertise MCP Apps support?",
+      "question": "2026-07-28 客户端如何声明支持 MCP Apps？",
       "options": [
-        "With notifications/initialized",
-        "With Mcp-Session-Id",
-        "In io.modelcontextprotocol/clientCapabilities.extensions on each request",
-        "By accepting all ui:// resources"
+        "使用 notifications/initialized",
+        "使用 Mcp-Session-Id",
+        "在每个请求的 io.modelcontextprotocol/clientCapabilities.extensions 中声明",
+        "接受所有 ui:// 资源"
       ],
       "correct": 2,
-      "explanation": "Extensions are opt-in through the per-request client capabilities map."
+      "explanation": "扩展通过逐请求的客户端能力映射主动选择启用。"
     },
     {
       "stage": "check",
-      "question": "What does ui/initialize initialize?",
+      "question": "ui/initialize 初始化什么？",
       "options": [
-        "A protocol-level server session",
-        "OAuth client registration",
-        "The Apps postMessage bridge between an iframe and host",
-        "The Streamable HTTP GET channel"
+        "协议级服务器会话",
+        "OAuth 客户端注册",
+        "iframe 与宿主之间的 Apps postMessage 桥接",
+        "Streamable HTTP GET 通道"
       ],
       "correct": 2,
-      "explanation": "ui/initialize belongs to the Apps bridge dialect and is separate from the removed MCP core handshake."
+      "explanation": "ui/initialize 属于 Apps 桥接方言，与已移除的 MCP 核心握手分离。"
     },
     {
       "stage": "check",
-      "question": "Which resource response is safest for a user-independent bundled App?",
+      "question": "对于与用户无关的打包 App，哪种资源响应最安全？",
       "options": [
-        "No resultType and no cache policy",
-        "resultType complete, a bounded ttlMs, public cacheScope, and deny-first CSP",
-        "A session token embedded in the HTML",
-        "An unlimited ttlMs and wildcard CSP domains"
+        "没有 resultType，也没有缓存策略",
+        "resultType 为 complete，ttlMs 有界，cacheScope 为 public，且 CSP 默认拒绝",
+        "HTML 中嵌入会话令牌",
+        "无限 ttlMs 和使用通配符的 CSP 域"
       ],
       "correct": 1,
-      "explanation": "A complete result, explicit cache hints, and a narrow CSP make the wire and browser policies inspectable."
+      "explanation": "完整结果、明确的缓存提示和范围有限的 CSP，使线上协议与浏览器策略可供检查。"
     },
     {
       "stage": "post",
-      "question": "A host receives a resources/read body for one URI but a different Mcp-Name header. What should happen?",
+      "question": "宿主收到的 resources/read 正文指向一个 URI，但 Mcp-Name 请求头不同。应如何处理？",
       "options": [
-        "Open both resources",
-        "Prefer the header",
-        "Prefer the body",
-        "Return HTTP 400 with JSON-RPC error -32020"
+        "打开两个资源",
+        "以请求头为准",
+        "以正文为准",
+        "返回 HTTP 400 和 JSON-RPC 错误 -32020"
       ],
       "correct": 3,
-      "explanation": "Routing headers and the body must match before version support or feature policy is evaluated; the transport returns HTTP 400 with JSON-RPC error -32020."
+      "explanation": "评估版本支持或功能策略之前，路由请求头与正文必须匹配；传输返回 HTTP 400 和 JSON-RPC 错误 -32020。"
     },
     {
       "stage": "post",
-      "question": "What is the correct fallback for a host without MCP Apps support?",
+      "question": "不支持 MCP Apps 的宿主应采用什么回退行为？",
       "options": [
-        "Return HTML as trusted host chrome",
-        "Keep the tool usable with ordinary text or structured output and omit the UI binding",
-        "Create a hidden session and retry",
-        "Grant the extension automatically"
+        "将 HTML 作为可信宿主界面返回",
+        "保留普通文本或结构化输出，使工具可用，并省略 UI 绑定",
+        "创建隐藏会话并重试",
+        "自动授予扩展能力"
       ],
       "correct": 1,
-      "explanation": "An optional extension must not make the underlying tool unusable for clients that do not negotiate it."
+      "explanation": "可选扩展不能使未协商该扩展的客户端无法使用底层工具。"
     }
   ]
 }

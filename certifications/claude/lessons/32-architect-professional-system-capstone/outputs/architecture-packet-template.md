@@ -1,84 +1,82 @@
-# Production Claude Architecture Packet
+# 生产环境 Claude 架构材料包（Production Claude Architecture Packet）
 
-## 1. Executive Decision
+## 1. 管理层决策（Executive Decision）
 
-- Decision requested:
-- Business outcome and owner:
-- Baseline and target:
-- Investment range:
-- Recommended option:
-- Residual risk:
-- Approval required from:
+- 请求作出的决策：
+- 业务成果及负责人：
+- 基线与目标：
+- 投入范围：
+- 推荐方案：
+- 剩余风险：
+- 需要哪些负责人批准：
 
-## 2. Discovery
+## 2. 调研（Discovery）
 
-- Users and affected parties:
-- Current workflow:
-- Functional requirements:
-- Quality and performance requirements:
-- Security and safety constraints:
-- Operability and lifecycle requirements:
-- Non-goals:
-- Assumptions and evidence plan:
+- 用户与受影响各方：
+- 当前工作流：
+- 功能需求：
+- 质量与性能需求：
+- 系统安全与使用安全约束：
+- 可运营性与生命周期需求：
+- 非目标：
+- 假设与证据计划：
 
-## 3. Architecture Decisions
+## 3. 架构决策（Architecture Decisions）
 
-For each decision, record context, options, selection, rejected alternatives,
-consequences, owner, verification, review date, and reversal condition.
+为每项决策记录情境、候选方案、所选方案、被否决的备选方案、后果、负责人、验证方式、审查日期和推翻条件。
 
-## 4. System and Data Views
+## 4. 系统与数据视图（System and Data Views）
 
-- Context diagram
-- End-to-end sequence
-- Data and identity flow
-- Deployment and ownership view
-- Failure, partial-result, and escalation paths
+- 上下文图
+- 端到端时序
+- 数据与身份流
+- 部署与责任归属视图
+- 故障、部分结果和升级处理路径
 
-## 5. RAG and Knowledge
+## 5. RAG 与知识（RAG and Knowledge）
 
-- Sources and owners:
-- Parsing and chunking:
-- Index and version strategy:
-- Retrieval and filters:
-- Provenance contract:
-- Freshness, rollback, and evaluation:
+- 来源与负责人：
+- 解析与分块：
+- 索引与版本策略：
+- 检索与过滤器：
+- 来源溯源契约：
+- 时效性、回滚与评估：
 
-## 6. Integration and Identity
+## 6. 集成与身份（Integration and Identity）
 
-- Protocol decisions:
-- Tool catalog and progressive discovery:
-- Principal and scope propagation:
-- Approval and high-risk action binding:
-- Error and retry contracts:
+- 协议决策：
+- 工具目录与渐进式发现：
+- 主体与权限范围的传递：
+- 批准与高风险操作的绑定：
+- 错误与重试契约：
 
-## 7. Evaluation and Observability
+## 7. 评估与可观测性（Evaluation and Observability）
 
-- Representative datasets and strata:
-- Retrieval, task, trajectory, safety, latency, and cost gates:
-- Baseline and candidate evidence:
-- Logs, metrics, traces, alerts, and redaction:
-- Shadow, canary, rollout, and rollback:
+- 代表性数据集与分层：
+- 检索、任务、执行轨迹、安全、延迟和成本门禁：
+- 基线与候选方案证据：
+- 日志、指标、追踪、告警与脱敏：
+- 影子模式、金丝雀发布、上线与回滚：
 
-## 8. Governance
+## 8. 治理（Governance）
 
-- Risk register:
-- Data map and retention:
-- Control matrix with owners and tests:
-- Human review design:
-- Fairness and contestability:
-- Required technical, security, privacy, legal, and domain approvals:
+- 风险登记册：
+- 数据地图与保留策略：
+- 带有负责人和测试的控制矩阵：
+- 人工审查设计：
+- 公平性与申诉能力：
+- 所需的技术、安全、隐私、法务和领域批准：
 
-## 9. Operations and Handoff
+## 9. 运营与交接（Operations and Handoff）
 
-- SLOs and alert owners:
-- Runbooks and failure drills:
-- Reviewer capacity:
-- Change and incident process:
-- Handoff acceptance evidence:
-- Retirement criteria:
+- SLO 与告警负责人：
+- 运行手册与故障演练：
+- 审查者容量：
+- 变更与事件流程：
+- 交接验收证据：
+- 退役标准：
 
-## 10. Open Decisions
+## 10. 待定决策（Open Decisions）
 
-| Decision | Evidence needed | Owner | Due date | Safe default |
+| 决策 | 所需证据 | 负责人 | 截止日期 | 安全默认方案 |
 |----------|-----------------|-------|----------|--------------|
-

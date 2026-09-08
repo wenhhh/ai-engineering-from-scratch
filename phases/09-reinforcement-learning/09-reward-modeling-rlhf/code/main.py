@@ -133,26 +133,26 @@ def main():
     rng = random.Random(42)
     w = train_rm(n_pairs=600, rng=rng)
 
-    print("=== Stage 1: reward model (Bradley-Terry pairwise logistic) ===")
+    print("=== 阶段 1：奖励模型（Reward Model），使用 Bradley-Terry 成对逻辑模型 ===")
     print()
-    print("top positive-weight tokens:")
+    print("正权重最大的词元（Token，保留英文训练语料）：")
     for tok in sorted(w, key=lambda t: -w[t])[:6]:
         print(f"  {tok:<10} w = {w[tok]:+.3f}")
     print()
-    print("top negative-weight tokens:")
+    print("负权重绝对值最大的词元（Token）：")
     for tok in sorted(w, key=lambda t: w[t])[:6]:
         print(f"  {tok:<10} w = {w[tok]:+.3f}")
     print()
-    print(f"RM pairwise accuracy on holdout (200 pairs) = {rm_accuracy(w):.3f}")
+    print(f"奖励模型（RM）在留出集（Holdout，200 对）上的成对判断准确率 = {rm_accuracy(w):.3f}")
     print()
 
-    print("=== Stage 2: PPO-RLHF against RM with KL penalty ===")
+    print("=== 阶段 2：针对奖励模型执行 PPO-RLHF，加入 KL 惩罚项（KL Penalty） ===")
     print()
     for beta in (0.01, 0.1, 1.0):
         _, hist = rlhf_loop(w, updates=150, beta=beta, rng=random.Random(0))
         first = hist[0]
         last = hist[-1]
-        print(f"beta={beta:<5}  initial: RM={first[1]:+.3f} KL={first[2]:.3f}   final: RM={last[1]:+.3f} KL={last[2]:.3f}")
+        print(f"beta={beta:<5}  初始：RM={first[1]:+.3f} KL={first[2]:.3f}   最终：RM={last[1]:+.3f} KL={last[2]:.3f}")
 
 
 if __name__ == "__main__":

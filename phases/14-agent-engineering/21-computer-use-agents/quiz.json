@@ -1,90 +1,90 @@
 {
   "lesson": "21-computer-use-agents",
-  "title": "Computer Use: Claude, OpenAI CUA, Gemini",
+  "title": "计算机使用：Claude、OpenAI CUA、Gemini（Computer Use: Claude, OpenAI CUA, Gemini）",
   "questions": [
     {
       "stage": "pre",
-      "question": "What input does Claude computer use take, and what does it emit?",
+      "question": "Claude computer use 接收什么输入，发出什么输出？",
       "options": [
-        "Screenshots in (vision-based), keyboard/mouse commands out",
-        "Accessibility tree in, keyboard/mouse commands out",
-        "DOM XML in, JavaScript out",
-        "JSON in, SQL out"
+        "输入截图（基于视觉），输出键盘和鼠标命令",
+        "输入无障碍树，输出键盘和鼠标命令",
+        "输入 DOM XML，输出 JavaScript",
+        "输入 JSON，输出 SQL"
       ],
       "correct": 0,
-      "explanation": "Claude reads pixels and emits keyboard/mouse actions; no OS accessibility API is used."
+      "explanation": "Claude 读取像素并发出键盘和鼠标动作，不使用操作系统无障碍 API。"
     },
     {
       "stage": "pre",
-      "question": "What is Gemini 2.5 Computer Use's distinguishing safety feature?",
+      "question": "Gemini 2.5 Computer Use 的标志性安全功能是什么？",
       "options": [
-        "A per-step safety service that assesses each action before execution and rejects unsafe ones",
-        "Read-only mode by default",
-        "Hard-coded WAF rules",
-        "Mandatory CAPTCHAs"
+        "逐步骤安全服务，在执行前评估每个动作并拒绝不安全动作",
+        "默认只读模式",
+        "硬编码 WAF 规则",
+        "强制验证码"
       ],
       "correct": 0,
-      "explanation": "Gemini 2.5 Computer Use ships a per-step safety classifier as a defining feature."
+      "explanation": "Gemini 2.5 Computer Use 将逐步骤安全分类器作为标志性功能提供。"
     },
     {
       "stage": "check",
-      "question": "What does the lesson identify as untrusted input across all three models?",
+      "question": "本课指出三种模型共同视为什么是不可信输入？",
       "options": [
-        "Nothing; everything is trusted",
-        "Only HTTPS responses",
-        "Screenshots, DOM text, tool outputs, PDF content, anything retrieved",
-        "Only PDF content"
+        "没有，所有内容都可信",
+        "只有 HTTPS 响应",
+        "截图、DOM 文本、工具输出、PDF 内容，以及任何检索所得内容",
+        "只有 PDF 内容"
       ],
       "correct": 2,
-      "explanation": "Only direct user instructions count as permission; everything else is untrusted."
+      "explanation": "只有用户直接发出的指令才算授权，其他内容均不可信。"
     },
     {
       "stage": "check",
-      "question": "Which OSWorld / WebArena numbers does the lesson cite for OpenAI CUA at launch?",
+      "question": "本课引用的 OpenAI CUA 发布时 OSWorld / WebArena 数字是什么？",
       "options": [
-        "Numbers not reported",
-        "OSWorld 99%, WebArena 99%",
-        "OSWorld 0%, WebArena 0%",
-        "OSWorld 38.1%, WebArena 58.1%, WebVoyager 87%"
+        "未报告数字",
+        "OSWorld 99%，WebArena 99%",
+        "OSWorld 0%，WebArena 0%",
+        "OSWorld 38.1%，WebArena 58.1%，WebVoyager 87%"
       ],
       "correct": 3,
-      "explanation": "Those were the launch numbers cited."
+      "explanation": "这些是本课引用的发布时数字。"
     },
     {
       "stage": "check",
-      "question": "Which defense pattern is NOT in the 2026 convergence list?",
+      "question": "哪种防御模式不在 2026 年趋同列表中？",
       "options": [
-        "Allowlist/blocklist of navigation targets",
-        "Per-step safety classifier",
-        "Human-in-the-loop for sensitive actions",
-        "Auto-clicking through dialogs to save time"
+        "导航目标允许列表和阻止列表",
+        "逐步骤安全分类器",
+        "敏感动作采用人在回路",
+        "为节省时间自动点击通过对话框"
       ],
       "correct": 3,
-      "explanation": "Auto-clicking dialogs is the opposite of safe; the lesson recommends explicit confirmation."
+      "explanation": "自动点击对话框与安全相反；本课建议明确确认。"
     },
     {
       "stage": "post",
-      "question": "What is the principal attack the lesson highlights against computer-use agents?",
+      "question": "本课重点指出针对计算机使用智能体的主要攻击是什么？",
       "options": [
-        "Network outages",
-        "OS update lag",
-        "Slow rendering",
-        "A malicious page or PDF embedding instructions in retrieved content that the model treats as user intent"
+        "网络中断",
+        "操作系统更新滞后",
+        "渲染缓慢",
+        "恶意网页或 PDF 在检索内容中嵌入指令，模型却将其当作用户意图"
       ],
       "correct": 3,
-      "explanation": "Trusting screenshots or DOM text as permission is the canonical indirect-prompt-injection failure."
+      "explanation": "将截图或 DOM 文本视为授权，是典型的间接提示词注入失败。"
     },
     {
       "stage": "post",
-      "question": "When is human-in-the-loop confirmation specifically recommended?",
+      "question": "何时特别建议人在回路确认？",
       "options": [
-        "Never",
-        "On sensitive actions like login, purchase, file delete",
-        "Only when the model asks",
-        "On read-only navigation"
+        "从不",
+        "登录、购买、删除文件等敏感动作时",
+        "只有模型提出要求时",
+        "只读导航时"
       ],
       "correct": 1,
-      "explanation": "Sensitive actions (money, data exposure, new logins) require explicit human confirmation."
+      "explanation": "敏感动作涉及资金、数据暴露或新登录，需要明确的人工确认。"
     }
   ]
 }

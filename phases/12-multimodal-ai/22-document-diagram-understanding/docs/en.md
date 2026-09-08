@@ -1,175 +1,175 @@
-# Document and Diagram Understanding
+# 文档与图示理解（Document and Diagram Understanding）
 
-> Documents are not photos. A PDF, scientific paper, invoice, or handwritten form has layout, tables, diagrams, footnotes, headers, and semantic structure that plain image understanding cannot capture. The pre-VLM stack was a pipeline: Tesseract OCR + LayoutLMv3 + table-extraction heuristics. The VLM wave replaced that with OCR-free models — Donut (2022), Nougat (2023), DocLLM (2023) — that emit structured markup directly. By 2026 the frontier is just "feed the page image to Claude Opus 4.7 at 2576px native," and the structured-markup output comes for free. This lesson reads the three-era arc of document AI.
+> 文档不是照片。PDF、科学论文、发票或手写表单具有布局、表格、图示、脚注、页眉和语义结构，普通图像理解无法捕获这些内容。视觉语言模型（VLM）之前的技术栈是流水线：Tesseract 光学字符识别（OCR）+ LayoutLMv3 + 表格提取启发式规则。VLM 浪潮用直接输出结构化标记的免 OCR 模型取代了它：Donut（2022）、Nougat（2023）、DocLLM（2023）。到 2026 年，前沿做法就是“将页面图像以 2576px 原生分辨率输入 Claude Opus 4.7”，结构化标记输出随之获得。本课解读文档 AI 的三个时代。
 
 **Type:** Build
-**Languages:** Python (stdlib, layout-aware document parser skeleton)
-**Prerequisites:** Phase 12 · 05 (LLaVA), Phase 5 (NLP)
-**Time:** ~180 minutes
+**Languages:** Python（标准库，布局感知文档解析器骨架）
+**Prerequisites:** 阶段 12 · 05（LLaVA），阶段 5（自然语言处理）
+**Time:** ~180 分钟
 
-## Learning Objectives
+## 学习目标（Learning Objectives）
 
-- Explain the three eras of document AI: OCR pipeline, OCR-free, VLM-native.
-- Describe LayoutLMv3's three input streams: text, layout (bbox), image patches, with unified masking.
-- Compare Donut (OCR-free, image → markup), Nougat (scientific paper → LaTeX), DocLLM (layout-aware generative), PaliGemma 2 (VLM-native).
-- Pick a document model for a new task (invoices, scientific papers, handwritten forms, Chinese receipts).
+- 解释文档 AI 的三个时代：OCR 流水线、免 OCR、VLM 原生。
+- 描述 LayoutLMv3 的三种输入流：文本、布局（边界框）、图像块，以及统一掩码。
+- 比较 Donut（免 OCR，图像 → 标记）、Nougat（科学论文 → LaTeX）、DocLLM（布局感知生成式）、PaliGemma 2（VLM 原生）。
+- 为新任务（发票、科学论文、手写表单、中文收据）选择文档模型。
 
-## The Problem
+## 问题（The Problem）
 
-"Understand this PDF" is deceptively hard. The information sits in:
+“理解这个 PDF”比看起来更难。信息存在于：
 
-- Text content (90% of the signal).
-- Layout (headers, footnotes, sidebars, two-column format).
-- Tables (rows, columns, merged cells).
-- Figures and diagrams.
-- Handwritten annotations.
-- Fonts and typography (title vs body).
+- 文本内容（90% 的信号）。
+- 布局（页眉、脚注、侧栏、双栏格式）。
+- 表格（行、列、合并单元格）。
+- 图片与图示。
+- 手写批注。
+- 字体与排版（标题与正文）。
 
-Raw OCR dumps the text and loses the rest. A system that cares about invoices needs to know "Total: $1,245" came from the bottom-right, not from a footnote.
+原始 OCR 只导出文本，丢失其余信息。关注发票的系统需要知道“总计：$1,245”来自右下角，而非脚注。
 
-## The Concept
+## 概念（The Concept）
 
-### Era 1 — OCR pipeline (pre-2021)
+### 时代 1：OCR 流水线，2021 年前（Era 1 — OCR pipeline (pre-2021)）
 
-The classic stack:
+经典技术栈：
 
-1. PDF → image per page.
-2. Tesseract (or commercial OCR) extracts text with per-word bounding boxes.
-3. Layout analyzer identifies blocks (header, table, paragraph).
-4. Table structure recognizer parses tables.
-5. Domain rules + regex extract fields.
+1. PDF → 每页一张图像。
+2. Tesseract（或商业 OCR）提取文本及逐词边界框。
+3. 布局分析器识别块（页眉、表格、段落）。
+4. 表格结构识别器解析表格。
+5. 领域规则 + 正则表达式提取字段。
 
-Works for clean printed text. Breaks on handwriting, skewed scans, complex tables, non-English scripts. Every failure mode requires a custom exception path.
+适用于清晰印刷文本。遇到手写、倾斜扫描、复杂表格和非英语文字就容易失效。每种故障模式都需要定制异常处理路径。
 
-### TrOCR (2021)
+### TrOCR（2021）（TrOCR (2021)）
 
-TrOCR (Li et al., arXiv:2109.10282) replaced Tesseract's classic CNN-CTC with a transformer encoder-decoder trained on synthetic + real text images. Clean win on handwritten and multilingual text. Still a pipeline (detector then TrOCR then layout), but the OCR step improved dramatically.
+TrOCR（Li 等人，arXiv:2109.10282）用在合成与真实文本图像上训练的变换器编码器-解码器，替代 Tesseract 经典的卷积神经网络与连接时序分类（CNN-CTC）结构。在手写和多语种文本上明确胜出。仍是流水线（先检测器，再 TrOCR，再布局），但 OCR 步骤得到大幅改善。
 
-### Era 2 — OCR-free (2022-2023)
+### 时代 2：免 OCR，2022-2023 年（Era 2 — OCR-free (2022-2023)）
 
-The first OCR-free models said: skip detection entirely, map image pixels to structured output directly.
+第一批免 OCR 模型提出：完全跳过检测，直接将图像像素映射到结构化输出。
 
-Donut (Kim et al., arXiv:2111.15664):
-- Encoder-decoder transformer, encoder is Swin-B.
-- Output is JSON for form understanding, markdown for summarization, or any task-specific schema.
-- No OCR, no layout, no detection.
+Donut（Kim 等人，arXiv:2111.15664）：
+- 编码器-解码器变换器，编码器为 Swin-B。
+- 表单理解输出 JSON，摘要输出 Markdown，也可输出任何任务专属模式。
+- 无 OCR、无布局分析、无检测。
 
-Nougat (Blecher et al., arXiv:2308.13418):
-- Trained specifically on scientific papers.
-- Output is LaTeX / markdown.
-- Handles equations, multi-column layout, figures.
-- The model every arXiv-parser calls.
+Nougat（Blecher 等人，arXiv:2308.13418）：
+- 专门在科学论文上训练。
+- 输出 LaTeX / Markdown。
+- 处理公式、多栏布局、图片。
+- 每个 arXiv 解析器都会调用的模型。
 
-These are specialists, not generalists. Donut on a scientific paper fails; Nougat on an invoice fails.
+这些是专用模型，不是通用模型。Donut 处理科学论文会失败；Nougat 处理发票会失败。
 
-### LayoutLMv3 (2022)
+### LayoutLMv3（2022）（LayoutLMv3 (2022)）
 
-A different track. LayoutLMv3 (Huang et al., arXiv:2204.08387) keeps OCR but adds layout understanding:
+这是另一条路线。LayoutLMv3（Huang 等人，arXiv:2204.08387）保留 OCR，但加入布局理解：
 
-- Three input streams: OCR text tokens, per-token 2D bounding boxes, image patches.
-- Masked training objective across all three modalities (masked text, masked patches, masked layout).
-- Downstream: classification, entity extraction, table QA.
+- 三种输入流：OCR 文本词元、逐词元二维边界框、图像块。
+- 对三种模态统一使用掩码训练目标（遮蔽文本、遮蔽图像块、遮蔽布局）。
+- 下游任务：分类、实体提取、表格问答。
 
-LayoutLMv3 is the peak of OCR-based document understanding. Strong on forms and invoices. Requires OCR upstream. Best pre-VLM accuracy on standardized document benchmarks.
+LayoutLMv3 是基于 OCR 的文档理解巅峰。擅长表单和发票。需要上游 OCR。在标准化文档基准上取得 VLM 出现前的最佳准确率。
 
-### DocLLM (2023)
+### DocLLM（2023）（DocLLM (2023)）
 
-DocLLM (Wang et al., arXiv:2401.00908) is LayoutLM's generative sibling. Generates free-form answers conditioned on layout tokens. Better for QA on documents; still depends on OCR input.
+DocLLM（Wang 等人，arXiv:2401.00908）是 LayoutLM 的生成式近亲。以布局词元为条件生成自由形式答案。更适合文档问答，但仍依赖 OCR 输入。
 
-### Era 3 — VLM-native (2024+)
+### 时代 3：VLM 原生，2024 年起（Era 3 — VLM-native (2024+)）
 
-2024 VLMs became good enough to replace the pipeline entirely. Feed the full page image at high resolution to a VLM, ask the question, get an answer.
+2024 年，VLM 已足够好，能够完全替代流水线。将完整页面图像以高分辨率输入 VLM，提出问题，得到答案。
 
-- LLaVA-NeXT 336-tile AnyRes works for small documents.
-- Qwen2.5-VL dynamic-resolution handles 2048+ pixels natively.
-- Claude Opus 4.7 supports 2576px documents.
-- PaliGemma 2 (April 2025) trains specifically for documents + handwriting.
+- LLaVA-NeXT 的 336 分块任意分辨率（AnyRes）适合小文档。
+- Qwen2.5-VL 动态分辨率原生处理 2048+ 像素。
+- Claude Opus 4.7 支持 2576px 文档。
+- PaliGemma 2（2025 年 4 月）专门针对文档与手写训练。
 
-The gap between VLM-native and OCR-pipeline closed rapidly. By 2026, VLM-native wins on:
+VLM 原生与 OCR 流水线之间的差距迅速缩小。到 2026 年，VLM 原生在以下方面胜出：
 
-- Scene text (hand-written + printed, mixed scripts).
-- Complex tables with merged cells.
-- Math equations embedded in text.
-- Figures with text annotations.
+- 场景文字（手写 + 印刷，混合文字系统）。
+- 带合并单元格的复杂表格。
+- 嵌入文本中的数学公式。
+- 带文本标注的图片。
 
-OCR pipelines still win on:
+OCR 流水线仍在以下方面胜出：
 
-- Pure-scan workloads at massive scale where per-page latency matters.
-- Pipeline reliability (deterministic failures vs VLM hallucinations).
-- Regulated environments requiring auditable OCR output.
+- 大规模纯扫描工作负载，每页延迟很重要。
+- 流水线可靠性（确定性故障与 VLM 幻觉的对比）。
+- 要求可审计 OCR 输出的受监管环境。
 
-### The Claude 4.7 / GPT-5 frontier
+### Claude 4.7 / GPT-5 前沿（The Claude 4.7 / GPT-5 frontier）
 
-At 2576-pixel native input, frontier VLMs do document understanding at near-human accuracy. The benchmark numbers from early 2026:
+在 2576 像素原生输入下，前沿 VLM 的文档理解准确率接近人类。2026 年初的基准数字：
 
-- DocVQA: Claude 4.7 ~95.1, PaliGemma 2 ~88.4, Nougat ~77.3, pipelined LayoutLMv3 ~83.
-- ChartQA: Claude 4.7 ~92.2, GPT-4V ~78.
-- VisualMRC: Claude 4.7 ~94.
+- DocVQA：Claude 4.7 约 95.1，PaliGemma 2 约 88.4，Nougat 约 77.3，流水线 LayoutLMv3 约 83。
+- ChartQA：Claude 4.7 约 92.2，GPT-4V 约 78。
+- VisualMRC：Claude 4.7 约 94。
 
-The closed-model gap is mostly resolution and base-LLM scale. Open models at 7B are a few points behind but catching up.
+闭源模型的差距主要来自分辨率和基础大语言模型（LLM）规模。7B 开放模型落后几分，但正在追赶。
 
-### Math equations and LaTeX output
+### 数学公式与 LaTeX 输出（Math equations and LaTeX output）
 
-Scientific papers need exact LaTeX output for equations. Nougat was trained on this. VLMs trained with LaTeX targets (Qwen2.5-VL-Math, Nougat derivatives) produce usable LaTeX. Without explicit LaTeX training, VLMs produce readable but imprecise transcriptions.
+科学论文需要精确的公式 LaTeX 输出。Nougat 为此接受过训练。以 LaTeX 为目标训练的 VLM（Qwen2.5-VL-Math、Nougat 衍生模型）能产生可用 LaTeX。没有显式 LaTeX 训练的 VLM，会生成可读但不精确的转录。
 
-For scientific-paper pipelines in 2026: chain Nougat on the PDF, then a VLM on tricky pages.
+对于 2026 年的科学论文流水线：先用 Nougat 处理 PDF，再用 VLM 处理难页。
 
-### Handwriting
+### 手写（Handwriting）
 
-Still the hardest sub-task. Mixed printed + handwritten (doctors' notes, filled forms) is where OCR pipelines still beat VLMs for cost. Handwritten-only VLMs are improving (Claude 4.7, PaliGemma 2).
+这仍是最难的子任务。在印刷与手写混合内容（医生笔记、已填写表单）上，OCR 流水线的成本仍优于 VLM。专注手写的 VLM 正在改善（Claude 4.7、PaliGemma 2）。
 
-### 2026 recipe
+### 2026 年配方（2026 recipe）
 
-For a new document-AI project:
+对于新的文档 AI 项目：
 
-- Pure-printed invoices at scale: LayoutLMv3 + rules, cost-efficient.
-- Mixed documents (scientific + handwritten + forms): VLM-native (PaliGemma 2 or Qwen2.5-VL).
-- Full arXiv ingestion: Nougat for math, VLM for figures.
-- Regulatory: OCR pipeline + VLM validator for cross-check.
+- 大规模纯印刷发票：LayoutLMv3 + 规则，成本效率高。
+- 混合文档（科学 + 手写 + 表单）：VLM 原生（PaliGemma 2 或 Qwen2.5-VL）。
+- 完整 arXiv 摄取：Nougat 处理数学，VLM 处理图片。
+- 监管场景：OCR 流水线 + VLM 验证器进行交叉核对。
 
 ```figure
 mm-doc-layout
 ```
 
-## Use It
+## 动手使用（Use It）
 
-`code/main.py`:
+`code/main.py`：
 
-- A toy layout-aware tokenizer: given (text, bbox) pairs, produces the LayoutLMv3-style input.
-- A Donut-style task schema generator: JSON template for forms.
-- A comparison of token budgets per page across OCR-pipeline, Donut, Nougat, and VLM-native.
+- 简化的布局感知分词器：给定（文本、边界框）对，生成 LayoutLMv3 风格输入。
+- Donut 风格任务模式生成器：表单的 JSON 模板。
+- 比较 OCR 流水线、Donut、Nougat 和 VLM 原生的每页词元预算。
 
-## Ship It
+## 交付成果（Ship It）
 
-This lesson produces `outputs/skill-document-ai-stack-picker.md`. Given a document-AI project (domain, scale, quality, regulatory), picks between OCR pipeline, OCR-free specialist, and VLM-native.
+本课产出 `outputs/skill-document-ai-stack-picker.md`。给定文档 AI 项目（领域、规模、质量、监管），在 OCR 流水线、免 OCR 专用模型和 VLM 原生之间选择。
 
-## Exercises
+## 练习（Exercises）
 
-1. Your project is 10M invoices per day. Which stack minimizes cost-per-page without losing accuracy?
+1. 项目每天处理 10M 张发票。哪个技术栈能在不损失准确率的情况下最小化每页成本？
 
-2. Why does LayoutLMv3 outperform pure-CLIP-VLMs on form QA but underperform at scene-text? What does the bbox stream give up?
+2. 为什么 LayoutLMv3 在表单问答上优于纯 CLIP VLM，却在场景文字上较弱？边界框输入流放弃了什么？
 
-3. Nougat generates LaTeX. Propose a test case where VLM-native output beats Nougat on LaTeX fidelity, and a case where Nougat wins.
+3. Nougat 生成 LaTeX。提出一个 VLM 原生输出在 LaTeX 保真度上优于 Nougat 的测试案例，以及一个 Nougat 胜出的案例。
 
-4. Read PaliGemma 2 paper (Google, 2024). What was the key training-data addition that lifted document accuracy vs PaliGemma 1?
+4. 阅读 PaliGemma 2 论文（Google，2024）。与 PaliGemma 1 相比，新增了哪些关键训练数据，使文档准确率提高？
 
-5. Design a regulatory-safe hybrid: OCR pipeline as primary, VLM as secondary cross-check. How do you resolve disagreement?
+5. 设计满足监管要求的混合方案：OCR 流水线为主，VLM 为辅进行交叉核对。如何解决两者分歧？
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语 | 常见说法 | 实际含义 |
 |------|-----------------|------------------------|
-| OCR pipeline | "Tesseract-style" | Stage-wise stack: detect -> OCR -> layout -> rules; deterministic, fragile |
-| OCR-free | "Donut-style" | Image-to-output transformer that skips explicit OCR; single model |
-| Layout-aware | "LayoutLM" | Input includes per-token bbox coordinates; unified masking across modalities |
-| VLM-native | "Frontier VLM" | Feed page image directly to Claude/GPT/Qwen VLM at high resolution; no pipeline |
-| DocVQA | "Doc benchmark" | Document VQA standard; most-cited score |
-| Markup output | "LaTeX / MD" | Structured output format instead of free-form text; enables downstream automation |
+| OCR 流水线（OCR pipeline） | “Tesseract 风格” | 分阶段技术栈：检测 -> OCR -> 布局 -> 规则；确定性强，但脆弱 |
+| 免 OCR（OCR-free） | “Donut 风格” | 跳过显式 OCR、直接从图像到输出的单个变换器模型 |
+| 布局感知（Layout-aware） | “LayoutLM” | 输入包含逐词元边界框坐标；跨模态统一掩码 |
+| VLM 原生（VLM-native） | “前沿 VLM” | 直接将高分辨率页面图像输入 Claude/GPT/Qwen VLM；无流水线 |
+| DocVQA | “文档基准” | 文档视觉问答标准；被引用最多的分数 |
+| 标记输出（Markup output） | “LaTeX / MD” | 用结构化输出格式替代自由文本，使下游自动化成为可能 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [Li et al. — TrOCR (arXiv:2109.10282)](https://arxiv.org/abs/2109.10282)
-- [Blecher et al. — Nougat (arXiv:2308.13418)](https://arxiv.org/abs/2308.13418)
-- [Huang et al. — LayoutLMv3 (arXiv:2204.08387)](https://arxiv.org/abs/2204.08387)
-- [Kim et al. — Donut (arXiv:2111.15664)](https://arxiv.org/abs/2111.15664)
-- [Wang et al. — DocLLM (arXiv:2401.00908)](https://arxiv.org/abs/2401.00908)
+- [Li 等人：TrOCR（arXiv:2109.10282）](https://arxiv.org/abs/2109.10282)
+- [Blecher 等人：Nougat（arXiv:2308.13418）](https://arxiv.org/abs/2308.13418)
+- [Huang 等人：LayoutLMv3（arXiv:2204.08387）](https://arxiv.org/abs/2204.08387)
+- [Kim 等人：Donut（arXiv:2111.15664）](https://arxiv.org/abs/2111.15664)
+- [Wang 等人：DocLLM（arXiv:2401.00908）](https://arxiv.org/abs/2401.00908)

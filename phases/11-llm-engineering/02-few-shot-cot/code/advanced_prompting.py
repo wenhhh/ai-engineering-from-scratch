@@ -377,18 +377,18 @@ def run_comparison(questions, expected_answers, examples, client, model):
     results = {name: {"correct": 0, "total": 0} for name in methods}
 
     for i, (question, expected) in enumerate(zip(questions, expected_answers)):
-        print(f"\nProblem {i + 1}: {question[:60]}...")
+        print(f"\n问题（Problem）{i + 1}: {question[:60]}...")
         for name, solver in methods.items():
             answer, *_ = solver(question)
             is_correct = str(answer) == str(expected)
             results[name]["total"] += 1
             if is_correct:
                 results[name]["correct"] += 1
-            status = "CORRECT" if is_correct else f"WRONG (got {answer}, expected {expected})"
+            status = "CORRECT" if is_correct else f"WRONG（实际 {answer}，期望 {expected}）"
             print(f"  {name:20s}: {status}")
 
     print("\n" + "=" * 50)
-    print("ACCURACY SUMMARY")
+    print("准确率摘要（Accuracy Summary）")
     print("=" * 50)
     for name, counts in results.items():
         acc = counts["correct"] / counts["total"] * 100 if counts["total"] > 0 else 0
@@ -511,37 +511,37 @@ if __name__ == "__main__":
     model = os.environ.get("LLM_MODEL", "gpt-4o")
 
     print("=" * 60)
-    print("ADVANCED PROMPTING PIPELINE")
-    print("Few-Shot + CoT + Self-Consistency + Tree-of-Thought")
+    print("高级提示词流水线（Advanced Prompting Pipeline）")
+    print("少样本（Few-Shot）+ 思维链（CoT）+ 自一致性（Self-Consistency）+ 思维树（Tree-of-Thought）")
     print("=" * 60)
 
     questions = [t["question"] for t in TEST_QUESTIONS]
     expected = [t["answer"] for t in TEST_QUESTIONS]
 
-    print("\n--- Technique Comparison ---")
+    print("\n--- 技术比较（Technique Comparison） ---")
     run_comparison(questions, expected, GSM8K_EXAMPLES, client, model)
 
-    print("\n\n--- Escalation Pipeline ---")
+    print("\n\n--- 升级处理流水线（Escalation Pipeline） ---")
     for test in TEST_QUESTIONS[:2]:
-        print(f"\nQ: {test['question'][:80]}...")
+        print(f"\n问题（Q）: {test['question'][:80]}...")
         result = solve_with_escalation(
             test["question"], GSM8K_EXAMPLES, client, model
         )
-        print(f"  Method: {result['method']}")
-        print(f"  Answer: {result['answer']} (expected: {test['answer']})")
-        print(f"  Confidence: {result['confidence']}")
+        print(f"  方法（Method）: {result['method']}")
+        print(f"  答案（Answer）: {result['answer']} （期望值: {test['answer']}）")
+        print(f"  置信度（Confidence）: {result['confidence']}")
 
-    print("\n\n--- Prompt Chaining ---")
+    print("\n\n--- 提示词链（Prompt Chaining） ---")
     for test in TEST_QUESTIONS[:2]:
-        print(f"\nQ: {test['question'][:80]}...")
+        print(f"\n问题（Q）: {test['question'][:80]}...")
         answer, chain = prompt_chain_solve(test["question"], client, model)
-        print(f"  Answer: {answer} (expected: {test['answer']})")
-        print(f"  Steps: extract -> solve -> verify")
+        print(f"  答案（Answer）: {answer} （期望值: {test['answer']}）")
+        print(f"  步骤: 提取（extract）-> 求解（solve）-> 验证（verify）")
 
     print("\n\n--- ReAct ---")
     for test in TEST_QUESTIONS[:2]:
-        print(f"\nQ: {test['question'][:80]}...")
+        print(f"\n问题（Q）: {test['question'][:80]}...")
         answer, trace = react_solve(test["question"], client, model)
-        print(f"  Answer: {answer} (expected: {test['answer']})")
+        print(f"  答案（Answer）: {answer} （期望值: {test['answer']}）")
 
-    print("\n\nDone.")
+    print("\n\n完成。")

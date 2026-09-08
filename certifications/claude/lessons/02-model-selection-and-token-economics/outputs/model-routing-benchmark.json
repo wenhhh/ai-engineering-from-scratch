@@ -1,6 +1,10 @@
 {
   "benchmarkId": "operations-routing-v1",
-  "candidates": ["fast", "balanced", "capable"],
+  "candidates": [
+    "fast",
+    "balanced",
+    "capable"
+  ],
   "qualityGate": {
     "requiredFacts": 4,
     "unsupportedClaimsAllowed": 0,
@@ -8,20 +12,100 @@
     "consequentialCaseMustEscalate": true
   },
   "cases": [
-    {"id": "routine-01", "riskClass": "routine", "chosenModel": "fast", "humanReview": false, "estimatedCostUnits": 1, "gatePassed": true, "routingSignal": "format-only task"},
-    {"id": "routine-02", "riskClass": "routine", "chosenModel": "fast", "humanReview": false, "estimatedCostUnits": 1, "gatePassed": true, "routingSignal": "fixed label set"},
-    {"id": "routine-03", "riskClass": "routine", "chosenModel": "fast", "humanReview": false, "estimatedCostUnits": 1, "gatePassed": true, "routingSignal": "complete supplied record"},
-    {"id": "routine-04", "riskClass": "routine", "chosenModel": "fast", "humanReview": false, "estimatedCostUnits": 1, "gatePassed": true, "routingSignal": "bounded rewrite"},
-    {"id": "ambiguous-01", "riskClass": "ambiguous", "chosenModel": "balanced", "humanReview": false, "estimatedCostUnits": 2, "gatePassed": true, "routingSignal": "two plausible interpretations"},
-    {"id": "ambiguous-02", "riskClass": "ambiguous", "chosenModel": "balanced", "humanReview": false, "estimatedCostUnits": 2, "gatePassed": true, "routingSignal": "exception language present"},
-    {"id": "ambiguous-03", "riskClass": "ambiguous", "chosenModel": "balanced", "humanReview": false, "estimatedCostUnits": 2, "gatePassed": true, "routingSignal": "multi-source synthesis"},
-    {"id": "conflict-01", "riskClass": "conflicting-source", "chosenModel": "capable", "humanReview": false, "estimatedCostUnits": 4, "gatePassed": true, "routingSignal": "authority conflict"},
-    {"id": "conflict-02", "riskClass": "conflicting-source", "chosenModel": "capable", "humanReview": false, "estimatedCostUnits": 4, "gatePassed": true, "routingSignal": "date and policy disagree"},
-    {"id": "consequential-01", "riskClass": "consequential", "chosenModel": "capable", "humanReview": true, "estimatedCostUnits": 6, "gatePassed": true, "routingSignal": "exception recommendation affects customer funds"}
+    {
+      "id": "routine-01",
+      "riskClass": "routine",
+      "chosenModel": "fast",
+      "humanReview": false,
+      "estimatedCostUnits": 1,
+      "gatePassed": true,
+      "routingSignal": "仅调整格式的任务"
+    },
+    {
+      "id": "routine-02",
+      "riskClass": "routine",
+      "chosenModel": "fast",
+      "humanReview": false,
+      "estimatedCostUnits": 1,
+      "gatePassed": true,
+      "routingSignal": "固定标签集合"
+    },
+    {
+      "id": "routine-03",
+      "riskClass": "routine",
+      "chosenModel": "fast",
+      "humanReview": false,
+      "estimatedCostUnits": 1,
+      "gatePassed": true,
+      "routingSignal": "已提供完整记录"
+    },
+    {
+      "id": "routine-04",
+      "riskClass": "routine",
+      "chosenModel": "fast",
+      "humanReview": false,
+      "estimatedCostUnits": 1,
+      "gatePassed": true,
+      "routingSignal": "边界明确的改写"
+    },
+    {
+      "id": "ambiguous-01",
+      "riskClass": "ambiguous",
+      "chosenModel": "balanced",
+      "humanReview": false,
+      "estimatedCostUnits": 2,
+      "gatePassed": true,
+      "routingSignal": "存在两种合理解释"
+    },
+    {
+      "id": "ambiguous-02",
+      "riskClass": "ambiguous",
+      "chosenModel": "balanced",
+      "humanReview": false,
+      "estimatedCostUnits": 2,
+      "gatePassed": true,
+      "routingSignal": "出现例外条款措辞"
+    },
+    {
+      "id": "ambiguous-03",
+      "riskClass": "ambiguous",
+      "chosenModel": "balanced",
+      "humanReview": false,
+      "estimatedCostUnits": 2,
+      "gatePassed": true,
+      "routingSignal": "多来源综合分析"
+    },
+    {
+      "id": "conflict-01",
+      "riskClass": "conflicting-source",
+      "chosenModel": "capable",
+      "humanReview": false,
+      "estimatedCostUnits": 4,
+      "gatePassed": true,
+      "routingSignal": "权威来源冲突"
+    },
+    {
+      "id": "conflict-02",
+      "riskClass": "conflicting-source",
+      "chosenModel": "capable",
+      "humanReview": false,
+      "estimatedCostUnits": 4,
+      "gatePassed": true,
+      "routingSignal": "日期与政策不一致"
+    },
+    {
+      "id": "consequential-01",
+      "riskClass": "consequential",
+      "chosenModel": "capable",
+      "humanReview": true,
+      "estimatedCostUnits": 6,
+      "gatePassed": true,
+      "routingSignal": "例外处理建议影响客户资金"
+    }
   ],
   "routingComparison": {
     "routedCostUnits": 24,
     "allCapableCostUnits": 40,
-    "uncertainFallback": "route to capable model and authorized human review"
+    "uncertainFallback": "路由到高能力模型，并交由获授权人员审核"
   }
 }

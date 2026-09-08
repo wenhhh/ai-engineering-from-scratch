@@ -1,65 +1,65 @@
-# Voice Activity Detection & Turn-Taking — Silero, Cobra, and the Flush Trick
+# 语音活动检测与轮次切换：Silero、Cobra 与刷新技巧（Voice Activity Detection & Turn-Taking — Silero, Cobra, and the Flush Trick）
 
-> Every voice agent lives or dies on two decisions: is the user speaking now, and are they done? VAD answers the first. Turn-detection (VAD + silence-hangover + semantic endpoint model) answers the second. Get either wrong and your assistant either cuts users off or never shuts up.
+> 每个语音智能体都依赖两项判断：用户现在是否在说话，以及是否已经说完。语音活动检测回答前者，轮次检测（语音活动检测、静音延续、语义端点模型）回答后者。任一判断错误，助手就会打断用户，或说个不停。
 
 **Type:** Build
 **Languages:** Python
-**Prerequisites:** Phase 6 · 11 (Real-Time Audio), Phase 6 · 12 (Voice Assistant)
-**Time:** ~45 minutes
+**Prerequisites:** 阶段 6 · 11（实时音频），阶段 6 · 12（语音助手）
+**Time:** ~45 分钟
 
-## The Problem
+## 问题（The Problem）
 
-Three distinct decisions a voice agent makes on every 20 ms chunk:
+语音智能体对每个 20 ms 块作出三项不同判断：
 
-1. **Is this frame speech?** — VAD. Binary, per-frame.
-2. **Has the user started a new utterance?** — onset detection.
-3. **Has the user finished?** — end-pointing (turn-end).
+1. **本帧是语音吗？** 语音活动检测（Voice Activity Detection，VAD），逐帧二分类。
+2. **用户开始了新语句吗？** 起始检测（Onset Detection）。
+3. **用户说完了吗？** 端点检测（End-Pointing），即轮次结束。
 
-The naive answer (energy threshold) fails on any noise — traffic, keyboards, crowd babble. The 2026 answer: Silero VAD (open, deep-learned) + a turn-detection model (semantic endpointing) + a VAD-calibrated silence hangover.
+朴素能量阈值遇到任何噪声都会失败，包括交通、键盘和嘈杂人声。2026 年的方案是 Silero VAD（开放、基于深度学习）加轮次检测模型（语义端点检测），再加基于 VAD 校准的静音延续。
 
-## The Concept
+## 概念（The Concept）
 
-![VAD cascade: energy → Silero → turn-detector → flush trick](../assets/vad-turn-taking.svg)
+![VAD 级联：能量 → Silero → 轮次检测器 → 刷新技巧](../assets/vad-turn-taking.svg)
 
-### The three-tier VAD cascade
+### 三级 VAD 级联（The three-tier VAD cascade）
 
-**Tier 1: energy gate.** Cheapest. Threshold RMS at -40 dBFS. Filters obvious silence but fires on any noise above the threshold.
+**第一级：能量门控（Energy Gate）。** 成本最低。均方根（Root Mean Square，RMS）阈值设为 -40 dBFS，滤掉明显静音，但任何超过阈值的噪声都会触发。
 
-**Tier 2: Silero VAD** (2020-2026, MIT). 1M parameters. Trained on 6000+ languages. Runs in ~1 ms per 30 ms chunk on a single CPU thread. 87.7% TPR at 5% FPR. The open-source default.
+**第二级：Silero VAD**（2020–2026，MIT）。100 万参数，在 6000 多种语言上训练。单 CPU 线程处理每 30 ms 块约需 1 ms。在假正率（False Positive Rate，FPR）5% 时，真正率（True Positive Rate，TPR）为 87.7%，是开源默认选择。
 
-**Tier 3: semantic turn detector.** LiveKit's turn-detection model (2024-2026) or your own small classifier. Distinguishes "pause mid-sentence" from "done talking." Uses linguistic context (intonation + recent words), not just silence.
+**第三级：语义轮次检测器（Semantic Turn Detector）。** 使用 LiveKit 轮次检测模型（2024–2026）或自建小型分类器，区分“句中停顿”与“已经说完”。它利用语言上下文（语调和最近词语），而不只看静音。
 
-### Key parameters and their defaults
+### 关键参数与默认值（Key parameters and their defaults）
 
-- **Threshold.** Silero outputs a probability; classify speech at &gt; 0.5 (default) or &gt; 0.3 (sensitive). Lower threshold = fewer first-word clips, more false positives.
-- **Minimum speech duration.** Reject speech shorter than 250 ms — usually coughs or chair noise.
-- **Silence hangover (end-pointing).** After VAD returns to 0, wait 500-800 ms before declaring end-of-turn. Too short → interrupt user. Too long → feels sluggish.
-- **Pre-roll buffer.** Keep 300-500 ms of audio before VAD fires. Prevents "hey" being clipped.
+- **阈值（Threshold）。** Silero 输出概率，&gt; 0.5 为语音（默认），或设 &gt; 0.3（敏感）。阈值越低，首词截断越少，误报越多。
+- **最短语音时长（Minimum Speech Duration）。** 拒绝短于 250 ms 的语音，通常是咳嗽或椅子噪声。
+- **静音延续（Silence Hangover，端点检测）。** VAD 回到 0 后等待 500–800 ms，再宣告轮次结束。过短会打断用户，过长显得迟缓。
+- **预录缓冲（Pre-Roll Buffer）。** 保留 VAD 触发前 300–500 ms 音频，防止“嘿”被截断。
 
-### The flush trick (Kyutai 2025)
+### 刷新技巧，Kyutai 2025（The flush trick (Kyutai 2025)）
 
-Streaming STT models have a look-ahead delay (500 ms for Kyutai STT-1B, 2.5 s for STT-2.6B). Normally you'd wait that long after end-of-speech for the transcript. Flush trick: when VAD fires end-of-speech, **send a flush signal to the STT** that forces immediate output. STT processes at ~4× realtime, so the 500 ms buffer finishes in ~125 ms.
+流式语音转文本（Speech-to-Text，STT）模型有前瞻延迟：Kyutai STT-1B 为 500 ms，STT-2.6B 为 2.5 秒。通常语音结束后还要等这么久才能得到转录。刷新技巧是：VAD 发出语音结束信号时，**向 STT 发送刷新信号**，强制立即输出。STT 处理速度约为实时 4 倍，因此 500 ms 缓冲约 125 ms 就能处理完。
 
-End-to-end: 125 ms VAD + flush STT = conversational latency.
+端到端看，125 ms 的 VAD 与刷新 STT 组合可达到对话级延迟。
 
-### 2026 VAD comparison
+### 2026 年 VAD 比较（2026 VAD comparison）
 
-| VAD | TPR @ 5% FPR | Latency | License |
+| VAD | FPR 5% 时的 TPR | 延迟 | 许可 |
 |-----|--------------|---------|---------|
-| WebRTC VAD (Google, 2013) | 50.0% | 30 ms | BSD |
-| Silero VAD (2020-2026) | 87.7% | ~1 ms | MIT |
-| Cobra VAD (Picovoice) | 98.9% | ~1 ms | commercial |
-| pyannote segmentation | 95% | ~10 ms | MIT-ish |
+| WebRTC VAD（Google，2013） | 50.0% | 30 ms | BSD |
+| Silero VAD（2020–2026） | 87.7% | ~1 ms | MIT |
+| Cobra VAD（Picovoice） | 98.9% | ~1 ms | 商业 |
+| pyannote 分段 | 95% | ~10 ms | 类 MIT |
 
-Silero is the right default. Cobra is the compliance / accuracy upgrade. Energy-only VAD has no place in 2026 production.
+Silero 是合适的默认选择，Cobra 是合规与准确率升级方案。纯能量 VAD 不应进入 2026 年生产环境。
 
 ```figure
 sp-vad-cascade
 ```
 
-## Build It
+## 动手实现（Build It）
 
-### Step 1: the energy gate
+### 第 1 步：能量门控（Step 1: the energy gate）
 
 ```python
 def energy_vad(chunk, threshold_dbfs=-40.0):
@@ -68,7 +68,7 @@ def energy_vad(chunk, threshold_dbfs=-40.0):
     return dbfs > threshold_dbfs
 ```
 
-### Step 2: Silero VAD in Python
+### 第 2 步：在 Python 中使用 Silero VAD（Step 2: Silero VAD in Python）
 
 ```python
 from silero_vad import load_silero_vad, get_speech_timestamps
@@ -86,7 +86,7 @@ for s in segments:
     print(f"{s['start']/16000:.2f}s - {s['end']/16000:.2f}s")
 ```
 
-### Step 3: turn-end state machine
+### 第 3 步：轮次结束状态机（Step 3: turn-end state machine）
 
 ```python
 class TurnDetector:
@@ -113,7 +113,7 @@ class TurnDetector:
         return None
 ```
 
-### Step 4: the flush trick skeleton
+### 第 4 步：刷新技巧骨架（Step 4: the flush trick skeleton）
 
 ```python
 def flush_on_end(stt_client, audio_buffer):
@@ -122,56 +122,56 @@ def flush_on_end(stt_client, audio_buffer):
     return stt_client.recv_transcript(timeout_ms=150)
 ```
 
-STT (Kyutai, Deepgram, AssemblyAI) must support flush for this to work. Whisper streaming does not — it's block-based and always waits for chunks.
+STT（Kyutai、Deepgram、AssemblyAI）必须支持刷新，这才有效。Whisper streaming 不支持，因为它基于块，总要等待块完成。
 
-## Use It
+## 实际应用（Use It）
 
-| Situation | VAD choice |
+| 情况 | VAD 选择 |
 |-----------|-----------|
-| Open, fast, general | Silero VAD |
-| Commercial call center | Cobra VAD |
-| On-device (phone) | Silero VAD ONNX |
-| Research / diarization | pyannote segmentation |
-| Zero-dependency fallback | WebRTC VAD (legacy) |
-| Need turn-ending quality | Silero + LiveKit turn-detector layered |
+| 开放、快速、通用 | Silero VAD |
+| 商业呼叫中心 | Cobra VAD |
+| 端侧，手机 | Silero VAD ONNX |
+| 研究 / 说话人分离 | pyannote 分段 |
+| 零依赖回退 | WebRTC VAD（旧方案） |
+| 要求轮次结束质量 | Silero 叠加 LiveKit turn-detector |
 
-Rule of thumb: never ship energy-only VAD unless you really have no other option.
+经验法则：除非确实别无选择，否则不要交付纯能量 VAD。
 
-## Pitfalls
+## 常见陷阱（Pitfalls）
 
-- **Fixed threshold.** Works in quiet, fails in noisy. Either calibrate on-device or switch to Silero.
-- **Too-short silence hangover.** Agent interrupts mid-sentence. 500-800 ms is the sweet spot for conversational speech.
-- **Too-long hangover.** Feels sluggish. A/B test with target users.
-- **No pre-roll buffer.** First 200-300 ms of user audio lost. Always keep a rolling pre-roll.
-- **Ignoring semantic endpointing.** "Hmm, let me think..." contains long pauses. Users hate being cut off mid-thought. Use LiveKit's turn-detector or similar.
+- **固定阈值。** 安静环境有效，噪声环境失效。端侧校准，或改用 Silero。
+- **静音延续过短。** 智能体在句中打断，对话语音的较佳范围是 500–800 ms。
+- **静音延续过长。** 显得迟缓，与目标用户做 A/B 测试。
+- **没有预录缓冲。** 用户音频前 200–300 ms 会丢失。始终保留滚动预录。
+- **忽略语义端点。** “嗯，让我想想……”包含长停顿。用户不希望思考中途被打断。使用 LiveKit 轮次检测器或类似模型。
 
-## Ship It
+## 交付成果（Ship It）
 
-Save as `outputs/skill-vad-tuner.md`. Pick VAD model, threshold, hangover, pre-roll, and turn-detection strategy for a workload.
+保存为 `outputs/skill-vad-tuner.md`。为工作负载选择 VAD 模型、阈值、静音延续、预录缓冲和轮次检测策略。
 
-## Exercises
+## 练习（Exercises）
 
-1. **Easy.** Run `code/main.py`. It simulates a speech + silence + speech + coughs sequence and tests three VAD tiers.
-2. **Medium.** Install `silero-vad`, process a 5-min recording, tune threshold to minimize both first-word clips and false triggers. Report precision/recall.
-3. **Hard.** Build a mini turn-detector: Silero VAD + a 3-layer MLP on the last 10 words' embeddings (use sentence-transformers). Train on a hand-labeled turn-end dataset. Beat Silero-only by 10% F1.
+1. **简单。** 运行 `code/main.py`，模拟语音、静音、语音、咳嗽序列，测试三级 VAD。
+2. **中等。** 安装 `silero-vad`，处理 5 分钟录音，调阈值以同时减少首词截断与误触发，报告精确率和召回率。
+3. **困难。** 构建小型轮次检测器：Silero VAD 加三层多层感知机（MLP），输入最近 10 个词的嵌入（使用 sentence-transformers）。在人标轮次结束数据集上训练，让 F1 比仅用 Silero 高 10%。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语 | 常见说法 | 实际含义 |
 |------|-----------------|-----------------------|
-| VAD | Voice detector | Binary per-frame: is this speech? |
-| Turn detection | End-pointing | VAD + silence-hangover + semantic endpoint. |
-| Silence hangover | Wait-after-speech | Time to wait before declaring turn end; 500-800 ms. |
-| Pre-roll | Pre-speech buffer | Keep 300-500 ms audio before VAD fires. |
-| Flush trick | Kyutai hack | VAD → flush-STT → 125 ms instead of 500 ms delay. |
-| Semantic endpoint | "Did they mean to stop?" | ML classifier that looks at words, not just silence. |
-| TPR @ FPR 5% | ROC point | Standard VAD benchmark; 87.7% for Silero, 50% WebRTC. |
+| 语音活动检测（VAD） | 语音检测器 | 逐帧二分类：是不是语音？ |
+| 轮次检测（Turn Detection） | 端点检测 | VAD 加静音延续加语义端点。 |
+| 静音延续（Silence Hangover） | 说完后等待 | 宣告轮次结束前等待的 500–800 ms。 |
+| 预录缓冲（Pre-Roll） | 语音前缓冲 | 保留 VAD 触发前 300–500 ms 音频。 |
+| 刷新技巧（Flush Trick） | Kyutai 技巧 | VAD → 刷新 STT，将延迟从 500 ms 降为 125 ms。 |
+| 语义端点（Semantic Endpoint） | “他是想停下来吗？” | 查看词语而不只查看静音的机器学习分类器。 |
+| FPR 5% 时的 TPR | 接收者操作特征曲线（ROC）上的点 | 标准 VAD 基准，Silero 为 87.7%，WebRTC 为 50%。 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [Silero VAD](https://github.com/snakers4/silero-vad) — the reference open VAD.
-- [Picovoice Cobra VAD](https://picovoice.ai/products/cobra/) — commercial accuracy leader.
-- [Kyutai — Unmute + flush trick](https://kyutai.org/stt) — the sub-200 ms engineering trick.
-- [LiveKit — turn detection](https://docs.livekit.io/agents/logic/turns/) — semantic endpointing in production.
-- [WebRTC VAD](https://webrtc.googlesource.com/src/) — the legacy baseline.
-- [pyannote segmentation](https://github.com/pyannote/pyannote-audio) — diarization-grade segmentation.
+- [Silero VAD 项目](https://github.com/snakers4/silero-vad)：参考开放 VAD。
+- [Picovoice Cobra VAD 产品](https://picovoice.ai/products/cobra/)：商业准确率领先者。
+- [Kyutai：Unmute 与刷新技巧](https://kyutai.org/stt)：低于 200 ms 的工程技巧。
+- [LiveKit：轮次检测](https://docs.livekit.io/agents/logic/turns/)：生产中的语义端点检测。
+- [WebRTC VAD 源码](https://webrtc.googlesource.com/src/)：旧版基线。
+- [pyannote 分段项目](https://github.com/pyannote/pyannote-audio)：说话人分离级分段。

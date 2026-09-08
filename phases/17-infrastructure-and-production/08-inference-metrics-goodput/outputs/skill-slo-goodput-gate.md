@@ -1,32 +1,32 @@
 ---
 name: slo-goodput-gate
-description: Produce a CI/CD-ready benchmark recipe that gates LLM deploys on goodput, not throughput, with P50/P90/P99 percentiles and a documented tool choice.
+description: 制定可用于 CI/CD 的基准方案，以有效吞吐量而非吞吐量作为 LLM 部署门禁，报告 P50/P90/P99，并记录工具选择。
 version: 1.0.0
 phase: 17
 lesson: 08
 tags: [inference-metrics, goodput, ttft, tpot, itl, slo, benchmarking]
 ---
 
-Given a workload (model, hardware, target concurrency, user-facing interaction type — streaming chat / one-shot / voice / agent), produce a goodput-based SLO gate for CI/CD.
+根据工作负载（模型、硬件、目标并发、面向用户的交互类型，即流式聊天、单次请求、语音或智能体），制定基于有效吞吐量（Goodput）的 CI/CD 服务等级目标（SLO）门禁。
 
-Produce:
+请输出：
 
-1. SLO spec. Three thresholds: TTFT P99 bound, TPOT P99 bound, E2E P99 bound. Choose defensible values from interaction type (streaming chat: TTFT 500 ms, TPOT 25 ms, E2E 3 s; voice: TTFT 300 ms tighter; agent: E2E 5 s looser).
-2. Benchmark recipe. Tool choice (LLMPerf or GenAI-Perf — state the one you pick and why). Prompt distribution (mean + stddev of input and output tokens). Concurrency sweep (25%, 50%, 100%, 150% of target).
-3. Goodput calculation. Formula: fraction of requests meeting all three constraints simultaneously. Target >= 99% for production, >= 95% for canary.
-4. Percentile reporting. For every metric, report P50, P90, P99 (never mean alone). Annotate means only for sanity check.
-5. Tool trap note. State whether the tool includes or excludes TTFT from ITL. Fix the definition before comparing across teams.
-6. Gating logic. CI passes if goodput >= target AT target concurrency. Flag if goodput degrades more than 5 pts between 100% and 150% concurrency — indicates load-test headroom is missing.
+1. SLO 规范。三个阈值：TTFT P99、TPOT P99、E2E P99 上限。根据交互类型选择可论证数值：流式聊天 TTFT 500 ms、TPOT 25 ms、E2E 3 s；语音 TTFT 收紧为 300 ms；智能体 E2E 放宽为 5 s。
+2. 基准方案。选择 LLMPerf 或 GenAI-Perf，说明选谁及原因。定义输入与输出词元的均值、标准差，以及并发扫描：目标的 25%、50%、100%、150%。
+3. 有效吞吐量计算。公式为同时满足三项约束的请求比例，生产目标 >= 99%，金丝雀目标 >= 95%。
+4. 百分位报告。每项指标都报告 P50、P90、P99，绝不只报均值；均值仅作为合理性检查附注。
+5. 工具陷阱说明。明确工具计算 ITL 时是否包含 TTFT，跨团队比较前固定定义。
+6. 门禁逻辑。在目标并发下有效吞吐量 >= 目标值，CI 才通过。100% 到 150% 并发间如果下降超过 5 个百分点，应告警，说明缺少负载测试余量。
 
-Hard rejects:
-- Gating on throughput alone. Refuse and require goodput.
-- Reporting mean without P99. Refuse.
-- Omitting tool name and tool version. Refuse.
-- Benchmarking only at target concurrency; always do the sweep.
+硬性否决条件：
+- 只用吞吐量设门禁，拒绝，要求有效吞吐量。
+- 报均值但不报 P99，拒绝。
+- 省略工具名和工具版本，拒绝。
+- 仅在目标并发测试；必须执行并发扫描。
 
-Refusal rules:
-- If the user has no SLO written down, refuse and first write one based on the interaction type.
-- If the prompt distribution is "identical prompts in a loop", refuse — this is prompt-uniformity trap. Require realistic synthetic.
-- If the benchmark is < 30 runs or <100 requests per run, refuse as statistically insufficient.
+拒绝规则：
+- 用户没有书面 SLO 时，拒绝直接测试，先按交互类型制定一个。
+- 提示词分布是“循环相同提示词”时，拒绝，这是提示词一致性陷阱，要求逼真合成数据。
+- 基准少于 30 次运行，或每次少于 100 请求时，以统计不足为由拒绝。
 
-Output: a one-page SLO gate spec listing thresholds, benchmark recipe, tool choice, percentile report template, and the CI pass/fail rule. End with a "what to measure next" paragraph naming one of goodput vs concurrency curve, prompt-distribution sensitivity, or chunked-prefill on/off tail comparison depending on the known weakness.
+输出：一页 SLO 门禁规范，包括阈值、基准方案、工具选择、百分位报告模板、CI 通过/失败规则。最后用一段“下一步测量什么”，根据已知薄弱点，选择有效吞吐量与并发曲线、提示词分布敏感度，或分块预填充开关的尾延迟对比。

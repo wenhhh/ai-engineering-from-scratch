@@ -2,63 +2,63 @@
   "questions": [
     {
       "stage": "pre",
-      "question": "What does the 'shape' of a tensor describe?",
+      "question": "张量（Tensor）的形状（Shape）描述什么？",
       "options": [
-        "A tuple listing the size along each axis",
-        "The memory address of the tensor",
-        "The total number of elements in the tensor",
-        "The data type of the tensor elements"
+        "列出各轴大小的元组",
+        "张量的内存地址",
+        "张量中的元素总数",
+        "张量元素的数据类型"
       ],
       "correct": 0,
-      "explanation": "The shape is a tuple listing the size along each axis. For example, a tensor with shape (2, 3, 4) has 2 elements along axis 0, 3 along axis 1, and 4 along axis 2."
+      "explanation": "形状是列出各轴大小的元组。例如，形状为 (2, 3, 4) 的张量沿轴 0 有 2 个元素，沿轴 1 有 3 个元素，沿轴 2 有 4 个元素。"
     },
     {
       "stage": "pre",
-      "question": "In PyTorch, what layout does an image batch tensor use by default?",
+      "question": "在 PyTorch 中，图像批量张量默认使用什么布局？",
       "options": [
-        "CHWN (channels, height, width, batch)",
-        "NHWC (batch, height, width, channels)",
-        "WHCN (width, height, channels, batch)",
-        "NCHW (batch, channels, height, width)"
+        "CHWN（通道、高度、宽度、批量）",
+        "NHWC（批量、高度、宽度、通道）",
+        "WHCN（宽度、高度、通道、批量）",
+        "NCHW（批量、通道、高度、宽度）"
       ],
       "correct": 3,
-      "explanation": "PyTorch defaults to NCHW (channels-first) layout. TensorFlow defaults to NHWC (channels-last). Mismatched layouts cause silent errors or performance issues."
+      "explanation": "PyTorch 默认采用 NCHW（通道优先，Channels-First）布局。TensorFlow 默认采用 NHWC（通道最后，Channels-Last）。布局不匹配会导致静默错误或性能问题。"
     },
     {
       "stage": "post",
-      "question": "What is the result shape when broadcasting tensors of shape (8, 1, 6, 1) and (7, 1, 5)?",
+      "question": "对形状为 (8, 1, 6, 1) 和 (7, 1, 5) 的张量进行广播（Broadcasting），结果形状是什么？",
       "options": [
         "(8, 7, 6, 5)",
         "(8, 1, 6, 5)",
         "(8, 7, 6, 1)",
-        "Broadcasting fails — shapes are incompatible"
+        "广播失败，因为形状不兼容"
       ],
       "correct": 0,
-      "explanation": "Align shapes from the right: (8,1,6,1) and (1,7,1,5). Dimensions are compatible when equal or one is 1. The result takes the maximum along each axis: (8, 7, 6, 5)."
+      "explanation": "将形状右对齐：(8,1,6,1) 和 (1,7,1,5)。维度大小相等或其中一个为 1 时，它们就兼容。结果取各轴大小的最大值：(8, 7, 6, 5)。"
     },
     {
       "stage": "post",
-      "question": "In the einsum expression 'bhtd,bhsd->bhts', what happens to the index 'd'?",
+      "question": "在 einsum 表达式 'bhtd,bhsd->bhts' 中，索引 'd' 会如何处理？",
       "options": [
-        "It is transposed between the two input tensors",
-        "It is summed over (contracted) because it appears in both inputs but not the output",
-        "It is broadcast across both tensors",
-        "It is kept in the output as a new axis"
+        "在两个输入张量之间转置",
+        "沿它求和（缩并），因为它出现在两个输入中，但未出现在输出中",
+        "在两个张量间进行广播",
+        "作为新轴保留在输出中"
       ],
       "correct": 1,
-      "explanation": "In einsum, any index that appears in the inputs but not the output is summed over. Index 'd' appears in both 'bhtd' and 'bhsd' but not in the output 'bhts', so it is contracted (multiplied and summed)."
+      "explanation": "在 einsum 中，凡出现在输入中而未出现在输出中的索引，都会沿该索引求和。索引 'd' 同时出现在 'bhtd' 和 'bhsd' 中，但未出现在输出 'bhts' 中，因此会被缩并（相乘并求和）。"
     },
     {
       "stage": "post",
-      "question": "Why does calling .view() fail on a transposed tensor in PyTorch?",
+      "question": "为什么在 PyTorch 中对转置后的张量调用 .view() 会失败？",
       "options": [
-        "The tensor is non-contiguous in memory after transpose, and view requires contiguous data",
-        "Transposed tensors have a different data type",
-        "Transpose changes the total number of elements",
-        "View only works on 2D tensors"
+        "转置后张量在内存中不连续，而 view 要求连续数据",
+        "转置后的张量具有不同的数据类型",
+        "转置改变了元素总数",
+        "View 只能用于二维张量"
       ],
       "correct": 0,
-      "explanation": "Transpose swaps strides without moving data, making the tensor non-contiguous. The .view() operation requires contiguous memory layout. Use .reshape() or call .contiguous() first."
+      "explanation": "转置交换步幅而不移动数据，使张量变为非连续。操作 .view() 要求连续的内存布局。应使用 .reshape() 或先调用 .contiguous()。"
     }
   ]
 }

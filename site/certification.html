@@ -1,20 +1,20 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="zh-CN" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <!-- AIFS:CERTIFICATION-SEO:START -->
-  <title>Certification Track - AI Engineering from Scratch</title>
-  <meta name="description" content="A free, independent certification study path with lessons, domain coverage, diagnostics, and original practice.">
+  <title>认证路线 · 从零开始的 AI 工程</title>
+  <meta name="description" content="免费、独立的认证学习路线，提供课程、知识领域覆盖说明、诊断测评和原创练习。">
   <link rel="canonical" href="https://aiengineeringfromscratch.com/certification">
-  <meta property="og:title" content="Certification Track · AI Engineering from Scratch">
-  <meta property="og:description" content="A practical path from blueprint domains to hands-on readiness.">
+  <meta property="og:title" content="认证路线 · 从零开始的 AI 工程">
+  <meta property="og:description" content="从考试大纲领域到动手能力准备的实践路线。">
   <meta property="og:image" content="https://aiengineeringfromscratch.com/og-image.png?v=4">
   <meta property="og:url" content="https://aiengineeringfromscratch.com/certification">
   <meta property="og:type" content="website">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Certification Track · AI Engineering from Scratch">
-  <meta name="twitter:description" content="A practical path from blueprint domains to hands-on readiness.">
+  <meta name="twitter:title" content="认证路线 · 从零开始的 AI 工程">
+  <meta name="twitter:description" content="从考试大纲领域到动手能力准备的实践路线。">
   <meta name="twitter:image" content="https://aiengineeringfromscratch.com/og-image.png?v=4">
   <!-- AIFS:CERTIFICATION-SEO:END -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -24,32 +24,32 @@
   <link rel="stylesheet" href="certifications.css?v=20260809a">
 </head>
 <body data-cert-page="track">
-  <a href="#main" class="skip-link">Skip to content</a>
+  <a href="#main" class="skip-link">跳转到正文</a>
   <header class="site-header"><div class="header-inner">
-    <a href="index.html" class="logo"><span class="logo-icon" aria-hidden="true"></span> AI / FROM SCRATCH</a>
-    <nav class="header-nav"><a href="index.html#contents">Contents</a><a href="catalog.html">Catalog</a><a href="prereqs.html">Roadmap</a><a href="glossary.html">Glossary</a><a href="about.html">About</a><a href="https://github.com/rohitg00/ai-engineering-from-scratch" target="_blank" rel="noopener" class="header-github"><span>GitHub</span><span class="star-count" data-loading="true">…</span></a></nav>
-    <button class="search-toggle" type="button" data-cmd-palette aria-label="Search"><span aria-hidden="true">⌕</span></button>
-    <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme" type="button"><span class="theme-icon" id="themeIcon">N</span></button>
+    <a href="index.html" class="logo"><span class="logo-icon" aria-hidden="true"></span> AI / 从零开始</a>
+    <nav class="header-nav"><a href="index.html#contents">目录</a><a href="catalog.html">课程目录</a><a href="prereqs.html">路线图</a><a href="glossary.html">术语表</a><a href="about.html">关于</a><a href="https://github.com/rohitg00/ai-engineering-from-scratch" target="_blank" rel="noopener" class="header-github"><span>GitHub</span><span class="star-count" data-loading="true">…</span></a></nav>
+    <button class="search-toggle" type="button" data-cmd-palette aria-label="搜索"><span aria-hidden="true">⌕</span></button>
+    <button class="theme-toggle" id="themeToggle" aria-label="切换主题" type="button"><span class="theme-icon" id="themeIcon">N</span></button>
   </div></header>
 
   <main id="main" class="cert-page">
-    <div class="cert-container cert-breadcrumb"><a href="certifications.html">Certifications</a><span>/</span><span id="trackBreadcrumb">Track</span></div>
+    <div class="cert-container cert-breadcrumb"><a href="certifications.html">认证课程</a><span>/</span><span id="trackBreadcrumb">路径</span></div>
     <section class="cert-container cert-track-hero" id="trackHero" aria-live="polite">
       <!-- AIFS:CERTIFICATION-FALLBACK:START -->
       <div class="cert-track-not-found-copy"><div class="cert-eyebrow">CERTIFICATION TRACK</div><p class="cert-track-summary">Loading this independent study path, its ordered lessons, and original practice.</p></div>
       <!-- AIFS:CERTIFICATION-FALLBACK:END -->
     </section>
-    <aside class="cert-container cert-access-notice" id="trackAccessNotice" aria-label="Current official exam access" hidden></aside>
-    <section class="cert-container cert-section" aria-labelledby="progressTitle"><div class="cert-progress-card" id="trackProgress"><h2 id="progressTitle">Your progress</h2></div></section>
-    <section class="cert-container cert-section" aria-labelledby="domainsTitle"><div class="cert-section-heading"><div><div class="cert-eyebrow">EXAM BLUEPRINT</div><h2 id="domainsTitle">Domain weighting</h2></div><p>Weights describe the official blueprint. Lesson coverage shows where this path trains each decision.</p></div><div class="cert-domain-list" id="trackDomains"></div></section>
-    <section class="cert-container cert-section" aria-labelledby="lessonsTitle"><div class="cert-section-heading"><div><div class="cert-eyebrow">LEARNING PATH</div><h2 id="lessonsTitle">Lessons in order</h2></div><p>Completion is stored only in this browser. Shared course lessons count everywhere they appear.</p></div><div class="cert-lesson-list" id="trackLessons"></div></section>
-    <section class="cert-container cert-section cert-deep-dive-section" id="trackDeepDiveSection" aria-labelledby="deepDivesTitle" hidden><div class="cert-section-heading"><div><div class="cert-eyebrow">OPTIONAL EXTENSIONS</div><h2 id="deepDivesTitle">Go deeper</h2></div><p>These existing course lessons add context and practice. They are optional and do not count toward required track progress.</p></div><div class="cert-deep-dive-list" id="trackDeepDives"></div></section>
-    <section class="cert-container cert-section" aria-labelledby="assessmentsTitle"><div class="cert-section-heading"><div><div class="cert-eyebrow">READINESS</div><h2 id="assessmentsTitle">Diagnostics and mocks</h2></div><p>Practice results are percentages for this course, not official scaled exam scores.</p></div><div class="cert-assessment-grid" id="trackAssessments"></div></section>
-    <section class="cert-container cert-section" aria-labelledby="plansTitle"><div class="cert-section-heading"><div><div class="cert-eyebrow">PACE YOURSELF</div><h2 id="plansTitle">Study plans</h2></div></div><div class="cert-plan-grid" id="trackStudyPlans"></div></section>
-    <aside class="cert-container cert-notice"><strong>Independent preparation</strong><p>This community curriculum is not affiliated with, endorsed by, sponsored by, or authorized by Anthropic. It teaches the public blueprint and practical skills, but it does not reproduce protected exam questions, issue a credential, determine eligibility, or guarantee a passing result.</p></aside>
+    <aside class="cert-container cert-access-notice" id="trackAccessNotice" aria-label="当前官方考试访问情况" hidden></aside>
+    <section class="cert-container cert-section" aria-labelledby="progressTitle"><div class="cert-progress-card" id="trackProgress"><h2 id="progressTitle">你的进度</h2></div></section>
+    <section class="cert-container cert-section" aria-labelledby="domainsTitle"><div class="cert-section-heading"><div><div class="cert-eyebrow">考试大纲</div><h2 id="domainsTitle">领域权重</h2></div><p>权重对应官方考纲。课程覆盖情况说明本路径在哪些课程中训练各项决策。</p></div><div class="cert-domain-list" id="trackDomains"></div></section>
+    <section class="cert-container cert-section" aria-labelledby="lessonsTitle"><div class="cert-section-heading"><div><div class="cert-eyebrow">学习路径</div><h2 id="lessonsTitle">按顺序学习</h2></div><p>完成状态仅存储在此浏览器中。共享课程在所有引用它的路径中均计入进度。</p></div><div class="cert-lesson-list" id="trackLessons"></div></section>
+    <section class="cert-container cert-section cert-deep-dive-section" id="trackDeepDiveSection" aria-labelledby="deepDivesTitle" hidden><div class="cert-section-heading"><div><div class="cert-eyebrow">可选拓展</div><h2 id="deepDivesTitle">深入学习</h2></div><p>这些现有课程补充背景与实践，属于选修，不计入路径必修进度。</p></div><div class="cert-deep-dive-list" id="trackDeepDives"></div></section>
+    <section class="cert-container cert-section" aria-labelledby="assessmentsTitle"><div class="cert-section-heading"><div><div class="cert-eyebrow">就绪度</div><h2 id="assessmentsTitle">诊断评估与模拟考试</h2></div><p>练习结果为本课程计算的百分比，并非官方考试量表分数。</p></div><div class="cert-assessment-grid" id="trackAssessments"></div></section>
+    <section class="cert-container cert-section" aria-labelledby="plansTitle"><div class="cert-section-heading"><div><div class="cert-eyebrow">安排学习节奏</div><h2 id="plansTitle">学习计划</h2></div></div><div class="cert-plan-grid" id="trackStudyPlans"></div></section>
+    <aside class="cert-container cert-notice"><strong>独立备考</strong><p>本社区课程与 Anthropic 无隶属关系，未获其认可、赞助或授权。课程教授公开考纲与实践技能，不复刻受保护试题、不颁发认证、不判定报考资格，也不保证通过考试。</p></aside>
   </main>
 
-  <footer class="site-footer"><div class="container footer-inner"><p>AI Engineering from Scratch · open source · free forever.</p><div class="footer-links"><a href="certifications.html">All certifications</a><a href="catalog.html">Course catalog</a><a href="https://github.com/rohitg00/ai-engineering-from-scratch" target="_blank" rel="noopener">GitHub</a></div></div></footer>
+  <footer class="site-footer"><div class="container footer-inner"><p>AI Engineering from Scratch · 开源 · 永久免费.</p><div class="footer-links"><a href="certifications.html">全部认证</a><a href="catalog.html">课程目录</a><a href="https://github.com/rohitg00/ai-engineering-from-scratch" target="_blank" rel="noopener">GitHub</a></div></div></footer>
 
   <script src="data.js?v=20260821c"></script><script src="certification-data.js?v=20260809c"></script><script src="progress.js?v=20260822a"></script><script src="certification-progress.js?v=20260808c"></script><script src="header.js?v=20260829b" defer></script><script src="cmdpalette.js?v=20260821a" defer></script><script src="certifications.js?v=20260809a" defer></script>
 </body>

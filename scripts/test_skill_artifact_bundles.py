@@ -1053,10 +1053,10 @@ class TutorSkillCompatibilityTest(unittest.TestCase):
         self.assertEqual(focused, focused_mirror)
         self.assertEqual(generic, generic_mirror)
         self.assertIn("MCP-ENGINEERING-LEARNING.md", focused)
-        self.assertIn("rename the legacy file to `MCP-LEARNING.md`", focused)
-        self.assertIn("Preserve every learner note and evidence row byte for byte", focused)
-        self.assertIn("`MCP-ENGINEERING-LEARNING.md` exists", generic)
-        self.assertIn("without discarding learner evidence", generic)
+        self.assertIn("将旧文件重命名为 `MCP-LEARNING.md`", focused)
+        self.assertIn("逐字节保留每条学习者笔记和证据记录", focused)
+        self.assertIn("`MCP-ENGINEERING-LEARNING.md` 中任一文件", generic)
+        self.assertIn("迁移旧文件名，并保留学习证据", generic)
 
 
 if __name__ == "__main__":

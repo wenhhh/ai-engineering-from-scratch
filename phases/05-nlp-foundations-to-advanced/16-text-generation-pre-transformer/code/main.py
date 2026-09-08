@@ -101,17 +101,17 @@ def main():
     def lap(prev, w):
         return laplace_prob(bigrams, unigrams, vocab_size, prev, w)
 
-    print(f"vocab size: {vocab_size}")
-    print(f"train sentences: {len(train)}")
-    print(f"test sentences: {len(test)}")
+    print(f"词表大小（Vocabulary size）: {vocab_size}")
+    print(f"训练句子数: {len(train)}")
+    print(f"测试句子数: {len(test)}")
     print()
-    print(f"perplexity (Laplace):     {perplexity(lap, test):.2f}")
-    print(f"perplexity (Kneser-Ney):  {perplexity(kn, test):.2f}")
+    print(f"困惑度（Perplexity，Laplace）:     {perplexity(lap, test):.2f}")
+    print(f"困惑度（Perplexity，Kneser-Ney）:  {perplexity(kn, test):.2f}")
     print()
-    print("=== sampled sentences (Kneser-Ney, 3 seeds) ===")
+    print("=== 采样句子（Sampled sentences，Kneser-Ney，3 个随机种子，保留英文语料） ===")
     for seed in [1, 7, 42]:
         sentence = sample_sentence(kn, vocab, seed=seed)
-        print(f"  seed={seed}: {' '.join(sentence)}")
+        print(f"  随机种子（Seed）={seed}: {' '.join(sentence)}")
 
 
 if __name__ == "__main__":

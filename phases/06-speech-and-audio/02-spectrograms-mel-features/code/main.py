@@ -1,6 +1,6 @@
-"""Spectrograms, mel filterbanks, MFCCs — built from stdlib math.
+"""使用标准库 math 构建频谱图（Spectrograms）、梅尔滤波器组（Mel filterbanks）及梅尔频率倒谱系数（MFCCs）。
 
-Run: python3 code/main.py
+运行：python3 code/main.py
 """
 
 import math
@@ -116,49 +116,49 @@ def main():
     n_mels = 40
     n_fft = frame_len
 
-    print("=== Step 1: frame a 0.5 s, 2 kHz tone ===")
+    print("=== 步骤 1：将 0.5 s、2 kHz 单音分帧（Framing） ===")
     tone = sine(2000.0, sr, 0.5)
     frames = frame_signal(tone, frame_len, hop)
-    print(f"  samples: {len(tone)}, frames: {len(frames)}, frame_len: {frame_len}, hop: {hop}")
+    print(f"  采样点数: {len(tone)}，帧数: {len(frames)}，帧长（Frame length）: {frame_len}，帧移（Hop）: {hop}")
 
     print()
-    print("=== Step 2: Hann window attenuates frame edges ===")
+    print("=== 步骤 2：汉宁窗（Hann window）衰减帧边缘 ===")
     w = hann(frame_len)
     print(f"  hann(0) = {w[0]:.4f}   hann(mid) = {w[frame_len // 2]:.4f}   hann(last) = {w[-1]:.4f}")
 
     print()
-    print("=== Step 3: STFT of the tone; argmax bin is at 2000 Hz ===")
+    print("=== 步骤 3：单音的短时傅里叶变换（STFT）；最大值频点在 2000 Hz ===")
     mag = stft_magnitude(tone, frame_len, hop)
     mid = mag[len(mag) // 2]
     k_peak = max(range(len(mid)), key=lambda i: mid[i])
-    print(f"  frames: {len(mag)}, bins/frame: {len(mid)}")
-    print(f"  peak bin: {k_peak}, freq: {k_peak * sr / n_fft:.1f} Hz (expected 2000 Hz)")
+    print(f"  帧数: {len(mag)}，每帧频点（Bins）: {len(mid)}")
+    print(f"  峰值频点: {k_peak}，频率: {k_peak * sr / n_fft:.1f} Hz（预期 2000 Hz）")
 
     print()
-    print("=== Step 4: mel filterbank, 40 mels, 0-4000 Hz ===")
+    print("=== 步骤 4：梅尔滤波器组（Mel filterbank），40 个梅尔频带，0-4000 Hz ===")
     fb = mel_filterbank(n_mels, n_fft, sr)
     mel_widths = [sum(1 for x in f if x > 0) for f in fb]
-    print(f"  filterbank shape: {n_mels} x {len(fb[0])}")
-    print(f"  bin widths (first 6): {mel_widths[:6]}   (last 6): {mel_widths[-6:]}")
-    print("  note: low-mel filters are narrow (dense), high-mel filters are wide (sparse).")
+    print(f"  滤波器组形状: {n_mels} x {len(fb[0])}")
+    print(f"  频点宽度（前 6 个）: {mel_widths[:6]}   （后 6 个）: {mel_widths[-6:]}")
+    print("  注意：低梅尔频率滤波器窄（密集），高梅尔频率滤波器宽（稀疏）。")
 
     print()
-    print("=== Step 5: chirp 200 Hz -> 4000 Hz; argmax mel per frame ===")
+    print("=== 步骤 5：扫频信号（Chirp）200 Hz -> 4000 Hz；每帧最大值对应的梅尔频带 ===")
     c = chirp(200.0, 4000.0, sr, 0.4)
     cmag = stft_magnitude(c, frame_len, hop)
     mel_spec = apply_filterbank(cmag, fb)
     lm = log_transform(mel_spec)
-    print("  frame -> argmax mel bin:")
+    print("  帧 -> 最大值梅尔频带:")
     step = max(1, len(lm) // 10)
     for i in range(0, len(lm), step):
         am = max(range(n_mels), key=lambda m: lm[i][m])
         print(f"    t={i:3d}  argmax_mel={am:2d}")
 
     print()
-    print("=== Step 6: MFCC-13 of a single mel frame ===")
+    print("=== 步骤 6：单个梅尔帧的 13 维 MFCC ===")
     mfcc = dct_ii(lm[len(lm) // 2], 13)
-    print(f"  MFCC (13 coeffs, mid frame): {[round(c, 3) for c in mfcc]}")
-    print("  note: coef 0 encodes overall energy; typically dropped downstream.")
+    print(f"  MFCC（13 个系数，中间帧）: {[round(c, 3) for c in mfcc]}")
+    print("  注意：第 0 个系数编码整体能量（Energy）；下游通常将其丢弃。")
 
 
 if __name__ == "__main__":

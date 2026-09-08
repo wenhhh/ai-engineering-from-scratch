@@ -1,90 +1,90 @@
 {
   "lesson": "26-failure-modes-agentic",
-  "title": "Failure Modes: Why Agents Break",
+  "title": "失效模式：智能体为什么出错（Failure Modes: Why Agents Break）",
   "questions": [
     {
       "stage": "pre",
-      "question": "What is MASFT's central claim?",
+      "question": "MASFT 的核心主张是什么？",
       "options": [
-        "Failures are random noise",
-        "Failures are due to network outages",
-        "Failures vanish with bigger models",
-        "Multi-agent failures are fundamental design flaws, not LLM limitations to be fixed with better base models"
+        "失败是随机噪声",
+        "失败由网络中断造成",
+        "更大的模型会消除失败",
+        "多智能体失败源于根本设计缺陷，而非可通过更好基础模型修复的 LLM 局限"
       ],
       "correct": 3,
-      "explanation": "Berkeley's MASFT categorizes failures as design flaws; they do not disappear by scaling the base model."
+      "explanation": "Berkeley 的 MASFT 将失败归类为设计缺陷；扩大基础模型规模不会使它们消失。"
     },
     {
       "stage": "pre",
-      "question": "Which is NOT one of the five recurring industry failure modes the lesson lists?",
+      "question": "哪项不属于本课列出的行业反复出现的五种失效模式？",
       "options": [
-        "Hallucinated actions",
-        "Cascading errors",
-        "Scope creep",
-        "Embedding versioning"
+        "幻觉动作（Hallucinated actions）",
+        "级联错误（Cascading errors）",
+        "范围蔓延（Scope creep）",
+        "嵌入版本控制（Embedding versioning）"
       ],
       "correct": 3,
-      "explanation": "The five are hallucinated actions, scope creep, cascading errors, context loss, tool misuse."
+      "explanation": "五种模式是幻觉动作、范围蔓延、级联错误、上下文丢失和工具误用。"
     },
     {
       "stage": "check",
-      "question": "What is a cascading error in this lesson?",
+      "question": "本课中的级联错误是什么？",
       "options": [
-        "A YAML parser error",
-        "One wrong call triggers downstream effects across systems (a phantom SKU triggers four downstream API calls)",
-        "A cron failure",
-        "An LLM rate-limit cascade"
+        "YAML 解析错误",
+        "一个错误调用跨系统触发下游影响，例如虚构 SKU 触发四次下游 API 调用",
+        "定时任务失败",
+        "LLM 限速级联"
       ],
       "correct": 1,
-      "explanation": "Cascades amplify a single bad call into a multi-system incident; especially severe when agents fake success."
+      "explanation": "级联将单个错误调用放大为多系统事故；智能体伪造成功时尤其严重。"
     },
     {
       "stage": "check",
-      "question": "Which two manifestations does the LLM Agent Hallucinations Survey list?",
+      "question": "LLM 智能体幻觉综述列出哪两种表现？",
       "options": [
-        "Hot and cold tokens",
-        "Instruction-following Deviation and Long-range Contextual Misuse",
-        "Greedy and beam search",
-        "Soft and hard prompts"
+        "热词元与冷词元",
+        "指令遵循偏离（Instruction-following Deviation）与长距离上下文误用（Long-range Contextual Misuse）",
+        "贪心搜索与束搜索",
+        "软提示词与硬提示词"
       ],
       "correct": 1,
-      "explanation": "Hallucinations show up as either ignoring system prompt or forgetting/misapplying earlier-turn context."
+      "explanation": "幻觉表现为忽略系统提示词，或忘记、误用早期轮次上下文。"
     },
     {
       "stage": "check",
-      "question": "What does success hallucination mean?",
+      "question": "成功幻觉（Success hallucination）是什么意思？",
       "options": [
-        "A unit test passed",
-        "The agent returns a success message even though the target state did not change (often on a 400 from a tool)",
-        "The user thinks success when none happened",
-        "The model is overconfident on benchmarks"
+        "单元测试通过",
+        "目标状态没有变化，智能体却返回成功消息，常见于工具返回 400 时",
+        "用户误以为成功，实际没有成功",
+        "模型在基准上过度自信"
       ],
       "correct": 1,
-      "explanation": "Re-probe environment state; agents commonly fake completion when they cannot distinguish 'I failed' from 'impossible'."
+      "explanation": "应重新探测环境状态；智能体无法区分“我失败了”与“不可能完成”时，经常伪造完成。"
     },
     {
       "stage": "post",
-      "question": "Why is tagging only crashes insufficient?",
+      "question": "为什么只标注崩溃不够？",
       "options": [
-        "Logging is paid",
-        "Most agent failures produce valid-looking output that does not crash; content-level checks are needed",
-        "Crashes leak PII",
-        "Crashes are slow"
+        "日志收费",
+        "大多数智能体失败产生看似有效且不会崩溃的输出，需要内容层面检查",
+        "崩溃泄露 PII",
+        "崩溃很慢"
       ],
       "correct": 1,
-      "explanation": "Crash-based monitoring misses the bulk of agent failures, which are content-shaped."
+      "explanation": "基于崩溃的监控会漏掉多数以内容形式表现的智能体失败。"
     },
     {
       "stage": "post",
-      "question": "What mitigation does the lesson recommend at every step of a reasoning chain?",
+      "question": "本课建议在推理链每一步采用什么缓解措施？",
       "options": [
-        "Add a sleep()",
-        "Disable retries",
-        "Automated verification gates that check factual grounding against environment state",
-        "Lower temperature only"
+        "添加 sleep()",
+        "禁用重试",
+        "自动验证门禁，对照环境状态检查事实依据",
+        "只降低温度"
       ],
       "correct": 2,
-      "explanation": "Per-step gates (safety classifier, argument validation, CRITIC, state re-probe) catch failures before they cascade."
+      "explanation": "逐步骤门禁包括安全分类器、参数校验、CRITIC、状态重探测，可在失败级联前捕获它们。"
     }
   ]
 }

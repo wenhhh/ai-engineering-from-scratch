@@ -1,19 +1,19 @@
 ---
 name: video-brief
-description: Translate a video brief into a model + prompt + shot plan for a 2026 video generator.
+description: 将视频需求简报转化为 2026 年视频生成器的模型、提示词与镜头计划。
 version: 1.0.0
 phase: 8
 lesson: 10
 tags: [video, diffusion, sora, veo, kling]
 ---
 
-Given a video brief (duration, aspect ratio, style, subject, camera plan, audio needs, fidelity bar, budget), output:
+给定视频简报（时长、宽高比、风格、主体、镜头规划、音频需求、保真门槛、预算），输出：
 
-1. Model + hosting. Sora, Veo 3, Kling 2.1, Runway Gen-3, Pika 2.0, CogVideoX, HunyuanVideo, WAN 2.2, or Mochi-1. One-sentence reason tied to duration / quality / license.
-2. Prompt scaffolding. (a) camera language (establishing, tracking, dolly, crane, handheld), (b) subject + action, (c) lighting + style, (d) negative prompt or style toggles. Aim for 50-150 tokens for Sora, 20-60 for Runway.
-3. Shot plan. Single-clip vs stitched multi-shot, keyframe or first-frame anchors, I2V vs T2V per shot.
-4. Seed + reproducibility. Per-shot seed, version pin, tooling repo.
-5. QA checklist. Frame-by-frame for flicker, identity consistency, physics violations, watermark compliance.
-6. Audio. Native in Veo 3, otherwise bolt-on (ElevenLabs, Suno, or licensed stems + lip-sync pass).
+1. 模型与托管。Sora、Veo 3、Kling 2.1、Runway Gen-3、Pika 2.0、CogVideoX、HunyuanVideo、WAN 2.2 或 Mochi-1。结合时长、质量、许可证，用一句话说明理由。
+2. 提示词结构。(a) 镜头语言（建立镜头、跟拍、推轨、升降、手持），(b) 主体与动作，(c) 光照与风格，(d) 负向提示词或风格开关。Sora 目标 50 至 150 词元，Runway 20 至 60。
+3. 镜头计划。单片段或拼接多镜头、关键帧或首帧锚点、逐镜头选择图生视频（I2V）或文生视频（Text-to-Video，T2V）。
+4. 种子与复现。逐镜头种子、固定版本、工具仓库。
+5. 质量检查清单。逐帧检查闪烁、身份一致性、违背物理规律、水印合规。
+6. 音频。Veo 3 原生提供；否则外接（ElevenLabs、Suno，或授权分轨加口型同步处理）。
 
-Refuse to promise &gt; 10s of continuous motion at 1080p on a free tier (Pika / Kling / Runway cap at 10s; longer runs are stitched). Refuse to generate likenesses of real people without a release. Flag any brief that implies real-time 4K generation in 2026 - current best is ~30s generation per 6s clip at 1080p on a hosted endpoint.
+拒绝承诺免费档提供 &gt; 10s 的 1080p 连续运动（Pika／Kling／Runway 上限 10s，更长运行由拼接实现）。没有肖像授权，拒绝生成真人相貌。标记任何暗示 2026 年可实时生成 4K 的简报：当前最佳托管端点生成 6 秒 1080p 片段约需 30 秒。

@@ -1,18 +1,18 @@
 ---
 name: prompt-caching-planner
-description: Design a cache-friendly prompt layout and pick the right provider caching mode.
+description: 设计适合缓存的提示词布局，并选择合适的供应商缓存模式。
 version: 1.0.0
 phase: 11
 lesson: 15
 tags: [llm-engineering, caching, cost]
 ---
 
-Given a prompt (system + tools + few-shot + retrieval + history + user) and a usage profile (requests per hour, TTL needed, provider), output:
+给定提示词（系统 + 工具 + 少样本示例（Few-shot）+ 检索 + 历史 + 用户）和使用特征（每小时请求数、所需生存时间（TTL）、供应商），输出：
 
-1. Layout. Reordered sections with a single cache breakpoint marked; explain which sections are stable, which are volatile.
-2. Provider mode. Anthropic cache_control, OpenAI automatic, or Gemini CachedContent. Justify from TTL and reuse pattern.
-3. Break-even. Expected reads per write within TTL; net cost vs no-cache with math.
-4. Verification plan. CI assertion that cache_read_input_tokens > 0 on the second identical request; dashboard split by cached vs uncached tokens.
-5. Failure modes. List the three most likely reasons the cache will miss in this setup (dynamic timestamp, tool reorder, near-duplicate text) and how you will prevent each.
+1. 布局（Layout）。重新排序各部分，并标出单一缓存断点（Cache Breakpoint）；说明哪些部分稳定，哪些容易变化。
+2. 供应商模式（Provider mode）。选择 Anthropic cache_control、OpenAI 自动缓存或 Gemini CachedContent。根据 TTL 和复用模式说明理由。
+3. 盈亏平衡（Break-even）。计算 TTL 内每次写入预期对应的读取次数，以及相较于无缓存的净成本。
+4. 验证方案（Verification plan）。在持续集成（CI）中断言第二个相同请求的 cache_read_input_tokens > 0；仪表盘区分已缓存与未缓存词元（Token）。
+5. 故障模式（Failure modes）。列出此配置下最可能导致未命中的三个原因：动态时间戳、工具重排、近似重复文本，并说明如何逐一预防。
 
-Refuse to ship a cache plan that places a dynamic field above the breakpoint. Refuse to enable 1h TTL without a reuse count that makes the 2x write premium pay back.
+拒绝交付将动态字段放在断点上方的缓存方案。如果复用次数不足以抵消 2 倍写入溢价，就拒绝启用 1 小时 TTL。

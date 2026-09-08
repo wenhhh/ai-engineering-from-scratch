@@ -1,22 +1,22 @@
 {
   "lesson": "21-tool-registry-schema-validation",
-  "title": "Tool Registry with Schema Validation",
+  "title": "带模式校验的工具注册表（Tool Registry with Schema Validation）",
   "questions": [
     {
       "stage": "pre",
-      "question": "Why register a tool's schema separately from its handler?",
+      "question": "为什么将工具模式（Schema）与处理函数分开注册？",
       "options": [
-        "Because handlers cannot return JSON",
-        "So the validator stays pure data, and the handler stays opaque code",
-        "Because schemas must be compiled",
-        "Because schemas have to live in YAML"
+        "因为处理函数无法返回 JSON",
+        "让校验器只处理纯数据，让处理函数保持为不透明的代码",
+        "因为模式必须编译",
+        "因为模式必须存放在 YAML 中"
       ],
       "correct": 1,
-      "explanation": "Keeping the schema as data and the handler as code lets the validator be a pure function over the schema tree."
+      "explanation": "模式作为数据、处理函数作为代码分离后，校验器便可成为遍历模式树的纯函数（Pure Function）。"
     },
     {
       "stage": "check",
-      "question": "Which keywords are intentionally outside the subset this lesson implements?",
+      "question": "本课实现的子集刻意排除了哪些关键字？",
       "options": [
         "items, enum",
         "oneOf, anyOf, $ref, allOf",
@@ -24,35 +24,35 @@
         "type, properties, required"
       ],
       "correct": 1,
-      "explanation": "The omitted keywords add cycles and reference resolution. We keep the subset linear so the validator stays a single recursive walk."
+      "explanation": "被省略的关键字会引入环和引用解析。我们保持子集的线性结构，让校验器只需一次递归遍历。"
     },
     {
       "stage": "check",
-      "question": "Why does register() reject duplicates by default?",
+      "question": "为什么 register() 默认拒绝重复注册？",
       "options": [
-        "Because the schema cannot be re-validated",
-        "Silent overwrites are the cause of production tool catalog drift",
-        "Because the registry cannot store more than one record per name",
-        "Because handlers cannot be replaced"
+        "因为无法重新校验模式",
+        "静默覆盖会造成生产工具目录漂移",
+        "因为注册表不能为一个名称存储多条记录",
+        "因为处理函数无法替换"
       ],
       "correct": 1,
-      "explanation": "Forcing override=True surfaces the case where two parts of the code intend to own the same tool name."
+      "explanation": "强制要求 override=True，能显式暴露代码中两处逻辑想拥有同一工具名称的情况。"
     },
     {
       "stage": "check",
-      "question": "What does the validator do when a schema specifies type integer but receives the value True?",
+      "question": "模式指定 type integer，但收到值 True 时，校验器会如何处理？",
       "options": [
-        "Coerces to integer silently",
-        "Treats it as 1 and passes",
-        "Raises an unhandled exception",
-        "Returns a type error because bool is not integer in this validator"
+        "静默强制转换为整数",
+        "将其当作 1 并通过校验",
+        "抛出未处理的异常",
+        "返回类型错误，因为本校验器不将 bool 视为 integer"
       ],
       "correct": 3,
-      "explanation": "Python bool is a subclass of int, but the validator filters bool out of the integer check. JSON booleans and integers are distinct."
+      "explanation": "Python 的 bool 是 int 的子类，但校验器在整数检查中排除了 bool。JSON 布尔值与整数是不同类型。"
     },
     {
       "stage": "post",
-      "question": "When the input object is {'user': {'email': 0}} and the schema requires user.email to be a string, what is the error path?",
+      "question": "输入对象为 {'user': {'email': 0}}，模式要求 user.email 是字符串时，错误路径是什么？",
       "options": [
         "/user",
         "/user/email",
@@ -60,19 +60,19 @@
         "user.email"
       ],
       "correct": 1,
-      "explanation": "JSON pointer encodes the descent through user then email as /user/email."
+      "explanation": "JSON 指针（JSON Pointer）将依次进入 user 和 email 的路径编码为 /user/email。"
     },
     {
       "stage": "post",
-      "question": "Why is the registry not a security boundary?",
+      "question": "为什么注册表不是安全边界（Security Boundary）？",
       "options": [
-        "Because handlers are async",
-        "Because handlers can still misbehave after validation passes",
-        "Because the registry is in-process",
-        "Because the schema is JSON"
+        "因为处理函数是异步的",
+        "因为校验通过后，处理函数仍可能违规",
+        "因为注册表位于进程内",
+        "因为模式使用 JSON"
       ],
       "correct": 1,
-      "explanation": "The registry checks shape. Behavior, timeouts, and isolation belong to the dispatcher and the sandbox."
+      "explanation": "注册表检查数据结构。行为、超时与隔离由分派器（Dispatcher）和沙箱（Sandbox）负责。"
     }
   ]
 }

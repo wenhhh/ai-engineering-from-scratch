@@ -1,157 +1,157 @@
-# ColPali and Vision-Native Document RAG
+# ColPali 与视觉原生文档检索增强生成（ColPali and Vision-Native Document RAG）
 
-> Traditional RAG parses PDFs into text, splits into chunks, embeds chunks, stores vectors. Every step loses signal: OCR drops chart data, chunking breaks table rows, text embeddings ignore figures. ColPali (Faysse et al., July 2024) asked the simpler question: why extract text at all? Embed the page image directly via PaliGemma, use ColBERT-style late interaction for retrieval, and keep all the layout, figures, fonts, and formatting signal the document carries. Published benchmarks: 20-40% better end-to-end accuracy than text-RAG on visually-rich documents. ColQwen2, ColSmol, and VisRAG extended the pattern. This lesson reads the vision-native RAG thesis and builds a tiny ColPali-like indexer.
+> 传统检索增强生成（RAG）将 PDF 解析为文本、切成块、嵌入这些块并存储向量。每一步都会丢失信号：OCR 丢掉图表数据，分块打断表格行，文本嵌入忽略图片。ColPali（Faysse 等人，2024 年 7 月）提出了更简单的问题：为什么还要提取文本？直接通过 PaliGemma 嵌入页面图像，使用 ColBERT 风格的后期交互（Late interaction）检索，保留文档携带的全部布局、图片、字体与格式信号。已发表基准显示：在视觉丰富的文档上，端到端准确率比文本 RAG 高 20-40%。ColQwen2、ColSmol 和 VisRAG 扩展了这一模式。本课解读视觉原生 RAG 的主张，并构建微型类 ColPali 索引器。
 
 **Type:** Build
-**Languages:** Python (stdlib, multi-vector indexer + MaxSim scorer)
-**Prerequisites:** Phase 11 (LLM Engineering — RAG basics), Phase 12 · 05 (LLaVA)
-**Time:** ~180 minutes
+**Languages:** Python（标准库，多向量索引器 + MaxSim 评分器）
+**Prerequisites:** 阶段 11（LLM 工程：RAG 基础），阶段 12 · 05（LLaVA）
+**Time:** ~180 分钟
 
-## Learning Objectives
+## 学习目标（Learning Objectives）
 
-- Explain the difference between bi-encoder retrieval (one vector per document) and late-interaction retrieval (many vectors per document).
-- Describe ColBERT's MaxSim operation and how ColPali generalizes it from text tokens to image patches.
-- Build a tiny ColPali-like indexer: page → patch embeddings → MaxSim over query-term embeddings → top-k pages.
-- Compare ColPali + Qwen2.5-VL generator vs text-RAG + GPT-4 on an invoices / financial reports use case.
+- 解释双编码器检索（每个文档一个向量）与后期交互检索（每个文档多个向量）的区别。
+- 描述 ColBERT 的最大相似度（MaxSim）运算，以及 ColPali 如何将它从文本词元推广到图像块。
+- 构建微型类 ColPali 索引器：页面 → 图像块嵌入 → 对查询词嵌入执行 MaxSim → 前 k 个页面。
+- 在发票 / 财务报告用例中，比较 ColPali + Qwen2.5-VL 生成器与文本 RAG + GPT-4。
 
-## The Problem
+## 问题（The Problem）
 
-Text-RAG on PDFs throws away most of the document. A financial report's Q3 revenue growth is usually in a chart; a medical report's findings are in annotated images; a legal contract's signature block is a layout fact, not a text fact.
+对 PDF 使用文本 RAG 会丢弃文档的大部分内容。财务报告中的 Q3 收入增长通常在图表里；医疗报告的发现出现在带标注图像中；法律合同的签名栏是布局事实，而非文本事实。
 
-The text-RAG pipeline:
+文本 RAG 流水线：
 
-1. PDF → text via OCR / pdftotext.
-2. Text → 300-500 token chunks.
-3. Chunk → bi-encoder embedding (one vector).
-4. User query → embedding → cosine similarity → top-k chunks.
-5. Chunks + query → LLM.
+1. PDF → 通过 OCR / pdftotext 得到文本。
+2. 文本 → 300-500 词元分块。
+3. 分块 → 双编码器嵌入（一个向量）。
+4. 用户查询 → 嵌入 → 余弦相似度 → 前 k 个分块。
+5. 分块 + 查询 → 大语言模型（LLM）。
 
-Five lossy steps. Charts not captured. Tables broken across chunks. Multi-column layout flattens. Figure annotations disappear.
+五个有损步骤。图表未被捕获，表格被分块打断，多栏布局被展平，图片标注消失。
 
-ColPali's fix: skip OCR, embed the page image directly. Use ColBERT-style late interaction for retrieval so the model can attend to fine-grained patches at query time.
+ColPali 的解决办法：跳过 OCR，直接嵌入页面图像。使用 ColBERT 风格的后期交互检索，使模型在查询时能够关注细粒度图像块。
 
-## The Concept
+## 概念（The Concept）
 
-### ColBERT (2020)
+### ColBERT（2020）（ColBERT (2020)）
 
-ColBERT (Khattab & Zaharia, arXiv:2004.12832) is a text retrieval method. Instead of one vector per document, it produces one vector per token. At query time:
+ColBERT（Khattab 和 Zaharia，arXiv:2004.12832）是一种文本检索方法。它不是每个文档生成一个向量，而是每个词元生成一个向量。查询时：
 
-- Query tokens get their own embeddings (N_q vectors).
-- Document tokens get embeddings (N_d vectors, typically cached).
-- Score = sum over query tokens of max over document tokens of cosine similarity: Σ_i max_j cos(q_i, d_j).
+- 查询词元获得各自嵌入（N_q 个向量）。
+- 文档词元获得嵌入（N_d 个向量，通常缓存）。
+- 分数 = 对每个查询词元取其与文档词元的最大余弦相似度，再求和：Σ_i max_j cos(q_i, d_j)。
 
-This is the MaxSim operation. Each query token "picks" its best-matching document token. The final score is the sum.
+这就是 MaxSim 运算。每个查询词元“挑选”与自己最匹配的文档词元。最终分数是这些值之和。
 
-Pros: strong recall, handles term-level semantics. Cons: N_d vectors per document, storage expensive.
+优点：召回率高，处理词项级语义。缺点：每个文档有 N_d 个向量，存储昂贵。
 
-### ColPali
+### ColPali（ColPali）
 
-ColPali (Faysse et al., arXiv:2407.01449) applies the ColBERT pattern to images.
+ColPali（Faysse 等人，arXiv:2407.01449）将 ColBERT 模式应用于图像。
 
-- Each page is encoded by PaliGemma (ViT + language) into patch embeddings: N_p vectors per page.
-- Each user query (text) is encoded into query-token embeddings: N_q vectors.
-- Score = Σ_i max_j cos(q_i, p_j), i.e., MaxSim over query-text-tokens and page-image-patches.
-- Retrieve top-k pages by total score.
+- 每页由 PaliGemma（ViT + 语言）编码为图像块嵌入：每页 N_p 个向量。
+- 每个用户查询（文本）编码为查询词元嵌入：N_q 个向量。
+- 分数 = Σ_i max_j cos(q_i, p_j)，即对查询文本词元与页面图像块执行 MaxSim。
+- 根据总分检索前 k 个页面。
 
-At document-ingestion time: embed every page with PaliGemma, store all patch embeddings. At query time: embed the query tokens, compute MaxSim against all stored page embeddings, return top-k pages.
+文档摄取时：用 PaliGemma 嵌入每页，存储所有图像块嵌入。查询时：嵌入查询词元，对全部已存储页面嵌入计算 MaxSim，返回前 k 个页面。
 
-Pros: end-to-end beats text-RAG by 20-40% on visually rich documents. Each patch-vector captures local layout and content.
+优点：在视觉丰富的文档上，端到端表现比文本 RAG 高 20-40%。每个图像块向量捕获局部布局和内容。
 
-Cons: N_p patches × 4-byte floats × D-dim vectors per page = storage grows fast. Mitigated by PQ / OPQ quantization.
+缺点：每页 N_p 个图像块 × 4 字节浮点数 × D 维向量，存储增长很快。可用乘积量化（PQ）/ 优化乘积量化（OPQ）缓解。
 
-### ColQwen2 and ColSmol
+### ColQwen2 与 ColSmol（ColQwen2 and ColSmol）
 
-ColQwen2 (illuin-tech, 2024-2025) swaps PaliGemma for Qwen2-VL. Better base encoder, better retrieval.
+ColQwen2（illuin-tech，2024-2025）将 PaliGemma 换成 Qwen2-VL。基础编码器更好，检索也更好。
 
-ColSmol is the smaller-scale variant for local / edge use. A ColSmol retriever at ~1B params runs on consumer GPU.
+ColSmol 是用于本地 / 边缘场景的小规模变体。约 1B 参数的 ColSmol 检索器可在消费级 GPU 上运行。
 
-### VisRAG
+### VisRAG（VisRAG）
 
-VisRAG (Yu et al., arXiv:2410.10594) is a different variant: instead of MaxSim on patches, pool each page into a single vector with a VLM then bi-encoder retrieve. Faster indexing + smaller storage, weaker recall.
+VisRAG（Yu 等人，arXiv:2410.10594）是另一种变体：不对图像块执行 MaxSim，而是先用 VLM 将每页池化成单个向量，再进行双编码器检索。索引更快、存储更小，但召回率较弱。
 
-The quality-vs-cost trade-off: ColPali for quality, VisRAG for scale.
+质量与成本的权衡：质量优先选 ColPali，规模优先选 VisRAG。
 
-### M3DocRAG
+### M3DocRAG（M3DocRAG）
 
-M3DocRAG (Cho et al., arXiv:2411.04952) extends multi-modal retrieval to multi-page multi-document reasoning. Retrieves pages across documents, composes a multi-page context for the VLM.
+M3DocRAG（Cho 等人，arXiv:2411.04952）将多模态检索扩展到多页、多文档推理。跨文档检索页面，为 VLM 组织多页上下文。
 
-### ViDoRe — the benchmark
+### ViDoRe：基准（ViDoRe — the benchmark）
 
-ColPali's companion benchmark. Visual Document Retrieval Evaluation. Tasks include financial reports, scientific papers, administrative documents, medical records, manuals. Metric: nDCG@5.
+这是 ColPali 的配套基准，即视觉文档检索评估（Visual Document Retrieval Evaluation）。任务包括财务报告、科学论文、行政文档、医疗记录和手册。指标为 nDCG@5。
 
-ColPali-v1 scores ~80% nDCG@5 on ViDoRe; text-RAG on the same documents scores ~50-60%.
+ColPali-v1 在 ViDoRe 上的 nDCG@5 约为 80%；相同文档上的文本 RAG 约为 50-60%。
 
-### The end-to-end RAG pipeline
+### 端到端 RAG 流水线（The end-to-end RAG pipeline）
 
-For a vision-native RAG:
+视觉原生 RAG 的流程：
 
-1. Ingest: PDF → page images → PaliGemma encoding → store all patch embeddings.
-2. Query: user text → query-token embeddings → MaxSim against all indexed pages → top-k pages.
-3. Generate: top-k page images + query → VLM (Qwen2.5-VL or Claude) → answer.
+1. 摄取：PDF → 页面图像 → PaliGemma 编码 → 存储全部图像块嵌入。
+2. 查询：用户文本 → 查询词元嵌入 → 对所有已索引页面执行 MaxSim → 前 k 个页面。
+3. 生成：前 k 个页面图像 + 查询 → VLM（Qwen2.5-VL 或 Claude）→ 答案。
 
-No OCR anywhere. Figures, charts, fonts, layout all flow into the answer.
+全程没有 OCR。图片、图表、字体和布局都参与答案生成。
 
-### Storage math
+### 存储计算（Storage math）
 
-A 50-page financial report with 729 patches per page and 128-dim embeddings:
+一份 50 页财务报告，每页 729 个图像块，嵌入为 128 维：
 
-- ColPali: 50 * 729 * 128 * 4 bytes = ~18 MB raw, ~4 MB after PQ.
-- Text-RAG: 50 chunks * 768-dim * 4 bytes = ~150 kB.
+- ColPali：50 * 729 * 128 * 4 bytes = 约 18 MB 原始存储，PQ 后约 4 MB。
+- 文本 RAG：50 chunks * 768-dim * 4 bytes = 约 150 kB。
 
-ColPali is ~30x more storage per document. At scale, OPQ / PQ brings it down to ~5-10x, usually tolerable.
+ColPali 每个文档的存储约为 30x。大规模场景下，OPQ / PQ 将其降到约 5-10x，通常可以接受。
 
-### When text-RAG still wins
+### 文本 RAG 何时仍然胜出（When text-RAG still wins）
 
-- Pure-text documents with no layout signal (wiki articles, chat logs). Text-RAG is simpler and storage-cheaper.
-- Multi-million-page archives where storage dominates cost.
-- Strict regulatory requirements demanding extractable OCR text alongside the retrieval.
+- 没有布局信号的纯文本文档（维基文章、聊天日志）。文本 RAG 更简单，存储更便宜。
+- 存储成本占主导的数百万页档案。
+- 严格监管要求检索时同时提供可提取的 OCR 文本。
 
-For everything else in 2026 — financial reports, scientific papers, legal contracts, medical records, UX documentation — vision-native RAG wins.
+对于 2026 年其他所有场景，包括财务报告、科学论文、法律合同、医疗记录、用户体验文档，视觉原生 RAG 胜出。
 
 ```figure
 mm-maxsim
 ```
 
-## Use It
+## 动手使用（Use It）
 
-`code/main.py`:
+`code/main.py`：
 
-- Toy patch encoder: maps a "page" (small grid of feature vectors) to an array of patch embeddings.
-- MaxSim scorer: computes the ColBERT-style score between a query token embedding set and a page patch set.
-- Indexes 5 toy pages, runs 3 queries, returns top-k with scores.
+- 简化图像块编码器：将“页面”（特征向量组成的小网格）映射为图像块嵌入数组。
+- MaxSim 评分器：计算查询词元嵌入集合与页面图像块集合之间的 ColBERT 风格分数。
+- 索引 5 个简化页面，运行 3 个查询，返回带分数的前 k 个结果。
 
-## Ship It
+## 交付成果（Ship It）
 
-This lesson produces `outputs/skill-vision-rag-designer.md`. Given a document-RAG project, picks ColPali / ColQwen2 / VisRAG / text-RAG and sizes the storage.
+本课产出 `outputs/skill-vision-rag-designer.md`。给定文档 RAG 项目，选择 ColPali / ColQwen2 / VisRAG / 文本 RAG，并估算存储。
 
-## Exercises
+## 练习（Exercises）
 
-1. A 200-page annual report at 729 patches per page, 128-dim emb, 4-byte floats. Compute raw storage and PQ-compressed (8x) storage.
+1. 200 页年报，每页 729 个图像块，128 维嵌入，4 字节浮点数。计算原始存储和 PQ 压缩（8x）后的存储。
 
-2. MaxSim is Σ_i max_j cos(q_i, p_j). What does this sum capture that a simple mean similarity does not?
+2. MaxSim 是 Σ_i max_j cos(q_i, p_j)。这个求和捕获了简单平均相似度没有捕获的什么？
 
-3. ColPali indexes pages as patch sets. What changes if we instead index at the word level (as ColBERT does)? Trade-offs?
+3. ColPali 将页面索引为图像块集合。如果改为词级索引（像 ColBERT 那样），会发生什么变化？有哪些权衡？
 
-4. Design the end-to-end pipeline for a 1M-page corpus with a latency budget of 500ms per query. Pick ColQwen2 / VisRAG and justify.
+4. 为 1M 页语料设计端到端流水线，每个查询延迟预算为 500ms。在 ColQwen2 / VisRAG 中选择并论证。
 
-5. Read M3DocRAG (arXiv:2411.04952). Describe the multi-page attention pattern and how it differs from single-page ColPali retrieval.
+5. 阅读 M3DocRAG（arXiv:2411.04952）。描述多页注意力模式，以及它与单页 ColPali 检索有何不同。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语 | 常见说法 | 实际含义 |
 |------|-----------------|------------------------|
-| Late interaction | "ColBERT-style" | Retrieval using per-token or per-patch embeddings + MaxSim, not a single doc vector |
-| MaxSim | "Max-over-patches" | For each query token, pick the highest-similarity document token; sum across query |
-| Bi-encoder | "Single-vector" | One vector per document; faster but loses granularity |
-| Multi-vector | "Many-vectors-per-doc" | Store N_p vectors per document / page; storage cost grows but recall improves |
-| Patch embedding | "Page feature" | One vector per image patch from a VLM encoder, cached per page |
-| ViDoRe | "Vision doc bench" | ColPali's benchmark suite for visual document retrieval |
-| PQ quantization | "Product quantization" | Compression that maintains vector similarity while shrinking storage ~8x |
+| 后期交互（Late interaction） | “ColBERT 风格” | 使用逐词元或逐图像块嵌入 + MaxSim 检索，而非单个文档向量 |
+| 最大相似度（MaxSim） | “对图像块取最大值” | 为每个查询词元选择相似度最高的文档词元，再沿查询求和 |
+| 双编码器（Bi-encoder） | “单向量” | 每个文档一个向量；更快，但丢失细粒度信息 |
+| 多向量（Multi-vector） | “每文档多个向量” | 每个文档 / 页面存储 N_p 个向量；存储成本增加，但召回率提高 |
+| 图像块嵌入（Patch embedding） | “页面特征” | VLM 编码器为每个图像块产生一个向量，按页面缓存 |
+| ViDoRe | “视觉文档基准” | ColPali 的视觉文档检索基准套件 |
+| PQ 量化（PQ quantization） | “乘积量化” | 保持向量相似度、同时将存储缩小约 8x 的压缩 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [Faysse et al. — ColPali (arXiv:2407.01449)](https://arxiv.org/abs/2407.01449)
-- [Khattab & Zaharia — ColBERT (arXiv:2004.12832)](https://arxiv.org/abs/2004.12832)
-- [Yu et al. — VisRAG (arXiv:2410.10594)](https://arxiv.org/abs/2410.10594)
-- [Cho et al. — M3DocRAG (arXiv:2411.04952)](https://arxiv.org/abs/2411.04952)
-- [illuin-tech/colpali GitHub](https://github.com/illuin-tech/colpali)
+- [Faysse 等人：ColPali（arXiv:2407.01449）](https://arxiv.org/abs/2407.01449)
+- [Khattab 与 Zaharia：ColBERT（arXiv:2004.12832）](https://arxiv.org/abs/2004.12832)
+- [Yu 等人：VisRAG（arXiv:2410.10594）](https://arxiv.org/abs/2410.10594)
+- [Cho 等人：M3DocRAG（arXiv:2411.04952）](https://arxiv.org/abs/2411.04952)
+- [illuin-tech/colpali 的 GitHub 仓库](https://github.com/illuin-tech/colpali)

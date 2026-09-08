@@ -1,23 +1,20 @@
-"""Speculative decoding harness: exact rejection rule, alpha sweep, tree mask.
+"""推测解码运行框架（Speculative decoding harness）: 精确拒绝规则、alpha 扫描、树掩码。
 
-Three things this file proves, on synthetic toy distributions so the math
-stays visible:
+本文件通过小型合成分布证明三件事，使数学过程保持清晰:
 
-1. The Leviathan-Kalai-Matias rejection rule preserves the target's
-   sampling distribution. Empirical total-variation distance between
-   plain target sampling and speculative-with-draft sampling is < 0.01
-   over 50_000 draws.
-2. The expected-tokens-per-verify formula holds. For acceptance rate
-   alpha and draft length K, E[tokens] = (1 - alpha^(K+1)) / (1 - alpha)
-   matches the measured throughput within sampling noise.
-3. Tree drafting verifies multiple candidate paths in a single target
-   forward via a topological causal mask. We build a depth-K tree, emit
-   the verification mask, and confirm every node attends only to its
-   ancestors.
+1. Leviathan-Kalai-Matias 拒绝规则保留目标模型的采样分布。
+   在 50_000 次抽样中，普通目标采样与带草稿的推测采样之间的经验
+   总变差距离（Total-variation distance）< 0.01。
+2. 每次验证的期望词元数公式成立。对接受率 alpha 和草稿长度 K，
+   E[tokens] = (1 - alpha^(K+1)) / (1 - alpha)
+   与实测吞吐量在采样噪声范围内一致。
+3. 树状草拟（Tree drafting）通过拓扑因果掩码（Topological causal mask），
+   在目标模型的一次前向传播中验证多条候选路径。构建深度为 K 的树，
+   输出验证掩码，并确认每个节点只关注其祖先。
 
-Stdlib + numpy only.
+仅使用标准库和 numpy。
 
-Run:
+运行:
     python main.py
     python main.py --vocab 64 --alpha 0.75 --k 4 --samples 50000
 """
@@ -36,9 +33,8 @@ def make_target(vocab: int, rng: np.random.Generator) -> np.ndarray:
 
 def make_draft(target: np.ndarray, alpha_hint: float,
                rng: np.random.Generator) -> np.ndarray:
-    """A draft distribution whose expected token-level acceptance is near
-    alpha_hint. We linearly blend target with a uniform distribution; the
-    blend ratio controls how close the draft is to the target."""
+    """构造词元级期望接受率接近 alpha_hint 的草稿分布。
+    将目标分布与均匀分布线性混合，混合比例控制草稿与目标的接近程度。"""
     vocab = target.size
     uniform = np.full(vocab, 1.0 / vocab)
     draft = alpha_hint * target + (1.0 - alpha_hint) * uniform
@@ -53,7 +49,7 @@ def sample(probs: np.ndarray, rng: np.random.Generator) -> int:
 
 def speculative_step(target: np.ndarray, draft: np.ndarray, K: int,
                      rng: np.random.Generator) -> list[int]:
-    """One round. Returns 1..K+1 tokens whose distribution equals target."""
+    """执行一轮。返回 1..K+1 个词元，其分布与目标分布一致。"""
     proposed: list[int] = []
     q_at: list[float] = []
     for _ in range(K):
@@ -90,8 +86,7 @@ def empirical_dist(samples: list[int], vocab: int) -> np.ndarray:
 def verify_distribution(target: np.ndarray, draft: np.ndarray, K: int,
                         n_samples: int, rng: np.random.Generator
                         ) -> tuple[float, float]:
-    """Compare next-token distributions under plain target sampling and
-    speculative sampling. They must be statistically indistinguishable."""
+    """比较普通目标采样与推测采样的下一词元分布。两者在统计上必须无法区分。"""
     vocab = target.size
     plain = [sample(target, rng) for _ in range(n_samples)]
     spec_first: list[int] = []
@@ -129,7 +124,7 @@ def measure_throughput(target: np.ndarray, draft: np.ndarray, K: int,
 
 
 def build_tree(branch_factor: tuple[int, ...]) -> list[tuple[int, list[int]]]:
-    """Return nodes as (parent_index, depth-path). Index 0 is root."""
+    """以 (parent_index, depth-path) 形式返回节点，即（父节点索引，深度路径）。索引 0 为根。"""
     tree: list[tuple[int, list[int]]] = [(-1, [])]
     frontier = [0]
     for depth, b in enumerate(branch_factor):
@@ -143,7 +138,7 @@ def build_tree(branch_factor: tuple[int, ...]) -> list[tuple[int, list[int]]]:
 
 
 def tree_attention_mask(tree: list[tuple[int, list[int]]]) -> np.ndarray:
-    """N x N causal mask where each row attends to its ancestors only."""
+    """N x N 因果掩码（Causal mask），每行只关注其祖先。"""
     n = len(tree)
     mask = np.zeros((n, n), dtype=np.int8)
     for i in range(n):
@@ -172,27 +167,27 @@ def validate_tree_mask(mask: np.ndarray,
 def _positive_int(value: str, *, minimum: int = 1) -> int:
     n = int(value)
     if n < minimum:
-        raise argparse.ArgumentTypeError(f"value must be >= {minimum}, got {n}")
+        raise argparse.ArgumentTypeError(f"值必须 >= {minimum}，实际为 {n}")
     return n
 
 
 def _unit_float(value: str) -> float:
     f = float(value)
     if not (0.0 < f <= 1.0):
-        raise argparse.ArgumentTypeError(f"value must be in (0, 1], got {f}")
+        raise argparse.ArgumentTypeError(f"值必须位于 (0, 1]，实际为 {f}")
     return f
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("--vocab", type=lambda v: _positive_int(v, minimum=2), default=32,
-                        help="vocab size (>= 2)")
+                        help="词表大小（Vocab size，>= 2）")
     parser.add_argument("--alpha", type=_unit_float, default=0.75,
-                        help="target acceptance rate in (0, 1]")
+                        help="目标接受率（Acceptance rate），范围 (0, 1]")
     parser.add_argument("--k", type=lambda v: _positive_int(v, minimum=1), default=4,
-                        help="draft length (>= 1)")
+                        help="草稿长度（Draft length，>= 1）")
     parser.add_argument("--samples", type=lambda v: _positive_int(v, minimum=2), default=20000,
-                        help="sample count (>= 2)")
+                        help="样本数量（Sample count，>= 2）")
     parser.add_argument("--seed", type=int, default=0)
     return parser.parse_args()
 
@@ -207,36 +202,36 @@ def main() -> None:
     tv_plain, tv_spec = verify_distribution(
         target, draft, args.k, args.samples, rng
     )
-    print(f"distribution check (n={args.samples}):")
+    print(f"分布检查（Distribution check，n={args.samples}）:")
     print(f"  TV(plain_target_sampling, target)       = {tv_plain:.4f}")
     print(f"  TV(speculative_sampling, target)         = {tv_spec:.4f}")
-    print(f"  delta TV (spec vs plain)                 = {abs(tv_spec - tv_plain):.4f}")
+    print(f"  总变差差值（delta TV，推测与普通采样）                 = {abs(tv_spec - tv_plain):.4f}")
 
     alpha_hat = measure_alpha(target, draft, args.samples // 2, rng)
     print()
-    print(f"alpha measurement (vocab={args.vocab}, alpha hint={args.alpha}):")
-    print(f"  measured alpha = {alpha_hat:.3f}")
+    print(f"alpha 测量（vocab={args.vocab}，alpha 提示值={args.alpha}）:")
+    print(f"  实测 alpha = {alpha_hat:.3f}")
 
     throughput = measure_throughput(target, draft, args.k, 2000, rng)
     expected = expected_tokens(alpha_hat, args.k)
     print()
-    print(f"throughput at K={args.k}:")
-    print(f"  measured E[tokens/verify]  = {throughput:.3f}")
-    print(f"  predicted E[tokens/verify] = {expected:.3f}  (1 - a^(K+1)) / (1 - a)")
+    print(f"K={args.k} 时的吞吐量（Throughput）:")
+    print(f"  实测 E[tokens/verify]  = {throughput:.3f}")
+    print(f"  预测 E[tokens/verify] = {expected:.3f}  (1 - a^(K+1)) / (1 - a)")
 
     print()
-    print("alpha sweep, K=4:")
+    print("alpha 扫描，K=4:")
     for a in (0.3, 0.5, 0.7, 0.85, 0.95):
         print(f"  alpha={a:.2f}  expected_tokens={expected_tokens(a, args.k):.2f}")
 
     print()
-    print("tree drafting demo: depth-3 tree, branch=(3, 2, 2)")
+    print("树状草拟演示: 深度为 3 的树，branch=(3, 2, 2)")
     tree = build_tree((3, 2, 2))
     mask = tree_attention_mask(tree)
-    print(f"  total candidate nodes: {len(tree)} (one verify pass covers all)")
-    print(f"  mask shape: {mask.shape}")
-    print(f"  mask correctness vs ancestor sets: {validate_tree_mask(mask, tree)}")
-    print(f"  attends-per-node (rows): {mask.sum(axis=1).tolist()}")
+    print(f"  候选节点总数: {len(tree)}（一次验证前向传播覆盖全部）")
+    print(f"  掩码形状（Mask shape）: {mask.shape}")
+    print(f"  掩码相对于祖先集合的正确性: {validate_tree_mask(mask, tree)}")
+    print(f"  每个节点关注的节点数（各行）: {mask.sum(axis=1).tolist()}")
 
 
 if __name__ == "__main__":

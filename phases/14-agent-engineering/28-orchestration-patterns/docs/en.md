@@ -1,141 +1,141 @@
-# Orchestration Patterns: Supervisor, Swarm, Hierarchical
+# 编排模式：监督者、群体与层级式（Orchestration Patterns: Supervisor, Swarm, Hierarchical）
 
-> Four orchestration patterns recur across 2026 frameworks: supervisor-worker, swarm / peer-to-peer, hierarchical, debate. Anthropic's guidance: "It's about building the right system for your needs." Start simple; add topology only when a single agent plus five workflow patterns is insufficient.
+> 2026 年框架中反复出现四种编排模式：监督者与工作者、群体 / 点对点、层级式、辩论。Anthropic 的建议是：“关键在于构建适合你需求的系统。”从简单方案开始，只有单个智能体加五种工作流模式不足时，才增加拓扑。
 
 **Type:** Learn + Build
-**Languages:** Python (stdlib)
-**Prerequisites:** Phase 14 · 12 (Workflow Patterns), Phase 14 · 25 (Multi-Agent Debate)
-**Time:** ~60 minutes
+**Languages:** Python（标准库）
+**Prerequisites:** 第 14 阶段 · 12（工作流模式），第 14 阶段 · 25（多智能体辩论）
+**Time:** 约 60 分钟
 
-## Learning Objectives
+## 学习目标（Learning Objectives）
 
-- Name the four recurring orchestration patterns and when each fits.
-- Describe the 2026 LangChain recommendation: tool-call-based supervision vs supervisor libraries.
-- Explain Anthropic's "build the right system" rule and how it gates topology choice.
-- Implement all four in stdlib against a common scripted LLM.
+- 列出四种反复出现的编排模式及各自适用条件。
+- 描述 2026 年 LangChain 的建议：基于工具调用的监督，与监督者库的比较。
+- 解释 Anthropic 的“构建合适系统”原则，以及它如何约束拓扑选择。
+- 基于同一个脚本化 LLM，使用标准库实现四种模式。
 
-## The Problem
+## 问题（The Problem）
 
-Teams reach for "multi-agent" before they need it. Four patterns recur across frameworks; once you can name them, you can pick the right one — or skip topology entirely.
+团队往往还没有明确需求，就先采用多智能体。四种模式在各框架中反复出现；认识它们之后，就能选择合适的模式，也能判断是否根本不需要多智能体拓扑。
 
-## The Concept
+## 概念（The Concept）
 
-### Supervisor-worker
+### 监督者与工作者（Supervisor-worker）
 
-- A central routing LLM dispatches to specialist agents.
-- Decides: loop back to self, hand off to specialist, terminate.
-- Specialists do not talk to each other; all routing goes through the supervisor.
+- 中央路由 LLM 将任务分派给专家智能体。
+- 决定返回自身循环、交接给专家，或终止。
+- 专家之间不直接交流，所有路由都经过监督者。
 
-Frameworks: LangGraph `create_supervisor`, Anthropic orchestrator-workers, CrewAI Hierarchical Process.
+对应框架：LangGraph `create_supervisor`、Anthropic 编排器与工作者、CrewAI 层级流程（Hierarchical Process）。
 
-**2026 LangChain recommendation:** do supervision through direct tool calls rather than `create_supervisor`. Gives finer context engineering control — you decide exactly what each specialist sees.
+**2026 年 LangChain 建议：** 通过直接工具调用实现监督，而不是使用 `create_supervisor`。这提供更精细的上下文工程控制，由你决定每位专家究竟看到什么。
 
-### Swarm / peer-to-peer
+### 群体 / 点对点（Swarm / peer-to-peer）
 
-- Agents hand off directly via a shared tool surface.
-- No central router.
-- Lower latency than supervisor (fewer hops).
-- Harder to reason about (no single point of control).
+- 智能体通过共享工具接口直接交接。
+- 没有中央路由器。
+- 比监督者延迟低，因为跳数更少。
+- 更难分析，因为没有单一控制点。
 
-Frameworks: LangGraph swarm topology, OpenAI Agents SDK handoffs (when all agents can hand off to all others).
+对应框架：LangGraph 群体拓扑，OpenAI Agents SDK 交接（当所有智能体都可交给其他所有智能体时）。
 
-### Hierarchical
+### 层级式（Hierarchical）
 
-- Supervisors managing sub-supervisors managing workers.
-- Implemented as nested subgraphs in LangGraph; nested crews in CrewAI.
-- Scales to large agent populations at the cost of operational complexity.
+- 监督者管理子监督者，子监督者管理工作者。
+- 在 LangGraph 中实现为嵌套子图，在 CrewAI 中实现为嵌套团队。
+- 可扩展到大量智能体，代价是运维复杂度。
 
-When you need it: when a single supervisor's context budget cannot hold descriptions of all specialists.
+需要它的条件：单个监督者的上下文预算无法容纳所有专家的描述。
 
-### Debate
+### 辩论（Debate）
 
-- Parallel proposers + iterative cross-critique (Lesson 25).
-- Not really orchestration — more verification — but shows up as a topology choice in frameworks.
+- 并行提议者，加迭代交叉批评（第 25 课）。
+- 严格说更接近验证而非编排，但框架中会将其列为拓扑选择。
 
-### Autonomous crews vs deterministic flows
+### 自主团队与确定性流程（Autonomous crews vs deterministic flows）
 
-CrewAI formalizes two deployment modes:
+CrewAI 将两种部署模式正式区分：
 
-- **Flow** for deterministic event-driven automation (recommended starting point for production).
-- **Crew** for autonomous role-based collaboration.
+- **Flow**：确定性的事件驱动自动化，推荐作为生产起点。
+- **Crew**：基于角色的自主协作。
 
-This is orthogonal to the four patterns above but maps to topology: Flow is typically supervisor or hierarchical; Crew is typically supervisor with an LLM router.
+这与上面四种模式相互独立，但可以映射到拓扑：Flow 通常采用监督者或层级式；Crew 通常采用带 LLM 路由器的监督者。
 
-### Anthropic's guidance
+### Anthropic 的建议（Anthropic's guidance）
 
-"Success in the LLM space isn't about building the most sophisticated system. It's about building the right system for your needs."
+“在 LLM 领域取得成功，不在于构建最复杂的系统，而在于构建适合自身需求的系统。”
 
-Decision order:
+决策顺序：
 
-1. Single agent + workflow patterns (Lesson 12) — start here.
-2. Supervisor-worker — when you have 2-4 specialists.
-3. Swarm — when latency matters more than reasoning clarity.
-4. Hierarchical — only when supervisor context budget fails.
-5. Debate — when accuracy matters more than cost.
+1. 单个智能体 + 工作流模式（第 12 课），从这里开始。
+2. 监督者与工作者：有 2–4 位专家时。
+3. 群体：延迟比推理过程清晰度更重要时。
+4. 层级式：仅在监督者上下文预算不足时。
+5. 辩论：准确率比成本更重要时。
 
-### Where this pattern goes wrong
+### 模式的失效点（Where this pattern goes wrong）
 
-- **Topology-first thinking.** "We need multi-agent" before identifying what problem multi-agent solves.
-- **Bouncing handoffs in swarm.** A -> B -> A -> B. Use hop counters.
-- **Fake hierarchy.** Three layers because "enterprise"; two actual teams. Collapse.
+- **拓扑优先思维（Topology-first thinking）。** 尚未明确多智能体要解决什么问题，就先说“我们需要多智能体”。
+- **群体中的往返交接（Bouncing handoffs in swarm）。** A -> B -> A -> B。应使用跳数计数器。
+- **虚假层级（Fake hierarchy）。** 只有两个真实团队，却因为“企业级”设置三层。应压平。
 
 ```figure
 orchestration-pattern
 ```
 
-## Build It
+## 动手实现（Build It）
 
-`code/main.py` implements all four patterns in stdlib against a scripted LLM:
+`code/main.py` 基于脚本化 LLM，使用标准库实现全部四种模式：
 
-- `Supervisor` — central router.
-- `Swarm` — peer-to-peer with direct handoffs.
-- `Hierarchical` — supervisors of supervisors.
-- `Debate` — parallel proposers + critique.
+- `Supervisor`：中央路由器。
+- `Swarm`：通过直接交接实现点对点协作。
+- `Hierarchical`：监督者的监督者。
+- `Debate`：并行提议者加批评。
 
-Each pattern handles the same three-intent task (refund / bug / sales). Trace shapes differ.
+每种模式处理相同的三意图任务：退款、缺陷、销售。追踪结构各不相同。
 
-Run it:
+运行：
 
 ```
 python3 code/main.py
 ```
 
-Output: per-pattern trace + op count. Supervisor is cleanest; swarm is shortest; hierarchical is deepest; debate is most expensive.
+输出：逐模式追踪与操作数。监督者最清晰，群体最短，层级式最深，辩论最昂贵。
 
-## Use It
+## 实际应用（Use It）
 
-- **LangGraph** for supervisor and hierarchical (nested subgraphs).
-- **OpenAI Agents SDK** for handoffs-as-tools (supervisor-shaped).
-- **CrewAI Flow** for production deterministic.
-- **Custom** for debate or when you want exact control.
+- **LangGraph**：用于监督者和层级式（嵌套子图）。
+- **OpenAI Agents SDK**：将交接作为工具，采用监督者式结构。
+- **CrewAI Flow**：用于生产中的确定性流程。
+- **自定义实现（Custom）**：用于辩论或需要精确控制时。
 
-## Ship It
+## 交付成果（Ship It）
 
-`outputs/skill-orchestration-picker.md` picks a topology and implements it.
+`outputs/skill-orchestration-picker.md` 选择一种拓扑并实现它。
 
-## Exercises
+## 练习（Exercises）
 
-1. Convert a supervisor-worker to a swarm by removing the router. What breaks? What improves?
-2. Add a hop counter to the swarm: refuse after 3 handoffs. Does it catch A->B->A bouncing?
-3. Build a two-level hierarchical system for a 12-specialist domain. Where does the context budget fail without nesting?
-4. Profile the four patterns on a production-shaped workload. Which wins on which metric (latency, cost, accuracy, debuggability)?
-5. Read Anthropic's "Building Effective Agents" post. Map each of your production flows to one of the four. Any that don't map cleanly?
+1. 移除路由器，将监督者与工作者转换为群体。什么会出问题？什么得到改善？
+2. 给群体添加跳数计数器：交接 3 次后拒绝。它能捕获 A->B->A 往返吗？
+3. 为有 12 位专家的领域构建两级层级系统。不使用嵌套时，上下文预算在哪里失效？
+4. 在生产式工作负载上分析四种模式。各自在延迟、成本、准确率、可调试性哪个指标上胜出？
+5. 阅读 Anthropic《构建有效的智能体》（Building Effective Agents）。将每条生产流程映射到四种模式之一。是否有无法清晰映射的流程？
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语 | 常见说法 | 实际含义 |
 |------|----------------|------------------------|
-| Supervisor-worker | "Router + specialists" | Central LLM dispatches to specialists; they don't talk to each other |
-| Swarm | "Peer-to-peer" | Direct handoffs via shared tools; no central router |
-| Hierarchical | "Supervisors of supervisors" | Nested subgraphs for large populations |
-| Debate | "Proposer + critique" | Parallel proposers, cross-critique (Lesson 25) |
-| Tool-call-based supervision | "Supervisor without a library" | Implement supervisor as direct tool calls for context control |
-| Crew | "Autonomous team" | CrewAI's role-based collaboration mode |
-| Flow | "Deterministic workflow" | CrewAI's event-driven production mode |
+| 监督者与工作者（Supervisor-worker） | “路由器 + 专家” | 中央 LLM 分派给专家；专家互不交流 |
+| 群体（Swarm） | “点对点” | 通过共享工具直接交接，没有中央路由器 |
+| 层级式（Hierarchical） | “监督者的监督者” | 为大量智能体构建嵌套子图 |
+| 辩论（Debate） | “提议者 + 批评” | 并行提议者、交叉批评（第 25 课） |
+| 基于工具调用的监督（Tool-call-based supervision） | “不用库的监督者” | 通过直接工具调用实现监督者，控制上下文 |
+| Crew | “自主团队” | CrewAI 基于角色的协作模式 |
+| Flow | “确定性工作流” | CrewAI 事件驱动的生产模式 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [Anthropic, Building Effective Agents](https://www.anthropic.com/research/building-effective-agents) — five patterns + agent vs workflow
-- [LangGraph overview](https://docs.langchain.com/oss/python/langgraph/overview) — supervisor, swarm, hierarchical
-- [CrewAI docs](https://docs.crewai.com/en/introduction) — Crew vs Flow
-- [Du et al., Society of Minds (arXiv:2305.14325)](https://arxiv.org/abs/2305.14325) — debate pattern
+- [Anthropic《构建有效的智能体》（Building Effective Agents）](https://www.anthropic.com/research/building-effective-agents)：五种模式，智能体与工作流
+- [LangGraph 概览](https://docs.langchain.com/oss/python/langgraph/overview)：监督者、群体、层级式
+- [CrewAI 文档](https://docs.crewai.com/en/introduction)：Crew 与 Flow
+- [Du 等，心智社会（Society of Minds，arXiv:2305.14325）](https://arxiv.org/abs/2305.14325)：辩论模式

@@ -1,75 +1,75 @@
 {
   "lesson": "05-constitutional-ai-rlaif",
-  "title": "Constitutional AI and RLAIF",
+  "title": "宪法式 AI 与 RLAIF（Constitutional AI and RLAIF）",
   "questions": [
     {
       "stage": "pre",
-      "question": "What is the core substitution in Constitutional AI versus standard RLHF?",
+      "question": "相比标准 RLHF，宪法式 AI（Constitutional AI）进行了哪项核心替换？",
       "options": [
-        "It removes the reward model entirely",
-        "It uses synthetic prompts instead of real ones",
-        "It replaces the human preference labeler with an AI labeler that reads a list of principles",
-        "It replaces PPO with DPO"
+        "完全移除奖励模型（Reward Model）",
+        "用合成提示词替代真实提示词",
+        "用阅读原则清单的 AI 标注员替代人类偏好标注员",
+        "用 DPO 替代 PPO"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "What does the first (SFT) phase of Constitutional AI do?",
+      "question": "宪法式 AI 的第一个阶段，即监督微调（SFT）阶段，会执行什么操作？",
       "options": [
-        "Generates synthetic principles by clustering labeler comments",
-        "Produces an initial response, critiques it under a sampled constitution principle, then revises and uses the revision as SFT target",
-        "Performs PPO with a constitution-derived reward",
-        "Trains a reward model on AI-generated preferences only"
+        "通过聚类标注员评论生成合成原则",
+        "生成初始回答，依据采样的宪法原则进行批评，然后修订，并将修订结果作为 SFT 目标",
+        "使用从宪法导出的奖励执行 PPO",
+        "只在 AI 生成的偏好上训练奖励模型"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "What does the second (RLAIF) phase do?",
+      "question": "第二个阶段，即基于 AI 反馈的强化学习（RLAIF）阶段，会执行什么操作？",
       "options": [
-        "Skips PPO and applies a single supervised loss",
-        "Trains a reward model on AI-generated preferences from a feedback model and runs PPO against it",
-        "Has humans re-label the SFT outputs",
-        "Distills the constitution into the tokenizer"
+        "跳过 PPO，只应用单个监督损失",
+        "在反馈模型生成的 AI 偏好上训练奖励模型，并针对该模型运行 PPO",
+        "让人类重新标注 SFT 输出",
+        "将宪法蒸馏到分词器（Tokenizer）中"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "What is the tier order in Anthropic's January 2026 four-tier Claude constitution?",
+      "question": "Anthropic 于 2026 年 1 月发布的四级 Claude 宪法，其层级顺序是什么？",
       "options": [
-        "Helpful > broadly ethical > platform rules > avoid catastrophe",
-        "Avoid catastrophic outcomes > follow Anthropic guidelines > broadly ethical > helpful and candid",
-        "Broadly ethical > helpful > platform rules > avoid catastrophe",
-        "Platform rules > avoid catastrophe > helpful > broadly ethical"
+        "提供帮助 > 广泛遵循伦理 > 平台规则 > 避免灾难",
+        "避免灾难性后果 > 遵守 Anthropic 指导规则 > 广泛遵循伦理 > 提供帮助并坦诚表达",
+        "广泛遵循伦理 > 提供帮助 > 平台规则 > 避免灾难",
+        "平台规则 > 避免灾难 > 提供帮助 > 广泛遵循伦理"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "Which failure mode is NOT necessarily fixed by switching from RLHF to RLAIF?",
+      "question": "从 RLHF 切换到 RLAIF，并不一定能修复哪种失效模式？",
       "options": [
-        "Labeler scarcity",
-        "Labeler cost",
-        "Reward hacking / Goodhart's Law",
-        "Labeler psychological inconsistency"
+        "标注员短缺",
+        "标注员成本",
+        "奖励投机（Reward hacking）与古德哈特定律（Goodhart's Law）",
+        "标注员心理上的不一致"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "What is the headline shift between Constitutional Classifiers v1 and v2 (2026)?",
+      "question": "宪法分类器（Constitutional Classifiers）v1 与 v2（2026）之间最显著的变化是什么？",
       "options": [
-        "v2 increased compute overhead from 1% to 23.7%",
-        "v2 removed the classifier and relied on constitution alone",
-        "v2 dropped compute overhead from 23.7% to about 1% with low successful attack rate",
-        "v2 only runs on input, not output"
+        "v2 将计算开销从 1% 提高到 23.7%",
+        "v2 移除分类器，只依赖宪法",
+        "v2 将计算开销从 23.7% 降至约 1%，同时保持较低的攻击成功率",
+        "v2 只处理输入，不处理输出"
       ],
       "correct": 2,
       "explanation": ""

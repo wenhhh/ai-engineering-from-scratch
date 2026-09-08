@@ -100,7 +100,7 @@
     }
     var links = document.querySelectorAll('.header-github');
     for (var j = 0; j < links.length; j++) {
-      links[j].setAttribute('aria-label', 'View ai-engineering-from-scratch on GitHub, ' + format(n) + ' stars');
+      links[j].setAttribute('aria-label', '在 GitHub 查看 ai-engineering-from-scratch，' + format(n) + ' 次星标');
     }
   }
 
@@ -224,8 +224,8 @@
   }
 
   function addNavigationLinks(nav) {
-    ensureNavigationLink(nav, 'learning-paths.html', 'Learning Paths', '');
-    ensureNavigationLink(nav, 'certifications.html', 'Certifications', 'header-mobile-only');
+    ensureNavigationLink(nav, 'learning-paths.html', '学习路径', '');
+    ensureNavigationLink(nav, 'certifications.html', '认证课程', 'header-mobile-only');
   }
 
   function setupNavigation(header) {
@@ -239,21 +239,21 @@
 
     navId += 1;
     if (!nav.id) nav.id = 'siteNavigation' + navId;
-    if (!nav.getAttribute('aria-label')) nav.setAttribute('aria-label', 'Primary');
+    if (!nav.getAttribute('aria-label')) nav.setAttribute('aria-label', '主导航');
 
     var toggle = document.createElement('button');
     toggle.type = 'button';
     toggle.className = 'header-menu-toggle';
     toggle.setAttribute('aria-controls', nav.id);
     toggle.setAttribute('aria-expanded', 'false');
-    toggle.setAttribute('aria-label', 'Open navigation');
+    toggle.setAttribute('aria-label', '展开导航');
     toggle.innerHTML = '<span class="header-menu-icon" aria-hidden="true">'
       + '<span></span><span></span><span></span></span>';
     inner.insertBefore(toggle, nav);
 
     var priorityNav = document.createElement('nav');
     priorityNav.className = 'header-priority-nav';
-    priorityNav.setAttribute('aria-label', 'Quick links');
+    priorityNav.setAttribute('aria-label', '快捷链接');
     priorityNav.hidden = true;
     inner.insertBefore(priorityNav, nav);
 
@@ -263,7 +263,7 @@
     });
     routeLinks.forEach(function (link) {
       var label = link.textContent.trim().toLowerCase();
-      if (label !== 'contents' && label !== 'catalog' && label !== 'learning paths') return;
+      if (label !== '目录' && label !== '课程目录' && label !== '学习路径') return;
       var marker = document.createComment('header-priority-' + label);
       nav.insertBefore(marker, link);
       priorityEntries.push({ link: link, marker: marker });
@@ -278,7 +278,7 @@
     var tools = document.createElement('div');
     tools.className = 'header-mobile-tools';
     tools.setAttribute('role', 'group');
-    tools.setAttribute('aria-label', 'Site tools');
+    tools.setAttribute('aria-label', '站点工具');
     nav.appendChild(tools);
 
     var toolAnchor = document.createComment('header-tools');
@@ -338,7 +338,7 @@
       open = !!next;
       header.classList.toggle('header-nav-open', open);
       toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-      toggle.setAttribute('aria-label', open ? 'Close navigation' : 'Open navigation');
+      toggle.setAttribute('aria-label', open ? '收起导航' : '展开导航');
       if (compact && compact.matches) nav.hidden = !open;
       else nav.hidden = false;
       if (restoreFocus && !open) toggle.focus();

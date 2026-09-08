@@ -1,58 +1,58 @@
 {
   "lesson": "24-plan-execute-control-flow",
-  "title": "Plan-Execute Control Flow",
+  "title": "规划与执行控制流（Plan-Execute Control Flow）",
   "questions": [
     {
       "stage": "pre",
-      "question": "What is the planner's responsibility in a plan-execute agent?",
+      "question": "规划与执行智能体中的规划器（Planner）负责什么？",
       "options": [
-        "To handle the JSON-RPC transport",
-        "To produce an ordered list of typed steps the executor will run",
-        "To enforce timeouts",
-        "To call the dispatcher on each step"
+        "处理 JSON-RPC 传输",
+        "生成供执行器运行的类型化步骤有序列表",
+        "执行超时限制",
+        "在每个步骤调用分派器"
       ],
       "correct": 1,
-      "explanation": "Planner emits structured plans. The executor runs them. Mixing the two is the chain-of-thought trap this lesson is moving away from."
+      "explanation": "规划器输出结构化计划，执行器运行计划。将两者混在一起，是本课要摆脱的思维链（Chain-of-Thought）陷阱。"
     },
     {
       "stage": "pre",
-      "question": "Why is expected_outcome part of the Step shape even though the executor does not check it?",
+      "question": "执行器不检查 expected_outcome，为什么仍将它放入 Step 结构？",
       "options": [
-        "Because it gives the replanner and tracers a stated success condition to read",
-        "Because the model trains on it",
-        "Because the dispatcher uses it as a cache key",
-        "Because the registry requires it"
+        "为重新规划器和追踪器提供可读取的明确成功条件",
+        "因为模型用它训练",
+        "因为分派器将它用作缓存键",
+        "因为注册表要求它"
       ],
       "correct": 0,
-      "explanation": "The replanner reads it when revising. The tracer renders it on the timeline. It is a human-readable contract on the step."
+      "explanation": "重新规划器在修订时读取它，追踪器在时间线上展示它。它是步骤的人类可读契约。"
     },
     {
       "stage": "check",
-      "question": "When a step fails and the replanner returns a new plan, what does the executor emit on the event stream?",
+      "question": "步骤失败后，重新规划器返回新计划，执行器会向事件流发送什么？",
       "options": [
-        "session.complete with status=failed",
-        "tool.error followed by session.start",
-        "plan.diff with removed/added/revised step ids",
-        "Nothing — replan is silent"
+        "status=failed 的 session.complete",
+        "先 tool.error，再 session.start",
+        "包含 removed/added/revised 步骤标识的 plan.diff",
+        "什么也不发送，重新规划是静默的"
       ],
       "correct": 2,
-      "explanation": "plan.diff makes the revision visible. A silent rewrite is the bug we are avoiding."
+      "explanation": "plan.diff 使修订可见。静默改写正是我们要避免的问题。"
     },
     {
       "stage": "check",
-      "question": "Why have both max_steps and max_replans as separate budgets?",
+      "question": "为什么将 max_steps 和 max_replans 设为两项独立预算？",
       "options": [
-        "Because the dispatcher rejects unbounded plans",
-        "Because the registry counts replans",
-        "Because asyncio requires both",
-        "Because they measure different units. Steps cap total execution; replans cap how many times the planner is called."
+        "因为分派器拒绝无界计划",
+        "因为注册表统计重新规划次数",
+        "因为 asyncio 要求两者",
+        "因为计量单位不同：步骤预算限制总执行量，重新规划预算限制规划器调用次数"
       ],
       "correct": 3,
-      "explanation": "max_replans catches a planner that keeps returning the same broken plan. max_steps catches a runaway plan that keeps growing."
+      "explanation": "max_replans 限制反复返回同一错误计划的规划器；max_steps 限制不断增长而失控的计划。"
     },
     {
       "stage": "check",
-      "question": "Which reason is returned when the planner returns an empty list on the first call?",
+      "question": "规划器首次调用返回空列表时，返回哪个原因？",
       "options": [
         "replan_budget",
         "step_budget",
@@ -60,23 +60,23 @@
         "goal_met"
       ],
       "correct": 2,
-      "explanation": "No plan, no execution. The session ends with reason=no_plan and status=failed."
+      "explanation": "没有计划就不执行。会话以 reason=no_plan、status=failed 结束。"
     },
     {
       "stage": "post",
-      "question": "What is in PlanDiff.revised?",
+      "question": "PlanDiff.revised 包含什么？",
       "options": [
-        "Step ids the planner asked to skip",
-        "Step ids whose tool_name or args changed between revisions",
-        "Step ids in the new plan that were not in the old",
-        "Step ids that were in the old plan and are not in the new"
+        "规划器要求跳过的步骤标识",
+        "修订前后 tool_name 或 args 改变的步骤标识",
+        "新计划中存在而旧计划中不存在的步骤标识",
+        "旧计划中存在而新计划中不存在的步骤标识"
       ],
       "correct": 1,
-      "explanation": "revised is the set of ids whose (tool_name, args) signature changed across the revision."
+      "explanation": "revised 是修订前后 (tool_name, args) 签名发生变化的步骤标识集合。"
     },
     {
       "stage": "post",
-      "question": "When the executor exhausts max_replans, what is the resulting SessionResult.reason?",
+      "question": "执行器耗尽 max_replans 时，SessionResult.reason 是什么？",
       "options": [
         "step_budget",
         "replan_budget",
@@ -84,7 +84,7 @@
         "goal_met"
       ],
       "correct": 1,
-      "explanation": "replan_budget. The status is failed. History carries every step that ran, including the failures that triggered replans."
+      "explanation": "为 replan_budget，状态为 failed。历史包含所有运行过的步骤，包括触发重新规划的失败步骤。"
     }
   ]
 }

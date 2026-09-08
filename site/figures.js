@@ -1,18 +1,18 @@
-/* figures.js — large-scale animated SVG explainers in the reference-manual style.
-   Auto-mount: <div data-figure="tokenizer-bpe"></div>
-   Catalog:
-     tokenizer-bpe        — text → words → BPE merges, watching merges learned live
-     ngram-machine        — sliding window builds prob table, samples new text
-     attention-matrix     — full N×N attention grid lighting up, value blend
-     embedding-arithmetic — king − man + woman → queen, vectors flying in 2D
-     transformer-block    — data flowing through residual + MHA + FFN layers
-     attention-lookup     — compact (legacy) softmax-of-scores
-     token-strip          — compact (legacy) text vs words vs BPE
-     loss-curve           — compact (legacy) training curve
-     embedding-projection — compact (legacy) cluster jitter
-     kv-cache             — compact (legacy) growing cache
-   No deps. The shared lesson runtime owns mounting, pause state, and disposal.
-*/
+/* figures.js — 参考手册风格的大型 SVG 动画讲解图。
+   自动挂载（Auto-mount）：<div data-figure="tokenizer-bpe"></div>
+   目录：
+     tokenizer-bpe        — 文本 → 单词 → BPE 合并，实时观察合并规则的学习
+     ngram-machine        — 滑动窗口（Sliding window）构建概率表，采样新文本
+     attention-matrix     — 完整 N×N 注意力（Attention）网格点亮，进行值混合（Value blend）
+     embedding-arithmetic — king − man + woman → queen，向量在二维空间中飞动
+     transformer-block    — 数据流经残差（Residual）+ MHA + FFN 层
+     attention-lookup     — 紧凑版（旧版）：对评分执行 softmax
+     token-strip          — 紧凑版（旧版）：文本、单词与 BPE 对比
+     loss-curve           — 紧凑版（旧版）：训练曲线（Training curve）
+     embedding-projection — 紧凑版（旧版）：簇抖动（Cluster jitter）
+     kv-cache             — 紧凑版（旧版）：不断增长的缓存（Cache）
+   无依赖。共享课程运行时（Runtime）负责挂载、暂停状态与释放。
+ */
 (function () {
   'use strict';
   const NS = 'http://www.w3.org/2000/svg';
@@ -25,7 +25,7 @@
   }
   const txt = (s) => document.createTextNode(s);
 
-  // The lesson runtime owns each loop so a language rerender can dispose it.
+  // 课程运行时管理各个循环，以便语言重新渲染时释放循环。
   function loop(host, fn, period = 6000, opts = {}) {
     if (window.LF && typeof window.LF.autoplay === 'function') {
       return window.LF.autoplay(host, fn, period, opts);
@@ -42,32 +42,32 @@
   function lerp(a, b, t) { return a + (b - a) * t; }
   function easeIO(t) { return t < .5 ? 2*t*t : 1 - Math.pow(-2*t+2, 2) / 2; }
 
-  /* ───────────────────────── BIG FIGURES ───────────────────────── */
+  /* ───────────────────────── 大型图表（Big figures） ───────────────────────── */
 
   /* tokenizer-bpe ── 720x520
-     A long string ticks through three "tracks":
-       1. raw chars       (pixel-by-pixel)
-       2. byte-pair scan  (highlights consecutive pair, increments count)
-       3. merged tokens   (newly-learned merges replace pairs)
-     Right side shows the merge rules being learned, top-to-bottom.
-  */
+     长字符串依次经过三条“轨道”：
+       1. 原始字符（Raw chars），逐像素推进
+       2. 字节对扫描（Byte-pair scan），高亮连续字符对并增加计数
+       3. 合并后的词元（Merged tokens），新学到的合并规则替换字符对
+     右侧自上而下显示正在学习的合并规则。
+   */
   function tokenizerBPE(host) {
     const W = 760, H = 540;
-    const svg = el('svg', { viewBox: `0 0 ${W} ${H}`, width: '100%', role: 'img', 'aria-label': 'BPE tokenizer training' });
+    const svg = el('svg', { viewBox: `0 0 ${W} ${H}`, width: '100%', role: 'img', 'aria-label': '字节对编码分词器训练（BPE Tokenizer Training）' });
     host.appendChild(svg);
 
-    // Title row
-    svg.appendChild(el('text', { x: 18, y: 22, 'font-family':'var(--font-mono)', 'font-size': 11, 'letter-spacing':'.16em', fill:'var(--ink-mute)' }, [txt('CORPUS')]));
-    svg.appendChild(el('text', { x: 18, y: 162, 'font-family':'var(--font-mono)', 'font-size': 11, 'letter-spacing':'.16em', fill:'var(--ink-mute)' }, [txt('SCAN PAIRS')]));
-    svg.appendChild(el('text', { x: 18, y: 322, 'font-family':'var(--font-mono)', 'font-size': 11, 'letter-spacing':'.16em', fill:'var(--ink-mute)' }, [txt('MERGED TOKENS')]));
-    svg.appendChild(el('text', { x: W - 18, y: 22, 'text-anchor':'end', 'font-family':'var(--font-mono)', 'font-size': 11, 'letter-spacing':'.16em', fill:'var(--blueprint)' }, [txt('LEARNED MERGES')]));
+    // 标题行
+    svg.appendChild(el('text', { x: 18, y: 22, 'font-family':'var(--font-mono)', 'font-size': 11, 'letter-spacing': 0, fill:'var(--ink-mute)' }, [txt('语料库（Corpus）')]));
+    svg.appendChild(el('text', { x: 18, y: 162, 'font-family':'var(--font-mono)', 'font-size': 11, 'letter-spacing': 0, fill:'var(--ink-mute)' }, [txt('扫描相邻对（Scan Pairs）')]));
+    svg.appendChild(el('text', { x: 18, y: 322, 'font-family':'var(--font-mono)', 'font-size': 11, 'letter-spacing': 0, fill:'var(--ink-mute)' }, [txt('合并后的词元（Merged Tokens）')]));
+    svg.appendChild(el('text', { x: W - 18, y: 22, 'text-anchor':'end', 'font-family':'var(--font-mono)', 'font-size': 11, 'letter-spacing': 0, fill:'var(--blueprint)' }, [txt('学到的合并规则（Learned Merges）')]));
 
-    // The tiny corpus — chars in cells
+    // 微型语料（Corpus），字符放在单元中
     const corpus = "the_cat_sat_on_the_mat_the_cat_ate";
     const chars = corpus.split('');
-    const CW = 18, CH = 28, X0 = 18, Y_RAW = 36, Y_SCAN = 176, Y_MERGE = 336;
+    const CW = 15, CH = 28, X0 = 18, Y_RAW = 36, Y_SCAN = 176, Y_MERGE = 336;
 
-    // Raw row
+    // 原始字符行
     const rawCells = chars.map((c, i) => {
       const x = X0 + i * CW;
       const g = el('g', {});
@@ -77,7 +77,7 @@
       return g;
     });
 
-    // Scan row — same chars, with a sliding pair highlighter and a "count++" pop
+    // 扫描行：相同字符，配有滑动的字符对高亮与弹出的 "count++"
     const scanCells = chars.map((c, i) => {
       const x = X0 + i * CW;
       const g = el('g', {});
@@ -89,7 +89,7 @@
     const scanBracket = el('rect', { y: Y_SCAN - 4, height: CH + 8, width: CW * 2 + 2, fill:'transparent', stroke:'var(--blueprint)', 'stroke-width': 2 });
     svg.appendChild(scanBracket);
 
-    // pair-counter floater
+    // 字符对计数器（Pair-counter）浮层
     const counter = el('g', {});
     const counterBg = el('rect', { x: 0, y: 0, width: 84, height: 24, fill:'var(--blueprint-tint-strong)', stroke:'var(--blueprint)', 'stroke-width': 1 });
     const counterTx = el('text', { x: 42, y: 16, 'text-anchor':'middle', 'font-family':'var(--font-mono)', 'font-size': 12, fill:'var(--ink)' });
@@ -97,8 +97,8 @@
     counter.setAttribute('opacity', '0');
     svg.appendChild(counter);
 
-    // Merge row — starts as chars, accrues merges as the run advances
-    // Plan a merge schedule: each "step" merges a pair across all occurrences.
+    // 合并行：从字符开始，随运行推进累积合并结果
+    // 规划合并调度（Merge schedule）：每个“步骤”在所有出现位置合并一个字符对。
     const mergeSchedule = [
       { pair: ['t','h'], joined: 'th' },
       { pair: ['th','e'], joined: 'the' },
@@ -109,7 +109,7 @@
     const STEPS = mergeSchedule.length + 1;
 
     function tokensAt(step) {
-      // Start from chars (· for spaces).
+      // 从字符开始，以 · 表示空格。
       let toks = chars.map(c => c === '_' ? '·' : c);
       const lastStep = Math.min(step, mergeSchedule.length);
       for (let s = 0; s < lastStep; s++) {
@@ -125,7 +125,7 @@
       return toks;
     }
 
-    // we render the merge row as a flexible run; redraw on step change
+    // 将合并行渲染为灵活排列的序列；步骤变化时重新绘制
     const mergeRowG = el('g', {});
     svg.appendChild(mergeRowG);
     function drawMergeRow(step, justMerged) {
@@ -133,7 +133,7 @@
       const toks = tokensAt(step);
       let x = X0;
       toks.forEach(tok => {
-        const w = Math.max(CW, tok.length * 9 + 10);
+        const w = Math.max(CW, tok.length * 8 + 4);
         const isJustMerged = justMerged && tok === justMerged;
         const fill = isJustMerged ? 'var(--blueprint)' : (tok.length > 1 ? 'var(--blueprint-tint-strong)' : 'transparent');
         const stroke = tok.length > 1 ? 'var(--blueprint)' : 'var(--rule-soft)';
@@ -148,7 +148,7 @@
     }
     drawMergeRow(0, null);
 
-    // Learned-merges sidebar (right side)
+    // 已学习合并规则（Learned-merges）侧栏，位于右侧
     const SBX = W - 240;
     svg.appendChild(el('rect', { x: SBX, y: 36, width: 220, height: 360, fill:'transparent', stroke:'var(--rule-soft)', 'stroke-width': 1 }));
     const merges = mergeSchedule.map((m, i) => {
@@ -161,34 +161,34 @@
       svg.appendChild(g);
       return g;
     });
-    // vocab-size readout
-    const vocabReadout = el('text', { x: W - 18, y: H - 18, 'text-anchor':'end', 'font-family':'var(--font-mono)', 'font-size': 11, 'letter-spacing':'.12em', fill:'var(--ink-mute)' });
+    // 词汇表大小（Vocab-size）显示
+    const vocabReadout = el('text', { x: W - 18, y: H - 18, 'text-anchor':'end', 'font-family':'var(--font-mono)', 'font-size': 11, 'letter-spacing': 0, fill:'var(--ink-mute)' });
     svg.appendChild(vocabReadout);
 
-    // status caption
-    const status = el('text', { x: 18, y: H - 18, 'font-family':'var(--font-mono)', 'font-size': 11, 'letter-spacing':'.12em', fill:'var(--blueprint)' });
+    // 状态说明
+    const status = el('text', { x: 18, y: H - 18, 'font-family':'var(--font-mono)', 'font-size': 11, 'letter-spacing': 0, fill:'var(--blueprint)' });
     svg.appendChild(status);
 
-    // Animation: each "stage" first slides scan window across, then commits a merge.
-    const PAIR_SCAN_FRAC = 0.65; // 65% of stage scanning, 35% applying merge
+    // 动画：每个“阶段”先横向滑动扫描窗口，再提交一次合并。
+    const PAIR_SCAN_FRAC = 0.65; // 阶段的 65% 用于扫描，35% 用于应用合并
     let lastStage = -1;
     loop(host, (t) => {
       const stage = Math.floor(t * STEPS);
       const tInStage = (t * STEPS) - stage;
       const m = mergeSchedule[stage];
 
-      // Scan bracket position — sweeps across the corpus
+      // 扫描括号位置：扫过语料
       const scanIdx = Math.floor(tInStage / PAIR_SCAN_FRAC * (chars.length - 1));
       const clamped = Math.min(Math.max(scanIdx, 0), chars.length - 2);
       scanBracket.setAttribute('x', X0 + clamped * CW - 1);
 
-      // Tint scan cells: highlight current pair
+      // 为扫描单元着色：高亮当前字符对
       scanCells.forEach((g, i) => {
         const r = g.firstChild;
         r.setAttribute('fill', (i === clamped || i === clamped + 1) ? 'var(--blueprint-tint-strong)' : 'transparent');
       });
 
-      // floating count next to the scan bracket
+      // 扫描括号旁的浮动计数
       if (m && tInStage < PAIR_SCAN_FRAC) {
         const a = chars[clamped] === '_' ? '·' : chars[clamped];
         const b = chars[clamped+1] === '_' ? '·' : chars[clamped+1];
@@ -201,49 +201,49 @@
         counter.setAttribute('opacity', '0');
       }
 
-      // Apply merge once we cross PAIR_SCAN_FRAC
+      // 超过 PAIR_SCAN_FRAC 时应用合并
       const applied = tInStage >= PAIR_SCAN_FRAC ? stage + 1 : stage;
       if (applied !== lastStage) {
         drawMergeRow(applied, m && tInStage >= PAIR_SCAN_FRAC ? m.joined : null);
         lastStage = applied;
       }
 
-      // reveal sidebar entries
+      // 显示侧栏条目
       merges.forEach((g, i) => {
         const visible = applied > i ? 1 : (applied === i && tInStage >= PAIR_SCAN_FRAC ? 1 : 0);
         g.setAttribute('opacity', visible);
       });
 
-      // status + vocab
-      const baseVocab = 28; // alphabet-ish
-      vocabReadout.textContent = 'VOCAB · ' + (baseVocab + applied);
+      // 状态与词汇表
+      const baseVocab = 28; // 近似字母表（Alphabet-ish）
+      vocabReadout.textContent = '词表（Vocab）· ' + (baseVocab + applied);
       if (!m) {
-        status.textContent = 'TOKENIZER LEARNED · LOOPING';
+        status.textContent = '分词器（Tokenizer）已训练 · 循环演示';
       } else if (tInStage < PAIR_SCAN_FRAC) {
-        status.textContent = 'COUNTING PAIRS  ·  step ' + (stage+1) + '/' + mergeSchedule.length;
+        status.textContent = '统计相邻对 · 步骤 ' + (stage+1) + '/' + mergeSchedule.length;
       } else {
-        status.textContent = 'MERGED  ' + m.pair.join(' + ') + '  →  ' + m.joined;
+        status.textContent = '已合并  ' + m.pair.join(' + ') + '  →  ' + m.joined;
       }
     }, 14000);
   }
 
   /* ngram-machine ── 720x420
-     Sliding bigram window over a sentence builds a probability table on the right.
-     Once the table is "warm" it samples a new sentence beneath.
-  */
+     二元语法（Bigram）滑动窗口扫过句子，在右侧构建概率表。
+     概率表“预热”后，在下方采样一个新句子。
+   */
   function ngramMachine(host) {
     const W = 760, H = 460;
-    const svg = el('svg', { viewBox: `0 0 ${W} ${H}`, width: '100%', role: 'img', 'aria-label': 'N-gram language model' });
+    const svg = el('svg', { viewBox: `0 0 ${W} ${H}`, width: '100%', role: 'img', 'aria-label': 'N 元语言模型（N-gram Language Model）' });
     host.appendChild(svg);
 
-    svg.appendChild(el('text', { x: 18, y: 22, 'font-family':'var(--font-mono)', 'font-size': 11, 'letter-spacing':'.16em', fill:'var(--ink-mute)' }, [txt('CORPUS · BIGRAM WINDOW')]));
-    svg.appendChild(el('text', { x: 18, y: 248, 'font-family':'var(--font-mono)', 'font-size': 11, 'letter-spacing':'.16em', fill:'var(--blueprint)' }, [txt('SAMPLED FROM P(next | current)')]));
-    svg.appendChild(el('text', { x: W - 18, y: 22, 'text-anchor':'end', 'font-family':'var(--font-mono)', 'font-size': 11, 'letter-spacing':'.16em', fill:'var(--ink-mute)' }, [txt('TRANSITION TABLE')]));
+    svg.appendChild(el('text', { x: 18, y: 22, 'font-family':'var(--font-mono)', 'font-size': 11, 'letter-spacing': 0, fill:'var(--ink-mute)' }, [txt('语料库 · 二元窗口（Bigram Window）')]));
+    svg.appendChild(el('text', { x: 18, y: 248, 'font-family':'var(--font-mono)', 'font-size': 11, 'letter-spacing': 0, fill:'var(--blueprint)' }, [txt('按 P(next | current) 采样（Sampling）')]));
+    svg.appendChild(el('text', { x: W - 18, y: 22, 'text-anchor':'end', 'font-family':'var(--font-mono)', 'font-size': 11, 'letter-spacing': 0, fill:'var(--ink-mute)' }, [txt('转移表（Transition Table）')]));
 
     const tokens = ['the','cat','sat','on','the','mat','the','dog','sat','on','the','log','the','cat','ate'];
-    // chip layout
+    // 标签布局（Chip layout）
     const Y_CORPUS = 56;
-    const chipW = 56, chipH = 30, chipGap = 6;
+    const chipW = 24, chipH = 30, chipGap = 6;
     const chips = tokens.map((tok, i) => {
       const x = 18 + i * (chipW + chipGap);
       const g = el('g', {});
@@ -252,18 +252,18 @@
       svg.appendChild(g);
       return { g, x, tok };
     });
-    // window bracket
+    // 窗口括号
     const winRect = el('rect', { y: Y_CORPUS - 4, height: chipH + 8, width: chipW * 2 + chipGap, fill:'transparent', stroke:'var(--blueprint)', 'stroke-width': 2 });
     svg.appendChild(winRect);
 
-    // Build the actual transition table (counts → probs) we'll animate filling
+    // 构建实际的转移表（Transition table），从计数 → 概率，随后以动画逐渐填满
     const transitions = {};
     for (let i = 0; i < tokens.length - 1; i++) {
       const a = tokens[i], b = tokens[i+1];
       transitions[a] = transitions[a] || {};
       transitions[a][b] = (transitions[a][b] || 0) + 1;
     }
-    // sidebar: list a few rows from the table
+    // 侧栏：列出表中的几行
     const SBX = W - 280, SBY = 50;
     svg.appendChild(el('rect', { x: SBX, y: SBY, width: 264, height: 180, fill:'transparent', stroke:'var(--rule-soft)', 'stroke-width': 1 }));
 
@@ -276,7 +276,7 @@
       rowEls[src] = { y, bars: [] };
     });
 
-    // each (src,dst) bar gets a placeholder we fill in later
+    // 为每个 (src,dst) 条形设置占位元素，稍后填充
     function ensureBar(src, dst) {
       const row = rowEls[src]; if (!row) return null;
       let b = row.bars.find(b => b.dst === dst);
@@ -293,19 +293,19 @@
       return b;
     }
 
-    // sampling lane (bottom)
+    // 底部采样泳道（Sampling lane）
     const sampleY = 300;
     const sampleChipsG = el('g', {});
     svg.appendChild(sampleChipsG);
 
-    // status
-    const status = el('text', { x: 18, y: H - 18, 'font-family':'var(--font-mono)', 'font-size': 11, 'letter-spacing':'.12em', fill:'var(--blueprint)' });
+    // 状态
+    const status = el('text', { x: 18, y: H - 18, 'font-family':'var(--font-mono)', 'font-size': 11, 'letter-spacing': 0, fill:'var(--blueprint)' });
     svg.appendChild(status);
-    const phaseTx = el('text', { x: W - 18, y: H - 18, 'text-anchor':'end', 'font-family':'var(--font-mono)', 'font-size': 11, 'letter-spacing':'.12em', fill:'var(--ink-mute)' });
+    const phaseTx = el('text', { x: W - 18, y: H - 18, 'text-anchor':'end', 'font-family':'var(--font-mono)', 'font-size': 11, 'letter-spacing': 0, fill:'var(--ink-mute)' });
     svg.appendChild(phaseTx);
 
-    // Animation: phase A — slide window through corpus filling table; phase B — generate new tokens
-    const PHASE_A = 0.6; // 60% counting, 40% generating
+    // 动画：阶段 A 滑动窗口扫过语料并填表；阶段 B 生成新词元
+    const PHASE_A = 0.6; // 60% 用于计数，40% 用于生成
     const totalPairs = tokens.length - 1;
     let lastSampleStep = -1, sampleHistory = [];
 
@@ -337,8 +337,8 @@
         winRect.setAttribute('x', chips[i].x - 1);
         chips.forEach((c, k) => c.g.firstChild.setAttribute('fill', (k === i || k === i+1) ? 'var(--blueprint-tint-strong)' : 'transparent'));
 
-        // accumulate counts up to index i
-        // (recompute deterministically each frame for visual consistency)
+        // 累积计数直到索引 i
+        // 每帧进行确定性重计算，保证视觉一致
         const counts = {};
         for (let p = 0; p <= i; p++) {
           const a = tokens[p], b = tokens[p+1];
@@ -355,14 +355,14 @@
             bar.fg.setAttribute('width', prob * 36);
           });
         });
-        status.textContent = 'COUNTING BIGRAMS  ·  ' + (i+1) + ' / ' + totalPairs;
-        phaseTx.textContent = 'PHASE 1';
-        // reset sample
+        status.textContent = '统计二元组（Bigrams）· ' + (i+1) + ' / ' + totalPairs;
+        phaseTx.textContent = '阶段 1';
+        // 重置样本
         sampleHistory = []; lastSampleStep = -1;
         rebuildSample();
       } else {
         const localT = (t - PHASE_A) / (1 - PHASE_A);
-        // fade out window
+        // 窗口淡出
         winRect.setAttribute('x', -50);
         chips.forEach(c => c.g.firstChild.setAttribute('fill', 'transparent'));
 
@@ -377,42 +377,42 @@
           rebuildSample();
           lastSampleStep = step;
         }
-        status.textContent = 'SAMPLING  ·  ' + sampleHistory.join(' ');
-        phaseTx.textContent = 'PHASE 2';
+        status.textContent = '采样（Sampling）· ' + sampleHistory.join(' ');
+        phaseTx.textContent = '阶段 2';
       }
     }, 12000);
   }
 
   /* attention-matrix ── 720x520
-     A 12-token sentence, full N×N attention grid lighting up.
-     A query head sweeps row-by-row; cells light by softmax weight.
-     A small "value blend" panel below shows the resulting context vector.
-  */
+     一个含 12 个词元的句子，完整 N×N 注意力网格点亮。
+     查询头（Query head）逐行扫过；单元按 softmax 权重点亮。
+     下方小型“值混合（Value blend）”面板展示生成的上下文向量（Context vector）。
+   */
   function attentionMatrix(host) {
-    const W = 760, H = 540;
-    const svg = el('svg', { viewBox: `0 0 ${W} ${H}`, width: '100%', role: 'img', 'aria-label': 'Self-attention matrix' });
+    const W = 760, H = 610;
+    const svg = el('svg', { viewBox: `0 0 ${W} ${H}`, width: '100%', role: 'img', 'aria-label': '自注意力矩阵（Self-Attention Matrix）' });
     host.appendChild(svg);
 
     const TOKENS = ['the','cat','sat','on','the','mat','because','it','was','warm','and','sunny'];
     const N = TOKENS.length;
-    const M = 384; // matrix size
+    const M = 384; // 矩阵大小
     const MX = 110, MY = 70;
     const cell = M / N;
 
-    svg.appendChild(el('text', { x: 18, y: 22, 'font-family':'var(--font-mono)', 'font-size':11, 'letter-spacing':'.16em', fill:'var(--ink-mute)' }, [txt('SELF-ATTENTION  ·  Q · Kᵀ → SOFTMAX → · V')]));
-    svg.appendChild(el('text', { x: MX + M + 18, y: MY + 14, 'font-family':'var(--font-mono)', 'font-size': 10, 'letter-spacing':'.14em', fill:'var(--ink-mute)' }, [txt('KEYS →')]));
-    svg.appendChild(el('text', { x: MX - 8, y: MY - 12, 'font-family':'var(--font-mono)', 'font-size': 10, 'letter-spacing':'.14em', fill:'var(--ink-mute)', 'text-anchor':'end' }, [txt('QUERIES ↓')]));
+    svg.appendChild(el('text', { x: 18, y: 22, 'font-family':'var(--font-mono)', 'font-size':11, 'letter-spacing': 0, fill:'var(--ink-mute)' }, [txt('自注意力（Self-Attention）· Q · Kᵀ → SOFTMAX → · V')]));
+    svg.appendChild(el('text', { x: MX + M + 18, y: MY + 14, 'font-family':'var(--font-mono)', 'font-size': 10, 'letter-spacing': 0, fill:'var(--ink-mute)' }, [txt('键（Keys）→')]));
+    svg.appendChild(el('text', { x: MX - 8, y: MY - 12, 'font-family':'var(--font-mono)', 'font-size': 10, 'letter-spacing': 0, fill:'var(--ink-mute)', 'text-anchor':'end' }, [txt('查询（Queries）↓')]));
 
-    // top labels
+    // 顶部标签
     TOKENS.forEach((t, i) => {
       svg.appendChild(el('text', { x: MX + i*cell + cell/2, y: MY - 8, 'text-anchor':'middle', 'font-family':'var(--font-mono)', 'font-size': 10, fill:'var(--ink-soft)' }, [txt(t)]));
     });
-    // left labels
+    // 左侧标签
     TOKENS.forEach((t, i) => {
       svg.appendChild(el('text', { x: MX - 8, y: MY + i*cell + cell/2 + 4, 'text-anchor':'end', 'font-family':'var(--font-mono)', 'font-size': 10, fill:'var(--ink-soft)' }, [txt(t)]));
     });
 
-    // grid cells
+    // 网格单元
     const cells = [];
     for (let i = 0; i < N; i++) {
       cells.push([]);
@@ -425,13 +425,13 @@
         cells[i].push(r);
       }
     }
-    // current row highlight
+    // 当前行高亮
     const rowHi = el('rect', { x: MX - 4, y: MY, width: M + 8, height: cell, fill:'transparent', stroke:'var(--blueprint)', 'stroke-width': 1.5 });
     svg.appendChild(rowHi);
 
-    // value blend bar — shows weighted blend at bottom
+    // 值混合条：在底部显示加权混合（Weighted blend）
     const VY = MY + M + 32;
-    svg.appendChild(el('text', { x: MX, y: VY - 8, 'font-family':'var(--font-mono)', 'font-size':10, 'letter-spacing':'.14em', fill:'var(--blueprint)' }, [txt('CONTEXT VECTOR  =  Σ αⱼ · vⱼ')]));
+    svg.appendChild(el('text', { x: MX, y: VY - 8, 'font-family':'var(--font-mono)', 'font-size':10, 'letter-spacing': 0, fill:'var(--blueprint)' }, [txt('上下文向量（Context Vector）= Σ αⱼ · vⱼ')]));
     const valBars = [];
     const VBW = M / N;
     for (let j = 0; j < N; j++) {
@@ -443,14 +443,14 @@
       valBars.push(fg);
     }
 
-    // status
-    const status = el('text', { x: 18, y: H - 18, 'font-family':'var(--font-mono)', 'font-size': 11, 'letter-spacing':'.12em', fill:'var(--blueprint)' });
+    // 状态
+    const status = el('text', { x: 18, y: H - 18, 'font-family':'var(--font-mono)', 'font-size': 11, 'letter-spacing': 0, fill:'var(--blueprint)' });
     svg.appendChild(status);
 
-    // synthetic affinity: each query "looks for" semantically related keys.
-    // We hard-code an interesting case: "it" (idx 7) softly attends to "cat" (1).
+    // 合成亲和度（Synthetic affinity）：每个查询“寻找”语义相关的键（Keys）。
+    // 硬编码一个有趣案例："it"（idx 7）以软注意力关注 "cat"（1）。
     function affinityRow(qi) {
-      // Base: noise; add bonus for a chosen target
+      // 基础值为噪声；为选定目标加上额外分值
       const targets = { 6: [3,4,5], 7: [1, 0], 9: [3,4,5], 10:[6], 11:[6] };
       const tArr = targets[qi];
       return Array.from({length: N}, (_, kj) => {
@@ -467,41 +467,41 @@
       const sub = qF - qi;
       rowHi.setAttribute('y', MY + qi * cell);
 
-      // fill row weights
+      // 填充行权重
       const w = softmax(affinityRow(qi), 0.7);
       for (let j = 0; j < N; j++) {
         const a = w[j];
         cells[qi][j].setAttribute('fill', `color-mix(in srgb, var(--blueprint) ${Math.round(a*100*1.4)}%, var(--blueprint-tint))`);
       }
-      // reset other rows to soft default (subtle decay)
+      // 将其他行重置为柔和的默认值，呈现轻微衰减
       for (let i = 0; i < N; i++) {
         if (i === qi) continue;
         for (let j = 0; j < N; j++) {
           cells[i][j].setAttribute('fill', i === j ? 'var(--blueprint-tint-strong)' : 'var(--blueprint-tint)');
         }
       }
-      // value blend
+      // 值混合（Value blend）
       for (let j = 0; j < N; j++) {
         valBars[j].setAttribute('y', VY + 60 - w[j] * 60);
         valBars[j].setAttribute('height', w[j] * 60);
       }
-      status.textContent = 'QUERY: "' + TOKENS[qi] + '"  ·  TOP KEY: "' + TOKENS[w.indexOf(Math.max(...w))] + '"';
+      status.textContent = '查询（Query）："' + TOKENS[qi] + '" · 最大权重键（Top Key）："' + TOKENS[w.indexOf(Math.max(...w))] + '"';
     }, 11000);
   }
 
   /* embedding-arithmetic ── 760x440
-     Words plotted in 2D embedding space. Vectors animate to show:
+     将词绘制在二维嵌入空间（2D embedding space）中。向量动画展示：
        king − man + woman ≈ queen
-  */
+   */
   function embeddingArithmetic(host) {
     const W = 760, H = 460, P = 60;
-    const svg = el('svg', { viewBox: `0 0 ${W} ${H}`, width: '100%', role: 'img', 'aria-label': 'Word vector arithmetic' });
+    const svg = el('svg', { viewBox: `0 0 ${W} ${H}`, width: '100%', role: 'img', 'aria-label': '词向量运算（Word Vector Arithmetic）' });
     host.appendChild(svg);
 
-    svg.appendChild(el('text', { x: 18, y: 22, 'font-family':'var(--font-mono)', 'font-size':11, 'letter-spacing':'.16em', fill:'var(--ink-mute)' }, [txt('EMBEDDING SPACE  ·  PCA(2) PROJECTION')]));
-    svg.appendChild(el('text', { x: W - 18, y: 22, 'text-anchor':'end', 'font-family':'var(--font-mono)', 'font-size':11, 'letter-spacing':'.16em', fill:'var(--blueprint)' }, [txt('king − man + woman ≈ queen')]));
+    svg.appendChild(el('text', { x: 18, y: 22, 'font-family':'var(--font-mono)', 'font-size':11, 'letter-spacing': 0, fill:'var(--ink-mute)' }, [txt('嵌入空间（Embedding Space）· PCA(2) 投影')]));
+    svg.appendChild(el('text', { x: W - 18, y: 22, 'text-anchor':'end', 'font-family':'var(--font-mono)', 'font-size':11, 'letter-spacing': 0, fill:'var(--blueprint)' }, [txt('king − man + woman ≈ queen')]));
 
-    // grid
+    // 网格
     for (let i = 0; i <= 8; i++) {
       const x = P + (i / 8) * (W - 2*P);
       const y = P + (i / 8) * (H - 2*P - 40);
@@ -509,7 +509,7 @@
       svg.appendChild(el('line', { x1: P, y1: y, x2: W - P, y2: y, stroke:'var(--rule-soft)', 'stroke-width': .6 }));
     }
 
-    // ambient cloud (greyed words)
+    // 周围的点云，词语显示为灰色
     const cloud = ['cat','dog','run','sit','apple','car','river','code','book','sky','fire','river'];
     cloud.forEach((wd, i) => {
       const cx = P + ((Math.sin(i*1.7)+1)/2) * (W - 2*P);
@@ -518,7 +518,7 @@
       svg.appendChild(el('text', { x: cx + 6, y: cy + 4, 'font-family':'var(--font-mono)', 'font-size': 10, fill:'var(--ink-mute)', opacity: .5 }, [txt(wd)]));
     });
 
-    // anchored points (in unit square 0..1)
+    // 锚定点（Anchored points），位于单位正方形 0..1 内
     const pts = {
       king:  { x: 0.30, y: 0.34 },
       man:   { x: 0.30, y: 0.62 },
@@ -537,7 +537,7 @@
       dots[name] = { x, y };
     });
 
-    // arrow defs
+    // 箭头定义（Defs）
     const defs = el('defs', {});
     const mk = (id, color) => {
       const m = el('marker', { id, viewBox:'0 0 10 10', refX: 8, refY: 5, markerWidth: 6, markerHeight: 6, orient: 'auto' });
@@ -549,7 +549,7 @@
     mk('arr-soft', 'var(--ink-mute)');
     svg.appendChild(defs);
 
-    // moving traveller dot + trail line + result dot
+    // 移动点、轨迹线与结果点
     const trail = el('path', { fill:'none', stroke:'var(--blueprint)', 'stroke-width': 2, 'stroke-dasharray':'4 4' });
     svg.appendChild(trail);
     const trav = el('circle', { r: 6, fill:'var(--warn)', stroke:'var(--bg)', 'stroke-width': 2 });
@@ -559,16 +559,16 @@
     result.appendChild(el('text', { x: dots.queen.x + 22, y: dots.queen.y - 12, 'font-family':'var(--font-mono)', 'font-size': 11, fill:'var(--warn)' }, [txt('= QUEEN ✓')]));
     svg.appendChild(result);
 
-    const eqn = el('text', { x: W/2, y: H - 28, 'text-anchor':'middle', 'font-family':'var(--font-mono)', 'font-size': 13, 'letter-spacing':'.06em', fill:'var(--ink)' }, [txt('king')]);
+    const eqn = el('text', { x: W/2, y: H - 28, 'text-anchor':'middle', 'font-family':'var(--font-mono)', 'font-size': 13, 'letter-spacing': 0, fill:'var(--ink)' }, [txt('king')]);
     svg.appendChild(eqn);
 
-    // four phases:  show king → subtract man → add woman → land near queen
+    // 四个阶段：显示 king → 减去 man → 加上 woman → 落在 queen 附近
     loop(host, (t) => {
-      // path waypoints
+      // 路径路标点（Waypoints）
       const start = dots.king;
       const afterMinusMan = { x: start.x + (start.x - dots.man.x), y: start.y + (start.y - dots.man.y) };
       const afterPlusWoman = { x: afterMinusMan.x + (dots.woman.x - dots.king.x), y: afterMinusMan.y + (dots.woman.y - dots.king.y) };
-      // ↑ that's "king + (woman - man)" which lands on queen.
+      // ↑ 即 "king + (woman - man)"，落在 queen 上。
       const wp = [start, afterMinusMan, afterPlusWoman];
 
       let pos = start, segIdx = 0, segT = 0;
@@ -581,13 +581,13 @@
       pos = { x: lerp(a.x, b.x, e), y: lerp(a.y, b.y, e) };
       trav.setAttribute('cx', pos.x); trav.setAttribute('cy', pos.y);
 
-      // trail = path so far
+      // 轨迹（Trail）= 截至当前的路径
       let d = `M ${start.x} ${start.y} `;
       for (let i = 0; i < segIdx; i++) d += `L ${wp[i+1].x} ${wp[i+1].y} `;
       d += `L ${pos.x} ${pos.y}`;
       trail.setAttribute('d', d);
 
-      // equation status
+      // 等式状态
       if (t < 0.05) eqn.textContent = 'king';
       else if (t < 0.33) eqn.textContent = 'king';
       else if (t < 0.66) eqn.textContent = 'king − man';
@@ -599,27 +599,28 @@
   }
 
   /* transformer-block ── 760x540
-     Token vectors flow through: + pos enc → MHA → residual → norm → FFN → residual → norm
-     Beams of light travel left → right; residual arcs glow when reached.
-  */
+     词元向量依次流经：+ pos enc → MHA → residual → norm → FFN → residual → norm
+     即加入位置编码（Pos enc）、多头注意力（MHA）、残差（Residual）、归一化（Norm）、前馈网络（FFN）、残差、归一化。
+     光束从左 → 右移动，到达残差弧线时使其发光。
+   */
   function transformerBlock(host) {
     const W = 820, H = 620;
-    const svg = el('svg', { viewBox: `0 0 ${W} ${H}`, width: '100%', role: 'img', 'aria-label': 'Transformer block data flow' });
+    const svg = el('svg', { viewBox: `0 0 ${W} ${H}`, width: '100%', role: 'img', 'aria-label': 'Transformer 块的数据流（Data Flow）' });
     host.appendChild(svg);
 
-    svg.appendChild(el('text', { x: 18, y: 22, 'font-family':'var(--font-mono)', 'font-size':11, 'letter-spacing':'.16em', fill:'var(--ink-mute)' }, [txt('ONE TRANSFORMER BLOCK  ·  EMBED · MHA · NORM · FFN · NORM')]));
+    svg.appendChild(el('text', { x: 18, y: 22, 'font-family':'var(--font-mono)', 'font-size':11, 'letter-spacing': 0, fill:'var(--ink-mute)' }, [txt('单个 Transformer 块 · EMBED · MHA · NORM · FFN · NORM')]));
 
-    // input column (left): 6 token "vectors" stacked
+    // 左侧输入列：堆叠的 6 个词元“向量”
     const colX = [70, 220, 380, 540, 720];
     const yTop = 70, vH = 26, vW = 78, gap = 7, NTOK = 6;
     function drawColumn(x, label) {
-      svg.appendChild(el('text', { x, y: yTop - 12, 'text-anchor':'middle', 'font-family':'var(--font-mono)', 'font-size':10, 'letter-spacing':'.14em', fill:'var(--ink-mute)' }, [txt(label)]));
+      svg.appendChild(el('text', { x, y: yTop - 26, 'text-anchor':'middle', 'font-family':'var(--font-mono)', 'font-size':10, 'letter-spacing': 0, fill:'var(--ink-mute)' }, label.split('\n').map((line, i) => el('tspan', { x, dy: i ? 14 : 0 }, [txt(line)]))));
       const arr = [];
       for (let i = 0; i < NTOK; i++) {
         const y = yTop + i * (vH + gap);
         const r = el('rect', { x: x - vW/2, y, width: vW, height: vH, fill:'var(--blueprint-tint)', stroke:'var(--rule-soft)', 'stroke-width': 1 });
         svg.appendChild(r);
-        // little stripes inside to look like a vector
+        // 内部小条纹，使其看起来像向量
         for (let k = 0; k < 5; k++) {
           svg.appendChild(el('rect', { x: x - vW/2 + 6 + k*14, y: y + 8, width: 10, height: 12, fill:'var(--blueprint-tint-strong)' }));
         }
@@ -627,18 +628,18 @@
       }
       return arr;
     }
-    const colInput = drawColumn(colX[0], 'EMBED + POS');
-    const colMHA   = drawColumn(colX[1], 'AFTER MHA');
-    const colResA  = drawColumn(colX[2], '+ RESIDUAL · NORM');
-    const colFFN   = drawColumn(colX[3], 'AFTER FFN');
-    const colResB  = drawColumn(colX[4], '+ RESIDUAL · NORM');
+    const colInput = drawColumn(colX[0], '嵌入（Embed）\n+ 位置（Pos）');
+    const colMHA   = drawColumn(colX[1], '多头注意力（MHA）\n输出');
+    const colResA  = drawColumn(colX[2], '+ 残差（Residual）\n归一化（Norm）');
+    const colFFN   = drawColumn(colX[3], '前馈网络（FFN）\n输出');
+    const colResB  = drawColumn(colX[4], '+ 残差（Residual）\n归一化（Norm）');
 
-    // op boxes & residual arcs sit BELOW the column block so nothing overlaps
+    // 操作（Op）方框与残差弧线位于列块下方，避免重叠
     const colsBottom = yTop + NTOK*(vH+gap);   // ≈ 268
-    const OP_Y = colsBottom + 50;              // op-box top
-    const ARC_Y = OP_Y + 110;                  // residual arc baseline
+    const OP_Y = colsBottom + 50;              // 操作方框顶部
+    const ARC_Y = OP_Y + 110;                  // 残差弧线基线
 
-    // residual arcs (skip lines), curving DOWN under the op row
+    // 残差弧线，即跳跃连接线（Skip lines），在操作行下方向下弯曲
     function arc(x1, x2, y) {
       return el('path', {
         d: `M ${x1} ${y - 80} C ${(x1+x2)/2} ${y + 30}, ${(x1+x2)/2} ${y + 30}, ${x2} ${y - 80}`,
@@ -649,10 +650,10 @@
     const resA = arc(colX[0], colX[2], ARC_Y);
     const resB = arc(colX[2], colX[4], ARC_Y);
     svg.appendChild(resA); svg.appendChild(resB);
-    svg.appendChild(el('text', { x: (colX[0]+colX[2])/2, y: ARC_Y + 50, 'text-anchor':'middle', 'font-family':'var(--font-mono)', 'font-size': 10, fill:'var(--ink-mute)' }, [txt('residual')]));
-    svg.appendChild(el('text', { x: (colX[2]+colX[4])/2, y: ARC_Y + 50, 'text-anchor':'middle', 'font-family':'var(--font-mono)', 'font-size': 10, fill:'var(--ink-mute)' }, [txt('residual')]));
+    svg.appendChild(el('text', { x: (colX[0]+colX[2])/2, y: ARC_Y + 50, 'text-anchor':'middle', 'font-family':'var(--font-mono)', 'font-size': 10, fill:'var(--ink-mute)' }, [txt('残差（Residual）')]));
+    svg.appendChild(el('text', { x: (colX[2]+colX[4])/2, y: ARC_Y + 50, 'text-anchor':'middle', 'font-family':'var(--font-mono)', 'font-size': 10, fill:'var(--ink-mute)' }, [txt('残差（Residual）')]));
 
-    // op boxes between columns
+    // 列之间的操作方框
     function opBox(x, label, sub) {
       const w = 110, h = 50, y = OP_Y;
       const g = el('g', {});
@@ -662,27 +663,27 @@
       svg.appendChild(g);
       return { x, y, w, h, box: g };
     }
-    const op1 = opBox((colX[0]+colX[1])/2, 'MHA', 'multi-head attn');
-    const op2 = opBox((colX[1]+colX[2])/2, '+', 'residual + norm');
-    const op3 = opBox((colX[2]+colX[3])/2, 'FFN', 'feed-forward');
-    const op4 = opBox((colX[3]+colX[4])/2, '+', 'residual + norm');
+    const op1 = opBox((colX[0]+colX[1])/2, 'MHA', '多头注意力（MHA）');
+    const op2 = opBox((colX[1]+colX[2])/2, '+', '残差 + 归一化（Norm）');
+    const op3 = opBox((colX[2]+colX[3])/2, 'FFN', '前馈网络（FFN）');
+    const op4 = opBox((colX[3]+colX[4])/2, '+', '残差 + 归一化（Norm）');
 
-    // beam particles
+    // 光束粒子（Beam particles）
     const beam = el('circle', { r: 5, fill:'var(--warn)' });
     svg.appendChild(beam);
-    // pulse glow circle on op
+    // 操作处的脉动光圈
     const pulse = el('circle', { r: 0, fill:'transparent', stroke:'var(--warn)', 'stroke-width': 2, opacity: 0 });
     svg.appendChild(pulse);
 
-    // status
-    const status = el('text', { x: 18, y: H - 18, 'font-family':'var(--font-mono)', 'font-size':11, 'letter-spacing':'.12em', fill:'var(--blueprint)' });
+    // 状态
+    const status = el('text', { x: 18, y: H - 18, 'font-family':'var(--font-mono)', 'font-size':11, 'letter-spacing': 0, fill:'var(--blueprint)' });
     svg.appendChild(status);
 
     const stations = [
-      { from: colX[0], to: colX[1], op: op1, label: 'tokens query each other', color: 'var(--blueprint)' },
-      { from: colX[1], to: colX[2], op: op2, label: 'add residual, normalize',  color: 'var(--ink)' },
-      { from: colX[2], to: colX[3], op: op3, label: 'per-token MLP transform',  color: 'var(--blueprint)' },
-      { from: colX[3], to: colX[4], op: op4, label: 'add residual, normalize',  color: 'var(--ink)' }
+      { from: colX[0], to: colX[1], op: op1, label: '词元（Token）相互查询', color: 'var(--blueprint)' },
+      { from: colX[1], to: colX[2], op: op2, label: '加上残差（Residual），再归一化（Normalize）',  color: 'var(--ink)' },
+      { from: colX[2], to: colX[3], op: op3, label: '逐词元进行多层感知机（MLP）变换',  color: 'var(--blueprint)' },
+      { from: colX[3], to: colX[4], op: op4, label: '加上残差（Residual），再归一化（Normalize）',  color: 'var(--ink)' }
     ];
 
     loop(host, (t) => {
@@ -690,13 +691,13 @@
       const sT = (t * stations.length) - stage;
       const s = stations[stage];
 
-      // beam travels through op
+      // 光束穿过操作
       let bx, by = OP_Y + 25;
       if (sT < 0.4) {
         bx = lerp(s.from, s.op.x, sT / 0.4);
       } else if (sT < 0.6) {
         bx = s.op.x;
-        // pulse
+        // 脉动（Pulse）
         const p = (sT - 0.4) / 0.2;
         pulse.setAttribute('cx', s.op.x); pulse.setAttribute('cy', s.op.y + s.op.h/2);
         pulse.setAttribute('r', p * 60);
@@ -707,23 +708,23 @@
       }
       beam.setAttribute('cx', bx); beam.setAttribute('cy', by);
 
-      // tint columns through which the beam has passed
+      // 为光束已经经过的列着色
       [colInput, colMHA, colResA, colFFN, colResB].forEach((col, i) => {
         const reached = i <= stage + (sT > 0.6 ? 1 : 0);
         col.forEach(c => c.r.setAttribute('fill', reached ? 'var(--blueprint-tint-strong)' : 'var(--blueprint-tint)'));
       });
 
-      // residual arc highlight
+      // 残差弧线高亮
       resA.setAttribute('opacity', stage >= 1 ? 1 : 0.5);
       resA.setAttribute('stroke', stage >= 1 && sT < 0.6 ? 'var(--warn)' : 'var(--ink-mute)');
       resB.setAttribute('opacity', stage >= 3 ? 1 : 0.5);
       resB.setAttribute('stroke', stage >= 3 && sT < 0.6 ? 'var(--warn)' : 'var(--ink-mute)');
 
-      status.textContent = 'STAGE ' + (stage+1) + ' / 4  ·  ' + s.label;
+      status.textContent = '阶段 ' + (stage+1) + ' / 4  ·  ' + s.label;
     }, 12000);
   }
 
-  /* ───── compact / legacy figures (kept) ───── */
+  /* ───── 紧凑版/旧版图表（Compact / legacy figures），予以保留 ───── */
 
   function attentionLookup(host) {
     const W = 720, H = 280;
@@ -733,7 +734,7 @@
     const qx = 60, qy = H/2;
     svg.appendChild(el('rect', { x: qx-26, y: qy-22, width: 52, height: 44, fill:'var(--blueprint)' }));
     svg.appendChild(el('text', { x: qx, y: qy+5, 'text-anchor':'middle', fill:'var(--bg)', 'font-family':'var(--font-mono)', 'font-size':14, 'font-weight':500 }, [txt('q')]));
-    svg.appendChild(el('text', { x: qx, y: qy+44, 'text-anchor':'middle', fill:'var(--ink-mute)', 'font-family':'var(--font-mono)', 'font-size':9, 'letter-spacing':'.16em' }, [txt('QUERY')]));
+    svg.appendChild(el('text', { x: qx, y: qy+44, 'text-anchor':'middle', fill:'var(--ink-mute)', 'font-family':'var(--font-mono)', 'font-size':9, 'letter-spacing': 0 }, [txt('查询（Query）')]));
     const kx0 = 200, kgap = 60, kw = 36, kh = 44;
     const ks = [], scoreLines = [], bars = [];
     for (let i = 0; i < KEYS; i++) {
@@ -748,7 +749,7 @@
       svg.appendChild(fg); bars.push(fg);
       svg.appendChild(el('text', { x, y: 254, 'text-anchor':'middle', fill:'var(--ink-mute)', 'font-family':'var(--font-mono)', 'font-size':10 }, [txt('α'+(i+1))]));
     }
-    svg.appendChild(el('text', { x: W-20, y: 22, 'text-anchor':'end', fill:'var(--ink-mute)', 'font-family':'var(--font-mono)', 'font-size':10, 'letter-spacing':'.16em' }, [txt('SOFTMAX(qK⊤/√d)')]));
+    svg.appendChild(el('text', { x: W-20, y: 22, 'text-anchor':'end', fill:'var(--ink-mute)', 'font-family':'var(--font-mono)', 'font-size':10, 'letter-spacing': 0 }, [txt('SOFTMAX(qK⊤/√d)')]));
     loop(host, (t) => {
       const center = t * (KEYS - 1);
       const raw = Array.from({length: KEYS}, (_, i) => -Math.pow(i - center, 2) * 0.7);
@@ -772,13 +773,13 @@
     const tokens = text.split(' ');
     const subwords = ["the", " cat", " sat", " on", " the", " m", "at"];
     const rows = [
-      { y: 28, items: [text], label: 'TEXT' },
-      { y: 68, items: tokens, label: 'WORDS' },
+      { y: 28, items: [text], label: '文本（Text）' },
+      { y: 68, items: tokens, label: '单词（Words）' },
       { y: 108, items: subwords, label: 'BPE' }
     ];
     rows.forEach((row, ri) => {
-      svg.appendChild(el('text', { x: 8, y: row.y+4, fill:'var(--ink-mute)', 'font-family':'var(--font-mono)', 'font-size':10, 'letter-spacing':'.16em' }, [txt(row.label)]));
-      let x = 88;
+      svg.appendChild(el('text', { x: 8, y: row.y+4, fill:'var(--ink-mute)', 'font-family':'var(--font-mono)', 'font-size':10, 'letter-spacing': 0 }, [txt(row.label)]));
+      let x = 130;
       row.items.forEach((tok) => {
         const tx = tok.replace(/^ /, '·');
         const w = Math.max(36, tx.length * 9 + 12);
@@ -810,8 +811,8 @@
     }
     svg.appendChild(el('line', { x1: P, y1: P, x2: P, y2: H-P, stroke:'var(--ink)', 'stroke-width': 1 }));
     svg.appendChild(el('line', { x1: P, y1: H-P, x2: W-P, y2: H-P, stroke:'var(--ink)', 'stroke-width': 1 }));
-    svg.appendChild(el('text', { x: P, y: 18, 'font-family':'var(--font-mono)', 'font-size':10, 'letter-spacing':'.14em', fill:'var(--ink-mute)' }, [txt('LOSS')]));
-    svg.appendChild(el('text', { x: W-P, y: H-8, 'text-anchor':'end', 'font-family':'var(--font-mono)', 'font-size':10, 'letter-spacing':'.14em', fill:'var(--ink-mute)' }, [txt('STEP →')]));
+    svg.appendChild(el('text', { x: P, y: 18, 'font-family':'var(--font-mono)', 'font-size':10, 'letter-spacing': 0, fill:'var(--ink-mute)' }, [txt('损失（Loss）')]));
+    svg.appendChild(el('text', { x: W-P, y: H-8, 'text-anchor':'end', 'font-family':'var(--font-mono)', 'font-size':10, 'letter-spacing': 0, fill:'var(--ink-mute)' }, [txt('步数（Step）→')]));
     const N = 240;
     const path = el('path', { fill:'none', stroke:'var(--blueprint)', 'stroke-width':1.6 });
     svg.appendChild(path);
@@ -832,8 +833,9 @@
       const lx = P + ((upto-1) / (N-1)) * (W - 2*P);
       const ly = P + (1 - lossFn(upto-1)) * (H - 2*P);
       dot.setAttribute('cx', lx); dot.setAttribute('cy', ly);
-      lbl.setAttribute('x', lx + 8); lbl.setAttribute('y', ly - 6);
-      lbl.textContent = 'loss=' + lossFn(upto-1).toFixed(3);
+      lbl.setAttribute('text-anchor', lx > W - 140 ? 'end' : 'start');
+      lbl.setAttribute('x', lx > W - 140 ? lx - 8 : lx + 8); lbl.setAttribute('y', ly - 6);
+      lbl.textContent = '损失（Loss）=' + lossFn(upto-1).toFixed(3);
     }, 5400);
   }
 
@@ -868,7 +870,7 @@
         o.node.setAttribute('transform', `translate(${dx} ${dy})`);
       });
     }, 7000);
-    svg.appendChild(el('text', { x: 12, y: 22, 'font-family':'var(--font-mono)', 'font-size':10, 'letter-spacing':'.16em', fill:'var(--ink-mute)' }, [txt('EMBEDDING SPACE · 2D PROJECTION')]));
+    svg.appendChild(el('text', { x: 12, y: 22, 'font-family':'var(--font-mono)', 'font-size':10, 'letter-spacing': 0, fill:'var(--ink-mute)' }, [txt('嵌入空间（Embedding Space）· 二维投影（2D Projection）')]));
   }
 
   function kvCache(host) {
@@ -887,7 +889,7 @@
         cells.push({ cell, c, r });
       }
     }
-    svg.appendChild(el('text', { x: P, y: H-10, 'font-family':'var(--font-mono)', 'font-size':10, 'letter-spacing':'.16em', fill:'var(--ink-mute)' }, [txt('CACHE GROWS LEFT → RIGHT · NEW TOKEN HIGHLIGHTED')]));
+    svg.appendChild(el('text', { x: P, y: H-10, 'font-family':'var(--font-mono)', 'font-size':10, 'letter-spacing': 0, fill:'var(--ink-mute)' }, [txt('缓存（Cache）从左向右增长 · 高亮显示新词元（Token）')]));
     loop(host, (t) => {
       const head = Math.floor(t * COLS);
       cells.forEach(({ cell, c }) => {

@@ -1,125 +1,125 @@
-# Build an Evidence-Backed Execution Plan
+# 构建有证据支撑的执行计划（Build an Evidence-Backed Execution Plan）
 
-> A plan is not a prettier to-do list. It is a dependency graph in which every change has a reason and every terminal node has proof.
+> 计划不是更漂亮的待办清单，而是一张依赖图：每项变更都有理由，每个末端节点都有完成证据。
 
 **Type:** Learn + Build
-**Languages:** Python (stdlib)
-**Prerequisites:** Phase 14 lesson 43
-**Time:** ~65 minutes
+**Languages:** Python（标准库）
+**Prerequisites:** 阶段 14 第 43 课
+**Time:** 约 65 分钟
 
-## Learning Objectives
+## 学习目标（Learning Objectives）
 
-- Convert a task frame into work items with evidence and proof.
-- Model ordering as dependencies instead of prose sequence.
-- Detect missing facts, unknown dependencies, and cycles before editing.
-- Separate steps that can run together from steps that must wait.
+- 将任务框架转换为具备依据与完成证据的工作项。
+- 用依赖关系而非叙述顺序建模执行次序。
+- 编辑前检测缺失事实、未知依赖和环路。
+- 区分可同时运行与必须等待的步骤。
 
-## Why Agent Plans Fail
+## 智能体计划为何失败（Why Agent Plans Fail）
 
-Weak plans repeat the request in future tense:
+薄弱计划只是用将来时重复请求：
 
-1. Update the API.
-2. Add tests.
-3. Update documentation.
+1. 更新 API。
+2. 添加测试。
+3. 更新文档。
 
-Nothing in that list says what was found, why those files are correct, which contract changes first, or what can happen concurrently. An agent can follow every step and still create rework.
+这份列表没有说明调查发现了什么、为什么应修改这些文件、哪个契约必须先变更，也没有说明哪些工作可以并发。智能体即使遵循每一步，仍可能造成返工。
 
-A strong plan makes five commitments for each work item:
+可靠的计划需要为每个工作项明确五件事：
 
-| Commitment | Purpose |
+| 承诺 | 用途 |
 |---|---|
-| Identifier | Stable reference for dependencies and handoff |
-| Change | The smallest behavior or contract change |
-| Evidence | Repository facts that justify the change |
-| Dependencies | Work that must be true first |
-| Proof | The exact check that closes the item |
+| 标识符（Identifier） | 依赖与交接中的稳定引用 |
+| 变更（Change） | 最小行为或契约变更 |
+| 依据（Evidence） | 支持变更的仓库事实 |
+| 依赖（Dependencies） | 必须先成立的工作 |
+| 证明（Proof） | 关闭工作项的确切检查 |
 
-## Plan the Contract Before Its Implementations
+## 先规划契约，再规划实现（Plan the Contract Before Its Implementations）
 
-When multiple surfaces depend on the same behavior, define the behavior first. Tests, implementation, documentation, and integration can then share one contract instead of inventing four versions.
+多个部分依赖同一行为时，应先定义该行为。这样，测试、实现、文档与集成便能共享一个契约，避免各自形成相互冲突的版本。
 
 ```mermaid
 flowchart LR
-  C[Contract] --> I[Implementation]
-  C --> D[Documentation]
-  I --> G[Integration gate]
+  C[契约] --> I[实现]
+  C --> D[文档]
+  I --> G[集成关卡]
   D --> G
 ```
 
-The graph exposes safe concurrency. Implementation and documentation can proceed together after the contract is fixed. Integration waits for both.
+图展示了安全并发：契约固定后，实现与文档可同时推进，集成等待两者。
 
-## Evidence Changes the Plan
+## 证据改变计划（Evidence Changes the Plan）
 
-Repository evidence is not decoration. It should be capable of changing the work:
+仓库证据不是装饰，应能改变工作：
 
-- An existing helper removes a planned new abstraction.
-- A compatibility test forces a migration step.
-- A deployment constraint moves a schema change into another task.
-- A public response type changes the order of implementation and documentation.
+- 现有辅助函数使计划中的新抽象不再需要。
+- 兼容性测试迫使计划增加迁移步骤。
+- 部署约束使数据模式（Schema）变更必须移到另一个任务中。
+- 公开响应类型改变实现与文档的顺序。
 
-If the evidence cannot change the plan, it is probably not evidence for that decision.
+如果证据无法改变计划，它很可能不是该决策的依据。
 
-## Design for Interruption
+## 为中断设计（Design for Interruption）
 
-Coding-agent sessions end unexpectedly. A resumable plan has work items small enough that another session can determine:
+编程智能体会话会意外结束。可恢复计划的工作项足够小，让另一次会话能判断：
 
-- which item is complete;
-- which proof ran;
-- which artifacts changed;
-- which dependencies are now unblocked;
-- what the next safe item is.
+- 哪项已完成；
+- 哪项证明已运行；
+- 哪些产物改变了；
+- 哪些依赖现已解除阻塞；
+- 下一项安全工作是什么。
 
-Do not encode state only in checked boxes inside a chat. Store the plan next to the work.
+不要只在聊天中的勾选框里编码状态。把计划存放在工作旁。
 
-## Plan Validation
+## 计划验证（Plan Validation）
 
-Reject the plan before execution when:
+出现以下情况，在执行前拒绝计划：
 
-- an identifier is duplicated;
-- a work item has no evidence;
-- a work item has no proof;
-- a dependency names an unknown item;
-- the graph contains a cycle;
-- the first irreversible action occurs before the relevant uncertainty is resolved.
+- 标识符重复；
+- 工作项没有依据；
+- 工作项没有完成证明；
+- 依赖指向未知工作项；
+- 图中存在环路；
+- 在相关不确定性解决之前，就执行了首个不可逆动作。
 
-The first five checks are mechanical. The last requires judgment and should be called out explicitly.
+前五项是机械检查。最后一项需要判断，应明确指出。
 
-## Build It
+## 动手实现（Build It）
 
-`code/main.py` models work items, validates their receipts, computes execution waves with a topological sort, and writes `outputs/evidence-plan.json`.
+`code/main.py` 对工作项建模，验证凭据，用拓扑排序计算执行波次（Execution Waves），并写入 `outputs/evidence-plan.json`。
 
-Run:
+运行：
 
 ```bash
 python3 code/main.py
 python3 -m unittest discover code/tests -v
 ```
 
-The example produces three waves. Contract definition runs first. Implementation and documentation run together. The integration gate runs last.
+示例产生三个波次。首先定义契约，接着实现与文档同时运行，最后运行集成关卡。
 
-## Use It with a Coding Agent
+## 与编程智能体一起使用（Use It with a Coding Agent）
 
-Ask the agent to produce the plan before it changes files. Review the plan for three things:
+让智能体在修改文件前产出计划。审查三件事：
 
-1. Every path and behavior claim has a repository receipt.
-2. Every item has one clear completion proof.
-3. The graph delays expensive or irreversible work until the uncertainty it depends on is resolved.
+1. 每项路径与行为主张都有仓库凭据。
+2. 每个工作项都有一个明确完成证明。
+3. 图将昂贵或不可逆工作延后，直到其依赖的不确定性解决。
 
-Approve the plan, not a vague promise to be careful.
+批准的是计划，而非“会小心”的含糊承诺。
 
-## Exercises
+## 练习（Exercises）
 
-1. Add a migration item that requires explicit human approval.
-2. Create a cycle and explain the hidden product disagreement behind it.
-3. Split one item that has two proof commands.
-4. Add a work item that can run in the second wave without touching either existing branch.
-5. Render the plan as Markdown while keeping JSON as the source of truth.
+1. 添加一个需要人工明确批准的迁移工作项。
+2. 创建环路，并解释其背后隐藏的产品分歧。
+3. 拆分一个包含两条证明命令的工作项。
+4. 添加一个能在第二波次运行、且不触及现有两个分支的工作项。
+5. 将计划渲染为 Markdown，同时保留 JSON 为事实来源。
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [Nuseibeh and Easterbrook, Requirements Engineering: A Roadmap](https://www.cs.toronto.edu/~sme/papers/2000/ICSE2000.pdf), for the iterative relationship between goals, specifications, agreement, and evolution.
-- [Barry Boehm, A Spiral Model of Software Development and Enhancement](https://dl.acm.org/doi/10.1145/12944.12948), for ordering development around risk resolution rather than a fixed linear sequence.
+- [Nuseibeh 与 Easterbrook：需求工程路线图（Requirements Engineering: A Roadmap）](https://www.cs.toronto.edu/~sme/papers/2000/ICSE2000.pdf)，讨论目标、规格、共识与演进之间的迭代关系。
+- [Barry Boehm：软件开发与改进的螺旋模型（A Spiral Model of Software Development and Enhancement）](https://dl.acm.org/doi/10.1145/12944.12948)，讨论围绕风险消解而非固定线性顺序安排开发。
 
-## What You Keep
+## 保留产物（What You Keep）
 
-Keep `outputs/evidence-plan.json`. It becomes the delegation contract in the next lesson.
+保留 `outputs/evidence-plan.json`。它将在下一课成为委派契约。

@@ -1,27 +1,27 @@
 ---
 name: speculative-tuning
-description: Profile a decode workload and pick draft model, draft length K, temperature gate, and fallback policy for speculative decoding.
+description: 分析解码负载，为推测解码（Speculative Decoding）选择草稿模型、草稿长度 K、温度门限和回退策略。
 version: 1.0.0
 phase: 10
 lesson: 25
 tags: [speculative-decoding, draft-model, alpha, throughput, inference, decode-latency]
 ---
 
-Given the target model (size, family, tokenizer), the workload telemetry (task mix, prompt-vs-decode token ratio, p50/p99 decode latency, accelerator and HBM headroom, average batch size, sampling temperature distribution), and the available draft checkpoints, output:
+给定目标模型（规模、家族、分词器（Tokenizer））、负载遥测（Telemetry）（任务组合、提示与解码词元比例、p50/p99 解码延迟、加速器及高带宽内存（High Bandwidth Memory，HBM）余量、平均批量大小、采样温度分布）和可用草稿检查点（Checkpoint），输出：
 
-1. Draft choice. Pick from same-family small (Llama-3.2-1B for Llama-70B), distilled draft (Qwen3-0.6B-spec), Medusa heads bolted on the target, or "no spec decode" if no draft is closer than 30 percent FLOP cost ratio. Confirm tokenizer match against the target byte-for-byte; refuse a mismatched tokenizer.
-2. Draft length K. Argmax of E[tokens] / (1 + K x c) where c is the draft-to-target cost ratio. Show the work for K in 2, 3, 4, 5, 6 using the measured alpha from a calibration run on 5_000 tokens of in-distribution data. Default K=4 for chat, K=6 for code, K=2 for high-temperature creative writing.
-3. Temperature gate. Set a temperature threshold above which spec decode is disabled. Default 0.8; lower to 0.6 if the calibration shows alpha collapsing earlier. Reject any temperature gate that depends on per-request inspection that adds more than 50 microseconds.
-4. Tree budget. If the serving stack supports tree drafting, pick a small fixed tree (depth 2, branch 3-2) for batch under 8; flat chain for batch over 32. State the verifier's KV scratch size in bytes and confirm it fits in HBM headroom.
-5. Fallback policy. Name the metric (sliding-window measured alpha over the last 1_000 verifies) and the threshold (alpha under 0.4) at which the server drops back to plain autoregressive decode for that request stream. Include the per-request lifetime of the fallback decision.
+1. 草稿选择。从同家族小模型（Llama-70B 配 Llama-3.2-1B）、蒸馏草稿（Qwen3-0.6B-spec）、附加于目标的 Medusa 头中选择；若没有草稿的浮点运算（Floating-Point Operation，FLOP）成本比低于 30%，选择“不使用推测解码”。逐字节确认分词器与目标一致，拒绝不匹配的分词器。
+2. 草稿长度 K。求 E[tokens] / (1 + K x c) 的最大值，其中 c 是草稿与目标成本比。用 5_000 个同分布（In-Distribution）词元校准实测 alpha，展示 K 为 2、3、4、5、6 时的计算。聊天默认 K=4，代码 K=6，高温度创意写作 K=2。
+3. 温度门限（Temperature Gate）。超过阈值关闭推测解码，默认 0.8；若校准显示 alpha 更早崩塌，降低至 0.6。拒绝依赖逐请求检查、且增加超过 50 微秒开销的门限。
+4. 树预算（Tree Budget）。若服务栈支持树状草稿（Tree Drafting），批量小于 8 时选择小型固定树（深度 2，分支 3-2），批量大于 32 时选择平坦链。以字节说明验证器键值（Key-Value，KV）临时空间大小，确认可装入 HBM 余量。
+5. 回退策略（Fallback Policy）。明确指标为最近 1_000 次验证的滑动窗口实测 alpha，阈值为低于 0.4；达到条件时，该请求流退回普通自回归解码。说明回退决策对各请求的有效期。
 
-Refuse spec decode at batch size above the point where the verifier is compute-bound. Above that point the unused FLOPs the speculator is meant to soak up no longer exist; throughput drops. Refuse spec decode for any task family with measured alpha under 0.4; the draft overhead dominates and wall-clock latency gets worse. Refuse a draft that has not been validated on a held-out 1_000-token sample against the target: an unvalidated draft is a silent KL drift.
+若批量大小超过验证器进入计算受限（Compute-Bound）的临界点，拒绝推测解码。超过此点，推测器原本用于利用的空闲 FLOPs 已不存在，吞吐量会下降。若某任务家族实测 alpha 低于 0.4，拒绝推测解码：草稿开销主导，实际延迟更差。拒绝尚未在 1_000 词元留出样本上对照目标验证的草稿，未验证草稿会导致无声的 KL 漂移（KL Drift）。
 
-Example input: "Llama-3.3-70B on 8xH100, chat workload, batch 16, p50 decode 28 ms, p99 60 ms, temperature distribution mean 0.4 / max 1.2, calibration shows alpha 0.78 on chat, 0.61 on code."
+输入示例：“Llama-3.3-70B，8xH100，聊天负载，批量 16，p50 解码 28 ms、p99 60 ms，温度均值 0.4、最大 1.2；校准 alpha 为聊天 0.78、代码 0.61。”
 
-Example output:
-- Draft: Llama-3.2-1B-Instruct-spec. Same tokenizer, same family, ratio c approx 0.03.
-- K: 4. E[tokens/verify] = 3.4 chat, 2.5 code. K=5 gains 0.1 token chat and pays 0.03 extra c; reject.
-- Temperature gate: 0.8. Above 0.8 alpha drops below 0.45 on the calibration set.
-- Tree budget: depth 2 branch (3, 2). KV scratch 480 MB at batch 16 fits.
-- Fallback: sliding-window alpha over last 1_000 verifies under 0.40 disables spec decode for that stream for 30 s, then probes again.
+输出示例：
+- 草稿：Llama-3.2-1B-Instruct-spec。相同分词器、相同家族，成本比 c 约 0.03。
+- K：4。E[tokens/verify] = 聊天 3.4、代码 2.5。K=5 仅多获得 0.1 个聊天词元，却增加 0.03 的 c，拒绝。
+- 温度门限：0.8。校准集上超过 0.8 时，alpha 低于 0.45。
+- 树预算：深度 2、分支 (3, 2)。批量 16 时，480 MB KV 临时空间可容纳。
+- 回退：最近 1_000 次验证的滑动窗口 alpha 低于 0.40 时，对该流关闭推测解码 30 秒，再重新探测。

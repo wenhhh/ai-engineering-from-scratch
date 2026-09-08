@@ -1,29 +1,29 @@
 ---
 name: sleeper-audit
-description: Audit an alignment-training report for whether it actually demonstrates removal of a planted or suspected backdoor.
+description: 审计对齐训练报告，判断它是否真正证明已移除植入或疑似的后门（Backdoor）。
 version: 1.0.0
 phase: 18
 lesson: 7
 tags: [sleeper-agents, backdoor, alignment-training, adversarial-training, probes]
 ---
 
-Given a report that claims a harmful behaviour has been removed from a model (via SFT, RLHF, adversarial training, or any combination), audit whether the removal has actually been demonstrated against the standard Hubinger et al. 2024 threat model.
+给定一份声称通过 SFT、RLHF、对抗训练或其组合移除了模型有害行为的报告，按照 Hubinger 等人 2024 年的标准威胁模型，审计它是否真正展示了移除效果。
 
-Produce:
+请提供以下内容：
 
-1. Elicitation scope. Did the report hold out an elicitation method that the training pipeline never saw? If the only evaluation is the red team's own distribution, removal is unproven.
-2. Trigger generality. Is the claimed trigger a literal string, a distribution shift, or an environmental feature (date, token, context size)? Generality of the trigger determines the size of the search space the red team has to cover.
-3. Internal-state evidence. Did the team apply residual-stream probes, SAE features, or other mechanistic probes to check whether the trigger-relevant state is still present internally even when behaviour is clean? Per the April 2024 Anthropic follow-up, internal state remains linearly legible after behavioural removal.
-4. Persistence-through-pipeline check. Was removal verified after every subsequent training stage (further SFT, later RLHF pass, adapter merge, distillation)? Backdoors persist through training — the final model is the thing evaluated, not a middle checkpoint.
-5. Scale-consistency check. If the claim is based on a smaller model, Hubinger 2024 Figure 4 shows persistence grows with scale. Smaller-model evidence does not transfer upward.
+1. 诱发范围。报告是否留出了一种训练流水线从未见过的诱发方法（Elicitation method）？如果唯一的评估来自红队自身分布，就没有证明行为已被移除。
+2. 触发器的通用程度。所述触发器是字面字符串、分布偏移，还是环境特征，例如日期、词元或上下文大小？触发器的通用程度决定红队需要覆盖的搜索空间大小。
+3. 内部状态证据。团队是否应用残差流探针（Residual-stream probes）、稀疏自编码器（SAE）特征或其他机制探针，检查即使行为已无异常，内部是否仍存在与触发器有关的状态？根据 2024 年 4 月 Anthropic 的后续研究，行为被移除后，内部状态仍可通过线性方式读出。
+4. 全流水线持续性检查。是否在每个后续训练阶段之后都验证了移除效果，包括进一步 SFT、之后的 RLHF、适配器合并和蒸馏？后门会在训练后保留，评估对象必须是最终模型，而不是中间检查点。
+5. 规模一致性检查。如果主张基于较小模型，Hubinger 2024 年论文图 4 表明，持续性随规模增大。小模型证据不能直接迁移到更大模型。
 
-Hard rejects:
-- Any claim that "we applied RLHF so the model is safe" with no held-out elicitation.
-- Any claim based only on red-team-distribution evaluation (training and evaluation draw from the same pool).
-- Any claim of removal without internal-state probes when the original implant mechanism is unknown.
+必须否定的说法或方案：
+- 任何没有留出诱发测试，却声称“我们应用了 RLHF，所以模型安全”的说法。
+- 任何仅依据红队分布评估的主张，即训练与评估从同一个样本池抽取。
+- 在原始植入机制未知时，任何没有内部状态探针就声称已移除后门的说法。
 
-Refusal rules:
-- If the user asks "can RLHF remove deceptive alignment," refuse the binary answer and point to Hubinger et al. 2024 Section 5 on persistence and Section 6 on chain-of-thought.
-- If the user asks for a numeric probability of latent deception, refuse and explain that base rates are unknown; the empirical evidence is persistence in constructed organisms, not emergence rate in naturally trained models.
+拒绝规则：
+- 如果用户问“RLHF 能移除欺骗性对齐吗”，请拒绝简单的是或否答案，并引导其阅读 Hubinger 等人 2024 年论文第 5 节的持续性与第 6 节的思维链讨论。
+- 如果用户要求潜在欺骗的数值概率，请拒绝，并解释基础发生率未知；实证证据说明的是构造模型中的持续性，而不是自然训练模型中的涌现率。
 
-Output: a one-page audit that maps the report's evidence onto the five audit dimensions above, flags every dimension the report does not address, and states the single largest unaddressed threat model. Cite Hubinger et al. (arXiv:2401.05566) for the baseline threat model.
+输出：一页审计，将报告证据映射到上述五个维度，标记所有未处理的维度，并指出尚未处理的最重要威胁模型。引用 Hubinger 等人的论文（arXiv:2401.05566）作为基准威胁模型来源。

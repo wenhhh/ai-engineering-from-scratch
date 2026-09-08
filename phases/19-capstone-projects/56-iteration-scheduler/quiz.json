@@ -1,78 +1,78 @@
 {
   "lesson": "56-iteration-scheduler",
-  "title": "Iteration Scheduler",
+  "title": "迭代调度器（Iteration Scheduler）",
   "questions": [
     {
       "stage": "pre",
-      "question": "Why does the scheduler use UCB scoring instead of always picking the current best branch?",
+      "question": "为什么调度器使用 UCB 评分，而不是始终选择当前最佳分支？",
       "options": [
-        "Because the queue cannot be sorted otherwise",
-        "Because asyncio requires UCB",
-        "Because UCB is faster to compute",
-        "Because greedy picks never explore; UCB balances exploitation with exploration"
+        "因为否则无法对队列排序",
+        "因为 asyncio 要求 UCB",
+        "因为 UCB 计算更快",
+        "因为贪心选择从不探索；UCB 平衡利用（Exploitation）与探索（Exploration）"
       ],
       "correct": 3,
-      "explanation": "Greedy locks onto the first lead. Uniform never exploits. UCB picks the leader while reserving capacity for less-explored branches via the sqrt(ln N / n) term."
+      "explanation": "贪心策略会锁定最早领先的分支，均匀策略则从不利用已有优势。UCB 在选择领先者的同时，通过 sqrt(ln N / n) 项为探索较少的分支预留容量。"
     },
     {
       "stage": "pre",
-      "question": "What score does a branch with zero completed runs receive under UCB1?",
+      "question": "在 UCB1 下，尚无已完成运行的分支会得到什么分数？",
       "options": [
-        "Positive infinity, so untried branches are always picked first",
-        "The mean reward of all other branches",
-        "Zero",
-        "The exploration constant c"
+        "正无穷，因此未尝试分支始终最先被选中",
+        "所有其他分支的平均奖励",
+        "零",
+        "探索常数 c"
       ],
       "correct": 0,
-      "explanation": "The lesson assigns +inf for runs=0. This guarantees every branch is tried at least once before any branch is revisited."
+      "explanation": "本课为 runs=0 赋值 +inf。这保证在重新访问任一分支之前，每个分支都至少尝试一次。"
     },
     {
       "stage": "check",
-      "question": "How does the scheduler keep multiple slots busy?",
+      "question": "调度器如何让多个槽位持续工作？",
       "options": [
-        "It uses asyncio.create_task per dispatched hypothesis and awaits FIRST_COMPLETED on the in-flight set",
-        "It runs the runner in a thread pool",
-        "It blocks the event loop on a sleep",
-        "It uses multiprocessing"
+        "为每个派发的假设使用 asyncio.create_task，并对运行中任务集合等待 FIRST_COMPLETED",
+        "在线程池中运行运行器",
+        "通过休眠阻塞事件循环",
+        "使用多进程"
       ],
       "correct": 0,
-      "explanation": "Each dispatched hypothesis becomes a task. The main loop waits on FIRST_COMPLETED so a finished slot is freed immediately and another hypothesis is dispatched."
+      "explanation": "每个派发的假设都成为一个任务。主循环等待 FIRST_COMPLETED，因此完成的槽位会立即释放，并派发另一个假设。"
     },
     {
       "stage": "check",
-      "question": "When does the scheduler emit a paper.trigger for a branch?",
+      "question": "调度器何时为某个分支输出 paper.trigger？",
       "options": [
-        "Every time a result lands on that branch",
-        "When the prune floor is hit",
-        "Only at the end of the run",
-        "On the first result whose branch mean meets or exceeds the paper threshold, and only once per branch"
+        "该分支每次收到结果时",
+        "触及剪枝下限时",
+        "只在运行结束时",
+        "第一次有结果使分支均值达到或超过论文阈值时，并且每个分支只触发一次"
       ],
       "correct": 3,
-      "explanation": "The trigger fires once per branch, the first time the branch's mean crosses the threshold. The paper_triggered flag on BranchStats prevents repeats."
+      "explanation": "每个分支只触发一次，即分支均值首次越过阈值时。BranchStats 上的 paper_triggered 标志防止重复触发。"
     },
     {
       "stage": "post",
-      "question": "What happens to a branch whose mean reward stays below the prune floor after the minimum-runs threshold?",
+      "question": "达到最少运行次数后，平均奖励仍低于剪枝下限的分支会怎样？",
       "options": [
-        "Nothing; UCB will eventually pick another branch",
-        "The reward floor is lowered automatically",
-        "The branch is marked pruned and remaining hypotheses on that branch are removed from the queue",
-        "The scheduler raises an exception"
+        "什么也不做；UCB 最终会选择其他分支",
+        "自动降低奖励下限",
+        "该分支被标记为已剪枝，其余假设从队列移除",
+        "调度器抛出异常"
       ],
       "correct": 2,
-      "explanation": "Pruning removes the branch from future scheduling. Pruning is separate from the picker: UCB ranks, pruning culls."
+      "explanation": "剪枝将该分支从后续调度中移除。剪枝独立于选择器：UCB 负责排序，剪枝负责淘汰。"
     },
     {
       "stage": "post",
-      "question": "Which two budgets does the scheduler enforce as hard limits?",
+      "question": "调度器将哪两项预算作为硬限制？",
       "options": [
-        "Memory and CPU",
-        "paper triggers and prune count",
-        "slots and queue depth",
-        "max_experiments (total runs) and max_seconds (wall clock)"
+        "内存和 CPU",
+        "论文触发次数和剪枝次数",
+        "槽位数和队列深度",
+        "max_experiments（总运行次数）和 max_seconds（实际耗时）"
       ],
       "correct": 3,
-      "explanation": "Both fire as stop reasons. max_experiments caps total work. max_seconds caps wall time. The trace records which one stopped the run."
+      "explanation": "两者都可触发停止。max_experiments 限制总工作量，max_seconds 限制实际耗时。追踪记录会记下哪一项使运行停止。"
     }
   ]
 }

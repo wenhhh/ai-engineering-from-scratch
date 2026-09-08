@@ -1,9 +1,9 @@
-"""Phase 13 Lesson 13: the stateless MCP Tasks extension.
+"""阶段 13 第 13 课：无状态 MCP 任务扩展（Tasks extension）。
 
-Lesson: ../docs/en.md
-Extension: https://tasks.extensions.modelcontextprotocol.io/specification/draft/tasks
-This example uses only Python's standard library.
-Run: python3 main.py
+课程： ../docs/en.md
+扩展： https://tasks.extensions.modelcontextprotocol.io/specification/draft/tasks
+本示例仅使用 Python 标准库。
+运行： python3 main.py
 """
 
 from __future__ import annotations
@@ -28,7 +28,7 @@ TERMINAL_STATUSES = {"completed", "cancelled", "failed"}
 TOOLS = [
     {
         "name": "generate_report",
-        "description": "Generate a durable report that may require outline approval.",
+        "description": "生成持久化报告（Durable report），过程中可能需要审批提纲。",
         "inputSchema": {
             "type": "object",
             "properties": {
@@ -171,7 +171,7 @@ class TaskStore:
             owner=owner,
             operation="tools/call:generate_report",
             status="working",
-            status_message="Preparing report outline.",
+            status_message="正在准备报告提纲。",
             created_at=timestamp,
             last_updated_at=timestamp,
             ttl_ms=900_000,
@@ -255,13 +255,13 @@ class TaskService:
                 action = answer.get("action")
                 if action in {"decline", "cancel"}:
                     task.status = "cancelled"
-                    task.status_message = "User did not approve the outline."
+                    task.status_message = "用户未批准提纲。"
                     task.input_requests = {}
                     self.store.save(task)
                 elif action == "accept" and isinstance(answer.get("content"), dict):
                     if answer["content"].get("approved") is True:
                         task.status = "working"
-                        task.status_message = "Generating approved report."
+                        task.status_message = "正在生成已获批准的报告。"
                         task.stage = 2
                         task.input_requests = {}
                         self.store.save(task)
@@ -273,7 +273,7 @@ class TaskService:
         task = self._owned_task(params.get("taskId"), principal=principal)
         if task.status not in TERMINAL_STATUSES:
             task.status = "cancelled"
-            task.status_message = "Cancellation was acknowledged by the worker."
+            task.status_message = "工作进程（Worker）已确认取消请求。"
             task.input_requests = {}
             self.store.save(task)
         return complete()
@@ -285,14 +285,14 @@ class TaskService:
         if task.stage == 0:
             key = "approve_outline"
             if key in task.issued_keys:
-                raise RuntimeError("task input request key cannot be reused")
+                raise RuntimeError("任务输入请求的键不可重复使用")
             task.issued_keys.append(key)
             task.input_requests = {
                 key: {
                     "method": "elicitation/create",
                     "params": {
                         "mode": "form",
-                        "message": "Approve the generated report outline?",
+                        "message": "是否批准生成的报告提纲？",
                         "requestedSchema": {
                             "type": "object",
                             "properties": {"approved": {"type": "boolean"}},
@@ -302,17 +302,17 @@ class TaskService:
                 }
             }
             task.status = "input_required"
-            task.status_message = "Waiting for outline approval."
+            task.status_message = "正在等待提纲审批。"
             task.stage = 1
         elif task.stage == 2:
             task.status = "completed"
-            task.status_message = "Report completed."
+            task.status_message = "报告已完成。"
             task.stage = 3
             task.result = complete(
                 content=[
                     {
                         "type": "text",
-                        "text": f"Generated {task.size} report with approved outline.",
+                        "text": f"已按获批提纲生成规模为 {task.size} 的报告。",
                     }
                 ],
                 structuredContent={"size": task.size, "approved": True},
@@ -435,7 +435,7 @@ def make_http_request(
         name = body["params"].get("taskId")
     if method == "tools/call" or method in {"tasks/get", "tasks/update", "tasks/cancel"}:
         if not isinstance(name, str) or not name:
-            raise ValueError(f"{method} requires a name for Mcp-Name")
+            raise ValueError(f"{method} 需要提供名称以填入 Mcp-Name")
         headers["Mcp-Name"] = name
     return body, headers
 
@@ -502,7 +502,7 @@ def main() -> None:
             )
         task_id = transcript[1]["result"]["taskId"]
         print(
-            "notification:",
+            "通知（Notification）：",
             json.dumps(
                 service.task_notification(task_id, subscription_id="listen-demo"),
                 indent=2,

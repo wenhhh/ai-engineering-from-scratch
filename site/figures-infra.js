@@ -1,16 +1,16 @@
-/* figures-infra.js: interactive lesson figures for Phase 17 (infrastructure and
-   production). Loads after lesson-figures.js and registers through window.LF.register.
-   Vanilla ES5, no deps, theme via CSS vars. Authoring is the same fenced block:
+/* figures-infra.js：阶段 17（基础设施与生产（Infrastructure and production））
+   的交互课程图表。在 lesson-figures.js 之后加载，通过 window.LF.register 注册。
+   原生 ES5，无依赖，主题由 CSS 变量控制。编写时仍使用相同的围栏块：
        ```figure
        data-parallel
-       ``` */
+       ```  */
 (function () {
   'use strict';
   var LF = window.LF;
   if (!LF) { return; }
   var el = LF.el, svgEl = LF.svgEl, slider = LF.slider, select = LF.select, fmtInt = LF.fmtInt;
 
-  // ── data-parallel: split the global batch into per-GPU shards, all-reduce ──
+  // ── data-parallel: 将全局批次（Global batch）切分为各 GPU 分片（Shards），执行全规约（All-reduce） ──
   function dataParallel(host) {
     var state = { gpus: 4, batch: 256 };
     var W = 520, H = 210, PAD = 24;
@@ -34,39 +34,39 @@
         svg.appendChild(lab);
         var cp = svgEl('text', { x: (cx + boxW / 2).toFixed(1), y: (top + 44).toFixed(1), 'text-anchor': 'middle',
           'font-family': 'monospace', 'font-size': '9', fill: 'var(--ink-mute,#777)' });
-        cp.appendChild(document.createTextNode('full copy'));
+        cp.appendChild(document.createTextNode('完整副本'));
         svg.appendChild(cp);
         var shB = svgEl('rect', { x: cx.toFixed(1), y: (top + boxH + 10).toFixed(1), width: boxW.toFixed(1), height: '20', rx: '2',
           fill: 'var(--blueprint,#3553ff)', opacity: '0.85' });
         svg.appendChild(shB);
         var sl = svgEl('text', { x: (cx + boxW / 2).toFixed(1), y: (top + boxH + 24).toFixed(1), 'text-anchor': 'middle',
           'font-family': 'monospace', 'font-size': '9', fill: 'var(--bg,#fafaf5)' });
-        sl.appendChild(document.createTextNode(shard + ' rows'));
+        sl.appendChild(document.createTextNode(shard + ' 行'));
         svg.appendChild(sl);
       }
       var ry = top + boxH + 48;
       svg.appendChild(svgEl('line', { x1: PAD, y1: ry, x2: W - PAD, y2: ry, stroke: 'var(--warn,#b8870f)', 'stroke-width': '2' }));
       var rl = svgEl('text', { x: (W / 2).toFixed(1), y: (ry + 16).toFixed(1), 'text-anchor': 'middle',
         'font-family': 'monospace', 'font-size': '10', fill: 'var(--warn,#b8870f)' });
-      rl.appendChild(document.createTextNode('all-reduce gradients across ' + g + ' GPUs'));
+      rl.appendChild(document.createTextNode(g + ' 块 GPU 通过 All-Reduce 汇总梯度'));
       svg.appendChild(rl);
-      num.innerHTML = g + 'x <small>throughput (ideal)</small>';
-      meta.textContent = 'global batch ' + B + ' split into ' + g + ' shards of ' + shard + '  ·  each GPU holds a full model copy';
-      formula.textContent = 'per-GPU batch = ceil(' + B + ' / ' + g + ') = ' + shard + '  ·  gradients summed by all-reduce, weights stay in sync';
+      num.innerHTML = g + 'x <small>理想吞吐量</small>';
+      meta.textContent = '全局批次 ' + B + ' 拆为 ' + g + ' 份，每份 ' + shard + '  ·  每块 GPU 保存完整模型副本';
+      formula.textContent = '每块 GPU 的批大小 = ceil(' + B + ' / ' + g + ') = ' + shard + '  ·  全归约（All-Reduce）求和梯度，保持权重同步';
     };
     var grid = el('div', { class: 'lf-grid' }, [
-      slider(state, 'gpus', 'number of GPUs', 1, 8, 1),
-      slider(state, 'batch', 'global batch size', 8, 1024, 8)
+      slider(state, 'gpus', 'GPU 数量', 1, 8, 1),
+      slider(state, 'batch', '全局批大小（Global Batch Size）', 8, 1024, 8)
     ]);
     host.appendChild(el('div', { class: 'lf' }, [
-      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['DATA PARALLELISM']), el('span', {}, ['drag the GPU count'])]),
+      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['数据并行（Data Parallelism）']), el('span', {}, ['调整 GPU 数量'])]),
       el('div', { class: 'lf-body' }, [grid, el('div', { class: 'lf-out' }, [svg, num, meta, formula])]),
-      el('div', { class: 'lf-cap' }, ['Each GPU holds a complete copy of the model and processes a different slice of the global batch. After the backward pass an all-reduce sums every GPU’s gradients so the copies stay identical. Throughput scales close to linearly with GPU count, but memory does not drop because every device still stores the whole model.'])
+      el('div', { class: 'lf-cap' }, ['每块 GPU 保存完整模型副本，处理全局批次中的不同数据分片。反向传播（Backward Pass）之后，通过全归约（All-Reduce）对所有 GPU 的梯度求和，使各副本保持一致。吞吐量随 GPU 数量近似线性增长，但单卡显存占用不会下降，因为每块设备仍保存整个模型。'])
     ]));
     state._render();
   }
 
-  // ── tensor-parallel: split a matmul column-wise, gather partial outputs ────
+  // ── tensor-parallel: 按列切分矩阵乘法（Matmul），收集部分输出 ──
   function tensorParallel(host) {
     var state = { gpus: 4, dim: 4096 };
     var W = 520, H = 200, PAD = 24;
@@ -95,25 +95,25 @@
       svg.appendChild(svgEl('line', { x1: PAD, y1: gy, x2: W - PAD, y2: gy, stroke: 'var(--warn,#b8870f)', 'stroke-width': '2' }));
       var gl = svgEl('text', { x: (W / 2).toFixed(1), y: (gy + 16).toFixed(1), 'text-anchor': 'middle',
         'font-family': 'monospace', 'font-size': '10', fill: 'var(--warn,#b8870f)' });
-      gl.appendChild(document.createTextNode('all-gather partial outputs into the full result'));
+      gl.appendChild(document.createTextNode('通过 All-Gather 拼接局部输出，得到完整结果'));
       svg.appendChild(gl);
-      num.innerHTML = colsEach + ' <small>columns / GPU</small>';
-      meta.textContent = 'weight matrix W is split column-wise across ' + g + ' GPUs  ·  each holds 1/' + g + ' of the parameters';
-      formula.textContent = 'Y = X·W  with W = [W₁ | … | W' + (g > 1 ? 'ₙ' : '₁') + '],  each GPU computes X·Wᵢ then all-gather  ·  mem/GPU ≈ d/' + g + ' cols = ' + colsEach;
+      num.innerHTML = colsEach + ' <small>列 / GPU</small>';
+      meta.textContent = '权重矩阵 W 按列切分至 ' + g + ' 块 GPU  ·  每块保存 1/' + g + ' 的参数';
+      formula.textContent = 'Y = X·W，其中 W = [W₁ | … | W' + (g > 1 ? 'ₙ' : '₁') + ']；每块 GPU 计算 X·Wᵢ，再进行全收集（All-Gather）  ·  每卡约保存 d/' + g + ' 列 = ' + colsEach;
     };
     var grid = el('div', { class: 'lf-grid' }, [
-      slider(state, 'gpus', 'number of GPUs', 1, 8, 1),
-      slider(state, 'dim', 'output width (columns)', 512, 8192, 256)
+      slider(state, 'gpus', 'GPU 数量', 1, 8, 1),
+      slider(state, 'dim', '输出宽度（列数）', 512, 8192, 256)
     ]);
     host.appendChild(el('div', { class: 'lf' }, [
-      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['TENSOR PARALLELISM']), el('span', {}, ['drag the GPU count'])]),
+      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['张量并行（Tensor Parallelism）']), el('span', {}, ['调整 GPU 数量'])]),
       el('div', { class: 'lf-body' }, [grid, el('div', { class: 'lf-out' }, [svg, num, meta, formula])]),
-      el('div', { class: 'lf-cap' }, ['A single large matmul is split across GPUs by partitioning the weight matrix into column blocks. Each GPU multiplies the full input by its slice, producing a partial output, then an all-gather stitches the slices into the complete result. The parameters per GPU drop by the GPU count, which is how one layer too big for a single device gets served.'])
+      el('div', { class: 'lf-cap' }, ['将权重矩阵按列分块，就能把一次大型矩阵乘法（Matrix Multiplication）分配给多块 GPU。每块 GPU 用完整输入乘以自己的权重分片，生成局部输出，再通过全收集（All-Gather）拼接为完整结果。单卡参数量降至原来的 GPU 数量分之一，因此单个设备容纳不下的模型层也能运行。'])
     ]));
     state._render();
   }
 
-  // ── pipeline-parallel: bubble fraction shrinks as micro-batches rise ───────
+  // ── pipeline-parallel: 微批次（Micro-batches）增多时，气泡比例（Bubble fraction）下降 ──
   function pipelineParallel(host) {
     var state = { micro: 4, stages: 4 };
     var W = 520, H = 210, PAD = 24;
@@ -134,7 +134,7 @@
         var y = PAD + r * rowH + 2;
         for (c = 0; c < totalSlots; c++) {
           var x = PAD + c * cw;
-          // stage r processes micro-batch (c - r); busy when 0 <= c-r < m
+          // 阶段 r 处理微批次 (c - r)；当 0 <= c-r < m 时忙碌
           var mb = c - r;
           var busy = mb >= 0 && mb < m;
           svg.appendChild(svgEl('rect', { x: x.toFixed(1), y: y.toFixed(1), width: (cw - 2).toFixed(1), height: (rowH - 4).toFixed(1), rx: '2',
@@ -146,42 +146,42 @@
         sl.appendChild(document.createTextNode('S' + (r + 1)));
         svg.appendChild(sl);
       }
-      num.innerHTML = (bubbleFrac * 100).toFixed(1) + ' <small>% bubble (idle)</small>';
+      num.innerHTML = (bubbleFrac * 100).toFixed(1) + ' <small>% 气泡占比（空闲）</small>';
       bar.style.width = (bubbleFrac * 100).toFixed(1) + '%';
       barWrap.classList.toggle('over', bubbleFrac > 0.4);
-      meta.textContent = m + ' micro-batches across ' + s + ' stages  ·  grey cells are idle pipeline bubble at fill and drain';
-      formula.textContent = 'bubble fraction = (stages − 1) / (micro-batches + stages − 1) = ' + (s - 1) + ' / ' + (m + s - 1) + ' = ' + (bubbleFrac * 100).toFixed(1) + '%';
+      meta.textContent = m + ' 个微批次经过 ' + s + ' 个阶段（S）  ·  灰色格表示流水线填充、排空时的空闲气泡';
+      formula.textContent = '气泡占比 = (阶段数 − 1) / (微批次数 + 阶段数 − 1) = ' + (s - 1) + ' / ' + (m + s - 1) + ' = ' + (bubbleFrac * 100).toFixed(1) + '%';
     };
     var grid = el('div', { class: 'lf-grid' }, [
-      slider(state, 'micro', 'micro-batches', 1, 16, 1),
-      slider(state, 'stages', 'pipeline stages', 2, 8, 1)
+      slider(state, 'micro', '微批次数（Micro-Batches）', 1, 16, 1),
+      slider(state, 'stages', '流水线阶段数（Pipeline Stages）', 2, 8, 1)
     ]);
     host.appendChild(el('div', { class: 'lf' }, [
-      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['PIPELINE PARALLELISM']), el('span', {}, ['drag the micro-batch count'])]),
+      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['流水线并行（Pipeline Parallelism）']), el('span', {}, ['调整微批次数'])]),
       el('div', { class: 'lf-body' }, [grid, el('div', { class: 'lf-out' }, [svg, num, barWrap, meta, formula])]),
-      el('div', { class: 'lf-cap' }, ['The model is split into stages, one per GPU, and micro-batches flow through them like an assembly line. While the pipeline fills and drains some stages sit idle, the grey bubble. The bubble fraction is (stages minus one) over (micro-batches plus stages minus one), so feeding more micro-batches amortizes the fixed fill-and-drain cost toward zero.'])
+      el('div', { class: 'lf-cap' }, ['将模型拆为多个阶段，每块 GPU 负责一个阶段，微批次（Micro-Batch）像流水线上的工件一样依次经过各阶段。流水线填充和排空时，部分阶段处于空闲状态，即图中的灰色气泡（Bubble）。气泡占比为“阶段数减一”除以“微批次数加阶段数减一”，因此增加微批次可以摊薄固定的填充、排空开销，使其占比趋近于零。'])
     ]));
     state._render();
   }
 
-  // ── zero-sharding: ZeRO stages shard optimizer, gradients, then params ─────
+  // ── zero-sharding: ZeRO 各阶段依次对优化器（Optimizer）、梯度（Gradients）和参数（Params）分片 ──
   function zeroSharding(host) {
     var state = { stage: '2', gpus: 8 };
     var num = el('span', { class: 'lf-num' });
     var rows = el('div', {});
     var meta = el('div', { class: 'lf-meta' });
     var formula = el('div', { class: 'lf-formula' });
-    // per-parameter bytes in mixed precision Adam: params 2, grads 2, opt states 12
+    // 混合精度（Mixed precision）Adam 中每个参数占用的字节：参数 2、梯度 2、优化器状态 12
     var COMPONENTS = [
-      { key: 'params', label: 'parameters (fp16)', bytes: 2, shardAt: 3 },
-      { key: 'grads', label: 'gradients (fp16)', bytes: 2, shardAt: 2 },
-      { key: 'opt', label: 'optimizer states (Adam)', bytes: 12, shardAt: 1 }
+      { key: 'params', label: '参数（Parameters，fp16）', bytes: 2, shardAt: 3 },
+      { key: 'grads', label: '梯度（Gradients，fp16）', bytes: 2, shardAt: 2 },
+      { key: 'opt', label: '优化器状态（Optimizer States，Adam）', bytes: 12, shardAt: 1 }
     ];
     state._render = function () {
       var stage = Number(state.stage), g = state.gpus;
       var total = 0, i;
       while (rows.firstChild) rows.removeChild(rows.firstChild);
-      var maxBytes = 16; // full per-param footprint, for bar scale
+      var maxBytes = 16; // 每个参数的完整内存占用，用于条形比例尺
       for (i = 0; i < COMPONENTS.length; i++) {
         var c = COMPONENTS[i];
         var sharded = stage >= c.shardAt;
@@ -190,33 +190,33 @@
         var bw = el('i'); bw.style.width = Math.min(100, perGpu / maxBytes * 100).toFixed(1) + '%';
         if (sharded) bw.style.background = 'var(--warn,#b8870f)';
         var lab = el('label', {}, [c.label + (sharded ? ' ÷ ' + g : ''),
-          el('b', {}, [perGpu.toFixed(2) + ' B/param'])]);
+          el('b', {}, [perGpu.toFixed(2) + ' 字节/参数'])]);
         rows.appendChild(el('div', { class: 'lf-ctrl' }, [lab, el('div', { class: 'lf-bar' }, [bw])]));
       }
-      num.innerHTML = total.toFixed(2) + ' <small>bytes / param / GPU</small>';
-      meta.textContent = 'ZeRO stage ' + stage + '  ·  ' + g + ' GPUs  ·  '
-        + (stage === 0 ? 'nothing sharded (plain data parallel)'
-          : stage === 1 ? 'optimizer states sharded'
-            : stage === 2 ? 'optimizer states + gradients sharded'
-              : 'optimizer states + gradients + parameters sharded');
-      formula.textContent = 'full footprint 16 B/param  →  sharded components divided across ' + g + ' GPUs  →  ' + total.toFixed(2) + ' B/param per GPU';
+      num.innerHTML = total.toFixed(2) + ' <small>字节 / 参数 / GPU</small>';
+      meta.textContent = 'ZeRO 阶段 ' + stage + '  ·  ' + g + ' 块 GPU  ·  '
+        + (stage === 0 ? '不分片（普通数据并行）'
+          : stage === 1 ? '优化器状态分片'
+            : stage === 2 ? '优化器状态和梯度分片'
+              : '优化器状态、梯度和参数均分片');
+      formula.textContent = '完整占用为每参数 16 字节  →  分片部分分布在 ' + g + ' 块 GPU 上  →  每块 GPU 每参数占用 ' + total.toFixed(2) + ' 字节';
     };
     var grid = el('div', { class: 'lf-grid' }, [
-      select(state, 'stage', 'ZeRO stage', [['stage 0', '0'], ['stage 1', '1'], ['stage 2', '2'], ['stage 3', '3']]),
-      slider(state, 'gpus', 'data-parallel GPUs', 2, 64, 1)
+      select(state, 'stage', 'ZeRO 阶段（Stage）', [['阶段 0', '0'], ['阶段 1', '1'], ['阶段 2', '2'], ['阶段 3', '3']]),
+      slider(state, 'gpus', '数据并行 GPU 数量', 2, 64, 1)
     ]);
     host.appendChild(el('div', { class: 'lf' }, [
-      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['ZERO SHARDING']), el('span', {}, ['pick the ZeRO stage'])]),
+      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['ZeRO 分片（ZeRO Sharding）']), el('span', {}, ['选择 ZeRO 阶段'])]),
       el('div', { class: 'lf-body' }, [grid, el('div', { class: 'lf-out' }, [num, rows, meta, formula])]),
-      el('div', { class: 'lf-cap' }, ['Plain data parallelism replicates the full optimizer state, gradients, and parameters on every GPU. ZeRO removes that redundancy in stages: stage 1 shards the heavy Adam optimizer states, stage 2 adds gradients, stage 3 adds the parameters themselves. Each stage cuts the per-GPU memory further, trading a little communication for the ability to train far larger models.'])
+      el('div', { class: 'lf-cap' }, ['普通数据并行在每块 GPU 上复制完整的优化器状态、梯度和参数。零冗余优化器（Zero Redundancy Optimizer，ZeRO）分阶段消除冗余：阶段 1 对占用较大的 Adam 优化器状态分片，阶段 2 加入梯度分片，阶段 3 再加入参数分片。每个阶段都进一步降低单卡显存占用，以少量额外通信换取训练更大模型的能力。'])
     ]));
     state._render();
   }
 
-  // ── gpu-memory-breakdown: stacked training memory vs GPU capacity ──────────
+  // ── gpu-memory-breakdown: 堆叠的训练内存占用与 GPU 容量对比 ──
   function gpuMemoryBreakdown(host) {
     var state = { params: 7, batch: 8 };
-    var GB = 1e9, REF = 80; // one 80 GB GPU
+    var GB = 1e9, REF = 80; // 一块 80 GB GPU
     var num = el('span', { class: 'lf-num' });
     var rows = el('div', {});
     var bar = el('i');
@@ -224,18 +224,18 @@
     var meta = el('div', { class: 'lf-meta' });
     var formula = el('div', { class: 'lf-formula' });
     state._render = function () {
-      var N = state.params * 1e9; // params in billions
+      var N = state.params * 1e9; // 参数量以十亿为单位
       var weights = N * 2 / GB;
       var grads = N * 2 / GB;
       var opt = N * 12 / GB;
-      // activations: rough per-sample cost grows with batch, here a simple linear model
+      // 激活（Activations）：每个样本的粗略开销随批次增大，此处采用简单线性模型
       var acts = state.batch * state.params * 0.6;
       var total = weights + grads + opt + acts;
       var parts = [
-        { label: 'weights (2 B)', v: weights },
-        { label: 'gradients (2 B)', v: grads },
-        { label: 'optimizer states (Adam ~12 B)', v: opt },
-        { label: 'activations (batch ' + state.batch + ')', v: acts }
+        { label: '权重（Weights，2 字节）', v: weights },
+        { label: '梯度（Gradients，2 字节）', v: grads },
+        { label: '优化器状态（Adam，约 12 字节）', v: opt },
+        { label: '激活值（Activations，批大小 ' + state.batch + '）', v: acts }
       ];
       while (rows.firstChild) rows.removeChild(rows.firstChild);
       parts.forEach(function (p) {
@@ -245,26 +245,26 @@
           el('div', { class: 'lf-bar' }, [bw])
         ]));
       });
-      num.innerHTML = total.toFixed(total < 100 ? 1 : 0) + ' <small>GB total</small>';
+      num.innerHTML = total.toFixed(total < 100 ? 1 : 0) + ' <small>GB 总计</small>';
       var pct = Math.min(100, total / REF * 100);
       bar.style.width = pct + '%';
       barWrap.classList.toggle('over', total > REF);
-      meta.textContent = (total > REF ? '⚠ exceeds ' : '') + Math.round(total / REF * 100) + '% of one ' + REF + ' GB GPU  ·  optimizer states dominate at training time';
-      formula.textContent = state.params + 'B params × (2 + 2 + 12) B = ' + (weights + grads + opt).toFixed(0) + ' GB fixed, + ' + acts.toFixed(1) + ' GB activations';
+      meta.textContent = (total > REF ? '超出容量：' : '') + '占单块 ' + REF + ' GB GPU 的 ' + Math.round(total / REF * 100) + '%  ·  训练时优化器状态占用较大';
+      formula.textContent = state.params + 'B 参数 × (2 + 2 + 12) 字节 = ' + (weights + grads + opt).toFixed(0) + ' GB 固定占用，再加 ' + acts.toFixed(1) + ' GB 激活值';
     };
     var grid = el('div', { class: 'lf-grid' }, [
-      slider(state, 'params', 'model params (billions)', 1, 70, 1),
-      slider(state, 'batch', 'batch size', 1, 64, 1)
+      slider(state, 'params', '模型参数量（十亿）', 1, 70, 1),
+      slider(state, 'batch', '批大小（Batch Size）', 1, 64, 1)
     ]);
     host.appendChild(el('div', { class: 'lf' }, [
-      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['TRAINING MEMORY']), el('span', {}, ['drag params and batch'])]),
+      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['训练显存（Training Memory）']), el('span', {}, ['调整参数量和批大小'])]),
       el('div', { class: 'lf-body' }, [grid, el('div', { class: 'lf-out' }, [num, rows, barWrap, meta, formula])]),
-      el('div', { class: 'lf-cap' }, ['Training memory is more than the weights. In mixed-precision Adam each parameter costs two bytes for the fp16 weight, two for the gradient, and about twelve for the optimizer states, so the fixed cost is roughly sixteen bytes per parameter before a single activation. Activations then scale with batch size. This is why a model that fits for inference can be far too large to train on one GPU.'])
+      el('div', { class: 'lf-cap' }, ['训练显存不只用于存放权重。混合精度（Mixed Precision）Adam 中，每个参数的 fp16 权重占 2 字节、梯度占 2 字节、优化器状态约占 12 字节；尚未计入激活值时，固定占用就约为每参数 16 字节。激活值占用又随批大小增长。因此，推理时能放入单卡的模型，训练时可能远超单卡容量。'])
     ]));
     state._render();
   }
 
-  // ── throughput-latency: batch size lifts throughput and per-request latency ─
+  // ── throughput-latency: 批次大小提高吞吐量（Throughput）及单请求延迟（Latency） ──
   function throughputLatency(host) {
     var state = { batch: 16 };
     var W = 520, H = 220, PAD = 36, BMAX = 128;
@@ -272,11 +272,11 @@
     var num = el('span', { class: 'lf-num' });
     var meta = el('div', { class: 'lf-meta' });
     var formula = el('div', { class: 'lf-formula' });
-    // throughput saturates (Amdahl-ish); latency rises with batch (queueing + compute)
-    function thru(b) { return 4000 * b / (b + 24); } // tokens/sec, saturating
-    function lat(b) { return 20 + 0.9 * b; }          // ms per request, linear
+    // 吞吐量趋于饱和（类似 Amdahl）；延迟随批次增大（排队 + 计算）
+    function thru(b) { return 4000 * b / (b + 24); } // tokens/sec，趋于饱和
+    function lat(b) { return 20 + 0.9 * b; }          // 每个请求的毫秒数，线性变化
     var TMAX = thru(BMAX), LMAX = lat(BMAX);
-    // knee: where marginal throughput per unit latency drops most; here near saturation onset
+    // 拐点（Knee）：单位延迟对应的边际吞吐量下降最明显处；此处位于开始饱和附近
     var knee = 24;
     function px(b) { return PAD + b / BMAX * (W - 2 * PAD); }
     function pyT(t) { return H - PAD - t / TMAX * (H - 2 * PAD); }
@@ -294,20 +294,20 @@
       svg.appendChild(svgEl('line', { x1: kx, y1: PAD, x2: kx, y2: H - PAD, stroke: 'var(--warn,#b8870f)', 'stroke-width': '1.5', 'stroke-dasharray': '3 3' }));
       svg.appendChild(svgEl('circle', { cx: px(b), cy: pyT(thru(b)), r: '5', fill: 'var(--blueprint,#3553ff)' }));
       svg.appendChild(svgEl('circle', { cx: px(b), cy: pyL(lat(b)), r: '4', fill: 'var(--ink-mute,#999)' }));
-      num.innerHTML = fmtInt(Math.round(thru(b))) + ' <small>tokens/sec</small>';
-      meta.textContent = 'batch ' + b + '  ·  per-request latency ' + lat(b).toFixed(0) + ' ms  ·  knee near batch ' + knee + ' (orange)';
-      formula.textContent = 'larger batch → throughput rises toward saturation, latency rises linearly  ·  pick batch at the knee for the best of both';
+      num.innerHTML = fmtInt(Math.round(thru(b))) + ' <small>词元/秒</small>';
+      meta.textContent = '批大小 ' + b + '  ·  单请求延迟 ' + lat(b).toFixed(0) + ' ms  ·  拐点位于批大小 ' + knee + ' 附近（橙色）';
+      formula.textContent = '增大批次 → 吞吐量逐渐饱和，延迟线性上升  ·  拐点附近的批大小可兼顾两者';
     };
-    var grid = el('div', {}, [slider(state, 'batch', 'batch size', 1, BMAX, 1)]);
+    var grid = el('div', {}, [slider(state, 'batch', '批大小（Batch Size）', 1, BMAX, 1)]);
     host.appendChild(el('div', { class: 'lf' }, [
-      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['THROUGHPUT / LATENCY']), el('span', {}, ['drag the batch size'])]),
+      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['吞吐量与延迟（Throughput / Latency）']), el('span', {}, ['调整批大小'])]),
       el('div', { class: 'lf-body' }, [grid, el('div', { class: 'lf-out' }, [svg, num, meta, formula])]),
-      el('div', { class: 'lf-cap' }, ['Blue is throughput, the dashed grey line is per-request latency. Bigger batches keep the GPU busier so total tokens per second climbs, but each individual request waits longer behind the others, so latency rises too. The knee (orange) is where throughput stops growing much while latency keeps climbing, which is the batch size most serving systems aim for.'])
+      el('div', { class: 'lf-cap' }, ['蓝线表示吞吐量（Throughput），灰色虚线表示单请求延迟（Latency）。更大的批次提高 GPU 利用率，使每秒生成的词元总量增加，但单个请求排队等待更久，延迟也随之上升。橙色拐点（Knee）附近，吞吐量增幅开始放缓，延迟仍持续上升；多数推理服务会将批大小设在这一带。'])
     ]));
     state._render();
   }
 
-  // ── autoscaling: replicas track incoming QPS to hold latency under target ──
+  // ── autoscaling: 副本（Replicas）跟随传入 QPS 调整，将延迟保持在目标以下 ──
   function autoscaling(host) {
     var state = { qps: 120, cap: 40 };
     var W = 520, H = 200, PAD = 26;
@@ -326,7 +326,7 @@
       for (i = 0; i < shown; i++) {
         var col = i % perRow, row = Math.floor(i / perRow);
         var x = ox + col * (bw + gx), y = oy + row * (bh + gy);
-        // load on this replica
+        // 此副本上的负载（Load）
         var thisLoad = Math.min(cap, qps - i * cap);
         var fillFrac = Math.max(0, thisLoad) / cap;
         svg.appendChild(svgEl('rect', { x: x.toFixed(1), y: y.toFixed(1), width: bw, height: bh, rx: '3',
@@ -337,27 +337,27 @@
       if (replicas > RMAX) {
         var more = svgEl('text', { x: (ox + 5 * (bw + gx)).toFixed(1), y: (oy + 2 * (bh + gy) + 14).toFixed(1),
           'font-family': 'monospace', 'font-size': '11', fill: 'var(--ink-mute,#777)' });
-        more.appendChild(document.createTextNode('+ ' + (replicas - RMAX) + ' more'));
+        more.appendChild(document.createTextNode('另有 ' + (replicas - RMAX) + ' 个'));
         svg.appendChild(more);
       }
       var headroom = replicas * cap - qps;
-      num.innerHTML = replicas + ' <small>replicas</small>';
-      meta.textContent = qps + ' QPS  ·  ' + cap + ' QPS per replica  ·  headroom ' + headroom + ' QPS keeps latency under target';
-      formula.textContent = 'replicas = ceil(QPS / per-replica capacity) = ceil(' + qps + ' / ' + cap + ') = ' + replicas;
+      num.innerHTML = replicas + ' <small>个副本</small>';
+      meta.textContent = qps + ' QPS  ·  每副本容量 ' + cap + ' QPS  ·  剩余 ' + headroom + ' QPS 余量，供延迟目标使用';
+      formula.textContent = '副本数 = ceil(QPS / 单副本容量) = ceil(' + qps + ' / ' + cap + ') = ' + replicas;
     };
     var grid = el('div', { class: 'lf-grid' }, [
-      slider(state, 'qps', 'incoming load (QPS)', 0, 480, 10),
-      slider(state, 'cap', 'per-replica capacity (QPS)', 10, 80, 5)
+      slider(state, 'qps', '请求负载（QPS）', 0, 480, 10),
+      slider(state, 'cap', '单副本容量（QPS）', 10, 80, 5)
     ]);
     host.appendChild(el('div', { class: 'lf' }, [
-      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['AUTOSCALING']), el('span', {}, ['drag the incoming load'])]),
+      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['自动伸缩（Autoscaling）']), el('span', {}, ['调整请求负载'])]),
       el('div', { class: 'lf-body' }, [grid, el('div', { class: 'lf-out' }, [svg, num, meta, formula])]),
-      el('div', { class: 'lf-cap' }, ['An autoscaler adds and removes replicas so that the offered load stays within capacity and latency holds under its target. The replica count is the load divided by what one replica can serve, rounded up. Raise the QPS and replicas spin up; lower it and they scale back down, which is what keeps both latency and cost in check.'])
+      el('div', { class: 'lf-cap' }, ['自动伸缩器（Autoscaler）增减副本，使请求负载保持在服务容量内、延迟保持在目标以下。副本数为负载除以单个副本的服务容量，再向上取整。每秒查询数（Queries per Second，QPS）增加时启动更多副本，减少时缩容，从而同时控制延迟和成本。'])
     ]));
     state._render();
   }
 
-  // ── cost-per-token: GPU price and throughput set the cost per 1M tokens ────
+  // ── cost-per-token: GPU 价格与吞吐量决定每 1M 词元（Tokens）的成本 ──
   function costPerToken(host) {
     var state = { price: 2.5, tps: 2000 };
     var num = el('span', { class: 'lf-num' });
@@ -365,30 +365,30 @@
     var barWrap = el('div', { class: 'lf-bar' }, [bar]);
     var meta = el('div', { class: 'lf-meta' });
     var formula = el('div', { class: 'lf-formula' });
-    var REF = 5; // $5 / 1M tokens as a visual reference
+    var REF = 5; // $5 / 1M tokens 作为视觉参考
     state._render = function () {
       var price = state.price, tps = state.tps;
       var tokensPerHr = tps * 3600;
       var costPerMillion = price / tokensPerHr * 1e6;
-      num.innerHTML = '$' + costPerMillion.toFixed(costPerMillion < 1 ? 3 : 2) + ' <small>/ 1M tokens</small>';
+      num.innerHTML = '$' + costPerMillion.toFixed(costPerMillion < 1 ? 3 : 2) + ' <small>/ 百万词元</small>';
       bar.style.width = Math.min(100, costPerMillion / REF * 100).toFixed(1) + '%';
       barWrap.classList.toggle('over', costPerMillion > REF);
-      meta.textContent = '$' + price.toFixed(2) + '/hr GPU  ·  ' + fmtInt(tps) + ' tokens/sec  ·  ' + (tokensPerHr / 1e6).toFixed(1) + 'M tokens/hr served';
-      formula.textContent = 'cost/1M = (price/hr) / (tokens/sec × 3600) × 10⁶ = (' + price.toFixed(2) + ' / ' + fmtInt(tokensPerHr) + ') × 10⁶ = $' + costPerMillion.toFixed(3);
+      meta.textContent = 'GPU 每小时 $' + price.toFixed(2) + '  ·  ' + fmtInt(tps) + ' 词元/秒  ·  每小时生成 ' + (tokensPerHr / 1e6).toFixed(1) + ' 百万词元';
+      formula.textContent = '百万词元成本 = 每小时价格 / (每秒词元数 × 3600) × 10⁶ = (' + price.toFixed(2) + ' / ' + fmtInt(tokensPerHr) + ') × 10⁶ = $' + costPerMillion.toFixed(3);
     };
     var grid = el('div', { class: 'lf-grid' }, [
-      slider(state, 'price', 'GPU price ($/hr)', 0.5, 12, 0.1),
-      slider(state, 'tps', 'throughput (tokens/sec)', 100, 8000, 100)
+      slider(state, 'price', 'GPU 价格（美元/小时）', 0.5, 12, 0.1),
+      slider(state, 'tps', '吞吐量（词元/秒）', 100, 8000, 100)
     ]);
     host.appendChild(el('div', { class: 'lf' }, [
-      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['COST PER TOKEN']), el('span', {}, ['drag price and throughput'])]),
+      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['词元成本（Cost per Token）']), el('span', {}, ['调整价格和吞吐量'])]),
       el('div', { class: 'lf-body' }, [grid, el('div', { class: 'lf-out' }, [num, barWrap, meta, formula])]),
-      el('div', { class: 'lf-cap' }, ['Serving economics reduce to two numbers: what the GPU costs per hour and how many tokens it produces in that hour. Cost per million tokens is the hourly price divided by the tokens served per hour, scaled to a million. Doubling throughput halves the unit cost, which is why batching, quantization, and faster kernels all translate directly into a lower price per token.'])
+      el('div', { class: 'lf-cap' }, ['推理服务的成本可归结为两个数：GPU 每小时的价格，以及这一小时生成的词元数。每小时价格除以每小时词元数，再乘以一百万，就得到百万词元成本。吞吐量翻倍，单位成本就减半，因此批处理（Batching）、量化（Quantization）和更快的计算内核（Kernel）都能直接降低词元单价。'])
     ]));
     state._render();
   }
 
-  // ── roofline: arithmetic intensity sets memory-bound vs compute-bound ──────
+  // ── roofline: 算术强度（Arithmetic intensity）决定内存受限（Memory-bound）还是计算受限（Compute-bound） ──
   function roofline(host) {
     var state = { logAI: 1.2 };
     var W = 520, H = 230, PAD = 40;
@@ -396,9 +396,9 @@
     var num = el('span', { class: 'lf-num' });
     var meta = el('div', { class: 'lf-meta' });
     var formula = el('div', { class: 'lf-formula' });
-    var PEAK = 1000;      // peak compute, GFLOP/s (arbitrary units)
-    var BW = 8;           // memory bandwidth, GB/s units -> attainable = BW * AI
-    var ridge = PEAK / BW; // arithmetic intensity where the two regimes meet
+    var PEAK = 1000;      // 峰值计算性能（Peak compute），GFLOP/s（任意单位）
+    var BW = 8;           // 内存带宽（Memory bandwidth），单位 GB/s -> attainable = BW * AI
+    var ridge = PEAK / BW; // 两种区域交汇处的算术强度
     var AIMIN = 0.5, AIMAX = 1000;
     function lx(ai) { return PAD + (Math.log10(ai) - Math.log10(AIMIN)) / (Math.log10(AIMAX) - Math.log10(AIMIN)) * (W - 2 * PAD); }
     function ly(perf) { return H - PAD - (Math.log10(perf) - Math.log10(8)) / (Math.log10(PEAK) - Math.log10(8)) * (H - 2 * PAD); }
@@ -406,32 +406,32 @@
     state._render = function () {
       var ai = Math.pow(10, state.logAI);
       var perf = attainable(ai);
-      var bound = ai < ridge ? 'memory-bound' : 'compute-bound';
+      var bound = ai < ridge ? '访存受限' : '计算受限';
       while (svg.firstChild) svg.removeChild(svg.firstChild);
-      // roofline: slanted memory roof then flat compute roof
+      // 屋顶线（Roofline）：先是倾斜的内存上限，再是水平的计算上限
       var d = '', i, a;
       for (i = 0; i <= 100; i++) {
         a = Math.pow(10, Math.log10(AIMIN) + (Math.log10(AIMAX) - Math.log10(AIMIN)) * i / 100);
         d += (i ? 'L' : 'M') + lx(a).toFixed(1) + ' ' + ly(attainable(a)).toFixed(1) + ' ';
       }
       svg.appendChild(svgEl('path', { d: d, fill: 'none', stroke: 'var(--blueprint,#3553ff)', 'stroke-width': '2' }));
-      // ridge line
+      // 脊线（Ridge line）
       var rx = lx(ridge);
       svg.appendChild(svgEl('line', { x1: rx, y1: PAD, x2: rx, y2: H - PAD, stroke: 'var(--rule-soft,#ddd)', 'stroke-width': '1', 'stroke-dasharray': '3 3' }));
-      // kernel marker
+      // 内核（Kernel）标记
       svg.appendChild(svgEl('circle', { cx: lx(ai), cy: ly(perf), r: '5', fill: 'var(--warn,#b8870f)' }));
       var rl = svgEl('text', { x: (rx + 4).toFixed(1), y: (PAD + 12).toFixed(1), 'font-family': 'monospace', 'font-size': '9', fill: 'var(--ink-mute,#777)' });
-      rl.appendChild(document.createTextNode('ridge ' + ridge.toFixed(0) + ' FLOP/B'));
+      rl.appendChild(document.createTextNode('转折点 ' + ridge.toFixed(0) + ' FLOP/B'));
       svg.appendChild(rl);
-      num.innerHTML = bound + ' <small>at AI ' + ai.toFixed(ai < 10 ? 1 : 0) + ' FLOP/B</small>';
-      meta.textContent = 'attainable ' + perf.toFixed(0) + ' GFLOP/s  ·  ' + (ai < ridge ? 'starved on memory bandwidth: feed it more reuse' : 'saturating the compute units: near peak');
-      formula.textContent = 'attainable = min(peak compute, bandwidth × AI)  ·  ridge at AI = peak/BW = ' + ridge.toFixed(0) + ' FLOP/byte';
+      num.innerHTML = bound + ' <small>AI = ' + ai.toFixed(ai < 10 ? 1 : 0) + ' FLOP/B</small>';
+      meta.textContent = '可达性能 ' + perf.toFixed(0) + ' GFLOP/s  ·  ' + (ai < ridge ? '内存带宽不足，需要增加数据复用' : '计算单元接近饱和，性能接近峰值');
+      formula.textContent = '可达性能 = min(峰值算力, 带宽 × AI)  ·  转折点 AI = 峰值算力/BW = ' + ridge.toFixed(0) + ' FLOP/字节';
     };
-    var grid = el('div', {}, [slider(state, 'logAI', 'arithmetic intensity (10^x FLOP/byte)', -0.3, 3, 0.05)]);
+    var grid = el('div', {}, [slider(state, 'logAI', '计算强度（10^x FLOP/字节）', -0.3, 3, 0.05)]);
     host.appendChild(el('div', { class: 'lf' }, [
-      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['ROOFLINE']), el('span', {}, ['drag the arithmetic intensity'])]),
+      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['屋顶线模型（Roofline Model）']), el('span', {}, ['调整计算强度'])]),
       el('div', { class: 'lf-body' }, [grid, el('div', { class: 'lf-out' }, [svg, num, meta, formula])]),
-      el('div', { class: 'lf-cap' }, ['Arithmetic intensity is the FLOPs a kernel does per byte it moves. On the left the slanted roof means performance is capped by memory bandwidth; on the right the flat roof means it is capped by raw compute. The ridge is where the two meet. A kernel below and left of the ridge (orange) is memory-bound, and the fix is more data reuse, not a faster chip.'])
+      el('div', { class: 'lf-cap' }, ['计算强度（Arithmetic Intensity，AI）是内核每搬运一个字节所执行的浮点运算次数（FLOPs）。左侧斜线表示性能受内存带宽限制，右侧水平线表示性能受峰值算力限制，两者交点即转折点（Ridge Point）。位于转折点左下方的橙色内核是访存受限（Memory-Bound）的，应增加数据复用；右侧则是计算受限（Compute-Bound）。仅换用算力更高的芯片并不能解决前者的带宽瓶颈。'])
     ]));
     state._render();
   }

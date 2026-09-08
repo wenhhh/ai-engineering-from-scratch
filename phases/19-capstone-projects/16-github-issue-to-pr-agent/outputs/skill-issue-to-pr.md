@@ -1,48 +1,48 @@
 ---
 name: issue-to-pr
-description: Build an async GitHub issue-to-PR agent that runs in a cloud sandbox, reproduces the build, verifies tests, and opens review-ready PRs within strict per-repo budgets.
+description: 构建异步 GitHub 问题到 PR 智能体，在云端沙箱中复现构建、验证测试，并在严格逐仓库预算内创建可评审 PR。
 version: 1.0.0
 phase: 19
 lesson: 16
 tags: [capstone, async-agent, github, fargate, daytona, swe-bench, budget, safety]
 ---
 
-Given a GitHub repository with issues labeled `@agent fix this`, ship a self-hosted cloud agent that turns each labeled issue into a review-ready PR with scoped credentials and bounded cost.
+给定问题已标记 `@agent fix this` 的 GitHub 仓库，交付自托管云智能体，以范围受限凭据和有界成本，将每个标记问题转为可评审 PR。
 
-Build plan:
+构建计划（Build Plan）：
 
-1. GitHub App with fine-grained token: issues rw, PRs write, contents rw, workflows read. No force-push. Branch protection on main prevents direct writes.
-2. Webhook receiver (Lambda or Fly.io) filters label / PR-comment events and enqueues to SQS.
-3. Dispatcher enforces per-repo per-day $ and PR-count ceilings; spins up an ECS Fargate task per allowed job.
-4. Environment inference: detect language + package manager + runtime from repo contents. Synthesize a Dockerfile on the fly if absent.
-5. Daytona or E2B sandbox per task. Clone repo into a fresh `git worktree` + agent branch.
-6. Agent loop (mini-swe-agent or SWE-agent v2 over Claude Opus 4.7 or GPT-5.4-Codex). Tools: ripgrep, tree-sitter repo-map, read_file, edit_file, run_tests, git. Caps: $20, 30 turns, 30 min.
-7. Verify: full CI in-sandbox; coverage delta via jacoco / coverage.py; label `needs-review` if delta < -2%; halt if CI red.
-8. PR open via GitHub API with rationale, diff summary, trace URL, cost, turns.
-9. Observability: Langfuse trace per PR; log scrub for secrets; per-repo budget dashboard.
-10. Eval on 30 seeded internal issues; compare vs Cursor Background Agents and AWS Remote SWE Agents on a three-issue shared subset.
+1. GitHub App 使用细粒度令牌：issues 读写、PR 写、contents 读写、workflows 读。禁止强制推送。main 分支保护阻止直接写入。
+2. 网络回调接收器（Webhook Receiver，Lambda 或 Fly.io）过滤标签／PR 评论事件，入队到 SQS。
+3. 分发器（Dispatcher）强制逐仓库逐日美元与 PR 数上限；每个获准作业启动一个 ECS Fargate 任务。
+4. 环境推断（Environment Inference）：根据仓库内容检测语言、包管理器与运行时。没有 Dockerfile 时即时合成。
+5. 每任务使用 Daytona 或 E2B 沙箱，将仓库克隆到全新 `git worktree` 与智能体分支。
+6. 智能体循环：mini-swe-agent 或 SWE-agent v2，调用 Claude Opus 4.7 或 GPT-5.4-Codex。工具：ripgrep、tree-sitter repo-map、read_file、edit_file、run_tests、git。上限：20 美元、30 轮、30 分钟。
+7. 验证：沙箱内完整 CI；jacoco / coverage.py 测量覆盖率变化；变化 < -2% 时标记 `needs-review`；CI 失败则停止。
+8. 通过 GitHub API 创建 PR，附理由、差异摘要、轨迹 URL、成本、轮次。
+9. 可观测性（Observability）：每 PR 的 Langfuse 轨迹；日志密钥清理；逐仓库预算仪表盘。
+10. 在 30 个带固定随机种子的内部问题上评估；在三个相同问题的子集上与 Cursor Background Agents、AWS Remote SWE Agents 比较。
 
-Assessment rubric:
+评估标准（Assessment Rubric）：
 
-| Weight | Criterion | Measurement |
+| 权重 | 标准 | 衡量方式 |
 |:-:|---|---|
-| 25 | Pass rate on 30 issues | End-to-end success (CI green + coverage OK) |
-| 20 | PR quality | Diff size, coverage delta, style conformance |
-| 20 | Cost and latency per resolved issue | $/PR and wall-clock/PR |
-| 20 | Safety | Scoped token, per-repo budget, no force-push, credential hygiene |
-| 15 | Operator UX | Rationale comments, retry affordance, @-mention follow-up |
+| 25 | 30 问题通过率 | 端到端成功，CI 通过且覆盖率合格 |
+| 20 | PR 质量 | 差异大小、覆盖率变化、风格一致性 |
+| 20 | 每个已解决问题的成本与延迟 | 每 PR 美元成本与实际运行时间 |
+| 20 | 安全 | 受限令牌、逐仓库预算、禁止强制推送、凭据卫生（Credential Hygiene） |
+| 15 | 操作人员体验（Operator UX） | 理由评论、重试入口、@ 点名追问 |
 
-Hard rejects:
+直接判定不合格的情况（Hard Rejects）：
 
-- Any agent that can force-push. Hard exclusion.
-- Dispatchers that skip budget checks. Runaway loops are the classic failure.
-- PRs opened without the full CI having passed in-sandbox.
-- Trace archives containing unredacted tokens or PII.
+- 任何能强制推送的智能体。严格排除。
+- 分发器跳过预算检查。失控循环是典型失败。
+- 完整 CI 尚未在沙箱通过就创建 PR。
+- 轨迹归档含未脱敏令牌或个人身份信息（PII）。
 
-Refusal rules:
+拒绝规则（Refusal Rules）：
 
-- Refuse to install without branch protection on main.
-- Refuse to run without a per-repo daily budget (dollars and PR count).
-- Refuse to retry failed runs automatically; all retries require a human label reapplication.
+- main 没有分支保护时拒绝安装。
+- 没有逐仓库每日预算（美元和 PR 数量）时拒绝运行。
+- 拒绝自动重试失败运行；所有重试都需人工重新添加标签。
 
-Output: a repo containing the GitHub App, the webhook receiver, the dispatcher + budget ledger, the Fargate task definition, the sandbox lifecycle manager, the mini-swe-agent loop, the 30-issue eval run, a side-by-side comparison against Cursor Background Agents and AWS Remote SWE Agents, and a write-up naming the top three build-inference failures and the Dockerfile-synthesis change that reduced each.
+输出：一个仓库，包含 GitHub App、网络回调接收器、分发器与预算台账、Fargate 任务定义、沙箱生命周期管理器、mini-swe-agent 循环、30 问题评估运行、与 Cursor Background Agents 和 AWS Remote SWE Agents 的并排比较，以及说明三种主要构建推断失败及分别减少这些失败的 Dockerfile 合成改动的报告。

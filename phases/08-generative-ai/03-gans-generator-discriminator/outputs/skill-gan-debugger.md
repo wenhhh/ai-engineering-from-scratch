@@ -1,18 +1,18 @@
 ---
 name: gan-debugger
-description: Diagnose failing GAN training from loss curves and sample grids; prescribe one-line fixes.
+description: 根据损失曲线和样本网格诊断 GAN 训练失败，并给出单行修复措施。
 version: 1.0.0
 phase: 8
 lesson: 03
 tags: [gan, adversarial, debugging]
 ---
 
-Given a failing GAN run (D and G loss curves, sample grid, dataset size, optimizer config), output:
+给定失败的 GAN 运行情况（D 与 G 的损失曲线、样本网格、数据集大小、优化器配置），输出：
 
-1. Diagnosis. One root cause from: mode collapse, D too strong, D too weak, vanishing gradient, batch-norm leakage, overfit D, learning-rate mismatch, bad init.
-2. Evidence. Pointer to the telltale in the loss curves or samples (e.g. "D(fake) &lt; 0.05 by step 500 = D too strong").
-3. Fix. One concrete change. Examples: `lr_D = lr_G / 2`, replace BN with IN, add spectral norm to D, switch to WGAN-GP with lambda=10, cut batch size by 2, add 0.1 Gaussian noise to D inputs.
-4. Rerun protocol. Seeds to try, number of steps before re-evaluation, acceptance criterion (e.g. "FID drops below baseline by step 20k").
-5. Fallback. If the fix doesn't land in one rerun, what to try next. Usually: switch architecture (StyleGAN, R3GAN) or switch paradigm (diffusion, flow matching) if dataset is too diverse.
+1. 诊断。从以下原因中选一个根因：模式崩溃（Mode Collapse）、D 过强、D 过弱、梯度消失、批归一化泄漏、D 过拟合、学习率不匹配、初始化不当。
+2. 证据。指出损失曲线或样本中的典型迹象（例如“第 500 步时 D(fake) &lt; 0.05，说明 D 过强”）。
+3. 修复。一项具体变更。例如：`lr_D = lr_G / 2`、用实例归一化（IN）替代批归一化（BN）、为 D 加谱归一化、换用 lambda=10 的 WGAN-GP、批大小减半、在 D 输入中加入 0.1 高斯噪声。
+4. 重跑方案。要尝试的种子、重新评估前的步数、验收标准（例如“第 20k 步前 FID 低于基线”）。
+5. 后备方案。一次重跑后修复未奏效时，接下来尝试什么。通常换架构（StyleGAN、R3GAN），或在数据集过于多样时换范式（扩散、流匹配）。
 
-Refuse to recommend increasing G learning rate when D is already saturated. Refuse to add regularization to G when the real failure is D - fix D first. Flag any run that shows training collapse within 100 steps as likely bad init or lr blowup, not a deep algorithmic issue.
+D 已饱和时，拒绝建议提高 G 学习率。真正故障在 D 时，拒绝给 G 加正则化，应先修 D。100 步内就训练崩溃的运行应标记为可能初始化不当或学习率失控，而非深层算法问题。

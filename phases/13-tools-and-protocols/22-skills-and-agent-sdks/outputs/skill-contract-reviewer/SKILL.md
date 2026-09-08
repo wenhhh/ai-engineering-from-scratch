@@ -1,37 +1,23 @@
 ---
 name: skill-contract-reviewer
-description: Validate an Agent Skill package and choose the right instruction, capability, or lifecycle primitive before implementation.
+description: 在实现之前验证 Agent Skill 包，并选择正确的指令、能力或生命周期原语。
 license: MIT
 metadata:
   lesson: "22"
 ---
 
-# Skill contract reviewer
+# 技能契约审查器（Skill contract reviewer）
 
-Use this skill when a workflow is about to become a reusable agent artifact.
+当工作流即将成为可复用智能体制品时，使用此技能。
 
-1. Set `SKILL_ROOT` to the absolute directory containing this installed
-   `SKILL.md`. Do not assume the process working directory is the bundle.
-2. Set `TARGET_ROOT` to the absolute original workspace working directory and
-   resolve the proposed skill directory under that root.
-3. Read `$SKILL_ROOT/references/contract.md` and validate the portable
-   `SKILL.md` identity fields.
-4. Read `$SKILL_ROOT/references/decision-model.md` and separate repository
-   context, reusable method, external capability, lifecycle timing,
-   deterministic logic, and isolated delegation.
-5. Before execution, show the exact resolved argument vector. Run
-   `python3 "$SKILL_ROOT/scripts/check_skill.py" "$TARGET_SKILL"`, where
-   `TARGET_SKILL` is the absolute proposed skill directory under
-   `TARGET_ROOT`.
-6. Inspect the JSON report. Fix every error before discussing host-specific
-   extensions.
-7. Compare the proposed artifact with
-   `$SKILL_ROOT/assets/task-shapes.json` and return the smallest composable set
-   of primitives.
+1. 将 `SKILL_ROOT` 设为包含这个已安装 `SKILL.md` 的绝对目录。不要假定进程工作目录就是包目录。
+2. 将 `TARGET_ROOT` 设为原始工作区工作目录的绝对路径，并在该根目录下解析拟议技能目录。
+3. 阅读 `$SKILL_ROOT/references/contract.md`，验证可移植 `SKILL.md` 身份字段。
+4. 阅读 `$SKILL_ROOT/references/decision-model.md`，分离仓库上下文、可复用方法、外部能力、生命周期时机、确定性逻辑和隔离委托。
+5. 执行前展示精确解析后的参数向量。运行 `python3 "$SKILL_ROOT/scripts/check_skill.py" "$TARGET_SKILL"`，其中 `TARGET_SKILL` 是 `TARGET_ROOT` 下拟议技能目录的绝对路径。
+6. 检查 JSON 报告。讨论宿主专属扩展前修复每个错误。
+7. 将拟议制品与 `$SKILL_ROOT/assets/task-shapes.json` 比较，返回最小可组合原语集合。
 
-Do not claim that a runtime extension is part of the portable contract. Do not treat a valid skill as permission to run scripts or access tools.
+不要声称运行时扩展属于可移植契约。不要把有效技能当作运行脚本或访问工具的许可。
 
-Return the validation report, the selected primitives, and one sentence
-explaining each selection. Include execution evidence with the resolved script
-path, resolved target path, cwd, exact argv, and exit code. If the host cannot
-expose one of those observations, mark it unverified instead of inventing it.
+返回验证报告、选定原语及每项选择的一句理由。包含执行证据：解析后的脚本路径、目标路径、cwd、精确 argv 和退出码。如果宿主无法公开某项观察，将其标为未验证，不要编造。

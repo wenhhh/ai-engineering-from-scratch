@@ -1,9 +1,9 @@
-// Subword tokenization in TypeScript: BPE training + encoding from scratch.
-// Mirrors code/main.py and follows the merge-rank dictionary approach used
-// by tiktoken and microsoft/Tokenizer for the inference loop.
-// Sources:
-//   https://github.com/openai/tiktoken (educational BPE)
-//   https://github.com/microsoft/Tokenizer (TS port of tiktoken)
+// TypeScript 子词分词（Subword tokenization）：从零实现 BPE 训练与编码。
+// 与 code/main.py 对应，推理循环（Inference loop）采用 tiktoken 和
+// microsoft/Tokenizer 使用的合并排名字典（Merge-rank dictionary）方法。
+// 来源:
+//   https://github.com/openai/tiktoken （教学版 BPE）
+//   https://github.com/microsoft/Tokenizer （tiktoken 的 TS 移植版）
 //   https://sebastianraschka.com/blog/2025/bpe-from-scratch.html
 
 type Sym = string;
@@ -94,7 +94,7 @@ function mergePair(vocab: Vocab, pair: Pair): Vocab {
 function trainBpe(text: string, numMerges: number): { merges: Merge[]; tokens: Sym[] } {
   const counts = wordCounts(text);
   if (counts.size === 0) {
-    throw new Error("wordCounts: corpus produced no words");
+    throw new Error("wordCounts: 语料中未提取到单词");
   }
   let vocab = initVocab(counts);
   const merges: Merge[] = [];
@@ -130,9 +130,9 @@ function encodeBpe(word: string, merges: readonly Merge[]): Sym[] {
 }
 
 function rankedEncode(word: string, merges: readonly Merge[]): Sym[] {
-  // Merge-rank lookup: production tokenizers (tiktoken, HF) score every
-  // adjacent pair by its position in the merge list and merge the lowest
-  // rank first. Same answer as encodeBpe, near-linear in word length.
+  // 合并排名查找（Merge-rank lookup）：生产级分词器（tiktoken、HF）按每个相邻对
+  // 在合并列表中的位置评分，优先合并排名最小的相邻对。
+  // 结果与 encodeBpe 相同，耗时相对于词长近似线性。
   const ranks: Map<string, number> = new Map();
   merges.forEach(([a, b], idx) => {
     ranks.set(pairKey(a, b), idx);
@@ -171,31 +171,31 @@ function main(): void {
   const small = trainBpe(corpus, 30);
   const big = trainBpe(corpus, 150);
 
-  console.log("=== BPE, 30 merges ===");
-  console.log("vocab size: " + small.tokens.length);
-  console.log("first 10 merges:");
+  console.log("=== 字节对编码（BPE），30 次合并，英文语料保留 ===");
+  console.log("词表大小（Vocabulary size）: " + small.tokens.length);
+  console.log("前 10 次合并（Merges）:");
   small.merges.slice(0, 10).forEach(([a, b], i) => {
     console.log("  " + i + ": " + JSON.stringify(a) + " + " + JSON.stringify(b) + " -> " + JSON.stringify(a + b));
   });
 
   console.log("");
-  console.log("=== BPE, 150 merges ===");
-  console.log("vocab size: " + big.tokens.length);
+  console.log("=== 字节对编码（BPE），150 次合并 ===");
+  console.log("词表大小（Vocabulary size）: " + big.tokens.length);
 
   console.log("");
   const heldOut = ["tokenizable", "unlearnable", "foxhound", "languages"];
-  console.log("=== encoding held-out words (150-merge model) ===");
+  console.log("=== 编码留出词（Held-out words，150 次合并模型） ===");
   for (const word of heldOut) {
     const naive = encodeBpe(word, big.merges);
     const ranked = rankedEncode(word, big.merges);
-    const tag = naive.length === 1 ? "OK" : "split(" + naive.length + ")";
+    const tag = naive.length === 1 ? "完整词（OK）" : "拆分（Split）(" + naive.length + ")";
     const equal = naive.length === ranked.length && naive.every((s, i) => s === ranked[i]);
-    console.log("  " + word.padEnd(14) + " -> " + naive.join(" | ") + "  [" + tag + "]  ranked==naive: " + equal);
+    console.log("  " + word.padEnd(14) + " -> " + naive.join(" | ") + "  [" + tag + "]  排名实现==朴素实现（ranked==naive）: " + equal);
   }
 
   console.log("");
-  console.log("note: with a tiny toy corpus, most held-out words will split.");
-  console.log("production vocabularies train on billions of tokens.");
+  console.log("注意：语料很小，因此大多数留出词会被拆分。");
+  console.log("生产级词表通过数十亿词元（Tokens）训练。");
 }
 
 main();

@@ -1,48 +1,78 @@
 {
   "lesson": "52-design-success-metrics",
-  "title": "Design Success Metrics",
+  "title": "设计成功指标（Design Success Metrics）",
   "questions": [
     {
       "stage": "pre",
-      "question": "What is the correct measurement order?",
-      "options": ["Data, model, feature", "Metric, question, goal", "Dashboard, metric, goal", "Goal, question, metric"],
+      "question": "正确的测量顺序是什么？",
+      "options": [
+        "数据、模型、功能",
+        "度量、问题、目标",
+        "仪表盘、度量、目标",
+        "目标、问题、度量"
+      ],
       "correct": 3,
-      "explanation": "Goals define information needs, questions refine them, and metrics operationalize answers."
+      "explanation": "目标定义信息需求，问题细化需求，指标将答案转为可操作测量。"
     },
     {
       "stage": "check",
-      "question": "Why define thresholds before looking at the results?",
-      "options": ["To avoid questions", "To reduce storage", "To prevent moving the decision rule to protect the build", "To guarantee a pass"],
+      "question": "为什么看结果前定义阈值？",
+      "options": [
+        "避免问题",
+        "减少存储",
+        "防止为了保护构建而移动决策规则",
+        "保证通过"
+      ],
       "correct": 2,
-      "explanation": "Precommitted thresholds reduce post-result rationalization."
+      "explanation": "提前承诺阈值，减少结果出现后找理由。"
     },
     {
       "stage": "check",
-      "question": "What does a guardrail metric protect?",
-      "options": ["A fixed constraint or unacceptable harm", "Only speed", "A release name", "A visual style"],
+      "question": "护栏指标要守住什么、避免什么？",
+      "options": [
+        "守住固定约束，避免不可接受的伤害",
+        "只有速度",
+        "发布名称",
+        "视觉风格"
+      ],
       "correct": 0,
-      "explanation": "Guardrails ensure improvement does not violate safety or policy."
+      "explanation": "护栏确保改善不违反安全或政策。"
     },
     {
       "stage": "check",
-      "question": "What is a counter-metric?",
-      "options": ["An unmeasured opinion", "A measure that catches cost or harm shifted elsewhere", "A second copy of the outcome metric", "A model score"],
+      "question": "什么是反向指标（Counter-metric）？",
+      "options": [
+        "未经测量的意见",
+        "发现成本或伤害被转移到别处的度量",
+        "成效指标的第二份副本",
+        "模型分数"
+      ],
       "correct": 1,
-      "explanation": "Local gains can create downstream burden that a counter-metric exposes."
+      "explanation": "局部收益可能制造下游负担，反向指标能揭示它。"
     },
     {
       "stage": "post",
-      "question": "Why must a metric name its source and window?",
-      "options": ["For branding", "To replace a threshold", "To avoid users", "For reproducibility and interpretation"],
+      "question": "为什么指标必须注明来源与窗口？",
+      "options": [
+        "用于品牌宣传",
+        "替代阈值",
+        "避开用户",
+        "确保可复现与可解释"
+      ],
       "correct": 3,
-      "explanation": "A number without provenance and time or sample boundaries cannot support a reliable decision."
+      "explanation": "数字若没有出处和时间或样本边界，就不能支持可靠决定。"
     },
     {
       "stage": "post",
-      "question": "When is offline replay insufficient?",
-      "options": ["When the decision depends on real user behavior or workflow effects", "When tests are fast", "Never", "Always"],
+      "question": "何时离线回放不足？",
+      "options": [
+        "决定依赖真实用户行为或工作流影响时",
+        "测试快时",
+        "永远不会",
+        "始终不足"
+      ],
       "correct": 0,
-      "explanation": "Replay is repeatable but cannot fully reproduce trust, coordination, and live behavior."
+      "explanation": "回放可重复，却不能完全复现信任、协调与现场行为。"
     }
   ]
 }

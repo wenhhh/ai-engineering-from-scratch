@@ -2,38 +2,38 @@
   "questions": [
     {
       "stage": "pre",
-      "question": "What does 'entropy' measure in information theory?",
-      "options": ["The number of bits in a binary message", "The error rate of a communication channel", "The energy of a physical system", "The average surprise or uncertainty in a probability distribution"],
+      "question": "信息论中的熵（Entropy）衡量什么？",
+      "options": ["二进制消息中的比特数", "通信信道的错误率", "物理系统的能量", "概率分布中的平均意外程度或不确定性"],
       "correct": 3,
-      "explanation": "Entropy H(P) = -sum(p(x) * log(p(x))) measures the average amount of surprise across all outcomes. High entropy means high uncertainty (uniform distribution). Low entropy means the outcome is predictable."
+      "explanation": "熵 H(P) = -sum(p(x) * log(p(x))) 衡量所有结果的平均意外程度。高熵表示高不确定性（均匀分布），低熵表示结果可预测。"
     },
     {
       "stage": "pre",
-      "question": "What is the cross-entropy loss commonly used for in neural networks?",
-      "options": ["Generating new data samples", "Regularizing model weights to prevent overfitting", "Classification tasks, measuring how far predicted probabilities are from true labels", "Regression tasks with continuous outputs"],
+      "question": "神经网络中的交叉熵损失（Cross-entropy Loss）通常用于什么？",
+      "options": ["生成新数据样本", "正则化模型权重以防止过拟合", "分类任务，衡量预测概率与真实标签相距多远", "连续输出的回归任务"],
       "correct": 2,
-      "explanation": "Cross-entropy loss H(P,Q) = -sum(p(x)*log(q(x))) measures the difference between the true distribution (labels) and the model's predicted distribution. It is THE standard loss for classification."
+      "explanation": "交叉熵损失 H(P,Q) = -sum(p(x)*log(q(x))) 衡量真实分布（标签）与模型预测分布的差异，是分类的标准损失。"
     },
     {
       "stage": "post",
-      "question": "Why is minimizing cross-entropy equivalent to minimizing KL divergence during training?",
-      "options": ["Because cross-entropy and KL divergence are the same formula", "Because cross-entropy = entropy + KL divergence, and the entropy of the true labels is constant, so minimizing cross-entropy minimizes KL divergence", "Because KL divergence is always zero during training", "Because the model's entropy equals zero at convergence"],
+      "question": "为什么训练中最小化交叉熵等价于最小化 KL 散度（KL Divergence）？",
+      "options": ["因为交叉熵与 KL 散度是同一个公式", "因为交叉熵 = 熵 + KL 散度，且真实标签的熵恒定，所以最小化交叉熵就会最小化 KL 散度", "因为训练中 KL 散度始终为零", "因为收敛时模型的熵等于零"],
       "correct": 1,
-      "explanation": "H(P,Q) = H(P) + D_KL(P||Q). Since the true distribution P doesn't change during training, H(P) is constant. Minimizing H(P,Q) is the same as minimizing D_KL(P||Q) -- pushing the model toward the true distribution."
+      "explanation": "H(P,Q) = H(P) + D_KL(P||Q)。由于训练中真实分布 P 不变，H(P) 恒定。最小化 H(P,Q) 等同于最小化 D_KL(P||Q)，即推动模型接近真实分布。"
     },
     {
       "stage": "post",
-      "question": "A language model has perplexity 50 on a test set. What does this mean?",
-      "options": ["The model has 50 layers", "The model makes 50 errors per sentence", "On average, the model is as uncertain as if it were choosing uniformly from 50 possible next tokens at each step", "The model was trained for 50 epochs"],
+      "question": "语言模型在测试集上的困惑度（Perplexity）为 50。这意味着什么？",
+      "options": ["模型有 50 层", "模型每句话犯 50 个错误", "平均而言，模型的不确定性相当于每一步从 50 个可能的下一个词元中均匀选择", "模型训练了 50 轮"],
       "correct": 2,
-      "explanation": "Perplexity = e^(cross-entropy). A perplexity of 50 means the model's uncertainty at each token is equivalent to picking randomly from 50 equally likely options. Lower perplexity means better predictions."
+      "explanation": "Perplexity = e^(cross-entropy)。困惑度为 50 表示每个词元上的不确定性相当于从 50 个等可能选项中随机选择。困惑度越低，预测越好。"
     },
     {
       "stage": "post",
-      "question": "How does mutual information differ from Pearson correlation for feature selection?",
-      "options": ["Mutual information is faster to compute", "They always give the same feature rankings", "Pearson correlation works for any data type while mutual information only works for continuous data", "Mutual information detects any statistical dependency (linear or nonlinear) while correlation only detects linear relationships"],
+      "question": "在特征选择中，互信息（Mutual Information）与皮尔逊相关（Pearson Correlation）有何区别？",
+      "options": ["互信息计算更快", "两者总给出相同的特征排序", "皮尔逊相关适用于所有数据类型，而互信息只适用于连续数据", "互信息检测任意统计依赖（线性或非线性），相关系数只检测线性关系"],
       "correct": 3,
-      "explanation": "Mutual information I(X;Y) captures all statistical dependencies between variables, including nonlinear and non-monotonic ones. Pearson correlation only measures linear association, missing many important relationships."
+      "explanation": "互信息 I(X;Y) 捕捉变量之间的所有统计依赖，包括非线性和非单调关系。皮尔逊相关仅衡量线性关联，会遗漏许多重要关系。"
     }
   ]
 }

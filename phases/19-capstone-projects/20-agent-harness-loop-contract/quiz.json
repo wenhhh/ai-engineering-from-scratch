@@ -1,34 +1,34 @@
 {
   "lesson": "20-agent-harness-loop-contract",
-  "title": "Agent Harness Loop Contract",
+  "title": "智能体运行框架循环契约（Agent Harness Loop Contract）",
   "questions": [
     {
       "stage": "pre",
-      "question": "Why model the harness loop as an explicit state machine rather than a while loop with flags?",
+      "question": "为什么用显式状态机（State Machine）建模框架循环，而不是带标志位的 while 循环？",
       "options": [
-        "It is the only shape the model can call",
-        "It avoids the need for tests",
-        "It lets the harness reject illegal transitions in one place and replay sessions from the event log",
-        "It is faster on CPython"
+        "这是模型唯一能调用的形态",
+        "这样就不需要测试",
+        "让框架在一处拒绝非法转换，并根据事件日志重放会话",
+        "在 CPython 上更快"
       ],
       "correct": 2,
-      "explanation": "A state machine puts the legality rules in one transition function. The same input sequence reproduces the same state, which is what makes session replay possible."
+      "explanation": "状态机把合法性规则集中到一个转换函数。同样的输入序列复现同样状态，这使会话重放成为可能。"
     },
     {
       "stage": "pre",
-      "question": "What does a pull point in the loop represent?",
+      "question": "循环中的拉取点（Pull Point）代表什么？",
       "options": [
-        "A timer that fires every N seconds",
-        "A point where the loop yields control and waits for the caller to provide an input",
-        "A hook subscriber that mutates payload",
-        "A model call that returns a tool name"
+        "每 N 秒触发的计时器",
+        "循环交出控制权，等待调用者提供输入的位置",
+        "修改载荷的钩子订阅者",
+        "返回工具名的模型调用"
       ],
       "correct": 1,
-      "explanation": "Pull points are returns, not exceptions. The caller fetches what the harness asked for and calls resume()."
+      "explanation": "拉取点是返回而非异常。调用者获取框架请求的内容，然后调用 resume()。"
     },
     {
       "stage": "check",
-      "question": "Which state is the only legal pull point for a tool call?",
+      "question": "哪个状态是工具调用唯一合法的拉取点？",
       "options": [
         "PLANNING",
         "AWAITING_TOOL",
@@ -36,55 +36,55 @@
         "REFLECTING"
       ],
       "correct": 1,
-      "explanation": "Only AWAITING_TOOL yields a tool pull point. EXECUTING transitions into it when a step requires a tool."
+      "explanation": "只有 AWAITING_TOOL 交出工具拉取点。步骤需要工具时，EXECUTING 转入该状态。"
     },
     {
       "stage": "check",
-      "question": "What happens when a hook raises HookAbort in before_tool_call?",
+      "question": "钩子在 before_tool_call 中抛出 HookAbort 时会发生什么？",
       "options": [
-        "The hook is unregistered",
-        "The tool call is skipped, on_error fires, and the loop moves to REFLECTING",
-        "The session immediately transitions to DONE",
-        "The budget is reset"
+        "注销钩子",
+        "跳过工具调用，触发 on_error，循环进入 REFLECTING",
+        "会话立即转入 DONE",
+        "重置预算"
       ],
       "correct": 1,
-      "explanation": "HookAbort cancels the in-flight tool dispatch, fires on_error with the abort reason, and continues."
+      "explanation": "HookAbort 取消正在进行的工具分发，以中止原因触发 on_error，然后继续。"
     },
     {
       "stage": "check",
-      "question": "Why are hooks and events kept as separate concerns?",
+      "question": "为什么将钩子（Hook）与事件（Event）作为独立职责？",
       "options": [
-        "Because event types are bytes and hooks are strings",
-        "Hooks are imperative and can mutate or abort. Events are observational and append-only.",
-        "Because the audit script forbids subscribers",
-        "Because the event log cannot store dicts"
+        "因为事件类型是字节，钩子是字符串",
+        "钩子是命令式的，可以修改或中止；事件用于观察且仅追加",
+        "因为审计脚本禁止订阅者",
+        "因为事件日志不能存字典"
       ],
       "correct": 1,
-      "explanation": "Hooks change behavior. Events describe behavior. Mixing them couples policy and telemetry, which is the bug we are avoiding."
+      "explanation": "钩子改变行为，事件描述行为。混用会耦合策略与遥测，这正是要避免的问题。"
     },
     {
       "stage": "post",
-      "question": "When the wall-clock budget is exceeded, what is the next state?",
+      "question": "实际运行时间预算超限后，下一个状态是什么？",
       "options": [
-        "DONE — the session is terminated",
-        "IDLE — a pull point is returned with a budget_exceeded reason",
-        "PLANNING — a fresh plan is drafted",
-        "EXECUTING — the loop retries"
+        "DONE：会话终止",
+        "IDLE：返回拉取点，原因为 budget_exceeded",
+        "PLANNING：起草新计划",
+        "EXECUTING：循环重试"
       ],
       "correct": 1,
-      "explanation": "Budget exhaustion is a yield. The harness transitions to IDLE, fires on_budget_exceeded, and returns a PullRequest so the caller can decide whether to extend or close."
+      "explanation": "预算耗尽意味着让出。框架转入 IDLE，触发 on_budget_exceeded，返回 PullRequest，让调用者决定延长还是关闭。"
     },
     {
       "stage": "post",
-      "question": "Why does this lesson stub out the planner instead of calling a model?",
+      "question": "为什么本课使用规划器桩（Stub），而不是调用模型？",
       "options": [
-        "Because models are slow to call locally",
-        "To keep the loop contract testable and deterministic before any model is bound",
-        "To save tokens",
-        "Because models cannot return tool calls"
+        "因为本地调用模型慢",
+        "在绑定任何模型前，让循环契约保持可测试与确定性",
+        "节省词元",
+        "因为模型不能返回工具调用"
       ],
       "correct": 1,
-      "explanation": "Pinning the loop contract first lets later lessons swap in real planners, registries, and dispatchers without renegotiating the state machine."
+      "explanation": "先固定循环契约，后续课程才能换入真实规划器、注册表和分发器，而不必重新协商状态机。"
     }
   ]
 }

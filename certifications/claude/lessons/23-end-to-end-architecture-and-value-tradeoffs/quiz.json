@@ -1,78 +1,78 @@
 {
   "lesson": "23-end-to-end-architecture-and-value-tradeoffs",
-  "title": "End-to-End Architecture and Value Tradeoffs",
+  "title": "端到端架构与价值取舍（End-to-End Architecture and Value Tradeoffs）",
   "questions": [
     {
       "stage": "pre",
-      "question": "A process has stable, known steps and strict audit requirements. Which pattern is the strongest default?",
+      "question": "流程步骤稳定且已知，并有严格审计要求。哪种模式最适合作为默认选择？",
       "options": [
-        "A tool-enabled single prompt",
-        "A planner-executor agent pair",
-        "A deterministic workflow",
-        "A bounded agent"
+        "启用工具的单个提示词",
+        "规划者与执行者智能体组合",
+        "确定性工作流",
+        "有边界的智能体"
       ],
       "correct": 2,
-      "explanation": "Known steps and audit needs favor code-owned transitions, narrow permissions, and explicit recovery. An agent is justified only when adaptive path selection is a real requirement."
+      "explanation": "已知步骤与审计需求更适合代码掌控转换、窄权限和明确恢复。只有自适应路径选择是真实需求，才有理由使用智能体。"
     },
     {
       "stage": "check",
-      "question": "When is a multi-agent design most justified?",
+      "question": "什么时候多智能体设计最有依据？",
       "options": [
-        "When redundant agents independently vote on every output",
-        "When an agent framework supports handoffs and parallel execution without additional application code",
-        "When a task has distinct stages that can each receive a specialized prompt and dedicated tool set",
-        "When context isolation, independent review, or parallel work measurably improves the outcome"
+        "冗余智能体对每项输出独立投票时",
+        "智能体框架无需额外应用代码就支持交接和并行执行时",
+        "任务有不同阶段，每阶段能接收专门提示词和独立工具集时",
+        "上下文隔离、独立评审或并行工作能可衡量地改善结果时"
       ],
       "correct": 3,
-      "explanation": "Multiple agents add coordination, cost, and handoff risk. They earn that complexity when isolation, independence, parallelism, or specialization addresses a measured requirement."
+      "explanation": "多个智能体增加协调、成本和交接风险。隔离、独立性、并行或专业化解决可测量需求时，这些复杂度才值得。"
     },
     {
       "stage": "check",
-      "question": "Which control should be enforced outside the model?",
+      "question": "哪项控制应在模型之外强制执行？",
       "options": [
-        "Whether a requested refund exceeds the caller's authorized limit",
-        "Whether a clause creates material business risk under the available evidence",
-        "Whether a summary preserves the decision-critical nuance of the source material",
-        "Whether a draft is sufficiently persuasive"
+        "请求退款是否超过调用者获授权上限",
+        "某条款在现有证据下是否造成重大业务风险",
+        "摘要是否保留来源中影响决策的细微含义",
+        "草稿是否足够有说服力"
       ],
       "correct": 0,
-      "explanation": "An authorization limit is a stable predicate over trusted identity and transaction data. Code must enforce it. Semantic judgments can use Claude with evaluation and review."
+      "explanation": "授权上限是基于可信身份和交易数据的稳定谓词，必须由代码执行。语义判断可使用 Claude，并配合评估与评审。"
     },
     {
       "stage": "check",
-      "question": "Why can the cheapest model per token be more expensive per successful task?",
+      "question": "为什么每词元最便宜的模型，每个成功任务反而可能更贵？",
       "options": [
-        "Low unit price always lowers task cost",
-        "Higher retry and human-review rates can outweigh the lower call price",
-        "Its token price changes the authorization boundary for costly or high-impact tool calls",
-        "Its lower capability tier requires every tool operation to be confirmed by a human reviewer"
+        "低单价总会降低任务成本",
+        "较高重试率和人工评审率可能抵消较低调用价格",
+        "其词元价格改变了昂贵或高影响工具调用的授权边界",
+        "其能力档次较低，所以每个工具操作都必须由人工评审者确认"
       ],
       "correct": 1,
-      "explanation": "Architecture economics include retries, tool calls, review labor, and corrections. Lower unit price does not guarantee lower expected cost for an accepted outcome."
+      "explanation": "架构经济性包含重试、工具调用、评审劳动和修正。低单价不保证获接受结果的预期成本更低。"
     },
     {
       "stage": "post",
-      "question": "A contract pipeline returns polished redlines with unsupported conclusions. Which change best addresses the structural failure?",
+      "question": "合同流水线返回精致修订稿，却包含无依据结论。哪项变化最能解决结构性失败？",
       "options": [
-        "Retrieve the highest-ranked clauses, generate the full redline in one step, and keep the version with the strongest confidence score",
-        "Run a second verifier prompt over each completed redline and accept it when the verifier reports no unsupported claims",
-        "Separate retrieval, clause analysis, evidence review, redline generation, and approval with explicit contracts",
-        "Add the full contract and policy library to one longer prompt, then require citations in the returned redline"
+        "检索排名最高条款，一步生成完整修订稿，保留置信度最高版本",
+        "对每份完成的修订稿运行第二个验证提示词，只要验证者报告没有无依据主张就接受",
+        "用明确契约分离检索、条款分析、证据评审、修订稿生成和审批",
+        "把完整合同和政策库加入更长提示词，要求修订稿包含引用"
       ],
       "correct": 2,
-      "explanation": "The failure comes from collapsed responsibilities and missing provenance. Decomposition with contracts localizes errors and prevents generation from bypassing evidence review."
+      "explanation": "失败来自职责混合和来源缺失。契约化分解定位错误，并防止生成绕过证据评审。"
     },
     {
       "stage": "post",
-      "question": "What should a feedback record include so it can guide an architecture change?",
+      "question": "反馈记录应包含什么，才能指导架构变化？",
       "options": [
-        "The final answer, its cited evidence, and the model confidence reported for each conclusion",
-        "A task-level rating, reviewer identity, and timestamp attached to the final response",
-        "Token usage, latency, retry count, and total cost for the completed model trajectory",
-        "Input class, versions, evidence, trajectory, validation, human edits, and downstream outcome"
+        "最终答案、引用证据及每项结论的模型置信度",
+        "附在最终响应上的任务评分、评审者身份和时间戳",
+        "完整模型轨迹的词元用量、延迟、重试数和总成本",
+        "输入类别、版本、证据、轨迹、验证、人工编辑和下游结果"
       ],
       "correct": 3,
-      "explanation": "A useful feedback loop connects outcome to the system state and trajectory that produced it. That evidence distinguishes prompt, retrieval, tool, routing, and scope failures."
+      "explanation": "有用的反馈循环将结果关联到产生它的系统状态和轨迹。这些证据能区分提示词、检索、工具、路由和范围失败。"
     }
   ]
 }

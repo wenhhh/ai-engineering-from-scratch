@@ -1,37 +1,62 @@
 [
   {
-    "question": "What is the fundamental design difference between PyTorch and JAX?",
-    "options": ["PyTorch is faster", "PyTorch mutates tensors eagerly while JAX compiles pure functions without side effects", "PyTorch doesn't support automatic differentiation", "JAX doesn't support GPUs"],
+    "question": "PyTorch 与 JAX 的根本设计差异是什么？",
+    "options": [
+      "PyTorch 更快",
+      "PyTorch 即时修改张量，而 JAX 编译没有副作用的纯函数",
+      "PyTorch 不支持自动微分",
+      "JAX 不支持 GPU"
+    ],
     "correct": 1,
-    "explanation": "PyTorch uses eager execution with mutable state (e.g., tensor.grad is modified in place). JAX embraces functional programming: functions are pure, state is explicit, and jit compilation optimizes entire computation graphs.",
+    "explanation": "PyTorch 使用带可变状态的即时执行，例如原地修改 tensor.grad。JAX 采用函数式编程：函数纯净、状态显式，jit 编译优化整个计算图。",
     "stage": "pre"
   },
   {
-    "question": "What does jax.jit do?",
-    "options": ["It adds dropout regularization", "It compiles a Python function into optimized XLA code that runs much faster than interpreted Python", "It computes gradients", "It initializes model weights"],
+    "question": "jax.jit 做什么？",
+    "options": [
+      "添加随机失活正则化",
+      "将 Python 函数编译为优化的 XLA 代码，运行远快于解释执行的 Python",
+      "计算梯度",
+      "初始化模型权重"
+    ],
     "correct": 1,
-    "explanation": "jax.jit traces a function and compiles it to XLA (Accelerated Linear Algebra) machine code. The first call is slow (compilation), but subsequent calls run the optimized compiled version.",
+    "explanation": "jax.jit 追踪函数并编译为 XLA（加速线性代数，Accelerated Linear Algebra）机器码。首次调用因编译较慢，后续调用运行优化后的编译版本。",
     "stage": "pre"
   },
   {
-    "question": "What does jax.vmap do?",
-    "options": ["Computes second-order gradients", "Manages GPU memory", "Validates model architecture", "Vectorizes a function to run over a batch dimension without writing explicit loops"],
+    "question": "jax.vmap 做什么？",
+    "options": [
+      "计算二阶梯度",
+      "管理 GPU 内存",
+      "验证模型架构",
+      "将函数向量化，沿批次维度运行，无需显式循环"
+    ],
     "correct": 3,
-    "explanation": "jax.vmap automatically vectorizes a function written for a single example to process an entire batch. You write code for one sample and vmap handles batching, often more efficiently than manual batch loops.",
+    "explanation": "jax.vmap 自动将单样本函数向量化为整批处理。你编写一个样本的代码，vmap 处理分批，往往比手动批次循环更高效。",
     "stage": "post"
   },
   {
-    "question": "How does JAX handle model state (weights) differently than PyTorch?",
-    "options": ["JAX requires explicit state passing -- weights are function arguments, not mutable object attributes", "JAX and PyTorch handle state identically", "JAX doesn't support trainable weights", "JAX stores weights on CPU only"],
+    "question": "JAX 对模型状态（权重）的处理与 PyTorch 有何不同？",
+    "options": [
+      "JAX 要求显式传递状态，权重是函数参数而非可变对象属性",
+      "JAX 与 PyTorch 状态处理相同",
+      "JAX 不支持可训练权重",
+      "JAX 只在 CPU 上存储权重"
+    ],
     "correct": 0,
-    "explanation": "In PyTorch, weights live inside nn.Module objects and are mutated in place. In JAX, weights are passed explicitly as function arguments and returned as new values. No mutation, no hidden state.",
+    "explanation": "PyTorch 权重位于 nn.Module 对象内并原地修改。JAX 将权重显式作为函数参数传入，并返回新值。没有修改操作，没有隐藏状态。",
     "stage": "post"
   },
   {
-    "question": "When would you choose JAX over PyTorch?",
-    "options": ["When you need the largest ecosystem of pretrained models", "For deployment on mobile devices", "For quick prototyping of small models", "When training at massive scale on TPU pods, where compilation and functional transforms provide significant speedups"],
+    "question": "何时会选择 JAX 而非 PyTorch？",
+    "options": [
+      "需要最大的预训练模型生态时",
+      "部署到移动设备时",
+      "快速构建小模型原型时",
+      "在 TPU Pod 上进行超大规模训练，编译和函数变换能带来明显加速时"
+    ],
     "correct": 3,
-    "explanation": "JAX excels at scale: jit compilation eliminates Python overhead, pmap handles multi-device parallelism naturally, and XLA optimization across the full computation graph gives significant speedups on TPU clusters.",
+    "explanation": "JAX 擅长大规模训练：jit 编译消除 Python 开销，pmap 自然处理多设备并行，XLA 对完整计算图的优化在 TPU 集群上带来明显加速。",
     "stage": "post"
   }
 ]

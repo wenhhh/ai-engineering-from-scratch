@@ -1,32 +1,32 @@
 ---
 name: skill-mot-evaluator
-description: Write a complete evaluation harness for MOTA / IDF1 / HOTA against ground-truth tracks
+description: 编写完整评估框架，对照真值轨迹计算 MOTA、IDF1 和 HOTA
 version: 1.0.0
 phase: 4
 lesson: 27
 tags: [mot, evaluation, tracking, metrics]
 ---
 
-# MOT Evaluator
+# 多目标跟踪评估器（MOT Evaluator）
 
-Wrap your tracker's output into the standard MOTA/IDF1/HOTA pipeline so you can compare fairly against the literature.
+将跟踪器输出接入标准 MOTA / IDF1 / HOTA 流水线，以便与文献公平比较。
 
-## When to use
+## 适用场景（When to use）
 
-- Benchmarking a new tracker on MOT17 / MOT20 / DanceTrack / SportsMOT.
-- Comparing ByteTrack to BoT-SORT to SAM 2 on your own footage.
-- Producing a reproducible number for a paper or a PR description.
+- 在 MOT17、MOT20、DanceTrack 或 SportsMOT 上评测新跟踪器。
+- 在自己的视频上比较 ByteTrack、BoT-SORT 和 SAM 2。
+- 为论文或拉取请求（Pull Request，PR）描述生成可复现指标。
 
-## Inputs
+## 输入（Inputs）
 
-- `predictions`: list per frame of `(track_id, x, y, w, h, confidence)` tuples.
-- `ground_truth`: list per frame of `(gt_id, x, y, w, h)` tuples.
-- `iou_threshold`: 0.5 typical for MOTA; HOTA uses a sweep.
-- `evaluator`: `py-motmetrics` (MOTA, IDF1) or `TrackEval` (HOTA).
+- `predictions`：每帧的 `(track_id, x, y, w, h, confidence)` 元组列表。
+- `ground_truth`：每帧的 `(gt_id, x, y, w, h)` 元组列表。
+- `iou_threshold`：MOTA 通常为 0.5；HOTA 使用阈值扫描。
+- `evaluator`：`py-motmetrics`（MOTA、IDF1）或 `TrackEval`（HOTA）。
 
-## Output format contract
+## 输出格式约定（Output format contract）
 
-Both `py-motmetrics` and `TrackEval` expect a specific on-disk format:
+`py-motmetrics` 和 `TrackEval` 都要求特定的磁盘格式：
 
 ```
 # predictions.txt
@@ -36,17 +36,17 @@ Both `py-motmetrics` and `TrackEval` expect a specific on-disk format:
 <frame>,<gt_id>,<x>,<y>,<w>,<h>,1,-1,-1,-1
 ```
 
-Frames are 1-indexed, boxes are (x, y, w, h), not (x1, y1, x2, y2). Conversion is where most integration bugs live.
+帧编号从 1 开始，边界框为 (x, y, w, h)，而非 (x1, y1, x2, y2)。大多数集成缺陷出在转换环节。
 
-## Steps
+## 步骤（Steps）
 
-1. Convert your tracker's output to MOT Challenge text format.
-2. Run `py-motmetrics.io.loadtxt` on both files.
-3. Compute MOTA + IDF1 with `mm.metrics.create().compute()`.
-4. For HOTA, invoke `TrackEval` with the same files and `Metrics: HOTA`.
-5. Save results as JSON for dashboards.
+1. 将跟踪器输出转换为 MOT Challenge 文本格式。
+2. 对两个文件运行 `py-motmetrics.io.loadtxt`。
+3. 使用 `mm.metrics.create().compute()` 计算 MOTA 与 IDF1。
+4. 对 HOTA，使用相同文件调用 `TrackEval`，设置 `Metrics: HOTA`。
+5. 将结果保存为 JSON，供仪表盘使用。
 
-## Implementation sketch
+## 实现示意（Implementation sketch）
 
 ```python
 import motmetrics as mm
@@ -68,27 +68,27 @@ def write_mot_txt(predictions, path):
                 f.write(f"{frame_idx},{tid},{x:.2f},{y:.2f},{w:.2f},{h:.2f},{conf:.3f},-1,-1,-1\n")
 ```
 
-## Report
+## 报告（Report）
 
 ```
 [mot evaluation]
-  frames:     <int>
-  gt tracks:  <int>
-  pred tracks: <int>
+  frames:     <整数>
+  gt tracks:  <整数>
+  pred tracks: <整数>
 
 [metrics]
-  MOTA:       <float>
-  MOTP:       <float>
-  IDF1:       <float>
-  IDP/IDR:    <float/float>
-  ID switches: <int>
-  HOTA:       <float>  (from TrackEval)
+  MOTA:       <浮点数>
+  MOTP:       <浮点数>
+  IDF1:       <浮点数>
+  IDP/IDR:    <浮点数/浮点数>
+  ID switches: <整数>
+  HOTA:       <浮点数>（来自 TrackEval）
 ```
 
-## Rules
+## 规则（Rules）
 
-- Always use 1-indexed frames in the output text file; MOT tooling expects this.
-- Convert (x1, y1, x2, y2) to (x, y, w, h) before writing.
-- Do not report MOTA alone for modern comparisons; include IDF1 and HOTA.
-- Watch for private vs public detections on MOT17 — they are evaluated separately and mixing them inflates scores.
-- Log per-sequence scores; aggregate hides failures on single difficult sequences.
+- 输出文本文件中的帧编号始终从 1 开始，MOT 工具要求如此。
+- 写入前，将 (x1, y1, x2, y2) 转换为 (x, y, w, h)。
+- 现代比较不要仅报告 MOTA，还应包含 IDF1 和 HOTA。
+- 注意 MOT17 上私有检测与公共检测的区别；它们分开评估，混用会夸大得分。
+- 记录逐序列得分，汇总值会掩盖单个困难序列上的失败。

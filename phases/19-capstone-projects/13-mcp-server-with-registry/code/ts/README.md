@@ -1,47 +1,47 @@
-# Lesson 13 - Stateless MCP Server (TypeScript)
+# 第 13 课：无状态 MCP 服务器（Stateless MCP Server，TypeScript）
 
-TypeScript half of the capstone. The Python side (`code/main.py`) ships the
-registry and policy gate; this project is the MCP transport: hand-rolled
-newline-delimited JSON-RPC 2.0 over stdio with three mock incident tools. It
-implements MCP `2026-07-28` directly, without `@modelcontextprotocol/sdk`, so
-you can inspect every byte on the wire.
+本项目是综合实践的 TypeScript 部分。Python 侧（`code/main.py`）交付
+注册中心与策略关卡；本项目负责 MCP 传输：手写
+基于 stdio、以换行分隔的 JSON-RPC 2.0，并提供三个模拟故障工具。
+它直接实现 MCP `2026-07-28`，不用 `@modelcontextprotocol/sdk`，因此
+你可以检查实际传输的每个字节。
 
-The protocol is stateless even though the mock incident store persists data.
-Every request repeats its protocol version and client capabilities in
-`params._meta`; no connection, process, or earlier request establishes a
-session. The server exposes mandatory `server/discover`, identifies itself in
-every successful result, and publishes deterministic, cacheable tool listings.
-`tools/call` validates arguments against the same bounded schemas returned by
-`tools/list`; malformed arguments for a known tool return a complete tool result
-with `isError: true` and never reach its executor.
+虽然模拟故障存储会持久保存数据，协议仍然无状态（Stateless）。
+每个请求都在 `params._meta` 中重复提供协议版本与客户端能力；
+任何连接、进程或先前请求都不会建立
+会话。服务器暴露必需的 `server/discover`，在
+每个成功结果中声明身份，并发布确定性、可缓存工具列表。
+`tools/call` 根据 `tools/list` 返回的相同有界模式
+验证参数；已知工具的格式错误参数返回完整工具结果，
+带 `isError: true`，绝不会到达执行器。
 
-The runtime identity is `com.example/internal-incidents`. It uses the reverse-DNS
-namespace for the verified `example.com` publisher. A matching published
-`server.json` must use that same name even though the local npm package has its
-own private project name.
+运行时身份为 `com.example/internal-incidents`。它使用已验证
+`example.com` 发布者的反向域名（Reverse-DNS）命名空间。匹配的发布
+`server.json` 必须使用相同名称，即使本地 npm 包有
+自己的私有项目名。
 
-## Layout
+## 目录结构（Layout）
 
 ```text
 src/
-  index.ts      entry: fixture demo (default) or stdio loop (--serve)
-  transport.ts  stdin readline + fixture replay
-  protocol.ts   request validation / server/discover / tools/list / tools/call
-  tools.ts      three incident tools + executors
-  types.ts      JSON-RPC + tool shapes
+  index.ts      入口：测试夹具（Fixture）演示（默认）或 stdio 循环（--serve）
+  transport.ts  stdin 逐行读取 + 测试夹具重放
+  protocol.ts   请求验证 / server/discover / tools/list / tools/call
+  tools.ts      三个故障工具 + 执行器
+  types.ts      JSON-RPC + 工具结构
 tests/
-  protocol.test.ts  stateless metadata, discovery, tools, errors, roundtrip
+  protocol.test.ts  无状态元数据、发现、工具、错误、往返验证
 ```
 
-## Run
+## 运行（Run）
 
 ```bash
 npm install
 npm run typecheck
 npm test
-npm start            # self-terminating fixture demo
-npm run serve        # real stdio loop (waits on stdin)
+npm start            # 自动结束的测试夹具演示
+npm run serve        # 实际 stdio 循环（等待 stdin）
 ```
 
-The demo is self-terminating. The real stdio server stays alive until its input
-stream closes; there is no MCP shutdown request or initialization handshake.
+演示会自动结束。实际 stdio 服务器保持运行，直到输入
+流关闭；没有 MCP 关闭请求或初始化握手。

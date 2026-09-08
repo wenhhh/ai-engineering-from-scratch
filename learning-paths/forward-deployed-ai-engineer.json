@@ -2,65 +2,65 @@
   "schemaVersion": 1,
   "kind": "career-route",
   "id": "forward-deployed-ai-engineer",
-  "title": "Customer AI Deployment",
-  "workFamily": "Customer AI Deployment",
-  "commonTitles": ["Forward-Deployed AI Engineer", "Field AI Engineer", "AI Solutions Engineer"],
-  "summary": "Discover a customer workflow, reduce its riskiest assumptions, and carry a useful AI system through measurement and rollout.",
-  "keywords": "forward deployed field engineering customer workflow discovery scoping prototype pilot production",
-  "decisionPrompt": "Do you want to discover a customer workflow, prove a narrow solution, and carry it into a measured rollout?",
-  "mission": "Build on shared foundations to turn an observed customer workflow into a scoped, evaluated, and operable AI deployment.",
+  "title": "客户 AI 部署（Customer AI Deployment）",
+  "workFamily": "客户 AI 部署（Customer AI Deployment）",
+  "commonTitles": ["前线部署 AI 工程师（Forward-Deployed AI Engineer）", "现场 AI 工程师（Field AI Engineer）", "AI 解决方案工程师（AI Solutions Engineer）"],
+  "summary": "发现客户工作流，降低其中风险最高的假设所带来的不确定性，并推动一个有用的 AI 系统完成衡量与上线。",
+  "keywords": "前线部署 现场工程 客户 工作流 发现 范围界定 原型 试点 生产 forward deployed field engineering customer workflow discovery scoping prototype pilot production",
+  "decisionPrompt": "你是否希望发现客户工作流，验证范围明确的小型解决方案，并推动它进入有指标衡量的上线过程？",
+  "mission": "在共同基础之上，将观察到的客户工作流转化为范围明确、经过评估且可运维的 AI 部署。",
   "responsibilities": [
-    "Observe the real workflow and define the outcome with users.",
-    "Map assumptions, constraints, dependencies, and failure risks.",
-    "Build the smallest vertical slice that can test the core claim.",
-    "Define success metrics, rollout controls, and feedback loops."
+    "观察真实工作流，并与用户共同定义预期成效（Outcome）。",
+    "梳理假设（Assumption）、约束（Constraint）、依赖（Dependency）与故障风险。",
+    "构建能够检验核心主张的最小纵向切片（Vertical slice）。",
+    "定义成功指标（Success metric）、上线控制与反馈循环（Feedback loop）。"
   ],
   "goodFitIf": [
-    "You want to work close to users and ambiguous operating environments.",
-    "You enjoy moving between discovery, implementation, evaluation, and rollout.",
-    "You can explain tradeoffs to both technical and operational stakeholders."
+    "你希望贴近用户，在边界尚不明确的运行环境中工作。",
+    "你喜欢在发现问题、实现、评估与上线之间切换。",
+    "你能够向技术和业务运营相关方解释取舍（Tradeoff）。"
   ],
   "baseline": [
-    "Complete the shared software engineering and AI foundations, or demonstrate equivalent working knowledge.",
-    "Be able to build and evaluate an API-backed AI application.",
-    "Be comfortable gathering workflow evidence before proposing a solution."
+    "完成共同的软件工程和 AI 基础课程，或证明具备同等实践知识。",
+    "能够构建和评估通过 API 提供能力的 AI 应用。",
+    "能够在提出解决方案之前收集工作流证据。"
   ],
-  "boundary": "This is a specialist overlay after shared foundations, not customer support or generic consulting. It prepares you to demonstrate a deployment workflow, but it does not replace live customer or production experience.",
-  "timeNote": "The estimate covers lesson time only. Portfolio work and practice take additional time.",
+  "boundary": "这是一条建立在共同基础之上的专业方向路径，不是客户支持或通用咨询。它帮助你具备展示部署工作流的能力，但不能替代实际客户工作或生产经验。",
+  "timeNote": "预计时间仅包含课程学习。作品集制作和练习还需额外时间。",
   "portfolioProof": {
-    "title": "Measured Customer Pilot",
-    "description": "Turn a documented workflow into a narrow pilot with explicit evidence, release controls, and a feedback plan.",
+    "title": "可衡量的客户试点（Measured Customer Pilot）",
+    "description": "将有文档记录的工作流转化为小范围试点（Pilot），具备明确证据、发布控制与反馈计划。",
     "evidence": [
-      "Workflow evidence and an assumption map",
-      "An executable specification for the smallest testable slice",
-      "A working vertical slice with evaluation results",
-      "Success metrics and a staged rollout plan",
-      "A feedback record that drives the next decision"
+      "工作流证据与假设图谱（Assumption map）",
+      "最小可测试切片的可执行规格（Executable specification）",
+      "可正常运行的纵向切片及其评估结果",
+      "成功指标与分阶段上线计划",
+      "推动下一步决策的反馈记录"
     ]
   },
   "readinessCriteria": [
-    "Can separate the requested output from the underlying operational outcome.",
-    "Can rank assumptions by uncertainty and consequence.",
-    "Can build a vertical slice that tests one valuable workflow end to end.",
-    "Can define evaluation, success, rollback, and feedback criteria before release.",
-    "Can explain what evidence supports moving from prototype to pilot or production."
+    "能够区分用户要求的产出（Output）与背后真正要实现的业务成效。",
+    "能够按照不确定性与后果对假设排序。",
+    "能够构建纵向切片，端到端检验一个有价值的工作流。",
+    "能够在发布前定义评估、成功、回滚（Rollback）与反馈标准。",
+    "能够解释哪些证据支持从原型（Prototype）推进到试点或生产阶段。"
   ],
   "coverage": {
-    "strong": ["Workflow discovery and scoping", "Evidence-driven prototyping", "Evaluation and success metrics", "Staged rollout and feedback"],
-    "partial": ["Stakeholder facilitation", "Enterprise integration and security", "Production operations under live traffic"],
-    "outsideCourse": ["Commercial account ownership", "Procurement and legal negotiation", "Years of customer deployment experience"]
+    "strong": ["工作流发现与范围界定（Scoping）", "证据驱动的原型开发（Evidence-driven prototyping）", "评估与成功指标", "分阶段上线与反馈"],
+    "partial": ["相关方协作促进（Stakeholder facilitation）", "企业集成与安全", "真实流量下的生产运维"],
+    "outsideCourse": ["商业客户账户管理责任", "采购与法律谈判", "多年客户部署经验"]
   },
-  "completionClaim": "Completing this route shows that you can produce evidence for a scoped customer AI pilot. It does not guarantee a role or establish production experience.",
+  "completionClaim": "完成本路径表明你能够为范围明确的客户 AI 试点提供证据，但不保证获得相关岗位，也不能证明你具备生产经验。",
   "sourceBasis": {
     "reviewedAt": "2026-08-29",
-    "method": "Synthesized from current primary job descriptions across AI field, product, platform, data, developer, and evaluation teams."
+    "method": "综合 AI 现场交付、产品、平台、数据、开发者及评估团队当时的一手职位描述整理而成。"
   },
   "estimatedMinutes": 865,
   "stages": [
     {
       "id": "common-core",
-      "title": "Common Core",
-      "outcome": "Frame the customer outcome, workflow, assumptions, and smallest useful test.",
+      "title": "共同核心（Common Core）",
+      "outcome": "明确客户成效、工作流、假设与最小有用测试。",
       "lessonPaths": [
         "phases/14-agent-engineering/47-outcomes-before-output",
         "phases/14-agent-engineering/48-discover-the-real-workflow",
@@ -68,36 +68,36 @@
         "phases/14-agent-engineering/50-choose-the-smallest-testable-slice",
         "phases/14-agent-engineering/51-write-specifications-that-preserve-judgment"
       ],
-      "artifact": "A workflow brief with outcome, evidence, assumptions, risks, and an executable slice specification."
+      "artifact": "一份工作流简报，包含成效、证据、假设、风险与可执行的切片规格。"
     },
     {
       "id": "role-practice",
-      "title": "Role Practice",
-      "outcome": "Build and evaluate the narrow AI system against explicit success criteria.",
+      "title": "岗位实践（Role Practice）",
+      "outcome": "依据明确的成功标准，构建和评估范围受限的 AI 系统。",
       "lessonPaths": [
         "phases/11-llm-engineering/06-rag",
         "phases/11-llm-engineering/10-evaluation",
         "phases/11-llm-engineering/13-production-app",
         "phases/14-agent-engineering/52-design-success-metrics"
       ],
-      "artifact": "A working vertical slice with an evaluation set, baseline, and success scorecard."
+      "artifact": "一个可正常运行的纵向切片，包含评估集（Evaluation set）、基线（Baseline）与成功指标评分卡（Scorecard）。"
     },
     {
       "id": "proof-project",
-      "title": "Proof Project",
-      "outcome": "Choose the right release stage and move the pilot through controlled exposure.",
+      "title": "能力证明项目（Proof Project）",
+      "outcome": "选择合适的发布阶段，并在受控地扩大开放范围的过程中推进试点。",
       "lessonPaths": [
         "phases/14-agent-engineering/53-prototype-pilot-or-production",
         "phases/17-infrastructure-and-production/20-shadow-canary-progressive"
       ],
-      "artifact": "A measured pilot with release gates, rollback conditions, and recorded results."
+      "artifact": "一个有指标衡量的试点，包含发布门禁（Release gate）、回滚条件与已记录的结果。"
     },
     {
       "id": "interview-readiness-evidence",
-      "title": "Interview and Readiness Evidence",
-      "outcome": "Show how evidence and user feedback determine the next iteration.",
+      "title": "面试与能力就绪证据（Interview and Readiness Evidence）",
+      "outcome": "展示证据与用户反馈如何决定下一轮迭代。",
       "lessonPaths": ["phases/14-agent-engineering/54-build-the-feedback-ratchet"],
-      "artifact": "A concise case study that connects user evidence, system results, tradeoffs, and the next decision."
+      "artifact": "一份简明案例研究，将用户证据、系统结果、技术取舍与下一步决策联系起来。"
     }
   ],
   "lessons": [

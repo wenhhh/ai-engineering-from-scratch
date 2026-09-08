@@ -1,70 +1,70 @@
-# Multi-Head Self-Attention
+# 多头自注意力（Multi-Head Self-Attention）
 
-> One linear projection, three views, H parallel heads, one mask. The attention block as the model actually uses it.
+> 一次线性投影、三个视图、H 个并行头、一个掩码。这就是模型实际使用的注意力块。
 
 **Type:** Build
 **Languages:** Python
-**Prerequisites:** Phase 04 lessons, Phase 07 transformer lessons, Lessons 30 through 32 of this phase
-**Time:** ~90 minutes
+**Prerequisites:** 阶段 04 的课程、阶段 07 的 Transformer 课程、本阶段第 30 至 32 课
+**Time:** ~90 分钟
 
-## Learning Objectives
-- Implement a batched Query/Key/Value projection as a single linear layer split into H heads.
-- Compute scaled dot-product attention with the correct normalization and dtype handling.
-- Apply a causal mask that prevents a position from attending to future positions.
-- Inspect per-head attention weights for a fixed input and reason about what each head looks at.
-- Train a small attention block on a toy task and watch the loss fall as the heads specialize.
+## 学习目标（Learning Objectives）
+- 用一个线性层实现批量查询／键／值（Query/Key/Value）投影，并拆分为 H 个头。
+- 使用正确的归一化和数据类型处理，计算缩放点积注意力（Scaled dot-product attention）。
+- 应用因果掩码（Causal mask），防止某个位置关注未来位置。
+- 检查固定输入的逐头注意力权重，分析每个头关注什么。
+- 在玩具任务上训练小型注意力块，观察各个头形成分工时损失如何下降。
 
 ```figure
 cap-multihead-attention
 ```
 
-## The frame
+## 总体框架（The frame）
 
-Attention is the function that lets a token's representation pull information from other tokens in the same sequence. Self-attention means queries, keys, and values are all derived from the same input. Multi-head means the projection is split into H parallel attention problems whose outputs are concatenated and projected back.
+注意力（Attention）使一个词元的表示能够从同一序列的其他词元中提取信息。自注意力（Self-attention）意味着查询、键和值都源自同一个输入。多头（Multi-head）意味着把投影拆成 H 个并行的注意力问题，再将输出拼接并投影回原维度。
 
-The efficient implementation pattern is one linear layer that projects from `D` to `3 * D` and gets sliced into three views, then reshaped into H heads of size `D // H` each. The matmul, softmax, and weighted sum happen as batched tensor operations so the heads run in parallel on the accelerator.
+高效实现模式是使用一个从 `D` 投影到 `3 * D` 的线性层，将结果切为三个视图，再重塑为 H 个大小均为 `D // H` 的头。矩阵乘法（Matmul）、softmax 和加权求和都以批量张量操作执行，因此各个头可在加速器上并行运行。
 
-This lesson builds that block. It also adds the causal mask so the same code works as the attention layer in a decoder-only language model. The next lesson stacks the block into a full transformer and the lesson after trains it.
+本课构建这个块，并加入因果掩码，使同一份代码能作为仅解码器语言模型（Decoder-only language model）的注意力层。下一课将该块堆叠成完整 Transformer，再下一课进行训练。
 
-## The shape contract
+## 形状契约（The shape contract）
 
-The input is `(B, T, D)`. The output is `(B, T, D)`. The mask is `(T, T)` or broadcastable to it. Inside the block the intermediate tensors have shape `(B, H, T, d_head)` where `d_head = D // H`. The constraint is `D % H == 0`.
+输入为 `(B, T, D)`，输出为 `(B, T, D)`。掩码为 `(T, T)` 或可广播到该形状。块内中间张量的形状为 `(B, H, T, d_head)`，其中 `d_head = D // H`。约束是 `D % H == 0`。
 
 ```mermaid
 flowchart LR
-    A["(B, T, D) input"] --> B[Linear D -> 3D]
-    B --> C["split into Q, K, V"]
-    C --> D["reshape to (B, H, T, d_head)"]
+    A["(B, T, D) 输入"] --> B[线性层 D -> 3D]
+    B --> C["拆分为 Q、K、V"]
+    C --> D["重塑为 (B, H, T, d_head)"]
     D --> E["scores = Q @ K.T / sqrt(d_head)"]
-    E --> F[apply causal mask]
-    F --> G[softmax over keys]
+    E --> F[应用因果掩码]
+    F --> G[沿键维度执行 softmax]
     G --> H["context = weights @ V"]
-    H --> I["reshape to (B, T, D)"]
-    I --> J[output Linear D -> D]
-    J --> K["(B, T, D) output"]
+    H --> I["重塑为 (B, T, D)"]
+    I --> J[输出线性层 D -> D]
+    J --> K["(B, T, D) 输出"]
 ```
 
-The two linear layers (the QKV projection and the output projection) are the only parameters in the block. The mask, the softmax, the matmuls, and the reshapes are all parameter-free.
+两个线性层（QKV 投影和输出投影）是块中仅有的参数所在。掩码、softmax、矩阵乘法和形状重塑均不含参数。
 
-## The QKV split
+## QKV 拆分（The QKV split）
 
-The naive implementation has three separate linear layers, one each for Q, K, and V. The efficient one has a single layer that outputs `3 * D` features and splits the result. The two are mathematically equivalent because three separate matrix multiplications by `(D, D)` weights are exactly one matrix multiplication by a `(3D, D)` weight stacked from them.
+朴素实现有三个独立线性层，分别对应 Q、K、V。高效实现只用一个输出 `3 * D` 个特征的层，再拆分结果。二者在数学上等价，因为分别与三个 `(D, D)` 权重矩阵相乘，恰好等于与它们堆叠而成的一个 `(3D, D)` 权重矩阵相乘。
 
-The efficient version is faster because the accelerator launches one matmul instead of three. It is also easier to initialize because the three sub-matrices live in the same parameter tensor and can be initialized together.
+高效版本更快，因为加速器只启动一次矩阵乘法，而不是三次。它也更容易初始化，因为三个子矩阵位于同一个参数张量中，可以一起初始化。
 
-## The head reshape
+## 多头形状重塑（The head reshape）
 
-After the split, each of Q, K, V is `(B, T, D)`. To turn that into H parallel attention problems, we reshape to `(B, T, H, d_head)` and transpose to `(B, H, T, d_head)`. The head dimension now sits next to the batch dimension so PyTorch treats the per-head attention as a batched operation across `B * H` independent instances.
+拆分后，Q、K、V 的形状均为 `(B, T, D)`。要将它们变成 H 个并行注意力问题，先重塑为 `(B, T, H, d_head)`，再转置为 `(B, H, T, d_head)`。此时头维度紧邻批次维度，因此 PyTorch 将逐头注意力视为跨 `B * H` 个独立实例的批量操作。
 
-The d_head dimension stays last so the score matmul `Q @ K.transpose(-2, -1)` contracts it. The result is `(B, H, T, T)` per-head attention scores.
+d_head 维度保持在最后，使分数矩阵乘法 `Q @ K.transpose(-2, -1)` 沿它收缩求和，得到形状为 `(B, H, T, T)` 的逐头注意力分数。
 
-## Scaling
+## 缩放（Scaling）
 
-The scores get divided by `sqrt(d_head)` before softmax. Without that scaling, dot products grow as `d_head` grows and push the softmax into a regime where one entry has almost all the mass and the others are vanishingly small. The gradients in that regime are tiny and learning stalls. Dividing by `sqrt(d_head)` keeps the variance of the scores roughly constant across head sizes.
+分数在 softmax 之前除以 `sqrt(d_head)`。若不缩放，点积会随 `d_head` 增大，将 softmax 推入一个元素占据几乎全部概率质量、其他元素极小的状态。此时梯度很小，学习停滞。除以 `sqrt(d_head)` 可使不同头大小下的分数方差大致恒定。
 
-## The causal mask
+## 因果掩码（The causal mask）
 
-A decoder-only language model can only condition on the past when predicting the next token. The mask enforces that. Concretely, before the softmax, every entry above the diagonal of the `(T, T)` score matrix gets replaced by negative infinity. After softmax those positions get weight zero.
+仅解码器语言模型预测下一词元时，只能以过去的信息为条件。掩码强制实现这一点。具体来说，在 softmax 前，将 `(T, T)` 分数矩阵对角线上方的每个元素替换为负无穷。softmax 后，这些位置的权重为零。
 
 ```mermaid
 sequenceDiagram
@@ -75,40 +75,40 @@ sequenceDiagram
     participant Softmax
     participant V
     Q->>Scores: Q @ K.T (B, H, T, T)
-    Scores->>Scores: divide by sqrt(d_head)
-    Mask->>Scores: set upper triangle to -inf
-    Scores->>Softmax: row-wise softmax over keys
+    Scores->>Scores: 除以 sqrt(d_head)
+    Mask->>Scores: 将上三角设为 -inf
+    Scores->>Softmax: 逐行沿键维度执行 softmax
     Softmax->>V: weights @ V -> (B, H, T, d_head)
 ```
 
-We register the mask as a buffer at construction so it lives on the same device as the model and is not part of the gradient graph. The mask covers the maximum context length the block will ever see. At forward time we slice the top-left `(T, T)` corner.
+构造时将掩码注册为缓冲区（Buffer），使其与模型位于同一设备上，且不属于梯度图。掩码覆盖该块可能接收的最大上下文长度。前向传播时，切取左上角的 `(T, T)` 区域。
 
-## The output projection
+## 输出投影（The output projection）
 
-After per-head context vectors `(B, H, T, d_head)`, we transpose back to `(B, T, H, d_head)`, reshape to `(B, T, D)`, and apply a final `(D, D)` linear projection. The output projection lets the model mix the heads. Without it, the H heads would only ever recombine through later layers and the block would be artificially constrained.
+得到逐头上下文向量 `(B, H, T, d_head)` 后，先转置回 `(B, T, H, d_head)`，再重塑为 `(B, T, D)`，最后应用 `(D, D)` 线性投影。输出投影让模型混合各头的信息。没有它，H 个头只能通过后续层重新组合，给该块施加了人为限制。
 
-## Attention weight inspection
+## 注意力权重检查（Attention weight inspection）
 
-The lesson exposes a `return_weights=True` flag on the forward pass. When set, the block returns the per-head attention weights of shape `(B, H, T, T)` alongside the output. The demo prints a heatmap of one head's weights on a short input so you can see the causal-triangle structure and the per-position focus.
+本课在前向传播中提供 `return_weights=True` 标志。启用后，该块除输出外，还返回形状为 `(B, H, T, T)` 的逐头注意力权重。演示打印短输入上某一个头的权重热力图（Heatmap），让你看到因果三角结构和各位置的关注重点。
 
-In a trained model, different heads learn different patterns. Some heads attend to the immediately previous token. Some heads attend to the start of the sequence. Some heads spread attention almost uniformly. The inspection hook is the entry point for that interpretability work.
+训练后的模型中，不同头会学习不同模式：有些关注紧邻的前一个词元，有些关注序列开头，有些几乎均匀分配注意力。检查钩子（Inspection hook）是开展这类可解释性（Interpretability）工作的入口。
 
-## The training demo
+## 训练演示（The training demo）
 
-The demo at the bottom of `main.py` wires the attention block to a tiny LM head and trains the whole thing on a repeat task. Each row of the input is a single random id replicated across the context. The target is the input shifted by one, so the model must learn that the next token is the same as the previous token. The loss is cross-entropy. With H=4, D=32, T=12, and a vocabulary of 64, the loss falls from random (around `log(64) ~ 4.16`) down to well under `1.0` over three epochs on CPU.
+`main.py` 底部的演示将注意力块连接到微型语言模型头（LM head），在重复任务上训练整体。输入的每一行都是一个随机 ID 在上下文长度内的重复。目标是输入移位一位的结果，所以模型必须学会下一词元与前一词元相同。损失为交叉熵（Cross-entropy）。在 H=4、D=32、T=12、词汇表大小为 64 时，在 CPU 上训练三轮，损失会从随机水平（约 `log(64) ~ 4.16`）降至远低于 `1.0`。
 
-The point of the demo is not to train a useful model. The point is to confirm the gradients flow through every piece of the block and the heads learn something on a problem where the answer is obvious.
+演示的目的不是训练实用模型，而是确认梯度能流经块的每个部分，且各个头能在答案显而易见的问题上学到内容。
 
-## What this lesson does not do
+## 本课不涉及的内容（What this lesson does not do）
 
-It does not add a feed-forward block. The transformer layer in a real model is attention followed by a two-layer MLP with a residual connection and layer norm around each. The next lesson adds those.
+本课不添加前馈块（Feed-forward block）。真实模型的 Transformer 层在注意力后接一个两层多层感知机（MLP），两部分各有残差连接（Residual connection）和层归一化（Layer norm）。下一课加入这些组件。
 
-It does not implement rotary or AliBi positional encoding. Both apply at the QKV projection step in the same block, but they are a separate teaching unit. The block as built here is compatible with either by transforming Q and K before the matmul.
+本课不实现旋转位置编码（Rotary positional encoding）或 AliBi。两者都作用于同一块的 QKV 投影步骤，但属于独立教学单元。这里构建的块可以在矩阵乘法前变换 Q 和 K，从而兼容两种方案。
 
-It does not implement KV cache for inference. Caching keys and values across forward passes is the optimization that makes autoregressive decoding fast. It changes the shape contract on the K and V tensors but not on Q. It belongs in the inference lesson.
+本课不实现推理的键值缓存（KV cache）。在前向传播之间缓存键和值，是加快自回归解码（Autoregressive decoding）的优化方法。它会改变 K 和 V 张量的形状契约，但不改变 Q。这属于推理课程的内容。
 
-## How to read the code
+## 如何阅读代码（How to read the code）
 
-`main.py` defines `MultiHeadSelfAttention`. The class holds two linear layers and a registered mask buffer. The forward pass projects, reshapes, scores, masks, softmaxes, weights, reshapes, and projects again. The demo at the bottom builds a small model that wraps the attention with token and positional embeddings and an LM head, trains it on a copy task for three epochs, and prints the loss curve and a per-head attention heatmap. The tests in `code/tests/test_attention.py` pin the shape contract, the causality property, the softmax property, the head-split property, and the gradient flow.
+`main.py` 定义 `MultiHeadSelfAttention`。该类包含两个线性层和一个已注册的掩码缓冲区。前向传播依次执行投影、重塑、评分、掩码、softmax、加权、重塑和再次投影。底部演示构建一个小模型，用词元与位置嵌入及语言模型头包裹注意力，在复制任务上训练三轮，并打印损失曲线和逐头注意力热力图。`code/tests/test_attention.py` 中的测试固定了形状契约、因果性、softmax 性质、多头拆分性质和梯度流。
 
-Run the demo. Then increase `n_heads` from 4 to 8 (keeping `d_model=32`, so `d_head=4`) and watch the heatmap change.
+运行演示，然后将 `n_heads` 从 4 增至 8（保持 `d_model=32`，因此 `d_head=4`），观察热力图的变化。

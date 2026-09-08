@@ -1,102 +1,102 @@
 {
   "lesson": "04-glove-fasttext-subword",
-  "title": "GloVe, FastText, and Subword Embeddings",
+  "title": "GloVe、FastText 与子词嵌入（GloVe, FastText, and Subword Embeddings）",
   "questions": [
     {
       "stage": "pre",
-      "question": "What did GloVe contribute over Word2Vec?",
+      "question": "相较 Word2Vec，GloVe 有什么贡献？",
       "options": [
-        "A deeper neural network",
-        "Subword n-gram embeddings",
-        "Direct factorization of the word-word co-occurrence matrix with a weighted loss",
-        "Byte-level tokenization"
+        "更深的神经网络",
+        "子词 n 元组嵌入（Subword n-gram embeddings）",
+        "用加权损失直接分解词与词的共现矩阵",
+        "字节级分词"
       ],
       "correct": 2,
-      "explanation": "GloVe factorizes the global co-occurrence matrix with a thoughtfully weighted log-loss."
+      "explanation": "GloVe 使用经过设计的加权对数损失分解全局共现矩阵（Co-occurrence matrix）。"
     },
     {
       "stage": "pre",
-      "question": "What problem does FastText solve that Word2Vec and GloVe do not?",
+      "question": "FastText 解决了 Word2Vec 和 GloVe 未解决的什么问题？",
       "options": [
-        "Reducing training cost",
-        "Multilingual transfer",
-        "Polysemy disambiguation",
-        "Producing vectors for unseen words by composing character n-grams"
+        "降低训练成本",
+        "多语言迁移",
+        "一词多义消歧",
+        "通过组合字符 n 元组为未见过的词生成向量"
       ],
       "correct": 3,
-      "explanation": "FastText composes a word vector from its subword n-grams, so OOV words still get a sensible vector."
+      "explanation": "FastText 根据子词 n 元组组合词向量，因此词表外（OOV）词仍能获得合理向量。"
     },
     {
       "stage": "check",
-      "question": "In GloVe, what role does the weighting function f(x) = (x/x_max)^alpha play?",
+      "question": "在 GloVe 中，加权函数 f(x) = (x/x_max)^alpha 起什么作用？",
       "options": [
-        "Selects negative samples",
-        "Normalizes vectors to unit length",
-        "Initializes weights randomly",
-        "Downweights extremely frequent pairs so they do not dominate the loss"
+        "选择负样本",
+        "将向量归一化为单位长度",
+        "随机初始化权重",
+        "降低极高频词对的权重，避免其主导损失"
       ],
       "correct": 3,
-      "explanation": "The weighting prevents ubiquitous co-occurrences like (the, and) from dominating training."
+      "explanation": "加权可避免 (the, and) 等普遍共现的词对主导训练。"
     },
     {
       "stage": "check",
-      "question": "How does the BPE merge step pick which pair to combine next?",
+      "question": "BPE 的合并步骤如何选择下一对待合并的单元？",
       "options": [
-        "A random pair",
-        "The lexicographically first pair",
-        "The most frequent adjacent token pair across the corpus",
-        "The pair with highest IDF"
+        "随机选一对",
+        "按字典序选第一对",
+        "选择整个语料库中最高频的相邻词元对",
+        "选择 IDF 最高的一对"
       ],
       "correct": 2,
-      "explanation": "BPE iteratively merges the most frequent adjacent pair."
+      "explanation": "字节对编码（BPE）反复合并最高频的相邻单元对。"
     },
     {
       "stage": "check",
-      "question": "Why does GPT-2 use byte-level BPE?",
+      "question": "为什么 GPT-2 使用字节级 BPE（Byte-level BPE）？",
       "options": [
-        "The base vocabulary of 256 bytes covers any input, eliminating out-of-vocabulary entirely",
-        "Bytes train faster than characters",
-        "Bytes preserve casing implicitly",
-        "Byte BPE skips merge training"
+        "由 256 个字节组成的基础词表覆盖任何输入，彻底消除词表外问题",
+        "字节比字符训练更快",
+        "字节隐式保留大小写",
+        "字节级 BPE 跳过合并训练"
       ],
       "correct": 0,
-      "explanation": "Starting from 256 bytes means every UTF-8 string tokenizes; nothing is OOV."
+      "explanation": "从 256 个字节开始，意味着每个 UTF-8 字符串都能被分词，不存在词表外输入。"
     },
     {
       "stage": "post",
-      "question": "Which tokenizer should you use when fine-tuning a pretrained transformer?",
+      "question": "微调预训练 Transformer 时应使用哪个分词器？",
       "options": [
-        "Always byte-level BPE",
-        "Always SentencePiece",
-        "Whichever has the largest vocabulary",
-        "The exact tokenizer the model shipped with; mismatch breaks the embeddings"
+        "始终使用字节级 BPE",
+        "始终使用 SentencePiece",
+        "词表最大的那个",
+        "模型原配的精确版本分词器；不匹配会破坏嵌入"
       ],
       "correct": 3,
-      "explanation": "Tokenizer-model mismatch silently corrupts inputs; always pair the shipped tokenizer with its model."
+      "explanation": "分词器与模型不匹配会悄然损坏输入，必须将原配分词器与对应模型一起使用。"
     },
     {
       "stage": "post",
-      "question": "When would you pick FastText over GloVe for pretrained word vectors?",
+      "question": "选预训练词向量时，什么时候应选 FastText 而不是 GloVe？",
       "options": [
-        "When you need a 50d model",
-        "When latency is tightest",
-        "When the corpus is very small",
-        "For morphologically rich languages or domains with frequent neologisms and misspellings"
+        "需要 50d 模型时",
+        "延迟要求最严格时",
+        "语料库很小时",
+        "形态丰富的语言，或新造词、拼写错误频繁的领域"
       ],
       "correct": 3,
-      "explanation": "FastText's subword composition handles inflections, neologisms, and misspellings that GloVe cannot."
+      "explanation": "FastText 的子词组合能处理 GloVe 无法处理的屈折变化、新造词和拼写错误。"
     },
     {
       "stage": "post",
-      "question": "What unit forms the base of WordPiece, BPE, and SentencePiece vocabularies?",
+      "question": "WordPiece、BPE 和 SentencePiece 的词表以什么单元为基础？",
       "options": [
-        "Sentences",
-        "Whole words",
-        "Paragraphs",
-        "Subword pieces (characters, n-grams, or learned merges) below the word level"
+        "句子",
+        "完整单词",
+        "段落",
+        "低于词级的子词片段，如字符、n 元组或学习得到的合并单元"
       ],
       "correct": 3,
-      "explanation": "All three are subword tokenizers; they differ in how merges or pieces are learned, not in being subword."
+      "explanation": "三者都是子词分词器，区别在于如何学习合并或片段，而不是是否使用子词。"
     }
   ]
 }

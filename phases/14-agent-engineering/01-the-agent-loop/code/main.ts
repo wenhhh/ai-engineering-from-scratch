@@ -1,15 +1,15 @@
-// Phase 14 Lesson 01 — toy ReAct agent loop, in TypeScript.
+// 第 14 阶段第 01 课——TypeScript 实现的教学用 ReAct 智能体循环（Agent loop）。
 //
-// Mirrors code/main.py: message buffer, tool registry, stop condition,
-// turn budget, observation formatter. The model is a scripted ToyLLM so the
-// loop runs offline and deterministic; swap for a real provider client and
-// the control flow is identical.
+// 对应 code/main.py：消息缓冲区（Message buffer）、工具注册表（Tool registry）、
+// 停止条件（Stop condition）、轮次预算（Turn budget）和观察结果格式化器（Observation formatter）。
+// 模型使用预设脚本式 ToyLLM，因此循环可离线运行且结果确定；
+// 替换为真实服务商客户端后，控制流仍完全相同。
 //
-// References:
-//   ReAct paper       https://arxiv.org/abs/2210.03629
-//   Anthropic agents  https://www.anthropic.com/engineering/building-effective-agents
+// 参考资料：
+//   ReAct 论文          https://arxiv.org/abs/2210.03629
+//   Anthropic 智能体    https://www.anthropic.com/engineering/building-effective-agents
 //
-// Run: npx tsx code/main.ts
+// 运行：npx tsx code/main.ts
 
 type ToolFn = (args: Record<string, string>) => string;
 
@@ -38,32 +38,32 @@ class ToolRegistry {
 
   dispatch(call: ToolCall): string {
     const fn = this.tools.get(call.name);
-    if (!fn) return `error: unknown tool ${JSON.stringify(call.name)}`;
+    if (!fn) return `错误：未知工具 ${JSON.stringify(call.name)}`;
     try {
       return fn(call.args);
     } catch (err) {
       const e = err as Error;
-      return `error: ${e.name}: ${e.message}`;
+      return `错误：${e.name}：${e.message}`;
     }
   }
 }
 
 function calculator(args: Record<string, string>): string {
   const expr = args.expr;
-  if (typeof expr !== "string") return "error: missing expr";
+  if (typeof expr !== "string") return "错误：缺少 expr";
   if (!/^[0-9+\-*/(). ]+$/.test(expr)) {
-    return "error: illegal character in expr";
+    return "错误：expr 中存在非法字符";
   }
   try {
     const fn = new Function(`"use strict"; return (${expr});`);
     const value = fn();
     if (typeof value !== "number" || !Number.isFinite(value)) {
-      return `error: non-finite result for ${expr}`;
+      return `错误：${expr} 的结果不是有限数值`;
     }
     return String(value);
   } catch (err) {
     const e = err as Error;
-    return `error: ${e.name}: ${e.message}`;
+    return `错误：${e.name}：${e.message}`;
   }
 }
 
@@ -78,7 +78,7 @@ class KVStore {
 
   set = (args: Record<string, string>): string => {
     this.store.set(args.key, args.value);
-    return `stored ${args.key}`;
+    return `已存储 ${args.key}`;
   };
 }
 
@@ -86,15 +86,15 @@ type ScriptEntry =
   | { kind: "action"; thought: string; action: string; args: Record<string, string> }
   | { kind: "finish"; content: string };
 
-// Scripted ReAct policy. Returns one assistant turn per call.
-// Replace with a provider client and the loop is identical.
+// 预设脚本式 ReAct 策略。每次调用返回一轮助手响应。
+// 替换为服务商客户端后，循环保持不变。
 class ToyLLM {
   private cursor = 0;
   constructor(private script: ScriptEntry[]) {}
 
   respond(_history: Turn[]): ScriptEntry {
     if (this.cursor >= this.script.length) {
-      return { kind: "finish", content: "no more actions" };
+      return { kind: "finish", content: "没有更多动作" };
     }
     return this.script[this.cursor++];
   }
@@ -127,8 +127,8 @@ class AgentLoop {
         observation,
       });
     }
-    this.history.push({ kind: "final", content: "budget exhausted" });
-    return "budget exhausted";
+    this.history.push({ kind: "final", content: "预算已耗尽" });
+    return "预算已耗尽";
   }
 
   toolNames(): string[] {
@@ -158,53 +158,53 @@ function buildDemoAgent(): AgentLoop {
   const script: ScriptEntry[] = [
     {
       kind: "action",
-      thought: "store the base price",
+      thought: "存储基础价格",
       action: "kv_set",
       args: { key: "base", value: "120" },
     },
     {
       kind: "action",
-      thought: "compute 15% tax",
+      thought: "计算 15% 的税额",
       action: "calculator",
       args: { expr: "120 * 0.15" },
     },
     {
       kind: "action",
-      thought: "store the tax",
+      thought: "存储税额",
       action: "kv_set",
       args: { key: "tax", value: "18.0" },
     },
     {
       kind: "action",
-      thought: "compute total",
+      thought: "计算总额",
       action: "calculator",
       args: { expr: "120 + 18.0" },
     },
     {
       kind: "action",
-      thought: "confirm stored values",
+      thought: "确认已存储的值",
       action: "kv_get",
       args: { key: "base" },
     },
-    { kind: "finish", content: "the total including 15% tax is 138.0" },
+    { kind: "finish", content: "含 15% 税额的总额为 138.0" },
   ];
   return new AgentLoop(new ToyLLM(script), tools, 10);
 }
 
 function main(): void {
   console.log("=".repeat(70));
-  console.log("TOY REACT LOOP — Phase 14, Lesson 01 (TypeScript port)");
+  console.log("教学用 ReAct 循环——第 14 阶段，第 01 课（TypeScript 移植版）");
   console.log("=".repeat(70));
 
   const agent = buildDemoAgent();
-  const final = agent.run("What is 120 plus 15% tax, stored in kv?");
+  const final = agent.run("120 加上 15% 的税额是多少？请存入 kv。");
   console.log();
   prettyTrace(agent.history);
   console.log();
-  console.log(`final answer: ${final}`);
+  console.log(`最终答案：${final}`);
   const actions = agent.history.filter((t) => t.kind === "action").length;
-  console.log(`turns used:   ${actions}`);
-  console.log(`tools used:   ${JSON.stringify(agent.toolNames())}`);
+  console.log(`已用轮次：${actions}`);
+  console.log(`使用的工具：${JSON.stringify(agent.toolNames())}`);
 }
 
 main();

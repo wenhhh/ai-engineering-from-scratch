@@ -1,78 +1,78 @@
 {
   "lesson": "65-hybrid-retrieval-bm25-dense",
-  "title": "Hybrid Retrieval with BM25 and Dense Embeddings",
+  "title": "BM25 与稠密嵌入的混合检索（Hybrid Retrieval with BM25 and Dense Embeddings）",
   "questions": [
     {
       "stage": "pre",
-      "question": "Why does a production RAG endpoint need both lexical and semantic retrieval at once?",
+      "question": "为什么生产 RAG 端点需要同时具备词法和语义检索？",
       "options": [
-        "Lexical search is required by law for compliance",
-        "Semantic retrieval is always more accurate",
-        "It halves the index size",
-        "The query distribution mixes literal-identifier and paraphrased queries; one modality fails on each class"
+        "法律要求使用词法搜索以合规",
+        "语义检索总是更准确",
+        "这样使索引大小减半",
+        "查询分布混合字面标识符和改述查询；每种模态都会在其中一类上失效"
       ],
       "correct": 3,
-      "explanation": "BM25 dominates on literal symbols; dense dominates on paraphrases. A real endpoint receives both classes from the same users."
+      "explanation": "BM25 在字面符号上占优，稠密检索在改述上占优。真实端点会收到同一批用户发来的两类查询。"
     },
     {
       "stage": "pre",
-      "question": "What is the BM25 parameter b at the default 0.75?",
+      "question": "默认值为 0.75 的 BM25 参数 b 是什么？",
       "options": [
-        "The number of fields in the document",
-        "A query-time exponent on cosine similarity",
-        "A multiplier on the IDF term",
-        "A length-normalization knob: longer documents are penalized but not linearly"
+        "文档字段数",
+        "查询时余弦相似度的指数",
+        "IDF 项的乘数",
+        "长度归一化参数：惩罚较长文档，但不是线性的"
       ],
       "correct": 3,
-      "explanation": "b interpolates between no length normalization (0) and full normalization (1); 0.75 is the published recommendation."
+      "explanation": "b 在不做长度归一化（0）与完全归一化（1）之间插值；0.75 是论文推荐值。"
     },
     {
       "stage": "check",
-      "question": "What does Reciprocal Rank Fusion compute for each candidate?",
+      "question": "倒数排名融合为每个候选计算什么？",
       "options": [
-        "Average of the BM25 and dense scores after min-max normalization",
-        "Sum of 1 / (k + rank) across each ranked list that contains the candidate",
-        "Product of cosine similarities across modalities",
-        "The median rank across modalities"
+        "BM25 和稠密分数经最小最大归一化后的均值",
+        "对包含该候选的各排序列表中的 1 / (k + rank) 求和",
+        "跨模态余弦相似度的乘积",
+        "跨模态排名中位数"
       ],
       "correct": 1,
-      "explanation": "RRF sums 1 / (k + rank) contributions per ranked list; k = 60 is the published default."
+      "explanation": "RRF 将各排序列表的 1 / (k + rank) 贡献相加；k = 60 是论文默认值。"
     },
     {
       "stage": "check",
-      "question": "Why is rank-based fusion preferred over a linear interpolation of BM25 and cosine scores?",
+      "question": "为什么优先采用排名融合，而不是 BM25 与余弦分数的线性插值？",
       "options": [
-        "Cosine scores are unbounded",
-        "BM25 scores are unbounded and corpus-dependent; cosine is bounded in -1 to 1; the score scales are not comparable across corpora",
-        "BM25 scores cannot be sorted",
-        "Linear interpolation requires GPU support"
+        "余弦分数无界",
+        "BM25 分数无界且依赖语料；余弦范围为 -1 至 1；跨语料分数尺度不可比",
+        "BM25 分数无法排序",
+        "线性插值需要 GPU 支持"
       ],
       "correct": 1,
-      "explanation": "Score interpolation breaks every reindex because the score distributions shift; ranks are comparable across modalities by construction."
+      "explanation": "每次重建索引，分数分布变化会破坏分数插值；排名则天然跨模态可比。"
     },
     {
       "stage": "check",
-      "question": "What happens to RRF when you make the constant k very small?",
+      "question": "RRF 常数 k 很小时会怎样？",
       "options": [
-        "The fusion becomes equivalent to a linear score sum",
-        "The top-1 contribution dominates the fusion; deep ranks contribute almost nothing",
-        "Out-of-corpus terms get a positive score",
-        "The fusion ignores the second modality"
+        "融合等价于分数线性求和",
+        "第 1 名贡献主导融合，较深排名几乎没有贡献",
+        "语料外词获得正分数",
+        "融合忽略第二模态"
       ],
       "correct": 1,
-      "explanation": "Small k concentrates the rank-1 contribution; large k flattens the contribution curve and lets deep candidates vote."
+      "explanation": "小 k 集中第 1 名的贡献；大 k 让贡献曲线变平，使较深候选仍可投票。"
     },
     {
       "stage": "post",
-      "question": "Which failure mode does field weighting through token repetition specifically avoid?",
+      "question": "通过重复词元实现字段加权，具体避免了什么失效模式？",
       "options": [
-        "Adding a second score-aggregation step at query time; the math stays identical and per-field-score combination logic is not needed",
-        "Out-of-vocabulary embeddings",
-        "BM25 IDF collapsing to zero",
-        "Cosine similarity going negative"
+        "查询时增加第二个分数聚合步骤；数学不变，无需逐字段分数组合逻辑",
+        "词表外嵌入",
+        "BM25 IDF 降为零",
+        "余弦相似度变负"
       ],
       "correct": 0,
-      "explanation": "Repeating tokens at index time multiplies term frequency, which lets the BM25 scoring math stay one summation rather than a separate field-score combinator."
+      "explanation": "索引时重复词元会提高词频，使 BM25 评分仍只需一次求和，而不必另设字段分数组合器。"
     }
   ]
 }

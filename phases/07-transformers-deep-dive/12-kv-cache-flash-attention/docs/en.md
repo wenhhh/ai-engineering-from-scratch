@@ -1,136 +1,136 @@
-# KV Cache, Flash Attention & Inference Optimization
+# 键值缓存、Flash Attention 与推理优化（KV Cache, Flash Attention & Inference Optimization）
 
-> Training is parallel and FLOP-bound. Inference is serial and memory-bound. Different bottleneck, different tricks.
+> 训练是并行的，受浮点计算限制；推理是串行的，受内存限制。瓶颈不同，技巧也不同。
 
 **Type:** Build
 **Languages:** Python
-**Prerequisites:** Phase 7 · 02 (Self-Attention), Phase 7 · 05 (Full Transformer), Phase 7 · 07 (GPT)
-**Time:** ~75 minutes
+**Prerequisites:** 阶段 7 · 02（自注意力），阶段 7 · 05（完整 Transformer），阶段 7 · 07（GPT）
+**Time:** ~75 分钟
 
-## The Problem
+## 问题（The Problem）
 
-A naive autoregressive decoder does `O(N²)` work to generate `N` tokens: at each step it recomputes attention over the full prefix. For a 4K-token response that is 16M attention operations, most of them redundant. Every hidden state of a prefix token is deterministic once computed — you only need to run the new token's query against the cached keys and values of everything before.
+朴素自回归解码器生成 `N` 个词元需要 `O(N²)` 工作量，每步都对完整前缀重算注意力。4K 词元响应需要 16M 次注意力操作，大部分冗余。前缀词元的每个隐藏状态一旦算出就确定了，只需用新词元查询对之前所有缓存的键和值计算注意力。
 
-On top of that, attention itself moves a lot of data. Standard attention materializes an N×N score matrix, N×d softmax output, N×d final output — too many reads and writes to HBM. For N≥2K, attention becomes memory-bound before it becomes FLOP-bound. Classic attention kernels underuse modern GPUs by 4–10×.
+此外，注意力本身搬运大量数据。标准注意力实体化 N×N 分数矩阵、N×d softmax 输出、N×d 最终输出，对高带宽内存（High Bandwidth Memory，HBM）的读写过多。N≥2K 时，注意力先受内存限制，再受 FLOPs 限制。经典注意力内核对现代 GPU 的利用率比可实现水平低 4–10 倍。
 
-Two optimizations, both from Dao et al., pushed frontier inference from "slow" to "fast":
+两项均来自 Dao 等人的优化，将前沿推理从“慢”变成“快”：
 
-1. **KV cache.** Store the K and V vectors of every prefix token. Each new token's attention is one query against the cached keys. Inference reduces from `O(N²)` to `O(N)` per generation step.
-2. **Flash Attention.** Tile the attention computation so the full N×N matrix never hits HBM. All of softmax + matmul happens in SRAM. 2–4× wall-clock speedup on A100; 5–10× on H100 with FP8.
+1. **键值缓存（Key-Value Cache，KV Cache）。** 保存每个前缀词元的 K、V 向量。新词元注意力只需一个查询对缓存键计算，每生成步骤从 `O(N²)` 降为 `O(N)`。
+2. **Flash Attention。** 对注意力分块，使完整 N×N 矩阵从不进入 HBM。softmax 与矩阵乘法全部在静态随机存取存储器（Static Random-Access Memory，SRAM）中完成。A100 上实际耗时快 2–4 倍，H100 配合 FP8 快 5–10 倍。
 
-By 2026 both are universal. Every production inference stack (vLLM, TensorRT-LLM, SGLang, llama.cpp) assumes them. Every frontier model ships with Flash Attention enabled.
+到 2026 年，两者已普及。所有生产推理技术栈（vLLM、TensorRT-LLM、SGLang、llama.cpp）都假设使用它们，所有前沿模型默认启用 Flash Attention。
 
-## The Concept
+## 概念（The Concept）
 
-![KV cache growth and Flash Attention tiling](../assets/kv-cache-flash-attn.svg)
+![KV 缓存增长与 Flash Attention 分块](../assets/kv-cache-flash-attn.svg)
 
-### KV cache math
+### KV 缓存数学（KV cache math）
 
-Per decoder layer, per token, per head:
+每解码器层、每词元、每个头：
 
 ```
 bytes_per_token_per_layer = 2 * d_head * dtype_size
                           ^
-                          K and V
+                          K 和 V
 ```
 
-For a 7B model with 32 layers, 32 heads, d_head=128, fp16:
+对于 7B 模型，32 层、32 头、d_head=128、fp16：
 
 ```
-per token per layer = 2 * 128 * 2 = 512 bytes
-per token (32 layers) = 16 KB
-per 32K context = 512 MB
+每词元每层 = 2 * 128 * 2 = 512 字节
+每词元（32 层）= 16 KB
+每 32K 上下文 = 512 MB
 ```
 
-For Llama 3 70B (80 layers, d_head=128, GQA with 8 KV heads):
+对于 Llama 3 70B，80 层、d_head=128、GQA 有 8 个 KV 头：
 
 ```
-per token per layer = 2 * 8 * 128 * 2 = 4096 bytes (4 KB)
-per 32K context = 10.4 GB
+每词元每层 = 2 * 8 * 128 * 2 = 4096 字节 (4 KB)
+每 32K 上下文 = 10.4 GB
 ```
 
-That 10 GB is why Llama 3 70B at 128K context needs most of a 40 GB A100 just for KV cache at batch size 1.
+正是这 10 GB，使 Llama 3 70B 在 128K 上下文、批次大小 1 时，仅 KV 缓存就需要占据 40 GB A100 的大部分显存。
 
-**GQA is the KV-cache win.** MHA with 64 heads would be 32 GB. MLA compresses even further.
+**GQA 带来 KV 缓存收益。** 64 头 MHA 会需要 32 GB，MLA 则进一步压缩。
 
-Drag the dimensions and watch the cache size move. Push the sequence length or batch up and see how fast it blows past a single GPU:
+拖动各维度，观察缓存大小变化。增大序列长度或批次，看看它多快超过单张 GPU 容量：
 
 ```figure
 kv-cache-sizer
 ```
 
-### Flash Attention — the tiling trick
+### Flash Attention：分块技巧（Flash Attention — the tiling trick）
 
-Standard attention:
-
-```
-S = Q @ K^T          (HBM read, N×N, HBM write)
-P = softmax(S)       (HBM read, HBM write)
-O = P @ V            (HBM read, HBM write)
-```
-
-Three HBM round trips. On H100, HBM bandwidth is 3 TB/s; SRAM is 30 TB/s. Every HBM trip is a factor-of-10 slowdown vs keeping everything on-chip.
-
-Flash Attention:
+标准注意力：
 
 ```
-for each block of Q (tile size ~128 × 128):
-    load Q_tile into SRAM
-    for each block of K, V:
-        load K_tile, V_tile into SRAM
-        compute S_tile = Q_tile @ K_tile^T     (SRAM)
-        running softmax aggregation             (SRAM)
-        accumulate into O_tile                  (SRAM)
-    write O_tile to HBM
+S = Q @ K^T          （HBM 读取，N×N，HBM 写入）
+P = softmax(S)       （HBM 读取，HBM 写入）
+O = P @ V            （HBM 读取，HBM 写入）
 ```
 
-One HBM trip per tile. Total memory footprint drops from `O(N²)` to `O(N)`. Backward pass recomputes some values from the forward pass instead of storing them — another memory win.
+三次 HBM 往返。H100 的 HBM 带宽为 3 TB/s，SRAM 为 30 TB/s。相对于全部留在片上，每次 HBM 往返都会慢 10 倍。
 
-**Numerical trick.** Running softmax maintains `(max, sum)` across tiles so the final normalization is exact. Not an approximation — Flash Attention computes bit-identical output to standard attention (modulo fp16 non-associativity).
+Flash Attention：
 
-**Version evolution:**
+```
+对 Q 的每个块（块大小约 128 × 128）：
+    将 Q_tile 加载到 SRAM
+    对 K、V 的每个块：
+        将 K_tile、V_tile 加载到 SRAM
+        计算 S_tile = Q_tile @ K_tile^T       (SRAM)
+        执行流式 softmax 聚合                 (SRAM)
+        累加到 O_tile                         (SRAM)
+    将 O_tile 写入 HBM
+```
 
-| Version | Year | Key change | Speedup on reference hardware |
+每块一次 HBM 往返，总内存占用从 `O(N²)` 降到 `O(N)`。反向传播重算部分前向值，而非存储它们，进一步节省内存。
+
+**数值技巧。** 流式 softmax 跨块维护 `(max, sum)`，保证最终归一化精确。不是近似；除去 fp16 非结合性，Flash Attention 与标准注意力的输出逐比特相同。
+
+**版本演进：**
+
+| 版本 | 年份 | 关键变化 | 参考硬件加速比 |
 |---------|------|-----------|-------------------------------|
-| Flash 1 | 2022 | Tiled SRAM kernel | 2× on A100 |
-| Flash 2 | 2023 | Better parallelism, causal-first ordering | 3× on A100 |
-| Flash 3 | 2024 | Hopper asynchrony, FP8 | 1.5–2× on H100 (~740 TFLOPs FP16) |
-| Flash 4 | 2026 | Blackwell 5-stage pipeline, software exp2 | Inference-first (forward only initially) |
+| Flash 1 | 2022 | SRAM 分块内核 | A100 上 2× |
+| Flash 2 | 2023 | 更好的并行性、因果优先顺序 | A100 上 3× |
+| Flash 3 | 2024 | Hopper 异步、FP8 | H100 上 1.5–2×（约 740 TFLOPs FP16） |
+| Flash 4 | 2026 | Blackwell 五阶段流水线、软件 exp2 | 推理优先，初期仅前向 |
 
-Flash 4 is forward-pass only at launch. Training still uses Flash 3. GQA and varlen support for Flash 4 is pending (mid-2026).
+Flash 4 发布时仅支持前向传播，训练仍使用 Flash 3。Flash 4 的 GQA 和变长支持尚待实现（2026 年中）。
 
-### Speculative decoding — the other latency win
+### 推测解码：另一项延迟收益（Speculative decoding — the other latency win）
 
-Cheap model proposes N tokens. Big model verifies all N in parallel. If verification accepts k tokens, you paid 1 big-model forward pass for k generations. Typical k=3–5 on code and prose.
+低成本模型提出 N 个词元，大模型并行验证全部 N 个。若接受 k 个词元，就用一次大模型前向传播完成 k 次生成。代码与散文中典型 k=3–5。
 
-2026 defaults:
-- **EAGLE 2 / Medusa.** Integrated draft heads that share the verifier's hidden states. 2–3× speedup with no quality loss.
-- **Speculative decoding with draft model.** 2–4× speedup on consumer hardware.
-- **Lookahead decoding.** Jacobi iteration; no draft model needed. Niche but free.
+2026 年默认方案：
+- **EAGLE 2 / Medusa。** 集成草稿头，共享验证模型隐藏状态。无质量损失地加速 2–3 倍。
+- **使用草稿模型的推测解码（Speculative decoding with draft model）。** 消费级硬件上加速 2–4 倍。
+- **前瞻解码（Lookahead decoding）。** Jacobi 迭代，无需草稿模型。较小众，但无需额外模型成本。
 
-### Continuous batching
+### 连续批处理（Continuous batching）
 
-Classic batched inference: wait for the slowest sequence to finish, then start a new batch. Wastes GPU when short responses finish early.
+经典批量推理等最慢序列完成才开始新批次，短响应提前结束时会浪费 GPU。
 
-Continuous batching (first shipped in Orca, now in vLLM, TensorRT-LLM, SGLang): swap new requests into the batch as soon as old ones finish. 5–10× throughput gain for typical chat workloads.
+连续批处理最早由 Orca 提供，如今用于 vLLM、TensorRT-LLM、SGLang：旧请求一结束，立即换入新请求。典型聊天负载吞吐量提高 5–10 倍。
 
-### PagedAttention — KV cache as virtual memory
+### 分页注意力：将 KV 缓存视为虚拟内存（PagedAttention — KV cache as virtual memory）
 
-vLLM's headline feature. KV cache is allocated in 16-token blocks; a page table maps logical positions to physical blocks. Lets you share KV across parallel samples (beam search, parallel sampling), hot-swap prefixes for prompt caching, and defragment memory. 4× throughput improvement over naive contiguous allocation.
+这是 vLLM 的招牌功能。KV 缓存按 16 词元块分配，页表将逻辑位置映射到物理块。它支持在并行样本间共享 KV（束搜索、并行采样）、热切换前缀以缓存提示词，并消除内存碎片。相较朴素连续分配，吞吐量提升 4 倍。
 
 ```figure
 flash-attention-memory
 ```
 
-## Build It
+## 动手实现（Build It）
 
-See `code/main.py`. We implement:
+参见 `code/main.py`，我们实现：
 
-1. A naive `O(N²)` incremental decoder.
-2. A `O(N)` KV-cached decoder.
-3. A tiled softmax that simulates Flash Attention's running-max algorithm.
+1. 朴素 `O(N²)` 增量解码器。
+2. 使用 KV 缓存的 `O(N)` 解码器。
+3. 模拟 Flash Attention 运行最大值算法的分块 softmax。
 
-### Step 1: KV cache
+### 第 1 步：KV 缓存（Step 1: KV cache）
 
 ```python
 class KVCache:
@@ -146,9 +146,9 @@ class KVCache:
         return self.K[layer][head], self.V[layer][head]
 ```
 
-Simple: keep growing per-token K, V vectors in per-layer, per-head lists.
+很简单：在每层、每头列表中不断追加逐词元的 K、V 向量。
 
-### Step 2: tiled softmax
+### 第 2 步：分块 softmax（Step 2: tiled softmax）
 
 ```python
 def tiled_softmax_dot(q, K, V, tile=4):
@@ -170,13 +170,13 @@ def tiled_softmax_dot(q, K, V, tile=4):
     return [o / s for o in out]
 ```
 
-Bit-identical output to `softmax(qK) V` in one shot, but at any time the working set is a `tile × d_head` block, not the full `N × d_head`.
+输出与一次性 `softmax(qK) V` 逐比特相同，但任意时刻工作集只是 `tile × d_head` 块，而非完整的 `N × d_head`。
 
-### Step 3: compare naive vs cached decoding on 100-token generation
+### 第 3 步：比较生成 100 词元时的朴素与缓存解码（Step 3: compare naive vs cached decoding on 100-token generation）
 
-Count attention operations. Naive: `O(N²)` = 5050. Cached: `O(N)` = 100. The code prints both.
+计算注意力操作数。朴素版本：`O(N²)` = 5050。缓存版本：`O(N)` = 100。代码打印两者。
 
-## Use It
+## 实际应用（Use It）
 
 ```python
 # HuggingFace transformers auto-enables KV cache on decoder-only generate().
@@ -189,7 +189,7 @@ model = AutoModelForCausalLM.from_pretrained(
 # generate() uses KV cache automatically
 ```
 
-vLLM production:
+vLLM 生产部署：
 
 ```bash
 pip install vllm
@@ -200,39 +200,39 @@ vllm serve meta-llama/Llama-3.1-70B-Instruct \
     --kv-cache-dtype fp8
 ```
 
-Prefix caching across requests is a big 2026 win — the same system prompt, few-shot examples, or long context document reuses KV across calls. For agent workloads with repeated tool prompts, prefix caching is routinely 5× throughput gain.
+跨请求前缀缓存是 2026 年的重要收益：相同系统提示词、少样本示例或长上下文文档可跨调用复用 KV。对反复使用工具提示词的智能体负载，前缀缓存通常带来 5 倍吞吐量。
 
-## Ship It
+## 交付成果（Ship It）
 
-See `outputs/skill-inference-optimizer.md`. The skill picks attention implementation, KV cache strategy, quantization, and speculative decoding for a new inference deployment.
+参见 `outputs/skill-inference-optimizer.md`。该技能为新推理部署选择注意力实现、KV 缓存策略、量化与推测解码。
 
-## Exercises
+## 练习（Exercises）
 
-1. **Easy.** Run `code/main.py`. Confirm the naive and cached decoders produce the same output; note the op-count difference.
-2. **Medium.** Implement prefix caching: given a prompt P and several completions, run one forward pass over P to fill the KV cache, then branch per-completion. Measure speedup vs re-encoding P for each.
-3. **Hard.** Implement a toy PagedAttention: KV cache in fixed 16-token blocks with a free-list. When a sequence finishes, return its blocks to the pool. Simulate 1,000 chat completions with varying lengths. Compare memory fragmentation vs contiguous allocation.
+1. **简单。** 运行 `code/main.py`。确认朴素与缓存解码器输出相同，记录操作数差异。
+2. **中等。** 实现前缀缓存：给定提示词 P 和多个补全，对 P 做一次前向传播填充 KV 缓存，然后为各补全分支。测量相较每次重新编码 P 的加速比。
+3. **困难。** 实现玩具 PagedAttention：用固定 16 词元块和空闲列表管理 KV 缓存。序列结束时将块归还池。模拟 1,000 次不同长度聊天补全，对比连续分配的内存碎片。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语 | 常见说法 | 实际含义 |
 |------|-----------------|-----------------------|
-| KV cache | "The trick that makes decoding fast" | Stored K and V from every prefix token; new queries attend to them instead of recomputing. |
-| HBM | "GPU main memory" | High Bandwidth Memory; 80 GB on H100, 192 GB on B200. ~3 TB/s bandwidth. |
-| SRAM | "On-chip memory" | Per-SM fast memory, ~256 KB per SM on H100. ~30 TB/s bandwidth. |
-| Flash Attention | "Tiled attention kernel" | Computes attention without materializing N×N in HBM. |
-| Continuous batching | "No-wait batching" | Swap finished sequences out, new ones in, without draining the batch. |
-| PagedAttention | "vLLM's headline" | KV cache allocated in fixed blocks with a page table; eliminates fragmentation. |
-| Prefix caching | "Reuse long prompts" | Cache KV for a shared prefix across requests; major cost cut for agents. |
-| Speculative decoding | "Draft + verify" | Cheap draft model proposes tokens; big model verifies k in one pass. |
+| 键值缓存（KV cache） | “让解码变快的技巧” | 保存每个前缀词元的 K、V，新查询直接关注它们，不再重算。 |
+| 高带宽内存（HBM） | “GPU 主内存” | H100 为 80 GB，B200 为 192 GB，带宽约 3 TB/s。 |
+| 静态随机存取存储器（SRAM） | “片上内存” | 每个流式多处理器（Streaming Multiprocessor，SM）的高速内存；H100 每 SM 约 256 KB，带宽约 30 TB/s。 |
+| Flash Attention | “分块注意力内核” | 不在 HBM 中实体化 N×N 矩阵即可计算注意力。 |
+| 连续批处理（Continuous batching） | “无需等待的批处理” | 无需清空整批，就能移出已完成序列、加入新序列。 |
+| 分页注意力（PagedAttention） | “vLLM 招牌” | 用页表和固定块分配 KV 缓存，消除碎片。 |
+| 前缀缓存（Prefix caching） | “复用长提示词” | 跨请求缓存共享前缀 KV，为智能体显著降本。 |
+| 推测解码（Speculative decoding） | “草稿与验证” | 低成本草稿模型提出词元，大模型一次验证 k 个。 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [Dao et al. (2022). FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness](https://arxiv.org/abs/2205.14135) — Flash 1.
-- [Dao (2023). FlashAttention-2: Faster Attention with Better Parallelism and Work Partitioning](https://arxiv.org/abs/2307.08691) — Flash 2.
-- [Shah et al. (2024). FlashAttention-3: Fast and Accurate Attention with Asynchrony and Low-precision](https://arxiv.org/abs/2407.08608) — Flash 3.
-- [FlashAttention-4 release notes (Dao-AILab, 2026)](https://github.com/Dao-AILab/flash-attention) — Blackwell 5-stage pipeline and the software-exp2 trick; read the repo README for the forward-only launch caveats this lesson mentions.
-- [Kwon et al. (2023). Efficient Memory Management for Large Language Model Serving with PagedAttention](https://arxiv.org/abs/2309.06180) — vLLM paper.
-- [Leviathan et al. (2023). Fast Inference from Transformers via Speculative Decoding](https://arxiv.org/abs/2211.17192) — spec decoding.
-- [Li et al. (2024). EAGLE: Speculative Sampling Requires Rethinking Feature Uncertainty](https://arxiv.org/abs/2401.15077) — EAGLE-1/2 paper for the integrated-draft approach the lesson cites.
-- [Cai et al. (2024). Medusa: Simple LLM Inference Acceleration Framework with Multiple Decoding Heads](https://arxiv.org/abs/2401.10774) — the Medusa approach referenced alongside EAGLE.
-- [vLLM docs — PagedAttention](https://docs.vllm.ai/en/latest/design/kernel/paged_attention.html) — the canonical deep dive on the 16-token block and page-table design.
+- [Dao 等（2022）：FlashAttention：具备 IO 感知的快速省内存精确注意力（FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness）](https://arxiv.org/abs/2205.14135)：Flash 1。
+- [Dao（2023）：FlashAttention-2：通过更好的并行与工作划分加速注意力（FlashAttention-2: Faster Attention with Better Parallelism and Work Partitioning）](https://arxiv.org/abs/2307.08691)：Flash 2。
+- [Shah 等（2024）：FlashAttention-3：通过异步与低精度实现快速准确的注意力（FlashAttention-3: Fast and Accurate Attention with Asynchrony and Low-precision）](https://arxiv.org/abs/2407.08608)：Flash 3。
+- [FlashAttention-4 发布说明（Dao-AILab，2026）](https://github.com/Dao-AILab/flash-attention)：Blackwell 五阶段流水线与软件 exp2 技巧；仓库 README 说明本课提及的初期仅前向限制。
+- [Kwon 等（2023）：用 PagedAttention 高效管理大语言模型服务内存（Efficient Memory Management for Large Language Model Serving with PagedAttention）](https://arxiv.org/abs/2309.06180)：vLLM 论文。
+- [Leviathan 等（2023）：通过推测解码实现 Transformer 快速推理（Fast Inference from Transformers via Speculative Decoding）](https://arxiv.org/abs/2211.17192)：推测解码。
+- [Li 等（2024）：EAGLE：推测采样需要重新思考特征不确定性（EAGLE: Speculative Sampling Requires Rethinking Feature Uncertainty）](https://arxiv.org/abs/2401.15077)：本课集成草稿方案的 EAGLE-1/2 论文。
+- [Cai 等（2024）：Medusa：具有多个解码头的简易大语言模型推理加速框架（Medusa: Simple LLM Inference Acceleration Framework with Multiple Decoding Heads）](https://arxiv.org/abs/2401.10774)：与 EAGLE 一同提及的 Medusa 方案。
+- [vLLM 文档：分页注意力（PagedAttention）](https://docs.vllm.ai/en/latest/design/kernel/paged_attention.html)：16 词元块与页表设计的权威深入讲解。

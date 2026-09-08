@@ -1,81 +1,80 @@
-# Order Status Assistant Runbook
+# 订单状态助手操作手册（Order Status Assistant Runbook）
 
-## Service Objective
+## 服务目标（Service Objective）
 
-Return a verified order status or a clear escalation without exposing secrets, crossing tenant boundaries, or performing mutation.
+返回已验证订单状态或明确升级，不暴露密钥、不跨租户边界、不执行修改。
 
-## First Response
+## 首次响应（First Response）
 
-1. Identify the trace or request ID.
-2. Classify the failure before retry.
-3. Confirm whether any tool executed.
-4. Inspect authoritative order state.
-5. Contain affected capability when security or cross-tenant access is possible.
+1. 确认追踪或请求 ID。
+2. 重试前分类失败。
+3. 确认是否执行过任何工具。
+4. 检查权威订单状态。
+5. 可能涉及安全或跨租户访问时，限制受影响能力。
 
-## Failure Classes
+## 失败类别（Failure Classes）
 
-### Missing or malformed order ID
+### 订单 ID 缺失或畸形（Missing or malformed order ID）
 
-- Response: request an exact public ID.
-- Retry: user-driven only.
-- Verify: no lookup tool ran.
+- 响应：请求确切公开 ID。
+- 重试：仅由用户驱动。
+- 验证：没有运行查询工具。
 
-### Provider timeout before complete response
+### 完整响应前服务商超时（Provider timeout before complete response）
 
-- Response: mark attempt incomplete.
-- Retry: once with bounded backoff if no tool side effect occurred.
-- Verify: inspect trace for complete terminal event and tool operations.
+- 响应：标记尝试未完成。
+- 重试：没有工具副作用时，有限退避后重试一次。
+- 验证：检查追踪中的完整终止事件和工具操作。
 
-### Rate limit
+### 限流（Rate limit）
 
-- Response: queue or return a clear temporary-unavailability state within the service objective.
-- Retry: follow provider guidance with bounded backoff.
-- Verify: no duplicate tool operation.
+- 响应：排队，或在服务目标内返回清楚的暂时不可用状态。
+- 重试：遵循服务商指导，采用有限退避。
+- 验证：没有重复工具操作。
 
-### Protocol or schema error
+### 协议或模式错误（Protocol or schema error）
 
-- Response: do not display partial output as final.
-- Retry: only after reconstructing valid message state or within the bounded structured-output repair policy.
-- Verify: contract tests and wire trace identify the repaired boundary.
+- 响应：不把部分输出显示为最终结果。
+- 重试：仅在重建有效消息状态后，或在有限结构化输出修复策略内进行。
+- 验证：契约测试和传输追踪指出已修复边界。
 
-### Policy denial
+### 政策拒绝（Policy denial）
 
-- Response: preserve denial and explain the safe next step.
-- Retry: only after valid external approval or corrected low-risk request.
-- Verify: forbidden tool did not execute.
+- 响应：保留拒绝，解释安全下一步。
+- 重试：仅在有效外部审批后，或低风险请求被纠正后。
+- 验证：禁止工具没有执行。
 
-### Order not found
+### 订单未找到（Order not found）
 
-- Response: do not guess status; escalate to the approved support path.
-- Retry: only with corrected authenticated identifier.
-- Verify: lookup used current user's authorized order scope.
+- 响应：不猜状态，升级到批准的客服路径。
+- 重试：仅使用纠正后的已认证标识。
+- 验证：查询使用当前用户获授权订单范围。
 
-### Tool unavailable
+### 工具不可用（Tool unavailable）
 
-- Response: state that status cannot currently be verified.
-- Retry: one bounded read-only retry or queue according to service objective.
-- Verify: no fabricated status appears.
+- 响应：说明当前无法验证状态。
+- 重试：一次有边界的只读重试，或按服务目标排队。
+- 验证：没有编造状态。
 
-### Security incident or secret exposure
+### 安全事故或密钥暴露（Security incident or secret exposure）
 
-- Contain: disable affected tool, MCP server, plugin, hook, or network path.
-- Revoke: rotate any potentially exposed credential immediately.
-- Investigate: preserve redacted traces and query authoritative access logs.
-- Recover: fix the failed trust boundary and add the fixture to security evals.
-- Restore: canary with least privilege and active monitoring.
+- 遏制：停用受影响工具、MCP 服务器、插件、钩子或网络路径。
+- 撤销：立即轮换任何可能暴露的凭据。
+- 调查：保留脱敏追踪，查询权威访问日志。
+- 恢复：修复失败信任边界，并把夹具加入安全评估。
+- 恢复服务：以最小权限进行金丝雀发布，并主动监控。
 
-### Regression after model or configuration change
+### 模型或配置变化后的回归（Regression after model or configuration change）
 
-- Contain: roll back model, prompt, schema, tool, Skill, hook, plugin, or server version.
-- Diagnose: compare paired eval cases and traces.
-- Recover: address the specific failing boundary.
-- Verify: full required and safety suites pass before rollout resumes.
+- 遏制：回滚模型、提示词、模式、工具、技能、钩子、插件或服务器版本。
+- 诊断：比较配对评估案例和追踪。
+- 恢复：处理具体失败边界。
+- 验证：恢复上线前，全部必需和安全套件通过。
 
-## Ambiguous Mutation Rule
+## 结果不明的修改规则（Ambiguous Mutation Rule）
 
-The current application is read-only. If future versions add mutation, never retry an ambiguous timeout until a stable idempotency key and system-of-record reconciliation prove whether the first attempt completed.
+当前应用只读。若未来加入修改，在稳定幂等键和权威记录系统对账证明首次尝试是否完成之前，绝不重试结果不明的超时。
 
-## Escalation Evidence
+## 升级证据（Escalation Evidence）
 
-Provide the operator with trace ID, failure class, order ID if permitted, component versions, policy decision, tool result class, and current authoritative state. Do not include raw credentials, full private content, or unrestricted prompts.
-
+向运维人员提供追踪 ID、失败类别、获准时的订单 ID、组件版本、政策决策、工具结果类别和当前权威状态。不包含原始凭据、完整私有内容或未受限制的提示词。

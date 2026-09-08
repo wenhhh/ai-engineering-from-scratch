@@ -1,78 +1,78 @@
 {
   "lesson": "13-mcp-async-tasks",
-  "title": "MCP Tasks Extension: Durable Work on a Stateless Core",
+  "title": "MCP 任务扩展：无状态核心上的持久工作（MCP Tasks Extension: Durable Work on a Stateless Core）",
   "questions": [
     {
       "stage": "pre",
-      "question": "How can a stateless MCP server support work that lasts ten minutes?",
+      "question": "无状态 MCP 服务器如何支持持续十分钟的工作？",
       "options": [
-        "Keep an Mcp-Session-Id connection open for ten minutes",
-        "Store progress only in initialize state",
-        "Require every client to use sticky load balancing",
-        "Return an explicit durable task handle backed by application storage"
+        "保持 Mcp-Session-Id 连接十分钟",
+        "仅在 initialize 状态存储进度",
+        "要求每个客户端使用粘性负载均衡",
+        "返回应用存储支持的显式持久任务句柄"
       ],
       "correct": 3,
-      "explanation": "Stateless describes the protocol request model. Durable application state is represented by an explicit task id and shared storage."
+      "explanation": "无状态描述协议请求模型。持久应用状态以显式任务 id 和共享存储表示。"
     },
     {
       "stage": "check",
-      "question": "When may a server return resultType task from tools/call?",
+      "question": "服务器何时可从 tools/call 返回 resultType task？",
       "options": [
-        "After the current request advertises the extension and the task is durably readable",
-        "Whenever a previous session advertised Tasks",
-        "Before persistence so the client can poll optimistically",
-        "Only when params._meta.task.required is true"
+        "当前请求公布扩展且任务可持久读取后",
+        "先前会话公布过 Tasks 时",
+        "持久化前，让客户端乐观轮询",
+        "仅在 params._meta.task.required 为 true 时"
       ],
       "correct": 0,
-      "explanation": "Task creation is server-directed, but current-request capability support and durable-before-return creation are mandatory. Missing support returns -32021 with data.requiredCapabilities."
+      "explanation": "创建由服务器主导，但当前请求能力支持和返回前持久创建是必需的。缺少支持返回 -32021 和 data.requiredCapabilities。"
     },
     {
       "stage": "check",
-      "question": "A tasks/get response has resultType complete and status working. What does that mean?",
+      "question": "tasks/get 响应 resultType 为 complete、status 为 working，表示什么？",
       "options": [
-        "The response violates the extension",
-        "The underlying job completed",
-        "The task was cancelled",
-        "The polling RPC completed but the job is still running"
+        "响应违反扩展",
+        "底层作业完成",
+        "任务被取消",
+        "轮询 RPC 完成，但作业仍运行"
       ],
       "correct": 3,
-      "explanation": "resultType describes the tasks/get RPC. The task status independently describes the durable job. When status is completed, the nested CallToolResult has its own resultType complete and serverInfo metadata."
+      "explanation": "resultType 描述 tasks/get RPC，任务状态独立描述持久作业。status 为 completed 时，嵌套 CallToolResult 有自己的 resultType complete 和 serverInfo 元数据。"
     },
     {
       "stage": "check",
-      "question": "How does a client answer input_required after a task already exists?",
+      "question": "任务已存在后，客户端如何回答 input_required？",
       "options": [
-        "Call tasks/result with an answer field",
-        "Open a new initialize session",
-        "Retry the original tools/call with the same id",
-        "Send tasks/update with inputResponses for outstanding task keys"
+        "调用 tasks/result 并带 answer 字段",
+        "打开新 initialize 会话",
+        "用同一 id 重试原 tools/call",
+        "发送 tasks/update，以 inputResponses 回答待处理任务键"
       ],
       "correct": 3,
-      "explanation": "Post-creation task input is surfaced by tasks/get and fulfilled through tasks/update, not by retrying the original call."
+      "explanation": "创建后输入由 tasks/get 展示，通过 tasks/update 满足，不重试原调用。"
     },
     {
       "stage": "post",
-      "question": "What does a successful tasks/cancel response guarantee?",
+      "question": "成功的 tasks/cancel 响应保证什么？",
       "options": [
-        "The server acknowledged cancellation intent",
-        "The result has been deleted",
-        "The final task status will be cancelled",
-        "The worker has already stopped"
+        "服务器确认了取消意图",
+        "结果已删除",
+        "最终任务状态将为 cancelled",
+        "工作器已停止"
       ],
       "correct": 0,
-      "explanation": "Cancellation is cooperative and eventually consistent. Work may finish or ignore cancellation after the acknowledgement."
+      "explanation": "取消是协作式且最终一致。确认后工作仍可能完成或忽略取消。"
     },
     {
       "stage": "post",
-      "question": "Which method set matches the current official Tasks extension?",
+      "question": "哪组方法符合当前官方任务扩展？",
       "options": [
-        "tools/task, notifications/task_result, and roots/list",
-        "tasks/get, tasks/update, and tasks/cancel",
-        "tasks/create, tasks/subscribe, and tasks/delete",
-        "tasks/status, tasks/result, and tasks/list"
+        "tools/task、notifications/task_result 和 roots/list",
+        "tasks/get、tasks/update 和 tasks/cancel",
+        "tasks/create、tasks/subscribe 和 tasks/delete",
+        "tasks/status、tasks/result 和 tasks/list"
       ],
       "correct": 1,
-      "explanation": "The extension uses tasks/get, tasks/update, and tasks/cancel. Each HTTP request sets Mcp-Name to params.taskId. The older status, result, and list methods are migration-only."
+      "explanation": "扩展使用 tasks/get、tasks/update 和 tasks/cancel。每个 HTTP 请求将 Mcp-Name 设为 params.taskId。旧 status、result、list 方法仅用于迁移。"
     }
   ]
 }

@@ -1,39 +1,39 @@
-# Code migration agent dashboard (TypeScript skeleton)
+# 代码迁移智能体仪表盘（Code Migration Agent Dashboard，TypeScript 骨架）
 
-Multi-file TypeScript skeleton for the dashboard layer of the code migration
-agent capstone. The agent (Python) runs in a sandbox; this server renders
-progress for the operator.
+代码迁移智能体综合实践（Capstone）的仪表盘层采用多个
+TypeScript 文件实现骨架。Python 智能体在沙箱中运行；此服务器为
+操作人员渲染进度。
 
-## Layout
+## 目录结构（Layout）
 
-- `src/index.ts` — entry point, simulates ticks and optionally serves HTTP.
-- `src/server.ts` — Hono routes for `/`, `/dashboard`, `/migrations`, `/migrations/:id`.
-- `src/migrations.ts` — per-file state machine and seed data.
-- `src/cost.ts` — turn count and dollar budget enforcement.
-- `src/types.ts` — shared types.
-- `tests/*.test.ts` — `node --test` style tests via `tsx`.
+- `src/index.ts`：入口，模拟时钟步进（Tick），可选提供 HTTP 服务。
+- `src/server.ts`：Hono 路由 `/`、`/dashboard`、`/migrations`、`/migrations/:id`。
+- `src/migrations.ts`：逐文件状态机（State Machine）与种子数据。
+- `src/cost.ts`：轮次计数与美元预算强制执行。
+- `src/types.ts`：共享类型。
+- `tests/*.test.ts`：通过 `tsx` 运行 `node --test` 风格测试。
 
-## Install
+## 安装（Install）
 
 ```bash
 npm install
 ```
 
-## Run
+## 运行（Run）
 
 ```bash
-npm start         # offline: simulate 40 ticks and print rollup
-npm run serve     # serve the HTML dashboard on PORT (default 8009)
+npm start         # 离线：模拟 40 个步进，打印汇总
+npm run serve     # 在 PORT（默认 8009）上提供 HTML 仪表盘服务
 ```
 
-## Verify
+## 验证（Verify）
 
 ```bash
 npm run typecheck
 npm test
 ```
 
-## Spec references
+## 规格参考（Spec References）
 
-- Source lesson: `phases/19-capstone-projects/09-code-migration-agent/docs/en.md`
-- Recipes: [OpenRewrite](https://docs.openrewrite.org), libcst.
+- 来源课程：`phases/19-capstone-projects/09-code-migration-agent/docs/en.md`
+- 配方（Recipe）：[OpenRewrite](https://docs.openrewrite.org)、libcst。

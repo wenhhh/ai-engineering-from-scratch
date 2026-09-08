@@ -1,87 +1,87 @@
 {
   "lesson": "08-production-rag-chatbot",
-  "title": "Capstone 08 — Production RAG Chatbot for a Regulated Vertical",
+  "title": "综合实践 08：受监管垂直领域的生产级 RAG 聊天机器人（Production RAG Chatbot for a Regulated Vertical）",
   "questions": [
     {
       "stage": "pre",
-      "question": "Why does prompt caching matter so much in a regulated-domain RAG chatbot?",
+      "question": "为什么提示词缓存（Prompt Caching）对受监管领域 RAG 聊天机器人如此重要？",
       "options": [
-        "It eliminates hallucinations",
-        "At 60-80% hit rate it cuts per-query cost 3-5x by discounting stable prefix tokens",
-        "It removes the need for a vector database",
-        "It improves recall on the rerank stage"
+        "它能消除幻觉（Hallucination）",
+        "在 60–80% 命中率下，通过稳定前缀词元折扣，将每查询成本降至三分之一至五分之一",
+        "它使向量数据库不再必要",
+        "它提高重排序阶段的召回率（Recall）"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "pre",
-      "question": "What goes into the cache header versus the uncached suffix of each request?",
+      "question": "每个请求的缓存头部与不缓存后缀分别放什么？",
       "options": [
-        "Random text padding to hit cache size",
-        "Only the retrieved documents",
-        "User question first, system prompt last",
-        "System prompt and static policies in the cache header, reranked context as cache extension, user question as the uncached suffix"
+        "随机填充文本以达到缓存大小",
+        "只放检索到的文档",
+        "用户问题在前，系统提示词在后",
+        "系统提示词和静态策略放在缓存头部，重排上下文作为缓存扩展，用户问题作为不缓存后缀"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "How does the retrieval layer respect jurisdiction tags like GDPR or HIPAA?",
+      "question": "检索层如何遵守 GDPR 或 HIPAA 等司法管辖区标签（Jurisdiction Tag）？",
       "options": [
-        "It rewrites the user question per region",
-        "It blocks the response after generation only",
-        "It runs a separate index per country",
-        "Role and jurisdiction filters apply before the hybrid search merge so chunks outside the user's scope are never reranked"
+        "按地区重写用户问题",
+        "只在生成后阻断回答",
+        "每个国家运行独立索引",
+        "在混合搜索合并前应用角色与司法管辖区过滤，使用户范围之外的分块不会进入重排序"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Which layered guardrail combination does the synthesis stage pass output through?",
+      "question": "综合生成阶段的输出经过哪种分层防护机制（Guardrails）组合？",
       "options": [
-        "Just an output PII regex",
-        "Only Llama Guard 4 on input",
-        "Llama Guard 4, NeMo Guardrails policy rails, and Presidio PII scrub, plus citation enforcement",
-        "A single LLM-judge faithfulness check"
+        "仅使用输出 PII 正则表达式",
+        "仅对输入使用 Llama Guard 4",
+        "Llama Guard 4、NeMo Guardrails 策略规则、Presidio PII 清理，再加强制引用",
+        "单个 LLM 裁判的忠实度检查"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "What does the drift dashboard alert on?",
+      "question": "漂移仪表盘（Drift Dashboard）对什么告警？",
       "options": [
-        "A change in the underlying LLM provider",
-        "Latency above 200ms",
-        "A retrieval-quality drop, for example a 5% week-over-week dip in nDCG or citation score",
-        "Any new document added to the index"
+        "底层 LLM 提供商发生变化",
+        "延迟超过 200ms",
+        "检索质量下降，例如 nDCG 或引用评分周环比下降 5%",
+        "索引加入任何新文档"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "How big is the golden set used to gate the deliverable's correctness rubric?",
+      "question": "用于交付物正确性评分验收的黄金集（Golden Set）有多大？",
       "options": [
-        "200 expert-labeled question/answer pairs with citations",
-        "5 demo queries",
-        "2000 synthetic questions",
-        "20 questions"
+        "200 组专家标注的带引用问答对",
+        "5 个演示查询",
+        "2000 个合成问题",
+        "20 个问题"
       ],
       "correct": 0,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "Which RAGAS scores are tracked online per turn?",
+      "question": "每轮在线追踪哪些 RAGAS 评分？",
       "options": [
         "BLEU, ROUGE, and METEOR",
-        "Token count and dollar cost",
-        "Faithfulness, answer relevance, and context precision",
-        "Throughput, GPU utilization, and queue depth"
+        "词元数与美元成本",
+        "忠实度（Faithfulness）、答案相关性（Answer Relevance）和上下文精确率（Context Precision）",
+        "吞吐量、GPU 利用率与队列深度"
       ],
       "correct": 2,
       "explanation": ""

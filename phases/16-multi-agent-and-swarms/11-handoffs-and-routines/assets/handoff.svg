@@ -16,51 +16,51 @@
       .edge { stroke: #1a1a1a; stroke-width: 1.2; fill: none; }
     </style>
   </defs>
-  <text x="450" y="28" text-anchor="middle" class="title">Swarm — routines + handoffs (OpenAI, 2024; Agents SDK 2025)</text>
+  <text x="450" y="28" text-anchor="middle" class="title">Swarm：例程 + 交接（OpenAI，2024；Agents SDK 2025）</text>
 
   <rect x="320" y="60" width="260" height="100" class="hot"/>
-  <text x="450" y="82" text-anchor="middle" class="head">Triage Agent</text>
-  <text x="450" y="104" text-anchor="middle" class="small">instructions:</text>
-  <text x="450" y="120" text-anchor="middle" class="small">"route user to the right specialist"</text>
-  <text x="450" y="140" text-anchor="middle" class="small">functions: transfer_to_refunds, sales, support</text>
+  <text x="450" y="82" text-anchor="middle" class="head">分流智能体（Triage Agent）</text>
+  <text x="450" y="104" text-anchor="middle" class="small">指令：</text>
+  <text x="450" y="120" text-anchor="middle" class="small">“将用户路由到合适的专职智能体”</text>
+  <text x="450" y="140" text-anchor="middle" class="small">函数：transfer_to_refunds, sales, support</text>
 
   <line x1="380" y1="160" x2="200" y2="220" class="edge" marker-end="url(#arrow)"/>
-  <text x="260" y="195" class="small">tool returns refund_agent</text>
+  <text x="260" y="195" class="small">工具返回 refund_agent</text>
 
   <line x1="450" y1="160" x2="450" y2="220" class="edge" marker-end="url(#arrow)"/>
-  <text x="460" y="195" class="small">tool returns sales_agent</text>
+  <text x="460" y="195" class="small">工具返回 sales_agent</text>
 
   <line x1="520" y1="160" x2="700" y2="220" class="edge" marker-end="url(#arrow)"/>
-  <text x="620" y="195" class="small">tool returns support_agent</text>
+  <text x="620" y="195" class="small">工具返回 support_agent</text>
 
   <rect x="100" y="220" width="200" height="80" class="cool"/>
-  <text x="200" y="242" text-anchor="middle" class="head">Refund Agent</text>
+  <text x="200" y="242" text-anchor="middle" class="head">退款智能体（Refund Agent）</text>
   <text x="200" y="262" text-anchor="middle" class="small">process_refund(order_id)</text>
-  <text x="200" y="282" text-anchor="middle" class="small">"refund processed for order 77"</text>
+  <text x="200" y="282" text-anchor="middle" class="small">“订单 77 退款已处理”</text>
 
   <rect x="350" y="220" width="200" height="80" class="cool"/>
-  <text x="450" y="242" text-anchor="middle" class="head">Sales Agent</text>
+  <text x="450" y="242" text-anchor="middle" class="head">销售智能体（Sales Agent）</text>
   <text x="450" y="262" text-anchor="middle" class="small">quote_product(product)</text>
-  <text x="450" y="282" text-anchor="middle" class="small">"quote: $99/mo"</text>
+  <text x="450" y="282" text-anchor="middle" class="small">“报价：$99/月”</text>
 
   <rect x="600" y="220" width="200" height="80" class="cool"/>
-  <text x="700" y="242" text-anchor="middle" class="head">Support Agent</text>
+  <text x="700" y="242" text-anchor="middle" class="head">支持智能体（Support Agent）</text>
   <text x="700" y="262" text-anchor="middle" class="small">open_ticket(issue)</text>
-  <text x="700" y="282" text-anchor="middle" class="small">"ticket opened"</text>
+  <text x="700" y="282" text-anchor="middle" class="small">“工单已创建”</text>
 
   <rect x="60" y="340" width="380" height="150" class="box"/>
-  <text x="250" y="362" text-anchor="middle" class="head">how the primitives work</text>
-  <text x="250" y="384" text-anchor="middle" class="small">agent = (instructions, tools)</text>
-  <text x="250" y="404" text-anchor="middle" class="small">handoff = tool that returns Agent</text>
-  <text x="250" y="424" text-anchor="middle" class="small">runtime detects Agent-valued return</text>
-  <text x="250" y="444" text-anchor="middle" class="small">switches active agent for next turn</text>
-  <text x="250" y="470" text-anchor="middle" class="caption">no state machine, no DSL, just tool calls</text>
+  <text x="250" y="362" text-anchor="middle" class="head">原语如何工作</text>
+  <text x="250" y="384" text-anchor="middle" class="small">智能体 = (instructions, tools)</text>
+  <text x="250" y="404" text-anchor="middle" class="small">交接 = 返回 Agent 的工具</text>
+  <text x="250" y="424" text-anchor="middle" class="small">运行时检测值为 Agent 的返回</text>
+  <text x="250" y="444" text-anchor="middle" class="small">切换下一轮活动智能体</text>
+  <text x="250" y="470" text-anchor="middle" class="caption">没有状态机或 DSL，只有工具调用</text>
 
   <rect x="460" y="340" width="380" height="150" class="box"/>
-  <text x="650" y="362" text-anchor="middle" class="head">stateless tradeoff</text>
-  <text x="650" y="384" text-anchor="middle" class="small">Swarm persists nothing between runs</text>
-  <text x="650" y="404" text-anchor="middle" class="small">memory is the caller's problem</text>
-  <text x="650" y="424" text-anchor="middle" class="small">Agents SDK (2025) adds: sessions, tracing</text>
-  <text x="650" y="444" text-anchor="middle" class="small">guardrails, handoff filters on top</text>
-  <text x="650" y="470" text-anchor="middle" class="caption">handoff primitive survives; production ergonomics added</text>
+  <text x="650" y="362" text-anchor="middle" class="head">无状态权衡</text>
+  <text x="650" y="384" text-anchor="middle" class="small">Swarm 在运行之间不持久化任何内容</text>
+  <text x="650" y="404" text-anchor="middle" class="small">记忆由调用者负责</text>
+  <text x="650" y="424" text-anchor="middle" class="small">Agents SDK（2025）增加会话、追踪</text>
+  <text x="650" y="444" text-anchor="middle" class="small">并添加防护机制、交接过滤器</text>
+  <text x="650" y="470" text-anchor="middle" class="caption">保留交接原语，增加生产易用性</text>
 </svg>

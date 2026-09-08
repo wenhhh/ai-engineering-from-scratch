@@ -1,7 +1,7 @@
-/* figures-agents4.js - animated lesson figures for agent engineering.
-   Loads after lesson-figures.js, registers through window.LF. No deps, ES5,
-   theme via CSS vars. SMIL-only animation: no JS render loops. Authoring: a
-   ```figure block naming one of the widgets below. */
+/* figures-agents4.js - 智能体工程（Agent engineering）的动画课程图表。
+   在 lesson-figures.js 之后加载，通过 window.LF 注册。无依赖，使用 ES5，主题由 CSS 变量控制。
+   动画仅使用 SMIL，不使用 JS 渲染循环。编写方式：使用一个以以下某个组件名称为内容的
+   ```figure 块。 */
 (function () {
   'use strict';
   var LF = window.LF;
@@ -26,17 +26,17 @@
     return t;
   }
 
-  // -- ae-memory-fusion: a query splitting into three stores, scores fusing ---
+  // -- ae-memory-fusion: 一个查询分流至三个存储，融合评分（Score fusion） --
   function memoryFusion(host) {
     var W = 520, H = 250;
     var svg = svgEl('svg', { viewBox: '0 0 ' + W + ' ' + H });
     var stores = [
-      { y: 50, name: 'VECTOR', sub: 'semantic', w: '0.50' },
-      { y: 110, name: 'KV', sub: 'fact lookup', w: '0.30' },
-      { y: 170, name: 'GRAPH', sub: 'relations', w: '0.20' }
+      { y: 50, name: '向量（Vector）', sub: '语义', w: '0.50' },
+      { y: 110, name: '键值（KV）', sub: '事实查询', w: '0.30' },
+      { y: 170, name: '图（Graph）', sub: '关系', w: '0.20' }
     ];
     svg.appendChild(svgEl('rect', { x: 24, y: 95, width: 80, height: 40, rx: '5', fill: 'var(--blueprint,#3553ff)', stroke: 'var(--blueprint,#3553ff)', 'stroke-width': '1.5' }));
-    svg.appendChild(txt(64, 119, 'query', '11', 'var(--bg,#fafaf5)'));
+    svg.appendChild(txt(64, 119, '查询', '11', 'var(--bg,#fafaf5)'));
     var i;
     for (i = 0; i < 3; i++) {
       var s = stores[i];
@@ -60,19 +60,19 @@
     var fuse = svgEl('rect', { x: 420, y: 95, width: 76, height: 40, rx: '5', fill: 'var(--bg-surface,#eee)', stroke: 'var(--blueprint,#3553ff)', 'stroke-width': '1.5' });
     fuse.appendChild(anim('fill', 'var(--bg-surface,#eee);var(--blueprint,#3553ff);var(--bg-surface,#eee)', '3s', { begin: '2.2s' }));
     svg.appendChild(fuse);
-    svg.appendChild(txt(458, 119, 'fuse', '11', 'var(--ink,#1a1a1a)'));
-    svg.appendChild(txt(260, 232, 'score = relevance + importance + recency, weighted sum', '10', 'var(--ink-mute,#777)'));
-    shell(host, 'HYBRID MEMORY', 'one query, three stores',
+    svg.appendChild(txt(458, 119, '融合', '11', 'var(--ink,#1a1a1a)'));
+    svg.appendChild(txt(260, 232, '得分 = 相关性、重要性与近期程度的加权和', '10', 'var(--ink-mute,#777)'));
+    shell(host, '混合记忆（Hybrid Memory）', '一次查询，三类存储',
       svg,
-      'Mem0 writes every memory to three stores at once and fuses them on retrieval. Vector answers semantic similarity, KV answers fact lookup, graph answers relationship reasoning. A weighted score over relevance, importance, and recency blends the three, so the single add/search surface is never wrong for two of three query classes the way one store always is.');
+      'Mem0 将每条记忆同时写入三类存储，并在检索时融合结果。向量存储负责语义相似度，键值存储（Key-Value Store，KV）负责事实查询，图存储负责关系推理。通过对相关性（Relevance）、重要性（Importance）和近期程度（Recency）加权评分，将三类结果融合，使统一的 add/search 接口适配三类查询，避免单一存储总有两类查询不擅长的问题。');
   }
 
-  // -- ae-crew-vs-flow: autonomous role mesh against a deterministic chain ----
+  // -- ae-crew-vs-flow: 自主角色网（Role mesh）与确定性链对比 --
   function crewVsFlow(host) {
     var W = 520, H = 250;
     var svg = svgEl('svg', { viewBox: '0 0 ' + W + ' ' + H });
-    svg.appendChild(txt(135, 28, 'CREW', '11', 'var(--blueprint,#3553ff)'));
-    svg.appendChild(txt(135, 42, 'autonomous, role-based', '8', 'var(--ink-mute,#777)'));
+    svg.appendChild(txt(135, 28, '团队（Crew）', '11', 'var(--blueprint,#3553ff)'));
+    svg.appendChild(txt(135, 42, '自主协作，按角色分工', '8', 'var(--ink-mute,#777)'));
     var roles = [[70, 80], [200, 80], [135, 160]];
     var i, j;
     for (i = 0; i < 3; i++) for (j = i + 1; j < 3; j++) {
@@ -81,7 +81,7 @@
       ln.appendChild(anim('stroke-dashoffset', '18;0', '1s', { begin: ((i + j) * 0.3) + 's' }));
       svg.appendChild(ln);
     }
-    var names = ['research', 'write', 'edit'];
+    var names = ['研究', '写作', '编辑'];
     for (i = 0; i < 3; i++) {
       var c = svgEl('circle', { cx: roles[i][0], cy: roles[i][1], r: '20', fill: 'var(--bg-surface,#eee)', stroke: 'var(--blueprint,#3553ff)', 'stroke-width': '1.5' });
       c.appendChild(anim('opacity', '0.65;1;0.65', '2.4s', { begin: (i * 0.5) + 's', repeatCount: 'indefinite' }));
@@ -89,9 +89,9 @@
       svg.appendChild(txt(roles[i][0], roles[i][1] + 3, names[i], '8', 'var(--blueprint,#3553ff)'));
     }
     svg.appendChild(svgEl('line', { x1: 290, y1: 30, x2: 290, y2: 210, stroke: 'var(--rule-soft,#ddd)', 'stroke-width': '1', 'stroke-dasharray': '3 3' }));
-    svg.appendChild(txt(405, 28, 'FLOW', '11', 'var(--blueprint,#3553ff)'));
-    svg.appendChild(txt(405, 42, 'event-driven, deterministic', '8', 'var(--ink-mute,#777)'));
-    var steps = ['fetch', 'route', 'emit'];
+    svg.appendChild(txt(405, 28, '流程（Flow）', '11', 'var(--blueprint,#3553ff)'));
+    svg.appendChild(txt(405, 42, '事件驱动，确定性执行', '8', 'var(--ink-mute,#777)'));
+    var steps = ['获取', '路由', '发出结果'];
     for (i = 0; i < 3; i++) {
       var y = 70 + i * 50;
       var b = svgEl('rect', { x: 350, y: y, width: 110, height: 34, rx: '4', fill: 'var(--bg-surface,#eee)', stroke: 'var(--rule-soft,#ddd)', 'stroke-width': '1.5' });
@@ -104,23 +104,23 @@
         svg.appendChild(ar);
       }
     }
-    svg.appendChild(txt(260, 236, 'docs: for production, start with a Flow', '10', 'var(--ink-mute,#777)'));
-    shell(host, 'CREW vs FLOW', 'two shapes, one framework',
+    svg.appendChild(txt(260, 236, '文档建议：生产应用从 Flow 开始', '10', 'var(--ink-mute,#777)'));
+    shell(host, '团队（Crew）与流程（Flow）', '一个框架，两种组织方式',
       svg,
-      'CrewAI ships two top-level shapes. A Crew is autonomous role-based collaboration, agents critiquing each other in a loose mesh, good for exploratory work. A Flow is an event-driven deterministic chain you can replay, audit, and cost. The docs are blunt: for any production-ready application, start with a Flow.');
+      'CrewAI 提供两种顶层组织方式。团队（Crew）通过角色分工自主协作，智能体在松散的网状结构中相互评议，适合探索性工作。流程（Flow）是一条事件驱动的确定性执行链，可以回放、审计并核算成本。文档明确建议：任何面向生产的应用都应从 Flow 开始。');
   }
 
-  // -- ae-agent-handoff: a transfer_to tool passing control between agents ----
+  // -- ae-agent-handoff: transfer_to 工具在智能体间移交控制权（Handoff） --
   function agentHandoff(host) {
     var W = 520, H = 230;
     var svg = svgEl('svg', { viewBox: '0 0 ' + W + ' ' + H });
     function agent(x, label) {
       svg.appendChild(svgEl('rect', { x: x, y: 80, width: 120, height: 56, rx: '6', fill: 'var(--bg-surface,#eee)', stroke: 'var(--blueprint,#3553ff)', 'stroke-width': '1.5' }));
       svg.appendChild(txt(x + 60, 105, label, '11', 'var(--blueprint,#3553ff)'));
-      svg.appendChild(txt(x + 60, 122, 'agent', '8', 'var(--ink-mute,#777)'));
+      svg.appendChild(txt(x + 60, 122, '智能体', '8', 'var(--ink-mute,#777)'));
     }
-    agent(40, 'triage');
-    agent(360, 'refund');
+    agent(40, '分流（Triage）');
+    agent(360, '退款（Refund）');
     var path = svgEl('path', { d: 'M160 108 C240 60, 280 60, 360 108', fill: 'none', stroke: 'var(--ink-soft,#555)', 'stroke-width': '1.6', 'stroke-dasharray': '6 5' });
     path.appendChild(anim('stroke-dashoffset', '22;0', '1s', {}));
     svg.appendChild(path);
@@ -133,20 +133,20 @@
     ctx.appendChild(LF.smil('animateMotion', { dur: '2.4s', path: 'M160 108 C240 60, 280 60, 360 108', keyPoints: '0;0;1;1', keyTimes: '0;0.3;0.8;1', calcMode: 'linear' }));
     ctx.appendChild(anim('opacity', '0;1;1;1', '2.4s', {}));
     svg.appendChild(ctx);
-    svg.appendChild(txt(260, 170, 'handoff is a tool the model can call', '11', 'var(--ink,#1a1a1a)'));
-    svg.appendChild(txt(260, 200, 'conversation context travels with control', '10', 'var(--ink-mute,#777)'));
-    shell(host, 'AGENT HANDOFF', 'delegation as a tool call',
+    svg.appendChild(txt(260, 170, '交接是一种可供模型调用的工具', '11', 'var(--ink,#1a1a1a)'));
+    svg.appendChild(txt(260, 200, '对话上下文随控制权一同转交', '10', 'var(--ink-mute,#777)'));
+    shell(host, '智能体交接（Agent Handoff）', '用工具调用表达委派',
       svg,
-      'In the OpenAI Agents SDK a handoff is just a tool named transfer_to_<agent>. When the triage agent calls it, control and the running conversation context pass to the target agent, which continues the session. Modeling delegation as an ordinary tool keeps the loop uniform: the model decides to hand off the same way it decides to call any function.');
+      '在 OpenAI Agents SDK 中，交接（Handoff）就是名为 transfer_to_<agent> 的工具。分流智能体调用它时，控制权与当前对话上下文一并转交给目标智能体，由目标继续会话。将委派建模为普通工具，可以保持循环形式统一：模型决定交接的方式，与决定调用任意函数的方式相同。');
   }
 
-  // -- ae-subagent-isolation: a parent spawning children with fresh context ---
+  // -- ae-subagent-isolation: 父智能体生成具有全新上下文（Context）的子智能体 --
   function subagentIsolation(host) {
     var W = 520, H = 250;
     var svg = svgEl('svg', { viewBox: '0 0 ' + W + ' ' + H });
     svg.appendChild(svgEl('rect', { x: 200, y: 24, width: 120, height: 46, rx: '6', fill: 'var(--blueprint,#3553ff)', stroke: 'var(--blueprint,#3553ff)', 'stroke-width': '1.5' }));
-    svg.appendChild(txt(260, 44, 'orchestrator', '11', 'var(--bg,#fafaf5)'));
-    svg.appendChild(txt(260, 60, 'main context', '8', 'var(--bg-surface,#cdd6ff)'));
+    svg.appendChild(txt(260, 44, '编排器', '11', 'var(--bg,#fafaf5)'));
+    svg.appendChild(txt(260, 60, '主上下文', '8', 'var(--bg-surface,#cdd6ff)'));
     var kids = [80, 260, 440];
     var i;
     for (i = 0; i < 3; i++) {
@@ -159,11 +159,11 @@
       var b = svgEl('rect', { x: x - 46, y: 136, width: 92, height: 42, rx: '5', fill: 'var(--bg-surface,#eee)', stroke: 'var(--blueprint,#3553ff)', 'stroke-width': '1.5', opacity: '0' });
       b.appendChild(anim('opacity', '0;1', '0.5s', { begin: (0.5 + i * 0.5) + 's', fill: 'freeze' }));
       svg.appendChild(b);
-      var t1 = txt(x, 157, 'subagent ' + (i + 1), '9', 'var(--blueprint,#3553ff)');
+      var t1 = txt(x, 157, '子智能体 ' + (i + 1), '9', 'var(--blueprint,#3553ff)');
       t1.setAttribute('opacity', '0');
       t1.appendChild(anim('opacity', '0;1', '0.5s', { begin: (0.5 + i * 0.5) + 's', fill: 'freeze' }));
       svg.appendChild(t1);
-      var t2 = txt(x, 171, 'own window', '8', 'var(--ink-mute,#777)');
+      var t2 = txt(x, 171, '独立上下文窗口', '8', 'var(--ink-mute,#777)');
       t2.setAttribute('opacity', '0');
       t2.appendChild(anim('opacity', '0;1', '0.5s', { begin: (0.5 + i * 0.5) + 's', fill: 'freeze' }));
       svg.appendChild(t2);
@@ -172,24 +172,24 @@
       ret.appendChild(anim('opacity', '0;0;1;1', '4s', { begin: (i * 0.5) + 's' }));
       svg.appendChild(ret);
     }
-    svg.appendChild(txt(260, 218, 'each subagent runs in an isolated context, returns a summary', '10', 'var(--ink-mute,#777)'));
-    shell(host, 'SUBAGENT ISOLATION', 'fan out, summarize back',
+    svg.appendChild(txt(260, 218, '每个子智能体在隔离上下文中运行，只返回摘要', '10', 'var(--ink-mute,#777)'));
+    shell(host, '子智能体隔离（Subagent Isolation）', '分发任务，收回摘要',
       svg,
-      'The Claude Agent SDK spawns subagents that each run in their own context window (dashed boundary). The orchestrator keeps its main context clean: children explore in parallel and return only a compact summary. This buys both parallelism and context isolation, so a noisy search does not flood the parent transcript.');
+      'Claude Agent SDK 创建的子智能体（Subagent）分别在独立上下文窗口（Context Window）中运行，图中虚线表示边界。编排器（Orchestrator）的主上下文保持精简：子智能体并行探索，只返回简短摘要。这样既获得并行能力，也实现上下文隔离，冗杂的搜索结果不会挤满父智能体的对话记录。');
   }
 
-  // -- ae-swebench-gate: a patch run against FAIL_TO_PASS unit tests ----------
+  // -- ae-swebench-gate: 使用 FAIL_TO_PASS 单元测试（Unit tests）检验补丁 --
   function swebenchGate(host) {
     var W = 520, H = 240;
     var svg = svgEl('svg', { viewBox: '0 0 ' + W + ' ' + H });
     svg.appendChild(svgEl('rect', { x: 30, y: 95, width: 100, height: 46, rx: '6', fill: 'var(--bg-surface,#eee)', stroke: 'var(--blueprint,#3553ff)', 'stroke-width': '1.5' }));
-    svg.appendChild(txt(80, 114, 'agent', '11', 'var(--blueprint,#3553ff)'));
-    svg.appendChild(txt(80, 130, 'patch', '8', 'var(--ink-mute,#777)'));
+    svg.appendChild(txt(80, 114, '智能体', '11', 'var(--blueprint,#3553ff)'));
+    svg.appendChild(txt(80, 130, '补丁', '8', 'var(--ink-mute,#777)'));
     var arr = svgEl('line', { x1: 130, y1: 118, x2: 185, y2: 118, stroke: 'var(--ink-soft,#555)', 'stroke-width': '1.6', 'stroke-dasharray': '5 4' });
     arr.appendChild(anim('stroke-dashoffset', '18;0', '0.8s', {}));
     svg.appendChild(arr);
     svg.appendChild(svgEl('rect', { x: 185, y: 40, width: 150, height: 156, rx: '6', fill: 'var(--bg-surface,#eee)', stroke: 'var(--rule-soft,#ddd)', 'stroke-width': '1.5' }));
-    svg.appendChild(txt(260, 34, 'test harness', '10', 'var(--ink-mute,#777)'));
+    svg.appendChild(txt(260, 34, '测试执行框架（Test Harness）', '10', 'var(--ink-mute,#777)'));
     var tests = [
       { y: 60, lab: 'FAIL_TO_PASS', begin: '0.8s' },
       { y: 95, lab: 'FAIL_TO_PASS', begin: '1.3s' },
@@ -210,18 +210,18 @@
     var gate = svgEl('rect', { x: 390, y: 95, width: 100, height: 46, rx: '6', fill: 'var(--bg-surface,#eee)', stroke: 'var(--warn,#b8870f)', 'stroke-width': '1.5' });
     gate.appendChild(anim('stroke', 'var(--warn,#b8870f);var(--blueprint,#3553ff)', '4s', { begin: '2.6s', fill: 'freeze' }));
     svg.appendChild(gate);
-    var res = txt(440, 122, 'RESOLVED', '10', 'var(--ink,#1a1a1a)');
+    var res = txt(440, 122, '已解决', '10', 'var(--ink,#1a1a1a)');
     svg.appendChild(res);
     var g2 = svgEl('line', { x1: 335, y1: 118, x2: 390, y2: 118, stroke: 'var(--ink-soft,#555)', 'stroke-width': '1.6', 'stroke-dasharray': '5 4' });
     g2.appendChild(anim('stroke-dashoffset', '18;0', '0.8s', { begin: '2.6s' }));
     svg.appendChild(g2);
-    svg.appendChild(txt(260, 222, 'resolved only if every gated test goes green', '10', 'var(--ink-mute,#777)'));
-    shell(host, 'SWE-BENCH GATE', 'tests, not judgment, score the patch',
+    svg.appendChild(txt(260, 222, '只有所有验收测试通过，才算解决', '10', 'var(--ink-mute,#777)'));
+    shell(host, 'SWE-bench 验收关卡（Gate）', '通过执行测试为补丁评分',
       svg,
-      'SWE-bench scores a patch by running the repo test suite, not by asking a model if it looks right. A task counts as resolved only when the FAIL_TO_PASS tests now pass and the PASS_TO_PASS tests still pass. Execution-based grading is why the benchmark resists gaming, and why SWE-bench Verified strips out tasks whose tests were ambiguous or broken.');
+      'SWE-bench 通过运行仓库测试套件为补丁评分，不依赖模型判断补丁看起来是否正确。只有原先失败的 FAIL_TO_PASS 测试现在通过，而且原先通过的 PASS_TO_PASS 测试仍然通过，任务才算解决。基于执行的评分（Execution-Based Grading）使基准不易被投机刷分；SWE-bench Verified 也因此剔除了测试含糊或损坏的任务。');
   }
 
-  // -- ae-agent-human-gap: two bars closing as the agent line climbs ----------
+  // -- ae-agent-human-gap: 智能体曲线上升，两根条形之间的差距缩小 --
   function agentHumanGap(host) {
     var W = 520, H = 240, PAD = 44, base = 200;
     var svg = svgEl('svg', { viewBox: '0 0 ' + W + ' ' + H });
@@ -229,7 +229,7 @@
     svg.appendChild(svgEl('line', { x1: PAD, y1: 30, x2: PAD, y2: base, stroke: 'var(--rule-soft,#ddd)', 'stroke-width': '1' }));
     var humanY = 50;
     svg.appendChild(svgEl('line', { x1: PAD, y1: humanY, x2: W - 20, y2: humanY, stroke: 'var(--ink-mute,#777)', 'stroke-width': '1.4', 'stroke-dasharray': '5 4' }));
-    svg.appendChild(txt(W - 24, humanY - 6, 'human ~78%', '9', 'var(--ink-mute,#777)', 'end'));
+    svg.appendChild(txt(W - 24, humanY - 6, '人类约 78%', '9', 'var(--ink-mute,#777)', 'end'));
     var x0 = PAD + 20, x1 = W - 60, y0 = base - 22, y1 = base - 120;
     var line = svgEl('path', { d: 'M' + x0 + ' ' + y0 + ' Q ' + ((x0 + x1) / 2) + ' ' + (y0 - 10) + ' ' + x1 + ' ' + y1, fill: 'none', stroke: 'var(--blueprint,#3553ff)', 'stroke-width': '2.4', 'stroke-dasharray': '320', 'stroke-dashoffset': '320' });
     line.appendChild(anim('stroke-dashoffset', '320;0', '3s', { begin: '0.3s', fill: 'freeze' }));
@@ -240,22 +240,22 @@
     svg.appendChild(txt(x0, base + 16, '2023', '9', 'var(--ink-mute,#777)'));
     svg.appendChild(txt(x1, base + 16, '2026', '9', 'var(--ink-mute,#777)'));
     svg.appendChild(txt(x0 + 4, y0 - 10, '14%', '9', 'var(--blueprint,#3553ff)', 'start'));
-    svg.appendChild(txt(260, 222, 'gap narrows, failure modes stay: grounding and operational knowledge', '10', 'var(--ink-mute,#777)'));
-    shell(host, 'AGENT vs HUMAN', 'the gap is closing',
+    svg.appendChild(txt(260, 236, '差距缩小，界面定位与操作知识仍是故障来源', '10', 'var(--ink-mute,#777)'));
+    shell(host, '智能体（Agent）与人类', '差距正在缩小',
       svg,
-      'At release WebArena and OSWorld showed a wide gap: the best agent near 14% where humans sit around 78%. The blue line is climbing year over year, but the two failure modes have not changed. Agents still miss GUI grounding (where to click) and operational knowledge (what the task actually requires), so the score rises faster than reliability.');
+      'WebArena 和 OSWorld 发布时显示出明显差距：最佳智能体接近 14%，人类约为 78%。蓝线逐年上升，但两类故障模式没有改变：智能体仍缺乏图形界面定位（GUI Grounding，即应点击哪里）和操作知识（Operational Knowledge，即任务实际上需要做什么），因此分数提升快于可靠性提升。');
   }
 
-  // -- ae-genai-span-tree: nested OTel spans drawing in parent-child order ----
+  // -- ae-genai-span-tree: 嵌套的 OTel 跨度（Spans）按父子顺序绘制 --
   function genaiSpanTree(host) {
     var W = 520, H = 240;
     var svg = svgEl('svg', { viewBox: '0 0 ' + W + ' ' + H });
     var spans = [
       { x: 40, w: 440, y: 40, lab: 'invoke_agent  CLIENT', begin: '0s', kind: 'agent' },
       { x: 80, w: 200, y: 80, lab: 'execute_tool  search', begin: '0.6s', kind: 'tool' },
-      { x: 120, w: 120, y: 120, lab: 'chat  gpt model', begin: '1.2s', kind: 'model' },
+      { x: 120, w: 120, y: 120, lab: 'chat  GPT 模型', begin: '1.2s', kind: 'model' },
       { x: 80, w: 240, y: 160, lab: 'execute_tool  fetch', begin: '1.8s', kind: 'tool' },
-      { x: 120, w: 150, y: 200, lab: 'chat  claude model', begin: '2.4s', kind: 'model' }
+      { x: 120, w: 150, y: 200, lab: 'chat  Claude 模型', begin: '2.4s', kind: 'model' }
     ];
     var i;
     for (i = 0; i < spans.length; i++) {
@@ -277,20 +277,20 @@
         svg.appendChild(conn);
       }
     }
-    svg.appendChild(txt(260, 230, 'one schema: agent > tool > model, parent-child by convention', '10', 'var(--ink-mute,#777)'));
-    shell(host, 'GENAI SPAN TREE', 'standard telemetry, nested',
+    svg.appendChild(txt(260, 238, '统一模式：智能体 > 工具 > 模型，约定父子关系', '9', 'var(--ink-mute,#777)'));
+    shell(host, '生成式 AI 跨度树（GenAI Span Tree）', '嵌套的标准遥测数据',
       svg,
-      'OpenTelemetry\'s GenAI conventions give every vendor one schema. An invoke_agent span is the root; each execute_tool span hangs off it; each model chat span hangs off the tool that called it. Because the names and parent-child links are standardized, the same trace reads the same way in Datadog, Grafana, Jaeger, or Honeycomb.');
+      'OpenTelemetry 的生成式 AI（Generative AI，GenAI）约定为各厂商提供统一的数据模式（Schema）。invoke_agent 跨度（Span）是根节点，每个 execute_tool 跨度是其子节点，每个模型 chat 跨度又隶属于调用它的工具。名称与父子关系标准化后，同一条追踪（Trace）在 Datadog、Grafana、Jaeger 或 Honeycomb 中都能按相同方式解读。');
   }
 
-  // -- ae-eval-three-layers: the eval loop wrapping the build, three rings ----
+  // -- ae-eval-three-layers: 评估循环（Eval loop）包围构建过程，形成三重环 --
   function evalThreeLayers(host) {
     var W = 520, H = 250, cx = 175, cy = 125;
     var svg = svgEl('svg', { viewBox: '0 0 ' + W + ' ' + H });
     var rings = [
-      { r: 96, lab: 'online production', dash: '12 8', dur: '8s', op: '0.45' },
-      { r: 70, lab: 'custom offline', dash: '9 7', dur: '6s', op: '0.65' },
-      { r: 44, lab: 'static benchmarks', dash: '6 5', dur: '4s', op: '0.85' }
+      { r: 96, lab: '线上生产评估', dash: '12 8', dur: '8s', op: '0.45' },
+      { r: 70, lab: '自定义离线评估', dash: '9 7', dur: '6s', op: '0.65' },
+      { r: 44, lab: '静态基准', dash: '6 5', dur: '4s', op: '0.85' }
     ];
     var i;
     for (i = 0; i < 3; i++) {
@@ -300,22 +300,22 @@
       svg.appendChild(ring);
     }
     svg.appendChild(svgEl('circle', { cx: cx, cy: cy, r: '22', fill: 'var(--blueprint,#3553ff)' }));
-    svg.appendChild(txt(cx, cy - 1, 'build', '10', 'var(--bg,#fafaf5)'));
-    svg.appendChild(txt(cx, cy + 12, 'agent', '8', 'var(--bg-surface,#cdd6ff)'));
+    svg.appendChild(txt(cx, cy - 1, '构建', '10', 'var(--bg,#fafaf5)'));
+    svg.appendChild(txt(cx, cy + 12, '智能体', '8', 'var(--bg-surface,#cdd6ff)'));
     var labelsX = 300;
     for (i = 0; i < 3; i++) {
       var y = 78 + i * 36;
       svg.appendChild(svgEl('circle', { cx: labelsX, cy: y - 4, r: '5', fill: 'none', stroke: 'var(--blueprint,#3553ff)', 'stroke-width': '1.6', 'stroke-dasharray': rings[2 - i].dash }));
       svg.appendChild(txt(labelsX + 14, y, rings[2 - i].lab, '11', 'var(--ink,#1a1a1a)', 'start'));
     }
-    var notes = ['SWE-bench, GAIA, BFCL', 'LLM-judge, execution, trajectory', 'live traffic, regressions, gates'];
+    var notes = ['SWE-bench、GAIA、BFCL', '模型评审、执行、轨迹', '真实流量、回归、验收关卡'];
     for (i = 0; i < 3; i++) {
       svg.appendChild(txt(labelsX + 14, 78 + i * 36 + 14, notes[i], '8', 'var(--ink-mute,#777)', 'start'));
     }
-    svg.appendChild(txt(260, 236, 'evaluation is the outer loop, not the last step', '10', 'var(--ink-mute,#777)'));
-    shell(host, 'EVAL-DRIVEN LOOP', 'three layers around the build',
+    svg.appendChild(txt(260, 236, '评估贯穿外层循环，不仅是最后一步', '10', 'var(--ink-mute,#777)'));
+    shell(host, '评估驱动循环（Eval-Driven Loop）', '围绕构建过程的三层评估',
       svg,
-      'Evaluation is not the final checkbox; it is the outer loop that drives every choice. Static benchmarks fix the model, custom offline evals measure your product shape, and online production evals catch regressions on live traffic. The three rings turn around the build continuously, which is why 2026 practice keeps evals next to code, in CI, gating every PR.');
+      '评估（Evaluation）是驱动每个决策的外层循环，而非最后勾选的检查项。静态基准用于确定模型，自定义离线评估衡量具体产品的表现，线上生产评估在真实流量中捕获回归。离线方法包括大语言模型评审（LLM Judge）、执行评估和轨迹评估（Trajectory Evaluation）。三层评估持续围绕构建过程运行，因此 2026 年的实践是将评估与代码一同维护，在持续集成（Continuous Integration，CI）中作为每个拉取请求（Pull Request，PR）的验收关卡。');
   }
 
   LF.register({

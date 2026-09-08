@@ -1,48 +1,78 @@
 {
   "lesson": "48-discover-the-real-workflow",
-  "title": "Discover the Real Workflow",
+  "title": "发现真实工作流（Discover the Real Workflow）",
   "questions": [
     {
       "stage": "pre",
-      "question": "Why start with current behavior instead of requested features?",
-      "options": ["The real workflow reveals workarounds, handoffs, state, and constraints", "Features are never useful", "It guarantees production readiness", "It avoids users"],
+      "question": "为什么从当前行为而非请求的功能开始？",
+      "options": [
+        "真实工作流揭示变通办法、交接、状态与约束",
+        "功能永远没用",
+        "它保证生产就绪",
+        "它避开用户"
+      ],
       "correct": 0,
-      "explanation": "Requirements emerge from how work actually happens, not only what people request."
+      "explanation": "需求来自工作实际如何发生，而不只是人们提出什么。"
     },
     {
       "stage": "check",
-      "question": "Which is the strongest direct evidence?",
-      "options": ["A user says what usually happens", "A roadmap", "A system trace of the action", "A team guess"],
+      "question": "哪项是最强的直接证据？",
+      "options": [
+        "用户说通常会发生什么",
+        "路线图",
+        "动作的系统追踪",
+        "团队猜测"
+      ],
       "correct": 2,
-      "explanation": "A trace observes behavior directly rather than reporting or inferring it."
+      "explanation": "追踪直接观察行为，而非转述或推断。"
     },
     {
       "stage": "check",
-      "question": "What four workflow surfaces deserve special attention?",
-      "options": ["Branches, commits, tags, releases", "Friction, hidden state, authority, and exceptions", "Color, font, layout, animation", "Model, tokens, temperature, prompt"],
+      "question": "哪四个工作流方面值得特别关注？",
+      "options": [
+        "分支、提交、标签、发布",
+        "阻力、隐藏状态、权限与异常",
+        "颜色、字体、布局、动画",
+        "模型、词元、温度、提示词"
+      ],
       "correct": 1,
-      "explanation": "These surfaces commonly contain the real problem and risk."
+      "explanation": "这些方面通常包含真实问题与风险。"
     },
     {
       "stage": "check",
-      "question": "Why preserve workflow variants?",
-      "options": ["An average may describe nobody and erase valid role or risk differences", "Variants are easier to code", "All users are identical", "It removes evidence needs"],
+      "question": "为什么保留工作流变体？",
+      "options": [
+        "平均结果可能不符合任何人，并抹去合理的角色或风险差异",
+        "变体更容易编码",
+        "所有用户都一样",
+        "它消除了证据需求"
+      ],
       "correct": 0,
-      "explanation": "Differences can encode roles, policy, expertise, or legacy state."
+      "explanation": "差异可能体现角色、政策、专业能力或遗留状态。"
     },
     {
       "stage": "post",
-      "question": "What does a direct-evidence ratio communicate?",
-      "options": ["Deployment cost", "Model accuracy", "Feature completeness", "How much of the workflow is grounded in observation rather than report or inference"],
+      "question": "直接证据比例传达什么？",
+      "options": [
+        "部署成本",
+        "模型准确率",
+        "功能完整性",
+        "工作流有多少基于观察，而非转述或推断"
+      ],
       "correct": 3,
-      "explanation": "It keeps the strength of evidence visible."
+      "explanation": "它使证据强度保持可见。"
     },
     {
       "stage": "post",
-      "question": "What is a hidden workflow step?",
-      "options": ["A public API", "A unit test", "A CSS transition", "Work carried in memory, chat, or personal notes outside the formal process"],
+      "question": "什么是隐藏工作流步骤？",
+      "options": [
+        "公开 API",
+        "单元测试",
+        "CSS 过渡",
+        "正式流程之外，承载于记忆、聊天或个人笔记中的工作"
+      ],
       "correct": 3,
-      "explanation": "Hidden state often explains why the visible process is incomplete."
+      "explanation": "隐藏状态常解释可见流程为何不完整。"
     }
   ]
 }

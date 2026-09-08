@@ -1,40 +1,40 @@
 ---
 name: hitl-design
-description: Review a proposed Human-in-the-Loop workflow for propose-then-commit shape and flag missing metadata, idempotency, verification, or challenge-and-response layers.
+description: 按先提案后提交形态审查拟议人在回路工作流，标记元数据、幂等性、验证或挑战应答层缺失。
 version: 1.0.0
 phase: 15
 lesson: 15
 tags: [hitl, propose-then-commit, idempotency, langgraph, cloudflare, agent-framework, eu-ai-act]
 ---
 
-Given a proposed HITL workflow, audit it against the propose-then-commit reference and flag what is missing, under-specified, or regulator-incompatible.
+给定拟议人在回路（HITL）工作流，按先提案后提交（Propose-then-commit）参考审计，标记缺失、规定不足或与监管不兼容的部分。
 
-Produce:
+请输出：
 
-1. **Proposal metadata.** Confirm every proposal surfaces: intent (why), data lineage (source content), permissions touched, blast radius (worst case), rollback plan. Missing fields are blockers; "the agent wants to X" is not a proposal.
-2. **Idempotency.** Name the idempotency key composition. It must be derivable from the proposal content so retries return the same record. Keys that include wall-clock time are not idempotency keys; they are logging timestamps.
-3. **Durability.** Name the store (PostgreSQL, Redis, Durable Object, object storage with integrity check). Confirm approvals survive agent restart, host restart, and deploy. In-memory queues do not qualify.
-4. **Approval surface.** Rubber-stamp approval (single Approve button) fails this audit. Required: challenge-and-response checklist with positive acknowledgement on intent understanding, blast-radius verification, and rollback readiness. Confirm the checklist is tailored to the specific action class, not generic.
-5. **Post-commit verify.** Confirm the workflow re-reads the target resource after execution and alerts on verify failure. "The tool returned 200" is not verify.
+1. **提案元数据（Proposal metadata）。** 确认每个提案展示意图（为什么）、数据血缘（源内容）、涉及权限、影响范围（最坏情况）、回滚计划。字段缺失即阻塞；“智能体想做 X”不算提案。
+2. **幂等性（Idempotency）。** 说明幂等键组成，必须能从提案内容推导，使重试返回同一记录。含实际时钟的键不是幂等键，而是日志时间戳。
+3. **持久性（Durability）。** 说明采用的存储（PostgreSQL、Redis、Durable Object、带完整性检查的对象存储）。确认智能体重启、主机重启或重新部署后，批准记录仍然保留；仅使用内存队列不符合要求。
+4. **批准界面（Approval surface）。** 单个批准按钮的橡皮图章式批准不通过。必须有挑战应答清单，明确确认理解意图、验证影响范围、回滚就绪；清单要针对动作类别，而非通用清单。
+5. **提交后验证（Post-commit verify）。** 确认执行后重新读取目标资源，验证失败告警。“工具返回 200”不是验证。
 
-Hard rejects:
-- HITL surfaces that do not persist proposals durably.
-- Approval flows where the reviewer is the agent itself.
-- Any irreversible production action without challenge-and-response.
-- Idempotency keys with wall-clock components.
-- Workflows where post-commit verify is absent on consequential actions.
+必须拒绝：
+- 不持久化提案的 HITL 界面。
+- 由智能体自身充当审查者的批准流程。
+- 没有挑战应答的不可逆生产动作。
+- 包含实际时钟成分的幂等键。
+- 有实质后果动作缺少提交后验证的工作流。
 
-Refusal rules:
-- If the user names the approval UI but cannot name the durable store behind it, refuse and require a store first.
-- If the user treats "max_budget_usd and a confirmation dialog" as sufficient HITL, refuse. Budgets cap cost, not correctness.
-- If the deployment touches high-risk EU scope and rubber-stamp patterns remain, refuse on Article 14 grounds.
+拒绝规则：
+- 若用户能说出批准界面，却说不出背后持久存储，拒绝，要求先有存储。
+- 若用户把“max_budget_usd 加确认框”视为充分 HITL，拒绝。预算限制成本，不保证正确性。
+- 若部署涉及欧盟高风险范围且仍有橡皮图章模式，依据第 14 条拒绝。
 
-Output format:
+输出格式：
 
-Return a propose-then-commit audit with:
-- **Proposal field table** (intent / lineage / blast / rollback / permissions — all five required)
-- **Idempotency note** (key composition, retry test result)
-- **Durability line** (store, survives-restart y/n)
-- **Approval surface** (rubber-stamp / checklist; if checklist, list the questions)
-- **Post-commit verify** (present y/n, what it re-reads)
-- **Readiness** (production / staging / research-only)
+返回先提案后提交审计，包含：
+- **提案字段表（Proposal field table）**：意图 / 血缘 / 影响 / 回滚 / 权限，五项全需
+- **幂等性说明（Idempotency note）**：键组成、重试测试结果
+- **持久性条目（Durability line）**：存储、重启后是否保留记录 y/n
+- **批准界面（Approval surface）**：橡皮图章 / 清单，若清单则列问题
+- **提交后验证（Post-commit verify）**：有无 y/n、重新读取什么
+- **就绪性（Readiness）**：生产 / 预发布 / 仅研究

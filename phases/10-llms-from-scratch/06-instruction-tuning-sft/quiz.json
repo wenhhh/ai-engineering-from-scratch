@@ -1,37 +1,62 @@
 [
   {
-    "question": "What is the fundamental difference between a base language model and an instruction-tuned model?",
-    "options": ["Instruction-tuned models are larger", "Base models are faster", "They have different architectures", "A base model continues text patterns; an instruction-tuned model follows instructions and answers questions"],
+    "question": "基础语言模型与指令微调模型的根本区别是什么？",
+    "options": [
+      "指令微调模型更大",
+      "基础模型更快",
+      "架构不同",
+      "基础模型续写文本模式，指令微调模型遵循指令并回答问题"
+    ],
     "correct": 3,
-    "explanation": "A base model trained with next-token prediction continues text patterns. Ask it a question and it may generate more questions. SFT teaches it to produce answers by training on (instruction, response) pairs.",
+    "explanation": "通过下一词元预测训练的基础模型会续写文本模式。问它一个问题，它可能生成更多问题。监督微调（Supervised Fine-Tuning，SFT）通过指令与回答对训练，教它生成答案。",
     "stage": "pre"
   },
   {
-    "question": "What is the purpose of masking loss on non-assistant tokens during SFT?",
-    "options": ["To reduce memory usage", "To speed up training", "To prevent overfitting", "To train the model only to generate responses, not to memorize the instruction format or system prompts"],
+    "question": "SFT 中屏蔽非助手词元的损失有什么目的？",
+    "options": [
+      "减少内存占用",
+      "加快训练",
+      "防止过拟合",
+      "只训练模型生成回答，而不是记忆指令格式或系统提示词"
+    ],
     "correct": 3,
-    "explanation": "During SFT, you want the model to learn how to respond, not how to reproduce the instruction. Loss masking sets the loss to 0 for system/user tokens so gradients only come from the assistant's response tokens.",
+    "explanation": "SFT 要让模型学习如何回应，而不是复现指令。损失掩码（Loss masking）将系统和用户词元的损失设为 0，使梯度只来自助手回答词元。",
     "stage": "pre"
   },
   {
-    "question": "What format does SFT training data typically follow?",
-    "options": ["Key-value pairs", "Chat template with system, user, and assistant roles marked by special tokens", "Raw text documents", "SQL queries and results"],
+    "question": "SFT 训练数据通常采用什么格式？",
+    "options": [
+      "键值对",
+      "用特殊词元标记系统、用户、助手角色的聊天模板",
+      "原始文本文档",
+      "SQL 查询与结果"
+    ],
     "correct": 1,
-    "explanation": "SFT data uses a structured chat format: a system prompt setting behavior, a user instruction, and an assistant response. Special tokens mark role boundaries so the model learns the conversational structure.",
+    "explanation": "SFT 数据采用结构化聊天格式：设定行为的系统提示词、用户指令、助手回答。特殊词元标记角色边界，让模型学习对话结构。",
     "stage": "post"
   },
   {
-    "question": "Why might an SFT model produce lower perplexity on benchmarks but worse conversational quality?",
-    "options": ["The benchmarks are wrong", "SFT optimizes for pattern matching on training examples, not for the nuanced quality judgments humans care about -- that requires RLHF/DPO", "The learning rate was wrong", "The model is too small"],
+    "question": "为什么 SFT 模型可能在基准测试上困惑度更低，对话质量却更差？",
+    "options": [
+      "基准测试错了",
+      "SFT 优化的是训练样例模式匹配，不是人类关心的细致质量判断，后者需要 RLHF/DPO",
+      "学习率不对",
+      "模型太小"
+    ],
     "correct": 1,
-    "explanation": "SFT teaches the model to follow formats and produce plausible responses. It doesn't teach which response is better when multiple valid options exist. Human preference alignment (RLHF/DPO) addresses this gap.",
+    "explanation": "SFT 教模型遵循格式并生成合理回答，却不教它在多个有效回答中哪一个更好。人类偏好对齐（Human preference alignment），即基于人类反馈的强化学习（Reinforcement Learning from Human Feedback，RLHF）或直接偏好优化（Direct Preference Optimization，DPO），用于弥补这个缺口。",
     "stage": "post"
   },
   {
-    "question": "How many high-quality instruction-response pairs are typically needed for effective SFT?",
-    "options": ["10,000 to 100,000 high-quality examples", "Fewer than 100", "Billions", "Millions"],
+    "question": "有效 SFT 通常需要多少高质量指令与回答对？",
+    "options": [
+      "10,000 到 100,000 个高质量样例",
+      "少于 100 个",
+      "数十亿个",
+      "数百万个"
+    ],
     "correct": 0,
-    "explanation": "SFT is surprisingly data-efficient. Studies show that 10K-100K high-quality examples (like the Alpaca or LIMA datasets) can effectively teach instruction following. Quality matters far more than quantity.",
+    "explanation": "SFT 的数据效率出人意料。研究表明，Alpaca 或 LIMA 等数据集中的 10K-100K 高质量样例就能有效教会指令遵循。质量远比数量重要。",
     "stage": "post"
   }
 ]

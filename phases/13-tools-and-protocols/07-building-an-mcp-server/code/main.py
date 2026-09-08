@@ -1,8 +1,8 @@
-"""Phase 13 Lesson 07: a stateless MCP server over stdio.
-Lesson: phases/13-tools-and-protocols/07-building-an-mcp-server/docs/en.md
-Specification: https://modelcontextprotocol.io/specification/2026-07-28/
-Implements discovery, three server primitives, and per-request validation.
-Run: python3 main.py --demo
+"""阶段 13 第 07 课：通过标准输入输出（stdio）运行的无状态 MCP 服务器。
+课程： phases/13-tools-and-protocols/07-building-an-mcp-server/docs/en.md
+规范： https://modelcontextprotocol.io/specification/2026-07-28/
+实现发现（Discovery）、三种服务器原语（Server primitives）以及逐请求验证。
+运行： python3 main.py --demo
 """
 
 from __future__ import annotations
@@ -39,7 +39,7 @@ NOTES = deepcopy(_BASE_NOTES)
 TOOLS = [
     {
         "name": "notes_search",
-        "description": "Search note titles and bodies by keyword.",
+        "description": "按关键词搜索笔记标题与正文。",
         "inputSchema": {
             "type": "object",
             "properties": {
@@ -52,7 +52,7 @@ TOOLS = [
     },
     {
         "name": "notes_create",
-        "description": "Create a new note.",
+        "description": "创建新笔记。",
         "inputSchema": {
             "type": "object",
             "properties": {
@@ -66,7 +66,7 @@ TOOLS = [
     },
     {
         "name": "notes_list",
-        "description": "List notes, optionally filtered by tag.",
+        "description": "列出笔记，可选择按标签筛选。",
         "inputSchema": {
             "type": "object",
             "properties": {"tag": {"type": "string"}},
@@ -79,9 +79,9 @@ TOOLS = [
 PROMPTS = [
     {
         "name": "review_note",
-        "description": "Critique a note and propose concrete improvements.",
+        "description": "评议笔记并提出具体改进建议。",
         "arguments": [
-            {"name": "note_id", "description": "Note identifier", "required": True}
+            {"name": "note_id", "description": "笔记标识符（Identifier）", "required": True}
         ],
     }
 ]
@@ -195,10 +195,10 @@ def exec_notes_list(arguments: dict[str, Any]) -> list[dict[str, str]]:
 def exec_notes_search(arguments: dict[str, Any]) -> list[dict[str, str]]:
     query = arguments.get("query")
     if not isinstance(query, str) or not query:
-        raise ValueError("query must be a non-empty string")
+        raise ValueError("query 必须为非空字符串")
     limit = arguments.get("limit", 10)
     if not isinstance(limit, int) or not 1 <= limit <= 50:
-        raise ValueError("limit must be an integer from 1 through 50")
+        raise ValueError("limit 必须为 1 至 50 之间的整数")
     needle = query.lower()
     hits = [
         {"id": note_id, "title": note["title"]}
@@ -212,11 +212,11 @@ def exec_notes_create(arguments: dict[str, Any]) -> list[dict[str, Any]]:
     title = arguments.get("title")
     body = arguments.get("body")
     if not isinstance(title, str) or not isinstance(body, str):
-        raise ValueError("title and body must be strings")
+        raise ValueError("title 和 body 必须为字符串")
     note_id = f"note-{uuid.uuid4().hex[:6]}"
     NOTES[note_id] = {"title": title, "body": body, "tag": str(arguments.get("tag", ""))}
     return [
-        {"type": "text", "text": f"Created {note_id}"},
+        {"type": "text", "text": f"已创建 {note_id}"},
         {
             "type": "resource",
             "resource": {"uri": f"notes://{note_id}", "text": body},
@@ -236,7 +236,7 @@ def handle_discover(params: dict[str, Any]) -> dict[str, Any]:
         {
             "supportedVersions": SUPPORTED_VERSIONS.copy(),
             "capabilities": deepcopy(SERVER_CAPABILITIES),
-            "instructions": "Use tools for note actions, resources for note bodies, and prompts for reviews.",
+            "instructions": "使用工具（Tools）操作笔记，使用资源（Resources）获取笔记正文，使用提示词（Prompts）进行评议。",
         },
         ttl_ms=3_600_000,
         cache_scope="public",
@@ -259,7 +259,7 @@ def handle_tools_call(params: dict[str, Any]) -> dict[str, Any]:
     executor = TOOL_EXECUTORS.get(name)
     if executor is None:
         return complete(
-            {"content": [{"type": "text", "text": f"Unknown tool: {name}"}], "isError": True}
+            {"content": [{"type": "text", "text": f"未知工具： {name}"}], "isError": True}
         )
     try:
         return complete({"content": executor(arguments), "isError": False})
@@ -313,13 +313,13 @@ def handle_prompts_get(params: dict[str, Any]) -> dict[str, Any]:
     body = NOTES[note_id]["body"]
     return complete(
         {
-            "description": "Review the note and propose concrete improvements.",
+            "description": "评审笔记并提出具体改进建议。",
             "messages": [
                 {
                     "role": "user",
                     "content": {
                         "type": "text",
-                        "text": f"Review this note and propose improvements:\n\n{body}",
+                        "text": f"评审以下笔记并提出改进建议：\n\n{body}",
                     },
                 }
             ],
@@ -391,7 +391,7 @@ def demo() -> None:
         make_request(7, "prompts/get", {"name": "review_note", "arguments": {"note_id": "note-1"}}),
         make_request(8, "tools/list", version="2027-01-01"),
     ]
-    print("MCP 2026-07-28 stateless notes server")
+    print("MCP 2026-07-28 无状态笔记服务器（Stateless notes server）")
     for message in scenarios:
         response = dispatch(message)
         print(f"\n{message['method']} id={message['id']}")

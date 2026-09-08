@@ -1,63 +1,63 @@
-# Capstone: Stateless Tool Ecosystem
+# 综合项目：无状态工具生态系统（Capstone: Stateless Tool Ecosystem）
 
-> A production agent system is a set of boundaries, not a pile of features. This capstone separates a readable in-process simulation from the protocol clients, authorization server, sandbox, and telemetry exporter a real deployment still needs.
+> 生产智能体系统是一组边界，不是功能堆砌。本综合项目将可读的进程内模拟，与真实部署仍需的协议客户端、授权服务器、沙箱和遥测导出器分开。
 
 **Type:** Build
 **Languages:** Python (stdlib, in-process simulation)
-**Prerequisites:** Phase 13 · 01 through 22, using MCP revision `2026-07-28`
-**Time:** ~120 minutes
+**Prerequisites:** Phase 13 · 01 至 22，使用 MCP 修订 `2026-07-28`
+**Time:** ~120 分钟
 
-## Learning Objectives
+## 学习目标（Learning Objectives）
 
-- Compose tool calls, task-shaped results, delegated work, UI resources, authorization policy, and trace records into one flow.
-- Carry protocol version, client identity, and capabilities on every MCP request instead of relying on a connection session.
-- Discover a server before use and drive long work through the official Tasks extension.
-- Distinguish a protocol-shaped simulation from an MCP, A2A, OAuth, or OpenTelemetry implementation.
-- Map each simulated boundary to the production component that must replace it.
-- Keep `AGENTS.md`, an Agent Skill, runtime adapters, tools, and security policy in their correct roles.
-- Explain which claims can be verified from local output and which need live integration tests.
+- 将工具调用、任务形态结果、委托工作、UI 资源、授权策略和追踪记录组合为一条流程。
+- 在每个 MCP 请求携带协议版本、客户端身份和能力，而非依赖连接会话。
+- 使用前发现服务器，并通过官方 Tasks 扩展驱动长任务。
+- 区分协议形态模拟与 MCP、A2A、OAuth 或 OpenTelemetry 实现。
+- 将每个模拟边界映射到必须替换它的生产组件。
+- 让 `AGENTS.md`、Agent Skill、运行时适配器、工具和安全策略各守其职。
+- 解释哪些主张可由本地输出验证，哪些需要实时集成测试。
 
-## The Problem
+## 问题（The Problem）
 
-Design a research-and-report system. A user asks for papers on agent protocols. The system searches a paper catalog, delegates summarization, generates a report, returns a UI resource, and records the path through the system.
+设计研究与报告系统。用户请求智能体协议相关论文。系统搜索论文目录、委托摘要、生成报告、返回 UI 资源，并记录贯穿系统的路径。
 
-That sentence hides several independent contracts:
+这句话隐藏了多个独立契约：
 
-- a model-facing tool schema;
-- a stateless request envelope and server discovery contract;
-- a gateway decision for actor, scope, and tool identity;
-- a long-running operation contract;
-- a delegation protocol;
-- a host-to-app bridge;
-- trace propagation and export;
-- a reusable operating procedure.
+- 面向模型的工具模式；
+- 无状态请求信封和服务器发现契约；
+- 针对行为者、作用域和工具身份的网关决定；
+- 长时间运行操作契约；
+- 委托协议；
+- 宿主到应用的桥接；
+- 追踪传播和导出；
+- 可复用操作规程。
 
-`code/main.py` keeps those boundaries visible with ordinary Python functions and dictionaries. It does not open a transport, contact arXiv, perform OAuth, call an A2A server, render an MCP App, or export telemetry. This makes the control flow easy to inspect without presenting a simulation as a compliant service.
+`code/main.py` 用普通 Python 函数和字典让这些边界可见。它不打开传输、不联系 arXiv、不执行 OAuth、不调用 A2A 服务器、不渲染 MCP App，也不导出遥测。因此易于检查控制流，同时不会将模拟呈现为符合规范的服务。
 
-## The Concept
+## 概念（The Concept）
 
-### Target architecture
+### 目标架构（Target architecture）
 
 ```mermaid
 flowchart LR
-  U[User] --> C[Agent client]
-  C --> G[Authorization gateway]
-  G --> M[Research MCP server]
-  M --> T[Search and report tools]
-  M --> R[Resources and prompts]
-  M --> Q[Task store]
-  M --> A[A2A client]
-  A --> W[Writer agent]
-  M --> UI[MCP App resource]
-  C --> O[Telemetry exporter]
+  U[用户] --> C[智能体客户端]
+  C --> G[授权网关]
+  G --> M[研究 MCP 服务器]
+  M --> T[搜索与报告工具]
+  M --> R[资源与提示词]
+  M --> Q[任务存储]
+  M --> A[A2A 客户端]
+  A --> W[写作智能体]
+  M --> UI[MCP App 资源]
+  C --> O[遥测导出器]
   G --> O
   M --> O
   A --> O
 ```
 
-The architecture is a conceptual composition of public protocol patterns. It is not a claim about the private internals of any product.
+该架构是公开协议模式的概念组合，不是对任何产品私有内部实现的主张。
 
-### Target trace
+### 目标追踪（Target trace）
 
 ```mermaid
 flowchart TD
@@ -65,36 +65,36 @@ flowchart TD
   I --> L1[llm.chat]
   I --> S[tools/call: arxiv_search]
   I --> D[A2A SendMessage]
-  D --> X[Opaque writer-agent execution]
+  D --> X[不透明写作智能体执行]
   I --> G[tools/call: generate_report]
-  G --> K[tasks/get polling]
-  K --> V[completed Task with final result]
-  V --> UI[ui:// report resource]
-  I --> L2[llm.chat final synthesis]
+  G --> K[tasks/get 轮询]
+  K --> V[带最终结果的 completed 任务]
+  V --> UI[ui:// 报告资源]
+  I --> L2[llm.chat 最终综合生成]
 ```
 
-In a real implementation, every hop propagates trace context. Span names and attributes must follow the OpenTelemetry semantic conventions supported by the chosen instrumentation version. A shared trace identifier alone does not prove correct parentage, export, or backend ingestion.
+真实实现中，每跳都传播追踪上下文。跨度名和属性必须遵循所选插桩版本支持的 OpenTelemetry 语义约定。仅有共享追踪标识符，不证明父子关系、导出或后端摄取正确。
 
-### Current protocol surfaces
+### 当前协议接口面（Current protocol surfaces）
 
-Use the method names defined by the current protocol, not names remembered from an older draft:
+使用当前协议定义的方法名，而非记忆中的旧草案名称：
 
-| Boundary | Current surface | What the capstone simulates |
+| 边界 | 当前接口面 | 综合项目模拟内容 |
 |---|---|---|
-| MCP discovery | Mandatory `server/discover` | A direct function returning versions, capabilities, and server identity |
-| MCP request context | Version, capabilities, and client identity in every `params._meta` | Fresh request metadata passed to every simulated call |
-| MCP tool call | `tools/call` | Direct Python function dispatch |
-| MCP task polling | `io.modelcontextprotocol/tasks` with `tasks/get` | A working handle followed by a completed task carrying its final result |
-| A2A delegation | `SendMessage` in gRPC and JSON-RPC; `POST /message:send` in HTTP+JSON | One nested span with no remote call or artificial delay |
-| MCP App calling a server tool | `app.callServerTool({ name, arguments })` | An HTML string with no live bridge |
-| OAuth authorization | Authorization server, protected-resource metadata, audience and scope validation | Static token lookup and scope membership |
-| OpenTelemetry | SDK, propagator, exporter, and collector or backend | In-memory span dictionaries |
+| MCP 发现 | 必需 `server/discover` | 直接函数返回版本、能力和服务器身份 |
+| MCP 请求上下文 | 每个 `params._meta` 中的版本、能力和客户端身份 | 每个模拟调用传入新的请求元数据 |
+| MCP 工具调用 | `tools/call` | 直接 Python 函数分发 |
+| MCP 任务轮询 | `io.modelcontextprotocol/tasks` 与 `tasks/get` | 先返回工作中句柄，再返回携带最终结果的已完成任务 |
+| A2A 委托 | gRPC 和 JSON-RPC 中的 `SendMessage`；HTTP+JSON 中的 `POST /message:send` | 一个嵌套跨度，无远程调用或人为延迟 |
+| MCP App 调用服务器工具 | `app.callServerTool({ name, arguments })` | 无实时桥接的 HTML 字符串 |
+| OAuth 授权 | 授权服务器、受保护资源元数据、受众与作用域验证 | 静态令牌查找和作用域成员检查 |
+| OpenTelemetry | SDK、传播器、导出器及收集器或后端 | 内存跨度字典 |
 
-Protocol names are only the first layer. Production tests must exercise serialization, authentication failures, cancellation, timeouts, retries, and version compatibility across the real wire.
+协议名称只是第一层。生产测试必须在线上实际覆盖序列化、认证失败、取消、超时、重试和版本兼容。
 
-### Stateless MCP changes the integration boundary
+### 无状态 MCP 改变集成边界（Stateless MCP changes the integration boundary）
 
-Revision `2026-07-28` removes protocol sessions and the `initialize` / `notifications/initialized` handshake. It also removes `Mcp-Session-Id`. Every request carries these namespaced `_meta` fields:
+修订 `2026-07-28` 移除了协议会话和 `initialize` / `notifications/initialized` 握手，也移除了 `Mcp-Session-Id`。每个请求携带这些命名空间化的 `_meta` 字段：
 
 ```json
 {
@@ -111,48 +111,48 @@ Revision `2026-07-28` removes protocol sessions and the `initialize` / `notifica
 }
 ```
 
-The server must implement `server/discover`. Ordinary results use `resultType: "complete"`; a task handle uses `resultType: "task"`. Each result should identify the server in `_meta.io.modelcontextprotocol/serverInfo`.
+服务器必须实现 `server/discover`。普通结果使用 `resultType: "complete"`，任务句柄使用 `resultType: "task"`。每个结果应在 `_meta.io.modelcontextprotocol/serverInfo` 中标识服务器。
 
-The task extension has `tasks/get`, `tasks/update`, and `tasks/cancel`. A tool may first return `resultType: "task"`; `tasks/get` itself returns `resultType: "complete"`, and the completed `Task` contains the final result. The old `tasks/result` and `tasks/list` methods are not part of the current extension. A client must advertise `io.modelcontextprotocol/tasks` in the same request that may receive a task handle. If it does not, the server returns `-32021` with `requiredCapabilities` shaped as the missing client-capability object, including `extensions.io.modelcontextprotocol/tasks`.
+任务扩展有 `tasks/get`、`tasks/update` 和 `tasks/cancel`。工具可先返回 `resultType: "task"`；`tasks/get` 本身返回 `resultType: "complete"`，已完成 `Task` 包含最终结果。旧的 `tasks/result` 和 `tasks/list` 不属于当前扩展。客户端必须在可能收到任务句柄的同一请求中声明 `io.modelcontextprotocol/tasks`。否则服务器返回 `-32021`，`requiredCapabilities` 结构是缺失客户端能力对象，包含 `extensions.io.modelcontextprotocol/tasks`。
 
-### Security posture
+### 安全设计（Security posture）
 
-The intended deployment uses defense in depth:
+预期部署使用纵深防御：
 
-- OAuth authorization with PKCE where the client type requires it;
-- resource and audience binding for issued access tokens;
-- gateway RBAC that checks the requested tool and scope;
-- upstream credentials held outside model-visible context;
-- a pinned or reviewed tool-description manifest;
-- a Rule of Two review for untrusted input, sensitive data, and consequential actions;
-- an execution sandbox whose filesystem, process, network, credential, and resource limits are enforced outside the skill.
+- 客户端类型要求时，OAuth 授权配合 PKCE；
+- 签发访问令牌的资源与受众绑定；
+- 检查请求工具和作用域的网关 RBAC；
+- 上游凭据位于模型可见上下文之外；
+- 固定或已审查的工具描述清单；
+- 对不可信输入、敏感数据和实际后果操作执行三取二规则审查；
+- 在技能之外强制执行文件系统、进程、网络、凭据和资源限制的执行沙箱。
 
-The demo implements only static tokens, scope checks, and description hashes. It is useful for policy flow, not security validation.
+演示仅实现静态令牌、作用域检查和描述哈希。它有助于理解策略流程，不用于安全验证。
 
-### Skills are procedure, not transport
+### 技能是规程，不是传输（Skills are procedure, not transport）
 
-An Agent Skill can tell the runtime how to perform the research workflow, which tool contracts to expect, what evidence to save, and when to stop. It cannot make an MCP server exist, establish A2A compatibility, grant scopes, or create a sandbox.
+Agent Skill 可告诉运行时如何执行研究流程、期望哪些工具契约、保存什么证据以及何时停止。它不能创建 MCP 服务器、建立 A2A 兼容性、授予作用域或创建沙箱。
 
 ```mermaid
 flowchart TD
-  RI[Repository instructions] --> H[Host runtime]
-  SK[Agent Skill procedure] --> H
-  H --> P[Invocation and permission policy]
-  P --> MCP[MCP client adapter]
-  P --> A2A[A2A client adapter]
-  P --> EX[Sandboxed executor]
+  RI[仓库指令] --> H[宿主运行时]
+  SK[Agent Skill 规程] --> H
+  H --> P[调用与权限策略]
+  P --> MCP[MCP 客户端适配器]
+  P --> A2A[A2A 客户端适配器]
+  P --> EX[沙箱化执行器]
 ```
 
-Ship the complete skill directory when the procedure references companion files. The flat artifact in this older capstone is a course blueprint, not evidence that a host preserves a portable bundle. Lessons 24 through 27 build and test the full bundle lifecycle.
+规程引用配套文件时，交付完整技能目录。这个较早综合项目中的扁平制品是课程蓝图，不证明宿主保留可移植包。第 24 至 27 课构建并测试完整包生命周期。
 
-### Course artifact metadata is a local adapter
+### 课程制品元数据是本地适配器（Course artifact metadata is a local adapter）
 
-The course catalog and installer recognize flat files named `skill-*.md`, but that is a repository convention rather than the portable Agent Skills package contract. Their minimal frontmatter parser reads only top-level keys. This lesson therefore keeps the portable identity fields and the course catalog fields at the same level:
+课程目录和安装器识别名为 `skill-*.md` 的扁平文件，但这是仓库约定，不是可移植 Agent Skills 包契约。其最小前置元数据解析器只读取顶层键。因此本课将可移植身份字段和课程目录字段放在同一层：
 
 ```yaml
 ---
 name: ecosystem-blueprint
-description: Produce a full Phase 13 ecosystem architecture for a product need.
+description: 根据产品需求生成完整 Phase 13 生态系统架构。
 version: "1.0.0"
 phase: "13"
 lesson: "23"
@@ -160,110 +160,110 @@ tags: [mcp, capstone, ecosystem, architecture, a2a, otel]
 ---
 ```
 
-`name` and `description` are the portable identity fields. `version`, `phase`, `lesson`, and `tags` are course-specific catalog extensions. The course parser requires `tags` as an inline list so `--tag capstone` can match it.
+`name` 和 `description` 是可移植身份字段。`version`、`phase`、`lesson` 和 `tags` 是课程专属目录扩展。课程解析器要求 `tags` 为行内列表，使 `--tag capstone` 能匹配。
 
-A portable directory skill may use the optional `metadata` map for string-valued extension data. That does not make `metadata` interchangeable with this repository's catalog schema. If this flat file nests `version` or `tags` below `metadata`, the minimal parser skips those indented keys, the catalog records an empty version, and tag filtering cannot find the artifact. Production hosts should use a safe YAML parser and validate their own documented schema.
+可移植目录技能可以用可选 `metadata` 映射保存字符串值扩展数据，但这不使 `metadata` 与仓库目录模式可互换。如果扁平文件将 `version` 或 `tags` 嵌套到 `metadata` 下，最小解析器会跳过缩进键，目录记录空版本，标签过滤也找不到制品。生产宿主应使用安全 YAML 解析器并验证自己的文档化模式。
 
-### Simulation versus production
+### 模拟与生产（Simulation versus production）
 
-| Layer | `code/main.py` | Production replacement | Required evidence |
+| 层 | `code/main.py` | 生产替代 | 必需证据 |
 |---|---|---|---|
-| Discovery | `server_discover()` plus static `TOOLS` | `server/discover` followed by cache-aware `tools/list` | Wire transcript, deterministic order, and schema validation |
-| Authentication | Token-keyed dictionary | OAuth authorization and resource server validation | Issuer, audience, scope, expiry, and failure tests |
-| Authorization | Scope membership | Gateway policy bound to actor, tool, target, and tenant | Allow and deny audit cases |
-| Search | Static paper fixtures | Search API or MCP server | Source provenance, ranking, and error tests |
-| Tasks | Local handle plus immediate `tasks/get` | Durable `io.modelcontextprotocol/tasks` store with `tasks/get`, `tasks/update`, `tasks/cancel`, and TTL | State-transition, input, cancellation, and recovery tests |
-| Delegation | Sleep plus nested span | A2A client and remote Agent Card | Contract, timeout, retry, and opacity tests |
-| App | HTML string and URI | MCP Apps resource and `App` bridge | CSP, permissions, tool-call, and browser tests |
-| Telemetry | In-memory list | OTel SDK and exporter | Collector receipt and trace-parent assertions |
-| Sandbox | None | Host-enforced isolated executor | Escape, egress, secret, and resource-limit tests |
+| 发现 | `server_discover()` 加静态 `TOOLS` | `server/discover` 后接具缓存感知的 `tools/list` | 线上记录、确定性顺序和模式验证 |
+| 认证 | 令牌键控字典 | OAuth 授权和资源服务器验证 | 签发者、受众、作用域、到期和失败测试 |
+| 授权 | 作用域成员关系 | 绑定行为者、工具、目标和租户的网关策略 | 允许与拒绝审计案例 |
+| 搜索 | 静态论文夹具 | 搜索 API 或 MCP 服务器 | 来源出处、排序和错误测试 |
+| 任务 | 本地句柄加立即 `tasks/get` | 持久 `io.modelcontextprotocol/tasks` 存储，含 `tasks/get`、`tasks/update`、`tasks/cancel` 和 TTL | 状态转移、输入、取消和恢复测试 |
+| 委托 | 休眠加嵌套跨度 | A2A 客户端和远程智能体卡片 | 契约、超时、重试和不透明性测试 |
+| 应用 | HTML 字符串和 URI | MCP Apps 资源和 `App` 桥接 | CSP、权限、工具调用和浏览器测试 |
+| 遥测 | 内存列表 | OTel SDK 和导出器 | 收集器接收和追踪父级断言 |
+| 沙箱 | 无 | 宿主强制隔离执行器 | 逃逸、出站、秘密和资源限制测试 |
 
-This table is the handoff boundary. A green local run validates the simulation only.
+此表就是交接边界。本地运行通过仅验证模拟。
 
-### Phase 13 map
+### Phase 13 映射（Phase 13 map）
 
-| Lessons | Contribution |
+| 课程 | 贡献 |
 |---|---|
-| 01-05 | Tool interfaces, calls, schemas, structured results, and deterministic validation |
-| 06-14 | Stateless MCP request envelopes, discovery, transports, resources, prompts, extensions, and Apps |
-| 15-18 | Poisoning defenses, OAuth, gateways, registries, and production authentication |
-| 19 | A2A message and task delegation |
-| 20 | OpenTelemetry GenAI trace design |
-| 21 | Model-provider routing |
-| 22 | Portable skill contract and runtime boundary |
+| 01-05 | 工具接口、调用、模式、结构化结果和确定性验证 |
+| 06-14 | 无状态 MCP 请求信封、发现、传输、资源、提示词、扩展和 Apps |
+| 15-18 | 投毒防御、OAuth、网关、注册表和生产认证 |
+| 19 | A2A 消息和任务委托 |
+| 20 | OpenTelemetry GenAI 追踪设计 |
+| 21 | 模型提供方路由 |
+| 22 | 可移植技能契约和运行时边界 |
 
 ```figure
 t3-capstone-chain
 ```
 
-## Build It
+## 动手实现（Build It）
 
-Run the in-process harness:
+运行进程内测试框架：
 
 ```bash
 cd phases/13-tools-and-protocols/23-capstone-tool-ecosystem
 python3 code/main.py
 ```
 
-Inspect five things:
+检查五件事：
 
-1. `server/discover` advertises revision `2026-07-28` and the Tasks extension.
-2. Alice can read and generate a report, while Bob's write-scoped call is denied.
-3. Every local span in one orchestrator run shares one trace identifier and records parent span identifiers.
-4. The report begins as a task handle. `tasks/get` returns a completed task whose final result contains text and a `ui://` reference.
-5. The delegated writer remains opaque because the orchestrator records only the boundary span.
-6. No output claims a network connection, OAuth exchange, collector export, browser render, or sandbox execution occurred.
+1. `server/discover` 声明修订 `2026-07-28` 和 Tasks 扩展。
+2. Alice 可读取并生成报告，Bob 的写作用域调用被拒绝。
+3. 一次编排器运行中的每个本地跨度共享一个追踪标识符，并记录父跨度标识符。
+4. 报告以任务句柄开始。`tasks/get` 返回已完成任务，最终结果含文本和 `ui://` 引用。
+5. 委托的写作智能体保持不透明，因为编排器仅记录边界跨度。
+6. 没有输出声称发生了网络连接、OAuth 交换、收集器导出、浏览器渲染或沙箱执行。
 
-The script runs twice, so it produces two root traces. Audit entries are process-local and reset on the next run.
+脚本运行两次，因此产生两条根追踪。审计条目是进程本地的，下次运行重置。
 
-## Use It
+## 实际应用（Use It）
 
-Promote one layer at a time:
+每次将一层替换为真实实现：
 
-1. Replace `server_discover()` and the static tool list with real `server/discover` and `tools/list` calls. Send version, identity, and capabilities in every request.
-2. Replace static tokens with an authorization server and protected resource validation.
-3. Implement the `io.modelcontextprotocol/tasks` extension and test `tasks/get`, `tasks/update`, `tasks/cancel`, timeout, TTL, and restart recovery. Do not add `tasks/result` or `tasks/list`.
-4. Replace the delegation stub with an A2A client that resolves an Agent Card and sends a message.
-5. Build the App with the official SDK and call server tools through `app.callServerTool`.
-6. Export spans to a test collector and assert parentage at the receiver.
-7. Run tool and script execution inside the sandbox contract from Lesson 26.
-8. Package the procedure as a complete directory bundle and pass the Lesson 27 release gate.
+1. 用真实 `server/discover` 和 `tools/list` 调用替换 `server_discover()` 和静态工具列表。每个请求发送版本、身份和能力。
+2. 用授权服务器和受保护资源验证替换静态令牌。
+3. 实现 `io.modelcontextprotocol/tasks` 扩展，测试 `tasks/get`、`tasks/update`、`tasks/cancel`、超时、TTL 和重启恢复。不要添加 `tasks/result` 或 `tasks/list`。
+4. 用解析智能体卡片并发送消息的 A2A 客户端替换委托桩。
+5. 使用官方 SDK 构建 App，通过 `app.callServerTool` 调用服务器工具。
+6. 将跨度导出到测试收集器，在接收端断言父子关系。
+7. 在第 26 课沙箱契约中运行工具和脚本执行。
+8. 将规程打包成完整目录包，并通过第 27 课发布门槛。
 
-Each promotion needs an integration test that crosses the new boundary. Do not delete the lower-level policy tests when the wire becomes real.
+每次替换都需要跨越新边界的集成测试。线上协议变成真实后，不要删除底层策略测试。
 
-## Ship It
+## 交付（Ship It）
 
-This lesson produces `outputs/skill-ecosystem-blueprint.md`, a legacy single-file course artifact. It asks for a one-page architecture covering primitives, security, delegation, telemetry, packaging, and the hardest operational risk. Its top-level catalog fields are exercised by the repository's real catalog and installer parsers.
+本课生成 `outputs/skill-ecosystem-blueprint.md`，一个旧式单文件课程制品。它要求一页架构，涵盖原语、安全设计、委托、遥测、打包和最难运维风险。其顶层目录字段由仓库真实目录和安装器解析器验证。
 
-Because it is not a directory bundle, it cannot carry references, scripts, assets, or eval fixtures. Use the package format from Lessons 22 and 24 through 27 when publishing a reusable skill outside this course.
+由于不是目录包，它不能携带参考资料、脚本、资产或评估夹具。在课程之外发布可复用技能时，使用第 22 课及第 24 至 27 课的包格式。
 
-## Exercises
+## 练习（Exercises）
 
-1. Run `code/main.py`. Separate facts proven by the output from production claims that still need integration evidence.
-2. Add a second static backend and define the collision rule for two tools with the same name. Then replace both lists with real `tools/list` calls.
-3. Replace the writer stub with an A2A test server. Record the Agent Card, message request, timeout path, and returned artifact.
-4. Add a task store that survives a process restart. Prove a client can resume with `tasks/get`, respect `pollIntervalMs`, and read the completed task's final result without `tasks/result`.
-5. Build a minimal MCP App and verify `app.callServerTool` in a browser with a restrictive CSP and explicit permissions.
-6. Export the simulated spans through an OTel SDK to a local collector. Assert receipt, trace identifiers, parentage, and error status.
-7. Write `AGENTS.md` for repository-wide maintenance rules and a separate skill bundle for the reusable research procedure. Explain why neither file grants tool authority.
+1. 运行 `code/main.py`。区分输出证明的事实与仍需集成证据的生产主张。
+2. 添加第二个静态后端，为同名两个工具定义冲突规则。然后用真实 `tools/list` 调用替换两个列表。
+3. 用 A2A 测试服务器替换写作桩。记录智能体卡片、消息请求、超时路径和返回制品。
+4. 添加能跨进程重启存活的任务存储。证明客户端可用 `tasks/get` 恢复、遵守 `pollIntervalMs`，并在不用 `tasks/result` 的情况下读取已完成任务最终结果。
+5. 构建最小 MCP App，在限制性 CSP 和显式权限下用浏览器验证 `app.callServerTool`。
+6. 通过 OTel SDK 将模拟跨度导出到本地收集器。断言接收、追踪标识符、父子关系和错误状态。
+7. 为仓库级维护规则编写 `AGENTS.md`，为可复用研究规程编写独立技能包。解释为何两者都不授予工具权限。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语 | 常见说法 | 实际含义 |
 |---|---|---|
-| Capstone | "Everything wired together" | A staged integration whose simulated and live boundaries remain explicit |
-| Protocol-shaped simulation | "It is basically MCP" | Local data and calls that resemble a protocol without implementing its wire contract |
-| Tasks extension | "Long tool call" | An optional `io.modelcontextprotocol/tasks` lifecycle with durable identity, polling, client input, final result, and cancellation semantics |
-| Opacity boundary | "The other agent handles it" | The caller sees the declared interface and artifacts, not private reasoning or internal state |
-| Runtime adapter | "Skill integration" | Host code that maps portable procedure to discovery, invocation, tools, policy, and context |
-| Integration evidence | "It passed" | A transcript, artifact, or receiver-side observation proving the real boundary was crossed |
+| 综合项目（Capstone） | “全部接在一起” | 模拟与真实边界保持明确的分阶段集成 |
+| 协议形态模拟（Protocol-shaped simulation） | “基本就是 MCP” | 类似协议但未实现线上契约的本地数据与调用 |
+| Tasks 扩展（Tasks extension） | “长工具调用” | 可选 `io.modelcontextprotocol/tasks` 生命周期，具有持久身份、轮询、客户端输入、最终结果和取消语义 |
+| 不透明边界（Opacity boundary） | “另一个智能体处理” | 调用方看到声明接口和制品，而非私有推理或内部状态 |
+| 运行时适配器（Runtime adapter） | “技能集成” | 将可移植规程映射到发现、调用、工具、策略和上下文的宿主代码 |
+| 集成证据（Integration evidence） | “通过了” | 证明真实边界被跨越的记录、制品或接收端观察 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [MCP specification 2026-07-28](https://modelcontextprotocol.io/specification/2026-07-28) for stateless requests, discovery, tools, authorization, and transport behavior.
-- [MCP 2026-07-28 key changes](https://modelcontextprotocol.io/specification/2026-07-28/changelog) for session removal, per-request metadata, MRTR, extensions, and deprecations.
-- [MCP Tasks extension](https://tasks.extensions.modelcontextprotocol.io/specification/draft/tasks) for `tasks/get`, `tasks/update`, `tasks/cancel`, and final results carried by terminal tasks.
-- [MCP Apps SDK](https://github.com/modelcontextprotocol/ext-apps/blob/main/docs/overview.md) for `App` and `app.callServerTool`.
-- [A2A protocol](https://a2a-protocol.org/latest/) for Agent Cards, message delivery, tasks, artifacts, and transport bindings.
-- [OpenTelemetry GenAI semantic conventions](https://opentelemetry.io/docs/specs/semconv/gen-ai/) for trace and attribute conventions.
-- [Agent Skills specification](https://agentskills.io/specification) for the portable package contract used by the procedural layer.
+- [MCP 规范 2026-07-28](https://modelcontextprotocol.io/specification/2026-07-28)：无状态请求、发现、工具、授权和传输行为。
+- [MCP 2026-07-28 关键变化](https://modelcontextprotocol.io/specification/2026-07-28/changelog)：会话移除、逐请求元数据、MRTR、扩展和弃用。
+- [MCP Tasks 扩展](https://tasks.extensions.modelcontextprotocol.io/specification/draft/tasks)：`tasks/get`、`tasks/update`、`tasks/cancel` 和终态任务携带的最终结果。
+- [MCP Apps SDK](https://github.com/modelcontextprotocol/ext-apps/blob/main/docs/overview.md)：`App` 和 `app.callServerTool`。
+- [A2A 协议](https://a2a-protocol.org/latest/)：智能体卡片、消息交付、任务、制品和传输绑定。
+- [OpenTelemetry GenAI 语义约定](https://opentelemetry.io/docs/specs/semconv/gen-ai/)：追踪和属性约定。
+- [Agent Skills 规范](https://agentskills.io/specification)：规程层使用的可移植包契约。

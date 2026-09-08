@@ -2,59 +2,59 @@
   {
     "id": "nb-pre-1",
     "stage": "pre",
-    "question": "What is the 'naive' assumption in Naive Bayes?",
+    "question": "朴素贝叶斯（Naive Bayes）中的“朴素”假设是什么？",
     "options": [
-      "The prior probability of each class is equal",
-      "All features are conditionally independent given the class label",
-      "The data is normally distributed",
-      "The model has no parameters to learn"
+      "每个类别的先验概率相等",
+      "给定类别标签后，所有特征条件独立",
+      "数据服从正态分布",
+      "模型没有需要学习的参数"
     ],
     "correct": 1,
-    "explanation": "Naive Bayes assumes every feature is independent of every other feature, conditioned on the class. This is mathematically wrong (e.g., 'machine' and 'learning' co-occur) but works well in practice."
+    "explanation": "朴素贝叶斯假设给定类别后，每个特征与其他特征都独立。这在数学上不成立，例如 'machine' 和 'learning' 经常共现，但实践中效果很好。"
   },
   {
     "id": "nb-pre-2",
     "stage": "pre",
-    "question": "What does Laplace smoothing prevent in Naive Bayes?",
+    "question": "拉普拉斯平滑（Laplace Smoothing）在朴素贝叶斯中防止什么？",
     "options": [
-      "Zero probabilities for words never seen in a class during training",
-      "Class imbalance in the dataset",
-      "Slow training on high-dimensional data",
-      "Overfitting to large datasets"
+      "训练期间从未在某类别中出现的词得到零概率",
+      "数据集中的类别不平衡",
+      "高维数据上的训练缓慢",
+      "对大型数据集过拟合"
     ],
     "correct": 0,
-    "explanation": "Without smoothing, a word that never appeared in 'spam' training emails would get P(word|spam) = 0, making the entire product zero regardless of other strong evidence. Laplace smoothing adds 1 to each count."
+    "explanation": "如果不平滑，一个从未出现在垃圾邮件 'spam' 训练样本中的词会得到 P(word|spam) = 0，无论其他证据多强，整个乘积都会归零。拉普拉斯平滑给每个计数加 1。"
   },
   {
     "id": "nb-post-1",
     "stage": "post",
-    "question": "The naive independence assumption is clearly wrong for text. Why does Naive Bayes still classify well?",
+    "question": "朴素独立性假设对文本显然不成立，为什么朴素贝叶斯仍能很好地分类？",
     "options": [
-      "It only works on very small vocabularies where independence holds",
-      "It only works when features are truly independent",
-      "Modern implementations secretly remove the independence assumption",
-      "Classification only needs correct class rankings, not correct probability estimates, and the assumption introduces stable errors that affect all classes similarly"
+      "它只适用于独立性成立的极小词表",
+      "它仅在特征真正独立时有效",
+      "现代实现暗中去掉了独立性假设",
+      "分类只需正确的类别排序，而非正确概率估计；假设引入的稳定误差对各类别影响相似"
     ],
     "correct": 3,
-    "explanation": "NB needs to rank classes correctly, not estimate exact probabilities. The independence assumption is high bias but low variance, making it stable with limited data. Correlated features double-count evidence for the correct class too."
+    "explanation": "NB 需要正确排列类别，而非估计精确概率。独立性假设带来高偏差、低方差，使其在数据有限时稳定。相关特征也会为正确类别重复计算证据。"
   },
   {
     "id": "nb-post-2",
     "stage": "post",
-    "question": "When should you use Multinomial NB versus Gaussian NB?",
+    "question": "何时使用多项式朴素贝叶斯，何时使用高斯朴素贝叶斯？",
     "options": [
-      "Multinomial for word count/frequency features, Gaussian for continuous real-valued features",
-      "They are interchangeable -- always use whichever is faster",
-      "Multinomial for binary data, Gaussian for multi-class problems",
-      "Multinomial for regression, Gaussian for classification"
+      "词计数或词频特征使用多项式，连续实值特征使用高斯",
+      "二者可互换，始终选择更快的",
+      "二元数据用多项式，多分类问题用高斯",
+      "回归用多项式，分类用高斯"
     ],
     "correct": 0,
-    "explanation": "Multinomial NB models feature counts (word frequencies in text). Gaussian NB assumes features follow normal distributions, suitable for continuous features like measurements or sensor readings."
+    "explanation": "多项式朴素贝叶斯建模特征计数，例如文本词频。高斯朴素贝叶斯假设特征服从正态分布，适用于测量值或传感器读数等连续特征。"
   },
   {
     "id": "nb-post-3",
     "stage": "post",
-    "question": "An email contains 'free' twice and 'money' once. In Multinomial NB with log probabilities, how is the spam score computed?",
+    "question": "一封邮件包含两次 'free' 和一次 'money'。使用对数概率的多项式朴素贝叶斯如何计算垃圾邮件得分？",
     "options": [
       "P(spam) * P(free|spam) * P(money|spam)",
       "log P(spam) * 2 * log P(free|spam)",
@@ -62,6 +62,6 @@
       "log P(spam) + 2 * log P(free|spam) + 1 * log P(money|spam)"
     ],
     "correct": 3,
-    "explanation": "Multinomial NB multiplies the word likelihoods raised to their count. In log space: log P(spam) + 2*log P(free|spam) + 1*log P(money|spam). The word count acts as an exponent."
+    "explanation": "多项式朴素贝叶斯将各词似然提升到对应计数次幂后相乘。在对数空间中为：log P(spam) + 2*log P(free|spam) + 1*log P(money|spam)。词计数充当指数。"
   }
 ]

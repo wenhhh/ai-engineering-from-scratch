@@ -1,9 +1,9 @@
-"""Speaker verification: toy MFCC-stat embeddings, cosine scoring, EER.
+"""说话人验证（Speaker verification）：简化 MFCC 统计嵌入（Embedding）、余弦评分（Cosine scoring）、等错误率（EER）。
 
-Synthetic "speakers" are sinusoid mixtures with different harmonic profiles.
-We enroll each speaker, build same/diff trial pairs, compute the EER.
+合成“说话人”由具有不同谐波特征（Harmonic profiles）的正弦波混合构成。
+注册（Enroll）每个说话人，构建相同/不同说话人的测试对（Trial pairs），并计算 EER。
 
-Run: python3 code/main.py
+运行：python3 code/main.py
 """
 
 import math
@@ -146,16 +146,16 @@ def main():
     }
 
     n_per = 5
-    print("=== Enroll 5 synthetic speakers, 5 utterances each ===")
+    print("=== 注册 5 个合成说话人，每人 5 段语音（Utterances） ===")
     enroll = defaultdict(list)
     for spk, freqs in speakers.items():
         for _ in range(n_per):
             sig = tone_mix(freqs, sr, duration, noise=0.04)
             enroll[spk].append(embed_mfcc_stats(sig, sr))
-        print(f"  {spk}: {len(enroll[spk])} embeddings, dim={len(enroll[spk][0])}")
+        print(f"  {spk}: {len(enroll[spk])} 个嵌入（Embeddings），维度={len(enroll[spk][0])}")
 
     print()
-    print("=== Build trial pairs (same vs different speaker) ===")
+    print("=== 构建测试对（Trial pairs，同一说话人与不同说话人） ===")
     same_scores = []
     diff_scores = []
     spk_list = list(speakers.keys())
@@ -169,26 +169,26 @@ def main():
             for e1 in enroll[s1]:
                 for e2 in enroll[s2]:
                     diff_scores.append(cosine(e1, e2))
-    print(f"  same-speaker pairs: {len(same_scores)}  mean cosine: {sum(same_scores)/len(same_scores):.3f}")
-    print(f"  diff-speaker pairs: {len(diff_scores)}  mean cosine: {sum(diff_scores)/len(diff_scores):.3f}")
+    print(f"  同一说话人测试对: {len(same_scores)}  平均余弦相似度: {sum(same_scores)/len(same_scores):.3f}")
+    print(f"  不同说话人测试对: {len(diff_scores)}  平均余弦相似度: {sum(diff_scores)/len(diff_scores):.3f}")
 
     print()
-    print("=== Equal Error Rate ===")
+    print("=== 等错误率（Equal Error Rate） ===")
     e, t = eer(same_scores, diff_scores)
-    print(f"  EER: {e * 100:.2f}%   at threshold: {t:.3f}")
-    print(f"  synthetic speakers are near-orthogonal, so this toy hits 0% EER.")
-    print(f"  real ECAPA-TDNN on VoxCeleb1-O lands at 0.87% after training on 2700 speakers.")
+    print(f"  EER: {e * 100:.2f}%   对应阈值（Threshold）: {t:.3f}")
+    print(f"  合成说话人近似正交（Near-orthogonal），因此本示例达到 0% EER。")
+    print(f"  实际 ECAPA-TDNN 在 2700 个说话人上训练后，在 VoxCeleb1-O 上达到 0.87%。")
 
     print()
-    print("=== 2026 speaker-verification leaderboard ===")
+    print("=== 2026 说话人验证排行榜（Speaker-verification leaderboard） ===")
     table = [
         ("ReDimNet (2024)",       0.39, "24M"),
         ("WavLM-SV large",        0.42, "316M"),
         ("Pyannote 3.1",          0.65, "6M"),
         ("ECAPA-TDNN",            0.87, "15M"),
-        ("x-vector (classic)",    3.10, "5M"),
+        ("x-vector（经典）",    3.10, "5M"),
     ]
-    print("  | Model              | EER  | Params |")
+    print("  | 模型（Model）        | EER  | 参数（Params） |")
     for name, e, p in table:
         print(f"  | {name:<18} | {e:.2f} | {p:<6} |")
 

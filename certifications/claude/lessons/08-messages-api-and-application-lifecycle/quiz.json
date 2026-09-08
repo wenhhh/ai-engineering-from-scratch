@@ -1,78 +1,78 @@
 {
   "lesson": "08-messages-api-and-application-lifecycle",
-  "title": "The Messages API Is a State Machine",
+  "title": "Messages API 是状态机（The Messages API Is a State Machine）",
   "questions": [
     {
       "stage": "pre",
-      "question": "Who owns conversation history when an application makes successive Messages API calls?",
+      "question": "应用连续调用 Messages API 时，谁负责对话历史？",
       "options": [
-        "The provider, which automatically carries prior Messages requests into the next call",
-        "The prompt cache, which restores omitted history when prefixes match",
-        "The latest tool, which returns both its result and the complete conversation state",
-        "The client application, which selects, stores, and resends the required messages"
+        "提供商自动将先前 Messages 请求带入下一调用",
+        "提示词缓存在前缀匹配时恢复省略历史",
+        "最新工具返回结果及完整对话状态",
+        "客户端应用选择、存储并重发必需消息"
       ],
       "correct": 3,
-      "explanation": "The Messages API is stateless. The client chooses, stores, and resends the message history required for each transition."
+      "explanation": "Messages API 无状态。每次转换所需的消息历史由客户端选择、存储并重发。"
     },
     {
       "stage": "check",
-      "question": "What must appear before a user-role tool_result in the next request?",
+      "question": "下一请求中，用户角色的 tool_result 前必须有什么？",
       "options": [
-        "The preserved assistant message containing the matching tool_use block",
-        "A user message containing only the tool_result ID and output, without prior content blocks",
-        "The previous assistant text blocks, with the tool_use block removed after execution",
-        "A new assistant summary of the requested tool call"
+        "保留的助手消息，其中包含匹配的 tool_use 块",
+        "只含 tool_result ID 和输出、不含此前内容块的用户消息",
+        "先前助手文本块，但执行后删除 tool_use 块",
+        "一份新的助手工具调用摘要"
       ],
       "correct": 0,
-      "explanation": "The assistant tool_use block establishes the request. The following tool_result must reference its ID and preserve protocol ordering."
+      "explanation": "助手 tool_use 块建立请求，随后的 tool_result 必须引用其 ID 并保留协议顺序。"
     },
     {
       "stage": "check",
-      "question": "A response looks complete but has stop_reason max_tokens. What is the safest interpretation?",
+      "question": "响应看似完整，但 stop_reason 为 max_tokens。最安全的解释是什么？",
       "options": [
-        "The response is complete if its final content block parses and ends at a sentence boundary",
-        "The output may be incomplete and needs explicit recovery or escalation",
-        "The client should resend only the final paragraph and ask the model to finish from there",
-        "Treat punctuation as evidence the response ended intentionally"
+        "最后内容块可解析且以句子边界结束，就算完整",
+        "输出可能不完整，需要明确恢复或升级处理",
+        "客户端应只重发最后一段，请模型从那里续写",
+        "把标点视为有意结束的证据"
       ],
       "correct": 1,
-      "explanation": "Control metadata overrides visual impressions. max_tokens means generation reached the configured limit, so the output cannot be assumed complete."
+      "explanation": "控制元数据优先于视觉印象。max_tokens 表示生成达到配置上限，不能假设完整。"
     },
     {
       "stage": "check",
-      "question": "A supported SDK is available for 50,000 independent classifications that may finish later. Which access pattern fits best?",
+      "question": "有受支持 SDK，要完成可延后结束的 50,000 项独立分类。哪种访问模式最合适？",
       "options": [
-        "Raw REST plus a tool loop that recursively schedules each record",
-        "One synchronous SDK request containing the full collection in one conversation",
-        "SDK Message Batches with stable custom IDs and asynchronous reconciliation",
-        "SDK streaming so every classification is committed from its first text delta"
+        "原始 REST 加递归调度记录的工具循环",
+        "一次同步 SDK 请求，把全部集合放在一个对话中",
+        "SDK Message Batches，使用稳定自定义 ID 和异步核对",
+        "SDK 流式，在首个文本增量到达时提交每项分类"
       ],
       "correct": 2,
-      "explanation": "The supported SDK reduces transport plumbing, while Message Batches match independent work whose results can arrive later. Client choice and completion pattern are separate decisions."
+      "explanation": "SDK 减少传输基础工作，Message Batches 符合结果可延后到达的独立任务。客户端与完成模式是不同决策。"
     },
     {
       "stage": "post",
-      "question": "Why should a stream consumer wait for a terminal event before committing a structured result?",
+      "question": "为何流消费者应等待终止事件再提交结构化结果？",
       "options": [
-        "A content-block stop proves the entire message and transport completed successfully",
-        "A tool-free stream can be committed after its first complete JSON object",
-        "A valid prefix can be committed if missing optional fields have schema defaults",
-        "Partial deltas may be incomplete and the connection may still fail"
+        "内容块停止证明整条消息和传输成功完成",
+        "没有工具的流可在首个完整 JSON 对象后提交",
+        "缺失可选字段有模式默认值时，有效前缀即可提交",
+        "部分增量可能不完整，连接仍可能失败"
       ],
       "correct": 3,
-      "explanation": "A partial stream is provisional. The client must know that the message completed before parsing a final contract or triggering downstream state changes."
+      "explanation": "部分流只是临时结果。解析最终契约或触发下游状态变化前，客户端必须确认消息完成。"
     },
     {
       "stage": "post",
-      "question": "A user supplies a Files API file_id that exists in the application's workspace. What must happen before including it in a Message?",
+      "question": "用户提供的 Files API file_id 存在于应用工作区。放入 Message 前必须做什么？",
       "options": [
-        "Bind it to the authenticated tenant and an application-owned asset record with retention policy",
-        "Retrieve it because existence in the workspace proves the current tenant owns it",
-        "Copy it into the system prompt so Claude can decide whether the reference is authorized",
-        "Convert it to inline base64 because inline content has no data-boundary requirements"
+        "将其绑定认证租户和含保留政策的应用资产记录",
+        "直接获取，因为工作区中存在就证明当前租户拥有它",
+        "复制进系统提示词，让 Claude 判断是否授权",
+        "转成行内 base64，因为行内内容没有数据边界要求"
       ],
       "correct": 0,
-      "explanation": "Workspace scope is broader than tenant authorization. The application must allowlist the asset, bind ownership and sensitivity, and enforce deletion independently of the opaque ID."
+      "explanation": "工作区范围比租户授权更广。应用必须允许列表化资产、绑定所有权和敏感度，并独立于不透明 ID 执行删除。"
     }
   ]
 }

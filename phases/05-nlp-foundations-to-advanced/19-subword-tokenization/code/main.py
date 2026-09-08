@@ -40,7 +40,7 @@ def merge_pair(vocab, pair):
 def train_bpe(text, num_merges):
     counts = word_counts(text)
     if not counts:
-        raise ValueError("word_counts: corpus produced no words")
+        raise ValueError("word_counts: 语料中未提取到单词")
     vocab = init_vocab(counts)
     merges = []
     for _ in range(num_merges):
@@ -84,27 +84,27 @@ def main():
     merges_small, tokens_small = train_bpe(corpus, num_merges=30)
     merges_big, tokens_big = train_bpe(corpus, num_merges=150)
 
-    print(f"=== BPE, 30 merges ===")
-    print(f"vocab size: {len(tokens_small)}")
-    print("first 10 merges:")
+    print(f"=== 字节对编码（BPE），30 次合并，英文语料保留 ===")
+    print(f"词表大小（Vocabulary size）: {len(tokens_small)}")
+    print("前 10 次合并（Merges）:")
     for i, m in enumerate(merges_small[:10]):
         print(f"  {i}: {m[0]!r} + {m[1]!r} -> {m[0] + m[1]!r}")
 
     print()
-    print(f"=== BPE, 150 merges ===")
-    print(f"vocab size: {len(tokens_big)}")
+    print(f"=== 字节对编码（BPE），150 次合并 ===")
+    print(f"词表大小（Vocabulary size）: {len(tokens_big)}")
 
     print()
     held_out = ["tokenizable", "unlearnable", "foxhound", "languages"]
-    print("=== encoding held-out words (150-merge model) ===")
+    print("=== 编码留出词（Held-out words，150 次合并模型） ===")
     for word in held_out:
         pieces = encode_bpe(word, merges_big)
-        tag = "OK" if len(pieces) == 1 else f"split({len(pieces)})"
+        tag = "完整词（OK）" if len(pieces) == 1 else f"拆分（Split，{len(pieces)}）"
         print(f"  {word:<14} -> {' | '.join(pieces)}  [{tag}]")
 
     print()
-    print("note: with a tiny toy corpus, most held-out words will split.")
-    print("production vocabularies train on billions of tokens.")
+    print("注意：语料很小，因此大多数留出词会被拆分。")
+    print("生产级词表通过数十亿词元（Tokens）训练。")
 
 
 if __name__ == "__main__":

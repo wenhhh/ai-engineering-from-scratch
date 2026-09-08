@@ -19,71 +19,71 @@
     </style>
   </defs>
 
-  <text x="480" y="24" text-anchor="middle" class="title">DeepSeek-V3 anatomy — 671B total, 37B active</text>
+  <text x="480" y="24" text-anchor="middle" class="title" style="font-size:15px">DeepSeek-V3 结构（Anatomy）：总参数 671B，激活参数 37B</text>
 
   <!-- stack -->
   <rect x="60" y="50" width="300" height="500" class="box"/>
-  <text x="210" y="72" text-anchor="middle" class="head">full stack (61 blocks)</text>
+  <text x="210" y="72" text-anchor="middle" class="head" style="font-size:12px">完整堆栈（Full Stack）：61 块</text>
 
   <rect x="80" y="88" width="260" height="36" class="cool"/>
-  <text x="210" y="110" text-anchor="middle" class="step">embedding (129k x 7168)</text>
+  <text x="210" y="110" text-anchor="middle" class="step" style="font-size:11px">嵌入（Embedding）(129k x 7168)</text>
 
   <rect x="80" y="130" width="260" height="42" class="old"/>
-  <text x="210" y="148" text-anchor="middle" class="step">3 dense blocks</text>
-  <text x="210" y="164" text-anchor="middle" class="small">MLA attention + dense SwiGLU MLP (18432)</text>
+  <text x="210" y="148" text-anchor="middle" class="step" style="font-size:11px">3 个稠密块（Dense Blocks）</text>
+  <text x="210" y="164" text-anchor="middle" class="small" style="font-size:8px">MLA 注意力（Attention）+ 稠密 SwiGLU MLP (18432)</text>
 
   <rect x="80" y="180" width="260" height="232" class="dsk"/>
-  <text x="210" y="200" text-anchor="middle" class="step">58 MoE blocks</text>
-  <text x="210" y="220" text-anchor="middle" class="small">MLA attention + MoE MLP</text>
-  <text x="210" y="242" text-anchor="middle" class="small">256 experts (2048 hidden each)</text>
-  <text x="210" y="262" text-anchor="middle" class="small">+ 1 shared expert (always on)</text>
-  <text x="210" y="282" text-anchor="middle" class="small">router: aux-loss-free bias</text>
-  <text x="210" y="302" text-anchor="middle" class="small">top-8 routing per token</text>
-  <text x="210" y="324" text-anchor="middle" class="small">active per token:</text>
-  <text x="210" y="340" text-anchor="middle" class="small">8 routed + 1 shared = 9 experts</text>
-  <text x="210" y="362" text-anchor="middle" class="small">KV cache: 512-dim MLA latent</text>
-  <text x="210" y="382" text-anchor="middle" class="small">per token per layer</text>
+  <text x="210" y="200" text-anchor="middle" class="step" style="font-size:12px">58 个 MoE 块（Blocks）</text>
+  <text x="210" y="220" text-anchor="middle" class="small" style="font-size:10px">MLA 注意力（Attention）+ MoE MLP</text>
+  <text x="210" y="242" text-anchor="middle" class="small" style="font-size:9px">256 个专家（Experts），各隐藏维度 2048</text>
+  <text x="210" y="262" text-anchor="middle" class="small" style="font-size:9px">+ 1 个共享专家（Shared Expert），始终启用</text>
+  <text x="210" y="282" text-anchor="middle" class="small" style="font-size:8px">路由器：无辅助损失偏置（Aux-Loss-Free Bias）</text>
+  <text x="210" y="302" text-anchor="middle" class="small" style="font-size:9px">每词元前 8 路由（Top-8 Routing）</text>
+  <text x="210" y="324" text-anchor="middle" class="small" style="font-size:10px">每词元激活（Active per Token）：</text>
+  <text x="210" y="340" text-anchor="middle" class="small" style="font-size:9px">8 个路由 + 1 个共享 = 9 个专家（Experts）</text>
+  <text x="210" y="362" text-anchor="middle" class="small" style="font-size:9px">KV 缓存：512 维 MLA 潜在表示（Latent）</text>
+  <text x="210" y="382" text-anchor="middle" class="small" style="font-size:9px">每词元、每层（Per Token per Layer）</text>
 
   <rect x="80" y="420" width="260" height="36" class="hot"/>
-  <text x="210" y="442" text-anchor="middle" class="step">1 MTP module</text>
+  <text x="210" y="442" text-anchor="middle" class="step" style="font-size:11px">1 个 MTP 模块（Module）</text>
 
   <rect x="80" y="462" width="260" height="36" class="cool"/>
-  <text x="210" y="484" text-anchor="middle" class="step">final RMSNorm + LM head (tied)</text>
+  <text x="210" y="484" text-anchor="middle" class="step" style="font-size:9px">最终 RMSNorm + LM 头（Head，权重绑定）</text>
 
-  <text x="210" y="530" text-anchor="middle" class="caption">total 671B · active 37B · ratio 5.5%</text>
+  <text x="210" y="530" text-anchor="middle" class="caption" style="font-size:10px">总计 671B · 激活 37B · 比例（Ratio）5.5%</text>
 
   <!-- Innovation callouts -->
   <rect x="400" y="50" width="520" height="500" class="box"/>
-  <text x="660" y="72" text-anchor="middle" class="head">four DeepSeek innovations</text>
+  <text x="660" y="72" text-anchor="middle" class="head" style="font-size:12px">DeepSeek 四项创新（Innovations）</text>
 
   <rect x="420" y="92" width="480" height="80" class="cool"/>
-  <text x="440" y="114" class="step">1 / MLA — Multi-Head Latent Attention</text>
-  <text x="440" y="134" class="small">compress K and V into shared 512-dim latent c^{KV};</text>
-  <text x="440" y="150" class="small">KV cache stores 512 floats/token/layer instead of 2 * heads * head_dim.</text>
-  <text x="440" y="166" class="small">at 128k: 7.6 GB vs 30.5 GB for GQA(8/128). 4x savings.</text>
+  <text x="440" y="114" class="step" style="font-size:11px">1 / 多头潜在注意力（Multi-Head Latent Attention，MLA）</text>
+  <text x="440" y="134" class="small" style="font-size:9px">将 K、V 压缩为共享 512 维潜在表示（Latent）c^{KV}；</text>
+  <text x="440" y="150" class="small" style="font-size:9px">KV 缓存每词元每层存 512 个浮点数，而非 2 * heads * head_dim。</text>
+  <text x="440" y="166" class="small" style="font-size:9px">128k 时：7.6 GB，对比 GQA(8/128) 的 30.5 GB；缩小 4 倍。</text>
 
   <rect x="420" y="180" width="480" height="80" class="hot"/>
-  <text x="440" y="202" class="step">2 / MTP — Multi-Token Prediction</text>
-  <text x="440" y="222" class="small">D=1 module predicts t+2 from h^(1) + E(t+1).</text>
-  <text x="440" y="238" class="small">denser training signal at 2.1% param overhead (14B of 671B).</text>
-  <text x="440" y="254" class="small">at inference: 80%+ acceptance as speculative-decoding draft.</text>
+  <text x="440" y="202" class="step" style="font-size:11px">2 / 多词元预测（Multi-Token Prediction，MTP）</text>
+  <text x="440" y="222" class="small" style="font-size:9px">D=1 模块（Module）依据 h^(1) + E(t+1) 预测 t+2。</text>
+  <text x="440" y="238" class="small" style="font-size:9px">以 2.1% 参数开销（671B 之外的 14B）换取更密集的训练信号。</text>
+  <text x="440" y="254" class="small" style="font-size:9px">推理草稿接受率（Draft Acceptance）超过 80%。</text>
 
   <rect x="420" y="268" width="480" height="80" class="cold"/>
-  <text x="440" y="290" class="step">3 / aux-loss-free routing</text>
-  <text x="440" y="310" class="small">per-expert bias terms adjusted during training</text>
-  <text x="440" y="326" class="small">to balance load — no auxiliary loss term needed.</text>
-  <text x="440" y="342" class="small">same effect, cleaner objective.</text>
+  <text x="440" y="290" class="step" style="font-size:11px">3 / 无辅助损失路由（Aux-Loss-Free Routing）</text>
+  <text x="440" y="310" class="small" style="font-size:10px">训练时调整各专家偏置项（Per-Expert Bias），</text>
+  <text x="440" y="326" class="small" style="font-size:10px">平衡负载，无需辅助损失项（Auxiliary Loss）。</text>
+  <text x="440" y="342" class="small" style="font-size:10px">效果相同，目标（Objective）更简洁。</text>
 
   <rect x="420" y="356" width="480" height="80" class="dsk"/>
-  <text x="440" y="378" class="step">4 / DualPipe training</text>
-  <text x="440" y="398" class="small">bidirectional pipeline overlap on 2k H800 GPUs.</text>
-  <text x="440" y="414" class="small">hides cross-node all-to-all inside compute windows.</text>
-  <text x="440" y="430" class="small">recovers ~245k GPU-hours vs 1F1B at V3's scale.</text>
+  <text x="440" y="378" class="step" style="font-size:12px">4 / DualPipe 训练（Training）</text>
+  <text x="440" y="398" class="small" style="font-size:9px">2k 块 H800 GPU 上的双向流水线重叠（Bidirectional Pipeline）。</text>
+  <text x="440" y="414" class="small" style="font-size:10px">将跨节点全互连（All-to-All）隐藏在计算窗口中。</text>
+  <text x="440" y="430" class="small" style="font-size:10px">V3 规模下，相比 1F1B 收回约 245k GPU 小时。</text>
 
   <rect x="420" y="444" width="480" height="100" class="box"/>
-  <text x="440" y="466" class="step">what this unlocks</text>
-  <text x="440" y="484" class="small">· 128k context with a manageable KV cache (MLA)</text>
-  <text x="440" y="500" class="small">· larger capacity for same active FLOP budget (256 experts, top-8)</text>
-  <text x="440" y="516" class="small">· 1.8x decode throughput free (MTP as spec-decode draft)</text>
-  <text x="440" y="532" class="small">· 95%+ GPU utilization at 2k-rank training (DualPipe)</text>
+  <text x="440" y="466" class="step" style="font-size:12px">带来的能力（What This Unlocks）</text>
+  <text x="440" y="484" class="small" style="font-size:9px">· 128k 上下文，KV 缓存（KV Cache）规模可控（MLA）</text>
+  <text x="440" y="500" class="small" style="font-size:9px">· 同等激活 FLOP 预算提供更大容量（256 专家、前 8 路由）</text>
+  <text x="440" y="516" class="small" style="font-size:9px">· 免费获得 1.8 倍解码吞吐量（Decode Throughput），MTP 作草稿</text>
+  <text x="440" y="532" class="small" style="font-size:9px">· 2k 进程训练的 GPU 利用率（Utilization）超过 95%（DualPipe）</text>
 </svg>

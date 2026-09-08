@@ -1,73 +1,73 @@
-# Skill Discovery and Progressive Disclosure
+# 技能发现与渐进披露（Skill Discovery and Progressive Disclosure）
 
-> A skill becomes useful before its body is loaded. Its name and description earn a place in the catalog; its deeper files earn context only when the task reaches them.
+> 技能在正文加载之前就开始发挥作用。名称和描述为它赢得目录位置，更深层文件只有在任务用到时才获得上下文空间。
 
 **Type:** Build
 **Languages:** Python (stdlib)
-**Prerequisites:** Phase 13 · 22 (Agent Skills: Portable Contract and Runtime Boundary)
-**Time:** ~105 minutes
+**Prerequisites:** Phase 13 · 22（智能体技能：可移植契约与运行时边界）
+**Time:** ~105 分钟
 
-## Learning Objectives
+## 学习目标（Learning Objectives）
 
-- Build a filesystem discovery pipeline that separates scope, validation, collision policy, and catalog publication.
-- Explain the three disclosure levels: catalog metadata, active instructions, and task-specific resources.
-- Design references so an agent can reach required detail directly without loading the entire package.
-- Budget catalog space independently from active-skill context.
-- Reject path traversal and symlink escape when a skill reads its own resources.
+- 构建分离范围、验证、冲突策略和目录发布的文件系统发现流水线。
+- 解释三级披露：目录元数据、活动指令和任务特定资源。
+- 设计参考资料，使智能体无需加载整个包就能直接到达必需细节。
+- 将目录空间与活动技能上下文分别预算。
+- 技能读取自身资源时，拒绝路径遍历和符号链接逃逸。
 
-## The Problem
+## 问题（The Problem）
 
-Your agent has 200 installed skills. Loading every `SKILL.md`, reference file, script, and template at session start would bury the current task in unrelated procedure. Loading nothing would force the user to remember exact filesystem paths.
+智能体安装了 200 个技能。如果会话开始时加载所有 `SKILL.md`、参考文件、脚本和模板，无关规程会淹没当前任务。如果什么都不加载，用户就必须记住精确文件系统路径。
 
-The usual compromise is a catalog: show the model a compact identity and routing description for each eligible skill, then load the full body only after selection. That creates two new engineering problems.
+常用折中方案是目录：向模型展示每个合格技能的紧凑身份和路由描述，选择后才加载完整正文。这产生两个新工程问题。
 
-First, discovery is not just recursive file search. Skills can exist at project, user, administrator, plugin, or built-in scopes. Two packages can share a name. A symlink can point outside the trusted root. A malformed package can consume catalog space or become impossible to invoke.
+首先，发现不只是递归查文件。技能可存在于项目、用户、管理员、插件或内置范围。两个包可能同名，符号链接可能指向可信根之外，格式错误的包可能占用目录空间或无法调用。
 
-Second, progressive disclosure can become progressive confusion. If `SKILL.md` says "read the relevant guide" and the package contains twelve guides, the model must guess. If every guide points to three more files, loading becomes an unbounded graph walk.
+其次，渐进披露可能变成渐进混淆。如果 `SKILL.md` 说“阅读相关指南”，包中却有十二份指南，模型就得猜。如果每份指南再指向三个文件，加载就变成无界图遍历。
 
-A good runtime makes discovery deterministic and disclosure intentional.
+好的运行时让发现具有确定性，让披露有明确目的。
 
-## The Concept
+## 概念（The Concept）
 
-### Discovery is a compiler pipeline
+### 发现是一条编译流水线（Discovery is a compiler pipeline）
 
-Treat the filesystem as source input. Do not publish raw paths directly to the model.
+将文件系统视为源输入，不要直接向模型发布原始路径。
 
 ```figure
 skill-discovery-pipeline
 ```
 
-Each stage should produce structured data and structured failures. A discovery log should answer:
+每阶段都应产生结构化数据和结构化失败。发现日志应回答：
 
-- Which roots were searched?
-- Which candidates were found?
-- Which candidates were rejected, and why?
-- Which package won a collision?
-- Which catalog entries were shortened or omitted because of budget?
+- 搜索了哪些根目录？
+- 找到了哪些候选？
+- 拒绝了哪些候选，为什么？
+- 哪个包在冲突中胜出？
+- 哪些目录条目因预算被缩短或省略？
 
-Without that evidence, "the model did not use my skill" is almost impossible to diagnose.
+没有这些证据，“模型没用我的技能”几乎无法诊断。
 
-### Scope is runtime policy
+### 范围是运行时策略（Scope is runtime policy）
 
-The portable specification defines a skill package, not one universal installation path or precedence order. The host decides where it searches.
+可移植规范定义技能包，不定义通用安装路径或优先顺序。宿主决定在哪里搜索。
 
-A generic runtime might use these scopes:
+通用运行时可使用以下范围：
 
-| Scope | Example root | Intended ownership |
+| 范围 | 根目录示例 | 预期所有者 |
 |---|---|---|
-| Workspace | `<repo>/.agents/skills/` | Project maintainers |
-| User | `<user-data>/skills/` | One developer |
-| Administrator | `<system>/skills/` | Machine or organization policy |
-| Plugin | A signed plugin bundle | Plugin publisher and installer |
-| Built-in | Runtime package | Runtime vendor |
+| 工作区（Workspace） | `<repo>/.agents/skills/` | 项目维护者 |
+| 用户（User） | `<user-data>/skills/` | 单个开发者 |
+| 管理员（Administrator） | `<system>/skills/` | 机器或组织策略 |
+| 插件（Plugin） | 已签名插件包 | 插件发布者和安装器 |
+| 内置（Built-in） | 运行时包 | 运行时供应商 |
 
-As of August 2026, Codex documents project discovery from `$CWD/.agents/skills` through ancestor directories up to the repository root, plus user, administrator, and built-in locations. It supports symlinked skill directories. Duplicate names may both appear rather than being merged. Those are Codex behaviors, not requirements of `SKILL.md`; verify the current [Codex skill documentation](https://learn.chatgpt.com/docs/build-skills) when writing an adapter.
+截至 2026 年 8 月，Codex 文档说明项目发现从 `$CWD/.agents/skills` 沿祖先目录向上直到仓库根，另有用户、管理员和内置位置。它支持符号链接技能目录。重复名称可能同时出现，而非合并。这些是 Codex 行为，不是 `SKILL.md` 要求；编写适配器时核实当前 [Codex 技能文档](https://learn.chatgpt.com/docs/build-skills)。
 
-Never invent precedence from directory names. Declare it as policy and test it. The lesson lab uses an explicit integer rank for each `Scope` so the same candidate set always resolves the same way.
+绝不从目录名臆造优先级。将其声明为策略并测试。本课实验为每个 `Scope` 使用显式整数等级，使相同候选集总得到相同结果。
 
-### Collisions need identity beyond `name`
+### 冲突需要 `name` 之外的身份（Collisions need identity beyond name）
 
-Two packages named `release-readiness` can be legitimate. One may be a workspace override and one a user default. A catalog entry therefore needs at least:
+两个名为 `release-readiness` 的包可能都合法：一个是工作区覆盖，一个是用户默认。因此目录条目至少需要：
 
 ```json
 {
@@ -79,124 +79,119 @@ Two packages named `release-readiness` can be legitimate. One may be a workspace
 }
 ```
 
-Common collision policies include:
+常见冲突策略：
 
-| Policy | Benefit | Risk |
+| 策略 | 收益 | 风险 |
 |---|---|---|
-| Keep every candidate | Nothing is hidden | The model sees ambiguous names |
-| Highest-precedence scope wins | Simple invocation | A local package can shadow a trusted one |
-| Reject duplicates | No silent shadowing | Legitimate overrides stop working |
-| Qualify names by source | Explicit identity | User-facing names become longer |
+| 保留所有候选 | 不隐藏任何内容 | 模型看到含糊名称 |
+| 最高优先级范围胜出 | 调用简单 | 本地包可能遮蔽可信包 |
+| 拒绝重复 | 没有静默遮蔽 | 合法覆盖停止工作 |
+| 按来源限定名称 | 身份明确 | 用户可见名称变长 |
 
-Choose one policy for the host. Preserve the rejected or shadowed candidates in diagnostics even when they are absent from the model catalog.
+为宿主选择一种策略。即使被拒绝或遮蔽候选不在模型目录，也要在诊断中保留。
 
-### Three disclosure levels
+### 三级披露（Three disclosure levels）
 
-The Agent Skills specification describes staged loading. The key is that each level has a different purpose.
+Agent Skills 规范描述分阶段加载。关键是各级目的不同。
 
 ```figure
 skill-disclosure-levels
 ```
 
-#### Level 1: catalog metadata
+#### 第一级：目录元数据（Level 1: catalog metadata）
 
-The model needs enough information to distinguish the skill from neighbors. The specification estimates roughly 100 tokens per catalog entry, but actual serialization and tokenization belong to the host.
+模型需要足够信息来区分相邻技能。规范估计每条约 100 词元，但实际序列化和分词由宿主负责。
 
-A useful description has two clauses:
+有用描述包含两个分句：
 
 ```yaml
-description: Validate a release candidate and produce a readiness report. Use when the user asks whether a version, tag, or package is ready to publish.
+description: 验证发布候选版本并生成就绪报告。当用户询问某版本、标签或包是否准备好发布时使用。
 ```
 
-The first clause states the capability. The second states the trigger boundary. Lesson 25 evaluates this boundary with positive and near-miss prompts.
+第一句说明能力，第二句说明触发边界。第 25 课用正例和近似未命中提示词评估此边界。
 
-#### Level 2: active instructions
+#### 第二级：活动指令（Level 2: active instructions）
 
-After activation, the body should function as a map and a procedure. The specification recommends keeping `SKILL.md` under 500 lines. That is a design signal, not a target to fill.
+激活后，正文应同时充当地图和规程。规范建议 `SKILL.md` 少于 500 行，这是设计信号，不是要填满的目标。
 
-The body should contain:
+正文应包含：
 
-- the task boundary;
-- the default workflow;
-- branch conditions;
-- direct references to deeper files;
-- tool and script contracts;
-- failure and stopping behavior;
-- the expected output and its verification.
+- 任务边界；
+- 默认流程；
+- 分支条件；
+- 深层文件的直接引用；
+- 工具和脚本契约；
+- 失败和停止行为；
+- 预期输出及其验证。
 
-Do not move the central workflow into a reference merely to make the entry file short. Activation must give the model enough context to begin correctly.
+不要仅为缩短入口文件就把核心流程移入参考资料。激活必须给模型足够上下文以正确开始。
 
-#### Level 3: supporting resources
+#### 第三级：支持资源（Level 3: supporting resources）
 
-References supply prose or data. Scripts provide deterministic computation. Assets are copied, filled, or transformed into deliverables rather than treated as instructions.
+参考资料提供文字或数据。脚本提供确定性计算。资产用于复制、填写或转换为交付物，不应视为指令。
 
-| Directory | Model reads it? | Model executes it? | Typical content |
+| 目录 | 模型读取？ | 模型执行？ | 典型内容 |
 |---|:---:|:---:|---|
-| `references/` | Yes, when needed | No | schemas, policies, domain guides |
-| `scripts/` | May inspect it | Through a permitted tool | validators, converters, collectors |
-| `assets/` | Only if useful | No | templates, fixtures, images, starter files |
+| `references/` | 需要时读取 | 否 | 模式、策略、领域指南 |
+| `scripts/` | 可能检查 | 通过获准工具 | 验证器、转换器、收集器 |
+| `assets/` | 仅有用时 | 否 | 模板、夹具、图片、起始文件 |
 
-These names are conventions, not magic capabilities. The host still needs file access and an execution tool.
+这些名称是约定，不是神奇能力。宿主仍需文件访问和执行工具。
 
-### Branch-specific references beat topic dumps
+### 分支专属参考优于主题堆积（Branch-specific references beat topic dumps）
 
-Write the entry file as a decision map:
+将入口写成决策地图：
 
 ```markdown
-## Choose the path
+## 选择路径（Choose the path）
 
-- For a Python package, read `references/python-release.md`.
-- For a container image, read `references/container-release.md`.
-- For a documentation-only release, read `references/docs-release.md`.
-- If the release combines artifact types, read only the guides for those artifacts.
+- Python 包：阅读 `references/python-release.md`。
+- 容器镜像：阅读 `references/container-release.md`。
+- 纯文档发布：阅读 `references/docs-release.md`。
+- 若发布组合多种制品，只读对应制品的指南。
 ```
 
-This gives every reference an observable load condition. "Read `references/` for more" does not.
+这为每份参考资料提供可观察加载条件。“更多内容阅读 `references/`”则没有。
 
-Keep the reference graph shallow. The official guidance recommends direct links from `SKILL.md` and avoiding deep chains. One hop makes reachability testable and reduces the chance that a needed constraint never enters context.
+保持引用图浅层。官方指导建议从 `SKILL.md` 直接链接，避免深链。一跳使可达性可测试，降低必需约束从未进入上下文的概率。
 
 ```figure
 skill-reference-map
 ```
 
-### Catalog budget and active context are different budgets
+### 目录预算与活动上下文是不同预算（Catalog budget and active context are different budgets）
 
-Let `c_i` be the serialized catalog cost of skill `i`, `B_c` the catalog budget, `b_j` the active body cost, and `r_k` the resources actually loaded.
+令 `c_i` 为技能 `i` 的序列化目录成本，`B_c` 为目录预算，`b_j` 为活动正文成本，`r_k` 为实际加载资源。
 
 ```text
 catalog_cost = sum(c_i for every published skill)
 active_cost = sum(b_j for every activated skill) + sum(r_k for every disclosed resource)
 ```
 
-Reducing one budget does not automatically reduce the other. Short descriptions can save catalog space while an activated 900-line body still overwhelms the task. Splitting the body into references can reduce active cost only when the runtime and instructions actually avoid loading irrelevant branches.
+降低一种预算不会自动降低另一种。短描述可节省目录空间，但激活的 900 行正文仍会淹没任务。只有运行时和指令真正避免加载无关分支，拆分正文到参考资料才会降低活动成本。
 
-Codex currently budgets the initial skill list at 2 percent of the context
-window when the context-window size is known. The 8,000-character value is a
-fallback only when that size is unknown; it is not a second cap combined with
-the 2 percent rule. When the catalog exceeds the applicable budget,
-descriptions may be shortened or omitted. Treat those figures as current
-Codex policy, not a property of the Agent Skills standard.
+当上下文窗口大小已知时，Codex 当前将初始技能列表预算设为窗口的 2%。8,000 字符仅在窗口大小未知时作为回退，不是与 2% 规则同时应用的第二个上限。目录超过适用预算时，描述可能缩短或省略。将这些数值视为当前 Codex 策略，不是 Agent Skills 标准属性。
 
-### Resource paths are a trust boundary
+### 资源路径是信任边界（Resource paths are a trust boundary）
 
-A skill should read only files inside its package. Literal string-prefix checks are not enough:
+技能应只读包内文件。字面字符串前缀检查不够：
 
 ```text
 references/../../../../.ssh/config
 references/external-link -> /private/company-secrets
 ```
 
-Resolve the package root and candidate with filesystem semantics, reject absolute inputs, and verify that the resolved candidate remains under the resolved root. Decide whether symlinks are allowed before discovery. If allowed, check the resolved target every time.
+按文件系统语义解析包根和候选，拒绝绝对输入，并验证解析后候选仍在解析后根目录内。在发现前决定是否允许符号链接；允许时每次都检查解析目标。
 
 ```figure
 skill-resource-containment
 ```
 
-Path containment does not establish content trust. A valid in-package reference can still contain malicious instructions. Lesson 26 handles that threat.
+路径包含关系不建立内容信任。合法包内参考资料仍可能含恶意指令。第 26 课处理此威胁。
 
-### Loading must be observable
+### 加载必须可观察（Loading must be observable）
 
-Record disclosure events without logging secrets:
+记录披露事件，不记录秘密：
 
 ```json
 {
@@ -208,28 +203,28 @@ Record disclosure events without logging secrets:
 }
 ```
 
-The reason turns a context choice into reviewable evidence. It also helps identify instructions that cause the agent to load every file "just in case."
+原因让上下文选择成为可审查证据，也帮助识别导致智能体“以防万一”加载所有文件的指令。
 
-## Build It
+## 动手实现（Build It）
 
-`code/main.py` builds a deterministic discovery and disclosure engine.
+`code/main.py` 构建确定性发现和披露引擎。
 
-The discovery surface includes:
+发现接口包含：
 
-- `Scope` for source and precedence metadata;
-- `SkillCandidate` for an unvalidated filesystem candidate;
-- `discover_scope(scope)` to enumerate immediate skill directories;
-- `resolve_collisions(candidates, precedence)` to apply one declared policy;
-- `CatalogEntry` and `build_catalog(...)` to publish bounded metadata;
-- `CatalogBudget` to account for serialized entries without pretending characters are universal tokens.
+- `Scope`：来源和优先级元数据；
+- `SkillCandidate`：尚未验证的文件系统候选；
+- `discover_scope(scope)`：枚举直接技能子目录；
+- `resolve_collisions(candidates, precedence)`：应用一种声明策略；
+- `CatalogEntry` 和 `build_catalog(...)`：发布有界元数据；
+- `CatalogBudget`：核算序列化条目，不假装字符是通用词元。
 
-The disclosure surface includes:
+披露接口包含：
 
-- `load_skill_body(entry, ...)` for Level 2 activation;
-- `validate_reference(skill_dir, reference)` for path containment;
-- `load_reference(...)` for bounded Level 3 reads.
+- `load_skill_body(entry, ...)`：第二级激活；
+- `validate_reference(skill_dir, reference)`：路径包含检查；
+- `load_reference(...)`：有界第三级读取。
 
-Run the lab:
+运行实验：
 
 ```bash
 cd "$(git rev-parse --show-toplevel)"
@@ -238,63 +233,62 @@ python3 code/main.py
 python3 -m unittest discover -s code/tests -v
 ```
 
-This block requires a local clone and resolves the repository root from any
-working directory inside that clone.
+此命令块要求本地克隆，并从克隆内任意工作目录解析仓库根。
 
-The demo creates temporary project and user scopes, inserts a collision, builds a catalog under a deliberately small budget, activates one skill, and attempts both a valid reference read and a traversal escape. No permanent files are installed.
+演示创建临时项目和用户范围，插入冲突，在刻意缩小预算下构建目录，激活一个技能，并尝试合法参考读取和遍历逃逸。不安装永久文件。
 
-### Why discovery is shallow
+### 为什么浅层发现（Why discovery is shallow）
 
-`discover_scope` checks immediate child directories for `SKILL.md`. It does not recursively treat every nested `SKILL.md` as a separate package. This preserves the package boundary and avoids accidentally publishing examples or fixtures inside an installed skill.
+`discover_scope` 检查直接子目录中的 `SKILL.md`，不会递归将每个嵌套 `SKILL.md` 当独立包。这保留包边界，避免意外发布已安装技能内的示例或夹具。
 
-### Why the lab does not parse arbitrary YAML
+### 为什么实验不解析任意 YAML（Why the lab does not parse arbitrary YAML）
 
-The lab supports the scalar frontmatter needed for its catalog. A production runtime should use a safe YAML parser with an explicit schema, size limits, and disabled custom object construction. "Stdlib-only" is a teaching constraint, not permission to invent a partial YAML dialect silently.
+实验支持目录所需标量前置元数据。生产运行时应使用安全 YAML 解析器，具有显式模式、大小限制，并禁用自定义对象构造。“仅标准库”是教学约束，不是静默发明部分 YAML 方言的许可。
 
-## Use It
+## 实际应用（Use It）
 
-Apply this checklist to any discovery adapter:
+对任何发现适配器应用此清单：
 
-1. List every configured root and who can write to it.
-2. State whether symlinked packages are allowed.
-3. Validate package name, directory name, required metadata, and entry-body size.
-4. Preserve source and scope in the internal identity.
-5. Declare and test duplicate-name behavior.
-6. Measure the exact serialized catalog sent to the model.
-7. Record why a body or resource was loaded.
-8. Keep resource reads inside the resolved package root.
-9. Fail clearly when a referenced file is missing.
-10. Rebuild the catalog when installations or policies change.
+1. 列出每个配置根及其写权限持有者。
+2. 说明是否允许符号链接包。
+3. 验证包名、目录名、必需元数据和入口正文大小。
+4. 在内部身份保留来源和范围。
+5. 声明并测试重复名称行为。
+6. 测量发给模型的精确序列化目录。
+7. 记录正文或资源为何加载。
+8. 资源读取保持在解析后包根内。
+9. 引用文件缺失时明确失败。
+10. 安装或策略变化时重建目录。
 
-## Ship It
+## 交付（Ship It）
 
-This lesson produces the `skill-catalog-builder` bundle. It scans explicitly ordered roots, rejects symlinked entry files and name-directory mismatches, resolves cross-scope collisions, rejects equal-precedence duplicates, and fits selected metadata into declared entry, description, and serialized-character budgets.
+本课生成 `skill-catalog-builder` 包。它扫描显式排序根，拒绝符号链接入口文件和名称目录不匹配，解决跨范围冲突，拒绝同优先级重复，并将选定元数据纳入声明的条目数、描述和序列化字符预算。
 
-Its JSON report contains selected entries, shadowed candidates, omitted entries, validation errors, precedence, and budget use. Body and reference loading remain separate runtime operations, so the catalog builder does not execute scripts or admit the whole package into context.
+JSON 报告包含选定条目、被遮蔽候选、省略条目、验证错误、优先级和预算使用。正文及参考加载仍是独立运行时操作，因此目录构建器不执行脚本，也不把整个包纳入上下文。
 
-## Exercises
+## 练习（Exercises）
 
-1. Add a plugin scope and place it between user and built-in precedence. Prove the collision result with a test.
-2. Change the collision policy from highest precedence to qualified names. Preserve both entries in the catalog.
-3. Add a byte-size limit to `load_reference`. Test a file exactly at the limit and one byte above it.
-4. Create two descriptions that sound nearly identical. Rewrite them so the trigger boundaries do not overlap.
-5. Add a manifest containing hashes for every reference and script. Detect a modified resource before loading it.
-6. Instrument the demo to report Level 1, Level 2, and Level 3 byte counts separately.
+1. 添加插件范围，将优先级放在用户与内置之间，用测试证明冲突结果。
+2. 将冲突策略从最高优先级改为限定名称，在目录中保留两个条目。
+3. 为 `load_reference` 添加字节大小限制，测试恰好等于限制和超出一字节的文件。
+4. 创建两个听起来几乎相同的描述，重写使触发边界不重叠。
+5. 添加包含每个参考和脚本哈希的清单，在加载前检测资源修改。
+6. 为演示插桩，分别报告第一级、第二级和第三级字节数。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语 | 常见说法 | 实际含义 |
 |---|---|---|
-| Skill discovery | "Find every SKILL.md" | Search configured scopes, validate packages, attach provenance, and apply policy |
-| Skill catalog | "The list of installed skills" | Compact model-visible routing metadata for eligible packages |
-| Collision policy | "Which duplicate wins" | A declared rule for same-name candidates from different sources |
-| Progressive disclosure | "Lazy loading" | Staged context admission from catalog to body to branch-specific resources |
-| Reference graph | "Files linked by the skill" | The reachable resource structure and its load conditions |
-| Path containment | "Stay in the folder" | Verify resolved resource targets remain inside the resolved package root |
+| 技能发现（Skill discovery） | “找到每个 SKILL.md” | 搜索配置范围、验证包、附上来源并应用策略 |
+| 技能目录（Skill catalog） | “已安装技能列表” | 合格包的紧凑模型可见路由元数据 |
+| 冲突策略（Collision policy） | “哪个重复项胜出” | 对不同来源同名候选的声明规则 |
+| 渐进披露（Progressive disclosure） | “惰性加载” | 从目录到正文再到分支专属资源的分阶段上下文准入 |
+| 引用图（Reference graph） | “技能链接的文件” | 可达资源结构及其加载条件 |
+| 路径包含（Path containment） | “留在文件夹” | 验证解析后的资源目标仍在解析后的包根内 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [Agent Skills specification](https://agentskills.io/specification) for package shape and progressive disclosure levels.
-- [Optimizing skill descriptions](https://agentskills.io/skill-creation/optimizing-descriptions) for catalog routing metadata.
-- [Agent Skills best practices](https://agentskills.io/skill-creation/best-practices) for direct references and entry-file size.
-- [OpenAI: Build skills](https://learn.chatgpt.com/docs/build-skills) for current Codex discovery scopes and catalog limits.
+- [Agent Skills 规范](https://agentskills.io/specification)：包结构和渐进披露层级。
+- [优化技能描述](https://agentskills.io/skill-creation/optimizing-descriptions)：目录路由元数据。
+- [Agent Skills 最佳实践](https://agentskills.io/skill-creation/best-practices)：直接引用和入口文件大小。
+- [OpenAI：构建技能](https://learn.chatgpt.com/docs/build-skills)：当前 Codex 发现范围和目录限制。

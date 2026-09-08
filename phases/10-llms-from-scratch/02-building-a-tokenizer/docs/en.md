@@ -1,44 +1,44 @@
-# Building a Tokenizer from Scratch
+# 从零构建分词器（Building a Tokenizer from Scratch）
 
-> Lesson 01 gave you a toy. This lesson gives you a weapon.
+> 第 01 课给你的是玩具，本课要给你的是实战工具。
 
 **Type:** Build
 **Languages:** Python
-**Prerequisites:** Phase 10, Lesson 01 (Tokenizers: BPE, WordPiece, SentencePiece)
-**Time:** ~90 minutes
+**Prerequisites:** 阶段 10，第 01 课（分词器：BPE、WordPiece、SentencePiece）
+**Time:** ~90 分钟
 
-## Learning Objectives
+## 学习目标（Learning Objectives）
 
-- Build a production-grade BPE tokenizer that handles Unicode, whitespace normalization, and special tokens
-- Implement byte-level fallback so the tokenizer can encode any input (including emoji, CJK, and code) without unknown tokens
-- Add pre-tokenization regex patterns that split text at word boundaries before applying BPE merges
-- Train a custom tokenizer on a corpus and evaluate its compression ratio against tiktoken on multilingual text
+- 构建生产级字节对编码（Byte Pair Encoding，BPE）分词器，处理 Unicode、空白规范化和特殊词元
+- 实现字节级回退（Byte-level fallback），让分词器能够编码任何输入，包括表情符号、中日韩文字和代码，而不产生未知词元
+- 加入预分词（Pre-tokenization）正则表达式模式，在应用 BPE 合并前按词边界拆分文本
+- 在语料上训练自定义分词器，并在多语言文本上对比它与 tiktoken 的压缩比
 
-## The Problem
+## 问题（The Problem）
 
-Your BPE tokenizer from Lesson 01 works on English text. Now throw Japanese at it. Or emoji. Or Python code with mixed tabs and spaces.
+第 01 课的 BPE 分词器能处理英文文本。现在试试日文、表情符号，或者混合制表符和空格的 Python 代码。
 
-It breaks.
+它会出问题。
 
-Not because BPE is wrong -- because the implementation is incomplete. A production tokenizer handles raw bytes in any encoding, normalizes Unicode before splitting, manages special tokens that never get merged, chains pre-tokenization with subword splitting, and does all of this fast enough to not bottleneck a training pipeline processing 15 trillion tokens.
+不是 BPE 错了，而是实现不完整。生产级分词器要处理任意编码的原始字节，在拆分前规范化 Unicode，管理永不参与合并的特殊词元（Special tokens），串联预分词与子词拆分，并且速度必须足够快，不能成为处理 15 万亿词元的训练流水线的瓶颈。
 
-GPT-2's tokenizer has 50,257 tokens. Llama 3 has 128,256. GPT-4 has roughly 100,000. These are not toy numbers. The merge tables behind those vocabularies were trained on hundreds of gigabytes of text, and the surrounding machinery -- normalization, pre-tokenization, special token injection, chat template formatting -- is what separates a tokenizer that handles "hello world" from one that handles the entire internet.
+GPT-2 的分词器有 50,257 个词元，Llama 3 有 128,256 个，GPT-4 约有 100,000 个。这些不是玩具级数字。词表背后的合并表是在数百 GB 文本上训练出来的；而周边机制，包括规范化、预分词、特殊词元注入、聊天模板格式化，决定了分词器是只能处理 "hello world"，还是能处理整个互联网。
 
-You are going to build that machinery.
+你将亲手构建这些机制。
 
-## The Concept
+## 概念（The Concept）
 
-### The Full Pipeline
+### 完整流水线（The Full Pipeline）
 
-A production tokenizer is not one algorithm. It is a pipeline of five stages, each solving a different problem.
+生产级分词器并非单一算法，而是由五个阶段组成的流水线，每个阶段解决一个不同的问题。
 
 ```mermaid
 graph LR
-    A[Raw Text] --> B[Normalize]
-    B --> C[Pre-Tokenize]
-    C --> D[BPE Merge]
-    D --> E[Special Tokens]
-    E --> F[Token IDs]
+    A[原始文本] --> B[规范化]
+    B --> C[预分词]
+    C --> D[BPE 合并]
+    D --> E[特殊词元]
+    E --> F[词元 ID]
 
     style A fill:#1a1a2e,stroke:#e94560,color:#fff
     style B fill:#1a1a2e,stroke:#e94560,color:#fff
@@ -48,64 +48,64 @@ graph LR
     style F fill:#1a1a2e,stroke:#e94560,color:#fff
 ```
 
-Each stage has a specific job:
+每个阶段都有明确任务：
 
-| Stage | What It Does | Why It Matters |
+| 阶段 | 功能 | 重要性 |
 |-------|-------------|----------------|
-| Normalize | NFKC Unicode, lowercase optional, strip accents optional | "fi" ligature (U+FB01) becomes "fi" (two chars). Without this, same word gets different tokens. |
-| Pre-Tokenize | Split text into chunks before BPE | Prevents BPE from merging across word boundaries. "the cat" should never produce a token "e c". |
-| BPE Merge | Apply learned merge rules to byte sequences | The core compression. Turns raw bytes into subword tokens. |
-| Special Tokens | Inject [BOS], [EOS], [PAD], chat template markers | These tokens have fixed IDs. They never participate in BPE merges. The model needs them for structure. |
-| ID Mapping | Convert token strings to integer IDs | The model sees integers, not strings. |
+| 规范化（Normalize） | Unicode NFKC 规范化，可选转小写、去除重音 | "fi" 连字（U+FB01）变成 "fi" 两个字符。否则，同一个词会得到不同词元。 |
+| 预分词（Pre-Tokenize） | 在 BPE 前将文本拆成块 | 防止 BPE 跨词边界合并。"the cat" 绝不应产生 "e c" 词元。 |
+| BPE 合并（BPE Merge） | 将学到的合并规则应用于字节序列 | 核心压缩步骤，将原始字节变成子词词元。 |
+| 特殊词元（Special Tokens） | 注入 [BOS]、[EOS]、[PAD] 和聊天模板标记 | 这些词元有固定 ID，永不参与 BPE 合并。模型靠它们识别结构。 |
+| ID 映射（ID Mapping） | 将词元字符串转换为整数 ID | 模型看到的是整数，而不是字符串。 |
 
-### Byte-Level BPE
+### 字节级 BPE（Byte-Level BPE）
 
-Lesson 01's tokenizer operated on UTF-8 bytes. That was the right call. But we skipped something important: what happens when those bytes are not valid UTF-8?
+第 01 课的分词器处理 UTF-8 字节，这个选择是对的。但我们跳过了一个重要问题：这些字节不是有效 UTF-8 时会怎样？
 
-Byte-level BPE solves this by treating every possible byte value (0-255) as a valid token. Your base vocabulary is exactly 256 entries. Any file -- text, binary, corrupted -- can be tokenized without producing an unknown token.
+字节级 BPE 将每种可能的字节值（0-255）都视为有效词元，从而解决这个问题。基础词表恰好包含 256 项。任何文件，无论文本、二进制还是损坏文件，都可以分词而不产生未知词元。
 
-GPT-2 added a trick: map each byte to a printable Unicode character so the vocabulary stays human-readable. Byte 0x20 (space) becomes the character "G" in their mapping. This is purely cosmetic. The algorithm does not care.
+GPT-2 加了一个技巧：把每个字节映射为可打印的 Unicode 字符，使词表保持人类可读。在它的映射中，字节 0x20（空格）变成字符 "G"。这纯粹是显示层面的处理，算法并不在意。
 
-The real power: byte-level BPE handles every language on earth. Chinese characters are 3 UTF-8 bytes each. Japanese can be 3-4 bytes. Arabic, Devanagari, emoji -- all just byte sequences. The BPE algorithm finds patterns in these byte sequences exactly the same way it finds patterns in English ASCII bytes.
+真正的优势在于，字节级 BPE 能处理世界上的每种语言。中文字符每个占 3 个 UTF-8 字节，日文可能占 3-4 个字节。阿拉伯文、天城文、表情符号都只是字节序列。BPE 在这些字节序列中发现模式的方式，与在英文 ASCII 字节中完全相同。
 
-### Pre-Tokenization
+### 预分词（Pre-Tokenization）
 
-Before BPE touches your text, you need to split it into chunks. This prevents the merge algorithm from creating tokens that span word boundaries.
+在 BPE 处理文本前，需要先将文本拆成块，防止合并算法创建跨越词边界的词元。
 
-GPT-2 uses a regex pattern to split text:
+GPT-2 使用正则表达式（Regular expression）模式拆分文本：
 
 ```
 '(?:[sdmt]|ll|ve|re)| ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+(?!\S)|\s+
 ```
 
-This pattern splits on contractions ("don't" becomes "don" + "'t"), words with optional leading spaces, numbers, punctuation, and whitespace. The leading space is kept attached to the word -- so "the cat" becomes [" the", " cat"], not ["the", " ", "cat"].
+该模式拆分缩略形式（"don't" 变成 "don" + "'t"）、可带前导空格的单词、数字、标点和空白。前导空格保留在单词上，因此 "the cat" 变成 [" the", " cat"]，而不是 ["the", " ", "cat"]。
 
-Llama uses SentencePiece, which skips regex entirely. It treats the raw byte stream as one long sequence and lets the BPE algorithm figure out the boundaries. This is simpler but gives BPE more freedom to create cross-word tokens.
+Llama 使用 SentencePiece，完全跳过正则表达式。它将原始字节流视为一个长序列，让 BPE 自己发现边界。这更简单，但也给了 BPE 更多创建跨词词元的自由。
 
-The choice matters. GPT-2's regex prevents the tokenizer from learning that "the" at the end of one word and "the" at the start of the next should merge. SentencePiece allows it, which sometimes produces more efficient compression but less interpretable tokens.
+这个选择很重要。GPT-2 的正则表达式会阻止分词器学到将一个词末尾的 "the" 与下一个词开头的 "the" 合并。SentencePiece 允许这种操作，有时压缩更高效，但词元更难解释。
 
-### Special Tokens
+### 特殊词元（Special Tokens）
 
-Every production tokenizer reserves token IDs for structural markers:
+所有生产级分词器都会为结构标记预留词元 ID：
 
-| Token | Purpose | Used By |
+| 词元 | 用途 | 使用模型 |
 |-------|---------|---------|
-| `[BOS]` / `<s>` | Beginning of sequence | Llama 3, GPT |
-| `[EOS]` / `</s>` | End of sequence | All models |
-| `[PAD]` | Padding for batch alignment | BERT, T5 |
-| `[UNK]` | Unknown token (byte-level BPE eliminates this) | BERT, WordPiece |
-| `<\|im_start\|>` | Chat message boundary start | ChatGPT, Qwen |
-| `<\|im_end\|>` | Chat message boundary end | ChatGPT, Qwen |
-| `<\|user\|>` | User turn marker | Llama 3 |
-| `<\|assistant\|>` | Assistant turn marker | Llama 3 |
+| `[BOS]` / `<s>` | 序列起始 | Llama 3, GPT |
+| `[EOS]` / `</s>` | 序列结束 | 所有模型 |
+| `[PAD]` | 填充以对齐批次 | BERT, T5 |
+| `[UNK]` | 未知词元，字节级 BPE 可消除它 | BERT, WordPiece |
+| `<\|im_start\|>` | 聊天消息边界起始 | ChatGPT, Qwen |
+| `<\|im_end\|>` | 聊天消息边界结束 | ChatGPT, Qwen |
+| `<\|user\|>` | 用户轮次标记 | Llama 3 |
+| `<\|assistant\|>` | 助手轮次标记 | Llama 3 |
 
-Special tokens are never split by BPE. They are matched exactly before the merge algorithm runs, replaced with their fixed ID, and the surrounding text is tokenized normally.
+特殊词元永远不会被 BPE 拆分。合并算法运行前，先精确匹配它们并替换成固定 ID，周围文本则正常分词。
 
-### Chat Templates
+### 聊天模板（Chat Templates）
 
-This is where most people get confused and most implementations break.
+这里是多数人感到困惑、多数实现出错的地方。
 
-When you send messages to a chat model, the API accepts a list of messages:
+向聊天模型发送消息时，API 接收的是消息列表：
 
 ```
 [
@@ -115,7 +115,7 @@ When you send messages to a chat model, the API accepts a list of messages:
 ]
 ```
 
-The model does not see JSON. It sees a flat token sequence. The chat template converts messages into that flat sequence using special tokens. Every model does this differently:
+模型看到的不是 JSON，而是一个扁平词元序列。聊天模板（Chat template）使用特殊词元，将消息转换成这个扁平序列。每种模型的做法都不同：
 
 ```
 Llama 3:
@@ -136,27 +136,27 @@ Hello<|im_end|>
 Hi there!<|im_end|>
 ```
 
-Get the template wrong and the model produces garbage. It was trained on one exact format. Any deviation -- a missing newline, a swapped token, an extra space -- puts the input outside the training distribution.
+模板弄错，模型就会输出垃圾。它只在一种精确格式上训练过。任何偏差，少一个换行、换错一个词元、多一个空格，都会使输入偏离训练分布。
 
-### Speed
+### 速度（Speed）
 
-Python is too slow for production tokenization.
+Python 对生产环境分词来说太慢。
 
-tiktoken (OpenAI) is written in Rust with Python bindings. HuggingFace tokenizers is also Rust. SentencePiece is C++. These achieve 10-100x speedups over pure Python.
+OpenAI 的 tiktoken 用 Rust 编写并提供 Python 绑定，HuggingFace tokenizers 也使用 Rust，SentencePiece 使用 C++。相较纯 Python，它们可以提速 10-100 倍。
 
-For perspective: tokenizing 15 trillion tokens for Llama 3 pre-training at 1 million tokens per second (fast Python) would take 174 days. At 100 million tokens per second (Rust), it takes 1.7 days.
+举例来说，为 Llama 3 预训练处理 15 万亿词元，若每秒处理 100 万词元，即较快的 Python 实现，需要 174 天；若每秒处理 1 亿词元，即 Rust 实现，则只需 1.7 天。
 
-You are building in Python to understand the algorithm. In production, you would use a compiled implementation and only touch the Python wrapper.
+使用 Python 实现是为了理解算法。在生产环境中，应采用编译型实现，只操作其 Python 包装层。
 
 ```figure
 weight-tying
 ```
 
-## Build It
+## 动手实现（Build It）
 
-### Step 1: Byte-Level Encoding
+### 步骤 1：字节级编码（Step 1: Byte-Level Encoding）
 
-The foundation. Convert any string into a sequence of bytes, map each byte to a printable character for display, and reverse the process.
+先打基础：把任意字符串转换为字节序列，将每个字节映射为可打印字符用于显示，再反向还原。
 
 ```python
 def bytes_to_tokens(text):
@@ -166,7 +166,7 @@ def tokens_to_text(token_bytes):
     return bytes(token_bytes).decode("utf-8", errors="replace")
 ```
 
-Test on multilingual text to see the byte counts:
+用多语言文本测试，查看字节数：
 
 ```python
 texts = [
@@ -181,11 +181,11 @@ for label, text in texts:
     print(f"{label}: {len(text)} chars -> {len(b)} bytes -> {b}")
 ```
 
-"hello" is 5 bytes. "你好" is 6 bytes (3 per character). The fire emoji is 4 bytes. The byte-level tokenizer does not care what language it is. Bytes are bytes.
+"hello" 是 5 字节，"你好" 是 6 字节，每个字符 3 字节。火焰表情符号是 4 字节。字节级分词器不关心语言种类，字节就是字节。
 
-### Step 2: Pre-Tokenizer with Regex
+### 步骤 2：正则表达式预分词器（Step 2: Pre-Tokenizer with Regex）
 
-Split text into chunks using the GPT-2 regex pattern. Each chunk gets tokenized independently by BPE.
+使用 GPT-2 的正则表达式模式把文本拆成块，每个块独立执行 BPE 分词。
 
 ```python
 import re
@@ -204,20 +204,20 @@ def pre_tokenize(text):
     return [match.group() for match in GPT2_PATTERN.finditer(text)]
 ```
 
-The `regex` module supports Unicode property escapes (`\p{L}` for letters, `\p{N}` for numbers). The standard library `re` module does not, so we fall back to ASCII character classes. For production multilingual tokenizers, install `regex`.
+`regex` 模块支持 Unicode 属性转义，`\p{L}` 表示字母，`\p{N}` 表示数字。标准库 `re` 不支持，所以这里回退到 ASCII 字符类。生产级多语言分词器应安装 `regex`。
 
-Try it:
+试一下：
 
 ```python
 print(pre_tokenize("Hello, world! Don't stop."))
 # [' Hello', ',', ' world', '!', " Don", "'t", ' stop', '.']
 ```
 
-The leading space stays attached to the word. Contractions split at the apostrophe. Punctuation becomes its own chunk. BPE will never merge tokens across these boundaries.
+前导空格仍附在单词上，缩略形式在撇号处拆开，标点单独成块。BPE 永远不会跨越这些边界合并词元。
 
-### Step 3: BPE on Byte Sequences
+### 步骤 3：在字节序列上执行 BPE（Step 3: BPE on Byte Sequences）
 
-The core algorithm from Lesson 01, but now operating on pre-tokenized chunks independently.
+核心算法来自第 01 课，但现在分别处理各个预分词块。
 
 ```python
 from collections import Counter
@@ -243,9 +243,9 @@ def apply_merge(byte_seq, pair, new_id):
     return merged
 ```
 
-### Step 4: Special Token Handling
+### 步骤 4：处理特殊词元（Step 4: Special Token Handling）
 
-Special tokens need exact matching and fixed IDs. They bypass BPE entirely.
+特殊词元需要精确匹配和固定 ID，它们完全绕过 BPE。
 
 ```python
 class SpecialTokenHandler:
@@ -273,9 +273,9 @@ class SpecialTokenHandler:
         return parts
 ```
 
-### Step 5: Full Tokenizer Class
+### 步骤 5：完整分词器类（Step 5: Full Tokenizer Class）
 
-Chain everything together: normalize, split on special tokens, pre-tokenize, BPE merge, map to IDs.
+把所有步骤串起来：规范化、按特殊词元拆分、预分词、BPE 合并、映射为 ID。
 
 ```python
 import unicodedata
@@ -342,9 +342,9 @@ class ProductionTokenizer:
         return len(self.vocab)
 ```
 
-### Step 6: Multilingual Test
+### 步骤 6：多语言测试（Step 6: Multilingual Test）
 
-The real test. Throw English, Chinese, emoji, and code at it.
+真正的测试来了：让它处理英文、中文、表情符号和代码。
 
 ```python
 corpus = (
@@ -379,13 +379,13 @@ for text in test_texts:
     print()
 ```
 
-Chinese characters produce 3 bytes each. The emoji produces 4 bytes. None of these crash the tokenizer. None produce unknown tokens. That is the power of byte-level BPE.
+中文字符每个产生 3 字节，表情符号产生 4 字节。它们都不会使分词器崩溃，也不会产生未知词元。这就是字节级 BPE 的能力。
 
-## Use It
+## 实际应用（Use It）
 
-### Comparing Real Tokenizers
+### 比较真实分词器（Comparing Real Tokenizers）
 
-Load the actual tokenizers from Llama 3, GPT-4, and Mistral. See how each handles the same multilingual paragraph.
+加载 Llama 3、GPT-4 和 Mistral 的实际分词器，看看它们如何处理同一段多语言文本。
 
 ```python
 import tiktoken
@@ -411,37 +411,37 @@ for name, tok in [("Llama 3", llama_tok), ("Mistral", mistral_tok)]:
     print(f"{name} ({len(tokens)} tokens): {pieces[:20]}...")
 ```
 
-You will see different token counts for the same text. Llama 3 with 128K vocabulary is more aggressive at merging common patterns. GPT-4 with 100K sits in the middle. Mistral with 32K produces more tokens but has a smaller embedding layer.
+同一文本会得到不同词元数。拥有 128K 词表的 Llama 3 更充分地合并常见模式；100K 词表的 GPT-4 居中；32K 词表的 Mistral 会产生更多词元，但嵌入层更小。
 
-The tradeoff is always the same: larger vocabulary means shorter sequences but more parameters.
+权衡始终相同：更大的词表意味着更短的序列，但参数更多。
 
-## Ship It
+## 交付成果（Ship It）
 
-This lesson produces a prompt for building and debugging production tokenizers. See `outputs/prompt-tokenizer-builder.md`.
+本课产出一份用于构建和调试生产级分词器的提示词（Prompt），见 `outputs/prompt-tokenizer-builder.md`。
 
-## Exercises
+## 练习（Exercises）
 
-1. **Easy:** Add a `get_token_bytes(id)` method that shows the raw bytes for any token ID. Use it to inspect what your most common merged tokens actually represent.
-2. **Medium:** Implement the Llama-style pre-tokenizer that splits on whitespace and digits but keeps leading spaces. Compare its vocabulary with the GPT-2 regex approach on the same corpus.
-3. **Hard:** Add a chat template method that takes a list of `{"role": ..., "content": ...}` messages and produces the correct token sequence for the Llama 3 chat format. Test it against the HuggingFace implementation.
+1. **简单：** 添加 `get_token_bytes(id)` 方法，显示任意词元 ID 的原始字节。用它检查最常见的合并词元实际表示什么。
+2. **中等：** 实现 Llama 风格的预分词器，按空白和数字拆分，但保留前导空格。在同一语料上，将其词表与 GPT-2 正则表达式方案比较。
+3. **困难：** 添加聊天模板方法，接收 `{"role": ..., "content": ...}` 消息列表，生成符合 Llama 3 聊天格式的正确词元序列。与 HuggingFace 实现进行对照测试。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语 | 常见说法 | 实际含义 |
 |------|----------------|----------------------|
-| Byte-level BPE | "Tokenizer that works on bytes" | BPE with a base vocabulary of 256 byte values -- handles any input without unknown tokens |
-| Pre-tokenization | "Splitting before BPE" | Regex or rule-based splitting that prevents BPE from merging across word boundaries |
-| NFKC normalization | "Unicode cleanup" | Canonical decomposition followed by compatibility composition -- "fi" ligature becomes "fi", fullwidth "A" becomes "A" |
-| Chat template | "How messages become tokens" | The exact format for converting a list of role/content messages into a flat token sequence -- model-specific and must match training format |
-| Special tokens | "Control tokens" | Reserved token IDs that bypass BPE -- [BOS], [EOS], [PAD], chat markers -- matched exactly before merge |
-| Fertility | "Tokens per word" | Ratio of output tokens to input words -- 1.3 for English in GPT-4, 2-3 for Korean, higher means wasted context |
-| tiktoken | "OpenAI tokenizer" | Rust BPE implementation with Python bindings -- 10-100x faster than pure Python |
-| Merge table | "The vocabulary" | Ordered list of byte-pair merges learned during training -- this IS the tokenizer's learned knowledge |
+| 字节级 BPE（Byte-level BPE） | “处理字节的分词器” | 基础词表包含 256 个字节值的 BPE，可处理任意输入而不产生未知词元 |
+| 预分词（Pre-tokenization） | “在 BPE 前拆分” | 基于正则表达式或规则的拆分，防止 BPE 跨词边界合并 |
+| NFKC 规范化（NFKC normalization） | “清理 Unicode” | 先规范分解再兼容合成，将 "fi" 连字变成 "fi"，将全角 "A" 变成 "A" |
+| 聊天模板（Chat template） | “消息如何变成词元” | 将角色与内容消息列表转换为扁平词元序列的精确格式，各模型不同，且必须匹配训练格式 |
+| 特殊词元（Special tokens） | “控制词元” | 绕过 BPE 的保留词元 ID，包括 [BOS]、[EOS]、[PAD] 和聊天标记，在合并前精确匹配 |
+| 词元繁殖率（Fertility） | “每词词元数” | 输出词元数与输入词数之比；GPT-4 的英文为 1.3，韩文为 2-3，越高越浪费上下文 |
+| tiktoken | “OpenAI 分词器” | 提供 Python 绑定的 Rust BPE 实现，比纯 Python 快 10-100 倍 |
+| 合并表（Merge table） | “词表” | 训练学到的字节对合并有序列表，这就是分词器学到的知识 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [OpenAI tiktoken source](https://github.com/openai/tiktoken) -- Rust BPE implementation used by GPT-3.5/4
-- [HuggingFace tokenizers](https://github.com/huggingface/tokenizers) -- Rust tokenizer library supporting BPE, WordPiece, Unigram
-- [Llama 3 paper (Meta, 2024)](https://arxiv.org/abs/2407.21783) -- details on 128K vocabulary and tokenizer training
-- [SentencePiece (Kudo & Richardson, 2018)](https://arxiv.org/abs/1808.06226) -- language-agnostic tokenization
-- [GPT-2 tokenizer source](https://github.com/openai/gpt-2/blob/master/src/encoder.py) -- the original byte-to-Unicode mapping
+- [OpenAI tiktoken 源码](https://github.com/openai/tiktoken) -- GPT-3.5/4 使用的 Rust BPE 实现
+- [HuggingFace tokenizers 分词器库](https://github.com/huggingface/tokenizers) -- 支持 BPE、WordPiece、Unigram 的 Rust 分词器库
+- [Llama 3 论文（Meta，2024）](https://arxiv.org/abs/2407.21783) -- 128K 词表及分词器训练细节
+- [SentencePiece 论文（Kudo 与 Richardson，2018）](https://arxiv.org/abs/1808.06226) -- 独立于语言的分词
+- [GPT-2 分词器源码](https://github.com/openai/gpt-2/blob/master/src/encoder.py) -- 最初的字节到 Unicode 映射

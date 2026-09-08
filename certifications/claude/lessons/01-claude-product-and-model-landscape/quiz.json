@@ -1,78 +1,78 @@
 {
   "lesson": "01-claude-product-and-model-landscape",
-  "title": "Choose the Smallest Surface That Can Carry the Work",
+  "title": "选择足以承载工作的最小产品形态（Choose the Smallest Surface That Can Carry the Work）",
   "questions": [
     {
       "stage": "pre",
-      "question": "A regulated application must use an existing Azure agreement, Entra identity, Azure RBAC, and a US data-zone deployment. Which path is the strongest starting candidate?",
+      "question": "一个受监管应用必须使用既有 Azure 协议、Entra 身份、Azure RBAC 和美国数据区部署。哪条路径最适合作为优先候选？",
       "options": [
-        "Amazon Bedrock with an AWS regional endpoint",
-        "Microsoft Foundry with the required Azure hosting and deployment type",
-        "Claude for Enterprise seats plus direct Claude API workspaces",
-        "Google Vertex AI with a US multi-region endpoint"
+        "使用 AWS 区域端点的 Amazon Bedrock",
+        "采用所需 Azure 托管和部署类型的 Microsoft Foundry",
+        "Claude for Enterprise 席位加直连 Claude API 工作区",
+        "使用美国多区域端点的 Google Vertex AI"
       ],
       "correct": 1,
-      "explanation": "Foundry aligns the stated procurement, identity, operations, and cloud boundary. The team must still verify the current hosting option and feature support."
+      "explanation": "Foundry 与题目中的采购、身份、运维和云边界要求一致。团队仍须核实当前托管选项和功能支持。"
     },
     {
       "stage": "check",
-      "question": "When is Research a better fit than a direct web search?",
+      "question": "什么情况下 Research 比直接网页搜索更合适？",
       "options": [
-        "When one current fact needs confirmation from its authoritative primary page",
-        "When the answer needs citations but the relevant source and claim are already known",
-        "When several sources must be gathered, reconciled, and cited",
-        "When one known document must be opened and checked for an exact policy clause"
+        "需要从权威第一方页面确认某个最新事实时",
+        "答案需要引用，但相关来源与主张已经明确时",
+        "需要搜集、核对并引用多个来源时",
+        "需要打开一份已知文档，检查确切政策条款时"
       ],
       "correct": 2,
-      "explanation": "Research fits broad multi-step investigation. A narrow fact usually needs a simpler search and verification path."
+      "explanation": "Research 适合广泛的多步骤调查。范围较小的事实通常只需更简单的搜索和核实路径。"
     },
     {
       "stage": "check",
-      "question": "What is the safest durable rule for choosing among Haiku, Sonnet, and Opus?",
+      "question": "在 Haiku、Sonnet 和 Opus 之间选择时，哪条长期规则最稳妥？",
       "options": [
-        "Select the family with the largest context window, then tune prompts to meet cost targets",
-        "Assign each family a permanent task category based on its published positioning",
-        "Default to the strongest family for external work, then downgrade low-risk internal tasks",
-        "Test the smallest plausible family against representative success criteria and escalate on measured failure"
+        "选择上下文窗口最大的家族，再调整提示词以满足成本目标",
+        "根据公开定位，为每个家族永久分配一种任务类别",
+        "对外工作默认使用最强家族，再为低风险内部任务降级",
+        "针对代表性成功标准测试可能胜任的最小家族，实测失败后再升级"
       ],
       "correct": 3,
-      "explanation": "The family roles are useful, but actual selection should be measured against the task's quality, latency, and cost constraints."
+      "explanation": "家族定位有参考价值，但实际选择应根据任务的质量、延迟和成本约束测量决定。"
     },
     {
       "stage": "check",
-      "question": "An organization buys Claude for Enterprise for employees and also calls the direct Claude API from an application. Which control design is strongest?",
+      "question": "组织为员工采购 Claude for Enterprise，同时应用也调用直连 Claude API。哪种控制设计最合适？",
       "options": [
-        "Govern named-user seats and member limits separately from API workspace keys, rate limits, and spend limits",
-        "Choose only one control plane because direct Anthropic products share the same identity and budget semantics",
-        "Use the Enterprise seat policy for application rate limits and the API workspace for employee access",
-        "Treat seats and API tokens as one pooled capacity because both are procured from Anthropic"
+        "将具名用户席位和成员限额，与 API 工作区密钥、速率限制和消费上限分开治理",
+        "只选择一个控制平面，因为 Anthropic 直连产品拥有相同的身份和预算语义",
+        "用 Enterprise 席位政策管理应用速率限制，用 API 工作区管理员工访问",
+        "将席位与 API 词元视为共享容量池，因为两者都从 Anthropic 采购"
       ],
       "correct": 0,
-      "explanation": "Human seats and application consumption are different usage shapes. Their identity, budget, and access controls must remain explicit even under direct procurement."
+      "explanation": "人员席位与应用消费属于不同使用形态。即使都直接采购，也必须明确各自的身份、预算和访问控制。"
     },
     {
       "stage": "post",
-      "question": "An AWS-first company requires AWS IAM, AWS billing, and an AWS-managed inference security boundary. Which deployment path best matches those requirements?",
+      "question": "一家以 AWS 为主的公司要求使用 AWS IAM、AWS 计费和 AWS 管理的推理安全边界。哪条部署路径最符合这些要求？",
       "options": [
-        "Google Vertex AI because multi-region endpoints are cloud-neutral",
-        "Amazon Bedrock, after verifying current model, region, and features",
-        "Claude for Enterprise because SSO replaces workload IAM",
-        "Microsoft Foundry because Azure Marketplace can be billed back to AWS"
+        "Google Vertex AI，因为多区域端点与云平台无关",
+        "核实当前模型、区域和功能后的 Amazon Bedrock",
+        "Claude for Enterprise，因为 SSO 可以替代工作负载 IAM",
+        "Microsoft Foundry，因为 Azure Marketplace 可向 AWS 转嫁计费"
       ],
       "correct": 1,
-      "explanation": "Bedrock matches the stated AWS control plane. Current model access, endpoints, data handling, and feature support remain dated inputs."
+      "explanation": "Bedrock 符合题目要求的 AWS 控制平面。当前模型访问、端点、数据处理和功能支持仍是需要标注日期的输入。"
     },
     {
       "stage": "post",
-      "question": "A Google Cloud team needs application inference inside its existing project, IAM, billing, and EU endpoint strategy. What should its ADR do?",
+      "question": "Google Cloud 团队需要在既有项目、IAM、计费和欧盟端点策略下运行应用推理。其 ADR 应怎样记录？",
       "options": [
-        "Select Vertex AI and permanently encode today's feature matrix because project identity will remain stable",
-        "Compare only token prices because Google Cloud already owns identity, procurement, and incident response",
-        "Select Vertex AI, then record current model, feature, endpoint, processor, and pricing evidence with a verification date",
-        "Select direct Claude API because model behavior is identical across providers and control planes do not affect architecture"
+        "选择 Vertex AI，并永久固化今天的功能矩阵，因为项目身份会保持稳定",
+        "只比较词元价格，因为 Google Cloud 已负责身份、采购和事故响应",
+        "选择 Vertex AI，然后记录当前模型、功能、端点、处理者和定价证据及核实日期",
+        "选择直连 Claude API，因为各提供商的模型行为相同，控制平面不影响架构"
       ],
       "correct": 2,
-      "explanation": "Vertex AI fits the stated control plane, but the ADR must preserve dated evidence for every changeable platform fact and name its review triggers."
+      "explanation": "Vertex AI 符合给定控制平面，但 ADR 必须为每项可变平台事实保留带日期的证据，并明确复核触发条件。"
     }
   ]
 }

@@ -1,22 +1,22 @@
 {
   "lesson": "17-mcp-gateways-and-registries",
-  "title": "Stateless MCP Gateways and Registry Admission",
+  "title": "无状态 MCP 网关与注册表准入（Stateless MCP Gateways and Registry Admission）",
   "questions": [
     {
       "stage": "pre",
-      "question": "What must a current MCP gateway preserve between ordinary client requests?",
+      "question": "当前 MCP 网关必须在普通客户端请求之间保留什么？",
       "options": [
-        "One Mcp-Session-Id per backend",
-        "The last HTTP connection",
-        "A standalone GET event stream",
-        "No protocol session; each request carries the information needed to validate and route it"
+        "每个后端一个 Mcp-Session-Id",
+        "最后一条 HTTP 连接",
+        "独立 GET 事件流",
+        "无需协议会话；每个请求携带验证和路由所需信息"
       ],
       "correct": 3,
-      "explanation": "MCP 2026-07-28 ordinary requests are self-contained and can reach any healthy gateway instance."
+      "explanation": "MCP 2026-07-28 普通请求自包含，可到达任意健康网关实例。"
     },
     {
       "stage": "check",
-      "question": "A principal-filtered tools/list result should usually use which cache scope?",
+      "question": "按主体过滤的 tools/list 结果通常应使用哪种缓存作用域？",
       "options": [
         "public",
         "global",
@@ -24,55 +24,55 @@
         "session"
       ],
       "correct": 2,
-      "explanation": "A user-specific tool list must not be shared across authorization contexts."
+      "explanation": "用户特定工具列表不得跨授权上下文共享。"
     },
     {
       "stage": "check",
-      "question": "How should a gateway forward a tool call to a current backend?",
+      "question": "网关应如何向当前后端转发工具调用？",
       "options": [
-        "Open a GET stream first",
-        "Copy the outer bearer token and session id",
-        "Reuse the outer JSON-RPC id as durable state",
-        "Create a fresh self-contained request with gateway client metadata and mediated capabilities"
+        "先打开 GET 流",
+        "复制外层持有者令牌和会话 id",
+        "将外层 JSON-RPC id 复用为持久状态",
+        "创建带网关客户端元数据和可调解能力的新自包含请求"
       ],
       "correct": 3,
-      "explanation": "The gateway is the backend's client and creates a new independently valid request."
+      "explanation": "网关是后端的客户端，会创建新的、可独立验证的请求。"
     },
     {
       "stage": "check",
-      "question": "How should a gateway use an official Registry server.json record during admission?",
+      "question": "准入期间，网关应如何使用官方 Registry server.json 记录？",
       "options": [
-        "Validate its publication shape, then join it to separate verified publisher, provenance, policy, and approval state",
-        "Treat publication as a completed security review",
-        "Copy verification claims from arbitrary record fields",
-        "Trust any record whose name looks familiar"
+        "验证发布结构，再关联独立已验证的发布者、来源、策略和批准状态",
+        "将发布当作已完成的安全审查",
+        "从任意记录字段复制验证声明",
+        "信任任何名称看起来熟悉的记录"
       ],
       "correct": 0,
-      "explanation": "server.json carries publication metadata. Verified provenance and the gateway's approval decision remain external admission evidence."
+      "explanation": "server.json 承载发布元数据。已验证来源和网关批准决定仍是外部准入证据。"
     },
     {
       "stage": "post",
-      "question": "How are long-lived list-change notifications opened in modern Streamable HTTP?",
+      "question": "现代 Streamable HTTP 如何打开长连接列表变更通知？",
       "options": [
-        "Through a POST subscriptions/listen request whose response is SSE",
-        "Through resources/subscribe",
-        "Through a standalone GET with Last-Event-ID",
-        "Through notifications/initialized"
+        "通过响应为 SSE 的 POST subscriptions/listen 请求",
+        "通过 resources/subscribe",
+        "通过带 Last-Event-ID 的独立 GET",
+        "通过 notifications/initialized"
       ],
       "correct": 0,
-      "explanation": "subscriptions/listen replaces the old unsolicited GET and resource subscription model."
+      "explanation": "subscriptions/listen 替代旧的未经请求 GET 和资源订阅模型。"
     },
     {
       "stage": "post",
-      "question": "Which Tasks extension routing rule is current?",
+      "question": "哪项 Tasks 扩展路由规则是当前规则？",
       "options": [
-        "Use tasks/result for final output",
-        "Use tasks/list to recover all tasks in a session",
-        "Route tasks/get, tasks/update, and tasks/cancel using taskId as Mcp-Name",
-        "Store the task in Mcp-Session-Id"
+        "用 tasks/result 获取最终输出",
+        "用 tasks/list 恢复会话中所有任务",
+        "用 taskId 作为 Mcp-Name 路由 tasks/get、tasks/update 和 tasks/cancel",
+        "将任务存入 Mcp-Session-Id"
       ],
       "correct": 2,
-      "explanation": "The official extension uses get, update, and cancel; task ids provide the routing handle without protocol sessions."
+      "explanation": "官方扩展使用 get、update 和 cancel；任务 id 提供路由句柄，无需协议会话。"
     }
   ]
 }

@@ -1,31 +1,31 @@
 ---
 name: omni-streaming-budget
-description: Size a Thinker-Talker streaming voice pipeline (Qwen-Omni / Moshi / Mini-Omni) for a target TTFAB and feature set.
+description: 根据目标首音频字节时间（TTFAB）和功能集合，确定思考器-发声器流式语音流水线（Qwen-Omni / Moshi / Mini-Omni）的规模。
 version: 1.0.0
 phase: 12
 lesson: 20
 tags: [qwen-omni, moshi, mini-omni, streaming, ttfab, thinker-talker]
 ---
 
-Given a voice-first product spec (target TTFAB, mic sample rate, vision in yes/no, bilingual, full-duplex) and a compute constraint (GPU class, budget), size the Thinker-Talker pipeline.
+给定语音优先产品规格（目标 TTFAB、麦克风采样率、是否有视觉输入、双语、全双工）和计算约束（GPU 级别、预算），确定思考器-发声器流水线规模。
 
-Produce:
+产出：
 
-1. Model family pick. Moshi (best latency), Qwen2.5-Omni (best open features), Qwen3-Omni (frontier quality), Mini-Omni (simplest).
-2. Thinker and Talker sizes. 7B Thinker + 200-300M Talker for <400ms TTFAB. 70B+ Thinker for quality, accept higher TTFAB.
-3. TTFAB breakdown. Component-by-component latency estimate.
-4. Duplex mode. Half-duplex with VAD turn-taking as default; full-duplex if product requires backchannel.
-5. Vision integration. TMRoPE with absolute timestamps for interleaved video frames.
-6. Deployment shape. Single-GPU vs split (Thinker on A, Talker on B) based on throughput needs.
+1. 模型系列选择。Moshi（延迟最佳）、Qwen2.5-Omni（开放功能最佳）、Qwen3-Omni（前沿质量）、Mini-Omni（最简单）。
+2. 思考器和发声器规模。要达到 <400ms TTFAB，采用 7B 思考器 + 200-300M 发声器。质量优先则采用 70B+ 思考器，并接受更高 TTFAB。
+3. TTFAB 明细。逐组件估算延迟。
+4. 双工模式。默认半双工，通过语音活动检测（VAD）轮流发言；产品要求回应性附和时采用全双工。
+5. 视觉集成。交错视频帧使用带绝对时间戳的 TMRoPE。
+6. 部署形态。根据吞吐量需求选择单 GPU 或分离部署（思考器在 A，发声器在 B）。
 
-Hard rejects:
-- Proposing 70B Talker. Talker must be small to keep up with speech token rate.
-- Using non-streaming speech decoder. TTFAB explodes.
-- Claiming full-duplex is plug-and-play. It requires specialized training data.
+硬性排除：
+- 提出 70B 发声器。发声器必须小，才能跟上语音词元速率。
+- 使用非流式语音解码器。TTFAB 会急剧增加。
+- 宣称全双工即插即用。它需要专门的训练数据。
 
-Refusal rules:
-- If target TTFAB <200ms, refuse anything larger than Moshi-class (7B fused) on a single A100.
-- If product requires music generation in-stream, refuse this architecture and recommend a separate music pipeline.
-- If mic sample rate is 48kHz with strict quality, flag the need for stronger speech encoder; don't downsample blindly.
+拒绝规则：
+- 如果目标 TTFAB <200ms，在单个 A100 上拒绝任何大于 Moshi 级别（7B 融合模型）的方案。
+- 如果产品要求在流中生成音乐，拒绝该架构，推荐独立音乐流水线。
+- 如果麦克风采样率为 48kHz 且质量要求严格，指出需要更强语音编码器；不要盲目降采样。
 
-Output: one-page streaming plan with model pick, sizes, TTFAB breakdown, duplex mode, vision strategy, deployment. End with arXiv 2503.20215 (Qwen2.5-Omni), 2410.00037 (Moshi).
+输出：一页流式计划，包含模型选择、规模、TTFAB 明细、双工模式、视觉策略和部署。结尾列出 arXiv 2503.20215（Qwen2.5-Omni）、2410.00037（Moshi）。

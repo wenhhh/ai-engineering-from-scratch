@@ -96,51 +96,51 @@ if __name__ == "__main__":
     X = rng.normal(0, 1, (n_tokens, d_model))
 
     print("=" * 60)
-    print("SELF-ATTENTION FROM SCRATCH")
+    print("从零实现自注意力（Self-attention）")
     print("=" * 60)
 
-    print(f"\nSentence: {' '.join(sentence)}")
-    print(f"Tokens: {n_tokens}, d_model: {d_model}, dk: {dk}, dv: {dv}")
-    print(f"Input shape: {X.shape}")
+    print(f"\n句子（Sentence，英文词元保留）: {' '.join(sentence)}")
+    print(f"词元数（Tokens）: {n_tokens}, d_model: {d_model}, dk: {dk}, dv: {dv}")
+    print(f"输入形状（Input shape）: {X.shape}")
 
     attn = SelfAttention(d_model, dk, dv, seed=42)
     output, weights = attn.forward(X)
 
-    print(f"\nOutput shape: {output.shape}")
-    print("\nAttention weights:")
+    print(f"\n输出形状（Output shape）: {output.shape}")
+    print("\n注意力权重（Attention weights）:")
     print_attention_matrix(weights, sentence)
 
-    print("\nASCII heatmap (darker = higher attention):")
+    print("\nASCII 热力图（Heatmap，越深表示注意力越高）:")
     ascii_heatmap(weights, sentence)
 
     print("\n" + "=" * 60)
-    print("MULTI-HEAD SELF-ATTENTION")
+    print("多头自注意力（Multi-head self-attention）")
     print("=" * 60)
 
     n_heads = 2
     mha = MultiHeadSelfAttention(d_model, n_heads, seed=42)
     mha_output, head_weights = mha.forward(X)
 
-    print(f"\nHeads: {n_heads}")
-    print(f"Output shape: {mha_output.shape}")
+    print(f"\n头数（Heads）: {n_heads}")
+    print(f"输出形状（Output shape）: {mha_output.shape}")
 
     for h, hw in enumerate(head_weights):
-        print(f"\nHead {h + 1} attention weights:")
+        print(f"\n第 {h + 1} 个头的注意力权重:")
         print_attention_matrix(hw, sentence)
 
     print("\n" + "=" * 60)
-    print("SOFTMAX DEMO")
+    print("Softmax 演示")
     print("=" * 60)
 
     logits = np.array([2.0, 1.0, 0.1])
     probs = softmax(logits)
-    print(f"\nLogits:  {logits}")
+    print(f"\n逻辑值（Logits）:  {logits}")
     print(f"Softmax: {probs.round(4)}")
-    print(f"Sum:     {probs.sum():.4f}")
+    print(f"总和（Sum）:     {probs.sum():.4f}")
 
     large_logits = np.array([100.0, 200.0, 300.0])
     probs_large = softmax(large_logits)
-    print(f"\nLarge logits:  {large_logits}")
+    print(f"\n大数值逻辑值（Large logits）:  {large_logits}")
     print(f"Softmax:       {probs_large.round(4)}")
-    print(f"Sum:           {probs_large.sum():.4f}")
-    print("(Numerically stable - no overflow)")
+    print(f"总和（Sum）:           {probs_large.sum():.4f}")
+    print("（数值稳定 Numerically stable，无溢出）")

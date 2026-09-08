@@ -2,38 +2,38 @@
   "questions": [
     {
       "stage": "pre",
-      "question": "What is an API key used for when calling an LLM service?",
-      "options": ["Encrypting the data sent to the server", "Authenticating your identity and authorizing requests", "Compressing requests to reduce bandwidth", "Selecting which programming language the server uses"],
+      "question": "调用大语言模型（Large Language Model，LLM）服务时，API 密钥（API Key）有什么用途？",
+      "options": ["加密发送到服务器的数据", "验证你的身份并授权请求", "压缩请求以减少带宽占用", "选择服务器使用的编程语言"],
       "correct": 1,
-      "explanation": "An API key is a unique string that identifies your account, authorizes your requests, and allows the provider to track usage and billing."
+      "explanation": "API 密钥是一个唯一字符串，用于标识你的账户、授权请求，并让服务提供商跟踪用量和计费。"
     },
     {
       "stage": "pre",
-      "question": "Why should API keys never be hardcoded directly in source code?",
-      "options": ["Python cannot read string literals longer than 50 characters", "API providers block keys that appear in source files", "Hardcoded keys make the code run slower", "They can be accidentally committed to git and exposed publicly"],
+      "question": "为什么绝不应该在源代码中直接硬编码（Hardcode）API 密钥？",
+      "options": ["Python 无法读取超过 50 个字符的字符串字面量", "API 提供商会封禁出现在源文件中的密钥", "硬编码密钥会使代码运行变慢", "它们可能被意外提交到 git 并公开暴露"],
       "correct": 3,
-      "explanation": "Hardcoded keys in source code risk being committed to version control and pushed to public repositories, where they can be scraped and abused by others."
+      "explanation": "源代码中硬编码的密钥可能被提交到版本控制系统并推送到公开仓库，进而被他人抓取和滥用。"
     },
     {
       "stage": "post",
-      "question": "What is the recommended way to store API keys for local development?",
-      "options": ["In a .env file that is listed in .gitignore", "In the README.md for easy access", "In a Python variable at the top of your script", "In the requirements.txt alongside package versions"],
+      "question": "本地开发时，推荐如何存储 API 密钥？",
+      "options": ["放在已列入 .gitignore 的 .env 文件中", "放在 README.md 中以便访问", "放在脚本开头的 Python 变量中", "与包版本一起放在 requirements.txt 中"],
       "correct": 0,
-      "explanation": "A .env file stores keys as environment variables and should be added to .gitignore so it is never committed to version control. SDKs read keys from environment variables automatically."
+      "explanation": ".env 文件以环境变量（Environment Variable）的形式存储密钥，应将其加入 .gitignore，避免提交到版本控制系统。SDK 会自动从环境变量中读取密钥。"
     },
     {
       "stage": "post",
-      "question": "In the raw HTTP API call to Anthropic, which header carries the API key?",
+      "question": "向 Anthropic 发起原始 HTTP API 调用时，哪个请求头（Header）携带 API 密钥？",
       "options": ["Authorization: Bearer sk-ant-...", "Content-Type: application/json", "anthropic-version: 2023-06-01", "x-api-key: sk-ant-..."],
       "correct": 3,
-      "explanation": "Anthropic's API uses the 'x-api-key' header for authentication, not the more common 'Authorization: Bearer' pattern. This is specific to their API design."
+      "explanation": "Anthropic API 使用 'x-api-key' 请求头进行身份验证（Authentication），而不是更常见的 'Authorization: Bearer' 模式。这是其 API 设计特有的约定。"
     },
     {
       "stage": "post",
-      "question": "What happens when you exceed an API's rate limit?",
-      "options": ["Your request is queued and processed later automatically", "The server returns an error (typically HTTP 429) and you must wait before retrying", "Your API key is permanently revoked", "The API silently drops your request with no response"],
+      "question": "超出 API 的速率限制（Rate Limit）时会发生什么？",
+      "options": ["请求被加入队列，稍后自动处理", "服务器返回错误（通常为 HTTP 429），你必须等待后再重试", "API 密钥被永久撤销", "API 静默丢弃请求，不返回任何响应"],
       "correct": 1,
-      "explanation": "Rate limiting returns HTTP 429 (Too Many Requests). You need to wait and retry, typically with exponential backoff. Rate limits prevent abuse and ensure fair usage."
+      "explanation": "触发速率限制会返回 HTTP 429（请求过多，Too Many Requests）。你需要等待后重试，通常采用指数退避（Exponential Backoff）。速率限制用于防止滥用并保证公平使用。"
     }
   ]
 }

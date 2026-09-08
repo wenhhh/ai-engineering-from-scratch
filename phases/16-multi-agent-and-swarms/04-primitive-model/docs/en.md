@@ -1,176 +1,176 @@
-# The Multi-Agent Primitive Model
+# 多智能体原语模型（The Multi-Agent Primitive Model）
 
-> Four primitives, nothing more — the agent, the handoff, the shared state, the orchestrator — span a four-dimensional design space, and the major multi-agent frameworks shipping in 2026 (AutoGen, LangGraph, CrewAI, OpenAI Agents SDK, Microsoft Agent Framework) are points in it. This lesson builds them from zero, runs a toy system on all four, then maps every major framework onto the same axes so you can read any new release in one paragraph.
+> 只有四种原语（Primitive）：智能体（Agent）、交接（Handoff）、共享状态（Shared state）和编排者（Orchestrator）。它们张成四维设计空间，2026 年推出的主要多智能体框架（AutoGen、LangGraph、CrewAI、OpenAI Agents SDK、Microsoft Agent Framework）都是其中的点。本课从零构建四者，用它们运行一个简化系统，再把所有主要框架映射到相同坐标轴，让你用一段话读懂任何新版本。
 
 **Type:** Learn
 **Languages:** Python (stdlib)
-**Prerequisites:** Phase 14 (Agent Engineering), Phase 16 · 01 (Why Multi-Agent)
-**Time:** ~60 minutes
+**Prerequisites:** Phase 14 智能体工程（Agent Engineering）, Phase 16 · 01 为什么使用多智能体（Why Multi-Agent）
+**Time:** ~60 分钟
 
-## Problem
+## 问题（Problem）
 
-Every six months a new multi-agent framework ships. AutoGen in 2023. CrewAI in 2024. LangGraph and OpenAI Swarm in 2024. Google ADK in April 2025. Microsoft Agent Framework RC in February 2026. Each press release claims to be "the right abstraction."
+每隔六个月就有新的多智能体框架发布：2023 年的 AutoGen，2024 年的 CrewAI，2024 年的 LangGraph 和 OpenAI Swarm，2025 年 4 月的 Google ADK，2026 年 2 月的 Microsoft Agent Framework RC。每份新闻稿都宣称自己是“正确的抽象”。
 
-If you try to learn them one at a time you will burn out. The APIs look different. The docs disagree about what an "agent" is. One framework calls its shared memory a "blackboard," another calls it a "message pool," a third calls it a "StateGraph." You start suspecting the field is just churning.
+逐个学习会让你疲于奔命。API 看起来不同，文档对“智能体”的定义也不一致。一个框架把共享内存叫作“黑板（Blackboard）”，另一个叫“消息池（Message pool）”，第三个叫“StateGraph”。你开始怀疑这个领域只是在反复折腾。
 
-It is not. Underneath the marketing, the four primitives are stable. Learn them once, read every new framework in one paragraph.
+并非如此。营销表象之下，四种原语是稳定的。学会一次，就能用一段话读懂每个新框架。
 
-## Concept
+## 概念（Concept）
 
-### The four primitives
+### 四种原语（The four primitives）
 
-1. **Agent** — a system prompt plus a tool list. Stateless; every run starts from its system prompt and the current message history.
-2. **Handoff** — a structured transfer of control from one agent to another. Mechanically, a tool call that returns a new agent or a graph edge that follows a condition.
-3. **Shared state** — any data structure that more than one agent can read (sometimes write). Message pool, blackboard, key-value store, vector memory.
-4. **Orchestrator** — whoever decides who speaks next. Options: an explicit graph (deterministic), an LLM speaker-selector (soft), the last speaker's handoff call (OpenAI Swarm), or a scheduler over a queue (swarm architecture).
+1. **智能体（Agent）**：系统提示词加工具列表。无状态；每次运行从系统提示词和当前消息历史开始。
+2. **交接（Handoff）**：控制权从一个智能体向另一个的结构化转移。机制上，它是返回新智能体的工具调用，或按条件跳转的图边。
+3. **共享状态（Shared state）**：可供多个智能体读取（有时写入）的任意数据结构，如消息池、黑板、键值存储、向量记忆。
+4. **编排者（Orchestrator）**：决定下一位发言者的一方。可选显式图（确定性）、LLM 发言者选择器（柔性）、上一位发言者的交接调用（OpenAI Swarm），或队列调度器（群体架构）。
 
-That is the entire design space. Every framework picks defaults for each axis; the rest is surface syntax.
+这就是整个设计空间。每个框架为各坐标轴选择默认值，其余只是表面语法。
 
-### How every 2026 framework maps to it
+### 2026 年框架如何映射到原语（How every 2026 framework maps to it）
 
-| Framework | Agent | Handoff | Shared state | Orchestrator |
+| 框架 | 智能体 | 交接 | 共享状态 | 编排者 |
 |-----------|-------|---------|--------------|--------------|
-| OpenAI Swarm / Agents SDK | `Agent(instructions, tools)` | tool returns Agent | caller's problem | the LLM's next handoff call |
-| AutoGen v0.4 / AG2 | `ConversableAgent` | speaker-selector on GroupChat | message pool | selector function (LLM or round-robin) |
-| CrewAI | `Agent(role, goal, backstory)` | `Process.Sequential / Hierarchical` | Task outputs chained | manager LLM or static order |
-| LangGraph | node function | graph edge + condition | `StateGraph` reducer | the graph, deterministic |
-| Microsoft Agent Framework | agent + orchestration patterns | pattern-specific | thread / context | pattern-specific |
-| Google ADK | agent + A2A card | A2A task | A2A artifacts | host decides |
+| OpenAI Swarm / Agents SDK | `Agent(instructions, tools)` | 工具返回 Agent | 调用者负责 | LLM 的下一次交接调用 |
+| AutoGen v0.4 / AG2 | `ConversableAgent` | GroupChat 中的发言者选择器 | 消息池 | 选择函数（LLM 或轮询） |
+| CrewAI | `Agent(role, goal, backstory)` | `Process.Sequential / Hierarchical` | 串联 Task 输出 | 管理者 LLM 或静态顺序 |
+| LangGraph | 节点函数 | 图边 + 条件 | `StateGraph` 归约器（Reducer） | 图本身，确定性 |
+| Microsoft Agent Framework | 智能体 + 编排模式 | 依模式而定 | 线程 / 上下文 | 依模式而定 |
+| Google ADK | 智能体 + A2A 卡片 | A2A 任务 | A2A 交付物 | 宿主决定 |
 
-Surface differences look huge. Underneath: same four knobs.
+表面差异看起来很大，底层却是同样四个调节维度。
 
-### Why this matters
+### 为什么重要（Why this matters）
 
-Once you see the primitives, framework comparison becomes a short checklist:
+看清原语后，框架比较就变成简短清单：
 
-- Does the orchestrator trust the LLM to route (Swarm) or does it pin routing in code (LangGraph)?
-- Is shared state full-history (GroupChat) or projected (StateGraph reducer)?
-- Can agents modify each other's prompts (CrewAI manager) or only hand off (Swarm)?
+- 编排者信任 LLM 路由（Swarm），还是在代码中固定路由（LangGraph）？
+- 共享状态包含完整历史（GroupChat），还是投影视图（StateGraph 归约器）？
+- 智能体能修改彼此提示词（CrewAI 管理者），还是只能交接（Swarm）？
 
-Those three questions answer 80% of which framework fits a given problem. You stop shopping for "the best multi-agent framework" and start designing for the axis you actually care about.
+这三个问题能解决给定问题选框架时 80% 的判断。你不再寻找“最好的多智能体框架”，而开始围绕真正关心的坐标轴设计。
 
-### The stateless insight
+### 无状态的洞见（The stateless insight）
 
-Every primitive except shared state is stateless. Agent is a function of (prompt, tools). Handoff is a function call. Orchestrator is a scheduler. **The only stateful thing in the system is shared state.** That is where all the interesting bugs live: memory poisoning (Lesson 15), message ordering, versioning, write contention.
+除共享状态外，每种原语都无状态。智能体是（提示词、工具）的函数，交接是函数调用，编排者是调度器。**系统中唯一有状态的事物就是共享状态。** 所有值得关注的缺陷都在这里：记忆投毒（Memory poisoning，第 15 课）、消息排序、版本管理、写入争用。
 
-Frameworks that hide shared state (Swarm) push the problem to the caller. Frameworks that centralize it (LangGraph checkpoint, AutoGen pool) make it inspectable but shift coordination cost onto the shared-state implementation.
+隐藏共享状态的框架（Swarm）把问题推给调用者。将其集中的框架（LangGraph 检查点、AutoGen 消息池）使状态可检查，但把协调成本转移给共享状态实现。
 
-### Anatomy of a single primitive
+### 单个原语的剖析（Anatomy of a single primitive）
 
-#### Agent
+#### 智能体（Agent）
 
 ```
 Agent = (system_prompt, tools, model, optional_name)
 ```
 
-No memory. No state. Two agents with the same system prompt and tools are interchangeable. Everything that looks like per-agent state is actually in shared state or the handoff protocol.
+没有记忆，没有状态。系统提示词和工具相同的两个智能体可以互换。看似属于每个智能体的状态，实际都在共享状态或交接协议中。
 
-#### Handoff
+#### 交接（Handoff）
 
 ```
 Handoff = (from_agent, to_agent, reason, payload)
 ```
 
-Three implementations dominate:
+三种实现占主导：
 
-- **Function return** — the tool returns the next agent. This is the OpenAI Swarm pattern. Agents carry routing in their tool schemas.
-- **Graph edge** — LangGraph. Edges are declarative. The LLM produces a value; a condition selects the next node.
-- **Speaker selection** — AutoGen GroupChat. A selector function (sometimes itself an LLM call) reads the pool and picks who speaks next.
+- **函数返回（Function return）**：工具返回下一个智能体。这是 OpenAI Swarm 模式，智能体在工具模式中携带路由。
+- **图边（Graph edge）**：LangGraph。边是声明式的，LLM 产出一个值，条件据此选择下一节点。
+- **发言者选择（Speaker selection）**：AutoGen GroupChat。选择函数（有时本身就是 LLM 调用）读取消息池，选择下一位发言者。
 
-#### Shared state
+#### 共享状态（Shared state）
 
 ```
 SharedState = { messages: [], artifacts: {}, context: {} }
 ```
 
-At minimum, a list of messages. Often more: structured artifacts (CrewAI Task outputs), typed context (LangGraph reducers), external memory (MCP, vector DB).
+至少包含消息列表，通常还包括结构化交付物（CrewAI Task 输出）、类型化上下文（LangGraph 归约器）和外部记忆（MCP、向量数据库）。
 
-Two topologies: **full pool** (every agent sees every message) and **projected** (agents see a role-scoped view). Full pools are simple and scale badly. Projected pools scale but require upfront schema design.
+有两种拓扑：**完整消息池（Full pool）**，每个智能体看到所有消息；**投影（Projected）**，智能体看到限定角色范围的视图。完整消息池简单但扩展性差。投影消息池能扩展，却需要事先设计模式。
 
-#### Orchestrator
+#### 编排者（Orchestrator）
 
 ```
 Orchestrator = ({state, last_speaker}) -> next_agent
 ```
 
-Four flavors:
+四种形式：
 
-- **Static** — the graph is fixed at build time (LangGraph deterministic, CrewAI Sequential).
-- **LLM-selected** — an LLM reads the pool and picks the next speaker (AutoGen, CrewAI Hierarchical).
-- **Handoff-driven** — the current agent decides by calling a handoff tool (Swarm).
-- **Queue-driven** — workers pull from a shared queue; no explicit next-speaker (swarm architectures, Matrix).
+- **静态（Static）**：图在构建时固定（LangGraph 确定性模式、CrewAI Sequential）。
+- **LLM 选择（LLM-selected）**：LLM 读取消息池并选择下一位发言者（AutoGen、CrewAI Hierarchical）。
+- **交接驱动（Handoff-driven）**：当前智能体调用交接工具作出决定（Swarm）。
+- **队列驱动（Queue-driven）**：工作者从共享队列拉取任务，没有显式的下一位发言者（群体架构、Matrix）。
 
-### What changes between frameworks
+### 框架间的变化（What changes between frameworks）
 
-Once the primitives are fixed, the remaining design decisions are:
+原语确定后，其余设计决策是：
 
-- **Memory strategy** — ephemeral vs durable checkpointing (LangGraph checkpointer).
-- **Safety boundary** — who can approve a handoff (human-in-the-loop).
-- **Cost accounting** — per-agent token budgets.
-- **Observability** — tracing handoffs, persisting state for replay.
+- **记忆策略（Memory strategy）**：临时状态还是持久检查点（LangGraph 检查点保存器）。
+- **安全边界（Safety boundary）**：谁能批准交接（人在回路，Human-in-the-loop）。
+- **成本核算（Cost accounting）**：每个智能体的词元预算。
+- **可观测性（Observability）**：追踪交接，持久化状态以便重放。
 
-All implementable on top of the primitives. None of them are new primitives.
+这些都可以在原语之上实现，没有一种是新原语。
 
 ```figure
 a5-primitive-radar
 ```
 
-## Build It
+## 动手实现（Build It）
 
-`code/main.py` implements the four primitives in ~150 lines of stdlib Python. No real LLM — each agent is a scripted policy so the focus stays on the coordination structure.
+`code/main.py` 用约 150 行标准库 Python 实现四种原语。没有真实 LLM；每个智能体都是脚本化策略，让重点保持在协调结构上。
 
-The file exports:
+文件导出：
 
-- `Agent` — a dataclass of name, system prompt, tools, policy function.
-- `Handoff` — a function that returns a new agent.
-- `SharedState` — a thread-safe message pool.
-- `Orchestrator` — three variants: `StaticOrchestrator`, `HandoffOrchestrator`, `LLMSelectorOrchestrator` (simulated).
+- `Agent`：包含名称、系统提示词、工具、策略函数的数据类。
+- `Handoff`：返回新智能体的函数。
+- `SharedState`：线程安全消息池。
+- `Orchestrator`：三种变体，即 `StaticOrchestrator`、`HandoffOrchestrator`、`LLMSelectorOrchestrator`（模拟）。
 
-The demo runs the same three-agent pipeline (research → write → review) through all three orchestrator types and prints the message pool at the end. You can see that the outputs differ only in *who picks next*; the agents and shared state are identical across runs.
+演示用三种编排者运行同一条三智能体流水线（研究 → 写作 → 评审），最后打印消息池。可以看到，输出差异仅在于*谁选择下一位*；各次运行的智能体与共享状态完全相同。
 
-Run it:
+运行：
 
 ```
 python3 code/main.py
 ```
 
-Expected output: three orchestrator runs, one per pattern. Each prints the final message pool. The handoff-driven run reaches fewer agents if the researcher decides it is done early — that is the LLM-routing tradeoff in miniature.
+预期输出：三次编排者运行，每种模式一次，各自打印最终消息池。交接驱动模式下，若研究员决定提前结束，就会触及更少智能体；这是 LLM 路由权衡的缩影。
 
-## Use It
+## 实际应用（Use It）
 
-`outputs/skill-primitive-mapper.md` is a skill that reads any multi-agent codebase or framework doc and returns the four-primitive mapping. Run it on a new framework release to get a one-paragraph understanding before reading docs in depth.
+`outputs/skill-primitive-mapper.md` 是读取任意多智能体代码库或框架文档并返回四原语映射的技能。在新框架发布时运行它，先用一段话建立理解，再深入阅读文档。
 
-## Ship It
+## 交付成果（Ship It）
 
-Before adopting a new framework, write the primitive mapping for it. If you cannot, the docs are incomplete or the framework is inventing a fifth primitive (rare — check for a shared-state flavor you have not seen).
+采用新框架之前，写出它的原语映射。若写不出来，要么文档不完整，要么框架正在发明第五种原语（很少见，先检查是否只是未见过的共享状态变体）。
 
-Pin the mapping in your architecture doc. When a new team member joins, send them the mapping before the API docs. When framework versions change, diff the mapping, not the changelog.
+把映射固定在架构文档中。新成员加入时，先发映射，再发 API 文档。框架升级时，对比映射，而非变更日志。
 
-## Exercises
+## 练习（Exercises）
 
-1. Run `code/main.py` three times with different agent policies. Observe how the orchestrator choice changes which agents run.
-2. Implement a fourth orchestrator type: a queue-driven one where agents poll shared state for work. What deadlock can happen, and how do you detect it?
-3. Take the LangGraph quickstart (https://docs.langchain.com/oss/python/langgraph/workflows-agents) and rewrite it as the four primitives. Which of LangGraph's abstractions map 1:1 and which are convenience wrappers?
-4. Read the OpenAI Swarm cookbook (https://developers.openai.com/cookbook/examples/orchestrating_agents). Identify which of the four primitives Swarm makes most ergonomic, and which one it pushes to the caller.
-5. Find one framework in this table that hides shared state entirely. Explain what breaks when agents need to coordinate across handoffs without re-reading history.
+1. 使用不同智能体策略运行 `code/main.py` 三次，观察编排者选择如何改变哪些智能体会运行。
+2. 实现第四种编排者：智能体轮询共享状态领取工作的队列驱动模式。可能发生什么死锁，如何检测？
+3. 将 LangGraph 快速入门（https://docs.langchain.com/oss/python/langgraph/workflows-agents）重写为四原语形式。哪些 LangGraph 抽象一一对应，哪些是便捷包装？
+4. 阅读 OpenAI Swarm 示例指南（https://developers.openai.com/cookbook/examples/orchestrating_agents）。指出 Swarm 让哪种原语最易使用，哪种又推给调用者。
+5. 在表格中找到一个完全隐藏共享状态的框架。说明智能体需要跨交接协调、却不能重新读取历史时会出现什么问题。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语 | 常见说法 | 实际含义 |
 |------|----------------|------------------------|
-| Agent | "An LLM with tools" | A `(system_prompt, tools, model)` triple. Stateless. |
-| Handoff | "Transfer of control" | A structured call that names the next agent and optional payload. Three implementations: function return, graph edge, speaker selection. |
-| Shared state | "Memory" / "context" | The only stateful part of a multi-agent system. Message pool or blackboard. |
-| Orchestrator | "Coordinator" | Whoever decides who runs next. Static graph, LLM selector, handoff-driven, or queue-driven. |
-| Primitive | "Abstraction" | One of the four axes every framework parameterizes. Not a framework feature. |
-| Message pool | "Shared chat history" | Full-history shared state. Easy to reason about, scales badly. |
-| Projected state | "Scoped view" | Role-specific view into shared state. Scales, requires schema design. |
-| Speaker selection | "Who talks next" | Orchestrator pattern where a function (often an LLM) picks the next agent from a group. |
+| 智能体（Agent） | “带工具的 LLM” | `(system_prompt, tools, model)` 三元组，无状态。 |
+| 交接（Handoff） | “控制权转移” | 指明下一智能体和可选有效载荷的结构化调用。三种实现：函数返回、图边、发言者选择。 |
+| 共享状态（Shared state） | “记忆”/“上下文” | 多智能体系统唯一有状态的部分，即消息池或黑板。 |
+| 编排者（Orchestrator） | “协调者” | 决定谁接着运行的一方：静态图、LLM 选择器、交接驱动或队列驱动。 |
+| 原语（Primitive） | “抽象” | 每个框架参数化的四个维度之一，不是框架特性。 |
+| 消息池（Message pool） | “共享聊天历史” | 保存完整历史的共享状态，易理解但扩展性差。 |
+| 投影状态（Projected state） | “限定范围的视图” | 共享状态中面向特定角色的视图。可扩展，需要模式设计。 |
+| 发言者选择（Speaker selection） | “谁接着说” | 由函数（通常为 LLM）从群组中选出下一智能体的编排模式。 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [OpenAI cookbook: Orchestrating Agents — Routines and Handoffs](https://developers.openai.com/cookbook/examples/orchestrating_agents) — the clearest articulation of handoff-driven orchestration
-- [AutoGen stable docs](https://microsoft.github.io/autogen/stable/) — GroupChat + speaker selection is the reference for LLM-selected orchestration
-- [LangGraph workflows and agents](https://docs.langchain.com/oss/python/langgraph/workflows-agents) — graph-edge orchestration and reducer-based shared state
-- [CrewAI introduction](https://docs.crewai.com/en/introduction) — role-goal-backstory agents, Sequential / Hierarchical processes
-- [AG2 (community AutoGen continuation)](https://github.com/ag2ai/ag2) — the live AutoGen v0.2 line after Microsoft moved v0.4 into maintenance
+- [OpenAI 示例指南：编排智能体，例程与交接（Orchestrating Agents — Routines and Handoffs）](https://developers.openai.com/cookbook/examples/orchestrating_agents)：对交接驱动编排最清晰的阐述
+- [AutoGen 稳定版文档（AutoGen stable docs）](https://microsoft.github.io/autogen/stable/)：GroupChat + 发言者选择是 LLM 选择式编排的参考
+- [LangGraph 工作流与智能体（LangGraph workflows and agents）](https://docs.langchain.com/oss/python/langgraph/workflows-agents)：图边编排与基于归约器的共享状态
+- [CrewAI 简介（CrewAI introduction）](https://docs.crewai.com/en/introduction)：角色、目标、背景故事智能体，Sequential / Hierarchical 流程
+- [AG2，社区延续的 AutoGen（community AutoGen continuation）](https://github.com/ag2ai/ag2)：Microsoft 将 v0.4 转入维护后仍活跃的 AutoGen v0.2 谱系

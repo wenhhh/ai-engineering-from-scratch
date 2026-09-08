@@ -1,78 +1,78 @@
 {
   "lesson": "30-developer-application-capstone",
-  "title": "Ship a Claude Application You Can Defend",
+  "title": "交付一个能经得起审查的 Claude 应用（Ship a Claude Application You Can Defend）",
   "questions": [
     {
       "stage": "pre",
-      "question": "What should define capstone success before implementation begins?",
+      "question": "实施开始前，什么应定义综合实践成功？",
       "options": [
-        "A minimum system-prompt length and a fixed amount of context for every request",
-        "Measurable functional, security, operational, and final-state requirements with explicit acceptance and release criteria",
-        "The complete catalog of available MCP servers and tools, regardless of workflow need",
-        "A fixed target for agent turns and tool calls in every successful workflow path"
+        "要求系统提示词达到最低长度，并为每个请求提供固定数量的上下文",
+        "可衡量的功能、安全、运维和最终状态需求，以及明确的验收与发布标准",
+        "列出所有可用 MCP 服务器和工具的完整目录，无论工作流是否需要它们",
+        "为每条成功的工作流路径，设定固定的智能体轮次和工具调用次数目标"
       ],
       "correct": 1,
-      "explanation": "Explicit requirements make success, failure, authority, and evidence testable before architecture choices harden."
+      "explanation": "明确需求让成功、失败、权限和证据在架构选择固化前即可测试。"
     },
     {
       "stage": "check",
-      "question": "Why does the capstone begin with a direct read-only tool instead of MCP?",
+      "question": "为什么综合实践从直接只读工具而非 MCP 开始？",
       "options": [
-        "Direct tools inherit user authorization from the model request, so they need no application-side checks",
-        "MCP cannot expose a tool until at least two independent hosts connect to the same server",
-        "One host and one capability do not yet justify a separate discovery and server lifecycle",
-        "MCP is intended for mutating capabilities, while a direct tool is the required transport for read-only access"
+        "直接工具从模型请求中继承用户授权，因此无需在应用侧进行任何检查",
+        "只有至少两个相互独立的宿主连接到同一服务器后，MCP 才能暴露工具",
+        "只有一个宿主和一项能力，尚不足以证明有必要另设发现机制和服务器生命周期",
+        "MCP 用于会产生修改的能力，而直接工具才是只读访问所必须采用的传输方式"
       ],
       "correct": 2,
-      "explanation": "MCP earns its operational cost when shared discovery, governance, or interoperability is needed across hosts."
+      "explanation": "跨宿主需要共享发现、治理或互操作时，MCP 才值得其运维成本。"
     },
     {
       "stage": "check",
-      "question": "The injection test returns a safe refusal. What else must the test assert?",
+      "question": "注入测试返回安全拒绝，还必须断言什么？",
       "options": [
-        "That the model invoked each available read-only tool before concluding that the requested action was forbidden",
-        "That extended thinking was enabled so the trace contains a longer explanation of the refusal decision",
-        "That the refusal includes enough detail for an evaluator to identify which instruction caused the attack",
-        "That no forbidden tool, secret read, network request, or other side effect occurred anywhere in the trajectory"
+        "模型在认定所请求的操作属于禁止操作之前，调用了每个可用的只读工具",
+        "启用了扩展思考，使执行追踪包含对拒绝决策更长的解释",
+        "拒绝内容包含足够的细节，使评估者能够识别是哪条指令引发了攻击",
+        "整个执行轨迹中均未调用禁止工具、读取密钥、发起网络请求或产生其他副作用"
       ],
       "correct": 3,
-      "explanation": "Security requires final-state and trajectory evidence. Refusal wording does not prove the application prevented side effects."
+      "explanation": "安全需要最终状态与轨迹证据。拒绝措辞不能证明应用阻止了副作用。"
     },
     {
       "stage": "check",
-      "question": "Why is extended thinking disabled by default for the order-status workflow?",
+      "question": "为什么订单状态工作流默认停用扩展思考？",
       "options": [
-        "The direct lookup has no measured quality gain that earns added latency and cost",
-        "It cannot be combined with tool-result blocks in a multi-turn Messages request",
-        "It exposes hidden reasoning in the API response, which would automatically leak application secrets",
-        "It prevents schema-constrained output whenever the application also requests a deterministic tool result"
+        "直接查询没有测得足以抵偿额外延迟和成本的质量收益",
+        "它无法与多轮 Messages 请求中的工具结果内容块结合使用",
+        "它会在 API 响应中暴露隐藏推理，而这会自动泄露应用程序的密钥",
+        "只要应用还请求了确定性的工具结果，它就会阻止生成受模式约束的输出"
       ],
       "correct": 0,
-      "explanation": "Features should follow workload evidence. A simple lookup does not justify more reasoning budget without an eval showing benefit."
+      "explanation": "功能应跟随负载证据。没有评估证明收益，简单查询不值得更多推理预算。"
     },
     {
       "stage": "post",
-      "question": "A live integration receives tool_use and then sends only tool_result in the next API request. Which capstone contract is broken?",
+      "question": "实时集成收到 tool_use 后，下一次 API 请求只发送 tool_result。破坏了哪个契约？",
       "options": [
-        "The evaluation time-limit contract, because the application made another request after tool execution began",
-        "The Messages content-block state contract linking assistant tool_use to the matching user tool_result",
-        "The prompt-caching contract, because the prior assistant content was not converted into a reusable cache prefix",
-        "The MCP resource-URI contract, because every tool result must be posted to a resource address before continuation"
+        "评估时限契约，因为应用在工具执行开始之后又发起了另一次请求",
+        "将 assistant tool_use 与对应 user tool_result 关联起来的 Messages 内容块状态契约",
+        "提示词缓存契约，因为先前的 assistant 内容没有被转换成可重复使用的缓存前缀",
+        "MCP 资源 URI 契约，因为继续执行之前必须先将每个工具结果发布到一个资源地址"
       ],
       "correct": 1,
-      "explanation": "The application must preserve the assistant tool_use block and append the matching user tool_result before resending complete state."
+      "explanation": "应用必须保留 assistant tool_use 块，追加匹配 user tool_result，再重发完整状态。"
     },
     {
       "stage": "post",
-      "question": "Which three artifacts make the capstone operationally defensible?",
+      "question": "哪三种交付物让综合实践在运维上有据可依？",
       "options": [
-        "A plugin inventory, MCP registry, and model leaderboard showing which available components were selected",
-        "The system prompt, sampling settings, and one successful nominal transcript",
-        "A versioned architecture decision record, executable evaluation plan, and rehearsed failure runbook",
-        "A deployment screenshot, aggregate token count, and product page describing the application's intended behavior"
+        "插件清单、MCP 注册表和模型排行榜，用来展示从所有可用组件中选中了哪些组件",
+        "系统提示词、采样设置，以及一次成功执行正常流程的对话记录",
+        "版本化架构决策记录、可执行评估计划和经过演练的故障运行手册",
+        "一张部署截图、汇总后的词元数量，以及描述应用预期行为的产品页面"
       ],
       "correct": 2,
-      "explanation": "Architecture explains decisions, evals verify behavior, and the runbook defines containment and recovery when production differs from the plan."
+      "explanation": "架构解释决策，评估验证行为，操作手册定义生产偏离计划时的遏制和恢复。"
     }
   ]
 }

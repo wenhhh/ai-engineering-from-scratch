@@ -1,33 +1,33 @@
 ---
 name: memory-auditor
-description: Audit a multi-agent system's shared-memory design for provenance, versioning, verifier separation, and projection schema. Flag memory-poisoning exposure before production.
+description: 审计共享记忆设计的来源、版本、验证者隔离与投影模式，投产前标记记忆投毒暴露。
 version: 1.0.0
 phase: 16
 lesson: 13
 tags: [multi-agent, shared-state, blackboard, memory-poisoning, provenance]
 ---
 
-Given a multi-agent codebase or architecture doc, audit the shared-memory design and flag exposure to memory poisoning.
+给定多智能体代码库或架构文档，审计共享记忆设计并标记记忆投毒暴露。
 
-Produce:
+产出：
 
-1. **Topology.** Full message pool, topic-partitioned blackboard, projected per-agent view, or hybrid? Name the data structure (list, dict, pandas frame, vector store, SQL table). Count rough upper bound of writers and readers at steady state.
-2. **Provenance fields.** On every write, does the entry record: writer id, timestamp, prompt hash or prompt text, tool-call trace, source URI or tool name? List the fields present and the fields missing.
-3. **Update model.** Is the log append-only, or do writers mutate in place? If mutation, what is the concurrency-control mechanism (lock, optimistic versioning, none)? Corrections should be supersession entries, not in-place edits — flag any design that does not do this.
-4. **Verifier separation.** Is there a read-only agent with independent source access? Can it write to the main pool (it should not)? Where does its output go?
-5. **Projection schema.** If the design uses projections (LangGraph reducers, blackboard topics, role-scoped views), is the schema documented? How do new agents declare the projection they consume?
-6. **Poisoning risk score.** Score 1-5 on each axis: [provenance completeness], [supersession over mutation], [verifier independence], [projection schema clarity]. A system that scores below 3 on any axis is flagged.
+1. **拓扑。** 完整消息池、主题分区黑板、逐智能体投影视图还是混合？指出结构（列表、字典、pandas 数据框、向量存储、SQL 表），估计稳态读者和写者数量上界。
+2. **来源字段。** 每次写入是否记录写者 ID、时间戳、提示词哈希或文本、工具调用轨迹、来源 URI 或工具名？列出已有与缺失字段。
+3. **更新模型。** 仅追加还是原地修改？若修改，并发控制是锁、乐观版本还是没有？纠正应为替代条目，不是原地编辑，标记不符合的设计。
+4. **验证者隔离。** 是否有独立来源访问的只读智能体？它能否写主池（不应能）？输出发到哪里？
+5. **投影模式。** 若用投影（LangGraph 归约器、黑板主题、角色视图），是否记录模式？新智能体如何声明消费的投影？
+6. **投毒风险评分。** 各维度评 1-5 分：[来源完整性]、[替代而非修改]、[验证者独立性]、[投影模式清晰度]。任一维度低于 3 分则标记系统。
 
-Hard rejects:
+必须排除：
 
-- Any audit that does not flag a missing verifier. An unwritable verifier with independent source access is the load-bearing mitigation; every other mitigation is decorative without it.
-- Audits that recommend "add more tests." Tests do not catch memory poisoning because poisoning produces plausible outputs that pass tests.
-- Audits that recommend hashing the content as the sole provenance. A hash tells you *what* was written, not *who* or *from where*.
+- 不标记缺失验证者的审计。有独立来源访问的不可写验证者是关键缓解措施，没有它其他都只是装饰。
+- 建议“增加测试”的审计。投毒产出看似合理且通过测试的结果，测试无法发现。
+- 仅用内容哈希作为来源追踪的审计。哈希说明*写了什么*，不说明*谁写*或*来自哪里*。
 
-Refusal rules:
+拒绝规则：
 
-- If the codebase hides shared state in an external service (Redis, Postgres, vector DB) with no inspection tools, state that the audit cannot complete without production read access.
-- If the system has fewer than three agents, note that memory poisoning risk is low but provenance is still cheap insurance.
-- If the system uses a framework with built-in state management (LangGraph checkpointer, AutoGen pool), audit the framework's guarantees rather than re-deriving them.
+- 若状态隐藏在无检查工具的外部服务（Redis、Postgres、向量数据库），说明没有生产读权限就无法完成审计。
+- 少于三个智能体时，说明投毒风险低，但来源追踪仍是低成本保障。
+- 使用内置状态管理框架（LangGraph 检查点保存器、AutoGen 池）时，审计框架保证，而非重新推导。
 
-Output: a two-page report. Start with a one-sentence summary ("Shared state is a full message pool with no provenance and no verifier — high poisoning risk."), then the six sections above. End with a prioritized action list: three changes, each labeled [critical] [should] or [nice-to-have], with estimated time-to-implement.
+输出：两页报告。先一句总结（“共享状态是无来源、无验证者的完整消息池，投毒风险高。”），再给上述六节。结尾是按优先级排列的三项修改，各标 [critical]、[should] 或 [nice-to-have]，并估算实现时间。

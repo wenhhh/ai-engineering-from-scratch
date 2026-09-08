@@ -1,44 +1,44 @@
-# Model Context Protocol (MCP)
+# 模型上下文协议（Model Context Protocol，MCP）
 
-> MCP gives an AI host one protocol for discovering and invoking tools, resources, and prompts. The 2026-07-28 revision makes that protocol stateless: capability and version context travels with every request, not in a connection-bound handshake.
+> MCP 为 AI 宿主（Host）提供统一协议，用于发现和调用工具、资源与提示词。2026-07-28 修订版使该协议无状态（Stateless）：能力与版本上下文随每个请求传递，而不再依赖绑定到连接的握手（Handshake）。
 
 **Type:** Build
 **Languages:** Python
-**Prerequisites:** Phase 11 · 09 (Function Calling), Phase 11 · 03 (Structured Outputs)
-**Time:** ~75 minutes
+**Prerequisites:** 阶段 11 · 09（函数调用，Function Calling）、阶段 11 · 03（结构化输出，Structured Outputs）
+**Time:** 约 75 分钟
 
-## Learning Objectives
+## 学习目标（Learning Objectives）
 
-- Distinguish an MCP host, client, server, transport, and server primitive.
-- Build a JSON-RPC request with the metadata required by MCP 2026-07-28.
-- Use `server/discover` to inspect versions, identity, and capabilities.
-- Return typed and cache-aware results from tools, resources, and prompts.
-- Explain how modern stateless MCP interoperates with handshake-era servers.
-- Choose safe state, transport, and approval boundaries for a server.
+- 区分 MCP 宿主、客户端（Client）、服务器（Server）、传输方式（Transport）和服务器原语（Server Primitive）。
+- 构建包含 MCP 2026-07-28 所需元数据的 JSON-RPC 请求。
+- 使用 `server/discover` 检查版本、身份与能力。
+- 从工具、资源和提示词返回具有明确类型及缓存信息的结果。
+- 解释现代无状态 MCP 如何与握手时代的服务器互操作。
+- 为服务器选择安全的状态、传输和审批边界。
 
-## The Problem
+## 问题（The Problem）
 
-Your application needs a database query, a calendar operation, and a file reader. Without a shared protocol, every AI host needs custom discovery, invocation, errors, transport, and authorization glue for those same capabilities.
+你的应用需要数据库查询、日历操作和文件读取功能。如果没有共享协议，每个 AI 宿主都必须为这些相同能力编写定制的发现、调用、错误、传输和授权衔接代码。
 
-MCP reduces that integration matrix. A server publishes a standard JSON-RPC surface. A compliant client can discover the surface, present it to a model or user, invoke it, and interpret the result without a server-specific adapter.
+MCP 缩小了这张集成矩阵。服务器发布标准的 JSON-RPC 接口。符合协议的客户端可以发现该接口、将其展示给模型或用户、调用它并解释结果，而无需针对特定服务器编写适配器（Adapter）。
 
-The important boundary is easy to miss. MCP standardizes communication. It does not decide which tool the model should call, make untrusted content safe, or turn a stateless request into durable application state. Your host and server still own those decisions.
+有一条重要边界很容易被忽略：MCP 标准化的是通信。它不决定模型应调用哪个工具，不会使不可信内容变安全，也不会将无状态请求变成持久的应用状态。这些决策仍由你的宿主和服务器负责。
 
-## The Concept
+## 概念（The Concept）
 
-![MCP host, stateless request, and server primitives](../assets/mcp-architecture.svg)
+![MCP 宿主、无状态请求与服务器原语](../assets/mcp-architecture.svg)
 
-### The three server primitives
+### 三种服务器原语（The three server primitives）
 
-1. **Tools** are callable actions. Each tool has a name, description, JSON Schema input, and handler.
-2. **Resources** are named, URI-addressed content that a client can read.
-3. **Prompts** are reusable templates that a host can expose to a user.
+1. **工具（Tools）**是可调用的动作。每个工具都有名称、描述、JSON Schema 输入和处理函数（Handler）。
+2. **资源（Resources）**是有名称、通过 URI 寻址且可供客户端读取的内容。
+3. **提示词（Prompts）**是宿主可向用户展示的可复用模板。
 
-The host is the AI application. An MCP client inside that host speaks to one server. The transport carries JSON-RPC messages between them.
+宿主就是 AI 应用。宿主内的一个 MCP 客户端与一个服务器通信。传输层在两者之间承载 JSON-RPC 消息。
 
-### Stateless requests replace the handshake
+### 无状态请求取代握手（Stateless requests replace the handshake）
 
-MCP 2026-07-28 removes `initialize` and `notifications/initialized`. It also removes protocol-level sessions. Every request carries the context needed to interpret it in `params._meta`:
+MCP 2026-07-28 移除了 `initialize` 和 `notifications/initialized`，也移除了协议级会话（Session）。每个请求都在 `params._meta` 中携带解释该请求所需的上下文：
 
 ```json
 {
@@ -58,13 +58,13 @@ MCP 2026-07-28 removes `initialize` and `notifications/initialized`. It also rem
 }
 ```
 
-The protocol version and client capabilities are required. Client identity is recommended. A missing `_meta`, a missing required field, or a required field with the wrong type is malformed and returns Invalid Params (`-32602`). A well-formed version string that the server does not support returns `UnsupportedProtocolVersionError` (`-32022`). A server can process a valid request without recovering a prior negotiation record.
+协议版本和客户端能力是必需项，建议同时提供客户端身份。缺少 `_meta`、缺少必需字段或必需字段类型错误，都属于格式错误，返回无效参数（Invalid Params，`-32602`）。格式正确但服务器不支持的版本字符串会返回 `UnsupportedProtocolVersionError`（`-32022`）。服务器无需恢复先前的协商记录，就能处理有效请求。
 
-Stateless does not mean an application can never maintain state. It means that state is not hidden behind an MCP connection or `Mcp-Session-Id`. If a workflow needs continuity, the server mints an opaque handle and the client passes that handle as an ordinary tool argument on later calls. Authorization must still be checked on every request.
+无状态并不意味着应用永远不能维护状态，而是说状态不能隐藏在 MCP 连接或 `Mcp-Session-Id` 后面。如果工作流需要跨调用连续性，服务器就生成一个不透明句柄（Opaque Handle），客户端在后续调用中将其作为普通工具参数传递。每个请求仍必须检查授权。
 
-### Discovery and version selection
+### 发现与版本选择（Discovery and version selection）
 
-Every modern server implements `server/discover`. The result advertises supported versions, capabilities, and server identity:
+每个现代服务器都实现 `server/discover`，其结果公布受支持的版本、能力和服务器身份：
 
 ```json
 {
@@ -90,50 +90,50 @@ Every modern server implements `server/discover`. The result advertises supporte
 }
 ```
 
-A client may call another method directly and handle a version error, but discovery makes capability display and version selection explicit. An unsupported version returns `UnsupportedProtocolVersionError` with code `-32022`. Its data contains `supported`, an array of server revisions, and `requested`, the rejected revision.
+客户端可以直接调用其他方法并处理版本错误，但发现操作让能力展示和版本选择变得明确。不受支持的版本会返回错误码为 `-32022` 的 `UnsupportedProtocolVersionError`。其数据包含服务器修订版本数组 `supported`，以及被拒绝的修订版本 `requested`。
 
-On stdio, a dual-era client probes with `server/discover`. A discovery result or a recognized modern error such as `UnsupportedProtocolVersionError` identifies a modern server. Any error or timeout that is not recognized as modern permits fallback to the 2025-11-25 `initialize` flow. Legacy behavior is compatibility code, not the modern default.
+在标准输入输出（stdio）传输上，兼容两个时代的客户端使用 `server/discover` 探测。发现结果，或可识别的现代错误（例如 `UnsupportedProtocolVersionError`），都表明这是现代服务器。对于无法识别为现代协议响应的错误或超时，允许回退到 2025-11-25 的 `initialize` 流程。旧版行为属于兼容代码，而非现代协议的默认路径。
 
-### Results are explicit
+### 显式结果（Results are explicit）
 
-Every core 2026-07-28 result has `resultType`:
+2026-07-28 核心协议的每个结果都有 `resultType`：
 
-- `complete` means the operation finished.
-- `input_required` means the server needs another round trip through the Multi Round-Trip Requests pattern. Core servers may return it only from `tools/call`, `resources/read`, or `prompts/get`.
+- `complete` 表示操作已完成。
+- `input_required` 表示服务器需要通过多轮往返请求（Multi Round-Trip Requests）模式再进行一次往返。核心服务器只能从 `tools/call`、`resources/read` 或 `prompts/get` 返回它。
 
-Clients must treat a legacy result that omits `resultType` as complete.
+对于省略 `resultType` 的旧版结果，客户端必须视为已完成。
 
-Servers should include `io.modelcontextprotocol/serverInfo` in every result's `_meta`. This identity is self-reported and is for display, logging, and debugging, not for security decisions.
+服务器应在每个结果的 `_meta` 中包含 `io.modelcontextprotocol/serverInfo`。这一身份由服务器自行声明，用于显示、日志记录和调试，而非安全决策。
 
-List and read results also carry `ttlMs` and `cacheScope`. A deterministic `tools/list` order plus a freshness hint lets clients cache discovery safely and improves prompt-cache stability. `cacheScope: public` permits shared caching; `private` confines reuse to the calling context.
+列表和读取结果还携带 `ttlMs` 与 `cacheScope`。确定性的 `tools/list` 排序配合新鲜度提示，使客户端能够安全缓存发现结果，并提高提示词缓存（Prompt Cache）的稳定性。`cacheScope: public` 允许共享缓存；`private` 将复用范围限定在调用上下文内。
 
-### The wire format and transport
+### 线上消息格式与传输（The wire format and transport）
 
-MCP uses JSON-RPC 2.0 over stdio or Streamable HTTP.
+MCP 通过 stdio 或可流式 HTTP（Streamable HTTP）传输 JSON-RPC 2.0。
 
-- A request has `jsonrpc`, `id`, `method`, and `params`.
-- A response has the matching `id` and either `result` or `error`.
-- A notification has no `id` and expects no response.
+- 请求包含 `jsonrpc`、`id`、`method` 和 `params`。
+- 响应包含匹配的 `id`，以及 `result` 或 `error`。
+- 通知（Notification）没有 `id`，也不期待响应。
 
-Modern Streamable HTTP exposes one endpoint that accepts POST. Each JSON-RPC message gets its own POST. A request POST receives either one JSON object or a request-scoped Server-Sent Events stream that ends with the final response. An accepted notification POST receives HTTP 202 with no response body; this core revision defines no client-to-server notifications over Streamable HTTP.
+现代 Streamable HTTP 暴露一个接受 POST 的端点。每条 JSON-RPC 消息各自使用一次 POST。请求 POST 收到一个 JSON 对象，或一个限定于该请求、以最终响应结束的服务器发送事件（Server-Sent Events，SSE）流。已接受的通知 POST 收到没有响应体的 HTTP 202；本核心修订版未定义通过 Streamable HTTP 发送的客户端到服务器通知。
 
-There is no standalone MCP GET stream, DELETE session endpoint, `Mcp-Session-Id`, or `Last-Event-ID` replay in 2026-07-28. Long-lived change notifications use a `subscriptions/listen` POST whose response remains open as an SSE stream.
+2026-07-28 中没有独立的 MCP GET 流、DELETE 会话端点、`Mcp-Session-Id` 或 `Last-Event-ID` 重放（Replay）。长时间持续的变更通知使用 `subscriptions/listen` POST，其响应作为 SSE 流保持打开。
 
-### Client input without server-initiated requests
+### 无需服务器主动发起请求的客户端输入（Client input without server-initiated requests）
 
-Older revisions let a server send requests such as `sampling/createMessage`, `roots/list`, or `elicitation/create` over a stream. The current protocol uses Multi Round-Trip Requests instead. An eligible tool call, resource read, or prompt get returns `resultType: input_required` with at least one of `inputRequests` or `requestState`. The client gathers any requested input, retries the original method with a new JSON-RPC ID and the corresponding `inputResponses`, and echoes the exact `requestState` when one was provided. If no `inputRequests` were present, the retry omits `inputResponses`.
+旧修订版允许服务器通过流发送 `sampling/createMessage`、`roots/list` 或 `elicitation/create` 等请求。当前协议改用多轮往返请求。符合条件的工具调用、资源读取或提示词获取会返回 `resultType: input_required`，并至少包含 `inputRequests` 或 `requestState` 之一。客户端收集所请求的输入，使用新的 JSON-RPC ID 和对应的 `inputResponses` 重试原方法；如果提供了 `requestState`，则原样回传其值。如果没有 `inputRequests`，重试时就省略 `inputResponses`。
 
-Roots, Sampling, and Logging remain functional but are deprecated, so new implementations should not adopt them. Existing Roots or Sampling requests travel inside MRTR `inputRequests`, never as independent server-to-client JSON-RPC requests. Prefer explicit file or directory parameters, resource URIs, server configuration, and direct model-provider integration. Use stderr for stdio diagnostics and OpenTelemetry for production telemetry.
+根目录（Roots）、采样（Sampling）和日志（Logging）功能仍可使用，但已弃用，因此新实现不应采用它们。现有 Roots 或 Sampling 请求在 MRTR 的 `inputRequests` 内传递，绝不能作为独立的服务器到客户端 JSON-RPC 请求。优先使用显式文件或目录参数、资源 URI、服务器配置，以及与模型供应商直接集成。stdio 诊断使用标准错误（stderr），生产遥测（Telemetry）使用 OpenTelemetry。
 
 ```figure
 mcp-nxm-collapse
 ```
 
-## Build It
+## 动手构建（Build It）
 
-### Step 1: register a server surface
+### 第 1 步：注册服务器接口（register a server surface）
 
-Registration stays simple even though the request contract changed:
+尽管请求契约（Request Contract）发生了变化，注册仍然很简单：
 
 ```python
 server = MCPServer("demo-server")
@@ -154,9 +154,9 @@ def add(a: int, b: int) -> dict:
     return {"sum": a + b}
 ```
 
-The shipped implementation in `code/main.py` also registers a resource and prompt. It deliberately uses the standard library so you can see each envelope rather than delegating the protocol to an SDK.
+随课程提供的 `code/main.py` 实现还注册了资源和提示词。它特意使用标准库，让你看到每个消息封装（Envelope），而不是把协议处理交给 SDK。
 
-### Step 2: attach metadata to every request
+### 第 2 步：为每个请求附加元数据（attach metadata to every request）
 
 ```python
 def request(method, params=None):
@@ -177,17 +177,17 @@ def request(method, params=None):
     }
 ```
 
-Do not cache this metadata only in a connection object. The server validates it on each request.
+不要只把这份元数据缓存在连接对象中。服务器会在每个请求上校验它。
 
-### Step 3: optionally discover before listing
+### 第 3 步：可在列举前执行发现（optionally discover before listing）
 
-Call `server/discover`, choose a supported version, then call `tools/list`. A direct `tools/list` is also valid if you already know the version and can handle `-32022`.
+调用 `server/discover`，选择受支持的版本，再调用 `tools/list`。如果你已知版本并能处理 `-32022`，也可以直接调用 `tools/list`。
 
-The demo returns tool lists in name order and attaches `ttlMs`, `cacheScope`, `resultType`, and server identity. A tool call returns a complete, non-cacheable result because its output can depend on current state.
+演示按名称排序返回工具列表，并附加 `ttlMs`、`cacheScope`、`resultType` 和服务器身份。工具调用返回已完成且不可缓存的结果，因为其输出可能依赖当前状态。
 
-### Step 4: map the same request to HTTP
+### 第 4 步：将同一请求映射到 HTTP（map the same request to HTTP）
 
-A remote `tools/call` POST includes headers that mirror the JSON-RPC body:
+远程 `tools/call` POST 包含与 JSON-RPC 请求体对应的请求头：
 
 ```http
 POST /mcp HTTP/1.1
@@ -198,20 +198,20 @@ Mcp-Method: tools/call
 Mcp-Name: add
 ```
 
-The `MCP-Protocol-Version` header must match the version in `_meta`. `Mcp-Method` is required on every JSON-RPC request and must match `method`. `Mcp-Name` is required only for `tools/call`, `resources/read`, and `prompts/get`, where it must match the tool name, resource URI, or prompt name. A missing required header or mismatch returns HTTP 400 with `HeaderMismatch` code `-32020`.
+`MCP-Protocol-Version` 请求头必须与 `_meta` 中的版本一致。每个 JSON-RPC 请求都必须包含 `Mcp-Method`，且与 `method` 一致。只有 `tools/call`、`resources/read` 和 `prompts/get` 需要 `Mcp-Name`，其值必须分别匹配工具名称、资源 URI 或提示词名称。缺少必需请求头或值不匹配时，返回 HTTP 400，并带有错误码为 `-32020` 的 `HeaderMismatch`。
 
-### Step 5: enforce safety outside protocol state
+### 第 5 步：在协议状态之外落实安全措施（enforce safety outside protocol state）
 
-- Validate authorization and audience on every HTTP request.
-- Bind local servers to localhost and validate `Origin` on Streamable HTTP.
-- Mark mutating tools with `destructiveHint: true` and require host approval.
-- Pass directory and file scope explicitly instead of depending on deprecated Roots.
-- Treat resources and tool output as untrusted data.
-- Keep stdout reserved for JSON-RPC under stdio; write diagnostics to stderr.
+- 对每个 HTTP 请求校验授权和受众（Audience）。
+- 将本地服务器绑定到 localhost，并在 Streamable HTTP 上校验 `Origin`。
+- 为会修改状态的工具标记 `destructiveHint: true`，并要求宿主批准。
+- 显式传递目录和文件范围，不依赖已弃用的 Roots。
+- 将资源和工具输出视为不可信数据。
+- 使用 stdio 时，将标准输出（stdout）专用于 JSON-RPC；诊断信息写入 stderr。
 
-## Use It
+## 使用方法（Use It）
 
-Run the lesson from its directory:
+在本课目录中运行：
 
 ```bash
 python3 code/main.py
@@ -219,49 +219,49 @@ cd code
 python3 -m unittest discover tests -v
 ```
 
-The first line should report discovery of `demo-server` at protocol `2026-07-28`. Then inspect `MCPClient.request`: it reconstructs `_meta` for every call. Remove the metadata from one request and observe the server reject it.
+第一行应报告已发现协议版本为 `2026-07-28` 的 `demo-server`。然后检查 `MCPClient.request`：它会为每次调用重建 `_meta`。移除某个请求的元数据，观察服务器拒绝它。
 
-## Ship It
+## 交付成果（Ship It）
 
-`outputs/skill-mcp-server-designer.md` turns a domain into a stateless MCP design. Its acceptance gate requires a discovery result, per-request metadata policy, deterministic cache-aware lists, explicit state handles, transport headers, authorization, and approval rules.
+`outputs/skill-mcp-server-designer.md` 将业务领域转化为无状态 MCP 设计。其验收门槛要求具备发现结果、逐请求元数据策略、顺序确定且包含缓存信息的列表、显式状态句柄、传输请求头、授权和审批规则。
 
-## Continue the MCP Deep Dive
+## 继续深入 MCP（Continue the MCP Deep Dive）
 
-This lesson gives you the protocol model. Phase 13 turns four production boundaries into separate build-and-verify lessons:
+本课介绍协议模型。阶段 13 将四个生产边界拆分为独立的构建与验证课程：
 
-1. [MCP Tool Contracts and Content](../../../13-tools-and-protocols/28-mcp-tool-contracts-and-content/docs/en.md) covers closed input schemas, structured content, routing metadata, opaque pagination, completion authorization, and the difference between protocol and tool-domain errors.
-2. [MCP Reliability, Cancellation, and Flow Control](../../../13-tools-and-protocols/29-mcp-reliability-cancellation-and-flow-control/docs/en.md) covers request cancellation, durable task cancellation, deadlines, idempotency, backpressure, proxy buffering, and reconnect behavior.
-3. [MCP Registry Supply Chain, Admission, Drift, and Rollback](../../../13-tools-and-protocols/30-mcp-registry-supply-chain-and-drift/docs/en.md) covers namespace proof, artifact provenance, immutable pins, live drift, Registry status, admission evidence, and rollback.
-4. [MCP Conformance Engineering](../../../13-tools-and-protocols/31-mcp-conformance-versioning-and-operations/docs/en.md) covers golden and negative wire transcripts, strict version eras, SDK differentials, proxy evidence, redaction, health gates, and release rollback.
+1. [MCP 工具契约与内容（MCP Tool Contracts and Content）](../../../13-tools-and-protocols/28-mcp-tool-contracts-and-content/docs/en.md) 涵盖封闭输入模式、结构化内容、路由元数据、不透明分页、补全授权，以及协议错误与工具领域错误的区别。
+2. [MCP 可靠性、取消与流量控制（MCP Reliability, Cancellation, and Flow Control）](../../../13-tools-and-protocols/29-mcp-reliability-cancellation-and-flow-control/docs/en.md) 涵盖请求取消、持久任务取消、截止时间、幂等性（Idempotency）、背压（Backpressure）、代理缓冲和重连行为。
+3. [MCP 注册表供应链、准入、漂移与回滚（MCP Registry Supply Chain, Admission, Drift, and Rollback）](../../../13-tools-and-protocols/30-mcp-registry-supply-chain-and-drift/docs/en.md) 涵盖命名空间证明、制品来源、不可变版本固定、运行时漂移、Registry 状态、准入证据和回滚。
+4. [MCP 一致性工程（MCP Conformance Engineering）](../../../13-tools-and-protocols/31-mcp-conformance-versioning-and-operations/docs/en.md) 涵盖黄金样本与反例通信记录、严格区分协议版本时代、SDK 差异测试、代理证据、脱敏、健康门槛和发布回滚。
 
-Follow them in order when the server will cross a team or trust boundary. Together they move from “the method works” to “the contract remains safe and diagnosable through deployment.”
+当服务器将跨越团队或信任边界时，请按顺序学习这些课程。它们一起将目标从“方法能够工作”推进到“契约在整个部署过程中保持安全且可诊断”。
 
-## Exercises
+## 练习（Exercises）
 
-1. Add a `subtract` tool and confirm `tools/list` remains alphabetically ordered.
-2. Remove the protocol-version key and verify Invalid Params (`-32602`). Then send the well-formed but unsupported version `2025-11-25`, verify `-32022`, confirm `requested` echoes that revision, and choose from `supported`.
-3. Add a server-minted `draftId` to a create operation, then require it as an argument to update. Explain why that is application state rather than a protocol session.
-4. Return `input_required` from a tool that needs user confirmation. Retry the original call with a new ID, an `inputResponses` entry, and the exact `requestState` instead of inventing a server-to-client JSON-RPC request.
-5. Sketch a dual-era stdio client. Treat a result or recognized modern error as modern, and permit fallback to `initialize` only for an unrecognized error or timeout.
+1. 添加 `subtract` 工具，确认 `tools/list` 仍按字母顺序排列。
+2. 移除协议版本键，验证返回无效参数（Invalid Params，`-32602`）。再发送格式正确但不受支持的版本 `2025-11-25`，验证返回 `-32022`，确认 `requested` 回传该修订版本，并从 `supported` 中选择版本。
+3. 为创建操作添加服务器生成的 `draftId`，然后要求更新操作必须携带该参数。解释为什么这是应用状态，而不是协议会话。
+4. 从需要用户确认的工具返回 `input_required`。使用新 ID、一个 `inputResponses` 条目和原样的 `requestState` 重试原调用，不要自行构造服务器到客户端的 JSON-RPC 请求。
+5. 勾勒兼容两个时代的 stdio 客户端。将结果或可识别的现代错误视为现代协议响应，只在出现无法识别的错误或超时时允许回退到 `initialize`。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语 | 常见说法 | 实际含义 |
 |------|-----------------|------------------------|
-| MCP | "Tool protocol for LLMs" | JSON-RPC protocol for server discovery, tools, resources, prompts, and extensions |
-| Host | "The AI app" | Owns the model and UI and mounts one or more MCP clients |
-| Client | "The connector" | Speaks MCP to one server on behalf of a host |
-| Stateless MCP | "No session" | Every request carries version and capabilities; no protocol state is keyed by a connection |
-| `server/discover` | "Capability probe" | Required server method advertising versions, capabilities, and identity |
-| `resultType` | "Result state" | Marks a result as `complete` or `input_required` |
-| State handle | "Workflow id" | Server-minted application identifier passed as an ordinary argument |
-| Streamable HTTP | "Remote transport" | One POST endpoint with JSON or request-scoped SSE responses |
-| MRTR | "Ask and retry" | Input request embedded in a result, followed by a retry of the original operation |
+| 模型上下文协议（MCP） | “LLM 的工具协议” | 用于服务器发现、工具、资源、提示词和扩展的 JSON-RPC 协议 |
+| 宿主（Host） | “AI 应用” | 拥有模型和 UI，并挂载一个或多个 MCP 客户端 |
+| 客户端（Client） | “连接器” | 代表宿主使用 MCP 与一个服务器通信 |
+| 无状态 MCP（Stateless MCP） | “没有会话” | 每个请求携带版本和能力；协议状态不以连接为键保存 |
+| `server/discover` | “能力探测” | 公布版本、能力和身份的必需服务器方法 |
+| `resultType` | “结果状态” | 将结果标记为 `complete` 或 `input_required` |
+| 状态句柄（State handle） | “工作流 ID” | 服务器生成、作为普通参数传递的应用标识符 |
+| 可流式 HTTP（Streamable HTTP） | “远程传输” | 一个 POST 端点，返回 JSON 或限定于请求的 SSE 响应 |
+| 多轮往返请求（MRTR） | “询问并重试” | 将输入请求嵌入结果，然后重试原操作 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [MCP 2026-07-28 key changes](https://modelcontextprotocol.io/specification/2026-07-28/changelog)
-- [MCP server discovery](https://modelcontextprotocol.io/specification/2026-07-28/server/discover)
-- [MCP Streamable HTTP](https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/streamable-http)
-- [MCP Multi Round-Trip Requests](https://modelcontextprotocol.io/specification/2026-07-28/basic/patterns/mrtr)
-- [MCP deprecated features](https://modelcontextprotocol.io/specification/2026-07-28/deprecated)
+- [MCP 2026-07-28 主要变更（key changes）](https://modelcontextprotocol.io/specification/2026-07-28/changelog)
+- [MCP 服务器发现（server discovery）](https://modelcontextprotocol.io/specification/2026-07-28/server/discover)
+- [MCP 可流式 HTTP（Streamable HTTP）](https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/streamable-http)
+- [MCP 多轮往返请求（Multi Round-Trip Requests）](https://modelcontextprotocol.io/specification/2026-07-28/basic/patterns/mrtr)
+- [MCP 已弃用功能（deprecated features）](https://modelcontextprotocol.io/specification/2026-07-28/deprecated)

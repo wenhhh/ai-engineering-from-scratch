@@ -1,78 +1,78 @@
 {
   "lesson": "06-governance-safety-and-responsible-use",
-  "title": "Put Authority Around Capability",
+  "title": "用授权约束能力（Put Authority Around Capability）",
   "questions": [
     {
       "stage": "pre",
-      "question": "A connector can read customer records and a model can draft offers. What is still required before offers are sent?",
+      "question": "连接器能读取客户记录，模型能起草优惠。发送优惠前还需要什么？",
       "options": [
-        "Documented authority, approved purpose, controls, and any required human approval",
-        "A prompt that tells Claude to send only offers it considers fair and accurate",
-        "A post-generation evaluator that checks tone and required offer fields before delivery",
-        "Treat connector read access as sufficient sending authority"
+        "记录明确的权限、获批用途、控制措施，以及所需人工批准",
+        "提示 Claude 只发送它认为公平准确的优惠",
+        "生成后评估者在交付前检查语气和必需优惠字段",
+        "将连接器读取访问视为足够的发送权限"
       ],
       "correct": 0,
-      "explanation": "Technical capability and data permission do not grant organizational authority to make or execute a decision."
+      "explanation": "技术能力和数据访问许可不赋予组织决策或执行权限。"
     },
     {
       "stage": "check",
-      "question": "Which action best demonstrates data minimization?",
+      "question": "哪项最体现数据最小化？",
       "options": [
-        "Retaining complete prompts for a shorter period instead of removing unnecessary fields",
-        "Supplying only the redacted fields required for the approved task",
-        "Sending the full customer record but instructing Claude to use only relevant fields",
-        "Encrypting the entire dataset before sending all records to the approved product surface"
+        "缩短完整提示词保留期，而不是移除无用字段",
+        "仅提供获批任务所需的脱敏字段",
+        "发送完整客户记录，但指示 Claude 只用相关字段",
+        "加密整个数据集后，将全部记录发送到获批产品形态"
       ],
       "correct": 1,
-      "explanation": "Minimization reduces input to the smallest information needed for the approved purpose."
+      "explanation": "最小化将输入减少为获批用途所需的最少信息。"
     },
     {
       "stage": "check",
-      "question": "Why must Claude data and retention behavior be verified for the exact product surface?",
+      "question": "为何必须针对确切 Claude 产品形态核实数据和保留行为？",
       "options": [
-        "A system prompt can request stricter retention when product controls are unavailable",
-        "Every surface follows the same default terms, but enterprise settings can override them",
-        "Terms, settings, plans, contracts, and features can differ and change",
-        "Retention matters only for external customer data, so internal workflows need a simpler check"
+        "产品控制不可用时，系统提示词可要求更严格保留",
+        "所有产品形态默认条款相同，但企业设置可覆盖",
+        "条款、设置、套餐、合同和功能可能不同且会变化",
+        "保留只涉及外部客户数据，内部工作流可简化检查"
       ],
       "correct": 2,
-      "explanation": "Privacy and retention are changeable product and contract facts, so assumptions should not be transferred between surfaces."
+      "explanation": "隐私和保留是可变产品与合同事实，不应跨产品形态移植假设。"
     },
     {
       "stage": "check",
-      "question": "What makes a human review gate meaningful?",
+      "question": "什么让人工审核门槛具有实质作用？",
       "options": [
-        "Every output is held until an available employee confirms the model followed its prompt",
-        "A reviewer sees the polished output and can approve it within the required service window",
-        "The workflow chooses the reviewer based on similarity between the case and prior approvals",
-        "The reviewer has evidence, uncertainty, policy context, authority, and the ability to reject or escalate"
+        "所有输出都等待有空员工确认模型遵守提示词",
+        "审核者看到精美输出，并可在服务时限内批准",
+        "按案例与此前批准的相似性选择审核者",
+        "审核者拥有证据、不确定性、政策背景、权限，以及拒绝或升级能力"
       ],
       "correct": 3,
-      "explanation": "Oversight requires informed authority and real intervention options, not ceremonial approval."
+      "explanation": "监督需要知情授权和真正干预选项，而不是仪式性批准。"
     },
     {
       "stage": "post",
-      "question": "A retrieved document says to ignore workflow policy and invoke a tool. What is the safest treatment?",
+      "question": "检索文档要求忽略工作流政策并调用工具。最安全的处理是什么？",
       "options": [
-        "Treat it as untrusted data, preserve higher-level controls, and block unauthorized tool use",
-        "Ask a second model whether the document is malicious before allowing it to expand permissions",
-        "Remove imperative sentences from the retrieved text and then execute any remaining requests",
-        "Follow document instructions only if the source ranks highly and the requested tool is read-only"
+        "将其视为不可信数据，保留高层控制，阻止未授权工具使用",
+        "先让第二个模型判断文档是否恶意，再允许其扩展权限",
+        "删除命令句，再执行剩余请求",
+        "仅在来源排名高且工具只读时遵循文档指令"
       ],
       "correct": 0,
-      "explanation": "Retrieved content can carry prompt injection. Tool authorization and governing instructions must remain outside untrusted text."
+      "explanation": "检索内容可能携带提示词注入。工具授权和管理指令必须置于不可信文本之外。"
     },
     {
       "stage": "post",
-      "question": "A ranking system shows materially different error rates across affected groups. What is the strongest next step?",
+      "question": "排名系统在受影响群体间显示明显不同错误率。最有力的下一步是什么？",
       "options": [
-        "Add an explicit fairness instruction, then proceed if the aggregate evaluation still passes",
-        "Investigate data and workflow causes with qualified owners, apply policy, and preserve correction or appeal",
-        "Reweight the aggregate metric so each group contributes equally, then release on that score",
-        "Remove group labels from evaluation data to keep the model and reviewers from using them"
+        "添加公平指令，只要总体评估仍通过就继续",
+        "与合格负责人调查数据和工作流原因，应用政策，保留纠正或申诉",
+        "重新加权总体指标，让每组贡献相等，再按该分数发布",
+        "从评估数据移除群体标签，防止模型和审核者使用"
       ],
       "correct": 1,
-      "explanation": "Fairness needs defined populations, outcomes, measurements, governance, and a remedy path, not a vague instruction."
+      "explanation": "公平性需要明确群体、结果、度量、治理和补救路径，不是模糊指令。"
     }
   ]
 }

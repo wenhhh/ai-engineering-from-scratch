@@ -116,14 +116,14 @@ function trackLessons(entry) {
 
 function certificationHead(entry, trackId) {
   const canonical = canonicalForTrack(trackId);
-  const title = entry.seoTitle || `${entry.title} - AI Engineering from Scratch`;
-  const description = entry.description || entry.excerpt || 'Free, independent certification preparation with ordered lessons and original practice.';
+  const title = entry.seoTitle || `${entry.title} - 从零开始的 AI 工程`;
+  const description = entry.description || entry.excerpt || '免费独立的认证备考，提供有序课程与原创练习。';
   const course = {
     '@type': 'Course',
     name: entry.title,
     description,
     url: canonical,
-    inLanguage: 'en',
+    inLanguage: 'zh-CN',
     isAccessibleForFree: true,
   };
   const jsonLd = {
@@ -140,8 +140,8 @@ function certificationHead(entry, trackId) {
       {
         '@type': 'BreadcrumbList',
         itemListElement: [
-          { '@type': 'ListItem', position: 1, name: 'Home', item: ORIGIN },
-          { '@type': 'ListItem', position: 2, name: 'Certifications', item: `${ORIGIN}/certifications.html` },
+          { '@type': 'ListItem', position: 1, name: '首页', item: ORIGIN },
+          { '@type': 'ListItem', position: 2, name: '认证备考', item: `${ORIGIN}/certifications.html` },
           { '@type': 'ListItem', position: 3, name: entry.title, item: canonical },
         ],
       },
@@ -183,20 +183,20 @@ function certificationFallback(entry, trackId) {
 
   return [
     '      <div class="cert-track-not-found-copy cert-seo-fallback" data-server-rendered="true">',
-    '        <div class="cert-eyebrow">INDEPENDENT CERTIFICATION PREPARATION</div>',
+    '        <div class="cert-eyebrow">独立认证备考</div>',
     `        <h1>${escapeHtml(entry.title)}</h1>`,
     excerpt ? `        <p class="cert-track-summary">${escapeHtml(excerpt)}</p>` : '',
     entry.description && entry.description !== excerpt ? `        <p>${escapeHtml(entry.description)}</p>` : '',
-    `        <p>This free community study path organizes ${lessons.length} practical lessons in a deliberate order, then connects them to original diagnostics and practice. It does not issue a credential or reproduce protected exam questions.</p>`,
-    lessonItems ? `        <h2>Lessons in this path</h2><ol>${lessonItems}</ol>` : '',
-    remaining > 0 ? `        <p>${remaining} more lessons continue in the interactive track.</p>` : '',
-    `        <div class="cert-track-hero-actions"><a class="cert-action" href="/certifications.html">All certifications</a><a class="cert-action secondary" href="${escapeHtml(canonicalForTrack(trackId))}">Open interactive track</a></div>`,
+    `        <p>这条免费社区学习路线按规划顺序组织 ${lessons.length} 节实践课程，并配套原创诊断测评与练习。它不颁发证书，也不复刻受保护的试题。</p>`,
+    lessonItems ? `        <h2>本路线课程</h2><ol>${lessonItems}</ol>` : '',
+    remaining > 0 ? `        <p>交互路线中还可继续学习 ${remaining} 节课程。</p>` : '',
+    `        <div class="cert-track-hero-actions"><a class="cert-action" href="/certifications.html">全部认证路线</a><a class="cert-action secondary" href="${escapeHtml(canonicalForTrack(trackId))}">打开交互路线</a></div>`,
     '      </div>',
   ].filter(Boolean).join('\n');
 }
 
 function errorPage(title, message) {
-  return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="robots" content="noindex"><title>${escapeHtml(title)} - AI Engineering from Scratch</title></head><body><main><h1>${escapeHtml(title)}</h1><p>${escapeHtml(message)}</p><nav aria-label="Recovery links"><ul><li><a href="/certifications.html">Certification paths</a></li><li><a href="/catalog.html">Course catalog</a></li><li><a href="/sitemap.xml">Sitemap</a></li><li><a href="/llms.txt">Agent curriculum index</a></li></ul></nav></main></body></html>`;
+  return `<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="robots" content="noindex"><title>${escapeHtml(title)} - 从零开始的 AI 工程</title></head><body><main><h1>${escapeHtml(title)}</h1><p>${escapeHtml(message)}</p><nav aria-label="返回导航"><ul><li><a href="/certifications.html">认证路线</a></li><li><a href="/catalog.html">课程目录</a></li><li><a href="/sitemap.xml">站点地图（Sitemap）</a></li><li><a href="/llms.txt">智能体课程索引</a></li></ul></nav></main></body></html>`;
 }
 
 function send(res, method, status, body, cacheControl) {
@@ -222,13 +222,13 @@ function createHandler(options) {
     const method = String(req.method || 'GET').toUpperCase();
     if (method !== 'GET' && method !== 'HEAD') {
       res.setHeader('Allow', 'GET, HEAD');
-      send(res, method, 405, errorPage('Method not allowed', 'Use GET or HEAD for certification pages.'), 'no-store');
+      send(res, method, 405, errorPage('不支持此请求方法', '认证页面请使用 GET 或 HEAD 请求。'), 'no-store');
       return;
     }
 
     const requestedId = queryValue(req, 'id') || queryValue(req, 'track');
     if (!validTrackId(requestedId)) {
-      send(res, method, 404, errorPage('Certification track not found', 'This track ID does not exist. Use the certification index, sitemap, or course catalog to continue.'), 'no-store');
+      send(res, method, 404, errorPage('未找到认证路线', '路线 ID 不存在，请通过认证索引、站点地图或课程目录继续。'), 'no-store');
       return;
     }
 
@@ -240,7 +240,7 @@ function createHandler(options) {
       if (!manifest || !manifest.tracks || typeof manifest.tracks !== 'object') throw new Error('manifest-shape');
       const entry = resolveTrack(manifest.tracks, requestedId);
       if (!entry || !entry.id || !entry.title) {
-        send(res, method, 404, errorPage('Certification track not found', 'This track ID is not part of the current certification catalog. Use the certification index, sitemap, or course catalog to continue.'), 'no-store');
+        send(res, method, 404, errorPage('未找到认证路线', '当前认证目录中没有此路线 ID，请通过认证索引、站点地图或课程目录继续。'), 'no-store');
         return;
       }
       const trackId = entry.id;
@@ -253,7 +253,7 @@ function createHandler(options) {
       html = replaceMarkedRegion(html, FALLBACK_START, FALLBACK_END, certificationFallback(entry, trackId));
       send(res, method, 200, html, 'public, max-age=300, s-maxage=86400, stale-while-revalidate=604800');
     } catch (_) {
-      send(res, method, 500, errorPage('Certification page unavailable', 'The certification page could not be assembled. Continue from the certification index while this page is restored.'), 'no-store');
+      send(res, method, 500, errorPage('认证页面暂不可用', '无法生成认证页面，请在页面恢复期间通过认证索引继续。'), 'no-store');
     }
   };
 }

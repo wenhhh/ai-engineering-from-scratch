@@ -1,40 +1,40 @@
 ---
 name: scaling-policy-review
-description: Review a frontier-lab scaling policy (Anthropic RSP, OpenAI Preparedness, DeepMind FSF, internal) against the RSP v3.0 reference shape.
+description: 以 RSP v3.0 的结构为参照，审查前沿实验室的扩展政策（Anthropic RSP、OpenAI Preparedness、DeepMind FSF 或内部政策）。
 version: 1.0.0
 phase: 15
 lesson: 19
 tags: [rsp, scaling-policy, ai-rd-4, pause-commitment, saferai, governance]
 ---
 
-Given a published or proposed scaling policy, produce a structured review comparing it to the RSP v3.0 reference shape (AI R&D-4, affirmative case, two-tier mitigation, Frontier Safety Roadmap, Risk Report, independent review).
+给定一份已发布或拟议的扩展政策，生成结构化审查，与 RSP v3.0 的参考结构进行比较（AI R&D-4、正面论证（affirmative case）、两层缓解措施、前沿安全路线图（Frontier Safety Roadmap）、风险报告（Risk Report）、独立评审）。
 
-Produce:
+请生成：
 
-1. **Two-tier inventory.** Separate commitments into "lab-unilateral" and "industry-wide recommendation." Commitments in the recommendation tier are advocacy, not promises. Count the ratio; a policy where most commitments live in the recommendation tier is a weak policy.
-2. **Thresholds.** Name every capability threshold and the mitigation that triggers. Flag thresholds that are qualitative where v2 had quantitative. Flag missing thresholds for capabilities the policy claims to cover.
-3. **Pause commitment.** Confirm the policy names a pause clause (training stops, deployment halts, or similar) at specific thresholds. v3.0 removed this; policies that follow suit inherit the regression.
-4. **Standing artifacts.** Confirm the policy mandates standing Frontier Safety Roadmap and Risk Report documents with declared cadence. One-off artifacts published post-hoc do not qualify.
-5. **Independent review.** Name the external review mechanism. Internal-only review (a "Safety Advisory Group" made of lab employees) does not qualify as independent oversight.
+1. **两层清单（Two-tier inventory）。** 将承诺分为“实验室单方面行动”和“全行业建议”。建议层的承诺属于倡议，而非保证。统计比例；如果大部分承诺都落在建议层，这就是一份弱政策。
+2. **阈值（Thresholds）。** 列出每个能力阈值，以及触发的缓解措施。标记 v2 使用定量阈值、如今却改为定性阈值的情况。对于政策声称覆盖的能力，标记缺失的阈值。
+3. **暂停承诺（Pause commitment）。** 确认政策明确规定达到哪些阈值时必须暂停（停止训练、停止部署或类似要求）。v3.0 删除了这一条款；其他政策若效仿，也会削弱原有的约束。
+4. **持续维护的产出（Standing artifacts）。** 确认政策要求持续维护前沿安全路线图和风险报告，并声明更新频率。事后发布的一次性产出不符合要求。
+5. **独立评审（Independent review）。** 指明外部评审机制。仅限内部的评审（由实验室员工组成的“安全顾问组”）不算独立监督。
 
-Hard rejects:
-- Policies with no named capability threshold.
-- Policies whose mitigations all live in the industry-recommendation tier.
-- Policies with no standing Roadmap / Risk Report artifacts.
-- Policies with no independent review mechanism.
-- Policies that claim to "learn from real-world experience" without stating how the policy text updates and on what cadence.
+硬性拒绝条件（Hard rejects）：
+- 没有明确能力阈值的政策。
+- 所有缓解措施都位于行业建议层的政策。
+- 没有持续维护的路线图或风险报告的政策。
+- 没有独立评审机制的政策。
+- 声称“从真实世界的经验中学习”，却不说明政策文本如何更新、按什么频率更新的政策。
 
-Refusal rules:
-- If the policy document is marketing rather than governance (no specific commitments, no thresholds, no cadence), refuse to rate it as a scaling policy.
-- If the user treats a policy's existence as equivalent to compliance, refuse. A policy is a commitment device; compliance requires evidence.
-- If the user cites an older policy version (e.g., 2023 Anthropic RSP) as current, refuse and require the current version.
+拒绝规则（Refusal rules）：
+- 如果政策文档属于营销而非治理（没有具体承诺、没有阈值、没有更新频率），拒绝将其作为扩展政策进行评级。
+- 如果用户将政策的存在等同于合规，拒绝接受这一判断。政策是一种承诺机制；合规需要证据。
+- 如果用户把旧版政策（例如 2023 年 Anthropic RSP）当作当前版本引用，拒绝并要求提供当前版本。
 
-Output format:
+输出格式（Output format）：
 
-Return a policy review with:
-- **Two-tier ratio** (unilateral / recommendation / total count)
-- **Threshold table** (name, type: quantitative / qualitative, trigger, mitigation)
-- **Pause commitment** (present y/n, specific clause)
-- **Standing artifacts** (Roadmap cadence, Risk Report cadence)
-- **Independent review** (mechanism, reviewer identity, frequency)
-- **Summary rating** (strong / moderate / weak, justified)
+返回一份政策审查，包含：
+- **两层比例**（单方面行动 / 建议 / 总数）
+- **阈值表**（名称、类型：定量 / 定性、触发条件、缓解措施）
+- **暂停承诺**（是否存在 y/n、具体条款）
+- **持续维护的产出**（路线图更新频率、风险报告更新频率）
+- **独立评审**（机制、评审者身份、频率）
+- **总体评级**（strong / moderate / weak，给出理由）

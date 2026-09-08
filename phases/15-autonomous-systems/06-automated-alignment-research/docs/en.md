@@ -1,102 +1,102 @@
-# Automated Alignment Research (Anthropic AAR)
+# 自动化对齐研究（Automated Alignment Research，Anthropic AAR）
 
-> Anthropic ran parallel teams of Claude Opus 4.6 Autonomous Alignment Researchers in independent sandboxes, coordinating via a shared forum whose logs live outside any sandbox (so agents cannot delete their own records). On the weak-to-strong training problem, the AARs outperformed human researchers. Anthropic's own summary flags that prescribed workflows often constrain AAR flexibility and degrade performance. Automating alignment research is the compression step that compresses the timeline to the exact misalignment risks the RSP is meant to detect.
+> Anthropic 在独立沙箱中并行运行多组基于 Claude Opus 4.6 的自主对齐研究员（Autonomous Alignment Researcher），通过共享论坛协调。论坛日志位于所有沙箱之外，因此智能体不能删除自己的记录。在弱到强训练问题上，AAR 优于人类研究者。Anthropic 自己的摘要指出，预先规定的工作流经常限制 AAR 灵活性、降低表现。自动化对齐研究压缩了时间线，而加速逼近的恰恰是 RSP 要检测的失对齐风险。
 
 **Type:** Learn
-**Languages:** Python (stdlib, parallel-research-forum simulator)
-**Prerequisites:** Phase 15 · 05 (AI Scientist v2), Phase 15 · 04 (DGM)
-**Time:** ~60 minutes
+**Languages:** Python（标准库，并行研究论坛模拟器）
+**Prerequisites:** 阶段 15 · 05（AI Scientist v2），阶段 15 · 04（DGM）
+**Time:** ~60 分钟
 
-## The Problem
+## 问题（The Problem）
 
-Alignment research is expensive in human-researcher time. Problems like scalable oversight, reward specification, or weak-to-strong training require experiments that take weeks per iteration. As frontier capabilities advance, the alignment workload grows faster than the supply of qualified researchers.
+对齐（Alignment）研究耗费大量人类研究者时间。可扩展监督（Scalable oversight）、奖励规范或弱到强训练等问题，每轮实验都需数周。前沿能力进步时，对齐工作量的增长快于合格研究者供给。
 
-Automated Alignment Research (AAR) asks whether the same frontier models whose capability is outrunning alignment can contribute to closing the gap. Anthropic's 2026 report on an AAR-run weak-to-strong-training study (alignment.anthropic.com/2026/automated-w2s-researcher/) is one of the first public results from a deployed system of this class.
+自动化对齐研究（Automated Alignment Research，AAR）探讨：能力增长正超越对齐进度的前沿模型，能否帮助缩小这一差距？Anthropic 2026 年关于 AAR 执行弱到强训练研究的报告（alignment.anthropic.com/2026/automated-w2s-researcher/），是此类已部署系统最早公开的成果之一。
 
-The result is genuinely positive: AARs solved a research problem better than the human baseline. The result also concentrates, in a single system, every concern this phase has developed. If alignment research can be automated, so can the parts that compromise safeguards. The RSP's thresholds for AI R&D capability are written with this loop in mind.
+结果确实积极：AAR 解决研究问题的表现优于人类基线。同时，它把本阶段讨论的所有担忧集中到一个系统中。若对齐研究可以自动化，破坏防护措施的部分也可以。RSP 的 AI 研发能力阈值正是围绕这一循环制定的。
 
-## The Concept
+## 概念（The Concept）
 
-### The architecture (as publicly described)
+### 架构：按公开描述（The architecture, as publicly described）
 
-- **Parallel agents.** Multiple Claude Opus 4.6 instances run as AARs, each in an independent sandbox. Sandboxes limit filesystem, network, and process surface.
-- **Shared forum.** Findings are published to a shared forum whose storage backend sits outside every sandbox. Agents can read the forum; agents cannot delete or edit forum records from within their own sandbox.
-- **Task allocation.** A human-designed task queue assigns research problems to AARs. AARs propose decompositions, run experiments, write up findings.
-- **Weak-to-strong training focus.** The published study addressed weak-to-strong training — using a weaker supervisor model to train a stronger student model. AARs outperformed human researchers on this task.
+- **并行智能体（Parallel agents）。** 多个 Claude Opus 4.6 实例作为 AAR 运行，各有独立沙箱，限制文件系统、网络和进程操作面。
+- **共享论坛（Shared forum）。** 发现发布到共享论坛，其存储后端位于每个沙箱之外。智能体可读论坛，但不能从自身沙箱内删除或编辑论坛记录。
+- **任务分配（Task allocation）。** 人类设计的任务队列向 AAR 分配研究问题。AAR 提出分解方案、运行实验、撰写发现。
+- **聚焦弱到强训练（Weak-to-strong training）。** 已发表研究处理弱到强训练：用较弱监督模型训练较强学生模型。AAR 在此任务上胜过人类研究者。
 
-### Why the out-of-sandbox log matters
+### 沙箱外日志为何重要（Why the out-of-sandbox log matters）
 
-The log-integrity property is the difference between a controlled experiment and a potentially compromised one. If AARs could edit their own logs, they could cover up failed or dubious experiments. Anthropic flags this directly: the property is a necessary condition for trusting the research output, and it is non-trivial to verify.
+日志是否完整可信，决定了实验仍然处于控制之下，还是可能已遭到篡改。若 AAR 能编辑自己的日志，就能掩盖失败或可疑的实验。Anthropic 明确指出：日志完整性是信任研究输出的必要条件，而且验证它并不简单。
 
-The analog in infrastructure terms is append-only logs with write-through to external storage (e.g. S3 object-lock, immutable Datadog logs). The agent has no credential to modify past records. This is the same pattern that 2026 corporate security teams use to make ransomware-resistant audit trails.
+基础设施中的类比是只追加日志，直写外部存储，例如 S3 对象锁、不可变 Datadog 日志。智能体没有修改历史记录的凭据。2026 年企业安全团队也用同样模式建立能抵御勒索软件的审计轨迹。
 
-### The prescribed-workflow tradeoff
+### 规定工作流的权衡（The prescribed-workflow tradeoff）
 
-Anthropic's report notes that prescribed workflows often constrain AAR flexibility and degrade performance. In other words: if the human designer writes the research plan step-by-step, AARs do worse than if given high-level goals and freedom to decompose. This is consistent with results across agentic research (LangGraph, Microsoft's Agent Framework) — overspecified scaffolds hurt capable agents.
+Anthropic 报告指出，预先规定的工作流经常约束 AAR 灵活性、降低表现。换言之，人类设计者逐步写出研究计划时，AAR 的表现反而不如只收到高层目标并有权自行分解时。这与智能体式研究（LangGraph、Microsoft 的 Agent Framework）中的结果一致：过度规定的支撑框架会损害有能力的智能体。
 
-The safety implication is subtle. The flexibility that improves AAR performance is also the flexibility that allows unsanctioned decomposition, novel tool use, and goal-drift. The tradeoff is a design-space decision: how much flexibility buys enough capability to beat humans, without handing the agent room to generalize goals off-distribution?
+这里的安全影响不易察觉：提高 AAR 表现的灵活性，也可能让它未经批准就拆分任务、以新方式使用工具，或发生目标漂移（Goal drift）。设计时必须权衡：赋予多大的灵活性，才能让它的能力超过人类，同时又不让它擅自将目标扩展到原定分布之外？
 
-### The compression risk
+### 时间压缩风险（The compression risk）
 
-RSP v3.0 (Lesson 19) introduces an AI R&D capability threshold: the ability to fully automate the AI R&D pipeline at competitive cost vs human + AI tools. DeepMind's FSF v3 includes an analogous ML R&D autonomy level. Both frameworks treat this threshold as the trigger for elevated controls.
+RSP v3.0（第 19 课）引入 AI 研发能力阈值：以相较“人类 + AI 工具”具有竞争力的成本，完全自动化 AI 研发流水线。DeepMind FSF v3 包含类似的机器学习研发自主性等级。两套框架都把该阈值作为升级控制措施的触发点。
 
-AAR is one step short of the threshold: it automates part of the pipeline (alignment research on specific, well-scoped tasks) but not the end-to-end capability development loop. The timeline question is how fast the gap closes.
+AAR 距该阈值还差一步：它自动化了流水线的一部分，即特定且界定清晰任务上的对齐研究，却未自动化端到端能力开发循环。时间线问题在于差距会多快闭合。
 
-Compressed timelines are the compounding-failure concern. If alignment research and capability research compound at similar rates, the misalignment risk surface grows at least as fast as capability. If capability compounds faster (the historical trend), the gap widens. This is the argument for AAR being a qualified good: each additional alignment result reduces the gap if and only if the research process is trustworthy.
+研发周期缩短，也带来了失败不断累积的风险。若对齐研究与能力研究以相近速度相互累积、加速发展，失对齐风险的增长至少会与能力增长一样快。若能力增长更快（历史趋势如此），两者的差距就会扩大。因此，AAR 的益处是有条件的：当且仅当研究过程可信时，新增的对齐研究成果才能缩小这一差距。
 
-### What AAR does not replace
+### AAR 不替代什么（What AAR does not replace）
 
-Human researchers set the task queue, review results, and hold the constitutional authority. The AARs accelerate the middle of the pipeline, not the ends. Anthropic's published outputs include both AAR contributions and human-researcher judgement on what to publish, what to retract, and what to refine.
+人类研究者设置任务队列、审查结果，并保有制定根本规则的权力。AAR 加速的是流水线中间的研究执行环节，而不是两端的任务设定与成果决策。Anthropic 发表的成果既包含 AAR 的贡献，也包含人类研究者对哪些内容应发表、撤回或完善的判断。
 
-This matches the propose-then-commit pattern from Lesson 15 applied to research itself: AARs propose; humans commit.
+这正是将第 15 课“先提案后提交（Propose-then-commit）”模式用于研究本身：AAR 提出方案，人类决定是否正式采纳。
 
 ```figure
 aar-forum
 ```
 
-## Use It
+## 实际应用（Use It）
 
-`code/main.py` simulates a multi-AAR research forum. Three independent "research agents" run in parallel, posting findings to an append-only forum with optional tamper attempts.
+`code/main.py` 模拟多 AAR 研究论坛。三个独立“研究智能体”并行运行，向只追加论坛发布发现，可选开启篡改尝试。
 
-Watch:
+观察：
 
-- How out-of-sandbox logging catches log-tampering attempts.
-- How task allocation with free decomposition outperforms fixed workflows on harder problems.
-- How a single compromised AAR can contaminate the forum's signal if the log is not tamper-evident.
+- 沙箱外日志如何捕获日志篡改尝试。
+- 在较难问题上，允许自由分解的任务分配如何优于固定工作流。
+- 若日志不具有篡改可见性（Tamper-evident），单个被攻破的 AAR 如何污染论坛信号。
 
-## Ship It
+## 交付成果（Ship It）
 
-`outputs/skill-aar-deployment-review.md` is a pre-deployment review of an automated-alignment-research pipeline.
+`outputs/skill-aar-deployment-review.md` 提供自动化对齐研究流水线的部署前审查。
 
-## Exercises
+## 练习（Exercises）
 
-1. Run `code/main.py`. Compare the "fixed-workflow" vs "free-decomposition" settings. Does free decomposition always win, or are there problem classes where the fixed workflow is competitive?
+1. 运行 `code/main.py`，比较“固定工作流”与“自由分解”设置。自由分解总是更好吗，还是某些问题类上固定工作流也有竞争力？
 
-2. Modify the simulator so one agent attempts log tampering. Confirm the append-only log detects it. Write one paragraph describing exactly what the detection signature looks like in the log.
+2. 修改模拟器，让一个智能体尝试篡改日志。确认只追加日志能检测到它，用一段话准确描述日志中的检测特征。
 
-3. Read Anthropic's weak-to-strong AAR report. Identify the specific sub-task the AARs beat human researchers on. What made it amenable to automation?
+3. 阅读 Anthropic 弱到强 AAR 报告。指出 AAR 胜过人类研究者的具体子任务。什么使它适合自动化？
 
-4. Design a task-queue allocation policy that balances AAR flexibility (better results) against prescribed-workflow constraints (easier audit). Describe how you would A/B test the two.
+4. 设计任务队列分配策略，平衡 AAR 灵活性（更好结果）与规定工作流约束（更易审计）。说明如何对两者做 A/B 测试。
 
-5. Read RSP v3.0's AI R&D-4 threshold. In one paragraph, describe what you think would cross it that AAR currently does not.
+5. 阅读 RSP v3.0 的 AI R&D-4 阈值。用一段话描述你认为怎样的能力会跨过该阈值，而当前 AAR 尚未做到。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语 | 常见说法 | 实际含义 |
 |---|---|---|
-| AAR | "Automated Alignment Researcher" | Claude Opus 4.6 instance operated autonomously on alignment problems |
-| Weak-to-strong training | "Training a stronger model with a weaker supervisor" | Classic scalable-oversight benchmark AARs outperformed humans on |
-| Shared forum | "Where agents publish findings" | Append-only, out-of-sandbox storage |
-| Out-of-sandbox log | "Agent cannot edit its own record" | Tamper-evident write-through to external storage |
-| Prescribed workflow | "Step-by-step plan from human designer" | Constrains AAR; often degrades performance vs free decomposition |
-| Free decomposition | "Agent decides how to break the task" | More capable, harder to audit |
-| AI R&D threshold | "RSP/FSF capability level" | Full automation of R&D pipeline at competitive cost |
-| Compressed timeline | "Alignment vs capability race" | If capability compounds faster than alignment, misalignment risk grows |
+| AAR | “自动化对齐研究员（Automated Alignment Researcher）” | 自主处理对齐问题的 Claude Opus 4.6 实例 |
+| 弱到强训练（Weak-to-strong training） | “用较弱监督者训练更强模型” | AAR 胜过人类的经典可扩展监督基准 |
+| 共享论坛（Shared forum） | “智能体发布发现之处” | 只追加、位于沙箱外的存储 |
+| 沙箱外日志（Out-of-sandbox log） | “智能体不能编辑自己的记录” | 直写外部存储且篡改可见 |
+| 规定工作流（Prescribed workflow） | “人类设计者逐步制定的计划” | 限制 AAR，相较自由分解经常降低表现 |
+| 自由分解（Free decomposition） | “智能体决定如何拆任务” | 能力更强，更难审计 |
+| AI 研发阈值（AI R&D threshold） | “RSP/FSF 能力等级” | 以有竞争力的成本完全自动化研发流水线 |
+| 压缩时间线（Compressed timeline） | “对齐与能力竞赛” | 若能力复利增长快于对齐，失对齐风险就增长 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [Anthropic — Automated Weak-to-Strong Researcher](https://alignment.anthropic.com/2026/automated-w2s-researcher/) — primary source.
-- [Anthropic Responsible Scaling Policy v3.0](https://anthropic.com/responsible-scaling-policy/rsp-v3-0) — AI R&D threshold framing.
-- [Anthropic — Measuring AI agent autonomy](https://www.anthropic.com/research/measuring-agent-autonomy) — broader agent-autonomy framing.
-- [DeepMind Frontier Safety Framework v3](https://deepmind.google/blog/strengthening-our-frontier-safety-framework/) — ML R&D autonomy levels parallel to RSP.
-- [Burns et al. (2023). Weak-to-Strong Generalization (OpenAI)](https://openai.com/index/weak-to-strong-generalization/) — the underlying problem AARs attacked.
+- [Anthropic：自动化弱到强研究员](https://alignment.anthropic.com/2026/automated-w2s-researcher/)：一手来源。
+- [Anthropic 负责任扩展政策 v3.0](https://anthropic.com/responsible-scaling-policy/rsp-v3-0)：AI 研发阈值框架。
+- [Anthropic：衡量 AI 智能体自主性](https://www.anthropic.com/research/measuring-agent-autonomy)：更广泛的智能体自主性框架。
+- [DeepMind 前沿安全框架 v3](https://deepmind.google/blog/strengthening-our-frontier-safety-framework/)：与 RSP 对应的机器学习研发自主性等级。
+- [Burns 等（2023）：弱到强泛化（OpenAI）](https://openai.com/index/weak-to-strong-generalization/)：AAR 所攻克的底层问题。

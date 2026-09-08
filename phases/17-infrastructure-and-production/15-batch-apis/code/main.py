@@ -1,10 +1,10 @@
-"""Batch vs synchronous cost simulator — stdlib Python.
+"""批处理（Batch）与同步调用（Synchronous）成本模拟器，仅使用 Python 标准库。
 
-Models a 50k-document pipeline across four configurations:
-  SYNC              : no discount, no cache
-  SYNC + CACHE      : system prompt cached after first call
-  BATCH             : 50% discount, no cache
-  BATCH + CACHE     : stacked (~10% of SYNC bill)
+针对处理 5 万篇文档的流水线（Pipeline），模拟四种配置：
+  SYNC              ：无折扣、无缓存
+  SYNC + CACHE      ：首次调用后缓存系统提示词（System Prompt）
+  BATCH             ：五折、无缓存
+  BATCH + CACHE     ：叠加两项优惠，约为同步调用账单的 10%
 """
 
 from __future__ import annotations
@@ -50,22 +50,22 @@ def run(label: str, docs: int, prefix: int, per_doc: int, output: int) -> None:
     bc = cost_batch(docs, prefix, per_doc, output)
     bcc = cost_batch_cache(docs, prefix, per_doc, output)
     print(f"\n{label}")
-    print(f"  docs={docs}, prefix={prefix}, per_doc={per_doc}, output={output}")
-    print(f"  SYNC            : ${sc:10.2f}  (baseline)")
-    print(f"  SYNC + CACHE    : ${scc:10.2f}  ({scc/sc*100:5.1f}% of baseline)")
-    print(f"  BATCH           : ${bc:10.2f}  ({bc/sc*100:5.1f}% of baseline)")
-    print(f"  BATCH + CACHE   : ${bcc:10.2f}  ({bcc/sc*100:5.1f}% of baseline)")
+    print(f"  文档数={docs}，前缀词元数={prefix}，单篇词元数={per_doc}，输出词元数={output}")
+    print(f"  同步（SYNC）           ：{sc:10.2f} 美元（基线）")
+    print(f"  同步与缓存（SYNC + CACHE）：{scc:10.2f} 美元（基线的 {scc/sc*100:5.1f}%）")
+    print(f"  批处理（BATCH）        ：{bc:10.2f} 美元（基线的 {bc/sc*100:5.1f}%）")
+    print(f"  批处理与缓存（BATCH + CACHE）：{bcc:10.2f} 美元（基线的 {bcc/sc*100:5.1f}%）")
 
 
 def main() -> None:
     print("=" * 80)
-    print("BATCH API ECONOMICS — stack batch with prompt caching for ~10% of sync bill")
+    print("批处理 API 经济性：叠加提示词缓存（Prompt Caching），成本约为同步调用的 10%")
     print("=" * 80)
-    run("Nightly doc summarization (50k docs)",
+    run("每晚生成文档摘要（5 万篇文档）",
         docs=50_000, prefix=4000, per_doc=2000, output=200)
-    run("Content classification (200k items, short per item)",
+    run("内容分类（20 万条，每条较短）",
         docs=200_000, prefix=1500, per_doc=300, output=50)
-    run("Large report draft (small N, heavy per item)",
+    run("生成长报告草稿（数量少，单条工作量大）",
         docs=1_000, prefix=6000, per_doc=15_000, output=2000)
 
 

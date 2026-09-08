@@ -1,70 +1,69 @@
-# Order Status Assistant Architecture Record
+# 订单状态助手架构记录（Order Status Assistant Architecture Record）
 
-## Decision
+## 决策（Decision）
 
-Use a bounded Claude-assisted workflow with one read-only in-process tool, deterministic policy, strict output validation, and explicit escalation.
+采用有边界的 Claude 辅助工作流，包含一个只读进程内工具、确定性政策、严格输出验证和明确升级处理。
 
-## Context
+## 背景（Context）
 
-The user needs a verified order status from an exact public order ID. The path is known and the cost of a fabricated action is high. One application owns the capability today.
+用户需要根据确切公开订单 ID 获得经过验证的订单状态。路径已知，编造操作的代价高。目前由一个应用掌管能力。
 
-## Components
+## 组件（Components）
 
-1. Input validator extracts the public ID format.
-2. Trust boundary labels user and retrieved content as untrusted.
-3. Claude may propose `lookup_order` through a typed tool contract.
-4. Policy gate allows only the read-only call with one argument.
-5. Trusted integration code binds authenticated user and tenant identity.
-6. Order service returns a minimized verified status.
-7. Claude produces a structured final response.
-8. Application validates schema, evidence, routing state, and trace.
+1. 输入校验器提取公开 ID 格式。
+2. 信任边界把用户和检索内容标为不可信。
+3. Claude 可通过带类型工具契约提议 `lookup_order`。
+4. 政策门禁只允许带一个参数的只读调用。
+5. 可信集成代码绑定已认证用户和租户身份。
+6. 订单服务返回最小化、经过验证的状态。
+7. Claude 生成结构化最终响应。
+8. 应用验证模式、证据、路由状态和追踪。
 
-## Decisions and Tradeoffs
+## 决策与取舍（Decisions and Tradeoffs）
 
-### Workflow over autonomous agent
+### 选择工作流而非自主智能体（Workflow over autonomous agent）
 
-The sequence is known. A general agent would add tool-selection and loop risk without improving the core user outcome.
+顺序已知。通用智能体会增加工具选择和循环风险，却不改善核心用户结果。
 
-### Direct tool over MCP
+### 选择直接工具而非 MCP（Direct tool over MCP）
 
-One host uses one capability. A direct typed handler has fewer operational boundaries. Migrate to MCP when two or more approved hosts need shared discovery and governance.
+一个宿主使用一个能力。直接带类型处理器的运维边界更少。两个或更多批准的宿主需要共享发现和治理时，再迁移到 MCP。
 
-### Read-only automatic capability
+### 只读自动能力（Read-only automatic capability）
 
-Lookup may run automatically after schema and policy checks. Refund, cancellation, address change, and external messages require separate tools, external approval, idempotency, and new evals.
+模式与政策检查后，查询可自动运行。退款、取消、地址变化和外部消息需要独立工具、外部审批、幂等性和新评估。
 
-### Structured output plus local validation
+### 结构化输出加本地验证（Structured output plus local validation）
 
-Provider-constrained generation reduces syntax errors. Local schema, semantic, and authorization checks remain mandatory.
+服务商约束生成减少语法错误。本地模式、语义和授权检查仍强制要求。
 
-### No extended thinking by default
+### 默认不用扩展思考（No extended thinking by default）
 
-The workflow is a direct lookup. Added reasoning budget requires measured quality improvement before adoption.
+工作流是直接查询。采用额外推理预算前，需要测得质量改善。
 
-## Rejected Alternatives
+## 被否决方案（Rejected Alternatives）
 
-- Free-form shell or database tool: excessive authority and difficult validation.
-- One broad `manage_order` tool: mixes read and mutation permissions.
-- Conversation text as approval: unauthenticated and vulnerable to injection.
-- Unlimited retries: creates cost and side-effect ambiguity.
-- MCP in the first version: interoperability benefit does not yet justify server operations.
+- 自由形式 shell 或数据库工具：权限过大，难以验证。
+- 宽泛的 `manage_order` 工具：混合读取和修改权限。
+- 把对话文本当审批：未经认证，易受注入影响。
+- 无限重试：增加成本和副作用歧义。
+- 首版引入 MCP：互操作收益尚不足以抵偿服务器运维。
 
-## Security Boundary
+## 安全边界（Security Boundary）
 
-- Credentials remain in trusted integration code.
-- Model arguments never establish identity or tenant.
-- Untrusted content cannot grant capability.
-- Unknown tools and argument fields fail closed.
-- Tool results are minimized before model context.
-- Traces contain typed summaries, versions, and fingerprints rather than secrets.
+- 凭据留在可信集成代码中。
+- 模型参数绝不建立身份或租户。
+- 不可信内容不能授予能力。
+- 未知工具和参数字段按拒绝方式失败。
+- 工具结果进入上下文前最小化。
+- 追踪包含带类型摘要、版本和指纹，而非密钥。
 
-## Verification
+## 验证（Verification）
 
-- Unit tests cover validation, policy, tool behavior, contract shape, and escalation.
-- Behavioral evals cover known, unknown, missing-input, and injection cases.
-- A production deployment must add live API serialization tests, authenticated ownership checks, rate-limit handling, and canary evaluation.
+- 单元测试覆盖验证、政策、工具行为、契约结构和升级。
+- 行为评估覆盖已知、未知、缺输入和注入案例。
+- 生产部署必须增加真实 API 序列化测试、已认证归属检查、限流处理和金丝雀评估。
 
-## Product Detail Notice
+## 产品细节说明（Product Detail Notice）
 
-Model IDs, SDK methods, structured-output fields, stop reasons, and configuration surfaces must be checked against current official documentation during implementation and upgrades.
-
+实施和升级时，模型 ID、SDK 方法、结构化输出字段、停止原因和配置入口必须对照当前官方文档检查。

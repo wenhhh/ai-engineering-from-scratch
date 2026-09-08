@@ -1,78 +1,78 @@
 {
   "lesson": "37-loading-pretrained-weights",
-  "title": "Loading Pretrained Weights",
+  "title": "加载预训练权重（Loading Pretrained Weights）",
   "questions": [
     {
       "stage": "pre",
-      "question": "Why does the loader need a name map?",
+      "question": "为什么加载器需要名称映射（Name map）？",
       "options": [
-        "Published GPT-2 weights use names like wte, wpe, h.N.attn.c_attn; the local model uses tok_embed, pos_embed, blocks.N.attn.qkv; the loader translates one onto the other",
-        "Safetensors files are encrypted",
-        "Pretrained tensors and local parameters share the same name",
-        "Torch requires it"
+        "已发布 GPT-2 权重使用 wte、wpe、h.N.attn.c_attn 等名称，本地模型使用 tok_embed、pos_embed、blocks.N.attn.qkv；加载器将一套映射到另一套",
+        "Safetensors 文件经过加密",
+        "预训练张量与本地参数使用相同名称",
+        "Torch 要求这样"
       ],
       "correct": 0,
-      "explanation": "The two naming conventions are different histories; the map is a literal dict expanded per layer."
+      "explanation": "两套命名约定源自不同历史；映射是逐层展开的字典字面量。"
     },
     {
       "stage": "check",
-      "question": "What is the conv1d transpose, and which tensors need it?",
+      "question": "什么是 conv1d 转置，哪些张量需要它？",
       "options": [
-        "All weight tensors",
-        "Published GPT-2 stores c_attn, c_proj, and c_fc weights in tensorflow conv1d layout, which is the transpose of what nn.Linear.weight expects; the loader calls .t() on those during assignment",
-        "Only the embedding",
-        "Only the LayerNorm scales"
+        "所有权重张量",
+        "已发布 GPT-2 用 tensorflow conv1d 布局保存 c_attn、c_proj 和 c_fc 权重，该布局是 nn.Linear.weight 预期形式的转置；加载器赋值时对它们调用 .t()",
+        "仅嵌入",
+        "仅 LayerNorm 缩放参数"
       ],
       "correct": 1,
-      "explanation": "Three suffixes need transposing; biases and LayerNorms are already shaped correctly."
+      "explanation": "三种后缀需要转置，偏置和 LayerNorm 的形状已经正确。"
     },
     {
       "stage": "check",
-      "question": "Why is the LM head not in the safetensors file?",
+      "question": "为什么 safetensors 文件中没有语言模型头（LM head）？",
       "options": [
-        "It is too large",
-        "It is loaded from a separate file",
-        "It is computed at runtime from logits",
-        "Weight tying: the LM head shares storage with the token embedding (wte), so loading wte and aliasing lm_head.weight = tok_embed.weight after the load reconstructs the head"
+        "它太大",
+        "它从另一文件加载",
+        "它在运行时由逻辑值计算",
+        "权重绑定：语言模型头与词元嵌入（wte）共享存储，因此加载 wte 后设置别名 lm_head.weight = tok_embed.weight 即可重建模型头"
       ],
       "correct": 3,
-      "explanation": "Setting lm_head.weight = tok_embed.weight after wte lands restores the alias; copying instead doubles the parameter count."
+      "explanation": "wte 落位后设置 lm_head.weight = tok_embed.weight 会恢复别名，改用复制则会使参数数量翻倍。"
     },
     {
       "stage": "check",
-      "question": "What does the loader do on a shape mismatch?",
+      "question": "形状不匹配时加载器做什么？",
       "options": [
-        "Pads the smaller tensor",
-        "Crashes the process",
-        "Records the mismatch in LoadReport.shape_mismatch and refuses to assign, leaving the local parameter untouched",
-        "Truncates the larger tensor"
+        "填充较小张量",
+        "使进程崩溃",
+        "在 LoadReport.shape_mismatch 记录不匹配并拒绝赋值，保持本地参数不变",
+        "截断较大张量"
       ],
       "correct": 2,
-      "explanation": "Half loaded models are silent failure machines; refusing to assign keeps the report honest."
+      "explanation": "只加载一半的模型会静默失败；拒绝赋值让报告如实反映结果。"
     },
     {
       "stage": "post",
-      "question": "Why is the demo's stub fixture not a real GPT-2 download?",
+      "question": "为什么演示使用桩夹具，而不下载真实 GPT-2？",
       "options": [
-        "Real files are not in safetensors format",
-        "Real weights are encrypted",
-        "The demo must run offline and quickly; the stub uses the exact pretrained naming convention so the loader code path is identical, and swapping in a real file changes nothing about the loader",
-        "Safetensors cannot store large tensors"
+        "真实文件不是 safetensors 格式",
+        "真实权重经过加密",
+        "演示必须快速离线运行；桩使用完全相同的预训练命名约定，使加载器代码路径一致，换成真实文件也无需改动加载器",
+        "Safetensors 不能存储大张量"
       ],
       "correct": 2,
-      "explanation": "Same code path, smaller payload; the loader works on either."
+      "explanation": "代码路径相同，载荷更小；加载器对两者都适用。"
     },
     {
       "stage": "post",
-      "question": "Why generate a sample before and after the load?",
+      "question": "为什么加载前后都生成样本？",
       "options": [
-        "To measure inference speed",
-        "To set the random seed",
-        "If the post-load samples are identical to the pre-load samples, the load did not change the model, which means the mapping silently missed every tensor",
-        "To warm up the GPU cache"
+        "测量推理速度",
+        "设置随机种子",
+        "如果加载后样本与加载前完全相同，则加载未改变模型，意味着映射静默漏掉了所有张量",
+        "预热 GPU 缓存"
       ],
       "correct": 2,
-      "explanation": "Sanity generation is the cheapest gate: a sample fingerprint that fails to change exposes a broken load that the LoadReport summary would not catch on its own."
+      "explanation": "健全性生成是成本最低的门禁：样本指纹未变可暴露加载故障，单靠 LoadReport 汇总无法发现这种情况。"
     }
   ]
 }

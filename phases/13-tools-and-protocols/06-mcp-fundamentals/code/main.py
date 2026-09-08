@@ -1,8 +1,8 @@
-"""Phase 13 Lesson 06: trace the stateless MCP request lifecycle.
-Lesson: phases/13-tools-and-protocols/06-mcp-fundamentals/docs/en.md
-Specification: https://modelcontextprotocol.io/specification/2026-07-28/
-Builds JSON-RPC requests, validates per-request metadata, and emits results.
-Run: python3 main.py
+"""阶段 13 第 06 课：跟踪无状态（Stateless）MCP 请求的生命周期。
+课程： phases/13-tools-and-protocols/06-mcp-fundamentals/docs/en.md
+规范： https://modelcontextprotocol.io/specification/2026-07-28/
+构建 JSON-RPC 请求，验证每次请求的元数据（Metadata），并生成结果。
+运行： python3 main.py
 """
 
 from __future__ import annotations
@@ -26,7 +26,7 @@ SERVER_CAPABILITIES = {"tools": {"listChanged": False}}
 TOOLS = [
     {
         "name": "notes_search",
-        "description": "Search notes by keyword.",
+        "description": "按关键词搜索笔记。",
         "inputSchema": {
             "type": "object",
             "properties": {"query": {"type": "string"}},
@@ -35,7 +35,7 @@ TOOLS = [
     },
     {
         "name": "notes_list",
-        "description": "List note titles.",
+        "description": "列出笔记标题。",
         "inputSchema": {
             "type": "object",
             "properties": {},
@@ -161,7 +161,7 @@ def dispatch(message: dict[str, Any]) -> dict[str, Any] | None:
             {
                 "supportedVersions": SUPPORTED_VERSIONS.copy(),
                 "capabilities": SERVER_CAPABILITIES.copy(),
-                "instructions": "Use notes_list for titles and notes_search for keywords.",
+                "instructions": "使用 notes_list 获取标题，使用 notes_search 按关键词搜索。",
             },
             ttl_ms=3_600_000,
             cache_scope="public",
@@ -201,13 +201,13 @@ def trace_message(message: dict[str, Any]) -> Trace:
     if "method" in message and "id" in message:
         method = str(message["method"])
         if method == "initialize":
-            return Trace("request", method, "legacy", "connection-scoped handshake")
+            return Trace("request", method, "legacy", "以连接为作用域的握手（Handshake）")
         params = message.get("params", {})
         meta = params.get("_meta", {}) if isinstance(params, dict) else {}
         if isinstance(meta, dict) and VERSION_KEY in meta and CAPABILITIES_KEY in meta:
-            detail = f"version={meta[VERSION_KEY]} capabilities=current-request"
+            detail = f"version={meta[VERSION_KEY]} 能力（Capabilities）=当前请求"
             return Trace("request", method, "modern", detail)
-        return Trace("request", method, "invalid", "missing modern request metadata")
+        return Trace("request", method, "invalid", "缺少新版请求元数据")
     if "result" in message or "error" in message:
         if "error" in message:
             return Trace("response", "error", "unknown", f"code={message['error']['code']}")
@@ -215,8 +215,8 @@ def trace_message(message: dict[str, Any]) -> Trace:
         era = "modern" if result.get("resultType") else "legacy"
         return Trace("response", "result", era, f"resultType={result.get('resultType', 'absent')}")
     if "method" in message:
-        return Trace("notification", str(message["method"]), "unknown", "no response expected")
-    return Trace("unknown", "", "invalid", "not a JSON-RPC message")
+        return Trace("notification", str(message["method"]), "unknown", "不期待响应")
+    return Trace("unknown", "", "invalid", "不是 JSON-RPC 消息")
 
 
 def show(message: dict[str, Any]) -> None:
@@ -236,14 +236,14 @@ def main() -> None:
         ),
         make_request(4, "tools/list", version="2027-01-01"),
     ]
-    print("MCP 2026-07-28 stateless request trace")
+    print("MCP 2026-07-28 无状态请求跟踪（Stateless request trace）")
     for current in requests:
         print()
         show(current)
         response = dispatch(current)
         if response is not None:
             show(response)
-    print("\nTransport closes. No protocol session was created or terminated.")
+    print("\n传输连接已关闭。未创建或终止任何协议会话（Protocol session）。")
 
 
 if __name__ == "__main__":

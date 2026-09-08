@@ -535,10 +535,10 @@ test('build-time SEO manifests cover every readable lesson and expose canonical 
     lessonManifest.lessons['phases/04-computer-vision/14-vision-transformers'],
     lessonManifest.lessons['phases/07-transformers-deep-dive/09-vision-transformers'],
   ];
-  assert.ok(visionTransformerEntries.every(entry => entry.title === 'Vision Transformers (ViT)'));
+  assert.ok(visionTransformerEntries.every(entry => /Vision Transformers.*ViT/.test(entry.title)));
   assert.equal(new Set(visionTransformerEntries.map(entry => entry.seoTitle)).size, 2);
-  assert.match(visionTransformerEntries[0].seoTitle, /Computer Vision/);
-  assert.match(visionTransformerEntries[1].seoTitle, /Transformers Deep Dive/);
+  assert.match(visionTransformerEntries[0].seoTitle, /Computer Vision|计算机视觉/);
+  assert.match(visionTransformerEntries[1].seoTitle, /Transformers Deep Dive|深入理解 Transformer/);
 
   const expectedLearningPathIds = new Map();
   for (const learningPath of learningPaths) {
@@ -1042,7 +1042,7 @@ test('repository Agent Skills path routes 22 to 24 and keeps 23 optional', () =>
   const poisoningPreflight = learningPath.prerequisites.find(
     entry => entry.id === 'tool-poisoning-and-untrusted-instructions'
   );
-  assert.equal(poisoningPreflight.title, 'Tool poisoning and untrusted instructions');
+  assert.equal(poisoningPreflight.title, '工具投毒（Tool poisoning）与不可信指令（Untrusted instructions）');
   assert.equal(poisoningPreflight.required, true);
   assert.equal(Object.hasOwn(poisoningPreflight, 'path'), false);
 });
@@ -1070,13 +1070,13 @@ test('optional MCP capstone keeps its prerequisite gate in every lesson reader s
 
   const lessonHtml = fs.readFileSync(path.join(__dirname, 'lesson.html'), 'utf8');
   assert.match(lessonHtml, /var focusedEntry = flatLessons\.find\(function \(item\) \{ return item\.path === lessonPath; \}\) \|\| null/);
-  assert.match(lessonHtml, /learningPathPrerequisiteCallout\(focusedEntry, 'Required before this lesson'\)/);
+  assert.match(lessonHtml, /learningPathPrerequisiteCallout\(focusedEntry, '本课先修要求'\)/);
   assert.match(lessonHtml, /var focusedOptionalLocked = learningPathEntryLocked\(focusedOptionalLesson\)/);
   assert.match(
     lessonHtml,
     /class="path-completion-link' \+ learningPathGateClass\(focusedOptionalLesson\)[\s\S]{0,300}learningPathGateAttributes\(focusedOptionalLesson\)/
   );
-  assert.match(lessonHtml, /focusedOptionalLocked \? 'Locked optional capstone: ' : 'Optional capstone: '/);
+  assert.match(lessonHtml, /focusedOptionalLocked \? '未解锁的选修综合实践（Capstone）：' : '选修综合实践（Capstone）：'/);
 });
 
 test('Agent Skills knowledge preflight persists per path and gates Lesson 26 deterministically', () => {
@@ -1142,17 +1142,17 @@ test('generic course skills dispatch every supported state to an installed owner
   for (const name of ['learn', 'start-learning']) {
     const source = fs.readFileSync(path.join(root, 'skills', name, 'SKILL.md'), 'utf8');
     const mirror = fs.readFileSync(path.join(root, '.claude', 'skills', name, 'SKILL.md'), 'utf8');
-    const section = source.match(/## Focused Agent Skills handoff\s+([\s\S]*?)(?=\n## |$)/);
+    const section = source.match(/## 转交智能体技能专门路线（Focused Agent Skills Handoff）\s+([\s\S]*?)(?=\n## |$)/);
     assert.ok(section, `${name} is missing the focused Agent Skills handoff`);
     assert.match(section[1], /AGENT-SKILLS-LEARNING\.md/);
     assert.match(section[1], /learn-agent-skills/);
-    assert.match(section[1], /do not\s+(?:copy Agent Skills state into|create)\s+`LEARNING\.md`/);
-    const resume = source.match(/## Resume routing across course modes\s+([\s\S]*?)(?=\n## |$)/);
+    assert.match(section[1], /(?:不要把智能体技能状态复制到|不创建)\s*`LEARNING\.md`/);
+    const resume = source.match(/## 跨学习模式恢复（Resume Routing Across Course Modes）\s+([\s\S]*?)(?=\n## |$)/);
     assert.ok(resume, `${name} is missing cross-route resume handling`);
     for (const [stateFile, owner] of routeOwners) {
       assert.match(
         resume[1],
-        new RegExp('`' + stateFile.replace('.', '\\.') + '` belongs to `' + owner + '`'),
+        new RegExp('`' + stateFile.replace('.', '\\.') + '` 由[^。]*`' + owner + '`[^。]*负责'),
         `${name} does not dispatch ${stateFile} to ${owner}`
       );
       assert.ok(fs.existsSync(path.join(root, 'skills', owner, 'SKILL.md')), `${owner} is not installed`);
@@ -1160,22 +1160,22 @@ test('generic course skills dispatch every supported state to an installed owner
     }
     assert.match(
       resume[1],
-      /`MCP-ENGINEERING-LEARNING\.md` is the legacy filename[\s\S]*?`learn-mcp` route, not a separate route/
+      /`MCP-ENGINEERING-LEARNING\.md` 是同一条 `learn-mcp` 路线的旧文件名，不是另一条路线/
     );
-    assert.match(resume[1], /names a route[\s\S]*?(?:use|dispatch to)\s+its\s+owner[\s\S]*?even when other state files exist/);
-    assert.match(resume[1], /(?:group the files by route owner|collect the owners whose state files\s+exist)/);
-    assert.match(resume[1], /If exactly one route(?:\s+owner)?\s+(?:is\s+represented|remains)[\s\S]*?(?:resume|invoke)\s+(?:its\s+owner|it|that\s+owner)/);
-    assert.match(resume[1], /If two\s+or more\s+(?:distinct\s+routes\s+are\s+represented|route\s+owners\s+remain)/);
-    assert.match(resume[1], /ask which\s+(?:one|route)\s+to\s+resume/);
-    assert.match(source, /Legacy runtimes[\s\S]*?`learn-mcp-engineering` as an alias[\s\S]*?`learn-mcp`/);
+    assert.match(resume[1], /明确指定路线时，即使其他状态文件[^。]*也立即转交对应技能/);
+    assert.match(resume[1], /检查哪些状态文件存在，归集对应的负责技能/);
+    assert.match(resume[1], /如果只剩一个负责技能[\s\S]*?(?:恢复该路线|调用它)/);
+    assert.match(resume[1], /如果有两个或更多负责技能/);
+    assert.match(resume[1], /询问恢复哪条路线/);
+    assert.match(source, /旧运行时[\s\S]*?`learn-mcp-engineering` 暴露为别名[\s\S]*?`learn-mcp`/);
     assert.match(source, /learning-paths\/model-context-protocol\.json/);
     assert.doesNotMatch(source, /learning-paths\/mcp-engineering\.json/);
     assert.equal(source, mirror, `${name} skill mirrors diverged`);
 
     const genericStart = name === 'learn'
-      ? source.indexOf('## Step 0')
-      : source.indexOf('If `LEARNING.md` already exists');
-    assert.ok(source.indexOf('## Resume routing across course modes') < genericStart);
+      ? source.indexOf('## 第 0 步')
+      : source.indexOf('如果 `LEARNING.md` 已存在');
+    assert.ok(source.indexOf('## 跨学习模式恢复') < genericStart);
   }
 
   assert.ok(fs.existsSync(path.join(root, 'learning-paths', 'model-context-protocol.json')));
@@ -1235,7 +1235,7 @@ test('terminal quiz skills isolate answer keys and use neutral reply formats', (
     );
   }
   for (let round = 1; round <= 5; round++) {
-    assert.match(canonicalKey, new RegExp(`## Round ${round}:`));
+    assert.match(canonicalKey, new RegExp(`## 第 ${round} 轮：`));
   }
   const combined = sources.join('\n');
   assert.match(combined, /Reply with one letter: <A\|B\|C\|D>\./);
@@ -1254,12 +1254,12 @@ test('the vectors and matrices quiz has parallel choices and varied answer posit
   );
   const questions = JSON.parse(fs.readFileSync(file, 'utf8')).questions;
   const expectedAnswers = [
-    "The first matrix's columns must equal the second matrix's rows",
-    'A square matrix that leaves a compatible matrix unchanged when multiplied',
-    'Element-wise multiplication uses matching entries; matrix multiplication uses row-column dot products',
-    'It expands b across compatible batch dimensions before addition',
-    'The matrix is singular and cannot have an inverse',
-    'It exchanges the matrix rows and columns',
+    "第一个矩阵的列数必须等于第二个矩阵的行数",
+    '相乘时不改变兼容矩阵的方阵',
+    '逐元素乘法将对应元素相乘，矩阵乘法计算行与列的点积',
+    '相加前，沿兼容的批次维度扩展 b',
+    '矩阵是奇异矩阵（Singular matrix），不存在逆矩阵',
+    '交换矩阵的行与列',
   ];
 
   assert.equal(questions.length, expectedAnswers.length);
@@ -1269,10 +1269,10 @@ test('the vectors and matrices quiz has parallel choices and varied answer posit
   );
   assert.ok(new Set(questions.map(question => question.correct)).size >= 4);
   assert.match(questions[3].explanation, /b\[:, None\]/);
-  assert.match(questions[3].explanation, /trailing-dimension alignment/);
-  assert.match(questions[3].explanation, /does not reliably broadcast across the batch axis/);
+  assert.match(questions[3].explanation, /末尾维度对齐/);
+  assert.match(questions[3].explanation, /不能保证沿批次轴正确广播/);
   for (const question of questions) {
-    const wordCounts = question.options.map(option => option.trim().split(/\s+/).length);
+    const wordCounts = question.options.map(option => (option.replace(/（[A-Za-z][^）]*）/g, '').match(/[\u3400-\u9fff]|[A-Za-z0-9_]+/g) || []).length);
     const correctWords = wordCounts[question.correct];
     const distractorWords = wordCounts.filter((_, index) => index !== question.correct).sort((a, b) => a - b);
     const medianDistractor = distractorWords[1];
@@ -1312,9 +1312,9 @@ test('course guide shape count matches its six routing bullets in both mirrors',
     path.join(root, '.claude', 'skills', 'course-guide', 'SKILL.md'),
   ]) {
     const source = fs.readFileSync(file, 'utf8');
-    const routing = source.match(/1\. \*\*Interpret the ask\*\*[\s\S]*?(?=\n2\. \*\*Scan the Contents tables\*\*)/);
+    const routing = source.match(/1\. \*\*判断需求\*\*[\s\S]*?(?=\n2\. \*\*检索目录表格\*\*)/);
     assert.ok(routing, `${file} is missing the routing-shape section`);
-    assert.match(routing[0], /one of six shapes/);
+    assert.match(routing[0], /以下六类/);
     assert.equal(Array.from(routing[0].matchAll(/^\s+- \*[^*]+\*/gm)).length, 6);
   }
 });
@@ -1341,15 +1341,15 @@ test('public curriculum counts match the canonical lesson and artifact inventory
   const ogImage = fs.readFileSync(path.join(__dirname, 'og-image.png'));
 
   assert.equal(lessonDirectories, lessons, 'README lesson inventory must match numbered lesson directories');
-  assert.match(readme, new RegExp(`> ${lessons} lessons\\. ${phaseCount} phases\\.`));
-  assert.match(readme, new RegExp(`The repo ships ${skills} skills and ${prompts} prompts`));
-  assert.match(agents, new RegExp(`${lessons} lessons\\. ${phaseCount} phases\\.`));
+  assert.match(readme, new RegExp(`> ${lessons}(?: lessons\\. ${phaseCount} phases\\.| 课，${phaseCount} 个阶段，)`));
+  assert.match(readme, new RegExp(`(?:The repo ships ${skills} skills and ${prompts} prompts|本仓库提供 ${skills} 个技能和 ${prompts} 个提示词)`));
+  assert.match(agents, new RegExp(`${lessons} 课，${phaseCount} 个阶段。`));
   assert.match(
     banner,
-    new RegExp(`${phaseCount} PHASES\\s+·\\s+${lessons} LESSONS\\s+·\\s+${skills} SKILLS\\s+·\\s+${prompts} PROMPTS`)
+    new RegExp(`(?:${phaseCount} PHASES\\s+·\\s+${lessons} LESSONS\\s+·\\s+${skills} SKILLS\\s+·\\s+${prompts} PROMPTS|${phaseCount} 个阶段（Phases） · ${lessons} 课（Lessons） · ${skills} 个技能（Skills） · ${prompts} 个提示词（Prompts）)`)
   );
-  assert.match(homepage, new RegExp(`${lessons} lessons\\. ${phaseCount} phases\\.`));
-  assert.match(lessonPage, new RegExp(`${lessons} lessons across ${phaseCount} phases`));
+  assert.match(homepage, new RegExp(`${lessons} 课，${phaseCount} 个阶段。`));
+  assert.match(lessonPage, new RegExp(`${lessons} 课，${phaseCount} 个阶段`));
   assert.equal(
     ogImage.includes(Buffer.from(`AIFS_COUNTS: lessons=${lessons} phases=${phaseCount} skills=${skills} prompts=${prompts}`)),
     true,
@@ -1380,7 +1380,7 @@ test('repository exposes the canonical Model Context Protocol learning path only
   const modelContextProtocol = learningPaths.find(entry => entry.id === 'model-context-protocol');
 
   assert.ok(modelContextProtocol);
-  assert.equal(modelContextProtocol.title, 'Model Context Protocol (MCP)');
+  assert.equal(modelContextProtocol.title, '模型上下文协议（Model Context Protocol，MCP）');
   assert.equal(modelContextProtocol.lessons[0].path, 'phases/13-tools-and-protocols/06-mcp-fundamentals');
   assert.equal(learningPaths.some(entry => entry.id === 'mcp-engineering'), false);
   assert.equal(fs.existsSync(path.join(root, 'learning-paths', 'mcp-engineering.json')), false);
@@ -1394,10 +1394,10 @@ test('repository exposes the four core AI engineering learning paths', () => {
   const learningPaths = parseLearningPaths(root, phases);
   const homepage = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
   const domains = [
-    ['building-and-deploying-ai-applications', 'Building and Deploying AI Applications', 12],
-    ['software-engineering-fundamentals', 'Software Engineering Fundamentals', 13],
-    ['using-coding-agents', 'Agent-Assisted Engineering', 16],
-    ['shaping-the-build', 'Product Judgment and Delivery', 8],
+    ['building-and-deploying-ai-applications', '构建与部署 AI 应用（Building and Deploying AI Applications）', 12],
+    ['software-engineering-fundamentals', '软件工程基础（Software Engineering Fundamentals）', 13],
+    ['using-coding-agents', '智能体辅助工程（Agent-Assisted Engineering）', 16],
+    ['shaping-the-build', '产品判断与交付（Product Judgment and Delivery）', 8],
   ];
 
   for (const [id, title, lessonCount] of domains) {
@@ -1428,19 +1428,19 @@ test('repository exposes the four core AI engineering learning paths', () => {
   assert.match(homepage, /assets\/figures\/006-ai-engineering-learning-paths-mobile\.svg/);
   assert.equal((homepage.match(/class="learning-paths-node /g) || []).length, domains.length);
   const homepageTargets = new Map([
-    ['building-and-deploying-ai-applications', ['Building and Deploying AI Applications', 'building-and-deploying']],
-    ['software-engineering-fundamentals', ['Software Engineering Fundamentals', 'software-fundamentals']],
-    ['using-coding-agents', ['Agent-Assisted Engineering', 'coding-agents']],
-    ['shaping-the-build', ['Product Judgment and Delivery', 'shaping-the-build']],
+    ['building-and-deploying-ai-applications', ['构建与部署 AI 应用（Building and Deploying AI Applications）', 'building-and-deploying']],
+    ['software-engineering-fundamentals', ['软件工程基础（Software Engineering Fundamentals）', 'software-fundamentals']],
+    ['using-coding-agents', ['智能体辅助工程（Agent-Assisted Engineering）', 'coding-agents']],
+    ['shaping-the-build', ['产品判断与交付（Product Judgment and Delivery）', 'shaping-the-build']],
   ]);
   for (const [id] of domains) {
     const [title, anchor] = homepageTargets.get(id);
     assert.match(
       homepage,
-      new RegExp(`class="learning-paths-node [^"]+"[^>]+href="learning-paths\\.html#${anchor}"[^>]+aria-label="Explore the competencies for ${title}"`)
+      new RegExp(`class="learning-paths-node [^"]+"[^>]+href="learning-paths\\.html#${anchor}"[^>]+aria-label="探索能力：${title}"`)
     );
   }
-  assert.match(readme, /<!-- STATS:START[\s\S]*?<p align="center"><sub><b>[^<]+<\/b> readers[\s\S]*?<!-- STATS:END -->/);
+  assert.match(readme, /<!-- STATS:START[\s\S]*?<p align="center"><sub><b>[^<]+<\/b> 位读者[\s\S]*?<!-- STATS:END -->/);
   assert.doesNotMatch(readme, /\[stats-start\]: #/);
   assert.doesNotMatch(readme, /## AI Engineering Learning Paths|site\/assets\/figures\/006-ai-engineering-learning-paths\.svg/);
 });
@@ -1455,16 +1455,16 @@ test('homepage preserves live GitHub CTAs and the motion-aware learner marquee',
   const learnerStyles = homepage.match(/\/\* Learner organization index \*\/([\s\S]*?)\.masthead-install-caption/);
 
   assert.ok(mastheadCta, 'prominent masthead CTA row is missing');
-  assert.match(mastheadCta[0], /<span>Start the Course<\/span>/);
-  assert.match(mastheadCta[0], /href="learning-paths\.html"[\s\S]*?<span>Explore Learning Paths<\/span>/);
+  assert.match(mastheadCta[0], /<span>开始课程<\/span>/);
+  assert.match(mastheadCta[0], /href="learning-paths\.html"[\s\S]*?<span>探索学习路径<\/span>/);
   assert.doesNotMatch(mastheadCta[0], /Start (?:MCP Engineering|Agent Skills)/i);
   assert.match(
     mastheadCta[0],
-    /<a class="masthead-btn" href="https:\/\/github\.com\/rohitg00\/ai-engineering-from-scratch"[^>]*aria-label="Star ai-engineering-from-scratch on GitHub"[^>]*>[\s\S]*?<span>Star on GitHub<\/span>[\s\S]*?<span class="masthead-btn-count" data-gh-stars="rohitg00\/ai-engineering-from-scratch" data-loading="true">/
+    /<a class="masthead-btn" href="https:\/\/github\.com\/rohitg00\/ai-engineering-from-scratch"[^>]*aria-label="在 GitHub 为 ai-engineering-from-scratch 加星标"[^>]*>[\s\S]*?<span>在 GitHub 加星标<\/span>[\s\S]*?<span class="masthead-btn-count" data-gh-stars="rohitg00\/ai-engineering-from-scratch" data-loading="true">/
   );
   assert.match(
     mastheadCta[0],
-    /<a class="masthead-btn" href="https:\/\/github\.com\/rohitg00"[^>]*aria-label="Follow Rohit Ghumare on GitHub"[^>]*>[\s\S]*?<span>Follow @rohitg00<\/span>/
+    /<a class="masthead-btn" href="https:\/\/github\.com\/rohitg00"[^>]*aria-label="在 GitHub 关注 Rohit Ghumare"[^>]*>[\s\S]*?<span>关注 @rohitg00<\/span>/
   );
   assert.match(homepage, /<script src="header\.js\?v=[^"]+" defer><\/script>/);
   assert.match(headerSource, /\[data-gh-stars="' \+ REPO \+ '"\]/);
@@ -1552,8 +1552,8 @@ test('shared header progressively compacts without hiding GitHub stars or search
   assert.match(headerSource, /var COMPACT_HEADER_QUERY = '\(max-width: 1400px\)'/);
   assert.match(headerSource, /var NARROW_HEADER_QUERY = '\(max-width: 820px\)'/);
   assert.match(headerSource, /priorityNav\.className = 'header-priority-nav'/);
-  assert.match(headerSource, /label !== 'contents' && label !== 'catalog' && label !== 'learning paths'/);
-  assert.match(headerSource, /ensureNavigationLink\(nav, 'learning-paths\.html', 'Learning Paths', ''\)/);
+  assert.match(headerSource, /label !== '目录' && label !== '课程目录' && label !== '学习路径'/);
+  assert.match(headerSource, /ensureNavigationLink\(nav, 'learning-paths\.html', '学习路径', ''\)/);
   assert.match(headerSource, /if \(isNarrow\) restorePriorityLinks\(\);[\s\S]*?else movePriorityLinksOut\(\)/);
 
   assert.match(
@@ -1605,7 +1605,7 @@ test('website motion contracts keep interaction state stable and compositor-frie
   assert.match(agentLoop[0], /transition:stroke 180ms[^'\"]*,opacity 180ms/);
   assert.doesNotMatch(agentLoop[0], /transition:[^'\"]*stroke-width/);
   assert.doesNotMatch(agentLoop[0], /edgeEls\[i\]\.setAttribute\('stroke-width'/);
-  assert.match(agentLoop[0], /STEP ' \+ \(state\.step \+ 1\) \+ ' OF 12/);
+  assert.match(agentLoop[0], /第 ' \+ \(state\.step \+ 1\) \+ ' \/ 12 步/);
 
   const place = ttsSource.match(/function place\(x, y, persist, limits\) \{[\s\S]*?\n  \}/);
   const placeDuringDrag = ttsSource.match(/function placeDuringDrag\(x, y, limits\) \{[\s\S]*?\n  \}/);
@@ -1670,7 +1670,7 @@ test('career lessons return to their exact learning paths guide without a fake c
   assert.match(lessonHtml, /var pathReturnHref = 'catalog\.html';/);
   assert.match(lessonHtml, /if \(learningPath\.kind === 'career-route'\)/);
   assert.match(lessonHtml, /pathReturnHref = 'learning-paths\.html#career-route-' \+ encodeURIComponent\(learningPath\.id\);/);
-  assert.match(lessonHtml, /pathReturnLabel = 'Back to career route';/);
+  assert.match(lessonHtml, /pathReturnLabel = '返回职业路径';/);
   assert.match(lessonHtml, /href="' \+ pathReturnHref \+ '">&larr; ' \+ pathReturnLabel/);
   assert.doesNotMatch(lessonHtml, /catalog\.html\?q=' \+ encodeURIComponent\(learningPath\.title/);
 });
@@ -1711,7 +1711,7 @@ test('lesson reader keeps learning-path context and renders a copyable full-dept
   assert.match(lessonHtml, /'mcp-engineering': 'model-context-protocol'/);
   assert.match(lessonHtml, /requestedLearningPathId = LEARNING_PATH_ID_ALIASES\[incomingLearningPathId\]/);
   assert.match(lessonHtml, /searchParams\.set\('learningPath', pathId\)/);
-  assert.match(lessonHtml, /Lesson ' \+ \(focusedIndex \+ 1\) \+ ' of ' \+ focusedLessons\.length/);
+  assert.match(lessonHtml, /课程 ' \+ \(focusedIndex \+ 1\) \+ ' \/ ' \+ focusedLessons\.length/);
   assert.match(lessonHtml, /prerequisitePaths: pathEntry/);
   assert.match(lessonHtml, /prerequisiteChecks: pathEntry/);
   assert.match(lessonHtml, /data-prerequisite-paths/);
@@ -1726,7 +1726,7 @@ test('lesson reader keeps learning-path context and renders a copyable full-dept
   assert.match(lessonHtml, /var nextLocked = learningPathMode && learningPathEntryLocked\(next\)/);
   assert.match(
     lessonHtml,
-    /data-learning-path-gate-label>'\s*\+\s*\(nextLocked\s*\?\s*'Locked'\s*:\s*'Next &rarr;'\)/
+    /data-learning-path-gate-label>'\s*\+\s*\(nextLocked\s*\?\s*'未解锁'\s*:\s*'下一课 &rarr;'\)/
   );
   assert.doesNotMatch(lessonHtml, /\|\| \{ id: checkId, title: checkId, description: '' \}/);
   assert.match(lessonHtml, /learningPathPrerequisiteCallout\(nextRequired/);
@@ -1736,13 +1736,13 @@ test('lesson reader keeps learning-path context and renders a copyable full-dept
   assert.match(lessonHtml, /btn\.setAttribute\('aria-expanded', expanded \? 'true' : 'false'\)/);
   assert.match(lessonHtml, /currentLessonIndex - 1/);
   assert.doesNotMatch(lessonHtml, /currentLessonIndex - 2/);
-  assert.match(lessonHtml, /Requires a local clone/);
+  assert.match(lessonHtml, /需要在本地克隆仓库/);
   assert.doesNotMatch(lessonHtml, /git rev-parse --show-toplevel/);
   assert.match(lessonHtml, /lessonQuizCorrectAnswers\[qid\] = q\.correct/);
   assert.doesNotMatch(lessonHtml, /data-correct=/);
-  assert.match(lessonHtml, /In Codex use <code>check-understanding /);
+  assert.match(lessonHtml, /在 Codex 使用 <code>check-understanding /);
   assert.match(lessonHtml, /\/check-understanding/);
-  assert.match(lessonHtml, /Act on this lesson/);
+  assert.match(lessonHtml, /实践本课内容/);
   assert.match(lessonHtml, /data-checkpoint="read"/);
   assert.match(lessonHtml, /data-checkpoint="built"/);
   assert.match(lessonHtml, /data-checkpoint="ran"/);
@@ -1777,12 +1777,12 @@ test('lesson reader keeps learning-path context and renders a copyable full-dept
   assert.doesNotMatch(lessonHtml, /id="desc-/);
   assert.match(lessonHtml, /@media \(max-width: 768px\) \{[\s\S]*?\.output-cards,[\s\S]*?\.code-cards \{ grid-template-columns: 1fr; \}/);
   assert.match(lessonHtml, /@media \(max-width: 480px\) \{[\s\S]*?\.code-card-actions,[\s\S]*?\.output-actions \{[\s\S]*?grid-template-columns: 1fr;/);
-  assert.match(lessonHtml, /Run from the repository root, the folder containing README\.md/);
-  assert.match(lessonHtml, /Run copied commands from the repository root, the directory containing README\.md and phases\//);
+  assert.match(lessonHtml, /从仓库根目录（包含 README\.md/);
+  assert.match(lessonHtml, /从仓库根目录（包含 README\.md 和 phases\/ 的目录）运行复制的命令/);
   assert.doesNotMatch(lessonHtml, /shell is anywhere inside the repository/);
   assert.match(lessonHtml, /inferLearningPath\(lessonPath\)/);
   assert.match(lessonHtml, /preferredIds = \['agent-skills', 'model-context-protocol'\]/);
-  assert.match(lessonHtml, /A code fence is not automatically a runnable program/);
+  assert.match(lessonHtml, /代码块不一定是可运行程序/);
   assert.match(lessonHtml, /var fetchOptions = localPreview \? \{ cache: 'no-store' \} : undefined/);
   assert.match(lessonHtml, /fetch\(primary, fetchOptions\)/);
   assert.doesNotMatch(lessonHtml, /<script src="figures(?:\.js|-)/);
@@ -1953,12 +1953,12 @@ test('MCP evaluators expose each protocol boundary in its owning scenario', () =
   assert.equal(oauth.evidence.boundaryValues.returnedIss, oauth.evidence.boundaryValues.authorizationServer);
   const opaque = plainMcpValue(logic.evaluateJwks(byId(logic.jwksScenarios, 'opaque')));
   assert.equal(opaque.evidence.token.format, 'opaque');
-  assert.match(opaque.evidence.actions.join(' '), /introspection/);
+  assert.match(opaque.evidence.actions.join(' '), /内省（Introspection）/);
   const singleflight = plainMcpValue(logic.evaluateJwks(byId(logic.jwksScenarios, 'singleflight')));
   assert.match(singleflight.evidence.actions.join(' '), /singleflightRefresh/);
 
   const drift = plainMcpValue(logic.evaluateDrift(byId(logic.driftScenarios, 'aligned')));
-  assert.equal(drift.evidence.identityRule, 'display name and serverInfo are not security identity');
+  assert.equal(drift.evidence.identityRule, '显示名称和 serverInfo 不构成安全身份');
   const conformance = plainMcpValue(logic.evaluateConformance(byId(logic.conformanceScenarios, 'unknown-result'), 'differential'));
   assert.equal(conformance.kind, 'nonconformant');
   assert.deepEqual(conformance.evidence.normalizedDiff.map(entry => entry.path), ['$.decision', '$.normalized']);
@@ -2010,7 +2010,7 @@ test('every Agent Skills figure mounts through the shared lesson runtime', () =>
     );
     const range = findDescendant(host, node => node.className === 'asf-range');
     assert.ok(range, `${host.dataset.figure} did not render its step control`);
-    assert.match(range.getAttribute('aria-valuetext'), /^Step \d+ of \d+:/);
+    assert.match(range.getAttribute('aria-valuetext'), /^第 \d+ 步，共 \d+ 步：/);
   }
 
   runtime.window.AIFSFigureRuntime.disposeRoot(root);
@@ -2045,6 +2045,37 @@ test('figure manifest deterministically routes only providers needed by lesson f
   assert.match(manifestSource, /window\.AIFS_FIGURE_PROVIDER_VERSIONS =/);
   assert.match(lessonHtml, new RegExp(`lesson-figures\\.js\\?v=${runtimeVersion}`));
   assert.match(lessonHtml, new RegExp(`figure-manifest\\.js\\?v=${manifestVersion}`));
+});
+
+test('epsilon-greedy renders a finite zero-regret curve without exploration', () => {
+  const dom = createMcpTestDom();
+  const registrations = {};
+  let state;
+  const makeElement = (tag, attrs, kids) => {
+    const node = dom.el(tag, attrs, kids);
+    node.style = {};
+    return node;
+  };
+  const control = current => { state = current; return makeElement('input'); };
+  vm.runInNewContext(fs.readFileSync(path.join(__dirname, 'figures-genai-rl.js'), 'utf8'), {
+    document: dom.document,
+    window: { LF: {
+      el: makeElement, svgEl: makeElement, slider: control, select: control,
+      clamp: (value, low, high) => Math.max(low, Math.min(high, value)),
+      register: entries => Object.assign(registrations, entries),
+    } },
+  });
+  const host = makeElement('div');
+  registrations['epsilon-greedy'](host);
+  state.eps = 0;
+  for (const decay of [0, 1]) {
+    state.decay = decay;
+    state._render();
+    const paths = dom.findAll(host, node => node.tagName === 'PATH');
+    assert.equal(paths.length, 1);
+    assert.doesNotMatch(paths[0].getAttribute('d'), /NaN|Infinity/);
+    assert.match(host.textContent, /累计遗憾 0\.0/);
+  }
 });
 
 test('new figure provider modules are appended deterministically without disturbing legacy order', t => {
@@ -2162,8 +2193,8 @@ test('reduced motion holds SMIL figures on a meaningful static frame', () => {
   const control = host.children.find(child => child.className === 'lf-motion-toggle');
   assert.ok(control);
   assert.equal(control.disabled, true);
-  assert.equal(control.textContent, 'Motion reduced');
-  assert.equal(control.getAttribute('aria-label'), 'Animation disabled because reduced motion is enabled');
+  assert.equal(control.textContent, '已减少动态效果');
+  assert.equal(control.getAttribute('aria-label'), '已启用减少动态效果，动画已停用');
   assert.equal(runtime.scheduledFrames.size, 0);
 });
 
@@ -2178,7 +2209,7 @@ test('MCP contract evaluator follows empty cursors and validates every structure
   assert.equal(emptyCursor.evidence.validation.cursorPresent, true);
   assert.equal(emptyCursor.evidence.validation.follow, true);
   assert.equal(emptyCursor.evidence.continuationRequest.params.cursor, '');
-  assert.match(emptyCursor.verdict, /even when it is the empty string/i);
+  assert.match(emptyCursor.verdict, /即使它是空字符串，也必须原样使用/);
 
   const scalar = plainMcpValue(logic.evaluateContract(scenario('scalar')));
   assert.equal(scalar.kind, 'valid-complete');
@@ -2186,7 +2217,7 @@ test('MCP contract evaluator follows empty cursors and validates every structure
   assert.equal(scalar.evidence.authoredDefinition.outputSchema.type, 'string');
   assert.equal(typeof scalar.evidence.callResponse.result.structuredContent, 'string');
   assert.equal(scalar.evidence.validation.outputSchemaMatched, true);
-  assert.match(scalar.verdict, /any JSON value/i);
+  assert.match(scalar.verdict, /任意 JSON 值/);
 
   const mismatch = plainMcpValue(logic.evaluateContract(scenario('schema')));
   assert.equal(mismatch.kind, 'protocol-error');
@@ -2194,7 +2225,7 @@ test('MCP contract evaluator follows empty cursors and validates every structure
   assert.equal(mismatch.evidence.callResponse.result.isError, true);
   assert.equal(mismatch.evidence.validation.valid, false);
   assert.equal(mismatch.evidence.validation.outputSchemaMatched, false);
-  assert.match(mismatch.verdict, /does not waive outputSchema/i);
+  assert.match(mismatch.verdict, /并不免除 outputSchema 的要求/);
 
   const toolError = plainMcpValue(logic.evaluateContract(scenario('tool-error')));
   assert.equal(toolError.kind, 'tool-error');
@@ -2219,7 +2250,7 @@ test('MCP progress is server-to-client and every reliability Task snapshot is co
 
   const stream = plainMcpValue(logic.evaluateTransport(byId(logic.transportScenarios, 'request-sse')));
   assert.equal(stream.evidence.request.body.method, 'tools/call');
-  assert.equal(stream.evidence.response.progressDirection, 'server-to-client on the request-scoped response');
+  assert.equal(stream.evidence.response.progressDirection, '在请求范围内的响应上，由服务器发往客户端');
   assert.equal(stream.evidence.response.events[0].method, 'notifications/progress');
   assert.equal(stream.evidence.response.events[0].params.progressToken, stream.evidence.request.body.params._meta.progressToken);
   assert.equal(stream.evidence.response.events[1].id, stream.evidence.request.body.id);
@@ -2268,7 +2299,7 @@ test('MCP registry drift quarantines and deactivates only the drifted release', 
   assert.equal(result.evidence.currentReleaseState.version, '4.0.0');
   assert.equal(result.evidence.currentReleaseState.quarantined, true);
   assert.equal(result.evidence.currentReleaseState.activeRouting, false);
-  assert.match(result.evidence.currentReleaseState.quarantineReason, /descriptor digest/i);
+  assert.match(result.evidence.currentReleaseState.quarantineReason, /描述符摘要/);
   assert.equal(result.evidence.routingState.releaseVersion, '4.0.0');
   assert.equal(result.evidence.routingState.active, false);
   assert.equal(result.evidence.routingState.action, 'remove-from-active-routing');
@@ -2279,6 +2310,6 @@ test('MCP registry drift quarantines and deactivates only the drifted release', 
   assert.equal(result.evidence.rollbackCandidate.healthStatus, 'healthy');
   assert.equal(result.evidence.rollbackCandidate.rollbackEligible, true);
   assert.equal(result.evidence.rollbackCandidate.activeRouting, false);
-  assert.equal(result.evidence.rollbackCandidate.activationRequires, 'explicit rollback decision');
-  assert.match(result.verdict, /separately admitted, healthy 3\.9\.2 release/i);
+  assert.equal(result.evidence.rollbackCandidate.activationRequires, '明确的回滚决策');
+  assert.match(result.verdict, /已独立获准准入且健康的 3\.9\.2 版本/);
 });

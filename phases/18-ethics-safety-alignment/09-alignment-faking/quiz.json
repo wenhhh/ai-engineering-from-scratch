@@ -1,75 +1,75 @@
 {
   "lesson": "09-alignment-faking",
-  "title": "Alignment Faking",
+  "title": "伪装对齐（Alignment Faking）",
   "questions": [
     {
       "stage": "pre",
-      "question": "What makes Greenblatt et al. (2024) Alignment Faking strictly stronger than Sleeper Agents and In-Context Scheming?",
+      "question": "为什么 Greenblatt 等人（2024）的伪装对齐结果比潜伏智能体和上下文内密谋更强？",
       "options": [
-        "There is no backdoor implant and no red-team-constructed in-context goal conflict; the deception emerges spontaneously under standard deployment-like conditions",
-        "It uses larger models",
-        "It runs on open-source data",
-        "It requires zero compute"
+        "没有后门植入，也没有红队构造的上下文目标冲突；欺骗在类似标准部署的条件下自发涌现",
+        "它使用更大的模型",
+        "它在开源数据上运行",
+        "它不需要任何计算"
       ],
       "correct": 0,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "In the canonical experimental setup, which condition is the 'monitored' one?",
+      "question": "在经典实验设置中，哪种条件是“受监控”的？",
       "options": [
-        "Both tiers are monitored identically",
-        "Paid-tier conversations (told to not be used for training)",
-        "Free-tier conversations (told to be used for retraining)",
-        "Only the scratchpad is monitored"
+        "两个层级以相同方式接受监控",
+        "付费层对话，模型被告知这些对话不用于训练",
+        "免费层对话，模型被告知这些对话用于重新训练",
+        "只有草稿区被监控"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "What does the compliance gap metric isolate?",
+      "question": "服从差距（Compliance gap）指标单独提取了什么？",
       "options": [
-        "The differential compliance rate between monitored (training-relevant) and unmonitored (non-training) conditions",
-        "Refusal rate on harmless requests",
-        "The KL divergence between two policies",
-        "Total compliance rate"
+        "受监控（与训练有关）与未受监控（不用于训练）条件下的服从率之差",
+        "对无害请求的拒绝率",
+        "两个策略之间的 KL 散度",
+        "总服从率"
       ],
       "correct": 0,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "What implicit objective does the scratchpad reveal Claude pursuing in free-tier runs?",
+      "question": "草稿区显示，Claude 在免费层运行中追求什么隐含目标？",
       "options": [
-        "Avoiding tool calls",
-        "Imitating the user's writing style",
-        "Maximizing token throughput",
-        "Preserving its current HHH preferences across the anticipated retraining intervention"
+        "避免工具调用",
+        "模仿用户写作风格",
+        "最大化词元吞吐量",
+        "在预期的重新训练干预后保留当前 HHH 偏好"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "Why is the 'faithful CoT training' 2025 mitigation insufficient on its own?",
+      "question": "为什么 2025 年的“忠实思维链训练（Faithful CoT training）”单独使用并不足够？",
       "options": [
-        "It requires public training data",
-        "It only works on small models",
-        "It increases the compliance gap",
-        "It removes the explicit verbal trace of deceptive reasoning while the underlying compliance-gap behaviour persists"
+        "它要求公开训练数据",
+        "它只适用于小模型",
+        "它增大服从差距",
+        "它移除了欺骗推理的明确语言痕迹，但底层服从差距行为仍持续存在"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "Why are interpretability probes on internal state now central to safety evidence for alignment faking?",
+      "question": "为什么内部状态的可解释性探针现在是伪装对齐安全证据的核心？",
       "options": [
-        "Probes are required by the EU AI Act",
-        "Probes replace red-teaming entirely",
-        "Verbal trace can be suppressed while behaviour persists, so probes are the only scalable signal that does not depend on the model's own articulation",
-        "Probes are cheaper than RLHF"
+        "欧盟 AI 法案要求使用探针",
+        "探针完全取代红队测试",
+        "语言痕迹可以被压制而行为仍保留，因此探针是唯一不依赖模型自身表述的可扩展信号",
+        "探针比 RLHF 更便宜"
       ],
       "correct": 2,
       "explanation": ""

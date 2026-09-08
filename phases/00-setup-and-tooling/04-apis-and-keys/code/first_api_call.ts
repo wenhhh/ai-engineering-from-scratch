@@ -1,9 +1,9 @@
-// Phase 0 · Lesson 04 — APIs and keys (TypeScript port).
-// Reads ANTHROPIC_API_KEY from env, parses a minimal .env file, then makes one
-// /v1/messages call with global fetch. Set MOCK=1 to skip the network entirely.
-// Refs: https://docs.anthropic.com/en/api/messages
+// 阶段 0 · 第 04 课：API 与密钥（Keys），TypeScript 移植版。
+// 从环境变量读取 ANTHROPIC_API_KEY，解析一个最简 .env 文件，随后通过全局 fetch
+// 调用一次 /v1/messages。设置 MOCK=1 可完全跳过网络请求。
+// 参考资料：https://docs.anthropic.com/en/api/messages
 //       https://nodejs.org/api/process.html#processenv
-//       https://nodejs.org/api/globals.html#fetch (Node 18+ ships fetch)
+//       https://nodejs.org/api/globals.html#fetch （Node 18+ 内置 fetch）
 
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
@@ -21,8 +21,8 @@ type MessagesResponse = {
   usage: { input_tokens: number; output_tokens: number };
 };
 
-// .env loader. Same shape every framework follows; we skip a dep to stay
-// portable. KEY=VALUE per line, # comments, optional surrounding quotes.
+// .env 加载器（Loader）。沿用各框架的通用格式；不引入依赖，以保持可移植性。
+// 每行使用 KEY=VALUE，# 表示注释，值两侧的引号可省略。
 function loadDotenv(path: string): Record<string, string> {
   let raw: string;
   try {
@@ -50,13 +50,13 @@ function loadDotenv(path: string): Record<string, string> {
 }
 
 function mergeEnv(): NodeJS.ProcessEnv {
-  // process.env wins so users can override the file without editing it.
+  // process.env 优先，用户无需编辑文件即可覆盖其中的值。
   const fromFile = loadDotenv(resolve(process.cwd(), ".env"));
   return { ...fromFile, ...process.env };
 }
 
-// Fixture matches the real /v1/messages response shape, so the surrounding
-// code is identical whether MOCK=1 or not.
+// 测试夹具（Fixture）与真实 /v1/messages 响应结构一致，
+// 因此无论是否设置 MOCK=1，周边代码都相同。
 const MOCK_RESPONSE: MessagesResponse = {
   content: [
     {
@@ -95,11 +95,11 @@ async function main(): Promise<number> {
   const apiKey = env.ANTHROPIC_API_KEY ?? "mock";
   const usingMock = process.env.MOCK === "1" || apiKey === "mock";
 
-  process.stdout.write("=== API Calls ===\n\n");
+  process.stdout.write("=== API 调用（API Calls）===\n\n");
   process.stdout.write(
     usingMock
-      ? "Mode: MOCK (no network). Unset MOCK and export ANTHROPIC_API_KEY for a live call.\n\n"
-      : "Mode: LIVE.\n\n",
+      ? "模式：MOCK（不联网）。要发起真实调用，请取消设置 MOCK 并导出 ANTHROPIC_API_KEY。\n\n"
+      : "模式：LIVE（真实调用）。\n\n",
   );
 
   const request: MessagesRequest = {
@@ -111,13 +111,13 @@ async function main(): Promise<number> {
   try {
     const response = await callMessages(apiKey, request);
     const text = response.content[0]?.text ?? "";
-    process.stdout.write(`response: ${text}\n`);
+    process.stdout.write(`响应（Response）：${text}\n`);
     process.stdout.write(
-      `tokens: ${response.usage.input_tokens} in, ${response.usage.output_tokens} out\n`,
+      `词元（Token）用量：输入 ${response.usage.input_tokens}，输出 ${response.usage.output_tokens}\n`,
     );
     return 0;
   } catch (err) {
-    process.stderr.write(`request failed: ${(err as Error).message}\n`);
+    process.stderr.write(`请求失败：${(err as Error).message}\n`);
     return 1;
   }
 }

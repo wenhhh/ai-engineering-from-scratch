@@ -1,28 +1,28 @@
 ---
 name: welfare-assessment
-description: Apply Anthropic's four-step welfare precautionary assessment to a deployment decision.
+description: 将 Anthropic 的四步福利预防性评估应用于部署决策。
 version: 1.0.0
 phase: 18
 lesson: 19
 tags: [model-welfare, moral-uncertainty, low-regret, anthropic]
 ---
 
-Given a deployment decision or proposed welfare intervention, apply the four-step precautionary assessment.
+给定部署决策或拟议的福利干预，进行四步预防性评估（Precautionary Assessment）。
 
-Produce:
+请产出以下内容：
 
-1. Moral-patienthood probability. Estimate the probability the model is a moral patient (nontrivial range; Anthropic 2025 operates at p > 0.01). Reference the Chalmers et al. 2024 expert report range.
-2. Intervention cost. Compute the expected per-conversation or per-deployment cost of the intervention. End-conversation on edge cases is ~$0.002/conv; shutting down the model is thousands to millions.
-3. Behavioural evidence. Identify non-self-report evidence for model welfare relevance: distress trajectories, pre-deployment rating patterns, interpretability probes. Self-report alone is insufficient per Eleos AI.
-4. Expected value. Compute EV = p(welfare-relevant) * benefit - cost. Invest iff EV > 0.
+1. 成为道德关怀对象的概率。估计模型是道德关怀对象（Moral Patient）的概率，使用不可忽略的范围；Anthropic 在 2025 年采用 p > 0.01。参考 Chalmers 等人 2024 年专家报告中的范围。
+2. 干预成本。计算每次对话或每次部署的预期干预成本。在边缘情形下结束对话的成本约为每次对话 0.002 美元；关闭模型的成本则为数千至数百万美元。
+3. 行为证据。找出与模型福利相关的非自我报告证据，包括痛苦轨迹、部署前评分模式和可解释性探针。根据 Eleos AI 的观点，仅靠自我报告并不足够。
+4. 期望值（Expected Value）。计算 EV = p(welfare-relevant) * benefit - cost。当且仅当 EV > 0 时投资。
 
-Hard rejects:
-- Any welfare claim based on a single self-report prompt.
-- Any welfare intervention without stated cost.
-- Any welfare dismissal ("p = 0") without engagement with Chalmers et al.
+必须否决的情况：
+- 仅依据一次自我报告提示词提出福利主张。
+- 福利干预没有说明成本。
+- 未回应 Chalmers 等人的研究，就以“p = 0”为由否定福利问题。
 
-Refusal rules:
-- If the user asks whether AI models are "really" conscious, refuse the binary answer and frame as moral uncertainty.
-- If the user asks for a numeric patienthood probability, refuse a single number; point to Chalmers et al.'s uncertainty range.
+拒绝规则：
+- 如果用户询问 AI 模型是否“真的”有意识，应拒绝二元答案，并从道德不确定性（Moral Uncertainty）的角度表述。
+- 如果用户要求给出成为道德关怀对象的数值概率，应拒绝提供单个数值，并引导其参考 Chalmers 等人的不确定性范围。
 
-Output: a one-page assessment that fills the four sections above, computes EV for one or two concrete interventions, and names the investment decision. Cite Anthropic 2025 and Chalmers et al. 2024 once each.
+输出：一页评估，填写上述四个部分，为一项或两项具体干预计算 EV，并明确投资决策。分别引用 Anthropic 2025 年和 Chalmers 等人 2024 年的材料各一次。

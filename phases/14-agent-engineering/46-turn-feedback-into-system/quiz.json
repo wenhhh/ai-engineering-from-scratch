@@ -1,48 +1,78 @@
 {
   "lesson": "46-turn-feedback-into-system",
-  "title": "Turn Feedback into a System",
+  "title": "将反馈转为系统（Turn Feedback into a System）",
   "questions": [
     {
       "stage": "pre",
-      "question": "What does a repeated agent correction reveal?",
-      "options": ["A missing or weak control in the work system", "A reason to skip tests", "A need for more chat history", "Only a weak model"],
+      "question": "反复纠正智能体揭示什么？",
+      "options": [
+        "工作系统中的控制缺失或薄弱",
+        "跳过测试的理由",
+        "需要更多聊天历史",
+        "只是模型弱"
+      ],
       "correct": 0,
-      "explanation": "Corrections are observations about missing tests, boundaries, examples, tools, or decisions."
+      "explanation": "纠正是对缺失测试、边界、示例、工具或决定的观察。"
     },
     {
       "stage": "check",
-      "question": "Where should a regression correction become durable?",
-      "options": ["A longer prompt", "A test or evaluation", "A new model", "A meeting note"],
+      "question": "回归问题的纠正应在哪里持久化？",
+      "options": [
+        "更长的提示词",
+        "测试或评估",
+        "新模型",
+        "会议笔记"
+      ],
       "correct": 1,
-      "explanation": "Executable proof prevents the same wrong result from silently returning."
+      "explanation": "可执行证据防止同样的错误结果悄悄回来。"
     },
     {
       "stage": "check",
-      "question": "Why find the root cause before writing a rule?",
-      "options": ["It removes the need for evidence", "Rules require citations", "It avoids all complexity", "Symptoms can arise from different missing controls"],
+      "question": "为什么写规则前先找根因？",
+      "options": [
+        "它消除证据需求",
+        "规则需要引用",
+        "它避免所有复杂性",
+        "症状可能来自不同的缺失控制"
+      ],
       "correct": 3,
-      "explanation": "A symptom-only rule fails when the same cause appears in a different form."
+      "explanation": "只针对症状的规则，在同一原因以不同形式出现时会失败。"
     },
     {
       "stage": "check",
-      "question": "When does a one-off correction justify a permanent control?",
-      "options": ["Always", "Never", "When recurrence or consequence justifies lasting complexity", "Only after release"],
+      "question": "一次性纠正何时足以支持永久控制？",
+      "options": [
+        "始终如此",
+        "永不如此",
+        "问题的复发频率或后果值得系统长期承担额外复杂性时",
+        "仅发布之后"
+      ],
       "correct": 2,
-      "explanation": "The ratchet should preserve meaningful judgment without accumulating every preference."
+      "explanation": "棘轮应保留有意义的判断，而非累积每个偏好。"
     },
     {
       "stage": "post",
-      "question": "Why fingerprint promoted controls?",
-      "options": ["To hide ownership", "For visual design", "To replace verification", "To collapse repeated lessons without losing distinct causes"],
+      "question": "为什么为提升后的控制生成指纹？",
+      "options": [
+        "隐藏所有权",
+        "用于视觉设计",
+        "替代验证",
+        "合并重复经验，同时保留不同原因"
+      ],
       "correct": 3,
-      "explanation": "Stable identity prevents the same control from being added repeatedly."
+      "explanation": "稳定身份防止反复添加同一控制。"
     },
     {
       "stage": "post",
-      "question": "Why does every control need a retirement check?",
-      "options": ["Controls can become stale, contradictory, or superseded", "Agents dislike instructions", "Tests cannot persist", "All rules expire daily"],
+      "question": "为什么每项控制都需要退役检查？",
+      "options": [
+        "控制可能过时、矛盾或被替代",
+        "智能体不喜欢指令",
+        "测试无法持久保存",
+        "所有规则每天到期"
+      ],
       "correct": 0,
-      "explanation": "The work system should remain minimal and current, not merely accumulate policy."
+      "explanation": "工作系统应保持最小且符合现状，而非仅累积政策。"
     }
   ]
 }

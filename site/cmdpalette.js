@@ -95,7 +95,7 @@
           id:          'lp:' + learningPathId,
           name:        learningPath.title || learningPathId,
           summary:     learningPath.summary || '',
-          keywords:    [learningPath.keywords || '', checkpointKeywords, 'focused course route'].filter(Boolean).join(' '),
+          keywords:    [learningPath.keywords || '', (learningPath.commonTitles || []).join(' '), checkpointKeywords, 'focused course route 学习路径 职业路线'].filter(Boolean).join(' '),
           lessonCount: route.length,
           minutes:     Number(learningPath.estimatedMinutes || 0),
           url:         learningPathDestination(firstLessonPath, learningPathId),
@@ -190,7 +190,7 @@
         _index.push({
           kind:     'certification-track',
           id:       'ct:' + trackId,
-          name:     track.credential || track.name || track.shortName || track.examCode || 'Certification track',
+          name:     track.credential || track.name || track.shortName || track.examCode || '认证学习路径',
           summary:  track.summary || track.audience || '',
           keywords: [track.shortName, track.examCode, track.level, track.audience, domainNames].filter(Boolean).join(' '),
           examCode: track.examCode || '',
@@ -215,7 +215,7 @@
         _index.push({
           kind:       'certification-lesson',
           id:         'cl:' + certPath,
-          name:       certLesson.name || certLesson.title || certLesson.slug || 'Certification lesson',
+          name:       certLesson.name || certLesson.title || certLesson.slug || '认证课程',
           summary:    certLesson.summary || '',
           keywords:   certLesson.keywords || '',
           type:       certLesson.type || '',
@@ -372,7 +372,7 @@
     el.id = PALETTE_ID;
     el.setAttribute('role', 'dialog');
     el.setAttribute('aria-modal', 'true');
-    el.setAttribute('aria-label', 'Search learning paths, lessons, and glossary');
+    el.setAttribute('aria-label', '搜索学习路径、课程和术语表');
     el.setAttribute('aria-hidden', 'true');
     el.inert = true;
 
@@ -387,29 +387,29 @@
             '<line x1="21" y1="21" x2="16.65" y2="16.65"/>' +
           '</svg>' +
           '<input class="cp-input" id="cpInput" type="search"' +
-          ' placeholder="Search paths, lessons, and glossary…"' +
+          ' placeholder="搜索路径、课程和术语表…"' +
           ' autocomplete="off" autocorrect="off"' +
           ' autocapitalize="off" spellcheck="false"' +
-          ' role="combobox" aria-label="Search" aria-autocomplete="list"' +
+          ' role="combobox" aria-label="搜索" aria-autocomplete="list"' +
           ' aria-haspopup="listbox" aria-expanded="false"' +
           ' aria-controls="cpResults">' +
           '<button class="cp-kbd-esc" id="cpClose" type="button"' +
-          ' aria-label="Close search">Esc</button>' +
+          ' aria-label="关闭搜索">Esc</button>' +
         '</div>' +
         '<ul class="cp-results" id="cpResults"' +
-        ' role="listbox" aria-label="Search results"></ul>' +
+        ' role="listbox" aria-label="搜索结果"></ul>' +
         '<div class="cp-footer">' +
           '<span class="cp-footer-group">' +
             '<kbd>↑</kbd><kbd>↓</kbd>' +
-            '<span class="cp-footer-label">navigate</span>' +
+            '<span class="cp-footer-label">选择</span>' +
           '</span>' +
           '<span class="cp-footer-group">' +
             '<kbd>↵</kbd>' +
-            '<span class="cp-footer-label">open</span>' +
+            '<span class="cp-footer-label">打开</span>' +
           '</span>' +
           '<span class="cp-footer-group">' +
             '<kbd>Esc</kbd>' +
-            '<span class="cp-footer-label">close</span>' +
+            '<span class="cp-footer-label">关闭</span>' +
           '</span>' +
           '<span class="cp-footer-shortcut">' + shortcutLabel + '</span>' +
         '</div>' +
@@ -508,18 +508,18 @@
       var learningPathCount = inventory.filter(function (item) { return item.kind === 'learning-path'; }).length;
       var artifactCount = inventory.filter(function (item) { return item.kind === 'artifact'; }).length;
       var glossaryCount = inventory.filter(function (item) { return item.kind === 'glossary'; }).length;
-      var inventoryParts = [lessonCount + ' lessons'];
+      var inventoryParts = [lessonCount + ' 节课'];
       if (learningPathCount) {
-        inventoryParts.push(learningPathCount + ' focused learning ' + (learningPathCount === 1 ? 'path' : 'paths'));
+        inventoryParts.push(learningPathCount + ' 条专题学习' + (learningPathCount === 1 ? '路径' : '路径'));
       }
       if (certificationLessonCount) {
-        inventoryParts.push(certificationLessonCount + ' certification lessons');
+        inventoryParts.push(certificationLessonCount + ' 节认证课程');
       }
-      inventoryParts.push(artifactCount + ' outputs');
-      inventoryParts.push(glossaryCount + ' glossary terms');
+      inventoryParts.push(artifactCount + ' 个交付物（Artifact）');
+      inventoryParts.push(glossaryCount + ' 个术语');
       list.innerHTML =
         '<li class="cp-empty" role="option" aria-disabled="true">' +
-        'Search ' + inventoryParts.slice(0, -1).join(', ') + ', and ' +
+        '可搜索 ' + inventoryParts.slice(0, -1).join(', ') + '，以及 ' +
         inventoryParts[inventoryParts.length - 1] +
         '</li>';
       _activeIdx = -1;
@@ -530,7 +530,7 @@
     if (results.length === 0) {
       list.innerHTML =
         '<li class="cp-empty" role="option" aria-disabled="true">' +
-        'No results for <em>' + escHtml(query) + '</em>' +
+        '未找到结果：<em>' + escHtml(query) + '</em>' +
         '</li>';
       _activeIdx = -1;
       _clearActiveDescendant();
@@ -546,21 +546,21 @@
 
       if (r.kind === 'learning-path') {
         dest = r.url;
-        chip = 'Learning path';
+        chip = '学习路径';
         chipClass += ' cp-item-chip--alt';
       } else if (r.kind === 'lesson') {
         // Prefer the in-site reader; fall back to GitHub URL
         dest = r.lessonPath
           ? 'lesson?path=' + encodeURIComponent(r.lessonPath)
           : r.url;
-        chip = 'Phase ' + String(r.phaseId).padStart(2, '0');
+        chip = '阶段 ' + String(r.phaseId).padStart(2, '0');
       } else if (r.kind === 'certification-lesson') {
         dest = 'lesson?path=' + encodeURIComponent(r.lessonPath);
-        chip = 'Certification';
+        chip = '认证';
         chipClass += ' cp-item-chip--alt';
       } else if (r.kind === 'certification-track') {
         dest = r.url;
-        chip = r.examCode || 'Certification';
+        chip = r.examCode || '认证';
         chipClass += ' cp-item-chip--alt';
       } else if (r.kind === 'artifact') {
         // Jump to the lesson that produced this artifact
@@ -568,7 +568,7 @@
           ? 'lesson?path=' + encodeURIComponent(r.lessonPath)
           : ('https://github.com/rohitg00/ai-engineering-from-scratch/tree/main/' + r.file);
         var ak = (r.artKind || 'artifact');
-        chip = ak.charAt(0).toUpperCase() + ak.slice(1);
+        chip = ({ skill: '技能（Skill）', prompt: '提示词（Prompt）', agent: '智能体（Agent）', mcp: '模型上下文协议（MCP）', artifact: '交付物（Artifact）' })[ak] || ak;
         chipClass += ' cp-item-chip--alt';
       } else {
         // Prefer the canonical term anchor. Legacy generated data falls back
@@ -576,27 +576,27 @@
         dest      = r.slug
           ? 'glossary.html#' + encodeURIComponent(r.slug)
           : 'glossary.html?q=' + encodeURIComponent(r.name);
-        chip      = 'Glossary';
+        chip      = '术语表';
         chipClass += ' cp-item-chip--alt';
       }
 
       var snippet = r.summary ? truncate(r.summary, 110) : '';
       var metaParts = [];
       if (r.kind === 'learning-path') {
-        if (r.lessonCount) metaParts.push(r.lessonCount + ' lessons');
+        if (r.lessonCount) metaParts.push(r.lessonCount + ' 节课');
         if (r.minutes) {
           var hours = Math.floor(r.minutes / 60);
           var minutes = r.minutes % 60;
-          metaParts.push(((hours ? hours + 'h' : '') + (minutes ? ' ' + minutes + 'm' : '')).trim());
+          metaParts.push(((hours ? hours + '小时' : '') + (minutes ? ' ' + minutes + '分钟' : '')).trim());
         }
       } else if (r.kind === 'lesson' || r.kind === 'certification-lesson') {
-        if (r.type && r.type !== '—') metaParts.push(r.type);
+        if (r.type && r.type !== '—') metaParts.push(({ Learn: '学习', Build: '动手实现（Build）', Reference: '参考', Capstone: '综合实践（Capstone）' })[r.type] || r.type);
         if (r.lang && r.lang !== '—') metaParts.push(r.lang);
       } else if (r.kind === 'certification-track') {
-        if (r.level) metaParts.push(r.level);
+        if (r.level) metaParts.push(({ foundational: '基础级', intermediate: '中级', advanced: '高级', associate: '助理级', professional: '专业级', Foundational: '基础级（Foundational）', 'Foundational architecture': '基础架构（Foundational Architecture）', 'Professional architecture': '专业架构（Professional Architecture）', 'Foundational technical': '技术基础（Foundational Technical）' })[r.level] || r.level);
       } else if (r.kind === 'artifact') {
         if (r.phaseId !== undefined && r.phaseId !== null) {
-          metaParts.push('Phase ' + String(r.phaseId).padStart(2, '0'));
+          metaParts.push('阶段 ' + String(r.phaseId).padStart(2, '0'));
         }
       }
       var meta = metaParts.join(' · '); // ·

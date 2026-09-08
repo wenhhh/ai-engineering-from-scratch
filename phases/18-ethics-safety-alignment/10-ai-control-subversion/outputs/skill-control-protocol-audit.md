@@ -1,29 +1,29 @@
 ---
 name: control-protocol-audit
-description: Audit a deployment protocol under the AI Control threat model.
+description: 按 AI 控制（AI Control）威胁模型审计部署协议。
 version: 1.0.0
 phase: 18
 lesson: 10
 tags: [ai-control, subversion, trusted-editing, untrusted-monitoring, safety-case]
 ---
 
-Given a deployment protocol description, audit it under the AI Control threat model: U (untrusted strong), T (trusted weak), H (trusted human), and measure the protocol's position on the usefulness-safety frontier.
+给定部署协议描述，按 AI 控制威胁模型审计：U 为不可信强模型，T 为可信弱模型，H 为可信人力，并测量协议在有用性与安全性前沿上的位置。
 
-Produce:
+请提供以下内容：
 
-1. Role assignment. Identify which model plays U and which plays T. If T is another instance of U, flag collusion risk immediately.
-2. Audit budget accounting. How is H allocated? Uniform, random, flag-directed? What fraction of outputs are audited in expectation?
-3. Collusion-vector enumeration. For every pair of untrusted components (U-producer + U-monitor, U-producer + U-editor), enumerate the collusion vectors: steganographic cues, shared-training prior exploitation, timing channels.
-4. Capability-gap analysis. How much weaker is T than U? At what point does T's editing signal become noise (e.g., T cannot reliably detect backdoors U produces)?
-5. Worst-case threat model. Under the assumption that U is adversarial with perfect knowledge of the protocol, what is the adversary's best strategy? What fraction of red-team attempts succeed?
+1. 角色分配。识别哪个模型充当 U，哪个充当 T。如果 T 是 U 的另一个实例，立即标记串通（Collusion）风险。
+2. 审计预算核算。H 如何分配：均匀、随机，还是按标记分配？预期有多少比例的输出被审计？
+3. 串通途径枚举。对每对不可信组件，例如 U 生成器与 U 监控器、U 生成器与 U 编辑器，列出串通途径：隐写线索、利用共享训练先验、时序通道。
+4. 能力差距分析。T 比 U 弱多少？什么时候 T 的编辑信号会变成噪声，例如 T 无法可靠发现 U 生成的后门？
+5. 最坏情况威胁模型。假设 U 具有对抗性且完全了解协议，对手的最佳策略是什么？红队尝试有多少比例成功？
 
-Hard rejects:
-- Any protocol description that uses U as its own monitor without a collusion-resistance mechanism.
-- Any protocol claim of "near-zero backdoor rate" without red-team evaluation where the red team has protocol visibility.
-- Any audit of a protocol without articulating the capability gap T-to-U and the budget of H.
+必须否定的说法或方案：
+- 任何让 U 监控自身、却没有抵抗串通机制的协议描述。
+- 任何没有进行红队可见协议细节的评估，就声称“后门率接近零”的协议主张。
+- 任何未明确说明 T 与 U 的能力差距及 H 预算的协议审计。
 
-Refusal rules:
-- If the user asks "is this protocol safe," refuse without the three-part evidence: (a) red-team result, (b) capability-gap estimate, (c) H budget.
-- If the user conflates alignment and control ("we aligned U so we don't need a protocol"), refuse and point to Lesson 9 (alignment faking) — alignment is a property of U; control is a property of the protocol.
+拒绝规则：
+- 如果用户问“这个协议安全吗”，但缺少以下三部分证据，请拒绝判断：（a）红队结果；（b）能力差距估计；（c）H 预算。
+- 如果用户混淆对齐与控制，例如“我们已对齐 U，所以不需要协议”，请否定这种说法，并引导其阅读第 9 课的伪装对齐。对齐是 U 的性质，控制是协议的性质。
 
-Output: a one-page audit that fills the five sections above, names the weakest link (usually T-to-U capability gap or collusion resistance), and states the single largest unaddressed failure mode. Cite Greenblatt et al. (arXiv:2312.06942) once as the threat-model source.
+输出：一页审计，填写上述五个部分，指出最弱环节，通常是 T 与 U 的能力差距或抵抗串通能力，并说明尚未处理的最重要失效模式。引用一次 Greenblatt 等人的论文（arXiv:2312.06942）作为威胁模型来源。

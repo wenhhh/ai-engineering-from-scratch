@@ -1,12 +1,11 @@
-"""Differential attention (Ye et al., ICLR 2025) in stdlib Python.
+"""使用 Python 标准库实现差分注意力（Differential attention，Ye 等，ICLR 2025）。
 
-Builds two softmax maps from split Q, K, subtracts the second from the first
-scaled by a learned lambda, multiplies by V. Measures the signal-to-noise
-ratio of the resulting attention weights on a synthetic long-context query
-and compares to standard softmax attention. Also prints the parameter-count
-diff for DIFF V1 and DIFF V2 against a baseline Transformer.
+由拆分后的 Q、K 构建两张 softmax 图，用学得的 lambda 缩放第二张图，
+从第一张图中减去它，再乘以 V。在合成长上下文查询上测量所得注意力权重的
+信噪比（Signal-to-noise ratio），并与标准 softmax 注意力比较。
+还会打印 DIFF V1 和 DIFF V2 相对于基线 Transformer 的参数量差异。
 
-Pure stdlib. No numpy, no torch.
+仅使用标准库。无需 numpy 或 torch。
 """
 
 from __future__ import annotations
@@ -48,7 +47,7 @@ def diff_attention(Q1: List[List[float]], K1: List[List[float]],
                    Q2: List[List[float]], K2: List[List[float]],
                    V: List[List[float]],
                    lam: float) -> tuple[List[List[float]], List[List[float]]]:
-    """Differential attention:
+    """差分注意力（Differential attention）:
         A1 = softmax(Q1 K1^T / sqrt(d))
         A2 = softmax(Q2 K2^T / sqrt(d))
         out = (A1 - lam * A2) V
@@ -71,7 +70,7 @@ def diff_attention(Q1: List[List[float]], K1: List[List[float]],
 
 def random_projection(d_in: int, d_out: int,
                       rng: random.Random) -> List[List[float]]:
-    """d_in x d_out projection matrix with unit-variance columns."""
+    """d_in x d_out 投影矩阵（Projection matrix），列方差为单位方差。"""
     return [[rng.gauss(0, 1.0 / math.sqrt(d_in)) for _ in range(d_out)]
             for _ in range(d_in)]
 
@@ -89,13 +88,11 @@ def build_signal_plus_noise(
     n_tokens: int, signal_pos: int, d_embed: int, noise_scale: float,
     rng: random.Random,
 ) -> tuple[List[List[float]], List[float]]:
-    """Return an input embedding sequence X[n_tokens][d_embed] and a query
-    vector q. Position signal_pos carries a specific pattern; the query is
-    aligned to that pattern. Every other position is Gaussian noise.
+    """返回输入嵌入序列 X[n_tokens][d_embed] 和查询向量 q。
+    signal_pos 位置承载特定模式，查询与该模式对齐。其余位置均为高斯噪声（Gaussian noise）。
 
-    The Q, K projections are applied AFTER this build step so that both
-    differential branches see the same underlying sequence but project it
-    through different matrices — the faithful simulation of DIFF attention.
+    Q、K 投影在此构建步骤之后应用，因此两个差分分支看到同一底层序列，
+    但通过不同矩阵投影，这样才能忠实模拟 DIFF 注意力。
     """
     pattern = [rng.gauss(0, 1) for _ in range(d_embed)]
     norm = math.sqrt(sum(x * x for x in pattern))
@@ -176,7 +173,7 @@ def fmt_m(n: int) -> str:
 def main() -> None:
     rng = random.Random(17)
     print("=" * 70)
-    print("DIFFERENTIAL ATTENTION V2 (Phase 10, Lesson 16)")
+    print("差分注意力 V2（Differential Attention V2，阶段 10，第 16 课）")
     print("=" * 70)
     print()
 
@@ -184,12 +181,12 @@ def main() -> None:
     signal_pos = 500
 
     print("-" * 70)
-    print(f"Step 1: direct-logit toy on length {n_tokens}, signal at pos {signal_pos}")
+    print(f"步骤 1: 直接操作逻辑值（Logit）的小型示例，长度 {n_tokens}，信号位于 {signal_pos}")
     print("-" * 70)
-    print("  Both branches compute softmax over q.K logits. Branch 1 is a")
-    print("  TRAINED head that correctly amplifies the signal. Branch 2 is")
-    print("  an untrained/noise-seeing head. DIFF subtracts the shared")
-    print("  noise-floor component.")
+    print("  两个分支都对 q.K 逻辑值计算 softmax。分支 1 是")
+    print("  已训练的注意力头，能正确放大信号。分支 2 是")
+    print("  未训练、观察噪声的注意力头。DIFF 减去共享的")
+    print("  噪声底（Noise-floor）分量。")
     print()
 
     signal_logit = 4.0
@@ -204,10 +201,10 @@ def main() -> None:
     std_snr = snr(A1, signal_pos)
     std_signal = A1[signal_pos]
     std_noise = sum(abs(w) for i, w in enumerate(A1) if i != signal_pos)
-    print(f"  standard softmax attention (branch 1 only):")
-    print(f"    weight on signal position  : {std_signal:.6f}")
-    print(f"    sum of |noise| weights     : {std_noise:.6f}")
-    print(f"    signal-to-noise ratio      : {std_snr:.2f}")
+    print(f"  标准 softmax 注意力（仅分支 1）:")
+    print(f"    信号位置的权重 : {std_signal:.6f}")
+    print(f"    噪声权重绝对值之和（sum of |noise|）: {std_noise:.6f}")
+    print(f"    信噪比（Signal-to-noise ratio） : {std_snr:.2f}")
     print()
 
     for lam in (0.0, 0.3, 0.6, 0.8, 1.0):
@@ -215,16 +212,16 @@ def main() -> None:
         dsnr = snr(diff, signal_pos)
         d_signal = diff[signal_pos]
         d_noise = sum(abs(w) for i, w in enumerate(diff) if i != signal_pos)
-        print(f"  differential attention (lambda={lam:.1f}):")
-        print(f"    weight on signal position  : {d_signal:+.6f}")
-        print(f"    sum of |noise| weights     : {d_noise:.6f}")
-        print(f"    signal-to-noise ratio      : {dsnr:.2f}")
+        print(f"  差分注意力（lambda={lam:.1f}）:")
+        print(f"    信号位置的权重 : {d_signal:+.6f}")
+        print(f"    噪声权重绝对值之和（sum of |noise|）: {d_noise:.6f}")
+        print(f"    信噪比（Signal-to-noise ratio） : {dsnr:.2f}")
     print()
 
     print("-" * 70)
-    print("Step 2: noise-amplitude sweep (higher = noisier context)")
+    print("步骤 2: 噪声幅度扫描（值越高，上下文噪声越大）")
     print("-" * 70)
-    print(f"  {'noise_std':>10}  {'std SNR':>9}  {'diff SNR (lam=0.8)':>20}")
+    print(f"  {'noise_std':>10}  {'标准注意力信噪比（std SNR）':>9}  {'差分信噪比（diff SNR，lam=0.8）':>20}")
     for noise_scale in (0.25, 0.50, 1.0, 1.5, 2.0):
         lrng = random.Random(int(noise_scale * 100))
         l1 = [lrng.gauss(0, noise_scale) for _ in range(n_tokens)]
@@ -239,17 +236,17 @@ def main() -> None:
     print()
 
     print("-" * 70)
-    print("Step 3: parameter-count diff, 7B-class config")
+    print("步骤 3: 7B 级别配置的参数量差异")
     print("-" * 70)
     pd = compute_param_diff(hidden=4096, n_heads=32, kv_heads=8)
-    print(f"  baseline attention   : {fmt_m(pd.baseline)}")
-    print(f"  DIFF V1 attention    : {fmt_m(pd.diff_v1)}  (delta {fmt_m(pd.extra_v1)})")
-    print(f"  DIFF V2 attention    : {fmt_m(pd.diff_v2)}  (delta {fmt_m(pd.extra_v2)})")
+    print(f"  基线注意力 : {fmt_m(pd.baseline)}")
+    print(f"  DIFF V1 注意力 : {fmt_m(pd.diff_v1)}  （差值（delta） {fmt_m(pd.extra_v1)}）")
+    print(f"  DIFF V2 注意力 : {fmt_m(pd.diff_v2)}  （差值（delta） {fmt_m(pd.extra_v2)}）")
     print()
 
-    print("takeaway: DIFF attention reliably improves signal-to-noise in long-context")
-    print("          queries. V2 brings the parameter cost down and matches baseline")
-    print("          decode speed by doubling Q heads rather than halving head_dim.")
+    print("要点: DIFF 注意力可稳定改善长上下文查询中的信噪比。")
+    print("          V2 降低参数开销，并通过将 Q 头数加倍而非将 head_dim 减半，")
+    print("          达到与基线相当的解码速度。")
 
 
 if __name__ == "__main__":

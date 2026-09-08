@@ -1,140 +1,140 @@
-# AI Gateways — LiteLLM, Portkey, Kong AI Gateway, Bifrost
+# AI 网关（AI Gateways）：LiteLLM、Portkey、Kong AI Gateway、Bifrost
 
-> A gateway sits between your apps and model providers. Core features are provider routing, fallback, retries, rate limiting, secret references, observability, guardrails. Market split in 2026: **LiteLLM** is MIT OSS with 100+ providers, OpenAI-compatible, but breaks down around ~2000 RPS (8 GB memory, cascading failures in published benchmarks); best for Python, <500 RPS, dev/prototyping. **Portkey** is control-plane-positioned (guardrails, PII redaction, jailbreak detection, audit trails), went Apache 2.0 open-source March 2026, 20-40 ms latency overhead, $49/mo production tier. **Kong AI Gateway** built on Kong Gateway — Kong's own benchmark on same 12 CPUs: 228% faster than Portkey, 859% faster than LiteLLM; $100/model/month pricing (max 5 on Plus tier); enterprise-fit if you're already on Kong. **Bifrost** (Maxim AI) — automatic retries with configurable backoff, fallback to Anthropic on OpenAI 429. **Cloudflare / Vercel AI Gateways** — managed, zero-ops, basic retry. Data residency drives the self-host decision; Portkey and Kong sit in the middle with OSS + optional managed.
+> 网关位于应用与模型提供商之间，核心功能包括提供商路由、回退、重试、限流、密钥引用、可观测性和防护。2026 年的市场格局如下：**LiteLLM** 是采用 MIT 许可的开源软件，支持 100 多家提供商，兼容 OpenAI，但在约 2000 RPS 时会出现故障，公开基准中内存占用为 8 GB，并发生级联故障；最适合 Python、低于 500 RPS、开发和原型场景。**Portkey** 定位为控制平面，提供防护、PII 脱敏、越狱检测和审计轨迹；2026 年 3 月按 Apache 2.0 开源，延迟开销为 20–40ms，生产档位为每月 $49。**Kong AI Gateway** 基于 Kong Gateway，Kong 自身在相同 12 个 CPU 上的基准表明，它比 Portkey 快 228%，比 LiteLLM 快 859%；价格为每模型每月 $100，Plus 档位最多支持 5 个模型；已经使用 Kong 的企业适合采用。**Bifrost**（Maxim AI）支持可配置退避的自动重试，OpenAI 返回 429 时可以回退到 Anthropic。**Cloudflare / Vercel AI Gateway** 是托管产品，无需运维，提供基本重试。数据驻留要求驱动是否自托管的决策；Portkey 和 Kong 处于中间地带，同时提供开源与可选托管方案。
 
 **Type:** Learn
-**Languages:** Python (stdlib, toy gateway-routing simulator)
-**Prerequisites:** Phase 17 · 01 (Managed LLM Platforms), Phase 17 · 16 (Model Routing)
-**Time:** ~60 minutes
+**Languages:** Python（标准库，简化的网关路由模拟器）
+**Prerequisites:** 阶段 17 · 01（托管 LLM 平台），阶段 17 · 16（模型路由）
+**Time:** ~60 分钟
 
-## Learning Objectives
+## 学习目标（Learning Objectives）
 
-- Enumerate the six core gateway features (routing, fallback, retries, rate limits, secrets, observability, guardrails).
-- Map four 2026 gateways (LiteLLM, Portkey, Kong AI, Bifrost) to scale ceilings and use cases.
-- Cite the Kong benchmark (228% vs Portkey, 859% vs LiteLLM) and explain why it matters for >500 RPS.
-- Choose self-hosted vs managed given data residency and ops budget.
+- 列出六项网关核心功能：路由、回退、重试、限流、密钥、可观测性和防护。
+- 将 2026 年的四种网关 LiteLLM、Portkey、Kong AI、Bifrost 与其规模上限和使用场景对应起来。
+- 引用 Kong 基准：相比 Portkey 快 228%，相比 LiteLLM 快 859%，并解释为什么这对超过 500 RPS 的场景重要。
+- 根据数据驻留要求和运维预算，在自托管与托管之间做出选择。
 
-## The Problem
+## 问题（The Problem）
 
-Your product calls OpenAI, Anthropic, and a self-hosted Llama. Each provider has a different SDK, error model, rate limit, and auth scheme. You want failover (if OpenAI 429s, try Anthropic), a single credential store, unified observability, and rate limits per tenant.
+你的产品调用 OpenAI、Anthropic 和自托管 Llama。各提供商的 SDK、错误模型、限流及认证机制不同。你希望实现故障转移，例如 OpenAI 返回 429 时尝试 Anthropic，同时使用统一凭据存储、统一可观测性和按租户限流。
 
-Reinventing this at the app layer couples every service to every provider. A gateway layer consolidates it into one process with one API (typically OpenAI-compatible) that fans out to providers.
+在应用层重复实现这些能力，会让每个服务都与每家提供商耦合。网关层将其集中到一个进程，通过一个 API（通常兼容 OpenAI）向不同提供商分发请求。
 
-## The Concept
+## 概念（The Concept）
 
-### Six core features
+### 六项核心功能（Six core features）
 
-1. **Provider routing** — OpenAI, Anthropic, Gemini, self-hosted, etc. behind one API.
-2. **Fallback** — on 429, 5xx, or quality failure, retry elsewhere.
-3. **Retries** — exponential backoff, bounded attempts.
-4. **Rate limits** — per-tenant, per-key, per-model.
-5. **Secret references** — pull credentials from vault at runtime (never in app).
-6. **Observability** — OTel + GenAI attributes (Phase 17 · 13) + cost attribution.
-7. **Guardrails** — PII redaction, jailbreak detection, allowed-topics filters.
+1. **提供商路由（provider routing）**：将 OpenAI、Anthropic、Gemini、自托管模型等放在同一个 API 后面。
+2. **回退（fallback）**：遇到 429、5xx 或质量失败时，换一个目标重试。
+3. **重试（retries）**：指数退避，并限制尝试次数。
+4. **限流（rate limits）**：按租户、密钥和模型限制流量。
+5. **密钥引用（secret references）**：运行时从保险库获取凭据，绝不放在应用中。
+6. **可观测性（observability）**：OTel + GenAI 属性（阶段 17 · 13）+ 成本归因。
+7. **防护（guardrails）**：PII 脱敏、越狱检测、允许主题过滤。
 
-### LiteLLM — MIT OSS, Python
+### LiteLLM：MIT 开源，使用 Python（LiteLLM — MIT OSS, Python）
 
-- 100+ providers, OpenAI-compatible, router config, fallback, basic observability.
-- Breaks down around 2000 RPS in Kong's benchmark; 8 GB memory footprint, cascading failures under sustained load.
-- Best fit: Python app, <500 RPS, dev/staging gateways, experimental routing.
-- Cost: $0 for OSS; cloud free tier exists.
+- 支持 100 多家提供商，兼容 OpenAI，提供路由器配置、回退和基本可观测性。
+- 在 Kong 基准中，约 2000 RPS 时出现故障；内存占用 8 GB，持续负载下出现级联故障。
+- 最适合 Python 应用、低于 500 RPS 的场景、开发或预发布网关，以及实验性路由。
+- 费用：开源版 $0；云端有免费档位。
 
-### Portkey — control plane positioning
+### Portkey：控制平面定位（Portkey — control plane positioning）
 
-- Apache 2.0 OSS as of March 2026. Guardrails, PII redaction, jailbreak detection, audit trails.
-- 20-40 ms per-request latency overhead.
-- $49/mo for production tier with retention + SLA.
-- Best fit: regulated industries needing guardrails + observability bundled.
+- 自 2026 年 3 月起按 Apache 2.0 开源，提供防护、PII 脱敏、越狱检测和审计轨迹。
+- 每请求延迟开销为 20–40ms。
+- 带数据保留和 SLA 的生产档位为每月 $49。
+- 最适合需要整合防护与可观测性的受监管行业。
 
-### Kong AI Gateway — the scale play
+### Kong AI Gateway：面向规模化（Kong AI Gateway — the scale play）
 
-- Built on Kong Gateway (mature API gateway product, lua+OpenResty).
-- Kong's own benchmark on 12-CPU equivalent: 228% faster than Portkey, 859% faster than LiteLLM.
-- Pricing: $100/model/month, max 5 on Plus tier.
-- Best fit: already on Kong; >1000 RPS; willing to license.
+- 基于 Kong Gateway，后者是成熟 API 网关产品，采用 lua + OpenResty。
+- Kong 自身在等效 12 个 CPU 上的基准表明，它比 Portkey 快 228%，比 LiteLLM 快 859%。
+- 定价为每模型每月 $100，Plus 档位最多 5 个模型。
+- 最适合已经使用 Kong、超过 1000 RPS 且愿意付费购买许可的团队。
 
-### Bifrost (Maxim AI)
+### Bifrost（Maxim AI）
 
-- Automatic retries with configurable backoff.
-- Fallback to Anthropic on OpenAI 429 is a canonical recipe.
-- Newer entrant; commercial.
+- 支持自动重试和可配置退避。
+- OpenAI 返回 429 时回退到 Anthropic，是典型配置方案。
+- 较新的商业产品。
 
-### Cloudflare AI Gateway / Vercel AI Gateway
+### 托管边缘网关（Cloudflare AI Gateway / Vercel AI Gateway）
 
-- Managed, zero-ops. Basic retry and observability.
-- Best fit: Edge-serving JavaScript apps on Cloudflare/Vercel.
-- Limited compared to Kong/Portkey on guardrails and rate limits.
+- 托管，无需运维，提供基本重试和可观测性。
+- 最适合在 Cloudflare/Vercel 上提供边缘服务的 JavaScript 应用。
+- 防护与限流能力相比 Kong/Portkey 有限。
 
-### Self-hosted vs managed
+### 自托管与托管（Self-hosted vs managed）
 
-Data residency is the forcing function. Healthcare and finance default self-host (LiteLLM or Portkey OSS or Kong). Consumer products default managed (Cloudflare AI Gateway) or middle-tier (Portkey managed). Hybrid: self-hosted for regulated tenant, managed for others.
+数据驻留是决定性约束。医疗和金融通常默认选择自托管，如 LiteLLM、Portkey 开源版或 Kong。消费产品通常默认选择托管方案，如 Cloudflare AI Gateway，或中间档位的 Portkey 托管版。也可采用混合方案：受监管租户自托管，其他租户使用托管服务。
 
-### Latency budget
+### 延迟预算（Latency budget）
 
-- LiteLLM: 5-15 ms overhead typical.
-- Portkey: 20-40 ms overhead.
-- Kong: 3-8 ms overhead.
-- Cloudflare/Vercel: 1-3 ms overhead (edge advantage).
+- LiteLLM：典型开销 5–15ms。
+- Portkey：开销 20–40ms。
+- Kong：开销 3–8ms。
+- Cloudflare/Vercel：开销 1–3ms，得益于边缘部署。
 
-Gateway latency directly adds to TTFT. For TTFT P99 < 100 ms SLA, Kong or Cloudflare. For P99 < 500 ms, any.
+网关延迟直接叠加到首词元延迟（TTFT）。若 SLA 要求 TTFT P99 <100ms，选择 Kong 或 Cloudflare；若 P99 <500ms，则任一种都可以。
 
-### Rate-limit semantics matter
+### 限流语义很重要（Rate-limit semantics matter）
 
-Simple token-bucket works up to moderate scale. Multi-tenant requires sliding-window + burst allowance + per-tenant tiering. LiteLLM ships token-bucket; Kong ships sliding-window; Portkey ships tiered.
+简单令牌桶（token-bucket）适用于中等规模。多租户需要滑动窗口（sliding-window）、突发额度和按租户分档。LiteLLM 提供令牌桶，Kong 提供滑动窗口，Portkey 提供分档限流。
 
-### Gateway + observability + routing compose
+### 网关、可观测性与路由可以组合（Gateway + observability + routing compose）
 
-Phase 17 · 13 (observability) + 16 (model routing) + 19 (gateways) are the same layer in production. Pick one tool that covers all three or wire them carefully: most 2026 deployments combine Helicone (observability) or Portkey (guardrails) with Kong (scale) for split roles.
+阶段 17 · 13（可观测性）、16（模型路由）和 19（网关）在生产环境中属于同一层。可以选择覆盖三者的工具，也可以仔细连接多个工具：2026 年多数部署将 Helicone（可观测性）或 Portkey（防护）与 Kong（规模化）组合，分别承担职责。
 
-### Numbers you should remember
+### 应记住的数字（Numbers you should remember）
 
-- LiteLLM: breaks at ~2000 RPS, 8 GB memory.
-- Portkey: 20-40 ms overhead; Apache 2.0 since March 2026.
-- Kong: 228% faster than Portkey, 859% faster than LiteLLM.
-- Kong pricing: $100/model/month, 5 max on Plus tier.
-- Cloudflare/Vercel: 1-3 ms overhead at the edge.
+- LiteLLM：约 2000 RPS 时出现故障，内存占用 8 GB。
+- Portkey：开销 20–40ms；自 2026 年 3 月起使用 Apache 2.0。
+- Kong：比 Portkey 快 228%，比 LiteLLM 快 859%。
+- Kong 定价：每模型每月 $100，Plus 档位最多 5 个。
+- Cloudflare/Vercel：边缘开销 1–3ms。
 
 ```figure
 mx-gateway-fallback
 ```
 
-## Use It
+## 动手使用（Use It）
 
-`code/main.py` simulates gateway routing with fallback across 3 providers under 429/5xx injection. Reports latency, retry rate, and fallback hit rate.
+`code/main.py` 在注入 429/5xx 错误时，模拟跨 3 家提供商的网关路由和回退，报告延迟、重试率和回退命中率。
 
-## Ship It
+## 交付成果（Ship It）
 
-This lesson produces `outputs/skill-gateway-picker.md`. Given scale, ops posture, compliance, latency budget, picks a gateway.
+本课产出 `outputs/skill-gateway-picker.md`。它根据规模、运维条件、合规要求和延迟预算选择网关。
 
-## Exercises
+## 练习（Exercises）
 
-1. Run `code/main.py`. Configure fallback from OpenAI→Anthropic→self-hosted. What's the expected hit rate at 5% provider error rate?
-2. Your SLA is TTFT P99 < 200 ms on a 300 ms baseline. Which gateways stay within budget?
-3. A healthcare customer requires self-hosted + PII redaction + audit. Pick Portkey OSS or Kong.
-4. Compare LiteLLM vs Kong: at what RPS ceiling should a team migrate?
-5. Design a rate-limit policy for a multi-tenant SaaS: free tier, trial tier, paid tier. Token-bucket or sliding-window?
+1. 运行 `code/main.py`，配置 OpenAI→Anthropic→自托管的回退链。提供商错误率为 5% 时，预期命中率是多少？
+2. 你的基准延迟为 300ms，SLA 却要求 TTFT P99 <200ms。哪些网关能保持在预算内？
+3. 医疗客户要求自托管、PII 脱敏和审计。选择 Portkey 开源版或 Kong。
+4. 比较 LiteLLM 与 Kong：团队应在达到什么 RPS 上限时迁移？
+5. 为多租户 SaaS 设计限流策略，包括免费档、试用档和付费档。应选令牌桶还是滑动窗口？
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语 | 常见说法 | 实际含义 |
 |------|----------------|------------------------|
-| Gateway | "API broker" | Process sitting between apps and providers |
-| LiteLLM | "the MIT one" | Python OSS, 100+ providers, breaks at 2K RPS |
-| Portkey | "guardrails gateway" | Control plane + observability, Apache 2.0 |
-| Kong AI Gateway | "the scale one" | Built on Kong Gateway, benchmark leader |
-| Bifrost | "Maxim's gateway" | Retries + Anthropic fallback recipe |
-| Cloudflare AI Gateway | "edge managed" | Edge-deployed managed gateway, zero-ops |
-| PII redaction | "data scrub" | Regex + NER mask before sending to model |
-| Jailbreak detection | "prompt injection guard" | Classifier on user input |
-| Audit trail | "regulated log" | Immutable record of every LLM call |
-| Token-bucket | "simple rate limit" | Refill-based rate limiter |
-| Sliding-window | "precise rate limit" | Time-windowed rate limiter; better fairness |
+| 网关（Gateway） | “API 代理” | 位于应用和提供商之间的进程 |
+| LiteLLM | “MIT 许可的那个” | Python 开源产品，支持 100 多家提供商，2K RPS 时出现故障 |
+| Portkey | “防护网关” | 控制平面与可观测性，Apache 2.0 |
+| Kong AI Gateway | “适合大规模的那个” | 基于 Kong Gateway，在基准中领先 |
+| Bifrost | “Maxim 的网关” | 重试及 Anthropic 回退方案 |
+| Cloudflare AI Gateway | “边缘托管” | 部署在边缘的托管网关，无需运维 |
+| PII 脱敏（PII redaction） | “数据清洗” | 发给模型前，用正则表达式与命名实体识别（NER）遮蔽信息 |
+| 越狱检测（Jailbreak detection） | “提示词注入防护” | 对用户输入运行分类器 |
+| 审计轨迹（Audit trail） | “合规日志” | 每次 LLM 调用的不可变记录 |
+| 令牌桶（Token-bucket） | “简单限流” | 通过补充令牌控制速率 |
+| 滑动窗口（Sliding-window） | “精确限流” | 基于时间窗口的限流器，公平性更好 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [Kong AI Gateway Benchmark](https://konghq.com/blog/engineering/ai-gateway-benchmark-kong-ai-gateway-portkey-litellm)
-- [TrueFoundry — AI Gateways 2026 Comparison](https://www.truefoundry.com/blog/a-definitive-guide-to-ai-gateways-in-2026-competitive-landscape-comparison)
-- [Techsy — Top LLM Gateway Tools 2026](https://techsy.io/en/blog/best-llm-gateway-tools)
-- [LiteLLM GitHub](https://github.com/BerriAI/litellm)
-- [Portkey GitHub](https://github.com/Portkey-AI/gateway)
-- [Kong AI Gateway docs](https://docs.konghq.com/gateway/latest/ai-gateway/)
+- [Kong AI Gateway 基准测试](https://konghq.com/blog/engineering/ai-gateway-benchmark-kong-ai-gateway-portkey-litellm)
+- [TrueFoundry：2026 年 AI 网关对比](https://www.truefoundry.com/blog/a-definitive-guide-to-ai-gateways-in-2026-competitive-landscape-comparison)
+- [Techsy：2026 年主流 LLM 网关工具](https://techsy.io/en/blog/best-llm-gateway-tools)
+- [LiteLLM 的 GitHub 仓库](https://github.com/BerriAI/litellm)
+- [Portkey 的 GitHub 仓库](https://github.com/Portkey-AI/gateway)
+- [Kong AI Gateway 文档](https://docs.konghq.com/gateway/latest/ai-gateway/)

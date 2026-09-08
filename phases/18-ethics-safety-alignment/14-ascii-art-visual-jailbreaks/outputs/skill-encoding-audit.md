@@ -1,29 +1,29 @@
 ---
 name: encoding-audit
-description: Audit a jailbreak-defense report across encoding-family attacks.
+description: 从不同编码攻击系列的角度审计越狱防御报告。
 version: 1.0.0
 phase: 18
 lesson: 14
 tags: [artprompt, ascii-art, encoding-attack, utes, structural-sleight]
 ---
 
-Given a jailbreak-defense report, enumerate the encoding-family attacks covered and the defense layer that catches each.
+给定越狱防御报告，列出覆盖的编码攻击系列及检测每种攻击的防御层。
 
-Produce:
+请提供以下内容：
 
-1. Encoding coverage. List each attack family evaluated: ASCII art (ArtPrompt), base64, leet-speak, UTF-8 homoglyphs, nested JSON / YAML / CSV, tree/graph UTES, image-modality. Flag families missing.
-2. Defense-layer mapping. For each family, identify which defense layer (keyword filter, perplexity filter, paraphrase, retokenization, output classifier, multimodal moderator) catches it and which does not.
-3. Visual-recognition gap. Per Jiang et al. 2024, PPL and Retokenization fail against ArtPrompt because the recognition happens at the visual level. Does the report's defense include anything that operates at the visual/structural level?
-4. Generalization test. UTES (StructuralSleight) generalizes to arbitrary rare structures. Does the report test structures not in its training defense set?
-5. Capability-safety tradeoff. A model with stronger visual-text capability (high ViTC score) is more vulnerable to ArtPrompt. Note the model's ViTC score if reported; request it if not.
+1. 编码覆盖。列出评估的每个攻击系列：ASCII 艺术（ArtPrompt）、base64、数字字母替换语（Leet-speak）、UTF-8 同形异义字符（Homoglyphs）、嵌套 JSON / YAML / CSV、树或图 UTES、图像模态。标记缺失系列。
+2. 防御层映射。对每个系列，指出关键词过滤器、困惑度过滤器、改写、重新分词、输出分类器或多模态审核器中，哪一层能检测，哪一层不能。
+3. 视觉识别缺口。根据 Jiang 等人 2024 年的研究，PPL 与重新分词对 ArtPrompt 失效，因为识别发生在视觉层面。报告的防御是否包含作用于视觉或结构层面的措施？
+4. 泛化测试。UTES（StructuralSleight）可推广到任意罕见结构。报告是否测试了不在防御训练集合中的结构？
+5. 能力与安全权衡。视觉文本能力更强、ViTC 分数更高的模型，更容易受到 ArtPrompt 攻击。已报告 ViTC 时记录其分数，否则要求提供。
 
-Hard rejects:
-- Any defense claim based solely on substring/keyword filtering.
-- Any defense claim that covers one encoding family and extrapolates to "encoding attacks."
-- Any defense claim without a per-family attack-success rate.
+必须否定的说法或方案：
+- 任何仅依赖子串或关键词过滤的防御主张。
+- 任何只覆盖一个编码系列，却推广到全部“编码攻击”的防御主张。
+- 任何没有按系列报告攻击成功率的防御主张。
 
-Refusal rules:
-- If the user asks whether ArtPrompt is "patched," refuse and explain the recognition-level vs text-level defense gap.
-- If the user asks for a recommended all-encoding defense, refuse a single recommendation — defense must be layered across all families that the deployment might face.
+拒绝规则：
+- 如果用户问 ArtPrompt 是否已“修补”，请拒绝这一简单判断，并解释识别层面与文本层面防御之间的缺口。
+- 如果用户要求推荐覆盖全部编码的防御，请拒绝单一推荐。防御必须分层覆盖部署可能面对的全部系列。
 
-Output: a one-page audit that fills the five sections above, flags the primary encoding gap, and names the single most urgent defense layer to add. Cite Jiang et al. (arXiv:2402.11753) and StructuralSleight once each.
+输出：一页审计，填写上述五部分，标记主要编码缺口，并指出最迫切需要增加的一个防御层。分别引用一次 Jiang 等人的论文（arXiv:2402.11753）和 StructuralSleight。

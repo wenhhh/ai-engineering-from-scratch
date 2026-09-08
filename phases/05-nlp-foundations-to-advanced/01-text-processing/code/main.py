@@ -71,10 +71,10 @@ def demo_pos_tagger(tokens):
 def main():
     text = "The cats were running at 3pm."
     result = preprocess(text, pos_tagger=demo_pos_tagger)
-    print(f"input:  {text}")
-    print(f"tokens: {result['tokens']}")
-    print(f"stems:  {result['stems']}")
-    print(f"lemmas: {result['lemmas']}")
+    print(f"输入（Input，保留英文以演示词形处理）:  {text}")
+    print(f"词元（Tokens）: {result['tokens']}")
+    print(f"词干（Stems）:  {result['stems']}")
+    print(f"词元原形（Lemmas）: {result['lemmas']}")
 
 
 if __name__ == "__main__":

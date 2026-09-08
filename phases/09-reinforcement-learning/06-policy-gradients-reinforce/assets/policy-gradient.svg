@@ -6,44 +6,44 @@
     <style>
       .box { fill: #faf6ef; stroke: #1a1a1a; stroke-width: 1.5; }
       .hot { fill: #fff1d6; stroke: #c0392b; stroke-width: 1.5; }
-      .label { font-size: 14px; font-weight: 600; fill: #1a1a1a; }
-      .content { font-size: 12px; fill: #333; font-family: 'Menlo', monospace; }
+      .label { font-size: 12px; font-weight: 600; fill: #1a1a1a; }
+      .content { font-size: 11px; fill: #333; font-family: 'Menlo', monospace; }
       .caption { font-size: 11px; fill: #555; font-style: italic; }
       .title { font-size: 16px; font-weight: 700; fill: #1a1a1a; }
     </style>
   </defs>
 
-  <text x="450" y="30" text-anchor="middle" class="title">REINFORCE — gradient ascent on expected return</text>
+  <text x="450" y="30" text-anchor="middle" class="title">REINFORCE：对期望回报（Expected Return）进行梯度上升</text>
 
   <rect x="40" y="60" width="820" height="70" class="box"/>
-  <text x="60" y="85" class="label">policy gradient theorem</text>
+  <text x="60" y="85" class="label">策略梯度定理（Policy Gradient Theorem）</text>
   <text x="60" y="108" class="content">grad J(theta) = E_pi [ sum_t  G_t  *  grad_theta log pi_theta(a_t | s_t) ]</text>
 
   <rect x="40" y="150" width="820" height="80" class="hot"/>
-  <text x="60" y="175" class="label">one rollout, one update</text>
-  <text x="60" y="198" class="content">roll out tau ~ pi_theta,  compute returns G_0, G_1, ..., G_T</text>
-  <text x="60" y="218" class="content">for each (s_t, a_t):  theta += lr * (G_t - b(s_t)) * grad log pi_theta(a_t | s_t)</text>
+  <text x="60" y="175" class="label">一条轨迹（Rollout），一次更新</text>
+  <text x="60" y="198" class="content">采集轨迹 tau ~ pi_theta，计算回报 G_0, G_1, ..., G_T</text>
+  <text x="60" y="218" class="content">对每个 (s_t, a_t)：  theta += lr * (G_t - b(s_t)) * grad log pi_theta(a_t | s_t)</text>
 
   <rect x="40" y="250" width="260" height="140" class="box"/>
-  <text x="170" y="275" text-anchor="middle" class="label">sample action</text>
+  <text x="170" y="275" text-anchor="middle" class="label">采样动作（Sample Action）</text>
   <text x="60" y="300" class="content">logits = f_theta(s)</text>
   <text x="60" y="320" class="content">p = softmax(logits)</text>
   <text x="60" y="340" class="content">a ~ Categorical(p)</text>
-  <text x="170" y="370" text-anchor="middle" class="caption">stochastic by design</text>
+  <text x="170" y="370" text-anchor="middle" class="caption">设计为随机策略（Stochastic Policy）</text>
 
   <rect x="320" y="250" width="260" height="140" class="box"/>
-  <text x="450" y="275" text-anchor="middle" class="label">credit assignment</text>
+  <text x="450" y="275" text-anchor="middle" class="label">信用分配（Credit Assignment）</text>
   <text x="340" y="300" class="content">G_t = sum_{k&gt;=t} g^{k-t} r_{k+1}</text>
-  <text x="340" y="320" class="content">reward-to-go only</text>
-  <text x="340" y="340" class="content">baseline: G_t - V(s_t)</text>
-  <text x="450" y="370" text-anchor="middle" class="caption">unbiased, lower variance</text>
+  <text x="340" y="320" class="content">仅使用后续回报（Reward-to-go）</text>
+  <text x="340" y="340" class="content">基线（Baseline）：G_t - V(s_t)</text>
+  <text x="450" y="370" text-anchor="middle" class="caption">无偏（Unbiased），方差更低</text>
 
   <rect x="600" y="250" width="260" height="140" class="box"/>
-  <text x="730" y="275" text-anchor="middle" class="label">apply gradient</text>
+  <text x="730" y="275" text-anchor="middle" class="label">应用梯度（Apply Gradient）</text>
   <text x="620" y="300" class="content">grad log pi = e_a - p</text>
   <text x="620" y="320" class="content">theta += lr * adv * grad</text>
-  <text x="620" y="340" class="content">+ entropy bonus</text>
-  <text x="730" y="370" text-anchor="middle" class="caption">on-policy, batched</text>
+  <text x="620" y="340" class="content">+ 熵奖励（Entropy Bonus）</text>
+  <text x="730" y="370" text-anchor="middle" class="caption">同策略（On-policy），批量更新</text>
 
-  <text x="450" y="430" text-anchor="middle" class="caption">PPO = REINFORCE + clipped IS ratio  ·  GRPO = REINFORCE + group-relative baseline  ·  DPO = REINFORCE without sampling</text>
+  <text x="450" y="430" text-anchor="middle" class="caption">PPO = REINFORCE + 裁剪的 IS 比率 · GRPO = REINFORCE + 组相对基线 · DPO = 无采样的 REINFORCE</text>
 </svg>

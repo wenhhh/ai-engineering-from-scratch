@@ -104,9 +104,9 @@ def evaluate(theta, episodes=200, rng=None):
 
 
 def main():
-    print("=== GRPO in miniature: tiny verifier bandit ===")
-    print(f"prompts: {[q['prompt'] for q in QUESTIONS]}")
-    print(f"correct answers: {[q['correct'] for q in QUESTIONS]}")
+    print("=== 微型组相对策略优化（GRPO）：带验证器的简易多臂老虎机（Bandit） ===")
+    print(f"提示词（Prompt，保留英文测试语料）：{[q['prompt'] for q in QUESTIONS]}")
+    print(f"正确答案：{[q['correct'] for q in QUESTIONS]}")
     print()
 
     theta_grpo, hist_grpo = train_grpo(updates=400, rng=random.Random(3))
@@ -120,20 +120,20 @@ def main():
     grpo_curve = block_mean(grpo_rewards, 50)
     kl_curve = block_mean([kl for _m, kl in hist_grpo], 50)
 
-    print(f"{'block':<8}{'GRPO mean_r':<16}{'GRPO mean_KL':<18}{'REINFORCE mean_r':<18}")
+    print(f"{'分组':<8}{'GRPO 平均奖励':<16}{'GRPO 平均 KL':<18}{'REINFORCE 平均奖励':<18}")
     for i, (g, k, rf) in enumerate(zip(grpo_curve, kl_curve, rf_curve)):
         print(f"{i+1:<8}{g:<16.3f}{k:<18.4f}{rf:<18.3f}")
 
     print()
     grpo_acc = evaluate(theta_grpo)
     rf_acc = evaluate(theta_rf)
-    print(f"greedy evaluation accuracy:")
+    print(f"贪心评估准确率：")
     print(f"  GRPO       = {grpo_acc*100:.1f}%")
     print(f"  REINFORCE  = {rf_acc*100:.1f}%")
 
     print()
-    print("GRPO uses the group-mean as baseline and group-std for normalization —")
-    print("no critic, no reward model. This is the DeepSeek-R1 recipe in one page.")
+    print("GRPO 用组内均值（Group Mean）作基线，用组内标准差（Group Standard Deviation）归一化；")
+    print("无需评论家（Critic）或奖励模型（Reward Model）。这一页代码概括了 DeepSeek-R1 的训练思路。")
 
 
 if __name__ == "__main__":

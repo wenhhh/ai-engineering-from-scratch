@@ -2,55 +2,55 @@
   "questions": [
     {
       "stage": "pre",
-      "question": "Why do AI projects need a separate virtual environment?",
+      "question": "为什么 AI 项目需要独立的虚拟环境（Virtual Environment）？",
       "options": [
-        "Python requires virtual environments to import packages",
-        "They isolate dependencies so different projects don't conflict",
-        "Virtual environments make code run faster",
-        "Virtual environments provide GPU access"
+        "Python 必须借助虚拟环境才能导入包",
+        "它们隔离依赖，使不同项目互不冲突",
+        "虚拟环境能让代码运行得更快",
+        "虚拟环境提供 GPU 访问能力"
       ],
       "correct": 1,
-      "explanation": "Virtual environments isolate package versions per project. Without them, upgrading PyTorch for one project can break another that depends on an older version."
+      "explanation": "虚拟环境按项目隔离包版本。不使用虚拟环境时，为一个项目升级 PyTorch，可能会破坏另一个依赖旧版本的项目。"
     },
     {
       "stage": "pre",
-      "question": "What does CUDA provide for AI workloads?",
+      "question": "CUDA 为 AI 工作负载（Workload）提供什么能力？",
       "options": [
-        "Parallel computing on NVIDIA GPUs for matrix operations",
-        "A Python package manager for ML libraries",
-        "A web framework for deploying models",
-        "A container runtime for model serving"
+        "在 NVIDIA GPU 上进行矩阵运算的并行计算能力",
+        "用于机器学习（Machine Learning，ML）库的 Python 包管理器",
+        "用于部署模型的 Web 框架",
+        "用于模型服务（Model Serving）的容器运行时"
       ],
       "correct": 0,
-      "explanation": "CUDA is NVIDIA's parallel computing platform that lets you run matrix operations on thousands of GPU cores simultaneously. PyTorch and TensorFlow use it under the hood."
+      "explanation": "CUDA 是 NVIDIA 的并行计算平台，可以让数千个 GPU 核心同时执行矩阵运算。PyTorch 和 TensorFlow 在底层使用它。"
     },
     {
       "stage": "post",
-      "question": "In the four-layer environment stack, which layer must be installed first?",
+      "question": "在四层环境技术栈中，必须先安装哪一层？",
       "options": [
-        "Language Runtimes (Python, Node.js)",
-        "System Foundation (OS, shell, GPU drivers)",
-        "Package Managers (pip, npm, cargo)",
-        "AI/ML Libraries (PyTorch, JAX)"
+        "语言运行时（Language Runtime，如 Python、Node.js）",
+        "系统基础（操作系统、shell、GPU 驱动）",
+        "包管理器（Package Manager，如 pip、npm、cargo）",
+        "AI/机器学习库（PyTorch、JAX）"
       ],
       "correct": 1,
-      "explanation": "You install bottom-up: system foundation first (OS, drivers), then package managers, then language runtimes, then AI libraries. Each layer depends on the one below."
+      "explanation": "安装应自底向上进行：先配置系统基础（操作系统、驱动），再安装包管理器、语言运行时，最后安装 AI 库。每一层都依赖下面的一层。"
     },
     {
       "stage": "post",
-      "question": "What is the purpose of uv in a Python AI project?",
+      "question": "uv 在 Python AI 项目中有什么用途？",
       "options": [
-        "A GPU monitoring tool",
-        "A neural network visualization library",
-        "An ultra-fast Python package installer and resolver",
-        "A CUDA compiler for custom kernels"
+        "GPU 监控工具",
+        "神经网络可视化库",
+        "高速 Python 包安装器和依赖解析器",
+        "用于自定义内核（Kernel）的 CUDA 编译器"
       ],
       "correct": 2,
-      "explanation": "uv is a fast Python package installer written in Rust. It replaces pip with much faster dependency resolution and installation, often 10-100x faster."
+      "explanation": "uv 是用 Rust 编写的高速 Python 包安装器。它可替代 pip，显著加快依赖解析与安装，通常快 10–100 倍。"
     },
     {
       "stage": "post",
-      "question": "How do you verify that PyTorch can access your GPU?",
+      "question": "如何验证 PyTorch 能否访问你的 GPU？",
       "options": [
         "python -c 'import gpu'",
         "import torch; print(torch.cuda.is_available())",
@@ -58,7 +58,7 @@
         "nvidia-smi --query"
       ],
       "correct": 1,
-      "explanation": "torch.cuda.is_available() returns True if PyTorch can access CUDA GPUs. On Apple Silicon, use torch.backends.mps.is_available() for Metal Performance Shaders."
+      "explanation": "如果 PyTorch 能访问 CUDA GPU，torch.cuda.is_available() 会返回 True。在 Apple Silicon 上，使用 torch.backends.mps.is_available() 检查 Metal Performance Shaders（MPS）是否可用。"
     }
   ]
 }

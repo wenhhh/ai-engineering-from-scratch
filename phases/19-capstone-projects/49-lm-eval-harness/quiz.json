@@ -1,78 +1,78 @@
 {
   "lesson": "49-lm-eval-harness",
-  "title": "Language Model Evaluation Harness",
+  "title": "语言模型评估运行框架（Language Model Evaluation Harness）",
   "questions": [
     {
       "stage": "pre",
-      "question": "What four fields define a task example in the harness's JSONL format?",
+      "question": "框架 JSONL 格式中，哪四个字段定义任务样本？",
       "options": [
-        "id, prompt, targets, metric, and an optional extras dict for side data the metric needs",
+        "id、prompt、targets、metric，以及承载指标所需附加数据的可选 extras 字典",
         "name, score, payload, vendor",
-        "weights and bias",
-        "input and output"
+        "权重和偏置",
+        "输入和输出"
       ],
       "correct": 0,
-      "explanation": "The JSONL line is the contract. The extras field lets the code_exec metric pass io_pairs without polluting the prompt."
+      "explanation": "JSONL 行就是契约。extras 让 code_exec 指标传递 io_pairs，而不污染提示词。"
     },
     {
       "stage": "pre",
-      "question": "Why is the metric function signature (prediction, targets, extras) -> float?",
+      "question": "为什么指标函数签名是 (prediction, targets, extras) -> float？",
       "options": [
-        "It returns an integer",
-        "It needs the model object",
-        "It is the smallest signature that handles single-target string match, multi-reference rouge-l, and code_exec with side data, while keeping scores in a comparable [0.0, 1.0] range",
-        "Random choice"
+        "它返回整数",
+        "它需要模型对象",
+        "这是处理单目标字符串匹配、多参考 rouge-l、带附加数据 code_exec 的最小签名，同时使分数保持在可比较的 [0.0, 1.0] 范围",
+        "随意选择"
       ],
       "correct": 2,
-      "explanation": "Floats in [0,1] mean per-task and overall scores are interpretable averages. The extras slot is how code_exec gets its io_pairs."
+      "explanation": "[0,1] 浮点数使逐任务与总分成为可解释均值，extras 是 code_exec 获取 io_pairs 的位置。"
     },
     {
       "stage": "check",
-      "question": "How does the code_exec metric resist malicious predictions?",
+      "question": "code_exec 指标如何抵抗恶意预测？",
       "options": [
-        "It uses sandbox containers",
-        "It runs the prediction with a stripped __builtins__ dict so the namespace exposes only a few safe names; import statements fail because the importer is not in scope",
-        "It does not",
-        "It rejects anything that contains def"
+        "使用沙箱容器",
+        "使用删减的 __builtins__ 字典运行预测，只暴露少量安全名称；导入器不在作用域，import 语句失败",
+        "没有抵抗",
+        "拒绝任何含 def 的内容"
       ],
       "correct": 1,
-      "explanation": "The lesson's safe namespace strips builtins down to a handful of names. The test asserts that import os returns score 0.0 instead of executing."
+      "explanation": "本课安全命名空间仅保留少量内置名称。测试断言 import os 得分 0.0，而非被执行。"
     },
     {
       "stage": "check",
-      "question": "What does the model adapter abstraction buy you?",
+      "question": "模型适配器抽象带来什么？",
       "options": [
-        "It is the only model-specific code in the harness; swap the adapter to point at a new vendor, and the tasks, metrics, runner, and leaderboard format stay the same",
-        "It is required by torch",
-        "Nothing",
-        "It makes the model faster"
+        "它是框架唯一模型专用代码；换适配器指向新供应商，任务、指标、运行器和排行榜格式不变",
+        "torch 要求这样",
+        "没有作用",
+        "让模型更快"
       ],
       "correct": 0,
-      "explanation": "ToyAdapter in the lesson is a deterministic pattern matcher. An HttpAdapter for a real vendor has the same generate(prompts) -> list[str] surface."
+      "explanation": "本课 ToyAdapter 是确定性模式匹配器。真实供应商的 HttpAdapter 具有同样 generate(prompts) -> list[str] 接口。"
     },
     {
       "stage": "check",
-      "question": "Why does the leaderboard JSON carry a schema string like leaderboard.v1?",
+      "question": "为什么排行榜 JSON 携带 leaderboard.v1 等模式字符串？",
       "options": [
-        "So future format changes bump the version and downstream dashboards can dispatch on it instead of breaking silently",
-        "It compresses the file",
-        "For SEO",
-        "It is random"
+        "未来格式变化提升版本，让下游看板据此分派，而非静默损坏",
+        "压缩文件",
+        "用于搜索引擎优化（SEO）",
+        "随意设置"
       ],
       "correct": 0,
-      "explanation": "Same trick as the checkpoint payload from lesson 47. The schema field is the migration hook."
+      "explanation": "与第 47 课检查点载荷采用同一技巧，schema 字段是迁移钩子。"
     },
     {
       "stage": "post",
-      "question": "Reading a leaderboard, overall_score is computed how, and what should you watch for when comparing two runs?",
+      "question": "排行榜 overall_score 如何计算，比较两次运行应留意什么？",
       "options": [
-        "Random sample",
-        "Sum of correct counts",
-        "Mean of per-task scores (each in [0,1]); when comparing, also diff per-example predictions for tasks whose scores moved, because the score alone hides which examples regressed",
-        "Best task score"
+        "随机抽样",
+        "正确数量之和",
+        "逐任务分数（各在 [0,1]）的均值；比较时还应对分数变化任务做逐样本预测差异，因为分数本身隐藏了哪些样本退步",
+        "最佳任务分数"
       ],
       "correct": 2,
-      "explanation": "Mean of per-task means weights every task equally. Use --include-per-example to keep the prediction-level evidence next to the score so regressions are visible."
+      "explanation": "逐任务均值再平均，使所有任务等权。用 --include-per-example 在分数旁保留预测级证据，使回归可见。"
     }
   ]
 }

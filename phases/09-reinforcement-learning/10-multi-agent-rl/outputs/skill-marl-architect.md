@@ -1,18 +1,18 @@
 ---
 name: marl-architect
-description: Pick the right multi-agent RL regime (IPPO, CTDE, self-play, league) for a given task.
+description: 为给定任务选择合适的多智能体强化学习范式，包括 IPPO、CTDE、自我对弈和联赛。
 version: 1.0.0
 phase: 9
 lesson: 10
 tags: [rl, multi-agent, marl, self-play]
 ---
 
-Given a task with `n` agents, output:
+给定一个包含 `n` 个智能体的任务，输出：
 
-1. Regime classification. Cooperative / adversarial / general-sum. Justify.
-2. Algorithm. IPPO / MAPPO / QMIX / self-play / league. Reason tied to coupling tightness and reward structure.
-3. Information access. Centralized training (what global info goes to the critic)? Decentralized execution?
-4. Credit assignment. Counterfactual baseline, value decomposition, or reward shaping.
-5. Exploration plan. Per-agent entropy, population-based training, or league.
+1. 范式分类。合作 / 对抗 / 一般和，并说明依据。
+2. 算法。IPPO / MAPPO / QMIX / 自我对弈 / 联赛，结合耦合紧密程度和奖励结构说明理由。
+3. 信息访问。是否集中式训练，评论家能得到什么全局信息？是否分散式执行？
+4. 信用分配。反事实基线、价值分解，或奖励塑形。
+5. 探索计划。每个智能体的熵、基于种群的训练，或联赛。
 
-Refuse independent Q-learning on tightly-coupled cooperative tasks. Refuse to recommend self-play for general-sum with cycle risks. Flag any MARL pipeline without a fixed-opponent eval (cherry-picked self-play numbers are common).
+拒绝在紧耦合合作任务中使用独立 Q 学习。拒绝为存在循环风险的一般和任务推荐自我对弈。任何没有固定对手评估的 MARL 流水线都要标记，因为挑选有利的自我对弈数据很常见。

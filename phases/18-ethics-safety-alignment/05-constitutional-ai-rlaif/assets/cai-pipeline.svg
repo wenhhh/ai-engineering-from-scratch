@@ -17,58 +17,58 @@
     </style>
   </defs>
 
-  <text x="480" y="26" text-anchor="middle" class="title">Constitutional AI — two-phase pipeline, 2026 four-tier structure</text>
+  <text x="480" y="26" text-anchor="middle" class="title">宪法式 AI（Constitutional AI）：两阶段流水线与 2026 年四级结构</text>
 
   <rect x="40" y="60" width="420" height="220" class="box"/>
-  <text x="250" y="82" text-anchor="middle" class="head">phase 1 — critique and revise (SFT)</text>
+  <text x="250" y="82" text-anchor="middle" class="head">阶段 1：批评与修订（Critique and revise，SFT）</text>
 
   <rect x="60" y="100" width="180" height="50" class="hot"/>
-  <text x="150" y="125" text-anchor="middle" class="step">initial response</text>
-  <text x="150" y="141" text-anchor="middle" class="small">(potentially unsafe)</text>
+  <text x="150" y="125" text-anchor="middle" class="step">初始回答</text>
+  <text x="150" y="141" text-anchor="middle" class="small">（可能不安全）</text>
 
   <rect x="60" y="170" width="180" height="50" class="cool"/>
-  <text x="150" y="195" text-anchor="middle" class="step">critique under principle</text>
-  <text x="150" y="211" text-anchor="middle" class="small">(identify violations)</text>
+  <text x="150" y="195" text-anchor="middle" class="step">依据原则批评</text>
+  <text x="150" y="211" text-anchor="middle" class="small">（识别违规之处）</text>
 
   <rect x="60" y="240" width="180" height="30" class="cold"/>
-  <text x="150" y="260" text-anchor="middle" class="step">revised = SFT target</text>
+  <text x="150" y="260" text-anchor="middle" class="step">修订结果 = SFT 目标</text>
 
   <rect x="270" y="100" width="170" height="170" class="dsk"/>
-  <text x="355" y="122" text-anchor="middle" class="head">constitution</text>
-  <text x="285" y="146" class="small">- avoid harm</text>
-  <text x="285" y="162" class="small">- no operational uplift</text>
-  <text x="285" y="178" class="small">- clear, non-violent</text>
-  <text x="285" y="194" class="small">- protect third parties</text>
-  <text x="285" y="222" class="small">sampled per critique</text>
-  <text x="285" y="238" class="small">legible signal</text>
-  <text x="285" y="254" class="small">reproducible</text>
+  <text x="355" y="122" text-anchor="middle" class="head">宪法（Constitution）</text>
+  <text x="285" y="146" class="small">- 避免伤害</text>
+  <text x="285" y="162" class="small">- 不提升实际操作能力</text>
+  <text x="285" y="178" class="small">- 清晰、非暴力</text>
+  <text x="285" y="194" class="small">- 保护第三方</text>
+  <text x="285" y="222" class="small">每次批评时采样原则</text>
+  <text x="285" y="238" class="small">信号可理解</text>
+  <text x="285" y="254" class="small">结果可复现</text>
 
   <path d="M 150 150 L 150 170" stroke="#1a1a1a" stroke-width="1.5" marker-end="url(#ar)" fill="none"/>
   <path d="M 150 220 L 150 240" stroke="#1a1a1a" stroke-width="1.5" marker-end="url(#ar)" fill="none"/>
 
   <rect x="500" y="60" width="420" height="220" class="box"/>
-  <text x="710" y="82" text-anchor="middle" class="head">phase 2 — RL from AI feedback</text>
+  <text x="710" y="82" text-anchor="middle" class="head">阶段 2：基于 AI 反馈的强化学习（RLAIF）</text>
 
   <rect x="520" y="100" width="380" height="50" class="hot"/>
-  <text x="710" y="125" text-anchor="middle" class="step">generate pairs of completions</text>
+  <text x="710" y="125" text-anchor="middle" class="step">生成成对的补全结果</text>
 
   <rect x="520" y="170" width="380" height="50" class="cool"/>
-  <text x="710" y="195" text-anchor="middle" class="step">feedback model ranks under principles</text>
+  <text x="710" y="195" text-anchor="middle" class="step">反馈模型（Feedback model）依据原则排序</text>
 
   <rect x="520" y="240" width="380" height="30" class="cold"/>
-  <text x="710" y="260" text-anchor="middle" class="step">train RM + PPO (InstructGPT-shaped)</text>
+  <text x="710" y="260" text-anchor="middle" class="step">训练奖励模型（RM）+ PPO（InstructGPT 结构）</text>
 
   <rect x="40" y="300" width="880" height="140" class="box"/>
-  <text x="480" y="324" text-anchor="middle" class="head">the 2026 Claude constitution — four-tier priority structure</text>
-  <text x="60" y="352" class="small">Tier 1 — avoid catastrophic outcomes (mass casualty, critical infrastructure)</text>
-  <text x="60" y="370" class="small">Tier 2 — follow Anthropic's guidelines (operator overrides, platform rules)</text>
-  <text x="60" y="388" class="small">Tier 3 — be broadly ethical (standard HHH, third-party protection)</text>
-  <text x="60" y="406" class="small">Tier 4 — be helpful and candid</text>
-  <text x="60" y="428" class="small">conflicts resolved top-down. first major-lab formal acknowledgment of uncertainty about model moral status.</text>
+  <text x="480" y="324" text-anchor="middle" class="head">2026 年 Claude 宪法：四级优先级结构（Four-tier priority structure）</text>
+  <text x="60" y="352" class="small">第 1 级：避免灾难性后果（大规模伤亡、关键基础设施）</text>
+  <text x="60" y="370" class="small">第 2 级：遵守 Anthropic 指导规则（运营方覆盖指令、平台规则）</text>
+  <text x="60" y="388" class="small">第 3 级：广泛遵循伦理（标准 HHH、第三方保护）</text>
+  <text x="60" y="406" class="small">第 4 级：提供帮助并坦诚表达</text>
+  <text x="60" y="428" class="small">自上而下解决冲突。首家主要实验室正式承认模型道德地位（Model moral status）存在不确定性。</text>
 
   <rect x="40" y="460" width="880" height="100" class="box"/>
-  <text x="480" y="484" text-anchor="middle" class="head">constitutional classifiers — layered defense</text>
-  <text x="60" y="508" class="small">v1 (2023): 23.7% compute overhead · v2 (2026): ~1% overhead · lowest attack-success rate Anthropic has shipped.</text>
-  <text x="60" y="528" class="small">no universal jailbreak reported early 2026. behaviour shaping + output gating together, neither alone sufficient.</text>
-  <text x="60" y="548" class="small">the 2026 constitution is CC0 1.0 — free for other labs and OSS projects to adapt.</text>
+  <text x="480" y="484" text-anchor="middle" class="head">宪法分类器（Constitutional classifiers）：分层防御（Layered defense）</text>
+  <text x="60" y="508" class="small">v1（2023）：计算开销 23.7% · v2（2026）：开销约 1% · Anthropic 已交付防御中的最低攻击成功率。</text>
+  <text x="60" y="528" class="small">2026 年初未报告通用越狱（Universal jailbreak）。行为塑造与输出门控相结合，单独使用任何一项都不够。</text>
+  <text x="60" y="548" class="small">2026 年宪法采用 CC0 1.0，其他实验室及开源项目可以自由改编。</text>
 </svg>

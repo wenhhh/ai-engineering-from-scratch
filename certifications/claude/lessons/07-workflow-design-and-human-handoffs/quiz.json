@@ -1,78 +1,78 @@
 {
   "lesson": "07-workflow-design-and-human-handoffs",
-  "title": "Design the Handoff Before the Automation",
+  "title": "先设计交接，再设计自动化（Design the Handoff Before the Automation）",
   "questions": [
     {
       "stage": "pre",
-      "question": "What should happen before choosing a Claude workflow pattern?",
+      "question": "选择 Claude 工作流模式前应做什么？",
       "options": [
-        "Select a model family before mapping the process",
-        "Map the real current process, decisions, sources, owners, and exceptions",
-        "Define the future automated path before documenting slow or inconsistent current steps",
-        "Estimate token cost from the expected number of model calls and then set the workflow scope"
+        "梳理流程前先选模型家族",
+        "梳理真实现行流程、决策、来源、负责人和例外",
+        "记录缓慢或不一致的现有步骤前，先定义未来自动化路径",
+        "根据预期模型调用次数估算词元成本，再定工作流范围"
       ],
       "correct": 1,
-      "explanation": "Current-state mapping reveals the actual judgment, ownership, and failure paths the future design must preserve or improve."
+      "explanation": "现状梳理揭示未来设计必须保留或改进的真实判断、责任和故障路径。"
     },
     {
       "stage": "check",
-      "question": "A team spends hours reconciling conflicting source systems. Which intervention is strongest?",
+      "question": "团队花数小时核对冲突来源系统。最有力的干预是什么？",
       "options": [
-        "Generate conflict reports for faster review",
-        "Add a final validation step after generation while leaving source ownership unchanged",
-        "Redesign the source process before automating the symptom",
-        "Use an adaptive agent to decide which source looks most credible for each conflict"
+        "生成冲突报告以加快审核",
+        "保持来源责任不变，只在生成后加最终验证",
+        "自动化症状前，先重设计来源流程",
+        "用自适应智能体决定每次冲突哪个来源更可信"
       ],
       "correct": 2,
-      "explanation": "The underlying waste is source conflict. Automating its description preserves the broken process."
+      "explanation": "浪费根源是来源冲突。自动化描述冲突，会保留坏流程。"
     },
     {
       "stage": "check",
-      "question": "What belongs in a reviewer handoff packet?",
+      "question": "审核交接包应包含什么？",
       "options": [
-        "The polished draft, its aggregate evaluation score, and the model's confidence estimate",
-        "The full conversation and tool trace so the reviewer can reconstruct the decision unaided",
-        "The recommended decision and citations, omitting rejected options to reduce review time",
-        "Decision required, evidence, source versions, checks, uncertainty, options, and fallback"
+        "精美草稿、总体评估分数和模型置信度",
+        "完整对话和工具轨迹，让审核者独立重建决策",
+        "建议决策与引用，省略被拒绝选项以省时间",
+        "所需决策、证据、来源版本、检查、不确定性、选项和回退"
       ],
       "correct": 3,
-      "explanation": "A structured packet lets the reviewer verify and decide without reconstructing the workflow."
+      "explanation": "结构化资料包让审核者无需重建工作流即可验证与决策。"
     },
     {
       "stage": "check",
-      "question": "Why must retries be designed carefully for external actions?",
+      "question": "为何外部操作的重试必须谨慎设计？",
       "options": [
-        "A repeated non-idempotent action can duplicate messages, charges, or other effects",
-        "A checkpoint proves the previous external action failed and therefore makes retry safe",
-        "Retrying generation can change parameters, so every repeated output should be discarded",
-        "Only tool calls with write permissions need retry limits; messages can always be resent"
+        "重复非幂等操作可能重复消息、收费或其他效果",
+        "检查点证明此前外部操作失败，所以重试安全",
+        "重试生成可能改变参数，因此所有重复输出都应丢弃",
+        "只有写权限工具调用需要重试上限，消息总可重发"
       ],
       "correct": 0,
-      "explanation": "Generation retries are often harmless, but external actions need idempotency and recorded completion state."
+      "explanation": "生成重试往往无害，但外部操作需要幂等性和已记录完成状态。"
     },
     {
       "stage": "post",
-      "question": "A workflow posts an executive brief automatically, but ownership of approval is ambiguous. What is the best repair?",
+      "question": "工作流自动发布高管简报，但批准责任模糊。最佳修复是什么？",
       "options": [
-        "Route low-confidence briefs to a generic reviewer while publishing all other outputs",
-        "Define a step owner, release gate, decision packet, and fallback before posting",
-        "Add a stronger rubric so the model can determine when its own brief is ready to post",
-        "Require two independent model reviewers to agree before the automated publication step"
+        "将低置信简报交给通用审核者，其余全部发布",
+        "发布前定义步骤负责人、发布门槛、决策包和回退",
+        "增加更强量表，让模型判断自己的简报何时可发布",
+        "自动发布前要求两个独立模型审核者一致"
       ],
       "correct": 1,
-      "explanation": "The primary defect is workflow authority and handoff, not generation quality."
+      "explanation": "主要缺陷在工作流权限与交接，而不是生成质量。"
     },
     {
       "stage": "post",
-      "question": "What is the strongest evidence before limited production release?",
+      "question": "有限生产发布前，最强证据是什么？",
       "options": [
-        "An internal pilot with high user adoption even though correction and review costs are unmeasured",
-        "A successful demonstration using the most common case and current production sources",
-        "Shadow-mode results across normal and exception cases, measured gates, review effort, and ready incident ownership",
-        "A vendor benchmark combined with unit tests of every deterministic workflow component"
+        "用户采用率高的内部试点，但未测量修正和审核成本",
+        "用最常见案例和当前生产来源进行成功演示",
+        "覆盖正常与例外案例的影子模式结果、实测门槛、审核投入和就绪事故责任",
+        "供应商基准加所有确定性工作流组件单元测试"
       ],
       "correct": 2,
-      "explanation": "Shadow mode tests the real workflow without granting action authority and reveals exception and operational costs."
+      "explanation": "影子模式不给操作权限就测试真实工作流，揭示例外和运维成本。"
     }
   ]
 }

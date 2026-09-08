@@ -1,37 +1,37 @@
 [
   {
-    "question": "Why is manually reading a few LLM outputs not a reliable evaluation method?",
-    "options": ["Manual review is too expensive", "It takes too long", "Small samples miss failure modes that only appear at scale, and human judgment is inconsistent across reviewers and sessions", "LLM outputs are always correct"],
+    "question": "为什么人工阅读少量大语言模型输出不是可靠的评估方法？",
+    "options": ["人工审查太贵", "耗时太长", "小样本会遗漏只在规模扩大后出现的失败模式，而且不同审查者及不同会话的人工判断不一致", "大语言模型输出总是正确"],
     "correct": 2,
-    "explanation": "Reading 10 outputs shows you 10 points in a distribution. A prompt change might improve 90% of outputs but break 10% of edge cases. Without systematic evaluation, you'll miss the regression until users report it.",
+    "explanation": "阅读 10 条输出，只能看到分布中的 10 个点。提示词修改可能改善 90% 的输出，却破坏 10% 的边界情况。没有系统评估，就要等用户反馈才会发现退化。",
     "stage": "pre"
   },
   {
-    "question": "What is regression testing in the context of LLM applications?",
-    "options": ["Testing on the training data", "Measuring model loss during training", "Running a fixed set of test cases after every change (prompt, model, parameters) to ensure quality hasn't degraded", "Testing linear regression models"],
+    "question": "大语言模型应用中的回归测试（regression testing）是什么？",
+    "options": ["在训练数据上测试", "测量训练期间的模型损失", "每次变更（提示词、模型、参数）后运行固定测试集，确保质量没有下降", "测试线性回归模型"],
     "correct": 2,
-    "explanation": "Every prompt change, model swap, or temperature tweak changes the output distribution. Regression tests catch cases where a change that improves one area silently degrades another.",
+    "explanation": "每次提示词修改、模型替换或温度调整都会改变输出分布。回归测试能发现改善一处却悄然损害另一处的情况。",
     "stage": "pre"
   },
   {
-    "question": "What is the LLM-as-judge evaluation approach?",
-    "options": ["Using a strong LLM to score outputs against rubrics, replacing expensive human evaluation while scaling to thousands of test cases", "Comparing two models' parameter counts", "Having the model evaluate its own training loss", "Using the model's confidence scores"],
+    "question": "大语言模型评判（LLM-as-judge）评估方法是什么？",
+    "options": ["使用强大语言模型按规程为输出评分，替代昂贵人工评估并扩展到数千个用例", "比较两个模型的参数量", "让模型评估自己的训练损失", "使用模型的置信分数"],
     "correct": 0,
-    "explanation": "LLM-as-judge sends (input, output, rubric) to a strong model (e.g., GPT-4) which scores the output. It's cheaper and faster than human evaluation, though it has known biases (e.g., preferring verbose responses).",
+    "explanation": "大语言模型评判将（输入、输出、规程）发送给强模型（如 GPT-4）评分。它比人工评估更便宜、更快，但存在已知偏见，例如偏好冗长回复。",
     "stage": "post"
   },
   {
-    "question": "What makes a good evaluation dataset for an LLM application?",
-    "options": ["As many examples as possible", "Random samples from the internet", "Only the hardest examples", "Diverse inputs covering common cases, edge cases, adversarial inputs, and expected outputs with clear rubrics"],
+    "question": "大语言模型应用的优质评估数据集应具备什么？",
+    "options": ["样本越多越好", "来自互联网的随机样本", "只有最难的样本", "多样输入，覆盖常见情况、边界情况、对抗输入，并有预期输出和清晰规程"],
     "correct": 3,
-    "explanation": "A good eval set covers the distribution: happy path cases, edge cases (empty input, very long input), adversarial inputs (prompt injection), and ambiguous queries. Each example has a clear expected output or scoring rubric.",
+    "explanation": "好的评估集覆盖分布：正常路径、边界情况（空输入、极长输入）、对抗输入（提示词注入）和歧义查询。每个样本都有明确预期输出或评分规程。",
     "stage": "post"
   },
   {
-    "question": "How should you handle non-deterministic LLM outputs in evaluation?",
-    "options": ["Run each test case multiple times and use aggregate metrics (pass rate, average score) to account for output variance", "Only evaluate the first output", "Set temperature to 0 for all evaluations", "Non-determinism doesn't affect evaluation"],
+    "question": "评估时应如何处理非确定性的大语言模型输出？",
+    "options": ["每个用例运行多次，使用汇总指标（通过率、平均分）考虑输出方差", "只评估第一次输出", "所有评估都将温度设为 0", "非确定性不会影响评估"],
     "correct": 0,
-    "explanation": "Even at temperature 0, some providers introduce sampling variation. Running each test 3-5 times and measuring pass rate or average score gives a more reliable picture than a single run that might hit a lucky/unlucky sample.",
+    "explanation": "即使温度为 0，某些提供商仍会引入采样差异。每个测试运行 3-5 次并测量通过率或平均分，比可能碰巧命中幸运或不幸样本的单次运行更可靠。",
     "stage": "post"
   }
 ]

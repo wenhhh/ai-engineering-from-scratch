@@ -1,150 +1,150 @@
-# Generative Agents and Emergent Simulation
+# 生成式智能体与涌现模拟（Generative Agents and Emergent Simulation）
 
-> Park et al. 2023 (UIST '23, arXiv:2304.03442) populated **Smallville**, a sandbox of 25 agents, with a three-part architecture: **memory stream** (natural-language log), **reflection** (higher-level syntheses the agent generates about its own stream), and **plan** (day-level behavior, then sub-plans). The landmark result was the Valentine's Day party emergence: one agent seeded with "wants to throw a Valentine's Day party," without further scripting, produced invitations spread through the population, coordinated dates, and the party happened — from 24 agents who started with no knowledge of it. Ablations show all three components are required for believability. The documented failures are spatial-norm errors (entering closed stores, sharing single-person bathrooms). This is the reference architecture for agent simulations and multi-agent social evaluation in 2026.
+> Park 等 2023 年（UIST '23，arXiv:2304.03442）用三部分架构构建 25 智能体沙箱 **Smallville**：**记忆流（Memory stream）**是自然语言日志，**反思（Reflection）**是智能体对记忆流的高层综合，**计划（Plan）**先安排日级行为再分解。标志性结果是情人节聚会涌现：仅给一个智能体“想举办情人节聚会”的初始目标，不再编排脚本，邀请便传播、日期得到协调，聚会最终发生；其余 24 个智能体起初对此一无所知。消融表明可信行为需要三者齐备。已记录故障为空间规范错误，如进入已关闭商店、共用单人卫生间。这是 2026 年智能体模拟与多智能体社会评估的参考架构。
 
 **Type:** Learn + Build
 **Languages:** Python (stdlib)
-**Prerequisites:** Phase 16 · 04 (Primitive Model), Phase 16 · 13 (Shared Memory)
-**Time:** ~75 minutes
+**Prerequisites:** Phase 16 · 04 原语模型（Primitive Model）, Phase 16 · 13 共享记忆（Shared Memory）
+**Time:** ~75 分钟
 
-## Problem
+## 问题（Problem）
 
-Most multi-agent systems are tightly-scripted teams: planner plans, coder codes, reviewer reviews. That works for well-defined tasks. It does not capture the emergent, unscripted behavior that arises when agents have memory, priorities, and an open world. Research, society simulation, and increasingly game AI need this second kind.
+多数多智能体系统是严格脚本化团队：规划者规划，编码者编码，评审员评审。它适合明确任务，却无法捕获智能体有记忆、优先级、开放世界时产生的非脚本涌现行为。研究、社会模拟及越来越多游戏 AI 需要后者。
 
-The Smallville architecture is the benchmark for it. Until Park 2023, the best agent simulations were shallow script-followers; after it, the pattern is the default for generative agents in open worlds. If you build an agent simulation in 2026, you are either using Smallville's three components or explicitly justifying why you are not.
+Smallville 架构是这一方向的基准。Park 2023 之前，最好的模拟也只是浅层脚本追随者；之后，它成为开放世界生成式智能体默认模式。2026 年构建模拟，要么使用其三组件，要么明确解释为何不用。
 
-## Concept
+## 概念（Concept）
 
-### The three components
+### 三个组件（The three components）
 
-**Memory stream.** An append-only log of observations, actions, reflections, and plans. Each entry has a timestamp, a type, a description (natural language), and derived metadata: **recency**, **importance** (self-rated 1-10 by the agent), and **relevance** (cosine similarity to current query).
+**记忆流（Memory stream）。** 观察、行动、反思、计划的仅追加日志。每条含时间戳、类型、自然语言描述及派生元数据：**近因性（Recency）**、**重要性（Importance）**（智能体自评 1-10）、**相关性（Relevance）**（与当前查询余弦相似度）。
 
 ```
-[2026-02-14 09:12:03] observation: Isabella Rodriguez asked me if I like jazz
-[2026-02-14 09:14:22] reflection:   I enjoy long conversations about music
-[2026-02-14 10:05:00] plan:         Attend Isabella's Valentine's Day party tonight
+[2026-02-14 09:12:03] observation: Isabella Rodriguez 问我是否喜欢爵士乐
+[2026-02-14 09:14:22] reflection:   我喜欢长时间谈论音乐
+[2026-02-14 10:05:00] plan:         今晚参加 Isabella 的情人节派对
 ```
 
-Memory retrieval combines the three scores: `score = w_recency * e^(-decay * age) + w_importance * importance + w_relevance * cos_sim`. Top-k entries enter the current prompt.
+检索结合三项分数：`score = w_recency * e^(-decay * age) + w_importance * importance + w_relevance * cos_sim`。前 k 条进入当前提示词。
 
-**Reflection.** Periodically (every N memories or on important events), the agent generates higher-order syntheses from recent memories. Reflection entries go back into the stream and are retrievable like any other memory. This is how agents build "understandings" — the architecture's equivalent of long-term beliefs.
+**反思（Reflection）。** 定期（每 N 条记忆或重要事件时）从近期记忆生成高阶综合。反思写回流，像其他记忆一样可检索，由此形成“理解”，即该架构的长期信念。
 
-**Plan.** Top-down decomposition. First, a day-level plan in broad strokes ("go to work, have dinner with Klaus"). Then hour-level plans. Then action-level plans. Plans are revisable: when an observation contradicts a plan, the agent replans the affected segment.
+**计划（Plan）。** 自顶向下分解。先粗粒度日计划（“上班，与 Klaus 吃晚饭”），再小时计划，再行动计划。计划可修改：观察与计划矛盾时，只重规划受影响片段。
 
-### Why all three matter (ablation)
+### 三者为何都重要：消融（Why all three matter, ablation）
 
-Park et al. ran ablations dropping each of observation, reflection, and plan. Each ablation hurts believability:
+Park 等分别移除观察、反思、计划进行消融，每次都降低行为可信度（Believability）：
 
-- Without **observation** the agent misses context and acts on stale beliefs.
-- Without **reflection** the agent cannot form higher-order beliefs; interactions stay shallow.
-- Without **plan** behavior becomes reactive noise; goals dissipate.
+- 没有**观察**，错过上下文，基于过时信念行动。
+- 没有**反思**，无法形成高阶信念，交互浅薄。
+- 没有**计划**，行为变成反应式噪声，目标消散。
 
-Believability scores from human raters are highest with all three; dropping any one produces a measurable regression.
+三者齐备时，人类评估者给的可信度最高；去掉任何一个都会产生可测退化。
 
-### The Valentine's Day emergence
+### 情人节涌现（The Valentine's Day emergence）
 
-One agent, Isabella Rodriguez, is seeded with the goal "wants to throw a Valentine's Day party at Hobbs Cafe on Feb 14 at 5pm." The 24 other agents receive no such seed. Over simulated days:
+给 Isabella Rodriguez 初始目标：“2 月 14 日下午 5 点在 Hobbs Cafe 举办情人节聚会。”其余 24 个没有此目标。在模拟数日内：
 
-1. Isabella's plan includes inviting people.
-2. Each invitation becomes an observation in a neighbor's memory stream.
-3. That neighbor's reflection generates beliefs: "Isabella is throwing a party."
-4. The neighbor's plan incorporates "attend party on Feb 14."
-5. Neighbors tell other neighbors. The invitation spreads without central coordination.
-6. At 5pm on Feb 14, several agents converge at Hobbs Cafe.
+1. Isabella 计划包含邀请别人。
+2. 每个邀请进入邻居记忆流成为观察。
+3. 邻居反思生成“Isabella 正在办聚会”的信念。
+4. 邻居计划加入“2 月 14 日参加聚会”。
+5. 邻居告诉其他邻居，邀请无需中心协调而传播。
+6. 2 月 14 日下午 5 点，数个智能体聚集于 Hobbs Cafe。
 
-This is emergence in the technical sense: system-level behavior (a party) arose from local interactions (bilateral invitations + individual planning) without a central orchestrator.
+这是技术意义的涌现（Emergence）：系统级聚会行为来自双边邀请与个人规划的局部交互，没有中心编排者。
 
-### The documented failure modes
+### 已记录故障（The documented failure modes）
 
-Park et al. explicitly document:
+Park 等明确记录：
 
-- **Spatial norm errors.** Agents walk into closed stores. Agents try to use the same single-person bathroom. Agents eat in rooms not intended for eating. The model does not infer social-physical norms from the environment alone.
-- **Memory overflow.** Deep simulation runs cause memory-retrieval cost to grow. Practical remedy: periodic memory compaction (summarize-and-prune) and decay on low-importance entries.
-- **Reflection hallucination.** Reflections can invent relationships that do not exist in the memory stream. Mitigation: include source memory ids in reflection prompts and verify at retrieval time.
+- **空间规范错误（Spatial norm errors）。** 进入已关闭商店、同时使用单人卫生间、在非用餐房间吃饭。模型不能仅靠环境推断社会物理规范。
+- **记忆溢出。** 深度模拟使检索成本增长。实际补救是定期压缩记忆（摘要并裁剪），衰减低重要性条目。
+- **反思幻觉。** 反思可能编造记忆流中不存在的关系。缓解：提示词包含来源记忆 ID，检索时验证。
 
-These are production-relevant failure modes: any 2026 agent simulation inherits them.
+这些与生产相关，任何 2026 年模拟都继承这些故障模式。
 
-### Three-component implementation rules
+### 三组件实现规则（Three-component implementation rules）
 
-1. **Memory is append-only.** Never mutate a memory entry. Corrections are new entries.
-2. **Importance scores are cheap.** Call the LLM to rate importance 1-10 at write time. Cache the score.
-3. **Retrieval is ranked, not filtered.** Top-k by combined score; do not use hard filters (which lose context).
-4. **Reflection runs periodically.** Trigger when the sum of importance of unprocessed memories exceeds a threshold (e.g., 150).
-5. **Plans are revisable.** When a new observation contradicts a plan, regenerate the affected segment only, not the whole plan.
+1. **记忆仅追加。** 从不修改条目，纠正为新条目。
+2. **重要性评分便宜。** 写入时调用 LLM 评 1-10 分，缓存结果。
+3. **检索排序，不硬过滤。** 综合分前 k 条，不用会丢上下文的硬过滤。
+4. **定期反思。** 未处理记忆重要性和超过阈值（如 150）时触发。
+5. **计划可修改。** 新观察与计划矛盾，只再生成受影响部分，不重写全计划。
 
-### Generative agents beyond Smallville
+### Smallville 之外的生成式智能体（Generative agents beyond Smallville）
 
-The 2024-2026 follow-up literature extends the architecture:
+2024–2026 年后续文献扩展架构：
 
-- **Multi-agent social simulation for policy / market research.** Smallville-like populations simulate user behavior in response to features. Faster than A/B tests; accuracy is contested.
-- **NPC AI for games.** RPGs with Smallville agents produce emergent storylines instead of scripted quests.
-- **Generative-agent evaluation benchmarks.** Rather than task accuracy, the metric becomes believability + coherence of behavior over long runs.
+- **政策/市场研究的多智能体社会模拟。** Smallville 式群体模拟用户对功能的反应，比 A/B 测试快，但准确性有争议。
+- **游戏 NPC AI。** 使用 Smallville 智能体的 RPG 产生涌现剧情而非脚本任务。
+- **生成式智能体评估基准。** 指标从任务准确率变为可信度 + 长时间行为连贯性。
 
-The architecture is the reference. Extensions swap components (vector store for memory, retrieval-augmented reflection, neurosymbolic plan) but keep the three-part structure.
+该架构是参考。扩展替换组件（向量存储记忆、检索增强反思、神经符号计划），保留三部分结构。
 
-### Why this matters for multi-agent engineering
+### 对多智能体工程的意义（Why this matters for multi-agent engineering）
 
-Smallville is the proof of concept that multi-agent emergence is cheap when the components are right. The architecture has now been replicated on open-source models (smaller LLMs lose believability gracefully, not sharply). Any production system that needs **emergent social behavior** uses this shape. Any system that needs **tight task execution** uses the supervisor / roles / primitives patterns from earlier in this phase.
+Smallville 证明组件正确时，多智能体涌现可以低成本获得。架构已在开源模型复现，小 LLM 的可信度平缓而非骤然下降。需**涌现社会行为**的生产系统采用此结构，需**严格任务执行**的系统采用本阶段前面的监督者/角色/原语模式。
 
 ```figure
 a5-memory-reflection
 ```
 
-## Build It
+## 动手实现（Build It）
 
-`code/main.py` implements the three components in stdlib Python with scripted agent policies (no real LLM). The demo reproduces the Valentine's-party emergence in miniature:
+`code/main.py` 用标准库 Python 与脚本智能体策略实现三组件，无真实 LLM，缩小复现情人节聚会涌现：
 
-- `MemoryStream` — append-only log with recency/importance/relevance retrieval.
-- `reflect(stream)` — scripted reflection over recent high-importance memories.
-- `plan(agent_state)` — day-level and hour-level plans based on current beliefs.
-- Scenario: 5 agents. Agent 1 starts with "throw party at 5pm." Over simulated ticks, the invitation spreads and agents converge.
+- `MemoryStream`：仅追加日志，按近因性/重要性/相关性检索。
+- `reflect(stream)`：对近期高重要性记忆脚本化反思。
+- `plan(agent_state)`：基于当前信念的日级和小时级计划。
+- 场景：5 个智能体，智能体 1 初始目标“下午 5 点办聚会”。模拟时间步推进，邀请传播、智能体聚集。
 
-Run:
+运行：
 
 ```
 python3 code/main.py
 ```
 
-Expected output: tick-by-tick trace. By the final tick, at least 3 of the 5 agents show the party in their plan, and they converge at the party location. The single seed produced the coordinated arrival without any orchestrator.
+预期逐时间步轨迹。最后至少 5 个中 3 个把聚会写入计划，并到聚会地点聚集。单个初始目标无需编排者即产生协调到达。
 
-## Use It
+## 实际应用（Use It）
 
-`outputs/skill-simulation-designer.md` designs a generative-agent simulation: number of agents, memory schema, reflection cadence, plan horizon, and evaluation metric.
+`outputs/skill-simulation-designer.md` 设计生成式模拟：智能体数、记忆模式、反思节奏、计划时域、评估指标。
 
-## Ship It
+## 交付成果（Ship It）
 
-Rules for production simulations:
+生产模拟规则：
 
-- **Memory is the database.** Pick a real store (vector DB, Postgres) at scale. In-memory stdlib is for prototypes.
-- **Log the retrieval trace.** For every action, log the top-k memories that drove it. This is your debug ability.
-- **Budget per-agent tokens.** Each agent's retrieve + reflect + plan per tick is O(k) LLM calls. N agents × T ticks × calls-per-tick can dwarf your budget.
-- **Compact memory periodically.** Summarize-and-prune low-importance entries. Retention policy is a design decision, not a detail.
-- **Detect spatial / social norm violations** explicitly. The architecture does not learn them.
+- **记忆就是数据库。** 规模化用真实存储（向量数据库、Postgres），内存标准库仅用于原型。
+- **记录检索轨迹。** 每个行动记录驱动它的前 k 条记忆，这是调试能力。
+- **为各智能体设词元预算。** 每个时间步的检索 + 反思 + 计划为 O(k) 次 LLM 调用。N 智能体 × T 时间步 × 每步调用数可远超预算。
+- **定期压缩记忆。** 对低重要性条目摘要并裁剪。保留策略是设计决策，不是细节。
+- 显式**检测空间/社会规范违规**，架构不会学习这些规范。
 
-## Exercises
+## 练习（Exercises）
 
-1. Run `code/main.py`. Confirm 3+ agents converge at the party. Increase agents to 10 — does the emergence still happen?
-2. Remove the reflection step. What does behavior look like? Map to the ablation finding in Park 2023.
-3. Introduce a competing seeded goal ("Klaus wants to give a research talk at 5pm"). Do agents split, or does one goal dominate? What determines it?
-4. Add spatial constraints: Hobbs Cafe holds at most 4 agents. Does the simulation handle overflow gracefully, or does it hit the "single-person bathroom" failure pattern?
-5. Read Park et al. (arXiv:2304.03442) Section 6 (emergent behavior experiments). Identify one behavior not reproducible in your miniature. What component of the architecture would you need to enhance?
+1. 运行 `code/main.py`，确认至少 3 个聚会。增加到 10 个，仍有涌现吗？
+2. 移除反思步骤，行为怎样？对应 Park 2023 消融发现。
+3. 引入竞争目标“下午 5 点 Klaus 想作研究报告”，智能体分流还是某目标主导？由什么决定？
+4. 增加空间约束：Hobbs Cafe 最多容纳 4 个。能妥善处理超员，还是重现“单人卫生间”故障？
+5. 阅读 Park 等（arXiv:2304.03442）第 6 节涌现实验，找一项缩小版无法复现的行为，需要增强哪组件？
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语 | 常见说法 | 实际含义 |
 |------|----------------|------------------------|
-| Memory stream | "The agent's diary" | Append-only log of observations, actions, reflections, plans. |
-| Recency | "How new is the memory" | Exponential-decay score by age. |
-| Importance | "How much does the agent care" | Self-rated 1-10 at write time. Cached. |
-| Relevance | "How related to the current query" | Cosine similarity (embedding-based). |
-| Reflection | "Higher-order belief" | Synthesis generated from recent memories, re-ingested as a new memory. |
-| Plan | "Day/hour/action decomposition" | Top-down plan tree. Revisable when observations contradict. |
-| Smallville | "Park 2023's sandbox" | 25-agent simulation that produced the Valentine's Day emergence. |
-| Believability | "The quality metric" | Human-rater score for whether behavior seems like a plausible agent. |
+| 记忆流（Memory stream） | “智能体日记” | 观察、行动、反思、计划的仅追加日志。 |
+| 近因性（Recency） | “记忆多新” | 按时间指数衰减评分。 |
+| 重要性（Importance） | “多在意” | 写入时自评 1-10 并缓存。 |
+| 相关性（Relevance） | “与当前查询多相关” | 基于嵌入的余弦相似度。 |
+| 反思（Reflection） | “高阶信念” | 近期记忆的综合，重新作为记忆摄入。 |
+| 计划（Plan） | “日/小时/行动分解” | 自顶向下计划树，观察矛盾时可修订。 |
+| Smallville | “Park 2023 沙箱” | 产生情人节涌现的 25 智能体模拟。 |
+| 行为可信度（Believability） | “质量指标” | 人类评估行为是否像可信智能体的评分。 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [Park et al. — Generative Agents: Interactive Simulacra of Human Behavior](https://arxiv.org/abs/2304.03442) — the reference architecture
-- [UIST '23 paper page](https://dl.acm.org/doi/10.1145/3586183.3606763) — publication venue
-- [Smallville code release](https://github.com/joonspk-research/generative_agents) — reference Python implementation
-- [Hayes-Roth 1985 — A Blackboard Architecture for Control](https://www.sciencedirect.com/science/article/abs/pii/0004370285900639) — prior art for structured-memory agents
+- [Park 等：生成式智能体，人类行为交互模拟（Generative Agents: Interactive Simulacra of Human Behavior）](https://arxiv.org/abs/2304.03442)：参考架构
+- [UIST '23 论文页面（paper page）](https://dl.acm.org/doi/10.1145/3586183.3606763)：发表会议信息
+- [Smallville 代码发布（code release）](https://github.com/joonspk-research/generative_agents)：Python 参考实现
+- [Hayes-Roth 1985：控制的黑板架构（A Blackboard Architecture for Control）](https://www.sciencedirect.com/science/article/abs/pii/0004370285900639)：结构化记忆智能体的先前工作

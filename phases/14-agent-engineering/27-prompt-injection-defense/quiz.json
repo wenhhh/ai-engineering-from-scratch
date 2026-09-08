@@ -1,90 +1,90 @@
 {
   "lesson": "27-prompt-injection-defense",
-  "title": "Prompt Injection and the PVE Defense",
+  "title": "提示词注入与 PVE 防御（Prompt Injection and the PVE Defense）",
   "questions": [
     {
       "stage": "pre",
-      "question": "What is indirect prompt injection?",
+      "question": "什么是间接提示词注入（Indirect prompt injection）？",
       "options": [
-        "A model misclick",
-        "A user typing 'ignore all rules' directly",
-        "Instructions embedded in data the agent retrieves (a page, PDF, email, memory note) that override the developer prompt on ingest",
-        "A typo in the system prompt"
+        "模型误点击",
+        "用户直接输入“忽略所有规则”",
+        "在智能体检索的数据（网页、PDF、邮件、记忆笔记）中嵌入指令，摄入后覆盖开发者提示词",
+        "系统提示词中的拼写错误"
       ],
       "correct": 2,
-      "explanation": "Greshake et al. coined indirect prompt injection: attacker-controlled retrieved content carries instructions."
+      "explanation": "Greshake 等提出间接提示词注入：攻击者控制的检索内容携带指令。"
     },
     {
       "stage": "pre",
-      "question": "What does the lesson say processing retrieved prompts is equivalent to?",
+      "question": "本课认为处理检索得到的提示词等价于什么？",
       "options": [
-        "A static analysis pass",
-        "Arbitrary code execution on the agent's tool-use surface",
-        "Free speech",
-        "A pure function call"
+        "一次静态分析",
+        "在智能体工具使用接口上执行任意代码",
+        "言论自由",
+        "纯函数调用"
       ],
       "correct": 1,
-      "explanation": "Greshake's framing: retrieved instructions can hit any tool the agent has access to."
+      "explanation": "Greshake 的观点是，检索指令可以触达智能体有权限访问的任何工具。"
     },
     {
       "stage": "check",
-      "question": "Which is NOT one of the five demonstrated exploit classes?",
+      "question": "哪项不属于五类已演示的利用方式？",
       "options": [
-        "Persistent memory poisoning",
-        "Cache invalidation",
-        "Data theft",
-        "Worming"
+        "持久记忆投毒",
+        "缓存失效",
+        "数据窃取",
+        "蠕虫式传播"
       ],
       "correct": 1,
-      "explanation": "The five are data theft, worming, persistent memory poisoning, ecosystem contamination, arbitrary tool use."
+      "explanation": "五类分别是数据窃取、蠕虫式传播、持久记忆投毒、生态污染和任意工具使用。"
     },
     {
       "stage": "check",
-      "question": "What does PVE stand for?",
+      "question": "PVE 代表什么？",
       "options": [
-        "Pre-Vectorize-Embed",
-        "Prompt-Validator-Executor: a cheap fast validator runs on each tool call before the expensive main model commits",
-        "Provider-Verifier-Encoder",
-        "Plan-Verify-Execute, an HTN dialect"
+        "预处理—向量化—嵌入（Pre-Vectorize-Embed）",
+        "提示词—验证器—执行器（Prompt-Validator-Executor）：昂贵主模型落实调用前，每次工具调用先运行便宜快速的验证器",
+        "提供商—核验器—编码器（Provider-Verifier-Encoder）",
+        "计划—验证—执行（Plan-Verify-Execute），一种 HTN 变体"
       ],
       "correct": 1,
-      "explanation": "PVE wraps every tool invocation with a cheap validator before main-model commit."
+      "explanation": "PVE 在主模型落实每次工具调用之前，先用低成本验证器进行检查。"
     },
     {
       "stage": "check",
-      "question": "Why is 'system prompt says ignore untrusted instructions' insufficient?",
+      "question": "为什么“系统提示词要求忽略不可信指令”不够？",
       "options": [
-        "It is too short",
-        "It is instruction-following, not enforcement; the model can still be overridden by sufficiently persuasive injected content",
-        "Providers strip it",
-        "It is encrypted"
+        "太短",
+        "这只是指令遵循，不是强制执行；足够有说服力的注入内容仍可能覆盖模型行为",
+        "提供商会删除它",
+        "它已被加密"
       ],
       "correct": 1,
-      "explanation": "Real defense needs source tagging, allowlists, per-step safety, and PVE-style validation, not just prompting."
+      "explanation": "真正防御需要来源标签、允许列表、逐步骤安全和 PVE 式校验，而非仅靠提示词。"
     },
     {
       "stage": "post",
-      "question": "What is overtrust of retrieved memory?",
+      "question": "什么是过度信任检索记忆？",
       "options": [
-        "Loading the wrong model",
-        "Yesterday's agent wrote a poisoned memory note; today's agent reads it and re-executes the injection",
-        "Forgetting to vacuum the index",
-        "Caching too aggressively"
+        "加载错模型",
+        "昨天的智能体写入被投毒记忆，今天的智能体读入后再次执行注入",
+        "忘记清理索引",
+        "过度缓存"
       ],
       "correct": 1,
-      "explanation": "Persistent memory poisoning means injections survive across sessions if memory is treated as trusted."
+      "explanation": "如果把记忆当作可信内容，持久记忆投毒就会使注入跨会话存活。"
     },
     {
       "stage": "post",
-      "question": "What metadata does the lesson recommend attaching to every piece of content?",
+      "question": "本课建议为每段内容附加什么元数据？",
       "options": [
-        "A token count",
-        "A timestamp only",
-        "An encryption key",
-        "A source tag: user_message vs tool_output vs retrieved; validator refuses directives in retrieved content"
+        "词元计数",
+        "只有时间戳",
+        "加密密钥",
+        "来源标签：user_message、tool_output 或 retrieved；验证器拒绝检索内容中的指令"
       ],
       "correct": 3,
-      "explanation": "Provenance tagging lets the validator treat content according to its trust level."
+      "explanation": "来源标注让验证器能按内容的信任等级处理它。"
     }
   ]
 }

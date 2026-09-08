@@ -1,134 +1,134 @@
-# Unsupervised Learning
+# 无监督学习（Unsupervised Learning）
 
-> No labels, no teacher. The algorithm finds structure on its own.
+> 没有标签，没有老师。算法自行发现结构。
 
 **Type:** Build
 **Languages:** Python
-**Prerequisites:** Phase 1 (Norms & Distances, Probability & Distributions), Phase 2 Lessons 1-6
-**Time:** ~90 minutes
+**Prerequisites:** 阶段 1（范数与距离、概率与分布），阶段 2 第 1–6 课
+**Time:** ~90 分钟
 
-## Learning Objectives
+## 学习目标（Learning Objectives）
 
-- Implement K-Means, DBSCAN, and Gaussian Mixture Models from scratch and compare their clustering behavior
-- Evaluate cluster quality using the silhouette score and the elbow method to select the optimal K
-- Explain when DBSCAN outperforms K-Means and identify which algorithm handles non-spherical clusters and outliers
-- Build an anomaly detection pipeline using clustering methods to flag points that deviate from normal patterns
+- 从零实现 K 均值、DBSCAN 和高斯混合模型，比较它们的聚类行为
+- 使用轮廓分数和肘部法评估聚类质量，选择最佳 K
+- 解释 DBSCAN 何时优于 K 均值，识别能处理非球形簇和异常值的算法
+- 用聚类方法构建异常检测流水线，标记偏离正常模式的点
 
-## The Problem
+## 问题（The Problem）
 
-Every ML lesson so far has assumed labeled data: "here is an input, here is the correct output." In the real world, labels are expensive. A hospital has millions of patient records but no one has manually tagged each one with a disease category. An e-commerce site has millions of user sessions but no one has hand-labeled customer segments. A security team has network logs but nobody has flagged every anomaly.
+此前每节机器学习课都假设数据带有标签：“这是输入，这是正确输出。”现实中，标签成本高昂。医院有数百万份患者记录，却没有人为每份记录标注疾病类别；电商网站有数百万次用户会话，却没有人工标注客户群体；安全团队有网络日志，却没有人为每个异常做标记。
 
-Unsupervised learning finds patterns without being told what to look for. It groups similar data points, discovers hidden structures, and surfaces anomalies. If supervised learning is learning from a textbook with an answer key, unsupervised learning is staring at raw data until the patterns reveal themselves.
+无监督学习不需要事先知道寻找什么，就能发现模式。它将相似数据点分组，发现隐藏结构，并揭示异常。如果监督学习是通过附有答案的教材学习，那么无监督学习就是观察原始数据，直到模式显现。
 
-The catch: without labels, you cannot directly measure "right" or "wrong." You need different tools to evaluate whether the structure your algorithm found is meaningful.
+难点在于，没有标签就无法直接衡量“对”或“错”。需要其他工具评估算法找到的结构是否有意义。
 
-## The Concept
+## 概念（The Concept）
 
-### Clustering: Grouping Similar Things Together
+### 聚类：将相似事物分组（Clustering: Grouping Similar Things Together）
 
-Clustering assigns each data point to a group (cluster) so that points within the same group are more similar to each other than to points in other groups. The question is always: what does "similar" mean?
+聚类（Clustering）将每个数据点分配到一个组，即簇（Cluster），使同组点之间比不同组点之间更相似。问题始终是：“相似”究竟是什么意思？
 
 ```mermaid
 flowchart LR
-    A[Raw Data] --> B{Choose Method}
+    A[原始数据] --> B{选择方法}
     B --> C[K-Means]
     B --> D[DBSCAN]
-    B --> E[Hierarchical]
+    B --> E[层次聚类]
     B --> F[GMM]
-    C --> G[Flat, spherical clusters]
-    D --> H[Arbitrary shapes, noise detection]
-    E --> I[Tree of nested clusters]
-    F --> J[Soft assignments, elliptical clusters]
+    C --> G[扁平的球形簇]
+    D --> H[任意形状，噪声检测]
+    E --> I[嵌套簇构成的树]
+    F --> J[软分配，椭圆形簇]
 ```
 
-### K-Means: The Workhorse
+### K 均值：主力方法（K-Means: The Workhorse）
 
-K-Means partitions data into exactly K clusters. Each cluster has a centroid (its center of mass), and every point belongs to the nearest centroid.
+K 均值（K-Means）将数据划分为恰好 K 个簇。每个簇有一个质心（Centroid），即质量中心；每个点归属于最近的质心。
 
-Lloyd's algorithm:
+Lloyd 算法：
 
-1. Pick K random points as initial centroids
-2. Assign each data point to the nearest centroid
-3. Recompute each centroid as the mean of its assigned points
-4. Repeat steps 2-3 until assignments stop changing
+1. 随机选择 K 个点作为初始质心
+2. 将每个数据点分配给最近的质心
+3. 取分配到各簇的点的均值，重新计算质心
+4. 重复第 2–3 步，直到分配不再变化
 
-The objective function (inertia) measures the total squared distance from each point to its assigned centroid. K-Means minimizes this, but only finds a local minimum. Different initializations can give different results.
+目标函数，即惯性（Inertia），衡量各点到所属质心的距离平方总和。K 均值将其最小化，但只能找到局部最小值，不同初始化可能产生不同结果。
 
-### Choosing K
+### 选择 K（Choosing K）
 
-Two standard methods:
+有两种标准方法：
 
-**Elbow method:** Run K-Means for K = 1, 2, 3, ..., n. Plot inertia vs K. Look for the "elbow" where adding more clusters stops reducing inertia significantly.
+**肘部法（Elbow Method）：**对 K = 1, 2, 3, ..., n 分别运行 K 均值。绘制惯性随 K 变化的曲线，寻找增加簇数量不再显著降低惯性的“肘部”。
 
-**Silhouette score:** For each point, measure how similar it is to its own cluster (a) versus the nearest other cluster (b). The silhouette coefficient is (b - a) / max(a, b), ranging from -1 (wrong cluster) to +1 (well-clustered). Average across all points for a global score.
+**轮廓分数（Silhouette Score）：**对每个点，比较其与所属簇的相似程度（a）及与最近其他簇的相似程度（b）。轮廓系数为 (b - a) / max(a, b)，范围从 -1（分错簇）到 +1（聚类良好）。对所有点取平均得到全局分数。
 
-### DBSCAN: Density-Based Clustering
+### DBSCAN：基于密度的聚类（DBSCAN: Density-Based Clustering）
 
-K-Means assumes clusters are spherical and requires you to pick K upfront. DBSCAN makes neither assumption. It finds clusters as dense regions separated by sparse regions.
+K 均值假设簇为球形，并要求预先选择 K。DBSCAN 不作这两个假设，而是将由稀疏区域隔开的密集区域识别为簇。
 
-Two parameters:
-- **eps**: the radius of a neighborhood
-- **min_samples**: the minimum number of points needed to form a dense region
+两个参数：
+- **eps**：邻域半径
+- **min_samples**：形成密集区域所需的最少点数
 
-Three types of points:
-- **Core point**: has at least min_samples points within eps distance
-- **Border point**: within eps of a core point but not itself a core point
-- **Noise point**: neither core nor border. These are outliers.
+三类点：
+- **核心点（Core Point）**：eps 距离内至少有 min_samples 个点
+- **边界点（Border Point）**：位于某个核心点的 eps 范围内，但自身不是核心点
+- **噪声点（Noise Point）**：既非核心点也非边界点，即异常值
 
-DBSCAN connects core points that are within eps of each other into the same cluster. Border points join the cluster of a nearby core point. Noise points belong to no cluster.
+DBSCAN 将彼此相距 eps 以内的核心点连接成同一簇。边界点加入附近核心点所在的簇，噪声点不属于任何簇。
 
-Strengths: finds clusters of any shape, automatically determines the number of clusters, identifies outliers. Weakness: struggles with clusters of varying densities.
+优点：发现任意形状的簇，自动确定簇数量，识别异常值。缺点：难以处理密度各不相同的簇。
 
-### Hierarchical Clustering
+### 层次聚类（Hierarchical Clustering）
 
-Builds a tree (dendrogram) of nested clusters.
+构建由嵌套簇组成的树状图（Dendrogram）。
 
-Agglomerative (bottom-up):
-1. Start with each point as its own cluster
-2. Merge the two closest clusters
-3. Repeat until only one cluster remains
-4. Cut the dendrogram at the desired level to get K clusters
+凝聚式（Agglomerative），即自底向上：
+1. 初始时每个点各自构成一个簇
+2. 合并最近的两个簇
+3. 重复，直到只剩一个簇
+4. 在所需层级切割树状图，得到 K 个簇
 
-The "closeness" between clusters can be measured as:
-- **Single linkage**: minimum distance between any two points in the two clusters
-- **Complete linkage**: maximum distance between any two points
-- **Average linkage**: average distance between all pairs
-- **Ward's method**: the merge that causes the smallest increase in total within-cluster variance
+簇间“接近程度”可以这样衡量：
+- **单链接（Single Linkage）**：两个簇中任意两点之间的最小距离
+- **全链接（Complete Linkage）**：任意两点之间的最大距离
+- **平均链接（Average Linkage）**：所有点对距离的平均值
+- **Ward 方法（Ward's Method）**：选择使总簇内方差增量最小的合并
 
-### Gaussian Mixture Models (GMM)
+### 高斯混合模型（Gaussian Mixture Models，GMM）
 
-K-Means gives hard assignments: each point belongs to exactly one cluster. GMM gives soft assignments: each point has a probability of belonging to each cluster.
+K 均值给出硬分配（Hard Assignment）：每个点恰好属于一个簇。GMM 给出软分配（Soft Assignment）：每个点都有属于各个簇的概率。
 
-GMM assumes the data is generated from a mixture of K Gaussian distributions, each with its own mean and covariance. The Expectation-Maximization (EM) algorithm alternates between:
+GMM 假设数据由 K 个高斯分布混合生成，每个分布都有自己的均值和协方差。期望最大化（Expectation-Maximization，EM）算法交替执行：
 
-- **E-step**: compute the probability that each point belongs to each Gaussian
-- **M-step**: update the mean, covariance, and mixing weight of each Gaussian to maximize the likelihood of the data
+- **期望步（E-step）**：计算每个点属于各高斯分布的概率
+- **最大化步（M-step）**：更新各高斯分布的均值、协方差和混合权重，使数据似然最大化
 
-GMM can model elliptical clusters (not just spherical like K-Means) and naturally handles overlapping clusters.
+GMM 能建模椭圆形簇，而不像 K 均值只处理球形簇，并能自然处理重叠簇。
 
-### When to Use Which
+### 各方法的适用场景（When to Use Which）
 
-| Method | Best for | Avoid when |
+| 方法 | 最适合 | 应避免的情况 |
 |--------|----------|------------|
-| K-Means | Large datasets, spherical clusters, known K | Irregular shapes, outliers present |
-| DBSCAN | Unknown K, arbitrary shapes, outlier detection | Varying densities, very high dimensions |
-| Hierarchical | Small datasets, need dendrogram, unknown K | Large datasets (O(n^2) memory) |
-| GMM | Overlapping clusters, soft assignments needed | Very large datasets, too many dimensions |
+| K 均值（K-Means） | 大数据集、球形簇、已知 K | 形状不规则、存在异常值 |
+| DBSCAN | 未知 K、任意形状、异常值检测 | 密度不一、维度很高 |
+| 层次聚类（Hierarchical） | 小数据集、需要树状图、未知 K | 大数据集，内存为 O(n^2) |
+| GMM | 重叠簇、需要软分配 | 数据集极大、维度过多 |
 
-### Anomaly Detection with Clustering
+### 用聚类进行异常检测（Anomaly Detection with Clustering）
 
-Clustering naturally supports anomaly detection:
-- **K-Means**: points far from any centroid are anomalies
-- **DBSCAN**: noise points are anomalies by definition
-- **GMM**: points with low probability under all Gaussians are anomalies
+聚类天然支持异常检测（Anomaly Detection）：
+- **K 均值**：远离所有质心的点是异常点
+- **DBSCAN**：按定义，噪声点就是异常点
+- **GMM**：在所有高斯分布下概率都低的点是异常点
 
 ```figure
 kmeans-step
 ```
 
-## Build It
+## 动手实现（Build It）
 
-### Step 1: K-Means from scratch
+### 第 1 步：从零实现 K 均值（K-Means from scratch）
 
 ```python
 import math
@@ -178,7 +178,7 @@ def kmeans(data, k, max_iterations=100, seed=42):
     return assignments, centroids
 ```
 
-### Step 2: Elbow method and silhouette score
+### 第 2 步：肘部法与轮廓分数（Elbow method and silhouette score）
 
 ```python
 def compute_inertia(data, assignments, centroids):
@@ -244,7 +244,7 @@ def find_best_k(data, max_k=10):
     return inertias
 ```
 
-### Step 3: DBSCAN from scratch
+### 第 3 步：从零实现 DBSCAN（DBSCAN from scratch）
 
 ```python
 def dbscan(data, eps, min_samples):
@@ -298,7 +298,7 @@ def dbscan(data, eps, min_samples):
     return labels
 ```
 
-### Step 4: Gaussian Mixture Model (EM algorithm)
+### 第 4 步：高斯混合模型与 EM 算法（Gaussian Mixture Model: EM algorithm）
 
 ```python
 def gmm(data, k, max_iterations=100, seed=42):
@@ -363,7 +363,7 @@ def gmm(data, k, max_iterations=100, seed=42):
     return assignments, means, weights, responsibilities
 ```
 
-### Step 5: Generate test data and run everything
+### 第 5 步：生成测试数据并运行全部算法（Generate test data and run everything）
 
 ```python
 def make_blobs(centers, n_per_cluster=50, spread=0.5, seed=42):
@@ -454,9 +454,9 @@ if __name__ == "__main__":
         print(f"    Point {[round(v, 2) for v in a]}")
 ```
 
-## Use It
+## 实际应用（Use It）
 
-With scikit-learn, the same algorithms are one-liners:
+使用 scikit-learn，同样的算法各用一行即可调用：
 
 ```python
 from sklearn.cluster import KMeans, DBSCAN, AgglomerativeClustering
@@ -469,33 +469,33 @@ agg = AgglomerativeClustering(n_clusters=3).fit(data)
 gmm_model = GaussianMixture(n_components=3, random_state=42).fit(data)
 ```
 
-The from-scratch versions show you exactly what these libraries compute. K-Means iterates between assigning and recomputing. DBSCAN grows clusters from dense seeds. GMM alternates between expectation and maximization. The library versions add numerical stability, smarter initialization (K-Means++), and GPU acceleration, but the core logic is the same.
+从零实现的版本让你准确了解库在计算什么。K 均值在分配和重新计算之间迭代；DBSCAN 从密集种子点扩展簇；GMM 交替执行期望和最大化。库版本增加数值稳定性、更聪明的初始化（K-Means++）及 GPU 加速，但核心逻辑相同。
 
-## Ship It
+## 交付成果（Ship It）
 
-This lesson produces working implementations of K-Means, DBSCAN, and GMM from scratch. The clustering code can be reused as a foundation for more advanced unsupervised methods.
+本课产出从零编写且可运行的 K 均值、DBSCAN 和 GMM 实现。这些聚类代码可复用，作为更高级无监督方法的基础。
 
-## Exercises
+## 练习（Exercises）
 
-1. Implement K-Means++ initialization: instead of picking random centroids, pick the first randomly and each subsequent centroid with probability proportional to its squared distance from the nearest existing centroid. Compare convergence speed to random initialization.
-2. Add hierarchical agglomerative clustering to the code. Implement Ward's linkage and produce a dendrogram (as a nested list of merges). Cut it at different levels and compare to K-Means results.
-3. Build a simple anomaly detection pipeline: run DBSCAN and GMM on the same data, flag points that both methods agree are outliers (noise in DBSCAN, low probability in GMM). Measure the overlap and discuss when the methods disagree.
+1. 实现 K-Means++ 初始化：不再随机选取所有质心，而是随机选第一个，后续质心按其到最近已有质心的距离平方成比例的概率选取。与随机初始化比较收敛速度。
+2. 在代码中添加凝聚式层次聚类。实现 Ward 链接，输出树状图（用嵌套的合并列表表示）。在不同层级切割，与 K 均值结果比较。
+3. 构建简单异常检测流水线：在同一数据上运行 DBSCAN 和 GMM，标记两种方法都认为异常的点，即 DBSCAN 中的噪声点和 GMM 中的低概率点。测量重叠程度，并讨论两种方法何时意见不同。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语 | 常见说法 | 实际含义 |
 |------|----------------|----------------------|
-| Clustering | "Grouping similar things" | Partitioning data into subsets where within-group similarity exceeds between-group similarity, measured by a specific distance metric |
-| Centroid | "The center of a cluster" | The mean of all points assigned to a cluster; used by K-Means as the cluster representative |
-| Inertia | "How tight the clusters are" | Sum of squared distances from each point to its assigned centroid; lower is tighter |
-| Silhouette score | "How well-separated clusters are" | For each point, (b - a) / max(a, b) where a is mean intra-cluster distance and b is mean nearest-cluster distance |
-| Core point | "A point in a dense region" | A point with at least min_samples neighbors within eps distance, in DBSCAN |
-| EM algorithm | "Soft K-Means" | Expectation-Maximization: iteratively compute membership probabilities (E-step) and update distribution parameters (M-step) |
-| Dendrogram | "A tree of clusters" | A tree diagram showing the order and distance at which clusters were merged in hierarchical clustering |
-| Anomaly | "An outlier" | A data point that does not conform to the expected pattern, identified as noise by DBSCAN or low-probability by GMM |
+| 聚类（Clustering） | “把相似事物分组” | 根据特定距离度量，将数据划分为组内相似度高于组间相似度的子集 |
+| 质心（Centroid） | “簇的中心” | 分配到簇的所有点的均值，K 均值用它代表簇 |
+| 惯性（Inertia） | “簇有多紧密” | 每个点到所属质心的距离平方和，越低越紧密 |
+| 轮廓分数（Silhouette Score） | “簇分得有多开” | 对每个点计算 (b - a) / max(a, b)，a 为平均簇内距离，b 为到最近其他簇的平均距离 |
+| 核心点（Core Point） | “密集区域中的点” | DBSCAN 中 eps 距离内至少有 min_samples 个邻居的点 |
+| EM 算法（EM Algorithm） | “软 K 均值” | 期望最大化：迭代计算归属概率（E-step），更新分布参数（M-step） |
+| 树状图（Dendrogram） | “簇组成的树” | 展示层次聚类中簇合并顺序及合并距离的树形图 |
+| 异常（Anomaly） | “离群点” | 不符合预期模式的数据点，被 DBSCAN 识别为噪声或被 GMM 判为低概率 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [Stanford CS229 - Unsupervised Learning](https://cs229.stanford.edu/notes2022fall/main_notes.pdf) - Andrew Ng's lecture notes on clustering and EM
-- [scikit-learn Clustering Guide](https://scikit-learn.org/stable/modules/clustering.html) - practical comparison of all clustering algorithms with visual examples
-- [DBSCAN original paper (Ester et al., 1996)](https://www.aaai.org/Papers/KDD/1996/KDD96-037.pdf) - the paper that introduced density-based clustering
+- [Stanford CS229：无监督学习（Unsupervised Learning）](https://cs229.stanford.edu/notes2022fall/main_notes.pdf)：Andrew Ng 关于聚类与 EM 的讲义
+- [scikit-learn 聚类指南（Clustering Guide）](https://scikit-learn.org/stable/modules/clustering.html)：结合可视化示例，对各种聚类算法进行实用比较
+- [DBSCAN 原始论文（original paper，Ester 等，1996）](https://www.aaai.org/Papers/KDD/1996/KDD96-037.pdf)：引入基于密度聚类方法的论文

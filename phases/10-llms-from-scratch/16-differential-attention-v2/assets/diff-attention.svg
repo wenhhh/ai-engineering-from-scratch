@@ -17,11 +17,11 @@
     </style>
   </defs>
 
-  <text x="480" y="28" text-anchor="middle" class="title">differential attention — subtract the noise floor</text>
+  <text x="480" y="28" text-anchor="middle" class="title">差分注意力（Differential Attention）：减去噪声底</text>
 
   <!-- Input -->
   <rect x="30" y="60" width="160" height="40" class="box"/>
-  <text x="110" y="85" text-anchor="middle" class="step">hidden state x</text>
+  <text x="110" y="85" text-anchor="middle" class="step" style="font-size:9px">隐藏状态（Hidden State）x</text>
 
   <!-- Split into two QK branches -->
   <line x1="190" y1="70" x2="250" y2="70" stroke="#1a1a1a" stroke-width="1.5" marker-end="url(#arrow)"/>
@@ -38,10 +38,10 @@
   <line x1="450" y1="95" x2="490" y2="95" stroke="#1a1a1a" stroke-width="1.5" marker-end="url(#arrow)"/>
 
   <rect x="490" y="50" width="200" height="30" class="hot"/>
-  <text x="590" y="70" text-anchor="middle" class="step">A1 = softmax(Q1 K1^T / sqrt(d))</text>
+  <text x="590" y="70" text-anchor="middle" class="step" style="font-size:9px">A1 = softmax(Q1 K1^T / sqrt(d))</text>
 
   <rect x="490" y="80" width="200" height="30" class="hot"/>
-  <text x="590" y="100" text-anchor="middle" class="step">A2 = softmax(Q2 K2^T / sqrt(d))</text>
+  <text x="590" y="100" text-anchor="middle" class="step" style="font-size:9px">A2 = softmax(Q2 K2^T / sqrt(d))</text>
 
   <!-- Subtraction -->
   <line x1="690" y1="80" x2="730" y2="80" stroke="#1a1a1a" stroke-width="1.5" marker-end="url(#arrow)"/>
@@ -56,43 +56,43 @@
 
   <!-- Noise cancellation visual -->
   <rect x="30" y="220" width="900" height="130" class="box"/>
-  <text x="480" y="243" text-anchor="middle" class="label">the intuition: both softmaxes carry the same uniform noise floor</text>
+  <text x="480" y="243" text-anchor="middle" class="label">直觉：两个 softmax 具有相同的均匀噪声底（Noise Floor）</text>
 
   <!-- A1 bar chart -->
   <text x="50" y="272" class="step">A1</text>
   <rect x="90" y="267" width="820" height="8" fill="#bbb"/>
   <rect x="500" y="260" width="4" height="22" fill="#c0392b"/>
-  <text x="910" y="275" class="small" text-anchor="end">signal</text>
+  <text x="910" y="275" class="small" text-anchor="end"><tspan dy="10">信号（Signal）</tspan></text>
 
   <!-- A2 bar chart -->
   <text x="50" y="302" class="step">A2</text>
   <rect x="90" y="297" width="820" height="8" fill="#bbb"/>
-  <text x="910" y="305" class="small" text-anchor="end">no signal</text>
+  <text x="910" y="305" class="small" text-anchor="end"><tspan dy="10">无信号（No Signal）</tspan></text>
 
   <!-- A1 - A2 result -->
-  <text x="50" y="335" class="step">A1 - lambda*A2</text>
+  <text x="50" y="335" class="step" style="font-size:9px"><tspan dy="10">A1 - lambda*A2</tspan></text>
   <rect x="90" y="328" width="820" height="3" fill="#eee"/>
   <rect x="500" y="321" width="4" height="17" fill="#2e7d32"/>
-  <text x="910" y="338" class="small" text-anchor="end">signal survives</text>
+  <text x="910" y="338" class="small" text-anchor="end">信号保留（Signal Survives）</text>
 
   <!-- V1 vs V2 diff -->
   <rect x="30" y="370" width="900" height="150" class="box"/>
-  <text x="480" y="393" text-anchor="middle" class="label">V1 (ICLR 2025) -&gt; V2 (Microsoft, Jan 2026)</text>
+  <text x="480" y="393" text-anchor="middle" class="label">V1（ICLR 2025）-&gt; V2（Microsoft，2026 年 1 月）</text>
 
-  <text x="50" y="420" class="step">head dim</text>
-  <text x="220" y="420" class="small">V1: halved (preserve param count)  ·  V2: unchanged (match baseline decode)</text>
+  <text x="50" y="420" class="step" style="font-size:10px">头维度（Head Dim）</text>
+  <text x="220" y="420" class="small">V1：减半（保留参数量） · V2：不变（匹配基线解码）</text>
 
-  <text x="50" y="440" class="step">query heads</text>
-  <text x="220" y="440" class="small">V1: same as baseline  ·  V2: doubled, KV heads unchanged</text>
+  <text x="50" y="440" class="step" style="font-size:10px">查询头（Query Heads）</text>
+  <text x="220" y="440" class="small">V1：与基线相同 · V2：翻倍，KV 头不变</text>
 
-  <text x="50" y="460" class="step">kernel</text>
-  <text x="220" y="460" class="small">V1: custom CUDA  ·  V2: plain FlashAttention — zero code change</text>
+  <text x="50" y="460" class="step" style="font-size:10px">内核（Kernel）</text>
+  <text x="220" y="460" class="small">V1：自定义 CUDA · V2：标准 FlashAttention，无需修改代码</text>
 
-  <text x="50" y="480" class="step">per-head norm</text>
-  <text x="220" y="480" class="small">V1: RMSNorm after subtraction (unstable at 70B)  ·  V2: removed</text>
+  <text x="50" y="480" class="step" style="font-size:10px">逐头归一化（Norm）</text>
+  <text x="220" y="480" class="small">V1：相减后用 RMSNorm（70B 时不稳定） · V2：移除</text>
 
-  <text x="50" y="500" class="step">decode speed</text>
-  <text x="220" y="500" class="small">V1: slower (V cache loaded twice)  ·  V2: matches baseline exactly</text>
+  <text x="50" y="500" class="step" style="font-size:10px">解码速度（Decode Speed）</text>
+  <text x="220" y="500" class="small">V1：较慢（V 缓存载入两次） · V2：与基线完全相当</text>
 
-  <text x="480" y="535" text-anchor="middle" class="caption">ICLR 2025 experiment -&gt; production pre-training. same math, production-ready packaging.</text>
+  <text x="480" y="535" text-anchor="middle" class="caption">ICLR 2025 实验 -&gt; 生产预训练（Pre-training）。相同数学，达到生产要求的实现。</text>
 </svg>

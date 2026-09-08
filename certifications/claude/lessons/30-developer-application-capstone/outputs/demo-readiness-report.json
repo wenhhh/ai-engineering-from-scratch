@@ -7,6 +7,6 @@
   "allowed_tools": ["lookup_order"],
   "forbidden_effects": ["secret_read", "external_write", "cross_tenant_lookup"],
   "artifacts": ["architecture.md", "eval-plan.json", "runbook.md"],
-  "local_mode": "requires no credentials",
-  "live_wire_mode": "explicit opt-in with ANTHROPIC_API_KEY and environment-gated test"
+  "local_mode": "不需要凭据",
+  "live_wire_mode": "显式启用，使用 ANTHROPIC_API_KEY，并由环境条件控制测试"
 }

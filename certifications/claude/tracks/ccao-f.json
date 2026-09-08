@@ -2,21 +2,21 @@
   "id": "claude-ccao-f",
   "slug": "ccao-f",
   "examCode": "CCAO-F",
-  "credential": "Claude Certified Associate - Foundations",
-  "shortName": "Associate Foundations",
-  "level": "Foundational",
+  "credential": "Claude 认证助理基础级（Claude Certified Associate - Foundations）",
+  "shortName": "助理基础级（Associate Foundations）",
+  "level": "基础级（Foundational）",
   "accent": "orange",
   "badge": {
     "imageUrl": "https://images.credly.com/images/a6387cbd-5ac1-4894-833a-da2cbc28587e/blob",
     "width": 600,
     "height": 600
   },
-  "summary": "Use Claude safely and effectively for business, research, analysis, and productivity workflows.",
-  "audience": "Operations, project, sales, marketing, finance, support, research, and other knowledge-work professionals. No software-development experience is required.",
+  "summary": "在业务、研究、分析和提升生产力的工作流中，安全且有效地使用 Claude。",
+  "audience": "面向运营、项目、销售、市场、财务、支持、研究及其他知识工作专业人员，不要求软件开发经验。",
   "recommendedExperience": [
-    "Three to six months using Claude or a comparable AI assistant in real work",
-    "Experience reviewing AI output before sharing it",
-    "A practical understanding of hallucinations, context limits, and data sensitivity"
+    "在实际工作中使用 Claude 或类似 AI 助手三至六个月",
+    "具备在分享 AI 输出前进行审核的经验",
+    "在实践层面理解幻觉（Hallucination）、上下文限制和数据敏感性"
   ],
   "exam": {
     "items": 60,
@@ -25,8 +25,8 @@
     "passingScaledScore": 720,
     "scoreScale": "100-1000",
     "validityMonths": 12,
-    "format": "Multiple-choice and multiple-response",
-    "delivery": "Proctored online or at a test center",
+    "format": "单项选择与多项选择（Multiple-choice and multiple-response）",
+    "delivery": "在线监考或在考试中心考试",
     "guideVersion": "1.0",
     "effective": "July 2026",
     "officialGuideUrl": "https://everpath-course-content.s3-accelerate.amazonaws.com/instructor%2F6nizmqk8tpzpfjvt6qmmav7rh%2Fpublic%2F1783542847%2FClaude+Certified+Associate+%E2%80%93+Foundations+Exam+Guide.pdf"
@@ -34,81 +34,81 @@
   "domains": [
     {
       "id": "prompting-task-execution",
-      "name": "Prompting and Task Execution",
+      "name": "提示词设计与任务执行（Prompting and Task Execution）",
       "weight": 14,
       "objectives": [
-        "Create effective prompts for business and technical tasks",
-        "Decompose complex requests into manageable work",
-        "Iterate prompts using observed output quality",
-        "Adapt prompting to analysis, research, drafting, and brainstorming"
+        "为业务和技术任务创建有效提示词（Create effective prompts for business and technical tasks）",
+        "将复杂请求分解为可管理工作（Decompose complex requests into manageable work）",
+        "根据观察到的输出质量迭代提示词（Iterate prompts using observed output quality）",
+        "将提示词设计适配于分析、研究、起草和头脑风暴（Adapt prompting to analysis, research, drafting, and brainstorming）"
       ]
     },
     {
       "id": "output-evaluation-validation",
-      "name": "Output Evaluation and Validation",
+      "name": "输出评估与验证（Output Evaluation and Validation）",
       "weight": 21,
       "objectives": [
-        "Evaluate accuracy, completeness, and audience fit",
-        "Identify hallucinations, inconsistencies, and bias",
-        "Fact-check against authoritative evidence",
-        "Choose when human review or additional verification is required",
-        "Refine and compare outputs",
-        "Select appropriate inline, artifact, and structured formats"
+        "评估准确性、完整性和受众适配（Evaluate accuracy, completeness, and audience fit）",
+        "识别幻觉、不一致和偏差（Identify hallucinations, inconsistencies, and bias）",
+        "依据权威证据核查事实（Fact-check against authoritative evidence）",
+        "判断何时需要人工审核或额外验证（Choose when human review or additional verification is required）",
+        "完善并比较输出（Refine and compare outputs）",
+        "选择合适的行内、交付物和结构化格式（Select appropriate inline, artifact, and structured formats）"
       ]
     },
     {
       "id": "product-model-selection",
-      "name": "Product and Model Selection",
+      "name": "产品与模型选择（Product and Model Selection）",
       "weight": 12,
       "objectives": [
-        "Choose among Projects, research, chat, and artifacts",
-        "Differentiate Haiku, Sonnet, and Opus roles",
-        "Balance quality, speed, and cost",
-        "Manage context and memory by restarting, summarizing, or persisting"
+        "在 Projects、研究、聊天和 Artifacts 之间选择（Choose among Projects, research, chat, and artifacts）",
+        "区分 Haiku、Sonnet 和 Opus 的角色（Differentiate Haiku, Sonnet, and Opus roles）",
+        "平衡质量、速度和成本（Balance quality, speed, and cost）",
+        "通过重启、总结或持久化管理上下文与记忆（Manage context and memory by restarting, summarizing, or persisting）"
       ]
     },
     {
       "id": "workflow-integration-solution-design",
-      "name": "Workflow Integration and Solution Design",
+      "name": "工作流集成与方案设计（Workflow Integration and Solution Design）",
       "weight": 16,
       "objectives": [
-        "Analyze requirements and candidate use cases",
-        "Apply Claude to research, planning, and process improvement",
-        "Support solution design and iteration",
-        "Augment or redesign existing workflows",
-        "Communicate value and limitations to stakeholders"
+        "分析需求和候选用例（Analyze requirements and candidate use cases）",
+        "将 Claude 用于研究、规划和流程改进（Apply Claude to research, planning, and process improvement）",
+        "支持方案设计和迭代（Support solution design and iteration）",
+        "增强或重新设计现有工作流（Augment or redesign existing workflows）",
+        "向利益相关者传达价值和限制（Communicate value and limitations to stakeholders）"
       ]
     },
     {
       "id": "configuration-knowledge-management",
-      "name": "Configuration and Knowledge Management",
+      "name": "配置与知识管理（Configuration and Knowledge Management）",
       "weight": 12,
       "objectives": [
-        "Configure Projects with instructions and knowledge",
-        "Manage uploads and connectors",
-        "Write effective persistent instructions",
-        "Maintain configurations and sources over time"
+        "为 Projects 配置指令和知识（Configure Projects with instructions and knowledge）",
+        "管理上传与连接器（Manage uploads and connectors）",
+        "编写有效的持久指令（Write effective persistent instructions）",
+        "随时间维护配置和来源（Maintain configurations and sources over time）"
       ]
     },
     {
       "id": "governance-risk-responsible-use",
-      "name": "Governance, Risk, and Responsible Use",
+      "name": "治理、风险与负责任使用（Governance, Risk, and Responsible Use）",
       "weight": 15,
       "objectives": [
-        "Separate appropriate from inappropriate use cases",
-        "Apply privacy, data-sensitivity, and regulatory constraints",
-        "Follow organizational AI policy",
-        "Recognize ethical implications and escalate risk"
+        "区分合适与不合适的用例（Separate appropriate from inappropriate use cases）",
+        "应用隐私、数据敏感性和监管约束（Apply privacy, data-sensitivity, and regulatory constraints）",
+        "遵循组织 AI 政策（Follow organizational AI policy）",
+        "识别伦理影响并升级风险（Recognize ethical implications and escalate risk）"
       ]
     },
     {
       "id": "troubleshooting-optimization",
-      "name": "Troubleshooting and Optimization",
+      "name": "故障排查与优化（Troubleshooting and Optimization）",
       "weight": 10,
       "objectives": [
-        "Diagnose underperforming prompts and poor outputs",
-        "Adjust the approach using feedback and results",
-        "Optimize workflows for efficiency and effectiveness"
+        "诊断表现不佳的提示词和劣质输出（Diagnose underperforming prompts and poor outputs）",
+        "根据反馈和结果调整方法（Adjust the approach using feedback and results）",
+        "优化工作流的效率与效果（Optimize workflows for efficiency and effectiveness）"
       ]
     }
   ],
@@ -124,18 +124,18 @@
     {"path": "certifications/claude/lessons/29-associate-workflow-capstone", "domains": ["prompting-task-execution", "output-evaluation-validation", "product-model-selection", "workflow-integration-solution-design", "configuration-knowledge-management", "governance-risk-responsible-use", "troubleshooting-optimization"], "role": "capstone", "required": true}
   ],
   "deepDives": [
-    {"path": "phases/11-llm-engineering/01-prompt-engineering", "label": "Prompt Engineering", "reason": "Build prompt structure and iteration from first principles"},
-    {"path": "phases/11-llm-engineering/05-context-engineering", "label": "Context Engineering", "reason": "Understand context limits and deliberate context assembly"},
-    {"path": "phases/11-llm-engineering/10-evaluation", "label": "LLM Evaluation", "reason": "Turn quality judgment into repeatable tests"},
-    {"path": "phases/11-llm-engineering/12-guardrails", "label": "Guardrails", "reason": "Layer responsible-use controls around model behavior"},
-    {"path": "phases/18-ethics-safety-alignment/20-bias-representational-harm", "label": "Bias and Representational Harm", "reason": "Recognize and evaluate harmful output patterns"}
+    {"path": "phases/11-llm-engineering/01-prompt-engineering", "label": "提示词工程（Prompt Engineering）", "reason": "从第一性原理出发，建立提示词结构与迭代方法"},
+    {"path": "phases/11-llm-engineering/05-context-engineering", "label": "上下文工程（Context Engineering）", "reason": "理解上下文限制，并有目的地组织上下文"},
+    {"path": "phases/11-llm-engineering/10-evaluation", "label": "大语言模型评估（LLM Evaluation）", "reason": "将质量判断转化为可重复的测试"},
+    {"path": "phases/11-llm-engineering/12-guardrails", "label": "防护机制（Guardrails）", "reason": "围绕模型行为分层设置负责任使用控制"},
+    {"path": "phases/18-ethics-safety-alignment/20-bias-representational-harm", "label": "偏差与表征伤害（Bias and Representational Harm）", "reason": "识别并评估有害的输出模式"}
   ],
   "assessments": [
-    {"id": "claude-ccao-f-diagnostic", "path": "certifications/claude/assessments/ccao-f/diagnostic.json", "kind": "diagnostic", "title": "Associate Foundations Diagnostic", "timeLimitMinutes": 25},
-    {"id": "claude-ccao-f-mock-01", "path": "certifications/claude/assessments/ccao-f/mock-01.json", "kind": "mock", "title": "Associate Foundations Full Mock", "timeLimitMinutes": 120}
+    {"id": "claude-ccao-f-diagnostic", "path": "certifications/claude/assessments/ccao-f/diagnostic.json", "kind": "diagnostic", "title": "助理基础级诊断测评（Associate Foundations Diagnostic）", "timeLimitMinutes": 25},
+    {"id": "claude-ccao-f-mock-01", "path": "certifications/claude/assessments/ccao-f/mock-01.json", "kind": "mock", "title": "助理基础级全长模拟考试（Associate Foundations Full Mock）", "timeLimitMinutes": 120}
   ],
   "studyPlans": [
-    {"id": "ccao-f-14-day", "label": "14-day focused plan", "durationDays": 14, "hoursPerWeek": 7, "milestones": ["Days 1-2: diagnose and learn the product map", "Days 3-6: prompting, context, and validation", "Days 7-10: workflows, governance, and troubleshooting", "Days 11-12: complete the capstone", "Days 13-14: full mock and targeted review"]},
-    {"id": "ccao-f-28-day", "label": "28-day steady plan", "durationDays": 28, "hoursPerWeek": 4, "milestones": ["Week 1: product selection and prompting", "Week 2: context, knowledge, and validation", "Week 3: workflow design and responsible use", "Week 4: capstone, mock, and weak-domain review"]}
+    {"id": "ccao-f-14-day", "label": "14 天集中学习计划（14-day focused plan）", "durationDays": 14, "hoursPerWeek": 7, "milestones": ["第 1-2 天：诊断学习基础，并了解产品版图", "第 3-6 天：提示词设计、上下文和验证", "第 7-10 天：工作流、治理和故障排查", "第 11-12 天：完成综合实践（Capstone）", "第 13-14 天：全长模拟考试和针对性复习"]},
+    {"id": "ccao-f-28-day", "label": "28 天稳步学习计划（28-day steady plan）", "durationDays": 28, "hoursPerWeek": 4, "milestones": ["第 1 周：产品选择和提示词设计", "第 2 周：上下文、知识和验证", "第 3 周：工作流设计和负责任使用", "第 4 周：综合实践、模拟考试和薄弱领域复习"]}
   ]
 }

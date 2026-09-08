@@ -1,46 +1,46 @@
-# Introduction to PyTorch
+# PyTorch 入门（Introduction to PyTorch）
 
-> You built the engine from pistons and crankshafts. Now learn the one everyone actually drives.
+> 你已经用活塞和曲轴组装了发动机，现在来学大家实际驾驶的那一款。
 
 **Type:** Build
 **Languages:** Python
-**Prerequisites:** Lesson 03.10 (Build Your Own Mini Framework)
-**Time:** ~75 minutes
+**Prerequisites:** 第 03.10 课（构建自己的迷你框架，Build Your Own Mini Framework）
+**Time:** ~75 分钟
 
-## Learning Objectives
+## 学习目标（Learning Objectives）
 
-- Build and train neural networks using PyTorch's nn.Module, nn.Sequential, and autograd
-- Use PyTorch tensors, GPU acceleration, and the standard training loop (zero_grad, forward, loss, backward, step)
-- Convert your from-scratch mini framework components to their PyTorch equivalents
-- Profile and compare training speed between your pure-Python framework and PyTorch on the same task
+- 使用 PyTorch 的 nn.Module、nn.Sequential 和自动求导（Autograd）构建并训练神经网络
+- 使用 PyTorch 张量（Tensor）、GPU 加速以及标准训练循环（zero_grad、forward、loss、backward、step）
+- 将从零构建的迷你框架组件转换为 PyTorch 对应实现
+- 在相同任务上进行性能分析，比较纯 Python 框架与 PyTorch 的训练速度
 
-## The Problem
+## 问题（The Problem）
 
-You have a working mini framework. Linear layers, ReLU, dropout, batch norm, Adam, a DataLoader, a training loop. It trains a 4-layer network on a circle classification problem in pure Python.
+你已有可运行的迷你框架：线性层、ReLU、随机失活、批归一化、Adam、DataLoader 和训练循环。它用纯 Python 在圆内外分类问题上训练 4 层网络。
 
-It is also 500x slower than PyTorch on the same problem.
+但在同一问题上，它也比 PyTorch 慢 500 倍。
 
-Your mini framework processes one sample at a time with nested Python loops. PyTorch dispatches the same operations to optimized C++/CUDA kernels that run on GPU. On a single NVIDIA A100, PyTorch trains a ResNet-50 (25.6M parameters) on ImageNet (1.28M images) in about 6 hours. Your framework would take roughly 3,000 hours on the same task -- if it didn't run out of memory first.
+迷你框架用嵌套 Python 循环一次处理一个样本。PyTorch 将同样的操作交给 GPU 上优化过的 C++/CUDA 内核。单张 NVIDIA A100 上，PyTorch 训练 ResNet-50（25.6M 参数）处理 ImageNet（1.28M 图像）约需 6 小时。你的框架完成同一任务大约需要 3,000 小时，前提是内存没有先耗尽。
 
-Speed is not the only gap. Your framework has no GPU support. No automatic differentiation -- you hand-wrote backward() for every module. No serialization. No distributed training. No mixed precision. No way to debug gradient flow without print statements.
+速度不是唯一差距。你的框架不支持 GPU，没有自动微分（Automatic Differentiation），每个模块的 backward() 都是手写的；没有序列化、分布式训练、混合精度，也没有除打印语句外的梯度流调试方法。
 
-PyTorch fills every one of these gaps. And it does so while keeping the exact same mental model you already built: Module, forward(), parameters(), backward(), optimizer.step(). The concepts transfer one-to-one. The syntax is nearly identical. The difference is that PyTorch wraps a decade of systems engineering behind the same interface you designed from scratch.
+PyTorch 填补了全部空缺，同时保留你已经建立的相同心智模型：Module、forward()、parameters()、backward()、optimizer.step()。概念一一对应，语法几乎相同。区别在于 PyTorch 在你从零设计的同样接口背后，封装了十年的系统工程成果。
 
-## The Concept
+## 概念（The Concept）
 
-### Why PyTorch Won
+### PyTorch 为什么胜出（Why PyTorch Won）
 
-In 2015, TensorFlow required you to define a static computation graph before running anything. You built the graph, compiled it, then fed data through it. Debugging meant staring at graph visualizations. Changing the architecture meant rebuilding the graph from scratch.
+2015 年，TensorFlow 要求先定义静态计算图（Static Computation Graph），才能运行任何操作。构建图、编译，再输入数据。调试意味着盯着图的可视化，改变架构意味着从零重建计算图。
 
-PyTorch launched in 2017 with a different philosophy: eager execution. You write Python. It runs immediately. `y = model(x)` actually computes y right now, not "add a node to a graph that will compute y later." This meant standard Python debugging tools worked. print() worked. pdb worked. if/else in your forward pass worked.
+PyTorch 于 2017 年推出，采用不同理念：即时执行（Eager Execution）。你写 Python，它立刻运行。`y = model(x)` 真正在当下计算 y，而不是“添加一个稍后计算 y 的图节点”。这让标准 Python 调试工具都能工作：print()、pdb，以及前向传播中的 if/else。
 
-By 2020, the market had spoken. PyTorch's share in ML research papers went from 7% (2017) to over 75% (2022). Meta, Google DeepMind, OpenAI, Anthropic, and Hugging Face all use PyTorch as their primary framework. TensorFlow 2.x adopted eager execution in response -- tacit admission that PyTorch's design was correct.
+到 2020 年，市场已给出答案。PyTorch 在机器学习研究论文中的占比从 2017 年的 7% 增至 2022 年超过 75%。Meta、Google DeepMind、OpenAI、Anthropic、Hugging Face 都将 PyTorch 作为主要框架。TensorFlow 2.x 随之采用即时执行，实际上承认了 PyTorch 的设计正确。
 
-The lesson: developer experience compounds. A framework that is 10% slower but 50% faster to debug wins every time.
+启示是：开发者体验会累积优势。运行慢 10% 但调试快 50% 的框架，总会胜出。
 
-### Tensors
+### 张量（Tensors）
 
-A tensor is a multi-dimensional array with three critical properties: shape, dtype, and device.
+张量是多维数组，有三个关键属性：形状（Shape）、数据类型（Dtype）和设备（Device）。
 
 ```python
 import torch
@@ -50,18 +50,18 @@ x = torch.randn(2, 3, 224, 224) # batch of 2 RGB images, 224x224
 x = torch.tensor([1, 2, 3])     # from a Python list
 ```
 
-**Shape** is the dimensionality. A scalar is shape (), a vector is (n,), a matrix is (m, n), a batch of images is (batch, channels, height, width).
+**形状（Shape）**表示维度。标量形状为 ()，向量为 (n,)，矩阵为 (m, n)，一批图像为 (batch, channels, height, width)。
 
-**Dtype** controls precision and memory.
+**数据类型（Dtype）**控制精度和内存。
 
-| dtype | Bits | Range | Use case |
+| dtype | 位数 | 范围 | 用途 |
 |-------|------|-------|----------|
-| float32 | 32 | ~7 decimal digits | Default training |
-| float16 | 16 | ~3.3 decimal digits | Mixed precision |
-| bfloat16 | 16 | Same range as float32, less precision | LLM training |
-| int8 | 8 | -128 to 127 | Quantized inference |
+| float32 | 32 | 约 7 位十进制数字 | 默认训练 |
+| float16 | 16 | 约 3.3 位十进制数字 | 混合精度 |
+| bfloat16 | 16 | 与 float32 范围相同，精度更低 | LLM 训练 |
+| int8 | 8 | -128 到 127 | 量化推理（Quantized Inference） |
 
-**Device** determines where computation happens.
+**设备（Device）**决定计算发生在哪里。
 
 ```python
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -70,9 +70,9 @@ x = x.to("cuda")
 x = x.cpu()
 ```
 
-Every operation requires all tensors on the same device. This is the #1 PyTorch error beginners hit: `RuntimeError: Expected all tensors to be on the same device`. Fix it by moving everything to the same device before computation.
+每项操作都要求所有张量位于同一设备。这是初学者最常遇到的 PyTorch 错误：`RuntimeError: Expected all tensors to be on the same device`。计算前将所有内容移至同一设备即可修复。
 
-**Reshaping** is constant-time -- it changes the metadata, not the data.
+**重塑形状（Reshaping）**是常数时间操作，只修改元数据而非数据。
 
 ```python
 x = torch.randn(2, 3, 4)
@@ -83,24 +83,24 @@ x.unsqueeze(0)     # add dimension: (1, 2, 3, 4)
 x.squeeze()        # remove size-1 dimensions
 ```
 
-### Autograd
+### 自动求导（Autograd）
 
-Your mini framework required you to implement backward() for every module. PyTorch does not. It records every operation on tensors into a directed acyclic graph (the computational graph) and then traverses that graph in reverse to compute gradients automatically.
+迷你框架要求你为每个模块实现 backward()，PyTorch 不需要。它将张量上的每项操作记录到有向无环图（即计算图）中，再逆向遍历，自动计算梯度。
 
 ```mermaid
 graph LR
-    x["x (leaf)"] --> mul["*"]
-    w["w (leaf, requires_grad)"] --> mul
+    x["x（叶子节点）"] --> mul["*"]
+    w["w（叶子节点，requires_grad）"] --> mul
     mul --> add["+"]
-    b["b (leaf, requires_grad)"] --> add
-    add --> loss["loss"]
+    b["b（叶子节点，requires_grad）"] --> add
+    add --> loss["损失（loss）"]
     loss --> |".backward()"| add
     add --> |"grad"| b
     add --> |"grad"| mul
     mul --> |"grad"| w
 ```
 
-The key difference from your framework: PyTorch uses tape-based autodiff. Every operation appends to a "tape" during the forward pass. Calling `.backward()` replays the tape in reverse.
+与自建框架的关键区别是：PyTorch 使用基于带的自动微分（Tape-Based Autodiff）。前向传播时，每项操作追加到一条“带”上，调用 `.backward()` 时逆向回放。
 
 ```python
 x = torch.randn(3, requires_grad=True)
@@ -110,15 +110,15 @@ z.backward()
 print(x.grad)  # dz/dx = 2x + 3
 ```
 
-Three rules of autograd:
+自动求导的三条规则：
 
-1. Only leaf tensors with `requires_grad=True` accumulate gradients
-2. Gradients accumulate by default -- call `optimizer.zero_grad()` before each backward pass
-3. `torch.no_grad()` disables gradient tracking (use during evaluation)
+1. 只有设置了 `requires_grad=True` 的叶子张量才会累积梯度
+2. 默认累积梯度，每次反向传播前调用 `optimizer.zero_grad()`
+3. `torch.no_grad()` 关闭梯度追踪，评估时使用
 
-### nn.Module
+### 神经网络模块（nn.Module）
 
-`nn.Module` is the base class for every neural network component in PyTorch. You already built this abstraction in Lesson 10. PyTorch's version adds automatic parameter registration, recursive module discovery, device management, and state dict serialization.
+`nn.Module` 是 PyTorch 中所有神经网络组件的基类。你在第 10 课已构建这一抽象。PyTorch 版本增加了自动参数注册、递归模块发现、设备管理和状态字典序列化。
 
 ```python
 import torch.nn as nn
@@ -137,58 +137,58 @@ class MLP(nn.Module):
         return x
 ```
 
-When you assign an `nn.Module` or `nn.Parameter` as an attribute in `__init__`, PyTorch automatically registers it. `model.parameters()` recursively collects every registered parameter. This is why you never have to manually gather weights like you did in the mini framework.
+在 `__init__` 中将 `nn.Module` 或 `nn.Parameter` 赋为属性时，PyTorch 自动注册它。`model.parameters()` 递归收集每个已注册参数，所以不必像迷你框架中那样手动汇总权重。
 
-Key building blocks:
+关键构建模块：
 
-| Module | What it does | Parameters |
+| 模块 | 功能 | 参数量 |
 |--------|-------------|------------|
 | nn.Linear(in, out) | Wx + b | in*out + out |
-| nn.Conv2d(in_ch, out_ch, k) | 2D convolution | in_ch*out_ch*k*k + out_ch |
-| nn.BatchNorm1d(features) | Normalize activations | 2 * features |
-| nn.Dropout(p) | Random zeroing | 0 |
+| nn.Conv2d(in_ch, out_ch, k) | 二维卷积（2D Convolution） | in_ch*out_ch*k*k + out_ch |
+| nn.BatchNorm1d(features) | 归一化激活值 | 2 * features |
+| nn.Dropout(p) | 随机置零 | 0 |
 | nn.ReLU() | max(0, x) | 0 |
-| nn.GELU() | Gaussian error linear | 0 |
-| nn.Embedding(vocab, dim) | Lookup table | vocab * dim |
-| nn.LayerNorm(dim) | Per-sample normalization | 2 * dim |
+| nn.GELU() | 高斯误差线性激活 | 0 |
+| nn.Embedding(vocab, dim) | 查找表（Lookup Table） | vocab * dim |
+| nn.LayerNorm(dim) | 逐样本归一化 | 2 * dim |
 
-### Loss Functions and Optimizers
+### 损失函数与优化器（Loss Functions and Optimizers）
 
-PyTorch ships production-ready versions of everything you built.
+你构建的每种功能，PyTorch 都提供了可用于生产的版本。
 
-**Loss functions** (from `torch.nn`):
+**损失函数**（来自 `torch.nn`）：
 
-| Loss | Task | Input |
+| 损失 | 任务 | 输入 |
 |------|------|-------|
-| nn.MSELoss() | Regression | Any shape |
-| nn.CrossEntropyLoss() | Multi-class classification | Logits (not softmax) |
-| nn.BCEWithLogitsLoss() | Binary classification | Logits (not sigmoid) |
-| nn.L1Loss() | Regression (robust) | Any shape |
-| nn.CTCLoss() | Sequence alignment | Log probabilities |
+| nn.MSELoss() | 回归 | 任意形状 |
+| nn.CrossEntropyLoss() | 多分类 | 原始分数（Logits），非 Softmax 输出 |
+| nn.BCEWithLogitsLoss() | 二元分类 | Logits，非 Sigmoid 输出 |
+| nn.L1Loss() | 回归（稳健） | 任意形状 |
+| nn.CTCLoss() | 序列对齐（Sequence Alignment） | 对数概率 |
 
-Note: `CrossEntropyLoss` combines `LogSoftmax` + `NLLLoss` internally. Pass raw logits, not softmax outputs. This is a common mistake that produces wrong gradients silently.
+注意：`CrossEntropyLoss` 内部组合了 `LogSoftmax` + `NLLLoss`。传入原始 Logit，而不是 Softmax 输出。这是常见错误，会悄悄产生错误梯度。
 
-**Optimizers** (from `torch.optim`):
+**优化器**（来自 `torch.optim`）：
 
-| Optimizer | When to use | Typical LR |
+| 优化器 | 使用场景 | 典型学习率 |
 |-----------|-------------|-----------|
-| SGD(params, lr, momentum) | CNNs, well-tuned pipelines | 0.01--0.1 |
-| Adam(params, lr) | Default starting point | 1e-3 |
-| AdamW(params, lr, weight_decay) | Transformers, fine-tuning | 1e-4--1e-3 |
-| LBFGS(params) | Small-scale, second-order | 1.0 |
+| SGD(params, lr, momentum) | CNN、充分调优的流程 | 0.01--0.1 |
+| Adam(params, lr) | 默认起点 | 1e-3 |
+| AdamW(params, lr, weight_decay) | Transformer、微调 | 1e-4--1e-3 |
+| LBFGS(params) | 小规模、二阶优化 | 1.0 |
 
-### The Training Loop
+### 训练循环（The Training Loop）
 
-Every PyTorch training loop follows the same 5-step pattern. You already know this from Lesson 10.
+每个 PyTorch 训练循环都遵循相同的五步模式，你在第 10 课已经见过。
 
 ```mermaid
 sequenceDiagram
-    participant D as DataLoader
-    participant M as Model
-    participant L as Loss fn
-    participant O as Optimizer
+    participant D as 数据加载器（DataLoader）
+    participant M as 模型（Model）
+    participant L as 损失函数（Loss fn）
+    participant O as 优化器（Optimizer）
 
-    loop Each Epoch
+    loop 每个训练轮次
         D->>M: batch = next(dataloader)
         M->>L: predictions = model(batch)
         L->>L: loss = criterion(predictions, targets)
@@ -198,7 +198,7 @@ sequenceDiagram
     end
 ```
 
-The canonical pattern:
+标准模式：
 
 ```python
 for epoch in range(num_epochs):
@@ -212,11 +212,11 @@ for epoch in range(num_epochs):
         optimizer.step()
 ```
 
-Five lines inside the batch loop. Five lines that trained GPT-4, Stable Diffusion, and LLaMA. The architecture changes. The data changes. These five lines do not.
+批次循环里五行代码。这五行训练了 GPT-4、Stable Diffusion 和 LLaMA。架构会变，数据会变，这五行不变。
 
-### Dataset and DataLoader
+### 数据集与数据加载器（Dataset and DataLoader）
 
-PyTorch's `Dataset` is an abstract class with two methods: `__len__` and `__getitem__`. `DataLoader` wraps it with batching, shuffling, and multi-process data loading.
+PyTorch 的 `Dataset` 是抽象类，包含 `__len__` 和 `__getitem__` 两个方法。`DataLoader` 为它包装分批、打乱和多进程数据加载。
 
 ```python
 from torch.utils.data import Dataset, DataLoader
@@ -235,24 +235,24 @@ class MNISTDataset(Dataset):
 loader = DataLoader(dataset, batch_size=64, shuffle=True, num_workers=4)
 ```
 
-`num_workers=4` spawns 4 processes to load data in parallel while the GPU trains on the current batch. On disk-bound workloads (large images, audio), this alone can double training speed.
+`num_workers=4` 启动 4 个进程并行加载数据，同时 GPU 训练当前批次。对受磁盘限制的工作负载（大图像、音频），仅此一项就能将训练速度翻倍。
 
-### GPU Training
+### GPU 训练（GPU Training）
 
-Moving a model to GPU:
+将模型移至 GPU：
 
 ```python
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = model.to(device)
 ```
 
-This recursively moves every parameter and buffer to the GPU. Then move each batch during training:
+这会递归将每个参数和缓冲区移至 GPU，然后在训练时移动每个批次：
 
 ```python
 inputs, targets = inputs.to(device), targets.to(device)
 ```
 
-**Mixed precision** halves memory usage and doubles throughput on modern GPUs (A100, H100, RTX 4090) by running forward/backward in float16 while keeping the master weights in float32:
+**混合精度（Mixed Precision）**在现代 GPU（A100、H100、RTX 4090）上可将内存使用减半、吞吐量翻倍：前向/反向传播用 float16，主权重仍保留 float32：
 
 ```python
 from torch.amp import autocast, GradScaler
@@ -268,31 +268,31 @@ for inputs, targets in loader:
     optimizer.zero_grad()
 ```
 
-### Comparison: Mini Framework vs PyTorch vs JAX
+### 对比：迷你框架、PyTorch 与 JAX（Comparison: Mini Framework vs PyTorch vs JAX）
 
-| Feature | Mini Framework (L10) | PyTorch | JAX |
+| 特性 | 迷你框架（第 10 课） | PyTorch | JAX |
 |---------|---------------------|---------|-----|
-| Autodiff | Manual backward() | Tape-based autograd | Functional transforms |
-| Execution | Eager (Python loops) | Eager (C++ kernels) | Traced + JIT compiled |
-| GPU support | No | Yes (CUDA, ROCm, MPS) | Yes (CUDA, TPU) |
-| Speed (MNIST MLP) | ~300s/epoch | ~0.5s/epoch | ~0.3s/epoch |
-| Module system | Custom Module class | nn.Module | Stateless functions (Flax/Equinox) |
-| Debugging | print() | print(), pdb, breakpoint() | Harder (JIT tracing breaks print) |
-| Ecosystem | None | Hugging Face, Lightning, timm | Flax, Optax, Orbax |
-| Learning curve | You built it | Moderate | Steep (functional paradigm) |
-| Production use | Toy problems | Meta, OpenAI, Anthropic, HF | Google DeepMind, Midjourney |
+| 自动微分 | 手动 backward() | 基于带的自动求导 | 函数变换 |
+| 执行方式 | 即时（Python 循环） | 即时（C++ 内核） | 追踪 + 即时编译（JIT） |
+| GPU 支持 | 无 | 有（CUDA、ROCm、MPS） | 有（CUDA、TPU） |
+| 速度（MNIST MLP） | 约 300 秒/轮 | 约 0.5 秒/轮 | 约 0.3 秒/轮 |
+| 模块系统 | 自定义 Module 类 | nn.Module | 无状态函数（Flax/Equinox） |
+| 调试 | print() | print()、pdb、breakpoint() | 更困难（JIT 追踪会使 print 失效） |
+| 生态 | 无 | Hugging Face、Lightning、timm | Flax、Optax、Orbax |
+| 学习曲线 | 你自己构建的 | 中等 | 陡峭（函数式范式） |
+| 生产使用 | 玩具问题 | Meta、OpenAI、Anthropic、HF | Google DeepMind、Midjourney |
 
 ```figure
 dropout-mask
 ```
 
-## Build It
+## 动手实现（Build It）
 
-A 3-layer MLP trained on MNIST using only PyTorch primitives. No high-level wrappers. No `torchvision.datasets`. We download and parse the raw data ourselves.
+仅用 PyTorch 基础组件在 MNIST 上训练 3 层 MLP。不用高级封装，也不用 `torchvision.datasets`，自行下载并解析原始数据。
 
-### Step 1: Load MNIST From Raw Files
+### 步骤 1：从原始文件加载 MNIST（Step 1: Load MNIST From Raw Files）
 
-MNIST ships as 4 gzipped files: training images (60,000 x 28 x 28), training labels, test images (10,000 x 28 x 28), test labels. We download them and parse the binary format.
+MNIST 提供 4 个 gzip 文件：训练图像（60,000 x 28 x 28）、训练标签、测试图像（10,000 x 28 x 28）和测试标签。我们下载它们并解析二进制格式。
 
 ```python
 import torch
@@ -332,9 +332,9 @@ def load_labels(filepath):
     return labels
 ```
 
-### Step 2: Define the Model
+### 步骤 2：定义模型（Step 2: Define the Model）
 
-A 3-layer MLP: 784 -> 256 -> 128 -> 10. ReLU activations. Dropout for regularization. No batch norm to keep it simple.
+3 层 MLP：784 -> 256 -> 128 -> 10，使用 ReLU 激活、随机失活正则化。为保持简单，不使用批归一化。
 
 ```python
 class MNISTModel(nn.Module):
@@ -354,13 +354,13 @@ class MNISTModel(nn.Module):
         return self.net(x)
 ```
 
-The output layer produces 10 raw logits (one per digit). No softmax -- `CrossEntropyLoss` handles that internally.
+输出层产生 10 个原始 Logit，每个数字一个。不用 Softmax，`CrossEntropyLoss` 会在内部处理。
 
-Parameter count: 784*256 + 256 + 256*128 + 128 + 128*10 + 10 = 235,146. Tiny by modern standards. GPT-2 small has 124M. This trains in seconds.
+参数量：784*256 + 256 + 256*128 + 128 + 128*10 + 10 = 235,146。按现代标准很小，GPT-2 small 有 124M 参数。这个模型几秒就能训练。
 
-### Step 3: Training Loop
+### 步骤 3：训练循环（Step 3: Training Loop）
 
-The canonical forward-loss-backward-step pattern.
+标准的前向、损失、反向、更新模式。
 
 ```python
 def train_one_epoch(model, loader, criterion, optimizer, device):
@@ -399,9 +399,9 @@ def evaluate(model, loader, criterion, device):
     return total_loss / total, correct / total
 ```
 
-Note `torch.no_grad()` during evaluation. This disables autograd, reducing memory usage and speeding up inference. Without it, PyTorch builds a computational graph you never use.
+注意评估时的 `torch.no_grad()`。它关闭自动求导，减少内存并加速推理。没有它，PyTorch 会构建一张你从不使用的计算图。
 
-### Step 4: Wire Everything Together
+### 步骤 4：连接所有部分（Step 4: Wire Everything Together）
 
 ```python
 def main():
@@ -451,25 +451,25 @@ def main():
     print(f"Final test accuracy: {test_acc:.4f}")
 ```
 
-Expected output after 10 epochs: ~97.8% test accuracy. Training time on CPU: ~30 seconds. On GPU: ~5 seconds. On your mini framework with the same architecture: ~45 minutes.
+训练 10 轮后的预期结果：测试准确率约 97.8%。CPU 训练约 30 秒，GPU 约 5 秒，同架构的迷你框架约 45 分钟。
 
-## Use It
+## 实际应用（Use It）
 
-### Quick Comparison: Mini Framework vs PyTorch
+### 快速对比：迷你框架与 PyTorch（Quick Comparison: Mini Framework vs PyTorch）
 
-| Mini Framework (Lesson 10) | PyTorch |
+| 迷你框架（第 10 课） | PyTorch |
 |---------------------------|---------|
 | `model = Sequential(Linear(784, 256), ReLU(), ...)` | `model = nn.Sequential(nn.Linear(784, 256), nn.ReLU(), ...)` |
 | `pred = model.forward(x)` | `pred = model(x)` |
 | `optimizer.zero_grad()` | `optimizer.zero_grad()` |
-| `grad = criterion.backward()` then `model.backward(grad)` | `loss.backward()` |
+| `grad = criterion.backward()`，然后 `model.backward(grad)` | `loss.backward()` |
 | `optimizer.step()` | `optimizer.step()` |
-| No GPU | `model.to("cuda")` |
-| Manual backward for every module | Autograd handles everything |
+| 不支持 GPU | `model.to("cuda")` |
+| 每个模块手写反向传播 | 自动求导处理全部工作 |
 
-The interface is nearly identical. The difference is everything under the hood.
+接口几乎相同，区别都在内部实现。
 
-### Saving and Loading Models
+### 保存与加载模型（Saving and Loading Models）
 
 ```python
 torch.save(model.state_dict(), "model.pt")
@@ -479,9 +479,9 @@ model.load_state_dict(torch.load("model.pt", weights_only=True))
 model.eval()
 ```
 
-Always save `state_dict()` (the parameter dictionary), not the model object. Saving the model object uses pickle, which breaks when you refactor code. State dicts are portable.
+始终保存 `state_dict()`（参数字典），而不是模型对象。保存模型对象会使用 pickle，代码重构后可能无法加载。状态字典则可移植。
 
-### Learning Rate Scheduling
+### 学习率调度（Learning Rate Scheduling）
 
 ```python
 scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
@@ -492,45 +492,45 @@ for epoch in range(10):
     scheduler.step()
 ```
 
-PyTorch ships 15+ schedulers: StepLR, ExponentialLR, CosineAnnealingLR, OneCycleLR, ReduceLROnPlateau. All plug into the same optimizer interface.
+PyTorch 提供 15 种以上调度器：StepLR、ExponentialLR、CosineAnnealingLR、OneCycleLR、ReduceLROnPlateau，全部接入相同的优化器接口。
 
-## Ship It
+## 交付成果（Ship It）
 
-This lesson produces two artifacts:
+本课产出两个交付物（Artifact）：
 
-- `outputs/prompt-pytorch-debugger.md` -- a prompt for diagnosing common PyTorch training failures
-- `outputs/skill-pytorch-patterns.md` -- a skill reference for PyTorch training patterns
+- `outputs/prompt-pytorch-debugger.md`：诊断常见 PyTorch 训练失败的提示词
+- `outputs/skill-pytorch-patterns.md`：PyTorch 训练模式的技能参考
 
-## Exercises
+## 练习（Exercises）
 
-1. **Add batch normalization.** Insert `nn.BatchNorm1d` after each linear layer (before the activation). Compare test accuracy and training speed vs the dropout-only version. Batch norm should reach 98%+ in fewer epochs.
+1. **添加批归一化。**在每个线性层之后、激活之前插入 `nn.BatchNorm1d`。比较测试准确率与训练速度，同只用随机失活的版本对照。批归一化应以更少轮次达到 98% 以上。
 
-2. **Implement a learning rate finder.** Train for one epoch with exponentially increasing learning rate (from 1e-7 to 1.0). Plot loss vs LR. The optimal LR is just before the loss starts climbing. Use this to pick a better LR for the MNIST model.
+2. **实现学习率查找器。**训练一轮，同时将学习率从 1e-7 指数级增至 1.0。绘制损失与学习率关系，损失开始上升前的学习率是最优值。用它为 MNIST 模型选择更好的学习率。
 
-3. **Port to GPU with mixed precision.** Add `torch.amp.autocast` and `GradScaler` to the training loop. Measure throughput (samples/second) with and without mixed precision on GPU. On an A100, expect ~2x speedup.
+3. **迁移到 GPU 并使用混合精度。**向训练循环添加 `torch.amp.autocast` 和 `GradScaler`，测量 GPU 上有无混合精度的吞吐量（样本/秒）。A100 上预期约 2x 加速。
 
-4. **Build a custom Dataset.** Download Fashion-MNIST (same format as MNIST but with clothing items). Implement a `FashionMNISTDataset(Dataset)` class with `__getitem__` and `__len__`. Train the same MLP and compare accuracy. Fashion-MNIST is harder -- expect ~88% vs ~98%.
+4. **构建自定义 Dataset。**下载 Fashion-MNIST，格式与 MNIST 相同，但内容是服饰。实现包含 `__getitem__` 和 `__len__` 的 `FashionMNISTDataset(Dataset)` 类。训练同一个 MLP 并比较准确率。Fashion-MNIST 更难，预期约 88%，而 MNIST 约 98%。
 
-5. **Replace Adam with SGD + momentum.** Train with `SGD(params, lr=0.01, momentum=0.9)`. Compare convergence curves. Then add a `CosineAnnealingLR` scheduler and see if SGD catches up to Adam by epoch 10.
+5. **将 Adam 替换为带动量 SGD。**使用 `SGD(params, lr=0.01, momentum=0.9)` 训练，比较收敛曲线，再添加 `CosineAnnealingLR` 调度器，观察第 10 轮时 SGD 能否追上 Adam。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语 | 常见说法 | 实际含义 |
 |------|----------------|----------------------|
-| Tensor | "A multi-dimensional array" | A typed, device-aware array with automatic differentiation support baked into every operation |
-| Autograd | "Automatic backprop" | A tape-based system that records operations during forward pass, then replays them in reverse to compute exact gradients |
-| nn.Module | "A layer" | The base class for any differentiable computation block -- registers parameters, supports nesting, handles train/eval modes |
-| state_dict | "The model weights" | An OrderedDict mapping parameter names to tensors -- the portable, serializable representation of a trained model |
-| .backward() | "Compute gradients" | Traverse the computational graph in reverse, computing and accumulating gradients for every leaf tensor with requires_grad=True |
-| .to(device) | "Move to GPU" | Recursively transfer all parameters and buffers to the specified device (CPU, CUDA, MPS) |
-| DataLoader | "The data pipeline" | An iterator that batches, shuffles, and optionally parallelizes data loading from a Dataset |
-| Mixed precision | "Use float16" | Train with float16 forward/backward for speed while keeping float32 master weights for numerical stability |
-| Eager execution | "Run it now" | Operations execute immediately when called, not deferred to a later compilation step -- the core design choice that differentiates PyTorch from TF 1.x |
-| zero_grad | "Reset gradients" | Set all parameter gradients to zero before the next backward pass, since PyTorch accumulates gradients by default |
+| 张量（Tensor） | “多维数组” | 带类型、设备感知的数组，每项操作都内置自动微分支持 |
+| 自动求导（Autograd） | “自动反向传播” | 前向传播时记录操作，再逆向回放计算精确梯度的带式系统 |
+| 神经网络模块（nn.Module） | “一个层” | 任意可微计算块的基类，注册参数、支持嵌套、处理训练/评估模式 |
+| 状态字典（state_dict） | “模型权重” | 将参数名映射到张量的 OrderedDict，是训练后模型可移植、可序列化的表示 |
+| 反向传播（.backward()） | “计算梯度” | 逆向遍历计算图，为每个 requires_grad=True 的叶子张量计算并累积梯度 |
+| 设备迁移（.to(device)） | “移至 GPU” | 将全部参数和缓冲区递归传至指定设备（CPU、CUDA、MPS） |
+| 数据加载器（DataLoader） | “数据流水线” | 从 Dataset 分批、打乱并可选地并行加载数据的迭代器 |
+| 混合精度（Mixed Precision） | “使用 float16” | 前向/反向用 float16 提速，同时保留 float32 主权重以维持数值稳定 |
+| 即时执行（Eager Execution） | “现在就运行” | 操作调用时立即执行，不延迟到后续编译步骤，这是 PyTorch 区别于 TF 1.x 的核心设计 |
+| 梯度清零（zero_grad） | “重置梯度” | 下次反向传播前将全部参数梯度设为零，因为 PyTorch 默认累积梯度 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- Paszke et al., "PyTorch: An Imperative Style, High-Performance Deep Learning Library" (2019) -- the original paper explaining PyTorch's design tradeoffs
-- PyTorch Tutorials: "Learning PyTorch with Examples" (https://pytorch.org/tutorials/beginner/pytorch_with_examples.html) -- the official path from tensors to nn.Module
-- PyTorch Performance Tuning Guide (https://pytorch.org/tutorials/recipes/recipes/tuning_guide.html) -- mixed precision, DataLoader workers, pinned memory, and other production optimizations
-- Horace He, "Making Deep Learning Go Brrrr" (https://horace.io/brrr_intro.html) -- why GPU training is fast, with PyTorch-specific optimization strategies
+- Paszke 等，《PyTorch：命令式风格的高性能深度学习库（PyTorch: An Imperative Style, High-Performance Deep Learning Library）》（2019）：解释 PyTorch 设计权衡的原始论文
+- PyTorch 教程：《通过示例学习 PyTorch（Learning PyTorch with Examples）》(https://pytorch.org/tutorials/beginner/pytorch_with_examples.html)：从张量到 nn.Module 的官方学习路径
+- PyTorch 性能调优指南（PyTorch Performance Tuning Guide）(https://pytorch.org/tutorials/recipes/recipes/tuning_guide.html)：混合精度、DataLoader 工作进程、固定内存及其他生产优化
+- Horace He，《让深度学习飞快运行（Making Deep Learning Go Brrrr）》(https://horace.io/brrr_intro.html)：解释 GPU 训练为何快速，并提供 PyTorch 特定优化策略

@@ -1,108 +1,108 @@
-# Design Success Metrics Before the Result Exists
+# 在结果出现前设计成功指标（Design Success Metrics Before the Result Exists）
 
-> Measurement should answer a decision, not decorate a dashboard. Start with the goal, derive questions, then choose the smallest metrics that answer them.
+> 测量应回答决策问题，而非装饰仪表盘。从目标出发，推导问题，再选择能回答问题的最小指标集合。
 
 **Type:** Learn + Build
-**Languages:** Python (stdlib)
-**Prerequisites:** Phase 14 lessons 47 and 51
-**Time:** ~70 minutes
+**Languages:** Python（标准库）
+**Prerequisites:** 阶段 14 第 47、51 课
+**Time:** 约 70 分钟
 
-## Learning Objectives
+## 学习目标（Learning Objectives）
 
-- Derive questions and metrics from an outcome goal.
-- Define thresholds, windows, sources, and directions before observing results.
-- Pair outcome metrics with guardrails and counter-metrics.
-- Match evaluation evidence to the decision the build must support.
+- 从成效目标推导问题与指标。
+- 观察结果前定义阈值、窗口、来源与方向。
+- 将成效指标与护栏、反向指标配合。
+- 让评估证据匹配构建必须支持的决定。
 
-## Goal, Question, Metric
+## 目标、问题、度量（Goal, Question, Metric）
 
-Start with a goal:
+从一个目标开始：
 
-> Reduce time to identify the affected service without increasing unsafe actions.
+> 缩短识别受影响服务的时间，同时不增加不安全操作。
 
-Derive questions:
+推导问题：
 
-- How quickly is the correct service identified?
-- How often is the identified service correct?
-- Does diagnosis remain read-only?
-- Does the workflow increase alert dismissal or operator workload?
+- 多快能识别正确服务？
+- 识别出的服务有多大比例正确？
+- 诊断是否保持只读？
+- 工作流是否增加告警忽略或操作者工作负担？
 
-Then choose metrics that operationalize those questions.
+然后选择将这些问题转为可操作测量的指标。
 
 ```mermaid
 flowchart LR
-  G[Goal] --> Q1[Question about outcome]
-  G --> Q2[Question about risk]
-  Q1 --> M1[Outcome metric]
-  Q2 --> M2[Guardrail metric]
-  M1 --> D[Decision rule]
+  G[目标] --> Q1[成效问题]
+  G --> Q2[风险问题]
+  Q1 --> M1[成效指标]
+  Q2 --> M2[护栏指标]
+  M1 --> D[决策规则]
   M2 --> D
 ```
 
-## A Metric Needs a Contract
+## 指标需要契约（A Metric Needs a Contract）
 
-Every metric needs:
+每个指标需要：
 
-| Field | Example |
+| 字段 | 示例 |
 |---|---|
-| Name | `median_identification_seconds` |
-| Direction | at most |
-| Threshold | 120 |
-| Window | ten incident replays |
-| Source | replay event log |
-| Population | on-call engineers in the pilot |
-| Kind | outcome or guardrail |
+| 名称（Name） | `median_identification_seconds` |
+| 方向（Direction） | 至多 |
+| 阈值（Threshold） | 120 |
+| 窗口（Window） | 十次事故回放 |
+| 来源（Source） | 回放事件日志 |
+| 人群（Population） | 试点中的值班工程师 |
+| 类型（Kind） | 成效或护栏 |
 
-Without source and window, a number cannot be reproduced. Without a threshold, it cannot drive a decision.
+没有来源与窗口，数字无法复现；没有阈值，数字无法驱动决定。
 
-## Outcome, Guardrail, and Counter-Metric
+## 成效、护栏与反向指标（Outcome, Guardrail, and Counter-Metric）
 
-- **Outcome metric:** did the desired state improve?
-- **Guardrail:** did a fixed constraint remain true?
-- **Counter-metric:** did the local improvement shift cost or harm elsewhere?
+- **成效指标（Outcome Metric）：** 期望状态是否改善？
+- **护栏（Guardrail）：** 固定约束是否仍成立？
+- **反向指标（Counter-metric）：** 局部改善是否将成本或伤害转移到别处？
 
-For an incident workflow, speed is not enough. Correctness, production writes, operator workload, and missed alerts protect against a fast but unsafe result.
+对于事故工作流，只有速度不够。正确性、生产写入、操作者工作量与漏掉的告警，共同防范快速却不安全的结果。
 
-## Offline and Online Evidence
+## 离线与在线证据（Offline and Online Evidence）
 
-Offline replay is useful for repeatability and edge coverage. A bounded pilot is useful for real behavior, trust, and workflow effects. Neither substitutes for the other.
+离线回放有助于可重复性和边界覆盖。有边界的试点有助于观察真实行为、信任和工作流影响。两者不能互相替代。
 
-Use the cheapest evidence that can answer the current decision. Do not expose real users merely because the implementation is ready.
+使用能够回答当前决策问题、获取成本最低的证据。不要仅因实现已经完成，就让真实用户承担试用风险。
 
-## Decide Before You Measure
+## 先决定，再测量（Decide Before You Measure）
 
-Write the pass, fail, and ambiguous paths before seeing results. Otherwise the team will move the threshold to protect the build.
+在看到结果前，写明结果通过、失败或不明确时各自如何处理。否则，团队可能为了保住已有实现而调整阈值。
 
-Example:
+例如：
 
-- pass: correct service rate at least 0.9 and median time at most 120 seconds;
-- fail: any production write or correct rate below 0.75;
-- ambiguous: small improvement with wide variance, requiring a larger replay set.
+- 通过：服务识别正确率至少 0.9，时间中位数至多 120 秒；
+- 失败：发生任何生产写入，或正确率低于 0.75；
+- 模糊：改善小且方差大，需要更大的回放集。
 
-## Build It
+## 动手实现（Build It）
 
-The lab validates a measurement plan, evaluates inclusive thresholds, records missing values, and writes `outputs/measurement-report.json`.
+实验验证测量计划，评估包含边界值的阈值，记录缺失值，并写入 `outputs/measurement-report.json`。
 
 ```bash
 python3 code/main.py
 python3 -m unittest discover code/tests -v
 ```
 
-Remove the guardrail metric and observe why the plan becomes invalid even when the outcome metrics remain.
+移除护栏指标，观察为什么即使成效指标仍在，计划也会失效。
 
-## Exercises
+## 练习（Exercises）
 
-1. Derive three questions from one outcome goal.
-2. Add a counter-metric that catches cost shifted to another role.
-3. Define the source, population, and window for every metric.
-4. Write pass, fail, and ambiguous decisions before generating values.
-5. Identify one metric that is easy to collect but cannot change the decision. Remove it.
+1. 从一个成效目标推导三个问题。
+2. 添加一个能发现成本转移到另一角色的反向指标。
+3. 为每个指标定义来源、人群和窗口。
+4. 生成数值前写好通过、失败与模糊决定。
+5. 找出一个容易采集却不能改变决定的指标，移除它。
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [Basili, Software Modeling and Measurement: The Goal/Question/Metric Paradigm](https://drum.lib.umd.edu/items/8119803a-362b-42ec-b6ce-2311713e7236), for deriving operational measurements from explicit goals.
-- [Basili, Caldiera, and Rombach, The Goal Question Metric Approach](https://www.cs.toronto.edu/~sme/CSC444F/handouts/GQM-paper.pdf), for applying the method as a feedback and improvement system.
+- [Basili：软件建模与测量，目标／问题／度量范式（Software Modeling and Measurement: The Goal/Question/Metric Paradigm）](https://drum.lib.umd.edu/items/8119803a-362b-42ec-b6ce-2311713e7236)，讨论从明确目标推导可操作测量。
+- [Basili、Caldiera 与 Rombach：目标—问题—度量方法（The Goal Question Metric Approach）](https://www.cs.toronto.edu/~sme/CSC444F/handouts/GQM-paper.pdf)，讨论将该方法用作反馈与改进系统。
 
-## What You Keep
+## 保留产物（What You Keep）
 
-Keep `outputs/measurement-report.json`. It defines the evidence gate for the prototype, pilot, or production stage.
+保留 `outputs/measurement-report.json`。它定义原型、试点或生产阶段的证据关卡。

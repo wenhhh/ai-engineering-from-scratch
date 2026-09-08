@@ -1,102 +1,102 @@
 {
   "lesson": "13-question-answering",
-  "title": "Question Answering Systems",
+  "title": "问答系统（Question Answering Systems）",
   "questions": [
     {
       "stage": "pre",
-      "question": "What does extractive QA predict?",
+      "question": "抽取式问答（Extractive QA）预测什么？",
       "options": [
-        "Start and end token indices of the answer span within a given passage",
-        "A retrieved passage ID",
-        "A generated natural-language answer",
-        "A confidence score only"
+        "给定段落内答案跨度的起止词元索引",
+        "检索段落 ID",
+        "生成的自然语言答案",
+        "仅置信分数"
       ],
       "correct": 0,
-      "explanation": "Extractive QA outputs the span of the passage that contains the answer."
+      "explanation": "抽取式问答输出段落中包含答案的跨度。"
     },
     {
       "stage": "pre",
-      "question": "What two components define a basic RAG pipeline?",
+      "question": "基础 RAG 流水线由哪两个组件定义？",
       "options": [
-        "Tokenizer and POS tagger",
-        "An encoder and a decoder trained jointly",
-        "A reranker and a translator",
-        "A retriever (find relevant passages) and a reader (extract or generate the answer)"
+        "分词器与词性标注器",
+        "联合训练的编码器与解码器",
+        "重排器与翻译器",
+        "检索器寻找相关段落，阅读器提取或生成答案"
       ],
       "correct": 3,
-      "explanation": "RAG = retriever (finds relevant context) plus reader (answers from it)."
+      "explanation": "RAG = 检索器找相关上下文，加阅读器据此回答。"
     },
     {
       "stage": "check",
-      "question": "On SQuAD, what does Exact Match (EM) measure?",
+      "question": "SQuAD 的精确匹配（Exact Match，EM）衡量什么？",
       "options": [
-        "Token-level F1",
-        "Whether the prediction matches the reference exactly after normalization (lowercase, strip punctuation, remove articles)",
-        "Edit distance",
-        "Per-word overlap"
+        "词元级 F1",
+        "归一化后预测与参考是否完全匹配，归一化包括转小写、去标点、去冠词",
+        "编辑距离",
+        "逐词重叠"
       ],
       "correct": 1,
-      "explanation": "EM is strict equality after a defined normalization step; partial matches score zero."
+      "explanation": "EM 是规定归一化后的严格相等，部分匹配得零分。"
     },
     {
       "stage": "check",
-      "question": "What does deepset/roberta-base-squad2 add over a SQuAD 1.1 model?",
+      "question": "deepset/roberta-base-squad2 相较 SQuAD 1.1 模型增加了什么？",
       "options": [
-        "Bigger context window",
-        "Multilingual support",
-        "Cross-lingual retrieval",
-        "Training on unanswerable questions so the model can predict a null answer"
+        "更大上下文窗口",
+        "多语言支持",
+        "跨语言检索",
+        "在不可回答问题上训练，使模型能预测空答案"
       ],
       "correct": 3,
-      "explanation": "SQuAD 2.0 includes unanswerable items; models trained on it can predict 'no answer'."
+      "explanation": "SQuAD 2.0 包含不可回答条目，在其上训练的模型能预测“无答案”。"
     },
     {
       "stage": "check",
-      "question": "Which RAGAS dimension targets hallucinations specifically?",
+      "question": "RAGAS 哪个维度专门针对幻觉？",
       "options": [
-        "Context precision",
-        "Answer relevance",
-        "Faithfulness, measured by NLI entailment between answer claims and retrieved context",
-        "Context recall"
+        "上下文精确率（Context precision）",
+        "答案相关性（Answer relevance）",
+        "忠实性（Faithfulness），用答案陈述与检索上下文之间的 NLI 蕴含衡量",
+        "上下文召回率（Context recall）"
       ],
       "correct": 2,
-      "explanation": "Faithfulness checks each answer claim against retrieved context via NLI entailment."
+      "explanation": "忠实性通过 NLI 蕴含逐项检查答案陈述是否得到检索上下文支持。"
     },
     {
       "stage": "post",
-      "question": "Why should you measure retrieval recall before evaluating reader accuracy?",
+      "question": "为什么评估阅读器准确率前应先测检索召回率？",
       "options": [
-        "Reader latency depends on it",
-        "If the correct passage is not in the top-k, the reader cannot succeed regardless of how good it is",
-        "Recall determines ROUGE",
-        "Required by transformers"
+        "阅读器延迟取决于它",
+        "如果正确段落不在前 k 个结果中，阅读器再好也无法成功",
+        "召回率决定 ROUGE",
+        "transformers 强制要求"
       ],
       "correct": 1,
-      "explanation": "A reader cannot answer when the right passage is missing; retrieval recall bounds reader performance."
+      "explanation": "缺少正确段落时阅读器无法作答，检索召回率限定其表现。"
     },
     {
       "stage": "post",
-      "question": "Which prompt pattern reduces hallucinations in RAG generation?",
+      "question": "哪种提示模式能减少 RAG 生成幻觉？",
       "options": [
-        "Removing the question",
-        "Including more passages",
-        "Asking the model to be creative",
-        "Telling the model to answer only from the provided context and to reply 'I don't know' when the context is insufficient"
+        "去掉问题",
+        "加入更多段落",
+        "要求模型发挥创意",
+        "告诉模型只根据给定上下文回答，上下文不足时答“我不知道”"
       ],
       "correct": 3,
-      "explanation": "Grounding + explicit refusal instructions cuts hallucination rates substantially."
+      "explanation": "依据关联（Grounding）加明确拒答指令可大幅降低幻觉率。"
     },
     {
       "stage": "post",
-      "question": "When is extractive QA still preferred over generative RAG in 2026?",
+      "question": "到 2026 年，什么情况下仍优先用抽取式 QA 而非生成式 RAG？",
       "options": [
-        "Regulated domains (legal, medical, audit) where literal quotation from authoritative sources is required",
-        "Open-domain trivia",
-        "Conversational QA",
-        "Multilingual support"
+        "法律、医学、审计等受监管领域，要求逐字引用权威来源",
+        "开放域常识问答",
+        "对话式问答",
+        "多语言支持"
       ],
       "correct": 0,
-      "explanation": "Extractive QA gives verbatim quotes from an authoritative corpus, which compliance contexts demand."
+      "explanation": "抽取式 QA 从权威语料逐字引用，符合合规场景要求。"
     }
   ]
 }

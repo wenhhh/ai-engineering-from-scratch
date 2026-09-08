@@ -1,31 +1,31 @@
 ---
 name: realtime-voice-pipeline
-description: Pick transport, VAD, streaming STT, LLM, streaming TTS, and orchestration for a target end-to-end latency.
+description: 根据目标端到端延迟选择传输、语音活动检测、流式语音转文本、大语言模型、流式文本转语音及编排方案。
 version: 1.0.0
 phase: 6
 lesson: 11
 tags: [voice-agent, livekit, pipecat, silero, streaming, latency]
 ---
 
-Given the target (latency P50/P95, language, channel, offline vs cloud, call volume), output:
+给定目标（延迟 P50/P95、语言、通道、离线或云端、通话量），输出：
 
-1. Transport. WebRTC (LiveKit / Daily) · WebSocket · SIP trunking (Twilio / Telnyx). Reason tied to jitter tolerance + use case.
-2. VAD + turn-taking. Silero VAD (open, 99.5% TPR) · Cobra (commercial) · LiveKit turn-detector. Threshold, min speech duration, silence hang-over.
-3. Streaming STT. Parakeet TDT (fastest open) · Kyutai STT (with flush trick) · Deepgram Nova-3 (API, ~150 ms) · Whisper-streaming. Reason.
-4. LLM + streaming. Pin the first 20 tokens before TTS kicks in. Model + streaming config + guardrails for prompt injection.
-5. Streaming TTS. Kokoro-82M (~100 ms TTFA) · Orpheus · Cartesia Sonic · ElevenLabs Turbo. Voice-pack or cloning guard (Lesson 8).
-6. Orchestration. LiveKit Agents · Pipecat · Vapi · Retell · custom Rust. Reason tied to team skills + scale.
-7. Observability. P50/P95/P99 per-stage histograms; false-positive interruption rate; drop-call rate; WER on call samples.
+1. 传输。WebRTC（LiveKit / Daily）、WebSocket、SIP 中继（Twilio / Telnyx）。结合抖动容忍度与用例说明理由。
+2. 语音活动检测（Voice Activity Detection，VAD）与轮次切换。Silero VAD（开放，真正率 TPR 99.5%）、Cobra（商业）、LiveKit turn-detector。给出阈值、最短语音时长、静音延续时间。
+3. 流式语音转文本（Speech-to-Text，STT）。Parakeet TDT（最快开放方案）、Kyutai STT（含刷新技巧）、Deepgram Nova-3（API，约 150 ms）、Whisper-streaming。说明理由。
+4. 大语言模型（Large Language Model，LLM）与流式处理。在启动 TTS 前确定首 20 个词元。模型、流式配置与提示词注入防护。
+5. 流式文本转语音（Text-to-Speech，TTS）。Kokoro-82M（首音频时间 TTFA 约 100 ms）、Orpheus、Cartesia Sonic、ElevenLabs Turbo。声音包或第 8 课的克隆防护。
+6. 编排。LiveKit Agents、Pipecat、Vapi、Retell、自定义 Rust。结合团队技能与规模说明理由。
+7. 可观测性。逐阶段 P50/P95/P99 直方图、误中断率、掉线率、通话样本上的词错误率（WER）。
 
-Refuse deploys that buffer entire utterances before STT. Refuse TTS that does not stream. Refuse evaluation by average latency — require P95. Refuse managed platforms (Vapi / Retell) for &gt; 100k minutes/month without a cost-comparison to build-your-own.
+拒绝先缓冲整句话再做 STT 的部署。拒绝不支持流式的 TTS。拒绝仅用平均延迟评估，必须提供 P95。每月 &gt; 100k 分钟时，若未与自建方案比较成本，拒绝使用托管平台（Vapi / Retell）。
 
-Example input: "Voice agent for car insurance quoting. &lt; 500 ms P95. English, US. 50k minutes/week. Compliance: HIPAA-adjacent (no PII in logs)."
+示例输入：“车险报价语音智能体。P95 &lt; 500 ms。美国英语。每周 50k 分钟。合规：接近 HIPAA 要求，日志中不能有个人身份信息。”
 
-Example output:
-- Transport: LiveKit Agents + Twilio SIP. Proven at call-center scale, HIPAA-mode opt-in.
-- VAD: Silero VAD @ threshold 0.45, min speech 220 ms, silence hang-over 400 ms. LiveKit turn-detector overlay.
-- STT: Deepgram Nova-3 English (~150 ms P95); fall-back to Parakeet-TDT if on-prem audit required.
-- LLM: GPT-4o streaming via OpenAI realtime API; guard against prompt injection with a post-filter; pin first 20 tokens to TTS.
-- TTS: Cartesia Sonic 2 (~150 ms TTFA, voice cloning not used — predefined voice).
-- Orchestration: LiveKit Agents. Observability via Hamming AI for production.
-- Logs: strip CVV / SSN / DOB with a regex + NER pass before persistence. Retain 30 days.
+示例输出：
+- 传输：LiveKit Agents 加 Twilio SIP。已有呼叫中心规模验证，可选择 HIPAA 模式。
+- VAD：Silero VAD，阈值 0.45，最短语音 220 ms，静音延续 400 ms，叠加 LiveKit turn-detector。
+- STT：Deepgram Nova-3 English（P95 约 150 ms）；需要本地审计时回退至 Parakeet-TDT。
+- LLM：通过 OpenAI Realtime API 流式使用 GPT-4o，用后置过滤器防提示词注入，将首 20 个词元确定后送至 TTS。
+- TTS：Cartesia Sonic 2（TTFA 约 150 ms，不使用声音克隆，采用预定义声音）。
+- 编排：LiveKit Agents。生产可观测性使用 Hamming AI。
+- 日志：持久化前用正则表达式加命名实体识别（Named Entity Recognition，NER）去除银行卡安全码（CVV）、社会安全号码（SSN）和出生日期（DOB）。保留 30 天。

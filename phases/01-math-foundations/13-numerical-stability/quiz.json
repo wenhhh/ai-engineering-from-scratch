@@ -2,7 +2,7 @@
   "questions": [
     {
       "stage": "pre",
-      "question": "What is the approximate range of numbers that float32 can represent?",
+      "question": "float32 可表示的数值范围大约是多少？",
       "options": [
         "+/- 1.8e308",
         "+/- 3.4e38",
@@ -10,55 +10,55 @@
         "+/- 65,504"
       ],
       "correct": 1,
-      "explanation": "Float32 has an 8-bit exponent giving a range of approximately +/- 3.4e38. Float16 is limited to +/- 65,504, and float64 reaches +/- 1.8e308."
+      "explanation": "Float32 有 8 位指数，范围约为 +/- 3.4e38。Float16 限于 +/- 65,504，而 float64 可达 +/- 1.8e308。"
     },
     {
       "stage": "pre",
-      "question": "Why does 0.1 + 0.2 not equal 0.3 in floating-point arithmetic?",
+      "question": "为什么浮点运算中 0.1 + 0.2 不等于 0.3？",
       "options": [
-        "The CPU has a bug in its addition circuit",
-        "0.1 and 0.2 cannot be represented exactly in binary floating point",
-        "Python rounds all decimals to integers",
-        "0.3 is not a valid floating-point number"
+        "CPU 的加法电路存在缺陷",
+        "0.1 和 0.2 无法用二进制浮点数精确表示",
+        "Python 将所有小数舍入为整数",
+        "0.3 不是有效的浮点数"
       ],
       "correct": 1,
-      "explanation": "The number 0.1 is a repeating fraction in binary (like 1/3 in decimal). Float32 truncates it, so the stored value is approximately 0.100000001490116. The accumulated error makes the sum differ from 0.3."
+      "explanation": "0.1 在二进制中是循环小数（类似十进制中的 1/3）。Float32 将其截断，因此存储值约为 0.100000001490116。累积误差使总和不同于 0.3。"
     },
     {
       "stage": "post",
-      "question": "In the stable softmax implementation, why do you subtract max(logits) before exponentiating?",
+      "question": "在稳定 softmax 实现中，为什么取指数前要减去 max(logits)？",
       "options": [
-        "It normalizes the logits to have zero mean",
-        "It converts logits from float16 to float32",
-        "It makes the output probabilities more uniform",
-        "It prevents exp() from overflowing by ensuring the largest exponent is 0"
+        "将逻辑值（Logits）归一化为零均值",
+        "将逻辑值从 float16 转换为 float32",
+        "使输出概率更均匀",
+        "确保最大的指数为 0，从而防止 exp() 上溢（Overflow）"
       ],
       "correct": 3,
-      "explanation": "After subtracting max(logits), the largest value is 0 and exp(0) = 1, which cannot overflow. All other values are negative, so their exponentials are less than 1. The probabilities are mathematically identical to the naive version."
+      "explanation": "减去 max(logits) 后，最大值为 0，而 exp(0) = 1，不可能上溢。其余值为负，因此指数函数值小于 1。得到的概率在数学上与朴素版本完全相同。"
     },
     {
       "stage": "post",
-      "question": "When using centered finite differences for gradient checking, what happens if the step size h is too small (e.g., 1e-15)?",
+      "question": "使用中心有限差分（Centered Finite Differences）检查梯度时，如果步长 h 过小（例如 1e-15），会发生什么？",
       "options": [
-        "The approximation becomes more accurate",
-        "The gradient automatically becomes zero",
-        "Catastrophic cancellation destroys the result because f(x+h) and f(x-h) are nearly identical",
-        "The function evaluation becomes faster"
+        "近似会更准确",
+        "梯度自动变为零",
+        "f(x+h) 和 f(x-h) 几乎相同，灾难性消减（Catastrophic Cancellation）会破坏结果",
+        "函数求值变得更快"
       ],
       "correct": 2,
-      "explanation": "When h is extremely small, f(x+h) and f(x-h) differ only in their last few significant digits. Subtracting them cancels the leading digits, leaving mostly rounding noise. Typical good values are h = 1e-5 to 1e-7."
+      "explanation": "当 h 极小时，f(x+h) 与 f(x-h) 只有最后几位有效数字不同。相减会抵消高位数字，剩下的主要是舍入噪声。通常合适的取值为 h = 1e-5 到 1e-7。"
     },
     {
       "stage": "post",
-      "question": "Why is bfloat16 generally preferred over float16 for neural network training?",
+      "question": "为什么神经网络训练通常更倾向使用 bfloat16，而不是 float16？",
       "options": [
-        "bfloat16 uses less memory than float16",
-        "bfloat16 has the same exponent range as float32, avoiding overflow on large activations without loss scaling",
-        "bfloat16 is supported by more GPU architectures than float16",
-        "bfloat16 has more mantissa bits, giving better precision"
+        "bfloat16 比 float16 使用更少内存",
+        "bfloat16 与 float32 指数范围相同，无需损失缩放就能避免大激活值上溢",
+        "支持 bfloat16 的 GPU 架构比支持 float16 的更多",
+        "bfloat16 尾数位更多，精度更高"
       ],
       "correct": 1,
-      "explanation": "bfloat16 has 8 exponent bits (same as float32, range up to 3.4e38) while float16 has only 5 exponent bits (max ~65,504). During training, activations and gradients can exceed 65,504, causing float16 overflow. bfloat16 handles this without loss scaling."
+      "explanation": "bfloat16 有 8 位指数（与 float32 相同，范围最高为 3.4e38），而 float16 只有 5 位指数（最大值 ~65,504）。训练时，激活值和梯度可能超过 65,504，造成 float16 上溢。bfloat16 无需损失缩放即可处理这种情况。"
     }
   ]
 }

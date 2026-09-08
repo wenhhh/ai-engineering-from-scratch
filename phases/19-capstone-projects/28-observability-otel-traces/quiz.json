@@ -1,46 +1,46 @@
 {
   "lesson": "phase-19/28-observability-otel-traces",
-  "title": "Observability: OTel GenAI Spans and Prometheus Metrics",
+  "title": "可观测性：OTel GenAI 跨度与 Prometheus 指标（Observability: OTel GenAI Spans and Prometheus Metrics）",
   "questions": [
     {
       "stage": "pre",
-      "question": "Before reading the lesson: what is the practical benefit of writing your harness's spans in the OTel GenAI attribute shape?",
+      "question": "阅读前思考：按 OTel GenAI 属性结构写入框架跨度，有什么实际收益？",
       "options": [
-        "Every OTel-compatible backend can read them without a custom parser.",
-        "OTel is a Python-only standard, so the harness gets type hints.",
-        "It is required by HIPAA.",
-        "OTel spans compress better on disk."
+        "所有兼容 OTel 的后端都可读取，无需自定义解析器",
+        "OTel 是仅限 Python 的标准，因此框架可获得类型提示",
+        "这是《健康保险流通与责任法案》（Health Insurance Portability and Accountability Act，HIPAA）的要求",
+        "OTel 跨度在磁盘上的压缩效果更好"
       ],
       "correct": 0,
-      "explanation": "The conventions are a contract with the wider ecosystem. Honeycomb, Grafana Tempo, Jaeger, and Datadog all parse gen_ai.* attributes out of the box."
+      "explanation": "约定是与整个生态的契约。Honeycomb、Grafana Tempo、Jaeger 和 Datadog 都可直接解析 gen_ai.* 属性。"
     },
     {
       "stage": "check",
-      "question": "An exception is raised inside a SpanBuilder.span() context. What does the lesson's builder record?",
+      "question": "SpanBuilder.span() 上下文内抛出异常时，本课构建器记录什么？",
       "options": [
-        "status remains UNSET and the exception is silently swallowed.",
-        "The span is dropped to avoid polluting the trace.",
-        "status=ERROR, status_message includes the exception type and message, and an 'exception' event is appended.",
-        "The span is renamed to 'error'."
+        "status 保持 UNSET，异常被静默吞掉",
+        "丢弃跨度，以免污染追踪",
+        "status=ERROR，status_message 包含异常类型与消息，并追加 exception 事件",
+        "将跨度重命名为 error"
       ],
       "correct": 2,
-      "explanation": "Status ERROR plus an exception event matches the OTel spec. The exception is re-raised so caller code can react."
+      "explanation": "ERROR 状态加异常事件符合 OTel 规范。异常会重新抛出，让调用者代码可以响应。"
     },
     {
       "stage": "check",
-      "question": "The Prometheus exposition for a histogram includes _bucket, _sum, and _count lines. Why are bucket counts cumulative (each le bucket includes all smaller buckets)?",
+      "question": "Prometheus 直方图暴露结果包含 _bucket、_sum、_count 行。为什么桶计数是累计的，即每个 le 桶都包含更小的桶？",
       "options": [
-        "Cumulative counts reduce floating-point error.",
-        "Cumulative counts let the scraper compute per-bucket counts via subtraction without storing all observations.",
-        "Cumulative counts are the only format Grafana supports.",
-        "They are not cumulative; the lesson's exposition is non-standard."
+        "累计计数可减少浮点误差",
+        "累计计数使采集器能通过相减算出各桶计数，无需保存所有观察值",
+        "累计计数是 Grafana 唯一支持的格式",
+        "计数并非累计，本课暴露格式不标准"
       ],
       "correct": 1,
-      "explanation": "Prometheus' design choice: a backend reads cumulative counts and computes per-bucket differences. This lets the time series be a simple monotonic counter per bucket."
+      "explanation": "这是 Prometheus 的设计选择：后端读取累计计数并计算相邻桶差值，使每个桶的时间序列都能成为简单的单调计数器。"
     },
     {
       "stage": "check",
-      "question": "The harness wraps a tool execution in a span. Which attribute keys identify it as a tool call under the GenAI conventions?",
+      "question": "框架用跨度包装工具执行。按 GenAI 约定，哪些属性键将其标识为工具调用？",
       "options": [
         "operation + tool.name.",
         "agent.harness.tool + agent.harness.call.",
@@ -48,31 +48,31 @@
         "gen_ai.tool.name + gen_ai.tool.call.id."
       ],
       "correct": 3,
-      "explanation": "gen_ai.tool.name and gen_ai.tool.call.id are the canonical keys for tool executions in the GenAI conventions."
+      "explanation": "gen_ai.tool.name 与 gen_ai.tool.call.id 是 GenAI 约定中工具执行的标准键。"
     },
     {
       "stage": "post",
-      "question": "You want to query 'what is the p95 latency of read_file calls'. Which artifact do you query?",
+      "question": "要查询 read_file 调用的 p95 延迟，应查询哪个产物？",
       "options": [
-        "The status_message field of the span.",
-        "The counter tools_called_total, divided by the time window.",
-        "The Prometheus histogram tool_latency_ms{tool=\"read_file\"} scraped over a window.",
-        "Each span's duration_ms in traces.jsonl, parsed by a script."
+        "跨度的 status_message 字段",
+        "将 tools_called_total 计数器除以时间窗口",
+        "在时间窗口内采集的 Prometheus 直方图 tool_latency_ms{tool=\"read_file\"}",
+        "用脚本解析 traces.jsonl 中每个跨度的 duration_ms"
       ],
       "correct": 2,
-      "explanation": "Histograms are the right tool for percentiles. The counter only counts; the trace contains raw spans but is not pre-aggregated."
+      "explanation": "直方图适合计算百分位数。计数器只计数；追踪包含原始跨度，但未预先聚合。"
     },
     {
       "stage": "post",
-      "question": "A reviewer asks why the lesson hand-rolls instead of importing opentelemetry-sdk. Which answer is correct?",
+      "question": "审阅者问为什么本课手工实现，而不导入 opentelemetry-sdk，哪个回答正确？",
       "options": [
-        "Hand-rolling teaches the wire format; the SDK can drop in later with the same attribute keys.",
-        "Hand-rolling is faster at runtime.",
-        "The SDK requires a network connection at import time.",
-        "The SDK does not support GenAI conventions."
+        "手工实现用于讲清传输格式，之后可保留相同属性键并替换为 SDK",
+        "手工实现的运行速度更快",
+        "SDK 导入时需要网络连接",
+        "SDK 不支持 GenAI 约定"
       ],
       "correct": 0,
-      "explanation": "The conventions are stable across implementations. The hand-rolled version exists for clarity; production wires in the SDK and reuses the same gen_ai.* keys."
+      "explanation": "约定在不同实现间保持稳定。手工版本服务于清晰教学，生产环境接入 SDK 并复用相同的 gen_ai.* 键。"
     }
   ]
 }

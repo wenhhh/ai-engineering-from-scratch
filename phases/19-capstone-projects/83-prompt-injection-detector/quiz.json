@@ -1,34 +1,34 @@
 {
   "lesson": "83-prompt-injection-detector",
-  "title": "Capstone 83 — Prompt Injection Detector",
+  "title": "综合实践 83：提示词注入检测器（Capstone 83 — Prompt Injection Detector）",
   "questions": [
     {
       "stage": "pre",
-      "question": "What does the detector return for a prompt?",
+      "question": "检测器对提示词返回什么？",
       "options": [
-        "A boolean block decision only",
-        "The model's full system prompt",
-        "A list of every rule in the rulebase",
-        "A category and a confidence in [0, 1]"
+        "仅布尔拦截决策",
+        "模型完整系统提示词",
+        "规则库全部规则列表",
+        "类别与 [0, 1] 内置信度"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "pre",
-      "question": "Why does normalize run before substring and regex rules?",
+      "question": "归一化为何先于子串和正则规则？",
       "options": [
-        "Because regex is slower than substring",
-        "Because the standard library forbids running rules on the original text",
-        "Because normalize lowers the file size on disk",
-        "Because normalize exposes hidden tokens such as base64, rot13, and zero-width insertions to the downstream rules"
+        "正则比子串慢",
+        "标准库禁止在原文运行规则",
+        "归一化减少磁盘文件大小",
+        "归一化将 base64、rot13、零宽插入等隐藏词元暴露给下游规则"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Given true positives = 6, false positives = 2 for category C, what is precision?",
+      "question": "类别 C 真正例 6、假正例 2，精确率是多少？",
       "options": [
         "0.86",
         "0.60",
@@ -40,36 +40,36 @@
     },
     {
       "stage": "check",
-      "question": "Why is the benign prompt corpus part of the evaluation?",
+      "question": "为何评估包含良性提示词语料？",
       "options": [
-        "To compute recall on attacks",
-        "To inflate the accuracy number",
-        "To pre-train the rules",
-        "To measure false-positive rate on safe text and catch over-broad rules"
+        "计算攻击召回率",
+        "抬高准确率数值",
+        "预训练规则",
+        "测量安全文本误报率，发现过宽规则"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "What does the analyze method do when no rule fires?",
+      "question": "无规则触发时 analyze 方法做什么？",
       "options": [
-        "Returns the category of the most recent rule attempted",
-        "Returns a random category",
-        "Returns the category benign with confidence 0.0",
-        "Raises an exception"
+        "返回最近尝试规则的类别",
+        "返回随机类别",
+        "返回 benign 类别，置信度 0.0",
+        "抛出异常"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "Why does this lesson argue the detector is not the safety gate?",
+      "question": "为何本课强调检测器不是安全门禁？",
       "options": [
-        "Because the detector is implemented in Python",
-        "Because the rules are stored as data",
-        "Because the detector is too fast to be useful",
-        "Because the detector is one signal among several the gate will compose, with each signal trading precision against recall differently"
+        "检测器用 Python 实现",
+        "规则作为数据存储",
+        "检测器太快而无用",
+        "检测器只是门禁组合的若干信号之一，各信号以不同方式权衡精确率和召回率"
       ],
       "correct": 3,
       "explanation": ""

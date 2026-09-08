@@ -1,78 +1,78 @@
 {
   "lesson": "28-mcp-tool-contracts-and-content",
-  "title": "MCP Tool Contracts and Content",
+  "title": "MCP 工具契约与内容（MCP Tool Contracts and Content）",
   "questions": [
     {
       "stage": "pre",
-      "question": "A tool publishes an outputSchema with type array. Which structuredContent value is valid?",
+      "question": "工具发布 type 为 array 的 outputSchema。哪个 structuredContent 有效？",
       "options": [
-        "Any JSON value because outputSchema is only documentation",
-        "Only an object because MCP structured results are object-only",
-        "An array whose items satisfy the published schema",
-        "A text block without structuredContent"
+        "任意 JSON 值，因为 outputSchema 只是文档",
+        "只能是对象，因为 MCP 结构化结果仅限对象",
+        "各项满足已发布模式的数组",
+        "没有 structuredContent 的文本块"
       ],
       "correct": 2,
-      "explanation": "structuredContent may be any JSON value, including an array, but it must conform to outputSchema when the tool publishes one."
+      "explanation": "structuredContent 可为任意 JSON 值，包括数组，但工具发布 outputSchema 时必须符合。"
     },
     {
       "stage": "check",
-      "question": "A tools/list result contains nextCursor as an empty string. What should the client do?",
+      "question": "tools/list 结果的 nextCursor 是空字符串。客户端应怎样？",
       "options": [
-        "Treat the empty string as the end of pagination",
-        "Send another list request with the exact empty string cursor",
-        "Replace it with cursor zero",
-        "Decode it to discover the next page number"
+        "视为分页结束",
+        "再次发送列表请求，携带精确空字符串游标",
+        "替换为游标零",
+        "解码以发现下一页编号"
       ],
       "correct": 1,
-      "explanation": "Cursor values are opaque. An empty string is a valid non-null cursor and must be sent back exactly."
+      "explanation": "游标值不透明。空字符串是有效非 null 游标，必须原样发回。"
     },
     {
       "stage": "check",
-      "question": "Which parameter should be rejected by a strict deployment policy when marked with x-mcp-header?",
+      "question": "标有 x-mcp-header 时，严格部署策略应拒绝哪个参数？",
       "options": [
-        "A string token field mirrored as Token",
-        "An integer shard field mirrored as Shard",
-        "A string region field mirrored as Region",
-        "A boolean dry_run field mirrored as Dry-Run"
+        "镜像为 Token 的字符串 token 字段",
+        "镜像为 Shard 的整数 shard 字段",
+        "镜像为 Region 的字符串 region 字段",
+        "镜像为 Dry-Run 的布尔 dry_run 字段"
       ],
       "correct": 0,
-      "explanation": "The protocol advises against mirroring sensitive values. A strict client admission policy should reject token, password, secret, credential, and PII fields."
+      "explanation": "协议建议不镜像敏感值。严格客户端准入策略应拒绝令牌、密码、秘密、凭据和 PII 字段。"
     },
     {
       "stage": "check",
-      "question": "What is the main difference between a resource_link block and an embedded resource block?",
+      "question": "resource_link 块与嵌入 resource 块的主要区别是什么？",
       "options": [
-        "A resource link points to data fetched later, while an embedded resource carries data now",
-        "A resource link is automatically authorized forever",
-        "An embedded resource must also appear in resources/list",
-        "Only resource links can include a URI"
+        "资源链接指向稍后获取的数据，嵌入资源现在就携带数据",
+        "资源链接自动永久授权",
+        "嵌入资源也必须出现在 resources/list",
+        "只有资源链接可包含 URI"
       ],
       "correct": 0,
-      "explanation": "A link defers retrieval and needs authorization when followed. An embedded resource places the data in the current result."
+      "explanation": "链接推迟获取，跟随时需要授权。嵌入资源将数据放在当前结果。"
     },
     {
       "stage": "post",
-      "question": "How should a client handle one malformed tool descriptor in a tools/list page?",
+      "question": "客户端应如何处理 tools/list 页中的一个坏描述符？",
       "options": [
-        "Reject that tool while continuing to evaluate unrelated tools",
-        "Silently repair the descriptor",
-        "Expose it but add a warning to the model prompt",
-        "Treat every tool execution as a JSON-RPC notification"
+        "拒绝该工具，继续评估无关工具",
+        "静默修复描述符",
+        "公开但给模型提示词加警告",
+        "把每次工具执行当 JSON-RPC 通知"
       ],
       "correct": 0,
-      "explanation": "Descriptor admission is per tool. One malformed definition should be excluded without making valid tools unavailable."
+      "explanation": "描述符逐工具准入。一个坏定义应被排除，不应使有效工具不可用。"
     },
     {
       "stage": "post",
-      "question": "Which failure belongs in a JSON-RPC error rather than a tool result with isError true?",
+      "question": "哪种失败应放入 JSON-RPC 错误，而非 isError true 工具结果？",
       "options": [
-        "A report source is temporarily unavailable",
-        "A downstream API returns an actionable tool-specific error",
-        "A business rule rejects a requested date",
-        "The requested tool name does not exist"
+        "报告来源暂时不可用",
+        "下游 API 返回可处理的工具特定错误",
+        "业务规则拒绝请求日期",
+        "请求工具名不存在"
       ],
       "correct": 3,
-      "explanation": "An unknown tool prevents protocol dispatch and belongs in a JSON-RPC error. Execution failures that a model can act on use isError true."
+      "explanation": "未知工具阻止协议分发，属于 JSON-RPC 错误。模型可处理的执行失败使用 isError true。"
     }
   ]
 }

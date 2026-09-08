@@ -3,25 +3,25 @@
   "version": 2,
   "track": "claude-ccdv-f",
   "kind": "mock",
-  "title": "Developer Foundations Full Mock",
+  "title": "开发者基础级全长模拟考试（Developer Foundations Full Mock）",
   "timeLimitMinutes": 120,
   "questions": [
     {
       "id": "ccdv-m1-001",
       "domain": "agents-workflows",
-      "objective": "Choose workflows or agents from task constraints",
+      "objective": "根据任务约束选择工作流或智能体（Choose workflows or agents from task constraints）",
       "type": "single",
-      "prompt": "A compliance pipeline always retrieves one policy, extracts four fields, validates them, and asks a reviewer to approve. Which design is most appropriate?",
+      "prompt": "合规流水线始终检索一份政策、提取四个字段、验证字段，再请审核者批准。哪种设计最合适？",
       "options": [
-        "A manager with five subagents",
-        "An autonomous agent that can choose any corporate tool",
-        "A deterministic workflow with bounded model steps",
-        "A self-modifying prompt loop"
+        "一个管理者加五个子智能体",
+        "能选择任何企业工具的自主智能体",
+        "包含有边界模型步骤的确定性工作流",
+        "会自我修改的提示词循环"
       ],
       "correct": [
         2
       ],
-      "explanation": "The path and approval boundary are already known. A workflow makes ordering, validation, and review deterministic, while an agent would add freedom without a requirement for adaptive planning.",
+      "explanation": "路径和审批边界已知。工作流让顺序、验证和审核具有确定性，而智能体会增加并无自适应规划需求的自由度。",
       "references": [
         "https://www.anthropic.com/research/building-effective-agents",
         "certifications/claude/lessons/10-tool-use-and-agentic-loops"
@@ -30,21 +30,21 @@
     {
       "id": "ccdv-m1-002",
       "domain": "agents-workflows",
-      "objective": "Design manager and subagent hierarchies",
+      "objective": "设计管理者与子智能体层级（Design manager and subagent hierarchies）",
       "type": "multiple",
-      "prompt": "A code migration is divided among subagents. Which design choices improve reliability? Select all that apply.",
+      "prompt": "代码迁移分配给多个子智能体。哪些设计选择改善可靠性？选择所有适用项。",
       "options": [
-        "Use an independent read-only reviewer for the merged result",
-        "Give every subagent broad write access to resolve dependencies",
-        "Require structured handoff artifacts from each subagent",
-        "Give each subagent explicit file ownership and acceptance tests"
+        "对合并结果使用独立只读评审者",
+        "授予每个子智能体广泛写权限以解决依赖",
+        "要求每个子智能体提供结构化交接交付物",
+        "为每个子智能体明确文件归属和验收测试"
       ],
       "correct": [
         0,
         2,
         3
       ],
-      "explanation": "Ownership reduces conflicting edits, independent review avoids generator self-confirmation, and structured handoffs preserve exact state. Broad shared write access creates races and unclear accountability.",
+      "explanation": "归属减少冲突编辑，独立评审避免生成者自我确认，结构化交接保留精确状态。广泛共享写权限会造成竞态和责任不清。",
       "references": [
         "https://platform.claude.com/docs/en/agent-sdk/overview",
         "https://www.anthropic.com/research/building-effective-agents",
@@ -54,19 +54,19 @@
     {
       "id": "ccdv-m1-003",
       "domain": "agents-workflows",
-      "objective": "Build with the Claude Agent SDK, custom loops, managed agents, and hooks",
+      "objective": "使用 Claude Agent SDK、自定义循环、托管智能体和钩子构建系统（Build with the Claude Agent SDK, custom loops, managed agents, and hooks）",
       "type": "single",
-      "prompt": "A team needs built-in repository tools, sessions, hooks, subagents, and streamed lifecycle events. Which implementation choice is the strongest starting point?",
+      "prompt": "团队需要内置仓库工具、会话、钩子、子智能体和流式生命周期事件。哪种实现最适合作为起点？",
       "options": [
-        "A raw one-call text completion",
-        "A JSON parser with no model",
-        "A custom Messages API loop that recreates repository tools, session persistence, hooks, subagent scheduling, and event streaming inside the application",
-        "The Claude Agent SDK with an explicit policy and evaluation layer"
+        "原始的单次文本补全",
+        "没有模型的 JSON 解析器",
+        "自定义 Messages API 循环，在应用内重新实现仓库工具、会话持久化、钩子、子智能体调度和事件流",
+        "Claude Agent SDK，配合明确的策略和评估层"
       ],
       "correct": [
         3
       ],
-      "explanation": "The Agent SDK packages an agent harness that fits these requirements. It does not replace authorization, sandboxing, terminal conditions, or evals, which the application must still provide.",
+      "explanation": "Agent SDK 打包了适合这些要求的智能体运行框架。它不替代授权、沙箱、终止条件或评估，这些仍需应用提供。",
       "references": [
         "https://platform.claude.com/docs/en/agent-sdk/overview",
         "certifications/claude/lessons/10-tool-use-and-agentic-loops"
@@ -75,21 +75,21 @@
     {
       "id": "ccdv-m1-004",
       "domain": "agents-workflows",
-      "objective": "Apply tool-loop, memory, context, and framework patterns",
+      "objective": "应用工具循环、记忆、上下文和框架模式（Apply tool-loop, memory, context, and framework patterns）",
       "type": "multiple",
-      "prompt": "Which conditions should terminate or pause a production agent loop? Select all that apply.",
+      "prompt": "哪些条件应终止或暂停生产智能体循环？选择所有适用项。",
       "options": [
-        "Stop when the agent reports high confidence",
-        "Maximum turn or cost budget reached",
-        "Repeated identical tool calls indicate no progress",
-        "A required human approval is pending"
+        "智能体报告高置信度时停止",
+        "达到最大轮次或成本预算",
+        "重复相同工具调用表明没有进展",
+        "必需的人工审批仍在等待"
       ],
       "correct": [
         1,
         2,
         3
       ],
-      "explanation": "Budgets, loop detection, and pending approval are objective control conditions. Confidence in prose is not evidence of correct final state and should not control termination by itself.",
+      "explanation": "预算、循环检测和待审批是客观控制条件。自然语言中的信心不是最终状态正确的证据，不能独自控制终止。",
       "references": [
         "https://www.anthropic.com/research/building-effective-agents",
         "https://platform.claude.com/docs/en/agents-and-tools/tool-use/implement-tool-use",
@@ -99,19 +99,19 @@
     {
       "id": "ccdv-m1-005",
       "domain": "agents-workflows",
-      "objective": "Apply tool-loop, memory, context, and framework patterns",
+      "objective": "应用工具循环、记忆、上下文和框架模式（Apply tool-loop, memory, context, and framework patterns）",
       "type": "single",
-      "prompt": "An agent resumes after a process crash during a deployment request. What should it do before continuing?",
+      "prompt": "部署请求期间进程崩溃，智能体随后恢复。继续前应做什么？",
       "options": [
-        "Reconcile the operation ID, repository state, and deployment system of record",
-        "Ask a subagent to guess whether the deployment finished",
-        "Discard all prior evidence and increase temperature",
-        "Resume from the compacted session summary, repeat the last deployment call with the same arguments, and infer success if the provider returns no error"
+        "核对操作 ID、仓库状态及部署权威记录系统",
+        "让子智能体猜测部署是否完成",
+        "丢弃所有先前证据并提高温度",
+        "从压缩会话摘要恢复，以相同参数重复最后部署调用，服务商未报错就推断成功"
       ],
       "correct": [
         0
       ],
-      "explanation": "Session memory is not authoritative state. Reconciliation establishes whether side effects occurred and which acceptance checks remain before any retry or continuation.",
+      "explanation": "会话记忆不是权威状态。任何重试或继续之前，核对可确定副作用是否发生，以及哪些验收检查尚未完成。",
       "references": [
         "https://platform.claude.com/docs/en/agent-sdk/overview",
         "certifications/claude/lessons/10-tool-use-and-agentic-loops"
@@ -120,21 +120,21 @@
     {
       "id": "ccdv-m1-006",
       "domain": "agents-workflows",
-      "objective": "Design manager and subagent hierarchies",
+      "objective": "设计管理者与子智能体层级（Design manager and subagent hierarchies）",
       "type": "multiple",
-      "prompt": "When does a subagent provide a real architectural benefit? Select all that apply.",
+      "prompt": "子智能体何时提供真实架构收益？选择所有适用项。",
       "options": [
-        "A specialist needs a narrower tool allowlist",
-        "Independent research branches can proceed in parallel",
-        "A reviewer needs context isolated from the generator",
-        "Use a subagent for one bounded prompt edit"
+        "专家需要更窄的工具允许列表",
+        "独立研究分支可以并行进行",
+        "评审者需要与生成者隔离的上下文",
+        "为一次有边界的提示词修改使用子智能体"
       ],
       "correct": [
         0,
         1,
         2
       ],
-      "explanation": "Isolation, genuine parallelism, and permission specialization justify a subagent. A minor prompt issue should be fixed directly instead of adding another model boundary.",
+      "explanation": "隔离、真实并行和权限专业化足以证明使用子智能体合理。小的提示词问题应直接修复，而非增加模型边界。",
       "references": [
         "https://platform.claude.com/docs/en/agent-sdk/overview",
         "certifications/claude/lessons/10-tool-use-and-agentic-loops"
@@ -143,19 +143,19 @@
     {
       "id": "ccdv-m1-007",
       "domain": "agents-workflows",
-      "objective": "Apply tool-loop, memory, context, and framework patterns",
+      "objective": "应用工具循环、记忆、上下文和框架模式（Apply tool-loop, memory, context, and framework patterns）",
       "type": "single",
-      "prompt": "A long-running agent compacts its context every hour. Which statement is correct?",
+      "prompt": "长时间运行的智能体每小时压缩上下文。哪项陈述正确？",
       "options": [
-        "Compaction can serve as the sole recovery record when the summary explicitly mentions current goals, approvals, artifact locations, and completed verification checks",
-        "Critical goals, approvals, artifacts, and verification results should also live in durable typed state",
-        "Compaction makes final-state evaluation unnecessary",
-        "Compaction removes the need for checkpoints"
+        "摘要明确提及当前目标、审批、交付物位置和已完成验证时，压缩可作为唯一恢复记录",
+        "关键目标、审批、交付物和验证结果还应保存在持久类型化状态中",
+        "压缩使最终状态评估不再必要",
+        "压缩免除了检查点"
       ],
       "correct": [
         1
       ],
-      "explanation": "Compaction supports continuity but is a probabilistic summary. Critical state needs durable records and reconciliation so omissions or drift cannot silently change the job.",
+      "explanation": "压缩支持连续性，但它是概率性摘要。关键状态需要持久记录和核对，防止遗漏或漂移悄悄改变任务。",
       "references": [
         "https://platform.claude.com/docs/en/agent-sdk/overview",
         "certifications/claude/lessons/10-tool-use-and-agentic-loops"
@@ -164,19 +164,19 @@
     {
       "id": "ccdv-m1-008",
       "domain": "agents-workflows",
-      "objective": "Apply tool-loop, memory, context, and framework patterns",
+      "objective": "应用工具循环、记忆、上下文和框架模式（Apply tool-loop, memory, context, and framework patterns）",
       "type": "single",
-      "prompt": "A research agent returns a polished report but never accessed the two required databases. Which evaluation is most decisive?",
+      "prompt": "研究智能体返回精美报告，却从未访问两个必需数据库。哪种评估最有决定性？",
       "options": [
-        "Increase the maximum turns",
-        "Grade only the writing style",
-        "Inspect the required tool trajectory and verify cited records resolve",
-        "Score the report for factual consistency, citation formatting, and coverage of the requested topics without enforcing the required database trajectory"
+        "增加最大轮次",
+        "只评写作风格",
+        "检查必需工具轨迹，并验证引用记录可解析定位",
+        "评价报告的事实一致性、引用格式及主题覆盖，但不强制必需数据库轨迹"
       ],
       "correct": [
         2
       ],
-      "explanation": "Agent success includes the path and evidence, not only final language. Required source access and resolvable citations reveal whether the claimed research actually occurred.",
+      "explanation": "智能体成功包含路径和证据，而不只是最终文字。必需来源访问及可定位引用，揭示所声称的研究是否真的发生。",
       "references": [
         "https://platform.claude.com/docs/en/test-and-evaluate/develop-tests",
         "https://www.anthropic.com/research/building-effective-agents",
@@ -186,19 +186,19 @@
     {
       "id": "ccdv-m1-009",
       "domain": "applications-integration",
-      "objective": "Translate business needs into functional and infrastructure requirements",
+      "objective": "将业务需求转为功能和基础设施要求（Translate business needs into functional and infrastructure requirements）",
       "type": "single",
-      "prompt": "A product owner asks for a Claude agent that answers customers instantly. What should engineering establish first?",
+      "prompt": "产品负责人想要一个即时回答客户的 Claude 智能体。工程团队首先应明确什么？",
       "options": [
-        "A twelve-agent hierarchy",
-        "A complete capability inventory and agent hierarchy that can answer every anticipated customer request before the team quantifies error cost or latency targets",
-        "The largest available model",
-        "The measurable outcome, data sources, action authority, error cost, and service constraints"
+        "十二个智能体组成的层级",
+        "在量化错误成本或延迟目标前，建立能回答所有预期客户请求的完整能力清单和智能体层级",
+        "当前最大的模型",
+        "可测量成果、数据来源、行动权限、错误成本和服务约束"
       ],
       "correct": [
         3
       ],
-      "explanation": "Architecture begins with a testable outcome and boundaries. Model and tool choices follow latency, quality, security, lifecycle, and authority requirements rather than replacing discovery.",
+      "explanation": "架构从可测试成果和边界开始。模型和工具选择应遵循延迟、质量、安全、生命周期及权限要求，不能替代需求探索。",
       "references": [
         "https://www.anthropic.com/research/building-effective-agents",
         "certifications/claude/lessons/01-claude-product-and-model-landscape"
@@ -207,21 +207,21 @@
     {
       "id": "ccdv-m1-010",
       "domain": "applications-integration",
-      "objective": "Use messages, tools, streaming, vision, thinking, caching, batch, and third-party providers",
+      "objective": "使用消息、工具、流式传输、视觉、思考、缓存、批处理和第三方服务商（Use messages, tools, streaming, vision, thinking, caching, batch, and third-party providers）",
       "type": "multiple",
-      "prompt": "Claude returns text and two tool_use blocks in one assistant message. What must the client do? Select all that apply.",
+      "prompt": "Claude 在一条 assistant 消息中返回文本和两个 tool_use 块。客户端必须做什么？选择所有适用项。",
       "options": [
-        "Preserve the complete assistant content block sequence",
-        "Validate and correlate a result for each tool_use ID",
-        "Open a separate conversation for each returned tool result",
-        "Append the tool results in a following user message"
+        "保留完整 assistant 内容块序列",
+        "验证并关联每个 tool_use ID 的结果",
+        "为每个返回工具结果开启单独对话",
+        "在后续 user 消息中追加工具结果"
       ],
       "correct": [
         0,
         1,
         3
       ],
-      "explanation": "The assistant response is part of client-owned history. Every tool request needs a correlated result, and the following user message carries those results before the next model call.",
+      "explanation": "assistant 响应属于客户端管理的历史。每个工具请求都需要关联结果，后续 user 消息在下一次模型调用前承载这些结果。",
       "references": [
         "https://platform.claude.com/docs/en/agents-and-tools/tool-use/implement-tool-use",
         "https://platform.claude.com/docs/en/api/messages",
@@ -231,19 +231,19 @@
     {
       "id": "ccdv-m1-011",
       "domain": "applications-integration",
-      "objective": "Use messages, tools, streaming, vision, thinking, caching, batch, and third-party providers",
+      "objective": "使用消息、工具、流式传输、视觉、思考、缓存、批处理和第三方服务商（Use messages, tools, streaming, vision, thinking, caching, batch, and third-party providers）",
       "type": "single",
-      "prompt": "Application code assumes response.content[0] always has a text field. Claude instead returns a tool_use block first. What is the correct fix?",
+      "prompt": "应用假定 response.content[0] 始终有 text 字段，Claude 却先返回 tool_use 块。正确修复是什么？",
       "options": [
-        "Switch on each content block type and handle supported types explicitly",
-        "Force every response into one string",
-        "Delete all non-text blocks",
-        "Normalize every response by retrying with an instruction that the first content block must be text, while retaining the remaining block handling assumptions"
+        "按每个内容块类型分派，明确处理支持的类型",
+        "将所有响应强制转为一个字符串",
+        "删除所有非文本块",
+        "增加要求首内容块必须是文本的指令并重试，以规范化响应，同时保留其他块处理假设"
       ],
       "correct": [
         0
       ],
-      "explanation": "Messages contain typed blocks, not a guaranteed text slot. Explicit dispatch preserves tool, thinking, and future block semantics while unknown types can fail closed or be safely recorded.",
+      "explanation": "Messages 包含类型化块，不保证某个位置一定是文本。明确分派保留工具、思考及未来块语义；未知类型可以默认拒绝或安全记录。",
       "references": [
         "https://platform.claude.com/docs/en/api/messages",
         "certifications/claude/lessons/01-claude-product-and-model-landscape"
@@ -252,19 +252,19 @@
     {
       "id": "ccdv-m1-012",
       "domain": "applications-integration",
-      "objective": "Apply system lifecycle practices",
+      "objective": "应用系统生命周期实践（Apply system lifecycle practices）",
       "type": "single",
-      "prompt": "A response ends with a complete-looking sentence but stop_reason is max_tokens. How should the application classify it?",
+      "prompt": "回答以看似完整的句子结束，但 stop_reason 是 max_tokens。应用应如何分类？",
       "options": [
-        "Complete if the visible sentence passes semantic checks, while recording max_tokens as a transport warning that does not affect downstream use",
-        "Potentially incomplete and requiring explicit recovery or escalation",
-        "A prompt-cache hit",
-        "A successful tool result"
+        "只要可见句子通过语义检查就视为完整，将 max_tokens 记为不影响下游使用的传输警告",
+        "可能不完整，需要明确恢复或升级处理",
+        "提示词缓存命中",
+        "成功的工具结果"
       ],
       "correct": [
         1
       ],
-      "explanation": "Protocol control metadata overrides visual appearance. max_tokens means generation reached its configured limit, so downstream consumers must not assume the contract completed.",
+      "explanation": "协议控制元数据优先于视觉外观。max_tokens 表示生成达到配置上限，下游消费者不能假定契约已完成。",
       "references": [
         "https://platform.claude.com/docs/en/build-with-claude/handling-stop-reasons",
         "certifications/claude/lessons/01-claude-product-and-model-landscape"
@@ -273,21 +273,21 @@
     {
       "id": "ccdv-m1-013",
       "domain": "applications-integration",
-      "objective": "Use messages, tools, streaming, vision, thinking, caching, batch, and third-party providers",
+      "objective": "使用消息、工具、流式传输、视觉、思考、缓存、批处理和第三方服务商（Use messages, tools, streaming, vision, thinking, caching, batch, and third-party providers）",
       "type": "multiple",
-      "prompt": "Which practices are safe for streamed responses? Select all that apply.",
+      "prompt": "哪些流式响应实践是安全的？选择所有适用项。",
       "options": [
-        "Record whether message_stop or an equivalent terminal event arrived",
-        "Execute tool calls from a schema-valid partial-response prefix",
-        "Buffer tool input until its block completes before parsing",
-        "Treat rendered text as provisional until terminal completion"
+        "记录是否收到 message_stop 或等效终止事件",
+        "从符合模式的部分响应前缀执行工具调用",
+        "缓冲工具输入，直到其内容块完成后再解析",
+        "在终止完成前，将已渲染文本视为暂定内容"
       ],
       "correct": [
         0,
         2,
         3
       ],
-      "explanation": "Streams expose partial state. Rendering may be progressive, but parsing, authorization, and side effects wait for complete blocks and a terminal message state.",
+      "explanation": "流暴露的是部分状态。渲染可以渐进进行，但解析、授权和副作用必须等待完整块及终止消息状态。",
       "references": [
         "https://platform.claude.com/docs/en/build-with-claude/streaming",
         "certifications/claude/lessons/01-claude-product-and-model-landscape"
@@ -296,19 +296,19 @@
     {
       "id": "ccdv-m1-014",
       "domain": "applications-integration",
-      "objective": "Use messages, tools, streaming, vision, thinking, caching, batch, and third-party providers",
+      "objective": "使用消息、工具、流式传输、视觉、思考、缓存、批处理和第三方服务商（Use messages, tools, streaming, vision, thinking, caching, batch, and third-party providers）",
       "type": "single",
-      "prompt": "An invoice image is supplied for extraction. Which control most improves reliability?",
+      "prompt": "输入发票图像用于提取。哪项控制最能提高可靠性？",
       "options": [
-        "Use the smallest supported thumbnail to minimize latency, ask for confidence per extracted field, and manually review only values below the threshold",
-        "Convert the image into an unrestricted shell command",
-        "Use supported image formats and resolution, state the extraction contract, and validate totals against source evidence",
-        "Skip output validation because vision is deterministic"
+        "使用支持的最小缩略图降低延迟，要求每字段置信度，只人工审核低于阈值的值",
+        "将图像转为不受限制的 shell 命令",
+        "使用支持的图像格式和分辨率，说明提取契约，并依据来源证据验证总数",
+        "因为视觉是确定性的，所以跳过输出验证"
       ],
       "correct": [
         2
       ],
-      "explanation": "Vision quality depends on usable input and explicit task constraints, while extracted values still require schema and semantic checks. Visual capability does not make readings deterministic.",
+      "explanation": "视觉质量依赖可用输入和明确任务约束，提取值仍需模式及语义检查。视觉能力不会让读取结果具有确定性。",
       "references": [
         "https://platform.claude.com/docs/en/build-with-claude/vision",
         "https://platform.claude.com/docs/en/build-with-claude/structured-outputs",
@@ -318,19 +318,19 @@
     {
       "id": "ccdv-m1-015",
       "domain": "applications-integration",
-      "objective": "Use messages, tools, streaming, vision, thinking, caching, batch, and third-party providers",
+      "objective": "使用消息、工具、流式传输、视觉、思考、缓存、批处理和第三方服务商（Use messages, tools, streaming, vision, thinking, caching, batch, and third-party providers）",
       "type": "single",
-      "prompt": "Extended thinking is enabled in a multi-turn tool workflow. What should the client do with provider-supplied thinking blocks when the current API requires them to be returned?",
+      "prompt": "多轮工具工作流开启扩展思考。当前 API 要求返回服务商提供的思考块时，客户端应如何处理？",
       "options": [
-        "Replace them with the tool result ID",
-        "Rewrite them for clarity",
-        "Convert the provider-supplied thinking blocks into a concise rationale and send that edited version back with the next tool result",
-        "Preserve and return them exactly according to the current protocol"
+        "用工具结果 ID 替代",
+        "为清晰起见重写",
+        "将思考块改写为简洁理由，下一次工具结果一并发回编辑后的版本",
+        "严格按当前协议原样保留并返回"
       ],
       "correct": [
         3
       ],
-      "explanation": "Feature-specific thinking blocks can carry integrity data and protocol requirements. The client must follow current documentation and must not edit, fabricate, or expose internal reasoning content.",
+      "explanation": "特定功能的思考块可能承载完整性数据和协议要求。客户端必须遵循当前文档，不得编辑、编造或暴露内部推理内容。",
       "references": [
         "https://platform.claude.com/docs/en/build-with-claude/extended-thinking",
         "certifications/claude/lessons/01-claude-product-and-model-landscape"
@@ -339,19 +339,19 @@
     {
       "id": "ccdv-m1-016",
       "domain": "applications-integration",
-      "objective": "Use messages, tools, streaming, vision, thinking, caching, batch, and third-party providers",
+      "objective": "使用消息、工具、流式传输、视觉、思考、缓存、批处理和第三方服务商（Use messages, tools, streaming, vision, thinking, caching, batch, and third-party providers）",
       "type": "single",
-      "prompt": "A shared 30,000-token policy prefix is identical across requests, while each customer question differs. Which arrangement best supports caching?",
+      "prompt": "共享的 30,000 词元政策前缀在各请求中相同，客户问题各不相同。哪种排列最利于缓存？",
       "options": [
-        "Place the stable policy and tool definitions before volatile customer content",
-        "Store the policy only in output",
-        "Put the customer question first and policy last",
-        "Place customer identity and request metadata before the policy so authorization context is evaluated first, then append the stable policy and tool definitions"
+        "把稳定政策和工具定义放在易变客户内容之前",
+        "只在输出中存储政策",
+        "先放客户问题，最后放政策",
+        "在政策前放客户身份和请求元数据，先评估授权上下文，再追加稳定政策和工具定义"
       ],
       "correct": [
         0
       ],
-      "explanation": "Prompt caching works on reusable prefixes. Stable content belongs before volatile content so customer-specific bytes do not invalidate the expensive shared prefix.",
+      "explanation": "提示词缓存作用于可复用前缀。稳定内容应先于易变内容，避免客户专属字节使昂贵共享前缀失效。",
       "references": [
         "https://platform.claude.com/docs/en/build-with-claude/prompt-caching",
         "certifications/claude/lessons/01-claude-product-and-model-landscape"
@@ -360,21 +360,21 @@
     {
       "id": "ccdv-m1-017",
       "domain": "applications-integration",
-      "objective": "Use messages, tools, streaming, vision, thinking, caching, batch, and third-party providers",
+      "objective": "使用消息、工具、流式传输、视觉、思考、缓存、批处理和第三方服务商（Use messages, tools, streaming, vision, thinking, caching, batch, and third-party providers）",
       "type": "multiple",
-      "prompt": "A batch job contains 10,000 independent requests. Which practices are appropriate? Select all that apply.",
+      "prompt": "批任务包含 10,000 个独立请求。哪些实践合适？选择所有适用项。",
       "options": [
-        "Use batch for user-facing requests that need immediate streaming",
-        "Assign a stable custom identifier to every request",
-        "Reconcile returned results to the original inputs",
-        "Handle per-request success and failure rather than assuming all-or-nothing"
+        "将批处理用于需要即时流式响应的面向用户请求",
+        "为每个请求分配稳定自定义标识符",
+        "将返回结果与原始输入核对",
+        "逐请求处理成功和失败，而非假设全部成功或全部失败"
       ],
       "correct": [
         1,
         2,
         3
       ],
-      "explanation": "Batch processing is asynchronous and results can vary per request. Stable IDs and reconciliation preserve accountability; an interactive dependent loop needs normal request latency instead.",
+      "explanation": "批处理是异步的，各请求结果可能不同。稳定 ID 和核对保留可追责性；交互式依赖循环则需要正常请求延迟。",
       "references": [
         "https://platform.claude.com/docs/en/build-with-claude/message-batches",
         "certifications/claude/lessons/01-claude-product-and-model-landscape"
@@ -383,19 +383,19 @@
     {
       "id": "ccdv-m1-018",
       "domain": "applications-integration",
-      "objective": "Use messages, tools, streaming, vision, thinking, caching, batch, and third-party providers",
+      "objective": "使用消息、工具、流式传输、视觉、思考、缓存、批处理和第三方服务商（Use messages, tools, streaming, vision, thinking, caching, batch, and third-party providers）",
       "type": "single",
-      "prompt": "An application moves from Anthropic's direct API to a third-party managed provider. What should the migration test first?",
+      "prompt": "应用从 Anthropic 直连 API 迁往第三方托管服务商。迁移首先应测试什么？",
       "options": [
-        "Whether the provider advertises the same model family and context limit under a comparable enterprise service tier",
-        "Authentication, supported features, request and response serialization, quotas, regions, and resolved model behavior",
-        "Whether a compatibility wrapper can preserve the current SDK method signatures and normalize all provider failures into the application's existing exception type",
-        "Only whether the model name string is accepted"
+        "服务商是否在可比企业套餐下宣传相同模型家族和上下文限制",
+        "身份验证、支持功能、请求与响应序列化、配额、区域和实际解析到的模型行为",
+        "兼容包装层是否能保留当前 SDK 方法签名，并将全部服务商失败规范化为应用现有异常类型",
+        "只测试模型名称字符串是否被接受"
       ],
       "correct": [
         1
       ],
-      "explanation": "Provider integrations can differ in identity, feature availability, headers, versions, quotas, data regions, and serialization. A live contract test must verify the actual wire and application mapping.",
+      "explanation": "服务商集成在身份、功能可用性、头部、版本、配额、数据区域和序列化方面可能不同。真实契约测试必须验证实际网络通信与应用映射。",
       "references": [
         "https://platform.claude.com/docs/en/api/messages",
         "https://platform.claude.com/docs/en/about-claude/models/overview",
@@ -405,19 +405,19 @@
     {
       "id": "ccdv-m1-019",
       "domain": "applications-integration",
-      "objective": "Apply REST, JSON, async, version-control, review, and refactoring practices",
+      "objective": "应用 REST、JSON、异步、版本控制、评审和重构实践（Apply REST, JSON, async, version-control, review, and refactoring practices）",
       "type": "single",
-      "prompt": "Twenty independent read-only tool requests can safely run concurrently. Which design is appropriate?",
+      "prompt": "20 个独立只读工具请求可以安全并发。哪种设计合适？",
       "options": [
-        "Remove timeouts so every request eventually returns",
-        "Serialize the calls in model-request order so trace playback remains deterministic, even though the operations are independent and each carries a stable call ID",
-        "Launch bounded asynchronous work, preserve per-call IDs, and collect individual outcomes",
-        "Share one mutable argument object across all tasks"
+        "移除超时，让每个请求最终返回",
+        "按模型请求顺序串行执行，让轨迹回放确定，即使操作独立且各有稳定调用 ID",
+        "启动有边界的异步工作，保留每次调用 ID，并收集各自结果",
+        "所有任务共享同一可变参数对象"
       ],
       "correct": [
         2
       ],
-      "explanation": "Bounded concurrency improves latency for independent work while correlation, deadlines, and per-call results preserve correctness. Shared mutable state and missing timeouts create nondeterministic failures.",
+      "explanation": "有界并发改善独立工作的延迟，关联标识、期限和逐调用结果保留正确性。共享可变状态和缺少超时会产生非确定性失败。",
       "references": [
         "https://platform.claude.com/docs/en/agents-and-tools/tool-use/implement-tool-use",
         "certifications/claude/lessons/01-claude-product-and-model-landscape"
@@ -426,19 +426,19 @@
     {
       "id": "ccdv-m1-020",
       "domain": "applications-integration",
-      "objective": "Apply REST, JSON, async, version-control, review, and refactoring practices",
+      "objective": "应用 REST、JSON、异步、版本控制、评审和重构实践（Apply REST, JSON, async, version-control, review, and refactoring practices）",
       "type": "single",
-      "prompt": "A prompt and output schema change together. Which release record is most useful?",
+      "prompt": "提示词与输出模式同时改变。哪种发布记录最有用？",
       "options": [
-        "Only the final pass rate",
-        "The developer's chat title",
-        "The source diff and final aggregate pass rate, because version control already preserves the previous prompt, schema, and code for rollback",
-        "Prompt version, schema version, model configuration, code revision, eval dataset version, and rollback point"
+        "只记录最终通过率",
+        "开发者聊天标题",
+        "源码差异和最终总体通过率，因为版本控制已保留旧提示词、模式和代码供回滚",
+        "提示词版本、模式版本、模型配置、代码修订、评估数据集版本和回滚点"
       ],
       "correct": [
         3
       ],
-      "explanation": "Behavior depends on the complete configuration. Recording all relevant versions makes a regression reproducible and gives operations a precise rollback target.",
+      "explanation": "系统行为取决于完整配置。记录所有相关版本，才能复现行为回归（Regression），并为运维提供明确的回滚目标。",
       "references": [
         "https://platform.claude.com/docs/en/test-and-evaluate/develop-tests",
         "certifications/claude/lessons/01-claude-product-and-model-landscape"
@@ -447,21 +447,21 @@
     {
       "id": "ccdv-m1-021",
       "domain": "applications-integration",
-      "objective": "Apply REST, JSON, async, version-control, review, and refactoring practices",
+      "objective": "应用 REST、JSON、异步、版本控制、评审和重构实践（Apply REST, JSON, async, version-control, review, and refactoring practices）",
       "type": "multiple",
-      "prompt": "An AI-generated refactor passes unit tests. What else should review verify? Select all that apply.",
+      "prompt": "AI 生成的重构通过单元测试。评审还应验证什么？选择所有适用项。",
       "options": [
-        "Unrelated files were not changed",
-        "Public API and serialization compatibility",
-        "The actual built or integrated behavior",
-        "Give the reviewer full repository context"
+        "没有修改无关文件",
+        "公共 API 和序列化兼容性",
+        "实际构建或集成后的行为",
+        "给评审者完整仓库上下文"
       ],
       "correct": [
         0,
         1,
         2
       ],
-      "explanation": "Unit tests are one layer. Integration behavior, compatibility, and scope discipline catch regressions that local tests miss, while context size is not a correctness criterion.",
+      "explanation": "单元测试只是一个层次。集成行为、兼容性和范围纪律可以发现本地测试遗漏的回归，上下文大小则不是正确性标准。",
       "references": [
         "https://platform.claude.com/docs/en/test-and-evaluate/develop-tests",
         "certifications/claude/lessons/01-claude-product-and-model-landscape"
@@ -470,19 +470,19 @@
     {
       "id": "ccdv-m1-022",
       "domain": "applications-integration",
-      "objective": "Design instruction, schema, session, content-boundary, and plugin behavior",
+      "objective": "设计指令、模式、会话、内容边界及插件行为（Design instruction, schema, session, content-boundary, and plugin behavior）",
       "type": "single",
-      "prompt": "A support session for Tenant A is reused when Tenant B opens a request. What is the primary defect?",
+      "prompt": "租户 B 发起请求时，系统复用了租户 A 的支持会话。主要缺陷是什么？",
       "options": [
-        "A session and data-isolation boundary violation",
-        "A routing defect caused by a low sampling temperature that made the session repeatedly select context from the previously successful tenant interaction",
-        "Missing prompt caching",
-        "Too few tools"
+        "违反会话和数据隔离边界",
+        "低采样温度导致路由缺陷，使会话反复选择前一个成功租户交互的上下文",
+        "缺少提示词缓存",
+        "工具太少"
       ],
       "correct": [
         0
       ],
-      "explanation": "Conversation state can contain private context and instructions. Tenant sessions must be isolated, with identity and authorization bound from authenticated application state.",
+      "explanation": "对话状态可能包含私有上下文和指令。租户会话必须隔离，身份与授权必须绑定到已认证应用状态。",
       "references": [
         "https://platform.claude.com/docs/en/api/messages",
         "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/mitigate-jailbreaks",
@@ -492,21 +492,21 @@
     {
       "id": "ccdv-m1-023",
       "domain": "applications-integration",
-      "objective": "Manage CLAUDE.md, settings, model, prompt, and plugin versions",
+      "objective": "管理 CLAUDE.md、设置、模型、提示词和插件版本（Manage CLAUDE.md, settings, model, prompt, and plugin versions）",
       "type": "multiple",
-      "prompt": "A team upgrades a Claude Code plugin used in CI. Which evidence should accompany the change? Select all that apply.",
+      "prompt": "团队升级 CI 中使用的 Claude Code 插件。哪些证据应随变更提供？选择所有适用项。",
       "options": [
-        "Representative workflow eval and rollback steps",
-        "Inventory of newly added tools, hooks, Skills, and network access",
-        "The plugin publisher's signed release notes and compatibility statement, without an independent inventory or workflow evaluation in the team's CI boundary",
-        "Pinned or recorded plugin version and provenance"
+        "代表性工作流评估和回滚步骤",
+        "新增工具、钩子、技能和网络访问清单",
+        "插件发布者签名的发布说明与兼容声明，但不在团队 CI 边界独立清点能力或评估工作流",
+        "固定或记录的插件版本和来源"
       ],
       "correct": [
         0,
         1,
         3
       ],
-      "explanation": "A plugin changes executable capability and context. Provenance, capability review, regression evidence, and rollback make the upgrade controlled; marketing does not establish safety.",
+      "explanation": "插件会改变可执行能力与上下文。来源、能力评审、回归证据和回滚使升级可控；营销内容不能证明安全。",
       "references": [
         "https://code.claude.com/docs/en/settings",
         "https://platform.claude.com/docs/en/test-and-evaluate/develop-tests",
@@ -516,19 +516,19 @@
     {
       "id": "ccdv-m1-024",
       "domain": "applications-integration",
-      "objective": "Apply system lifecycle practices",
+      "objective": "应用系统生命周期实践（Apply system lifecycle practices）",
       "type": "single",
-      "prompt": "A read-only provider request returns a transient 529 and no response body. Which recovery is strongest?",
+      "prompt": "只读服务商请求返回暂时性 529，且没有响应体。最佳恢复是什么？",
       "options": [
-        "Convert the request into a mutating tool",
-        "Retry with bounded exponential backoff, jitter, and an overall deadline",
-        "Repeat forever until it succeeds",
-        "Switch to a fallback model and slightly relax the output schema on each retry while retaining the same unbounded retry schedule"
+        "将请求改为有副作用工具",
+        "采用有界指数退避、抖动和总体期限重试",
+        "无限重试直到成功",
+        "切换回退模型，每次重试略微放宽输出模式，同时保持相同无界重试计划"
       ],
       "correct": [
         1
       ],
-      "explanation": "A transient availability error can justify a bounded retry for an idempotent read. Backoff, jitter, deadlines, and attempt limits prevent synchronized load and runaway latency.",
+      "explanation": "暂时性可用性错误可支持对幂等读取进行有限重试。退避、抖动、期限和次数限制可防止同步负载与失控延迟。",
       "references": [
         "https://platform.claude.com/docs/en/api/messages",
         "certifications/claude/lessons/01-claude-product-and-model-landscape"
@@ -537,19 +537,19 @@
     {
       "id": "ccdv-m1-025",
       "domain": "applications-integration",
-      "objective": "Apply REST, JSON, async, version-control, review, and refactoring practices",
+      "objective": "应用 REST、JSON、异步、版本控制、评审和重构实践（Apply REST, JSON, async, version-control, review, and refactoring practices）",
       "type": "single",
-      "prompt": "An API accepts create-ticket requests. Which field best protects a retry after a connection drop?",
+      "prompt": "API 接受创建工单请求。哪个字段最能保护连接中断后的重试？",
       "options": [
-        "A longer user message",
-        "A fresh client-generated retry identifier created after each interrupted create-ticket attempt",
-        "A stable idempotency key bound to the intended operation",
-        "A provider-generated request identifier, because the service can use it to recognize repeated create-ticket payloads after an interrupted response"
+        "更长用户消息",
+        "每次创建工单中断后，客户端新生成一个重试标识符",
+        "绑定到预期操作的稳定幂等键",
+        "服务商生成的请求标识符，因为响应中断后服务能用它识别重复创建载荷"
       ],
       "correct": [
         2
       ],
-      "explanation": "Idempotency lets the server recognize the same logical operation and return or reconcile the prior result instead of creating a duplicate side effect.",
+      "explanation": "幂等性（Idempotency）让服务器能够识别同一次逻辑操作，返回此前的结果，或核对并处理已有结果，而不再次产生相同的副作用。",
       "references": [
         "https://platform.claude.com/docs/en/api/messages",
         "certifications/claude/lessons/01-claude-product-and-model-landscape"
@@ -558,19 +558,19 @@
     {
       "id": "ccdv-m1-026",
       "domain": "claude-code",
-      "objective": "Operate Rules, Skills, Commands, Agents, memory, sessions, headless mode, streaming mode, auto-mode, CLAUDE.md, initialization, and settings",
+      "objective": "操作规则、技能、命令、智能体、记忆、会话、无界面模式、流式模式、自动模式、CLAUDE.md、初始化和设置（Operate Rules, Skills, Commands, Agents, memory, sessions, headless mode, streaming mode, auto-mode, CLAUDE.md, initialization, and settings）",
       "type": "single",
-      "prompt": "A database migration procedure is detailed, reusable, and needed only when migration files change. Where should the team place it?",
+      "prompt": "数据库迁移流程详细、可复用，且只在迁移文件改变时需要。团队应放在哪里？",
       "options": [
-        "Inside an API token",
-        "In the model alias",
-        "In the root CLAUDE.md so every repository task receives the full migration procedure and Claude can decide whether a changed file makes it relevant",
-        "In a task-relevant Skill or scoped Rule, depending on whether it is a procedure or file constraint"
+        "API 令牌内部",
+        "模型别名中",
+        "根 CLAUDE.md，让所有仓库任务收到完整迁移流程，再由 Claude 判断是否相关",
+        "根据它是操作流程还是文件约束，放入任务相关技能或限定作用域的规则"
       ],
       "correct": [
         3
       ],
-      "explanation": "A Skill packages reusable procedure with progressive disclosure, while a scoped Rule applies constraints to relevant files. Both avoid bloating every session with unrelated detail.",
+      "explanation": "技能通过渐进式披露（Progressive disclosure）打包可复用流程，限定作用域的规则将约束应用于相关文件。两者都避免无关细节膨胀每个会话。",
       "references": [
         "https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview",
         "https://code.claude.com/docs/en/memory",
@@ -580,21 +580,21 @@
     {
       "id": "ccdv-m1-027",
       "domain": "claude-code",
-      "objective": "Operate Rules, Skills, Commands, Agents, memory, sessions, headless mode, streaming mode, auto-mode, CLAUDE.md, initialization, and settings",
+      "objective": "操作规则、技能、命令、智能体、记忆、会话、无界面模式、流式模式、自动模式、CLAUDE.md、初始化和设置（Operate Rules, Skills, Commands, Agents, memory, sessions, headless mode, streaming mode, auto-mode, CLAUDE.md, initialization, and settings）",
       "type": "multiple",
-      "prompt": "A headless pull-request review runs on untrusted contributions. Which controls are required? Select all that apply.",
+      "prompt": "无界面拉取请求评审处理不可信贡献。哪些控制必需？选择所有适用项。",
       "options": [
-        "Minimal repository and token permissions",
-        "A short-lived repository write token so the reviewer can apply obvious fixes to its branch after emitting structured findings",
-        "No unrelated secrets in the job environment",
-        "Bounded time, tools, network, and structured output"
+        "最小仓库和令牌权限",
+        "短期仓库写令牌，让评审者输出结构化发现后在分支上直接修复明显问题",
+        "任务环境中没有无关机密",
+        "有边界的时间、工具、网络和结构化输出"
       ],
       "correct": [
         0,
         2,
         3
       ],
-      "explanation": "Headless execution lacks interactive supervision, so its identity and capabilities must be narrow. The result should enter normal review and protected merge paths rather than bypass them.",
+      "explanation": "无界面执行缺少交互监督，身份与能力必须狭窄。结果应进入正常评审和受保护合并路径，而非绕过它们。",
       "references": [
         "https://code.claude.com/docs/en/headless",
         "https://code.claude.com/docs/en/settings",
@@ -604,19 +604,19 @@
     {
       "id": "ccdv-m1-028",
       "domain": "eval-testing-debugging",
-      "objective": "Classify errors, select recovery, analyze traces, and isolate integration failures from model failures",
+      "objective": "分类错误、选择恢复方式、分析轨迹，并区分集成失败与模型失败（Classify errors, select recovery, analyze traces, and isolate integration failures from model failures）",
       "type": "single",
-      "prompt": "Claude chose the correct tool, but the tool returned HTTP 403 because the authenticated service account lacks scope. How should the failure be classified?",
+      "prompt": "Claude 选对工具，但因已认证服务账户缺少权限范围，工具返回 HTTP 403。应如何分类？",
       "options": [
-        "Authorization or integration failure at the tool boundary",
-        "Prompt wording failure",
-        "Sampling variance",
-        "A model planning failure because the selected tool could not accomplish the requested action with the service account available to the agent"
+        "工具边界上的授权或集成失败",
+        "提示词措辞失败",
+        "采样波动",
+        "模型规划失败，因为所选工具无法用智能体现有服务账户完成请求"
       ],
       "correct": [
         0
       ],
-      "explanation": "The model selected the expected capability. The authoritative 403 identifies an identity or authorization configuration problem, which should be fixed at the integration boundary rather than through prompting.",
+      "explanation": "模型选择了预期能力。权威的 403 指向身份或授权配置问题，应在集成边界修复，而非通过提示词调整。",
       "references": [
         "https://platform.claude.com/docs/en/test-and-evaluate/develop-tests",
         "certifications/claude/lessons/05-output-evaluation-and-validation"
@@ -625,19 +625,19 @@
     {
       "id": "ccdv-m1-029",
       "domain": "model-selection-optimization",
-      "objective": "Explain tokens, sampling, context, non-determinism, thinking, effort, and prompting modes",
+      "objective": "解释词元、采样、上下文、非确定性、思考、努力程度和提示词模式（Explain tokens, sampling, context, non-determinism, thinking, effort, and prompting modes）",
       "type": "single",
-      "prompt": "Two requests with identical visible inputs produce different valid summaries. What is the best engineering interpretation?",
+      "prompt": "两个可见输入相同的请求生成不同但有效的摘要。最佳工程解释是什么？",
       "options": [
-        "The application should select a canonical answer by comparing deterministic surface features such as length and sentence coverage across the two outputs",
-        "Model generation is non-deterministic, so quality must be measured across representative repeated trials",
-        "One response proves the API is broken",
-        "Caching guarantees identical text"
+        "应用应比较两次输出长度、句子覆盖等确定性表面特征，选择标准答案",
+        "模型生成具有非确定性，质量应通过代表性重复试验衡量",
+        "其中一个响应证明 API 损坏",
+        "缓存保证文本相同"
       ],
       "correct": [
         1
       ],
-      "explanation": "Probabilistic generation can vary even under controlled settings. Evals should define acceptable properties and use repeated samples where variance matters instead of demanding identical wording.",
+      "explanation": "即使设置受控，概率性生成也会变化。评估应定义可接受属性，在方差重要时重复采样，而非要求措辞一致。",
       "references": [
         "https://platform.claude.com/docs/en/about-claude/models/overview",
         "https://platform.claude.com/docs/en/test-and-evaluate/develop-tests",
@@ -647,19 +647,19 @@
     {
       "id": "ccdv-m1-030",
       "domain": "model-selection-optimization",
-      "objective": "Explain tokens, sampling, context, non-determinism, thinking, effort, and prompting modes",
+      "objective": "解释词元、采样、上下文、非确定性、思考、努力程度和提示词模式（Explain tokens, sampling, context, non-determinism, thinking, effort, and prompting modes）",
       "type": "single",
-      "prompt": "A classification task uses an enum and already passes its eval. What is the likely effect of increasing randomness?",
+      "prompt": "分类任务使用枚举，已经通过评估。增加随机性可能有什么影响？",
       "options": [
-        "Automatic schema validation",
-        "Greater coverage of borderline labels because additional sampling variance explores classifications the deterministic configuration might systematically miss",
-        "Potentially greater output variance without a demonstrated requirement",
-        "A larger context window"
+        "自动进行模式验证",
+        "增加边界标签覆盖，因为额外采样波动探索确定性配置可能系统性遗漏的分类",
+        "没有已证明需求，却可能增加输出波动",
+        "扩大上下文窗口"
       ],
       "correct": [
         2
       ],
-      "explanation": "Sampling controls influence variation, not truth or schema enforcement. A stable classification workload should keep settings justified by measured behavior.",
+      "explanation": "采样控制影响变化程度，不决定真实性或强制模式。稳定分类工作负载的设置应以实测行为为依据。",
       "references": [
         "https://platform.claude.com/docs/en/about-claude/models/overview",
         "certifications/claude/lessons/01-claude-product-and-model-landscape"
@@ -668,21 +668,21 @@
     {
       "id": "ccdv-m1-031",
       "domain": "model-selection-optimization",
-      "objective": "Balance model quality, latency, cost, capability, and version changes",
+      "objective": "平衡模型质量、延迟、成本、能力和版本变化（Balance model quality, latency, cost, capability, and version changes）",
       "type": "multiple",
-      "prompt": "Which measurements belong in a model-selection comparison? Select all that apply.",
+      "prompt": "模型选择比较应包含哪些测量？选择所有适用项。",
       "options": [
-        "The provider's broad benchmark ranking and advertised model tier, used as a proxy for capability classes not present in the representative task set",
-        "p50 and p95 latency",
-        "Task and safety pass rates on representative cases",
-        "Token and monetary cost per successful task"
+        "将服务商宽泛基准排名和宣传档次作为代表性任务集未覆盖能力类别的替代指标",
+        "p50 和 p95 延迟",
+        "代表性案例上的任务和安全通过率",
+        "每个成功任务的词元及货币成本"
       ],
       "correct": [
         1,
         2,
         3
       ],
-      "explanation": "Selection is an empirical tradeoff across quality, risk, latency, and economics. Branding does not prove fitness for one workload or its operational constraints.",
+      "explanation": "选择是质量、风险、延迟和经济性之间的实证权衡。品牌不能证明模型适合某个工作负载及其运行约束。",
       "references": [
         "https://platform.claude.com/docs/en/about-claude/models/overview",
         "https://platform.claude.com/docs/en/about-claude/pricing",
@@ -692,19 +692,19 @@
     {
       "id": "ccdv-m1-032",
       "domain": "model-selection-optimization",
-      "objective": "Balance model quality, latency, cost, capability, and version changes",
+      "objective": "平衡模型质量、延迟、成本、能力和版本变化（Balance model quality, latency, cost, capability, and version changes）",
       "type": "single",
-      "prompt": "A smaller model fails only complex contract analysis cases, while it passes simple routing cases. Which architecture is most efficient?",
+      "prompt": "较小模型只在复杂合同分析上失败，简单路由均通过。哪种架构最高效？",
       "options": [
-        "Increase every prompt to the context limit",
-        "Remove the difficult cases from evaluation",
-        "Use the largest model for every request to avoid routing false negatives, then recover the added expense by shortening prompts for routine cases",
-        "Route by measured task complexity, with safeguards and fallback"
+        "将每个提示词增加到上下文上限",
+        "从评估移除困难案例",
+        "所有请求都用最大模型避免路由假阴性，再缩短常规案例提示词抵消费用",
+        "按实测任务复杂度路由，配合防护和回退"
       ],
       "correct": [
         3
       ],
-      "explanation": "Model routing can reserve expensive capability for tasks that earn it while keeping simpler work fast and economical. The router and fallback need their own evaluation.",
+      "explanation": "模型路由可将昂贵能力留给值得的任务，使简单工作快速且经济。路由器和回退也需要独立评估。",
       "references": [
         "https://platform.claude.com/docs/en/about-claude/models/overview",
         "certifications/claude/lessons/01-claude-product-and-model-landscape"
@@ -713,21 +713,21 @@
     {
       "id": "ccdv-m1-033",
       "domain": "model-selection-optimization",
-      "objective": "Budget tokens and use prompt caching",
+      "objective": "规划词元预算并使用提示词缓存（Budget tokens and use prompt caching）",
       "type": "multiple",
-      "prompt": "Which statements about prompt caching are correct? Select all that apply.",
+      "prompt": "关于提示词缓存，哪些陈述正确？选择所有适用项。",
       "options": [
-        "A cache hit does not make stale source content correct",
-        "It can reduce repeated-prefix input cost and time to first token",
-        "Changing bytes early in the prefix can reduce downstream reuse",
-        "It lets the application exceed the selected model's context limit when the overflowing tokens belong to a byte-identical cached prefix"
+        "缓存命中不会让过时来源内容变正确",
+        "它可以减少重复前缀输入成本和首词元时间",
+        "改变前缀靠前字节可能减少后续复用",
+        "只要超限词元属于逐字节相同的缓存前缀，应用就能超过所选模型上下文限制"
       ],
       "correct": [
         0,
         1,
         2
       ],
-      "explanation": "Caching reuses computation for stable prompt prefixes. It changes economics and latency, not freshness, truth, authorization, or the context-window limit.",
+      "explanation": "缓存复用稳定提示词前缀的计算，改变的是经济性和延迟，而非新鲜度、真实性、授权或上下文窗口限制。",
       "references": [
         "https://platform.claude.com/docs/en/build-with-claude/prompt-caching",
         "certifications/claude/lessons/01-claude-product-and-model-landscape"
@@ -736,19 +736,19 @@
     {
       "id": "ccdv-m1-034",
       "domain": "model-selection-optimization",
-      "objective": "Explain tokens, sampling, context, non-determinism, thinking, effort, and prompting modes",
+      "objective": "解释词元、采样、上下文、非确定性、思考、努力程度和提示词模式（Explain tokens, sampling, context, non-determinism, thinking, effort, and prompting modes）",
       "type": "single",
-      "prompt": "A request exceeds the selected model's context window. Which response is strongest?",
+      "prompt": "请求超过所选模型上下文窗口。最佳回应是什么？",
       "options": [
-        "Prune irrelevant content, retrieve only needed evidence, compact durable state, or select a justified larger context",
-        "Split the oversized input into arbitrary equal parts, generate an answer for each part independently, and concatenate the answers without preserving cross-part obligations",
-        "Increase temperature",
-        "Encode the overflow as a secret"
+        "裁剪无关内容、只检索所需证据、压缩持久状态，或选择有充分理由的更大上下文",
+        "将超大输入随意等分，各自独立生成答案再拼接，不保留跨片段责任",
+        "提高温度",
+        "将溢出内容编码为机密"
       ],
       "correct": [
         0
       ],
-      "explanation": "Context is a finite budget. Selection, retrieval, pruning, and structured compaction preserve relevant evidence; a larger context is justified only when the workload still requires it.",
+      "explanation": "上下文是有限预算。选择、检索、裁剪和结构化压缩保留相关证据；只有工作负载仍需要时，更大上下文才合理。",
       "references": [
         "https://platform.claude.com/docs/en/build-with-claude/context-windows",
         "certifications/claude/lessons/01-claude-product-and-model-landscape"
@@ -757,19 +757,19 @@
     {
       "id": "ccdv-m1-035",
       "domain": "model-selection-optimization",
-      "objective": "Explain tokens, sampling, context, non-determinism, thinking, effort, and prompting modes",
+      "objective": "解释词元、采样、上下文、非确定性、思考、努力程度和提示词模式（Explain tokens, sampling, context, non-determinism, thinking, effort, and prompting modes）",
       "type": "single",
-      "prompt": "Extended thinking improves hard planning accuracy by 8 points but doubles p95 latency. What should determine adoption?",
+      "prompt": "扩展思考让困难规划准确率提高 8 个点，却使 p95 延迟翻倍。是否采用应由什么决定？",
       "options": [
-        "Whether prompt caching is disabled",
-        "Whether the target workflow's quality requirement earns the measured latency and cost tradeoff",
-        "Enable it for every request because a statistically significant gain on the hard planning slice justifies a uniform configuration and simpler operations",
-        "Whether the output contains more reasoning text"
+        "提示词缓存是否关闭",
+        "目标工作流的质量要求是否值得实测延迟和成本权衡",
+        "因为困难规划切片上统计显著提升足以支持统一配置和简化运维，所以所有请求都开启",
+        "输出是否包含更多推理文字"
       ],
       "correct": [
         1
       ],
-      "explanation": "Thinking is a workload-specific tradeoff. Adopt it on the tasks where measured quality gain is necessary and operational budgets remain acceptable.",
+      "explanation": "是否启用思考（Thinking），需要针对具体工作负载作权衡。只有实测的质量提升确有必要，而且运行预算仍可接受时，才应在该类任务上采用。",
       "references": [
         "https://platform.claude.com/docs/en/build-with-claude/extended-thinking",
         "certifications/claude/lessons/01-claude-product-and-model-landscape"
@@ -778,21 +778,21 @@
     {
       "id": "ccdv-m1-036",
       "domain": "model-selection-optimization",
-      "objective": "Integrate SDK and transport fundamentals",
+      "objective": "集成 SDK 与传输基础（Integrate SDK and transport fundamentals）",
       "type": "multiple",
-      "prompt": "A direct API SDK upgrade changes typed response models. Which tests reduce migration risk? Select all that apply.",
+      "prompt": "直连 API SDK 升级改变了类型化响应模型。哪些测试降低迁移风险？选择所有适用项。",
       "options": [
-        "Test deserialization of every used content block and stop reason",
-        "Capture and compare actual wire responses",
-        "Rely on the SDK's semantic-versioning guarantee for fields covered by its types, while testing only newly introduced response content blocks",
-        "Run live integration cases for streaming and tools"
+        "测试每个已使用内容块和停止原因的反序列化",
+        "捕获并比较实际网络响应",
+        "对类型覆盖字段依赖 SDK 语义化版本保证，只测试新增响应内容块",
+        "运行流式与工具的真实集成案例"
       ],
       "correct": [
         0,
         1,
         3
       ],
-      "explanation": "Wire, typed-model, and end-to-end tests cover the serialization boundaries where fields can disappear or change. Version labels help planning but do not replace evidence.",
+      "explanation": "网络、类型模型和端到端测试覆盖字段可能丢失或改变的序列化边界。版本标签有助于规划，但不能替代证据。",
       "references": [
         "https://platform.claude.com/docs/en/api/messages",
         "https://platform.claude.com/docs/en/build-with-claude/streaming",
@@ -802,19 +802,19 @@
     {
       "id": "ccdv-m1-037",
       "domain": "model-selection-optimization",
-      "objective": "Balance model quality, latency, cost, capability, and version changes",
+      "objective": "平衡模型质量、延迟、成本、能力和版本变化（Balance model quality, latency, cost, capability, and version changes）",
       "type": "single",
-      "prompt": "An application uses a moving model alias. What operational control is most important?",
+      "prompt": "应用使用会变化的模型别名。哪项运行控制最重要？",
       "options": [
-        "Depend on the moving alias as the rollback mechanism because the provider can update it again if the new resolved version causes a regression",
-        "Disable traces to reduce cost",
-        "Run scheduled canary evals and keep a tested rollback configuration",
-        "Never record the resolved model information"
+        "依赖变化别名作为回滚机制，因为新解析版本回归时服务商可以再次更新它",
+        "关闭轨迹降低成本",
+        "定期运行金丝雀评估（Canary eval），并保留经过测试的回滚配置",
+        "永不记录解析后的模型信息"
       ],
       "correct": [
         2
       ],
-      "explanation": "A moving alias can change behavior without an application commit. Canary evals, recorded configuration, and rollback make that change observable and recoverable.",
+      "explanation": "指向会变化的模型版本的别名（Moving Alias），可能在应用代码没有任何提交时改变系统行为。金丝雀评估（Canary Evaluation）、配置记录与回滚机制，让这类变化能够被发现并从中恢复。",
       "references": [
         "https://platform.claude.com/docs/en/about-claude/models/overview",
         "https://platform.claude.com/docs/en/test-and-evaluate/develop-tests",
@@ -824,19 +824,19 @@
     {
       "id": "ccdv-m1-038",
       "domain": "prompt-context-engineering",
-      "objective": "Place clear instructions, examples, and constraints",
+      "objective": "放置清晰的指令、示例和约束（Place clear instructions, examples, and constraints）",
       "type": "single",
-      "prompt": "A prompt fails on ambiguous invoices. Which improvement should be tried first?",
+      "prompt": "提示词在含糊发票上失败。首先应尝试什么改进？",
       "options": [
-        "Repeat the task name twenty times",
-        "Add several easy invoice examples that reinforce the normal-case format and tell Claude to extrapolate the same pattern when ambiguous fields appear",
-        "Remove the validation criteria",
-        "Add one representative difficult example with the desired decision and output contract"
+        "重复任务名称二十次",
+        "加入几个简单发票示例强化正常格式，让 Claude 在含糊字段出现时外推同一模式",
+        "删除验证标准",
+        "加入一个有代表性的困难示例，附期望决策和输出契约"
       ],
       "correct": [
         3
       ],
-      "explanation": "Failure-driven few-shot examples clarify gray cases and the expected contract. Prompt changes should target observed errors rather than adding undirected text.",
+      "explanation": "针对失败的少样本示例澄清灰色案例及预期契约。提示词修改应针对观察到的错误，而非无方向地增加文本。",
       "references": [
         "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/overview",
         "certifications/claude/lessons/03-prompting-and-task-decomposition"
@@ -845,21 +845,21 @@
     {
       "id": "ccdv-m1-039",
       "domain": "prompt-context-engineering",
-      "objective": "Place clear instructions, examples, and constraints",
+      "objective": "放置清晰的指令、示例和约束（Place clear instructions, examples, and constraints）",
       "type": "multiple",
-      "prompt": "Which prompt practices make mixed trusted instructions and untrusted documents easier to reason about? Select all that apply.",
+      "prompt": "哪些提示词实践让混合可信指令与不可信文档更容易推理？选择所有适用项。",
       "options": [
-        "Delimit each source and label its role",
-        "Concatenate content into one XML-tagged document but omit source trust labels, assuming consistent delimiters are sufficient to preserve instruction priority",
-        "State that document content cannot override policy",
-        "Place output requirements near the task and validate them"
+        "为每个来源设置分隔符并标明角色",
+        "将内容拼成带 XML 标签的文档，但省略来源信任标签，假定一致分隔足以保持指令优先级",
+        "明确文档内容不能覆盖政策",
+        "将输出要求放在任务附近，并进行验证"
       ],
       "correct": [
         0,
         2,
         3
       ],
-      "explanation": "Clear boundaries, authority labels, and explicit output contracts reduce ambiguity. They support but do not replace deterministic security and validation controls.",
+      "explanation": "清晰的边界、标明权威性的标签，以及明确的输出契约（Output Contract），可以减少歧义。这些做法有助于安全和验证，但不能替代确定性的控制措施。",
       "references": [
         "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/overview",
         "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/mitigate-jailbreaks",
@@ -869,19 +869,19 @@
     {
       "id": "ccdv-m1-040",
       "domain": "prompt-context-engineering",
-      "objective": "Prevent context drift and bloat with pruning, compaction, and isolation",
+      "objective": "通过裁剪、压缩和隔离防止上下文漂移与膨胀（Prevent context drift and bloat with pruning, compaction, and isolation）",
       "type": "single",
-      "prompt": "A chat has accumulated three unrelated tasks and contradictory constraints. What is the safest next step?",
+      "prompt": "聊天已积累三个无关任务和矛盾约束。最安全的下一步是什么？",
       "options": [
-        "Start a clean session with a verified handoff containing only current facts and obligations",
-        "Continue in the existing session after appending a final instruction that newer constraints override older ones and asking Claude to resolve conflicts implicitly",
-        "Move secrets into the system prompt",
-        "Add every previous message twice"
+        "开启干净会话，通过经验证交接只携带当前事实和责任",
+        "继续现有会话，最后追加新约束覆盖旧约束的指令，让 Claude 隐式解决冲突",
+        "将机密移入系统提示词",
+        "把每条历史消息重复添加两次"
       ],
       "correct": [
         0
       ],
-      "explanation": "Old context can contaminate a changed objective. A clean boundary and concise verified handoff preserve necessary state while removing stale instructions.",
+      "explanation": "旧上下文可能污染改变后的目标。干净边界与简洁、经验证的交接保留必要状态，同时移除过时指令。",
       "references": [
         "https://platform.claude.com/docs/en/build-with-claude/context-windows",
         "certifications/claude/lessons/03-prompting-and-task-decomposition"
@@ -890,21 +890,21 @@
     {
       "id": "ccdv-m1-041",
       "domain": "prompt-context-engineering",
-      "objective": "Prevent context drift and bloat with pruning, compaction, and isolation",
+      "objective": "通过裁剪、压缩和隔离防止上下文漂移与膨胀（Prevent context drift and bloat with pruning, compaction, and isolation）",
       "type": "multiple",
-      "prompt": "Which information belongs in a long-task checkpoint artifact? Select all that apply.",
+      "prompt": "长任务检查点交付物应包含哪些信息？选择所有适用项。",
       "options": [
-        "The agent's full speculative reasoning history so a resumed session can understand why rejected approaches were considered and avoid repeating exploration",
-        "Current objective and acceptance criteria",
-        "Outstanding approvals and ambiguous side effects",
-        "Completed artifacts and their hashes"
+        "完整推测性推理历史，让恢复会话理解为何考虑过被放弃方案，避免重复探索",
+        "当前目标和验收标准",
+        "待审批事项和结果含糊的副作用",
+        "已完成交付物及其哈希"
       ],
       "correct": [
         1,
         2,
         3
       ],
-      "explanation": "A checkpoint preserves exact operational state needed to resume and verify. Speculative reasoning can be discarded unless it became an approved decision.",
+      "explanation": "检查点（Checkpoint）保存恢复和验证所需的精确运行状态。推测性的推理可以丢弃，除非它已经转化为获得批准的决策。",
       "references": [
         "https://platform.claude.com/docs/en/agent-sdk/overview",
         "certifications/claude/lessons/03-prompting-and-task-decomposition"
@@ -913,19 +913,19 @@
     {
       "id": "ccdv-m1-042",
       "domain": "prompt-context-engineering",
-      "objective": "Sanitize input and iterate prompts",
+      "objective": "净化输入并迭代提示词（Sanitize input and iterate prompts）",
       "type": "single",
-      "prompt": "A user-supplied field is inserted into a repair prompt. What is the safest construction?",
+      "prompt": "用户提供的字段被插入修复提示词。最安全的构造方式是什么？",
       "options": [
-        "Place the field directly after the system repair rules so it remains close to the validation instructions, then ask the model to ignore any embedded commands",
-        "Label and delimit it as untrusted data, include machine-generated validation errors, and cap attempts",
-        "Execute any commands it contains",
-        "Remove all validation so repair is easier"
+        "将字段直接放在系统修复规则后靠近验证指令，再让模型忽略其中嵌入的命令",
+        "标记并分隔为不可信数据，加入机器生成的验证错误，并限制尝试次数",
+        "执行其中任何命令",
+        "移除全部验证以方便修复"
       ],
       "correct": [
         1
       ],
-      "explanation": "Trust labeling and delimiting prevent input from masquerading as policy, while bounded repair and precise errors address formatting without creating an infinite injection loop.",
+      "explanation": "信任标签和分隔防止输入伪装成政策；有限修复和精确错误针对格式问题，而不形成无限注入循环。",
       "references": [
         "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/overview",
         "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/mitigate-jailbreaks",
@@ -935,19 +935,19 @@
     {
       "id": "ccdv-m1-043",
       "domain": "prompt-context-engineering",
-      "objective": "Validate and defensively consume structured output",
+      "objective": "验证并防御性消费结构化输出（Validate and defensively consume structured output）",
       "type": "single",
-      "prompt": "Claude returns valid JSON with priority 12, while the schema allows integers from 1 through 5. What should the consumer do?",
+      "prompt": "Claude 返回有效 JSON，其中 priority 为 12，但模式只允许 1 至 5 的整数。消费者应做什么？",
       "options": [
-        "Clamp it silently to 5",
-        "Accept it after clamping the value to the schema maximum and record the original value in telemetry for later prompt-quality analysis",
-        "Reject it as a schema violation and use bounded repair or fallback",
-        "Ask a tool to authorize 12"
+        "悄悄截断为 5",
+        "截断到模式最大值后接受，并在遥测记录原值，留待后续分析提示词质量",
+        "按模式违规拒绝，并使用有界修复或回退",
+        "要求工具授权 12"
       ],
       "correct": [
         2
       ],
-      "explanation": "Parsing proves only syntax. Numeric bounds are part of the contract, and silent coercion hides a producer failure that should remain observable.",
+      "explanation": "解析成功只能证明语法正确。数值取值范围也是契约的一部分；悄然强制转换（Silent Coercion）会掩盖数据生产方的错误，而这些错误本应保持可见。",
       "references": [
         "https://platform.claude.com/docs/en/build-with-claude/structured-outputs",
         "certifications/claude/lessons/03-prompting-and-task-decomposition"
@@ -956,21 +956,21 @@
     {
       "id": "ccdv-m1-044",
       "domain": "security-safety",
-      "objective": "Mitigate prompt injection, jailbreaks, data leakage, and unsafe input",
+      "objective": "缓解提示词注入、越狱、数据泄露和不安全输入（Mitigate prompt injection, jailbreaks, data leakage, and unsafe input）",
       "type": "multiple",
-      "prompt": "An MCP resource contains instructions to call a secret-export tool. Which defenses should apply? Select all that apply.",
+      "prompt": "MCP 资源包含调用机密导出工具的指令。应应用哪些防御？选择所有适用项。",
       "options": [
-        "Require host and server authorization independent of content",
-        "Do not expose unnecessary secret or export capabilities",
-        "Keep resource content in an untrusted-data boundary",
-        "Treat instructions from an authenticated MCP server as trusted application policy, while still requiring normal approval for the resulting secret-export call"
+        "要求独立于内容的宿主和服务器授权",
+        "不暴露不必要的机密或导出能力",
+        "将资源内容保留在不可信数据边界",
+        "将已认证 MCP 服务器的指令视为可信应用政策，但仍要求对最终机密导出调用正常审批"
       ],
       "correct": [
         0,
         1,
         2
       ],
-      "explanation": "Remote content and tool results can be compromised. Capability minimization and independent authorization prevent content from granting itself authority over protected operations.",
+      "explanation": "远程内容和工具结果可能遭到入侵。能力最小化与独立授权防止内容自行赋予受保护操作权限。",
       "references": [
         "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/mitigate-jailbreaks",
         "https://modelcontextprotocol.io/docs/tutorials/security/security_best_practices",
@@ -980,19 +980,19 @@
     {
       "id": "ccdv-m1-045",
       "domain": "security-safety",
-      "objective": "Protect identity, secrets, keys, and access approvals",
+      "objective": "保护身份、机密、密钥和访问审批（Protect identity, secrets, keys, and access approvals）",
       "type": "single",
-      "prompt": "Where should a commerce API key be introduced into an order lookup?",
+      "prompt": "订单查询应在哪里引入商务 API 密钥？",
       "options": [
-        "In the user-visible trace",
-        "In a short-lived system prompt inserted only after the model has selected the order-lookup tool, with trace redaction enabled for the request",
-        "In the tool description",
-        "In trusted integration code immediately before the authorized request"
+        "用户可见轨迹中",
+        "模型选择订单查询工具后，才加入短期系统提示词，并开启请求轨迹脱敏",
+        "工具描述中",
+        "在获授权请求发出前一刻，由可信集成代码引入"
       ],
       "correct": [
         3
       ],
-      "explanation": "The model needs a business capability, not the credential. Trusted code retrieves the key from a protected source and returns only minimized result data.",
+      "explanation": "模型需要的是业务能力，而不是凭据（Credential）。可信代码负责从受保护的来源取得密钥，并且只返回完成任务所需的最少结果数据。",
       "references": [
         "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/mitigate-jailbreaks",
         "certifications/claude/lessons/12-claude-agent-sdk-and-hooks"
@@ -1001,19 +1001,19 @@
     {
       "id": "ccdv-m1-046",
       "domain": "security-safety",
-      "objective": "Layer guardrails with least privilege",
+      "objective": "结合最小权限分层设置防护机制（Layer guardrails with least privilege）",
       "type": "single",
-      "prompt": "Claude proposes read_file with path /workspace/project/../secrets.txt. What should the policy check use?",
+      "prompt": "Claude 提议 read_file，路径为 /workspace/project/../secrets.txt。策略检查应使用什么？",
       "options": [
-        "The canonical resolved path against explicit allowed roots, plus operating-system sandboxing",
-        "Claude's confidence score",
-        "The file extension only",
-        "A normalized string-prefix check performed by the application before the tool call, without resolving symlinks or relying on an operating-system sandbox"
+        "将规范解析后的路径与明确允许根目录比较，并配合操作系统沙箱",
+        "Claude 的置信分数",
+        "只看文件扩展名",
+        "工具调用前由应用检查规范化字符串前缀，但不解析符号链接，也不依赖操作系统沙箱"
       ],
       "correct": [
         0
       ],
-      "explanation": "Traversal can make an apparently allowed prefix resolve outside the root. Canonical path enforcement and sandbox permissions provide complementary protection.",
+      "explanation": "路径穿越可能让看似允许的前缀解析到根目录之外。规范路径强制检查和沙箱权限提供互补保护。",
       "references": [
         "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/mitigate-jailbreaks",
         "certifications/claude/lessons/12-claude-agent-sdk-and-hooks"
@@ -1022,21 +1022,21 @@
     {
       "id": "ccdv-m1-047",
       "domain": "security-safety",
-      "objective": "Use hooks for deterministic safety controls",
+      "objective": "使用钩子实现确定性安全控制（Use hooks for deterministic safety controls）",
       "type": "multiple",
-      "prompt": "Which statements about security hooks are correct? Select all that apply.",
+      "prompt": "关于安全钩子，哪些陈述正确？选择所有适用项。",
       "options": [
-        "A pre-tool hook can block before a side effect",
-        "A post-tool hook can redact result content and record metrics",
-        "A tested pre-tool hook that canonicalizes paths and blocks known secret patterns can replace sandboxing for tools whose arguments are fully schema validated",
-        "Hooks should be tested with allowed and denied fixtures"
+        "工具前置钩子能在副作用前阻断",
+        "工具后置钩子能脱敏结果内容并记录指标",
+        "经过测试、规范化路径且阻断已知机密模式的前置钩子，可为参数已完整验证模式的工具替代沙箱",
+        "钩子应使用允许和拒绝样例测试"
       ],
       "correct": [
         0,
         1,
         3
       ],
-      "explanation": "Hooks enforce lifecycle checks and need behavioral tests. They are one defense layer, not a replacement for filesystem, network, identity, and server-side controls.",
+      "explanation": "钩子执行生命周期检查，需要行为测试。它们只是防御的一层，不能替代文件系统、网络、身份及服务器端控制。",
       "references": [
         "https://code.claude.com/docs/en/hooks-guide",
         "certifications/claude/lessons/12-claude-agent-sdk-and-hooks"
@@ -1045,21 +1045,21 @@
     {
       "id": "ccdv-m1-048",
       "domain": "tools-mcps",
-      "objective": "Design descriptions, schemas, errors, approvals, and tool sets",
+      "objective": "设计描述、模式、错误、审批和工具集（Design descriptions, schemas, errors, approvals, and tool sets）",
       "type": "multiple",
-      "prompt": "Which changes make a tool catalog easier for Claude to use correctly? Select all that apply.",
+      "prompt": "哪些改变让 Claude 更容易正确使用工具目录？选择所有适用项。",
       "options": [
-        "Give each tool a distinct narrow purpose",
-        "Expose several overlapping tools under one namespace and use detailed examples in the system prompt instead of distinct names or negative-use descriptions",
-        "Describe important non-use cases",
-        "Use bounded schemas with required fields and enums"
+        "赋予每个工具不同且狭窄的目的",
+        "在同一命名空间公开多个重叠工具，在系统提示词中用详细示例替代不同名称或不适用说明",
+        "描述重要的不适用情形",
+        "使用带必需字段和枚举的有界模式"
       ],
       "correct": [
         0,
         2,
         3
       ],
-      "explanation": "Clear semantic separation and strict inputs improve selection and validation. Overlapping vague tools create ambiguity and consume context without adding reliable capability.",
+      "explanation": "清晰语义分离和严格输入改善选择与验证。重叠且模糊的工具制造歧义、消耗上下文，却不增加可靠能力。",
       "references": [
         "https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview",
         "certifications/claude/lessons/10-tool-use-and-agentic-loops"
@@ -1068,19 +1068,19 @@
     {
       "id": "ccdv-m1-049",
       "domain": "tools-mcps",
-      "objective": "Design descriptions, schemas, errors, approvals, and tool sets",
+      "objective": "设计描述、模式、错误、审批和工具集（Design descriptions, schemas, errors, approvals, and tool sets）",
       "type": "single",
-      "prompt": "A read-only tool handler times out. What should a useful tool error tell the model?",
+      "prompt": "只读工具处理器超时。有用的工具错误应告诉模型什么？",
       "options": [
-        "Instructions for bypassing policy",
-        "What failed, whether state changed, and whether a bounded retry is safe",
-        "Only the word error",
-        "The complete exception class, stack location, and request arguments so Claude can decide whether modified arguments would make a retry safe"
+        "绕过策略的指令",
+        "什么失败了、状态是否变化，以及有限重试是否安全",
+        "只给出 error 一词",
+        "完整异常类、堆栈位置和请求参数，让 Claude 判断修改参数是否能安全重试"
       ],
       "correct": [
         1
       ],
-      "explanation": "Concise operational facts let the loop choose a safe recovery. Internal stack traces and secrets belong in protected telemetry, not model-visible results.",
+      "explanation": "简洁的运行事实能帮助循环选择安全的恢复方式。内部堆栈轨迹（Stack Trace）和机密信息应保存在受保护的遥测（Telemetry）中，不应出现在模型可见的结果里。",
       "references": [
         "https://platform.claude.com/docs/en/agents-and-tools/tool-use/implement-tool-use",
         "certifications/claude/lessons/10-tool-use-and-agentic-loops"
@@ -1089,19 +1089,19 @@
     {
       "id": "ccdv-m1-050",
       "domain": "tools-mcps",
-      "objective": "Design descriptions, schemas, errors, approvals, and tool sets",
+      "objective": "设计描述、模式、错误、审批和工具集（Design descriptions, schemas, errors, approvals, and tool sets）",
       "type": "single",
-      "prompt": "Claude requests two tools: create_invoice and send_invoice. Can they run in parallel?",
+      "prompt": "Claude 请求 create_invoice 和 send_invoice 两个工具。它们能并行吗？",
       "options": [
-        "Yes, if the harness starts both requests together but delays delivery of send_invoice until create_invoice returns the generated identifier",
-        "Yes, if temperature is zero",
-        "No, because sending depends on the created invoice and its identifier",
-        "No, because tools can never run concurrently"
+        "能，只要运行框架同时启动请求，但等 create_invoice 返回生成标识符后再投递 send_invoice",
+        "能，只要温度为零",
+        "不能，因为发送依赖已创建发票及其标识符",
+        "不能，因为工具永远不能并发"
       ],
       "correct": [
         2
       ],
-      "explanation": "These calls have a data and state dependency, so execution must remain sequential. Independent read-only calls may be parallelized with correlation and bounded concurrency.",
+      "explanation": "这些调用存在数据和状态依赖，必须顺序执行。独立只读调用则可在有关联标识和有界并发的条件下并行。",
       "references": [
         "https://platform.claude.com/docs/en/agents-and-tools/tool-use/implement-tool-use",
         "certifications/claude/lessons/10-tool-use-and-agentic-loops"
@@ -1110,21 +1110,21 @@
     {
       "id": "ccdv-m1-051",
       "domain": "tools-mcps",
-      "objective": "Author and deploy MCP tools, resources, and prompts across transports",
+      "objective": "跨传输方式编写和部署 MCP 工具、资源及提示词（Author and deploy MCP tools, resources, and prompts across transports）",
       "type": "multiple",
-      "prompt": "Which steps belong to the MCP connection lifecycle? Select all that apply.",
+      "prompt": "哪些步骤属于 MCP 连接生命周期？选择所有适用项。",
       "options": [
-        "Call optional methods documented by the server vendor before capability negotiation, then fall back when the server returns a method-not-found error",
-        "Discover only capabilities the server advertised",
-        "Send the initialized notification where required",
-        "Initialize and negotiate protocol version and capabilities"
+        "能力协商前调用服务器厂商文档中的可选方法，收到方法不存在错误时再回退",
+        "只发现服务器已声明的能力",
+        "需要时发送 initialized 通知",
+        "初始化并协商协议版本和能力"
       ],
       "correct": [
         1,
         2,
         3
       ],
-      "explanation": "MCP begins with explicit negotiation, followed by operation within advertised capabilities. Assumptions about unsupported methods create version and interoperability failures.",
+      "explanation": "MCP 以明确协商开始，随后在已声明能力范围内操作。假设支持未声明方法会造成版本与互操作失败。",
       "references": [
         "https://modelcontextprotocol.io/specification",
         "certifications/claude/lessons/10-tool-use-and-agentic-loops"
@@ -1133,19 +1133,19 @@
     {
       "id": "ccdv-m1-052",
       "domain": "tools-mcps",
-      "objective": "Author and deploy MCP tools, resources, and prompts across transports",
+      "objective": "跨传输方式编写和部署 MCP 工具、资源及提示词（Author and deploy MCP tools, resources, and prompts across transports）",
       "type": "single",
-      "prompt": "A team-wide remote MCP server exposes customer data. Which control is essential?",
+      "prompt": "团队共用的远程 MCP 服务器公开客户数据。哪项控制必不可少？",
       "options": [
-        "Put one shared bearer token in CLAUDE.md",
-        "Allow arbitrary redirect destinations",
-        "Authenticate the MCP transport once for the team workspace and rely on each tool description to state which tenant data callers may request",
-        "Authenticate the caller and enforce tenant and resource authorization on the server"
+        "将一个共享 bearer token 放入 CLAUDE.md",
+        "允许任意重定向目的地",
+        "为团队工作区认证 MCP 传输一次，再依赖各工具描述说明调用者可请求哪些租户数据",
+        "认证调用者，并在服务器上强制执行租户和资源授权"
       ],
       "correct": [
         3
       ],
-      "explanation": "The server owns its data boundary and must authenticate and authorize every request. Host consent and model selection cannot grant server-side access.",
+      "explanation": "服务器负责自己的数据边界，必须对每个请求认证和授权。宿主同意及模型选择不能赋予服务器端访问权。",
       "references": [
         "https://modelcontextprotocol.io/docs/tutorials/security/security_best_practices",
         "certifications/claude/lessons/10-tool-use-and-agentic-loops"
@@ -1154,21 +1154,21 @@
     {
       "id": "ccdv-m1-053",
       "domain": "tools-mcps",
-      "objective": "Choose among built-in tools, custom tools, Skills, and MCP",
+      "objective": "在内置工具、自定义工具、技能和 MCP 之间选择（Choose among built-in tools, custom tools, Skills, and MCP）",
       "type": "multiple",
-      "prompt": "Match architecture mechanisms to their strongest use. Which pairings are correct? Select all that apply.",
+      "prompt": "将架构机制匹配到最适合的用途。哪些配对正确？选择所有适用项。",
       "options": [
-        "Subagent for isolated reviewer context",
-        "MCP for shared standard capability discovery across hosts",
-        "Skill for reusable procedure loaded only when relevant",
-        "MCP for one stable in-process helper when a generated schema and standard client library are available, even though no interoperability boundary exists"
+        "用子智能体隔离评审者上下文",
+        "用 MCP 实现跨宿主的共享标准能力发现",
+        "用技能封装只在相关时加载的可复用流程",
+        "已有生成模式和标准客户端库时，即使没有互操作边界，也为单个稳定进程内辅助函数使用 MCP"
       ],
       "correct": [
         0,
         1,
         2
       ],
-      "explanation": "Skills package procedure, MCP standardizes external capability connections, and subagents isolate context or tools. A one-process helper is usually simpler as a local function or client tool.",
+      "explanation": "技能打包流程，MCP 标准化外部能力连接，子智能体隔离上下文或工具。单进程辅助函数通常作为本地函数或客户端工具更简单。",
       "references": [
         "https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview",
         "https://modelcontextprotocol.io/specification",

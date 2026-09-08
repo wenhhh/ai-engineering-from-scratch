@@ -1,7 +1,7 @@
-"""LangGraph-shaped stateful graph in stdlib, with checkpoint and resume.
+"""用标准库实现 LangGraph 式有状态图（Stateful graph），支持检查点（Checkpoint）与恢复（Resume）。
 
-State is a typed dict. Nodes return update dicts. Runtime serializes state
-after every node so resume picks up exactly where it left off.
+状态是带类型标注的字典。节点返回更新字典。运行时在每个节点后
+序列化状态，因此恢复时能精确接续先前的执行位置。
 """
 
 from __future__ import annotations
@@ -103,11 +103,11 @@ class Runner:
             state = copy.deepcopy(initial_state)
         current = resume_from or self.graph.entry
         if current is None:
-            raise RuntimeError("no entry node set")
+            raise RuntimeError("未设置入口节点")
         while current is not None and current != END:
             fn = self.graph.nodes.get(current)
             if fn is None:
-                raise RuntimeError(f"unknown node {current!r}")
+                raise RuntimeError(f"未知节点 {current!r}")
             update = fn(state)
             if update is None:
                 update = {}
@@ -150,13 +150,13 @@ def _sales(state: State) -> Update:
 
 def _human_gate(state: State) -> Update:
     if not state.get("human_approval"):
-        return {"_pause_reason": "awaiting human approval",
+        return {"_pause_reason": "等待人工批准",
                 "step": state.get("step", 0) + 1}
     return {"step": state.get("step", 0) + 1}
 
 
 def _send(state: State) -> Update:
-    return {"output": f"sent {state.get('ticket')}",
+    return {"output": f"已发送 {state.get('ticket')}",
             "step": state.get("step", 0) + 1}
 
 
@@ -185,7 +185,7 @@ def build_graph() -> StateGraph:
 
 def main() -> None:
     print("=" * 70)
-    print("LANGGRAPH STATE MACHINE — Phase 14, Lesson 13")
+    print("LangGraph 状态机（State machine）——第 14 阶段，第 13 课")
     print("=" * 70)
 
     graph = build_graph()
@@ -196,20 +196,20 @@ def main() -> None:
     initial: State = {"input": "the CLI crashes on ctrl-c, please fix",
                       "step": 0, "human_approval": False}
 
-    print("\nfirst run (will pause at human_gate)")
+    print("\n首次运行（将在 human_gate 暂停）")
     try:
         final = runner.run(session, initial)
-        print(f"  final: {final}")
+        print(f"  最终结果：{final}")
     except PausedAtNode as paused:
-        print(f"  PAUSED at {paused.node}")
-        print(f"  state at pause: {json.dumps(paused.state, default=str)}")
+        print(f"  暂停于 {paused.node}")
+        print(f"  暂停时的状态：{json.dumps(paused.state, default=str)}")
 
-    print("\ncheckpoint history")
+    print("\n检查点（Checkpoint）历史")
     for node, snap in ckpt.history(session):
-        print(f"  {node}  route={snap.get('route')}  "
-              f"ticket={snap.get('ticket')}  step={snap.get('step')}")
+        print(f"  {node}  路由={snap.get('route')}  "
+              f"工单={snap.get('ticket')}  步骤={snap.get('step')}")
 
-    print("\nhuman approves; resume from next node after human_gate")
+    print("\n人工批准；从 human_gate 后的下一节点恢复")
     latest = ckpt.load_latest(session)
     assert latest is not None
     last_node, last_state = latest
@@ -223,11 +223,11 @@ def main() -> None:
         resume_from="send",
         state_override=approved_state,
     )
-    print(f"  final: {final}")
+    print(f"  最终结果：{final}")
 
     print()
-    print("property: state serializes after every node; resume is exact.")
-    print("no fresh re-runs after step 38 fails; pick up at step 39.")
+    print("性质：每个节点执行后都序列化状态，确保精确恢复。")
+    print("第 38 步失败后无需从头重跑，从第 39 步接续执行。")
 
 
 if __name__ == "__main__":

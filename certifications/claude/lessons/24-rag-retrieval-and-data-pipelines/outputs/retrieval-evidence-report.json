@@ -2,7 +2,7 @@
   "report_id": "policy-retrieval-baseline-v1",
   "active_sources": ["refund-v3", "shipping-v2"],
   "excluded_sources": [
-    {"document_id": "refund-v2", "reason": "inactive version"}
+    {"document_id": "refund-v2", "reason": "非活跃版本（inactive version）"}
   ],
   "query": "Who approves a refund above 500 dollars?",
   "ranked_hits": [
@@ -11,10 +11,10 @@
       "document_id": "refund-v3",
       "chunk_id": "refund-v3:0",
       "updated_at": "2026-08-01",
-      "support": "Finance approval is required before execution."
+      "support": "执行前必须获得财务审批。"
     }
   ],
   "metrics": {"recall_at_k": 1.0, "mean_reciprocal_rank": 1.0},
   "freshness_gate": "passed",
-  "authorization_gate": "fixture uses public synthetic policy data"
+  "authorization_gate": "夹具使用公开的合成政策数据"
 }

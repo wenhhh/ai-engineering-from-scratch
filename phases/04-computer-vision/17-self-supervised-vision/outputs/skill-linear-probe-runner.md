@@ -1,40 +1,40 @@
 ---
 name: skill-linear-probe-runner
-description: Write the complete linear-probe evaluation for any frozen encoder and labelled dataset
+description: 为任意冻结编码器和有标签数据集编写完整线性探测评估
 version: 1.0.0
 phase: 4
 lesson: 17
 tags: [self-supervised, evaluation, linear-probe, pytorch]
 ---
 
-# Linear Probe Runner
+# 线性探测运行器（Linear Probe Runner）
 
-Evaluate a frozen encoder's features by training a single linear classifier on top. The standard evaluation for every self-supervised paper.
+在冻结编码器特征之上训练单个线性分类器，以评估特征。这是各类自监督论文的标准评估方法。
 
-## When to use
+## 使用时机（When to use）
 
-- Comparing self-supervised checkpoints.
-- Tracking feature quality over pretraining epochs.
-- Deciding whether a pretrained encoder is good enough for a downstream task without fine-tuning.
+- 比较自监督检查点。
+- 跟踪预训练各轮次的特征质量。
+- 判断预训练编码器不经微调是否足以胜任下游任务。
 
-## Inputs
+## 输入（Inputs）
 
-- `encoder`: frozen `nn.Module` returning a fixed-dim feature per image.
-- `feature_dim`: dimensionality of the encoder output.
-- `train_dataset`: labelled dataset (image, class_id).
-- `val_dataset`: held-out set.
-- `num_classes`: task classes.
-- `epochs`: typically 100 for ImageNet-scale, 50 for smaller datasets.
+- `encoder`：冻结的 `nn.Module`，为每张图像返回固定维度特征。
+- `feature_dim`：编码器输出维数。
+- `train_dataset`：有标签数据集，格式为 (image, class_id)。
+- `val_dataset`：留出集。
+- `num_classes`：任务类别数。
+- `epochs`：ImageNet 规模通常为 100，小数据集通常为 50。
 
-## Steps
+## 步骤（Steps）
 
-1. Set encoder to eval mode and `requires_grad=False` on every parameter.
-2. Feature-extract both train and val sets once. Store as numpy arrays or a memory-mapped file.
-3. Train a `nn.Linear(feature_dim, num_classes)` on the cached features with SGD + cosine schedule.
-4. Standard hyperparameters: `lr=0.1`, `momentum=0.9`, `weight_decay=0`, `batch_size=1024`. Linear probe is surprisingly sensitive to `lr` — sweep if accuracy is poor.
-5. Report top-1 accuracy on val at the end of training.
+1. 将编码器设为评估模式，并为每个参数设置 `requires_grad=False`。
+2. 分别对训练集与验证集提取一次特征，保存为 numpy 数组或内存映射文件。
+3. 在缓存特征上用随机梯度下降（Stochastic Gradient Descent，SGD）与余弦调度训练 `nn.Linear(feature_dim, num_classes)`。
+4. 标准超参数：`lr=0.1`、`momentum=0.9`、`weight_decay=0`、`batch_size=1024`。线性探测对 `lr` 的敏感程度可能超出预期，准确率差时应扫描多个值。
+5. 训练结束时报告验证集 top-1 准确率。
 
-## Output template
+## 输出模板（Output template）
 
 ```python
 import torch
@@ -86,19 +86,19 @@ def linear_probe(encoder, feature_dim, train_loader, val_loader,
     return best_val
 ```
 
-## Report
+## 报告（Report）
 
 ```
 [linear probe]
-  encoder:     <name + pretrain checkpoint>
+  encoder:     <名称与预训练检查点>
   feature_dim: <int>
   epochs:      <int>
   best_val_top1: <float>
 ```
 
-## Rules
+## 规则（Rules）
 
-- Never update encoder weights during linear probe; that would be a fine-tune, not a probe.
-- Precompute features once; retraining the encoder on every epoch wastes 100x compute.
-- Use SGD with cosine schedule and no weight decay; Adam sometimes underperforms here.
-- Sweep learning rates at least once per encoder family; the optimum varies across SSL methods.
+- 线性探测期间不得更新编码器权重，否则就是微调，而不是探测。
+- 只预计算一次特征；每轮重新训练编码器会浪费 100 倍计算。
+- 使用 SGD、余弦调度且不使用权重衰减；Adam 在这里有时表现较差。
+- 每类编码器至少扫描一次学习率；不同自监督学习（Self-Supervised Learning，SSL）方法的最优值不同。

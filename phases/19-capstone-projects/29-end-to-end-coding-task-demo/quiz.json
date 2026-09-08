@@ -1,22 +1,22 @@
 {
   "lesson": "phase-19/29-end-to-end-coding-task-demo",
-  "title": "End-to-End Coding Agent on the Harness",
+  "title": "运行框架上的端到端编码智能体（End-to-End Coding Agent on the Harness）",
   "questions": [
     {
       "stage": "pre",
-      "question": "Before reading the lesson: why does the end-to-end demo replace the LLM with a deterministic policy?",
+      "question": "阅读前思考：为什么端到端演示用确定性策略替代 LLM？",
       "options": [
-        "Deterministic policies always outperform LLMs on coding tasks.",
-        "The lesson cannot afford the inference cost.",
-        "The LLM is too slow to run in tests.",
-        "The harness is what the lesson is testing; the policy is the substitutable seam."
+        "确定性策略在编码任务上总是优于 LLM",
+        "本课承担不起推理成本",
+        "LLM 太慢，无法用于测试",
+        "本课测试的是运行框架，策略是可替换的组件"
       ],
       "correct": 3,
-      "explanation": "The harness contract does not care whether the policy is an LLM or a state machine. Removing the LLM removes the network and the variance and turns the lesson into a reproducible integration test."
+      "explanation": "框架契约不关心策略是 LLM 还是状态机。移除 LLM 就移除了网络和随机波动，使课程成为可复现的集成测试。"
     },
     {
       "stage": "check",
-      "question": "The agent's state machine has five states. In what order does it execute them on a normal pass?",
+      "question": "智能体状态机有五个状态，正常通过时按什么顺序执行？",
       "options": [
         "RUN_TESTS -> SURVEY -> INSPECT -> FIX -> VERIFY.",
         "SURVEY -> RUN_TESTS -> INSPECT -> FIX -> VERIFY.",
@@ -24,23 +24,23 @@
         "SURVEY -> INSPECT -> FIX -> RUN_TESTS -> VERIFY."
       ],
       "correct": 1,
-      "explanation": "The agent surveys the project, runs the tests, inspects the failing test, fixes the bug, then verifies. RUN_TESTS comes before INSPECT because the test failure is the signal the policy reads."
+      "explanation": "智能体先查看项目，再运行测试、检查失败测试、修复错误，最后验证。RUN_TESTS 先于 INSPECT，因为策略读取的信号是测试失败。"
     },
     {
       "stage": "check",
-      "question": "The bundled fixture's bug is an off-by-one in src/fizz.py: range(1, n) instead of range(1, n + 1). Where does the policy decide to apply the fix?",
+      "question": "附带夹具中 src/fizz.py 的边界偏一错误是使用 range(1, n)，而非 range(1, n + 1)。策略在哪里决定应用修复？",
       "options": [
-        "Inside the SURVEY state, by reading the file header.",
-        "Outside the state machine, in the gate chain.",
-        "Inside the VERIFY state, after the rerun.",
-        "Inside the INSPECT state, after the test failure has named the expected output."
+        "在 SURVEY 状态内读取文件头时",
+        "在状态机之外的关卡链中",
+        "在 VERIFY 状态内重新运行之后",
+        "在 INSPECT 状态内，测试失败已指明预期输出之后"
       ],
       "correct": 3,
-      "explanation": "INSPECT is where the policy reads the failing test and learns the expected shape. The fix is identified there and written in the next FIX state."
+      "explanation": "策略在 INSPECT 读取失败测试并了解预期结构，在此识别修复，然后在下一 FIX 状态写入。"
     },
     {
       "stage": "check",
-      "question": "Every tool call goes through what chain of components in order?",
+      "question": "每次工具调用按顺序经过哪条组件链？",
       "options": [
         "ObservationLedger -> GateChain -> Sandbox -> SpanBuilder.",
         "SpanBuilder -> GateChain -> Sandbox -> ObservationLedger.",
@@ -48,31 +48,31 @@
         "Sandbox -> GateChain -> SpanBuilder -> ObservationLedger."
       ],
       "correct": 2,
-      "explanation": "Gate first (allow / refuse), span next (so the refusal is also captured), sandbox third (only if allowed), ledger last (only on success). The lesson code wires it that way."
+      "explanation": "先关卡（允许或拒绝），再跨度（也记录拒绝），第三是沙箱（仅允许时执行），最后是账本（仅成功时记录）。本课代码按此方式连接。"
     },
     {
       "stage": "post",
-      "question": "You replace the deterministic policy with a real LLM. Which harness component changes?",
+      "question": "用真实 LLM 替换确定性策略时，哪个框架组件改变？",
       "options": [
-        "The sandbox has to be hardened with seccomp.",
-        "The Prometheus exposition format becomes incompatible.",
-        "The gate chain has to be rewritten to handle LLM stochasticity.",
-        "Nothing in the harness changes; the policy is the only piece that swaps."
+        "必须用 seccomp 加固沙箱",
+        "Prometheus 暴露格式会变得不兼容",
+        "必须重写关卡链以处理 LLM 随机性",
+        "框架无需改变，只替换策略"
       ],
       "correct": 3,
-      "explanation": "The lesson's point: the harness is policy-agnostic. The seam is the next_action / observe interface. The LLM plugs in there without touching gate, sandbox, ledger, or spans."
+      "explanation": "本课重点是框架与策略无关。替换接口是 next_action / observe，LLM 接入这里即可，无需改动关卡、沙箱、账本或跨度。"
     },
     {
       "stage": "post",
-      "question": "The demo asserts the agent solves the fixture in fewer than 12 steps. The deterministic policy uses 5. What is a real-LLM agent likely to do, and how does the harness handle it?",
+      "question": "演示断言智能体用少于 12 步解决夹具，确定性策略使用 5 步。真实 LLM 智能体可能怎样，框架如何处理？",
       "options": [
-        "The LLM cannot run inside this harness.",
-        "The LLM uses 5 steps too; the harness is unchanged.",
-        "The harness silently extends the budget.",
-        "The LLM may use more steps; the step_budget bounds the loop and an unsolved run is reported as a failure with a halted_reason."
+        "LLM 无法在该框架内运行",
+        "LLM 也使用 5 步，框架不变",
+        "框架静默扩大预算",
+        "LLM 可能用更多步骤；step_budget 限制循环，未解决的运行以失败及 halted_reason 报告"
       ],
       "correct": 3,
-      "explanation": "The step budget is the loud, deterministic stopping criterion. An LLM that wanders gets capped and the report tells you exactly why."
+      "explanation": "步骤预算是明确且确定性的停止条件。偏离目标的 LLM 会受到上限约束，报告会准确说明停止原因。"
     }
   ]
 }

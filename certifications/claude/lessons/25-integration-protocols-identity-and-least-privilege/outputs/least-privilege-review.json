@@ -10,14 +10,14 @@
     "error": {
       "category": "authorization",
       "retryable": false,
-      "safe_next_action": "request authorized human review"
+      "safe_next_action": "请求获授权的人类评审"
     }
   },
   "controls": [
-    "identity propagated outside model arguments",
-    "execution-time scope check",
-    "approval bound to exact action and parameters",
-    "structured audit reference"
+    "在模型参数之外传递身份",
+    "执行时检查权限范围",
+    "审批绑定确切操作和参数",
+    "结构化审计引用"
   ],
   "status": "least_privilege_verified"
 }

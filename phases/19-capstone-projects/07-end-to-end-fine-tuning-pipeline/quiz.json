@@ -1,62 +1,62 @@
 {
   "lesson": "07-end-to-end-fine-tuning-pipeline",
-  "title": "Capstone 07 — End-to-End Fine-Tuning Pipeline (Data to SFT to DPO to Serve)",
+  "title": "综合实践 07：端到端微调流水线（End-to-End Fine-Tuning Pipeline，从数据到 SFT、DPO 与服务）",
   "questions": [
     {
       "stage": "pre",
-      "question": "What does the contamination check guard against during data preparation?",
+      "question": "数据准备期间，污染检查（Contamination Check）防范什么？",
       "options": [
-        "Tokenizer drift between SFT and DPO stages",
-        "Test-set leakage from public benchmarks such as MMLU-Pro and MT-Bench-v2 into training data",
-        "GPU driver mismatches between training and serving",
-        "GGUF version skew across llama.cpp builds"
+        "SFT 与 DPO 阶段之间的分词器（Tokenizer）漂移",
+        "MMLU-Pro、MT-Bench-v2 等公共基准的测试集泄露到训练数据中",
+        "训练与服务之间 GPU 驱动不匹配",
+        "不同 llama.cpp 构建间的 GGUF 版本偏差"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "pre",
-      "question": "Why does the pipeline compose SFT then DPO (or GRPO) rather than DPO alone?",
+      "question": "为什么流水线先组合监督微调（SFT），再做直接偏好优化（DPO）或组相对策略优化（GRPO），而不是只做 DPO？",
       "options": [
-        "DPO cannot run on quantized weights",
-        "Axolotl does not implement DPO",
-        "SFT establishes domain behavior on labeled completions while DPO or GRPO aligns the model against preference pairs or verifiable rewards",
-        "DPO requires a separate base model architecture"
+        "DPO 无法在量化权重上运行",
+        "Axolotl 没有实现 DPO",
+        "SFT 通过已标注补全建立领域行为，而 DPO 或 GRPO 通过偏好对或可验证奖励对齐模型",
+        "DPO 需要独立的基础模型架构"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "What does EAGLE-3 contribute to the vLLM serving stage?",
+      "question": "EAGLE-3 为 vLLM 服务阶段带来什么？",
       "options": [
-        "An OPA policy for tool calls",
-        "An automatic data dedup step",
-        "A new prompt-caching layer",
-        "Draft heads that predict N tokens ahead; the target verifies in one pass for 2-3x throughput"
+        "工具调用的 OPA 策略",
+        "自动数据去重步骤",
+        "新的提示词缓存层",
+        "提前预测 N 个词元的草稿头（Draft Head）；目标模型一次前向验证，实现 2–3 倍吞吐量"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Which metric reports how well a speculative-decoding draft aligns with the target model?",
+      "question": "哪个指标报告投机解码（Speculative Decoding）草稿与目标模型的一致程度？",
       "options": [
-        "Acceptance rate",
-        "Perplexity",
-        "PSI",
-        "Coverage delta"
+        "接受率（Acceptance Rate）",
+        "困惑度（Perplexity）",
+        "总体稳定性指数（Population Stability Index，PSI）",
+        "覆盖率变化（Coverage Delta）"
       ],
       "correct": 0,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Which trio of quants does the pipeline ship for deployment flexibility?",
+      "question": "流水线交付哪三种量化版本来提高部署灵活性？",
       "options": [
         "GPTQ-INT4-Marlin, AWQ-INT4, and GGUF-Q4_K_M",
         "FP32, FP16, BF16",
-        "INT8 only across three runtimes",
+        "在三个运行时上只使用 INT8",
         "ONNX, CoreML, TFLite"
       ],
       "correct": 0,
@@ -64,24 +64,24 @@
     },
     {
       "stage": "post",
-      "question": "Which framework convention does the 2026 model card follow in this capstone?",
+      "question": "本综合实践中的 2026 模型卡遵循哪种框架约定？",
       "options": [
-        "HuggingFace YAML front-matter only",
-        "OpenAI's model card format",
-        "Datasheets for Datasets",
-        "Model Openness Framework (MOF) 2026 template covering data, training, eval, safety, license, and reproducibility"
+        "仅使用 HuggingFace YAML 前置元数据（Front-Matter）",
+        "OpenAI 的模型卡格式",
+        "数据集数据表（Datasheets for Datasets）",
+        "模型开放性框架（Model Openness Framework，MOF）2026 模板，涵盖数据、训练、评估、安全、许可和可复现性"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "Which HPA metric is used to autoscale the serving replicas?",
+      "question": "使用哪个 HPA 指标自动扩缩服务副本？",
       "options": [
-        "GPU temperature",
-        "CPU utilization",
-        "Queue-wait time",
-        "Network egress bytes"
+        "GPU 温度",
+        "CPU 利用率",
+        "队列等待时间（Queue-Wait Time）",
+        "网络出站字节数"
       ],
       "correct": 2,
       "explanation": ""

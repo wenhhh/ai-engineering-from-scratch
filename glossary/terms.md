@@ -1,2246 +1,2497 @@
-# AI Engineering Glossary
+<a id="ai-engineering-glossary"></a>
+# AI 工程术语表（AI Engineering Glossary）
 
-Use this glossary when a lesson, paper, model card, or code review introduces a term faster than it explains it. Search by the exact term or an alias, read the direct definition first, then use the practical note to connect it to a system you can build.
+当课程、论文、模型卡（Model Card）或代码审阅引入术语，却来不及解释时，可以查阅本术语表。按准确术语或别名搜索，先读直接定义，再通过实践说明，将概念与自己能构建的系统联系起来。
 
-Each entry belongs to one learning category. `Related terms` gives you the next useful concepts without forcing a fixed path. Definitions describe the common engineering meaning, but provider-specific behavior can differ. When an API contract or model card disagrees with a general definition, the current official documentation wins.
+每个条目归属于一个学习分类。`Related terms` 提供接下来值得了解的相关概念，而不强制规定学习顺序。定义描述常见的工程含义，但不同提供方的具体行为可能有差异。当 API 契约或模型卡与通用定义不一致时，以当前官方文档为准。
 
-The twelve categories are: Math & training; Models & inference; Data & representations; Retrieval & generation; Prompting & context; Agents & tools; Evaluation & safety; AI-native development; Infrastructure & serving; Reliability & operations; Security & governance; Multimodal systems.
+十二个分类分别是：数学与训练（Math & training）；模型与推理（Models & inference）；数据与表示（Data & representations）；检索与生成（Retrieval & generation）；提示词与上下文（Prompting & context）；智能体与工具（Agents & tools）；评估与安全（Evaluation & safety）；AI 原生开发（AI-native development）；基础设施与服务（Infrastructure & serving）；可靠性与运维（Reliability & operations）；安全与治理（Security & governance）；多模态系统（Multimodal systems）。
 
 ## A
 
-### Activation Checkpointing
-- **Category:** Math & training
-- **What it actually means:** A training-memory technique that saves only selected forward-pass activations and recomputes the omitted ones during backpropagation.
-- **Why it matters:** It lets you train larger models or sequences within a fixed memory budget by trading additional computation for lower activation storage.
-- **In practice:** Checkpoint the memory-heavy transformer blocks, measure the extra step time, and keep recovery checkpoints separate from activation-recomputation settings.
-- **Common confusion:** Activation checkpointing is not a durable training checkpoint. It helps one forward and backward pass fit in memory but cannot resume a crashed run.
-- **Related terms:** Autograd, Backpropagation, Checkpoint, Mixed Precision
-- **Sources:** [Training Deep Nets with Sublinear Memory Cost](https://arxiv.org/abs/1604.06174)
+<a id="activation-checkpointing"></a>
+### 激活检查点（Activation Checkpointing）
+- **分类（Category）:** 数学与训练（Math & training）
+- **准确含义（What it actually means）:** 一种训练内存优化技术：只保存选定的前向传播激活值，在反向传播时重新计算未保存的部分。
+- **重要性（Why it matters）:** 它用额外计算换取更少的激活存储，让你在固定内存预算内训练更大的模型或处理更长的序列。
+- **实际应用（In practice）:** 对占用内存较多的 Transformer 块启用激活检查点，测量每步增加的耗时，并将故障恢复检查点与激活重计算设置分开管理。
+- **常见混淆（Common confusion）:** 激活检查点不是持久化的训练检查点。它帮助单次前向和反向传播适配内存容量，却无法恢复崩溃的训练任务。
+- **相关术语（Related terms）:** Autograd, Backpropagation, Checkpoint, Mixed Precision
+- **来源（Sources）:** [以亚线性内存开销训练深度网络](https://arxiv.org/abs/1604.06174)
 
-### Activation Function
-- **Category:** Math & training
-- **What people say:** The nonlinear operation between layers.
-- **What it actually means:** A function applied after a linear or affine layer that introduces nonlinearity. Without it, composing layers with weights and biases collapses to one affine transformation. ReLU, GELU, and SiLU are common choices. The choice directly affects whether gradients flow during training.
-- **Learn it:** [Activation Functions](../phases/03-deep-learning-core/04-activation-functions/)
-- **Related terms:** ReLU, Gradient, Backpropagation
+<a id="activation-function"></a>
+### 激活函数（Activation Function）
+- **分类（Category）:** 数学与训练（Math & training）
+- **常见说法（What people say）:** 层与层之间的非线性运算。
+- **准确含义（What it actually means）:** 在线性层或仿射层之后应用、用于引入非线性的函数。没有它，多个带权重和偏置的层复合后仍等价于一次仿射变换。常见选择包括 ReLU、GELU 和 SiLU。具体选择直接影响训练时梯度能否传递。
+- **学习课程（Learn it）:** [激活函数](../phases/03-deep-learning-core/04-activation-functions/)
+- **相关术语（Related terms）:** ReLU, Gradient, Backpropagation
 
-### Adam (Optimizer)
-- **Category:** Math & training
-- **What people say:** The optimizer you use without thinking about it.
-- **What it actually means:** Adaptive Moment Estimation. It combines an exponential average of gradients with an exponential average of squared gradients, applies bias correction, and adapts the update scale per parameter. It is a useful baseline, but it still needs a suitable learning rate and schedule.
-- **Common confusion:** Adam is a strong baseline, not a universal best optimizer.
-- **Sources:** [Adam paper](https://arxiv.org/abs/1412.6980)
-- **Related terms:** AdamW, Optimizer, Learning Rate
+<a id="adam-optimizer"></a>
+### 自适应矩估计优化器（Adam (Optimizer)）
+- **分类（Category）:** 数学与训练（Math & training）
+- **常见说法（What people say）:** 不假思索就会选用的优化器。
+- **准确含义（What it actually means）:** 即自适应矩估计（Adaptive Moment Estimation）。它结合梯度的指数平均与梯度平方的指数平均，进行偏差校正，并针对每个参数调整更新尺度。它是实用的基线，但仍需要合适的学习率及调度方案。
+- **常见混淆（Common confusion）:** Adam 是有竞争力的基线，而不是普遍最优的优化器。
+- **来源（Sources）:** [Adam 论文](https://arxiv.org/abs/1412.6980)
+- **相关术语（Related terms）:** AdamW, Optimizer, Learning Rate
 
-### AdamW
-- **Category:** Math & training
-- **What people say:** Adam with weight decay fixed.
-- **What it actually means:** An Adam variant that decouples weight decay from the gradient-based parameter update. That makes the shrinkage behavior easier to reason about than adding an L2 penalty inside Adam's adaptively scaled gradient.
-- **Common confusion:** Decoupled weight decay does not make AdamW universally optimal. Model, data, and training scale still determine the best optimizer and schedule.
-- **Sources:** [Decoupled Weight Decay Regularization](https://arxiv.org/abs/1711.05101)
-- **Related terms:** Adam (Optimizer), Weight Decay, Optimizer
+<a id="adamw"></a>
+### 解耦权重衰减优化器（AdamW）
+- **分类（Category）:** 数学与训练（Math & training）
+- **常见说法（What people say）:** 修正了权重衰减方式的 Adam。
+- **准确含义（What it actually means）:** 将权重衰减与基于梯度的参数更新解耦的 Adam 变体。与在 Adam 自适应缩放的梯度中加入 L2 惩罚相比，这使参数收缩的行为更容易分析。
+- **常见混淆（Common confusion）:** 解耦权重衰减并不意味着 AdamW 普遍最优。最佳优化器和调度方案仍取决于模型、数据与训练规模。
+- **来源（Sources）:** [解耦权重衰减正则化](https://arxiv.org/abs/1711.05101)
+- **相关术语（Related terms）:** Adam (Optimizer), Weight Decay, Optimizer
 
-### Admission Control
-- **Category:** Reliability & operations
-- **What it actually means:** A pre-acceptance gate that decides whether a request may enter a bounded queue or service under the system's current capacity, priority, and policy.
-- **Why it matters:** Rejecting excess work at a controlled boundary protects admitted requests from queue growth, timeout cascades, and resource exhaustion.
-- **In practice:** Estimate the request's cost, check tenant and system capacity, reserve the required budget atomically, and identify the overloaded scope when rejecting. Give retry guidance only when the condition is transient and the caller's retry budget permits another attempt.
-- **Common confusion:** Admission control acts before acceptance. Load shedding can reject or remove work at ingress, in queues, at dependencies, or at other overload boundaries.
-- **Related terms:** Load Shedding, Backpressure, Rate Limit, Saturation
-- **Sources:** [Google SRE: Handling Overload](https://sre.google/sre-book/handling-overload/)
+<a id="admission-control"></a>
+### 准入控制（Admission Control）
+- **分类（Category）:** 可靠性与运维（Reliability & operations）
+- **准确含义（What it actually means）:** 在接受请求之前设置的门禁，根据系统当前容量、优先级和策略，决定请求能否进入有界队列或服务。
+- **重要性（Why it matters）:** 在受控边界拒绝超量工作，可以保护已获准的请求，避免队列膨胀、超时级联和资源耗尽。
+- **实际应用（In practice）:** 估算请求成本，检查租户和系统容量，以原子方式预留所需预算，并在拒绝时指出哪个范围过载。只有当问题是暂时的，且调用方的重试预算允许再次尝试时，才提供重试建议。
+- **常见混淆（Common confusion）:** 准入控制发生在接受请求之前。负载丢弃则可在入口、队列、依赖项或其他过载边界拒绝或移除工作。
+- **相关术语（Related terms）:** Load Shedding, Backpressure, Rate Limit, Saturation
+- **来源（Sources）:** [Google SRE：处理过载](https://sre.google/sre-book/handling-overload/)
 
-### Agent
-- **Category:** Agents & tools
-- **What people say:** An autonomous model that thinks and acts alone.
-- **What it actually means:** A software system that lets a model select actions toward a goal, observe tool or environment results, and continue under an orchestration policy. An agent may use a loop, a state machine, a workflow engine, or human approvals. The model is one component, not the entire system.
-- **Why it matters:** Reliability comes from the harness, tool contracts, state, permissions, and verification around the model.
-- **In practice:** A coding agent reads repository context, proposes a patch, runs tests in a sandbox, and stops for approval before deployment.
-- **Common confusion:** Autonomy is a degree of delegated authority, not a required property of every agent.
-- **Learn it:** [The Agent Loop](../phases/14-agent-engineering/01-the-agent-loop/)
-- **Related terms:** Agent Harness, Agent State, Tool Contract, Human-in-the-Loop (HITL)
+<a id="agent"></a>
+### 智能体（Agent）
+- **分类（Category）:** 智能体与工具（Agents & tools）
+- **常见说法（What people say）:** 能够独立思考和行动的自主模型。
+- **准确含义（What it actually means）:** 一种软件系统，让模型能够围绕目标选择动作、观察工具或环境返回的结果，并在编排策略约束下继续执行。智能体可以使用循环、状态机、工作流引擎或人工审批。模型只是其中一个组件，而不是整个系统。
+- **重要性（Why it matters）:** 可靠性来自围绕模型构建的运行框架、工具契约、状态、权限和验证机制。
+- **实际应用（In practice）:** 编程智能体读取仓库上下文，提出补丁，在沙箱中运行测试，并在部署前停下来请求批准。
+- **常见混淆（Common confusion）:** 自主性表示被委派权限的程度，不是每个智能体都必须具备的属性。
+- **学习课程（Learn it）:** [智能体循环](../phases/14-agent-engineering/01-the-agent-loop/)
+- **相关术语（Related terms）:** Agent Harness, Agent State, Tool Contract, Human-in-the-Loop (HITL)
 
-### Agent Harness
-- **Category:** Agents & tools
-- **What it actually means:** The runtime around a model that assembles context, exposes tools, manages state, enforces limits, records traces, and decides when the agent should continue, retry, ask, or stop.
-- **Why it matters:** Two systems using the same model can perform very differently because their harnesses provide different context, tools, feedback, and safety boundaries.
-- **In practice:** Your harness can limit an agent to five tool calls, persist a checkpoint after each accepted patch, and require a passing test command before completion.
-- **Common confusion:** A harness is broader than a prompt template and narrower than the complete product.
-- **Learn it:** [Minimal Agent Workbench](../phases/14-agent-engineering/32-minimal-agent-workbench/)
-- **Related terms:** Agent, Tool Contract, Agent State, Verification Gate, Sandbox
+<a id="agent-harness"></a>
+### 智能体运行框架（Agent Harness）
+- **分类（Category）:** 智能体与工具（Agents & tools）
+- **准确含义（What it actually means）:** 围绕模型构建的运行时，负责组装上下文、提供工具、管理状态、执行限制、记录追踪，并决定智能体何时继续、重试、询问或停止。
+- **重要性（Why it matters）:** 即使使用同一模型，两个系统的表现也可能相差很大，因为运行框架提供的上下文、工具、反馈和安全边界不同。
+- **实际应用（In practice）:** 运行框架可以将智能体限制为最多调用五次工具，在每次补丁被接受后持久化检查点，并要求完成前必须有一条测试命令通过。
+- **常见混淆（Common confusion）:** 运行框架的范围比提示词模板广，但比完整产品窄。
+- **学习课程（Learn it）:** [最小智能体工作台](../phases/14-agent-engineering/32-minimal-agent-workbench/)
+- **相关术语（Related terms）:** Agent, Tool Contract, Agent State, Verification Gate, Sandbox
 
-### Agent Memory
-- **Category:** Agents & tools
-- **What it actually means:** Information stored outside the model and selected for use in later agent steps, such as prior decisions, user preferences, task episodes, or verified facts.
-- **Why it matters:** It gives an agent continuity beyond one context window without forcing every past event into every prompt.
-- **In practice:** Store a compact task outcome with provenance, retrieve it only when relevant, and let the user inspect or correct durable personal information.
-- **Common confusion:** Agent memory is not the same as agent state. State tracks the current run; memory preserves selected information for possible future runs.
-- **Related terms:** Agent State, Context Engineering, Checkpoint, Semantic Cache
-- **Sources:** [Generative Agents](https://arxiv.org/abs/2304.03442)
+<a id="agent-memory"></a>
+### 智能体记忆（Agent Memory）
+- **分类（Category）:** 智能体与工具（Agents & tools）
+- **准确含义（What it actually means）:** 存储在模型之外、经筛选供后续智能体步骤使用的信息，例如此前的决策、用户偏好、任务经历或已核实的事实。
+- **重要性（Why it matters）:** 它让智能体在单个上下文窗口之外保持连续性，而不必把每件过去发生的事塞进每条提示词。
+- **实际应用（In practice）:** 保存带来源记录的精简任务结果，只在相关时检索，并允许用户查看或纠正持久保存的个人信息。
+- **常见混淆（Common confusion）:** 智能体记忆不等于智能体状态。状态跟踪当前运行，记忆则保留精选信息，供未来可能的运行使用。
+- **相关术语（Related terms）:** Agent State, Context Engineering, Checkpoint, Semantic Cache
+- **来源（Sources）:** [生成式智能体](https://arxiv.org/abs/2304.03442)
 
-### Agent State
-- **Category:** Agents & tools
-- **What it actually means:** The explicit data an agent carries across steps, such as the current objective, completed actions, tool results, open questions, budgets, approvals, and artifact references.
-- **Why it matters:** Explicit state makes long tasks resumable, inspectable, and less dependent on the model reconstructing progress from a transcript.
-- **In practice:** Store the selected issue, changed files, latest test result, and remaining checks in a typed object that is updated after each action.
-- **Common confusion:** State is not the same as conversation history. A transcript is evidence; state is the compact operational record used to decide what happens next.
-- **Learn it:** [Repository Memory and State](../phases/14-agent-engineering/34-repo-memory-and-state/)
-- **Related terms:** Checkpoint, Durable Execution, Context Engineering, Handoff
+<a id="agent-state"></a>
+### 智能体状态（Agent State）
+- **分类（Category）:** 智能体与工具（Agents & tools）
+- **准确含义（What it actually means）:** 智能体在步骤之间携带的显式数据，例如当前目标、已完成动作、工具结果、待解问题、预算、审批和交付物引用。
+- **重要性（Why it matters）:** 显式状态让长任务可恢复、可检查，减少对模型从对话记录中重建进度的依赖。
+- **实际应用（In practice）:** 将选定的问题单、已改文件、最新测试结果和剩余检查项存入带类型定义的对象，并在每次动作后更新。
+- **常见混淆（Common confusion）:** 状态不等于对话历史。对话记录是证据；状态则是决定下一步操作所用的精简运行记录。
+- **学习课程（Learn it）:** [仓库记忆与状态](../phases/14-agent-engineering/34-repo-memory-and-state/)
+- **相关术语（Related terms）:** Checkpoint, Durable Execution, Context Engineering, Handoff
 
-### Agent Skill
-- **Category:** Agents & tools
-- **What it actually means:** A discoverable directory of procedural instructions whose entry point is `SKILL.md`, with optional references, scripts, and assets that a compatible runtime can load in stages.
-- **Why it matters:** It packages reusable task knowledge separately from one conversation while keeping deeper context and deterministic helpers available on demand.
-- **In practice:** Publish a compact name and routing description, load the workflow only after activation, and read branch-specific references when the task reaches them.
-- **Common confusion:** Activating a skill supplies context. It does not expose a tool, grant permission, create a sandbox, or prove that the resulting work is correct.
-- **Learn it:** [Agent Skills: Portable Contract and Runtime Boundary](../phases/13-tools-and-protocols/22-skills-and-agent-sdks/)
-- **Related terms:** Skill Bundle, Skill Catalog, Skill Invocation, Progressive Disclosure, MCP (Model Context Protocol)
-- **Sources:** [Agent Skills specification](https://agentskills.io/specification)
+<a id="agent-skill"></a>
+### 智能体技能（Agent Skill）
+- **分类（Category）:** 智能体与工具（Agents & tools）
+- **准确含义（What it actually means）:** 以 `SKILL.md` 为入口、可被发现的过程性指令目录，可附带参考资料、脚本和资源，由兼容运行时分阶段加载。
+- **重要性（Why it matters）:** 它将可复用的任务知识与单次对话分离打包，同时让更深入的上下文和确定性辅助程序按需可用。
+- **实际应用（In practice）:** 发布简洁的名称和路由描述，只在技能激活后加载工作流程，并在任务进行到相应分支时读取该分支的参考资料。
+- **常见混淆（Common confusion）:** 激活技能只是提供上下文，并不意味着暴露工具、授予权限、创建沙箱，或证明最终工作正确。
+- **学习课程（Learn it）:** [智能体技能：可移植契约与运行时边界](../phases/13-tools-and-protocols/22-skills-and-agent-sdks/)
+- **相关术语（Related terms）:** Skill Bundle, Skill Catalog, Skill Invocation, Progressive Disclosure, MCP (Model Context Protocol)
+- **来源（Sources）:** [智能体技能规范](https://agentskills.io/specification)
 
-### AI Risk Assessment
-- **Category:** Security & governance
-- **What it actually means:** A documented analysis of how an AI system can affect people, organizations, and environments, including context, hazards, likelihood, impact, controls, residual risk, and monitoring responsibilities.
-- **Why it matters:** Model capability alone does not determine risk. Deployment context, affected groups, human authority, data, and system integrations change both the harms and the controls required.
-- **In practice:** Define the intended use and affected parties, identify credible failure and misuse scenarios, assign owners to controls, record residual risk, and set review triggers for material changes.
-- **Common confusion:** A risk assessment supports a decision under stated assumptions. It is not a one-time safety certificate or proof that every hazard has been found.
-- **Related terms:** Threat Model, Guardrails, Human-in-the-Loop (HITL), Data Classification
-- **Sources:** [NIST AI Risk Management Framework](https://www.nist.gov/itl/ai-risk-management-framework)
+<a id="ai-risk-assessment"></a>
+### 人工智能风险评估（AI Risk Assessment）
+- **分类（Category）:** 安全与治理（Security & governance）
+- **准确含义（What it actually means）:** 以文档形式分析 AI 系统如何影响个人、组织和环境，内容包括背景、危害、发生可能性、影响、控制措施、残余风险和监测责任。
+- **重要性（Why it matters）:** 风险并非只由模型能力决定。部署场景、受影响群体、人的权限、数据及系统集成都会改变可能的伤害和所需控制措施。
+- **实际应用（In practice）:** 定义预期用途与受影响方，识别可信的失效和滥用场景，为控制措施指定负责人，记录残余风险，并为重大变更设定复审触发条件。
+- **常见混淆（Common confusion）:** 风险评估为特定假设下的决策提供支持。它不是一次性的安全证书，也不证明已发现所有危害。
+- **相关术语（Related terms）:** Threat Model, Guardrails, Human-in-the-Loop (HITL), Data Classification
+- **来源（Sources）:** [NIST 人工智能风险管理框架](https://www.nist.gov/itl/ai-risk-management-framework)
 
-### Alignment
-- **Category:** Evaluation & safety
-- **What people say:** Making AI safe.
-- **What it actually means:** The effort to make a model or AI system behave in ways that match intended goals, constraints, and human preferences across both expected and adversarial situations.
-- **Why it matters:** A system can optimize the stated metric while violating the user's real intent, so alignment requires evaluation, oversight, and system controls as well as model training.
-- **Related terms:** Guardrails, Evaluation (Eval), Human-in-the-Loop (HITL)
+<a id="alignment"></a>
+### 对齐（Alignment）
+- **分类（Category）:** 评估与安全（Evaluation & safety）
+- **常见说法（What people say）:** 让 AI 安全。
+- **准确含义（What it actually means）:** 在预期情境和对抗情境下，使模型或 AI 系统的行为符合预定目标、约束与人类偏好的努力。
+- **重要性（Why it matters）:** 系统可能一边优化指定指标，一边违背用户真实意图。因此，对齐不仅需要模型训练，也需要评估、监督和系统控制。
+- **相关术语（Related terms）:** Guardrails, Evaluation (Eval), Human-in-the-Loop (HITL)
 
-### Approval Gate
-- **Category:** Agents & tools
-- **What it actually means:** A control point that blocks a consequential action until an authorized person or policy grants permission.
-- **Why it matters:** It limits the blast radius of uncertain model decisions while preserving automation for reversible work.
-- **In practice:** Let an agent draft a database migration and run it against a disposable database, but require an owner to approve any production execution.
-- **Common confusion:** An approval gate asks whether an action is authorized. A verification gate asks whether evidence shows the action is correct.
-- **Learn it:** [Verification Gates](../phases/14-agent-engineering/38-verification-gates/)
-- **Related terms:** Human-in-the-Loop (HITL), Verification Gate, Least Privilege
+<a id="approval-gate"></a>
+### 审批门禁（Approval Gate）
+- **分类（Category）:** 智能体与工具（Agents & tools）
+- **准确含义（What it actually means）:** 阻止重要动作执行的控制点，直到获授权的人或策略授予许可。
+- **重要性（Why it matters）:** 它限制不确定模型决策的影响范围，同时保留可逆工作的自动化。
+- **实际应用（In practice）:** 让智能体编写数据库迁移方案，并在一次性数据库中试运行，但任何生产执行都必须获得负责人的批准。
+- **常见混淆（Common confusion）:** 审批门禁判断动作是否获得授权；验证门禁判断证据是否表明动作正确。
+- **学习课程（Learn it）:** [验证门禁](../phases/14-agent-engineering/38-verification-gates/)
+- **相关术语（Related terms）:** Human-in-the-Loop (HITL), Verification Gate, Least Privilege
 
-### Approximate Nearest Neighbor (ANN)
-- **Category:** Retrieval & generation
-- **What it actually means:** A search method that returns vectors likely to be among the nearest to a query without exhaustively comparing the query with every stored vector.
-- **Why it matters:** Approximation makes large vector indexes practical, but it introduces a measurable tradeoff between search speed, memory, and retrieval recall.
-- **In practice:** Tune index and search parameters against a held-out query set, then report latency together with Recall@K instead of assuming every true neighbor is found.
-- **Common confusion:** ANN describes a search objective and tradeoff, while HNSW is one particular index algorithm that can implement it.
-- **Related terms:** Vector Database, HNSW, Cosine Similarity, Recall@K
-- **Sources:** [Efficient and Robust Approximate Nearest Neighbor Search Using HNSW](https://dl.acm.org/doi/10.1109/TPAMI.2018.2889473)
+<a id="approximate-nearest-neighbor-ann"></a>
+### 近似最近邻（Approximate Nearest Neighbor (ANN)）
+- **分类（Category）:** 检索与生成（Retrieval & generation）
+- **准确含义（What it actually means）:** 无需将查询向量与所有已存向量逐一比较，就能返回很可能属于其最近邻的向量的搜索方法。
+- **重要性（Why it matters）:** 近似搜索使大规模向量索引切实可行，但也带来搜索速度、内存和检索召回率之间可度量的权衡。
+- **实际应用（In practice）:** 在留出的查询集上调优索引和搜索参数，同时报告延迟与 Recall@K，不要假设每个真正的近邻都会被找到。
+- **常见混淆（Common confusion）:** ANN 描述搜索目标和权衡，而 HNSW 是可实现该目标的一种具体索引算法。
+- **相关术语（Related terms）:** Vector Database, HNSW, Cosine Similarity, Recall@K
+- **来源（Sources）:** [使用 HNSW 进行高效且稳健的近似最近邻搜索](https://dl.acm.org/doi/10.1109/TPAMI.2018.2889473)
 
-### Attention
-- **Category:** Models & inference
-- **What people say:** How a model focuses on important tokens.
-- **What it actually means:** A mechanism that forms contextual representations by comparing query vectors with key vectors, normalizing the resulting scores, and using them to combine value vectors. Masks, position rules, or sparse patterns can restrict which positions participate.
-- **Why it matters:** Attention lets a model route information between sequence positions, but it does not by itself explain or prove what the model understood.
-- **Common confusion:** Attention weights are computation coefficients, not a faithful explanation of model reasoning.
-- **Learn it:** [Self-Attention from Scratch](../phases/07-transformers-deep-dive/02-self-attention-from-scratch/)
-- **Sources:** [Attention Is All You Need](https://arxiv.org/abs/1706.03762)
-- **Related terms:** Self-Attention, Transformer, KV Cache
+<a id="attention"></a>
+### 注意力（Attention）
+- **分类（Category）:** 模型与推理（Models & inference）
+- **常见说法（What people say）:** 模型如何关注重要词元。
+- **准确含义（What it actually means）:** 通过比较查询向量与键向量、归一化所得分数，再按这些分数组合值向量，形成上下文表示的机制。掩码、位置规则或稀疏模式可以限制哪些位置参与运算。
+- **重要性（Why it matters）:** 注意力让模型能够在序列位置之间传递信息，但它本身无法解释或证明模型理解了什么。
+- **常见混淆（Common confusion）:** 注意力权重是计算系数，不是对模型推理过程的忠实解释。
+- **学习课程（Learn it）:** [从零实现自注意力](../phases/07-transformers-deep-dive/02-self-attention-from-scratch/)
+- **来源（Sources）:** [注意力就是你所需要的一切](https://arxiv.org/abs/1706.03762)
+- **相关术语（Related terms）:** Self-Attention, Transformer, KV Cache
 
-### Audio Token
-- **Category:** Multimodal systems
-- **What it actually means:** A discrete identifier produced by an audio codec or tokenizer for a short segment or feature of an audio signal, sometimes across several codebooks.
-- **Why it matters:** Discrete audio representations let sequence models process, predict, store, or generate sound using token-oriented architectures.
-- **In practice:** Version the codec with the model, preserve sample-rate and codebook metadata, measure reconstruction quality, and distinguish semantic audio tokens from waveform-compression tokens.
-- **Common confusion:** An audio token is not a fixed duration, phoneme, or word. Its meaning and time span depend on the tokenizer and codebook design.
-- **Learn it:** [Neural Audio Codecs](../phases/06-speech-and-audio/13-neural-audio-codecs/)
-- **Related terms:** Token, Embedding, Automatic Speech Recognition (ASR), Multimodal Model
-- **Sources:** [SoundStream](https://arxiv.org/abs/2107.03312)
+<a id="audio-token"></a>
+### 音频词元（Audio Token）
+- **分类（Category）:** 多模态系统（Multimodal systems）
+- **准确含义（What it actually means）:** 由音频编解码器或分词器生成的离散标识符，表示音频信号的一小段或某个特征，有时涉及多个码本。
+- **重要性（Why it matters）:** 离散音频表示让序列模型能够使用面向词元的架构处理、预测、存储或生成声音。
+- **实际应用（In practice）:** 让编解码器与模型一起进行版本管理，保留采样率和码本元数据，测量重建质量，并区分语义音频词元与波形压缩词元。
+- **常见混淆（Common confusion）:** 音频词元并不对应固定时长、音素或单词。其含义和时间跨度取决于分词器与码本设计。
+- **学习课程（Learn it）:** [神经音频编解码器](../phases/06-speech-and-audio/13-neural-audio-codecs/)
+- **相关术语（Related terms）:** Token, Embedding, Automatic Speech Recognition (ASR), Multimodal Model
+- **来源（Sources）:** [SoundStream 论文](https://arxiv.org/abs/2107.03312)
 
-### Audit Log
-- **Category:** Security & governance
-- **What it actually means:** A durable, access-controlled record of security- or accountability-relevant events, including who or what acted, what changed, when it happened, and the resulting status.
-- **Why it matters:** Consequential agent actions need evidence that supports investigation, policy review, and responsibility beyond performance debugging.
-- **In practice:** Record tool authorization, approval decisions, external writes, policy versions, and artifact identifiers while redacting secrets and restricting log access.
-- **Common confusion:** A trace helps diagnose one execution path. An audit log preserves events required for accountability across executions and over time.
-- **Related terms:** Trace, Observability, Approval Gate, Provenance Attestation
-- **Sources:** [NIST SP 800-92](https://csrc.nist.gov/pubs/sp/800/92/final)
+<a id="audit-log"></a>
+### 审计日志（Audit Log）
+- **分类（Category）:** 安全与治理（Security & governance）
+- **准确含义（What it actually means）:** 关于安全或问责相关事件的持久记录，受访问控制保护，包含谁或什么执行了动作、改动了什么、何时发生，以及最终状态。
+- **重要性（Why it matters）:** 重要的智能体动作需要证据，不仅用于性能调试，还要支持调查、策略复审和责任追溯。
+- **实际应用（In practice）:** 记录工具授权、审批决定、外部写入、策略版本及交付物标识符，同时隐去机密信息并限制日志访问。
+- **常见混淆（Common confusion）:** 追踪用于诊断一条执行路径；审计日志则跨多次执行、随时间保留问责所需的事件。
+- **相关术语（Related terms）:** Trace, Observability, Approval Gate, Provenance Attestation
+- **来源（Sources）:** [NIST SP 800-92 标准](https://csrc.nist.gov/pubs/sp/800/92/final)
 
-### Autograd
-- **Category:** Math & training
-- **What people say:** Automatic gradients.
-- **What it actually means:** A system that records or transforms tensor operations so it can compute derivatives, usually with reverse-mode automatic differentiation. You write the forward computation and the framework derives the gradients needed for backpropagation.
-- **Learn it:** [Chain Rule and Automatic Differentiation](../phases/01-math-foundations/05-chain-rule-and-autodiff/)
-- **Related terms:** Backpropagation, Gradient, Tensor
+<a id="autograd"></a>
+### 自动求导（Autograd）
+- **分类（Category）:** 数学与训练（Math & training）
+- **常见说法（What people say）:** 自动计算梯度。
+- **准确含义（What it actually means）:** 记录或变换张量运算，以计算导数的系统，通常使用反向模式自动微分。你编写前向计算，框架推导反向传播所需的梯度。
+- **学习课程（Learn it）:** [链式法则与自动微分](../phases/01-math-foundations/05-chain-rule-and-autodiff/)
+- **相关术语（Related terms）:** Backpropagation, Gradient, Tensor
 
-### Automatic Speech Recognition (ASR)
-- **Category:** Multimodal systems
-- **What it actually means:** The task and system pipeline that maps a speech signal to a transcription, often with optional token or segment timing and confidence information.
-- **Why it matters:** Speech interfaces depend on more than language modeling. Acoustic variation, segmentation, decoding, vocabulary, and domain conditions all affect the final transcript.
-- **In practice:** Evaluate word or character errors by language, speaker, noise, and domain, retain timestamps when downstream grounding needs them, and test the exact audio preprocessing used in production.
-- **Common confusion:** ASR transcribes what was said. Determining who spoke requires diarization or speaker recognition, while translation and intent understanding are separate tasks.
-- **Learn it:** [Speech Recognition and ASR](../phases/06-speech-and-audio/04-speech-recognition-asr/)
-- **Related terms:** Audio Token, Encoder, Tokenization, Multimodal Model
-- **Sources:** [Connectionist Temporal Classification](https://www.cs.toronto.edu/~graves/icml_2006.pdf)
+<a id="automatic-speech-recognition-asr"></a>
+### 自动语音识别（Automatic Speech Recognition (ASR)）
+- **分类（Category）:** 多模态系统（Multimodal systems）
+- **准确含义（What it actually means）:** 将语音信号映射为转写文本的任务及系统流水线，通常还可提供词元或片段的时间信息与置信度。
+- **重要性（Why it matters）:** 语音接口并不只依赖语言建模。声学变化、切分、解码、词汇和领域条件都会影响最终转写文本。
+- **实际应用（In practice）:** 按语言、说话人、噪声和领域评估词错误率或字符错误率；下游依据关联需要时间戳时予以保留，并测试生产环境实际使用的音频预处理流程。
+- **常见混淆（Common confusion）:** ASR 转写说出的内容。确定是谁说话需要说话人分离或说话人识别；翻译与意图理解则是另外的任务。
+- **学习课程（Learn it）:** [语音识别与 ASR](../phases/06-speech-and-audio/04-speech-recognition-asr/)
+- **相关术语（Related terms）:** Audio Token, Encoder, Tokenization, Multimodal Model
+- **来源（Sources）:** [连接时序分类](https://www.cs.toronto.edu/~graves/icml_2006.pdf)
 
-### Autoregressive
-- **Category:** Models & inference
-- **What people say:** The model generates one word at a time.
-- **What it actually means:** A factorization in which each output token is predicted from the tokens that precede it. During generation, the selected token is appended to the sequence and becomes part of the next prediction's context.
-- **Common confusion:** The unit is a token, not necessarily a word, and generation can use decoding methods other than always selecting the highest-probability token.
-- **Related terms:** Token, Temperature, KV Cache
+<a id="autoregressive"></a>
+### 自回归（Autoregressive）
+- **分类（Category）:** 模型与推理（Models & inference）
+- **常见说法（What people say）:** 模型每次生成一个单词。
+- **准确含义（What it actually means）:** 一种分解方式，根据前面的词元预测每个输出词元。生成时，选定词元被追加到序列中，成为下一次预测上下文的一部分。
+- **常见混淆（Common confusion）:** 生成单位是词元，不一定是单词；解码方法也不局限于每次选择概率最高的词元。
+- **相关术语（Related terms）:** Token, Temperature, KV Cache
 
-### Autoscaling
-- **Category:** Infrastructure & serving
-- **What it actually means:** A control loop that changes the number or capacity of serving workers from observed demand, resource use, or application metrics within configured bounds.
-- **Why it matters:** AI workloads can change faster than manual provisioning, but scaling decisions must account for model-load time, accelerator availability, queueing, and request cost.
-- **In practice:** Scale from a demand signal tied to useful work, set minimum warm capacity, bound scale-down churn, and verify that new replicas pass readiness checks before receiving traffic.
-- **Common confusion:** Autoscaling adds or removes capacity. It does not make an overloaded dependency faster or guarantee that enough hardware can be acquired in time.
-- **Learn it:** [GPU Autoscaling on Kubernetes](../phases/17-infrastructure-and-production/03-gpu-autoscaling-kubernetes/)
-- **Related terms:** Model Serving, Saturation, Readiness Probe, Backpressure
-- **Sources:** [Kubernetes Horizontal Pod Autoscaling](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/)
+<a id="autoscaling"></a>
+### 自动扩缩容（Autoscaling）
+- **分类（Category）:** 基础设施与服务（Infrastructure & serving）
+- **准确含义（What it actually means）:** 根据观测到的需求、资源使用或应用指标，在配置边界内调整服务工作单元数量或容量的控制循环。
+- **重要性（Why it matters）:** AI 工作负载的变化可能快于人工配置资源，但扩缩容决策必须考虑模型加载时间、加速器可用性、排队和请求成本。
+- **实际应用（In practice）:** 根据与有效工作相关的需求信号扩缩容，设置最低预热容量，限制缩容引发的反复变化，并确认新副本通过就绪检查后才接收流量。
+- **常见混淆（Common confusion）:** 自动扩缩容增加或减少容量。它不会让过载的依赖项变快，也不保证能及时获得足够硬件。
+- **学习课程（Learn it）:** [Kubernetes 上的 GPU 自动扩缩容](../phases/17-infrastructure-and-production/03-gpu-autoscaling-kubernetes/)
+- **相关术语（Related terms）:** Model Serving, Saturation, Readiness Probe, Backpressure
+- **来源（Sources）:** [Kubernetes 水平 Pod 自动扩缩容](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/)
 
-### Availability
-- **Category:** Reliability & operations
-- **What it actually means:** The proportion of eligible service interactions or time windows in which users can obtain the defined acceptable service under a stated measurement boundary.
-- **Why it matters:** A service can be running while users still cannot complete useful requests, so availability must be tied to user-visible success rather than process uptime alone.
-- **In practice:** Define eligible events and acceptable outcomes, exclude only documented cases, calculate the indicator over a fixed window, and investigate both total failures and prolonged partial degradation.
-- **Common confusion:** Availability is one reliability outcome. It does not describe latency, correctness, safety, or the experience of every user segment.
-- **Related terms:** Service Level Indicator (SLI), Service Level Objective (SLO), Error Budget, Incident Response
-- **Sources:** [Google SRE: Service Level Objectives](https://sre.google/sre-book/service-level-objectives/)
+<a id="availability"></a>
+### 可用性（Availability）
+- **分类（Category）:** 可靠性与运维（Reliability & operations）
+- **准确含义（What it actually means）:** 在明确的度量边界内，用户能够获得已定义的可接受服务的合格服务交互或时间窗口所占比例。
+- **重要性（Why it matters）:** 服务可能仍在运行，用户却无法完成有用的请求。因此，可用性必须与用户可见的成功相关，而不能只看进程运行时间。
+- **实际应用（In practice）:** 定义合格事件与可接受结果，只排除有文档依据的情况，在固定窗口内计算指标，并调查完全失败及长时间部分退化两类问题。
+- **常见混淆（Common confusion）:** 可用性只是可靠性的一项结果，并不描述延迟、正确性、安全性或每类用户的体验。
+- **相关术语（Related terms）:** Service Level Indicator (SLI), Service Level Objective (SLO), Error Budget, Incident Response
+- **来源（Sources）:** [Google SRE：服务级别目标](https://sre.google/sre-book/service-level-objectives/)
 
 ## B
 
-### Backpressure
-- **Category:** AI-native development
-- **What it actually means:** A flow-control mechanism that slows or rejects upstream work when a downstream component cannot process it safely at the current rate.
-- **Why it matters:** Without backpressure, queued agent runs, tool calls, or streamed events can exhaust memory, exceed rate limits, and amplify retries.
-- **In practice:** When the evaluator queue reaches its limit, pause new agent jobs or return a retryable response instead of accepting unbounded work.
-- **Common confusion:** Backpressure protects capacity before failure. A circuit breaker stops calls after failures show a dependency is unhealthy.
-- **Related terms:** Rate Limit, Retry with Backoff, Circuit Breaker
+<a id="backpressure"></a>
+### 背压（Backpressure）
+- **分类（Category）:** AI 原生开发（AI-native development）
+- **准确含义（What it actually means）:** 当下游组件无法以当前速率安全处理工作时，减缓或拒绝上游工作的流量控制机制。
+- **重要性（Why it matters）:** 没有背压，排队中的智能体任务、工具调用或流式事件可能耗尽内存、超出速率限制，并放大重试。
+- **实际应用（In practice）:** 当评估器队列达到上限时，暂停新的智能体任务或返回可重试响应，而不是无限接受工作。
+- **常见混淆（Common confusion）:** 背压在失败之前保护容量；熔断器则在失败表明依赖项不健康后停止调用。
+- **相关术语（Related terms）:** Rate Limit, Retry with Backoff, Circuit Breaker
 
-### Backpropagation
-- **Category:** Math & training
-- **What people say:** How neural networks learn.
-- **What it actually means:** An efficient application of the chain rule that propagates derivatives from a scalar loss backward through a computation graph. It computes gradients; an optimizer uses those gradients to update parameters.
-- **Common confusion:** Backpropagation calculates gradients. It does not choose the update rule or learning rate.
-- **Why it's called that:** Derivative information moves backward from the loss toward earlier operations.
-- **Learn it:** [Backpropagation from Scratch](../phases/03-deep-learning-core/03-backpropagation/)
-- **Related terms:** Autograd, Gradient, Optimizer
+<a id="backpropagation"></a>
+### 反向传播（Backpropagation）
+- **分类（Category）:** 数学与训练（Math & training）
+- **常见说法（What people say）:** 神经网络的学习方式。
+- **准确含义（What it actually means）:** 高效应用链式法则，将导数从标量损失沿计算图向后传播。它计算梯度，再由优化器使用这些梯度更新参数。
+- **常见混淆（Common confusion）:** 反向传播计算梯度，并不选择更新规则或学习率。
+- **名称由来（Why it's called that）:** 导数信息从损失向更早的运算反向传递。
+- **学习课程（Learn it）:** [从零实现反向传播](../phases/03-deep-learning-core/03-backpropagation/)
+- **相关术语（Related terms）:** Autograd, Gradient, Optimizer
 
-### Batch Size
-- **Category:** Math & training
-- **What people say:** How many examples are processed at once.
-- **What it actually means:** The number of examples whose losses contribute to one gradient estimate before an optimizer update. Larger batches can improve hardware utilization and reduce gradient noise, but they require more memory and may need different learning-rate or scheduling choices.
-- **Common confusion:** There is no universal batch-size range or rule that says every batch increase should produce the same learning-rate increase.
-- **Related terms:** Learning Rate, Gradient, Optimizer
+<a id="batch-size"></a>
+### 批大小（Batch Size）
+- **分类（Category）:** 数学与训练（Math & training）
+- **常见说法（What people say）:** 一次处理多少个样本。
+- **准确含义（What it actually means）:** 在一次优化器更新之前，其损失共同参与一次梯度估计的样本数量。更大的批次可以提高硬件利用率、降低梯度噪声，但需要更多内存，也可能需要不同的学习率或调度选择。
+- **常见混淆（Common confusion）:** 不存在通用的批大小范围，也没有规则要求每次增大批次都按同样幅度提高学习率。
+- **相关术语（Related terms）:** Learning Rate, Gradient, Optimizer
 
-### Benchmark Contamination
-- **Category:** Evaluation & safety
-- **What it actually means:** Overlap or information leakage between evaluation examples and data used to pretrain, tune, prompt, select, or otherwise improve the evaluated system.
-- **Why it matters:** Contamination can make a benchmark score reflect prior exposure rather than the ability to generalize to unseen tasks.
-- **In practice:** Track dataset provenance, search training sources for exact and near duplicates, hold back private test cases, and refresh public evals with newly authored examples.
-- **Common confusion:** Contamination is broader than exact copying. Paraphrases, answer keys, benchmark metadata, and repeated prompt tuning can also leak evaluation information.
-- **Related terms:** Data Leakage, Data Deduplication, Eval Set, Exact Match (EM)
-- **Sources:** [Investigating Data Contamination in Modern Benchmarks for Large Language Models](https://arxiv.org/abs/2311.09783)
+<a id="benchmark-contamination"></a>
+### 基准测试污染（Benchmark Contamination）
+- **分类（Category）:** 评估与安全（Evaluation & safety）
+- **准确含义（What it actually means）:** 评估样本与用于预训练、调优、提示、选择或以其他方式改进被评估系统的数据之间存在重叠或信息泄漏。
+- **重要性（Why it matters）:** 污染可能让基准分数反映系统此前接触过这些内容，而非泛化到未见任务的能力。
+- **实际应用（In practice）:** 跟踪数据集来源，在训练来源中搜索完全重复与近似重复内容，保留私有测试用例，并用新编写的样本更新公开评估集。
+- **常见混淆（Common confusion）:** 污染不只包括原样复制。改写文本、标准答案、基准元数据和反复调优提示词，也可能泄漏评估信息。
+- **相关术语（Related terms）:** Data Leakage, Data Deduplication, Eval Set, Exact Match (EM)
+- **来源（Sources）:** [现代大语言模型基准测试中的数据污染调查](https://arxiv.org/abs/2311.09783)
 
-### BM25
-- **Category:** Retrieval & generation
-- **What it actually means:** A lexical ranking function that scores a document from query-term matches while accounting for term rarity, repeated occurrences, and document length.
-- **Why it matters:** It is a strong exact-term retrieval baseline and complements dense retrieval for identifiers, rare words, and domain-specific phrases.
-- **In practice:** Retrieve candidates with BM25 and dense search, combine their ranks, then evaluate the merged results before adding a more expensive reranker.
-- **Common confusion:** BM25 does not understand semantic similarity directly, and its score has no universal meaning across different queries or index configurations.
-- **Related terms:** Hybrid Retrieval, Dense Retrieval, Reranker, RAG (Retrieval-Augmented Generation)
-- **Sources:** [The Probabilistic Relevance Framework: BM25 and Beyond](https://doi.org/10.1561/1500000019)
+<a id="bm25"></a>
+### 词项相关性排序函数（BM25）
+- **分类（Category）:** 检索与生成（Retrieval & generation）
+- **准确含义（What it actually means）:** 根据查询词项的匹配情况为文档评分的词法排序函数，同时考虑词项稀有程度、重复次数和文档长度。
+- **重要性（Why it matters）:** 它是有竞争力的精确词项检索基线，在标识符、罕见词和领域专用短语上可补充稠密检索。
+- **实际应用（In practice）:** 使用 BM25 与稠密搜索检索候选项，融合排名，先评估合并结果，再决定是否加入成本更高的重排序器。
+- **常见混淆（Common confusion）:** BM25 不直接理解语义相似性，其分数在不同查询或索引配置之间也没有统一含义。
+- **相关术语（Related terms）:** Hybrid Retrieval, Dense Retrieval, Reranker, RAG (Retrieval-Augmented Generation)
+- **来源（Sources）:** [概率相关性框架：BM25 及其扩展](https://doi.org/10.1561/1500000019)
 
-### Byte Pair Encoding (BPE)
-- **Category:** Data & representations
-- **What it actually means:** A subword-tokenization method that repeatedly merges frequent adjacent units to construct a fixed vocabulary from training text.
-- **Why it matters:** It balances vocabulary size with the ability to represent rare or unseen words as smaller units.
-- **In practice:** Train the tokenizer only on approved corpus splits, version its merge rules with the model, and inspect how it segments code, multilingual text, and whitespace.
-- **Common confusion:** BPE is one tokenizer family, not a universal description of how every model creates tokens.
-- **Related terms:** Tokenization, Vocabulary, Token, Embedding
-- **Sources:** [Neural Machine Translation of Rare Words with Subword Units](https://arxiv.org/abs/1508.07909)
+<a id="byte-pair-encoding-bpe"></a>
+### 字节对编码（Byte Pair Encoding (BPE)）
+- **分类（Category）:** 数据与表示（Data & representations）
+- **准确含义（What it actually means）:** 一种子词分词方法，通过反复合并频繁出现的相邻单元，从训练文本构造固定词表。
+- **重要性（Why it matters）:** 它在词表大小与用较小单元表示罕见词或未见词的能力之间取得平衡。
+- **实际应用（In practice）:** 只使用获准的语料划分训练分词器，将合并规则与模型一起版本化，并检查它如何切分代码、多语言文本和空白字符。
+- **常见混淆（Common confusion）:** BPE 是一类分词器方法，不是所有模型生成词元方式的通用描述。
+- **相关术语（Related terms）:** Tokenization, Vocabulary, Token, Embedding
+- **来源（Sources）:** [使用子词单元进行罕见词神经机器翻译](https://arxiv.org/abs/1508.07909)
 
 ## C
 
-### Calibration
-- **Category:** Evaluation & safety
-- **What it actually means:** The agreement between a system's stated confidence and the observed frequency with which predictions at that confidence are correct.
-- **Why it matters:** A system can be accurate on average yet dangerously overconfident on the cases where people rely on its score.
-- **In practice:** Bucket predictions by confidence, compare confidence with empirical accuracy, and recalibrate or abstain when the gap is unacceptable.
-- **Common confusion:** Calibration measures confidence reliability, not overall accuracy, factuality, or reasoning quality.
-- **Related terms:** Softmax, Evaluation (Eval), Precision & Recall, Logits
-- **Sources:** [On Calibration of Modern Neural Networks](https://proceedings.mlr.press/v70/guo17a.html)
+<a id="calibration"></a>
+### 校准（Calibration）
+- **分类（Category）:** 评估与安全（Evaluation & safety）
+- **准确含义（What it actually means）:** 系统声明的置信度，与具有该置信度的预测实际正确频率之间的一致程度。
+- **重要性（Why it matters）:** 系统即使平均准确率较高，在用户依赖分数作决定的案例上仍可能危险地过度自信。
+- **实际应用（In practice）:** 按置信度将预测分桶，比较置信度与实际准确率；差距不可接受时，重新校准或弃答。
+- **常见混淆（Common confusion）:** 校准衡量置信度的可靠性，而非总体准确率、事实性或推理质量。
+- **相关术语（Related terms）:** Softmax, Evaluation (Eval), Precision & Recall, Logits
+- **来源（Sources）:** [现代神经网络的校准研究](https://proceedings.mlr.press/v70/guo17a.html)
 
-### Canary Release
-- **Category:** Reliability & operations
-- **What it actually means:** A deployment strategy that exposes a new version to a limited slice of traffic or infrastructure before expanding the rollout.
-- **Why it matters:** It limits the impact of defects and gives you production evidence before the new model, prompt, agent, or service reaches everyone.
-- **In practice:** Route a small eligible cohort to the release, compare quality and operational metrics with the control, and stop or roll back on predefined failures.
-- **Common confusion:** A canary release limits exposure; it does not replace pre-deployment tests, approval, or rollback preparation.
-- **Related terms:** Evaluation (Eval), Observability, Rollback, Verification Gate
-- **Sources:** [Kubernetes Deployments: Canary Deployment](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#canary-deployment)
+<a id="canary-release"></a>
+### 金丝雀发布（Canary Release）
+- **分类（Category）:** 可靠性与运维（Reliability & operations）
+- **准确含义（What it actually means）:** 先让有限的一部分流量或基础设施使用新版本，再扩大推出范围的部署策略。
+- **重要性（Why it matters）:** 它限制缺陷影响，并在新模型、提示词、智能体或服务覆盖所有人之前提供生产证据。
+- **实际应用（In practice）:** 将一小组合格用户路由至新版本，与对照组比较质量和运行指标，并在出现预定义失败时停止或回滚。
+- **常见混淆（Common confusion）:** 金丝雀发布限制暴露范围，但不能替代部署前测试、审批或回滚准备。
+- **相关术语（Related terms）:** Evaluation (Eval), Observability, Rollback, Verification Gate
+- **来源（Sources）:** [Kubernetes 部署：金丝雀部署](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#canary-deployment)
 
-### Chain of Thought (CoT)
-- **Category:** Prompting & context
-- **What people say:** Asking the model to show every step of its thinking.
-- **What it actually means:** Intermediate reasoning used to decompose a task before producing an answer. A prompt can request a visible rationale, while some systems use internal reasoning that is not returned to the user.
-- **Why it matters:** Decomposition can help on multi-step tasks, but a fluent rationale is not proof that the answer is correct or that the text faithfully represents the model's internal computation.
-- **In practice:** Ask for a concise plan, independently check the result, and request verifiable calculations or citations instead of relying on a long reasoning transcript.
-- **Common confusion:** Chain of thought is not a substitute for tools, tests, or external verification.
-- **Learn it:** [Few-Shot and Chain of Thought](../phases/11-llm-engineering/02-few-shot-cot/)
-- **Related terms:** Prompt Engineering, Verification Gate, Evaluation (Eval)
+<a id="chain-of-thought-cot"></a>
+### 思维链（Chain of Thought (CoT)）
+- **分类（Category）:** 提示词与上下文（Prompting & context）
+- **常见说法（What people say）:** 要求模型展示每一步思考。
+- **准确含义（What it actually means）:** 在生成答案前用于分解任务的中间推理过程。提示词可以要求可见的理由说明，也有系统使用不向用户返回的内部推理。
+- **重要性（Why it matters）:** 分解任务有助于多步骤问题，但流畅的理由说明不能证明答案正确，也不能证明文本忠实反映了模型的内部计算。
+- **实际应用（In practice）:** 要求简洁计划，独立检查结果，并请求可验证的计算或引用，而不是依赖冗长的推理记录。
+- **常见混淆（Common confusion）:** 思维链不能替代工具、测试或外部验证。
+- **学习课程（Learn it）:** [少样本与思维链](../phases/11-llm-engineering/02-few-shot-cot/)
+- **相关术语（Related terms）:** Prompt Engineering, Verification Gate, Evaluation (Eval)
 
-### Checkpoint
-- **Category:** Agents & tools
-- **What it actually means:** A durable snapshot used to resume from a known boundary. In a workflow, it stores operational state and artifact references. In model training, it can store parameters, optimizer state, scheduler state, and the training position.
-- **Why it matters:** Long-running workflows and training runs can recover from interruption without replaying completed work or losing expensive progress.
-- **In practice:** Save an agent's accepted patch and test evidence after a verified step, or save a training run's weights, optimizer state, random state, and data position before shutdown.
-- **Common confusion:** A workflow checkpoint and a model-training checkpoint serve the same recovery goal but preserve different state. Neither is merely a transcript or a weights file with no resume metadata.
-- **Learn it:** [Checkpoint Save and Resume](../phases/19-capstone-projects/47-checkpoint-save-resume/); [Repository Memory and State](../phases/14-agent-engineering/34-repo-memory-and-state/)
-- **Related terms:** Agent State, Durable Execution, Parameter, Optimizer
+<a id="checkpoint"></a>
+### 检查点（Checkpoint）
+- **分类（Category）:** 智能体与工具（Agents & tools）
+- **准确含义（What it actually means）:** 用于从已知边界恢复的持久快照。在工作流中，它保存运行状态和交付物引用；在模型训练中，它可保存参数、优化器状态、调度器状态及训练位置。
+- **重要性（Why it matters）:** 长时间运行的工作流和训练任务可以从中断中恢复，无须重做已完成工作，也不会丢失代价高昂的进展。
+- **实际应用（In practice）:** 在经过验证的步骤后，保存智能体已接受的补丁及测试证据；或在关闭训练前保存权重、优化器状态、随机状态和数据位置。
+- **常见混淆（Common confusion）:** 工作流检查点与模型训练检查点有相同的恢复目标，但保留的状态不同。二者都不只是对话记录，也不只是缺少恢复元数据的权重文件。
+- **学习课程（Learn it）:** [检查点保存与恢复](../phases/19-capstone-projects/47-checkpoint-save-resume/); [仓库记忆与状态](../phases/14-agent-engineering/34-repo-memory-and-state/)
+- **相关术语（Related terms）:** Agent State, Durable Execution, Parameter, Optimizer
 
-### Chunked Prefill
-- **Category:** Infrastructure & serving
-- **What it actually means:** A serving technique that divides a long prompt's prefill work into smaller schedulable pieces so prompt processing can interleave with decode work from other requests.
-- **Why it matters:** One long prompt can otherwise occupy the accelerator and delay active generations, producing poor tail latency even when total throughput looks healthy.
-- **In practice:** Choose a chunk policy from measured workloads, account for scheduling overhead, and compare prefill completion, decode latency, and goodput under mixed prompt lengths.
-- **Common confusion:** Chunked prefill changes how prompt computation is scheduled. It does not split the user's context into independent semantic chunks or change the model's context window.
-- **Learn it:** [vLLM Serving Internals](../phases/17-infrastructure-and-production/04-vllm-serving-internals/)
-- **Related terms:** Prefill, Decode Phase, Dynamic Batching, Tail Latency
-- **Sources:** [Sarathi-Serve](https://arxiv.org/abs/2403.02310)
+<a id="chunked-prefill"></a>
+### 分块预填充（Chunked Prefill）
+- **分类（Category）:** 基础设施与服务（Infrastructure & serving）
+- **准确含义（What it actually means）:** 将长提示词的预填充工作拆成较小、可调度片段的服务技术，使提示词处理可以与其他请求的解码工作交错执行。
+- **重要性（Why it matters）:** 否则，一个长提示词可能占据加速器并拖延正在生成的请求，即使总体吞吐量看似正常，尾延迟仍很差。
+- **实际应用（In practice）:** 根据实测工作负载选择分块策略，计入调度开销，并在混合提示词长度下比较预填充完成时间、解码延迟和有效吞吐量。
+- **常见混淆（Common confusion）:** 分块预填充改变提示词计算的调度方式，不会把用户上下文切成独立语义块，也不改变模型的上下文窗口。
+- **学习课程（Learn it）:** [vLLM 服务内部机制](../phases/17-infrastructure-and-production/04-vllm-serving-internals/)
+- **相关术语（Related terms）:** Prefill, Decode Phase, Dynamic Batching, Tail Latency
+- **来源（Sources）:** [Sarathi-Serve 论文](https://arxiv.org/abs/2403.02310)
 
-### Chunking
-- **Category:** Retrieval & generation
-- **What people say:** Splitting documents into pieces.
-- **What it actually means:** Dividing source material into retrievable units before indexing. Chunk boundaries, overlap, metadata, and document structure determine whether retrieval returns enough context without flooding the prompt.
-- **Why it matters:** The right chunking strategy depends on document shape, query type, embedding model, and evaluation results. There is no universal token size or overlap percentage.
-- **In practice:** Keep headings and code blocks intact, attach source metadata, then measure retrieval quality on real questions before tuning size.
-- **Related terms:** RAG (Retrieval-Augmented Generation), Reranker, Grounding
+<a id="chunking"></a>
+### 分块（Chunking）
+- **分类（Category）:** 检索与生成（Retrieval & generation）
+- **常见说法（What people say）:** 把文档切成小块。
+- **准确含义（What it actually means）:** 在建立索引前，将源材料划分为可检索单元。块边界、重叠、元数据及文档结构决定检索能否返回足够上下文，同时避免提示词被淹没。
+- **重要性（Why it matters）:** 合适的分块策略取决于文档结构、查询类型、嵌入模型和评估结果。不存在通用的词元块大小或重叠比例。
+- **实际应用（In practice）:** 保持标题和代码块完整，附加来源元数据，并在调整大小前用真实问题测量检索质量。
+- **相关术语（Related terms）:** RAG (Retrieval-Augmented Generation), Reranker, Grounding
 
-### Circuit Breaker
-- **Category:** AI-native development
-- **What it actually means:** A reliability control that temporarily stops calls to a dependency after failures cross a threshold, then probes whether the dependency has recovered.
-- **Why it matters:** It prevents repeated model or tool failures from consuming latency, budget, and capacity across the rest of the system.
-- **In practice:** Open the breaker after repeated provider timeouts, fail over or return a controlled response, then allow a limited health probe after a cooldown.
-- **Common confusion:** A circuit breaker reacts to dependency health. A rate limit controls allowed request volume.
-- **Related terms:** Retry with Backoff, Rate Limit, Model Router, Backpressure
+<a id="circuit-breaker"></a>
+### 熔断器（Circuit Breaker）
+- **分类（Category）:** AI 原生开发（AI-native development）
+- **准确含义（What it actually means）:** 当失败次数超过阈值后，暂时停止调用某个依赖项，并随后探测其是否恢复的可靠性控制。
+- **重要性（Why it matters）:** 它防止反复发生的模型或工具失败消耗系统其余部分的延迟预算、费用预算和容量。
+- **实际应用（In practice）:** 提供方反复超时后打开熔断器，切换备用服务或返回受控响应；冷却一段时间后，允许有限的健康探测。
+- **常见混淆（Common confusion）:** 熔断器针对依赖项健康状态作出反应；速率限制控制允许的请求量。
+- **相关术语（Related terms）:** Retry with Backoff, Rate Limit, Model Router, Backpressure
 
-### CNN (Convolutional Neural Network)
-- **Category:** Models & inference
-- **What people say:** A neural network for images.
-- **What it actually means:** A neural network that uses convolution operations (sliding filters over the input) to detect local patterns. Stacking convolutions detects increasingly complex features: edges, textures, objects.
-- **Common confusion:** Convolutions also work on audio, time series, and other grid-like data.
-- **Related terms:** Feature, Inductive Bias, Activation Function
+<a id="cnn-convolutional-neural-network"></a>
+### 卷积神经网络（CNN (Convolutional Neural Network)）
+- **分类（Category）:** 模型与推理（Models & inference）
+- **常见说法（What people say）:** 处理图像的神经网络。
+- **准确含义（What it actually means）:** 利用卷积运算，即在输入上滑动滤波器，检测局部模式的神经网络。堆叠卷积可以检测逐渐复杂的特征：边缘、纹理和物体。
+- **常见混淆（Common confusion）:** 卷积也适用于音频、时间序列和其他网格状数据。
+- **相关术语（Related terms）:** Feature, Inductive Bias, Activation Function
 
-### Coding Agent
-- **Category:** AI-native development
-- **What it actually means:** An agent specialized for software work that can inspect a repository, edit files, run development tools, and use their outputs to advance a scoped engineering task.
-- **Why it matters:** Its value depends on repository context, tool permissions, review boundaries, and verification, not only code generation quality.
-- **In practice:** Give the agent an issue, a scope contract, repository instructions, and a test command; review the resulting patch and evidence before accepting it.
-- **Common confusion:** A coding assistant that only suggests text is not necessarily an agent. The agent acts through tools and observes results.
-- **Learn it:** [Skill Discovery and Progressive Disclosure](../phases/13-tools-and-protocols/24-skill-discovery-and-progressive-disclosure/)
-- **Related terms:** Agent Harness, Repository Map, Patch, Scope Contract, Reviewer Agent
+<a id="coding-agent"></a>
+### 编程智能体（Coding Agent）
+- **分类（Category）:** AI 原生开发（AI-native development）
+- **准确含义（What it actually means）:** 专门处理软件工作的智能体，能检查仓库、编辑文件、运行开发工具，并根据工具输出推进有明确范围的工程任务。
+- **重要性（Why it matters）:** 其价值取决于仓库上下文、工具权限、审阅边界和验证，而不只是代码生成质量。
+- **实际应用（In practice）:** 向智能体提供问题单、范围契约、仓库指令和测试命令；接受结果前审阅补丁及证据。
+- **常见混淆（Common confusion）:** 只建议文本的编程助手不一定是智能体。智能体通过工具行动，并观察结果。
+- **学习课程（Learn it）:** [技能发现与渐进式披露](../phases/13-tools-and-protocols/24-skill-discovery-and-progressive-disclosure/)
+- **相关术语（Related terms）:** Agent Harness, Repository Map, Patch, Scope Contract, Reviewer Agent
 
-### Compensating Action
-- **Category:** Agents & tools
-- **What it actually means:** A deliberate operation that semantically counteracts a completed side effect when the original operation cannot be rolled back atomically.
-- **Why it matters:** Multi-step agent workflows cross databases and external services where a later failure cannot undo earlier writes through one transaction.
-- **In practice:** If a booking workflow charges a card but the reservation fails, issue a tracked refund and preserve both events rather than deleting history.
-- **Common confusion:** Compensation is a new business action, not time travel. It can fail and therefore needs idempotency, monitoring, and escalation.
-- **Related terms:** Durable Execution, Idempotency, Checkpoint, Approval Gate
-- **Sources:** [Sagas](https://dl.acm.org/doi/10.1145/38713.38742)
+<a id="compensating-action"></a>
+### 补偿动作（Compensating Action）
+- **分类（Category）:** 智能体与工具（Agents & tools）
+- **准确含义（What it actually means）:** 当原操作无法原子回滚时，有意执行一个在语义上抵消已完成副作用的操作。
+- **重要性（Why it matters）:** 多步骤智能体工作流跨越数据库和外部服务，后续失败无法通过单个事务撤销此前所有写入。
+- **实际应用（In practice）:** 如果预订流程已扣款却预订失败，应发起可追踪的退款，并保留两个事件，而不是删除历史。
+- **常见混淆（Common confusion）:** 补偿是新的业务动作，不是让时间倒流。它也可能失败，因此需要幂等性、监测和升级处理机制。
+- **相关术语（Related terms）:** Durable Execution, Idempotency, Checkpoint, Approval Gate
+- **来源（Sources）:** [Saga 事务论文](https://dl.acm.org/doi/10.1145/38713.38742)
 
-### Content Provenance
-- **Category:** Security & governance
-- **What it actually means:** Verifiable information about the origin and editing history of a piece of media or other digital content, including the actors, tools, transformations, and assertions attached to it.
-- **Why it matters:** Generative systems make origin claims difficult to infer from appearance alone, so consumers and platforms need inspectable evidence about how content was produced.
-- **In practice:** Bind provenance assertions to the content, sign them with controlled identities, preserve transformation history, and show clearly when evidence is missing or cannot be verified.
-- **Common confusion:** Provenance can establish who asserted a history and whether the record was altered. It does not prove that the depicted event is true or that the content is harmless.
-- **Learn it:** [Watermarking, SynthID, Stable Signature, and C2PA](../phases/18-ethics-safety-alignment/23-watermarking-synthid-stable-signature-c2pa/)
-- **Related terms:** Data Provenance, Provenance Attestation, Audit Log, Grounding
-- **Sources:** [C2PA Technical Specification](https://c2pa.org/specifications/specifications/2.2/specs/C2PA_Specification.html)
+<a id="content-provenance"></a>
+### 内容溯源（Content Provenance）
+- **分类（Category）:** 安全与治理（Security & governance）
+- **准确含义（What it actually means）:** 关于媒体或其他数字内容起源及编辑历史的可验证信息，包括相关参与者、工具、变换和附加声明。
+- **重要性（Why it matters）:** 生成式系统让人难以仅凭外观推断来源声明，因此消费者和平台需要能检查的内容生产证据。
+- **实际应用（In practice）:** 将来源声明绑定到内容，用受控身份签名，保留变换历史，并明确展示证据缺失或无法验证的情况。
+- **常见混淆（Common confusion）:** 溯源能确定是谁声明了这段历史、记录是否被篡改，但不能证明内容描绘的事件真实，也不能证明内容无害。
+- **学习课程（Learn it）:** [水印、SynthID、Stable Signature 与 C2PA](../phases/18-ethics-safety-alignment/23-watermarking-synthid-stable-signature-c2pa/)
+- **相关术语（Related terms）:** Data Provenance, Provenance Attestation, Audit Log, Grounding
+- **来源（Sources）:** [C2PA 技术规范](https://c2pa.org/specifications/specifications/2.2/specs/C2PA_Specification.html)
 
-### Context Compression
-- **Category:** Prompting & context
-- **What it actually means:** Reducing the token footprint of source material while attempting to preserve the information required for a later model decision.
-- **Why it matters:** Compression can make long tasks fit within budget, but every omitted detail creates a risk that the model loses evidence, constraints, or unresolved state.
-- **In practice:** Preserve authoritative facts and identifiers verbatim, summarize redundant history, attach source pointers, and test the compressed context on representative tasks.
-- **Common confusion:** Compression is lossy unless it retains the full original. A shorter summary is not automatically an equivalent context.
-- **Related terms:** Token Budget, Context Engineering, Progressive Disclosure, Handoff
-- **Sources:** [LLMLingua](https://arxiv.org/abs/2310.05736)
+<a id="context-compression"></a>
+### 上下文压缩（Context Compression）
+- **分类（Category）:** 提示词与上下文（Prompting & context）
+- **准确含义（What it actually means）:** 减少源材料占用的词元数量，同时尽量保留后续模型决策所需的信息。
+- **重要性（Why it matters）:** 压缩可以让长任务适配预算，但每个被省略的细节都可能导致模型失去证据、约束或尚未解决的状态信息。
+- **实际应用（In practice）:** 逐字保留权威事实和标识符，概括冗余历史，附加来源指针，并用代表性任务测试压缩后的上下文。
+- **常见混淆（Common confusion）:** 除非保留完整原文，否则压缩是有损的。更短的摘要不自动等价于原上下文。
+- **相关术语（Related terms）:** Token Budget, Context Engineering, Progressive Disclosure, Handoff
+- **来源（Sources）:** [LLMLingua 论文](https://arxiv.org/abs/2310.05736)
 
-### Context Engineering
-- **Category:** Prompting & context
-- **What it actually means:** Designing the full information environment supplied to a model at each step, including instructions, selected files, retrieved evidence, tool results, examples, state, and output constraints.
-- **Why it matters:** Model performance often fails because relevant evidence is missing, stale, badly ordered, or overwhelmed by noise.
-- **In practice:** Build a compact task packet with the goal, repository rules, relevant interfaces, recent tool output, and unresolved decisions, then update it as state changes.
-- **Common confusion:** Prompt engineering focuses on instruction wording. Context engineering also decides what evidence and state enter the model's working context.
-- **Learn it:** [Context Engineering](../phases/11-llm-engineering/05-context-engineering/)
-- **Related terms:** Context Window, Progressive Disclosure, Agent State, Repository Map
+<a id="context-engineering"></a>
+### 上下文工程（Context Engineering）
+- **分类（Category）:** 提示词与上下文（Prompting & context）
+- **准确含义（What it actually means）:** 设计每一步提供给模型的完整信息环境，包括指令、选定文件、检索证据、工具结果、示例、状态和输出约束。
+- **重要性（Why it matters）:** 模型表现不佳，往往是因为相关证据缺失、过时、排序不当，或被噪声淹没。
+- **实际应用（In practice）:** 构建精简任务包，包含目标、仓库规则、相关接口、近期工具输出和待决问题，并随状态变化更新。
+- **常见混淆（Common confusion）:** 提示词工程着重于指令措辞；上下文工程还决定哪些证据和状态进入模型的工作上下文。
+- **学习课程（Learn it）:** [上下文工程](../phases/11-llm-engineering/05-context-engineering/)
+- **相关术语（Related terms）:** Context Window, Progressive Disclosure, Agent State, Repository Map
 
-### Context Window
-- **Category:** Prompting & context
-- **What people say:** How much the model remembers.
-- **What it actually means:** The maximum token capacity available to one model inference under a specific model and API contract. The capacity may include system instructions, messages, retrieved content, tool exchanges, and generated output, with provider-specific accounting and output limits.
-- **Why it matters:** Conversation history is only available when the application sends or reconstructs it. A large window does not guarantee that every included detail will be used reliably.
-- **Common confusion:** Context is temporary input to an inference. Durable memory is stored outside the model and selected back into later context.
-- **Learn it:** [Context Engineering](../phases/11-llm-engineering/05-context-engineering/)
-- **Related terms:** Token Budget, Context Engineering, Prompt Cache, Agent State
+<a id="context-window"></a>
+### 上下文窗口（Context Window）
+- **分类（Category）:** 提示词与上下文（Prompting & context）
+- **常见说法（What people say）:** 模型能记住多少内容。
+- **准确含义（What it actually means）:** 在特定模型与 API 契约下，单次模型推理可用的最大词元容量。它可能包括系统指令、消息、检索内容、工具交互和生成输出；计量方式与输出限制因提供方而异。
+- **重要性（Why it matters）:** 只有应用发送或重建对话历史时，模型才能使用它。窗口大并不保证其中每个细节都能被可靠利用。
+- **常见混淆（Common confusion）:** 上下文是一次推理的临时输入。持久记忆存储在模型之外，经筛选再进入后续上下文。
+- **学习课程（Learn it）:** [上下文工程](../phases/11-llm-engineering/05-context-engineering/)
+- **相关术语（Related terms）:** Token Budget, Context Engineering, Prompt Cache, Agent State
 
-### Continuous Batching
-- **Category:** Infrastructure & serving
-- **What it actually means:** A serving scheduler that adds and removes generation requests at iteration boundaries instead of waiting for every request in a fixed batch to finish.
-- **Why it matters:** Autoregressive requests produce different output lengths, so continuous batching can keep accelerators utilized without forcing short requests to wait for the longest one.
-- **In practice:** Admit new requests when capacity becomes available, track per-request latency, and apply backpressure when the live batch or KV-cache budget is full.
-- **Common confusion:** Continuous batching is an inference scheduling policy, not gradient accumulation or a training batch-size technique.
-- **Related terms:** Dynamic Batching, Decode Phase, Backpressure, Rate Limit
-- **Sources:** [Orca](https://www.usenix.org/conference/osdi22/presentation/yu)
+<a id="continuous-batching"></a>
+### 连续批处理（Continuous Batching）
+- **分类（Category）:** 基础设施与服务（Infrastructure & serving）
+- **准确含义（What it actually means）:** 在迭代边界添加或移除生成请求，而不等待固定批次内所有请求完成的服务调度方式。
+- **重要性（Why it matters）:** 自回归请求的输出长度不同，连续批处理可以维持加速器利用率，而不迫使短请求等待最长的请求。
+- **实际应用（In practice）:** 容量空出时接受新请求，跟踪每个请求的延迟，并在活动批次或键值缓存预算耗尽时施加背压。
+- **常见混淆（Common confusion）:** 连续批处理是推理调度策略，不是梯度累积，也不是训练批大小技术。
+- **相关术语（Related terms）:** Dynamic Batching, Decode Phase, Backpressure, Rate Limit
+- **来源（Sources）:** [Orca 论文](https://www.usenix.org/conference/osdi22/presentation/yu)
 
-### Contrastive Learning
-- **Category:** Math & training
-- **What people say:** Learning by comparison.
-- **What it actually means:** Training by pulling similar pairs closer and pushing dissimilar pairs apart in embedding space. CLIP uses this: matching image-text pairs vs non-matching ones.
-- **Related terms:** Embedding, Cosine Similarity, Loss Function
+<a id="contrastive-learning"></a>
+### 对比学习（Contrastive Learning）
+- **分类（Category）:** 数学与训练（Math & training）
+- **常见说法（What people say）:** 通过比较进行学习。
+- **准确含义（What it actually means）:** 在嵌入空间中拉近相似样本对、推远不相似样本对的训练方式。CLIP 就采用这种方式，比较匹配与不匹配的图文对。
+- **相关术语（Related terms）:** Embedding, Cosine Similarity, Loss Function
 
-### Cosine Similarity
-- **Category:** Data & representations
-- **What people say:** How similar two vectors are.
-- **What it actually means:** The normalized dot product of two vectors. It compares their direction rather than their magnitude and ranges from -1 to 1 for real-valued vectors.
-- **Common confusion:** High cosine similarity only has meaning relative to the embedding model and the data distribution. It does not prove factual or semantic equivalence.
-- **Related terms:** Embedding, Semantic Search, Reranker
+<a id="cosine-similarity"></a>
+### 余弦相似度（Cosine Similarity）
+- **分类（Category）:** 数据与表示（Data & representations）
+- **常见说法（What people say）:** 两个向量有多相似。
+- **准确含义（What it actually means）:** 两个向量的归一化点积，比较方向而不是大小。对于实值向量，其范围为 -1 到 1。
+- **常见混淆（Common confusion）:** 高余弦相似度只有相对于特定嵌入模型和数据分布才有意义，并不证明事实或语义等价。
+- **相关术语（Related terms）:** Embedding, Semantic Search, Reranker
 
-### Cost per Successful Task
-- **Category:** AI-native development
-- **What it actually means:** Total system cost divided by the number of tasks that satisfy a defined success criterion, including retries, failed runs, tool use, and evaluation overhead.
-- **Why it matters:** A cheap model call can produce an expensive workflow if it fails often or requires repeated human correction.
-- **In practice:** Measure provider charges and infrastructure cost across 100 repository tasks, then divide by the number whose patches pass tests and review.
-- **Common confusion:** Cost per token measures usage. Cost per successful task measures useful outcomes.
-- **Related terms:** Evaluation (Eval), Retry with Backoff, Model Router, Verification Gate
+<a id="cost-per-successful-task"></a>
+### 每个成功任务的成本（Cost per Successful Task）
+- **分类（Category）:** AI 原生开发（AI-native development）
+- **准确含义（What it actually means）:** 系统总成本除以满足既定成功标准的任务数，成本包括重试、失败运行、工具使用和评估开销。
+- **重要性（Why it matters）:** 单次模型调用即使便宜，若频繁失败或反复需要人工纠正，整个工作流仍可能昂贵。
+- **实际应用（In practice）:** 统计 100 个仓库任务的提供方费用和基础设施成本，再除以补丁通过测试与审阅的任务数。
+- **常见混淆（Common confusion）:** 每词元成本衡量用量；每个成功任务的成本衡量有用的成果。
+- **相关术语（Related terms）:** Evaluation (Eval), Retry with Backoff, Model Router, Verification Gate
 
-### Cross-Attention
-- **Category:** Multimodal systems
-- **What it actually means:** Attention in which the query representation comes from one sequence or representation while keys and values come from another.
-- **Why it matters:** It gives one stream a learnable way to retrieve information from another, such as language tokens attending to visual features.
-- **In practice:** State which stream supplies queries, keys, and values, apply masks for missing or invalid positions, and inspect whether the model still performs when one modality is ablated.
-- **Common confusion:** Cross-attention is not intrinsically multimodal. It can connect two text sequences or other representations; self-attention instead derives queries, keys, and values from the same sequence representation.
-- **Related terms:** Attention, Self-Attention, Vision-Language Model (VLM), Multimodal Fusion
-- **Sources:** [Attention Is All You Need](https://arxiv.org/abs/1706.03762)
+<a id="cross-attention"></a>
+### 交叉注意力（Cross-Attention）
+- **分类（Category）:** 多模态系统（Multimodal systems）
+- **准确含义（What it actually means）:** 查询表示来自一个序列或表示，而键和值来自另一个序列或表示的注意力机制。
+- **重要性（Why it matters）:** 它让一条信息流能以可学习的方式检索另一条流的信息，例如语言词元关注视觉特征。
+- **实际应用（In practice）:** 明确哪条流提供查询、键和值，为缺失或无效位置应用掩码，并检查消融一个模态后模型是否仍能正常表现。
+- **常见混淆（Common confusion）:** 交叉注意力并不天然等于多模态。它也可连接两个文本序列或其他表示；自注意力则从同一序列表示产生查询、键和值。
+- **相关术语（Related terms）:** Attention, Self-Attention, Vision-Language Model (VLM), Multimodal Fusion
+- **来源（Sources）:** [注意力就是你所需要的一切](https://arxiv.org/abs/1706.03762)
 
-### Cross-Entropy
-- **Category:** Math & training
-- **What people say:** The classification loss.
-- **What it actually means:** A loss based on the negative log probability assigned to the target outcome. In next-token training, it penalizes the model when it assigns low probability to the observed next token.
-- **Common confusion:** Perplexity is the exponentiated average cross-entropy only when the averaging and logarithm base are defined consistently.
-- **Related terms:** Loss Function, Softmax, Perplexity
+<a id="cross-entropy"></a>
+### 交叉熵（Cross-Entropy）
+- **分类（Category）:** 数学与训练（Math & training）
+- **常见说法（What people say）:** 分类损失。
+- **准确含义（What it actually means）:** 基于目标结果所获概率的负对数构造的损失。在下一词元训练中，当模型给实际出现的下一词元分配较低概率时，它会施加惩罚。
+- **常见混淆（Common confusion）:** 只有平均方式和对数底数的定义一致时，困惑度才等于平均交叉熵的指数。
+- **相关术语（Related terms）:** Loss Function, Softmax, Perplexity
 
-### CUDA
-- **Category:** Models & inference
-- **What people say:** GPU programming.
-- **What it actually means:** NVIDIA's platform and programming model for general-purpose computation on compatible GPUs. Deep-learning frameworks use CUDA libraries and kernels to execute many tensor operations in parallel.
-- **Common confusion:** GPU acceleration is not synonymous with CUDA; other hardware and software stacks exist.
-- **Related terms:** Tensor, Mixed Precision, JAX
+<a id="cuda"></a>
+### 统一计算设备架构（CUDA）
+- **分类（Category）:** 模型与推理（Models & inference）
+- **常见说法（What people say）:** GPU 编程。
+- **准确含义（What it actually means）:** NVIDIA 面向兼容 GPU 通用计算的平台和编程模型。深度学习框架使用 CUDA 库和内核并行执行大量张量运算。
+- **常见混淆（Common confusion）:** GPU 加速不等同于 CUDA，还存在其他硬件与软件技术栈。
+- **相关术语（Related terms）:** Tensor, Mixed Precision, JAX
 
 ## D
 
-### Data Augmentation
-- **Category:** Math & training
-- **What people say:** Making more training data.
-- **What it actually means:** Creating modified examples, such as transformed images, perturbed audio, or paraphrased text, to increase training diversity without collecting entirely new source data. It can reduce overfitting when the transformation preserves the task signal.
-- **Common confusion:** An augmentation must preserve the target label or behavior you want the model to learn.
-- **Related terms:** Overfitting, Epoch, Eval Set
+<a id="data-augmentation"></a>
+### 数据增强（Data Augmentation）
+- **分类（Category）:** 数学与训练（Math & training）
+- **常见说法（What people say）:** 制造更多训练数据。
+- **准确含义（What it actually means）:** 通过变换图像、扰动音频或改写文本等方式生成修改后的样本，无须收集全新源数据即可增加训练多样性。当变换保留任务信号时，它能减少过拟合。
+- **常见混淆（Common confusion）:** 增强操作必须保留希望模型学会的目标标签或行为。
+- **相关术语（Related terms）:** Overfitting, Epoch, Eval Set
 
-### Data Classification
-- **Category:** Security & governance
-- **What it actually means:** Assigning data to documented sensitivity or impact classes so handling, access, retention, sharing, and incident rules follow the consequences of disclosure or loss.
-- **Why it matters:** An AI pipeline cannot apply proportionate controls if source documents, prompts, traces, and generated artifacts are treated as equally sensitive.
-- **In practice:** Classify data at ingestion, carry the label through derived artifacts, restrict tools and destinations by class, and define how labels change after transformation or aggregation.
-- **Common confusion:** Data classification describes protection requirements. It is not the same as a machine-learning classification task or a claim that the data is accurate.
-- **Related terms:** Data Minimization, Trust Boundary, Least Privilege, Audit Log
-- **Sources:** [NIST SP 1800-39 Initial Public Draft: Data Classification Practices](https://www.nccoe.nist.gov/sites/default/files/2026-02/nist-sp-1800-39-ipd.pdf); [NIST FIPS 199: Federal Information and Information System Categorization](https://csrc.nist.gov/pubs/fips/199/final)
+<a id="data-classification"></a>
+### 数据分类分级（Data Classification）
+- **分类（Category）:** 安全与治理（Security & governance）
+- **准确含义（What it actually means）:** 将数据归入有文档定义的敏感性或影响等级，使处理、访问、保留、共享及事件规则与泄露或丢失的后果相匹配。
+- **重要性（Why it matters）:** 如果把源文档、提示词、追踪和生成交付物视为同等敏感，AI 流水线就无法施加适度的控制。
+- **实际应用（In practice）:** 在摄取时分类，让标签随衍生交付物传递，按等级限制工具与目的地，并定义变换或聚合后标签如何变化。
+- **常见混淆（Common confusion）:** 数据分类分级描述保护要求，不等同于机器学习分类任务，也不代表数据准确。
+- **相关术语（Related terms）:** Data Minimization, Trust Boundary, Least Privilege, Audit Log
+- **来源（Sources）:** [NIST SP 1800-39 首次公开草案：数据分类实践](https://www.nccoe.nist.gov/sites/default/files/2026-02/nist-sp-1800-39-ipd.pdf); [NIST FIPS 199：联邦信息与信息系统分类](https://csrc.nist.gov/pubs/fips/199/final)
 
-### Data Deduplication
-- **Category:** Data & representations
-- **What it actually means:** Detecting and removing exact and near-duplicate examples within or across datasets.
-- **Why it matters:** Repetition can distort the training distribution, increase memorization, leak test material, and make evaluation appear stronger than it is.
-- **In practice:** Normalize content, use exact hashes and similarity methods, review borderline clusters, and record which version and rule removed each example.
-- **Common confusion:** Deduplication is not ordinary data cleaning. Two distinct records can legitimately share text, and two paraphrases can still carry the same leaked information.
-- **Related terms:** Data Provenance, Benchmark Contamination, Dataset Split, Overfitting
-- **Sources:** [Deduplicating Training Data Makes Language Models Better](https://arxiv.org/abs/2107.06499)
+<a id="data-deduplication"></a>
+### 数据去重（Data Deduplication）
+- **分类（Category）:** 数据与表示（Data & representations）
+- **准确含义（What it actually means）:** 检测并移除单个或多个数据集内完全重复和近似重复的样本。
+- **重要性（Why it matters）:** 重复可能扭曲训练分布、增加记忆化、泄漏测试材料，让评估看起来比实际更好。
+- **实际应用（In practice）:** 规范化内容，使用精确哈希和相似性方法，审阅边界情况的聚类，并记录每个样本由哪个版本和规则移除。
+- **常见混淆（Common confusion）:** 去重不是普通的数据清洗。两条不同记录可能合理地共享文本，而两段改写也可能携带相同的泄漏信息。
+- **相关术语（Related terms）:** Data Provenance, Benchmark Contamination, Dataset Split, Overfitting
+- **来源（Sources）:** [训练数据去重让语言模型更好](https://arxiv.org/abs/2107.06499)
 
-### Data Exfiltration
-- **Category:** Security & governance
-- **What it actually means:** Unauthorized transfer of protected data from a system or trust zone to a person, tool, service, or storage location that is not permitted to receive it.
-- **Why it matters:** An agent can expose secrets through generated text, tool arguments, URLs, logs, or side effects even when the original data store remains intact.
-- **In practice:** Minimize readable data, allowlist destinations, inspect outbound tool calls, redact sensitive fields, and alert on unusual transfers across trust boundaries.
-- **Common confusion:** Exfiltration is about unauthorized movement or disclosure. Ordinary retrieval of data by an authorized component is not exfiltration, although later use can become one.
-- **Learn it:** [EchoLeak and CVEs for AI](../phases/18-ethics-safety-alignment/25-echoleak-cves-for-ai/)
-- **Related terms:** Trust Boundary, Least Privilege, Indirect Prompt Injection, Audit Log
-- **Sources:** [NIST SP 800-53 Rev. 5: AC-4 Information Flow Enforcement](https://csrc.nist.gov/files/pubs/sp/800/53/r5/upd1/final/docs/sp800-53r5-controls.xlsx)
+<a id="data-exfiltration"></a>
+### 数据外泄（Data Exfiltration）
+- **分类（Category）:** 安全与治理（Security & governance）
+- **准确含义（What it actually means）:** 未经授权，将受保护数据从系统或信任区域转移给无权接收它的个人、工具、服务或存储位置。
+- **重要性（Why it matters）:** 即使原始数据存储完好，智能体仍可能通过生成文本、工具参数、URL、日志或副作用暴露机密。
+- **实际应用（In practice）:** 尽量减少可读数据，设置目的地允许列表，检查出站工具调用，隐去敏感字段，并对跨信任边界的异常传输告警。
+- **常见混淆（Common confusion）:** 外泄指未经授权的数据移动或披露。获授权组件正常检索数据不属于外泄，但后续使用可能构成外泄。
+- **学习课程（Learn it）:** [EchoLeak 与 AI 的通用漏洞披露](../phases/18-ethics-safety-alignment/25-echoleak-cves-for-ai/)
+- **相关术语（Related terms）:** Trust Boundary, Least Privilege, Indirect Prompt Injection, Audit Log
+- **来源（Sources）:** [NIST SP 800-53 第 5 修订版：AC-4 信息流强制控制](https://csrc.nist.gov/files/pubs/sp/800/53/r5/upd1/final/docs/sp800-53r5-controls.xlsx)
 
-### Data Leakage
-- **Category:** Data & representations
-- **What it actually means:** Unintended use of information during training or feature construction that would not be available at the real prediction point or belongs to a held-out evaluation boundary.
-- **Why it matters:** Leakage produces optimistic metrics that collapse when the system encounters genuinely unseen inputs.
-- **In practice:** Split data before fitting preprocessors, keep future information out of historical features, and isolate test labels and benchmark answers from prompts and tuning loops.
-- **Common confusion:** Leakage is not limited to duplicate rows. Global normalization statistics, timestamps, target-derived features, and repeated test-driven prompt edits can all leak information.
-- **Related terms:** Dataset Split, Benchmark Contamination, Eval Set, Data Provenance
-- **Sources:** [scikit-learn: Data leakage](https://scikit-learn.org/stable/common_pitfalls.html#data-leakage)
+<a id="data-leakage"></a>
+### 数据泄漏（Data Leakage）
+- **分类（Category）:** 数据与表示（Data & representations）
+- **准确含义（What it actually means）:** 训练或构造特征时，无意使用真实预测时点不可获得的信息，或属于留出评估边界的信息。
+- **重要性（Why it matters）:** 泄漏产生过于乐观的指标，当系统遇到真正未见输入时，这些指标就会失效。
+- **实际应用（In practice）:** 拟合预处理器之前先划分数据，避免未来信息进入历史特征，并将测试标签和基准答案与提示词、调优循环隔离。
+- **常见混淆（Common confusion）:** 泄漏不只来自重复行。全局归一化统计量、时间戳、目标衍生特征及反复依据测试修改提示词，都可能泄漏信息。
+- **相关术语（Related terms）:** Dataset Split, Benchmark Contamination, Eval Set, Data Provenance
+- **来源（Sources）:** [scikit-learn：数据泄漏](https://scikit-learn.org/stable/common_pitfalls.html#data-leakage)
 
-### Data Lineage
-- **Category:** Security & governance
-- **What it actually means:** A record of how a data artifact was derived across sources, transformations, joins, filters, versions, and downstream uses.
-- **Why it matters:** When a source is corrected, revoked, or found unsafe, lineage identifies which datasets, embeddings, evaluations, and model artifacts may be affected.
-- **In practice:** Give inputs and outputs stable identifiers, record each transformation and version, preserve parent-child relationships, and test whether an affected source can be traced to every derivative.
-- **Common confusion:** Data provenance explains origin and custody broadly. Lineage emphasizes the transformation path and dependencies between data artifacts.
-- **Related terms:** Data Provenance, Datasheet for Datasets, Audit Log, Content Provenance
-- **Sources:** [W3C PROV-O](https://www.w3.org/TR/prov-o/)
+<a id="data-lineage"></a>
+### 数据血缘（Data Lineage）
+- **分类（Category）:** 安全与治理（Security & governance）
+- **准确含义（What it actually means）:** 记录数据交付物如何经由来源、变换、连接、过滤、版本及下游使用而派生形成。
+- **重要性（Why it matters）:** 当来源被纠正、撤销或发现不安全时，血缘可识别哪些数据集、嵌入、评估及模型交付物可能受影响。
+- **实际应用（In practice）:** 为输入输出赋予稳定标识符，记录每次变换及版本，保留父子关系，并测试受影响来源能否追踪到所有衍生物。
+- **常见混淆（Common confusion）:** 数据溯源广泛描述来源和保管关系；数据血缘侧重变换路径及数据交付物之间的依赖。
+- **相关术语（Related terms）:** Data Provenance, Datasheet for Datasets, Audit Log, Content Provenance
+- **来源（Sources）:** [W3C 来源本体 PROV-O 规范](https://www.w3.org/TR/prov-o/)
 
-### Data Minimization
-- **Category:** Security & governance
-- **What it actually means:** For personal data, limiting what is collected, processed, exposed, and retained to what is necessary for a specified purpose. Teams can apply the same discipline to sensitive non-personal data as an engineering control.
-- **Why it matters:** Every unnecessary field placed in a prompt, trace, cache, or tool call increases privacy exposure and the possible impact of misuse or compromise.
-- **In practice:** Define the required fields before collection, redact or aggregate at the earliest boundary, set retention limits, and verify that optional context improves a measured task outcome before keeping it.
-- **Common confusion:** Minimization does not mean keeping no data. It means being able to justify each data element, use, recipient, and retention period against the stated purpose.
-- **Related terms:** Purpose Limitation, Data Classification, Least Privilege, Context Engineering
-- **Sources:** [General Data Protection Regulation, Article 5(1)(c)](https://eur-lex.europa.eu/eli/reg/2016/679/oj)
+<a id="data-minimization"></a>
+### 数据最小化（Data Minimization）
+- **分类（Category）:** 安全与治理（Security & governance）
+- **准确含义（What it actually means）:** 对于个人数据，将收集、处理、暴露和保留的范围限制为特定目的所必需的内容。团队也可将同样原则用于敏感的非个人数据，作为工程控制措施。
+- **重要性（Why it matters）:** 每个不必要地进入提示词、追踪、缓存或工具调用的字段，都会增加隐私暴露，以及滥用或系统遭入侵后的潜在影响。
+- **实际应用（In practice）:** 收集前明确必需字段，在最早边界隐去或聚合数据，设置保留期限，并在保留可选上下文前验证它确实改善了可度量的任务结果。
+- **常见混淆（Common confusion）:** 最小化不意味着不保留任何数据，而是能根据既定目的，为每个数据项、用途、接收方和保留期说明必要性。
+- **相关术语（Related terms）:** Purpose Limitation, Data Classification, Least Privilege, Context Engineering
+- **来源（Sources）:** [《通用数据保护条例》第 5(1)(c) 条](https://eur-lex.europa.eu/eli/reg/2016/679/oj)
 
-### Data Provenance
-- **Category:** Data & representations
-- **What it actually means:** Traceable information about where data originated, who or what transformed it, which versions were used, and how derived artifacts relate to their sources.
-- **Why it matters:** You need provenance to reproduce results, honor usage constraints, investigate contamination, and remove affected data when a source changes.
-- **In practice:** Assign immutable dataset versions, record transformation jobs and source identifiers, and carry lineage metadata into embeddings, eval cases, and model artifacts.
-- **Common confusion:** A source URL is only one piece of provenance; it does not describe collection time, licensing, filtering, transformation, or downstream use.
-- **Related terms:** Dataset Split, Data Deduplication, Provenance Attestation, Grounding
-- **Sources:** [W3C PROV Overview](https://www.w3.org/TR/prov-overview/)
+<a id="data-provenance"></a>
+### 数据溯源（Data Provenance）
+- **分类（Category）:** 数据与表示（Data & representations）
+- **准确含义（What it actually means）:** 可追踪的数据来源信息，包括由谁或什么进行了变换、使用了哪些版本，以及衍生交付物与来源的关系。
+- **重要性（Why it matters）:** 复现结果、遵守使用约束、调查污染，以及来源变化时移除受影响数据，都需要溯源。
+- **实际应用（In practice）:** 为数据集分配不可变版本，记录变换任务和来源标识符，并将血缘元数据带入嵌入、评估案例和模型交付物。
+- **常见混淆（Common confusion）:** 源 URL 只是溯源的一部分，无法说明收集时间、许可、过滤、变换或下游使用。
+- **相关术语（Related terms）:** Dataset Split, Data Deduplication, Provenance Attestation, Grounding
+- **来源（Sources）:** [W3C PROV 概览](https://www.w3.org/TR/prov-overview/)
 
-### Dataset Split
-- **Category:** Data & representations
-- **What it actually means:** A documented partition of examples into separate subsets for fitting, development decisions, and final evaluation.
-- **Why it matters:** Separation prevents the evidence used to choose a system from also serving as independent proof that the chosen system generalizes.
-- **In practice:** Split by the real deployment unit, such as user, repository, organization, or time, rather than randomly dividing correlated rows.
-- **Common confusion:** A random split is not automatically independent. Near duplicates, future observations, or records from the same entity can cross the boundary.
-- **Related terms:** Eval Set, Overfitting, Data Leakage, Distribution Shift
-- **Sources:** [Datasheets for Datasets](https://cacm.acm.org/research/datasheets-for-datasets/)
+<a id="dataset-split"></a>
+### 数据集划分（Dataset Split）
+- **分类（Category）:** 数据与表示（Data & representations）
+- **准确含义（What it actually means）:** 有文档记录地将样本分成相互分离的子集，分别用于拟合、开发决策和最终评估。
+- **重要性（Why it matters）:** 分离可避免用于选择系统的证据，同时又被当作该系统具有泛化能力的独立证明。
+- **实际应用（In practice）:** 按真实部署单元划分，例如用户、仓库、组织或时间，而不是随机分割彼此相关的行。
+- **常见混淆（Common confusion）:** 随机划分不自动意味着独立。近似重复、未来观测或同一实体的记录，都可能跨越边界。
+- **相关术语（Related terms）:** Eval Set, Overfitting, Data Leakage, Distribution Shift
+- **来源（Sources）:** [数据集说明书](https://cacm.acm.org/research/datasheets-for-datasets/)
 
-### Datasheet for Datasets
-- **Category:** Security & governance
-- **What it actually means:** Structured documentation of a dataset's motivation, composition, collection process, preprocessing, uses, distribution, maintenance, and known limitations.
-- **Why it matters:** A dataset is not safe or suitable merely because it is available. Downstream builders need evidence about how it was created and where its assumptions break.
-- **In practice:** Publish the datasheet with a versioned dataset, identify who can answer questions, record excluded populations and transformations, and update the document when the dataset changes.
-- **Common confusion:** A datasheet documents evidence and intended use. It is not a license, quality guarantee, or substitute for deployment-specific evaluation.
-- **Learn it:** [Model, System, and Dataset Cards](../phases/18-ethics-safety-alignment/26-model-system-dataset-cards/)
-- **Related terms:** Data Lineage, Data Provenance, Model Card, Dataset Split
-- **Sources:** [Datasheets for Datasets](https://arxiv.org/abs/1803.09010)
+<a id="datasheet-for-datasets"></a>
+### 数据集说明书（Datasheet for Datasets）
+- **分类（Category）:** 安全与治理（Security & governance）
+- **准确含义（What it actually means）:** 结构化记录数据集的动机、组成、收集流程、预处理、用途、分发、维护及已知局限的文档。
+- **重要性（Why it matters）:** 数据集不会仅因可获取就安全或适用。下游构建者需要了解它如何创建，以及其假设在哪些地方不成立。
+- **实际应用（In practice）:** 随版本化数据集发布说明书，指出谁能回答问题，记录未覆盖的人群和所做变换，并在数据集变化时更新文档。
+- **常见混淆（Common confusion）:** 说明书记录证据和预期用途，不是许可证、质量保证，也不能替代针对具体部署的评估。
+- **学习课程（Learn it）:** [模型卡、系统卡与数据集卡](../phases/18-ethics-safety-alignment/26-model-system-dataset-cards/)
+- **相关术语（Related terms）:** Data Lineage, Data Provenance, Model Card, Dataset Split
+- **来源（Sources）:** [数据集说明书](https://arxiv.org/abs/1803.09010)
 
-### Deadline Propagation
-- **Category:** Reliability & operations
-- **What it actually means:** Passing the remaining end-to-end time budget to downstream calls so each dependency knows how long the original request can still usefully wait.
-- **Why it matters:** Independent timeouts can exceed the user's deadline and leave abandoned work consuming capacity after the result is no longer useful.
-- **In practice:** Set one request deadline at ingress, subtract elapsed time for each downstream call, cancel expired work, and record which boundary exhausted the budget.
-- **Common confusion:** A deadline is an absolute or remaining completion boundary. A retry delay controls when another attempt begins and must fit inside that same budget.
-- **Related terms:** Retry with Backoff, Retry Budget, Tail Latency, Service Level Objective (SLO)
-- **Sources:** [gRPC Deadlines](https://grpc.io/docs/guides/deadlines/)
+<a id="deadline-propagation"></a>
+### 截止时间传递（Deadline Propagation）
+- **分类（Category）:** 可靠性与运维（Reliability & operations）
+- **准确含义（What it actually means）:** 将剩余端到端时间预算传给下游调用，使各依赖项知道原始请求还能有意义地等待多久。
+- **重要性（Why it matters）:** 相互独立的超时可能超过用户的截止时间，让结果已无用的废弃工作继续占用容量。
+- **实际应用（In practice）:** 在入口设置一个请求截止时间，每次下游调用扣除已耗时间，取消过期工作，并记录哪个边界耗尽了预算。
+- **常见混淆（Common confusion）:** 截止时间是绝对或剩余的完成边界；重试延迟控制下次尝试何时开始，也必须处于同一预算内。
+- **相关术语（Related terms）:** Retry with Backoff, Retry Budget, Tail Latency, Service Level Objective (SLO)
+- **来源（Sources）:** [gRPC 截止时间指南](https://grpc.io/docs/guides/deadlines/)
 
-### Decode Phase
-- **Category:** Infrastructure & serving
-- **What it actually means:** The iterative stage of autoregressive inference that generates new tokens one step at a time after the input prefix has been processed.
-- **Why it matters:** Decode work has different compute, memory, and scheduling behavior from prefill, so one aggregate latency number can hide the actual serving bottleneck.
-- **In practice:** Measure inter-token latency and output throughput separately, account for KV-cache occupancy, and test mixed workloads where active decodes share capacity with new prefills.
-- **Common confusion:** Decode phase is not the decoder component of an encoder-decoder model. It names the runtime generation stage.
-- **Learn it:** [Disaggregated Prefill and Decode](../phases/17-infrastructure-and-production/17-disaggregated-prefill-decode/)
-- **Related terms:** Prefill, Autoregressive, KV Cache, Time per Output Token (TPOT)
-- **Sources:** [DistServe](https://arxiv.org/abs/2401.09670)
+<a id="decode-phase"></a>
+### 解码阶段（Decode Phase）
+- **分类（Category）:** 基础设施与服务（Infrastructure & serving）
+- **准确含义（What it actually means）:** 输入前缀处理完毕后，自回归推理逐步生成新词元的迭代阶段。
+- **重要性（Why it matters）:** 解码在计算、内存和调度方面与预填充不同，因此单个总体延迟值可能掩盖真正的服务瓶颈。
+- **实际应用（In practice）:** 分别测量词元间延迟和输出吞吐量，计入键值缓存占用，并测试活动解码与新预填充共享容量的混合工作负载。
+- **常见混淆（Common confusion）:** 解码阶段不是编码器-解码器模型中的解码器组件，而是运行时的生成阶段。
+- **学习课程（Learn it）:** [预填充与解码分离](../phases/17-infrastructure-and-production/17-disaggregated-prefill-decode/)
+- **相关术语（Related terms）:** Prefill, Autoregressive, KV Cache, Time per Output Token (TPOT)
+- **来源（Sources）:** [DistServe 论文](https://arxiv.org/abs/2401.09670)
 
-### Decoder
-- **Category:** Models & inference
-- **What people say:** The output side of a model.
-- **What it actually means:** A component that maps a representation into an output. In an encoder-decoder transformer, the decoder uses masked self-attention and cross-attention to generate outputs. Decoder-only language models instead generate from a single causal stack.
-- **Related terms:** Encoder, Transformer, Autoregressive
+<a id="decoder"></a>
+### 解码器（Decoder）
+- **分类（Category）:** 模型与推理（Models & inference）
+- **常见说法（What people say）:** 模型的输出侧。
+- **准确含义（What it actually means）:** 将表示映射为输出的组件。在编码器-解码器 Transformer 中，解码器通过掩码自注意力和交叉注意力生成输出；仅解码器语言模型则使用单个因果堆叠生成。
+- **相关术语（Related terms）:** Encoder, Transformer, Autoregressive
 
-### Decoding Strategy
-- **Category:** Models & inference
-- **What it actually means:** The algorithm that converts a model's sequence of next-token scores into selected tokens and a completed output.
-- **Why it matters:** Greedy selection, sampling, truncation, and search can produce different quality, diversity, latency, and repeatability from the same logits.
-- **In practice:** Define the task's decoding settings, stop rules, and seed behavior in the eval configuration so results can be compared fairly.
-- **Common confusion:** Decoding changes how outputs are selected; it does not change the model's trained parameters or add knowledge.
-- **Related terms:** Autoregressive, Temperature, Top-k Sampling, Nucleus Sampling (Top-p)
-- **Sources:** [The Curious Case of Neural Text Degeneration](https://arxiv.org/abs/1904.09751)
+<a id="decoding-strategy"></a>
+### 解码策略（Decoding Strategy）
+- **分类（Category）:** 模型与推理（Models & inference）
+- **准确含义（What it actually means）:** 将模型连续产生的下一词元分数转换为选定词元及完整输出的算法。
+- **重要性（Why it matters）:** 对于同样的原始分数，贪心选择、采样、截断和搜索可能产生不同的质量、多样性、延迟和可重复性。
+- **实际应用（In practice）:** 在评估配置中定义任务的解码设置、停止规则及随机种子行为，使结果能够公平比较。
+- **常见混淆（Common confusion）:** 解码改变输出的选择方式，不改变模型训练所得的参数，也不增加知识。
+- **相关术语（Related terms）:** Autoregressive, Temperature, Top-k Sampling, Nucleus Sampling (Top-p)
+- **来源（Sources）:** [神经文本退化的奇特现象](https://arxiv.org/abs/1904.09751)
 
-### Defense in Depth
-- **Category:** Security & governance
-- **What it actually means:** Using independent preventive, detective, and corrective controls at several system boundaries so one failed control does not determine the outcome.
-- **Why it matters:** AI systems combine probabilistic models, untrusted content, tools, and external services, making any single filter or prompt an inadequate security boundary.
-- **In practice:** Pair instruction controls with narrow permissions, sandboxing, schema validation, approval for consequential actions, monitoring, and a tested recovery path.
-- **Common confusion:** More controls are not automatically better. Layers should address distinct failure modes and remain testable rather than repeat the same assumption.
-- **Related terms:** Guardrails, Sandbox, Least Privilege, Trust Boundary
-- **Sources:** [NIST Glossary: Defense in Depth](https://csrc.nist.gov/glossary/term/defense_in_depth)
+<a id="defense-in-depth"></a>
+### 纵深防御（Defense in Depth）
+- **分类（Category）:** 安全与治理（Security & governance）
+- **准确含义（What it actually means）:** 在多个系统边界使用相互独立的预防、检测和纠正控制，使单个控制失效不会决定最终结果。
+- **重要性（Why it matters）:** AI 系统结合了概率模型、不可信内容、工具与外部服务，因此任何单个过滤器或提示词都不足以充当安全边界。
+- **实际应用（In practice）:** 将指令控制与有限权限、沙箱、模式验证、重要动作审批、监测及经过测试的恢复路径配合使用。
+- **常见混淆（Common confusion）:** 控制措施越多不自动意味着越好。各层应针对不同失效模式，并保持可测试，而不是重复同一个假设。
+- **相关术语（Related terms）:** Guardrails, Sandbox, Least Privilege, Trust Boundary
+- **来源（Sources）:** [NIST 术语表：纵深防御](https://csrc.nist.gov/glossary/term/defense_in_depth)
 
-### Delegation
-- **Category:** Agents & tools
-- **What it actually means:** Assigning a bounded subtask to another person or agent together with the needed context, authority, output contract, and return conditions.
-- **Why it matters:** Explicit delegation enables specialization and parallel work without losing ownership, scope, or the ability to integrate results.
-- **In practice:** Give a reviewer agent the exact files, rubric, evidence, and deadline, then require it to return findings rather than silently modifying the primary artifact.
-- **Common confusion:** Sending a vague message to another agent is not reliable delegation. The receiver needs a scope contract and a defined handoff back.
-- **Related terms:** Scope Contract, Handoff, Reviewer Agent, Orchestration
-- **Sources:** [Building Effective Agents](https://www.anthropic.com/research/building-effective-agents)
+<a id="delegation"></a>
+### 委派（Delegation）
+- **分类（Category）:** 智能体与工具（Agents & tools）
+- **准确含义（What it actually means）:** 将有明确边界的子任务交给另一个人或智能体，同时提供所需上下文、权限、输出契约和返回条件。
+- **重要性（Why it matters）:** 显式委派支持专业分工与并行工作，同时保留责任归属、范围和整合结果的能力。
+- **实际应用（In practice）:** 向审阅智能体提供确切文件、评分准则、证据及截止时间，要求它返回发现，而不是悄悄修改主要交付物。
+- **常见混淆（Common confusion）:** 向另一个智能体发送模糊消息不等于可靠委派。接收方需要范围契约和明确的回交方式。
+- **相关术语（Related terms）:** Scope Contract, Handoff, Reviewer Agent, Orchestration
+- **来源（Sources）:** [构建有效的智能体](https://www.anthropic.com/research/building-effective-agents)
 
-### Dense Retrieval
-- **Category:** Retrieval & generation
-- **What it actually means:** First-stage retrieval that embeds queries and candidates into vector representations and ranks candidates by a similarity function.
-- **Why it matters:** It can retrieve paraphrases and semantic matches that share few exact words, complementing lexical methods such as BM25.
-- **In practice:** Train or select an embedding model for the domain, index candidate vectors, and evaluate retrieval recall before connecting the results to generation.
-- **Common confusion:** Dense retrieval is not a reranker. It searches the collection, while a reranker rescores a smaller candidate set.
-- **Related terms:** Embedding, Semantic Search, BM25, Hybrid Retrieval
-- **Sources:** [Dense Passage Retrieval](https://aclanthology.org/2020.emnlp-main.550/)
+<a id="dense-retrieval"></a>
+### 稠密检索（Dense Retrieval）
+- **分类（Category）:** 检索与生成（Retrieval & generation）
+- **准确含义（What it actually means）:** 将查询与候选项嵌入为向量表示，并通过相似度函数排序候选项的第一阶段检索。
+- **重要性（Why it matters）:** 它能找出几乎不共享原词的改写和语义匹配，补充 BM25 等词法方法。
+- **实际应用（In practice）:** 为领域训练或选择嵌入模型，为候选向量建立索引，并在将结果接入生成前评估检索召回率。
+- **常见混淆（Common confusion）:** 稠密检索不是重排序器。它搜索整个集合，而重排序器对较小候选集重新评分。
+- **相关术语（Related terms）:** Embedding, Semantic Search, BM25, Hybrid Retrieval
+- **来源（Sources）:** [稠密段落检索](https://aclanthology.org/2020.emnlp-main.550/)
 
-### Diffusion Model
-- **Category:** Models & inference
-- **What people say:** A model that generates images from noise.
-- **What it actually means:** A generative model trained around a progressive noising process and a learned reverse process. Sampling usually begins from noise and applies repeated denoising steps, sometimes in a learned latent space.
-- **Common confusion:** Diffusion is a general generative framework, not an image-only technique.
-- **Related terms:** Latent Space, VAE (Variational Autoencoder), Inference
+<a id="diffusion-model"></a>
+### 扩散模型（Diffusion Model）
+- **分类（Category）:** 模型与推理（Models & inference）
+- **常见说法（What people say）:** 从噪声生成图像的模型。
+- **准确含义（What it actually means）:** 围绕渐进加噪过程及学习到的逆过程训练的生成模型。采样通常从噪声开始，反复去噪，有时在学习到的潜在空间中进行。
+- **常见混淆（Common confusion）:** 扩散是通用生成框架，并非只用于图像。
+- **相关术语（Related terms）:** Latent Space, VAE (Variational Autoencoder), Inference
 
-### Disaggregated Serving
-- **Category:** Infrastructure & serving
-- **What it actually means:** A serving architecture that runs prefill and decode work in separately provisioned worker pools and transfers the required attention state between them.
-- **Why it matters:** Prefill and decode stress hardware differently, so independent pools can be sized and scheduled for their own bottlenecks instead of competing in one queue.
-- **In practice:** Measure state-transfer cost, route requests through compatible model versions, scale each pool from its own demand signal, and test failure recovery between phases.
-- **Common confusion:** Disaggregation separates runtime stages. It does not split one model into tensor or pipeline-parallel shards within a stage.
-- **Learn it:** [Disaggregated Prefill and Decode](../phases/17-infrastructure-and-production/17-disaggregated-prefill-decode/)
-- **Related terms:** Prefill, Decode Phase, Model Serving, Goodput
-- **Sources:** [DistServe](https://arxiv.org/abs/2401.09670)
+<a id="disaggregated-serving"></a>
+### 分离式服务（Disaggregated Serving）
+- **分类（Category）:** 基础设施与服务（Infrastructure & serving）
+- **准确含义（What it actually means）:** 在分别配置资源的工作单元池中运行预填充与解码，并在二者之间传输所需注意力状态的服务架构。
+- **重要性（Why it matters）:** 预填充和解码对硬件的压力不同，独立资源池可以针对各自瓶颈设置容量和调度，而非在同一队列中争抢资源。
+- **实际应用（In practice）:** 测量状态传输成本，确保请求经过兼容的模型版本，根据各自需求信号扩缩容，并测试两个阶段之间的故障恢复。
+- **常见混淆（Common confusion）:** 分离式服务分开的是运行时阶段，不是将一个模型在阶段内部拆成张量并行或流水线并行分片。
+- **学习课程（Learn it）:** [预填充与解码分离](../phases/17-infrastructure-and-production/17-disaggregated-prefill-decode/)
+- **相关术语（Related terms）:** Prefill, Decode Phase, Model Serving, Goodput
+- **来源（Sources）:** [DistServe 论文](https://arxiv.org/abs/2401.09670)
 
-### Distribution Shift
-- **Category:** Evaluation & safety
-- **What it actually means:** A difference between the data distribution used to build or evaluate a system and the distribution it encounters after deployment.
-- **Why it matters:** A model can pass held-out tests yet fail when users, tasks, language, tools, or operating conditions change.
-- **In practice:** Define expected deployment slices, monitor performance and input characteristics by slice, and add new failures to a versioned eval set.
-- **Common confusion:** Distribution shift is not always model drift. The model may be unchanged while its environment or user population changes.
-- **Related terms:** Dataset Split, Eval Set, Overfitting, Model Card
-- **Sources:** [WILDS](https://proceedings.mlr.press/v139/koh21a.html)
+<a id="distribution-shift"></a>
+### 分布偏移（Distribution Shift）
+- **分类（Category）:** 评估与安全（Evaluation & safety）
+- **准确含义（What it actually means）:** 构建或评估系统时使用的数据分布，与部署后遇到的数据分布之间的差异。
+- **重要性（Why it matters）:** 模型可能通过留出测试，却在用户、任务、语言、工具或运行条件变化时失败。
+- **实际应用（In practice）:** 定义预期部署切片，按切片监测性能和输入特征，并将新失败纳入版本化评估集。
+- **常见混淆（Common confusion）:** 分布偏移不总是模型漂移。模型可能没变，变化的是环境或用户群体。
+- **相关术语（Related terms）:** Dataset Split, Eval Set, Overfitting, Model Card
+- **来源（Sources）:** [WILDS 论文](https://proceedings.mlr.press/v139/koh21a.html)
 
-### DPO (Direct Preference Optimization)
-- **Category:** Math & training
-- **What people say:** Preference training without a separate reward-model stage.
-- **What it actually means:** A preference-optimization objective that trains a policy directly from preferred and rejected response pairs relative to a reference policy. It avoids running an explicit reward model and reinforcement-learning loop during this stage.
-- **Common confusion:** DPO still depends on the quality and coverage of preference data and does not eliminate evaluation or alignment risk.
-- **Learn it:** [Direct Preference Optimization](../phases/10-llms-from-scratch/08-dpo/)
-- **Sources:** [Direct Preference Optimization paper](https://arxiv.org/abs/2305.18290)
-- **Related terms:** RLHF (Reinforcement Learning from Human Feedback), SFT (Supervised Fine-Tuning), Alignment
+<a id="dpo-direct-preference-optimization"></a>
+### 直接偏好优化（DPO (Direct Preference Optimization)）
+- **分类（Category）:** 数学与训练（Math & training）
+- **常见说法（What people say）:** 不需要单独奖励模型阶段的偏好训练。
+- **准确含义（What it actually means）:** 相对于参考策略，直接使用偏好与被拒绝的回答对训练策略的偏好优化目标。它避免在这一阶段运行显式奖励模型和强化学习循环。
+- **常见混淆（Common confusion）:** DPO 仍依赖偏好数据的质量与覆盖范围，不会消除评估需求或对齐风险。
+- **学习课程（Learn it）:** [直接偏好优化](../phases/10-llms-from-scratch/08-dpo/)
+- **来源（Sources）:** [直接偏好优化论文](https://arxiv.org/abs/2305.18290)
+- **相关术语（Related terms）:** RLHF (Reinforcement Learning from Human Feedback), SFT (Supervised Fine-Tuning), Alignment
 
-### Dropout
-- **Category:** Math & training
-- **What people say:** Randomly turning off activations.
-- **What it actually means:** During training, randomly setting a fraction of activations to zero encourages the network not to rely on one activation path. It is normally disabled for standard inference, although Monte Carlo dropout deliberately keeps it active to estimate uncertainty.
-- **Related terms:** Overfitting, Weight Decay, Activation Function
+<a id="dropout"></a>
+### 随机失活（Dropout）
+- **分类（Category）:** 数学与训练（Math & training）
+- **常见说法（What people say）:** 随机关闭激活值。
+- **准确含义（What it actually means）:** 训练时随机将一部分激活值置零，鼓励网络不要依赖某一条激活路径。标准推理通常关闭它，但蒙特卡洛随机失活会有意保留，以估计不确定性。
+- **相关术语（Related terms）:** Overfitting, Weight Decay, Activation Function
 
-### Durable Execution
-- **Category:** Agents & tools
-- **What it actually means:** Running a workflow so its state and completed steps survive process crashes, restarts, or long waits without redoing confirmed side effects.
-- **Why it matters:** Agent tasks often span model calls, tools, approvals, and external systems. A transient process should not be the only record of progress.
-- **In practice:** Persist each workflow transition, use idempotency keys for external writes, and resume from the latest checkpoint after a worker restarts.
-- **Common confusion:** Durable execution does not make every operation safe automatically. Side effects still need idempotency and compensation rules.
-- **Related terms:** Checkpoint, Agent State, Idempotency, Approval Gate
+<a id="durable-execution"></a>
+### 持久执行（Durable Execution）
+- **分类（Category）:** 智能体与工具（Agents & tools）
+- **准确含义（What it actually means）:** 以能跨进程崩溃、重启或长时间等待保留状态和已完成步骤的方式运行工作流，并避免重复已确认的副作用。
+- **重要性（Why it matters）:** 智能体任务往往跨越模型调用、工具、审批和外部系统。临时进程不应成为进度的唯一记录。
+- **实际应用（In practice）:** 持久化每次工作流状态转换，对外部写入使用幂等键，并在工作单元重启后从最新检查点恢复。
+- **常见混淆（Common confusion）:** 持久执行不会自动让每个操作安全。副作用仍需要幂等与补偿规则。
+- **相关术语（Related terms）:** Checkpoint, Agent State, Idempotency, Approval Gate
 
-### Dynamic Batching
-- **Category:** Infrastructure & serving
-- **What it actually means:** A runtime policy that forms inference batches from queued requests according to compatible shapes, maximum size, priority, and allowed queue delay.
-- **Why it matters:** Grouping requests can improve hardware utilization, but waiting for a batch can make latency worse when traffic is sparse or requests differ sharply.
-- **In practice:** Set queue-delay and batch limits from measured latency objectives, separate incompatible request shapes, and compare throughput with tail latency at realistic arrival rates.
-- **Common confusion:** Dynamic batching assembles batches from queued work. Continuous batching changes membership while autoregressive generation is already running.
-- **Learn it:** [vLLM Serving Internals](../phases/17-infrastructure-and-production/04-vllm-serving-internals/)
-- **Related terms:** Admission Control, Continuous Batching, Saturation, Tail Latency
-- **Sources:** [NVIDIA Triton: Models and Schedulers](https://docs.nvidia.com/deeplearning/triton-inference-server/user-guide/docs/user_guide/model_configuration.html#scheduling-and-batching)
+<a id="dynamic-batching"></a>
+### 动态批处理（Dynamic Batching）
+- **分类（Category）:** 基础设施与服务（Infrastructure & serving）
+- **准确含义（What it actually means）:** 根据兼容形状、最大大小、优先级和允许的排队延迟，从队列请求中组成推理批次的运行时策略。
+- **重要性（Why it matters）:** 合并请求可以提高硬件利用率，但流量稀疏或请求差异很大时，等待组成批次可能恶化延迟。
+- **实际应用（In practice）:** 根据实测延迟目标设置排队延迟和批次限制，分离形状不兼容的请求，并在真实到达速率下比较吞吐量与尾延迟。
+- **常见混淆（Common confusion）:** 动态批处理从排队工作中组批；连续批处理则在自回归生成已进行时改变批次成员。
+- **学习课程（Learn it）:** [vLLM 服务内部机制](../phases/17-infrastructure-and-production/04-vllm-serving-internals/)
+- **相关术语（Related terms）:** Admission Control, Continuous Batching, Saturation, Tail Latency
+- **来源（Sources）:** [NVIDIA Triton：模型与调度器](https://docs.nvidia.com/deeplearning/triton-inference-server/user-guide/docs/user_guide/model_configuration.html#scheduling-and-batching)
 
 ## E
 
-### Early Fusion
-- **Category:** Multimodal systems
-- **What it actually means:** Combining raw or low-level representations from several modalities before most task-specific modeling occurs.
-- **Why it matters:** Early interaction can expose fine-grained cross-modal relationships, but it also requires compatible representations and careful handling of alignment and missing inputs.
-- **In practice:** Convert each modality into a declared token or feature representation, preserve source and position markers, fuse them before the shared backbone, and compare against single-modality and late-fusion baselines.
-- **Common confusion:** Early fusion describes where streams are combined in the architecture. It does not guarantee that the model learns useful alignment between them.
-- **Learn it:** [Chameleon Early-Fusion Tokens](../phases/12-multimodal-ai/11-chameleon-early-fusion-tokens/)
-- **Related terms:** Late Fusion, Multimodal Fusion, Modality Alignment, Token
-- **Sources:** [Chameleon: Mixed-Modal Early-Fusion Foundation Models](https://arxiv.org/abs/2405.09818); [Multimodal Machine Learning: A Survey and Taxonomy](https://arxiv.org/abs/1705.09406)
+<a id="early-fusion"></a>
+### 早期融合（Early Fusion）
+- **分类（Category）:** 多模态系统（Multimodal systems）
+- **准确含义（What it actually means）:** 在大部分任务专用建模发生之前，组合多个模态的原始或低层表示。
+- **重要性（Why it matters）:** 早期交互能揭示细粒度跨模态关系，但也需要兼容表示，并谨慎处理对齐和缺失输入。
+- **实际应用（In practice）:** 将各模态转换为明确的词元或特征表示，保留来源和位置标记，在共享骨干网络之前融合，并与单模态及晚期融合基线比较。
+- **常见混淆（Common confusion）:** 早期融合描述各信息流在架构中的汇合位置，不保证模型会学到有用的跨流对齐。
+- **学习课程（Learn it）:** [Chameleon 早期融合词元](../phases/12-multimodal-ai/11-chameleon-early-fusion-tokens/)
+- **相关术语（Related terms）:** Late Fusion, Multimodal Fusion, Modality Alignment, Token
+- **来源（Sources）:** [Chameleon：混合模态早期融合基础模型](https://arxiv.org/abs/2405.09818); [多模态机器学习：综述与分类体系](https://arxiv.org/abs/1705.09406)
 
-### Eigenvalue
-- **Category:** Math & training
-- **What people say:** A matrix property used in PCA.
-- **What it actually means:** A scalar that describes how a linear transformation scales a corresponding nonzero eigenvector without changing its direction. In covariance-matrix PCA, larger eigenvalues correspond to directions with more variance.
-- **Related terms:** Tensor, Feature, Latent Space
+<a id="eigenvalue"></a>
+### 特征值（Eigenvalue）
+- **分类（Category）:** 数学与训练（Math & training）
+- **常见说法（What people say）:** 主成分分析中用到的矩阵性质。
+- **准确含义（What it actually means）:** 描述线性变换如何缩放对应非零特征向量、而不改变其方向的标量。在基于协方差矩阵的主成分分析中，更大的特征值对应方差更大的方向。
+- **相关术语（Related terms）:** Tensor, Feature, Latent Space
 
-### Embedding
-- **Category:** Data & representations
-- **What people say:** A vector that represents meaning.
-- **What it actually means:** A learned mapping from discrete items (words, images, users) to dense vectors in continuous space, where similar items end up close together
-- **Common confusion:** Similarity depends on the model, training objective, and metric. Distance in one embedding space does not carry over to another.
-- **Why it's called that:** The items are placed, or embedded, in a geometric representation space.
-- **Learn it:** [Embeddings](../phases/11-llm-engineering/04-embeddings/)
-- **Related terms:** Cosine Similarity, Semantic Search, Vector Database
+<a id="embedding"></a>
+### 嵌入（Embedding）
+- **分类（Category）:** 数据与表示（Data & representations）
+- **常见说法（What people say）:** 表示含义的向量。
+- **准确含义（What it actually means）:** 将离散项，例如单词、图像和用户，映射到连续空间中稠密向量的学习所得映射，使相似项最终彼此接近。
+- **常见混淆（Common confusion）:** 相似性取决于模型、训练目标和度量。一种嵌入空间中的距离不能直接套用到另一种空间。
+- **名称由来（Why it's called that）:** 这些项被放置，也就是“嵌入”到一个几何表示空间中。
+- **学习课程（Learn it）:** [嵌入](../phases/11-llm-engineering/04-embeddings/)
+- **相关术语（Related terms）:** Cosine Similarity, Semantic Search, Vector Database
 
-### Encoder
-- **Category:** Models & inference
-- **What people say:** The input side of a model.
-- **What it actually means:** A component that transforms input into a representation. A transformer encoder commonly uses non-causal self-attention, subject to any masks, so each position can incorporate context from across the input.
-- **Common confusion:** Encoder-only models can produce outputs through task heads even though they are not typically used for autoregressive text generation.
-- **Related terms:** Decoder, Transformer, Embedding
+<a id="encoder"></a>
+### 编码器（Encoder）
+- **分类（Category）:** 模型与推理（Models & inference）
+- **常见说法（What people say）:** 模型的输入侧。
+- **准确含义（What it actually means）:** 将输入转换为表示的组件。Transformer 编码器通常使用非因果自注意力，在所用掩码的约束下，让各位置整合整个输入的上下文。
+- **常见混淆（Common confusion）:** 仅编码器模型虽通常不用于自回归文本生成，仍可通过任务头产生输出。
+- **相关术语（Related terms）:** Decoder, Transformer, Embedding
 
-### Epoch
-- **Category:** Math & training
-- **What people say:** One pass through the training data.
-- **What it actually means:** One traversal of the defined training dataset. In distributed or sampled training, the exact implementation of an epoch depends on the data loader and sampling policy.
-- **Common confusion:** More epochs do not guarantee better generalization; evaluate on held-out data.
-- **Related terms:** Batch Size, Overfitting, Eval Set
+<a id="epoch"></a>
+### 训练轮次（Epoch）
+- **分类（Category）:** 数学与训练（Math & training）
+- **常见说法（What people say）:** 遍历训练数据一次。
+- **准确含义（What it actually means）:** 遍历一遍所定义的训练数据集。在分布式或采样训练中，一个轮次的具体实现取决于数据加载器和采样策略。
+- **常见混淆（Common confusion）:** 更多轮次不保证更好的泛化，应在留出数据上评估。
+- **相关术语（Related terms）:** Batch Size, Overfitting, Eval Set
 
-### Error Budget
-- **Category:** Reliability & operations
-- **What it actually means:** The amount of unsuccessful service allowed by a service-level objective over its measurement window before the objective is exhausted.
-- **Why it matters:** It gives reliability and product work a shared decision boundary: teams can spend remaining budget on change while slowing risk when user-visible failure consumes it.
-- **In practice:** Derive the budget from the SLO, track burn by cause and user segment, define release actions before exhaustion, and avoid resetting the accounting after an incident.
-- **Common confusion:** An error budget is not a quota for causing incidents. It is an operating policy derived from a user-facing reliability target.
-- **Related terms:** Service Level Objective (SLO), Service Level Indicator (SLI), Availability, Incident Response
-- **Sources:** [Google SRE Workbook: Error Budget Policy](https://sre.google/workbook/error-budget-policy/)
+<a id="error-budget"></a>
+### 错误预算（Error Budget）
+- **分类（Category）:** 可靠性与运维（Reliability & operations）
+- **准确含义（What it actually means）:** 服务级别目标在其度量窗口内允许的失败服务量，超过该量就耗尽目标允许的预算。
+- **重要性（Why it matters）:** 它为可靠性与产品工作提供共同决策边界：团队可以用剩余预算推进变更，但当用户可见失败消耗预算时应放缓风险活动。
+- **实际应用（In practice）:** 从服务级别目标推导预算，按原因和用户群体跟踪消耗，在耗尽前明确发布应对动作，并避免事件后重置统计。
+- **常见混淆（Common confusion）:** 错误预算不是主动制造事故的配额，而是由面向用户的可靠性目标推导出的运行策略。
+- **相关术语（Related terms）:** Service Level Objective (SLO), Service Level Indicator (SLI), Availability, Incident Response
+- **来源（Sources）:** [Google SRE 工作手册：错误预算策略](https://sre.google/workbook/error-budget-policy/)
 
-### Eval Set
-- **Category:** Evaluation & safety
-- **Aliases:** Evaluation set
-- **What it actually means:** A versioned collection of inputs, expected properties, scoring rules, and metadata used to measure an AI system against a defined capability or risk.
-- **Why it matters:** A repeatable set turns vague quality claims into comparable evidence and catches regressions after prompts, models, tools, or retrieval change.
-- **In practice:** Keep representative support questions, adversarial instructions, expected citations, and failure labels in a reviewed dataset that is separate from development examples.
-- **Common confusion:** A development eval guides iteration, a final held-out test estimates performance after choices are fixed, and a standardized benchmark supports comparison under a shared protocol. Repeated tuning against any held-out set leaks test information and inflates results.
-- **Learn it:** [Eval-Driven Agent Development](../phases/14-agent-engineering/30-eval-driven-agent-development/)
-- **Related terms:** Evaluation (Eval), Regression Test, LLM-as-a-Judge, Verification Gate
+<a id="eval-set"></a>
+### 评估集（Eval Set）
+- **分类（Category）:** 评估与安全（Evaluation & safety）
+- **别名（Aliases）:** Evaluation set
+- **准确含义（What it actually means）:** 包含输入、期望属性、评分规则和元数据的版本化集合，用于度量 AI 系统的特定能力或风险。
+- **重要性（Why it matters）:** 可重复使用的数据集能将模糊的质量声明转化为可比较证据，并在提示词、模型、工具或检索变化后发现回归。
+- **实际应用（In practice）:** 将有代表性的支持问题、对抗指令、预期引用和失败标签放在经审阅的数据集中，与开发示例分开。
+- **常见混淆（Common confusion）:** 开发评估指导迭代；最终留出测试在选择确定后估计性能；标准化基准则支持在共同协议下比较。针对任何留出集反复调优，都会泄漏测试信息并夸大结果。
+- **学习课程（Learn it）:** [评估驱动的智能体开发](../phases/14-agent-engineering/30-eval-driven-agent-development/)
+- **相关术语（Related terms）:** Evaluation (Eval), Regression Test, LLM-as-a-Judge, Verification Gate
 
-### Evaluation (Eval)
-- **Category:** Evaluation & safety
-- **Aliases:** Eval
-- **What it actually means:** A defined process for measuring model or system behavior on representative tasks using explicit success criteria, data, scorers, and review procedures.
-- **Why it matters:** You cannot improve reliability if success is only a subjective impression from a few demos.
-- **In practice:** Run the same customer-support scenarios before and after changing retrieval, score correctness and citation support, and inspect failures by category.
-- **Common confusion:** A benchmark score is one evaluation result, not a complete account of production quality.
-- **Learn it:** [LLM Evaluation](../phases/11-llm-engineering/10-evaluation/)
-- **Related terms:** Eval Set, LLM-as-a-Judge, Cost per Successful Task, Regression Test
+<a id="evaluation-eval"></a>
+### 评估（Evaluation (Eval)）
+- **分类（Category）:** 评估与安全（Evaluation & safety）
+- **别名（Aliases）:** Eval
+- **准确含义（What it actually means）:** 使用明确的成功标准、数据、评分器及审阅流程，在代表性任务上度量模型或系统行为的既定过程。
+- **重要性（Why it matters）:** 如果成功只是观看几个演示后的主观印象，就无法改进可靠性。
+- **实际应用（In practice）:** 在改变检索前后运行相同客服场景，评估正确性及引用支撑程度，并按类别检查失败。
+- **常见混淆（Common confusion）:** 基准分数只是一个评估结果，不能完整说明生产质量。
+- **学习课程（Learn it）:** [大语言模型评估](../phases/11-llm-engineering/10-evaluation/)
+- **相关术语（Related terms）:** Eval Set, LLM-as-a-Judge, Cost per Successful Task, Regression Test
 
-### Exact Match (EM)
-- **Category:** Evaluation & safety
-- **What it actually means:** A metric that counts an output as correct only when its normalized representation exactly equals an accepted reference answer.
-- **Why it matters:** It is deterministic and easy to audit for tasks with one canonical answer, but it exposes no partial credit.
-- **In practice:** Define normalization and all accepted references before evaluation, then pair exact match with task-specific checks when several outputs can be valid.
-- **Common confusion:** A low exact-match score can reflect harmless formatting differences, while a matching string can still be unsupported or unsafe in context.
-- **Related terms:** ROUGE, Eval Set, Structured Output, Pass@k
-- **Sources:** [SQuAD](https://aclanthology.org/D16-1264/)
+<a id="exact-match-em"></a>
+### 完全匹配（Exact Match (EM)）
+- **分类（Category）:** 评估与安全（Evaluation & safety）
+- **准确含义（What it actually means）:** 只有输出的规范化表示与某个获认可的参考答案完全一致时，才计为正确的指标。
+- **重要性（Why it matters）:** 对于只有一个标准答案的任务，它具有确定性且易于审计，但不提供部分得分。
+- **实际应用（In practice）:** 评估前定义规范化规则及全部可接受参考答案；允许多种有效输出时，结合任务专用检查使用完全匹配。
+- **常见混淆（Common confusion）:** 完全匹配得分低可能只是无害的格式差异；而字符串即使匹配，在上下文中仍可能缺乏依据或不安全。
+- **相关术语（Related terms）:** ROUGE, Eval Set, Structured Output, Pass@k
+- **来源（Sources）:** [SQuAD 数据集论文](https://aclanthology.org/D16-1264/)
 
-### Expert Parallelism
-- **Category:** Infrastructure & serving
-- **What it actually means:** Distributing mixture-of-experts subnetworks across devices and routing each token's activations to the devices that host its selected experts.
-- **Why it matters:** Sparse experts increase model capacity without executing every expert for every token, but routing introduces communication, load-balance, and placement constraints.
-- **In practice:** Measure token distribution by expert, provision communication bandwidth, cap or route overflow deliberately, and test quality when traffic produces uneven expert demand.
-- **Common confusion:** Expert parallelism partitions experts selected by a router. Tensor parallelism partitions the tensor operations inside layers.
-- **Learn it:** [Mixture of Experts](../phases/07-transformers-deep-dive/11-mixture-of-experts/)
-- **Related terms:** MoE (Mixture of Experts), Tensor Parallelism, Pipeline Parallelism, Model Serving
-- **Sources:** [GShard](https://arxiv.org/abs/2006.16668)
+<a id="expert-parallelism"></a>
+### 专家并行（Expert Parallelism）
+- **分类（Category）:** 基础设施与服务（Infrastructure & serving）
+- **准确含义（What it actually means）:** 将混合专家子网络分布在多个设备上，并将每个词元的激活路由到承载其选中专家的设备。
+- **重要性（Why it matters）:** 稀疏专家无需对每个词元执行所有专家即可增大模型容量，但路由会引入通信、负载均衡和放置约束。
+- **实际应用（In practice）:** 按专家测量词元分布，配置通信带宽，有意识地限制或转移溢出负载，并测试流量导致专家需求不均时的质量。
+- **常见混淆（Common confusion）:** 专家并行划分路由器所选的专家；张量并行划分层内部的张量运算。
+- **学习课程（Learn it）:** [混合专家](../phases/07-transformers-deep-dive/11-mixture-of-experts/)
+- **相关术语（Related terms）:** MoE (Mixture of Experts), Tensor Parallelism, Pipeline Parallelism, Model Serving
+- **来源（Sources）:** [GShard 论文](https://arxiv.org/abs/2006.16668)
 
 ## F
 
-### Feature
-- **Category:** Data & representations
-- **What people say:** A column in a dataset.
-- **What it actually means:** An individual measurable property of the data. In classical ML, you engineer features by hand. In deep learning, the network learns features automatically from raw data.
-- **Common confusion:** A stored column can contain several useful features, and a learned representation can contain features with no simple human label.
-- **Related terms:** Embedding, Latent Space, Inductive Bias
+<a id="feature"></a>
+### 特征（Feature）
+- **分类（Category）:** 数据与表示（Data & representations）
+- **常见说法（What people say）:** 数据集中的一列。
+- **准确含义（What it actually means）:** 数据的一项可测量属性。在经典机器学习中，特征通常手工设计；在深度学习中，网络从原始数据自动学习特征。
+- **常见混淆（Common confusion）:** 一列存储数据可能包含多个有用特征，学习到的表示也可能包含难以赋予简单人类标签的特征。
+- **相关术语（Related terms）:** Embedding, Latent Space, Inductive Bias
 
-### Few-Shot
-- **Category:** Prompting & context
-- **What people say:** Give the model a few examples in the prompt.
-- **What it actually means:** In-context learning that includes a small set of demonstrations before the target input so the model can infer the desired task, format, or decision boundary.
-- **Why it matters:** Example quality and coverage matter more than a universal example count. Poor or contradictory demonstrations can reduce reliability.
-- **Related terms:** Zero-Shot, In-Context Learning, Prompt Engineering, Context Window
+<a id="few-shot"></a>
+### 少样本（Few-Shot）
+- **分类（Category）:** 提示词与上下文（Prompting & context）
+- **常见说法（What people say）:** 在提示词中给模型几个示例。
+- **准确含义（What it actually means）:** 一种上下文学习，在目标输入之前加入少量示范，让模型推断期望任务、格式或决策边界。
+- **重要性（Why it matters）:** 示例质量与覆盖范围比某个通用示例数量更重要。质量差或互相矛盾的示范可能降低可靠性。
+- **相关术语（Related terms）:** Zero-Shot, In-Context Learning, Prompt Engineering, Context Window
 
-### Fine-tuning
-- **Category:** Math & training
-- **What people say:** Training a model on your data.
-- **What it actually means:** Continuing training from pretrained parameters on a narrower dataset or objective. Depending on the method, you may update all parameters, selected parameters, or added adapter parameters.
-- **Why it matters:** Fine-tuning can adapt behavior, style, format, or task performance, but it is not a dependable replacement for retrieval when facts must stay current or traceable.
-- **Common confusion:** Fine-tuning can influence encoded knowledge, but it does not simply append records to a searchable database inside the model.
-- **Learn it:** [Fine-Tuning and LoRA](../phases/11-llm-engineering/08-fine-tuning-lora/)
-- **Related terms:** SFT (Supervised Fine-Tuning), LoRA (Low-Rank Adaptation), QLoRA, RAG (Retrieval-Augmented Generation)
+<a id="fine-tuning"></a>
+### 微调（Fine-tuning）
+- **分类（Category）:** 数学与训练（Math & training）
+- **常见说法（What people say）:** 用你的数据训练模型。
+- **准确含义（What it actually means）:** 从预训练参数出发，在更窄的数据集或目标上继续训练。根据方法不同，可以更新全部参数、选定参数或新增适配器参数。
+- **重要性（Why it matters）:** 微调能调整行为、风格、格式或任务表现，但当事实必须保持最新或可追溯时，它不能可靠地替代检索。
+- **常见混淆（Common confusion）:** 微调会影响模型编码的知识，但不是简单地向模型内部的可搜索数据库追加记录。
+- **学习课程（Learn it）:** [微调与低秩适配](../phases/11-llm-engineering/08-fine-tuning-lora/)
+- **相关术语（Related terms）:** SFT (Supervised Fine-Tuning), LoRA (Low-Rank Adaptation), QLoRA, RAG (Retrieval-Augmented Generation)
 
-### Flaky Test
-- **Category:** AI-native development
-- **What it actually means:** A test that can pass and fail across equivalent runs without a relevant change to the code or intended test environment.
-- **Why it matters:** Flakiness weakens verification gates and can train people or agents to ignore real failures or retry until they obtain a false pass.
-- **In practice:** Preserve the failing seed and environment, quarantine only with an owner and deadline, then fix uncontrolled time, concurrency, network, order, or shared-state dependencies.
-- **Common confusion:** A test that consistently exposes an intermittent product bug is valuable evidence, not necessarily a flaky test.
-- **Related terms:** Regression Test, Test Oracle, Retry with Backoff, Verification Gate
-- **Sources:** [De-Flake Your Tests](https://conferences.computer.org/icsme/pdfs/ICSME2020-1oOutvkGTwF4GyVvNtr3Mm/561900a736/561900a736.pdf)
+<a id="flaky-test"></a>
+### 不稳定测试（Flaky Test）
+- **分类（Category）:** AI 原生开发（AI-native development）
+- **准确含义（What it actually means）:** 在代码或预期测试环境未发生相关变化的等价运行中，可能时而通过、时而失败的测试。
+- **重要性（Why it matters）:** 不稳定性削弱验证门禁，还可能让人或智能体习惯于忽略真实失败，或不断重试直到得到虚假的通过结果。
+- **实际应用（In practice）:** 保留失败的随机种子和环境；仅在有负责人和截止日期时隔离测试，然后修复失控的时间、并发、网络、顺序或共享状态依赖。
+- **常见混淆（Common confusion）:** 稳定地暴露间歇性产品缺陷的测试是有价值的证据，不一定属于不稳定测试。
+- **相关术语（Related terms）:** Regression Test, Test Oracle, Retry with Backoff, Verification Gate
+- **来源（Sources）:** [消除测试的不稳定性](https://conferences.computer.org/icsme/pdfs/ICSME2020-1oOutvkGTwF4GyVvNtr3Mm/561900a736/561900a736.pdf)
 
-### FlashAttention
-- **Category:** Infrastructure & serving
-- **What it actually means:** An exact attention algorithm that tiles the computation to reduce transfers between accelerator memory levels while avoiding materialization of the full attention matrix in high-bandwidth memory.
-- **Why it matters:** Attention can be limited by memory movement rather than arithmetic, especially for long sequences, so an IO-aware kernel can improve usable speed and memory efficiency.
-- **In practice:** Use a kernel supported by the model's shapes, masks, dtype, and hardware, verify numerical tolerance, and benchmark end-to-end latency rather than quoting a paper result as a fixed multiplier.
-- **Common confusion:** FlashAttention changes how attention is computed, not the mathematical attention result it targets. It is separate from KV caching and quantization.
-- **Learn it:** [KV Cache and Flash Attention](../phases/07-transformers-deep-dive/12-kv-cache-flash-attention/)
-- **Related terms:** Attention, Self-Attention, KV Cache, Mixed Precision
-- **Sources:** [FlashAttention](https://arxiv.org/abs/2205.14135)
+<a id="flashattention"></a>
+### 高效精确注意力算法（FlashAttention）
+- **分类（Category）:** 基础设施与服务（Infrastructure & serving）
+- **准确含义（What it actually means）:** 一种精确注意力算法，通过分块计算减少加速器内存层级间的数据传输，并避免在高带宽内存中显式存储完整注意力矩阵。
+- **重要性（Why it matters）:** 注意力的瓶颈可能是数据移动而非算术运算，长序列尤其如此，因此感知输入输出开销的内核能提高实际速度和内存效率。
+- **实际应用（In practice）:** 使用支持模型形状、掩码、数据类型及硬件的内核，验证数值容差，并测量端到端延迟，而不是将论文结果当作固定加速倍数。
+- **常见混淆（Common confusion）:** FlashAttention 改变注意力的计算方式，不改变其目标数学结果。它与键值缓存、量化是不同技术。
+- **学习课程（Learn it）:** [键值缓存与 Flash Attention](../phases/07-transformers-deep-dive/12-kv-cache-flash-attention/)
+- **相关术语（Related terms）:** Attention, Self-Attention, KV Cache, Mixed Precision
+- **来源（Sources）:** [FlashAttention 论文](https://arxiv.org/abs/2205.14135)
 
-### Function Calling
-- **Category:** Agents & tools
-- **What people say:** A model using tools.
-- **What it actually means:** A provider or application interface through which a model emits a structured request naming a tool and its arguments. Application code validates the request, performs the operation, and can return the result for another model step.
-- **Common confusion:** The model requests a function call; your trusted code decides whether and how to execute it. Function calling alone is not a complete agent.
-- **Learn it:** [Function Calling](../phases/11-llm-engineering/09-function-calling/)
-- **Related terms:** Structured Output, Tool Contract, Agent, MCP (Model Context Protocol)
+<a id="function-calling"></a>
+### 函数调用（Function Calling）
+- **分类（Category）:** 智能体与工具（Agents & tools）
+- **常见说法（What people say）:** 模型使用工具。
+- **准确含义（What it actually means）:** 由提供方或应用提供的接口，模型通过它输出包含工具名和参数的结构化请求。应用代码验证请求、执行操作，并可将结果返回给下一步模型调用。
+- **常见混淆（Common confusion）:** 模型只是请求函数调用；是否执行、如何执行由受信代码决定。单独的函数调用不构成完整智能体。
+- **学习课程（Learn it）:** [函数调用](../phases/11-llm-engineering/09-function-calling/)
+- **相关术语（Related terms）:** Structured Output, Tool Contract, Agent, MCP (Model Context Protocol)
 
 ## G
 
-### GAN (Generative Adversarial Network)
-- **Category:** Models & inference
-- **What people say:** Two neural networks competing during training.
-- **What it actually means:** A generator network tries to create realistic data while a discriminator network tries to tell real from fake. They train together: the generator gets better at fooling the discriminator, and the discriminator gets better at detecting fakes.
-- **Related terms:** Loss Function, Latent Space, Diffusion Model
+<a id="gan-generative-adversarial-network"></a>
+### 生成对抗网络（GAN (Generative Adversarial Network)）
+- **分类（Category）:** 模型与推理（Models & inference）
+- **常见说法（What people say）:** 训练时相互竞争的两个神经网络。
+- **准确含义（What it actually means）:** 生成器网络试图创造逼真数据，判别器网络则试图区分真实与伪造。二者共同训练：生成器更善于欺骗判别器，判别器更善于识别伪造。
+- **相关术语（Related terms）:** Loss Function, Latent Space, Diffusion Model
 
-### Goodput
-- **Category:** Infrastructure & serving
-- **What it actually means:** The rate of completed requests that satisfy defined service constraints, such as both time-to-first-token and per-token latency objectives, under a stated workload.
-- **Why it matters:** Raw throughput can rise while users experience more slow requests. Goodput counts only work that meets the service contract.
-- **In practice:** Declare the request distribution and latency thresholds, count only compliant completions, report percentiles beside the aggregate rate, and avoid comparing systems under different objectives.
-- **Common confusion:** Goodput is not all completed throughput and is not a universal property of a model. It depends on workload and success thresholds.
-- **Learn it:** [Inference Metrics and Goodput](../phases/17-infrastructure-and-production/08-inference-metrics-goodput/)
-- **Related terms:** Service Level Objective (SLO), Time to First Token (TTFT), Time per Output Token (TPOT), Cost per Successful Task
-- **Sources:** [DistServe](https://arxiv.org/abs/2401.09670)
+<a id="goodput"></a>
+### 有效吞吐量（Goodput）
+- **分类（Category）:** 基础设施与服务（Infrastructure & serving）
+- **准确含义（What it actually means）:** 在明确工作负载下，完成且满足既定服务约束的请求速率，例如同时满足首词元时间与每词元延迟目标。
+- **重要性（Why it matters）:** 原始吞吐量可能上升，用户却遇到更多慢请求。有效吞吐量只统计符合服务契约的工作。
+- **实际应用（In practice）:** 明确请求分布和延迟阈值，只统计合规完成项，在总体速率旁报告分位数，并避免比较目标不同的系统。
+- **常见混淆（Common confusion）:** 有效吞吐量不是全部已完成吞吐量，也不是模型的通用属性；它取决于工作负载和成功阈值。
+- **学习课程（Learn it）:** [推理指标与有效吞吐量](../phases/17-infrastructure-and-production/08-inference-metrics-goodput/)
+- **相关术语（Related terms）:** Service Level Objective (SLO), Time to First Token (TTFT), Time per Output Token (TPOT), Cost per Successful Task
+- **来源（Sources）:** [DistServe 论文](https://arxiv.org/abs/2401.09670)
 
-### GPT
-- **Category:** Models & inference
-- **What people say:** A generic name for any chatbot.
-- **What it actually means:** Generative Pre-trained Transformer, a family label for generative transformer models pretrained on sequence-prediction objectives and adapted for downstream use. Product names and model architectures should not be treated as interchangeable.
-- **Why it's called that:** Generative describes output production, pre-trained describes the initial broad training stage, and transformer identifies the architecture family.
-- **Related terms:** Transformer, Autoregressive, LLM (Large Language Model)
+<a id="gpt"></a>
+### 生成式预训练变换器（GPT）
+- **分类（Category）:** 模型与推理（Models & inference）
+- **常见说法（What people say）:** 任何聊天机器人的泛称。
+- **准确含义（What it actually means）:** 即生成式预训练 Transformer（Generative Pre-trained Transformer），指一类先通过序列预测目标预训练、再适配下游用途的生成式 Transformer 模型。产品名称与模型架构不应混为一谈。
+- **名称由来（Why it's called that）:** “生成式”描述产生输出，“预训练”描述最初的广泛训练阶段，“Transformer”标识其架构家族。
+- **相关术语（Related terms）:** Transformer, Autoregressive, LLM (Large Language Model)
 
-### Graceful Degradation
-- **Category:** Reliability & operations
-- **What it actually means:** Preserving a bounded core service when capacity or dependencies are impaired by reducing optional quality, features, freshness, or workload instead of failing every request.
-- **Why it matters:** AI systems often depend on several slow or fallible components, so an explicit reduced mode can protect essential user outcomes during partial failure.
-- **In practice:** Predefine which capabilities may be disabled, keep the reduced mode visible to operators, protect safety checks, test the fallback under dependency failure, and restore full service deliberately. Tell users when correctness, safety, freshness, or a promised contract materially changes.
-- **Common confusion:** Graceful degradation is not silently returning a worse answer as if nothing happened. Operators always need visibility; users need disclosure when the reduced mode materially changes the result or service contract.
-- **Learn it:** [Production LLM Application](../phases/11-llm-engineering/13-production-app/)
-- **Related terms:** Circuit Breaker, Load Shedding, Model Router, Availability
-- **Sources:** [Google SRE: Addressing Cascading Failures](https://sre.google/sre-book/addressing-cascading-failures/)
+<a id="graceful-degradation"></a>
+### 平稳降级（Graceful Degradation）
+- **分类（Category）:** 可靠性与运维（Reliability & operations）
+- **准确含义（What it actually means）:** 当容量或依赖项受损时，降低可选质量、功能、时效性或工作负载，以保留有限的核心服务，而不是让所有请求失败。
+- **重要性（Why it matters）:** AI 系统经常依赖多个缓慢或可能失败的组件，因此明确的降级模式能在部分故障时保护关键用户成果。
+- **实际应用（In practice）:** 预先定义可关闭的能力，让运维人员能看到降级模式，保护安全检查，在依赖故障下测试回退方案，并有计划地恢复完整服务。若正确性、安全性、时效性或承诺的契约有重大变化，应告知用户。
+- **常见混淆（Common confusion）:** 平稳降级不是悄悄返回更差答案并假装无事发生。运维人员始终需要可见性；降级实质影响结果或服务契约时，用户也需要知情。
+- **学习课程（Learn it）:** [生产级大语言模型应用](../phases/11-llm-engineering/13-production-app/)
+- **相关术语（Related terms）:** Circuit Breaker, Load Shedding, Model Router, Availability
+- **来源（Sources）:** [Google SRE：应对级联故障](https://sre.google/sre-book/addressing-cascading-failures/)
 
-### Gradient
-- **Category:** Math & training
-- **What people say:** The slope of the loss.
-- **What it actually means:** A vector of partial derivatives pointing in the direction of steepest increase. In ML, you go opposite to the gradient (gradient descent) to minimize the loss.
-- **Common confusion:** Optimizers can transform, average, clip, or adapt gradients instead of taking a plain negative-gradient step.
-- **Related terms:** Backpropagation, Gradient Descent, Optimizer
+<a id="gradient"></a>
+### 梯度（Gradient）
+- **分类（Category）:** 数学与训练（Math & training）
+- **常见说法（What people say）:** 损失的斜率。
+- **准确含义（What it actually means）:** 由偏导数组成、指向增长最快方向的向量。在机器学习中，沿梯度反方向移动，即梯度下降，以最小化损失。
+- **常见混淆（Common confusion）:** 优化器可以变换、平均、裁剪或自适应调整梯度，而不是简单沿负梯度走一步。
+- **相关术语（Related terms）:** Backpropagation, Gradient Descent, Optimizer
 
-### Gradient Accumulation
-- **Category:** Math & training
-- **What it actually means:** Summing or averaging gradients from several microbatches before performing one optimizer update.
-- **Why it matters:** It lets you approximate a larger effective batch when one device cannot hold all examples and activations at once.
-- **In practice:** Scale the loss consistently, call the optimizer only after the chosen number of microbatches, and measure whether normalization or distributed synchronization changes behavior.
-- **Common confusion:** Gradient accumulation reduces per-step activation memory, but it does not reproduce every property of processing the full batch simultaneously.
-- **Related terms:** Batch Size, Mixed Precision, Optimizer, Backpropagation
-- **Sources:** [PyTorch AMP examples: Gradient accumulation](https://docs.pytorch.org/docs/stable/notes/amp_examples.html#gradient-accumulation)
+<a id="gradient-accumulation"></a>
+### 梯度累积（Gradient Accumulation）
+- **分类（Category）:** 数学与训练（Math & training）
+- **准确含义（What it actually means）:** 在一次优化器更新前，对多个微批次的梯度求和或取平均。
+- **重要性（Why it matters）:** 当单个设备无法同时容纳所有样本与激活时，它能近似实现更大的有效批次。
+- **实际应用（In practice）:** 一致地缩放损失，仅在达到选定微批次数后调用优化器，并测量归一化或分布式同步是否改变行为。
+- **常见混淆（Common confusion）:** 梯度累积减少每步激活内存，但不能复现整批样本同时处理的所有性质。
+- **相关术语（Related terms）:** Batch Size, Mixed Precision, Optimizer, Backpropagation
+- **来源（Sources）:** [PyTorch 自动混合精度示例：梯度累积](https://docs.pytorch.org/docs/stable/notes/amp_examples.html#gradient-accumulation)
 
-### Gradient Clipping
-- **Category:** Math & training
-- **What it actually means:** Limiting gradient values or their combined norm before an optimizer update when they exceed a chosen threshold.
-- **Why it matters:** It can prevent an unusually large gradient from destabilizing a training step and producing non-finite values.
-- **In practice:** Log unclipped norms, clip after unscaling mixed-precision gradients, and investigate repeated clipping instead of treating it as a substitute for diagnosing instability.
-- **Common confusion:** Clipping controls update magnitude; it does not repair invalid data, a broken loss, or a consistently unsuitable learning rate.
-- **Related terms:** Gradient, NaN (Not a Number), Mixed Precision, Learning Rate
-- **Sources:** [On the difficulty of training recurrent neural networks](https://arxiv.org/abs/1211.5063)
+<a id="gradient-clipping"></a>
+### 梯度裁剪（Gradient Clipping）
+- **分类（Category）:** 数学与训练（Math & training）
+- **准确含义（What it actually means）:** 在优化器更新前，当梯度值或其整体范数超过阈值时加以限制。
+- **重要性（Why it matters）:** 它可防止异常大的梯度破坏某个训练步骤的稳定性，产生非有限数值。
+- **实际应用（In practice）:** 记录裁剪前范数，在混合精度梯度反缩放后裁剪，并调查反复发生的裁剪，而不是用裁剪代替不稳定性诊断。
+- **常见混淆（Common confusion）:** 裁剪控制更新幅度，不能修复无效数据、错误损失函数或持续不合适的学习率。
+- **相关术语（Related terms）:** Gradient, NaN (Not a Number), Mixed Precision, Learning Rate
+- **来源（Sources）:** [训练循环神经网络的困难](https://arxiv.org/abs/1211.5063)
 
-### Gradient Descent
-- **Category:** Math & training
-- **What people say:** Walking downhill on the loss surface.
-- **What it actually means:** A family of optimization updates that move parameters using the negative gradient of an objective, usually estimated from batches rather than the entire dataset.
-- **Related terms:** Gradient, Learning Rate, Optimizer
+<a id="gradient-descent"></a>
+### 梯度下降（Gradient Descent）
+- **分类（Category）:** 数学与训练（Math & training）
+- **常见说法（What people say）:** 沿损失曲面下坡。
+- **准确含义（What it actually means）:** 利用目标函数负梯度移动参数的一类优化更新方法，梯度通常由批次估计，而非整个数据集。
+- **相关术语（Related terms）:** Gradient, Learning Rate, Optimizer
 
-### Grounding
-- **Category:** Retrieval & generation
-- **What it actually means:** Connecting a generated answer or action to evidence, state, or observations that the system can identify and check.
-- **Why it matters:** Grounding gives the system a basis beyond unconstrained generation and makes unsupported claims easier to detect.
-- **In practice:** Retrieve a policy section, require the answer to cite it, and reject claims that the cited passage does not support.
-- **Common confusion:** Adding documents to a prompt creates an opportunity for grounding. It does not guarantee the model will use them correctly.
-- **Learn it:** [Retrieval-Augmented Generation](../phases/11-llm-engineering/06-rag/)
-- **Related terms:** RAG (Retrieval-Augmented Generation), Hallucination, Verification Gate, Reranker
+<a id="grounding"></a>
+### 依据关联（Grounding）
+- **分类（Category）:** 检索与生成（Retrieval & generation）
+- **准确含义（What it actually means）:** 将生成答案或动作与系统能够识别并检查的证据、状态或观测联系起来。
+- **重要性（Why it matters）:** 依据关联让系统拥有超出无约束生成的依据，也更容易发现无支持的断言。
+- **实际应用（In practice）:** 检索政策章节，要求答案引用它，并拒绝引用段落不支持的断言。
+- **常见混淆（Common confusion）:** 将文档加入提示词只是创造依据关联的机会，不保证模型会正确使用。
+- **学习课程（Learn it）:** [检索增强生成](../phases/11-llm-engineering/06-rag/)
+- **相关术语（Related terms）:** RAG (Retrieval-Augmented Generation), Hallucination, Verification Gate, Reranker
 
-### Guardrails
-- **Category:** Evaluation & safety
-- **What people say:** Safety filters around a model.
-- **What it actually means:** System controls that constrain inputs, tool use, outputs, permissions, and escalation. They can include schemas, policy checks, classifiers, allowlists, sandboxing, approvals, and post-action verification.
-- **Why it matters:** No single filter covers all failure modes, so controls should be layered according to risk.
-- **Common confusion:** Guardrails reduce risk; they do not prove that an AI system is safe.
-- **Learn it:** [Guardrails](../phases/11-llm-engineering/12-guardrails/)
-- **Related terms:** Least Privilege, Approval Gate, Sandbox, Evaluation (Eval)
+<a id="guardrails"></a>
+### 防护机制（Guardrails）
+- **分类（Category）:** 评估与安全（Evaluation & safety）
+- **常见说法（What people say）:** 围绕模型的安全过滤器。
+- **准确含义（What it actually means）:** 约束输入、工具使用、输出、权限和升级处理的系统控制，可包括模式、策略检查、分类器、允许列表、沙箱、审批和动作后验证。
+- **重要性（Why it matters）:** 没有单一过滤器覆盖所有失效模式，因此应按风险分层设置控制。
+- **常见混淆（Common confusion）:** 防护机制降低风险，不证明 AI 系统安全。
+- **学习课程（Learn it）:** [防护机制](../phases/11-llm-engineering/12-guardrails/)
+- **相关术语（Related terms）:** Least Privilege, Approval Gate, Sandbox, Evaluation (Eval)
 
 ## H
 
-### Hallucination
-- **Category:** Evaluation & safety
-- **What people say:** The model is lying.
-- **What it actually means:** Generated content that is false, unsupported by the available evidence, or inconsistent with the task's source of truth. It can arise even when the output is fluent and the model is not attempting to deceive.
-- **Why it matters:** You usually cannot inspect whether a statement existed in training data, so production checks should focus on support, correctness, and traceability.
-- **In practice:** Require cited evidence for factual answers and evaluate whether each citation actually supports the associated claim.
-- **Common confusion:** A hallucination is an output-quality failure, not a diagnosis of model intent.
-- **Related terms:** Grounding, RAG (Retrieval-Augmented Generation), Verification Gate
+<a id="hallucination"></a>
+### 幻觉（Hallucination）
+- **分类（Category）:** 评估与安全（Evaluation & safety）
+- **常见说法（What people say）:** 模型在撒谎。
+- **准确含义（What it actually means）:** 生成的内容错误、缺乏现有证据支持，或与任务的权威事实来源不一致。即使输出流畅且模型并未试图欺骗，也可能产生幻觉。
+- **重要性（Why it matters）:** 通常无法检查某个陈述是否曾出现在训练数据中，因此生产检查应关注依据支持、正确性与可追溯性。
+- **实际应用（In practice）:** 要求事实性回答引用证据，并评估每条引用是否真正支持对应断言。
+- **常见混淆（Common confusion）:** 幻觉属于输出质量失败，不是对模型意图的诊断。
+- **相关术语（Related terms）:** Grounding, RAG (Retrieval-Augmented Generation), Verification Gate
 
-### Handoff
-- **Category:** AI-native development
-- **What it actually means:** A structured transfer of a task between people or agents that preserves the objective, current state, evidence, decisions, constraints, and remaining work.
-- **Why it matters:** A good handoff prevents the next worker from reconstructing the entire task from a long transcript or repeating completed actions.
-- **In practice:** Pass the accepted plan, changed files, test commands and results, unresolved risks, and exact next action in a compact task packet.
-- **Common confusion:** A summary says what happened. A handoff also says what state is authoritative and what should happen next.
-- **Learn it:** [Multi-Session Handoff](../phases/14-agent-engineering/40-multi-session-handoff/)
-- **Related terms:** Agent State, Checkpoint, Scope Contract, Progressive Disclosure
+<a id="handoff"></a>
+### 交接（Handoff）
+- **分类（Category）:** AI 原生开发（AI-native development）
+- **准确含义（What it actually means）:** 在人或智能体之间结构化转移任务，保留目标、当前状态、证据、决策、约束和剩余工作。
+- **重要性（Why it matters）:** 良好的交接可避免下一位执行者从冗长记录中重建整个任务，或重复已完成动作。
+- **实际应用（In practice）:** 用精简任务包传递已接受计划、变更文件、测试命令与结果、未解决风险和确切下一步动作。
+- **常见混淆（Common confusion）:** 摘要说明发生了什么；交接还说明哪些状态具有权威性，以及下一步应做什么。
+- **学习课程（Learn it）:** [多会话交接](../phases/14-agent-engineering/40-multi-session-handoff/)
+- **相关术语（Related terms）:** Agent State, Checkpoint, Scope Contract, Progressive Disclosure
 
-### HNSW
-- **Category:** Retrieval & generation
-- **Aliases:** Hierarchical Navigable Small World
-- **What it actually means:** An approximate-nearest-neighbor index that organizes vectors in layered proximity graphs and searches from coarse upper layers toward detailed lower layers.
-- **Why it matters:** It is a common way to make high-recall vector search practical at scales where exhaustive comparison is too slow.
-- **In practice:** Tune construction and query parameters against latency, memory, and Recall@K targets, then rebuild the index when embedding versions change.
-- **Common confusion:** HNSW is an index algorithm, not a similarity metric, embedding model, or complete vector database.
-- **Related terms:** Approximate Nearest Neighbor (ANN), Vector Database, Embedding, Recall@K
-- **Sources:** [Efficient and Robust Approximate Nearest Neighbor Search Using HNSW](https://dl.acm.org/doi/10.1109/TPAMI.2018.2889473)
+<a id="hnsw"></a>
+### 分层可导航小世界（HNSW）
+- **分类（Category）:** 检索与生成（Retrieval & generation）
+- **别名（Aliases）:** Hierarchical Navigable Small World
+- **准确含义（What it actually means）:** 将向量组织为分层邻近图，并从粗粒度上层搜索到精细下层的近似最近邻索引。
+- **重要性（Why it matters）:** 当穷举比较过慢时，它是实现大规模高召回向量搜索的常见方法。
+- **实际应用（In practice）:** 按延迟、内存和 Recall@K 目标调优构建与查询参数，嵌入版本改变时重建索引。
+- **常见混淆（Common confusion）:** HNSW 是索引算法，不是相似度度量、嵌入模型或完整向量数据库。
+- **相关术语（Related terms）:** Approximate Nearest Neighbor (ANN), Vector Database, Embedding, Recall@K
+- **来源（Sources）:** [使用 HNSW 进行高效且稳健的近似最近邻搜索](https://dl.acm.org/doi/10.1109/TPAMI.2018.2889473)
 
-### Human-in-the-Loop (HITL)
-- **Category:** Agents & tools
-- **Aliases:** Human oversight, human review
-- **What it actually means:** A workflow design in which a person supplies judgment, correction, approval, or escalation at defined points in an AI-driven process.
-- **Why it matters:** Human involvement is most useful at high-impact, ambiguous, or irreversible boundaries, not as an undefined fallback after every step.
-- **In practice:** Let the agent classify routine requests automatically, but route uncertain or high-value cases to a reviewer with the evidence and proposed action.
-- **Common confusion:** HITL does not automatically make a system safe. Reviewers need time, context, authority, and a clear decision standard.
-- **Related terms:** Approval Gate, Verification Gate, Agent, Guardrails
+<a id="human-in-the-loop-hitl"></a>
+### 人在回路（Human-in-the-Loop (HITL)）
+- **分类（Category）:** 智能体与工具（Agents & tools）
+- **别名（Aliases）:** Human oversight, human review
+- **准确含义（What it actually means）:** 在 AI 驱动流程的明确节点，由人提供判断、纠正、批准或升级处理的工作流设计。
+- **重要性（Why it matters）:** 人工参与最适合高影响、含糊或不可逆的边界，而不是每一步之后都设置一个未定义的兜底。
+- **实际应用（In practice）:** 让智能体自动分类常规请求，但将不确定或高价值案例连同证据和建议动作一起交给审阅者。
+- **常见混淆（Common confusion）:** 人在回路不会自动让系统安全。审阅者需要时间、上下文、权限和明确决策标准。
+- **相关术语（Related terms）:** Approval Gate, Verification Gate, Agent, Guardrails
 
-### Hybrid Retrieval
-- **Category:** Retrieval & generation
-- **What it actually means:** Retrieval that combines signals from different methods, commonly lexical matching and dense-vector similarity, before merging or reranking results.
-- **Why it matters:** Exact identifiers, rare terms, and semantic paraphrases behave differently, so one retrieval signal can miss useful evidence.
-- **In practice:** Retrieve candidates with both BM25-style keyword search and embeddings, merge their ranks, then rerank the combined set for the user query.
-- **Common confusion:** Hybrid retrieval combines candidate signals. A reranker applies a second relevance model to candidates already retrieved.
-- **Learn it:** [Advanced RAG](../phases/11-llm-engineering/07-advanced-rag/)
-- **Related terms:** Semantic Search, Reranker, RAG (Retrieval-Augmented Generation), Embedding
+<a id="hybrid-retrieval"></a>
+### 混合检索（Hybrid Retrieval）
+- **分类（Category）:** 检索与生成（Retrieval & generation）
+- **准确含义（What it actually means）:** 融合不同方法的信号，通常是词法匹配与稠密向量相似度，再合并或重排结果的检索方式。
+- **重要性（Why it matters）:** 精确标识符、罕见术语和语义改写的表现不同，因此单一检索信号可能遗漏有用证据。
+- **实际应用（In practice）:** 同时使用 BM25 式关键词搜索和嵌入检索候选项，融合排名，再针对用户查询重排合并后的集合。
+- **常见混淆（Common confusion）:** 混合检索组合候选信号；重排序器则对已检索候选项应用第二个相关性模型。
+- **学习课程（Learn it）:** [高级检索增强生成](../phases/11-llm-engineering/07-advanced-rag/)
+- **相关术语（Related terms）:** Semantic Search, Reranker, RAG (Retrieval-Augmented Generation), Embedding
 
-### Hyperparameter
-- **Category:** Math & training
-- **What people say:** A setting you tune.
-- **What it actually means:** A configuration choice that shapes model structure, optimization, data processing, or inference rather than being learned as an ordinary model parameter. Examples include learning rate, batch size, layer count, and decoding settings.
-- **Common confusion:** Some hyperparameters are selected before training, while others can be changed during a schedule or at inference time.
-- **Related terms:** Parameter, Learning Rate, Batch Size, Temperature
+<a id="hyperparameter"></a>
+### 超参数（Hyperparameter）
+- **分类（Category）:** 数学与训练（Math & training）
+- **常见说法（What people say）:** 需要调优的设置。
+- **准确含义（What it actually means）:** 影响模型结构、优化、数据处理或推理的配置选择，而不是作为普通模型参数学习所得的值。例如学习率、批大小、层数和解码设置。
+- **常见混淆（Common confusion）:** 有些超参数在训练前选定，有些可在调度过程中或推理时改变。
+- **相关术语（Related terms）:** Parameter, Learning Rate, Batch Size, Temperature
 
 ## I
 
-### Idempotency
-- **Category:** AI-native development
-- **What it actually means:** The property that repeating the same operation with the same identity does not create additional side effects beyond the first successful application.
-- **Why it matters:** Retries are normal in distributed agent systems. Without idempotency, one uncertain response can duplicate payments, comments, deployments, or records.
-- **In practice:** Attach an idempotency key to a tool request and persist the completed result so a retry returns that result instead of executing the write again.
-- **Common confusion:** Idempotency does not mean every response is byte-for-byte identical. It means the intended state change is not duplicated.
-- **Sources:** [HTTP Semantics: idempotent methods](https://www.rfc-editor.org/rfc/rfc9110.html#name-idempotent-methods)
-- **Related terms:** Retry with Backoff, Durable Execution, Checkpoint
+<a id="idempotency"></a>
+### 幂等性（Idempotency）
+- **分类（Category）:** AI 原生开发（AI-native development）
+- **准确含义（What it actually means）:** 以相同身份重复同一操作，不会产生超出首次成功应用之外的额外副作用的性质。
+- **重要性（Why it matters）:** 分布式智能体系统中的重试很常见。没有幂等性，一次不确定响应就可能造成重复付款、评论、部署或记录。
+- **实际应用（In practice）:** 为工具请求附加幂等键，并持久保存完成结果，让重试返回该结果，而不是再次执行写入。
+- **常见混淆（Common confusion）:** 幂等性不意味着每次响应逐字节相同，而是预期状态变化不会重复发生。
+- **来源（Sources）:** [HTTP 语义：幂等方法](https://www.rfc-editor.org/rfc/rfc9110.html#name-idempotent-methods)
+- **相关术语（Related terms）:** Retry with Backoff, Durable Execution, Checkpoint
 
-### Image Token
-- **Category:** Multimodal systems
-- **What it actually means:** A model-specific visual unit represented as a vector or discrete code, commonly derived from an image patch, region, or learned visual-codebook entry.
-- **Why it matters:** Turning visual input into a sequence lets transformer-style components process images together with text or other tokenized modalities.
-- **In practice:** Document whether tokens are continuous patches or discrete codes, preserve spatial position, test resolution and aspect-ratio changes, and count visual tokens in the model's input budget.
-- **Common confusion:** An image token is not necessarily one pixel, one object, or one fixed physical area. Its scope follows the visual encoder or tokenizer.
-- **Learn it:** [Vision-Language Models](../phases/04-computer-vision/25-vision-language-models/)
-- **Related terms:** Patch Embedding, Token, VAE (Variational Autoencoder), Vision Transformer (ViT)
-- **Sources:** [Vision Transformer](https://arxiv.org/abs/2010.11929); [VQ-VAE](https://arxiv.org/abs/1711.00937)
+<a id="image-token"></a>
+### 图像词元（Image Token）
+- **分类（Category）:** 多模态系统（Multimodal systems）
+- **准确含义（What it actually means）:** 模型特有的视觉单元，以向量或离散编码表示，通常由图像块、区域或学习到的视觉码本条目产生。
+- **重要性（Why it matters）:** 将视觉输入转化为序列，使 Transformer 类组件能将图像与文本或其他词元化模态一起处理。
+- **实际应用（In practice）:** 记录词元是连续图像块还是离散编码，保留空间位置，测试分辨率和宽高比变化，并把视觉词元计入模型输入预算。
+- **常见混淆（Common confusion）:** 图像词元不一定是一个像素、一个物体或固定物理区域，其范围由视觉编码器或分词器决定。
+- **学习课程（Learn it）:** [视觉语言模型](../phases/04-computer-vision/25-vision-language-models/)
+- **相关术语（Related terms）:** Patch Embedding, Token, VAE (Variational Autoencoder), Vision Transformer (ViT)
+- **来源（Sources）:** [视觉 Transformer](https://arxiv.org/abs/2010.11929); [向量量化变分自编码器论文](https://arxiv.org/abs/1711.00937)
 
-### In-Context Learning
-- **Category:** Prompting & context
-- **What it actually means:** A model adapting its behavior from instructions, examples, or patterns supplied in the current input without an ordinary parameter update.
-- **Why it matters:** It explains how one pretrained model can perform a new task from context while keeping its weights unchanged.
-- **In practice:** Place representative demonstrations before the target input, test order and formatting variants, and keep evaluation examples separate from the demonstrations.
-- **Common confusion:** In-context learning is temporary conditioning, not fine-tuning, durable memory, or proof that the model inferred the intended rule.
-- **Related terms:** Few-Shot, Zero-Shot, Context Window, Prompt Engineering
-- **Sources:** [Language Models are Few-Shot Learners](https://arxiv.org/abs/2005.14165)
+<a id="in-context-learning"></a>
+### 上下文学习（In-Context Learning）
+- **分类（Category）:** 提示词与上下文（Prompting & context）
+- **准确含义（What it actually means）:** 模型根据当前输入提供的指令、示例或模式调整行为，而不进行普通参数更新。
+- **重要性（Why it matters）:** 它解释了一个预训练模型如何在权重不变的情况下，凭上下文执行新任务。
+- **实际应用（In practice）:** 在目标输入前放置代表性示范，测试顺序和格式变体，并将评估样本与示范分开。
+- **常见混淆（Common confusion）:** 上下文学习是临时条件化，不是微调、持久记忆，也不证明模型推断出了预期规则。
+- **相关术语（Related terms）:** Few-Shot, Zero-Shot, Context Window, Prompt Engineering
+- **来源（Sources）:** [语言模型是少样本学习者](https://arxiv.org/abs/2005.14165)
 
-### Incident Response
-- **Category:** Reliability & operations
-- **What it actually means:** The coordinated process for detecting, analyzing, containing, recovering from, communicating, and learning from an event that threatens service, data, safety, or security.
-- **Why it matters:** During an incident, clear roles and evidence matter more than improvised heroics, especially when model behavior and distributed dependencies obscure the failing boundary.
-- **In practice:** Define severity and command roles, preserve traces and audit records, stop harmful actions, communicate impact, verify recovery, and track corrective work to completion.
-- **Common confusion:** Incident response manages the event and its consequences. Root-cause analysis and long-term prevention continue after immediate service is restored.
-- **Learn it:** [SRE for AI](../phases/17-infrastructure-and-production/23-sre-for-ai/)
-- **Related terms:** Observability, Audit Log, Postmortem, Availability
-- **Sources:** [Google SRE: Managing Incidents](https://sre.google/sre-book/managing-incidents/); [NIST SP 800-61 Rev. 3](https://csrc.nist.gov/pubs/sp/800/61/r3/final)
+<a id="incident-response"></a>
+### 事件响应（Incident Response）
+- **分类（Category）:** 可靠性与运维（Reliability & operations）
+- **准确含义（What it actually means）:** 针对威胁服务、数据、功能安全或信息安全的事件，协调开展检测、分析、遏制、恢复、沟通和复盘学习的过程。
+- **重要性（Why it matters）:** 事件发生时，清晰角色和证据比临时个人救火更重要，尤其当模型行为和分布式依赖掩盖故障边界时。
+- **实际应用（In practice）:** 定义严重程度与指挥角色，保留追踪和审计记录，停止有害动作，沟通影响，验证恢复，并跟踪纠正工作直至完成。
+- **常见混淆（Common confusion）:** 事件响应处理事件及其后果。即时服务恢复后，根因分析和长期预防仍要继续。
+- **学习课程（Learn it）:** [面向 AI 的站点可靠性工程](../phases/17-infrastructure-and-production/23-sre-for-ai/)
+- **相关术语（Related terms）:** Observability, Audit Log, Postmortem, Availability
+- **来源（Sources）:** [Google SRE：事件管理](https://sre.google/sre-book/managing-incidents/); [NIST SP 800-61 第 3 修订版](https://csrc.nist.gov/pubs/sp/800/61/r3/final)
 
-### Indirect Prompt Injection
-- **Category:** Security & governance
-- **What it actually means:** A prompt-injection attack delivered through content the system retrieves or observes, such as a webpage, document, email, image text, or tool result, rather than directly through the user's instruction.
-- **Why it matters:** An agent can encounter attacker-controlled instructions while performing an authorized task and mistake that content for authority-bearing guidance.
-- **In practice:** Label external content as untrusted data, separate it from instructions, minimize tool permissions, require approval for consequential actions, and include malicious retrieved content in regression tests.
-- **Common confusion:** Indirect describes the delivery path, not a weaker attack. A hidden instruction in retrieved content can be as consequential as a direct user prompt.
-- **Learn it:** [Indirect Prompt Injection](../phases/18-ethics-safety-alignment/15-indirect-prompt-injection/)
-- **Related terms:** Prompt Injection, Instruction Hierarchy, Trust Boundary, Data Exfiltration
-- **Sources:** [Compromising Real-World LLM-Integrated Applications with Indirect Prompt Injection](https://arxiv.org/abs/2302.12173)
+<a id="indirect-prompt-injection"></a>
+### 间接提示词注入（Indirect Prompt Injection）
+- **分类（Category）:** 安全与治理（Security & governance）
+- **准确含义（What it actually means）:** 通过系统检索或观察到的内容传递的提示词注入攻击，例如网页、文档、邮件、图像文字或工具结果，而非直接来自用户指令。
+- **重要性（Why it matters）:** 智能体执行获授权任务时，可能遇到攻击者控制的指令，并误把内容当作具有权威性的指导。
+- **实际应用（In practice）:** 将外部内容标为不可信数据，与指令分离，尽量缩小工具权限，重要动作要求审批，并在回归测试中加入恶意检索内容。
+- **常见混淆（Common confusion）:** “间接”描述传递路径，不代表攻击更弱。检索内容中的隐藏指令可能与直接用户提示同样具有重大后果。
+- **学习课程（Learn it）:** [间接提示词注入](../phases/18-ethics-safety-alignment/15-indirect-prompt-injection/)
+- **相关术语（Related terms）:** Prompt Injection, Instruction Hierarchy, Trust Boundary, Data Exfiltration
+- **来源（Sources）:** [利用间接提示词注入攻陷现实中的大语言模型集成应用](https://arxiv.org/abs/2302.12173)
 
-### Inductive Bias
-- **Category:** Models & inference
-- **What people say:** Assumptions built into a learning system.
-- **What it actually means:** Structural or statistical assumptions that favor some functions or representations over others. Convolution favors locality and shared filters; causal masking favors prediction from preceding positions.
-- **Common confusion:** Transformers still have inductive biases through tokenization, position handling, masking, architecture, data, and objective.
-- **Related terms:** CNN (Convolutional Neural Network), Transformer, Feature
+<a id="inductive-bias"></a>
+### 归纳偏置（Inductive Bias）
+- **分类（Category）:** 模型与推理（Models & inference）
+- **常见说法（What people say）:** 内置于学习系统的假设。
+- **准确含义（What it actually means）:** 偏向某些函数或表示而非其他函数或表示的结构性或统计假设。卷积偏向局部性与共享滤波器；因果掩码偏向从前序位置预测。
+- **常见混淆（Common confusion）:** Transformer 仍通过分词、位置处理、掩码、架构、数据和目标函数具有归纳偏置。
+- **相关术语（Related terms）:** CNN (Convolutional Neural Network), Transformer, Feature
 
-### Inference
-- **Category:** Models & inference
-- **What people say:** Running a trained model.
-- **What it actually means:** Executing a trained model to produce predictions, scores, embeddings, or generated tokens without performing an ordinary training update to its parameters.
-- **Common confusion:** An application can update caches, conversation state, or external memory during inference even though model weights stay unchanged.
-- **Related terms:** Autoregressive, Streaming, KV Cache
+<a id="inference"></a>
+### 推理（Inference）
+- **分类（Category）:** 模型与推理（Models & inference）
+- **常见说法（What people say）:** 运行训练好的模型。
+- **准确含义（What it actually means）:** 执行训练好的模型以产生预测、分数、嵌入或生成词元，而不对参数进行普通训练更新。
+- **常见混淆（Common confusion）:** 推理期间模型权重虽不变，应用仍可更新缓存、对话状态或外部记忆。
+- **相关术语（Related terms）:** Autoregressive, Streaming, KV Cache
 
-### Instruction Following
-- **Category:** Prompting & context
-- **What it actually means:** A model capability to map natural-language directions and supplied context to behavior that satisfies the stated task and constraints.
-- **Why it matters:** Language generation can be fluent without obeying the user's requested operation, format, boundaries, or priorities.
-- **In practice:** Evaluate instruction adherence separately from answer quality using conflicting constraints, format requirements, irrelevant context, and refusal cases.
-- **Common confusion:** Instruction following is not factual correctness, alignment, or obedience to every string that looks like an instruction.
-- **Related terms:** SFT (Supervised Fine-Tuning), Prompt Engineering, Instruction Hierarchy, Alignment
-- **Sources:** [Finetuned Language Models Are Zero-Shot Learners](https://arxiv.org/abs/2109.01652)
+<a id="instruction-following"></a>
+### 指令遵循（Instruction Following）
+- **分类（Category）:** 提示词与上下文（Prompting & context）
+- **准确含义（What it actually means）:** 模型将自然语言要求与提供的上下文映射为满足指定任务和约束的行为的能力。
+- **重要性（Why it matters）:** 语言生成可以很流畅，却未遵循用户要求的操作、格式、边界或优先级。
+- **实际应用（In practice）:** 使用冲突约束、格式要求、无关上下文及拒答案例，将指令遵循与答案质量分开评估。
+- **常见混淆（Common confusion）:** 指令遵循不等于事实正确性、对齐，也不是服从所有看似指令的字符串。
+- **相关术语（Related terms）:** SFT (Supervised Fine-Tuning), Prompt Engineering, Instruction Hierarchy, Alignment
+- **来源（Sources）:** [微调后的语言模型是零样本学习者](https://arxiv.org/abs/2109.01652)
 
-### Instruction Hierarchy
-- **Category:** Prompting & context
-- **What it actually means:** A rule set for resolving conflicts among instructions from sources with different authority, such as application policy, users, and untrusted retrieved content.
-- **Why it matters:** Agent systems mix trusted goals with external text, so the model and harness need a defined response when lower-authority content conflicts with higher-authority constraints.
-- **In practice:** Label untrusted tool output as data, preserve higher-priority constraints outside that content, and test direct and indirect conflict cases.
-- **Common confusion:** An instruction hierarchy can improve behavior but is not a security boundary; least privilege and approval controls still limit consequences.
-- **Related terms:** System Prompt, Prompt Injection, Least Privilege, Tool Contract
-- **Sources:** [The Instruction Hierarchy](https://arxiv.org/abs/2404.13208)
+<a id="instruction-hierarchy"></a>
+### 指令层级（Instruction Hierarchy）
+- **分类（Category）:** 提示词与上下文（Prompting & context）
+- **准确含义（What it actually means）:** 解决来自不同权威来源的指令冲突的规则集，例如应用策略、用户和不可信检索内容。
+- **重要性（Why it matters）:** 智能体系统混合了受信目标与外部文本，因此当低权威内容与高权威约束冲突时，模型和运行框架需要明确的应对方式。
+- **实际应用（In practice）:** 将不可信工具输出标为数据，将更高优先级约束保存在其外部，并测试直接和间接冲突案例。
+- **常见混淆（Common confusion）:** 指令层级能改善行为，但不是安全边界；最小权限和审批控制仍用于限制后果。
+- **相关术语（Related terms）:** System Prompt, Prompt Injection, Least Privilege, Tool Contract
+- **来源（Sources）:** [指令层级论文](https://arxiv.org/abs/2404.13208)
 
-### Inter-Token Latency (ITL)
-- **Category:** Infrastructure & serving
-- **What it actually means:** The elapsed time between two consecutive output-token arrival events for one request, calculated as `t_i - t_(i-1)` for an output token after the first.
-- **Why it matters:** Individual gaps expose decode stalls and streaming jitter that a per-request average can hide, especially under batching, preemption, or mixed workloads.
-- **In practice:** Record each post-first-token interval with its request and token position, then report distributions by workload, output length, and concurrency without pooling away request boundaries.
-- **Common confusion:** ITL is one interval between consecutive tokens. Time per output token is a per-request average across those intervals, while time to first token covers the wait before streaming begins.
-- **Learn it:** [Inference Metrics and Goodput](../phases/17-infrastructure-and-production/08-inference-metrics-goodput/)
-- **Related terms:** Time per Output Token (TPOT), Time to First Token (TTFT), Decode Phase, Tail Latency
-- **Sources:** [DistServe](https://arxiv.org/abs/2401.09670)
+<a id="inter-token-latency-itl"></a>
+### 词元间延迟（Inter-Token Latency (ITL)）
+- **分类（Category）:** 基础设施与服务（Infrastructure & serving）
+- **准确含义（What it actually means）:** 单个请求中相邻两次输出词元到达事件之间的时间，对于第一个之后的输出词元，计算为 `t_i - t_(i-1)`。
+- **重要性（Why it matters）:** 单次间隔能揭示请求平均值可能掩盖的解码停顿与流式抖动，在批处理、抢占或混合工作负载下尤其重要。
+- **实际应用（In practice）:** 记录首词元之后每个间隔及其请求和词元位置，再按工作负载、输出长度和并发度报告分布，不要汇总到丢失请求边界。
+- **常见混淆（Common confusion）:** ITL 是相邻词元的一次间隔；每输出词元耗时是单个请求内这些间隔的平均值；首词元时间则覆盖开始流式输出前的等待。
+- **学习课程（Learn it）:** [推理指标与有效吞吐量](../phases/17-infrastructure-and-production/08-inference-metrics-goodput/)
+- **相关术语（Related terms）:** Time per Output Token (TPOT), Time to First Token (TTFT), Decode Phase, Tail Latency
+- **来源（Sources）:** [DistServe 论文](https://arxiv.org/abs/2401.09670)
 
 ## J
 
-### Jailbreak
-- **Category:** Security & governance
-- **What it actually means:** An adversarial input or interaction strategy intended to make a model produce behavior that its training or application controls are designed to prevent.
-- **Why it matters:** Successful jailbreaks expose gaps between stated policy and actual behavior, and they can become more consequential when the model controls tools or protected data.
-- **In practice:** Derive test families from prohibited behaviors, vary format and interaction length, measure both refusal and harmful completion, and convert confirmed failures into versioned adversarial evals.
-- **Common confusion:** A jailbreak targets model or system behavioral restrictions. Prompt injection redirects instruction following, often toward an attacker's goal; one interaction can involve both.
-- **Learn it:** [Jailbreak Taxonomy](../phases/19-capstone-projects/82-jailbreak-taxonomy/)
-- **Related terms:** Prompt Injection, Red Teaming, Guardrails, Eval Set
-- **Sources:** [Universal and Transferable Adversarial Attacks on Aligned Language Models](https://arxiv.org/abs/2307.15043)
+<a id="jailbreak"></a>
+### 越狱（Jailbreak）
+- **分类（Category）:** 安全与治理（Security & governance）
+- **准确含义（What it actually means）:** 旨在让模型产生其训练或应用控制原本要防止的行为的对抗性输入或交互策略。
+- **重要性（Why it matters）:** 成功越狱暴露了声明策略与实际行为之间的差距，模型控制工具或受保护数据时，后果可能更严重。
+- **实际应用（In practice）:** 从被禁止行为推导测试类别，改变格式和交互长度，同时测量拒答与有害完成情况，并将已确认失败转为版本化对抗评估。
+- **常见混淆（Common confusion）:** 越狱针对模型或系统的行为限制；提示词注入重定向指令遵循，常指向攻击者目标。一次交互可同时包含两者。
+- **学习课程（Learn it）:** [越狱分类体系](../phases/19-capstone-projects/82-jailbreak-taxonomy/)
+- **相关术语（Related terms）:** Prompt Injection, Red Teaming, Guardrails, Eval Set
+- **来源（Sources）:** [针对已对齐语言模型的通用且可迁移对抗攻击](https://arxiv.org/abs/2307.15043)
 
-### JAX
-- **Category:** Math & training
-- **What people say:** A NumPy-like system for accelerated machine learning.
-- **What it actually means:** A Python library for transforming numerical functions with automatic differentiation, compilation, vectorization, and parallel execution across accelerators. Its transformations work best with explicit state and functional-style code.
-- **Common confusion:** JAX does not prohibit all stateful programming, but hidden mutation inside transformed functions can produce incorrect or unsupported behavior.
-- **Learn it:** [Introduction to JAX](../phases/03-deep-learning-core/12-intro-to-jax/)
-- **Sources:** [JAX documentation](https://docs.jax.dev/en/latest/)
-- **Related terms:** Autograd, Tensor, CUDA
+<a id="jax"></a>
+### 加速数值计算库（JAX）
+- **分类（Category）:** 数学与训练（Math & training）
+- **常见说法（What people say）:** 类似 NumPy、用于加速机器学习的系统。
+- **准确含义（What it actually means）:** 用于变换数值函数的 Python 库，支持自动微分、编译、向量化和跨加速器并行执行。其变换最适合显式状态和函数式风格代码。
+- **常见混淆（Common confusion）:** JAX 并不禁止所有有状态编程，但被变换函数中的隐藏修改可能产生错误或不受支持的行为。
+- **学习课程（Learn it）:** [JAX 入门](../phases/03-deep-learning-core/12-intro-to-jax/)
+- **来源（Sources）:** [JAX 文档](https://docs.jax.dev/en/latest/)
+- **相关术语（Related terms）:** Autograd, Tensor, CUDA
 
 ## K
 
-### Knowledge Distillation
-- **Category:** Math & training
-- **What it actually means:** Training a student model to reproduce selected behavior or output distributions from a more capable teacher, often alongside ordinary target labels.
-- **Why it matters:** It can transfer useful behavior into a smaller or cheaper model when serving the teacher directly is impractical.
-- **In practice:** Define teacher outputs, temperature, student loss, and a held-out eval set, then compare the student with both the teacher and a label-only baseline.
-- **Common confusion:** Distillation transfers behavior on the training distribution; it does not copy every capability, fact, or safety property of the teacher.
-- **Related terms:** Fine-tuning, Loss Function, Logits, Quantization
-- **Sources:** [Distilling the Knowledge in a Neural Network](https://arxiv.org/abs/1503.02531)
+<a id="knowledge-distillation"></a>
+### 知识蒸馏（Knowledge Distillation）
+- **分类（Category）:** 数学与训练（Math & training）
+- **准确含义（What it actually means）:** 训练学生模型复现更强教师模型的特定行为或输出分布，通常同时使用普通目标标签。
+- **重要性（Why it matters）:** 当直接部署教师模型不现实，它能把有用行为转移到更小或成本更低的模型。
+- **实际应用（In practice）:** 定义教师输出、温度、学生损失和留出评估集，再将学生与教师及只使用标签的基线比较。
+- **常见混淆（Common confusion）:** 蒸馏转移的是训练分布上的行为，不会复制教师的每项能力、事实或安全属性。
+- **相关术语（Related terms）:** Fine-tuning, Loss Function, Logits, Quantization
+- **来源（Sources）:** [蒸馏神经网络中的知识](https://arxiv.org/abs/1503.02531)
 
-### KV Cache
-- **Category:** Models & inference
-- **What people say:** A cache that makes token generation faster.
-- **What it actually means:** Stored key and value tensors from earlier positions in autoregressive generation. Reusing them avoids recomputing attention projections for the unchanged prefix at every decoding step.
-- **Why it matters:** It reduces repeated computation but consumes memory that grows with sequence length, layers, batch, and model configuration.
-- **Common confusion:** A KV cache is runtime attention state for a sequence. Prefix caching reuses eligible KV state across requests, while prompt caching is a broader provider or application reuse contract.
-- **Learn it:** [KV Cache and Flash Attention](../phases/07-transformers-deep-dive/12-kv-cache-flash-attention/)
-- **Related terms:** Attention, Autoregressive, Prefix Caching, Prompt Cache
+<a id="kv-cache"></a>
+### 键值缓存（KV Cache）
+- **分类（Category）:** 模型与推理（Models & inference）
+- **常见说法（What people say）:** 加快词元生成的缓存。
+- **准确含义（What it actually means）:** 自回归生成过程中保存的先前位置的键和值张量。复用它们可避免每个解码步骤都为未变前缀重新计算注意力投影。
+- **重要性（Why it matters）:** 它减少重复计算，但内存占用会随序列长度、层数、批次和模型配置增长。
+- **常见混淆（Common confusion）:** 键值缓存是序列运行时的注意力状态。前缀缓存跨请求复用符合条件的键值状态，而提示词缓存是更广义的提供方或应用复用契约。
+- **学习课程（Learn it）:** [键值缓存与 Flash Attention](../phases/07-transformers-deep-dive/12-kv-cache-flash-attention/)
+- **相关术语（Related terms）:** Attention, Autoregressive, Prefix Caching, Prompt Cache
 
 ## L
 
-### Late Fusion
-- **Category:** Multimodal systems
-- **What it actually means:** Processing modalities through separate encoders or predictors and combining their high-level representations, scores, or decisions near the task output.
-- **Why it matters:** Separate branches can use modality-specific architectures and tolerate missing inputs, though they may miss fine-grained interactions available to earlier fusion.
-- **In practice:** Calibrate each branch, define how missing modalities affect the merge, compare score-level and feature-level combinations, and evaluate each branch alone as an ablation.
-- **Common confusion:** Late fusion describes the position of combination. It does not mean simple averaging or guarantee that the modalities contribute equally.
-- **Learn it:** [Cross-Attention Fusion](../phases/19-capstone-projects/61-cross-attention-fusion/)
-- **Related terms:** Early Fusion, Multimodal Fusion, Modality, Evaluation (Eval)
-- **Sources:** [Multimodal Deep Learning](https://ai.stanford.edu/~ang/papers/icml11-MultimodalDeepLearning.pdf); [Multimodal Machine Learning: A Survey and Taxonomy](https://arxiv.org/abs/1705.09406)
+<a id="late-fusion"></a>
+### 晚期融合（Late Fusion）
+- **分类（Category）:** 多模态系统（Multimodal systems）
+- **准确含义（What it actually means）:** 通过独立编码器或预测器处理各模态，并在接近任务输出的位置组合它们的高层表示、分数或决策。
+- **重要性（Why it matters）:** 独立分支可以采用模态专用架构、容忍输入缺失，但可能遗漏早期融合可利用的细粒度交互。
+- **实际应用（In practice）:** 校准各分支，定义模态缺失如何影响合并，比较分数级和特征级组合，并单独评估各分支作为消融实验。
+- **常见混淆（Common confusion）:** 晚期融合描述组合发生的位置，不意味着简单取平均，也不保证各模态贡献相等。
+- **学习课程（Learn it）:** [交叉注意力融合](../phases/19-capstone-projects/61-cross-attention-fusion/)
+- **相关术语（Related terms）:** Early Fusion, Multimodal Fusion, Modality, Evaluation (Eval)
+- **来源（Sources）:** [多模态深度学习](https://ai.stanford.edu/~ang/papers/icml11-MultimodalDeepLearning.pdf); [多模态机器学习：综述与分类体系](https://arxiv.org/abs/1705.09406)
 
-### Latent Space
-- **Category:** Data & representations
-- **What people say:** A model's hidden representation space.
-- **What it actually means:** A learned representation space whose coordinates encode factors useful to a model. It may be lower-dimensional than the input, but compression is not required for every latent representation.
-- **Common confusion:** Nearby points are only meaningfully similar according to what the model and training objective learned.
-- **Related terms:** Embedding, VAE (Variational Autoencoder), Feature
+<a id="latent-space"></a>
+### 潜在空间（Latent Space）
+- **分类（Category）:** 数据与表示（Data & representations）
+- **常见说法（What people say）:** 模型的隐藏表示空间。
+- **准确含义（What it actually means）:** 一种学习得到的表示空间，其坐标编码对模型有用的因素。它的维度可能低于输入，但并非每种潜在表示都必须压缩。
+- **常见混淆（Common confusion）:** 相邻点是否具有有意义的相似性，仅取决于模型和训练目标学到了什么。
+- **相关术语（Related terms）:** Embedding, VAE (Variational Autoencoder), Feature
 
-### Learning Rate
-- **Category:** Math & training
-- **What people say:** How large each optimization step is.
-- **What it actually means:** A scale factor used by an optimizer to control parameter-update magnitude. Values that are too large can destabilize training; values that are too small can make useful progress impractically slow.
-- **Common confusion:** The effective update also depends on the optimizer, schedule, gradient scale, batch, and parameter history.
-- **Related terms:** Optimizer, Gradient Descent, Batch Size
+<a id="learning-rate"></a>
+### 学习率（Learning Rate）
+- **分类（Category）:** 数学与训练（Math & training）
+- **常见说法（What people say）:** 每次优化步伐的大小。
+- **准确含义（What it actually means）:** 优化器用来控制参数更新幅度的缩放因子。过大可能使训练不稳定，过小则可能让有效进展慢到不切实际。
+- **常见混淆（Common confusion）:** 实际更新还取决于优化器、调度、梯度尺度、批次和参数历史。
+- **相关术语（Related terms）:** Optimizer, Gradient Descent, Batch Size
 
-### Learning Rate Schedule
-- **Category:** Math & training
-- **What it actually means:** A policy that changes the optimizer's learning rate as training progresses according to steps, epochs, metrics, or a predefined curve.
-- **Why it matters:** Different training stages can benefit from different update scales, so one constant rate may be unstable early or wasteful late.
-- **In practice:** Version the schedule with the optimizer configuration, log the actual rate at every step, and compare schedules under the same token or update budget.
-- **Common confusion:** A scheduler controls the learning rate over time; it does not decide when an optimizer step occurs or guarantee convergence.
-- **Related terms:** Learning Rate, Warmup, Optimizer, Epoch
-- **Sources:** [SGDR](https://arxiv.org/abs/1608.03983); [Attention Is All You Need](https://arxiv.org/abs/1706.03762)
+<a id="learning-rate-schedule"></a>
+### 学习率调度（Learning Rate Schedule）
+- **分类（Category）:** 数学与训练（Math & training）
+- **准确含义（What it actually means）:** 随训练进展，按步数、轮次、指标或预定义曲线改变优化器学习率的策略。
+- **重要性（Why it matters）:** 不同训练阶段适合不同更新尺度，因此恒定学习率可能在早期不稳定，或在后期浪费时间。
+- **实际应用（In practice）:** 将调度与优化器配置一起版本化，记录每步实际学习率，并在相同词元或更新预算下比较不同方案。
+- **常见混淆（Common confusion）:** 调度器控制学习率随时间变化，不决定何时执行优化器更新，也不保证收敛。
+- **相关术语（Related terms）:** Learning Rate, Warmup, Optimizer, Epoch
+- **来源（Sources）:** [带热重启的随机梯度下降论文](https://arxiv.org/abs/1608.03983); [注意力就是你所需要的一切](https://arxiv.org/abs/1706.03762)
 
-### Least Privilege
-- **Category:** Evaluation & safety
-- **What it actually means:** Giving a model, agent, tool, or user only the permissions required for the current task, for only as long as those permissions are needed.
-- **Why it matters:** Models can make mistakes or follow malicious instructions. Narrow permissions reduce the damage any one failure can cause.
-- **In practice:** Give a documentation agent read access to source files and write access to one branch, but no production credentials or merge permission.
-- **Common confusion:** Authentication proves identity. Least privilege limits what that identity can do.
-- **Related terms:** Sandbox, Approval Gate, Prompt Injection, Tool Contract
+<a id="least-privilege"></a>
+### 最小权限（Least Privilege）
+- **分类（Category）:** 评估与安全（Evaluation & safety）
+- **准确含义（What it actually means）:** 只在所需时间内，向模型、智能体、工具或用户授予当前任务必需的权限。
+- **重要性（Why it matters）:** 模型会出错，也可能遵循恶意指令。有限权限减少单次失败可能造成的损害。
+- **实际应用（In practice）:** 让文档智能体读取源文件、写入一个分支，但不给生产凭据或合并权限。
+- **常见混淆（Common confusion）:** 身份认证证明是谁；最小权限限制该身份能做什么。
+- **相关术语（Related terms）:** Sandbox, Approval Gate, Prompt Injection, Tool Contract
 
-### LLM (Large Language Model)
-- **Category:** Models & inference
-- **What people say:** The brain of an AI application.
-- **What it actually means:** A language model with enough capacity and broad training to perform many language tasks through prompting or adaptation. Most current LLMs use transformer architectures and sequence-prediction objectives, but size thresholds, data sources, and training recipes vary.
-- **Common confusion:** An LLM is a model component. Tools, retrieval, state, policies, and product logic live in the surrounding system.
-- **Related terms:** Transformer, Autoregressive, Agent Harness
+<a id="llm-large-language-model"></a>
+### 大语言模型（LLM (Large Language Model)）
+- **分类（Category）:** 模型与推理（Models & inference）
+- **常见说法（What people say）:** AI 应用的大脑。
+- **准确含义（What it actually means）:** 具有足够容量并经过广泛训练，能通过提示或适配执行多种语言任务的语言模型。当前多数大语言模型使用 Transformer 架构和序列预测目标，但规模门槛、数据来源和训练配方各异。
+- **常见混淆（Common confusion）:** 大语言模型是模型组件；工具、检索、状态、策略和产品逻辑位于外围系统中。
+- **相关术语（Related terms）:** Transformer, Autoregressive, Agent Harness
 
-### LLM-as-a-Judge
-- **Category:** Evaluation & safety
-- **What it actually means:** Using a language model to score, compare, classify, or critique another system's output against a rubric.
-- **Why it matters:** It can scale evaluation of qualities that are difficult to express as exact-match tests, such as clarity or instruction adherence.
-- **In practice:** Give a separate evaluator model the task, candidate answer, reference evidence, and a structured rubric, then calibrate its scores against human-reviewed examples.
-- **Common confusion:** A judge model is not ground truth. It can be biased by order, verbosity, style, prompt wording, or shared model failures.
-- **Learn it:** [Eval-Driven Agent Development](../phases/14-agent-engineering/30-eval-driven-agent-development/)
-- **Related terms:** Evaluation (Eval), Eval Set, Verification Gate, Precision & Recall
+<a id="llm-as-a-judge"></a>
+### 大语言模型裁判（LLM-as-a-Judge）
+- **分类（Category）:** 评估与安全（Evaluation & safety）
+- **准确含义（What it actually means）:** 使用语言模型依据评分准则，对另一系统的输出评分、比较、分类或评论。
+- **重要性（Why it matters）:** 它能扩展那些难以用完全匹配测试表达的质量评估，例如清晰度或指令遵循。
+- **实际应用（In practice）:** 将任务、候选答案、参考证据和结构化评分准则交给独立评估模型，再用人工审阅样本校准其分数。
+- **常见混淆（Common confusion）:** 裁判模型不是真实标准。顺序、篇幅、风格、提示措辞或模型共有的失败，都可能使其偏颇。
+- **学习课程（Learn it）:** [评估驱动的智能体开发](../phases/14-agent-engineering/30-eval-driven-agent-development/)
+- **相关术语（Related terms）:** Evaluation (Eval), Eval Set, Verification Gate, Precision & Recall
 
-### Load Shedding
-- **Category:** Reliability & operations
-- **What it actually means:** Deliberately rejecting, dropping, or cancelling selected work at one or more overload boundaries when demand exceeds the capacity available to produce useful results.
-- **Why it matters:** Continuing to accept every request during overload can increase queueing until nearly all requests miss their deadlines and recovery becomes harder.
-- **In practice:** Shed at the earliest informed boundary, preserve high-priority and already-admitted work when possible, identify the overloaded scope, and mark a response retryable only when the condition is transient and the request remains within its retry budget.
-- **Common confusion:** Load shedding is not confined to work that has already been accepted. Admission control is specifically the pre-acceptance gate, while rate limiting can enforce a usage policy even when capacity remains.
-- **Related terms:** Admission Control, Backpressure, Rate Limit, Graceful Degradation
-- **Sources:** [Google SRE: Handling Overload](https://sre.google/sre-book/handling-overload/)
+<a id="load-shedding"></a>
+### 负载丢弃（Load Shedding）
+- **分类（Category）:** 可靠性与运维（Reliability & operations）
+- **准确含义（What it actually means）:** 当需求超过可产生有效结果的容量时，在一个或多个过载边界有意拒绝、丢弃或取消部分工作。
+- **重要性（Why it matters）:** 过载时仍接受每个请求，会使队列不断增长，直到几乎所有请求都错过截止时间，恢复也更困难。
+- **实际应用（In practice）:** 在最早具备判断信息的边界丢弃工作，尽可能保留高优先级及已获准的工作，指出过载范围；只有问题暂时存在且请求仍在重试预算内时，才标记响应可重试。
+- **常见混淆（Common confusion）:** 负载丢弃不限于已被接受的工作。准入控制专指接受前门禁；而速率限制即使在容量尚有余量时，也可用于执行用量策略。
+- **相关术语（Related terms）:** Admission Control, Backpressure, Rate Limit, Graceful Degradation
+- **来源（Sources）:** [Google SRE：处理过载](https://sre.google/sre-book/handling-overload/)
 
-### Logits
-- **Category:** Models & inference
-- **What it actually means:** The model's unnormalized numeric scores for candidate outcomes before a normalization function or decoding rule converts them into selections.
-- **Why it matters:** Temperature, softmax, top-k, and top-p operate on or derive from logits, so logits connect model computation to generated tokens.
-- **In practice:** Inspect logits or log probabilities when the API exposes them, apply masks before sampling, and avoid interpreting raw magnitude as calibrated confidence.
-- **Common confusion:** Logits are not probabilities and are not comparable across unrelated positions, models, or tasks without a defined transformation.
-- **Related terms:** Softmax, Temperature, Token, Cross-Entropy
-- **Sources:** [Attention Is All You Need](https://arxiv.org/abs/1706.03762)
+<a id="logits"></a>
+### 未归一化分数（Logits）
+- **分类（Category）:** 模型与推理（Models & inference）
+- **准确含义（What it actually means）:** 模型为候选结果给出的未归一化数值分数，随后由归一化函数或解码规则转成选择。
+- **重要性（Why it matters）:** 温度、softmax、top-k 和 top-p 对这些分数操作或从中派生，因此它们连接模型计算与生成词元。
+- **实际应用（In practice）:** API 提供时检查原始分数或对数概率，在采样前应用掩码，不要将原始数值大小解释为经校准的置信度。
+- **常见混淆（Common confusion）:** 这些分数不是概率；没有明确变换时，不能在无关位置、模型或任务之间比较。
+- **相关术语（Related terms）:** Softmax, Temperature, Token, Cross-Entropy
+- **来源（Sources）:** [注意力就是你所需要的一切](https://arxiv.org/abs/1706.03762)
 
-### LoRA (Low-Rank Adaptation)
-- **Category:** Math & training
-- **What people say:** Parameter-efficient fine-tuning.
-- **What it actually means:** A method that keeps base weights frozen and learns low-rank update matrices for selected layers. It reduces the number of trainable parameters and can lower training memory relative to full-parameter fine-tuning.
-- **Common confusion:** Actual memory and speed savings depend on rank, target modules, optimizer state, activation memory, quantization, and implementation.
-- **Learn it:** [Fine-Tuning and LoRA](../phases/11-llm-engineering/08-fine-tuning-lora/)
-- **Sources:** [LoRA paper](https://arxiv.org/abs/2106.09685)
-- **Related terms:** Fine-tuning, QLoRA, Parameter
+<a id="lora-low-rank-adaptation"></a>
+### 低秩适配（LoRA (Low-Rank Adaptation)）
+- **分类（Category）:** 数学与训练（Math & training）
+- **常见说法（What people say）:** 参数高效微调。
+- **准确含义（What it actually means）:** 冻结基础权重，并为选定层学习低秩更新矩阵的方法。它减少可训练参数数量，相比全参数微调可降低训练内存。
+- **常见混淆（Common confusion）:** 实际节省的内存与时间取决于秩、目标模块、优化器状态、激活内存、量化及实现。
+- **学习课程（Learn it）:** [微调与低秩适配](../phases/11-llm-engineering/08-fine-tuning-lora/)
+- **来源（Sources）:** [LoRA 论文](https://arxiv.org/abs/2106.09685)
+- **相关术语（Related terms）:** Fine-tuning, QLoRA, Parameter
 
-### Loss Function
-- **Category:** Math & training
-- **What people say:** A number that measures training error.
-- **What it actually means:** An objective that maps predictions and targets, sometimes with regularization terms, to a value optimization tries to reduce. The loss determines which errors training directly rewards or penalizes.
-- **Common confusion:** A low training loss does not guarantee useful, safe, or generalizable behavior on production tasks.
-- **Related terms:** Cross-Entropy, Gradient, Evaluation (Eval)
+<a id="loss-function"></a>
+### 损失函数（Loss Function）
+- **分类（Category）:** 数学与训练（Math & training）
+- **常见说法（What people say）:** 衡量训练误差的数字。
+- **准确含义（What it actually means）:** 将预测和目标，有时连同正则项，映射为优化过程试图降低的数值的目标函数。损失决定训练直接奖励或惩罚哪些错误。
+- **常见混淆（Common confusion）:** 训练损失低不保证在生产任务上有用、安全或能泛化。
+- **相关术语（Related terms）:** Cross-Entropy, Gradient, Evaluation (Eval)
 
-### Lost in the Middle
-- **Category:** Prompting & context
-- **What it actually means:** A long-context failure pattern in which model performance changes with evidence position and can degrade when relevant information sits between the beginning and end.
-- **Why it matters:** Fitting evidence inside the context window does not guarantee that the model will use every position with equal reliability.
-- **In practice:** Test several evidence positions, reduce distractors, place decision-critical constraints where they remain salient, and verify answers against the source.
-- **Common confusion:** It is an observed behavior pattern, not a fixed law that affects every model, task, or position identically.
-- **Related terms:** Context Window, Context Engineering, Eval Set, Grounding
-- **Sources:** [Lost in the Middle](https://aclanthology.org/2024.tacl-1.9/)
+<a id="lost-in-the-middle"></a>
+### 迷失在中间（Lost in the Middle）
+- **分类（Category）:** 提示词与上下文（Prompting & context）
+- **准确含义（What it actually means）:** 一种长上下文失效模式：模型表现随证据位置变化，相关信息处于开头与结尾之间时，表现可能下降。
+- **重要性（Why it matters）:** 证据能放入上下文窗口，不保证模型对每个位置都同样可靠地利用。
+- **实际应用（In practice）:** 测试多个证据位置，减少干扰，将关键决策约束放在仍易被注意的位置，并对照来源验证答案。
+- **常见混淆（Common confusion）:** 这是一种观测到的行为模式，不是对每个模型、任务或位置都产生同样影响的固定定律。
+- **相关术语（Related terms）:** Context Window, Context Engineering, Eval Set, Grounding
+- **来源（Sources）:** [迷失在中间论文](https://aclanthology.org/2024.tacl-1.9/)
 
 ## M
 
-### Maximum Marginal Relevance (MMR)
-- **Category:** Retrieval & generation
-- **What it actually means:** A selection rule that balances relevance to the query with novelty relative to items already selected.
-- **Why it matters:** It can reduce redundant chunks so a limited context budget covers more distinct evidence.
-- **In practice:** Retrieve a candidate pool, select the next item using a documented relevance-diversity weight, and evaluate both answer quality and source coverage.
-- **Common confusion:** MMR diversifies an existing candidate set; it does not retrieve missing evidence or prove that selected passages are correct.
-- **Related terms:** Reranker, Chunking, RAG (Retrieval-Augmented Generation), Grounding
-- **Sources:** [The Use of MMR, Diversity-Based Reranking for Reordering Documents and Producing Summaries](https://www.cs.cmu.edu/~jgc/publication/MMR_DiversityBased_Reranking_SIGIR_1998.pdf)
+<a id="maximum-marginal-relevance-mmr"></a>
+### 最大边际相关性（Maximum Marginal Relevance (MMR)）
+- **分类（Category）:** 检索与生成（Retrieval & generation）
+- **准确含义（What it actually means）:** 在与查询的相关性及相对于已选项目的新颖性之间取平衡的选择规则。
+- **重要性（Why it matters）:** 它可以减少冗余块，让有限上下文预算覆盖更多不同证据。
+- **实际应用（In practice）:** 检索候选池，依据有文档记录的相关性与多样性权重选择下一项，并同时评估答案质量和来源覆盖率。
+- **常见混淆（Common confusion）:** MMR 对已有候选集作多样化，不会检索到缺失证据，也不证明所选段落正确。
+- **相关术语（Related terms）:** Reranker, Chunking, RAG (Retrieval-Augmented Generation), Grounding
+- **来源（Sources）:** [使用最大边际相关性：基于多样性重排序文档并生成摘要](https://www.cs.cmu.edu/~jgc/publication/MMR_DiversityBased_Reranking_SIGIR_1998.pdf)
 
-### MCP (Model Context Protocol)
-- **Category:** Agents & tools
-- **What people say:** A standard way for AI applications to connect to tools and context.
-- **What it actually means:** An open JSON-RPC protocol for a host to connect to servers that expose tools, resources, prompts, and extensions through defined request, result, discovery, and transport contracts. In revision 2026-07-28, every request carries its protocol version and client capabilities instead of relying on an initialization handshake or protocol session.
-- **Common confusion:** MCP standardizes discovery and exchange. It does not decide which tool is safe to call, grant permission, or forbid an application from using explicit state handles.
-- **Learn it:** [Model Context Protocol](../phases/11-llm-engineering/14-model-context-protocol/)
-- **Sources:** [MCP 2026-07-28 key changes](https://modelcontextprotocol.io/specification/2026-07-28/changelog)
-- **Related terms:** Stateless MCP, Multi Round-Trip Request (MRTR), Function Calling, Tool Contract, Least Privilege
+<a id="mcp-model-context-protocol"></a>
+### 模型上下文协议（MCP (Model Context Protocol)）
+- **分类（Category）:** 智能体与工具（Agents & tools）
+- **常见说法（What people say）:** AI 应用连接工具和上下文的标准方式。
+- **准确含义（What it actually means）:** 一种开放的 JSON-RPC 协议，让宿主按照定义的请求、结果、发现和传输契约，连接提供工具、资源、提示词及扩展的服务器。在 2026-07-28 修订版中，每个请求都携带协议版本和客户端能力，而不依赖初始化握手或协议会话。
+- **常见混淆（Common confusion）:** MCP 标准化发现与交换，不决定哪个工具可安全调用，不授予权限，也不禁止应用使用显式状态句柄。
+- **学习课程（Learn it）:** [模型上下文协议](../phases/11-llm-engineering/14-model-context-protocol/)
+- **来源（Sources）:** [MCP 2026-07-28 主要变更](https://modelcontextprotocol.io/specification/2026-07-28/changelog)
+- **相关术语（Related terms）:** Stateless MCP, Multi Round-Trip Request (MRTR), Function Calling, Tool Contract, Least Privilege
 
-### Membership Inference
-- **Category:** Security & governance
-- **What it actually means:** An attack that estimates whether a particular record or example was included in a model's training data by observing model outputs or other accessible signals.
-- **Why it matters:** Even when the model does not reproduce a record verbatim, distinguishable behavior can reveal information about participation in a sensitive dataset.
-- **In practice:** Test representative members and non-members under the real query interface, limit unnecessary confidence signals, reduce data exposure, and evaluate privacy defenses against utility requirements.
-- **Common confusion:** Membership inference asks whether a record participated in training. Model extraction tries to reproduce model behavior, while direct memorization tests whether content can be recovered.
-- **Learn it:** [Differential Privacy for LLMs](../phases/18-ethics-safety-alignment/22-differential-privacy-for-llms/)
-- **Related terms:** Data Leakage, Data Minimization, Eval Set, Data Classification
-- **Sources:** [Membership Inference Attacks Against Machine Learning Models](https://doi.org/10.1109/SP.2017.41)
+<a id="membership-inference"></a>
+### 成员推断（Membership Inference）
+- **分类（Category）:** 安全与治理（Security & governance）
+- **准确含义（What it actually means）:** 通过观察模型输出或其他可用信号，估计某条记录或样本是否被纳入模型训练数据的攻击。
+- **重要性（Why it matters）:** 即使模型没有逐字复现记录，可区分的行为仍可能泄露某人或某记录参与敏感数据集的信息。
+- **实际应用（In practice）:** 通过真实查询接口测试代表性成员和非成员，限制不必要的置信度信号，减少数据暴露，并结合实用性要求评估隐私防御。
+- **常见混淆（Common confusion）:** 成员推断询问记录是否参与训练；模型提取试图复现模型行为；直接记忆测试则检查能否恢复内容。
+- **学习课程（Learn it）:** [大语言模型的差分隐私](../phases/18-ethics-safety-alignment/22-differential-privacy-for-llms/)
+- **相关术语（Related terms）:** Data Leakage, Data Minimization, Eval Set, Data Classification
+- **来源（Sources）:** [针对机器学习模型的成员推断攻击](https://doi.org/10.1109/SP.2017.41)
 
-### Mixed Precision
-- **Category:** Math & training
-- **What people say:** Using lower-precision arithmetic for speed and memory savings.
-- **What it actually means:** A numerical strategy that uses different data types for different operations, often lower precision for many matrix operations and higher precision for values that need more range or stability.
-- **Common confusion:** Speed, memory, and accuracy effects depend on hardware, data type, scaling method, kernels, and model. They are not a fixed multiplier.
-- **Related terms:** Tensor, CUDA, NaN (Not a Number), Quantization
+<a id="mixed-precision"></a>
+### 混合精度（Mixed Precision）
+- **分类（Category）:** 数学与训练（Math & training）
+- **常见说法（What people say）:** 使用较低精度运算来提速和节省内存。
+- **准确含义（What it actually means）:** 对不同运算使用不同数据类型的数值策略，通常对许多矩阵运算使用低精度，对需要更大范围或更高稳定性的值使用高精度。
+- **常见混淆（Common confusion）:** 速度、内存和准确性影响取决于硬件、数据类型、缩放方法、内核和模型，不是固定倍数。
+- **相关术语（Related terms）:** Tensor, CUDA, NaN (Not a Number), Quantization
 
-### Modality
-- **Category:** Multimodal systems
-- **What it actually means:** A form of information with its own structure and acquisition process, such as text, image, audio, video, depth, or sensor measurements.
-- **Why it matters:** Different modalities have different sampling rates, noise, spatial or temporal structure, and missing-data behavior, so one preprocessing assumption rarely fits all of them.
-- **In practice:** Document each modality's source, units, resolution, timing, preprocessing, and missing-value policy before designing alignment or fusion.
-- **Common confusion:** A modality is not merely a file extension or feature column. Several encodings can represent one modality, and one sample can contain several modalities.
-- **Learn it:** [MIO Any-to-Any Streaming](../phases/12-multimodal-ai/16-mio-any-to-any-streaming/)
-- **Related terms:** Multimodal Model, Token, Tensor, Embedding
-- **Sources:** [ImageBind: One Embedding Space To Bind Them All](https://arxiv.org/abs/2305.05665); [Multimodal Machine Learning: A Survey and Taxonomy](https://arxiv.org/abs/1705.09406)
+<a id="modality"></a>
+### 模态（Modality）
+- **分类（Category）:** 多模态系统（Multimodal systems）
+- **准确含义（What it actually means）:** 具有自身结构和采集过程的信息形式，例如文本、图像、音频、视频、深度或传感器测量值。
+- **重要性（Why it matters）:** 不同模态具有不同采样率、噪声、时空结构和数据缺失行为，因此一个预处理假设很少能适合所有模态。
+- **实际应用（In practice）:** 设计对齐或融合之前，记录每个模态的来源、单位、分辨率、时间信息、预处理和缺失值策略。
+- **常见混淆（Common confusion）:** 模态不只是文件扩展名或特征列。多种编码可以表示同一模态，一个样本也能包含多种模态。
+- **学习课程（Learn it）:** [MIO 任意模态到任意模态的流式处理](../phases/12-multimodal-ai/16-mio-any-to-any-streaming/)
+- **相关术语（Related terms）:** Multimodal Model, Token, Tensor, Embedding
+- **来源（Sources）:** [ImageBind：用一个嵌入空间关联所有模态](https://arxiv.org/abs/2305.05665); [多模态机器学习：综述与分类体系](https://arxiv.org/abs/1705.09406)
 
-### Modality Alignment
-- **Category:** Multimodal systems
-- **What it actually means:** Learning or establishing correspondences between representations from different modalities so semantically or temporally related items can be matched.
-- **Why it matters:** Fusion and cross-modal retrieval fail when the system cannot connect the same event, object, or concept across differently structured inputs.
-- **In practice:** Define positive and negative pairs, preserve time or spatial metadata, evaluate mismatched examples, and measure alignment separately from downstream task accuracy.
-- **Common confusion:** Alignment makes representations comparable or corresponding. It does not require them to become identical or erase modality-specific information.
-- **Learn it:** [Projection Layer Modality Alignment](../phases/19-capstone-projects/60-projection-layer-modality-align/)
-- **Related terms:** Shared Embedding Space, Contrastive Learning, Grounding, Multimodal Fusion
-- **Sources:** [Learning Transferable Visual Models From Natural Language Supervision](https://proceedings.mlr.press/v139/radford21a.html)
+<a id="modality-alignment"></a>
+### 模态对齐（Modality Alignment）
+- **分类（Category）:** 多模态系统（Multimodal systems）
+- **准确含义（What it actually means）:** 学习或建立不同模态表示之间的对应关系，使语义或时间相关的项目能够匹配。
+- **重要性（Why it matters）:** 系统若无法在不同结构的输入中关联同一事件、物体或概念，融合与跨模态检索就会失败。
+- **实际应用（In practice）:** 定义正负样本对，保留时间或空间元数据，评估不匹配样本，并将对齐与下游任务准确率分开度量。
+- **常见混淆（Common confusion）:** 对齐使表示可比较或相对应，不要求它们完全相同，也不要求抹去模态特有信息。
+- **学习课程（Learn it）:** [用于模态对齐的投影层](../phases/19-capstone-projects/60-projection-layer-modality-align/)
+- **相关术语（Related terms）:** Shared Embedding Space, Contrastive Learning, Grounding, Multimodal Fusion
+- **来源（Sources）:** [从自然语言监督中学习可迁移视觉模型](https://proceedings.mlr.press/v139/radford21a.html)
 
-### Model Card
-- **Category:** Evaluation & safety
-- **What it actually means:** A structured report describing a model's intended uses, evaluation conditions, performance characteristics, limitations, and relevant ethical or safety considerations.
-- **Why it matters:** It gives downstream builders context for deciding whether reported evidence applies to their users and deployment conditions.
-- **In practice:** Document model version, training and evaluation scope, subgroup results, known failure modes, prohibited uses, and the date of each claim.
-- **Common confusion:** A model card communicates evidence and limitations; it is not a certification, warranty, system threat model, or substitute for deployment-specific evaluation.
-- **Related terms:** Eval Set, Dataset Split, Distribution Shift, Alignment
-- **Sources:** [Model Cards for Model Reporting](https://dl.acm.org/doi/10.1145/3287560.3287596)
+<a id="model-card"></a>
+### 模型卡（Model Card）
+- **分类（Category）:** 评估与安全（Evaluation & safety）
+- **准确含义（What it actually means）:** 描述模型预期用途、评估条件、性能特征、局限，以及相关伦理或安全考量的结构化报告。
+- **重要性（Why it matters）:** 它为下游构建者提供背景，帮助判断报告证据是否适用于自己的用户与部署条件。
+- **实际应用（In practice）:** 记录模型版本、训练和评估范围、子群体结果、已知失效模式、禁止用途，以及每项声明的日期。
+- **常见混淆（Common confusion）:** 模型卡传达证据和局限，不是认证、担保、系统威胁模型，也不能替代针对部署的评估。
+- **相关术语（Related terms）:** Eval Set, Dataset Split, Distribution Shift, Alignment
+- **来源（Sources）:** [用于模型报告的模型卡](https://dl.acm.org/doi/10.1145/3287560.3287596)
 
-### Model Router
-- **Category:** AI-native development
-- **What it actually means:** A component that selects a model or provider for a request using requirements such as capability, latency, cost, context size, policy, and current availability.
-- **Why it matters:** Different tasks and failure conditions justify different models, and routing can improve outcome quality without sending every request to the largest option.
-- **In practice:** Send low-risk extraction to a fast model, complex code review to a stronger model, and fail over only to providers that satisfy the same data policy.
-- **Common confusion:** Routing is a policy decision. Random load balancing only distributes traffic.
-- **Related terms:** Evaluation (Eval), Circuit Breaker, Rate Limit, Cost per Successful Task
+<a id="model-router"></a>
+### 模型路由器（Model Router）
+- **分类（Category）:** AI 原生开发（AI-native development）
+- **准确含义（What it actually means）:** 按能力、延迟、成本、上下文大小、策略和当前可用性等要求，为请求选择模型或提供方的组件。
+- **重要性（Why it matters）:** 不同任务和故障条件适合不同模型，路由无需把所有请求交给最大模型，也能改善结果质量。
+- **实际应用（In practice）:** 将低风险提取交给快速模型，将复杂代码审阅交给更强模型，故障切换时只选择满足同样数据策略的提供方。
+- **常见混淆（Common confusion）:** 路由是策略决策；随机负载均衡只是分配流量。
+- **相关术语（Related terms）:** Evaluation (Eval), Circuit Breaker, Rate Limit, Cost per Successful Task
 
-### Model Serving
-- **Category:** Infrastructure & serving
-- **What it actually means:** The runtime and API layer that loads versioned model artifacts, accepts inference requests, schedules execution, manages resources, and returns results under an operational contract.
-- **Why it matters:** A capable model can still produce an unreliable product when queueing, batching, placement, versioning, cancellation, and response boundaries are not engineered explicitly.
-- **In practice:** Pin model and tokenizer versions, validate request limits, expose readiness and latency signals, control concurrency, and test rollback before routing production traffic.
-- **Common confusion:** Model serving is broader than calling inference once and narrower than the complete application, which may also include retrieval, tools, policy, and user state.
-- **Learn it:** [Self-Hosted Serving Selection](../phases/17-infrastructure-and-production/28-self-hosted-serving-selection/)
-- **Related terms:** Inference, Model Router, Autoscaling, Observability
-- **Sources:** [Clipper](https://arxiv.org/abs/1612.03079)
+<a id="model-serving"></a>
+### 模型服务（Model Serving）
+- **分类（Category）:** 基础设施与服务（Infrastructure & serving）
+- **准确含义（What it actually means）:** 加载版本化模型交付物、接受推理请求、调度执行、管理资源，并在运行契约下返回结果的运行时和 API 层。
+- **重要性（Why it matters）:** 若未明确设计排队、批处理、放置、版本管理、取消和响应边界，能力强的模型仍可能构成不可靠产品。
+- **实际应用（In practice）:** 固定模型和分词器版本，验证请求限制，提供就绪与延迟信号，控制并发，并在路由生产流量前测试回滚。
+- **常见混淆（Common confusion）:** 模型服务比单次推理调用广，又比完整应用窄；完整应用可能还包括检索、工具、策略和用户状态。
+- **学习课程（Learn it）:** [自托管服务选型](../phases/17-infrastructure-and-production/28-self-hosted-serving-selection/)
+- **相关术语（Related terms）:** Inference, Model Router, Autoscaling, Observability
+- **来源（Sources）:** [Clipper 论文](https://arxiv.org/abs/1612.03079)
 
-### MoE (Mixture of Experts)
-- **Category:** Models & inference
-- **What people say:** A large model that activates only part of its parameters for each token.
-- **What it actually means:** An architecture with multiple expert subnetworks and a learned router that selects a subset for each input unit, often each token. Sparse activation can increase total parameter capacity without using every expert on every forward pass.
-- **Why it matters:** Compute, memory, communication, routing balance, and quality depend on the specific architecture and serving system.
-- **Common confusion:** Product names do not prove an MoE architecture unless the model developer discloses it.
-- **Learn it:** [Mixture of Experts](../phases/07-transformers-deep-dive/11-mixture-of-experts/)
-- **Related terms:** Transformer, Model Router, Parameter
+<a id="moe-mixture-of-experts"></a>
+### 混合专家（MoE (Mixture of Experts)）
+- **分类（Category）:** 模型与推理（Models & inference）
+- **常见说法（What people say）:** 每个词元只激活一部分参数的大模型。
+- **准确含义（What it actually means）:** 包含多个专家子网络，以及为每个输入单元，通常是每个词元，选择专家子集的学习型路由器的架构。稀疏激活可增加总参数容量，而无需每次前向传播都使用全部专家。
+- **重要性（Why it matters）:** 计算、内存、通信、路由均衡和质量取决于具体架构与服务系统。
+- **常见混淆（Common confusion）:** 除非模型开发者披露，否则产品名称不能证明其采用混合专家架构。
+- **学习课程（Learn it）:** [混合专家](../phases/07-transformers-deep-dive/11-mixture-of-experts/)
+- **相关术语（Related terms）:** Transformer, Model Router, Parameter
 
-### Multimodal Fusion
-- **Category:** Multimodal systems
-- **What it actually means:** Combining evidence or learned representations from more than one modality to produce a joint representation, prediction, or generated output.
-- **Why it matters:** Modalities can supply complementary evidence, but naïve combination can amplify noise, timing errors, or one dominant stream.
-- **In practice:** Establish single-modality baselines, specify the fusion point and masks, test missing and contradictory inputs, and report which modalities drive each evaluated slice.
-- **Common confusion:** Fusion is the combination operation. Alignment establishes correspondence, and merely placing two modalities in one request does not prove either occurred successfully.
-- **Learn it:** [Cross-Attention Fusion](../phases/19-capstone-projects/61-cross-attention-fusion/)
-- **Related terms:** Early Fusion, Late Fusion, Cross-Attention, Modality Alignment
-- **Sources:** [Multimodal Deep Learning](https://ai.stanford.edu/~ang/papers/icml11-MultimodalDeepLearning.pdf); [Multimodal Machine Learning: A Survey and Taxonomy](https://arxiv.org/abs/1705.09406)
+<a id="multimodal-fusion"></a>
+### 多模态融合（Multimodal Fusion）
+- **分类（Category）:** 多模态系统（Multimodal systems）
+- **准确含义（What it actually means）:** 将多个模态的证据或学习所得表示组合起来，产生联合表示、预测或生成输出。
+- **重要性（Why it matters）:** 各模态可提供互补证据，但简单组合可能放大噪声、时间误差或某个占主导的信息流。
+- **实际应用（In practice）:** 建立单模态基线，明确融合点和掩码，测试缺失与矛盾输入，并报告各评估切片主要由哪些模态驱动。
+- **常见混淆（Common confusion）:** 融合是组合操作；对齐建立对应关系。仅将两种模态放进同一请求，不能证明任一过程成功发生。
+- **学习课程（Learn it）:** [交叉注意力融合](../phases/19-capstone-projects/61-cross-attention-fusion/)
+- **相关术语（Related terms）:** Early Fusion, Late Fusion, Cross-Attention, Modality Alignment
+- **来源（Sources）:** [多模态深度学习](https://ai.stanford.edu/~ang/papers/icml11-MultimodalDeepLearning.pdf); [多模态机器学习：综述与分类体系](https://arxiv.org/abs/1705.09406)
 
-### Multimodal Model
-- **Category:** Multimodal systems
-- **What it actually means:** A model that learns from, relates, or generates more than one modality through representation, alignment, fusion, translation, or coordinated prediction.
-- **Why it matters:** Multimodal capability depends on how modalities interact, not simply on accepting several input types, and failures can occur at each representation boundary.
-- **In practice:** Document supported input and output combinations, evaluate each modality alone and together, test missing or conflicting inputs, and track preprocessing versions with the model.
-- **Common confusion:** A pipeline with separate image and text models is multimodal at the system level, but it is not necessarily one jointly trained multimodal model.
-- **Learn it:** [MIO Any-to-Any Streaming](../phases/12-multimodal-ai/16-mio-any-to-any-streaming/)
-- **Related terms:** Modality, Vision-Language Model (VLM), Multimodal Fusion, Transformer
-- **Sources:** [Flamingo: a Visual Language Model for Few-Shot Learning](https://arxiv.org/abs/2204.14198); [Multimodal Machine Learning: A Survey and Taxonomy](https://arxiv.org/abs/1705.09406)
+<a id="multimodal-model"></a>
+### 多模态模型（Multimodal Model）
+- **分类（Category）:** 多模态系统（Multimodal systems）
+- **准确含义（What it actually means）:** 通过表示、对齐、融合、翻译或协同预测，从多种模态学习、关联多种模态或生成多种模态的模型。
+- **重要性（Why it matters）:** 多模态能力取决于模态如何交互，而不只是接受多种输入类型；每个表示边界都可能失败。
+- **实际应用（In practice）:** 记录支持的输入输出组合，分别及联合评估各模态，测试缺失或冲突输入，并将预处理版本与模型一起跟踪。
+- **常见混淆（Common confusion）:** 由独立图像模型和文本模型组成的流水线在系统层面是多模态的，但不一定是一个联合训练的多模态模型。
+- **学习课程（Learn it）:** [MIO 任意模态到任意模态的流式处理](../phases/12-multimodal-ai/16-mio-any-to-any-streaming/)
+- **相关术语（Related terms）:** Modality, Vision-Language Model (VLM), Multimodal Fusion, Transformer
+- **来源（Sources）:** [Flamingo：用于少样本学习的视觉语言模型](https://arxiv.org/abs/2204.14198); [多模态机器学习：综述与分类体系](https://arxiv.org/abs/1705.09406)
 
-### Multi Round-Trip Request (MRTR)
-- **Category:** Agents & tools
-- **Aliases:** MRTR
-- **What it actually means:** An MCP request pattern in which an operation returns `resultType: input_required` with one or more `inputRequests`, then the client retries the original method with `inputResponses` and the exact returned `requestState`.
-- **Why it matters:** It lets a stateless server request user, model, or root input without opening a server-initiated JSON-RPC exchange or storing protocol session state.
-- **In practice:** Return an input request from `tools/call`, collect the authorized response in the host, and retry that same tool call with a new JSON-RPC id.
-- **Common confusion:** `requestState` is untrusted round-trip data. Integrity-protect it before using it for authorization or business decisions, and do not treat it as a server-side session identifier.
-- **Learn it:** [MCP Roots and Elicitation](../phases/13-tools-and-protocols/12-mcp-roots-and-elicitation/)
-- **Related terms:** Stateless MCP, MCP (Model Context Protocol), Human-in-the-Loop (HITL), Tool Contract
-- **Sources:** [MCP Multi Round-Trip Requests](https://modelcontextprotocol.io/specification/2026-07-28/basic/patterns/mrtr)
+<a id="multi-round-trip-request-mrtr"></a>
+### 多轮往返请求（Multi Round-Trip Request (MRTR)）
+- **分类（Category）:** 智能体与工具（Agents & tools）
+- **别名（Aliases）:** MRTR
+- **准确含义（What it actually means）:** 一种 MCP 请求模式：操作返回 `resultType: input_required` 及一个或多个 `inputRequests`，随后客户端带上 `inputResponses` 和原样返回的 `requestState` 重试原方法。
+- **重要性（Why it matters）:** 它让无状态服务器请求用户、模型或根目录输入，而无需发起服务器主动的 JSON-RPC 交换，也无需存储协议会话状态。
+- **实际应用（In practice）:** 从 `tools/call` 返回输入请求，在宿主中收集获授权响应，然后用新的 JSON-RPC id 重试同一工具调用。
+- **常见混淆（Common confusion）:** `requestState` 是不可信的往返数据。在将其用于授权或业务决策前保护其完整性，不要把它当作服务器端会话标识符。
+- **学习课程（Learn it）:** [MCP 根目录与信息征询](../phases/13-tools-and-protocols/12-mcp-roots-and-elicitation/)
+- **相关术语（Related terms）:** Stateless MCP, MCP (Model Context Protocol), Human-in-the-Loop (HITL), Tool Contract
+- **来源（Sources）:** [MCP 多轮往返请求](https://modelcontextprotocol.io/specification/2026-07-28/basic/patterns/mrtr)
 
 ## N
 
-### NaN (Not a Number)
-- **Category:** Math & training
-- **What people say:** A sign that numerical computation failed.
-- **What it actually means:** A floating-point value representing an undefined or unrepresentable numerical result. In training, NaNs can come from invalid operations, overflow, unstable normalization, excessive updates, or earlier corrupted values.
-- **In practice:** Find the first non-finite tensor, inspect its inputs, and add assertions or anomaly detection near that operation.
-- **Related terms:** Mixed Precision, Learning Rate, Gradient
+<a id="nan-not-a-number"></a>
+### 非数值（NaN (Not a Number)）
+- **分类（Category）:** 数学与训练（Math & training）
+- **常见说法（What people say）:** 数值计算失败的信号。
+- **准确含义（What it actually means）:** 表示未定义或无法表示的数值结果的浮点值。训练中的 NaN 可能来自无效运算、溢出、不稳定归一化、过大更新或更早损坏的值。
+- **实际应用（In practice）:** 找到首个非有限张量，检查其输入，并在该运算附近添加断言或异常检测。
+- **相关术语（Related terms）:** Mixed Precision, Learning Rate, Gradient
 
-### Normalization
-- **Category:** Math & training
-- **What people say:** Scaling data to a standard range.
-- **What it actually means:** A family of transformations that rescale or recenter inputs, activations, or features using defined statistics. Batch normalization and layer normalization use different axes and behave differently across training and inference.
-- **Common confusion:** Normalization can improve optimization stability, but it does not always permit a larger learning rate or improve every architecture.
-- **Related terms:** Tensor, Activation Function, Mixed Precision
+<a id="normalization"></a>
+### 归一化（Normalization）
+- **分类（Category）:** 数学与训练（Math & training）
+- **常见说法（What people say）:** 把数据缩放到标准范围。
+- **准确含义（What it actually means）:** 使用明确统计量对输入、激活或特征重新缩放或居中的一类变换。批归一化与层归一化使用不同轴，在训练和推理阶段也有不同行为。
+- **常见混淆（Common confusion）:** 归一化可以改善优化稳定性，但不总能允许更大学习率，也不一定改善每种架构。
+- **相关术语（Related terms）:** Tensor, Activation Function, Mixed Precision
 
-### Nucleus Sampling (Top-p)
-- **Category:** Models & inference
-- **Aliases:** Top-p sampling
-- **What it actually means:** A decoding method that samples from the smallest set of next-token candidates whose cumulative probability reaches a chosen threshold.
-- **Why it matters:** The candidate-set size adapts to the distribution, retaining more options when uncertainty is broad and fewer when probability is concentrated.
-- **In practice:** Evaluate the threshold with temperature and stop settings held constant, and record the complete decoding configuration with every result.
-- **Common confusion:** Top-p is a probability-mass threshold, while top-k always keeps a fixed maximum number of candidates.
-- **Related terms:** Top-k Sampling, Temperature, Decoding Strategy, Softmax
-- **Sources:** [The Curious Case of Neural Text Degeneration](https://arxiv.org/abs/1904.09751)
+<a id="nucleus-sampling-top-p"></a>
+### 核采样（Nucleus Sampling (Top-p)）
+- **分类（Category）:** 模型与推理（Models & inference）
+- **别名（Aliases）:** Top-p sampling
+- **准确含义（What it actually means）:** 一种解码方法，从累计概率达到指定阈值的最小下一词元候选集合中采样。
+- **重要性（Why it matters）:** 候选集合大小随分布自适应变化：不确定性分散时保留更多选项，概率集中时保留更少选项。
+- **实际应用（In practice）:** 保持温度和停止设置不变来评估阈值，并为每个结果记录完整解码配置。
+- **常见混淆（Common confusion）:** Top-p 是概率质量阈值，而 top-k 始终保留固定最大数量的候选项。
+- **相关术语（Related terms）:** Top-k Sampling, Temperature, Decoding Strategy, Softmax
+- **来源（Sources）:** [神经文本退化的奇特现象](https://arxiv.org/abs/1904.09751)
 
 ## O
 
-### Observability
-- **Category:** AI-native development
-- **What it actually means:** The ability to understand an AI system's behavior from recorded inputs, outputs, state transitions, tool calls, timings, costs, errors, and evaluation signals.
-- **Why it matters:** AI failures often span model, retrieval, tools, and orchestration. You need correlated evidence to locate the failing boundary.
-- **In practice:** Record a trace ID across retrieval, model calls, tool execution, approvals, and final scoring while applying redaction and access controls.
-- **Common confusion:** Logging collects events. Observability makes those events structured and connected enough to answer operational questions.
-- **Learn it:** [Agent Observability Platforms](../phases/14-agent-engineering/24-agent-observability-platforms/)
-- **Related terms:** Trace, Evaluation (Eval), Agent State, Time to First Token (TTFT)
+<a id="observability"></a>
+### 可观测性（Observability）
+- **分类（Category）:** AI 原生开发（AI-native development）
+- **准确含义（What it actually means）:** 从记录的输入、输出、状态转换、工具调用、耗时、成本、错误和评估信号中理解 AI 系统行为的能力。
+- **重要性（Why it matters）:** AI 失败往往横跨模型、检索、工具和编排，需要关联证据定位故障边界。
+- **实际应用（In practice）:** 在检索、模型调用、工具执行、审批和最终评分全过程记录追踪标识符，同时应用脱敏与访问控制。
+- **常见混淆（Common confusion）:** 日志记录收集事件；可观测性让事件足够结构化且相互关联，以回答运行问题。
+- **学习课程（Learn it）:** [智能体可观测性平台](../phases/14-agent-engineering/24-agent-observability-platforms/)
+- **相关术语（Related terms）:** Trace, Evaluation (Eval), Agent State, Time to First Token (TTFT)
 
-### Optimizer
-- **Category:** Math & training
-- **What people say:** The algorithm that updates weights.
-- **What it actually means:** An algorithm that transforms gradients into parameter updates. Plain stochastic gradient descent is a simple baseline; momentum, Adam, and other optimizers change the update using history or adaptive scaling. Each choice has different memory, stability, and tuning behavior.
-- **Common confusion:** The optimizer consumes gradients; backpropagation computes them.
-- **Related terms:** Adam (Optimizer), AdamW, Gradient, Learning Rate
+<a id="optimizer"></a>
+### 优化器（Optimizer）
+- **分类（Category）:** 数学与训练（Math & training）
+- **常见说法（What people say）:** 更新权重的算法。
+- **准确含义（What it actually means）:** 将梯度转换为参数更新的算法。普通随机梯度下降是简单基线；动量、Adam 等优化器利用历史或自适应缩放改变更新方式。不同选择有不同内存、稳定性和调优行为。
+- **常见混淆（Common confusion）:** 优化器使用梯度；反向传播计算梯度。
+- **相关术语（Related terms）:** Adam (Optimizer), AdamW, Gradient, Learning Rate
 
-### Orchestration
-- **Category:** Agents & tools
-- **What it actually means:** The control logic that sequences, branches, delegates, retries, pauses, resumes, and terminates work across model and tool steps.
-- **Why it matters:** Reliable agent behavior depends on explicit workflow decisions outside the model, especially when tasks have dependencies or consequential side effects.
-- **In practice:** Encode stable steps as a workflow or state machine, expose bounded decisions to the model, and persist transitions before external writes.
-- **Common confusion:** Orchestration is not synonymous with autonomy or multi-agent systems; one agent can be orchestrated through a deterministic workflow.
-- **Related terms:** Agent Harness, Planning, Delegation, Durable Execution
-- **Sources:** [Building Effective Agents](https://www.anthropic.com/research/building-effective-agents)
+<a id="orchestration"></a>
+### 编排（Orchestration）
+- **分类（Category）:** 智能体与工具（Agents & tools）
+- **准确含义（What it actually means）:** 在模型和工具步骤之间安排顺序、分支、委派、重试、暂停、恢复及终止工作的控制逻辑。
+- **重要性（Why it matters）:** 可靠智能体行为依赖模型之外的显式工作流决策，尤其当任务有依赖关系或重要副作用时。
+- **实际应用（In practice）:** 将稳定步骤编码为工作流或状态机，让模型在有限范围内决策，并在外部写入前持久化状态转换。
+- **常见混淆（Common confusion）:** 编排不等同于自主性或多智能体系统；单个智能体也可以通过确定性工作流编排。
+- **相关术语（Related terms）:** Agent Harness, Planning, Delegation, Durable Execution
+- **来源（Sources）:** [构建有效的智能体](https://www.anthropic.com/research/building-effective-agents)
 
-### Overfitting
-- **Category:** Math & training
-- **What people say:** The model memorized the training data.
-- **What it actually means:** A generalization gap in which performance on training data is substantially better than performance on representative unseen data. Memorization can contribute, but the operational symptom is poor generalization.
-- **In practice:** Compare training and held-out metrics, inspect subgroup failures, and test changes such as data quality, regularization, early stopping, or model capacity.
-- **Related terms:** Underfitting, Dropout, Weight Decay, Eval Set
+<a id="overfitting"></a>
+### 过拟合（Overfitting）
+- **分类（Category）:** 数学与训练（Math & training）
+- **常见说法（What people say）:** 模型记住了训练数据。
+- **准确含义（What it actually means）:** 训练数据上的表现明显优于代表性未见数据上的表现的泛化差距。记忆化可能是原因之一，但实际症状是泛化不佳。
+- **实际应用（In practice）:** 比较训练与留出指标，检查子群体失败，并测试数据质量、正则化、早停或模型容量等方面的改变。
+- **相关术语（Related terms）:** Underfitting, Dropout, Weight Decay, Eval Set
 
 ## P
 
-### Paged KV Cache
-- **Category:** Infrastructure & serving
-- **What it actually means:** A KV-cache memory manager that stores attention state in fixed-size blocks and maps logical sequence positions to physical blocks instead of requiring one contiguous allocation per sequence.
-- **Why it matters:** Variable sequence lengths create fragmentation and unpredictable growth, so block-based allocation can improve usable memory and enable flexible sharing.
-- **In practice:** Select block size from workload measurements, track allocation and eviction, isolate state between requests, and test cancellation and prefix sharing under memory pressure.
-- **Common confusion:** Paged KV cache manages runtime attention-state memory. It does not move model parameters to disk or extend the model's trained context limit.
-- **Learn it:** [vLLM Serving Internals](../phases/17-infrastructure-and-production/04-vllm-serving-internals/)
-- **Related terms:** KV Cache, Prefix Caching, Context Window, Model Serving
-- **Sources:** [Efficient Memory Management for Large Language Model Serving with PagedAttention](https://arxiv.org/abs/2309.06180)
+<a id="paged-kv-cache"></a>
+### 分页键值缓存（Paged KV Cache）
+- **分类（Category）:** 基础设施与服务（Infrastructure & serving）
+- **准确含义（What it actually means）:** 将注意力状态存于固定大小块，并把逻辑序列位置映射到物理块的键值缓存内存管理器，而非为每个序列要求一次连续分配。
+- **重要性（Why it matters）:** 可变序列长度导致碎片和难以预测的增长，基于块的分配可以提高可用内存并支持灵活共享。
+- **实际应用（In practice）:** 根据工作负载测量选择块大小，跟踪分配与驱逐，在请求之间隔离状态，并在内存压力下测试取消与前缀共享。
+- **常见混淆（Common confusion）:** 分页键值缓存管理运行时注意力状态内存，不会把模型参数移到磁盘，也不会扩展模型训练所得的上下文上限。
+- **学习课程（Learn it）:** [vLLM 服务内部机制](../phases/17-infrastructure-and-production/04-vllm-serving-internals/)
+- **相关术语（Related terms）:** KV Cache, Prefix Caching, Context Window, Model Serving
+- **来源（Sources）:** [使用 PagedAttention 高效管理大语言模型服务内存](https://arxiv.org/abs/2309.06180)
 
-### Parameter
-- **Category:** Models & inference
-- **What people say:** A number used to describe model size.
-- **What it actually means:** A value learned during training, commonly a weight, bias, embedding element, or normalization parameter. Parameter count is one measure of model capacity, but it does not directly determine quality, memory, or serving cost.
-- **Common confusion:** Memory per parameter depends on numerical format, quantization metadata, sharding, optimizer state, activations, and runtime overhead.
-- **Related terms:** Weight, MoE (Mixture of Experts), Quantization
+<a id="parameter"></a>
+### 参数（Parameter）
+- **分类（Category）:** 模型与推理（Models & inference）
+- **常见说法（What people say）:** 用来描述模型大小的数字。
+- **准确含义（What it actually means）:** 训练中学习得到的值，常见形式是权重、偏置、嵌入元素或归一化参数。参数数量是模型容量的一种度量，但不直接决定质量、内存或服务成本。
+- **常见混淆（Common confusion）:** 每参数内存取决于数值格式、量化元数据、分片、优化器状态、激活和运行时开销。
+- **相关术语（Related terms）:** Weight, MoE (Mixture of Experts), Quantization
 
-### Pass@k
-- **Category:** Evaluation & safety
-- **What it actually means:** Across a task set, the fraction of tasks for which at least one of k sampled candidates passes a defined correctness test.
-- **Why it matters:** It measures the value of sampling several attempts for tasks such as code generation where an automatic verifier can check each candidate.
-- **In practice:** Generate candidates independently under a fixed configuration, run the same isolated tests on each, and report k with the sampling and estimator details.
-- **Common confusion:** Pass@k is not single-attempt accuracy, and a higher score can reflect a larger attempt budget rather than a better first answer.
-- **Related terms:** Coding Agent, Regression Test, Eval Set, Test Oracle
-- **Sources:** [Evaluating Large Language Models Trained on Code](https://arxiv.org/abs/2107.03374)
+<a id="passk"></a>
+### 多次采样通过率（Pass@k）
+- **分类（Category）:** 评估与安全（Evaluation & safety）
+- **准确含义（What it actually means）:** 在任务集中，k 个采样候选项至少有一个通过指定正确性测试的任务所占比例。
+- **重要性（Why it matters）:** 对于代码生成等可由自动验证器检查各候选项的任务，它衡量多次采样尝试的价值。
+- **实际应用（In practice）:** 在固定配置下独立生成候选项，对每项运行相同的隔离测试，并连同采样和估计器细节一起报告 k。
+- **常见混淆（Common confusion）:** Pass@k 不是单次尝试准确率；分数提高可能只是尝试预算更多，而非首个答案更好。
+- **相关术语（Related terms）:** Coding Agent, Regression Test, Eval Set, Test Oracle
+- **来源（Sources）:** [评估基于代码训练的大语言模型](https://arxiv.org/abs/2107.03374)
 
-### Patch
-- **Category:** AI-native development
-- **What it actually means:** A reviewable representation of changes to one or more files, usually expressed as additions and deletions against a known base revision.
-- **Why it matters:** A patch gives people and agents a narrow artifact to inspect, test, apply, or reject without accepting an entire working directory.
-- **In practice:** Ask a coding agent to return a unified diff, then verify that it touches only allowed files and applies cleanly to the expected commit.
-- **Common confusion:** A patch captures file changes, not the reasoning, test evidence, or approval needed to ship them.
-- **Learn it:** [Workbench for Real Repositories](../phases/14-agent-engineering/41-workbench-for-real-repos/)
-- **Related terms:** Coding Agent, Worktree, Scope Contract, Regression Test
+<a id="patch"></a>
+### 补丁（Patch）
+- **分类（Category）:** AI 原生开发（AI-native development）
+- **准确含义（What it actually means）:** 对一个或多个文件变更的可审阅表示，通常是相对于已知基准修订版的增加与删除。
+- **重要性（Why it matters）:** 补丁让人和智能体拥有范围明确的交付物，可检查、测试、应用或拒绝，而无需接受整个工作目录。
+- **实际应用（In practice）:** 要求编程智能体返回统一差异格式，再确认它只触及获准文件，且能干净地应用到预期提交。
+- **常见混淆（Common confusion）:** 补丁记录文件变化，不包含交付这些变更所需的推理、测试证据或批准。
+- **学习课程（Learn it）:** [真实仓库中的工作台](../phases/14-agent-engineering/41-workbench-for-real-repos/)
+- **相关术语（Related terms）:** Coding Agent, Worktree, Scope Contract, Regression Test
 
-### Patch Embedding
-- **Category:** Multimodal systems
-- **What it actually means:** A learned projection that converts an image patch into a fixed-width vector used as one element of a transformer input sequence.
-- **Why it matters:** It creates the interface between a spatial image grid and a sequence model, with patch size controlling token count and retained local detail.
-- **In practice:** Record patch and image dimensions, handle padding or resizing explicitly, add position information, and measure how resolution changes affect both accuracy and token cost.
-- **Common confusion:** A patch embedding is the vector representation of a patch, not a semantic object detector or a guarantee that patch boundaries match visual entities.
-- **Learn it:** [Vision Transformer Patch Tokens](../phases/12-multimodal-ai/01-vision-transformer-patch-tokens/)
-- **Related terms:** Vision Transformer (ViT), Image Token, Embedding, Token
-- **Sources:** [An Image is Worth 16x16 Words](https://arxiv.org/abs/2010.11929)
+<a id="patch-embedding"></a>
+### 图像块嵌入（Patch Embedding）
+- **分类（Category）:** 多模态系统（Multimodal systems）
+- **准确含义（What it actually means）:** 通过学习得到的投影，把图像块转成固定宽度向量，作为 Transformer 输入序列的一个元素。
+- **重要性（Why it matters）:** 它连接空间图像网格与序列模型，图像块大小控制词元数量及保留的局部细节。
+- **实际应用（In practice）:** 记录图像块和图像尺寸，明确处理填充或缩放，添加位置信息，并测量分辨率变化对准确率和词元成本的影响。
+- **常见混淆（Common confusion）:** 图像块嵌入是图像块的向量表示，不是语义目标检测器，也不保证块边界匹配视觉实体。
+- **学习课程（Learn it）:** [视觉 Transformer 图像块词元](../phases/12-multimodal-ai/01-vision-transformer-patch-tokens/)
+- **相关术语（Related terms）:** Vision Transformer (ViT), Image Token, Embedding, Token
+- **来源（Sources）:** [一幅图像相当于 16x16 个单词](https://arxiv.org/abs/2010.11929)
 
-### Perplexity
-- **Category:** Models & inference
-- **What people say:** How surprised a language model is by a dataset.
-- **What it actually means:** The exponentiated average negative log-likelihood under a stated tokenization and logarithm convention. Lower values mean the model assigned higher probability to the evaluated sequence.
-- **Common confusion:** Perplexity is not comparable across different tokenizers or evaluation setups and does not directly measure factuality or usefulness.
-- **Related terms:** Cross-Entropy, Token, Evaluation (Eval)
+<a id="perplexity"></a>
+### 困惑度（Perplexity）
+- **分类（Category）:** 模型与推理（Models & inference）
+- **常见说法（What people say）:** 语言模型对数据集有多意外。
+- **准确含义（What it actually means）:** 在明确的分词方式和对数约定下，平均负对数似然的指数。值越低，表示模型为被评估序列分配的概率越高。
+- **常见混淆（Common confusion）:** 不同分词器或评估设置下的困惑度不可直接比较，也不直接衡量事实性或有用性。
+- **相关术语（Related terms）:** Cross-Entropy, Token, Evaluation (Eval)
 
-### Pipeline Parallelism
-- **Category:** Infrastructure & serving
-- **What it actually means:** Partitioning sequential groups of model layers across devices and moving microbatches or requests through those stages as a pipeline.
-- **Why it matters:** It lets models exceed one device's memory, but stage imbalance, pipeline bubbles, activation transfers, and failure coordination affect usable performance.
-- **In practice:** Balance stage cost, choose a microbatch schedule, measure idle time and interconnect traffic, and keep model and checkpoint partition metadata versioned.
-- **Common confusion:** Pipeline parallelism divides layers by depth. Tensor parallelism divides tensor operations within a layer.
-- **Learn it:** [Scaling and Distributed Training](../phases/10-llms-from-scratch/05-scaling-distributed/)
-- **Related terms:** Tensor Parallelism, Expert Parallelism, Batch Size, Model Serving
-- **Sources:** [GPipe](https://arxiv.org/abs/1811.06965)
+<a id="pipeline-parallelism"></a>
+### 流水线并行（Pipeline Parallelism）
+- **分类（Category）:** 基础设施与服务（Infrastructure & serving）
+- **准确含义（What it actually means）:** 将连续模型层组划分到不同设备，让微批次或请求像流水线一样通过各阶段。
+- **重要性（Why it matters）:** 它让模型可以超过单设备内存，但阶段不均、流水线气泡、激活传输和故障协调会影响实际性能。
+- **实际应用（In practice）:** 均衡阶段成本，选择微批次调度，测量空闲时间和互连流量，并对模型及检查点的分区元数据进行版本管理。
+- **常见混淆（Common confusion）:** 流水线并行按深度划分层；张量并行划分层内部的张量运算。
+- **学习课程（Learn it）:** [扩展与分布式训练](../phases/10-llms-from-scratch/05-scaling-distributed/)
+- **相关术语（Related terms）:** Tensor Parallelism, Expert Parallelism, Batch Size, Model Serving
+- **来源（Sources）:** [GPipe 论文](https://arxiv.org/abs/1811.06965)
 
-### Planning
-- **Category:** Agents & tools
-- **What it actually means:** Constructing, selecting, or revising a sequence of actions and dependencies intended to move from the current state to a goal.
-- **Why it matters:** Explicit plans make assumptions and ordering visible before an agent commits to expensive or irreversible actions.
-- **In practice:** Ask for a short dependency-aware plan, validate it against available tools and permissions, then re-plan when observations invalidate an assumption.
-- **Common confusion:** A generated plan is a proposal, not proof that the steps are feasible, sufficient, or safe.
-- **Related terms:** Agent State, ReAct, Orchestration, Verification Gate
-- **Sources:** [LLM+P](https://arxiv.org/abs/2304.11477)
+<a id="planning"></a>
+### 规划（Planning）
+- **分类（Category）:** 智能体与工具（Agents & tools）
+- **准确含义（What it actually means）:** 构造、选择或修订动作序列及依赖关系，以从当前状态推进到目标。
+- **重要性（Why it matters）:** 显式计划让假设和顺序在智能体执行昂贵或不可逆动作前就可见。
+- **实际应用（In practice）:** 要求简短且考虑依赖的计划，对照可用工具和权限验证，并在观测推翻假设时重新规划。
+- **常见混淆（Common confusion）:** 生成计划只是提案，不证明步骤可行、充分或安全。
+- **相关术语（Related terms）:** Agent State, ReAct, Orchestration, Verification Gate
+- **来源（Sources）:** [LLM+P 论文](https://arxiv.org/abs/2304.11477)
 
-### Postmortem
-- **Category:** Reliability & operations
-- **What it actually means:** A durable incident record that explains impact, detection, response, contributing conditions, recovery, and owned follow-up actions without assigning blame as a substitute for analysis.
-- **Why it matters:** A resolved outage still has value as evidence. Capturing system conditions and decisions turns one event into improvements that reduce recurrence and response time.
-- **In practice:** Build the timeline from traces and logs, distinguish triggering events from contributing conditions, assign dated actions, and review whether each action changed the relevant control.
-- **Common confusion:** A postmortem is not a meeting transcript or a search for one person's mistake. It should produce testable system improvements.
-- **Related terms:** Incident Response, Regression Test, Audit Log, Observability
-- **Sources:** [Google SRE: Postmortem Culture](https://sre.google/sre-book/postmortem-culture/)
+<a id="postmortem"></a>
+### 事后复盘（Postmortem）
+- **分类（Category）:** 可靠性与运维（Reliability & operations）
+- **准确含义（What it actually means）:** 记录事件影响、检测、响应、促成条件、恢复及有负责人跟进动作的持久文档，不以追责代替分析。
+- **重要性（Why it matters）:** 已解决的故障仍有证据价值。记录系统条件和决策，可将单次事件转化为减少复发及响应耗时的改进。
+- **实际应用（In practice）:** 从追踪和日志重建时间线，区分触发事件与促成条件，分配带期限的动作，并检查每项动作是否改变了相关控制。
+- **常见混淆（Common confusion）:** 复盘不是会议记录，也不是寻找某个人的错误，应产出可测试的系统改进。
+- **相关术语（Related terms）:** Incident Response, Regression Test, Audit Log, Observability
+- **来源（Sources）:** [Google SRE：事后复盘文化](https://sre.google/sre-book/postmortem-culture/)
 
-### Precision & Recall
-- **Category:** Evaluation & safety
-- **What people say:** Two metrics for classification or retrieval quality.
-- **What it actually means:** Precision asks how many flagged items were correct; recall asks how many relevant items were found. When you change the decision threshold for one fixed scoring model, improving recall often lowers precision and vice versa. A better model can improve both. F1 is their harmonic mean.
-- **Common confusion:** The right threshold and metric depend on the cost of each error and the prevalence of the target class.
-- **Related terms:** Eval Set, Semantic Search, Guardrails
+<a id="precision--recall"></a>
+### 精确率与召回率（Precision & Recall）
+- **分类（Category）:** 评估与安全（Evaluation & safety）
+- **常见说法（What people say）:** 分类或检索质量的两个指标。
+- **准确含义（What it actually means）:** 精确率问被标记项中多少是正确的，召回率问相关项中找到了多少。对于固定评分模型，改变决策阈值时，提高召回率通常降低精确率，反之亦然；更好的模型可以同时改善两者。F1 是二者的调和平均。
+- **常见混淆（Common confusion）:** 合适的阈值和指标取决于各类错误的成本，以及目标类别的占比。
+- **相关术语（Related terms）:** Eval Set, Semantic Search, Guardrails
 
-### Prefill
-- **Category:** Infrastructure & serving
-- **Aliases:** Prefill Phase
-- **What it actually means:** The initial inference stage that processes all supplied input tokens to produce their representations and the attention state required for subsequent autoregressive generation.
-- **Why it matters:** Prompt shape, queueing, and cache reuse affect prefill cost, and prefill competes differently for compute than decode, so it strongly influences startup latency and serving schedules.
-- **In practice:** Record prompt tokens and prefill latency, separate queue time from execution time, compare cached and uncached prefixes, and test long prompts beside active decode traffic.
-- **Common confusion:** Prefill is the runtime prompt-processing stage, not the first generated token itself. The first token appears only after prefill and any queueing complete.
-- **Learn it:** [Disaggregated Prefill and Decode](../phases/17-infrastructure-and-production/17-disaggregated-prefill-decode/)
-- **Related terms:** Decode Phase, KV Cache, Time to First Token (TTFT), Chunked Prefill
-- **Sources:** [Sarathi-Serve](https://www.usenix.org/system/files/osdi24-agrawal.pdf); [DistServe](https://arxiv.org/abs/2401.09670)
+<a id="prefill"></a>
+### 预填充（Prefill）
+- **分类（Category）:** 基础设施与服务（Infrastructure & serving）
+- **别名（Aliases）:** Prefill Phase
+- **准确含义（What it actually means）:** 推理的初始阶段，处理所有已提供的输入词元，产生其表示及后续自回归生成所需的注意力状态。
+- **重要性（Why it matters）:** 提示词形状、排队和缓存复用影响预填充成本；其计算竞争方式与解码不同，因此显著影响启动延迟与服务调度。
+- **实际应用（In practice）:** 记录提示词的词元数量和预填充延迟，区分排队与执行时间，比较缓存和未缓存前缀，并在活动解码流量旁测试长提示词。
+- **常见混淆（Common confusion）:** 预填充是运行时提示词处理阶段，不是首个生成词元本身。只有预填充与排队都完成后，首词元才出现。
+- **学习课程（Learn it）:** [预填充与解码分离](../phases/17-infrastructure-and-production/17-disaggregated-prefill-decode/)
+- **相关术语（Related terms）:** Decode Phase, KV Cache, Time to First Token (TTFT), Chunked Prefill
+- **来源（Sources）:** [Sarathi-Serve 论文](https://www.usenix.org/system/files/osdi24-agrawal.pdf); [DistServe 论文](https://arxiv.org/abs/2401.09670)
 
-### Prefix Caching
-- **Category:** Infrastructure & serving
-- **What it actually means:** Reusing KV-cache blocks produced for an identical eligible token prefix across requests so the serving runtime can skip repeated prefix computation.
-- **Why it matters:** Shared system instructions, templates, or documents can consume substantial prefill work, but reuse only helps when token sequences and cache eligibility match.
-- **In practice:** Place stable tokens before request-specific content, include model and tokenizer versions in cache identity, isolate tenant-sensitive state, monitor hit rate, and treat eviction as normal.
-- **Common confusion:** Prefix caching reuses runtime attention state for exact token prefixes. Prompt caching is a broader provider or application contract, while semantic caching reuses a prior result for a similar request.
-- **Learn it:** [Inference Optimization](../phases/10-llms-from-scratch/12-inference-optimization/)
-- **Related terms:** Prompt Cache, Semantic Cache, KV Cache, Paged KV Cache
-- **Sources:** [SGLang](https://arxiv.org/abs/2312.07104)
+<a id="prefix-caching"></a>
+### 前缀缓存（Prefix Caching）
+- **分类（Category）:** 基础设施与服务（Infrastructure & serving）
+- **准确含义（What it actually means）:** 跨请求复用相同且符合条件的词元前缀产生的键值缓存块，使服务运行时跳过重复前缀计算。
+- **重要性（Why it matters）:** 共享系统指令、模板或文档可能消耗大量预填充工作，但只有词元序列和缓存资格都匹配时，复用才有帮助。
+- **实际应用（In practice）:** 将稳定词元放在请求特有内容之前，在缓存身份中纳入模型及分词器版本，隔离租户敏感状态，监测命中率，并将驱逐视为正常现象。
+- **常见混淆（Common confusion）:** 前缀缓存复用精确词元前缀的运行时注意力状态；提示词缓存是更广义的提供方或应用契约；语义缓存则为相似请求复用此前结果。
+- **学习课程（Learn it）:** [推理优化](../phases/10-llms-from-scratch/12-inference-optimization/)
+- **相关术语（Related terms）:** Prompt Cache, Semantic Cache, KV Cache, Paged KV Cache
+- **来源（Sources）:** [SGLang 论文](https://arxiv.org/abs/2312.07104)
 
-### Progressive Disclosure
-- **Category:** AI-native development
-- **What it actually means:** Supplying a person or model with the minimum useful context first, then revealing deeper detail when the task or evidence requires it.
-- **Why it matters:** It limits context noise and cost while keeping authoritative detail available on demand.
-- **In practice:** Give a coding agent repository rules and a map first; load full implementation files only after it identifies the relevant module.
-- **Common confusion:** Progressive disclosure is staged access to detail, not deliberate withholding of information required for a decision.
-- **Learn it:** [Workbench for Real Repositories](../phases/14-agent-engineering/41-workbench-for-real-repos/)
-- **Related terms:** Context Engineering, Repository Map, Token Budget, Handoff
+<a id="progressive-disclosure"></a>
+### 渐进式披露（Progressive Disclosure）
+- **分类（Category）:** AI 原生开发（AI-native development）
+- **准确含义（What it actually means）:** 先向人或模型提供最少但有用的上下文，再在任务或证据需要时提供更深入细节。
+- **重要性（Why it matters）:** 它限制上下文噪声与成本，同时让权威细节按需可用。
+- **实际应用（In practice）:** 先给编程智能体仓库规则和地图，等它识别相关模块后才加载完整实现文件。
+- **常见混淆（Common confusion）:** 渐进式披露是分阶段获取细节，不是故意隐瞒决策所需信息。
+- **学习课程（Learn it）:** [真实仓库中的工作台](../phases/14-agent-engineering/41-workbench-for-real-repos/)
+- **相关术语（Related terms）:** Context Engineering, Repository Map, Token Budget, Handoff
 
-### Prompt Cache
-- **Category:** Prompting & context
-- **What it actually means:** Reuse of provider-side or application-side computation for an identical or eligible prompt prefix so repeated inference avoids some preprocessing work.
-- **Why it matters:** Stable instructions and large shared documents can become cheaper or faster across repeated calls when the provider's cache contract is satisfied.
-- **In practice:** Place stable policy text before request-specific content, monitor cache-hit metadata, and treat misses as normal because eligibility and lifetime vary by provider.
-- **Common confusion:** A prompt cache is a provider or application reuse contract and may use prefix caching internally. Prefix caching specifically reuses eligible exact-token KV state, while semantic caching reuses a prior result for a sufficiently similar request.
-- **Learn it:** [Prompt Caching](../phases/11-llm-engineering/15-prompt-caching/)
-- **Related terms:** Semantic Cache, Prefix Caching, KV Cache, Time to First Token (TTFT)
+<a id="prompt-cache"></a>
+### 提示词缓存（Prompt Cache）
+- **分类（Category）:** 提示词与上下文（Prompting & context）
+- **准确含义（What it actually means）:** 复用提供方或应用侧对相同或符合条件的提示词前缀所做的计算，使重复推理省去部分预处理。
+- **重要性（Why it matters）:** 满足提供方缓存契约时，稳定指令和大型共享文档在反复调用中可以更便宜或更快。
+- **实际应用（In practice）:** 将稳定策略文本放在请求特有内容前，监测缓存命中元数据，并将未命中视为正常情况，因为资格与有效期因提供方而异。
+- **常见混淆（Common confusion）:** 提示词缓存是提供方或应用的复用契约，内部可能使用前缀缓存。前缀缓存专门复用合格的精确词元键值状态；语义缓存则为足够相似的请求复用此前结果。
+- **学习课程（Learn it）:** [提示词缓存](../phases/11-llm-engineering/15-prompt-caching/)
+- **相关术语（Related terms）:** Semantic Cache, Prefix Caching, KV Cache, Time to First Token (TTFT)
 
-### Prompt Engineering
-- **Category:** Prompting & context
-- **What people say:** Wording instructions so a model follows the task.
-- **What it actually means:** Designing model-facing instructions, examples, constraints, and output requirements to improve behavior on a defined task.
-- **Common confusion:** Prompt wording cannot compensate for missing evidence, unsafe permissions, poor tool contracts, or absent evaluation.
-- **Learn it:** [Prompt Engineering](../phases/11-llm-engineering/01-prompt-engineering/)
-- **Related terms:** Context Engineering, Few-Shot, System Prompt, Structured Output
+<a id="prompt-engineering"></a>
+### 提示词工程（Prompt Engineering）
+- **分类（Category）:** 提示词与上下文（Prompting & context）
+- **常见说法（What people say）:** 通过措辞让模型遵循任务。
+- **准确含义（What it actually means）:** 设计面向模型的指令、示例、约束和输出要求，以改善特定任务上的行为。
+- **常见混淆（Common confusion）:** 提示词措辞无法弥补证据缺失、不安全权限、糟糕工具契约或缺少评估。
+- **学习课程（Learn it）:** [提示词工程](../phases/11-llm-engineering/01-prompt-engineering/)
+- **相关术语（Related terms）:** Context Engineering, Few-Shot, System Prompt, Structured Output
 
-### Prompt Injection
-- **Category:** Evaluation & safety
-- **What people say:** An adversarial instruction that redirects a model.
-- **What it actually means:** An attack or failure mode in which untrusted content influences a model to disregard intended instructions, expose data, misuse tools, or take actions outside the user's goal. The content can arrive directly from a user or indirectly through retrieved pages, files, messages, or tool output.
-- **Why it matters:** Models process instructions and data through the same language channel, so input filtering alone cannot reliably separate every malicious instruction from legitimate content.
-- **In practice:** Treat external content as untrusted, isolate it from authority-bearing instructions, minimize tool permissions, require approval for consequential writes, and verify outputs and actions.
-- **Common confusion:** Prompt injection is not technically the same mechanism as SQL injection, and a stronger system prompt is not a complete defense.
-- **Learn it:** [Prompt Injection Defense](../phases/14-agent-engineering/27-prompt-injection-defense/)
-- **Sources:** [OWASP prompt injection guidance](https://genai.owasp.org/llmrisk/llm01-prompt-injection/)
-- **Related terms:** Least Privilege, Sandbox, Approval Gate, Tool Contract
+<a id="prompt-injection"></a>
+### 提示词注入（Prompt Injection）
+- **分类（Category）:** 评估与安全（Evaluation & safety）
+- **常见说法（What people say）:** 重定向模型行为的对抗指令。
+- **准确含义（What it actually means）:** 不可信内容影响模型，使其忽视预定指令、暴露数据、误用工具或执行用户目标之外动作的攻击或失效模式。内容可直接来自用户，也可间接来自检索页面、文件、消息或工具输出。
+- **重要性（Why it matters）:** 模型通过同一语言通道处理指令与数据，因此仅靠输入过滤，无法可靠地区分所有恶意指令和合法内容。
+- **实际应用（In practice）:** 将外部内容视为不可信，与有权威性的指令隔离，尽量缩小工具权限，重要写入要求审批，并验证输出与动作。
+- **常见混淆（Common confusion）:** 提示词注入在技术机制上不同于 SQL 注入，更强的系统提示词也不是完整防御。
+- **学习课程（Learn it）:** [提示词注入防御](../phases/14-agent-engineering/27-prompt-injection-defense/)
+- **来源（Sources）:** [OWASP 提示词注入指南](https://genai.owasp.org/llmrisk/llm01-prompt-injection/)
+- **相关术语（Related terms）:** Least Privilege, Sandbox, Approval Gate, Tool Contract
 
-### Prompt Sensitivity
-- **Category:** Prompting & context
-- **What it actually means:** Variation in model output or measured performance caused by changes to prompt wording, order, formatting, or examples that preserve the intended task.
-- **Why it matters:** A system that succeeds under one convenient phrasing may be unreliable for real users or misleading in evaluation.
-- **In practice:** Create semantically equivalent prompt variants, measure variance by case, and keep variants in regression tests instead of optimizing one prompt against one eval set.
-- **Common confusion:** Sensitivity is not always a prompt defect; it can reveal ambiguity, weak model robustness, unstable decoding, or an inadequate scoring rule.
-- **Related terms:** Prompt Engineering, Eval Set, Regression Test, Few-Shot
-- **Sources:** [ProSA](https://aclanthology.org/2024.findings-emnlp.108/)
+<a id="prompt-sensitivity"></a>
+### 提示词敏感性（Prompt Sensitivity）
+- **分类（Category）:** 提示词与上下文（Prompting & context）
+- **准确含义（What it actually means）:** 在保持预期任务不变时，提示词措辞、顺序、格式或示例变化引起的模型输出或实测性能变化。
+- **重要性（Why it matters）:** 只在一种有利表述下成功的系统，对真实用户可能不可靠，也可能误导评估。
+- **实际应用（In practice）:** 构造语义等价的提示词变体，按案例测量方差，将变体保留在回归测试中，而不是针对一个评估集只优化一条提示词。
+- **常见混淆（Common confusion）:** 敏感性不总是提示词缺陷，也可能揭示歧义、模型稳健性弱、解码不稳定或评分规则不足。
+- **相关术语（Related terms）:** Prompt Engineering, Eval Set, Regression Test, Few-Shot
+- **来源（Sources）:** [ProSA 论文](https://aclanthology.org/2024.findings-emnlp.108/)
 
-### Provenance Attestation
-- **Category:** Security & governance
-- **What it actually means:** Authenticated, machine-readable metadata that binds an artifact to claims about how, where, when, and from which inputs it was produced.
-- **Why it matters:** It lets automated policy and reviewers verify supply-chain claims instead of trusting an unsigned build note.
-- **In practice:** Generate an attestation in the build system, bind it to artifact digests, sign it with a controlled identity, and verify it before release.
-- **Common confusion:** A signature identifies the attester and protects integrity; it does not prove that every claim inside the attestation is true.
-- **Related terms:** Data Provenance, Reproducible Build, Audit Log, Verification Gate
-- **Sources:** [SLSA Software Attestations](https://slsa.dev/spec/v1.2/attestation-model)
+<a id="provenance-attestation"></a>
+### 来源证明（Provenance Attestation）
+- **分类（Category）:** 安全与治理（Security & governance）
+- **准确含义（What it actually means）:** 经过认证、机器可读的元数据，将交付物绑定到关于它如何、何地、何时、由哪些输入产生的声明。
+- **重要性（Why it matters）:** 它让自动化策略和审阅者验证供应链声明，而不是信任未签名的构建说明。
+- **实际应用（In practice）:** 在构建系统中生成证明，将其绑定到交付物摘要，以受控身份签名，并在发布前验证。
+- **常见混淆（Common confusion）:** 签名识别证明者并保护完整性，不证明其中每项声明都真实。
+- **相关术语（Related terms）:** Data Provenance, Reproducible Build, Audit Log, Verification Gate
+- **来源（Sources）:** [SLSA 软件证明规范](https://slsa.dev/spec/v1.2/attestation-model)
 
-### Purpose Limitation
-- **Category:** Security & governance
-- **What it actually means:** For personal data, collecting and using it only for specified, explicit purposes unless a new use has an appropriate compatible or authorized basis.
-- **Why it matters:** Data that was acceptable for one workflow can create privacy and governance risk when silently reused for model training, evaluation, personalization, or unrelated analytics.
-- **In practice:** Record the purpose with each dataset, check new pipelines against it before access, separate incompatible uses, and require a documented decision when the purpose changes.
-- **Common confusion:** Purpose limitation governs why data is used. Data minimization governs how much data that purpose actually requires.
-- **Related terms:** Data Minimization, Data Classification, AI Risk Assessment, Audit Log
-- **Sources:** [General Data Protection Regulation, Article 5(1)(b)](https://eur-lex.europa.eu/eli/reg/2016/679/oj)
+<a id="purpose-limitation"></a>
+### 目的限制（Purpose Limitation）
+- **分类（Category）:** 安全与治理（Security & governance）
+- **准确含义（What it actually means）:** 对于个人数据，只为指定且明确的目的收集和使用，除非新用途具有适当的兼容或授权依据。
+- **重要性（Why it matters）:** 适用于某工作流的数据，若被悄悄复用于模型训练、评估、个性化或无关分析，可能产生隐私和治理风险。
+- **实际应用（In practice）:** 随每个数据集记录目的，在访问前据此检查新流水线，隔离不兼容用途，并在目的改变时要求有文档记录的决策。
+- **常见混淆（Common confusion）:** 目的限制规定为什么使用数据；数据最小化规定该目的实际需要多少数据。
+- **相关术语（Related terms）:** Data Minimization, Data Classification, AI Risk Assessment, Audit Log
+- **来源（Sources）:** [《通用数据保护条例》第 5(1)(b) 条](https://eur-lex.europa.eu/eli/reg/2016/679/oj)
 
 ## Q
 
-### QLoRA
-- **Category:** Math & training
-- **What people say:** LoRA with a quantized base model.
-- **What it actually means:** A parameter-efficient fine-tuning method that keeps a pretrained base model frozen in a low-bit quantized representation while training LoRA adapters with higher-precision computation where needed.
-- **Why it matters:** It can reduce the memory needed to adapt large models, but savings and quality depend on model, rank, optimizer, sequence length, hardware, and implementation.
-- **Common confusion:** QLoRA does not guarantee a particular memory footprint or a fixed quality gap from full fine-tuning.
-- **Learn it:** [Fine-Tuning and LoRA](../phases/11-llm-engineering/08-fine-tuning-lora/)
-- **Sources:** [QLoRA paper](https://arxiv.org/abs/2305.14314)
-- **Related terms:** LoRA (Low-Rank Adaptation), Quantization, Fine-tuning
+<a id="qlora"></a>
+### 量化低秩适配（QLoRA）
+- **分类（Category）:** 数学与训练（Math & training）
+- **常见说法（What people say）:** 基础模型量化后的 LoRA。
+- **准确含义（What it actually means）:** 一种参数高效微调方法，以低比特量化表示冻结预训练基础模型，同时在需要时以较高精度计算训练 LoRA 适配器。
+- **重要性（Why it matters）:** 它可减少适配大模型所需内存，但节省幅度和质量取决于模型、秩、优化器、序列长度、硬件及实现。
+- **常见混淆（Common confusion）:** QLoRA 不保证特定内存占用，也不保证与全参数微调保持固定质量差距。
+- **学习课程（Learn it）:** [微调与低秩适配](../phases/11-llm-engineering/08-fine-tuning-lora/)
+- **来源（Sources）:** [QLoRA 论文](https://arxiv.org/abs/2305.14314)
+- **相关术语（Related terms）:** LoRA (Low-Rank Adaptation), Quantization, Fine-tuning
 
-### Quantization
-- **Category:** Models & inference
-- **What people say:** Storing or computing model values with fewer bits.
-- **What it actually means:** Representing weights, activations, or caches with lower-precision formats to reduce memory, bandwidth, or compute cost. Methods differ in calibration, granularity, data type, and whether conversion happens before, during, or after training.
-- **Common confusion:** Moving from one nominal bit width to another does not guarantee the same end-to-end memory or speed ratio because metadata, kernels, caches, and hardware support also matter.
-- **Related terms:** QLoRA, Mixed Precision, Parameter
+<a id="quantization"></a>
+### 量化（Quantization）
+- **分类（Category）:** 模型与推理（Models & inference）
+- **常见说法（What people say）:** 用更少比特存储或计算模型数值。
+- **准确含义（What it actually means）:** 以更低精度格式表示权重、激活或缓存，以减少内存、带宽或计算成本。不同方法在校准、粒度、数据类型，以及转换发生在训练前、训练中还是训练后等方面存在差异。
+- **常见混淆（Common confusion）:** 从一种标称位宽改为另一种，不保证端到端内存或速度同比变化，因为元数据、内核、缓存和硬件支持也有影响。
+- **相关术语（Related terms）:** QLoRA, Mixed Precision, Parameter
 
 ## R
 
-### RAG (Retrieval-Augmented Generation)
-- **Category:** Retrieval & generation
-- **What people say:** A model answering with retrieved knowledge.
-- **What it actually means:** A system pattern that retrieves evidence relevant to a request and supplies selected content to a generative model before it answers or acts. Retrieval can use lexical, vector, structured, or hybrid methods.
-- **Why it matters:** RAG can make current or private evidence available without encoding it into model weights, but retrieval and grounding must be evaluated separately.
-- **Why it's called that:** Retrieval finds evidence, augmentation adds selected evidence to context, and generation produces the response.
-- **Learn it:** [Retrieval-Augmented Generation](../phases/11-llm-engineering/06-rag/)
-- **Sources:** [Retrieval-Augmented Generation paper](https://arxiv.org/abs/2005.11401)
-- **Related terms:** Grounding, Hybrid Retrieval, Reranker, Hallucination
+<a id="rag-retrieval-augmented-generation"></a>
+### 检索增强生成（RAG (Retrieval-Augmented Generation)）
+- **分类（Category）:** 检索与生成（Retrieval & generation）
+- **常见说法（What people say）:** 模型利用检索知识回答问题。
+- **准确含义（What it actually means）:** 一种系统模式：检索与请求相关的证据，在生成模型回答或行动之前向其提供选定内容。检索可使用词法、向量、结构化或混合方法。
+- **重要性（Why it matters）:** RAG 可提供最新或私有证据而无需写入模型权重，但检索与依据关联必须分开评估。
+- **名称由来（Why it's called that）:** “检索”寻找证据，“增强”将选定证据加入上下文，“生成”产生响应。
+- **学习课程（Learn it）:** [检索增强生成](../phases/11-llm-engineering/06-rag/)
+- **来源（Sources）:** [检索增强生成论文](https://arxiv.org/abs/2005.11401)
+- **相关术语（Related terms）:** Grounding, Hybrid Retrieval, Reranker, Hallucination
 
-### Rate Limit
-- **Category:** AI-native development
-- **What it actually means:** A policy that caps requests, tokens, concurrent work, or another resource within a defined time or capacity window.
-- **Why it matters:** It protects providers and your own system from overload, uncontrolled spend, and unfair resource use.
-- **In practice:** Enforce per-tenant token and concurrency limits, read provider retry metadata, and queue or reject excess work predictably.
-- **Common confusion:** A rate limit controls allowed usage. Backpressure propagates downstream capacity constraints through a system.
-- **Related terms:** Backpressure, Retry with Backoff, Circuit Breaker
+<a id="rate-limit"></a>
+### 速率限制（Rate Limit）
+- **分类（Category）:** AI 原生开发（AI-native development）
+- **准确含义（What it actually means）:** 在明确的时间或容量窗口内，限制请求、词元、并发工作或其他资源的策略。
+- **重要性（Why it matters）:** 它保护提供方和自己的系统，避免过载、费用失控和不公平资源使用。
+- **实际应用（In practice）:** 执行每租户词元与并发限制，读取提供方重试元数据，并以可预测方式排队或拒绝超量工作。
+- **常见混淆（Common confusion）:** 速率限制控制允许用量；背压在系统内传递下游容量约束。
+- **相关术语（Related terms）:** Backpressure, Retry with Backoff, Circuit Breaker
 
-### ReAct
-- **Category:** Agents & tools
-- **What it actually means:** An agent pattern that interleaves task reasoning, a concrete action, and an observation returned by the environment before deciding the next step.
-- **Why it matters:** Environment feedback can correct assumptions and ground later decisions instead of forcing the model to complete the entire task from internal generation alone.
-- **In practice:** Expose a small set of typed tools, return concise observations, cap the loop, and verify the final artifact rather than storing private reasoning traces.
-- **Common confusion:** ReAct is a prompting and control pattern, not a guarantee of autonomy, correctness, or safe tool use.
-- **Related terms:** Agent, Function Calling, Planning, Grounding
-- **Sources:** [ReAct](https://arxiv.org/abs/2210.03629)
+<a id="react"></a>
+### 推理与行动交替（ReAct）
+- **分类（Category）:** 智能体与工具（Agents & tools）
+- **准确含义（What it actually means）:** 在决定下一步之前，交替进行任务推理、具体动作及环境返回观测的智能体模式。
+- **重要性（Why it matters）:** 环境反馈可以纠正假设，为后续决策提供依据，而不迫使模型仅靠内部生成完成整个任务。
+- **实际应用（In practice）:** 提供少量带类型定义的工具，返回简洁观测，限制循环次数，并验证最终交付物，而不是存储私有推理追踪。
+- **常见混淆（Common confusion）:** ReAct 是提示与控制模式，不保证自主性、正确性或安全工具使用。
+- **相关术语（Related terms）:** Agent, Function Calling, Planning, Grounding
+- **来源（Sources）:** [ReAct 论文](https://arxiv.org/abs/2210.03629)
 
-### Readiness Probe
-- **Category:** Reliability & operations
-- **What it actually means:** A diagnostic that tells the traffic-routing layer whether a service instance is currently able to accept requests.
-- **Why it matters:** A process can be alive while its model is unloaded, dependencies are unavailable, or warmup is incomplete, so sending traffic too early creates avoidable failures.
-- **In practice:** Check the minimum dependencies required to serve, fail readiness during startup and draining, keep the probe inexpensive, and do not restart the process solely because readiness is false.
-- **Common confusion:** Readiness controls traffic eligibility. Liveness decides whether the process should be restarted, and neither proves that every model response will be correct.
-- **Learn it:** [Production LLM Application](../phases/11-llm-engineering/13-production-app/)
-- **Related terms:** Autoscaling, Model Serving, Availability, Graceful Degradation
-- **Sources:** [Kubernetes Liveness, Readiness, and Startup Probes](https://kubernetes.io/docs/concepts/configuration/liveness-readiness-startup-probes/)
+<a id="readiness-probe"></a>
+### 就绪探针（Readiness Probe）
+- **分类（Category）:** 可靠性与运维（Reliability & operations）
+- **准确含义（What it actually means）:** 向流量路由层说明服务实例当前是否能接受请求的诊断。
+- **重要性（Why it matters）:** 进程可能存活，但模型尚未加载、依赖不可用或预热未完成，过早发送流量会造成可避免的失败。
+- **实际应用（In practice）:** 检查提供服务所必需的最少依赖，在启动和排空期间标为未就绪，保持探针开销低，不要仅因未就绪就重启进程。
+- **常见混淆（Common confusion）:** 就绪状态控制是否有资格接收流量；存活检查决定是否重启进程；二者都不证明每次模型响应正确。
+- **学习课程（Learn it）:** [生产级大语言模型应用](../phases/11-llm-engineering/13-production-app/)
+- **相关术语（Related terms）:** Autoscaling, Model Serving, Availability, Graceful Degradation
+- **来源（Sources）:** [Kubernetes 存活、就绪与启动探针](https://kubernetes.io/docs/concepts/configuration/liveness-readiness-startup-probes/)
 
-### Recall@K
-- **Category:** Retrieval & generation
-- **What it actually means:** For one query, Recall@K is `|relevant items intersecting the top k| / |relevant items|`. A dataset score aggregates those per-query values under a stated rule.
-- **Why it matters:** It tells you whether a retrieval stage supplies downstream generation or reranking with enough relevant candidates.
-- **In practice:** Define relevance judgments, k, the aggregation method, and a policy for queries with no judged relevant items, then inspect queries with zero recalled evidence.
-- **Common confusion:** High Recall@K does not mean the top result is good, the ranking is well ordered, or the final answer is grounded. Queries with no relevant items require an explicit exclusion or assigned-value policy because the denominator is zero.
-- **Related terms:** Precision & Recall, Eval Set, Reranker, Approximate Nearest Neighbor (ANN)
-- **Sources:** [BEIR](https://openreview.net/forum?id=wCu6T5xFjeJ)
+<a id="recallk"></a>
+### 前若干项召回率（Recall@K）
+- **分类（Category）:** 检索与生成（Retrieval & generation）
+- **准确含义（What it actually means）:** 对单个查询，Recall@K 为 `|relevant items intersecting the top k| / |relevant items|`。数据集分数按明确规则聚合各查询的值。
+- **重要性（Why it matters）:** 它说明检索阶段是否为下游生成或重排序提供了足够相关候选项。
+- **实际应用（In practice）:** 定义相关性判定、k、聚合方法，以及没有被判定为相关项目的查询的处理策略，再检查完全没有召回证据的查询。
+- **常见混淆（Common confusion）:** Recall@K 高不代表首个结果好、排序合理或最终答案有依据。没有相关项的查询分母为零，必须明确排除或赋值策略。
+- **相关术语（Related terms）:** Precision & Recall, Eval Set, Reranker, Approximate Nearest Neighbor (ANN)
+- **来源（Sources）:** [BEIR 基准论文](https://openreview.net/forum?id=wCu6T5xFjeJ)
 
-### Reciprocal Rank Fusion (RRF)
-- **Category:** Retrieval & generation
-- **What it actually means:** A rank-fusion method that combines several result lists by summing contributions that decrease with each item's rank in each list.
-- **Why it matters:** It can merge lexical, dense, or multi-query rankings without assuming their raw scores share the same scale.
-- **In practice:** Retrieve independent candidate lists, deduplicate by stable document identity, apply one versioned fusion constant, and evaluate against each individual retriever.
-- **Common confusion:** RRF combines ranks, not embeddings or relevance scores, and it cannot recover an item absent from every input list.
-- **Related terms:** Hybrid Retrieval, BM25, Dense Retrieval, Reranker
-- **Sources:** [Reciprocal Rank Fusion Outperforms Condorcet and Individual Rank Learning Methods](https://dl.acm.org/doi/10.1145/1571941.1572114)
+<a id="reciprocal-rank-fusion-rrf"></a>
+### 倒数排名融合（Reciprocal Rank Fusion (RRF)）
+- **分类（Category）:** 检索与生成（Retrieval & generation）
+- **准确含义（What it actually means）:** 一种排名融合方法，将多个结果列表合并，各项目从各列表获得的贡献随其排名降低，并对这些贡献求和。
+- **重要性（Why it matters）:** 它能合并词法、稠密或多查询排名，无须假设原始分数具有相同尺度。
+- **实际应用（In practice）:** 独立检索候选列表，按稳定文档身份去重，应用统一且版本化的融合常数，并与各单独检索器比较评估。
+- **常见混淆（Common confusion）:** RRF 合并排名，而不是嵌入或相关性分数，也不能找回所有输入列表中都不存在的项目。
+- **相关术语（Related terms）:** Hybrid Retrieval, BM25, Dense Retrieval, Reranker
+- **来源（Sources）:** [倒数排名融合优于孔多塞法与单独排名学习方法](https://dl.acm.org/doi/10.1145/1571941.1572114)
 
-### Red Teaming
-- **Category:** Security & governance
-- **What it actually means:** A structured adversarial testing process in which authorized testers seek failures using documented objectives, threat assumptions, cases, and evidence.
-- **Why it matters:** Ordinary quality tests rarely explore how a system behaves under manipulation, misuse, conflicting goals, or determined attempts to bypass controls.
-- **In practice:** Derive attacks from a threat model, run them in an isolated environment, record reproducible cases, remediate by layer, and convert confirmed failures into regression evals.
-- **Common confusion:** A list of jailbreak prompts is not a complete red-team program, and red teaming cannot prove the absence of unknown failures.
-- **Related terms:** Threat Model, Guardrails, Prompt Injection, Eval Set
-- **Sources:** [Red Teaming Language Models with Language Models](https://arxiv.org/abs/2202.03286)
+<a id="red-teaming"></a>
+### 红队测试（Red Teaming）
+- **分类（Category）:** 安全与治理（Security & governance）
+- **准确含义（What it actually means）:** 由获授权测试者依据有文档记录的目标、威胁假设、案例和证据寻找失效的结构化对抗测试过程。
+- **重要性（Why it matters）:** 普通质量测试很少探索系统在操纵、滥用、目标冲突或蓄意绕过控制时的行为。
+- **实际应用（In practice）:** 从威胁模型推导攻击，在隔离环境中执行，记录可复现案例，分层修复，并将确认的失败转成回归评估。
+- **常见混淆（Common confusion）:** 越狱提示词列表不构成完整红队计划，红队测试也不能证明不存在未知失败。
+- **相关术语（Related terms）:** Threat Model, Guardrails, Prompt Injection, Eval Set
+- **来源（Sources）:** [使用语言模型对语言模型进行红队测试](https://arxiv.org/abs/2202.03286)
 
-### Regression Test
-- **Category:** AI-native development
-- **What it actually means:** A repeatable check that protects behavior known to work, especially after code, prompt, model, retrieval, or tool changes.
-- **Why it matters:** AI system changes can improve average quality while silently reintroducing a previously fixed failure.
-- **In practice:** Turn a corrected prompt-injection incident into a permanent eval case that must pass before the next deployment.
-- **Common confusion:** A regression test guards a specific expected behavior. A broad benchmark estimates performance across a wider task distribution.
-- **Learn it:** [Eval-Driven Agent Development](../phases/14-agent-engineering/30-eval-driven-agent-development/)
-- **Related terms:** Eval Set, Verification Gate, Patch, Evaluation (Eval)
+<a id="regression-test"></a>
+### 回归测试（Regression Test）
+- **分类（Category）:** AI 原生开发（AI-native development）
+- **准确含义（What it actually means）:** 保护已知正常行为的可重复检查，尤其用于代码、提示词、模型、检索或工具变化之后。
+- **重要性（Why it matters）:** AI 系统变更可能改善平均质量，却悄悄重新引入先前已修复的失败。
+- **实际应用（In practice）:** 将已纠正的提示词注入事件转为永久评估案例，要求下次部署前必须通过。
+- **常见混淆（Common confusion）:** 回归测试保护特定预期行为；广泛基准测试估计更广任务分布上的表现。
+- **学习课程（Learn it）:** [评估驱动的智能体开发](../phases/14-agent-engineering/30-eval-driven-agent-development/)
+- **相关术语（Related terms）:** Eval Set, Verification Gate, Patch, Evaluation (Eval)
 
-### ReLU
-- **Category:** Math & training
-- **What people say:** A simple activation function.
-- **What it actually means:** Rectified Linear Unit, defined as `f(x) = max(0, x)`. It is inexpensive and has a non-saturating positive branch, though zero gradients on negative inputs can create inactive units.
-- **Related terms:** Activation Function, Gradient, CNN (Convolutional Neural Network)
+<a id="relu"></a>
+### 修正线性单元（ReLU）
+- **分类（Category）:** 数学与训练（Math & training）
+- **常见说法（What people say）:** 简单的激活函数。
+- **准确含义（What it actually means）:** 即修正线性单元（Rectified Linear Unit），定义为 `f(x) = max(0, x)`。它计算开销低，正值分支不饱和，但负输入上的零梯度可能导致单元不再激活。
+- **相关术语（Related terms）:** Activation Function, Gradient, CNN (Convolutional Neural Network)
 
-### Repository Instructions
-- **Category:** AI-native development
-- **What it actually means:** Version-controlled guidance that tells coding agents how a repository is organized, which commands and conventions apply, what boundaries to respect, and how to verify work.
-- **Why it matters:** It turns repeated tribal knowledge into local context that travels with the code and can vary by subproject.
-- **In practice:** Keep an `AGENTS.md` at the repository root, add narrower files for subdirectories, and include exact build, test, generated-file, security, and contribution rules.
-- **Common confusion:** Repository instructions complement source code and human documentation; they do not override the user's current request or guarantee that an agent follows them correctly.
-- **Related terms:** Repository Map, Scope Contract, Coding Agent, Progressive Disclosure
-- **Sources:** [AGENTS.md specification](https://agents.md/)
+<a id="repository-instructions"></a>
+### 仓库指令（Repository Instructions）
+- **分类（Category）:** AI 原生开发（AI-native development）
+- **准确含义（What it actually means）:** 纳入版本控制的指导，告诉编程智能体仓库如何组织、适用哪些命令与约定、应遵守哪些边界，以及如何验证工作。
+- **重要性（Why it matters）:** 它将反复依赖口耳相传的知识转为随代码流转的本地上下文，并可按子项目细化。
+- **实际应用（In practice）:** 在仓库根目录保留 `AGENTS.md`，为子目录添加范围更窄的文件，写明准确的构建、测试、生成文件、安全和贡献规则。
+- **常见混淆（Common confusion）:** 仓库指令补充源代码和面向人的文档，不覆盖用户当前请求，也不保证智能体正确遵循。
+- **相关术语（Related terms）:** Repository Map, Scope Contract, Coding Agent, Progressive Disclosure
+- **来源（Sources）:** [AGENTS.md 规范](https://agents.md/)
 
-### Repository Map
-- **Category:** AI-native development
-- **What it actually means:** A compact, maintained description of a repository's important directories, ownership boundaries, entry points, build commands, tests, generated files, and local instructions.
-- **Why it matters:** It helps a coding agent find the right evidence before loading large files or editing the wrong subsystem.
-- **In practice:** Generate an index from the tree and manifests, then enrich it with authoritative notes about module boundaries and validation commands.
-- **Common confusion:** A raw file tree shows names. A repository map explains which paths matter and how they relate to a task.
-- **Learn it:** [Repository Memory and State](../phases/14-agent-engineering/34-repo-memory-and-state/)
-- **Related terms:** Coding Agent, Progressive Disclosure, Scope Contract, Context Engineering
+<a id="repository-map"></a>
+### 仓库地图（Repository Map）
+- **分类（Category）:** AI 原生开发（AI-native development）
+- **准确含义（What it actually means）:** 一份精简且持续维护的仓库说明，涵盖重要目录、所有权边界、入口点、构建命令、测试、生成文件及本地指令。
+- **重要性（Why it matters）:** 它帮助编码智能体（Coding Agent）在加载大型文件或误改子系统之前找到正确证据。
+- **实际应用（In practice）:** 根据目录树和清单生成索引，再补充关于模块边界与验证命令的权威说明。
+- **常见混淆（Common confusion）:** 原始文件树展示名称；仓库地图解释哪些路径重要，以及它们与任务的关系。
+- **学习课程（Learn it）:** [仓库记忆与状态](../phases/14-agent-engineering/34-repo-memory-and-state/)
+- **相关术语（Related terms）:** Coding Agent, Progressive Disclosure, Scope Contract, Context Engineering
 
-### Reproducible Build
-- **Category:** AI-native development
-- **What it actually means:** A build whose declared source, environment, and instructions can be independently rerun to produce bit-for-bit identical specified artifacts.
-- **Why it matters:** It makes an artifact verifiable beyond the machine or agent that originally produced it and exposes hidden build inputs.
-- **In practice:** Pin toolchains and dependencies, remove timestamps and unstable ordering, capture the environment, then compare independently rebuilt artifact digests.
-- **Common confusion:** A build that succeeds twice is repeatable evidence, but reproducibility requires the declared independent conditions and identical outputs.
-- **Related terms:** Repository Instructions, Verification Gate, Provenance Attestation, Software Bill of Materials (SBOM)
-- **Sources:** [Reproducible Builds definition](https://reproducible-builds.org/docs/definition/)
+<a id="reproducible-build"></a>
+### 可复现构建（Reproducible Build）
+- **分类（Category）:** AI 原生开发（AI-native development）
+- **准确含义（What it actually means）:** 依据声明的源代码、环境和指令，能够由独立执行者重新运行，并生成逐位一致的指定产物的构建。
+- **重要性（Why it matters）:** 它使产物能够在原始构建机器或智能体之外得到验证，并暴露隐藏的构建输入。
+- **实际应用（In practice）:** 固定工具链与依赖版本，消除时间戳和不稳定的排序，记录环境，然后比较独立重建产物的摘要。
+- **常见混淆（Common confusion）:** 构建成功两次是可重复执行的证据，但可复现性要求满足声明的独立条件，且输出完全一致。
+- **相关术语（Related terms）:** Repository Instructions, Verification Gate, Provenance Attestation, Software Bill of Materials (SBOM)
+- **来源（Sources）:** [可复现构建的定义](https://reproducible-builds.org/docs/definition/)
 
-### Reranker
-- **Category:** Retrieval & generation
-- **What it actually means:** A second-stage model or scoring function that reorders a small candidate set using a richer comparison between the query and each candidate.
-- **Why it matters:** Fast first-stage retrieval maximizes candidate coverage, while reranking can improve which evidence reaches the limited context window.
-- **In practice:** Retrieve 50 candidates with hybrid search, score each query-document pair with a cross-encoder, and pass the top 5 supported chunks to generation.
-- **Common confusion:** A reranker does not search the entire corpus. It only reorders candidates that retrieval already found.
-- **Related terms:** Hybrid Retrieval, Semantic Search, RAG (Retrieval-Augmented Generation)
+<a id="reranker"></a>
+### 重排序器（Reranker）
+- **分类（Category）:** 检索与生成（Retrieval & generation）
+- **准确含义（What it actually means）:** 第二阶段的模型或评分函数，通过更丰富的查询与候选项比较，对规模较小的候选集重新排序。
+- **重要性（Why it matters）:** 快速的第一阶段检索尽可能扩大候选覆盖面，而重排序能够改善进入有限上下文窗口的证据质量。
+- **实际应用（In practice）:** 使用混合检索（Hybrid Retrieval）获取 50 个候选项，以交叉编码器（Cross-Encoder）为每个查询与文档对评分，再将排名最高的 5 个有依据的文本块送入生成阶段。
+- **常见混淆（Common confusion）:** 重排序器不会搜索整个语料库，只会重新排列检索已经找到的候选项。
+- **相关术语（Related terms）:** Hybrid Retrieval, Semantic Search, RAG (Retrieval-Augmented Generation)
 
-### Retry Budget
-- **Category:** Reliability & operations
-- **What it actually means:** A bound on retry traffic, usually expressed relative to original requests or over a time window, that prevents retries from consuming unbounded capacity.
-- **Why it matters:** When a dependency slows or fails, unrestricted retries multiply load exactly when the system has the least spare capacity.
-- **In practice:** Count retries separately from first attempts, cap them by service and tenant, honor deadlines, use jittered backoff, and stop retrying non-transient or non-idempotent failures.
-- **Common confusion:** A retry budget limits extra attempts. An error budget measures user-visible unreliability allowed by an SLO.
-- **Related terms:** Retry with Backoff, Error Budget, Rate Limit, Admission Control
-- **Sources:** [Google SRE: Addressing Cascading Failures](https://sre.google/sre-book/addressing-cascading-failures/)
+<a id="retry-budget"></a>
+### 重试预算（Retry Budget）
+- **分类（Category）:** 可靠性与运维（Reliability & operations）
+- **准确含义（What it actually means）:** 对重试流量的限制，通常相对于原始请求数量或按时间窗口表达，用于防止重试无限消耗容量。
+- **重要性（Why it matters）:** 当依赖项变慢或失效时，不受约束的重试会在系统最缺乏余量的时候成倍增加负载。
+- **实际应用（In practice）:** 将重试与首次尝试分别计数，按服务和租户设置上限，遵守截止时间，采用带抖动的退避，并停止重试非暂时性故障或非幂等操作的失败。
+- **常见混淆（Common confusion）:** 重试预算限制额外尝试次数；错误预算（Error Budget）衡量服务等级目标（Service Level Objective，SLO）允许的用户可见不可靠程度。
+- **相关术语（Related terms）:** Retry with Backoff, Error Budget, Rate Limit, Admission Control
+- **来源（Sources）:** [Google 站点可靠性工程：应对级联故障](https://sre.google/sre-book/addressing-cascading-failures/)
 
-### Retry with Backoff
-- **Category:** AI-native development
-- **What it actually means:** Repeating a failed transient operation after progressively longer delays, usually with randomized jitter and a strict retry limit.
-- **Why it matters:** Immediate synchronized retries can worsen an outage, consume rate limits, and duplicate side effects.
-- **In practice:** Retry a provider timeout after bounded exponential delays, honor server retry guidance, and reuse an idempotency key for any write.
-- **Common confusion:** Do not retry permanent validation or permission errors, and do not retry non-idempotent operations without a duplication strategy.
-- **Related terms:** Idempotency, Rate Limit, Circuit Breaker, Backpressure
+<a id="retry-with-backoff"></a>
+### 退避重试（Retry with Backoff）
+- **分类（Category）:** AI 原生开发（AI-native development）
+- **准确含义（What it actually means）:** 对暂时失败的操作进行重试，每次等待逐渐延长，通常还加入随机抖动并设置严格的重试次数上限。
+- **重要性（Why it matters）:** 立即同步重试可能加剧故障、消耗速率配额，并重复产生副作用。
+- **实际应用（In practice）:** 提供方请求超时后，按有上限的指数延迟重试，遵循服务端的重试指引，并为任何写操作复用同一个幂等键（Idempotency Key）。
+- **常见混淆（Common confusion）:** 不要重试永久性的校验错误或权限错误；没有防重复策略时，也不要重试非幂等操作。
+- **相关术语（Related terms）:** Idempotency, Rate Limit, Circuit Breaker, Backpressure
 
-### Reviewer Agent
-- **Category:** AI-native development
-- **What it actually means:** An agent assigned to inspect another agent's artifact or decision against explicit criteria and return findings or a verdict.
-- **Why it matters:** Separation of roles can catch omissions, but it only helps when the reviewer receives independent evidence and a concrete rubric.
-- **In practice:** After one agent produces a patch, give a separate reviewer the diff, scope contract, repository rules, and test output, then require line-specific findings.
-- **Common confusion:** A second model call is not automatically independent or correct. Shared context, model bias, and vague criteria can reproduce the same mistake.
-- **Learn it:** [Reviewer Agent](../phases/14-agent-engineering/39-reviewer-agent/)
-- **Related terms:** Coding Agent, Verification Gate, Scope Contract, LLM-as-a-Judge
+<a id="reviewer-agent"></a>
+### 审查智能体（Reviewer Agent）
+- **分类（Category）:** AI 原生开发（AI-native development）
+- **准确含义（What it actually means）:** 负责依据明确标准检查另一个智能体的产物或决策，并返回问题或结论的智能体。
+- **重要性（Why it matters）:** 角色分离有助于发现遗漏，但前提是审查者获得独立证据和具体的评分准则。
+- **实际应用（In practice）:** 一个智能体生成补丁后，将差异、范围契约、仓库规则和测试输出交给独立审查者，并要求给出定位到具体行的问题。
+- **常见混淆（Common confusion）:** 第二次模型调用并不自动意味着独立或正确；共享上下文、模型偏差和模糊标准可能重现同样的错误。
+- **学习课程（Learn it）:** [审查智能体](../phases/14-agent-engineering/39-reviewer-agent/)
+- **相关术语（Related terms）:** Coding Agent, Verification Gate, Scope Contract, LLM-as-a-Judge
 
-### RLHF (Reinforcement Learning from Human Feedback)
-- **Category:** Math & training
-- **What people say:** Training a model from human preferences.
-- **What it actually means:** A family of pipelines that uses human feedback to learn a reward or preference signal and then optimizes a model policy against that signal. Implementations vary and need not all use the same reinforcement-learning algorithm.
-- **Common confusion:** RLHF optimizes a proxy learned from collected feedback. It does not guarantee broad alignment with every user or situation.
-- **Learn it:** [Reinforcement Learning from Human Feedback](../phases/10-llms-from-scratch/07-rlhf/)
-- **Sources:** [InstructGPT paper](https://arxiv.org/abs/2203.02155)
-- **Related terms:** DPO (Direct Preference Optimization), SFT (Supervised Fine-Tuning), Alignment
+<a id="rlhf-reinforcement-learning-from-human-feedback"></a>
+### 基于人类反馈的强化学习（RLHF (Reinforcement Learning from Human Feedback)）
+- **分类（Category）:** 数学与训练（Math & training）
+- **常见说法（What people say）:** 依据人类偏好训练模型。
+- **准确含义（What it actually means）:** 一类利用人类反馈学习奖励或偏好信号，再据此优化模型策略的流水线。具体实现各不相同，不一定使用同一种强化学习（Reinforcement Learning）算法。
+- **常见混淆（Common confusion）:** 基于人类反馈的强化学习（RLHF）优化的是从收集到的反馈中学到的代理目标，并不保证对每个用户或情境都实现广泛的对齐。
+- **学习课程（Learn it）:** [基于人类反馈的强化学习](../phases/10-llms-from-scratch/07-rlhf/)
+- **来源（Sources）:** [InstructGPT 论文](https://arxiv.org/abs/2203.02155)
+- **相关术语（Related terms）:** DPO (Direct Preference Optimization), SFT (Supervised Fine-Tuning), Alignment
 
-### Rollback
-- **Category:** Reliability & operations
-- **What it actually means:** Restoring a previously known deployment or configuration when the current release violates operational, quality, or safety criteria.
-- **Why it matters:** Agent and model changes can fail in production despite pre-deployment evaluation, so recovery must be designed before rollout.
-- **In practice:** Retain versioned artifacts and configuration, define rollback triggers, rehearse the command and data implications, and verify service health after restoration.
-- **Common confusion:** Code rollback does not automatically reverse database migrations, external side effects, cached outputs, or data written by the bad release.
-- **Related terms:** Canary Release, Checkpoint, Regression Test, Durable Execution
-- **Sources:** [Kubernetes Deployments: Rolling Back](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#rolling-back-a-deployment)
+<a id="rollback"></a>
+### 回滚（Rollback）
+- **分类（Category）:** 可靠性与运维（Reliability & operations）
+- **准确含义（What it actually means）:** 当当前发布违反运维、质量或安全标准时，恢复到先前已知的部署或配置。
+- **重要性（Why it matters）:** 即使通过部署前评估，智能体和模型变更仍可能在生产环境失效，因此必须在发布前设计恢复方案。
+- **实际应用（In practice）:** 保留有版本记录的产物和配置，定义回滚触发条件，演练命令及其数据影响，并在恢复后验证服务健康状态。
+- **常见混淆（Common confusion）:** 代码回滚不会自动撤销数据库迁移、外部副作用、缓存输出，或问题版本写入的数据。
+- **相关术语（Related terms）:** Canary Release, Checkpoint, Regression Test, Durable Execution
+- **来源（Sources）:** [Kubernetes 部署：回滚](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#rolling-back-a-deployment)
 
-### ROUGE
-- **Category:** Evaluation & safety
-- **What people say:** A reference-overlap metric often used for summaries.
-- **What it actually means:** A family of metrics that compares generated text with reference text using units such as n-gram overlap or longest common subsequence.
-- **Common confusion:** Surface overlap can miss semantic equivalence and can reward copied wording without proving factual quality.
-- **Related terms:** Evaluation (Eval), Precision & Recall, LLM-as-a-Judge
+<a id="rouge"></a>
+### 面向摘要评估的召回导向指标（ROUGE）
+- **分类（Category）:** 评估与安全（Evaluation & safety）
+- **常见说法（What people say）:** 一种常用于摘要的参考文本重叠度指标。
+- **准确含义（What it actually means）:** 一组使用词元片段（n-gram）重叠或最长公共子序列等单位，将生成文本与参考文本进行比较的指标。
+- **常见混淆（Common confusion）:** 表面重叠可能漏掉语义等价的表达，也可能奖励照抄措辞，却无法证明事实质量。
+- **相关术语（Related terms）:** Evaluation (Eval), Precision & Recall, LLM-as-a-Judge
 
 ## S
 
-### Sandbox
-- **Category:** Agents & tools
-- **What it actually means:** An isolated execution environment that restricts an agent's access to files, processes, network destinations, credentials, and host resources.
-- **Why it matters:** Generated code and tool calls can be wrong or malicious. Isolation limits their reach and makes disposable verification practical.
-- **In practice:** Run tests in an ephemeral container with a read-only base, a scoped writable workspace, no production secrets, and an explicit network allowlist.
-- **Common confusion:** A sandbox reduces impact. It does not establish that the code inside is correct or harmless.
-- **Learn it:** [Production Agent Runtimes](../phases/14-agent-engineering/29-production-runtimes/)
-- **Related terms:** Least Privilege, Approval Gate, Coding Agent, Guardrails
+<a id="sandbox"></a>
+### 沙箱（Sandbox）
+- **分类（Category）:** 智能体与工具（Agents & tools）
+- **准确含义（What it actually means）:** 一种隔离执行环境，限制智能体对文件、进程、网络目标、凭据和宿主资源的访问。
+- **重要性（Why it matters）:** 生成的代码和工具调用可能有误或带有恶意。隔离能够限制其影响范围，使一次性验证环境切实可行。
+- **实际应用（In practice）:** 在临时容器中运行测试，使用只读基础环境、限定范围的可写工作区，不提供生产凭据，并明确设置网络允许列表。
+- **常见混淆（Common confusion）:** 沙箱降低影响，但不能证明其中的代码正确或无害。
+- **学习课程（Learn it）:** [生产级智能体运行时](../phases/14-agent-engineering/29-production-runtimes/)
+- **相关术语（Related terms）:** Least Privilege, Approval Gate, Coding Agent, Guardrails
 
-### Saturation
-- **Category:** Reliability & operations
-- **What it actually means:** The degree to which a constrained resource or service has exhausted its capacity, including queued work that cannot begin promptly.
-- **Why it matters:** Utilization alone can appear acceptable while memory, accelerator slots, queue depth, or a downstream quota is already limiting useful throughput.
-- **In practice:** Identify each critical resource, measure active and waiting work, relate saturation to tail latency and errors, and alert before the queue enters an unstable growth regime.
-- **Common confusion:** Saturation is not one universal percentage. The limiting resource and its queueing behavior depend on the workload and architecture.
-- **Related terms:** Observability, Autoscaling, Backpressure, Tail Latency
-- **Sources:** [Google SRE: Monitoring Distributed Systems](https://sre.google/sre-book/monitoring-distributed-systems/)
+<a id="saturation"></a>
+### 饱和度（Saturation）
+- **分类（Category）:** 可靠性与运维（Reliability & operations）
+- **准确含义（What it actually means）:** 受限资源或服务的容量被耗尽的程度，包括无法及时开始执行的排队工作。
+- **重要性（Why it matters）:** 即使利用率看起来尚可，内存、加速器槽位、队列深度或下游配额也可能已经限制有效吞吐量。
+- **实际应用（In practice）:** 识别每种关键资源，测量正在执行和等待的工作，将饱和度与尾延迟及错误关联，并在队列进入不稳定增长状态之前告警。
+- **常见混淆（Common confusion）:** 饱和度不是一个通用百分比；瓶颈资源及其排队行为取决于工作负载和架构。
+- **相关术语（Related terms）:** Observability, Autoscaling, Backpressure, Tail Latency
+- **来源（Sources）:** [Google 站点可靠性工程：监控分布式系统](https://sre.google/sre-book/monitoring-distributed-systems/)
 
-### Scope Contract
-- **Category:** AI-native development
-- **What it actually means:** A concrete agreement that defines a task's goal, allowed and forbidden surfaces, expected artifacts, verification requirements, and stopping conditions.
-- **Why it matters:** It prevents an agent from turning a narrow fix into an unreviewable refactor or from claiming completion without evidence.
-- **In practice:** State that only the parser module and its tests may change, public APIs must remain compatible, and the named test suite must pass.
-- **Common confusion:** A task description says what you want. A scope contract also defines boundaries and proof.
-- **Learn it:** [Scope Contracts](../phases/14-agent-engineering/36-scope-contracts/)
-- **Related terms:** Coding Agent, Patch, Verification Gate, Handoff
+<a id="scope-contract"></a>
+### 范围契约（Scope Contract）
+- **分类（Category）:** AI 原生开发（AI-native development）
+- **准确含义（What it actually means）:** 明确任务目标、允许及禁止修改的范围、预期产物、验证要求和停止条件的具体约定。
+- **重要性（Why it matters）:** 它防止智能体将小范围修复扩大为难以审查的重构，或在没有证据时声称完成。
+- **实际应用（In practice）:** 明确规定只能修改解析器模块及其测试，公共应用程序接口（Application Programming Interface，API）必须保持兼容，而且指定测试套件必须通过。
+- **常见混淆（Common confusion）:** 任务描述说明你想要什么；范围契约还规定边界与证明要求。
+- **学习课程（Learn it）:** [范围契约](../phases/14-agent-engineering/36-scope-contracts/)
+- **相关术语（Related terms）:** Coding Agent, Patch, Verification Gate, Handoff
 
-### Self-Attention
-- **Category:** Models & inference
-- **What people say:** Tokens deciding which other tokens matter.
-- **What it actually means:** Attention in which queries, keys, and values are derived from the same sequence representation. Scaled similarity scores are normalized and used to combine values, subject to causal, padding, local, or other masks.
-- **Why it matters:** It builds context-sensitive token representations, but the permitted attention pattern depends on the architecture.
-- **Common confusion:** Not every token can always attend to every other token. Causal and sparse models intentionally restrict connections.
-- **Learn it:** [Self-Attention from Scratch](../phases/07-transformers-deep-dive/02-self-attention-from-scratch/)
-- **Related terms:** Attention, Transformer, Context Window
+<a id="self-attention"></a>
+### 自注意力（Self-Attention）
+- **分类（Category）:** 模型与推理（Models & inference）
+- **常见说法（What people say）:** 由词元决定其他哪些词元重要。
+- **准确含义（What it actually means）:** 查询、键和值均由同一序列表示导出的注意力机制。对缩放后的相似度分数进行归一化，再据此组合值，同时遵守因果、填充、局部或其他掩码约束。
+- **重要性（Why it matters）:** 它构建依赖上下文的词元表示，但允许使用的注意力连接模式取决于架构。
+- **常见混淆（Common confusion）:** 并非每个词元总能关注所有其他词元；因果模型与稀疏模型会有意限制连接。
+- **学习课程（Learn it）:** [从零实现自注意力](../phases/07-transformers-deep-dive/02-self-attention-from-scratch/)
+- **相关术语（Related terms）:** Attention, Transformer, Context Window
 
-### Semantic Cache
-- **Category:** AI-native development
-- **What it actually means:** A cache that reuses a previous result when a new request is judged sufficiently similar under a chosen representation and threshold.
-- **Why it matters:** It can reduce latency and cost for repeated intents, but an incorrect match can return stale or user-inappropriate output.
-- **In practice:** Cache low-risk FAQ answers by normalized intent, include tenant and policy version in the key, and bypass the cache for personalized or time-sensitive requests.
-- **Common confusion:** Semantic similarity does not guarantee that two requests have the same correct answer. A semantic cache reuses a prior result, while prefix caching reuses exact-token KV state and prompt caching follows provider or application eligibility rules.
-- **Related terms:** Prompt Cache, Embedding, Cost per Successful Task, Grounding
+<a id="semantic-cache"></a>
+### 语义缓存（Semantic Cache）
+- **分类（Category）:** AI 原生开发（AI-native development）
+- **准确含义（What it actually means）:** 当新请求在选定的表示方式和阈值下被判定为足够相似时，复用先前结果的缓存。
+- **重要性（Why it matters）:** 它能够降低重复意图请求的延迟和成本，但错误匹配可能返回过时或不适合当前用户的输出。
+- **实际应用（In practice）:** 按归一化后的意图缓存低风险常见问题答案，将租户和策略版本纳入键，并对个性化或时间敏感请求绕过缓存。
+- **常见混淆（Common confusion）:** 语义相似不保证两个请求具有相同的正确答案。语义缓存复用先前结果；前缀缓存（Prefix Caching）复用精确词元对应的键值（Key-Value，KV）状态；提示词缓存（Prompt Caching）则遵循提供方或应用的适用规则。
+- **相关术语（Related terms）:** Prompt Cache, Embedding, Cost per Successful Task, Grounding
 
-### Semantic Search
-- **Category:** Retrieval & generation
-- **What people say:** Search by meaning instead of exact words.
-- **What it actually means:** Retrieval that represents a query and candidates in an embedding space and ranks candidates using a vector-similarity function.
-- **Why it matters:** It can retrieve paraphrases and conceptually related text, but exact identifiers and rare strings may still need lexical search.
-- **Related terms:** Embedding, Hybrid Retrieval, Vector Database, Reranker
+<a id="semantic-search"></a>
+### 语义搜索（Semantic Search）
+- **分类（Category）:** 检索与生成（Retrieval & generation）
+- **常见说法（What people say）:** 按含义而非精确字词搜索。
+- **准确含义（What it actually means）:** 将查询和候选项表示在嵌入空间（Embedding Space）中，并使用向量相似度函数对候选项排序的检索方式。
+- **重要性（Why it matters）:** 它能够检索改写表达和概念上相关的文本，但精确标识符与罕见字符串仍可能需要词法搜索（Lexical Search）。
+- **相关术语（Related terms）:** Embedding, Hybrid Retrieval, Vector Database, Reranker
 
-### Separation of Duties
-- **Category:** Security & governance
-- **What it actually means:** Dividing conflicting responsibilities or authority across independent roles so one principal cannot complete a high-risk action without another authorized decision.
-- **Why it matters:** A compromised account or mistaken agent should not be able to propose, approve, execute, and conceal the same consequential change.
-- **In practice:** Separate artifact creation from release approval, use distinct identities, preserve both decisions in the audit log, and define emergency access with later review.
-- **Common confusion:** Separation of duties is about conflicting authority, not simply assigning work to several people or agents that share the same credentials.
-- **Related terms:** Approval Gate, Reviewer Agent, Audit Log, Least Privilege
-- **Sources:** [NIST SP 800-53 Rev. 5](https://csrc.nist.gov/pubs/sp/800/53/r5/upd1/final)
+<a id="separation-of-duties"></a>
+### 职责分离（Separation of Duties）
+- **分类（Category）:** 安全与治理（Security & governance）
+- **准确含义（What it actually means）:** 将相互冲突的职责或权限分配给独立角色，使单个主体无法在缺少另一个授权决策的情况下完成高风险操作。
+- **重要性（Why it matters）:** 遭到入侵的账户或出错的智能体不应能够独自提出、批准、执行并掩盖同一项影响重大的变更。
+- **实际应用（In practice）:** 将产物创建与发布审批分开，使用不同身份，在审计日志中保留双方决策，并制定需事后复核的紧急访问机制。
+- **常见混淆（Common confusion）:** 职责分离关注相互冲突的权限，而不只是把工作分给共享同一凭据的多个人或智能体。
+- **相关术语（Related terms）:** Approval Gate, Reviewer Agent, Audit Log, Least Privilege
+- **来源（Sources）:** [美国国家标准与技术研究院特别出版物 800-53 第 5 次修订版](https://csrc.nist.gov/pubs/sp/800/53/r5/upd1/final)
 
-### Service Level Indicator (SLI)
-- **Category:** Reliability & operations
-- **What it actually means:** A quantitative measure of service behavior at a defined user-relevant boundary, such as successful request ratio or latency below a threshold.
-- **Why it matters:** Reliability discussions become actionable only when the observed behavior, eligible events, and measurement point are explicit.
-- **In practice:** Define numerator, denominator, exclusions, data source, and aggregation window, then validate that the indicator tracks an outcome users actually experience.
-- **Common confusion:** An SLI is the measurement. An SLO is the target applied to that measurement over a defined period.
-- **Related terms:** Service Level Objective (SLO), Availability, Tail Latency, Observability
-- **Sources:** [Google SRE: Service Level Objectives](https://sre.google/sre-book/service-level-objectives/)
+<a id="service-level-indicator-sli"></a>
+### 服务等级指标（Service Level Indicator (SLI)）
+- **分类（Category）:** 可靠性与运维（Reliability & operations）
+- **准确含义（What it actually means）:** 在明确且与用户相关的边界上，对服务行为进行定量衡量的指标，例如成功请求比例或延迟低于阈值的比例。
+- **重要性（Why it matters）:** 只有明确观测行为、符合统计条件的事件和测量位置，可靠性讨论才能转化为行动。
+- **实际应用（In practice）:** 定义分子、分母、排除项、数据源和聚合窗口，再验证该指标确实跟踪用户实际体验到的结果。
+- **常见混淆（Common confusion）:** 服务等级指标（SLI）是测量值；服务等级目标（SLO）是在指定时段内施加于该测量值的目标。
+- **相关术语（Related terms）:** Service Level Objective (SLO), Availability, Tail Latency, Observability
+- **来源（Sources）:** [Google 站点可靠性工程：服务等级目标](https://sre.google/sre-book/service-level-objectives/)
 
-### Service Level Objective (SLO)
-- **Category:** Reliability & operations
-- **What it actually means:** A target range or threshold for a service-level indicator over a stated population and measurement window.
-- **Why it matters:** It translates an expected user outcome into an operating boundary for monitoring, capacity, release risk, and incident decisions.
-- **In practice:** Choose an indicator users care about, set the target from product needs rather than current performance, define the window and exclusions, and attach an error-budget policy.
-- **Common confusion:** An SLO is an internal reliability objective. A contractual service-level agreement can include remedies and may use different definitions.
-- **Learn it:** [Inference Metrics and Goodput](../phases/17-infrastructure-and-production/08-inference-metrics-goodput/)
-- **Related terms:** Service Level Indicator (SLI), Error Budget, Availability, Goodput
-- **Sources:** [Google SRE: Service Level Objectives](https://sre.google/sre-book/service-level-objectives/)
+<a id="service-level-objective-slo"></a>
+### 服务等级目标（Service Level Objective (SLO)）
+- **分类（Category）:** 可靠性与运维（Reliability & operations）
+- **准确含义（What it actually means）:** 针对指定总体和测量窗口内的服务等级指标设定的目标范围或阈值。
+- **重要性（Why it matters）:** 它将预期用户结果转化为监控、容量、发布风险和事件决策的运维边界。
+- **实际应用（In practice）:** 选择用户关心的指标，依据产品需求而非当前表现设定目标，定义窗口及排除项，并配套错误预算策略。
+- **常见混淆（Common confusion）:** 服务等级目标（SLO）是内部可靠性目标；具有合同性质的服务等级协议（Service-Level Agreement）可能包含补救措施，并采用不同定义。
+- **学习课程（Learn it）:** [推理指标与有效吞吐量](../phases/17-infrastructure-and-production/08-inference-metrics-goodput/)
+- **相关术语（Related terms）:** Service Level Indicator (SLI), Error Budget, Availability, Goodput
+- **来源（Sources）:** [Google 站点可靠性工程：服务等级目标](https://sre.google/sre-book/service-level-objectives/)
 
-### SFT (Supervised Fine-Tuning)
-- **Category:** Math & training
-- **What people say:** Training on example inputs and desired outputs.
-- **What it actually means:** Fine-tuning a pretrained model on paired inputs and desired responses so it learns the demonstrated behavior under the training distribution.
-- **Common confusion:** SFT can adapt many behaviors beyond chat, and example quality determines what behavior is reinforced.
-- **Related terms:** Fine-tuning, DPO (Direct Preference Optimization), RLHF (Reinforcement Learning from Human Feedback)
+<a id="sft-supervised-fine-tuning"></a>
+### 监督微调（SFT (Supervised Fine-Tuning)）
+- **分类（Category）:** 数学与训练（Math & training）
+- **常见说法（What people say）:** 利用示例输入与期望输出进行训练。
+- **准确含义（What it actually means）:** 使用成对的输入和期望响应，对预训练模型进行微调，使其在训练分布下学习示例展示的行为。
+- **常见混淆（Common confusion）:** 监督微调（SFT）能够适配聊天之外的许多行为，而示例质量决定哪些行为得到强化。
+- **相关术语（Related terms）:** Fine-tuning, DPO (Direct Preference Optimization), RLHF (Reinforcement Learning from Human Feedback)
 
-### Shadow Traffic
-- **Category:** Reliability & operations
-- **What it actually means:** A copy of live request traffic sent to a candidate system for observation while the candidate response remains outside the primary user response path. Because the copied request still executes, its side effects must be isolated.
-- **Why it matters:** It exposes the candidate to real input shapes and load while limiting user impact, which can reveal failures absent from synthetic tests.
-- **In practice:** Remove or tokenize sensitive fields, route tools and dependencies to sandboxed or no-op targets, block writes at capability boundaries, preserve request correlation, and prevent shadow load from competing with user traffic.
-- **Common confusion:** Keeping a candidate response off the primary path does not make execution side-effect-free. A canary release differs because it serves real users from the candidate for a controlled share of traffic.
-- **Learn it:** [Shadow, Canary, and Progressive Delivery](../phases/17-infrastructure-and-production/20-shadow-canary-progressive/)
-- **Related terms:** Canary Release, Evaluation (Eval), Trace, Model Serving
-- **Sources:** [Istio Traffic Mirroring](https://istio.io/latest/docs/tasks/traffic-management/mirroring/)
+<a id="shadow-traffic"></a>
+### 影子流量（Shadow Traffic）
+- **分类（Category）:** 可靠性与运维（Reliability & operations）
+- **准确含义（What it actually means）:** 将实时请求流量的副本发送给候选系统进行观察，而候选响应不进入用户主响应路径。由于副本请求仍会执行，必须隔离其副作用。
+- **重要性（Why it matters）:** 它使候选系统接触真实输入形态和负载，同时限制对用户的影响，因此能够暴露合成测试中没有出现的故障。
+- **实际应用（In practice）:** 移除敏感字段或对其进行令牌化处理，将工具和依赖项路由至沙箱目标或无操作目标，在能力边界阻止写入，保留请求关联，并防止影子负载与用户流量争用资源。
+- **常见混淆（Common confusion）:** 候选响应不进入主路径并不意味着执行没有副作用。金丝雀发布（Canary Release）不同之处在于，它让候选系统承接受控比例的流量，直接服务真实用户。
+- **学习课程（Learn it）:** [影子流量、金丝雀与渐进式交付](../phases/17-infrastructure-and-production/20-shadow-canary-progressive/)
+- **相关术语（Related terms）:** Canary Release, Evaluation (Eval), Trace, Model Serving
+- **来源（Sources）:** [Istio 流量镜像](https://istio.io/latest/docs/tasks/traffic-management/mirroring/)
 
-### Shared Embedding Space
-- **Category:** Multimodal systems
-- **What it actually means:** A common vector space in which representations from different modalities can be compared with the same similarity function.
-- **Why it matters:** It enables cross-modal retrieval and matching, such as finding images from text, without requiring both items to share a raw representation.
-- **In practice:** Train paired and unpaired negatives deliberately, normalize vectors when the objective requires it, evaluate both retrieval directions, and inspect subgroup and language performance.
-- **Common confusion:** Sharing a vector dimension does not create a shared semantic space. The training objective and data must establish cross-modal comparability.
-- **Learn it:** [CLIP Contrastive Pretraining](../phases/12-multimodal-ai/02-clip-contrastive-pretraining/)
-- **Related terms:** Embedding, Cosine Similarity, Modality Alignment, Semantic Search
-- **Sources:** [Learning Transferable Visual Models From Natural Language Supervision](https://proceedings.mlr.press/v139/radford21a.html)
+<a id="shared-embedding-space"></a>
+### 共享嵌入空间（Shared Embedding Space）
+- **分类（Category）:** 多模态系统（Multimodal systems）
+- **准确含义（What it actually means）:** 一种公共向量空间，使不同模态的表示可以通过同一个相似度函数进行比较。
+- **重要性（Why it matters）:** 它支持跨模态检索与匹配，例如以文本查找图像，而不要求双方具有相同的原始表示。
+- **实际应用（In practice）:** 有计划地利用配对样本和非配对负样本进行训练，在目标函数要求时归一化向量，评估两个方向的检索效果，并检查各子群体与语言的表现。
+- **常见混淆（Common confusion）:** 向量维度相同并不意味着形成了共享语义空间；训练目标和数据必须建立跨模态可比性。
+- **学习课程（Learn it）:** [对比语言图像预训练](../phases/12-multimodal-ai/02-clip-contrastive-pretraining/)
+- **相关术语（Related terms）:** Embedding, Cosine Similarity, Modality Alignment, Semantic Search
+- **来源（Sources）:** [通过自然语言监督学习可迁移的视觉模型](https://proceedings.mlr.press/v139/radford21a.html)
 
-### Skill Bundle
-- **Category:** Agents & tools
-- **What it actually means:** The complete installable skill directory, including `SKILL.md` and every reference, script, asset, fixture, or companion file required by the workflow.
-- **Why it matters:** Copying only the entry file can leave valid-looking instructions that point to missing resources or lose the deterministic code the workflow depends on.
-- **In practice:** Install the tree as one unit, record hashes and source revision, validate the installed copy, and show collisions before replacing an existing bundle.
-- **Common confusion:** `SKILL.md` is the entry point, not necessarily the entire artifact.
-- **Learn it:** [Skill Evals, Packaging, and Portability](../phases/13-tools-and-protocols/27-skill-evals-packaging-and-portability/)
-- **Related terms:** Agent Skill, Skill Catalog, Reproducible Build, Provenance Attestation
-- **Sources:** [Agent Skills specification](https://agentskills.io/specification)
+<a id="skill-bundle"></a>
+### 技能包（Skill Bundle）
+- **分类（Category）:** 智能体与工具（Agents & tools）
+- **准确含义（What it actually means）:** 完整的可安装技能目录，包括 `SKILL.md` 以及工作流所需的全部参考资料、脚本、资源、测试夹具或配套文件。
+- **重要性（Why it matters）:** 只复制入口文件，可能使指令看似有效却指向缺失资源，或丢失工作流依赖的确定性代码。
+- **实际应用（In practice）:** 将目录树作为整体安装，记录哈希值和源修订版本，验证安装后的副本，并在替换现有技能包前展示冲突。
+- **常见混淆（Common confusion）:** `SKILL.md` 是入口，不一定是完整产物。
+- **学习课程（Learn it）:** [技能评估、打包与可移植性](../phases/13-tools-and-protocols/27-skill-evals-packaging-and-portability/)
+- **相关术语（Related terms）:** Agent Skill, Skill Catalog, Reproducible Build, Provenance Attestation
+- **来源（Sources）:** [智能体技能规范](https://agentskills.io/specification)
 
-### Skill Catalog
-- **Category:** Agents & tools
-- **What it actually means:** The compact model-visible inventory of eligible skills, usually containing routing metadata such as name, description, and an internal source identifier rather than every skill body.
-- **Why it matters:** A catalog lets an agent discover relevant procedures without loading every installed package into the working context.
-- **In practice:** Validate packages first, apply an explicit duplicate-name policy, measure the serialized catalog budget, and retain diagnostics for entries that were shortened, omitted, or shadowed.
-- **Common confusion:** A catalog entry means the skill is discoverable. It does not mean the body is active or its tools are authorized.
-- **Learn it:** [Skill Discovery and Progressive Disclosure](../phases/13-tools-and-protocols/24-skill-discovery-and-progressive-disclosure/)
-- **Related terms:** Skill Discovery, Skill Invocation, Progressive Disclosure, Token Budget
-- **Sources:** [Agent Skills specification](https://agentskills.io/specification)
+<a id="skill-catalog"></a>
+### 技能目录（Skill Catalog）
+- **分类（Category）:** 智能体与工具（Agents & tools）
+- **准确含义（What it actually means）:** 模型可见的、符合条件的技能精简清单，通常包含名称、描述和内部源标识符等路由元数据，而不是每个技能的完整正文。
+- **重要性（Why it matters）:** 目录使智能体不必把所有已安装的软件包都加载到工作上下文，也能发现相关流程。
+- **实际应用（In practice）:** 先验证软件包，应用明确的同名处理策略，测量序列化目录的预算，并为被缩短、省略或遮蔽的条目保留诊断信息。
+- **常见混淆（Common confusion）:** 目录条目表示技能可被发现，并不表示其正文已经激活或其工具已经获得授权。
+- **学习课程（Learn it）:** [技能发现与渐进披露](../phases/13-tools-and-protocols/24-skill-discovery-and-progressive-disclosure/)
+- **相关术语（Related terms）:** Skill Discovery, Skill Invocation, Progressive Disclosure, Token Budget
+- **来源（Sources）:** [智能体技能规范](https://agentskills.io/specification)
 
-### Skill Discovery
-- **Category:** Agents & tools
-- **What it actually means:** A runtime pipeline that searches configured roots, identifies candidate skill directories, validates their package contract, attaches scope and provenance, resolves collisions, and publishes eligible catalog entries.
-- **Why it matters:** Deterministic discovery makes missing, malformed, shadowed, and unsafe packages diagnosable before model routing begins.
-- **In practice:** Declare search scopes and duplicate behavior, decide how symlinks are handled, reject resource escapes, and log why each candidate was accepted or rejected.
-- **Common confusion:** Skill discovery is not an unrestricted recursive search for filenames called `SKILL.md`; installation locations and precedence are runtime policy.
-- **Learn it:** [Skill Discovery and Progressive Disclosure](../phases/13-tools-and-protocols/24-skill-discovery-and-progressive-disclosure/)
-- **Related terms:** Skill Catalog, Skill Bundle, Progressive Disclosure, Trust Boundary
-- **Sources:** [Agent Skills client implementation guide](https://agentskills.io/client-implementation/adding-skills-support)
+<a id="skill-discovery"></a>
+### 技能发现（Skill Discovery）
+- **分类（Category）:** 智能体与工具（Agents & tools）
+- **准确含义（What it actually means）:** 一种运行时流水线：搜索已配置的根目录，识别候选技能目录，验证其打包契约，附加作用域和来源信息，解决冲突，并发布符合条件的目录条目。
+- **重要性（Why it matters）:** 确定性的发现过程使缺失、格式错误、被遮蔽及不安全的软件包在模型路由开始之前就能得到诊断。
+- **实际应用（In practice）:** 声明搜索范围和同名处理方式，决定如何处理符号链接，拒绝越界资源访问，并记录每个候选项被接受或拒绝的原因。
+- **常见混淆（Common confusion）:** 技能发现不是不受限制地递归搜索名为 `SKILL.md` 的文件；安装位置和优先级属于运行时策略。
+- **学习课程（Learn it）:** [技能发现与渐进披露](../phases/13-tools-and-protocols/24-skill-discovery-and-progressive-disclosure/)
+- **相关术语（Related terms）:** Skill Catalog, Skill Bundle, Progressive Disclosure, Trust Boundary
+- **来源（Sources）:** [智能体技能客户端实现指南](https://agentskills.io/client-implementation/adding-skills-support)
 
-### Skill Invocation
-- **Category:** Agents & tools
-- **What it actually means:** The runtime-mediated process in which an eligible human, model, application, or other skill selects a skill and causes its instructions to enter the working context.
-- **Why it matters:** Explicit user access, implicit model routing, activation, argument binding, tool permission, and execution are separate decisions with different failure modes.
-- **In practice:** Define actor policy, evaluate descriptions with positive and near-miss requests, record the selected package identity, and keep host-specific invocation fields in tested adapters.
-- **Common confusion:** Invocation activates instructions. It does not automatically execute a command or bypass approval and sandbox policy.
-- **Learn it:** [Skill Invocation and Routing](../phases/13-tools-and-protocols/25-skill-invocation-and-routing/)
-- **Related terms:** Agent Skill, Skill Catalog, Approval Gate, Sandbox
-- **Sources:** [Evaluating Agent Skills](https://agentskills.io/skill-creation/evaluating-skills)
+<a id="skill-invocation"></a>
+### 技能调用（Skill Invocation）
+- **分类（Category）:** 智能体与工具（Agents & tools）
+- **准确含义（What it actually means）:** 由运行时协调的过程：符合条件的人、模型、应用或其他技能选择某个技能，并使其指令进入工作上下文。
+- **重要性（Why it matters）:** 用户的显式访问、模型的隐式路由、激活、参数绑定、工具权限和执行是独立决策，具有不同的失败模式。
+- **实际应用（In practice）:** 定义调用主体策略，使用正例请求与近似但不匹配的请求评估描述，记录所选技能包身份，并将宿主特定的调用字段保留在经过测试的适配器中。
+- **常见混淆（Common confusion）:** 调用会激活指令，但不会自动执行命令，也不会绕过审批和沙箱策略。
+- **学习课程（Learn it）:** [技能调用与路由](../phases/13-tools-and-protocols/25-skill-invocation-and-routing/)
+- **相关术语（Related terms）:** Agent Skill, Skill Catalog, Approval Gate, Sandbox
+- **来源（Sources）:** [评估智能体技能](https://agentskills.io/skill-creation/evaluating-skills)
 
-### Softmax
-- **Category:** Math & training
-- **What people say:** A function that turns logits into normalized positive values.
-- **What it actually means:** A function defined by `softmax(x_i) = exp(x_i) / sum(exp(x_j))`, implemented with numerical stabilization. Its outputs are positive and sum to one, so they can parameterize a categorical distribution.
-- **Common confusion:** Softmax values are not automatically calibrated probabilities about real-world correctness.
-- **Related terms:** Temperature, Cross-Entropy, Attention
+<a id="softmax"></a>
+### 归一化指数函数（Softmax）
+- **分类（Category）:** 数学与训练（Math & training）
+- **常见说法（What people say）:** 将未归一化分数（Logits）转换为归一化正值的函数。
+- **准确含义（What it actually means）:** 定义为 `softmax(x_i) = exp(x_i) / sum(exp(x_j))` 的函数，实现时使用数值稳定化处理。其输出为正数且总和为一，因此可用于参数化类别分布（Categorical Distribution）。
+- **常见混淆（Common confusion）:** 归一化指数函数（Softmax）的数值并不自动成为经过校准的、关于现实世界正确性的概率。
+- **相关术语（Related terms）:** Temperature, Cross-Entropy, Attention
 
-### Software Bill of Materials (SBOM)
-- **Category:** Security & governance
-- **Aliases:** SBOM
-- **What it actually means:** A structured inventory of software components and relationships associated with a product or artifact, often including versions, suppliers, licenses, and identifiers.
-- **Why it matters:** You need a component inventory to assess affected dependencies, license obligations, and supply-chain exposure when software changes or vulnerabilities emerge.
-- **In practice:** Generate the SBOM during the trusted build, bind it to the release artifact, verify it in policy checks, and update it whenever dependencies or packaging change.
-- **Common confusion:** An SBOM is an inventory, not proof that components are secure, correctly licensed, or actually present unless generation and provenance are trustworthy.
-- **Related terms:** Provenance Attestation, Reproducible Build, Data Provenance, Audit Log
-- **Sources:** [SPDX 3.0.1 specification](https://spdx.github.io/spdx-spec/v3.0/)
+<a id="software-bill-of-materials-sbom"></a>
+### 软件物料清单（Software Bill of Materials (SBOM)）
+- **分类（Category）:** 安全与治理（Security & governance）
+- **别名（Aliases）:** SBOM
+- **准确含义（What it actually means）:** 与产品或产物相关的软件组件及其关系的结构化清单，通常包括版本、供应方、许可证和标识符。
+- **重要性（Why it matters）:** 软件发生变化或出现漏洞时，需要组件清单来评估受影响的依赖、许可证义务以及供应链风险暴露。
+- **实际应用（In practice）:** 在可信构建期间生成软件物料清单（SBOM），将其绑定到发布产物，在策略检查中验证，并在依赖或打包方式变化时更新。
+- **常见混淆（Common confusion）:** 软件物料清单是清单，而不是组件安全、许可证合规或实际存在的证明，除非其生成过程和来源可信。
+- **相关术语（Related terms）:** Provenance Attestation, Reproducible Build, Data Provenance, Audit Log
+- **来源（Sources）:** [软件包数据交换规范 3.0.1](https://spdx.github.io/spdx-spec/v3.0/)
 
-### Speculative Decoding
-- **Category:** Models & inference
-- **What it actually means:** An inference method in which a cheaper draft process proposes several tokens and the target model scores those draft positions in parallel. In exact sampling variants, an acceptance and correction rule preserves the target model's output distribution.
-- **Why it matters:** It can reduce serial target-model decoding work when drafts are accepted, without requiring a change to the target model's trained weights.
-- **In practice:** Measure acceptance rate and end-to-end latency on real prompts, include draft-model overhead, and verify that the implementation preserves the intended decoding distribution.
-- **Common confusion:** Speculative decoding is not ordinary model routing or unverified autocomplete. Exact variants preserve the target distribution through acceptance and correction, while approximate variants may trade that guarantee for speed.
-- **Related terms:** Autoregressive, KV Cache, Decoding Strategy, Tokens per Second (TPS)
-- **Sources:** [Fast Inference from Transformers via Speculative Decoding](https://proceedings.mlr.press/v202/leviathan23a.html)
+<a id="speculative-decoding"></a>
+### 推测解码（Speculative Decoding）
+- **分类（Category）:** 模型与推理（Models & inference）
+- **准确含义（What it actually means）:** 一种推理方法：成本更低的草稿过程提出多个词元，目标模型则并行计算这些草稿位置的分数。在精确采样变体中，接受与修正规则保持目标模型的输出分布。
+- **重要性（Why it matters）:** 当草稿被接受时，它可以减少目标模型的串行解码工作，而不需要改变目标模型已训练的权重。
+- **实际应用（In practice）:** 在真实提示词上测量接受率和端到端延迟，计入草稿模型的开销，并验证实现保持了预期的解码分布。
+- **常见混淆（Common confusion）:** 推测解码不是普通的模型路由或未经验证的自动补全。精确变体通过接受与修正保持目标分布，而近似变体可能牺牲这一保证来换取速度。
+- **相关术语（Related terms）:** Autoregressive, KV Cache, Decoding Strategy, Tokens per Second (TPS)
+- **来源（Sources）:** [通过推测解码实现变换器快速推理](https://proceedings.mlr.press/v202/leviathan23a.html)
 
-### Stateless MCP
-- **Category:** Agents & tools
-- **What it actually means:** The MCP 2026-07-28 request model in which every request carries the protocol version and client capabilities in `params._meta`, while results carry an explicit `resultType`; no protocol state is keyed by an initialization handshake, connection, or `Mcp-Session-Id`.
-- **Why it matters:** Any worker can validate and process a request from its contents and authorization context, which avoids hidden connection affinity and makes horizontal routing easier to reason about.
-- **In practice:** Implement `server/discover`, rebuild request metadata on every call, validate transport headers against the JSON-RPC body, and pass server-minted application handles as ordinary tool arguments when continuity is required.
-- **Common confusion:** Stateless MCP removes protocol sessions, not application state, transport connections, streaming responses, tasks, or explicit handles.
-- **Learn it:** [MCP Fundamentals](../phases/13-tools-and-protocols/06-mcp-fundamentals/)
-- **Related terms:** MCP (Model Context Protocol), Multi Round-Trip Request (MRTR), Tool Contract, Idempotency
-- **Sources:** [MCP 2026-07-28 key changes](https://modelcontextprotocol.io/specification/2026-07-28/changelog); [MCP Streamable HTTP](https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/streamable-http)
+<a id="stateless-mcp"></a>
+### 无状态模型上下文协议（Stateless MCP）
+- **分类（Category）:** 智能体与工具（Agents & tools）
+- **准确含义（What it actually means）:** 模型上下文协议（MCP）2026-07-28 的请求模型：每个请求在 `params._meta` 中携带协议版本和客户端能力，结果则携带显式的 `resultType`；协议状态不以初始化握手、连接或 `Mcp-Session-Id` 为索引。
+- **重要性（Why it matters）:** 任何工作进程都可以依据请求内容及授权上下文进行验证和处理，从而避免隐藏的连接亲和性，使水平路由更容易分析。
+- **实际应用（In practice）:** 实现 `server/discover`，在每次调用时重新构建请求元数据，对照 JSON-RPC 正文校验传输头，并在需要连续性时将服务器签发的应用句柄作为普通工具参数传递。
+- **常见混淆（Common confusion）:** 无状态模型上下文协议移除的是协议会话，而不是应用状态、传输连接、流式响应、任务或显式句柄。
+- **学习课程（Learn it）:** [模型上下文协议基础](../phases/13-tools-and-protocols/06-mcp-fundamentals/)
+- **相关术语（Related terms）:** MCP (Model Context Protocol), Multi Round-Trip Request (MRTR), Tool Contract, Idempotency
+- **来源（Sources）:** [模型上下文协议 2026-07-28 关键变更](https://modelcontextprotocol.io/specification/2026-07-28/changelog); [模型上下文协议可流式传输的超文本传输协议](https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/streamable-http)
 
-### Stochastic Gradient Descent (SGD)
-- **Category:** Math & training
-- **Aliases:** SGD
-- **What it actually means:** An optimizer family that updates parameters from a gradient estimated on a sampled example or minibatch rather than the complete training dataset.
-- **Why it matters:** It is the baseline for understanding gradient noise, momentum, batch scaling, and the adaptive optimizers used in modern training.
-- **In practice:** Record batch sampling, learning rate, momentum if used, and schedule, then compare validation behavior under equal update or token budgets.
-- **Common confusion:** In current practice, SGD usually means minibatch SGD, and its useful learning rate does not follow one universal batch-scaling rule.
-- **Related terms:** Gradient Descent, Batch Size, Learning Rate, Optimizer
-- **Sources:** [Optimization Methods for Large-Scale Machine Learning](https://arxiv.org/abs/1606.04838); [Accurate, Large Minibatch SGD](https://arxiv.org/abs/1706.02677)
+<a id="stochastic-gradient-descent-sgd"></a>
+### 随机梯度下降（Stochastic Gradient Descent (SGD)）
+- **分类（Category）:** 数学与训练（Math & training）
+- **别名（Aliases）:** SGD
+- **准确含义（What it actually means）:** 一类优化器，使用从采样示例或小批量估计的梯度更新参数，而非使用完整训练数据集的梯度。
+- **重要性（Why it matters）:** 它是理解梯度噪声、动量、批量缩放及现代训练所用自适应优化器的基础。
+- **实际应用（In practice）:** 记录批量采样方式、学习率、使用的动量和调度策略，再在相同更新次数或词元预算下比较验证表现。
+- **常见混淆（Common confusion）:** 当前实践中的随机梯度下降（SGD）通常指小批量随机梯度下降，其适用学习率并不遵循唯一通用的批量缩放规则。
+- **相关术语（Related terms）:** Gradient Descent, Batch Size, Learning Rate, Optimizer
+- **来源（Sources）:** [大规模机器学习的优化方法](https://arxiv.org/abs/1606.04838); [精确的大批量随机梯度下降](https://arxiv.org/abs/1706.02677)
 
-### Stop Sequence
-- **Category:** Models & inference
-- **What it actually means:** An application-specified token or text pattern that causes generation to stop when the decoding system encounters it.
-- **Why it matters:** Stop sequences bound output protocols and multi-part generation without waiting for the model to decide semantically that it is finished.
-- **In practice:** Choose unambiguous delimiters, test tokenization and partial streaming matches, and still enforce output length and schema validation.
-- **Common confusion:** A stop sequence is a mechanical decoding condition, not proof that the answer is complete or that an agent goal is satisfied.
-- **Related terms:** Decoding Strategy, Structured Output, Token, Termination Condition
-- **Sources:** [Transformers text-generation documentation](https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)
+<a id="stop-sequence"></a>
+### 停止序列（Stop Sequence）
+- **分类（Category）:** 模型与推理（Models & inference）
+- **准确含义（What it actually means）:** 应用指定的词元或文本模式，解码系统遇到它时便停止生成。
+- **重要性（Why it matters）:** 停止序列为输出协议和分段生成设定边界，无须等待模型从语义上决定自己已经完成。
+- **实际应用（In practice）:** 选择无歧义的分隔符，测试词元化及流式传输中的部分匹配，同时仍强制执行输出长度限制与模式校验。
+- **常见混淆（Common confusion）:** 停止序列是一种机械性的解码条件，并不能证明答案完整或智能体目标已经实现。
+- **相关术语（Related terms）:** Decoding Strategy, Structured Output, Token, Termination Condition
+- **来源（Sources）:** [Transformers 文本生成文档](https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)
 
-### Streaming
-- **Category:** Models & inference
-- **What people say:** Showing output as it is generated.
-- **What it actually means:** Delivering incremental response events before the complete result is ready. A stream may contain token text, structured deltas, tool-call arguments, usage metadata, or status events depending on the API.
-- **Why it matters:** It improves perceived responsiveness, but it does not reduce the model's actual time to produce a complete answer.
-- **Common confusion:** Network transport, event shape, and chunk boundaries are provider-specific and are not guaranteed to align with words or tokens.
-- **Learn it:** [Production LLM Application](../phases/11-llm-engineering/13-production-app/)
-- **Related terms:** Time to First Token (TTFT), Autoregressive, Observability
+<a id="streaming"></a>
+### 流式传输（Streaming）
+- **分类（Category）:** 模型与推理（Models & inference）
+- **常见说法（What people say）:** 在输出生成的同时展示输出。
+- **准确含义（What it actually means）:** 在完整结果就绪之前交付增量响应事件。根据应用程序接口（Application Programming Interface，API）的不同，流中可能包含词元文本、结构化增量、工具调用参数、用量元数据或状态事件。
+- **重要性（Why it matters）:** 它改善用户感知的响应速度，但不会缩短模型生成完整答案的实际时间。
+- **常见混淆（Common confusion）:** 网络传输、事件形态和分块边界因提供方而异，不保证与单词或词元对齐。
+- **学习课程（Learn it）:** [生产级大语言模型应用](../phases/11-llm-engineering/13-production-app/)
+- **相关术语（Related terms）:** Time to First Token (TTFT), Autoregressive, Observability
 
-### Structured Output
-- **Category:** Agents & tools
-- **What it actually means:** Model output constrained or validated against a machine-readable schema so application code can consume fields without parsing free-form prose.
-- **Why it matters:** It reduces format ambiguity at the model-to-software boundary and enables field-level validation and retries.
-- **In practice:** Require an incident triage result with an allowed severity enum, evidence array, and nullable escalation reason, then reject any response that fails the schema.
-- **Common confusion:** Schema-valid output can still contain incorrect values. Structure is not factual verification.
-- **Learn it:** [Structured Outputs](../phases/11-llm-engineering/03-structured-outputs/)
-- **Related terms:** Function Calling, Tool Contract, Verification Gate
+<a id="structured-output"></a>
+### 结构化输出（Structured Output）
+- **分类（Category）:** 智能体与工具（Agents & tools）
+- **准确含义（What it actually means）:** 依据机器可读模式（Schema）约束或校验的模型输出，使应用代码无须解析自由形式的正文即可读取字段。
+- **重要性（Why it matters）:** 它减少模型与软件边界处的格式歧义，并支持字段级校验和重试。
+- **实际应用（In practice）:** 要求事件分诊结果包含允许的严重程度枚举、证据数组及可为空的升级处理原因，然后拒绝任何不符合模式的响应。
+- **常见混淆（Common confusion）:** 符合模式的输出仍可能包含错误值；结构不等于事实验证。
+- **学习课程（Learn it）:** [结构化输出](../phases/11-llm-engineering/03-structured-outputs/)
+- **相关术语（Related terms）:** Function Calling, Tool Contract, Verification Gate
 
-### Swarm
-- **Category:** Agents & tools
-- **What people say:** Many agents collaborating without one fixed controller.
-- **What it actually means:** A loosely coordinated multi-agent pattern in which local agent decisions and message exchange produce system-level behavior. The term is used inconsistently, so the actual topology, state ownership, and termination rules must be specified.
-- **Common confusion:** Multiple named agents do not guarantee useful specialization or emergent coordination.
-- **Related terms:** Agent, Reviewer Agent, Handoff, Agent State
+<a id="swarm"></a>
+### 智能体群体（Swarm）
+- **分类（Category）:** 智能体与工具（Agents & tools）
+- **常见说法（What people say）:** 多个智能体在没有固定单一控制者的情况下协作。
+- **准确含义（What it actually means）:** 一种松散协调的多智能体模式，由局部智能体决策和消息交换产生系统级行为。该术语的用法并不一致，因此必须明确实际拓扑、状态所有权和终止规则。
+- **常见混淆（Common confusion）:** 多个具名智能体并不保证产生有用的专业分工或涌现式协调。
+- **相关术语（Related terms）:** Agent, Reviewer Agent, Handoff, Agent State
 
-### System Prompt
-- **Category:** Prompting & context
-- **What people say:** Developer-controlled instructions for a model interaction.
-- **What it actually means:** A provider-defined instruction message or configuration supplied by the application to establish behavior and constraints within that provider's instruction hierarchy.
-- **Why it matters:** System instructions can guide behavior, but they are not guaranteed to remain secret and should not be treated as a security boundary.
-- **Common confusion:** Priority rules, message roles, persistence, and visibility differ across APIs. Check the current provider contract.
-- **Learn it:** [Instructions as Executable Constraints](../phases/14-agent-engineering/33-instructions-as-executable-constraints/)
-- **Related terms:** Prompt Engineering, Prompt Injection, Context Engineering, Guardrails
+<a id="system-prompt"></a>
+### 系统提示词（System Prompt）
+- **分类（Category）:** 提示词与上下文（Prompting & context）
+- **常见说法（What people say）:** 由开发者控制、用于模型交互的指令。
+- **准确含义（What it actually means）:** 应用提供的一种由提供方定义的指令消息或配置，用于在该提供方的指令层级内确立行为和约束。
+- **重要性（Why it matters）:** 系统指令可以引导行为，但不保证始终保密，不应将其视为安全边界。
+- **常见混淆（Common confusion）:** 优先级规则、消息角色、持久性和可见性在不同应用程序接口（API）之间存在差异，应检查提供方当前的契约。
+- **学习课程（Learn it）:** [将指令作为可执行约束](../phases/14-agent-engineering/33-instructions-as-executable-constraints/)
+- **相关术语（Related terms）:** Prompt Engineering, Prompt Injection, Context Engineering, Guardrails
 
 ## T
 
-### Tail Latency
-- **Category:** Reliability & operations
-- **What it actually means:** The latency experienced by the slowest portion of requests, commonly summarized with a high percentile under a stated workload and time window.
-- **Why it matters:** Averages can look healthy while a meaningful group of users waits much longer because of queueing, contention, retries, or variable request cost.
-- **In practice:** Report several percentiles by route and workload, retain timeouts as censored or failed observations according to a documented rule, and trace slow requests across dependencies.
-- **Common confusion:** Tail latency is not the single slowest request and has no meaning without the percentile, population, and measurement boundary.
-- **Learn it:** [Inference Metrics and Goodput](../phases/17-infrastructure-and-production/08-inference-metrics-goodput/)
-- **Related terms:** Time to First Token (TTFT), Time per Output Token (TPOT), Saturation, Goodput
-- **Sources:** [The Tail at Scale](https://research.google/pubs/the-tail-at-scale/)
+<a id="tail-latency"></a>
+### 尾延迟（Tail Latency）
+- **分类（Category）:** 可靠性与运维（Reliability & operations）
+- **准确含义（What it actually means）:** 最慢一部分请求经历的延迟，通常在指定工作负载和时间窗口下，以较高百分位数概括。
+- **重要性（Why it matters）:** 平均值可能看起来正常，但仍有相当一部分用户由于排队、资源争用、重试或请求成本差异而等待更久。
+- **实际应用（In practice）:** 按路由和工作负载报告多个百分位数，依据有文档记录的规则将超时保留为删失观测或失败观测，并跨依赖追踪慢请求。
+- **常见混淆（Common confusion）:** 尾延迟不是单个最慢请求；没有百分位数、统计总体和测量边界，它就没有明确含义。
+- **学习课程（Learn it）:** [推理指标与有效吞吐量](../phases/17-infrastructure-and-production/08-inference-metrics-goodput/)
+- **相关术语（Related terms）:** Time to First Token (TTFT), Time per Output Token (TPOT), Saturation, Goodput
+- **来源（Sources）:** [大规模系统中的尾延迟](https://research.google/pubs/the-tail-at-scale/)
 
-### Temperature
-- **Category:** Models & inference
-- **What people say:** A creativity setting.
-- **What it actually means:** A decoding parameter that rescales logits before a probability distribution is formed. Higher positive values usually flatten the distribution; lower positive values sharpen it.
-- **Why it matters:** Temperature changes sampling behavior, not the model's knowledge or factuality.
-- **Common confusion:** A zero setting is often implemented as greedy decoding, but exact behavior and determinism depend on the provider, sampler, seed support, and serving system.
-- **Related terms:** Softmax, Autoregressive, Token
+<a id="temperature"></a>
+### 温度（Temperature）
+- **分类（Category）:** 模型与推理（Models & inference）
+- **常见说法（What people say）:** 一种创造力设置。
+- **准确含义（What it actually means）:** 在形成概率分布前对未归一化分数（Logits）重新缩放的解码参数。较高的正值通常使分布更平坦，较低的正值则使其更尖锐。
+- **重要性（Why it matters）:** 温度改变采样行为，而不是模型的知识或事实准确性。
+- **常见混淆（Common confusion）:** 零值设置通常以贪心解码（Greedy Decoding）实现，但具体行为和确定性取决于提供方、采样器、随机种子支持及服务系统。
+- **相关术语（Related terms）:** Softmax, Autoregressive, Token
 
-### Tensor
-- **Category:** Data & representations
-- **What people say:** A multidimensional array used for numerical computation.
-- **What it actually means:** A typed array with a shape, data type, and device placement that frameworks use to represent inputs, parameters, activations, and gradients. Automatic-differentiation metadata is framework- and operation-dependent, not an inherent property of every tensor.
-- **Related terms:** Autograd, Parameter, Mixed Precision
+<a id="tensor"></a>
+### 张量（Tensor）
+- **分类（Category）:** 数据与表示（Data & representations）
+- **常见说法（What people say）:** 用于数值计算的多维数组。
+- **准确含义（What it actually means）:** 具有形状、数据类型和设备位置的带类型数组，框架用它表示输入、参数、激活值和梯度。自动微分元数据取决于框架与操作，并不是所有张量的固有属性。
+- **相关术语（Related terms）:** Autograd, Parameter, Mixed Precision
 
-### Tensor Parallelism
-- **Category:** Infrastructure & serving
-- **What it actually means:** Partitioning tensor operations within a model layer across devices, with collective communication combining partial results during the layer computation.
-- **Why it matters:** It lets one layer use memory and compute from several devices, but frequent communication can dominate when the interconnect or partition is unsuitable.
-- **In practice:** Match partition dimensions to model shapes, benchmark collective traffic, keep ranks on a fast interconnect, and record the sharding layout with checkpoints and serving configuration.
-- **Common confusion:** Tensor parallelism splits work inside layers. Pipeline parallelism places different layer groups on different devices.
-- **Learn it:** [Scaling and Distributed Training](../phases/10-llms-from-scratch/05-scaling-distributed/)
-- **Related terms:** Tensor, Pipeline Parallelism, Expert Parallelism, Parameter
-- **Sources:** [Megatron-LM](https://arxiv.org/abs/1909.08053)
+<a id="tensor-parallelism"></a>
+### 张量并行（Tensor Parallelism）
+- **分类（Category）:** 基础设施与服务（Infrastructure & serving）
+- **准确含义（What it actually means）:** 将模型某一层内部的张量运算划分到多个设备，在该层计算过程中通过集合通信（Collective Communication）合并部分结果。
+- **重要性（Why it matters）:** 它让单层能够使用多个设备的内存和算力，但互连或划分方式不合适时，频繁通信可能占据主要开销。
+- **实际应用（In practice）:** 使划分维度匹配模型形状，对集合通信流量进行基准测试，将各进程置于高速互连上，并随检查点和服务配置记录分片布局。
+- **常见混淆（Common confusion）:** 张量并行拆分层内工作；流水线并行（Pipeline Parallelism）则将不同层组放在不同设备上。
+- **学习课程（Learn it）:** [扩展与分布式训练](../phases/10-llms-from-scratch/05-scaling-distributed/)
+- **相关术语（Related terms）:** Tensor, Pipeline Parallelism, Expert Parallelism, Parameter
+- **来源（Sources）:** [Megatron-LM 论文](https://arxiv.org/abs/1909.08053)
 
-### Termination Condition
-- **Category:** Agents & tools
-- **What it actually means:** An explicit rule that ends or pauses an agent run when it succeeds, fails, exhausts a budget, reaches a safe boundary, or requires escalation.
-- **Why it matters:** Without a termination condition, an agent can loop, repeat side effects, waste budget, or claim completion without satisfying the goal.
-- **In practice:** Define success evidence, maximum steps and cost, non-retryable errors, and escalation states before starting the loop.
-- **Common confusion:** A stop sequence ends text generation; a termination condition decides whether the task or workflow should stop.
-- **Related terms:** Agent Harness, Token Budget, Verification Gate, Stop Sequence
-- **Sources:** [AutoGen](https://arxiv.org/abs/2308.08155)
+<a id="termination-condition"></a>
+### 终止条件（Termination Condition）
+- **分类（Category）:** 智能体与工具（Agents & tools）
+- **准确含义（What it actually means）:** 一条明确规则：当智能体成功、失败、耗尽预算、到达安全边界或需要升级处理时，结束或暂停其运行。
+- **重要性（Why it matters）:** 没有终止条件，智能体可能陷入循环、重复产生副作用、浪费预算，或在未实现目标时声称完成。
+- **实际应用（In practice）:** 在开始循环前，定义成功证据、最大步数和成本、不可重试的错误及升级处理状态。
+- **常见混淆（Common confusion）:** 停止序列结束文本生成；终止条件决定任务或工作流是否应停止。
+- **相关术语（Related terms）:** Agent Harness, Token Budget, Verification Gate, Stop Sequence
+- **来源（Sources）:** [AutoGen 论文](https://arxiv.org/abs/2308.08155)
 
-### Test Oracle
-- **Category:** AI-native development
-- **What it actually means:** The mechanism, specification, reference, invariant, or human judgment used to decide whether observed program behavior is correct.
-- **Why it matters:** Generating test inputs is not enough; automated verification requires an independent basis for classifying each result.
-- **In practice:** Prefer executable invariants, reference implementations, schemas, and deterministic expected outputs, then document where human judgment remains necessary.
-- **Common confusion:** The model that wrote the code should not be treated as an independent oracle merely because you ask it whether its own output is correct.
-- **Related terms:** Regression Test, Verification Gate, Eval Set, Human-in-the-Loop (HITL)
-- **Sources:** [The Oracle Problem in Software Testing](https://www.computer.org/csdl/journal/ts/2015/05/06963470/13rRUx0geBw)
+<a id="test-oracle"></a>
+### 测试判定依据（Test Oracle）
+- **分类（Category）:** AI 原生开发（AI-native development）
+- **准确含义（What it actually means）:** 用于判断所观测程序行为是否正确的机制、规格、参考、不变量或人工判断。
+- **重要性（Why it matters）:** 仅生成测试输入还不够；自动化验证需要独立依据来判定每个结果。
+- **实际应用（In practice）:** 优先采用可执行不变量、参考实现、模式和确定性的预期输出，然后记录哪些地方仍需人工判断。
+- **常见混淆（Common confusion）:** 不能仅仅因为向编写代码的模型询问其输出是否正确，就将它视为独立的判定依据。
+- **相关术语（Related terms）:** Regression Test, Verification Gate, Eval Set, Human-in-the-Loop (HITL)
+- **来源（Sources）:** [软件测试中的判定依据问题](https://www.computer.org/csdl/journal/ts/2015/05/06963470/13rRUx0geBw)
 
-### Threat Model
-- **Category:** Security & governance
-- **What it actually means:** A documented account of protected assets, trust boundaries, potential adversaries, assumed capabilities, attack paths, impacts, and planned controls.
-- **Why it matters:** Security controls cannot be judged without stating what they defend, against whom, and under which assumptions.
-- **In practice:** Map data and authority across model, retrieval, tools, users, and external services, then turn credible abuse paths into red-team cases and mitigations.
-- **Common confusion:** A threat model prioritizes plausible risks; it is not a checklist that proves the system secure or predicts every future attack.
-- **Related terms:** Least Privilege, Prompt Injection, Sandbox, Red Teaming
-- **Sources:** [NIST SP 800-154](https://csrc.nist.gov/pubs/sp/800/154/ipd); [NIST Generative AI Profile](https://nvlpubs.nist.gov/nistpubs/ai/nist.ai.600-1.pdf)
+<a id="threat-model"></a>
+### 威胁模型（Threat Model）
+- **分类（Category）:** 安全与治理（Security & governance）
+- **准确含义（What it actually means）:** 以文档形式记录受保护资产、信任边界、潜在对手、假定能力、攻击路径、影响及计划采取的控制措施。
+- **重要性（Why it matters）:** 不说明保护什么、防御谁以及基于哪些假设，就无法评价安全控制措施。
+- **实际应用（In practice）:** 梳理数据和权限在模型、检索、工具、用户及外部服务之间的流动，再将可信的滥用路径转化为红队测试（Red Teaming）用例和缓解措施。
+- **常见混淆（Common confusion）:** 威胁模型对可信风险进行优先排序；它不是证明系统安全或预测所有未来攻击的检查清单。
+- **相关术语（Related terms）:** Least Privilege, Prompt Injection, Sandbox, Red Teaming
+- **来源（Sources）:** [美国国家标准与技术研究院特别出版物 800-154](https://csrc.nist.gov/pubs/sp/800/154/ipd); [美国国家标准与技术研究院生成式人工智能风险管理概况](https://nvlpubs.nist.gov/nistpubs/ai/nist.ai.600-1.pdf)
 
-### Time per Output Token (TPOT)
-- **Category:** Infrastructure & serving
-- **What it actually means:** For one request with `N > 1` output tokens, the average post-first-token interval: `(t_N - t_1) / (N - 1)`. System distributions then aggregate those per-request averages.
-- **Why it matters:** Users can receive the first token quickly while the rest of the answer streams slowly, so startup latency alone does not describe generation responsiveness.
-- **In practice:** Compute TPOT separately for each request, report percentiles across requests by output length and concurrency, and avoid pooling all token intervals or comparing systems with different tokenizers and measurement boundaries.
-- **Common confusion:** TPOT is a per-request average. An individual inter-token latency is one gap between consecutive tokens, while time to first token includes the wait before output starts.
-- **Learn it:** [Inference Metrics and Goodput](../phases/17-infrastructure-and-production/08-inference-metrics-goodput/)
-- **Related terms:** Decode Phase, Time to First Token (TTFT), Streaming, Goodput
-- **Sources:** [DistServe](https://arxiv.org/abs/2401.09670)
+<a id="time-per-output-token-tpot"></a>
+### 每输出词元耗时（Time per Output Token (TPOT)）
+- **分类（Category）:** 基础设施与服务（Infrastructure & serving）
+- **准确含义（What it actually means）:** 对于具有 `N > 1` 个输出词元的单个请求，首个词元之后的平均间隔为：`(t_N - t_1) / (N - 1)`。系统级分布再聚合这些逐请求平均值。
+- **重要性（Why it matters）:** 用户可能很快收到首个词元，但答案其余部分仍缓慢流出，因此仅凭启动延迟无法描述生成的响应速度。
+- **实际应用（In practice）:** 分别计算每个请求的每输出词元耗时（TPOT），按输出长度和并发量报告请求间的百分位数，避免将所有词元间隔混合统计，也不要比较分词器或测量边界不同的系统。
+- **常见混淆（Common confusion）:** 每输出词元耗时是逐请求平均值。单次词元间延迟是相邻词元之间的一个间隔，而首词元时间（Time to First Token）包含输出开始前的等待。
+- **学习课程（Learn it）:** [推理指标与有效吞吐量](../phases/17-infrastructure-and-production/08-inference-metrics-goodput/)
+- **相关术语（Related terms）:** Decode Phase, Time to First Token (TTFT), Streaming, Goodput
+- **来源（Sources）:** [DistServe 论文](https://arxiv.org/abs/2401.09670)
 
-### Time to First Token (TTFT)
-- **Category:** Models & inference
-- **Aliases:** TTFT
-- **What it actually means:** The elapsed time from submitting a generation request until the client receives the first output token or content event under a defined measurement boundary.
-- **Why it matters:** TTFT strongly affects perceived responsiveness and can reveal queueing, prompt processing, cache, or network delays.
-- **In practice:** Record client-side TTFT by model, prompt length, region, and cache status, then separate it from total completion time.
-- **Common confusion:** TTFT is not tokens per second. One measures startup latency; the other measures generation throughput after output begins.
-- **Related terms:** Streaming, Prompt Cache, Observability, Token Budget
+<a id="time-to-first-token-ttft"></a>
+### 首词元时间（Time to First Token (TTFT)）
+- **分类（Category）:** 模型与推理（Models & inference）
+- **别名（Aliases）:** TTFT
+- **准确含义（What it actually means）:** 在明确的测量边界下，从提交生成请求到客户端收到首个输出词元或内容事件所经过的时间。
+- **重要性（Why it matters）:** 首词元时间（TTFT）显著影响用户感知的响应速度，并能揭示排队、提示词处理、缓存或网络延迟。
+- **实际应用（In practice）:** 按模型、提示词长度、区域和缓存状态记录客户端的首词元时间，并将其与总完成时间分开。
+- **常见混淆（Common confusion）:** 首词元时间不是每秒词元数（Tokens per Second）。前者测量启动延迟，后者测量输出开始后的生成吞吐量。
+- **相关术语（Related terms）:** Streaming, Prompt Cache, Observability, Token Budget
 
-### Token
-- **Category:** Data & representations
-- **What people say:** A word-sized piece of model input or output.
-- **What it actually means:** An integer identifier produced by a model-specific tokenizer from text, bytes, images, audio, or another input representation. A token can be a whole word, part of a word, punctuation, whitespace, a byte sequence, or a special control symbol.
-- **Common confusion:** Character-to-token ratios vary by language, content, and tokenizer, so count with the target model's tokenizer or provider tools.
-- **Learn it:** [Tokenizers](../phases/10-llms-from-scratch/01-tokenizers/)
-- **Related terms:** Token Budget, Context Window, Autoregressive
+<a id="token"></a>
+### 词元（Token）
+- **分类（Category）:** 数据与表示（Data & representations）
+- **常见说法（What people say）:** 模型输入或输出中大小类似单词的片段。
+- **准确含义（What it actually means）:** 由模型专用的分词器（Tokenizer）根据文本、字节、图像、音频或其他输入表示生成的整数标识符。词元可以是完整单词、单词的一部分、标点、空白、字节序列或特殊控制符号。
+- **常见混淆（Common confusion）:** 字符与词元的比例随语言、内容和分词器变化，因此应使用目标模型的分词器或提供方工具进行计数。
+- **学习课程（Learn it）:** [分词器](../phases/10-llms-from-scratch/01-tokenizers/)
+- **相关术语（Related terms）:** Token Budget, Context Window, Autoregressive
 
-### Token Budget
-- **Category:** Prompting & context
-- **What it actually means:** An explicit allocation of token capacity across instructions, evidence, history, tool results, reasoning or working space, and output.
-- **Why it matters:** Every included token competes for context capacity, latency, and cost. Budgeting forces you to preserve high-value evidence first.
-- **In practice:** Reserve output capacity, cap retrieved chunks, summarize old tool results into state, and stop or compact before the model limit is reached.
-- **Common confusion:** A token budget is a planning constraint. It is not the same as the model's maximum context window.
-- **Learn it:** [Context Engineering](../phases/11-llm-engineering/05-context-engineering/)
-- **Related terms:** Context Window, Context Engineering, Progressive Disclosure, Cost per Successful Task
+<a id="token-budget"></a>
+### 词元预算（Token Budget）
+- **分类（Category）:** 提示词与上下文（Prompting & context）
+- **准确含义（What it actually means）:** 在指令、证据、历史记录、工具结果、推理或工作空间以及输出之间明确分配的词元容量。
+- **重要性（Why it matters）:** 每个纳入的词元都会争用上下文容量，并影响延迟与成本。预算管理迫使你优先保留高价值证据。
+- **实际应用（In practice）:** 预留输出容量，限制检索文本块数量，将旧工具结果总结为状态，并在达到模型限制之前停止或压缩上下文。
+- **常见混淆（Common confusion）:** 词元预算是一种规划约束，不等于模型的最大上下文窗口。
+- **学习课程（Learn it）:** [上下文工程](../phases/11-llm-engineering/05-context-engineering/)
+- **相关术语（Related terms）:** Context Window, Context Engineering, Progressive Disclosure, Cost per Successful Task
 
-### Tokenization
-- **Category:** Data & representations
-- **What it actually means:** Converting an input representation into the ordered token identifiers a specific model or tokenizer accepts.
-- **Why it matters:** Tokenization determines sequence length, vocabulary boundaries, cost accounting, truncation behavior, and how text or code is represented before embedding.
-- **In practice:** Use the exact tokenizer for the target model, version it with artifacts, and test multilingual text, code, whitespace, and special tokens.
-- **Common confusion:** Tokenization is not always word splitting, and two models can assign different token counts and IDs to the same input.
-- **Related terms:** Token, Vocabulary, Byte Pair Encoding (BPE), Embedding
-- **Sources:** [Neural Machine Translation of Rare Words with Subword Units](https://arxiv.org/abs/1508.07909)
+<a id="tokenization"></a>
+### 词元化（Tokenization）
+- **分类（Category）:** 数据与表示（Data & representations）
+- **准确含义（What it actually means）:** 将输入表示转换为特定模型或分词器接受的有序词元标识符。
+- **重要性（Why it matters）:** 词元化决定序列长度、词表边界、成本核算、截断行为，以及文本或代码在嵌入之前的表示方式。
+- **实际应用（In practice）:** 使用目标模型的确切分词器，随产物记录其版本，并测试多语言文本、代码、空白和特殊词元。
+- **常见混淆（Common confusion）:** 词元化并不总是按单词切分，而且两个模型可以为同一输入分配不同的词元数量和标识符。
+- **相关术语（Related terms）:** Token, Vocabulary, Byte Pair Encoding (BPE), Embedding
+- **来源（Sources）:** [使用子词单元进行罕见词神经机器翻译](https://arxiv.org/abs/1508.07909)
 
-### Tokens per Second (TPS)
-- **Category:** Infrastructure & serving
-- **Aliases:** TPS, output token throughput
-- **What it actually means:** A throughput measure reporting how many output tokens a serving system produces per unit time under a stated scope and workload.
-- **Why it matters:** It complements startup latency by showing how quickly generation proceeds after output begins and how serving behaves under load.
-- **In practice:** State whether TPS is per request or aggregate, exclude or identify prefill, and report batch, concurrency, sequence lengths, hardware, and percentile latency.
-- **Common confusion:** TPS is not directly comparable across different tokenizers, workloads, quality settings, or measurement boundaries.
-- **Related terms:** Time to First Token (TTFT), Streaming, Prefill, Observability
-- **Sources:** [Sarathi-Serve](https://www.usenix.org/system/files/osdi24-agrawal.pdf)
+<a id="tokens-per-second-tps"></a>
+### 每秒词元数（Tokens per Second (TPS)）
+- **分类（Category）:** 基础设施与服务（Infrastructure & serving）
+- **别名（Aliases）:** TPS, output token throughput
+- **准确含义（What it actually means）:** 一种吞吐量指标，报告服务系统在明确范围和工作负载下，每单位时间生成的输出词元数量。
+- **重要性（Why it matters）:** 它补充启动延迟，展示输出开始后的生成速度，以及服务在负载下的表现。
+- **实际应用（In practice）:** 说明每秒词元数（TPS）是单请求值还是聚合值，排除或标明预填充（Prefill），并报告批量、并发量、序列长度、硬件和延迟百分位数。
+- **常见混淆（Common confusion）:** 不同分词器、工作负载、质量设置或测量边界下的每秒词元数不能直接比较。
+- **相关术语（Related terms）:** Time to First Token (TTFT), Streaming, Prefill, Observability
+- **来源（Sources）:** [Sarathi-Serve 论文](https://www.usenix.org/system/files/osdi24-agrawal.pdf)
 
-### Tool Contract
-- **Category:** Agents & tools
-- **What it actually means:** The complete agreement for a tool boundary: purpose, typed inputs, outputs, validation, permissions, side effects, errors, timeouts, idempotency, and evidence returned to the caller.
-- **Why it matters:** A schema tells a model what fields exist; a contract tells the system when the tool is safe and how failures must be handled.
-- **In practice:** Define a file-write tool with an allowed root, expected base revision, maximum size, dry-run mode, explicit conflict errors, and a returned patch hash.
-- **Common confusion:** A JSON Schema is part of a tool contract, not the whole contract.
-- **Learn it:** [Tool Use and Function Calling](../phases/14-agent-engineering/06-tool-use-and-function-calling/)
-- **Related terms:** Function Calling, Structured Output, Least Privilege, Idempotency
+<a id="tool-contract"></a>
+### 工具契约（Tool Contract）
+- **分类（Category）:** 智能体与工具（Agents & tools）
+- **准确含义（What it actually means）:** 针对工具边界的完整约定：用途、带类型的输入、输出、校验、权限、副作用、错误、超时、幂等性，以及返回给调用者的证据。
+- **重要性（Why it matters）:** 模式告诉模型有哪些字段；契约则告诉系统工具何时可以安全使用，以及必须如何处理失败。
+- **实际应用（In practice）:** 为文件写入工具定义允许的根目录、预期基础修订版本、最大大小、试运行模式、明确的冲突错误及返回的补丁哈希值。
+- **常见混淆（Common confusion）:** JSON Schema 是工具契约的一部分，而不是全部。
+- **学习课程（Learn it）:** [工具使用与函数调用](../phases/14-agent-engineering/06-tool-use-and-function-calling/)
+- **相关术语（Related terms）:** Function Calling, Structured Output, Least Privilege, Idempotency
 
-### Top-k Sampling
-- **Category:** Models & inference
-- **What it actually means:** A decoding method that restricts the next-token distribution to the k highest-scoring candidates, renormalizes their probabilities, and samples from that set.
-- **Why it matters:** It removes the long low-probability tail from sampling while keeping a fixed maximum candidate count.
-- **In practice:** Evaluate k together with temperature, top-p, and stop settings, and record the complete sampler configuration with generated results.
-- **Common confusion:** Top-k uses a fixed candidate count, while top-p uses a probability-mass threshold whose candidate count changes by step.
-- **Related terms:** Nucleus Sampling (Top-p), Temperature, Decoding Strategy, Logits
-- **Sources:** [The Curious Case of Neural Text Degeneration](https://arxiv.org/abs/1904.09751)
+<a id="top-k-sampling"></a>
+### 前若干项采样（Top-k Sampling）
+- **分类（Category）:** 模型与推理（Models & inference）
+- **准确含义（What it actually means）:** 一种解码方法，将下一个词元的分布限制为得分最高的 k 个候选项，对其概率重新归一化，再从该集合中采样。
+- **重要性（Why it matters）:** 它从采样中移除低概率长尾，同时保持固定的最大候选数量。
+- **实际应用（In practice）:** 将 k 与温度、核采样（Top-p）和停止设置一起评估，并随生成结果记录完整采样器配置。
+- **常见混淆（Common confusion）:** 前若干项采样（Top-k）使用固定候选数量，而核采样使用概率质量阈值，其候选数量随步骤变化。
+- **相关术语（Related terms）:** Nucleus Sampling (Top-p), Temperature, Decoding Strategy, Logits
+- **来源（Sources）:** [神经文本退化的奇特现象](https://arxiv.org/abs/1904.09751)
 
-### Trace
-- **Category:** AI-native development
-- **What it actually means:** A correlated record of one request or task across model calls, retrieval, tools, state transitions, retries, approvals, and evaluations.
-- **Why it matters:** It lets you reconstruct where time, cost, and failure entered a multi-step workflow.
-- **In practice:** Propagate one trace identifier through the agent harness and attach redacted spans for each model and tool operation.
-- **Common confusion:** A trace should record operational evidence, not expose hidden model reasoning, secrets, or unredacted sensitive content.
-- **Learn it:** [OpenTelemetry GenAI Conventions](../phases/14-agent-engineering/23-otel-genai-conventions/)
-- **Sources:** [OpenTelemetry traces](https://opentelemetry.io/docs/concepts/signals/traces/)
-- **Related terms:** Observability, Agent State, Time to First Token (TTFT), Evaluation (Eval)
+<a id="trace"></a>
+### 追踪（Trace）
+- **分类（Category）:** AI 原生开发（AI-native development）
+- **准确含义（What it actually means）:** 围绕同一请求或任务，将模型调用、检索、工具、状态转换、重试、审批和评估关联起来的记录。
+- **重要性（Why it matters）:** 它让你能够重建多步骤工作流中时间、成本和故障产生的位置。
+- **实际应用（In practice）:** 在智能体运行框架（Agent Harness）中传递同一个追踪标识符，并为每次模型和工具操作附加经过脱敏的跨度（Span）记录。
+- **常见混淆（Common confusion）:** 追踪应记录运维证据，而不应暴露模型的隐藏推理、秘密信息或未经脱敏的敏感内容。
+- **学习课程（Learn it）:** [OpenTelemetry 生成式人工智能约定](../phases/14-agent-engineering/23-otel-genai-conventions/)
+- **来源（Sources）:** [OpenTelemetry 追踪](https://opentelemetry.io/docs/concepts/signals/traces/)
+- **相关术语（Related terms）:** Observability, Agent State, Time to First Token (TTFT), Evaluation (Eval)
 
-### Transfer Learning
-- **Category:** Math & training
-- **What people say:** Reusing a pretrained model for a new task.
-- **What it actually means:** Starting from representations or parameters learned on one data distribution or objective and adapting them for another. The transferable components and update strategy depend on architecture and task.
-- **Common confusion:** Transfer is not limited to later layers, and successful transfer is not guaranteed when source and target tasks differ sharply.
-- **Related terms:** Fine-tuning, Feature, SFT (Supervised Fine-Tuning)
+<a id="transfer-learning"></a>
+### 迁移学习（Transfer Learning）
+- **分类（Category）:** 数学与训练（Math & training）
+- **常见说法（What people say）:** 将预训练模型复用于新任务。
+- **准确含义（What it actually means）:** 从某种数据分布或目标上学到的表示或参数出发，将其适配到另一种分布或目标。可迁移的组件及更新策略取决于架构和任务。
+- **常见混淆（Common confusion）:** 迁移不限于后面的网络层；源任务和目标任务差异很大时，也不保证迁移成功。
+- **相关术语（Related terms）:** Fine-tuning, Feature, SFT (Supervised Fine-Tuning)
 
-### Transformer
-- **Category:** Models & inference
-- **What people say:** The architecture behind many modern language models.
-- **What it actually means:** A neural-network architecture built from attention, position information, feed-forward sublayers, residual connections, and normalization. Encoder, decoder, and encoder-decoder variants use different masks and information flows.
-- **Why it matters:** Training can process many sequence positions in parallel, while autoregressive generation still produces outputs step by step.
-- **Common confusion:** Self-attention does not imply unrestricted all-to-all attention in every transformer.
-- **Learn it:** [Build a Full Transformer](../phases/07-transformers-deep-dive/05-full-transformer/)
-- **Sources:** [Attention Is All You Need](https://arxiv.org/abs/1706.03762)
-- **Related terms:** Attention, Self-Attention, Encoder, Decoder
+<a id="transformer"></a>
+### 变换器（Transformer）
+- **分类（Category）:** 模型与推理（Models & inference）
+- **常见说法（What people say）:** 许多现代语言模型背后的架构。
+- **准确含义（What it actually means）:** 一种由注意力机制、位置信息、前馈子层、残差连接和归一化构成的神经网络架构。编码器、解码器及编码器—解码器变体使用不同的掩码和信息流。
+- **重要性（Why it matters）:** 训练时可以并行处理多个序列位置，而自回归生成（Autoregressive Generation）仍然逐步产生输出。
+- **常见混淆（Common confusion）:** 自注意力并不意味着每个变换器中都存在不受限制的全连接注意力。
+- **学习课程（Learn it）:** [构建完整变换器](../phases/07-transformers-deep-dive/05-full-transformer/)
+- **来源（Sources）:** [注意力机制就是你所需要的一切](https://arxiv.org/abs/1706.03762)
+- **相关术语（Related terms）:** Attention, Self-Attention, Encoder, Decoder
 
-### Trust Boundary
-- **Category:** Security & governance
-- **What it actually means:** An interface where data, instructions, identity, or authority crosses between components or principals that operate under different trust assumptions.
-- **Why it matters:** A boundary crossing is where the system must authenticate actors, validate data, constrain permissions, and decide which claims can influence action.
-- **In practice:** Draw boundaries around users, model context, retrieval sources, tools, networks, and data stores, then specify validation and authorization for every crossing.
-- **Common confusion:** A network boundary is only one kind of trust boundary. Untrusted document text entering a privileged agent context also crosses one.
-- **Learn it:** [Jailbreak Taxonomy](../phases/19-capstone-projects/82-jailbreak-taxonomy/)
-- **Related terms:** Threat Model, Least Privilege, Sandbox, Indirect Prompt Injection
-- **Sources:** [Microsoft Learn: Trust Boundary, the Trust Zone Change Element](https://learn.microsoft.com/en-us/training/modules/tm-create-a-threat-model-using-foundational-data-flow-diagram-elements/6-trust-boundary-the-trust-zone-change-element); [OWASP Threat Modeling](https://owasp.org/www-community/Threat_Modeling)
+<a id="trust-boundary"></a>
+### 信任边界（Trust Boundary）
+- **分类（Category）:** 安全与治理（Security & governance）
+- **准确含义（What it actually means）:** 数据、指令、身份或权限跨越具有不同信任假设的组件或主体时经过的接口。
+- **重要性（Why it matters）:** 系统必须在跨越边界时认证行为主体、验证数据、约束权限，并决定哪些声明能够影响行动。
+- **实际应用（In practice）:** 围绕用户、模型上下文、检索来源、工具、网络和数据存储划定边界，然后为每次跨越规定验证与授权要求。
+- **常见混淆（Common confusion）:** 网络边界只是信任边界的一种。不可信文档文本进入具有特权的智能体上下文，同样跨越了信任边界。
+- **学习课程（Learn it）:** [越狱分类体系](../phases/19-capstone-projects/82-jailbreak-taxonomy/)
+- **相关术语（Related terms）:** Threat Model, Least Privilege, Sandbox, Indirect Prompt Injection
+- **来源（Sources）:** [Microsoft Learn：信任边界，信任区域变更元素](https://learn.microsoft.com/en-us/training/modules/tm-create-a-threat-model-using-foundational-data-flow-diagram-elements/6-trust-boundary-the-trust-zone-change-element); [开放式网络应用程序安全项目威胁建模](https://owasp.org/www-community/Threat_Modeling)
 
 ## U
 
-### Underfitting
-- **Category:** Math & training
-- **What people say:** The model cannot fit the training task well enough.
-- **What it actually means:** A model or training setup has insufficient effective capacity, optimization, features, or training signal to capture useful patterns in the training data.
-- **In practice:** Diagnose data and optimization first, then consider training longer, changing features, reducing excessive regularization, or increasing suitable capacity.
-- **Related terms:** Overfitting, Loss Function, Hyperparameter
+<a id="underfitting"></a>
+### 欠拟合（Underfitting）
+- **分类（Category）:** 数学与训练（Math & training）
+- **常见说法（What people say）:** 模型无法充分拟合训练任务。
+- **准确含义（What it actually means）:** 模型或训练配置缺乏足够的有效容量、优化、特征或训练信号，无法捕获训练数据中的有用模式。
+- **实际应用（In practice）:** 先诊断数据和优化，再考虑延长训练、改变特征、减少过度正则化，或增加合适的容量。
+- **相关术语（Related terms）:** Overfitting, Loss Function, Hyperparameter
 
 ## V
 
-### VAE (Variational Autoencoder)
-- **Category:** Models & inference
-- **What people say:** A probabilistic generative autoencoder.
-- **What it actually means:** A latent-variable model trained with a reconstruction objective and a regularization term that keeps an approximate posterior close to a chosen prior. The reparameterization estimator allows gradients through stochastic latent sampling.
-- **Common confusion:** A VAE does not force every latent distribution to one fixed Gaussian; the exact prior and approximate posterior are modeling choices.
-- **Sources:** [Auto-Encoding Variational Bayes](https://arxiv.org/abs/1312.6114)
-- **Related terms:** Latent Space, Encoder, Decoder, Diffusion Model
+<a id="vae-variational-autoencoder"></a>
+### 变分自编码器（VAE (Variational Autoencoder)）
+- **分类（Category）:** 模型与推理（Models & inference）
+- **常见说法（What people say）:** 一种概率生成式自编码器。
+- **准确含义（What it actually means）:** 一种潜变量模型，使用重建目标和使近似后验接近选定先验的正则项进行训练。重参数化估计器（Reparameterization Estimator）使梯度能够通过随机潜变量采样过程传播。
+- **常见混淆（Common confusion）:** 变分自编码器（VAE）不会强迫每个潜变量分布都成为某个固定高斯分布；具体的先验和近似后验属于建模选择。
+- **来源（Sources）:** [自编码变分贝叶斯](https://arxiv.org/abs/1312.6114)
+- **相关术语（Related terms）:** Latent Space, Encoder, Decoder, Diffusion Model
 
-### Vector Database
-- **Category:** Retrieval & generation
-- **What people say:** A database optimized for vector similarity search.
-- **What it actually means:** A storage and indexing system that supports nearest-neighbor queries over vector representations, often with metadata filtering, persistence, and approximate indexes.
-- **Common confusion:** A vector database stores and searches vectors. It does not create high-quality embeddings or guarantee relevant retrieval.
-- **Related terms:** Embedding, Semantic Search, Hybrid Retrieval
+<a id="vector-database"></a>
+### 向量数据库（Vector Database）
+- **分类（Category）:** 检索与生成（Retrieval & generation）
+- **常见说法（What people say）:** 针对向量相似度搜索优化的数据库。
+- **准确含义（What it actually means）:** 一种支持对向量表示进行近邻查询的存储和索引系统，通常具有元数据过滤、持久化和近似索引功能。
+- **常见混淆（Common confusion）:** 向量数据库存储和搜索向量；它不会创建高质量嵌入，也不保证检索结果相关。
+- **相关术语（Related terms）:** Embedding, Semantic Search, Hybrid Retrieval
 
-### Verification Gate
-- **Category:** Evaluation & safety
-- **What it actually means:** A control point that blocks progress until defined evidence satisfies a correctness or quality criterion.
-- **Why it matters:** It converts a model's claim of completion into an evidence-backed decision.
-- **In practice:** Prevent a coding task from completing until the patch applies, scoped tests pass, forbidden files remain unchanged, and required artifacts exist.
-- **Common confusion:** Verification checks whether evidence meets criteria. Approval grants authority to proceed, even when the evidence is already known.
-- **Learn it:** [Verification Gates](../phases/14-agent-engineering/38-verification-gates/)
-- **Related terms:** Approval Gate, Regression Test, Scope Contract, Structured Output
+<a id="verification-gate"></a>
+### 验证关卡（Verification Gate）
+- **分类（Category）:** 评估与安全（Evaluation & safety）
+- **准确含义（What it actually means）:** 在规定的证据满足正确性或质量标准之前阻止流程继续的控制点。
+- **重要性（Why it matters）:** 它将模型声称的完成转化为有证据支撑的决策。
+- **实际应用（In practice）:** 在补丁可应用、范围内测试通过、禁止修改的文件保持不变且所需产物存在之前，不允许编码任务完成。
+- **常见混淆（Common confusion）:** 验证检查证据是否满足标准；审批则授予继续执行的权限，即使证据早已明确。
+- **学习课程（Learn it）:** [验证关卡](../phases/14-agent-engineering/38-verification-gates/)
+- **相关术语（Related terms）:** Approval Gate, Regression Test, Scope Contract, Structured Output
 
-### Vision-Language Model (VLM)
-- **Category:** Multimodal systems
-- **What it actually means:** A model that learns relationships between, or jointly processes, visual and language representations for tasks such as retrieval, description, question answering, or grounded generation.
-- **Why it matters:** VLM performance depends on the visual encoder, language component, connection mechanism, training data, and resolution policy rather than one generic capability label.
-- **In practice:** Evaluate text-only and vision-only controls, vary image resolution and layout, require evidence localization where possible, and report failures by visual skill and language.
-- **Common confusion:** Accepting an image does not prove the model uses it correctly, and a VLM is not necessarily able to generate images.
-- **Learn it:** [Vision-Language Models](../phases/04-computer-vision/25-vision-language-models/)
-- **Related terms:** Multimodal Model, Vision Transformer (ViT), Cross-Attention, Visual Grounding
-- **Sources:** [CLIP](https://arxiv.org/abs/2103.00020); [Flamingo](https://arxiv.org/abs/2204.14198)
+<a id="vision-language-model-vlm"></a>
+### 视觉语言模型（Vision-Language Model (VLM)）
+- **分类（Category）:** 多模态系统（Multimodal systems）
+- **准确含义（What it actually means）:** 学习视觉表示与语言表示之间的关系，或联合处理这些表示的模型，用于检索、描述、问答或有依据的生成等任务。
+- **重要性（Why it matters）:** 视觉语言模型（VLM）的表现取决于视觉编码器、语言组件、连接机制、训练数据和分辨率策略，而不是某个笼统的能力标签。
+- **实际应用（In practice）:** 评估仅文本和仅视觉的对照条件，改变图像分辨率与布局，尽可能要求定位证据，并按视觉技能和语言报告失败情况。
+- **常见混淆（Common confusion）:** 能接收图像不证明模型正确使用了图像，而且视觉语言模型不一定能够生成图像。
+- **学习课程（Learn it）:** [视觉语言模型](../phases/04-computer-vision/25-vision-language-models/)
+- **相关术语（Related terms）:** Multimodal Model, Vision Transformer (ViT), Cross-Attention, Visual Grounding
+- **来源（Sources）:** [对比语言图像预训练论文](https://arxiv.org/abs/2103.00020); [Flamingo 论文](https://arxiv.org/abs/2204.14198)
 
-### Vision Transformer (ViT)
-- **Category:** Multimodal systems
-- **What it actually means:** A vision architecture that represents an image as a sequence of patch embeddings with position information and processes that sequence with transformer encoder blocks.
-- **Why it matters:** It provides a sequence-model interface for visual data, but performance and compute depend on patch size, resolution, pretraining, and inductive biases.
-- **In practice:** Keep patching and normalization consistent with training, account for position-embedding behavior at new resolutions, and compare against a suitable visual baseline on the target dataset.
-- **Common confusion:** ViT is an architecture family, not every transformer that accepts images, and its patches are not inherently semantic objects.
-- **Learn it:** [Vision Transformers](../phases/04-computer-vision/14-vision-transformers/)
-- **Related terms:** Transformer, Patch Embedding, Self-Attention, Encoder
-- **Sources:** [An Image is Worth 16x16 Words](https://arxiv.org/abs/2010.11929)
+<a id="vision-transformer-vit"></a>
+### 视觉变换器（Vision Transformer (ViT)）
+- **分类（Category）:** 多模态系统（Multimodal systems）
+- **准确含义（What it actually means）:** 一种视觉架构，将图像表示为带位置信息的图像块嵌入序列，再用变换器编码器块处理该序列。
+- **重要性（Why it matters）:** 它为视觉数据提供序列模型接口，但性能和计算量取决于图像块大小、分辨率、预训练和归纳偏置（Inductive Bias）。
+- **实际应用（In practice）:** 使分块和归一化方式与训练保持一致，考虑位置嵌入在新分辨率下的行为，并在目标数据集上与合适的视觉基线比较。
+- **常见混淆（Common confusion）:** 视觉变换器（ViT）是一个架构家族，并非所有接收图像的变换器；其图像块也不天然对应语义对象。
+- **学习课程（Learn it）:** [视觉变换器](../phases/04-computer-vision/14-vision-transformers/)
+- **相关术语（Related terms）:** Transformer, Patch Embedding, Self-Attention, Encoder
+- **来源（Sources）:** [一张图像相当于 16x16 个词](https://arxiv.org/abs/2010.11929)
 
-### Visual Grounding
-- **Category:** Multimodal systems
-- **What it actually means:** Connecting a language expression to spatial evidence in an image or video, such as a region, object, mask, or tracked entity.
-- **Why it matters:** A fluent visual answer can be unsupported, while grounding makes the claimed referent inspectable and enables region-level evaluation.
-- **In practice:** Require a box, mask, or temporal segment with the answer, test ambiguous and absent referents, and score localization separately from language correctness.
-- **Common confusion:** Visual grounding identifies where the referenced evidence is. General image captioning can describe a scene without localizing each claim.
-- **Learn it:** [Cross-Attention Fusion](../phases/19-capstone-projects/61-cross-attention-fusion/)
-- **Related terms:** Grounding, Vision-Language Model (VLM), Attention, Evaluation (Eval)
-- **Sources:** [MDETR](https://arxiv.org/abs/2104.12763)
+<a id="visual-grounding"></a>
+### 视觉定位（Visual Grounding）
+- **分类（Category）:** 多模态系统（Multimodal systems）
+- **准确含义（What it actually means）:** 将语言表达与图像或视频中的空间证据关联起来，例如区域、对象、掩码或被跟踪的实体。
+- **重要性（Why it matters）:** 流畅的视觉回答可能没有依据，而视觉定位使其声称指向的对象可以被检查，并支持区域级评估。
+- **实际应用（In practice）:** 要求答案附带边界框、掩码或时间片段，测试指代不明确及指代对象不存在的情况，并将定位准确性与语言正确性分别评分。
+- **常见混淆（Common confusion）:** 视觉定位指出所引用证据的位置；一般图像描述可以描述场景，而无须为每项陈述定位。
+- **学习课程（Learn it）:** [交叉注意力融合](../phases/19-capstone-projects/61-cross-attention-fusion/)
+- **相关术语（Related terms）:** Grounding, Vision-Language Model (VLM), Attention, Evaluation (Eval)
+- **来源（Sources）:** [MDETR 论文](https://arxiv.org/abs/2104.12763)
 
-### Vocabulary
-- **Category:** Data & representations
-- **What it actually means:** The finite mapping between token identifiers and the units a tokenizer can emit, including ordinary, byte-level, and special control tokens.
-- **Why it matters:** Vocabulary design affects sequence length, multilingual coverage, code representation, embedding size, and compatibility between tokenizers and model weights.
-- **In practice:** Version the vocabulary and special-token assignments with the model, test encode-decode round trips, and never substitute a tokenizer with merely similar token names.
-- **Common confusion:** A model vocabulary is not a dictionary of human words; many entries are fragments, bytes, whitespace patterns, or control symbols.
-- **Related terms:** Tokenization, Byte Pair Encoding (BPE), Token, Embedding
-- **Sources:** [Neural Machine Translation of Rare Words with Subword Units](https://arxiv.org/abs/1508.07909)
+<a id="vocabulary"></a>
+### 词表（Vocabulary）
+- **分类（Category）:** 数据与表示（Data & representations）
+- **准确含义（What it actually means）:** 词元标识符与分词器能够输出的单元之间的有限映射，包括普通词元、字节级词元和特殊控制词元。
+- **重要性（Why it matters）:** 词表设计影响序列长度、多语言覆盖、代码表示、嵌入大小，以及分词器与模型权重之间的兼容性。
+- **实际应用（In practice）:** 随模型对词表和特殊词元分配进行版本管理，测试编码后再解码的往返过程，绝不要仅因为词元名称相似就替换分词器。
+- **常见混淆（Common confusion）:** 模型词表不是人类词语的字典；许多条目是片段、字节、空白模式或控制符号。
+- **相关术语（Related terms）:** Tokenization, Byte Pair Encoding (BPE), Token, Embedding
+- **来源（Sources）:** [使用子词单元进行罕见词神经机器翻译](https://arxiv.org/abs/1508.07909)
 
 ## W
 
-### Warmup
-- **Category:** Math & training
-- **What it actually means:** An initial training phase in which the learning rate rises from a smaller value toward the main schedule's target value.
-- **Why it matters:** Early gradients and optimizer statistics can be unstable, especially in large-batch or transformer training, so abrupt full-size updates may damage optimization.
-- **In practice:** Define warmup in steps or processed tokens, log the realized curve, and tune it with the batch, optimizer, and total training budget held visible.
-- **Common confusion:** Warmup is not required for every model and does not make an otherwise unsuitable learning rate safe.
-- **Related terms:** Learning Rate Schedule, Learning Rate, Batch Size, AdamW
-- **Sources:** [Accurate, Large Minibatch SGD](https://arxiv.org/abs/1706.02677)
+<a id="warmup"></a>
+### 学习率预热（Warmup）
+- **分类（Category）:** 数学与训练（Math & training）
+- **准确含义（What it actually means）:** 训练初期的一个阶段，学习率从较小值逐渐上升至主调度策略的目标值。
+- **重要性（Why it matters）:** 早期梯度和优化器统计量可能不稳定，尤其是在大批量或变换器训练中，因此突然采用完整幅度的更新可能损害优化过程。
+- **实际应用（In practice）:** 以步数或已处理词元数定义预热，记录实际曲线，并在明确批量、优化器和总训练预算的前提下调节。
+- **常见混淆（Common confusion）:** 并非每个模型都需要预热，而且预热不会使原本不合适的学习率变得安全。
+- **相关术语（Related terms）:** Learning Rate Schedule, Learning Rate, Batch Size, AdamW
+- **来源（Sources）:** [精确的大批量随机梯度下降](https://arxiv.org/abs/1706.02677)
 
-### Weight
-- **Category:** Math & training
-- **What people say:** A learned number inside a model.
-- **What it actually means:** A trainable coefficient in a model transformation. Weights are usually organized into tensors, and optimization adjusts them to reduce the training objective.
-- **Common confusion:** Not every parameter is called a weight; biases, embeddings, and normalization scales are parameters too.
-- **Related terms:** Parameter, Tensor, Optimizer
+<a id="weight"></a>
+### 权重（Weight）
+- **分类（Category）:** 数学与训练（Math & training）
+- **常见说法（What people say）:** 模型内部学到的一个数值。
+- **准确含义（What it actually means）:** 模型变换中的可训练系数。权重通常组织为张量，优化过程通过调整它们降低训练目标。
+- **常见混淆（Common confusion）:** 并非所有参数都称为权重；偏置、嵌入和归一化缩放系数也都是参数。
+- **相关术语（Related terms）:** Parameter, Tensor, Optimizer
 
-### Weight Decay
-- **Category:** Math & training
-- **What people say:** Regularization that shrinks weights during optimization.
-- **What it actually means:** An update rule that reduces selected parameter magnitudes over training, often by multiplying weights by a shrinkage factor separate from the gradient update.
-- **Why it matters:** It can improve generalization, but the useful coefficient and excluded parameter groups depend on model, optimizer, schedule, and data.
-- **Common confusion:** Decoupled weight decay is equivalent to an L2 loss penalty for some simple optimizers, but not generally for adaptive optimizers such as Adam.
-- **Related terms:** AdamW, Overfitting, Optimizer
+<a id="weight-decay"></a>
+### 权重衰减（Weight Decay）
+- **分类（Category）:** 数学与训练（Math & training）
+- **常见说法（What people say）:** 在优化过程中缩小权重的正则化方式。
+- **准确含义（What it actually means）:** 在训练期间减小选定参数幅值的更新规则，通常通过独立于梯度更新的收缩因子乘以权重来实现。
+- **重要性（Why it matters）:** 它能够改善泛化，但适用系数及应排除的参数组取决于模型、优化器、调度策略和数据。
+- **常见混淆（Common confusion）:** 对于某些简单优化器，解耦权重衰减（Decoupled Weight Decay）等价于 L2 损失惩罚，但对 Adam 等自适应优化器通常不成立。
+- **相关术语（Related terms）:** AdamW, Overfitting, Optimizer
 
-### Worktree
-- **Category:** AI-native development
-- **What it actually means:** In Git, a working directory attached to a repository and branch or commit, with shared object storage but its own checked-out files and index.
-- **Why it matters:** Separate worktrees let people and agents work concurrently without constantly switching or overwriting one checkout.
-- **In practice:** Give each coding agent a named feature branch and exact worktree path, then review and integrate patches through normal Git history.
-- **Common confusion:** A worktree isolates checked-out files, not every process, port, cache, database, or secret on the machine.
-- **Learn it:** [Workbench for Real Repositories](../phases/14-agent-engineering/41-workbench-for-real-repos/)
-- **Sources:** [git-worktree documentation](https://git-scm.com/docs/git-worktree)
-- **Related terms:** Coding Agent, Patch, Scope Contract, Handoff
+<a id="worktree"></a>
+### 工作树（Worktree）
+- **分类（Category）:** AI 原生开发（AI-native development）
+- **准确含义（What it actually means）:** 在 Git 中，关联到仓库及分支或提交的工作目录，共享对象存储，但拥有自己的检出文件和索引。
+- **重要性（Why it matters）:** 独立工作树使人员和智能体能够并发工作，无须反复切换或覆盖同一个检出目录。
+- **实际应用（In practice）:** 为每个编码智能体分配具名功能分支和确切的工作树路径，然后通过常规 Git 历史审查并集成补丁。
+- **常见混淆（Common confusion）:** 工作树隔离的是检出文件，而不是机器上的所有进程、端口、缓存、数据库或秘密信息。
+- **学习课程（Learn it）:** [面向真实仓库的工作台](../phases/14-agent-engineering/41-workbench-for-real-repos/)
+- **来源（Sources）:** [git-worktree 文档](https://git-scm.com/docs/git-worktree)
+- **相关术语（Related terms）:** Coding Agent, Patch, Scope Contract, Handoff
 
 ## Z
 
-### Zero-Shot
-- **Category:** Prompting & context
-- **What people say:** Asking for a task without examples in the current prompt.
-- **What it actually means:** Performing a task from instructions or task framing without including task-specific demonstrations in the immediate input.
-- **Common confusion:** Zero-shot does not mean the model had no relevant pretraining, instruction tuning, tools, or retrieved context.
-- **Related terms:** Few-Shot, Prompt Engineering, Transfer Learning
+<a id="zero-shot"></a>
+### 零样本（Zero-Shot）
+- **分类（Category）:** 提示词与上下文（Prompting & context）
+- **常见说法（What people say）:** 在当前提示词中不提供示例而要求执行任务。
+- **准确含义（What it actually means）:** 依据指令或任务描述执行任务，不在直接输入中包含针对该任务的示范。
+- **常见混淆（Common confusion）:** 零样本不意味着模型没有相关预训练、指令微调、工具或检索上下文。
+- **相关术语（Related terms）:** Few-Shot, Prompt Engineering, Transfer Learning
 
-### Zero Trust
-- **Category:** Security & governance
-- **What it actually means:** A security model that grants no implicit trust from network location or asset ownership and instead evaluates each access request against identity, device, resource, policy, and current context.
-- **Why it matters:** AI tools and agents span local files, cloud services, models, and external content, so a trusted internal network is too broad a basis for authority.
-- **In practice:** Authenticate every actor and workload, authorize each resource action, issue short-lived credentials, segment access, and continuously record and reevaluate policy-relevant signals.
-- **Common confusion:** Zero trust does not mean trusting nothing or blocking all automation. It means making trust decisions explicit, scoped, and continuously verifiable.
-- **Learn it:** [Security, Secrets, and Audit](../phases/17-infrastructure-and-production/25-security-secrets-audit/)
-- **Related terms:** Least Privilege, Trust Boundary, Approval Gate, Audit Log
-- **Sources:** [NIST SP 800-207](https://csrc.nist.gov/pubs/sp/800/207/final)
+<a id="zero-trust"></a>
+### 零信任（Zero Trust）
+- **分类（Category）:** 安全与治理（Security & governance）
+- **准确含义（What it actually means）:** 一种安全模型，不因网络位置或资产所有权而授予隐式信任，而是依据身份、设备、资源、策略和当前上下文评估每次访问请求。
+- **重要性（Why it matters）:** 人工智能工具和智能体跨越本地文件、云服务、模型和外部内容，因此以受信任的内部网络作为授权依据过于宽泛。
+- **实际应用（In practice）:** 认证每个行为主体和工作负载，为每个资源操作授权，签发短期凭据，分段控制访问，并持续记录和重新评估与策略相关的信号。
+- **常见混淆（Common confusion）:** 零信任不意味着什么都不信任，也不意味着阻止所有自动化；它意味着将信任决策明确化、限定范围，并使其能够持续验证。
+- **学习课程（Learn it）:** [安全、秘密信息与审计](../phases/17-infrastructure-and-production/25-security-secrets-audit/)
+- **相关术语（Related terms）:** Least Privilege, Trust Boundary, Approval Gate, Audit Log
+- **来源（Sources）:** [美国国家标准与技术研究院特别出版物 800-207](https://csrc.nist.gov/pubs/sp/800/207/final)

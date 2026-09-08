@@ -99,9 +99,9 @@ def main():
     for sent in test_sentences:
         mft = predict_mft(sent, word_best, default_tag)
         hmm = viterbi(sent, transitions, emissions, tags, vocab)
-        print(f"tokens: {sent}")
-        print(f"  mft : {mft}")
-        print(f"  hmm : {hmm}")
+        print(f"词元（Tokens，英文语料及词性枚举保留）: {sent}")
+        print(f"  最频繁标签（MFT）: {mft}")
+        print(f"  隐马尔可夫模型（HMM）: {hmm}")
         print()
 
 

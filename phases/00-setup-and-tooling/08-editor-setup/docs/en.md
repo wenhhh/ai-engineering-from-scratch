@@ -1,61 +1,61 @@
-# Editor Setup
+# 编辑器配置（Editor Setup）
 
-> Your editor is your co-pilot. Configure it once so it stays out of your way and starts pulling its weight.
+> 编辑器是你的搭档。一次配置好，让它不再妨碍工作，而是帮你分担任务。
 
 **Type:** Build
 **Languages:** --
-**Prerequisites:** Phase 0, Lesson 01
-**Time:** ~20 minutes
+**Prerequisites:** 阶段 0，第 01 课
+**Time:** ~20 分钟
 
-## Learning Objectives
+## 学习目标（Learning Objectives）
 
-- Install VS Code with essential extensions for Python, Jupyter, linting, and remote SSH
-- Configure format-on-save, type checking, and notebook output scrolling for AI workflows
-- Set up Remote SSH to edit and debug code on remote GPU machines as if they were local
-- Evaluate editor alternatives (Cursor, Windsurf, Neovim) and their tradeoffs for AI work
+- 安装 VS Code 以及 Python、Jupyter、代码检查（Linting）和远程 SSH 所需的扩展
+- 为 AI 工作流程配置保存时格式化（Format on Save）、类型检查（Type Checking）和笔记本输出滚动
+- 配置 Remote SSH，像操作本地代码一样编辑和调试远程 GPU 机器上的代码
+- 评估替代编辑器（Cursor、Windsurf、Neovim），比较它们用于 AI 工作时的取舍
 
-## The Problem
+## 问题（The Problem）
 
-You'll spend thousands of hours inside your editor writing Python, running notebooks, debugging training loops, and SSH-ing into GPU boxes. A misconfigured editor turns every session into friction: no autocomplete, no type hints, no inline errors, manual formatting, and a clunky terminal workflow.
+你将在编辑器中花费数千小时编写 Python、运行笔记本、调试训练循环，并通过 SSH 连接 GPU 机器。配置不当会让每次工作都受阻：没有自动补全、类型提示和行内错误提示，需要手动格式化，终端操作也很笨重。
 
-The right setup takes 20 minutes. Skipping it costs you 20 minutes every day.
+正确配置需要 20 分钟。跳过它，则每天都会损失 20 分钟。
 
-## The Concept
+## 概念（The Concept）
 
-An AI engineering editor setup needs five things:
+AI 工程（AI Engineering）的编辑器配置需要五个部分：
 
 ```mermaid
 graph TD
-    L5["5. Remote Development<br/>SSH into GPU boxes, cloud VMs"] --> L4
-    L4["4. Terminal Integration<br/>Run scripts, debug, monitor GPU"] --> L3
-    L3["3. AI-Specific Settings<br/>Auto-format, type checking, rulers"] --> L2
-    L2["2. Extensions<br/>Python, Jupyter, Pylance, GitLens"] --> L1
-    L1["1. Base Editor<br/>VS Code — free, extensible, universal"]
+    L5["5. 远程开发（Remote Development）<br/>通过 SSH 连接 GPU 机器、云端虚拟机"] --> L4
+    L4["4. 终端集成（Terminal Integration）<br/>运行脚本、调试、监控 GPU"] --> L3
+    L3["3. AI 专用设置<br/>自动格式化、类型检查、列标尺"] --> L2
+    L2["2. 扩展（Extension）<br/>Python、Jupyter、Pylance、GitLens"] --> L1
+    L1["1. 基础编辑器<br/>VS Code：免费、可扩展、通用"]
 ```
 
 ```figure
 s0-lsp-roundtrip
 ```
 
-## Build It
+## 动手实现（Build It）
 
-### Step 1: Install VS Code
+### 第 1 步：安装 VS Code（Step 1: Install VS Code）
 
-VS Code is the recommended editor. It is free, runs on every OS, has first-class Jupyter notebook support, and the extension ecosystem covers everything you need for AI work.
+推荐使用 VS Code。它免费、支持各类操作系统、对 Jupyter 笔记本支持完善，扩展生态涵盖 AI 工作所需的各种功能。
 
-Download it from [code.visualstudio.com](https://code.visualstudio.com/).
+从 [code.visualstudio.com](https://code.visualstudio.com/) 下载。
 
-Verify from the terminal:
+在终端中验证：
 
 ```bash
 code --version
 ```
 
-If `code` is not found on macOS, open VS Code, press `Cmd+Shift+P`, type "Shell Command", and select "Install 'code' command in PATH".
+如果 macOS 找不到 `code`，打开 VS Code，按 `Cmd+Shift+P`，输入“Shell Command”，选择“将 'code' 命令安装到 PATH（Install 'code' command in PATH）”。
 
-### Step 2: Install Essential Extensions
+### 第 2 步：安装必需扩展（Step 2: Install Essential Extensions）
 
-Open the integrated terminal in VS Code (`` Ctrl+` `` on every platform) and install the extensions that matter for AI work:
+打开 VS Code 的集成终端（所有平台均为 `` Ctrl+` ``），安装 AI 工作需要的扩展：
 
 ```bash
 code --install-extension ms-python.python
@@ -68,26 +68,26 @@ code --install-extension ms-python.black-formatter
 code --install-extension charliermarsh.ruff
 ```
 
-What each one does:
+各扩展的用途：
 
-| Extension | Why |
+| 扩展 | 用途 |
 |-----------|-----|
-| Python | Language support, virtual env detection, run/debug |
-| Pylance | Fast type checking, autocomplete, import resolution |
-| Jupyter | Run notebooks inside VS Code, variable explorer |
-| GitLens | See who changed what, inline git blame |
-| Remote SSH | Open a folder on a remote GPU box as if it were local |
-| Debugpy | Step-through debugging for Python |
-| Black Formatter | Auto-format on save, consistent style |
-| Ruff | Fast linting, catches common mistakes |
+| Python | 语言支持、虚拟环境检测、运行与调试 |
+| Pylance | 快速类型检查、自动补全、导入解析 |
+| Jupyter | 在 VS Code 内运行笔记本，浏览变量 |
+| GitLens | 查看谁修改了什么，行内显示 git blame |
+| Remote SSH | 像打开本地目录一样打开远程 GPU 机器上的文件夹 |
+| Debugpy | Python 单步调试（Step-through Debugging） |
+| Black Formatter | 保存时自动格式化，保持风格一致 |
+| Ruff | 快速代码检查，发现常见错误 |
 
-The file `code/.vscode/extensions.json` in this lesson contains the full recommendations list. When you open the project folder, VS Code will prompt you to install them.
+本课的 `code/.vscode/extensions.json` 文件包含完整推荐列表。打开项目文件夹时，VS Code 会提示你安装这些扩展。
 
-### Step 3: Configure Settings
+### 第 3 步：配置设置（Step 3: Configure Settings）
 
-Copy the settings from `code/.vscode/settings.json` in this lesson, or apply them manually through `Settings > Open Settings (JSON)`.
+复制本课 `code/.vscode/settings.json` 中的设置，或通过 `Settings > Open Settings (JSON)` 手动应用。
 
-The key settings for AI work:
+AI 工作的关键设置：
 
 ```jsonc
 {
@@ -99,19 +99,19 @@ The key settings for AI work:
 }
 ```
 
-Why these matter:
+这些设置的重要性：
 
-- **Type checking on basic**: Catches wrong argument types before you run. Saves debugging time on tensor shape mismatches and wrong API parameters.
-- **Format on save**: Never think about formatting again. Black handles it.
-- **Rulers at 88 and 120**: Black wraps at 88. The 120 marker shows when docstrings and comments are getting too long.
-- **Notebook output scrolling**: Training loops print thousands of lines. Without scrolling, the output panel explodes.
-- **Auto-save**: You will forget to save. Your training script will run stale code. Auto-save prevents that.
+- **基础类型检查（basic）**：运行前发现参数类型错误，减少排查张量形状（Tensor Shape）不匹配和 API 参数错误的时间。
+- **保存时格式化**：不用再考虑格式，交给 Black 处理。
+- **第 88 和 120 列的标尺（Ruler）**：Black 在第 88 列换行；第 120 列标记用于提醒文档字符串（Docstring）和注释过长。
+- **笔记本输出滚动**：训练循环可能打印数千行。没有滚动区域，输出面板会无限扩张。
+- **自动保存（Auto-save）**：忘记保存会让训练脚本运行旧代码。自动保存可以避免这种情况。
 
-### Step 4: Terminal Integration
+### 第 4 步：终端集成（Step 4: Terminal Integration）
 
-VS Code's integrated terminal is where you run training scripts, monitor GPUs, and manage environments.
+你可以在 VS Code 的集成终端中运行训练脚本、监控 GPU 和管理环境。
 
-Set it up properly:
+按以下方式配置：
 
 ```jsonc
 {
@@ -122,37 +122,37 @@ Set it up properly:
 }
 ```
 
-Useful shortcuts:
+实用快捷键：
 
-| Action | macOS | Linux/Windows |
+| 操作 | macOS | Linux/Windows |
 |--------|-------|---------------|
-| Toggle terminal | `` Ctrl+` `` | `` Ctrl+` `` |
-| New terminal | `` Ctrl+Shift+` `` | `` Ctrl+Shift+` `` |
-| Split terminal | `Cmd+\` | `Ctrl+Shift+5` |
+| 显示或隐藏终端 | `` Ctrl+` `` | `` Ctrl+` `` |
+| 新建终端 | `` Ctrl+Shift+` `` | `` Ctrl+Shift+` `` |
+| 拆分终端 | `Cmd+\` | `Ctrl+Shift+5` |
 
-Split terminals are useful: one for running your script, one for monitoring GPU with `nvidia-smi -l 1` or `watch -n 1 nvidia-smi`.
+拆分终端很实用：一个运行脚本，另一个用 `nvidia-smi -l 1` 或 `watch -n 1 nvidia-smi` 监控 GPU。
 
-### Step 5: Remote Development (SSH into GPU Boxes)
+### 第 5 步：远程开发，通过 SSH 连接 GPU 机器（Step 5: Remote Development (SSH into GPU Boxes)）
 
-This is the most important extension for AI work. You will run training on remote machines (cloud VMs, lab servers, Lambda, Vast.ai). Remote SSH lets you open the remote filesystem, edit files, run terminals, and debug as if everything were local.
+这是 AI 工作中最重要的扩展。你会在远程机器（云端虚拟机、实验室服务器、Lambda、Vast.ai）上运行训练。Remote SSH 让你像操作本地机器一样打开远程文件系统、编辑文件、运行终端和调试。
 
-Setup:
+配置步骤：
 
-1. Install the Remote SSH extension (done in Step 2).
-2. Press `Ctrl+Shift+P` (or `Cmd+Shift+P`), type "Remote-SSH: Connect to Host".
-3. Enter `user@your-gpu-box-ip`.
-4. VS Code installs its server component on the remote machine automatically.
+1. 安装 Remote SSH 扩展（第 2 步已完成）。
+2. 按 `Ctrl+Shift+P`（或 `Cmd+Shift+P`），输入“Remote-SSH: Connect to Host”（连接到主机）。
+3. 输入 `user@your-gpu-box-ip`。
+4. VS Code 会自动在远程机器上安装服务端组件。
 
-For passwordless access, set up SSH keys:
+要实现免密码访问，配置 SSH 密钥：
 
 ```bash
 ssh-keygen -t ed25519 -C "your-email@example.com"
 ssh-copy-id user@your-gpu-box-ip
 ```
 
-Add the host to `~/.ssh/config` for convenience:
+为方便使用，将主机加入 `~/.ssh/config`：
 
-```
+```text
 Host gpu-box
     HostName 203.0.113.50
     User ubuntu
@@ -160,52 +160,52 @@ Host gpu-box
     ForwardAgent yes
 ```
 
-Now `Remote-SSH: Connect to Host > gpu-box` connects instantly.
+现在通过 `Remote-SSH: Connect to Host > gpu-box` 即可直接连接。
 
-## Alternatives
+## 替代方案（Alternatives）
 
-### Cursor
+### Cursor 编辑器（Cursor）
 
-[cursor.com](https://cursor.com) is a VS Code fork with built-in AI code generation. It uses the same extension ecosystem and settings format. If you use Cursor, everything in this lesson still applies. Import the same `settings.json` and `extensions.json`.
+[cursor.com](https://cursor.com) 是基于 VS Code 派生、内置 AI 代码生成功能的编辑器，使用相同的扩展生态和设置格式。如果使用 Cursor，本课内容仍然适用。导入同样的 `settings.json` 和 `extensions.json` 即可。
 
-### Windsurf
+### Windsurf 编辑器（Windsurf）
 
-[windsurf.com](https://windsurf.com) is another AI-first VS Code fork. Same story: same extensions, same settings format, same Remote SSH support.
+[windsurf.com](https://windsurf.com) 是另一个以 AI 为核心、基于 VS Code 派生的编辑器。同样拥有相同的扩展、设置格式和 Remote SSH 支持。
 
-### Vim/Neovim
+### Vim/Neovim 编辑器（Vim/Neovim）
 
-If you already use Vim or Neovim and are productive in it, stay there. The minimum setup for AI Python work:
+如果你已经使用 Vim 或 Neovim，且工作效率不错，就继续使用。Python AI 工作所需的最低配置如下：
 
-- **pyright** or **pylsp** for type checking (via Mason or manual install)
-- **nvim-lspconfig** for language server integration
-- **jupyter-vim** or **molten-nvim** for notebook-like execution
-- **telescope.nvim** for file/symbol search
-- **none-ls.nvim** with black and ruff for formatting/linting
+- 用 **pyright** 或 **pylsp** 进行类型检查（通过 Mason 或手动安装）
+- 用 **nvim-lspconfig** 集成语言服务器（Language Server）
+- 用 **jupyter-vim** 或 **molten-nvim** 实现类似笔记本的执行方式
+- 用 **telescope.nvim** 搜索文件和符号（Symbol）
+- 用 **none-ls.nvim** 配合 black 和 ruff 进行格式化与代码检查
 
-If you do not already use Vim, do not start now. The learning curve will compete with learning AI engineering. Use VS Code.
+如果你尚未使用 Vim，就不要现在开始。它的学习曲线会分散你学习 AI 工程的精力。使用 VS Code 即可。
 
-## Use It
+## 实际应用（Use It）
 
-With this setup, your daily workflow looks like:
+完成配置后，日常工作流程如下：
 
-1. Open the project folder in VS Code (or connect via Remote SSH to a GPU box).
-2. Write Python in the editor with autocomplete, type hints, and inline errors.
-3. Run Jupyter notebooks inline with the Jupyter extension.
-4. Use the integrated terminal for training scripts, `uv pip install`, and GPU monitoring.
-5. Review changes with GitLens before committing.
+1. 在 VS Code 中打开项目文件夹（或通过 Remote SSH 连接 GPU 机器）。
+2. 借助自动补全、类型提示和行内错误提示编写 Python。
+3. 使用 Jupyter 扩展在编辑器内运行 Jupyter 笔记本。
+4. 使用集成终端运行训练脚本、执行 `uv pip install` 并监控 GPU。
+5. 提交前用 GitLens 审阅修改。
 
-## Exercises
+## 练习（Exercises）
 
-1. Install VS Code and all extensions listed in Step 2
-2. Copy the `settings.json` from this lesson into your VS Code config
-3. Open a Python file and verify that Pylance shows type hints and Black formats on save
-4. If you have access to a remote machine, set up Remote SSH and open a folder on it
+1. 安装 VS Code 和第 2 步列出的所有扩展
+2. 将本课的 `settings.json` 复制到你的 VS Code 配置中
+3. 打开 Python 文件，验证 Pylance 能显示类型提示，Black 能在保存时格式化
+4. 如果可以访问远程机器，配置 Remote SSH 并打开其上的文件夹
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语 | 常见说法 | 实际含义 |
 |------|----------------|----------------------|
-| LSP | "Autocomplete engine" | Language Server Protocol: a standard for editors to get type info, completions, and diagnostics from a language-specific server |
-| Pylance | "The Python plugin" | Microsoft's Python language server using Pyright for type checking and IntelliSense |
-| Remote SSH | "Working on the server" | VS Code extension that runs a lightweight server on a remote machine and streams the UI to your local editor |
-| Format on save | "Auto-prettier" | The editor runs a formatter (Black, Ruff) every time you save, so code style is always consistent |
+| 语言服务器协议（Language Server Protocol，LSP） | “自动补全引擎” | 编辑器向特定语言服务器获取类型信息、补全和诊断结果的标准协议 |
+| Pylance | “Python 插件” | Microsoft 的 Python 语言服务器，使用 Pyright 进行类型检查并提供 IntelliSense |
+| Remote SSH | “在服务器上工作” | 在远程机器上运行轻量服务器，并将界面传送到本地编辑器的 VS Code 扩展 |
+| 保存时格式化（Format on Save） | “自动美化” | 每次保存时编辑器都会运行格式化器（Black、Ruff），使代码风格始终一致 |

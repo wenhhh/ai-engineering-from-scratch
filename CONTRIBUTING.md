@@ -1,167 +1,155 @@
-# Contributing
+# 贡献指南（Contributing）
 
-Lessons, translations, fixes, outputs — all welcome. One contribution per pull
-request keeps reviews fast and lets contributor counts and credit work
-correctly.
+欢迎贡献课程、译文、修复和交付物（Artifact）。每个拉取请求（Pull Request，PR）只处理一项贡献，有助于缩短审查时间，也便于准确统计贡献次数并记录署名。
 
-## Important: the README and ROADMAP feed the website
+## 重要：README 和 ROADMAP 是网站的数据来源
 
-`site/build.js` parses `README.md`, `ROADMAP.md`, and `glossary/terms.md` to
-generate `site/data.js`. Two patterns must stay intact in any pull request that
-touches those files:
+`site/build.js` 解析 `README.md`、`ROADMAP.md` 和 `glossary/terms.md`，生成 `site/data.js`。修改这些文件的拉取请求必须保留下列格式：
 
-- Phase headers in either `### Phase N: Name \`X lessons\`` form or
-  `<details><summary><b>Phase N — Name</b> ... <code>X lessons</code> ... <em>Description</em></summary>` form.
-- Lesson tables with the column shape `| # | Lesson | Type | Lang |` (or
-  `| # | Project | Combines | Lang |` for capstone tables). The `Lang` column
-  accepts plain text (`Python, TypeScript`) or the legacy emoji flags
-  (`🐍 🟦 🦀 🟣 ⚛️`); both are parser-equivalent.
-- ROADMAP status glyphs (`✅`, `🚧`, `⬚`) on phase headers and lesson rows.
-  Do not replace them with text — the parser keys off the exact characters.
+- 阶段标题使用 `### Phase N: Name \`X lessons\``，或者
+  `<details><summary><b>Phase N — Name</b> ... <code>X lessons</code> ... <em>Description</em></summary>`。
+- 课程表格的列结构为 `| # | Lesson | Type | Lang |`；综合实践（Capstone）表格使用 `| # | Project | Combines | Lang |`。`Lang` 列支持纯文本（`Python, TypeScript`）或原有的语言图标（`🐍 🟦 🦀 🟣 ⚛️`），解析结果相同。
+- ROADMAP 的阶段标题和课程行中保留状态符号（`✅`、`🚧`、`⬚`）。不要将它们替换成文字，因为解析器依赖这些确切字符。
 
-Run `node site/build.js` after editing those files; `git diff site/data.js`
-should show only the timestamp change if your edit was structural-safe.
+修改后运行 `node site/build.js`。如果修改没有破坏结构，`git diff site/data.js` 应只出现时间戳变化。
 
-## Ways to Contribute
+## 贡献方式（Ways to Contribute）
 
-### 1. Add a New Lesson
+### 1. 添加新课程
 
-Each lesson lives in `phases/XX-phase-name/NN-lesson-name/` with this structure:
+每课位于 `phases/XX-phase-name/NN-lesson-name/`，目录结构如下：
 
-```
+```text
 NN-lesson-name/
-├── code/           At least one runnable implementation
-├── notebook/       Jupyter notebook for experimentation (optional)
+├── code/           至少一个可运行的实现
+├── notebook/       用于实验的 Jupyter 笔记本（可选）
 ├── docs/
-│   └── en.md       Lesson documentation (required)
-└── outputs/        Prompts, skills, or agents this lesson produces (if applicable)
+│   └── en.md       课程文档（必需）
+└── outputs/        本课产出的提示词、技能或智能体（如适用）
 ```
 
-**Lesson doc format** (`en.md`):
+**课程文档格式**（`en.md`）：
 
 ```markdown
-# Lesson Title
+# 课程标题
 
-> One-line motto — the core idea in one sentence.
+> 用一句话说明本课的核心思想。
 
-## The Problem
+## 要解决的问题（The Problem）
 
-Why does this matter? What can't you do without this?
+为什么这个问题值得关注？缺少这一知识，你无法完成什么？
 
-## The Concept
+## 核心概念（The Concept）
 
-Explain with diagrams, visuals, and intuition. Code comes later.
+先通过图表、可视化和直观解释讲清概念，再进入代码实现。
 
-## Build It
+## 动手实现（Build It）
 
-Step-by-step implementation from scratch.
+分步骤从零实现。
 
-## Use It
+## 实际应用（Use It）
 
-Now use a real framework or library to do the same thing.
+使用实际框架或库完成同样的任务。
 
-## Ship It
+## 交付成果（Ship It）
 
-The prompt, skill, agent, or tool this lesson produces.
+介绍本课产出的提示词、技能、智能体或工具。
 
-## Exercises
+## 练习（Exercises）
 
-1. Exercise one
-2. Exercise two
-3. Challenge exercise
+1. 练习一
+2. 练习二
+3. 挑战练习
 ```
 
-### 2. Add a Translation
+### 2. 添加译文
 
-Create a new file in any lesson's `docs/` folder:
+在任意课程的 `docs/` 目录中创建新文件：
 
-```
+```text
 docs/
-├── en.md    (English — always required)
-├── zh.md    (Chinese)
-├── ja.md    (Japanese)
-├── es.md    (Spanish)
-├── hi.md    (Hindi)
+├── en.md    （英语，始终需要保留）
+├── zh.md    （中文）
+├── ja.md    （日语）
+├── es.md    （西班牙语）
+├── hi.md    （印地语）
 └── ...
 ```
 
-Keep the same structure as the English version. Translate content, not code.
+与英文版保持相同结构。翻译内容，不改动代码。
 
-### 3. Add an Output
+### 3. 添加交付物
 
-If a lesson should produce a reusable prompt, skill, agent, or MCP server:
+如果课程需要产出可复用的提示词（Prompt）、技能（Skill）、智能体（Agent）或模型上下文协议（Model Context Protocol，MCP）服务器：
 
-1. Create it in the lesson's `outputs/` folder
-2. Add a reference in the top-level `outputs/` index
+1. 在该课的 `outputs/` 目录中创建交付物
+2. 在顶层 `outputs/` 索引中添加引用
 
-**Prompt format:**
+**提示词格式：**
 
 ```markdown
 ---
 name: prompt-name
-description: What this prompt does
+description: 说明这个提示词的用途
 phase: 14
 lesson: 01
 ---
 
-[System prompt or template here]
+[在此填写系统提示词或模板]
 ```
 
-**Skill format:**
+**技能格式：**
 
 ```markdown
 ---
 name: skill-name
-description: What this skill teaches
+description: 说明这个技能教授的内容
 version: 1.0.0
 phase: 14
 lesson: 01
 tags: [agents, loops]
 ---
 
-[Skill content here]
+[在此填写技能内容]
 ```
 
-### 4. Fix Bugs or Improve Existing Lessons
+### 4. 修复缺陷或改进已有课程
 
-- Fix code that doesn't run
-- Improve explanations
-- Add better diagrams
-- Update outdated information
+- 修复无法运行的代码
+- 改进解释
+- 补充更易理解的图表
+- 更新过时信息
 
-### 5. Add Exercises or Projects
+### 5. 添加练习或项目
 
-More exercises and projects are always welcome, especially ones that connect multiple phases.
+欢迎补充练习与项目，尤其是能够串联多个阶段知识的内容。
 
-## Guidelines
+## 编写要求（Guidelines）
 
-- **Code must run.** Every code file should execute without errors with the listed dependencies.
-- **No comments in code.** Code should be self-explanatory. Use the docs for explanation.
-- **Best language for the job.** Don't force Python where TypeScript or Rust is the better choice.
-- **Build from scratch first.** Always implement the concept from first principles before showing the framework version.
-- **Keep it practical.** Theory serves practice, not the other way around.
-- **No AI slop.** Write like a human. Be direct. Cut filler.
+- **代码必须能运行。** 安装列出的依赖后，每个代码文件都应执行无误。
+- **代码中不添加注释。** 代码应能表达自身意图，解释放在文档中。
+- **选择适合任务的语言。** 如果 TypeScript 或 Rust 更合适，不要强行使用 Python。
+- **先从零实现。** 展示框架版本前，先从基本原理出发实现概念。
+- **以实践为中心。** 理论为实践服务，而不是反过来。
+- **拒绝空泛的 AI 生成内容。** 用自然、直接的语言写作，删除无实质信息的套话。
 
-## Pull Request Process
+## 拉取请求流程（Pull Request Process）
 
-Sponsorship changes are not accepted through contributor pull requests. Sponsor
-names, logos, links, and tier assignments are managed by the maintainer. See
-[SPONSORS.md](SPONSORS.md) for sponsorship enquiries.
+赞助信息的变更不接受贡献者通过拉取请求提交。赞助商名称、标识、链接与赞助等级由维护者管理。赞助咨询请参阅 [SPONSORS.md](SPONSORS.md)。
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b add-lesson-phase3-gradient-descent`)
-3. Make your changes
-4. Ensure all code runs
-5. Submit a pull request with a clear description
+1. 创建派生仓库（Fork）
+2. 创建功能分支（`git checkout -b add-lesson-phase3-gradient-descent`）
+3. 完成修改
+4. 确认所有代码都能运行
+5. 提交拉取请求，并写清楚改动内容
 
-## Code of Conduct
+## 行为准则（Code of Conduct）
 
-See [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md). Be kind, be helpful, be constructive.
+请参阅 [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)。尊重他人，提供帮助，提出建设性意见。
 
-## Style
+## 写作风格（Style）
 
-- Direct prose. Cut filler. Match the manual's tone, not marketing copy.
-- No decorative emojis in headings. Lang column emoji flags are the one
-  exception and only because the parser maps them.
-- Code runs as-is with the dependencies listed in the lesson.
-- Build from scratch first, framework second.
+- 直接表达，删除套话。保持技术手册的语气，不写营销文案。
+- 标题不使用装饰性表情图标。语言列中的图标是唯一例外，因为解析器需要将它们映射为语言名称。
+- 安装课程列出的依赖后，代码应无需改动即可运行。
+- 先从零实现，再介绍框架。

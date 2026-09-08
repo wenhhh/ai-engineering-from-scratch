@@ -1,75 +1,75 @@
 {
   "lesson": "20-shadow-canary-progressive",
-  "title": "Shadow Traffic, Canary Rollout, and Progressive Deployment for LLMs",
+  "title": "LLM 的影子流量、金丝雀发布与渐进式部署（Shadow Traffic, Canary Rollout, and Progressive Deployment for LLMs）",
   "questions": [
     {
       "stage": "pre",
-      "question": "What is the right way to order shadow, canary, and A/B testing for an LLM rollout?",
+      "question": "LLM 发布中，影子、金丝雀和 A/B 测试的正确顺序是什么？",
       "options": [
-        "Skip shadow entirely",
-        "Shadow (zero-impact compare), then canary (live traffic progressive with gates), then A/B for distinct alternatives once stability is confirmed",
-        "Canary first, then shadow, then A/B",
-        "A/B first, then shadow, then canary"
+        "完全跳过影子模式",
+        "先影子模式（不影响用户的比较），再金丝雀（带门禁的渐进真实流量），确认稳定后对差异明显的备选方案做 A/B",
+        "先金丝雀，再影子，最后 A/B",
+        "先 A/B，再影子，最后金丝雀"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Which set of five metrics does the lesson gate canary progressions on?",
+      "question": "本课使用哪五项指标作为金丝雀推进门禁？",
       "options": [
-        "GPU temp, fan speed, queue depth, cost, latency",
-        "Just throughput",
-        "Latency percentiles, cost per request, error/refusal rate, output length distribution, user-feedback rate",
-        "Accuracy on offline eval only"
+        "GPU 温度、风扇转速、队列深度、成本、延迟",
+        "只看吞吐量",
+        "延迟分位数、每请求成本、错误与拒答率、输出长度分布、用户反馈率",
+        "只看离线评测准确率"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Roughly how much run-to-run accuracy variance does the lesson cite for identical inputs on LLMs?",
+      "question": "本课引用的 LLM 相同输入在不同运行间的准确率变化大约有多大？",
       "options": [
-        "Under 0.1%",
-        "Up to about 15%, due to GPU FP non-associativity plus batch-size variance",
-        "Always 50%",
-        "Identical outputs run-to-run"
+        "低于 0.1%",
+        "最高约 15%，来自 GPU 浮点运算不满足结合律及批大小变化",
+        "始终为 50%",
+        "每次运行的输出完全相同"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "What is shadow mode for, in the lesson's framing?",
+      "question": "按照本课的解释，影子模式有什么用途？",
       "options": [
-        "A complete quality test that replaces evals",
-        "A smoke test catching cost blow-ups, length regressions, refusal changes, and hard errors — not a quality guarantee",
-        "Replacement for rollback",
-        "Final production rollout step"
+        "替代评测的完整质量测试",
+        "发现成本暴涨、长度退化、拒答变化和明确运行错误的冒烟测试，不是质量保证",
+        "替代回滚",
+        "生产发布的最后一步"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "What is the correct rollback design per the lesson?",
+      "question": "按照本课说明，正确的回滚设计是什么？",
       "options": [
-        "Manual SSH to each pod",
-        "Redeploy with new model digest, taking hours",
-        "Flip a policy flag and revert the pinned model digest in seconds — no redeploy",
-        "Wait for the next release window"
+        "手动 SSH 到每个 Pod",
+        "使用新模型摘要重新部署，耗时数小时",
+        "几秒内切换策略开关并恢复固定模型摘要，无需重新部署",
+        "等待下一次发布窗口"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "Why is cost listed as a gate alongside latency and quality?",
+      "question": "为什么成本与延迟、质量一起列为门禁？",
       "options": [
-        "A 20% better model can be 3x more expensive per call; shipping that without a cost gate breaks unit economics",
-        "Cost is the same across providers",
-        "Cost is automatically capped by every provider",
-        "Cost is a vanity metric"
+        "模型效果好 20%，每次调用却可能贵 3 倍；没有成本门禁就发布，会破坏单位经济性",
+        "各提供商的成本相同",
+        "所有提供商都会自动限制成本上限",
+        "成本只是表面指标"
       ],
       "correct": 0,
       "explanation": ""

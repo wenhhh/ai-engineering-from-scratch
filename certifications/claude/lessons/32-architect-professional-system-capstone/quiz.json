@@ -1,78 +1,78 @@
 {
   "lesson": "32-architect-professional-system-capstone",
-  "title": "Architect Professional System Capstone",
+  "title": "架构师专业级系统综合项目（Architect Professional System Capstone）",
   "questions": [
     {
       "stage": "pre",
-      "question": "What is the capstone's primary deliverable?",
+      "question": "本综合项目的主要交付物是什么？",
       "options": [
-        "A connected, evidence-linked architecture packet covering requirements, design, validation, rollout, and operations",
-        "A model-feature inventory mapping every available capability to the component where it could be enabled",
-        "An exam-alignment report linking architecture patterns to blueprint domains and practice scores",
-        "A comprehensive multi-agent diagram showing every available role, model route, integration, and communication path"
+        "相互关联且链接证据的架构材料包，覆盖需求、设计、验证、上线和运营",
+        "一份模型功能清单，将每一项可用能力映射到可以启用该能力的具体组件",
+        "一份考试对齐报告，将架构模式关联到考试蓝图中的领域及相应的练习分数",
+        "一张完整的多智能体架构图，展示每个可用角色、模型路由、集成以及通信路径"
       ],
       "correct": 0,
-      "explanation": "Professional readiness requires connected decisions, contracts, controls, tests, rollout, ownership, and recovery. Complexity and feature lists do not prove that."
+      "explanation": "专业级就绪要求决策、契约、控制、测试、上线、责任归属和恢复相互关联。复杂度和功能清单无法证明这一点。"
     },
     {
       "stage": "check",
-      "question": "A candidate architecture has excellent average quality but one unverified authorization hard gate. What is the release decision?",
+      "question": "候选架构的平均质量出色，但有一道授权硬门禁未经验证。应作出什么发布决策？",
       "options": [
-        "Release because aggregate quality demonstrates that the remaining authorization risk is unlikely to affect most requests",
-        "Block release until the authorization control is implemented and verified at the execution boundary",
-        "Lower the authorization gate's weight so stronger aggregate quality can offset the missing evidence",
-        "Add a system instruction telling the model to avoid unauthorized actions, then monitor the pilot for violations"
+        "发布，因为总体质量说明剩余授权风险不太可能影响大多数请求",
+        "阻止发布，直到在执行边界实现并验证授权控制",
+        "降低授权门禁的权重，让更好的总体质量抵消证据缺失",
+        "增加一条系统指令，要求模型避免未授权操作，然后监控试点中的违规情况"
       ],
       "correct": 1,
-      "explanation": "A hard gate represents a constraint that cannot be averaged away. Authorization must be proven at the execution boundary before exposure."
+      "explanation": "硬门禁代表不能被平均值抵消的约束。系统对外开放之前，必须在执行边界证明授权控制有效。"
     },
     {
       "stage": "check",
-      "question": "Why must a model or agent call trace back to a requirement?",
+      "question": "为什么模型或智能体调用必须能够追溯到需求？",
       "options": [
-        "Every requirement needs a model call because deterministic components are insufficient",
-        "A one-to-one mapping makes architecture ownership and implementation review easier across teams",
-        "Unjustified calls add cost, latency, attack surface, and maintenance without proven value",
-        "Each requirement should receive equal model-token allocation across capabilities"
+        "每一项需求都需要一次模型调用，因为确定性组件不足以满足这些需求",
+        "一一对应的映射能够让不同团队更容易明确架构责任归属，并开展实现审查",
+        "无依据的调用增加成本、延迟、攻击面和维护负担，却没有已证明的价值",
+        "每项需求都应在不同能力之间获得等量的模型词元分配"
       ],
       "correct": 2,
-      "explanation": "Architecture spends complexity to satisfy constraints and outcomes. A call with no requirement is capability bloat and should be removed or justified."
+      "explanation": "架构通过引入复杂度来满足约束和成果要求。没有需求依据的调用属于能力冗余，应当移除或证明其必要性。"
     },
     {
       "stage": "check",
-      "question": "What makes a capstone evaluation representative?",
+      "question": "什么样的综合项目评估才具有代表性？",
       "options": [
-        "It measures API availability, request latency, token use, and error rate because operational metrics are objective and comparable",
-        "It reproduces one successful end-to-end demonstration with the exact prompt, model, tools, and data intended for launch",
-        "It uses a large synthetic set of well-formed inputs so every component receives enough statistically consistent success cases",
-        "It covers task distribution, risk strata, ambiguity, stale data, attacks, dependency failures, quality, trajectory, latency, cost, and review"
+        "测量 API 可用性、请求延迟、词元用量和错误率，因为这些运营指标客观且能够相互比较",
+        "使用计划发布时实际采用的准确提示词、模型、工具和数据，复现一次成功的端到端演示",
+        "采用规模庞大、输入格式正确的合成数据集，使每个组件都获得数量充足且在统计上保持一致的成功案例",
+        "覆盖任务分布、风险分层、含糊输入、过期数据、攻击、依赖故障、质量、执行轨迹、延迟、成本和审查"
       ],
       "correct": 3,
-      "explanation": "Representative evidence covers ordinary work and the failures the architecture must control, across both final outcomes and the trajectory that produced them."
+      "explanation": "代表性证据既覆盖日常工作，也覆盖架构必须控制的故障，并同时考察最终成果与产生这些成果的执行轨迹。"
     },
     {
       "stage": "post",
-      "question": "Which statement best defends a deterministic workflow over an adaptive agent?",
+      "question": "哪项陈述最能论证选择确定性工作流而非自适应智能体？",
       "options": [
-        "The path is known, strict latency and auditability are requirements, and evaluations show no value from adaptive planning",
-        "Deterministic workflows are categorically safer than agents, so requirements and evaluation evidence do not need to influence the choice",
-        "Adaptive agents consume more tokens in many trajectories, so token count alone establishes that a fixed workflow is the correct pattern",
-        "The team lacks Agent SDK experience, so a fixed workflow reduces implementation, testing, and delivery risk for this release"
+        "路径已知，严格延迟和可审计性是明确需求，且评估表明自适应规划没有带来价值",
+        "确定性工作流必然比智能体更安全，因此需求和评估证据无需影响选择",
+        "自适应智能体在许多执行轨迹中消耗更多词元，因此仅凭词元数量就能确定固定工作流是正确模式",
+        "团队缺乏 Agent SDK 经验，因此固定工作流能够降低本次发布的实现、测试和交付风险"
       ],
       "correct": 0,
-      "explanation": "A strong defense connects the pattern to explicit requirements and evidence. It also leaves room to reverse the decision if the task distribution changes."
+      "explanation": "有力的论证将模式与明确需求和证据关联起来，同时也允许在任务分布变化时推翻原决策。"
     },
     {
       "stage": "post",
-      "question": "What proves an operational handoff in the capstone?",
+      "question": "什么能够证明综合项目已完成运营交接？",
       "options": [
-        "The pilot completes without a visible error, which demonstrates that the receiving owner will be able to handle future failures",
-        "The receiving owner can monitor, evaluate, contain, roll back, recover, and change the system using accepted evidence",
-        "The architect approves the final delivery packet and remains available to explain any undocumented operating assumption",
-        "The repository, architecture packet, dashboards, and runbooks exist in locations the receiving team can access"
+        "试点结束时没有可见错误，这证明接收方负责人能够处理未来故障",
+        "接收方负责人能够使用已验收的证据监控、评估、遏制故障、回滚、恢复和变更系统",
+        "架构师批准最终交付材料包，并随时可以解释任何未记录的运营假设",
+        "仓库、架构材料包、仪表盘和运行手册都位于接收团队可访问的位置"
       ],
       "correct": 1,
-      "explanation": "Handoff is demonstrated operating ability and accepted responsibility. Recovery drills, runbooks, access, evaluation, and ownership prove it."
+      "explanation": "交接意味着已证明的运营能力和已接受的责任。恢复演练、运行手册、访问权限、评估和责任归属能够证明这一点。"
     }
   ]
 }

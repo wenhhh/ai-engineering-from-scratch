@@ -1,215 +1,215 @@
-# Choose the Smallest Surface That Can Carry the Work
+# 选择足以承载工作的最小产品形态（Choose the Smallest Surface That Can Carry the Work）
 
-> Product selection is architecture at knowledge-work scale. The wrong surface can make correct output stale, unreviewable, or needlessly expensive.
+> 产品选择，是知识工作尺度上的架构设计。产品形态选错了，即使输出正确，也可能过时、无法审核，或产生不必要的成本。
 
 **Type:** Learn
 **Languages:** Python
-**Prerequisites:** [Study the Decisions, Not the Vocabulary](../../00-certification-strategy/), [Managed LLM Platforms](../../../../../phases/17-infrastructure-and-production/01-managed-llm-platforms/)
-**Time:** ~90 minutes
+**Prerequisites:** [学会决策，而不只是记住术语（Study the Decisions, Not the Vocabulary）](../../00-certification-strategy/), [托管 LLM 平台（Managed LLM Platforms）](../../../../../phases/17-infrastructure-and-production/01-managed-llm-platforms/)
+**Time:** ~90 分钟
 
-## Learning Objectives
+## 学习目标（Learning Objectives）
 
-- Choose among chat, Projects, Research, files and Artifacts, connectors, and programmatic surfaces.
-- Explain the durable role of Haiku, Sonnet, and Opus without depending on a specific model version.
-- Match a surface and model to quality, speed, cost, freshness, and governance constraints.
-- Compare direct Anthropic, Amazon Bedrock, Google Vertex AI, and Microsoft Foundry deployment paths with an architecture decision record.
-- Identify when memory, project knowledge, or a new conversation is the correct continuity mechanism.
-- Mark changeable product facts with an official source and verification date.
+- 在对话、Projects、Research、文件与 Artifacts、连接器（Connector）和编程接口之间作出选择。
+- 不依赖特定模型版本，解释 Haiku、Sonnet 和 Opus 的长期定位。
+- 根据质量、速度、成本、时效性和治理约束，匹配产品形态与模型。
+- 通过架构决策记录（Architecture decision record，ADR），比较 Anthropic 直连、Amazon Bedrock、Google Vertex AI 和 Microsoft Foundry 部署路径。
+- 判断何时应使用记忆（Memory）、项目知识（Project knowledge）或新对话来保持工作连续性。
+- 为可能变化的产品事实标注官方来源和核实日期。
 
-## The Problem
+## 问题背景（The Problem）
 
-An operations lead prepares a weekly competitor brief. She opens last week's chat, pastes three new links, asks for an update, and forwards the result.
+一位运营负责人每周准备竞品简报。她打开上周的对话，粘贴三个新链接，要求更新，然后转发结果。
 
-The output is polished. It also cites an old product price from the previous conversation, misses a policy change in an internal document, and contains a competitor claim with no source. The failure did not begin with wording. It began with the chosen work surface.
+输出看起来很专业，却引用了上一轮对话中的旧产品价格，漏掉内部文档的一项政策变更，还包含一条没有来源的竞品主张。问题并非始于措辞，而是始于所选的工作界面。
 
-An old chat carried stale context. Pasted links did not guarantee comprehensive research. The internal policy was not part of the available knowledge. The workflow had no claim-verification step.
+旧对话携带了过时上下文。粘贴链接并不能保证研究全面。内部政策不在可用知识中。工作流也没有验证主张的步骤。
 
-The exam objective is called product and model selection, but the real skill is boundary design. You decide what Claude can see, what it can remember, what it can retrieve, what it can create, and how much reasoning capacity the task deserves.
+考试将这一目标称为产品与模型选择，但真正需要的是边界设计能力。你要决定 Claude 能看到什么、记住什么、检索什么、创建什么，以及任务值得投入多少推理能力。
 
-## The Concept
+## 核心概念（The Concept）
 
-### Start with the work, not the feature menu
+### 从工作出发，而不是从功能菜单出发（Start with the work, not the feature menu）
 
-Describe the task along six dimensions:
+从六个维度描述任务：
 
-| Dimension | Question |
+| 维度（Dimension） | 问题（Question） |
 |---|---|
-| Recurrence | Is this one-time, repeated, or continuous? |
-| Knowledge | Is the required source small, large, private, or changing? |
-| Freshness | Can yesterday's copy be wrong today? |
-| Output | Is the result a reply, report, file, analysis, or reusable workflow? |
-| Consequence | What happens if the result is wrong or the action is unintended? |
-| Collaboration | Does one person use it, or must a team share and maintain it? |
+| 重复性（Recurrence） | 任务是一次性的、重复发生的，还是持续运行的？ |
+| 知识（Knowledge） | 所需来源是少量、大量、私有，还是不断变化的？ |
+| 时效性（Freshness） | 昨天的副本今天是否可能已经错误？ |
+| 输出（Output） | 结果是回复、报告、文件、分析，还是可复用的工作流？ |
+| 后果（Consequence） | 结果错误或发生非预期操作会怎样？ |
+| 协作（Collaboration） | 是个人使用，还是需要团队共享和维护？ |
 
-Only then choose the surface.
+之后再选择产品形态。
 
-### Chat is for bounded conversational work
+### 对话适合边界清晰的交流任务（Chat is for bounded conversational work）
 
-A new chat is often the correct default for a one-time task with a clear input. It gives you a clean context boundary. Use it for drafting, brainstorming, explaining, transforming supplied text, and short analysis.
+对于输入明确的一次性任务，新对话通常是合适的默认选择。它提供清晰的上下文边界，适合起草、头脑风暴、解释、转换给定文本以及简短分析。
 
-A long-running chat becomes dangerous when old assumptions quietly influence new work. Restart when the objective changes, the context contains conflicting instructions, or you cannot explain which earlier messages still matter. Before restarting, extract a short, verified handoff if continuity is needed.
+持续很久的对话中，旧假设可能在不知不觉间影响新工作，这会带来风险。当目标变化、上下文包含冲突指令，或你无法说明哪些早期消息仍然重要时，应重新开始。如果需要保持连续性，重启前先提取一份简短且经过核实的交接说明。
 
-Chat search and memory can recover prior context, but they are not substitutes for an approved source of truth. Memory is useful for preferences and durable working context. A policy, price list, or customer record belongs in a maintained system with ownership and dates.
+对话搜索和记忆可以恢复先前上下文，但不能替代获批的权威来源。记忆适合保存偏好和长期工作背景。政策、价目表或客户记录应存放在有负责人、有日期且持续维护的系统中。
 
-### Projects are maintained context boundaries
+### Projects 是持续维护的上下文边界（Projects are maintained context boundaries）
 
-A Project groups focused chats with project instructions and a knowledge base. It is a better fit when the same stable context supports repeated work, such as a brand guide, research program, operating procedure, or client engagement.
+Project 将聚焦同一主题的对话、项目指令和知识库组织起来。当重复工作依赖相同的稳定上下文时，例如品牌指南、研究项目、操作规程或客户合作，Project 更合适。
 
-The advantage is not merely storage. It is repeatability. Each new conversation starts inside an intentional boundary.
+其优势不只是存储，而是可重复性：每次新对话都在有意设定的边界内开始。
 
-The risk is stale configuration. A Project that contains last quarter's policy can make the same wrong decision consistently. Every Project needs an owner, source inventory, review cadence, and removal process.
+风险在于配置过时。包含上季度政策的 Project 可能持续作出同一种错误决策。每个 Project 都需要负责人、来源清单、复核节奏和移除流程。
 
-Official product behavior changes. As checked on August 8, 2026, Anthropic's help material says Projects can contain instructions and uploaded knowledge, and can use retrieval when knowledge approaches context limits. Availability, limits, and plan requirements must be verified again in the current help center.
+官方产品行为会变化。按 2026 年 8 月 8 日的核查结果，Anthropic 帮助资料说明 Projects 可以包含指令和上传的知识，且知识量接近上下文上限时可以使用检索。可用性、限制和套餐要求必须在最新帮助中心重新核实。
 
-### Cowork is a steerable task loop
+### Cowork 是可在运行中引导的任务循环（Cowork is a steerable task loop）
 
-Cowork is a product surface for multi-step knowledge work, not a separate deployment path and not an exam objective in this lesson. As verified on August 9, 2026, Anthropic's current help material describes an outcome-driven task loop: you describe the result, review the approach, watch progress, and steer or redirect the work while it runs. Projects can provide standing files, links, instructions, and memory for related tasks. Skills provide reusable workflows, while plugins can package skills, connectors, agents, and hooks.
+Cowork 是面向多步骤知识工作的产品形态，不是独立部署路径，也不是本课的考试目标。按 2026 年 8 月 9 日的核实结果，Anthropic 当时的帮助资料描述了一种结果驱动的任务循环：你描述目标结果、审核方案、观察进度，并在运行中引导或调整工作方向。Projects 可为相关任务提供常备文件、链接、指令和记忆。Skills 提供可复用工作流，而插件可将技能、连接器、智能体（Agent）和钩子（Hook）打包。
 
-Use Cowork when the result is a real file or coordinated task across approved sources and the work benefits from human steering. Keep the file boundary narrow: current documentation says local access is limited to connected folders, file operations pass through permissions, and permanent deletion requires explicit approval. For sensitive files, unfamiliar plugins, consequential actions, or broad computer access, use manual approval, stay close to the task, and review the resulting files. A long-running loop does not transfer accountability to the model.
+当结果是实际文件，或任务需要跨获批来源协调，且人工引导有助于完成工作时，可以使用 Cowork。文件访问边界应保持狭窄：当前文档说明，本地访问仅限已连接的文件夹，文件操作受权限控制，永久删除需要明确批准。面对敏感文件、陌生插件、重大操作或广泛计算机访问时，应采用手动批准，持续关注任务，并检查产出文件。长时间运行的循环不会把责任转移给模型。
 
-### Research is for multi-source investigation
+### Research 适合多来源调查（Research is for multi-source investigation）
 
-Use Research when the task requires broad information gathering, several searches, synthesis, and citations. A direct web search is better for a narrow current fact. Research is better for questions such as comparing markets, reviewing several papers, or reconciling public sources with connected internal material.
+任务需要广泛搜集信息、多次搜索、综合分析和引用时，使用 Research。对于范围较小的最新事实，直接网页搜索更合适。Research 更适合比较市场、审阅多篇论文，或将公开来源与已连接的内部资料相互核对。
 
-Research does not remove the need to judge sources. A long report can still cite weak evidence, combine claims from different dates, or miss a private constraint. Treat citations as navigation to evidence, not automatic proof.
+Research 不会免除你判断来源质量的责任。长报告仍可能引用薄弱证据、混用不同日期的主张，或遗漏私有约束。应将引用视为通往证据的导航，而不是自动成立的证明。
 
-### Files and Artifacts make the output inspectable
+### 文件与 Artifacts 让输出可检查（Files and Artifacts make the output inspectable）
 
-Choose an output form based on what happens next. Inline text is appropriate when the answer will be read and discarded. A structured table is better when fields must be compared. A downloadable document or spreadsheet is better when the result enters a business process.
+根据下一步用途选择输出形式。如果答案读完即弃，行内文本就合适。如果需要比较字段，结构化表格更好。如果结果要进入业务流程，可下载的文档或电子表格更合适。
 
-The artifact should expose assumptions, sources, dates, and unresolved items. A beautiful file that hides uncertainty is harder to review than a plain table with a clear evidence column.
+交付物应明确呈现假设、来源、日期和待解决事项。隐藏不确定性的精美文件，比带有清晰证据列的朴素表格更难审核。
 
-File creation and editing capabilities can change by surface, plan, file type, and size. Verify current limits before designing a recurring workflow around them.
+文件创建和编辑能力可能随产品形态、套餐、文件类型和大小而变化。围绕这些能力设计周期性工作流前，应核实当前限制。
 
-### Connectors trade copying for live, permissioned access
+### 连接器以实时、受权限控制的访问替代复制（Connectors trade copying for live, permissioned access）
 
-Connectors let Claude retrieve from or act within external services. They are useful when source freshness matters and manual copy-paste would drift.
+连接器让 Claude 能从外部服务中检索信息或执行操作。当来源时效性重要、手动复制粘贴容易偏离原始数据时，它们很有用。
 
-Do not select a connector merely because one exists. Check:
+不要仅因为存在连接器就选择它。需要检查：
 
-- Whether it is read-only or can mutate data.
-- Which permissions it inherits from the connected account.
-- Whether every action requires approval.
-- What data is retained with the conversation.
-- Whether organization administrators must enable it.
-- Whether the connector exposes the exact content type you need.
+- 它是只读，还是可以修改数据。
+- 它继承已连接账户的哪些权限。
+- 是否每个操作都需要批准。
+- 哪些数据会随对话保留。
+- 是否需要组织管理员启用。
+- 它能否提供你需要的确切内容类型。
 
-As checked on August 8, 2026, official documentation says Google Workspace connectors can search Gmail, work with Calendar and Drive, and require explicit approval for actions. It also documents limitations, including content that may not be visible. Those details are changeable product facts.
+按 2026 年 8 月 8 日的核查结果，官方文档说明 Google Workspace 连接器可以搜索 Gmail、处理 Calendar 和 Drive 内容，且执行操作需要明确批准。文档还列出了限制，包括某些内容可能不可见。这些细节都是会变化的产品事实。
 
-### API and coding surfaces are for owned software behavior
+### API 与编程工具适合由你负责的软件行为（API and coding surfaces are for owned software behavior）
 
-Move to an API, Claude Code, or an agent runtime when you need deterministic integration, custom interfaces, automated tests, versioned configuration, or repeated execution inside a software system.
+当你需要确定性集成、自定义界面、自动化测试、版本化配置，或在软件系统内重复执行时，转向 API、Claude Code 或智能体运行时（Agent runtime）。
 
-Do not build an application to avoid learning how to configure a Project. Do build one when the workflow needs a contract that the chat product cannot express, such as a typed output schema, application-owned authorization, or automated evaluation on every release.
+不要为了逃避学习 Project 配置而构建应用。但当工作流需要对话产品无法表达的契约时，就应该构建应用，例如带类型的输出模式（Schema）、由应用负责的授权，或每次发布都自动执行的评估。
 
-### Deployment is a control-plane decision
+### 部署是控制平面决策（Deployment is a control-plane decision）
 
-Choosing a work surface and choosing where Claude runs are different decisions. A Project can be the right employee surface while a separate application uses a cloud-hosted API. Do not hide both choices behind the word "Claude."
+选择工作产品形态与选择 Claude 在哪里运行，是两个不同的决策。Project 可能适合作为员工界面，而另一个应用使用云托管 API。不要把两种选择都隐藏在“Claude”这个词后面。
 
-As verified on August 9, 2026, official Anthropic documentation describes four deployment paths that an enterprise architecture review should compare:
+按 2026 年 8 月 9 日的核实结果，Anthropic 官方文档描述了企业架构评审应比较的四条部署路径：
 
-| Path | Control plane and procurement | Strong fit when | Recheck before approval |
+| 路径（Path） | 控制平面与采购（Control plane and procurement） | 适用条件（Strong fit when） | 批准前重新核查（Recheck before approval） |
 |---|---|---|---|
-| Claude for Enterprise and direct Claude API | Anthropic administers the human product and first-party API services. Enterprise seats and direct API workspaces are separate usage shapes. | Direct Anthropic procurement is acceptable, first-party product access matters, and no cloud marketplace is mandatory. | Enterprise identity and seat policy, API authentication, workspace budgets, data terms, available features, and model lifecycle. |
-| Amazon Bedrock | AWS-native authentication, billing, regions, quotas, and AWS-managed inference boundaries. | The organization already governs production AI through AWS IAM, AWS procurement, and AWS compliance controls. | Model access, regional endpoint, feature differences, AWS data handling, quotas, and the exact Bedrock API generation. |
-| Google Vertex AI | Google Cloud project identity, billing, and global, multi-region, or regional endpoints. | The workload belongs in an existing Google Cloud landing zone and its IAM, billing, logging, and residency controls. | Model and feature support, endpoint geography, provisioned versus pay-as-you-go capacity, and Google Cloud data handling. |
-| Microsoft Foundry | Azure-native endpoints and authentication with Azure Marketplace billing. Current documentation describes Azure-hosted and Anthropic-hosted choices. | Azure procurement, Entra identity, Azure RBAC, and Foundry operations are already the approved path. | Hosting option, deployment type, region or data zone, model and feature support, and current processor terms. |
+| Claude for Enterprise 与直连 Claude API | Anthropic 管理面向人的产品和第一方 API 服务。企业席位与直连 API 工作区是不同的使用形态。 | 可以直接向 Anthropic 采购，重视第一方产品访问，且没有必须通过云市场采购的要求。 | 企业身份与席位政策、API 身份验证、工作区预算、数据条款、可用功能及模型生命周期。 |
+| Amazon Bedrock | AWS 原生身份验证、计费、区域、配额，以及 AWS 管理的推理边界。 | 组织已通过 AWS IAM、AWS 采购及 AWS 合规控制来治理生产 AI。 | 模型访问、区域端点、功能差异、AWS 数据处理、配额，以及确切的 Bedrock API 代际。 |
+| Google Vertex AI | Google Cloud 项目身份、计费，以及全球、多区域或区域端点。 | 工作负载应进入既有 Google Cloud 云落地区（Landing zone），并沿用其 IAM、计费、日志和数据驻留控制。 | 模型与功能支持、端点地理位置、预配容量与按量付费容量，以及 Google Cloud 数据处理。 |
+| Microsoft Foundry | Azure 原生端点与身份验证，通过 Azure Marketplace 计费。当前文档描述了 Azure 托管和 Anthropic 托管两种选择。 | Azure 采购、Entra 身份、Azure RBAC 和 Foundry 运维已是获批路径。 | 托管选项、部署类型、区域或数据区、模型与功能支持，以及最新处理者条款。 |
 
-These rows are not a ranking. They are a map of ownership. The best path is the one that satisfies the organization's constraints with the fewest new control planes.
+这些行不是排名，而是责任归属图。最佳路径，是以最少新增控制平面满足组织约束的路径。
 
-Treat direct Anthropic access as one procurement family, but keep its controls explicit. Claude for Enterprise governs named people and shared work. The direct Claude API governs application workloads through API organizations and workspaces. A seat is not API capacity, and an API spend limit is not a seat policy.
+可以把 Anthropic 直连访问归为同一采购类别，但仍须明确各项控制。Claude for Enterprise 管理具名人员与共享工作。直连 Claude API 则通过 API 组织和工作区管理应用负载。席位不等于 API 容量，API 消费上限也不等于席位政策。
 
-The partner clouds also differ in who operates and processes each layer. As verified on August 9, 2026, Anthropic's data-retention documentation says Anthropic is the data processor for the first-party Claude API and Microsoft Foundry, while the cloud provider is the data processor for Amazon Bedrock and Google Cloud. Foundry additionally has hosting choices whose boundaries must be read from the current Foundry page. Record the exact offering, region, and hosting option instead of writing only "Azure" or "AWS."
+合作云还在各层的运营者和数据处理者方面有所不同。按 2026 年 8 月 9 日的核实结果，Anthropic 数据保留文档说明：第一方 Claude API 和 Microsoft Foundry 的数据处理者是 Anthropic，Amazon Bedrock 和 Google Cloud 的数据处理者则是云提供商。Foundry 另有不同托管选项，其边界须查阅最新 Foundry 页面。应记录确切服务、区域和托管选项，而不只是写“Azure”或“AWS”。
 
-### Score the requirement, not the provider
+### 为需求评分，而不是为提供商评分（Score the requirement, not the provider）
 
-Write the decision criteria before meeting a vendor:
+在接洽供应商之前，先写下决策标准：
 
-| Criterion | Architecture question |
+| 标准（Criterion） | 架构问题（Architecture question） |
 |---|---|
-| Cloud commitment | Which landing zones, network controls, logging systems, and support teams already exist? |
-| Procurement | Must consumption flow through a cloud marketplace or a direct Anthropic agreement? |
-| Compliance and data boundary | Who is the processor, where does inference run, what may leave the boundary, and which retention terms apply? |
-| Identity | Will humans use enterprise SSO and SCIM, or will workloads use cloud identity, federation, or scoped API credentials? |
-| Seats and budgets | Are you buying named-user access, application tokens, provisioned capacity, or more than one of these? Where are limits enforced? |
-| Operational control | Who owns model enablement, quotas, regions, logs, incident response, deprecation work, and feature verification? |
+| 云平台约束（Cloud commitment） | 已有哪些云落地区、网络控制、日志系统和支持团队？ |
+| 采购（Procurement） | 消费是否必须通过云市场，或通过与 Anthropic 的直接协议结算？ |
+| 合规与数据边界（Compliance and data boundary） | 谁是处理者？推理在哪里运行？什么可以离开边界？适用哪些保留条款？ |
+| 身份（Identity） | 人员使用企业 SSO 和 SCIM，还是工作负载使用云身份、联合身份或限定范围的 API 凭据？ |
+| 席位与预算（Seats and budgets） | 采购的是具名用户访问、应用词元（Token）、预配容量，还是其中多项？限制在哪里执行？ |
+| 运维控制（Operational control） | 谁负责模型启用、配额、区域、日志、事故响应、弃用迁移工作和功能核实？ |
 
-Weight each criterion for the actual workload, score every path with a short reason, and compute the result. A score without a reason is decoration. A score copied to a different organization is misinformation.
+针对实际工作负载为各项标准赋权，为每条路径评分并简述理由，然后计算结果。没有理由的分数只是装饰。把一套分数照搬到另一个组织，会产生误导。
 
-Finish with an architecture decision record. State the chosen path, rejected alternatives, consequences, and review triggers. Cloud commitment, processor terms, required features, or procurement can change, so an accepted decision still needs a review date.
+最后形成架构决策记录。写明所选路径、拒绝的替代方案、后果和复核触发条件。云平台约束、处理者条款、必需功能或采购要求都可能改变，因此已接受的决策仍需要复核日期。
 
-### Model families are roles, not status levels
+### 模型家族是角色，不是身份等级（Model families are roles, not status levels）
 
-The durable family pattern is:
+长期有效的家族定位如下：
 
-- **Haiku:** prioritize speed and low cost for narrow, well-specified, high-volume work.
-- **Sonnet:** balance capability, latency, and cost for most professional workflows.
-- **Opus:** prioritize capability for the hardest reasoning, synthesis, and agentic work where measured quality earns the additional cost or latency.
+- **Haiku：** 面向范围窄、要求明确、调用量大的工作，优先考虑速度和低成本。
+- **Sonnet：** 面向大多数专业工作流，在能力、延迟和成本之间取得平衡。
+- **Opus：** 面向最困难的推理、综合分析和智能体式（Agentic）工作；当实测质量足以证明额外成本或延迟值得时，优先考虑能力。
 
-Exact generations, aliases, prices, context limits, output limits, thinking modes, and platform availability change. Never teach a version table as permanent knowledge. Use the live models overview and pricing page.
+确切代际、别名、价格、上下文上限、输出上限、思考模式和平台可用性都会变化。不要把版本表当成永久知识来教授，应查阅实时模型概览和定价页。
 
-Selection requires evidence. Run representative examples on the smallest plausible model. Escalate only when measured failures remain after fixing the prompt, context, and validation design.
+选择需要证据。在可能胜任的最小模型上运行代表性示例。只有修复提示词、上下文和验证设计后，实测失败仍然存在，才升级模型。
 
 ```mermaid
 flowchart TD
-    A["Define outcome and constraints"] --> B{"Repeated shared context?"}
-    B -->|"Yes"| C["Project or owned application"]
-    B -->|"No"| D["Fresh chat"]
-    C --> E{"Live external source or action?"}
+    A["定义结果与约束"] --> B{"是否重复使用共享上下文？"}
+    B -->|"是"| C["Project 或自行负责的应用"]
+    B -->|"否"| D["新对话"]
+    C --> E{"是否需要实时外部来源或操作？"}
     D --> E
-    E -->|"Yes"| F["Approved connector, Research, or API"]
-    E -->|"No"| G["Provided files or project knowledge"]
-    F --> H["Test smallest plausible model"]
+    E -->|"是"| F["获批连接器、Research 或 API"]
+    E -->|"否"| G["给定文件或项目知识"]
+    F --> H["测试可能胜任的最小模型"]
     G --> H
-    H --> I["Add evidence and review"]
+    H --> I["补充证据与审核"]
 ```
 
-## Build It
+## 动手实现（Build It）
 
-Create a product-selection record with two linked decisions.
+创建产品选择记录，其中包含两个相互关联的决策。
 
-First, choose the work surface for the weekly competitor brief.
+首先，为每周竞品简报选择工作产品形态。
 
-1. State the output: a two-page executive brief with a source appendix.
-2. Set freshness: public claims no older than seven days; internal product facts from the current approved roadmap.
-3. Choose Research for broad public collection and an approved connector or maintained Project source for internal documents.
-4. Choose a model by testing a representative five-source brief on two family tiers.
-5. Compare factual coverage, unsupported claims, latency, and review time.
-6. Require a human owner to approve the final claims.
-7. Record the product documentation and date used for each changeable fact.
+1. 明确输出：两页高管简报，附来源附录。
+2. 设定时效性：公开主张不早于七天前；内部产品事实来自当前获批路线图。
+3. 选择 Research 广泛搜集公开信息，并选择获批连接器或持续维护的 Project 来源处理内部文档。
+4. 将一份包含五个来源的代表性简报放到两个模型家族层级上测试，据此选择模型。
+5. 比较事实覆盖率、无依据主张、延迟和审核时间。
+6. 要求人类负责人批准最终主张。
+7. 对每项可变事实记录所依据的产品文档和日期。
 
-Your decision record should include rejected alternatives. Explain why reusing the old chat loses on stale context, and why a custom application is premature if the native workflow meets the requirement.
+决策记录应包含被拒绝的替代方案。说明复用旧对话为何因上下文过时而不合适，以及原生工作流已满足需求时，为何构建自定义应用为时过早。
 
-Second, complete a deployment decision matrix for an application workload:
+其次，为应用工作负载完成部署决策矩阵：
 
-1. Write a concrete workload and the six deployment criteria before assigning scores.
-2. Compare Claude for Enterprise and direct API access, Amazon Bedrock, Google Vertex AI, and Microsoft Foundry.
-3. Weight each criterion from one to five for this workload.
-4. Give every candidate a one-to-five fit score and a reason for every criterion.
-5. Link every changeable platform claim to current official documentation and record the verification date.
-6. Select the highest weighted fit, then write the ADR consequences and review triggers.
+1. 打分前先写出具体负载和六项部署标准。
+2. 比较 Claude for Enterprise 与直连 API 访问、Amazon Bedrock、Google Vertex AI 和 Microsoft Foundry。
+3. 根据该负载，为每项标准赋予一至五的权重。
+4. 对每个候选方案的每项标准给出一至五的适配分数及理由。
+5. 为每条可变平台主张关联最新官方文档，并记录核实日期。
+6. 选择加权适配度最高的方案，再写明 ADR 的后果和复核触发条件。
 
-Do not manipulate weights to force a preferred provider. If a hard compliance rule disqualifies a path, state it as a gate before scoring.
+不要为了选中偏好的提供商而操纵权重。如果某项硬性合规规则会淘汰一条路径，应在打分前将其明确列为准入门槛。
 
-## Interactive Lab
+## 交互实验（Interactive Lab）
 
-Use the model-fit figure to change recurrence, freshness, consequence, collaboration, and output constraints. The point is not to find one universally best surface. It is to observe which constraint makes a simpler surface stop fitting.
+使用模型适配图调整重复性、时效性、后果、协作和输出约束。目的不是找出一个普遍最佳的产品形态，而是观察哪项约束使较简单的形态不再适用。
 
 ```figure
 01-claude-model-fit
 ```
 
-## Practice Lab
+## 实践实验（Practice Lab）
 
-Run the local fit scorer, then make the cheaper model fail one gate or make a simpler surface satisfy every constraint. Change the deployment weights, break a candidate score, or remove dated evidence. The recommendation must change from evidence, not from a product or cloud preference.
+运行本地适配评分器，然后让便宜模型无法通过某道门槛，或让更简单的产品形态满足全部约束。调整部署权重、将某个候选分数改成无效值，或删除带日期的证据。推荐必须随证据变化，而不是随产品或云平台偏好变化。
 
-## Shipped Artifact
+## 交付物（Shipped Artifact）
 
-`outputs/product-selection-record.json` contains a filled work-surface decision for the weekly competitor brief plus a deployment matrix and ADR for a regulated Azure-based application. The deployment section covers all four current paths, six weighted criteria, scenario-specific reasons, dated official evidence, consequences, and review triggers.
+`outputs/product-selection-record.json` 包含填写完整的每周竞品简报产品形态决策，以及面向受监管 Azure 应用的部署矩阵和 ADR。部署部分覆盖当前全部四条路径、六项加权标准、与场景相关的理由、带日期的官方证据、后果和复核触发条件。
 
-## Verify It
+## 验证结果（Verify It）
 
-Run the deterministic validator and its tests:
+运行确定性校验器及其测试：
 
 ```bash
 cd certifications/claude/lessons/01-claude-product-and-model-landscape/code
@@ -217,107 +217,107 @@ python3 main.py
 python3 -m unittest discover tests -v
 ```
 
-The validator rejects undated product facts, a model choice absent from the benchmark, missing human ownership, decisions with no rejected alternative, incomplete deployment paths, arithmetic drift, an ADR that ignores the highest weighted fit, and missing official evidence. Adapt the filled record to one recurring workflow you own.
+校验器会拒绝以下情况：产品事实没有日期、所选模型不在基准中、缺少人类负责人、决策未记录被拒绝的替代方案、部署路径不完整、计算不一致、ADR 忽略加权适配度最高的方案，以及缺少官方证据。将填写好的记录改编为你负责的一项周期性工作流。
 
-## Capstone Connection
+## 与综合实践的联系（Capstone Connection）
 
-The lesson quiz tests product and model fit under changing constraints. The artifact feeds product selection and source-boundary decisions into capstones 29 through 32, where you must defend why a smaller or more native surface loses.
+本课测验考查约束变化时的产品和模型适配决策。交付物将产品选择与来源边界决策带入第 29 至 32 课的综合实践，届时你必须说明更小或更原生的产品形态为何不合适。
 
-## Use It
+## 实际应用（Use It）
 
-Use this compact decision card before starting work:
+开始工作前，使用这张简明决策卡：
 
 ```text
-Outcome:
-Recurrence:
-Required sources and freshness:
-Sensitivity:
-Output form:
-Human owner:
-Chosen surface:
-Chosen model family:
-Chosen deployment path:
-Cloud commitment and procurement route:
-Data boundary and processor:
-Human seats versus application budget:
-Why smaller or simpler alternatives fail:
-Changeable facts verified on:
+预期结果：
+重复频率：
+所需来源及其时效：
+敏感程度：
+输出形式：
+人工负责人：
+选定的产品接口：
+选定的模型系列：
+选定的部署路径：
+云服务支出承诺与采购渠道：
+数据边界与处理方：
+人员席位与应用预算的分配：
+更小或更简单的替代方案为何不适用：
+易变事实的核验日期：
 ```
 
-If you cannot fill the source and owner fields, you are not ready to prompt.
+如果来源和负责人字段都填不出来，就还没到编写提示词的时候。
 
-For model selection, keep a tiny comparison set. Ten representative tasks are more useful than one heroic example. Include easy, ordinary, ambiguous, and failure-prone cases. Measure whether the smaller model clears the requirement. Do not compare prose style alone.
+模型选择只需保留一小组对比任务。十个代表性任务比一个表现惊艳的示例更有用。应覆盖简单、常规、模糊和容易失败的情况，测量较小模型是否达到要求，而不只是比较文风。
 
-## Exam Decision Patterns
+## 考试决策模式（Exam Decision Patterns）
 
-- One-time bounded transformation usually starts in a fresh chat.
-- Repeated work with shared stable context points toward a maintained Project.
-- Broad, current, multi-source investigation points toward Research.
-- Fresh external data or external action points toward an approved connector or owned integration.
-- Structured, automated, testable behavior points toward an API or coding surface.
-- Existing AWS governance and procurement can make Bedrock the smallest operational change.
-- Existing Google Cloud governance and endpoint requirements can make Vertex AI the smallest operational change.
-- Existing Azure procurement, identity, and Foundry operations can make Microsoft Foundry the smallest operational change.
-- Direct Anthropic access can fit when direct procurement and first-party controls are acceptable, but enterprise seats and API workloads remain separate decisions.
-- Select the smallest model that meets measured quality, not the model with the strongest reputation.
-- Restart when old context is more likely to contaminate than help.
+- 一次性、边界明确的转换任务通常从新对话开始。
+- 重复工作依赖共享稳定上下文时，通常适合持续维护的 Project。
+- 广泛、最新、多来源的调查通常适合 Research。
+- 需要新鲜外部数据或外部操作时，通常适合获批连接器或自行负责的集成。
+- 需要结构化、自动化、可测试的行为时，通常适合 API 或编程工具。
+- 已有 AWS 治理和采购体系时，Bedrock 可能带来最小的运维变更。
+- 已有 Google Cloud 治理和端点要求时，Vertex AI 可能带来最小的运维变更。
+- 已有 Azure 采购、身份和 Foundry 运维体系时，Microsoft Foundry 可能带来最小的运维变更。
+- 可以接受直接采购和第一方控制时，Anthropic 直连访问可能合适，但企业席位和 API 负载仍是独立决策。
+- 选择达到实测质量要求的最小模型，而不是声誉最强的模型。
+- 当旧上下文更可能干扰而非帮助时，重新开始。
 
-## Common Traps
+## 常见陷阱（Common Traps）
 
-- Reusing an old chat because it feels convenient.
-- Treating memory as an authoritative database.
-- Uploading a file once and assuming it will remain current.
-- Selecting Research for a simple fact lookup.
-- Giving a connector more authority than the task requires.
-- Hardcoding current model prices into a permanent decision rule.
-- Choosing Opus before testing whether Sonnet or Haiku meets the target.
-- Building a custom application when a maintained native surface is sufficient.
-- Choosing a cloud from a feature headline while ignoring procurement, identity, and incident ownership.
-- Treating a named-user seat as application capacity or an API budget as a seat policy.
-- Writing "runs in our cloud" without recording the exact offering, hosting option, endpoint geography, and processor.
-- Freezing today's model and feature support into a permanent provider matrix.
+- 因为方便而复用旧对话。
+- 把记忆当成权威数据库。
+- 上传一次文件就认为它会一直保持最新。
+- 为简单事实查询选择 Research。
+- 给连接器超出任务所需的权限。
+- 将当前模型价格硬编码进永久决策规则。
+- 尚未测试 Sonnet 或 Haiku 能否达标，就选择 Opus。
+- 持续维护的原生产品形态已经够用，却构建自定义应用。
+- 根据功能宣传选择云平台，忽略采购、身份和事故责任归属。
+- 将具名用户席位当成应用容量，或将 API 预算当成席位政策。
+- 只写“运行在我们的云中”，不记录确切服务、托管选项、端点地理位置和处理者。
+- 将今天的模型与功能支持固化为永久的提供商矩阵。
 
-## Exercises
+## 练习（Exercises）
 
-1. Choose a surface for a one-time rewrite, a recurring policy Q&A workflow, a five-source market report, and an automated ticket classifier. Defend each choice.
-2. Create two cases where a connector is worse than a file upload.
-3. Compare a small and large model on five representative tasks. Define success before running them.
-4. Audit one Project you use. List its owner, stale sources, persistent instructions, and review date.
-5. Find one current product limit in the official help center and record it as a dated fact rather than a permanent rule.
-6. Score the four deployment paths for one application in your organization, then change the cloud-commitment weight and explain whether the ADR should change.
+1. 分别为一次性改写、周期性政策问答、五来源市场报告和自动工单分类器选择产品形态，并说明理由。
+2. 设计两个连接器不如文件上传的案例。
+3. 用五个代表性任务比较小模型与大模型。运行前先定义成功标准。
+4. 审核你使用的一个 Project，列出负责人、过时来源、持久指令和复核日期。
+5. 在官方帮助中心找到一项当前产品限制，将它记录为带日期的事实，而不是永久规则。
+6. 为组织中的一个应用对四条部署路径评分，然后调整云平台约束的权重，解释 ADR 是否应变化。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | Meaning |
+| 术语（Term） | 含义（Meaning） |
 |---|---|
-| Work surface | The product boundary through which inputs, context, tools, and outputs are managed |
-| Project knowledge | Files or sources maintained for conversations inside a Project |
-| Memory | User-controlled continuity derived from prior work, separate from authoritative source data |
-| Connector | A permissioned link to an external service or data source |
-| Research | A multi-step information-gathering and synthesis capability |
-| Smallest sufficient capability | The least complex surface and model that meets all measured requirements |
-| Deployment path | The commercial and operational route through which people or applications access Claude |
-| Control plane | The system that owns identity, policy, billing, quotas, deployment, and operational configuration |
-| Architecture decision record | A dated record of a decision, its context, alternatives, consequences, and review triggers |
+| 工作产品形态（Work surface） | 管理输入、上下文、工具和输出的产品边界 |
+| 项目知识（Project knowledge） | 为 Project 内对话维护的文件或来源 |
+| 记忆（Memory） | 由用户控制、源于先前工作的连续性信息，与权威来源数据分离 |
+| 连接器（Connector） | 通向外部服务或数据源、受权限控制的连接 |
+| Research | 多步骤信息搜集与综合分析能力 |
+| 最小充分能力（Smallest sufficient capability） | 满足全部实测要求且复杂度最低的产品形态和模型 |
+| 部署路径（Deployment path） | 人员或应用访问 Claude 所经过的商业与运维路径 |
+| 控制平面（Control plane） | 负责身份、政策、计费、配额、部署和运维配置的系统 |
+| 架构决策记录（Architecture decision record） | 带日期的记录，说明决策、背景、替代方案、后果和复核触发条件 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [Models overview](https://platform.claude.com/docs/en/about-claude/models/overview)
-- [Authentication](https://platform.claude.com/docs/en/manage-claude/authentication)
-- [Workspaces](https://platform.claude.com/docs/en/manage-claude/workspaces)
-- [Set up single sign-on](https://support.claude.com/en/articles/13132885-set-up-single-sign-on-sso)
-- [Claude Enterprise spend limits](https://platform.claude.com/docs/en/manage-claude/spend-limits-api)
-- [API and data retention](https://platform.claude.com/docs/en/manage-claude/api-and-data-retention)
-- [Claude in Amazon Bedrock](https://platform.claude.com/docs/en/build-with-claude/claude-in-amazon-bedrock)
-- [Claude on Google Cloud](https://platform.claude.com/docs/en/build-with-claude/claude-on-vertex-ai)
-- [Claude in Microsoft Foundry](https://platform.claude.com/docs/en/build-with-claude/claude-in-microsoft-foundry)
-- [What are Projects?](https://support.claude.com/en/articles/9517075-what-are-projects)
-- [Get started with Claude Cowork](https://support.claude.com/en/articles/13345190-get-started-with-claude-cowork)
-- [Use Claude Cowork safely](https://support.claude.com/en/articles/13364135-use-claude-cowork-safely)
-- [Use Skills in Claude](https://support.claude.com/en/articles/12512180-use-skills-in-claude)
-- [Install Cowork plugins](https://claude.com/docs/cowork/guide/plugins)
-- [When to use web search, extended thinking, and Research](https://support.claude.com/en/articles/11095361-when-should-i-use-web-search-extended-thinking-and-research)
-- [Use connectors to extend Claude](https://support.claude.com/en/articles/11176164-use-connectors-to-extend-claude-s-capabilities)
-- [Use Google Workspace connectors](https://support.claude.com/en/articles/10166901-use-google-workspace-connectors)
-- [Context Engineering](../../../../../phases/11-llm-engineering/05-context-engineering/)
-- [Model Routing](../../../../../phases/17-infrastructure-and-production/16-model-routing/)
+- [模型概览（Models overview）](https://platform.claude.com/docs/en/about-claude/models/overview)
+- [身份验证（Authentication）](https://platform.claude.com/docs/en/manage-claude/authentication)
+- [工作区（Workspaces）](https://platform.claude.com/docs/en/manage-claude/workspaces)
+- [设置单点登录（Set up single sign-on）](https://support.claude.com/en/articles/13132885-set-up-single-sign-on-sso)
+- [Claude Enterprise 消费上限](https://platform.claude.com/docs/en/manage-claude/spend-limits-api)
+- [API 与数据保留（API and data retention）](https://platform.claude.com/docs/en/manage-claude/api-and-data-retention)
+- [Amazon Bedrock 中的 Claude](https://platform.claude.com/docs/en/build-with-claude/claude-in-amazon-bedrock)
+- [Google Cloud 上的 Claude](https://platform.claude.com/docs/en/build-with-claude/claude-on-vertex-ai)
+- [Microsoft Foundry 中的 Claude](https://platform.claude.com/docs/en/build-with-claude/claude-in-microsoft-foundry)
+- [什么是 Projects？](https://support.claude.com/en/articles/9517075-what-are-projects)
+- [开始使用 Claude Cowork](https://support.claude.com/en/articles/13345190-get-started-with-claude-cowork)
+- [安全使用 Claude Cowork](https://support.claude.com/en/articles/13364135-use-claude-cowork-safely)
+- [在 Claude 中使用 Skills](https://support.claude.com/en/articles/12512180-use-skills-in-claude)
+- [安装 Cowork 插件](https://claude.com/docs/cowork/guide/plugins)
+- [何时使用网页搜索、扩展思考和 Research](https://support.claude.com/en/articles/11095361-when-should-i-use-web-search-extended-thinking-and-research)
+- [使用连接器扩展 Claude](https://support.claude.com/en/articles/11176164-use-connectors-to-extend-claude-s-capabilities)
+- [使用 Google Workspace 连接器](https://support.claude.com/en/articles/10166901-use-google-workspace-connectors)
+- [上下文工程（Context Engineering）](../../../../../phases/11-llm-engineering/05-context-engineering/)
+- [模型路由（Model Routing）](../../../../../phases/17-infrastructure-and-production/16-model-routing/)

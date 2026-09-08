@@ -1,78 +1,78 @@
 {
   "lesson": "24-skill-discovery-and-progressive-disclosure",
-  "title": "Skill Discovery and Progressive Disclosure",
+  "title": "技能发现与渐进披露（Skill Discovery and Progressive Disclosure）",
   "questions": [
     {
       "stage": "pre",
-      "question": "A host finds the same skill name in project and user scopes. What determines which one wins?",
+      "question": "宿主在项目和用户范围发现同名技能。由什么决定胜出者？",
       "options": [
-        "The host's documented scope-precedence policy",
-        "The directory with the newest timestamp",
-        "The longest SKILL.md body",
-        "The skill description's first verb"
+        "宿主文档化的范围优先级策略",
+        "时间戳最新的目录",
+        "最长 SKILL.md 正文",
+        "技能描述的第一个动词"
       ],
       "correct": 0,
-      "explanation": "The portable skill format does not create one universal precedence order. A host must declare how scopes shadow one another and should report collisions instead of silently relying on filesystem iteration order."
+      "explanation": "可移植格式不创建通用优先顺序。宿主必须声明范围间如何遮蔽，并应报告冲突，而非静默依赖文件系统迭代顺序。"
     },
     {
       "stage": "check",
-      "question": "What belongs in the first discovery catalog sent to a model before implementation?",
+      "question": "实现前发送给模型的首个发现目录应包含什么？",
       "options": [
-        "Every script, asset, and reference in full",
-        "A compact identity record such as name and description",
-        "The output from running every bundled script",
-        "Only the modification timestamp"
+        "全部脚本、资产和参考资料全文",
+        "名称和描述等紧凑身份记录",
+        "运行每个包内脚本的输出",
+        "仅修改时间戳"
       ],
       "correct": 1,
-      "explanation": "Level-one discovery should carry enough metadata to route a task without loading full instructions. Bodies and referenced resources are disclosed later, which protects the context budget and avoids premature execution."
+      "explanation": "第一级发现应携带足以路由任务的元数据，不加载完整指令。正文和引用资源稍后披露，以保护上下文预算并避免过早执行。"
     },
     {
       "stage": "check",
-      "question": "Which sequence correctly implements progressive disclosure under this contract?",
+      "question": "哪一顺序按此契约正确实现渐进披露？",
       "options": [
-        "Load all bodies, discard most, then build a catalog",
-        "Read references first, then infer which skill owns them",
-        "Run scripts, load assets, then discover names",
-        "Catalog metadata, load the selected SKILL.md body, then read a needed reference"
+        "加载所有正文，丢弃大部分，再构建目录",
+        "先读参考资料，再推断所属技能",
+        "运行脚本，加载资产，再发现名称",
+        "目录元数据，加载选定 SKILL.md 正文，再读取需要的参考资料"
       ],
       "correct": 3,
-      "explanation": "Discovery, activation, and resource loading are separate stages. Each stage spends more context only after the previous stage establishes relevance, so unrelated skill bodies and references remain outside the prompt."
+      "explanation": "发现、激活和资源加载是独立阶段。前一级确立相关性后才花费更多上下文，使无关正文和参考资料留在提示词之外。"
     },
     {
       "stage": "check",
-      "question": "Why should an equal-precedence duplicate be reported as ambiguous?",
+      "question": "为什么同优先级重复项应报告为歧义？",
       "options": [
-        "Because choosing by incidental directory order makes routing nondeterministic and hard to audit",
-        "Because every collision means both skills are invalid YAML",
-        "Because duplicate names automatically receive network access",
-        "Because the user scope must always win"
+        "按偶然目录顺序选择会使路由不确定且难审计",
+        "每次冲突都说明两个技能 YAML 无效",
+        "重复名称自动获得网络访问",
+        "用户范围必须始终胜出"
       ],
       "correct": 0,
-      "explanation": "If two candidates have the same name and policy rank, lexical or iteration order is not meaningful authority. Failing clearly forces the host or user to resolve identity instead of producing environment-dependent behavior."
+      "explanation": "同名且策略等级相同的两个候选，字典序或迭代顺序不代表有意义的权限。明确失败迫使宿主或用户解决身份，而非产生依赖环境的行为。"
     },
     {
       "stage": "post",
-      "question": "A SKILL.md references `references/archive/schema.md` in a bundle that permits only one-level references. What should validation do?",
+      "question": "仅允许一层引用的包中，SKILL.md 引用 `references/archive/schema.md`。验证应如何处理？",
       "options": [
-        "Copy the file to a global cache automatically",
-        "Execute it to discover whether it is useful",
-        "Reject it as a deeper reference chain than the package contract allows",
-        "Follow it because every relative path is safe"
+        "自动复制到全局缓存",
+        "执行它来发现是否有用",
+        "因引用链深于包契约允许而拒绝",
+        "跟随，因为所有相对路径都安全"
       ],
       "correct": 2,
-      "explanation": "A one-level contract allows direct files or paths such as `references/schema.md`, not recursively nested chains. The bound keeps packages inspectable and blocks traversal-like complexity before content is loaded."
+      "explanation": "一层契约允许直接文件或 `references/schema.md` 这类路径，不允许递归嵌套链。该限制保持包可检查，并在加载内容前阻止类似遍历的复杂性。"
     },
     {
       "stage": "post",
-      "question": "What is the most defensible response when a catalog exceeds its declared context budget?",
+      "question": "目录超过声明的上下文预算时，最站得住脚的应对是什么？",
       "options": [
-        "Apply deterministic limits, report omitted entries, and allow narrower discovery",
-        "Ignore the budget whenever a skill has a long description",
-        "Remove skill names while keeping full instruction bodies",
-        "Randomly sample entries on every run"
+        "应用确定性限制，报告省略条目，并允许更窄发现",
+        "只要技能描述长就忽略预算",
+        "移除技能名称却保留完整正文",
+        "每次运行随机抽样条目"
       ],
       "correct": 0,
-      "explanation": "Deterministic truncation or omission makes catalog behavior reproducible and measurable. Reporting omissions preserves observability, while narrower scope or search can retrieve candidates that did not fit the first catalog."
+      "explanation": "确定性截断或省略使目录行为可复现、可测量。报告省略项保留可观察性，更窄范围或搜索可找回首个目录放不下的候选。"
     }
   ]
 }

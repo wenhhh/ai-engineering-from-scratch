@@ -1,78 +1,78 @@
 {
   "lesson": "30-bpe-tokenizer-from-scratch",
-  "title": "BPE Tokenizer From Scratch",
+  "title": "从零构建 BPE 分词器（BPE Tokenizer From Scratch）",
   "questions": [
     {
       "stage": "pre",
-      "question": "Why does a byte-level BPE tokenizer start from a 256-symbol alphabet?",
+      "question": "为什么字节级 BPE 分词器从包含 256 个符号的字母表开始？",
       "options": [
-        "It is the smallest alphabet that supports the English language",
-        "It guarantees any UTF-8 input can be represented before any merge is learned",
-        "It removes the need to store a merge table",
-        "It matches the GPU warp size on most accelerators"
+        "这是支持英语的最小字母表",
+        "它保证在学到任何合并前就能表示任意 UTF-8 输入",
+        "它省去了存储合并表的需求",
+        "它与多数加速器的图形处理器（Graphics Processing Unit，GPU）线程束（Warp）大小匹配"
       ],
       "correct": 1,
-      "explanation": "The 256 raw byte ids cover every possible UTF-8 input. No unknown token is ever required because any input can be expressed as a sequence of bytes."
+      "explanation": "256 个原始字节标识覆盖所有可能的 UTF-8 输入。任何输入都能表示为字节序列，因此永远不需要未知词元（Unknown Token）。"
     },
     {
       "stage": "check",
-      "question": "What does each BPE training step do?",
+      "question": "每个 BPE 训练步骤做什么？",
       "options": [
-        "Decreases the vocabulary by removing the least common id",
-        "Trains a small neural network to score subwords",
-        "Splits a random word and assigns it a new id",
-        "Counts adjacent symbol pairs across the corpus and merges the most frequent one"
+        "删除最不常见的标识以缩小词表",
+        "训练小型神经网络为子词评分",
+        "拆分随机单词并分配新标识",
+        "统计语料中的相邻符号对，合并最频繁的一对"
       ],
       "correct": 3,
-      "explanation": "Each step finds the highest-frequency adjacent pair across the corpus, merges it into a new symbol, and records the merge."
+      "explanation": "每步找到语料中最高频的相邻符号对，将其合并为新符号，并记录此次合并。"
     },
     {
       "stage": "check",
-      "question": "When encoding new text, in what order are merges applied?",
+      "question": "编码新文本时，按什么顺序应用合并？",
       "options": [
-        "By position in the input, left to right, regardless of training rank",
-        "By the rank the merge received during training, lowest rank first",
-        "By the bytes of the pair, sorted alphabetically",
-        "In random order until none apply"
+        "按输入位置从左到右，与训练排序无关",
+        "按训练时获得的排序值，最低者优先",
+        "按符号对的字节以字母顺序排列",
+        "按随机顺序，直到没有可用合并"
       ],
       "correct": 1,
-      "explanation": "Inference applies merges in the order they were learned. The earliest merge in the table wins when multiple merges could apply."
+      "explanation": "推理按学习顺序应用合并。多个合并都适用时，表中最早的合并优先。"
     },
     {
       "stage": "check",
-      "question": "What is the encoder's behavior on a special-token string when allow_special is False?",
+      "question": "allow_special 为 False 时，编码器如何处理特殊词元字符串？",
       "options": [
-        "It raises an error",
-        "It encodes the literal bytes of the string",
-        "It silently skips the string",
-        "It maps the string to its reserved id"
+        "抛出错误",
+        "编码字符串的字面字节",
+        "静默跳过字符串",
+        "将字符串映射到预留标识"
       ],
       "correct": 1,
-      "explanation": "With allow_special off, a string like <|endoftext|> is treated as raw bytes and goes through the merge loop like any other input."
+      "explanation": "关闭 allow_special 时，<|endoftext|> 这类字符串被视为原始字节，像其他输入一样经过合并循环。"
     },
     {
       "stage": "post",
-      "question": "Why does the decoder never need an unknown-token id?",
+      "question": "为什么解码器永远不需要未知词元标识？",
       "options": [
-        "Every learned token is the concatenation of two known tokens, recursing down to single bytes",
-        "The encoder strips unknown tokens before decoding",
-        "The decoder always returns the empty string for unknown ids",
-        "The model rejects unknown ids during sampling"
+        "每个学到的词元都是两个已知词元的拼接，可递归展开到单字节",
+        "编码器在解码前移除未知词元",
+        "解码器对未知标识始终返回空字符串",
+        "模型在采样时拒绝未知标识"
       ],
       "correct": 0,
-      "explanation": "Every id resolves either to a raw byte or to two previously known ids. Recursive expansion always terminates in bytes, which decode to UTF-8."
+      "explanation": "每个标识都解析为原始字节或两个先前已知标识。递归展开总会终止于字节，随后可解码为 UTF-8。"
     },
     {
       "stage": "post",
-      "question": "What happens to the encoded length of a fixed sentence as the target vocabulary grows?",
+      "question": "目标词表增大时，固定句子的编码长度会怎样？",
       "options": [
-        "It tends to decrease because larger vocabularies cover more subwords",
-        "It oscillates randomly because BPE is non-deterministic",
-        "It stays constant because each id encodes a single byte",
-        "It increases linearly with the vocabulary size"
+        "通常缩短，因为更大词表覆盖更多子词",
+        "随机振荡，因为 BPE 是非确定性的",
+        "保持不变，因为每个标识编码一个字节",
+        "随词表大小线性增长"
       ],
       "correct": 0,
-      "explanation": "Larger vocabularies learn more merges, so common subwords collapse into single ids and the encoded sequence gets shorter."
+      "explanation": "更大的词表会学习更多合并，常见子词合并为单个标识，编码序列因而更短。"
     }
   ]
 }

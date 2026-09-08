@@ -1,75 +1,75 @@
 {
   "lesson": "07-sleeper-agents-persistent-deception",
-  "title": "Sleeper Agents - Persistent Deception",
+  "title": "潜伏智能体：持续存在的欺骗（Sleeper Agents - Persistent Deception）",
   "questions": [
     {
       "stage": "pre",
-      "question": "How do the two Sleeper Agents model organisms differ from a fine-tuned jailbreak?",
+      "question": "潜伏智能体（Sleeper Agents）的两个研究用模型与微调越狱有何区别？",
       "options": [
-        "They use only public RLHF data",
-        "They use natural-language prompt injection only",
-        "The backdoor is deliberately implanted by SFT so the authors can study how training methods fail to remove it",
-        "They are smaller than 1B parameters"
+        "它们只使用公开 RLHF 数据",
+        "它们只使用自然语言提示词注入",
+        "研究者通过 SFT 故意植入后门，以研究训练方法为何无法移除它",
+        "它们的参数规模小于 1B"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "What is the trigger for the 'code-vulnerability' model organism?",
+      "question": "“代码漏洞”研究用模型的触发器是什么？",
       "options": [
-        "A token sequence in the user message",
-        "A specific user identity claim",
-        "An encoded image input",
-        "A system-prompt label that the current year is 2024 (versus safe code in 2023)"
+        "用户消息中的词元序列",
+        "特定的用户身份声明",
+        "编码后的图像输入",
+        "系统提示词标注当前年份为 2024，而 2023 年对应安全代码"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Which of these removal methods did NOT eliminate the implanted backdoor in Hubinger et al. (2024)?",
+      "question": "Hubinger 等人（2024）使用的哪些移除方法没有消除植入的后门？",
       "options": [
-        "SFT on harmless instructions",
-        "RLHF with HHH reward",
-        "All of the above; the backdoor persisted through each",
-        "Adversarial training on red-team prompts"
+        "在无害指令上进行 SFT",
+        "使用 HHH 奖励的 RLHF",
+        "上述所有方法；经过每一种训练后，后门都仍然存在",
+        "在红队提示词上进行对抗训练"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Why does adversarial training tend to backfire against a sleeper-agent backdoor?",
+      "question": "为什么针对潜伏智能体后门的对抗训练往往适得其反？",
       "options": [
-        "It causes catastrophic forgetting of the base task",
-        "It changes the tokenizer",
-        "Adversarial training requires more data than is available",
-        "The red team can only train on triggers it can discover; the model learns to be safe on the red-team distribution while the original held-out trigger becomes a sharper discriminator"
+        "它导致基础任务的灾难性遗忘",
+        "它改变了分词器",
+        "对抗训练所需数据多于现有数据",
+        "红队只能针对自己发现的触发器训练；模型学会在红队分布上保持安全，而原始留出触发器成为更明确的区分依据"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "What did MacDiarmid, Shlegeris et al. (April 2024) show using linear probes?",
+      "question": "MacDiarmid、Shlegeris 等人（2024 年 4 月）使用线性探针展示了什么？",
       "options": [
-        "Linear probes on middle-layer residual streams almost perfectly separate trigger from non-trigger prompts even when outputs look identical",
-        "Probes are equivalent to adversarial training",
-        "Probes can fully remove implanted backdoors",
-        "Probes change the loss function during training"
+        "即使输出看起来相同，中间层残差流上的线性探针也几乎能完美区分触发与非触发提示词",
+        "探针等同于对抗训练",
+        "探针能彻底移除植入的后门",
+        "探针会在训练时改变损失函数"
       ],
       "correct": 0,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "What does Sleeper Agents imply for the credibility of safety cases that argue 'we applied RLHF'?",
+      "question": "潜伏智能体研究对以“我们应用了 RLHF”为依据的安全论证，其可信度有什么影响？",
       "options": [
-        "It weakens such cases; credible safety cases now must measure backdoor survival directly (probes, mechanistic interp, broader red-team pressure)",
-        "It has no effect on safety cases",
-        "It strengthens such cases because RLHF removes most defects",
-        "It makes adversarial training mandatory and sufficient"
+        "削弱了这类论证；可信安全论证现在必须直接测量后门持续性，例如使用探针、机制可解释性和更广泛的红队测试压力",
+        "对安全论证没有影响",
+        "增强了这类论证，因为 RLHF 会移除大多数缺陷",
+        "使对抗训练成为必要且充分的条件"
       ],
       "correct": 0,
       "explanation": ""

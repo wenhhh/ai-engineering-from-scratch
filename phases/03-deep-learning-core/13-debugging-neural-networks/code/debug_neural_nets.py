@@ -72,15 +72,15 @@ class NetworkDebugger:
         for name, stats in self.activation_stats.items():
             if stats["fraction_zero"] > 0.5:
                 issues.append(
-                    f"DEAD_NEURONS: {name} has {stats['fraction_zero']:.0%} zero activations"
+                    f"DEAD_NEURONS（死亡神经元）：{name} 中有 {stats['fraction_zero']:.0%} 的激活值为零"
                 )
             if abs(stats["mean"]) > 10:
                 issues.append(
-                    f"EXPLODING_ACTIVATIONS: {name} mean={stats['mean']:.2f}"
+                    f"EXPLODING_ACTIVATIONS（激活值爆炸）： {name} 均值（mean）={stats['mean']:.2f}"
                 )
             if stats["std"] < 1e-6:
                 issues.append(
-                    f"COLLAPSED_ACTIVATIONS: {name} std={stats['std']:.2e}"
+                    f"COLLAPSED_ACTIVATIONS（激活值坍缩）： {name} 标准差（std）={stats['std']:.2e}"
                 )
         return issues if issues else ["HEALTHY"]
 
@@ -91,44 +91,44 @@ class NetworkDebugger:
             grad_magnitudes.append((name, stats["abs_mean"]))
             if stats["abs_mean"] < 1e-7:
                 issues.append(
-                    f"VANISHING_GRADIENT: {name} abs_mean={stats['abs_mean']:.2e}"
+                    f"VANISHING_GRADIENT（梯度消失）： {name} 绝对值均值（abs_mean）={stats['abs_mean']:.2e}"
                 )
             if stats["abs_mean"] > 100:
                 issues.append(
-                    f"EXPLODING_GRADIENT: {name} abs_mean={stats['abs_mean']:.2e}"
+                    f"EXPLODING_GRADIENT（梯度爆炸）： {name} 绝对值均值（abs_mean）={stats['abs_mean']:.2e}"
                 )
         if len(grad_magnitudes) >= 2:
             first_mag = grad_magnitudes[0][1]
             last_mag = grad_magnitudes[-1][1]
             if last_mag > 0 and first_mag / (last_mag + 1e-15) > 100:
                 issues.append(
-                    f"GRADIENT_RATIO: first/last = {first_mag / (last_mag + 1e-15):.0f}x (vanishing)"
+                    f"GRADIENT_RATIO（梯度比）：first/last = {first_mag / (last_mag + 1e-15):.0f}x（梯度消失，vanishing）"
                 )
         return issues if issues else ["HEALTHY"]
 
     def print_report(self):
-        print("\n=== NETWORK DEBUGGER REPORT ===")
-        print(f"\nLoss health: {self.check_loss_health()}")
+        print("\n=== 神经网络调试报告（Network Debugger Report） ===")
+        print(f"\n损失健康状态（Loss Health）： {self.check_loss_health()}")
         if self.loss_history:
             print(
-                f"  Last 5 losses: {[f'{v:.4f}' for v in self.loss_history[-5:]]}"
+                f"  最近 5 次损失： {[f'{v:.4f}' for v in self.loss_history[-5:]]}"
             )
-        print("\nActivation diagnostics:")
+        print("\n激活值诊断（Activation Diagnostics）：")
         for item in self.check_activations():
             print(f"  {item}")
-        print("\nGradient diagnostics:")
+        print("\n梯度诊断（Gradient Diagnostics）：")
         for item in self.check_gradients():
             print(f"  {item}")
-        print("\nPer-layer activation stats:")
+        print("\n逐层激活值统计（Activation Stats）：")
         for name, stats in self.activation_stats.items():
             print(
-                f"  {name}: mean={stats['mean']:.4f} std={stats['std']:.4f} "
-                f"zero={stats['fraction_zero']:.1%}"
+                f"  {name}: 均值（mean）={stats['mean']:.4f} 标准差（std）={stats['std']:.4f} "
+                f"零值比例（zero）={stats['fraction_zero']:.1%}"
             )
-        print("\nPer-layer gradient stats:")
+        print("\n逐层梯度统计（Gradient Stats）：")
         for name, stats in self.gradient_stats.items():
             print(
-                f"  {name}: abs_mean={stats['abs_mean']:.2e} max={stats['max']:.2e}"
+                f"  {name}: 绝对值均值（abs_mean）={stats['abs_mean']:.2e} 最大值（max）={stats['max']:.2e}"
             )
 
     def remove_hooks(self):
@@ -140,8 +140,8 @@ class NetworkDebugger:
 def overfit_one_batch(model, x_batch, y_batch, criterion, lr=0.01, steps=200):
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
     model.train()
-    print("\n=== OVERFIT ONE BATCH TEST ===")
-    print(f"Batch size: {x_batch.shape[0]}, Steps: {steps}")
+    print("\n=== 单批次过拟合测试（Overfit One Batch Test） ===")
+    print(f"批次大小（Batch Size）： {x_batch.shape[0]}, 步数（Steps）： {steps}")
 
     for step in range(steps):
         optimizer.zero_grad()
@@ -158,16 +158,16 @@ def overfit_one_batch(model, x_batch, y_batch, criterion, lr=0.01, steps=200):
                     preds = output.argmax(dim=1)
                 targets = y_batch if y_batch.dim() == 1 else y_batch.squeeze()
                 acc = (preds == targets).float().mean().item()
-            print(f"  Step {step:3d} | Loss: {loss.item():.6f} | Accuracy: {acc:.1%}")
+            print(f"  步骤 {step:3d} | 损失（Loss）：{loss.item():.6f} | 准确率（Accuracy）：{acc:.1%}")
 
     final_loss = loss.item()
     if final_loss > 0.1:
         print(
-            f"\n  FAIL: Loss did not converge ({final_loss:.4f}). "
-            f"Model or training loop is broken."
+            f"\n  失败（FAIL）：损失未收敛（{final_loss:.4f}）。"
+            f"模型或训练循环存在问题。"
         )
         return False
-    print(f"\n  PASS: Loss converged to {final_loss:.6f}")
+    print(f"\n  通过（PASS）：损失已收敛至 {final_loss:.6f}")
     return True
 
 
@@ -183,7 +183,7 @@ def find_learning_rate(
     best_loss = float("inf")
     current_lr = start_lr
 
-    print("\n=== LEARNING RATE FINDER ===")
+    print("\n=== 学习率查找器（Learning Rate Finder） ===")
 
     for step in range(steps):
         optimizer.zero_grad()
@@ -206,19 +206,19 @@ def find_learning_rate(
     model.load_state_dict(original_state)
 
     if len(results) < 10:
-        print("  Could not complete LR sweep -- loss diverged too quickly")
+        print("  无法完成学习率扫描（LR Sweep）：损失发散过快")
         return results
 
     min_loss_idx = min(range(len(results)), key=lambda i: results[i][1])
     suggested_lr = results[max(0, min_loss_idx - 10)][0]
 
     print(
-        f"  Swept {len(results)} steps from {start_lr:.0e} to {results[-1][0]:.0e}"
+        f"  共扫描 {len(results)} 步，学习率从 {start_lr:.0e} 到 {results[-1][0]:.0e}"
     )
     print(
-        f"  Minimum loss {results[min_loss_idx][1]:.4f} at lr={results[min_loss_idx][0]:.2e}"
+        f"  最小损失为 {results[min_loss_idx][1]:.4f}，对应 lr={results[min_loss_idx][0]:.2e}"
     )
-    print(f"  Suggested learning rate: {suggested_lr:.2e}")
+    print(f"  建议学习率（Learning Rate）： {suggested_lr:.2e}")
 
     return results
 
@@ -238,7 +238,7 @@ def gradient_check(model, x, y, criterion, eps=1e-4):
     y_double = y.double()
     model_double = model.double()
 
-    print("\n=== GRADIENT CHECK ===")
+    print("\n=== 梯度检查（Gradient Check） ===")
     overall_max_diff = 0
     checked = 0
 
@@ -279,18 +279,18 @@ def gradient_check(model, x, y, criterion, eps=1e-4):
             checked += 1
 
         overall_max_diff = max(overall_max_diff, layer_max_diff)
-        status = "OK" if layer_max_diff < 1e-5 else "MISMATCH"
-        print(f"  {name}: max_rel_diff={layer_max_diff:.2e} [{status}]")
+        status = "一致（OK）" if layer_max_diff < 1e-5 else "不匹配（MISMATCH）"
+        print(f"  {name}: 最大相对差异（max_rel_diff）={layer_max_diff:.2e} [{status}]")
 
     model.float()
 
-    print(f"\n  Checked {checked} parameters")
+    print(f"\n  已检查 {checked} 个参数")
     if overall_max_diff < 1e-5:
-        print("  PASS: Gradients match (rel_diff < 1e-5)")
+        print("  通过（PASS）：梯度一致（rel_diff < 1e-5）")
     elif overall_max_diff < 1e-3:
-        print("  WARN: Small differences (1e-5 < rel_diff < 1e-3)")
+        print("  警告（WARN）：存在小幅差异（1e-5 < rel_diff < 1e-3）")
     else:
-        print("  FAIL: Gradient mismatch detected (rel_diff > 1e-3)")
+        print("  失败（FAIL）：检测到梯度不匹配（rel_diff > 1e-3）")
     return overall_max_diff
 
 
@@ -301,7 +301,7 @@ def demo_broken_networks():
     criterion = nn.CrossEntropyLoss()
 
     print("=" * 60)
-    print("BUG 1: Learning rate too high (lr=10)")
+    print("问题 1：学习率（Learning Rate）过高（lr=10）")
     print("=" * 60)
     model1 = nn.Sequential(nn.Linear(10, 32), nn.ReLU(), nn.Linear(32, 2))
     debugger1 = NetworkDebugger(model1)
@@ -317,7 +317,7 @@ def demo_broken_networks():
     debugger1.remove_hooks()
 
     print("\n" + "=" * 60)
-    print("BUG 2: Dead ReLUs from bad initialization")
+    print("问题 2：不当初始化导致 ReLU 死亡（Dead ReLUs）")
     print("=" * 60)
     model2 = nn.Sequential(
         nn.Linear(10, 32),
@@ -344,7 +344,7 @@ def demo_broken_networks():
     debugger2.remove_hooks()
 
     print("\n" + "=" * 60)
-    print("BUG 3: Missing zero_grad (gradients accumulate)")
+    print("问题 3：缺少 zero_grad 调用，导致梯度累积（Gradient Accumulation）")
     print("=" * 60)
     model3 = nn.Sequential(nn.Linear(10, 32), nn.ReLU(), nn.Linear(32, 2))
     debugger3 = NetworkDebugger(model3)
@@ -359,7 +359,7 @@ def demo_broken_networks():
     debugger3.remove_hooks()
 
     print("\n" + "=" * 60)
-    print("HEALTHY NETWORK: Correct setup for comparison")
+    print("正常网络（Healthy Network）：使用正确配置进行对照")
     print("=" * 60)
     model_good = nn.Sequential(nn.Linear(10, 32), nn.ReLU(), nn.Linear(32, 2))
     debugger_good = NetworkDebugger(model_good)
@@ -375,19 +375,19 @@ def demo_broken_networks():
     debugger_good.remove_hooks()
 
     print("\n" + "=" * 60)
-    print("OVERFIT-ONE-BATCH TEST")
+    print("单批次过拟合测试（Overfit-One-Batch Test）")
     print("=" * 60)
     model_test = nn.Sequential(nn.Linear(10, 32), nn.ReLU(), nn.Linear(32, 2))
     overfit_one_batch(model_test, x[:8], y[:8], criterion)
 
     print("\n" + "=" * 60)
-    print("LEARNING RATE FINDER")
+    print("学习率查找器（Learning Rate Finder）")
     print("=" * 60)
     model_lr = nn.Sequential(nn.Linear(10, 32), nn.ReLU(), nn.Linear(32, 2))
     find_learning_rate(model_lr, x, y, criterion)
 
     print("\n" + "=" * 60)
-    print("GRADIENT CHECK (smooth model + MSE loss for clean finite differences)")
+    print("梯度检查（Gradient Check）：使用平滑模型和均方误差（MSE）损失，以准确计算有限差分（Finite Differences）")
     print("=" * 60)
     torch.manual_seed(123)
     x_check = torch.randn(4, 3)
@@ -398,6 +398,6 @@ def demo_broken_networks():
 
 if __name__ == "__main__":
     print("=" * 60)
-    print("DEBUGGING NEURAL NETWORKS -- Phase 3, Lesson 13")
+    print("神经网络调试（Debugging Neural Networks）-- 阶段 3，第 13 课")
     print("=" * 60)
     demo_broken_networks()

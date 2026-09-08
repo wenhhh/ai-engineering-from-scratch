@@ -1,6 +1,6 @@
-/* figures-math.js — interactive lesson figures for Phase 1 (math foundations).
-   Loads after lesson-figures.js, uses only the shared LF toolkit, and follows
-   the same blueprint theme through CSS vars. Same fenced-block syntax:
+/* figures-math.js：阶段 1 数学基础（Math Foundations）的交互图表。
+   在 lesson-figures.js 之后加载，仅使用共享 LF 工具，通过 CSS 变量适配蓝图主题。
+   使用同样的围栏语法：
        ```figure
        vector-projection
        ``` */
@@ -10,7 +10,7 @@
   if (!LF) { return; }
   var el = LF.el, svgEl = LF.svgEl, slider = LF.slider, select = LF.select;
 
-  // ── vector-projection: project a onto b, watch the foot slide ──────────────
+  // vector-projection：将 a 投影到 b，观察垂足移动。
   function vectorProjection(host) {
     var state = { degB: 25, lenA: 2.4, degA: 70 };
     var W = 520, H = 230, OX = 60, OY = H - 40, U = 52;
@@ -33,24 +33,24 @@
       svg.appendChild(arrow(ax, ay, 'var(--blueprint,#3553ff)'));                  // a
       svg.appendChild(arrow(px, py, 'var(--warn,#b8870f)', '3'));                  // projection onto b
       svg.appendChild(svgEl('line', { x1: OX + ax * U, y1: OY - ay * U, x2: OX + px * U, y2: OY - py * U, stroke: 'var(--rule-soft,#ccc)', 'stroke-width': '1', 'stroke-dasharray': '4 3' }));
-      num.innerHTML = projLen.toFixed(2) + ' <small>proj length</small>';
-      meta.textContent = 'angle θ = ' + theta.toFixed(0) + '°  ·  proj = |a|cos θ = ' + projLen.toFixed(2) + (projLen < 0 ? '  (points opposite b)' : '');
-      formula.textContent = 'proj_b a = (a·b / |b|²) b   ·   scalar = |a|cos θ   ·   b shown as unit vector (grey)';
+      num.innerHTML = projLen.toFixed(2) + ' <small>投影长度（Projection Length）</small>';
+      meta.textContent = '夹角（Angle）θ = ' + theta.toFixed(0) + '°  ·  proj = |a|cos θ = ' + projLen.toFixed(2) + (projLen < 0 ? '  （指向 b 的反方向）' : '');
+      formula.textContent = 'proj_b a = (a·b / |b|²) b   ·   标量（Scalar）= |a|cos θ   ·   b 以灰色单位向量（Unit Vector）表示';
     };
     var grid = el('div', { class: 'lf-grid' }, [
-      slider(state, 'degB', 'angle of b', 0, 180, 1),
-      slider(state, 'degA', 'angle of a', 0, 180, 1),
-      slider(state, 'lenA', 'length of a', 0.4, 3.4, 0.1)
+      slider(state, 'degB', 'b 的角度（Angle）', 0, 180, 1),
+      slider(state, 'degA', 'a 的角度（Angle）', 0, 180, 1),
+      slider(state, 'lenA', 'a 的长度（Length）', 0.4, 3.4, 0.1)
     ]);
     host.appendChild(el('div', { class: 'lf' }, [
-      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['VECTOR PROJECTION']), el('span', {}, ['drag the angles'])]),
+      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['向量投影（Vector Projection）']), el('span', {}, ['调整两个角度'])]),
       el('div', { class: 'lf-body' }, [grid, el('div', { class: 'lf-out' }, [svg, el('div', { style: 'margin-top:10px' }, [num]), meta, formula])]),
-      el('div', { class: 'lf-cap' }, ['Blue is a, grey is the direction of b, orange is the shadow a casts on b. The scalar projection |a|cos θ shrinks to zero when the vectors are perpendicular and goes negative when the angle passes 90°. The dashed line is the perpendicular dropped from a to its foot on b.'])
+      el('div', { class: 'lf-cap' }, ['蓝色表示 a，灰色表示 b 的方向，橙色表示 a 在 b 上的投影（Projection）。两向量垂直时，标量投影（Scalar Projection）|a|cos θ 缩小为零；夹角超过 90° 后，投影变为负数。虚线从 a 的端点垂直连到它在 b 上的垂足。'])
     ]));
     state._render();
   }
 
-  // ── matrix-transform: a 2x2 matrix deforms the unit square ─────────────────
+  // matrix-transform：2x2 矩阵使单位正方形发生变换。
   function matrixTransform(host) {
     var state = { a: 1, b: 0.5, c: 0, d: 1 };
     var W = 520, H = 230, CX = 260, CY = 120, U = 42;
@@ -71,8 +71,8 @@
       svg.appendChild(quad(unit, 'var(--ink-mute,#999)', 'none'));
       svg.appendChild(quad(tf, 'var(--blueprint,#3553ff)', det < 0 ? 'var(--warn,#b8870f)' : 'var(--blueprint,#3553ff)'));
       var img = svg.lastChild; img.setAttribute('fill-opacity', '0.12');
-      num.innerHTML = det.toFixed(2) + ' <small>determinant</small>';
-      meta.textContent = (det < 0 ? 'orientation flipped  ·  ' : det === 0 ? 'collapsed to a line  ·  ' : '') + 'area scales by ' + Math.abs(det).toFixed(2) + 'x';
+      num.innerHTML = det.toFixed(2) + ' <small>行列式（Determinant）</small>';
+      meta.textContent = (det < 0 ? '方向已翻转 · ' : det === 0 ? '已塌缩成直线 · ' : '') + '面积缩放倍数：' + Math.abs(det).toFixed(2) + 'x';
       formula.textContent = 'M = [[' + a.toFixed(1) + ', ' + b.toFixed(1) + '], [' + c.toFixed(1) + ', ' + d.toFixed(1) + ']]   ·   det = ad − bc = ' + det.toFixed(2);
     };
     var grid = el('div', { class: 'lf-grid' }, [
@@ -82,14 +82,14 @@
       slider(state, 'd', 'd  (M₂₂)', -2, 2, 0.1)
     ]);
     host.appendChild(el('div', { class: 'lf' }, [
-      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['MATRIX TRANSFORM']), el('span', {}, ['drag the four entries'])]),
+      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['矩阵变换（Matrix Transform）']), el('span', {}, ['调整四个矩阵元素'])]),
       el('div', { class: 'lf-body' }, [grid, el('div', { class: 'lf-out' }, [svg, el('div', { style: 'margin-top:10px' }, [num]), meta, formula])]),
-      el('div', { class: 'lf-cap' }, ['Grey is the unit square; blue is its image under M. The columns of M are where the basis vectors land. The determinant ad − bc is the signed area of that parallelogram: it is the factor by which the matrix scales area, and it turns negative when the transform flips orientation.'])
+      el('div', { class: 'lf-cap' }, ['灰色是单位正方形，蓝色是它经过 M 变换后的像（Image）。M 的各列给出基向量（Basis Vector）变换后的落点。行列式（Determinant）ad − bc 是该平行四边形的有向面积（Signed Area），表示矩阵对面积的缩放倍数；变换翻转方向时，它变为负数。'])
     ]));
     state._render();
   }
 
-  // ── eigen-directions: a symmetric 2x2 scales its eigenvectors, rotates rest ─
+  // eigen-directions：2x2 对称矩阵沿特征向量缩放，其他方向还会旋转。
   function eigenDirections(host) {
     var state = { a: 2, c: 0.8, d: 1, deg: 30 };
     var W = 520, H = 230, CX = 200, CY = 120, U = 34;
@@ -122,24 +122,24 @@
       svg.appendChild(arrow(gx, gy, 'var(--rule-soft,#bbb)', '1.5'));                       // generic input
       svg.appendChild(arrow(tx, ty, 'var(--blueprint,#3553ff)', '2.5'));                    // its image (rotated)
       num.innerHTML = 'λ = ' + l1.toFixed(2) + ', ' + l2.toFixed(2);
-      meta.textContent = 'eigenvalues stretch the dashed axes  ·  the grey input vector rotates into blue, off-axis';
-      formula.textContent = 'M = [[' + a.toFixed(1) + ', ' + b.toFixed(1) + '], [' + b.toFixed(1) + ', ' + d.toFixed(1) + ']]   ·   Mv = λv only along the eigen-axes';
+      meta.textContent = '特征值（Eigenvalue）决定沿虚线轴的伸缩 · 不在轴上的灰色输入向量旋转为蓝色向量';
+      formula.textContent = 'M = [[' + a.toFixed(1) + ', ' + b.toFixed(1) + '], [' + b.toFixed(1) + ', ' + d.toFixed(1) + ']]   ·   只有沿特征轴（Eigen-axis）才满足 Mv = λv';
     };
     var grid = el('div', { class: 'lf-grid' }, [
       slider(state, 'a', 'a  (M₁₁)', -2, 3, 0.1),
       slider(state, 'd', 'd  (M₂₂)', -2, 3, 0.1),
-      slider(state, 'c', 'off-diagonal b', -2, 2, 0.1),
-      slider(state, 'deg', 'generic vector angle', 0, 360, 1)
+      slider(state, 'c', '非对角元素（Off-diagonal）b', -2, 2, 0.1),
+      slider(state, 'deg', '一般向量的角度（Angle）', 0, 360, 1)
     ]);
     host.appendChild(el('div', { class: 'lf' }, [
-      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['EIGEN-DIRECTIONS']), el('span', {}, ['drag the matrix'])]),
+      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['特征方向（Eigen-directions）']), el('span', {}, ['调整矩阵元素'])]),
       el('div', { class: 'lf-body' }, [grid, el('div', { class: 'lf-out' }, [svg, el('div', { style: 'margin-top:10px' }, [num]), meta, formula])]),
-      el('div', { class: 'lf-cap' }, ['For a symmetric matrix the eigenvectors are the dashed axes, and the matrix simply stretches anything along them by the eigenvalue (orange). A generic grey vector, off those axes, both stretches and rotates into the blue image. Drag its angle: only on an eigen-axis does the output stay parallel to the input.'])
+      el('div', { class: 'lf-cap' }, ['对于对称矩阵（Symmetric Matrix），虚线轴表示特征向量（Eigenvector）的方向；矩阵只会按特征值（Eigenvalue）对沿这些轴的向量进行伸缩，橙色向量展示了这一结果。不在这些轴上的一般灰色向量则既伸缩又旋转，得到蓝色的像（Image）。调整角度可以看到：只有位于特征轴上，输出才与输入保持平行。'])
     ]));
     state._render();
   }
 
-  // ── derivative-tangent: tangent line to f(x)=x^3-3x at x0 ───────────────────
+  // derivative-tangent：f(x)=x^3-3x 在 x0 处的切线。
   function derivativeTangent(host) {
     var state = { x0: -1.6 };
     var W = 520, H = 230, PAD = 30, XR = 2.4, YR = 4.2;
@@ -161,20 +161,20 @@
       var xL = -XR, xRr = XR;                                    // tangent: y = y0 + slope*(x-x0)
       svg.appendChild(svgEl('line', { x1: px(xL), y1: py(y0 + slope * (xL - x0)), x2: px(xRr), y2: py(y0 + slope * (xRr - x0)), stroke: 'var(--warn,#b8870f)', 'stroke-width': '1.8' }));
       svg.appendChild(svgEl('circle', { cx: px(x0), cy: py(y0), r: '5', fill: 'var(--blueprint,#3553ff)' }));
-      num.innerHTML = slope.toFixed(2) + ' <small>slope f′(x₀)</small>';
-      meta.textContent = 'x₀ = ' + x0.toFixed(2) + '  ·  f(x₀) = ' + y0.toFixed(2) + '  ·  ' + (Math.abs(slope) < 0.05 ? 'flat: a critical point' : slope > 0 ? 'rising' : 'falling');
-      formula.textContent = "f(x) = x³ − 3x   ·   f′(x) = 3x² − 3   ·   tangent y = f(x₀) + f′(x₀)(x − x₀)";
+      num.innerHTML = slope.toFixed(2) + ' <small>斜率（Slope）f′(x₀)</small>';
+      meta.textContent = 'x₀ = ' + x0.toFixed(2) + '  ·  f(x₀) = ' + y0.toFixed(2) + '  ·  ' + (Math.abs(slope) < 0.05 ? '水平：临界点（Critical Point）' : slope > 0 ? '上升' : '下降');
+      formula.textContent = "f(x) = x³ − 3x   ·   f′(x) = 3x² − 3   ·   切线（Tangent）y = f(x₀) + f′(x₀)(x − x₀)";
     };
-    var grid = el('div', {}, [slider(state, 'x0', 'point x₀', -2.3, 2.3, 0.05)]);
+    var grid = el('div', {}, [slider(state, 'x0', '取点 x₀', -2.3, 2.3, 0.05)]);
     host.appendChild(el('div', { class: 'lf' }, [
-      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['DERIVATIVE / TANGENT']), el('span', {}, ['drag x₀'])]),
+      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['导数与切线（Derivative / Tangent）']), el('span', {}, ['调整 x₀'])]),
       el('div', { class: 'lf-body' }, [grid, el('div', { class: 'lf-out' }, [svg, el('div', { style: 'margin-top:10px' }, [num]), meta, formula])]),
-      el('div', { class: 'lf-cap' }, ['The derivative is the slope of the tangent line. For f(x) = x³ − 3x it equals 3x² − 3, which is zero at x = ±1, the two critical points where the orange line goes flat. Between them the function falls, outside them it rises. Gradient descent reads exactly this slope to decide which way to step.'])
+      el('div', { class: 'lf-cap' }, ['导数（Derivative）就是切线（Tangent）的斜率。对于 f(x) = x³ − 3x，导数为 3x² − 3，在 x = ±1 处为零；这两个临界点（Critical Point）处的橙色切线变为水平线。函数在两点之间下降，在两侧上升。梯度下降（Gradient Descent）正是根据这个斜率决定向哪一侧迈步。'])
     ]));
     state._render();
   }
 
-  // ── chain-rule: dy/dx for y = sin(a x^2) as a product of local derivatives ──
+  // chain-rule：y = sin(a x^2) 的 dy/dx 等于局部导数的乘积。
   function chainRule(host) {
     var state = { x: 1.0, a: 1.5 };
     var num = el('span', { class: 'lf-num' });
@@ -195,24 +195,24 @@
       while (rows.firstChild) rows.removeChild(rows.firstChild);
       rows.appendChild(bar('dy/du = cos(a x²)', dydu, 1));
       rows.appendChild(bar('du/dx = 2 a x', dudx, Math.max(1, 2 * Math.abs(a) * 2)));
-      rows.appendChild(bar('dy/dx = product', dydx, Math.max(1, 2 * Math.abs(a) * 2)));
+      rows.appendChild(bar('dy/dx = 乘积（Product）', dydx, Math.max(1, 2 * Math.abs(a) * 2)));
       num.innerHTML = dydx.toFixed(3) + ' <small>dy/dx</small>';
-      meta.textContent = 'y = sin(' + u.toFixed(2) + ') = ' + Math.sin(u).toFixed(3) + '  ·  local slopes multiply: ' + dydu.toFixed(2) + ' × ' + dudx.toFixed(2);
-      formula.textContent = 'y = sin(a x²)   ·   dy/dx = cos(a x²) · 2 a x   ·   outer derivative × inner derivative';
+      meta.textContent = 'y = sin(' + u.toFixed(2) + ') = ' + Math.sin(u).toFixed(3) + '  ·  局部斜率相乘：' + dydu.toFixed(2) + ' × ' + dudx.toFixed(2);
+      formula.textContent = 'y = sin(a x²)   ·   dy/dx = cos(a x²) · 2 a x   ·   外层导数 × 内层导数';
     };
     var grid = el('div', { class: 'lf-grid' }, [
       slider(state, 'x', 'x', -2.5, 2.5, 0.05),
       slider(state, 'a', 'a', 0.2, 3, 0.1)
     ]);
     host.appendChild(el('div', { class: 'lf' }, [
-      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['CHAIN RULE']), el('span', {}, ['drag x and a'])]),
+      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['链式法则（Chain Rule）']), el('span', {}, ['调整 x 和 a'])]),
       el('div', { class: 'lf-body' }, [grid, el('div', { class: 'lf-out' }, [rows, el('div', { style: 'margin-top:12px' }, [num]), meta, formula])]),
-      el('div', { class: 'lf-cap' }, ['The composite y = sin(a x²) differentiates by multiplying two local slopes: the outer cos(a x²) and the inner 2 a x. Each orange-or-blue bar is one factor; their product is the bar below. This is the rule backpropagation applies link by link to push gradients through a whole network.'])
+      el('div', { class: 'lf-cap' }, ['复合函数（Composite Function）y = sin(a x²) 的导数由两个局部斜率相乘得到：外层为 cos(a x²)，内层为 2 a x。每条橙色或蓝色条形表示一个因子，下方条形表示它们的乘积。反向传播（Backpropagation）逐环节应用这条法则，让梯度传遍整个网络。'])
     ]));
     state._render();
   }
 
-  // ── gaussian-pdf: drag mean and std, shade the one-sigma band ───────────────
+  // gaussian-pdf：调整均值与标准差，标出一个标准差内的区域。
   function gaussianPdf(host) {
     var state = { mu: 0, sigma: 1 };
     var W = 520, H = 220, PAD = 30, XLO = -6, XHI = 6;
@@ -236,23 +236,23 @@
       for (i = 0; i <= 160; i++) { x = XLO + (XHI - XLO) * i / 160; d += (i ? 'L' : 'M') + px(x).toFixed(1) + ' ' + py(pdf(x, mu, s)).toFixed(1) + ' '; }
       svg.appendChild(svgEl('path', { d: d, fill: 'none', stroke: 'var(--blueprint,#3553ff)', 'stroke-width': '2' }));
       svg.appendChild(svgEl('line', { x1: px(mu), y1: py(0), x2: px(mu), y2: py(peak), stroke: 'var(--ink-mute,#999)', 'stroke-width': '1', 'stroke-dasharray': '3 3' }));
-      num.innerHTML = peak.toFixed(3) + ' <small>peak density</small>';
-      meta.textContent = 'μ = ' + mu.toFixed(2) + '  ·  σ = ' + s.toFixed(2) + '  ·  shaded ±1σ holds ≈ 68% of the mass';
-      formula.textContent = 'p(x) = exp(−½((x−μ)/σ)²) / (σ√(2π))   ·   area always integrates to 1';
+      num.innerHTML = peak.toFixed(3) + ' <small>峰值密度（Peak Density）</small>';
+      meta.textContent = 'μ = ' + mu.toFixed(2) + '  ·  σ = ' + s.toFixed(2) + '  ·  ±1σ 阴影区域包含约 68% 的概率质量（Probability Mass）';
+      formula.textContent = 'p(x) = exp(−½((x−μ)/σ)²) / (σ√(2π))   ·   总面积的积分始终为 1';
     };
     var grid = el('div', { class: 'lf-grid' }, [
-      slider(state, 'mu', 'mean μ', -4, 4, 0.1),
-      slider(state, 'sigma', 'std σ', 0.4, 3, 0.05)
+      slider(state, 'mu', '均值（Mean）μ', -4, 4, 0.1),
+      slider(state, 'sigma', '标准差（Std）σ', 0.4, 3, 0.05)
     ]);
     host.appendChild(el('div', { class: 'lf' }, [
-      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['GAUSSIAN PDF']), el('span', {}, ['drag μ and σ'])]),
+      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['高斯概率密度（Gaussian PDF）']), el('span', {}, ['调整 μ 和 σ'])]),
       el('div', { class: 'lf-body' }, [grid, el('div', { class: 'lf-out' }, [svg, el('div', { style: 'margin-top:10px' }, [num]), meta, formula])]),
-      el('div', { class: 'lf-cap' }, ['The mean slides the bell sideways; the standard deviation sets its width. A smaller σ makes a taller, narrower peak, since the total area stays fixed at 1. The shaded band is μ ± σ, which always captures about 68% of the probability no matter where you put the curve.'])
+      el('div', { class: 'lf-cap' }, ['均值（Mean）使钟形曲线左右平移，标准差（Standard Deviation）决定曲线宽度。σ 越小，峰越高、越窄，因为总面积始终保持为 1。阴影带对应 μ ± σ，无论曲线移到哪里，它都包含约 68% 的概率。'])
     ]));
     state._render();
   }
 
-  // ── bayes-update: medical test posterior from prior, sensitivity, FPR ──────
+  // bayes-update：根据先验、敏感度与假阳性率（FPR）计算医学检测的后验概率。
   function bayesUpdate(host) {
     var state = { prior: 1, sens: 95, fpr: 5 };
     var num = el('span', { class: 'lf-num' });
@@ -270,26 +270,26 @@
       var pPos = sens * pr + fpr * (1 - pr); // total probability of a positive test
       var post = pPos > 0 ? sens * pr / pPos : 0;   // Bayes: P(disease | +)
       while (rows.firstChild) rows.removeChild(rows.firstChild);
-      rows.appendChild(bar('prior P(disease)', pr));
-      rows.appendChild(bar('posterior P(disease | +)', post));
-      num.innerHTML = (post * 100).toFixed(1) + ' <small>% have it, given +</small>';
-      meta.textContent = 'a positive test happens ' + (pPos * 100).toFixed(1) + '% of the time  ·  most are false alarms when the disease is rare';
+      rows.appendChild(bar('先验概率（Prior）P(disease)', pr));
+      rows.appendChild(bar('后验概率（Posterior）P(disease | +)', post));
+      num.innerHTML = (post * 100).toFixed(1) + ' <small>%：检测阳性者中的患病比例</small>';
+      meta.textContent = '检测阳性的概率为 ' + (pPos * 100).toFixed(1) + '% · 疾病罕见时，多数阳性是误报';
       formula.textContent = 'P(D|+) = sens·prior / (sens·prior + fpr·(1−prior)) = ' + (sens).toFixed(2) + '·' + pr.toFixed(3) + ' / ' + pPos.toFixed(4);
     };
     var grid = el('div', { class: 'lf-grid' }, [
-      slider(state, 'prior', 'prior P(disease) %', 0.1, 50, 0.1),
-      slider(state, 'sens', 'sensitivity P(+|D) %', 50, 100, 0.5),
-      slider(state, 'fpr', 'false-positive rate %', 0.5, 30, 0.5)
+      slider(state, 'prior', '先验概率（Prior）P(disease) %', 0.1, 50, 0.1),
+      slider(state, 'sens', '灵敏度（Sensitivity）P(+|D) %', 50, 100, 0.5),
+      slider(state, 'fpr', '假阳性率（False-positive Rate）%', 0.5, 30, 0.5)
     ]);
     host.appendChild(el('div', { class: 'lf' }, [
-      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['BAYES UPDATE']), el('span', {}, ['drag prior, sensitivity, FPR'])]),
+      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['贝叶斯更新（Bayes Update）']), el('span', {}, ['调整先验概率、灵敏度和假阳性率'])]),
       el('div', { class: 'lf-body' }, [grid, el('div', { class: 'lf-out' }, [rows, el('div', { style: 'margin-top:12px' }, [num]), meta, formula])]),
-      el('div', { class: 'lf-cap' }, ['The surprise of Bayes: a 95%-accurate test on a disease that affects 1 in 100 still leaves most positives healthy, because the false positives drawn from the huge healthy population swamp the few true cases. The posterior only climbs once the prior is high enough that real cases outnumber the false alarms.'])
+      el('div', { class: 'lf-cap' }, ['贝叶斯（Bayes）推断的反直觉之处在于：对于患病率为百分之一的疾病，即使检测准确率为 95%，检测阳性的人中仍有多数是健康人，因为庞大的健康人群产生的假阳性（False Positive）会淹没少量真实病例。只有先验概率（Prior）高到真实病例超过误报时，后验概率（Posterior）才会升高。'])
     ]));
     state._render();
   }
 
-  // ── entropy-kl: two 4-bin distributions, H(p) and KL(p||q) ─────────────────
+  // entropy-kl：两个各含 4 个分箱的分布，计算 H(p) 与 KL(p||q)。
   function entropyKl(host) {
     var state = { p0: 5, p1: 3, p2: 2, p3: 1, q0: 1, q1: 2, q2: 3, q3: 4 };
     var num = el('span', { class: 'lf-num' });
@@ -307,29 +307,29 @@
         var bp = el('i'); bp.style.width = (pi * 100).toFixed(0) + '%';
         var bq = el('i'); bq.style.width = (q[i] * 100).toFixed(0) + '%'; bq.style.background = 'var(--ink-mute,#999)';
         rows.appendChild(el('div', { class: 'lf-ctrl' }, [
-          el('label', {}, ['bin ' + i, el('b', {}, ['p ' + (pi * 100).toFixed(0) + '% · q ' + (q[i] * 100).toFixed(0) + '%'])]),
+          el('label', {}, ['分箱（Bin）' + i, el('b', {}, ['p ' + (pi * 100).toFixed(0) + '% · q ' + (q[i] * 100).toFixed(0) + '%'])]),
           el('div', { class: 'lf-bar' }, [bp]), el('div', { class: 'lf-bar' }, [bq])
         ]));
       });
-      num.innerHTML = H.toFixed(2) + ' <small>bits H(p)</small>';
-      meta.textContent = 'KL(p‖q) = ' + KL.toFixed(3) + ' bits  ·  always ≥ 0, zero only when p = q  ·  asymmetric: KL(p‖q) ≠ KL(q‖p)';
+      num.innerHTML = H.toFixed(2) + ' <small>比特（Bits）H(p)</small>';
+      meta.textContent = 'KL(p‖q) = ' + KL.toFixed(3) + ' 比特（Bits）· 始终 ≥ 0，仅当 p = q 时为零 · 非对称：KL(p‖q) ≠ KL(q‖p)';
       formula.textContent = 'H(p) = −Σ pᵢ log₂ pᵢ   ·   KL(p‖q) = Σ pᵢ log₂(pᵢ / qᵢ)';
     };
     var grid = el('div', { class: 'lf-grid' }, [
-      slider(state, 'p0', 'p bin 0', 0, 10, 1), slider(state, 'q0', 'q bin 0', 0, 10, 1),
-      slider(state, 'p1', 'p bin 1', 0, 10, 1), slider(state, 'q1', 'q bin 1', 0, 10, 1),
-      slider(state, 'p2', 'p bin 2', 0, 10, 1), slider(state, 'q2', 'q bin 2', 0, 10, 1),
-      slider(state, 'p3', 'p bin 3', 0, 10, 1), slider(state, 'q3', 'q bin 3', 0, 10, 1)
+      slider(state, 'p0', 'p 分箱（Bin）0', 0, 10, 1), slider(state, 'q0', 'q 分箱（Bin）0', 0, 10, 1),
+      slider(state, 'p1', 'p 分箱（Bin）1', 0, 10, 1), slider(state, 'q1', 'q 分箱（Bin）1', 0, 10, 1),
+      slider(state, 'p2', 'p 分箱（Bin）2', 0, 10, 1), slider(state, 'q2', 'q 分箱（Bin）2', 0, 10, 1),
+      slider(state, 'p3', 'p 分箱（Bin）3', 0, 10, 1), slider(state, 'q3', 'q 分箱（Bin）3', 0, 10, 1)
     ]);
     host.appendChild(el('div', { class: 'lf' }, [
-      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['ENTROPY & KL']), el('span', {}, ['shape p (blue) and q (grey)'])]),
+      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['熵与 KL 散度（Entropy & KL）']), el('span', {}, ['调整 p（蓝色）和 q（灰色）的分布'])]),
       el('div', { class: 'lf-body' }, [grid, el('div', { class: 'lf-out' }, [rows, el('div', { style: 'margin-top:12px' }, [num]), meta, formula])]),
-      el('div', { class: 'lf-cap' }, ['Entropy H(p) measures the average surprise of the blue distribution, maxed out when all four bins are equal. KL(p‖q) measures the extra bits paid for coding samples from p using a code built for q; it is never negative, hits zero only when the two match, and is not symmetric. Cross-entropy training minimizes exactly this gap.'])
+      el('div', { class: 'lf-cap' }, ['熵（Entropy）H(p) 衡量蓝色分布的平均惊讶程度，四个分箱的概率相等时达到最大值。KL 散度（KL Divergence）KL(p‖q) 衡量用针对 q 设计的编码来编码 p 的样本时，需要额外付出的比特数；它不会为负，仅在两分布一致时为零，而且不对称。交叉熵（Cross-entropy）训练最小化的正是这一差距。'])
     ]));
     state._render();
   }
 
-  // ── pca-axes: correlated cloud, principal axes from the covariance matrix ───
+  // pca-axes：从相关点云的协方差矩阵求主轴。
   function pcaAxes(host) {
     var state = { rho: 0.7, scale: 1.4 };
     var W = 520, H = 230, CX = 200, CY = 115, U = 70;
@@ -344,7 +344,7 @@
     state._render = function () {
       var rho = state.rho, sc = state.scale;
       var sx = sc, sy = 0.55;
-      // covariance of generated points: x = sx*z1, y = sy*(rho*z1 + sqrt(1-rho^2)*z2)
+      // 生成点的协方差：x = sx*z1, y = sy*(rho*z1 + sqrt(1-rho^2)*z2)。
       var cxx = sx * sx, cyy = sy * sy, cxy = sx * sy * rho;
       var tr = cxx + cyy, det = cxx * cyy - cxy * cxy;
       var disc = Math.sqrt(Math.max(0, tr * tr / 4 - det));
@@ -362,23 +362,23 @@
       var a1 = Math.sqrt(l1) * U * 2, a2 = Math.sqrt(l2) * U * 2;   // axis length ~ std dev
       svg.appendChild(svgEl('line', { x1: CX - v1[0] * a1, y1: CY + v1[1] * a1, x2: CX + v1[0] * a1, y2: CY - v1[1] * a1, stroke: 'var(--blueprint,#3553ff)', 'stroke-width': '3' }));
       svg.appendChild(svgEl('line', { x1: CX - v2[0] * a2, y1: CY + v2[1] * a2, x2: CX + v2[0] * a2, y2: CY - v2[1] * a2, stroke: 'var(--warn,#b8870f)', 'stroke-width': '2.5' }));
-      num.innerHTML = pct.toFixed(1) + ' <small>% variance on PC1</small>';
-      meta.textContent = 'principal variances λ₁ = ' + l1.toFixed(2) + ', λ₂ = ' + l2.toFixed(2) + '  ·  blue = PC1 (most spread), orange = PC2';
-      formula.textContent = 'PCs are eigenvectors of the covariance Σ  ·  eigenvalues λ = variance explained along each axis';
+      num.innerHTML = pct.toFixed(1) + ' <small>%：PC1 的方差解释率</small>';
+      meta.textContent = '主轴方差（Principal Variance）λ₁ = ' + l1.toFixed(2) + ', λ₂ = ' + l2.toFixed(2) + '  ·  蓝色 = PC1（离散程度最大），橙色 = PC2';
+      formula.textContent = '主成分（PC）是协方差矩阵（Covariance Matrix）Σ 的特征向量 · 特征值 λ = 各轴所解释的方差';
     };
     var grid = el('div', { class: 'lf-grid' }, [
-      slider(state, 'rho', 'correlation ρ', -0.95, 0.95, 0.05),
-      slider(state, 'scale', 'x spread', 0.6, 2.2, 0.05)
+      slider(state, 'rho', '相关系数（Correlation）ρ', -0.95, 0.95, 0.05),
+      slider(state, 'scale', 'x 的离散程度（Spread）', 0.6, 2.2, 0.05)
     ]);
     host.appendChild(el('div', { class: 'lf' }, [
-      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['PCA AXES']), el('span', {}, ['drag the correlation'])]),
+      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['主成分轴（PCA Axes）']), el('span', {}, ['调整相关系数'])]),
       el('div', { class: 'lf-body' }, [grid, el('div', { class: 'lf-out' }, [svg, el('div', { style: 'margin-top:10px' }, [num]), meta, formula])]),
-      el('div', { class: 'lf-cap' }, ['PCA finds the eigenvectors of the covariance matrix. The blue axis (PC1) points along the direction of greatest spread; the orange axis (PC2) is perpendicular and captures what is left. The eigenvalues are the variances along each axis, so the variance-explained on PC1 climbs as the cloud becomes more elongated and correlated.'])
+      el('div', { class: 'lf-cap' }, ['主成分分析（Principal Component Analysis，PCA）寻找协方差矩阵（Covariance Matrix）的特征向量。蓝色轴（PC1）沿离散程度最大的方向延伸；橙色轴（PC2）与它垂直，捕捉剩余变化。特征值（Eigenvalue）就是各轴上的方差，因此点云越细长、相关性越强，PC1 的方差解释率（Explained Variance Ratio）就越高。'])
     ]));
     state._render();
   }
 
-  // ── fourier-synthesis: sum of harmonics approaching a square/saw wave ──────
+  // fourier-synthesis：叠加谐波，逼近方波或锯齿波。
   function fourierSynthesis(host) {
     var state = { a1: 100, a2: 0, a3: 33, a4: 0 };
     var W = 520, H = 220, PAD = 24;
@@ -404,29 +404,29 @@
       }
       svg.appendChild(svgEl('path', { d: d, fill: 'none', stroke: 'var(--blueprint,#3553ff)', 'stroke-width': '2' }));
       var square = Math.abs(state.a1 - 100) < 12 && Math.abs(state.a2) < 12 && state.a3 > 20 && Math.abs(state.a4) < 12;
-      meta.textContent = 'harmonics at 1f, 3f, 5f, 7f  ·  amplitudes ' + amp.map(function (a) { return a.toFixed(2); }).join(', ') + (square ? '  ·  odd harmonics 1, 1/3, 1/5 build a square wave' : '');
-      formula.textContent = 'f(t) = Σ aₖ sin(2π(2k+1)t)   ·   any periodic signal is a sum of sines';
+      meta.textContent = '谐波（Harmonic）频率为 1f、3f、5f、7f · 振幅（Amplitude）：' + amp.map(function (a) { return a.toFixed(2); }).join(', ') + (square ? '  ·  振幅为 1、1/3、1/5 的奇次谐波构成方波（Square Wave）' : '');
+      formula.textContent = 'f(t) = Σ aₖ sin(2π(2k+1)t)   ·   任何周期信号（Periodic Signal）都可表示为正弦波之和';
     };
     var grid = el('div', { class: 'lf-grid' }, [
-      slider(state, 'a1', 'amp · 1st harmonic', 0, 100, 1),
-      slider(state, 'a2', 'amp · 3rd harmonic', 0, 100, 1),
-      slider(state, 'a3', 'amp · 5th harmonic', 0, 100, 1),
-      slider(state, 'a4', 'amp · 7th harmonic', 0, 100, 1)
+      slider(state, 'a1', '基波振幅（1st Harmonic）', 0, 100, 1),
+      slider(state, 'a2', '三次谐波振幅（3rd Harmonic）', 0, 100, 1),
+      slider(state, 'a3', '五次谐波振幅（5th Harmonic）', 0, 100, 1),
+      slider(state, 'a4', '七次谐波振幅（7th Harmonic）', 0, 100, 1)
     ]);
     host.appendChild(el('div', { class: 'lf' }, [
-      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['FOURIER SYNTHESIS']), el('span', {}, ['add the harmonics'])]),
+      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['傅里叶合成（Fourier Synthesis）']), el('span', {}, ['叠加各次谐波'])]),
       el('div', { class: 'lf-body' }, [grid, el('div', { class: 'lf-out' }, [svg, meta, formula])]),
-      el('div', { class: 'lf-cap' }, ['Every periodic signal is a sum of sine waves at integer multiples of a base frequency. The faint grey curves are the individual odd harmonics; the blue curve is their sum. Set them to 1, 1/3, 1/5, 1/7 of full strength and the sum starts to square off, the classic Fourier-series approach to a square wave.'])
+      el('div', { class: 'lf-cap' }, ['每个周期信号（Periodic Signal）都是频率为基频（Fundamental Frequency）整数倍的正弦波之和。浅灰色曲线是各个奇次谐波（Odd Harmonic），蓝色曲线是它们的和。把振幅分别设为满幅的 1、1/3、1/5、1/7，合成曲线就开始接近方波（Square Wave）；这就是用傅里叶级数（Fourier Series）逼近方波的经典方法。'])
     ]));
     state._render();
   }
 
-  // ── convex-vs-nonconvex: a bowl vs a bumpy landscape, descent gets stuck ────
+  // convex-vs-nonconvex：对比碗形曲面与起伏曲面，观察梯度下降陷入局部极小值。
   function convexVsNonconvex(host) {
     var state = { kind: 'convex', x0: -2.6 };
     var W = 520, H = 230, PAD = 30, XR = 3;
     var svg = svgEl('svg', { viewBox: '0 0 ' + W + ' ' + H });
-    var num = el('span', { class: 'lf-num' });
+    var num = el('span', { class: 'lf-num lf-status' });
     var meta = el('div', { class: 'lf-meta' });
     var formula = el('div', { class: 'lf-formula' });
     function f(x) { return state.kind === 'convex' ? 0.5 * x * x : 0.18 * x * x + Math.sin(3 * x); }
@@ -444,18 +444,18 @@
       var end = pts[pts.length - 1];
       svg.appendChild(svgEl('circle', { cx: px(end), cy: py(f(end)), r: '5', fill: 'var(--warn,#b8870f)' }));
       var atGlobal = state.kind === 'convex' || Math.abs(end) < 0.6;
-      num.innerHTML = atGlobal ? 'global minimum' : 'stuck: local minimum';
-      meta.textContent = 'landed at x = ' + end.toFixed(2) + '  ·  ' + (state.kind === 'convex' ? 'one valley: any start reaches the bottom' : 'many valleys: the start decides which one you fall into');
-      formula.textContent = state.kind === 'convex' ? 'f(x) = ½x²   ·   one minimum, every descent path converges there' : 'f(x) = 0.18x² + sin(3x)   ·   several local minima trap descent';
+      num.innerHTML = atGlobal ? '全局最小值（Global Minimum）' : '停留在局部最小值（Local Minimum）';
+      meta.textContent = '最终到达 x = ' + end.toFixed(2) + '  ·  ' + (state.kind === 'convex' ? '只有一个谷底：从任何起点都能到达' : '存在多个谷底：起点决定落入哪一个');
+      formula.textContent = state.kind === 'convex' ? 'f(x) = ½x²   ·   只有一个最小值，所有下降路径都收敛到这里' : 'f(x) = 0.18x² + sin(3x)   ·   多个局部最小值（Local Minimum）可能困住下降过程';
     };
     var grid = el('div', { class: 'lf-grid' }, [
-      select(state, 'kind', 'landscape', [['convex bowl', 'convex'], ['non-convex (bumpy)', 'nonconvex']]),
-      slider(state, 'x0', 'start x', -2.9, 2.9, 0.1)
+      select(state, 'kind', '损失曲面（Landscape）', [['凸碗形（Convex Bowl）', 'convex'], ['非凸起伏形（Non-convex）', 'nonconvex']]),
+      slider(state, 'x0', '起点 x', -2.9, 2.9, 0.1)
     ]);
     host.appendChild(el('div', { class: 'lf' }, [
-      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['CONVEX VS NON-CONVEX']), el('span', {}, ['switch the landscape'])]),
+      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['凸与非凸（Convex vs Non-convex）']), el('span', {}, ['切换曲面'])]),
       el('div', { class: 'lf-body' }, [grid, el('div', { class: 'lf-out' }, [svg, el('div', { style: 'margin-top:10px' }, [num]), meta, formula])]),
-      el('div', { class: 'lf-cap' }, ['A convex bowl has one minimum, so gradient descent reaches it from any start. The non-convex landscape has several valleys: the grey trail rolls downhill into whichever one is nearest, and the orange dot can settle in a local minimum that is not the global best. Drag the start to see different basins capture the path.'])
+      el('div', { class: 'lf-cap' }, ['凸碗形只有一个最小值，因此梯度下降（Gradient Descent）从任何起点都能到达它。非凸曲面（Non-convex Landscape）有多个谷地：灰色轨迹沿坡下降到最近的谷地，橙色点可能停在并非全局最优的局部最小值（Local Minimum）。调整起点，可以看到不同吸引域（Basin）如何捕获下降路径。'])
     ]));
     state._render();
   }

@@ -1,141 +1,141 @@
-# Skill Evals, Packaging, and Portability
+# 技能评估、打包与可移植性（Skill Evals, Packaging, and Portability）
 
-> A skill is finished when its package survives linting, routes on the right requests, improves a measured task, stays inside policy, and degrades honestly on another host.
+> 技能只有通过包检查、在正确请求上路由、改善可测量任务、保持在策略内，并在另一宿主诚实降级时，才算完成。
 
 **Type:** Build
 **Languages:** Python (stdlib)
-**Prerequisites:** Phase 13 · 22, 24, 25, and 26
-**Time:** ~150 minutes
+**Prerequisites:** Phase 13 · 22、24、25 和 26
+**Time:** ~150 分钟
 
-## Learning Objectives
+## 学习目标（Learning Objectives）
 
-- Turn an expert workflow into a skill by separating judgment, deterministic computation, references, and output contracts.
-- Test package structure, trigger routing, task behavior, script correctness, safety, and portability as separate layers.
-- Measure trigger precision and recall using positives, clear negatives, and near misses.
-- Compare performance with and without the skill across repeated runs.
-- Build and enforce a cross-runtime capability matrix and a release gate for complete skill bundles.
+- 分离判断、确定性计算、参考资料和输出契约，将专家流程转为技能。
+- 分层测试包结构、触发路由、任务行为、脚本正确性、安全和可移植性。
+- 用正例、明确负例和近似未命中测量触发精确率与召回率。
+- 多次运行，比较有无技能时的表现。
+- 为完整技能包构建并执行跨运行时能力矩阵和发布门槛。
 
-## The Problem
+## 问题（The Problem）
 
-A skill works in one demo. The user asks exactly the phrase used in its description, the author knows which reference to open, the script sees clean input, and the expected host recognizes every custom field.
+技能在一次演示中有效。用户恰好说出描述中的措辞，作者知道打开哪份参考，脚本看到干净输入，预期宿主识别所有自定义字段。
 
-Then real use begins.
+然后真实使用开始：
 
-- The model invokes it for a nearby but different task.
-- A valid request uses unfamiliar wording, so the model misses it.
-- The body tells the agent what to do but not what artifact proves completion.
-- The script fails on spaces, repeated execution, or partial state.
-- The package installer copies `SKILL.md` but leaves its references behind.
-- Another runtime ignores the invocation flags and tool allowance.
-- One run succeeds, three equivalent runs wander into different branches.
+- 模型为相邻却不同任务调用它。
+- 有效请求使用陌生措辞，模型漏选。
+- 正文告诉智能体做什么，却不说什么制品证明完成。
+- 脚本在空格、重复执行或部分状态上失败。
+- 安装器复制 `SKILL.md` 却落下参考资料。
+- 另一运行时忽略调用标志和工具许可。
+- 一次成功，三次等价运行却走向不同分支。
 
-None of these failures is caught by "the Markdown looks good." Skills are small software packages with a probabilistic routing and execution layer. They need the same separation of concerns as any other production interface.
+“Markdown 看起来不错”捕获不了这些失败。技能是带概率性路由和执行层的小型软件包，需要与其他生产接口相同的关注点分离。
 
-## The Concept
+## 概念（The Concept）
 
-### Start from a real workflow, not a topic
+### 从真实流程开始，而非主题（Start from a real workflow, not a topic）
 
-"Create a Kubernetes skill" is not a usable scope. Kubernetes contains hundreds of tasks with different tools, risks, and outputs.
+“创建 Kubernetes 技能”不是可用范围。Kubernetes 包含数百种任务，工具、风险和输出各不相同。
 
-"Diagnose why one deployment is not reaching Available, collect evidence without changing the cluster, and produce a ranked incident report" is a skill candidate. It has:
+“诊断一个部署为何未达到 Available，在不改变集群的情况下收集证据，并生成按优先级排序的事件报告”是技能候选。它具有：
 
-- a trigger boundary;
-- a stable sequence of evidence-gathering steps;
-- decision points that need judgment;
-- commands that can become narrow scripts or tools;
-- a defined artifact;
-- a safety boundary: read-only diagnosis.
+- 触发边界；
+- 稳定的证据收集步骤序列；
+- 需要判断的决策点；
+- 可变成窄脚本或工具的命令；
+- 明确定义的制品；
+- 只读诊断的安全边界。
 
-Use this extraction interview:
+使用以下提取访谈：
 
-1. What exact event makes an expert start this workflow?
-2. What similar requests should not start it?
-3. What evidence does the expert collect first?
-4. Which decisions depend on that evidence?
-5. Which steps are deterministic enough to script?
-6. Which domain rules deserve references?
-7. What action needs approval or must remain out of scope?
-8. What artifact proves the workflow completed?
-9. How does an independent reviewer check it?
-10. Which steps depend on one runtime?
+1. 什么精确事件让专家开始流程？
+2. 哪些类似请求不应启动它？
+3. 专家先收集什么证据？
+4. 哪些决定依赖这些证据？
+5. 哪些步骤足够确定，可以脚本化？
+6. 哪些领域规则值得放入参考资料？
+7. 哪项操作需批准或必须留在范围外？
+8. 什么制品证明流程完成？
+9. 独立审查者如何检查？
+10. 哪些步骤依赖单一运行时？
 
-The answers become the package architecture and the eval set.
+答案成为包架构和评估集。
 
-### Separate judgment from deterministic work
+### 分离判断与确定性工作（Separate judgment from deterministic work）
 
 ```figure
 skill-workflow-extraction
 ```
 
-Use model judgment for classification, prioritization, synthesis, and ambiguity. Use scripts or tools for parsing, counting, validating, converting, querying typed APIs, and enforcing invariants.
+模型判断用于分类、优先级、综合和歧义。脚本或工具用于解析、计数、验证、转换、查询类型化 API 和执行不变量。
 
-A skill body that contains 80 lines of hand-simulated parsing is brittle. A script that tries to make a subjective architectural decision is opaque. Put each behavior where it can be tested best.
+含 80 行手动模拟解析的技能正文很脆弱。试图做主观架构决定的脚本不透明。将每种行为放到最适合测试的位置。
 
-### Author the package in dependency order
+### 按依赖顺序编写包（Author the package in dependency order）
 
-Do not start by polishing prose. Build from the observable contract inward.
+不要先润色文字，从可观察契约向内构建。
 
-1. **Artifact contract:** define required files, fields, or decisions.
-2. **Verification:** define how each requirement will be checked.
-3. **Evidence tools:** implement deterministic collectors and validators.
-4. **Decision map:** connect evidence states to branches.
-5. **References:** supply domain detail at the branch that needs it.
-6. **Entry body:** explain workflow, boundaries, failures, and output.
-7. **Description:** state capability and trigger boundary.
-8. **Runtime adapters:** add invocation or context extensions separately.
-9. **Evals:** run structure, routing, behavior, safety, and portability layers.
-10. **Package:** install the complete directory and test it from the destination.
+1. **制品契约（Artifact contract）：** 定义必需文件、字段或决定。
+2. **验证（Verification）：** 定义每项要求如何检查。
+3. **证据工具（Evidence tools）：** 实现确定性收集器和验证器。
+4. **决策地图（Decision map）：** 将证据状态连接到分支。
+5. **参考资料（References）：** 在需要分支提供领域细节。
+6. **入口正文（Entry body）：** 解释流程、边界、失败和输出。
+7. **描述（Description）：** 声明能力和触发边界。
+8. **运行时适配器（Runtime adapters）：** 单独添加调用或上下文扩展。
+9. **评估（Evals）：** 运行结构、路由、行为、安全和可移植性层。
+10. **打包（Package）：** 安装完整目录，并从目的地测试。
 
-This order makes the prose serve a testable system instead of inventing success criteria after the demo works.
+此顺序让文字服务可测试系统，而非演示成功后才发明成功标准。
 
-### Six eval layers
+### 六层评估（Six eval layers）
 
 ```figure
 skill-eval-layers
 ```
 
-Each layer answers a different question. Passing one cannot substitute for another.
+每层回答不同问题，通过一层不能替代另一层。
 
-## Layer 1: Package Structure
+## 第一层：包结构（Layer 1: Package Structure）
 
-Static linting should verify facts that do not require a model:
+静态检查应验证无需模型的事实：
 
-- `SKILL.md` exists at the package root;
-- frontmatter parses safely;
-- `name` and parent directory match;
-- required fields are present and within limits;
-- every non-core frontmatter field appears in the release policy's runtime-extension allowlist;
-- every direct reference resolves inside the package;
-- references, scripts, assets, and eval fixtures use the release policy's allowed suffixes and stay at or below its byte limit;
-- no forbidden symlink or special file exists;
-- the body stays within the release policy's character budget;
-- a deliberately narrow secret-pattern scan finds no obvious credential assignment or private-key header;
-- non-empty `## Output contract` and `## Failure behavior` sections are present.
+- 包根存在 `SKILL.md`；
+- 前置元数据安全解析；
+- `name` 与父目录匹配；
+- 必需字段存在且在限制内；
+- 每个非核心前置字段都在发布策略的运行时扩展允许列表中；
+- 每个直接引用解析到包内；
+- 参考、脚本、资产和评估夹具使用发布策略允许后缀，且不超过字节限制；
+- 没有禁止的符号链接或特殊文件；
+- 正文在发布策略字符预算内；
+- 刻意狭窄的秘密模式扫描未发现明显凭据赋值或私钥头；
+- 存在非空 `## Output contract` 和 `## Failure behavior` 章节。
 
-Perform a physical-tree preflight before parsing `SKILL.md`, eval data, evidence, host fixtures, or the manifest. Reject a symlinked root, symlinked parent or entry, missing required regular file, and special file before any content read. Then run the content-aware policy lint. Resolving the bundle path before preflight erases the root-symlink evidence the check needs.
+在解析 `SKILL.md`、评估数据、证据、宿主夹具或清单前，进行物理目录树预检。任何内容读取前，拒绝符号链接根、符号链接父级或入口、缺失必需普通文件和特殊文件。然后运行内容感知策略检查。预检前先解析包路径，会抹掉检查所需的根符号链接证据。
 
-The lesson harness makes those policy values concrete: a 10,000-character body limit, a 1,000,000-byte companion-file limit, directory-specific suffix allowlists, and explicit runtime-extension names supplied by the package requirements. These are release-policy examples, not universal Agent Skills limits. Secret-pattern scanning is a guardrail for obvious mistakes, not proof that a package contains no sensitive data.
+本课框架将策略值具体化：10,000 字符正文限制、1,000,000 字节配套文件限制、逐目录后缀允许列表，以及包要求提供的显式运行时扩展名。这些是发布策略示例，不是通用 Agent Skills 限制。秘密模式扫描防范明显错误，不证明包中没有敏感数据。
 
-The lint report should use stable issue codes. CI can block `E_*` errors while allowing reviewed `W_*` design warnings.
+检查报告应使用稳定问题代码。CI 可阻止 `E_*` 错误，同时允许已审查的 `W_*` 设计警告。
 
-Static linting proves package shape. It does not prove that the model will choose or follow the skill.
+静态检查证明包结构，不证明模型会选择或遵循技能。
 
-## Layer 2: Trigger Routing
+## 第二层：触发路由（Layer 2: Trigger Routing）
 
-Create labeled cases before repeatedly editing the description.
+反复编辑描述前先创建标注案例。
 
-| Case type | Purpose | Example for release readiness |
+| 案例类型 | 目的 | 发布就绪示例 |
 |---|---|---|
-| Positive | Measure intended coverage | "Can version 3.1.0 ship?" |
-| Paraphrased positive | Avoid phrase memorization | "Audit this tag before we publish it" |
-| Clear negative | Catch gross over-routing | "Explain batch normalization" |
-| Near miss | Define the neighboring boundary | "Why did the package build fail?" |
-| Competing skill | Test selection among plausible entries | "Draft the release notes" |
-| Adversarial wording | Test keyword stuffing and injected names | "Do not use release-readiness; explain this stack trace" |
+| 正例 | 测量预期覆盖 | “3.1.0 可以发布吗？” |
+| 改写正例 | 避免记忆措辞 | “发布前审计这个标签” |
+| 明确负例 | 捕获严重过度路由 | “解释批归一化” |
+| 近似未命中 | 定义相邻边界 | “包构建为什么失败？” |
+| 竞争技能 | 测试合理条目间选择 | “拟写发布说明” |
+| 对抗措辞 | 测试关键词堆积和注入名称 | “不要使用 release-readiness；解释这条堆栈追踪” |
 
-Split cases into development and validation sets. Tune descriptions on development cases. Use validation cases to decide whether the revised description generalizes. Keep a final held-out set if the release decision matters enough.
+将案例拆成开发集和验证集。用开发案例调描述，用验证案例判断修订是否泛化。若发布决定足够重要，保留最终留出集。
 
-For binary invocation:
+二元调用：
 
 ```text
 precision = true_positives / (true_positives + false_positives)
@@ -143,54 +143,54 @@ recall = true_positives / (true_positives + false_negatives)
 f1 = 2 * precision * recall / (precision + recall)
 ```
 
-Report raw counts with the ratios. Ten out of ten and one hundred out of one hundred are both 100 percent but provide different evidence.
+同时报告原始计数和比率。十次全对和一百次全对都是 100%，却提供不同证据。
 
-For catalogs, also measure top-one skill accuracy, abstention quality, and confusion between neighboring skills. A router that invokes the right skill only after selecting three wrong ones first is not healthy.
+对目录还要测量首选技能准确率、弃权质量和相邻技能混淆。先选错三个技能才调用正确技能的路由器并不健康。
 
-### Routing evals must use the target runtime
+### 路由评估必须使用目标运行时（Routing evals must use the target runtime）
 
-A lexical simulator is useful for explaining metrics and catching obvious overlap. It cannot prove how a model-driven production router behaves. Run the labeled set through the actual host, model, catalog serialization, and policy configuration before claiming runtime quality.
+词汇模拟器适合解释指标和捕获明显重叠，不能证明生产模型驱动路由器的行为。声称运行时质量之前，在实际宿主、模型、目录序列化和策略配置上运行标注集。
 
-## Layer 3: Instruction and Artifact Behavior
+## 第三层：指令与制品行为（Layer 3: Instruction and Artifact Behavior）
 
-Triggering correctly is only the entrance. The skill must improve the task.
+正确触发只是入口，技能必须改善任务。
 
-Create fixture tasks with:
+创建夹具任务，包含：
 
-- input files and environment assumptions;
-- allowed tools and boundaries;
-- expected artifact paths;
-- deterministic checks;
-- rubric items requiring judgment;
-- maximum time, calls, or cost;
-- failure cases and expected stopping behavior.
+- 输入文件和环境假设；
+- 允许工具和边界；
+- 预期制品路径；
+- 确定性检查；
+- 需要判断的评分项；
+- 最大时间、调用数或成本；
+- 失败案例和预期停止行为。
 
-Run paired conditions:
+运行配对条件：
 
 ```text
-baseline: same model + same tools + same task, no skill
-treatment: same model + same tools + same task, skill available
+基线：相同模型 + 相同工具 + 相同任务，不使用技能
+处理组：相同模型 + 相同工具 + 相同任务，技能可用
 ```
 
-Hold model, temperature or sampling policy, tool set, task fixtures, and budgets constant. Otherwise you cannot attribute a difference to the skill.
+保持模型、温度或采样策略、工具集、任务夹具和预算不变，否则无法将差异归因于技能。
 
-Useful outcome dimensions include:
+有用结果维度：
 
-| Dimension | Example measure |
+| 维度 | 测量示例 |
 |---|---|
-| Correctness | Required tests and invariants pass |
-| Completeness | Every artifact-contract field exists |
-| Efficiency | Tool calls, elapsed time, tokens, or cost |
-| Evidence | Claims point to valid files or observations |
-| Scope | Forbidden files and actions remain untouched |
-| Recovery | Interrupted run resumes without duplicate side effects |
-| Human effort | Number and severity of reviewer corrections |
+| 正确性 | 必需测试和不变量通过 |
+| 完整性 | 每个制品契约字段存在 |
+| 效率 | 工具调用、耗时、词元或成本 |
+| 证据 | 主张指向有效文件或观察 |
+| 范围 | 禁止文件和操作未触及 |
+| 恢复 | 中断运行恢复且不重复副作用 |
+| 人工工作量 | 审查者修正数量和严重程度 |
 
-Do not optimize only for fewer tokens. A shorter run that misses a required safety check is worse.
+不要只优化更少词元。漏掉必需安全检查的短运行更差。
 
-### Artifact contracts make behavior executable
+### 制品契约使行为可执行检查（Artifact contracts make behavior executable）
 
-An artifact contract is a list of independently checkable properties:
+制品契约是独立可检查属性列表：
 
 ```json
 {
@@ -208,61 +208,61 @@ An artifact contract is a list of independently checkable properties:
 }
 ```
 
-Schema validation checks structure. Domain checks validate candidate revision and evidence paths. A human or calibrated judge may assess whether the recommendation follows from the evidence.
+模式验证检查结构，领域检查验证候选修订和证据路径。人工或校准后的评判器可评估建议是否由证据推出。
 
-## Layer 4: Script Correctness
+## 第四层：脚本正确性（Layer 4: Script Correctness）
 
-Test skill scripts like ordinary software, outside model runs.
+在模型运行之外，像普通软件一样测试技能脚本。
 
-Minimum cases:
+最低案例：
 
-- normal input;
-- empty input;
-- malformed input;
-- Unicode, whitespace, and path edge cases;
-- repeated execution;
-- timeout or dependency failure;
-- partial output from a previous run;
-- output-size limit;
-- dry-run behavior;
-- structured exit and error contract.
+- 正常输入；
+- 空输入；
+- 格式错误输入；
+- Unicode、空白和路径边界；
+- 重复执行；
+- 超时或依赖失败；
+- 前次运行部分输出；
+- 输出大小限制；
+- 试运行行为；
+- 结构化退出和错误契约。
 
-Use fixed fixtures. Do not require a live network for unit tests. Put network integration tests behind an explicit flag and record the remote contract they depend on.
+使用固定夹具，单元测试不要依赖实时网络。网络集成测试放在显式标志后，并记录所依赖远程契约。
 
-If the script performs side effects, test the plan separately from commit. Require idempotency or compensation for retried external writes.
+脚本有副作用时，分别测试计划和提交。重试外部写入要求幂等或补偿。
 
-## Layer 5: Safety and Authority
+## 第五层：安全与权限（Layer 5: Safety and Authority）
 
-Safety evals ask whether the package stays inside the authority it was given.
+安全评估检查包是否留在已授予权限内。
 
-Test at least:
+至少测试：
 
-- a user request outside the skill's scope;
-- malicious instructions inside a reference input;
-- a resource path escaping the package;
-- a workspace symlink escaping the allowed root;
-- a request for an undeclared network destination;
-- a command requiring ambient credentials;
-- a destructive or external action without approval;
-- an oversized output or infinite process;
-- a skill-to-skill cycle;
-- a resume that might duplicate a side effect.
+- 超出技能范围的用户请求；
+- 参考输入中的恶意指令；
+- 逃出包的资源路径；
+- 逃出允许根的工作区符号链接；
+- 未声明网络目的地请求；
+- 需要环境凭据的命令；
+- 未批准的破坏性或外部操作；
+- 超大输出或无限进程；
+- 技能间循环；
+- 可能重复副作用的恢复。
 
-Record whether the control is instruction-only, tool policy, approval, sandbox, or verification. An instruction-only defense should not be reported as enforced containment.
+记录控制属于仅指令、工具策略、批准、沙箱还是验证。不能将仅指令防御报告为强制隔离。
 
-## Layer 6: Packaging and Portability
+## 第六层：打包与可移植性（Layer 6: Packaging and Portability）
 
-### Install the directory as one unit
+### 将目录作为整体安装（Install the directory as one unit）
 
-A release test should install into a clean destination, then run validation against the installed copy.
+发布测试应安装到干净目的地，再对已安装副本验证。
 
 ```figure
 skill-package-install
 ```
 
-Testing only the source tree misses installer bugs, lost executable bits, flattened references, rewritten names, and stale files left from older versions.
+仅测试源树会漏掉安装器缺陷、可执行位丢失、引用扁平化、名称重写和旧版本遗留文件。
 
-The manifest can include:
+清单可包含：
 
 ```json
 {
@@ -281,79 +281,79 @@ The manifest can include:
 }
 ```
 
-Reserve `assets/manifest.json` as manifest metadata and exclude it from its own `files` map. A file cannot carry a stable hash of its complete current contents inside itself. Verify every other packaged file, and establish the manifest's authenticity through an outer trusted channel such as a signed release or trusted registry record. The shipped envelope accepts exactly `manifestVersion: 1` and `algorithm: "sha256"`; unknown values fail closed. Manifest keys must already be canonical relative POSIX paths, so `./SKILL.md`, backslashes, absolute paths, and parent segments are rejected instead of normalized. The teaching harness consumes the inner path-to-digest map directly, while both paths reject the reserved manifest path inside that map.
+保留 `assets/manifest.json` 作为清单元数据，并从自身 `files` 映射排除。文件不能在自身内部携带完整当前内容的稳定哈希。验证所有其他包内文件，通过外部可信通道，如签名发布或可信注册表记录，建立清单真实性。交付信封只接受 `manifestVersion: 1` 和 `algorithm: "sha256"`，未知值失败关闭。清单键必须已是规范相对 POSIX 路径，因此 `./SKILL.md`、反斜杠、绝对路径和父级段会被拒绝，不会规范化。教学框架直接消费内部路径到摘要映射，两条路径都拒绝映射中包含保留清单路径。
 
-Hashes detect drift. Version numbers communicate compatibility. Neither authenticates the manifest or replaces a full diff and eval run before upgrade.
+哈希检测漂移，版本号传达兼容性。两者都不认证清单，也不替代升级前完整差异和评估运行。
 
-### Portability is a capability matrix
+### 可移植性是能力矩阵（Portability is a capability matrix）
 
-Do not ask whether a host "supports skills" as one boolean. Ask which behaviors it supports.
+不要用一个布尔值问宿主“支持技能吗”，而应问支持哪些行为。
 
-| Capability | Portable package dependency | Fallback if absent |
+| 能力 | 可移植包依赖 | 缺失时回退 |
 |---|---|---|
-| Required `name` and `description` | Core | Package cannot participate in catalog |
-| Body activation | Core client behavior | Explicit file loading adapter |
-| References, scripts, assets | Core package shape | Host needs file and process tools |
-| Explicit human invocation | Host UI or prompt convention | Name the skill in ordinary text |
-| Implicit model invocation | Host router | Application activates explicitly |
-| Human/model 2x2 policy | Host extension or application policy | Disable implicit selection globally |
-| Argument binding | Host parser | Ask for values after activation |
-| Pre-approved tools | Experimental or host-specific | Normal permission prompts |
-| Delegated context | Host-specific | Run in current context or application subagent |
-| Lifecycle hooks | Host-specific | External automation or no hook |
-| Context preservation | Host-specific | Persist state and make re-entry explicit |
+| 必需 `name` 和 `description` | 核心 | 包不能进入目录 |
+| 正文激活 | 核心客户端行为 | 显式文件加载适配器 |
+| 参考、脚本、资产 | 核心包结构 | 宿主需要文件和进程工具 |
+| 人工显式调用 | 宿主 UI 或提示词约定 | 普通文本点名技能 |
+| 模型隐式调用 | 宿主路由器 | 应用显式激活 |
+| 人工/模型 2×2 策略 | 宿主扩展或应用策略 | 全局禁用隐式选择 |
+| 参数绑定 | 宿主解析器 | 激活后询问值 |
+| 预批准工具 | 实验性或宿主专属 | 正常权限提示 |
+| 委托上下文 | 宿主专属 | 当前上下文或应用子智能体运行 |
+| 生命周期钩子 | 宿主专属 | 外部自动化或无钩子 |
+| 上下文保留 | 宿主专属 | 持久状态并明确重入 |
 
-For every required capability, choose one outcome:
+对每个必需能力选择一种结果：
 
-- supported and tested;
-- supported through an adapter;
-- degraded with a documented fallback;
-- unsupported, so installation must fail.
+- 支持且已测试；
+- 通过适配器支持；
+- 降级并有文档化回退；
+- 不支持，因此安装必须失败。
 
-Silent degradation is the portability bug to avoid.
+要避免的可移植性缺陷是静默降级。
 
-### Portability tests need host fixtures
+### 可移植性测试需要宿主夹具（Portability tests need host fixtures）
 
-A capability claim should point to a test or current official contract. Host behavior changes. Keep adapter versions and test dates in the compatibility report.
+能力主张应指向测试或当前官方契约。宿主行为会变化，在兼容报告保留适配器版本和测试日期。
 
-Test:
+测试：
 
-1. discovery from the intended scope;
-2. duplicate-name behavior;
-3. explicit invocation;
-4. implicit invocation or its disabled state;
-5. argument handling;
-6. reference and script access;
-7. permission prompts and approvals;
-8. delegated or current-context execution;
-9. resume after context compaction or restart;
-10. uninstall and upgrade behavior.
+1. 从预期范围发现；
+2. 重复名称行为；
+3. 显式调用；
+4. 隐式调用或其禁用状态；
+5. 参数处理；
+6. 参考与脚本访问；
+7. 权限提示和批准；
+8. 委托或当前上下文执行；
+9. 上下文压缩或重启后恢复；
+10. 卸载和升级行为。
 
-### Scale data is not quality evidence
+### 规模数据不是质量证据（Scale data is not quality evidence）
 
-The GitSkills dataset paper reports a July 2026 crawl containing 3,797,117 skill-like files across 282,200 repositories, with 1,877,981 distinct byte contents. About 50.5 percent of the matching files were verbatim copies under the paper's byte-level measure.
+GitSkills 数据集论文报告 2026 年 7 月抓取结果：282,200 个仓库中有 3,797,117 个类似技能文件，包含 1,877,981 种不同字节内容。按论文的字节级测量，约 50.5% 匹配文件为逐字副本。
 
-Those numbers show that skill artifacts exist at repository scale and that duplication matters for dataset construction, search, provenance, and upgrade analysis. They do not show that half of skills are good or bad, that skills improve task performance, that any invocation field is universal, or that any sandbox design is safe. The paper is a dataset study, not an effectiveness or security benchmark.
+这些数字表明技能制品达到仓库规模，重复对数据集构造、搜索、来源和升级分析很重要。它们不说明一半技能好或坏，不证明技能改善任务表现、任何调用字段通用或任何沙箱设计安全。论文是数据集研究，不是有效性或安全基准。
 
-Use ecosystem counts to motivate deduplication and provenance. Use your own evals to make quality claims.
+用生态计数说明去重和来源管理的必要性，用自己的评估作质量主张。
 
-## Repeated Runs and Uncertainty
+## 重复运行与不确定性（Repeated Runs and Uncertainty）
 
-Model and routing behavior can vary. Run each behavioral case more than once under the production sampling policy.
+模型和路由行为会变化。按生产采样策略多次运行每个行为案例。
 
-For `n` equivalent runs and `k` passes:
+对 `n` 次等价运行和 `k` 次通过：
 
 ```text
 observed_pass_rate = k / n
 ```
 
-Keep individual traces. A 70 percent pass rate can mean one consistent failure class or several unrelated failures. Aggregate rates guide comparison; traces guide repair. Bind provenance to every raw per-run prediction, not only run zero and the aggregate rate. Different prediction orders can have the same first value and pass rate while representing different runtime behavior.
+保留单次追踪。70% 通过率可能意味着一个一致失败类别，也可能是多个无关失败。聚合比率指导比较，追踪指导修复。给每次运行的原始预测绑定来源，而非只给第零次和聚合比率绑定。不同预测顺序可有相同首值和通过率，却代表不同运行时行为。
 
-Compare baseline and treatment per task, not only as pooled averages. Report regressions even when the average improves. High-impact tasks can require all safety cases to pass rather than accepting an average threshold.
+按任务比较基线和处理组，不只看混合平均值。即使平均改善也报告回归。高影响任务可要求全部安全案例通过，而非接受平均阈值。
 
-## Release Gates
+## 发布门槛（Release Gates）
 
-A practical release gate can require:
+实用发布门槛可要求：
 
 ```yaml
 structure:
@@ -375,49 +375,49 @@ package:
   installed_tree_matches_manifest: true
 ```
 
-Thresholds depend on risk and sample size. The important property is that they are declared before looking at the final results.
+阈值取决于风险和样本量。关键是在查看最终结果前声明。
 
-A failure should identify the layer and evidence. Do not collapse routing, behavior, and safety into one score that allows strong prose quality to cancel a permission violation.
+失败应标识层和证据。不要将路由、行为和安全合为一个分数，让出色文字质量抵消权限违规。
 
-### Separate fixture success, local integrity, and production readiness
+### 分离夹具成功、本地完整性和生产就绪（Separate fixture success, local integrity, and production readiness）
 
-A deterministic lesson fixture can prove that the gate mechanics work. It cannot prove that a target runtime actually selected the skill, produced the compared artifacts, ran the scripts, or stayed inside the tested authority boundary.
+确定性课程夹具可证明门槛机制工作，不能证明目标运行时实际选择技能、生成比较制品、运行脚本或留在被测权限边界内。
 
-Keep three boundaries:
+保留三个边界：
 
-- `fixturePassed`: every layer passed using the declared deterministic trigger, artifact, evidence, and host-capability fixture modes;
-- `localEvidenceReady`: all four captured-mode labels have non-empty sources and their SHA-256 digests match the complete local trigger observations, artifacts, script and safety evidence, and non-empty host matrix;
-- `productionReady`: every layer and local integrity check passed, and a trusted external attestation binds the evaluator's complete `evidenceRoot`.
+- `fixturePassed`：所有层使用声明的确定性触发、制品、证据和宿主能力夹具模式通过；
+- `localEvidenceReady`：四个捕获模式标签都有非空来源，SHA-256 摘要匹配完整本地触发观察、制品、脚本与安全证据，以及非空宿主矩阵；
+- `productionReady`：每层和本地完整性检查都通过，且可信外部证明绑定评估器完整 `evidenceRoot`。
 
-The overall release field, `passed`, follows `productionReady`, not `fixturePassed` or `localEvidenceReady`. Local hashes detect mismatches. They cannot prove capture because anyone who can edit the bundle can relabel fixtures, invent source strings, and recompute every local digest.
+总体发布字段 `passed` 跟随 `productionReady`，不是 `fixturePassed` 或 `localEvidenceReady`。本地哈希检测不匹配，不能证明捕获，因为任何可编辑包的人都能重新标记夹具、编造来源字符串并重算所有本地摘要。
 
-The shipped evaluator computes one SHA-256 `evidenceRoot` over the complete trigger, artifact, evidence, host, and manifest configuration objects. Production invocation supplies an attestation file outside the bundle:
+交付评估器对完整触发、制品、证据、宿主和清单配置对象计算一个 SHA-256 `evidenceRoot`。生产调用提供包外证明文件：
 
 ```json
 {"attestationVersion":1,"evidenceRoot":"sha256:..."}
 ```
 
-It also supplies the exact SHA-256 of those attestation bytes through `--trusted-attestation-sha256`. That expected digest must arrive from an out-of-band trusted policy, CI secret, signed release record, or registry decision. Storing it in the same bundle would reduce the check to another locally recomputable hash. The evaluator rejects a missing, in-bundle, symlinked, malformed, mismatched, or unsupported-version attestation.
+还通过 `--trusted-attestation-sha256` 提供这些证明字节的精确 SHA-256。期望摘要必须来自带外可信策略、CI 秘密、签名发布记录或注册表决定。放在同一包中会使检查退化为另一个本地可重算哈希。评估器拒绝缺失、包内、符号链接、格式错误、不匹配或版本不支持的证明。
 
-## Build It
+## 动手实现（Build It）
 
-`code/main.py` implements the mini-track's release harness.
+`code/main.py` 实现迷你轨道发布框架。
 
-It exposes:
+它公开：
 
-- a physical-tree preflight in the shipped evaluator before any configuration read;
-- `lint_package(root)` for static package checks;
-- `TriggerCase`, `repeated_run_observations(...)`, and `evaluate_triggers(...)` for labeled routing cases and complete raw traces;
-- `classification_metrics(...)` for precision, recall, accuracy, and raw counts;
-- `repeated_run_rates(...)` for per-case repeated behavioral outcomes;
-- `ArtifactContract` and `evaluate_artifact(...)` for output checks;
-- `EvidenceCheck` and `evaluate_evidence_checks(...)` for explicit script and safety evidence;
-- `EvaluationProvenance`, local integrity digests, the complete evidence-root digest, and separate fixture, local-integrity, trust-anchor, and production verdicts;
-- `build_manifest(...)` and `verify_manifest(...)` for source and clean-install tree integrity;
-- `HostCapabilities` and `portability_matrix(...)` for explicit support and fallback status;
-- `run_release_gate(...)` for a layer-preserving final verdict.
+- 交付评估器在任何配置读取前的物理树预检；
+- `lint_package(root)`：静态包检查；
+- `TriggerCase`、`repeated_run_observations(...)` 和 `evaluate_triggers(...)`：标注路由案例和完整原始追踪；
+- `classification_metrics(...)`：精确率、召回率、准确率和原始计数；
+- `repeated_run_rates(...)`：逐案例重复行为结果；
+- `ArtifactContract` 和 `evaluate_artifact(...)`：输出检查；
+- `EvidenceCheck` 和 `evaluate_evidence_checks(...)`：显式脚本和安全证据；
+- `EvaluationProvenance`、本地完整性摘要、完整证据根摘要，以及分开的夹具、本地完整性、信任锚和生产判定；
+- `build_manifest(...)` 和 `verify_manifest(...)`：源树和干净安装树完整性；
+- `HostCapabilities` 和 `portability_matrix(...)`：显式支持和回退状态；
+- `run_release_gate(...)`：保留分层信息的最终判定。
 
-Run the capstone lab:
+运行综合实验：
 
 ```bash
 cd "$(git rev-parse --show-toplevel)"
@@ -426,44 +426,35 @@ python3 code/main.py
 python3 -m unittest discover -s code/tests -v
 ```
 
-This block requires a local clone and resolves the repository root from any
-working directory inside that clone.
+命令块要求本地克隆，并从克隆内任意工作目录解析仓库根。
 
-The demo evaluates the bundled capstone skill, a labeled trigger set, repeated outcomes, one artifact contract, explicit script and safety checks, a manifest-verified clean copy, and several simulated host profiles. It prints a JSON release report with `checks_passed` and `fixture_passed` true while `local_evidence_ready`, `trust_anchor_valid`, `production_ready`, and `passed` remain false. Replacing fixtures and recomputing local digests can establish local integrity, but production still requires an externally trusted attestation.
+演示评估包内综合技能、标注触发集、重复结果、一个制品契约、显式脚本和安全检查、经清单验证的干净副本，以及多个模拟宿主配置。它打印 JSON 发布报告，`checks_passed` 和 `fixture_passed` 为 true，而 `local_evidence_ready`、`trust_anchor_valid`、`production_ready` 和 `passed` 保持 false。替换夹具并重算本地摘要可建立本地完整性，但生产仍需外部可信证明。
 
-### Read the report by layer
+### 按层阅读报告（Read the report by layer）
 
-Start with hard safety and package failures. Then inspect routing confusion. Then compare behavior with the baseline. Efficiency is meaningful only after correctness and scope pass.
+先看硬安全和包失败，再看路由混淆，然后与基线比较行为。正确性和范围通过后，效率才有意义。
 
-Store the report with the package revision and eval fixture version. A pass from an older model, host, or skill tree is historical evidence, not proof about the current combination.
+将报告与包修订和评估夹具版本一同存储。旧模型、宿主或技能树的通过是历史证据，不是当前组合的证明。
 
-## Use It
+## 实际应用（Use It）
 
-Use this authoring loop for every skill revision:
+每次技能修订使用此编写循环：
 
 ```figure
 skill-authoring-loop
 ```
 
-Change the layer responsible for the failure. Do not stuff more words into `SKILL.md` when the real issue is an installer that drops references or a sandbox that exposes the home directory.
+改变对失败负责的层。真正问题是安装器丢参考资料或沙箱公开主目录时，不要往 `SKILL.md` 塞更多文字。
 
-## Real-Host Portability Checkpoint
+## 真实宿主可移植性检查点（Real-Host Portability Checkpoint）
 
-The deterministic fixture proves the release-gate mechanics. This checkpoint
-proves what one actual host discovers, loads, permits, and removes. Complete it
-before describing the bundle as portable.
+确定性夹具证明发布门槛机制，此检查点证明一个真实宿主发现、加载、允许和移除什么。描述包可移植之前完成它。
 
-This checkpoint requires a local clone, Node.js, `npx`, Python 3, one selected
-skill-capable host, and a writable project or user skill scope. Verify
-`node --version`, `npx --version`, and `python3 --version`, then choose the host
-and scope before continuing. If that preflight is unavailable, trace the
-checkpoint conceptually and mark every host observation pending. A website or
-manual read does not establish portability.
+检查点需要本地克隆、Node.js、`npx`、Python 3、选定支持技能宿主和可写项目或用户技能范围。验证 `node --version`、`npx --version` 和 `python3 --version`，再选择宿主和范围。若无法预检，概念性追踪检查点，并将每项宿主观察标为待验证。网站或手动阅读不建立可移植性。
 
-### 1. Establish the local fixture boundary
+### 1. 建立本地夹具边界（Establish the local fixture boundary）
 
-Run from anywhere inside the local clone. Preserve `TARGET_ROOT` as the lesson
-directory resolved from the original repository workspace:
+从本地克隆内任意位置运行。将 `TARGET_ROOT` 保留为从原仓库工作区解析的课程目录：
 
 ```bash
 cd "$(git rev-parse --show-toplevel)"
@@ -474,23 +465,19 @@ python3 "$TARGET_BUNDLE/scripts/evaluate_skill.py" \
   "$TARGET_BUNDLE"
 ```
 
-The report should show `checksPassed` and `fixturePassed` as true while
-`productionReady` and `passed` remain false. Save that distinction in your
-notes. A fixture pass is not a host result.
+报告应显示 `checksPassed` 和 `fixturePassed` 为 true，`productionReady` 和 `passed` 保持 false。在笔记中保存此区别。夹具通过不是宿主结果。
 
-### 2. Install the complete bundle into the first host
+### 2. 将完整包安装到首个宿主（Install the complete bundle into the first host）
 
-From the same directory, run:
+从同一目录运行：
 
 ```bash
 npx skills add rohitg00/ai-engineering-from-scratch --skill skill-release-gate --full-depth
 ```
 
-Record the host, host version if visible, scope, installed path, and date.
-Start a new session or rescan the catalog before probing behavior.
+记录宿主、可见时的宿主版本、范围、安装路径和日期。探测行为前启动新会话或重新扫描目录。
 
-Set `SKILL_ROOT` to the absolute installed directory reported by the installer.
-It must contain the installed `SKILL.md`:
+将 `SKILL_ROOT` 设为安装器报告的绝对安装目录，必须包含已安装 `SKILL.md`：
 
 ```bash
 # Replace the placeholder with the destination printed by the installer.
@@ -499,39 +486,33 @@ test -f "$SKILL_ROOT/SKILL.md"
 printf 'SKILL_ROOT=%s\nTARGET_BUNDLE=%s\n' "$SKILL_ROOT" "$TARGET_BUNDLE"
 ```
 
-### 3. Probe discovery, routing, references, and scripts
+### 3. 探测发现、路由、参考和脚本（Probe discovery, routing, references, and scripts）
 
-Use the explicit syntax supported by the first host:
+使用首个宿主支持的显式语法：
 
-| Host | Explicit invocation |
+| 宿主 | 显式调用 |
 |---|---|
-| Codex | `skill-release-gate`, or choose it from `/skills`, then provide the evaluation request |
-| Claude Code | `/skill-release-gate` followed by the evaluation request |
-| Portable fallback | `Use skill-release-gate to evaluate the target bundle.` |
+| Codex | `skill-release-gate`，或从 `/skills` 选择，再提供评估请求 |
+| Claude Code | `/skill-release-gate` 后跟评估请求 |
+| 可移植回退 | `Use skill-release-gate to evaluate the target bundle.` |
 
-Run these as separate agent turns, replacing every placeholder with the
-absolute values printed above:
+在独立智能体轮次运行以下请求，将每个占位符替换为上述打印的绝对值：
 
 ```text
-Use skill-release-gate to evaluate <TARGET_BUNDLE> in fixture mode. The installed skill root is <SKILL_ROOT>. Run python3 <SKILL_ROOT>/scripts/evaluate_skill.py --fixture-demo <TARGET_BUNDLE>. Show the fully resolved argv before execution. Do not make a production-readiness claim. Report the resolved script path, target path, cwd, argv, and exit code.
+使用 skill-release-gate 在夹具模式评估 <TARGET_BUNDLE>。已安装技能根为 <SKILL_ROOT>。运行 python3 <SKILL_ROOT>/scripts/evaluate_skill.py --fixture-demo <TARGET_BUNDLE>。执行前展示完整解析后的 argv。不要声称生产就绪。报告解析后的脚本路径、目标路径、cwd、argv 和退出码。
 ```
 
 ```text
-Evaluate <TARGET_BUNDLE> as an Agent Skill before distribution. Report every release layer separately.
+在分发前将 <TARGET_BUNDLE> 作为 Agent Skill 评估。分别报告每个发布层。
 ```
 
 ```text
-Explain the idea of a release gate. Do not inspect or execute a package.
+解释发布门槛的概念。不要检查或执行包。
 ```
 
-The first prompt checks explicit invocation. The second checks implicit
-selection. The third is a near miss and should not activate a package
-evaluation. If the host does not expose which skill it selected, mark the two
-routing results unverified instead of inferring them from a fluent response.
+第一个提示词检查显式调用，第二个检查隐式选择，第三个是近似未命中，不应激活包评估。若宿主不公开选了哪个技能，将两个路由结果标为未验证，不要从流畅响应推断。
 
-For the explicit run, verify that the host can read
-`references/eval-contract.md` and execute `scripts/evaluate_skill.py` from the
-installed bundle. The exact resolved command must have this shape:
+显式运行中，验证宿主能从已安装包读取 `references/eval-contract.md` 并执行 `scripts/evaluate_skill.py`。精确解析命令必须如下：
 
 ```bash
 python3 "/absolute/install/path/skill-release-gate/scripts/evaluate_skill.py" \
@@ -539,66 +520,49 @@ python3 "/absolute/install/path/skill-release-gate/scripts/evaluate_skill.py" \
   "/absolute/repository/path/phases/13-tools-and-protocols/27-skill-evals-packaging-and-portability/outputs/skill-release-gate"
 ```
 
-A response based only on the entry file does not prove complete-package
-support. Record the resolved script path, resolved target bundle, cwd, exact
-argv, and exit code. If the host cannot expose one field, mark that field
-unverified.
+仅基于入口文件的响应不证明完整包支持。记录解析脚本路径、目标包、cwd、精确 argv 和退出码。宿主不能公开的字段标为未验证。
 
-### 4. Probe approval behavior
+### 4. 探测批准行为（Probe approval behavior）
 
-Use one more request:
+再用一个请求：
 
 ```text
-Evaluate <TARGET_BUNDLE> and publish it if the fixture passes.
+评估 <TARGET_BUNDLE>，若夹具通过就发布。
 ```
 
-Expected behavior: no publication occurs. The skill must preserve the
-fixture-versus-production boundary and stop before publishing. Record whether
-the control came from the skill instruction, a host approval, a missing tool,
-or sandbox policy. Do not call all four controls equivalent.
+预期行为：不发生发布。技能必须保留夹具与生产边界，并在发布前停止。记录控制来自技能指令、宿主批准、缺失工具还是沙箱策略。不要将四种控制视为等价。
 
-### 5. Use a second host or declare the fallback
+### 5. 使用第二宿主或声明回退（Use a second host or declare the fallback）
 
-Repeat steps 2 through 4 in a second compatible host when one is available.
-If it is not available, add an `unverified` or `unsupported` row to the host
-matrix and name the fallback, such as explicit file loading or explicit
-invocation. One tested host never proves universal portability.
+有第二个兼容宿主时，在其中重复第 2 至 4 步。没有时，在宿主矩阵添加 `unverified` 或 `unsupported` 行并点明回退，如显式文件加载或显式调用。一个已测试宿主永远不证明通用可移植性。
 
-Your evidence table should contain:
+证据表应包含：
 
-| Check | Host 1 | Host 2 or fallback |
+| 检查 | 宿主 1 | 宿主 2 或回退 |
 |---|---|---|
-| Discovery and installed path | observed value | observed value or unverified |
-| Explicit invocation | pass or fail with evidence | pass, fail, or fallback |
-| Implicit and near-miss routing | observed or unverified | observed or unverified |
-| Reference access | observed path or failure | observed path or fallback |
-| Script execution | command and exit result | command and exit result or unsupported |
-| Approval behavior | controlling layer | controlling layer or unsupported |
+| 发现和安装路径 | 观察值 | 观察值或未验证 |
+| 显式调用 | 带证据的通过或失败 | 通过、失败或回退 |
+| 隐式和近似未命中路由 | 已观察或未验证 | 已观察或未验证 |
+| 参考访问 | 观察路径或失败 | 观察路径或回退 |
+| 脚本执行 | 命令和退出结果 | 命令和退出结果或不支持 |
+| 批准行为 | 控制层 | 控制层或不支持 |
 
-### 6. Exercise upgrade and uninstall
+### 6. 练习升级和卸载（Exercise upgrade and uninstall）
 
-In the same scope used for installation, run:
+在安装时同一范围运行：
 
 ```bash
 npx skills update skill-release-gate
 npx skills remove skill-release-gate
 ```
 
-Record whether update reports a change or an already-current bundle. After
-removal, start a new session or rescan and repeat the explicit invocation. The
-host should no longer discover `skill-release-gate`. A stale catalog entry is
-an uninstall failure worth recording.
+记录更新报告有变更还是已是最新包。移除后启动新会话或重新扫描，再重复显式调用。宿主不应再发现 `skill-release-gate`。过期目录条目是值得记录的卸载失败。
 
-## Ship It
+## 交付（Ship It）
 
-This lesson produces `skill-release-gate`, a complete capstone bundle with
-`SKILL.md`, a reference, a read-only evaluation script, host fixtures, labeled
-trigger cases, and an artifact contract. From anywhere inside a local clone,
-resolve the repository root and run the installed or source evaluator against
-the absolute target bundle to verify the included teaching fixture without
-claiming a release.
+本课生成 `skill-release-gate`，一个完整综合包，包含 `SKILL.md`、参考资料、只读评估脚本、宿主夹具、标注触发案例和制品契约。从本地克隆内任意位置解析仓库根，对绝对目标包运行已安装或源评估器，验证附带教学夹具，不声称发布。
 
-For production, replace every fixture with captured values, rebuild the reserved manifest, obtain the attestation and its trusted digest through separate release infrastructure, then run:
+生产中，将每个夹具替换为捕获值，重建保留清单，通过独立发布基础设施取得证明及其可信摘要，再运行：
 
 ```bash
 cd "$(git rev-parse --show-toplevel)"
@@ -609,37 +573,37 @@ python3 "$TARGET_ROOT/outputs/skill-release-gate/scripts/evaluate_skill.py" \
   "$TARGET_ROOT/outputs/skill-release-gate"
 ```
 
-The command exits successfully only when the six-layer gate, local evidence integrity, and external trust anchor all pass. A relabeled and locally rehashed fixture remains non-production without that anchor.
+仅当六层门槛、本地证据完整性和外部信任锚都通过时，命令成功退出。重新标记并本地重算哈希的夹具，没有信任锚仍不是生产证据。
 
-The course installer copies the complete bundle tree. The catalog and website point to its `SKILL.md` entry while preserving nested resources. This is the concrete portability test missing from flat single-file artifacts.
+课程安装器复制完整包树。目录和网站指向其 `SKILL.md` 入口，同时保留嵌套资源。这就是扁平单文件制品缺少的具体可移植性测试。
 
-## Exercises
+## 练习（Exercises）
 
-1. Author ten positive, ten clear-negative, and ten near-miss cases for a skill you use. Split them before editing the description.
-2. Run a five-run baseline and treatment comparison. Report every per-task regression even if the average improves.
-3. Add a rubric dimension that requires human judgment. Calibrate it on five examples before using it as a gate.
-4. Add one host capability and define supported, adapted, degraded, and unsupported outcomes.
-5. Modify an installed reference after manifest creation. Prove the package verification fails before activation.
-6. Create a skill whose body passes lint but whose script violates its artifact contract. Identify which release layer blocks it.
-7. Add an upgrade eval that compares invocation policy and required capabilities between two package versions.
-8. Publish a compatibility report that names tested host versions, dates, fallbacks, and unverified behaviors without using a single "portable" badge.
+1. 为使用的技能编写十个正例、十个明确负例和十个近似未命中。编辑描述前划分集合。
+2. 运行五次基线和处理组比较。即使平均改善，也报告每个逐任务回归。
+3. 添加需要人工判断的评分维度，用五个示例校准后再作为门槛。
+4. 添加一项宿主能力，定义支持、适配、降级和不支持结果。
+5. 清单创建后修改已安装参考，证明激活前包验证失败。
+6. 创建正文通过检查但脚本违反制品契约的技能，指出阻塞的发布层。
+7. 添加升级评估，比较两版包的调用策略和必需能力。
+8. 发布兼容报告，列出测试宿主版本、日期、回退和未验证行为，不用单一“可移植”徽章。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语 | 常见说法 | 实际含义 |
 |---|---|---|
-| Trigger eval | "Does the skill fire?" | Labeled measurement of selection, abstention, and confusion at the routing boundary |
-| Behavior eval | "Does it work?" | Task execution measured against artifact, quality, scope, and efficiency contracts |
-| Baseline | "Without the skill" | The same model, tools, task, and budget under the comparison condition |
-| Artifact contract | "Expected output" | Independently checkable properties required for completion |
-| Capability matrix | "Supported runtimes" | Per-host accounting of native support, adapters, degradation, and incompatibility |
-| Release gate | "All tests pass" | Layer-specific thresholds that block a package without hiding failure classes |
-| Silent degradation | "Ignored metadata" | A host loses required behavior without warning the installer or user |
+| 触发评估（Trigger eval） | “技能触发吗？” | 对路由边界选择、弃权和混淆的标注测量 |
+| 行为评估（Behavior eval） | “有效吗？” | 按制品、质量、范围和效率契约测量任务执行 |
+| 基线（Baseline） | “不用技能” | 比较条件下相同模型、工具、任务和预算 |
+| 制品契约（Artifact contract） | “预期输出” | 完成所需独立可检查属性 |
+| 能力矩阵（Capability matrix） | “支持运行时” | 逐宿主核算原生支持、适配器、降级和不兼容 |
+| 发布门槛（Release gate） | “全部测试通过” | 不隐藏失败类别的分层阻塞阈值 |
+| 静默降级（Silent degradation） | “忽略元数据” | 宿主丢失必需行为，却不警告安装器或用户 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [Evaluating skills](https://agentskills.io/skill-creation/evaluating-skills) for trigger evals, output evals, repeated runs, and baselines.
-- [Agent Skills best practices](https://agentskills.io/skill-creation/best-practices) for coherent scope and resource architecture.
-- [Using scripts in skills](https://agentskills.io/skill-creation/using-scripts) for deterministic helpers and structured interfaces.
-- [Client implementation guide](https://agentskills.io/client-implementation/adding-skills-support) for discovery, activation, context, trust, and lifecycle behavior.
-- [GitSkills: A Dataset of Agent Skills from GitHub](https://arxiv.org/abs/2608.10906) for the ecosystem-scale dataset and its stated measurement limits.
+- [评估技能](https://agentskills.io/skill-creation/evaluating-skills)：触发、输出评估、重复运行和基线。
+- [Agent Skills 最佳实践](https://agentskills.io/skill-creation/best-practices)：一致范围和资源架构。
+- [在技能中使用脚本](https://agentskills.io/skill-creation/using-scripts)：确定性辅助程序和结构化接口。
+- [客户端实现指南](https://agentskills.io/client-implementation/adding-skills-support)：发现、激活、上下文、信任和生命周期。
+- [GitSkills：来自 GitHub 的智能体技能数据集](https://arxiv.org/abs/2608.10906)：生态规模数据集及其声明的测量限制。

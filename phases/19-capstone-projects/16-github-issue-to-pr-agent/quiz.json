@@ -1,87 +1,87 @@
 {
   "lesson": "16-github-issue-to-pr-agent",
-  "title": "Capstone 16 — GitHub Issue-to-PR Autonomous Agent",
+  "title": "综合实践 16：GitHub 问题到 PR 自主智能体（GitHub Issue-to-PR Autonomous Agent）",
   "questions": [
     {
       "stage": "pre",
-      "question": "How is the async cloud coding agent triggered in production?",
+      "question": "生产中如何触发异步云编码智能体（Async Cloud Coding Agent）？",
       "options": [
-        "A GitHub webhook fired by an issue label or PR comment, dispatched to a sandbox worker",
-        "A manual file upload",
-        "A long-lived SSH session into a VM",
-        "A scheduled cron job hitting the repo"
+        "由问题标签或 PR 评论触发 GitHub 网络回调（Webhook），分发至沙箱工作者",
+        "人工上传文件",
+        "连接虚拟机的长期 SSH 会话",
+        "定时 cron 作业访问仓库"
       ],
       "correct": 0,
       "explanation": ""
     },
     {
       "stage": "pre",
-      "question": "Why must the agent run with a short-lived GitHub App installation token rather than a personal access token?",
+      "question": "为什么智能体必须使用短期 GitHub App 安装令牌，而非个人访问令牌（Personal Access Token，PAT）？",
       "options": [
-        "Personal access tokens cannot open PRs",
-        "App tokens grant fine-grained, scoped, short-lived credentials suited for per-task workers",
-        "Apps avoid GitHub rate limits entirely",
-        "Apps require less code than PATs"
+        "个人访问令牌不能创建 PR",
+        "App 令牌提供适合逐任务工作者的细粒度、范围受限、短期凭据",
+        "App 完全避免 GitHub 速率限制",
+        "App 比 PAT 需要更少代码"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Which two protections prevent the agent from clobbering main?",
+      "question": "哪两项保护阻止智能体覆盖 main？",
       "options": [
-        "Disabling git on the worker",
-        "Branch protection enforcing no direct push or force-push to main, with the app not on the bypass list",
-        "Requiring a captcha per push",
-        "Encrypting the repo before clone"
+        "在工作者中禁用 git",
+        "分支保护禁止直接或强制推送 main，且 App 不在绕过列表中",
+        "每次推送要求验证码",
+        "克隆前加密仓库"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Why is path-scoped protection for .github/workflows enforced at the worker rather than as a GitHub App permission?",
+      "question": "为什么 .github/workflows 的路径范围保护由工作者执行，而非 GitHub App 权限？",
       "options": [
-        ".github/workflows is a virtual path",
-        "GitHub App permissions are not path-scoped, so the worker's allow-list check on the proposed diff is the right place to enforce it",
-        "Path scoping is impossible in any form",
-        "Workflows are stored outside the repo"
+        ".github/workflows 是虚拟路径",
+        "GitHub App 权限不按路径限定，因此应由工作者对待应用差异做允许列表（Allow-List）检查",
+        "任何形式都无法限定路径范围",
+        "工作流存储在仓库外"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "What gating happens after the agent loop concludes, before opening a PR?",
+      "question": "智能体循环结束、创建 PR 前进行什么检查关卡？",
       "options": [
-        "The reviewer model rewrites the diff",
-        "The PR opens immediately with no checks",
-        "Full CI runs in the sandbox; coverage delta is computed; PRs with a regression beyond a threshold are labeled needs-review",
-        "The repo is force-pushed to main"
+        "评审模型重写差异",
+        "立即创建 PR，不做检查",
+        "在沙箱运行完整 CI，计算覆盖率变化，超过退化阈值的 PR 标记 needs-review",
+        "将仓库强制推送至 main"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "Which budget knobs does the dispatcher enforce per repo per day?",
+      "question": "分发器对每仓库每天执行哪些预算限制？",
       "options": [
-        "Only a turn cap",
-        "A dollar ceiling per PR plus a maximum number of PRs per repo per day",
-        "Unlimited PRs and unlimited cost",
-        "Only a wall-clock cap"
+        "只有轮次上限",
+        "每 PR 美元上限，以及每仓库每天最大 PR 数量",
+        "PR 数量和成本均无限",
+        "只有实际运行时间上限"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "What goes into the PR body that the agent posts?",
+      "question": "智能体发布的 PR 正文包含什么？",
       "options": [
-        "Rationale, diff summary, trace URL, cost, and turn count so reviewers can audit and follow up",
-        "Only the diff",
-        "Nothing; the PR has an empty body",
-        "A generated changelog only"
+        "理由（Rationale）、差异摘要、轨迹 URL、成本和轮次，使评审者能审计与追问",
+        "只有差异",
+        "没有内容，PR 正文为空",
+        "只有生成的变更日志"
       ],
       "correct": 0,
       "explanation": ""

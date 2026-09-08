@@ -1,78 +1,78 @@
 {
   "lesson": "19-claude-code-memory-rules-skills-and-ci",
-  "title": "Claude Code Memory, Rules, Skills, and CI",
+  "title": "Claude Code 记忆、规则、技能与 CI（Claude Code Memory, Rules, Skills, and CI）",
   "questions": [
     {
       "stage": "pre",
-      "question": "A root CLAUDE.md contains hundreds of lines that apply only to database migrations. What is the strongest improvement?",
+      "question": "根 CLAUDE.md 包含数百行只适用于数据库迁移的内容。最佳改进是什么？",
       "options": [
-        "Move migration guidance to a scoped rule or Skill and keep the root file as a concise router",
-        "Keep the guidance in the root file but add a summary and stronger priority labels",
-        "Move every project instruction into separate Skills so the root file has no shared context or routing role",
-        "Copy the migration section into task prompts only when a developer remembers it is relevant"
+        "将迁移指导移到限定作用域的规则或技能，根文件只保留精简导航",
+        "保留在根文件中，但增加摘要和更强的优先级标签",
+        "将每条项目指令移到独立技能，让根文件不再承担共享上下文或导航职责",
+        "只有开发者记起相关性时，才把迁移章节复制到任务提示词"
       ],
       "correct": 0,
-      "explanation": "Narrow guidance should load only in its true scope. A concise root file preserves high-value project context without making every task pay the full instruction cost."
+      "explanation": "窄范围指导应只在真正适用的作用域加载。精简根文件保留高价值项目上下文，不让每个任务承担全部指令成本。"
     },
     {
       "stage": "check",
-      "question": "A PreToolUse command hook must block a tool and explain why. Which output contract is valid?",
+      "question": "PreToolUse 命令钩子必须阻止工具并解释原因。哪种输出契约有效？",
       "options": [
-        "Exit 2 and print structured JSON to stdout so both blocking mechanisms apply",
-        "Exit 2 with stderr, or exit 0 with event-specific JSON",
-        "Exit 0 with plain text that asks Claude to deny the tool",
-        "Exit 1 and print a JSON decision to stderr"
+        "退出码为 2，同时向 stdout 打印结构化 JSON，让两种阻止机制都生效",
+        "以 2 退出并写入 stderr，或以 0 退出并输出事件专用 JSON",
+        "以 0 退出，输出要求 Claude 拒绝工具的纯文本",
+        "以 1 退出，并把 JSON 决策打印到 stderr"
       ],
       "correct": 1,
-      "explanation": "Exit 2 is the blocking exit-code path; structured JSON is parsed only on exit 0. The two paths must not be combined, and each hook event has its own decision schema."
+      "explanation": "退出码 2 是通过退出码阻止的路径；只有退出码 0 才解析结构化 JSON。两条路径不能混合，每类钩子事件都有自己的决策模式。"
     },
     {
       "stage": "check",
-      "question": "What does allowed-tools in SKILL.md do?",
+      "question": "SKILL.md 中的 allowed-tools 做什么？",
       "options": [
-        "Restricts Claude to exactly those tools until the session ends",
-        "Grants the listed tools permanently after the project folder is trusted",
-        "Pre-approves matching tools for one invocation turn",
-        "Overrides project deny rules for the Skill's bundled scripts"
+        "将 Claude 限制为只能使用这些工具，直到会话结束",
+        "项目信任后永久授予所列工具",
+        "在一个调用轮次内预先批准匹配工具",
+        "为技能附带脚本覆盖项目拒绝规则"
       ],
       "correct": 2,
-      "explanation": "allowed-tools is a temporary pre-approval, not a sandbox. Other tools remain available under normal permissions, and deny rules continue to apply."
+      "explanation": "allowed-tools 是临时预批准，不是沙箱。其他工具仍按正常权限可用，拒绝规则继续适用。"
     },
     {
       "stage": "check",
-      "question": "How should a team configure a migration-auditor subagent that must stop cleanly when evidence is missing?",
+      "question": "迁移审计子智能体必须在证据缺失时明确停止，团队应如何配置？",
       "options": [
-        "Use bypassPermissions in a worktree so missing access cannot interrupt the audit",
-        "Put its complete procedure in the root CLAUDE.md so every session sees the same prompt",
-        "Give it inherited tools and ask it to keep trying until it can report success",
-        "Use /agents with read-only tools, maxTurns, and a structured blocked result"
+        "在工作树中使用 bypassPermissions，避免访问不足打断审计",
+        "将完整流程放在根 CLAUDE.md，让每个会话看到相同提示词",
+        "让它继承工具，并要求持续尝试直到能报告成功",
+        "使用 /agents，配置只读工具、maxTurns 和结构化 blocked 结果"
       ],
       "correct": 3,
-      "explanation": "Tool and turn boundaries limit the task, while a structured blocked result preserves the obstacle. A worktree isolates files but does not justify broader permissions."
+      "explanation": "工具和轮次边界限制任务，结构化 blocked 结果保留障碍。工作树隔离文件，但不能成为扩大权限的理由。"
     },
     {
       "stage": "post",
-      "question": "A path-specific rule never appears to affect tasks. What should the team verify first?",
+      "question": "路径专用规则似乎从未影响任务。团队首先应验证什么？",
       "options": [
-        "Whether its glob matches fixture paths and the file is in the documented configuration scope",
-        "Whether lower sampling variance would make the rule's effect easier to observe",
-        "Whether the selected model follows scoped rules more reliably than the previous version across the same fixture paths",
-        "Whether a plugin instruction layer is overriding the path-specific guidance"
+        "通配模式是否匹配夹具路径，文件是否处于文档规定的配置作用域",
+        "降低采样方差是否让规则效果更容易观察",
+        "在相同夹具路径下，所选模型是否比上一版本更可靠地遵循作用域规则",
+        "插件指令层是否覆盖了路径专用指导"
       ],
       "correct": 0,
-      "explanation": "A configuration audit should prove the rule loads for expected paths and not for others. Silent glob mismatch creates false confidence regardless of model capability."
+      "explanation": "配置审计应证明规则对预期路径加载、对其他路径不加载。通配模式静默不匹配会造成虚假信心，与模型能力无关。"
     },
     {
       "stage": "post",
-      "question": "Several repositories need the same reviewed Skills, agents, and hooks. What is the strongest distribution design?",
+      "question": "多个仓库需要相同的已评审技能、智能体和钩子。最佳分发设计是什么？",
       "options": [
-        "Import the whole shared repository from every project's root CLAUDE.md",
-        "Use a versioned plugin, reviewed marketplace, and managed source restrictions",
-        "Copy each file into every user's home configuration and rely on manual updates",
-        "Enable automatic updates from any marketplace so every repository stays current"
+        "从每个项目根 CLAUDE.md 导入整个共享仓库",
+        "使用版本化插件、经过评审的市场和托管来源限制",
+        "把每个文件复制到每位用户的主目录配置，依赖手动更新",
+        "允许从任意市场自动更新，让每个仓库保持最新"
       ],
       "correct": 1,
-      "explanation": "A plugin provides one versioned bundle, a marketplace distributes it, and managed settings can enforce organization source policy. Project-only procedures should remain directly in that repository."
+      "explanation": "插件提供统一版本化包，市场负责分发，托管设置可强制组织来源政策。只适用于单个项目的流程应直接保留在该仓库。"
     }
   ]
 }

@@ -1,15 +1,15 @@
-# Portable contract checklist
+# 可移植契约清单（Portable contract checklist）
 
-- The bundle is a directory containing a regular `SKILL.md` file.
-- Frontmatter starts on the first line and has a closing delimiter.
-- `name` is present, no longer than 64 characters, and uses lowercase letters, digits, and single hyphens.
-- `name` matches the bundle directory.
-- `description` is present, no longer than 1024 characters, and states when the skill is useful.
-- Optional `compatibility` contains 1 to 500 characters when present.
-- Optional `metadata` maps string keys to string values.
-- Optional experimental `allowed-tools` is a non-empty space-separated string whose behavior is verified in the target host.
-- Unknown runtime fields are separated from the portable package contract and handled by an explicit adapter.
-- The Markdown body contains the procedure.
-- Optional portable metadata and host-specific extensions remain distinguishable.
+- 包是包含普通 `SKILL.md` 文件的目录。
+- 前置元数据从第一行开始，并有闭合分隔符。
+- `name` 存在，不超过 64 字符，使用小写字母、数字和单个连字符。
+- `name` 匹配包目录。
+- `description` 存在，不超过 1024 字符，并说明技能何时有用。
+- 可选 `compatibility` 出现时包含 1 至 500 字符。
+- 可选 `metadata` 将字符串键映射到字符串值。
+- 可选实验性 `allowed-tools` 是非空、空格分隔字符串，其行为在目标宿主已验证。
+- 未知运行时字段与可移植包契约分离，并由显式适配器处理。
+- Markdown 正文包含规程。
+- 可选可移植元数据和宿主专属扩展仍可区分。
 
-Passing this checklist makes the package structurally loadable. It does not grant filesystem, network, secret, subprocess, or tool authority.
+通过清单意味着包在结构上可加载，不授予文件系统、网络、秘密、子进程或工具权限。

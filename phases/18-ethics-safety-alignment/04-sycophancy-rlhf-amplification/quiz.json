@@ -1,75 +1,75 @@
 {
   "lesson": "04-sycophancy-rlhf-amplification",
-  "title": "Sycophancy as RLHF Amplification",
+  "title": "RLHF 对谄媚的放大作用（Sycophancy as RLHF Amplification）",
   "questions": [
     {
       "stage": "pre",
-      "question": "Which best describes sycophancy in a language model?",
+      "question": "以下哪一项最准确地描述了语言模型中的谄媚（Sycophancy）？",
       "options": [
-        "Switching languages mid-conversation",
-        "Refusing to answer any user-belief question",
-        "Citing sources for every claim",
-        "Agreeing with a stated user premise regardless of its truth"
+        "在对话中途切换语言",
+        "拒绝回答任何涉及用户观点的问题",
+        "为每个主张引用来源",
+        "不论真假，都认同用户给定的前提"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Shapira et al. (2026) formalize sycophancy amplification as a two-stage mechanism. What is stage 1?",
+      "question": "Shapira 等人（2026）将谄媚放大形式化为两阶段机制。第 1 阶段是什么？",
       "options": [
-        "The optimizer adds a sycophancy term to the loss directly",
-        "Sycophantic completions are over-represented among high-reward outputs of the base policy",
-        "Labelers explicitly select sycophantic outputs in 100% of pairs",
-        "Sycophancy is encoded in the tokenizer"
+        "优化器直接在损失中添加谄媚项",
+        "基础策略的高奖励输出中，谄媚式补全占比过高",
+        "标注员在 100% 的配对中明确选择谄媚输出",
+        "谄媚被编码在分词器（Tokenizer）中"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Why is sycophancy considered inverse-scaling in the lesson?",
+      "question": "为什么本课认为谄媚具有逆向缩放（Inverse scaling）性质？",
       "options": [
-        "It is observed only in models below 1B parameters",
-        "It tracks training loss inversely",
-        "It decreases as model size grows",
-        "It rises with model size and longer RLHF training, unlike most capabilities"
+        "它只出现在参数少于 1B 的模型中",
+        "它与训练损失呈反向变化",
+        "它随模型规模扩大而减少",
+        "与大多数能力不同，它随模型规模扩大和 RLHF 训练时间延长而增加"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Cheng, Tramel et al. (Science, March 2026) decouple sycophancy from honesty by:",
+      "question": "Cheng、Tramel 等人（Science，2026 年 3 月）如何将谄媚与诚实分离？",
       "options": [
-        "Asking models to introspect on their own reasoning",
-        "Measuring matched user-belief vs third-party-belief framings of the same factual claim",
-        "Using only multiple-choice questions",
-        "Testing only on math problems"
+        "要求模型反思自己的推理过程",
+        "测量同一事实主张在用户观点与第三方观点配对表述下的差异",
+        "只使用多项选择题",
+        "只测试数学问题"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "What is the agreement-penalty correction Shapira et al. propose?",
+      "question": "Shapira 等人提出的认同惩罚（Agreement penalty）修正是什么？",
       "options": [
-        "Penalize the policy when its KL is below a threshold",
-        "Re-rank outputs by length only",
-        "Drop pairs where the user is wrong",
-        "Subtract a classifier-measured agreement score from the proxy reward: r'(x, y) = r(x, y) - alpha * agree(x, y)"
+        "当策略的 KL 低于阈值时惩罚策略",
+        "只按长度对输出重新排序",
+        "删除用户说错的配对",
+        "从代理奖励中减去分类器测得的认同评分：r'(x, y) = r(x, y) - alpha * agree(x, y)"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "What trade-off does the agreement penalty produce as alpha increases?",
+      "question": "随着 alpha 增大，认同惩罚会带来什么权衡？",
       "options": [
-        "Only helpfulness changes, sycophancy is unaffected",
-        "Sycophancy rises because the classifier is noisy",
-        "Sycophancy drops, but legitimate agreement (the model is slightly more contrarian on correct user beliefs) also drops",
-        "It always strictly improves both sycophancy and helpfulness"
+        "只有有帮助程度发生变化，谄媚不受影响",
+        "由于分类器带有噪声，谄媚增加",
+        "谄媚减少，但合理认同也减少，即模型对正确的用户观点也略微更倾向于反对",
+        "它总能同时严格改善谄媚和有帮助程度"
       ],
       "correct": 2,
       "explanation": ""

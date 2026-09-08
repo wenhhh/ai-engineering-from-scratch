@@ -1,78 +1,78 @@
 {
   "lesson": "phase-19/25-verification-gates-observation-budget",
-  "title": "Verification Gates and the Observation Budget",
+  "title": "验证关卡与观察预算（Verification Gates and the Observation Budget）",
   "questions": [
     {
       "stage": "pre",
-      "question": "Before reading the lesson: which of these is the strongest reason a harness needs a deterministic gate chain rather than a model-as-judge?",
+      "question": "阅读前思考：运行框架需要确定性关卡链，而非模型裁判（Model-as-Judge）的最有力理由是什么？",
       "options": [
-        "Models are too slow to act as judges in production.",
-        "Gate chains let the model write its own policy.",
-        "A model-as-judge always produces hallucinated allow decisions.",
-        "Determinism makes the deny reason auditable and the chain replayable."
+        "模型在生产环境中担任裁判太慢",
+        "关卡链让模型编写自己的策略",
+        "模型裁判总会因幻觉而作出允许决定",
+        "确定性让拒绝原因可审计、关卡链可重放"
       ],
       "correct": 3,
-      "explanation": "Audit trails and reproducibility are the practical wins. A judge model can also be wired in, but the structural gate needs to be deterministic so the decision can be reproduced and reviewed."
+      "explanation": "实际收益是审计轨迹与可复现性。也可以接入裁判模型，但结构关卡需要确定性，才能复现和复核决策。"
     },
     {
       "stage": "check",
-      "question": "Why does the lesson run WhitelistGate before BudgetGate in the chain?",
+      "question": "为什么本课在关卡链中先运行 WhitelistGate，再运行 BudgetGate？",
       "options": [
-        "BudgetGate cannot run until at least one tool has been called.",
-        "Whitelist denials are cheaper, so short-circuiting them avoids the expensive ledger sum.",
-        "Whitelist must always be the last gate by convention.",
-        "Order does not matter because GateChain randomises evaluation order."
+        "BudgetGate 必须在至少调用过一次工具后才能运行",
+        "白名单拒绝成本更低，短路可避免高成本的账本求和",
+        "按惯例白名单必须始终是最后一个关卡",
+        "顺序无关，因为 GateChain 会随机化评估顺序"
       ],
       "correct": 1,
-      "explanation": "Cheap denials run first. WhitelistGate is O(1) hash lookup. BudgetGate has to sum the ledger. Short-circuiting on whitelist avoids that work when the call is structurally illegal."
+      "explanation": "低成本拒绝先运行。WhitelistGate 是 O(1) 哈希查询，BudgetGate 需要对账本求和。调用结构不合法时，白名单短路可避免后续工作。"
     },
     {
       "stage": "check",
-      "question": "An ObservationLedger has recorded a 60-token observation from read_file. The harness then refuses a subsequent call. What does the ledger record about the refusal?",
+      "question": "ObservationLedger 已记录来自 read_file 的 60 词元观察，随后框架拒绝下一次调用。账本会如何记录这次拒绝？",
       "options": [
-        "Nothing. The ledger only records successful observations.",
-        "The refusal is appended as a synthetic Observation with the refuser's name.",
-        "A zero-token Observation row tagged refused.",
-        "A negative-token Observation row representing the refusal cost."
+        "不记录，账本只记录成功的观察",
+        "将拒绝追加为带拒绝方名称的合成 Observation",
+        "记录标记为 refused 的零词元 Observation 行",
+        "记录负词元 Observation 行，代表拒绝成本"
       ],
       "correct": 0,
-      "explanation": "The ledger records observations the model has seen. A refusal produces a GateDecision, not an Observation. Refusal counts live alongside the ledger, not inside it."
+      "explanation": "账本记录模型看过的观察。拒绝产生 GateDecision，而非 Observation。拒绝计数与账本并列存储，不在账本内部。"
     },
     {
       "stage": "check",
-      "question": "RecencyGate.window is set to 3. The ledger's latest_turn is 5. A new ToolCall arrives on turn 10. What happens?",
+      "question": "RecencyGate.window 为 3，账本 latest_turn 为 5，第 10 轮到达新的 ToolCall，会怎样？",
       "options": [
-        "The gate denies: gap of 5 exceeds window of 3.",
-        "The gate allows: the call is on the latest turn.",
-        "The gate allows: window applies to ledger size, not turn gap.",
-        "The gate raises an exception because the ledger is stale."
+        "关卡拒绝：间隔 5 超过窗口 3",
+        "关卡允许：调用发生在最新一轮",
+        "关卡允许：窗口约束账本大小，而非轮次间隔",
+        "关卡因账本过期而抛出异常"
       ],
       "correct": 0,
-      "explanation": "RecencyGate compares (call.turn - ledger.latest_turn) against the window. 10 - 5 = 5, which is greater than 3, so the gate denies."
+      "explanation": "RecencyGate 比较 (call.turn - ledger.latest_turn) 与窗口。10 - 5 = 5，大于 3，因此拒绝。"
     },
     {
       "stage": "post",
-      "question": "You want to add a per-call output cap (no single observation may exceed 8000 tokens). Where does this gate logically belong in the chain?",
+      "question": "你要增加单次调用输出上限，每条观察不得超过 8000 词元。按逻辑应将此关卡放在何处？",
       "options": [
-        "It cannot be a gate because the size is only known after the tool runs.",
-        "Before WhitelistGate, since size is the cheapest property to check.",
-        "Inside the BudgetGate so the limits compose.",
-        "After BudgetGate, since cumulative budget always dominates."
+        "它不能作为关卡，因为只有工具运行后才知道输出大小",
+        "放在 WhitelistGate 前，因为大小检查成本最低",
+        "放入 BudgetGate，使限制组合生效",
+        "放在 BudgetGate 后，因为累计预算始终优先"
       ],
       "correct": 0,
-      "explanation": "The output size is not known at gate-evaluation time. The harness applies the cap after the tool runs, by truncating the observation before the model sees it. Gates evaluate inputs, not outputs."
+      "explanation": "评估关卡时尚不知道输出大小。框架在工具运行后、模型看到观察前进行截断，以落实上限。关卡评估输入，不评估输出。"
     },
     {
       "stage": "post",
-      "question": "A reviewer asks you to prove that the agent never fired a denied tool call during a session. Which artifact do you point them at?",
+      "question": "审阅者要求证明会话中智能体从未执行被拒绝的工具调用，你应提供哪个产物？",
       "options": [
-        "The ObservationLedger snapshot, which only contains successful observations.",
-        "The pytest output, which records test pass/fail.",
-        "The model's chat transcript, which contains its own self-report.",
-        "The list of ChainOutcome records, which contains every per-call decision with deny reasons."
+        "仅包含成功观察的 ObservationLedger 快照",
+        "记录测试通过或失败的 pytest 输出",
+        "包含模型自述的聊天记录",
+        "包含每次调用决策及拒绝原因的 ChainOutcome 记录列表"
       ],
       "correct": 3,
-      "explanation": "ChainOutcome records carry per-call decisions and deny reasons. The ledger and transcript can support the claim, but the auditable artifact is the chain decisions."
+      "explanation": "ChainOutcome 记录携带逐调用决策和拒绝原因。账本与对话记录可作为辅助，但可审计的产物是关卡链决策。"
     }
   ]
 }

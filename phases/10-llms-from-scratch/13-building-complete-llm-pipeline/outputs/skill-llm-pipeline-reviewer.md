@@ -1,31 +1,31 @@
 ---
 name: llm-pipeline-reviewer
-description: Review an end-to-end LLM training pipeline manifest before a multi-million-dollar run.
+description: 在启动数百万美元的运行前，审查端到端大语言模型（LLM）训练流水线清单。
 version: 1.0.0
 phase: 10
 lesson: 13
 tags: [pipeline, training, manifest, eval-gate, cost, rollback]
 ---
 
-Given a proposed training pipeline manifest (YAML or JSON describing tokenizer, data, pre-training, SFT, alignment, eval, quantization, and serving stages), produce a review covering:
+给定拟议的训练流水线清单（用 YAML 或 JSON 描述分词器、数据、预训练、SFT、对齐、评估、量化和服务阶段），生成覆盖以下内容的审查：
 
-1. Stage graph. Confirm each stage has typed inputs and outputs. Call out missing dependencies, implicit state, or any stage that consumes a bare directory instead of a named artifact hash.
-2. Hash chain. Verify output_hash of stage N equals one of the input_hashes of every downstream stage. Any mismatch means the manifest is incoherent and the pipeline must not start.
-3. Eval gate. Every metric in the gate list must be numeric, have an operator, a threshold, and a measurement source. Reject any gate that is subjective ("looks good"), unbounded (no threshold), or measured on the training data.
-4. Regression guard. The new model's core benchmarks (MMLU, MATH, HumanEval+, GPQA, or a domain-specific equivalent) must have baseline numbers attached. A run with no baselines is a run with no regression detection.
-5. KL budget. Alignment stages (RLHF, DPO, CAI, GRPO) must declare a cumulative KL cap against the reference. Unbounded KL is an unbounded drift.
-6. Contamination check. Training data shards and eval sets must have a documented overlap check (exact match or 13-gram). Required pass threshold: <0.1%.
-7. Cost estimate. Pre-run estimate for each stage plus a total, compared against the budget gate. If estimate > budget, pipeline refuses to start.
-8. Rollback plan. For each stage, named actions on failure: re-run, fall back to previous artifact, revise inputs and re-run downstream. Expensive stages (pre-training) must have a warm checkpoint strategy.
-9. Artifact store. Checkpoints, datasets, tokenizers, eval reports must be content-addressed (SHA-256). Filename-addressed artifacts ("latest.pt") are a hard reject.
-10. Observability. Every stage must emit structured logs with a trace ID, stage name, input hashes, output hash, wall clock, and cost. Missing trace IDs mean the run cannot be debugged after the fact.
+1. 阶段图（Stage Graph）。确认每个阶段都有带类型的输入与输出。指出缺失依赖、隐式状态，或任何直接消费裸目录而非命名交付物哈希的阶段。
+2. 哈希链（Hash Chain）。验证阶段 N 的 output_hash 等于每个下游阶段 input_hashes 中的一项。任何不匹配都意味着清单不一致，流水线不得启动。
+3. 评估门槛（Eval Gate）。门槛列表中的每个指标都必须是数值，具有运算符、阈值和测量来源。拒绝主观门槛（“看起来不错”）、无边界门槛（没有阈值），以及在训练数据上测量的门槛。
+4. 回归防护（Regression Guard）。新模型的核心基准（MMLU、MATH、HumanEval+、GPQA 或对应的领域基准）必须附有基线数值。没有基线的运行，就没有回归检测。
+5. KL 预算（KL Budget）。对齐阶段（RLHF、DPO、CAI、GRPO）必须声明相对参考模型的累计 KL 上限。KL 无上限，漂移就无边界。
+6. 污染检查（Contamination Check）。训练数据分片与评估集必须有记录在案的重叠检查（精确匹配或 13 元语法匹配）。要求的通过阈值：<0.1%。
+7. 成本估算（Cost Estimate）。提供逐阶段运行前估算与总额，并与预算门槛比较。如果估算 > 预算，流水线拒绝启动。
+8. 回滚方案（Rollback Plan）。为每个阶段明确失败动作：重跑、回退到先前交付物、修订输入并重跑下游。昂贵阶段（预训练）必须有可继续训练的检查点策略。
+9. 交付物存储（Artifact Store）。检查点、数据集、分词器与评估报告必须采用内容寻址（Content-addressed，SHA-256）。按文件名寻址的交付物（"latest.pt"）必须拒绝。
+10. 可观测性（Observability）。每个阶段必须输出包含跟踪 ID、阶段名、输入哈希、输出哈希、实际时间和成本的结构化日志。缺少跟踪 ID，就无法事后调试该运行。
 
-Red flags that halt the review:
-- a gate missing a measurement source (gate on a metric no stage computes)
-- a stage that shares a checkpoint with a downstream stage (no separation of concerns)
-- an alignment stage with no reference model (no anchor for KL)
-- an LLM-as-judge eval where the judge is the same model family as the policy (contamination)
-- a cost estimate that exceeds the budget by more than 20%
-- a rollback plan consisting solely of "re-run from scratch"
+出现以下危险信号时停止审查：
+- 门槛缺少测量来源（依据的指标没有任何阶段计算）
+- 一个阶段与下游阶段共用检查点（没有职责分离）
+- 对齐阶段没有参考模型（KL 没有锚点）
+- 大语言模型裁判（LLM-as-judge）评估中，裁判与策略属于同一模型家族（污染）
+- 成本估算超出预算超过 20%
+- 回滚方案只有“从零重跑”
 
-Output: a two-page review with PASS/HOLD per gate, the exact manifest field or missing field that produced each verdict, and the minimum change required to flip a HOLD into a PASS.
+输出：两页审查报告，为每项门槛给出 PASS/HOLD，列出产生各判断的确切清单字段或缺失字段，以及使 HOLD 转为 PASS 所需的最小改动。

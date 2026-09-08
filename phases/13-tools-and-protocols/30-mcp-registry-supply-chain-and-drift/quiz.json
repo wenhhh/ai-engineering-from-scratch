@@ -1,78 +1,78 @@
 {
   "lesson": "30-mcp-registry-supply-chain-and-drift",
-  "title": "MCP Registry Supply Chain: Admission, Drift, and Rollback",
+  "title": "MCP 注册表供应链：准入、漂移与回滚（MCP Registry Supply Chain: Admission, Drift, and Rollback）",
   "questions": [
     {
       "stage": "pre",
-      "question": "What does successful publication in an MCP Registry establish for a production gateway?",
+      "question": "在 MCP Registry 中成功发布，能为生产网关确立什么？",
       "options": [
-        "The record passed Registry publication controls, while local runtime admission is still required",
-        "The live endpoint exactly matches the published package",
-        "The newest version should immediately replace every older route",
-        "The server is safe for every principal"
+        "记录通过了注册表发布控制，但仍需本地运行时准入",
+        "在线端点与发布的包完全匹配",
+        "最新版本应立即替换所有旧路由",
+        "该服务器对所有主体都安全"
       ],
       "correct": 0,
-      "explanation": "Registry publication establishes publication facts. Artifact, runtime, authorization, and local approval checks remain separate."
+      "explanation": "注册表发布确立的是发布事实。产物、运行时、授权和本地批准检查仍相互独立。"
     },
     {
       "stage": "check",
-      "question": "Which namespace comparison rejects com.exampleevil/tool when the verified namespace is com.example?",
+      "question": "已验证命名空间为 com.example 时，哪种比较会拒绝 com.exampleevil/tool？",
       "options": [
-        "Check whether the whole name starts with com.example",
-        "Search for the substring example",
-        "Split at the slash and compare the namespace segment exactly",
-        "Trust the namespace written inside server.json"
+        "检查完整名称是否以 com.example 开头",
+        "查找子串 example",
+        "在斜杠处分割，并精确比较命名空间段",
+        "信任 server.json 内写出的命名空间"
       ],
       "correct": 2,
-      "explanation": "An exact segment comparison preserves the namespace boundary and uses authority supplied by a trusted verifier."
+      "explanation": "精确比较分段能够保持命名空间边界，并使用可信验证器提供的授权依据。"
     },
     {
       "stage": "check",
-      "question": "A live server adds a new tool while its Registry record and package coordinate stay unchanged. Which evidence detects this?",
+      "question": "在线服务器添加了新工具，但注册表记录与包坐标未变。哪项证据能检测到它？",
       "options": [
-        "A fresh normalized descriptor digest compared with the admitted toolset pin",
-        "The Registry publication timestamp",
-        "The namespace authentication method",
-        "The semantic version string alone"
+        "将新的规范化描述符摘要与获准的工具集固定记录比较",
+        "注册表发布时间戳",
+        "命名空间身份验证方法",
+        "仅靠语义化版本字符串"
       ],
       "correct": 0,
-      "explanation": "Live descriptor pinning detects behavior drift that publication metadata and package coordinates cannot show."
+      "explanation": "固定实时描述符能够检测发布元数据和包坐标无法反映的行为漂移。"
     },
     {
       "stage": "check",
-      "question": "What should happen when an admitted Registry version changes from active to deprecated?",
+      "question": "获准的注册表版本从 active 变为 deprecated 时，应如何处理？",
       "options": [
-        "Quarantine it from new routing and retain the historical admission evidence",
-        "Rewrite the published record back to active",
-        "Delete all evidence so clients cannot discover it",
-        "Ignore status because package ownership was already verified"
+        "隔离它以阻止新路由，并保留历史准入证据",
+        "将发布记录改回 active",
+        "删除所有证据，让客户端无法发现它",
+        "因为已验证包所有权而忽略状态"
       ],
       "correct": 0,
-      "explanation": "Status is operational input. Quarantine stops new use while retained evidence supports audit and rollback analysis."
+      "explanation": "状态是运维输入。隔离阻止新的使用，保留证据则支持审计和回滚分析。"
     },
     {
       "stage": "post",
-      "question": "Which target is eligible for an automatic rollback?",
+      "question": "哪个目标符合自动回滚条件？",
       "options": [
-        "Any version whose name sorts before the candidate",
-        "A previously admitted pin that is active under policy, healthy, and not quarantined",
-        "The version marked latest, even if it was never reviewed",
-        "A deleted Registry version with a familiar package name"
+        "名称排序位于候选版本之前的任何版本",
+        "此前获准、按策略仍为活动、健康且未隔离的固定记录",
+        "标记为 latest 的版本，即使从未审查",
+        "包名熟悉的已删除注册表版本"
       ],
       "correct": 1,
-      "explanation": "Rollback restores a known admissible route. It does not bypass current status, health, or quarantine checks."
+      "explanation": "回滚恢复已知符合准入条件的路由，并不绕过当前状态、健康或隔离检查。"
     },
     {
       "stage": "post",
-      "question": "Why should admission ledger heads be anchored in a separate trust domain?",
+      "question": "为什么应将准入账本链头锚定在独立信任域？",
       "options": [
-        "It makes artifact digests unnecessary",
-        "It lets publishers set Registry-managed status",
-        "It converts mutable version ranges into exact pins",
-        "A local hash chain detects edits, while a separate anchor makes a complete local rewrite detectable"
+        "这样就不再需要产物摘要",
+        "这样发布者就能设置注册表管理的状态",
+        "这样可把可变版本范围转换成精确固定值",
+        "本地哈希链可检测修改，独立锚点则使完整的本地重写也可被检测"
       ],
       "correct": 3,
-      "explanation": "An attacker who can rewrite the whole local ledger can recompute its chain. An external signed or write-once anchor exposes that rewrite."
+      "explanation": "能够重写整个本地账本的攻击者可以重新计算哈希链。外部签名或一次写入锚点能够揭示这种重写。"
     }
   ]
 }

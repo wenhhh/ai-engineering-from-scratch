@@ -1,48 +1,78 @@
 {
   "lesson": "44-plan-from-evidence",
-  "title": "Plan from Evidence",
+  "title": "依据证据规划（Plan from Evidence）",
   "questions": [
     {
       "stage": "pre",
-      "question": "What distinguishes an execution plan from a to-do list?",
-      "options": ["A model recommendation", "A fixed number of steps", "More prose", "A dependency graph with evidence and proof"],
+      "question": "执行计划与待办清单有何区别？",
+      "options": [
+        "模型推荐",
+        "固定步骤数",
+        "更多说明文字",
+        "具备依据与完成证明的依赖图"
+      ],
       "correct": 3,
-      "explanation": "Dependencies, receipts, and completion proof make the plan executable and resumable."
+      "explanation": "依赖、凭据与完成证明使计划可执行、可恢复。"
     },
     {
       "stage": "check",
-      "question": "Why define a shared contract before its implementations?",
-      "options": ["To avoid documentation", "To delay all work", "So dependent surfaces do not invent conflicting behavior", "So only one agent can work"],
+      "question": "为什么先定义共享契约，再定义各项实现？",
+      "options": [
+        "避免文档",
+        "延迟所有工作",
+        "防止依赖该契约的各个部分自行定义相互冲突的行为",
+        "只让一个智能体工作"
+      ],
       "correct": 2,
-      "explanation": "A fixed contract unblocks safe parallel work on dependent surfaces."
+      "explanation": "契约固定后，依赖它的各项工作就可以安全地并行开展。"
     },
     {
       "stage": "check",
-      "question": "What does a dependency cycle usually reveal?",
-      "options": ["Good parallelism", "A hidden unresolved decision or bad decomposition", "Fast execution", "Strong evidence"],
+      "question": "依赖环路通常揭示什么？",
+      "options": [
+        "良好的并行性",
+        "隐藏的未决决定或不良拆分",
+        "快速执行",
+        "强有力的证据"
+      ],
       "correct": 1,
-      "explanation": "Cyclic work items cannot establish a valid starting point."
+      "explanation": "成环的工作项无法建立有效起点。"
     },
     {
       "stage": "check",
-      "question": "When can two work items share an execution wave?",
-      "options": ["When their dependencies are complete and they are otherwise independent", "When they touch the same files", "When neither has proof", "When both are important"],
+      "question": "两个工作项何时能共享一个执行波次？",
+      "options": [
+        "依赖已完成，且除此之外彼此独立时",
+        "触及同一文件时",
+        "两者都没有证明时",
+        "两者都重要时"
+      ],
       "correct": 0,
-      "explanation": "A wave contains all currently unblocked independent work."
+      "explanation": "一个波次包含当前所有已解除阻塞的独立工作。"
     },
     {
       "stage": "post",
-      "question": "Why attach evidence to each work item?",
-      "options": ["To show why the change belongs and let new evidence revise it", "To replace tests", "To decorate the plan", "To satisfy a token target"],
+      "question": "为什么给每个工作项附上依据？",
+      "options": [
+        "说明变更为什么属于这里，并让新证据修订它",
+        "替代测试",
+        "装饰计划",
+        "满足词元目标"
+      ],
       "correct": 0,
-      "explanation": "Evidence must justify and be capable of changing the plan."
+      "explanation": "证据必须支持计划，并能改变计划。"
     },
     {
       "stage": "post",
-      "question": "What makes a plan resumable?",
-      "options": ["One worker for everything", "A long initial prompt", "Small items with status, artifacts, dependencies, and proof", "Chat history"],
+      "question": "什么使计划可恢复？",
+      "options": [
+        "所有事都交给一个工作者",
+        "很长的初始提示词",
+        "带状态、产物、依赖与证明的小工作项",
+        "聊天历史"
+      ],
       "correct": 2,
-      "explanation": "Durable item state lets another session continue without rediscovery."
+      "explanation": "持久化工作项状态使另一次会话不必重新探索就能继续。"
     }
   ]
 }

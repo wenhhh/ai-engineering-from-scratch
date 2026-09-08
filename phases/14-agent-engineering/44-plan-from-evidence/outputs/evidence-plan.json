@@ -16,16 +16,16 @@
   "items": [
     {
       "id": "contract",
-      "change": "Define duplicate-email behavior",
+      "change": "定义重复邮箱行为",
       "evidence": [
         "tests/test_accounts.py:44"
       ],
       "depends_on": [],
-      "proof": "review contract"
+      "proof": "审查契约"
     },
     {
       "id": "implementation",
-      "change": "Reject normalized duplicates",
+      "change": "拒绝规范化后重复的邮箱",
       "evidence": [
         "app/accounts.py:18"
       ],
@@ -36,7 +36,7 @@
     },
     {
       "id": "docs",
-      "change": "Document the 409 response",
+      "change": "记录 409 响应",
       "evidence": [
         "docs/api.md:72"
       ],
@@ -47,7 +47,7 @@
     },
     {
       "id": "integration",
-      "change": "Run the complete acceptance gate",
+      "change": "运行完整验收关卡",
       "evidence": [
         "pyproject.toml:31"
       ],

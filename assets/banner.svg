@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="420" viewBox="0 0 1280 420" role="img" aria-label="AI Engineering from Scratch — reference manual banner">
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="420" viewBox="0 0 1280 420" role="img" aria-label="从零开始的 AI 工程（AI Engineering from Scratch）：参考手册横幅">
   <defs>
     <pattern id="paper" x="0" y="0" width="16" height="16" patternUnits="userSpaceOnUse">
       <circle cx="0" cy="0" r="1" fill="#1a1a1a" fill-opacity="0.08"/>
@@ -20,32 +20,32 @@
   <rect width="1280" height="420" fill="#fafaf5"/>
   <rect width="1280" height="420" fill="url(#paper)"/>
 
-  <g class="mono" font-size="11" letter-spacing="2.4" fill="#3553ff">
-    <text x="56" y="44">FIG_000  —  REFERENCE MANUAL  V1.0</text>
+  <g class="mono" font-size="11" letter-spacing="0" fill="#3553ff">
+    <text x="56" y="44">FIG_000 · 参考手册（Reference Manual） V1.0</text>
   </g>
-  <g class="mono" font-size="11" letter-spacing="2.4" fill="#7a7a78" text-anchor="end">
-    <text x="1224" y="44">© 2026  ·  OPEN SOURCE  ·  MIT LICENSE</text>
+  <g class="mono" font-size="11" letter-spacing="0" fill="#7a7a78" text-anchor="end">
+    <text x="1224" y="44">© 2026 · 开源（Open Source） · MIT 许可证（MIT License）</text>
   </g>
 
   <line x1="56" y1="64" x2="1224" y2="64" stroke="#3553ff" stroke-width="0.6" stroke-opacity="0.4"/>
 
   <g transform="translate(56, 110)">
-    <text class="display" x="0" y="58" font-size="68" letter-spacing="1.5" fill="#3553ff">AI ENGINEERING</text>
-    <text class="display" x="0" y="124" font-size="68" letter-spacing="1.5" fill="#1a1a1a">FROM SCRATCH.</text>
+    <text class="display" x="0" y="58" font-size="48" letter-spacing="0" fill="#3553ff">从零开始的 AI 工程</text>
+    <text class="display" x="0" y="124" font-size="28" letter-spacing="0" fill="#1a1a1a">（AI Engineering from Scratch）</text>
   </g>
 
   <g class="serif" font-size="17" fill="#1a1a1a">
-    <text x="56" y="296">A reference manual for people who want to design and build AI systems from first principles.</text>
+    <text x="56" y="296">一本面向希望从基本原理出发设计和构建 AI 系统的开发者的参考手册。</text>
   </g>
-  <g class="mono" font-size="11" letter-spacing="2.4" fill="#7a7a78">
-    <text x="56" y="324">20 PHASES  ·  523 LESSONS  ·  396 SKILLS  ·  99 PROMPTS</text>
+  <g class="mono" font-size="11" letter-spacing="0" fill="#7a7a78">
+    <text x="56" y="324">20 个阶段（Phases） · 523 课（Lessons） · 396 个技能（Skills） · 99 个提示词（Prompts）</text>
   </g>
 
   <line x1="780" y1="110" x2="780" y2="350" stroke="#3553ff" stroke-width="0.6" stroke-opacity="0.4" stroke-dasharray="3 3"/>
 
   <g transform="translate(820, 130)">
-    <g class="mono" font-size="9" letter-spacing="2" fill="#3553ff">
-      <text x="0" y="-10">FIG_000.A  —  CURRICULUM STACK</text>
+    <g class="mono" font-size="9" letter-spacing="0" fill="#3553ff">
+      <text x="0" y="-10">FIG_000.A · 课程层次（Curriculum Stack）</text>
     </g>
 
     <g transform="translate(8, 32)">
@@ -87,23 +87,23 @@
       <line x1="244" y1="187" x2="278" y2="187"/>
     </g>
 
-    <g class="mono" font-size="9" letter-spacing="1.6" fill="#3553ff">
-      <text x="288" y="22">SETUP &amp; TOOLING</text>
-      <text x="288" y="50">MATH FOUNDATIONS</text>
-      <text x="288" y="78">ML FUNDAMENTALS</text>
-      <text x="288" y="106">DEEP LEARNING · RL</text>
-      <text x="288" y="134">VISION · SPEECH · NLP</text>
-      <text x="288" y="162">LLMS · TRANSFORMERS</text>
-      <text x="288" y="190">AGENTS · SWARMS · PROD</text>
+    <g class="mono" font-size="9" letter-spacing="0" fill="#3553ff">
+      <text x="288" y="22">环境配置与工具</text>
+      <text x="288" y="50">数学基础</text>
+      <text x="288" y="78">机器学习基础</text>
+      <text x="288" y="106">深度学习与强化学习</text>
+      <text x="288" y="134">视觉、语音与自然语言处理</text>
+      <text x="288" y="162">大语言模型与 Transformer</text>
+      <text x="288" y="190">智能体、群体与生产实践</text>
     </g>
-    <g class="mono" font-size="8" letter-spacing="1.4" fill="#7a7a78">
-      <text x="288" y="33">PHASE 00</text>
-      <text x="288" y="61">PHASE 01</text>
-      <text x="288" y="89">PHASE 02</text>
-      <text x="288" y="117">PHASE 03 · 09</text>
-      <text x="288" y="145">PHASE 04 · 05 · 06</text>
-      <text x="288" y="173">PHASE 07 · 08 · 10 · 12</text>
-      <text x="288" y="201">PHASE 13–19</text>
+    <g class="mono" font-size="7" letter-spacing="0" fill="#7a7a78">
+      <text x="288" y="33">（Setup &amp; Tooling） · 阶段 00</text>
+      <text x="288" y="61">（Math Foundations） · 阶段 01</text>
+      <text x="288" y="89">（ML Fundamentals） · 阶段 02</text>
+      <text x="288" y="117">（Deep Learning · RL） · 阶段 03 · 09</text>
+      <text x="288" y="145" font-size="6">（Vision · Speech · NLP） · 阶段 04 · 05 · 06</text>
+      <text x="288" y="173" font-size="6">（LLMs · Transformers） · 阶段 07 · 08 · 10 · 12</text>
+      <text x="288" y="201">（Agents · Swarms · Prod） · 阶段 13–19</text>
     </g>
   </g>
 

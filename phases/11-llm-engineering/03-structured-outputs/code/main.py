@@ -12,11 +12,11 @@ def _validate(data, schema, path, errors):
 
     if schema_type == "object":
         if not isinstance(data, dict):
-            errors.append(f"{path}: expected object, got {type(data).__name__}")
+            errors.append(f"{path}: 期望对象（Object），实际为 {type(data).__name__}")
             return
         for key in schema.get("required", []):
             if key not in data:
-                errors.append(f"{path}.{key}: required field missing")
+                errors.append(f"{path}.{key}: 缺少必填字段")
         properties = schema.get("properties", {})
         for key, value in data.items():
             if key in properties:
@@ -24,44 +24,44 @@ def _validate(data, schema, path, errors):
 
     elif schema_type == "array":
         if not isinstance(data, list):
-            errors.append(f"{path}: expected array, got {type(data).__name__}")
+            errors.append(f"{path}: 期望数组（Array），实际为 {type(data).__name__}")
             return
         min_items = schema.get("minItems", 0)
         max_items = schema.get("maxItems", float("inf"))
         if len(data) < min_items:
-            errors.append(f"{path}: array has {len(data)} items, minimum is {min_items}")
+            errors.append(f"{path}: 数组有 {len(data)} 项，最少需要 {min_items} 项")
         if len(data) > max_items:
-            errors.append(f"{path}: array has {len(data)} items, maximum is {max_items}")
+            errors.append(f"{path}: 数组有 {len(data)} 项，最多允许 {max_items} 项")
         items_schema = schema.get("items", {})
         for i, item in enumerate(data):
             _validate(item, items_schema, f"{path}[{i}]", errors)
 
     elif schema_type == "string":
         if not isinstance(data, str):
-            errors.append(f"{path}: expected string, got {type(data).__name__}")
+            errors.append(f"{path}: 期望字符串（String），实际为 {type(data).__name__}")
             return
         enum_values = schema.get("enum")
         if enum_values and data not in enum_values:
-            errors.append(f"{path}: '{data}' not in allowed values {enum_values}")
+            errors.append(f"{path}: '{data}' 不在允许值中 {enum_values}")
 
     elif schema_type == "number":
         if not isinstance(data, (int, float)):
-            errors.append(f"{path}: expected number, got {type(data).__name__}")
+            errors.append(f"{path}: 期望数值（Number），实际为 {type(data).__name__}")
             return
         minimum = schema.get("minimum")
         maximum = schema.get("maximum")
         if minimum is not None and data < minimum:
-            errors.append(f"{path}: {data} is less than minimum {minimum}")
+            errors.append(f"{path}: {data} 小于最小值 {minimum}")
         if maximum is not None and data > maximum:
-            errors.append(f"{path}: {data} is greater than maximum {maximum}")
+            errors.append(f"{path}: {data} 大于最大值 {maximum}")
 
     elif schema_type == "boolean":
         if not isinstance(data, bool):
-            errors.append(f"{path}: expected boolean, got {type(data).__name__}")
+            errors.append(f"{path}: 期望布尔值（Boolean），实际为 {type(data).__name__}")
 
     elif schema_type == "integer":
         if not isinstance(data, int) or isinstance(data, bool):
-            errors.append(f"{path}: expected integer, got {type(data).__name__}")
+            errors.append(f"{path}: 期望整数（Integer），实际为 {type(data).__name__}")
 
 
 class SchemaField:
@@ -167,11 +167,11 @@ def demonstrate_constrained_decoding():
         '{"product": "Sony", "price": 348}',
     ]
 
-    print(f"\n  {'Partial JSON':<45} {'Valid Next Tokens'}")
+    print(f"\n  {'不完整 JSON（Partial JSON）':<45} {'合法后续词元（Valid Next Tokens）'}")
     print("  " + "-" * 70)
     for state in partial_states:
         valid = next_valid_tokens(state, {})
-        display = state if state else "(empty)"
+        display = state if state else "（空）"
         print(f"  {display:<45} {valid}")
 
 
@@ -197,14 +197,14 @@ def extract_with_retry(text, schema, max_retries=3):
         try:
             data = json.loads(raw)
         except json.JSONDecodeError as e:
-            print(f"    Attempt {attempt + 1}: JSON parse error -- {e}")
+            print(f"    尝试 {attempt + 1}: JSON 解析错误 -- {e}")
             continue
 
         errors = validate_schema(data, schema)
         if not errors:
             return data
 
-        print(f"    Attempt {attempt + 1}: Schema validation errors -- {errors}")
+        print(f"    尝试 {attempt + 1}: 模式（Schema）验证错误 -- {errors}")
 
     return None
 
@@ -223,31 +223,31 @@ PRODUCT_SCHEMA = {
 
 def run_schema_validation_demo():
     print("=" * 60)
-    print("  STEP 1: JSON Schema Validation")
+    print("  步骤 1: JSON Schema 验证")
     print("=" * 60)
 
     test_cases = [
-        ({"product": "Sony WH-1000XM5", "price": 348.0, "in_stock": True}, "Valid complete object"),
-        ({"product": "Test", "price": 10.0, "in_stock": True, "categories": ["audio"]}, "Valid with optional array"),
-        ({"product": "Test", "price": -5.0, "in_stock": True}, "Negative price"),
-        ({"product": "Test", "in_stock": True}, "Missing required field (price)"),
-        ({"product": "Test", "price": "ten", "in_stock": True}, "String as price"),
-        ({"product": 123, "price": 10.0, "in_stock": True}, "Number as product name"),
-        ("not an object", "String instead of object"),
-        ({"product": "Test", "price": 10.0, "in_stock": "yes"}, "String as boolean"),
+        ({"product": "Sony WH-1000XM5", "price": 348.0, "in_stock": True}, "有效的完整对象"),
+        ({"product": "Test", "price": 10.0, "in_stock": True, "categories": ["audio"]}, "有效且包含可选数组"),
+        ({"product": "Test", "price": -5.0, "in_stock": True}, "价格为负数"),
+        ({"product": "Test", "in_stock": True}, "缺少必填字段（price）"),
+        ({"product": "Test", "price": "ten", "in_stock": True}, "将字符串用作价格"),
+        ({"product": 123, "price": 10.0, "in_stock": True}, "将数值用作产品名称"),
+        ("not an object", "使用字符串而非对象"),
+        ({"product": "Test", "price": 10.0, "in_stock": "yes"}, "将字符串用作布尔值"),
     ]
 
     for data, label in test_cases:
         errors = validate_schema(data, PRODUCT_SCHEMA)
         status = "PASS" if not errors else f"FAIL: {errors}"
         print(f"\n  {label}:")
-        print(f"    Data:   {json.dumps(data) if isinstance(data, dict) else repr(data)}")
-        print(f"    Result: {status}")
+        print(f"    数据（Data）:   {json.dumps(data) if isinstance(data, dict) else repr(data)}")
+        print(f"    结果（Result）: {status}")
 
 
 def run_schema_generation_demo():
     print(f"\n{'=' * 60}")
-    print("  STEP 2: Model-to-Schema Generation")
+    print("  步骤 2: 从模型生成模式（Model-to-Schema Generation）")
     print("=" * 60)
 
     product_fields = {
@@ -259,7 +259,7 @@ def run_schema_generation_demo():
     }
 
     schema = model_to_schema("Product", product_fields)
-    print(f"\n  Generated schema from Python model:")
+    print(f"\n  从 Python 模型生成的模式（Schema）:")
     print(f"  {json.dumps(schema, indent=2)}")
 
     event_fields = {
@@ -271,14 +271,14 @@ def run_schema_generation_demo():
     }
 
     event_schema = model_to_schema("Event", event_fields)
-    print(f"\n  Event schema:")
+    print(f"\n  事件模式（Event schema）:")
     print(f"  {json.dumps(event_schema, indent=2)}")
 
     valid_event = {"title": "Standup", "date": "2026-01-15", "attendees": ["Alice", "Bob"], "priority": "high"}
     invalid_event = {"title": "Standup", "date": "2026-01-15", "attendees": ["Alice"], "priority": "urgent"}
 
-    print(f"\n  Validating against event schema:")
-    for data, label in [(valid_event, "Valid event"), (invalid_event, "Invalid priority enum")]:
+    print(f"\n  根据事件模式进行验证:")
+    for data, label in [(valid_event, "有效事件"), (invalid_event, "无效的优先级枚举")]:
         errors = validate_schema(data, event_schema)
         status = "PASS" if not errors else f"FAIL: {errors}"
         print(f"    {label}: {status}")
@@ -286,14 +286,14 @@ def run_schema_generation_demo():
 
 def run_constrained_decoding_demo():
     print(f"\n{'=' * 60}")
-    print("  STEP 3: Constrained Decoding Simulation")
+    print("  步骤 3: 约束解码模拟（Constrained Decoding Simulation）")
     print("=" * 60)
     demonstrate_constrained_decoding()
 
 
 def run_extraction_pipeline_demo():
     print(f"\n{'=' * 60}")
-    print("  STEP 4: Extraction Pipeline with Retry")
+    print("  步骤 4: 带重试的提取流水线（Extraction Pipeline with Retry）")
     print("=" * 60)
 
     texts = [
@@ -304,17 +304,17 @@ def run_extraction_pipeline_demo():
     ]
 
     for text in texts:
-        print(f"\n  Input: {text[:70]}...")
+        print(f"\n  输入（Input）: {text[:70]}...")
         result = extract_with_retry(text, PRODUCT_SCHEMA)
         if result:
-            print(f"  Output: {json.dumps(result)}")
+            print(f"  输出（Output）: {json.dumps(result)}")
         else:
-            print(f"  Output: FAILED after retries")
+            print(f"  输出（Output）: 重试后仍失败")
 
 
 def run_nested_schema_demo():
     print(f"\n{'=' * 60}")
-    print("  STEP 5: Nested Schema Validation")
+    print("  步骤 5: 嵌套模式验证（Nested Schema Validation）")
     print("=" * 60)
 
     order_schema = {
@@ -364,8 +364,8 @@ def run_nested_schema_demo():
         "total": -10,
     }
 
-    print(f"\n  Order schema (nested objects + arrays):")
-    for data, label in [(valid_order, "Valid order"), (invalid_order, "Invalid order")]:
+    print(f"\n  订单模式（嵌套对象 + 数组）:")
+    for data, label in [(valid_order, "有效订单"), (invalid_order, "无效订单")]:
         errors = validate_schema(data, order_schema)
         status = "PASS" if not errors else f"FAIL"
         print(f"\n    {label}: {status}")

@@ -1,90 +1,90 @@
 {
   "lesson": "16-openai-agents-sdk",
-  "title": "OpenAI Agents SDK: Handoffs, Guardrails, Tracing",
+  "title": "OpenAI Agents SDK：交接、护栏与追踪（Handoffs, Guardrails, Tracing）",
   "questions": [
     {
       "stage": "pre",
-      "question": "What are the five primitives of the OpenAI Agents SDK?",
+      "question": "OpenAI Agents SDK 的五种基本构件是什么？",
       "options": [
-        "Plan, Worker, Solver, Evaluator, Reflector",
-        "Tool, Prompt, Model, Memory, Trace",
-        "Agent, Handoff, Guardrail, Session, Tracing",
-        "Node, Edge, Reducer, Checkpointer, Subgraph"
+        "计划（Plan）、工作者（Worker）、求解器（Solver）、评估器（Evaluator）、反思器（Reflector）",
+        "工具（Tool）、提示词（Prompt）、模型（Model）、记忆（Memory）、追踪（Trace）",
+        "智能体（Agent）、交接（Handoff）、护栏（Guardrail）、会话（Session）、追踪（Tracing）",
+        "节点（Node）、边（Edge）、归约器（Reducer）、检查点存储器（Checkpointer）、子图（Subgraph）"
       ],
       "correct": 2,
-      "explanation": "The SDK ships these five primitives."
+      "explanation": "SDK 提供这五种基本构件。"
     },
     {
       "stage": "pre",
-      "question": "How does the model see a handoff?",
+      "question": "模型以什么形式看到交接（Handoff）？",
       "options": [
-        "As a special token",
-        "As a system message",
-        "As a custom HTTP endpoint",
-        "As a tool named transfer_to_<agent_name>"
+        "特殊词元",
+        "系统消息",
+        "自定义 HTTP 端点",
+        "名为 transfer_to_<agent_name> 的工具"
       ],
       "correct": 3,
-      "explanation": "Handoffs are exposed as tools with the transfer_to_<agent> name shape."
+      "explanation": "交接以工具形式暴露，名称形式为 transfer_to_<agent>。"
     },
     {
       "stage": "check",
-      "question": "Which three guardrail types does the SDK ship?",
+      "question": "SDK 提供哪三类护栏（Guardrail）？",
       "options": [
-        "Hard, soft, and best-effort guardrails",
-        "Pre, post, and inline guardrails",
-        "Input, output, and tool guardrails",
-        "Static, dynamic, and federated guardrails"
+        "硬护栏、软护栏和尽力而为护栏",
+        "前置、后置和内联护栏",
+        "输入、输出和工具护栏",
+        "静态、动态和联邦式护栏"
       ],
       "correct": 2,
-      "explanation": "Input (first agent), output (last agent), and tool (per function tool) guardrails."
+      "explanation": "输入护栏作用于第一个智能体，输出护栏作用于最后一个智能体，工具护栏逐个作用于函数工具。"
     },
     {
       "stage": "check",
-      "question": "What is the difference between parallel and blocking guardrails?",
+      "question": "并行护栏与阻塞护栏有什么区别？",
       "options": [
-        "Parallel runs alongside the main LLM (lower latency, wastes tokens on trip); blocking runs first (no wasted tokens on trip)",
-        "Blocking only works on output",
-        "Parallel costs more money always",
-        "Blocking is asynchronous; parallel is synchronous"
+        "并行护栏与主 LLM 同时运行（延迟更低，但拦截时浪费词元）；阻塞护栏先运行（拦截时不浪费词元）",
+        "阻塞模式只能用于输出",
+        "并行模式始终更费钱",
+        "阻塞模式是异步的，并行模式是同步的"
       ],
       "correct": 0,
-      "explanation": "Parallel optimizes latency at the cost of wasted tokens when tripped; blocking saves tokens but adds latency."
+      "explanation": "并行模式以拦截时浪费词元为代价优化延迟；阻塞模式节省词元，但增加延迟。"
     },
     {
       "stage": "check",
-      "question": "How is tracing enabled in the SDK?",
+      "question": "SDK 如何开启追踪（Tracing）？",
       "options": [
-        "Only on the hosted dashboard",
-        "Off by default; enable per agent",
-        "Only via OpenTelemetry collector",
-        "On by default; OPENAI_AGENTS_DISABLE_TRACING=1 opts out"
+        "只能在托管仪表盘中开启",
+        "默认关闭，按智能体开启",
+        "只能通过 OpenTelemetry 收集器开启",
+        "默认开启；OPENAI_AGENTS_DISABLE_TRACING=1 可将其关闭"
       ],
       "correct": 3,
-      "explanation": "Spans for LLM, tool, handoff, and guardrail emit by default; an env var disables them."
+      "explanation": "默认会发出 LLM、工具、交接和护栏跨度；可用环境变量关闭。"
     },
     {
       "stage": "post",
-      "question": "What is handoff drift and how does the lesson recommend mitigating it?",
+      "question": "什么是交接漂移（Handoff drift），本课建议如何缓解？",
       "options": [
-        "Agent A hands off to B which hands back to A in a loop; add a hop counter",
-        "Sessions overflow; archive old ones",
-        "Tracing falls behind; reduce span volume",
-        "Guardrails desync; retrain"
+        "智能体 A 交给 B，B 又交回 A，形成循环；添加跳数计数器",
+        "会话溢出；归档旧会话",
+        "追踪跟不上；减少跨度数量",
+        "护栏不同步；重新训练"
       ],
       "correct": 0,
-      "explanation": "A hop counter caps transfer chains before they loop indefinitely."
+      "explanation": "跳数计数器限制转移链长度，避免无限循环。"
     },
     {
       "stage": "post",
-      "question": "Why are built-in tools a guardrail gap?",
+      "question": "为什么内置工具构成护栏覆盖缺口？",
       "options": [
-        "They do not support handoffs",
-        "Tool guardrails only fire on function tools; built-in tools (file reader, web fetch) need separate policy",
-        "They cannot be traced",
-        "They are slower than function tools"
+        "它们不支持交接",
+        "工具护栏仅对函数工具触发；内置工具（文件读取、网页获取）需要单独的策略",
+        "它们无法追踪",
+        "它们比函数工具慢"
       ],
       "correct": 1,
-      "explanation": "Per-tool guardrails cover function tools; built-in tools require a separate policy layer."
+      "explanation": "逐工具护栏覆盖函数工具；内置工具需要单独的策略层。"
     }
   ]
 }

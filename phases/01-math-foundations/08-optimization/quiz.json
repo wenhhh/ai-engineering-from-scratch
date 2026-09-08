@@ -2,38 +2,38 @@
   "questions": [
     {
       "stage": "pre",
-      "question": "What does 'optimization' mean in the context of training a neural network?",
-      "options": ["Finding the model weights that minimize the loss function", "Making the code run faster", "Reducing the number of parameters in the model", "Choosing the best hardware for training"],
+      "question": "在训练神经网络的语境中，优化（Optimization）是什么意思？",
+      "options": ["寻找使损失函数最小化的模型权重", "使代码运行更快", "减少模型参数数量", "为训练选择最佳硬件"],
       "correct": 0,
-      "explanation": "Training a neural network IS optimization. The loss function measures how wrong the model is, and optimization finds the weight values that make it as small as possible."
+      "explanation": "训练神经网络就是优化。损失函数衡量模型的错误程度，优化则寻找使损失尽可能小的权重值。"
     },
     {
       "stage": "pre",
-      "question": "What happens if the learning rate is too large during gradient descent?",
-      "options": ["Training converges faster to the global minimum", "The optimizer overshoots the minimum and the loss diverges (bounces or increases)", "The model automatically reduces the learning rate", "The gradients become zero"],
+      "question": "梯度下降中，学习率（Learning Rate）过大会发生什么？",
+      "options": ["训练更快收敛到全局最小值", "优化器越过最小值，损失发散（反复振荡或增大）", "模型自动降低学习率", "梯度变为零"],
       "correct": 1,
-      "explanation": "A learning rate that is too large causes each step to overshoot the valley, potentially bouncing between walls or diverging entirely. The loss increases instead of decreasing."
+      "explanation": "学习率过大会使每一步跨过谷底，可能在两侧反弹或彻底发散。损失不降反升。"
     },
     {
       "stage": "post",
-      "question": "How does Adam differ from vanilla gradient descent?",
-      "options": ["Adam computes exact second derivatives while GD uses first derivatives", "Adam uses a fixed learning rate while GD uses adaptive rates", "Adam processes the full dataset per step while GD uses mini-batches", "Adam tracks running averages of gradients and squared gradients to give each weight its own adaptive learning rate"],
+      "question": "Adam 与普通梯度下降有何区别？",
+      "options": ["Adam 计算精确的二阶导数，而 GD 使用一阶导数", "Adam 使用固定学习率，而 GD 使用自适应学习率", "Adam 每一步处理整个数据集，而 GD 使用小批量", "Adam 追踪梯度及梯度平方的滑动平均，为每个权重分配自己的自适应学习率"],
       "correct": 3,
-      "explanation": "Adam maintains per-weight first moment (gradient direction) and second moment (gradient magnitude) estimates. Dividing by sqrt(second moment) gives small steps for weights with large gradients and large steps for weights with small gradients."
+      "explanation": "Adam 为各权重维护一阶矩（梯度方向）和二阶矩（梯度幅度）估计。除以 sqrt(second moment)，使大梯度权重迈小步、小梯度权重迈大步。"
     },
     {
       "stage": "post",
-      "question": "Why is the noise in mini-batch SGD considered beneficial rather than just a nuisance?",
-      "options": ["Noise makes the loss function convex", "Noise helps the optimizer escape shallow local minima and saddle points that a noiseless optimizer would get stuck in", "Noise is not beneficial; it always slows convergence", "Noise reduces memory usage during training"],
+      "question": "为什么小批量 SGD 的噪声被认为有益，而不只是干扰？",
+      "options": ["噪声使损失函数变为凸函数", "噪声帮助优化器逃离浅局部极小值和鞍点，无噪声优化器可能困在其中", "噪声没有好处，它总会减慢收敛", "噪声降低训练时的内存占用"],
       "correct": 1,
-      "explanation": "The stochastic noise from random mini-batches provides random perturbations that can push the optimizer out of shallow local minima and saddle points, leading to better generalization."
+      "explanation": "随机小批量带来的噪声提供随机扰动，能将优化器推出浅局部极小值和鞍点，从而改善泛化。"
     },
     {
       "stage": "post",
-      "question": "What does a cosine annealing learning rate schedule do?",
-      "options": ["Increases the learning rate throughout training following a cosine curve", "Starts with a high learning rate and smoothly decreases it following a cosine curve, with optional warmup", "Alternates the learning rate between two fixed values", "Sets the learning rate to the cosine of the current epoch number"],
+      "question": "余弦退火（Cosine Annealing）学习率调度会做什么？",
+      "options": ["在整个训练过程中沿余弦曲线增大学习率", "从较高学习率开始，沿余弦曲线平滑降低，可选择加入预热", "使学习率在两个固定值之间交替", "将学习率设为当前训练轮次数的余弦"],
       "correct": 1,
-      "explanation": "Cosine annealing smoothly reduces the learning rate from lr_max to lr_min following a half-cosine curve. This provides large steps early for fast progress and small steps late for fine convergence."
+      "explanation": "余弦退火沿半条余弦曲线，将学习率从 lr_max 平滑降至 lr_min。前期大步长促进快速前进，后期小步长实现精细收敛。"
     }
   ]
 }

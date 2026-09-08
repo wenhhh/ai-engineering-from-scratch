@@ -16,62 +16,62 @@
     </style>
   </defs>
 
-  <text x="480" y="26" text-anchor="middle" class="title">CrewAI — Agent, Task, Crew, Process + Flow for production</text>
+  <text x="480" y="26" text-anchor="middle" class="title">CrewAI：Agent、Task、Crew、Process，以及面向生产的 Flow</text>
 
   <rect x="40" y="50" width="880" height="140" class="primitive"/>
-  <text x="480" y="72" text-anchor="middle" class="head">four primitives</text>
+  <text x="480" y="72" text-anchor="middle" class="head">四个基本元素</text>
   <rect x="60" y="88" width="200" height="86" class="box"/>
-  <text x="160" y="108" text-anchor="middle" class="step">Agent</text>
+  <text x="160" y="108" text-anchor="middle" class="step">智能体（Agent）</text>
   <text x="78" y="128" class="small">role + goal + backstory + tools</text>
-  <text x="78" y="144" class="small">backstory shapes tone + judgment</text>
-  <text x="78" y="160" class="small">keep it tight (&lt;200 words)</text>
+  <text x="78" y="144" class="small">背景故事塑造语气与判断</text>
+  <text x="78" y="160" class="small">保持简洁（&lt;200 词）</text>
   <rect x="280" y="88" width="200" height="86" class="box"/>
-  <text x="380" y="108" text-anchor="middle" class="step">Task</text>
+  <text x="380" y="108" text-anchor="middle" class="step">任务（Task）</text>
   <text x="298" y="128" class="small">description + expected_output</text>
-  <text x="298" y="144" class="small">assigned to one Agent</text>
-  <text x="298" y="160" class="small">reusable; composes into Crews</text>
+  <text x="298" y="144" class="small">分配给一个 Agent</text>
+  <text x="298" y="160" class="small">可复用；组合成 Crew</text>
   <rect x="500" y="88" width="200" height="86" class="box"/>
-  <text x="600" y="108" text-anchor="middle" class="step">Crew</text>
-  <text x="518" y="128" class="small">container: Agents + Tasks</text>
-  <text x="518" y="144" class="small">owns the Process</text>
-  <text x="518" y="160" class="small">Sequential | Hierarchical | Consensual</text>
+  <text x="600" y="108" text-anchor="middle" class="step">团队（Crew）</text>
+  <text x="518" y="128" class="small">容器：Agent + Task</text>
+  <text x="518" y="144" class="small">负责 Process</text>
+  <text x="518" y="160" class="small" style="font-size:8px">Sequential | Hierarchical | Consensual</text>
   <rect x="720" y="88" width="180" height="86" class="box"/>
-  <text x="810" y="108" text-anchor="middle" class="step">Process</text>
-  <text x="738" y="128" class="small">execution strategy</text>
-  <text x="738" y="144" class="small">Hierarchical adds manager</text>
-  <text x="738" y="160" class="small">reach only for 4+ specialists</text>
+  <text x="810" y="108" text-anchor="middle" class="step">执行过程（Process）</text>
+  <text x="738" y="128" class="small">执行策略</text>
+  <text x="738" y="144" class="small">Hierarchical 增加管理者</text>
+  <text x="738" y="160" class="small">仅用于 4+ 个专门智能体</text>
 
   <rect x="40" y="210" width="420" height="300" class="crew"/>
-  <text x="250" y="232" text-anchor="middle" class="head">Crew  autonomous collaboration</text>
+  <text x="250" y="232" text-anchor="middle" class="head">团队（Crew）：自主协作</text>
   <rect x="60" y="248" width="380" height="40" class="box"/>
-  <text x="78" y="270" class="step">researcher  outliner  drafter</text>
-  <text x="78" y="284" class="small">free-form; Process picks shape at runtime</text>
+  <text x="78" y="270" class="step">研究者、提纲编写者、起草者</text>
+  <text x="78" y="284" class="small">自由形式；Process 在运行时选择形态</text>
   <rect x="60" y="296" width="380" height="40" class="box"/>
-  <text x="78" y="318" class="step">Hierarchical: manager Agent picks next specialist</text>
+  <text x="78" y="318" class="step">Hierarchical：管理者选择下一专门智能体</text>
   <rect x="60" y="344" width="380" height="40" class="box"/>
-  <text x="78" y="366" class="step">good for: exploration, first drafts, brainstorming</text>
+  <text x="78" y="366" class="step">适合：探索、初稿、头脑风暴</text>
   <rect x="60" y="392" width="380" height="40" class="box"/>
-  <text x="78" y="414" class="step">bad for: prod replay, deterministic audits, SLAs</text>
+  <text x="78" y="414" class="step">不适合：生产回放、确定性审计、SLA</text>
   <rect x="60" y="440" width="380" height="60" class="box"/>
-  <text x="78" y="462" class="step">output variance: high</text>
-  <text x="78" y="478" class="small">LLM picks Task order if Process=Hierarchical</text>
-  <text x="78" y="494" class="small">debug path: read the trace; no graph to read</text>
+  <text x="78" y="462" class="step">输出变动：高</text>
+  <text x="78" y="478" class="small">Process=Hierarchical 时，LLM 选择 Task 顺序</text>
+  <text x="78" y="494" class="small">调试路径：阅读轨迹，没有图可读</text>
 
   <rect x="480" y="210" width="440" height="300" class="flow"/>
-  <text x="700" y="232" text-anchor="middle" class="head">Flow  event-driven deterministic</text>
+  <text x="700" y="232" text-anchor="middle" class="head">流程（Flow）：事件驱动、确定性</text>
   <rect x="500" y="248" width="400" height="40" class="box"/>
   <text x="518" y="270" class="step">@start  researched  outlined  drafted</text>
-  <text x="518" y="284" class="small">code owns the graph; engineers own the shape</text>
+  <text x="518" y="284" class="small">代码掌控图，工程师掌控形态</text>
   <rect x="500" y="296" width="400" height="40" class="box"/>
-  <text x="518" y="318" class="step">@listen("researched"): fires when that topic emits</text>
+  <text x="518" y="318" class="step">@listen("researched")：该主题发出时触发</text>
   <rect x="500" y="344" width="400" height="40" class="box"/>
-  <text x="518" y="366" class="step">good for: production, replay, SLAs, audits</text>
+  <text x="518" y="366" class="step">适合：生产、回放、SLA、审计</text>
   <rect x="500" y="392" width="400" height="40" class="box"/>
-  <text x="518" y="414" class="step">bad for: open-ended creativity</text>
+  <text x="518" y="414" class="step">不适合：开放式创作</text>
   <rect x="500" y="440" width="400" height="60" class="box"/>
-  <text x="518" y="462" class="step">2026 docs: start production with Flow</text>
-  <text x="518" y="478" class="small">fold Crews in as sub-steps when autonomy earns cost</text>
-  <text x="518" y="494" class="small">observability: every event is a span</text>
+  <text x="518" y="462" class="step">2026 年文档：生产从 Flow 开始</text>
+  <text x="518" y="478" class="small">自主性值得成本时，将 Crew 作为子步骤接入</text>
+  <text x="518" y="494" class="small">可观测性：每个事件都是跨度</text>
 
-  <text x="480" y="540" text-anchor="middle" class="caption">same three-step task; Crew is fluid, Flow is fixed. choice is operational, not architectural.</text>
+  <text x="480" y="540" text-anchor="middle" class="caption">相同的三步任务：Crew 可变，Flow 固定。选择取决于运行需求，而不是架构。</text>
 </svg>

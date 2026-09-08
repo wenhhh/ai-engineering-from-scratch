@@ -1,111 +1,99 @@
 ---
 name: mcp-contract-reviewer
-description: Review MCP tool descriptors, results, pagination, completions, and parameter-header policy before exposing tools to a model.
+description: 向模型公开工具前，审查 MCP 工具描述符、结果、分页、补全和参数请求头策略。
 version: 1.0.0
 phase: 13
 lesson: 28
 tags: [mcp, tools, json-schema, pagination, completion, security]
 ---
 
-Review the supplied MCP tool surface against protocol version `2026-07-28`.
+按协议版本 `2026-07-28` 审查提供的 MCP 工具接口面。
 
-Ask for these inputs if they are absent:
+缺失时请求以下输入：
 
-1. The complete `tools/list` descriptor pages, including every `nextCursor` field.
-2. At least one successful result and one failure result per tool.
-3. The Streamable HTTP parameter-header mapping, if used.
-4. Completion references, caller classes, and example suggestions.
-5. The authorization context that can change the visible tool set.
+1. 完整 `tools/list` 描述符分页，包括每个 `nextCursor` 字段。
+2. 每个工具至少一个成功和一个失败结果。
+3. 使用时的 Streamable HTTP 参数请求头映射。
+4. 补全引用、调用方类别和建议示例。
+5. 可改变可见工具集的授权上下文。
 
-Produce a compact report with these sections.
+生成含以下章节的紧凑报告。
 
-## Descriptor admission
+## 描述符准入（Descriptor admission）
 
-For each tool:
+对每个工具：
 
-- verify a non-empty stable name;
-- require an object `inputSchema`;
-- identify the JSON Schema dialect, defaulting to 2020-12 when omitted;
-- validate `outputSchema` when present;
-- list annotations as untrusted hints, not policy;
-- return `ADMIT`, `REJECT`, or `CONDITIONAL` with one precise reason.
+- 验证非空稳定名称；
+- 要求对象 `inputSchema`；
+- 标识 JSON Schema 方言，省略时默认 2020-12；
+- 存在时验证 `outputSchema`；
+- 将注解列为不可信提示，不是策略；
+- 返回 `ADMIT`、`REJECT` 或 `CONDITIONAL`，附一个精确原因。
 
-Reject one malformed descriptor without rejecting unrelated valid tools.
+拒绝一个坏描述符，不拒绝无关有效工具。
 
-## Result contract
+## 结果契约（Result contract）
 
-For every complete result, including one with `isError: true`:
+每个完整结果，包括 `isError: true`：
 
-- require `resultType: complete`;
-- validate every content block by type;
-- treat `structuredContent` as any JSON value, not object-only;
-- require `structuredContent` and conformance to `outputSchema` when one exists;
-- require a compatibility text block for structured results;
-- distinguish resource links from embedded resources;
-- state size and media-type limits.
+- 要求 `resultType: complete`；
+- 按类型验证每个内容块；
+- 将 `structuredContent` 视为任意 JSON 值，不限对象；
+- 存在 `outputSchema` 时要求 `structuredContent` 且符合模式；
+- 结构化结果要求兼容文本块；
+- 区分资源链接与嵌入资源；
+- 声明大小和媒体类型限制。
 
-Classify malformed requests as JSON-RPC errors. Classify actionable execution
-failures as complete results with `isError: true`, without bypassing the
-published output contract.
+格式错误请求分类为 JSON-RPC 错误。可处理执行失败分类为带 `isError: true` 的完整结果，不绕过已发布输出契约。
 
-## Parameter headers
+## 参数请求头（Parameter headers）
 
-For every `x-mcp-header`:
+对每个 `x-mcp-header`：
 
-- require a valid, non-empty HTTP field-name token;
-- require case-insensitive uniqueness;
-- require string, integer, or boolean type;
-- traverse the entire input schema, including nested properties, combinators,
-  array items, and definitions used by `$ref`;
-- allow the annotation only on a direct `inputSchema.properties` member and
-  reject every annotation found elsewhere or in `outputSchema`;
-- reject `number` and integer values outside `-9007199254740991` through
-  `9007199254740991`;
-- reject credential, token, secret, password, authorization, and PII fields by deployment policy;
-- transmit a value plainly only when it is non-empty visible ASCII and does
-  not begin with `=?base64?`;
-- otherwise emit exactly `=?base64?{Base64UTF8}?=` without trimming or
-  normalizing the original value;
-- encode Unicode, empty, whitespace, control, CR or LF, padded, and
-  sentinel-looking strings, and render booleans as lowercase text;
-- at the HTTP boundary, decode recognized `Mcp-Param-*` values, compare header
-  names case-insensitively and decoded values exactly with the JSON body, and
-  reject a missing, duplicated, unexpected, malformed, or mismatched copy as
-  HTTP `400` plus JSON-RPC `-32020`;
-- log the final header name and rejection category, never the argument value
-  or encoded payload.
+- 要求有效非空 HTTP 字段名词法单元；
+- 要求不区分大小写的唯一性；
+- 要求字符串、整数或布尔类型；
+- 遍历完整输入模式，包括嵌套属性、组合器、数组项和 `$ref` 使用的定义；
+- 仅允许直接 `inputSchema.properties` 成员上的注解，拒绝别处或 `outputSchema` 中所有注解；
+- 拒绝 `number` 和超出 `-9007199254740991` 至 `9007199254740991` 的整数；
+- 按部署策略拒绝凭据、令牌、秘密、密码、授权和 PII 字段；
+- 仅当值为非空可见 ASCII 且不以 `=?base64?` 开头时明文发送；
+- 否则精确发出 `=?base64?{Base64UTF8}?=`，不裁剪或规范化原值；
+- 编码 Unicode、空值、空白、控制、CR 或 LF、填充和看似哨兵字符串，布尔值呈现为小写文本；
+- 在 HTTP 边界解码已识别 `Mcp-Param-*` 值，不区分大小写比较名称，精确比较解码值与 JSON 正文；缺失、重复、意外、格式错误或不匹配副本返回 HTTP `400` 和 JSON-RPC `-32020`；
+- 记录最终请求头名和拒绝类别，绝不记录参数值或编码载荷。
 
-## Pagination
+## 分页（Pagination）
 
-Trace every list request. Continue whenever `nextCursor` is present and non-null, including when it is an empty string. Never decode, modify, increment, order, or derive meaning from a cursor. Report duplicate tools, missing pages, and unstable ordering.
+追踪每个列表请求。`nextCursor` 存在且非 null 时继续，包括空字符串。绝不解码、修改、递增、排序游标或推导含义。报告重复工具、缺页和不稳定顺序。
 
-## Completion
+## 补全（Completion）
 
-For each prompt or resource reference:
+对每个提示词或资源引用：
 
-- validate the reference and argument;
-- filter suggestions through the caller's authorization;
-- cap the result at 100 values;
-- define client debounce and server rate limits;
-- test that hidden tenant, resource, and environment names do not leak.
+- 验证引用和参数；
+- 按调用方授权过滤建议；
+- 结果最多 100 值；
+- 定义客户端防抖和服务器限流；
+- 测试隐藏租户、资源和环境名不泄露。
 
-## Verification matrix
+## 验证矩阵（Verification matrix）
 
-Return at least these checks:
+至少返回以下检查：
 
-| Check | Fixture | Expected result |
+| 检查 | 夹具 | 预期结果 |
 |------|---------|-----------------|
-| Non-object structured output | Valid array, scalar, or null schema | Accepted when conforming |
-| Output mismatch | Wrong JSON type or missing property | Rejected before model use |
-| Error output mismatch | `isError: true` with missing or invalid structured content | Rejected before model use |
-| Empty cursor | `nextCursor: ""` | Follow-up request sends the exact cursor |
-| Unsafe header | Token or invalid field name | Descriptor rejected |
-| Nested header annotation | `oneOf`, `items`, nested object, or `$ref` definition | Descriptor rejected during full-tree admission |
-| Encoded header values | Unicode, newline, padding, or sentinel-looking text | Exact base64 UTF-8 sentinel round-trips the original value |
-| Integer header values | Both safe bounds and one value beyond each bound | Safe bounds pass; unsafe values are rejected |
-| Header and body parity | Case variant, missing copy, and decoded mismatch | Case variant passes; missing or mismatch returns HTTP 400 and JSON-RPC -32020 |
-| Mixed content | Text, media, link, embedded resource | Each block validated independently |
-| Completion isolation | Low-privilege caller | No privileged suggestion returned |
-| Error layering | Unknown tool and business failure | JSON-RPC error and `isError: true` remain distinct |
+| 非对象结构化输出 | 有效数组、标量或 null 模式 | 合规时接受 |
+| 输出不匹配 | 错误 JSON 类型或缺属性 | 模型使用前拒绝 |
+| 错误输出不匹配 | `isError: true`，结构化内容缺失或无效 | 模型使用前拒绝 |
+| 空游标 | `nextCursor: ""` | 后续请求发送精确游标 |
+| 不安全请求头 | 令牌或无效字段名 | 拒绝描述符 |
+| 嵌套请求头注解 | `oneOf`、`items`、嵌套对象或 `$ref` 定义 | 全树准入时拒绝描述符 |
+| 编码请求头值 | Unicode、换行、填充或看似哨兵文本 | 精确 base64 UTF-8 哨兵往返原值 |
+| 整数请求头值 | 两个安全边界及各超出一个值 | 安全边界通过，越界拒绝 |
+| 请求头正文一致 | 大小写变体、缺失副本、解码不匹配 | 大小写变体通过；缺失或不匹配返回 HTTP 400 和 JSON-RPC -32020 |
+| 混合内容 | 文本、媒体、链接、嵌入资源 | 独立验证每块 |
+| 补全隔离 | 低权限调用方 | 不返回特权建议 |
+| 错误分层 | 未知工具和业务失败 | JSON-RPC 错误与 `isError: true` 保持不同 |
 
-Refuse approval when evidence includes only a successful tool call. Require discovery pages, admission decisions, and validated result fixtures.
+证据只有成功工具调用时拒绝批准。要求发现分页、准入决定和已验证结果夹具。

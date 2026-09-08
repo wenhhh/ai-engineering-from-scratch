@@ -1,63 +1,63 @@
-# Tool Registry with Schema Validation
+# 带模式校验的工具注册表（Tool Registry with Schema Validation）
 
-> A tool the agent cannot validate is a tool the agent cannot call. Build the registry and the schema checker before you build the tools.
+> 智能体无法校验的工具，就不应调用。先构建注册表和模式校验器，再构建工具。
 
 **Type:** Build
 **Languages:** Python
-**Prerequisites:** Phase 13 lessons 01-07, Phase 14 lesson 01
-**Time:** ~90 minutes
+**Prerequisites:** 第 13 阶段第 01–07 课、第 14 阶段第 01 课
+**Time:** 约 90 分钟
 
-## Learning Objectives
-- Hold a typed registry of tool name → schema → handler that the dispatcher can ask once and trust afterwards.
-- Implement a JSON Schema 2020-12 subset that covers the keywords ninety percent of tool calls actually use.
-- Return precise, json-pointer-shaped error paths so the model can self-correct in one round trip.
-- Reject re-registration without explicit override, since silent overwrites are how production tool catalogs drift.
-- Keep the validator pure (no I/O, no time, no globals) so it can be re-run on a replay log.
+## 学习目标（Learning Objectives）
+- 维护工具名称 → 模式 → 处理函数的类型化注册表（Typed Registry），让分派器查询一次后即可信赖。
+- 实现 JSON Schema 2020-12 的一个子集，覆盖九成工具调用实际使用的关键字。
+- 返回精确的 JSON 指针（JSON Pointer）错误路径，让模型通过一次往返自行修正。
+- 未显式覆盖时拒绝重复注册，因为静默覆盖会造成生产工具目录漂移。
+- 保持校验器为纯函数（Pure Function）：无输入输出、时间依赖或全局状态，便于在重放日志上重新运行。
 
 ```figure
 cf-registry-validate
 ```
 
-## Why the registry comes before the tool
+## 为什么先构建注册表（Why the registry comes before the tool）
 
-A coding agent in 2026 has more registered tools than the model can fit in a single context window. A non-trivial harness will register two hundred tools and surface ten to forty at any given turn. The registry is the source of truth for "what tools exist," "what shape do their arguments take," and "what handler do I call." Once those three answers are pinned, the rest of the harness can stop guessing.
+2026 年的编码智能体（Coding Agent）注册的工具数量，已经超过模型单个上下文窗口（Context Window）的容纳能力。一个有一定规模的运行框架（Harness）会注册两百个工具，每轮暴露十到四十个。注册表是以下问题的事实来源：“有哪些工具”“参数是什么结构”“应该调用哪个处理函数”。这三个答案一旦确定，框架的其他部分就不必猜测。
 
-The mistake we are avoiding is shipping handlers without schemas, or shipping schemas without validation. Both are common. Both turn the next layer (the dispatcher in lesson twenty-three) into a guessing game where the only failure mode is a stack trace from the handler.
+我们要避免的是：交付没有模式（Schema）的处理函数，或交付模式却不做校验。两者都很常见，也都会让下一层，即第 23 课的分派器（Dispatcher），只能猜测，最终仅靠处理函数抛出的堆栈跟踪得知失败。
 
-## What a tool record looks like
+## 工具记录的结构（What a tool record looks like）
 
 ```text
 ToolRecord
-  name        : str          (unique, lowercase alphanumeric and underscore segments separated by dots, e.g., snake_case.segment.case)
-  description : str          (one line, shown to the model)
-  schema      : dict         (JSON Schema 2020-12 subset)
-  handler     : Callable     (async or sync, returns Any)
-  idempotent  : bool         (dispatcher uses this for retry decisions)
-  timeout_ms  : int          (override per-tool dispatcher default)
+  name        : str          （唯一；小写字母、数字、下划线组成的片段以点分隔，例如 snake_case.segment.case）
+  description : str          （单行，展示给模型）
+  schema      : dict         （JSON Schema 2020-12 子集）
+  handler     : Callable     （异步或同步，返回 Any）
+  idempotent  : bool         （分派器据此决定是否重试）
+  timeout_ms  : int          （覆盖分派器针对单个工具的默认超时）
 ```
 
-The schema is the only field the validator touches. The handler is opaque to it. We separate them on purpose. The schema is data. The handler is code. Mixing them tempts you to put validation logic inside the handler, which is the bug we are stopping.
+模式是校验器唯一接触的字段，处理函数对它是不透明的。我们刻意将两者分离：模式是数据，处理函数是代码。混在一起容易诱使你把校验逻辑放入处理函数，而这正是我们要阻止的错误。
 
-## The JSON Schema 2020-12 subset
+## JSON Schema 2020-12 子集（The JSON Schema 2020-12 subset）
 
-The full 2020-12 spec is a paper. We need eight keywords.
+完整的 2020-12 规范篇幅很长。我们只需要八个关键字。
 
 ```text
 type           string / number / integer / boolean / object / array / null
-properties     map of property name -> schema
-required       list of property names
-enum           list of allowed primitive values
-minLength      integer, applies to strings
-maxLength      integer, applies to strings
-pattern        ECMA-262-compatible regex, applies to strings
-items          schema applied to every array element
+properties     属性名 -> 模式的映射
+required       属性名称列表
+enum           允许的原始类型值列表
+minLength      整数，适用于字符串
+maxLength      整数，适用于字符串
+pattern        兼容 ECMA-262 的正则表达式，适用于字符串
+items          应用于每个数组元素的模式
 ```
 
-That is enough to cover what a tool API actually needs. The keywords we are not adding (oneOf, anyOf, allOf, $ref, conditionals) are valid in production schemas but turn the validator into a tree walker with cycles. We are building a registry, not a JSON Schema engine.
+这些足以覆盖工具应用程序接口（Application Programming Interface，API）的实际需求。我们不加入的关键字（oneOf、anyOf、allOf、$ref、条件关键字）在生产模式中完全有效，但会使校验器变成需要处理环的树遍历器。我们要构建的是注册表，不是 JSON Schema 引擎。
 
-## Json pointer error paths
+## JSON 指针错误路径（Json pointer error paths）
 
-When validation fails, the validator returns a list of errors. Each error carries a json-pointer path into the input. A pointer is a slash-prefixed sequence of property names and array indices.
+校验失败时，校验器返回错误列表。每个错误都带有指向输入的 JSON 指针路径：以斜杠开头，由属性名称和数组索引构成。
 
 ```text
 {"a": {"b": [1, 2, "x"]}}
@@ -65,39 +65,39 @@ When validation fails, the validator returns a list of errors. Each error carrie
                     /a/b/2
 ```
 
-The model reads error paths better than it reads sentences. If a schema requires `args.user.email` and the model passed an integer, the error should be `/user/email` with `expected_type: string`. The model fixes that in the next call without a round of natural language.
+模型理解错误路径比理解句子更容易。如果模式要求 `args.user.email`，而模型传入整数，错误就应包含 `/user/email` 和 `expected_type: string`。模型能在下一次调用中修复，无需额外一轮自然语言交流。
 
-## Registration and override
+## 注册与覆盖（Registration and override）
 
-`register(name, schema, handler, **opts)` rejects re-registration by default. The caller has to pass `override=True` to replace. This is operational hygiene. Two parts of the codebase silently registering the same tool name is the kind of bug that takes a week to find in production.
+`register(name, schema, handler, **opts)` 默认拒绝重复注册；调用者必须传入 `override=True` 才能替换。这是基本的运维规范。代码库中两处代码静默注册同名工具，正是那种上线后可能要查一周的错误。
 
-The registry exposes three read methods. `get(name)` returns the record or raises. `validate(name, args)` returns an `Ok` or a list of errors. `names()` returns the tool names in registration order.
+注册表提供三个读取方法：`get(name)` 返回记录，否则抛出异常；`validate(name, args)` 返回 `Ok` 或错误列表；`names()` 按注册顺序返回工具名称。
 
-## What the validator is and is not
+## 校验器的职责与边界（What the validator is and is not）
 
-It is a single pass over the schema tree, recursive. It is pure. It does not call handlers. It does not coerce types (a string `"42"` does not pass a number schema). It does not silently truncate.
+它以递归方式单次遍历模式树，是纯函数，不调用处理函数，不做类型强制转换（字符串 `"42"` 无法通过数值模式），也不会静默截断。
 
-It is not a security boundary. A malicious handler can still misbehave after validation passes. The dispatcher in lesson twenty-three adds timeout and sandbox layers. The registry adds shape.
+它不是安全边界（Security Boundary）。即使校验通过，恶意处理函数仍可能违规。第 23 课的分派器会加入超时和沙箱（Sandbox）层，注册表仅检查数据结构。
 
-## Shape
+## 结构（Shape）
 
 ```mermaid
 flowchart TD
-    code[your code]
-    reg[ToolRegistry<br/>name<br/>schema<br/>handler<br/>timeout]
-    out[Ok or list of errors]
-    code -->|register name, schema, handler| reg
-    reg -->|validate args| out
+    code[你的代码]
+    reg[工具注册表 ToolRegistry<br/>name<br/>schema<br/>handler<br/>timeout]
+    out[Ok 或错误列表]
+    code -->|注册 name、schema、handler| reg
+    reg -->|校验 args| out
 ```
 
-## How to read the code
+## 代码阅读指南（How to read the code）
 
-`code/main.py` defines `ToolRegistry`, `ToolRecord`, `ValidationError`, and the eight validator functions. The validator dispatches on `schema["type"]` (or treats a schema with `enum` as untyped enum check). Each type validator returns either an empty list or a list of `ValidationError`. The top-level walker concatenates errors and prepends path segments as it descends.
+`code/main.py` 定义 `ToolRegistry`、`ToolRecord`、`ValidationError` 和八个校验函数。校验器按 `schema["type"]` 分派（带 `enum` 的模式也可以作为无类型枚举检查）。各类型校验器返回空列表或 `ValidationError` 列表。顶层遍历器汇总错误，并在递归深入时为路径添加片段前缀。
 
-`code/tests/test_registry.py` covers registration, override, validation success, validation failure with paths, and every keyword in the subset.
+`code/tests/test_registry.py` 覆盖注册、覆盖、校验成功、携带路径的校验失败，以及子集中的每个关键字。
 
-## Going further
+## 进一步探索（Going further）
 
-The two extensions you will want once this lesson lands are `$ref` resolution against a local definitions block, and `additionalProperties: false` for strict shape. Both are small. Both are common to add as the tool catalog grows past fifty tools. We left them out of the lesson to keep the file under one read.
+完成本课后，你可能需要两项扩展：针对本地定义块解析 `$ref`，以及通过 `additionalProperties: false` 严格约束结构。两者都不大，工具目录超过五十个工具后也常会加入。为了让文件能一次读完，本课暂不实现。
 
-The next lesson (twenty-two) builds the JSON-RPC stdio transport that surfaces this registry to a model client. The lesson after (twenty-three) wraps both behind a dispatcher with timeouts and retries.
+下一课（第 22 课）构建 JSON-RPC 标准输入输出（Standard Input/Output，stdio）传输层，将注册表暴露给模型客户端。再下一课（第 23 课）通过具备超时和重试能力的分派器将两者封装起来。

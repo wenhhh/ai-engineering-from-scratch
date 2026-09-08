@@ -1,102 +1,102 @@
 {
   "lesson": "29-dialogue-state-tracking",
-  "title": "Dialogue State Tracking",
+  "title": "对话状态跟踪（Dialogue State Tracking）",
   "questions": [
     {
       "stage": "pre",
-      "question": "What does dialogue state tracking maintain across turns?",
+      "question": "对话状态跟踪跨轮次维护什么？",
       "options": [
-        "A free-text history only",
-        "A POS-tagged transcript",
-        "An embedding of the conversation",
-        "A slot-value dictionary representing the user's current goal, updated after every turn"
+        "仅自由文本历史",
+        "词性标注转录",
+        "对话嵌入",
+        "表示用户当前目标、每轮更新的槽位值字典"
       ],
       "correct": 3,
-      "explanation": "DST keeps a structured slot-value map that the backend can act on."
+      "explanation": "DST 保持后端可据此执行操作的结构化槽位值映射。"
     },
     {
       "stage": "pre",
-      "question": "What does Joint Goal Accuracy (JGA) measure?",
+      "question": "联合目标准确率（JGA）测量什么？",
       "options": [
-        "Fraction of turns where every slot is exactly correct (all-or-nothing)",
-        "Cosine similarity",
-        "Latency per turn",
-        "Average slot accuracy"
+        "所有槽位完全正确的轮次比例，全对才计分",
+        "余弦相似度",
+        "每轮延迟",
+        "平均槽位准确率"
       ],
       "correct": 0,
-      "explanation": "JGA is the strict per-turn match across all slots; per-slot accuracy is more lenient."
+      "explanation": "JGA 严格匹配每轮全部槽位；逐槽位准确率更宽松。"
     },
     {
       "stage": "check",
-      "question": "Why does regenerating the whole state from history each turn handle user corrections naturally?",
+      "question": "为什么每轮从历史重生成完整状态能自然处理用户修正？",
       "options": [
-        "It uses fewer tokens",
-        "It runs on GPU",
-        "It avoids embeddings",
-        "Reading the full history lets the model re-derive the final state including 'actually...' corrections without explicit rollback logic"
+        "它使用更少词元",
+        "它在 GPU 上运行",
+        "它避免嵌入",
+        "阅读完整历史让模型重新推导包含“其实……”修正的最终状态，无需显式回滚逻辑"
       ],
       "correct": 3,
-      "explanation": "Full-history regeneration absorbs corrections by recomputing the final state from the entire conversation."
+      "explanation": "完整历史重生成通过从整段对话重新计算最终状态来吸收修正。"
     },
     {
       "stage": "check",
-      "question": "Which 2026 pattern gives a guaranteed-valid slot dict in 5 lines of code?",
+      "question": "2026 年哪种模式用 5 行代码提供保证有效的槽位字典？",
       "options": [
-        "Hand-written regex",
-        "LLM + Instructor + Pydantic schema with constrained or validated output",
-        "TF-IDF classifier",
-        "BM25 retrieval"
+        "手写正则",
+        "LLM + Instructor + Pydantic 模式，配合约束或验证输出",
+        "TF-IDF 分类器",
+        "BM25 检索"
       ],
       "correct": 1,
-      "explanation": "Pydantic schema + Instructor validates the LLM's state output against the slot ontology automatically."
+      "explanation": "Pydantic 模式与 Instructor 自动根据槽位本体验证 LLM 状态输出。"
     },
     {
       "stage": "check",
-      "question": "Why version your DST schema?",
+      "question": "为什么给 DST 模式做版本控制？",
       "options": [
-        "Adding new slots post-hoc invalidates older training data and breaks longitudinal evaluation",
-        "Reduce token count",
-        "Required by JSON",
-        "Speed gains"
+        "事后增加槽位使旧训练数据失效，破坏纵向评估",
+        "减少词元数",
+        "JSON 要求如此",
+        "提升速度"
       ],
       "correct": 0,
-      "explanation": "Unversioned schema changes silently break training data alignment and eval comparability."
+      "explanation": "没有版本控制的模式变更会悄然破坏训练数据对齐与评估可比性。"
     },
     {
       "stage": "post",
-      "question": "Why must DST for compliance-sensitive domains include a rule-based check alongside LLM extraction?",
+      "question": "为什么合规敏感领域的 DST 必须在 LLM 抽取之外加入规则检查？",
       "options": [
-        "LLMs are slower",
-        "Rules avoid embeddings",
-        "LLM-only DST can mis-extract destructive parameters (amount, account, date); a rules layer enforces deterministic constraints",
-        "Rules are multilingual"
+        "LLM 更慢",
+        "规则避免嵌入",
+        "纯 LLM DST 可能错抽金额、账户、日期等破坏性操作参数，规则层强制确定性约束",
+        "规则支持多语言"
       ],
       "correct": 2,
-      "explanation": "Compliance domains require deterministic enforcement; rules catch slot errors that LLMs introduce."
+      "explanation": "合规领域需要确定性约束，规则能捕获 LLM 引入的槽位错误。"
     },
     {
       "stage": "post",
-      "question": "What is the cost concern with regenerating state on every turn via LLM?",
+      "question": "通过 LLM 每轮重生成状态有什么成本问题？",
       "options": [
-        "Embedding drift",
-        "More embeddings",
-        "Re-reading the full history each turn yields O(n^2) total token usage; cap or summarize older turns",
-        "Cosine costs"
+        "嵌入漂移",
+        "更多嵌入",
+        "每轮重读完整历史导致总词元使用量 O(n^2)，应限制或摘要旧轮次",
+        "余弦成本"
       ],
       "correct": 2,
-      "explanation": "Full-history regeneration is quadratic in turns; cap history or use rolling summaries."
+      "explanation": "完整历史重生成对轮次数呈二次复杂度，应限制历史或使用滚动摘要。"
     },
     {
       "stage": "post",
-      "question": "Why are explicit confirmation flows required before destructive backend actions?",
+      "question": "为什么破坏性后端操作前需要显式确认流程？",
       "options": [
-        "Confirmation increases JGA",
-        "Even good DST has nonzero slot-error rates; a deterministic confirmation prevents wrong-account or wrong-amount actions",
-        "Required by tokenizers",
-        "Latency"
+        "确认提高 JGA",
+        "即使优秀 DST 也存在槽位错误，确定性确认能防止对错误账户或错误金额操作",
+        "分词器要求如此",
+        "延迟"
       ],
       "correct": 1,
-      "explanation": "Destructive actions need user confirmation because DST is never error-free."
+      "explanation": "DST 永远不可能完全无误，因此破坏性操作需要用户确认。"
     }
   ]
 }

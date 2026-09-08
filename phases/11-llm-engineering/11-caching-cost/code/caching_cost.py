@@ -24,7 +24,7 @@ MODEL_PRICING = {
 
 def calculate_cost(model, input_tokens, output_tokens, cached_input_tokens=0):
     if model not in MODEL_PRICING:
-        return {"error": f"Unknown model: {model}"}
+        return {"error": f"未知模型： {model}"}
     pricing = MODEL_PRICING[model]
     non_cached = input_tokens - cached_input_tokens
     input_cost = (non_cached / 1_000_000) * pricing["input"]
@@ -215,7 +215,7 @@ class TokenBucketRateLimiter:
 
     def get_usage(self, user_id):
         if user_id not in self.buckets:
-            return {"error": "User not found"}
+            return {"error": "用户不存在"}
         b = self.buckets[user_id]
         return {
             "user_id": user_id,
@@ -254,11 +254,11 @@ class CostTracker:
         total = self.total_cost()
         pct = total / self.monthly_budget if self.monthly_budget > 0 else 0
         if pct >= 0.95 and not any(a["level"] == "stop" for a in self.alerts):
-            self.alerts.append({"level": "stop", "message": f"Budget 95% consumed: ${total:.2f}/${self.monthly_budget:.2f}", "timestamp": time.time()})
+            self.alerts.append({"level": "stop", "message": f"预算已消耗 95%： ${total:.2f}/${self.monthly_budget:.2f}", "timestamp": time.time()})
         elif pct >= 0.85 and not any(a["level"] == "throttle" for a in self.alerts):
-            self.alerts.append({"level": "throttle", "message": f"Budget 85% consumed: ${total:.2f}/${self.monthly_budget:.2f}", "timestamp": time.time()})
+            self.alerts.append({"level": "throttle", "message": f"预算已消耗 85%： ${total:.2f}/${self.monthly_budget:.2f}", "timestamp": time.time()})
         elif pct >= 0.70 and not any(a["level"] == "warning" for a in self.alerts):
-            self.alerts.append({"level": "warning", "message": f"Budget 70% consumed: ${total:.2f}/${self.monthly_budget:.2f}", "timestamp": time.time()})
+            self.alerts.append({"level": "warning", "message": f"预算已消耗 70%： ${total:.2f}/${self.monthly_budget:.2f}", "timestamp": time.time()})
 
     def total_cost(self):
         return round(sum(e["cost"] for e in self.logs), 6)
@@ -343,44 +343,44 @@ def simulate_llm_call(model, query):
 
 def run_demo():
     print("=" * 60)
-    print("  Caching, Rate Limiting & Cost Optimization Demo")
+    print("  缓存、限流与成本优化演示（Caching, Rate Limiting & Cost Optimization）")
     print("=" * 60)
 
-    print("\n--- Model Pricing ---")
+    print("\n--- 模型定价（Model Pricing） ---")
     for model, pricing in list(MODEL_PRICING.items())[:6]:
         cost_1k = calculate_cost(model, 1000, 500)
-        print(f"  {model}: ${cost_1k['total_cost']:.6f} per 1K in + 500 out")
+        print(f"  {model}: ${cost_1k['total_cost']:.6f} 每 1K 输入词元 + 500 输出词元")
 
-    print("\n--- Cost Comparison: 100K Requests ---")
+    print("\n--- 成本对比：100K 次请求 ---")
     for model in ["gpt-4o", "gpt-4o-mini", "claude-sonnet-4", "claude-haiku-3.5"]:
         cost = calculate_cost(model, 1000 * 100_000, 500 * 100_000)
         print(f"  {model}: ${cost['total_cost']:.2f}")
 
-    print("\n--- Anthropic Cache Savings ---")
+    print("\n--- Anthropic 缓存节省成本 ---")
     no_cache = calculate_cost("claude-sonnet-4", 2000, 500, 0)
     with_cache = calculate_cost("claude-sonnet-4", 2000, 500, 1500)
     saving = no_cache["total_cost"] - with_cache["total_cost"]
-    print(f"  Without cache: ${no_cache['total_cost']:.6f}")
-    print(f"  With 1500 cached tokens: ${with_cache['total_cost']:.6f}")
-    print(f"  Savings per call: ${saving:.6f} ({saving/no_cache['total_cost']*100:.1f}%)")
+    print(f"  不使用缓存： ${no_cache['total_cost']:.6f}")
+    print(f"  缓存 1500 个词元时： ${with_cache['total_cost']:.6f}")
+    print(f"  每次调用节省： ${saving:.6f} ({saving/no_cache['total_cost']*100:.1f}%)")
 
     exact_cache = ExactCache(max_size=100, ttl_seconds=300)
     semantic_cache = SemanticCache(similarity_threshold=0.75, max_size=100)
     rate_limiter = TokenBucketRateLimiter()
     tracker = CostTracker(monthly_budget=100.0)
 
-    print("\n--- Exact Cache ---")
+    print("\n--- 精确缓存（Exact Cache）---")
     messages_1 = [{"role": "user", "content": "What is the return policy?"}]
     result = exact_cache.get("gpt-4o-mini", messages_1, 0.0)
-    print(f"  First lookup: {'HIT' if result else 'MISS'}")
+    print(f"  第一次查找： {'HIT' if result else 'MISS'}")
     exact_cache.put("gpt-4o-mini", messages_1, 0.0, "You can return items within 30 days.")
     result = exact_cache.get("gpt-4o-mini", messages_1, 0.0)
-    print(f"  Second lookup: {'HIT' if result else 'MISS'} -> {result}")
+    print(f"  第二次查找： {'HIT' if result else 'MISS'} -> {result}")
     result = exact_cache.get("gpt-4o-mini", messages_1, 0.7)
-    print(f"  With temp=0.7: {'HIT' if result else 'MISS (non-deterministic, skip cache)'}")
-    print(f"  Stats: {exact_cache.stats()}")
+    print(f"  当 temp=0.7 时： {'HIT' if result else 'MISS（非确定性，跳过缓存）'}")
+    print(f"  统计： {exact_cache.stats()}")
 
-    print("\n--- Semantic Cache ---")
+    print("\n--- 语义缓存（Semantic Cache）---")
     test_queries = [
         ("What is the return policy?", "Items can be returned within 30 days with receipt."),
         ("How do I return an item?", None),
@@ -392,25 +392,25 @@ def run_demo():
     for query, response in test_queries:
         cached = semantic_cache.get(query)
         if cached:
-            print(f"  '{query[:40]}' -> CACHE HIT (sim={cached['similarity']}, original='{cached['original_query'][:40]}')")
+            print(f"  '{query[:40]}' -> 缓存命中（CACHE HIT，sim={cached['similarity']}, 原始查询='{cached['original_query'][:40]}')")
         elif response:
             semantic_cache.put(query, response)
-            print(f"  '{query[:40]}' -> MISS (stored)")
+            print(f"  '{query[:40]}' -> MISS（已存储）")
         else:
-            print(f"  '{query[:40]}' -> MISS (no match)")
-    print(f"  Stats: {semantic_cache.stats()}")
+            print(f"  '{query[:40]}' -> MISS（无匹配）")
+    print(f"  统计： {semantic_cache.stats()}")
 
-    print("\n--- Rate Limiting ---")
+    print("\n--- 限流（Rate Limiting）---")
     for i in range(12):
         check = rate_limiter.check("user_1", 1000, "free")
         if check["allowed"]:
             rate_limiter.consume("user_1", 1000, "free")
         status = "OK" if check["allowed"] else f"BLOCKED ({check['reason']})"
         if i < 5 or not check["allowed"]:
-            print(f"  Request {i+1}: {status}")
-    print(f"  Usage: {rate_limiter.get_usage('user_1')}")
+            print(f"  请求 {i+1}： {status}")
+    print(f"  用量： {rate_limiter.get_usage('user_1')}")
 
-    print("\n--- Model Routing ---")
+    print("\n--- 模型路由（Model Routing） ---")
     routing_queries = [
         "What time do you close?",
         "Summarize this quarterly earnings report",
@@ -422,7 +422,7 @@ def run_demo():
         route = route_model(q, "pro")
         print(f"  '{q[:50]}' -> {route['model']} ({route['complexity']})")
 
-    print("\n--- Full Pipeline: Before vs After Optimization ---")
+    print("\n--- 完整流水线：优化前后对比 ---")
     queries = [
         "What is the return policy?",
         "How do I return something?",
@@ -436,17 +436,17 @@ def run_demo():
         "Analyze the pros and cons of serverless architecture",
     ]
 
-    print("\n  [Before: no caching, single model (gpt-4o)]")
+    print("\n  [优化前：无缓存，单一模型（gpt-4o）]")
     tracker_before = CostTracker(monthly_budget=1000.0)
     for q in queries:
         result = simulate_llm_call("gpt-4o", q)
         tracker_before.log_call("gpt-4o", result["input_tokens"], result["output_tokens"], latency_ms=result["latency_ms"], cache_status="miss")
     before = tracker_before.summary()
-    print(f"  Total cost: ${before['total_cost']:.6f}")
-    print(f"  Avg cost/call: ${before['avg_cost_per_call']:.6f}")
-    print(f"  Avg latency: {before['avg_latency_ms']}ms")
+    print(f"  总成本： ${before['total_cost']:.6f}")
+    print(f"  平均每次调用成本： ${before['avg_cost_per_call']:.6f}")
+    print(f"  平均延迟（latency）： {before['avg_latency_ms']}ms")
 
-    print("\n  [After: caching + routing + rate limiting]")
+    print("\n  [优化后：缓存 + 路由 + 限流]")
     exact_c = ExactCache()
     semantic_c = SemanticCache(similarity_threshold=0.75)
     tracker_after = CostTracker(monthly_budget=1000.0)
@@ -468,25 +468,25 @@ def run_demo():
         semantic_c.put(q, result["response"])
 
     after = tracker_after.summary()
-    print(f"  Total cost: ${after['total_cost']:.6f}")
-    print(f"  Avg cost/call: ${after['avg_cost_per_call']:.6f}")
-    print(f"  Avg latency: {after['avg_latency_ms']}ms")
-    print(f"  Cache hit rate: {after['cache_hit_rate']:.0%}")
+    print(f"  总成本： ${after['total_cost']:.6f}")
+    print(f"  平均每次调用成本： ${after['avg_cost_per_call']:.6f}")
+    print(f"  平均延迟（latency）： {after['avg_latency_ms']}ms")
+    print(f"  缓存命中率（Cache hit rate）： {after['cache_hit_rate']:.0%}")
 
     if before["total_cost"] > 0:
         savings_pct = (1 - after["total_cost"] / before["total_cost"]) * 100
-        print(f"\n  SAVINGS: {savings_pct:.1f}% cost reduction")
-        print(f"  Latency improvement: {(1 - after['avg_latency_ms'] / before['avg_latency_ms']) * 100:.1f}% faster")
+        print(f"\n  节省成本：成本降低 {savings_pct:.1f}%")
+        print(f"  延迟改善：加快 {(1 - after['avg_latency_ms'] / before['avg_latency_ms']) * 100:.1f}%")
 
-    print("\n--- Budget Alerts Demo ---")
+    print("\n--- 预算告警演示（Budget Alerts） ---")
     alert_tracker = CostTracker(monthly_budget=0.01)
     for i in range(5):
         alert_tracker.log_call("gpt-4o", 5000, 2000, latency_ms=500)
-    print(f"  Total spent: ${alert_tracker.total_cost():.6f} / ${alert_tracker.monthly_budget}")
+    print(f"  总支出： ${alert_tracker.total_cost():.6f} / ${alert_tracker.monthly_budget}")
     for alert in alert_tracker.alerts:
-        print(f"  ALERT [{alert['level'].upper()}]: {alert['message']}")
+        print(f"  告警（ALERT）[{alert['level'].upper()}]: {alert['message']}")
 
-    print("\n--- Cost Breakdown by Model ---")
+    print("\n--- 按模型细分成本 ---")
     multi_tracker = CostTracker(monthly_budget=500.0)
     for _ in range(50):
         multi_tracker.log_call("gpt-4o-mini", 800, 200, latency_ms=150)
@@ -498,11 +498,11 @@ def run_demo():
         multi_tracker.log_call("claude-opus-4", 3000, 1000, latency_ms=1200)
     breakdown = multi_tracker.cost_by_model()
     for model, data in sorted(breakdown.items(), key=lambda x: x[1]["cost"], reverse=True):
-        print(f"  {model}: {data['calls']} calls, ${data['cost']:.6f}, {data['input_tokens']:,} in / {data['output_tokens']:,} out")
-    print(f"  Total: ${multi_tracker.total_cost():.6f}")
+        print(f"  {model}: {data['calls']} 次调用， ${data['cost']:.6f}, {data['input_tokens']:,} 输入 / {data['output_tokens']:,} 输出")
+    print(f"  总计： ${multi_tracker.total_cost():.6f}")
 
     print("\n" + "=" * 60)
-    print("  Demo complete.")
+    print("  演示完成。")
     print("=" * 60)
 
 

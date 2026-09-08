@@ -59,9 +59,10 @@ class BookRenderingTest(unittest.TestCase):
     def test_literal_tokens_remain_text_in_valid_xhtml(self):
         source = 'Prompt: "<image A> caption <image B>". Replace a name with "<PERSON>".\n\n'
         source += '| Token | Meaning |\n| --- | --- |\n| <image> | Image |\n| <doc A> | Context |\n'
+        source += '\n在“<图像 A> 描述 A <图像 B> 描述 B”中交错输入。\n'
         root = ET.fromstring("<div>" + render(source) + "</div>")
         text = "".join(root.itertext())
-        for token in ("<image>", "<image A>", "<image B>", "<PERSON>", "<doc A>"):
+        for token in ("<image>", "<image A>", "<image B>", "<PERSON>", "<doc A>", "<图像 A>", "<图像 B>"):
             self.assertIn(token, text)
 
     def test_code_and_real_html_are_unchanged(self):
@@ -99,12 +100,34 @@ class BookRenderingTest(unittest.TestCase):
             with patch.multiple(build_book, BUILD=Path(directory), DIST=Path(directory)), \
                  patch.object(build_book, "git_date", return_value="2026-09-07"), \
                  patch.object(build_book, "git_edition", return_value="2026.09"), \
-                 patch.object(build_book, "pick_font", return_value=None), \
+                 patch.object(build_book, "pick_font", return_value="Noto Serif CJK SC"), \
                  patch.object(build_book.subprocess, "run", side_effect=[
                      None, subprocess.CalledProcessError(43, "pandoc"),
                  ]):
                 with self.assertRaises(subprocess.CalledProcessError):
                     build_book.render(build_book.CONFIG["volumes"][0], Path("fixture.md"), 1, pdf=True)
+
+    def test_chinese_pdf_requires_fonts_for_prose_and_code(self):
+        with tempfile.TemporaryDirectory() as directory:
+            for font in (None, "Noto Serif CJK SC"):
+                with self.subTest(font=font), \
+                     patch.multiple(build_book, BUILD=Path(directory), DIST=Path(directory), BOOK_LANG="zh"), \
+                     patch.object(build_book, "git_date", return_value="2026-09-08"), \
+                     patch.object(build_book, "git_edition", return_value="2026.09"), \
+                     patch.object(build_book, "pick_font", return_value=font), \
+                     patch.object(build_book.subprocess, "run") as run:
+                    if font is None:
+                        with self.assertRaisesRegex(RuntimeError, "CJK"):
+                            build_book.render(build_book.CONFIG["volumes"][0], Path("fixture.md"), 1, pdf=True)
+                        self.assertEqual(run.call_count, 1)
+                    else:
+                        build_book.render(build_book.CONFIG["volumes"][0], Path("fixture.md"), 1, pdf=True)
+                        command = run.call_args.args[0]
+                        self.assertIn("CJKmainfont=" + font, command)
+                        self.assertIn("CJKmonofont=" + font, command)
+                        self.assertIn("lang=zh-Hans", command)
+                        metadata = (Path(directory) / "foundations-meta.yaml").read_text()
+                        self.assertIn("lang: zh-Hans", metadata)
 
     @unittest.skipUnless(shutil.which("xelatex") and shutil.which("pdftotext"),
                          "PDF layout check requires xelatex and pdftotext")

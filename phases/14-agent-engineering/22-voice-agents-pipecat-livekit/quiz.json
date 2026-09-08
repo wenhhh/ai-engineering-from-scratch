@@ -1,90 +1,90 @@
 {
   "lesson": "22-voice-agents-pipecat-livekit",
-  "title": "Voice Agents: Pipecat and LiveKit",
+  "title": "语音智能体：Pipecat 与 LiveKit（Voice Agents: Pipecat and LiveKit）",
   "questions": [
     {
       "stage": "pre",
-      "question": "Which two flow directions does a Pipecat pipeline use?",
+      "question": "Pipecat 流水线使用哪两个流动方向？",
       "options": [
-        "Read and write",
-        "Hot and cold",
-        "Inbound and outbound",
-        "DOWNSTREAM (source to sink) and UPSTREAM (feedback, cancel, barge-in)"
+        "读与写",
+        "热与冷",
+        "入站与出站",
+        "DOWNSTREAM（源到汇）和 UPSTREAM（反馈、取消、插话打断）"
       ],
       "correct": 3,
-      "explanation": "Frames flow downstream source-to-sink and upstream for control and cancellation."
+      "explanation": "帧沿下游从源流向汇，沿上游传递控制与取消。"
     },
     {
       "stage": "pre",
-      "question": "What is the canonical Pipecat voice pipeline?",
+      "question": "典型 Pipecat 语音流水线是什么？",
       "options": [
-        "VAD -> STT -> LLM -> TTS -> transport",
-        "Audio -> JSON -> SQL -> response",
-        "LLM -> embed -> retrieve -> answer",
+        "VAD -> STT -> LLM -> TTS -> 传输",
+        "音频 -> JSON -> SQL -> 响应",
+        "LLM -> 嵌入 -> 检索 -> 回答",
         "TTS -> STT -> LLM -> VAD"
       ],
       "correct": 0,
-      "explanation": "VAD detects voice activity, STT transcribes, LLM responds, TTS speaks, transport delivers."
+      "explanation": "VAD 检测语音活动，STT 转写，LLM 回复，TTS 发声，传输层交付。"
     },
     {
       "stage": "check",
-      "question": "Which two voice agent classes does LiveKit Agents ship?",
+      "question": "LiveKit Agents 提供哪两种语音智能体类？",
       "options": [
-        "BatchAgent and StreamAgent",
-        "TextAgent and SpeechAgent",
-        "MultimodalAgent (direct audio) and VoicePipelineAgent (STT/LLM/TTS cascade)",
-        "LocalAgent and CloudAgent"
+        "BatchAgent 和 StreamAgent",
+        "TextAgent 和 SpeechAgent",
+        "MultimodalAgent（直接音频）和 VoicePipelineAgent（STT/LLM/TTS 级联）",
+        "LocalAgent 和 CloudAgent"
       ],
       "correct": 2,
-      "explanation": "MultimodalAgent uses direct audio (Realtime-style); VoicePipelineAgent uses STT->LLM->TTS for text-level control."
+      "explanation": "MultimodalAgent 使用直接音频，即 Realtime 式处理；VoicePipelineAgent 使用 STT->LLM->TTS 提供文本层面的控制。"
     },
     {
       "stage": "check",
-      "question": "What is barge-in and how is it handled?",
+      "question": "什么是插话打断（Barge-in），如何处理？",
       "options": [
-        "An LLM cost spike; reduce tokens",
-        "The user interrupts while the agent is speaking; UPSTREAM cancel frames stop TTS mid-utterance",
-        "Captcha failure; retry",
-        "A provider outage; switch regions"
+        "LLM 成本激增；减少词元",
+        "智能体说话时用户打断；UPSTREAM 取消帧在话语中途停止 TTS",
+        "验证码失败；重试",
+        "提供商故障；切换区域"
       ],
       "correct": 1,
-      "explanation": "Barge-in is user interruption; UPSTREAM cancellation is how Pipecat handles it cleanly."
+      "explanation": "插话打断就是用户中断智能体；Pipecat 通过 UPSTREAM 传递取消信号，让流水线各阶段配合停止当前输出。"
     },
     {
       "stage": "check",
-      "question": "What end-to-end latency does the lesson describe as premium?",
+      "question": "本课将怎样的端到端延迟描述为高端水平？",
       "options": [
-        "About 450-600 ms",
-        "About 1500 ms",
-        "About 50 ms",
-        "About 5000 ms"
+        "约 450–600 毫秒",
+        "约 1500 毫秒",
+        "约 50 毫秒",
+        "约 5000 毫秒"
       ],
       "correct": 0,
-      "explanation": "Premium stacks land around 450-600 ms; 800-1200 ms is common; over 1500 ms feels broken."
+      "explanation": "高端技术栈约为 450–600 毫秒；800–1200 毫秒常见；超过 1500 毫秒会让人觉得系统出了问题。"
     },
     {
       "stage": "post",
-      "question": "What goes wrong if STT confidence is ignored?",
+      "question": "忽略 STT 置信度会出什么问题？",
       "options": [
-        "Calls get cheaper",
-        "Latency improves",
-        "TTS gets faster",
-        "Low-confidence transcripts feed the LLM as if gospel, producing wrong answers; gate on confidence or ask for confirmation"
+        "调用变便宜",
+        "延迟改善",
+        "TTS 变快",
+        "将低置信度转写当作绝对正确的内容传给 LLM，产生错误回答；应按置信度把关或要求确认"
       ],
       "correct": 3,
-      "explanation": "Treating low-confidence STT as truth is a top voice-agent failure mode."
+      "explanation": "将低置信度 STT 视为事实，是语音智能体的主要失效模式。"
     },
     {
       "stage": "post",
-      "question": "Why does the lesson recommend summing component latencies before shipping?",
+      "question": "本课为什么建议交付前将组件延迟相加？",
       "options": [
-        "Latency is required by WebRTC",
-        "Every component adds 50-200 ms; the sum determines whether the experience feels broken",
-        "Providers bill by latency",
-        "It satisfies a compliance requirement"
+        "WebRTC 要求存在延迟",
+        "每个组件增加 50–200 毫秒；总和决定体验是否像系统出了问题",
+        "提供商按延迟计费",
+        "满足合规要求"
       ],
       "correct": 1,
-      "explanation": "Sum the chain (VAD + STT + LLM + TTS + transport) before shipping; targets are tight."
+      "explanation": "交付前计算整条链路（VAD + STT + LLM + TTS + 传输）的延迟总和；目标很严格。"
     }
   ]
 }

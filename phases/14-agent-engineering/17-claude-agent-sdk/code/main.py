@@ -1,7 +1,7 @@
-"""Claude Agent SDK harness shape in stdlib.
+"""用标准库模拟 Claude Agent SDK 执行框架（Harness）的结构。
 
-Built-in tools, subagents with isolated context, lifecycle hooks, session store.
-Demonstrates how spawning subagents keeps the orchestrator's context bounded.
+包含内置工具、上下文隔离的子智能体（Subagent）、生命周期钩子（Lifecycle hook）与会话存储（Session store）。
+演示如何通过启动子智能体，使编排器（Orchestrator）的上下文保持有界。
 """
 
 from __future__ import annotations
@@ -153,12 +153,12 @@ def _list_dir_demo(path: str) -> str:
 
 def main() -> None:
     print("=" * 70)
-    print("CLAUDE AGENT SDK SHAPE — Phase 14, Lesson 17")
+    print("Claude Agent SDK 结构——第 14 阶段，第 17 课")
     print("=" * 70)
 
     tools = ToolRegistry()
-    tools.register(Tool("read_file", "read a file", _read_file_demo))
-    tools.register(Tool("list_dir", "list a directory", _list_dir_demo))
+    tools.register(Tool("read_file", "读取文件", _read_file_demo))
+    tools.register(Tool("list_dir", "列出目录内容", _list_dir_demo))
 
     hook_log: list[str] = []
     hooks = Hooks(
@@ -176,42 +176,42 @@ def main() -> None:
     harness = Harness(tools, hooks, store)
 
     parent = "session_main"
-    print("\norchestrator starts")
+    print("\n编排器启动")
     orchestrator_run = harness.run_agent(
         parent,
         "review these three modules",
         [("list_dir", {"path": "/project"})],
     )
-    print(f"  orchestrator context tokens: {orchestrator_run.context_tokens}")
+    print(f"  编排器上下文词元数： {orchestrator_run.context_tokens}")
 
-    print("\nspawn three subagents (context isolation)")
+    print("\n启动三个子智能体（上下文隔离，Context isolation）")
     sub_runs = harness.spawn_subagents(parent, [
         ("review module a", [("read_file", {"path": "a.py"})]),
         ("review module b", [("read_file", {"path": "b.py"})]),
         ("review module c", [("read_file", {"path": "c.py"})]),
     ])
     for run in sub_runs:
-        print(f"  sub {run.session_id}  tokens={run.context_tokens}  "
-              f"tool_calls={len(run.tool_calls)}")
-    print(f"  orchestrator context tokens remain: "
+        print(f"  子智能体 {run.session_id}  词元数={run.context_tokens}  "
+              f"工具调用数={len(run.tool_calls)}")
+    print(f"  编排器上下文词元数仍为： "
           f"{orchestrator_run.context_tokens}")
 
-    print("\nsession store")
+    print("\n会话存储（Session store）")
     for sid in store.list_sessions():
-        print(f"  {sid}  turns={len(store.load(sid))}")
-    print(f"  subkeys of {parent}: {store.list_subkeys(parent)}")
+        print(f"  {sid}  轮次数={len(store.load(sid))}")
+    print(f"  {parent} 的子会话键： {store.list_subkeys(parent)}")
 
-    print("\nhooks fired")
+    print("\n已触发的钩子（Hook）")
     for line in hook_log[:10]:
         print(f"  {line}")
-    print(f"  ... {len(hook_log)} hook events total")
+    print(f"  ... 共 {len(hook_log)} 个钩子事件")
 
-    print("\ndelete parent (cascades to subs)")
+    print("\n删除父会话（级联删除子会话）")
     store.delete(parent)
-    print(f"  remaining sessions: {store.list_sessions()}")
+    print(f"  剩余会话： {store.list_sessions()}")
 
     print()
-    print("subagent results return to orchestrator; orchestrator context is preserved.")
+    print("子智能体将结果返回给编排器，编排器的上下文得以保留。")
 
 
 if __name__ == "__main__":

@@ -2,40 +2,85 @@
   "recordId": "weekly-brief-validation-v3",
   "sourceSnapshot": "2026-W31",
   "sources": [
-    {"id": "dataset-returns", "authority": "primary-data"},
-    {"id": "interview-07", "authority": "anecdotal"},
-    {"id": "policy-4.2", "authority": "approved-policy"}
+    {
+      "id": "dataset-returns",
+      "authority": "primary-data"
+    },
+    {
+      "id": "interview-07",
+      "authority": "anecdotal"
+    },
+    {
+      "id": "policy-4.2",
+      "authority": "approved-policy"
+    }
   ],
   "claims": [
-    {"id": "C-01", "claim": "Returns rose in the North region", "sourceIds": ["dataset-returns"], "support": "direct-calculation", "severity": "required", "result": "pass"},
-    {"id": "C-02", "claim": "Training caused the change", "sourceIds": ["interview-07"], "support": "speculative", "severity": "blocker", "result": "fail"},
-    {"id": "C-03", "claim": "Refund exceptions require approval", "sourceIds": ["policy-4.2"], "support": "direct-policy", "severity": "blocker", "result": "pass"},
-    {"id": "C-04", "claim": "All seven regions are represented", "sourceIds": ["dataset-returns"], "support": "coverage-check", "severity": "required", "result": "pass"}
+    {
+      "id": "C-01",
+      "claim": "北部区域退货增加",
+      "sourceIds": [
+        "dataset-returns"
+      ],
+      "support": "direct-calculation",
+      "severity": "required",
+      "result": "pass"
+    },
+    {
+      "id": "C-02",
+      "claim": "培训导致了变化",
+      "sourceIds": [
+        "interview-07"
+      ],
+      "support": "speculative",
+      "severity": "blocker",
+      "result": "fail"
+    },
+    {
+      "id": "C-03",
+      "claim": "退款例外需要批准",
+      "sourceIds": [
+        "policy-4.2"
+      ],
+      "support": "direct-policy",
+      "severity": "blocker",
+      "result": "pass"
+    },
+    {
+      "id": "C-04",
+      "claim": "全部七个区域均已覆盖",
+      "sourceIds": [
+        "dataset-returns"
+      ],
+      "support": "coverage-check",
+      "severity": "required",
+      "result": "pass"
+    }
   ],
   "capabilityDiagnostic": {
-    "unexpectedOutput": "The brief states that training caused lower returns even though the evidence only establishes timing.",
+    "unexpectedOutput": "简报声称培训导致退货减少，但证据只确定了时间先后。",
     "primaryProperty": "next-token-prediction",
     "humanCompetency": "discernment",
     "properties": [
       {
         "id": "next-token-prediction",
-        "evidence": "The generated causal continuation is plausible but not entailed by the interview note.",
-        "targetedFix": "Require quoted supporting spans and abstention when no source establishes causation."
+        "evidence": "生成的因果续写看似合理，却无法由访谈笔记推出。",
+        "targetedFix": "要求引用支持片段；没有来源确立因果时弃答。"
       },
       {
         "id": "knowledge",
-        "evidence": "The workflow is constrained to the supplied snapshot and has no approved causal study.",
-        "targetedFix": "Retrieve an authoritative current study or remove the causal claim."
+        "evidence": "工作流仅使用给定快照，没有获批的因果研究。",
+        "targetedFix": "检索当前权威研究，或移除因果主张。"
       },
       {
         "id": "working-memory",
-        "evidence": "All four claims and their source records are present in the review packet.",
-        "targetedFix": "Keep the claim-evidence matrix adjacent during revision so coverage remains verifiable."
+        "evidence": "审核包中包含全部四项主张及其来源记录。",
+        "targetedFix": "修订时将主张—证据矩阵放在邻近位置，使覆盖情况仍可验证。"
       },
       {
         "id": "steerability",
-        "evidence": "The generation contract did not prohibit causal language without direct support.",
-        "targetedFix": "Add an acceptance test that causal claims require direct causal evidence."
+        "evidence": "生成契约没有禁止缺乏直接支持的因果措辞。",
+        "targetedFix": "增加验收测试，要求因果主张必须有直接因果证据。"
       }
     ]
   },
@@ -45,11 +90,13 @@
     "claimSupport": "evidence-review",
     "audienceFit": "human-rubric"
   },
-  "uncertainties": ["West region sample is smaller than the target"],
+  "uncertainties": [
+    "西部区域样本小于目标"
+  ],
   "release": {
     "blockerFailures": 1,
     "requiredFailures": 0,
     "decision": "revise",
-    "nextAction": "Remove the causal claim or obtain authoritative causal evidence"
+    "nextAction": "移除因果主张，或获取权威因果证据"
   }
 }

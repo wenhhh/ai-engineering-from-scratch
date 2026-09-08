@@ -13,71 +13,71 @@
       "weight": 14,
       "allocatedHours": 1.4,
       "confidence": "practiced",
-      "decisions": ["Choose a prompt contract", "Place a verification boundary"],
-      "artifact": "Prompt contract packet",
-      "failureMode": "Optimizing wording before defining success"
+      "decisions": ["选择提示词契约（Prompt contract）", "设置验证边界（Verification boundary）"],
+      "artifact": "提示词契约包（Prompt contract packet）",
+      "failureMode": "尚未定义成功标准，就开始优化措辞"
     },
     {
       "id": "output-evaluation-validation",
       "weight": 21,
       "allocatedHours": 2.1,
       "confidence": "understood",
-      "decisions": ["Choose a deterministic check", "Escalate an unsupported claim"],
-      "artifact": "Claim-evidence matrix",
-      "failureMode": "Treating citation presence as claim support"
+      "decisions": ["选择确定性检查（Deterministic check）", "将缺乏支持的主张升级处理"],
+      "artifact": "主张—证据矩阵（Claim-evidence matrix）",
+      "failureMode": "把存在引用等同于主张有证据支持"
     },
     {
       "id": "product-model-selection",
       "weight": 12,
       "allocatedHours": 1.2,
       "confidence": "practiced",
-      "decisions": ["Choose the smallest sufficient surface", "Escalate model capability from evidence"],
-      "artifact": "Product-selection record",
-      "failureMode": "Choosing the largest model by reputation"
+      "decisions": ["选择足以满足需求的最小产品形态", "依据证据升级模型能力"],
+      "artifact": "产品选择记录（Product-selection record）",
+      "failureMode": "仅凭声誉选择最大的模型"
     },
     {
       "id": "workflow-integration-solution-design",
       "weight": 16,
       "allocatedHours": 1.6,
       "confidence": "understood",
-      "decisions": ["Assist, automate, redesign, or reject", "Place a human handoff"],
-      "artifact": "Workflow handoff packet",
-      "failureMode": "Automating prose while deleting ownership"
+      "decisions": ["决定采用辅助、自动化、重新设计还是拒绝执行", "设置人工交接点"],
+      "artifact": "工作流交接包（Workflow handoff packet）",
+      "failureMode": "自动化文字生成的同时，抹去了责任归属"
     },
     {
       "id": "configuration-knowledge-management",
       "weight": 12,
       "allocatedHours": 1.2,
       "confidence": "practiced",
-      "decisions": ["Classify context by job", "Retire a superseded source"],
-      "artifact": "Source registry",
-      "failureMode": "Treating memory as a source of record"
+      "decisions": ["按用途分类上下文", "停用已被取代的来源"],
+      "artifact": "来源登记表（Source registry）",
+      "failureMode": "把记忆当成权威记录来源"
     },
     {
       "id": "governance-risk-responsible-use",
       "weight": 15,
       "allocatedHours": 1.5,
       "confidence": "understood",
-      "decisions": ["Separate capability from authority", "Require meaningful review"],
-      "artifact": "Responsible-use control map",
-      "failureMode": "Relying on prompt-only governance"
+      "decisions": ["区分能力与授权", "要求进行实质性审核"],
+      "artifact": "负责任使用控制措施图（Responsible-use control map）",
+      "failureMode": "仅依赖提示词实施治理"
     },
     {
       "id": "troubleshooting-optimization",
       "weight": 10,
       "allocatedHours": 1.0,
       "confidence": "timed",
-      "decisions": ["Classify the failure layer", "Choose the smallest repair"],
-      "artifact": "Error log",
-      "failureMode": "Calling every defect a model failure"
+      "decisions": ["判断故障所在层次", "选择最小修复措施"],
+      "artifact": "错题日志（Error log）",
+      "failureMode": "把所有缺陷都归为模型故障"
     }
   ],
   "practiceProtocol": {
     "stages": [
-      {"id": "orient", "exitEvidence": "Untouched diagnostic mapped to objectives and confidence"},
-      {"id": "build", "exitEvidence": "Required lessons, tests, and learner-owned artifacts complete"},
-      {"id": "transfer", "exitEvidence": "New scenarios defended and weak domains remediated"},
-      {"id": "simulate", "exitEvidence": "Fresh timed sets reviewed under published exam rules"}
+      {"id": "orient", "exitEvidence": "完成未接触过的诊断测评，并关联目标和掌握程度"},
+      {"id": "build", "exitEvidence": "完成必修课程、测试和学习者自己制作的交付物"},
+      {"id": "transfer", "exitEvidence": "能够说明新场景中的决策理由，并已补强薄弱领域"},
+      {"id": "simulate", "exitEvidence": "按已公布的考试规则完成并复盘全新限时题组"}
     ],
     "errorTaxonomy": [
       "recall-gap",

@@ -2,66 +2,66 @@
   {
     "id": "unsupervised-pre-1",
     "stage": "pre",
-    "question": "What distinguishes unsupervised learning from supervised learning?",
+    "question": "无监督学习（Unsupervised Learning）与监督学习的区别是什么？",
     "options": [
-      "Unsupervised learning has no labeled outputs -- the algorithm finds structure on its own",
-      "Unsupervised learning always produces better results",
-      "Unsupervised learning uses more data",
-      "Unsupervised learning only works with text data"
+      "无监督学习没有带标签的输出，算法自行发现结构",
+      "无监督学习总是产生更好的结果",
+      "无监督学习使用更多数据",
+      "无监督学习只适用于文本数据"
     ],
     "correct": 0,
-    "explanation": "In unsupervised learning, there are no labels. The algorithm discovers patterns, groupings, or structure in the data without being told what the correct output should be."
+    "explanation": "无监督学习没有标签。算法无需获知正确输出是什么，就能在数据中发现模式、分组或结构。"
   },
   {
     "id": "unsupervised-pre-2",
     "stage": "pre",
-    "question": "What does K-Means require you to specify before training?",
+    "question": "训练 K 均值（K-Means）之前必须指定什么？",
     "options": [
-      "The number of clusters K",
-      "The exact cluster centers",
-      "The distance metric to use",
-      "The labels for each data point"
+      "簇数量 K",
+      "确切的簇中心",
+      "要使用的距离度量",
+      "每个数据点的标签"
     ],
     "correct": 0,
-    "explanation": "K-Means requires the number of clusters K as input. It then iteratively assigns points to the nearest centroid and recomputes centroids until convergence."
+    "explanation": "K 均值要求输入簇数量 K，然后迭代地将点分配给最近质心并重新计算质心，直到收敛。"
   },
   {
     "id": "unsupervised-post-1",
     "stage": "post",
-    "question": "K-Means fails on two interlocking half-moon shapes but DBSCAN succeeds. Why?",
+    "question": "面对两个相互嵌合的半月形，K 均值失败而 DBSCAN 成功。为什么？",
     "options": [
-      "DBSCAN always outperforms K-Means on every dataset",
-      "DBSCAN uses more data than K-Means",
-      "DBSCAN finds clusters based on density, so it can discover arbitrary shapes, while K-Means assumes spherical clusters",
-      "K-Means cannot handle 2D data"
+      "DBSCAN 在每个数据集上都优于 K 均值",
+      "DBSCAN 使用的数据比 K 均值更多",
+      "DBSCAN 基于密度发现簇，因此能发现任意形状，而 K 均值假设球形簇",
+      "K 均值无法处理二维数据"
     ],
     "correct": 2,
-    "explanation": "K-Means assigns points to the nearest centroid, producing spherical (convex) clusters. DBSCAN grows clusters from dense regions, discovering any shape as long as the cluster is connected by density."
+    "explanation": "K 均值将点分配到最近质心，产生球形（凸）簇。DBSCAN 从密集区域扩展簇，只要簇通过密度相连，就能发现任意形状。"
   },
   {
     "id": "unsupervised-post-2",
     "stage": "post",
-    "question": "What is the silhouette score measuring?",
+    "question": "轮廓分数（Silhouette Score）衡量什么？",
     "options": [
-      "The total number of clusters found",
-      "How similar each point is to its own cluster compared to the nearest other cluster",
-      "The speed of the clustering algorithm",
-      "The percentage of outliers in the data"
+      "找到的簇总数",
+      "每个点与自身簇的相似程度，相对于与最近其他簇的相似程度",
+      "聚类算法的速度",
+      "数据中异常值的比例"
     ],
     "correct": 1,
-    "explanation": "Silhouette score = (b - a) / max(a, b), where a is mean intra-cluster distance and b is mean nearest-cluster distance. It ranges from -1 (wrong cluster) to +1 (well-clustered)."
+    "explanation": "Silhouette score = (b - a) / max(a, b)，其中 a 为平均簇内距离，b 为到最近其他簇的平均距离。范围从 -1（分错簇）到 +1（聚类良好）。"
   },
   {
     "id": "unsupervised-post-3",
     "stage": "post",
-    "question": "How does a Gaussian Mixture Model differ from K-Means in its cluster assignments?",
+    "question": "高斯混合模型（Gaussian Mixture Model）与 K 均值在簇分配上有何不同？",
     "options": [
-      "GMM uses hard assignments where each point belongs to exactly one cluster",
-      "GMM gives soft (probabilistic) assignments where each point has a probability of belonging to each cluster",
-      "GMM only works with one-dimensional data",
-      "GMM does not use centroids at all"
+      "GMM 使用硬分配，每个点恰好属于一个簇",
+      "GMM 给出软分配，即每个点都有属于各簇的概率",
+      "GMM 只适用于一维数据",
+      "GMM 完全不使用质心"
     ],
     "correct": 1,
-    "explanation": "K-Means assigns each point to exactly one cluster (hard). GMM computes the probability that each point belongs to each Gaussian component (soft), and can model elliptical, overlapping clusters."
+    "explanation": "K 均值将每个点分配到恰好一个簇，即硬分配。GMM 计算每个点属于各高斯成分的概率，即软分配，并能建模椭圆形、重叠的簇。"
   }
 ]

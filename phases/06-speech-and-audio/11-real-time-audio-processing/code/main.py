@@ -1,9 +1,9 @@
-"""Real-time voice agent pipeline simulator.
+"""实时语音智能体（Real-time voice agent）流水线模拟器。
 
-Simulates an audio chunk stream through VAD → STT → LLM → TTS with a
-latency budget. No real models; tracks timing to show where budget goes.
+模拟音频块流经语音活动检测（VAD）→ 语音转文本（STT）→ LLM → 文本转语音（TTS），
+并设置延迟预算（Latency budget）。不含实际模型；跟踪计时以展示预算分配。
 
-Run: python3 code/main.py
+运行：python3 code/main.py
 """
 
 import math
@@ -51,13 +51,13 @@ def main():
     random.seed(0)
     rng = random.Random(0)
 
-    print("=== Step 1: simulate 1.5 s of user speech as 20 ms chunks ===")
+    print("=== 步骤 1：以 20 ms 音频块模拟 1.5 s 用户语音 ===")
     chunks = [simulate_chunk(True, rng) for _ in range(75)]
     chunks += [simulate_chunk(False, rng) for _ in range(20)]
-    print(f"  generated {len(chunks)} chunks, {CHUNK_MS} ms each = {len(chunks)*CHUNK_MS} ms")
+    print(f"  生成 {len(chunks)} 个音频块（Chunks），每块 {CHUNK_MS} ms = {len(chunks)*CHUNK_MS} ms")
 
     print()
-    print("=== Step 2: VAD-gate and buffer speech ===")
+    print("=== 步骤 2：通过 VAD 门控（Gate）并缓冲语音 ===")
     buffered = []
     in_speech = False
     for c in chunks:
@@ -67,10 +67,10 @@ def main():
             in_speech = True
         elif in_speech and len(buffered) >= 16000 * 0.3:
             break
-    print(f"  buffered {len(buffered) / 16000:.3f} s of speech")
+    print(f"  已缓冲 {len(buffered) / 16000:.3f} s 语音")
 
     print()
-    print("=== Step 3: simulate STT / LLM / TTS with timing ===")
+    print("=== 步骤 3：模拟 STT / LLM / TTS 并计时 ===")
     budget = {}
     t = time.time()
 
@@ -88,33 +88,33 @@ def main():
 
     total = (time.time() - t) * 1000
 
-    print(f"  user said: {text!r}")
-    print(f"  agent replied: {reply!r}")
+    print(f"  用户输入（保留英文模拟文本）: {text!r}")
+    print(f"  智能体回复（保留英文模拟文本）: {reply!r}")
     print()
-    print("  latency breakdown:")
+    print("  延迟分解（Latency breakdown）:")
     for stage, ms in budget.items():
         bar = "#" * int(ms / 10)
         print(f"    {stage:<10s}  {ms:>6.1f} ms  {bar}")
-    print(f"  end-to-end: {total:.1f} ms   (target: &lt; 500 ms)")
+    print(f"  端到端（End-to-end）: {total:.1f} ms   （目标: &lt; 500 ms）")
 
     print()
-    print("=== Step 4: where the 2026 production budget goes ===")
+    print("=== 步骤 4：2026 生产环境的预算分配 ===")
     rows = [
-        ("network in",  "50-100"),
+        ("网络输入（Network in）",  "50-100"),
         ("VAD",          "20-80"),
-        ("STT stream",   "100-300"),
-        ("LLM stream",   "100-500"),
+        ("STT 流式处理（Stream）",   "100-300"),
+        ("LLM 流式处理（Stream）",   "100-500"),
         ("TTS TTFA",     "100-300"),
-        ("network out",  "50-100"),
-        ("TOTAL",        "400-1400"),
+        ("网络输出（Network out）",  "50-100"),
+        ("总计（TOTAL）",        "400-1400"),
     ]
-    print("  | stage           | typical ms |")
+    print("  | 阶段（Stage）     | 典型耗时 ms |")
     for name, ms in rows:
         print(f"  | {name:<15} | {ms:>10} |")
 
     print()
-    print("  sub-500 ms: LiveKit + Silero + Deepgram + GPT-4o + Cartesia")
-    print("  sub-200 ms: Moshi (full-duplex) or Sesame CSM — different architecture (see lesson 15)")
+    print("  低于 500 ms: LiveKit + Silero + Deepgram + GPT-4o + Cartesia")
+    print("  低于 200 ms：Moshi（全双工 Full-duplex）或 Sesame CSM，采用不同架构（见第 15 课）")
 
 
 if __name__ == "__main__":

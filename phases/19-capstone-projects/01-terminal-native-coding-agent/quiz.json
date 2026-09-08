@@ -1,34 +1,34 @@
 {
   "lesson": "01-terminal-native-coding-agent",
-  "title": "Capstone 01 — Terminal-Native Coding Agent",
+  "title": "综合实践 01：终端原生编码智能体（Terminal-Native Coding Agent）",
   "questions": [
     {
       "stage": "pre",
-      "question": "Which loop shape do 2026 terminal coding agents share?",
+      "question": "2026 年终端编码智能体共享哪种循环结构？",
       "options": [
-        "Fetch, embed, rank, synthesize",
-        "Plan, act, observe, recover",
-        "Train, evaluate, deploy, monitor",
-        "Encode, decode, sample, stream"
+        "获取、嵌入、排序、综合",
+        "规划、行动、观察、恢复",
+        "训练、评估、部署、监控",
+        "编码、解码、采样、流式传输"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "pre",
-      "question": "Why does the harness run each task inside an E2B or Daytona sandbox?",
+      "question": "为什么运行框架让每个任务在 E2B 或 Daytona 沙箱内执行？",
       "options": [
-        "To enable GPU access for the agent loop",
-        "To bypass model-provider rate limits",
-        "To isolate filesystem and tool execution from the host so the worktree can be torn down on completion",
-        "To benchmark token throughput on cold caches"
+        "为智能体循环启用 GPU 访问",
+        "绕过模型提供方的速率限制",
+        "将文件系统和工具执行与宿主隔离，使任务完成后可以销毁工作树",
+        "在冷缓存上基准测试词元吞吐量"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Which built-in hook is the natural place to block destructive shell commands before they execute?",
+      "question": "哪个内置钩子最适合在破坏性 shell 命令执行前阻止它们？",
       "options": [
         "Stop",
         "PostToolUse",
@@ -40,31 +40,31 @@
     },
     {
       "stage": "check",
-      "question": "The capstone caps each tool result at roughly 4k tokens. Which failure mode does that primarily prevent?",
+      "question": "本综合实践将每次工具结果限制在约 4k 词元，主要防止哪种失效模式？",
       "options": [
-        "Model overfitting to tool-call traces",
-        "Sandbox escape via malicious shell metacharacters",
-        "Stale plan state across resumed sessions",
-        "Context poisoning and runaway cost when a tool returns a large dump"
+        "模型对工具调用追踪过拟合",
+        "通过恶意 shell 元字符逃逸沙箱",
+        "恢复会话时计划状态陈旧",
+        "工具返回大量内容时导致上下文污染与成本失控"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "What does the PreCompact hook do at the 150k-token mark?",
+      "question": "到达 150k 词元时，PreCompact 钩子做什么？",
       "options": [
-        "Cancels the run and refunds the user budget",
-        "Force-pushes the current branch to back up progress",
-        "Summarizes older turns into a prior-state block so the plan and new observations still fit",
-        "Switches the backing model to a smaller draft model"
+        "取消运行并退还用户预算",
+        "强制推送当前分支以备份进度",
+        "将旧轮次概括为先前状态块，使计划和新观测仍能装入上下文",
+        "将后端模型切换为更小的草稿模型"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "Which baseline does the capstone compare its harness against on a 30-issue SWE-bench Pro subset?",
+      "question": "本综合实践在 SWE-bench Pro 的 30 问题子集上，将框架与哪个基线比较？",
       "options": [
         "Aider",
         "mini-swe-agent",
@@ -76,12 +76,12 @@
     },
     {
       "stage": "post",
-      "question": "Which metric set is the deliverable measuring against?",
+      "question": "交付物衡量的是哪组指标？",
       "options": [
-        "WER, MOS, and first-audio-out",
-        "MRR@10 and nDCG@10",
-        "Perplexity, BLEU, and ROUGE",
-        "pass@1, turns-per-task, and dollar-per-task"
+        "词错误率（WER）、平均意见分（MOS）和首次音频输出时间",
+        "MRR@10 和 nDCG@10",
+        "困惑度（Perplexity）、BLEU 和 ROUGE",
+        "pass@1、每任务轮数和每任务美元成本"
       ],
       "correct": 3,
       "explanation": ""

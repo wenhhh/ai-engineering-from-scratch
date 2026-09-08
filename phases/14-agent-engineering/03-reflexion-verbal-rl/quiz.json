@@ -1,90 +1,90 @@
 {
   "lesson": "03-reflexion-verbal-rl",
-  "title": "Reflexion: Verbal Reinforcement Learning",
+  "title": "Reflexion：语言强化学习（Verbal Reinforcement Learning）",
   "questions": [
     {
       "stage": "pre",
-      "question": "What does Reflexion replace in standard reinforcement learning?",
+      "question": "Reflexion 替换了标准强化学习中的什么？",
       "options": [
-        "Episodic memory with parametric memory",
-        "Gradient updates with natural-language reflections stored between trials",
-        "Policy networks with random search",
-        "Reward shaping with a constant reward"
+        "用参数记忆替代情景记忆",
+        "用试验之间保存的自然语言反思替代梯度更新",
+        "用随机搜索替代策略网络",
+        "用固定奖励替代奖励塑形"
       ],
       "correct": 1,
-      "explanation": "Reflexion uses natural-language reflections in episodic memory instead of weight updates."
+      "explanation": "Reflexion 使用情景记忆中的自然语言反思，而不是权重更新。"
     },
     {
       "stage": "pre",
-      "question": "What three components define a Reflexion system?",
+      "question": "哪三个组件定义了 Reflexion 系统？",
       "options": [
-        "Planner, Worker, Solver",
-        "Selector, Expander, Backpropagator",
-        "Generator, Critic, Optimizer",
-        "Actor, Evaluator, Self-Reflector"
+        "规划器（Planner）、执行器（Worker）、求解器（Solver）",
+        "选择器（Selector）、扩展器（Expander）、反向传播器（Backpropagator）",
+        "生成器（Generator）、批评器（Critic）、优化器（Optimizer）",
+        "行动者（Actor）、评估器（Evaluator）、自我反思器（Self-Reflector）"
       ],
       "correct": 3,
-      "explanation": "Reflexion factors the agent into an Actor that runs trajectories, an Evaluator that scores them, and a Self-Reflector that writes lessons."
+      "explanation": "Reflexion 将智能体拆分为运行轨迹的行动者、为轨迹评分的评估器，以及写下经验教训的自我反思器。"
     },
     {
       "stage": "check",
-      "question": "Which evaluator type uses an external binary signal like a unit test or a known correct answer?",
+      "question": "哪类评估器使用单元测试或已知正确答案这类外部二元信号？",
       "options": [
-        "Heuristic",
-        "Scalar",
-        "Self-evaluated",
-        "Vote-based"
+        "启发式（Heuristic）",
+        "标量（Scalar）",
+        "自我评估（Self-evaluated）",
+        "基于投票（Vote-based）"
       ],
       "correct": 1,
-      "explanation": "Scalar evaluators read pass/fail signals from ground truth (ALFWorld success, HumanEval tests)."
+      "explanation": "标量评估器从真实参照读取通过或失败信号，例如 ALFWorld 是否成功、HumanEval 测试是否通过。"
     },
     {
       "stage": "check",
-      "question": "Why is self-evaluation a weaker signal than scalar feedback?",
+      "question": "为什么自我评估的信号比标量反馈弱？",
       "options": [
-        "The model judging itself has no external grounding so it can rubber-stamp its own answer",
-        "It is slower to compute",
-        "It always requires a larger model",
-        "It cannot run on tools"
+        "模型评价自己时没有外部依据，因此可能直接认可自己的答案",
+        "计算更慢",
+        "总是需要更大的模型",
+        "无法用于工具"
       ],
       "correct": 0,
-      "explanation": "Self-eval lacks an external check, so a confident hallucination scores well; pair it with tool-grounded verification."
+      "explanation": "自我评估缺少外部检查，因此自信表达的幻觉也可能获得高分；应结合以工具为依据的验证。"
     },
     {
       "stage": "check",
-      "question": "Which case does the lesson list as a place where Reflexion does NOT help?",
+      "question": "本课列出的哪种情况中，Reflexion 没有帮助？",
       "options": [
-        "An external transient failure like the network being down",
-        "HotpotQA multi-hop questions",
-        "Code generation where tests can score",
-        "ALFWorld navigation tasks"
+        "网络中断之类的外部暂时性故障",
+        "HotpotQA 多跳问题",
+        "可以用测试评分的代码生成",
+        "ALFWorld 导航任务"
       ],
       "correct": 0,
-      "explanation": "Reflecting on a transient external outage produces a reflection that does not help future runs."
+      "explanation": "针对暂时性外部故障生成的反思，无法帮助未来运行。"
     },
     {
       "stage": "post",
-      "question": "What is memory rot in the Reflexion pattern?",
+      "question": "Reflexion 模式中的记忆腐化（Memory rot）是什么？",
       "options": [
-        "Losing reflections when the process restarts",
-        "The reflection prompt exceeds the context window",
-        "Reflections get encrypted by the provider",
-        "Episodic buffer fills with obsolete or wrong reflections and slows or biases future trials"
+        "进程重启时反思丢失",
+        "反思提示词超出上下文窗口",
+        "提供商加密了反思",
+        "情景缓冲区充满过时或错误反思，使未来试验变慢或产生偏差"
       ],
       "correct": 3,
-      "explanation": "Accumulated stale or wrong reflections degrade behavior; mitigate with compaction or TTL."
+      "explanation": "积累的过时或错误反思会使行为退化；可以通过压缩或 TTL 缓解。"
     },
     {
       "stage": "post",
-      "question": "Which production pattern is the lesson's clearest match for Reflexion?",
+      "question": "本课中的哪种生产模式最明显地对应 Reflexion？",
       "options": [
-        "Claude Code's CLAUDE.md learnings prepended to future sessions",
-        "Anthropic's prompt caching",
-        "Cursor's apply-edits flow",
-        "OpenAI's batch API"
+        "将 Claude Code 的 CLAUDE.md 经验记录前置到未来会话",
+        "Anthropic 的提示词缓存",
+        "Cursor 的应用编辑流程",
+        "OpenAI 的批处理 API"
       ],
       "correct": 0,
-      "explanation": "CLAUDE.md learnings, pro-workflow's learn-rule, and Letta's sleep-time compute all externalize the episodic reflection buffer."
+      "explanation": "CLAUDE.md 经验记录、pro-workflow 的 learn-rule 和 Letta 的休眠时计算，都将情景反思缓冲区外置。"
     }
   ]
 }

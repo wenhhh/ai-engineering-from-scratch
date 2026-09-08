@@ -38,7 +38,7 @@ class BPETokenizer:
             self.merges[best_pair] = new_token
             self.vocab[new_token] = self.vocab[best_pair[0]] + self.vocab[best_pair[1]]
             merged_str = self.vocab[new_token]
-            print(f"Merge {i + 1}: {best_pair} -> {new_token} = {merged_str}")
+            print(f"合并（Merge）{i + 1}: {best_pair} -> {new_token} = {merged_str}")
 
         return self
 
@@ -68,13 +68,13 @@ def demo_bpe():
     )
 
     print("=" * 60)
-    print("Training BPE tokenizer")
+    print("训练字节对编码分词器（BPE Tokenizer）")
     print("=" * 60)
 
     tokenizer = BPETokenizer()
     tokenizer.train(corpus, num_merges=30)
 
-    print(f"\nVocabulary size: {tokenizer.vocab_size()}")
+    print(f"\n词表大小（Vocabulary size）: {tokenizer.vocab_size()}")
 
     test_sentences = [
         "The cat sat on the mat.",
@@ -84,29 +84,29 @@ def demo_bpe():
     ]
 
     print("\n" + "=" * 60)
-    print("Encoding test sentences")
+    print("编码测试句子（Encoding test sentences）")
     print("=" * 60)
 
     for sentence in test_sentences:
         encoded = tokenizer.encode(sentence)
         decoded = tokenizer.decode(encoded)
         raw_bytes = len(sentence.encode("utf-8"))
-        print(f"\nOriginal:  {sentence}")
-        print(f"Encoded:   {encoded}")
-        print(f"Decoded:   {decoded}")
-        print(f"Tokens:    {len(encoded)} (from {raw_bytes} bytes)")
-        print(f"Ratio:     {len(encoded) / raw_bytes:.2f}")
+        print(f"\n原文（Original）:  {sentence}")
+        print(f"编码结果（Encoded）:   {encoded}")
+        print(f"解码结果（Decoded）:   {decoded}")
+        print(f"词元（Tokens）:    {len(encoded)} （原始字节数: {raw_bytes}）")
+        print(f"比率（Ratio）:     {len(encoded) / raw_bytes:.2f}")
 
 
 def demo_tiktoken():
     try:
         import tiktoken
     except ImportError:
-        print("\ntiktoken not installed. Run: pip install tiktoken")
+        print("\n未安装 tiktoken。请运行: pip install tiktoken")
         return
 
     print("\n" + "=" * 60)
-    print("Comparing with tiktoken (GPT-4 tokenizer)")
+    print("与 tiktoken（GPT-4 分词器）比较")
     print("=" * 60)
 
     enc = tiktoken.get_encoding("cl100k_base")
@@ -123,9 +123,9 @@ def demo_tiktoken():
         tokens = enc.encode(text)
         decoded_pieces = [enc.decode([t]) for t in tokens]
         print(f"\n'{text}'")
-        print(f"  Tokens:  {decoded_pieces}")
-        print(f"  IDs:     {tokens}")
-        print(f"  Count:   {len(tokens)}")
+        print(f"  词元（Tokens）:  {decoded_pieces}")
+        print(f"  标识符（IDs）:     {tokens}")
+        print(f"  数量（Count）:   {len(tokens)}")
 
 
 if __name__ == "__main__":

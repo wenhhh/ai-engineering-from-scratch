@@ -1,147 +1,147 @@
-# Eval-Driven Agent Development
+# 评估驱动的智能体开发（Eval-Driven Agent Development）
 
-> Anthropic's guidance: "start with simple prompts, optimize them with comprehensive evaluation, and add multi-step agentic systems only when needed." Evaluation is not the last step. It's the outer loop that drives every other choice in Phase 14.
+> Anthropic 建议：“从简单提示词开始，通过全面评估优化，只在需要时增加多步骤智能体系统。”评估不是最后一步，而是驱动第 14 阶段所有其他选择的外层循环。
 
 **Type:** Learn + Build
-**Languages:** Python (stdlib)
-**Prerequisites:** All of Phase 14.
-**Time:** ~60 minutes
+**Languages:** Python（标准库）
+**Prerequisites:** 第 14 阶段全部内容。
+**Time:** 约 60 分钟
 
-## Learning Objectives
+## 学习目标（Learning Objectives）
 
-- Name the three evaluation layers — static benchmarks, custom offline, online production — and what each is for.
-- Explain the evaluator-optimizer tight loop.
-- Describe the 2026 best practice: evals live next to code, run in CI, gate PRs.
-- Connect every Phase 14 lesson to the eval case it generates.
+- 列出三个评估层：静态基准、自定义离线、在线生产，以及各自用途。
+- 解释评估器优化器的紧密循环。
+- 描述 2026 年最佳实践：评估与代码放在一起，在 CI 中运行，为 PR 把关。
+- 将第 14 阶段每一课关联到它所生成的评估用例。
 
-## The Problem
+## 问题（The Problem）
 
-Agents pass demos. They fail in production in ways demos cannot predict. Benchmarks answer "is this model broadly capable?" not "is this agent shipping the right patches for my product?" The answer: evaluation at three layers, running continuously, with every guardrail and learned rule mapped to an eval case.
+智能体能通过演示，却会以演示无法预测的方式在生产中失败。基准回答的是“模型总体上有能力吗”，而不是“智能体是否为我的产品交付正确补丁”。答案是在三个层面持续评估，并将每个护栏和学到的规则映射到评估用例。
 
-## The Concept
+## 概念（The Concept）
 
-### Three evaluation layers
+### 三个评估层（Three evaluation layers）
 
-1. **Static benchmarks** — SWE-bench Verified for code (Lesson 19), WebArena/OSWorld for browsing / desktop (Lesson 20), GAIA for generalist (Lesson 19), BFCL V4 for tool use (Lesson 06). Use for cross-model comparison and regression gating. Contamination is real: SWE-bench+ found 32.67% solution leakage. Always report Verified / +-audited scores.
+1. **静态基准（Static benchmarks）**：代码使用 SWE-bench Verified（第 19 课），网页/桌面使用 WebArena/OSWorld（第 20 课），通用能力使用 GAIA（第 19 课），工具使用采用 BFCL V4（第 06 课）。用于跨模型比较和回归门禁。污染确实存在：SWE-bench+ 发现 32.67% 解答泄漏。始终报告 Verified / + 审计分数。
 
-2. **Custom offline evals** — your product's shape:
-   - LLM-as-judge (Langfuse, Phoenix, Opik — Lesson 24).
-   - Execution-based (run the patch, check tests).
-   - Trajectory-based (compare action sequences against gold; OSWorld-Human shows top agents 1.4-2.7x over gold).
+2. **自定义离线评估（Custom offline evals）**：针对产品形态：
+   - LLM 作为裁判（Langfuse、Phoenix、Opik，第 24 课）。
+   - 基于执行：运行补丁，检查测试。
+   - 基于轨迹：将动作序列与黄金轨迹比较；OSWorld-Human 显示顶尖智能体步骤数为黄金轨迹的 1.4–2.7 倍。
 
-3. **Online evals** — production:
-   - Session replays (Langfuse).
-   - Guardrail-triggered alerts (Lesson 16, 21).
-   - Per-step cost / latency tracking (Lesson 23 OTel spans).
+3. **在线评估（Online evals）**：面向生产：
+   - 会话回放（Langfuse）。
+   - 护栏触发告警（第 16、21 课）。
+   - 逐步骤成本与延迟跟踪（第 23 课 OTel 跨度）。
 
-### Evaluator-optimizer (Anthropic)
+### 评估器优化器（Evaluator-optimizer，Anthropic）
 
-The tight loop:
+紧密循环：
 
-1. Proposer generates output.
-2. Evaluator judges.
-3. Refine until evaluator passes.
+1. 提议者生成输出。
+2. 评估器判断。
+3. 改进，直到评估器判定通过。
 
-This is Self-Refine (Lesson 05) generalized. Any agent flow you care about can wrap in evaluator-optimizer for reliability.
+这是自我改进（Self-Refine，第 05 课）的推广。对于任何需要保证可靠性的智能体流程，都可以在外层加入评估器与优化器组成的循环。
 
-### 2026 best practice
+### 2026 年最佳实践（2026 best practice）
 
-- Evals live next to code.
-- Run in CI on every PR.
-- Gate merge on eval scores (e.g. "no regression > 5% vs main").
-- Every guardrail maps to an eval case.
-- Every learned rule (Reflexion, pro-workflow learn-rule) maps to a failure case.
+- 评估与代码放在一起。
+- 每个 PR 都在 CI 中运行。
+- 按评估分数把关合并，例如“相对 main 不得回归 > 5%”。
+- 每个护栏映射到一个评估用例。
+- 每个学到的规则，如 Reflexion、pro-workflow learn-rule，都映射到一个失败用例。
 
-### Tying Phase 14 together
+### 串联第 14 阶段（Tying Phase 14 together）
 
-Every lesson in Phase 14 generates eval cases:
+第 14 阶段每一课都会生成评估用例：
 
-| Lesson | Eval case it generates |
+| 课程 | 生成的评估用例 |
 |--------|------------------------|
-| 01 Agent Loop | Budget-exhausted, infinite-loop guard |
-| 02 ReWOO | Planner replans correctly when a tool fails |
-| 03 Reflexion | Learned reflections apply on retry |
-| 05 Self-Refine/CRITIC | Judge passes refined output |
-| 06 Tool Use | Argument coercion works; unknown tools rejected |
-| 07-10 Memory | Retrieval citations match sources; stale facts invalidate |
-| 12 Workflow Patterns | Each pattern produces correct output |
-| 13 LangGraph | Resume reproduces state exactly |
-| 14 AutoGen Actors | DLQ catches crashed handlers |
-| 16 OpenAI Agents SDK | Guardrail trips on the right inputs |
-| 17 Claude Agent SDK | Subagent results return to orchestrator |
-| 19-20 Benchmarks | SWE-bench Verified score, WebArena success rate, OSWorld efficiency |
-| 21 Computer Use | Per-step safety catches injected DOM |
-| 23 OTel | Spans emit required attributes |
-| 26 Failure Modes | Detectors tag known failures |
-| 27 Prompt Injection | PVE refuses poisoned retrievals |
-| 28 Orchestration | Supervisor routes to the right specialist |
-| 29 Runtime Shapes | DLQ handles N% failure |
+| 01 智能体循环（Agent Loop） | 预算耗尽、无限循环守卫 |
+| 02 ReWOO | 工具失败时规划器正确重规划 |
+| 03 Reflexion | 重试时应用学到的反思 |
+| 05 Self-Refine/CRITIC | 裁判判定改进后的输出通过 |
+| 06 工具使用（Tool Use） | 参数强制转换有效，未知工具被拒绝 |
+| 07-10 记忆（Memory） | 检索引用匹配来源，过期事实失效 |
+| 12 工作流模式（Workflow Patterns） | 每种模式产生正确输出 |
+| 13 LangGraph | 恢复准确重现状态 |
+| 14 AutoGen 参与者（Actors） | 死信队列捕获崩溃处理器 |
+| 16 OpenAI Agents SDK | 护栏针对正确输入触发拦截 |
+| 17 Claude Agent SDK | 子智能体结果返回编排器 |
+| 19-20 基准（Benchmarks） | SWE-bench Verified 分数、WebArena 成功率、OSWorld 效率 |
+| 21 计算机使用（Computer Use） | 逐步骤安全捕获注入 DOM |
+| 23 OTel | 跨度发出必需属性 |
+| 26 失效模式（Failure Modes） | 检测器标注已知失败 |
+| 27 提示词注入（Prompt Injection） | PVE 拒绝被投毒的检索内容 |
+| 28 编排（Orchestration） | 监督者路由到正确专家 |
+| 29 运行时形态（Runtime Shapes） | 死信队列处理 N% 的失败 |
 
-If your eval suite has cases for each, you have covered Phase 14.
+如果评估套件为每项都有用例，你就覆盖了第 14 阶段。
 
-### Where eval-driven development fails
+### 评估驱动开发的失效点（Where eval-driven development fails）
 
-- **No baseline.** Evals without a last-known-good are unreadable. Store baselines.
-- **LLM-judge without grounding.** Judges hallucinate too. CRITIC pattern (Lesson 05) — judge grounds on external tools.
-- **Over-fitting to evals.** Optimizing for the eval diverges from production usefulness. Rotate cases.
-- **Flaky evals.** Non-deterministic cases cause false alarms. Pin seeds, snapshot state.
+- **没有基线（No baseline）。** 没有最后已知正常状态的评估难以解读，应存储基线。
+- **LLM 裁判缺乏事实依据（LLM-judge without grounding）。** 裁判也会幻觉。采用 CRITIC 模式（第 05 课），用外部工具为判断提供依据。
+- **对评估过拟合（Over-fitting to evals）。** 针对评估优化会偏离生产实用性，应轮换用例。
+- **不稳定评估（Flaky evals）。** 非确定性用例产生误报，应固定随机种子、保存状态快照。
 
 ```figure
 ae-eval-three-layers
 ```
 
-## Build It
+## 动手实现（Build It）
 
-`code/main.py` is a stdlib eval harness:
+`code/main.py` 是使用标准库实现的评估执行框架（Harness）：
 
-- Case registry with categories (benchmark, custom, online).
-- A scripted agent under test.
-- Evaluator-optimizer loop: propose, judge, refine until pass or max rounds.
-- CI gate: aggregate pass rate + regression against baseline.
+- 带类别（benchmark、custom、online）的用例注册表。
+- 待测脚本化智能体。
+- 评估器优化器循环：提议、判断、改进，直到通过或达到最大轮数。
+- CI 门禁：汇总通过率，以及相对于基线的回归。
 
-Run it:
+运行：
 
 ```
 python3 code/main.py
 ```
 
-Output: per-case pass/fail, regression flag, CI gate verdict.
+输出：逐用例通过或失败、回归标志、CI 门禁裁决。
 
-## Use It
+## 实际应用（Use It）
 
-- Write eval cases in the same repo as your agent code.
-- Run them on every PR via CI.
-- Fail the build on regression.
-- Track pass rate over time.
-- Tie every production failure to a new case.
+- 将评估用例写在智能体代码的同一仓库中。
+- 每个 PR 都通过 CI 运行。
+- 回归时使构建失败。
+- 持续跟踪通过率。
+- 将每次生产失败关联到一个新用例。
 
-## Ship It
+## 交付成果（Ship It）
 
-`outputs/skill-eval-suite.md` builds a three-layer eval suite for an agent product with CI gates and regression tracking.
+`outputs/skill-eval-suite.md` 为智能体产品构建三层评估套件，包含 CI 门禁与回归跟踪。
 
-## Exercises
+## 练习（Exercises）
 
-1. Take one of your production failures. Write an eval case that reproduces it. Does your agent pass it now?
-2. Build an LLM-judge rubric for your domain with three dimensions (factual, tone, scope). Score 50 sessions.
-3. Wire the eval suite into CI. Fail the build on >=5% regression.
-4. Add a trajectory-efficiency metric: how many steps did the agent take vs a gold trajectory?
-5. Map every Phase 14 lesson to an eval case in your suite. Any missing? That's a gap to close.
+1. 选一次生产失败，编写可复现它的评估用例。智能体现在能通过吗？
+2. 为自身领域构建包含事实、语气、范围三个维度的 LLM 裁判量规，对 50 个会话评分。
+3. 将评估套件接入 CI，回归 >=5% 时使构建失败。
+4. 添加轨迹效率指标：智能体相对黄金轨迹用了多少步？
+5. 将第 14 阶段每课映射到套件中的评估用例。有遗漏吗？那就是需要补齐的缺口。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语 | 常见说法 | 实际含义 |
 |------|----------------|------------------------|
-| Static benchmark | "Off-the-shelf eval" | SWE-bench, GAIA, AgentBench, WebArena, OSWorld |
-| Custom offline eval | "Domain eval" | LLM-as-judge / exec / trajectory on your product shape |
-| Online eval | "Production eval" | Session replay, guardrail alerts, cost/latency tracking |
-| Evaluator-optimizer | "Propose-judge-refine" | Iterate until judge passes |
-| CI gate | "Merge blocker" | Fail the build on eval regression |
-| Baseline | "Last-known-good" | Reference score to detect regression |
-| Trajectory efficiency | "Steps over gold" | Agent step count divided by human expert minimum |
+| 静态基准（Static benchmark） | “现成评估” | SWE-bench、GAIA、AgentBench、WebArena、OSWorld |
+| 自定义离线评估（Custom offline eval） | “领域评估” | 针对产品形态使用 LLM 裁判、执行或轨迹评估 |
+| 在线评估（Online eval） | “生产评估” | 会话回放、护栏告警、成本和延迟跟踪 |
+| 评估器优化器（Evaluator-optimizer） | “提议—判断—改进” | 迭代直到裁判判定通过 |
+| CI 门禁（CI gate） | “合并阻断器” | 评估回归时使构建失败 |
+| 基线（Baseline） | “最后已知正常状态” | 用于检测回归的参考分数 |
+| 轨迹效率（Trajectory efficiency） | “相对黄金轨迹的步骤数” | 智能体步骤数除以人类专家最少步骤数 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [Anthropic, Building Effective Agents](https://www.anthropic.com/research/building-effective-agents) — "start simple, optimize with evals"
-- [OpenAI, SWE-bench Verified](https://openai.com/index/introducing-swe-bench-verified/) — the curated benchmark
-- [Berkeley Function Calling Leaderboard](https://gorilla.cs.berkeley.edu/leaderboard.html) — tool-use benchmark
-- [Langfuse docs](https://langfuse.com/) — evals + session replay in practice
+- [Anthropic《构建有效的智能体》（Building Effective Agents）](https://www.anthropic.com/research/building-effective-agents)：“从简单开始，用评估优化”
+- [OpenAI，SWE-bench Verified](https://openai.com/index/introducing-swe-bench-verified/)：人工筛选基准
+- [Berkeley 函数调用排行榜（Function Calling Leaderboard）](https://gorilla.cs.berkeley.edu/leaderboard.html)：工具使用基准
+- [Langfuse 文档](https://langfuse.com/)：评估与会话回放实践

@@ -71,7 +71,7 @@ def bias_variance_decomposition(
 
 
 def print_decomposition(results):
-    print(f"{'Degree':>6}  {'Bias^2':>10}  {'Variance':>10}  {'Noise':>10}  {'Total':>10}  {'B+V+N':>10}")
+    print(f"{'次数（Degree）':>6}  {'偏差平方（Bias^2）':>10}  {'方差（Variance）':>10}  {'噪声（Noise）':>10}  {'总计（Total）':>10}  {'B+V+N':>10}")
     print("-" * 70)
     for degree, r in sorted(results.items()):
         bvn = r["bias_sq"] + r["variance"] + r["noise"]
@@ -88,9 +88,9 @@ def find_optimal(results):
 
 def demo_basic_decomposition():
     print("=" * 70)
-    print("BIAS-VARIANCE DECOMPOSITION")
-    print("True function: sin(1.5x) + 0.5x")
-    print("Noise std: 0.5, Training samples: 30, Bootstrap rounds: 200")
+    print("偏差-方差分解（Bias-Variance Decomposition）")
+    print("真实函数：sin(1.5x) + 0.5x")
+    print("噪声标准差（Noise Std）：0.5，训练样本：30，自助采样（Bootstrap）轮数：200")
     print("=" * 70)
     print()
 
@@ -99,28 +99,28 @@ def demo_basic_decomposition():
     print_decomposition(results)
 
     best = find_optimal(results)
-    print(f"\nOptimal degree: {best}")
-    print(f"  Bias^2:   {results[best]['bias_sq']:.4f}")
-    print(f"  Variance: {results[best]['variance']:.4f}")
-    print(f"  Total:    {results[best]['total_error']:.4f}")
+    print(f"\n最佳次数（Degree）： {best}")
+    print(f"  偏差平方（Bias^2）：   {results[best]['bias_sq']:.4f}")
+    print(f"  方差（Variance）： {results[best]['variance']:.4f}")
+    print(f"  总计（Total）：    {results[best]['total_error']:.4f}")
 
 
 def demo_complexity_tradeoff():
     print()
     print("=" * 70)
-    print("MODEL COMPLEXITY TRADEOFF")
-    print("Sweeping polynomial degree from 1 to 15")
+    print("模型复杂度权衡（Model Complexity Tradeoff）")
+    print("将多项式次数从 1 扫描至 15")
     print("=" * 70)
     print()
 
     degrees = list(range(1, 16))
     results = bias_variance_decomposition(degrees)
 
-    print(f"{'Degree':>6}  {'Bias^2':>10}  {'Variance':>10}  {'Total':>10}  {'Dominant':>12}")
+    print(f"{'次数（Degree）':>6}  {'偏差平方（Bias^2）':>10}  {'方差（Variance）':>10}  {'总计（Total）':>10}  {'主导项（Dominant）':>12}")
     print("-" * 60)
     for degree in degrees:
         r = results[degree]
-        dominant = "BIAS" if r["bias_sq"] > r["variance"] else "VARIANCE"
+        dominant = "偏差（Bias）" if r["bias_sq"] > r["variance"] else "方差（Variance）"
         print(
             f"{degree:>6d}  {r['bias_sq']:>10.4f}  {r['variance']:>10.4f}  "
             f"{r['total_error']:>10.4f}  {dominant:>12}"
@@ -134,22 +134,22 @@ def demo_complexity_tradeoff():
                 break
 
     if crossover:
-        print(f"\nBias-variance crossover at degree {crossover}")
-        print("Below this: bias dominates (underfitting)")
-        print("Above this: variance dominates (overfitting)")
+        print(f"\n偏差与方差在次数 {crossover} 处交叉")
+        print("低于此次数：偏差占主导，出现欠拟合（Underfitting）")
+        print("高于此次数：方差占主导，出现过拟合（Overfitting）")
 
 
 def demo_regularization_effect():
     print()
     print("=" * 70)
-    print("REGULARIZATION EFFECT (L2 / Ridge)")
-    print("Fixed degree=10, sweeping lambda")
+    print("正则化效果（Regularization Effect，L2 / 岭回归 Ridge）")
+    print("固定 degree=10，扫描 lambda")
     print("=" * 70)
     print()
 
     lambdas = [0.0, 0.001, 0.01, 0.1, 1.0, 10.0, 100.0]
 
-    print(f"{'Lambda':>10}  {'Bias^2':>10}  {'Variance':>10}  {'Total':>10}")
+    print(f"{'Lambda':>10}  {'偏差平方（Bias^2）':>10}  {'方差（Variance）':>10}  {'总计（Total）':>10}")
     print("-" * 50)
 
     for lam in lambdas:
@@ -158,23 +158,23 @@ def demo_regularization_effect():
         print(f"{lam:>10.3f}  {r['bias_sq']:>10.4f}  {r['variance']:>10.4f}  {r['total_error']:>10.4f}")
 
     print()
-    print("As lambda increases:")
-    print("  - Variance decreases (model is more constrained)")
-    print("  - Bias increases (model is forced to be simpler)")
-    print("  - Optimal lambda balances these two effects")
+    print("随着 lambda 增大：")
+    print("  - 方差下降（模型受到更多约束）")
+    print("  - 偏差增加（模型被迫变得更简单）")
+    print("  - 最佳 lambda 平衡这两种效果")
 
 
 def demo_data_size_effect():
     print()
     print("=" * 70)
-    print("TRAINING SET SIZE EFFECT")
-    print("Fixed degree=5, varying n_train")
+    print("训练集规模的影响（Training Set Size Effect）")
+    print("固定 degree=5，改变 n_train")
     print("=" * 70)
     print()
 
     sizes = [10, 20, 50, 100, 200, 500]
 
-    print(f"{'N_train':>8}  {'Bias^2':>10}  {'Variance':>10}  {'Total':>10}")
+    print(f"{'N_train':>8}  {'偏差平方（Bias^2）':>10}  {'方差（Variance）':>10}  {'总计（Total）':>10}")
     print("-" * 50)
 
     for n in sizes:
@@ -183,14 +183,14 @@ def demo_data_size_effect():
         print(f"{n:>8d}  {r['bias_sq']:>10.4f}  {r['variance']:>10.4f}  {r['total_error']:>10.4f}")
 
     print()
-    print("More data reduces variance but does not affect bias.")
-    print("If your problem is high bias, more data will not help.")
+    print("更多数据会减小方差，但不会影响偏差。")
+    print("如果问题在于高偏差，增加数据无济于事。")
 
 
 def demo_diagnosis():
     print()
     print("=" * 70)
-    print("UNDERFITTING vs OVERFITTING DIAGNOSIS")
+    print("欠拟合（Underfitting）与过拟合（Overfitting）诊断")
     print("=" * 70)
     print()
 
@@ -199,9 +199,9 @@ def demo_diagnosis():
     x_test, y_test = generate_data(n_samples=100, seed=99)
 
     cases = [
-        (1, "Linear (degree 1)"),
-        (4, "Polynomial (degree 4)"),
-        (15, "Polynomial (degree 15)"),
+        (1, "线性模型（Linear，次数 1）"),
+        (4, "多项式（Polynomial，次数 4）"),
+        (15, "多项式（Polynomial，次数 15）"),
     ]
 
     for degree, name in cases:
@@ -214,25 +214,25 @@ def demo_diagnosis():
         gap = test_mse - train_mse
 
         if train_mse > 0.5 and test_mse > 0.5 and gap < train_mse * 0.5:
-            diagnosis = "HIGH BIAS (underfitting)"
+            diagnosis = "高偏差（High Bias，欠拟合 Underfitting）"
         elif gap > train_mse * 2:
-            diagnosis = "HIGH VARIANCE (overfitting)"
+            diagnosis = "高方差（High Variance，过拟合 Overfitting）"
         else:
-            diagnosis = "REASONABLE FIT"
+            diagnosis = "拟合合理（Reasonable Fit）"
 
         print(f"{name}:")
-        print(f"  Train MSE: {train_mse:.4f}")
-        print(f"  Test MSE:  {test_mse:.4f}")
-        print(f"  Gap:       {gap:.4f}")
-        print(f"  Diagnosis: {diagnosis}")
+        print(f"  训练均方误差（Train MSE）： {train_mse:.4f}")
+        print(f"  测试均方误差（Test MSE）：  {test_mse:.4f}")
+        print(f"  差距（Gap）：       {gap:.4f}")
+        print(f"  诊断（Diagnosis）： {diagnosis}")
         print()
 
 
 def demo_learning_curves():
     print()
     print("=" * 70)
-    print("LEARNING CURVES")
-    print("Train vs test error as training set size grows")
+    print("学习曲线（Learning Curves）")
+    print("随训练集规模增大，比较训练误差与测试误差")
     print("=" * 70)
     print()
 
@@ -242,9 +242,9 @@ def demo_learning_curves():
 
     sizes = [10, 15, 20, 30, 50, 75, 100, 150, 200, 300]
 
-    for degree, label in [(1, "Degree 1 (high bias)"), (5, "Degree 5 (balanced)"), (12, "Degree 12 (high variance)")]:
+    for degree, label in [(1, "次数 1（高偏差 High Bias）"), (5, "次数 5（偏差与方差均衡）"), (12, "次数 12（高方差 High Variance）")]:
         print(f"  {label}:")
-        print(f"  {'N_train':>8}  {'Train MSE':>10}  {'Test MSE':>10}  {'Gap':>10}")
+        print(f"  {'N_train':>8}  {'训练均方误差（Train MSE）':>10}  {'测试均方误差（Test MSE）':>10}  {'差距（Gap）':>10}")
         print(f"  {'-' * 48}")
 
         for n in sizes:
@@ -271,22 +271,22 @@ def demo_learning_curves():
 
         print()
 
-    print("High bias (degree 1): both curves converge to HIGH error. Gap stays small.")
-    print("High variance (degree 12): train error stays low, test error stays high.")
-    print("More data reduces variance but cannot fix bias.")
+    print("高偏差（次数 1）：两条曲线都收敛到较高的误差，差距始终较小。")
+    print("高方差（次数 12）：训练误差保持较低，测试误差保持较高。")
+    print("增加数据可降低方差，但无法解决偏差问题。")
 
 
 def demo_regularization_sweep():
     print()
     print("=" * 70)
-    print("REGULARIZATION SWEEP (Ridge alpha vs Bias/Variance)")
-    print("Fixed degree=15, sweeping alpha from 0.001 to 100")
+    print("正则化扫描（Regularization Sweep）：岭回归（Ridge）的 alpha 与偏差/方差")
+    print("固定 degree=15，将 alpha 从 0.001 扫描至 100")
     print("=" * 70)
     print()
 
     alphas = [0.001, 0.005, 0.01, 0.05, 0.1, 0.5, 1.0, 5.0, 10.0, 50.0, 100.0]
 
-    print(f"  {'Alpha':>10}  {'Bias^2':>10}  {'Variance':>10}  {'Total':>10}  {'Dominant':>12}")
+    print(f"  {'Alpha':>10}  {'偏差平方（Bias^2）':>10}  {'方差（Variance）':>10}  {'总计（Total）':>10}  {'主导项（Dominant）':>12}")
     print(f"  {'-' * 60}")
 
     best_alpha = None
@@ -295,7 +295,7 @@ def demo_regularization_sweep():
     for alpha in alphas:
         results = bias_variance_decomposition([15], lam=alpha, n_bootstrap=200)
         r = results[15]
-        dominant = "BIAS" if r["bias_sq"] > r["variance"] else "VARIANCE"
+        dominant = "偏差（Bias）" if r["bias_sq"] > r["variance"] else "方差（Variance）"
         print(
             f"  {alpha:>10.3f}  {r['bias_sq']:>10.4f}  {r['variance']:>10.4f}  "
             f"{r['total_error']:>10.4f}  {dominant:>12}"
@@ -305,12 +305,12 @@ def demo_regularization_sweep():
             best_alpha = alpha
 
     print()
-    print(f"Optimal alpha: {best_alpha}")
-    print(f"  Total error at optimal: {best_total:.4f}")
+    print(f"最佳 alpha： {best_alpha}")
+    print(f"  最佳参数下的总误差： {best_total:.4f}")
     print()
-    print("Small alpha: variance dominates (model is unconstrained, fits noise)")
-    print("Large alpha: bias dominates (model is over-constrained, misses signal)")
-    print("Optimal alpha balances both, sitting at the bottom of the U-curve.")
+    print("alpha 较小：方差占主导（模型缺乏约束，拟合了噪声）")
+    print("alpha 较大：偏差占主导（模型受到过多约束，未捕获信号）")
+    print("最佳 alpha 平衡两者，位于 U 形曲线的底部。")
 
 
 if __name__ == "__main__":
@@ -321,4 +321,4 @@ if __name__ == "__main__":
     demo_diagnosis()
     demo_learning_curves()
     demo_regularization_sweep()
-    print("All bias-variance demos complete.")
+    print("所有偏差-方差（Bias-Variance）演示已完成。")

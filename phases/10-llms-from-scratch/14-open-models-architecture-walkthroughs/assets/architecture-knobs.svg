@@ -17,72 +17,72 @@
     </style>
   </defs>
 
-  <text x="480" y="28" text-anchor="middle" class="title">six knobs: GPT-2 → open frontier</text>
+  <text x="480" y="28" text-anchor="middle" class="title">六项设计选择（Knobs）：GPT-2 → 前沿开放模型</text>
 
   <!-- Six rows, two columns: "was" (left) vs "now" (right) -->
   <!-- Row 1: Norm -->
-  <text x="30" y="72" class="head">1 / Norm</text>
+  <text x="30" y="72" class="head" style="font-size:8px">1 / 归一化（Norm）</text>
   <rect x="130" y="55" width="330" height="36" class="old"/>
-  <text x="295" y="78" text-anchor="middle" class="step">LayerNorm — mean + std + scale + bias</text>
+  <text x="295" y="78" text-anchor="middle" class="step" style="font-size:9px">层归一化（LayerNorm）：mean + std + scale + bias</text>
   <line x1="465" y1="73" x2="495" y2="73" stroke="#1a1a1a" stroke-width="1.5" marker-end="url(#arrow)"/>
   <rect x="500" y="55" width="330" height="36" class="cool"/>
-  <text x="665" y="78" text-anchor="middle" class="step">RMSNorm — std + scale</text>
+  <text x="665" y="78" text-anchor="middle" class="step">均方根归一化（RMSNorm）：std + scale</text>
 
   <!-- Row 2: Position -->
-  <text x="30" y="122" class="head">2 / Position</text>
+  <text x="30" y="122" class="head" style="font-size:8px">2 / 位置（Position）</text>
   <rect x="130" y="105" width="330" height="36" class="old"/>
-  <text x="295" y="128" text-anchor="middle" class="step">learned embedding table</text>
+  <text x="295" y="128" text-anchor="middle" class="step">学习式嵌入表（Learned Embedding Table）</text>
   <line x1="465" y1="123" x2="495" y2="123" stroke="#1a1a1a" stroke-width="1.5" marker-end="url(#arrow)"/>
   <rect x="500" y="105" width="330" height="36" class="cool"/>
-  <text x="665" y="128" text-anchor="middle" class="step">RoPE (+ YaRN / NTK for stretch)</text>
+  <text x="665" y="128" text-anchor="middle" class="step">旋转位置嵌入（RoPE），YaRN / NTK 扩展</text>
 
   <!-- Row 3: Activation -->
-  <text x="30" y="172" class="head">3 / Activation</text>
+  <text x="30" y="172" class="head" style="font-size:8px">3 / 激活（Activation）</text>
   <rect x="130" y="155" width="330" height="36" class="old"/>
-  <text x="295" y="178" text-anchor="middle" class="step">GELU — one projection</text>
+  <text x="295" y="178" text-anchor="middle" class="step">GELU：一次投影（Projection）</text>
   <line x1="465" y1="173" x2="495" y2="173" stroke="#1a1a1a" stroke-width="1.5" marker-end="url(#arrow)"/>
   <rect x="500" y="155" width="330" height="36" class="cool"/>
-  <text x="665" y="178" text-anchor="middle" class="step">SwiGLU — gate · swish(gate) · up</text>
+  <text x="665" y="178" text-anchor="middle" class="step" style="font-size:9px">Swish 门控单元（SwiGLU）：gate · swish(gate) · up</text>
 
   <!-- Row 4: Attention -->
-  <text x="30" y="222" class="head">4 / Attention</text>
+  <text x="30" y="222" class="head" style="font-size:8px">4 / 注意力（Attention）</text>
   <rect x="130" y="205" width="330" height="36" class="old"/>
-  <text x="295" y="228" text-anchor="middle" class="step">MHA — one K,V per head</text>
+  <text x="295" y="228" text-anchor="middle" class="step">多头注意力（MHA）：每头一组 K,V</text>
   <line x1="465" y1="223" x2="495" y2="223" stroke="#1a1a1a" stroke-width="1.5" marker-end="url(#arrow)"/>
   <rect x="500" y="205" width="330" height="36" class="cool"/>
-  <text x="665" y="228" text-anchor="middle" class="step">GQA → MQA → MLA (shrink KV cache)</text>
+  <text x="665" y="228" text-anchor="middle" class="step">GQA → MQA → MLA（缩小键值缓存）</text>
 
   <!-- Row 5: MLP density -->
-  <text x="30" y="272" class="head">5 / MLP</text>
+  <text x="30" y="272" class="head" style="font-size:8px">5 / 多层感知机（MLP）</text>
   <rect x="130" y="255" width="330" height="36" class="old"/>
-  <text x="295" y="278" text-anchor="middle" class="step">dense — every param per token</text>
+  <text x="295" y="278" text-anchor="middle" class="step">稠密（Dense）：每词元使用全部参数</text>
   <line x1="465" y1="273" x2="495" y2="273" stroke="#1a1a1a" stroke-width="1.5" marker-end="url(#arrow)"/>
   <rect x="500" y="255" width="330" height="36" class="cool"/>
-  <text x="665" y="278" text-anchor="middle" class="step">MoE — top-k of N experts per token</text>
+  <text x="665" y="278" text-anchor="middle" class="step">混合专家（MoE）：每词元从 N 专家选 top-k</text>
 
   <!-- Row 6: Norm placement -->
-  <text x="30" y="322" class="head">6 / Norm place</text>
+  <text x="30" y="322" class="head" style="font-size:8px">6 / 归一化位置</text>
   <rect x="130" y="305" width="330" height="36" class="old"/>
-  <text x="295" y="328" text-anchor="middle" class="step">post-norm — hard to train deep</text>
+  <text x="295" y="328" text-anchor="middle" class="step">后归一化（Post-norm）：深层训练困难</text>
   <line x1="465" y1="323" x2="495" y2="323" stroke="#1a1a1a" stroke-width="1.5" marker-end="url(#arrow)"/>
   <rect x="500" y="305" width="330" height="36" class="cool"/>
-  <text x="665" y="328" text-anchor="middle" class="step">pre-norm (stays everywhere)</text>
+  <text x="665" y="328" text-anchor="middle" class="step">预归一化（Pre-norm）：普遍保留</text>
 
   <!-- Model comparison strip -->
   <rect x="30" y="360" width="900" height="140" class="box"/>
-  <text x="480" y="383" text-anchor="middle" class="label">the diff for each frontier open model</text>
+  <text x="480" y="383" text-anchor="middle" class="label">各前沿开放模型的差异（Diff）</text>
 
   <text x="50" y="410" class="step">GPT-2 Small</text>
-  <text x="200" y="410" class="small">LayerNorm · GELU · learned · MHA · dense · 1k ctx</text>
+  <text x="200" y="410" class="small">LayerNorm · GELU · 学习式位置 · MHA · 稠密 · 1k 上下文</text>
 
   <text x="50" y="432" class="step">Llama 3 8B</text>
-  <text x="200" y="432" class="small">RMSNorm · SwiGLU · RoPE · GQA 32/8 · dense · 128k</text>
+  <text x="200" y="432" class="small">RMSNorm · SwiGLU · RoPE · GQA 32/8 · 稠密 · 128k</text>
 
   <text x="50" y="454" class="step">Mixtral 8x7B</text>
   <text x="200" y="454" class="small">RMSNorm · SwiGLU · RoPE · GQA · MoE 8/top-2 · 32k</text>
 
   <text x="50" y="476" class="step">DeepSeek V3</text>
-  <text x="200" y="476" class="small">RMSNorm · SwiGLU · RoPE · MLA · MoE 256/top-8 · 128k · 671B/37B active</text>
+  <text x="200" y="476" class="small">RMSNorm · SwiGLU · RoPE · MLA · MoE 256/top-8 · 128k · 671B/37B 活跃</text>
 
-  <text x="480" y="515" text-anchor="middle" class="caption">same skeleton, six tuned knobs — the next frontier model picks a subset of these</text>
+  <text x="480" y="515" text-anchor="middle" class="caption">相同骨架，六项可调设计；下一个前沿模型仍从中选择子集（Subset）</text>
 </svg>

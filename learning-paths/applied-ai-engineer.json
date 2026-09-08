@@ -2,65 +2,65 @@
   "schemaVersion": 1,
   "kind": "career-route",
   "id": "applied-ai-engineer",
-  "title": "LLM Product Engineering",
-  "workFamily": "LLM Product Engineering",
-  "commonTitles": ["Applied AI Engineer", "LLM Engineer", "AI Product Engineer"],
-  "summary": "Turn language-model capability into evaluated, safe, cost-aware product behavior that can survive production traffic.",
-  "keywords": "applied ai engineer llm product prompt structured output rag tools evaluation guardrails production",
-  "decisionPrompt": "Do you want to turn language-model capability into a reliable product feature with measurable user behavior?",
-  "mission": "Build on shared foundations to ship grounded LLM features with explicit contracts, evaluation, safety, cost, and release controls.",
+  "title": "大语言模型产品工程（LLM Product Engineering）",
+  "workFamily": "大语言模型产品工程（LLM Product Engineering）",
+  "commonTitles": ["应用 AI 工程师（Applied AI Engineer）", "大语言模型工程师（LLM Engineer）", "AI 产品工程师（AI Product Engineer）"],
+  "summary": "将语言模型能力转化为经过评估、安全、兼顾成本且能够承受生产流量的产品行为。",
+  "keywords": "应用 AI 工程师 大语言模型 产品 提示词 结构化输出 检索增强生成 工具 评估 防护机制 生产 applied ai engineer llm product prompt structured output rag tools evaluation guardrails production",
+  "decisionPrompt": "你是否希望将语言模型能力转化为可靠的产品功能，并使用户行为可衡量？",
+  "mission": "在共同基础之上，交付具有依据关联（Grounding）的大语言模型（LLM）功能，并明确其契约、评估、安全、成本与发布控制机制。",
   "responsibilities": [
-    "Shape model behavior with prompts, schemas, context, retrieval, and tools.",
-    "Define evaluation sets and guardrails around product requirements.",
-    "Balance quality, latency, cost, and operational risk.",
-    "Ship through production interfaces and controlled rollout stages."
+    "通过提示词（Prompt）、模式（Schema）、上下文（Context）、检索（Retrieval）与工具塑造模型行为。",
+    "围绕产品需求定义评估集（Evaluation set）与防护机制（Guardrails）。",
+    "平衡质量、延迟（Latency）、成本与运维风险。",
+    "通过生产接口与受控的分阶段上线（Rollout）交付功能。"
   ],
   "goodFitIf": [
-    "You want to connect model behavior directly to a user-facing product.",
-    "You enjoy balancing quality, safety, latency, and cost.",
-    "You prefer measured product behavior over isolated model demos."
+    "你希望将模型行为直接接入面向用户的产品。",
+    "你喜欢平衡质量、安全、延迟与成本。",
+    "相比孤立的模型演示，你更重视经过衡量的产品行为。"
   ],
   "baseline": [
-    "Complete the shared software engineering and AI foundations, or demonstrate equivalent working knowledge.",
-    "Be able to call a model API and build a small web or service interface.",
-    "Understand basic evaluation, testing, and production error handling."
+    "完成共同的软件工程和 AI 基础课程，或证明具备同等实践知识。",
+    "能够调用模型 API，并构建小型网页或服务接口。",
+    "理解基本评估、测试与生产错误处理。"
   ],
-  "boundary": "This is a specialist overlay after shared foundations and focuses on LLM product engineering. It does not cover every applied AI modality or replace product discovery and live production ownership.",
-  "timeNote": "The estimate covers lesson time only. Portfolio work and practice take additional time.",
+  "boundary": "这是一条建立在共同基础之上、聚焦大语言模型产品工程的专业方向路径。它不覆盖应用 AI 的所有模态（Modality），也不能替代产品探索（Product discovery）与实际生产运维责任。",
+  "timeNote": "预计时间仅包含课程学习。作品集制作和练习还需额外时间。",
   "portfolioProof": {
-    "title": "Production LLM Feature",
-    "description": "Build a grounded LLM feature with a clear user contract, measurable quality, safety controls, and a staged release plan.",
+    "title": "生产级大语言模型功能（Production LLM Feature）",
+    "description": "构建具有依据关联的大语言模型功能，具备清晰的用户契约、可衡量的质量、安全控制与分阶段发布计划。",
     "evidence": [
-      "A user contract and structured output schema",
-      "A grounded application using retrieval or tools",
-      "An evaluation set and guardrail report",
-      "A quality, latency, and cost scorecard",
-      "A deployment and staged rollout record"
+      "用户契约与结构化输出模式（Structured output schema）",
+      "通过检索或工具实现依据关联的应用",
+      "评估集与防护机制报告",
+      "质量、延迟与成本评分卡（Scorecard）",
+      "部署与分阶段上线记录"
     ]
   },
   "readinessCriteria": [
-    "Can choose prompts, schemas, retrieval, and tools based on a product requirement.",
-    "Can build an evaluation set before tuning behavior.",
-    "Can identify and test safety and failure boundaries.",
-    "Can measure quality, latency, and cost together.",
-    "Can explain deployment, gateway, canary, and rollback choices."
+    "能够根据产品需求选择提示词、模式、检索与工具。",
+    "能够在调优行为之前建立评估集。",
+    "能够识别并测试安全与故障边界。",
+    "能够综合衡量质量、延迟与成本。",
+    "能够解释部署、网关（Gateway）、金丝雀发布（Canary）与回滚（Rollback）的选择。"
   ],
   "coverage": {
-    "strong": ["Prompt and structured output design", "Context, retrieval, and tools", "LLM evaluation and guardrails", "Cost-aware production rollout"],
-    "partial": ["Product discovery", "User experience research", "Full cloud operations"],
-    "outsideCourse": ["Vision and audio product specialization", "Foundation-model training ownership", "Commercial product management"]
+    "strong": ["提示词与结构化输出设计", "上下文、检索与工具", "大语言模型评估与防护机制", "兼顾成本的生产上线"],
+    "partial": ["产品探索（Product discovery）", "用户体验研究（User experience research）", "完整的云运维"],
+    "outsideCourse": ["视觉与音频产品专业能力", "基础模型（Foundation model）训练的主导责任", "商业产品管理"]
   },
-  "completionClaim": "Completing this route shows that you can build and evaluate a production-style LLM feature. It does not guarantee a role or prove ownership of a live commercial product.",
+  "completionClaim": "完成本路径表明你能够构建和评估按生产方式实现的大语言模型功能，但不保证获得相关岗位，也不能证明你曾负责实际运行的商业产品。",
   "sourceBasis": {
     "reviewedAt": "2026-08-29",
-    "method": "Synthesized from current primary job descriptions across AI field, product, platform, data, developer, and evaluation teams."
+    "method": "综合 AI 现场交付、产品、平台、数据、开发者及评估团队当时的一手职位描述整理而成。"
   },
   "estimatedMinutes": 885,
   "stages": [
     {
       "id": "common-core",
-      "title": "Common Core",
-      "outcome": "Shape language-model behavior through prompts, schemas, context, retrieval, and tools.",
+      "title": "共同核心（Common Core）",
+      "outcome": "通过提示词、模式、上下文、检索与工具塑造语言模型行为。",
       "lessonPaths": [
         "phases/11-llm-engineering/01-prompt-engineering",
         "phases/11-llm-engineering/03-structured-outputs",
@@ -69,35 +69,35 @@
         "phases/11-llm-engineering/06-rag",
         "phases/11-llm-engineering/09-function-calling"
       ],
-      "artifact": "A grounded feature prototype with a typed user contract and observable tool or retrieval behavior."
+      "artifact": "一个具有依据关联的功能原型，包含带类型约束的用户契约与可观察的工具或检索行为。"
     },
     {
       "id": "role-practice",
-      "title": "Role Practice",
-      "outcome": "Measure quality and control cost and safety before production exposure.",
+      "title": "岗位实践（Role Practice）",
+      "outcome": "在面向生产流量之前，衡量质量并管控成本与安全。",
       "lessonPaths": [
         "phases/11-llm-engineering/10-evaluation",
         "phases/11-llm-engineering/11-caching-cost",
         "phases/11-llm-engineering/12-guardrails"
       ],
-      "artifact": "An evaluation suite with guardrail tests and a quality, latency, and cost scorecard."
+      "artifact": "一套评估套件，包含防护机制测试以及质量、延迟与成本评分卡。"
     },
     {
       "id": "proof-project",
-      "title": "Proof Project",
-      "outcome": "Package the feature as a production-style application behind operational controls.",
+      "title": "能力证明项目（Proof Project）",
+      "outcome": "将功能封装为按生产方式构建的应用，并置于运维控制机制之下。",
       "lessonPaths": [
         "phases/11-llm-engineering/13-production-app",
         "phases/17-infrastructure-and-production/19-ai-gateways"
       ],
-      "artifact": "A deployed LLM feature with routing, limits, observability hooks, and documented failure behavior."
+      "artifact": "一个已部署的大语言模型功能，具备路由（Routing）、限额、可观测性钩子（Observability hook）与有文档说明的故障行为。"
     },
     {
       "id": "interview-readiness-evidence",
-      "title": "Interview and Readiness Evidence",
-      "outcome": "Show how the feature advances through controlled exposure with rollback evidence.",
+      "title": "面试与能力就绪证据（Interview and Readiness Evidence）",
+      "outcome": "展示功能如何逐步、受控地扩大开放范围，并提供回滚证据。",
       "lessonPaths": ["phases/17-infrastructure-and-production/20-shadow-canary-progressive"],
-      "artifact": "A product case study with eval results, cost tradeoffs, release gates, and a rollback decision."
+      "artifact": "一份产品案例研究，包含评估结果、成本取舍、发布门禁（Release gate）与回滚决策。"
     }
   ],
   "lessons": [

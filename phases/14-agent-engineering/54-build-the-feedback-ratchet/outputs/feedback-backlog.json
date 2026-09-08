@@ -2,28 +2,28 @@
   {
     "priority": 12,
     "destination": "context",
-    "change": "Prevent recurrence of: missing context caused duplicate service lookup",
+    "change": "防止复发：缺少上下文导致重复查找服务",
     "owner": "platform",
     "durable_artifact": "context/retrieval-guidance.md",
-    "verification_evidence": "Record a replay with the required context present",
-    "retirement_check": "Remove or revise after 90 days without recurrence"
+    "verification_evidence": "记录一次具备所需上下文的回放",
+    "retirement_check": "90 天未复发后移除或修订"
   },
   {
     "priority": 12,
     "destination": "evaluation",
-    "change": "Prevent recurrence of: false positive on a stale deployment",
+    "change": "防止复发：对过时部署产生假阳性",
     "owner": "evaluation",
     "durable_artifact": "evaluations/regression-suite.json",
-    "verification_evidence": "Record a passing regression evaluation",
-    "retirement_check": "Remove or revise after 60 days without recurrence"
+    "verification_evidence": "记录一次通过的回归评估",
+    "retirement_check": "60 天未复发后移除或修订"
   },
   {
     "priority": 5,
     "destination": "policy",
-    "change": "Prevent recurrence of: production write was attempted",
+    "change": "防止复发：尝试了生产写入",
     "owner": "security",
     "durable_artifact": "policies/authority-boundaries.json",
-    "verification_evidence": "Record a passing authority-boundary scenario",
-    "retirement_check": "Remove or revise after 180 days without recurrence"
+    "verification_evidence": "记录一次验证通过的权限边界场景",
+    "retirement_check": "180 天未复发后移除或修订"
   }
 ]

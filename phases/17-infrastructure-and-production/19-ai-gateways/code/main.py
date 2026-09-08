@@ -1,7 +1,7 @@
-"""AI gateway routing + fallback simulator — stdlib Python.
+"""AI 网关（Gateway）路由与故障回退（Fallback）模拟器，仅使用 Python 标准库。
 
-Models a gateway fronting OpenAI, Anthropic, and self-hosted. Injects 429/5xx
-errors per provider. Compares fallback strategies.
+模拟统一接入 OpenAI、Anthropic 与自托管服务的网关，为各供应商注入 429/5xx 错误，
+比较故障回退策略。
 """
 
 from __future__ import annotations
@@ -21,7 +21,7 @@ class Provider:
 PROVIDERS = [
     Provider("OpenAI",       180, 0.03, 0),
     Provider("Anthropic",    220, 0.02, 0),
-    Provider("Self-hosted",  100, 0.05, 0),
+    Provider("自托管（Self-hosted）",  100, 0.05, 0),
 ]
 
 GATEWAY_OVERHEAD = {
@@ -34,7 +34,7 @@ GATEWAY_OVERHEAD = {
 
 def call_provider(p: Provider, rng: random.Random) -> tuple[bool, float]:
     if rng.random() < p.error_rate:
-        return False, p.base_latency_ms * 0.3  # half-done before error
+        return False, p.base_latency_ms * 0.3  # 请求处理到一半时出错
     return True, p.base_latency_ms
 
 
@@ -71,24 +71,24 @@ def simulate_fallback(gateway: str, n: int = 1000, seed: int = 7) -> dict:
 
 
 def report(row: dict) -> None:
-    print(f"{row['gateway']:12}  success={row['success_rate']*100:5.1f}%  "
-          f"mean_latency={row['mean_latency']:6.0f}ms  "
-          f"retries={row['retries']:4}  fallbacks={row['fallback_hits']:4}")
+    print(f"{row['gateway']:12}  成功率={row['success_rate']*100:5.1f}%  "
+          f"平均延迟={row['mean_latency']:6.0f}ms  "
+          f"重试次数={row['retries']:4}  回退次数={row['fallback_hits']:4}")
 
 
 def main() -> None:
     print("=" * 80)
-    print("AI GATEWAY FALLBACK — 3-provider chain under error injection")
+    print("AI 网关故障回退：错误注入（Error Injection）下的三供应商调用链")
     print("=" * 80)
-    header = f"{'Gateway':12}  {'Success':>7}         {'mean latency':>12}  retries  fallbacks"
+    header = f"{'网关':12}  {'成功率':>7}         {'平均延迟':>12}  重试次数  回退次数"
     print(header)
     print("-" * len(header))
     for gw in ("LiteLLM", "Portkey", "Kong", "Cloudflare"):
         report(simulate_fallback(gw))
 
-    print("\nNotes: a single-provider target at 3% error rate → 97% success.")
-    print("Two-provider fallback → 99.94% success (complement of 0.03 × 0.02).")
-    print("Three-provider fallback → 99.997% success. Latency rises on fallback.")
+    print("\n说明：单供应商错误率为 3% 时，成功率为 97%。")
+    print("双供应商回退的成功率为 99.94%，即 1 − 0.03 × 0.02。")
+    print("三供应商回退的成功率为 99.997%。触发回退时，延迟会上升。")
 
 
 if __name__ == "__main__":

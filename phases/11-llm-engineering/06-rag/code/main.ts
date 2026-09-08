@@ -1,10 +1,10 @@
-// Phase 11 · Lesson 06 — Minimal RAG (TypeScript port).
-// TF-IDF vector store + cosine similarity + retrieval + prompt assembly,
-// over a toy corpus. End-to-end pipeline runs on Node stdlib only.
-// Swap the embedder for OpenAI text-embedding-3-small (or any 1536-dim
-// model) and the simple_generate stub for a real /v1/messages call —
-// the rest of the pipeline stays.
-// Refs: https://platform.openai.com/docs/guides/embeddings
+// 第 11 阶段 · 第 06 课：最小检索增强生成（RAG，TypeScript 移植版）。
+// 在微型语料库上实现 TF-IDF 向量存储、余弦相似度、检索和提示词组装。
+// 端到端（end-to-end）流水线仅依赖 Node 标准库。
+// 可将嵌入器替换为 OpenAI text-embedding-3-small（或任意 1536 维模型），
+// 将 simple_generate 桩函数替换为真正的 /v1/messages 调用；
+// 流水线其余部分保持不变。
+// 参考文献： https://platform.openai.com/docs/guides/embeddings
 //       https://en.wikipedia.org/wiki/Tf%E2%80%93idf
 //       https://docs.anthropic.com/en/docs/build-with-claude/embeddings
 
@@ -37,8 +37,8 @@ function computeTF(text: string, vocab: string[]): number[] {
   return vocab.map((w) => (counts.get(w) ?? 0) / total);
 }
 
-// Smoothed IDF (the `+1`s avoid divide-by-zero and a zero IDF for terms in
-// every document). Matches scikit-learn's default formula.
+// 平滑逆文档频率（Smoothed IDF）：`+1` 避免除零，以及出现在所有文档中的
+// 词项得到零 IDF。此处与 scikit-learn 默认公式一致。
 function computeIDF(documents: string[], vocab: string[]): number[] {
   const n = documents.length;
   const docTokens = documents.map((d) => new Set(d.toLowerCase().split(/\s+/)));
@@ -92,9 +92,9 @@ function buildRagPrompt(query: string, chunks: string[]): string {
   ].join("\n");
 }
 
-// Stand-in for the generation step. Picks the chunk-sentence with most
-// non-stopword overlap with the question. In production this is one
-// /v1/messages call with `prompt` as the user message.
+// 生成步骤的替代实现：选出与问题具有最多非停用词（non-stopword）重叠的
+// 分块句子。生产环境中，此处将 `prompt` 作为用户消息，
+// 执行一次 /v1/messages 调用。
 const STOPWORDS = new Set([
   "the", "a", "an", "is", "are", "was", "were", "what", "how",
   "why", "when", "where", "do", "does", "for", "of", "in", "to",
@@ -191,15 +191,15 @@ function bar(): string {
 }
 
 function main(): void {
-  process.stdout.write(`${bar()}\nSTEP 1: chunking\n${bar()}\n`);
+  process.stdout.write(`${bar()}\n步骤 1：分块（chunking）\n${bar()}\n`);
   const sample = SAMPLE_DOCUMENTS[0]!;
   const chunks = chunkText(sample, 30, 10);
-  process.stdout.write(`  document: ${sample.split(/\s+/).length} words → ${chunks.length} chunks\n`);
+  process.stdout.write(`  文档： ${sample.split(/\s+/).length} 个单词 → ${chunks.length} 个分块\n`);
   chunks.forEach((c, i) => {
-    process.stdout.write(`    chunk ${i} (${c.split(/\s+/).length} words): ${c.slice(0, 80)}...\n`);
+    process.stdout.write(`    分块 ${i} (${c.split(/\s+/).length} 个单词): ${c.slice(0, 80)}...\n`);
   });
 
-  process.stdout.write(`\n${bar()}\nSTEP 2: TF-IDF on a toy corpus\n${bar()}\n`);
+  process.stdout.write(`\n${bar()}\n步骤 2：微型语料库上的 TF-IDF\n${bar()}\n`);
   const miniDocs = [
     "The cat sat on the mat",
     "The dog sat on the rug",
@@ -207,23 +207,23 @@ function main(): void {
   ];
   const vocab = buildVocabulary(miniDocs);
   const idf = computeIDF(miniDocs, vocab);
-  process.stdout.write(`  vocab size: ${vocab.length}\n`);
+  process.stdout.write(`  词表大小： ${vocab.length}\n`);
   const ranked = vocab.map((w, i) => ({ w, s: idf[i] ?? 0 })).sort((a, b) => b.s - a.s).slice(0, 6);
   for (const { w, s } of ranked) process.stdout.write(`    ${w.padEnd(18)} IDF=${s.toFixed(3)}\n`);
 
   const e1 = tfidfEmbed(miniDocs[0]!, vocab, idf);
   const e2 = tfidfEmbed(miniDocs[1]!, vocab, idf);
   const e3 = tfidfEmbed(miniDocs[2]!, vocab, idf);
-  process.stdout.write(`\n${bar()}\nSTEP 3: cosine similarity\n${bar()}\n`);
-  process.stdout.write(`  cat-mat vs dog-rug:       ${cosineSimilarity(e1, e2).toFixed(4)}\n`);
-  process.stdout.write(`  cat-mat vs ml/ai:         ${cosineSimilarity(e1, e3).toFixed(4)}\n`);
-  process.stdout.write(`  dog-rug vs ml/ai:         ${cosineSimilarity(e2, e3).toFixed(4)}\n`);
+  process.stdout.write(`\n${bar()}\n步骤 3：余弦相似度（cosine similarity）\n${bar()}\n`);
+  process.stdout.write(`  cat-mat 对比 dog-rug:       ${cosineSimilarity(e1, e2).toFixed(4)}\n`);
+  process.stdout.write(`  cat-mat 对比 ml/ai:         ${cosineSimilarity(e1, e3).toFixed(4)}\n`);
+  process.stdout.write(`  dog-rug 对比 ml/ai:         ${cosineSimilarity(e2, e3).toFixed(4)}\n`);
 
-  process.stdout.write(`\n${bar()}\nSTEP 4: full RAG pipeline\n${bar()}\n`);
+  process.stdout.write(`\n${bar()}\n步骤 4：完整 RAG 流水线（pipeline）\n${bar()}\n`);
   const rag = new RAGPipeline(50, 10, 3);
   const sourceNames = ["refund-policy.md", "product-overview.md", "security.md", "api-docs.md", "uptime-sla.md"];
   const numChunks = rag.index(SAMPLE_DOCUMENTS, sourceNames);
-  process.stdout.write(`  indexed ${SAMPLE_DOCUMENTS.length} docs → ${numChunks} chunks, vocab=${rag.vocab.length}\n`);
+  process.stdout.write(`  已索引 ${SAMPLE_DOCUMENTS.length} 篇文档 → ${numChunks} 个分块, 词表大小=${rag.vocab.length}\n`);
 
   const queries = [
     "What is the refund policy for enterprise customers?",
@@ -233,16 +233,16 @@ function main(): void {
   ];
   for (const q of queries) {
     const result = rag.query(q, 3);
-    process.stdout.write(`\n  query:  ${q}\n  answer: ${result.answer}\n`);
+    process.stdout.write(`\n  查询：${q}\n  回答：${result.answer}\n`);
     for (const r of result.retrieved) {
       const preview = r.chunk.slice(0, 80).replace(/\n/g, " ");
       process.stdout.write(`    [${r.source}] score=${r.score.toFixed(4)} | ${preview}...\n`);
     }
   }
 
-  process.stdout.write(`\n${bar()}\nSUMMARY\n${bar()}\n`);
-  process.stdout.write("  RAG: query → embed → search → augment → generate\n");
-  process.stdout.write("  Swap TF-IDF for text-embedding-3-small and simpleGenerate for a real LLM call.\n");
+  process.stdout.write(`\n${bar()}\n总结（SUMMARY）\n${bar()}\n`);
+  process.stdout.write("  RAG：查询（query）→ 嵌入（embed）→ 检索（search）→ 增强（augment）→ 生成（generate）\n");
+  process.stdout.write("  将 TF-IDF 替换为 text-embedding-3-small，并将 simpleGenerate 替换为实际 LLM 调用。\n");
 }
 
 main();

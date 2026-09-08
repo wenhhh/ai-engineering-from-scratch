@@ -1,7 +1,7 @@
-# Toy reverse-mode autodiff in Julia. Builds a computation graph from
-# operator overloads on a mutable Value type, runs a topological sort,
-# then walks backward applying local chain-rule closures.
-# Stdlib only. Sources:
+# Julia 教学版反向模式自动微分（Reverse-mode autodiff）。通过
+# 可变 Value 类型上的运算符重载（Operator overloads）构建计算图（Computation graph），执行拓扑排序（Topological sort），
+# 再反向遍历，应用实现局部链式法则（Chain rule）的闭包（Closures）。
+# 仅使用标准库（Standard library）。参考资料：
 #   https://docs.julialang.org/en/v1/manual/methods/
 #   https://docs.julialang.org/en/v1/manual/constructors/
 #   https://docs.julialang.org/en/v1/base/base/#Base.@kwdef
@@ -137,15 +137,15 @@ end
 
 
 function demo_basic()
-    println("=== Basic: y = relu(x1 * x2 + 1) ===")
+    println("=== 基础示例（Basic）：y = relu(x1 * x2 + 1) ===")
     x1 = Value(2.0)
     x2 = Value(3.0)
     y = relu(x1 * x2 + 1.0)
     backward!(y)
     println("  x1 = 2.0, x2 = 3.0")
     @printf("  y = %.4f\n", y.data)
-    @printf("  dy/dx1 = %.4f  (expected 3.0)\n", x1.grad)
-    @printf("  dy/dx2 = %.4f  (expected 2.0)\n", x2.grad)
+    @printf("  dy/dx1 = %.4f  (预期 3.0)\n", x1.grad)
+    @printf("  dy/dx2 = %.4f  (预期 2.0)\n", x2.grad)
     @assert abs(x1.grad - 3.0) < 1e-6
     @assert abs(x2.grad - 2.0) < 1e-6
     println("  PASSED\n")
@@ -153,30 +153,30 @@ end
 
 
 function demo_power()
-    println("=== Power: y = x^3, dy/dx at x=2 ===")
+    println("=== 幂运算（Power）：y = x^3，x=2 处的 dy/dx ===")
     x = Value(2.0)
     y = x ^ 3
     backward!(y)
     @printf("  x = 2.0\n")
-    @printf("  y = %.4f  (expected 8.0)\n", y.data)
-    @printf("  dy/dx = %.4f  (expected 12.0 = 3*x^2)\n", x.grad)
+    @printf("  y = %.4f  (预期 8.0)\n", y.data)
+    @printf("  dy/dx = %.4f  (预期 12.0 = 3*x^2)\n", x.grad)
     @assert abs(x.grad - 12.0) < 1e-6
     println("  PASSED\n")
 end
 
 
 function demo_complex()
-    println("=== Complex: f = relu(a*b + c) ===")
+    println("=== 复合运算（Complex）：f = relu(a*b + c) ===")
     a = Value(2.0)
     b = Value(-3.0)
     c = Value(10.0)
     f = relu(a * b + c)
     backward!(f)
     @printf("  a=2, b=-3, c=10\n")
-    @printf("  f = %.4f  (expected 4.0)\n", f.data)
-    @printf("  df/da = %.4f  (expected -3.0)\n", a.grad)
-    @printf("  df/db = %.4f  (expected 2.0)\n",  b.grad)
-    @printf("  df/dc = %.4f  (expected 1.0)\n",  c.grad)
+    @printf("  f = %.4f  (预期 4.0)\n", f.data)
+    @printf("  df/da = %.4f  (预期 -3.0)\n", a.grad)
+    @printf("  df/db = %.4f  (预期 2.0)\n",  b.grad)
+    @printf("  df/dc = %.4f  (预期 1.0)\n",  c.grad)
     @assert abs(a.grad + 3.0) < 1e-6
     @assert abs(b.grad - 2.0) < 1e-6
     @assert abs(c.grad - 1.0) < 1e-6
@@ -185,7 +185,7 @@ end
 
 
 function demo_neuron()
-    println("=== Single neuron: y = relu(w1*x1 + w2*x2 + b) ===")
+    println("=== 单个神经元（Single neuron）：y = relu(w1*x1 + w2*x2 + b) ===")
     w1 = Value(0.5)
     w2 = Value(-1.5)
     x1 = Value(3.0)
@@ -202,29 +202,29 @@ function demo_neuron()
     if pre > 0
         @assert abs(w1.grad - x1.data) < 1e-6
         @assert abs(b.grad - 1.0) < 1e-6
-        println("  PASSED (relu active)\n")
+        println("  通过（relu 已激活）\n")
     else
         @assert abs(w1.grad) < 1e-6
-        println("  PASSED (relu inactive)\n")
+        println("  通过（relu 未激活）\n")
     end
 end
 
 
 function demo_exp_log()
-    println("=== Exp and Log operations ===")
+    println("=== 指数（Exp）与对数（Log）运算 ===")
     x = Value(2.0)
     y = _exp(x)
     backward!(y)
-    @printf("  exp(2.0) = %.4f  (expected %.4f)\n", y.data, exp(2.0))
-    @printf("  d/dx exp(x) at x=2 = %.4f  (expected %.4f)\n", x.grad, exp(2.0))
+    @printf("  exp(2.0) = %.4f  (预期 %.4f)\n", y.data, exp(2.0))
+    @printf("  d/dx exp(x) 在 x=2 处 = %.4f  (预期 %.4f)\n", x.grad, exp(2.0))
     @assert abs(x.grad - exp(2.0)) < 1e-4
     println("  PASSED\n")
 
     x = Value(3.0)
     y = _log(x)
     backward!(y)
-    @printf("  log(3.0) = %.4f  (expected %.4f)\n", y.data, log(3.0))
-    @printf("  d/dx log(x) at x=3 = %.4f  (expected %.4f)\n", x.grad, 1 / 3)
+    @printf("  log(3.0) = %.4f  (预期 %.4f)\n", y.data, log(3.0))
+    @printf("  d/dx log(x) 在 x=3 处 = %.4f  (预期 %.4f)\n", x.grad, 1 / 3)
     @assert abs(x.grad - 1 / 3) < 1e-4
     println("  PASSED\n")
 end
@@ -245,7 +245,7 @@ end
 
 
 function demo_gradient_check()
-    println("=== Gradient Checking ===")
+    println("=== 梯度检查（Gradient Checking）===")
     cases = [
         ("x^3 + 2x + 1", x -> x ^ 3 + x * 2 + 1.0),
         ("tanh(x^2)", x -> _tanh(x ^ 2)),
@@ -253,7 +253,7 @@ function demo_gradient_check()
         ("exp(x) * x", x -> _exp(x) * x),
         ("log(x^2 + 1)", x -> _log(x ^ 2 + 1.0)),
     ]
-    @printf("  %-22s %12s %12s %12s\n", "Expression", "Autodiff", "Numerical", "Diff")
+    @printf("  %-22s %12s %12s %12s\n", "表达式", "自动微分", "数值解", "差值")
     println("  " * "-" ^ 60)
     all_passed = true
     for (name, expr) in cases
@@ -264,11 +264,11 @@ function demo_gradient_check()
         end
         @printf("  %-22s %12.8f %12.8f %12.2e  %s\n", name, ad, num, diff, status)
     end
-    println(all_passed ? "  ALL CHECKS PASSED\n" : "  SOME CHECKS FAILED\n")
+    println(all_passed ? "  所有检查通过\n" : "  部分检查失败\n")
 end
 
 
-# Tiny MLP using our autodiff.
+# 使用本课自动微分实现的小型多层感知机（MLP）。
 struct Neuron
     w::Vector{Value}
     b::Value
@@ -323,7 +323,7 @@ parameters(m::MLP) = vcat([parameters(l) for l in m.layers]...)
 
 
 function demo_mlp_training()
-    println("=== Mini MLP Training on XOR ===")
+    println("=== 用异或（XOR）训练小型多层感知机（MLP）===")
     Random.seed!(42)
     model = MLP(Int[2, 4, 1])
 
@@ -354,7 +354,7 @@ function demo_mlp_training()
         end
     end
 
-    println("\n  Predictions after training:")
+    println("\n  训练后的预测（Predictions）：")
     for (x, y) in zip(xs, ys)
         pred = model(x)
         sign = pred.data > 0 ? "+" : "-"
@@ -373,7 +373,7 @@ function main()
     demo_exp_log()
     demo_gradient_check()
     demo_mlp_training()
-    println("All demos passed.")
+    println("所有演示通过。")
 end
 
 

@@ -1,38 +1,38 @@
 ---
 name: marl-picker
-description: Choose a MARL algorithm (MADDPG, QMIX, MAPPO, IQL, or extensions) for a given multi-agent task. Consider cooperative vs competitive, action-space type, heterogeneity, reward structure, and scale.
+description: 为给定多智能体任务选择 MARL 算法（MADDPG、QMIX、MAPPO、IQL 或扩展）。考虑合作或竞争、动作空间类型、异构性、奖励结构与规模。
 version: 1.0.0
 phase: 16
 lesson: 20
 tags: [multi-agent, MARL, MADDPG, QMIX, MAPPO, CTDE]
 ---
 
-Given a multi-agent task description, pick the MARL algorithm.
+根据多智能体任务描述，选择 MARL 算法。
 
-Produce:
+产出：
 
-1. **Task taxonomy.** Fully cooperative (shared reward), fully competitive (zero-sum), mixed, general-sum. Number of agents. Homogeneous vs heterogeneous.
-2. **Observability.** Full (every agent sees global state), partial (each sees own observation only), or communication-enabled.
-3. **Action space.** Discrete (Atari-like, SMAC) or continuous (particle world, MuJoCo). Affects algorithm choice.
-4. **Reward structure.** Dense (per-step shaped) vs sparse (terminal only). Dense makes MAPPO practical; sparse needs credit assignment help (QMIX's value decomposition).
-5. **Algorithm recommendation.** Start with MAPPO as baseline per Yu et al. 2022. Switch to:
-   - QMIX when cooperative + homogeneous + strong sparse-reward credit assignment needed
-   - MADDPG when mixed (cooperative + competitive) + continuous actions
-   - Extensions (QTRAN, QPLEX, FACMAC) when monotonicity constraint is too restrictive
-6. **Training infrastructure.** Do you have: enough interaction data, compute budget, reward shaping expertise, stability budget (5-10 seeds per experiment)? If not, recommend prompt-level policies for LLM agents.
-7. **Deployment contract.** CTDE: at deploy time each agent only sees local observation. Write the contract explicitly so runtime code respects it.
+1. **任务分类（Task taxonomy）。**完全合作（共享奖励）、完全竞争（零和）、混合、一般和。智能体数量。同构还是异构。
+2. **可观测性（Observability）。**完全（每个智能体看到全局状态）、部分（各自仅看到自身观察），或允许通信。
+3. **动作空间（Action space）。**离散（类似 Atari、SMAC）还是连续（particle world、MuJoCo）。这会影响算法选择。
+4. **奖励结构（Reward structure）。**密集（逐步塑形）还是稀疏（仅终局）。密集奖励使 MAPPO 实用；稀疏奖励需要信用分配辅助（QMIX 的价值分解）。
+5. **算法建议（Algorithm recommendation）。**按 Yu 等 2022 年的结论，以 MAPPO 作为基线。以下情况改用：
+   - QMIX：合作 + 同构 + 需要较强的稀疏奖励信用分配
+   - MADDPG：混合（合作 + 竞争）+ 连续动作
+   - 扩展（QTRAN、QPLEX、FACMAC）：单调性约束过强
+6. **训练基础设施（Training infrastructure）。**是否具备足够交互数据、计算预算、奖励塑形经验、稳定性预算（每次实验 5–10 个随机种子）？否则，对 LLM 智能体建议采用提示层面的策略。
+7. **部署契约（Deployment contract）。**CTDE：部署时，每个智能体只看到局部观察。显式写明契约，让运行时代码遵守它。
 
-Hard rejects:
+直接否决：
 
-- Picking a non-MAPPO baseline for a first run. MAPPO is the 2026 baseline; start there.
-- Using QMIX for mixed cooperative-competitive tasks. Value decomposition assumes monotone aggregation.
-- Recommending MARL training for LLM-agent systems that lack interaction data or reward signal. Prompt-level policies will outperform until the data is there.
-- Training without logging per-agent observations and actions. Debugging is impossible.
+- 首次运行选择非 MAPPO 基线。MAPPO 是 2026 年的基线，应从它开始。
+- 在混合合作竞争任务中使用 QMIX。价值分解假设单调聚合。
+- 对缺乏交互数据或奖励信号的 LLM 智能体系统建议 MARL 训练。在数据齐备前，提示层面的策略表现会更好。
+- 训练时不记录逐智能体观察和动作。这将无法调试。
 
-Refusal rules:
+拒绝规则：
 
-- If the task has fewer than ~1000 episodes of interaction data, recommend prompt-level policies or supervised fine-tuning.
-- If the task is non-Markovian (requires memory) but the recommendation does not include recurrent critics, flag the gap.
-- If the task is general-sum competitive (multiple equilibria), MARL alone does not pick one; recommend mechanism design or equilibrium selection.
+- 如果任务交互数据少于约 1000 个回合，建议采用提示层面的策略或监督微调。
+- 如果任务非马尔可夫（需要记忆），但建议未包含循环评论家，应标记这一缺口。
+- 如果任务为一般和竞争（多个均衡），MARL 本身不会替你选定一个均衡；建议采用机制设计或均衡选择。
 
-Output: a one-page brief. Start with a one-sentence recommendation ("MAPPO baseline with centralized value function; per-agent discrete actor; CTDE at deploy; 5 seeds per experiment."), then the seven sections above. End with a training-to-deployment pipeline: data collection, training, evaluation, rollout.
+输出：一页简报。以一句话给出建议（“采用具有集中式价值函数的 MAPPO 基线；每个智能体具有离散行动者；部署遵循 CTDE；每次实验使用 5 个随机种子。”），随后给出上述七节。最后提供训练到部署的流水线：数据收集、训练、评估、推出。

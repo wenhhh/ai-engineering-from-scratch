@@ -1,37 +1,37 @@
 [
   {
-    "question": "What is the limitation of basic top-k semantic search in RAG?",
-    "options": ["It requires GPU", "It retrieves chunks that are semantically similar to the query but may not contain the actual answer, especially for ambiguous or multi-hop questions", "It's too slow", "It can't handle large documents"],
+    "question": "RAG 中基础 top-k 语义搜索的局限是什么？",
+    "options": ["需要 GPU", "检索到与查询语义相近但可能不含实际答案的块，尤其在模糊或多跳问题中", "太慢", "无法处理大文档"],
     "correct": 1,
-    "explanation": "Basic semantic search matches surface-level meaning. 'What was revenue last quarter?' retrieves chunks about 'revenue strategy' (semantically similar) instead of the chunk saying '$47.2M in Q3 2025' (which uses 'earnings').",
+    "explanation": "基础语义搜索匹配表层含义。‘上季度营收是多少？’检索到‘营收策略’（语义相近），而不是写着‘2025 年 Q3 为 $47.2M’、使用‘收益（earnings）’一词的块。",
     "stage": "pre"
   },
   {
-    "question": "What is hybrid search in the context of RAG?",
-    "options": ["Combining BM25 keyword matching with semantic vector search to capture both exact terms and meaning-based relevance", "Using both CPU and GPU for search", "Searching across multiple databases", "Using two different LLMs"],
+    "question": "RAG 中的混合搜索（Hybrid search）是什么？",
+    "options": ["结合 BM25 关键词匹配与语义向量搜索，同时捕捉精确词项和基于含义的相关性", "同时使用 CPU 和 GPU 搜索", "跨多个数据库搜索", "使用两个不同 LLM"],
     "correct": 0,
-    "explanation": "BM25 catches exact keyword matches (e.g., '$47.2M' or 'Q3'). Semantic search catches meaning matches. Combining them with a reranker gives the best of both worlds: precision on specific terms plus recall on semantic variants.",
+    "explanation": "BM25 捕捉精确关键词匹配（如‘$47.2M’或‘Q3’），语义搜索捕捉含义匹配。结合两者与重排序器，可兼得具体词项的精确率和语义变体的召回率。",
     "stage": "pre"
   },
   {
-    "question": "What does a cross-encoder reranker do in an advanced RAG pipeline?",
-    "options": ["It encodes documents into vectors", "It generates the final answer", "It splits documents into chunks", "It takes (query, document) pairs and scores their relevance with higher accuracy than embedding similarity, reordering the initial retrieval results"],
+    "question": "交叉编码器（Cross-encoder）重排序器在高级 RAG 流水线中做什么？",
+    "options": ["将文档编码为向量", "生成最终答案", "将文档分块", "接收（查询、文档）对，以比嵌入相似度更高的准确性为相关性评分，重新排列初始检索结果"],
     "correct": 3,
-    "explanation": "Bi-encoder similarity (used for initial retrieval) is fast but approximate. A cross-encoder processes the full query-document pair together with cross-attention, giving much more accurate relevance scores for reranking the top candidates.",
+    "explanation": "双编码器相似度（用于初始检索）快但近似。交叉编码器通过交叉注意力联合处理完整查询—文档对，给出更准确的相关性分数，用于重排靠前候选。",
     "stage": "post"
   },
   {
-    "question": "What is the HyDE (Hypothetical Document Embedding) query transformation technique?",
-    "options": ["Encrypting the query for privacy", "Using the LLM to generate a hypothetical answer, then embedding that answer as the search query instead of the original question", "Expanding abbreviations in the query", "Hiding the query from the model"],
+    "question": "假设文档嵌入（Hypothetical Document Embedding，HyDE）查询变换技术是什么？",
+    "options": ["为隐私加密查询", "用 LLM 生成假设答案，再嵌入该答案作为搜索查询，替代原问题", "展开查询中的缩写", "对模型隐藏查询"],
     "correct": 1,
-    "explanation": "The original query 'What was Q3 revenue?' might not embed close to the answer chunk. HyDE asks the LLM to generate a hypothetical answer ('Q3 revenue was approximately...'), then uses that as the search query, which embeds closer to actual answer-containing chunks.",
+    "explanation": "原查询‘Q3 营收是多少？’的嵌入可能不接近答案块。HyDE 要求 LLM 生成假设答案（‘Q3 营收约为……’），将其用作搜索查询，其嵌入更接近实际包含答案的块。",
     "stage": "post"
   },
   {
-    "question": "Why does parent-child chunking improve RAG over flat chunking?",
-    "options": ["It's faster to index", "Small child chunks are used for precise retrieval, but the larger parent chunk is returned for context, preventing the 'lost context' problem", "It reduces the number of chunks", "It eliminates the need for embeddings"],
+    "question": "为什么父子分块（Parent-child chunking）比扁平分块更能改善 RAG？",
+    "options": ["建索引更快", "用小子块精确检索，却返回较大父块作上下文，防止‘上下文丢失’", "减少块数量", "不再需要嵌入"],
     "correct": 1,
-    "explanation": "Small chunks (200 tokens) embed precisely but lack context. Large chunks (2000 tokens) have context but embed imprecisely. Parent-child uses small chunks for search accuracy but returns the parent chunk for generation context.",
+    "explanation": "小块（200 词元）嵌入精确但缺上下文，大块（2000 词元）有上下文但嵌入不精确。父子策略用小块保证搜索准确率，返回父块提供生成上下文。",
     "stage": "post"
   }
 ]

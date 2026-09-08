@@ -1,32 +1,32 @@
 [
   {
     "target": "automation",
-    "rule": "Prevent implicit environment assumptions",
-    "verification": "Run the setup or tool preflight",
+    "rule": "避免依赖未经明确说明的环境假设",
+    "verification": "运行环境准备或工具预检",
     "fingerprint": "4583ddf9efe6",
-    "symptom": "Setup command failed",
-    "cause": "environment assumptions were implicit",
+    "symptom": "环境准备命令失败",
+    "cause": "环境假设未明确说明",
     "recurrence": 3,
-    "consequence": "lost session"
+    "consequence": "浪费了一次会话"
   },
   {
     "target": "scope",
-    "rule": "Prevent unchecked scope description",
-    "verification": "Run the scope checker",
+    "rule": "避免只描述任务范围而不实际检查",
+    "verification": "运行范围检查器",
     "fingerprint": "84a04b190176",
-    "symptom": "Agent edited an unrelated file",
-    "cause": "scope was described but not checked",
+    "symptom": "智能体编辑了无关文件",
+    "cause": "范围有描述却没有检查",
     "recurrence": 2,
-    "consequence": "review churn"
+    "consequence": "审查反复返工"
   },
   {
     "target": "test",
-    "rule": "Prevent missing executable example for edge case",
-    "verification": "Run the new regression test",
+    "rule": "防止边界情况缺少可执行示例",
+    "verification": "运行新回归测试",
     "fingerprint": "a615a06d2823",
-    "symptom": "A regression escaped",
-    "cause": "edge case had no executable example",
+    "symptom": "回归问题漏检",
+    "cause": "边界情况没有可执行示例",
     "recurrence": 1,
-    "consequence": "user-visible failure"
+    "consequence": "用户可见失败"
   }
 ]

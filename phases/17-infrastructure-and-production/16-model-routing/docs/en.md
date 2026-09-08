@@ -1,116 +1,116 @@
-# Model Routing as a Cost-Reduction Primitive
+# 将模型路由用作降本基础能力（Model Routing as a Cost-Reduction Primitive）
 
-> A dynamic broker evaluates every request (task type, token length, embedding similarity, confidence) and sends simple queries to a cheap model, escalating complex ones to a frontier model. Also called model cascading. Production case studies show 20-60% cost reduction at iso-quality across US/UK/EU deployments; a 30% routing efficiency improvement on high-volume SaaS turns into six-figure annual savings. The 2026 context is that LLM inference prices dropped ~10x per year — a GPT-4-class token went from $20/M to ~$0.40/M from late 2022 to 2026. Most of the drop is better serving stacks (Phase 17 · 04-09), not hardware. Routing is how you convert that price drop into margin without product regression. The failure mode is cheap-model drift: the route pushes 40% to a weaker model, quality drops 3-5% on reasoning tasks, no one notices for a quarter. Gate routes by online quality metrics, not just offline eval sets.
+> 动态代理会评估每个请求的任务类型、词元长度、嵌入相似度和置信度，将简单查询发送给低成本模型，将复杂查询升级到前沿模型。这也称为模型级联（model cascading）。美国、英国和欧盟的生产部署案例表明，在质量相同的情况下可以降低 20–60% 的成本；对于高流量 SaaS，路由效率提升 30% 就能带来每年六位数的节省。2026 年的背景是，LLM 推理价格每年约降至原来的 1/10：从 2022 年末到 2026 年，GPT-4 级别的词元价格从 $20/M 降至约 $0.40/M。降幅主要来自更高效的服务栈（阶段 17 · 04–09），而非硬件。路由可以将价格下降转化为利润率提升，同时避免产品退步。典型失效模式是低成本模型漂移（cheap-model drift）：路由将 40% 的请求交给较弱的模型，推理任务质量下降 3–5%，却整整一个季度都无人察觉。应使用在线质量指标约束路由，不能只依赖离线评测集。
 
 **Type:** Learn
-**Languages:** Python (stdlib, toy cascading router simulator)
-**Prerequisites:** Phase 17 · 01 (Managed LLM Platforms), Phase 17 · 19 (AI Gateways)
-**Time:** ~60 minutes
+**Languages:** Python（标准库，简化的级联路由模拟器）
+**Prerequisites:** 阶段 17 · 01（托管 LLM 平台），阶段 17 · 19（AI 网关）
+**Time:** ~60 分钟
 
-## Learning Objectives
+## 学习目标（Learning Objectives）
 
-- Explain model cascading: cheap-first with confidence check, escalate on low confidence.
-- Enumerate the four routing signals (task classification, prompt length, embedding similarity to known-hard set, self-confidence from first-pass).
-- Compute expected blended cost at target routing split and quality loss tolerance.
-- Name the drift-monitoring metric (online quality gate) that catches cheap-model creep.
+- 解释模型级联：先使用低成本模型并检查置信度，在置信度低时升级。
+- 列出四种路由信号：任务分类、提示词长度、与已知高难度集合的嵌入相似度、首次生成的自置信度。
+- 根据目标路由比例和可容忍的质量损失，计算预期混合成本。
+- 指出能够发现低成本模型使用范围悄然扩大的漂移监控指标，即在线质量门禁（online quality gate）。
 
-## The Problem
+## 问题（The Problem）
 
-Your service costs $80k/month on GPT-5. Your analytics show 70% of queries are simple: "what time is it in Paris?" "rephrase this sentence." A Haiku-class model handles those perfectly at 3% of the cost. 30% need GPT-5's reasoning — coding, math, multi-step planning.
+你的服务每月在 GPT-5 上花费 $80k。分析结果表明，70% 的查询很简单，例如“巴黎现在几点？”或“改写这句话”。Haiku 级别模型只需 3% 的成本就能很好地处理这些请求。剩余 30% 需要 GPT-5 的推理能力，例如编程、数学和多步骤规划。
 
-If you route the 70% to cheap and 30% to expensive, your bill drops ~65% at the same product quality. This is routing. The trick is building the broker without regressing quality.
+如果将 70% 路由到低成本模型、30% 路由到昂贵模型，就能在保持产品质量的同时将账单降低约 65%。这就是路由。难点在于构建代理时不让质量退步。
 
-## The Concept
+## 概念（The Concept）
 
-### Four routing signals
+### 四种路由信号（Four routing signals）
 
-1. **Task classification**: simple/complex/codegen/math/chat. Can be a rules-based classifier, a small LLM (Haiku-class at $0.25/M), or embedding similarity to labeled buckets. Output: route = cheap / balanced / frontier.
+1. **任务分类（task classification）**：简单、复杂、代码生成、数学、聊天。可以使用基于规则的分类器、小型 LLM（$0.25/M 的 Haiku 级别模型），或与已标注类别的嵌入相似度。输出为 route = cheap / balanced / frontier，即低成本、均衡或前沿模型。
 
-2. **Prompt length**: prompts >4K tokens often need frontier for coherence. Prompts <500 tokens usually don't.
+2. **提示词长度（prompt length）**：超过 4K 词元的提示词往往需要前沿模型来保持连贯性。少于 500 词元的提示词通常不需要。
 
-3. **Embedding similarity to known-hard set**: if the query is close (cosine > 0.88) to a known-hard bucket, escalate to frontier directly.
+3. **与已知高难度集合的嵌入相似度（embedding similarity to known-hard set）**：如果查询接近已知高难度类别（余弦相似度 > 0.88），就直接升级到前沿模型。
 
-4. **Self-confidence from first-pass**: send to cheap; if model's log-probs show low confidence OR it refuses OR outputs hedging language, retry on frontier. Adds P95 latency on ~10% of traffic but saves 50%+ on the other 90%.
+4. **首次生成的自置信度（self-confidence from first-pass）**：先交给低成本模型；如果模型的对数概率（log-probs）表明置信度低，或者模型拒绝回答，或者输出含糊保留的措辞，就用前沿模型重试。这会增加约 10% 流量的 P95 延迟，但能为其余 90% 节省 50% 以上的成本。
 
-### Three patterns
+### 三种模式（Three patterns）
 
-**Pre-route** (classifier up front): ~5-10ms latency added; fastest overall.
+**预路由（pre-route）**：先运行分类器，增加约 5–10ms 延迟；整体速度最快。
 
-**Cascade** (cheap-first, escalate on low confidence): ~1.2x median latency (cheap run plus verify), ~2x on escalated. Best quality floor.
+**级联（cascade）**：先使用低成本模型，置信度低时升级；中位延迟约为 1.2 倍（低成本模型运行加验证），升级请求约为 2 倍。质量下限最好。
 
-**Ensemble route** (run cheap and frontier in parallel for a sample, reward-model pick): highest quality, highest cost; use only for critical A/B.
+**集成路由（ensemble route）**：针对抽样请求并行运行低成本模型和前沿模型，再由奖励模型选择。质量最高，成本也最高；仅用于关键的 A/B 测试。
 
-### Implementation
+### 实现（Implementation）
 
-AI gateways (Phase 17 · 19) expose routing. LiteLLM has `router` config with fallback and cost-routing. Portkey has guards + routing. Kong AI Gateway has plugin-based routing. OpenRouter's model marketplace exposes a recommendation API.
+AI 网关（阶段 17 · 19）提供路由功能。LiteLLM 的 `router` 配置支持回退和成本路由。Portkey 支持防护与路由。Kong AI Gateway 支持基于插件的路由。OpenRouter 的模型市场提供推荐 API。
 
-Open-source: RouteLLM (LMSYS), Not Diamond (commercial), Prompt Mule.
+开源相关选择包括 RouteLLM（LMSYS）、Not Diamond（商业产品）和 Prompt Mule。
 
-### The 2026 price curve
+### 2026 年的价格曲线（The 2026 price curve）
 
-| Model class | Late 2022 | 2026 | Change |
+| 模型级别 | 2022 年末 | 2026 年 | 变化 |
 |-------------|-----------|------|--------|
-| GPT-4-level quality | ~$20/M | ~$0.40/M | 50x cheaper |
-| Frontier (GPT-5, Claude 4) | — | ~$3-10/M | new tier |
+| GPT-4 级别质量 | ~$20/M | ~$0.40/M | 成本降至 1/50 |
+| 前沿模型（GPT-5、Claude 4） | — | ~$3-10/M | 新增档位 |
 
-Most of the improvement is serving efficiency — the core lessons in Phase 17 · 04-09 turned into provider-side cost drops. Routing lets you capture those gains at the app layer instead of waiting for all your users to migrate to the cheap tier.
+大部分改善来自服务效率：阶段 17 · 04–09 的核心内容转化成了提供商侧的成本下降。路由让你在应用层获得这些收益，无需等待所有用户都迁移到低成本档位。
 
-### Drift is the real risk
+### 漂移才是真正的风险（Drift is the real risk）
 
-Your route sends 40% to the cheap model. Over six months, the task distribution shifts (users get more sophisticated, ask longer questions). The router doesn't notice because its classifier was trained on Q1 data. Quality drops silently. Nobody complains loud enough. You find out in a competitor benchmark you lost.
+路由将 40% 的请求发送给低成本模型。六个月后，任务分布发生变化：用户使用得更深入，提出的问题也更长。路由器没有察觉，因为它的分类器是用第一季度的数据训练的。质量悄然下降，没有用户强烈投诉。直到在竞争对手的基准测试中落败，你才发现问题。
 
-Gate routes by online quality metrics:
+用在线质量指标约束路由：
 
-- User thumbs-up / thumbs-down per route.
-- Automated LLM-judge on a held-out sample (5%) per route.
-- Escalation rate: if cascade is kicking up-route >30%, the cheap model is being over-routed.
-- Refusal rate per route.
+- 每条路由的用户点赞与点踩。
+- 每条路由保留的抽样请求（5%）上的自动 LLM 评判（LLM-judge）。
+- 升级率（escalation rate）：如果级联中超过 30% 的请求需要升级，说明低成本模型承接了过多请求。
+- 每条路由的拒答率。
 
-### Numbers you should remember
+### 应记住的数字（Numbers you should remember）
 
-- 2026 routing savings at iso-quality: 20-60% case studies.
-- LLM price drop 2022-2026: ~10x per year aggregate.
-- GPT-4-level 2022 vs 2026: ~$20/M → ~$0.40/M.
-- Cascade latency impact: ~1.2x median, ~2x escalated (~10% of traffic).
+- 2026 年同等质量下的路由节省：案例研究为 20–60%。
+- 2022–2026 年 LLM 总体价格下降：每年约降至原来的 1/10。
+- GPT-4 级别的价格，2022 年与 2026 年相比：~$20/M → ~$0.40/M。
+- 级联对延迟的影响：中位数约 1.2 倍，升级请求约 2 倍（约占流量的 10%）。
 
 ```figure
 model-cascade-router
 ```
 
-## Use It
+## 动手使用（Use It）
 
-`code/main.py` simulates pre-route, cascade, and ensemble on a mixed workload. Reports blended cost, quality loss, and escalation rate.
+`code/main.py` 在混合工作负载上模拟预路由、级联和集成路由，并报告混合成本、质量损失及升级率。
 
-## Ship It
+## 交付成果（Ship It）
 
-This lesson produces `outputs/skill-router-plan.md`. Given workload and quality budget, picks a routing pattern and signals.
+本课产出 `outputs/skill-router-plan.md`。它根据工作负载和质量预算，选择路由模式及信号。
 
-## Exercises
+## 练习（Exercises）
 
-1. Run `code/main.py`. At what accuracy floor does cascade beat pre-route?
-2. Your user base is 30% enterprise (complex queries), 70% free tier (simple). Design the routing split. What online metric gates it?
-3. A route drops quality by 2% but saves 40%. Is that a ship? Depends on product — argue both.
-4. Implement a confidence check using logprobs from OpenAI / Anthropic APIs. What's the threshold you start with?
-5. Over six months, escalation rate climbs from 8% to 22%. Diagnose three causes and the fix for each.
+1. 运行 `code/main.py`。在什么准确率下限下，级联优于预路由？
+2. 你的用户中有 30% 是企业用户（复杂查询），70% 是免费用户（简单查询）。设计路由比例，并说明用什么在线指标把关。
+3. 某条路由让质量下降 2%，但节省 40% 成本。应该上线吗？答案取决于产品，请分别论证支持和反对的理由。
+4. 使用 OpenAI / Anthropic API 的 logprobs 实现置信度检查。你会从什么阈值开始？
+5. 六个月内，升级率从 8% 上升到 22%。诊断三种原因，并分别给出修复方案。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语 | 常见说法 | 实际含义 |
 |------|----------------|------------------------|
-| Model routing | "cost broker" | Dynamic choice of model per request |
-| Model cascade | "cheap-first escalate" | Run cheap, fall through to frontier on low confidence |
-| Pre-route | "classify first" | Classifier up front; no re-run |
-| Ensemble route | "parallel pick" | Run multiple, reward-model picks best |
-| Escalation rate | "uprouted %" | Fraction of cascade requests that escalated |
-| RouteLLM | "LMSYS router" | OSS router library |
-| Not Diamond | "commercial router" | SaaS model-routing product |
-| Drift | "cheap creep" | Distribution shift without router noticing |
-| Online quality gate | "live check" | Automated LLM-judge sampling live traffic |
+| 模型路由（Model routing） | “成本代理” | 为每个请求动态选择模型 |
+| 模型级联（Model cascade） | “先用便宜的，再升级” | 先运行低成本模型，置信度低时转交前沿模型 |
+| 预路由（Pre-route） | “先分类” | 先运行分类器，不重复执行请求 |
+| 集成路由（Ensemble route） | “并行择优” | 运行多个模型，由奖励模型选出最佳结果 |
+| 升级率（Escalation rate） | “向上路由的百分比” | 级联请求中发生升级的比例 |
+| RouteLLM | “LMSYS 路由器” | 开源路由库 |
+| Not Diamond | “商业路由器” | SaaS 模型路由产品 |
+| 漂移（Drift） | “低成本模型使用范围悄然扩大” | 分布发生变化，路由器却没有察觉 |
+| 在线质量门禁（Online quality gate） | “实时检查” | 使用自动 LLM 评判抽查线上流量 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [AbhyashSuchi — Model Routing LLM 2026 Best Practices](https://abhyashsuchi.in/model-routing-llm-2026-best-practices/)
-- [Lukas Brunner — Rise of Inference Optimization 2026](https://dev.to/lukas_brunner/the-rise-of-inference-optimization-the-real-llm-infra-trend-shaping-2026-4e4o)
-- [RouteLLM paper / code](https://github.com/lm-sys/RouteLLM)
-- [Not Diamond — model routing](https://www.notdiamond.ai/)
-- [OpenRouter](https://openrouter.ai/) — multi-model gateway with routing primitives.
+- [AbhyashSuchi：2026 年 LLM 模型路由最佳实践](https://abhyashsuchi.in/model-routing-llm-2026-best-practices/)
+- [Lukas Brunner：2026 年推理优化的兴起](https://dev.to/lukas_brunner/the-rise-of-inference-optimization-the-real-llm-infra-trend-shaping-2026-4e4o)
+- [RouteLLM 论文与代码](https://github.com/lm-sys/RouteLLM)
+- [Not Diamond：模型路由](https://www.notdiamond.ai/)
+- [OpenRouter](https://openrouter.ai/)：提供路由基础能力的多模型网关。

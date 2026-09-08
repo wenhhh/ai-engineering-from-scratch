@@ -1,27 +1,27 @@
-# Mission - Agent Workbench: Why Capable Models Still Fail
+# 任务：智能体工作台，有能力的模型为什么仍然失败（Mission - Agent Workbench: Why Capable Models Still Fail）
 
-## Goal
-Run the same small repo task twice, once prompt-only and once with the seven workbench surfaces wired in, and emit a failure-mode report that maps each missed surface to the symptom it caused.
+## 目标（Goal）
+对同一小型仓库任务运行两次，一次仅用提示词，一次接入七项工作台支撑能力（Workbench Surfaces）；输出失效模式报告，将每项缺失的支撑能力映射到所致症状。
 
-## Inputs
-- A stub agent and a tiny FastAPI-style handler to validate
-- The seven-surface list (instructions, state, scope, feedback, verification, review, handoff)
+## 输入（Inputs）
+- 桩智能体和待校验的微型 FastAPI 式处理器
+- 七项支撑能力列表：指令、状态、范围、反馈、验证、审查、交接
 
-## Deliverables
-- `code/main.py` that runs both pipelines back to back
-- `failure_modes.json` summarizing the prompt-only run
-- One-line verdict for the workbench run
+## 交付物（Deliverables）
+- 连续运行两条流水线的 `code/main.py`
+- 汇总仅提示词运行的 `failure_modes.json`
+- 用一行文字说明工作台运行的判定结果
 
-## Acceptance
-- `python3 code/main.py` exits zero
-- Output shows a side-by-side log of the two runs
-- `failure_modes.json` lists every missed surface with the matching symptom
+## 验收（Acceptance）
+- `python3 code/main.py` 以退出码 0 结束
+- 输出展示两次运行的并排日志
+- `failure_modes.json` 列出每项缺失的支撑能力及对应症状
 
-## Out of scope
-- Calling a real model. The stub is rule-based on purpose.
-- Building any one surface in depth. That is what the next eleven lessons are for.
+## 范围之外（Out of scope）
+- 调用真实模型。桩刻意采用规则实现。
+- 深入构建某一项支撑能力，这是接下来十一课的内容。
 
-## References
-- `docs/en.md` - full lesson
-- `code/main.py` - reference implementation
-- `outputs/skill-workbench-audit.md` - extracted skill
+## 参考（References）
+- `docs/en.md`：完整课程
+- `code/main.py`：参考实现
+- `outputs/skill-workbench-audit.md`：提取出的技能

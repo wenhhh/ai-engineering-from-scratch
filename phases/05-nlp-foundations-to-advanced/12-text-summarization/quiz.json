@@ -1,102 +1,102 @@
 {
   "lesson": "12-text-summarization",
-  "title": "Text Summarization",
+  "title": "文本摘要（Text Summarization）",
   "questions": [
     {
       "stage": "pre",
-      "question": "What is the key behavioral difference between extractive and abstractive summarization?",
+      "question": "抽取式（Extractive）与生成式（Abstractive）摘要在行为上的关键区别是什么？",
       "options": [
-        "Extractive is multilingual only",
-        "Extractive returns sentences verbatim from the source; abstractive generates new text and can hallucinate",
-        "Extractive uses TF-IDF; abstractive uses Word2Vec",
-        "Extractive is slower than abstractive"
+        "抽取式只支持多语言",
+        "抽取式逐字返回源句；生成式生成新文本，可能产生幻觉",
+        "抽取式用 TF-IDF，生成式用 Word2Vec",
+        "抽取式比生成式慢"
       ],
       "correct": 1,
-      "explanation": "Extractive lifts sentences verbatim; abstractive rewrites and risks hallucination."
+      "explanation": "抽取式逐字摘句，生成式改写并有幻觉风险。"
     },
     {
       "stage": "pre",
-      "question": "What does ROUGE measure?",
+      "question": "ROUGE 衡量什么？",
       "options": [
-        "Token-level perplexity",
-        "Embedding similarity",
-        "N-gram and longest-common-subsequence overlap between system and reference summaries",
-        "Reading time"
+        "词元级困惑度",
+        "嵌入相似度",
+        "系统摘要与参考摘要的 n 元词组和最长公共子序列重叠",
+        "阅读时间"
       ],
       "correct": 2,
-      "explanation": "ROUGE-1/2/L measure unigram, bigram, and LCS overlap with references."
+      "explanation": "ROUGE-1/2/L 分别衡量与参考的一元词组、二元词组和最长公共子序列（LCS）重叠。"
     },
     {
       "stage": "check",
-      "question": "How does TextRank score sentences in extractive summarization?",
+      "question": "TextRank 在抽取式摘要中如何为句子评分？",
       "options": [
-        "By running a PageRank-style iteration over a graph where edges are sentence-similarity weights",
-        "By embedding cosine to the question",
-        "By comparing to a reference summary",
-        "By raw word count"
+        "在边权为句子相似度的图上执行 PageRank 式迭代",
+        "按与问题嵌入的余弦相似度",
+        "与参考摘要比较",
+        "按原始词数"
       ],
       "correct": 0,
-      "explanation": "TextRank uses PageRank over a sentence-similarity graph; highly connected sentences score highest."
+      "explanation": "TextRank 在句子相似度图上使用 PageRank，连接最多的句子得分最高。"
     },
     {
       "stage": "check",
-      "question": "Why enable stemming when computing ROUGE?",
+      "question": "为什么计算 ROUGE 时启用词干提取（Stemming）？",
       "options": [
-        "Without stemming, 'running' and 'run' count as different tokens and ROUGE undercounts true overlap",
-        "Stemming normalizes case",
-        "Stemming is required by the rouge-score package",
-        "To speed up ROUGE"
+        "否则 'running' 与 'run' 被算成不同词元，ROUGE 会少算真实重叠",
+        "词干提取统一大小写",
+        "rouge-score 包强制要求词干提取",
+        "为了加速 ROUGE"
       ],
       "correct": 0,
-      "explanation": "Stemming merges morphological variants so ROUGE credits semantically equivalent forms."
+      "explanation": "词干提取归并形态变体，使 ROUGE 认可语义等价形式。"
     },
     {
       "stage": "check",
-      "question": "Which 2026 metric is purpose-built to detect summary hallucinations via NLI entailment?",
+      "question": "2026 年哪类指标专门通过自然语言推断（NLI）蕴含检测摘要幻觉？",
       "options": [
-        "Faithfulness checks (e.g. FactCC or RAGAS faithfulness) using NLI between source and summary claims",
+        "忠实性检查，如 FactCC 或 RAGAS faithfulness，对源文与摘要陈述使用 NLI",
         "BLEU",
         "chrF",
         "ROUGE-L"
       ],
       "correct": 0,
-      "explanation": "NLI-based faithfulness scoring flags claims in the summary not entailed by the source."
+      "explanation": "基于 NLI 的忠实性评分标记源文无法蕴含的摘要陈述。"
     },
     {
       "stage": "post",
-      "question": "Why is extractive summarization preferred for compliance-adjacent content?",
+      "question": "为什么合规相关内容偏好抽取式摘要？",
       "options": [
-        "Extractive supports longer outputs",
-        "Outputs are lifted verbatim from the source, eliminating the abstractive hallucination class",
-        "It is faster",
-        "ROUGE scores are higher"
+        "抽取式支持更长输出",
+        "输出逐字来自源文，消除了生成式幻觉这一类别",
+        "速度更快",
+        "ROUGE 分数更高"
       ],
       "correct": 1,
-      "explanation": "Verbatim extraction cannot invent content, which matters where factuality is regulated."
+      "explanation": "逐字抽取无法编造内容，这在事实性受到监管的场景中很重要。"
     },
     {
       "stage": "post",
-      "question": "Which of these is an abstractive hallucination type to monitor for?",
+      "question": "哪项是应监控的生成式幻觉类型？",
       "options": [
-        "Long sentences",
-        "Entity swap (e.g. 'John Smith' rendered as 'John Brown'), number drift, polarity flip, or fact invention",
-        "Punctuation drift",
-        "Stopword removal"
+        "长句",
+        "实体替换，如把 'John Smith' 写为 'John Brown'，以及数字漂移、极性翻转或事实编造",
+        "标点漂移",
+        "移除停用词"
       ],
       "correct": 1,
-      "explanation": "Entity swaps, numeric drift, polarity flips, and invented facts are the canonical abstractive failure modes."
+      "explanation": "实体替换、数字漂移、极性翻转和事实编造是经典生成式失效方式。"
     },
     {
       "stage": "post",
-      "question": "When would you reach for a Pegasus checkpoint over BART-large-CNN?",
+      "question": "什么时候应选择 Pegasus 检查点而不是 BART-large-CNN？",
       "options": [
-        "When evaluating BLEU",
-        "When you need extractive output",
-        "For domains like scientific abstracts where Pegasus's gap-sentence pretraining objective is a closer fit",
-        "When the input is short"
+        "评估 BLEU 时",
+        "需要抽取式输出时",
+        "科学摘要等领域中，Pegasus 缺句预训练目标更适合",
+        "输入很短时"
       ],
       "correct": 2,
-      "explanation": "Pegasus's gap-sentence objective excels at long-form domain summarization (e.g. pubmed)."
+      "explanation": "Pegasus 的缺句目标擅长长篇领域摘要，例如 pubmed。"
     }
   ]
 }

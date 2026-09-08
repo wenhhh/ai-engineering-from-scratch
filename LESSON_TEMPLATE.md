@@ -1,133 +1,133 @@
-# Lesson Template
+# 课程模板（Lesson Template）
 
-Use this template when creating a new lesson. Copy the folder structure and fill in the content.
+创建新课程时使用此模板。按下面的目录结构建立文件，再填写内容。
 
-## Folder Structure
+## 目录结构（Folder Structure）
 
-```
+```text
 NN-lesson-name/
 ├── code/
-│   ├── main.py            (primary implementation)
-│   ├── main.ts            (TypeScript version, if applicable)
-│   ├── main.rs            (Rust version, if applicable)
-│   └── main.jl            (Julia version, if applicable)
+│   ├── main.py            （主要实现）
+│   ├── main.ts            （TypeScript 版本，如适用）
+│   ├── main.rs            （Rust 版本，如适用）
+│   └── main.jl            （Julia 版本，如适用）
 ├── notebook/
-│   └── lesson.ipynb       (Jupyter notebook for experimentation)
+│   └── lesson.ipynb       （用于实验的 Jupyter 笔记本）
 ├── docs/
-│   └── en.md              (lesson documentation)
+│   └── en.md              （课程文档）
 └── outputs/
-    ├── prompt-*.md         (prompts produced by this lesson)
-    └── skill-*.md          (skills produced by this lesson)
+    ├── prompt-*.md         （本课产出的提示词）
+    └── skill-*.md          （本课产出的技能）
 ```
 
-## Documentation Format (docs/en.md)
+## 文档格式（docs/en.md）
 
 ```markdown
-# [Lesson Title]
+# [课程标题]
 
-> [One-line motto — the core idea that sticks]
+> [用一句话写出值得记住的核心思想]
 
 **Type:** Build | Learn
-**Languages:** Python, TypeScript, Rust, Julia (list what's used)
-**Prerequisites:** [List prior lessons needed]
-**Time:** ~[estimated time] minutes
+**Languages:** Python, TypeScript, Rust, Julia（只列实际使用的语言）
+**Prerequisites:** [列出必需的先修课程]
+**Time:** 约 [预计时长] 分钟
 
-## The Problem
+## 要解决的问题（The Problem）
 
-[2-3 paragraphs. What can't you do without this? Why should you care?
-Make it concrete — show a scenario where not knowing this hurts.]
+[写 2 至 3 段。缺少这一知识，你无法完成什么？为什么值得学习？
+给出具体场景，展示不了解这一概念会造成什么问题。]
 
-## The Concept
+## 核心概念（The Concept）
 
-[Explain with diagrams and intuition. No code yet.
-Use ASCII diagrams, tables, or link to visuals in the web app.
-Build mental models before implementation.]
+[先用图表和直观解释讲清概念，暂不展示代码。
+使用 ASCII 图、表格，或链接到网页应用中的可视化内容。
+先建立心智模型（Mental Model），再进入实现。]
 
-## Build It
+## 动手实现（Build It）
 
-[Step-by-step implementation from scratch.
-Start with the simplest version, then add complexity.
-Every code block should be runnable on its own.]
+[分步骤从零实现。
+从最简单的版本开始，再逐步增加复杂度。
+每个代码块都应能独立运行。]
 
-### Step 1: [Name]
+### 步骤 1：[名称]
 
-[Explanation]
+[解释]
 
-    [code block]
+    [代码块]
 
-### Step 2: [Name]
+### 步骤 2：[名称]
 
-[Explanation]
+[解释]
 
-    [code block]
+    [代码块]
 
-[...continue...]
+[……继续添加步骤……]
 
-## Use It
+## 实际应用（Use It）
 
-[Now show how frameworks/libraries do the same thing.
-Compare your from-scratch version to the library version.
-This proves the concept and introduces practical tools.]
+[展示框架或库如何完成同样的任务。
+对比从零实现的版本和库实现的版本。
+借此验证对概念的理解，并介绍实用工具。]
 
-## Ship It
+## 交付成果（Ship It）
 
-[What reusable artifact does this lesson produce?
-Could be a prompt, a skill, an agent, an MCP server, or a tool.
-Include it here and save it in the outputs/ folder.]
+[本课产出什么可复用的交付物（Artifact）？
+可以是提示词（Prompt）、技能（Skill）、智能体（Agent）、MCP 服务器或工具。
+在此介绍，并将文件保存在 outputs/ 目录中。]
 
-## Exercises
+## 练习（Exercises）
 
-1. [Easy — reinforce the core concept]
-2. [Medium — apply it to a different problem]
-3. [Hard — extend or combine with prior lessons]
+1. [简单：巩固核心概念]
+2. [中等：将知识应用到另一个问题]
+3. [困难：扩展实现，或结合先前课程的知识]
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语 | 常见说法 | 准确含义 |
 |------|----------------|----------------------|
-| [term] | [common misconception] | [actual definition] |
+| [术语] | [常见误解] | [实际定义] |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [Resource 1](url) — [why it's worth reading]
-- [Resource 2](url) — [why it's worth reading]
+- [资料 1](url)：[值得阅读的原因]
+- [资料 2](url)：[值得阅读的原因]
 ```
 
-## Code File Guidelines
+## 代码文件要求（Code File Guidelines）
 
-- Code must run without errors
-- No comments — code should be self-explanatory
-- Use the language that fits best for the topic
-- Include a `requirements.txt` or equivalent if there are dependencies
-- Start simple, build up complexity
-- Every function and class should have a clear purpose
+- 代码必须运行无误
+- 不添加注释，代码应能表达自身意图
+- 选择最适合该主题的语言
+- 如有依赖，提供 `requirements.txt` 或相应语言的依赖清单
+- 从简单版本开始，逐步增加复杂度
+- 每个函数和类都应有明确用途
 
-## Output File Format
+## 交付物文件格式（Output File Format）
 
-### Prompts
+### 提示词（Prompts）
 
 ```markdown
 ---
 name: prompt-name
-description: What this prompt does
-phase: [phase number]
-lesson: [lesson number]
+description: 说明这个提示词的用途
+phase: [阶段编号]
+lesson: [课程编号]
 ---
 
-[Prompt content]
+[提示词内容]
 ```
 
-### Skills
+### 技能（Skills）
 
 ```markdown
 ---
 name: skill-name
-description: What this skill teaches
+description: 说明这个技能教授的内容
 version: 1.0.0
-phase: [phase number]
-lesson: [lesson number]
+phase: [阶段编号]
+lesson: [课程编号]
 tags: [relevant, tags]
 ---
 
-[Skill content]
+[技能内容]
 ```

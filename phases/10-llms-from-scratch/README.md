@@ -1,25 +1,21 @@
-# Phase 10: LLMs from Scratch
+# 阶段 10：从零构建大语言模型（LLMs from Scratch）
 
-> Build, train, and understand large language models.
+> 构建、训练并理解大语言模型（Large Language Model，LLM）。
 
-## Start this phase on GitHub
+## 在 GitHub 开始本阶段（Start this phase on GitHub）
 
-**Prerequisites:** Phase 5 NLP Foundations. Phase 7 Transformers is strongly
-recommended before the model-building lessons.
+**Prerequisites:** 阶段 5 自然语言处理（Natural Language Processing，NLP）基础。开始模型构建课程前，强烈建议先学习阶段 7 Transformer。
 
-**First lesson:** [Tokenizers](01-tokenizers/)
+**第一课：** [分词器（Tokenizers）](01-tokenizers/)
 
-Run this command from the repository root:
+在仓库根目录运行：
 
 ```bash
 python3 phases/10-llms-from-scratch/01-tokenizers/code/main.py
 ```
 
-Keep the command, exit code, encode/decode round-trip results, learned merge
-count, and compression ratios. `tiktoken` is an optional comparison.
+保留命令、退出码、编码/解码往返（Encode/Decode Round-Trip）结果、学得的合并次数及压缩率。可选择与 `tiktoken` 比较。
 
-**Next action:** Add a word the tiny corpus has not seen, inspect its pieces,
-then continue to [Building a Tokenizer from Scratch](02-building-a-tokenizer/).
+**下一步：** 添加一个微型语料从未见过的词，检查其拆分片段，然后继续学习[从零构建分词器（Building a Tokenizer from Scratch）](02-building-a-tokenizer/)。
 
-Browse the [full Phase 10 lesson list](../../README.md#phase-10) or the
-[cross-phase roadmap](../../ROADMAP.md).
+浏览[阶段 10 完整课程列表](../../README.md#phase-10)或[跨阶段路线图（Roadmap）](../../ROADMAP.md)。

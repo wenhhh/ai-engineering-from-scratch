@@ -1,78 +1,78 @@
 {
   "lesson": "71-classical-metrics",
-  "title": "Classical Metrics",
+  "title": "经典指标（Classical Metrics）",
   "questions": [
     {
       "stage": "pre",
-      "question": "Why is the tokenizer chosen at the metric layer rather than the runner layer?",
+      "question": "为什么在指标层而非运行器层选择分词器？",
       "options": [
-        "Tokenizers are model-specific and the runner cannot see the model",
-        "The tokenizer defines what counts as a token match; swapping it changes the benchmark",
-        "Metric implementations are O(n) regardless of tokenizer choice",
-        "Numpy requires a tokenizer at import time"
+        "分词器依赖模型，运行器看不到模型",
+        "分词器定义什么算词元匹配；更换它会改变基准",
+        "无论选何分词器，指标实现都是 O(n)",
+        "Numpy 导入时需要分词器"
       ],
       "correct": 1,
-      "explanation": "BLEU and F1 are sensitive to tokenisation. Binding the tokenizer to the metric makes scores reproducible and lets you point at the rule."
+      "explanation": "BLEU 和 F1 对分词敏感。将分词器绑定指标可保证分数可复现，并能指出规则。"
     },
     {
       "stage": "pre",
-      "question": "What does modified n-gram precision do that plain n-gram precision does not?",
+      "question": "修正 n 元语法精确率比普通精确率多做什么？",
       "options": [
-        "It clips each candidate n-gram count by the maximum count seen in any reference",
-        "It runs faster than plain precision",
-        "It uses a different log base",
-        "It returns a value in 0 to 100 instead of 0 to 1"
+        "用任一参考中的最大计数截断各候选 n 元语法计数",
+        "比普通精确率更快",
+        "采用不同对数底数",
+        "返回 0 至 100 而非 0 至 1"
       ],
       "correct": 0,
-      "explanation": "Clipping by the reference cap stops a candidate from inflating its score by repeating a high-precision word over and over."
+      "explanation": "以参考计数为上限，防止候选反复重复高精确率词语来抬分。"
     },
     {
       "stage": "check",
-      "question": "Why does BLEU use a brevity penalty?",
+      "question": "BLEU 为什么使用简短惩罚？",
       "options": [
-        "Long candidates make the geometric mean numerically unstable",
-        "Brevity penalty replaces the n-gram count cap",
-        "It compensates for the additive-one smoothing",
-        "Without it, a very short candidate that matches a few words gets a high precision and unfairly high BLEU"
+        "长候选让几何均值数值不稳定",
+        "简短惩罚替代 n 元语法计数上限",
+        "补偿加一平滑",
+        "否则只匹配少数词的极短候选会获得高精确率和不公平的高 BLEU"
       ],
       "correct": 3,
-      "explanation": "Precision alone rewards short outputs. BP downweights candidates shorter than the reference using exp(1 - r/c)."
+      "explanation": "仅精确率会奖励短输出。BP 使用 exp(1 - r/c) 降低短于参考的候选权重。"
     },
     {
       "stage": "check",
-      "question": "What does ROUGE-L compare?",
+      "question": "ROUGE-L 比较什么？",
       "options": [
-        "The Levenshtein distance between candidate and reference strings",
-        "The 4-gram precision against any reference 4-gram",
-        "The longest common subsequence of candidate and reference token sequences",
-        "The character-level Jaccard index"
+        "候选和参考字符串的 Levenshtein 距离",
+        "与任意参考 4 元语法比较的精确率",
+        "候选与参考词元序列的最长公共子序列",
+        "字符级 Jaccard 指数"
       ],
       "correct": 2,
-      "explanation": "ROUGE-L uses the LCS length, then computes precision (LCS/cand-len) and recall (LCS/ref-len) combined with F-beta."
+      "explanation": "ROUGE-L 使用 LCS 长度，再计算精确率（LCS/cand-len）和召回率（LCS/ref-len），以 F-beta 组合。"
     },
     {
       "stage": "check",
-      "question": "Token-level F1 returns 1.0 for which case?",
+      "question": "词元级 F1 在哪种情况下返回 1.0？",
       "options": [
-        "When the prediction and target share exactly one token",
-        "When the prediction is a superset of the target with extra noise",
-        "When the prediction is empty and the target is non-empty",
-        "When prediction and target are both empty"
+        "预测与目标恰共享一个词元",
+        "预测是带额外噪声的目标超集",
+        "预测为空而目标非空",
+        "预测与目标均为空"
       ],
       "correct": 3,
-      "explanation": "By convention, empty-empty is a perfect match. Any non-empty target with an empty prediction is 0.0."
+      "explanation": "按约定，空与空为完全匹配。目标非空而预测为空时为 0.0。"
     },
     {
       "stage": "post",
-      "question": "Why dispatch on metric_name rather than category in the score function?",
+      "question": "评分函数为何按 metric_name 而非 category 分派？",
       "options": [
-        "The runner does not have access to the category field",
-        "It lets the same category use different metrics across tasks and keeps the dispatcher metric-agnostic",
-        "Category is harder to validate than metric_name",
-        "metric_name is shorter than category"
+        "运行器无法访问 category 字段",
+        "让同一类别不同任务使用不同指标，使分派器不依赖具体指标",
+        "category 比 metric_name 更难验证",
+        "metric_name 比 category 短"
       ],
       "correct": 1,
-      "explanation": "metric_name is the contract. A summary task can use rouge_l on one record and bleu_4 on another; the dispatcher does not need to care."
+      "explanation": "metric_name 是契约。摘要任务可在一条记录用 rouge_l、另一条用 bleu_4，分派器无须关心。"
     }
   ]
 }

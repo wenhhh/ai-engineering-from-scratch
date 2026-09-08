@@ -1,78 +1,78 @@
 {
   "lesson": "32-token-positional-embeddings",
-  "title": "Token and Positional Embeddings",
+  "title": "词元与位置嵌入（Token and Positional Embeddings）",
   "questions": [
     {
       "stage": "pre",
-      "question": "What shape does the embedding stage produce from (B, T) ids?",
+      "question": "嵌入（Embedding）阶段将 (B, T) ID 转换为什么形状？",
       "options": [
-        "(B, T, D) where D is the model dimension",
+        "(B, T, D)，其中 D 为模型维度",
         "(B, V)",
-        "(B, T, V) where V is the vocabulary size",
+        "(B, T, V)，其中 V 为词汇表大小",
         "(B, T)"
       ],
       "correct": 0,
-      "explanation": "Each id is mapped to a D-dimensional vector. The batch keeps B and T and gains a new feature dimension D."
+      "explanation": "每个 ID 映射为 D 维向量。批次保留 B 和 T，增加新的特征维度 D。"
     },
     {
       "stage": "check",
-      "question": "How are token and positional embeddings composed in this lesson?",
+      "question": "本课如何组合词元嵌入与位置嵌入？",
       "options": [
-        "By an extra linear projection",
-        "By taking the elementwise maximum",
-        "By elementwise sum, broadcasting the position vector across the batch",
-        "By concatenation along the feature axis"
+        "通过额外的线性投影（Linear projection）",
+        "逐元素取最大值",
+        "逐元素求和，将位置向量沿批次广播（Broadcast）",
+        "沿特征轴拼接（Concatenation）"
       ],
       "correct": 2,
-      "explanation": "The two tensors of shape (B, T, D) and (T, D) are summed. Broadcasting replicates the positional table across the batch axis."
+      "explanation": "形状为 (B, T, D) 和 (T, D) 的两个张量相加。广播沿批次轴复制位置表。"
     },
     {
       "stage": "check",
-      "question": "How many learnable parameters does a SinusoidalPositionalEmbedding contribute?",
+      "question": "SinusoidalPositionalEmbedding 增加多少个可学习参数？",
       "options": [
         "max_context_length * d_model",
-        "Zero",
+        "零个",
         "max_context_length",
         "d_model"
       ],
       "correct": 1,
-      "explanation": "The sinusoidal table is computed from a formula and stored as a buffer. It contributes no parameters."
+      "explanation": "正弦表由公式计算，并作为缓冲区（Buffer）存储，不增加参数。"
     },
     {
       "stage": "check",
-      "question": "Which positional encoding cannot accept a sequence longer than its construction limit?",
+      "question": "哪种位置编码无法接受超过其构造时长度上限的序列？",
       "options": [
-        "Sinusoidal positional embedding",
-        "Neither",
-        "Both",
-        "Learned positional embedding"
+        "正弦位置嵌入（Sinusoidal positional embedding）",
+        "两者都可以接受",
+        "两者都无法接受",
+        "可学习位置嵌入（Learned positional embedding）"
       ],
       "correct": 2,
-      "explanation": "In this lesson implementation, both classes enforce max_context_length at forward time. Learned is inherently table-bounded; sinusoidal here is also bounded because it uses a prebuilt table."
+      "explanation": "在本课实现中，两个类都在前向传播时强制执行 max_context_length 限制。可学习位置嵌入天然受表大小限制；这里的正弦位置嵌入使用预建表，因此也受限制。"
     },
     {
       "stage": "post",
-      "question": "Why does the sinusoidal scheme use both sin and cos on adjacent feature pairs?",
+      "question": "为什么正弦方案在相邻特征对上同时使用 sin 和 cos？",
       "options": [
-        "So that the vector at position p+k is a linear function of the vector at position p",
-        "Because cos by itself cannot be backpropagated through",
-        "Because sin alone is not periodic",
-        "Because it doubles the parameter count"
+        "使位置 p+k 的向量成为位置 p 向量的线性函数",
+        "因为单独的 cos 无法进行反向传播",
+        "因为 sin 本身不具有周期性",
+        "因为这样会使参数数量翻倍"
       ],
       "correct": 0,
-      "explanation": "Pairing sin and cos at the same wavelength means a position shift by k is a rotation, which is a linear map. Attention can then learn relative offsets through linear projections."
+      "explanation": "将相同波长的 sin 和 cos 配对，意味着位置偏移 k 等价于旋转，而旋转是线性映射。注意力因而可以通过线性投影学习相对偏移。"
     },
     {
       "stage": "post",
-      "question": "Why does the embedding backward pass only update rows of the token table that appeared in the batch?",
+      "question": "为什么嵌入的反向传播只更新词元表中在批次里出现过的行？",
       "options": [
-        "Rows not touched in the forward pass produce zero gradient by the chain rule",
-        "The optimizer skips rows it has not seen",
-        "PyTorch only stores gradients for non-zero entries",
-        "Token ids are stored in a sparse data structure"
+        "根据链式法则（Chain rule），前向传播未访问的行产生零梯度",
+        "优化器跳过它未见过的行",
+        "PyTorch 只存储非零元素的梯度",
+        "词元 ID 保存在稀疏数据结构中"
       ],
       "correct": 0,
-      "explanation": "A row that did not contribute to any output has zero derivative for the loss, so its gradient is zero for that step."
+      "explanation": "未对任何输出作出贡献的行，其损失导数为零，因此该步骤的梯度为零。"
     }
   ]
 }

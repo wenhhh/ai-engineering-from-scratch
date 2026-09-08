@@ -1,102 +1,102 @@
 {
   "lesson": "18-multilingual-nlp",
-  "title": "Multilingual NLP",
+  "title": "多语言自然语言处理（Multilingual NLP）",
   "questions": [
     {
       "stage": "pre",
-      "question": "What does zero-shot cross-lingual transfer mean?",
+      "question": "零样本跨语言迁移（Zero-Shot Cross-Lingual Transfer）是什么意思？",
       "options": [
-        "Translating without a translation model",
-        "Tokenizing with zero merges",
-        "Fine-tune a multilingual model on one source language and evaluate on a different language with no target-language labels",
-        "Training with zero examples"
+        "不用翻译模型进行翻译",
+        "以零次合并进行分词",
+        "在一种源语言上微调多语言模型，在没有目标语言标签的另一种语言上评估",
+        "用零个样本训练"
       ],
       "correct": 2,
-      "explanation": "Zero-shot transfer: train on the source language, run on the target without target-language supervision."
+      "explanation": "零样本迁移：在源语言上训练，不依赖目标语言监督而在目标语言上运行。"
     },
     {
       "stage": "pre",
-      "question": "Which model family ships as the standard 100-language cross-lingual baseline?",
+      "question": "哪个模型系列作为标准的 100 语言跨语言基线上线？",
       "options": [
         "GPT-2",
         "GloVe",
         "DistilBERT",
-        "XLM-R (e.g. XLM-RoBERTa-base, 270M)"
+        "XLM-R，例如 270M 的 XLM-RoBERTa-base"
       ],
       "correct": 3,
-      "explanation": "XLM-R is the canonical 100-language pretrained baseline for cross-lingual classification."
+      "explanation": "XLM-R 是跨语言分类的经典 100 语言预训练基线。"
     },
     {
       "stage": "check",
-      "question": "Why does English-as-source not always give the best transfer for a non-English target?",
+      "question": "为什么对非英语目标语言，以英语为源语言并不总能获得最佳迁移效果？",
       "options": [
-        "English has too little data",
-        "Language similarity (typology, script, morphology) predicts transfer quality; a closer high-resource source can outperform English",
-        "English uses BPE",
-        "English is too short"
+        "英语数据太少",
+        "语言相似性，包括类型、文字和形态，能够预测迁移质量；更接近的高资源源语言可能优于英语",
+        "英语使用 BPE",
+        "英语太短"
       ],
       "correct": 1,
-      "explanation": "Typologically related sources (e.g. Hindi for Indic targets) often outperform English as a fine-tune source."
+      "explanation": "类型相关的源语言，例如面向印度语支目标时的印地语，作为微调源语言往往优于英语。"
     },
     {
       "stage": "check",
-      "question": "What is the 'fertility tax' for low-resource languages?",
+      "question": "低资源语言的“词元膨胀税”（Fertility Tax）是什么？",
       "options": [
-        "Smaller models train slower",
-        "Tokenizers cannot handle Unicode",
-        "BPE refuses to train",
-        "Low-resource text tokenizes into more subwords per word than English, consuming context window, latency, and capacity"
+        "较小模型训练更慢",
+        "分词器无法处理 Unicode",
+        "BPE 拒绝训练",
+        "低资源文本每个词切出的子词比英语更多，消耗上下文窗口、延迟和容量"
       ],
       "correct": 3,
-      "explanation": "Long-tail languages tokenize at much higher fertility, eating context and training efficiency."
+      "explanation": "长尾语言的词元膨胀率高得多，会消耗上下文和训练效率。"
     },
     {
       "stage": "check",
-      "question": "Why is per-language evaluation required, not aggregated accuracy?",
+      "question": "为什么需要逐语言评估，而不能只看汇总准确率？",
       "options": [
-        "Aggregates run faster",
-        "Aggregates only work on classification",
-        "Aggregates ignore tokenization",
-        "Aggregate numbers hide long-tail languages where a multilingual model can be far worse than its mean suggests"
+        "汇总计算更快",
+        "汇总只适用于分类",
+        "汇总忽略分词",
+        "汇总数值掩盖了长尾语言，而多语言模型在这些语言上的表现可能远低于均值所暗示的水平"
       ],
       "correct": 3,
-      "explanation": "Aggregate accuracy masks poor performance on low-resource languages; per-language scores expose it."
+      "explanation": "汇总准确率掩盖低资源语言的差表现；逐语言分数将其揭示出来。"
     },
     {
       "stage": "post",
-      "question": "Why is fine-tuning learning rate critical when adapting a multilingual model with few-shot data?",
+      "question": "使用少样本数据适配多语言模型时，为什么微调学习率很关键？",
       "options": [
-        "High LR can collapse the multilingual alignment and effectively reduce the model to English-only",
-        "Lower LR wastes GPU",
-        "It changes the vocabulary",
-        "Required by tokenizers"
+        "高学习率可能破坏多语言对齐，使模型实际上退化为仅支持英语",
+        "低学习率浪费 GPU",
+        "它改变词表",
+        "分词器要求如此"
       ],
       "correct": 0,
-      "explanation": "Excessive LR drifts the shared representation; conservative LR (~2e-5) preserves cross-lingual structure."
+      "explanation": "过高学习率导致共享表示漂移；保守学习率（约 2e-5）能保留跨语言结构。"
     },
     {
       "stage": "post",
-      "question": "Which mitigation directly addresses tokenizer fertility for long-tail scripts?",
+      "question": "哪种缓解措施直接应对长尾书写系统的分词膨胀问题？",
       "options": [
-        "Skip stopwords",
-        "Use byte-fallback (SentencePiece byte_fallback=True) or a tokenizer with broader script coverage (e.g. XLM-V)",
-        "More training epochs",
-        "Lower batch size"
+        "跳过停用词",
+        "使用字节回退（SentencePiece byte_fallback=True），或采用覆盖更多书写系统的分词器，例如 XLM-V",
+        "更多训练轮次",
+        "更小批大小"
       ],
       "correct": 1,
-      "explanation": "Byte fallback and broader-vocab tokenizers reduce fertility and OOV for low-resource scripts."
+      "explanation": "字节回退和更宽词表的分词器能减少低资源书写系统的词元膨胀和 OOV。"
     },
     {
       "stage": "post",
-      "question": "When is a monolingual model from scratch worth trying instead of a multilingual one?",
+      "question": "什么时候值得尝试从零训练单语言模型，而不是使用多语言模型？",
       "options": [
-        "Only for translation",
-        "Whenever the tokenizer is BPE",
-        "Always for English",
-        "When the target language has enough data to train a monolingual model that beats the multilingual baseline; test before assuming"
+        "仅用于翻译时",
+        "只要分词器是 BPE",
+        "英语总是如此",
+        "目标语言数据充足，可以训练出优于多语言基线的单语言模型时；做出假设前先测试"
       ],
       "correct": 3,
-      "explanation": "Sometimes monolingual training beats multilingual for high-resource targets; empirical comparison decides."
+      "explanation": "对于高资源目标语言，单语言训练有时优于多语言训练，应由实证比较决定。"
     }
   ]
 }

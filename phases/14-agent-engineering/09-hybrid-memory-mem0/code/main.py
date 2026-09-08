@@ -1,7 +1,7 @@
-"""Mem0-shaped hybrid memory: vector + KV + graph with fusion scoring.
+"""Mem0 式混合记忆（Hybrid memory）：向量、键值（KV）与图存储，配合融合评分（Fusion scoring）。
 
-Stdlib only. Vector store uses token-overlap as an embedding stand-in.
-Scope taxonomy: user / session / agent. Fusion: relevance + importance + recency.
+仅使用标准库。向量存储以词元重叠率代替嵌入（Embedding）。
+作用域分类：user / session / agent。融合：相关性（Relevance）+ 重要性（Importance）+ 新近性（Recency）。
 """
 
 from __future__ import annotations
@@ -160,7 +160,7 @@ class Mem0:
 
 def main() -> None:
     print("=" * 70)
-    print("MEM0 HYBRID MEMORY — Phase 14, Lesson 09")
+    print("Mem0 混合记忆（Hybrid memory）——第 14 阶段，第 09 课")
     print("=" * 70)
 
     mem = Mem0()
@@ -199,35 +199,35 @@ def main() -> None:
         kv_triples=(("refund_request", "4711"),),
     )
 
-    print("\nvector-only recall for 'writing style preferences'")
+    print("\n仅用向量召回（Recall）搜索 'writing style preferences'")
     for score, record in mem.vector.search("writing style preferences", top_k=3):
         print(f"  {score:.3f}  {record.rid}  {record.text}")
 
-    print("\ngraph recall for entities linked to 'ava'")
+    print("\n通过图召回与 'ava' 相连的实体")
     for edge in mem.graph.neighbors("ava", valid_only=False):
-        status = "VALID  " if edge.valid else "INVALID"
+        status = "有效   " if edge.valid else "无效"
         print(f"  [{status}] {edge.subject} --{edge.relation}--> {edge.obj}")
 
-    print("\nKV recall for ava all facts")
+    print("\n通过键值（KV）召回 ava 的全部事实")
     for record in mem.kv.by_user("ava"):
         print(f"  {record.rid}  {record.text}")
 
-    print("\nfused top-3 for ava, query 'where does ava live'")
+    print("\nava 的融合结果前 3 项，查询 'where does ava live'")
     for score, record in mem.search("where does ava live", user_id="ava", top_k=3):
         print(f"  {score:.3f}  {record.rid}  {record.text}")
 
-    print("\nfused top-3 for ava, query 'what is she building'")
+    print("\nava 的融合结果前 3 项，查询 'what is she building'")
     for score, record in mem.search("what is ava building", user_id="ava", top_k=3):
         print(f"  {score:.3f}  {record.rid}  {record.text}")
 
-    print("\nscope isolation: bob's refund does not leak to ava's search")
+    print("\n作用域隔离（Scope isolation）：bob 的退款信息不会泄漏到 ava 的搜索结果")
     hits = mem.search("refund invoice", user_id="ava", top_k=5)
-    print(f"  ava results: {len(hits)}  (expect 0 user-scoped hits from bob)")
+    print(f"  ava 的结果数：{len(hits)}（预期来自 bob 用户作用域的命中数为 0）")
     for score, record in hits:
         print(f"    {score:.3f}  {record.user_id}  {record.text}")
 
     print()
-    print("fusion: relevance + importance + recency. per-product weight tuning.")
+    print("融合：相关性 + 重要性 + 新近性。权重按产品需求调整。")
 
 
 if __name__ == "__main__":

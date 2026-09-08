@@ -1,22 +1,22 @@
 {
   "lesson": "phase-19/40-dpo-from-scratch",
-  "title": "Direct Preference Optimization from Scratch",
+  "title": "从零实现直接偏好优化（Direct Preference Optimization from Scratch）",
   "questions": [
     {
       "stage": "pre",
-      "question": "Before reading: under the Bradley-Terry preference model, the probability a human prefers completion y_w to y_l given prompt x is sigmoid(r(x, y_w) - r(x, y_l)). What is the implication?",
+      "question": "阅读前：Bradley-Terry 偏好模型中，给定提示词 x，人类偏好补全 y_w 而非 y_l 的概率为 sigmoid(r(x, y_w) - r(x, y_l))。这意味着什么？",
       "options": [
-        "Only the difference in reward matters; any function added to both r(x, y_w) and r(x, y_l) cancels.",
-        "You must fit r before training the policy.",
-        "Bradley-Terry requires a normalising constant Z(x) that does not vanish.",
-        "Sigmoid is incompatible with maximum likelihood."
+        "只有奖励差重要；同时加到 r(x, y_w) 和 r(x, y_l) 上的任何函数都会抵消。",
+        "训练策略前必须拟合 r。",
+        "Bradley-Terry 需要不会消失的归一化常数 Z(x)。",
+        "Sigmoid 与最大似然不兼容。"
       ],
       "correct": 0,
-      "explanation": "The Bradley-Terry preference depends only on the reward difference. Anything common to both completions cancels. This is the structural reason DPO can avoid an explicit reward model: the prompt-only term in the optimal policy formula cancels."
+      "explanation": "Bradley-Terry 偏好只依赖奖励差，两个补全共有的内容都会抵消。这是 DPO 可避免显式奖励模型的结构原因：最优策略公式中只依赖提示词的项会抵消。"
     },
     {
       "stage": "check",
-      "question": "The DPO loss for a single triple is -log sigmoid( beta * ( (logp_w_pol - logp_w_ref) - (logp_l_pol - logp_l_ref) ) ). If logp_w_pol = logp_w_ref and logp_l_pol = logp_l_ref, the loss equals?",
+      "question": "单个三元组的 DPO 损失为 -log sigmoid( beta * ( (logp_w_pol - logp_w_ref) - (logp_l_pol - logp_l_ref) ) )。若 logp_w_pol = logp_w_ref 且 logp_l_pol = logp_l_ref，损失等于多少？",
       "options": [
         "beta.",
         "-1.",
@@ -24,55 +24,55 @@
         "0."
       ],
       "correct": 2,
-      "explanation": "Both differences are zero, so the sigmoid argument is zero, the sigmoid value is 0.5, and -log(0.5) = log(2). This is the loss when the policy has not moved from the reference at all."
+      "explanation": "两个差都为零，sigmoid 输入为零、输出为 0.5，-log(0.5) = log(2)。这是策略完全未偏离参考时的损失。"
     },
     {
       "stage": "check",
-      "question": "During DPO training, the chosen log-probability under the reference model changes between epochs because the policy diverges from it. True or false?",
+      "question": "DPO 训练期间，因为策略偏离参考，参考模型下优选补全的对数概率会随轮次变化。对还是错？",
       "options": [
-        "True only when beta is non-zero.",
-        "False unless gradients are explicitly disabled with no_grad.",
-        "True: the reference drifts as the policy updates.",
-        "False: the reference is frozen; reference log-probs are computed once and reused."
+        "仅 beta 非零时为对。",
+        "除非用 no_grad 显式禁用梯度，否则为错。",
+        "对：参考随策略更新而漂移。",
+        "错：参考冻结，其对数概率计算一次后复用。"
       ],
       "correct": 3,
-      "explanation": "The reference is frozen for the entire DPO run. Its parameters never update. The implementation either snapshots reference log-probs once or wraps the reference forward pass in no_grad with requires_grad=False set on its parameters."
+      "explanation": "整个 DPO 运行中参考都被冻结，参数从不更新。实现可以一次性快照参考对数概率，也可以在参数 requires_grad=False 的同时，将参考前向传播包在 no_grad 中。"
     },
     {
       "stage": "check",
-      "question": "Taking the gradient of L_DPO with respect to logp_w_pol (the policy's log-probability of the chosen completion), the sign is?",
+      "question": "对 logp_w_pol（策略对优选补全的对数概率）求 L_DPO 梯度，符号是什么？",
       "options": [
-        "Positive (loss increases as chosen log-prob increases).",
-        "Zero (loss is independent of policy log-probs).",
-        "Indeterminate (depends on the reference).",
-        "Negative (loss decreases as chosen log-prob increases)."
+        "正（优选对数概率增大时损失增大）。",
+        "零（损失与策略对数概率无关）。",
+        "不确定（取决于参考）。",
+        "负（优选对数概率增大时损失减小）。"
       ],
       "correct": 3,
-      "explanation": "The gradient is -beta * (1 - sigmoid(z)), which is non-positive. Increasing the chosen log-probability decreases the loss, which is exactly the training signal we want."
+      "explanation": "梯度为 -beta * (1 - sigmoid(z))，非正。增大优选对数概率会降低损失，正是需要的训练信号。"
     },
     {
       "stage": "post",
-      "question": "On your fixture the DPO loss decreases but the policy starts preferring shorter completions across the board, even when shorter is worse. The most likely cause?",
+      "question": "夹具上的 DPO 损失下降，但策略开始普遍偏好较短补全，即使短答案更差。最可能的原因是什么？",
       "options": [
-        "Length bias: longer sequences accumulate more log-probability terms (each negative), so sum-of-log-probs penalises length structurally.",
-        "The optimiser is using the wrong learning rate.",
-        "The reference is not properly frozen.",
-        "The beta is too low."
+        "长度偏差：较长序列累加更多对数概率项（每项为负），所以对数概率求和在结构上惩罚长度。",
+        "优化器学习率错误。",
+        "参考没有正确冻结。",
+        "beta 太低。"
       ],
       "correct": 0,
-      "explanation": "Sum-of-log-probabilities is biased toward shorter sequences because every additional token adds a negative log-probability term. The standard fix is to normalise log-probs by completion length when training and evaluating."
+      "explanation": "对数概率求和偏向较短序列，因为每增加一个词元就多一个负的对数概率项。标准修复是在训练和评估时按补全长度归一化对数概率。"
     },
     {
       "stage": "post",
-      "question": "You want to replace the sigmoid + log loss with the IPO variant (z - 1)^2. What is the practical effect on training dynamics?",
+      "question": "将 sigmoid 加 log 损失替换为 IPO 变体 (z - 1)^2，对训练动态的实际影响是什么？",
       "options": [
-        "It removes the need for the reference model entirely.",
-        "It does not saturate the way the sigmoid loss does, which holds up better under noisy preference labels.",
-        "It requires no beta parameter.",
-        "It is mathematically equivalent at all points."
+        "完全不再需要参考模型。",
+        "它不会像 sigmoid 损失那样饱和，因此在偏好标签含噪声时更稳健。",
+        "无需 beta 参数。",
+        "在所有点都数学等价。"
       ],
       "correct": 1,
-      "explanation": "IPO's squared loss does not saturate the way the sigmoid does, which helps when preference labels are noisy or when some triples are mis-labelled. Empirically it reduces over-optimisation on small preference datasets."
+      "explanation": "IPO 平方损失不会像 sigmoid 那样饱和，有助于处理含噪声偏好标签或误标三元组。实验上，它可减少小型偏好数据集上的过度优化。"
     }
   ]
 }

@@ -27,7 +27,7 @@ class LayerNorm:
 
 class MultiHeadAttention:
     def __init__(self, embed_dim, num_heads):
-        assert embed_dim % num_heads == 0, f"embed_dim {embed_dim} not divisible by num_heads {num_heads}"
+        assert embed_dim % num_heads == 0, f"embed_dim {embed_dim} 不能被 num_heads 整除，num_heads 为 {num_heads}"
         self.num_heads = num_heads
         self.head_dim = embed_dim // num_heads
         self.W_q = np.random.randn(embed_dim, embed_dim) * 0.02
@@ -195,9 +195,9 @@ def train_mini_gpt(text, vocab_size=256, embed_dim=128, num_heads=4,
         num_layers=num_layers, max_seq_len=seq_len, ff_dim=embed_dim * 4
     )
 
-    print(f"Model parameters: {model.count_parameters():,}")
-    print(f"Training tokens: {len(tokens):,}")
-    print(f"Config: {num_layers} layers, {num_heads} heads, {embed_dim} dims")
+    print(f"模型参数量（Model parameters）: {model.count_parameters():,}")
+    print(f"训练词元数: {len(tokens):,}")
+    print(f"配置（Config）: {num_layers} 层，{num_heads} 个注意力头，{embed_dim} 维")
     print()
 
     for step in range(num_steps):
@@ -265,7 +265,7 @@ def train_mini_gpt(text, vocab_size=256, embed_dim=128, num_heads=4,
         model.embedding.token_embed -= lr * grad_token_embed
 
         if step % 20 == 0:
-            print(f"Step {step:4d} | Loss: {loss:.4f}")
+            print(f"步数（Step）{step:4d} | 损失（Loss）: {loss:.4f}")
 
     return model
 
@@ -278,9 +278,9 @@ def parameter_breakdown():
         ("GPT-2 XL", 50257, 1600, 25, 48, 1024, 6400),
     ]
 
-    print("GPT-2 Family Parameter Counts")
+    print("GPT-2 系列参数量")
     print("=" * 65)
-    print(f"{'Model':<16} {'Layers':>6} {'Heads':>6} {'Dims':>6} {'Params':>14}")
+    print(f"{'模型（Model）':<16} {'层数（Layers）':>6} {'头数（Heads）':>6} {'维度（Dims）':>6} {'参数量（Params）':>14}")
     print("-" * 65)
 
     for name, vocab, dim, heads, layers, seq_len, ff in configs:
@@ -298,7 +298,7 @@ def parameter_breakdown():
 
 
 def memory_estimate():
-    print("Memory Requirements for Inference (FP16)")
+    print("推理内存需求（Inference Memory，FP16）")
     print("=" * 65)
 
     models = [
@@ -308,7 +308,7 @@ def memory_estimate():
         ("Llama 3 405B", 405e9, 126, 128, 128, 131072),
     ]
 
-    print(f"{'Model':<24} {'Weights':>10} {'KV Cache':>12} {'Total':>10}")
+    print(f"{'模型（Model）':<24} {'权重（Weights）':>10} {'键值缓存（KV Cache）':>12} {'总计（Total）':>10}")
     print("-" * 65)
 
     for name, params, layers, heads, head_dim, max_seq in models:
@@ -346,13 +346,13 @@ The causal mask ensures autoregressive generation during training.
 Pre-training on large text corpora teaches the model general language understanding.
 Fine-tuning adapts the pre-trained model to specific downstream tasks."""
 
-    print("Training Mini GPT")
+    print("训练 Mini GPT")
     print("=" * 65)
     model = train_mini_gpt(corpus, num_steps=200)
 
     prompt = list("The transformer".encode("utf-8"))
-    print(f"\nPrompt: 'The transformer'")
-    print("Generating...")
+    print(f"\n提示词（Prompt）: 'The transformer'")
+    print("正在生成……")
     output_tokens = generate(model, prompt, max_new_tokens=100, temperature=0.8)
     generated_text = bytes(output_tokens).decode("utf-8", errors="replace")
-    print(f"Generated: {generated_text}")
+    print(f"生成结果（Generated）: {generated_text}")

@@ -1,87 +1,87 @@
 {
   "lesson": "05-autonomous-research-agent",
-  "title": "Capstone 05 — Autonomous Research Agent (AI-Scientist Class)",
+  "title": "综合实践 05：自主研究智能体（Autonomous Research Agent，AI-Scientist 类）",
   "questions": [
     {
       "stage": "pre",
-      "question": "What search shape does the AI-Scientist-class agent use to explore experiments?",
+      "question": "AI-Scientist 类智能体使用哪种搜索形态探索实验？",
       "options": [
-        "Breadth-first expansion with random scoring",
-        "Beam search over token outputs",
-        "Pure reinforcement learning from human feedback",
-        "Best-first tree search over experiment nodes with a novelty x quality x budget score"
+        "使用随机评分的广度优先扩展（Breadth-First Expansion）",
+        "对词元（Token）输出进行束搜索（Beam Search）",
+        "纯粹使用基于人类反馈的强化学习（Reinforcement Learning from Human Feedback）",
+        "对实验节点进行最佳优先树搜索（Best-First Tree Search），评分为新颖性 x 质量 x 预算"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "pre",
-      "question": "Why is the sandbox configured with --network=none and bounded resource caps?",
+      "question": "为什么沙箱（Sandbox）配置 --network=none 并设置有限的资源上限？",
       "options": [
-        "To force the agent to use prompt caching",
-        "To prevent network egress and contain experiment side effects within a reproducible envelope",
-        "To enforce deterministic floating-point arithmetic",
-        "To allow GPU passthrough by default"
+        "强制智能体使用提示词缓存（Prompt Caching）",
+        "阻止网络出站（Network Egress），并将实验副作用限制在可复现的边界内",
+        "强制浮点运算具有确定性",
+        "默认允许 GPU 直通（Passthrough）"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "What is the role of the vision critique step in the writer loop?",
+      "question": "写作循环中的视觉评议（Vision Critique）步骤起什么作用？",
       "options": [
-        "Generates new experiment ideas from screenshots",
-        "Replaces matplotlib at render time",
-        "Translates figures into bar charts",
-        "Compiles the LaTeX draft to PDF, then has a VLM critique layout, figure legibility, and claim-evidence alignment"
+        "根据截图生成新实验想法",
+        "在渲染时替代 matplotlib",
+        "将图形转换为条形图",
+        "将 LaTeX 草稿编译为 PDF，再由视觉语言模型（Vision-Language Model，VLM）评议版式、图形可读性以及论断与证据的一致性"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "How does the reviewer ensemble gate the pipeline?",
+      "question": "评审器集成（Reviewer Ensemble）如何控制流水线能否继续？",
       "options": [
-        "Reviewers vote anonymously and the majority wins",
-        "Five judges score on NeurIPS-style rubrics and the weighted aggregate must clear a threshold, otherwise the draft loops back to the writer",
-        "A single judge accepts or rejects on a binary flag",
-        "Reviews run after publication only"
+        "评审器匿名投票，多数获胜",
+        "五个裁判按 NeurIPS 风格标准评分，加权汇总结果必须达到阈值，否则草稿返回写作器",
+        "单个裁判根据二元标志接受或拒绝",
+        "仅在发表后运行评审"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Which cost discipline does the capstone enforce per paper?",
+      "question": "本综合实践对每篇论文实施哪种成本纪律？",
       "options": [
-        "GPU-hours tracked but never capped",
-        "A $30 hard budget tracked through Langfuse counters and pre-run estimates",
-        "Cost-only optimization without quality checks",
-        "Unbounded compute, hard wall-clock only"
+        "追踪 GPU 小时数，但不设上限",
+        "通过 Langfuse 计数器和运行前估算追踪 30 美元硬性预算",
+        "只优化成本，不检查质量",
+        "计算资源无限，仅硬性限制实际运行时间（Wall-Clock）"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "Which scoring function ranks tree nodes for further expansion?",
+      "question": "哪个评分函数为树节点排序，以决定后续扩展？",
       "options": [
-        "Citation count of related papers",
-        "Random uniform priority",
-        "Output length and token count",
-        "Novelty x quality x remaining budget"
+        "相关论文的引用次数",
+        "均匀随机优先级",
+        "输出长度与词元数",
+        "新颖性 x 质量 x 剩余预算"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "What does the red-team report exercise against the system?",
+      "question": "红队报告针对系统演练哪些内容？",
       "options": [
-        "Sandbox-escape attempts such as fork bombs, network exfiltration, and filesystem escapes",
-        "Caching hit rate on system prompts",
-        "Multi-tenant data leakage in the vector DB",
-        "Latency tail under packet loss"
+        "进程炸弹（Fork Bomb）、网络数据外传（Network Exfiltration）和文件系统逃逸等沙箱逃逸尝试",
+        "系统提示词的缓存命中率",
+        "向量数据库（Vector DB）中的多租户数据泄露",
+        "丢包情况下的尾部延迟（Tail Latency）"
       ],
       "correct": 0,
       "explanation": ""

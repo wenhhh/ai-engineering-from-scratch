@@ -1,32 +1,32 @@
 ---
 name: eagle3-rollout
-description: Produce a staged EAGLE-3 speculative-decoding rollout plan that measures acceptance rate alpha on real traffic before shipping.
+description: 制定分阶段 EAGLE-3 推测解码上线计划，在交付前先测量真实流量上的接受率 alpha。
 version: 1.0.0
 phase: 17
 lesson: 05
 tags: [speculative-decoding, eagle-3, vllm, alpha, production-rollout]
 ---
 
-Given a target model, hardware (GPU type and count), traffic description (general chat / code / specialized), concurrency target, and current baseline metrics (TTFT, ITL, throughput), produce a staged EAGLE-3 rollout plan.
+根据目标模型、硬件（GPU 类型和数量）、流量描述（通用聊天、代码或专业领域）、并发目标和当前基线指标（TTFT、ITL、吞吐量），制定分阶段 EAGLE-3 上线计划。
 
-Produce:
+请输出：
 
-1. Baseline measurement plan. Which benchmark (LLMPerf, GenAI-Perf, or production shadow), which prompt distribution, which concurrency point, which metrics to record (TTFT mean/P99, ITL mean/P99, throughput, concurrency).
-2. Draft-head selection. ShareGPT-trained EAGLE-3 for general chat. Domain-trained EAGLE-3 for specialized traffic (code, medical, legal) or the decision to train one before shipping.
-3. Config. Exact vLLM `speculative_config` fields (method, model, num_speculative_tokens). Note the v0.18.0 compatibility: draft-model speculation cannot combine with `--enable-chunked-prefill`; N-gram GPU spec decode in V1 is the exception.
-4. Alpha gate. Target alpha >= 0.55 at production concurrency. Measurement procedure: shadow traffic for 24 hours, log vLLM `spec_decode_metrics`, divide accepted tokens by requested draft length. Kill switch if alpha drops below 0.45 in any 1-hour window.
-5. Tail watch. Plot P99 ITL delta (spec on - spec off). If delta is positive, the rejected-draft two-pass pattern is biting. Reduce K or disable on this workload.
-6. Break-even check. At reported concurrency, compute break-even alpha for current verify overhead. Ship only if measured alpha clears break-even by at least 0.1.
+1. 基线测量计划。明确基准（LLMPerf、GenAI-Perf 或生产影子流量）、提示词分布、并发测试点和记录指标（TTFT 均值/P99、ITL 均值/P99、吞吐量、并发）。
+2. 草稿头选择。通用聊天选择 ShareGPT 训练的 EAGLE-3；代码、医疗、法律等专业流量选择领域训练的 EAGLE-3，或决定上线前先训练一个。
+3. 配置。给出精确 vLLM `speculative_config` 字段（method、model、num_speculative_tokens）。指出 v0.18.0 的兼容性：草稿模型推测不能与 `--enable-chunked-prefill` 组合，V1 中 N-gram GPU 推测解码是例外。
+4. alpha 门禁。目标为生产并发下 alpha >= 0.55。测量步骤：运行 24 小时影子流量，记录 vLLM `spec_decode_metrics`，用接受词元数除以请求的草稿长度。任意 1 小时窗口内 alpha 低于 0.45 时触发紧急停止。
+5. 尾延迟监控。绘制 P99 ITL 差值（推测开启减推测关闭）。差值为正，说明被拒草稿的双遍执行正在造成影响。减小 K，或对此工作负载禁用推测。
+6. 盈亏平衡检查。在报告并发下，根据当前验证开销计算盈亏平衡 alpha。只有实测 alpha 至少高出盈亏平衡点 0.1 才上线。
 
-Hard rejects:
-- Shipping without measuring alpha on production traffic. Refuse and require a 24-hour shadow measurement.
-- Claiming 2-3x speedup without naming the measured alpha.
-- Enabling speculative decoding for offline batch jobs where latency is not the constraint.
-- Combining draft-model speculation with chunked prefill on vLLM v0.18.0. Hard incompatibility.
+硬性否决条件：
+- 未测量生产流量 alpha 就上线。拒绝，要求 24 小时影子测量。
+- 声称加速 2-3 倍，却不提供实测 alpha。
+- 对延迟并非约束的离线批处理作业开启推测解码。
+- 在 vLLM v0.18.0 上组合草稿模型推测与分块预填充，这是硬性不兼容。
 
-Refusal rules:
-- If traffic is primarily very short outputs (under 50 tokens mean), refuse. Draft overhead dominates; ship plain target.
-- If hardware is consumer (RTX 4090 / 5090) and batch size stays under 8, recommend plain target — batch-amortization of verify overhead needs concurrency the hardware cannot supply.
-- If the user wants auto-tune of K without a measurement loop, refuse. K is chosen from measured alpha plus verify overhead; no auto-tune replaces measurement.
+拒绝规则：
+- 如果流量主要是很短的输出，平均少于 50 词元，拒绝启用。草稿开销占主导，应部署纯目标模型。
+- 如果是消费级硬件 RTX 4090 / 5090，且批次始终小于 8，推荐纯目标模型：摊薄验证开销所需的并发超出该硬件能力。
+- 如果用户希望不建立测量循环就自动调 K，拒绝。K 由实测 alpha 与验证开销决定，自动调优不能替代测量。
 
-Output: a one-page staged rollout plan listing baseline → config → alpha gate → tail watch → break-even confirmation. End with a "what to measure next" paragraph naming either domain-specific EAGLE-3 training, lower K, or reverting to plain target depending on the diagnosis.
+输出：一页分阶段上线计划，依次列出基线 → 配置 → alpha 门禁 → 尾延迟监控 → 盈亏平衡确认。最后用一段“下一步测量什么”，根据诊断选择领域专用 EAGLE-3 训练、降低 K 或退回纯目标模型。

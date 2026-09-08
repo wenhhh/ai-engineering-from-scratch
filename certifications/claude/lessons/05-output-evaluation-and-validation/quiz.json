@@ -1,78 +1,78 @@
 {
   "lesson": "05-output-evaluation-and-validation",
-  "title": "Validate the Claim, Not the Confidence",
+  "title": "验证主张，而不是相信自信语气（Validate the Claim, Not the Confidence）",
   "questions": [
     {
       "stage": "pre",
-      "question": "A report includes a citation beside every claim. What must validation still establish?",
+      "question": "报告每项主张旁都有引用，验证还必须确定什么？",
       "options": [
-        "That each source is authoritative and supports the exact claim",
-        "That every factual sentence has one citation even when several claims share evidence",
-        "That the citation format is consistent and all links resolve without redirects",
-        "That every linked page shares one publication date"
+        "每个来源具有权威性，并支持确切主张",
+        "每个事实句都有一个引用，即使多个主张共享证据",
+        "引用格式一致，所有链接无需重定向即可打开",
+        "所有链接页面拥有同一发布日期"
       ],
       "correct": 0,
-      "explanation": "Citation presence does not prove authority, completeness, or entailment. The evidence must support the specific claim."
+      "explanation": "引用存在不证明权威性、完整性或蕴含关系。证据必须支持具体主张。"
     },
     {
       "stage": "check",
-      "question": "Which evaluator should check whether returned JSON parses and contains required fields?",
+      "question": "应由哪种评估者检查返回的 JSON 是否可解析、是否包含必需字段？",
       "options": [
-        "A model-based schema grader",
-        "A deterministic parser and schema check",
-        "The generating model asked to confirm that its own response follows the schema",
-        "A human reviewer applying a checklist to every returned object before use"
+        "基于模型的模式评分器",
+        "确定性解析器和模式检查",
+        "让生成模型确认自己的回答符合模式",
+        "人工审核者在使用前逐个对象应用清单"
       ],
       "correct": 1,
-      "explanation": "Exact structural properties should be checked programmatically because the result is repeatable and unambiguous."
+      "explanation": "精确结构属性应通过程序检查，因为结果可重复且无歧义。"
     },
     {
       "stage": "check",
-      "question": "A response gives a fluent answer about a policy published after the supplied source snapshot. Which repair best targets the knowledge limitation?",
+      "question": "回答流畅地描述了一项在给定来源快照之后发布的政策。哪种修复最针对知识局限？",
       "options": [
-        "Increase the output length so the model can explain its recall",
-        "Treat polished wording as evidence that the policy is already known",
-        "Add the current approved policy as evidence and rerun claim-support checks",
-        "Ask for the same answer again with a higher confidence threshold"
+        "增加输出长度，让模型解释其记忆",
+        "把精美措辞视为模型已知政策的证据",
+        "补充当前获批政策作为证据，重跑主张支持检查",
+        "提高置信度阈值，再要求同一答案"
       ],
       "correct": 2,
-      "explanation": "A knowledge gap needs authoritative current context and validation. A generic retry does not change the information available to the workflow."
+      "explanation": "知识缺口需要最新权威上下文和验证。泛泛重试不会改变工作流可用的信息。"
     },
     {
       "stage": "check",
-      "question": "An aggregate evaluation score is 95 percent, but high-impact exception cases pass only 40 percent. What should control deployment?",
+      "question": "总体评估得分为 95%，但高影响例外案例只有 40% 通过率。什么应决定部署？",
       "options": [
-        "A weighted average that assigns exception cases their expected traffic frequency only",
-        "The normal-case score plus a plan to monitor exceptions after full deployment",
-        "The aggregate score, provided the exception cases represent less than 5 percent of traffic",
-        "The risk-segment failure and required release threshold"
+        "只按例外案例预期流量频率赋权的加权平均",
+        "正常案例分数，加上全面部署后监控例外的计划",
+        "只要例外案例少于流量的 5%，就看总体分数",
+        "风险分组失败情况与必需发布阈值"
       ],
       "correct": 3,
-      "explanation": "Performance must be segmented by consequence. A high average cannot hide unacceptable behavior on critical cases."
+      "explanation": "必须按后果分组查看表现。高平均值不能掩盖关键案例不可接受的行为。"
     },
     {
       "stage": "post",
-      "question": "A response states that training caused lower returns, but the source only shows that training occurred first. What defect is this?",
+      "question": "回答声称培训导致退货减少，但来源只显示培训先发生。这是什么缺陷？",
       "options": [
-        "Overreach from correlation to causation",
-        "A completeness failure because the response did not cite every event in the timeline",
-        "An audience failure because causal language is acceptable only in technical reports",
-        "A provenance failure because temporal order cannot be represented in a citation"
+        "从相关性过度推断因果",
+        "完整性故障，因为未引用时间线所有事件",
+        "受众故障，因为只有技术报告才能使用因果措辞",
+        "来源追溯故障，因为引用无法表达时间先后"
       ],
       "correct": 0,
-      "explanation": "The conclusion is stronger than the evidence, so the claim-evidence relationship fails even if both events are real."
+      "explanation": "结论强于证据，因此即使两个事件都真实，主张与证据关系仍不成立。"
     },
     {
       "stage": "post",
-      "question": "What is the strongest response to a material production failure?",
+      "question": "发生重大生产故障后，最有力的应对是什么？",
       "options": [
-        "Raise the model's confidence threshold without locating the layer that caused the failure",
-        "Add a durable evaluation case and repair the relevant criterion, source, prompt, or workflow control",
-        "Correct the affected output and add a manual review step for similar requests this week",
-        "Exclude the failed example from aggregate reporting because production inputs are uncontrolled"
+        "不定位故障层次，直接提高模型置信度阈值",
+        "增加持久评估案例，并修复相关标准、来源、提示词或工作流控制",
+        "修正受影响输出，本周对类似请求增加人工审核",
+        "因生产输入不受控，将失败示例排除在总体报告外"
       ],
       "correct": 1,
-      "explanation": "Closing the loop prevents recurrence by making the failure part of future testing and system design."
+      "explanation": "闭环将故障纳入未来测试与系统设计，从而防止重现。"
     }
   ]
 }

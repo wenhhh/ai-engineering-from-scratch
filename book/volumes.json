@@ -1,5 +1,5 @@
 {
-  "series": "AI Engineering from Scratch",
+  "series": "从零开始的 AI 工程（AI Engineering from Scratch）",
   "author": "aiengineeringfromscratch.com",
   "site": "https://aiengineeringfromscratch.com",
   "repo": "https://github.com/rohitg00/ai-engineering-from-scratch",
@@ -7,43 +7,43 @@
     {
       "slug": "foundations",
       "number": 1,
-      "title": "Foundations",
-      "subtitle": "Math, Tooling, and Classical Machine Learning",
+      "title": "基础（Foundations）",
+      "subtitle": "数学、工具与经典机器学习（Math, Tooling, and Classical Machine Learning）",
       "phases": ["00-setup-and-tooling", "01-math-foundations", "02-ml-fundamentals"]
     },
     {
       "slug": "deep-learning",
       "number": 2,
-      "title": "Deep Learning",
-      "subtitle": "Networks, Vision, and Speech",
+      "title": "深度学习（Deep Learning）",
+      "subtitle": "网络、视觉与语音（Networks, Vision, and Speech）",
       "phases": ["03-deep-learning-core", "04-computer-vision", "06-speech-and-audio"]
     },
     {
       "slug": "language",
       "number": 3,
-      "title": "Language",
-      "subtitle": "NLP Foundations and the Transformer",
+      "title": "语言（Language）",
+      "subtitle": "自然语言处理基础与 Transformer（NLP Foundations and the Transformer）",
       "phases": ["05-nlp-foundations-to-advanced", "07-transformers-deep-dive"]
     },
     {
       "slug": "llms",
       "number": 4,
-      "title": "Large Language Models",
-      "subtitle": "Generation, Reinforcement, Pretraining, and Engineering",
+      "title": "大语言模型（Large Language Models）",
+      "subtitle": "生成、强化学习、预训练与工程实践（Generation, Reinforcement, Pretraining, and Engineering）",
       "phases": ["08-generative-ai", "09-reinforcement-learning", "10-llms-from-scratch", "11-llm-engineering"]
     },
     {
       "slug": "agents",
       "number": 5,
-      "title": "Agents",
-      "subtitle": "Multimodality, Protocols, Autonomy, and Swarms",
+      "title": "智能体（Agents）",
+      "subtitle": "多模态、协议、自主性与群体（Multimodality, Protocols, Autonomy, and Swarms）",
       "phases": ["12-multimodal-ai", "13-tools-and-protocols", "14-agent-engineering", "15-autonomous-systems", "16-multi-agent-and-swarms"]
     },
     {
       "slug": "production",
       "number": 6,
-      "title": "Production",
-      "subtitle": "Infrastructure, Safety, and Capstones",
+      "title": "生产实践（Production）",
+      "subtitle": "基础设施、安全与综合实践（Infrastructure, Safety, and Capstones）",
       "phases": ["17-infrastructure-and-production", "18-ethics-safety-alignment", "19-capstone-projects"]
     }
   ]

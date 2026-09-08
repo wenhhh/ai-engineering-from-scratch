@@ -1,78 +1,78 @@
 {
   "lesson": "14-evals-testing-debugging-and-observability",
-  "title": "Evals Turn Agent Behavior Into Engineering Evidence",
+  "title": "评测将智能体行为转化为工程证据（Evals Turn Agent Behavior Into Engineering Evidence）",
   "questions": [
     {
       "stage": "pre",
-      "question": "An agent says an order shipped, but no tool call or database change exists. Which evaluation surface catches the decisive failure?",
+      "question": "智能体说订单已发货，但没有工具调用或数据库变更。哪个评测方面能够发现决定性的失败？",
       "options": [
-        "A semantic grader comparing the claim with the user's requested outcome",
-        "Trajectory review of the claimed shipping action",
-        "Final-state verification against the authoritative order system",
-        "Protocol validation confirming that the response ended normally without tool use"
+        "将主张与用户期望结果比较的语义评分器",
+        "审查所声称发货操作的轨迹",
+        "对照权威订单系统验证最终状态",
+        "确认响应正常结束且没有使用工具的协议校验"
       ],
       "correct": 2,
-      "explanation": "The authoritative system state proves whether the action occurred. Fluent output cannot substitute for an external state check."
+      "explanation": "权威系统状态能证明操作是否发生。流畅输出不能替代外部状态检查。"
     },
     {
       "stage": "check",
-      "question": "Which property should be tested deterministically instead of with an LLM judge?",
+      "question": "哪个属性应使用确定性测试，而非 LLM 评判器？",
       "options": [
-        "Whether two nuanced summaries preserve equivalent meaning and emphasis",
-        "Whether prose is empathetic to the reader",
-        "Whether an explanation communicates the core idea clearly to a novice reader",
-        "Whether JSON includes required fields and valid enums"
+        "两份细腻摘要是否保留等价含义与重点",
+        "文字是否体谅读者",
+        "解释是否向初学者清楚传达核心思想",
+        "JSON 是否包含必需字段与有效枚举"
       ],
       "correct": 3,
-      "explanation": "Schema validity has exact rules. A deterministic validator is cheaper, reproducible, and more reliable than a model grader."
+      "explanation": "模式有效性有精确规则。确定性校验器比模型评分器更便宜、可复现且更可靠。"
     },
     {
       "stage": "check",
-      "question": "How should a model-based grader be validated?",
+      "question": "应如何验证模型评分器？",
       "options": [
-        "By calibrating it against independently labeled human examples and reviewing disagreements",
-        "By selecting a stronger grader model and allowing enough tokens for detailed reasoning",
-        "By repeating each judgment and accepting the label when multiple samples agree",
-        "By supplying the generator's full reasoning so the grader can reconstruct its intent"
+        "用独立人工标注样例校准，并审查分歧",
+        "选择更强的评分模型，并允许足够词元进行详细推理",
+        "重复每次判断，多次采样一致时接受标签",
+        "提供生成器完整推理，让评分器重建其意图"
       ],
       "correct": 0,
-      "explanation": "Human-labeled cases reveal false positives, false negatives, rubric ambiguity, and grader biases. Self-consistency alone cannot establish validity."
+      "explanation": "人工标注案例能揭示假阳性、假阴性、评分标准歧义与评分器偏差。仅凭自洽性不能证明有效性。"
     },
     {
       "stage": "check",
-      "question": "A provider response is valid, but the SDK client drops one response field during serialization. What should debugging inspect?",
+      "question": "提供商响应有效，但 SDK 客户端在序列化中丢弃了一个响应字段。调试应检查什么？",
       "options": [
-        "The final application prompt and model settings",
-        "The live wire response and each serialization boundary",
-        "The SDK's public type declaration without capturing the provider's raw response",
-        "The final mapped object and downstream consumer without inspecting earlier boundaries"
+        "最终应用提示词和模型设置",
+        "真实线上响应及每个序列化边界",
+        "只查看 SDK 公开类型声明，不捕获提供商原始响应",
+        "只检查最终映射对象和下游消费者，不检查更早边界"
       ],
       "correct": 1,
-      "explanation": "Comparing wire data, SDK types, and application mapping identifies where the field disappeared before changing model behavior."
+      "explanation": "比较线上数据、SDK 类型和应用映射，可以在修改模型行为前定位字段在哪一步消失。"
     },
     {
       "stage": "post",
-      "question": "Why should a release gate inspect slices and severe failures in addition to average score?",
+      "question": "发布门禁为什么应在平均分之外检查切片和严重失败？",
       "options": [
-        "Severe failures can be accepted when their aggregate contribution stays below the gate",
-        "An average score is sufficient only when each slice has the same traffic frequency",
-        "Averages can hide a new critical regression in one domain or safety case",
-        "Slices make model-based evaluation deterministic enough to replace severe-case review"
+        "严重失败对总体贡献低于门禁时就可接受",
+        "仅当各切片流量频率相同时，平均分才足够",
+        "平均值可能掩盖某个领域或安全案例中新增的关键回归",
+        "切片让模型评测足够确定，可以取代严重案例审查"
       ],
       "correct": 2,
-      "explanation": "A small overall gain can conceal data leakage, cross-tenant access, or a large drop for one important scenario group."
+      "explanation": "总体的小幅提升可能掩盖数据泄露、跨租户访问或某个重要场景组的大幅下降。"
     },
     {
       "stage": "post",
-      "question": "A request fails due to invalid tool-result ordering. Which recovery is most appropriate?",
+      "question": "请求因工具结果顺序无效而失败。哪种恢复最合适？",
       "options": [
-        "Retry the malformed message with a larger model and preserve the same client history",
-        "Ask a model grader whether the intended tool sequence was semantically reasonable",
-        "Increase the tool timeout because late results can cause invalid content-block ordering",
-        "Fix the client protocol state and add a contract test"
+        "使用更大模型重试畸形消息，保留相同客户端历史",
+        "请模型评分器判断预期工具顺序在语义上是否合理",
+        "增加工具超时，因为结果过晚可能导致内容块顺序无效",
+        "修复客户端协议状态，并添加契约测试"
       ],
       "correct": 3,
-      "explanation": "This is a deterministic protocol defect. Prompt or model changes do not repair malformed application state."
+      "explanation": "这是确定性协议缺陷。修改提示词或模型不能修复畸形的应用状态。"
     }
   ]
 }

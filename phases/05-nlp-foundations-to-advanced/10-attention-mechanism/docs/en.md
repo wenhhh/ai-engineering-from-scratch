@@ -1,68 +1,68 @@
-# Attention Mechanism — The Breakthrough
+# 注意力机制：关键突破（Attention Mechanism — The Breakthrough）
 
-> The decoder stops squinting at a compressed summary and starts looking at the whole source. Everything after this is attention plus engineering.
+> 解码器不再盯着压缩摘要猜测，而是查看整个源序列。此后的发展，就是注意力加工程。
 
 **Type:** Build
 **Languages:** Python
-**Prerequisites:** Phase 5 · 09 (Sequence-to-Sequence Models)
-**Time:** ~45 minutes
+**Prerequisites:** 阶段 5 · 09（序列到序列模型，Sequence-to-Sequence Models）
+**Time:** ~45 分钟
 
-## The Problem
+## 问题（The Problem）
 
-Lesson 09 ended on a measured failure. A GRU encoder-decoder trained on a toy copy task goes from 89% accuracy at length 5 to near-chance at length 80. The reason is structural, not a training bug: every bit of information the encoder gleaned has to fit in one fixed-size hidden state, and the decoder never sees anything else.
+第 09 课以一个实测失效案例结束：在玩具复制任务上训练的 GRU 编码器–解码器，准确率从长度 5 时的 89%，下降到长度 80 时接近随机水平。原因是结构性的，不是训练缺陷：编码器获得的每一点信息都必须装进一个定长隐藏状态，解码器看不到其他内容。
 
-Bahdanau, Cho, and Bengio published a three-line fix in 2014. Instead of giving the decoder only the final encoder state, keep every encoder state. At each decoder step, compute a weighted average of encoder states where the weights say "how much does the decoder need to look at encoder position `i` right now?" That weighted average is the context, and it changes every decoder step.
+Bahdanau、Cho 和 Bengio 在 2014 年提出三行就能表达的修复：不要只给解码器最终编码器状态，而要保留每个编码器状态。每个解码步骤计算编码器状态的加权平均，权重回答“解码器现在需要多大程度关注编码器位置 `i`？”这个加权平均就是上下文，每个解码步骤都会改变。
 
-That is the whole idea. Transformers extended it. Self-attention applied it to a single sequence. Multi-head attention ran it in parallel. But the 2014 version already broke the bottleneck, and once you have it, the pivot to transformers is engineering, not conceptual.
+核心想法仅此而已。Transformer 扩展了它，自注意力（Self-attention）把它应用于单个序列，多头注意力（Multi-head attention）并行运行它。但 2014 年的版本已经打破瓶颈；理解它之后，转向 Transformer 主要是工程变化，而非概念跳跃。
 
-## The Concept
+## 概念（The Concept）
 
-![Bahdanau attention: decoder queries all encoder states](../assets/attention.svg)
+![Bahdanau 注意力：解码器查询全部编码器状态](../assets/attention.svg)
 
-At each decoder step `t`:
+在每个解码步骤 `t`：
 
-1. Use the previous decoder hidden state `s_{t-1}` as a **query**.
-2. Score it against every encoder hidden state `h_1, ..., h_T`. One scalar per encoder position.
-3. Softmax the scores to get attention weights `α_{t,1}, ..., α_{t,T}` that sum to 1.
-4. Context vector `c_t = Σ α_{t,i} * h_i`. Weighted average of encoder states.
-5. Decoder takes `c_t` plus the previous output token, produces the next token.
+1. 将前一解码器隐藏状态 `s_{t-1}` 用作**查询（Query）**。
+2. 将其与每个编码器隐藏状态 `h_1, ..., h_T` 评分，每个编码器位置得到一个标量。
+3. 对分数做 softmax，得到总和为 1 的注意力权重 `α_{t,1}, ..., α_{t,T}`。
+4. 上下文向量 `c_t = Σ α_{t,i} * h_i`，即编码器状态的加权平均。
+5. 解码器接收 `c_t` 和前一输出词元，生成下一个词元。
 
-The weighted average is the point. When the decoder needs to translate "Je" to "I", it weights the encoder state over "Je" high and the others low. When it needs "not", it weights "pas" high. The context vector reshapes each step.
+加权平均是重点。解码器需要将“Je”译为“I”时，会给“Je”对应的编码器状态较高权重，其他位置较低；需要“not”时，则给“pas”较高权重。上下文向量每步重新形成。
 
-## Shapes (the thing that bites everyone)
+## 张量形状：人人都会踩的坑（Shapes）
 
-This is where every attention implementation goes wrong the first time. Read slowly.
+几乎每个注意力实现第一次都会在这里出错，请慢慢读。
 
-| Thing | Shape | Notes |
+| 对象 | 形状 | 说明 |
 |-------|-------|-------|
-| Encoder hidden states `H` | `(T_enc, d_h)` | If BiLSTM, `d_h = 2 * d_hidden` |
-| Decoder hidden state `s_{t-1}` | `(d_s,)` | One vector |
-| Attention score `e_{t,i}` | scalar | One per encoder position |
-| Attention weight `α_{t,i}` | scalar | After softmax over all `i` |
-| Context vector `c_t` | `(d_h,)` | Same shape as an encoder state |
+| 编码器隐藏状态 `H` | `(T_enc, d_h)` | 若为 BiLSTM，`d_h = 2 * d_hidden` |
+| 解码器隐藏状态 `s_{t-1}` | `(d_s,)` | 一个向量 |
+| 注意力分数 `e_{t,i}` | 标量 | 每个编码器位置一个 |
+| 注意力权重 `α_{t,i}` | 标量 | 对全部 `i` 做 softmax 后得到 |
+| 上下文向量 `c_t` | `(d_h,)` | 与编码器状态形状相同 |
 
-**Bahdanau (additive) score.** `e_{t,i} = v_α^T * tanh(W_a * s_{t-1} + U_a * h_i)`.
+**Bahdanau 加性评分（Additive score）。** `e_{t,i} = v_α^T * tanh(W_a * s_{t-1} + U_a * h_i)`。
 
-- `s_{t-1}` has shape `(d_s,)`, `h_i` has shape `(d_h,)`.
-- `W_a` has shape `(d_attn, d_s)`. `U_a` has shape `(d_attn, d_h)`.
-- Their sum inside the tanh has shape `(d_attn,)`.
-- `v_α` has shape `(d_attn,)`. The inner product with `v_α` collapses to a scalar. **This is what `v_α` does.** It is not magic. It is the projection that turns an attention-dim vector into a scalar score.
+- `s_{t-1}` 的形状是 `(d_s,)`，`h_i` 的形状是 `(d_h,)`。
+- `W_a` 的形状是 `(d_attn, d_s)`，`U_a` 的形状是 `(d_attn, d_h)`。
+- tanh 内两者之和的形状为 `(d_attn,)`。
+- `v_α` 的形状是 `(d_attn,)`，与 `v_α` 做内积后缩为标量。**这就是 `v_α` 的作用。** 它并不神秘，只是将注意力维度向量投影为标量分数。
 
-**Luong (multiplicative) score.** Three variants:
+**Luong 乘性评分（Multiplicative score）。** 有三种变体：
 
-- `dot`: `e_{t,i} = s_t^T * h_i`. Requires `d_s == d_h`. Hard constraint. Skip if your encoder is bidirectional.
-- `general`: `e_{t,i} = s_t^T * W * h_i` with `W` shape `(d_s, d_h)`. Removes the equal-dim constraint.
-- `concat`: essentially the Bahdanau form. Rarely used since the first two are cheaper.
+- `dot`：`e_{t,i} = s_t^T * h_i`，要求 `d_s == d_h`，这是硬约束。编码器为双向时跳过它。
+- `general`：`e_{t,i} = s_t^T * W * h_i`，其中 `W` 形状为 `(d_s, d_h)`，去除了维度相等约束。
+- `concat`：本质上就是 Bahdanau 形式。前两种更便宜，因此它很少使用。
 
-**One Bahdanau / Luong gotcha worth naming.** Bahdanau uses `s_{t-1}` (the decoder state *before* generating the current word). Luong uses `s_t` (the state *after*). Mixing them up produces subtly wrong gradients that are extremely hard to debug. Pick one paper and stick to its convention.
+**一个值得说明的 Bahdanau / Luong 陷阱。** Bahdanau 使用 `s_{t-1}`，即生成当前词*之前*的解码器状态；Luong 使用 `s_t`，即*之后*的状态。混用会产生难以察觉、极难调试的错误梯度。选一篇论文，始终遵守其约定。
 
 ```figure
 attention-heatmap
 ```
 
-## Build It
+## 动手实现（Build It）
 
-### Step 1: additive (Bahdanau) attention
+### 步骤 1：加性 Bahdanau 注意力（Additive attention）
 
 ```python
 import numpy as np
@@ -84,9 +84,9 @@ def softmax(x):
     return e / e.sum()
 ```
 
-Check your shapes against the table above. `encoder_states` has shape `(T_enc, d_h)`. `projected_enc` has shape `(T_enc, d_attn)`. `projected_dec` has shape `(d_attn,)` and broadcasts. `combined` has shape `(T_enc, d_attn)`. `scores` has shape `(T_enc,)`. `weights` has shape `(T_enc,)`. `context` has shape `(d_h,)`. Ship it.
+对照上表检查形状：`encoder_states` 为 `(T_enc, d_h)`，`projected_enc` 为 `(T_enc, d_attn)`，`projected_dec` 为 `(d_attn,)`，参与广播。`combined` 为 `(T_enc, d_attn)`，`scores` 为 `(T_enc,)`，`weights` 为 `(T_enc,)`，`context` 为 `(d_h,)`。核对后即可交付。
 
-### Step 2: Luong dot and general
+### 步骤 2：Luong 点积与通用形式（Dot and general）
 
 ```python
 def dot_attention(decoder_state, encoder_states):
@@ -102,11 +102,11 @@ def general_attention(decoder_state, encoder_states, W):
     return weights @ encoder_states, weights
 ```
 
-Three lines each. This is why Luong's paper landed. Same accuracy on most tasks, a lot less code.
+每种三行代码。这正是 Luong 论文受欢迎的原因：多数任务上准确率相同，代码却少得多。
 
-### Step 3: a worked numerical example
+### 步骤 3：数值示例（A worked numerical example）
 
-Given three encoder states (roughly "cat", "sat", "mat") and a decoder state that aligns most with the first, the attention distribution concentrates on position 0. If the decoder state shifts to align with the last, attention moves to position 2. The context vector tracks.
+给定三个编码器状态，大致对应“cat”“sat”“mat”，以及与第一个状态最对齐的解码器状态，注意力分布会集中于位置 0。若解码器状态转向与最后状态对齐，注意力便移到位置 2，上下文向量随之变化。
 
 ```python
 H = np.array([
@@ -124,23 +124,23 @@ print("weights:", w.round(3))
 weights: [0.464 0.305 0.231]
 ```
 
-First row wins. Then move the decoder state closer to the third encoder state and watch the weights shift. That is it. Attention is explicit alignment.
+第一行胜出。再把解码器状态移向第三个编码器状态，观察权重变化。就是这样，注意力是显式对齐（Explicit alignment）。
 
-### Step 4: why this is the bridge to transformers
+### 步骤 4：为什么它连接到 Transformer（The bridge to transformers）
 
-Translate the language above into Q/K/V:
+把上述表述转换为 Q/K/V：
 
-- **Query** = decoder state `s_{t-1}`
-- **Key** = encoder states (what we score against)
-- **Value** = encoder states (what we weight and sum)
+- **查询（Query）** = 解码器状态 `s_{t-1}`
+- **键（Key）** = 编码器状态，即评分时匹配的对象
+- **值（Value）** = 编码器状态，即加权求和的对象
 
-In classical attention, keys and values are the same thing. Self-attention separates them: you can query a sequence against itself, with different learned projections for K and V. Multi-head attention runs it in parallel with different learned projections. Transformers stack the whole stage many times and drop RNNs.
+传统注意力中，键和值相同。自注意力将其分开：序列可对自身发起查询，K 和 V 使用不同的学习投影。多头注意力用不同投影并行执行。Transformer 多次堆叠整个阶段，并去掉 RNN。
 
-The math is the same. The shapes are the same. The pedagogical jump from Bahdanau attention to scaled dot-product attention is mostly notation.
+数学相同，形状相同。从 Bahdanau 注意力到缩放点积注意力（Scaled dot-product attention），教学上的跨越主要在记号。
 
-## Use It
+## 实际应用（Use It）
 
-PyTorch and TensorFlow ship attention directly.
+PyTorch 和 TensorFlow 直接提供注意力。
 
 ```python
 import torch
@@ -159,64 +159,64 @@ print(output.shape, weights.shape)
 torch.Size([2, 5, 128]) torch.Size([2, 5, 10])
 ```
 
-That is a transformer attention layer. Query batch of 5 positions, key/value batch of 10 positions, 128-dim each, 8 heads. `output` is the new context-augmented queries. `weights` is the 5x10 alignment matrix you can visualize.
+这就是 Transformer 注意力层。查询批次有 5 个位置，键和值批次有 10 个位置，每个 128 维，使用 8 个头。`output` 是融入上下文的新查询，`weights` 是可视化的 5x10 对齐矩阵（Alignment matrix）。
 
-### When classical attention still matters
+### 传统注意力仍然重要的场景（When classical attention still matters）
 
-- Pedagogy. The single-head, single-layer, RNN-based version makes every concept visible.
-- On-device sequence tasks where transformers do not fit.
-- Any paper from 2014-2017. You will misread it without knowing Bahdanau's convention.
-- Fine-grained alignment analysis in MT. Raw attention weights are an interpretability tool even on transformer models, and reading them requires knowing what they are.
+- 教学。单头、单层、基于 RNN 的版本能让每个概念直接可见。
+- Transformer 放不下的设备端序列任务。
+- 阅读 2014-2017 年的论文。不知道 Bahdanau 约定就会读错。
+- 机器翻译（MT）的细粒度对齐分析。即使在 Transformer 上，原始注意力权重也是可解释性工具，阅读它们需要理解其含义。
 
-### The attention-weight-as-explanation trap
+### 将注意力权重当作解释的陷阱（The attention-weight-as-explanation trap）
 
-Attention weights look interpretable. They are weights that sum to one across positions; you can plot them; high means "looked at this." Reviewers love them.
+注意力权重看起来可解释：它们在各位置之和为一，可以绘图，高权重意味着“看了这里”。评审者很喜欢这种图。
 
-They are not as interpretable as they look. Jain and Wallace (2019) showed that attention distributions can be permuted and replaced by arbitrary alternatives without changing model predictions for some tasks. Never report attention weights as evidence of reasoning without an ablation or counterfactual check.
+但其可解释性没有表面那么强。Jain 与 Wallace（2019）表明，在某些任务上，可以置换注意力分布，甚至替换成任意其他分布，而不改变模型预测。没有消融（Ablation）或反事实（Counterfactual）检查，绝不能将注意力权重作为推理过程的证据。
 
-## Ship It
+## 交付成果（Ship It）
 
-Save as `outputs/prompt-attention-shapes.md`:
+保存为 `outputs/prompt-attention-shapes.md`：
 
 ```markdown
 ---
 name: attention-shapes
-description: Debug shape bugs in attention implementations.
+description: 调试注意力（Attention）实现中的张量形状错误。
 phase: 5
 lesson: 10
 ---
 
-Given a broken attention implementation, you identify the shape mismatch. Output:
+给定有问题的注意力实现，找出形状不匹配，输出：
 
-1. Which matrix has the wrong shape. Name the tensor.
-2. What its shape should be, derived from (d_s, d_h, d_attn, T_enc, T_dec, batch_size).
-3. One-line fix. Transpose, reshape, or project.
-4. A test to catch regressions. Typically: assert `output.shape == (batch, T_dec, d_h)` and `weights.shape == (batch, T_dec, T_enc)` and `weights.sum(dim=-1) close to 1`.
+1. 哪个矩阵形状错误，给出张量名称。
+2. 根据 (d_s, d_h, d_attn, T_enc, T_dec, batch_size) 推导它应有的形状。
+3. 一行修复：转置、重塑或投影。
+4. 捕捉回归的测试，通常断言 `output.shape == (batch, T_dec, d_h)`、`weights.shape == (batch, T_dec, T_enc)` 和 `weights.sum(dim=-1) close to 1`。
 
-Refuse to recommend fixes that silently broadcast. Broadcast-hiding bugs surface later as silent accuracy degradation, the worst kind of attention bug.
+拒绝推荐依赖静默广播的修复。被广播掩盖的错误之后会以静默准确率下降出现，这是最糟糕的注意力缺陷。
 
-For Bahdanau confusion, insist the decoder input is `s_{t-1}` (pre-step state). For Luong, `s_t` (post-step state). For dot-product, flag dimension mismatch between query and key as the most common first-time error.
+若混淆 Bahdanau，要求解码器输入必须是 `s_{t-1}`（步骤前状态）；Luong 则是 `s_t`（步骤后状态）。点积注意力首次实现最常见的错误是查询与键维度不匹配，应指出它。
 ```
 
-## Exercises
+## 练习（Exercises）
 
-1. **Easy.** Implement `softmax` masking so padding tokens in the encoder get attention weight zero. Test on a batch with variable-length sequences.
-2. **Medium.** Add multi-head attention to the Luong `general` form. Split `d_h` into `n_heads` groups, run attention per head, concatenate. Verify the single-head case matches your earlier implementation.
-3. **Hard.** Train a GRU encoder-decoder with Bahdanau attention on the toy copy task from lesson 09. Plot accuracy vs sequence length. Compare against the no-attention baseline. You should see the gap widen as length grows, confirming attention lifts the bottleneck.
+1. **简单。** 实现 `softmax` 掩码（Masking），使编码器填充词元的注意力权重为零，在变长序列批次上测试。
+2. **中等。** 为 Luong `general` 形式加入多头注意力，将 `d_h` 拆为 `n_heads` 组，每头执行注意力后拼接。验证单头情况与之前实现一致。
+3. **困难。** 在第 09 课玩具复制任务上训练带 Bahdanau 注意力的 GRU 编码器–解码器，绘制准确率随序列长度变化的曲线，与无注意力基线比较。你应看到差距随长度增大，证明注意力缓解了瓶颈。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语 | 常见说法 | 实际含义 |
 |------|-----------------|-----------------------|
-| Attention | Looking at things | Weighted average of a value sequence, weights computed from a query-key similarity. |
-| Query, Key, Value | QKV | Three projections: Q asks, K is what to match, V is what to return. |
-| Additive attention | Bahdanau | Feed-forward score: `v^T tanh(W q + U k)`. |
-| Multiplicative attention | Luong dot / general | Score is `q^T k` or `q^T W k`. Cheaper, same accuracy on most tasks. |
-| Alignment matrix | The pretty picture | Attention weights as a `(T_dec, T_enc)` grid. Read it to see what the model attended to. |
+| 注意力（Attention） | 看向某处 | 值序列的加权平均，权重由查询与键的相似度计算。 |
+| 查询、键、值（Query, Key, Value） | QKV | 三种投影：Q 提问，K 用于匹配，V 用于返回。 |
+| 加性注意力（Additive attention） | Bahdanau | 前馈评分：`v^T tanh(W q + U k)`。 |
+| 乘性注意力（Multiplicative attention） | Luong dot / general | 分数为 `q^T k` 或 `q^T W k`，更便宜，多数任务上准确率相同。 |
+| 对齐矩阵（Alignment matrix） | 好看的图 | 以 `(T_dec, T_enc)` 网格表示注意力权重，可读出模型关注了哪里。 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [Bahdanau, Cho, Bengio (2014). Neural Machine Translation by Jointly Learning to Align and Translate](https://arxiv.org/abs/1409.0473) — the paper.
-- [Luong, Pham, Manning (2015). Effective Approaches to Attention-based Neural Machine Translation](https://arxiv.org/abs/1508.04025) — the three score variants and their comparison.
-- [Jain and Wallace (2019). Attention is not Explanation](https://arxiv.org/abs/1902.10186) — the interpretability caveat.
-- [Dive into Deep Learning — Bahdanau Attention](https://d2l.ai/chapter_attention-mechanisms-and-transformers/bahdanau-attention.html) — runnable walkthrough with PyTorch.
+- [Bahdanau、Cho、Bengio（2014）：联合学习对齐与翻译的神经机器翻译（Neural Machine Translation by Jointly Learning to Align and Translate）](https://arxiv.org/abs/1409.0473)：原始论文。
+- [Luong、Pham、Manning（2015）：基于注意力的神经机器翻译有效方法（Effective Approaches to Attention-based Neural Machine Translation）](https://arxiv.org/abs/1508.04025)：三种评分变体及其比较。
+- [Jain 与 Wallace（2019）：注意力并非解释（Attention is not Explanation）](https://arxiv.org/abs/1902.10186)：关于可解释性的限制。
+- [《动手学深度学习》（Dive into Deep Learning）：Bahdanau 注意力](https://d2l.ai/chapter_attention-mechanisms-and-transformers/bahdanau-attention.html)：可运行的 PyTorch 讲解。

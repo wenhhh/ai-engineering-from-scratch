@@ -1,41 +1,41 @@
 ---
 name: benchmark-reader
-description: Read a multi-agent benchmark claim skeptically. Grades the claim on benchmark selection, contamination, baselines, statistical significance, task diversity, and cost disclosure.
+description: 审慎阅读多智能体基准主张。依据基准选择、污染、基线、统计显著性、任务多样性、成本披露对主张评级。
 version: 1.0.0
 phase: 16
 lesson: 24
 tags: [multi-agent, benchmarks, evaluation, SWE-bench, MARBLE]
 ---
 
-Given a published or internal claim of multi-agent benchmark performance, grade the claim and surface caveats.
+针对已发布或内部的多智能体基准性能主张，给出评级并揭示限制。
 
-Produce:
+产出：
 
-1. **Benchmark + split identification.** Which benchmark (MARBLE, COMMA, MedAgentBoard, AgentArch, SWE-bench Pro, SWE-bench Verified, custom)? Which split (full, held-out, contamination-cleaned)? Unknown splits are disqualifying.
-2. **Contamination status.** Is the benchmark post-training-cutoff for the model under test? If the benchmark predates the training cutoff, flag for contamination risk and discount the claim.
-3. **Baseline quality.** Vs single-LLM, vs random, vs prior multi-agent work. Vs untuned-same-system does not count; it is an ablation, not a baseline.
-4. **Statistical significance.** N trials, confidence interval or standard error, p-value or equivalent. Claims without statistics on N < 50 trials are under-supported.
-5. **Task diversity.** One task, one domain, or many? Single-task claims do not imply generalization.
-6. **Cost disclosure.** Tokens per task, wall-clock per task, dollar cost per task. A 90% solution at 20x cost is a business decision; without cost, the claim is incomplete.
-7. **Letter grade + one-sentence verdict.**
+1. **识别基准与划分（Benchmark + split identification）。**哪个基准（MARBLE、COMMA、MedAgentBoard、AgentArch、SWE-bench Pro、SWE-bench Verified、自定义）？哪个划分（完整、留出、已清除污染）？划分未知则不合格。
+2. **污染状态（Contamination status）。**基准是否晚于受测模型的训练截止时间？如果早于截止时间，标记污染风险，并对主张打折。
+3. **基线质量（Baseline quality）。**与单 LLM、随机、既有多智能体工作比较。与同一系统未调优版本比较不算；那是消融，不是基线。
+4. **统计显著性（Statistical significance）。**N 次试验、置信区间或标准误、p 值或等价量。N < 50 次试验且无统计量的主张证据不足。
+5. **任务多样性（Task diversity）。**一个任务、一个领域，还是多个？单任务主张不意味着泛化。
+6. **成本披露（Cost disclosure）。**每任务 token 数、每任务实际耗时、每任务美元成本。以 20 倍成本达到 90% 的方案是商业决策；不披露成本，主张就不完整。
+7. **字母评级与一句话结论（Letter grade + one-sentence verdict）。**
 
-   - **A:** All six checks pass; the claim is likely robust.
-   - **B:** One weakness; the claim is plausible with noted caveats.
-   - **C:** Two weaknesses; the claim is suggestive but needs replication.
-   - **D:** Three or more weaknesses; the claim is not evidence.
-   - **F:** Disqualifying issue (contamination on undisclosed split, no statistics, no baseline).
+   - **A：**六项检查全部通过；主张可能稳健。
+   - **B：**一项弱点；在注明限制后，主张可信。
+   - **C：**两项弱点；主张具有启发性，但需要复现。
+   - **D：**三项及以上弱点；主张不构成证据。
+   - **F：**存在取消资格的问题（未披露划分上的污染、无统计量、无基线）。
 
-Hard rejects:
+直接否决：
 
-- Claims citing "SWE-bench" without specifying Verified vs Pro. The 40+ point gap makes this ambiguous reporting unacceptable.
-- Claims without baseline comparison. "Our system does X%" is a number, not a result.
-- Claims based on fewer than 20 trials for multi-agent systems. Variance is too high.
-- Cost-unreported claims for multi-agent systems. The coordination tax is material.
+- 引用“SWE-bench”却不说明 Verified 还是 Pro。40 多个百分点的差距，使这种含糊报告不可接受。
+- 没有基线比较的主张。“我们的系统达到 X%”只是数字，不是结果。
+- 基于少于 20 次试验的多智能体系统主张。方差过高。
+- 未报告成本的多智能体系统主张。协调税不可忽略。
 
-Refusal rules:
+拒绝规则：
 
-- If the benchmark is not publicly available and the user has no internal audit trail, grade cannot be assigned. Recommend releasing evaluation artifacts.
-- If the claim is from a paper currently under peer review (arXiv preprint, unsubmitted), downgrade one letter grade as precaution until replication.
-- If the user is the claimant themselves asking for an audit, run the audit straight; flag when the claim is not yet ready for publication.
+- 如果基准未公开，用户也没有内部审计轨迹，则无法评级。建议发布评估产物。
+- 如果主张来自目前正在同行评审的论文（arXiv 预印本、未投稿），作为预防措施，在复现前降低一个字母等级。
+- 如果用户就是主张提出者，要求审计，则直接开展；主张尚未准备好发表时，应明确标记。
 
-Output: a one-page grade card. Start with a one-sentence summary ("Grade: C — good benchmark choice, adequate baselines, but no contamination check and no cost disclosure."), then the seven sections above. End with a prioritized list of "what to fix to raise the grade."
+输出：一页评级卡。以一句话概述（“评级：C。基准选择良好、基线充分，但缺少污染检查与成本披露。”），随后给出上述七节。最后提供按优先级排序的“提高评级需要修复什么”列表。

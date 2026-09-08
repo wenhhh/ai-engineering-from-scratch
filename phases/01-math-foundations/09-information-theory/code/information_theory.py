@@ -100,7 +100,7 @@ def joint_entropy(joint_probs, base=2):
 def label_smoothing_demo():
     print()
     print("=" * 60)
-    print("LABEL SMOOTHING AND CROSS-ENTROPY")
+    print("标签平滑与交叉熵（Label Smoothing and Cross-Entropy）")
     print("=" * 60)
 
     num_classes = 4
@@ -112,9 +112,9 @@ def label_smoothing_demo():
     hard_target[true_class] = 1.0
 
     epsilons = [0.0, 0.05, 0.1, 0.2]
-    print(f"\n  Logits:  {logits}")
+    print(f"\n  未归一化分数（Logits）：  {logits}")
     print(f"  Softmax: [{', '.join(f'{p:.4f}' for p in probs)}]")
-    print(f"  True class: {true_class}")
+    print(f"  真实类别（True class）： {true_class}")
     print()
 
     for eps in epsilons:
@@ -128,13 +128,13 @@ def label_smoothing_demo():
               f"H(target)={target_entropy:.4f}  CE={ce:.4f}")
 
     print()
-    print("  Higher epsilon -> higher target entropy -> acts as regularization")
+    print("  epsilon 越大 -> 目标熵（Target entropy）越高 -> 起到正则化（Regularization）作用")
 
 
 def feature_selection_mi_demo():
     print()
     print("=" * 60)
-    print("FEATURE SELECTION VIA MUTUAL INFORMATION")
+    print("通过互信息（Mutual Information）进行特征选择（Feature Selection）")
     print("=" * 60)
 
     random.seed(42)
@@ -148,8 +148,8 @@ def feature_selection_mi_demo():
     features["noise"] = [random.choice([0, 1]) for _ in range(n)]
     features["constant"] = [0] * n
 
-    print(f"\n  Samples: {n}")
-    print(f"  Target balance: {sum(target)}/{n - sum(target)}")
+    print(f"\n  样本数（Samples）： {n}")
+    print(f"  目标类别数量比： {sum(target)}/{n - sum(target)}")
     print()
 
     mi_scores = []
@@ -162,33 +162,33 @@ def feature_selection_mi_demo():
         mi_scores.append((name, mi))
 
     mi_scores.sort(key=lambda x: x[1], reverse=True)
-    print("  Feature MI ranking:")
+    print("  特征互信息（MI）排名：")
     for name, mi in mi_scores:
         bar = "#" * int(mi * 200)
         print(f"    {name:>16s}  MI = {mi:.4f} bits  {bar}")
 
     print()
-    print("  Strong signal has highest MI. Noise and constant have ~0.")
+    print("  强信号（strong_signal）的互信息最高；噪声（noise）和常量（constant）的互信息约为 0。")
 
 
 if __name__ == "__main__":
 
     print("=" * 60)
-    print("INFORMATION CONTENT (SURPRISE)")
+    print("信息量（Information Content，惊讶度 Surprise）")
     print("=" * 60)
 
     events = [
-        ("Fair coin heads", 0.5),
-        ("Rolling a 6", 1 / 6),
-        ("1-in-1000 event", 0.001),
-        ("Certain event", 1.0),
+        ("公平硬币出现正面", 0.5),
+        ("掷出 6 点", 1 / 6),
+        ("概率为千分之一的事件", 0.001),
+        ("必然事件", 1.0),
     ]
     for name, p in events:
         print(f"  {name:20s}  p={p:<8.4f}  surprise={information_content(p):.4f} bits")
 
     print()
     print("=" * 60)
-    print("ENTROPY")
+    print("熵（Entropy）")
     print("=" * 60)
 
     distributions = {
@@ -202,7 +202,7 @@ if __name__ == "__main__":
 
     print()
     print("=" * 60)
-    print("CROSS-ENTROPY AND KL DIVERGENCE")
+    print("交叉熵与 KL 散度（Cross-Entropy and KL Divergence）")
     print("=" * 60)
 
     true_dist = [0.7, 0.2, 0.1]
@@ -215,9 +215,9 @@ if __name__ == "__main__":
     kl_good = kl_divergence(true_dist, good_model)
     kl_bad = kl_divergence(true_dist, bad_model)
 
-    print(f"  True distribution:    {true_dist}")
-    print(f"  Good model:           {good_model}")
-    print(f"  Bad model:            {bad_model}")
+    print(f"  真实分布（True distribution）：    {true_dist}")
+    print(f"  较好的模型：           {good_model}")
+    print(f"  较差的模型：            {bad_model}")
     print()
     print(f"  H(true):              {h_true:.4f} bits")
     print(f"  H(true, good):        {ce_good:.4f} bits")
@@ -225,13 +225,13 @@ if __name__ == "__main__":
     print(f"  KL(true || good):     {kl_good:.4f} bits")
     print(f"  KL(true || bad):      {kl_bad:.4f} bits")
     print()
-    print(f"  Verify: H(P,Q) = H(P) + KL(P||Q)")
-    print(f"  Good: {h_true:.4f} + {kl_good:.4f} = {h_true + kl_good:.4f}  (CE = {ce_good:.4f})")
-    print(f"  Bad:  {h_true:.4f} + {kl_bad:.4f} = {h_true + kl_bad:.4f}  (CE = {ce_bad:.4f})")
+    print(f"  验证：H(P,Q) = H(P) + KL(P||Q)")
+    print(f"  较好模型：{h_true:.4f} + {kl_good:.4f} = {h_true + kl_good:.4f}  (CE = {ce_good:.4f})")
+    print(f"  较差模型：{h_true:.4f} + {kl_bad:.4f} = {h_true + kl_bad:.4f}  (CE = {ce_bad:.4f})")
 
     print()
     print("=" * 60)
-    print("KL DIVERGENCE IS NOT SYMMETRIC")
+    print("KL 散度不对称（KL Divergence Is Not Symmetric）")
     print("=" * 60)
 
     p = [0.9, 0.1]
@@ -239,11 +239,11 @@ if __name__ == "__main__":
     print(f"  P = {p},  Q = {q}")
     print(f"  KL(P || Q) = {kl_divergence(p, q):.4f} bits")
     print(f"  KL(Q || P) = {kl_divergence(q, p):.4f} bits")
-    print(f"  They differ because KL is not a true distance metric.")
+    print(f"  两者不同，因为 KL 散度不是真正的距离度量（Distance metric）。")
 
     print()
     print("=" * 60)
-    print("CROSS-ENTROPY LOSS FOR CLASSIFICATION")
+    print("分类的交叉熵损失（Cross-Entropy Loss for Classification）")
     print("=" * 60)
 
     logits = [2.0, 1.0, 0.1]
@@ -251,21 +251,21 @@ if __name__ == "__main__":
     probs = softmax(logits)
     loss = cross_entropy_loss(true_class, logits)
 
-    print(f"  Logits:       {logits}")
+    print(f"  未归一化分数（Logits）：       {logits}")
     print(f"  Softmax:      [{', '.join(f'{p:.4f}' for p in probs)}]")
-    print(f"  True class:   {true_class}")
-    print(f"  CE loss:      {loss:.4f} nats")
-    print(f"  Perplexity:   {perplexity(loss):.2f}")
+    print(f"  真实类别（True class）：   {true_class}")
+    print(f"  交叉熵（CE）损失：      {loss:.4f} nats")
+    print(f"  困惑度（Perplexity）：   {perplexity(loss):.2f}")
 
     print()
-    print("  Trying different true classes with same logits:")
+    print("  保持 logits 不变，尝试不同的真实类别：")
     for c in range(3):
         l = cross_entropy_loss(c, logits)
-        print(f"    Class {c}: loss={l:.4f}  prob={probs[c]:.4f}")
+        print(f"    类别（Class）{c}： loss={l:.4f}  prob={probs[c]:.4f}")
 
     print()
     print("=" * 60)
-    print("CROSS-ENTROPY = NEGATIVE LOG-LIKELIHOOD")
+    print("交叉熵（Cross-Entropy）= 负对数似然（Negative Log-Likelihood）")
     print("=" * 60)
 
     random.seed(42)
@@ -280,40 +280,40 @@ if __name__ == "__main__":
         for lb, lg in zip(labels, all_logits)
     ) / n_samples
 
-    print(f"  Samples:               {n_samples}")
-    print(f"  Cross-entropy loss:    {ce_avg:.6f} nats")
-    print(f"  Neg log-likelihood:    {nll_avg:.6f} nats")
-    print(f"  Difference:            {abs(ce_avg - nll_avg):.2e}")
-    print(f"  They are identical. Minimizing CE = maximizing likelihood.")
+    print(f"  样本数（Samples）：               {n_samples}")
+    print(f"  交叉熵损失：    {ce_avg:.6f} nats")
+    print(f"  负对数似然：    {nll_avg:.6f} nats")
+    print(f"  差值：            {abs(ce_avg - nll_avg):.2e}")
+    print(f"  两者相同。最小化交叉熵（CE）= 最大化似然（Likelihood）。")
 
     print()
     print("=" * 60)
-    print("MUTUAL INFORMATION")
+    print("互信息（Mutual Information）")
     print("=" * 60)
 
     independent = [[0.25, 0.25], [0.25, 0.25]]
     dependent = [[0.45, 0.05], [0.05, 0.45]]
     partial = [[0.3, 0.2], [0.1, 0.4]]
 
-    print(f"  Independent:   MI = {mutual_information(independent):.4f} bits")
-    print(f"  Dependent:     MI = {mutual_information(dependent):.4f} bits")
-    print(f"  Partial:       MI = {mutual_information(partial):.4f} bits")
+    print(f"  独立（Independent）：   MI = {mutual_information(independent):.4f} bits")
+    print(f"  相关（Dependent）：     MI = {mutual_information(dependent):.4f} bits")
+    print(f"  部分相关（Partial）：       MI = {mutual_information(partial):.4f} bits")
 
     print()
     print("=" * 60)
-    print("BITS VS NATS")
+    print("比特与奈特（Bits vs Nats）")
     print("=" * 60)
 
     fair_coin = [0.5, 0.5]
-    print(f"  Fair coin entropy:")
-    print(f"    In bits (log2): {entropy(fair_coin, base=2):.4f}")
-    print(f"    In nats (ln):   {entropy(fair_coin, base=math.e):.4f}")
+    print(f"  公平硬币的熵：")
+    print(f"    以比特（bits，log2）计： {entropy(fair_coin, base=2):.4f}")
+    print(f"    以奈特（nats，ln）计：   {entropy(fair_coin, base=math.e):.4f}")
     print(f"    1 bit = {1 / math.log2(math.e):.4f} nats")
     print(f"    1 nat = {math.log2(math.e):.4f} bits")
 
     print()
     print("=" * 60)
-    print("PERPLEXITY IN LANGUAGE MODELS")
+    print("语言模型中的困惑度（Perplexity in Language Models）")
     print("=" * 60)
 
     random.seed(123)
@@ -325,35 +325,35 @@ if __name__ == "__main__":
     avg_ce = negative_log_likelihood(true_tokens, token_logits)
     ppl = perplexity(avg_ce)
 
-    print(f"  Vocab size:        {vocab_size}")
-    print(f"  Sequence length:   {sequence_length}")
-    print(f"  Avg CE loss:       {avg_ce:.4f} nats")
-    print(f"  Perplexity:        {ppl:.2f}")
-    print(f"  Random baseline:   {vocab_size:.2f} (uniform over vocab)")
-    print(f"  The model is better than random if perplexity < vocab size.")
+    print(f"  词汇表大小（Vocabulary size）：        {vocab_size}")
+    print(f"  序列长度（Sequence length）：   {sequence_length}")
+    print(f"  Avg 交叉熵（CE）损失：       {avg_ce:.4f} nats")
+    print(f"  困惑度（Perplexity）：        {ppl:.2f}")
+    print(f"  随机基线（Random baseline）：   {vocab_size:.2f} （在词汇表上均匀分布）")
+    print(f"  若困惑度 < 词汇表大小，则模型优于随机猜测。")
 
     print()
     print("=" * 60)
-    print("CONDITIONAL AND JOINT ENTROPY")
+    print("条件熵与联合熵（Conditional and Joint Entropy）")
     print("=" * 60)
 
     joint_dep = [[0.45, 0.05], [0.05, 0.45]]
     joint_indep = [[0.25, 0.25], [0.25, 0.25]]
 
-    print(f"\n  Dependent joint distribution: {joint_dep}")
-    print(f"    Joint entropy H(X,Y):     {joint_entropy(joint_dep):.4f} bits")
-    print(f"    Conditional H(Y|X):       {conditional_entropy(joint_dep):.4f} bits")
-    print(f"    Mutual information I(X;Y):{mutual_information(joint_dep):.4f} bits")
+    print(f"\n  相关变量的联合分布（Joint distribution）： {joint_dep}")
+    print(f"    联合熵（Joint entropy）H(X,Y)：     {joint_entropy(joint_dep):.4f} bits")
+    print(f"    条件熵（Conditional entropy）H(Y|X)：       {conditional_entropy(joint_dep):.4f} bits")
+    print(f"    互信息（Mutual information）I(X;Y)：{mutual_information(joint_dep):.4f} bits")
 
     hx_dep = entropy([sum(row) for row in joint_dep])
     print(f"    H(X):                     {hx_dep:.4f} bits")
-    print(f"    Verify: H(X,Y) = H(X) + H(Y|X) = {hx_dep:.4f} + {conditional_entropy(joint_dep):.4f} = {hx_dep + conditional_entropy(joint_dep):.4f}")
+    print(f"    验证：H(X,Y) = H(X) + H(Y|X) = {hx_dep:.4f} + {conditional_entropy(joint_dep):.4f} = {hx_dep + conditional_entropy(joint_dep):.4f}")
 
-    print(f"\n  Independent joint distribution: {joint_indep}")
-    print(f"    Joint entropy H(X,Y):     {joint_entropy(joint_indep):.4f} bits")
-    print(f"    Conditional H(Y|X):       {conditional_entropy(joint_indep):.4f} bits")
-    print(f"    Mutual information I(X;Y):{mutual_information(joint_indep):.4f} bits")
-    print("    When independent: H(Y|X) = H(Y) and I(X;Y) = 0")
+    print(f"\n  独立变量的联合分布（Joint distribution）： {joint_indep}")
+    print(f"    联合熵（Joint entropy）H(X,Y)：     {joint_entropy(joint_indep):.4f} bits")
+    print(f"    条件熵（Conditional entropy）H(Y|X)：       {conditional_entropy(joint_indep):.4f} bits")
+    print(f"    互信息（Mutual information）I(X;Y)：{mutual_information(joint_indep):.4f} bits")
+    print("    独立时：H(Y|X) = H(Y)，且 I(X;Y) = 0")
 
     label_smoothing_demo()
     feature_selection_mi_demo()

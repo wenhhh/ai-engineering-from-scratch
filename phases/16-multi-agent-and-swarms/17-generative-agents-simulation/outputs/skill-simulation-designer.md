@@ -1,36 +1,36 @@
 ---
 name: simulation-designer
-description: Design a generative-agent simulation (Smallville-style) for a given scenario. Specifies memory schema, reflection cadence, plan horizon, spatial/social constraints, and evaluation metrics.
+description: 为场景设计 Smallville 式生成智能体模拟，明确记忆模式、反思节奏、计划时域、空间社会约束及评估。
 version: 1.0.0
 phase: 16
 lesson: 17
 tags: [multi-agent, simulation, generative-agents, emergence, memory]
 ---
 
-Given a scenario that requires emergent behavior from a population of agents (social simulation, game NPCs, policy rehearsal, market dynamics), design the simulation.
+给定需智能体群体涌现行为的场景（社会模拟、游戏 NPC、政策预演、市场动态），设计模拟。
 
-Produce:
+产出：
 
-1. **Population size and heterogeneity.** N agents; which share a base model vs different; prompt families; role distribution. Smallville used 25 homogeneous agents with individualized personas; larger populations benefit from heterogeneity.
-2. **Memory schema.** Fields per entry: `(ts, kind, content, importance, embedding_ref, source_ids)`. Recency-decay constant; importance scoring procedure; relevance metric (cosine with embedding model X). Retention policy for compaction.
-3. **Reflection cadence.** Trigger: sum of unprocessed importance > threshold, or every N observations, or periodic tick. Number of reflections per trigger. Reflection prompt template.
-4. **Plan horizon.** Day / hour / action levels. Which are mandatory; which optional. Revision trigger: a new observation with importance > threshold that contradicts the active plan.
-5. **World model.** Spatial grid, social graph, resource constraints. What constitutes an observation (line-of-sight, conversation, notification). What normative constraints the architecture does NOT learn and must be encoded explicitly (capacity limits, closed hours, private spaces).
-6. **Seed goals.** Which agents are seeded with which priorities. Overlapping goals that may compete; non-competing goals that should coexist.
-7. **Budget.** Per-tick LLM calls per agent (observe + retrieve + reflect + plan + act). Expected tokens per tick per agent. Total simulation cost for T ticks.
-8. **Evaluation metric.** Believability (human-rater), goal achievement rate, coordination events counted, spatial-norm violations as a failure signal.
+1. **群体规模与异构性。** N 个智能体，哪些同模型、哪些不同，提示词族、角色分布。Smallville 用 25 个个性化人设同构智能体，更大群体受益于异构。
+2. **记忆模式。** 每条字段 `(ts, kind, content, importance, embedding_ref, source_ids)`，近因衰减常数、重要性评分流程、相关性指标（嵌入模型 X 的余弦）、压缩保留策略。
+3. **反思节奏。** 未处理重要性和 > 阈值，或每 N 个观察，或周期时间步触发。每次反思数量、提示词模板。
+4. **计划时域。** 日/小时/行动级，哪些必需、哪些可选。修订触发：重要性 > 阈值且与活动计划矛盾的新观察。
+5. **世界模型。** 空间网格、社会图、资源约束。何为观察（视线、对话、通知），哪些规范不会自行学习、必须编码（容量、营业时间、私有空间）。
+6. **初始目标。** 各智能体初始优先级，可能竞争的重叠目标与应共存的非竞争目标。
+7. **预算。** 每步每智能体 LLM 调用（观察 + 检索 + 反思 + 计划 + 行动）、预计词元、T 步总成本。
+8. **评估指标。** 人类行为可信度、目标达成率、协调事件数、作为故障信号的空间规范违规。
 
-Hard rejects:
+必须排除：
 
-- Designs without explicit spatial / social norm encoding. The architecture will violate them (closed-store, single-bathroom failures from Park 2023).
-- Designs with mutable memory. Memory must be append-only; corrections are new entries.
-- Designs that run reflection every tick. This is budget-inefficient; reflection is expensive and triggers should be threshold-based.
-- Simulations at large N (> 50) without a memory-compaction strategy. Retrieval cost grows with stream length.
+- 不明确编码空间/社会规范，架构会违反，如 Park 2023 的闭店、单人卫生间故障。
+- 可修改记忆。必须仅追加，纠正为新条目。
+- 每步反思，预算效率低；反思昂贵，应按阈值触发。
+- N > 50 却无记忆压缩，检索成本随流长度增加。
 
-Refusal rules:
+拒绝规则：
 
-- If the scenario requires emergent *task execution* rather than emergent *social behavior*, recommend the supervisor / roles / primitives patterns instead (Phase 16 · 05-08). Smallville is for social simulation.
-- If budget allows < 100 LLM calls per tick total, recommend N = 3-5 with dense interactions rather than larger populations.
-- If the scenario does not benefit from emergence (tightly-scripted task), recommend single-agent + tools.
+- 需涌现*任务执行*而非*社会行为*，改荐监督者/角色/原语（阶段 16 · 05-08），Smallville 用于社会模拟。
+- 每步总预算 < 100 次 LLM 调用，推荐 N=3-5 密集交互，而非更大群体。
+- 场景不受益于涌现（严格脚本任务），推荐单智能体 + 工具。
 
-Output: a one-page design brief. Start with a single-sentence summary ("Smallville-style simulation: 15 heterogeneous agents, reflection at importance sum > 120, 3-level plan horizon, spatial grid with capacity constraints, measured by believability + coordination events."), then the eight sections above. End with the expected emergent behaviors and the first three failure modes to watch for.
+输出：一页设计简报。先一句总结（“Smallville 式模拟：15 异构智能体，重要性和 > 120 触发反思，三级计划，容量约束网格，以可信度和协调事件评估。”），再给八节，结尾列预期涌现行为与前三项故障模式。

@@ -1,102 +1,102 @@
 {
   "lesson": "24-coreference-resolution",
-  "title": "Coreference Resolution",
+  "title": "共指消解（Coreference Resolution）",
   "questions": [
     {
       "stage": "pre",
-      "question": "What is the goal of coreference resolution?",
+      "question": "共指消解的目标是什么？",
       "options": [
-        "Cluster all mentions (named, nominal, pronominal) that refer to the same real-world entity",
-        "Extract relations",
-        "Tag parts of speech",
-        "Translate pronouns to nouns"
+        "将指向同一现实实体的所有命名、名词性、代词性提及聚类",
+        "提取关系",
+        "标注词性",
+        "将代词翻译为名词"
       ],
       "correct": 0,
-      "explanation": "Coref clusters mention spans that all refer to the same entity."
+      "explanation": "共指消解将指向同一实体的提及片段聚类。"
     },
     {
       "stage": "pre",
-      "question": "Which type of expression is a 'nominal' mention?",
+      "question": "哪种表达是“名词性”（Nominal）提及？",
       "options": [
-        "A verb",
-        "A pronoun like 'she'",
-        "A proper noun only",
-        "A noun phrase such as 'the CEO' or 'the company'"
+        "动词",
+        "“她”这样的代词",
+        "仅专有名词",
+        "“CEO”或“该公司”这样的名词短语"
       ],
       "correct": 3,
-      "explanation": "Nominal mentions are noun phrases like 'the company'; pronominal mentions are pronouns."
+      "explanation": "名词性提及是“该公司”这样的名词短语，代词性提及则是代词。"
     },
     {
       "stage": "check",
-      "question": "What is the modern (Lee et al., 2017) coref architecture?",
+      "question": "现代共指架构（Lee 等，2017）是什么？",
       "options": [
-        "Rule-based syntactic parsing only",
-        "Decision trees",
-        "End-to-end span-based: enumerate spans, score mentions, then score antecedent probabilities and cluster greedily",
-        "BM25 retrieval"
+        "仅基于规则的句法分析",
+        "决策树",
+        "端到端片段模型：枚举片段，为提及评分，再评估先行词概率并贪心聚类",
+        "BM25 检索"
       ],
       "correct": 2,
-      "explanation": "End-to-end neural coref enumerates spans and learns mention + antecedent scoring jointly."
+      "explanation": "端到端神经共指枚举片段，联合学习提及评分和先行词评分。"
     },
     {
       "stage": "check",
-      "question": "What does CoNLL F1 average?",
+      "question": "CoNLL F1 对什么取平均？",
       "options": [
-        "MUC, B-cubed, and CEAF-phi4 F1 scores",
-        "Precision and recall",
-        "F1 across languages",
-        "Token and span F1"
+        "MUC、B-cubed 和 CEAF-phi4 的 F1 分数",
+        "精确率与召回率",
+        "跨语言 F1",
+        "词元与片段 F1"
       ],
       "correct": 0,
-      "explanation": "CoNLL F1 is the mean of MUC, B-cubed, and CEAF-phi4 metrics."
+      "explanation": "CoNLL F1 是 MUC、B-cubed 和 CEAF-phi4 指标的平均值。"
     },
     {
       "stage": "check",
-      "question": "What is bridging anaphora?",
+      "question": "什么是桥接照应（Bridging Anaphora）？",
       "options": [
-        "An implicit reference like 'the wheels' implying the wheels of a previously mentioned car",
-        "A mistranslation",
-        "A pronoun before its referent",
-        "A pronoun without an antecedent"
+        "例如“车轮”隐含指向之前提到的车的车轮这样的隐式指称",
+        "误译",
+        "指称对象之前的代词",
+        "没有先行词的代词"
       ],
       "correct": 0,
-      "explanation": "Bridging links a mention to a part-of or related entity that was implied but not explicitly stated."
+      "explanation": "桥接将提及链接到隐含但未明确陈述的部分实体或相关实体。"
     },
     {
       "stage": "post",
-      "question": "Why is LLM-only coref unreliable on long documents?",
+      "question": "为什么只用 LLM 的共指消解在长文档上不可靠？",
       "options": [
-        "Coref requires a CFG",
-        "LLMs cannot read text",
-        "Tokenizers fail",
-        "Single-call LLMs over-merge or silently drop mentions across 50+ paragraphs; require sliding-window plus merge"
+        "共指需要 CFG",
+        "LLM 无法阅读文本",
+        "分词器失败",
+        "单次 LLM 调用在 50 多个段落中会过度合并或静默遗漏提及，需要滑动窗口加合并"
       ],
       "correct": 3,
-      "explanation": "Long-doc LLM coref degrades; sliding-window with cross-window merging mitigates."
+      "explanation": "长文档 LLM 共指效果退化，滑动窗口与跨窗口合并能够缓解。"
     },
     {
       "stage": "post",
-      "question": "Why merge coref clusters into NER results before downstream tasks?",
+      "question": "为什么在下游任务前将共指簇合并进 NER 结果？",
       "options": [
-        "Required by Wikidata",
-        "So downstream tasks see one entity per cluster rather than one per surface mention, dramatically improving coverage",
-        "Lower latency",
-        "To increase token count"
+        "Wikidata 要求如此",
+        "让下游看到每簇一个实体，而不是每个表层提及一个实体，大幅改善覆盖",
+        "降低延迟",
+        "增加词元数"
       ],
       "correct": 1,
-      "explanation": "Without merging, NER counts each surface form separately and misses 60-80% of entity mentions."
+      "explanation": "不合并时，NER 分别统计每种表层形式，会遗漏 60–80% 的实体提及。"
     },
     {
       "stage": "post",
-      "question": "Why are hard-coded gender rules a fragility in coref systems?",
+      "question": "为什么硬编码性别规则会让共指系统脆弱？",
       "options": [
-        "They break on non-binary referents, organizations, and animals; learned scoring is more robust",
-        "They cannot use POS tags",
-        "They require GPU",
-        "They run too fast"
+        "它们在非二元性别指称对象、组织和动物上失效，学习型评分更稳健",
+        "它们无法使用词性标签",
+        "它们需要 GPU",
+        "它们运行太快"
       ],
       "correct": 0,
-      "explanation": "Gender heuristics fail in demographically diverse text; learned models are preferred."
+      "explanation": "性别启发式在人口特征多样的文本中失效，更适合使用学习模型。"
     }
   ]
 }

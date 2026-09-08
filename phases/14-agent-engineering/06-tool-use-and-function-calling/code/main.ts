@@ -1,16 +1,16 @@
-// Phase 14 Lesson 06 — tool use and function calling, in TypeScript.
+// 第 14 阶段第 06 课——TypeScript 实现的工具使用（Tool use）与函数调用（Function calling）。
 //
-// Stdlib tool registry with JSON Schema subset validation and parallel dispatch.
-// Subset: required fields, string/integer/number/boolean/array/object,
-// enum, minimum/maximum. Every validation failure becomes a structured
-// observation so an agent can retry.
+// 使用标准库实现工具注册表（Tool registry），支持 JSON 结构定义（JSON Schema）子集校验与并行分派。
+// 子集：必填字段、string/integer/number/boolean/array/object、
+// enum、minimum/maximum。每次校验失败都会转为结构化
+// 观察结果（Observation），以便智能体重试。
 //
-// References:
-//   OpenAI function-calling   https://platform.openai.com/docs/guides/function-calling
-//   Anthropic tool-use        https://docs.anthropic.com/en/docs/build-with-claude/tool-use
+// 参考资料：
+//   OpenAI 函数调用   https://platform.openai.com/docs/guides/function-calling
+//   Anthropic 工具使用        https://docs.anthropic.com/en/docs/build-with-claude/tool-use
 //   JSON Schema 2020-12       https://json-schema.org/draft/2020-12
 //
-// Run: npx tsx code/main.ts
+// 运行： npx tsx code/main.ts
 
 type Primitive = "integer" | "number" | "boolean" | "string" | "array" | "object";
 
@@ -63,36 +63,36 @@ function coerce(value: unknown, schema: PropSchema): { value: unknown; error: st
     if (typeof value === "string") {
       const parsed = Number(value);
       if (Number.isInteger(parsed)) return { value: parsed, error: null };
-      return { value, error: `cannot coerce string ${JSON.stringify(value)} to integer` };
+      return { value, error: `无法将字符串 ${JSON.stringify(value)} 转换为整数（Integer）` };
     }
-    return { value, error: `expected integer, got ${describeType(value)}` };
+    return { value, error: `需要整数（Integer），实际为 ${describeType(value)}` };
   }
   if (t === "number") {
     if (typeof value === "number") return { value, error: null };
     if (typeof value === "string") {
       const parsed = Number(value);
       if (Number.isFinite(parsed)) return { value: parsed, error: null };
-      return { value, error: `cannot coerce string ${JSON.stringify(value)} to number` };
+      return { value, error: `无法将字符串 ${JSON.stringify(value)} 转换为数值（Number）` };
     }
-    return { value, error: `expected number, got ${describeType(value)}` };
+    return { value, error: `需要数值（Number），实际为 ${describeType(value)}` };
   }
   if (t === "boolean") {
     if (typeof value === "boolean") return { value, error: null };
-    return { value, error: `expected boolean, got ${describeType(value)}` };
+    return { value, error: `需要布尔值（Boolean），实际为 ${describeType(value)}` };
   }
   if (t === "string") {
     if (typeof value === "string") return { value, error: null };
-    return { value, error: `expected string, got ${describeType(value)}` };
+    return { value, error: `需要字符串（String），实际为 ${describeType(value)}` };
   }
   if (t === "array") {
     if (Array.isArray(value)) return { value, error: null };
-    return { value, error: `expected array, got ${describeType(value)}` };
+    return { value, error: `需要数组（Array），实际为 ${describeType(value)}` };
   }
   if (t === "object") {
     if (typeof value === "object" && value !== null && !Array.isArray(value)) {
       return { value, error: null };
     }
-    return { value, error: `expected object, got ${describeType(value)}` };
+    return { value, error: `需要对象（Object），实际为 ${describeType(value)}` };
   }
   return { value, error: null };
 }
@@ -104,13 +104,13 @@ function validate(args: ToolArgs, schema: ToolInputSchema): { out: ToolArgs; err
   const out: ToolArgs = {};
 
   for (const name of required) {
-    if (!(name in args)) errors.push(`missing required: ${name}`);
+    if (!(name in args)) errors.push(`缺少必填字段：${name}`);
   }
 
   for (const [name, value] of Object.entries(args)) {
     const prop = props[name];
     if (!prop) {
-      errors.push(`unknown field: ${name}`);
+      errors.push(`未知字段：${name}`);
       continue;
     }
     const { value: coerced, error } = coerce(value, prop);
@@ -119,17 +119,17 @@ function validate(args: ToolArgs, schema: ToolInputSchema): { out: ToolArgs; err
       continue;
     }
     if (prop.enum && !prop.enum.includes(coerced as never)) {
-      errors.push(`${name}: ${JSON.stringify(coerced)} not in ${JSON.stringify(prop.enum)}`);
+      errors.push(`${name}: ${JSON.stringify(coerced)} 不在允许值中 ${JSON.stringify(prop.enum)}`);
       continue;
     }
     if (prop.type === "number" || prop.type === "integer") {
       const numVal = coerced as number;
       if (prop.minimum !== undefined && numVal < prop.minimum) {
-        errors.push(`${name}: ${numVal} < minimum ${prop.minimum}`);
+        errors.push(`${name}: ${numVal} < 最小值（minimum） ${prop.minimum}`);
         continue;
       }
       if (prop.maximum !== undefined && numVal > prop.maximum) {
-        errors.push(`${name}: ${numVal} > maximum ${prop.maximum}`);
+        errors.push(`${name}: ${numVal} > 最大值（maximum） ${prop.maximum}`);
         continue;
       }
     }
@@ -157,14 +157,14 @@ class ToolRegistry {
   dispatch(call: ToolCall): ToolResult {
     const tool = this.tools.get(call.name);
     if (!tool) {
-      return { toolUseId: call.toolUseId, ok: false, content: `error: unknown tool ${JSON.stringify(call.name)}` };
+      return { toolUseId: call.toolUseId, ok: false, content: `错误：未知工具 ${JSON.stringify(call.name)}` };
     }
     const { out, errors } = validate(call.args, tool.inputSchema);
     if (errors.length > 0) {
       return {
         toolUseId: call.toolUseId,
         ok: false,
-        content: `validation error: ${errors.join("; ")}`,
+        content: `校验错误：${errors.join("; ")}`,
       };
     }
     try {
@@ -174,7 +174,7 @@ class ToolRegistry {
       return {
         toolUseId: call.toolUseId,
         ok: false,
-        content: `execution error: ${e.name}: ${e.message}`,
+        content: `执行错误：${e.name}: ${e.message}`,
       };
     }
   }
@@ -197,18 +197,18 @@ function multiply(args: ToolArgs): string {
 }
 
 function classify(args: ToolArgs): string {
-  return `classified as ${args.status as string}`;
+  return `分类为 ${args.status as string}`;
 }
 
 function main(): void {
   console.log("=".repeat(70));
-  console.log("TOOL USE and FUNCTION CALLING — Phase 14, Lesson 06 (TypeScript port)");
+  console.log("工具使用（Tool use）与函数调用（Function calling）——第 14 阶段，第 06 课（TypeScript 移植版）");
   console.log("=".repeat(70));
 
   const reg = new ToolRegistry();
   reg.register({
     name: "add",
-    description: "Add two integers a and b. Use for any integer addition.",
+    description: "将两个整数 a 和 b 相加。适用于任意整数加法。",
     inputSchema: {
       type: "object",
       properties: { a: { type: "integer" }, b: { type: "integer" } },
@@ -218,7 +218,7 @@ function main(): void {
   });
   reg.register({
     name: "multiply",
-    description: "Multiply two integers a and b. Prefer multiplication over looped addition.",
+    description: "将两个整数 a 和 b 相乘。优先使用乘法，而非循环累加。",
     inputSchema: {
       type: "object",
       properties: { a: { type: "integer" }, b: { type: "integer" } },
@@ -228,7 +228,7 @@ function main(): void {
   });
   reg.register({
     name: "classify",
-    description: "Classify a status as one of the allowed labels.",
+    description: "将状态归入允许的标签之一。",
     inputSchema: {
       type: "object",
       properties: {
@@ -239,7 +239,7 @@ function main(): void {
     executor: classify,
   });
 
-  console.log("\ncatalog (as presented to the model)");
+  console.log("\n工具目录（呈现给模型的内容）");
   for (const entry of reg.catalog()) {
     console.log(`  - ${entry.name}: ${entry.description}`);
   }
@@ -252,15 +252,15 @@ function main(): void {
     { toolUseId: "u05", name: "subtract", args: { a: 1, b: 2 } },
   ];
 
-  console.log("\nparallel dispatch (5 calls in one turn)");
+  console.log("\n并行分派（Parallel dispatch，一轮内调用 5 次）");
   for (const result of reg.dispatchMany(calls)) {
-    const tag = result.ok ? "OK " : "ERR";
+    const tag = result.ok ? "通过 " : "错误";
     console.log(`  ${result.toolUseId} ${tag}: ${result.content}`);
   }
 
   console.log();
-  console.log("observation shape: every validation failure is a structured error");
-  console.log("string the agent can read and retry against. never raise to the loop.");
+  console.log("观察结果的形式：每次校验失败均返回结构化错误字符串，");
+  console.log("供智能体读取并据此重试，绝不向循环抛出异常。");
 }
 
 main();

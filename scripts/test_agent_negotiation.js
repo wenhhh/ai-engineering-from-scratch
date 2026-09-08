@@ -22,7 +22,7 @@ test('serves Markdown for the canonical homepage when preferred', () => {
   assert.equal(result.headers.vary, 'Accept, Accept-Encoding');
   assert.equal(result.headers['x-api-version'], '1');
   assert.equal(Object.keys(result.headers).some(name => /ratelimit/i.test(name)), false);
-  assert.match(result.body, /^# AI Engineering from Scratch/);
+  assert.match(result.body, /^# 从零开始的 AI 工程/);
 });
 
 test('keeps HTML when HTML has the higher quality value', () => {
@@ -39,7 +39,7 @@ test('returns 406 when the client rejects both supported types', () => {
   assert.equal(result.headers['content-type'], 'application/problem+json; charset=utf-8');
   assert.deepEqual(JSON.parse(result.body), {
     type: 'about:blank', title: 'Not Acceptable', status: 406,
-    code: 'representation_not_supported', detail: 'Request text/html or text/markdown.',
+    code: 'representation_not_supported', detail: '请请求 text/html 或 text/markdown 格式。',
   });
   assert.equal(result.headers['cache-control'], 'no-store');
 });
@@ -73,7 +73,7 @@ test('unknown paths preserve HTML and Markdown recovery and offer typed API erro
     assert.match(html.body, /sitemap\.xml/);
     const markdown = request('text/markdown', route);
     assert.equal(markdown.res.statusCode, 404);
-    assert.match(markdown.body, /\[curriculum index\]\(\/llms\.txt\)/);
+    assert.match(markdown.body, /\[课程索引\]\(\/llms\.txt\)/);
     const json = request('application/json', route);
     assert.equal(json.res.statusCode, 404);
     assert.match(json.headers['content-type'], /^application\/problem\+json/);

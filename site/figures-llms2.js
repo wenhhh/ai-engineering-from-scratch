@@ -1,17 +1,17 @@
-/* figures-llms2.js: a second batch of interactive lesson figures for Phase 10
-   (LLMs from scratch). Loads after lesson-figures.js and registers through
-   window.LF.register. Vanilla ES5, no deps, theme via CSS vars. Authoring is
-   the same fenced block:
+/* figures-llms2.js：阶段 10（从零构建大语言模型（LLMs from scratch））
+   的第二批交互课程图表。在 lesson-figures.js 之后加载，通过
+   window.LF.register 注册。原生 ES5，无依赖，主题由 CSS 变量控制。编写时
+   仍使用相同的围栏块：
        ```figure
        rmsnorm-vs-layernorm
-       ``` */
+       ```  */
 (function () {
   'use strict';
   var LF = window.LF;
   if (!LF) { return; }
   var el = LF.el, svgEl = LF.svgEl, slider = LF.slider, select = LF.select, fmtInt = LF.fmtInt;
 
-  // ── rmsnorm-vs-layernorm: center+scale vs scale-only over a feature vector ─
+  // ── rmsnorm-vs-layernorm: 对特征向量（Feature vector）执行中心化并缩放，与仅缩放对比 ──
   function rmsnormVsLayernorm(host) {
     var feats = [2.4, -1.2, 0.8, 3.1, -0.6, 1.7];
     var state = { mode: 'rmsnorm', shift: 0 };
@@ -21,7 +21,7 @@
     var meta = el('div', { class: 'lf-meta' });
     var formula = el('div', { class: 'lf-formula' });
     function px(i) { return PAD + (i + 0.5) / N * (W - 2 * PAD); }
-    function py(v) { return H / 2 - v * 22; }
+    function py(v) { return H / 2 - v * 14; }
     state._render = function () {
       var x = feats.map(function (f) { return f + state.shift; });
       var mean = x.reduce(function (a, b) { return a + b; }, 0) / N;
@@ -40,27 +40,27 @@
         svg.appendChild(svgEl('rect', { x: (px(i) + 3).toFixed(1), y: Math.min(py(0), py(out[i])).toFixed(1), width: '6', height: Math.abs(py(out[i]) - py(0)).toFixed(1), fill: 'var(--blueprint,#3553ff)' }));
       }
       var outMean = out.reduce(function (a, b) { return a + b; }, 0) / N;
-      num.innerHTML = (state.mode === 'rmsnorm' ? 'RMS ' + rms.toFixed(2) : 'std ' + std.toFixed(2)) + ' <small>divisor</small>';
+      num.innerHTML = (state.mode === 'rmsnorm' ? 'RMS ' + rms.toFixed(2) : 'std ' + std.toFixed(2)) + ' <small>除数</small>';
       meta.textContent = state.mode === 'rmsnorm'
-        ? 'no mean subtraction: output mean ' + outMean.toFixed(2) + ' (shift survives) · cheaper, no centering'
-        : 'mean ' + mean.toFixed(2) + ' subtracted first: output mean ' + outMean.toFixed(2) + ' (recentered to 0)';
+        ? '不减均值：输出均值 ' + outMean.toFixed(2) + '（偏移保留）· 开销更低，不做中心化'
+        : '先减去均值 ' + mean.toFixed(2) + '：输出均值 ' + outMean.toFixed(2) + '（重新以 0 为中心）';
       formula.textContent = state.mode === 'rmsnorm'
-        ? 'RMSNorm: xᵢ / sqrt(mean(x²) + ε)   ·   skips the mean, keeps the scale'
-        : 'LayerNorm: (xᵢ − mean) / sqrt(var + ε)   ·   center then scale';
+        ? 'RMSNorm: xᵢ / sqrt(mean(x²) + ε)   ·   跳过均值处理，保留缩放步骤'
+        : 'LayerNorm: (xᵢ − mean) / sqrt(var + ε)   ·   先中心化，再缩放';
     };
     var grid = el('div', { class: 'lf-grid' }, [
-      select(state, 'mode', 'normalization', [['RMSNorm', 'rmsnorm'], ['LayerNorm', 'layernorm']]),
-      slider(state, 'shift', 'add a constant shift', -2, 2, 0.1)
+      select(state, 'mode', '归一化（Normalization）', [['均方根归一化（RMSNorm）', 'rmsnorm'], ['层归一化（LayerNorm）', 'layernorm']]),
+      slider(state, 'shift', '添加常数偏移', -2, 2, 0.1)
     ]);
     host.appendChild(el('div', { class: 'lf' }, [
-      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['RMSNORM vs LAYERNORM']), el('span', {}, ['toggle and shift'])]),
+      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['RMSNorm 与 LayerNorm 对比']), el('span', {}, ['切换方法并调整偏移'])]),
       el('div', { class: 'lf-body' }, [grid, el('div', { class: 'lf-out' }, [svg, num, meta, formula])]),
-      el('div', { class: 'lf-cap' }, ['Grey is the raw feature vector, blue the normalized output. LayerNorm subtracts the mean then divides by the standard deviation, recentering every vector to zero. RMSNorm skips the mean entirely and divides by the root-mean-square, so it is cheaper and keeps any constant shift. Add a shift and watch LayerNorm absorb it while RMSNorm lets it through.'])
+      el('div', { class: 'lf-cap' }, ['灰色表示原始特征向量，蓝色表示归一化输出。层归一化（Layer Normalization，LayerNorm）先减均值，再除以标准差（Standard Deviation），将每个向量重新中心化到零。均方根归一化（Root Mean Square Normalization，RMSNorm）完全跳过均值处理，直接除以均方根（RMS），因此开销更低，并保留常数偏移。添加偏移后，可以看到 LayerNorm 消除了它，而 RMSNorm 让它继续影响输出。'])
     ]));
     state._render();
   }
 
-  // ── swiglu-ffn: a gate path modulates a value path, vs plain ReLU ──────────
+  // ── swiglu-ffn: 门控路径（Gate path）调制值路径（Value path），与普通 ReLU 对比 ──
   function swigluFfn(host) {
     var state = { x: 1.2, mode: 'swiglu' };
     var W = 520, H = 200, PAD = 30;
@@ -77,7 +77,7 @@
       return relu(v);
     }
     function px(x) { return PAD + (x + 4) / 8 * (W - 2 * PAD); }
-    function py(y) { return H - PAD - (y + 4) / 8 * (H - 2 * PAD); }
+    function py(y) { return H - PAD - (y + 4) / (Math.max(4, out(4)) + 4) * (H - 2 * PAD); }
     state._render = function () {
       while (svg.firstChild) svg.removeChild(svg.firstChild);
       svg.appendChild(svgEl('line', { x1: px(-4), y1: py(0), x2: px(4), y2: py(0), stroke: 'var(--rule-soft,#eee)', 'stroke-width': '1' }));
@@ -88,27 +88,27 @@
       var y = out(state.x);
       svg.appendChild(svgEl('circle', { cx: px(state.x), cy: py(y), r: '5', fill: 'var(--blueprint,#3553ff)' }));
       var v = state.x * wV, g = swish(state.x * wG);
-      num.innerHTML = y.toFixed(3) + ' <small>output</small>';
+      num.innerHTML = y.toFixed(3) + ' <small>输出</small>';
       meta.textContent = state.mode === 'swiglu'
-        ? 'value path ' + v.toFixed(2) + ' × gate swish(' + (state.x * wG).toFixed(2) + ') = ' + g.toFixed(2) + '  →  ' + y.toFixed(2)
-        : 'plain FFN: ReLU(' + v.toFixed(2) + ') = ' + y.toFixed(2) + ' (no gate)';
+        ? '值分支 ' + v.toFixed(2) + ' × 门控 swish(' + (state.x * wG).toFixed(2) + ') = ' + g.toFixed(2) + '  →  ' + y.toFixed(2)
+        : '普通 FFN：ReLU(' + v.toFixed(2) + ') = ' + y.toFixed(2) + '（无门控）';
       formula.textContent = state.mode === 'swiglu'
-        ? 'SwiGLU: (x·W) ⊙ swish(x·V)   ·   the gate smoothly modulates the value'
-        : 'ReLU FFN: max(0, x·W)   ·   a hard cutoff, no second path';
+        ? 'SwiGLU: (x·W) ⊙ swish(x·V)   ·   门控平滑地调节数值'
+        : 'ReLU FFN: max(0, x·W)   ·   硬截断，无第二条分支';
     };
     var grid = el('div', { class: 'lf-grid' }, [
-      select(state, 'mode', 'feed-forward', [['SwiGLU (gated)', 'swiglu'], ['ReLU (plain)', 'relu']]),
-      slider(state, 'x', 'input x', -4, 4, 0.1)
+      select(state, 'mode', '前馈网络（FFN）', [['SwiGLU（带门控）', 'swiglu'], ['ReLU（普通）', 'relu']]),
+      slider(state, 'x', '输入 x', -4, 4, 0.1)
     ]);
     host.appendChild(el('div', { class: 'lf' }, [
-      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['SWIGLU FEED-FORWARD']), el('span', {}, ['toggle and drag x'])]),
+      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['SwiGLU 前馈网络（Feed-forward Network）']), el('span', {}, ['切换方法并拖动 x'])]),
       el('div', { class: 'lf-body' }, [grid, el('div', { class: 'lf-out' }, [svg, num, meta, formula])]),
-      el('div', { class: 'lf-cap' }, ['A plain FFN runs the input through one matrix and a ReLU: a hard kink at zero. SwiGLU splits into two paths from the same input, a value x·W and a gate swish(x·V), and multiplies them. The gate smoothly scales the value up or down per coordinate, giving the network a soft, learnable on-off switch that modern open models prefer over a flat ReLU.'])
+      el('div', { class: 'lf-cap' }, ['普通前馈网络（FFN）让输入经过一个矩阵和 ReLU，在零点形成突变的折角。SwiGLU 将同一输入分成值分支 x·W 和门控分支 swish(x·V)，再将两者相乘。门控（Gate）逐坐标平滑地放大或缩小数值，为网络提供可学习的软开关；现代开放模型更倾向于用它替代单纯的 ReLU。'])
     ]));
     state._render();
   }
 
-  // ── rlhf-pipeline: SFT → reward model → PPO, three stages with data flow ────
+  // ── rlhf-pipeline: SFT → 奖励模型（Reward model）→ PPO，三个阶段间传递数据 ──
   function rlhfPipeline(host) {
     var state = { stage: 0 };
     var W = 520, H = 210, PAD = 18;
@@ -116,14 +116,14 @@
     var meta = el('div', { class: 'lf-meta' });
     var formula = el('div', { class: 'lf-formula' });
     var STAGES = [
-      { name: 'SFT', sub: 'supervised fine-tune', data: 'demonstrations', out: 'policy π₀' },
-      { name: 'Reward', sub: 'train reward model', data: 'preference pairs', out: 'reward r(x,y)' },
-      { name: 'PPO', sub: 'RL optimization', data: 'prompts + reward', out: 'aligned policy π' }
+      { name: 'SFT', sub: '监督微调', data: '人工示范', out: '策略 π₀' },
+      { name: '奖励', sub: '训练奖励模型', data: '偏好样本对', out: '奖励 r(x,y)' },
+      { name: 'PPO', sub: '强化学习优化', data: '提示词 + 奖励', out: '对齐后的策略 π' }
     ];
     var DESC = [
-      'Stage 1 — SFT: fine-tune the base model on human-written demonstrations to get a starting policy.',
-      'Stage 2 — Reward Model: train a model on chosen-vs-rejected pairs to score how good a response is.',
-      'Stage 3 — PPO: optimize the policy against the reward model with a KL penalty back to the SFT policy.'
+      '阶段 1：监督微调（Supervised Fine-tuning，SFT）。用人工编写的示范微调基础模型，得到初始策略（Policy）。',
+      '阶段 2：奖励模型（Reward Model，RM）。用优选与弃选回答组成的样本对训练模型，为回答质量评分。',
+      '阶段 3：近端策略优化（Proximal Policy Optimization，PPO）。根据奖励模型优化策略，并用 KL 散度惩罚约束其偏离 SFT 策略的程度。'
     ];
     function box(x, y, w, h, label, sub, active) {
       var g = svgEl('g', {});
@@ -162,18 +162,18 @@
         }
       }
       meta.textContent = DESC[state.stage];
-      formula.textContent = 'SFT(demos) → RM(preferences) → PPO(maximize reward − β·KL[π ‖ π₀])';
+      formula.textContent = 'SFT(示范) → RM(偏好) → PPO(最大化奖励 − β·KL[π ‖ π₀])';
     };
-    var grid = el('div', {}, [slider(state, 'stage', 'pipeline stage', 0, 2, 1)]);
+    var grid = el('div', {}, [slider(state, 'stage', '流水线阶段', 0, 2, 1)]);
     host.appendChild(el('div', { class: 'lf' }, [
-      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['RLHF PIPELINE']), el('span', {}, ['step through the stages'])]),
+      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['RLHF 流水线（Pipeline）']), el('span', {}, ['逐阶段查看'])]),
       el('div', { class: 'lf-body' }, [grid, el('div', { class: 'lf-out' }, [svg, meta, formula])]),
-      el('div', { class: 'lf-cap' }, ['RLHF runs in three stages. First supervised fine-tuning teaches the base model to follow instructions from human demonstrations. Then a reward model learns to score responses from preference pairs. Finally PPO optimizes the policy to maximize that reward while a KL penalty keeps it close to the SFT model so it does not drift into reward hacking.'])
+      el('div', { class: 'lf-cap' }, ['基于人类反馈的强化学习（Reinforcement Learning from Human Feedback，RLHF）分为三个阶段。首先通过监督微调，让基础模型从人工示范中学会遵循指令。随后，奖励模型从偏好样本对中学习如何为回答评分。最后，PPO 优化策略以最大化奖励，同时用 KL 散度惩罚使它保持接近 SFT 模型，避免逐渐走向奖励投机（Reward Hacking）。'])
     ]));
     state._render();
   }
 
-  // ── dpo-loss: margin between chosen and rejected, scaled by beta ───────────
+  // ── dpo-loss: 被选与被拒回答之间的间隔（Margin），由 beta 缩放 ──
   function dpoLoss(host) {
     var state = { beta: 0.3, gap: 0.0 };
     var W = 520, H = 200, PAD = 32, GMAX = 6;
@@ -196,25 +196,25 @@
       svg.appendChild(svgEl('path', { d: d, fill: 'none', stroke: 'var(--blueprint,#3553ff)', 'stroke-width': '2' }));
       var l = loss(state.gap, beta);
       svg.appendChild(svgEl('circle', { cx: px(state.gap), cy: py(l, lmax), r: '5', fill: 'var(--blueprint,#3553ff)' }));
-      num.innerHTML = l.toFixed(3) + ' <small>DPO loss</small>';
-      meta.textContent = state.gap > 0.5 ? 'chosen ahead of rejected: loss small, model already prefers the right answer'
-        : state.gap < -0.5 ? 'rejected ahead of chosen: loss large, strong gradient to fix it'
-          : 'tie: loss ≈ ' + loss(0, beta).toFixed(2) + ' (−log ½ scaled by β)';
+      num.innerHTML = l.toFixed(3) + ' <small>DPO 损失</small>';
+      meta.textContent = state.gap > 0.5 ? '优选回答领先弃选回答：损失小，模型已经偏好正确回答'
+        : state.gap < -0.5 ? '弃选回答领先优选回答：损失大，产生较强梯度来纠正'
+          : '持平：损失 ≈ ' + loss(0, beta).toFixed(2) + '（−log ½，按 β 缩放）';
       formula.textContent = 'L = −log σ( β · ( (logπ(yc) − logπref(yc)) − (logπ(yr) − logπref(yr)) ) )   ·   β = ' + beta.toFixed(2);
     };
     var grid = el('div', { class: 'lf-grid' }, [
-      slider(state, 'beta', 'β (KL strength)', 0.05, 1.0, 0.05),
-      slider(state, 'gap', 'chosen − rejected margin', -GMAX, GMAX, 0.1)
+      slider(state, 'beta', 'β（KL 约束强度）', 0.05, 1.0, 0.05),
+      slider(state, 'gap', '优选 − 弃选的差值', -GMAX, GMAX, 0.1)
     ]);
     host.appendChild(el('div', { class: 'lf' }, [
-      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['DPO LOSS']), el('span', {}, ['drag β and the margin'])]),
+      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['直接偏好优化（DPO）损失']), el('span', {}, ['拖动 β 和差值'])]),
       el('div', { class: 'lf-body' }, [grid, el('div', { class: 'lf-out' }, [svg, num, meta, formula])]),
-      el('div', { class: 'lf-cap' }, ['DPO skips the separate reward model: it directly trains the policy so the chosen response outscores the rejected one, both measured relative to a frozen reference. The loss is −log σ of β times that margin. A positive margin (chosen ahead) drives the loss toward zero; a negative one pushes a large gradient. β controls how hard the implicit KL constraint pulls back toward the reference.'])
+      el('div', { class: 'lf-cap' }, ['直接偏好优化（Direct Preference Optimization，DPO）省去了独立的奖励模型：它直接训练策略，使优选回答（Chosen）的得分超过弃选回答（Rejected），两者都相对于冻结的参考模型衡量。损失是对 β 乘以该差值的结果求 −log σ。正差值（优选领先）使损失趋向零，负差值则产生较大梯度。β 控制隐式 KL 约束将策略拉回参考模型的强度。'])
     ]));
     state._render();
   }
 
-  // ── paged-kv-cache: fixed pages vs contiguous, fragmentation and waste ─────
+  // ── paged-kv-cache: 固定页（Pages）与连续分配（Contiguous）的对比，展示碎片与浪费 ──
   function pagedKvCache(host) {
     var state = { seq: 70, page: 16 };
     var W = 520, H = 210, PAD = 18;
@@ -224,30 +224,30 @@
     var barWrap = el('div', { class: 'lf-bar' }, [bar]);
     var meta = el('div', { class: 'lf-meta' });
     var formula = el('div', { class: 'lf-formula' });
-    var SLOTS = 128; // a contiguous reservation must over-allocate to max length
+    var SLOTS = 128; // 连续预留必须按最大长度超额分配
     var MAXLEN = 128;
     state._render = function () {
       var seq = state.seq, page = state.page;
       var pages = Math.ceil(seq / page);
       var paged = pages * page;
       var pagedWaste = paged - seq;
-      var contigWaste = MAXLEN - seq; // contiguous reserves the full max up front
+      var contigWaste = MAXLEN - seq; // 连续分配预先保留完整的最大容量
       while (svg.firstChild) svg.removeChild(svg.firstChild);
       var cols = 32, cw = (W - 2 * PAD) / cols, ch = 12;
-      // contiguous row: one reservation of MAXLEN, used part blue, reserved-but-empty grey
+      // 连续分配行：一次预留 MAXLEN，已用部分为蓝色，已预留但空置部分为灰色
       var rowY = 40, i;
       var ttop = svgEl('text', { x: PAD, y: (rowY - 8).toFixed(1), 'font-family': 'monospace', 'font-size': '10', fill: 'var(--ink-mute,#777)' });
-      ttop.appendChild(document.createTextNode('contiguous: reserve max length up front'));
+      ttop.appendChild(document.createTextNode('连续分配：预先按最大长度预留空间'));
       svg.appendChild(ttop);
       for (i = 0; i < MAXLEN; i++) {
         var cx = PAD + (i % cols) * cw, cy = rowY + Math.floor(i / cols) * (ch + 2);
         svg.appendChild(svgEl('rect', { x: cx.toFixed(1), y: cy.toFixed(1), width: (cw - 2).toFixed(1), height: ch, rx: '1',
           fill: i < seq ? 'var(--blueprint,#3553ff)' : 'var(--rule-soft,#ccc)', opacity: i < seq ? '0.9' : '0.5' }));
       }
-      // paged row: pages allocated on demand, only the last page partly wasted
+      // 分页行（Paged row）：按需分配页，只有最后一页存在部分浪费
       var rowY2 = rowY + 4 * (ch + 2) + 30;
       var tbot = svgEl('text', { x: PAD, y: (rowY2 - 8).toFixed(1), 'font-family': 'monospace', 'font-size': '10', fill: 'var(--ink-mute,#777)' });
-      tbot.appendChild(document.createTextNode('paged: ' + pages + ' pages of ' + page + ', only the last partly free'));
+      tbot.appendChild(document.createTextNode('分页：' + pages + ' 页，每页 ' + page + ' 格，仅末页有空余'));
       svg.appendChild(tbot);
       for (i = 0; i < paged; i++) {
         var px2 = PAD + (i % cols) * cw, py2 = rowY2 + Math.floor(i / cols) * (ch + 2);
@@ -259,26 +259,26 @@
         }
       }
       var savedPct = Math.round((1 - paged / MAXLEN) * 100);
-      num.innerHTML = pagedWaste + ' <small>cells wasted (paged)</small>';
+      num.innerHTML = pagedWaste + ' <small>格浪费（分页）</small>';
       bar.style.width = Math.max(2, Math.min(100, savedPct)) + '%';
-      meta.textContent = 'contiguous wastes ' + contigWaste + ' reserved cells · paged wastes only ' + pagedWaste
-        + ' (last page) · ' + savedPct + '% less reserved memory';
+      meta.textContent = '连续分配浪费 ' + contigWaste + ' 格预留空间 · 分页仅浪费 ' + pagedWaste
+        + ' 格（末页）· 预留内存减少 ' + savedPct + '%';
       formula.textContent = 'pages = ⌈seq / page⌉ = ⌈' + seq + ' / ' + page + '⌉ = ' + pages
-        + '  ·  internal waste ≤ page − 1 per sequence, not max − seq';
+        + '  ·  每个序列的内部浪费 ≤ page − 1，而非 max − seq';
     };
     var grid = el('div', { class: 'lf-grid' }, [
-      slider(state, 'seq', 'sequence length', 1, MAXLEN, 1),
-      slider(state, 'page', 'page (block) size', 4, 32, 4)
+      slider(state, 'seq', '序列长度', 1, MAXLEN, 1),
+      slider(state, 'page', '页（块）大小', 4, 32, 4)
     ]);
     host.appendChild(el('div', { class: 'lf' }, [
-      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['PAGED KV CACHE']), el('span', {}, ['drag length and page size'])]),
+      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['分页键值缓存（Paged KV Cache）']), el('span', {}, ['拖动长度和页大小'])]),
       el('div', { class: 'lf-body' }, [grid, el('div', { class: 'lf-out' }, [svg, num, barWrap, meta, formula])]),
-      el('div', { class: 'lf-cap' }, ['A contiguous KV cache reserves the full maximum sequence length per request up front, so most of it sits empty (grey). PagedAttention stores the cache in fixed-size pages allocated on demand: only the final page is partly free (orange). Internal waste drops from max minus length to at most one page, which is why paged caches fit far more concurrent sequences on the same GPU.'])
+      el('div', { class: 'lf-cap' }, ['连续键值缓存（Contiguous KV Cache）预先为每个请求按最大序列长度预留空间，因此大部分空间处于空闲状态（灰色）。分页注意力（PagedAttention）用按需分配的固定大小页面存储缓存，只有最后一页可能有空余（橙色）。内部浪费从“最大长度减当前长度”降到最多一页，所以同一张 GPU 上的分页缓存可以容纳更多并发序列。'])
     ]));
     state._render();
   }
 
-  // ── expert-capacity: capacity factor vs tokens, dropped vs wasted slots ─────
+  // ── expert-capacity: 容量因子（Capacity factor）与词元的关系，比较丢弃与浪费的槽位 ──
   function expertCapacity(host) {
     var state = { cap: 1.25, tokens: 64 };
     var W = 520, H = 200, PAD = 24, E = 8;
@@ -286,14 +286,14 @@
     var num = el('span', { class: 'lf-num' });
     var meta = el('div', { class: 'lf-meta' });
     var formula = el('div', { class: 'lf-formula' });
-    // deterministic skewed routing: expert e gets a fixed share of tokens
+    // 确定性偏斜路由（Skewed routing）：专家 e 获得固定比例的词元
     var SHARE = [0.22, 0.18, 0.15, 0.13, 0.11, 0.09, 0.07, 0.05];
     state._render = function () {
       var T = state.tokens, cap = state.cap;
-      var perExpert = Math.floor(cap * T / E); // capacity slots per expert
+      var perExpert = Math.floor(cap * T / E); // 每个专家的容量槽位
       var loads = SHARE.map(function (s) { return Math.round(s * T); });
       var sum = loads.reduce(function (a, b) { return a + b; }, 0);
-      loads[0] += (T - sum); // keep total exactly T
+      loads[0] += (T - sum); // 保持总数恰好为 T
       while (svg.firstChild) svg.removeChild(svg.firstChild);
       var bw = (W - 2 * PAD) / E - 8, dropped = 0, wasted = 0, e;
       var maxBar = H - 2 * PAD;
@@ -313,24 +313,24 @@
         }
       }
       svg.appendChild(svgEl('line', { x1: PAD, y1: capY.toFixed(1), x2: W - PAD, y2: capY.toFixed(1), stroke: 'var(--ink,#1a1a1a)', 'stroke-width': '1', 'stroke-dasharray': '4 3' }));
-      num.innerHTML = dropped + ' <small>tokens dropped</small>';
-      meta.textContent = 'capacity ' + perExpert + ' / expert · dropped ' + dropped + ' (overflow, orange) · idle ' + wasted
-        + ' slots (wasted compute) · ' + (cap < 1 ? 'too tight' : cap > 1.5 ? 'too loose' : 'balanced');
+      num.innerHTML = dropped + ' <small>个词元被丢弃</small>';
+      meta.textContent = '每个专家容量 ' + perExpert + ' · 丢弃 ' + dropped + ' 个词元（溢出，橙色）· 空闲 ' + wasted
+        + ' 个槽位（浪费算力）· ' + (cap < 1 ? '容量过紧' : cap > 1.5 ? '容量过松' : '较为均衡');
       formula.textContent = 'capacity = ⌊capacity_factor · tokens / experts⌋ = ⌊' + cap.toFixed(2) + ' · ' + T + ' / ' + E + '⌋ = ' + perExpert;
     };
     var grid = el('div', { class: 'lf-grid' }, [
-      slider(state, 'cap', 'capacity factor', 0.5, 2.0, 0.05),
-      slider(state, 'tokens', 'tokens in batch', 16, 128, 8)
+      slider(state, 'cap', '容量因子（Capacity Factor）', 0.5, 2.0, 0.05),
+      slider(state, 'tokens', '批次词元数', 16, 128, 8)
     ]);
     host.appendChild(el('div', { class: 'lf' }, [
-      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['EXPERT CAPACITY']), el('span', {}, ['drag capacity and tokens'])]),
+      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['专家容量（Expert Capacity）']), el('span', {}, ['拖动容量和词元数'])]),
       el('div', { class: 'lf-body' }, [grid, el('div', { class: 'lf-out' }, [svg, num, meta, formula])]),
-      el('div', { class: 'lf-cap' }, ['Each expert in an MoE layer gets a fixed number of token slots, set by the capacity factor. Routing is uneven, so popular experts overflow and the extra tokens are dropped (orange above the dashed line). Set the factor too low and you drop many tokens; set it too high and lightly-loaded experts sit idle, wasting padded compute. The factor is tuned to keep both small.'])
+      el('div', { class: 'lf-cap' }, ['混合专家（Mixture of Experts，MoE）层中的每个专家都有固定数量的词元槽位，由容量因子（Capacity Factor）决定。路由分布不均，热门专家会溢出，多余词元被丢弃（虚线以上的橙色部分）。因子过低会丢弃大量词元，过高则让负载较轻的专家闲置，浪费填充计算。调整这一因子，就是要同时降低这两类开销。'])
     ]));
     state._render();
   }
 
-  // ── sliding-window-attention: banded mask of width w vs full O(N^2) ────────
+  // ── sliding-window-attention: 宽度 w 的带状掩码（Banded mask）与完整 O(N^2) 对比 ──
   function slidingWindowAttention(host) {
     var state = { window: 4 };
     var W = 520, H = 240, PAD = 24, N = 16;
@@ -361,21 +361,21 @@
       }
       svg.appendChild(svgEl('rect', { x: ox, y: oy.toFixed(1), width: GRID, height: GRID, fill: 'none', stroke: 'var(--ink-soft,#555)', 'stroke-width': '1' }));
       var saved = Math.round((1 - active / full) * 100);
-      num.innerHTML = active + ' <small>of ' + full + ' attended pairs</small>';
-      meta.textContent = 'window w = ' + w + ' · each token sees the previous ' + (w - 1) + ' plus itself · '
-        + saved + '% fewer pairs than full causal attention';
-      formula.textContent = 'attend(i, j) iff 0 ≤ i − j < w   ·   cost O(N·w) vs full O(N²) when w ≪ N';
+      num.innerHTML = active + ' <small>/ ' + full + ' 个注意力配对</small>';
+      meta.textContent = '窗口 w = ' + w + ' · 每个词元能看到前 ' + (w - 1) + ' 个词元及自身 · 配对数比完整因果注意力减少 '
+        + saved + '%';
+      formula.textContent = 'attend(i, j) 当且仅当 0 ≤ i − j < w   ·   w ≪ N 时，开销为 O(N·w)，完整注意力为 O(N²)';
     };
-    var grid = el('div', {}, [slider(state, 'window', 'window size w', 1, N, 1)]);
+    var grid = el('div', {}, [slider(state, 'window', '窗口大小 w', 1, N, 1)]);
     host.appendChild(el('div', { class: 'lf' }, [
-      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['SLIDING WINDOW ATTENTION']), el('span', {}, ['drag the window width'])]),
+      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['滑动窗口注意力（Sliding Window Attention）']), el('span', {}, ['拖动窗口宽度'])]),
       el('div', { class: 'lf-body' }, [grid, el('div', { class: 'lf-out' }, [svg, num, meta, formula])]),
-      el('div', { class: 'lf-cap' }, ['Rows are queries, columns are keys. Blue cells are the pairs a token actually attends to; grey cells are inside the causal triangle but cut by the window; white is the future, always masked. Full causal attention fills the whole lower triangle at O(N²) cost. A sliding window of width w keeps only the banded diagonal, dropping to O(N·w) so long context stays affordable.'])
+      el('div', { class: 'lf-cap' }, ['行表示查询（Query），列表示键（Key）。蓝色格子是词元实际关注的配对；灰色格子位于因果三角区内，但被窗口排除；白色表示未来，始终被掩码（Mask）屏蔽。完整因果注意力（Causal Attention）填满整个下三角区域，开销为 O(N²)。宽度为 w 的滑动窗口只保留对角线附近的带状区域，将开销降为 O(N·w)，让长上下文保持可承受的成本。'])
     ]));
     state._render();
   }
 
-  // ── differential-attention: two softmax maps subtracted, λ cancels noise ────
+  // ── differential-attention: 两个 softmax 图相减，λ 消除噪声 ──
   function differentialAttention(host) {
     var state = { lambda: 0.6 };
     var W = 520, H = 200, PAD = 30, N = 8;
@@ -383,7 +383,7 @@
     var num = el('span', { class: 'lf-num' });
     var meta = el('div', { class: 'lf-meta' });
     var formula = el('div', { class: 'lf-formula' });
-    // map1: a real signal peak at token 2 plus broad noise; map2: the same broad noise
+    // map1：词元 2 处的真实信号峰加上宽广噪声；map2：相同的宽广噪声
     var sig = [0.04, 0.06, 0.55, 0.07, 0.05, 0.07, 0.06, 0.10];
     var noise = [0.10, 0.13, 0.11, 0.14, 0.12, 0.15, 0.13, 0.12];
     function norm(a) { var s = a.reduce(function (x, y) { return x + y; }, 0); return a.map(function (v) { return v / s; }); }
@@ -406,27 +406,27 @@
         svg.appendChild(svgEl('rect', { x: (x + cw / 2).toFixed(1), y: (170 - ho).toFixed(1), width: (cw / 2 - 3).toFixed(1), height: ho.toFixed(1), fill: 'var(--blueprint,#3553ff)' }));
       }
       var t1 = svgEl('text', { x: PAD, y: '24', 'font-family': 'monospace', 'font-size': '9.5', fill: 'var(--ink-mute,#777)' });
-      t1.appendChild(document.createTextNode('map 1 (signal + noise)'));
+      t1.appendChild(document.createTextNode('注意力图 1（信号 + 噪声）'));
       svg.appendChild(t1);
       var t2 = svgEl('text', { x: PAD, y: '104', 'font-family': 'monospace', 'font-size': '9.5', fill: 'var(--blueprint,#3553ff)' });
-      t2.appendChild(document.createTextNode('map1 − λ·map2 (denoised)'));
+      t2.appendChild(document.createTextNode('map1 − λ·map2（去噪后）'));
       svg.appendChild(t2);
-      num.innerHTML = (peak * 100).toFixed(0) + ' <small>% mass on the true token</small>';
-      meta.textContent = lam < 0.3 ? 'λ small: little subtracted, broad noise survives'
-        : lam > 0.9 ? 'λ large: aggressive cancellation, signal sharpened'
-          : 'λ = ' + lam.toFixed(2) + ': common-mode noise cancels, the real peak stands out';
-      formula.textContent = 'Attn = softmax(Q₁K₁) − λ · softmax(Q₂K₂)   ·   shared noise subtracts, signal remains';
+      num.innerHTML = (peak * 100).toFixed(0) + ' <small>% 权重落在真实目标词元上</small>';
+      meta.textContent = lam < 0.3 ? 'λ 较小：减去的量少，分散的噪声仍然保留'
+        : lam > 0.9 ? 'λ 较大：抵消更强，信号更集中'
+          : 'λ = ' + lam.toFixed(2) + '：共模噪声被抵消，真实峰值凸显';
+      formula.textContent = 'Attn = softmax(Q₁K₁) − λ · softmax(Q₂K₂)   ·   共同噪声相减抵消，信号保留';
     };
-    var grid = el('div', {}, [slider(state, 'lambda', 'λ (subtraction weight)', 0, 1.0, 0.05)]);
+    var grid = el('div', {}, [slider(state, 'lambda', 'λ（相减权重）', 0, 1.0, 0.05)]);
     host.appendChild(el('div', { class: 'lf' }, [
-      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['DIFFERENTIAL ATTENTION']), el('span', {}, ['drag λ'])]),
+      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['差分注意力（Differential Attention）']), el('span', {}, ['拖动 λ'])]),
       el('div', { class: 'lf-body' }, [grid, el('div', { class: 'lf-out' }, [svg, num, meta, formula])]),
-      el('div', { class: 'lf-cap' }, ['Differential attention computes two separate softmax maps and subtracts the second, scaled by a learned λ, from the first. Both maps carry the same broad attention noise, so the subtraction cancels it as common mode, while the genuine signal peak (token 2 here) survives. Raising λ subtracts more aggressively, sharpening the mass onto the relevant token instead of spreading it across irrelevant context.'])
+      el('div', { class: 'lf-cap' }, ['差分注意力（Differential Attention）计算两张独立的 softmax 注意力图，再从第一张中减去乘以可学习系数 λ 的第二张。两张图携带相同的分散注意力噪声，相减会将其作为共模噪声（Common-mode Noise）抵消，而真实信号峰值（此处为词元 2）得以保留。增大 λ 会加强相减效果，使权重集中到相关词元，而非分散到无关上下文。'])
     ]));
     state._render();
   }
 
-  // ── weight-tying: reuse the embedding matrix as the output projection ──────
+  // ── weight-tying: 复用嵌入矩阵（Embedding matrix）作为输出投影（Output projection） ──
   function weightTying(host) {
     var state = { logV: 15, dim: 768 };
     var W = 520, H = 190, PAD = 22;
@@ -447,25 +447,25 @@
       var vocab = Math.pow(2, state.logV), d = state.dim;
       var saved = vocab * d;
       while (svg.firstChild) svg.removeChild(svg.firstChild);
-      svg.appendChild(box(PAD, 30, 150, 44, 'input embedding', 'var(--blueprint,#3553ff)'));
-      svg.appendChild(box(W - PAD - 150, 116, 150, 44, 'output projection', 'var(--blueprint,#3553ff)'));
-      // tie arrow: same matrix reused (transposed)
+      svg.appendChild(box(PAD, 30, 150, 44, '输入嵌入', 'var(--blueprint,#3553ff)'));
+      svg.appendChild(box(W - PAD - 150, 116, 150, 44, '输出投影', 'var(--blueprint,#3553ff)'));
+      // 共享箭头：同一矩阵转置后复用
       svg.appendChild(svgEl('line', { x1: PAD + 75, y1: 74, x2: W - PAD - 75, y2: 116, stroke: 'var(--warn,#b8870f)', 'stroke-width': '2', 'stroke-dasharray': '5 3' }));
       var tt = svgEl('text', { x: (W / 2).toFixed(1), y: '100', 'text-anchor': 'middle', 'font-family': 'monospace', 'font-size': '10', fill: 'var(--warn,#b8870f)' });
-      tt.appendChild(document.createTextNode('tied: same V×d matrix, transposed'));
+      tt.appendChild(document.createTextNode('权重绑定：复用同一个 V×d 矩阵的转置'));
       svg.appendChild(tt);
-      num.innerHTML = human(saved) + ' <small>params saved</small>';
-      meta.textContent = 'vocab ' + human(vocab) + ' × dim ' + d + ' = one matrix instead of two · readout reuses the embedding';
+      num.innerHTML = human(saved) + ' <small>个参数被节省</small>';
+      meta.textContent = '词表 ' + human(vocab) + ' × 维度 ' + d + '：两个矩阵合为一个 · 输出读取复用嵌入矩阵';
       formula.textContent = 'logits = h · Eᵀ   ·   saved = vocab × d_model = ' + human(vocab) + ' × ' + d + ' = ' + human(saved);
     };
     var grid = el('div', { class: 'lf-grid' }, [
-      slider(state, 'logV', 'vocabulary (2^x)', 10, 18, 1),
-      slider(state, 'dim', 'model dim d', 128, 4096, 128)
+      slider(state, 'logV', '词表大小（2^x）', 10, 18, 1),
+      slider(state, 'dim', '模型维度 d', 128, 4096, 128)
     ]);
     host.appendChild(el('div', { class: 'lf' }, [
-      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['WEIGHT TYING']), el('span', {}, ['drag vocab and dim'])]),
+      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['权重绑定（Weight Tying）']), el('span', {}, ['拖动词表大小和维度'])]),
       el('div', { class: 'lf-body' }, [grid, el('div', { class: 'lf-out' }, [svg, num, meta, formula])]),
-      el('div', { class: 'lf-cap' }, ['The input embedding maps each token id to a d-dimensional vector; the output projection maps a hidden vector back to a logit per vocabulary entry. Both are vocab×d matrices that play inverse roles, so many models tie them: the output layer reuses the transposed embedding. That removes a whole vocab×d_model block of parameters, a large saving when the vocabulary is tens of thousands of tokens wide.'])
+      el('div', { class: 'lf-cap' }, ['输入嵌入（Input Embedding）将每个词元 ID 映射到 d 维向量；输出投影（Output Projection）将隐藏向量映射回词表中每个条目的未归一化得分（Logit）。两者都是 vocab×d 矩阵，作用方向相反，因此很多模型会绑定这两组权重：输出层复用嵌入矩阵的转置。这省去了一整块 vocab×d_model 参数；词表包含数万个词元时，节省相当可观。'])
     ]));
     state._render();
   }

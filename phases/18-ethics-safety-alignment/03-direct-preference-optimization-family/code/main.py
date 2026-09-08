@@ -1,13 +1,12 @@
-"""DPO family losses on toy preference data — stdlib Python.
+"""在教学偏好数据上比较直接偏好优化（DPO）家族的损失，仅使用 Python 标准库。
 
-Fits a softmax policy on 4 actions to a pairwise preference dataset using
-six losses: DPO, IPO, KTO, SimPO, ORPO, BPO. Compares final chosen log-prob,
-rejected log-prob, implicit reward spread, and win rate.
+在成对偏好数据集上，使用 DPO、IPO、KTO、SimPO、ORPO、BPO 六种损失，
+拟合四个动作上的 Softmax 策略。比较最终的优选回答对数概率、
+非优选回答对数概率、隐式奖励跨度和胜率。
 
-Toy-level — goal is to read the loss formulas side by side, not to match
-production numbers.
+这是教学模型，目的是对照阅读损失公式，而非复现生产环境指标。
 
-Usage: python3 code/main.py
+用法：python3 code/main.py
 """
 
 from __future__ import annotations
@@ -45,7 +44,7 @@ def sigmoid(x: float) -> float:
 
 
 def sample_pref_pair() -> tuple[int, int, float]:
-    """Sample a preference pair (y_w, y_l) with true preference strength p_w."""
+    """采样偏好对（Preference pair）(y_w, y_l)，其真实偏好强度为 p_w。"""
     i, j = random.sample(range(N_ACTIONS), 2)
     p_i_beats_j = sigmoid(TRUE_UTILITY[i] - TRUE_UTILITY[j])
     if random.random() < p_i_beats_j:
@@ -98,9 +97,9 @@ def train_dpo(pairs: list[tuple[int, int, float]], beta: float = 0.1,
             g_margin = 2 * diff
             grad = [g_margin * (gw_i - gl_i) for gw_i, gl_i in zip(gw, gl)]
         elif variant == "bpo":
-            # DPO + penalty on decreases of log_pi_w
+            # DPO 加上针对 log_pi_w 下降的惩罚
             g_margin = -(1.0 - sigmoid(margin))
-            anchor_pen = -1.0 * (log_pi_w - log_ref_w)  # push chosen toward/above ref
+            anchor_pen = -1.0 * (log_pi_w - log_ref_w)  # 将优选回答推向参考值或更高值
             grad = [beta * (g_margin * gw_i - g_margin * gl_i) - 0.05 * anchor_pen * gw_i
                     for gw_i, gl_i in zip(gw, gl)]
         else:
@@ -112,7 +111,7 @@ def train_dpo(pairs: list[tuple[int, int, float]], beta: float = 0.1,
 def train_simpo(pairs: list[tuple[int, int, float]], beta: float = 1.5,
                 gamma: float = 0.5, steps: int = 2000, lr: float = 0.05) -> Policy:
     pi, _ = make_policy_and_ref()
-    lens = [1, 1, 1, 1]  # trivial in single-action toy; illustrative
+    lens = [1, 1, 1, 1]  # 单动作教学模型中的长度都为 1，仅作演示
     for _ in range(steps):
         w, l, _ = random.choice(pairs)
         log_pi_w = pi.logprob(w) / lens[w]
@@ -137,11 +136,11 @@ def train_kto(labels: list[tuple[int, bool]], beta: float = 0.1,
         log_ref_y = ref.logprob(y)
         value = beta * (log_pi_y - log_ref_y) - z_ref
         if desirable:
-            v = sigmoid(value)  # want up
+            v = sigmoid(value)  # 希望该值增大
             g_value = -(1 - v)
         else:
             v = sigmoid(-value)
-            g_value = (1 - v) * 2.0  # loss aversion weight
+            g_value = (1 - v) * 2.0  # 损失厌恶（Loss aversion）权重
         gy = pi.grad_logprob(y)
         grad = [beta * g_value * gy_i for gy_i in gy]
         apply_grad(pi, grad, lr)
@@ -155,9 +154,9 @@ def train_orpo(pairs: list[tuple[int, int, float]], lam: float = 0.1,
         w, l, _ = random.choice(pairs)
         log_pi_w = pi.logprob(w)
         log_pi_l = pi.logprob(l)
-        # NLL term
+        # 负对数似然（NLL）项
         gw = pi.grad_logprob(w)
-        # odds ratio term (simplified)
+        # 优势比（Odds ratio）项，已简化
         odds_w = math.exp(log_pi_w) / (1 - math.exp(log_pi_w) + 1e-6)
         odds_l = math.exp(log_pi_l) / (1 - math.exp(log_pi_l) + 1e-6)
         log_ratio = math.log(odds_w + 1e-6) - math.log(odds_l + 1e-6)
@@ -178,16 +177,16 @@ def win_rate(pi: Policy) -> float:
 
 
 def report(name: str, pi: Policy) -> None:
-    print(f"  {name:8s}  probs={[f'{p:.3f}' for p in softmax(pi.logits)]}  "
-          f"win_rate={win_rate(pi):.3f}  logits={[f'{l:+.2f}' for l in pi.logits]}")
+    print(f"  {name:8s}  概率={[f'{p:.3f}' for p in softmax(pi.logits)]}  "
+          f"胜率={win_rate(pi):.3f}  逻辑值（Logits）={[f'{l:+.2f}' for l in pi.logits]}")
 
 
 def main() -> None:
     print("=" * 70)
-    print("DPO FAMILY ON TOY 4-ACTION PREFERENCE DATA (Phase 18, Lesson 3)")
+    print("四动作教学偏好数据上的 DPO 家族（阶段 18，第 3 课）")
     print("=" * 70)
-    print(f"  true utility : {TRUE_UTILITY}")
-    print(f"  true optimum : {[f'{p:.3f}' for p in softmax(TRUE_UTILITY)]}")
+    print(f"  真实效用：{TRUE_UTILITY}")
+    print(f"  真实最优分布：{[f'{p:.3f}' for p in softmax(TRUE_UTILITY)]}")
     print()
 
     pairs = [sample_pref_pair() for _ in range(500)]
@@ -220,9 +219,9 @@ def main() -> None:
 
     print()
     print("-" * 70)
-    print("TAKEAWAY: all six methods shift mass toward action 1 (highest true")
-    print("utility). they differ in how tightly they anchor to the reference,")
-    print("how they treat preference strength, and whether they need pairs.")
+    print("要点：六种方法都会将概率质量移向动作 1（真实效用最高）。")
+    print("它们的区别在于参考策略约束的强弱、")
+    print("如何处理偏好强度，以及是否需要成对数据。")
     print("=" * 70)
 
 

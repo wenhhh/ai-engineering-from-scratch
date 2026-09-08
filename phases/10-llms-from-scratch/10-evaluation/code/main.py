@@ -147,16 +147,16 @@ def summarize_results(results, threshold=0.8):
 
 def print_summary(summary, suite_name="Eval"):
     print(f"\n{'=' * 60}")
-    print(f"  {suite_name} Summary")
+    print(f"  {suite_name} 摘要")
     print(f"{'=' * 60}")
     for metric, stats in summary.items():
         print(f"\n  {metric}:")
-        print(f"    Mean:      {stats['mean']:.3f}")
-        print(f"    Median:    {stats['median']:.3f}")
-        print(f"    Std:       {stats['std']:.3f}")
-        print(f"    Range:     [{stats['min']:.3f}, {stats['max']:.3f}]")
-        print(f"    Pass rate: {stats['pass_rate']:.1%} (threshold >= 0.8)")
-        print(f"    N:         {stats['n']}")
+        print(f"    均值（Mean）:      {stats['mean']:.3f}")
+        print(f"    中位数（Median）:    {stats['median']:.3f}")
+        print(f"    标准差（Std）:       {stats['std']:.3f}")
+        print(f"    范围（Range）:     [{stats['min']:.3f}, {stats['max']:.3f}]")
+        print(f"    通过率（Pass rate）: {stats['pass_rate']:.1%} （阈值 >= 0.8）")
+        print(f"    样本数（N）:         {stats['n']}")
 
 
 def demo_model_good(prompt):
@@ -195,7 +195,7 @@ def demo_model_random(prompt):
 
 def run_eval_demo():
     print("=" * 60)
-    print("  STEP 1: Eval Framework")
+    print("  步骤 1: 评估框架（Eval Framework）")
     print("=" * 60)
 
     cases = [
@@ -223,14 +223,14 @@ def run_eval_demo():
     results_bad = suite.run(demo_model_bad)
     results_random = suite.run(demo_model_random)
 
-    print_summary(summarize_results(results_good), "Model A (concise, exact)")
-    print_summary(summarize_results(results_bad), "Model B (verbose, paraphrase)")
-    print_summary(summarize_results(results_random), "Model C (random)")
+    print_summary(summarize_results(results_good), "模型 A（简洁、精确）")
+    print_summary(summarize_results(results_bad), "模型 B（冗长、转述）")
+    print_summary(summarize_results(results_random), "模型 C（随机）")
 
 
 def run_elo_demo():
     print(f"\n{'=' * 60}")
-    print("  STEP 2: ELO Tournament")
+    print("  步骤 2: ELO 锦标赛（Tournament）")
     print("=" * 60)
 
     cases = [
@@ -272,21 +272,21 @@ def run_elo_demo():
 
                 elo.record_match(name_a, name_b, outcome)
 
-    print("\n  ELO Leaderboard (after pairwise comparisons):")
+    print("\n  ELO 排行榜（两两比较后）:")
     for rank, (name, rating) in enumerate(elo.leaderboard(), 1):
         print(f"    {rank}. {name:<15} {rating:.0f}")
 
-    print(f"\n  Match history ({len(elo.history)} matches):")
+    print(f"\n  对局历史（{len(elo.history)} 场）:")
     for m in elo.history[:5]:
         winner = m["a"] if m["outcome"] == "a" else m["b"] if m["outcome"] == "b" else "tie"
         print(f"    {m['a']} vs {m['b']} -> {winner}")
     if len(elo.history) > 5:
-        print(f"    ... and {len(elo.history) - 5} more")
+        print(f"    ……另有 {len(elo.history) - 5} 场")
 
 
 def run_perplexity_demo():
     print(f"\n{'=' * 60}")
-    print("  STEP 3: Perplexity Comparison")
+    print("  步骤 3: 困惑度比较（Perplexity Comparison）")
     print("=" * 60)
 
     test_texts = [
@@ -296,28 +296,28 @@ def run_perplexity_demo():
     ]
 
     for text in test_texts:
-        print(f"\n  Text: {text[:60]}...")
-        for quality, label in [(0.9, "Strong"), (0.7, "Medium"), (0.4, "Weak")]:
+        print(f"\n  文本（Text）: {text[:60]}...")
+        for quality, label in [(0.9, "强（Strong）"), (0.7, "中（Medium）"), (0.4, "弱（Weak）")]:
             log_probs = token_log_probs_simulated(text, model_quality=quality)
             ppl = perplexity(log_probs)
-            print(f"    {label} model (quality={quality}): perplexity = {ppl:.2f}")
+            print(f"    {label} 模型（质量 quality={quality}）: 困惑度（perplexity） = {ppl:.2f}")
 
 
 def run_metric_comparison():
     print(f"\n{'=' * 60}")
-    print("  STEP 4: Metric Disagreement Analysis")
+    print("  步骤 4: 指标分歧分析（Metric Disagreement Analysis）")
     print("=" * 60)
 
     test_pairs = [
-        ("Paris", "Paris", "Exact match"),
-        ("The capital of France is Paris", "Paris", "Verbose correct answer"),
-        ("France", "Paris", "Wrong but related"),
-        ("I don't know", "Paris", "Refusal"),
-        ("paris", "Paris", "Case mismatch"),
-        ("Paris, France", "Paris", "Extra info"),
+        ("Paris", "Paris", "精确匹配（Exact match）"),
+        ("The capital of France is Paris", "Paris", "冗长的正确答案（Verbose correct answer）"),
+        ("France", "Paris", "错误但相关（Wrong but related）"),
+        ("I don't know", "Paris", "拒答（Refusal）"),
+        ("paris", "Paris", "大小写不匹配（Case mismatch）"),
+        ("Paris, France", "Paris", "额外信息（Extra info）"),
     ]
 
-    print(f"\n  {'Prediction':<35} {'Expected':<10} {'EM':>5} {'F1':>5} {'Judge':>6}")
+    print(f"\n  {'预测（Prediction）':<35} {'期望（Expected）':<10} {'EM':>5} {'F1':>5} {'评判（Judge）':>6}")
     print("  " + "-" * 68)
 
     for pred, expected, label in test_pairs:

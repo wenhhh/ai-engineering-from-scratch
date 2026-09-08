@@ -1,238 +1,238 @@
-# Turn a Request Into a Testable Contract
+# 将请求转化为可测试的契约（Turn a Request Into a Testable Contract）
 
-> A strong prompt does not merely describe what to write. It makes success observable before generation begins.
+> 好的提示词（Prompt）不只是描述要写什么，还会在生成开始前让成功标准变得可观察。
 
 **Type:** Learn
 **Languages:** Python
-**Prerequisites:** [Study the Decisions, Not the Vocabulary](../../00-certification-strategy/), [Prompt Engineering](../../../../../phases/11-llm-engineering/01-prompt-engineering/)
-**Time:** ~100 minutes
+**Prerequisites:** [学会决策，而不只是记住术语（Study the Decisions, Not the Vocabulary）](../../00-certification-strategy/), [提示词工程（Prompt Engineering）](../../../../../phases/11-llm-engineering/01-prompt-engineering/)
+**Time:** ~100 分钟
 
-## Learning Objectives
+## 学习目标（Learning Objectives）
 
-- Translate an ambiguous request into an outcome, evidence standard, constraints, and acceptance checks.
-- Decompose complex work into stages that can be inspected and corrected independently.
-- Choose between direct prompting, examples, structured sections, iteration, and workflow redesign.
-- Diagnose prompt failures without treating every bad output as a model failure.
-- Build reusable prompt packets for high-value Claude workflows.
+- 将模糊请求转化为结果目标、证据标准、约束和验收检查。
+- 将复杂工作分解为能够独立检查和修正的阶段。
+- 在直接提示、示例、结构化章节、迭代和工作流重设计之间作出选择。
+- 诊断提示词故障，而不把每个差输出都归为模型故障。
+- 为高价值 Claude 工作流构建可复用提示词包。
 
-## The Problem
+## 问题背景（The Problem）
 
-An operations manager asks Claude to "research our customer complaints and create a persuasive executive report with recommendations." The result is fluent. It includes four recommendations, two trends, and a clean table.
+一位运营经理要求 Claude“研究客户投诉，写一份有说服力的高管报告并提出建议”。结果流畅，包含四条建议、两个趋势和一张整齐表格。
 
-It is also unusable. One recommendation conflicts with policy. The table combines two date ranges. A regional exception is missing. Nobody can tell which complaint supports which claim.
+但它无法使用。一条建议违反政策，表格混用了两个日期范围，还遗漏了区域例外。没人能看出哪条投诉支持哪项主张。
 
-The team tries three repairs. They add "be accurate." They ask Claude to "think harder." Then they paste the same request into a more capable model. The prose improves, but the evidence problem remains.
+团队尝试三种修复：加上“务必准确”，要求 Claude“更深入地思考”，再把同一请求交给更强模型。文字更好了，证据问题却仍然存在。
 
-The request never defined the decision, the permitted sources, the required coverage, the audience, or the test for a supported recommendation. Claude optimized for a plausible report because plausibility was the only visible target.
+请求从未定义要支持的决策、允许来源、必需覆盖内容、受众，或有依据建议的检验方式。Claude 优化的是一份看似合理的报告，因为“看似合理”是唯一可见目标。
 
-## The Concept
+## 核心概念（The Concept）
 
-### Prompting is interface design
+### 提示词编写就是接口设计（Prompting is interface design）
 
-A prompt is an interface between human intent and model behavior. Good interfaces expose inputs, constraints, outputs, and failure states. Weak prompts hide all four inside adjectives such as "great," "comprehensive," or "professional."
+提示词是人类意图与模型行为之间的接口。好的接口明确输入、约束、输出和失败状态。差的提示词把这四项都藏在“优秀”“全面”“专业”等形容词里。
 
-Use this contract:
+使用以下契约：
 
-1. **Outcome:** What decision or action will this output support?
-2. **Context:** What background is necessary, and what is irrelevant?
-3. **Task:** What transformation should Claude perform?
-4. **Evidence:** Which sources may support claims, and how should gaps be handled?
-5. **Constraints:** What must not happen?
-6. **Format:** What exact shape should the result take?
-7. **Acceptance checks:** How will a person or program decide whether it passes?
+1. **结果（Outcome）：** 输出要支持什么决策或操作？
+2. **上下文（Context）：** 哪些背景必需，哪些无关？
+3. **任务（Task）：** Claude 应执行什么转换？
+4. **证据（Evidence）：** 哪些来源可支持主张，缺口如何处理？
+5. **约束（Constraints）：** 哪些事情不得发生？
+6. **格式（Format）：** 结果应采用什么确切结构？
+7. **验收检查（Acceptance checks）：** 人或程序如何判断是否通过？
 
-The order matters less than the presence of each part. You can label sections with Markdown headings, XML-style tags, or another consistent delimiter. Structure helps the model distinguish data from instructions and helps reviewers locate assumptions.
+顺序不如各部分齐全重要。可以用 Markdown 标题、XML 风格标签或其他一致的分隔符标注章节。结构有助于模型区分数据和指令，也便于审核者找到假设。
 
 ```text
 <outcome>
-Prepare the weekly support review so the director can choose two process fixes.
+准备每周支持工作评审材料，帮助总监选出两项流程改进。
 </outcome>
 
 <sources>
-Use only the attached tickets and policy handbook. Treat the handbook as authoritative.
+仅使用所附工单和政策手册。以手册为权威依据。
 </sources>
 
 <task>
-Group complaints by root cause, quantify each group, and propose no more than three fixes.
+按根因分组投诉，统计各组数量，并提出不超过三项改进。
 </task>
 
 <constraints>
-Do not infer customer intent. Mark missing dates as unknown. Do not include names.
+不得推断客户意图。缺失日期标为未知。不得包含姓名。
 </constraints>
 
 <output>
-Return: executive summary, evidence table, recommendations, uncertainties.
+返回：高管摘要、证据表、建议、不确定事项。
 </output>
 
 <checks>
-Every recommendation must cite at least two ticket IDs and one policy section.
+每条建议必须引用至少两个工单 ID 和一个政策章节。
 </checks>
 ```
 
-### Criteria come before wording
+### 先定标准，再改措辞（Criteria come before wording）
 
-Prompt optimization is impossible without a target. Define criteria first, then improve the prompt against representative cases.
+没有目标就无法优化提示词。先定义标准，再用代表性案例检验并改进提示词。
 
-For the complaint report, criteria might be:
+投诉报告的标准可以是：
 
-- Every complaint is assigned once or explicitly marked unclassified.
-- Counts reconcile with the input total.
-- Policy claims cite a supplied section.
-- Recommendations do not exceed the team's authority.
-- Personally identifying information is absent.
-- Uncertainty is visible instead of converted into a guess.
+- 每条投诉恰好分类一次，或明确标为未分类。
+- 各项计数与输入总数核算一致。
+- 政策主张引用给定章节。
+- 建议不超出团队权限。
+- 不包含个人身份信息。
+- 不确定性清晰可见，而不是变成猜测。
 
-"Make it better" gives no diagnostic signal. "The counts must reconcile" tells you what failed and what to change.
+“做得更好”没有提供诊断信号；“计数必须核算一致”则告诉你哪里失败、该改什么。
 
-### Decompose along verification boundaries
+### 沿验证边界分解任务（Decompose along verification boundaries）
 
-Long tasks become safer when each stage produces an artifact that can be inspected. A useful decomposition is:
+每个阶段都产出可检查的交付物（Artifact），可以让长任务更安全。一种有用的分解如下：
 
 ```mermaid
 flowchart LR
-    A["Clarify the decision"] --> B["Inventory and classify sources"]
-    B --> C["Extract claims and evidence"]
-    C --> D["Analyze patterns"]
-    D --> E["Draft for the audience"]
-    E --> F["Validate claims and constraints"]
-    F --> G["Approve or revise"]
+    A["澄清决策"] --> B["盘点并分类来源"]
+    B --> C["提取主张与证据"]
+    C --> D["分析规律"]
+    D --> E["面向受众起草"]
+    E --> F["验证主张与约束"]
+    F --> G["批准或修订"]
 ```
 
-This is not the same as splitting by arbitrary page count. Each boundary should answer a question:
+这不等于按任意页数拆分。每个边界都应回答一个问题：
 
-- Can we verify the source set before analysis?
-- Can we verify extracted facts before interpretation?
-- Can we verify recommendations before publishing?
+- 能否在分析前验证来源集合？
+- 能否在解释前验证提取的事实？
+- 能否在发布前验证建议？
 
-Run independent tasks in parallel only when they do not depend on one another. Classifying complaint categories and extracting policy constraints can run in parallel. Writing recommendations must wait for both.
+只有互不依赖的任务才能并行运行。投诉类别分类和政策约束提取可以并行，撰写建议则必须等待两者完成。
 
-Sequential stages reduce hidden coupling. They also create a recovery point. If extraction is wrong, you repair extraction rather than regenerating the entire report.
+顺序阶段减少隐藏耦合，也提供恢复点。提取错误时，只需修复提取步骤，而不是重生成整份报告。
 
-### Examples teach boundaries
+### 示例教会模型理解边界（Examples teach boundaries）
 
-Few-shot examples are useful when the rule is difficult to state or when formatting must be exact. A good example shows the decision boundary, not just the easy center.
+规则难以表述或格式必须精确时，少样本示例（Few-shot examples）很有用。好的示例展示决策边界，而不只是最容易的典型情况。
 
-For sentiment labels, do not provide three obviously positive examples. Include an ambiguous complaint, a mixed statement, and an "unknown" case. Explain why each label applies. The model learns what separates categories.
+对于情感标签，不要给三个明显正面的示例。应包含模糊投诉、混合陈述和“未知”案例，并解释每个标签为何适用，让模型学习类别间的区别。
 
-Examples can also create accidental rules. If every demonstration mentions retail customers, the model may treat retail language as part of the task. Keep examples diverse, minimal, and consistent with the written criteria.
+示例也可能意外引入规则。如果每个演示都提到零售客户，模型可能把零售语言视为任务的一部分。示例应多样、精简，并与书面标准一致。
 
-### Assign roles carefully
+### 谨慎赋予角色（Assign roles carefully）
 
-Role prompts can supply perspective, such as "act as a compliance reviewer." They do not grant knowledge, authority, or access. A role cannot replace policy text, source evidence, or a human approval step.
+角色提示可以提供视角，例如“担任合规审核者”，但不会赋予知识、权限或访问能力。角色不能替代政策文本、来源证据或人工批准步骤。
 
-Prefer a concrete perspective:
+优先使用具体视角：
 
 ```text
-Review the draft from the perspective of the privacy owner.
-Identify each sentence that exposes personal data, cite the applicable supplied policy,
-and propose the smallest compliant revision.
+从隐私负责人的角度审核草稿。
+找出每个暴露个人数据的句子，引用所提供的适用政策，
+并提出满足合规要求的最小修改。
 ```
 
-This is testable. "You are the world's best privacy expert" is not.
+这可以测试，而“你是世界上最好的隐私专家”不可以。
 
-### Iteration needs a hypothesis
+### 迭代需要假设（Iteration needs a hypothesis）
 
-Useful iteration changes one meaningful variable and measures the effect across a small evaluation set. Examples:
+有效迭代每次改变一个有意义的变量，并在小型评估集上测量影响。例如：
 
-- Hypothesis: requiring a claim-evidence table will reduce unsupported recommendations.
-- Hypothesis: placing the policy before the tickets will improve exception handling.
-- Hypothesis: one counterexample will improve classification of mixed cases.
+- 假设：要求提供主张与证据对照表，会减少无依据建议。
+- 假设：将政策放在工单之前，会改善例外处理。
+- 假设：增加一个反例，会改善混合案例分类。
 
-Keep the evaluation cases stable while comparing prompt variants. Otherwise you cannot distinguish a better prompt from an easier input.
+比较提示词变体时，评估案例应保持稳定，否则无法区分是提示词更好，还是输入更容易。
 
-When repeated changes fail, stop polishing sentences. The problem may be missing evidence, conflicting requirements, too much context, insufficient capability, or an unsafe workflow.
+反复修改仍失败时，应停止润色句子。问题可能是证据缺失、需求冲突、上下文过多、能力不足，或工作流不安全。
 
-## Build It
+## 动手实现（Build It）
 
-### Step 1: Write the acceptance card
+### 第 1 步：编写验收卡（Step 1: Write the acceptance card）
 
-Choose one recurring work task. Write a short acceptance card before a prompt:
+选择一项周期性工作任务，在编写提示词前先写一张简短验收卡：
 
 ```text
-Decision supported:
-Primary reader:
-Authoritative sources:
-Required facts:
-Forbidden content or actions:
-Output structure:
-Pass conditions:
-Escalation conditions:
+支持的决策：
+主要读者：
+权威来源：
+必需事实：
+禁止内容或操作：
+输出结构：
+通过条件：
+升级处理条件：
 ```
 
-Make every pass condition observable. "Professional" is not observable. "Uses no unexplained acronym and begins with a three-sentence summary" is.
+让每个通过条件都可观察。“专业”不可观察；“不使用未解释的缩写，并以三句话摘要开头”则可以。
 
-### Step 2: Create a source hierarchy
+### 第 2 步：建立来源层级（Step 2: Create a source hierarchy）
 
-Conflicting sources are normal. Tell Claude which source wins.
+来源冲突很常见，要告诉 Claude 哪个来源优先。
 
 ```text
-Authority order:
-1. Approved policy handbook dated 2026-07-01
-2. Current operating procedure
-3. Ticket notes
+权威优先顺序：
+1. 日期为 2026-07-01 的获批政策手册
+2. 当前操作规程
+3. 工单笔记
 
-If sources conflict, report the conflict. Do not silently choose the newer or longer text.
+来源冲突时，报告冲突。不要默默选择更新或更长的文本。
 ```
 
-Recency and authority are different. A recent chat message does not automatically override an approved policy.
+时效性与权威性不同。新近对话消息不会自动覆盖获批政策。
 
-### Step 3: Design the stages
+### 第 3 步：设计阶段（Step 3: Design the stages）
 
-For each stage, define input, output, and gate:
+为每个阶段定义输入、输出和门槛：
 
-| Stage | Input | Output | Gate |
+| 阶段（Stage） | 输入（Input） | 输出（Output） | 门槛（Gate） |
 |---|---|---|---|
-| Intake | Request and source inventory | Scope card | Owner confirms decision and deadline |
-| Extraction | Approved sources | Claim-evidence rows | Required fields complete |
-| Analysis | Verified rows | Patterns and exceptions | Counts reconcile |
-| Draft | Approved analysis | Audience-ready report | Format and scope pass |
-| Validation | Draft plus sources | Findings and corrections | High-risk findings resolved |
+| 受理（Intake） | 请求和来源清单 | 范围卡 | 负责人确认决策与截止时间 |
+| 提取（Extraction） | 获批来源 | 主张与证据记录行 | 必需字段完整 |
+| 分析（Analysis） | 验证后的记录行 | 规律与例外 | 计数核算一致 |
+| 起草（Draft） | 获批分析 | 面向受众的报告 | 格式和范围检查通过 |
+| 验证（Validation） | 草稿与来源 | 发现的问题及修正 | 高风险问题已解决 |
 
-This table is a workflow specification. The prompt for each stage can stay smaller and more precise than one giant prompt.
+这张表就是工作流规格。每个阶段的提示词可以比一条巨型提示词更小、更精确。
 
-### Step 4: Add uncertainty behavior
+### 第 4 步：定义不确定性处理行为（Step 4: Add uncertainty behavior）
 
-Tell Claude what to do when evidence is missing:
+告诉 Claude 证据缺失时怎么办：
 
 ```text
-If a required fact is unavailable, write "Not established from supplied sources."
-List the missing source and explain which conclusion cannot be made.
-Do not estimate a number unless the task explicitly permits estimation.
+如果必需事实不可得，写明“无法由给定来源确定”。
+列出缺失来源，并解释因此无法得出哪项结论。
+除非任务明确允许估算，否则不要估算数值。
 ```
 
-Abstention is a designed output, not a model defect.
+弃答（Abstention）是设计好的输出，不是模型缺陷。
 
-### Step 5: Test adversarial cases
+### 第 5 步：测试对抗案例（Step 5: Test adversarial cases）
 
-Create at least five cases:
+至少创建五个案例：
 
-- A normal request with complete evidence.
-- A request missing one required source.
-- Two sources that conflict.
-- An instruction hidden inside source content.
-- A request that exceeds the user's authority.
+- 证据完整的正常请求。
+- 缺少一个必需来源的请求。
+- 两个来源相互冲突。
+- 来源内容中隐藏指令。
+- 请求超出用户权限。
 
-Record pass or fail against the acceptance card. Do not rely on one impressive demonstration.
+按照验收卡记录通过或失败，不要依赖一次令人印象深刻的演示。
 
-## Interactive Lab
+## 交互实验（Interactive Lab）
 
-Use the prompt-contract figure to edit the outcome, evidence, constraints, output shape, and checks as separate components. Follow the stage gates to see why a missing source should stop analysis instead of producing better formatted uncertainty.
+使用提示词契约图，分别编辑结果、证据、约束、输出形态和检查。沿阶段门槛观察：来源缺失为何应阻止分析，而不是生成排版更好的不确定内容。
 
 ```figure
 03-prompt-contract
 ```
 
-## Practice Lab
+## 实践实验（Practice Lab）
 
-Run the contract scorer and remove one acceptance check, source rank, stage gate, or adversarial case. Repair the exact failure instead of adding vague prompt wording.
+运行契约评分器，删除一个验收检查、来源排名、阶段门槛或对抗案例。针对确切失败修复，而不是增加含糊提示词措辞。
 
-## Shipped Artifact
+## 交付物（Shipped Artifact）
 
-`outputs/prompt-contract-packet.json` is a filled complaint-analysis contract. It contains all seven contract parts, an authority order, five adversarial evaluation cases, explicit abstention behavior, and stage-level gates.
+`outputs/prompt-contract-packet.json` 是填写完整的投诉分析契约，包含全部七个契约部分、权威优先顺序、五个对抗评估案例、明确弃答行为和阶段级门槛。
 
-## Verify It
+## 验证结果（Verify It）
 
-Validate it locally:
+在本地验证：
 
 ```bash
 cd certifications/claude/lessons/03-prompting-and-task-decomposition/code
@@ -240,60 +240,60 @@ python3 main.py
 python3 -m unittest discover tests -v
 ```
 
-The validator rejects vague pass criteria, missing authority order, absent escalation behavior, or an evaluation set that omits normal, missing-source, conflict, injection, and unauthorized cases.
+校验器拒绝含糊通过标准、缺失权威优先顺序、没有升级处理行为，以及未覆盖正常、来源缺失、冲突、注入和未授权案例的评估集。
 
-## Capstone Connection
+## 与综合实践的联系（Capstone Connection）
 
-The quiz checks contract design, decomposition, evidence hierarchy, and abstention. Carry the validated packet into capstones 29 through 32 as the versioned prompt and acceptance contract for the workflow you build.
+测验检查契约设计、任务分解、证据层级和弃答。将验证后的包带入第 29 至 32 课综合实践，作为所构建工作流的版本化提示词与验收契约。
 
-## Use It
+## 实际应用（Use It）
 
-### Exam decision pattern
+### 考试决策模式（Exam decision pattern）
 
-For scenario questions, use this order:
+场景题按以下顺序处理：
 
-1. Identify the requested outcome.
-2. Find the missing requirement or evidence.
-3. Prefer a repair that makes the failure observable.
-4. Preserve an explicit human or policy boundary when consequences are high.
-5. Escalate model capability only after prompt, context, and workflow causes are addressed.
+1. 确定所需结果。
+2. 找出缺失需求或证据。
+3. 优先选择让故障可观察的修复。
+4. 后果重大时，保留明确的人工或政策边界。
+5. 处理提示词、上下文和工作流原因后，再升级模型能力。
 
-The strongest answer usually improves the contract or the workflow. It rarely adds a vague adjective.
+最好的答案通常改进契约或工作流，很少只是增加含糊形容词。
 
-### Common traps
+### 常见陷阱（Common traps）
 
-- **One prompt for the entire project:** Complex work has no inspection points.
-- **More detail without hierarchy:** A longer prompt can contain more contradictions.
-- **Role as authority:** A persona does not create reliable facts or permissions.
-- **Examples without edge cases:** The model learns the easy pattern but misses the boundary.
-- **Chain-of-thought dependency:** Requiring hidden reasoning text is not a substitute for verifiable intermediate artifacts.
-- **Model upgrade as first response:** Better capability cannot recover an absent policy.
-- **Endless conversational correction:** A reusable task needs versioned instructions and evaluation cases.
+- **一个提示词包办整个项目（One prompt for the entire project）：** 复杂工作没有检查点。
+- **增加细节却没有层级（More detail without hierarchy）：** 更长提示词可能包含更多矛盾。
+- **把角色当成权限（Role as authority）：** 人设不会创造可靠事实或权限。
+- **示例缺少边界案例（Examples without edge cases）：** 模型学会简单模式，却没学会边界。
+- **依赖思维链（Chain-of-thought dependency）：** 要求隐藏推理文本，不能替代可验证的中间交付物。
+- **首先升级模型（Model upgrade as first response）：** 更强能力无法找回未提供的政策。
+- **无休止地在对话中纠正（Endless conversational correction）：** 可复用任务需要版本化指令和评估案例。
 
-### Exercises
+### 练习（Exercises）
 
-1. Rewrite "Summarize this for leadership" as a seven-part prompt contract.
-2. Take a five-step task and identify which steps can run in parallel. Explain every dependency.
-3. Create three examples for a category label: one clear, one boundary case, and one abstention.
-4. Design five evaluation cases for your prompt, including conflicting evidence and an unauthorized request.
-5. Review a recent weak output and classify the failure as requirement, source, context, prompt, model, or workflow.
+1. 将“给领导总结一下”改写为七部分提示词契约。
+2. 选择一个五步骤任务，找出哪些步骤可并行，解释每项依赖。
+3. 为一个类别标签创建三个示例：一个清晰案例、一个边界案例、一个弃答案例。
+4. 为提示词设计五个评估案例，包含冲突证据和未授权请求。
+5. 复盘最近一次差输出，将故障归类为需求、来源、上下文、提示词、模型或工作流问题。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-- **Acceptance criterion:** An observable condition an output must satisfy.
-- **Decomposition:** Splitting work into stages with explicit dependencies and outputs.
-- **Few-shot prompting:** Supplying examples that demonstrate the desired task or boundary.
-- **Prompt contract:** A structured statement of outcome, context, task, evidence, constraints, format, and checks.
-- **Source hierarchy:** The rule that determines which evidence is authoritative when sources conflict.
-- **Abstention:** An explicit refusal to infer when evidence or permission is insufficient.
-- **Verification boundary:** A point where an intermediate artifact can be tested before work continues.
+- **验收标准（Acceptance criterion）：** 输出必须满足的可观察条件。
+- **任务分解（Decomposition）：** 将工作拆分为具有明确依赖与输出的阶段。
+- **少样本提示（Few-shot prompting）：** 提供展示期望任务或边界的示例。
+- **提示词契约（Prompt contract）：** 对结果、上下文、任务、证据、约束、格式和检查的结构化说明。
+- **来源层级（Source hierarchy）：** 来源冲突时决定哪项证据具有权威性的规则。
+- **弃答（Abstention）：** 证据或权限不足时明确拒绝推断。
+- **验证边界（Verification boundary）：** 工作继续前可以测试中间交付物的节点。
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [Anthropic: Prompt engineering overview](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/overview)
-- [Anthropic: Prompting best practices](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-4-best-practices)
-- [Anthropic: Define success criteria and build evaluations](https://platform.claude.com/docs/en/test-and-evaluate/develop-tests)
-- [AI Engineering from Scratch: Few-Shot Prompting and Chain of Thought](../../../../../phases/11-llm-engineering/02-few-shot-cot/)
-- [AI Engineering from Scratch: Anthropic Workflow Patterns](../../../../../phases/14-agent-engineering/12-anthropic-workflow-patterns/)
+- [Anthropic：提示词工程概览](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/overview)
+- [Anthropic：提示词最佳实践](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-4-best-practices)
+- [Anthropic：定义成功标准并构建评估](https://platform.claude.com/docs/en/test-and-evaluate/develop-tests)
+- [AI Engineering from Scratch：少样本提示与思维链](../../../../../phases/11-llm-engineering/02-few-shot-cot/)
+- [AI Engineering from Scratch：Anthropic 工作流模式](../../../../../phases/14-agent-engineering/12-anthropic-workflow-patterns/)
 
-Official product behavior and model-specific prompting advice can change. The links above were checked on 2026-08-08. Recheck the current Anthropic documentation before freezing a production prompt or studying a release-specific feature.
+官方产品行为和模型特定提示建议会变化。以上链接核查于 2026-08-08。在固定生产提示词或学习特定发布版本功能前，应重新查阅最新 Anthropic 文档。

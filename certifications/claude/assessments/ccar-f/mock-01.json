@@ -3,25 +3,25 @@
   "version": 2,
   "track": "claude-ccar-f",
   "kind": "mock",
-  "title": "Architect Foundations Scenario Mock",
+  "title": "架构师基础级场景模拟考试（Architect Foundations Scenario Mock）",
   "timeLimitMinutes": 120,
   "questions": [
     {
       "id": "ccar-f-m1-001",
       "domain": "agentic-architecture-orchestration",
-      "objective": "Implement the tool-use lifecycle from stop reason to tool result",
+      "objective": "实现从停止原因到工具结果的工具调用生命周期（Implement the tool-use lifecycle from stop reason to tool result）",
       "type": "single",
-      "prompt": "Packet 1, HelioDesk: A support assistant requests `read_case` and `read_active_policy` in one response. Both calls are authorized and independent. What should the orchestration harness do next?",
+      "prompt": "材料包 1，HelioDesk：支持助手在同一响应中请求 `read_case` 和 `read_active_policy`，两个调用均获授权且相互独立。编排运行框架接下来应做什么？",
       "options": [
-        "Execute both calls and append one combined natural-language observation without the original call IDs, then continue because the calls share a support-case goal",
-        "Convert the calls into one unstructured search query",
-        "Execute both calls, preserve each call ID, append structured tool results after the assistant turn, then continue Claude's loop",
-        "Return an empty user message and wait for another request"
+        "执行两次调用，追加不含原始调用 ID 的合并自然语言观察，因为二者共享支持案例目标而继续",
+        "将调用转换为一个非结构化搜索查询",
+        "执行两次调用，保留各调用 ID，在 assistant 轮次后追加结构化工具结果，再继续 Claude 循环",
+        "返回空 user 消息，等待另一个请求"
       ],
       "correct": [
         2
       ],
-      "explanation": "The harness owns the tool protocol. Independent authorized calls may run concurrently, but every result must remain associated with its original call ID and appear in valid conversation order before continuation.",
+      "explanation": "运行框架负责工具协议。独立且获授权的调用可以并发，但每个结果必须关联原始调用 ID，并在继续前按有效对话顺序出现。",
       "references": [
         "certifications/claude/lessons/10-tool-use-and-agentic-loops",
         "https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview"
@@ -30,19 +30,19 @@
     {
       "id": "ccar-f-m1-002",
       "domain": "agentic-architecture-orchestration",
-      "objective": "Choose coordinator and subagent topologies",
+      "objective": "选择协调者与子智能体拓扑（Choose coordinator and subagent topologies）",
       "type": "single",
-      "prompt": "Packet 1, HelioDesk: Case analysis is short, uses two read tools, and fits comfortably in one context. The team proposes four subagents because multi-agent sounds more robust. What is the strongest initial architecture?",
+      "prompt": "材料包 1，HelioDesk：案例分析很短，只用两个读取工具，一个上下文绰绰有余。团队因多智能体听起来更稳健而提议四个子智能体。最佳初始架构是什么？",
       "options": [
-        "Use four specialist agents with identical case context and read permissions, then select the majority resolution to increase robustness without first measuring one loop",
-        "Create one subagent per sentence in the resolution",
-        "Use a coordinator without any task contracts",
-        "Use one bounded agent loop and add subagents only if measured context, parallelism, specialization, or reviewer independence requires them"
+        "给四个专家智能体相同案例上下文和读取权限，选择多数意见，在尚未测量单循环前就提高稳健性",
+        "为解决方案的每句话创建一个子智能体",
+        "使用没有任何任务契约的协调者",
+        "使用一个有边界智能体循环，仅当实测上下文、并行、专业化或评审独立性需要时才增加子智能体"
       ],
       "correct": [
         3
       ],
-      "explanation": "A single-agent baseline is simpler to inspect and evaluate. Additional contexts are justified by a specific benefit, not by feature count, and broad duplicate agents create merge and authority problems.",
+      "explanation": "单智能体基线更易检查和评估。额外上下文应由具体收益证明合理，而非功能数量；宽泛重复智能体会产生合并和权限问题。",
       "references": [
         "certifications/claude/lessons/16-multi-agent-orchestration-and-delegation",
         "https://www.anthropic.com/research/building-effective-agents"
@@ -51,20 +51,20 @@
     {
       "id": "ccar-f-m1-003",
       "domain": "agentic-architecture-orchestration",
-      "objective": "Use Task, allowedTools, isolated context, parallelism, and forked sessions",
+      "objective": "使用 Task、allowedTools、隔离上下文、并行和分叉会话（Use Task, allowedTools, isolated context, parallelism, and forked sessions）",
       "type": "multiple",
-      "prompt": "Packet 1, HelioDesk: A policy specialist and a case-evidence specialist can work independently after intake. Which two design choices are strongest? Select two.",
+      "prompt": "材料包 1，HelioDesk：接收案例后，政策专家与案例证据专家可独立工作。哪两项设计最合适？选择两项。",
       "options": [
-        "Give both specialists a guarded refund dry-run tool",
-        "Begin a provisional final decision after the first specialist reports, then revise only if the second returns a direct contradiction",
-        "Run the specialists in isolated contexts with only their required read tools",
-        "Merge results by claim and source IDs after each returns complete or explicit partial state"
+        "给两位专家都提供带防护的退款试运行工具",
+        "第一位专家返回后即开始临时最终决策，仅当第二位直接反驳时修订",
+        "让专家在隔离上下文中运行，只提供各自必需读取工具",
+        "每位返回完整或明确部分状态后，按主张和来源 ID 合并结果"
       ],
       "correct": [
         2,
         3
       ],
-      "explanation": "Isolation protects attention and authority, while structured identity supports safe parallel reduction. Execution authority and premature decisions are unnecessary and can convert missing evidence into action.",
+      "explanation": "隔离保护注意力与权限，结构化身份支持安全并行汇总。执行权限和过早决策没有必要，还可能把缺失证据转化为行动。",
       "references": [
         "certifications/claude/lessons/16-multi-agent-orchestration-and-delegation",
         "certifications/claude/lessons/17-agent-sdk-sessions-subagents-and-context"
@@ -73,19 +73,19 @@
     {
       "id": "ccar-f-m1-004",
       "domain": "agentic-architecture-orchestration",
-      "objective": "Use hooks for deterministic controls and normalization",
+      "objective": "使用钩子实现确定性控制和规范化（Use hooks for deterministic controls and normalization）",
       "type": "single",
-      "prompt": "Packet 1, HelioDesk: Refund execution must never occur without a fresh duty-manager approval token. Where should this invariant be enforced?",
+      "prompt": "材料包 1，HelioDesk：退款执行必须始终有新鲜的值班经理审批令牌。应在哪里强制此不变条件？",
       "options": [
-        "In deterministic pre-action authorization plus service-side validation, with the prompt explaining workflow behavior",
-        "In the final writing-style rubric",
-        "By asking the agent to self-report confidence",
-        "In a system prompt that defines the fresh-token requirement and asks the agent to verify token timestamp and approver identity before selecting the refund tool"
+        "在确定性行动前授权和服务端验证中强制，提示词说明工作流行为",
+        "在最终写作风格量规中",
+        "让智能体自报信心",
+        "在系统提示词定义新鲜令牌要求，让智能体选择退款工具前验证时间戳和审批者身份"
       ],
       "correct": [
         0
       ],
-      "explanation": "Hard authorization cannot depend on model memory or wording. A deterministic gate and the service enforce the invariant even under long context, injection, retry, or model error.",
+      "explanation": "硬性授权不能依赖模型记忆或措辞。即使存在长上下文、注入、重试或模型错误，确定性关卡和服务也必须强制该不变条件。",
       "references": [
         "certifications/claude/lessons/17-agent-sdk-sessions-subagents-and-context",
         "certifications/claude/lessons/06-governance-safety-and-responsible-use"
@@ -94,20 +94,20 @@
     {
       "id": "ccar-f-m1-005",
       "domain": "agentic-architecture-orchestration",
-      "objective": "Enforce prerequisites, decompose concerns, and structure handoffs",
+      "objective": "强制先决条件、分离关注点并结构化交接（Enforce prerequisites, decompose concerns, and structure handoffs）",
       "type": "multiple",
-      "prompt": "Packet 1, HelioDesk: Policy search returns valid UK evidence but times out before EU evidence. The case region is EU. Which two coordinator behaviors are correct? Select two.",
+      "prompt": "材料包 1，HelioDesk：政策搜索返回有效英国证据，但在返回欧盟证据前超时，案例地区是欧盟。协调者哪两项行为正确？选择两项。",
       "options": [
-        "Keep the valid UK result as a partial artifact with its scope and provenance",
-        "Use the valid UK policy as a temporary proxy for EU handling when the product terms appear harmonized, while labeling the regional assumption",
-        "Block the EU recommendation and retry the named gap or escalate according to the error contract",
-        "Mark research complete with an EU evidence gap and allow synthesis to choose a conservative no-refund action without retry or escalation"
+        "将有效英国结果保留为部分交付物，附作用域和来源",
+        "产品条款似乎协调一致时，暂用英国政策代理欧盟处理，并标注地区假设",
+        "阻止欧盟建议，按错误契约重试明确缺口或升级处理",
+        "将研究标为完成并注明欧盟证据缺口，允许综合分析保守选择不退款，不重试也不升级"
       ],
       "correct": [
         0,
         2
       ],
-      "explanation": "Partial work should remain usable without being mistaken for coverage. Since the missing scope governs the actual case, synthesis must stop until a safe retry or authoritative escalation resolves it.",
+      "explanation": "部分工作应保持可用，但不能被误当作完整覆盖。缺失范围决定实际案例，综合分析必须停止，直到安全重试或权威升级处理解决缺口。",
       "references": [
         "certifications/claude/lessons/16-multi-agent-orchestration-and-delegation",
         "certifications/claude/lessons/21-long-context-reliability-provenance-and-escalation"
@@ -116,19 +116,19 @@
     {
       "id": "ccar-f-m1-006",
       "domain": "tool-design-mcp-integration",
-      "objective": "Write precise tool descriptions and boundaries",
+      "objective": "编写精确工具描述和边界（Write precise tool descriptions and boundaries）",
       "type": "single",
-      "prompt": "Packet 1, HelioDesk: `search`, `lookup`, and `find` all accept a string, but query public pages, customer cases, and active policy respectively. What is the strongest redesign?",
+      "prompt": "材料包 1，HelioDesk：`search`、`lookup`、`find` 都接收字符串，但分别查询公开页面、客户案例和生效政策。最佳重新设计是什么？",
       "options": [
-        "Add a lightweight router prompt over the unchanged catalog and retry with the next tool whenever the first result set is empty or irrelevant",
-        "Rename each by source and action, add positive and negative use guidance, constrain schemas, and test confusion pairs",
-        "Combine them behind a single discovery tool whose required source enum selects public pages, customer cases, or active policy, while keeping the generic search name",
-        "Keep the names and add a general reminder to choose well"
+        "在未改目录上加轻量路由提示词，首次结果为空或无关就换下一工具重试",
+        "按来源和动作重命名，增加适用及不适用指导，限制模式并测试易混淆工具对",
+        "合并为单个发现工具，通过必需 source 枚举选择公开页面、客户案例或生效政策，保留通用 search 名称",
+        "保持名称，只增加应认真选择的通用提醒"
       ],
       "correct": [
         1
       ],
-      "explanation": "Selection quality depends on visible interface boundaries. Distinct source, purpose, schema, and negative-use guidance give the model a decision surface and make catalog evaluation possible.",
+      "explanation": "选择质量依赖可见接口边界。区分来源、目的、模式和不适用指导，为模型提供决策依据，也让目录评估成为可能。",
       "references": [
         "certifications/claude/lessons/18-tool-contracts-errors-and-progressive-discovery",
         "https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview"
@@ -137,20 +137,20 @@
     {
       "id": "ccar-f-m1-007",
       "domain": "tool-design-mcp-integration",
-      "objective": "Return structured and retry-aware MCP errors",
+      "objective": "返回结构化且考虑重试的 MCP 错误（Return structured and retry-aware MCP errors）",
       "type": "multiple",
-      "prompt": "Packet 1, HelioDesk: The policy MCP server reports a version conflict. Which two fields should guide recovery? Select two.",
+      "prompt": "材料包 1，HelioDesk：政策 MCP 服务器报告版本冲突。哪两个字段应指导恢复？选择两项。",
       "options": [
-        "A generic retryable conflict plus the server's latest policy version identifier, leaving the client to discard its local state and restart",
-        "Both conflicting source versions and a safe next action",
-        "The authenticated server identity and request trace, because a trusted server can resolve the version conflict internally on the next attempt",
-        "A conflict category with retryability false until state is refreshed or reconciled"
+        "通用可重试冲突及服务器最新政策版本标识符，让客户端丢弃本地状态重启",
+        "两个冲突来源版本和安全下一步",
+        "已认证服务器身份和请求轨迹，因为可信服务器能在下一次尝试内部解决版本冲突",
+        "冲突类别，且刷新或核对状态前 retryability 为 false"
       ],
       "correct": [
         1,
         3
       ],
-      "explanation": "A conflict is not a blind transient retry. The client needs category, source state, and a reconciliation path while protected internals and credentials remain outside the result.",
+      "explanation": "冲突不是可盲目重试的临时故障。客户端需要类别、来源状态和核对路径，而受保护内部信息与凭据必须留在结果之外。",
       "references": [
         "certifications/claude/lessons/18-tool-contracts-errors-and-progressive-discovery",
         "https://modelcontextprotocol.io/specification/latest"
@@ -159,19 +159,19 @@
     {
       "id": "ccar-f-m1-008",
       "domain": "tool-design-mcp-integration",
-      "objective": "Scope MCP configuration and resources",
+      "objective": "限定 MCP 配置与资源作用域（Scope MCP configuration and resources）",
       "type": "single",
-      "prompt": "Packet 1, HelioDesk: Active policy text is read-only context with stable identifiers and no operation. Which MCP primitive best represents it?",
+      "prompt": "材料包 1，HelioDesk：生效政策文本是带稳定标识符、不执行操作的只读上下文。哪种 MCP 原语最合适？",
       "options": [
-        "A hidden credential",
-        "A refund execution tool",
-        "A resource",
-        "A prompt"
+        "隐藏凭据",
+        "退款执行工具",
+        "资源（Resource）",
+        "提示词（Prompt）"
       ],
       "correct": [
         2
       ],
-      "explanation": "A resource represents contextual data the host or model can read. Wrapping static policy in an action tool adds misleading semantics and can blur the authority boundary.",
+      "explanation": "资源表示宿主或模型可读取的上下文数据。将静态政策包装成行动工具会增加误导性语义，模糊权限边界。",
       "references": [
         "certifications/claude/lessons/11-mcp-server-design-and-integration",
         "certifications/claude/lessons/18-tool-contracts-errors-and-progressive-discovery"
@@ -180,20 +180,20 @@
     {
       "id": "ccar-f-m1-009",
       "domain": "tool-design-mcp-integration",
-      "objective": "Manage tool distribution and tool choice",
+      "objective": "管理工具分发和工具选择（Manage tool distribution and tool choice）",
       "type": "multiple",
-      "prompt": "Packet 1, HelioDesk: A separate executor can issue refunds after approval. Which two controls are necessary? Select two.",
+      "prompt": "材料包 1，HelioDesk：独立执行者可在审批后退款。哪两项控制必需？选择两项。",
       "options": [
-        "Distribute the write tool only to the executor role",
-        "Expose a guarded refund tool to the coordinator and research roles, relying on the approval-token schema to prevent any unauthorized call",
-        "Retry the same approved refund after a bounded delay using a new operation ID, because a timeout contains no success response",
-        "Require fresh authorization, an idempotency key, and reconciliation of unknown outcomes"
+        "只向执行者角色分发写工具",
+        "向协调者和研究角色公开受防护退款工具，依靠审批令牌模式防止未授权调用",
+        "有限等待后用新操作 ID 重试同一获批退款，因为超时没有成功响应",
+        "要求新鲜授权、幂等键，并核对未知结果"
       ],
       "correct": [
         0,
         3
       ],
-      "explanation": "Least-privilege distribution reduces accidental selection. Fresh approval and idempotent reconciliation protect against duplicate or unauthorized side effects when results are lost or retried.",
+      "explanation": "按最小权限（Least Privilege）原则分配工具，可以减少误选。重新取得有效审批，并以幂等方式核对和处理结果，能够防止结果丢失或重试时产生重复或未经授权的副作用。",
       "references": [
         "certifications/claude/lessons/18-tool-contracts-errors-and-progressive-discovery",
         "certifications/claude/lessons/17-agent-sdk-sessions-subagents-and-context"
@@ -202,19 +202,19 @@
     {
       "id": "ccar-f-m1-010",
       "domain": "prompt-engineering-structured-output",
-      "objective": "Enforce schemas with tool use and tool choice",
+      "objective": "通过工具调用与工具选择强制模式（Enforce schemas with tool use and tool choice）",
       "type": "single",
-      "prompt": "Packet 1, HelioDesk: A resolution candidate requires `policy_section`, `case_fact_ids`, `action`, and nullable `refund_amount`, but must not execute anything. What is the strongest output design?",
+      "prompt": "材料包 1，HelioDesk：候选解决方案需要 `policy_section`、`case_fact_ids`、`action` 和可空 `refund_amount`，但不得执行操作。最佳输出设计是什么？",
       "options": [
-        "Ask for persuasive prose and parse it later",
-        "Make every field a required non-null string",
-        "Force a dry-run mode on the real refund tool so its production schema returns the typed candidate without committing an external state change",
-        "Use a no-side-effect structured candidate schema, require it when appropriate, then validate every field"
+        "要求有说服力的文字，之后再解析",
+        "每个字段都设为必需的非空字符串",
+        "强制真实退款工具采用试运行模式，用其生产模式返回类型化候选方案，不提交外部状态变化",
+        "使用无副作用的结构化候选模式，适当时强制要求，再验证每个字段"
       ],
       "correct": [
         3
       ],
-      "explanation": "A typed recommendation should not inherit action authority. Nullable unknowns prevent invented amounts, while semantic and provenance validation determine whether the structurally valid candidate is supported.",
+      "explanation": "类型化建议不应继承行动权限。允许未知值为空可防止编造金额，语义与来源验证则判断结构有效的候选方案是否有依据。",
       "references": [
         "certifications/claude/lessons/20-reliable-extraction-batch-and-reviewers",
         "https://platform.claude.com/docs/en/build-with-claude/structured-outputs"
@@ -223,20 +223,20 @@
     {
       "id": "ccar-f-m1-011",
       "domain": "prompt-engineering-structured-output",
-      "objective": "Validate, retry, and feed back semantic errors",
+      "objective": "验证、重试并反馈语义错误（Validate, retry, and feed back semantic errors）",
       "type": "multiple",
-      "prompt": "Packet 1, HelioDesk: The candidate matches its schema but cites a policy section that does not authorize the proposed action. Which two responses are strongest? Select two.",
+      "prompt": "材料包 1，HelioDesk：候选方案符合模式，但引用的政策条款未授权拟议行动。哪两种响应最合适？选择两项。",
       "options": [
-        "Replace the unsupported citation with the policy document identifier and retain the action when the case facts otherwise satisfy the candidate schema",
-        "Return a provenance error naming the action and unsupported source",
-        "Allow a bounded repair using the original evidence, then escalate if no supported action exists",
-        "Accept it when the candidate passes its schema and the cited section belongs to the active policy version, recording the support mismatch for audit"
+        "用政策文档标识符替换无支持引用，只要案例事实符合候选模式就保留行动",
+        "返回来源错误，指出行动及不支持它的来源",
+        "允许用原始证据进行有界修复，没有有依据行动时升级处理",
+        "只要符合模式且引用条款属于生效政策版本就接受，将支持不匹配记入审计"
       ],
       "correct": [
         1,
         2
       ],
-      "explanation": "Schema validity does not establish policy support. Targeted feedback allows a supported correction, while bounded attempts ensure a policy gap becomes escalation rather than repeated fabrication.",
+      "explanation": "模式有效不代表政策支持。针对性反馈允许有依据修正，有限尝试确保政策缺口进入升级处理，而非反复编造。",
       "references": [
         "certifications/claude/lessons/20-reliable-extraction-batch-and-reviewers",
         "certifications/claude/lessons/05-output-evaluation-and-validation"
@@ -245,19 +245,19 @@
     {
       "id": "ccar-f-m1-012",
       "domain": "prompt-engineering-structured-output",
-      "objective": "Separate generator and independent reviewer passes",
+      "objective": "分离生成者与独立评审轮次（Separate generator and independent reviewer passes）",
       "type": "single",
-      "prompt": "Packet 1, HelioDesk: Which reviewer input best protects independent judgment?",
+      "prompt": "材料包 1，HelioDesk：哪种评审输入最能保护独立判断？",
       "options": [
-        "The resolution candidate, active policy evidence, case facts, rubric, and finding schema in an isolated context",
-        "The same artifact, evidence, facts, and rubric, preceded by the generator's full rationale so the reviewer can concentrate on disputed assumptions",
-        "A request to agree with the coordinator",
-        "Only the proposed refund amount"
+        "在隔离上下文提供候选解决方案、生效政策证据、案例事实、量规和发现模式",
+        "相同交付物、证据、事实及量规，但先附生成者完整理由，让评审者专注有争议假设",
+        "要求同意协调者",
+        "只提供拟退款金额"
       ],
       "correct": [
         0
       ],
-      "explanation": "The reviewer needs the artifact and evidence but not the generator's persuasive trajectory. Isolation and a finding contract reduce correlated assumptions and preserve actionable defects.",
+      "explanation": "评审者需要交付物和证据，不需要生成者的说服性轨迹。隔离与发现契约减少相关假设，并保留可行动缺陷。",
       "references": [
         "certifications/claude/lessons/20-reliable-extraction-batch-and-reviewers",
         "certifications/claude/lessons/16-multi-agent-orchestration-and-delegation"
@@ -266,19 +266,19 @@
     {
       "id": "ccar-f-m1-013",
       "domain": "context-management-reliability",
-      "objective": "Place facts to reduce lost-in-the-middle failures",
+      "objective": "安排事实位置，减少中间信息遗失（Place facts to reduce lost-in-the-middle failures）",
       "type": "single",
-      "prompt": "Packet 1, HelioDesk: The regional exception is buried between hundreds of case messages and is often missed. What is the strongest context design?",
+      "prompt": "材料包 1，HelioDesk：地区例外埋在数百条案例消息之间，经常被遗漏。最佳上下文设计是什么？",
       "options": [
-        "Remove dates and section IDs",
-        "Put the task and hard constraints first, retrieve the regional exception with provenance, and place the decision question after focused evidence",
-        "Repeat all messages twice",
-        "Keep the entire case and policy corpus in one context, place the decision question at both ends, and rely on nominal capacity plus repetition for recall"
+        "删除日期和条款 ID",
+        "先放任务与硬约束，检索带来源的地区例外，再在聚焦证据后放决策问题",
+        "所有消息重复两遍",
+        "将全部案例和政策语料保留在一个上下文，两端放决策问题，依赖标称容量和重复来确保回忆"
       ],
       "correct": [
         1
       ],
-      "explanation": "Focused retrieval and deliberate placement make critical evidence salient while preserving verifiability. Context capacity alone cannot guarantee that one buried rule controls the answer.",
+      "explanation": "聚焦检索和有目的的位置安排使关键证据突出，同时保留可验证性。上下文容量本身不能保证埋藏规则会主导回答。",
       "references": [
         "certifications/claude/lessons/21-long-context-reliability-provenance-and-escalation",
         "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/long-context-tips"
@@ -287,20 +287,20 @@
     {
       "id": "ccar-f-m1-014",
       "domain": "context-management-reliability",
-      "objective": "Calibrate confidence and human review",
+      "objective": "校准置信度与人工审核（Calibrate confidence and human review）",
       "type": "multiple",
-      "prompt": "Packet 1, HelioDesk: Which two cases should receive mandatory human review even if the ordinary automation path is accurate? Select two.",
+      "prompt": "材料包 1，HelioDesk：即使普通自动化路径准确，哪两类案例仍应强制人工审核？选择两项。",
       "options": [
-        "High-impact refund recommendations",
-        "Partial, conflicting, novel, or low-evidence cases",
-        "Outputs below a fixed self-reported confidence threshold calibrated on aggregate cases but not segmented by impact, novelty, or evidence state",
-        "Cases with unusually long input records"
+        "高影响退款建议",
+        "证据部分缺失、冲突、新颖或不足的案例",
+        "低于固定自报置信阈值的输出，该阈值只在总体案例校准，未按影响、新颖性或证据状态分层",
+        "输入记录异常长的案例"
       ],
       "correct": [
         0,
         1
       ],
-      "explanation": "Consequence and observable evidence risk should drive review. Self-reported percentages are not calibrated thresholds, and length does not reliably predict correctness or harm.",
+      "explanation": "后果和可观察证据风险应驱动审核。自报百分比不是校准阈值，篇幅也不能可靠预测正确性或伤害。",
       "references": [
         "certifications/claude/lessons/21-long-context-reliability-provenance-and-escalation",
         "certifications/claude/lessons/06-governance-safety-and-responsible-use"
@@ -309,19 +309,19 @@
     {
       "id": "ccar-f-m1-015",
       "domain": "context-management-reliability",
-      "objective": "Track provenance, conflicts, dates, and content types",
+      "objective": "追踪来源、冲突、日期和内容类型（Track provenance, conflicts, dates, and content types）",
       "type": "single",
-      "prompt": "Packet 1, HelioDesk: Two approved policy resources contain conflicting effective dates and no precedence rule. What should synthesis do?",
+      "prompt": "材料包 1，HelioDesk：两份获批政策资源的生效日期冲突，没有优先规则。综合分析应怎么办？",
       "options": [
-        "Choose the longer document",
-        "Select the source with the newest visible effective date and record the other as supporting background, assuming recency defines precedence unless challenged",
-        "Preserve both source versions, block the governed action, and escalate the exact conflict to the policy owner",
-        "Average the dates"
+        "选择更长文档",
+        "选择可见生效日期更新的来源，另一份作为支持背景，假定时效决定优先级，除非有人质疑",
+        "保留两个来源版本，阻止受治理行动，将具体冲突升级给政策负责人",
+        "取日期平均值"
       ],
       "correct": [
         2
       ],
-      "explanation": "An undefined conflict is a policy gap, not a model reasoning problem. Provenance must remain visible while the authorized owner resolves the governing source.",
+      "explanation": "未定义的冲突是政策缺口，而非模型推理问题。在获授权负责人确定适用来源期间，来源信息必须保持可见。",
       "references": [
         "certifications/claude/lessons/21-long-context-reliability-provenance-and-escalation",
         "certifications/claude/lessons/04-context-knowledge-memory-and-caching"
@@ -330,19 +330,19 @@
     {
       "id": "ccar-f-m1-016",
       "domain": "agentic-architecture-orchestration",
-      "objective": "Choose coordinator and subagent topologies",
+      "objective": "选择协调者与子智能体拓扑（Choose coordinator and subagent topologies）",
       "type": "single",
-      "prompt": "Packet 2, Ridgeway: A monorepo migration touches four independent service adapters plus one shared protocol. Which topology is strongest?",
+      "prompt": "材料包 2，Ridgeway：单体仓库迁移涉及四个独立服务适配器及一个共享协议。哪种拓扑最合适？",
       "options": [
-        "Run the cross-service review before inspecting adapters",
-        "Use one subagent for every deterministic test command",
-        "Give four adapter specialists the entire repository and shared write access, then ask a coordinator to resolve overlapping edits before running protocol tests",
-        "Build a manifest, run bounded adapter reviews in parallel, then perform one cross-service protocol pass after local results are validated"
+        "检查适配器前先做跨服务评审",
+        "为每条确定性测试命令使用子智能体",
+        "给四位适配器专家整个仓库和共享写权限，让协调者先解决重叠编辑，再跑协议测试",
+        "建立清单，有界并行评审适配器，本地结果验证后再统一进行跨服务协议检查"
       ],
       "correct": [
         3
       ],
-      "explanation": "Per-adapter work benefits from isolated parallel contexts, while the shared protocol requires a later global pass. A manifest enforces coverage and prevents duplicate ownership.",
+      "explanation": "各适配器工作受益于隔离并行上下文，共享协议则需要后续全局检查。清单强制覆盖，防止重复归属。",
       "references": [
         "certifications/claude/lessons/16-multi-agent-orchestration-and-delegation",
         "certifications/claude/lessons/31-architect-foundations-scenario-capstone"
@@ -351,20 +351,20 @@
     {
       "id": "ccar-f-m1-017",
       "domain": "agentic-architecture-orchestration",
-      "objective": "Enforce prerequisites, decompose concerns, and structure handoffs",
+      "objective": "强制先决条件、分离关注点并结构化交接（Enforce prerequisites, decompose concerns, and structure handoffs）",
       "type": "multiple",
-      "prompt": "Packet 2, Ridgeway: Which two prerequisites should the orchestrator enforce structurally? Select two.",
+      "prompt": "材料包 2，Ridgeway：编排器应在结构上强制哪两项先决条件？选择两项。",
       "options": [
-        "The coordinator should approve the consolidated design narrative before contract tests, because test failures can then be interpreted against intended behavior",
-        "All adapter specialists should update one shared manifest during execution so cross-service synthesis always sees the latest findings",
-        "Deterministic contract tests pass before a reviewer may recommend merge",
-        "Every in-scope adapter has a complete or named partial review before cross-service synthesis"
+        "契约测试前，协调者应批准整合设计叙述，以便按预期行为解释测试失败",
+        "所有适配器专家执行时更新同一共享清单，使跨服务综合分析始终看到最新发现",
+        "评审者建议合并前，确定性契约测试必须通过",
+        "跨服务综合分析前，每个范围内适配器都已有完整或明确部分评审"
       ],
       "correct": [
         2,
         3
       ],
-      "explanation": "Coverage state and test gates have exact answers and belong in orchestration code. Style preference and shared unversioned notes cannot substitute for verified prerequisites.",
+      "explanation": "覆盖状态和测试关卡有精确答案，应放在编排代码中。风格偏好和共享未版本化笔记不能替代已验证先决条件。",
       "references": [
         "certifications/claude/lessons/16-multi-agent-orchestration-and-delegation",
         "certifications/claude/lessons/19-claude-code-memory-rules-skills-and-ci"
@@ -373,19 +373,19 @@
     {
       "id": "ccar-f-m1-018",
       "domain": "agentic-architecture-orchestration",
-      "objective": "Resume or fork without carrying stale context",
+      "objective": "恢复或分叉时不携带过时上下文（Resume or fork without carrying stale context）",
       "type": "single",
-      "prompt": "Packet 2, Ridgeway: During a long migration, the target dependency releases a breaking version and the branch changes. What should happen before continuing?",
+      "prompt": "材料包 2，Ridgeway：长迁移期间，目标依赖发布破坏性版本，分支也改变了。继续前应该怎么办？",
       "options": [
-        "Reconcile files and dependency state against the manifest, mark stale assumptions, and start or fork with a revised plan if divergence is material",
-        "Resume from the compacted plan, re-run only the last failed command, and treat new branch or dependency differences as implementation details to absorb during edits",
-        "Resume and repeat the last writes",
-        "Delete all test evidence"
+        "对照清单核对文件和依赖状态，标记过时假设，差异重大时按修订计划新开或分叉会话",
+        "从压缩计划恢复，只重跑最后失败命令，将新分支或依赖差异作为编辑时吸收的实现细节",
+        "恢复并重复最后写入",
+        "删除所有测试证据"
       ],
       "correct": [
         0
       ],
-      "explanation": "Conversation continuity is not authoritative external state. Reconciliation prevents duplicate writes and obsolete planning, while a fresh branch of reasoning protects the valid prior work.",
+      "explanation": "对话连续性不是权威外部状态。核对防止重复写入和过时规划，新的推理分支保护先前有效工作。",
       "references": [
         "certifications/claude/lessons/17-agent-sdk-sessions-subagents-and-context",
         "https://platform.claude.com/docs/en/agent-sdk/sessions"
@@ -394,20 +394,20 @@
     {
       "id": "ccar-f-m1-019",
       "domain": "agentic-architecture-orchestration",
-      "objective": "Use hooks for deterministic controls and normalization",
+      "objective": "使用钩子实现确定性控制和规范化（Use hooks for deterministic controls and normalization）",
       "type": "multiple",
-      "prompt": "Packet 2, Ridgeway: Which two hook uses are appropriate? Select two.",
+      "prompt": "材料包 2，Ridgeway：哪两种钩子用途合适？选择两项。",
       "options": [
-        "Run targeted formatting or contract tests after an edited file changes",
-        "Run a shell hook that compares the changed architecture to repository examples and blocks writes when its heuristic similarity score is too low",
-        "Block edits outside the declared migration scope before write",
-        "Record credential identifiers and resolved secret-store paths in hook output so failed CI operations can be reproduced without exposing raw values"
+        "文件编辑后运行针对性格式化或契约测试",
+        "运行 shell 钩子，将新架构与仓库示例比较，启发式相似度过低时阻断写入",
+        "写入前阻止超出声明迁移范围的编辑",
+        "在钩子输出记录凭据标识符和解析后的机密存储路径，以便不暴露原值就能复现 CI 失败"
       ],
       "correct": [
         0,
         2
       ],
-      "explanation": "Scope gates and targeted verification are deterministic, observable hook responsibilities. Semantic design judgment belongs to reviewed reasoning, and secrets should never enter configuration or logs.",
+      "explanation": "范围关卡和针对性验证是确定性、可观察的钩子职责。语义设计判断应交给经过评审的推理，机密绝不应进入配置或日志。",
       "references": [
         "certifications/claude/lessons/17-agent-sdk-sessions-subagents-and-context",
         "certifications/claude/lessons/19-claude-code-memory-rules-skills-and-ci"
@@ -416,19 +416,19 @@
     {
       "id": "ccar-f-m1-020",
       "domain": "tool-design-mcp-integration",
-      "objective": "Choose Claude Code file, shell, and search tools safely",
+      "objective": "安全选择 Claude Code 文件、shell 和搜索工具（Choose Claude Code file, shell, and search tools safely）",
       "type": "single",
-      "prompt": "Packet 2, Ridgeway: The agent knows the exact file and needs to change one existing function. Which tool sequence is strongest?",
+      "prompt": "材料包 2，Ridgeway：智能体知道确切文件，只需修改一个已有函数。哪种工具顺序最合适？",
       "options": [
-        "Use broad shell replacement across the repository",
-        "Read the known file, apply a bounded edit, then run the smallest relevant test command",
-        "Search for analogous functions across the repository, copy the most common implementation into the known file, and rely on the full test suite to expose local differences",
-        "Search the public web instead of the repository"
+        "跨仓库使用宽泛 shell 替换",
+        "读取已知文件，进行有界编辑，再运行最小相关测试命令",
+        "跨仓库搜索类似函数，将最常见实现复制进已知文件，再靠完整测试暴露局部差异",
+        "搜索公开网络而非仓库"
       ],
       "correct": [
         1
       ],
-      "explanation": "Specific file tools express intent and keep the diff inspectable. Shell remains appropriate for tests, but broad text mutation creates unnecessary scope and escaping risk.",
+      "explanation": "专用文件工具表达意图，并保持差异可检查。shell 适合运行测试，但宽泛文本修改引入不必要范围和转义风险。",
       "references": [
         "certifications/claude/lessons/18-tool-contracts-errors-and-progressive-discovery",
         "certifications/claude/lessons/19-claude-code-memory-rules-skills-and-ci"
@@ -437,19 +437,19 @@
     {
       "id": "ccar-f-m1-021",
       "domain": "tool-design-mcp-integration",
-      "objective": "Return structured and retry-aware MCP errors",
+      "objective": "返回结构化且考虑重试的 MCP 错误（Return structured and retry-aware MCP errors）",
       "type": "single",
-      "prompt": "Packet 2, Ridgeway: A test runner times out, but the persisted report shows 84 passing and one failing test before timeout. What should the tool return?",
+      "prompt": "材料包 2，Ridgeway：测试运行器超时，但持久报告显示超时前 84 项通过、1 项失败。工具应返回什么？",
       "options": [
-        "A failure record containing the runner environment, complete command output, and a single retry recommendation, but omitting which 84 results remain valid",
-        "Success because most tests passed",
-        "A partial timeout result with counts, failing test identity, retry policy, trace, and full report reference",
-        "A generic error with no artifact"
+        "含运行环境、完整命令输出和单一重试建议的失败记录，但不说明哪 84 项结果仍有效",
+        "成功，因为大多数测试通过",
+        "部分超时结果，包含计数、失败测试身份、重试策略、轨迹和完整报告引用",
+        "没有交付物的通用错误"
       ],
       "correct": [
         2
       ],
-      "explanation": "The result must preserve both valid evidence and incomplete coverage. Structured partial state lets orchestration retry safely without erasing the observed failure or exposing unrelated environment data.",
+      "explanation": "结果必须同时保留有效证据和未完成覆盖。结构化部分状态使编排可安全重试，不抹去已观察失败，也不暴露无关环境数据。",
       "references": [
         "certifications/claude/lessons/18-tool-contracts-errors-and-progressive-discovery",
         "certifications/claude/lessons/21-long-context-reliability-provenance-and-escalation"
@@ -458,19 +458,19 @@
     {
       "id": "ccar-f-m1-022",
       "domain": "claude-code-configuration-workflows",
-      "objective": "Design CLAUDE.md hierarchy, imports, rules, and memory",
+      "objective": "设计 CLAUDE.md 层级、导入、规则和记忆（Design CLAUDE.md hierarchy, imports, rules, and memory）",
       "type": "single",
-      "prompt": "Packet 2, Ridgeway: The root CLAUDE.md includes detailed rules for one adapter directory and all six languages in the monorepo. What is the best redesign?",
+      "prompt": "材料包 2，Ridgeway：根 CLAUDE.md 包含一个适配器目录及仓库全部六种语言的详细规则。最佳重新设计是什么？",
       "options": [
-        "Keep concise shared boundaries at root and move adapter or language rules into each maintainer's user memory so only relevant experts load them",
-        "Keep adding global detail",
-        "Remove repository guidance entirely",
-        "Keep concise shared boundaries at root and move adapter or language guidance into versioned imports and path-specific rules"
+        "根文件保留简洁共享边界，将适配器或语言规则移到各维护者用户记忆，只有相关专家加载",
+        "继续增加全局细节",
+        "完全删除仓库指导",
+        "根文件保留简洁共享边界，将适配器或语言指导移至版本化导入文件和特定路径规则"
       ],
       "correct": [
         3
       ],
-      "explanation": "The narrowest true scope reduces context bloat and conflicting instructions while preserving team review. Private configuration cannot serve as reproducible project policy.",
+      "explanation": "最小有效作用域减少上下文膨胀和指令冲突，同时保留团队评审。私有配置不能作为可复现项目政策。",
       "references": [
         "certifications/claude/lessons/19-claude-code-memory-rules-skills-and-ci",
         "https://docs.anthropic.com/en/docs/claude-code/memory"
@@ -479,20 +479,20 @@
     {
       "id": "ccar-f-m1-023",
       "domain": "claude-code-configuration-workflows",
-      "objective": "Apply path-specific rules",
+      "objective": "应用特定路径规则（Apply path-specific rules）",
       "type": "multiple",
-      "prompt": "Packet 2, Ridgeway: Migration files are append-only, while adapter code requires contract tests. Which two configurations are strongest? Select two.",
+      "prompt": "材料包 2，Ridgeway：迁移文件只可追加，适配器代码则需要契约测试。哪两项配置最合适？选择两项。",
       "options": [
-        "One global append-only rule",
-        "A tested migration-path rule for append-only and rollback requirements",
-        "A team shell alias that selects migration or adapter checks from the changed paths but is distributed outside version control",
-        "A tested adapter-path rule requiring the relevant contract suite"
+        "一条全局只追加规则",
+        "经过测试的迁移路径规则，涵盖只追加及回滚要求",
+        "根据变更路径选择迁移或适配器检查的团队 shell 别名，但不纳入版本控制",
+        "经过测试的适配器路径规则，要求相关契约测试套件"
       ],
       "correct": [
         1,
         3
       ],
-      "explanation": "Separate path rules encode different local policies without loading them everywhere. Fixture paths should prove globs match, because an inactive rule creates false confidence.",
+      "explanation": "独立路径规则编码不同本地政策，不必处处加载。测试样例路径应证明通配模式匹配，因为未生效规则会造成虚假信心。",
       "references": [
         "certifications/claude/lessons/19-claude-code-memory-rules-skills-and-ci",
         "certifications/claude/lessons/31-architect-foundations-scenario-capstone"
@@ -501,19 +501,19 @@
     {
       "id": "ccar-f-m1-024",
       "domain": "claude-code-configuration-workflows",
-      "objective": "Create project and user commands and Skills",
+      "objective": "创建项目与用户命令和技能（Create project and user commands and Skills）",
       "type": "single",
-      "prompt": "Packet 2, Ridgeway: The team has a reusable migration-review method with references, scripts, evidence rules, and stop conditions. Which Claude Code mechanism best packages it?",
+      "prompt": "材料包 2，Ridgeway：团队有可复用迁移评审方法，包含参考资料、脚本、证据规则和停止条件。哪种 Claude Code 机制最适合打包？",
       "options": [
-        "A Skill loaded when the workflow is relevant",
-        "A project command containing the entire procedure inline, with scripts and references copied into its prompt whenever the command runs",
-        "A hidden post-write side effect",
-        "A secret value in CLAUDE.md"
+        "工作流相关时加载的技能（Skill）",
+        "将完整流程内联在项目命令中，每次运行都将脚本和参考资料复制进提示词",
+        "隐藏的写后副作用",
+        "CLAUDE.md 中的机密值"
       ],
       "correct": [
         0
       ],
-      "explanation": "A Skill supports progressive disclosure of a reusable method and its assets. It should define inputs and outputs but does not itself grant tool permissions or authorization.",
+      "explanation": "技能支持渐进式披露可复用方法及其资源。它应定义输入和输出，但本身不赋予工具权限或授权。",
       "references": [
         "certifications/claude/lessons/19-claude-code-memory-rules-skills-and-ci",
         "https://docs.anthropic.com/en/docs/claude-code/memory"
@@ -522,20 +522,20 @@
     {
       "id": "ccar-f-m1-025",
       "domain": "claude-code-configuration-workflows",
-      "objective": "Choose plan mode, direct execution, or Explore",
+      "objective": "选择计划模式、直接执行或 Explore（Choose plan mode, direct execution, or Explore）",
       "type": "multiple",
-      "prompt": "Packet 2, Ridgeway: The migration scope is ambiguous and the team does not know which services depend on the parser. Which two actions should precede implementation? Select two.",
+      "prompt": "材料包 2，Ridgeway：迁移范围含糊，团队不知道哪些服务依赖解析器。实现前应做哪两项？选择两项。",
       "options": [
-        "Use read-only exploration to map dependencies and tests",
-        "Provision read-only production metadata access so the implementer can infer runtime dependencies before repository exploration or plan approval",
-        "Start a representative parser edit to reveal hidden dependencies, then use resulting test failures to define the migration scope",
-        "Prepare a plan with scope, risks, and verification for approval"
+        "只读探索依赖和测试",
+        "仓库探索或计划审批前，先提供只读生产元数据访问，让实现者推断运行依赖",
+        "先改一个代表性解析器以揭示隐藏依赖，再用测试失败定义迁移范围",
+        "准备包含范围、风险和验证的计划供审批"
       ],
       "correct": [
         0,
         3
       ],
-      "explanation": "Exploration answers bounded codebase questions, and planning makes the cross-service change reviewable before mutation. Broad edits and deployment authority are premature.",
+      "explanation": "探索回答有边界的代码库问题，规划让跨服务变更在修改前可评审。宽泛编辑和部署权限都为时过早。",
       "references": [
         "certifications/claude/lessons/19-claude-code-memory-rules-skills-and-ci",
         "certifications/claude/lessons/16-multi-agent-orchestration-and-delegation"
@@ -544,19 +544,19 @@
     {
       "id": "ccar-f-m1-026",
       "domain": "claude-code-configuration-workflows",
-      "objective": "Run headless CI with structured output and independent review",
+      "objective": "以结构化输出和独立评审运行无界面 CI（Run headless CI with structured output and independent review）",
       "type": "single",
-      "prompt": "Packet 2, Ridgeway: Which headless review design is strongest?",
+      "prompt": "材料包 2，Ridgeway：哪种无界面评审设计最合适？",
       "options": [
-        "Resume the implementer's interactive session and allow writes",
-        "Use a clean checkout, versioned settings, read-only tools, bounded runtime, structured findings, and separate deterministic tests",
-        "Use a clean checkout and read-only tools, but depend on a standard maintainer image whose undocumented hooks supply the review and security policy",
-        "Return prose with no finding identity"
+        "恢复实现者交互会话，并允许写入",
+        "使用干净检出、版本化设置、只读工具、有界运行时间、结构化发现和独立确定性测试",
+        "使用干净检出与只读工具，但依赖未记录钩子提供评审和安全政策的标准维护者镜像",
+        "返回没有发现身份的文字"
       ],
       "correct": [
         1
       ],
-      "explanation": "Fresh state and stable finding schemas make CI reproducible and permit remediation checks. Write authority and hidden local state undermine reviewer independence and auditability.",
+      "explanation": "新鲜状态和稳定发现模式让 CI 可复现，并支持补救验证。写权限和隐藏本地状态削弱评审独立性及可审计性。",
       "references": [
         "certifications/claude/lessons/19-claude-code-memory-rules-skills-and-ci",
         "https://docs.anthropic.com/en/docs/claude-code/sdk/sdk-headless"
@@ -565,19 +565,19 @@
     {
       "id": "ccar-f-m1-027",
       "domain": "claude-code-configuration-workflows",
-      "objective": "Use examples, test-driven iteration, and interviews",
+      "objective": "使用示例、测试驱动迭代和访谈（Use examples, test-driven iteration, and interviews）",
       "type": "single",
-      "prompt": "Packet 2, Ridgeway: A later CI run verifies remediation. What input should connect it to the original review?",
+      "prompt": "材料包 2，Ridgeway：后续 CI 运行验证整改。什么输入应将其与原评审关联？",
       "options": [
-        "Only the number of changed files",
-        "A vague summary saying fix the issues",
-        "Stable finding IDs, original evidence and acceptance rules, current diff, and relevant test results",
-        "The implementer's full conversation and latest commit hash, allowing the reviewer to infer which original findings were intended to be fixed"
+        "只提供变更文件数",
+        "模糊摘要，写着修复问题",
+        "稳定发现 ID、原始证据和验收规则、当前差异及相关测试结果",
+        "实现者完整对话和最新提交哈希，让评审者推断想修复哪些原始发现"
       ],
       "correct": [
         2
       ],
-      "explanation": "Structured findings preserve the exact claim under review across fresh runs. The full transcript is unnecessary and can introduce stale framing, while counts do not show remediation.",
+      "explanation": "结构化发现让新运行仍保留待评审的精确主张。完整记录并非必要，还可能带来过时框架；计数不能说明整改。",
       "references": [
         "certifications/claude/lessons/19-claude-code-memory-rules-skills-and-ci",
         "certifications/claude/lessons/14-evals-testing-debugging-and-observability"
@@ -586,19 +586,19 @@
     {
       "id": "ccar-f-m1-028",
       "domain": "prompt-engineering-structured-output",
-      "objective": "State explicit evaluation criteria",
+      "objective": "明确评估标准（State explicit evaluation criteria）",
       "type": "single",
-      "prompt": "Packet 2, Ridgeway: A CI reviewer returns valid findings but flags harmless style differences and misses protocol breaks. What should change first?",
+      "prompt": "材料包 2，Ridgeway：CI 评审者返回结构有效的发现，却标记无害风格差异并漏掉协议破坏。首先应改什么？",
       "options": [
-        "Allow the reviewer to apply its own fixes and use the resulting clean diff as evidence that each reported style or protocol finding was valid",
-        "Remove deterministic tests",
-        "Increase the output length",
-        "Define severity and evidence criteria around behavioral contracts, then evaluate representative diffs"
+        "允许评审者自行修复，把最终干净差异作为每个风格或协议发现有效的证据",
+        "移除确定性测试",
+        "增加输出篇幅",
+        "围绕行为契约定义严重性和证据标准，再评估代表性差异"
       ],
       "correct": [
         3
       ],
-      "explanation": "The reviewer lacks the correct judgment contract. Explicit behavior-focused criteria and representative examples improve prioritization, while tests remain authoritative for exact properties.",
+      "explanation": "评审者缺少正确判断契约。明确的行为导向标准和代表性示例改善优先级，测试仍对精确属性具有权威性。",
       "references": [
         "certifications/claude/lessons/20-reliable-extraction-batch-and-reviewers",
         "certifications/claude/lessons/14-evals-testing-debugging-and-observability"
@@ -607,19 +607,19 @@
     {
       "id": "ccar-f-m1-029",
       "domain": "context-management-reliability",
-      "objective": "Propagate structured errors and partial results",
+      "objective": "传播结构化错误和部分结果（Propagate structured errors and partial results）",
       "type": "single",
-      "prompt": "Packet 2, Ridgeway: A 20,000-line build log must enter the coordinator context. Which adapter output is strongest?",
+      "prompt": "材料包 2，Ridgeway：20,000 行构建日志需要进入协调者上下文。哪种适配器输出最合适？",
       "options": [
-        "Status, failing targets and assertions, coverage counts, error category, affected scope, timestamps, and a full artifact reference",
-        "No log information",
-        "The complete compressed log embedded in coordinator context, preceded by the command status and final failing assertion so no diagnostic detail is lost",
-        "Build mostly worked"
+        "状态、失败目标及断言、覆盖计数、错误类别、受影响范围、时间戳和完整交付物引用",
+        "不提供日志信息",
+        "将完整压缩日志嵌入协调者上下文，前置命令状态和最后失败断言，保证不丢诊断细节",
+        "构建大致成功"
       ],
       "correct": [
         0
       ],
-      "explanation": "Decision-relevant structure preserves failure and coverage while externalizing repetition. Arbitrary truncation can delete the only failing assertion and make partial state look complete.",
+      "explanation": "与决策相关的结构保留失败和覆盖，将重复内容外置。随意截断可能删掉唯一失败断言，使部分状态看起来完整。",
       "references": [
         "certifications/claude/lessons/21-long-context-reliability-provenance-and-escalation",
         "certifications/claude/lessons/17-agent-sdk-sessions-subagents-and-context"
@@ -628,20 +628,20 @@
     {
       "id": "ccar-f-m1-030",
       "domain": "context-management-reliability",
-      "objective": "Use scratchpads, subagents, manifests, and compaction for large codebases",
+      "objective": "为大型代码库使用草稿区、子智能体、清单和压缩（Use scratchpads, subagents, manifests, and compaction for large codebases）",
       "type": "multiple",
-      "prompt": "Packet 2, Ridgeway: Which two statements correctly separate large-codebase memory mechanisms? Select two.",
+      "prompt": "材料包 2，Ridgeway：哪两项陈述正确区分大型代码库记忆机制？选择两项。",
       "options": [
-        "The scratchpad is the authoritative execution ledger for completed writes, while the manifest stores only initial scope and final coverage",
-        "The manifest stores durable scope, versions, coverage, findings, and gaps",
-        "Compaction rebuilds a smaller working context while evidence remains externally authoritative",
-        "Each subagent should receive complete repository history so local decisions preserve cross-service context, with compaction applied independently"
+        "草稿区是已完成写入的权威执行台账，清单只存初始范围和最终覆盖",
+        "清单持久保存范围、版本、覆盖、发现和缺口",
+        "压缩重建更小工作上下文，证据仍以外部存储为权威",
+        "每个子智能体都应接收完整仓库历史以保留跨服务上下文，再各自独立压缩"
       ],
       "correct": [
         1,
         2
       ],
-      "explanation": "Manifest and compaction solve durable state and context-size problems respectively. Scratchpads are temporary, and subagent isolation works only when inputs remain bounded and relevant.",
+      "explanation": "清单和压缩分别解决持久状态与上下文大小问题。草稿区（Scratchpad）是临时的，只有输入有界且相关时，子智能体隔离才有效。",
       "references": [
         "certifications/claude/lessons/21-long-context-reliability-provenance-and-escalation",
         "certifications/claude/lessons/17-agent-sdk-sessions-subagents-and-context"
@@ -650,19 +650,19 @@
     {
       "id": "ccar-f-m1-031",
       "domain": "agentic-architecture-orchestration",
-      "objective": "Choose sequential or adaptive decomposition",
+      "objective": "选择顺序或自适应分解（Choose sequential or adaptive decomposition）",
       "type": "single",
-      "prompt": "Packet 3, Atlas: A migration-research project may uncover new questions depending on evidence. Which orchestration approach is strongest?",
+      "prompt": "材料包 3，Atlas：迁移研究可能根据证据发现新问题。最佳编排方式是什么？",
       "options": [
-        "One unrestricted agent with the complete enterprise catalog and a prompt to create internal specialist roles whenever an evidence gap appears",
-        "A coordinator that delegates bounded specialists for identified gaps, under deterministic budgets and result contracts",
-        "A fixed agent for every imaginable question",
-        "A fixed fan-out across source categories with free-form reports, followed by a coordinator that reconciles duplicate claims using text similarity"
+        "一个不受限制智能体拥有完整企业目录，通过提示词在出现证据缺口时建立内部专家角色",
+        "协调者在确定性预算和结果契约下，将已发现缺口委派给有边界专家",
+        "为每个可以想象的问题预设一个固定智能体",
+        "按来源类别固定扇出，返回自由文本报告，再由协调者通过文本相似度核对重复主张"
       ],
       "correct": [
         1
       ],
-      "explanation": "Adaptive decomposition fits an unknown research frontier, but the coordinator still needs structural budgets, minimal tools, and typed results. Preallocating speculative agents creates duplicate and irrelevant work.",
+      "explanation": "自适应分解适合未知研究前沿，但协调者仍需要结构化预算、最小工具和类型化结果。预先分配推测性智能体会产生重复及无关工作。",
       "references": [
         "certifications/claude/lessons/16-multi-agent-orchestration-and-delegation",
         "https://www.anthropic.com/research/building-effective-agents"
@@ -671,19 +671,19 @@
     {
       "id": "ccar-f-m1-032",
       "domain": "agentic-architecture-orchestration",
-      "objective": "Choose coordinator and subagent topologies",
+      "objective": "选择协调者与子智能体拓扑（Choose coordinator and subagent topologies）",
       "type": "single",
-      "prompt": "Packet 3, Atlas: Before adding specialists, the team has not measured the single-agent workflow. What should it do?",
+      "prompt": "材料包 3，Atlas：团队添加专家前尚未测量单智能体工作流。应该做什么？",
       "options": [
-        "Add ten specialists to maximize coverage",
-        "Start several specialists on the same approved sources and compare their coverage before defining a single-agent baseline, using agreement as the quality signal",
-        "Establish a single-agent baseline for quality, repeated work, context growth, latency, and cost",
-        "Remove the evaluation set"
+        "增加十名专家最大化覆盖",
+        "先让多位专家处理同一获批来源并比较覆盖，再定义单智能体基线，以一致性作为质量信号",
+        "建立单智能体质量、重复工作、上下文增长、延迟和成本基线",
+        "移除评估集"
       ],
       "correct": [
         2
       ],
-      "explanation": "A baseline reveals whether isolation or parallelism solves a real failure and provides a comparison. Without it, multi-agent complexity has no measured justification.",
+      "explanation": "基线揭示隔离或并行是否解决真实失败，并提供比较依据。没有基线，多智能体复杂性就没有实测理由。",
       "references": [
         "certifications/claude/lessons/16-multi-agent-orchestration-and-delegation",
         "certifications/claude/lessons/31-architect-foundations-scenario-capstone"
@@ -692,20 +692,20 @@
     {
       "id": "ccar-f-m1-033",
       "domain": "agentic-architecture-orchestration",
-      "objective": "Use Task, allowedTools, isolated context, parallelism, and forked sessions",
+      "objective": "使用 Task、allowedTools、隔离上下文、并行和分叉会话（Use Task, allowedTools, isolated context, parallelism, and forked sessions）",
       "type": "multiple",
-      "prompt": "Packet 3, Atlas: Specialists research security, cost, and migration effort. Which two delegation-contract fields are essential? Select two.",
+      "prompt": "材料包 3，Atlas：专家分别研究安全、成本和迁移工作量。哪两个委派契约字段必不可少？选择两项。",
       "options": [
-        "Non-overlapping scope and minimum allowed tools",
-        "A structured claim result with source IDs, conflicts, gaps, and completion state",
-        "Permission for each specialist to edit its section of the final report directly, using file ownership to prevent conflicts at merge time",
-        "A broad instruction to maximize coverage until sources repeat, leaving each specialist to infer a reasonable tool and token budget"
+        "不重叠的范围和最小允许工具",
+        "结构化主张结果，含来源 ID、冲突、缺口和完成状态",
+        "允许每位专家直接编辑最终报告自己的章节，通过文件归属防止合并冲突",
+        "宽泛要求最大化覆盖直到来源开始重复，由专家自行推断合理工具和词元预算"
       ],
       "correct": [
         0,
         1
       ],
-      "explanation": "Bounded ownership and typed evidence allow parallel merge without duplication. Broad mutation and undefined completion make the coordinator unable to measure coverage or control cost.",
+      "explanation": "有界归属与类型化证据允许无重复并行合并。宽泛修改和未定义完成条件，会让协调者无法测量覆盖或控制成本。",
       "references": [
         "certifications/claude/lessons/16-multi-agent-orchestration-and-delegation",
         "certifications/claude/lessons/21-long-context-reliability-provenance-and-escalation"
@@ -714,19 +714,19 @@
     {
       "id": "ccar-f-m1-034",
       "domain": "agentic-architecture-orchestration",
-      "objective": "Enforce prerequisites, decompose concerns, and structure handoffs",
+      "objective": "强制先决条件、分离关注点并结构化交接（Enforce prerequisites, decompose concerns, and structure handoffs）",
       "type": "single",
-      "prompt": "Packet 3, Atlas: The independent reviewer receives the generator's entire discussion and repeats its unsupported assumption. What is the strongest repair?",
+      "prompt": "材料包 3，Atlas：独立评审者收到生成者整个讨论，重复了其无依据假设。最佳修复是什么？",
       "options": [
-        "Remove source evidence",
-        "Retain the full discussion but instruct the reviewer to challenge every generator assumption, cite contradictory evidence, and lower confidence when rationale is persuasive",
-        "Let the generator review itself",
-        "Use a fresh reviewer context containing the report, evidence, rubric, and finding schema but not the generator's persuasive trajectory"
+        "删除来源证据",
+        "保留完整讨论，但让评审者挑战每个生成者假设、引用反证，并在理由有说服力时降低信心",
+        "让生成者自我评审",
+        "使用新评审上下文，包含报告、证据、量规和发现模式，不包含生成者的说服性轨迹"
       ],
       "correct": [
         3
       ],
-      "explanation": "Independence is architectural context separation, not a role label. The reviewer still needs complete evidence and criteria, but it should not inherit the reasoning path being challenged.",
+      "explanation": "独立性是架构层面的上下文分离，不是角色标签。评审者仍需完整证据和标准，但不应继承正在被质疑的推理路径。",
       "references": [
         "certifications/claude/lessons/16-multi-agent-orchestration-and-delegation",
         "certifications/claude/lessons/20-reliable-extraction-batch-and-reviewers"
@@ -735,20 +735,20 @@
     {
       "id": "ccar-f-m1-035",
       "domain": "agentic-architecture-orchestration",
-      "objective": "Resume or fork without carrying stale context",
+      "objective": "恢复或分叉时不携带过时上下文（Resume or fork without carrying stale context）",
       "type": "multiple",
-      "prompt": "Packet 3, Atlas: Architects want to compare two incompatible migration assumptions without contaminating the original branch. Which two practices are strongest? Select two.",
+      "prompt": "材料包 3，Atlas：架构师想比较两个不兼容迁移假设，而不污染原分支。哪两种做法最合适？选择两项。",
       "options": [
-        "Merge the conclusion supported by more branch outputs and retain only the winning rationale so downstream reviewers receive one coherent recommendation",
-        "Treat both forks as independent validations of the common evidence state, even when that starting state has not been checked for authority or freshness",
-        "Fork from a verified common evidence state",
-        "Prevent either branch from mutating shared external state without coordination"
+        "合并更多分支输出支持的结论，只保留胜出理由，让下游评审者收到一致建议",
+        "即使共同初始证据未核实权威性和新鲜度，也将两个分叉视为独立验证",
+        "从经验证的共同证据状态分叉",
+        "没有协调时，阻止任何分支修改共享外部状态"
       ],
       "correct": [
         2,
         3
       ],
-      "explanation": "Forking preserves a branch point for alternative reasoning, while mutation controls protect shared state. It does not validate inherited evidence, and synthesis must retain substantive conflicts.",
+      "explanation": "分叉为替代推理保留分支点，修改控制则保护共享状态。分叉不验证继承证据，综合分析必须保留实质冲突。",
       "references": [
         "certifications/claude/lessons/17-agent-sdk-sessions-subagents-and-context",
         "https://platform.claude.com/docs/en/agent-sdk/sessions"
@@ -757,19 +757,19 @@
     {
       "id": "ccar-f-m1-036",
       "domain": "tool-design-mcp-integration",
-      "objective": "Manage tool distribution and tool choice",
+      "objective": "管理工具分发和工具选择（Manage tool distribution and tool choice）",
       "type": "single",
-      "prompt": "Packet 3, Atlas: The enterprise tool catalog has 900 capabilities, but a security researcher needs only public search and an internal advisory resource. What is the strongest approach?",
+      "prompt": "材料包 3，Atlas：企业目录有 900 项能力，安全研究者只需公开搜索和内部安全通告资源。最佳方式是什么？",
       "options": [
-        "Use scoped progressive discovery and load only authorized relevant definitions",
-        "Load all 900 read-only definitions so Claude can discover cross-domain evidence, while service-side authorization blocks any tool the researcher should not use",
-        "Hide authorization inside tool descriptions",
-        "Give the researcher write access to improve recall"
+        "采用限定作用域的渐进式发现，只加载已授权且相关的定义",
+        "加载全部 900 个只读定义让 Claude 发现跨领域证据，再由服务端授权阻断研究者不应使用的工具",
+        "将授权藏在工具描述里",
+        "授予研究者写权限以提高召回率"
       ],
       "correct": [
         0
       ],
-      "explanation": "Scoped discovery protects context, selection quality, and the security review surface. It must filter by identity and must not reveal or authorize unrelated capabilities.",
+      "explanation": "限定作用域的发现保护上下文、选择质量和安全评审范围。它必须按身份过滤，不得揭露或授权无关能力。",
       "references": [
         "certifications/claude/lessons/18-tool-contracts-errors-and-progressive-discovery",
         "https://modelcontextprotocol.io/specification/latest"
@@ -778,20 +778,20 @@
     {
       "id": "ccar-f-m1-037",
       "domain": "tool-design-mcp-integration",
-      "objective": "Scope MCP configuration and resources",
+      "objective": "限定 MCP 配置与资源作用域（Scope MCP configuration and resources）",
       "type": "multiple",
-      "prompt": "Packet 3, Atlas: Which two primitive choices are appropriate? Select two.",
+      "prompt": "材料包 3，Atlas：哪两种原语选择合适？选择两项。",
       "options": [
-        "Expose a bounded source-query operation as a tool with structured partial errors",
-        "Use a production write tool in validation-only mode to force its JSON claim schema, relying on a mode flag to prevent external mutation",
-        "Expose an approved research corpus as resources with stable provenance",
-        "Expose credential references through a reusable prompt so approved users can copy them into whichever research tool the current host selects"
+        "将有边界来源查询操作公开为工具，并提供结构化部分错误",
+        "使用生产写工具的仅验证模式强制 JSON 主张模式，依赖模式标志避免外部修改",
+        "将获批研究语料公开为带稳定来源信息的资源",
+        "通过可复用提示词公开凭据引用，让获批用户复制到当前宿主选择的研究工具"
       ],
       "correct": [
         0,
         2
       ],
-      "explanation": "Resources represent contextual data and tools represent requested operations. Credentials stay outside protocol content, and structured generation should not borrow unnecessary action authority.",
+      "explanation": "资源表示上下文数据，工具表示所请求操作。凭据留在协议内容之外，结构化生成不应借用不必要的行动权限。",
       "references": [
         "certifications/claude/lessons/11-mcp-server-design-and-integration",
         "certifications/claude/lessons/18-tool-contracts-errors-and-progressive-discovery"
@@ -800,19 +800,19 @@
     {
       "id": "ccar-f-m1-038",
       "domain": "claude-code-configuration-workflows",
-      "objective": "Create project and user commands and Skills",
+      "objective": "创建项目与用户命令和技能（Create project and user commands and Skills）",
       "type": "single",
-      "prompt": "Packet 3, Atlas: Researchers repeatedly use the same source-quality rubric, query sequence, evidence schema, and conflict procedure. How should the team package it for Claude Code?",
+      "prompt": "材料包 3，Atlas：研究者反复使用同一来源质量量规、查询顺序、证据模式和冲突流程。团队应如何为 Claude Code 打包？",
       "options": [
-        "As an unrestricted deployment command",
-        "As a versioned research Skill with references, outputs, and stop conditions",
-        "As a secret in the root guidance",
-        "As a project hook that inserts the rubric and query sequence into every research prompt and writes the free-form report whenever a research command completes"
+        "作为不受限制的部署命令",
+        "作为版本化研究技能，附参考资料、输出和停止条件",
+        "作为根指导中的机密",
+        "作为项目钩子，将量规和查询顺序插入每个研究提示词，研究命令完成时写入自由文本报告"
       ],
       "correct": [
         1
       ],
-      "explanation": "A Skill provides reusable guidance and progressive disclosure while remaining versioned for the team. Hidden side effects and secrets are not workflow instructions.",
+      "explanation": "技能（Skill）提供可复用的指导，支持渐进式披露（Progressive Disclosure），并由团队进行版本管理。隐藏的副作用和机密信息不属于工作流指令。",
       "references": [
         "certifications/claude/lessons/19-claude-code-memory-rules-skills-and-ci",
         "https://docs.anthropic.com/en/docs/claude-code/memory"
@@ -821,19 +821,19 @@
     {
       "id": "ccar-f-m1-039",
       "domain": "prompt-engineering-structured-output",
-      "objective": "State explicit evaluation criteria",
+      "objective": "明确评估标准（State explicit evaluation criteria）",
       "type": "single",
-      "prompt": "Packet 3, Atlas: Specialists return plausible claims but disagree about what counts as authoritative evidence. What should be defined first?",
+      "prompt": "材料包 3，Atlas：专家返回看似合理主张，却对权威证据标准有分歧。首先应定义什么？",
       "options": [
-        "A consensus rule requiring two specialists to support each claim before synthesis, with source disagreements resolved by the coordinator's confidence score",
-        "A single model confidence threshold",
-        "Source authority, freshness, claim support, coverage, conflict, and abstention criteria",
-        "A longer report template"
+        "要求两个专家支持每个主张才综合，用协调者置信分数解决来源分歧的共识规则",
+        "单一模型置信阈值",
+        "来源权威、新鲜度、主张支持、覆盖、冲突和拒绝作答标准",
+        "更长报告模板"
       ],
       "correct": [
         2
       ],
-      "explanation": "A shared evaluation contract aligns specialists and reviewers around observable evidence. Forced agreement can hide real conflicts, and confidence alone does not define authority or support.",
+      "explanation": "共享评估契约使专家和评审者围绕可观察证据对齐。强求一致可能隐藏真实冲突，信心本身不定义权威或支持。",
       "references": [
         "certifications/claude/lessons/20-reliable-extraction-batch-and-reviewers",
         "certifications/claude/lessons/05-output-evaluation-and-validation"
@@ -842,20 +842,20 @@
     {
       "id": "ccar-f-m1-040",
       "domain": "prompt-engineering-structured-output",
-      "objective": "Use few-shot examples for consistent judgment",
+      "objective": "使用少样本示例保持判断一致（Use few-shot examples for consistent judgment）",
       "type": "multiple",
-      "prompt": "Packet 3, Atlas: Which two examples most improve claim classification? Select two.",
+      "prompt": "材料包 3，Atlas：哪两个示例最能改善主张分类？选择两项。",
       "options": [
-        "A representative set of common supported claims with varied prose but no borderline entailment, conflict, or insufficient-evidence cases",
-        "A source that discusses a topic but does not entail the claim",
-        "An expert-labeled edge case whose classification differs from the current written rubric, without first updating the rubric or explaining the exception",
-        "Two authoritative sources that conflict and require explicit conflict state"
+        "一组文风多样的常见有依据主张，不含边界蕴含、冲突或证据不足案例",
+        "讨论某主题但不蕴含支持该主张的来源",
+        "专家标注的边缘案例，分类与现有书面量规不同，却未先更新量规或解释例外",
+        "两个权威来源冲突，要求明确标注冲突状态"
       ],
       "correct": [
         1,
         3
       ],
-      "explanation": "Boundary and conflict examples teach the decisions most likely to vary. Repetitive easy cases add little information, while inconsistent labels damage the judgment contract.",
+      "explanation": "边界案例和存在冲突的示例，能教会模型如何处理最容易产生判断差异的决策。重复简单案例提供的信息有限，而不一致的标签会破坏判断契约（Judgment Contract）。",
       "references": [
         "certifications/claude/lessons/20-reliable-extraction-batch-and-reviewers",
         "certifications/claude/lessons/03-prompting-and-task-decomposition"
@@ -864,19 +864,19 @@
     {
       "id": "ccar-f-m1-041",
       "domain": "prompt-engineering-structured-output",
-      "objective": "Enforce schemas with tool use and tool choice",
+      "objective": "通过工具调用与工具选择强制模式（Enforce schemas with tool use and tool choice）",
       "type": "single",
-      "prompt": "Packet 3, Atlas: Every specialist must return claims with source ID, version, support class, conflicts, and unresolved questions. What is the strongest contract?",
+      "prompt": "材料包 3，Atlas：每位专家必须返回含来源 ID、版本、支持类别、冲突和未决问题的主张。最佳契约是什么？",
       "options": [
-        "A production database-write tool",
-        "A summary that omits empty fields",
-        "A detailed report template with labeled prose sections for source, version, support, conflicts, and open questions, followed by a parser that tolerates missing sections",
-        "A required no-side-effect structured result schema plus validation"
+        "生产数据库写工具",
+        "省略空字段的摘要",
+        "含来源、版本、支持、冲突和开放问题标签的详细文字模板，再用容忍缺章节的解析器处理",
+        "必需的无副作用结构化结果模式，加上验证"
       ],
       "correct": [
         3
       ],
-      "explanation": "A typed contract makes merge and coverage deterministic without granting write authority. Unknowns and empty states should remain explicit so missing evidence cannot disappear during synthesis.",
+      "explanation": "类型化契约让合并和覆盖具有确定性，而不授予写权限。未知和空状态应保持明确，防止缺失证据在综合时消失。",
       "references": [
         "certifications/claude/lessons/20-reliable-extraction-batch-and-reviewers",
         "https://platform.claude.com/docs/en/build-with-claude/structured-outputs"
@@ -885,20 +885,20 @@
     {
       "id": "ccar-f-m1-042",
       "domain": "prompt-engineering-structured-output",
-      "objective": "Use batch processing for appropriate workloads",
+      "objective": "对合适工作负载使用批处理（Use batch processing for appropriate workloads）",
       "type": "multiple",
-      "prompt": "Packet 3, Atlas: Which two workloads are good batch candidates after current support and limits are verified? Select two.",
+      "prompt": "材料包 3，Atlas：核实当前支持与限制后，哪两种工作负载适合批处理？选择两项。",
       "options": [
-        "Offline extraction across 40,000 independent archived reports",
-        "A live approval workflow that batches requests for up to the response deadline and streams completed approvals as each batch result arrives",
-        "A low-latency interactive tool loop",
-        "Independent evidence review of already generated claim records"
+        "对 40,000 份独立归档报告进行离线提取",
+        "实时审批工作流，先收集请求直到响应期限，再随着批结果到达流式返回已完成审批",
+        "低延迟交互式工具循环",
+        "独立审核已生成主张记录的证据"
       ],
       "correct": [
         0,
         3
       ],
-      "explanation": "Large independent asynchronous items and offline reviewer passes fit batch economics. Adaptive tool loops and live approvals require real-time continuation or a redesigned staged workflow.",
+      "explanation": "大量独立异步项及离线评审适合批处理经济性。自适应工具循环和实时审批需要实时续接，或重新设计为分阶段工作流。",
       "references": [
         "certifications/claude/lessons/20-reliable-extraction-batch-and-reviewers",
         "https://platform.claude.com/docs/en/build-with-claude/message-batches"
@@ -907,19 +907,19 @@
     {
       "id": "ccar-f-m1-043",
       "domain": "context-management-reliability",
-      "objective": "Track provenance, conflicts, dates, and content types",
+      "objective": "追踪来源、冲突、日期和内容类型（Track provenance, conflicts, dates, and content types）",
       "type": "single",
-      "prompt": "Packet 3, Atlas: The reducer receives two claims with the same text but different source versions and dates. What should it do?",
+      "prompt": "材料包 3，Atlas：归约器收到两项文本相同、来源版本和日期不同的主张。应怎么做？",
       "options": [
-        "Merge by stable claim identity while preserving both provenance records and applying explicit freshness or authority rules",
-        "Choose the first arrival",
-        "Deduplicate by normalized claim text, retain only the newest source record, and assume its date resolves provenance conflicts without a separate authority rule",
-        "Average source dates"
+        "按稳定主张身份合并，保留两份来源记录，并应用明确新鲜度或权威规则",
+        "选择先到者",
+        "按规范化主张文本去重，只保留最新来源，假定日期可在没有独立权威规则时解决来源冲突",
+        "取来源日期平均值"
       ],
       "correct": [
         0
       ],
-      "explanation": "Text equality does not prove evidential equivalence. Version and authority may change the claim's validity, so provenance and conflicts must survive reduction.",
+      "explanation": "文本相同不代表证据等价。版本和来源权威性可能改变一项主张是否成立，因此汇总压缩（Reduction）后仍须保留来源信息与冲突。",
       "references": [
         "certifications/claude/lessons/21-long-context-reliability-provenance-and-escalation",
         "certifications/claude/lessons/16-multi-agent-orchestration-and-delegation"
@@ -928,20 +928,20 @@
     {
       "id": "ccar-f-m1-044",
       "domain": "context-management-reliability",
-      "objective": "Track provenance, conflicts, dates, and content types",
+      "objective": "追踪来源、冲突、日期和内容类型（Track provenance, conflicts, dates, and content types）",
       "type": "multiple",
-      "prompt": "Packet 3, Atlas: A source is a table-heavy PDF with footnotes. Which two ingestion practices are strongest? Select two.",
+      "prompt": "材料包 3，Atlas：来源是一份表格密集、含脚注的 PDF。哪两种摄取实践最合适？选择两项。",
       "options": [
-        "Extract plain text in reading order, keep the document and page IDs, and discard table-cell and footnote relationships after successful OCR",
-        "Preserve page, table, cell relationship, footnote, content type, and extractor metadata",
-        "Verify important claims against the rendered page or original asset",
-        "Use OCR confidence thresholds as proof that layout and footnote associations were preserved, verifying only pages below the threshold"
+        "按阅读顺序提取纯文本，保留文档和页 ID，OCR 成功后丢弃表格单元格及脚注关系",
+        "保留页面、表格、单元格关系、脚注、内容类型和提取器元数据",
+        "对照渲染页面或原始资源验证重要主张",
+        "用 OCR 置信阈值证明布局和脚注关系保留，只验证低于阈值的页面"
       ],
       "correct": [
         1,
         2
       ],
-      "explanation": "Layout and footnotes can change meaning. Structural metadata and rendered inspection keep citations resolvable and expose extraction risk that plain text or OCR confidence may hide.",
+      "explanation": "布局和脚注可能改变含义。结构元数据和渲染检查让引用可定位，并暴露纯文本或 OCR 信心可能隐藏的提取风险。",
       "references": [
         "certifications/claude/lessons/21-long-context-reliability-provenance-and-escalation",
         "https://platform.claude.com/docs/en/build-with-claude/citations"
@@ -950,19 +950,19 @@
     {
       "id": "ccar-f-m1-045",
       "domain": "context-management-reliability",
-      "objective": "Calibrate confidence and human review",
+      "objective": "校准置信度与人工审核（Calibrate confidence and human review）",
       "type": "single",
-      "prompt": "Packet 3, Atlas: The system reviews only claims it labels low confidence. What additional review most improves detection of a broken confidence router?",
+      "prompt": "材料包 3，Atlas：系统只审核自标低置信的主张。哪种额外审核最能发现置信路由器失效？",
       "options": [
-        "A stratified sample of low-confidence claims across source types, because confidence routing already identifies where the model is most likely to fail",
-        "A random sample of ordinary passing claims",
-        "No human review after launch",
-        "Only claims from one specialist"
+        "按来源类型分层抽样低置信主张，因为置信路由已识别模型最可能失败的位置",
+        "随机抽样普通通过主张",
+        "上线后不再人工审核",
+        "只审核某一专家的主张"
       ],
       "correct": [
         1
       ],
-      "explanation": "Risk-triggered review catches known hazards, while random sampling measures false passes outside those triggers. Without it, a miscalibrated flagger can remain invisible.",
+      "explanation": "风险触发审核捕捉已知危险，随机抽样则测量触发条件之外的错误放行。没有随机抽样，校准失效的标记者可能一直不可见。",
       "references": [
         "certifications/claude/lessons/21-long-context-reliability-provenance-and-escalation",
         "certifications/claude/lessons/14-evals-testing-debugging-and-observability"
@@ -971,19 +971,19 @@
     {
       "id": "ccar-f-m1-046",
       "domain": "agentic-architecture-orchestration",
-      "objective": "Choose sequential or adaptive decomposition",
+      "objective": "选择顺序或自适应分解（Choose sequential or adaptive decomposition）",
       "type": "single",
-      "prompt": "Packet 4, Harbor: CI must extract a change record, run deterministic checks, generate findings, independently review them, and publish an artifact. Which orchestration is strongest?",
+      "prompt": "材料包 4，Harbor：CI 必须提取变更记录、运行确定性检查、生成发现、独立评审，再发布交付物。最佳编排是什么？",
       "options": [
-        "A bounded agent that chooses the order of extraction, testing, review, and publication from repository context, while a final gate checks only artifact existence",
-        "Run publication before validation",
-        "A fixed pipeline with structural gates, using model reasoning only inside bounded generation and review stages",
-        "Use a new subagent for each schema field"
+        "有边界智能体根据仓库上下文选择提取、测试、评审和发布顺序，最终关卡只检查交付物存在",
+        "先发布后验证",
+        "带结构性关卡的固定流水线，只在有边界的生成和评审阶段使用模型推理",
+        "为每个模式字段创建新子智能体"
       ],
       "correct": [
         2
       ],
-      "explanation": "The stage order is known and should be enforced by code. Model reasoning remains useful for semantic findings, while deterministic tests and publication prerequisites stay outside it.",
+      "explanation": "阶段顺序已知，应由代码强制。模型推理适合语义发现，确定性测试与发布先决条件则留在其外部。",
       "references": [
         "certifications/claude/lessons/16-multi-agent-orchestration-and-delegation",
         "certifications/claude/lessons/31-architect-foundations-scenario-capstone"
@@ -992,20 +992,20 @@
     {
       "id": "ccar-f-m1-047",
       "domain": "agentic-architecture-orchestration",
-      "objective": "Enforce prerequisites, decompose concerns, and structure handoffs",
+      "objective": "强制先决条件、分离关注点并结构化交接（Enforce prerequisites, decompose concerns, and structure handoffs）",
       "type": "multiple",
-      "prompt": "Packet 4, Harbor: Which two handoff fields let a downstream release owner act safely? Select two.",
+      "prompt": "材料包 4，Harbor：哪两个交接字段让下游发布负责人可安全行动？选择两项。",
       "options": [
-        "Partial or blocked scope, residual risks, required decision, and fallback",
-        "Stable finding and artifact IDs with exact check status",
-        "The generator transcript and tool log so the release owner can reconstruct artifact identities, failed checks, and fallback decisions when needed",
-        "A polished readiness summary with aggregate pass counts and an owner, leaving individual blocked scopes and residual risks in the source system"
+        "部分完成或阻塞范围、剩余风险、所需决策和回退方案",
+        "稳定发现与交付物 ID，附精确检查状态",
+        "生成者记录和工具日志，让发布负责人需要时重建交付物身份、失败检查及回退决策",
+        "精美就绪摘要，包含总体通过数和负责人，但把具体阻塞范围与剩余风险留在来源系统"
       ],
       "correct": [
         0,
         1
       ],
-      "explanation": "A release owner needs verifiable state, unresolved scope, and explicit options. Smooth prose or raw trajectory forces rediscovery and can hide a blocking failure.",
+      "explanation": "发布负责人需要可验证状态、未解决范围和明确选项。流畅文字或原始轨迹迫使重新探索，还可能隐藏阻断失败。",
       "references": [
         "certifications/claude/lessons/16-multi-agent-orchestration-and-delegation",
         "certifications/claude/lessons/31-architect-foundations-scenario-capstone"
@@ -1014,19 +1014,19 @@
     {
       "id": "ccar-f-m1-048",
       "domain": "tool-design-mcp-integration",
-      "objective": "Scope MCP configuration and resources",
+      "objective": "限定 MCP 配置与资源作用域（Scope MCP configuration and resources）",
       "type": "single",
-      "prompt": "Packet 4, Harbor: The repository should share an MCP test-service declaration, but CI and developers use separately provisioned tokens. What is the strongest configuration?",
+      "prompt": "材料包 4，Harbor：仓库应共享 MCP 测试服务声明，但 CI 和开发者使用各自配置的令牌。最佳配置是什么？",
       "options": [
-        "Version the project declaration but use one centrally shared developer token in CI and local environments so configuration behavior remains identical",
-        "Put the token in CLAUDE.md",
-        "Commit every token for reproducibility",
-        "Version the safe project declaration and reference credentials injected from approved CI or user secret stores"
+        "版本化项目声明，但 CI 和本地都用一个集中共享开发者令牌，保证配置行为相同",
+        "将令牌放入 CLAUDE.md",
+        "为可复现性提交全部令牌",
+        "版本化安全项目声明，引用从获批 CI 或用户机密存储注入的凭据"
       ],
       "correct": [
         3
       ],
-      "explanation": "Shared server behavior belongs in project scope, while credential values remain external and identity-specific. This preserves reproducibility without exposing secrets or collapsing environments.",
+      "explanation": "共享服务器行为属于项目作用域，凭据值则保留在外部且按身份区分。这样保留可复现性，不暴露机密，也不混同环境。",
       "references": [
         "certifications/claude/lessons/18-tool-contracts-errors-and-progressive-discovery",
         "certifications/claude/lessons/19-claude-code-memory-rules-skills-and-ci"
@@ -1035,19 +1035,19 @@
     {
       "id": "ccar-f-m1-049",
       "domain": "tool-design-mcp-integration",
-      "objective": "Manage tool distribution and tool choice",
+      "objective": "管理工具分发和工具选择（Manage tool distribution and tool choice）",
       "type": "single",
-      "prompt": "Packet 4, Harbor: CI needs a typed change record but should not publish or deploy. Which tool-choice design is strongest?",
+      "prompt": "材料包 4，Harbor：CI 需要类型化变更记录，但不应发布或部署。最佳工具选择设计是什么？",
       "options": [
-        "Force a no-side-effect extraction contract and keep publish tools undistributed",
-        "Ask for prose and skip parsing",
-        "Give the reviewer every production write tool",
-        "Force the deployment tool in a documented validation-only mode and depend on its typed response, even though the production capability remains distributed to CI"
+        "强制无副作用提取契约，不分发发布工具",
+        "要求文字并跳过解析",
+        "给评审者所有生产写工具",
+        "强制部署工具采用文档规定的仅验证模式，依赖其类型化响应，即使生产能力仍分发给 CI"
       ],
       "correct": [
         0
       ],
-      "explanation": "The typed-output requirement does not justify action authority. Tool distribution and choice should enforce structured generation while deployment stays behind a separate approved stage.",
+      "explanation": "类型化输出要求不能证明行动权限合理。工具分发与选择应强制结构化生成，部署仍由独立获批阶段控制。",
       "references": [
         "certifications/claude/lessons/18-tool-contracts-errors-and-progressive-discovery",
         "certifications/claude/lessons/20-reliable-extraction-batch-and-reviewers"
@@ -1056,20 +1056,20 @@
     {
       "id": "ccar-f-m1-050",
       "domain": "tool-design-mcp-integration",
-      "objective": "Return structured and retry-aware MCP errors",
+      "objective": "返回结构化且考虑重试的 MCP 错误（Return structured and retry-aware MCP errors）",
       "type": "multiple",
-      "prompt": "Packet 4, Harbor: A test service returns a rate-limit error after completing two of five independent suites. Which two responses are strongest? Select two.",
+      "prompt": "材料包 4，Harbor：测试服务完成五个独立套件中的两个后返回速率限制错误。哪两种响应最合适？选择两项。",
       "options": [
-        "Retry all five suites after the stated delay",
-        "Mark the stage conditionally complete using the two passing suites, while scheduling the remaining three as post-release verification",
-        "Preserve completed suite results with identities and provenance",
-        "Return a retryable rate-limit category with remaining scope and safe retry timing"
+        "按规定等待后重试全部五个套件",
+        "凭两个通过套件将阶段标为有条件完成，将剩余三个安排为发布后验证",
+        "保留已完成套件结果及其身份和来源",
+        "返回可重试速率限制类别，附剩余范围和安全重试时间"
       ],
       "correct": [
         2,
         3
       ],
-      "explanation": "Structured partial state prevents duplicate work and preserves failures already observed. Retry metadata lets orchestration continue only the unresolved suites under service policy.",
+      "explanation": "结构化部分状态防止重复工作，并保留已观察失败。重试元数据让编排只按服务政策继续未解决套件。",
       "references": [
         "certifications/claude/lessons/18-tool-contracts-errors-and-progressive-discovery",
         "https://modelcontextprotocol.io/specification/latest"
@@ -1078,19 +1078,19 @@
     {
       "id": "ccar-f-m1-051",
       "domain": "claude-code-configuration-workflows",
-      "objective": "Design CLAUDE.md hierarchy, imports, rules, and memory",
+      "objective": "设计 CLAUDE.md 层级、导入、规则和记忆（Design CLAUDE.md hierarchy, imports, rules, and memory）",
       "type": "single",
-      "prompt": "Packet 4, Harbor: CI behavior depends on a reviewer rule stored only in one maintainer's user memory. What is the strongest repair?",
+      "prompt": "材料包 4，Harbor：CI 行为依赖只存于某维护者用户记忆的评审规则。最佳修复是什么？",
       "options": [
-        "Remove configuration auditing",
-        "Move shared reviewer policy into versioned project guidance or scoped rules and test that CI loads it",
-        "Keep the policy in maintainer memory and add several compliant examples to the repository so headless CI can infer the same reviewer behavior from precedent",
-        "Copy it into the model output after review"
+        "移除配置审计",
+        "将共享评审政策移到版本化项目指导或限定作用域规则，并测试 CI 确实加载",
+        "保留维护者记忆中的政策，在仓库增加合规示例，让无界面 CI 从先例推断相同行为",
+        "评审后复制到模型输出"
       ],
       "correct": [
         1
       ],
-      "explanation": "Team and CI behavior must come from reviewable project state. User memory is appropriate for personal preferences, not required shared policy or reproducible gates.",
+      "explanation": "团队和 CI 行为必须来自可评审项目状态。用户记忆适合个人偏好，不适合必需共享政策或可复现关卡。",
       "references": [
         "certifications/claude/lessons/19-claude-code-memory-rules-skills-and-ci",
         "https://docs.anthropic.com/en/docs/claude-code/memory"
@@ -1099,20 +1099,20 @@
     {
       "id": "ccar-f-m1-052",
       "domain": "claude-code-configuration-workflows",
-      "objective": "Apply path-specific rules",
+      "objective": "应用特定路径规则（Apply path-specific rules）",
       "type": "multiple",
-      "prompt": "Packet 4, Harbor: Release manifests require schema tests, while documentation changes require link checks. Which two configurations are strongest? Select two.",
+      "prompt": "材料包 4，Harbor：发布清单需要模式测试，文档变更需要链接检查。哪两项配置最合适？选择两项。",
       "options": [
-        "Fixture files proving each rule activates only where intended",
-        "Two path rules reviewed against their glob syntax but not exercised with positive and negative fixture files in the headless environment",
-        "Separate tested path rules for manifest and documentation globs",
-        "One global hook that detects file type at runtime and invokes schema or link checks, maintained in the CI image rather than versioned path rules"
+        "用样例文件证明各规则只在预期位置激活",
+        "评审两个路径规则的通配语法，但不在无界面环境用正反样例执行",
+        "为清单和文档通配模式设置分开的、经测试的路径规则",
+        "运行时检测文件类型并执行模式或链接检查的全局钩子，维护在 CI 镜像而非版本化路径规则中"
       ],
       "correct": [
         0,
         2
       ],
-      "explanation": "Narrow tested globs load relevant policy and expose matching mistakes. A broad opaque hook increases surprise, while an untested rule can silently provide no protection.",
+      "explanation": "狭窄且经测试的通配模式加载相关政策，暴露匹配错误。宽泛不透明钩子增加意外，未测试规则则可能悄悄毫无保护。",
       "references": [
         "certifications/claude/lessons/19-claude-code-memory-rules-skills-and-ci",
         "certifications/claude/lessons/31-architect-foundations-scenario-capstone"
@@ -1121,19 +1121,19 @@
     {
       "id": "ccar-f-m1-053",
       "domain": "claude-code-configuration-workflows",
-      "objective": "Run headless CI with structured output and independent review",
+      "objective": "以结构化输出和独立评审运行无界面 CI（Run headless CI with structured output and independent review）",
       "type": "single",
-      "prompt": "Packet 4, Harbor: A headless reviewer currently emits prose that cannot be reconciled across reruns. What output is strongest?",
+      "prompt": "材料包 4，Harbor：无界面评审者当前输出文字，无法在重跑间核对。最佳输出是什么？",
       "options": [
-        "An automatic merge command",
-        "A versioned prose report with file paths, quoted evidence, and severity headings, relying on issue order and wording to reconcile findings across reruns",
-        "Structured findings with stable ID, file, evidence, severity, rule, and disposition",
-        "A general quality score only"
+        "自动合并命令",
+        "带文件路径、引述证据和严重性标题的版本化文字报告，依靠问题顺序和措辞核对重跑发现",
+        "结构化发现，含稳定 ID、文件、证据、严重性、规则和处理结果",
+        "只有总体质量分数"
       ],
       "correct": [
         2
       ],
-      "explanation": "Stable structured findings support deduplication, remediation verification, and audit. A score cannot identify the failed claim, and review should remain separate from mutation or merge authority.",
+      "explanation": "稳定结构化发现支持去重、整改验证和审计。分数不能识别失败主张，评审应与修改或合并权限分开。",
       "references": [
         "certifications/claude/lessons/19-claude-code-memory-rules-skills-and-ci",
         "certifications/claude/lessons/14-evals-testing-debugging-and-observability"
@@ -1142,19 +1142,19 @@
     {
       "id": "ccar-f-m1-054",
       "domain": "claude-code-configuration-workflows",
-      "objective": "Use examples, test-driven iteration, and interviews",
+      "objective": "使用示例、测试驱动迭代和访谈（Use examples, test-driven iteration, and interviews）",
       "type": "single",
-      "prompt": "Packet 4, Harbor: A generated pipeline change is supposed to preserve behavior. What is the strongest implementation loop?",
+      "prompt": "材料包 4，Harbor：生成的流水线变更应保持行为。最佳实现循环是什么？",
       "options": [
-        "Edit broadly, then ask whether it looks correct",
-        "Use examples that cover only the happy path",
-        "Make the bounded change first, then ask an independent reviewer to infer preserved behavior from the diff and run deterministic tests only if it reports uncertainty",
-        "Establish a failing or characterizing test, make the bounded change, run focused and risk-proportional gates, then inspect the real artifact"
+        "广泛编辑后问看起来是否正确",
+        "只用正常路径示例",
+        "先做有界修改，再让独立评审者从差异推断行为保留，只有报告不确定时才跑确定性测试",
+        "建立失败测试或特征刻画测试，做有界修改，运行聚焦且与风险相称的关卡，再检查真实交付物"
       ],
       "correct": [
         3
       ],
-      "explanation": "Tests define observable behavior and localize regressions. Independent review complements rather than replaces deterministic verification, and artifact inspection catches packaging or rendering boundaries.",
+      "explanation": "测试定义可观察行为并定位回归。独立评审补充而不替代确定性验证，交付物检查捕捉打包或渲染边界问题。",
       "references": [
         "certifications/claude/lessons/19-claude-code-memory-rules-skills-and-ci",
         "certifications/claude/lessons/14-evals-testing-debugging-and-observability"
@@ -1163,20 +1163,20 @@
     {
       "id": "ccar-f-m1-055",
       "domain": "claude-code-configuration-workflows",
-      "objective": "Run headless CI with structured output and independent review",
+      "objective": "以结构化输出和独立评审运行无界面 CI（Run headless CI with structured output and independent review）",
       "type": "multiple",
-      "prompt": "Packet 4, Harbor: Which two controls improve reproducibility of model-assisted CI findings? Select two.",
+      "prompt": "材料包 4，Harbor：哪两项控制改善模型辅助 CI 发现的可复现性？选择两项。",
       "options": [
-        "Use a centrally installed reviewer command pinned in the CI image but not declared in project configuration, because the image itself is versioned",
-        "Set bounded time, turns, cost, and allowed tools",
-        "Resume the implementer's latest session so review retains intent and prior tool evidence, while recording the current commit and deterministic test results",
-        "Record the commit, model or runtime configuration, settings, prompt or Skill version, and input artifacts"
+        "使用固定在 CI 镜像中、但未在项目配置声明的集中评审命令，因为镜像本身已版本化",
+        "限定时间、轮次、成本和允许工具",
+        "恢复实现者最新会话，保留意图及工具证据，同时记录当前提交和确定性测试结果",
+        "记录提交、模型或运行时配置、设置、提示词或技能版本及输入交付物"
       ],
       "correct": [
         1,
         3
       ],
-      "explanation": "Declared versions and execution bounds make runs comparable and constrain failure. Interactive sessions and hidden commands introduce untracked state that other runs cannot reproduce.",
+      "explanation": "声明版本和执行边界让运行可比较并限制失败。交互会话和隐藏命令引入其他运行无法复现的未跟踪状态。",
       "references": [
         "certifications/claude/lessons/19-claude-code-memory-rules-skills-and-ci",
         "https://docs.anthropic.com/en/docs/claude-code/sdk/sdk-headless"
@@ -1185,19 +1185,19 @@
     {
       "id": "ccar-f-m1-056",
       "domain": "prompt-engineering-structured-output",
-      "objective": "Enforce schemas with tool use and tool choice",
+      "objective": "通过工具调用与工具选择强制模式（Enforce schemas with tool use and tool choice）",
       "type": "single",
-      "prompt": "Packet 4, Harbor: Some change notices omit an effective date. How should the schema represent this?",
+      "prompt": "材料包 4，Harbor：部分变更通知未提供生效日期。模式应如何表示？",
       "options": [
-        "Require the field but allow an explicit null or unknown state with review metadata",
-        "Require an ISO date and let the model infer it from nearby release context, recording low confidence for a reviewer when the source omits the value",
-        "Drop records with missing dates silently",
-        "Use an unrestricted free-form string"
+        "要求字段存在，但允许明确 null 或 unknown 状态，附审核元数据",
+        "要求 ISO 日期，允许模型从附近发布背景推断，来源缺值时记录低置信供审核",
+        "静默丢弃缺日期记录",
+        "使用不受限制的自由文本字符串"
       ],
       "correct": [
         0
       ],
-      "explanation": "Required and nullable forces an explicit supported value or known absence. It prevents silent omission and reduces pressure to invent a plausible date.",
+      "explanation": "字段同时设为必填且可空（Required and Nullable），就要求明确给出有依据的值，或表明已知该值缺失。这样既能防止悄然漏掉字段，也能减少编造看似合理日期的压力。",
       "references": [
         "certifications/claude/lessons/20-reliable-extraction-batch-and-reviewers",
         "https://platform.claude.com/docs/en/build-with-claude/structured-outputs"
@@ -1206,20 +1206,20 @@
     {
       "id": "ccar-f-m1-057",
       "domain": "prompt-engineering-structured-output",
-      "objective": "Validate, retry, and feed back semantic errors",
+      "objective": "验证、重试并反馈语义错误（Validate, retry, and feed back semantic errors）",
       "type": "multiple",
-      "prompt": "Packet 4, Harbor: A record's end date precedes its start date and its cited span has no end date. Which two validators should reject it? Select two.",
+      "prompt": "材料包 4，Harbor：记录结束日期早于开始日期，引用片段又没有结束日期。哪两个验证器应拒绝？选择两项。",
       "options": [
-        "Semantic validation for the impossible date relationship",
-        "Schema validation requiring both fields to contain ISO-formatted dates, without comparing their relationship or verifying source support",
-        "A model review instructed to flag inconsistent dates from the extracted record, without access to the cited source span",
-        "Provenance validation for the unsupported extracted value"
+        "语义验证，拒绝不可能的日期关系",
+        "模式验证，要求两字段均为 ISO 格式日期，但不比较关系或验证来源支持",
+        "让模型只依据提取记录标记日期不一致，不提供引用来源片段",
+        "来源验证，拒绝无依据提取值"
       ],
       "correct": [
         0,
         3
       ],
-      "explanation": "The payload may parse and match its schema while remaining internally invalid and unsupported. Semantic and evidence checks address those distinct failures.",
+      "explanation": "载荷（Payload）可能可以解析，也符合结构定义（Schema），但内部语义仍不成立，或缺少证据支持。语义检查与证据检查分别针对这两类问题。",
       "references": [
         "certifications/claude/lessons/20-reliable-extraction-batch-and-reviewers",
         "certifications/claude/lessons/09-structured-output-and-defensive-parsing"
@@ -1228,19 +1228,19 @@
     {
       "id": "ccar-f-m1-058",
       "domain": "prompt-engineering-structured-output",
-      "objective": "Separate generator and independent reviewer passes",
+      "objective": "分离生成者与独立评审轮次（Separate generator and independent reviewer passes）",
       "type": "single",
-      "prompt": "Packet 4, Harbor: The generator silently corrects its own records during review, so CI cannot tell which fields originally failed. What is the strongest redesign?",
+      "prompt": "材料包 4，Harbor：生成者在评审时悄悄修正自己记录，CI 无法知道原先哪些字段失败。最佳重新设计是什么？",
       "options": [
-        "Allow in-place correction but require the generator to add a change-summary field after review, using that self-reported summary as the audit trail",
-        "Require a separate reviewer to emit finding IDs and evidence before a controlled correction pass",
-        "Increase the retry limit without recording errors",
-        "Delete the source version"
+        "允许原地修正，但要求生成者评审后增加变更摘要字段，以自报摘要作为审计轨迹",
+        "要求独立评审者先输出发现 ID 和证据，再进行受控修正",
+        "增加重试上限，但不记录错误",
+        "删除来源版本"
       ],
       "correct": [
         1
       ],
-      "explanation": "Findings must survive independently of correction for audit, evaluation, and remediation checks. Silent rewriting hides the defect and prevents learning from the failure.",
+      "explanation": "发现的问题必须独立于修正结果保留，以便审计、评估和检查整改效果。悄然改写结果会掩盖缺陷，也就无法从这次失败中吸取教训。",
       "references": [
         "certifications/claude/lessons/20-reliable-extraction-batch-and-reviewers",
         "certifications/claude/lessons/14-evals-testing-debugging-and-observability"
@@ -1249,20 +1249,20 @@
     {
       "id": "ccar-f-m1-059",
       "domain": "prompt-engineering-structured-output",
-      "objective": "Use batch processing for appropriate workloads",
+      "objective": "对合适工作负载使用批处理（Use batch processing for appropriate workloads）",
       "type": "multiple",
-      "prompt": "Packet 4, Harbor: An asynchronous extraction job returns results out of order and expires for 3 percent of items. Which two controls are necessary? Select two.",
+      "prompt": "材料包 4，Harbor：异步提取任务乱序返回，3% 的项目过期。哪两项控制必需？选择两项。",
       "options": [
-        "Join by array position after sorting both requests and responses by their timestamps, assuming the service completes equal-priority items consistently",
-        "Join results by stable custom ID, not array position",
-        "Persist source, schema, prompt versions and retry only eligible failed items",
-        "Replace the first failed result when its retry succeeds so downstream users see only the latest output, while retaining aggregate retry metrics"
+        "先按时间戳排序请求和响应，再按数组位置关联，假定服务一致完成同优先级项目",
+        "按稳定 custom ID 关联结果，而非数组位置",
+        "持久保存来源、模式和提示词版本，只重试符合条件的失败项",
+        "重试成功后替换首次失败结果，让下游只见最新输出，同时保留总体重试指标"
       ],
       "correct": [
         1,
         2
       ],
-      "explanation": "Stable identity and versioned inputs make asynchronous results reconciliable. Selective retries preserve valid work and prevent source changes from silently altering historical decisions.",
+      "explanation": "稳定身份和版本化输入使异步结果可核对。选择性重试保留有效工作，防止来源变化悄悄改变历史决策。",
       "references": [
         "certifications/claude/lessons/20-reliable-extraction-batch-and-reviewers",
         "https://platform.claude.com/docs/en/build-with-claude/message-batches"
@@ -1271,19 +1271,19 @@
     {
       "id": "ccar-f-m1-060",
       "domain": "context-management-reliability",
-      "objective": "Track provenance, conflicts, dates, and content types",
+      "objective": "追踪来源、冲突、日期和内容类型（Track provenance, conflicts, dates, and content types）",
       "type": "single",
-      "prompt": "Packet 4, Harbor: A release record combines a Markdown change notice, JSON manifest, test log, and rendered dashboard. What is the strongest reliability packet?",
+      "prompt": "材料包 4，Harbor：发布记录组合 Markdown 变更通知、JSON 清单、测试日志和渲染仪表盘。最佳可靠性材料包是什么？",
       "options": [
-        "Only the dashboard screenshot",
-        "Only a model confidence percentage",
-        "A manifest preserving each content type, version, date, location, extraction method, structured partial errors, conflicts, and full artifact references",
-        "One normalized JSON record that converts every content type to text, embeds the most important excerpts, and omits original artifact locations after validation"
+        "只有仪表盘截图",
+        "只有模型置信百分比",
+        "清单保留各内容类型、版本、日期、位置、提取方法、结构化部分错误、冲突及完整交付物引用",
+        "单个规范化 JSON 记录，将所有类型转为文本、嵌入最重要摘录，验证后省略原始交付物位置"
       ],
       "correct": [
         2
       ],
-      "explanation": "Different formats carry different structural meaning. A provenance-rich manifest allows reviewers to trace claims, detect rendering loss, preserve partial state, and resolve conflicts safely.",
+      "explanation": "不同格式承载不同结构含义。来源丰富的清单让评审者追踪主张、发现渲染丢失、保留部分状态并安全解决冲突。",
       "references": [
         "certifications/claude/lessons/21-long-context-reliability-provenance-and-escalation",
         "certifications/claude/lessons/31-architect-foundations-scenario-capstone"

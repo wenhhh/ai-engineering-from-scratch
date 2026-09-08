@@ -1,78 +1,78 @@
 {
   "lesson": "78-zero-parameter-sharding",
-  "title": "ZeRO Optimizer State Sharding",
+  "title": "ZeRO 优化器状态分片（ZeRO Optimizer State Sharding）",
   "questions": [
     {
       "stage": "pre",
-      "question": "Why does ZeRO shard optimiser state first instead of parameters?",
+      "question": "ZeRO 为何先分片优化器状态，而不是参数？",
       "options": [
-        "Optimiser state is the largest memory term and is only touched during the step, not forward or backward",
-        "DeepSpeed mandates it",
-        "Optimiser is more important",
-        "Parameters are easier"
+        "优化器状态是最大内存项，且只在更新时访问，前向反向不访问",
+        "DeepSpeed 强制如此",
+        "优化器更重要",
+        "参数更容易"
       ],
       "correct": 0,
-      "explanation": "For Adam in mixed precision the fp32 master plus two moments is 12P bytes per rank vs 4P for fp16 params + grads. Sharding the biggest term first wins the most memory per unit complexity."
+      "explanation": "混合精度 Adam 的 fp32 主副本和两份矩每 rank 为 12P 字节，fp16 参数加梯度为 4P。先分片最大项，单位复杂度可节省最多内存。"
     },
     {
       "stage": "pre",
-      "question": "What is the per-step wire pattern of ZeRO stage 1?",
+      "question": "ZeRO 阶段 1 每步通信模式是什么？",
       "options": [
-        "Nothing",
-        "One broadcast",
-        "One allreduce",
-        "One reduce_scatter on gradients plus one allgather on updated parameters"
+        "无",
+        "一次 broadcast",
+        "一次 allreduce",
+        "梯度一次 reduce_scatter，加更新参数一次 allgather"
       ],
       "correct": 3,
-      "explanation": "Reduce_scatter delivers each rank only its gradient shard; allgather distributes the updated parameter shards back. Total bytes equal allreduce, memory is divided by N."
+      "explanation": "Reduce_scatter 仅交付各 rank 梯度分片，allgather 分发更新参数分片。总字节数等于 allreduce，内存除以 N。"
     },
     {
       "stage": "check",
-      "question": "Why is the per-step bandwidth the same as DDP?",
+      "question": "为什么每步带宽与 DDP 相同？",
       "options": [
-        "It is not the same",
-        "Magic",
-        "ZeRO uses compression",
-        "Allreduce equals reduce_scatter plus allgather in bandwidth; ZeRO splits that into two halves on different data"
+        "并不相同",
+        "魔法",
+        "ZeRO 使用压缩",
+        "Allreduce 带宽等于 reduce_scatter 加 allgather；ZeRO 将它拆成处理不同数据的两半"
       ],
       "correct": 3,
-      "explanation": "Ring allreduce is implemented as reduce_scatter then allgather. ZeRO does the same two operations but the allgather rotates the updated parameters, not the summed gradient."
+      "explanation": "环形 allreduce 实现为先 reduce_scatter 再 allgather。ZeRO 执行相同两操作，但 allgather 轮转的是更新参数而非梯度和。"
     },
     {
       "stage": "check",
-      "question": "For a 7B model with Adam in mixed precision on 8 ranks, what is the memory drop vs vanilla DDP?",
+      "question": "70 亿参数模型在 8 rank 上用 Adam 混合精度，相对普通 DDP 内存下降多少？",
       "options": [
         "99%",
         "0%",
         "10%",
-        "Around 65% (vanilla 16P vs ZeRO-1 4P + 12P/N = 5.5P)"
+        "约 65%（普通 16P，ZeRO-1 为 4P + 12P/N = 5.5P）"
       ],
       "correct": 3,
-      "explanation": "Vanilla: 2P + 2P + 4P + 4P + 4P = 16P. ZeRO-1: 2P + 2P + (4P+4P+4P)/8 = 5.5P. Drop is (16-5.5)/16 = 65.6%."
+      "explanation": "普通：2P + 2P + 4P + 4P + 4P = 16P。ZeRO-1：2P + 2P + (4P+4P+4P)/8 = 5.5P。下降 (16-5.5)/16 = 65.6%。"
     },
     {
       "stage": "check",
-      "question": "What does ZeRO-2 add over ZeRO-1?",
+      "question": "ZeRO-2 比 ZeRO-1 增加什么？",
       "options": [
-        "Removes the optimiser",
-        "Also drops the non-shard gradients after reduce_scatter, freeing per-rank gradient memory; bandwidth stays the same",
-        "Nothing",
-        "Switches backend to NCCL"
+        "移除优化器",
+        "reduce_scatter 后也丢弃非自身分片梯度，释放每 rank 梯度内存；带宽不变",
+        "没有增加",
+        "后端改为 NCCL"
       ],
       "correct": 1,
-      "explanation": "ZeRO-2 zeroes the non-shard gradient portion after reduce_scatter; same bandwidth as ZeRO-1 but lower gradient memory."
+      "explanation": "ZeRO-2 在 reduce_scatter 后清零非自身梯度分片，带宽与 ZeRO-1 相同，梯度内存更低。"
     },
     {
       "stage": "post",
-      "question": "Why does ZeRO require the optimiser state checkpoint to record which rank owns which shard?",
+      "question": "为什么 ZeRO 优化器检查点须记录各 rank 分片所有权？",
       "options": [
-        "It does not",
-        "Cosmetic",
-        "Compression",
-        "Without per-rank ownership the saved state is unreadable at restart; resuming on the same world size needs to put the right shard back on the right rank"
+        "不需要",
+        "装饰作用",
+        "压缩",
+        "没有逐 rank 所有权，重启时保存状态无法读取；相同 world size 恢复需将正确分片放回正确 rank"
       ],
       "correct": 3,
-      "explanation": "Lesson 80 builds the sharded checkpoint manifest precisely so a ZeRO run can resume on the same topology."
+      "explanation": "第 80 课构建分片检查点清单，正是为了让 ZeRO 在相同拓扑恢复。"
     }
   ]
 }

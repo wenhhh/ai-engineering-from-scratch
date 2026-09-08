@@ -1,48 +1,78 @@
 {
   "lesson": "43-frame-the-task-before-code",
-  "title": "Frame the Task Before Code",
+  "title": "写代码前界定任务（Frame the Task Before Code）",
   "questions": [
     {
       "stage": "pre",
-      "question": "What should be the first unit of reliable coding-agent work?",
-      "options": ["A task frame backed by repository evidence", "A model call", "An edit", "A pull request"],
+      "question": "可靠编程智能体工作的第一个单位应是什么？",
+      "options": [
+        "有仓库证据支撑的任务框架",
+        "模型调用",
+        "编辑",
+        "拉取请求"
+      ],
       "correct": 0,
-      "explanation": "The task frame establishes facts, boundaries, unknowns, and proof before implementation."
+      "explanation": "任务框架在实现前建立事实、边界、未知项与证据方案。"
     },
     {
       "stage": "check",
-      "question": "Which of these statements is a repository fact?",
-      "options": ["The duplicate-response test expects 409 at tests/test_accounts.py:44", "The API probably uses 409", "409 feels conventional", "The API should use 409"],
+      "question": "以下哪项是仓库事实？",
+      "options": [
+        "tests/test_accounts.py:44 的重复响应测试预期 409",
+        "API 大概使用 409",
+        "409 感觉符合惯例",
+        "API 应该使用 409"
+      ],
       "correct": 0,
-      "explanation": "A fact carries a concrete receipt that can be inspected."
+      "explanation": "事实附有可检查的具体凭据。"
     },
     {
       "stage": "check",
-      "question": "Why name forbidden paths?",
-      "options": ["To select a model", "To define the negative space of the change", "To make the prompt longer", "To avoid running tests"],
+      "question": "为什么指定禁止路径？",
+      "options": [
+        "选择模型",
+        "定义变更不得触及的范围",
+        "让提示词更长",
+        "避免运行测试"
+      ],
       "correct": 1,
-      "explanation": "Allowed paths alone do not state what tempting adjacent work must remain untouched."
+      "explanation": "只有允许路径，无法说明哪些有诱惑力的相邻工作必须保持不动。"
     },
     {
       "stage": "check",
-      "question": "When should a human unknown pause the agent?",
-      "options": ["Whenever any file is unfamiliar", "Before every command", "Only after deployment", "When it changes product behavior, risk, authority, or irreversible cost"],
+      "question": "需人工回答的未知项何时应让智能体暂停？",
+      "options": [
+        "只要有不熟悉文件",
+        "每条命令之前",
+        "仅部署之后",
+        "当它改变产品行为、风险、权限或不可逆成本时"
+      ],
       "correct": 3,
-      "explanation": "High-consequence choices require an explicit checkpoint before they are buried in code."
+      "explanation": "后果重大的选择应在埋进代码前设置明确检查点。"
     },
     {
       "stage": "post",
-      "question": "What makes acceptance evidence strong?",
-      "options": ["It is written after coding", "It uses many tools", "It names the exact command or observation and the claim it proves", "It says tests pass"],
+      "question": "什么使验收证据有力？",
+      "options": [
+        "编码后才写",
+        "使用很多工具",
+        "指明确切命令或观察，以及它证明的主张",
+        "说测试通过"
+      ],
       "correct": 2,
-      "explanation": "Specific proof lets another session reproduce task closure."
+      "explanation": "具体证据让另一次会话能复现任务收尾。"
     },
     {
       "stage": "post",
-      "question": "When is reconnaissance sufficient?",
-      "options": ["When the context window is full", "When every planned decision has evidence, delegated authority, or an explicit unknown", "After one search", "After reading every file"],
+      "question": "何时侦察已经充分？",
+      "options": [
+        "上下文窗口已满",
+        "每项计划决策都有证据、委托权限或明确未知项时",
+        "搜索一次之后",
+        "阅读每个文件之后"
+      ],
       "correct": 1,
-      "explanation": "Reconnaissance stops when decisions are grounded or visibly unresolved."
+      "explanation": "决策已有依据或未解决状态清晰可见时，侦察即可停止。"
     }
   ]
 }

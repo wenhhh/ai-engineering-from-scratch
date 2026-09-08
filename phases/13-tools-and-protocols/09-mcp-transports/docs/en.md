@@ -1,83 +1,83 @@
-# MCP Transports: stdio and Stateless Streamable HTTP
+# MCP 传输：stdio 与无状态 Streamable HTTP（MCP Transports: stdio and Stateless Streamable HTTP）
 
-> Transport carries MCP messages. It does not supply missing protocol state. In `2026-07-28`, local stdio and remote Streamable HTTP both carry self-describing requests.
+> 传输承载 MCP 消息，不补充缺失的协议状态。在 `2026-07-28` 中，本地 stdio 与远程 Streamable HTTP 都承载自描述请求。
 
 **Type:** Learn
 **Languages:** Python
-**Prerequisites:** Phase 13, Lessons 07 and 08
-**Time:** ~65 minutes
+**Prerequisites:** 阶段 13，第 07、08 课
+**Time:** ~65 分钟
 
-## Learning Objectives
+## 学习目标（Learning Objectives）
 
-- Choose stdio for local child processes and Streamable HTTP for network services.
-- Implement the modern single-endpoint, POST-only Streamable HTTP contract.
-- Mirror and validate MCP version, method, and name headers against the JSON-RPC body.
-- Deliver request-scoped SSE and long-lived `subscriptions/listen` streams correctly.
-- Migrate session-based and legacy HTTP+SSE deployments without presenting legacy behavior as modern.
+- 本地子进程选择 stdio，网络服务选择 Streamable HTTP。
+- 实现现代单端点、仅 POST 的 Streamable HTTP 契约。
+- 将 MCP 版本、方法和名称头与 JSON-RPC 正文中的对应值镜像，并校验一致性。
+- 正确投递请求作用域 SSE 与长时间保持的 `subscriptions/listen` 流。
+- 迁移基于会话和旧版 HTTP+SSE 的部署，不把旧版行为说成现代行为。
 
-## The Problem
+## 问题（The Problem）
 
-Earlier Streamable HTTP revisions combined protocol negotiation with connection and session behavior. A server could mint `Mcp-Session-Id`, expose a standalone GET stream, accept DELETE for session termination, and resume SSE with `Last-Event-ID`.
+早期 Streamable HTTP 修订版将协议协商与连接、会话行为结合。服务器可以签发 `Mcp-Session-Id`，暴露独立 GET 流，接受 DELETE 终止会话，并用 `Last-Event-ID` 恢复 SSE。
 
-MCP `2026-07-28` removes those mechanisms from the modern wire. Every request can land on any healthy worker because its protocol version and client capabilities travel in the request body. HTTP headers mirror selected fields for routing and policy, but the server validates those headers against the body before execution.
+MCP `2026-07-28` 从现代线上传输中移除这些机制。每次请求都能落到任意健康工作进程，因为协议版本和客户端能力随请求正文传送。HTTP 头镜像部分字段，供路由与策略使用，但服务器在执行前会验证这些头与正文一致。
 
-The result is easier to scale and easier to reason about. It also means that a server teaching the 2025 transport as current is teaching the wrong failure and security model.
+结果更易扩展，也更易推理。这也意味着，把 2025 年的传输当作当前规范教授的服务器示例，教的是错误的故障与安全模型。
 
-## The Concept
+## 概念（The Concept）
 
-### stdio
+### 标准输入输出（stdio）
 
-The stdio binding is for a client-launched subprocess:
+stdio 绑定适用于客户端启动的子进程：
 
-- Client writes one UTF-8 JSON-RPC message per line to stdin.
-- Server writes one UTF-8 JSON-RPC message per line to stdout.
-- Server writes diagnostics to stderr.
-- Server exits promptly on stdin EOF.
-- Every modern request carries version and client capabilities in `params._meta`.
+- 客户端向 stdin 每行写一条 UTF-8 JSON-RPC 消息。
+- 服务器向 stdout 每行写一条 UTF-8 JSON-RPC 消息。
+- 服务器向 stderr 写诊断信息。
+- stdin 到达 EOF 时服务器立即退出。
+- 每个现代请求在 `params._meta` 中携带版本与客户端能力。
 
-The process may live for many calls, but it is not a modern protocol session. If it exits unexpectedly, in-flight requests are lost. Restart the process, rediscover, relist, reopen subscriptions, and retry safe operations with new request ids.
+进程可持续处理多次调用，但不是现代协议会话。意外退出会丢失在途请求。应重启进程、重新发现、重新列举、重开订阅，并用新请求 id 重试安全操作。
 
-### Streamable HTTP in 2026-07-28
+### 2026-07-28 中的 Streamable HTTP（Streamable HTTP in 2026-07-28）
 
-A modern server exposes one MCP endpoint, such as `/mcp`, that accepts POST.
+现代服务器暴露一个接受 POST 的 MCP 端点，例如 `/mcp`。
 
-Every JSON-RPC request or notification is a new HTTP POST. The body contains one JSON-RPC message. Clients do not send JSON-RPC responses to the server.
+每条 JSON-RPC 请求或通知都是一个新的 HTTP POST，正文含一条 JSON-RPC 消息。客户端不向服务器发送 JSON-RPC 响应。
 
-For a request, the server returns either:
+对于请求，服务器返回以下之一：
 
-- `Content-Type: application/json` with one JSON-RPC response; or
-- `Content-Type: text/event-stream` with notifications related to that request, followed by the final JSON-RPC response.
+- `Content-Type: application/json`，含一条 JSON-RPC 响应；或
+- `Content-Type: text/event-stream`，包含该请求相关通知，最后是最终 JSON-RPC 响应。
 
-For an accepted notification, the server returns `202 Accepted` with no body.
+对于接受的通知，服务器返回无正文的 `202 Accepted`。
 
-Clients advertise both response types:
+客户端声明接受两种响应类型：
 
 ```http
 Accept: application/json, text/event-stream
 ```
 
-### POST-only means POST-only
+### 仅 POST 就是仅 POST（POST-only means POST-only）
 
-Modern Streamable HTTP has no standalone GET stream and no DELETE session endpoint.
+现代 Streamable HTTP 没有独立 GET 流，也没有 DELETE 会话端点。
 
-- `GET /mcp` returns `405 Method Not Allowed`.
-- `DELETE /mcp` returns `405 Method Not Allowed`.
-- `Mcp-Session-Id` is ignored and never minted or echoed.
-- `Last-Event-ID` is ignored because modern streams are not resumable.
+- `GET /mcp` 返回 `405 Method Not Allowed`。
+- `DELETE /mcp` 返回 `405 Method Not Allowed`。
+- 忽略 `Mcp-Session-Id`，绝不签发或回传。
+- 忽略 `Last-Event-ID`，因为现代流不可恢复。
 
-If a request-scoped stream breaks before its final response, the client has lost that in-flight request. It may issue a new request with a new JSON-RPC id when retry is safe. It must not attempt stream resumption.
+请求作用域流在最终响应前中断时，客户端丢失该在途请求。重试安全时可以用新 JSON-RPC id 发新请求，但不得尝试恢复流。
 
-### Origin validation
+### 来源校验（Origin validation）
 
-Servers validate `Origin` on incoming connections to prevent DNS rebinding. If the header is present and not explicitly allowed, return `403 Forbidden`. A non-browser client may omit `Origin`, which the official transport rules permit.
+服务器校验传入连接的 `Origin`，防止 DNS 重绑定（DNS rebinding）。头存在但未被显式允许时，返回 `403 Forbidden`。非浏览器客户端可省略 `Origin`，官方传输规则允许如此。
 
-Local servers should bind to `127.0.0.1`, not every interface. Network services still need authentication and authorization on every request. Origin validation is not authentication.
+本地服务器应绑定 `127.0.0.1`，而非所有接口。网络服务仍需对每次请求认证与授权。Origin 校验不是身份认证。
 
-Use exact origin matching after canonical configuration. Prefix checks such as `origin.startswith("https://trusted.example")` are unsafe because they can accept attacker-controlled suffixes.
+配置规范化后，采用精确来源匹配。`origin.startswith("https://trusted.example")` 这样的前缀检查不安全，因为可能接受攻击者控制的后缀。
 
-### Required HTTP metadata headers
+### 必需的 HTTP 元数据头（Required HTTP metadata headers）
 
-Every modern POST request includes:
+每个现代 POST 请求包含：
 
 ```http
 MCP-Protocol-Version: 2026-07-28
@@ -85,45 +85,45 @@ Mcp-Method: tools/call
 Mcp-Name: notes_search
 ```
 
-Header rules:
+头规则：
 
-- `MCP-Protocol-Version` is required and must equal `params._meta.io.modelcontextprotocol/protocolVersion`.
-- `Mcp-Method` is required and must equal the JSON-RPC `method`.
-- `Mcp-Name` is required for `tools/call`, `resources/read`, and `prompts/get`.
-- `Mcp-Name` equals `params.name`, or `params.uri` for `resources/read`.
-- Header values are case-sensitive even though header names are case-insensitive.
+- `MCP-Protocol-Version` 必需，必须等于 `params._meta.io.modelcontextprotocol/protocolVersion`。
+- `Mcp-Method` 必需，必须等于 JSON-RPC `method`。
+- `tools/call`、`resources/read` 和 `prompts/get` 必须包含 `Mcp-Name`。
+- `Mcp-Name` 等于 `params.name`；对于 `resources/read`，等于 `params.uri`。
+- 头名称不区分大小写，但头值区分大小写。
 
-Unsafe or non-ASCII `Mcp-Name` values use the exact UTF-8 Base64 sentinel:
+不安全或非 ASCII 的 `Mcp-Name` 值采用确切的 UTF-8 Base64 哨兵格式：
 
 ```text
 =?base64?{Base64EncodedValue}?=
 ```
 
-The server decodes that value before comparing it with the body.
+服务器先解码，再与正文比较。
 
-Missing, malformed, or mismatched mirrored headers return HTTP `400` with JSON-RPC code `-32020`. If header and body agree on a version the server does not support, return HTTP `400` with `-32022` and exact error data such as `{"supported":["2026-07-28"],"requested":"2027-01-01"}`.
+镜像头缺失、格式错误或不匹配时，返回 HTTP `400` 和 JSON-RPC 错误码 `-32020`。头与正文版本一致但服务器不支持时，返回 HTTP `400` 与 `-32022`，并附确切错误数据，如 `{"supported":["2026-07-28"],"requested":"2027-01-01"}`。
 
-An unknown modern method returns HTTP `404` with JSON-RPC `-32601`. The JSON-RPC body is important because a dual-era client uses it to distinguish a modern error from a legacy endpoint miss.
+未知现代方法返回 HTTP `404` 与 JSON-RPC `-32601`。JSON-RPC 正文很重要，因为双时期客户端靠它区分现代错误与旧版端点未命中。
 
-### Request-scoped SSE
+### 请求作用域 SSE（Request-scoped SSE）
 
-A server may choose SSE for one long-running request:
+服务器可以为一个长时间运行的请求选择 SSE：
 
 ```text
 POST tools/call id=41
-  <- notifications/progress related to id=41
-  <- notifications/progress related to id=41
-  <- JSON-RPC response id=41
-stream closes
+  <- 与 id=41 相关的 notifications/progress
+  <- 与 id=41 相关的 notifications/progress
+  <- JSON-RPC 响应 id=41
+流关闭
 ```
 
-The server must not send independent JSON-RPC requests on this stream. Sampling, elicitation, and roots interactions use Multi Round-Trip Request results. Closing the response stream cancels that request.
+服务器不得在此流上发送独立 JSON-RPC 请求。采样、信息征询和根目录交互使用多轮往返请求结果。关闭响应流会取消该请求。
 
-Do not add SSE event ids for replay. `Last-Event-ID` resumption is not part of the modern revision.
+不要为重放增加 SSE 事件 id。`Last-Event-ID` 恢复不属于现代修订版。
 
-### Long-lived changes use subscriptions/listen
+### 长期变更使用 subscriptions/listen（Long-lived changes use subscriptions/listen）
 
-Change notifications use a client-opened request, not standalone GET:
+变更通知使用客户端打开的请求，而非独立 GET：
 
 ```json
 {
@@ -147,44 +147,44 @@ Change notifications use a client-opened request, not standalone GET:
 }
 ```
 
-The POST response is a long-lived SSE stream. Its first protocol message is `notifications/subscriptions/acknowledged`. The acknowledgement, every change notification, and the final result carry `io.modelcontextprotocol/subscriptionId` in `_meta`, equal to the listen request id. The server may emit SSE comments as keepalives. When the stream drops, the client reissues `subscriptions/listen` with a new request id and refetches affected data.
+POST 响应是长期保持的 SSE 流，首条协议消息是 `notifications/subscriptions/acknowledged`。确认、每条变更通知及最终结果都在 `_meta` 中携带 `io.modelcontextprotocol/subscriptionId`，其值等于监听请求 id。服务器可以输出 SSE 注释保活。流断开时，客户端以新请求 id 重新发送 `subscriptions/listen`，重新获取受影响数据。
 
-`resources/subscribe` and `resources/unsubscribe` belong to the legacy era. Do not use them on a modern connection.
+`resources/subscribe` 和 `resources/unsubscribe` 属于旧版时期，不要在现代连接上使用。
 
-### Explicit application state
+### 显式应用状态（Explicit application state）
 
-Removing protocol sessions does not forbid workflows with state. The server may mint an opaque state handle and return it as a normal tool result. The client passes that handle as an explicit argument on later calls.
+移除协议会话不禁止有状态工作流。服务器可以签发不透明状态句柄，作为普通工具结果返回。客户端在后续调用中将句柄作为显式参数传入。
 
-Bind handles to the authenticated principal, make them unguessable, expire them, and authorize every use. This makes state visible at the application layer instead of hiding it in transport affinity.
+句柄要绑定到已认证主体、不可猜测、设定过期时间，并在每次使用时授权。这让状态在应用层可见，而不是藏在传输亲和性（Transport affinity）中。
 
-The failure caused by hidden replica state is mechanical:
+隐藏副本状态造成的失败过程很具体：
 
-1. Request A reaches replica 1 and creates a draft in that process's memory.
-2. The response does not return a draft handle because the implementation assumes the connection identifies the draft.
-3. Request B is a fresh POST and reaches replica 2.
-4. Replica 2 has valid protocol metadata but no way to name or load the draft, so the workflow fails or reads the wrong local object.
-5. Sticky routing appears to fix the symptom until a restart, rollout, reschedule, or failover moves the next request.
+1. 请求 A 到达副本 1，在该进程内存中创建草稿。
+2. 响应不返回草稿句柄，因为实现假定连接标识草稿。
+3. 请求 B 是新的 POST，到达副本 2。
+4. 副本 2 有有效协议元数据，却无法命名或加载草稿，工作流因此失败或读取错误本地对象。
+5. 粘性路由看似修复症状，直到重启、发布、重新调度或故障转移改变下个请求的落点。
 
-The correct boundary has two parts. Protocol context stays in each request. Durable application state lives in a shared store under a server-minted handle returned to the client. The next call supplies that handle, any replica loads the same record, and authorization binds the record to the authenticated principal and tenant. Replica memory may cache a record, but it cannot be the only copy required for correctness.
+正确边界有两部分。协议上下文留在每次请求中；持久应用状态放在共享存储中，用服务器签发并返回客户端的句柄索引。下次调用提供句柄，任意副本加载同一记录，授权将记录绑定到已认证主体和租户。副本内存可缓存记录，但不能成为正确运行所必需的唯一副本。
 
-Choose the state mechanism by lifetime. Request-local variables can serve one call. A short MRTR continuation can use integrity-protected `requestState`. A draft or durable task needs an explicit handle plus shared persistence, expiry, concurrency control, and idempotency. None of those objects is an MCP protocol session.
+按生命周期选择状态机制。请求局部变量可服务一次调用。短期多轮往返请求（MRTR）续接可使用完整性保护的 `requestState`。草稿或持久任务需要显式句柄，加上共享持久化、过期、并发控制与幂等性。这些对象都不是 MCP 协议会话。
 
-### HTTP dual-era compatibility
+### HTTP 双时期兼容（HTTP dual-era compatibility）
 
-A client that supports modern and legacy servers attempts a modern POST first. If it receives HTTP `400`, `404`, or `405`, it inspects the body:
+同时支持现代和旧版服务器的客户端先尝试现代 POST。收到 HTTP `400`、`404` 或 `405` 时，检查正文：
 
-- A recognized modern JSON-RPC error proves the server is modern. Correct the request or retry an advertised version. Do not downgrade.
-- An empty body or an unrecognized response may indicate a legacy HTTP+SSE server. Only then try the old GET endpoint and expect its legacy `endpoint` event.
+- 已识别现代 JSON-RPC 错误证明服务器是现代的。纠正请求或按公布版本重试，不降级。
+- 空正文或未识别响应可能表明旧版 HTTP+SSE 服务器。只有此时才尝试旧 GET 端点，并期待其旧版 `endpoint` 事件。
 
-A server can support both eras during migration by routing modern metadata to the modern POST-only implementation and retaining separate legacy endpoints for old clients. Never describe the legacy GET, DELETE, session id, or replay behavior as part of `2026-07-28`.
+迁移中，服务器可以将现代元数据路由到现代仅 POST 实现，为旧客户端保留独立旧版端点，从而支持两个时期。绝不把旧版 GET、DELETE、会话 id 或重放行为描述为 `2026-07-28` 的一部分。
 
 ```figure
 tp-transport-handshake
 ```
 
-## Use It
+## 实际应用（Use It）
 
-`code/main.py` implements a finite, modern Streamable HTTP server with the Python standard library. It validates Origin and mirrored headers, ignores removed session headers, returns JSON for normal calls, and demonstrates a finite `subscriptions/listen` SSE stream.
+`code/main.py` 用 Python 标准库实现有限的现代 Streamable HTTP 服务器。它校验 Origin 和镜像头，忽略已移除会话头，为普通调用返回 JSON，并演示有限的 `subscriptions/listen` SSE 流。
 
 ```bash
 cd code
@@ -192,46 +192,46 @@ python3 main.py --probe
 python3 -m unittest discover tests -v
 ```
 
-The probe checks:
+探测检查：
 
-- invalid Origin is rejected;
-- discovery succeeds without a session id;
-- `Mcp-Session-Id` and `Last-Event-ID` are ignored;
-- header mismatch returns `-32020`;
-- unsupported version returns `-32022` with exact `supported` and `requested` data;
-- an accepted id-less notification returns HTTP `202` with no body;
-- GET and DELETE return `405`;
-- `subscriptions/listen` is a POST response stream whose acknowledgement, notifications, and final result carry its subscription id.
+- 拒绝无效 Origin；
+- 没有会话 id 也能发现成功；
+- 忽略 `Mcp-Session-Id` 和 `Last-Event-ID`；
+- 头不匹配返回 `-32020`；
+- 不支持的版本返回 `-32022`，附确切 `supported` 与 `requested` 数据；
+- 接受的无 id 通知返回无正文 HTTP `202`；
+- GET 和 DELETE 返回 `405`；
+- `subscriptions/listen` 是 POST 响应流，其确认、通知与最终结果携带订阅 id。
 
-## Ship It
+## 交付成果（Ship It）
 
-This lesson ships `outputs/skill-mcp-transport-migrator.md`. It removes modern protocol sessions, adds header-body validation, replaces standalone GET with `subscriptions/listen`, and keeps any legacy bridge visibly separate.
+本课交付 `outputs/skill-mcp-transport-migrator.md`。它移除现代协议会话，增加头与正文校验，用 `subscriptions/listen` 替代独立 GET，并让所有旧版桥接保持可见隔离。
 
-## Exercises
+## 练习（Exercises）
 
-1. Remove `Mcp-Method` from a POST. Confirm HTTP `400` and error `-32020`.
-2. Send matching header and body version `2027-01-01`. Confirm HTTP `400`, error `-32022`, and exact data `{"supported":["2026-07-28"],"requested":"2027-01-01"}`.
-3. Send a Base64 sentinel `Mcp-Name` for a non-ASCII resource URI. Confirm the decoded value is compared with `params.uri`.
-4. Break the finite listen stream before its final response. Reissue it with a new JSON-RPC id and refetch tools.
-5. Add an explicit workflow handle to the ping tool. Bind it to an authorization subject without using connection affinity.
+1. 从 POST 移除 `Mcp-Method`，确认 HTTP `400` 与错误 `-32020`。
+2. 发送一致的头与正文版本 `2027-01-01`，确认 HTTP `400`、错误 `-32022` 和确切数据 `{"supported":["2026-07-28"],"requested":"2027-01-01"}`。
+3. 为非 ASCII 资源 URI 发送 Base64 哨兵形式的 `Mcp-Name`，确认解码值与 `params.uri` 比较。
+4. 在最终响应前中断有限监听流。用新 JSON-RPC id 重新发送并重新获取工具。
+5. 为 ping 工具增加显式工作流句柄，将其绑定到授权主体，不使用连接亲和性。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | Meaning |
+| 术语 | 含义 |
 |------|---------|
-| stdio | Newline-delimited JSON-RPC over a client-launched subprocess |
-| Streamable HTTP | Single endpoint where each modern message is a new POST |
-| Request-scoped SSE | POST response stream containing related notifications and final response |
-| `subscriptions/listen` | Long-lived POST request for opted-in change notifications |
-| Header mismatch | HTTP `400` and JSON-RPC `-32020` when mirrored headers disagree with body |
-| Origin validation | DNS-rebinding defense for incoming connections, not authentication |
-| Explicit state handle | Application token passed as an ordinary argument instead of hidden session state |
-| Legacy bridge | Separate earlier-era behavior kept only for compatibility |
+| stdio | 通过客户端启动的子进程传输换行分隔 JSON-RPC |
+| Streamable HTTP | 每条现代消息都是新 POST 的单端点 |
+| 请求作用域 SSE（Request-scoped SSE） | 包含相关通知与最终响应的 POST 响应流 |
+| `subscriptions/listen` | 接收主动选择的变更通知的长期 POST 请求 |
+| 头不匹配（Header mismatch） | 镜像头与正文不一致时的 HTTP `400` 和 JSON-RPC `-32020` |
+| 来源校验（Origin validation） | 对传入连接的 DNS 重绑定防御，不是认证 |
+| 显式状态句柄（Explicit state handle） | 作为普通参数传入的应用令牌，替代隐藏会话状态 |
+| 旧版桥接（Legacy bridge） | 仅为兼容而保留的独立早期行为 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [MCP Transport Overview](https://modelcontextprotocol.io/specification/2026-07-28/basic/transports)
-- [MCP stdio Transport](https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/stdio)
+- [MCP 传输概览（MCP Transport Overview）](https://modelcontextprotocol.io/specification/2026-07-28/basic/transports)
+- [MCP stdio 传输（MCP stdio Transport）](https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/stdio)
 - [MCP Streamable HTTP](https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/streamable-http)
-- [MCP Subscriptions](https://modelcontextprotocol.io/specification/2026-07-28/basic/patterns/subscriptions)
-- [MCP 2026-07-28 Changelog](https://modelcontextprotocol.io/specification/2026-07-28/changelog)
+- [MCP 订阅（MCP Subscriptions）](https://modelcontextprotocol.io/specification/2026-07-28/basic/patterns/subscriptions)
+- [MCP 2026-07-28 变更日志（MCP 2026-07-28 Changelog）](https://modelcontextprotocol.io/specification/2026-07-28/changelog)

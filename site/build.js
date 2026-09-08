@@ -109,7 +109,7 @@ function parseRoadmap(content) {
 
   for (const line of content.split(/\r?\n/)) {
     // Match phase headers like: ## Phase 0: Setup & Tooling — ✅
-    const phaseMatch = line.match(/^##\s+Phase\s+(\d+).*?—\s*(✅|🚧|⬚)/);
+    const phaseMatch = line.match(/^##\s+(?:Phase|阶段)\s+(\d+).*?—\s*(✅|🚧|⬚)/);
     if (phaseMatch) {
       const phaseId = parseInt(phaseMatch[1]);
       const statusEmoji = phaseMatch[2];
@@ -194,7 +194,7 @@ function parseReadme(content, roadmapStatuses) {
     }
 
     // Detect start of lesson table
-    if (currentPhase && line.match(/^\|\s*#\s*\|\s*Lesson/)) {
+    if (currentPhase && line.match(/^\|\s*#\s*\|\s*(?:Lesson|课程（Lesson）)/)) {
       inLessonTable = true;
       isCapstoneTable = false;
       continue;
@@ -217,7 +217,8 @@ function parseReadme(content, roadmapStatuses) {
 
         // Type may be plain ("Build") or a shield image: ![Build](https://...)
         const typeBadgeMatch = typeRaw.match(/!\[([^\]]+)\]/);
-        const type = typeBadgeMatch ? typeBadgeMatch[1] : typeRaw;
+        const typeLabel = typeBadgeMatch ? typeBadgeMatch[1] : typeRaw;
+        const type = typeLabel.replace(/^.*（(Build|Learn|Reference|Capstone)）$/, '$1');
 
         // Lang may be plain ("Python, Rust") or emoji flags (🐍 🟦 🦀 🟣 ⚛️)
         const EMOJI_LANG = {
@@ -294,7 +295,7 @@ function parseReadme(content, roadmapStatuses) {
     }
 
     // Also detect capstone table format (# | Project | Combines | Lang)
-    if (currentPhase && line.match(/^\|\s*#\s*\|\s*Project/)) {
+    if (currentPhase && line.match(/^\|\s*#\s*\|\s*(?:Project|项目（Project）)/)) {
       inLessonTable = true;
       isCapstoneTable = true;
       continue;
@@ -638,7 +639,7 @@ function writeFigureManifest(repoRoot = REPO_ROOT, siteDir = __dirname) {
 // phase-level learning path. Keeping the website graph generated from it
 // prevents the interactive roadmap from drifting into a second curriculum.
 function parseCurriculumPrereqs(content, phases) {
-  const section = content.match(/## The shape of the curriculum[\s\S]*?```mermaid\s*\r?\n([\s\S]*?)```/);
+  const section = content.match(/## (?:The shape of the curriculum|[^\n]+（The shape of the curriculum）)[\s\S]*?```mermaid\s*\r?\n([\s\S]*?)```/);
   if (!section) throw new Error('README.md is missing the canonical curriculum Mermaid graph');
 
   const phaseIds = phases.map(phase => phase.id).sort((a, b) => a - b);
@@ -767,7 +768,7 @@ function truncateText(value, limit) {
   if (!limit || text.length <= limit) return text;
   const clipped = text.slice(0, Math.max(0, limit - 1));
   const boundary = clipped.lastIndexOf(' ');
-  return (boundary >= Math.floor(limit * 0.65) ? clipped.slice(0, boundary) : clipped).trimEnd() + '…';
+  return (boundary >= Math.floor(limit * 0.75) ? clipped.slice(0, boundary) : clipped).trimEnd() + '…';
 }
 
 function wordCount(value) {
@@ -782,7 +783,7 @@ function truncateWords(value, limit) {
 }
 
 function seoTitleFor(title) {
-  const brandedTitle = `${title} | AI Engineering from Scratch`;
+  const brandedTitle = `${title} | 从零开始的 AI 工程`;
   return brandedTitle.length <= 60 ? brandedTitle : truncateText(title, 60);
 }
 
@@ -905,9 +906,12 @@ function disambiguateDuplicateSeoTitles(entries) {
   for (const matches of entriesByTitle.values()) {
     if (matches.length < 2) continue;
     for (const entry of matches) {
-      const qualifier = entry.context.kind === 'course'
+      let qualifier = entry.context.kind === 'course'
         ? entry.context.phaseName
         : entry.context.programName;
+      if (`${entry.title} - ${qualifier}`.length > 60) {
+        qualifier = qualifier.replace(/（[A-Za-z][^）]*）/g, '').trim();
+      }
       entry.seoTitle = seoTitleFor(`${entry.title} - ${qualifier}`);
     }
     if (new Set(matches.map(entry => entry.seoTitle)).size !== matches.length) {
@@ -1523,6 +1527,7 @@ function glossaryError(lineNumber, term, message) {
 
 function glossarySlug(term) {
   return term
+    .replace(/^.*（([^（）]+)）$/, '$1')
     .normalize('NFKD')
     .replace(/[\u0300-\u036f]/g, '')
     .toLowerCase()
@@ -1532,6 +1537,7 @@ function glossarySlug(term) {
 
 function glossaryLookupKey(value) {
   return String(value || '')
+    .replace(/^.*（([^（）]+)）$/, '$1')
     .normalize('NFKD')
     .replace(/[\u0300-\u036f]/g, '')
     .toLocaleLowerCase('en-US')
@@ -1622,6 +1628,7 @@ function parseGlossary(content) {
   for (let index = 0; index < lines.length; index++) {
     const line = lines[index];
     const lineNumber = index + 1;
+    if (/^\s*<a id="[a-z0-9-]+"><\/a>\s*$/.test(line)) continue;
     if (/^###\s*$/.test(line)) glossaryError(lineNumber, '', 'term heading cannot be empty');
     const termMatch = line.match(/^###\s+(.+?)\s*$/);
     if (termMatch) {
@@ -1674,7 +1681,7 @@ function parseGlossary(content) {
     }
 
     if (fieldMatch) {
-      const label = fieldMatch[1].trim();
+      const label = fieldMatch[1].trim().replace(/^.*（([^（）]+)）$/, '$1');
       const value = fieldMatch[2].trim();
       const key = GLOSSARY_FIELD_KEYS.get(label);
       if (!key) glossaryError(lineNumber, currentTerm.term, `unknown field "${label}"`);
@@ -1683,10 +1690,11 @@ function parseGlossary(content) {
       currentTerm.fields.add(label);
 
       if (key === 'category') {
-        if (!GLOSSARY_CATEGORIES.has(value)) {
+        const category = value.replace(/^.*（([^（）]+)）$/, '$1');
+        if (!GLOSSARY_CATEGORIES.has(category)) {
           glossaryError(lineNumber, currentTerm.term, `unknown category "${value}"`);
         }
-        currentTerm.category = value;
+        currentTerm.category = category;
       } else if (key === 'aliases' || key === 'related') {
         const items = glossaryList(value);
         if (!items.length) glossaryError(lineNumber, currentTerm.term, `field "${label}" needs at least one item`);
@@ -2145,41 +2153,41 @@ function writeLlms(phases, glossaryCount, artifactCount, certifications) {
   const rawOrigin = 'https://raw.githubusercontent.com/rohitg00/ai-engineering-from-scratch/' + resolveRef();
   let total = 0;
   phases.forEach(p => { total += p.lessons.filter(l => lessonPath(l.url)).length; });
-  let out = `# AI Engineering from Scratch\n\n`;
-  out += `> A free, open-source curriculum that builds every core AI algorithm by hand — ${total} lessons across ${phases.length} phases, from linear algebra to autonomous agents. Python, TypeScript, Rust, Julia.\n\n`;
-  out += `Canonical site: ${SITE_ORIGIN}\n`;
-  out += `Source: https://github.com/rohitg00/ai-engineering-from-scratch\n`;
-  out += `Glossary terms: ${glossaryCount} · Reusable outputs (prompts/skills/agents): ${artifactCount}\n\n`;
-  out += `## Developer resources\n`;
-  out += `- [Developer documentation](${SITE_ORIGIN}/developer.html) — machine-readable site contracts and integration notes\n`;
-  out += `- [OpenAPI description](${SITE_ORIGIN}/openapi.json) — read-only public resource inventory\n`;
-  out += `- [Sitemap](${SITE_ORIGIN}/sitemap.xml) — canonical URL inventory\n`;
-  out += `- [Contact](${SITE_ORIGIN}/contact.html) — maintainer and project contact route\n`;
-  out += `- [Privacy](${SITE_ORIGIN}/privacy.html) — data and analytics policy\n\n`;
-  out += `Lesson routes include crawler-readable titles, summaries, navigation, and canonical URLs. Each raw markdown link below is the complete source text. Lesson directories may also include code/ (runnable implementation) and quiz.json.\n\n`;
+  let out = `# 从零开始的 AI 工程（AI Engineering from Scratch）\n\n`;
+  out += `> 免费开源课程，从线性代数到自主智能体，亲手实现每个核心 AI 算法。共 ${total} 课、${phases.length} 个阶段，使用 Python、TypeScript、Rust、Julia。\n\n`;
+  out += `规范站点： ${SITE_ORIGIN}\n`;
+  out += `源码： https://github.com/rohitg00/ai-engineering-from-scratch\n`;
+  out += `术语：${glossaryCount} 个 · 可复用交付物（提示词/技能/智能体）：${artifactCount} 件\n\n`;
+  out += `## 开发者资源（Developer Resources）\n`;
+  out += `- [开发者文档](${SITE_ORIGIN}/developer.html)：机器可读的网站契约与集成说明\n`;
+  out += `- [OpenAPI 描述](${SITE_ORIGIN}/openapi.json)：只读公开资源清单\n`;
+  out += `- [站点地图（Sitemap）](${SITE_ORIGIN}/sitemap.xml)：规范 URL 清单\n`;
+  out += `- [联系我们](${SITE_ORIGIN}/contact.html)：维护者与项目联系渠道\n`;
+  out += `- [隐私政策](${SITE_ORIGIN}/privacy.html)：数据与分析政策\n\n`;
+  out += `课程路由包含爬虫可读的标题、摘要、导航和规范 URL。下方每个 Markdown 原文链接都指向完整源码文本。课程目录还可能包含 code/（可运行实现）和 quiz.json。\n\n`;
   for (const phase of phases) {
-    out += `## Phase ${phase.id}: ${phase.name}\n`;
+    out += `## 阶段 ${phase.id}： ${phase.name}\n`;
     if (phase.desc) out += `${phase.desc}\n`;
     out += `\n`;
     for (const l of phase.lessons) {
       const p = lessonPath(l.url);
       if (!p) continue;
       const note = l.summary ? ` — ${l.summary}` : '';
-      out += `- [${l.name}](${SITE_ORIGIN}/lesson?path=${encodeURIComponent(p)}) · [raw](${rawOrigin}/${p}/docs/en.md)${note}\n`;
+      out += `- [${l.name}](${SITE_ORIGIN}/lesson?path=${encodeURIComponent(p)}) · [原始文件](${rawOrigin}/${p}/docs/en.md)${note}\n`;
     }
     out += `\n`;
   }
-  out += `## Optional\n`;
-  out += `- [Catalog](${SITE_ORIGIN}/catalog.html) — full searchable lesson index\n`;
-  out += `- [Roadmap](${SITE_ORIGIN}/prereqs.html) — prerequisite ordering across phases\n`;
-  out += `- [AI Engineering Learning Paths](${SITE_ORIGIN}/learning-paths.html) — four core domain paths and six career routes connected to practical lessons\n`;
-  if (glossaryCount > 0) out += `- [Glossary](${SITE_ORIGIN}/glossary.html) — plain-language definitions of ${glossaryCount} terms\n`;
+  out += `## 可选资源（Optional）\n`;
+  out += `- [课程目录](${SITE_ORIGIN}/catalog.html)：可搜索的完整课程索引\n`;
+  out += `- [路线图](${SITE_ORIGIN}/prereqs.html)：跨阶段前置知识顺序\n`;
+  out += `- [AI 工程学习路径](${SITE_ORIGIN}/learning-paths.html)：四条核心领域路径与六条职业路线，均关联实践课程\n`;
+  if (glossaryCount > 0) out += `- [术语表](${SITE_ORIGIN}/glossary.html)：${glossaryCount} 个术语的通俗定义\n`;
   if (certifications && certifications.program) {
-    out += `\n## Certification preparation\n`;
-    out += `Independent, open-source practice material. Practice scores are not official exam scores and completion does not guarantee certification.\n\n`;
-    out += `- [Claude certification learner guide](${rawOrigin}/certifications/claude/GETTING_STARTED.md)\n`;
-    out += `- [Claude certification tutor contract](${rawOrigin}/skills/claude-certification/SKILL.md)\n`;
-    out += `- [Certification catalog](${SITE_ORIGIN}/certifications.html)\n`;
+    out += `\n## 认证备考（Certification Preparation）\n`;
+    out += `独立开源练习资料。练习分数不是官方考试分数，完成课程不保证获得认证。\n\n`;
+    out += `- [Claude 认证学习指南](${rawOrigin}/certifications/claude/GETTING_STARTED.md)\n`;
+    out += `- [Claude 认证导师约定](${rawOrigin}/skills/claude-certification/SKILL.md)\n`;
+    out += `- [认证目录](${SITE_ORIGIN}/certifications.html)\n`;
     for (const track of certifications.tracks) {
       out += `- [${track.credential || track.shortName || track.id}](${SITE_ORIGIN}/certification?id=${encodeURIComponent(track.id)})`;
       if (track.summary) out += ` — ${track.summary}`;
@@ -2187,7 +2195,7 @@ function writeLlms(phases, glossaryCount, artifactCount, certifications) {
     }
     const certRawOrigin = 'https://raw.githubusercontent.com/rohitg00/ai-engineering-from-scratch/' + resolveRef();
     for (const lesson of Object.values(certifications.lessonsByPath)) {
-      out += `- [${lesson.name}](${SITE_ORIGIN}/lesson?path=${encodeURIComponent(lesson.path)}) · [raw](${certRawOrigin}/${lesson.path}/docs/en.md)`;
+      out += `- [${lesson.name}](${SITE_ORIGIN}/lesson?path=${encodeURIComponent(lesson.path)}) · [原始文件](${certRawOrigin}/${lesson.path}/docs/en.md)`;
       if (lesson.summary) out += ` — ${lesson.summary}`;
       out += `\n`;
     }
@@ -2205,7 +2213,7 @@ function syncReadme(lessons) {
 
   // Keep the lessons badge in sync with the live count (URL value + alt text)
   md = md.replace(/badge\/lessons-\d+-/g, `badge/lessons-${lessons}-`);
-  md = md.replace(/alt="\d+ lessons"/g, `alt="${lessons} lessons"`);
+  md = md.replace(/alt="\d+ 课"/g, `alt="${lessons} 课"`);
 
   // Regenerate the traffic proof block from site/stats.json
   const statsPath = path.join(__dirname, 'stats.json');
@@ -2215,9 +2223,9 @@ function syncReadme(lessons) {
       const fmt = n => Number(n).toLocaleString('en-US');
       const block =
         '<!-- STATS:START (generated from site/stats.json by build.js — do not edit by hand) -->\n' +
-        `<p align="center"><sub><b>${fmt(s.visitors30d)}</b> readers &nbsp;·&nbsp; ` +
-        `<b>${fmt(s.pageViews30d)}</b> page views in the last ${s.period} &nbsp;·&nbsp; ` +
-        `as of ${s.updated}</sub></p>\n` +
+        `<p align="center"><sub><b>${fmt(s.visitors30d)}</b> 位读者 &nbsp;·&nbsp; ` +
+        `<b>${fmt(s.pageViews30d)}</b> 次页面浏览，统计周期：${s.period} &nbsp;·&nbsp; ` +
+        `截至 ${s.updated}</sub></p>\n` +
         '<!-- STATS:END -->';
       const statsRe = /(?:<!-- STATS:START[\s\S]*?<!-- STATS:END -->|\[stats-start\]: #[\s\S]*?\[stats-end\]: #)/;
       if (statsRe.test(md)) {
@@ -2271,6 +2279,8 @@ module.exports = {
   githubSourceUrl,
   lessonDocumentSeo,
   parseReadme,
+  parseCurriculumPrereqs,
+  parseGlossary,
   parseRoadmap,
   parseLearningPaths,
   parseCertifications,

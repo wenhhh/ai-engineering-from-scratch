@@ -1,44 +1,44 @@
-# Bag of Words, TF-IDF, and Text Representation
+# 词袋、TF-IDF 与文本表示（Bag of Words, TF-IDF, and Text Representation）
 
-> Count first, think later. TF-IDF still beats embeddings on well-defined tasks in 2026.
+> 先计数，再思考。到 2026 年，在边界明确的任务上，TF-IDF 仍能胜过嵌入（Embedding）。
 
 **Type:** Build
 **Languages:** Python
-**Prerequisites:** Phase 5 · 01 (Text Processing), Phase 2 · 02 (Linear Regression from Scratch)
-**Time:** ~75 minutes
+**Prerequisites:** 阶段 5 · 01（文本处理，Text Processing），阶段 2 · 02（从零实现线性回归，Linear Regression from Scratch）
+**Time:** ~75 分钟
 
-## The Problem
+## 问题（The Problem）
 
-The model needs numbers. You have strings.
+模型需要数字，而你手里是字符串。
 
-Every NLP pipeline has to answer the same question. How do we turn a variable-length stream of tokens into a fixed-size vector that a classifier can consume. The first answer the field landed on was the dumbest one that works. Count the words. Make a vector.
+每条自然语言处理（NLP）流水线都要回答同一个问题：如何将长度可变的词元流转换为分类器可用的定长向量？这个领域最早采用的答案，也是最朴素的可行方法：统计词数，生成向量。
 
-That vector has carried more production NLP than any embedding model. Spam filters, topic classifiers, log anomaly detection, search ranking (before BM25), the first wave of sentiment analysis, the first decade of academic NLP benchmarks. 2026 practitioners still reach for it first on narrow classification tasks. It is fast, interpretable, and often indistinguishable from a 400M-parameter embedding model on tasks where word presence is what matters.
+这种向量承载的生产 NLP 应用比任何嵌入模型都多：垃圾邮件过滤、主题分类、日志异常检测、BM25 之前的搜索排序、早期情感分析，以及学术 NLP 基准测试最初十年的工作。到 2026 年，从业者在范围明确的分类任务上仍会先选它。它速度快、可解释；当任务只关心某个词是否出现时，其效果往往与 400M 参数的嵌入模型难分高下。
 
-This lesson builds bag of words, then TF-IDF, from scratch. Then shows scikit-learn doing the same in three lines. Then names the failure mode that makes you reach for embeddings.
+本课先从零实现词袋（Bag of Words，BoW），再实现 TF-IDF；接着展示 scikit-learn 如何用三行代码完成相同工作，最后说明哪些失效情况会促使你改用嵌入。
 
-## The Concept
+## 概念（The Concept）
 
-**Bag of Words (BoW)** throws away order. For each document, count how many times each vocabulary word appears. Vector length is the vocabulary size. Position `i` is the count of word `i`.
+**词袋（Bag of Words，BoW）**舍弃顺序。对每篇文档，统计词表中每个词出现的次数。向量长度就是词表大小，位置 `i` 存放词 `i` 的计数。
 
-**TF-IDF** reweights BoW. A word that appears in every document is uninformative, so scale it down. A word rare across the corpus but frequent in a single document is signal, so scale it up.
+**词频–逆文档频率（Term Frequency–Inverse Document Frequency，TF-IDF）**重新加权词袋。在每篇文档都出现的词信息量低，应降低权重；在整个语料库中稀有、却在某一篇文档中频繁出现的词携带信号，应提高权重。
 
 ```
 TF-IDF(w, d) = TF(w, d) * IDF(w)
              = count(w in d) / |d| * log(N / df(w))
 ```
 
-Where `TF` is term frequency in the document, `df` is document frequency (how many docs contain the word), `N` is total documents. The `log` keeps the weight bounded for ubiquitous words.
+其中 `TF` 是文档内的词频（Term frequency），`df` 是文档频率（Document frequency，即多少篇文档包含该词），`N` 是文档总数。`log` 使普遍出现的词的权重保持在有限范围。
 
-Key property: both produce sparse vectors with interpretable axes. You can look at a trained classifier's weights and read which words push a document toward each class. You cannot do this with a 768-dimensional BERT embedding.
+关键性质：两者都会生成坐标轴可解释的稀疏向量（Sparse vector）。查看训练后分类器的权重，就能知道哪些词把文档推向哪个类别。768 维 BERT 嵌入做不到这一点。
 
 ```figure
 bow-tfidf
 ```
 
-## Build It
+## 动手实现（Build It）
 
-### Step 1: build the vocabulary
+### 步骤 1：构建词表（Build the vocabulary）
 
 ```python
 def build_vocab(docs):
@@ -50,9 +50,9 @@ def build_vocab(docs):
     return vocab
 ```
 
-Input: list of tokenized documents (any word-level tokenizer will do; the `code/main.py` in this lesson uses a simplified lowercase variant). Output: `{word: index}` dict. Stable insertion order means word index 0 is the first word seen in the first document. Convention varies; scikit-learn sorts alphabetically.
+输入：已分词文档的列表，任意词级分词器均可；本课 `code/main.py` 使用一个简化的转小写版本。输出：`{word: index}` 字典。稳定的插入顺序意味着索引 0 对应第一篇文档中最先遇到的词。不同实现约定不同，scikit-learn 按字母顺序排序。
 
-### Step 2: bag of words
+### 步骤 2：词袋（Bag of words）
 
 ```python
 def bag_of_words(docs, vocab):
@@ -71,9 +71,9 @@ def bag_of_words(docs, vocab):
 [[1, 1, 1, 1, 0], [2, 0, 0, 0, 1]]
 ```
 
-Rows are documents. Columns are vocabulary indices. Entry `[i][j]` is "how many times word `j` appears in document `i`." Doc 1 has `cat` twice because it did. Doc 0 has `ran` zero times because it did not.
+行对应文档，列对应词表索引。元素 `[i][j]` 表示“词 `j` 在文档 `i` 中出现的次数”。文档 1 的 `cat` 计数是两次，因为它确实出现了两次；文档 0 的 `ran` 计数为零，因为它没有出现。
 
-### Step 3: term frequency and document frequency
+### 步骤 3：词频与文档频率（Term frequency and document frequency）
 
 ```python
 import math
@@ -96,9 +96,9 @@ def inverse_document_frequency(df, n_docs):
     return [math.log((n_docs + 1) / (d + 1)) + 1 for d in df]
 ```
 
-Two smoothing tricks worth naming. The `(n+1)/(d+1)` avoids `log(x/0)`. The trailing `+1` ensures a word in every document still has IDF 1 (not 0), matching scikit-learn's default. Other implementations use raw `log(N/df)`. Both work; the smoothed version is friendlier.
+这里有两个值得说明的平滑（Smoothing）技巧：`(n+1)/(d+1)` 避免 `log(x/0)`；末尾的 `+1` 保证在所有文档中都出现的词仍有 IDF 1，而不是 0，与 scikit-learn 默认行为一致。其他实现使用原始的 `log(N/df)`。两种都可行，平滑版本更便于使用。
 
-### Step 4: TF-IDF
+### 步骤 4：TF-IDF（TF-IDF）
 
 ```python
 def tfidf(bow_matrix):
@@ -124,9 +124,9 @@ def tfidf(bow_matrix):
 >>> tfidf(bow)
 ```
 
-Three documents, five vocab words (`the`, `cat`, `sat`, `dog`, `ran`). `the` appears in all three, so its IDF is low. `dog` appears in one, so its IDF is high. The vectors are sparse (most entries are small) and the discriminative words pop.
+三篇文档，词表含五个词（`the`、`cat`、`sat`、`dog`、`ran`）。`the` 在三篇中都出现，因此 IDF 低；`dog` 只在一篇中出现，因此 IDF 高。向量是稀疏的（大多数元素较小），有区分力的词会凸显出来。
 
-### Step 5: L2-normalize rows
+### 步骤 5：逐行 L2 归一化（L2-normalize rows）
 
 ```python
 def l2_normalize(matrix):
@@ -137,11 +137,11 @@ def l2_normalize(matrix):
     return out
 ```
 
-Without normalization, a longer document gets a larger vector and dominates similarity scores. L2 normalization puts every document on the unit hypersphere. Cosine similarity between rows is now just a dot product.
+不做归一化（Normalization）时，较长文档的向量更大，会主导相似度分数。L2 归一化将每篇文档放到单位超球面上，此时行之间的余弦相似度（Cosine similarity）就是点积。
 
-## Use It
+## 实际应用（Use It）
 
-scikit-learn ships the production version.
+scikit-learn 提供生产级实现。
 
 ```python
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
@@ -158,39 +158,39 @@ tfidf = tfidf_vectorizer.fit_transform(docs)
 print(tfidf.toarray().round(3))
 ```
 
-`CountVectorizer` does tokenization, vocabulary, and BoW in one call. `TfidfVectorizer` adds IDF weighting and L2 normalization. Both return sparse matrices. For 100k documents, the dense version does not fit in memory; stay sparse until the classifier demands dense.
+`CountVectorizer` 一次调用完成分词、词表构建和词袋表示。`TfidfVectorizer` 额外加入 IDF 加权和 L2 归一化。两者都返回稀疏矩阵。对于 100k 篇文档，稠密版本无法装入内存；在分类器明确要求稠密数据前，一直保留稀疏表示。
 
-Knobs that change everything:
+对结果影响显著的参数：
 
-| Arg | Effect |
+| 参数 | 作用 |
 |-----|--------|
-| `ngram_range=(1, 2)` | Include bigrams. Usually boosts classification. |
-| `min_df=2` | Drop words in fewer than 2 docs. Trims vocabulary on noisy data. |
-| `max_df=0.95` | Drop words in more than 95% of docs. Approximates stopword removal without a hardcoded list. |
-| `stop_words="english"` | scikit-learn's builtin stopword list. Task-dependent — sentiment analysis should *not* drop negations. |
-| `sublinear_tf=True` | Use `1 + log(tf)` instead of raw `tf`. Helps when a term repeats many times in one doc. |
+| `ngram_range=(1, 2)` | 包含二元词组（Bigram），通常能改善分类效果。 |
+| `min_df=2` | 丢弃出现在少于 2 篇文档中的词，在噪声数据上缩减词表。 |
+| `max_df=0.95` | 丢弃出现在超过 95% 文档中的词，无须硬编码列表即可近似移除停用词。 |
+| `stop_words="english"` | 使用 scikit-learn 内置停用词列表。是否使用取决于任务，情感分析*不应*移除否定词。 |
+| `sublinear_tf=True` | 用 `1 + log(tf)` 代替原始 `tf`，适合某个词在单篇文档中反复出现的情况。 |
 
-### When TF-IDF still wins (as of 2026)
+### TF-IDF 仍然胜出的场景，截至 2026 年（When TF-IDF still wins）
 
-- Spam detection, topic labeling, log anomaly flagging. Word presence is what matters; semantic nuance does not.
-- Low-data regimes (hundreds of labeled examples). TF-IDF plus logistic regression has no pretraining cost.
-- Anywhere latency matters. TF-IDF plus a linear model answers in microseconds. Embedding a document through a transformer takes 10-100ms.
-- Systems that must explain their predictions. Inspect the classifier's coefficients. Top positive words are the reason.
+- 垃圾邮件检测、主题标注和日志异常标记。重要的是词是否出现，而不是细微语义差别。
+- 小数据场景（几百个标注样本）。TF-IDF 加逻辑回归（Logistic regression）没有预训练成本。
+- 任何重视延迟的场景。TF-IDF 加线性模型可在微秒内回答，通过 Transformer 为文档生成嵌入则需要 10-100ms。
+- 必须解释预测结果的系统。查看分类器系数，正向权重最高的词就是预测原因。
 
-### When TF-IDF fails
+### TF-IDF 何时失效（When TF-IDF fails）
 
-The semantic blindness failure. Consider these two documents:
+一种失效是对语义视而不见。考虑下面两篇文档：
 
-- "The movie was not good at all."
-- "The movie was excellent."
+- “The movie was not good at all.”（这部电影一点也不好。）
+- “The movie was excellent.”（这部电影非常出色。）
 
-One is a negative review. One is positive. Their TF-IDF overlap is exactly `{the, movie, was}`. A bag-of-words classifier has to memorize that the word `not` near `good` flips the label. It can learn this on enough data, but never as gracefully as a model that understands syntax.
+一条是负面评论，一条是正面评论。它们的 TF-IDF 重叠部分恰好是 `{the, movie, was}`。词袋分类器必须记住：`good` 附近出现 `not` 会翻转标签。数据足够时它能学到这一点，但始终不如理解句法的模型处理得自然。
 
-The other failure: out-of-vocabulary words at inference. A BoW model trained on IMDb reviews has no idea what to do with `Zoomer-approved` if that token never appeared in training. Subword embeddings (lesson 04) handle this. TF-IDF cannot.
+另一种失效是推理时出现词表外词（Out-of-vocabulary word，OOV）。在 IMDb 评论上训练的词袋模型，如果训练时从未见过 `Zoomer-approved`，就不知道如何处理。子词嵌入（第 04 课）可以应对，TF-IDF 不行。
 
-### Hybrid: TF-IDF weighted embeddings
+### 混合方案：TF-IDF 加权嵌入（TF-IDF weighted embeddings）
 
-The 2026 pragmatic default for medium-data classification: use TF-IDF weights as attention over word embeddings.
+2026 年面向中等数据规模分类的实用默认方案：将 TF-IDF 权重用作词嵌入上的注意力（Attention）。
 
 ```python
 def tfidf_weighted_embedding(doc, tfidf_scores, embedding_table, dim):
@@ -209,56 +209,56 @@ def tfidf_weighted_embedding(doc, tfidf_scores, embedding_table, dim):
     return [v / total_weight for v in vec]
 ```
 
-You get semantic capacity from embeddings, and rare-word emphasis from TF-IDF. Classifier trains on the pooled vector. This outperforms either on its own for sentiment, topic, and intent classification below about 50k labeled examples.
+嵌入提供语义能力，TF-IDF 突出稀有词。分类器在池化（Pooling）后的向量上训练。对于标注样本少于约 50k 的情感、主题和意图分类，这比单独使用其中任一种方法效果更好。
 
-## Ship It
+## 交付成果（Ship It）
 
-Save as `outputs/prompt-vectorization-picker.md`:
+保存为 `outputs/prompt-vectorization-picker.md`：
 
 ```markdown
 ---
 name: vectorization-picker
-description: Given a text-classification task, recommend BoW, TF-IDF, embeddings, or a hybrid.
+description: 根据文本分类任务，推荐词袋（BoW）、TF-IDF、嵌入（Embedding）或混合方案。
 phase: 5
 lesson: 02
 ---
 
-You recommend a text-vectorization strategy. Given a task description, output:
+你负责推荐文本向量化（Text vectorization）策略。根据任务描述，输出：
 
-1. Representation (BoW, TF-IDF, transformer embeddings, or a hybrid). Explain why in one sentence.
-2. Specific vectorizer configuration. Name the library. Quote the arguments (`ngram_range`, `min_df`, `max_df`, `sublinear_tf`, `stop_words`).
-3. One failure mode to test before shipping.
+1. 表示方式（词袋、TF-IDF、Transformer 嵌入或混合方案），用一句话解释原因。
+2. 具体向量化器配置。给出库名，列出参数（`ngram_range`、`min_df`、`max_df`、`sublinear_tf`、`stop_words`）。
+3. 交付前应测试的一种失效情况。
 
-Refuse to recommend embeddings when the user has under 500 labeled examples unless they show evidence of semantic failure in a TF-IDF baseline. Refuse to remove stopwords for sentiment analysis (negations carry signal). Flag class imbalance as needing more than a vectorizer change.
+用户标注样本少于 500 个时，拒绝推荐嵌入，除非用户提供了 TF-IDF 基线在语义上失效的证据。拒绝为情感分析移除停用词（否定词携带信号）。指出类别不平衡（Class imbalance）不能仅靠更换向量化器解决。
 
-Example input: "Classifying 30k customer support tickets into 12 categories. Most tickets are 2-3 sentences. English only. Need explainability for audit logs."
+输入示例：“将 30k 条客户支持工单分成 12 类。大多数工单有 2-3 句话。仅英语。审计日志需要可解释性。”
 
-Example output:
+输出示例：
 
-- Representation: TF-IDF. 30k examples is not small; explainability requirement rules out dense embeddings.
-- Config: `TfidfVectorizer(ngram_range=(1, 2), min_df=3, max_df=0.95, sublinear_tf=True, stop_words=None)`. Keep stopwords because category keywords sometimes are stopwords ("not working" vs "working").
-- Failure to test: verify `min_df=3` does not drop rare category keywords. Run `get_feature_names_out` filtered by class and eyeball.
+- 表示方式：TF-IDF。30k 个样本不算少，可解释性要求排除了稠密嵌入。
+- 配置：`TfidfVectorizer(ngram_range=(1, 2), min_df=3, max_df=0.95, sublinear_tf=True, stop_words=None)`。保留停用词，因为类别关键词有时正是停用词（“not working”与“working”）。
+- 待测失效情况：确认 `min_df=3` 不会丢弃稀有类别的关键词。运行 `get_feature_names_out`，按类别筛选后人工检查。
 ```
 
-## Exercises
+## 练习（Exercises）
 
-1. **Easy.** Implement `cosine_similarity(doc_vec_a, doc_vec_b)` on the L2-normalized TF-IDF output. Verify that identical documents score 1.0 and disjoint-vocabulary documents score 0.0.
-2. **Medium.** Add `n-gram` support to `bag_of_words`. Parameter `n` produces counts over `n`-grams. Test that `n=2` on `["the", "cat", "sat"]` produces bigram counts for `["the cat", "cat sat"]`.
-3. **Hard.** Build the TF-IDF-weighted-embedding hybrid above using GloVe 100d vectors (download once, cache). Compare classification accuracy against plain TF-IDF and plain mean-pooled embeddings on the 20 Newsgroups dataset. Report which wins where.
+1. **简单。** 在 L2 归一化后的 TF-IDF 输出上实现 `cosine_similarity(doc_vec_a, doc_vec_b)`。验证相同文档得分为 1.0，词表完全不相交的文档得分为 0.0。
+2. **中等。** 为 `bag_of_words` 添加 `n-gram` 支持。参数 `n` 生成 `n` 元词组的计数。测试对 `["the", "cat", "sat"]` 使用 `n=2` 时，能得到 `["the cat", "cat sat"]` 的二元词组计数。
+3. **困难。** 使用 GloVe 100d 向量（下载一次并缓存）实现上述 TF-IDF 加权嵌入混合方案。在 20 Newsgroups 数据集上，将分类准确率与纯 TF-IDF、纯均值池化嵌入比较，报告各方法在哪些场景胜出。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语 | 常见说法 | 实际含义 |
 |------|-----------------|-----------------------|
-| BoW | Word frequency vector | Counts of vocabulary words in one document. Throws away order. |
-| TF | Term frequency | Count of a word in a document, optionally normalized by document length. |
-| DF | Document frequency | Count of documents containing the word at least once. |
-| IDF | Inverse document frequency | `log(N / df)` smoothed. Downweights words that appear everywhere. |
-| Sparse vector | Mostly zeros | Vocabulary is typically 10k-100k words; most are absent from any given document. |
-| Cosine similarity | Vector angle | Dot product of L2-normalized vectors. 1 is identical, 0 is orthogonal. |
+| 词袋（BoW） | 词频向量 | 一篇文档中词表各词的计数，舍弃顺序。 |
+| 词频（TF） | 词出现频率 | 词在文档中的计数，可选择按文档长度归一化。 |
+| 文档频率（DF） | 文档出现频率 | 至少包含该词一次的文档数量。 |
+| 逆文档频率（IDF） | 文档频率的逆向度量 | 平滑后的 `log(N / df)`，降低到处都出现的词的权重。 |
+| 稀疏向量（Sparse vector） | 大多为零 | 词表通常含 10k-100k 个词；其中大多数不会出现在任意一篇给定文档中。 |
+| 余弦相似度（Cosine similarity） | 向量夹角 | L2 归一化向量的点积，1 表示相同，0 表示正交。 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [scikit-learn — feature extraction from text](https://scikit-learn.org/stable/modules/feature_extraction.html#text-feature-extraction) — the canonical API reference, plus notes on every knob.
-- [Salton, G., & Buckley, C. (1988). Term-weighting approaches in automatic text retrieval](https://www.sciencedirect.com/science/article/pii/0306457388900210) — the paper that made TF-IDF the default for a decade.
-- ["Why TF-IDF Still Beats Embeddings" — Ashfaque Thonikkadavan (Medium)](https://medium.com/@cmtwskb/why-tf-idf-still-beats-embeddings-ad85c123e1b2) — 2026 take on when the old method wins and why.
+- [scikit-learn：文本特征提取（Feature extraction from text）](https://scikit-learn.org/stable/modules/feature_extraction.html#text-feature-extraction)：权威 API 参考，附各参数说明。
+- [Salton, G. 与 Buckley, C.（1988）：自动文本检索中的词项加权方法（Term-weighting approaches in automatic text retrieval）](https://www.sciencedirect.com/science/article/pii/0306457388900210)：让 TF-IDF 在随后十年成为默认选择的论文。
+- [为什么 TF-IDF 仍能胜过嵌入（Why TF-IDF Still Beats Embeddings），Ashfaque Thonikkadavan，Medium](https://medium.com/@cmtwskb/why-tf-idf-still-beats-embeddings-ad85c123e1b2)：从 2026 年视角解释老方法何时胜出及其原因。

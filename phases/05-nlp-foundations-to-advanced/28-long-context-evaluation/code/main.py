@@ -56,7 +56,7 @@ def run_niah_grid(lengths, depths, seed=0):
     needle = "the magic word is pineapple"
     expected = "pineapple"
     capacity = 20000
-    corner = "depth\\len"
+    corner = "深度\\长度（Depth/len）"
     print(f"  {corner:<12}  " + "  ".join(f"{n:>6}" for n in lengths))
     for d in depths:
         row = []
@@ -64,8 +64,8 @@ def run_niah_grid(lengths, depths, seed=0):
             filler = make_filler(n, seed=seed + n)
             haystack = insert_needle(filler, needle, d)
             row.append(score_single_needle(haystack, expected, capacity))
-        tag = "  PASS" if all(row) else f"{sum(row)}/{len(row)}"
-        print(f"  depth={d:<5}    " + "  ".join(f"{x:>6}" for x in row) + "    " + tag)
+        tag = "通过（PASS）" if all(row) else f"{sum(row)}/{len(row)}"
+        print(f"  深度（Depth）={d:<5}    " + "  ".join(f"{x:>6}" for x in row) + "    " + tag)
 
 
 def run_multi_needle(length, n_needles=3, seed=42):
@@ -87,21 +87,21 @@ def main():
     lengths = [500, 2000, 8000, 20000, 40000]
     depths = [0.1, 0.3, 0.5, 0.7, 0.9]
 
-    print("=== toy NIAH grid (mock model with effective capacity = 20k) ===")
-    print("marker: 1 = needle found in-context,  0 = needle missed")
+    print("=== 小型大海捞针（NIAH）网格：模拟模型有效容量 = 20k，英文填充文本及针文本保留 ===")
+    print("标记：1 = 在上下文中找到针（Needle），0 = 未找到针")
     print()
     run_niah_grid(lengths, depths)
 
     print()
-    print("=== multi-needle at length=10000, n=3 ===")
+    print("=== 多针（Multi-needle），length=10000，n=3 ===")
     score = run_multi_needle(10000, n_needles=3)
-    print(f"  found {score * 3:.0f} / 3 needles")
+    print(f"  找到 {score * 3:.0f} / 3 个针")
 
     print()
-    print("notes:")
-    print("  mock model has hard effective-capacity cutoff; real LLMs degrade gradually.")
-    print("  real NIAH: sweep 5 depths × 6 lengths, produce heatmap per model.")
-    print("  always pair with one multi-hop / aggregation task (RULER) — single-needle is saturable.")
+    print("说明:")
+    print("  模拟模型的有效容量（Effective capacity）有硬性截断；实际大语言模型（LLM）则逐渐退化。")
+    print("  实际 NIAH：扫描 5 个深度 × 6 种长度，为每个模型生成热力图（Heatmap）。")
+    print("  始终搭配一个多跳（Multi-hop）/聚合（Aggregation）任务（RULER），因为单针任务容易达到性能上限。")
 
 
 if __name__ == "__main__":

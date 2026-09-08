@@ -1,22 +1,22 @@
 {
   "lesson": "15-constitutional-safety-harness",
-  "title": "Capstone 15 — Constitutional Safety Harness + Red-Team Range",
+  "title": "综合实践 15：宪法式安全框架与红队靶场（Constitutional Safety Harness + Red-Team Range）",
   "questions": [
     {
       "stage": "pre",
-      "question": "What does layered safety in this capstone mean?",
+      "question": "本综合实践中的分层安全（Layered Safety）意味着什么？",
       "options": [
-        "Defense in depth across input sanitize, policy rails, classifier gate, model, output filter, and HITL tier",
-        "Running one strong classifier on the input only",
-        "A single rule-based regex over outputs",
-        "Manual review of every response"
+        "在输入清理、策略规则、分类器关卡、模型、输出过滤与 HITL 层实施纵深防御（Defense in Depth）",
+        "只对输入运行一个强分类器",
+        "对输出使用单个基于规则的正则表达式",
+        "人工评审每个回答"
       ],
       "correct": 0,
       "explanation": ""
     },
     {
       "stage": "pre",
-      "question": "Which classifier handles multilingual coverage across roughly 132 languages?",
+      "question": "哪个分类器覆盖约 132 种语言？",
       "options": [
         "Llama Guard 4",
         "Nemotron 3 Content Safety",
@@ -28,47 +28,47 @@
     },
     {
       "stage": "check",
-      "question": "Why is over-refusal measured on a benign suite like XSTest?",
+      "question": "为什么在 XSTest 等良性套件上测量过度拒绝（Over-Refusal）？",
       "options": [
-        "To track false-positive blocks so the model stays helpful while improving harmlessness",
-        "To certify the guardrail framework",
-        "To replace red-team scoring",
-        "To benchmark token throughput"
+        "追踪假阳性阻断，使模型提高无害性的同时保持有帮助",
+        "认证防护框架",
+        "替代红队评分",
+        "测量词元吞吐量基准"
       ],
       "correct": 0,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "What is the constitutional self-critique loop in this capstone?",
+      "question": "本综合实践的宪法式自我批评（Constitutional Self-Critique）循环是什么？",
       "options": [
-        "An RLHF reward model trained from scratch",
-        "Critic LLM scores drafts against a written constitution, prompts the model rewrites the objected outputs, and SFT runs on the improved pairs",
-        "A single forward pass through Llama Guard 4",
-        "A reranker over candidate jailbreak prompts"
+        "从零训练的基于人类反馈强化学习（RLHF）奖励模型",
+        "批评者 LLM 按书面宪法为草稿评分，提示模型重写被质疑的输出，然后在改进样本对上执行 SFT",
+        "经过 Llama Guard 4 的一次前向计算",
+        "候选越狱提示词的重排序器"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "How are successful jailbreaks scored for severity in the findings?",
+      "question": "发现报告如何为成功越狱评定严重程度？",
       "options": [
-        "By the model that produced the response",
-        "Using CVSS 4.0 with attack vector, complexity, and impact, plus a disclosure timeline",
-        "By raw token count of the prompt",
-        "On a hand-tuned 1-10 scale chosen by the operator"
+        "按生成回答的模型评分",
+        "使用 CVSS 4.0 的攻击向量、复杂度与影响评分，并附披露时间线",
+        "按提示词原始词元数评分",
+        "按操作人员自选的人工调节 1–10 分制"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "Which six attack families does the red-team range run?",
+      "question": "红队靶场运行哪六类攻击？",
       "options": [
         "PSI, KL, MMD, KS, JS, and Wasserstein",
-        "PAIR, TAP, GCG, encoding (ASCII/base64/rot13), multi-turn persona, and multilingual code-switch",
-        "Brute-force, dictionary, replay, MITM, phishing, and CSRF",
+        "PAIR、TAP、GCG、编码（ASCII/base64/rot13）、多轮角色和多语言语码切换",
+        "暴力破解（Brute-Force）、字典（Dictionary）、重放（Replay）、中间人（MITM）、钓鱼（Phishing）和跨站请求伪造（CSRF）",
         "BLEU, ROUGE, METEOR, BERTScore, CometKiwi, and chrF"
       ],
       "correct": 1,
@@ -76,12 +76,12 @@
     },
     {
       "stage": "post",
-      "question": "Why is range automation (cron + alerts) part of the rubric?",
+      "question": "为什么靶场自动化（cron + 告警）属于评分标准？",
       "options": [
-        "Cron is the only way to call OPA",
-        "Automation is required to disable Llama Guard 4",
-        "Manual runs are explicitly required",
-        "Continuous scheduled probes catch drift in attack success rate and over-refusal regressions over time"
+        "cron 是调用 OPA 的唯一方式",
+        "禁用 Llama Guard 4 需要自动化",
+        "明确要求人工运行",
+        "持续定时探测可捕获攻击成功率随时间的漂移，以及过度拒绝回归"
       ],
       "correct": 3,
       "explanation": ""

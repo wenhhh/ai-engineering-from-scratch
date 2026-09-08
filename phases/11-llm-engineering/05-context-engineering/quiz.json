@@ -1,37 +1,37 @@
 [
   {
-    "question": "What is the difference between prompt engineering and context engineering?",
-    "options": ["Context engineering is about database design", "A prompt is the user's query; context is everything in the model's window: system prompt, tools, retrieved docs, history, and the prompt itself", "They are the same thing", "Prompt engineering is more advanced"],
+    "question": "提示词工程（Prompt Engineering）与上下文工程（Context Engineering）有什么区别？",
+    "options": ["上下文工程研究数据库设计", "提示词是用户查询；上下文是模型窗口中的全部内容：系统提示词、工具、检索文档、历史和提示词本身", "两者相同", "提示词工程更高级"],
     "correct": 1,
-    "explanation": "Prompt engineering focuses on crafting the user instruction. Context engineering manages the entire input to the model: what goes in, what stays out, in what order, and how to allocate the limited context window.",
+    "explanation": "提示词工程聚焦编写用户指令。上下文工程管理模型的全部输入：放入什么、排除什么、按何种顺序，以及如何分配有限的上下文窗口。",
     "stage": "pre"
   },
   {
-    "question": "Why does context window order matter for LLM performance?",
-    "options": ["Order only matters for code", "LLMs have recency and primacy biases, paying more attention to the beginning and end of the context window", "Alphabetical order helps the model search faster", "It doesn't -- LLMs process all tokens equally"],
+    "question": "上下文窗口内的顺序为什么影响 LLM 表现？",
+    "options": ["顺序只对代码重要", "LLM 存在近因偏差和首因偏差，更关注上下文窗口的开头和结尾", "字母顺序使模型搜索更快", "没有影响，LLM 对所有词元一视同仁"],
     "correct": 1,
-    "explanation": "Research shows LLMs attend more to the start and end of the context window ('lost in the middle' phenomenon). Placing the most important information at the beginning or end of context improves utilization.",
+    "explanation": "研究表明，LLM 更关注上下文窗口的开头和结尾（‘中间信息丢失’现象）。将最重要信息放在上下文开头或结尾，可提高利用效果。",
     "stage": "pre"
   },
   {
-    "question": "A coding assistant uses 22,700 tokens of a 128K context window. Why is budget management still important?",
-    "options": ["Only the prompt matters", "Token counting is inaccurate", "128K should be enough for any use case", "Long conversations, large code files, and retrieved documentation can quickly fill the window; without budget management, critical context gets truncated"],
+    "question": "编程助手在 128K 上下文窗口中使用了 22,700 词元，为什么预算管理仍然重要？",
+    "options": ["只有提示词重要", "词元计数不准确", "128K 应足够应对所有场景", "长对话、大代码文件和检索文档会迅速填满窗口；没有预算管理，关键上下文就会被截断"],
     "correct": 3,
-    "explanation": "22,700 tokens is the baseline. A 50-turn conversation adds 30K+ tokens. Retrieving a large codebase adds 50K+. Tool call results add more. Without active management, the window fills and oldest context is lost.",
+    "explanation": "22,700 词元只是基线。50 轮对话增加 30K+ 词元，检索大代码库增加 50K+，工具调用结果还会继续增加。不主动管理，窗口就会填满，最早上下文随之丢失。",
     "stage": "post"
   },
   {
-    "question": "What is the sliding window strategy for conversation history?",
-    "options": ["Keeping only the N most recent turns in context and dropping older turns, optionally summarizing them first", "Expanding the context window dynamically", "Moving the model to a different server", "Processing the conversation in fixed-size chunks"],
+    "question": "对话历史的滑动窗口（Sliding window）策略是什么？",
+    "options": ["上下文只保留最近 N 轮，丢弃更早轮次，也可先对其总结", "动态扩大上下文窗口", "将模型移到另一台服务器", "用固定大小的块处理对话"],
     "correct": 0,
-    "explanation": "Sliding window keeps the K most recent conversation turns in full context. Older turns are either dropped or replaced with a summary. This bounds memory usage while preserving the most relevant recent context.",
+    "explanation": "滑动窗口完整保留最近 K 轮对话。更早轮次被丢弃或替换为摘要。这样既限制记忆使用量，又保留最相关的近期上下文。",
     "stage": "post"
   },
   {
-    "question": "How should a context assembler allocate tokens across components?",
-    "options": ["Maximize retrieval context always", "Equal allocation to each component", "Minimize system prompt tokens", "Dynamically based on query type: a simple question needs less retrieval context; a complex question needs more, with generation headroom always reserved"],
+    "question": "上下文组装器应如何在各组件之间分配词元？",
+    "options": ["始终最大化检索上下文", "各组件平均分配", "最小化系统提示词词元", "根据查询类型动态分配：简单问题需要较少检索上下文，复杂问题需要更多，始终预留生成空间"],
     "correct": 3,
-    "explanation": "A simple factual question might need 500 tokens of retrieved context. A complex analysis might need 10,000. A good context assembler adjusts allocation dynamically while always reserving headroom for the model's response.",
+    "explanation": "简单事实问题可能需要 500 词元检索上下文，复杂分析可能需要 10,000。良好的上下文组装器会动态调整分配，同时始终为模型回答预留空间。",
     "stage": "post"
   }
 ]

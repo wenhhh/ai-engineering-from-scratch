@@ -1,120 +1,120 @@
-# Associate Workflow Capstone Checklist
+# 入门工作流综合实践清单（Associate Workflow Capstone Checklist）
 
-Use this checklist as the release record for your capstone. Replace bracketed prompts with evidence. Do not mark an item complete because a draft looks convincing.
+将此清单用作综合实践发布记录，用证据替换方括号提示。不要因为草稿有说服力就勾选完成。
 
-## Monday: Purpose and Surface
+## 周一：用途与使用界面（Monday: Purpose and Surface）
 
-- [ ] Decision, deadline, audience, and accountable owner are explicit.
-- [ ] Allowed and prohibited actions are documented.
-- [ ] Data and consequence are classified under organizational policy.
-- [ ] The selected Claude surface is approved for the purpose and data class.
-- [ ] Current terms, retention behavior, controls, and limitations were checked.
-- [ ] Verification date and official or contractual sources are recorded.
+- [ ] 决策、期限、受众和负责人员明确。
+- [ ] 已记录允许和禁止的操作。
+- [ ] 按组织政策对数据和后果分类。
+- [ ] 所选 Claude 使用界面获准用于该用途和数据类别。
+- [ ] 已检查当前条款、保留行为、控制和限制。
+- [ ] 已记录核查日期及官方或合同来源。
 
-Evidence:
-
-```text
-[Surface-selection record and policy approval]
-```
-
-## Tuesday: Sources and Context
-
-- [ ] Every source has an ID, owner, authority, effective date, review date, and sensitivity.
-- [ ] Superseded or duplicate material is outside active retrieval.
-- [ ] The authority order is explicit.
-- [ ] Required regions or business units are present or marked missing.
-- [ ] The weekly source snapshot and cutoff are fixed.
-- [ ] Conflicts, stale sources, and permission gaps have owners.
-
-Evidence:
+证据：
 
 ```text
-[Registry version, snapshot ID, source exceptions]
+[使用界面选择记录与政策批准]
 ```
 
-## Wednesday: Prompt and Task Design
+## 周二：来源与上下文（Tuesday: Sources and Context）
 
-- [ ] Outcome, context, task, evidence, constraints, format, and acceptance checks are present.
-- [ ] Extraction, reconciliation, analysis, and drafting are separate stages.
-- [ ] Each stage has a testable input, output, and gate.
-- [ ] Missing evidence produces abstention or escalation, not guessing.
-- [ ] Source content is treated as data, not tool authorization.
-- [ ] Prompt and workflow versions are recorded.
+- [ ] 每个来源都有 ID、负责人、权威性、生效日期、复审日期和敏感度。
+- [ ] 已被替代或重复材料不进入活跃检索。
+- [ ] 权威顺序明确。
+- [ ] 必需区域或业务单元齐全，或已标明缺失。
+- [ ] 每周来源快照和截止时间固定。
+- [ ] 冲突、过时来源和权限缺口均有负责人。
 
-Evidence:
+证据：
 
 ```text
-[Prompt versions and stage contracts]
+[注册表版本、快照 ID、来源例外]
 ```
 
-## Thursday: Validation and Governance
+## 周三：提示词与任务设计（Wednesday: Prompt and Task Design）
 
-- [ ] The Python validator passes for the release candidate.
-- [ ] At least three deliberate failure packets are blocked or marked for revision.
-- [ ] Exact totals and schemas use deterministic checks.
-- [ ] Every consequential claim maps to authoritative supporting evidence.
-- [ ] Independent review reports findings separately from revision.
-- [ ] Privacy, bias, scope, and action-authority checks pass.
-- [ ] Every blocker is resolved before handoff.
+- [ ] 包含结果、上下文、任务、证据、约束、格式和验收检查。
+- [ ] 提取、核对、分析和起草分成独立阶段。
+- [ ] 每阶段都有可测试输入、输出和门禁。
+- [ ] 缺失证据触发拒答或升级，而非猜测。
+- [ ] 来源内容被视为数据，而非工具授权。
+- [ ] 已记录提示词和工作流版本。
 
-Commands and results:
+证据：
+
+```text
+[提示词版本和阶段契约]
+```
+
+## 周四：验证与治理（Thursday: Validation and Governance）
+
+- [ ] 发布候选通过 Python 校验器。
+- [ ] 至少三个故意构造的失败包被阻止或标为待修订。
+- [ ] 精确总数和模式使用确定性检查。
+- [ ] 每项高后果主张映射到权威支持证据。
+- [ ] 独立评审将发现与修订分开报告。
+- [ ] 隐私、偏差、范围和操作权限检查通过。
+- [ ] 交接前解决每个阻塞项。
+
+命令和结果：
 
 ```text
 python3 code/main.py
 python3 -m unittest discover -s code/tests -v
 
-[Paste concise status and test count]
+[粘贴简短状态和测试数量]
 ```
 
-## Friday: Handoff and Recovery
+## 周五：交接与恢复（Friday: Handoff and Recovery）
 
-- [ ] The handoff states the exact decision, deadline, and decision owner.
-- [ ] Source snapshot, draft version, and workflow version are included.
-- [ ] Passed checks, failed checks, conflicts, and uncertainty are visible.
-- [ ] Approve, revise, reject, and escalate paths are available.
-- [ ] Manual fallback is current and has been rehearsed.
-- [ ] External actions are separated from drafting and protected against duplicate execution.
-- [ ] A post-approval source change triggers delta review.
+- [ ] 交接说明确切决策、期限和决策负责人。
+- [ ] 包含来源快照、草稿版本和工作流版本。
+- [ ] 通过检查、失败检查、冲突和不确定性可见。
+- [ ] 提供批准、修订、拒绝和升级路径。
+- [ ] 人工后备方案为最新，且已演练。
+- [ ] 外部操作与起草分离，并防止重复执行。
+- [ ] 审批后来源变化触发差异评审。
 
-Decision record:
+决策记录：
 
 ```text
-Decision:
-Decision owner:
-Evidence snapshot:
-Conditions:
-Fallback:
+决策：
+决策负责人：
+证据快照：
+条件：
+后备方案：
 ```
 
-## Evaluation Coverage
+## 评估覆盖（Evaluation Coverage）
 
-- [ ] Four representative normal cases pass.
-- [ ] Three edge cases cover missing, conflicting, or stale evidence.
-- [ ] Three governance or adversarial cases cover unauthorized purpose, sensitive data, or prompt injection.
-- [ ] High-risk performance is reported separately from aggregate performance.
-- [ ] A held-out case remains unused during prompt tuning.
+- [ ] 四个代表性正常案例通过。
+- [ ] 三个边界案例覆盖缺失、冲突或过时证据。
+- [ ] 三个治理或对抗案例覆盖未授权用途、敏感数据或提示词注入。
+- [ ] 高风险表现与总体表现分开报告。
+- [ ] 一个留出案例在调优提示词期间保持未使用。
 
-## Retrospective
+## 复盘（Retrospective）
 
 ```text
-Most expensive stage:
-Most important caught defect:
-Failure added to evaluation set:
-Source or control to improve:
-Human responsibility that remains:
-Next release boundary:
+成本最高的阶段：
+发现的最重要缺陷：
+加入评估集的失败：
+需改进的来源或控制：
+仍由人类承担的职责：
+下次发布边界：
 ```
 
-## Release Recommendation
+## 发布建议（Release Recommendation）
 
-- [ ] Remain manual.
-- [ ] Continue in shadow mode.
-- [ ] Release as human-reviewed assistance.
-- [ ] Permit bounded automation for low-consequence steps.
-- [ ] Stop and escalate because purpose, data, authority, or evidence is unresolved.
+- [ ] 保持人工。
+- [ ] 继续影子模式。
+- [ ] 以人工评审辅助方式发布。
+- [ ] 允许低后果步骤进行有边界自动化。
+- [ ] 因用途、数据、权限或证据未解决而停止并升级。
 
-Rationale:
+理由：
 
 ```text
-[State what was tested, what passed, what remains uncertain, and who owns the decision.]
+[说明测试了什么、什么通过、什么仍不确定，以及谁负责决策。]
 ```

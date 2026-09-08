@@ -1,38 +1,38 @@
 ---
 name: horizon-reality-check
-description: Given a task you want to hand to an agent, decide whether the current frontier's horizon covers it with enough margin.
+description: 给定准备交给智能体的任务，判断当前前沿模型的时程是否覆盖它并留有足够余量。
 version: 1.0.0
 phase: 15
 lesson: 1
 tags: [autonomous-agents, metr, time-horizon, reliability, deployment]
 ---
 
-Given a proposed autonomous task (what the agent should do, how long a human expert would take, what the failure cost is), produce a reality check on whether the current frontier model's horizon actually covers it.
+给定一项准备交由智能体自主执行的任务（智能体应该做什么、人类专家需要多久、失败代价是什么），核查当前前沿模型的任务时间跨度（Time horizon）是否足以覆盖该任务。
 
-Produce:
+请输出：
 
-1. **Expert-time estimate.** Ask the user for the median expert completion time in minutes or hours. If they cannot estimate it, refuse and redirect them to measure a small sample first.
-2. **Headroom ratio.** Divide the chosen model's 50% METR horizon by the expert-time estimate. Flag any ratio under 4x — at 50% success probability, you want a generous margin. At ratio 2x or below, refuse the deployment unless HITL is in the loop on every significant action.
-3. **Reliability budget.** Estimate trajectory length in tool calls, then compute end-to-end success at per-step reliability 0.95, 0.99, 0.995. If the task length exceeds the 50%-success threshold at your assumed per-step reliability, require checkpoints or split the task.
-4. **Eval-vs-deploy adjustment.** Apply a 20-40% gap between benchmark horizon and deploy-context horizon. Cite the Anthropic 2024 alignment-faking study or the 2026 International AI Safety Report when justifying to stakeholders.
-5. **Required controls.** Based on headroom, list the minimum set of controls: budget cap, iteration cap, kill switch, HITL checkpoint points, canary tokens, and trajectory audit schedule.
+1. **专家用时估计（Expert-time estimate）。** 要求用户以分钟或小时提供专家完成时间的中位数。若无法估计，拒绝继续，引导其先测量一个小样本。
+2. **余量比（Headroom ratio）。** 将所选模型的 METR 50% 时程除以专家用时估计。标记任何低于 4x 的比值：在 50% 成功概率下，需要充足余量。比值为 2x 或更低时，拒绝部署，除非每个重要动作都有人在回路（Human-in-the-loop，HITL）。
+3. **可靠性预算（Reliability budget）。** 以工具调用次数估计轨迹长度，然后按每步可靠性 0.95、0.99、0.995 计算端到端成功率。若任务长度超过假定每步可靠性下的 50% 成功阈值，要求设置检查点或拆分任务。
+4. **评估与部署修正（Eval-vs-deploy adjustment）。** 按基准测试与实际部署之间 20-40% 的差距，修正任务时间跨度估计。向利益相关方解释时，引用 Anthropic 2024 年对齐伪装研究或《2026 年国际 AI 安全报告》。
+5. **必需控制措施（Required controls）。** 根据余量列出至少需要具备的控制措施：预算上限、迭代上限、紧急停止开关、HITL 检查点位置、金丝雀词元和轨迹审计计划。
 
-Hard rejects:
-- Any deployment at horizon ratio below 2x without HITL on every consequential action.
-- Any claim that a model "can do" a task based on the METR horizon alone. The horizon is the 50% mark on a logistic curve; tail failures are guaranteed.
-- Treating METR horizons as a floor rather than a ceiling.
+必须拒绝：
+- 时程比低于 2x，且并非每个有实质后果的动作都配置 HITL 的部署。
+- 仅根据 METR 时程声称模型“能做”某任务。时程是逻辑斯蒂曲线上的 50% 点；尾部失败必然存在。
+- 将 METR 时程视为下限而非上限。
 
-Refusal rules:
-- If the user cannot estimate expert-time for the task, refuse and ask them to measure a small sample first. Anything else is guesswork.
-- If the proposed task would cost more than the user's worst-case budget at full model pricing, refuse and recommend budget controls from Lesson 13 before proceeding.
-- If the user describes a task that touches irreversible actions (financial transactions, production database writes, emails to customers) without any HITL layer, refuse. The horizon argument does not clear irreversible deployment.
+拒绝规则：
+- 若用户无法估计任务的专家用时，拒绝并要求先测量小样本；否则都只是猜测。
+- 若按模型全价计算，拟议任务成本会超过用户的最坏情况预算，拒绝继续，建议先采用第 13 课的预算控制。
+- 若任务涉及不可逆动作（金融交易、生产数据库写入、向客户发邮件）却没有任何 HITL 层，应拒绝部署。仅凭任务时间跨度足够，不能认定系统可以执行不可逆操作。
 
-Output format:
+输出格式：
 
-Return a short memo with:
-- **Task summary** (one sentence)
-- **Expert-time estimate** (with units)
-- **Headroom ratio** (with explicit number)
-- **End-to-end reliability estimate** (table at three per-step rates)
-- **Minimum controls** (bulleted)
-- **Go / hold / no-go** (explicit verdict plus one-sentence justification)
+返回简短备忘录，包含：
+- **任务摘要（Task summary）**：一句话
+- **专家用时估计（Expert-time estimate）**：带单位
+- **余量比（Headroom ratio）**：给出明确数字
+- **端到端可靠性估计（End-to-end reliability estimate）**：列出三种每步可靠性下的表格
+- **最低控制措施（Minimum controls）**：项目列表
+- **放行 / 暂缓 / 禁止（Go / hold / no-go）**：明确结论及一句话理由

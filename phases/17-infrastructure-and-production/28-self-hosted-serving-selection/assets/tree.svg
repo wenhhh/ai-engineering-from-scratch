@@ -13,49 +13,49 @@
       .caption { font-size: 11px; fill: #555; font-style: italic; }
     </style>
   </defs>
-  <text x="480" y="24" text-anchor="middle" class="title">self-hosted engine decision tree — hardware first, then scale, then workload</text>
+  <text x="480" y="24" text-anchor="middle" class="title">自托管引擎决策树：先硬件，再规模，最后工作负载</text>
 
   <rect x="40" y="50" width="280" height="200" class="cpu"/>
-  <text x="180" y="72" text-anchor="middle" class="head">CPU / edge</text>
-  <text x="180" y="96" text-anchor="middle" class="step">llama.cpp (dominant)</text>
-  <text x="60" y="124" class="small">· widest model support</text>
-  <text x="60" y="142" class="small">· fastest CPU inference</text>
-  <text x="60" y="160" class="small">· full control over quant / threads</text>
+  <text x="180" y="72" text-anchor="middle" class="head">CPU / 边缘</text>
+  <text x="180" y="96" text-anchor="middle" class="step">llama.cpp（占主导）</text>
+  <text x="60" y="124" class="small">· 模型支持最广</text>
+  <text x="60" y="142" class="small">· CPU 推理最快</text>
+  <text x="60" y="160" class="small">· 完全控制量化与线程</text>
   <rect x="60" y="180" width="240" height="60" class="box"/>
-  <text x="180" y="202" text-anchor="middle" class="step">Ollama = llama.cpp + UX</text>
-  <text x="180" y="220" text-anchor="middle" class="small">one command, single user</text>
-  <text x="180" y="236" text-anchor="middle" class="small">15-30% slower than llama.cpp</text>
+  <text x="180" y="202" text-anchor="middle" class="small">Ollama = llama.cpp + UX（用户体验）</text>
+  <text x="180" y="220" text-anchor="middle" class="small">一条命令，单用户</text>
+  <text x="180" y="236" text-anchor="middle" class="small">比 llama.cpp 慢 15–30%</text>
 
   <rect x="340" y="50" width="280" height="200" class="gpu"/>
   <text x="480" y="72" text-anchor="middle" class="head">NVIDIA GPU</text>
   <rect x="360" y="90" width="240" height="45" class="box"/>
-  <text x="480" y="113" text-anchor="middle" class="step">vLLM (broad default)</text>
-  <text x="480" y="128" text-anchor="middle" class="small">v0.15.1 Feb 2026, Blackwell SM120</text>
+  <text x="480" y="113" text-anchor="middle" class="step">vLLM（通用默认项）</text>
+  <text x="480" y="128" text-anchor="middle" class="small" style="font-size: 8px">v0.15.1，2026 年 2 月，Blackwell SM120</text>
   <rect x="360" y="145" width="240" height="45" class="box"/>
-  <text x="480" y="168" text-anchor="middle" class="step">TRT-LLM (Blackwell only)</text>
-  <text x="480" y="183" text-anchor="middle" class="small">throughput leader on B200/GB200</text>
+  <text x="480" y="168" text-anchor="middle" class="step">TRT-LLM（仅 Blackwell）</text>
+  <text x="480" y="183" text-anchor="middle" class="small">B200/GB200 上吞吐量领先</text>
   <rect x="360" y="200" width="240" height="45" class="box"/>
-  <text x="480" y="222" text-anchor="middle" class="step">Ollama (dev only)</text>
-  <text x="480" y="237" text-anchor="middle" class="small">not for shared production</text>
+  <text x="480" y="222" text-anchor="middle" class="step">Ollama（仅开发）</text>
+  <text x="480" y="237" text-anchor="middle" class="small">不适合共享生产</text>
 
   <rect x="640" y="50" width="280" height="200" class="agent"/>
-  <text x="780" y="72" text-anchor="middle" class="head">agentic / prefix-heavy</text>
-  <text x="780" y="96" text-anchor="middle" class="step">SGLang (specialist)</text>
-  <text x="660" y="124" class="small">· RadixAttention (Phase 17 · 06)</text>
-  <text x="660" y="142" class="small">· 400,000+ GPUs in production</text>
-  <text x="660" y="160" class="small">· xAI, LinkedIn, Cursor, Oracle</text>
-  <text x="660" y="178" class="small">· GCP, Azure, AWS</text>
-  <text x="780" y="210" text-anchor="middle" class="caption">RAG heavy prefix reuse → here</text>
-  <text x="780" y="228" text-anchor="middle" class="caption">multi-turn agent tools → here</text>
+  <text x="780" y="72" text-anchor="middle" class="head">智能体 / 大量前缀复用</text>
+  <text x="780" y="96" text-anchor="middle" class="step">SGLang（专长型）</text>
+  <text x="660" y="124" class="small">· RadixAttention（阶段 17 · 06）</text>
+  <text x="660" y="142" class="small">· 生产使用超过 400,000 块 GPU</text>
+  <text x="660" y="160" class="small">· 用户：xAI、LinkedIn、Cursor、Oracle</text>
+  <text x="660" y="178" class="small">· 云平台：GCP、Azure、AWS</text>
+  <text x="780" y="210" text-anchor="middle" class="caption">RAG 大量前缀复用 → 选这里</text>
+  <text x="780" y="228" text-anchor="middle" class="caption">多轮智能体工具 → 选这里</text>
 
   <rect x="40" y="280" width="880" height="90" class="maint"/>
-  <text x="480" y="302" text-anchor="middle" class="head">TGI maintenance mode since December 11, 2025</text>
-  <text x="480" y="324" text-anchor="middle" class="step">only bug fixes going forward — do NOT default to TGI for new projects</text>
-  <text x="480" y="344" text-anchor="middle" class="caption">existing TGI deployments can continue; migrate to SGLang or vLLM when convenient</text>
+  <text x="480" y="302" text-anchor="middle" class="head">TGI 自 2025 年 12 月 11 日起进入维护模式</text>
+  <text x="480" y="324" text-anchor="middle" class="step">此后只修复缺陷，新项目不要默认选择 TGI</text>
+  <text x="480" y="344" text-anchor="middle" class="caption">现有 TGI 部署可以继续，在合适时机迁移到 SGLang 或 vLLM</text>
 
   <rect x="40" y="390" width="880" height="100" class="box"/>
-  <text x="480" y="412" text-anchor="middle" class="head">2026 pipeline pattern</text>
-  <text x="480" y="434" text-anchor="middle" class="step">dev: Ollama   →   staging: llama.cpp   →   prod: vLLM (or SGLang)</text>
-  <text x="480" y="454" text-anchor="middle" class="step">same GGUF or HF weights across all three tiers</text>
-  <text x="480" y="476" text-anchor="middle" class="caption">engineers iterate fast locally; staging mirrors prod quant; prod is the serving target</text>
+  <text x="480" y="412" text-anchor="middle" class="head">2026 年流水线模式</text>
+  <text x="480" y="434" text-anchor="middle" class="step">开发：Ollama → 预发布：llama.cpp → 生产：vLLM（或 SGLang）</text>
+  <text x="480" y="454" text-anchor="middle" class="step">三个环境使用相同 GGUF 或 HF 权重</text>
+  <text x="480" y="476" text-anchor="middle" class="caption">工程师本地快速迭代，预发布对齐生产量化，生产是最终服务目标</text>
 </svg>

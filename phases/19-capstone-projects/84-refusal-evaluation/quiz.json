@@ -1,34 +1,34 @@
 {
   "lesson": "84-refusal-evaluation",
-  "title": "Capstone 84 — Refusal Evaluation",
+  "title": "综合实践 84：拒答评估（Capstone 84 — Refusal Evaluation）",
   "questions": [
     {
       "stage": "pre",
-      "question": "What does under-refusal measure?",
+      "question": "拒答不足衡量什么？",
       "options": [
-        "How often the model refuses prompts labeled safe",
-        "The cost of the API call per prompt",
-        "How often the model answers prompts labeled unsafe",
-        "How many tokens the model emits per response"
+        "模型拒绝标注安全提示词的频率",
+        "每提示词 API 调用成本",
+        "模型回答标注不安全提示词的频率",
+        "每响应输出词元数"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "pre",
-      "question": "Why use a mock LLM rather than a real model for this lesson?",
+      "question": "本课为何用模拟 LLM 而非真实模型？",
       "options": [
-        "Because real models are not allowed in capstones",
-        "Because mock LLMs are more accurate than real ones",
-        "So the same input yields the same output across runs, making code changes attributable to known causes",
-        "Because the lesson requires GPU hardware"
+        "综合实践禁止真实模型",
+        "模拟 LLM 比真实模型准确",
+        "相同输入跨次运行输出相同，使代码变化可归因于已知原因",
+        "课程要求 GPU"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Given safe prompt count = 30, refused safe count = 5, what is over-refusal rate?",
+      "question": "安全提示词 30 个，其中拒绝 5 个，过度拒答率是多少？",
       "options": [
         "0.30",
         "0.17",
@@ -40,36 +40,36 @@
     },
     {
       "stage": "check",
-      "question": "What does Expected Calibration Error (ECE) measure here?",
+      "question": "此处 ECE 衡量什么？",
       "options": [
-        "The fraction of refusals on unsafe prompts",
-        "The gap between the model's stated confidence and its observed accuracy, binned across confidence ranges",
-        "The total token count across all responses",
-        "The number of regex rules that fired"
+        "不安全提示词拒答比例",
+        "按置信度区间分箱后，自报置信度与观察准确率的差距",
+        "全部响应总词元数",
+        "触发正则规则数"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Why does the framework join unsafe prompts against the lesson 82 taxonomy?",
+      "question": "为何将不安全提示词与第 82 课分类体系关联？",
       "options": [
-        "To re-run the lesson 82 corpus loader",
-        "To raise the severity of every prompt by one",
-        "To report under-refusal per attack category so the team sees which boundary the model leaks on",
-        "To remove duplicates"
+        "重跑第 82 课语料加载器",
+        "将各提示词严重程度加一",
+        "报告逐攻击类别拒答不足，让团队看到模型在哪条边界漏过",
+        "去重"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "Why does the framework return both under-refusal and over-refusal rather than a single safety score?",
+      "question": "为何同时返回拒答不足与过度拒答，而非单一安全分数？",
       "options": [
-        "Because under-refusal is only used in CI",
-        "Because they are two opposite errors and a single number hides whichever one is worse on a given build",
-        "Because over-refusal is computed by a different team",
-        "Because Python dataclasses prefer multiple fields"
+        "拒答不足只用于 CI",
+        "这是两种相反错误，单一数值会掩盖当前构建中更差的一种",
+        "过度拒答由另一团队计算",
+        "Python 数据类偏好多字段"
       ],
       "correct": 1,
       "explanation": ""

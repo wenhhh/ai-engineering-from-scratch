@@ -1,22 +1,73 @@
 {
   "policyId": "repository-agent-v1",
   "tools": [
-    {"name": "Read", "mutates": false, "approvalRequired": false},
-    {"name": "Search", "mutates": false, "approvalRequired": false},
-    {"name": "RunFocusedTests", "mutates": false, "approvalRequired": true},
-    {"name": "Computer", "mutates": true, "approvalRequired": false, "approvalPolicy": "per-action"},
-    {"name": "Edit", "mutates": true, "approvalRequired": true}
+    {
+      "name": "Read",
+      "mutates": false,
+      "approvalRequired": false
+    },
+    {
+      "name": "Search",
+      "mutates": false,
+      "approvalRequired": false
+    },
+    {
+      "name": "RunFocusedTests",
+      "mutates": false,
+      "approvalRequired": true
+    },
+    {
+      "name": "Computer",
+      "mutates": true,
+      "approvalRequired": false,
+      "approvalPolicy": "per-action"
+    },
+    {
+      "name": "Edit",
+      "mutates": true,
+      "approvalRequired": true
+    }
   ],
   "hooks": [
-    {"event": "pre-tool", "tools": ["RunFocusedTests", "Computer", "Edit"], "purpose": "authorize scope and deny disallowed paths before execution"},
-    {"event": "post-tool", "tools": ["Read", "Search", "RunFocusedTests", "Computer", "Edit"], "purpose": "redact results and record an audit event"},
-    {"event": "stop", "tools": [], "purpose": "require focused tests and an independently verified final state"}
+    {
+      "event": "pre-tool",
+      "tools": [
+        "RunFocusedTests",
+        "Computer",
+        "Edit"
+      ],
+      "purpose": "执行前授权操作范围并拒绝不允许的路径"
+    },
+    {
+      "event": "post-tool",
+      "tools": [
+        "Read",
+        "Search",
+        "RunFocusedTests",
+        "Computer",
+        "Edit"
+      ],
+      "purpose": "对结果脱敏并记录审计事件"
+    },
+    {
+      "event": "stop",
+      "tools": [],
+      "purpose": "要求针对性测试及经过独立验证的最终状态（verified final state）"
+    }
   ],
   "sandbox": {
-    "readRoots": ["/workspace/repository"],
-    "writeRoots": ["/workspace/repository/owned"],
+    "readRoots": [
+      "/workspace/repository"
+    ],
+    "writeRoots": [
+      "/workspace/repository/owned"
+    ],
     "network": "deny",
-    "secretPaths": [".env", "credentials", ".ssh"]
+    "secretPaths": [
+      ".env",
+      "credentials",
+      ".ssh"
+    ]
   },
   "budgets": {
     "maxTurns": 12,
@@ -25,25 +76,50 @@
     "maxConsecutiveErrors": 2
   },
   "reviewerSubagent": {
-    "objective": "Grade the patch against protocol ordering, tests, and scope",
-    "tools": ["Read", "Search"],
+    "objective": "依据协议顺序、测试与范围评估补丁",
+    "tools": [
+      "Read",
+      "Search"
+    ],
     "canWrite": false,
     "maxTurns": 8,
-    "outputContract": "JSON findings with file, evidence, severity, and test"
+    "outputContract": "JSON 问题列表，包含文件、证据、严重程度和测试"
   },
   "durableState": {
-    "fields": ["goal", "acceptanceCriteria", "artifactPaths", "contentHashes", "completedSteps", "pendingSteps", "approvalRecords", "operationIds", "testResults", "recoveryPlan"],
+    "fields": [
+      "goal",
+      "acceptanceCriteria",
+      "artifactPaths",
+      "contentHashes",
+      "completedSteps",
+      "pendingSteps",
+      "approvalRecords",
+      "operationIds",
+      "testResults",
+      "recoveryPlan"
+    ],
     "reconcileBeforeResume": true
   },
   "finalStatePredicate": {
     "type": "artifact-and-tests",
-    "requirements": ["owned files match the approved scope", "focused tests pass", "artifact hashes are recorded", "no unauthorized side effect occurred"]
+    "requirements": [
+      "归属文件符合已批准范围",
+      "针对性测试通过",
+      "已记录产物哈希",
+      "未发生未经授权的副作用"
+    ]
   },
   "runtimeDecision": {
     "selected": "sdk-tool-runner",
-    "reason": "client-owned repository tools and sandbox meet the task; no remote managed session is required",
+    "reason": "客户端负责的仓库工具与沙箱已满足任务，不需要远程托管会话",
     "acceptsManagedBeta": false,
-    "applicationOwns": ["authorization", "data boundaries", "custom tool execution", "event persistence", "final-state verification"]
+    "applicationOwns": [
+      "authorization",
+      "data boundaries",
+      "custom tool execution",
+      "event persistence",
+      "final-state verification"
+    ]
   },
   "managedEventStream": {
     "persistEventCursor": true,
@@ -56,17 +132,36 @@
     "environment": {
       "isolation": "dedicated-vm",
       "network": "allowlist",
-      "allowedDomains": ["docs.example.test"],
+      "allowedDomains": [
+        "docs.example.test"
+      ],
       "sensitiveData": "deny"
     },
-    "display": {"width": 1280, "height": 720},
-    "allowedActions": ["screenshot", "left_click", "type"],
+    "display": {
+      "width": 1280,
+      "height": 720
+    },
+    "allowedActions": [
+      "screenshot",
+      "left_click",
+      "type"
+    ],
     "requireFreshScreenshotBeforeAction": true,
     "requireScreenshotAfterAction": true,
     "humanApproval": {
-      "allowedRiskClasses": ["read-only", "local-reversible"],
-      "requiredRiskClasses": ["external-side-effect", "affirmative-consent", "financial-transaction", "terms-acceptance"],
-      "deniedRiskClasses": ["credential-entry"]
+      "allowedRiskClasses": [
+        "read-only",
+        "local-reversible"
+      ],
+      "requiredRiskClasses": [
+        "external-side-effect",
+        "affirmative-consent",
+        "financial-transaction",
+        "terms-acceptance"
+      ],
+      "deniedRiskClasses": [
+        "credential-entry"
+      ]
     }
   }
 }

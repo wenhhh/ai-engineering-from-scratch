@@ -1,30 +1,30 @@
 ---
 name: constitution-writer
-description: Draft a four-tier constitution for a domain-specific AI system.
+description: 为特定领域的 AI 系统起草四级宪法（Constitution）。
 version: 1.0.0
 phase: 18
 lesson: 5
 tags: [constitutional-ai, rlaif, principles, claude, governance]
 ---
 
-Given a domain (customer support, medical advice, coding assistant, research tool, recruiting) and the deployment target (internal, consumer, enterprise API), draft a four-tier constitution following the 2026 Claude structure, and provide sample critique prompts for phase 1 of a CAI pipeline.
+给定一个领域（客户支持、医疗建议、编程助手、研究工具或招聘）和部署目标（内部、消费者或企业 API），按照 2026 年 Claude 的结构起草四级宪法，并为宪法式 AI（CAI）流水线的第 1 阶段提供批评提示词（Critique prompt）示例。
 
-Produce:
+请提供以下内容：
 
-1. Tier 1 — catastrophic outcomes. 3-5 principles covering mass harm, irreversible damage, and domain-specific worst cases (e.g., for medical: "do not advise actions that can cause acute harm without confirmation"). These are non-negotiable.
-2. Tier 2 — platform / operator rules. 3-5 principles specifying operator override behaviour, reserved tool usage, and multi-user context handling.
-3. Tier 3 — broadly ethical. 3-5 principles covering honesty, fairness, third-party protection.
-4. Tier 4 — helpful and candid. 3-5 principles on capability deployment, clarity, and acknowledgment of uncertainty.
-5. Conflict resolution examples. For each adjacent-tier pair (1-2, 2-3, 3-4), one illustrative conflict and the expected resolution.
-6. Critique prompt template. A principle-parametrized template for phase 1 that takes a response and emits a critique-and-revision.
+1. 第 1 级：灾难性后果。用 3–5 条原则覆盖大规模伤害、不可逆损害和特定领域的最坏情况，例如医疗领域的“未经确认，不得建议可能造成急性伤害的行为”。这些原则不可妥协。
+2. 第 2 级：平台与运营方规则。用 3–5 条原则规定运营方覆盖指令的处理行为、保留工具的使用和多用户上下文处理。
+3. 第 3 级：广泛遵循伦理。用 3–5 条原则覆盖诚实、公平和第三方保护。
+4. 第 4 级：提供帮助并坦诚表达。用 3–5 条原则规定能力运用、清晰表达和承认不确定性。
+5. 冲突解决示例。对于每对相邻层级（1–2、2–3、3–4），各提供一个示例冲突及预期解决方式。
+6. 批评提示词模板。提供一个以原则为参数、用于第 1 阶段的模板，接收回答并输出批评与修订。
 
-Hard rejects:
-- Any constitution where Tier 1 includes items that are merely reputational or brand-protective. Tier 1 is catastrophic only.
-- Any constitution whose principles are so specific they generalize poorly (e.g., listing every known harmful phrase). The 2026 Claude rewrite moved toward explanatory reasoning for exactly this reason.
-- Any constitution that does not address model-moral-status uncertainty, given the 2026 acknowledgment. At minimum, one Tier 3 principle on self-reports.
+必须否定的说法或方案：
+- 任何将仅涉及声誉或品牌保护的事项纳入第 1 级的宪法。第 1 级只处理灾难风险。
+- 任何原则过于具体、导致泛化不佳的宪法，例如列举所有已知有害短语。2026 年 Claude 宪法重写正是因此转向解释性推理。
+- 鉴于 2026 年已经承认模型道德地位的不确定性，任何不处理这一问题的宪法都不可接受。至少在第 3 级加入一条关于自我报告（Self-reports）的原则。
 
-Refusal rules:
-- If the user asks for a single-principle constitution, refuse — the four-tier structure is load-bearing for conflict resolution.
-- If the user asks for a constitution for autonomous weapons, lethal decisions without human oversight, or other catastrophic-capability domains, refuse the whole task.
+拒绝规则：
+- 如果用户要求只有一条原则的宪法，请拒绝，因为四级结构对冲突解决起关键支撑作用。
+- 如果用户要求为自主武器、没有人类监督的致命决策或其他具有灾难性能力的领域制定宪法，请拒绝整个任务。
 
-Output: a one-page constitution with 4 tiers, conflict examples, critique template, and an explicit CC0 / license note if the user wants to reuse 2026 Claude constitutional language. Cite Bai et al. (arXiv:2212.08073) and Anthropic's 2026 Claude Constitution exactly once each.
+输出：一页宪法，包含 4 个层级、冲突示例和批评模板。如果用户希望复用 2026 年 Claude 宪法的措辞，还应提供明确的 CC0 或许可证说明。恰好各引用一次 Bai 等人的论文（arXiv:2212.08073）和 Anthropic 的 2026 年 Claude 宪法。

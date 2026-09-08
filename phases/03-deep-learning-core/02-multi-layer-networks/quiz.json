@@ -1,37 +1,62 @@
 [
   {
-    "question": "What is the purpose of a hidden layer in a multi-layer network?",
-    "options": ["To transform inputs into new feature representations that enable nonlinear decision boundaries", "To apply the loss function", "To reduce the number of parameters", "To store the training data"],
+    "question": "多层网络中隐藏层（Hidden Layer）的作用是什么？",
+    "options": [
+      "将输入变换为新的特征表示，从而产生非线性决策边界",
+      "应用损失函数",
+      "减少参数数量",
+      "存储训练数据"
+    ],
     "correct": 0,
-    "explanation": "Hidden layers apply weights, biases, and activation functions to create new feature representations. These intermediate features allow the network to learn nonlinear mappings that a single layer cannot.",
+    "explanation": "隐藏层应用权重、偏置和激活函数来创建新的特征表示。这些中间特征使网络能够学习单层无法实现的非线性映射。",
     "stage": "pre"
   },
   {
-    "question": "What does the forward pass do in a neural network?",
-    "options": ["Computes gradients for backpropagation", "Shuffles the training data", "Updates the weights using gradients", "Pushes input through each layer to produce an output"],
+    "question": "神经网络的前向传播（Forward Pass）执行什么操作？",
+    "options": [
+      "为反向传播计算梯度",
+      "打乱训练数据",
+      "使用梯度更新权重",
+      "将输入逐层传递以产生输出"
+    ],
     "correct": 3,
-    "explanation": "The forward pass is pure computation: for each layer, multiply by weights, add bias, apply activation, and pass the result to the next layer. No learning happens during the forward pass.",
+    "explanation": "前向传播是纯计算：每层乘以权重、加上偏置、应用激活函数，再把结果传给下一层。前向传播期间不发生学习。",
     "stage": "pre"
   },
   {
-    "question": "For a layer with 3 neurons receiving input from 2 neurons, what is the shape of the weight matrix?",
-    "options": ["(2, 3)", "(3, 2)", "(2, 2)", "(3, 3)"],
+    "question": "某层有 3 个神经元，接收来自 2 个神经元的输入，权重矩阵的形状是什么？",
+    "options": [
+      "(2, 3)",
+      "(3, 2)",
+      "(2, 2)",
+      "(3, 3)"
+    ],
     "correct": 1,
-    "explanation": "The weight matrix has shape (neurons_in_current_layer, neurons_in_previous_layer) = (3, 2). Each row contains one neuron's weights across all inputs.",
+    "explanation": "权重矩阵形状为 (neurons_in_current_layer, neurons_in_previous_layer) = (3, 2)。每行包含一个神经元对应所有输入的权重。",
     "stage": "post"
   },
   {
-    "question": "What does the Universal Approximation Theorem guarantee?",
-    "options": ["Neural networks can solve any computational problem", "A single hidden layer with enough neurons can approximate any continuous function", "Deeper networks always outperform shallow ones", "Any network can be trained in polynomial time"],
+    "question": "通用逼近定理（Universal Approximation Theorem）保证了什么？",
+    "options": [
+      "神经网络能解决任何计算问题",
+      "神经元足够多的单隐藏层可以逼近任意连续函数",
+      "深层网络总是优于浅层网络",
+      "任何网络都能在多项式时间内完成训练"
+    ],
     "correct": 1,
-    "explanation": "Cybenko (1989) proved that a network with one hidden layer and sufficient neurons can approximate any continuous function to any desired accuracy. In practice, deeper networks achieve the same with fewer total parameters.",
+    "explanation": "Cybenko（1989）证明，具有一个隐藏层且神经元足够多的网络，可以按任意所需精度逼近任何连续函数。实践中，深层网络能用更少的总参数达到相同效果。",
     "stage": "post"
   },
   {
-    "question": "Why does the sigmoid activation function make learning possible, unlike the step function used in perceptrons?",
-    "options": ["Sigmoid outputs larger values", "Sigmoid is faster to compute", "Sigmoid is smooth and differentiable everywhere, so gradients exist for backpropagation", "Sigmoid outputs negative values"],
+    "question": "不同于感知机使用的阶跃函数，为什么 Sigmoid 激活函数能让学习成为可能？",
+    "options": [
+      "Sigmoid 输出更大的数值",
+      "Sigmoid 计算更快",
+      "Sigmoid 处处平滑可微，因此反向传播所需的梯度存在",
+      "Sigmoid 输出负值"
+    ],
     "correct": 2,
-    "explanation": "The step function has zero gradient almost everywhere and undefined gradient at the threshold. Sigmoid is smooth with a well-defined derivative (s*(1-s)) at every point, which is essential for gradient-based learning.",
+    "explanation": "阶跃函数几乎处处梯度为零，在阈值处梯度未定义。Sigmoid 处处平滑，且每一点都有明确定义的导数 (s*(1-s))，这是基于梯度学习的必要条件。",
     "stage": "post"
   }
 ]

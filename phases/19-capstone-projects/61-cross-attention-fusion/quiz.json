@@ -1,46 +1,46 @@
 {
   "lesson": "61-cross-attention-fusion",
-  "title": "Cross-Attention Fusion",
+  "title": "交叉注意力融合（Cross-Attention Fusion）",
   "questions": [
     {
       "stage": "pre",
-      "question": "What is the operational difference between early fusion and late fusion in vision-language modeling?",
+      "question": "视觉语言建模中，早期融合（Early fusion）与晚期融合（Late fusion）在运作上有何区别？",
       "options": [
-        "Late fusion uses more memory",
-        "Early fusion is illegal",
-        "Early fusion concatenates image and text tokens into one sequence; late fusion keeps them separate and bridges via cross-attention at each block",
-        "Early fusion runs first in wall-clock time"
+        "晚期融合使用更多内存",
+        "早期融合不合法",
+        "早期融合将图像和文本词元拼接成一个序列；晚期融合让两者保持独立，并在每个块通过交叉注意力连接",
+        "早期融合在实际时间上先运行"
       ],
       "correct": 2,
-      "explanation": "Chameleon and Emu3 are early-fusion; Flamingo and BLIP-2 are late-fusion. The architectural choice changes mask shapes and KV caching."
+      "explanation": "Chameleon 和 Emu3 采用早期融合；Flamingo 和 BLIP-2 采用晚期融合。架构选择会改变掩码形状和键值缓存（KV caching）。"
     },
     {
       "stage": "pre",
-      "question": "In a decoder block with both self-attention and cross-attention, which one uses a causal mask?",
+      "question": "同时包含自注意力和交叉注意力的解码器块中，哪种注意力使用因果掩码（Causal mask）？",
       "options": [
-        "Neither",
-        "Both",
-        "Cross-attention only",
-        "Self-attention only; the image is fully observed and cross-attention has no temporal order"
+        "都不使用",
+        "两者都使用",
+        "仅交叉注意力",
+        "仅自注意力；图像已被完整观察，交叉注意力没有时间顺序"
       ],
       "correct": 3,
-      "explanation": "Text generation is autoregressive, so text self-attention is causal. Image tokens are all visible before any text is decoded."
+      "explanation": "文本生成是自回归的，因此文本自注意力具有因果性。在解码任何文本之前，所有图像词元均已可见。"
     },
     {
       "stage": "check",
-      "question": "Why is the cross-attention KV cache built once per image?",
+      "question": "为什么每张图像的交叉注意力键值缓存只构建一次？",
       "options": [
-        "Image keys and values do not change as text is decoded, so projecting memory once and reusing the K and V across all decode steps is the whole inference speedup",
-        "It avoids using the GPU",
-        "PyTorch requires caching",
-        "Caching saves disk space"
+        "文本解码期间图像的键和值不变，因此只投影一次记忆并在所有解码步骤复用 K 和 V，正是推理加速的来源",
+        "这样可以不使用 GPU",
+        "PyTorch 要求缓存",
+        "缓存节省磁盘空间"
       ],
       "correct": 0,
-      "explanation": "The vision encoder runs once. Its KV projection is computed once. Each text token reuses the cache for free."
+      "explanation": "视觉编码器运行一次，KV 投影计算一次。每个文本词元复用缓存，无须重新计算。"
     },
     {
       "stage": "check",
-      "question": "What is the output shape of cross-attention when text length is Nt=10 and image length is Nv=197 with hidden=256?",
+      "question": "文本长度 Nt=10、图像长度 Nv=197、hidden=256 时，交叉注意力的输出形状是什么？",
       "options": [
         "(B, 10, 256)",
         "(B, 207, 256)",
@@ -48,31 +48,31 @@
         "(B, 197, 256)"
       ],
       "correct": 0,
-      "explanation": "Cross-attention output shape follows the query stream, so output is (B, Nt, hidden) regardless of key length."
+      "explanation": "交叉注意力的输出形状跟随查询流，因此无论键长度如何，输出均为 (B, Nt, hidden)。"
     },
     {
       "stage": "check",
-      "question": "Why is no mask used on cross-attention?",
+      "question": "为什么交叉注意力不使用掩码？",
       "options": [
-        "Masks always cause NaN",
-        "Masks are too expensive",
-        "The image is fully observed before text generation begins; every text position may attend to every patch",
-        "PyTorch does not support cross masks"
+        "掩码总会产生 NaN",
+        "掩码开销太大",
+        "文本生成开始前图像已被完整观察；每个文本位置都可以关注每个图像块",
+        "PyTorch 不支持交叉掩码"
       ],
       "correct": 2,
-      "explanation": "There is no temporal order on image patches and no leakage to prevent, so cross-attention sees the whole image."
+      "explanation": "图像块没有时间顺序，也没有需要防止的信息泄漏，因此交叉注意力可以看到整张图像。"
     },
     {
       "stage": "post",
-      "question": "Which extension would you add to recover Flamingo-style stability during training?",
+      "question": "要恢复 Flamingo 风格的训练稳定性，你会添加哪项扩展？",
       "options": [
-        "Remove the FFN",
-        "Insert a learned tanh gate on the cross-attention residual so the model can start from text-only behavior and grow into the image stream",
-        "Drop the self-attention layer",
-        "Use only one attention head"
+        "移除前馈网络（FFN）",
+        "在交叉注意力残差上插入可学习的 tanh 门控，让模型从纯文本行为开始，逐步接入图像流",
+        "删除自注意力层",
+        "只使用一个注意力头"
       ],
       "correct": 1,
-      "explanation": "Flamingo's tanh gate starts at zero, recovers text-only behavior at init, and gives the model a smooth ramp into cross-attention."
+      "explanation": "Flamingo 的 tanh 门控从零开始，在初始化时恢复纯文本行为，并让模型平滑过渡到交叉注意力。"
     }
   ]
 }

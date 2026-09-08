@@ -1,8 +1,8 @@
-"""Multi-head attention from scratch in pure stdlib.
+"""仅用标准库从零实现多头注意力（Multi-head attention）。
 
-No numpy, no torch. A tiny Matrix class carries the ops we need.
-Demonstrates: split heads, per-head scaled dot-product attention,
-combine heads, output projection, and a Grouped-Query variant.
+不用 numpy 或 torch。小型 Matrix 类提供所需运算。
+演示：拆分注意力头、各头的缩放点积注意力（Scaled dot-product attention）、
+合并头、输出投影（Output projection），以及分组查询（Grouped-Query）变体。
 """
 
 import math
@@ -11,7 +11,7 @@ from typing import List
 
 
 class Matrix:
-    """Row-major 2D matrix of floats. Just enough ops for attention."""
+    """行优先（Row-major）的二维浮点矩阵，仅提供注意力所需运算。"""
 
     __slots__ = ("rows", "cols", "data")
 
@@ -43,7 +43,7 @@ def randn_matrix(rows, cols, rng, scale=None):
 
 
 def matmul(A: Matrix, B: Matrix) -> Matrix:
-    assert A.cols == B.rows, f"{A.cols} vs {B.rows}"
+    assert A.cols == B.rows, f"{A.cols} 与 {B.rows}"
     out = Matrix(A.rows, B.cols)
     for i in range(A.rows):
         for k in range(A.cols):
@@ -89,7 +89,7 @@ def scaled_dot_product_attention(Q: Matrix, K: Matrix, V: Matrix):
 
 
 def split_heads(X: Matrix, n_heads: int) -> List[Matrix]:
-    assert X.cols % n_heads == 0, "d_model not divisible by n_heads"
+    assert X.cols % n_heads == 0, "d_model 不能被 n_heads 整除"
     d_head = X.cols // n_heads
     heads = []
     for h in range(n_heads):
@@ -131,7 +131,7 @@ def multi_head_attention(X: Matrix, Wq, Wk, Wv, Wo, n_heads: int):
 
 
 def grouped_query_attention(X: Matrix, Wq, Wk, Wv, Wo, n_heads: int, n_kv_heads: int):
-    """Same as MHA but K and V have fewer heads, repeated to match Q."""
+    """与多头注意力（MHA）相同，但 K 和 V 的头数更少，通过重复匹配 Q。"""
     Q = matmul(X, Wq)
     K = matmul(X, Wk)
     V = matmul(X, Wv)
@@ -171,12 +171,12 @@ def main():
 
     out, weights = multi_head_attention(X, Wq, Wk, Wv, Wo, n_heads=n_heads)
 
-    print(f"=== multi-head attention: {n_heads} heads, d_model={d_model}, d_head={d_model // n_heads} ===")
-    print(f"input  shape: ({X.rows}, {X.cols})")
-    print(f"output shape: ({out.rows}, {out.cols})")
+    print(f"=== 多头注意力（Multi-head attention）：{n_heads} 个头， d_model={d_model}, d_head={d_model // n_heads} ===")
+    print(f"输入形状（Input shape）: ({X.rows}, {X.cols})")
+    print(f"输出形状（Output shape）: ({out.rows}, {out.cols})")
     print()
     for h, W in enumerate(weights):
-        print(f"-- head {h} attention weights --")
+        print(f"-- 第 {h} 个头的注意力权重（Attention weights，英文词元标签保留） --")
         print(f"{'':>6}", end="")
         for t in tokens:
             print(f"{t:>7}", end="")
@@ -188,7 +188,7 @@ def main():
             print()
         print()
 
-    # GQA demo: 4 Q heads, 2 KV heads
+    # 分组查询注意力（GQA）演示：4 个 Q 头，2 个 KV 头
     d_model = 8
     n_heads = 4
     n_kv = 2
@@ -197,12 +197,12 @@ def main():
     Wv = randn_matrix(d_model, (d_model // n_heads) * n_kv, rng)
     Wo = randn_matrix(d_model, d_model, rng)
     out_gqa = grouped_query_attention(X, Wq, Wk, Wv, Wo, n_heads=n_heads, n_kv_heads=n_kv)
-    print(f"=== GQA: {n_heads} Q heads, {n_kv} KV heads ===")
-    print(f"output shape: ({out_gqa.rows}, {out_gqa.cols})")
+    print(f"=== 分组查询注意力（GQA）：{n_heads} 个 Q 头，{n_kv} 个 KV 头 ===")
+    print(f"输出形状（Output shape）: ({out_gqa.rows}, {out_gqa.cols})")
     kv_cache_full = n_heads * n * (d_model // n_heads) * 2
     kv_cache_gqa = n_kv * n * (d_model // n_heads) * 2
-    print(f"KV cache elements (MHA):  {kv_cache_full}")
-    print(f"KV cache elements (GQA):  {kv_cache_gqa}  ({kv_cache_full // kv_cache_gqa}x smaller)")
+    print(f"KV 缓存（KV cache）元素数（MHA）:  {kv_cache_full}")
+    print(f"KV 缓存（KV cache）元素数（GQA）:  {kv_cache_gqa}  （缩小 {kv_cache_full // kv_cache_gqa} 倍）")
 
 
 if __name__ == "__main__":

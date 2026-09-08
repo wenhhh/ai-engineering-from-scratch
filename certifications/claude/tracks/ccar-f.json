@@ -2,22 +2,22 @@
   "id": "claude-ccar-f",
   "slug": "ccar-f",
   "examCode": "CCAR-F",
-  "credential": "Claude Certified Architect - Foundations",
-  "shortName": "Architect Foundations",
-  "level": "Foundational architecture",
+  "credential": "Claude 认证架构师基础级（Claude Certified Architect - Foundations）",
+  "shortName": "架构师基础级（Architect Foundations）",
+  "level": "架构基础级（Foundational architecture）",
   "accent": "violet",
   "badge": {
     "imageUrl": "https://images.credly.com/images/f2040db3-3904-4240-8966-e87b1510bea0/blob",
     "width": 604,
     "height": 604
   },
-  "summary": "Make sound production tradeoffs across Claude Code, the Claude Agent SDK, the Claude API, and MCP.",
-  "audience": "Developers and architects who design production Claude systems and can reason through ambiguous, scenario-based architecture decisions.",
+  "summary": "在 Claude Code、Claude Agent SDK、Claude API 和 MCP 之间做出合理的生产环境权衡。",
+  "audience": "面向设计生产级 Claude 系统，并能在含糊的场景式架构决策中进行推理的开发者和架构师。",
   "recommendedExperience": [
-    "Six or more months building with Claude",
-    "Hands-on work with the Claude API and tool use",
-    "Working knowledge of Claude Code, the Claude Agent SDK, and MCP",
-    "Experience choosing between architectural alternatives under constraints"
+    "至少六个月使用 Claude 进行构建的经验",
+    "亲自使用 Claude API 和工具调用的经验",
+    "具备 Claude Code、Claude Agent SDK 和 MCP 的应用知识",
+    "具备在约束条件下选择不同架构方案的经验"
   ],
   "exam": {
     "items": 60,
@@ -26,26 +26,26 @@
     "passingScaledScore": 720,
     "scoreScale": "100-1000",
     "validityMonths": 12,
-    "format": "Scenario-based multiple-choice and multiple-response; four scenarios drawn from six",
-    "delivery": "Proctored online or at a test center",
+    "format": "基于场景的单项选择与多项选择；从六种场景中抽取四种",
+    "delivery": "在线监考或在考试中心考试",
     "guideVersion": "1.0",
     "effective": "July 2026",
     "officialGuideUrl": "https://everpath-course-content.s3-accelerate.amazonaws.com/instructor%2F6nizmqk8tpzpfjvt6qmmav7rh%2Fpublic%2F1783542750%2FClaude+Certified+Architect+%E2%80%93+Foundations+Exam+Guide.pdf"
   },
   "domains": [
-    {"id": "agentic-architecture-orchestration", "name": "Agentic Architecture and Orchestration", "weight": 27, "objectives": ["Implement the tool-use lifecycle from stop reason to tool result", "Choose coordinator and subagent topologies", "Use Task, allowedTools, isolated context, parallelism, and forked sessions", "Enforce prerequisites, decompose concerns, and structure handoffs", "Use hooks for deterministic controls and normalization", "Choose sequential or adaptive decomposition", "Resume or fork without carrying stale context"]},
-    {"id": "tool-design-mcp-integration", "name": "Tool Design and MCP Integration", "weight": 18, "objectives": ["Write precise tool descriptions and boundaries", "Return structured and retry-aware MCP errors", "Manage tool distribution and tool choice", "Scope MCP configuration and resources", "Choose Claude Code file, shell, and search tools safely"]},
-    {"id": "claude-code-configuration-workflows", "name": "Claude Code Configuration and Workflows", "weight": 20, "objectives": ["Design CLAUDE.md hierarchy, imports, rules, and memory", "Create project and user commands and Skills", "Apply path-specific rules", "Choose plan mode, direct execution, or Explore", "Use examples, test-driven iteration, and interviews", "Run headless CI with structured output and independent review"]},
-    {"id": "prompt-engineering-structured-output", "name": "Prompt Engineering and Structured Output", "weight": 20, "objectives": ["State explicit evaluation criteria", "Use few-shot examples for consistent judgment", "Enforce schemas with tool use and tool choice", "Validate, retry, and feed back semantic errors", "Use batch processing for appropriate workloads", "Separate generator and independent reviewer passes"]},
-    {"id": "context-management-reliability", "name": "Context Management and Reliability", "weight": 15, "objectives": ["Place facts to reduce lost-in-the-middle failures", "Escalate ambiguity and policy gaps", "Propagate structured errors and partial results", "Use scratchpads, subagents, manifests, and compaction for large codebases", "Calibrate confidence and human review", "Track provenance, conflicts, dates, and content types"]}
+    {"id": "agentic-architecture-orchestration", "name": "智能体式架构与编排（Agentic Architecture and Orchestration）", "weight": 27, "objectives": ["实现从停止原因到工具结果的工具调用生命周期（Implement the tool-use lifecycle from stop reason to tool result）", "选择协调者与子智能体拓扑（Choose coordinator and subagent topologies）", "使用 Task、allowedTools、隔离上下文、并行和分叉会话（Use Task, allowedTools, isolated context, parallelism, and forked sessions）", "强制先决条件、分离关注点并结构化交接（Enforce prerequisites, decompose concerns, and structure handoffs）", "使用钩子实现确定性控制和规范化（Use hooks for deterministic controls and normalization）", "选择顺序或自适应分解（Choose sequential or adaptive decomposition）", "恢复或分叉时不携带过时上下文（Resume or fork without carrying stale context）"]},
+    {"id": "tool-design-mcp-integration", "name": "工具设计与 MCP 集成（Tool Design and MCP Integration）", "weight": 18, "objectives": ["编写精确工具描述和边界（Write precise tool descriptions and boundaries）", "返回结构化且考虑重试的 MCP 错误（Return structured and retry-aware MCP errors）", "管理工具分发和工具选择（Manage tool distribution and tool choice）", "限定 MCP 配置与资源作用域（Scope MCP configuration and resources）", "安全选择 Claude Code 文件、shell 和搜索工具（Choose Claude Code file, shell, and search tools safely）"]},
+    {"id": "claude-code-configuration-workflows", "name": "Claude Code 配置与工作流（Claude Code Configuration and Workflows）", "weight": 20, "objectives": ["设计 CLAUDE.md 层级、导入、规则和记忆（Design CLAUDE.md hierarchy, imports, rules, and memory）", "创建项目与用户命令和技能（Create project and user commands and Skills）", "应用特定路径规则（Apply path-specific rules）", "选择计划模式、直接执行或 Explore（Choose plan mode, direct execution, or Explore）", "使用示例、测试驱动迭代和访谈（Use examples, test-driven iteration, and interviews）", "以结构化输出和独立评审运行无界面 CI（Run headless CI with structured output and independent review）"]},
+    {"id": "prompt-engineering-structured-output", "name": "提示词工程与结构化输出（Prompt Engineering and Structured Output）", "weight": 20, "objectives": ["明确评估标准（State explicit evaluation criteria）", "使用少样本示例保持判断一致（Use few-shot examples for consistent judgment）", "通过工具调用与工具选择强制模式（Enforce schemas with tool use and tool choice）", "验证、重试并反馈语义错误（Validate, retry, and feed back semantic errors）", "对合适工作负载使用批处理（Use batch processing for appropriate workloads）", "分离生成者与独立评审轮次（Separate generator and independent reviewer passes）"]},
+    {"id": "context-management-reliability", "name": "上下文管理与可靠性（Context Management and Reliability）", "weight": 15, "objectives": ["安排事实位置，减少中间信息遗失（Place facts to reduce lost-in-the-middle failures）", "将歧义和政策缺口升级处理（Escalate ambiguity and policy gaps）", "传播结构化错误和部分结果（Propagate structured errors and partial results）", "为大型代码库使用草稿区、子智能体、清单和压缩（Use scratchpads, subagents, manifests, and compaction for large codebases）", "校准置信度与人工审核（Calibrate confidence and human review）", "追踪来源、冲突、日期和内容类型（Track provenance, conflicts, dates, and content types）"]}
   ],
   "scenarioPool": [
-    "Customer support resolution agent",
-    "Code generation with Claude Code",
-    "Multi-agent research",
-    "Developer productivity with Claude",
-    "Claude Code for CI/CD",
-    "Structured data extraction"
+    "客户支持问题解决智能体（Customer support resolution agent）",
+    "使用 Claude Code 生成代码（Code generation with Claude Code）",
+    "多智能体研究（Multi-agent research）",
+    "使用 Claude 提升开发者生产力（Developer productivity with Claude）",
+    "用于持续集成与交付的 Claude Code（Claude Code for CI/CD）",
+    "结构化数据提取（Structured data extraction）"
   ],
   "lessons": [
     {"path": "certifications/claude/lessons/00-certification-strategy", "domains": ["agentic-architecture-orchestration"], "role": "orientation", "required": true},
@@ -71,18 +71,18 @@
     {"path": "certifications/claude/lessons/31-architect-foundations-scenario-capstone", "domains": ["agentic-architecture-orchestration", "tool-design-mcp-integration", "claude-code-configuration-workflows", "prompt-engineering-structured-output", "context-management-reliability"], "role": "capstone", "required": true}
   ],
   "deepDives": [
-    {"path": "phases/14-agent-engineering/28-orchestration-patterns", "label": "Orchestration Patterns", "reason": "Compare coordinator, delegation, and parallel patterns"},
-    {"path": "phases/15-autonomous-systems/12-durable-execution", "label": "Durable Execution", "reason": "Handle resume, failure, and long-running state"},
-    {"path": "phases/13-tools-and-protocols/15-mcp-security-tool-poisoning", "label": "MCP Tool Poisoning", "reason": "Treat tool descriptions and results as an attack surface"},
-    {"path": "phases/14-agent-engineering/39-reviewer-agent", "label": "Reviewer Agent", "reason": "Build independent evidence-based review"},
-    {"path": "phases/14-agent-engineering/40-multi-session-handoff", "label": "Multi-Session Handoff", "reason": "Preserve structured state without stale context"}
+    {"path": "phases/14-agent-engineering/28-orchestration-patterns", "label": "编排模式（Orchestration Patterns）", "reason": "比较协调者、委派与并行模式"},
+    {"path": "phases/15-autonomous-systems/12-durable-execution", "label": "持久执行（Durable Execution）", "reason": "处理恢复、失败和长时间运行状态"},
+    {"path": "phases/13-tools-and-protocols/15-mcp-security-tool-poisoning", "label": "MCP 工具投毒（MCP Tool Poisoning）", "reason": "将工具描述与结果视为攻击面"},
+    {"path": "phases/14-agent-engineering/39-reviewer-agent", "label": "评审智能体（Reviewer Agent）", "reason": "建立基于证据的独立评审"},
+    {"path": "phases/14-agent-engineering/40-multi-session-handoff", "label": "多会话交接（Multi-Session Handoff）", "reason": "保留结构化状态，不携带过时上下文"}
   ],
   "assessments": [
-    {"id": "claude-ccar-f-diagnostic", "path": "certifications/claude/assessments/ccar-f/diagnostic.json", "kind": "diagnostic", "title": "Architect Foundations Diagnostic", "timeLimitMinutes": 30},
-    {"id": "claude-ccar-f-mock-01", "path": "certifications/claude/assessments/ccar-f/mock-01.json", "kind": "mock", "title": "Architect Foundations Scenario Mock", "timeLimitMinutes": 120}
+    {"id": "claude-ccar-f-diagnostic", "path": "certifications/claude/assessments/ccar-f/diagnostic.json", "kind": "diagnostic", "title": "架构师基础级诊断测评（Architect Foundations Diagnostic）", "timeLimitMinutes": 30},
+    {"id": "claude-ccar-f-mock-01", "path": "certifications/claude/assessments/ccar-f/mock-01.json", "kind": "mock", "title": "架构师基础级场景模拟考试（Architect Foundations Scenario Mock）", "timeLimitMinutes": 120}
   ],
   "studyPlans": [
-    {"id": "ccar-f-28-day", "label": "28-day scenario plan", "durationDays": 28, "hoursPerWeek": 12, "milestones": ["Days 1-5: product, model, prompt, context, and validation foundations", "Days 6-10: Messages API, structured output, tool loops, and MCP", "Days 11-15: Agent SDK, security, evaluation, and Claude Code", "Days 16-20: orchestration, sessions, tool contracts, and memory", "Days 21-24: extraction, long-context reliability, and scenario capstone", "Days 25-28: full scenario mock and targeted review"]},
-    {"id": "ccar-f-49-day", "label": "49-day architecture plan", "durationDays": 49, "hoursPerWeek": 7, "milestones": ["Week 1: product, model, and prompt foundations", "Week 2: context, validation, API, and structured output", "Week 3: tool loops, MCP, Agent SDK, and security", "Week 4: evaluation and Claude Code workflows", "Week 5: orchestration, sessions, and tool contracts", "Week 6: memory, extraction, and context reliability", "Week 7: scenario capstone, full mock, and remediation"]}
+    {"id": "ccar-f-28-day", "label": "28 天场景学习计划（28-day scenario plan）", "durationDays": 28, "hoursPerWeek": 12, "milestones": ["第 1-5 天：产品、模型、提示词、上下文和验证基础", "第 6-10 天：Messages API、结构化输出、工具循环和 MCP", "第 11-15 天：Agent SDK、安全、评估和 Claude Code", "第 16-20 天：编排、会话、工具契约和记忆", "第 21-24 天：提取、长上下文可靠性和场景综合实践", "第 25-28 天：完整场景模拟考试和针对性复习"]},
+    {"id": "ccar-f-49-day", "label": "49 天架构学习计划（49-day architecture plan）", "durationDays": 49, "hoursPerWeek": 7, "milestones": ["第 1 周：产品、模型和提示词基础", "第 2 周：上下文、验证、API 和结构化输出", "第 3 周：工具循环、MCP、Agent SDK 和安全", "第 4 周：评估和 Claude Code 工作流", "第 5 周：编排、会话和工具契约", "第 6 周：记忆、提取和上下文可靠性", "第 7 周：场景综合实践、全长模拟考试和补习"]}
   ]
 }

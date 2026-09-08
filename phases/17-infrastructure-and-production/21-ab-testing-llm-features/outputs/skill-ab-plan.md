@@ -1,32 +1,32 @@
 ---
 name: ab-plan
-description: Design an LLM A/B test — pick platform (Statsig or GrowthBook), primary metric, guardrails, sample size with LLM-noise buffer, CUPED, sequential stopping, and multiple-comparison correction.
+description: 设计 LLM A/B 测试，选择平台（Statsig 或 GrowthBook）、主指标、护栏、带 LLM 噪声余量的样本量、CUPED、序贯停止与多重比较校正。
 version: 1.0.0
 phase: 17
 lesson: 21
 tags: [ab-testing, statsig, growthbook, cuped, sequential, benjamini-hochberg, srm]
 ---
 
-Given the feature change (prompt / model / generation parameter), baseline metrics, expected lift, and team posture (warehouse-native OSS vs bundled SaaS), produce an A/B plan.
+根据功能变更（提示词、模型或生成参数）、基准指标、预期提升和团队偏好（数据仓库原生开源方案或集成 SaaS），制定 A/B 方案。
 
-Produce:
+需要提供：
 
-1. Platform. Statsig (bundled SaaS, OpenAI-owned) or GrowthBook (MIT OSS, warehouse-native). Justify.
-2. Primary metric + guardrails. Primary is the metric you are trying to move; guardrails are things that must not regress (cost/request, latency P99, refusal rate).
-3. Sample size. Classical power calculation × 1.4 (LLM non-determinism buffer).
-4. Design. Fixed-horizon or sequential. Sequential if you expect strong signals; fixed if the change is subtle.
-5. CUPED. Enable if pre-period data exists for the primary metric; specify the regressor.
-6. Correction. Bonferroni for small number of tests; Benjamini-Hochberg for many related tests.
-7. SRM. Require SRM check on every experiment; halt and debug if flagged.
+1. 平台。选择 Statsig（集成 SaaS，OpenAI 旗下）或 GrowthBook（MIT 开源、数据仓库原生），并说明理由。
+2. 主指标与护栏。主指标是希望改善的指标；护栏是不能退步的指标，如每请求成本、延迟 P99、拒答率。
+3. 样本量。经典功效计算结果 × 1.4，作为 LLM 非确定性余量。
+4. 设计。选择固定周期或序贯。如果预计信号很强，采用序贯；变化细微时采用固定周期。
+5. CUPED。如果主指标有实验前数据，就启用，并指定回归变量。
+6. 校正。少量检验使用 Bonferroni；大量相关检验使用 Benjamini-Hochberg。
+7. SRM。每个实验都必须做样本比例失配检查；发现问题时停止并调试。
 
-Hard rejects:
-- Shipping on vibes. Refuse — require A/B or documented no-A/B exception.
-- Running >5 experiments on the same primary metric without BH/Bonferroni. Refuse — false discovery certain.
-- Skipping SRM check. Refuse — assignment bugs are common.
+必须拒绝的情况：
+- 凭感觉发布。拒绝：要求 A/B，或书面记录不做 A/B 的例外理由。
+- 对同一主指标运行超过 5 个实验，却不使用 BH/Bonferroni。拒绝：必然会出现错误发现。
+- 跳过 SRM 检查。拒绝：分组错误很常见。
 
-Refusal rules:
-- If traffic < 1000 users/week for the feature, refuse fixed A/B — require shadow + canary (Phase 17 · 20) instead.
-- If the primary metric is subjective (e.g., "quality") without an objective proxy, require human eval in parallel.
-- If the lift hypothesis is smaller than the LLM noise floor, refuse — the experiment cannot detect it with realistic sample size.
+拒绝规则：
+- 如果该功能流量少于每周 1000 名用户，拒绝固定 A/B，改为要求影子模式加金丝雀（阶段 17 · 20）。
+- 如果主指标是“质量”等主观指标，且没有客观代理指标，要求并行进行人工评测。
+- 如果假设的提升小于 LLM 噪声下限，拒绝：现实可行的样本量无法检测到它。
 
-Output: a one-page plan with platform, primary + guardrails, sample size, design, CUPED, correction, SRM policy. End with the decision rule: primary significant + all guardrails not significant-negative → ship; any guardrail breach → do not ship regardless of primary.
+输出：一页方案，包含平台、主指标与护栏、样本量、设计、CUPED、校正和 SRM 策略。最后给出决策规则：主指标显著改善，且所有护栏均无显著负向变化 → 发布；任何护栏违规 → 无论主指标如何，都不发布。

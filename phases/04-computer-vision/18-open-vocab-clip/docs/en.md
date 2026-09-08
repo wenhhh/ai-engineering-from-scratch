@@ -1,36 +1,36 @@
-# Open-Vocabulary Vision — CLIP
+# 开放词汇视觉：CLIP（Open-Vocabulary Vision — CLIP）
 
-> Train an image encoder and a text encoder together so that matching (image, caption) pairs land at the same point in a shared space. That is the whole trick.
+> 联合训练图像编码器与文本编码器，让匹配的图像、描述对落在共享空间中的同一点。这就是全部技巧。
 
 **Type:** Build + Use
 **Languages:** Python
-**Prerequisites:** Phase 4 Lesson 14 (ViT), Phase 4 Lesson 17 (Self-Supervised)
-**Time:** ~45 minutes
+**Prerequisites:** 阶段 4 第 14 课（视觉 Transformer），阶段 4 第 17 课（自监督）
+**Time:** 约 45 分钟
 
-## Learning Objectives
+## 学习目标（Learning Objectives）
 
-- Explain CLIP's two-tower architecture and contrastive training objective
-- Use a pretrained CLIP (or SigLIP) for zero-shot classification without any task-specific training
-- Implement zero-shot classification from scratch: encode class prompts, compute cosine similarity, take argmax
-- Distinguish CLIP, SigLIP, OpenCLIP, and LLaVA/LLaMA-vision models — what each is for in 2026
+- 解释 CLIP 的双塔架构与对比训练目标
+- 使用预训练 CLIP 或 SigLIP 进行零样本分类，不进行任何任务专用训练
+- 从零实现零样本分类：编码类别提示词、计算余弦相似度、取最大值索引
+- 区分 CLIP、SigLIP、OpenCLIP 与 LLaVA/LLaMA-vision 模型，理解它们在 2026 年的各自用途
 
-## The Problem
+## 问题（The Problem）
 
-Traditional classifiers are closed-vocabulary: a 1000-class ImageNet model can only predict 1000 labels. Every new category requires labelled data and a retrained head.
+传统分类器采用封闭词汇（Closed Vocabulary）：1000 类 ImageNet 模型只能预测 1000 个标签。每增加一个类别，都需要标注数据并重新训练分类头。
 
-CLIP (Radford et al., OpenAI 2021) showed that training on 400M (image, caption) pairs scraped from the web produces a model that can classify into any set of categories at inference, described purely in natural language. You give it a new class by writing a sentence.
+对比语言图像预训练（Contrastive Language-Image Pre-training，CLIP；Radford 等，OpenAI，2021）表明，在网页抓取的 400M 对图像与描述上训练，可以得到一种模型：推理时仅用自然语言描述任意类别集合，就能进行分类。写一句话，就能给它增加一个新类别。
 
-That capability — zero-shot transfer — is why every modern vision system starts with a CLIP-family checkpoint. Detection (Grounding DINO, OWL-ViT), segmentation (CLIPSeg, SAM), retrieval, content moderation, VLMs, and text-to-image generation all build on CLIP-style joint embeddings.
+这种零样本迁移（Zero-Shot Transfer）能力，是每个现代视觉系统都从 CLIP 家族检查点开始的原因。检测（Grounding DINO、OWL-ViT）、分割（CLIPSeg、SAM）、检索、内容审核、视觉语言模型与文生图，都建立在 CLIP 风格联合嵌入之上。
 
-## The Concept
+## 概念（The Concept）
 
-### Two towers
+### 双塔（Two towers）
 
 ```mermaid
 flowchart LR
-    IMG["Image"] --> IENC["Image encoder<br/>(ViT-L/14)"] --> IEMB["Image embedding<br/>(1024,)"]
-    TXT["Caption"] --> TENC["Text encoder<br/>(transformer)"] --> TEMB["Text embedding<br/>(1024,)"]
-    IEMB --> SIM["Cosine similarity"]
+    IMG["图像"] --> IENC["图像编码器<br/>(ViT-L/14)"] --> IEMB["图像嵌入<br/>(1024,)"]
+    TXT["图像描述"] --> TENC["文本编码器<br/>（Transformer）"] --> TEMB["文本嵌入<br/>(1024,)"]
+    IEMB --> SIM["余弦相似度"]
     TEMB --> SIM
 
     style IENC fill:#dbeafe,stroke:#2563eb
@@ -38,11 +38,11 @@ flowchart LR
     style SIM fill:#dcfce7,stroke:#16a34a
 ```
 
-Both encoders end with a linear projection to the same embedding dimension (512 for CLIP-B/32, 1024 for CLIP-L/14). L2-normalise and compute cosine similarity.
+两个编码器都以线性投影结束，输出相同嵌入维度，CLIP-B/32 为 512，CLIP-L/14 为 1024。进行 L2 归一化后计算余弦相似度（Cosine Similarity）。
 
-### The objective
+### 优化目标（The objective）
 
-Given a batch of N (image, caption) pairs, build an NxN similarity matrix. Train both encoders so the diagonal (matching pairs) has high similarity and off-diagonals (non-matching) have low similarity.
+给定包含 N 对图像与描述的批次，构建 NxN 相似度矩阵。训练两个编码器，让对角线上的匹配对相似度高，非对角线的不匹配对相似度低。
 
 ```
 sim_matrix = image_embeddings @ text_embeddings.T / tau
@@ -52,51 +52,51 @@ loss_t2i = cross_entropy(sim_matrix.T,     targets=arange(N))
 loss = (loss_i2t + loss_t2i) / 2
 ```
 
-Symmetric because both image-to-text and text-to-image retrieval should work. `tau` (temperature) is typically learned as a scalar parameter, initialised to 0.07.
+之所以对称，是因为图搜文与文搜图都应有效。`tau` 是温度（Temperature），通常作为标量参数学习，初始化为 0.07。
 
-### SigLIP: a better loss
+### SigLIP：更好的损失（SigLIP: a better loss）
 
-SigLIP (Zhai et al., 2023) replaced the softmax with per-pair sigmoid:
+SigLIP（Zhai 等，2023）用逐对 sigmoid 替换 softmax：
 
 ```
-loss = mean over pairs of log(1 + exp(-y_ij * sim_ij))
-y_ij = +1 if matching, -1 otherwise
+loss = 对所有配对的 log(1 + exp(-y_ij * sim_ij)) 取平均
+y_ij = 匹配时为 +1，否则为 -1
 ```
 
-Per-pair loss removes the batch-level normalisation that CLIP requires. SigLIP trains better at small batch sizes and matches or exceeds CLIP at equal data.
+逐对损失去掉了 CLIP 所需的批次级归一化。SigLIP 在小批量下训练更好，相同数据量时可匹配或超过 CLIP。
 
-### Zero-shot classification
+### 零样本分类（Zero-shot classification）
 
-Given a trained CLIP:
+给定已训练的 CLIP：
 
-1. For each class, compose a prompt: "a photo of a {class}".
-2. Encode all class prompts with the text encoder -> `T` shape (C, d).
-3. Encode the test image -> `I` shape (1, d).
-4. Similarity = `I @ T.T` shape (1, C).
-5. Argmax -> predicted class.
+1. 为每个类别编写提示词：“一张 {class} 的照片”。
+2. 用文本编码器编码全部类别提示词 -> `T`，形状为 (C, d)。
+3. 编码测试图像 -> `I`，形状为 (1, d)。
+4. 相似度 = `I @ T.T`，形状为 (1, C)。
+5. 取最大值索引（Argmax）-> 预测类别。
 
-Prompt engineering matters. OpenAI published 80 prompt templates for ImageNet ("a photo of a {}", "a blurry photo of a {}", "a sketch of a {}", ...). Average the embeddings of all templates per class for an extra 1-3% top-1 accuracy.
+提示词工程（Prompt Engineering）很重要。OpenAI 为 ImageNet 发布了 80 个提示词模板，例如“一张 {} 的照片”“一张模糊的 {} 照片”“一幅 {} 的素描”等。对每个类别的全部模板嵌入取平均，可额外提高 1-3% 的 top-1 准确率。
 
-### Where CLIP-style models are used in 2026
+### 2026 年 CLIP 风格模型的应用（Where CLIP-style models are used in 2026）
 
-- **Zero-shot classification** — direct use.
-- **Image retrieval** — encode all images once, embed query at inference.
-- **Text-conditioned detection** — Grounding DINO, OWL-ViT wrap a CLIP text tower around a detector.
-- **Text-conditioned segmentation** — CLIPSeg; SAM uses text-prompt inputs via CLIP.
-- **VLMs** — LLaVA, Qwen-VL, InternVL wire a CLIP-family vision encoder into an LLM.
-- **Text-to-image gen** — Stable Diffusion, DALL-E 3 condition on CLIP text embeddings.
+- **零样本分类（Zero-shot classification）**：直接使用。
+- **图像检索（Image retrieval）**：一次性编码全部图像，推理时嵌入查询。
+- **文本条件检测（Text-conditioned detection）**：Grounding DINO、OWL-ViT 为检测器接入 CLIP 文本塔。
+- **文本条件分割（Text-conditioned segmentation）**：CLIPSeg；SAM 通过 CLIP 使用文本提示输入。
+- **视觉语言模型（Vision-Language Model，VLM）**：LLaVA、Qwen-VL、InternVL 将 CLIP 家族视觉编码器连接到大语言模型（Large Language Model，LLM）。
+- **文生图（Text-to-image generation）**：Stable Diffusion、DALL-E 3 以 CLIP 文本嵌入为条件。
 
-Once you have a shared embedding space, every vision+language task becomes a distance computation.
+一旦有了共享嵌入空间，每个视觉加语言任务都会变为距离计算。
 
 ```figure
 clip-contrastive
 ```
 
-## Build It
+## 动手构建（Build It）
 
-### Step 1: A tiny two-tower model
+### 第 1 步：微型双塔模型（Step 1: A tiny two-tower model）
 
-Real CLIP is ViT + transformer. For this lesson the towers are small MLPs over pre-extracted features so the training signal is visible on CPU.
+真实 CLIP 是 ViT 加 Transformer。本课的两个塔是处理预提取特征的小型多层感知机（Multilayer Perceptron，MLP），便于在 CPU 上观察训练信号。
 
 ```python
 import torch
@@ -117,9 +117,9 @@ class TwoTower(nn.Module):
         return i, t, self.logit_scale.exp()
 ```
 
-Two projections, shared-dim output, learned temperature. Same shape as the real CLIP API.
+两个投影、相同维度输出、可学习温度，接口形状与真实 CLIP API 一致。
 
-### Step 2: Contrastive loss
+### 第 2 步：对比损失（Step 2: Contrastive loss）
 
 ```python
 def clip_loss(image_emb, text_emb, logit_scale):
@@ -131,9 +131,9 @@ def clip_loss(image_emb, text_emb, logit_scale):
     return (l_i + l_t) / 2
 ```
 
-Symmetric. Higher logit_scale = sharper softmax = more confident but risk of instability.
+损失对称。logit_scale 越高，softmax 越尖锐，置信度越高，但也有不稳定风险。
 
-### Step 3: Zero-shot classifier
+### 第 3 步：零样本分类器（Step 3: Zero-shot classifier）
 
 ```python
 @torch.no_grad()
@@ -149,9 +149,9 @@ def zero_shot_classify(model, image_feats, class_text_feats, class_names):
     return [class_names[p] for p in pred.tolist()]
 ```
 
-One line per step. This is the exact zero-shot procedure used with a production CLIP checkpoint.
+每一步一行。这正是生产 CLIP 检查点使用的零样本流程。
 
-### Step 4: Sanity check
+### 第 4 步：基本检查（Step 4: Sanity check）
 
 ```python
 torch.manual_seed(0)
@@ -164,11 +164,11 @@ loss = clip_loss(i, t, scale)
 print(f"batch size: {i.size(0)}   loss: {loss.item():.3f}")
 ```
 
-Loss should be close to `log(N) = log(8) = 2.08` for a randomly initialised model — the symmetric cross-entropy target when no structure is learned yet.
+随机初始化模型的损失应接近 `log(N) = log(8) = 2.08`，这是尚未学到结构时的对称交叉熵目标值。
 
-## Use It
+## 实际使用（Use It）
 
-OpenCLIP is the community default in 2026:
+OpenCLIP 是 2026 年社区的默认选择：
 
 ```python
 import open_clip
@@ -191,37 +191,37 @@ with torch.no_grad():
 print(probs)
 ```
 
-SigLIP is newer, trains better at small scales, and is preferred for new work: `google/siglip-base-patch16-224`. Hugging Face ships both.
+SigLIP 更新，在小规模下训练更好，新工作优先选择它：`google/siglip-base-patch16-224`。Hugging Face 提供两者。
 
-## Ship It
+## 交付成果（Ship It）
 
-This lesson produces:
+本课产出：
 
-- `outputs/prompt-zero-shot-class-picker.md` — a prompt that designs class templates for zero-shot CLIP given a list of classes and a domain.
-- `outputs/skill-image-text-retriever.md` — a skill that builds an image embedding index with any CLIP checkpoint, supports query-by-text and query-by-image.
+- `outputs/prompt-zero-shot-class-picker.md`：根据类别列表与领域，为零样本 CLIP 设计类别模板的提示词。
+- `outputs/skill-image-text-retriever.md`：使用任意 CLIP 检查点构建图像嵌入索引的技能，支持文本查询与图像查询。
 
-## Exercises
+## 练习（Exercises）
 
-1. **(Easy)** Use a pretrained OpenCLIP ViT-B/32 and do zero-shot classification on CIFAR-10 with the 80-template prompt set. Report top-1 accuracy; it should be around 85-90%.
-2. **(Medium)** Compare single-template ("a photo of a {}") vs 80-template averaged embeddings on the same CIFAR-10 task. Quantify the gap and explain why templates help.
-3. **(Hard)** Build a zero-shot image retrieval index: embed 1,000 images with CLIP, build a FAISS index, query with a natural language description. Report retrieval recall@5 for 20 held-out queries you write by hand.
+1. **（简单）** 使用预训练 OpenCLIP ViT-B/32 与 80 模板提示词集，在 CIFAR-10 上进行零样本分类。报告 top-1 准确率，应约为 85-90%。
+2. **（中等）** 在相同 CIFAR-10 任务上，比较单模板“一张 {} 的照片”与 80 模板平均嵌入。量化差距，解释模板为何有效。
+3. **（困难）** 构建零样本图像检索索引：用 CLIP 嵌入 1,000 张图像，建立 FAISS 索引，用自然语言描述查询。手工编写 20 个留出查询，报告检索 recall@5。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语 | 常见说法 | 实际含义 |
 |------|----------------|----------------------|
-| Two-tower | "Dual encoder" | Separate image and text encoders ending in a shared-dim projection head |
-| Zero-shot | "No task-specific training" | Classify into classes described only by text at inference; no labels touched |
-| Temperature / logit_scale | "tau" | Learned scalar that scales the similarity matrix before softmax |
-| Prompt template | "A photo of a {}" | Natural-language wrapper around class names; averaging many templates boosts zero-shot accuracy |
-| CLIP | "Image+text model" | The 2021 OpenAI model; vocabulary of the field in 2026 |
-| SigLIP | "Sigmoid CLIP" | Swaps softmax for per-pair sigmoid; trains better at small batches |
-| OpenCLIP | "Open reproduction" | Community-trained CLIP variants on LAION; production default for open-source pipelines |
-| VLM | "Vision-language model" | A CLIP-family encoder plus an LLM, trained to answer questions about images |
+| 双塔（Two-tower） | “双编码器” | 独立图像与文本编码器，以相同维度的投影头结束 |
+| 零样本（Zero-shot） | “无需任务专用训练” | 推理时仅根据文本描述的类别分类，不使用标签 |
+| 温度 / logit_scale（Temperature / logit_scale） | “tau” | 在 softmax 前缩放相似度矩阵的可学习标量 |
+| 提示词模板（Prompt template） | “一张 {} 的照片” | 用自然语言包裹类别名，平均多个模板可提高零样本准确率 |
+| 对比语言图像预训练（CLIP） | “图文模型” | OpenAI 2021 年模型，也是 2026 年该领域的通用术语 |
+| SigLIP | “采用 sigmoid 的 CLIP” | 用逐对 sigmoid 替换 softmax，小批量训练更好 |
+| OpenCLIP | “开放复现” | 社区在 LAION 上训练的 CLIP 变体，是开源流水线的生产默认选择 |
+| 视觉语言模型（Vision-Language Model，VLM） | “视觉加语言模型” | CLIP 家族编码器加 LLM，训练后回答图像相关问题 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [CLIP: Learning Transferable Visual Models from Natural Language Supervision (Radford et al., 2021)](https://arxiv.org/abs/2103.00020)
-- [SigLIP: Sigmoid Loss for Language-Image Pre-Training (Zhai et al., 2023)](https://arxiv.org/abs/2303.15343)
-- [OpenCLIP](https://github.com/mlfoundations/open_clip) — the community codebase
-- [DINOv2 vs CLIP vs MAE: a features comparison](https://huggingface.co/blog/dinov2) — HF guide with side-by-side use cases
+- [CLIP：从自然语言监督学习可迁移视觉模型（Radford 等，2021）](https://arxiv.org/abs/2103.00020)
+- [SigLIP：用于语言图像预训练的 Sigmoid 损失（Zhai 等，2023）](https://arxiv.org/abs/2303.15343)
+- [OpenCLIP](https://github.com/mlfoundations/open_clip)：社区代码库
+- [DINOv2、CLIP 与 MAE 特征比较](https://huggingface.co/blog/dinov2)：Hugging Face 指南，并列展示使用场景

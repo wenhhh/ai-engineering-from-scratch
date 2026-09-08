@@ -20,7 +20,7 @@
     var button = document.getElementById('themeToggle');
     var theme = root.getAttribute('data-theme');
     if (icon) icon.textContent = theme === 'light' ? 'N' : 'D';
-    if (button) button.setAttribute('aria-label', theme === 'light' ? 'Switch to dark theme' : 'Switch to light theme');
+    if (button) button.setAttribute('aria-label', theme === 'light' ? '切换深色主题' : '切换浅色主题');
   }
 
   function applyTheme(theme) {

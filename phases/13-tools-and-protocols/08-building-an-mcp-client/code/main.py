@@ -1,8 +1,8 @@
-"""Phase 13 Lesson 08: a stateless multi-server MCP client.
-Lesson: phases/13-tools-and-protocols/08-building-an-mcp-client/docs/en.md
-Specification: https://modelcontextprotocol.io/specification/2026-07-28/
-Demonstrates discovery, fail-closed legacy probing, deterministic merge, and routing.
-Run: python3 main.py
+"""阶段 13 第 08 课：无状态多服务器 MCP 客户端（Multi-server MCP client）。
+课程： phases/13-tools-and-protocols/08-building-an-mcp-client/docs/en.md
+规范： https://modelcontextprotocol.io/specification/2026-07-28/
+演示发现（Discovery）、失败即拒绝（Fail-closed）的旧版探测、确定性合并（Deterministic merge）与路由（Routing）。
+运行： python3 main.py
 """
 
 from __future__ import annotations
@@ -112,14 +112,14 @@ def decode_rpc_response(
     if has_result:
         result = response["result"]
         if not isinstance(result, dict):
-            raise RuntimeError("JSON-RPC result must be an object")
+            raise RuntimeError("JSON-RPC result 必须为对象")
         return "result", result
     error = response["error"]
     if not isinstance(error, dict):
-        raise RuntimeError("JSON-RPC error must be an object")
+        raise RuntimeError("JSON-RPC error 必须为对象")
     code = error.get("code")
     if not isinstance(code, int) or isinstance(code, bool) or not isinstance(error.get("message"), str):
-        raise RuntimeError("JSON-RPC error requires an integer code and string message")
+        raise RuntimeError("JSON-RPC error 需要整数 code 和字符串 message")
     return "error", error
 
 
@@ -178,7 +178,7 @@ class ModernFakeServer:
                     {
                         "supportedVersions": self.supported_versions.copy(),
                         "capabilities": self.capabilities.copy(),
-                        "instructions": f"Tools provided by {self.server_info['name']}.",
+                        "instructions": f"由 {self.server_info['name']} 提供的工具。",
                     },
                     ttl_ms=3_600_000,
                     cache_scope="public",
@@ -202,9 +202,9 @@ class ModernFakeServer:
                             {
                                 "type": "text",
                                 "text": (
-                                    f"[{self.server_info['name']}] {name} ran"
+                                    f"[{self.server_info['name']}] {name} 已运行"
                                     if name in declared
-                                    else f"Unknown tool: {name}"
+                                    else f"未知工具： {name}"
                                 ),
                             }
                         ],
@@ -259,7 +259,7 @@ class LegacyFakeServer:
                 "jsonrpc": "2.0",
                 "id": message["id"],
                 "result": {
-                    "content": [{"type": "text", "text": f"[{self.name}/legacy] {name} ran"}],
+                    "content": [{"type": "text", "text": f"[{self.name}/legacy] {name} 已运行"}],
                     "isError": False,
                 },
             }
@@ -298,9 +298,9 @@ class MultiServerClient:
         legacy_probe_timeout_ms: int = 1_000,
     ) -> None:
         if not supported_modern or not supported_legacy:
-            raise ValueError("at least one modern and legacy version must be configured")
+            raise ValueError("至少需要分别配置一个新版和一个旧版协议版本")
         if discovery_timeout_ms <= 0 or legacy_probe_timeout_ms <= 0:
-            raise ValueError("probe timeouts must be positive")
+            raise ValueError("探测超时时间必须为正数")
         self.supported_modern = supported_modern
         self.supported_legacy = supported_legacy
         self.probe_version = probe_version or supported_modern[0]
@@ -343,7 +343,7 @@ class MultiServerClient:
 
     def _activate_modern(self, peer: Peer, result: dict[str, Any], version: str) -> None:
         if result.get("resultType") != "complete":
-            raise RuntimeError(f"{peer.name}: modern discovery omitted resultType")
+            raise RuntimeError(f"{peer.name}: 新版发现响应缺少 resultType")
         peer.era = "modern"
         peer.protocol_version = version
         peer.capabilities = result.get("capabilities", {})
@@ -368,12 +368,12 @@ class MultiServerClient:
         try:
             response = self._send(peer, initialize, self.legacy_probe_timeout_ms)
         except (TimeoutError, ConnectionError) as exc:
-            raise RuntimeError(f"{peer.name}: bounded legacy probe failed closed") from exc
+            raise RuntimeError(f"{peer.name}: 有界旧版探测失败，已按失败即拒绝原则终止") from exc
         if not isinstance(response, dict):
-            raise RuntimeError(f"{peer.name}: bounded legacy probe returned no result")
+            raise RuntimeError(f"{peer.name}: 有界旧版探测未返回结果")
         kind, payload = decode_rpc_response(response, request_id)
         if kind != "result":
-            raise RuntimeError(f"{peer.name}: legacy initialize returned an error")
+            raise RuntimeError(f"{peer.name}: 旧版 initialize 返回错误")
         result = payload
         version = result.get("protocolVersion")
         capabilities = result.get("capabilities")
@@ -417,32 +417,32 @@ class MultiServerClient:
             return
 
         if response is None:
-            self._probe_legacy(peer, "empty discovery response")
+            self._probe_legacy(peer, "发现响应为空")
             return
         if not isinstance(response, dict):
-            raise RuntimeError(f"{peer.name}: malformed discovery response")
+            raise RuntimeError(f"{peer.name}: 发现响应格式错误")
         kind, payload = decode_rpc_response(response, request_id)
         if kind == "result":
             advertised = payload.get("supportedVersions", [])
             if not isinstance(advertised, list) or not all(
                 isinstance(version, str) for version in advertised
             ):
-                raise RuntimeError(f"{peer.name}: malformed modern discovery result")
+                raise RuntimeError(f"{peer.name}: 新版发现结果格式错误")
             selected = self._mutual_version(advertised)
             if selected is None:
-                raise RuntimeError(f"{peer.name}: no mutually supported modern version")
+                raise RuntimeError(f"{peer.name}: 没有双方均支持的新版协议版本")
             self._activate_modern(peer, payload, selected)
             return
 
         code = payload["code"]
         if code in RECOGNIZED_MODERN_ERRORS:
             if code != -32022:
-                raise RuntimeError(f"{peer.name}: correct modern request error {code} before retrying")
+                raise RuntimeError(f"{peer.name}: 请先修正新版请求错误 {code}，再重试")
             data = payload.get("data")
             advertised = data.get("supported", []) if isinstance(data, dict) else []
             selected = self._mutual_version(advertised)
             if selected is None:
-                raise RuntimeError(f"{peer.name}: no mutually supported modern version")
+                raise RuntimeError(f"{peer.name}: 没有双方均支持的新版协议版本")
             retry_id = self._new_id()
             retry = modern_request(
                 retry_id,
@@ -454,16 +454,16 @@ class MultiServerClient:
             try:
                 retried = self._send(peer, retry, self.discovery_timeout_ms)
             except (TimeoutError, ConnectionError) as exc:
-                raise RuntimeError(f"{peer.name}: proven-modern discovery retry failed") from exc
+                raise RuntimeError(f"{peer.name}: 已确认使用新版协议的发现重试失败") from exc
             if not isinstance(retried, dict):
-                raise RuntimeError(f"{peer.name}: proven-modern discovery retry returned no result")
+                raise RuntimeError(f"{peer.name}: 已确认使用新版协议的发现重试未返回结果")
             retry_kind, retry_payload = decode_rpc_response(retried, retry_id)
             if retry_kind != "result":
-                raise RuntimeError(f"{peer.name}: proven-modern discovery retry returned an error")
+                raise RuntimeError(f"{peer.name}: 已确认使用新版协议的发现重试返回错误")
             self._activate_modern(peer, retry_payload, selected)
             return
 
-        self._probe_legacy(peer, f"unrecognized discovery error {code}")
+        self._probe_legacy(peer, f"无法识别的发现错误 {code}")
 
     def connect_all(self) -> None:
         for peer_name in sorted(self.peers):
@@ -482,16 +482,16 @@ class MultiServerClient:
         elif peer.era == "legacy":
             message = legacy_request(request_id, method, params)
         else:
-            raise RuntimeError(f"{peer.name}: protocol era not selected")
+            raise RuntimeError(f"{peer.name}: 尚未选择协议代际")
         response = self._send(peer, message)
         if not isinstance(response, dict):
-            raise RuntimeError(f"{peer.name}: missing response")
+            raise RuntimeError(f"{peer.name}: 缺少响应")
         kind, payload = decode_rpc_response(response, request_id)
         if kind != "result":
-            raise RuntimeError(f"{peer.name}: RPC error {payload}")
+            raise RuntimeError(f"{peer.name}: RPC 错误 {payload}")
         result = dict(payload)
         if peer.era == "modern" and "resultType" not in result:
-            raise RuntimeError(f"{peer.name}: modern result omitted resultType")
+            raise RuntimeError(f"{peer.name}: 新版结果缺少 resultType")
         if peer.era == "legacy":
             result.setdefault("resultType", "complete")
         return result
@@ -505,7 +505,7 @@ class MultiServerClient:
 
     def merge(self, policy: str = "prefix-on-collision") -> None:
         if policy not in {"prefix-on-collision", "reject"}:
-            raise ValueError("policy must be prefix-on-collision or reject")
+            raise ValueError("policy 必须为 prefix-on-collision 或 reject")
         self.registry.clear()
         for peer_name in sorted(self.peers):
             peer = self.peers[peer_name]
@@ -517,7 +517,7 @@ class MultiServerClient:
                         continue
                     canonical_name = f"{peer.name}/{local_name}"
                     if canonical_name in self.registry:
-                        raise ValueError(f"canonical collision: {canonical_name}")
+                        raise ValueError(f"规范名称冲突： {canonical_name}")
                 self.registry[canonical_name] = MergedTool(
                     canonical_name=canonical_name,
                     peer_name=peer.name,
@@ -531,14 +531,14 @@ class MultiServerClient:
         if merged is None:
             return {
                 "resultType": "complete",
-                "content": [{"type": "text", "text": f"Unknown tool: {canonical_name}"}],
+                "content": [{"type": "text", "text": f"未知工具： {canonical_name}"}],
                 "isError": True,
             }
         peer = self.peers[merged.peer_name]
         if not peer.available:
             return {
                 "resultType": "complete",
-                "content": [{"type": "text", "text": f"Transport unavailable: {peer.name}"}],
+                "content": [{"type": "text", "text": f"传输不可用： {peer.name}"}],
                 "isError": True,
             }
         return self._request(
@@ -557,9 +557,9 @@ def tool(name: str, description: str) -> dict[str, Any]:
 
 
 def main() -> None:
-    notes = ModernFakeServer("notes", [tool("search", "Search notes"), tool("create", "Create note")])
-    files = ModernFakeServer("files", [tool("search", "Search files"), tool("read", "Read file")])
-    archive = LegacyFakeServer("archive", [tool("search", "Search archive"), tool("restore", "Restore item")])
+    notes = ModernFakeServer("notes", [tool("search", "搜索笔记"), tool("create", "创建笔记")])
+    files = ModernFakeServer("files", [tool("search", "搜索文件"), tool("read", "读取文件")])
+    archive = LegacyFakeServer("archive", [tool("search", "搜索归档"), tool("restore", "还原条目")])
 
     client = MultiServerClient()
     client.add_server("notes", notes)
@@ -570,17 +570,17 @@ def main() -> None:
     client.discover_tools()
     client.merge()
 
-    print("MCP client peers")
+    print("MCP 客户端对端（Peers）")
     for peer_name, peer in sorted(client.peers.items()):
         print(f"  {peer_name:8s} era={peer.era:6s} version={peer.protocol_version}")
-    print("\nMerged tools")
+    print("\n合并后的工具")
     for canonical_name, merged in client.registry.items():
         print(f"  {canonical_name:20s} -> {merged.peer_name}:{merged.local_name}")
-    print("\nCalls")
+    print("\n调用（Calls）")
     for name in ("create", "read", "notes/search", "search", "restore"):
         result = client.call(name, {})
         print(f"  {name:20s} -> {result['content'][0]['text']}")
-    print("\nNo modern protocol sessions were created.")
+    print("\n未创建任何新版协议会话。")
 
 
 if __name__ == "__main__":

@@ -1,48 +1,78 @@
 {
   "lesson": "08-building-an-mcp-client",
-  "title": "Building an MCP Client: Discovery, Routing, and Dual-Era Fallback",
+  "title": "构建 MCP 客户端：发现、路由与双时期回退（Building an MCP Client: Discovery, Routing, and Dual-Era Fallback）",
   "questions": [
     {
       "stage": "pre",
-      "question": "What should a dual-era stdio client send first?",
-      "options": ["Mcp-Session-Id", "server/discover", "initialize", "HTTP GET"],
+      "question": "双时期 stdio 客户端首先应发送什么？",
+      "options": [
+        "Mcp-Session-Id",
+        "server/discover",
+        "initialize",
+        "HTTP GET"
+      ],
       "correct": 1,
-      "explanation": "The discovery probe creates a clear boundary between modern per-request metadata and legacy initialization."
+      "explanation": "发现探测在现代逐请求元数据与旧版初始化之间建立清晰边界。"
     },
     {
       "stage": "check",
-      "question": "A discovery probe returns -32022 with a mutually supported version. What should the client do?",
-      "options": ["Retry modern discovery at the supported version", "Send initialize", "Open HTTP GET", "Ignore the server"],
+      "question": "发现探测返回 -32022，且包含双方支持版本。客户端应该怎么做？",
+      "options": [
+        "按支持版本重试现代发现",
+        "发送 initialize",
+        "打开 HTTP GET",
+        "忽略服务器"
+      ],
       "correct": 0,
-      "explanation": "-32022 is recognized modern evidence, so the client stays modern and retries."
+      "explanation": "-32022 是已识别的现代证据，所以客户端保持现代协议并重试。"
     },
     {
       "stage": "check",
-      "question": "Which condition is sufficient to select the legacy era?",
-      "options": ["Any -32601 error", "The peer is on a legacy allowlist", "The peer is allowlisted and a bounded initialize probe returns a valid supported legacy result", "A discovery timeout by itself"],
+      "question": "哪种条件足以选择旧版时期？",
+      "options": [
+        "任意 -32601 错误",
+        "对端在旧版允许列表中",
+        "对端在允许列表中，且有界 initialize 探测返回有效、受支持的旧版结果",
+        "单独一次发现超时"
+      ],
       "correct": 2,
-      "explanation": "The allowlist permits a probe, but only a structurally valid positive initialize result for a configured legacy revision proves the legacy era."
+      "explanation": "允许列表只允许探测，只有配置旧版修订版的结构有效正向 initialize 结果才证明旧版时期。"
     },
     {
       "stage": "check",
-      "question": "How should a client handle two tools named search?",
-      "options": ["Silently overwrite one", "Trust startup order", "Prefix or reject by declared policy", "Create a protocol session"],
+      "question": "客户端应如何处理两个名为 search 的工具？",
+      "options": [
+        "静默覆盖其中一个",
+        "相信启动顺序",
+        "按声明策略加前缀或拒绝",
+        "创建协议会话"
+      ],
       "correct": 2,
-      "explanation": "Explicit prefix or rejection keeps routing visible and deterministic."
+      "explanation": "显式前缀或拒绝使路由可见且确定。"
     },
     {
       "stage": "post",
-      "question": "A legacy result omits resultType after the client negotiated a legacy era. How is it interpreted?",
-      "options": ["As input_required", "As complete", "As a transport error", "As server/discover"],
+      "question": "客户端协商旧版时期后，旧版结果省略 resultType，应如何解释？",
+      "options": [
+        "视为 input_required",
+        "视为 complete",
+        "视为传输错误",
+        "视为 server/discover"
+      ],
       "correct": 1,
-      "explanation": "Clients treat absent resultType from earlier protocol versions as complete."
+      "explanation": "客户端把早期协议版本缺失的 resultType 视为 complete。"
     },
     {
       "stage": "post",
-      "question": "What must happen after a modern transport loss before routing resumes?",
-      "options": ["Reconnect, rediscover, and relist", "Resume with Last-Event-ID", "Echo Mcp-Session-Id", "Reuse old connection metadata"],
+      "question": "现代传输丢失后，恢复路由前必须做什么？",
+      "options": [
+        "重连、重新发现并重新列举",
+        "用 Last-Event-ID 恢复",
+        "回传 Mcp-Session-Id",
+        "复用旧连接元数据"
+      ],
       "correct": 0,
-      "explanation": "The client rebuilds peer bookkeeping and retries only safe operations with new request ids."
+      "explanation": "客户端重建对端记录，仅用新请求 id 重试安全操作。"
     }
   ]
 }

@@ -1,6 +1,6 @@
-# Model evaluation in Julia. Train/val/test split, k-fold + stratified k-fold
-# cross validation, classification metrics (accuracy, precision, recall, F1,
-# ROC, AUC), and regression metrics (MSE, RMSE, MAE, R^2). Stdlib only. Sources:
+# Julia 模型评估（Model Evaluation）：训练/验证/测试集划分、k 折与分层 k 折
+# 交叉验证（Cross Validation），分类指标（准确率 accuracy、精确率 precision、召回率 recall、F1、
+# ROC、AUC），以及回归指标（MSE、RMSE、MAE、R^2）。仅使用标准库。来源：
 #   https://docs.julialang.org/en/v1/stdlib/Random/
 #   https://docs.julialang.org/en/v1/stdlib/Statistics/
 #   https://docs.julialang.org/en/v1/manual/functions/
@@ -275,25 +275,25 @@ end
 
 function demo_split_and_metrics()
     println("=" ^ 60)
-    println("TRAIN / VAL / TEST SPLIT + METRICS")
+    println("训练/验证/测试集划分与指标（Metrics）")
     println("=" ^ 60)
     X, ys = make_classification_data(300)
     X_train, ys_train, X_val, ys_val, X_test, ys_test = train_val_test_split(X, ys)
-    @printf("  Train: %d  Val: %d  Test: %d\n",
+    @printf("  训练集：%d  验证集：%d  测试集：%d\n",
             length(X_train), length(X_val), length(X_test))
-    @printf("  Train positive ratio: %.3f\n", sum(ys_train) / length(ys_train))
-    @printf("  Val   positive ratio: %.3f\n", sum(ys_val) / length(ys_val))
+    @printf("  训练集正类比例： %.3f\n", sum(ys_train) / length(ys_train))
+    @printf("  验证集正类比例： %.3f\n", sum(ys_val) / length(ys_val))
 
     model = SimpleLogistic(0.1, 200)
     fit_simple!(model, X_train, ys_train)
 
-    println("\n--- Classification metrics ---")
+    println("\n--- 分类指标（Classification Metrics） ---")
     y_pred = [predict_simple(model, x) for x in X_test]
     tp, tn, fp, fn = confusion_matrix(ys_test, y_pred)
-    @printf("  Confusion: TP=%d  TN=%d  FP=%d  FN=%d\n", tp, tn, fp, fn)
-    @printf("  Accuracy:  %.4f\n", accuracy(ys_test, y_pred))
-    @printf("  Precision: %.4f\n", precision_score(ys_test, y_pred))
-    @printf("  Recall:    %.4f\n", recall_score(ys_test, y_pred))
+    @printf("  混淆矩阵（Confusion Matrix）： TP=%d  TN=%d  FP=%d  FN=%d\n", tp, tn, fp, fn)
+    @printf("  准确率（Accuracy）：  %.4f\n", accuracy(ys_test, y_pred))
+    @printf("  精确率（Precision）： %.4f\n", precision_score(ys_test, y_pred))
+    @printf("  召回率（Recall）：    %.4f\n", recall_score(ys_test, y_pred))
     @printf("  F1:        %.4f\n", f1_score(ys_test, y_pred))
 
     y_scores = [predict_proba_simple(model, x) for x in X_test]
@@ -303,50 +303,50 @@ end
 
 function demo_cross_validation()
     println("\n" * "=" ^ 60)
-    println("K-FOLD CROSS VALIDATION")
+    println("K 折交叉验证（K-Fold Cross Validation）")
     println("=" ^ 60)
     X, ys = make_classification_data(300)
     scores = cross_validate(X, ys, () -> SimpleLogistic(0.1, 200);
                             k=5, metric_fn=accuracy)
     m = mean(scores)
     s = std(scores; corrected=false)
-    println("\nPlain k=5:")
-    @printf("  Fold scores: [%s]\n",
+    println("\n普通划分，k=5：")
+    @printf("  各折得分： [%s]\n",
             join([@sprintf("%.4f", v) for v in scores], ", "))
-    @printf("  Mean: %.4f  (+/- %.4f)\n", m, s)
+    @printf("  均值（Mean）： %.4f  (+/- %.4f)\n", m, s)
 
     strat = cross_validate(X, ys, () -> SimpleLogistic(0.1, 200);
                            k=5, metric_fn=accuracy, stratified=true)
     sm = mean(strat)
     ss = std(strat; corrected=false)
-    println("\nStratified k=5:")
-    @printf("  Fold scores: [%s]\n",
+    println("\n分层划分（Stratified），k=5：")
+    @printf("  各折得分： [%s]\n",
             join([@sprintf("%.4f", v) for v in strat], ", "))
-    @printf("  Mean: %.4f  (+/- %.4f)\n", sm, ss)
+    @printf("  均值（Mean）： %.4f  (+/- %.4f)\n", sm, ss)
 end
 
 
 function demo_imbalanced()
     println("\n" * "=" ^ 60)
-    println("IMBALANCED DATA: WHY ACCURACY LIES")
+    println("不均衡数据（Imbalanced Data）：准确率为何会误导")
     println("=" ^ 60)
     X, ys = make_imbalanced_data(300; minority_ratio=0.05)
     positives = sum(ys)
-    @printf("\n  Class distribution: %d positive, %d negative (%.1f%% positive)\n",
+    @printf("\n  类别分布：%d 个正类，%d 个负类（正类占 %.1f%%）\n",
             positives, length(ys) - positives, 100 * positives / length(ys))
     baseline = zeros(Int, length(ys))
-    println("\n  Always-negative baseline:")
-    @printf("    Accuracy:  %.4f\n", accuracy(ys, baseline))
-    @printf("    Precision: %.4f\n", precision_score(ys, baseline))
-    @printf("    Recall:    %.4f\n", recall_score(ys, baseline))
+    println("\n  始终预测负类的基线（Baseline）：")
+    @printf("    准确率（Accuracy）：  %.4f\n", accuracy(ys, baseline))
+    @printf("    精确率（Precision）： %.4f\n", precision_score(ys, baseline))
+    @printf("    召回率（Recall）：    %.4f\n", recall_score(ys, baseline))
     @printf("    F1:        %.4f\n", f1_score(ys, baseline))
-    println("  Accuracy lies; precision and recall expose the failure.")
+    println("  准确率具有误导性；精确率与召回率揭示了模型的失败。")
 end
 
 
 function demo_regression_metrics()
     println("\n" * "=" ^ 60)
-    println("REGRESSION METRICS")
+    println("回归指标（Regression Metrics）")
     println("=" ^ 60)
     X, ys = make_regression_data(200)
     n_train = Int(round(0.8 * length(X)))
@@ -355,14 +355,14 @@ function demo_regression_metrics()
     for i in (n_train + 1):length(ys)
         push!(y_pred, ys[i] + randn() * 0.5)
     end
-    @printf("  MSE:  %.4f\n", mse(y_true, y_pred))
-    @printf("  RMSE: %.4f\n", rmse(y_true, y_pred))
-    @printf("  MAE:  %.4f\n", mae(y_true, y_pred))
+    @printf("  均方误差（MSE）：  %.4f\n", mse(y_true, y_pred))
+    @printf("  均方根误差（RMSE）： %.4f\n", rmse(y_true, y_pred))
+    @printf("  平均绝对误差（MAE）：  %.4f\n", mae(y_true, y_pred))
     @printf("  R^2:  %.4f\n", r_squared(y_true, y_pred))
 
     mean_baseline = fill(mean(y_true), length(y_true))
-    println("\n  Predict-the-mean baseline:")
-    @printf("    MSE:  %.4f\n", mse(y_true, mean_baseline))
+    println("\n  始终预测均值的基线（Baseline）：")
+    @printf("    均方误差（MSE）：  %.4f\n", mse(y_true, mean_baseline))
     @printf("    R^2:  %.4f\n", r_squared(y_true, mean_baseline))
 end
 

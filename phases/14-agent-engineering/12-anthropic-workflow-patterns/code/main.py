@@ -1,8 +1,8 @@
-"""All five Anthropic workflow patterns in stdlib.
+"""使用标准库实现 Anthropic 的全部五种工作流模式（Workflow pattern）。
 
-prompt chaining, routing, parallelization (voting), orchestrator-workers,
-evaluator-optimizer. Each pattern is 10-15 lines; the point is to show how
-small they are compared to a framework.
+提示词链（Prompt chaining）、路由（Routing）、并行化（Parallelization，投票）、
+编排器与工作器（Orchestrator-workers）、评估器与优化器（Evaluator-optimizer）。
+每种模式仅需 10-15 行，目的是展示它们比框架小得多。
 """
 
 from __future__ import annotations
@@ -27,7 +27,7 @@ class ScriptedLLM:
             return value[i]
         if isinstance(value, str):
             return value
-        return f"[unhandled: {prompt}]"
+        return f"[未处理：{prompt}]"
 
 
 def prompt_chain(input_text: str, llm: Callable[[str], str],
@@ -47,7 +47,7 @@ def route(input_text: str, classifier: Callable[[str], str],
     label = classifier(input_text)
     handler = handlers.get(label) or handlers.get("default")
     if handler is None:
-        return label, f"no handler for {label}"
+        return label, f"没有处理 {label} 的函数"
     return label, handler(input_text)
 
 
@@ -91,7 +91,7 @@ def evaluator_optimizer(task: str, proposer: Callable[[str, str | None], str],
 
 def demo_chain(llm: ScriptedLLM) -> None:
     print("-" * 70)
-    print("1. PROMPT CHAINING — summarize then title")
+    print("1. 提示词链（Prompt chaining）——先摘要，再拟标题")
     print("-" * 70)
     trace = prompt_chain(
         input_text="Agents are ReAct loops with tools, memory, and guardrails.",
@@ -107,7 +107,7 @@ def demo_chain(llm: ScriptedLLM) -> None:
 
 def demo_route(llm: ScriptedLLM) -> None:
     print("\n" + "-" * 70)
-    print("2. ROUTING — classify then dispatch")
+    print("2. 路由（Routing）——先分类，再分派")
     print("-" * 70)
 
     def classifier(text: str) -> str:
@@ -117,7 +117,7 @@ def demo_route(llm: ScriptedLLM) -> None:
         "refund": lambda t: llm(f"handle refund: {t}"),
         "bug": lambda t: llm(f"handle bug: {t}"),
         "sales": lambda t: llm(f"handle sales: {t}"),
-        "default": lambda t: "escalate to human",
+        "default": lambda t: "升级至人工处理",
     }
 
     for inp in ("I want my money back",
@@ -129,16 +129,16 @@ def demo_route(llm: ScriptedLLM) -> None:
 
 def demo_parallel(llm: ScriptedLLM) -> None:
     print("\n" + "-" * 70)
-    print("3. PARALLELIZATION — N voters on a boolean")
+    print("3. 并行化（Parallelization）——N 个投票者对布尔值投票")
     print("-" * 70)
     winner, counts = parallel_vote("is this code safe to ship?", llm, n=5)
-    print(f"  winner: {winner}")
-    print(f"  counts: {dict(counts)}")
+    print(f"  获胜结果： {winner}")
+    print(f"  票数： {dict(counts)}")
 
 
 def demo_orchestrator(llm: ScriptedLLM) -> None:
     print("\n" + "-" * 70)
-    print("4. ORCHESTRATOR-WORKERS — specialist pool")
+    print("4. 编排器与工作器（Orchestrator-workers）——专家池")
     print("-" * 70)
 
     workers = [
@@ -160,12 +160,12 @@ def demo_orchestrator(llm: ScriptedLLM) -> None:
     final, outputs = orchestrator_workers(task, workers, synth)
     for name, out in outputs:
         print(f"  [{name}] {out}")
-    print(f"  synth: {final}")
+    print(f"  综合结果： {final}")
 
 
 def demo_evaluator_optimizer(llm: ScriptedLLM) -> None:
     print("\n" + "-" * 70)
-    print("5. EVALUATOR-OPTIMIZER — propose, judge, refine")
+    print("5. 评估器与优化器（Evaluator-optimizer）——提出候选、评判、改进")
     print("-" * 70)
 
     def proposer(task: str, feedback: str | None) -> str:
@@ -183,36 +183,36 @@ def demo_evaluator_optimizer(llm: ScriptedLLM) -> None:
         "write a one-line summary of ReAct", proposer, evaluator
     )
     for i, (cand, verdict, reason) in enumerate(trace, 1):
-        print(f"  iter {i}  [{verdict}] {cand}  // {reason}")
-    print(f"  final: {final}")
+        print(f"  第 {i} 轮  [{verdict}] {cand}  // {reason}")
+    print(f"  最终结果： {final}")
 
 
 def main() -> None:
     print("=" * 70)
-    print("ANTHROPIC WORKFLOW PATTERNS — Phase 14, Lesson 12")
+    print("Anthropic 工作流模式（Workflow pattern）——第 14 阶段，第 12 课")
     print("=" * 70)
 
     llm = ScriptedLLM({
         "summarize: Agents are ReAct loops with tools, memory, and guardrails.":
             "Agents: ReAct + tools + memory + guardrails.",
         "give a 6-word title: Agents: ReAct + tools + memory + guardrails.":
-            "Agents as ReAct with Guardrails Built In",
+            "内置防护机制（Guardrails）的 ReAct 智能体",
 
         "classify: I want my money back": "refund",
         "classify: the CLI crashes on ctrl-c": "bug",
         "classify: do you offer volume pricing": "sales",
-        "handle refund: I want my money back": "refund filed",
-        "handle bug: the CLI crashes on ctrl-c": "bug logged",
-        "handle sales: do you offer volume pricing": "quote sent",
+        "handle refund: I want my money back": "退款申请已提交",
+        "handle bug: the CLI crashes on ctrl-c": "缺陷已记录",
+        "handle sales: do you offer volume pricing": "报价已发送",
 
         "is this code safe to ship?": ["yes", "yes", "no", "yes", "no"],
 
         "review python: review this python change for style and security":
-            "python ok",
+            "Python 检查通过",
         "review security: review this python change for style and security":
-            "security ok",
+            "安全检查通过",
         "review style: review this python change for style and security":
-            "style ok",
+            "风格检查通过",
 
         "propose: write a one-line summary of ReAct":
             "ReAct loops thoughts and tool calls.",
@@ -230,8 +230,8 @@ def main() -> None:
     demo_orchestrator(llm)
     demo_evaluator_optimizer(llm)
 
-    print(f"\ntotal llm calls across all five patterns: {len(llm.calls)}")
-    print("direct API + small helpers. no framework needed.")
+    print(f"\n五种模式的 LLM 调用总数： {len(llm.calls)}")
+    print("直接调用 API，配合小型辅助函数，无需框架。")
 
 
 if __name__ == "__main__":

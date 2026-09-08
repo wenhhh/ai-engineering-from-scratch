@@ -1,44 +1,44 @@
 ---
 name: workbench-audit
-description: Audit a repo for the seven agent workbench surfaces and report which are missing, partial, or healthy before any agent work begins.
+description: 任何智能体工作开始前，审计仓库的七项工作台支撑能力（Workbench Surfaces），报告缺失、部分具备或健康状态。
 version: 1.0.0
 phase: 14
 lesson: 31
 tags: [workbench, audit, reliability, agent-engineering]
 ---
 
-Given a repository path and the agent product that will run inside it, audit the seven workbench surfaces and produce a readiness report.
+给定仓库路径和将在其中运行的智能体产品，审计七项工作台支撑能力（Workbench Surfaces），产出就绪报告。
 
-The seven surfaces:
+七项支撑能力：
 
-1. Instructions: a root file the agent reads first (e.g. `AGENTS.md`), short, that routes to deeper rules.
-2. State: a durable, machine-readable file that records task, touched files, blockers, next action.
-3. Scope: a contract per task listing allowed files, forbidden files, acceptance criteria, rollback plan.
-4. Feedback: a runner that captures command, stdout, stderr, exit code, and feeds the result back into the loop.
-5. Verification: a gate that runs tests, lint, type-check, smoke run, and confirms acceptance criteria.
-6. Review: a second pass with a different role, builder cannot mark its own work.
-7. Handoff: an artifact that summarizes what changed, why, what is left, and the next best action.
+1. 指令：智能体首先读取的简短根文件，例如 `AGENTS.md`，负责路由到更深入规则。
+2. 状态：持久、机器可读的文件，记录任务、改动文件、阻塞和下一步动作。
+3. 范围：每任务契约，列出允许文件、禁止文件、验收标准、回滚计划。
+4. 反馈：运行器捕获命令、标准输出、标准错误、退出码，将结果送回循环。
+5. 验证：门禁运行测试、代码检查、类型检查、冒烟运行，并确认验收标准。
+6. 审查：由不同角色进行第二轮检查，构建者不能自评工作。
+7. 交接：产物概述改了什么、为什么、还剩什么，以及最佳下一步动作。
 
-Produce:
+产出：
 
-- A score per surface: 0 missing, 1 partial, 2 healthy. Tie each score to a file or process you observed.
-- Three priorities ordered by leverage: which missing surface, if added first, removes the most failure modes.
-- A `workbench_audit.json` machine-readable report plus a `workbench_audit.md` human-readable summary.
-- A starter patch for the weakest surface: the smallest file change that moves the score from 0 to 1.
+- 每项支撑能力的分数：0 缺失、1 部分具备、2 健康。每个分数关联观察到的文件或流程。
+- 按影响力排序的三项优先工作：先补哪项缺失的支撑能力，能消除最多失效模式。
+- 机器可读的 `workbench_audit.json` 报告与人类可读的 `workbench_audit.md` 摘要。
+- 最薄弱支撑能力的起步补丁：用最小文件修改将分数从 0 提到 1。
 
-Hard rejects:
+必须拒绝的设计：
 
-- "Healthy" scores without a file path or process reference. Audits without evidence rot.
-- A single combined "agent config" surface. Combining surfaces hides which one failed when a task breaks.
-- Skipping verification because tests are slow. If verification is not on the workbench, builders mark their own homework.
+- “健康”评分没有文件路径或流程引用。没有证据的审计会失去价值。
+- 将所有内容合并为单个“智能体配置”支撑能力。合并会掩盖任务失败时究竟哪项支撑能力出了问题。
+- 因测试慢而跳过验证。工作台没有验证，构建者就会自评作业。
 
-Refusal rules:
+拒绝规则：
 
-- If the repo has no test command at all, refuse the verification score and surface it as a blocking finding.
-- If the repo has no version control history, refuse the handoff score and surface it as a blocking finding.
-- If the agent product runs as root or with unrestricted file access, refuse the scope score until a sandbox or write list is defined.
+- 如果仓库完全没有测试命令，拒绝给出验证评分，将其报告为阻塞性发现。
+- 如果仓库没有版本控制历史，拒绝给出交接评分，将其报告为阻塞性发现。
+- 如果智能体产品以 root 运行或文件访问无限制，在定义沙箱或写入列表之前，拒绝给出范围评分。
 
-Output structure:
+输出结构：
 
 ```
 workbench-audit/
@@ -49,8 +49,8 @@ workbench-audit/
 └── README.md
 ```
 
-End with "what to read next" pointing to:
+结尾给出“接下来读什么”，指向：
 
-- Lesson 32 for the minimal repo layout.
-- Lesson 33 for the instructions surface in depth.
-- Lesson 38 for the verification gate.
+- 第 32 课：最小仓库布局。
+- 第 33 课：深入讲解指令支撑能力。
+- 第 38 课：验证门禁。

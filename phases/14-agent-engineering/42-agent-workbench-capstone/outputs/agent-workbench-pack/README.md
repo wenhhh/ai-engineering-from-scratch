@@ -1,16 +1,16 @@
-# Agent Workbench Pack
+# 智能体工作台包（Agent Workbench Pack）
 
-Drop-in workbench for any repo that wants reliable agent work.
+供任何希望智能体可靠工作的仓库使用的即插即用工作台。
 
-## What you get
+## 包含内容（What you get）
 
-- `AGENTS.md` short router into the rest of the pack.
-- `docs/` rules, reliability policy, handoff protocol, reviewer rubric.
-- `schemas/` JSON Schemas for state, board, and scope contract.
-- `scripts/` init, feedback runner, verification gate, handoff generator.
-- `bin/install.sh` idempotent installer.
+- `AGENTS.md`：通向包内其余内容的简短路由入口。
+- `docs/`：规则、可靠性政策、交接协议、审查评分标准。
+- `schemas/`：状态、看板和范围契约的 JSON 结构定义（JSON Schema）。
+- `scripts/`：初始化、反馈运行器、验证关卡、交接生成器。
+- `bin/install.sh`：幂等安装器。
 
-## Quickstart
+## 快速开始（Quickstart）
 
 ```
 bin/install.sh
@@ -18,6 +18,6 @@ $EDITOR task_board.json
 python3 scripts/init_agent.py
 ```
 
-## Versioning
+## 版本管理（Versioning）
 
-The `VERSION` file is the contract. Major bumps require a state migration.
+`VERSION` 文件就是契约。主版本升级需要状态迁移。

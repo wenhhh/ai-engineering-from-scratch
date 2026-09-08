@@ -1,29 +1,29 @@
 ---
 name: dp-audit
-description: Audit a differential-privacy claim for a language-model deployment.
+description: 审计语言模型部署的差分隐私声明。
 version: 1.0.0
 phase: 18
 lesson: 22
 tags: [differential-privacy, dp-sgd, lora, mia, pmixed]
 ---
 
-Given a privacy claim for a language-model deployment, audit the claim.
+给定语言模型部署的隐私声明，对该声明进行审计。
 
-Produce:
+请产出以下内容：
 
-1. (ε, δ) values. What ε and δ were used? What accountant computed them (Moments Accountant, Rényi DP, GDP)? ε without the accountant is meaningless.
-2. DP target. Is the DP guarantee on the full model or on adapters (LoRA)? If LoRA, the base-model memorization is not covered.
-3. MIA protocol. Was membership-inference tested with canaries (Duan 2024) or with extraction (Carlini 2021, Nasr 2025)? Per Kowalczyk et al. 2025, the two measure different things.
-4. Confidence-exposure check. Does the deployment expose confidence scores? If yes, the DP Reversal via LLM Feedback attack applies; additional truncation/quantization is required.
-5. Alternative-mechanism comparison. Was PMixED or DP-synthetic-data considered? These alternatives may give better utility on specific threat models.
+1. (ε, δ) 数值。使用了什么 ε 和 δ？由什么记账器（Accountant）计算，例如矩记账器（Moments Accountant）、Rényi DP 或 GDP？不说明记账器，ε 就没有意义。
+2. DP 对象。差分隐私（DP）保证适用于完整模型，还是适配器（LoRA）？如果是 LoRA，则不覆盖基础模型的记忆内容。
+3. MIA 流程。成员推断是否通过金丝雀样本测试（Duan，2024），还是通过数据提取测试（Carlini，2021；Nasr，2025）？根据 Kowalczyk 等人 2025 年的研究，两者测量不同事物。
+4. 置信度暴露检查。部署是否暴露置信分数？如果暴露，通过 LLM 反馈逆转 DP 的攻击就适用，需要额外的截断或量化。
+5. 替代机制比较。是否考虑过 PMixED 或 DP 合成数据？在特定威胁模型下，这些替代方案可能提供更好的效用。
 
-Hard rejects:
-- Any DP claim without an ε, δ pair and accountant.
-- Any DP claim based solely on canary MIA.
-- Any deployment exposing confidence scores without addressing DP Reversal.
+必须否决的情况：
+- DP 声明没有提供 ε、δ 数值对及记账器。
+- DP 声明仅依据金丝雀 MIA。
+- 部署暴露置信分数，却没有处理 DP 逆转问题。
 
-Refusal rules:
-- If the user asks "is epsilon=8 safe enough," refuse the numeric answer; safety depends on the threat model and the most-extractable-data distribution.
-- If the user asks for a recommended ε for LLM deployment, refuse a universal numeric target; require a threat model, data sensitivity, utility constraints, and accountant details before discussing candidate ranges.
+拒绝规则：
+- 如果用户问“epsilon=8 是否足够安全”，应拒绝仅凭数值作答；安全性取决于威胁模型和最易提取数据的分布。
+- 如果用户要求推荐 LLM 部署的 ε，应拒绝通用数值目标；讨论候选范围前，必须了解威胁模型、数据敏感性、效用约束和记账器细节。
 
-Output: a one-page audit filling the five sections, flagging missing accountant or MIA evaluation, and naming the highest-value remediation. Cite Abadi et al. 2016 (DP-SGD) and Kowalczyk et al. 2025 once each.
+输出：一页审计报告，填写上述五个部分，标明缺失的记账器信息或 MIA 评估，并指出价值最高的补救措施。分别引用 Abadi 等人 2016 年的 DP-SGD 论文和 Kowalczyk 等人 2025 年的论文各一次。

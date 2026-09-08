@@ -85,7 +85,7 @@ class ProductionTokenizer:
             self.vocab[new_id] = self.vocab[best[0]] + self.vocab[best[1]]
             chunk_bytes = [apply_merge(seq, best, new_id) for seq in chunk_bytes]
             merged_display = self.vocab[new_id]
-            print(f"Merge {i + 1}: ({best[0]}, {best[1]}) -> {new_id} = {merged_display}")
+            print(f"合并（Merge）{i + 1}: ({best[0]}, {best[1]}) -> {new_id} = {merged_display}")
 
     def add_special_token(self, token_str):
         token_id = self.next_id
@@ -125,26 +125,26 @@ class ProductionTokenizer:
 
 def demo_byte_encoding():
     print("=" * 60)
-    print("Byte-Level Encoding")
+    print("字节级编码（Byte-Level Encoding）")
     print("=" * 60)
 
     texts = [
-        ("English", "hello"),
-        ("Chinese", "你好"),
-        ("Japanese", "こんにちは"),
-        ("Emoji", "🔥🌍"),
-        ("Mixed", "hello你好🔥"),
-        ("Code", "def f(x):"),
+        ("英语（English）", "hello"),
+        ("中文（Chinese）", "你好"),
+        ("日语（Japanese）", "こんにちは"),
+        ("表情符号（Emoji）", "🔥🌍"),
+        ("混合文本（Mixed）", "hello你好🔥"),
+        ("代码（Code）", "def f(x):"),
     ]
 
     for label, text in texts:
         b = list(text.encode("utf-8"))
-        print(f"{label:10s}: {len(text):2d} chars -> {len(b):2d} bytes -> {b[:16]}{'...' if len(b) > 16 else ''}")
+        print(f"{label:10s}: {len(text):2d} 个字符 -> {len(b):2d} 个字节 -> {b[:16]}{'...' if len(b) > 16 else ''}")
 
 
 def demo_pre_tokenization():
     print("\n" + "=" * 60)
-    print("Pre-Tokenization (GPT-2 Regex)")
+    print("预分词（Pre-Tokenization，GPT-2 正则表达式）")
     print("=" * 60)
 
     texts = [
@@ -162,7 +162,7 @@ def demo_pre_tokenization():
 
 def demo_full_tokenizer():
     print("\n" + "=" * 60)
-    print("Training Production Tokenizer")
+    print("训练生产级分词器（Production Tokenizer）")
     print("=" * 60)
 
     corpus = (
@@ -184,11 +184,11 @@ def demo_full_tokenizer():
     user_id = tok.add_special_token("<|user|>")
     asst_id = tok.add_special_token("<|assistant|>")
 
-    print(f"\nVocab size: {tok.vocab_size()}")
-    print(f"Special tokens: <|begin|>={bos_id}, <|end|>={eos_id}, <|user|>={user_id}, <|assistant|>={asst_id}")
+    print(f"\n词表大小（Vocab size）: {tok.vocab_size()}")
+    print(f"特殊词元（Special tokens）: <|begin|>={bos_id}, <|end|>={eos_id}, <|user|>={user_id}, <|assistant|>={asst_id}")
 
     print("\n" + "=" * 60)
-    print("Encoding Tests")
+    print("编码测试（Encoding Tests）")
     print("=" * 60)
 
     test_texts = [
@@ -204,23 +204,23 @@ def demo_full_tokenizer():
         ids = tok.encode(text)
         decoded = tok.decode(ids)
         raw_bytes = len(text.encode("utf-8"))
-        print(f"\nInput:   {text}")
-        print(f"IDs:     {ids[:20]}{'...' if len(ids) > 20 else ''}")
-        print(f"Tokens:  {len(ids)} (from {raw_bytes} bytes, ratio: {len(ids)/raw_bytes:.2f})")
-        print(f"Decoded: {decoded}")
+        print(f"\n输入（Input）:   {text}")
+        print(f"标识符（IDs）:     {ids[:20]}{'...' if len(ids) > 20 else ''}")
+        print(f"词元（Tokens）:  {len(ids)} （原始字节数: {raw_bytes}，比率: {len(ids)/raw_bytes:.2f}）")
+        print(f"解码结果（Decoded）: {decoded}")
         roundtrip = "PASS" if decoded == text else "FAIL"
-        print(f"Round-trip: {roundtrip}")
+        print(f"往返校验（Round-trip）: {roundtrip}")
 
 
 def demo_tiktoken_comparison():
     try:
         import tiktoken
     except ImportError:
-        print("\ntiktoken not installed. Run: pip install tiktoken")
+        print("\n未安装 tiktoken。请运行: pip install tiktoken")
         return
 
     print("\n" + "=" * 60)
-    print("Comparison with tiktoken (GPT-4)")
+    print("与 tiktoken（GPT-4）比较")
     print("=" * 60)
 
     enc = tiktoken.get_encoding("cl100k_base")
@@ -230,19 +230,19 @@ def demo_tiktoken_comparison():
     tokens = enc.encode(test_paragraph)
     pieces = [enc.decode([t]) for t in tokens]
 
-    print(f"\nInput: {test_paragraph}")
-    print(f"GPT-4 tokens ({len(tokens)}): {pieces}")
+    print(f"\n输入（Input）: {test_paragraph}")
+    print(f"GPT-4 词元 ({len(tokens)}): {pieces}")
 
     languages = [
-        ("English", "The quick brown fox jumps over the lazy dog."),
-        ("Chinese", "快速的棕色狐狸跳过了懒狗。"),
-        ("Japanese", "素早い茶色のキツネが怠け者の犬を飛び越えた。"),
-        ("Korean", "빠른 갈색 여우가 게으른 개를 뛰어넘었다."),
-        ("Code", "def quicksort(arr): return sorted(arr)"),
-        ("Emoji", "🎉🎊🎈🎁🎂🎄🎃🎆🎇✨"),
+        ("英语（English）", "The quick brown fox jumps over the lazy dog."),
+        ("中文（Chinese）", "快速的棕色狐狸跳过了懒狗。"),
+        ("日语（Japanese）", "素早い茶色のキツネが怠け者の犬を飛び越えた。"),
+        ("韩语（Korean）", "빠른 갈색 여우가 게으른 개를 뛰어넘었다."),
+        ("代码（Code）", "def quicksort(arr): return sorted(arr)"),
+        ("表情符号（Emoji）", "🎉🎊🎈🎁🎂🎄🎃🎆🎇✨"),
     ]
 
-    print(f"\n{'Language':<10} {'Chars':<6} {'Tokens':<7} {'Fertility':<10}")
+    print(f"\n{'语言（Language）':<10} {'字符数（Chars）':<6} {'词元数（Tokens）':<7} {'分词生育率（Fertility）':<10}")
     print("-" * 35)
     for label, text in languages:
         toks = enc.encode(text)

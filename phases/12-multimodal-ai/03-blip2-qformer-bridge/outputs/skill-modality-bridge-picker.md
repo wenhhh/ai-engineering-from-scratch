@@ -1,30 +1,30 @@
 ---
 name: modality-bridge-picker
-description: Recommend Q-Former vs MLP projector vs Perceiver resampler for a VLM configuration given token budget, quality target, and training compute.
+description: 根据词元预算、质量目标和训练计算量，为 VLM 配置推荐 Q-Former、MLP 投影器（Projector）或 Perceiver 重采样器（Resampler）。
 version: 1.0.0
 phase: 12
 lesson: 03
 tags: [blip2, qformer, vlm, modality-bridge, architecture]
 ---
 
-Given a vision encoder's token count per image, the LLM's context budget, the target number of images per prompt, and the training compute budget, recommend which modality bridge to use and justify with parameter counts and token economics.
+给定视觉编码器的每图词元数、LLM 上下文预算、每条提示词的目标图像数量和训练计算预算，推荐使用哪种模态桥接器（Modality bridge），并用参数量与词元成本说明理由。
 
-Produce:
+生成以下内容：
 
-1. Token budget audit. Report raw tokens per image from the vision encoder, tokens per image after each bridge option, and the fraction of LLM context consumed at declared image-per-prompt counts.
-2. Bridge comparison. For each of Q-Former (32 tokens, ~188M params), MLP projector (all patches, ~20M params), and Perceiver resampler (K learnable queries via N-layer cross-attention, variable), give parameters, quality proxies, and training cost ballpark.
-3. Recommendation. Single best choice for the stated constraints, with one-line justification. Flag when the constraints are contradictory (high quality + tight token budget + low training compute).
-4. Two-stage training trace. If Q-Former is picked, outline ITC + ITM + ITG losses for stage 1 and LM loss for stage 2. Name a representative dataset for each (COCO, LAION, Visual Genome).
-5. Ablation checklist. Five experiments the caller should run before locking the bridge (query count, two-stage vs single-stage, projector depth, freeze schedule, finetune subset).
+1. 词元预算审计。报告视觉编码器的每图原始词元数、每种桥接方案后的每图词元数，以及在声明的每条提示词图像数量下占用的 LLM 上下文比例。
+2. 桥接器比较。对 Q-Former（32 词元，约 188M 参数）、MLP 投影器（全部图像块，约 20M 参数）和 Perceiver 重采样器（通过 N 层交叉注意力处理 K 个可学习查询，可变）分别给出参数、质量近似指标和训练成本粗估。
+3. 建议。给出所述约束下的单一最佳选择，用一句话说明理由。约束相互矛盾时（高质量 + 紧张词元预算 + 低训练计算量）作出标记。
+4. 两阶段训练流程。若选择 Q-Former，概述阶段 1 的 ITC + ITM + ITG 损失和阶段 2 的 LM 损失。为每项给出代表性数据集（COCO、LAION、Visual Genome）。
+5. 消融检查清单（Ablation checklist）。列出调用者在确定桥接器之前应运行的五项实验：查询数量、两阶段与单阶段、投影器深度、冻结调度、微调子集。
 
-Hard rejects:
-- Any recommendation that ignores the token budget. "Use MLP" with 576 tokens per image fails at 10 images in a 4k context.
-- Claiming Q-Former strictly dominates MLP. At single-image high-quality tasks with unlimited context, MLP wins.
-- Treating Perceiver resampler as equivalent to Q-Former. Flamingo applies it at every LLM layer; BLIP-2 applies it once.
+必须排除：
+- 忽略词元预算的任何建议。每图 576 词元时，对 4k 上下文中的 10 张图像建议“使用 MLP”不可行。
+- 声称 Q-Former 严格优于 MLP。单图高质量任务且上下文无限时，MLP 胜出。
+- 将 Perceiver 重采样器等同于 Q-Former。Flamingo 在每个 LLM 层应用它，BLIP-2 只应用一次。
 
-Refusal rules:
-- If the caller asks for a bridge that can handle video without specifying how many frames and at what frame rate, refuse — video bridges differ from single-image bridges by specification, not just scale.
-- If the LLM in scope is trained from scratch with the vision tower (early-fusion, Chameleon-style), refuse — Lesson 12.11 covers that case separately.
-- If no training compute is stated, refuse and ask whether the caller can afford stage 2 of BLIP-2 (~a few hundred A100-hours) or only projector-only training.
+拒绝规则：
+- 如果调用者要求处理视频的桥接器，却未指定帧数和帧率，则拒绝：视频桥接器与单图桥接器的区别是规格，而不只是规模。
+- 如果范围内的 LLM 与视觉塔一起从零训练（早期融合，Chameleon 风格），则拒绝；第 12.11 课单独讨论这种情况。
+- 如果未说明训练计算量，则拒绝，并询问调用者能否承担 BLIP-2 阶段 2（约几百 A100 小时），还是只能训练投影器。
 
-Output: a one-page bridge recommendation with token math, parameter counts, recommended architecture, training outline, and ablation checklist. End with a "what to read next" paragraph pointing to Lesson 12.04 (Flamingo) for cross-attention-everywhere, Lesson 12.05 (LLaVA) for MLP-only, or Lesson 12.07 (ablations) for the data-vs-architecture tradeoff.
+输出：一页桥接器建议，包含词元计算、参数量、推荐架构、训练概要和消融检查清单。最后用“接下来读什么”段落指向第 12.04 课（Flamingo，逐层交叉注意力）、第 12.05 课（LLaVA，仅 MLP），或第 12.07 课（消融，数据与架构的权衡）。

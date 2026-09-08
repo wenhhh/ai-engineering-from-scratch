@@ -1,87 +1,87 @@
 {
   "lesson": "11-llm-observability-dashboard",
-  "title": "Capstone 11 — LLM Observability & Eval Dashboard",
+  "title": "综合实践 11：大语言模型可观测性与评估仪表盘（LLM Observability & Eval Dashboard）",
   "questions": [
     {
       "stage": "pre",
-      "question": "Which ingest schema do Langfuse, Phoenix, and OpenLLMetry converge on?",
+      "question": "Langfuse、Phoenix 和 OpenLLMetry 共同采用哪种摄取模式（Ingest Schema）？",
       "options": [
-        "Prometheus exposition format",
-        "OpenTelemetry GenAI semantic conventions over OTLP HTTP",
-        "Proprietary JSON per vendor",
-        "Plain CSV log files"
+        "Prometheus 暴露格式（Exposition Format）",
+        "通过 OTLP HTTP 传输的 OpenTelemetry GenAI 语义约定（Semantic Conventions）",
+        "各厂商专有 JSON",
+        "普通 CSV 日志文件"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "pre",
-      "question": "Why separate ClickHouse and Postgres in the storage tier?",
+      "question": "为什么存储层将 ClickHouse 与 Postgres 分开？",
       "options": [
-        "They are interchangeable and one is chosen at random",
-        "Postgres is faster for span ingest",
-        "ClickHouse handles columnar analytics over spans while Postgres holds users, sessions, and app metadata",
-        "ClickHouse cannot store strings"
+        "它们可以互换，随机选择其一",
+        "Postgres 摄取跟踪区段更快",
+        "ClickHouse 对跟踪区段进行列式分析（Columnar Analytics），Postgres 保存用户、会话与应用元数据",
+        "ClickHouse 不能存储字符串"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "What does the tail-sampling processor in the OpenTelemetry Collector do?",
+      "question": "OpenTelemetry Collector 中的尾部采样（Tail Sampling）处理器做什么？",
       "options": [
-        "Decides whether to keep a trace after it completes, using rules like keep errors plus sample successes",
-        "Replays old traces into Postgres",
-        "Streams every byte unconditionally",
-        "Truncates spans below 100ms"
+        "轨迹完成后，根据保留错误、抽样成功等规则决定是否保留",
+        "将旧轨迹重放到 Postgres",
+        "无条件流式传输每个字节",
+        "截断低于 100ms 的跟踪区段"
       ],
       "correct": 0,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "How does the dashboard detect drift across weeks?",
+      "question": "仪表盘如何检测周与周之间的漂移（Drift）？",
       "options": [
-        "Counts unique trace IDs",
-        "Computes PSI or KL divergence on pooled prompt embeddings and watches eval-score trends",
-        "Manual eyeballing of the dashboard",
-        "Reads the latest deploy timestamp"
+        "统计唯一轨迹标识符",
+        "对池化提示词嵌入计算 PSI 或 KL 散度，并监控评估分数趋势",
+        "人工目测仪表盘",
+        "读取最新部署时间戳"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "What is the deliverable's MTTR target on an injected PII-leak regression?",
+      "question": "交付物针对注入 PII 泄露回归问题的 MTTR 目标是什么？",
       "options": [
-        "Under 1 hour",
-        "Within 24 hours",
-        "Under 5 minutes from bug deployed to Slack alert",
-        "Within the next on-call shift"
+        "少于 1 小时",
+        "24 小时以内",
+        "从缺陷部署到 Slack 告警少于 5 分钟",
+        "下一次值班交接前"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "Which SDK families must produce canonical GenAI spans to meet the trace-coverage rubric?",
+      "question": "要满足轨迹覆盖评分标准，哪些 SDK 类别必须生成规范 GenAI 跟踪区段？",
       "options": [
-        "OpenAI and Anthropic only",
-        "Any one SDK is enough",
-        "Only vLLM",
-        "At least six: OpenAI, Anthropic, Google GenAI, LangChain, LlamaIndex, and vLLM"
+        "仅 OpenAI 和 Anthropic",
+        "任意一个 SDK 即可",
+        "仅 vLLM",
+        "至少六类：OpenAI、Anthropic、Google GenAI、LangChain、LlamaIndex 和 vLLM"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "How are evaluation results linked back to the original LLM call?",
+      "question": "评估结果如何关联回原始 LLM 调用？",
       "options": [
-        "As a separate Postgres table with no trace ID",
-        "As a CSV emailed nightly",
-        "As Slack messages only",
-        "As eval spans written as children of the parent trace in ClickHouse"
+        "以不含轨迹标识符的独立 Postgres 表保存",
+        "每晚通过电子邮件发送 CSV",
+        "仅作为 Slack 消息",
+        "作为评估跟踪区段（Eval Span）写入 ClickHouse，成为父轨迹的子节点"
       ],
       "correct": 3,
       "explanation": ""

@@ -1,8 +1,8 @@
-/* figures-foundations3.js - animated lesson figures for Phase 1 (math
-   foundations), Phase 2 (ML fundamentals), and Phase 9 (reinforcement
-   learning). Loads after lesson-figures.js, registers through window.LF.
-   No deps, ES5 only, theme via CSS vars. SMIL-only animation: no JS render
-   loops. Authoring: a ```figure block naming a widget below. */
+/* figures-foundations3.js - 阶段 1（数学基础（Math foundations））、阶段 2（机器学习基础（ML fundamentals））
+   及阶段 9（强化学习（Reinforcement learning））的动画课程图表。
+   在 lesson-figures.js 之后加载，通过 window.LF 注册。
+   无依赖，仅使用 ES5，主题由 CSS 变量控制。动画仅使用 SMIL，不使用 JS 渲染
+   循环。编写方式：使用一个以以下某个组件名称为内容的 ```figure 块。 */
 (function () {
   'use strict';
   var LF = window.LF;
@@ -46,10 +46,10 @@
     node.appendChild(svgEl('animate', { attributeName: 'stroke-dashoffset', values: len + ';0', dur: dur, begin: begin, fill: 'freeze', calcMode: 'spline', keySplines: SPL, keyTimes: '0;1' }));
   }
 
-  // -- f3-bootstrap-resample: data row resampled into a histogram of means ----
+  // -- f3-bootstrap-resample: 对一行数据重采样（Resample），得到均值直方图（Histogram） --
   function bootstrapResample(host) {
     var svg = svgEl('svg', { viewBox: '0 0 520 240' });
-    svg.appendChild(txt(60, 20, 'observed data (n = 10)', '9', MUTE, 'start'));
+    svg.appendChild(txt(60, 20, '观测数据（n = 10）', '9', MUTE, 'start'));
     var i, d;
     for (i = 0; i < 10; i++) {
       d = svgEl('circle', { cx: 70 + i * 42, cy: 42, r: '4.5', fill: SOFT, opacity: '0' });
@@ -60,7 +60,7 @@
     ring.appendChild(svgEl('animateMotion', { path: 'M70 42 L448 42 L196 42 L364 42 L70 42', dur: '4s', begin: '0.9s', repeatCount: 'indefinite', calcMode: 'linear', keyPoints: '0;0.25;0.5;0.75;1', keyTimes: '0;0.25;0.5;0.75;1' }));
     ring.appendChild(anim('opacity', '0;0.9;0.9;0', '4s', { begin: '0.9s', keyTimes: '0;0.06;0.94;1' }));
     svg.appendChild(ring);
-    svg.appendChild(txt(460, 21, 'resample with replacement', '9', BP, 'end'));
+    svg.appendChild(txt(460, 21, '有放回重采样', '9', BP, 'end'));
     var heights = [12, 30, 54, 70, 54, 30, 12], base = 196;
     for (i = 0; i < 7; i++) {
       var h = heights[i], x = 152 + i * 32;
@@ -70,19 +70,19 @@
       bar.appendChild(svgEl('animate', { attributeName: 'y', values: (base - h * 0.95).toFixed(1) + ';' + (base - h), dur: '0.5s', begin: (1.2 + i * 0.12) + 's', fill: 'freeze', calcMode: 'spline', keySplines: SPL, keyTimes: '0;1' }));
       svg.appendChild(bar);
     }
-    svg.appendChild(txt(260, 216, 'distribution of bootstrap means', '9', MUTE));
+    svg.appendChild(txt(260, 216, '自助样本均值的分布', '9', MUTE));
     var ci = svgEl('path', { d: 'M184 92 L184 84 L336 84 L336 92', fill: 'none', stroke: WARN, 'stroke-width': '1.8' });
     drawIn(ci, 170, 0.8, '2.6s');
     svg.appendChild(ci);
-    var ciLabel = svgEl('g', { opacity: '0' }, [txt(260, 74, '95% confidence interval', '9', WARN)]);
+    var ciLabel = svgEl('g', { opacity: '0' }, [txt(260, 74, '95% 置信区间（Confidence Interval）', '9', WARN)]);
     enter(ciLabel, '3s');
     svg.appendChild(ciLabel);
-    shell(host, 'BOOTSTRAP RESAMPLING', 'resample, recompute, repeat',
+    shell(host, '自助重采样（Bootstrap Resampling）', '重复采样、计算统计量',
       svg,
-      'The bootstrap treats your sample as a stand-in for the population. Draw n points with replacement, compute the statistic, and repeat thousands of times: the resulting distribution of bootstrap means shows how much the statistic wobbles from sampling noise alone. The middle 95 percent of it is a confidence interval that needs no normality assumption.');
+      '自助法（Bootstrap）用已有样本近似总体。有放回地抽取 n 个点，计算统计量，重复数千次：所得自助样本均值的分布，反映了仅由抽样噪声引起的统计量波动。取分布中间的 95%，即可得到不依赖正态性假设的置信区间（Confidence Interval）。');
   }
 
-  // -- f3-learning-boundary: centroids emerge from data, boundary follows -----
+  // -- f3-learning-boundary: 质心（Centroids）从数据中显现，边界随之移动 --
   function learningBoundary(host) {
     var svg = svgEl('svg', { viewBox: '0 0 520 240' });
     var A = [[118, 66], [156, 92], [130, 118], [176, 70]];
@@ -112,18 +112,18 @@
     drawIn(bound, 210, 0.9, '1.5s');
     svg.appendChild(bound);
     var lbl = svgEl('g', { opacity: '0' }, [
-      txt(120, 30, 'class A centroid', '9', BP),
-      txt(390, 216, 'class B centroid', '9', WARN),
-      txt(300, 224, 'learned boundary: closest centroid wins', '9', MUTE, 'start')
+      txt(120, 30, 'A 类质心（Centroid）', '9', BP),
+      txt(390, 202, 'B 类质心（Centroid）', '9', WARN),
+      txt(300, 224, '学到的边界：归入最近的质心', '9', MUTE, 'start')
     ]);
     enter(lbl, '2.3s');
     svg.appendChild(lbl);
-    shell(host, 'LEARNING FROM DATA', 'no rules written by hand',
+    shell(host, '从数据中学习（Learning from Data）', '无需手写规则',
       svg,
-      'Nobody wrote an if-statement here. The classifier summarizes each labelled cluster by its centroid, and the decision boundary falls out of the geometry: the perpendicular bisector between the two centroids. Feed it different data and a different boundary emerges. That inversion, rules derived from examples rather than typed by hand, is what makes it machine learning.');
+      '这里没有人手写 if 判断。分类器（Classifier）用质心（Centroid）概括每个带标签的簇，决策边界（Decision Boundary）由几何关系直接确定，即两个质心连线的垂直平分线。换一组数据，就会得到另一条边界。规则由样本推导出来，而不是由人逐条编写，这正是机器学习（Machine Learning）的核心。');
   }
 
-  // -- f3-ensemble-average: jittery weak learners average into a smooth one ---
+  // -- f3-ensemble-average: 波动的弱学习器（Weak learners）平均为平滑的学习器 --
   function ensembleAverage(host) {
     var svg = svgEl('svg', { viewBox: '0 0 520 220' });
     var weak = [
@@ -143,8 +143,8 @@
     drawIn(avg, 480, 1.4, '1.6s');
     svg.appendChild(avg);
     var lbl = svgEl('g', { opacity: '0' }, [
-      txt(60, 34, '5 weak learners, each wrong differently', '9', MUTE, 'start'),
-      txt(60, 50, 'their average', '9', BP, 'start')
+      txt(60, 34, '5 个弱学习器（Weak Learners），各有不同误差', '9', MUTE, 'start'),
+      txt(60, 50, '取它们的平均值', '9', BP, 'start')
     ]);
     enter(lbl, '2.2s');
     svg.appendChild(lbl);
@@ -152,19 +152,19 @@
     votes.appendChild(svgEl('animateMotion', { path: 'M40 152 Q 100 138 150 114 T 260 75 T 370 88 T 480 121', dur: '3.5s', begin: '3s', repeatCount: 'indefinite', calcMode: 'spline', keyPoints: '0;1', keyTimes: '0;1', keySplines: '0.4 0 0.6 1' }));
     votes.appendChild(anim('opacity', '0;1;1;0', '3.5s', { begin: '3s', keyTimes: '0;0.08;0.92;1' }));
     svg.appendChild(votes);
-    shell(host, 'ENSEMBLE AVERAGING', 'many wrongs make a right',
+    shell(host, '集成平均（Ensemble Averaging）', '让不同误差相互抵消',
       svg,
-      'Each grey curve is one weak learner: high variance, wrong in its own way. Because their errors are (partly) independent, averaging them cancels the noise while keeping the shared signal, and the blue ensemble tracks the true pattern more closely than any member. Bagging builds exactly this, and majority voting is the same cancellation applied to class labels.');
+      '每条灰色曲线代表一个弱学习器（Weak Learner）：方差较高，出错方式各不相同。由于它们的误差具有一定独立性，取平均值可以抵消噪声、保留共同信号；蓝色的集成结果因此比任何单个成员都更接近真实规律。装袋法（Bagging）采用的正是这一思路；多数投票（Majority Voting）则把相同的误差抵消机制应用于类别标签。');
   }
 
-  // -- f3-pipeline-flow: one sample rides through fit-once, ordered stages ----
+  // -- f3-pipeline-flow: 一个样本经过仅拟合一次、按序排列的各阶段 --
   function pipelineFlow(host) {
     var svg = svgEl('svg', { viewBox: '0 0 520 200' });
     var stages = [
-      { x: 76, name: 'impute', sub: 'median' },
-      { x: 196, name: 'scale', sub: 'mean, std' },
-      { x: 316, name: 'encode', sub: 'one-hot' },
-      { x: 436, name: 'model', sub: 'predict' }
+      { x: 76, name: '缺失值填补', sub: '中位数' },
+      { x: 196, name: '缩放', sub: '均值、标准差' },
+      { x: 316, name: '编码', sub: '独热编码（One-hot）' },
+      { x: 436, name: '模型', sub: '预测' }
     ];
     var i, g;
     for (i = 0; i < 4; i++) {
@@ -186,27 +186,27 @@
     dot.appendChild(anim('r', '5;5;3.6;3.6;5;5;3.6;3.6;5', '5s', { begin: '1.4s', keyTimes: '0;0.2;0.28;0.4;0.48;0.6;0.68;0.8;1', calcMode: 'discrete' }));
     svg.appendChild(dot);
     var lock = svgEl('g', { opacity: '0' }, [
-      txt(196, 152, 'statistics fitted on train data only', '9', WARN),
-      txt(196, 168, 'inference reuses the frozen fit, so train and serve match', '9', MUTE)
+      txt(260, 152, '统计量仅使用训练数据拟合', '9', WARN),
+      txt(260, 168, '推理复用已固定的拟合结果，保持训练与服务一致', '9', MUTE)
     ]);
     enter(lock, '2s');
     svg.appendChild(lock);
-    shell(host, 'ML PIPELINE', 'one object, ordered steps',
+    shell(host, '机器学习流水线（ML Pipeline）', '一个对象，按序执行各步骤',
       svg,
-      'A pipeline chains every transformation and the model into one object: the sample enters raw and each stage reshapes it before handing it on. All statistics (medians, means, category maps) are fitted once, on training data only, then frozen. Serving runs the identical chain, which is what closes off data leakage and train-serve skew.');
+      '流水线（Pipeline）把各项变换和模型串成一个对象：原始样本进入后，依次由各阶段处理并传给下一步。所有统计量，包括中位数、均值和类别映射，都只在训练数据上拟合一次，随后固定。线上服务执行同一条处理链，从而避免数据泄漏（Data Leakage）和训练与服务偏差（Train-serve Skew）。');
   }
 
-  // -- f3-series-decompose: observed = trend + seasonality + residual --------
+  // -- f3-series-decompose: observed = trend + seasonality + residual，即观测值 = 趋势 + 季节性 + 残差 --
   function seriesDecompose(host) {
     var svg = svgEl('svg', { viewBox: '0 0 520 280' });
     var obs = svgEl('path', { d: 'M60 88 C 90 58, 110 58, 140 76 C 170 94, 190 50, 220 46 C 250 42, 270 78, 300 70 C 330 62, 350 34, 380 36 C 410 38, 430 60, 480 48', fill: 'none', stroke: INK, 'stroke-width': '1.8' });
     drawIn(obs, 470, 1.2, '0.2s');
     svg.appendChild(obs);
-    svg.appendChild(txt(60, 26, 'observed series', '9', INK, 'start'));
+    svg.appendChild(txt(60, 26, '观测序列（Observed Series）', '9', INK, 'start'));
     var rows = [
-      { d: 'M60 138 C 200 132, 340 122, 480 112', label: 'trend', color: BP, b: '1.5s' },
-      { d: 'M60 192 Q 90 172 120 192 T 180 192 T 240 192 T 300 192 T 360 192 T 420 192 T 480 192', label: 'seasonality', color: WARN, b: '1.8s' },
-      { d: 'M60 246 L90 241 L120 249 L150 244 L180 248 L210 242 L240 247 L270 245 L300 250 L330 243 L360 247 L390 244 L420 248 L450 245 L480 247', label: 'residual', color: MUTE, b: '2.1s' }
+      { d: 'M60 138 C 200 132, 340 122, 480 112', label: '趋势（Trend）', color: BP, b: '1.5s' },
+      { d: 'M60 192 Q 90 172 120 192 T 180 192 T 240 192 T 300 192 T 360 192 T 420 192 T 480 192', label: '季节性（Seasonality）', color: WARN, b: '1.8s' },
+      { d: 'M60 246 L90 241 L120 249 L150 244 L180 248 L210 242 L240 247 L270 245 L300 250 L330 243 L360 247 L390 244 L420 248 L450 245 L480 247', label: '残差（Residual）', color: MUTE, b: '2.1s' }
     ];
     var i;
     for (i = 0; i < 3; i++) {
@@ -223,12 +223,12 @@
     scan.appendChild(svgEl('animate', { attributeName: 'x2', values: '60;480', dur: '4.5s', begin: '3s', repeatCount: 'indefinite', calcMode: 'spline', keySplines: '0.4 0 0.6 1', keyTimes: '0;1' }));
     scan.appendChild(anim('opacity', '0;0.8;0.8;0', '4.5s', { begin: '3s', keyTimes: '0;0.08;0.9;1' }));
     svg.appendChild(scan);
-    shell(host, 'TIME SERIES DECOMPOSITION', 'peel the layers apart',
+    shell(host, '时间序列分解（Time Series Decomposition）', '逐项拆开各个分量',
       svg,
-      'The observed series is a sum of three simpler signals: a slow trend, a repeating seasonal cycle, and what is left over, the residual. Decomposition separates them so each can be handled on its own terms: detrend and deseasonalize to reach stationarity, then model the residual. The sweep line reminds you the parts line up point-for-point in time.');
+      '观测序列由三种较简单的信号相加而成：缓慢变化的趋势（Trend）、重复出现的季节性（Seasonality）周期，以及剩下的残差（Residual）。分解后可以分别处理：去除趋势和季节性，使序列满足平稳性（Stationarity），再对残差建模。移动的扫描线表明，各分量在时间轴上逐点对应。');
   }
 
-  // -- f3-anomaly-fence: model the normal region, flag what falls outside ----
+  // -- f3-anomaly-fence: 对正常区域建模，标记落在区域外的点 --
   function anomalyFence(host) {
     var svg = svgEl('svg', { viewBox: '0 0 520 240' });
     var pts = [[180, 100], [230, 132], [270, 96], [212, 78], [300, 128], [252, 148], [188, 138], [286, 76], [240, 110], [316, 104]];
@@ -241,7 +241,7 @@
     var fence = svgEl('ellipse', { cx: 248, cy: 112, rx: 118, ry: 62, fill: 'none', stroke: BP, 'stroke-width': '1.8', pathLength: '100', 'stroke-dasharray': '100', 'stroke-dashoffset': '100' });
     fence.appendChild(svgEl('animate', { attributeName: 'stroke-dashoffset', values: '100;0', dur: '1.3s', begin: '1s', fill: 'freeze', calcMode: 'spline', keySplines: SPL, keyTimes: '0;1' }));
     svg.appendChild(fence);
-    svg.appendChild(txt(248, 200, 'the model learns this region: normal', '9', BP));
+    svg.appendChild(txt(248, 200, '模型学到的区域：正常', '9', BP));
     var out = grp(444, 52);
     out.appendChild(svgEl('circle', { r: '5', fill: WARN }));
     pop(out, '2.2s');
@@ -250,15 +250,15 @@
     ringA.appendChild(anim('r', '6;20', '2s', { begin: '2.6s', calcMode: 'spline', keySplines: '0.4 0 0.6 1', keyTimes: '0;1' }));
     ringA.appendChild(anim('opacity', '0.8;0', '2s', { begin: '2.6s', keyTimes: '0;1' }));
     svg.appendChild(ringA);
-    var lbl = svgEl('g', { opacity: '0' }, [txt(444, 90, 'anomaly:', '9', WARN), txt(444, 104, 'outside normal', '9', WARN)]);
+    var lbl = svgEl('g', { opacity: '0' }, [txt(444, 90, '异常（Anomaly）：', '9', WARN), txt(444, 104, '落在正常区域之外', '9', WARN)]);
     enter(lbl, '2.8s');
     svg.appendChild(lbl);
-    shell(host, 'ANOMALY DETECTION', 'model normal, flag the rest',
+    shell(host, '异常检测（Anomaly Detection）', '学习正常模式，标记区域外的点',
       svg,
-      'There are too few labelled anomalies to learn what abnormal looks like, so the detector learns the shape of normal instead: the dense region where ordinary points live. Anything that lands outside that fence is flagged, no matter what kind of anomaly it is. That is why the method needs no anomaly labels and still catches failure modes it has never seen.');
+      '带标签的异常样本太少，不足以学习异常的形态，因此检测器转而学习正常数据的分布形状，也就是普通样本聚集的密集区域。凡是落在这条边界之外的点，无论属于哪种异常，都会被标记。这样，即使没有异常标签，也能发现从未见过的故障模式。');
   }
 
-  // -- f3-feature-prune: noise features fall away, signal features stay ------
+  // -- f3-feature-prune: 噪声特征（Noise features）被剔除，信号特征（Signal features）保留 --
   function featurePrune(host) {
     var svg = svgEl('svg', { viewBox: '0 0 520 220' });
     var hs = [96, 14, 72, 10, 20, 84, 12, 58, 16, 9], base = 170;
@@ -280,24 +280,24 @@
     var cut = svgEl('line', { x1: 50, y1: base - 34, x2: 490, y2: base - 34, stroke: WARN, 'stroke-width': '1.4', 'stroke-dasharray': '5 4', opacity: '0' });
     enter(cut, '1.4s');
     svg.appendChild(cut);
-    svg.appendChild(txt(486, base - 40, 'selection threshold', '9', WARN, 'end'));
-    svg.appendChild(txt(270, 192, 'feature importance (e.g. mutual information with the target)', '9', MUTE));
-    var lbl = svgEl('g', { opacity: '0' }, [txt(270, 32, '10 features in, 4 carry signal, the rest is noise', '9', SOFT)]);
+    svg.appendChild(txt(486, base - 40, '筛选阈值（Threshold）', '9', WARN, 'end'));
+    svg.appendChild(txt(270, 192, '特征重要性：例如与目标之间的互信息（Mutual Information）', '9', MUTE));
+    var lbl = svgEl('g', { opacity: '0' }, [txt(270, 32, '输入 10 个特征，4 个包含有效信号，其余为噪声', '9', SOFT)]);
     enter(lbl, '2.6s');
     svg.appendChild(lbl);
-    shell(host, 'FEATURE SELECTION', 'keep signal, drop noise',
+    shell(host, '特征选择（Feature Selection）', '保留信号，去掉噪声',
       svg,
-      'Score every feature by how much it tells you about the target, mutual information here, and a threshold splits signal from noise. The low bars fade out: dropping them shrinks the feature space, so distances stay meaningful, the model needs less data, and overfitting to noise columns disappears. Filter, wrapper, and embedded methods differ only in how the scores are computed.');
+      '根据每个特征能提供多少目标信息为其打分，这里使用互信息（Mutual Information），再用阈值区分信号与噪声。低分的柱子逐渐淡出：删除这些特征可以缩小特征空间，让距离仍有意义，减少模型所需的数据量，并消除对噪声列的过拟合（Overfitting）。过滤法（Filter）、包装法（Wrapper）和嵌入法（Embedded）的区别，在于如何计算这些分数。');
   }
 
-  // -- f3-dqn-stability: replay decorrelates, target net updates in jumps ----
+  // -- f3-dqn-stability: 经验回放（Replay）消除相关性，目标网络（Target net）跳跃式更新 --
   function dqnStability(host) {
     var svg = svgEl('svg', { viewBox: '0 0 520 240' });
     var boxes = [
-      { x: 74, y: 66, name: 'env', sub: 's, a, r, s\'', b: '0.1s' },
-      { x: 226, y: 66, name: 'replay buffer', sub: 'shuffled past', b: '0.28s' },
-      { x: 400, y: 66, name: 'online net', sub: 'trains every step', b: '0.46s' },
-      { x: 400, y: 176, name: 'target net', sub: 'frozen copy', b: '0.64s' }
+      { x: 74, y: 66, name: '环境（Env）', sub: 's, a, r, s\'', b: '0.1s' },
+      { x: 226, y: 66, name: '经验回放缓冲区', sub: '打乱历史经验', b: '0.28s' },
+      { x: 400, y: 66, name: '在线网络', sub: '每一步都训练', b: '0.46s' },
+      { x: 400, y: 176, name: '目标网络', sub: '冻结的副本', b: '0.64s' }
     ];
     var i, g;
     for (i = 0; i < 4; i++) {
@@ -320,22 +320,22 @@
       s.appendChild(anim('opacity', '0;1;1;0', '2.5s', { begin: (1.4 + i * 0.3) + 's', keyTimes: '0;0.15;0.85;1' }));
       svg.appendChild(s);
     }
-    svg.appendChild(txt(226, 130, 'random minibatch: decorrelated', '8', BP));
+    svg.appendChild(txt(226, 130, '随机小批量：降低相关性', '8', BP));
     var sync = svgEl('g', { opacity: '0' });
     sync.appendChild(svgEl('line', { x1: 400, y1: 92, x2: 400, y2: 150, stroke: WARN, 'stroke-width': '2' }));
     sync.appendChild(svgEl('polygon', { points: '396,148 404,148 400,156', fill: WARN }));
-    sync.appendChild(txt(346, 126, 'copy', '8', WARN, 'end'));
+    sync.appendChild(txt(346, 126, '复制', '8', WARN, 'end'));
     sync.appendChild(anim('opacity', '0;0;1;1;0', '5s', { begin: '1.8s', keyTimes: '0;0.76;0.8;0.92;1', calcMode: 'discrete' }));
     svg.appendChild(sync);
-    var hold = svgEl('g', { opacity: '0' }, [txt(226, 214, 'target held fixed ~10k steps, then synced: a stable bootstrap target', '9', MUTE)]);
+    var hold = svgEl('g', { opacity: '0' }, [txt(260, 214, '目标网络约每 1 万步同步一次，让自举目标保持稳定', '9', MUTE)]);
     enter(hold, '2.2s');
     svg.appendChild(hold);
-    shell(host, 'DQN STABILITY TRICKS', 'replay + frozen target',
+    shell(host, '深度 Q 网络（DQN）的稳定训练技巧', '经验回放 + 冻结目标网络',
       svg,
-      'Two of the three tricks that made deep Q-learning converge. Transitions stream into a replay buffer, and training samples them at random, so consecutive updates stop being correlated. Meanwhile the amber target network stays frozen while the online network trains, and only snaps to a fresh copy every ten thousand or so steps, keeping the Bellman target from chasing itself.');
+      '图中展示了使深度 Q 学习（Deep Q-learning）收敛的三项技巧中的两项。状态转移不断进入经验回放缓冲区（Replay Buffer），训练时随机抽样，打破连续更新之间的相关性。同时，在线网络（Online Network）持续训练，琥珀色的目标网络（Target Network）保持冻结，约每一万步才复制一次最新参数，避免贝尔曼目标（Bellman Target）不断追逐自身的变化。');
   }
 
-  // -- f3-marl-orbit: independent learners cycle, joint training converges ---
+  // -- f3-marl-orbit: 独立学习器循环游走，联合训练（Joint training）实现收敛 --
   function marlOrbit(host) {
     var svg = svgEl('svg', { viewBox: '0 0 520 240' });
     var orbit = svgEl('circle', { cx: 130, cy: 122, r: 55, fill: 'none', stroke: RULE, 'stroke-width': '1', 'stroke-dasharray': '4 4', opacity: '0' });
@@ -349,8 +349,8 @@
     a2.appendChild(svgEl('animateMotion', { path: 'M130 177 A55 55 0 1 1 129.9 176.999 Z', dur: '4s', begin: '0.6s', repeatCount: 'indefinite', calcMode: 'linear', keyPoints: '0;1', keyTimes: '0;1' }));
     a2.appendChild(svgEl('animate', { attributeName: 'opacity', values: '0;1', dur: '0.5s', begin: '0.7s', fill: 'freeze', calcMode: 'spline', keySplines: SPL, keyTimes: '0;1' }));
     svg.appendChild(a2);
-    svg.appendChild(txt(130, 214, 'independent learning: each chases', '9', MUTE));
-    svg.appendChild(txt(130, 228, 'the other, policies never settle', '9', MUTE));
+    svg.appendChild(txt(130, 214, '独立学习（Independent Learning）：', '9', MUTE));
+    svg.appendChild(txt(130, 228, '双方相互追逐，策略无法稳定', '9', MUTE));
     var spiralD = 'M390 42 C 462 42, 462 198, 390 198 C 326 198, 326 70, 390 70 C 434 70, 434 170, 390 170 C 352 170, 352 96, 390 96 C 418 96, 418 146, 390 146 C 368 146, 368 118, 390 118';
     var spiral = svgEl('path', { d: spiralD, fill: 'none', stroke: RULE, 'stroke-width': '1', 'stroke-dasharray': '4 4', opacity: '0' });
     enter(spiral, '0.4s');
@@ -363,52 +363,52 @@
     walker.appendChild(svgEl('animateMotion', { path: spiralD, dur: '5.5s', begin: '1s', repeatCount: 'indefinite', calcMode: 'spline', keyPoints: '0;1', keyTimes: '0;1', keySplines: '0.4 0 0.6 1' }));
     walker.appendChild(anim('opacity', '0;1;1;0', '5.5s', { begin: '1s', keyTimes: '0;0.06;0.9;1' }));
     svg.appendChild(walker);
-    svg.appendChild(txt(390, 214, 'centralized critic: the joint view', '9', MUTE));
-    svg.appendChild(txt(390, 228, 'damps the chase into an equilibrium', '9', MUTE));
-    shell(host, 'MULTI-AGENT DYNAMICS', 'cycle vs converge',
+    svg.appendChild(txt(390, 214, '集中式评价器：观察联合状态', '9', MUTE));
+    svg.appendChild(txt(390, 228, '抑制相互追逐，逐渐达到均衡', '9', MUTE));
+    shell(host, '多智能体动力学（Multi-agent Dynamics）', '循环震荡与收敛',
       svg,
-      'Left: two independent learners in the same world. Each treats the other as part of the environment, so every update by one invalidates the other\'s value estimates, and the pair orbits forever, the non-stationarity trap. Right: give training a centralized critic that sees the joint state and actions, and the same dynamics spiral inward to a stable joint policy.');
+      '左图中，两个独立学习器处于同一个环境，各自把对方视为环境的一部分。因此，一方每次更新都会使另一方的价值估计失效，双方不断循环追逐，陷入非平稳性（Non-stationarity）困境。右图中，训练时引入能观察联合状态和动作的集中式评价器（Centralized Critic），相同的交互过程便沿螺旋向内收敛，形成稳定的联合策略（Joint Policy）。');
   }
 
-  // -- f3-reality-gap: the randomized sim envelope grows over the real world -
+  // -- f3-reality-gap: 随机化模拟（Randomized sim）的包络扩展，覆盖真实世界 --
   function realityGap(host) {
     var svg = svgEl('svg', { viewBox: '0 0 520 220' });
     var axis = svgEl('line', { x1: 50, y1: 150, x2: 470, y2: 150, stroke: SOFT, 'stroke-width': '1.2', opacity: '0' });
     enter(axis, '0.1s');
     svg.appendChild(axis);
-    svg.appendChild(txt(260, 174, 'physics parameter (friction, mass, latency, lighting...)', '9', MUTE));
+    svg.appendChild(txt(260, 174, '物理参数：摩擦、质量、延迟、光照等', '9', MUTE));
     var band = svgEl('rect', { x: 130, y: 82, width: 70, height: 60, rx: '6', fill: BP, opacity: '0' });
     band.appendChild(svgEl('animate', { attributeName: 'opacity', values: '0;0.18;0.18', dur: '6s', begin: '0.5s', repeatCount: 'indefinite', keyTimes: '0;0.08;1', calcMode: 'spline', keySplines: SPL + ';0 0 1 1' }));
     band.appendChild(svgEl('animate', { attributeName: 'x', values: '130;130;84;84', dur: '6s', begin: '0.5s', repeatCount: 'indefinite', keyTimes: '0;0.3;0.55;1', calcMode: 'spline', keySplines: '0 0 1 1;' + SPL + ';0 0 1 1' }));
     band.appendChild(svgEl('animate', { attributeName: 'width', values: '70;70;330;330', dur: '6s', begin: '0.5s', repeatCount: 'indefinite', keyTimes: '0;0.3;0.55;1', calcMode: 'spline', keySplines: '0 0 1 1;' + SPL + ';0 0 1 1' }));
     svg.appendChild(band);
-    var bandLbl = svgEl('g', { opacity: '0' }, [txt(165, 68, 'sim training envelope', '9', BP, 'start')]);
+    var bandLbl = svgEl('g', { opacity: '0' }, [txt(165, 68, '仿真训练覆盖范围', '9', BP, 'start')]);
     enter(bandLbl, '0.7s');
     svg.appendChild(bandLbl);
     var real = svgEl('g', { opacity: '0' });
     real.appendChild(svgEl('line', { x1: 350, y1: 76, x2: 350, y2: 150, stroke: INK, 'stroke-width': '2' }));
     real.appendChild(svgEl('circle', { cx: 350, cy: 150, r: '4.5', fill: INK }));
-    real.appendChild(txt(350, 64, 'the real robot', '9', INK));
+    real.appendChild(txt(350, 64, '真实机器人', '9', INK));
     enter(real, '1s');
     svg.appendChild(real);
-    var gap = svgEl('g', { opacity: '0' }, [txt(276, 118, 'gap', '10', WARN)]);
+    var gap = svgEl('g', { opacity: '0' }, [txt(276, 118, '差距', '10', WARN)]);
     gap.appendChild(anim('opacity', '0;1;1;0;0', '6s', { begin: '0.5s', keyTimes: '0;0.18;0.34;0.44;1', calcMode: 'spline', keySplines: SPL + ';0 0 1 1;0.4 0 1 1;0 0 1 1' }));
     svg.appendChild(gap);
-    var cover = svgEl('g', { opacity: '0' }, [txt(260, 200, 'randomize the sim until reality is just one more variant', '9', BP)]);
+    var cover = svgEl('g', { opacity: '0' }, [txt(260, 200, '随机化仿真参数，让真实环境也落在训练覆盖范围内', '9', BP)]);
     cover.appendChild(anim('opacity', '0;0;1;1;0', '6s', { begin: '0.5s', keyTimes: '0;0.55;0.66;0.92;1', calcMode: 'spline', keySplines: '0 0 1 1;' + SPL + ';0 0 1 1;0.4 0 1 1' }));
     svg.appendChild(cover);
-    shell(host, 'DOMAIN RANDOMIZATION', 'widen the envelope',
+    shell(host, '域随机化（Domain Randomization）', '扩大训练覆盖范围',
       svg,
-      'A policy trained in one fixed simulator sits some distance from the real system on every physics axis, and that distance is the reality gap. Domain randomization widens the training envelope: every episode samples different masses, frictions, delays, and lighting. Once the envelope spans the real robot\'s parameters, reality is just another sample the policy already handles.');
+      '只在参数固定的仿真器中训练的策略，在各个物理参数维度上都与真实系统存在偏差，这就是仿真与现实差距（Reality Gap）。域随机化（Domain Randomization）扩大训练覆盖范围：每个回合都采样不同的质量、摩擦、延迟和光照参数。当这一范围涵盖真实机器人的参数时，真实环境就成了策略已经能够应对的另一种样本。');
   }
 
-  // -- f3-selfplay-ladder: the self-play loop turns cycles into rising skill -
+  // -- f3-selfplay-ladder: 自博弈（Self-play）循环将迭代转为技能提升 --
   function selfplayLadder(host) {
     var svg = svgEl('svg', { viewBox: '0 0 520 240' });
     var nodes = [
-      { x: 120, y: 52, name: 'self-play', b: '0.1s' },
-      { x: 196, y: 150, name: 'search', b: '0.28s' },
-      { x: 44, y: 150, name: 'update', b: '0.46s' }
+      { x: 120, y: 52, name: '自我对弈', b: '0.1s' },
+      { x: 196, y: 150, name: '搜索', b: '0.28s' },
+      { x: 44, y: 150, name: '更新', b: '0.46s' }
     ];
     var i, g;
     for (i = 0; i < 3; i++) {
@@ -426,8 +426,8 @@
     runner.appendChild(svgEl('animateMotion', { path: loopD, dur: '5s', begin: '1s', repeatCount: 'indefinite', calcMode: 'linear', keyPoints: '0;1', keyTimes: '0;1' }));
     runner.appendChild(svgEl('animate', { attributeName: 'opacity', values: '0;1', dur: '0.5s', begin: '1s', fill: 'freeze', calcMode: 'spline', keySplines: SPL, keyTimes: '0;1' }));
     svg.appendChild(runner);
-    svg.appendChild(txt(120, 206, 'play yourself, let search improve the move,', '9', MUTE));
-    svg.appendChild(txt(120, 220, 'train the net on what search found', '9', MUTE));
+    svg.appendChild(txt(120, 206, '与自己对弈，用搜索改进行动', '9', MUTE));
+    svg.appendChild(txt(120, 220, '再用搜索结果训练网络', '9', MUTE));
     var stairs = svgEl('path', { d: 'M280 190 L316 190 L316 166 L352 166 L352 142 L388 142 L388 116 L424 116 L424 90 L460 90 L460 64 L484 64', fill: 'none', stroke: BP, 'stroke-width': '2.2' });
     stairs.setAttribute('stroke-dasharray', '460');
     stairs.setAttribute('stroke-dashoffset', '460');
@@ -436,11 +436,11 @@
     var axisY = svgEl('line', { x1: 280, y1: 44, x2: 280, y2: 190, stroke: RULE, 'stroke-width': '1', opacity: '0' });
     enter(axisY, '0.8s');
     svg.appendChild(axisY);
-    svg.appendChild(txt(382, 210, 'playing strength, one step per loop', '9', SOFT));
-    svg.appendChild(txt(292, 40, 'Elo', '9', MUTE, 'start'));
-    shell(host, 'SELF-PLAY LADDER', 'the AlphaZero loop',
+    svg.appendChild(txt(382, 210, '每轮循环，对弈能力提高一级', '9', SOFT));
+    svg.appendChild(txt(292, 40, '等级分（Elo）', '9', MUTE, 'start'));
+    shell(host, '自我对弈阶梯（Self-play Ladder）', 'AlphaZero 的训练循环',
       svg,
-      'One loop drives AlphaZero, MuZero, and GRPO alike: the current policy plays itself, search (or verification) turns those games into a better move distribution, and the network is trained toward what search found. Every lap around the triangle produces a slightly stronger opponent for the next lap, so playing strength climbs the staircase without any human data.');
+      'AlphaZero、MuZero 和组相对策略优化（Group Relative Policy Optimization，GRPO）都由这样一个循环驱动：当前策略与自身对弈，搜索或验证把这些对局转化为更好的行动分布，再让网络向搜索得到的结果学习。每绕三角形一圈，都会为下一轮产生一个更强的对手，因此不依赖人类数据，对弈能力也能逐级提升。');
   }
 
   LF.register({

@@ -1,157 +1,157 @@
-# Checkpoint Save and Resume
+# 检查点保存与恢复（Checkpoint Save and Resume）
 
-> Train interrupts kill runs; checkpoints let them continue. Save model, optimizer, scheduler, loss history, step counter, and RNG state, atomically, so a kill at any moment leaves a valid file on disk.
+> 训练中断会终止运行，检查点让它继续。原子地保存模型、优化器、调度器、损失历史、步骤计数与随机数生成器状态，使任意时刻被终止后，磁盘上都留有有效文件。
 
 **Type:** Build
 **Languages:** Python
-**Prerequisites:** Phase 19 lessons 42 to 45
-**Time:** ~90 minutes
+**Prerequisites:** 阶段 19 第 42 至 45 课
+**Time:** ~90 分钟
 
-## Learning Objectives
+## 学习目标（Learning Objectives）
 
-- Capture the full training state into a single payload that can be reloaded into a fresh process.
-- Implement atomic save with write-to-temp then rename so a crash never leaves a half-written file.
-- Restore the RNG state for Python, NumPy, and PyTorch so the post-resume loss matches the uninterrupted baseline.
-- Build a sharded checkpoint layout for models that no longer fit in a single file, with hash-verified shards and a JSON index.
+- 将完整训练状态捕获到单个载荷（Payload），可在新进程重新加载。
+- 先写临时文件再重命名，实现原子保存（Atomic save），不让崩溃留下写到一半的文件。
+- 恢复 Python、NumPy 和 PyTorch 的随机数生成器（RNG）状态，使恢复后损失匹配未中断基线。
+- 为无法放进单个文件的模型构建分片检查点（Sharded checkpoint）布局，带哈希验证分片和 JSON 索引。
 
-## The Problem
+## 问题（The Problem）
 
-You set a training job for 18 hours. The wallclock cap is 4 hours. The cluster reboots at hour 11 because someone above your pay grade approved a kernel upgrade. Without checkpoints you start over. Without resume you also lose the optimizer state that took the first 11 hours to learn, so even if the model weights survived, the AdamW moments are gone and the next step lurches in a direction the training trajectory had already moved past.
+你设定训练任务运行 18 小时，实际运行时限是 4 小时。第 11 小时，某位上级批准内核升级，集群重启。没有检查点就得从头开始。没有恢复，还会丢掉前 11 小时学出的优化器状态；即使权重幸存，AdamW 矩也消失了，下一步会突然转向训练轨迹早已越过的方向。
 
-The right artifact is a single file that holds everything needed to continue: model parameters, optimizer state, scheduler state, the loss history for plots, the current step and epoch and batch-in-epoch counters, and the RNG state for every source of randomness. Without the RNG state the resumed loss curve is a different curve. Same model, same data, different shuffle, different dropout mask, different number on the dashboard.
+正确交付物是包含继续运行所需一切的单个文件：模型参数、优化器状态、调度器状态、绘图损失历史、当前步骤、轮次、轮内批次计数，以及所有随机来源的 RNG 状态。没有 RNG 状态，恢复后就是另一条损失曲线：同一模型、同一数据，不同打乱顺序、不同随机失活掩码，看板上数值不同。
 
-Atomic save is the other half of the contract. Writing into the final filename means a crash mid-write leaves a corrupt file; the resume reads garbage. Writing into a temporary file in the same directory and then renaming means a crash mid-write leaves the previous good file untouched. The rename is atomic on POSIX file systems.
+原子保存是契约的另一半。直接写最终文件名，中途崩溃就留下损坏文件，恢复会读到错误内容。写同目录临时文件再重命名，中途崩溃仍保留此前完好文件。POSIX 文件系统上的重命名是原子的。
 
-## The Concept
+## 概念（The Concept）
 
 ```mermaid
 flowchart TD
-  ckpt[checkpoint payload] --> m[model state_dict]
-  ckpt --> o[optimizer state_dict]
-  ckpt --> s[scheduler state_dict]
-  ckpt --> tr[train state: step, epoch, batch_in_epoch, losses]
-  ckpt --> rng[rng state: python, numpy, torch_cpu, torch_cuda]
+  ckpt[检查点载荷] --> m[模型 state_dict]
+  ckpt --> o[优化器 state_dict]
+  ckpt --> s[调度器 state_dict]
+  ckpt --> tr[训练状态：step, epoch, batch_in_epoch, losses]
+  ckpt --> rng[随机状态：python, numpy, torch_cpu, torch_cuda]
   ckpt --> meta[wall_saved_at, schema]
-  ckpt --> write[atomic write: tmp file then os.replace]
+  ckpt --> write[原子写入：临时文件再 os.replace]
 ```
 
-### The five state buckets
+### 五类状态（The five state buckets）
 
-| Bucket | Why it matters |
+| 类别 | 重要原因 |
 |--------|----------------|
-| Model | Weights and buffers; what the model is. |
-| Optimizer | Momentum and adaptive moments; without these the next step is a different optimization problem. |
-| Scheduler | Where the learning rate is on its curve; cosine schedules in particular care. |
-| Train counters | Step, epoch, batch-in-epoch, plus the loss history that draws the dashboard. |
-| RNG state | Determinism for dropout, data shuffling, and any sampling inside the model. |
+| 模型（Model） | 权重与缓冲区，定义模型本身。 |
+| 优化器（Optimizer） | 动量与自适应矩；缺失后下一步就是不同的优化问题。 |
+| 调度器（Scheduler） | 学习率在曲线上的位置，余弦调度尤其依赖它。 |
+| 训练计数（Train counters） | 步骤、轮次、轮内批次，以及用于看板绘图的损失历史。 |
+| RNG 状态（RNG state） | 保证随机失活、数据打乱及模型内任何采样的确定性。 |
 
-### Atomic save
+### 原子保存（Atomic save）
 
 ```mermaid
 flowchart LR
-  payload[payload] --> tmpf[write to .ckpt.pt.XXXX.tmp]
-  tmpf --> rename[os.replace to ckpt.pt]
-  rename --> done[ckpt.pt is valid]
-  crash1[crash before rename] --> orig[ckpt.pt unchanged]
-  crash2[crash after rename] --> done
+  payload[载荷] --> tmpf[写入 .ckpt.pt.XXXX.tmp]
+  tmpf --> rename[os.replace 为 ckpt.pt]
+  rename --> done[ckpt.pt 有效]
+  crash1[重命名前崩溃] --> orig[ckpt.pt 不变]
+  crash2[重命名后崩溃] --> done
 ```
 
-Two rules. First, the temporary file lives in the same directory as the target so the rename stays within the same file system; cross-device renames are not atomic. Second, the temporary name is unique per attempt so two writers do not stomp.
+两条规则。第一，临时文件必须与目标同目录，让重命名留在同一文件系统；跨设备重命名不原子。第二，每次尝试使用唯一临时名称，防止两个写入者互相覆盖。
 
-### Sharded checkpoints
+### 分片检查点（Sharded checkpoints）
 
-When the model gets large the single-file payload becomes too big to load fast, too big to inspect, and too painful when a network share hiccups mid-read. The fix is to split the parameter state into shards and write a small index that ties them together.
+模型变大后，单文件载荷过大，难以快速加载和检查，网络共享中途读取异常时也很痛苦。解决办法是把参数状态拆成分片，用小索引连接。
 
 ```mermaid
 flowchart LR
-  state[state_dict] --> split[split keys round robin into N shards]
+  state[state_dict] --> split[按键轮询拆入 N 个分片]
   split --> s0[model.shard-000.pt]
   split --> s1[model.shard-001.pt]
   split --> sN[model.shard-NNN.pt]
   s0 --> idx[index.json]
   s1 --> idx
   sN --> idx
-  meta[meta.pt: optimizer + scheduler + train_state + rng] --> idx
+  meta[meta.pt：optimizer + scheduler + train_state + rng] --> idx
 ```
 
-The index records the shard count, the sha256 of each shard, and the sha256 of the meta file. The loader fails loudly when any hash mismatches. The shards can land on different physical disks; the meta is small and reads first.
+索引记录分片数、各分片 sha256 和元数据文件 sha256。任意哈希不符，加载器明确报错。分片可放在不同物理磁盘；元数据很小，优先读取。
 
-### Resume continues mid epoch
+### 在轮次中途恢复（Resume continues mid epoch）
 
-A resume that snaps to the start of the next epoch wastes anywhere from minutes to a day. The fix is `(epoch, batch_in_epoch)` plus the RNG state. After load, the training loop fast-forwards the random number generator past the batches already consumed in the current epoch and continues from `batch_in_epoch`. The lesson code does this exactly; the assertion is that the loss trajectory after resume matches the uninterrupted baseline within 1e-4.
+直接跳到下一轮起点恢复，会浪费几分钟至一天工作。解决办法是 `(epoch, batch_in_epoch)` 加 RNG 状态。加载后，训练循环让随机数生成器快进越过本轮已处理批次，从 `batch_in_epoch` 继续。本课代码精确执行，断言恢复后的损失轨迹在 1e-4 内匹配未中断基线。
 
 ```figure
 cc-atomic-checkpoint
 ```
 
-## Build It
+## 动手实现（Build It）
 
-`code/main.py` provides four primitives and a demo driver.
+`code/main.py` 提供四个基本操作和一个演示驱动器。
 
-### Step 1: capture and restore RNG state
+### 第 1 步：捕获和恢复 RNG 状态（Step 1: capture and restore RNG state）
 
-`capture_rng_state` returns a dict with Python's `random.getstate`, NumPy's `np.random.get_state`, and PyTorch CPU and CUDA RNG bytes. `restore_rng_state` reverses it. The CPU tensor is a uint8 byte buffer that PyTorch's RNG knows how to consume.
+`capture_rng_state` 返回字典，含 Python `random.getstate`、NumPy `np.random.get_state`，以及 PyTorch CPU 和 CUDA RNG 字节。`restore_rng_state` 反向恢复。CPU 张量是 PyTorch RNG 能读取的 uint8 字节缓冲区。
 
-### Step 2: atomic save
+### 第 2 步：原子保存（Step 2: atomic save）
 
-`atomic_save` writes the payload to a temp file in the target directory, then `os.replace` swaps it into the final name. `atomic_write_json` does the same for the sharded index.
+`atomic_save` 把载荷写到目标目录的临时文件，再用 `os.replace` 换成最终名称。`atomic_write_json` 对分片索引执行同样操作。
 
-### Step 3: full checkpoint round trip
+### 第 3 步：完整检查点往返（Step 3: full checkpoint round trip）
 
-`save_checkpoint` packages the model, optimizer, scheduler, train state, and RNG into one dict. `load_checkpoint` reverses it and returns a `TrainState`. The schema field is the upgrade hook: future format changes bump the version string and the loader dispatches.
+`save_checkpoint` 将模型、优化器、调度器、训练状态和 RNG 打包进字典。`load_checkpoint` 反向加载，返回 `TrainState`。模式字段（Schema field）是升级钩子：以后格式变化时提升版本字符串，由加载器分派。
 
-### Step 4: sharded variant
+### 第 4 步：分片变体（Step 4: sharded variant）
 
-`save_sharded_checkpoint` round-robins the parameter keys across N shards, writes each shard with its own atomic save, writes a meta file with optimizer and scheduler and train state, and writes the JSON index with shard sha256s. `load_sharded_checkpoint` verifies every shard before merging.
+`save_sharded_checkpoint` 将参数键轮询分配到 N 个分片，各自原子保存，写入包含优化器、调度器与训练状态的元数据文件，再写包含分片 sha256 的 JSON 索引。`load_sharded_checkpoint` 合并前验证每个分片。
 
-### Step 5: resume demo
+### 第 5 步：恢复演示（Step 5: resume demo）
 
-`run_resume_demo` trains a small model for `total_steps`, saves a checkpoint at `interrupt_at`, then continues. A second process restores the checkpoint and runs the remaining steps. The function returns the max absolute difference between the two loss trajectories after the interruption point. With RNG restored, the difference is zero or floating-point noise.
+`run_resume_demo` 训练小模型 `total_steps` 步，在 `interrupt_at` 保存检查点后继续。第二个进程恢复检查点，运行余下步骤。函数返回中断点之后两条损失轨迹的最大绝对差。恢复 RNG 后，差值为零或浮点噪声。
 
-Run it:
+运行：
 
 ```bash
 python3 code/main.py
 ```
 
-The single-file and sharded demos both assert max-diff under 1e-4. The summary lands in `outputs/resume-demo.json`.
+单文件与分片演示都断言最大差小于 1e-4，汇总写入 `outputs/resume-demo.json`。
 
-## Use It
+## 实际应用（Use It）
 
-Production training stacks ship checkpointing as part of the trainer. The shape is the same: model + optimizer + scheduler + counters + RNG, written atomically, named by step so the latest is easy to find. Sharded layouts power large model loading with parallel reads; the index.json is what makes that work.
+生产训练栈将检查点保存作为训练器的一部分。形式相同：模型加优化器加调度器加计数器加 RNG，原子写入，按步骤命名便于找到最新文件。分片布局借助并行读取支持大模型加载，index.json 让这件事成立。
 
-Three patterns to enforce:
+应强制三种模式：
 
-- **Schema is a string in the payload.** Migrations branch on it. Without it you cannot evolve the format without breaking old runs.
-- **Sha256 every shard.** A silently truncated download is the worst kind of bug; the loader fails fast or it fails late.
-- **Keep checkpoint cadence honest.** Save every N steps and every wallclock-minute, whichever is shorter. Otherwise the long step that crashes wastes a full window of work.
+- **载荷中的模式是字符串（Schema is a string in the payload）。** 迁移按它分支；没有它，格式演进就会破坏旧运行。
+- **每个分片做 sha256（Sha256 every shard）。** 静默截断下载是最糟的错误；加载器不是尽早失败，就是拖到之后失败。
+- **保存频率必须可靠（Keep checkpoint cadence honest）。** 每 N 步或按实际分钟间隔保存，以更短间隔为准。否则长步骤崩溃会浪费整个窗口的工作。
 
-## Ship It
+## 交付成果（Ship It）
 
-`outputs/skill-checkpoint-save-resume.md` is the recipe for any new training script: payload shape, atomic write, RNG capture, sharded index. Drop the skill into a repo, wire `save_checkpoint` at the periodic save site, wire `load_checkpoint` at startup, and the run survives kills.
+`outputs/skill-checkpoint-save-resume.md` 为新训练脚本提供方案：载荷结构、原子写入、RNG 捕获、分片索引。把技能加入仓库，在周期保存处接入 `save_checkpoint`，启动时接入 `load_checkpoint`，运行就能从终止中恢复。
 
-## Exercises
+## 练习（Exercises）
 
-1. Replace round-robin sharding with sharding by parameter group (layers ending in `.weight` vs `.bias`). When is each layout preferable?
-2. Extend the save loop to keep the last K checkpoints and prune older ones. What is the right K when the disk is small?
-3. Add a `--ckpt-every-seconds` flag that triggers a save on a wallclock interval, not just step count.
-4. Add a checksum verification path that runs at startup, scans every checkpoint in the directory, and reports which ones are corrupt.
-5. Implement a `migrate_v1_to_v2` function that adds a new field to the payload and bumps the schema string. Make load tolerate both versions.
+1. 将轮询分片改为按参数组分片（以 `.weight` 和 `.bias` 结尾的层分开）。各布局何时更合适？
+2. 扩展保存循环，只保留最近 K 个检查点并清理更旧的。磁盘小时 K 应是多少？
+3. 添加 `--ckpt-every-seconds` 标志，按实际时间间隔触发保存，而不只按步骤。
+4. 添加启动时校验路径，扫描目录中所有检查点，报告哪些已损坏。
+5. 实现 `migrate_v1_to_v2`，给载荷新增字段、提升模式字符串，让加载兼容两版。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语 | 常见说法 | 实际含义 |
 |------|-----------------|------------------------|
-| Atomic save | "Write and pray" | Write to a temp file in the same directory, then os.replace into the target name |
-| State dict | "The weights" | Model parameters and buffers, keyed by parameter name |
-| Sharded checkpoint | "Big model file" | Multiple files, one per shard, plus a meta file and a JSON index with sha256s |
-| RNG state | "Random seed" | Captured state for python random, numpy, torch CPU, torch CUDA; not just the seed |
-| Mid-epoch resume | "Restart" | Fast-forward the RNG and continue from the next batch in the same epoch |
+| 原子保存（Atomic save） | “写完后祈祷” | 写同目录临时文件，再用 os.replace 替换目标名 |
+| 状态字典（State dict） | “权重” | 以参数名为键的模型参数与缓冲区 |
+| 分片检查点（Sharded checkpoint） | “大模型文件” | 每分片一个文件，加元数据文件和带 sha256 的 JSON 索引 |
+| RNG 状态（RNG state） | “随机种子” | 捕获 python random、numpy、torch CPU、torch CUDA 状态，而非仅种子 |
+| 轮中恢复（Mid-epoch resume） | “重启” | 快进 RNG，从同一轮的下一个批次继续 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- POSIX `rename` semantics for the atomicity claim that `os.replace` relies on.
-- PyTorch documentation on `torch.save` and `torch.load`, including `map_location` for cross-device restores.
-- Phase 19 lesson 46 covers the gradient accumulation that this lesson's checkpoint payload survives across.
-- Phase 19 lesson 48 covers the distributed wrappers whose state dict format this scheme accommodates.
-- The Linux kernel `fsync` documentation for the durability guarantee behind atomic rename.
+- POSIX `rename` 语义：`os.replace` 所依赖的原子性依据。
+- PyTorch 的 `torch.save` 与 `torch.load` 文档，包括跨设备恢复的 `map_location`。
+- 阶段 19 第 46 课：本课检查点载荷能够跨越保存的梯度累积。
+- 阶段 19 第 48 课：本方案适配其状态字典格式的分布式包装器。
+- Linux 内核 `fsync` 文档：原子重命名背后的持久性保证。

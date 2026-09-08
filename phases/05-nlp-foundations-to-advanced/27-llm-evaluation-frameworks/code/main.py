@@ -104,7 +104,7 @@ def main():
         },
     ]
 
-    print("=== toy RAG eval: faithfulness / relevance / context precision & recall / G-Eval ===")
+    print("=== 小型 RAG 评估（Evaluation）：忠实度 / 相关性 / 上下文精确率与召回率 / G-Eval，英文测试夹具保留 ===")
     print()
     for i, case in enumerate(cases):
         ctx_joined = " ".join(case["context"])
@@ -113,23 +113,23 @@ def main():
         cp = context_precision(case["context"], case["gold_relevant"])
         cr = context_recall(case["context"], tokenize(case["expected"]))
         ge = g_eval_correctness(case["answer"], case["expected"])
-        print(f"case {i}: {case['question']}")
-        print(f"  answer:   {case['answer']}")
-        print(f"  expected: {case['expected']}")
-        print(f"  faithfulness        = {f:.2f}")
-        print(f"  answer-relevance    = {r:.2f}")
-        print(f"  context-precision   = {cp:.2f}")
-        print(f"  context-recall      = {cr:.2f}")
-        print(f"  g-eval correctness  = {ge:.2f}")
+        print(f"用例（Case） {i}: {case['question']}")
+        print(f"  回答（Answer）:   {case['answer']}")
+        print(f"  预期（Expected）: {case['expected']}")
+        print(f"  忠实度（Faithfulness）        = {f:.2f}")
+        print(f"  回答相关性（Answer relevance）    = {r:.2f}")
+        print(f"  上下文精确率（Context precision）   = {cp:.2f}")
+        print(f"  上下文召回率（Context recall）      = {cr:.2f}")
+        print(f"  G-Eval 正确性（Correctness）  = {ge:.2f}")
         print()
 
-    print("interpretation:")
-    print("  case 0 = faithful + correct      -> all metrics high")
-    print("  case 1 = hallucinated date        -> g-eval drops, faithfulness partial")
-    print("  case 2 = off-topic answer         -> relevance + g-eval collapse")
+    print("解读:")
+    print("  用例 0 = 忠实 + 正确      -> 所有指标均高")
+    print("  用例 1 = 编造日期（Hallucinated date）        -> G-Eval 下降，部分忠实")
+    print("  用例 2 = 离题回答         -> 相关性与 G-Eval 骤降")
     print()
-    print("note: toy uses lexical overlap. production uses NLI + LLM-as-judge.")
-    print("shape of the eval loop is identical.")
+    print("注意：本示例使用词汇重叠（Lexical overlap）。生产环境使用自然语言推断（NLI）+ 大语言模型裁判（LLM-as-judge）。")
+    print("评估循环（Evaluation loop）的形式保持相同。")
 
 
 if __name__ == "__main__":

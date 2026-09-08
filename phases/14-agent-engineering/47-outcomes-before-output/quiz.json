@@ -1,48 +1,78 @@
 {
   "lesson": "47-outcomes-before-output",
-  "title": "Outcomes Before Output",
+  "title": "成效先于产出（Outcomes Before Output）",
   "questions": [
     {
       "stage": "pre",
-      "question": "Which statement is an outcome rather than an output?",
-      "options": ["Build an incident assistant", "Add a dashboard", "Deploy a vector database", "Identify the failing service within two minutes while remaining read-only"],
+      "question": "哪项陈述是成效，而非产出？",
+      "options": [
+        "构建事故助手",
+        "添加仪表盘",
+        "部署向量数据库",
+        "在保持只读的同时，于两分钟内识别故障服务"
+      ],
       "correct": 3,
-      "explanation": "The statement names an observable change and constraint without fixing the artifact."
+      "explanation": "该陈述指明可观察变化与约束，没有固定产物。"
     },
     {
       "stage": "check",
-      "question": "Why does faster implementation increase shaping risk?",
-      "options": ["Teams can commit to the wrong problem before learning catches up", "Code becomes slower", "Models stop planning", "Tests become impossible"],
+      "question": "为什么实现更快会增加界定方向的风险？",
+      "options": [
+        "团队可能尚未充分了解问题，就已经投入了错误的方向",
+        "代码变慢",
+        "模型不再规划",
+        "测试变得不可能"
+      ],
       "correct": 0,
-      "explanation": "Speed amplifies the cost of an unearned direction."
+      "explanation": "速度放大了缺乏依据的方向所带来的成本。"
     },
     {
       "stage": "check",
-      "question": "What belongs in an outcome frame?",
-      "options": ["User, situation, current behavior, desired outcome, constraints, and non-goals", "Only architecture", "Only features", "Model and framework versions"],
+      "question": "成效框架包含什么？",
+      "options": [
+        "用户、情境、当前行为、期望成效、约束、非目标",
+        "仅架构",
+        "仅功能",
+        "模型与框架版本"
+      ],
       "correct": 0,
-      "explanation": "The six surfaces connect the build to a real situation and boundary."
+      "explanation": "六个部分把构建连接到真实情境与边界。"
     },
     {
       "stage": "check",
-      "question": "When may an outcome frame name technology?",
-      "options": ["Only in the title", "When a verified compatibility constraint truly fixes it", "In every goal", "Whenever it is popular"],
+      "question": "成效框架何时可以指定技术？",
+      "options": [
+        "仅在标题中",
+        "已验证的兼容性约束确实固定该技术时",
+        "每个目标中",
+        "只要它流行"
+      ],
       "correct": 1,
-      "explanation": "Technology belongs only when evidence makes it a real constraint."
+      "explanation": "只有证据使技术成为真实约束，它才应出现。"
     },
     {
       "stage": "post",
-      "question": "What is the role of non-goals?",
-      "options": ["List future dreams", "Reject tempting adjacent work in this slice", "Measure success", "Replace constraints"],
+      "question": "非目标的作用是什么？",
+      "options": [
+        "列出未来愿望",
+        "拒绝当前切片中有诱惑力的相邻工作",
+        "测量成功",
+        "替代约束"
+      ],
       "correct": 1,
-      "explanation": "Concrete non-goals keep the build attached to its current outcome."
+      "explanation": "具体非目标让构建始终围绕当前成效。"
     },
     {
       "stage": "post",
-      "question": "When has a constrained outcome failed?",
-      "options": ["Only when no code ships", "When implementation changes", "When the desired result is reached by violating a fixed constraint", "When a non-goal is documented"],
+      "question": "受约束成效何时算失败？",
+      "options": [
+        "只有没有代码交付时",
+        "实现改变时",
+        "通过违反固定约束达成期望结果时",
+        "记录非目标时"
+      ],
       "correct": 2,
-      "explanation": "Constraints are part of the outcome, not optional implementation guidance."
+      "explanation": "约束是成效的一部分，不是可选实现建议。"
     }
   ]
 }

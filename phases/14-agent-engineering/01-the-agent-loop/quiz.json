@@ -1,90 +1,90 @@
 {
   "lesson": "01-the-agent-loop",
-  "title": "The Agent Loop: Observe, Think, Act",
+  "title": "智能体循环：观察、思考、行动（The Agent Loop: Observe, Think, Act）",
   "questions": [
     {
       "stage": "pre",
-      "question": "Why does an LLM on its own behave like an autocomplete rather than an agent?",
+      "question": "为什么单独的大语言模型（LLM）表现得像自动补全器，而不是智能体（Agent）？",
       "options": [
-        "It cannot read files, run queries, or verify claims against the outside world",
-        "Its context window is too small to hold a question",
-        "It only emits one token at a time",
-        "It refuses to answer without a system prompt"
+        "它无法读取文件、执行查询，或对照外部世界核实说法",
+        "它的上下文窗口太小，容不下一个问题",
+        "它每次只输出一个词元",
+        "没有系统提示词时，它会拒绝回答"
       ],
       "correct": 0,
-      "explanation": "An LLM with no loop and no tools can only produce text from its weights; it cannot observe state or act on it."
+      "explanation": "没有循环和工具的 LLM 只能根据权重生成文本，无法观察状态或对其采取行动。"
     },
     {
       "stage": "pre",
-      "question": "Which three labels appear in the canonical ReAct trace from Yao et al. 2022?",
+      "question": "Yao 等人于 2022 年提出的经典 ReAct 轨迹包含哪三个标签？",
       "options": [
-        "Prompt, Response, Reward",
-        "Plan, Execute, Reflect",
-        "Thought, Action, Observation",
-        "System, User, Assistant"
+        "提示词（Prompt）、响应（Response）、奖励（Reward）",
+        "计划（Plan）、执行（Execute）、反思（Reflect）",
+        "思考（Thought）、行动（Action）、观察（Observation）",
+        "系统（System）、用户（User）、助手（Assistant）"
       ],
       "correct": 2,
-      "explanation": "ReAct interleaves Thought, Action, and Observation lines in a single stream."
+      "explanation": "ReAct 在同一个流中交替呈现思考（Thought）、行动（Action）和观察（Observation）行。"
     },
     {
       "stage": "check",
-      "question": "Which item is NOT one of the five ingredients the lesson lists for an agent loop?",
+      "question": "以下哪项不属于本课列出的智能体循环五要素？",
       "options": [
-        "Tool registry",
-        "Message buffer",
-        "Observation formatter",
-        "Gradient optimizer"
+        "工具注册表（Tool registry）",
+        "消息缓冲区（Message buffer）",
+        "观察结果格式化器（Observation formatter）",
+        "梯度优化器（Gradient optimizer）"
       ],
       "correct": 3,
-      "explanation": "The five ingredients are message buffer, tool registry, stop condition, turn budget, and observation formatter. Gradient optimizers belong to training, not the inference loop."
+      "explanation": "五要素是消息缓冲区、工具注册表、停止条件、轮次预算和观察结果格式化器。梯度优化器属于训练过程，而不是推理循环。"
     },
     {
       "stage": "check",
-      "question": "What is the role of a turn budget in the loop?",
+      "question": "轮次预算（Turn budget）在循环中起什么作用？",
       "options": [
-        "It controls how many tools the registry exposes",
-        "It rate-limits the LLM provider",
-        "It hard-caps loop iterations to prevent runaway agents",
-        "It caps the number of tokens per response"
+        "控制注册表暴露的工具数量",
+        "限制 LLM 提供商的调用速率",
+        "为循环迭代次数设定硬上限，防止智能体失控运行",
+        "限制每次响应的词元数量"
       ],
       "correct": 2,
-      "explanation": "Turn budget is a cap on loop iterations; 2026 agents commonly run 40-400 steps and need a task-appropriate cap."
+      "explanation": "轮次预算是循环迭代次数的上限；2026 年智能体通常运行 40-400 步，需要与任务相适应的上限。"
     },
     {
       "stage": "check",
-      "question": "What changed in the 2025-2026 native-reasoning shift compared to prompt-based Thought tokens?",
+      "question": "相比基于提示词的 Thought 词元，2025-2026 年转向原生推理（Native reasoning）后发生了什么变化？",
       "options": [
-        "Thought tokens are now emitted on a separate reasoning channel passed through turns",
-        "Models stopped using tool calls and rely on chain-of-thought only",
-        "Observations are removed from the prompt entirely",
-        "The loop control flow was replaced with a DAG"
+        "思考词元改为通过独立推理通道输出，并在轮次之间透传",
+        "模型不再使用工具调用，只依靠思维链",
+        "观察结果被彻底移出提示词",
+        "循环控制流被有向无环图（DAG）取代"
       ],
       "correct": 0,
-      "explanation": "Reasoning content moves to a dedicated channel (often encrypted across providers), but the observe-think-act control flow is unchanged."
+      "explanation": "推理内容移到专用通道，跨提供商传递时通常加密，但观察、思考、行动的控制流不变。"
     },
     {
       "stage": "post",
-      "question": "Why does the lesson say tool outputs are untrusted input?",
+      "question": "为什么本课说工具输出是不可信输入？",
       "options": [
-        "Tool runtimes are slow and unreliable",
-        "Retrieved content can carry hidden instructions like delete-the-repo and only direct user input counts as permission",
-        "Tool results are always larger than the model's context window",
-        "The provider strips tool output bytes by default"
+        "工具运行时缓慢且不可靠",
+        "检索内容可能携带删除仓库之类的隐藏指令，而只有用户的直接输入才算授权",
+        "工具结果总是超出模型的上下文窗口",
+        "提供商默认会剥离工具输出字节"
       ],
       "correct": 1,
-      "explanation": "OpenAI CUA docs state explicitly that only direct user instructions count as permission; tool outputs can carry adversarial instructions and must be treated as untrusted."
+      "explanation": "OpenAI CUA 文档明确规定，只有用户的直接指令才算授权；工具输出可能携带对抗性指令，必须视为不可信内容。"
     },
     {
       "stage": "post",
-      "question": "Why does the lesson claim every 2026 framework still runs ReAct under the hood?",
+      "question": "为什么本课认为 2026 年的每个框架底层仍在运行 ReAct？",
       "options": [
-        "Because LangGraph forces all other frameworks to inherit from it",
-        "Because providers require the ReAct keywords in the prompt",
-        "Because Yao et al. own a patent on the loop",
-        "Because the observe-think-act control flow is invariant; frameworks differ in checkpointing, actors, role templates, and tracing around it"
+        "因为 LangGraph 强制其他所有框架继承它",
+        "因为提供商要求提示词中包含 ReAct 关键词",
+        "因为 Yao 等人拥有该循环的专利",
+        "因为观察、思考、行动的控制流不变；框架的区别在于周围的检查点、参与者、角色模板和追踪设施"
       ],
       "correct": 3,
-      "explanation": "Differences across Claude Agent SDK, OpenAI Agents SDK, LangGraph, AutoGen, CrewAI, Agno, and Mastra are about what wraps the loop, not the loop itself."
+      "explanation": "Claude Agent SDK、OpenAI Agents SDK、LangGraph、AutoGen、CrewAI、Agno 和 Mastra 的差异在于循环外的封装，而不是循环本身。"
     }
   ]
 }

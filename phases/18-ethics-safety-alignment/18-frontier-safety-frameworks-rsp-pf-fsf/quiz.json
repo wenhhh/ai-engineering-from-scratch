@@ -1,75 +1,75 @@
 {
   "lesson": "18-frontier-safety-frameworks-rsp-pf-fsf",
-  "title": "Frontier Safety Frameworks - RSP, PF, FSF",
+  "title": "前沿安全框架（Frontier Safety Frameworks）— RSP、PF、FSF",
   "questions": [
     {
       "stage": "pre",
-      "question": "What does Anthropic's ASL structure model itself on?",
+      "question": "Anthropic 的 ASL 结构参照了什么？",
       "options": [
-        "EU AI Act categories",
-        "Biosafety levels (BSL)",
-        "Internet RFC tiers",
-        "ITIL incident severities"
+        "欧盟《人工智能法案》的类别",
+        "生物安全等级（BSL）",
+        "互联网 RFC 等级",
+        "ITIL 事件严重程度"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Which OpenAI Preparedness Framework v2 criterion captures 'harm occurs fast or cannot be undone'?",
+      "question": "OpenAI《准备度框架》v2 中，哪项标准表达了“伤害发生得很快，或无法撤销”？",
       "options": [
-        "Net-new",
-        "Plausible",
-        "Measurable",
-        "Instantaneous-or-irremediable"
+        "全新性（Net-New）",
+        "可信性（Plausible）",
+        "可测量性（Measurable）",
+        "瞬时性或不可补救性（Instantaneous-or-Irremediable）"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Which Critical Capability Level was added to DeepMind's FSF v3.0 (September 2025)?",
+      "question": "DeepMind 的 FSF v3.0（2025 年 9 月）增加了哪个关键能力等级？",
       "options": [
-        "Harmful Manipulation",
-        "Cyber Uplift",
-        "Bioweapon Uplift",
-        "ML R&D Acceleration"
+        "有害操纵（Harmful Manipulation）",
+        "网络能力提升（Cyber Uplift）",
+        "生物武器能力提升（Bioweapon Uplift）",
+        "机器学习研发加速（ML R&D Acceleration）"
       ],
       "correct": 0,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "What is a 'competitor-adjustment clause' in the 2025+ frontier safety frameworks?",
+      "question": "2025 年及之后的前沿安全框架中，“竞争对手调整条款”是什么？",
       "options": [
-        "A provision allowing a lab to reduce safety requirements if peer labs ship without comparable safeguards",
-        "An export-control exemption",
-        "A model-card disclosure requirement",
-        "A pricing rule for API access"
+        "如果同行实验室在没有同等防护措施的情况下发布模型，允许本实验室降低安全要求的规定",
+        "出口管制豁免",
+        "模型卡披露要求",
+        "API 访问的定价规则"
       ],
       "correct": 0,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "What are the three standard pillars of a safety case as described in the lesson?",
+      "question": "本课所述的安全论证有哪三个标准支柱？",
       "options": [
-        "Helpful, honest, harmless",
-        "Monitoring, illegibility, incapability",
-        "Speed, accuracy, cost",
-        "Inner, outer, mesa"
+        "有帮助、诚实、无害",
+        "监控、不可解读性和能力缺失",
+        "速度、准确率和成本",
+        "内部、外部和内嵌"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "Which structural alignment exists across Anthropic's 'Capability Thresholds,' OpenAI's 'High Capability thresholds,' and DeepMind's 'Critical Capability Levels'?",
+      "question": "Anthropic 的“能力阈值”、OpenAI 的“高能力阈值”和 DeepMind 的“关键能力等级”之间，存在哪种结构一致性？",
       "options": [
-        "None are publicly documented",
-        "Structural alignment: tiered frontier-capability thresholds with published evaluation criteria, even though terminology differs",
-        "Identical terminology and numeric cutoffs",
-        "All three use the exact same evaluations"
+        "它们都没有公开文档",
+        "结构一致：虽然术语不同，但都采用分级的前沿能力阈值，并公开评估标准",
+        "术语和数值界限完全相同",
+        "三者采用完全相同的评估"
       ],
       "correct": 1,
       "explanation": ""

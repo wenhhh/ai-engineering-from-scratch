@@ -1,304 +1,304 @@
-# What Is Machine Learning
+# 什么是机器学习（What Is Machine Learning）
 
-> Machine learning is teaching computers to find patterns in data instead of writing rules by hand.
+> 机器学习（Machine Learning，ML）让计算机从数据中发现模式，而不是由人手工编写规则。
 
 **Type:** Learn
 **Languages:** Python
-**Prerequisites:** Phase 1 (Math Foundations)
-**Time:** ~45 minutes
+**Prerequisites:** 阶段 1：数学基础（Math Foundations）
+**Time:** ~45 分钟
 
-## Learning Objectives
+## 学习目标（Learning Objectives）
 
-- Explain the difference between supervised, unsupervised, and reinforcement learning and identify which type applies to a given problem
-- Implement a nearest centroid classifier from scratch and evaluate it against a random baseline
-- Distinguish between classification and regression tasks and select the appropriate loss function for each
-- Evaluate whether a given business problem is suitable for ML or better solved with deterministic rules
+- 解释监督学习、无监督学习与强化学习的区别，并判断给定问题适合哪一种学习方式
+- 从零实现最近质心分类器（Nearest Centroid Classifier），并与随机基线比较评估结果
+- 区分分类与回归任务，为每一种任务选择适当的损失函数
+- 判断一个业务问题是否适合机器学习，还是用确定性规则解决更合适
 
-## The Problem
+## 问题（The Problem）
 
-You want to build a spam filter. The traditional approach: sit down and write hundreds of rules. "If the email contains 'FREE MONEY', mark it spam. If it has more than 3 exclamation marks, mark it spam." You spend weeks writing rules. Then spammers change their wording. Your rules break. You write more rules. The cycle never ends.
+你想构建一个垃圾邮件过滤器。传统做法是坐下来编写数百条规则：“如果邮件包含‘免费送钱’，就标记为垃圾邮件；如果感叹号超过 3 个，也标记为垃圾邮件。”你花了数周编写规则，垃圾邮件发送者却改变了措辞。规则失效了，你只好再写更多规则，如此循环，永无止境。
 
-Machine learning flips this. Instead of writing rules, you give the computer thousands of labeled emails ("spam" or "not spam") and let it figure out the rules on its own. The computer finds patterns you never would have thought of. When spammers change tactics, you retrain on new data instead of rewriting code.
+机器学习把这个过程反过来。你不再编写规则，而是给计算机数千封带标签的邮件（“垃圾邮件”或“非垃圾邮件”），让它自己找出规则。计算机会发现你从未想到的模式。当垃圾邮件发送者改变策略时，你只需用新数据重新训练，而不用重写代码。
 
-This shift from "programming rules" to "learning from data" is the core of machine learning. Every recommendation engine, voice assistant, self-driving car, and language model works this way.
+从“编写规则”转向“从数据中学习”，就是机器学习的核心。推荐引擎、语音助手、自动驾驶汽车和语言模型，都采用这种方式工作。
 
-## The Concept
+## 概念（The Concept）
 
-### Learning From Data, Not Rules
+### 从数据而非规则中学习（Learning From Data, Not Rules）
 
-Traditional programming and machine learning solve problems in opposite directions.
+传统编程与机器学习以相反的方向解决问题。
 
 ```mermaid
 flowchart LR
-    subgraph Traditional["Traditional Programming"]
+    subgraph Traditional["传统编程（Traditional Programming）"]
         direction LR
-        R[Rules] --> P1[Program]
-        D1[Data] --> P1
-        P1 --> O1[Output]
+        R[规则] --> P1[程序]
+        D1[数据] --> P1
+        P1 --> O1[输出]
     end
 
-    subgraph ML["Machine Learning"]
+    subgraph ML["机器学习（Machine Learning）"]
         direction LR
-        D2[Data] --> P2[Learning Algorithm]
-        O2[Expected Output] --> P2
-        P2 --> M[Model / Rules]
+        D2[数据] --> P2[学习算法]
+        O2[预期输出] --> P2
+        P2 --> M[模型 / 规则]
     end
 ```
 
-Traditional programming: you write the rules. The program applies them to data to produce output.
+传统编程：你编写规则，程序将规则应用于数据，产生输出。
 
-Machine learning: you provide data and expected outputs. The algorithm discovers the rules.
+机器学习：你提供数据和预期输出，算法发现规则。
 
-The "model" that comes out of training IS the rules, encoded as numbers (weights, parameters). It generalizes from examples it has seen to make predictions on data it has never seen.
+训练得到的“模型”本身就是规则，只不过它们被编码为数字（权重、参数）。模型从见过的样本中归纳规律，再对从未见过的数据作出预测，这就是泛化（Generalization）。
 
-### The Three Types of Machine Learning
+### 机器学习的三种类型（The Three Types of Machine Learning）
 
 ```mermaid
 flowchart TD
-    ML[Machine Learning] --> SL[Supervised Learning]
-    ML --> UL[Unsupervised Learning]
-    ML --> RL[Reinforcement Learning]
+    ML[机器学习] --> SL[监督学习]
+    ML --> UL[无监督学习]
+    ML --> RL[强化学习]
 
-    SL --> C[Classification]
-    SL --> R[Regression]
+    SL --> C[分类]
+    SL --> R[回归]
 
-    UL --> CL[Clustering]
-    UL --> DR[Dimensionality Reduction]
+    UL --> CL[聚类]
+    UL --> DR[降维]
 
-    RL --> PO[Policy Optimization]
-    RL --> VL[Value Learning]
+    RL --> PO[策略优化]
+    RL --> VL[价值学习]
 ```
 
-**Supervised Learning**: You have input-output pairs. The model learns to map inputs to outputs.
-- "Here are 10,000 photos labeled cat or dog. Learn to tell them apart."
-- "Here are house features and prices. Learn to predict the price."
+**监督学习（Supervised Learning）**：你有输入与输出配对的数据，模型学习从输入到输出的映射。
+- “这里有 10,000 张标记为猫或狗的照片，学会区分它们。”
+- “这里有房屋特征和价格，学会预测价格。”
 
-**Unsupervised Learning**: You have inputs only. No labels. The model finds structure on its own.
-- "Here are 10,000 customer purchase histories. Find natural groupings."
-- "Here are 1,000 dimensional data points. Reduce to 2 dimensions while keeping structure."
+**无监督学习（Unsupervised Learning）**：你只有输入，没有标签，模型自行发现结构。
+- “这里有 10,000 位客户的购买记录，找出自然形成的分组。”
+- “这里有 1,000 维的数据点，在保留结构的同时将它们降到 2 维。”
 
-**Reinforcement Learning**: An agent takes actions in an environment and receives rewards or penalties. It learns a strategy (policy) to maximize total reward.
-- "Play this game. +1 for winning, -1 for losing. Figure out a strategy."
-- "Control this robot arm. +1 for picking up the object, -0.01 for each second wasted."
+**强化学习（Reinforcement Learning，RL）**：智能体（Agent）在环境中采取行动，并获得奖励或惩罚。它学习一种策略（Policy），使总奖励最大化。
+- “玩这个游戏，赢了 +1，输了 -1，自己想出策略。”
+- “控制这只机械臂，抓起物体 +1，每浪费一秒 -0.01。”
 
-Most of what you will build in practice uses supervised learning. Unsupervised learning is common for preprocessing and exploration. Reinforcement learning powers game AI, robotics, and RLHF for language models.
+实际工作中，你构建的大部分系统使用监督学习。无监督学习常用于预处理和探索。强化学习则用于游戏 AI、机器人，以及语言模型的基于人类反馈的强化学习（Reinforcement Learning from Human Feedback，RLHF）。
 
-### Beyond the Big Three
+### 三大类型之外（Beyond the Big Three）
 
-The three categories above are clean, but real-world ML often blurs the lines.
+上面的三种类型界限分明，但现实中的机器学习常常融合多种思路。
 
-**Semi-supervised learning** uses a small set of labeled data and a large set of unlabeled data. You might have 100 labeled medical images and 100,000 unlabeled ones. Techniques include:
+**半监督学习（Semi-supervised Learning）**使用少量有标签数据和大量无标签数据。例如，你可能有 100 张带标签的医学图像，以及 100,000 张无标签图像。相关技术包括：
 
-- **Label propagation:** Build a graph connecting similar data points. Labels spread from labeled nodes to unlabeled neighbors through the graph.
-- **Pseudo-labeling:** Train a model on the labeled data, use it to predict labels for unlabeled data, then retrain on everything. The model bootstraps its own training set.
-- **Consistency regularization:** The model should give the same prediction for an input and a slightly perturbed version of that input. This works even without labels.
+- **标签传播（Label Propagation）：**构建一张连接相似数据点的图。标签沿图从有标签节点传播到相邻的无标签节点。
+- **伪标签（Pseudo-labeling）：**先用有标签数据训练模型，再用它预测无标签数据的标签，最后用全部数据重新训练。模型以自举方式扩充自己的训练集。
+- **一致性正则化（Consistency Regularization）：**模型对同一个输入及其轻微扰动版本应给出相同预测。即使没有标签，这种方法也能发挥作用。
 
-**Self-supervised learning** creates supervision from the data itself. No human labels needed at all. The model creates its own prediction task from the structure of the data.
+**自监督学习（Self-supervised Learning）**从数据本身构造监督信号，完全不需要人工标签。模型利用数据结构创建自己的预测任务。
 
-- **Masked language modeling (BERT):** Hide 15% of words in a sentence, train the model to predict the missing words. The "labels" come from the original text.
-- **Contrastive learning (SimCLR):** Take an image, create two augmented versions. Train the model to recognize they came from the same image while distinguishing them from augmented versions of other images.
-- **Next-token prediction (GPT):** Predict the next word given all previous words. Every text document becomes a training example.
+- **掩码语言建模（Masked Language Modeling，BERT）：**隐藏句子中 15% 的词，训练模型预测缺失词。“标签”来自原始文本。
+- **对比学习（Contrastive Learning，SimCLR）：**对一张图像生成两个增强版本，训练模型识别它们来自同一张图像，同时将它们与其他图像的增强版本区分开。
+- **下一词元预测（Next-token Prediction，GPT）：**根据前面所有词预测下一个词。每篇文本文档都能成为训练样本。
 
-These are not separate categories from the big three. They are strategies that combine supervised and unsupervised ideas. Self-supervised learning is technically supervised (the model predicts something), but the labels are generated automatically, not by humans.
+这些不是独立于三大类型的新类别，而是结合监督与无监督思想的策略。从技术角度看，自监督学习属于监督学习（模型需要预测某个目标），但其标签是自动生成的，而不是由人标注的。
 
-### Classification vs Regression
+### 分类与回归（Classification vs Regression）
 
-These are the two main supervised learning tasks.
+这是监督学习的两类主要任务。
 
-| Aspect | Classification | Regression |
+| 维度 | 分类（Classification） | 回归（Regression） |
 |--------|---------------|------------|
-| Output | Discrete categories | Continuous numbers |
-| Example | "Is this email spam?" | "What will the house price be?" |
-| Output space | {cat, dog, bird} | Any real number |
-| Loss function | Cross-entropy, accuracy | Mean squared error, MAE |
-| Decision | Boundaries between classes | A curve that fits the data |
+| 输出 | 离散类别 | 连续数值 |
+| 示例 | “这封邮件是垃圾邮件吗？” | “这套房子的价格会是多少？” |
+| 输出空间 | {猫, 狗, 鸟} | 任意实数 |
+| 损失函数 | 交叉熵（Cross-entropy）、准确率（Accuracy） | 均方误差（Mean Squared Error，MSE）、平均绝对误差（Mean Absolute Error，MAE） |
+| 决策 | 类别之间的边界 | 拟合数据的曲线 |
 
-Classification answers "which category?" Regression answers "how much?"
+分类回答“属于哪一类？”，回归回答“有多少？”。
 
-Some problems can be framed either way. Predicting if a stock goes up or down is classification. Predicting the exact price is regression.
+有些问题可以从任一角度建模。预测股票上涨还是下跌是分类，预测确切股价则是回归。
 
-### The ML Workflow
+### 机器学习工作流（The ML Workflow）
 
-Every machine learning project follows the same pipeline, regardless of the algorithm.
+无论采用哪种算法，每个机器学习项目都遵循相同的流水线（Pipeline）。
 
 ```mermaid
 flowchart LR
-    A[Collect Data] --> B[Clean & Explore]
-    B --> C[Feature Engineering]
-    C --> D[Split Data]
-    D --> E[Train Model]
-    E --> F[Evaluate]
-    F -->|Not good enough| C
-    F -->|Good enough| G[Deploy]
-    G --> H[Monitor]
-    H -->|Performance drops| A
+    A[收集数据] --> B[清洗与探索]
+    B --> C[特征工程]
+    C --> D[划分数据]
+    D --> E[训练模型]
+    E --> F[评估]
+    F -->|尚未达标| C
+    F -->|达到要求| G[部署]
+    G --> H[监控]
+    H -->|性能下降| A
 ```
 
-**Collect Data**: Gather raw data. More data is almost always better, but quality matters more than quantity.
+**收集数据（Collect Data）**：收集原始数据。数据更多通常更好，但质量比数量更重要。
 
-**Clean & Explore**: Handle missing values, remove duplicates, visualize distributions, spot anomalies. This step often takes 60-80% of total project time.
+**清洗与探索（Clean & Explore）**：处理缺失值、去重、可视化分布并发现异常。这一步通常占项目总时间的 60–80%。
 
-**Feature Engineering**: Transform raw data into features the model can use. Turn dates into day-of-week. Normalize numerical columns. Encode categorical variables. Good features matter more than fancy algorithms.
+**特征工程（Feature Engineering）**：将原始数据转换成模型可以使用的特征。例如，将日期转换成星期几、归一化数值列、编码类别变量。好特征比花哨的算法更重要。
 
-**Split Data**: Divide into training, validation, and test sets. The model trains on training data, you tune hyperparameters on validation data, and you report final performance on test data.
+**划分数据（Split Data）**：将数据分为训练集、验证集和测试集。模型在训练集上训练，你在验证集上调整超参数，最后在测试集上报告性能。
 
-**Train Model**: Feed training data into an algorithm. The algorithm adjusts internal parameters to minimize a loss function.
+**训练模型（Train Model）**：将训练数据输入算法，算法调整内部参数，使损失函数（Loss Function）最小化。
 
-**Evaluate**: Measure performance on validation/test data. If performance is not acceptable, go back and try different features, algorithms, or hyperparameters.
+**评估（Evaluate）**：在验证或测试数据上衡量性能。如果性能达不到要求，就回到前面，尝试不同的特征、算法或超参数。
 
-**Deploy**: Put the model into production where it makes predictions on new data.
+**部署（Deploy）**：将模型投入生产环境，让它对新数据作出预测。
 
-**Monitor**: Track performance over time. Data distributions change (data drift), and models degrade. When performance drops, retrain.
+**监控（Monitor）**：持续跟踪性能。数据分布会变化，即数据漂移（Data Drift），模型性能也会衰退。性能下降时需要重新训练。
 
-### Training, Validation, and Test Splits
+### 训练集、验证集与测试集划分（Training, Validation, and Test Splits）
 
-This is the most important concept beginners get wrong. You must evaluate your model on data it has never seen during training. Otherwise you are measuring memorization, not learning.
+这是初学者最容易理解错、也最重要的概念。必须用模型在训练时从未见过的数据来评估它，否则你衡量的是记忆能力，而不是学习能力。
 
 ```mermaid
 flowchart LR
-    subgraph Dataset["Full Dataset (100%)"]
+    subgraph Dataset["完整数据集（100%）"]
         direction LR
-        TR["Training Set (70%)"]
-        VA["Validation Set (15%)"]
-        TE["Test Set (15%)"]
+        TR["训练集（70%）"]
+        VA["验证集（15%）"]
+        TE["测试集（15%）"]
     end
 
-    TR -->|Train model| M[Model]
-    M -->|Tune hyperparameters| VA
-    VA -->|Final evaluation| TE
+    TR -->|训练模型| M[模型]
+    M -->|调整超参数| VA
+    VA -->|最终评估| TE
 ```
 
-| Split | Purpose | When used | Typical size |
+| 数据划分 | 用途 | 使用时机 | 常见比例 |
 |-------|---------|-----------|-------------|
-| Training | Model learns from this data | During training | 60-80% |
-| Validation | Tune hyperparameters, compare models | After each training run | 10-20% |
-| Test | Final unbiased performance estimate | Once, at the very end | 10-20% |
+| 训练集（Training） | 模型从这些数据中学习 | 训练期间 | 60–80% |
+| 验证集（Validation） | 调整超参数、比较模型 | 每次训练结束后 | 10–20% |
+| 测试集（Test） | 最终的无偏性能估计 | 全部工作结束时，仅一次 | 10–20% |
 
-The test set is sacred. You look at it exactly once. If you keep adjusting your model based on test performance, you are effectively training on the test set and your reported numbers are meaningless.
+测试集必须严格隔离，只在最后查看一次。如果你不断依据测试性能调整模型，实际上就是在测试集上训练，报告出来的数字也就失去了意义。
 
-For small datasets, use k-fold cross-validation: split data into k parts, train on k-1 parts, validate on the remaining part, rotate, and average results.
+对于小数据集，可以使用 k 折交叉验证（k-fold Cross-validation）：将数据分成 k 份，用 k-1 份训练，剩下一份验证，轮换各份的角色，最后对结果取平均。
 
-### Overfitting vs Underfitting
+### 过拟合与欠拟合（Overfitting vs Underfitting）
 
 ```mermaid
 flowchart LR
-    subgraph UF["Underfitting"]
-        U1["Model too simple"]
-        U2["High bias"]
-        U3["Misses patterns"]
+    subgraph UF["欠拟合（Underfitting）"]
+        U1["模型过于简单"]
+        U2["高偏差"]
+        U3["遗漏模式"]
     end
 
-    subgraph GF["Good Fit"]
-        G1["Right complexity"]
-        G2["Balanced"]
-        G3["Generalizes well"]
+    subgraph GF["良好拟合（Good Fit）"]
+        G1["复杂度合适"]
+        G2["达到平衡"]
+        G3["泛化良好"]
     end
 
-    subgraph OF["Overfitting"]
-        O1["Model too complex"]
-        O2["High variance"]
-        O3["Memorizes noise"]
+    subgraph OF["过拟合（Overfitting）"]
+        O1["模型过于复杂"]
+        O2["高方差"]
+        O3["记住噪声"]
     end
 
-    UF -->|Increase complexity| GF
-    GF -->|Too much complexity| OF
+    UF -->|提高复杂度| GF
+    GF -->|复杂度过高| OF
 ```
 
-**Underfitting**: The model is too simple to capture the patterns in the data. A straight line trying to fit a curved relationship. Training error is high. Test error is high.
+**欠拟合（Underfitting）**：模型太简单，无法捕捉数据中的模式，例如用直线拟合曲线关系。训练误差高，测试误差也高。
 
-**Overfitting**: The model is too complex and memorizes the training data, including its noise. A wiggly curve that passes through every training point but fails on new data. Training error is low. Test error is high.
+**过拟合（Overfitting）**：模型太复杂，记住了训练数据，包括其中的噪声。例如，一条曲折的曲线穿过每一个训练点，却无法适用于新数据。训练误差低，测试误差高。
 
-**Good fit**: The model captures real patterns without memorizing noise. Training error and test error are both reasonably low.
+**良好拟合（Good Fit）**：模型捕捉了真实模式，而没有记住噪声。训练误差和测试误差都保持在合理的低水平。
 
-Signs of overfitting:
-- Training accuracy is much higher than validation accuracy
-- The model performs well on training data but poorly on new data
-- Adding more training data improves performance (the model was memorizing, not learning)
+过拟合的迹象：
+- 训练准确率远高于验证准确率
+- 模型在训练数据上表现好，在新数据上表现差
+- 增加训练数据能提升性能（模型此前是在记忆，而不是学习）
 
-Fixes for overfitting:
-- Get more training data
-- Reduce model complexity (fewer parameters, simpler architecture)
-- Regularization (add a penalty for large weights)
-- Dropout (randomly zero out neurons during training)
-- Early stopping (stop training when validation error starts increasing)
+解决过拟合的方法：
+- 获取更多训练数据
+- 降低模型复杂度（减少参数、简化架构）
+- 正则化（Regularization）：对过大的权重添加惩罚
+- 随机失活（Dropout）：训练时随机将神经元输出置零
+- 早停（Early Stopping）：验证误差开始上升时停止训练
 
-Fixes for underfitting:
-- Use a more complex model
-- Add more features
-- Reduce regularization
-- Train longer
+解决欠拟合的方法：
+- 使用更复杂的模型
+- 增加特征
+- 减弱正则化
+- 延长训练时间
 
-### The Bias-Variance Tradeoff
+### 偏差与方差的权衡（The Bias-Variance Tradeoff）
 
-This is the mathematical framework behind overfitting and underfitting.
+这是解释过拟合与欠拟合的数学框架。
 
-**Bias**: Error from wrong assumptions in the model. A linear model has high bias when the true relationship is nonlinear. High bias leads to underfitting.
+**偏差（Bias）**：模型中的错误假设造成的误差。当真实关系是非线性时，线性模型就具有高偏差。高偏差会导致欠拟合。
 
-**Variance**: Error from sensitivity to small fluctuations in the training data. A model with high variance gives very different predictions when trained on different subsets of data. High variance leads to overfitting.
+**方差（Variance）**：模型对训练数据微小波动的敏感性造成的误差。高方差模型在不同数据子集上训练后，会给出差异很大的预测。高方差会导致过拟合。
 
-| Model complexity | Bias | Variance | Result |
+| 模型复杂度 | 偏差 | 方差 | 结果 |
 |-----------------|------|----------|--------|
-| Too low (linear model for curved data) | High | Low | Underfitting |
-| Just right | Medium | Medium | Good generalization |
-| Too high (degree-20 polynomial for 10 points) | Low | High | Overfitting |
+| 过低（用线性模型拟合曲线数据） | 高 | 低 | 欠拟合 |
+| 恰当 | 中 | 中 | 泛化良好 |
+| 过高（用 20 次多项式拟合 10 个点） | 低 | 高 | 过拟合 |
 
 Total error = Bias^2 + Variance + Irreducible noise
 
-You cannot reduce irreducible noise (it is randomness in the data itself). You want to find the sweet spot where bias^2 + variance is minimized.
+不可约噪声（Irreducible Noise）来自数据本身的随机性，无法消除。你要找到使偏差平方与方差之和最小的位置。
 
-### No Free Lunch Theorem
+### 没有免费午餐定理（No Free Lunch Theorem）
 
-There is no single algorithm that works best for every problem. An algorithm that performs well on one class of problems will perform poorly on another. This is why data scientists try multiple algorithms and compare results.
+不存在对所有问题都最优的单一算法。在某类问题上表现好的算法，在另一类问题上可能表现差。因此，数据科学家会尝试多种算法并比较结果。
 
-In practice, the choice depends on:
-- How much data you have
-- How many features there are
-- Whether the relationship is linear or nonlinear
-- Whether you need interpretability
-- How much compute you can afford
+实际选择取决于：
+- 你有多少数据
+- 有多少特征
+- 关系是线性还是非线性
+- 是否需要可解释性
+- 你能承担多少计算开销
 
-### When NOT to Use Machine Learning
+### 何时不应使用机器学习（When NOT to Use Machine Learning）
 
-ML is powerful but not always the right tool. Before reaching for a model, ask whether you actually need one.
+机器学习很强大，却并非总是合适的工具。选模型之前，先问问自己是否真的需要它。
 
-**Do not use ML when:**
+**以下情况不要使用机器学习：**
 
-- **Rules are simple and well-defined.** Tax calculation, sorting algorithms, unit conversions. If you can write the logic in a few if-statements, a model adds complexity for no benefit.
-- **You have no data or very little data.** ML needs examples to learn from. With 10 data points, you cannot train anything meaningful. Collect data first.
-- **The cost of being wrong is catastrophic and you need guaranteed correctness.** Medical dosage calculation, nuclear reactor control, cryptographic verification. ML models are probabilistic. They will sometimes be wrong. If "sometimes wrong" is unacceptable, use deterministic methods.
-- **A lookup table or heuristic solves the problem.** If a simple threshold or table covers 99% of cases, adding ML increases maintenance cost without meaningful improvement.
-- **You cannot explain the decision and explainability is required.** Regulated industries (lending, insurance, criminal justice) sometimes require that every decision be fully explainable. Some ML models are interpretable (linear regression, small decision trees). Most are not.
-- **The problem changes faster than you can retrain.** If the rules change daily and retraining takes a week, the model is always stale.
+- **规则简单而明确。**例如税额计算、排序算法、单位换算。如果几条 if 语句就能写清逻辑，引入模型只会增加复杂度，没有收益。
+- **没有数据或数据极少。**机器学习需要从样本中学习。只有 10 个数据点，无法训练出有意义的模型。先收集数据。
+- **出错代价灾难性，而且必须保证正确。**例如药物剂量计算、核反应堆控制、密码学验证。机器学习模型具有概率性，偶尔会出错。如果不能接受“偶尔出错”，就采用确定性方法。
+- **查找表或启发式规则就能解决。**如果简单阈值或表格已覆盖 99% 的情况，添加机器学习只会增加维护成本，不会带来有意义的改进。
+- **必须解释决策，但模型无法解释。**信贷、保险、刑事司法等受监管领域，有时要求每项决策都能得到完整解释。一些模型可以解释，例如线性回归、小型决策树；大多数模型则不具备这种可解释性。
+- **问题变化速度超过重新训练速度。**如果规则每天变化，而重训需要一周，模型就始终落后。
 
-Use this decision flowchart:
+使用下面的决策流程图：
 
 ```mermaid
 flowchart TD
-    A["Do you have data?"] -->|No| B["Collect data first or use rules"]
-    A -->|Yes| C["Can you write the rules explicitly?"]
-    C -->|"Yes, and they are simple"| D["Use rules. Skip ML."]
-    C -->|"No, or they are too complex"| E["Is the cost of errors acceptable?"]
-    E -->|"No, need guaranteed correctness"| F["Use deterministic methods"]
-    E -->|Yes| G["Do you need explainability?"]
-    G -->|"Yes, strictly"| H["Use interpretable models only"]
-    G -->|"No, or partially"| I["Use ML"]
-    I --> J["Do you have enough labeled data?"]
-    J -->|Yes| K["Supervised learning"]
-    J -->|"Some labels"| L["Semi-supervised learning"]
-    J -->|"No labels"| M["Unsupervised or self-supervised"]
+    A["有数据吗？"] -->|没有| B["先收集数据或使用规则"]
+    A -->|有| C["能明确写出规则吗？"]
+    C -->|"能，而且规则简单"| D["使用规则，不用机器学习"]
+    C -->|"不能，或规则太复杂"| E["能接受出错的代价吗？"]
+    E -->|"不能，必须保证正确"| F["使用确定性方法"]
+    E -->|能| G["需要可解释性吗？"]
+    G -->|"有严格要求"| H["只使用可解释模型"]
+    G -->|"不需要，或只需部分解释"| I["使用机器学习"]
+    I --> J["有足够的带标签数据吗？"]
+    J -->|有| K["监督学习"]
+    J -->|"只有部分标签"| L["半监督学习"]
+    J -->|"没有标签"| M["无监督或自监督学习"]
 ```
 
 ```figure
 f3-learning-boundary
 ```
 
-## Build It
+## 动手实现（Build It）
 
-The code in `code/ml_intro.py` implements a nearest centroid classifier from scratch, the simplest possible ML algorithm. It demonstrates the core idea: learn from data, then predict on new data.
+`code/ml_intro.py` 从零实现了最近质心分类器，这是最简单的机器学习算法。它演示了核心思想：从数据中学习，再对新数据作出预测。
 
-### Step 1: Nearest Centroid Classifier from Scratch
+### 第 1 步：从零实现最近质心分类器（Step 1: Nearest Centroid Classifier from Scratch）
 
-The nearest centroid classifier computes the center (mean) of each class in the training data. To predict, it assigns each new point to the class whose center is closest.
+最近质心分类器计算训练数据中每个类别的中心（均值）。预测时，将每个新点分配给中心距离它最近的类别。
 
 ```python
 class NearestCentroid:
@@ -316,11 +316,11 @@ class NearestCentroid:
         return self.classes[distances.argmin(axis=0)]
 ```
 
-That is the entire algorithm. Fit computes two means. Predict computes distances. No gradient descent, no iteration, no hyperparameters.
+这就是整个算法。拟合时计算两个均值，预测时计算距离。不需要梯度下降（Gradient Descent）、迭代或超参数（Hyperparameter）。
 
-### Step 2: Train on Synthetic Data
+### 第 2 步：在合成数据上训练（Step 2: Train on Synthetic Data）
 
-We generate a 2D classification dataset with two classes that overlap slightly. The centroid classifier draws a linear decision boundary between the class centers.
+我们生成一个二维分类数据集，包含两个略有重叠的类别。质心分类器在两个类别中心之间划出线性决策边界（Decision Boundary）。
 
 ```python
 rng = np.random.RandomState(42)
@@ -330,40 +330,40 @@ X = np.vstack([X_class0, X_class1])
 y = np.array([0] * 100 + [1] * 100)
 ```
 
-### Step 3: Compare Against a Baseline
+### 第 3 步：与基线比较（Step 3: Compare Against a Baseline）
 
-Every ML model should be compared against a trivial baseline. Here, the baseline predicts a random class. If your ML model does not beat random guessing, something is wrong.
+每个机器学习模型都应与简单基线（Baseline）比较。这里的基线随机预测类别。如果你的模型连随机猜测都无法超过，说明某个环节出了问题。
 
 ```python
 baseline_preds = rng.choice([0, 1], size=len(y_test))
 baseline_acc = np.mean(baseline_preds == y_test)
 ```
 
-The centroid classifier should get around 90%+ accuracy on this clean dataset. Random baseline gets around 50%.
+在这个干净的数据集上，质心分类器的准确率应达到约 90% 或更高，而随机基线约为 50%。
 
-### Why This Matters
+### 为什么这很重要（Why This Matters）
 
-The nearest centroid classifier is trivially simple. It has no hyperparameters, no iteration, no gradient descent. Yet it captures the fundamental ML pattern:
+最近质心分类器非常简单，没有超参数、没有迭代，也没有梯度下降，但它体现了机器学习的基本模式：
 
-1. **Learn** a representation from training data (the centroids)
-2. **Predict** on new data using that representation (nearest distance)
-3. **Evaluate** against a baseline (random guessing)
+1. 从训练数据中**学习**一种表示（质心）
+2. 用这种表示对新数据作出**预测**（最近距离）
+3. 与基线比较进行**评估**（随机猜测）
 
-Every ML algorithm, from logistic regression to transformers, follows this same three-step pattern. The representation gets more complex, but the workflow stays the same.
+从逻辑回归到 Transformer，每种机器学习算法都遵循这三个步骤。表示会变得更复杂，但工作流保持不变。
 
-### Step 4: What the Centroid Classifier Cannot Do
+### 第 4 步：质心分类器做不到什么（Step 4: What the Centroid Classifier Cannot Do）
 
-The nearest centroid classifier assumes each class forms a single blob. It draws linear decision boundaries. It fails when:
+最近质心分类器假设每个类别形成一个单独的数据团，并划出线性决策边界。以下情况会使它失效：
 
-- Classes have multiple clusters (e.g., the digit "1" can be written in several different ways)
-- The decision boundary is nonlinear (e.g., one class wraps around another)
-- Features have very different scales (distance is dominated by the largest-scale feature)
+- 一个类别含有多个簇（例如，数字“1”可以有几种不同写法）
+- 决策边界非线性（例如，一个类别包围另一个类别）
+- 特征尺度差异很大（距离被尺度最大的特征主导）
 
-These limitations motivate every other algorithm you will learn. K-nearest neighbors handles multiple clusters. Decision trees handle nonlinear boundaries. Feature scaling fixes the scale problem. Each lesson builds on the limitations of the previous one.
+这些局限正是你学习其他算法的动机。K 近邻（K-nearest Neighbors，KNN）处理多个簇，决策树（Decision Tree）处理非线性边界，特征缩放（Feature Scaling）解决尺度问题。每一课都从前一课的局限继续展开。
 
-## Use It
+## 实际应用（Use It）
 
-sklearn provides `NearestCentroid` and synthetic data generators:
+sklearn 提供了 `NearestCentroid` 和合成数据生成器：
 
 ```python
 from sklearn.neighbors import NearestCentroid
@@ -381,35 +381,35 @@ clf.fit(X_train, y_train)
 print(f"Accuracy: {clf.score(X_test, y_test):.3f}")
 ```
 
-## Ship It
+## 交付成果（Ship It）
 
-This lesson produces `outputs/prompt-ml-problem-framer.md` -- a prompt that turns vague business problems into concrete ML tasks. Give it a problem description ("we want to reduce churn" or "predict demand for next quarter") and it identifies the learning type, defines the prediction target, lists candidate features, picks a success metric, establishes a baseline, and flags pitfalls like data leakage or class imbalance. Use it at the start of any ML project to avoid building the wrong thing.
+本课产出 `outputs/prompt-ml-problem-framer.md`，这是一个将模糊业务问题转换为具体机器学习任务的提示词（Prompt）。提供一段问题描述，例如“我们想减少客户流失”或“预测下一季度的需求”，它就会识别学习类型、定义预测目标、列出候选特征、选择成功指标、建立基线，并指出数据泄漏或类别不平衡等隐患。在任何机器学习项目开始时使用它，可以避免做出不符合需求的系统。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语 | 常见说法 | 实际含义 |
 |------|----------------|----------------------|
-| Model | "The AI" | A mathematical function with learnable parameters that maps inputs to outputs |
-| Training | "Teaching the AI" | Running an optimization algorithm to adjust model parameters so predictions match known outputs |
-| Feature | "An input column" | A measurable property of the data that the model uses to make predictions |
-| Label | "The answer" | The known output for a training example, used to compute the error signal |
-| Hyperparameter | "A setting you tweak" | A parameter set before training that controls the learning process (learning rate, number of layers) |
-| Loss function | "How wrong the model is" | A function that measures the gap between predicted and actual outputs, which training tries to minimize |
-| Overfitting | "It memorized the test" | The model learned training-specific noise instead of general patterns, so it fails on new data |
-| Underfitting | "It didn't learn anything" | The model is too simple to capture the real patterns in the data |
-| Generalization | "It works on new data" | The model's ability to make accurate predictions on data it was not trained on |
-| Cross-validation | "Testing on different chunks" | Repeatedly splitting data into train/test folds and averaging results, giving a more robust performance estimate |
-| Regularization | "Keeping weights small" | Adding a penalty term to the loss function that discourages overly complex models |
-| Data drift | "The world changed" | The statistical distribution of incoming data shifts over time, degrading model performance |
+| 模型（Model） | “那个 AI” | 一个带可学习参数的数学函数，将输入映射为输出 |
+| 训练（Training） | “教 AI” | 运行优化算法调整模型参数，使预测匹配已知输出 |
+| 特征（Feature） | “一个输入列” | 数据中可度量的属性，模型利用它进行预测 |
+| 标签（Label） | “答案” | 训练样本的已知输出，用于计算误差信号 |
+| 超参数（Hyperparameter） | “你要调整的设置” | 训练前设置、用于控制学习过程的参数，例如学习率、层数 |
+| 损失函数（Loss Function） | “模型错得有多离谱” | 衡量预测输出与实际输出差距的函数，训练的目标是将其最小化 |
+| 过拟合（Overfitting） | “它把考题背下来了” | 模型学到了训练数据特有的噪声，而不是一般模式，因此在新数据上失效 |
+| 欠拟合（Underfitting） | “它什么也没学会” | 模型太简单，无法捕捉数据中的真实模式 |
+| 泛化（Generalization） | “它在新数据上也能用” | 模型对未参与训练的数据作出准确预测的能力 |
+| 交叉验证（Cross-validation） | “换几块数据测试” | 反复将数据划分为训练折与测试折并对结果取平均，获得更稳健的性能估计 |
+| 正则化（Regularization） | “让权重小一些” | 在损失函数中添加惩罚项，抑制过于复杂的模型 |
+| 数据漂移（Data Drift） | “世界变了” | 新输入数据的统计分布随时间变化，导致模型性能下降 |
 
-## Exercises
+## 练习（Exercises）
 
-1. Take any dataset (e.g., Iris, Titanic). Split it 70/15/15 into train/validation/test. Explain why you should not tune hyperparameters on the test set.
-2. List three real-world problems. For each one, identify whether it is classification, regression, or clustering, and whether it is supervised or unsupervised.
-3. A model gets 99% accuracy on training data but 60% on test data. Diagnose the problem and list three things you would try to fix it.
+1. 任选一个数据集，例如 Iris 或 Titanic，按 70/15/15 划分为训练集、验证集和测试集。解释为什么不应在测试集上调整超参数。
+2. 列出三个现实问题。逐一判断它属于分类、回归还是聚类，以及应采用监督还是无监督学习。
+3. 某模型在训练数据上准确率为 99%，在测试数据上却只有 60%。诊断问题，并列出三个你会尝试的解决办法。
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [An Introduction to Statistical Learning](https://www.statlearning.com/) - free textbook covering all classical ML methods with practical examples
-- [Google's Machine Learning Crash Course](https://developers.google.com/machine-learning/crash-course) - concise visual introduction to ML concepts
-- [Scikit-learn User Guide](https://scikit-learn.org/stable/user_guide.html) - the practical reference for implementing ML in Python
+- [统计学习导论（An Introduction to Statistical Learning）](https://www.statlearning.com/)：免费教材，结合实践示例介绍各类经典机器学习方法
+- [Google 机器学习速成课程（Machine Learning Crash Course）](https://developers.google.com/machine-learning/crash-course)：以简明的可视化方式介绍机器学习概念
+- [Scikit-learn 用户指南（User Guide）](https://scikit-learn.org/stable/user_guide.html)：在 Python 中实现机器学习的实用参考

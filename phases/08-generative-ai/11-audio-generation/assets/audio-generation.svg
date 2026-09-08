@@ -7,64 +7,64 @@
       .box { fill: #faf6ef; stroke: #1a1a1a; stroke-width: 1.5; }
       .hot { fill: #fff1d6; stroke: #c0392b; stroke-width: 1.5; }
       .cold { fill: #eaf4ff; stroke: #2c5f8c; stroke-width: 1.5; }
-      .label { font-size: 14px; font-weight: 600; fill: #1a1a1a; }
-      .content { font-size: 12px; fill: #333; }
-      .mono { font-size: 12px; fill: #333; font-family: 'Menlo', monospace; }
+      .label { font-size: 12px; font-weight: 600; fill: #1a1a1a; }
+      .content { font-size: 10px; fill: #333; }
+      .mono { font-size: 11px; fill: #333; font-family: 'Menlo', monospace; }
       .caption { font-size: 11px; fill: #555; font-style: italic; }
       .title { font-size: 16px; font-weight: 700; fill: #1a1a1a; }
     </style>
   </defs>
 
-  <text x="450" y="28" text-anchor="middle" class="title">audio gen: codec tokens + transformer or diffusion</text>
+  <text x="450" y="28" text-anchor="middle" class="title">音频生成（Audio Generation）：编解码器词元 + Transformer 或扩散</text>
 
   <!-- waveform -->
   <rect x="30" y="70" width="140" height="60" class="box"/>
-  <text x="100" y="98" text-anchor="middle" class="content">waveform</text>
-  <text x="100" y="116" text-anchor="middle" class="caption">24 kHz, 1-D</text>
+  <text x="100" y="98" text-anchor="middle" class="content">波形（Waveform）</text>
+  <text x="100" y="116" text-anchor="middle" class="caption">24 kHz，一维</text>
 
   <line x1="170" y1="100" x2="210" y2="100" stroke="#1a1a1a" stroke-width="1.2" marker-end="url(#arrow)"/>
 
   <!-- codec encoder -->
   <rect x="210" y="70" width="160" height="60" class="cold"/>
-  <text x="290" y="98" text-anchor="middle" class="content">codec encoder</text>
+  <text x="290" y="98" text-anchor="middle" class="content">编解码器的编码端（Encoder）</text>
   <text x="290" y="116" text-anchor="middle" class="caption">Encodec / DAC / SoundStream</text>
 
   <line x1="370" y1="100" x2="410" y2="100" stroke="#1a1a1a" stroke-width="1.2" marker-end="url(#arrow)"/>
 
   <!-- tokens -->
   <rect x="410" y="60" width="220" height="80" class="hot"/>
-  <text x="520" y="85" text-anchor="middle" class="label">RVQ tokens</text>
-  <text x="520" y="105" text-anchor="middle" class="mono">K &#215; 75 Hz indices</text>
-  <text x="520" y="125" text-anchor="middle" class="caption">8 codebooks typical</text>
+  <text x="520" y="85" text-anchor="middle" class="label">残差向量量化（RVQ）词元</text>
+  <text x="520" y="105" text-anchor="middle" class="mono">K &#215; 75 Hz 索引</text>
+  <text x="520" y="125" text-anchor="middle" class="caption">通常 8 个码本（Codebooks）</text>
 
   <line x1="630" y1="100" x2="670" y2="100" stroke="#1a1a1a" stroke-width="1.2" marker-end="url(#arrow)"/>
 
   <rect x="670" y="70" width="180" height="60" class="cold"/>
-  <text x="760" y="98" text-anchor="middle" class="content">codec decoder</text>
-  <text x="760" y="116" text-anchor="middle" class="caption">tokens &#8594; wav</text>
+  <text x="760" y="98" text-anchor="middle" class="content">编解码器的解码端（Decoder）</text>
+  <text x="760" y="116" text-anchor="middle" class="caption">词元（Token）&#8594; wav</text>
 
   <!-- two generators -->
-  <text x="230" y="190" text-anchor="middle" class="label">token-AR path (MusicGen, VALL-E)</text>
+  <text x="230" y="190" text-anchor="middle" class="label">词元自回归（Token-AR）：MusicGen、VALL-E</text>
   <rect x="40" y="200" width="380" height="130" class="cold"/>
-  <text x="230" y="225" text-anchor="middle" class="content">decoder-only transformer</text>
+  <text x="230" y="225" text-anchor="middle" class="content">仅解码器 Transformer（Decoder-only）</text>
   <text x="230" y="243" text-anchor="middle" class="mono">p(t_n | t_&lt;n, text_prompt, voice_prompt)</text>
-  <text x="230" y="265" text-anchor="middle" class="caption">streams naturally (~200 ms TTFB)</text>
-  <text x="230" y="285" text-anchor="middle" class="caption">delayed-parallel: K offset streams</text>
-  <text x="230" y="305" text-anchor="middle" class="caption">dominates speech in 2026</text>
+  <text x="230" y="265" text-anchor="middle" class="caption">天然流式输出（首字节时间 TTFB 约 200 ms）</text>
+  <text x="230" y="285" text-anchor="middle" class="caption">延迟并行（Delayed Parallel）：K 条错位流</text>
+  <text x="230" y="305" text-anchor="middle" class="caption">2026 年语音领域主流</text>
 
-  <text x="670" y="190" text-anchor="middle" class="label">diffusion / flow path (Stable Audio, AudioLDM)</text>
+  <text x="670" y="190" text-anchor="middle" class="label">扩散／流路径（Stable Audio、AudioLDM）</text>
   <rect x="480" y="200" width="380" height="130" class="cold"/>
-  <text x="670" y="225" text-anchor="middle" class="content">DiT on audio latents</text>
-  <text x="670" y="243" text-anchor="middle" class="mono">x_t &#8594; x_0 via flow matching</text>
-  <text x="670" y="265" text-anchor="middle" class="caption">faster total time for long clips</text>
-  <text x="670" y="285" text-anchor="middle" class="caption">cleaner for music at &gt;=30 s</text>
-  <text x="670" y="305" text-anchor="middle" class="caption">dominates music generation in 2026</text>
+  <text x="670" y="225" text-anchor="middle" class="content">音频潜变量上的 DiT</text>
+  <text x="670" y="243" text-anchor="middle" class="mono">x_t &#8594; x_0，使用流匹配（Flow Matching）</text>
+  <text x="670" y="265" text-anchor="middle" class="caption">长片段总耗时更短</text>
+  <text x="670" y="285" text-anchor="middle" class="caption">&gt;=30 s 音乐更干净</text>
+  <text x="670" y="305" text-anchor="middle" class="caption">2026 年音乐生成主流</text>
 
   <!-- 2026 stack -->
   <rect x="30" y="360" width="830" height="140" class="box"/>
-  <text x="445" y="385" text-anchor="middle" class="label">2026 production stack</text>
-  <text x="445" y="410" text-anchor="middle" class="caption">TTS: ElevenLabs V3, OpenAI TTS, GPT-4o realtime, NaturalSpeech 3</text>
-  <text x="445" y="430" text-anchor="middle" class="caption">Music: Suno v4, Udio, Stable Audio 2.5, MusicGen 3.3B</text>
-  <text x="445" y="450" text-anchor="middle" class="caption">SFX: AudioCraft 2, ElevenLabs SFX, Stable Audio Open</text>
-  <text x="445" y="475" text-anchor="middle" class="caption">Voice clone: XTTS v2 (open), ElevenLabs Pro (consent-verified)</text>
+  <text x="445" y="385" text-anchor="middle" class="label">2026 年生产技术栈（Production Stack）</text>
+  <text x="445" y="410" text-anchor="middle" class="caption">文本转语音（TTS）：ElevenLabs V3、OpenAI TTS、GPT-4o realtime、NaturalSpeech 3</text>
+  <text x="445" y="430" text-anchor="middle" class="caption">音乐：Suno v4、Udio、Stable Audio 2.5、MusicGen 3.3B</text>
+  <text x="445" y="450" text-anchor="middle" class="caption">音效（SFX）：AudioCraft 2、ElevenLabs SFX、Stable Audio Open</text>
+  <text x="445" y="475" text-anchor="middle" class="caption">声音克隆（Voice Clone）：XTTS v2（开放）、ElevenLabs Pro（已核实同意）</text>
 </svg>

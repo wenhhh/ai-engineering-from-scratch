@@ -1,102 +1,102 @@
 {
   "lesson": "20-structured-outputs-constrained-decoding",
-  "title": "Structured Outputs & Constrained Decoding",
+  "title": "结构化输出与约束解码（Structured Outputs & Constrained Decoding）",
   "questions": [
     {
       "stage": "pre",
-      "question": "Why is prompt-only 'return JSON' not enough for production?",
+      "question": "为什么只用提示词要求“返回 JSON”不足以支撑生产？",
       "options": [
-        "Prompts are too long",
-        "Prompting cannot describe schemas",
-        "JSON is too verbose",
-        "Frontier models comply most of the time but not always; the small fraction of malformed outputs breaks downstream parsers"
+        "提示词太长",
+        "提示词无法描述模式",
+        "JSON 太冗长",
+        "前沿模型大多数时候遵守要求，但并非始终；少量格式错误输出会破坏下游解析器"
       ],
       "correct": 3,
-      "explanation": "Prompt-only structure works ~80% of the time on frontier models; production needs harder guarantees."
+      "explanation": "仅靠提示词约束结构，在前沿模型上约有 80% 的情况有效；生产环境需要更强保证。"
     },
     {
       "stage": "pre",
-      "question": "What does constrained decoding modify at each generation step?",
+      "question": "约束解码在每步生成时修改什么？",
       "options": [
-        "The logit vector, masking tokens that would invalidate the target grammar so only valid continuations can be sampled",
-        "The training loss",
-        "The tokenizer",
-        "The KV cache"
+        "logit 向量，屏蔽会违反目标语法的词元，使采样只能得到合法续接",
+        "训练损失",
+        "分词器",
+        "KV 缓存"
       ],
       "correct": 0,
-      "explanation": "A logit processor sets invalid tokens to -inf so the softmax cannot sample them."
+      "explanation": "logit 处理器将无效词元设为 -inf，使 softmax 无法采样到它们。"
     },
     {
       "stage": "check",
-      "question": "Why might constrained decoding be faster than free generation?",
+      "question": "为什么约束解码可能比自由生成更快？",
       "options": [
-        "The model is smaller",
-        "It avoids softmax entirely",
-        "It skips backprop",
-        "Forced scaffold tokens (e.g. '{\"name\": \"') can be emitted directly without sampling, and the valid-token search space shrinks"
+        "模型更小",
+        "它完全避免 softmax",
+        "它跳过反向传播",
+        "强制的框架词元，例如 '{\"name\": \"'，可直接输出而无需采样，并且有效词元搜索空间缩小"
       ],
       "correct": 3,
-      "explanation": "Determined tokens skip sampling and reduced valid-token sets shrink the decode cost."
+      "explanation": "已确定词元跳过采样，有效词元集合缩小也降低了解码成本。"
     },
     {
       "stage": "check",
-      "question": "Which schema design choice prevents premature commitment by the model?",
+      "question": "哪种模式设计选择能防止模型过早定案？",
       "options": [
-        "Put 'answer' first",
-        "Place reasoning fields before the answer/decision field so the model thinks before committing",
-        "Use shorter keys",
-        "Use snake_case"
+        "将 'answer' 放在首位",
+        "将推理字段放在 answer/decision 字段前，让模型在定案前思考",
+        "使用更短的键",
+        "使用 snake_case"
       ],
       "correct": 1,
-      "explanation": "Field order is logic: putting reasoning first lets the model think before locking in an answer."
+      "explanation": "字段顺序就是逻辑：推理在前，模型才能在锁定答案前思考。"
     },
     {
       "stage": "check",
-      "question": "What is the limitation of FSM-based constrained decoding tools like Outlines?",
+      "question": "Outlines 等基于 FSM 的约束解码工具有什么限制？",
       "options": [
-        "They only support enums",
-        "They lock you to OpenAI",
-        "Recursive schemas have to be flattened; truly recursive structures need CFG-based engines such as XGrammar",
-        "They are not deterministic"
+        "它们只支持枚举",
+        "它们绑定 OpenAI",
+        "递归模式必须展平；真正的递归结构需要 XGrammar 等基于 CFG 的引擎",
+        "它们不是确定性的"
       ],
       "correct": 2,
-      "explanation": "FSMs cannot represent unbounded recursion; CFG engines handle it."
+      "explanation": "FSM 无法表示无界递归，CFG 引擎可以处理。"
     },
     {
       "stage": "post",
-      "question": "Why is Instructor described as not modifying logits?",
+      "question": "为什么说 Instructor 不修改 logits？",
       "options": [
-        "Instructor formats the schema into the prompt and parses/retries the output; logit masking happens server-side or not at all",
-        "It edits the prompt",
-        "It uses gradient updates",
-        "Required by Anthropic"
+        "Instructor 将模式格式化到提示词中，解析输出并重试；logit 屏蔽要么在服务端进行，要么完全没有",
+        "它编辑提示词",
+        "它使用梯度更新",
+        "Anthropic 要求如此"
       ],
       "correct": 0,
-      "explanation": "Instructor uses provider-side structured output plus client-side validation and retries, not logit masking."
+      "explanation": "Instructor 使用供应商侧结构化输出以及客户端验证和重试，而不是 logit 屏蔽。"
     },
     {
       "stage": "post",
-      "question": "What problem can a strict regex like date='YYYY-MM-DD' introduce?",
+      "question": "date='YYYY-MM-DD' 这样的严格正则可能带来什么问题？",
       "options": [
-        "It breaks JSON parsing",
-        "It removes any escape hatch for unknown values, so the model fabricates a date instead of returning null/sentinel",
-        "It requires CFG support",
-        "Regex is slow"
+        "它破坏 JSON 解析",
+        "它不给未知值留下退出通道，模型于是编造日期，而不是返回 null 或哨兵值",
+        "它要求 CFG 支持",
+        "正则很慢"
       ],
       "correct": 1,
-      "explanation": "Over-strict grammars force the model to invent values; always allow null/sentinel for unknowns."
+      "explanation": "过严的语法迫使模型编造值；始终允许未知值使用 null 或哨兵值。"
     },
     {
       "stage": "post",
-      "question": "When should you reach for vLLM guided decoding vs a vendor structured-output API?",
+      "question": "什么时候应选择 vLLM 引导解码，而不是供应商结构化输出 API？",
       "options": [
-        "Only with byte-level BPE",
-        "Always vendor",
-        "Self-hosted inference where you control the model and want logit-level guarantees without retries",
-        "Only for tiny schemas"
+        "仅使用字节级 BPE 时",
+        "始终选择供应商",
+        "自托管推理中，你控制模型，希望无需重试就获得 logit 级保证时",
+        "仅用于微型模式"
       ],
       "correct": 2,
-      "explanation": "vLLM guided decoding fits self-hosted serving with logit-level constraints; vendor APIs lock you to their stack."
+      "explanation": "vLLM 引导解码适合具备 logit 级约束的自托管服务；供应商 API 会绑定其技术栈。"
     }
   ]
 }

@@ -6,87 +6,87 @@
       .cool { fill: #e6f4ea; stroke: #2e7d32; stroke-width: 1.5; }
       .cold { fill: #dfe9ff; stroke: #2c5ea9; stroke-width: 1.5; }
       .dsk { fill: #e9e6ff; stroke: #5a4fcf; stroke-width: 1.5; }
-      .step { font-size: 12px; font-family: 'Menlo', monospace; fill: #222; }
+      .step { font-size: 9px; font-family: 'Menlo', monospace; fill: #222; }
       .small { font-size: 10px; font-family: 'Menlo', monospace; fill: #555; }
       .caption { font-size: 11px; fill: #555; font-style: italic; }
       .title { font-size: 16px; font-weight: 700; fill: #1a1a1a; }
-      .head { font-size: 12px; font-weight: 700; fill: #1a1a1a; }
+      .head { font-size: 11px; font-weight: 700; fill: #1a1a1a; }
     </style>
   </defs>
 
-  <text x="480" y="24" text-anchor="middle" class="title">regulated-domain RAG — ingestion, guard, cache, observe</text>
+  <text x="480" y="24" text-anchor="middle" class="title">受监管领域 RAG（Regulated-Domain RAG）：摄取、防护、缓存与观测</text>
 
   <rect x="40" y="50" width="280" height="460" class="box"/>
-  <text x="180" y="72" text-anchor="middle" class="head">ingestion</text>
+  <text x="180" y="72" text-anchor="middle" class="head">摄取（Ingestion）</text>
   <rect x="60" y="90" width="240" height="34" class="cool"/>
   <text x="180" y="110" text-anchor="middle" class="step">docling / Unstructured</text>
   <rect x="60" y="130" width="240" height="34" class="cool"/>
-  <text x="180" y="150" text-anchor="middle" class="step">ColPali for visual docs</text>
+  <text x="180" y="150" text-anchor="middle" class="step">ColPali 处理视觉文档（Visual Docs）</text>
   <rect x="60" y="170" width="240" height="34" class="dsk"/>
-  <text x="180" y="190" text-anchor="middle" class="step">role + jurisdiction tags</text>
+  <text x="180" y="190" text-anchor="middle" class="step">角色与司法管辖区标签（Role + Jurisdiction）</text>
   <rect x="60" y="210" width="240" height="34" class="dsk"/>
-  <text x="180" y="230" text-anchor="middle" class="step">summaries + labels</text>
+  <text x="180" y="230" text-anchor="middle" class="step">摘要与标签（Summaries + Labels）</text>
 
   <rect x="60" y="260" width="240" height="60" class="cold"/>
   <text x="180" y="280" text-anchor="middle" class="step">pgvector + pgvectorscale</text>
-  <text x="180" y="298" text-anchor="middle" class="small">Tantivy BM25 side-index</text>
-  <text x="180" y="314" text-anchor="middle" class="small">payload: role, jurisdiction</text>
+  <text x="180" y="298" text-anchor="middle" class="small">Tantivy BM25 辅助索引（Side-Index）</text>
+  <text x="180" y="314" text-anchor="middle" class="small">载荷（Payload）：role、jurisdiction</text>
 
   <rect x="60" y="336" width="240" height="160" class="box"/>
-  <text x="180" y="358" text-anchor="middle" class="head">eval</text>
-  <text x="180" y="378" text-anchor="middle" class="small">200-Q golden set</text>
-  <text x="180" y="394" text-anchor="middle" class="small">RAGAS faithfulness</text>
-  <text x="180" y="410" text-anchor="middle" class="small">citation correctness</text>
-  <text x="180" y="428" text-anchor="middle" class="small">Phoenix weekly drift</text>
-  <text x="180" y="444" text-anchor="middle" class="small">red-team suite</text>
-  <text x="180" y="460" text-anchor="middle" class="small">(PAIR + PII + off-domain)</text>
-  <text x="180" y="484" text-anchor="middle" class="caption">alert: nDCG drop &gt; 5%</text>
+  <text x="180" y="358" text-anchor="middle" class="head">评估（Eval）</text>
+  <text x="180" y="378" text-anchor="middle" class="small">200 题黄金集（Golden Set）</text>
+  <text x="180" y="394" text-anchor="middle" class="small">RAGAS 忠实度（Faithfulness）</text>
+  <text x="180" y="410" text-anchor="middle" class="small">引用正确性（Citation Correctness）</text>
+  <text x="180" y="428" text-anchor="middle" class="small">Phoenix 每周漂移（Drift）</text>
+  <text x="180" y="444" text-anchor="middle" class="small">红队套件（Red-Team Suite）</text>
+  <text x="180" y="460" text-anchor="middle" class="small">（PAIR + PII + 领域外问题）</text>
+  <text x="180" y="484" text-anchor="middle" class="caption">告警：nDCG 下降 &gt; 5%</text>
 
   <rect x="340" y="50" width="300" height="460" class="box"/>
-  <text x="490" y="72" text-anchor="middle" class="head">conversation (LangGraph)</text>
+  <text x="490" y="72" text-anchor="middle" class="head">对话（Conversation，LangGraph）</text>
   <rect x="360" y="90" width="260" height="36" class="cool"/>
-  <text x="490" y="112" text-anchor="middle" class="step">filter role + jurisdiction</text>
+  <text x="490" y="112" text-anchor="middle" class="step">按角色与司法管辖区过滤（Filter）</text>
   <rect x="360" y="134" width="260" height="36" class="cool"/>
-  <text x="490" y="156" text-anchor="middle" class="step">hybrid retrieve + RRF</text>
+  <text x="490" y="156" text-anchor="middle" class="step">混合检索（Hybrid Retrieve）+ RRF</text>
   <rect x="360" y="178" width="260" height="36" class="cool"/>
-  <text x="490" y="200" text-anchor="middle" class="step">rerank bge-v2-gemma-2b</text>
+  <text x="490" y="200" text-anchor="middle" class="step">重排序（Rerank）bge-v2-gemma-2b</text>
   <rect x="360" y="222" width="260" height="36" class="dsk"/>
-  <text x="490" y="244" text-anchor="middle" class="step">assemble cache-stable prompt</text>
+  <text x="490" y="244" text-anchor="middle" class="step">组装缓存稳定的提示词（Cache-Stable Prompt）</text>
   <rect x="360" y="266" width="260" height="36" class="dsk"/>
-  <text x="490" y="288" text-anchor="middle" class="step">Claude Sonnet 4.7 synth</text>
+  <text x="490" y="288" text-anchor="middle" class="step">Claude Sonnet 4.7 综合生成（Synth）</text>
   <rect x="360" y="310" width="260" height="36" class="hot"/>
-  <text x="490" y="332" text-anchor="middle" class="step">Llama Guard 4 output</text>
+  <text x="490" y="332" text-anchor="middle" class="step">Llama Guard 4 输出（Output）</text>
   <rect x="360" y="354" width="260" height="36" class="hot"/>
-  <text x="490" y="376" text-anchor="middle" class="step">Presidio PII scrub</text>
+  <text x="490" y="376" text-anchor="middle" class="step">Presidio PII 清理（Scrub）</text>
   <rect x="360" y="398" width="260" height="36" class="cool"/>
-  <text x="490" y="420" text-anchor="middle" class="step">citation enforcement</text>
-  <text x="490" y="460" text-anchor="middle" class="small">prompt-caching target: 60-80%</text>
+  <text x="490" y="420" text-anchor="middle" class="step">强制引用（Citation Enforcement）</text>
+  <text x="490" y="460" text-anchor="middle" class="small">提示词缓存（Prompt Caching）目标：60–80%</text>
   <text x="490" y="478" text-anchor="middle" class="small">cache key = system+policy+context</text>
-  <text x="490" y="496" text-anchor="middle" class="caption">Claude 4.5+ prompt-cache API</text>
+  <text x="490" y="496" text-anchor="middle" class="caption">Claude 4.5+ 提示词缓存 API</text>
 
   <rect x="660" y="50" width="260" height="460" class="box"/>
-  <text x="790" y="72" text-anchor="middle" class="head">guardrails + observe</text>
+  <text x="790" y="72" text-anchor="middle" class="head">防护与观测（Guardrails + Observe）</text>
   <rect x="680" y="90" width="220" height="40" class="hot"/>
-  <text x="790" y="108" text-anchor="middle" class="step">Llama Guard 4 input</text>
-  <text x="790" y="124" text-anchor="middle" class="small">jailbreak + PII probes</text>
+  <text x="790" y="108" text-anchor="middle" class="step">Llama Guard 4 输入（Input）</text>
+  <text x="790" y="124" text-anchor="middle" class="small">越狱（Jailbreak）+ PII 探测</text>
   <rect x="680" y="138" width="220" height="40" class="hot"/>
   <text x="790" y="156" text-anchor="middle" class="step">NeMo Guardrails v0.12</text>
-  <text x="790" y="172" text-anchor="middle" class="small">off-domain rails</text>
+  <text x="790" y="172" text-anchor="middle" class="small">领域外问题规则（Off-Domain Rails）</text>
   <rect x="680" y="186" width="220" height="40" class="dsk"/>
-  <text x="790" y="204" text-anchor="middle" class="step">Langfuse self-hosted</text>
-  <text x="790" y="220" text-anchor="middle" class="small">annotation queue</text>
+  <text x="790" y="204" text-anchor="middle" class="step">Langfuse 自托管（Self-Hosted）</text>
+  <text x="790" y="220" text-anchor="middle" class="small">标注队列（Annotation Queue）</text>
   <rect x="680" y="234" width="220" height="40" class="cold"/>
-  <text x="790" y="252" text-anchor="middle" class="step">Arize Phoenix drift</text>
-  <text x="790" y="268" text-anchor="middle" class="small">weekly retrieval quality</text>
+  <text x="790" y="252" text-anchor="middle" class="step">Arize Phoenix 漂移（Drift）</text>
+  <text x="790" y="268" text-anchor="middle" class="small">每周检索质量（Retrieval Quality）</text>
 
   <rect x="680" y="286" width="220" height="220" class="box"/>
-  <text x="790" y="308" text-anchor="middle" class="head">cost report</text>
-  <text x="790" y="330" text-anchor="middle" class="small">prompt-cache hit rate</text>
-  <text x="790" y="346" text-anchor="middle" class="small">tokens / query breakdown</text>
-  <text x="790" y="362" text-anchor="middle" class="small">$ / query by stage</text>
-  <text x="790" y="380" text-anchor="middle" class="small">rerank / synth / guard</text>
-  <text x="790" y="404" text-anchor="middle" class="small">hit rate target: 60-80%</text>
-  <text x="790" y="420" text-anchor="middle" class="small">3-5x cost reduction</text>
-  <text x="790" y="442" text-anchor="middle" class="small">when prefix is stable</text>
-  <text x="790" y="478" text-anchor="middle" class="caption">Harvey / Glean / Mendable 2026 shape</text>
+  <text x="790" y="308" text-anchor="middle" class="head">成本报告（Cost Report）</text>
+  <text x="790" y="330" text-anchor="middle" class="small">提示词缓存命中率（Cache Hit Rate）</text>
+  <text x="790" y="346" text-anchor="middle" class="small">每查询词元明细（Tokens / Query）</text>
+  <text x="790" y="362" text-anchor="middle" class="small">按阶段拆分每查询美元成本</text>
+  <text x="790" y="380" text-anchor="middle" class="small">重排序 / 综合生成 / 防护</text>
+  <text x="790" y="404" text-anchor="middle" class="small">命中率（Hit Rate）目标：60–80%</text>
+  <text x="790" y="420" text-anchor="middle" class="small">成本降至三分之一至五分之一</text>
+  <text x="790" y="442" text-anchor="middle" class="small">前提：前缀（Prefix）稳定</text>
+  <text x="790" y="478" text-anchor="middle" class="caption" style="font-size:9px">Harvey / Glean / Mendable 2026 形态</text>
 </svg>

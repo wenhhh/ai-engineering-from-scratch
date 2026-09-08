@@ -1,40 +1,40 @@
 ---
 name: agent-budget-audit
-description: Audit an agent deployment's cost-governor stack and flag missing layers before enabling unattended runs.
+description: 启用无人值守运行前，审计智能体部署的成本控制器栈并标记缺失层。
 version: 1.0.0
 phase: 15
 lesson: 13
 tags: [cost-governors, denial-of-wallet, budgets, claude-code-sdk, agent-governance]
 ---
 
-Given a proposed agent deployment, audit its cost-governor stack against the twelve-layer reference and flag which layers are missing, under-tuned, or over-tuned.
+给定拟议智能体部署，按十二层参考审计成本控制器（Cost governor）栈，标记缺失、设置过松或过紧的层。
 
-Produce:
+请输出：
 
-1. **Layer inventory.** For each of the twelve reference layers (per-request cap, per-task token budget, per-task dollar budget, per-tool cap, iteration cap, per-minute/hour/day/month rolling caps, velocity limit, tiered routing, prompt caching, context windowing, HITL checkpoints, kill switch), state whether it is configured, and at what value.
-2. **Failure-mode mapping.** For each time-scale failure (runaway loop, slow leak, bad release, legitimate surge), name the specific layer that catches it and how fast.
-3. **Tool-specific caps.** List every tool the agent can call. For each, name a per-session cap and a reason. Any tool without an explicit cap is an open loop.
-4. **Alert thresholds.** Separate from caps: at what spend rate does a human get paged? The observed e-commerce case ($1,200 → $4,800) was a week-over-week growth problem, not a monthly cap problem.
-5. **Kill-switch path.** When a cap fires, what happens? Clean abort, rollback, alert, re-enable procedure. Confirm the kill switch is external to the agent (the agent cannot edit its own cap).
+1. **层清单（Layer inventory）。** 对十二个参考层逐一说明是否配置及数值：每请求上限、每任务词元预算、每任务美元预算、每工具上限、迭代上限、每分钟/小时/日/月滚动上限、速率限制、分层路由、提示词缓存、上下文窗口化、HITL 检查点、紧急停止开关。
+2. **失效模式映射（Failure-mode mapping）。** 对每种时间尺度故障（失控循环、缓慢泄漏、有问题发布、合理激增），指出哪层捕获、需要多久。
+3. **各工具的调用上限（Tool-specific caps）。** 列出所有可调用的工具，为每个工具设定单次会话的调用上限，并说明理由。工具没有明确上限，就可能被无约束地循环调用。
+4. **告警阈值（Alert thresholds）。** 与硬上限分开：花费速率达到多少会呼叫人类？已观察电商案例（$1,200 → $4,800）是周环比增长问题，不是月度上限问题。
+5. **紧急停止流程（Kill-switch path）。** 说明触发上限后如何处理：有序中止运行、回滚、告警，以及重新启用的流程。确认开关位于智能体外部，智能体无法修改自己的上限。
 
-Hard rejects:
-- Any autonomous deployment without a per-task dollar budget.
-- Any unattended long-horizon run without a velocity limit.
-- Tool surfaces with no per-tool cap on a new (<30 days) tool addition.
-- Kill switches the agent itself can modify.
-- Monthly cap as the only cap (every other time scale is unguarded).
+必须拒绝：
+- 没有每任务美元预算的自主部署。
+- 没有速率限制的无人值守长时程运行。
+- 新增工具的上线时间 <30 天，却未配置该工具的调用上限。
+- 智能体自身可修改的紧急停止开关。
+- 只配置月度上限，其他时间尺度无人防守。
 
-Refusal rules:
-- If the user cannot price a worst-case run on today's model prices, refuse and require a costed estimate.
-- If the proposed budget exceeds the organization's acceptable loss on a single mistake, refuse and require a lower cap.
-- If the user treats the Auto Mode classifier (Lesson 10) as a replacement for budgets, refuse. The classifier is orthogonal to cost; both layers are required.
+拒绝规则：
+- 若用户无法按当前模型价格为最坏运行估价，拒绝，要求附成本估算。
+- 若预算超过组织对单次错误可接受的损失，拒绝并要求降低上限。
+- 若用户用 Auto Mode 分类器（第 10 课）替代预算控制，应拒绝。分类器审查动作，预算控制限制花费，两层防护都不可缺少。
 
-Output format:
+输出格式：
 
-Return a cost-governor audit with:
-- **Layer table** (layer name, configured y/n, value)
-- **Failure-mode coverage** (4 rows: loop / leak / release / surge)
-- **Per-tool caps** (tool, cap, reason)
-- **Alert thresholds** (rate, owner, channel)
-- **Kill-switch path** (trigger, action, re-enable procedure)
-- **Readiness** (production / staging / research-only)
+返回成本控制器审计，包含：
+- **层表（Layer table）**：层名、已配置 y/n、数值
+- **失效模式覆盖（Failure-mode coverage）**：4 行，循环 / 泄漏 / 发布 / 激增
+- **每工具上限（Per-tool caps）**：工具、上限、理由
+- **告警阈值（Alert thresholds）**：速率、负责人、渠道
+- **紧急停止路径（Kill-switch path）**：触发、动作、重新启用流程
+- **就绪性（Readiness）**：生产 / 预发布 / 仅研究

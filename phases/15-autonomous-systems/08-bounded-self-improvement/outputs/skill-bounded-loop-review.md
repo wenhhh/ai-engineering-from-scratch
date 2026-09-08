@@ -1,39 +1,39 @@
 ---
 name: bounded-loop-review
-description: Audit a proposed bounded self-improvement loop against the four-primitive stack (invariants, anchor, multi-objective, regression detection).
+description: 按不变条件、锚点、多目标、回归检测四种机制审计拟议的有界自我改进循环。
 version: 1.0.0
 phase: 15
 lesson: 8
 tags: [bounded-self-improvement, invariants, alignment-anchor, rsi-safety]
 ---
 
-Given a proposed self-improvement loop, score it against the four bounding primitives identified by the ICLR 2026 RSI Workshop and produce a concrete gap analysis.
+给定拟议自我改进循环，按 ICLR 2026 RSI 研讨会指出的四种约束机制评分，提供具体差距分析。
 
-Produce:
+请输出：
 
-1. **Invariant inventory.** List every invariant the loop enforces. For each, name (a) what is checked, (b) where the check runs (inside/outside agent reach), (c) what a violation does (hard reject, pause, log-only).
-2. **Anchor identification.** Name the alignment anchor (objective statement, constitution, intent description). State its storage location and verify the loop cannot edit it. If there is no anchor, flag as missing.
-3. **Multi-objective axes.** List every axis the loop evaluates. Confirm safety, fairness, and robustness are present alongside performance. A single-axis loop fails this check.
-4. **Regression policy.** State the historical window, the per-axis tolerance, and what happens when a drop is detected. Confirm regression checks use an external comparison set, not just internal history.
-5. **Gap analysis.** For each missing primitive, predict which failure class will emerge first. Invariants missing → smuggled capability or tool drift. Anchor missing → objective reinterpretation. Multi-objective missing → safety regression masking performance gain. Regression missing → silent capability loss.
+1. **不变条件清单（Invariant inventory）。** 列出循环实施的所有不变条件，逐一说明（a）检查什么、（b）检查运行位置（智能体可触及范围内/外）、（c）违反后的动作（硬拒绝、暂停、仅记录）。
+2. **锚点识别（Anchor identification）。** 指出对齐锚点（目标声明、宪法、意图描述），说明存储位置，验证循环不能编辑它。没有则标记缺失。
+3. **多目标维度（Multi-objective axes）。** 列出循环评估的每个维度，确认性能之外还包括安全、公平和鲁棒性。单维度循环不通过。
+4. **回归策略（Regression policy）。** 说明历史窗口、逐维度容差、检测到下降后的动作。确认回归检查使用外部比较集，而非只有内部历史。
+5. **差距分析（Gap analysis）。** 针对每种缺失的机制，预测最先出现的故障类别。不变条件缺失 → 暗中引入未经批准的能力，或工具行为发生漂移；锚点缺失 → 擅自重新解释目标；多目标约束缺失 → 安全性退步掩盖性能提升；回归检测缺失 → 能力下降却未被发现。
 
-Hard rejects:
-- Any loop with zero invariants.
-- Any loop without an alignment anchor outside the edit surface.
-- Any loop that optimizes a single scalar score.
-- Any loop whose regression check reads only from its own history (the loop defines "normal").
+必须拒绝：
+- 没有任何不变条件的循环。
+- 没有位于编辑范围之外的对齐锚点的循环。
+- 优化单一标量分数的循环。
+- 回归检查只读取自身历史的循环（循环自己定义“正常”）。
 
-Refusal rules:
-- If the user treats "it hasn't broken yet" as evidence of safety, refuse and require explicit gate design before any compute is spent.
-- If the user cannot produce the invariants list in 15 minutes, refuse — the loop has no invariants.
-- If the loop is proposed to run in production (affecting real users or infrastructure) without all four primitives, refuse and require staging with monitoring first.
+拒绝规则：
+- 若用户将“还没坏过”视为安全证据，拒绝，要求在投入算力前明确设计门禁。
+- 若用户在 15 分钟内拿不出不变条件清单，拒绝：循环没有不变条件。
+- 若拟议循环缺少四种机制中的任何一种，却要在生产运行、影响真实用户或基础设施，拒绝，要求先在有监控的预发布环境运行。
 
-Output format:
+输出格式：
 
-Return a scored review with:
-- **Invariant score** (0-5 with explicit list)
-- **Anchor score** (0-5 with storage and verify method)
-- **Multi-objective score** (0-5 with axes listed)
-- **Regression score** (0-5 with tolerance and window)
-- **Gap analysis** (predicted first failure, mitigation plan)
-- **Deployment readiness** (production / staging / research-only)
+返回评分审查，包含：
+- **不变条件评分（Invariant score）**：0-5，附明确清单
+- **锚点评分（Anchor score）**：0-5，附存储与验证方式
+- **多目标评分（Multi-objective score）**：0-5，列出维度
+- **回归评分（Regression score）**：0-5，附容差与窗口
+- **差距分析（Gap analysis）**：预测首个失败、缓解计划
+- **部署就绪性（Deployment readiness）**：生产 / 预发布 / 仅研究

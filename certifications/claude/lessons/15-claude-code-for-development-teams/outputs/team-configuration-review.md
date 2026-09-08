@@ -1,86 +1,55 @@
-# Team Configuration Review: Support Router
+# 团队配置审查：支持工单路由器（Team Configuration Review: Support Router）
 
-Status: ready for team review
+状态（Status）：已准备好接受团队审查
 
-## Scope
+## 范围（Scope） <!-- ## Scope -->
 
-Owner: developer-platform. The reviewed job proposes patches from pull-request
-diffs. It cannot merge, deploy, post comments, or read unrelated repositories.
+负责人（Owner）：developer-platform。被审查任务依据拉取请求差异提出补丁，不能合并、部署、发表评论或读取无关仓库。
 
-## Capability Inventory
+## 能力清单（Capability Inventory） <!-- ## Capability Inventory -->
 
-Read is limited to the isolated checkout. Edit is limited to the patch workspace.
-The job may run `python3 -m unittest`; network and production credentials are
-absent. A human owns merge and any external communication.
+读取仅限隔离检出目录，编辑仅限补丁工作区。任务可以运行 `python3 -m unittest`，没有网络或生产凭据。合并和任何外部沟通均由人工负责。
 
-## Permission Modes
+## 权限模式（Permission Modes） <!-- ## Permission Modes -->
 
-Interactive work begins in `default`. `acceptEdits` may pre-approve file edits,
-but it does not authorize a push, deploy, network call, or external message.
-Headless review uses `dontAsk` with narrow allow rules, while a deny rule blocks
-credentials and publishing in every ordinary mode. `bypassPermissions` is not
-allowed in this job.
+交互工作从 `default` 开始。`acceptEdits` 可以预先批准文件编辑，但不授权推送、部署、网络调用或外部消息。无界面审查使用 `dontAsk` 和范围狭窄的允许规则；拒绝规则（deny rule）在每种普通模式下阻止凭据访问和发布。本任务不允许 `bypassPermissions`。
 
-## Context Recovery
+## 上下文恢复（Context Recovery） <!-- ## Context Recovery -->
 
-The operator uses `/context` to inspect consumption and `/compact` with explicit
-focus to continue the same task. `/clear` starts unrelated work with empty
-conversation context. `/rewind` may restore tracked edits or conversation, but
-Git and authoritative external state remain the recovery record.
+操作人员使用 `/context` 检查占用，使用带明确焦点的 `/compact` 继续同一任务。`/clear` 以空对话上下文开始无关工作。`/rewind` 可以恢复已跟踪编辑或对话，但 Git 与权威外部状态仍是恢复记录。
 
-## Autonomous Boundary
+## 自主性边界（Autonomous Boundary） <!-- ## Autonomous Boundary -->
 
-`/goal` is allowed only with a measurable acceptance condition, a turn budget
-visible to the evaluator, and an externally enforced turn bound. `/loop` may
-poll CI while the session stays open, but it cannot invent new work or widen
-publishing authority. Both retain the current permission boundary.
+只有具备可测量验收条件、对评估器可见的轮数预算，以及外部强制执行的轮数上限（turn bound），才允许使用 `/goal`。`/loop` 可以在会话打开期间轮询 CI，但不能自行创造新工作或扩大发布权限。两者都保留当前权限边界。
 
-## Worktree Ownership
+## 工作树归属（Worktree Ownership） <!-- ## Worktree Ownership -->
 
-Each parallel change starts with `claude --worktree <owner-task>`. One named
-owner controls each branch and file surface. Worktree isolation prevents edit
-collisions, not credential or network access, and its shared Git metadata is
-still protected by repository policy.
+每项并行变更通过 `claude --worktree <owner-task>` 开始。每个分支与文件范围由一名具名负责人（owner）控制。工作树隔离防止编辑冲突，不隔离凭据或网络访问，其共享 Git 元数据仍受仓库策略保护。
 
-## Hook Decision
+## 钩子决定（Hook Decision） <!-- ## Hook Decision -->
 
-`permission-request-decision.json` is an exit 0 structured response for the
-`PermissionRequest` event. It denies external publishing with a message. A
-command hook that uses exit 2 blocks through stderr instead; it never prints
-JSON and exit 2 together.
+`permission-request-decision.json` 是 `PermissionRequest` 事件的退出码 0 结构化响应，通过消息说明拒绝外部发布。使用退出码 2 的命令钩子改由 stderr 实施阻止，绝不将 JSON 输出与退出码 2 混用。
 
-## Scheduled Execution
+## 定时执行（Scheduled Execution） <!-- ## Scheduled Execution -->
 
-An in-session `/loop` handles short polling. A cloud routine is reviewed as an
-autonomous identity with only the required repositories and connectors. GitHub
-Actions owns repository-governed cron jobs with minimal workflow permissions.
+会话内 `/loop` 处理短期轮询。云端 Routine 作为自主身份接受审查，只配置必要仓库和连接器。GitHub Actions 以最小工作流权限负责由仓库管理的 cron 任务。
 
-## Review Automation
+## 审查自动化（Review Automation） <!-- ## Review Automation -->
 
-As verified 2026-08-09, managed Code Review is a research preview for Team and
-Enterprise plans. It may report inline findings but does not approve or block
-the pull request. Repository automation uses
-`anthropics/claude-code-action@v1` with a pinned prompt, explicit tools, a turn
-limit, and the protected merge path.
+截至 2026-08-09 核验，托管 Code Review 是面向 Team 和 Enterprise 套餐的研究预览。它可以报告行内问题，但不会批准或阻止拉取请求。仓库自动化使用 `anthropics/claude-code-action@v1`，并配置固定提示词、明确工具、轮数限制和受保护合并路径。
 
-## Allowed Fixture
+## 允许夹具（Allowed Fixture） <!-- ## Allowed Fixture -->
 
-The allow fixture reads `src/router.py`, edits its paired test, runs the focused
-suite, and emits a patch artifact with exact test evidence. `acceptEdits` may
-speed those local edits but grants no public action.
+允许（allow）夹具读取 `src/router.py`、编辑对应测试、运行针对性测试集，并生成包含精确测试证据的补丁产物。`acceptEdits` 可以加快这些本地编辑，但不授予任何公开操作权限。
 
-## Denied Fixture
+## 拒绝夹具（Denied Fixture） <!-- ## Denied Fixture -->
 
-The deny fixture attempts to read `.env`, push a protected branch, and call an
-unapproved server. Pre-action policy blocks all three before execution.
+拒绝（deny）夹具尝试读取 `.env`、推送受保护分支，以及调用未批准服务器。操作前策略在执行之前阻止这三项操作。
 
-## Version Evidence
+## 版本证据（Version Evidence） <!-- ## Version Evidence -->
 
-Claude Code configuration version `team-review-1.2` and the review procedure are
-pinned in the repository. The model alias, plugin versions, and test command are
-recorded in the artifact metadata for every run.
+Claude Code 配置版本（version）`team-review-1.2` 与审查流程已在仓库中固定（pinned）。每次运行都在产物元数据中记录模型别名、插件版本和测试命令。
 
-## Rollback
+## 回滚（Rollback） <!-- ## Rollback -->
 
-Rollback disables the job, discards its isolated patch, restores configuration
-`team-review-1.1`, and reruns the allow and deny fixtures before re-enablement.
+回滚（rollback）会禁用任务、丢弃其隔离补丁、恢复配置 `team-review-1.1`，并在重新启用前重跑允许和拒绝夹具。

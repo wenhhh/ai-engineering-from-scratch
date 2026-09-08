@@ -1,78 +1,78 @@
 {
   "lesson": "00-certification-strategy",
-  "title": "Study the Decisions, Not the Vocabulary",
+  "title": "学会决策，而不只是记住术语（Study the Decisions, Not the Vocabulary）",
   "questions": [
     {
       "stage": "pre",
-      "question": "What is the best first use of an official exam blueprint?",
+      "question": "拿到官方考试大纲后，首先怎样使用它最合适？",
       "options": [
-        "Turn every domain label into a glossary and study all domains for equal time",
-        "Allocate study around weighted job decisions and measured objective gaps",
-        "Treat the listed objectives as an exact inventory of live question wording",
-        "Translate the scaled cut score into a percent-correct target"
+        "把各领域名称整理成术语表，为每个领域安排相同学习时间",
+        "根据岗位决策的权重以及实测发现的目标差距分配学习时间",
+        "把列出的目标视为在用考题原文的精确清单",
+        "把换算后的及格分数转换为正确率目标"
       ],
       "correct": 1,
-      "explanation": "The blueprint defines domains, weights, and objectives. It is most useful as a map of the work and decisions to practice."
+      "explanation": "大纲定义了领域、权重和目标。将它作为需要练习的工作与决策的地图，最能发挥其价值。"
     },
     {
       "stage": "check",
-      "question": "A product price appears in your study notes. What makes the note defensible?",
+      "question": "学习笔记中记录了一项产品价格。怎样才能让这条笔记有可靠依据？",
       "options": [
-        "Keep the guide's figure until that exam version retires",
-        "Record the figure without a date because an official page will update in place",
-        "Record the official source, applicable product surface, and verification date",
-        "Accept the figure after two independent preparation sources report the same amount"
+        "一直沿用指南中的价格，直到该考试版本停用",
+        "只记价格而不记日期，因为官方页面会原地更新",
+        "记录官方来源、适用的产品形态和核实日期",
+        "只要两个独立备考来源报告了相同金额，就接受该价格"
       ],
       "correct": 2,
-      "explanation": "Prices and feature availability change. A dated official source lets the learner verify the fact again before relying on it."
+      "explanation": "价格和功能可用性会变化。带日期的官方来源使学习者能够在采用该事实前再次核实。"
     },
     {
       "stage": "check",
-      "question": "A scenario offers four technically capable features. Which comparison should come first?",
+      "question": "场景中有四种技术上都能完成任务的功能。应先进行哪种比较？",
       "options": [
-        "Compare published benchmark scores before translating the scenario constraints",
-        "Select the most comprehensive feature so later use cases are already covered",
-        "Pick the lowest list price before checking quality, latency, and operational risk",
-        "Choose the smallest option that satisfies the outcome and stated constraints"
+        "尚未梳理场景约束，就先比较公开基准分数",
+        "选择最全面的功能，提前覆盖未来的使用场景",
+        "尚未检查质量、延迟和运行风险，就先选标价最低的方案",
+        "选择能够满足预期结果和明确约束的最小方案"
       ],
       "correct": 3,
-      "explanation": "Scenario judgment begins with outcome and constraints, then selects the smallest sufficient capability."
+      "explanation": "场景判断应从结果和约束入手，再选择足以满足需求的最小能力。"
     },
     {
       "stage": "check",
-      "question": "Why should you review questions answered correctly by guessing?",
+      "question": "为什么猜对的题也需要复盘？",
       "options": [
-        "A correct guess does not demonstrate a reusable decision rule",
-        "Reviewing the chosen option is enough even if the reasoning cannot be reproduced",
-        "A low-confidence correct answer should count as mastery after the score is recorded",
-        "Guessed answers should be reviewed only when that domain falls below the target"
+        "猜对并不能证明你掌握了可复用的决策规则",
+        "即使无法重现推理过程，也只需回顾所选选项",
+        "只要分数已记录，缺乏把握的正确答案也应算作掌握",
+        "只有该领域低于目标时，才需要复盘猜出的答案"
       ],
       "correct": 0,
-      "explanation": "The result was correct, but the reasoning is not yet reliable enough to transfer to a different scenario."
+      "explanation": "结果虽然正确，但推理还不够可靠，无法据此迁移到不同场景。"
     },
     {
       "stage": "post",
-      "question": "Which readiness signal is strongest?",
+      "question": "哪种迹象最能说明已经准备就绪？",
       "options": [
-        "Completed labs and flashcards without a fresh timed test of transfer decisions",
-        "Two fresh timed sets, no weak domain, completed artifacts, and explained errors",
-        "One untimed mock above target after reviewing every explanation in that same set",
-        "Three timed mocks above target even though one high-weight domain remains weak"
+        "完成实验和记忆卡片，但没有用全新限时测试检验决策迁移能力",
+        "完成两套全新限时题组，没有薄弱领域，交付物齐全，且能解释错误",
+        "看过同一套题的全部解析后，在一次不限时模拟中超过目标",
+        "三次限时模拟均超过目标，但仍有一个高权重领域薄弱"
       ],
       "correct": 1,
-      "explanation": "A multi-part gate measures repeatability, domain balance, practical work, and reasoning instead of familiarity with one set."
+      "explanation": "多条件门槛衡量的是可重复表现、各领域的均衡程度、实践成果和推理能力，而不是对某一套题的熟悉程度。"
     },
     {
       "stage": "post",
-      "question": "What should an error log capture after a wrong scenario answer?",
+      "question": "场景题答错后，错题日志应记录什么？",
       "options": [
-        "The final score and time spent, without recording why the distractor looked valid",
-        "The correct option, domain label, and a note to reread the corresponding lesson",
-        "The missed constraint, attractive distractor, better rule, and transfer scenario",
-        "The full question and every option so repeated wording can be memorized later"
+        "最终分数和耗时，不记录干扰项为何看似有效",
+        "正确选项、领域标签，以及重读相应课程的提醒",
+        "遗漏的约束、有吸引力的干扰项、更好的规则，以及迁移应用场景",
+        "完整题目和所有选项，以便之后背诵重复出现的措辞"
       ],
       "correct": 2,
-      "explanation": "The useful unit is the reasoning failure and the reusable rule that repairs it, not the option letter."
+      "explanation": "有用的记录单位是推理失误及能够修正它的可复用规则，而不是选项字母。"
     }
   ]
 }

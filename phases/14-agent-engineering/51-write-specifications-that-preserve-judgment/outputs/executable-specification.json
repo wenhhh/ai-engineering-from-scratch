@@ -2,50 +2,50 @@
   "status": "executable",
   "issues": [],
   "contract": {
-    "outcome": "Identify the affected service from an incident alert in under two minutes",
+    "outcome": "用不到两分钟，根据事故告警识别受影响服务",
     "invariants": [
-      "diagnosis is read-only",
-      "every source is included in the audit record"
+      "诊断只读",
+      "每个来源都纳入审计记录"
     ],
     "examples": [
-      "an alert with a deployment id resolves to its service owner"
+      "带部署 ID 的告警能解析到服务负责人"
     ],
     "non_goals": [
-      "automatic remediation",
-      "changing alert routing"
+      "自动修复",
+      "改变告警路由"
     ],
     "decisions": [
       {
-        "question": "Which read-only data source should be queried first?",
+        "question": "应先查询哪个只读数据来源？",
         "mode": "delegated",
         "rationale": ""
       },
       {
-        "question": "May the system write to production?",
+        "question": "系统可以写入生产吗？",
         "mode": "locked",
-        "rationale": "Production authority stays with the incident commander"
+        "rationale": "生产权限仍由事故指挥者掌握"
       },
       {
-        "question": "How many sources may be queried?",
+        "question": "最多可以查询多少个来源？",
         "mode": "bounded",
-        "rationale": "Stop after five sources or two minutes"
+        "rationale": "查询五个来源或达到两分钟后停止"
       }
     ],
     "proof": [
-      "ten recorded incident replays",
-      "zero production writes"
+      "十次有记录的事故回放",
+      "零生产写入"
     ]
   },
   "agent_may_decide": [
-    "Which read-only data source should be queried first?"
+    "应先查询哪个只读数据来源？"
   ],
   "bounded_decisions": [
     {
-      "question": "How many sources may be queried?",
-      "boundary": "Stop after five sources or two minutes"
+      "question": "最多可以查询多少个来源？",
+      "boundary": "查询五个来源或达到两分钟后停止"
     }
   ],
   "human_checkpoint": [
-    "May the system write to production?"
+    "系统可以写入生产吗？"
   ]
 }

@@ -1,102 +1,102 @@
 {
   "lesson": "16-text-generation-pre-transformer",
-  "title": "Text Generation Before Transformers — N-gram Language Models",
+  "title": "Transformer 之前的文本生成：N 元语法语言模型（Text Generation Before Transformers — N-gram Language Models）",
   "questions": [
     {
       "stage": "pre",
-      "question": "What does an n-gram language model estimate?",
+      "question": "N 元语法语言模型估计什么？",
       "options": [
-        "Document embeddings",
-        "Edit distance between words",
-        "P(next word | previous n-1 words) from count statistics",
+        "文档嵌入",
+        "词之间的编辑距离",
+        "根据计数统计估计 P(next word | previous n-1 words)",
         "P(label | document)"
       ],
       "correct": 2,
-      "explanation": "An n-gram LM models P(w | last n-1 words) via counted occurrences."
+      "explanation": "N 元语法语言模型通过出现次数对 P(w | last n-1 words) 建模。"
     },
     {
       "stage": "pre",
-      "question": "What problem does smoothing solve in n-gram models?",
+      "question": "平滑（Smoothing）解决了 N 元语法模型的什么问题？",
       "options": [
-        "Numerical precision",
-        "Zero-probability assignment to n-grams unseen in training, which collapses sentence likelihoods to zero",
-        "Memory usage",
-        "Tokenization mismatch"
+        "数值精度",
+        "给训练中未见过的 N 元语法分配零概率，导致句子似然降为零",
+        "内存占用",
+        "分词不一致"
       ],
       "correct": 1,
-      "explanation": "Smoothing reallocates probability mass so unseen n-grams get non-zero probability."
+      "explanation": "平滑重新分配概率质量，使未见过的 N 元语法获得非零概率。"
     },
     {
       "stage": "check",
-      "question": "What insight makes Kneser-Ney smoothing better than naive absolute discounting?",
+      "question": "什么洞见让 Kneser-Ney 平滑优于朴素绝对折扣？",
       "options": [
-        "It uses bigger n",
-        "It uses TF-IDF",
-        "It uses gradient descent",
-        "It estimates the lower-order distribution with continuation probability (number of distinct contexts a word appears in) instead of raw frequency"
+        "它使用更大的 n",
+        "它使用 TF-IDF",
+        "它使用梯度下降",
+        "它用续接概率，即一个词出现的不同上下文数量，而非原始频率，来估计低阶分布"
       ],
       "correct": 3,
-      "explanation": "Continuation probability gives credit for context diversity, not just raw count."
+      "explanation": "续接概率考虑上下文的多样性，而不只是原始计数。"
     },
     {
       "stage": "check",
-      "question": "What does perplexity measure?",
+      "question": "困惑度（Perplexity）衡量什么？",
       "options": [
-        "Number of distinct n-grams",
-        "exp of the average negative log-likelihood per token on a held-out test set; lower is better",
-        "Cross-entropy of labels",
-        "Throughput of generation"
+        "不同 N 元语法的数量",
+        "留出测试集上每个词元的平均负对数似然的 exp；越低越好",
+        "标签的交叉熵",
+        "生成吞吐量"
       ],
       "correct": 1,
-      "explanation": "Perplexity = exp(- mean log P); lower means the model is less surprised by the test text."
+      "explanation": "困惑度 = exp(- mean log P)；越低表示测试文本让模型越不意外。"
     },
     {
       "stage": "check",
-      "question": "Why must train and test sets use identical tokenization when comparing perplexity numbers?",
+      "question": "比较困惑度数值时，为什么训练集和测试集必须使用相同的分词方式？",
       "options": [
-        "To avoid OOV",
-        "Perplexity depends on the tokenization scheme; mismatched tokenizers produce noncomparable scores",
-        "Required by gradient descent",
-        "To control batch size"
+        "为了避免 OOV",
+        "困惑度取决于分词方案；分词器不一致会产生不可比较的分数",
+        "梯度下降要求如此",
+        "为了控制批大小"
       ],
       "correct": 1,
-      "explanation": "Different tokenizations change the token count and likelihood, making perplexity values incomparable."
+      "explanation": "不同分词方式会改变词元数量和似然，使困惑度无法比较。"
     },
     {
       "stage": "post",
-      "question": "Why do generated trigram-LM sentences feel locally fluent but globally incoherent?",
+      "question": "为什么三元语法语言模型生成的句子局部流畅，但整体不连贯？",
       "options": [
-        "Local trigram context guides each next word but the model has no long-range memory beyond n-1 tokens",
-        "They drop punctuation",
-        "They use Laplace smoothing",
-        "Beam search fails"
+        "局部三元上下文指导每个后续词，但模型没有超出 n-1 个词元的长程记忆",
+        "它们丢弃标点",
+        "它们使用拉普拉斯平滑",
+        "束搜索失败"
       ],
       "correct": 0,
-      "explanation": "Conditioning only on the last n-1 tokens makes long-range coherence accidental."
+      "explanation": "仅以前 n-1 个词元为条件，长程连贯只能偶然出现。"
     },
     {
       "stage": "post",
-      "question": "Where do n-gram models still ship in production in 2026?",
+      "question": "2026 年，N 元语法模型仍在哪些生产场景中使用？",
       "options": [
-        "Multilingual translation",
-        "Summarization",
-        "Open-domain chatbots",
-        "Latency-critical paths like speech recognition rescoring and on-device autocomplete via libraries such as KenLM"
+        "多语言翻译",
+        "摘要生成",
+        "开放域聊天机器人",
+        "通过 KenLM 等库用于语音识别重评分、端侧自动补全等对延迟要求严格的路径"
       ],
       "correct": 3,
-      "explanation": "KenLM-style n-gram models still serve as fast on-device or rescoring components."
+      "explanation": "KenLM 风格的 N 元语法模型仍作为快速端侧组件或重评分组件提供服务。"
     },
     {
       "stage": "post",
-      "question": "Why is computing an n-gram baseline before declaring a neural LM 'good' still recommended?",
+      "question": "为什么仍建议在宣称神经语言模型“好”之前计算 N 元语法基线？",
       "options": [
-        "It speeds up training",
-        "Required by ROUGE",
-        "It removes OOV",
-        "If a transformer LM does not beat a tuned Kneser-Ney baseline by a wide margin on the same tokenization, something is off in the training pipeline"
+        "它能加快训练",
+        "ROUGE 要求如此",
+        "它能消除 OOV",
+        "在相同分词方式下，如果 Transformer 语言模型没有大幅优于调优后的 Kneser-Ney 基线，说明训练流水线存在问题"
       ],
       "correct": 3,
-      "explanation": "KN baselines are surprisingly strong; a neural LM should win by a large margin or you have a bug."
+      "explanation": "KN 基线的表现很强；神经语言模型应大幅胜出，否则很可能存在缺陷。"
     }
   ]
 }

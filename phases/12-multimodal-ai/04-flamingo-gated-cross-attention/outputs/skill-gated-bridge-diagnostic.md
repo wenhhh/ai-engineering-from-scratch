@@ -1,30 +1,30 @@
 ---
 name: gated-bridge-diagnostic
-description: Identify Flamingo-lineage design elements in an open VLM config and diagnose freezing / gating issues.
+description: 识别开放 VLM 配置中的 Flamingo 谱系设计元素，诊断冻结（Freezing）与门控（Gating）问题。
 version: 1.0.0
 phase: 12
 lesson: 04
 tags: [flamingo, idefics, openflamingo, gated-cross-attention, interleaved-inputs]
 ---
 
-Given an open VLM checkpoint and its config (layer structure, cross-attention schedule, gate parametrization, training recipe), identify which Flamingo-lineage elements it uses and diagnose common symptoms of mis-set gating.
+给定开放 VLM 检查点及其配置（层结构、交叉注意力调度、门控参数化、训练方案），识别其中采用的 Flamingo 谱系元素，并诊断门控设置不当的常见症状。
 
-Produce:
+生成以下内容：
 
-1. Lineage checklist. Flag presence of (Perceiver resampler Y/N, gated cross-attn frequency M, tanh vs sigmoid gate, alpha init value, LLM freeze depth).
-2. Interleaved-input support. Parse the prompt format the model expects; confirm or deny support for multi-image, video, and few-shot in-context prompting.
-3. Visual token budget. Compute per-image cost: K latents x N cross-attn insertion points. Compare to a BLIP-2-style single-input bridge at the same image count.
-4. Gate diagnosis. Given training-loss curves or benchmark degradations, suggest whether the gate opened too fast (loses text capability), too slow (fails to use visual input), or is miscalibrated (visual tokens competing rather than augmenting).
-5. Fix recipe. Concrete parameter fix: initialize alpha closer to 0 if text degraded, raise the learning rate on the gate parameter, or freeze the gate for the first N steps.
+1. 谱系检查清单。标记是否存在 Perceiver 重采样器、门控交叉注意力频率 M、tanh 或 sigmoid 门、alpha 初始值、LLM 冻结深度。
+2. 交错输入（Interleaved input）支持。解析模型要求的提示词格式，确认或否定其对多图像、视频及上下文内少样本提示的支持。
+3. 视觉词元预算。计算每图成本：K 个潜在向量 x N 个交叉注意力插入点。与相同图像数量下的 BLIP-2 式单输入桥接器比较。
+4. 门控诊断。根据训练损失曲线或基准性能下降，判断是否为门打开太快（丧失文本能力）、太慢（无法利用视觉输入）或校准不当（视觉词元形成竞争而不是补充）。
+5. 修复方案。给出具体参数修复：文本性能下降时将 alpha 初始化得更接近 0，提高门控参数学习率，或在前 N 步冻结门。
 
-Hard rejects:
-- Treating any open VLM as "a Flamingo" without checking the resampler and gate schedule. Idefics2 dropped the resampler; labeling it Flamingo-lineage without qualifier is wrong.
-- Assuming zero init always survives training. Some open reproductions use small non-zero init which trades initial stability for faster convergence.
-- Claiming gated cross-attention is strictly better than a single BLIP-2 bridge for all tasks. On single-image VQA with a small LLM, the extra cross-attn layers are pure cost.
+必须排除：
+- 不检查重采样器和门控调度就把任意开放 VLM 称为“Flamingo”。Idefics2 去掉了重采样器，不加限定地将其标为 Flamingo 谱系是错误的。
+- 假设零初始化在训练中始终维持。有些开放复现使用较小的非零初始值，以初始稳定性换取更快收敛。
+- 声称门控交叉注意力在所有任务上都严格优于单个 BLIP-2 桥接器。小型 LLM 上的单图 VQA 中，额外交叉注意力层只是增加成本。
 
-Refusal rules:
-- If the checkpoint's training recipe is not public, refuse and explain why gate diagnosis requires knowing the gate schedule.
-- If the caller asks to compare to Gemini or Claude (proprietary), refuse — their gating mechanisms are unpublished.
-- If the VLM in scope is an early-fusion model (Chameleon, Emu3), refuse — gating applies only to adapter-style VLMs.
+拒绝规则：
+- 如果检查点的训练方案不公开，则拒绝，并解释为什么门控诊断需要知道门控调度。
+- 如果调用者要求与 Gemini 或 Claude 等专有模型比较，则拒绝；其门控机制未公布。
+- 如果范围内的 VLM 是早期融合（Early fusion）模型（Chameleon、Emu3），则拒绝；门控只适用于适配器式 VLM。
 
-Output: a one-page diagnostic with lineage checklist, interleaved-input capability matrix, token budget, gate diagnosis, and concrete fix recipe. End with a "what to read next" paragraph pointing to Lesson 12.05 (LLaVA) for the alternative projector approach or Lesson 12.11 (Chameleon) for the early-fusion escape hatch.
+输出：一页诊断，包含谱系检查清单、交错输入能力矩阵、词元预算、门控诊断及具体修复方案。最后用“接下来读什么”段落指向第 12.05 课（LLaVA，以了解替代的投影器方法），或第 12.11 课（Chameleon，以了解转向早期融合的途径）。

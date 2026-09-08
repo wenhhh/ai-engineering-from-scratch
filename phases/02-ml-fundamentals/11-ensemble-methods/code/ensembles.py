@@ -273,7 +273,7 @@ class StackingClassifier:
 
 def demo_adaboost():
     print("=" * 60)
-    print("ADABOOST FROM SCRATCH")
+    print("从零实现自适应提升（AdaBoost）")
     print("=" * 60)
 
     X, y = make_classification_data(n_samples=400, n_features=5)
@@ -284,22 +284,22 @@ def demo_adaboost():
         model.fit(X_train, y_train)
         train_acc = model.accuracy(X_train, y_train)
         test_acc = model.accuracy(X_test, y_test)
-        print(f"  n_estimators={n_est:>3d}  train_acc={train_acc:.3f}  test_acc={test_acc:.3f}")
+        print(f"  n_estimators={n_est:>3d}  训练准确率（train_acc）={train_acc:.3f}  测试准确率（test_acc）={test_acc:.3f}")
 
     print()
 
     stump = DecisionStump()
     stump.fit(X_train, y_train, np.full(len(y_train), 1 / len(y_train)))
     stump_acc = np.mean(stump.predict(X_test) == y_test)
-    print(f"  Single stump accuracy: {stump_acc:.3f}")
-    print(f"  AdaBoost 50 accuracy:  {model.accuracy(X_test, y_test):.3f}")
-    print(f"  Improvement: {model.accuracy(X_test, y_test) - stump_acc:.3f}")
+    print(f"  单个决策树桩（Decision Stump）的准确率： {stump_acc:.3f}")
+    print(f"  AdaBoost 50 的准确率：  {model.accuracy(X_test, y_test):.3f}")
+    print(f"  提升量： {model.accuracy(X_test, y_test) - stump_acc:.3f}")
     print()
 
 
 def demo_gradient_boosting():
     print("=" * 60)
-    print("GRADIENT BOOSTING FROM SCRATCH")
+    print("从零实现梯度提升（Gradient Boosting）")
     print("=" * 60)
 
     X, y = make_regression_data(n_samples=400, n_features=5)
@@ -310,21 +310,21 @@ def demo_gradient_boosting():
         model.fit(X_train, y_train)
         train_mse = model.mse(X_train, y_train)
         test_mse = model.mse(X_test, y_test)
-        print(f"  n_estimators={n_est:>3d}  train_mse={train_mse:.4f}  test_mse={test_mse:.4f}")
+        print(f"  n_estimators={n_est:>3d}  训练均方误差（train_mse）={train_mse:.4f}  测试均方误差（test_mse）={test_mse:.4f}")
 
     print()
 
     single_tree = SimpleRegressionTree(max_depth=3)
     single_tree.fit(X_train, y_train)
     tree_mse = np.mean((single_tree.predict(X_test) - y_test) ** 2)
-    print(f"  Single tree MSE: {tree_mse:.4f}")
-    print(f"  GBM 100 MSE:     {model.mse(X_test, y_test):.4f}")
+    print(f"  单棵树的均方误差（MSE）： {tree_mse:.4f}")
+    print(f"  梯度提升机（GBM）100 的均方误差（MSE）：     {model.mse(X_test, y_test):.4f}")
     print()
 
 
 def demo_learning_rate_effect():
     print("=" * 60)
-    print("LEARNING RATE vs NUMBER OF TREES")
+    print("学习率（Learning Rate）与树数量")
     print("=" * 60)
 
     X, y = make_regression_data(n_samples=400)
@@ -341,16 +341,16 @@ def demo_learning_rate_effect():
         model = GradientBoostingScratch(n_estimators=n_est, learning_rate=lr)
         model.fit(X_train, y_train)
         test_mse = model.mse(X_test, y_test)
-        print(f"  lr={lr:.2f}, n_trees={n_est:>3d}  test_mse={test_mse:.4f}")
+        print(f"  lr={lr:.2f}, n_trees={n_est:>3d}  测试均方误差（test_mse）={test_mse:.4f}")
 
     print()
-    print("Lower learning rates need more trees but often generalize better.")
+    print("较低的学习率需要更多树，但通常泛化（Generalization）更好。")
     print()
 
 
 def demo_bagging():
     print("=" * 60)
-    print("BAGGING CLASSIFIER")
+    print("装袋分类器（Bagging Classifier）")
     print("=" * 60)
 
     X, y = make_classification_data(n_samples=400)
@@ -364,15 +364,15 @@ def demo_bagging():
     bagging.fit(X_train, y_train)
     bag_acc = bagging.accuracy(X_test, y_test)
 
-    print(f"  Single tree accuracy: {single_acc:.3f}")
-    print(f"  Bagging (20 trees):   {bag_acc:.3f}")
-    print(f"  Variance reduction:   {bag_acc - single_acc:+.3f}")
+    print(f"  单棵树的准确率： {single_acc:.3f}")
+    print(f"  装袋法（Bagging，20 棵树）：   {bag_acc:.3f}")
+    print(f"  方差降低量（Variance Reduction）：   {bag_acc - single_acc:+.3f}")
     print()
 
 
 def demo_stacking():
     print("=" * 60)
-    print("STACKING ENSEMBLE")
+    print("堆叠集成（Stacking Ensemble）")
     print("=" * 60)
 
     X, y = make_classification_data(n_samples=400)
@@ -416,17 +416,17 @@ def demo_stacking():
         m = model_fn()
         m.fit(X_train, y_train)
         acc = np.mean(m.predict(X_test) == y_test)
-        print(f"  Tree depth={depth} accuracy: {acc:.3f}")
+        print(f"  树深度（depth）={depth}，准确率： {acc:.3f}")
 
     stack_acc = stack.accuracy(X_test, y_test)
-    print(f"  Stacking accuracy:    {stack_acc:.3f}")
-    print(f"  Meta-learner weights: {stack.meta_weights}")
+    print(f"  堆叠集成（Stacking）的准确率：    {stack_acc:.3f}")
+    print(f"  元学习器权重（Meta-learner Weights）： {stack.meta_weights}")
     print()
 
 
 def demo_comparison():
     print("=" * 60)
-    print("FULL COMPARISON")
+    print("完整比较（Full Comparison）")
     print("=" * 60)
 
     X, y = make_classification_data(n_samples=500)
@@ -434,25 +434,25 @@ def demo_comparison():
 
     single = SimpleRegressionTree(max_depth=5)
     single.fit(X_train, y_train)
-    print(f"  Single tree (d=5):    {np.mean(np.sign(single.predict(X_test)) == y_test):.3f}")
+    print(f"  单棵树（d=5）：    {np.mean(np.sign(single.predict(X_test)) == y_test):.3f}")
 
     bag = BaggingClassifier(n_estimators=20, max_depth=5)
     bag.fit(X_train, y_train)
-    print(f"  Bagging (20, d=5):    {bag.accuracy(X_test, y_test):.3f}")
+    print(f"  装袋法（Bagging，20，d=5）：    {bag.accuracy(X_test, y_test):.3f}")
 
     ada = AdaBoostScratch(n_estimators=50)
     ada.fit(X_train, y_train)
-    print(f"  AdaBoost (50 stumps): {ada.accuracy(X_test, y_test):.3f}")
+    print(f"  AdaBoost（50 个决策树桩）： {ada.accuracy(X_test, y_test):.3f}")
 
     print()
-    print("Bagging reduces variance (better than single tree).")
-    print("Boosting reduces bias (learns complex boundaries from weak learners).")
+    print("装袋法（Bagging）降低方差，效果优于单棵树。")
+    print("提升法（Boosting）降低偏差，通过弱学习器（Weak Learners）学习复杂边界。")
     print()
 
 
 def demo_sklearn_comparison():
     print("=" * 60)
-    print("SKLEARN COMPARISON")
+    print("sklearn 对比")
     print("=" * 60)
 
     try:
@@ -463,7 +463,7 @@ def demo_sklearn_comparison():
         )
         from sklearn.metrics import accuracy_score
     except ImportError:
-        print("  sklearn not installed, skipping comparison.")
+        print("  未安装 sklearn，跳过比较。")
         print()
         return
 
@@ -474,7 +474,7 @@ def demo_sklearn_comparison():
 
     ada_ours = AdaBoostScratch(n_estimators=50)
     ada_ours.fit(X_train, y_train)
-    print(f"  Our AdaBoost:      {ada_ours.accuracy(X_test, y_test):.3f}")
+    print(f"  本课实现的 AdaBoost：      {ada_ours.accuracy(X_test, y_test):.3f}")
 
     ada_sk = AdaBoostClassifier(n_estimators=50, random_state=42, algorithm="SAMME")
     ada_sk.fit(X_train_01, y_train_01)
@@ -482,11 +482,11 @@ def demo_sklearn_comparison():
 
     rf = RandomForestClassifier(n_estimators=100, random_state=42)
     rf.fit(X_train_01, y_train_01)
-    print(f"  sklearn RF:        {accuracy_score(y_test_01, rf.predict(X_test_01)):.3f}")
+    print(f"  sklearn 随机森林（RF）：        {accuracy_score(y_test_01, rf.predict(X_test_01)):.3f}")
 
     gb = GradientBoostingClassifier(n_estimators=100, random_state=42)
     gb.fit(X_train_01, y_train_01)
-    print(f"  sklearn GBM:       {accuracy_score(y_test_01, gb.predict(X_test_01)):.3f}")
+    print(f"  sklearn 梯度提升机（GBM）：       {accuracy_score(y_test_01, gb.predict(X_test_01)):.3f}")
 
     print()
 
@@ -499,4 +499,4 @@ if __name__ == "__main__":
     demo_stacking()
     demo_comparison()
     demo_sklearn_comparison()
-    print("All ensemble demos complete.")
+    print("所有集成（Ensemble）演示已完成。")

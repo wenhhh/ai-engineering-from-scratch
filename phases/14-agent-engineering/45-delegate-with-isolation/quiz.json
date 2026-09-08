@@ -1,48 +1,78 @@
 {
   "lesson": "45-delegate-with-isolation",
-  "title": "Delegate with Isolation",
+  "title": "通过隔离委派（Delegate with Isolation）",
   "questions": [
     {
       "stage": "pre",
-      "question": "When is parallel delegation justified?",
-      "options": ["When work has real independence in decisions, paths, or waiting time", "For every task over ten minutes", "Whenever more agents are available", "Only for documentation"],
+      "question": "什么时候并行委派合理？",
+      "options": [
+        "工作在决策、路径或等待时间上真正独立时",
+        "所有超过十分钟的任务",
+        "只要有更多智能体可用",
+        "仅文档任务"
+      ],
       "correct": 0,
-      "explanation": "Parallelism helps only when units can progress without shared mutable decisions or ownership."
+      "explanation": "只有单元不共享可变决策或所有权、能够独立推进时，并行才有帮助。"
     },
     {
       "stage": "check",
-      "question": "Which guarantee does filesystem isolation not provide?",
-      "options": ["Exclusive design and path ownership", "Independent command execution", "Recoverable branches", "Separate directories"],
+      "question": "文件系统隔离不能提供哪项保证？",
+      "options": [
+        "独占设计与路径所有权",
+        "独立命令执行",
+        "可恢复分支",
+        "独立目录"
+      ],
       "correct": 0,
-      "explanation": "Two isolated worktrees can still implement conflicting designs."
+      "explanation": "两个隔离工作树仍可实现冲突设计。"
     },
     {
       "stage": "check",
-      "question": "Why must each work unit name proof?",
-      "options": ["To avoid a handoff", "To increase concurrency", "So the integrator receives reproducible evidence", "So the worker can claim success"],
+      "question": "为什么每个工作单元必须指定证明？",
+      "options": [
+        "避免交接",
+        "增加并发",
+        "让集成者收到可复现证据",
+        "让工作者宣称成功"
+      ],
       "correct": 2,
-      "explanation": "The integrator must verify results, not trust summaries."
+      "explanation": "集成者必须验证结果，而非信任摘要。"
     },
     {
       "stage": "check",
-      "question": "What should happen when two units own overlapping paths?",
-      "options": ["Let the last worker win", "Merge without review", "Run them faster", "Block and redesign the split"],
+      "question": "两个单元拥有重叠路径时应怎样？",
+      "options": [
+        "让最后的工作者获胜",
+        "不审查就合并",
+        "让它们更快运行",
+        "阻止并重新设计拆分"
+      ],
       "correct": 3,
-      "explanation": "Overlapping write ownership creates avoidable conflict and ambiguity."
+      "explanation": "重叠写入所有权会制造可避免的冲突与歧义。"
     },
     {
       "stage": "post",
-      "question": "What is calibrated autonomy?",
-      "options": ["Manual work only", "Freedom where evidence and rollback are strong, checkpoints where consequence is high", "Full automation", "Random approvals"],
+      "question": "什么是校准自主性（Calibrated Autonomy）？",
+      "options": [
+        "只手工工作",
+        "证据与回滚保障充分时给予自由，后果重大时设置检查点",
+        "完全自动化",
+        "随机审批"
+      ],
       "correct": 1,
-      "explanation": "Authority should follow consequence and reversibility."
+      "explanation": "权限应取决于后果与可逆性。"
     },
     {
       "stage": "post",
-      "question": "What is the integrator's final responsibility?",
-      "options": ["Delete handoffs", "Choose a larger model", "Rewrite every unit", "Run the full cross-unit verification gate and enforce scope"],
+      "question": "集成者的最终责任是什么？",
+      "options": [
+        "删除交接",
+        "选择更大模型",
+        "重写每个单元",
+        "运行完整跨单元验证关卡，并执行范围约束"
+      ],
       "correct": 3,
-      "explanation": "Unit proof does not replace end-to-end integration evidence."
+      "explanation": "单元证明不能替代端到端集成证据。"
     }
   ]
 }

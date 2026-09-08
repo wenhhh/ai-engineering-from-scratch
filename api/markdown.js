@@ -40,7 +40,7 @@ function qualityFor(accepted, mediaType) {
 function markdownFor(requestPath) {
   const llms = fs.readFileSync(path.join(SITE_ROOT, 'llms.txt'), 'utf8');
   if (requestPath === '/') return llms;
-  return `# AI Engineering from Scratch\n\nCanonical page: https://aiengineeringfromscratch.com${requestPath}\n\nThe agent-oriented curriculum index is available at https://aiengineeringfromscratch.com/llms.txt.\n\n${llms}`;
+  return `# 从零开始的 AI 工程（AI Engineering from Scratch）\n\n规范页面（Canonical Page）：https://aiengineeringfromscratch.com${requestPath}\n\n面向智能体（Agent）的课程索引位于 https://aiengineeringfromscratch.com/llms.txt。\n\n${llms}`;
 }
 
 module.exports = (req, res) => {
@@ -67,7 +67,7 @@ module.exports = (req, res) => {
 
   if (method !== 'GET' && method !== 'HEAD') {
     res.setHeader('Allow', 'GET, HEAD');
-    problem(405, 'Method Not Allowed', 'method_not_allowed', 'Use GET or HEAD to read public resources.');
+    problem(405, 'Method Not Allowed', 'method_not_allowed', '请使用 GET 或 HEAD 读取公开资源。');
     return;
   }
 
@@ -75,17 +75,17 @@ module.exports = (req, res) => {
   if (!file) {
     res.setHeader('Cache-Control', 'no-store');
     if (markdownQ >= htmlQ && markdownQ > 0) {
-      send(404, 'text/markdown', '# Page not found\n\nThis path does not exist.\n\nTry the [curriculum index](/llms.txt), [sitemap](/sitemap.xml), or [catalog](/catalog.html).\n');
+      send(404, 'text/markdown', '# 未找到页面\n\n此路径不存在。\n\n请查看[课程索引](/llms.txt)、[站点地图（Sitemap）](/sitemap.xml)或[课程目录](/catalog.html)。\n');
     } else if (htmlQ > 0) {
       send(404, 'text/html', fs.readFileSync(path.join(SITE_ROOT, '404.html'), 'utf8'));
     } else {
-      problem(404, 'Not Found', 'resource_not_found', 'Use /llms.txt or /sitemap.xml to discover public resources.');
+      problem(404, 'Not Found', 'resource_not_found', '请通过 /llms.txt 或 /sitemap.xml 查找公开资源。');
     }
     return;
   }
 
   if (!markdownQ && !htmlQ) {
-    problem(406, 'Not Acceptable', 'representation_not_supported', 'Request text/html or text/markdown.');
+    problem(406, 'Not Acceptable', 'representation_not_supported', '请请求 text/html 或 text/markdown 格式。');
     return;
   }
 

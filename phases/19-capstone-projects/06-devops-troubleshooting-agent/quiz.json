@@ -1,87 +1,87 @@
 {
   "lesson": "06-devops-troubleshooting-agent",
-  "title": "Capstone 06 — DevOps Troubleshooting Agent for Kubernetes",
+  "title": "综合实践 06：Kubernetes 运维故障排查智能体（DevOps Troubleshooting Agent for Kubernetes）",
   "questions": [
     {
       "stage": "pre",
-      "question": "What is the default permission posture for the troubleshooting agent's RBAC surface?",
+      "question": "故障排查智能体的基于角色的访问控制（Role-Based Access Control，RBAC）权限面默认采用什么权限策略？",
       "options": [
-        "Cluster-admin so it can self-heal",
-        "Read-only by default, with destructive verbs gated behind a separate server and human approval",
-        "Equivalent to the on-call engineer",
-        "Namespace-admin in the affected namespace only"
+        "集群管理员权限，以便自愈",
+        "默认只读，破坏性动作由独立服务器和人工审批控制",
+        "与值班工程师权限相同",
+        "仅在受影响命名空间拥有命名空间管理员权限"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "pre",
-      "question": "What is the knowledge graph the agent walks during root cause analysis?",
+      "question": "根因分析（Root Cause Analysis，RCA）期间，智能体遍历的知识图谱（Knowledge Graph）是什么？",
       "options": [
-        "Nodes are K8s objects plus telemetry sources; edges encode ownership, scheduling, and observation",
-        "Prometheus metric names organized by team",
-        "A flat list of recently restarted pods",
-        "A graph of GitHub commits and PR reviews"
+        "节点为 K8s 对象与遥测来源；边编码所属、调度和观测关系",
+        "按团队组织的 Prometheus 指标名称",
+        "最近重启 Pod 的平坦列表",
+        "GitHub 提交和 PR 评审构成的图"
       ],
       "correct": 0,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "How are root-cause hypotheses ranked for the Slack brief?",
+      "question": "Slack 简报中的根因假设如何排序？",
       "options": [
-        "By alphabetic alert name",
-        "By model log-probability alone",
-        "By the order they were generated",
-        "By an evidence score combining recency, specificity, graph-path length, and citation count"
+        "按告警名称的字母顺序",
+        "仅按模型对数概率（Log-Probability）",
+        "按生成顺序",
+        "按结合时新性、具体性、图路径长度和引用数量的证据评分"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Why does the audit log record commands the agent considered as well as those executed?",
+      "question": "为什么审计日志（Audit Log）既记录智能体考虑过的命令，也记录执行过的命令？",
       "options": [
-        "ArgoCD only accepts considered commands",
-        "Replay attacks require both lists",
-        "The Slack API needs both for delivery",
-        "Reviewers can catch near-misses where the agent almost ran a destructive command"
+        "ArgoCD 只接受考虑过的命令",
+        "重放攻击（Replay Attack）需要两个列表",
+        "Slack API 需要两个列表才能投递",
+        "审查人员能发现智能体险些执行破坏性命令的险情（Near-Miss）"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Which mechanism prevents the agent from rolling back unilaterally on a bad deploy?",
+      "question": "哪种机制阻止智能体在错误部署后自行回滚？",
       "options": [
-        "Destructive tools live on a separate MCP server behind an approval token from a Slack card",
-        "PagerDuty automatically pauses the deployment",
-        "Branch protection on the GitOps repo",
-        "A second LLM-judge votes on the rollback"
+        "破坏性工具位于独立 MCP 服务器，受 Slack 卡片产生的审批令牌保护",
+        "PagerDuty 自动暂停部署",
+        "GitOps 仓库的分支保护",
+        "第二个 LLM 裁判对回滚投票"
       ],
       "correct": 0,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "What is the p50 time-to-hypothesis target the rubric measures?",
+      "question": "评分标准测量的假设生成耗时（Time-to-Hypothesis）p50 目标是什么？",
       "options": [
-        "Under 1 hour",
-        "Under 30 seconds",
-        "Under the next on-call shift",
-        "Under 5 minutes from alert to Slack brief"
+        "少于 1 小时",
+        "少于 30 秒",
+        "在下一次值班交接前",
+        "从告警到 Slack 简报少于 5 分钟"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "How big is the synthetic incident suite used to score RCA accuracy?",
+      "question": "用于评定 RCA 准确率的合成故障套件有多大？",
       "options": [
-        "5 scenarios",
-        "20 scenarios covering OOMKill, DNS flap, HPA thrash, PVC fill, and more",
-        "1 scripted demo incident",
-        "100 randomly sampled production alerts"
+        "5 个场景",
+        "20 个场景，涵盖 OOMKill、DNS 抖动、HPA 震荡、PVC 占满等",
+        "1 个脚本化演示故障",
+        "100 条随机抽样的生产告警"
       ],
       "correct": 1,
       "explanation": ""

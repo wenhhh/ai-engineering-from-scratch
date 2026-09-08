@@ -1,102 +1,102 @@
 {
   "lesson": "22-embedding-models-deep-dive",
-  "title": "Embedding Models — The 2026 Deep Dive",
+  "title": "嵌入模型：2026 年深入解析（Embedding Models — The 2026 Deep Dive）",
   "questions": [
     {
       "stage": "pre",
-      "question": "What is a dense embedding?",
+      "question": "什么是稠密嵌入（Dense Embedding）？",
       "options": [
-        "One fixed-size vector per text where cosine similarity ranks passages by semantic proximity",
-        "A token-level alignment matrix",
-        "A sparse weight per vocab token",
-        "A graph over documents"
+        "每段文本一个固定大小向量，通过余弦相似度按语义接近程度排序段落",
+        "词元级对齐矩阵",
+        "每个词表词元的稀疏权重",
+        "文档图"
       ],
       "correct": 0,
-      "explanation": "Dense embeddings give one vector per text (typically 384-3072 dim); cosine ranks similarity."
+      "explanation": "稠密嵌入为每段文本提供一个向量，通常为 384–3072 维，使用余弦相似度排序。"
     },
     {
       "stage": "pre",
-      "question": "What does Matryoshka Representation Learning enable?",
+      "question": "套娃表示学习（Matryoshka Representation Learning）支持什么？",
       "options": [
-        "Faster softmax",
-        "Multilingual training",
-        "Cross-encoder rescoring",
-        "Truncating a trained embedding to its first N dimensions and getting a still-useful smaller embedding"
+        "更快的 softmax",
+        "多语言训练",
+        "交叉编码器重评分",
+        "将训练好的嵌入截断到前 N 维，仍得到有用的较小嵌入"
       ],
       "correct": 3,
-      "explanation": "Matryoshka training makes the first N dims of the vector standalone-useful, enabling cheap truncation."
+      "explanation": "Matryoshka 训练让向量前 N 维能够独立使用，支持低成本截断。"
     },
     {
       "stage": "check",
-      "question": "How do multi-vector (ColBERT) embeddings score query-doc pairs?",
+      "question": "多向量（ColBERT）嵌入如何为查询—文档对评分？",
       "options": [
-        "Cosine of mean-pooled token vectors",
-        "Cross-entropy",
-        "MaxSim: for each query token find the most similar document token, then sum the maxima",
-        "Earth-mover's distance"
+        "平均池化词元向量的余弦相似度",
+        "交叉熵",
+        "MaxSim：对每个查询词元找到最相似的文档词元，再将这些最大值相加",
+        "推土机距离"
       ],
       "correct": 2,
-      "explanation": "ColBERT-style late interaction uses MaxSim across per-token vectors."
+      "explanation": "ColBERT 风格的后期交互在逐词元向量之间采用 MaxSim。"
     },
     {
       "stage": "check",
-      "question": "What does BGE-M3 output simultaneously?",
+      "question": "BGE-M3 同时输出什么？",
       "options": [
-        "Only a sparse vector",
-        "Only a dense vector",
-        "Dense, sparse, and multi-vector (colbert) representations from one model in a single inference",
-        "Only a colbert vector"
+        "仅稀疏向量",
+        "仅稠密向量",
+        "单个模型一次推理产生稠密、稀疏和多向量（colbert）表示",
+        "仅 colbert 向量"
       ],
       "correct": 2,
-      "explanation": "BGE-M3 emits three retrieval modes from one model, useful for fused hybrid scoring."
+      "explanation": "BGE-M3 从一个模型输出三种检索模式，适合融合式混合评分。"
     },
     {
       "stage": "check",
-      "question": "Why must you re-normalize a Matryoshka-truncated vector before cosine similarity?",
+      "question": "为什么在余弦相似度计算前，必须重新归一化 Matryoshka 截断后的向量？",
       "options": [
-        "Truncation changes the vector norm; without re-normalizing, dot product no longer equals cosine",
-        "Cosine ignores normalization",
-        "Truncation breaks training",
-        "Required by FAISS only"
+        "截断改变向量范数；不重新归一化，点积就不再等于余弦相似度",
+        "余弦忽略归一化",
+        "截断破坏训练",
+        "只有 FAISS 要求"
       ],
       "correct": 0,
-      "explanation": "Re-normalizing after truncation restores unit norm so dot product equals cosine again."
+      "explanation": "截断后重新归一化恢复单位范数，使点积再次等于余弦相似度。"
     },
     {
       "stage": "post",
-      "question": "Why do BGE models often need a query-side prefix string?",
+      "question": "为什么 BGE 模型常需要查询侧前缀字符串？",
       "options": [
-        "To compress queries",
-        "Prefixes change tokenizer behavior",
-        "Required by FAISS",
-        "BGE was trained with an explicit query prompt; omitting it costs 3-5 points recall"
+        "为了压缩查询",
+        "前缀改变分词器行为",
+        "FAISS 要求如此",
+        "BGE 训练时使用明确的查询提示；省略会损失 3–5 个召回率点"
       ],
       "correct": 3,
-      "explanation": "BGE models expect a 'Represent this sentence for searching...' prefix on queries."
+      "explanation": "BGE 模型要求查询带上 'Represent this sentence for searching...' 前缀。"
     },
     {
       "stage": "post",
-      "question": "Why is MTEB necessary but not sufficient for picking an embedding model?",
+      "question": "为什么选择嵌入模型时，MTEB 必要但不充分？",
       "options": [
-        "MTEB only covers English",
-        "MTEB rewards bigger models",
-        "MTEB ignores latency",
-        "Leaderboard ranks are average across many tasks; your specific domain may differ, so always benchmark on your data"
+        "MTEB 只覆盖英语",
+        "MTEB 奖励更大模型",
+        "MTEB 忽略延迟",
+        "排行榜名次是多个任务的平均，你的具体领域可能不同，因此始终要在自己的数据上测试"
       ],
       "correct": 3,
-      "explanation": "MTEB averages across tasks; domain-specific eval can flip the ranking."
+      "explanation": "MTEB 对任务取平均；领域专用评估可能颠倒排名。"
     },
     {
       "stage": "post",
-      "question": "When should you add SPLADE sparse retrieval alongside dense embeddings?",
+      "question": "什么时候应在稠密嵌入之外加入 SPLADE 稀疏检索？",
       "options": [
-        "On small corpora only",
-        "Whenever the encoder is multilingual",
-        "When queries are keyword-heavy or contain identifiers/codes that dense embeddings blur",
-        "Whenever Matryoshka is used"
+        "仅用于小语料库",
+        "只要编码器支持多语言",
+        "查询以关键词为主，或包含被稠密嵌入模糊的标识符、代码时",
+        "只要使用 Matryoshka"
       ],
       "correct": 2,
-      "explanation": "SPLADE captures lexical/keyword matches that dense models can miss; fuse with dense via RRF."
+      "explanation": "SPLADE 捕获稠密模型可能遗漏的词汇和关键词匹配，通过 RRF 与稠密检索融合。"
     }
   ]
 }

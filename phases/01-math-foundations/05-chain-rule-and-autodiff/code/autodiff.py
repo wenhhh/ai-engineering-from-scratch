@@ -105,7 +105,7 @@ class Value:
 
 
 def demo_basic():
-    print("=== Basic: y = relu(x1 * x2 + 1) ===")
+    print("=== 基础示例（Basic）：y = relu(x1 * x2 + 1) ===")
     x1 = Value(2.0)
     x2 = Value(3.0)
     a = x1 * x2
@@ -115,28 +115,28 @@ def demo_basic():
 
     print(f"  x1 = 2.0, x2 = 3.0")
     print(f"  y  = {y.data}")
-    print(f"  dy/dx1 = {x1.grad}  (expected 3.0 = x2)")
-    print(f"  dy/dx2 = {x2.grad}  (expected 2.0 = x1)")
+    print(f"  dy/dx1 = {x1.grad}  (预期 3.0 = x2)")
+    print(f"  dy/dx2 = {x2.grad}  (预期 2.0 = x1)")
     assert abs(x1.grad - 3.0) < 1e-6
     assert abs(x2.grad - 2.0) < 1e-6
     print("  PASSED\n")
 
 
 def demo_power():
-    print("=== Power: y = x^3, dy/dx at x=2 ===")
+    print("=== 幂运算（Power）：y = x^3，x=2 处的 dy/dx ===")
     x = Value(2.0)
     y = x ** 3
     y.backward()
 
     print(f"  x = 2.0")
-    print(f"  y = {y.data}  (expected 8.0)")
-    print(f"  dy/dx = {x.grad}  (expected 12.0 = 3*x^2)")
+    print(f"  y = {y.data}  (预期 8.0)")
+    print(f"  dy/dx = {x.grad}  (预期 12.0 = 3*x^2)")
     assert abs(x.grad - 12.0) < 1e-6
     print("  PASSED\n")
 
 
 def demo_complex():
-    print("=== Complex: f = relu(a*b + c) ===")
+    print("=== 复合运算（Complex）：f = relu(a*b + c) ===")
     a = Value(2.0)
     b = Value(-3.0)
     c = Value(10.0)
@@ -144,10 +144,10 @@ def demo_complex():
     f.backward()
 
     print(f"  a=2, b=-3, c=10")
-    print(f"  f = {f.data}  (expected 4.0)")
-    print(f"  df/da = {a.grad}  (expected -3.0 = b)")
-    print(f"  df/db = {b.grad}  (expected 2.0 = a)")
-    print(f"  df/dc = {c.grad}  (expected 1.0)")
+    print(f"  f = {f.data}  (预期 4.0)")
+    print(f"  df/da = {a.grad}  (预期 -3.0 = b)")
+    print(f"  df/db = {b.grad}  (预期 2.0 = a)")
+    print(f"  df/dc = {c.grad}  (预期 1.0)")
     assert abs(a.grad - (-3.0)) < 1e-6
     assert abs(b.grad - 2.0) < 1e-6
     assert abs(c.grad - 1.0) < 1e-6
@@ -155,7 +155,7 @@ def demo_complex():
 
 
 def demo_neuron():
-    print("=== Single neuron: y = relu(w1*x1 + w2*x2 + b) ===")
+    print("=== 单个神经元（Single neuron）：y = relu(w1*x1 + w2*x2 + b) ===")
     w1 = Value(0.5)
     w2 = Value(-1.5)
     x1 = Value(3.0)
@@ -181,11 +181,11 @@ def demo_neuron():
         assert abs(x1.grad - w1.data) < 1e-6
         assert abs(x2.grad - w2.data) < 1e-6
         assert abs(b.grad - 1.0) < 1e-6
-        print("  PASSED (relu active)\n")
+        print("  通过（relu 已激活）\n")
     else:
         assert abs(w1.grad) < 1e-6
         assert abs(w2.grad) < 1e-6
-        print("  PASSED (relu inactive, all grads zero)\n")
+        print("  通过（relu 未激活，所有梯度为零）\n")
 
 
 class Neuron:
@@ -241,7 +241,7 @@ def gradient_check(build_expr, x_val, h=1e-7):
 
 
 def demo_mlp_training():
-    print("=== Mini MLP Training on XOR ===")
+    print("=== 用异或（XOR）训练小型多层感知机（MLP）===")
     random.seed(42)
     model = MLP([2, 4, 1])
 
@@ -264,7 +264,7 @@ def demo_mlp_training():
         if step % 20 == 0 or step == 99:
             print(f"  step {step:3d}  loss = {loss.data:.4f}")
 
-    print("\n  Predictions after training:")
+    print("\n  训练后的预测（Predictions）：")
     for x, y in zip(xs, ys):
         pred = model(x)
         sign = "+" if pred.data > 0 else "-"
@@ -273,7 +273,7 @@ def demo_mlp_training():
 
 
 def demo_gradient_check():
-    print("=== Gradient Checking ===")
+    print("=== 梯度检查（Gradient Checking）===")
 
     expressions = [
         ("x^3 + 2x + 1",       lambda x: x ** 3 + x * 2 + 1),
@@ -283,7 +283,7 @@ def demo_gradient_check():
         ("log(x^2 + 1)",       lambda x: (x ** 2 + 1).log()),
     ]
 
-    print(f"  {'Expression':<22} {'Autodiff':>12} {'Numerical':>12} {'Diff':>12}")
+    print(f"  {'表达式':<22} {'自动微分':>12} {'数值解':>12} {'差值':>12}")
     print("  " + "-" * 60)
 
     all_passed = True
@@ -295,37 +295,37 @@ def demo_gradient_check():
         print(f"  {name:<22} {ad:12.8f} {num:12.8f} {diff:12.2e}  {status}")
 
     if all_passed:
-        print("  ALL CHECKS PASSED\n")
+        print("  所有检查通过\n")
     else:
-        print("  SOME CHECKS FAILED\n")
+        print("  部分检查失败\n")
 
 
 def demo_exp_log():
-    print("=== Exp and Log operations ===")
+    print("=== 指数（Exp）与对数（Log）运算 ===")
     x = Value(2.0)
     y = x.exp()
     y.backward()
     import math
-    print(f"  exp(2.0) = {y.data:.4f}  (expected {math.exp(2.0):.4f})")
-    print(f"  d/dx exp(x) at x=2 = {x.grad:.4f}  (expected {math.exp(2.0):.4f})")
+    print(f"  exp(2.0) = {y.data:.4f}  (预期 {math.exp(2.0):.4f})")
+    print(f"  d/dx exp(x) 在 x=2 处 = {x.grad:.4f}  (预期 {math.exp(2.0):.4f})")
     assert abs(x.grad - math.exp(2.0)) < 1e-4
     print("  PASSED\n")
 
     x = Value(3.0)
     y = x.log()
     y.backward()
-    print(f"  log(3.0) = {y.data:.4f}  (expected {math.log(3.0):.4f})")
-    print(f"  d/dx log(x) at x=3 = {x.grad:.4f}  (expected {1/3:.4f})")
+    print(f"  log(3.0) = {y.data:.4f}  (预期 {math.log(3.0):.4f})")
+    print(f"  d/dx log(x) 在 x=3 处 = {x.grad:.4f}  (预期 {1/3:.4f})")
     assert abs(x.grad - 1.0 / 3.0) < 1e-4
     print("  PASSED\n")
 
 
 def demo_verify_pytorch():
-    print("=== Verify against PyTorch ===")
+    print("=== 与 PyTorch 对照验证 ===")
     try:
         import torch
     except ImportError:
-        print("  PyTorch not installed, skipping verification.\n")
+        print("  未安装 PyTorch，跳过验证。\n")
         return
 
     x1_v = Value(2.0)
@@ -338,7 +338,7 @@ def demo_verify_pytorch():
     y_t = torch.relu(x1_t * x2_t + 1.0)
     y_t.backward()
 
-    print(f"  Our engine: dy/dx1={x1_v.grad}, dy/dx2={x2_v.grad}")
+    print(f"  本课引擎（Engine）： dy/dx1={x1_v.grad}, dy/dx2={x2_v.grad}")
     print(f"  PyTorch:    dy/dx1={x1_t.grad.item()}, dy/dx2={x2_t.grad.item()}")
     assert abs(x1_v.grad - x1_t.grad.item()) < 1e-6
     assert abs(x2_v.grad - x2_t.grad.item()) < 1e-6
@@ -354,4 +354,4 @@ if __name__ == "__main__":
     demo_gradient_check()
     demo_mlp_training()
     demo_verify_pytorch()
-    print("All demos passed.")
+    print("所有演示通过。")

@@ -1,32 +1,32 @@
 ---
 name: scheming-triage
-description: Triage an agent-deployment incident report against the Apollo three-pillar scheming framework.
+description: 按 Apollo 的密谋（Scheming）三个支柱框架，对智能体部署事故报告进行分类诊断。
 version: 1.0.0
 phase: 18
 lesson: 8
 tags: [scheming, agent-safety, apollo, three-pillars, safety-cases]
 ---
 
-Given an agent-deployment incident report (unexpected tool use, data access, self-preservation-adjacent behaviour), classify the failure mode and, when scheming is a candidate, apply the Apollo three-pillar test.
+给定智能体部署事故报告，例如意外工具使用、数据访问或与自我保存有关的行为，对失效模式分类；如果密谋是候选解释，则应用 Apollo 的三个支柱测试。
 
-Produce:
+请提供以下内容：
 
-1. Failure-class triage. Label the incident as one of: capability failure (the model could not do the task), control failure (the monitoring/tool-use protocol did not contain the model), or scheming (the model took actions against the user's goal in service of a different in-context goal).
-2. Three-pillar check (if scheming is a candidate).
-   - Misalignment: did the action serve an orthogonal goal present in the environment or tool output?
-   - Goal-directedness: was the action part of a multi-step plan, or a one-shot error?
-   - Situational awareness: is there evidence the model knew it was being evaluated at the time?
-3. Evaluation-context audit. Was the incident observed in deployment, in red-team evaluation, or in both? If only in deployment, note that evaluation-time results do not transfer (Apollo 2025 caveat).
-4. Elicitation reproducibility. Can the same prompt + environment produce the behaviour again? A reproducible incident is within the three-pillar frame; a non-reproducible one may be a capability elicitation artifact.
-5. Safety-case gap. Which of the three pillars does the current safety case for this deployment address, and which does it leave uncovered?
+1. 失效类别诊断。将事故标注为以下之一：能力失败，即模型无法完成任务；控制失败，即监控或工具使用协议未能约束模型；密谋，即模型为了服务上下文中的另一个目标，采取违背用户目标的行动。
+2. 三个支柱检查，仅在密谋是候选解释时进行。
+   - 失配（Misalignment）：行动是否服务于环境或工具输出中的另一个独立目标？
+   - 目标导向性（Goal-directedness）：行动属于多步骤计划，还是一次性错误？
+   - 情境意识（Situational awareness）：是否有证据表明模型知道自己当时正在被评估？
+3. 评估上下文审计。事故是在部署中、红队评估中，还是两者中都被观察到？如果只在部署中出现，请指出评估时的结果不能直接迁移，参见 Apollo 2025 年的限制说明。
+4. 诱发可复现性。同样的提示词与环境能否再次产生该行为？可复现事故属于三个支柱框架内的问题；不可复现事故可能是能力诱发过程的产物。
+5. 安全论证缺口。当前部署的安全论证（Safety case）处理了三个支柱中的哪些，又遗漏了哪些？
 
-Hard rejects:
-- Any framing that treats scheming as a capability-class failure. Scheming requires goal-directedness and situational awareness — a capability-lacking model cannot scheme.
-- Any inference that "anti-scheming training reduced covert-action rate" implies reduced underlying misalignment, without checking the evaluation-context recognition rate for the same model.
-- Any claim that oversight subversion is "not an attack" because the agent did not exfiltrate data — oversight subversion is a scheming action in itself.
+必须否定的说法或方案：
+- 任何将密谋归为能力失败的表述。密谋需要目标导向性和情境意识，缺乏相应能力的模型无法密谋。
+- 任何在未检查同一模型的评估上下文识别率时，就根据“反密谋训练降低了隐蔽行动率”推断底层失配减少的说法。
+- 任何因为智能体没有外传数据，就声称颠覆监督（Oversight subversion）“不是攻击”的说法；颠覆监督本身就是一种密谋行动。
 
-Refusal rules:
-- If the user asks "is my model scheming," refuse a binary answer without the three-pillar evidence; request the evaluation-context and elicitation-reproducibility data.
-- If the user asks for a residual scheming probability, refuse the numeric answer and explain that 2026 evaluation reliability is bounded by the model's own situational-awareness.
+拒绝规则：
+- 如果用户问“我的模型在密谋吗”，但没有三个支柱的证据，请拒绝给出简单的是或否答案，要求提供评估上下文与诱发可复现性数据。
+- 如果用户要求剩余密谋概率，请拒绝数值答案，并解释在 2026 年，评估可靠性受模型自身情境意识的限制。
 
-Output: a one-page triage that labels the failure class, fills the three pillars with the evidence available, flags missing evidence, and names the single safety-case gap most urgent to close. Cite Meinke et al. (arXiv:2412.04984) once as the framework source.
+输出：一页分类诊断，标明失效类别，用现有证据填写三个支柱，标记缺失证据，并指出最急需弥补的一个安全论证缺口。引用一次 Meinke 等人的论文（arXiv:2412.04984）作为框架来源。

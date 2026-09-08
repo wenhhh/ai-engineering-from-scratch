@@ -1,46 +1,46 @@
-# Forking Guide
+# 派生仓库指南（Forking Guide）
 
-This course is MIT licensed. You're free to fork it and adapt it for your needs. Here's how to do it well.
+本课程采用 MIT 许可证（MIT License）。你可以创建派生仓库（Fork），并按自身需求调整。以下介绍几种使用方式。
 
-## For Teams
+## 团队培训（For Teams）
 
-Want to use this as internal training? Fork and customize:
+打算将课程用于内部培训？创建派生仓库后，可以这样定制：
 
-1. Fork the repository
-2. Remove phases your team doesn't need
-3. Add company-specific examples and data
-4. Add internal tool integrations to the outputs
-5. Keep the attribution — it helps the community grow
+1. 创建派生仓库
+2. 删除团队不需要的阶段
+3. 加入公司业务相关的示例和数据
+4. 在课程交付物中集成内部工具
+5. 保留来源署名，帮助社区发展
 
-## For Schools & Universities
+## 学校与高校（For Schools & Universities）
 
-Want to use this as course material?
+打算将课程用作教材？
 
-1. Fork the repository
-2. Map phases to your semester schedule
-3. Add grading rubrics to exercises
-4. Add your own assignments and exams
-5. Consider contributing improvements back upstream
+1. 创建派生仓库
+2. 将课程阶段对应到学期教学安排
+3. 为练习补充评分量规（Rubric）
+4. 加入自己的作业与考试
+5. 考虑将改进贡献回上游
 
-## For Bootcamps
+## 训练营（For Bootcamps）
 
-Running a paid bootcamp? That's fine under MIT.
+打算开设收费训练营？MIT 许可证允许这种用途。
 
-1. Fork and structure for your cohort timeline
-2. Add video content, live sessions, mentorship
-3. The code and docs are yours to build on
-4. Consider sponsoring the project or contributing back
+1. 创建派生仓库，并按照学员批次的时间安排组织内容
+2. 加入视频、直播课与导师辅导
+3. 在现有代码和文档的基础上继续开发
+4. 考虑赞助项目或向上游贡献改进
 
-## For Other Languages
+## 其他编程语言（For Other Languages）
 
-Want to teach this curriculum in a different programming language?
+打算用另一种编程语言教授本课程？
 
-1. Fork the repository
-2. Re-implement code examples in your language
-3. Keep the lesson structure and documentation
-4. Submit a PR to link your fork from the main README
+1. 创建派生仓库
+2. 用选定的语言重新实现代码示例
+3. 保留课程结构和文档
+4. 提交拉取请求（Pull Request，PR），申请在主仓库 README 中添加你的派生仓库链接
 
-## Keeping Your Fork Updated
+## 同步上游更新（Keeping Your Fork Updated）
 
 ```bash
 git remote add upstream https://github.com/rohitg00/ai-engineering-from-scratch.git
@@ -49,11 +49,11 @@ git fetch upstream
 git merge upstream/main
 ```
 
-## Attribution
+## 来源署名（Attribution）
 
-Not required by MIT, but appreciated:
+MIT 不要求采用下面这种额外的署名展示形式，但我们欢迎你这样标注：
 
-```
-Based on AI Engineering from Scratch
+```text
+基于《从零开始的 AI 工程（AI Engineering from Scratch）》
 https://github.com/rohitg00/ai-engineering-from-scratch
 ```

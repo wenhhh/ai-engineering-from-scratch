@@ -1,98 +1,98 @@
-# Capstone 08 — Production RAG Chatbot for a Regulated Vertical
+# 综合实践 08：受监管垂直领域的生产级检索增强生成聊天机器人（Production RAG Chatbot for a Regulated Vertical）
 
-> Harvey, Glean, Mendable, and LlamaCloud all run the same production shape in 2026. Ingest with docling or Unstructured and ColPali for visuals. Hybrid search. Re-rank with bge-reranker-v2-gemma. Synthesize with Claude Sonnet 4.7 using prompt caching at 60-80% hit rate. Guard with Llama Guard 4 and NeMo Guardrails. Watch with Langfuse and Phoenix. Grade with RAGAS on a 200-question golden set. Build one in a regulated domain (legal, clinical, insurance), and the capstone is passing the golden set, the red team, and the drift dashboard.
+> 2026 年，Harvey、Glean、Mendable 和 LlamaCloud 都采用相同的生产形态。用 docling 或 Unstructured 摄取内容，用 ColPali 处理视觉信息；执行混合搜索（Hybrid Search），用 bge-reranker-v2-gemma 重排序（Re-Ranking）；由 Claude Sonnet 4.7 综合生成（Synthesis），提示词缓存（Prompt Caching）命中率达到 60–80%；用 Llama Guard 4 和 NeMo Guardrails 防护，用 Langfuse 和 Phoenix 观测，用 RAGAS 在 200 题黄金集（Golden Set）上评分。在法律、临床或保险等受监管领域构建一个系统，本综合实践的验收是通过黄金集、红队测试（Red Team）以及漂移仪表盘（Drift Dashboard）检查。
 
 **Type:** Capstone
-**Languages:** Python (pipeline + API), TypeScript (chat UI)
-**Prerequisites:** Phase 5 (NLP), Phase 7 (transformers), Phase 11 (LLM engineering), Phase 12 (multimodal), Phase 17 (infrastructure), Phase 18 (safety)
-**Phases exercised:** P5 · P7 · P11 · P12 · P17 · P18
-**Time:** 30 hours
+**Languages:** Python（流水线 + API）, TypeScript（聊天界面）
+**Prerequisites:** 阶段 5（自然语言处理，NLP）、阶段 7（Transformer）、阶段 11（大语言模型工程）、阶段 12（多模态）、阶段 17（基础设施）、阶段 18（安全）
+**涉及阶段（Phases exercised）:** P5 · P7 · P11 · P12 · P17 · P18
+**Time:** 30 小时
 
-## Problem
+## 问题（Problem）
 
-Regulated-domain RAG (legal contracts, clinical trial protocols, insurance policies) is the most-shipped production shape of 2026 because the ROI is obvious and the stakes are concrete. Harvey (Allen & Overy) built it for legal. Mendable ships the developer-docs flavor. Glean covers enterprise search. The pattern is: ingest high-fidelity, retrieve hybrid with rerank, synthesize with citation enforcement and prompt caching, guard with multiple safety layers, and monitor drift continuously.
+受监管领域的检索增强生成（Retrieval-Augmented Generation，RAG），如法律合同、临床试验方案和保险条款，是 2026 年交付最多的生产形态，因为投资回报（Return on Investment，ROI）明确，风险后果具体。Harvey（Allen & Overy）为法律领域构建了这种系统。Mendable 交付开发者文档版本，Glean 覆盖企业搜索。模式是：高保真摄取，混合检索加重排序，强制引用并使用提示词缓存进行综合生成，多层安全防护，以及持续监控漂移。
 
-The hard parts are not the model. They are jurisdiction-aware compliance (HIPAA, GDPR, SOC2), citation-level auditability, cost control (prompt caching buys 60-90% discount when hit rate is high), hallucination detection via RAGAS faithfulness, and drift detection when the source documents get updated without the index catching up. This capstone asks you to ship all of it on a 200-question golden set with a red-team suite alongside.
+难点不在模型，而在于考虑司法管辖区的合规要求（HIPAA、GDPR、SOC2）、引用级可审计性、成本控制（命中率高时提示词缓存可节省 60–90% 费用）、通过 RAGAS 忠实度（Faithfulness）检测幻觉（Hallucination），以及源文档更新而索引未跟进时的漂移检测。本综合实践要求交付全部能力，使用 200 题黄金集，并配备红队套件。
 
-## Concept
+## 概念（Concept）
 
-The pipeline has two sides. **Ingestion**: docling or Unstructured parses structured documents; ColPali handles visually rich ones; chunks get summaries, tags, and role-based access labels. Vectors go into pgvector + pgvectorscale (under 50M vectors) or Qdrant Cloud; sparse BM25 runs alongside. **Conversation**: LangGraph handles memory and multi-turn; each query runs hybrid retrieval, reranks with bge-reranker-v2-gemma-2b, synthesizes with Claude Sonnet 4.7 (prompt-cached), passes output through Llama Guard 4 and NeMo Guardrails, and emits a citation-anchored response.
+流水线分为两侧。**摄取（Ingestion）**：docling 或 Unstructured 解析结构化文档；ColPali 处理视觉内容丰富的文档；分块（Chunk）附加摘要、标签和基于角色的访问标签。向量存入 pgvector + pgvectorscale（少于 5000 万向量）或 Qdrant Cloud；旁路运行稀疏 BM25。**对话（Conversation）**：LangGraph 管理记忆和多轮交互；每个查询执行混合检索，用 bge-reranker-v2-gemma-2b 重排序，再由 Claude Sonnet 4.7 综合生成（启用提示词缓存），输出经过 Llama Guard 4 和 NeMo Guardrails，最终返回锚定引用的回答。
 
-The eval stack has four layers. **Golden set** (200 labeled Q/A with citations) for correctness. **Red team** (jailbreaks, PII extraction attempts, off-domain questions) for safety. **RAGAS** for faithfulness / answer relevance / context precision automatically per-turn. **Drift dashboard** (Arize Phoenix) watching retrieval quality and hallucination score weekly.
+评估栈有四层。**黄金集（Golden Set）**：200 组带引用的已标注问答，用于检验正确性。**红队测试（Red Team）**：越狱（Jailbreak）、个人身份信息（Personally Identifiable Information，PII）提取尝试和领域外问题，用于检验安全。**RAGAS**：每轮自动评定忠实度、答案相关性（Answer Relevance）与上下文精确率（Context Precision）。**漂移仪表盘（Drift Dashboard）**：Arize Phoenix 每周监控检索质量与幻觉得分。
 
-Prompt caching is the cost lever. Claude 4.5+ and GPT-5+ support caching system prompts + retrieved context. At 60-80% hit rate, per-query cost drops 3-5x. The pipeline must be designed for stable prefixes (system prompt + reranked context first) to achieve high cache hit rates.
+提示词缓存是降低成本的关键。Claude 4.5+ 和 GPT-5+ 支持缓存系统提示词与检索上下文。在 60–80% 命中率下，每查询成本降至原来的三分之一至五分之一。流水线必须采用稳定前缀设计（系统提示词与重排后的上下文放在前面），才能达到高缓存命中率。
 
-## Architecture
+## 架构（Architecture）
 
 ```
-documents (contracts, protocols, policies)
+文档（合同、方案、条款）
       |
       v
-docling / Unstructured parse + ColPali for visuals
+docling / Unstructured 解析 + ColPali 处理视觉内容
       |
       v
-chunks + summaries + role-labels + jurisdiction tags
+分块 + 摘要 + 角色标签 + 司法管辖区标签
       |
       v
 pgvector + pgvectorscale  +  BM25 (Tantivy)
       |
-query + role + jurisdiction
+查询 + 角色 + 司法管辖区
       |
       v
-LangGraph conversational agent
-   +--- retrieve (hybrid)
-   +--- filter by role + jurisdiction
-   +--- rerank (bge-reranker-v2-gemma-2b or Voyage rerank-2)
-   +--- synthesize (Claude Sonnet 4.7, prompt cached)
-   +--- guard (Llama Guard 4 + NeMo Guardrails + Presidio output PII scrub)
-   +--- cite + return
+LangGraph 对话智能体（Conversational Agent）
+   +--- 检索（混合）
+   +--- 按角色 + 司法管辖区过滤
+   +--- 重排序（bge-reranker-v2-gemma-2b 或 Voyage rerank-2）
+   +--- 综合生成（Claude Sonnet 4.7，提示词已缓存）
+   +--- 防护（Llama Guard 4 + NeMo Guardrails + Presidio 输出 PII 清理）
+   +--- 引用 + 返回
       |
       v
-eval:
-  RAGAS faithfulness / answer_relevance / context_precision (online)
-  Langfuse annotation queue (sampled)
-  Arize Phoenix drift (weekly)
-  red team suite (pre-release)
+评估：
+  RAGAS faithfulness / answer_relevance / context_precision（在线）
+  Langfuse 标注队列（抽样）
+  Arize Phoenix 漂移监控（每周）
+  红队套件（发布前）
 ```
 
-## Stack
+## 技术栈（Stack）
 
-- Ingestion: Unstructured.io or docling for structured documents; ColPali for visually-rich PDFs
-- Vector DB: pgvector + pgvectorscale under 50M vectors; Qdrant Cloud otherwise
-- Sparse: Tantivy BM25 with field weights
-- Orchestration: LlamaIndex Workflows (ingestion) + LangGraph (conversation)
-- Re-ranker: bge-reranker-v2-gemma-2b self-hosted or Voyage rerank-2 hosted
-- LLM: Claude Sonnet 4.7 with prompt caching; fallback Llama 3.3 70B self-hosted
-- Eval: RAGAS 0.2 online, DeepEval for hallucination and jailbreak suites
-- Observability: Langfuse self-hosted with annotation queue; Arize Phoenix for drift
-- Guardrails: Llama Guard 4 input/output classifier, NeMo Guardrails v0.12 policy, Presidio PII scrub
-- Compliance: role-based access labels on chunks; jurisdiction tags for GDPR/HIPAA
+- 摄取：Unstructured.io 或 docling 处理结构化文档；ColPali 处理视觉内容丰富的 PDF
+- 向量数据库（Vector DB）：少于 5000 万向量时用 pgvector + pgvectorscale，否则用 Qdrant Cloud
+- 稀疏检索（Sparse）：带字段权重的 Tantivy BM25
+- 编排（Orchestration）：LlamaIndex Workflows 负责摄取，LangGraph 负责对话
+- 重排序器（Re-Ranker）：自托管 bge-reranker-v2-gemma-2b 或托管 Voyage rerank-2
+- 大语言模型（Large Language Model，LLM）：Claude Sonnet 4.7 启用提示词缓存；自托管 Llama 3.3 70B 作为备用
+- 评估：在线 RAGAS 0.2，DeepEval 用于幻觉与越狱套件
+- 可观测性（Observability）：自托管 Langfuse 带标注队列；Arize Phoenix 检测漂移
+- 防护机制（Guardrails）：Llama Guard 4 输入／输出分类器、NeMo Guardrails v0.12 策略、Presidio PII 清理
+- 合规（Compliance）：分块附基于角色的访问标签；为 GDPR/HIPAA 附司法管辖区标签
 
 ```figure
 canary-rollout
 ```
 
-## Build It
+## 动手实现（Build It）
 
-1. **Ingestion.** Parse your corpus (1000-10000 documents for a serious build) with Unstructured or docling. For scanned / visual-heavy pages, route through ColPali. Produce chunks with summaries, role-labels, jurisdiction tags.
+1. **摄取（Ingestion）。** 用 Unstructured 或 docling 解析语料（正式构建建议 1000–10000 份文档）。扫描页或视觉内容较多的页面交由 ColPali 处理。生成附摘要、角色标签、司法管辖区标签的分块。
 
-2. **Index.** Dense embeddings (Voyage-3 or Nomic-embed-v2) into pgvector + pgvectorscale. BM25 side-index via Tantivy. Role and jurisdiction filters as payload.
+2. **索引（Index）。** 将稠密嵌入（Dense Embedding，Voyage-3 或 Nomic-embed-v2）写入 pgvector + pgvectorscale。通过 Tantivy 创建 BM25 辅助索引。将角色和司法管辖区过滤信息作为载荷（Payload）。
 
-3. **Hybrid retrieve.** Filter by role+jurisdiction first; then parallel dense + BM25; merge with reciprocal rank fusion; top-20 to reranker; top-5 to synth.
+3. **混合检索（Hybrid Retrieve）。** 先按角色与司法管辖区过滤，再并行执行稠密检索与 BM25；用倒数排名融合（Reciprocal Rank Fusion，RRF）合并；前 20 项交给重排序器，前 5 项交给生成器。
 
-4. **Synthesize with prompt caching.** System prompt + static policies in cache header; reranked context as cache extension; user question as uncached suffix. Target 60-80% cache hit rate in steady state.
+4. **启用提示词缓存的综合生成（Synthesize with Prompt Caching）。** 系统提示词与静态策略放在缓存头部，重排后的上下文作为缓存扩展，用户问题作为不缓存的后缀。稳态缓存命中率目标为 60–80%。
 
-5. **Guardrails.** Llama Guard 4 on input; NeMo Guardrails rails block off-domain questions or policy-forbidden topics; Presidio scrubs accidental PII in the output; citation enforcement post-filter.
+5. **防护机制（Guardrails）。** 对输入使用 Llama Guard 4；NeMo Guardrails 规则阻止领域外问题或策略禁止话题；Presidio 清理输出中意外出现的 PII；后置过滤器强制要求引用。
 
-6. **Golden set.** 200 Q/A pairs labeled by a domain expert with (answer, citations). Score agent on exact-citation match, answer correctness, faithfulness (RAGAS).
+6. **黄金集（Golden Set）。** 由领域专家标注 200 组问答，包含答案和引用。按引用精确匹配、答案正确性和 RAGAS 忠实度为智能体评分。
 
-7. **Red team.** 50 adversarial prompts: jailbreaks (PAIR, TAP), PII exfiltration attempts, off-domain, cross-jurisdiction leaks. Score with pass/fail and severity.
+7. **红队测试（Red Team）。** 50 条对抗提示词：越狱（PAIR、TAP）、PII 外传尝试、领域外问题和跨司法管辖区泄露。记录通过／失败与严重程度。
 
-8. **Drift dashboard.** Arize Phoenix tracks retrieval quality (nDCG, citation faithfulness) weekly. Alert on 5% drop.
+8. **漂移仪表盘（Drift Dashboard）。** Arize Phoenix 每周追踪检索质量，包括归一化折损累计增益（Normalized Discounted Cumulative Gain，nDCG）和引用忠实度。下降 5% 时告警。
 
-9. **Cost report.** Langfuse: prompt-caching hit rate, tokens per query, $/query breakdown by stage.
+9. **成本报告（Cost Report）。** Langfuse 记录提示词缓存命中率、每查询词元数及按阶段拆分的每查询美元成本。
 
-## Use It
+## 实际应用（Use It）
 
 ```
 $ chat --role=analyst --jurisdiction=GDPR
@@ -108,51 +108,51 @@ answer:
   citations: [MSA-2024-03-11 s12.4, DPA-v2.1 s5]
 ```
 
-## Ship It
+## 交付成果（Ship It）
 
-`outputs/skill-production-rag.md` describes the deliverable. A regulated-domain chatbot deployed with compliance labels, passed through the rubric, observed with live drift monitoring.
+`outputs/skill-production-rag.md` 描述交付物：一个带合规标签部署的受监管领域聊天机器人，通过评分标准验收，并接受实时漂移监控。
 
-| Weight | Criterion | How it is measured |
+| 权重 | 标准 | 衡量方式 |
 |:-:|---|---|
-| 25 | RAGAS faithfulness + answer relevance | Online scores on the golden set (200 Q/A) |
-| 20 | Citation correctness | Fraction of answers with verifiable source anchors |
-| 20 | Guardrail coverage | Llama Guard 4 pass rate + jailbreak suite results |
-| 20 | Cost / latency engineering | Prompt-cache hit rate, p95 latency, $/query |
-| 15 | Drift monitoring dashboard | Phoenix live dashboard with weekly retrieval-quality trend |
+| 25 | RAGAS 忠实度 + 答案相关性 | 黄金集（200 组问答）上的在线评分 |
+| 20 | 引用正确性 | 具有可验证来源锚点的答案比例 |
+| 20 | 防护覆盖率 | Llama Guard 4 通过率 + 越狱套件结果 |
+| 20 | 成本／延迟工程 | 提示词缓存命中率、p95 延迟、每查询美元成本 |
+| 15 | 漂移监控仪表盘 | Phoenix 实时仪表盘，呈现每周检索质量趋势 |
 | **100** | | |
 
-## Exercises
+## 练习（Exercises）
 
-1. Build a second corpus slice under a different jurisdiction (e.g., HIPAA alongside GDPR). Demonstrate role+jurisdiction filtering preventing cross-leak on a 20-question cross-jurisdiction probe.
+1. 在不同司法管辖区下构建第二份语料切片，例如在 GDPR 之外增加 HIPAA。通过 20 个跨司法管辖区探测问题，展示角色与司法管辖区过滤能够阻止交叉泄露。
 
-2. Measure prompt-cache hit rate over a week of production traffic. Identify which queries break the cache prefix. Restructure.
+2. 测量一周生产流量的提示词缓存命中率。识别哪些查询破坏缓存前缀，重组结构。
 
-3. Add multi-turn memory with a 10k-token summary buffer. Measure whether faithfulness drops as the conversation grows.
+3. 增加带一万词元摘要缓冲区的多轮记忆。测量忠实度是否随对话增长而下降。
 
-4. Swap Claude Sonnet 4.7 for Llama 3.3 70B self-hosted. Measure $/query and faithfulness delta.
+4. 将 Claude Sonnet 4.7 替换为自托管 Llama 3.3 70B。测量每查询美元成本与忠实度变化。
 
-5. Add an "unsure" mode: if top reranked scores are below a threshold, the agent says "I do not have confident citations" instead of answering. Measure false-confidence reduction.
+5. 增加“不确定”模式：若重排序最高分低于阈值，智能体不作答，而是说“我没有足够可信的引用”。测量错误自信减少多少。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语 | 常见说法 | 实际含义 |
 |------|-----------------|------------------------|
-| Prompt caching | "Cached system + context" | Claude/OpenAI feature: cached prefix tokens discounted 60-90% on hit |
-| RAGAS | "RAG evaluator" | Automated scoring of faithfulness, answer relevance, context precision |
-| Golden set | "Labeled eval" | 200+ expert-labeled Q/A with citations; the ground truth |
-| Jurisdiction tag | "Compliance label" | GDPR/HIPAA/SOC2 scope attached to chunks; enforced by retrieval filter |
-| Citation faithfulness | "Grounded answer rate" | Fraction of claims backed by retrievable source spans |
-| Drift | "Retrieval quality decay" | Weekly change in nDCG or citation score; alert threshold 5% |
-| Red team | "Adversarial eval" | Pre-release jailbreak, PII extraction, off-domain probes |
+| 提示词缓存（Prompt Caching） | “缓存系统提示词 + 上下文” | Claude/OpenAI 功能：命中时，已缓存前缀词元的费用降低 60–90% |
+| RAGAS | “RAG 评估器” | 自动评定忠实度、答案相关性和上下文精确率 |
+| 黄金集（Golden Set） | “已标注评估集” | 200 多组专家标注的带引用问答，作为真实参考标准（Ground Truth） |
+| 司法管辖区标签（Jurisdiction Tag） | “合规标签” | 附在分块上的 GDPR/HIPAA/SOC2 适用范围，由检索过滤器强制执行 |
+| 引用忠实度（Citation Faithfulness） | “有据回答率” | 有可检索来源片段支持的论断比例 |
+| 漂移（Drift） | “检索质量衰退” | nDCG 或引用评分的每周变化；告警阈值 5% |
+| 红队测试（Red Team） | “对抗评估” | 发布前的越狱、PII 提取、领域外问题探测 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [Harvey AI](https://www.harvey.ai) — reference legal production stack
-- [Glean enterprise search](https://www.glean.com) — reference RAG at enterprise scale
-- [Mendable documentation](https://mendable.ai) — developer-docs RAG reference
-- [LlamaCloud Parse + Index](https://docs.cloud.llamaindex.ai/llamaparse/getting_started) — managed ingestion
-- [Anthropic prompt caching](https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching) — the cost-lever reference
-- [RAGAS 0.2 documentation](https://docs.ragas.io/) — the canonical RAG eval framework
-- [Arize Phoenix](https://github.com/Arize-ai/phoenix) — reference drift observability
-- [Llama Guard 4](https://www.llama.com/docs/model-cards-and-prompt-formats/llama-guard-4/) — 2026 safety classifier
-- [NeMo Guardrails v0.12](https://docs.nvidia.com/nemo-guardrails/) — policy rail framework
+- [Harvey AI](https://www.harvey.ai)：法律领域生产技术栈参考
+- [Glean 企业搜索](https://www.glean.com)：企业规模 RAG 参考
+- [Mendable 文档](https://mendable.ai)：开发者文档 RAG 参考
+- [LlamaCloud 解析与索引（Parse + Index）](https://docs.cloud.llamaindex.ai/llamaparse/getting_started)：托管摄取
+- [Anthropic 提示词缓存](https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching)：成本优化参考
+- [RAGAS 0.2 文档](https://docs.ragas.io/)：典型 RAG 评估框架
+- [Arize Phoenix](https://github.com/Arize-ai/phoenix)：漂移可观测性参考
+- [Llama Guard 4](https://www.llama.com/docs/model-cards-and-prompt-formats/llama-guard-4/)：2026 安全分类器
+- [NeMo Guardrails v0.12](https://docs.nvidia.com/nemo-guardrails/)：策略防护规则框架

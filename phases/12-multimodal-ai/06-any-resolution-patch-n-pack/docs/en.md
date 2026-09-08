@@ -1,148 +1,148 @@
-# Any-Resolution Vision: Patch-n'-Pack and NaFlex
+# 任意分辨率视觉：分块打包与 NaFlex（Any-Resolution Vision: Patch-n'-Pack and NaFlex）
 
-> Real images are not 224x224 squares. A receipt is 9:16, a chart is 16:9, a medical scan might be 4096x4096, a mobile screenshot is 9:19.5. The pre-2024 VLM answer — resize everything to a fixed square — threw away the signal that makes OCR, document understanding, and high-resolution scene parsing work. NaViT (Google, 2023) showed you could pack variable-resolution patches into a single transformer batch with block-diagonal masking. Qwen2-VL's M-RoPE (2024) dropped absolute positional tables entirely. LLaVA-NeXT's AnyRes tiled high-resolution images into a base + sub-images. SigLIP 2's NaFlex variant (2025) is now the default encoder for open VLMs that want a single checkpoint to serve every aspect ratio. This lesson implements patch-n'-pack end to end.
+> 真实图像不是 224x224 的正方形。收据是 9:16，图表是 16:9，医学扫描可能为 4096x4096，手机截图是 9:19.5。2024 年以前 VLM 的答案是把一切缩放成固定正方形，这丢掉了 OCR、文档理解和高分辨率场景解析所需的信号。NaViT（Google，2023）表明，可以通过块对角掩码（Block-diagonal masking），将可变分辨率的图像块打包到单个变换器批次。Qwen2-VL 的 M-RoPE（2024）完全去掉绝对位置表。LLaVA-NeXT 的 AnyRes 将高分辨率图像分成基础图像与子图。SigLIP 2 的 NaFlex 变体（2025）如今是开放 VLM 希望用单一检查点服务所有宽高比时的默认编码器。本课将端到端实现分块打包（Patch-n'-pack）。
 
 **Type:** Build
-**Languages:** Python (stdlib, patch packer + block-diagonal mask)
-**Prerequisites:** Phase 12 · 01 (ViT patches), Phase 12 · 05 (LLaVA)
-**Time:** ~120 minutes
+**Languages:** Python（标准库，图像块打包器 + 块对角掩码）
+**Prerequisites:** 阶段 12 · 01（ViT 图像块）、阶段 12 · 05（LLaVA）
+**Time:** ~120 分钟
 
-## Learning Objectives
+## 学习目标（Learning Objectives）
 
-- Pack patches from a batch of variable-resolution images into one sequence and build the block-diagonal attention mask.
-- Pick between AnyRes tiling (LLaVA-NeXT), NaFlex (SigLIP 2), and M-RoPE (Qwen2-VL) for a given task.
-- Compute token budgets for OCR, charts, and photography without resizing.
-- Name the three failure modes of square-resize: squished text, cropped content, wasted tokens on padding.
+- 将一批可变分辨率图像的图像块打包为一个序列，并构建块对角注意力掩码。
+- 根据任务，在 AnyRes 分块（LLaVA-NeXT）、NaFlex（SigLIP 2）和 M-RoPE（Qwen2-VL）之间选择。
+- 不缩放图像，计算 OCR、图表和摄影图像的词元预算。
+- 说出正方形缩放的三种失败模式：文字挤压、内容裁切、词元浪费在填充上。
 
-## The Problem
+## 问题（The Problem）
 
-Transformers expect a sequence. A batch is a stack of sequences the same length. If your images are 224x224, you get 196 patch tokens every time, padding not required, job done. Train on 224, infer on 224, never think about resolution again.
+变换器要求序列。批次是相同长度序列的堆叠。如果图像为 224x224，每次都会得到 196 个图像块词元，无需填充，问题就解决了。在 224 上训练，在 224 上推理，再也不用考虑分辨率。
 
-The world does not cooperate. Documents are portrait (8.5x11 inches, 2:3-ish). Chart screenshots are landscape (16:9). Receipts are tall and thin (1:3). Medical imaging ships at 2048x2048 or larger. Mobile device screenshots are 1170x2532 (0.46:1).
+现实并不配合。文档是竖版（8.5x11 英寸，约 2:3）；图表截图是横版（16:9）；收据又高又窄（1:3）；医学影像为 2048x2048 或更大；移动设备截图是 1170x2532（0.46:1）。
 
-Three pre-2024 options and why each fails:
+2024 年前的三种选择，以及各自为何失败：
 
-1. Resize to a fixed square (224x224 or 336x336). The squish distorts text and faces. The downscale destroys chart labels and OCR content. Standard practice until LLaVA-1.5.
-2. Crop to a fixed aspect ratio. You throw away most of the image, and picking the crop location is its own vision problem.
-3. Pad to the longest side. Fixes distortion but wastes 50%+ of tokens on padding for portrait images. Quadratic attention cost on all those pad tokens.
+1. 缩放为固定正方形（224x224 或 336x336）。挤压会扭曲文字和人脸，下采样会破坏图表标签与 OCR 内容。直到 LLaVA-1.5，这仍是标准做法。
+2. 裁剪到固定宽高比。大部分图像被丢弃，而选择裁剪位置本身就是一个视觉问题。
+3. 按最长边填充。修复了失真，但竖版图像有 50%+ 的词元浪费在填充上，而且所有填充词元都产生二次注意力开销。
 
-The 2024-2025 answer: let the transformer eat patches at the image's native resolution, and figure out how to pack a heterogeneous batch into one sequence without wasted compute.
+2024–2025 年的答案是：让变换器按图像原生分辨率接收图像块，再研究如何将异构批次打包为一个序列，避免浪费计算。
 
-## The Concept
+## 概念（The Concept）
 
-### NaViT and patch-n'-pack
+### NaViT 与分块打包（NaViT and patch-n'-pack）
 
-NaViT (Dehghani et al., 2023) was the paper that showed this works at scale. The idea is mechanical:
+NaViT（Dehghani 等人，2023）证明了这种方案在大规模下有效。思路很直接：
 
-1. For each image in the batch, compute its native patch grid at a chosen patch size (say 14).
-2. Flatten each image's patches into its own variable-length sequence.
-3. Concatenate all images' patches into one long sequence for the batch.
-4. Build a block-diagonal attention mask so image A's patches only attend within image A.
-5. Carry per-patch position information (2D RoPE or fractional position embeddings).
+1. 对批次中每张图像，以选定图像块大小（例如 14）计算原生图像块网格。
+2. 将每张图像的图像块展平为各自的变长序列。
+3. 将所有图像的图像块拼接为整个批次的一个长序列。
+4. 构建块对角注意力掩码，使图像 A 的图像块只能关注图像 A 内部。
+5. 携带每个图像块的位置信息（二维 RoPE 或分数位置嵌入）。
 
-A batch of three images at 336x336 (576 tokens), 224x224 (256 tokens), and 448x336 (768 tokens) becomes one 1600-token sequence with a 1600x1600 block-diagonal mask. No padding. No wasted compute. The transformer handles arbitrary aspect ratios.
+包含 336x336（576 词元）、224x224（256 词元）和 448x336（768 词元）三张图像的批次，变成一个 1600 词元序列，配有 1600x1600 块对角掩码。无需填充，没有浪费的计算，变换器可以处理任意宽高比。
 
-NaViT also introduced fractional patch dropping during training — drop 50% of patches at random across the batch — which both regularizes and speeds training. SigLIP 2 inherited this.
+NaViT 还引入训练时按比例丢弃图像块：在整个批次中随机丢弃 50% 的图像块，同时实现正则化和训练加速。SigLIP 2 继承了这一方法。
 
-### AnyRes (LLaVA-NeXT)
+### AnyRes（LLaVA-NeXT）
 
-LLaVA-NeXT's AnyRes is the pragmatic alternative. Given a high-resolution image and a fixed encoder (CLIP or SigLIP at 336), tile the image:
+LLaVA-NeXT 的 AnyRes 是务实的替代方案。给定高分辨率图像和固定编码器（分辨率 336 的 CLIP 或 SigLIP），对图像分块：
 
-1. Pick a grid layout from a predefined set — (1x1), (1x2), (2x1), (1x3), (3x1), (2x2), etc. — that best fits the image's aspect ratio.
-2. Tile the full image into the grid; each tile becomes a 336x336 crop.
-3. Also produce a thumbnail: the whole image resized to 336x336 as a global-context token.
-4. Encode every tile through the frozen 336-encoder. Concatenate the tile tokens + thumbnail tokens.
+1. 从预定义集合中选择最符合图像宽高比的网格布局，例如 (1x1)、(1x2)、(2x1)、(1x3)、(3x1)、(2x2) 等。
+2. 将完整图像切入网格，每块成为一张 336x336 裁剪图。
+3. 另外生成缩略图：将整张图像缩放为 336x336，作为全局上下文词元。
+4. 用冻结的 336 编码器编码每块，拼接各块词元与缩略图词元。
 
-For a 672x672 image at 2x2 grid plus thumbnail: 4 * 576 + 576 = 2880 visual tokens. Expensive but effective — the LLM sees both local detail and global context.
+对于采用 2x2 网格加缩略图的 672x672 图像：4 * 576 + 576 = 2880 个视觉词元。开销大但有效，LLM 同时看到局部细节与全局上下文。
 
-AnyRes is the route of choice when your encoder is frozen and only supports one resolution. It explodes token count for large images (a 1344x1344 image at 4x4 grid is 9216 + 576 ≈ 9800 tokens, which fills most of a 8k LLM context).
+编码器冻结且只支持单一分辨率时，AnyRes 是首选路径。大图像会导致词元数量暴涨：1344x1344 图像采用 4x4 网格时，产生 9216 + 576 ≈ 9800 词元，填满 8k LLM 上下文的大部分。
 
-### M-RoPE (Qwen2-VL)
+### M-RoPE（Qwen2-VL）
 
-Qwen2-VL introduced Multimodal Rotary Position Embedding. Instead of NaViT's fractional positions or AnyRes's tile-and-thumbnail, each patch carries a 3D position (temporal, height, width). The query/key rotations handle arbitrary H, W, and temporal length.
+Qwen2-VL 引入多模态旋转位置嵌入（Multimodal Rotary Position Embedding）。不用 NaViT 的分数位置或 AnyRes 的分块加缩略图，每个图像块携带三维位置（时间、高度、宽度）。查询/键旋转处理任意 H、W 和时间长度。
 
-M-RoPE ships native dynamic resolution without retraining. At inference you feed any HxW image, the patch embedder produces H/14 x W/14 tokens, each token gets its (t=0, r=row, c=col) position, RoPE rotates attention with the right frequencies, done. Qwen2.5-VL and Qwen3-VL continue this. InternVL3's V2PE is the same idea with variable encoding per modality.
+M-RoPE 无需重新训练就提供原生动态分辨率。推理时输入任意 HxW 图像，图像块嵌入器生成 H/14 x W/14 个词元，每个词元获得 (t=0, r=row, c=col) 位置，RoPE 用正确频率旋转注意力，即可完成。Qwen2.5-VL 和 Qwen3-VL 延续这一方法。InternVL3 的 V2PE 采用相同思路，为不同模态使用可变编码。
 
-Unlike AnyRes, M-RoPE is O(H x W / P^2) tokens at native resolution — no multiplicative tile overhead. Unlike NaViT, it still expects a single image per forward. Batching across resolutions still needs patch-n'-pack on top.
+与 AnyRes 不同，M-RoPE 在原生分辨率下产生 O(H x W / P^2) 个词元，没有乘法式分块开销。与 NaViT 不同，它仍要求每次前向传播只处理单张图像。跨分辨率批处理仍需叠加分块打包。
 
-### NaFlex (SigLIP 2)
+### NaFlex（SigLIP 2）
 
-NaFlex is the SigLIP 2 checkpoint's native-flex mode. A single model serves multiple sequence lengths (256, 729, 1024 tokens) at inference. Internally it uses NaViT-style patch-n'-pack during training and absolute fractional positions per patch. The selling point: one checkpoint, pick your token budget at inference based on the task.
+NaFlex 是 SigLIP 2 检查点的原生灵活模式。单个模型在推理时支持多种序列长度（256、729、1024 词元）。内部在训练时采用 NaViT 式分块打包，以及逐图像块的绝对分数位置。优势是一个检查点，在推理时按任务选择词元预算。
 
-For a semantic task (classification, retrieval), 256 tokens. For OCR or chart understanding, 1024 tokens. No retraining.
+语义任务（分类、检索）使用 256 词元，OCR 或图表理解使用 1024 词元。无需重新训练。
 
-### The packing mask
+### 打包掩码（The packing mask）
 
-The block-diagonal mask is where most implementations stumble. For a packed sequence of length `N_total` covering images `i=0..B-1` with lengths `n_i`, the mask `M` of shape `(N_total, N_total)` is 1 if both indices fall in the same image's block, else 0. You can build it from a cumulative length list:
+块对角掩码是多数实现容易出错的地方。对于长度为 `N_total`、涵盖图像 `i=0..B-1`、各自长度为 `n_i` 的打包序列，形状为 `(N_total, N_total)` 的掩码 `M` 在两个索引落入同一图像块区间时取 1，否则取 0。可从累积长度列表构建：
 
 ```
 offsets = [0, n_0, n_0+n_1, ..., N_total]
 M[i, j] = 1 iff there exists b where offsets[b] <= i < offsets[b+1] and offsets[b] <= j < offsets[b+1]
 ```
 
-This is one line in PyTorch with `torch.block_diag` or an explicit gather. FlashAttention's variable-length path (`cu_seqlens`) skips the mask entirely and attends within sequences using the cumulative-length tensor directly — ~10x faster than a dense mask for typical batches.
+PyTorch 中用 `torch.block_diag` 或显式收集一行即可实现。FlashAttention 的变长路径（`cu_seqlens`）完全跳过掩码，直接用累积长度张量在序列内部计算注意力；典型批次上比稠密掩码快约 10 倍。
 
-### Token budgets
+### 词元预算（Token budgets）
 
-Pick your strategy by task:
+按任务选择策略：
 
-- OCR / documents: 1024-4096 tokens. SigLIP 2 NaFlex at 1024, or AnyRes 3x3 + thumbnail.
-- Charts and UI: 729-1024 tokens at 384-448 native. Qwen2.5-VL dynamic resolution with max pixels cap.
-- Natural photos: 256-576 tokens is fine. The downstream LLM sees enough. Pay for tokens where content density is high.
-- Video: 64-128 tokens per frame after spatial pooling, 2-8 FPS. Lesson 12.17 covers this.
+- OCR / 文档：1024-4096 词元。使用 1024 词元的 SigLIP 2 NaFlex，或 AnyRes 3x3 + 缩略图。
+- 图表和 UI：在原生 384-448 分辨率下使用 729-1024 词元。采用带最大像素上限的 Qwen2.5-VL 动态分辨率。
+- 自然照片：256-576 词元足够，下游 LLM 已能看到足够信息。在内容密度高的地方付出词元成本。
+- 视频：空间池化后每帧 64-128 词元，2-8 FPS。第 12.17 课讨论此项。
 
-The 2026 production rule: pick a per-task max-pixels cap, encode at native aspect ratio up to that cap, pack the batch, and skip padding. Qwen2.5-VL exposes `min_pixels` and `max_pixels` for exactly this knob.
+2026 年生产规则：按任务选定最大像素上限，在不超过上限时按原生宽高比编码，打包批次，并跳过填充。Qwen2.5-VL 提供的 `min_pixels` 和 `max_pixels` 正是这一调节手段。
 
 ```figure
 mm-patch-n-pack
 ```
 
-## Use It
+## 实际应用（Use It）
 
-`code/main.py` implements patch-n'-pack for a heterogeneous batch of images with integer pixel coordinates. It:
+`code/main.py` 为具有整数像素坐标的异构图像批次实现分块打包。它会：
 
-- Takes a list of (H, W) image sizes.
-- Computes each image's patch sequence length at patch size 14.
-- Packs them into one sequence of total length `sum(n_i)`.
-- Builds the block-diagonal attention mask (dense, for clarity).
-- Compares the packed cost vs square-resize and AnyRes tiling.
-- Prints a token budget table for a mixed batch (receipt, chart, screenshot, photo).
+- 接收图像尺寸 (H, W) 列表。
+- 计算图像块大小为 14 时每张图像的序列长度。
+- 将其打包为总长度 `sum(n_i)` 的单一序列。
+- 构建块对角注意力掩码（为清晰起见使用稠密形式）。
+- 比较打包与正方形缩放、AnyRes 分块的成本。
+- 为混合批次（收据、图表、截图、照片）打印词元预算表。
 
-Run it. The numbers that drop out are the reason every 2026 open VLM uses patch-n'-pack.
+运行它。得到的数字解释了为什么每个 2026 年开放 VLM 都使用分块打包。
 
-## Ship It
+## 交付成果（Ship It）
 
-This lesson produces `outputs/skill-resolution-budget-planner.md`. Given a mixed-aspect-ratio workload (OCR, charts, photos, video frames) and a total-token budget, it picks the right strategy (NaFlex, AnyRes, M-RoPE, or fixed-square) and emits a per-request configuration. Use this skill when you are sizing a VLM for a product — it prevents the silent 10x token blowup that kills latency budgets.
+本课交付 `outputs/skill-resolution-budget-planner.md`。给定混合宽高比工作负载（OCR、图表、照片、视频帧）和总词元预算，它选择合适策略（NaFlex、AnyRes、M-RoPE 或固定正方形），并输出逐请求配置。为产品确定 VLM 规模时使用此技能，避免悄然发生的 10 倍词元增长耗尽延迟预算。
 
-## Exercises
+## 练习（Exercises）
 
-1. A receipt is 600x1500 (1:2.5). At patch size 14, how many native-resolution tokens? How many after square-resize to 336? Which loses more OCR accuracy in practice?
+1. 收据尺寸为 600x1500（1:2.5）。图像块大小为 14 时，原生分辨率产生多少词元？正方形缩放到 336 后是多少？实践中哪种损失更多 OCR 准确率？
 
-2. Build the block-diagonal mask for a batch of four images with lengths 256, 576, 729, 1024. Verify the attention matrix is 2585x2585 and has exactly `256^2 + 576^2 + 729^2 + 1024^2` non-zero entries.
+2. 为四张图像构建块对角掩码，其序列长度分别为 256、576、729、1024。验证注意力矩阵为 2585x2585，且非零元素恰好为 `256^2 + 576^2 + 729^2 + 1024^2` 个。
 
-3. For a 1792x896 image at patch 14, compare: (a) square-resize to 336 then encode, (b) AnyRes 2x1 + thumbnail, (c) M-RoPE at native. Which uses fewest tokens? Which preserves most detail?
+3. 对 1792x896 图像、图像块 14，比较：（a）正方形缩放到 336 再编码；（b）AnyRes 2x1 + 缩略图；（c）原生 M-RoPE。哪种词元最少？哪种保留细节最多？
 
-4. Implement fractional patch dropping: given a packed sequence, drop 50% of tokens uniformly at random, and update the block-diagonal mask accordingly. Measure the mask's sparsity change.
+4. 实现按比例丢弃图像块：给定打包序列，均匀随机丢弃 50% 词元，并相应更新块对角掩码。测量掩码稀疏度变化。
 
-5. Read Section 3.2 of the Qwen2-VL paper (arXiv:2409.12191). Describe in two sentences what `min_pixels` and `max_pixels` control and why both bounds matter.
+5. 阅读 Qwen2-VL 论文（arXiv:2409.12191）第 3.2 节。用两句话描述 `min_pixels` 和 `max_pixels` 控制什么，以及为什么上下界都重要。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语（Term） | 常见说法 | 准确含义 |
 |------|-----------------|------------------------|
-| Patch-n'-pack | "NaViT-style packing" | Concatenate variable-length patch sequences from different images into one batch dimension |
-| Block-diagonal mask | "Packing mask" | Attention mask that confines each image's patches to attend only to themselves, not neighbors in the pack |
-| AnyRes | "LLaVA-NeXT tiling" | Split a high-res image into a grid of fixed-size tiles plus a global thumbnail; encode every tile with a fixed encoder |
-| NaFlex | "SigLIP 2 native-flex" | Single SigLIP 2 checkpoint that serves 256/729/1024-token budgets at inference without retraining |
-| M-RoPE | "Multimodal RoPE" | 3D rotary position encoding (time, row, column) that handles arbitrary H, W, T without position tables |
-| cu_seqlens | "FlashAttention packing" | Cumulative-length tensor the FlashAttention varlen path uses instead of a dense block-diagonal mask |
-| min_pixels / max_pixels | "Resolution bounds" | Qwen2.5-VL per-request knobs capping token count on very small or very large inputs |
-| Visual token budget | "How many tokens per image" | Rough count of patch tokens emitted per image; sets the LLM's prompt budget and attention cost |
+| 分块打包（Patch-n'-pack） | “NaViT 式打包” | 将不同图像的变长图像块序列拼接到一个批次维度 |
+| 块对角掩码（Block-diagonal mask） | “打包掩码” | 将每张图像的图像块限制为只关注自身，而不关注打包序列中的相邻图像 |
+| AnyRes | “LLaVA-NeXT 分块” | 将高分辨率图像切成固定大小的网格块，加上全局缩略图；用固定编码器编码每块 |
+| NaFlex | “SigLIP 2 原生灵活模式” | 单个 SigLIP 2 检查点，无需重新训练就能在推理时服务 256/729/1024 词元预算 |
+| M-RoPE | “多模态 RoPE” | 三维旋转位置编码（时间、行、列），无需位置表即可处理任意 H、W、T |
+| cu_seqlens | “FlashAttention 打包” | FlashAttention 变长路径用于替代稠密块对角掩码的累积长度张量 |
+| min_pixels / max_pixels | “分辨率边界” | Qwen2.5-VL 的逐请求调节参数，约束极小或极大输入的词元数量 |
+| 视觉词元预算（Visual token budget） | “每张图像有多少词元” | 每图输出图像块词元的粗略数量，决定 LLM 提示词预算和注意力成本 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [Dehghani et al. — Patch n' Pack: NaViT (arXiv:2307.06304)](https://arxiv.org/abs/2307.06304)
-- [Wang et al. — Qwen2-VL (arXiv:2409.12191)](https://arxiv.org/abs/2409.12191)
-- [Laurençon et al. — What matters when building vision-language models? (Idefics2, arXiv:2405.02246)](https://arxiv.org/abs/2405.02246)
-- [Tschannen et al. — SigLIP 2 (arXiv:2502.14786)](https://arxiv.org/abs/2502.14786)
-- [Qwen Team — Qwen2.5-VL Technical Report (arXiv:2502.13923)](https://arxiv.org/abs/2502.13923)
+- [Dehghani 等人：《分块打包（Patch n' Pack）：NaViT》（arXiv:2307.06304）](https://arxiv.org/abs/2307.06304)
+- [Wang 等人：Qwen2-VL（arXiv:2409.12191）](https://arxiv.org/abs/2409.12191)
+- [Laurençon 等人：《构建视觉语言模型时，什么最重要？（What matters when building vision-language models?）》（Idefics2，arXiv:2405.02246）](https://arxiv.org/abs/2405.02246)
+- [Tschannen 等人：SigLIP 2（arXiv:2502.14786）](https://arxiv.org/abs/2502.14786)
+- [Qwen 团队：《Qwen2.5-VL 技术报告（Qwen2.5-VL Technical Report）》（arXiv:2502.13923）](https://arxiv.org/abs/2502.13923)

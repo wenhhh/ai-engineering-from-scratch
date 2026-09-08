@@ -2,38 +2,63 @@
   "questions": [
     {
       "stage": "pre",
-      "question": "What single architectural idea did AlexNet (2012) introduce that made training deep CNNs practical on GPUs?",
-      "options": ["Residual connections", "Depthwise separable convolutions", "Replacing tanh with ReLU, which does not saturate and speeds convergence by roughly 6x", "Batch normalization"],
+      "question": "AlexNet（2012）引入的哪一个架构想法，使在 GPU 上训练深层 CNN 成为可行方案？",
+      "options": [
+        "残差连接（Residual connections）",
+        "深度可分离卷积（Depthwise separable convolutions）",
+        "用 ReLU 替代 tanh；ReLU 不饱和，使收敛速度提高约 6 倍",
+        "批归一化（Batch normalization）"
+      ],
       "correct": 2,
-      "explanation": "AlexNet's biggest training speedup came from ReLU. Tanh saturates for large positive or negative inputs, which kills gradients and caps the depth you can train. ReLU is piecewise linear, does not saturate for positive inputs, and was the single change that took training from weeks to days. Dropout and GPU parallelism mattered, but ReLU is the one that unlocked depth."
+      "explanation": "AlexNet 最大的训练加速来自 ReLU。tanh 在较大的正负输入下会饱和，导致梯度消失，限制可训练深度。ReLU 是分段线性的，在正输入下不饱和；单是这一改动，就让训练从数周缩短到数天。随机失活和 GPU 并行也很重要，但真正使深度训练成为可能的是 ReLU。"
     },
     {
       "stage": "pre",
-      "question": "Why did VGG prefer stacks of 3x3 convolutions over a single larger kernel?",
-      "options": ["Two 3x3 convs cover the same 5x5 receptive field with fewer parameters (18C^2 vs 25C^2) and one extra ReLU between them", "3x3 convs are rotation-invariant; 5x5 is not", "Smaller kernels run faster on CPU", "Larger kernels cannot be trained with SGD"],
+      "question": "为什么 VGG 更倾向于堆叠 3x3 卷积，而不是使用一个更大的卷积核？",
+      "options": [
+        "两个 3x3 卷积覆盖相同的 5x5 感受野，参数更少（18C^2 对比 25C^2），中间还多一个 ReLU",
+        "3x3 卷积具有旋转不变性，而 5x5 没有",
+        "小卷积核在 CPU 上运行更快",
+        "大卷积核不能用随机梯度下降（SGD）训练"
+      ],
       "correct": 0,
-      "explanation": "Two stacked 3x3 convs see the same 5x5 patch as one 5x5 conv, but use fewer parameters (2 * 3 * 3 * C^2 = 18C^2 compared to 25C^2) and include an additional non-linearity. That extra ReLU increases expressive power. VGG turned this observation into an entire architecture with exactly one block type repeated."
+      "explanation": "两个堆叠的 3x3 卷积与一个 5x5 卷积观察相同的 5x5 图像块，但参数更少（2 * 3 * 3 * C^2 = 18C^2，对比 25C^2），且多一次非线性变换。额外的 ReLU 增强了表达能力。VGG 将这一观察发展为只重复一种模块的完整架构。"
     },
     {
       "stage": "post",
-      "question": "ResNet introduced residual connections as y = F(x) + x. What problem does this solve?",
-      "options": ["Vanishing activations in layers with ReLU", "Memory consumption during backprop", "The degradation problem — past ~20 plain conv layers, training loss starts getting worse because the optimizer struggles to learn an identity mapping through many non-linear layers", "Overfitting in the classifier head"],
+      "question": "ResNet 用 y = F(x) + x 引入残差连接，解决了什么问题？",
+      "options": [
+        "带 ReLU 的层中的激活消失",
+        "反向传播时的内存消耗",
+        "退化问题：超过约 20 个普通卷积层后，优化器难以通过众多非线性层学到恒等映射，训练损失开始变差",
+        "分类头过拟合"
+      ],
       "correct": 2,
-      "explanation": "Before ResNet, training loss started increasing past about 20 layers even though the network had more capacity — the degradation problem. A residual block can trivially represent identity by driving F to zero, giving the optimizer a safe default. With that escape hatch, every extra block can make the network slightly better, which is how 100+ layer networks became trainable."
+      "explanation": "在 ResNet 之前，网络超过约 20 层后，尽管容量更大，训练损失却开始上升，这就是退化问题。残差模块只需将 F 变为零，就能轻易表示恒等映射，为优化器提供稳妥的默认状态。有了这条退出路径，每个额外模块都可以让网络略有改善，于是 100 多层的网络成为可训练的。"
     },
     {
       "stage": "post",
-      "question": "In a ResNet BasicBlock with in_channels=64, out_channels=128, stride=2, what is the role of the shortcut branch?",
-      "options": ["It is a placeholder that is removed at inference time", "It is a max-pool that halves the spatial dimension", "It is always identity; the main branch handles the shape change", "It is a 1x1 conv with stride 2 that matches the output channels and spatial size of the main branch so the two can be added"],
+      "question": "在 in_channels=64、out_channels=128、stride=2 的 ResNet BasicBlock 中，捷径分支起什么作用？",
+      "options": [
+        "它是推理时会被移除的占位结构",
+        "它是将空间维度减半的最大池化",
+        "它始终是恒等映射，主分支负责形状变化",
+        "它是步幅为 2 的 1x1 卷积，使输出通道数和空间尺寸与主分支一致，从而能够相加"
+      ],
       "correct": 3,
-      "explanation": "When a block changes channel count or spatial stride, the identity path cannot be added directly to the main branch because shapes differ. The shortcut becomes a 1x1 conv with stride=2 and C_out output channels, optionally followed by batch norm. Pass-through identity is used only when in_c == out_c and stride == 1."
+      "explanation": "模块改变通道数或空间步幅时，恒等路径与主分支形状不同，不能直接相加。此时捷径变成 stride=2、输出通道数为 C_out 的 1x1 卷积，后面可接批归一化。只有 in_c == out_c 且 stride == 1 时，才使用直接通过的恒等映射。"
     },
     {
       "stage": "post",
-      "question": "ResNet-18 has ~11.7M parameters and matches or beats VGG-16 (138M params) on ImageNet. What does this imply about VGG?",
-      "options": ["VGG's kernels were too small to learn good features", "VGG was trained with a worse optimizer", "Most of VGG's parameters are wasted in the fully connected head and the redundant depth past the point where residual connections would let each layer contribute", "VGG's accuracy on ImageNet has been measured incorrectly"],
+      "question": "ResNet-18 约有 1,170 万参数，在 ImageNet 上达到或超过 VGG-16（1.38 亿参数）的表现。这说明 VGG 存在什么问题？",
+      "options": [
+        "VGG 的卷积核太小，无法学习好的特征",
+        "VGG 使用了较差的优化器训练",
+        "VGG 的多数参数浪费在全连接头和冗余深度上；若使用残差连接，这些深度中的每层本可继续作出贡献",
+        "VGG 的 ImageNet 准确率测量有误"
+      ],
       "correct": 2,
-      "explanation": "VGG-16's parameter count is dominated by its giant fully connected classifier (three dense layers on 25088 activations), and its plain deep stack cannot add layers as efficiently as a residual stack. ResNet-18 replaces the FC head with global average pool plus one linear layer and uses residual blocks, which together give roughly 12x parameter efficiency at similar accuracy."
+      "explanation": "VGG-16 的参数量主要来自巨大的全连接分类器：对 25088 个激活值使用三个全连接层。其普通深层堆叠也无法像残差堆叠那样有效地增加层数。ResNet-18 用全局平均池化加一个线性层替代全连接头，并使用残差模块，两者共同在相近准确率下带来约 12 倍的参数效率。"
     }
   ]
 }

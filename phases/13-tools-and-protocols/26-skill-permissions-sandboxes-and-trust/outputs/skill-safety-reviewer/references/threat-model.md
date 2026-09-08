@@ -1,13 +1,13 @@
-# Threat model
+# 威胁模型（Threat model）
 
-Review these boundaries independently:
+独立审查这些边界：
 
-- Authority: instructions cannot rewrite host permissions.
-- Filesystem: resolve the target and keep it inside the workspace root; reject symlink escape.
-- Commands: accept an argv array, deny shell metacharacters and destructive executables, and require an executable allowlist.
-- Network: require HTTPS and an exact origin allowlist. Normalize the effective port, so `https://api.example.test` and `https://api.example.test:443` match while port `8443` needs its own entry. Do not accept credentials in URL userinfo.
-- External content: treat retrieved text as data, never as policy or approval.
-- Secrets: detect likely secret-bearing payloads without logging their values.
-- Destructive actions: deny or require a recorded human approval according to host policy.
+- 权限：指令不能改写宿主权限。
+- 文件系统：解析目标并保持在工作区根内，拒绝符号链接逃逸。
+- 命令：接受 argv 数组，拒绝 shell 元字符和破坏性可执行文件，要求可执行文件允许列表。
+- 网络：要求 HTTPS 和精确来源允许列表。规范化有效端口，使 `https://api.example.test` 和 `https://api.example.test:443` 匹配，而端口 `8443` 需独立条目。不接受 URL userinfo 中的凭据。
+- 外部内容：将检索文本视为数据，绝不视为策略或批准。
+- 秘密：检测疑似含秘密载荷，不记录值。
+- 破坏性操作：按宿主策略拒绝，或要求已记录人工批准。
 
-An `allow` verdict means only that the simulated request satisfies the supplied policy. This bundle does not execute any action.
+`allow` 判定仅表示模拟请求满足提供的策略。本包不执行任何操作。

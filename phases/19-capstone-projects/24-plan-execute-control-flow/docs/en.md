@@ -1,111 +1,111 @@
-# Plan-Execute Control Flow
+# 规划与执行控制流（Plan-Execute Control Flow）
 
-> A plan that cannot survive a failure is a script. A script that can replan is an agent. Build the replanner first.
+> 无法应对失败的计划只是脚本。能够重新规划的脚本才是智能体。先构建重新规划器。
 
 **Type:** Build
 **Languages:** Python
-**Prerequisites:** Phase 13 lessons 01-07, Phase 14 lesson 01
-**Time:** ~90 minutes
+**Prerequisites:** 第 13 阶段第 01–07 课、第 14 阶段第 01 课
+**Time:** 约 90 分钟
 
-## Learning Objectives
-- Represent a plan as an ordered list of typed steps so the executor can reason about progress and outcome.
-- Execute steps sequentially with a controlled failure handoff back to the planner.
-- Replan from the current cursor with the prior error in the context so the next plan is informed.
-- Emit a plan diff on each revision so a downstream tracer or UI can show why the plan changed.
-- Enforce two budgets: a hard step ceiling and a hard replan ceiling.
+## 学习目标（Learning Objectives）
+- 将计划表示为类型化步骤的有序列表，让执行器能判断进度和结果。
+- 按顺序执行步骤，并在失败时受控地将处理权交回规划器。
+- 从当前游标（Cursor）重新规划，将上次错误放入上下文，使下一版计划有据可依。
+- 每次修订都发出计划差异（Plan Diff），让下游追踪器或用户界面展示计划为何改变。
+- 强制执行两项硬预算：步骤上限和重新规划次数上限。
 
 ```figure
 cg-plan-replan
 ```
 
-## Plan and execute, not chain-of-thought
+## 规划与执行，而非思维链（Plan and execute, not chain-of-thought）
 
-A chain-of-thought agent emits tokens and lets the loop guess where the tool call ends. A plan-and-execute agent emits a structured plan first, then executes each step deterministically. The plan is data the harness can introspect. The execution is the harness running that data through a dispatcher.
+思维链（Chain-of-Thought）智能体输出词元（Token），让循环猜测工具调用在哪里结束。规划与执行（Plan-and-Execute）智能体先输出结构化计划，再确定性地执行每一步。计划是运行框架（Harness）可以检查的数据；执行则是框架将这些数据交给分派器处理。
 
-Two pieces. A planner that produces a plan. An executor that runs the plan. The interesting work is what happens when the executor hits a failure. Three options:
+系统由两部分组成：生成计划的规划器（Planner），以及运行计划的执行器（Executor）。关键在于执行器遇到失败时如何处理，共有三种选择：
 
 ```text
-1. Abort         (return failed, surface the error)
-2. Skip          (mark step failed, continue with the rest)
-3. Replan        (hand the error to the planner, get a new plan from the cursor)
+1. 中止（Abort）   （返回失败，报告错误）
+2. 跳过（Skip）    （将步骤标记为失败，继续执行其余步骤）
+3. 重新规划（Replan）（将错误交给规划器，从游标位置获取新计划）
 ```
 
-Replan is the one that turns a script into an agent.
+重新规划让脚本成为智能体。
 
-## The Step shape
+## Step 结构（The Step shape）
 
 ```text
 Step
-  id              : int           (monotonic within a plan revision)
+  id              : int           （在同一计划修订版内单调递增）
   tool_name       : str
   args            : dict
-  expected_outcome: str           (planner's stated success condition)
+  expected_outcome: str           （规划器声明的成功条件）
   result          : Any | None
   error           : str | None
 ```
 
-`expected_outcome` is a short sentence the planner emits alongside the step. It is not enforced by the executor. It is for two things: the replanner reads it when revising the plan; the event stream emits it so a tracer can show "this step was supposed to do X."
+`expected_outcome` 是规划器随步骤输出的一句简短描述，执行器并不强制检查。它有两个用途：重新规划器修订计划时读取它；事件流发送它，让追踪器展示“这一步原本应完成 X”。
 
-## The planner shape
+## 规划器结构（The planner shape）
 
 ```python
 def planner(goal: str, history: list[Step], last_error: str | None) -> list[Step]:
     ...
 ```
 
-A pure function. `goal` is the user goal. `history` is the steps already executed (with results and errors filled in). `last_error` is None on the first call and the most recent failure message on every subsequent call. The planner returns the next plan starting from the cursor.
+这是一个纯函数（Pure Function）。`goal` 是用户目标；`history` 是已经执行的步骤，填有结果和错误；`last_error` 首次调用时为 None，后续每次调用时为最近的失败消息。规划器返回从当前游标开始的下一份计划。
 
-The planner does not know about the executor. It does not know about retries. It does not know about timeouts. It produces a plan. That is all.
+规划器不知道执行器、重试或超时。它只负责生成计划。
 
-## The executor
+## 执行器（The executor）
 
-The executor is a small state machine. Each step runs through the dispatcher. The outcome is one of three things: success, failure-replannable, failure-fatal. Replannable failures hand back to the planner. Fatal failures (budget exceeded, replan ceiling hit) return a `FAILED` session result.
+执行器是一个小型状态机（State Machine）。每个步骤通过分派器运行，结果分为三种：成功、可重新规划的失败、致命失败。可重新规划的失败会交回规划器；致命失败（预算耗尽、达到重新规划上限）返回 `FAILED` 会话结果。
 
 ```mermaid
 stateDiagram-v2
     [*] --> EXEC
-    EXEC --> NEXT: success
+    EXEC --> NEXT: 成功
     NEXT --> EXEC: n+1 < len(plan)
     NEXT --> DONE: n+1 == len(plan)
-    EXEC --> REPLAN: failure
-    REPLAN --> EXEC: new plan, replans_used < max_replans
+    EXEC --> REPLAN: 失败
+    REPLAN --> EXEC: 新计划，replans_used < max_replans
     REPLAN --> FAILED: replans_used >= max_replans
     FAILED --> [*]
     DONE --> [*]
 ```
 
-## Plan diffs on revision
+## 修订时的计划差异（Plan diffs on revision）
 
-When the planner returns a new plan after a failure, the executor emits a `plan.diff` event with three fields.
-
-```text
-removed: list of step ids that were in the old plan and are not in the new
-added  : list of step ids in the new plan that were not in the old
-revised: list of step ids whose tool_name or args changed
-```
-
-A tracer or UI can render this as a strikethrough on the removed steps and a highlight on the added ones. The point is not the diff format. The point is that revision is a visible event, not a silent rewrite.
-
-## Two budgets, both hard
-
-`max_steps` caps total step executions across the whole session, including replans. Default is twelve. A linear five-step plan that replans twice and adds three steps each time hits sixteen executions and would exceed the budget. The executor will refuse the replan and return FAILED.
-
-`max_replans` caps the number of times the planner is called after the first plan. Default is five. This is the more important limit. A planner that returns the same broken plan five times in a row would otherwise loop until the step budget catches it. Capping replans makes the failure faster and the reason clearer.
-
-## The deterministic planner in this lesson
-
-We do not call a model in this lesson. The lesson ships a deterministic planner that picks a plan based on `last_error`.
+失败后，规划器返回新计划，执行器便发出包含三个字段的 `plan.diff` 事件。
 
 ```text
-last_error is None    -> emit a four-step plan
-last_error matches X  -> emit a three-step plan that routes around X
-last_error matches Y  -> emit a two-step plan that gives up gracefully
-otherwise             -> return [] (signals nothing to replan)
+removed: 旧计划中存在、新计划中不存在的步骤标识列表
+added  : 新计划中存在、旧计划中不存在的步骤标识列表
+revised: tool_name 或 args 已改变的步骤标识列表
 ```
 
-This is enough to test the executor's behavior on every transition path: success, replan-once, replan-twice, replan-exhaustion, and step-budget exhaustion.
+追踪器或用户界面可以给删除的步骤加删除线，高亮新增步骤。重点不在差异格式，而在于修订是可见事件，不是静默改写。
 
-## Result shape
+## 两项硬预算（Two budgets, both hard）
+
+`max_steps` 限制整个会话中的总步骤执行次数，包括重新规划后的执行，默认十二次。一个线性五步计划重新规划两次，每次增加三步，会达到十六次执行并超出预算。执行器会拒绝重新规划并返回 FAILED。
+
+`max_replans` 限制首次计划之后调用规划器的次数，默认五次。这是更重要的限制。若规划器连续五次返回同一份有问题的计划，没有此限制就会一直循环，直到触及步骤预算。限制重新规划次数，能更快失败，也让原因更明确。
+
+## 本课的确定性规划器（The deterministic planner in this lesson）
+
+本课不调用模型，而是提供一个根据 `last_error` 选择计划的确定性规划器（Deterministic Planner）。
+
+```text
+last_error is None    -> 输出四步计划
+last_error 匹配 X     -> 输出绕过 X 的三步计划
+last_error 匹配 Y     -> 输出有序放弃的两步计划
+其他情况              -> 返回 []（表示无可重新规划的内容）
+```
+
+这足以测试执行器的每条转换路径：成功、重新规划一次、重新规划两次、重新规划预算耗尽和步骤预算耗尽。
+
+## 结果结构（Result shape）
 
 ```text
 SessionResult
@@ -116,16 +116,16 @@ SessionResult
   events      : list[Event]
 ```
 
-The harness loop from lesson twenty can read this directly. The dispatcher from lesson twenty-three is what executes each step. The registry from lesson twenty-one validates each step's args. The transport from lesson twenty-two would surface this whole flow over JSON-RPC to a model client.
+第 20 课的框架循环可以直接读取此结果。第 23 课的分派器执行每个步骤，第 21 课的注册表校验各步骤参数，第 22 课的传输层则可以通过 JSON-RPC 将整个流程暴露给模型客户端。
 
-## How to read the code
+## 代码阅读指南（How to read the code）
 
-`code/main.py` defines `PlanExecuteAgent`, `Step`, `PlanDiff`, `SessionResult`, and the deterministic planner. The executor is a single `run(goal)` method that returns a `SessionResult`. The plan diff is computed by comparing step ids and `(tool_name, args)` tuples.
+`code/main.py` 定义 `PlanExecuteAgent`、`Step`、`PlanDiff`、`SessionResult` 及确定性规划器。执行器是单个 `run(goal)` 方法，返回 `SessionResult`。计划差异通过比较步骤标识和 `(tool_name, args)` 元组计算。
 
-`code/tests/test_agent.py` covers a linear success, a mid-plan failure that replans once, replan exhaustion that returns `failed:replan_budget`, step-budget exhaustion, and the plan-diff event format.
+`code/tests/test_agent.py` 覆盖线性成功、计划中途失败后重新规划一次、重新规划预算耗尽并返回 `failed:replan_budget`、步骤预算耗尽，以及计划差异事件格式。
 
-## Going further
+## 进一步探索（Going further）
 
-Two extensions you will want once you wire this to a real model. First, partial-plan caching: when a plan succeeds for the first three of six steps and then fails, you do not want to re-run the first three. The executor already keeps history; the planner just needs to read it. Second, parallel branches: the current executor is strictly sequential. A planner that emits an independent branch (`gather_step` instead of `next_step`) can run two tool calls concurrently through the dispatcher.
+接入真实模型后，你可能需要两项扩展。第一，部分计划缓存（Partial-Plan Caching）：六步计划的前三步成功后才失败时，不应重新执行前三步。执行器已经保留历史，规划器只需读取。第二，并行分支（Parallel Branch）：当前执行器严格顺序执行；若规划器输出独立分支（用 `gather_step` 而非 `next_step`），就能通过分派器并发运行两个工具调用。
 
-Both add real complexity. Both are easier to add once the linear executor is pinned. That is what this lesson does.
+两项扩展都会增加实际复杂度。在线性执行器的行为确定之后再添加，会更容易。本课正是先完成这项基础。

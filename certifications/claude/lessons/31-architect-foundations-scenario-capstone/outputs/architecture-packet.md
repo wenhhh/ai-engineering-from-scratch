@@ -1,53 +1,53 @@
-# Architect Foundations Scenario Packet
+# 架构师基础场景材料包（Architect Foundations Scenario Packet）
 
-Complete this packet for one original scenario, then write a delta for each of the other five public context categories. Replace bracketed prompts with evidence.
+为一个原创场景完成此材料包，然后为另外五种公开情境类别分别撰写差异说明。用证据替换方括号内的提示。
 
-## 1. Scenario Boundary
+## 1. 场景边界（Scenario Boundary）
 
 ```text
-Scenario ID:
-Public context category:
-Decision supported:
-Users and affected people:
-Allowed actions:
-Prohibited actions:
-Input sources and sensitivity:
-Latency and volume:
-Failure consequence:
-Human decision authority:
+场景 ID：
+公开情境类别：
+支持的决策：
+用户和受影响的人：
+允许的操作：
+禁止的操作：
+输入来源及敏感程度：
+延迟与处理量：
+故障后果：
+人工决策权限：
 ```
 
-## 2. Agentic Architecture and Orchestration
+## 2. 智能体架构与编排（Agentic Architecture and Orchestration）
 
-### Dependency graph
+### 依赖图（Dependency graph）
 
 ```mermaid
 flowchart LR
-    A["Intake"] --> B["Bounded analysis"]
-    B --> C["Validated candidate"]
-    C --> D["Independent review"]
-    D --> E["Human decision"]
+    A["受理"] --> B["限定范围的分析"]
+    B --> C["已校验的候选结果"]
+    C --> D["独立审查"]
+    D --> E["人工决策"]
 ```
 
-| Task ID | Reason for separate context | Prerequisites | Allowed tools | Complete | Partial | Blocked |
+| 任务 ID | 单独使用上下文的理由 | 前置条件 | 允许的工具 | 完成 | 部分完成 | 阻塞 |
 |---|---|---|---|---|---|---|
-| [task] | [isolation, specialization, parallelism, or review] | [IDs] | [names] | [gate] | [named gaps] | [required state] |
+| [任务] | [隔离、专业化、并行或审查] | [ID] | [名称] | [门禁] | [明确的缺口] | [所需状态] |
 
 ```text
-Deterministic prerequisites:
-Adaptive decisions:
-Parallelism limit:
-Merge identity and conflict rules:
-Resume, fork, and compaction policy:
+确定性的前置条件：
+自适应决策：
+并行度上限：
+合并时的标识与冲突规则：
+恢复、分叉和压缩政策：
 ```
 
-## 3. Tool and MCP Contracts
+## 3. 工具与 MCP 契约（Tool and MCP Contracts）
 
-| Tool or primitive | Use | Do not use | Closed input schema | Result and error | Auth scope | Side effect |
+| 工具或原语 | 使用条件 | 不使用的条件 | 封闭输入模式 | 结果与错误 | 授权范围 | 副作用 |
 |---|---|---|---|---|---|---|
-| [name] | [positive rule] | [negative rule] | [object schema] | [complete, partial, blocked] | [scope] | [none or bounded write] |
+| [名称] | [正向规则] | [反向规则] | [对象模式] | [complete, partial, blocked] | [范围] | [无副作用或受限写入] |
 
-Transcribe each input boundary into the validator packet as `input_schema`. It must name every property type, require only declared properties, and set `additionalProperties` to `false`. A no-argument tool still uses a closed object schema with empty `properties` and `required` arrays.
+将每项输入边界以 `input_schema` 的形式写入校验器材料包。必须明确每个属性的类型，只将已声明属性列为必填项，并把 `additionalProperties` 设为 `false`。无参数工具仍使用封闭对象模式，`properties` 和 `required` 数组为空。
 
 ```json
 {
@@ -61,146 +61,146 @@ Transcribe each input boundary into the validator packet as `input_schema`. It m
 ```
 
 ```text
-MCP server scope:
-Resources:
-Tools:
-Prompts:
-Progressive discovery policy:
-Write authorization:
-Idempotency and reconciliation:
-Secret provisioning:
+MCP 服务器作用域：
+资源：
+工具：
+提示词：
+渐进式发现政策：
+写入授权：
+幂等性与状态核对：
+密钥供应方式：
 ```
 
-## 4. Claude Code Configuration and Workflow
+## 4. Claude Code 配置与工作流（Claude Code Configuration and Workflow）
 
 ```text
-Root project guidance:
-Imported guidance:
-Path-specific rules and tested globs:
-Skills:
-Commands:
-Agents and allowed tools:
-Hooks and enforced invariants:
-Plan or interview boundary:
-User-local configuration excluded from team policy:
+项目根级指导：
+导入的指导：
+路径特定规则及已测试的 glob 模式：
+技能：
+命令：
+智能体及允许的工具：
+钩子及其强制维持的不变量：
+计划或需求访谈的边界：
+不纳入团队政策的用户本地配置：
 ```
 
-### Headless CI
+### 无界面 CI（Headless CI）
 
-- [ ] Starts from a clean commit and declared inputs.
-- [ ] Uses versioned project configuration.
-- [ ] Has bounded read-only review tools.
-- [ ] Emits structured findings with stable IDs.
-- [ ] Runs deterministic tests and policy gates separately.
-- [ ] Receives prior finding IDs for remediation review.
-- [ ] Records current model and runtime configuration.
+- [ ] 从干净的提交和已声明的输入开始。
+- [ ] 使用纳入版本管理的项目配置。
+- [ ] 使用范围受限的只读审查工具。
+- [ ] 输出带有稳定 ID 的结构化发现项。
+- [ ] 分别运行确定性测试和政策门禁。
+- [ ] 接收先前的发现项 ID，以便开展整改复审。
+- [ ] 记录当前模型和运行时配置。
 
-## 5. Prompt and Structured Output
+## 5. 提示词与结构化输出（Prompt and Structured Output）
 
 ```text
-Evaluation criteria:
-Boundary examples:
-Prompt contract version:
-Schema version:
-Representation for unknown or unsupported values:
-Tool-choice policy:
-Syntax validator:
-Schema validator:
-Semantic validator:
-Provenance validator:
-Retry limit and feedback contract:
-Independent reviewer inputs and output:
-Batch or real-time decision:
+评估标准：
+边界示例：
+提示词契约版本：
+模式版本：
+未知值或无依据值的表示方式：
+工具选择政策：
+语法校验器：
+模式校验器：
+语义校验器：
+来源溯源校验器：
+重试上限与反馈契约：
+独立审查者的输入与输出：
+批处理或实时处理的选择：
 ```
 
-## 6. Context Management and Reliability
+## 6. 上下文管理与可靠性（Context Management and Reliability）
 
 ```text
-Critical fact placement:
-Context budget:
-Manifest location and schema:
-Scratchpad lifecycle:
-Subagent context boundaries:
-Compaction and resume packet:
-Tool-output trimming rules:
-Complete, partial, and blocked propagation:
-Provenance fields:
-Source conflict and date rules:
-Content-type extraction and rendering checks:
-Confidence evidence classes:
-Human review strata and random sample:
-Escalation owners:
+关键事实的放置位置：
+上下文预算：
+清单位置与模式：
+暂存笔记的生命周期：
+子智能体上下文边界：
+压缩与恢复材料包：
+工具输出裁剪规则：
+完成、部分完成和阻塞状态的传递：
+来源溯源字段：
+来源冲突与日期规则：
+按内容类型进行的抽取与渲染检查：
+置信度的证据类别：
+人工审查分层与随机抽样：
+升级处理负责人：
 ```
 
-## 7. Failure Fixtures
+## 7. 故障夹具（Failure Fixtures）
 
-| ID | Injected failure | Detection | Containment | Retry or escalation | Durable evidence | Owner |
+| ID | 注入的故障 | 检测 | 遏制 | 重试或升级处理 | 持久化证据 | 负责人 |
 |---|---|---|---|---|---|---|
-| [failure] | [condition] | [signal] | [safe stop] | [rule] | [artifact] | [role] |
+| [故障] | [条件] | [信号] | [安全停止] | [规则] | [产物] | [角色] |
 
-Required coverage:
+必须覆盖：
 
-- [ ] Orchestration prerequisite, partial result, or stale resume.
-- [ ] Tool validation, authorization, conflict, timeout, or unknown side effect.
-- [ ] Claude Code rule scope, permission, hook, or clean-CI failure.
-- [ ] Schema-valid semantic or provenance failure.
-- [ ] Lost fact, conflicting source, content-type, or escalation failure.
+- [ ] 编排前置条件、部分结果或使用过期状态恢复。
+- [ ] 工具校验、授权、冲突、超时或未知副作用。
+- [ ] Claude Code 规则作用域、权限、钩子或干净 CI 环境中的故障。
+- [ ] 模式有效，但语义或来源溯源无效。
+- [ ] 事实丢失、来源冲突、内容类型或升级处理故障。
 
-## 8. Architecture Decisions
+## 8. 架构决策（Architecture Decisions）
 
-Complete one record for each major choice.
+为每个重大选择填写一份记录。
 
 ```text
-Decision ID:
-Context and forces:
-Chosen option:
-Alternatives rejected:
-Tradeoff accepted:
-Evidence:
-Change trigger:
-Owner:
+决策 ID：
+情境与制约因素：
+所选方案：
+被否决的备选方案：
+接受的权衡：
+证据：
+变更触发条件：
+负责人：
 ```
 
-## 9. Cross-Scenario Deltas
+## 9. 跨场景差异（Cross-Scenario Deltas）
 
-Repeat for all six contexts, including the primary scenario.
+为全部六种情境重复填写，包括主要场景。
 
 ```text
-Context category:
-Core invariants retained:
-New source or authority boundary:
-New tool or MCP requirement:
-New Claude Code configuration requirement:
-New output and validation requirement:
-New context and escalation risk:
-Control removed or added, with reason:
+情境类别：
+保留的核心不变量：
+新增的来源或权限边界：
+新增的工具或 MCP 要求：
+新增的 Claude Code 配置要求：
+新增的输出与校验要求：
+新增的上下文与升级处理风险：
+移除或新增的控制及原因：
 ```
 
-## 10. Review and Handoff
+## 10. 审查与交接（Review and Handoff）
 
 ```text
-Decision owner:
-Implementation owner:
-Independent reviewer:
-Validator result:
-Finding IDs and dispositions:
-Evidence artifacts:
-Residual risks and owners:
-Fallback:
-Rollout boundary:
-Model, API, SDK, Claude Code, or MCP change triggers:
-Next verification date:
+决策负责人：
+实施负责人：
+独立审查者：
+校验器结果：
+发现项 ID 及处置结果：
+证据产物：
+剩余风险及负责人：
+回退方案：
+上线范围：
+模型、API、SDK、Claude Code 或 MCP 的变更触发条件：
+下次验证日期：
 ```
 
-Release recommendation:
+发布建议：
 
-- [ ] Blocked pending authority, policy, evidence, or architecture correction.
-- [ ] Ready for a shadow or read-only pilot.
-- [ ] Ready for bounded human-reviewed use.
-- [ ] Ready for specifically named low-consequence automation.
+- [ ] 阻塞，等待权限、政策、证据或架构修正。
+- [ ] 可开展影子模式或只读试点。
+- [ ] 可在限定范围内使用，并由人工审查。
+- [ ] 可执行明确指定的低后果自动化任务。
 
-Rationale:
+理由：
 
 ```text
-[State which scenarios and failures were tested, which invariants passed, what remains uncertain, and who owns the decision.]
+[说明测试了哪些场景和故障、哪些不变量通过检查、还有哪些不确定性，以及谁负责作出决策。]
 ```

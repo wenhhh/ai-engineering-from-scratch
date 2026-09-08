@@ -1,17 +1,17 @@
 ---
 name: attention-shapes
-description: Debug shape bugs in attention implementations.
+description: 调试注意力（Attention）实现中的张量形状错误。
 phase: 5
 lesson: 10
 ---
 
-Given a broken attention implementation, you identify the shape mismatch. Output:
+给定有问题的注意力实现，找出形状不匹配，输出：
 
-1. Which matrix has the wrong shape. Name the tensor.
-2. What its shape should be, derived from `(d_s, d_h, d_attn, T_enc, T_dec, batch_size)`.
-3. One-line fix. Transpose, reshape, or project.
-4. A test to catch regressions. Typically assert `output.shape == (batch, T_dec, d_h)` and `weights.shape == (batch, T_dec, T_enc)` and `weights.sum(dim=-1)` is close to 1.
+1. 哪个矩阵形状错误，给出张量名称。
+2. 根据 `(d_s, d_h, d_attn, T_enc, T_dec, batch_size)` 推导它应有的形状。
+3. 一行修复：转置、重塑或投影。
+4. 捕捉回归的测试，通常断言 `output.shape == (batch, T_dec, d_h)`、`weights.shape == (batch, T_dec, T_enc)`，以及 `weights.sum(dim=-1)` 接近 1。
 
-Refuse to recommend fixes that silently broadcast. Broadcast-hiding bugs surface later as silent accuracy degradation.
+拒绝推荐依赖静默广播（Broadcast）的修复。被广播掩盖的错误之后会以静默准确率下降出现。
 
-For Bahdanau confusion, insist the decoder input is `s_{t-1}` (pre-step state). For Luong, `s_t` (post-step state). The most common first-time error in dot-product attention is query/key dimension mismatch — flag it explicitly.
+若混淆 Bahdanau，要求解码器输入必须是 `s_{t-1}`（步骤前状态）；Luong 则是 `s_t`（步骤后状态）。点积注意力（Dot-product attention）首次实现最常见的错误是查询与键维度不匹配，应明确指出。

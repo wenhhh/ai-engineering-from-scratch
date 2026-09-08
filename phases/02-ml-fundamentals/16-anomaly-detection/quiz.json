@@ -2,66 +2,66 @@
   {
     "id": "anomaly-pre-1",
     "stage": "pre",
-    "question": "Why is anomaly detection typically framed as an unsupervised problem rather than classification?",
+    "question": "为什么异常检测通常被界定为无监督问题，而不是分类问题？",
     "options": [
-      "Supervised classification is always less accurate",
-      "Labeled anomalies are extremely rare, and novel anomaly types differ from previously seen ones",
-      "Anomaly detection only works on time series data",
-      "Anomaly detection does not require any data"
+      "监督分类始终更不准确",
+      "带标签异常极少，而且新型异常与以前见过的类型不同",
+      "异常检测只适用于时间序列数据",
+      "异常检测不需要任何数据"
     ],
     "correct": 1,
-    "explanation": "Anomalies are rare (often <0.1% of data), so there are too few labeled examples to train a classifier. Also, future anomalies may be of types never seen before. Modeling 'normal' and flagging deviations handles both problems."
+    "explanation": "异常很少，通常不到数据的 0.1%，带标签示例不足以训练分类器。未来异常还可能属于从未见过的类型。建模“正常”并标记偏离，能同时处理这两个问题。"
   },
   {
     "id": "anomaly-pre-2",
     "stage": "pre",
-    "question": "A temperature of 90F is normal in summer but anomalous in winter. What type of anomaly is this?",
+    "question": "90°F 的温度在夏天正常，在冬天异常。这属于哪种异常？",
     "options": [
-      "Point anomaly",
-      "Contextual anomaly",
-      "Statistical anomaly",
-      "Collective anomaly"
+      "点异常（Point Anomaly）",
+      "上下文异常（Contextual Anomaly）",
+      "统计异常（Statistical Anomaly）",
+      "集体异常（Collective Anomaly）"
     ],
     "correct": 1,
-    "explanation": "A contextual anomaly is a value that is unusual given its context (time, location). The value itself might be normal in a different context. Same data point, different interpretation based on surrounding conditions."
+    "explanation": "上下文异常是在给定时间、位置等上下文中不寻常的值，换个上下文可能正常。同一数据点会因周围条件不同而有不同解释。"
   },
   {
     "id": "anomaly-post-1",
     "stage": "post",
-    "question": "The Z-score method flags points more than 3 standard deviations from the mean. When does this approach fail?",
+    "question": "Z 分数方法标记偏离均值超过 3 个标准差的点。何时会失效？",
     "options": [
-      "When there are exactly 3 anomalies in the dataset",
-      "When the data is perfectly normally distributed",
-      "When the features are standardized",
-      "When the data is multimodal, skewed, or when outliers in the training data inflate the mean and std"
+      "数据集中恰好有 3 个异常时",
+      "数据完全服从正态分布时",
+      "特征被标准化时",
+      "数据多峰、偏斜，或训练数据中的离群点抬高均值和标准差时"
     ],
     "correct": 3,
-    "explanation": "Z-score assumes a single Gaussian distribution. It fails on multimodal data (multiple clusters), skewed distributions, and when outliers in training data shift the mean/std, making real anomalies harder to detect."
+    "explanation": "Z 分数假设单一高斯分布。它在多峰数据（多个簇）、偏斜分布上失效；训练离群点改变均值和标准差，也会使真实异常更难被检测。"
   },
   {
     "id": "anomaly-post-2",
     "stage": "post",
-    "question": "How does Isolation Forest detect anomalies differently from distance-based methods?",
+    "question": "孤立森林（Isolation Forest）检测异常的方式与基于距离的方法有何不同？",
     "options": [
-      "It isolates points using random splits; anomalies require fewer splits to isolate because they are few and different",
-      "It only works on text data",
-      "It uses neural networks instead of trees",
-      "It computes distances to every other point in the dataset"
+      "通过随机分裂隔离点；异常稀少且不同，因此需要更少分裂就能隔离",
+      "它只适用于文本数据",
+      "它使用神经网络，而非树",
+      "它计算到数据集中每个其他点的距离"
     ],
     "correct": 0,
-    "explanation": "Isolation Forest randomly partitions data with tree splits. Anomalies, being rare and different, end up isolated (in their own leaf) with fewer splits. Short average path length = more anomalous."
+    "explanation": "孤立森林通过树分裂随机划分数据。异常稀少且不同，较少分裂就能隔离到自己的叶节点。平均路径越短，越异常。"
   },
   {
     "id": "anomaly-post-3",
     "stage": "post",
-    "question": "You build both an unsupervised anomaly detector and a supervised fraud classifier. When should you prefer the unsupervised approach?",
+    "question": "你同时构建了无监督异常检测器和监督欺诈分类器。何时应优先使用无监督方案？",
     "options": [
-      "When you need to detect novel fraud patterns that differ from historical labeled examples",
-      "When you have millions of labeled fraud examples",
-      "When you only care about precision, not recall",
-      "Always -- unsupervised is always better for anomaly detection"
+      "需要检测与历史带标签示例不同的新欺诈模式时",
+      "拥有数百万带标签欺诈示例时",
+      "只关心精确率、不关心召回率时",
+      "始终如此，无监督在异常检测中总是更好"
     ],
     "correct": 0,
-    "explanation": "Supervised classifiers only catch fraud types present in training data. Unsupervised detectors flag any deviation from normal, catching novel fraud schemes. The tradeoff is higher false positive rate."
+    "explanation": "监督分类器只能捕捉训练数据中出现的欺诈类型。无监督检测器会标记任何偏离正常的情况，能够发现新欺诈手法，代价是假阳性率更高。"
   }
 ]

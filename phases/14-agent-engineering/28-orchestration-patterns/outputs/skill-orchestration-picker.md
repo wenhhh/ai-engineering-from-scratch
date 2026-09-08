@@ -1,39 +1,39 @@
 ---
 name: orchestration-picker
-description: Pick an orchestration topology (supervisor, swarm, hierarchical, debate, or none) for a given problem and implement it minimally.
+description: 为给定问题选择编排拓扑（监督者、群体、层级式、辩论或不使用拓扑），并进行最小实现。
 version: 1.0.0
 phase: 14
 lesson: 28
 tags: [orchestration, supervisor, swarm, hierarchical, debate]
 ---
 
-Given a product domain and a task class, pick the minimal topology.
+给定产品领域和任务类别，选择最小拓扑。
 
-Decision:
+决策：
 
-1. 1 agent + workflow patterns (Lesson 12) suffice? -> don't use topology at all.
-2. 2-4 specialists with distinct responsibilities? -> **supervisor-worker**.
-3. Latency-critical and specialists can cleanly hand off? -> **swarm**.
-4. 10+ specialists, supervisor context budget failing? -> **hierarchical**.
-5. Accuracy matters more than cost, multi-proposer + critique helps? -> **debate** (Lesson 25).
+1. 1 个智能体 + 工作流模式（第 12 课）是否足够？-> 完全不使用拓扑。
+2. 2–4 位职责清晰的专家？-> **监督者与工作者（Supervisor-worker）**。
+3. 延迟关键，专家之间能清晰交接？-> **群体（Swarm）**。
+4. 10 位以上专家，监督者上下文预算不足？-> **层级式（Hierarchical）**。
+5. 准确率比成本重要，多提议者加批评有帮助？-> **辩论（Debate）**（第 25 课）。
 
-Produce:
+产出：
 
-1. The chosen topology scaffold.
-2. Hop counter on swarm; nesting depth limit on hierarchical; round cap on debate.
-3. Observability hooks per handoff or per step (OTel GenAI spans, Lesson 23).
-4. A "why this, not that" README section.
+1. 所选拓扑骨架。
+2. 群体的跳数计数器、层级式的嵌套深度限制、辩论的轮次上限。
+3. 每次交接或每一步的可观测性钩子，使用 OTel GenAI 跨度（第 23 课）。
+4. README 中的“为什么选这个而非那个”部分。
 
-Hard rejects:
+必须拒绝的设计：
 
-- Calling 3 LLM calls in sequence "multi-agent." That's a prompt chain.
-- Swarm without hop counter. Bouncing is a certainty.
-- Hierarchical that bottoms out at 1 specialist per branch. Flatten.
+- 把顺序执行 3 次 LLM 调用称为“多智能体”。那是提示词链。
+- 群体没有跳数计数器。往返交接必然发生。
+- 层级式每个分支最终只有 1 位专家。应压平。
 
-Refusal rules:
+拒绝规则：
 
-- If the user wants multi-agent for a task that a single ReAct loop handles, refuse and suggest Lesson 01.
-- If the user wants supervisor for a 2-step task, refuse and suggest prompt chaining (Lesson 12).
-- If the domain has compliance / audit requirements, refuse swarm and suggest supervisor or hierarchical.
+- 如果单个 ReAct 循环可以处理任务，用户却要求多智能体，应拒绝并建议第 01 课。
+- 如果两步任务要求监督者，应拒绝并建议提示词链（第 12 课）。
+- 如果领域有合规或审计要求，拒绝群体，建议监督者或层级式。
 
-Output: topology scaffold + README with decision rationale. End with "what to read next" pointing to Lesson 13 (LangGraph) for supervisor implementation, Lesson 16 (OpenAI Agents SDK) for handoffs-as-tools, or Lesson 25 for debate specifics.
+输出：拓扑骨架与说明决策理由的 README。结尾给出“接下来读什么”，指向第 13 课（LangGraph）的监督者实现、第 16 课（OpenAI Agents SDK）的工具式交接，或第 25 课的辩论细节。

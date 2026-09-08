@@ -1,139 +1,139 @@
-# Cross-Encoder Reranker
+# 交叉编码器重排器（Cross-Encoder Reranker）
 
-> A bi-encoder embeds query and document independently. A cross-encoder concatenates them and reads both at once. The cross-encoder is the smartest reader and the slowest. Used as a second stage on the bi-encoder's top-k, it pays for itself.
+> 双编码器独立嵌入查询和文档。交叉编码器将两者拼接并同时阅读。交叉编码器理解最强，也最慢。将它用作双编码器前 k 项之后的第二阶段，就能收回成本。
 
 **Type:** Build
 **Languages:** Python
-**Prerequisites:** Phase 11 lesson 06 (RAG), Phase 11 lesson 07 (advanced RAG); Phase 19 Track B foundations (lessons 20-29); Phase 19 lesson 65 (hybrid retrieval feeding this stage)
-**Time:** ~90 minutes
+**Prerequisites:** 阶段 11 第 06 课（RAG）、07 课（高级 RAG）；阶段 19 路线 B 基础（第 20–29 课）；阶段 19 第 65 课（为本阶段提供输入的混合检索）
+**Time:** ~90 分钟
 
-## Learning Objectives
-- Distinguish a bi-encoder retriever from a cross-encoder reranker by their input shape, parameter count, and per-query cost.
-- Implement a small cross-encoder from scratch as a transformer block that consumes a packed (query, document) sequence and emits a single relevance scalar.
-- Wire a two-stage retrieve-then-rerank pipeline: retrieve top-N with a cheap retriever, rerank N to top-K with the cross-encoder, return K.
-- Measure the latency-vs-quality trade-off on a small fixture corpus and pick the right N for a given latency budget.
+## 学习目标（Learning Objectives）
+- 从输入形状、参数量和每查询开销区分双编码器检索器与交叉编码器重排器。
+- 从零实现小型交叉编码器：用 Transformer 块读取打包的（查询，文档）序列，输出单个相关性标量。
+- 连接先检索后重排的两阶段流水线：低成本检索器取前 N 项，交叉编码器将 N 项重排为前 K 项，返回 K 项。
+- 在小型固定语料上测量延迟与质量的权衡，为给定延迟预算选择合适的 N。
 
-## The Problem
+## 问题（The Problem）
 
-A bi-encoder maps query and document into the same vector space and ranks by cosine. The two encodings never see each other. The model has to compress everything useful about a document into a single vector, blind to the query. This is fast - one embedding per document at index time and one per query at query time - and it is the only way to rank at corpus scale.
+双编码器（Bi-encoder）将查询和文档映射到同一向量空间，按余弦相似度排序。两次编码互不可见。模型必须在不知道查询的情况下，把文档全部有用信息压缩到一个向量。这很快：索引时每篇文档嵌入一次，查询时每个查询嵌入一次，也是语料规模排序的唯一可行方式。
 
-The cost is precision. Two documents that have the same overall topic can have nearly identical embeddings even when one of them answers the query and the other does not. The bi-encoder cannot tell them apart.
+代价是精确性。整体主题相同的两篇文档，嵌入可能几乎一样，即使其中一篇回答了查询，另一篇没有。双编码器无法区分它们。
 
-A cross-encoder solves this by reading the query and the document together. The model receives `[query] [SEP] [document]` as a single sequence, runs full attention across the join, and produces one relevance scalar. Every token of the document can attend to every token of the query. The model decides the score with full context.
+交叉编码器（Cross-encoder）通过一起阅读查询和文档解决该问题。模型接收单一序列 `[query] [SEP] [document]`，对拼接后的整体执行完全注意力，输出一个相关性标量。文档每个词元都能关注查询每个词元。模型在完整上下文中决定分数。
 
-The cost is throughput. Where the bi-encoder embeds once and queries forever, the cross-encoder runs once per (query, document) pair. For a 10-million-document corpus that is 10 million forward passes per query. Unrunnable in a request budget.
+代价是吞吐量。双编码器一次嵌入可反复查询，交叉编码器却要对每个（查询，文档）对运行一次。1000 万文档的语料，每次查询就需 1000 万次前向传播，无法在请求预算内运行。
 
-The solution is staging. Use the bi-encoder to retrieve the top-N. Use the cross-encoder to rerank the N to a top-K. N is small (50 to 200) and the cross-encoder's quality lift is concentrated where it matters. The total latency stays in the request budget. The total quality is the cross-encoder's quality, capped by the bi-encoder's recall at N.
+解决方案是分阶段。先用双编码器检索前 N 项，再用交叉编码器将 N 项重排为前 K 项。N 很小（50 至 200），交叉编码器的质量收益集中在关键候选上。总延迟仍在请求预算内。总质量是交叉编码器的质量，但上限由双编码器在 N 处的召回率决定。
 
-## The Concept
+## 概念（The Concept）
 
 ```mermaid
 flowchart LR
-  Query[Query] --> Bi[Bi-Encoder Retriever]
-  Corpus[Corpus] --> Bi
-  Bi --> TopN[Top-N Candidates]
-  TopN --> Cross[Cross-Encoder]
+  Query[查询] --> Bi[双编码器检索器]
+  Corpus[语料] --> Bi
+  Bi --> TopN[前 N 个候选]
+  TopN --> Cross[交叉编码器]
   Query --> Cross
-  Cross --> TopK[Top-K Reranked]
+  Cross --> TopK[重排后的前 K 项]
 ```
 
-### The cross-encoder's input shape
+### 交叉编码器的输入形状（The cross-encoder's input shape）
 
-The standard packing is `[CLS] query_tokens [SEP] document_tokens [SEP]`. The CLS-position output is fed into a single linear head that outputs the relevance scalar. Some implementations use mean-pooling instead of CLS; the difference is small. The point is that the model produces one number per pair.
+标准打包方式是 `[CLS] query_tokens [SEP] document_tokens [SEP]`。CLS 位置的输出送入一个线性头，输出相关性标量。一些实现用均值池化替代 CLS，差别不大。关键是模型为每个样本对产生一个数值。
 
-A 22M-parameter cross-encoder (the published `ms-marco-MiniLM-L-6-v2` weight class) is the typical production point. Smaller models lose quality faster than they save latency. Larger models (e.g. `bge-reranker-v2-m3` at 568M parameters) are reserved for offline reranking or for first-page reranking where K is small.
+2200 万参数的交叉编码器（已发布的 `ms-marco-MiniLM-L-6-v2` 权重类别）是典型生产选择。更小模型的质量损失快于延迟收益。更大模型（如 5.68 亿参数的 `bge-reranker-v2-m3`）留给离线重排，或 K 很小的首页重排。
 
-### Why this lesson trains a tiny one
+### 本课为何训练微型模型（Why this lesson trains a tiny one）
 
-A real cross-encoder is a finetuned encoder transformer. In production you load a checkpoint and run it. In this lesson the goal is to show you the shape of the model and the shape of the latency-quality curve, not to train a state-of-the-art ranker. So we build a small `nn.Module` with one transformer block, multi-head attention (4 heads by default), and one regression head. It is initialized deterministically from a seed so the demo is reproducible without weights on disk.
+真正的交叉编码器是微调后的编码器 Transformer。生产中加载检查点即可运行。本课旨在展示模型结构和延迟质量曲线，而不是训练最先进的排序器。因此我们构建小型 `nn.Module`，包含一个 Transformer 块、多头注意力（默认 4 头）和一个回归头。通过种子确定性初始化，无须磁盘权重也可复现演示。
 
-The toy model learns the right shape from the fixture corpus: relevant query-document pairs have higher predicted scores than irrelevant pairs. The end-to-end pipeline reranks the bi-encoder's output and the rerank's top-k correlates with the gold labels.
+玩具模型从固定语料学到正确的关系：相关查询文档对的预测分数高于不相关对。端到端流水线重排双编码器输出，重排后的前 k 项与标准标签相关。
 
-### Latency vs quality
+### 延迟与质量（Latency vs quality）
 
-The two-stage pipeline has one tunable: N. Sweep N from 5 to 100 on a held-out query set and you get the curve.
+两阶段流水线有一个可调量 N。在留出查询集上从 5 到 100 扫描 N，便得到曲线。
 
-| N | Recall@1 of stage 2 | Cross-encoder forward passes per query | Latency |
+| N | 第二阶段 Recall@1 | 每查询交叉编码器前向传播次数 | 延迟 |
 |---|--------------------|---------------------------------------|---------|
-| 5 | 0.62 | 5 | low |
-| 20 | 0.81 | 20 | medium |
-| 50 | 0.86 | 50 | high |
-| 100 | 0.86 | 100 | very high |
+| 5 | 0.62 | 5 | 低 |
+| 20 | 0.81 | 20 | 中 |
+| 50 | 0.86 | 50 | 高 |
+| 100 | 0.86 | 100 | 很高 |
 
-The numbers above are illustrative of the shape, not measurements from this fixture. The shape is real. There is always a knee around 20 to 50 candidates where the rerank lift saturates. Past the knee you are paying for nothing.
+以上数字用于说明曲线形态，不是本固定语料上的测量值。形态是真实的。20 至 50 个候选附近总有一个拐点，重排收益趋于饱和。超过拐点，就是付费却没有收益。
 
-Pick N from the eval curve plus the latency budget. The cross-encoder cannot raise recall above the bi-encoder's recall at N, so a low N caps quality, not just latency.
+根据评估曲线和延迟预算选择 N。交叉编码器无法将召回率提高到双编码器在 N 处的召回率之上，因此小 N 不只限制延迟，也限制质量。
 
 ```figure
 rerank-funnel
 ```
 
-## Build It
+## 动手实现（Build It）
 
-`code/main.py` implements:
+`code/main.py` 实现了：
 
-- `CrossEncoder` - a small `torch.nn.Module`: token embedding, one transformer block with multi-head attention and feedforward, mean-pooled head producing one scalar.
-- `tokenize_pair(query, document)` - packs the two strings into a single id sequence with type ids that mark the boundary, deterministic and stdlib.
-- `train_tiny(pairs)` - one pass of supervised training on a hand-labeled (query, document, relevance) triple list, so the model produces sensible scores on the fixture.
-- `rerank(query, candidates, top_k)` - the production interface.
-- `pipeline(query, retriever, top_n, top_k)` - the two-stage flow.
-- A demo `main()` that loads the corpus from lesson 65's pattern, retrieves top-N, reranks to top-K, prints both lists side by side, and reports the latency of each stage.
+- `CrossEncoder`：小型 `torch.nn.Module`，包含词元嵌入、一个带多头注意力和前馈网络的 Transformer 块，以及输出单标量的均值池化头。
+- `tokenize_pair(query, document)`：把两个字符串打包成单一 ID 序列，以类型 ID 标记边界，使用标准库且结果确定。
+- `train_tiny(pairs)`：在人工标注的（查询，文档，相关性）三元组列表上进行一轮监督训练，使模型在固定语料上产生合理分数。
+- `rerank(query, candidates, top_k)`：生产接口。
+- `pipeline(query, retriever, top_n, top_k)`：两阶段流程。
+- 演示 `main()`：按第 65 课模式加载语料，检索前 N 项，重排为前 K 项，并排打印两个列表，报告各阶段延迟。
 
-Run it:
+运行：
 
 ```bash
 python3 code/main.py
 ```
 
-The output shows the bi-encoder's top-N, the cross-encoder's top-K, and a timing summary. The cross-encoder takes longer per call but does not run on the full corpus. The two-stage total stays within the request budget while picking the answer that the bi-encoder ranked second or third.
+输出展示双编码器前 N 项、交叉编码器前 K 项及计时摘要。交叉编码器每次调用更慢，但不会遍历整个语料。两阶段总时间仍在请求预算内，同时选出双编码器原本排在第二或第三的答案。
 
-## Failure modes the demo will hide
+## 演示会掩盖的失效模式（Failure modes the demo will hide）
 
-**Cross-encoder is not symmetric.** `rerank(q, d)` and `rerank(d, q)` are different scores. Always feed the query first. If you accidentally swap, recall collapses.
+**交叉编码器不对称。** `rerank(q, d)` 与 `rerank(d, q)` 分数不同。始终先输入查询。误换顺序会导致召回率骤降。
 
-**N is too low to expose the bug.** If you set N = K, the cross-encoder cannot reorder; it can only reweight. The lift looks zero. Pick N at least three times K.
+**N 太小，无法暴露问题。** N = K 时，交叉编码器无法重新排序，只能重新赋权，收益看起来为零。N 至少取 K 的三倍。
 
-**Training data leaks into the eval.** If the hand-labeled training pairs include the eval queries, the rerank looks magical. Strictly separate train and eval, even on a fixture.
+**训练数据泄漏到评估。** 人工标注训练对若包含评估查询，重排会显得神奇。即使固定测试语料也必须严格分离训练与评估。
 
-**Production weights are dense.** A 22M-parameter cross-encoder is 88MB at float32. Plan the model server's memory before promising sub-100ms p95.
+**生产权重是稠密的。** 2200 万参数交叉编码器用 float32 占 88MB。在承诺 p95 低于 100ms 前，规划好模型服务器内存。
 
-**Batching matters.** A real cross-encoder runs the N candidates in one batch. This lesson does that in `_batch_encode`, which builds the batched id and type-id tensors with `torch.tensor(...)` and runs one forward pass. Skip batching and the latency multiplies by N.
+**批处理很重要。** 真实交叉编码器将 N 个候选放在一批运行。本课在 `_batch_encode` 中实现：通过 `torch.tensor(...)` 构建批量 ID 和类型 ID 张量，再执行一次前向传播。不做批处理，延迟会乘以 N。
 
-## Use It
+## 实际应用（Use It）
 
-Production patterns:
+生产模式：
 
-- Pin the bi-encoder, cross-encoder, and N together. Changing any one invalidates the eval.
-- Cache the reranker's output by (query, document_id) hash. The same query against a stable corpus reranks to the same order; cache hits buy you a free latency cut.
-- Log the rank-1 cross-encoder score. A query whose top-1 score is below a corpus-specific threshold is an out-of-domain hit; surface it to the LLM as "I am not confident".
+- 一起固定双编码器、交叉编码器和 N。任一变化都使原评估失效。
+- 按（查询，文档 ID）的哈希缓存重排器输出。同一查询在稳定语料上的重排顺序不变，缓存命中可直接降低延迟。
+- 记录排名第一的交叉编码器分数。首位分数低于语料特定阈值的查询，是领域外命中；应向 LLM 传达“我没有把握”。
 
-## Ship It
+## 交付成果（Ship It）
 
-Lesson 68 evaluates this two-stage pipeline end to end. Lesson 69 wires this reranker behind the hybrid retriever from lesson 65 and in front of the answer generator. The reranker is the second stage of the end-to-end system.
+第 68 课端到端评估这条两阶段流水线。第 69 课将本重排器接在第 65 课混合检索器之后、答案生成器之前。重排器是端到端系统的第二阶段。
 
-## Exercises
+## 练习（Exercises）
 
-1. Sweep N from 5 to 50 and plot recall@1 of the reranked output. Find the knee on this fixture.
-2. Train the cross-encoder for ten epochs instead of one. Measure the score-margin between positive and negative pairs at each epoch.
-3. Replace mean-pooling with a CLS-token head. Compare convergence on this fixture.
-4. Add a second cross-encoder head that predicts a binary "is this answer in the document" label. Use both heads at inference; one to rank, one to threshold.
-5. Replace the deterministic mock bi-encoder with the one from lesson 65 and chain the two stages. Measure the change in top-K versus bi-encoder alone.
+1. 从 5 至 50 扫描 N，绘制重排输出的 recall@1，找到本固定语料的拐点。
+2. 将交叉编码器训练十轮而非一轮，测量每轮正负样本对的分数间隔。
+3. 用 CLS 词元头替换均值池化，在固定语料上比较收敛情况。
+4. 加入第二个交叉编码器头，预测二元标签“文档中是否有这个答案”。推理时同时使用两头，一头排序，一头作阈值判断。
+5. 将确定性模拟双编码器替换为第 65 课的版本，串联两阶段，测量相对仅使用双编码器时前 K 项的变化。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语 | 常见说法 | 实际含义 |
 |------|-----------------|------------------------|
-| Bi-encoder | "Vector retriever" | Encodes query and doc independently; cosine ranks them |
-| Cross-encoder | "Reranker" | Encodes (query, doc) jointly; outputs one relevance scalar |
-| Two-stage pipeline | "Retrieve and rerank" | Cheap retriever returns N, expensive reranker keeps K |
-| N (candidate budget) | "Rerank pool" | The number of candidates the cross-encoder scores per query |
-| Mean-pooling head | "Mean of last hidden" | Average the encoder's last-layer outputs into one vector |
+| 双编码器（Bi-encoder） | “向量检索器” | 独立编码查询和文档，按余弦相似度排序 |
+| 交叉编码器（Cross-encoder） | “重排器” | 联合编码（查询，文档），输出一个相关性标量 |
+| 两阶段流水线（Two-stage pipeline） | “检索并重排” | 低成本检索器返回 N 项，高成本重排器保留 K 项 |
+| N（候选预算，candidate budget） | “重排池” | 每个查询由交叉编码器评分的候选数 |
+| 均值池化头（Mean-pooling head） | “最后隐藏层均值” | 将编码器最后一层输出平均成一个向量 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- Nogueira, Cho, "Passage Re-ranking with BERT", 2019 - the canonical cross-encoder ranker paper
-- Reimers, Gurevych, "Sentence-BERT: Sentence Embeddings using Siamese BERT-Networks", 2019 - on bi-encoders vs cross-encoders
-- [SentenceTransformers Cross-Encoders documentation](https://www.sbert.net/examples/applications/cross-encoder/README.html)
-- [BGE Reranker v2 model card](https://huggingface.co/BAAI/bge-reranker-v2-m3)
-- Phase 19 lesson 65 - the hybrid retriever feeding this rerank stage
-- Phase 19 lesson 68 - the eval that measures the lift this rerank delivers
+- Nogueira、Cho：《使用 BERT 的段落重排（Passage Re-ranking with BERT）》，2019：经典交叉编码器排序论文
+- Reimers、Gurevych：《Sentence-BERT：使用孪生 BERT 网络的句子嵌入（Sentence-BERT: Sentence Embeddings using Siamese BERT-Networks）》，2019：双编码器与交叉编码器对比
+- [SentenceTransformers 交叉编码器（Cross-Encoders）文档](https://www.sbert.net/examples/applications/cross-encoder/README.html)
+- [BGE Reranker v2 模型卡（Model card）](https://huggingface.co/BAAI/bge-reranker-v2-m3)
+- 阶段 19 第 65 课：为本重排阶段提供输入的混合检索器
+- 阶段 19 第 68 课：测量重排收益的评估

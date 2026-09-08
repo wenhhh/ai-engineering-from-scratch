@@ -1,31 +1,31 @@
 ---
 name: tokenizer-vs-adapter-picker
-description: Pick between Chameleon-style early fusion (shared-vocab tokenizer) and LLaVA-style late fusion (adapter on frozen LLM) for a VLM project.
+description: 为 VLM 项目选择 Chameleon 式早期融合（共享词表分词器）或 LLaVA 式晚期融合（冻结 LLM 上的适配器）。
 version: 1.0.0
 phase: 12
 lesson: 11
 tags: [chameleon, early-fusion, vq-vae, late-fusion, adapter]
 ---
 
-Given a product specification (understanding-only or understanding+generation), target image quality (social-post / magazine / print / broadcast), and cost budget (training + inference), recommend Chameleon-family or LLaVA-family with a concrete architecture outline.
+给定产品规格（仅理解或理解 + 生成）、目标图像质量（社交帖子 / 杂志 / 印刷 / 广播）和成本预算（训练 + 推理），推荐 Chameleon 家族或 LLaVA 家族，并给出具体架构概要。
 
-Produce:
+生成以下内容：
 
-1. Verdict. Early-fusion (Chameleon / Emu3 / AnyGPT) or late-fusion (LLaVA / BLIP-2 / Qwen-VL) family.
-2. Tokenizer pick (for early-fusion verdicts). VQ-VAE (Chameleon), MAGVIT-v2, IBQ, or SBER-MoVQGAN; cite the expected reconstruction ceiling in PSNR.
-3. Training-stability plan. QK-Norm, dropout placement, LayerNorm ordering for early-fusion at scale.
-4. Cost estimate. Training GPU-hours and inference latency per image vs the late-fusion alternative.
-5. Generation-quality ceiling. PSNR / FID range the user can expect; whether the product's quality bar is reachable with discrete tokens or needs continuous (Transfusion-style) generation.
-6. Migration path. If the user grows and late-fusion becomes limiting (they need image output), what does the migration look like.
+1. 结论。早期融合（Early fusion，Chameleon / Emu3 / AnyGPT）或晚期融合（Late fusion，LLaVA / BLIP-2 / Qwen-VL）家族。
+2. 分词器选择（早期融合结论时）。VQ-VAE（Chameleon）、MAGVIT-v2、IBQ 或 SBER-MoVQGAN；引用以峰值信噪比（PSNR）衡量的预期重建上限。
+3. 训练稳定计划。大规模早期融合所需的 QK-Norm、随机失活位置和 LayerNorm 顺序。
+4. 成本估算。训练 GPU 小时、每图推理延迟，并与晚期融合替代方案比较。
+5. 生成质量上限。用户可预期的 PSNR / FID 范围；产品质量门槛能否通过离散词元达到，还是需要连续生成（Transfusion 风格）。
+6. 迁移路径。如果用户需求增长，晚期融合成为限制（需要图像输出），应如何迁移。
 
-Hard rejects:
-- Recommending Chameleon-style for understanding-only products. Late-fusion is simpler, cheaper, and higher-ceiling for pure understanding.
-- Proposing VQ-VAE with K<4096 for production image generation. Codebook is too small, artifacts are visible.
-- Claiming early-fusion inference is free. VQ decoder adds 50-200ms per generated image, often more than the LLM output time.
+必须排除：
+- 为仅理解产品推荐 Chameleon 风格。纯理解场景中，晚期融合更简单、更便宜、上限更高。
+- 为生产图像生成提出 K<4096 的 VQ-VAE。码本过小，伪影可见。
+- 声称早期融合推理免费。VQ 解码器为每张生成图像增加 50-200ms，常超过 LLM 输出时间。
 
-Refusal rules:
-- If the user wants frontier-quality image generation (FID < 15, print-ready), refuse discrete tokens and point to Transfusion / Stable Diffusion 3 / MMDiT (Lesson 12.13).
-- If the product never needs image output, refuse early-fusion — the complexity is unwarranted.
-- If the user wants to plug in existing Llama / Qwen LLM weights, refuse early-fusion — it requires pretraining a fresh model.
+拒绝规则：
+- 如果用户要求前沿质量图像生成（FID < 15，可印刷），则拒绝离散词元，指向 Transfusion / Stable Diffusion 3 / MMDiT（第 12.13 课）。
+- 如果产品从不需要图像输出，则拒绝早期融合，因为复杂度没有必要。
+- 如果用户希望接入既有 Llama / Qwen LLM 权重，则拒绝早期融合；它需要预训练全新模型。
 
-Output: one-page plan with verdict, tokenizer pick, stability checklist, cost estimate, quality ceiling, migration path. End with arXiv 2405.09818 (Chameleon) and 2408.11039 (Transfusion) for comparison reading.
+输出：一页计划，包含结论、分词器选择、稳定性检查清单、成本估算、质量上限、迁移路径。最后附 arXiv 2405.09818（Chameleon）和 2408.11039（Transfusion），供对比阅读。

@@ -1,78 +1,78 @@
 {
   "lesson": "13-mcp-server-with-registry",
-  "title": "Capstone 13: Stateless MCP Server with Registry and Governance",
+  "title": "综合实践 13：带注册中心与治理的无状态 MCP 服务器（Stateless MCP Server with Registry and Governance）",
   "questions": [
     {
       "stage": "pre",
-      "question": "Why does this capstone use both server.json and server/discover?",
+      "question": "为什么本综合实践同时使用 server.json 和 server/discover？",
       "options": [
-        "server.json stores sessions, while server/discover deletes them",
-        "The Registry requires both files to contain identical version dates",
-        "They are two names for the same tool manifest",
-        "server.json publishes install and endpoint metadata, while server/discover reports live protocol capabilities"
+        "server.json 存储会话，server/discover 删除会话",
+        "注册中心要求两个文件包含相同版本日期",
+        "它们是同一工具清单的两个名称",
+        "server.json 发布安装与端点元数据，server/discover 报告实时协议能力"
       ],
       "correct": 3,
-      "explanation": "The Registry record helps clients locate and configure a server. The live RPC reports what the running process supports. Their schemas and version domains are independent, but the published identity must use the authenticated namespace and match live serverInfo."
+      "explanation": "注册中心（Registry）记录帮助客户端定位和配置服务器。实时 RPC 报告运行进程支持什么。它们的模式与版本域独立，但发布身份必须使用已认证命名空间，并匹配实时 serverInfo。"
     },
     {
       "stage": "check",
-      "question": "What replaces the initialize handshake in MCP revision 2026-07-28?",
+      "question": "MCP 修订版 2026-07-28 用什么替代 initialize 握手（Handshake）？",
       "options": [
-        "Mcp-Session-Id plus notifications/initialized",
-        "Every request carries protocol version and client capabilities, and clients can call mandatory server/discover",
-        "A GET request that opens a permanent server stream",
-        "A session cookie sent once per TCP connection"
+        "Mcp-Session-Id 加 notifications/initialized",
+        "每个请求携带协议版本与客户端能力，客户端可以调用必需的 server/discover",
+        "打开永久服务器流的 GET 请求",
+        "每个 TCP 连接发送一次的会话 cookie"
       ],
       "correct": 1,
-      "explanation": "The protocol is stateless. Version and capabilities are request metadata, while server/discover provides live version and capability discovery without creating a session."
+      "explanation": "协议无状态（Stateless）。版本和能力属于请求元数据，server/discover 不创建会话，而是提供实时版本与能力发现。"
     },
     {
       "stage": "check",
-      "question": "Which tools/list behavior supports safe and efficient discovery?",
+      "question": "哪种 tools/list 行为支持安全且高效的发现？",
       "options": [
-        "A response cached forever without a scope",
-        "A random tool order on each replica",
-        "A connection-local list created during initialize",
-        "Deterministic order plus ttlMs and a correct public or private cacheScope"
+        "永久缓存且没有范围的响应",
+        "每个副本随机排列工具",
+        "initialize 期间创建的连接本地列表",
+        "确定性顺序，加 ttlMs 和正确的 public 或 private cacheScope"
       ],
       "correct": 3,
-      "explanation": "Stable ordering improves reproducibility and prompt caching. ttlMs communicates freshness, and cacheScope prevents user-specific results from leaking through shared caches."
+      "explanation": "稳定顺序提高可复现性与提示词缓存（Prompt Caching）效果。ttlMs 表示新鲜度，cacheScope 防止用户专属结果通过共享缓存泄露。"
     },
     {
       "stage": "check",
-      "question": "Which Streamable HTTP design matches the current stateless transport?",
+      "question": "哪种可流式 HTTP（Streamable HTTP）设计符合当前无状态传输？",
       "options": [
-        "All clients require sticky load-balancer routing",
-        "POST creates a session, GET resumes it, and DELETE closes it",
-        "A standalone GET stream uses Last-Event-ID replay",
-        "Each JSON-RPC message uses its own POST, with JSON or request-scoped SSE for a request"
+        "所有客户端都要求负载均衡器粘性路由",
+        "POST 创建会话，GET 恢复，DELETE 关闭",
+        "独立 GET 流使用 Last-Event-ID 重放",
+        "每条 JSON-RPC 消息各用一次 POST，请求响应采用 JSON 或请求范围 SSE"
       ],
       "correct": 3,
-      "explanation": "Current Streamable HTTP is POST-only for MCP messages and has no protocol session, standalone GET stream, session DELETE, or Last-Event-ID resumability."
+      "explanation": "当前 Streamable HTTP 对 MCP 消息只使用 POST，没有协议会话、独立 GET 流、会话 DELETE 或 Last-Event-ID 恢复能力。"
     },
     {
       "stage": "post",
-      "question": "What must a production server validate before a policy-approved tool handler runs?",
+      "question": "策略批准的工具处理器运行前，生产服务器必须验证什么？",
       "options": [
-        "Only that server.json lists the remote URL",
-        "Only the tool's destructiveHint annotation",
-        "Only that a human posted an approval message",
-        "Protocol metadata plus token issuer, audience or resource, expiry, scope, and any exact-action approval"
+        "只检查 server.json 列出远程 URL",
+        "只检查工具的 destructiveHint 注解",
+        "只检查人工发布了审批消息",
+        "协议元数据，加令牌签发者、受众或资源、有效期、权限范围，以及任何精确操作审批"
       ],
       "correct": 3,
-      "explanation": "Transport metadata, token validation, and policy are separate gates. Annotations and publication metadata do not grant authority."
+      "explanation": "传输元数据、令牌验证和策略是独立关卡。注解与发布元数据不授予权限。"
     },
     {
       "stage": "post",
-      "question": "Which evidence best supports the claim that the server scales without protocol sessions?",
+      "question": "哪项证据最能支持服务器不依赖协议会话即可扩展的说法？",
       "options": [
-        "A server.json remote entry",
-        "A wire-level concurrent run across two interchangeable replicas with no affinity dependency",
-        "A unit test that constructs one response dictionary",
-        "A diagram showing a load balancer"
+        "server.json 远程条目",
+        "两个可互换副本上的实际传输级并发运行，不依赖亲和性",
+        "构造一个响应字典的单元测试",
+        "展示负载均衡器的图"
       ],
       "correct": 1,
-      "explanation": "The real transport and deployment boundary must be exercised. Alternating requests across replicas proves correctness is not hidden in one process or sticky session."
+      "explanation": "必须演练实际传输与部署边界。请求交替经过副本，才能证明正确性没有隐藏在单个进程或粘性会话中。"
     }
   ]
 }

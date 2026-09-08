@@ -1,8 +1,8 @@
-"""Phase 13 Lesson 15: secure MCP 2026-07-28 tool dispatch.
-Lesson: phases/13-tools-and-protocols/15-mcp-security-tool-poisoning/docs/en.md
-Spec: https://modelcontextprotocol.io/specification/2026-07-28
-Scans metadata, pins descriptors, detects collisions, and validates routing.
-It also protects MRTR continuation state; Lesson 09 owns HTTP transport.
+"""阶段 13 第 15 课：安全的 MCP 2026-07-28 工具分发（Tool dispatch）。
+课程： phases/13-tools-and-protocols/15-mcp-security-tool-poisoning/docs/en.md
+规范： https://modelcontextprotocol.io/specification/2026-07-28
+扫描元数据（Metadata）、固定描述符（Descriptor）、检测冲突并验证路由。
+同时保护 MRTR 续接状态（Continuation state）；HTTP 传输见第 09 课。
 """
 
 from __future__ import annotations
@@ -95,7 +95,7 @@ class ReplayStore:
         clock: Callable[[], float] = time.time,
     ) -> None:
         if type(max_entries) is not int or max_entries < 1:
-            raise ValueError("max_entries must be a positive integer")
+            raise ValueError("max_entries 必须为正整数")
         self.max_entries = max_entries
         self._clock = clock
         self._consumed: dict[str, float] = {}
@@ -157,9 +157,9 @@ def scan_catalog(
                 findings.append(Finding("metadata_poisoning", key, label))
             digest = descriptor_digest(tool)
             if key not in approved:
-                findings.append(Finding("unapproved", key, "descriptor has no approved digest"))
+                findings.append(Finding("unapproved", key, "描述符没有已批准的摘要（Digest）"))
             elif not hmac.compare_digest(approved[key], digest):
-                findings.append(Finding("rug_pull", key, "approved descriptor changed"))
+                findings.append(Finding("rug_pull", key, "已批准的描述符发生变化"))
     for name, keys in unqualified.items():
         if len(keys) > 1:
             findings.append(Finding("shadowing", name, ", ".join(sorted(keys))))
@@ -196,7 +196,7 @@ def open_state(token: str, secret: bytes) -> dict[str, Any]:
         encoded, supplied = token.encode().split(b".", 1)
         expected = base64.urlsafe_b64encode(hmac.new(secret, encoded, hashlib.sha256).digest()).rstrip(b"=")
         if not hmac.compare_digest(supplied, expected):
-            raise ValueError("signature mismatch")
+            raise ValueError("签名不匹配")
         padding = b"=" * (-len(encoded) % 4)
         state = json.loads(base64.urlsafe_b64decode(encoded + padding))
     except (ValueError, json.JSONDecodeError) as exc:
@@ -310,7 +310,7 @@ class SecurityGateway:
                         "method": "elicitation/create",
                         "params": {
                             "mode": "form",
-                            "message": f"Export notes to {arguments.get('destination', 'unknown')}?",
+                            "message": f"是否将笔记导出至 {arguments.get('destination', 'unknown')}？",
                             "requestedSchema": {
                                 "type": "object",
                                 "properties": {"confirm": {"type": "boolean"}},
@@ -349,7 +349,7 @@ class SecurityGateway:
         if action == "cancel":
             return {
                 "resultType": "complete",
-                "content": [{"type": "text", "text": "Export cancelled."}],
+                "content": [{"type": "text", "text": "已取消导出。"}],
                 "structuredContent": {"exported": False, "outcome": "cancelled"},
                 "isError": False,
             }
@@ -359,7 +359,7 @@ class SecurityGateway:
                 expires_at=expires_at,
                 operation=lambda: {
                     "resultType": "complete",
-                    "content": [{"type": "text", "text": "Export declined."}],
+                    "content": [{"type": "text", "text": "已拒绝导出。"}],
                     "structuredContent": {
                         "exported": False,
                         "outcome": "declined",
@@ -382,7 +382,7 @@ class SecurityGateway:
                 "content": [
                     {
                         "type": "text",
-                        "text": "Export completed after confirmation.",
+                        "text": "确认后已完成导出。",
                     }
                 ],
                 "structuredContent": {"exported": True, "outcome": "accepted"},
@@ -419,7 +419,7 @@ class SecurityGateway:
                 if params.get("name") == "notes.search":
                     result = {
                         "resultType": "complete",
-                        "content": [{"type": "text", "text": "No matching notes."}],
+                        "content": [{"type": "text", "text": "没有匹配的笔记。"}],
                         "isError": False,
                     }
                 elif params.get("name") == "notes.export":

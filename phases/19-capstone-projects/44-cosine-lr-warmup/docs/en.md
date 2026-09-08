@@ -1,132 +1,132 @@
-# Cosine LR with Linear Warmup
+# 带线性预热的余弦学习率（Cosine LR with Linear Warmup）
 
-> The learning-rate schedule is the second most important decision after the loss function. AdamW with a cosine decay and a linear warmup is the modern default for language-model training because it lets the model see a small effective step size during the brittle first thousand updates, ramps up to a configured peak, and decays smoothly back toward zero. This lesson builds that schedule, plots the curve over training steps, logs gradient norms next to the schedule, and proves the schedule honors warmup, peak, and decay boundaries.
+> 学习率调度是仅次于损失函数的重要决策。AdamW 搭配余弦衰减与线性预热，是现代语言模型训练的默认方案：在最初一千次脆弱更新中使用较小有效步长，升至配置峰值，再平滑降回接近零。本课构建该调度，按训练步数绘制曲线，在学习率旁记录梯度范数，并证明调度遵守预热、峰值与衰减边界。
 
 **Type:** Build
 **Languages:** Python
-**Prerequisites:** Phase 19 lessons 30-37
-**Time:** ~90 minutes
+**Prerequisites:** 阶段 19 第 30–37 课
+**Time:** ~90 分钟
 
-## Learning Objectives
+## 学习目标（Learning Objectives）
 
-- Implement an AdamW optimizer wired to a cosine learning-rate schedule with linear warmup.
-- Compute the schedule's exact value at any step without floating-point drift across runs.
-- Log gradient L2 norm side by side with the learning rate so training health is observable.
-- Render the schedule to a text plot the eye can read and a CSV any tool can consume.
+- 实现接入线性预热（Linear warmup）加余弦学习率调度的 AdamW 优化器。
+- 计算任意步骤的精确调度值，避免各次运行间的浮点漂移。
+- 将梯度 L2 范数与学习率并列记录，使训练健康状况可观测。
+- 将调度渲染为可目视阅读的文本图，并输出任何工具都可读取的 CSV。
 
-## The Problem
+## 问题（The Problem）
 
-The first thousand training updates are the loudest. The model's weights are still close to initialization. The optimizer's running second-moment estimate has not stabilised. The gradient norm is large and noisy. If the learning rate is at its peak during these updates the model either diverges outright or settles into a loss plateau it never escapes. The two well-known fixes are gradient clipping, which is the subject of Phase 19 lesson 45, and a learning-rate schedule that starts small and ramps up.
+最初一千次训练更新波动最大。权重仍接近初始化，优化器运行中的二阶矩（Second moment）估计尚未稳定，梯度范数大且噪声多。若此时学习率已达峰值，模型要么直接发散，要么陷入无法逃脱的损失平台。两种成熟修复是梯度裁剪（阶段 19 第 45 课）和从小值开始逐渐上升的学习率调度。
 
-The cosine-with-warmup schedule has three regions. From step zero to step `warmup_steps` the learning rate scales linearly from zero to the configured peak `lr_max`. From step `warmup_steps` to step `total_steps` the learning rate follows the upper half of a cosine curve, decaying from `lr_max` to `lr_min`. After `total_steps` the learning rate is pinned at `lr_min` so a misconfigured trainer that overshoots does not silently exit the schedule.
+带预热的余弦调度有三个区域。从零步到 `warmup_steps`，学习率由零线性升至配置峰值 `lr_max`。从 `warmup_steps` 到 `total_steps`，沿余弦曲线上半部分从 `lr_max` 衰减至 `lr_min`。`total_steps` 之后固定在 `lr_min`，使配置错误、运行超步的训练器不会静默脱离调度。
 
-The build problem is that schedules are easy to get wrong off by one. The off-by-one shows up six hours into a training run as a learning rate that is 1 percent too high or too low at the moment the model starts overfitting, which is invisible unless the schedule is exhaustively tested at boundaries.
+构建难点是调度容易出现偏一错误（Off-by-one）。训练六小时后，在模型开始过拟合时，学习率会因此高或低 1%；若没有彻底测试边界，这种错误就不可见。
 
-## The Concept
+## 概念（The Concept）
 
 ```mermaid
 flowchart TD
-  Step[Training step] --> Branch{step state}
-  Branch -- step <= warmup --> Linear[Linear ramp from 0 to lr_max]
-  Branch -- warmup < step <= total --> Cosine[Cosine decay from lr_max to lr_min]
-  Branch -- step > total --> Floor[Pin at lr_min]
+  Step[训练步骤] --> Branch{步骤状态}
+  Branch -- step <= warmup --> Linear[从 0 线性升至 lr_max]
+  Branch -- warmup < step <= total --> Cosine[从 lr_max 余弦衰减至 lr_min]
+  Branch -- step > total --> Floor[固定在 lr_min]
   Linear --> Apply[AdamW.step]
   Cosine --> Apply
   Floor --> Apply
-  Apply --> GradNorm[Compute gradient L2 norm]
-  GradNorm --> Log[Step log row]
-  Log --> Plot[Text plot + CSV]
+  Apply --> GradNorm[计算梯度 L2 范数]
+  GradNorm --> Log[步骤日志行]
+  Log --> Plot[文本图 + CSV]
 ```
 
-### Warmup formula
+### 预热公式（Warmup formula）
 
-For `step` in `[0, warmup_steps]` with `warmup_steps > 0`, the learning rate is `lr_max * step / warmup_steps`. The degenerate `warmup_steps = 0` case is treated as "no warmup": the schedule starts directly at `lr_max` at step zero and immediately enters cosine decay. Some test harnesses pass `warmup_steps = 0` to check the schedule still produces a usable curve.
+当 `step` 位于 `[0, warmup_steps]` 且 `warmup_steps > 0` 时，学习率为 `lr_max * step / warmup_steps`。退化情况 `warmup_steps = 0` 视为“无预热”：零步直接从 `lr_max` 开始，立即进入余弦衰减。有些测试框架传入 `warmup_steps = 0`，检查调度仍能产生可用曲线。
 
-### Cosine formula
+### 余弦公式（Cosine formula）
 
-For `step` in `(warmup_steps, total_steps]` the learning rate is `lr_min + 0.5 * (lr_max - lr_min) * (1 + cos(pi * progress))` where `progress = (step - warmup_steps) / max(1, total_steps - warmup_steps)`. At `step = warmup_steps` the cosine evaluates to `cos(0) = 1`, which gives `lr_max`, matching the warmup endpoint exactly. At `step = total_steps` the cosine evaluates to `cos(pi) = -1`, which gives `lr_min`, matching the decay endpoint exactly.
+当 `step` 位于 `(warmup_steps, total_steps]` 时，学习率为 `lr_min + 0.5 * (lr_max - lr_min) * (1 + cos(pi * progress))`，其中 `progress = (step - warmup_steps) / max(1, total_steps - warmup_steps)`。在 `step = warmup_steps`，`cos(0) = 1`，得到 `lr_max`，精确匹配预热终点。在 `step = total_steps`，`cos(pi) = -1`，得到 `lr_min`，精确匹配衰减终点。
 
-The continuity at both endpoints is not an accident. It is the reason the schedule is implemented as a single function over `step`, not as three different functions glued together. A glued schedule loses one boundary the first time `lr_max` is changed.
+两个端点的连续性不是偶然。这正是将调度实现为关于 `step` 的单一函数，而非拼接三个函数的原因。拼接式调度在第一次改变 `lr_max` 时就会丢掉一个边界。
 
-### Floor after total steps
+### 总步数之后的下限（Floor after total steps）
 
-For `step > total_steps` the learning rate stays at `lr_min`. The contract is explicit: the schedule does not error out and does not extrapolate; it pins at the floor and lets the trainer log a warning. Trainers that need to extend training change the schedule's `total_steps`, not the loop.
+当 `step > total_steps`，学习率保持 `lr_min`。契约明确：调度不报错、不外推，而是固定在下限，让训练器记录警告。需要延长训练时，应修改调度的 `total_steps`，而非循环。
 
-### Gradient norm logging alongside the rate
+### 同时记录梯度范数与学习率（Gradient norm logging alongside the rate）
 
-The schedule is half of training health. The gradient norm is the other half. The training loop logs both per step. A divergent training run shows the gradient norm spike before the loss does; a well-tuned warmup keeps the norm rising linearly with the rate; a too-aggressive peak shows up as a norm that stays high after warmup. The dataset on disk is `step, lr, grad_l2_norm, loss`. The CSV is the only durable record.
+调度只反映一半训练健康状况，梯度范数是另一半。训练循环逐步记录二者。发散训练的梯度范数会先于损失突增；调好的预热让范数随学习率线性上升；峰值过激则表现为预热后范数仍居高不下。磁盘数据格式为 `step, lr, grad_l2_norm, loss`，CSV 是唯一持久记录。
 
 ```figure
 cap-cosine-warmup
 ```
 
-## Build It
+## 动手实现（Build It）
 
-`code/main.py` implements:
+`code/main.py` 实现：
 
-- `CosineWithWarmup` - a stateless function `lr(step) -> float` over the configured schedule.
-- `TrainState` - wraps a model, an `AdamW` optimizer, and the schedule into a single step function.
-- `TrainState.step` - runs one forward pass, one backward pass, logs gradient L2 norm, and applies `lr(step)` to the optimizer.
-- `plot_schedule_ascii` - renders the schedule as a text plot the eye can read.
-- `write_schedule_csv` - emits one row per step with the learning rate.
+- `CosineWithWarmup`：按配置调度提供无状态函数 `lr(step) -> float`。
+- `TrainState`：将模型、`AdamW` 优化器和调度包装为一个步骤函数。
+- `TrainState.step`：执行一次前向和反向传播，记录梯度 L2 范数，将 `lr(step)` 应用于优化器。
+- `plot_schedule_ascii`：将调度渲染成目视可读的文本图。
+- `write_schedule_csv`：每步输出一行学习率。
 
-A demo at the bottom of the file builds a tiny `nn.Linear` model, trains for 20 steps over a fixed input batch, and prints the per-step learning rate, gradient norm, and loss. The schedule is also rendered as a text plot for the visual sanity check.
+底部演示构建微型 `nn.Linear` 模型，在固定输入批次上训练 20 步，打印逐步学习率、梯度范数和损失，并将调度渲染为文本图以做视觉健全性检查。
 
-Run it:
+运行：
 
 ```bash
 python3 code/main.py
 ```
 
-The script exits zero and prints a per-step training log plus the schedule plot.
+脚本以零退出，打印逐步训练日志和调度图。
 
-## Production Patterns
+## 生产模式（Production Patterns）
 
-Four patterns elevate the schedule to a production artifact.
+四种模式使调度成为生产级交付物。
 
-**Schedule lives in a config, not in code.** The trainer reads `warmup_steps`, `total_steps`, `lr_max`, `lr_min` from a YAML or JSON config that is committed to git. The schedule is reproducible because the config is content-addressed; the schedule is auditable because the config is part of the PR diff.
+**调度放在配置中，而非代码里（Schedule lives in a config, not in code）。** 训练器从提交到 git 的 YAML 或 JSON 配置读取 `warmup_steps`、`total_steps`、`lr_max`、`lr_min`。配置按内容寻址，使调度可复现；配置属于 PR 差异，使调度可审计。
 
-**Step counter is monotonic and decoupled from epochs.** Some frameworks confuse step and epoch when the dataset is sharded or the dataloader restarts. The schedule reads `global_step` from the trainer's checkpoint, not from a local counter. A resumed run continues at the right schedule position because the step counter is the durable axis.
+**步骤计数单调且与轮次解耦（Step counter is monotonic and decoupled from epochs）。** 数据集分片或加载器重启时，有些框架混淆步骤和轮次。调度从训练器检查点读取 `global_step`，而非本地计数器。步骤计数是持久坐标轴，因此恢复运行会从正确调度位置继续。
 
-**Schedule plot in the run directory.** Every training run writes `outputs/lr_schedule.png` (or in this lesson a text plot) into its run directory. A reviewer who skims the directory can sanity-check the schedule without re-running anything. This catches the misconfigured-schedule class of bugs at PR time.
+**运行目录中保存调度图（Schedule plot in the run directory）。** 每次训练将 `outputs/lr_schedule.png`（本课为文本图）写入运行目录。评审浏览目录就能检查调度，无需重跑任何内容，从而在 PR 阶段发现调度配置错误。
 
-**Log row schema is fixed.** `step, lr, grad_l2_norm, loss` in that order. A downstream notebook or dashboard reads the schema; renaming a column without bumping a version invalidates every existing dashboard.
+**日志行模式固定（Log row schema is fixed）。** `step, lr, grad_l2_norm, loss`，顺序不变。下游笔记本或看板依赖该模式；重命名列却不升版本，会使所有现有看板失效。
 
-## Use It
+## 实际应用（Use It）
 
-Production patterns:
+生产模式：
 
-- **Sweep peak before sweeping anything else.** `lr_max` is the most sensitive knob. Sweep it on a small model first; the optimal `lr_max` scales weakly with model size, so the small-model sweep is a strong prior.
-- **Warmup is a fraction of total steps, not an absolute count.** A 200-million-step run with 2,000 warmup steps starts at peak almost immediately; a 20,000-step run with the same number warms up for 10 percent. Configure warmup as a fraction (typical: 1-3 percent) so the schedule scales with training duration.
-- **`lr_min` is non-zero on purpose.** A floor that is 10 percent of `lr_max` keeps the optimizer learning during the long tail. A `lr_min = 0` schedule produces a training curve that looks great on a plot and a model that has not actually finished training.
+- **先扫描峰值，再扫描其他项（Sweep peak before sweeping anything else）。** `lr_max` 最敏感。先用小模型扫描；最优 `lr_max` 随模型大小变化较弱，因此小模型扫描提供有力先验。
+- **预热按总步数比例，而非绝对数量配置（Warmup is a fraction of total steps, not an absolute count）。** 两亿步训练若预热 2000 步，几乎立刻到峰值；两万步训练用相同数量则预热 10%。按比例（通常 1–3%）配置，调度才能随训练时长缩放。
+- **刻意让 `lr_min` 非零（Non-zero on purpose）。** 下限为 `lr_max` 的 10% 能让优化器在长尾阶段继续学习。`lr_min = 0` 的调度会生成图上好看、模型却实际尚未完成训练的曲线。
 
-## Ship It
+## 交付成果（Ship It）
 
-`outputs/skill-cosine-warmup.md` would, on a real project, describe which config carries the schedule, which trainer step the global counter is read from, and what `lr_max` sweep produced the deployed value. This lesson ships the engine.
+真实项目中的 `outputs/skill-cosine-warmup.md` 应说明：哪个配置保存调度、从哪个训练器步骤读取全局计数，以及哪次 `lr_max` 扫描得出了部署值。本课交付引擎。
 
-## Exercises
+## 练习（Exercises）
 
-1. Add an inverse-square-root variant of the schedule and compare it on a 200-step toy training run. Which curve produces the lower final loss?
-2. Add a `--restart` flag that adds a second warmup at `total_steps / 2`. Defend whether warm restarts improve or hurt on the toy run.
-3. Add a unit test that the schedule is continuous: for every step in `[0, total_steps]` the difference `|lr(step+1) - lr(step)|` is bounded by `lr_max / warmup_steps`.
-4. Wire the schedule into a `torch.optim.lr_scheduler.LambdaLR` so it composes with framework code. The lesson uses a plain step function; what does the wrapper change?
-5. Add a `--plot-png` flag that writes a real plot via `matplotlib`. Defend whether the lesson's text plot or the PNG is the better default for CI runs.
+1. 添加平方根倒数（Inverse-square-root）调度变体，在 200 步玩具训练中比较。哪条曲线最终损失更低？
+2. 添加 `--restart` 标志，在 `total_steps / 2` 加入第二次预热。说明热重启（Warm restart）改善还是损害玩具训练。
+3. 添加调度连续性单元测试：对 `[0, total_steps]` 每一步，差 `|lr(step+1) - lr(step)|` 以 `lr_max / warmup_steps` 为界。
+4. 将调度接入 `torch.optim.lr_scheduler.LambdaLR`，使其可与框架代码组合。本课用普通步骤函数，包装器改变了什么？
+5. 添加 `--plot-png` 标志，用 `matplotlib` 写真实图形。说明本课文本图或 PNG 哪个更适合作为 CI 默认输出。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语 | 常见说法 | 实际含义 |
 |------|-----------------|------------------------|
-| Warmup | "Slow start" | Linear ramp from zero to `lr_max` over the first `warmup_steps` updates |
-| Cosine decay | "Smooth drop" | Upper-half cosine curve from `lr_max` to `lr_min` over the remaining steps |
-| Floor | "After training" | The fixed `lr_min` value the schedule pins at past `total_steps` |
-| Gradient norm | "L2 of grads" | The Euclidean norm of the concatenated gradient vector, logged each step |
-| Global step | "Schedule axis" | A monotonic step counter that survives restarts and drives the schedule |
+| 预热（Warmup） | “慢启动（Slow start）” | 前 `warmup_steps` 次更新中，从零线性升至 `lr_max` |
+| 余弦衰减（Cosine decay） | “平滑下降（Smooth drop）” | 剩余步骤沿余弦曲线上半部分从 `lr_max` 降至 `lr_min` |
+| 下限（Floor） | “训练之后” | 超过 `total_steps` 后固定的 `lr_min` 值 |
+| 梯度范数（Gradient norm） | “梯度的 L2” | 拼接梯度向量的欧几里得范数，逐步记录 |
+| 全局步骤（Global step） | “调度坐标轴（Schedule axis）” | 重启后保留、驱动调度的单调步骤计数器 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [Loshchilov and Hutter, SGDR: Stochastic Gradient Descent with Warm Restarts (arXiv 1608.03983)](https://arxiv.org/abs/1608.03983) - the cosine schedule's reference paper
-- [Loshchilov and Hutter, Decoupled Weight Decay Regularization (arXiv 1711.05101)](https://arxiv.org/abs/1711.05101) - AdamW's reference paper
-- [PyTorch torch.optim.lr_scheduler](https://docs.pytorch.org/docs/stable/optim.html#how-to-adjust-learning-rate) - how step functions compose with framework schedulers
-- Phase 19 · 42 - the downloader whose corpus this schedule consumes
-- Phase 19 · 43 - the dataloader the schedule co-evolves with
-- Phase 19 · 45 - gradient clipping and AMP, the next layer in the loop
+- [Loshchilov 与 Hutter，SGDR：带热重启的随机梯度下降（Stochastic Gradient Descent with Warm Restarts，arXiv 1608.03983）](https://arxiv.org/abs/1608.03983)：余弦调度参考论文
+- [Loshchilov 与 Hutter，解耦权重衰减正则化（Decoupled Weight Decay Regularization，arXiv 1711.05101）](https://arxiv.org/abs/1711.05101)：AdamW 参考论文
+- [PyTorch torch.optim.lr_scheduler](https://docs.pytorch.org/docs/stable/optim.html#how-to-adjust-learning-rate)：步骤函数如何与框架调度器组合
+- 阶段 19 第 42 课：提供本调度所用语料的下载器
+- 阶段 19 第 43 课：与调度共同演进的数据加载器
+- 阶段 19 第 45 课：梯度裁剪与 AMP，循环的下一层

@@ -1,78 +1,78 @@
 {
   "lesson": "09-structured-output-and-defensive-parsing",
-  "title": "Structured Output Is an Untrusted Contract",
+  "title": "结构化输出是不可信契约（Structured Output Is an Untrusted Contract）",
   "questions": [
     {
       "stage": "pre",
-      "question": "A response is valid JSON and matches its schema. What has not yet been proven?",
+      "question": "响应是有效 JSON 且符合模式，还未证明什么？",
       "options": [
-        "That its claims are true and its proposed action is authorized",
-        "That every required key is present and no forbidden key was returned",
-        "That the response can be parsed into the declared primitive field types",
-        "That enum membership, string lengths, and numeric bounds are structurally valid"
+        "主张真实且拟议操作获授权",
+        "全部必需键存在且未返回禁用键",
+        "响应可解析为声明的基本字段类型",
+        "枚举成员、字符串长度和数值边界结构有效"
       ],
       "correct": 0,
-      "explanation": "Syntax and schema validation do not establish semantic truth, resource ownership, or permission to act."
+      "explanation": "语法和模式验证不能确立语义真实性、资源所有权或操作许可。"
     },
     {
       "stage": "check",
-      "question": "Why is silently converting the string \"4\" to integer 4 risky?",
+      "question": "为何静默把字符串 \"4\" 转成整数 4 有风险？",
       "options": [
-        "It should occur before parsing so the producer's original value stays observable",
-        "It hides a contract violation and can make incompatible output appear valid",
-        "It preserves intent but prevents the validator from checking numeric bounds",
-        "It is safe whenever the schema also allows numeric strings through a union type"
+        "应在解析前转换，保持生产者原值可观察",
+        "隐藏契约违规，让不兼容输出看似有效",
+        "保留意图，但使校验器无法检查数值边界",
+        "只要模式通过联合类型允许数字字符串就安全"
       ],
       "correct": 1,
-      "explanation": "Optimistic coercion changes the returned value and masks a producer or schema problem. Strict parsing keeps failures observable."
+      "explanation": "乐观转换改变返回值，掩盖生产者或模式问题。严格解析让失败可观察。"
     },
     {
       "stage": "check",
-      "question": "Which schema choice best prevents new model-generated fields from leaking into logs?",
+      "question": "哪种模式选择最能防止新增模型字段泄入日志？",
       "options": [
-        "Store the raw response in restricted logs before parsing downstream fields",
-        "Accept extra fields and rely on log-redaction rules to remove sensitive ones",
-        "Set additionalProperties to false and map only approved fields",
-        "Allow optional extension fields but omit them from the user-facing result"
+        "解析下游字段前先把原始响应存入受限日志",
+        "接受额外字段，依赖日志脱敏删除敏感项",
+        "将 additionalProperties 设为 false，只映射获批字段",
+        "允许可选扩展字段，但不在用户结果中展示"
       ],
       "correct": 2,
-      "explanation": "Rejecting unexpected fields and explicitly mapping the validated contract prevents accidental propagation of unapproved content."
+      "explanation": "拒绝意外字段并明确映射已验证契约，可防止未批准内容意外传播。"
     },
     {
       "stage": "check",
-      "question": "When should a bounded repair loop stop and escalate rather than keep requesting JSON?",
+      "question": "有界修复何时应停止并升级，而不是继续索要 JSON？",
       "options": [
-        "After the first structural failure, even when the evidence and repair are clear",
-        "Only when context and rate limits are reached during the same attempt",
-        "Whenever a schema-valid object fails one semantic business rule",
-        "When required evidence is absent or the retry budget is exhausted"
+        "首次结构失败后，即使证据与修复明确",
+        "只有同次尝试达到上下文和速率上限时",
+        "模式有效对象违反任一语义业务规则时",
+        "必需证据缺失或重试预算耗尽时"
       ],
       "correct": 3,
-      "explanation": "Repair can correct formatting or shape. It cannot safely invent missing evidence, and unlimited retries waste budget and amplify hostile input."
+      "explanation": "修复可纠正格式或结构，不能安全虚构缺失证据；无限重试浪费预算并放大恶意输入。"
     },
     {
       "stage": "post",
-      "question": "A structured stream currently contains only {\"category\":\"bill. What should the application do?",
+      "question": "结构化流目前只有 {\"category\":\"bill，应用应怎么办？",
       "options": [
-        "Buffer it until the content block and message complete, then parse and validate",
-        "Complete the obvious suffix locally, then validate the reconstructed object",
-        "Treat the prefix as malformed final JSON and begin a repair request immediately",
-        "Route it to billing provisionally because the observed prefix matches that category"
+        "缓存至内容块和消息完成，再解析验证",
+        "本地补齐明显后缀，再验证重建对象",
+        "视为畸形最终 JSON，立即开始修复请求",
+        "因前缀匹配，临时路由到 billing"
       ],
       "correct": 0,
-      "explanation": "The prefix is incomplete, not a finished contract. No downstream action should run until the stream completes and the full value passes validation."
+      "explanation": "前缀未完成，不是完整契约。流完成且完整值通过验证前，不应执行下游操作。"
     },
     {
       "stage": "post",
-      "question": "Which component should verify that a refund does not exceed the authenticated user's charge?",
+      "question": "哪个组件应核实退款不超过认证用户的收费金额？",
       "options": [
-        "A constrained schema that limits refunds to a global maximum amount",
-        "Deterministic application code using authenticated identity and trusted charge records",
-        "A model reviewer that checks whether the refund seems proportionate",
-        "A system instruction that compares the amount with retrieved charge history"
+        "将退款限定为全局最大金额的约束模式",
+        "使用认证身份和可信收费记录的确定性应用代码",
+        "检查退款看起来是否适当的模型审核者",
+        "将金额与检索收费历史比较的系统指令"
       ],
       "correct": 1,
-      "explanation": "Ownership and monetary bounds are semantic and authorization checks. They require authenticated state and trusted application data."
+      "explanation": "所有权和金额边界属于语义与授权检查，需要认证状态和可信应用数据。"
     }
   ]
 }

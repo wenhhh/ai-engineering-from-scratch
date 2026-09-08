@@ -1,12 +1,12 @@
-# Reliability Policy
+# 可靠性政策（Reliability Policy）
 
-The workbench absorbs the five industry-recurring failure modes:
+工作台应对行业中反复出现的五种失败模式：
 
-1. Hallucinated action — caught by the rule set + verification gate.
-2. Scope creep — caught by the scope contract diff check.
-3. Cascading errors — caught by feedback records + refuse-on-null-exit.
-4. Context loss — absorbed by repo memory; chat is not the source of truth.
-5. Tool misuse — caught by the reviewer rubric's verification dimension.
+1. 行动幻觉（Hallucinated Action）：由规则集与验证关卡捕获。
+2. 范围蔓延（Scope Creep）：由范围契约差异检查捕获。
+3. 级联错误（Cascading Errors）：由反馈记录与空退出状态即拒绝机制捕获。
+4. 上下文丢失（Context Loss）：依靠仓库记忆缓解；聊天不是事实来源。
+5. 工具误用（Tool Misuse）：由审查评分标准中的验证维度捕获。
 
-The policy is enforced by the verification gate. The override path is signed
-and audited; agents cannot self-override.
+政策由验证关卡执行。例外放行路径需要签署
+并接受审计；智能体不能自行放行。

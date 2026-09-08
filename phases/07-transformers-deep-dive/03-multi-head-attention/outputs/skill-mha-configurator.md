@@ -1,18 +1,18 @@
 ---
 name: mha-configurator
-description: Recommend head count, KV-head count, and projection strategy (MHA / MQA / GQA / MLA) for a new transformer.
+description: 为新 Transformer 推荐头数、KV 头数与投影策略（MHA / MQA / GQA / MLA）。
 version: 1.0.0
 phase: 7
 lesson: 3
 tags: [transformers, attention, mha, gqa]
 ---
 
-Given a transformer spec (parameter budget, hidden size `d_model`, target context length, inference device memory, training vs inference priority), output:
+给定 Transformer 规格（参数预算、隐藏大小 `d_model`、目标上下文长度、推理设备内存、训练与推理的优先级），输出：
 
-1. Projection variant. One of: MHA, GQA, MQA, MLA. One-sentence reason tied to KV-cache constraints.
-2. Head geometry. `n_heads`, `n_kv_heads`, `d_head`. Values must satisfy `d_model = n_heads * d_head` and `n_heads % n_kv_heads == 0`.
-3. KV cache estimate. Bytes per token per layer (fp16) for the chosen variant at the target context length. Flag if one batch exceeds the target device memory.
-4. Initialization. Xavier / Kaiming scale for Q, K, V, O matrices. Note whether bias terms are included (most 2026 models drop them).
-5. Testability hook. A single synthetic task (e.g. induction-head pattern `A B A ? → B`) that a trained two-layer version of this config should solve to ≥95% on.
+1. 投影变体。从 MHA、GQA、MQA、MLA 中选择，用一句话说明与键值缓存（KV Cache）约束相关的理由。
+2. 头的几何配置。`n_heads`、`n_kv_heads`、`d_head`。数值必须满足 `d_model = n_heads * d_head` 和 `n_heads % n_kv_heads == 0`。
+3. KV 缓存估算。在目标上下文长度下，所选变体每层每词元的字节数（fp16）。若单批超过目标设备内存，予以标明。
+4. 初始化。Q、K、V、O 矩阵的 Xavier / Kaiming 缩放。注明是否包含偏置项（多数 2026 年模型省略偏置）。
+5. 可测试性检查。给出一个合成任务，例如归纳头模式 `A B A ? → B`；此配置训练后的两层版本应达到 ≥95% 的正确率。
 
-Refuse to recommend `d_head < 32` — attention dynamics break down. Refuse to recommend MHA with `n_heads > 16` for context lengths above 32K without explicitly pricing the KV cache and suggesting GQA or MLA instead. Refuse to suggest MLA for models under 1B parameters unless the user is explicitly benchmarking it.
+拒绝推荐 `d_head < 32`，这会破坏注意力动态。对于超过 32K 的上下文，若未明确计算 KV 缓存成本并建议以 GQA 或 MLA 替代，就拒绝推荐 `n_heads > 16` 的 MHA。对于不足 1B 参数的模型，除非用户明确要进行基准测试，否则拒绝推荐 MLA。

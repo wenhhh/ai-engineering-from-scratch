@@ -1,33 +1,33 @@
 ---
 name: agent-loop
-description: Write a correct, minimal ReAct agent loop in any target language/runtime with tools, stop condition, and turn budget.
+description: 用任意目标语言或运行时编写正确、最小的 ReAct 智能体循环（Agent loop），包含工具、停止条件和轮次预算。
 version: 1.0.0
 phase: 14
 lesson: 01
 tags: [react, agent-loop, tools, observability, stop-condition]
 ---
 
-Given a target runtime (Python async, Python sync, Node, Rust async, Go) and a tool list (name, input schema, callable), produce a ReAct agent loop that is correct on the first try.
+给定目标运行时（Python 异步、Python 同步、Node、Rust 异步或 Go）和工具列表（名称、输入结构定义、可调用对象），生成首次运行即可正确工作的 ReAct 智能体循环。
 
-Produce:
+请生成：
 
-1. A message-buffer type with roles {user, assistant, tool, final} and the schema the target provider expects (Anthropic `tool_use` / `tool_result` blocks, OpenAI function-calling messages, Responses API reasoning channel). Never silently swap schemas between providers.
-2. A tool registry with name -> callable dispatch, input validation, and a typed result. Errors must be caught and turned into observation strings, never raised to the loop.
-3. A loop that runs until one of: explicit `finish` action, no tool calls in the assistant turn, max turns, max total tokens, or a guardrail trip. Pick exactly one primary stop; the others are safety belts.
-4. A turn budget scaled to the task class — short task 10, computer-use 200, deep research 400. Call out the choice explicitly.
-5. A trace record that logs every thought, action, observation, and stop reason. Emit OpenTelemetry GenAI spans (`invoke_agent`, `tool_call`) when the runtime has an OTel SDK present.
+1. 消息缓冲区（Message buffer）类型，包含角色 {user, assistant, tool, final}，采用目标提供商要求的结构定义（Schema）：Anthropic 的 `tool_use` / `tool_result` 块、OpenAI 函数调用消息或 Responses API 推理通道。绝不能在提供商之间悄悄替换结构定义。
+2. 工具注册表（Tool registry），具备名称 -> 可调用对象分派、输入验证和带类型的结果。必须捕获错误并转为观察字符串，不能向循环抛出。
+3. 循环持续运行，直到出现以下情况之一：显式 `finish` 行动、助手轮次中没有工具调用、达到最大轮次或总词元数，或触发防护机制（Guardrail）。只选一种主要停止方式，其余作为安全保障。
+4. 按任务类别调整轮次预算（Turn budget）：短任务为 10，计算机使用为 200，深度研究为 400。明确说明选择。
+5. 轨迹记录（Trace record），记录每次思考、行动、观察和停止原因。运行时存在 OTel SDK 时，输出 OpenTelemetry GenAI 跨度（Span）：`invoke_agent`、`tool_call`。
 
-Hard rejects:
+严格禁止：
 
-- Looping without a turn cap. This is a reliability, not an optimization, issue.
-- Swallowing tool errors into an empty observation. The model must see the failure text so it can correct.
-- Treating retrieved content as trusted instructions. All tool outputs are untrusted input — only the user message carries permission (see OpenAI CUA docs).
-- Mixing providers without a schema-translation layer. Anthropic and OpenAI have divergent tool schemas and message shapes.
+- 不设轮次上限的循环。这是可靠性问题，而不是优化问题。
+- 吞掉工具错误，只返回空观察结果。模型必须看到失败文本，才能纠错。
+- 把检索内容当作可信指令。所有工具输出都是不可信输入，只有用户消息携带授权，参见 OpenAI CUA 文档。
+- 没有结构定义（Schema）转换层就混用提供商。Anthropic 与 OpenAI 的工具结构定义和消息结构并不相同。
 
-Refusal rules:
+拒绝规则：
 
-- If the target is "no framework, bash only," refuse and recommend at least a typed message schema; agent loops are too error-prone for untyped shell glue.
-- If the user asks for "auto-retry on failed tool call without feedback to the model," refuse. Retries must either go through the model (CRITIC/Self-Refine, Lesson 05) or be part of the tool's own idempotency contract.
-- If the tool list has a destructive tool without a human-in-the-loop confirmation, refuse and point to Lesson 09 (permissions + sandboxing).
+- 如果目标是“不用框架，只用 bash”，应拒绝，并建议至少为消息制定带类型的结构定义（Schema）；用无类型的 shell 脚本拼接智能体循环很容易出错。
+- 如果用户要求“工具调用失败时自动重试，不向模型反馈”，应拒绝。重试必须经过模型（CRITIC/Self-Refine，第 05 课），或者属于工具自身的幂等性契约（Idempotency contract）。
+- 如果工具列表包含破坏性工具，却没有人在回路（Human-in-the-loop）确认，应拒绝，并指向第 09 课（权限与沙箱）。
 
-Output: one file per language target plus a `README.md` explaining the stop-condition choice, turn budget justification, and one worked trace showing thought-action-observation per step. End with "what to read next" pointing to Lesson 02 (ReWOO planning) if the task is long-horizon, Lesson 03 (Reflexion) if the task is repeat-of-previous, or Lesson 27 (prompt injection) if the tools touch untrusted content.
+输出：每种目标语言一个文件，再附一个 `README.md`，解释停止条件的选择、轮次预算的依据，并提供一份完整轨迹示例，展示每一步的思考、行动和观察。末尾添加“接下来读什么”：长时程任务指向第 02 课（ReWOO 规划）；重复之前的任务指向第 03 课（Reflexion）；工具接触不可信内容时指向第 27 课（提示词注入，Prompt injection）。

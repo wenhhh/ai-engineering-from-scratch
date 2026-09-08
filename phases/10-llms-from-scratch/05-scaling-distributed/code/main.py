@@ -28,7 +28,7 @@ def simulate_data_parallelism(data, num_gpus, model_fn):
 
 def simulate_tensor_parallelism(input_data, weight_matrix, num_gpus):
     d_in, d_out = weight_matrix.shape
-    assert d_out % num_gpus == 0, f"d_out {d_out} not divisible by num_gpus {num_gpus}"
+    assert d_out % num_gpus == 0, f"d_out {d_out} 不能被 num_gpus 整除，num_gpus 为 {num_gpus}"
     shard_size = d_out // num_gpus
 
     partial_results = []
@@ -251,7 +251,7 @@ if __name__ == "__main__":
     np.random.seed(42)
 
     print("=" * 70)
-    print("DATA PARALLELISM SIMULATION")
+    print("数据并行模拟（Data Parallelism Simulation）")
     print("=" * 70)
 
     data = np.random.randn(64, 32)
@@ -265,11 +265,11 @@ if __name__ == "__main__":
 
     for n_gpus in [1, 2, 4, 8]:
         loss, grad = simulate_data_parallelism(data, n_gpus, model_fn)
-        print(f"  {n_gpus} GPUs: loss={loss:.4f}, grad_norm={np.linalg.norm(grad):.4f}")
+        print(f"  {n_gpus} 张 GPU: 损失（loss）={loss:.4f}, 梯度范数（grad_norm）={np.linalg.norm(grad):.4f}")
 
     print()
     print("=" * 70)
-    print("TENSOR PARALLELISM SIMULATION")
+    print("张量并行模拟（Tensor Parallelism Simulation）")
     print("=" * 70)
 
     x = np.random.randn(4, 8192)
@@ -277,20 +277,20 @@ if __name__ == "__main__":
 
     for n_gpus in [1, 2, 4, 8]:
         output, error = simulate_tensor_parallelism(x, W, n_gpus)
-        print(f"  {n_gpus} GPUs: output_shape={output.shape}, max_error={error:.2e}")
+        print(f"  {n_gpus} 张 GPU: 输出形状（output_shape）={output.shape}, 最大误差（max_error）={error:.2e}")
 
     print()
     print("=" * 70)
-    print("PIPELINE PARALLELISM SIMULATION")
+    print("流水线并行模拟（Pipeline Parallelism Simulation）")
     print("=" * 70)
 
     for n_mb in [1, 4, 8, 16, 32]:
         _, total_t, bubble = simulate_pipeline_parallelism(32, 4, n_mb)
-        print(f"  {n_mb:2d} micro-batches: total_time={total_t:4d}, bubble={bubble:.1%}")
+        print(f"  {n_mb:2d} 个微批次（Micro-batches）: 总耗时（total_time）={total_t:4d}, 气泡比例（bubble）={bubble:.1%}")
 
     print()
     print("=" * 70)
-    print("MEMORY CALCULATOR")
+    print("内存计算器（Memory Calculator）")
     print("=" * 70)
 
     configs = [
@@ -303,7 +303,7 @@ if __name__ == "__main__":
         (405, "fsdp", 128),
     ]
 
-    print(f"  {'Model':>8} {'Sharding':>8} {'GPUs':>5} {'Per-GPU':>10} {'Fits 80GB':>10}")
+    print(f"  {'模型（Model）':>8} {'分片（Sharding）':>8} {'GPU 数量':>5} {'每 GPU 内存':>10} {'能否装入 80GB':>10}")
     print("  " + "-" * 50)
     for params, shard, gpus in configs:
         result = memory_calculator(params, num_gpus=gpus, sharding=shard)
@@ -312,28 +312,28 @@ if __name__ == "__main__":
 
     print()
     print("=" * 70)
-    print("MIXED PRECISION COMPARISON")
+    print("混合精度比较（Mixed Precision Comparison）")
     print("=" * 70)
 
     for params_b in [7, 13, 70, 405]:
         result = mixed_precision_comparison(params_b)
         print(f"  {params_b}B: FP32={result['fp32_total_gb']:.0f}GB, "
-              f"Mixed BF16={result['mixed_bf16_gb']:.0f}GB, "
-              f"Savings={result['savings_vs_fp32']:.0%}")
+              f"混合精度 BF16={result['mixed_bf16_gb']:.0f}GB, "
+              f"节省比例（Savings）={result['savings_vs_fp32']:.0%}")
 
     print()
     print("=" * 70)
-    print("COMMUNICATION VOLUME")
+    print("通信量（Communication Volume）")
     print("=" * 70)
 
     for strategy in ["data_parallel", "fsdp", "tensor_parallel"]:
         result = communication_volume_calculator(70, 8, strategy)
         print(f"  {result['strategy']}")
-        print(f"    Per-step volume: {result['per_step_gb']:.1f} GB")
+        print(f"    每步通信量: {result['per_step_gb']:.1f} GB")
         print()
 
     print("=" * 70)
-    print("TRAINING COST ESTIMATES")
+    print("训练成本估算（Training Cost Estimates）")
     print("=" * 70)
 
     estimates = [
@@ -343,7 +343,7 @@ if __name__ == "__main__":
         (671, 14.8, "h100", 2048),
     ]
 
-    print(f"  {'Model':>8} {'Tokens':>8} {'GPUs':>6} {'Days':>8} {'Cost':>14}")
+    print(f"  {'模型（Model）':>8} {'词元数（Tokens）':>8} {'GPU 数量':>6} {'天数（Days）':>8} {'成本（Cost）':>14}")
     print("  " + "-" * 55)
     for params, tokens, gpu, n_gpus in estimates:
         result = training_cost_estimator(params, tokens, gpu, n_gpus)

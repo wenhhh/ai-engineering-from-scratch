@@ -14,65 +14,65 @@
     </style>
   </defs>
 
-  <text x="480" y="26" text-anchor="middle" class="title">Agent observability 2026 — three open-source platforms, three emphases</text>
+  <text x="480" y="26" text-anchor="middle" class="title">2026 年智能体可观测性（Observability）：三个开源平台，三个侧重点</text>
 
   <rect x="40" y="50" width="290" height="240" class="lf"/>
   <text x="185" y="72" text-anchor="middle" class="head">Langfuse  MIT</text>
-  <text x="60" y="96" class="small">6M+ SDK installs/month, 19k+ stars</text>
+  <text x="60" y="96" class="small">SDK 每月安装 600 万+，星标 19,000+</text>
   <rect x="60" y="108" width="250" height="30" class="box"/>
-  <text x="78" y="128" class="step">tracing + prompt management</text>
+  <text x="78" y="128" class="step">追踪 + 提示词管理</text>
   <rect x="60" y="142" width="250" height="30" class="box"/>
-  <text x="78" y="162" class="step">LLM-as-judge, user feedback, custom evals</text>
+  <text x="78" y="162" class="step">LLM 裁判、用户反馈、自定义评估</text>
   <rect x="60" y="176" width="250" height="30" class="box"/>
-  <text x="78" y="196" class="step">session replays, annotation queues</text>
+  <text x="78" y="196" class="step">会话回放、标注队列</text>
   <rect x="60" y="210" width="250" height="30" class="box"/>
-  <text x="78" y="230" class="step">playground + prompt experiments</text>
+  <text x="78" y="230" class="step" style="font-size: 10px">试验场（Playground）+ 提示词实验</text>
   <rect x="60" y="244" width="250" height="40" class="box"/>
-  <text x="78" y="264" class="step">best for: all-in-one with prompt loop</text>
-  <text x="78" y="280" class="small">prompt versions tied to traces</text>
+  <text x="78" y="264" class="step" style="font-size: 10px">最适合：包含提示词循环的一体化方案</text>
+  <text x="78" y="280" class="small">提示词版本关联追踪</text>
 
   <rect x="340" y="50" width="290" height="240" class="px"/>
   <text x="485" y="72" text-anchor="middle" class="head">Arize Phoenix  Elastic 2.0</text>
-  <text x="360" y="96" class="small">agent-specific evaluation focus</text>
+  <text x="360" y="96" class="small">专注智能体专用评估</text>
   <rect x="360" y="108" width="250" height="30" class="box"/>
-  <text x="378" y="128" class="step">trace clustering + anomaly detection</text>
+  <text x="378" y="128" class="step">追踪聚类 + 异常检测</text>
   <rect x="360" y="142" width="250" height="30" class="box"/>
-  <text x="378" y="162" class="step">RAG relevancy + retrieval eval</text>
+  <text x="378" y="162" class="step">RAG 相关性 + 检索评估</text>
   <rect x="360" y="176" width="250" height="30" class="box"/>
-  <text x="378" y="196" class="step">OpenInference auto-instrumentation</text>
+  <text x="378" y="196" class="step">OpenInference 自动插桩</text>
   <rect x="360" y="210" width="250" height="30" class="box"/>
-  <text x="378" y="230" class="step">pairs with managed Arize AX</text>
+  <text x="378" y="230" class="step">配合托管 Arize AX</text>
   <rect x="360" y="244" width="250" height="40" class="box"/>
-  <text x="378" y="264" class="step">best for: RAG relevancy + drift</text>
-  <text x="378" y="280" class="small">no prompt versioning  alongside, not replacing</text>
+  <text x="378" y="264" class="step">最适合：RAG 相关性 + 漂移</text>
+  <text x="378" y="280" class="small">无提示词版本控制；配合而非替代</text>
 
   <rect x="640" y="50" width="290" height="240" class="op"/>
   <text x="785" y="72" text-anchor="middle" class="head">Comet Opik  Apache 2.0</text>
-  <text x="660" y="96" class="small">automated optimization + guardrails</text>
+  <text x="660" y="96" class="small">自动优化 + 护栏</text>
   <rect x="660" y="108" width="250" height="30" class="box"/>
-  <text x="678" y="128" class="step">automated prompt A/B experiments</text>
+  <text x="678" y="128" class="step">自动提示词 A/B 实验</text>
   <rect x="660" y="142" width="250" height="30" class="box"/>
-  <text x="678" y="162" class="step">guardrails: PII redaction, topical</text>
+  <text x="678" y="162" class="step">护栏：PII 脱敏、主题约束</text>
   <rect x="660" y="176" width="250" height="30" class="box"/>
-  <text x="678" y="196" class="step">LLM-judge hallucination detection</text>
+  <text x="678" y="196" class="step">LLM 裁判幻觉检测</text>
   <rect x="660" y="210" width="250" height="30" class="box"/>
-  <text x="678" y="230" class="step">vendor benchmark: ~14x Langfuse</text>
+  <text x="678" y="230" class="step">厂商基准：约为 Langfuse 的 14 倍</text>
   <rect x="660" y="244" width="250" height="40" class="box"/>
-  <text x="678" y="264" class="step">best for: optimization loop</text>
-  <text x="678" y="280" class="small">vendor numbers directional; measure your own</text>
+  <text x="678" y="264" class="step">最适合：优化循环</text>
+  <text x="678" y="280" class="small">厂商数字仅供参考，应自行测量</text>
 
   <rect x="40" y="310" width="880" height="200" class="shared"/>
-  <text x="480" y="332" text-anchor="middle" class="head">common substrate  OpenTelemetry GenAI spans (Lesson 23)</text>
+  <text x="480" y="332" text-anchor="middle" class="head">共同基础：OpenTelemetry GenAI 跨度（第 23 课）</text>
   <rect x="60" y="348" width="840" height="30" class="box"/>
-  <text x="78" y="368" class="step">all three consume OTel GenAI spans; you can switch without re-instrumenting</text>
+  <text x="78" y="368" class="step">三者都消费 OTel GenAI 跨度；切换时无需重新插桩</text>
   <rect x="60" y="382" width="840" height="30" class="box"/>
-  <text x="78" y="402" class="step">content capture: external store + span references (PII-safe)</text>
+  <text x="78" y="402" class="step">内容采集：外部存储 + 跨度引用（保护 PII）</text>
   <rect x="60" y="416" width="840" height="30" class="box"/>
-  <text x="78" y="436" class="step">89% of orgs have agent observability (Maxim field data, 2026)</text>
+  <text x="78" y="436" class="step">89% 的组织已有智能体可观测性（Maxim 实地数据，2026 年）</text>
   <rect x="60" y="450" width="840" height="30" class="box"/>
-  <text x="78" y="470" class="step">32% of respondents cite quality as the top production barrier</text>
+  <text x="78" y="470" class="step">32% 的受访者认为质量是首要生产障碍</text>
   <rect x="60" y="484" width="840" height="22" class="box"/>
-  <text x="78" y="500" class="step">Datadog v1.37+ maps GenAI attributes natively  mixed ops+ML teams fit here</text>
+  <text x="78" y="500" class="step">Datadog v1.37+ 原生映射 GenAI 属性，适合运维与机器学习混合团队</text>
 
-  <text x="480" y="540" text-anchor="middle" class="caption">tracing without evaluation is expensive logging. pair traces + LLM-judge + prompt versioning.</text>
+  <text x="480" y="540" text-anchor="middle" class="caption">没有评估的追踪是昂贵的日志。应结合追踪、LLM 裁判与提示词版本控制。</text>
 </svg>

@@ -66,29 +66,29 @@ def count_tokens(T, H, W, p_t=2, p_h=8, p_w=8):
 
 
 def main():
-    print("[token count for 5s 360p video (150 frames, 480x360)]")
+    print("[5s 360p 视频的词元数（Token count，150 帧，480x360）]")
     tokens = count_tokens(150, 480, 360, p_t=2, p_h=8, p_w=8)
     T_tok = 150 // 2
     S_tok = (480 // 8) * (360 // 8)
-    print(f"  tokens per clip: {tokens:,}")
-    print(f"  attention pairs (joint): {tokens ** 2:,}")
-    # Divided temporal: T^2 attention at every spatial position.
-    # Divided spatial:  (H*W)^2 attention at every timestep.
+    print(f"  每段视频词元数: {tokens:,}")
+    print(f"  注意力对数（Attention pairs，联合计算）: {tokens ** 2:,}")
+    # 分离式时域注意力（Divided temporal attention）：每个空间位置计算 T^2 个注意力对。
+    # 分离式空域注意力（Divided spatial attention）：每个时间步计算 (H*W)^2 个注意力对。
     divided_time = S_tok * T_tok ** 2
     divided_space = T_tok * S_tok ** 2
-    print(f"  divided time total: {divided_time:,}")
-    print(f"  divided space total: {divided_space:,}")
-    print(f"  divided total: {divided_time + divided_space:,}")
+    print(f"  分离式时域计算总数: {divided_time:,}")
+    print(f"  分离式空域计算总数: {divided_space:,}")
+    print(f"  分离式计算总数: {divided_time + divided_space:,}")
 
     torch.manual_seed(0)
     vid = torch.randn(1, 4, 8, 16, 16)
     model = TinyVideoDiT(in_channels=4, dim=64, depth=2, heads=2)
     out, grid = model(vid)
-    print(f"\n[model shapes]")
-    print(f"  input   {tuple(vid.shape)}")
-    print(f"  tokens grid {grid}")
-    print(f"  output  {tuple(out.shape)}")
-    print(f"  params  {sum(p.numel() for p in model.parameters()):,}")
+    print(f"\n[模型形状（Model shapes）]")
+    print(f"  输入（Input）   {tuple(vid.shape)}")
+    print(f"  词元网格（Tokens grid） {grid}")
+    print(f"  输出（Output）  {tuple(out.shape)}")
+    print(f"  参数（Parameters）  {sum(p.numel() for p in model.parameters()):,}")
 
 
 if __name__ == "__main__":

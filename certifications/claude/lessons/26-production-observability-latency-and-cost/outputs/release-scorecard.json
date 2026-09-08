@@ -20,5 +20,5 @@
     "hard_safety_failures": 0
   },
   "decision": "blocked_on_task_success",
-  "safe_next_action": "repair timeout path and rerun the representative evaluation"
+  "safe_next_action": "修复超时路径，重新运行代表性评估"
 }

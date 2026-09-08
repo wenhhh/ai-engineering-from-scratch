@@ -1,99 +1,99 @@
-# Study the Decisions, Not the Vocabulary
+# 学会决策，而不只是记住术语（Study the Decisions, Not the Vocabulary）
 
-> A certification blueprint is a map of decisions a competent practitioner can defend. Treat it as a list of terms and you will study the least useful part of the exam.
+> 认证考试大纲（Certification blueprint）列出了合格从业者应当能够作出并说明理由的决策。如果把它当成术语表，你花时间学习的就会是对考试最没有帮助的部分。
 
 **Type:** Learn
 **Languages:** Python
-**Prerequisites:** None
-**Time:** ~75 minutes
+**Prerequisites:** 无
+**Time:** ~75 分钟
 
-## Learning Objectives
+## 学习目标（Learning Objectives）
 
-- Convert a certification blueprint into a weighted study plan.
-- Separate stable engineering principles from product details that can change.
-- Build an evidence ledger that records decisions, reasons, and official sources.
-- Practice scenario judgment without using dumps or reconstructing live questions.
-- Define a readiness gate based on domain performance, not one flattering mock score.
+- 将认证考试大纲转化为按权重分配时间的学习计划。
+- 区分稳定的工程原则与可能变化的产品细节。
+- 建立证据台账（Evidence ledger），记录决策、理由和官方来源。
+- 不使用泄露题库、不还原在用考题，通过场景练习培养判断能力。
+- 根据各领域的表现设定备考就绪门槛（Readiness gate），而不是依赖一次好看的模拟分数。
 
-## The Problem
+## 问题背景（The Problem）
 
-Maya has spent two weeks memorizing feature names. She can define a Project, a context window, and a connector. Then she meets a scenario.
+Maya 花了两周背诵功能名称。她能解释 Project、上下文窗口（Context Window）和连接器（Connector），随后却遇到了一道场景题。
 
-A team wants to summarize a confidential weekly report. The source file changes every Friday. The final summary goes to executives. The options include pasting the report into a new chat, adding it to an old Project, connecting the live source, and building a custom application. Every option can produce a summary. Only one fits the update cadence, review requirement, data policy, and maintenance burden.
+一个团队希望为机密周报生成摘要。源文件每周五更新，最终摘要要交给高管。可选方案包括：把报告粘贴到新对话中、加入已有 Project、连接实时数据源，或者构建自定义应用。每个方案都能生成摘要，但只有一个同时适合更新频率、审核要求、数据政策和维护负担。
 
-Maya searches her memory for the definition of a connector. The scenario is asking for a decision.
+Maya 努力回想连接器的定义，但这道题要求她作出决策。
 
-That distinction controls this entire curriculum. The official guides describe tasks such as selecting a product, validating an output, managing knowledge, and escalating risk. A definition can support those tasks. It cannot perform them for you.
+这一区别贯穿整套课程。官方指南描述的是选择产品、验证输出、管理知识和升级处理风险等任务。定义可以帮助你完成这些任务，却不能代替你完成它们。
 
-The exams also use a scaled score. A practice percentage is not an official score, and no community mock can predict the result. Your job is to build enough judgment that unfamiliar scenarios still feel structured.
+考试还采用换算分数（Scaled score）。练习正确率不等于官方分数，任何社区模拟考试都无法预测考试结果。你要培养足够的判断能力，让自己面对陌生场景时仍然能有条理地分析。
 
-## The Concept
+## 核心概念（The Concept）
 
-### The blueprint is a job model
+### 考试大纲是岗位工作模型（The blueprint is a job model）
 
-Each domain represents part of the work expected from the target role. The weight estimates how much of the scored exam is drawn from that domain. Weight is not difficulty. A small domain can still contain difficult questions. Weight tells you how to allocate practice.
+每个领域都对应目标岗位应承担的一部分工作。权重表示该领域在计分考试中的大致占比，而不是难度；占比较小的领域也可能有难题。权重的作用是指导你分配练习时间。
 
-For Associate Foundations, the largest domain is output evaluation and validation. That is a signal. The role is not merely someone who can ask Claude for an answer. It is someone who can decide whether the answer is fit to use.
+在 Associate Foundations 中，占比最大的领域是输出评估与验证。这传达了一个信号：该岗位不仅要会向 Claude 提问，还要能够判断回答是否适合实际使用。
 
-Use three labels while reading every objective:
+阅读每个目标时，使用以下三种标签：
 
-1. **Know:** facts or vocabulary you must recall.
-2. **Do:** a procedure you must perform.
-3. **Decide:** a tradeoff you must resolve from constraints.
+1. **知道（Know）：** 需要记住的事实或术语。
+2. **执行（Do）：** 需要能够完成的操作流程。
+3. **决策（Decide）：** 需要依据约束作出的权衡。
 
-Most weak study plans overinvest in Know. Most scenario questions concentrate on Do and Decide.
+效果不佳的学习计划往往在“知道”上投入过多，而大多数场景题关注的是“执行”和“决策”。
 
-### Stable principles and changeable facts
+### 稳定原则与可变事实（Stable principles and changeable facts）
 
-Some knowledge changes slowly:
+有些知识变化很慢：
 
-- Sensitive data needs an approved handling path.
-- A claim needs evidence before it enters a consequential deliverable.
-- Persistent instructions should be concise, scoped, and maintained.
-- Irreversible actions deserve stronger review than reversible drafts.
-- A larger model is wasteful when a smaller model meets the measured requirement.
+- 敏感数据必须通过获批的流程处理。
+- 主张进入可能造成重大影响的交付物前，必须有证据支持。
+- 持久指令应简洁、范围明确，并持续维护。
+- 不可逆操作应比可修改的草稿接受更严格的审核。
+- 如果较小模型已达到实测要求，使用更大模型就是浪费。
 
-Other knowledge can change between the day this lesson is written and the day you study:
+另一些知识可能在本课写作到你学习的这段时间内就发生变化：
 
-- Model names, prices, and context limits.
-- Plan eligibility and feature availability.
-- Product navigation and interface labels.
-- Connector capabilities and approval behavior.
-- Certification fees, policies, and access rules.
+- 模型名称、价格和上下文上限。
+- 套餐适用资格与功能可用性。
+- 产品导航方式和界面标签。
+- 连接器能力与审批行为。
+- 认证费用、政策和参与规则。
 
-The second group must carry a verification date and an official source. This curriculum was checked against the July 2026 version 1.0 guides. Before scheduling an exam, open the current official guide and certification FAQ again.
+第二类知识必须附上核实日期和官方来源。本课程已对照 2026 年 7 月的 1.0 版指南核查。在预约考试前，请再次打开最新官方指南和认证常见问题。
 
-### The scenario decision stack
+### 场景决策的分析顺序（The scenario decision stack）
 
-When several answers sound reasonable, inspect the scenario in this order:
+当多个答案听起来都合理时，按以下顺序分析场景：
 
 ```mermaid
 flowchart TD
-    A["State the required outcome"] --> B["Extract constraints"]
-    B --> C["Classify risk and reversibility"]
-    C --> D["Choose the smallest sufficient capability"]
-    D --> E["Add evidence and review"]
-    E --> F["Check maintenance and ownership"]
+    A["明确所需结果"] --> B["提取约束条件"]
+    B --> C["判断风险与可逆性"]
+    C --> D["选择足以满足需求的最小能力"]
+    D --> E["补充证据与审核"]
+    E --> F["检查维护安排与责任归属"]
 ```
 
-The smallest sufficient capability matters. If a direct chat produces a one-time draft safely, a managed Project may be unnecessary. If a source changes every day, a pasted copy may be too stale. If the workflow performs a consequential action, convenience does not outrank approval.
+“足以满足需求的最小能力”很重要。如果普通对话就能安全地产出一次性草稿，可能不需要专门维护 Project。如果数据源每天变化，粘贴的副本可能很快过时。如果工作流会执行影响重大的操作，便利性就不能凌驾于审批要求之上。
 
-### Wrong answers are usually locally correct
+### 错误答案通常只在局部成立（Wrong answers are usually locally correct）
 
-Good distractors are rarely nonsense. They solve the wrong problem, ignore one constraint, or add unnecessary machinery.
+设计良好的干扰项（Distractor）很少毫无道理。它们往往解决了错误的问题、忽略了某个约束，或引入了不必要的复杂机制。
 
-Common shapes include:
+常见类型包括：
 
-- **Capability without fit:** The feature can do the task, but not under the stated privacy or freshness requirement.
-- **Maximum power by default:** The largest model is selected without a measured need.
-- **Prompt-only repair:** A prompt is rewritten when the failure actually comes from stale knowledge or a missing source.
-- **Automation without ownership:** A workflow has no reviewer, escalation route, or maintenance owner.
-- **Policy after execution:** Sensitive material is processed first and classified later.
-- **One successful example:** A single polished output is treated as evidence of reliability.
+- **有能力但不适用（Capability without fit）：** 功能能够完成任务，却无法满足题目给出的隐私或时效要求。
+- **默认选择最强能力（Maximum power by default）：** 未经实测确认需求，就选择最大模型。
+- **只修改提示词（Prompt-only repair）：** 故障其实源于过时知识或缺失来源，却反复重写提示词。
+- **自动化缺乏责任归属（Automation without ownership）：** 工作流没有审核人、升级处理路径或维护负责人。
+- **先执行后考虑政策（Policy after execution）：** 先处理敏感材料，再进行数据分类。
+- **以一次成功为依据（One successful example）：** 把一份精美输出当成可靠性的证据。
 
-### Build an evidence ledger
+### 建立证据台账（Build an evidence ledger）
 
-Your notes should record decisions, not copied paragraphs. Use one entry per objective:
+笔记应记录决策，而不是抄录段落。每个目标对应一条记录：
 
 ```json
 {
@@ -106,87 +106,79 @@ Your notes should record decisions, not copied paragraphs. Use one entry per obj
 }
 ```
 
-The counterexample is essential. If you cannot name when a rule should not apply, you probably memorized a slogan rather than learned a boundary.
+反例必不可少。如果你说不出规则何时不适用，很可能只是记住了口号，而没有理解适用边界。
 
-## Build It
+## 动手实现（Build It）
 
-Create a seven-row Associate Foundations ledger, one row per domain. For each row, write:
+创建一份包含七行的 Associate Foundations 台账，每个领域一行。每行写明：
 
-- The domain weight.
-- Two decisions you expect to make.
-- One artifact that proves you can perform the work.
-- One failure mode you want to recognize quickly.
-- One official source.
-- Your current confidence: unseen, understood, practiced, or timed.
+- 领域权重。
+- 预计需要作出的两个决策。
+- 一份能够证明你有能力完成该工作的交付物。
+- 一种希望能够快速识别的失效模式（Failure mode）。
+- 一个官方来源。
+- 当前掌握程度：未接触（unseen）、已理解（understood）、已练习（practiced）或已限时练习（timed）。
 
-Then allocate ten study hours proportionally. Start with the mathematical allocation, but adjust for weakness. A 21 percent domain where you already perform strongly may need less remediation than a 12 percent domain you have never used.
+然后按比例分配十小时学习时间。先计算基础分配，再根据薄弱程度调整。对于占比 21% 但你已表现良好的领域，补强时间可能应少于一个占比 12% 却从未接触过的领域。
 
-Use this formula:
+使用以下公式：
 
 ```text
 domain hours = total hours x domain weight x weakness multiplier
 ```
 
-Normalize the final numbers so they add back to your available time. A weakness multiplier of 1.5 is reasonable for an unfamiliar domain. Do not use a multiplier to avoid high-weight work you dislike.
+将最终数值归一化，使总和等于可用时间。对陌生领域使用 1.5 的薄弱程度乘数是合理的，但不要借调整乘数回避自己不喜欢的高权重内容。
 
-Finally, build an error log for practice questions. Record:
+最后，为练习题建立错题日志（Error log），记录：
 
-- The decision you made.
-- The constraint you missed.
-- Why the selected option looked attractive.
-- The rule that would have produced a better answer.
-- A new scenario where the same rule applies.
+- 你作出的决策。
+- 遗漏的约束。
+- 所选选项为何看起来有吸引力。
+- 哪条规则本可以帮助你得出更好的答案。
+- 一个同样适用该规则的新场景。
 
-Reviewing the error log is more valuable than repeatedly taking the same mock.
+复盘错题日志，比反复做同一套模拟题更有价值。
 
-### Use a cadence, not a cram pile
+### 按节奏学习，而不是临时堆积材料（Use a cadence, not a cram pile）
 
-Use this four-stage cadence as a curriculum heuristic. Stretch it across four
-weeks or compress it into the time you actually have:
+把以下四阶段节奏作为课程学习的参考。可以安排为四周，也可以压缩到实际可用的时间内：
 
-1. **Orient:** Read the current guide, take one untouched diagnostic, and map
-   every miss to an objective and a confidence level.
-2. **Build:** Complete the required lessons and learner-owned artifacts. Run the
-   tests rather than treating code, policy, or architecture examples as prose.
-3. **Transfer:** Solve new scenarios, defend why each plausible alternative
-   loses, and repair weak domains using the error log.
-4. **Simulate:** Take fresh timed sets under the published closed-book rules,
-   review correct guesses, and stop adding new material immediately before the
-   assessment.
+1. **定位（Orient）：** 阅读最新指南，做一套未接触过的诊断测评，并为每道错题关联目标和掌握程度。
+2. **构建（Build）：** 完成必修课程以及由学习者自己制作的交付物。实际运行测试，不要只把代码、政策或架构示例当文章阅读。
+3. **迁移（Transfer）：** 解决新场景，说明每个看似合理的备选方案为什么不合适，并利用错题日志补强薄弱领域。
+4. **模拟（Simulate）：** 按已公布的闭卷规则完成全新限时题组，复盘猜对的题目，并在临近测评时停止增加新材料。
 
-Classify every miss before choosing remediation:
+选择补救措施前，先为每次错误分类：
 
-- **Recall gap:** You did not know a stable fact or definition.
-- **Stale fact:** You remembered a product detail that needs current official verification.
-- **Missed constraint:** You ignored privacy, freshness, latency, cost, authority, or reversibility.
-- **Sequence error:** You chose a valid action at the wrong lifecycle stage.
-- **Surface confusion:** You selected a capable product or tool that was not the smallest maintainable fit.
-- **Evidence failure:** You accepted confidence, citation presence, or one successful run as proof.
-- **Overengineering:** You added architecture before the scenario required it.
+- **记忆缺口（Recall gap）：** 不知道某个稳定事实或定义。
+- **事实过时（Stale fact）：** 记住的产品细节需要依据最新官方资料重新核实。
+- **遗漏约束（Missed constraint）：** 忽略了隐私、时效性、延迟、成本、权限或可逆性。
+- **顺序错误（Sequence error）：** 操作本身有效，却安排在错误的生命周期阶段。
+- **产品形态混淆（Surface confusion）：** 选了有能力的产品或工具，却不是满足需求且便于维护的最小方案。
+- **证据失误（Evidence failure）：** 把自信语气、存在引用或一次成功运行当成证明。
+- **过度工程（Overengineering）：** 场景尚未需要，就提前增加架构。
 
-The category determines the repair. A stale fact needs documentation lookup. A
-missed constraint needs new scenarios. A sequence error needs a lifecycle map.
-Rereading the same explanation is not a universal study strategy.
+错误类别决定补救方式。事实过时需要查阅文档；遗漏约束需要练习新场景；顺序错误需要梳理生命周期图。反复阅读同一段解析，并不是适用于所有问题的学习策略。
 
-## Interactive Lab
+## 交互实验（Interactive Lab）
 
-Use the route-map figure to change domain confidence and available hours. Watch how a weak, high-weight domain changes the study sequence instead of treating every objective equally.
+在路线图中调整各领域的掌握程度和可用小时数。观察薄弱且高权重的领域如何改变学习顺序，而不是对所有目标平均用力。
 
 ```figure
 00-certification-route-map
 ```
 
-## Practice Lab
+## 实践实验（Practice Lab）
 
-Run the local scenario scorer, then change one confidence label and observe the weighted study order. Break the domain weights or allocated hours and confirm that the runner refuses an invalid plan.
+运行本地场景评分器，修改一个掌握程度标签，观察加权学习顺序的变化。故意把领域权重或时间分配改成无效值，确认运行器会拒绝无效计划。
 
-## Shipped Artifact
+## 交付物（Shipped Artifact）
 
-The filled artifact in `outputs/readiness-plan.json` is a complete ten-hour Associate Foundations plan. It includes all seven blueprint domains, current confidence, two decisions per domain, a failure mode, an official source, a concrete artifact to produce, a four-stage practice cadence, and a wrong-answer taxonomy.
+`outputs/readiness-plan.json` 中填写好的交付物是一份完整的十小时 Associate Foundations 计划。它包含大纲全部七个领域、当前掌握程度、每个领域的两个决策、一种失效模式、一个官方来源、一份具体待产出的交付物、四阶段练习节奏，以及错题分类体系。
 
-## Verify It
+## 验证结果（Verify It）
 
-Validate the packet and its tests without an API key:
+无需 API 密钥，即可验证计划包并运行测试：
 
 ```bash
 cd certifications/claude/lessons/00-certification-strategy/code
@@ -194,77 +186,77 @@ python3 main.py
 python3 -m unittest discover tests -v
 ```
 
-The validator proves that domain weights and allocated hours reconcile, every source is dated and official, every domain has practice evidence, and remediation covers distinct failure classes. Replace the filled values with your own after the example passes.
+校验器用于确认领域权重与分配时间核算一致、每个来源都有日期且来自官方、各领域都包含实践证据，以及补救措施覆盖不同错误类别。示例通过后，再将其中的值替换为你自己的计划。
 
-## Capstone Connection
+## 与综合实践的联系（Capstone Connection）
 
-The six-question quiz checks whether you can reason from weights, dated facts, constraints, and error evidence. Carry the validated plan into the capstone for your chosen route. In the Associate route, it becomes the coverage and readiness record for lesson 29.
+六道测验题检查你能否根据权重、带日期的事实、约束和错误证据进行推理。将验证后的计划带入所选路线的综合实践。在 Associate 路线中，它会成为第 29 课的覆盖情况与备考就绪记录。
 
-## Use It
+## 实际应用（Use It）
 
-Use the curriculum in four passes.
+分四轮学习本课程。
 
-**Pass one: orient.** Read the current guide, take the diagnostic once, and mark weak domains. Do not study the diagnostic answers until you finish it.
+**第一轮：定位。** 阅读最新指南，完成一次诊断测评，标出薄弱领域。做完前不要学习诊断题的答案。
 
-**Pass two: build.** Complete the lessons and their artifacts. Run the workweek capstone without notes. The capstone forces product selection, knowledge maintenance, prompting, validation, governance, and handoff into one workflow.
+**第二轮：构建。** 完成课程及其交付物。不看笔记完成工作周综合实践；这项实践要求你在同一工作流中统筹产品选择、知识维护、提示词编写、验证、治理和交接。
 
-**Pass three: explain.** For each decision, explain why the best alternative loses under the stated constraints. Explanation exposes shallow confidence.
+**第三轮：解释。** 对每个决策，说明在给定约束下，最有竞争力的备选方案为什么仍不如当前选择。解释过程会暴露没有扎实依据的自信。
 
-**Pass four: time.** Take the full mock under closed-book conditions. Review every answer, including correct guesses. A guessed correct answer is not mastered.
+**第四轮：限时。** 在闭卷条件下完成整套模拟考试。复盘每个答案，包括猜对的题。猜对不代表掌握。
 
-A conservative readiness gate is:
+较稳妥的备考就绪门槛是：
 
-- Two fresh, timed practice sets at or above your target.
-- No domain below 75 percent on raw practice scoring.
-- Every capstone artifact complete.
-- Every missed question explained in terms of a missed constraint.
-- At least ten minutes remaining on a full mock.
+- 两套全新限时练习均达到或超过目标。
+- 各领域的原始练习得分率均不低于 75%。
+- 完成所有综合实践交付物。
+- 每道错题都能从遗漏约束的角度解释。
+- 完成整套模拟考试后至少还剩十分钟。
 
-This is a study gate, not a prediction of Anthropic's scaled score.
+这是学习进度门槛，并不用于预测 Anthropic 的换算分数。
 
-## Exam Decision Patterns
+## 考试决策模式（Exam Decision Patterns）
 
-- Prefer the option that satisfies all explicit constraints over the option with the most features.
-- Treat words such as current, confidential, recurring, approved, auditable, and executive as architectural inputs.
-- Separate content quality from workflow quality. A good answer produced through an unapproved data path is still the wrong solution.
-- Prefer a maintained source over a copied snapshot when freshness matters.
-- Add human review where consequence, uncertainty, or irreversibility is high.
-- Verify product facts against current official material instead of trusting a remembered interface.
+- 优先选择满足所有明确约束的方案，而不是功能最多的方案。
+- 将“最新”“机密”“周期性”“已批准”“可审计”“面向高管”等词视为架构决策的输入。
+- 区分内容质量与工作流质量。未经批准的数据处理路径即使产出好答案，也仍是错误方案。
+- 时效性重要时，优先使用有人维护的来源，而不是复制的快照。
+- 后果、不确定性或不可逆程度较高时，加入人工审核。
+- 依据最新官方资料核实产品事实，不要依赖记忆中的界面。
 
-## Common Traps
+## 常见陷阱（Common Traps）
 
-- Using live-question dumps. They violate program rules and train recognition instead of judgment.
-- Treating a longer answer as more likely to be correct.
-- Memorizing exact prices without a date.
-- Equating the biggest model with the safest choice.
-- Taking many low-quality mocks instead of studying explanations.
-- Counting a familiar scenario as proof you can handle an unfamiliar one.
-- Confusing a raw practice percentage with the official scaled score.
+- 使用泄露的在用题库。这违反认证规则，而且训练的是识题能力，不是判断力。
+- 认为答案越长，正确的可能性就越大。
+- 记住精确价格，却不记录日期。
+- 把最大模型等同于最安全选择。
+- 大量做低质量模拟题，却不研究解析。
+- 把熟悉场景中的成功当成能够应对陌生场景的证据。
+- 混淆原始练习正确率与官方换算分数。
 
-## Exercises
+## 练习（Exercises）
 
-1. Take one objective from each domain and label it Know, Do, or Decide. Defend each label.
-2. Write a scenario where a Project is unnecessary and another where a Project is the simplest maintainable choice.
-3. Find one product fact in this curriculum that could change. Verify it in an official source and record the date.
-4. Rewrite a weak error-log entry, "I forgot the answer," into a missed-constraint explanation.
-5. Design a personal readiness gate that is stricter than one mock score but achievable inside your available time.
+1. 从每个领域选一个目标，标为知道（Know）、执行（Do）或决策（Decide），并说明分类理由。
+2. 编写两个场景：一个不需要 Project，另一个以 Project 为最简单且便于维护的选择。
+3. 在本课程中找出一项可能变化的产品事实，通过官方来源核实并记录日期。
+4. 将“我忘了答案”这类无效错题记录改写为对遗漏约束的解释。
+5. 设计个人备考就绪门槛：比单次模拟分数更严格，又能在可用时间内达到。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | Meaning |
+| 术语（Term） | 含义（Meaning） |
 |---|---|
-| Blueprint | The official domain and objective map used to define exam scope |
-| Scaled score | A transformed exam score that is not equal to raw percentage correct |
-| Distractor | An incorrect option designed to be plausible under an incomplete reading |
-| Decision rule | A reusable way to choose from alternatives under known constraints |
-| Evidence ledger | A dated record connecting an objective to a rule, artifact, and official source |
-| Readiness gate | A set of conditions required before attempting the next assessment stage |
+| 考试大纲（Blueprint） | 用于界定考试范围的官方领域与目标图谱 |
+| 换算分数（Scaled score） | 经转换得到的考试分数，不等于原始正确率 |
+| 干扰项（Distractor） | 在没有完整理解题意时看似合理的错误选项 |
+| 决策规则（Decision rule） | 在已知约束下从多个方案中作出选择的可复用方法 |
+| 证据台账（Evidence ledger） | 带日期的记录，将目标与规则、交付物和官方来源关联起来 |
+| 备考就绪门槛（Readiness gate） | 进入下一测评阶段前必须满足的一组条件 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [Anthropic Partner certification catalog](https://anthropic-partners.skilljar.com/page/partner-certifications)
-- [Anthropic certification FAQ](https://anthropic-partners.skilljar.com/page/faq-certifications)
-- [Claude Certified Associate Foundations exam guide](https://everpath-course-content.s3-accelerate.amazonaws.com/instructor%2F6nizmqk8tpzpfjvt6qmmav7rh%2Fpublic%2F1783542847%2FClaude+Certified+Associate+%E2%80%93+Foundations+Exam+Guide.pdf)
-- [CCAR-F Exact Mechanics Review](../../../references/ccar-f-exact-mechanics.md)
-- [Prompt Engineering: Techniques and Patterns](../../../../../phases/11-llm-engineering/01-prompt-engineering/)
-- [Evaluation and Testing LLM Applications](../../../../../phases/11-llm-engineering/10-evaluation/)
+- [Anthropic Partner 认证目录](https://anthropic-partners.skilljar.com/page/partner-certifications)
+- [Anthropic 认证常见问题](https://anthropic-partners.skilljar.com/page/faq-certifications)
+- [Claude Certified Associate Foundations 考试指南](https://everpath-course-content.s3-accelerate.amazonaws.com/instructor%2F6nizmqk8tpzpfjvt6qmmav7rh%2Fpublic%2F1783542847%2FClaude+Certified+Associate+%E2%80%93+Foundations+Exam+Guide.pdf)
+- [CCAR-F 精确机制复习（Exact Mechanics Review）](../../../references/ccar-f-exact-mechanics.md)
+- [提示词工程：技巧与模式（Prompt Engineering: Techniques and Patterns）](../../../../../phases/11-llm-engineering/01-prompt-engineering/)
+- [LLM 应用的评估与测试（Evaluation and Testing LLM Applications）](../../../../../phases/11-llm-engineering/10-evaluation/)

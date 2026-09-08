@@ -1,17 +1,17 @@
-"""Phase 13 Lesson 01 - the tool interface, four-step loop, no LLM.
+"""阶段 13 第 01 课：工具接口（Tool interface），不使用 LLM 的四步循环。
 
-Implements the describe -> decide -> execute -> observe cycle used by every
-2026 tool-calling stack (OpenAI, Anthropic, Gemini, MCP, A2A). The "decide"
-step is faked with a keyword router so the loop runs offline; replace it with
-any real provider in Lesson 02.
+实现 2026 年各工具调用（Tool calling）技术栈（OpenAI、Anthropic、Gemini、MCP、A2A）
+使用的描述 -> 决策 -> 执行 -> 观察循环。通过关键词路由器模拟“决策”步骤，
+使循环可以离线运行；第 02 课会将其替换为
+真实服务商的实现。
 
-The harness:
-  - registers three tools (add, get_time, get_weather)
-  - validates tool-call arguments against a minimal JSON Schema subset
-  - prints each step so you can read the choreography
-  - bounds iteration at MAX_TURNS to prevent runaway loops
+运行框架（Harness）：
+  - 注册三个工具（add、get_time、get_weather）
+  - 根据最小 JSON Schema 子集验证工具调用参数
+  - 打印每个步骤，便于理解调用编排
+  - 将迭代次数限制为 MAX_TURNS，防止循环失控
 
-Run: python code/main.py
+运行： python code/main.py
 """
 
 from __future__ import annotations
@@ -59,8 +59,8 @@ REGISTRY: list[Tool] = [
     Tool(
         name="add",
         description=(
-            "Use when the user asks for the sum of two numbers. "
-            "Do not use for subtraction, product, or symbolic algebra."
+            "用户要求计算两个数之和时使用。"
+            "不要用于减法、乘法或符号代数（Symbolic algebra）。"
         ),
         input_schema={
             "type": "object",
@@ -75,8 +75,8 @@ REGISTRY: list[Tool] = [
     Tool(
         name="get_time",
         description=(
-            "Use when the user asks what time it is. "
-            "Do not use for historical dates or future scheduling."
+            "用户询问当前时间时使用。"
+            "不要用于查询历史日期或安排未来日程。"
         ),
         input_schema={
             "type": "object",
@@ -90,8 +90,8 @@ REGISTRY: list[Tool] = [
     Tool(
         name="get_weather",
         description=(
-            "Use when the user asks about current conditions in a named city. "
-            "Do not use for forecasts or historical weather data."
+            "用户询问指定城市的当前天气时使用。"
+            "不要用于天气预报或历史天气数据。"
         ),
         input_schema={
             "type": "object",
@@ -111,32 +111,32 @@ def validate(schema: dict, value: Any) -> list[str]:
     t = schema.get("type")
     if t == "object":
         if not isinstance(value, dict):
-            return [f"expected object, got {type(value).__name__}"]
+            return [f"预期为对象（Object），实际为 {type(value).__name__}"]
         for field in schema.get("required", []):
             if field not in value:
-                errors.append(f"missing required field '{field}'")
+                errors.append(f"缺少必填字段 '{field}'")
         for key, sub in schema.get("properties", {}).items():
             if key in value:
                 errors.extend(validate(sub, value[key]))
         return errors
     if t == "number" and not isinstance(value, (int, float)):
-        errors.append(f"expected number, got {type(value).__name__}")
+        errors.append(f"预期为数值（Number），实际为 {type(value).__name__}")
     if t == "string" and not isinstance(value, str):
-        errors.append(f"expected string, got {type(value).__name__}")
+        errors.append(f"预期为字符串（String），实际为 {type(value).__name__}")
     if "enum" in schema and value not in schema["enum"]:
-        errors.append(f"value {value!r} not in enum {schema['enum']}")
+        errors.append(f"值 {value!r} 不在枚举（Enum）中 {schema['enum']}")
     return errors
 
 
 def fake_decide(user_msg: str, history: list[dict]) -> dict:
-    """Stand-in for the model. Routes by keyword so the loop runs offline.
+    """模型的替身。根据关键词路由，使循环能够离线运行。
 
-    Production substitute: swap this for provider.chat.completions.create with
-    tools=[t.input_schema for t in REGISTRY]. Same return shape.
+    生产环境替代方式：改用 provider.chat.completions.create，传入
+    tools=[t.input_schema for t in REGISTRY]，返回结构保持一致。
     """
     last = history[-1] if history else {}
     if last.get("role") == "tool":
-        return {"content": f"Final answer built from tool output: {last.get('content')}"}
+        return {"content": f"根据工具输出生成的最终回答：{last.get('content')}"}
     msg = user_msg.lower()
     if re.search(r"\b(add|sum|plus)\b", msg):
         nums = [float(n) for n in re.findall(r"-?\d+\.?\d*", msg)]
@@ -172,59 +172,59 @@ def fake_decide(user_msg: str, history: list[dict]) -> dict:
                 }
             ]
         }
-    return {"content": "I cannot route that query to any registered tool."}
+    return {"content": "无法将该查询路由至任何已注册工具。"}
 
 
 def run_loop(user_msg: str) -> None:
     print("=" * 72)
-    print(f"USER : {user_msg}")
+    print(f"用户： {user_msg}")
     print("-" * 72)
     tools_by_name = {t.name: t for t in REGISTRY}
     history: list[dict] = [{"role": "user", "content": user_msg}]
     for turn in range(1, MAX_TURNS + 1):
         decision = fake_decide(user_msg, history)
         if "content" in decision:
-            print(f"TURN {turn} DECIDE : final answer")
-            print(f"MODEL : {decision['content']}")
+            print(f"第 {turn} 轮 决策（Decide）：最终回答")
+            print(f"模型： {decision['content']}")
             return
         for call in decision["tool_calls"]:
             tool = tools_by_name.get(call["name"])
-            print(f"TURN {turn} DECIDE : call {call['name']} id={call['id']}")
-            print(f"           args = {json.dumps(call['arguments'])}")
+            print(f"第 {turn} 轮 决策（Decide）：调用 {call['name']} id={call['id']}")
+            print(f"           参数 = {json.dumps(call['arguments'])}")
             if tool is None:
-                print(f"           ERROR : unknown tool {call['name']}")
+                print(f"           错误：未知工具 {call['name']}")
                 return
             errs = validate(tool.input_schema, call["arguments"])
             if errs:
-                print(f"           VALIDATION ERRORS : {errs}")
+                print(f"           验证错误：{errs}")
                 return
             if tool.consequential:
-                print("           GATE : tool is consequential, would confirm")
+                print("           门禁（Gate）：该工具会产生实际影响，需要确认")
             start = time.perf_counter()
             result = tool.executor(call["arguments"])
             ms = (time.perf_counter() - start) * 1000
-            print(f"TURN {turn} EXECUTE: {tool.name} -> {json.dumps(result)}"
+            print(f"第 {turn} 轮 执行（Execute）： {tool.name} -> {json.dumps(result)}"
                   f" [{ms:.2f} ms]")
             history.append({
                 "role": "tool", "id": call["id"],
                 "name": tool.name, "content": json.dumps(result),
             })
-        print(f"TURN {turn} OBSERVE: history length = {len(history)}")
-    print("LOOP TERMINATED : hit MAX_TURNS circuit breaker")
+        print(f"第 {turn} 轮 观察（Observe）：历史记录长度 = {len(history)}")
+    print("循环已终止：触发 MAX_TURNS 熔断器（Circuit breaker）")
 
 
 def describe_registry() -> None:
-    print("TOOL REGISTRY")
+    print("工具注册表（Tool registry）")
     print("-" * 72)
     for t in REGISTRY:
-        kind = "consequential" if t.consequential else "pure"
+        kind = "有实际影响（Consequential）" if t.consequential else "纯函数（Pure）"
         print(f"  {t.name:14s} [{kind}] - {t.description}")
     print()
 
 
 def main() -> None:
     print("=" * 72)
-    print("PHASE 13 LESSON 01 - THE TOOL INTERFACE")
+    print("阶段 13 第 01 课：工具接口（The Tool Interface）")
     print("=" * 72)
     describe_registry()
     for query in (

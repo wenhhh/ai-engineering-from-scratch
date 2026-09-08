@@ -84,13 +84,13 @@ def evaluate(Q, slip, episodes=200, rng=None):
 
 
 def main():
-    print(f"=== sim-to-real: train in 'sim', evaluate on 'real' ===")
-    print(f"env: {GRID}x{GRID} GridWorld, slip = probability of perpendicular slip")
+    print(f"=== 仿真到现实迁移（Sim-to-real）：在仿真中训练，在“现实”中评估 ===")
+    print(f"环境：{GRID}x{GRID} 网格世界（GridWorld），slip 表示向垂直方向偏移的概率")
     print()
 
-    print("training two policies with same compute budget:")
-    print("  policy A: fixed slip = 0.0 (no domain randomization)")
-    print("  policy B: slip ~ Uniform[0.0, 0.3] (domain randomization)")
+    print("用相同计算预算训练两个策略：")
+    print("  策略 A：固定 slip = 0.0，不使用域随机化（Domain Randomization）")
+    print("  策略 B：slip ~ Uniform[0.0, 0.3]，使用域随机化（Domain Randomization）")
     print()
 
     rng = random.Random(1)
@@ -98,20 +98,20 @@ def main():
     rng = random.Random(1)
     Q_dr = train_dr(0.0, 0.3, rng=rng)
 
-    print("evaluation on 'real' slips (each 200 episodes greedy eval):")
-    print(f"  {'slip':<10}{'fixed-slip policy':<22}{'DR-trained policy':<22}")
+    print("在“现实”偏移概率下评估：每种概率进行 200 个回合的贪心评估")
+    print(f"  {'slip':<10}{'固定偏移策略':<22}{'域随机化训练策略':<22}")
     for slip in (0.0, 0.1, 0.2, 0.3, 0.5, 0.7):
         r_fixed = evaluate(Q_fixed, slip)
         r_dr = evaluate(Q_dr, slip)
         label = ""
         if slip <= 0.3:
-            label = "(in-support for DR)"
+            label = "（位于域随机化的分布支持范围内）"
         else:
-            label = "(OOD for DR)"
+            label = "（超出域随机化分布，OOD）"
         print(f"  {slip:<10.2f}{r_fixed:<22.2f}{r_dr:<22.2f}{label}")
 
     print()
-    print("takeaway: DR-trained policy degrades gracefully; fixed-slip policy is brittle out-of-distribution.")
+    print("结论：域随机化（DR）训练的策略性能平缓下降；固定偏移策略在分布外（OOD）条件下较脆弱。")
 
 
 if __name__ == "__main__":

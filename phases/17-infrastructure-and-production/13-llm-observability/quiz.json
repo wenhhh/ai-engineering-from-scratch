@@ -1,22 +1,22 @@
 {
   "lesson": "13-llm-observability",
-  "title": "LLM Observability Stack Selection",
+  "title": "LLM 可观测性技术栈选型（LLM Observability Stack Selection）",
   "questions": [
     {
       "stage": "pre",
-      "question": "How does the lesson split the 2026 LLM observability market?",
+      "question": "本课如何划分 2026 年 LLM 可观测性市场？",
       "options": [
-        "Development platforms (bundled with evals/prompts/sessions) versus gateway/telemetry tools",
-        "Python versus TypeScript",
-        "Vendor versus open source",
-        "On-prem versus cloud"
+        "整合评估、提示词、会话的开发平台，以及网关/遥测工具",
+        "Python 与 TypeScript",
+        "供应商与开源",
+        "本地部署与云"
       ],
       "correct": 0,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Which tool does the lesson position as MIT-licensed core with strong self-host story and 50K events/month free cloud tier?",
+      "question": "哪个工具被定位为核心 MIT 许可、自托管能力强、云端每月免费 50K 事件？",
       "options": [
         "Phoenix",
         "Arize AX",
@@ -28,48 +28,48 @@
     },
     {
       "stage": "check",
-      "question": "What is Arize AX's main scale claim relative to monolithic observability stacks like Datadog?",
+      "question": "Arize AX 相对 Datadog 等一体化可观测性栈的主要规模化宣传是什么？",
       "options": [
-        "Always more expensive",
-        "Roughly 100x cheaper at scale via zero-copy Iceberg/Parquet integration",
-        "Free under 1M events/day",
-        "10% cheaper"
+        "总是更贵",
+        "通过零拷贝 Iceberg/Parquet 集成，规模化成本约低 100 倍",
+        "每日 1M 事件以下免费",
+        "便宜 10%"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "What does the lesson call the wrong instrumentation layer for portability?",
+      "question": "从可移植性角度，本课认为哪一层埋点不合适？",
       "options": [
-        "Instrumenting at the HTTP/OpenAI-SDK layer",
-        "Sampling at 5% on successes",
-        "Using OpenTelemetry GenAI semantic conventions",
-        "Instrumenting inside your agent framework, since it couples you to that framework"
+        "在 HTTP/OpenAI SDK 层埋点",
+        "对成功请求采样 5%",
+        "使用 OpenTelemetry GenAI 语义约定",
+        "在智能体框架内部埋点，因为会耦合该框架"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "Which OpenTelemetry conventions does the lesson identify as the 2026 interop layer between observability tools?",
+      "question": "本课将哪套 OpenTelemetry 约定视为 2026 年可观测性工具的互操作层？",
       "options": [
-        "GenAI semantic conventions (gen_ai.system, gen_ai.request.model, gen_ai.usage.input_tokens)",
-        "OTel HTTP semantic conventions",
-        "OTel messaging semantic conventions",
-        "OTel database semantic conventions"
+        "GenAI 语义约定：gen_ai.system、gen_ai.request.model、gen_ai.usage.input_tokens",
+        "OTel HTTP 语义约定",
+        "OTel 消息语义约定",
+        "OTel 数据库语义约定"
       ],
       "correct": 0,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "Why does the lesson argue full-trace retention does not scale past 1M requests/day?",
+      "question": "为什么本课认为，每日超过 1M 请求时，全量追踪保留无法继续扩展？",
       "options": [
-        "Vendors block it",
-        "Phoenix only supports 1M traces",
-        "Retention storage costs more than the LLM calls themselves; teams must sample (e.g. 100% errors, 100% high-cost, 5% successes)",
-        "OpenTelemetry caps trace volume"
+        "服务商禁止",
+        "Phoenix 只支持 1M 追踪",
+        "保留存储成本超过 LLM 调用本身，必须采样，例如错误 100%、高成本 100%、成功 5%",
+        "OpenTelemetry 限制追踪量"
       ],
       "correct": 2,
       "explanation": ""

@@ -2,66 +2,66 @@
   {
     "id": "ml-intro-pre-1",
     "stage": "pre",
-    "question": "In supervised learning, what does the model receive during training?",
+    "question": "监督学习（Supervised Learning）中，模型在训练期间接收什么？",
     "options": [
-      "Input-output pairs where the correct answer is provided",
-      "A set of rules written by a human expert",
-      "A reward signal for each action taken",
-      "Only input data with no labels"
+      "提供正确答案的输入输出对",
+      "由人类专家编写的一组规则",
+      "每次采取行动后获得的奖励信号",
+      "只有输入数据，没有标签"
     ],
     "correct": 0,
-    "explanation": "Supervised learning trains on input-output pairs (labeled data). The model learns to map inputs to known correct outputs."
+    "explanation": "监督学习使用输入输出对（带标签数据）进行训练。模型学习将输入映射为已知的正确输出。"
   },
   {
     "id": "ml-intro-pre-2",
     "stage": "pre",
-    "question": "What is the purpose of splitting data into training and test sets?",
+    "question": "将数据划分为训练集（Training Set）和测试集（Test Set）的目的是什么？",
     "options": [
-      "To have backup data in case the training data is lost",
-      "To evaluate whether the model generalizes to data it has never seen during training",
-      "To make training faster by using less data",
-      "To balance the classes in the dataset"
+      "准备备份数据，以防训练数据丢失",
+      "评估模型能否泛化到训练期间从未见过的数据",
+      "通过减少数据量来加快训练",
+      "平衡数据集中各个类别的数量"
     ],
     "correct": 1,
-    "explanation": "The test set measures generalization. If you evaluate on training data, you measure memorization, not learning."
+    "explanation": "测试集衡量泛化（Generalization）能力。在训练数据上评估，衡量的是记忆而非学习。"
   },
   {
     "id": "ml-intro-post-1",
     "stage": "post",
-    "question": "A model gets 98% accuracy on training data but 55% on test data. What is this an example of?",
+    "question": "某模型在训练数据上的准确率为 98%，但在测试数据上只有 55%。这属于什么情况？",
     "options": [
-      "Data drift: the test distribution changed",
-      "Underfitting: the model is too simple",
-      "Overfitting: the model memorized training noise instead of learning general patterns",
-      "Good generalization: the model learned the true patterns"
+      "数据漂移（Data Drift）：测试数据的分布发生了变化",
+      "欠拟合（Underfitting）：模型过于简单",
+      "过拟合（Overfitting）：模型记住了训练噪声，没有学到一般模式",
+      "泛化良好：模型学到了真实模式"
     ],
     "correct": 2,
-    "explanation": "A large gap between training accuracy (high) and test accuracy (low) is the hallmark of overfitting. The model memorized the training data."
+    "explanation": "训练准确率高、测试准确率低，且二者差距很大，是过拟合的典型特征。模型记住了训练数据。"
   },
   {
     "id": "ml-intro-post-2",
     "stage": "post",
-    "question": "An e-commerce site wants to group customers into segments based on purchase behavior without any predefined labels. Which type of ML is this?",
+    "question": "某电商网站希望根据购买行为对客户进行分群，且没有预先定义的标签。这属于哪类机器学习（Machine Learning，ML）？",
     "options": [
-      "Unsupervised learning (clustering)",
-      "Supervised learning (regression)",
-      "Supervised learning (classification)",
-      "Reinforcement learning"
+      "无监督学习（Unsupervised Learning）：聚类（Clustering）",
+      "监督学习（Supervised Learning）：回归（Regression）",
+      "监督学习（Supervised Learning）：分类（Classification）",
+      "强化学习（Reinforcement Learning）"
     ],
     "correct": 0,
-    "explanation": "Finding natural groupings in data without predefined labels is clustering, which is a form of unsupervised learning."
+    "explanation": "没有预定义标签，在数据中寻找自然形成的分组，这就是聚类，属于无监督学习。"
   },
   {
     "id": "ml-intro-post-3",
     "stage": "post",
-    "question": "Which scenario is NOT a good use case for machine learning?",
+    "question": "以下哪个场景不适合使用机器学习？",
     "options": [
-      "Detecting fraudulent transactions in a stream of millions of payments",
-      "Predicting customer churn from historical behavior data",
-      "Classifying images of skin lesions as benign or malignant",
-      "Converting temperatures from Celsius to Fahrenheit"
+      "在数百万笔支付组成的数据流中检测欺诈交易",
+      "根据历史行为数据预测客户流失",
+      "将皮肤病变图像分类为良性或恶性",
+      "将摄氏温度转换为华氏温度"
     ],
     "correct": 3,
-    "explanation": "Celsius to Fahrenheit is a fixed formula (F = 9/5 * C + 32). Simple, well-defined rules do not need ML. ML adds complexity with no benefit."
+    "explanation": "摄氏转华氏使用固定公式（F = 9/5 * C + 32）。简单、明确的规则不需要机器学习；引入机器学习只会增加复杂度，没有收益。"
   }
 ]

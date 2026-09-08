@@ -1,90 +1,90 @@
 {
   "lesson": "37-runtime-feedback-loops",
-  "title": "Runtime Feedback Loops",
+  "title": "运行时反馈循环（Runtime Feedback Loops）",
   "questions": [
     {
       "stage": "pre",
-      "question": "What does the feedback runner force the agent to do?",
+      "question": "反馈运行器强制智能体做什么？",
       "options": [
-        "React to imagined output",
-        "React to facts: structured stdout/stderr/exit/duration records captured into the loop on every command",
-        "Skip verification",
-        "Use a different model"
+        "回应想象的输出",
+        "回应事实：每条命令捕获的结构化标准输出／标准错误／退出码／耗时记录都进入循环",
+        "跳过验证",
+        "使用另一个模型"
       ],
       "correct": 1,
-      "explanation": "The runner closes the gap between 'tests passed' (imagined) and 'tests actually ran and exited zero' (recorded)."
+      "explanation": "运行器消除了“测试通过了”（想象）与“测试确实运行且退出码为零”（记录）之间的缺口。"
     },
     {
       "stage": "pre",
-      "question": "How does feedback differ from telemetry?",
+      "question": "反馈与遥测有何不同？",
       "options": [
-        "Feedback is for the next turn of this run; telemetry is for operators reviewing runs across time (different files, different retention)",
-        "They are the same thing",
-        "Telemetry is paid",
-        "Telemetry uses OTel; feedback uses GraphQL"
+        "反馈供本次运行的下一轮使用；遥测供操作者跨时间审查运行情况（文件和保留策略不同）",
+        "两者相同",
+        "遥测要付费",
+        "遥测使用 OTel，反馈使用 GraphQL"
       ],
       "correct": 0,
-      "explanation": "Both share fields but live in different files with different retention; feedback is intra-run, telemetry is cross-run."
+      "explanation": "两者共享字段，但文件与保留策略不同；反馈面向单次运行内部，遥测面向跨运行观察。"
     },
     {
       "stage": "check",
-      "question": "Which field MUST appear in every feedback record?",
+      "question": "每条反馈记录必须包含哪个字段？",
       "options": [
-        "exit_code (and a null exit must refuse to advance the loop)",
+        "exit_code（退出状态为 null 时必须拒绝推进循环）",
         "embedding_vector",
         "model_id",
         "prompt_cache_token"
       ],
       "correct": 0,
-      "explanation": "exit_code is the unambiguous success signal; null exit means no progress."
+      "explanation": "exit_code 是明确的成功信号；退出状态为 null 意味着不能推进。"
     },
     {
       "stage": "check",
-      "question": "How does the runner truncate large outputs?",
+      "question": "运行器如何截断大型输出？",
       "options": [
-        "Compresses with gzip",
-        "Random sampling",
-        "First 10 lines only",
-        "Deterministic head + tail with a 'truncated N lines' marker so the same output always produces the same record"
+        "用 gzip 压缩",
+        "随机采样",
+        "只保留前 10 行",
+        "确定性保留头尾并带有“已截断 N 行”标记，使同一输出始终产生同一记录"
       ],
       "correct": 3,
-      "explanation": "Deterministic truncation keeps records replayable while bounding token cost; tails carry the failure summary."
+      "explanation": "确定性截断既让记录可回放，又限制词元成本；尾部承载失败摘要。"
     },
     {
       "stage": "check",
-      "question": "Why redact at write time rather than read time?",
+      "question": "为什么在写入时脱敏，而不是读取时？",
       "options": [
-        "Read-time redaction breaks JSON",
-        "The file on disk is what an attacker reaches; redacting only on read leaves secrets in JSONL files",
-        "It is faster",
-        "Compression"
+        "读取时脱敏会破坏 JSON",
+        "攻击者接触的是磁盘文件；只在读取时脱敏会让秘密留在 JSONL 文件中",
+        "速度更快",
+        "为了压缩"
       ],
       "correct": 1,
-      "explanation": "Redact lines matching Bearer, password=, api_key=, AKIA..., xox[baprs]- before append; auditing the patterns quarterly."
+      "explanation": "追加前移除匹配 Bearer、password=、api_key=、AKIA...、xox[baprs]- 的行；每季度审计这些模式。"
     },
     {
       "stage": "post",
-      "question": "What does parent_command_id give the workbench?",
+      "question": "parent_command_id 为工作台带来什么？",
       "options": [
-        "Faster file I/O",
-        "Lower memory",
-        "Retries link to their parent attempt so the reviewer and audit see the failure chain; without it retries look like independent successes",
-        "Cheaper inference"
+        "更快的文件 I/O",
+        "更低内存占用",
+        "重试关联到父尝试，让审查者和审计看到失败链；否则重试看起来像独立的成功",
+        "更便宜的推理"
       ],
       "correct": 2,
-      "explanation": "Parent linkage makes retry chains visible to the reviewer (Lesson 39) and the verification gate."
+      "explanation": "父级关联让审查者（第 39 课）和验证关卡看见重试链。"
     },
     {
       "stage": "post",
-      "question": "Why cap feedback_record.jsonl at 1 MB with rotation?",
+      "question": "为什么将 feedback_record.jsonl 限为 1 MB 并轮转？",
       "options": [
-        "Disks are too slow",
-        "The agent only reads the current file; rotation keeps runtime cost bounded while CI artifacts capture the full set",
-        "JSON does not handle larger files",
-        "The provider charges per byte"
+        "磁盘太慢",
+        "智能体只读取当前文件；轮转限制运行时成本，而 CI 产物保留完整集合",
+        "JSON 无法处理更大文件",
+        "提供商按字节收费"
       ],
       "correct": 1,
-      "explanation": "Bounded current file + rotated history is the same pattern logrotate uses; predictable cost in the hot loop."
+      "explanation": "有界当前文件加轮转历史，与 logrotate 模式相同；让热循环的成本可预测。"
     }
   ]
 }

@@ -1,78 +1,78 @@
 {
   "lesson": "18-mcp-auth-production",
-  "title": "MCP Auth in Production: Issuer-Bound Enrollment and Tokens",
+  "title": "生产环境中的 MCP 授权：签发者绑定登记与令牌（MCP Auth in Production: Issuer-Bound Enrollment and Tokens）",
   "questions": [
     {
       "stage": "pre",
-      "question": "An MCP client discovers a different authorization-server issuer for the same resource. What should it do with its existing registration and access token?",
+      "question": "MCP 客户端为同一资源发现了不同的授权服务器签发者。应如何处理现有注册和访问令牌？",
       "options": [
-        "Reuse only the access token after changing its audience locally",
-        "Enroll for the new issuer and keep credentials isolated by issuer",
-        "Reuse both because the MCP resource URL did not change",
-        "Store both under the tool name instead of the issuer"
+        "在本地改变受众后只复用访问令牌",
+        "为新签发者登记，并按签发者隔离凭据",
+        "因为 MCP 资源 URL 未变，所以两者都复用",
+        "将两者存到工具名下，而非签发者名下"
       ],
       "correct": 1,
-      "explanation": "Client identifiers and registration credentials belong to the authorization-server issuer that created them. An issuer change requires independent enrollment, and each access token is cached under both that issuer and its resource audience."
+      "explanation": "客户端标识符和注册凭据属于创建它们的授权服务器签发者。签发者变化要求独立登记，每个访问令牌按签发者及资源受众共同缓存。"
     },
     {
       "stage": "check",
-      "question": "Which enrollment approach is preferred by the MCP 2026-07-28 authorization profile?",
+      "question": "MCP 2026-07-28 授权配置优先采用哪种登记方式？",
       "options": [
-        "RFC 7591 Dynamic Client Registration for every request",
-        "A Client ID Metadata Document served from the client's HTTPS URL",
-        "A protocol session that stores one global client identifier",
-        "A shared client secret embedded in every desktop client"
+        "每个请求都执行 RFC 7591 动态客户端注册",
+        "由客户端 HTTPS URL 提供的客户端 ID 元数据文档",
+        "存储一个全局客户端标识符的协议会话",
+        "嵌入每个桌面客户端的共享客户端秘密"
       ],
       "correct": 1,
-      "explanation": "CIMD lets the authorization server resolve client metadata from an HTTPS client identifier. DCR is deprecated and remains only for compatibility."
+      "explanation": "CIMD 让授权服务器从 HTTPS 客户端标识符解析元数据。DCR 已弃用，仅为兼容保留。"
     },
     {
       "stage": "check",
-      "question": "A deprecated DCR request describes a loopback desktop client. Which metadata is essential to classify it correctly?",
+      "question": "已弃用的 DCR 请求描述一个环回桌面客户端。哪项元数据对正确分类必不可少？",
       "options": [
         "Mcp-Session-Id",
-        "A wildcard redirect URI",
-        "application_type set to native",
-        "A reusable bearer token"
+        "通配符重定向 URI",
+        "application_type 设为 native",
+        "可复用持有者令牌"
       ],
       "correct": 2,
-      "explanation": "Current compatibility guidance requires the correct application type. A loopback desktop client is native; web clients use HTTPS redirect URIs."
+      "explanation": "当前兼容指导要求正确应用类型。环回桌面客户端是 native；Web 客户端使用 HTTPS 重定向 URI。"
     },
     {
       "stage": "check",
-      "question": "Why does the client validate the RFC 9207 iss value before redeeming an authorization code?",
+      "question": "为什么客户端兑换授权码前验证 RFC 9207 iss 值？",
       "options": [
-        "To prevent redeeming an honest issuer's code at the wrong token endpoint",
-        "To avoid refreshing the JWKS cache",
-        "To replace PKCE with issuer discovery",
-        "To select a tool from server/discover"
+        "防止在错误令牌端点兑换诚实签发者的授权码",
+        "避免刷新 JWKS 缓存",
+        "用签发者发现替代 PKCE",
+        "从 server/discover 选择工具"
       ],
       "correct": 0,
-      "explanation": "The issuer check defends against authorization-server mix-up. It complements PKCE by confirming the response came from the issuer recorded before redirect."
+      "explanation": "签发者检查防御授权服务器混淆。它补充 PKCE，确认响应来自重定向前记录的签发者。"
     },
     {
       "stage": "post",
-      "question": "Where should an MCP resource server cache authorization for the current stateless transport?",
+      "question": "对于当前无状态传输，MCP 资源服务器应在哪里缓存授权？",
       "options": [
-        "Under Mcp-Session-Id until the client sends DELETE",
-        "Inside the server/discover result for all later calls",
-        "In the SSE connection until it reconnects",
-        "Nowhere as a protocol-session decision; validate the bearer token on every request"
+        "在 Mcp-Session-Id 下，直到客户端发送 DELETE",
+        "在 server/discover 结果中供后续调用使用",
+        "在 SSE 连接中，直到重连",
+        "不缓存为协议会话决定；每个请求都验证持有者令牌"
       ],
       "correct": 3,
-      "explanation": "MCP 2026-07-28 removes protocol sessions. Each request crosses the authorization boundary independently, so identity, audience, expiry, and scope are checked each time."
+      "explanation": "MCP 2026-07-28 移除了协议会话。每个请求独立跨越授权边界，因此每次都检查身份、受众、到期时间和作用域。"
     },
     {
       "stage": "post",
-      "question": "Which deployment evidence is strongest before trusting an authorization server?",
+      "question": "信任授权服务器前，哪项部署证据最有力？",
       "options": [
-        "The target server's discovered metadata checked against PKCE, issuer, enrollment, and resource-binding requirements",
-        "A vendor category table copied from an older lesson",
-        "A product page that says OAuth is supported",
-        "A successful login that does not inspect the token audience"
+        "按 PKCE、签发者、登记和资源绑定要求检查目标服务器的发现元数据",
+        "从旧课程复制的供应商类别表",
+        "声称支持 OAuth 的产品页面",
+        "没有检查令牌受众的成功登录"
       ],
       "correct": 0,
-      "explanation": "Capabilities change by deployment and version. The live discovery document is the concrete contract to check, followed by end-to-end issuer and audience validation."
+      "explanation": "能力会随部署和版本变化。实时发现文档是要检查的具体契约，之后还要端到端验证签发者和受众。"
     }
   ]
 }

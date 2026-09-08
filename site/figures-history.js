@@ -1,4 +1,4 @@
-/* figures-history.js - lesson figures for the language-model history arc: prediction-game (Shannon's 1951 guessing game), chatbot-lineage (scripted-bot timeline), mask-derivation (prefix average to attention). SMIL-authored (animate/animateTransform via LF), ES5, no deps. */
+/* figures-history.js - 语言模型（Language model）历史脉络的课程图表：prediction-game（Shannon 1951 年猜测游戏）、chatbot-lineage（脚本机器人时间线）、mask-derivation（从前缀平均到注意力（Attention））。使用 SMIL 编写（通过 LF 使用 animate/animateTransform），使用 ES5，无依赖。 */
 (function () {
   'use strict';
   var LF = window.LF;
@@ -38,13 +38,13 @@
     node.appendChild(anim('opacity', '0;0;1;1', dur, { keyTimes: kt }));
   }
 
-  // ── prediction-game: guess counts reveal letters, entropy bar shrinks ───────
+  // ── prediction-game: 猜测次数揭示字母，熵（Entropy）条缩短 ──
   function predictionGame(host) {
     var W = 560, H = 250, svg = svgEl('svg', { viewBox: '0 0 ' + W + ' ' + H });
     var letters = 'THE·CAT·SAT·ON·THE·MAT'.split('');
     var guesses = [3, 1, 1, 1, 4, 2, 1, 1, 3, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 2, 1, 1];
     var DUR = 9, CW = 23, x0 = 27, cy = 96;
-    svg.appendChild(txt(x0, 34, 'GUESS THE NEXT LETTER · COUNT THE TRIES', { 'font-size': '10', 'letter-spacing': '.14em', fill: MUTE }));
+    svg.appendChild(txt(x0, 34, '猜下一个字母 · 记录尝试次数', { 'font-size': '10', 'letter-spacing': '0', fill: MUTE }));
     letters.forEach(function (ch, i) {
       var x = x0 + i * CW;
       var frac = (0.4 + i * 0.24) / DUR;
@@ -64,31 +64,31 @@
       svg.appendChild(chip);
     });
     var barY = 168, barW = 480;
-    svg.appendChild(txt(x0, barY - 10, 'BITS PER LETTER', { 'font-size': '10', 'letter-spacing': '.14em', fill: MUTE }));
+    svg.appendChild(txt(x0, barY - 10, '每个字母的比特数', { 'font-size': '10', 'letter-spacing': '0', fill: MUTE }));
     svg.appendChild(svgEl('rect', { x: x0, y: barY, width: barW, height: 12, fill: 'none', stroke: RULE, 'stroke-width': '1' }));
     var fill = svgEl('rect', { x: x0, y: barY, width: barW, height: 12, fill: BP, opacity: '0.85' });
     fill.appendChild(anim('width', barW + ';' + barW + ';121;121', DUR, { keyTimes: '0;0.05;0.72;1', calcMode: 'spline', keySplines: '0 0 1 1;.4 0 .2 1;0 0 1 1' }));
     svg.appendChild(fill);
-    svg.appendChild(txt(x0 + barW, barY + 32, 'log2(27) = 4.75 RAW', { 'text-anchor': 'end', 'font-size': '10', fill: MUTE }));
-    var measured = txt(x0 + 121, barY + 32, '~1.2 GUESSED', { 'font-size': '10', fill: BP, opacity: '0' });
+    svg.appendChild(txt(x0 + barW, barY + 32, '原始：log2(27) = 4.75', { 'text-anchor': 'end', 'font-size': '10', fill: MUTE }));
+    var measured = txt(x0 + 121, barY + 32, '猜测测得约 1.2', { 'font-size': '10', fill: BP, opacity: '0' });
     fadeIn(measured, DUR, '0;0.68;0.76;1');
     svg.appendChild(measured);
-    svg.appendChild(txt(x0, H - 14, 'GUESS COUNTS RE-ENCODE THE TEXT · THEIR AVERAGE BOUNDS THE ENTROPY', { 'font-size': '9', 'letter-spacing': '.12em', fill: MUTE }));
-    card(host, 'THE PREDICTION GAME', 'entropy measured by hand, 1951', svg,
-      'A human guesses each hidden letter until correct; the guess counts alone can reconstruct the text, so their statistics bound the information per letter. A 27-symbol alphabet could carry 4.75 bits per letter. Human guessers with context needed close to 1. Every language model since is a mechanical player of this game, and perplexity is its score.');
+    svg.appendChild(txt(x0, H - 14, '猜测次数重新编码了文本 · 平均次数给出熵的界限', { 'font-size': '9', 'letter-spacing': '0', fill: MUTE }));
+    card(host, '预测游戏（Prediction Game）', '1951 年：人工测量熵', svg,
+      '人逐个猜测隐藏字母，直到猜对；只凭猜测次数就能重建文本，因此这些次数的统计量可以给出每个字母信息量的界限。包含 27 个符号的字母表，每个字母最多可承载 4.75 比特（Bit）。利用上下文的人类猜测者只需要接近 1 比特。此后的每个语言模型都是这个游戏的自动玩家，困惑度（Perplexity）就是它的得分。');
   }
 
-  // ── chatbot-lineage: fifty years of scripts on one timeline ─────────────────
+  // ── chatbot-lineage: 一条时间线展示五十年的脚本演进 ──
   function chatbotLineage(host) {
     var W = 560, H = 240, svg = svgEl('svg', { viewBox: '0 0 ' + W + ' ' + H });
     var DUR = 10, y = 152;
     var nodes = [
-      { x: 70, year: '1950', name: 'IMITATION GAME', detail: 'dialogue = benchmark' },
-      { x: 128, year: '1956', name: 'FIELD NAMED', detail: '2-month conjecture' },
-      { x: 216, year: '1966', name: 'ELIZA', detail: '~200 patterns, no state' },
-      { x: 288, year: '1972', name: 'PARRY', detail: '3 affect variables' },
-      { x: 398, year: '1995', name: 'ALICE', detail: '40K categories' },
-      { x: 472, year: '2001', name: 'SMARTERCHILD', detail: 'templates + APIs' }
+      { x: 70, year: '1950', name: '模仿游戏', detail: '对话即基准测试' },
+      { x: 128, year: '1956', name: '领域正式命名', detail: '两个月的研究设想' },
+      { x: 216, year: '1966', name: 'ELIZA', detail: '约 200 条模式，无状态' },
+      { x: 288, year: '1972', name: 'PARRY', detail: '3 个情感变量' },
+      { x: 398, year: '1995', name: 'ALICE', detail: '4 万个类别' },
+      { x: 472, year: '2001', name: 'SMARTERCHILD', detail: '模板 + API' }
     ];
     var line = svgEl('line', { x1: 32, y1: y, x2: 528, y2: y, stroke: RULE, 'stroke-width': '1.5', 'stroke-dasharray': '496', 'stroke-dashoffset': '496' });
     line.appendChild(anim('stroke-dashoffset', '496;496;0;0', DUR, { keyTimes: '0;0.03;0.62;1' }));
@@ -112,14 +112,14 @@
         svg.appendChild(t);
       });
     });
-    var verdict = txt(W / 2, H - 18, 'SAME MACHINE · MORE RULES · NEVER GENERAL', { 'text-anchor': 'middle', 'font-size': '10', 'letter-spacing': '.16em', fill: BP, opacity: '0' });
+    var verdict = txt(W / 2, H - 18, '机制相同 · 规则更多 · 始终不具备通用能力', { 'text-anchor': 'middle', 'font-size': '10', 'letter-spacing': '0', fill: BP, opacity: '0' });
     fadeIn(verdict, DUR, '0;0.68;0.78;1');
     svg.appendChild(verdict);
-    card(host, 'THE SCRIPTED HALF-CENTURY', 'match, respond, repeat', svg,
-      'Every system on this line is one mechanism: match the input, emit a canned response, update a little state. PARRY added affect variables, ALICE added forty thousand categories, SmarterChild added backend lookups. Coverage grew linearly with rules; generality never arrived. That ceiling is why the next three paradigms exist.');
+    card(host, '脚本式对话（Scripted Dialogue）的半个世纪', '匹配、回应、重复', svg,
+      '这条时间线上的系统采用同一种机制：匹配输入，输出预设回答，再更新少量状态。PARRY 加入情感变量（Affect Variable），ALICE 加入四万个类别，SmarterChild 加入后端查询。覆盖范围随规则数量线性增长，通用能力（Generality）却始终没有到来。这一上限促成了接下来的三种范式（Paradigm）。');
   }
 
-  // ── mask-derivation: prefix average → learned weights → attention ───────────
+  // ── mask-derivation: 前缀平均（Prefix average）→ 学得的权重（Learned weights）→ 注意力（Attention） ──
   function maskDerivation(host) {
     var W = 560, H = 260, svg = svgEl('svg', { viewBox: '0 0 ' + W + ' ' + H });
     var DUR = 10, N = 5, CS = 25;
@@ -134,14 +134,14 @@
       [1.0], [0.8, 0.2], [0.1, 0.3, 0.6], [0.4, 0.05, 0.15, 0.4], [0.05, 0.45, 0.1, 0.3, 0.1]
     ];
     var panels = [
-      { x0: 34, title: 'AVERAGE', sub: '1/(i+1)', weights: uniform, beg: 0.05 },
-      { x0: 218, title: 'LEARNED', sub: 'softmax(S + M)', weights: learned, beg: 0.28 },
-      { x0: 402, title: 'ATTENTION', sub: 'softmax(QKᵀ/√d + M)', weights: dynamicA, beg: 0.51, dynamic: dynamicB }
+      { x0: 34, title: '均匀平均', sub: '1/(i+1)', weights: uniform, beg: 0.05 },
+      { x0: 218, title: '学习权重', sub: 'softmax(S + M)', weights: learned, beg: 0.28 },
+      { x0: 402, title: '注意力', sub: 'softmax(QKᵀ/√d + M)', weights: dynamicA, beg: 0.51, dynamic: dynamicB }
     ];
     panels.forEach(function (p) {
       var g = svgEl('g', { opacity: '0' });
       fadeIn(g, DUR, revealKT(p.beg, 0.05, 2));
-      g.appendChild(svgEl('text', { x: p.x0 + (N * CS) / 2, y: 40, 'text-anchor': 'middle', 'font-family': MONO, 'font-size': '10', 'letter-spacing': '.14em', fill: MUTE }, [document.createTextNode(p.title)]));
+      g.appendChild(svgEl('text', { x: p.x0 + (N * CS) / 2, y: 40, 'text-anchor': 'middle', 'font-family': MONO, 'font-size': '10', 'letter-spacing': '0', fill: MUTE }, [document.createTextNode(p.title)]));
       for (var i = 0; i < N; i++) {
         for (var j = 0; j < N; j++) {
           var cx = p.x0 + j * CS, cy = 56 + i * CS;
@@ -163,18 +163,18 @@
       g.appendChild(svgEl('text', { x: p.x0 + (N * CS) / 2, y: 56 + N * CS + 20, 'text-anchor': 'middle', 'font-family': MONO, 'font-size': '9.5', fill: SOFT }, [document.createTextNode(p.sub)]));
       svg.appendChild(g);
     });
-    [{ x: 172, beg: 0.24, label: 'learn S' }, { x: 356, beg: 0.47, label: 'S = QKᵀ' }].forEach(function (a) {
+    [{ x: 172, beg: 0.24, label: '学习 S' }, { x: 356, beg: 0.47, label: 'S = QKᵀ' }].forEach(function (a) {
       var g = svgEl('g', { opacity: '0' });
       fadeIn(g, DUR, revealKT(a.beg, 0.04, 2));
       g.appendChild(svgEl('path', { d: 'M ' + a.x + ' 118 l 28 0 m -7 -5 l 7 5 l -7 5', fill: 'none', stroke: BP, 'stroke-width': '1.6' }));
       g.appendChild(svgEl('text', { x: a.x + 14, y: 106, 'text-anchor': 'middle', 'font-family': MONO, 'font-size': '9', fill: SOFT }, [document.createTextNode(a.label)]));
       svg.appendChild(g);
     });
-    var verdict = txt(W / 2, H - 14, 'TRIANGLE CONSTANT · WEIGHTS EVOLVE', { 'text-anchor': 'middle', 'font-size': '10', 'letter-spacing': '.16em', fill: BP, opacity: '0' });
+    var verdict = txt(W / 2, H - 14, '三角结构不变 · 权重逐步演化', { 'text-anchor': 'middle', 'font-size': '10', 'letter-spacing': '0', fill: BP, opacity: '0' });
     fadeIn(verdict, DUR, '0;0.58;0.68;1');
     svg.appendChild(verdict);
-    card(host, 'WHERE THE TRIANGLE COMES FROM', 'three refinements of one matrix', svg,
-      'All three panels are a lower-triangular row-stochastic matrix multiplied against the sequence. The prefix average fixes every weight at 1/(i+1). Learned scores make the weights uneven but static. Attention makes them depend on the tokens themselves, which is why the third panel keeps shifting. The mask never changed; it is the loop bounds of the original average.');
+    card(host, '三角掩码从何而来', '同一个矩阵的三次改进', svg,
+      '三个面板都用下三角行随机矩阵（Lower-triangular Row-stochastic Matrix）与序列相乘。前缀平均（Prefix Average）将每个权重固定为 1/(i+1)。学习得到的分数让权重不再均匀，但仍然固定。注意力（Attention）让权重依赖词元本身，因此第三个面板会持续变化。掩码（Mask）从未改变，它就是最初求平均时的循环边界。');
   }
 
   LF.register({

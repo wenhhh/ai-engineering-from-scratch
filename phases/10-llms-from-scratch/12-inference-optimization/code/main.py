@@ -350,7 +350,7 @@ def memory_budget(config, gpu_memory_gb, model_dtype_bytes=2, kv_dtype_bytes=2):
     available_for_kv = gpu_memory_gb - model_memory_gb - overhead_gb
 
     if available_for_kv <= 0:
-        return {"error": "Model does not fit in GPU memory", "model_memory_gb": model_memory_gb}
+        return {"error": "模型无法装入 GPU 显存", "model_memory_gb": model_memory_gb}
 
     per_token = 2 * config["num_layers"] * config["num_kv_heads"] * config["head_dim"] * kv_dtype_bytes
     max_tokens = int(available_for_kv * (1024 ** 3) / per_token)
@@ -371,10 +371,10 @@ if __name__ == "__main__":
     np.random.seed(42)
 
     print("=" * 70)
-    print("STEP 1: KV Cache Memory Analysis")
+    print("步骤 1: 键值缓存内存分析（KV Cache Memory Analysis）")
     print("=" * 70)
 
-    print(f"\n  {'Model':<20s} {'Per Token':>12s} {'@ 4K ctx':>12s} {'@ 32K ctx':>12s} {'@ 128K ctx':>12s}")
+    print(f"\n  {'模型（Model）':<20s} {'每词元（Per Token）':>12s} {'4K 上下文':>12s} {'32K 上下文':>12s} {'128K 上下文':>12s}")
     print("  " + "-" * 68)
 
     for name, config in MODEL_CONFIGS.items():
@@ -385,21 +385,21 @@ if __name__ == "__main__":
         print(f"  {name:<20s} {pt['per_token_kb']:>10.1f}KB {mem_4k['total_gb']:>10.2f}GB "
               f"{mem_32k['total_gb']:>10.2f}GB {mem_128k['total_gb']:>10.2f}GB")
 
-    print(f"\n  Memory budget for Llama 3 70B on different GPU configs:")
-    print(f"  {'GPU Config':<25s} {'Model':>8s} {'KV Avail':>10s} {'@2K users':>10s} {'@4K users':>10s}")
+    print(f"\n  不同 GPU 配置下 Llama 3 70B 的内存预算:")
+    print(f"  {'GPU 配置':<25s} {'模型（Model）':>8s} {'可用 KV 内存':>10s} {'2K 用户数':>10s} {'4K 用户数':>10s}")
     print("  " + "-" * 63)
 
     config_70b = MODEL_CONFIGS["Llama-3-70B"]
     for gpu_name, gpu_gb in [("1xA100-80GB", 80), ("2xA100-80GB", 160), ("4xA100-80GB", 320), ("8xH100-80GB", 640)]:
         budget = memory_budget(config_70b, gpu_gb)
         if "error" in budget:
-            print(f"  {gpu_name:<25s} {budget['model_memory_gb']:>7.1f}GB   DOES NOT FIT")
+            print(f"  {gpu_name:<25s} {budget['model_memory_gb']:>7.1f}GB   无法装入")
         else:
             print(f"  {gpu_name:<25s} {budget['model_memory_gb']:>7.1f}GB {budget['available_for_kv_gb']:>9.1f}GB "
                   f"{budget['max_users_at_2k']:>10d} {budget['max_users_at_4k']:>10d}")
 
     print("\n" + "=" * 70)
-    print("STEP 2: KV Cache with Attention")
+    print("步骤 2: 带注意力（Attention）的 KV 缓存")
     print("=" * 70)
 
     d_model = 64
@@ -414,18 +414,18 @@ if __name__ == "__main__":
     prefill_out = attn.forward(prompt, kv_cache=cache, layer_idx=0)
     cache.advance(seq_len)
 
-    print(f"\n  Prefill: {seq_len} tokens processed")
-    print(f"  KV cache after prefill: {cache.seq_len} tokens, {cache.used_bytes()} bytes")
-    print(f"  Output shape: {prefill_out.shape}")
+    print(f"\n  预填充（Prefill）: 已处理 {seq_len} 个词元")
+    print(f"  预填充后的 KV 缓存: {cache.seq_len} 个词元，{cache.used_bytes()} 字节")
+    print(f"  输出形状（Output shape）: {prefill_out.shape}")
 
     for step in range(4):
         new_token = np.random.randn(1, 1, d_model).astype(np.float32)
         decode_out = attn.forward(new_token, kv_cache=cache, layer_idx=0)
-        print(f"  Decode step {step + 1}: cache={cache.seq_len} tokens, "
-              f"output shape={decode_out.shape}, used={cache.used_bytes()} bytes")
+        print(f"  解码步（Decode step）{step + 1}: 缓存={cache.seq_len} 个词元，"
+              f"输出形状={decode_out.shape}，已用={cache.used_bytes()} 字节")
 
     print("\n" + "=" * 70)
-    print("STEP 3: Static vs Continuous Batching")
+    print("步骤 3: 静态与连续批处理（Static vs Continuous Batching）")
     print("=" * 70)
 
     def make_requests(n=30, seed=42):
@@ -448,12 +448,12 @@ if __name__ == "__main__":
     continuous_results = simulate_continuous_batching(continuous_requests, batch_size)
     continuous_stats = batching_stats(continuous_results)
 
-    print(f"\n  {30} requests, batch_size={batch_size}")
-    print(f"  Output lengths: min={min(r.output_tokens for r in make_requests())}, "
+    print(f"\n  {30} 个请求，批大小 batch_size={batch_size}")
+    print(f"  输出长度: 最小值 min={min(r.output_tokens for r in make_requests())}, "
           f"max={max(r.output_tokens for r in make_requests())}, "
           f"mean={np.mean([r.output_tokens for r in make_requests()]):.1f}")
 
-    print(f"\n  {'Metric':<25s} {'Static':>12s} {'Continuous':>12s} {'Improvement':>12s}")
+    print(f"\n  {'指标（Metric）':<25s} {'静态（Static）':>12s} {'连续（Continuous）':>12s} {'改善（Improvement）':>12s}")
     print("  " + "-" * 61)
 
     for metric in ["avg_latency", "p50_latency", "p99_latency", "total_time", "throughput"]:
@@ -462,11 +462,11 @@ if __name__ == "__main__":
         if metric == "throughput":
             improvement = f"{c/s:.2f}x" if s > 0 else "N/A"
         else:
-            improvement = f"{(s-c)/s*100:.1f}% less" if s > 0 else "N/A"
+            improvement = f"{(s-c)/s*100:.1f}% 减少" if s > 0 else "N/A"
         print(f"  {metric:<25s} {s:>12.1f} {c:>12.1f} {improvement:>12s}")
 
     print("\n" + "=" * 70)
-    print("STEP 4: Prefix Caching")
+    print("步骤 4: 前缀缓存（Prefix Caching）")
     print("=" * 70)
 
     cache = PrefixCache(max_entries=5000)
@@ -480,7 +480,7 @@ if __name__ == "__main__":
     for i, prefix in enumerate(system_prompts):
         kv_data = [np.random.randn(4, 16).astype(np.float16) for _ in prefix]
         inserted = cache.insert(prefix, kv_data)
-        print(f"\n  Cached system prompt {i+1}: {len(prefix)} tokens, {inserted} inserted")
+        print(f"\n  已缓存系统提示词 {i+1}: {len(prefix)} 个词元，插入 {inserted} 个")
 
     num_requests = 100
     hit_count = 0
@@ -497,26 +497,26 @@ if __name__ == "__main__":
             hit_count += 1
             tokens_saved += depth
 
-    print(f"\n  {num_requests} requests with shared system prompts:")
-    print(f"  Cache hit rate: {cache.hit_rate():.1%}")
-    print(f"  Tokens saved (prefix reuse): {tokens_saved}")
-    print(f"  Avg tokens saved per hit: {tokens_saved / max(hit_count, 1):.1f}")
-    print(f"  Total entries in trie: {cache.total_entries}")
+    print(f"\n  {num_requests} 个共享系统提示词的请求:")
+    print(f"  缓存命中率（Cache hit rate）: {cache.hit_rate():.1%}")
+    print(f"  节省的词元数（前缀复用）: {tokens_saved}")
+    print(f"  每次命中平均节省词元数: {tokens_saved / max(hit_count, 1):.1f}")
+    print(f"  字典树（Trie）条目总数: {cache.total_entries}")
 
     print("\n" + "=" * 70)
-    print("STEP 5: Speculative Decoding")
+    print("步骤 5: 推测解码（Speculative Decoding）")
     print("=" * 70)
 
     vocab_size = 500
     num_trials = 10
 
     strategies = [
-        ("Draft-target (8B->70B)", 0.78, 5),
+        ("草稿-目标（Draft-target，8B->70B）", 0.78, 5),
         ("EAGLE", 0.85, 6),
-        ("N-gram lookup", 0.50, 4),
+        ("N 元组查找（N-gram lookup）", 0.50, 4),
     ]
 
-    print(f"\n  {'Strategy':<25s} {'Accept Rate':>12s} {'Avg Accept':>12s} {'Speedup':>10s}")
+    print(f"\n  {'策略（Strategy）':<25s} {'接受率（Accept Rate）':>12s} {'平均接受数（Avg Accept）':>12s} {'加速比（Speedup）':>10s}")
     print("  " + "-" * 59)
 
     for name, acc_rate, spec_k in strategies:
@@ -537,27 +537,27 @@ if __name__ == "__main__":
               f"{np.mean(trial_avg_accepts):>12.2f} {np.mean(trial_speedups):>9.2f}x")
 
     print("\n" + "=" * 70)
-    print("STEP 6: Ops:Byte Analysis")
+    print("步骤 6: 运算字节比分析（Ops:Byte Analysis）")
     print("=" * 70)
 
     a100_tflops = 312
     a100_bandwidth_tbs = 2.0
     crossover = a100_tflops / a100_bandwidth_tbs
 
-    print(f"\n  A100 specs: {a100_tflops} TFLOPS (BF16), {a100_bandwidth_tbs} TB/s bandwidth")
-    print(f"  Crossover ops:byte ratio: {crossover:.0f}")
+    print(f"\n  A100 规格: {a100_tflops} TFLOPS (BF16), {a100_bandwidth_tbs} TB/s 带宽")
+    print(f"  转折点运算字节比（ops:byte）: {crossover:.0f}")
 
     scenarios = [
-        ("Prefill, batch=1, seq=4096", 4096),
-        ("Decode, batch=1", 1),
-        ("Decode, batch=8", 8),
-        ("Decode, batch=32", 32),
-        ("Decode, batch=128", 128),
-        ("Decode, batch=256", 256),
-        ("Decode, batch=512", 512),
+        ("预填充（Prefill）, batch=1, seq=4096", 4096),
+        ("解码（Decode）, batch=1", 1),
+        ("解码（Decode）, batch=8", 8),
+        ("解码（Decode）, batch=32", 32),
+        ("解码（Decode）, batch=128", 128),
+        ("解码（Decode）, batch=256", 256),
+        ("解码（Decode）, batch=512", 512),
     ]
 
-    print(f"\n  {'Scenario':<35s} {'Ops:Byte':>10s} {'Bound':>12s} {'Utilization':>12s}")
+    print(f"\n  {'场景（Scenario）':<35s} {'Ops:Byte':>10s} {'瓶颈（Bound）':>12s} {'利用率（Utilization）':>12s}")
     print("  " + "-" * 69)
 
     for name, ops_per_byte in scenarios:
@@ -568,17 +568,17 @@ if __name__ == "__main__":
             util = 100.0
         print(f"  {name:<35s} {ops_per_byte:>10d} {bound:>12s} {util:>11.1f}%")
 
-    print("\n  Takeaway: batch decode until ops:byte exceeds the crossover point.")
-    print(f"  On A100, this means batch size >= ~{int(crossover)} for full compute utilization.")
+    print("\n  要点: 增大解码批次，直到 ops:byte 超过转折点。")
+    print(f"  在 A100 上，充分利用计算能力意味着批大小 >= ~{int(crossover)}。")
 
     print("\n" + "=" * 70)
-    print("SUMMARY")
+    print("总结（Summary）")
     print("=" * 70)
-    print("  1. KV cache trades memory for compute: 320KB/token for Llama 3 70B")
-    print("  2. Continuous batching fills idle GPU slots as requests finish")
-    print("  3. PagedAttention eliminates memory fragmentation (simulated via trie)")
-    print("  4. Prefix caching reuses KV entries for shared system prompts")
-    print("  5. Speculative decoding gets 2-3x speedup by batching verification")
-    print("  6. Ops:byte ratio determines whether you are compute or memory bound")
-    print("\n  Production stack: vLLM or SGLang with PagedAttention + continuous")
-    print("  batching + prefix caching. Add speculative decoding for latency.")
+    print("  1. KV 缓存以内存换取计算: Llama 3 70B 为 320KB/token")
+    print("  2. 连续批处理在请求完成时填补空闲 GPU 槽位")
+    print("  3. PagedAttention 消除内存碎片（此处通过字典树模拟）")
+    print("  4. 前缀缓存复用共享系统提示词的 KV 条目")
+    print("  5. 推测解码通过批量验证获得 2-3x 加速")
+    print("  6. 运算字节比决定瓶颈在计算还是内存")
+    print("\n  生产技术栈: vLLM 或 SGLang，配合 PagedAttention + 连续")
+    print("  批处理 + 前缀缓存。加入推测解码可降低延迟。")

@@ -1,102 +1,102 @@
 {
   "lesson": "19-subword-tokenization",
-  "title": "Subword Tokenization — BPE, WordPiece, Unigram, SentencePiece",
+  "title": "子词分词（Subword Tokenization）：BPE、WordPiece、Unigram、SentencePiece",
   "questions": [
     {
       "stage": "pre",
-      "question": "What does subword tokenization buy you over word-level vocabularies?",
+      "question": "与词级词表相比，子词分词带来什么？",
       "options": [
-        "Faster training",
-        "Smaller models",
-        "Better embeddings",
-        "Rare words decompose into known subword pieces, eliminating OOV while keeping vocabulary bounded"
+        "更快训练",
+        "更小模型",
+        "更好嵌入",
+        "罕见词分解为已知子词片段，在保持词表有界的同时消除 OOV"
       ],
       "correct": 3,
-      "explanation": "Subword tokens cover any input by decomposition, removing the OOV problem of word-level vocab."
+      "explanation": "子词词元通过分解覆盖任意输入，消除词级词表的 OOV 问题。"
     },
     {
       "stage": "pre",
-      "question": "Why does GPT-2 use byte-level BPE rather than character-level BPE?",
+      "question": "为什么 GPT-2 使用字节级 BPE，而不是字符级 BPE？",
       "options": [
-        "Required by transformers",
-        "A 256-byte base vocabulary covers any UTF-8 input, guaranteeing no [UNK] tokens",
-        "Bytes are smaller",
-        "Byte BPE skips merges"
+        "Transformer 要求如此",
+        "256 字节的基础词表覆盖任意 UTF-8 输入，保证没有 [UNK] 词元",
+        "字节更小",
+        "字节 BPE 跳过合并"
       ],
       "correct": 1,
-      "explanation": "Byte-level BPE starts from 256 bytes so every input encodes; nothing is OOV."
+      "explanation": "字节级 BPE 从 256 个字节开始，因此所有输入都能编码，没有 OOV。"
     },
     {
       "stage": "check",
-      "question": "How does the Unigram tokenizer build its vocabulary?",
+      "question": "Unigram 分词器如何构建词表？",
       "options": [
-        "Greedy frequent-pair merging",
-        "Random sampling",
-        "Start from a large candidate set, iteratively prune tokens whose removal least hurts corpus log-likelihood",
-        "Greedy IDF weighting"
+        "贪心合并高频词元对",
+        "随机采样",
+        "从大型候选集合开始，迭代剪除那些移除后对语料对数似然损害最小的词元",
+        "贪心 IDF 加权"
       ],
       "correct": 2,
-      "explanation": "Unigram fits a unigram LM and iteratively removes the least useful tokens to reach target vocab size."
+      "explanation": "Unigram 拟合一元语言模型，迭代移除最无用的词元，直到达到目标词表大小。"
     },
     {
       "stage": "check",
-      "question": "What distinguishes WordPiece's merge criterion from BPE's?",
+      "question": "WordPiece 的合并标准与 BPE 有何区别？",
       "options": [
-        "WordPiece uses bytes",
-        "WordPiece skips merges",
-        "WordPiece is unsupervised",
-        "WordPiece merges pairs that maximize training-corpus likelihood, while BPE merges the most frequent pair"
+        "WordPiece 使用字节",
+        "WordPiece 跳过合并",
+        "WordPiece 是无监督的",
+        "WordPiece 合并使训练语料似然最大化的词元对，而 BPE 合并出现最多的一对"
       ],
       "correct": 3,
-      "explanation": "WordPiece picks merges by likelihood; BPE picks by raw frequency."
+      "explanation": "WordPiece 按似然选择合并，BPE 按原始频率选择。"
     },
     {
       "stage": "check",
-      "question": "Which tool trains a tokenizer directly on raw multilingual Unicode text?",
+      "question": "哪个工具直接在原始多语言 Unicode 文本上训练分词器？",
       "options": [
         "spaCy",
         "tiktoken",
         "tokenizers-lite",
-        "SentencePiece (encodes whitespace as a special marker and trains BPE or Unigram)"
+        "SentencePiece，将空白编码为特殊标记，并训练 BPE 或 Unigram"
       ],
       "correct": 3,
-      "explanation": "SentencePiece trains BPE/Unigram on raw text without pre-tokenization; tiktoken only encodes."
+      "explanation": "SentencePiece 无需预分词即可在原始文本上训练 BPE/Unigram；tiktoken 只负责编码。"
     },
     {
       "stage": "post",
-      "question": "Why must production CI hash-check the deployed tokenizer.json?",
+      "question": "为什么生产 CI 必须检查部署的 tokenizer.json 的哈希？",
       "options": [
-        "Tokenizer drift produces different token IDs from those the model was trained on, silently corrupting outputs",
-        "To compress storage",
-        "It reduces vocabulary size",
-        "Required by Hugging Face"
+        "分词器漂移产生与模型训练时不同的词元 ID，悄然破坏输出",
+        "为了压缩存储",
+        "它减少词表大小",
+        "Hugging Face 要求如此"
       ],
       "correct": 0,
-      "explanation": "Even small tokenizer changes shift IDs; a hash check catches drift before it reaches users."
+      "explanation": "即便很小的分词器变化也会改变 ID；哈希检查可以在影响用户前发现漂移。"
     },
     {
       "stage": "post",
-      "question": "What is a common reason a single emoji takes many tokens?",
+      "question": "单个表情符号占用多个词元的常见原因是什么？",
       "options": [
-        "Emojis are stop characters",
-        "Emojis are reserved",
-        "Multi-codepoint emojis encode into multiple UTF-8 bytes; without dedicated tokens each byte is its own subword",
-        "Emojis are stored as floats"
+        "表情符号是停用字符",
+        "表情符号被保留",
+        "多码点表情编码为多个 UTF-8 字节；没有专用词元时，每个字节各自成为一个子词",
+        "表情符号存储为浮点数"
       ],
       "correct": 2,
-      "explanation": "Composite emojis encode as several bytes; byte-level tokenizers may use multiple tokens per glyph."
+      "explanation": "复合表情编码为多个字节，字节级分词器可能为单个字形使用多个词元。"
     },
     {
       "stage": "post",
-      "question": "What heuristic guides vocabulary size for a new monolingual transformer?",
+      "question": "什么经验规则指导新单语言 Transformer 的词表大小？",
       "options": [
-        "Match training corpus size",
-        "Roughly 32k for models under 1B parameters; 50-100k for 1-10B; 200k+ for multilingual or frontier models",
-        "Always 1M",
-        "Always 8000"
+        "匹配训练语料库规模",
+        "参数少于 1B 的模型约用 32k；1–10B 用 50–100k；多语言或前沿模型用 200k 以上",
+        "总是 1M",
+        "总是 8000"
       ],
       "correct": 1,
-      "explanation": "Vocab size scales with model and language coverage; these are rough community defaults."
+      "explanation": "词表大小随模型和语言覆盖扩展；这些是社区的粗略默认值。"
     }
   ]
 }

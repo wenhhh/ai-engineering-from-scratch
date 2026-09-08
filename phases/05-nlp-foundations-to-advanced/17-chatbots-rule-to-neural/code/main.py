@@ -61,23 +61,23 @@ def is_destructive(text):
 
 def hybrid_respond(user_input):
     if is_destructive(user_input):
-        return "Destructive action detected. Routing to structured confirmation flow.", "rule"
+        return "检测到破坏性操作（Destructive action）。转入结构化确认流程（Structured confirmation flow）。", "rule"
 
     answer, score = faq_respond(user_input)
     if answer:
-        return f"{answer}  (faq match={score:.2f})", "faq"
+        return f"{answer}  (常见问题匹配（FAQ match）={score:.2f})", "faq"
 
-    return f"(would call LLM agent for: {user_input!r})", "agent"
+    return f"（将为此输入调用大语言模型智能体（LLM agent）: {user_input!r}）", "agent"
 
 
 def main():
-    print("=== rule-based ELIZA-style ===")
+    print("=== 基于规则的 ELIZA 风格（Rule-based ELIZA-style，输入与应答模板保留为英文样例） ===")
     for msg in ["Hi there", "My name is Alex", "I want coffee", "I feel tired", "The sky is blue"]:
-        print(f"  user : {msg}")
-        print(f"  bot  : {rule_based_respond(msg)}")
+        print(f"  用户（User）: {msg}")
+        print(f"  机器人（Bot）: {rule_based_respond(msg)}")
     print()
 
-    print("=== hybrid routing ===")
+    print("=== 混合路由（Hybrid routing）：rule 为规则，faq 为常见问题，agent 为智能体 ===")
     for msg in ["how do i reset my password", "cancel my order", "what's the weather like", "I want a refund"]:
         response, route = hybrid_respond(msg)
         print(f"  [{route:5s}] {msg}")

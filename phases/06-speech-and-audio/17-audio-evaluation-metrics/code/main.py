@@ -1,9 +1,9 @@
-"""Audio evaluation metrics, from scratch.
+"""从零实现音频评估指标（Audio evaluation metrics）。
 
-Implements WER, CER, EER, simple SECS, FAD-shaped embedding distance,
-and a MMAU-style multiple-choice accuracy. Stdlib-only.
+实现词错误率（WER）、字符错误率（CER）、等错误率（EER）、简化 SECS、FAD 形式的嵌入距离，
+以及 MMAU 风格的选择题准确率（Multiple-choice accuracy）。仅用标准库。
 
-Run: python3 code/main.py
+运行：python3 code/main.py
 """
 
 import math
@@ -78,7 +78,7 @@ def mmau_accuracy(predictions, golds):
 
 
 def main():
-    print("=== WER + CER ===")
+    print("=== 词错误率（WER）+ 字符错误率（CER），英文参考及候选文本保留 ===")
     pairs = [
         ("turn on the kitchen lights",  "turn off the kitchen lights"),
         ("what's the weather today",     "what is the weather today"),
@@ -86,64 +86,64 @@ def main():
         ("set a 5 minute timer",         "set a five minute timer"),
     ]
     for ref, hyp in pairs:
-        print(f"  ref: {ref!r}")
-        print(f"  hyp: {hyp!r}")
+        print(f"  参考（Reference）: {ref!r}")
+        print(f"  候选（Hypothesis）: {hyp!r}")
         print(f"    WER = {wer(ref, hyp):.3f}   CER = {cer(ref, hyp):.3f}")
 
     print()
-    print("=== EER (toy speaker verification) ===")
+    print("=== 等错误率（EER，小型说话人验证示例） ===")
     random.seed(0)
     rng = random.Random(0)
     same = [rng.gauss(0.80, 0.06) for _ in range(100)]
     diff = [rng.gauss(0.20, 0.15) for _ in range(500)]
     eer, t = eer_from_scores(same, diff)
-    print(f"  same mean cos: {sum(same)/len(same):.3f}")
-    print(f"  diff mean cos: {sum(diff)/len(diff):.3f}")
-    print(f"  EER = {eer * 100:.2f}%   at threshold {t:.3f}")
+    print(f"  同一说话人平均余弦相似度: {sum(same)/len(same):.3f}")
+    print(f"  不同说话人平均余弦相似度: {sum(diff)/len(diff):.3f}")
+    print(f"  EER = {eer * 100:.2f}%   对应阈值 {t:.3f}")
 
     print()
-    print("=== SECS (toy voice-cloning similarity) ===")
+    print("=== 说话人嵌入余弦相似度（SECS，小型声音克隆相似度示例） ===")
     ref_emb = [rng.gauss(0, 0.1) for _ in range(192)]
     clone_emb = [ref_emb[i] + rng.gauss(0, 0.1) for i in range(192)]
     secs = cosine(ref_emb, clone_emb)
-    print(f"  SECS = {secs:.3f}   (target: &gt; 0.75 for recognizable clone)")
+    print(f"  SECS = {secs:.3f}   （目标：可辨认的克隆声音 &gt; 0.75）")
 
     print()
-    print("=== FAD-shaped embedding distance ===")
+    print("=== 弗雷歇音频距离（FAD）形式的嵌入距离（Embedding distance） ===")
     real_embs = [[rng.gauss(0, 1.0) for _ in range(32)] for _ in range(50)]
     fake_embs = [[rng.gauss(0.1, 1.1) for _ in range(32)] for _ in range(50)]
     fad = embedding_fad_like(real_embs, fake_embs)
-    print(f"  FAD-like = {fad:.3f}   (MusicGen-small on MusicCaps: 4.5)")
+    print(f"  FAD-like = {fad:.3f}   （MusicGen-small 在 MusicCaps 上为 4.5）")
 
     print()
-    print("=== MMAU-Pro-style multiple-choice accuracy ===")
+    print("=== MMAU-Pro 风格的选择题准确率（Multiple-choice accuracy） ===")
     predictions = ["A", "C", "B", "A", "D", "C", "B", "A", "A", "C"]
     golds       = ["A", "B", "B", "A", "D", "A", "B", "A", "C", "C"]
     acc = mmau_accuracy(predictions, golds)
-    print(f"  accuracy = {acc:.3f}  (random on 4-way: 0.250)")
+    print(f"  准确率 = {acc:.3f}  （四选一随机水平：0.250）")
 
     print()
-    print("=== 2026 benchmarks worth knowing ===")
+    print("=== 值得了解的 2026 基准测试（Benchmarks） ===")
     rows = [
-        ("Open ASR Leaderboard",  "LibriSpeech + multilingual", "Parakeet-TDT 6.05%, Whisper-LV3-turbo 1.58%"),
-        ("TTS Arena",             "blind pairwise TTS",          "Kokoro ELO 1059, ElevenLabs v3 1179"),
-        ("Artificial Analysis Speech", "TTS + STT arena",        "Inworld TTS-1.5-Max ELO 1236 leader"),
-        ("MMAU-Pro",              "LALM reasoning",              "Gemini 2.5 Pro ~60%, GPT-4o Audio 52.5%"),
-        ("LongAudioBench",        "multi-minute LALM",           "Audio Flamingo Next beats Gemini 2.5 Pro"),
-        ("VoxCeleb1-O",           "speaker verification EER",    "ECAPA 0.87%, 3D-Speaker 0.50%"),
-        ("AudioSet mAP",          "multi-label classification",  "BEATs-iter3 0.548 mAP"),
-        ("ASVspoof 5",            "anti-spoofing EER",           "SOTA ~7.23% on in-the-wild"),
+        ("Open ASR Leaderboard",  "LibriSpeech + 多语言（Multilingual）", "Parakeet-TDT 6.05%, Whisper-LV3-turbo 1.58%"),
+        ("TTS Arena",             "TTS 成对盲测（Blind pairwise）",          "Kokoro ELO 1059, ElevenLabs v3 1179"),
+        ("Artificial Analysis Speech", "TTS + STT 竞技场（Arena）",        "Inworld TTS-1.5-Max 以 ELO 1236 领先"),
+        ("MMAU-Pro",              "LALM 推理（Reasoning）",              "Gemini 2.5 Pro ~60%, GPT-4o Audio 52.5%"),
+        ("LongAudioBench",        "数分钟音频的 LALM",           "Audio Flamingo Next 超过 Gemini 2.5 Pro"),
+        ("VoxCeleb1-O",           "说话人验证（Speaker verification）EER",    "ECAPA 0.87%, 3D-Speaker 0.50%"),
+        ("AudioSet mAP",          "多标签分类（Multi-label classification）",  "BEATs-iter3 0.548 mAP"),
+        ("ASVspoof 5",            "反欺骗（Anti-spoofing）EER",           "真实环境（In-the-wild）最佳水平（SOTA）~7.23%"),
     ]
-    print("  | leaderboard              | axis                      | 2026 SOTA                                   |")
+    print("  | 排行榜（Leaderboard） | 评估维度（Axis） | 2026 最佳水平（SOTA） |")
     for name, axis, sota in rows:
         print(f"  | {name:<24} | {axis:<25} | {sota:<43} |")
 
     print()
-    print("takeaways:")
-    print("  - every task has 2-3 primary metrics; choose BEFORE training")
-    print("  - normalize text before computing WER/CER; report the normalization")
-    print("  - report P50/P95/P99 for latency, per-class for classification, per-category for MMAU")
-    print("  - public benchmark + your own held-out domain set = both, always")
+    print("要点:")
+    print("  - 每个任务有 2-3 个主要指标；在训练之前选定")
+    print("  - 计算 WER/CER 前先对文本进行规范化（Normalization），并报告规范化方式")
+    print("  - 延迟报告 P50/P95/P99；分类按类别报告；MMAU 按任务类别报告")
+    print("  - 公开基准 + 自建领域留出集（Held-out domain set），始终两者都用")
 
 
 if __name__ == "__main__":

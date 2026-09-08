@@ -1,78 +1,78 @@
 {
   "lesson": "02-model-selection-and-token-economics",
-  "title": "Spend Capability Where Failure Is Expensive",
+  "title": "将能力投入到失败代价高的地方（Spend Capability Where Failure Is Expensive）",
   "questions": [
     {
       "stage": "pre",
-      "question": "What is the strongest model-selection rule?",
+      "question": "哪条模型选择规则最可靠？",
       "options": [
-        "Use the strongest model for external outputs and smaller models for internal drafts",
-        "Use the smallest model that clears measured requirements with adequate margin",
-        "Use the newest model meeting context and modality needs",
-        "Use the lowest-cost model that passes one average-quality benchmark on sample inputs"
+        "对外输出用最强模型，内部草稿用小模型",
+        "使用留有足够余量且通过实测要求的最小模型",
+        "使用满足上下文和模态需求的最新模型",
+        "使用在样例输入上通过一次平均质量基准、且成本最低的模型"
       ],
       "correct": 1,
-      "explanation": "Selection should follow representative quality, latency, cost, and risk criteria, not product rank."
+      "explanation": "选择应依据代表性的质量、延迟、成本和风险标准，而不是产品排名。"
     },
     {
       "stage": "check",
-      "question": "A summary omits a policy exception because the policy was never supplied. Which failure layer is primary?",
+      "question": "摘要遗漏了一项政策例外，因为从未提供该政策。主要属于哪层故障？",
       "options": [
-        "A context-placement failure because the exception was supplied too far from the task",
-        "A caching failure because the policy should have persisted from an earlier request",
-        "A source failure because required authoritative evidence never entered the workflow",
-        "A model-capability failure because the model did not infer the missing exception"
+        "上下文位置故障，因为例外内容离任务太远",
+        "缓存故障，因为政策本应从此前请求中保留下来",
+        "来源故障，因为必需的权威证据从未进入工作流",
+        "模型能力故障，因为模型未推断出缺失的例外"
       ],
       "correct": 2,
-      "explanation": "The model cannot reliably use a fact that was absent from its available sources. Upgrade is not the first repair."
+      "explanation": "模型无法可靠使用可用来源中不存在的事实。升级不是首选修复措施。"
     },
     {
       "stage": "check",
-      "question": "Which cost comparison is most complete?",
+      "question": "哪种成本比较最完整？",
       "options": [
-        "Input and output token price multiplied by the expected request volume",
-        "Benchmark score divided by published token price",
-        "Average API cost per call plus infrastructure spend, excluding human correction",
-        "Token cost plus request volume, review, failures, and rework"
+        "输入和输出词元价格乘以预期请求量",
+        "基准分数除以公开词元价格",
+        "平均每次 API 调用成本加基础设施费用，不含人工修正",
+        "词元成本，加上请求量、审核、失败和返工因素"
       ],
       "correct": 3,
-      "explanation": "A cheaper call can produce a more expensive workflow when correction and failure costs are ignored."
+      "explanation": "忽略修正和失败成本时，单次调用更便宜的方案可能让整个工作流更贵。"
     },
     {
       "stage": "check",
-      "question": "Two identical requests to a pinned model produce different valid phrasings even with the lowest supported sampling randomness. What is the strongest evaluation response?",
+      "question": "固定模型的两个相同请求，即使使用最低受支持采样随机性，也产生不同但有效的措辞。最合适的评估应对是什么？",
       "options": [
-        "Expect variation, repeat the evaluation, and score the required behavior",
-        "Compare only the average word count because semantic variation cannot be evaluated deterministically",
-        "Lower temperature until every response is identical, then use one run per release",
-        "Reject the pinned model because a fixed identifier guarantees byte-identical output"
+        "预期结果会变化，重复评估，并对必需行为评分",
+        "只比较平均字数，因为语义变化无法确定性评估",
+        "降低温度直到所有回答相同，然后每次发布只运行一次",
+        "拒绝该固定模型，因为固定标识符保证字节完全一致的输出"
       ],
       "correct": 0,
-      "explanation": "Pinned model weights and low randomness do not guarantee identical output. Repeated trials plus deterministic behavior checks provide stronger evidence."
+      "explanation": "固定模型权重和低随机性不保证输出相同。重复试验加确定性行为检查提供更强证据。"
     },
     {
       "stage": "post",
-      "question": "Low effort fails one repeated quality run. High effort clears quality, p95 latency, and cost. A supported fast route clears quality and latency but exceeds the cost gate. Which configuration should be selected?",
+      "question": "低投入程度在一次重复质量测试中失败；高投入程度通过质量、p95 延迟和成本门槛；受支持的快速路径通过质量和延迟，但超出成本门槛。应选哪种配置？",
       "options": [
-        "The fast route because lower latency should override a predeclared cost gate",
-        "High effort because it is the least costly supported configuration that clears every gate",
-        "Low effort because its average quality can hide the failing run",
-        "Whichever configuration current marketing material describes as most capable"
+        "快速路径，因为低延迟应优先于预先声明的成本门槛",
+        "高投入程度，因为它是通过全部门槛且成本最低的受支持配置",
+        "低投入程度，因为平均质量可以掩盖失败运行",
+        "当前宣传资料称为能力最强的任意配置"
       ],
       "correct": 1,
-      "explanation": "The predeclared gate controls the decision. High effort is the only supported configuration in the scenario that satisfies quality, tail latency, and cost together."
+      "explanation": "决策由预先声明的门槛决定。在此场景中，高投入程度是唯一同时满足质量、尾延迟和成本的受支持配置。"
     },
     {
       "stage": "post",
-      "question": "What does an official passing threshold of 720 on a 100-to-1,000 scaled score mean for a practice quiz?",
+      "question": "官方在 100 至 1,000 的换算分数中将及格线设为 720，这对练习测验意味着什么？",
       "options": [
-        "A 72 percent practice score is equivalent when domain weights match the guide",
-        "The practice target should be exactly 72 percent correct",
-        "The scaled threshold cannot be converted into a raw percentage; practice percentages remain readiness evidence only",
-        "Any raw score above 720 divided by ten predicts an official pass"
+        "只要领域权重与指南一致，72% 练习得分就等价",
+        "练习目标应恰好是 72% 正确率",
+        "换算门槛不能转换为原始百分比；练习百分比只能作为准备程度的证据",
+        "任何超过 720 除以十的原始分数都预示官方考试通过"
       ],
       "correct": 2,
-      "explanation": "Scaled scoring equates exam forms and is not raw percent correct. Community practice scores cannot be converted to or predict the official result."
+      "explanation": "换算评分用于等值处理不同试卷，并非原始正确率。社区练习分数无法转换为或预测官方结果。"
     }
   ]
 }

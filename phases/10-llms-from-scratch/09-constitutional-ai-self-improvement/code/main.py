@@ -1,9 +1,8 @@
-"""Constitutional AI self-critique + GRPO rule-reward loop.
+"""宪法式 AI（Constitutional AI）自我批评 + 组相对策略优化（GRPO）规则奖励循环。
 
-Runs end-to-end in pure stdlib + numpy. The CAI loop uses a handwritten critic
-that stands in for an LLM self-judge. The GRPO loop uses a deterministic math
-grader as the reward source. Both loops produce the metrics you would wire
-into a real optimizer.
+仅用标准库和 numpy 即可端到端运行。CAI 循环使用手写批评器（Critic），
+代替大语言模型（LLM）的自我评判器。GRPO 循环使用确定性的数学评分器
+作为奖励来源。两个循环都会生成可接入真实优化器（Optimizer）的指标。
 """
 
 from __future__ import annotations
@@ -126,9 +125,8 @@ def grpo_step(
 
 
 def mock_sampler(rng: random.Random) -> Callable[[str], str]:
-    """Stand-in for an LLM policy. Returns a string that sometimes contains
-    the correct answer to a simple arithmetic prompt, sometimes wrapped in
-    <answer> tags, sometimes not. Good enough to exercise the reward shape."""
+    """模拟 LLM 策略（Policy）。返回的字符串有时包含简单算术提示词的正确答案，
+    有时包裹在 <answer> 标签中，有时不带标签。这足以验证奖励的形式。"""
 
     def sampler(prompt: str) -> str:
         try:
@@ -180,7 +178,7 @@ def self_improvement_round(
 
 def demo_constitutional_loop() -> None:
     print("=" * 70)
-    print("PART 1 / CONSTITUTIONAL AI SELF-CRITIQUE")
+    print("第 1 部分 / 宪法式 AI 自我批评（Constitutional AI Self-critique）")
     print("=" * 70)
     raw = [
         ("What is the capital of France?",
@@ -192,17 +190,17 @@ def demo_constitutional_loop() -> None:
          "and among the many options a reasonable choice would be blue."),
     ]
     for pair in cai_stage_one(raw):
-        print(f"\nPrompt   : {pair['prompt']}")
-        print(f"Principle: {pair['principle']}")
-        print(f"Initial  : {pair['initial']}")
-        print(f"Problems : {pair['problems']}")
-        print(f"Revised  : {pair['revised']}")
-        print(f"Changed? : {pair['changed']}")
+        print(f"\n提示词（Prompt）   : {pair['prompt']}")
+        print(f"原则（Principle）: {pair['principle']}")
+        print(f"初始回复（Initial）  : {pair['initial']}")
+        print(f"问题（Problems） : {pair['problems']}")
+        print(f"修订回复（Revised）  : {pair['revised']}")
+        print(f"是否改动（Changed）? : {pair['changed']}")
 
 
 def demo_grpo_loop() -> None:
     print("\n" + "=" * 70)
-    print("PART 2 / GRPO WITH RULE-BASED REWARDS")
+    print("第 2 部分 / 基于规则奖励（Rule-based Rewards）的 GRPO")
     print("=" * 70)
     rng = random.Random(42)
     sampler = mock_sampler(rng)
@@ -215,30 +213,30 @@ def demo_grpo_loop() -> None:
     group_size = 8
 
     for round_idx in range(3):
-        print(f"\n-- Round {round_idx + 1} / group_size={group_size} --")
+        print(f"\n-- 轮次（Round）{round_idx + 1} / 组大小 group_size={group_size} --")
         result = self_improvement_round(prompts, sampler, group_size=group_size)
         for m in result["per_prompt"]:
             print(
                 f"  {m['prompt']:<22} "
-                f"mean={m['mean_reward']:.3f}  "
-                f"best={m['best_reward']:.3f}  "
-                f"std={m['std_reward']:.3f}"
+                f"均值（mean）={m['mean_reward']:.3f}  "
+                f"最优值（best）={m['best_reward']:.3f}  "
+                f"标准差（std）={m['std_reward']:.3f}"
             )
-        print(f"  overall mean reward: {result['overall_mean']:.3f}")
+        print(f"  总体平均奖励: {result['overall_mean']:.3f}")
 
-    print("\n-- Synthetic GRPO update --")
+    print("\n-- 合成数据 GRPO 更新 --")
     rewards = [1.0, 0.0, 0.1, 0.0, 1.0, 1.0, 0.0, 0.1]
     advantages = group_relative_advantage(rewards)
     policy_logprobs = np.array([-1.2, -2.1, -1.9, -2.4, -1.1, -1.0, -2.3, -2.0])
     ref_logprobs = policy_logprobs - 0.05
     stats = grpo_step(policy_logprobs, ref_logprobs, advantages)
-    print(f"  rewards       : {rewards}")
-    print(f"  advantages    : {advantages.round(3).tolist()}")
-    print(f"  policy_loss   : {stats['policy_loss']:.4f}")
-    print(f"  kl            : {stats['kl']:.4f}")
-    print(f"  total_loss    : {stats['total_loss']:.4f}")
-    print(f"  mean ratio    : {stats['mean_ratio']:.4f}")
-    print(f"  adv range     : {stats['advantage_range']:.4f}")
+    print(f"  奖励（rewards）       : {rewards}")
+    print(f"  优势（advantages）    : {advantages.round(3).tolist()}")
+    print(f"  策略损失（policy_loss）   : {stats['policy_loss']:.4f}")
+    print(f"  KL 散度（kl）            : {stats['kl']:.4f}")
+    print(f"  总损失（total_loss）    : {stats['total_loss']:.4f}")
+    print(f"  平均比率（mean ratio）    : {stats['mean_ratio']:.4f}")
+    print(f"  优势范围（adv range）     : {stats['advantage_range']:.4f}")
 
 
 if __name__ == "__main__":
@@ -247,5 +245,5 @@ if __name__ == "__main__":
     demo_constitutional_loop()
     demo_grpo_loop()
     print("\n" + "=" * 70)
-    print("DONE")
+    print("完成（DONE）")
     print("=" * 70)

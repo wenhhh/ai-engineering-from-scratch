@@ -2,38 +2,38 @@
   "questions": [
     {
       "stage": "pre",
-      "question": "What is a Language Server Protocol (LSP)?",
-      "options": ["A protocol for transferring files between editors", "A compression format for source code files", "A network protocol for remote pair programming", "A standard for editors to receive type info, completions, and diagnostics from a language-specific server"],
+      "question": "什么是语言服务器协议（Language Server Protocol，LSP）？",
+      "options": ["在编辑器之间传输文件的协议", "源代码文件的压缩格式", "用于远程结对编程的网络协议", "编辑器从特定语言服务器获取类型信息、补全和诊断结果的标准"],
       "correct": 3,
-      "explanation": "LSP is a standardized protocol that lets editors communicate with language servers for features like autocomplete, type checking, and error diagnostics, regardless of the editor used."
+      "explanation": "LSP 是标准化协议，让编辑器与语言服务器通信，以提供自动补全、类型检查（Type Checking）和错误诊断等功能，不受具体编辑器限制。"
     },
     {
       "stage": "pre",
-      "question": "Why is format-on-save useful for team projects?",
-      "options": ["It ensures consistent code style across all contributors without manual formatting", "It compresses the code for faster git operations", "It reduces file sizes by removing whitespace", "It catches runtime bugs before the code is executed"],
+      "question": "为什么保存时格式化（Format on Save）对团队项目有用？",
+      "options": ["无需手动格式化，就能保证所有贡献者的代码风格一致", "压缩代码以加快 git 操作", "通过删除空白缩小文件", "在执行代码前发现运行时缺陷"],
       "correct": 0,
-      "explanation": "Format-on-save runs a formatter (like Black or Ruff) every time you save, ensuring all code follows the same style conventions regardless of who wrote it."
+      "explanation": "保存时格式化会在每次保存时运行格式化器（例如 Black 或 Ruff），保证所有代码遵循相同风格约定，而不受作者影响。"
     },
     {
       "stage": "post",
-      "question": "Which VS Code extension enables editing code on a remote GPU machine as if it were local?",
+      "question": "哪个 VS Code 扩展可以让你像编辑本地代码一样编辑远程 GPU 机器上的代码？",
       "options": ["Pylance", "Debugpy", "GitLens", "Remote SSH"],
       "correct": 3,
-      "explanation": "Remote SSH installs a lightweight VS Code server on the remote machine and streams the UI to your local editor, letting you edit files, run terminals, and debug remotely."
+      "explanation": "Remote SSH 在远程机器上安装轻量级 VS Code 服务端，并将界面传送到本地编辑器，让你能够远程编辑文件、运行终端和调试。"
     },
     {
       "stage": "post",
-      "question": "Why should 'notebook.output.scrolling' be enabled in VS Code settings for AI work?",
-      "options": ["It enables smooth scrolling animations in the editor", "It allows scrolling between notebook cells with the mouse wheel", "It enables horizontal scrolling for wide dataframes", "It prevents training loop output (thousands of lines) from exploding the output panel"],
+      "question": "为什么 AI 工作的 VS Code 设置应启用 'notebook.output.scrolling'？",
+      "options": ["它启用编辑器中的平滑滚动动画", "它允许用鼠标滚轮在笔记本单元格之间滚动", "它为宽数据帧启用水平滚动", "它防止训练循环的数千行输出撑大输出面板"],
       "correct": 3,
-      "explanation": "Training loops can print thousands of lines of output. Without output scrolling, the notebook output panel grows unbounded, making the notebook unusable."
+      "explanation": "训练循环可能打印数千行输出。如果没有输出滚动区域，笔记本输出面板会无限增长，导致笔记本无法使用。"
     },
     {
       "stage": "post",
-      "question": "What does setting 'python.analysis.typeCheckingMode' to 'basic' in VS Code accomplish?",
-      "options": ["It enables syntax highlighting for Python files", "It formats Python code according to PEP 8 standards", "It enables Python 3.12 language features", "It catches wrong argument types and tensor shape mismatches before running the code"],
+      "question": "在 VS Code 中将 'python.analysis.typeCheckingMode' 设置为 'basic' 有什么作用？",
+      "options": ["为 Python 文件启用语法高亮", "按 PEP 8 标准格式化 Python 代码", "启用 Python 3.12 语言特性", "运行代码前发现参数类型错误和张量形状不匹配"],
       "correct": 3,
-      "explanation": "Basic type checking with Pylance flags type mismatches, wrong argument types, and incorrect API parameters at edit time, catching bugs before you run a potentially expensive training script."
+      "explanation": "Pylance 的基础类型检查会在编辑时标记类型不匹配、参数类型错误和 API 参数错误，让你在运行可能代价高昂的训练脚本前发现缺陷。"
     }
   ]
 }

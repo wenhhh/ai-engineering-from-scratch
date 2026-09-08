@@ -1,48 +1,78 @@
 {
   "lesson": "49-map-assumptions-and-risk",
-  "title": "Map Assumptions and Risk",
+  "title": "绘制假设与风险地图（Map Assumptions and Risk）",
   "questions": [
     {
       "stage": "pre",
-      "question": "What does an assumption map expose that a feature roadmap hides?",
-      "options": ["Conditions that must be true for the build to deserve investment", "Release dates", "Source code", "Team names"],
+      "question": "假设地图揭示了功能路线图隐藏的什么？",
+      "options": [
+        "构建值得投资所必需的成立条件",
+        "发布日期",
+        "源代码",
+        "团队名称"
+      ],
       "correct": 0,
-      "explanation": "Assumptions surface value, usability, feasibility, viability, and safety bets."
+      "explanation": "假设揭示价值、可用性、技术可行性、运营可持续性与安全性的押注。"
     },
     {
       "stage": "check",
-      "question": "Which assumption is falsifiable?",
-      "options": ["The design is modern", "Users will love it", "Eight of ten engineers identify the correct service faster in replay", "The feature is useful"],
+      "question": "哪项假设可证伪？",
+      "options": [
+        "设计很现代",
+        "用户会喜欢它",
+        "十名工程师中八名在回放中更快识别正确服务",
+        "功能有用"
+      ],
       "correct": 2,
-      "explanation": "A falsifiable assumption has a population, observation, and possible failure."
+      "explanation": "可证伪假设包含人群、观察与失败可能。"
     },
     {
       "stage": "check",
-      "question": "Why score impact, uncertainty, and irreversibility separately?",
-      "options": ["To guarantee success", "To make the reason for risk ordering explicit", "To eliminate judgment", "To create a universal formula"],
+      "question": "为什么分别评估影响、不确定性和不可逆性？",
+      "options": [
+        "保证成功",
+        "明确风险排序的原因",
+        "消除判断",
+        "创造通用公式"
+      ],
       "correct": 1,
-      "explanation": "The dimensions expose why an unknown should be resolved early."
+      "explanation": "这些维度揭示某个未知项为何应及早解决。"
     },
     {
       "stage": "check",
-      "question": "What should the next experiment target?",
-      "options": ["The highest open risk with a decisive, cheap test", "The most popular idea", "The easiest feature", "The longest task"],
+      "question": "下一项实验应针对什么？",
+      "options": [
+        "用决定性且便宜的测试针对最高未解风险",
+        "最受欢迎的想法",
+        "最容易的功能",
+        "最长的任务"
+      ],
       "correct": 0,
-      "explanation": "Risk-driven order maximizes learning before commitment."
+      "explanation": "风险驱动顺序让团队在投入前尽可能多地获得认识。"
     },
     {
       "stage": "post",
-      "question": "What makes an experiment decisive?",
-      "options": ["It produces a demo", "Every result leads to more building", "Pass, fail, and ambiguous results lead to stated next decisions", "It uses production authority"],
+      "question": "什么使实验具有决定性？",
+      "options": [
+        "它产出演示",
+        "每个结果都导向继续构建",
+        "通过、失败与模糊结果各自导向明确的下一步决定",
+        "它使用生产权限"
+      ],
       "correct": 2,
-      "explanation": "A test must be able to change direction."
+      "explanation": "测试必须能够改变方向。"
     },
     {
       "stage": "post",
-      "question": "How should build order change when reversibility differs?",
-      "options": ["Irreversible work always comes first", "Only cost matters", "It does not", "Reversible tests should precede high-consequence irreversible commitments"],
+      "question": "可逆性不同时，构建顺序应如何改变？",
+      "options": [
+        "不可逆工作始终最先",
+        "只考虑成本",
+        "不改变",
+        "可逆测试应先于后果重大的不可逆承诺"
+      ],
       "correct": 3,
-      "explanation": "Learn safely before taking on authority or migration cost."
+      "explanation": "承担权限或迁移成本之前，先安全地获取认识。"
     }
   ]
 }

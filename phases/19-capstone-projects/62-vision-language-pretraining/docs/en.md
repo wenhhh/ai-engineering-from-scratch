@@ -1,143 +1,143 @@
-# Vision-Language Pretraining
+# 视觉语言预训练（Vision-Language Pretraining）
 
-> The encoder, projection, and decoder are wired. Now train them together. Two objectives drive learning: a contrastive image-text loss (InfoNCE) that pulls matching pairs together in the joint embedding space, and a language modeling loss that asks the decoder to caption each image. Combined, they teach the network both to find the right image for a caption and to write a caption for the image.
+> 编码器、投影层和解码器已经连接好。现在将它们一起训练。学习由两个目标驱动：图像文本对比损失（InfoNCE）在联合嵌入空间中拉近匹配对；语言建模损失要求解码器为每张图像生成描述。二者结合，让网络既能为描述找到正确图像，也能为图像写出描述。
 
 **Type:** Build
 **Languages:** Python
-**Prerequisites:** Phase 19 lessons 30-37 (Track B foundations)
-**Time:** ~90 minutes
+**Prerequisites:** 阶段 19 第 30–37 课（路线 B 基础）
+**Time:** ~90 分钟
 
-## Learning Objectives
+## 学习目标（Learning Objectives）
 
-- Implement InfoNCE contrastive loss across a batch of image-caption pairs.
-- Compose contrastive loss with autoregressive language modeling loss.
-- Synthesize a 200-pair mock image-caption corpus with no real dataset download.
-- Run a 50-step demo training loop and observe both losses decreasing.
+- 在一批图像描述对上实现 InfoNCE 对比损失（Contrastive loss）。
+- 将对比损失与自回归语言建模损失组合。
+- 合成包含 200 对样本的模拟图像描述语料，无须下载真实数据集。
+- 运行 50 步演示训练循环，观察两项损失下降。
 
-## The Problem
+## 问题（The Problem）
 
-A vision-language model needs two skills. It must rank: given a caption, find the right image among many. It must generate: given an image, write a caption. Pretraining the model on one skill alone gives you half a system. CLIP nailed ranking but cannot caption. GPT-4V can caption but uses a separate retrieval head for ranking. Multi-objective pretraining gets both in one pass.
+视觉语言模型需要两种能力。一是排序（Ranking）：给定描述，从多张图像中找到正确图像。二是生成（Generation）：给定图像，写出描述。只预训练其中一种能力，就只能得到半个系统。CLIP 擅长排序，却无法生成描述。GPT-4V 能生成描述，但使用独立的检索头执行排序。多目标预训练能在一轮训练中获得两种能力。
 
-InfoNCE handles the ranking half. For a batch of N pairs, the model treats the N matching pairs as positives and the `N^2 - N` mismatched pairs as negatives, then runs a cross-entropy loss on the resulting `(N, N)` similarity matrix. The LM loss handles the generation half: standard next-token prediction conditioned on the image. Both losses are differentiable and can share the encoder, projector, and decoder weights.
+InfoNCE 负责排序。对于一批 N 对样本，模型将 N 个匹配对作为正例，将 `N^2 - N` 个不匹配对作为负例，然后在得到的 `(N, N)` 相似度矩阵上计算交叉熵损失。语言模型（LM）损失负责生成：以图像为条件，进行标准的下一词元预测。两项损失均可微，可以共享编码器、投影器和解码器权重。
 
-## The Concept
+## 概念（The Concept）
 
 ```mermaid
 flowchart TB
-  Batch[batch of N image-caption pairs] --> Enc[vision encoder]
-  Batch --> Tok[tokenize captions]
-  Enc --> Pool[CLS pool + projection]
-  Tok --> TxtEnc[text encoder mean pool]
-  Pool --> ImgEmb[image embeddings N x D]
-  TxtEnc --> TxtEmb[text embeddings N x D]
-  ImgEmb --> Sim[similarity matrix N x N]
+  Batch[N 对图像描述样本组成的批次] --> Enc[视觉编码器]
+  Batch --> Tok[对描述分词]
+  Enc --> Pool[CLS 池化 + 投影]
+  Tok --> TxtEnc[文本编码器均值池化]
+  Pool --> ImgEmb[图像嵌入 N x D]
+  TxtEnc --> TxtEmb[文本嵌入 N x D]
+  ImgEmb --> Sim[相似度矩阵 N x N]
   TxtEmb --> Sim
-  Sim --> CL[InfoNCE bidirectional]
-  Enc --> Dec[cross-attention decoder]
+  Sim --> CL[双向 InfoNCE]
+  Enc --> Dec[交叉注意力解码器]
   Tok --> Dec
-  Dec --> LM[language modeling cross-entropy]
-  CL --> Total[contrastive + LM]
+  Dec --> LM[语言建模交叉熵]
+  CL --> Total[对比损失 + LM 损失]
   LM --> Total
 ```
 
-### InfoNCE in one paragraph
+### 一段话理解 InfoNCE（InfoNCE in one paragraph）
 
-Stack the N image embeddings as rows and the N text embeddings as rows. L2-normalize both. Compute the `N x N` matrix `S = I T^T / tau` where `tau` is a learned temperature. The diagonal entries are the matching pairs; off-diagonal entries are negatives. Apply cross-entropy with the target `argmax` running down the diagonal: row `i` should have its highest entry in column `i`. Do the same symmetrically along columns. The total is the average of the two. This is the CLIP loss in eight lines.
+将 N 个图像嵌入按行堆叠，再将 N 个文本嵌入按行堆叠。两者都做 L2 归一化。计算 `N x N` 矩阵 `S = I T^T / tau`，其中 `tau` 是可学习的温度。对角线元素是匹配对，非对角线元素是负例。计算交叉熵，并让目标 `argmax` 沿对角线排列：第 `i` 行的最大元素应位于第 `i` 列。对列对称地执行同样操作。总损失为两者的均值。这就是用八行代码实现的 CLIP 损失。
 
-### Temperature matters
+### 温度的重要性（Temperature matters）
 
-The temperature `tau` controls how peaked the softmax is. Too small (e.g. `tau = 0.01`) and the gradient comes only from the very hardest negative, training is noisy. Too large and the softmax flattens and gradient vanishes. CLIP learns `tau` as a parameter; the demo here does the same.
+温度（Temperature）`tau` 控制 softmax 的尖锐程度。温度过小（例如 `tau = 0.01`）时，梯度只来自最难负例，训练噪声很大。温度过大时，softmax 趋于平坦，梯度消失。CLIP 将 `tau` 作为参数学习；这里的演示也如此。
 
-### Language modeling loss
+### 语言建模损失（Language modeling loss）
 
-The decoder consumes image memory tokens via cross-attention and predicts the next text token at every position. Loss is standard cross-entropy with the next-position target. Padding positions are masked out of the loss.
+解码器通过交叉注意力读取图像记忆词元，并在每个位置预测下一个文本词元。损失是以后一位置为目标的标准交叉熵。填充位置不计入损失。
 
-### Combining the losses
+### 组合损失（Combining the losses）
 
-`total = contrastive + lm_weight * lm` where `lm_weight` is a scalar (often 1.0). The two losses share gradients into the encoder and projection; only the decoder receives LM-loss gradient. This is the multi-task recipe that CoCa, BLIP, and SigLIP-style models all use, with various weightings.
+`total = contrastive + lm_weight * lm`，其中 `lm_weight` 是标量（通常为 1.0）。两项损失的梯度都流向编码器和投影层；解码器只接收 LM 损失的梯度。这是 CoCa、BLIP 和 SigLIP 风格模型采用的多任务方案，只是权重各不相同。
 
-| Component | Loss surface | Affects |
+| 组件 | 损失面 | 影响对象 |
 |-----------|--------------|---------|
-| InfoNCE | Pair ranking in the joint space | Encoder + projection + text head |
-| LM | Token prediction conditioned on image | Encoder + projection + decoder |
-| Combined | Multi-task | Whole stack |
+| InfoNCE | 联合空间中的样本对排序 | 编码器 + 投影层 + 文本头 |
+| LM | 以图像为条件的词元预测 | 编码器 + 投影层 + 解码器 |
+| 组合 | 多任务 | 整个模型栈 |
 
-### Why 50 steps is enough for a demo
+### 为何演示只需 50 步（Why 50 steps is enough for a demo）
 
-The mock corpus is a synthetic 200-pair set with random images and random caption ids. After 50 SGD steps with batch size 16, both losses drop visibly even if the absolute values stay above what a real-data model would achieve. The point of the demo is to confirm the gradient plumbing works end to end and that adding the LM loss does not destabilize the contrastive objective.
+模拟语料是由随机图像和随机描述 ID 构成的 200 对合成样本。批大小为 16，执行 50 步随机梯度下降（SGD）后，两项损失都会明显下降，即使绝对值仍高于真实数据模型能达到的水平。演示旨在确认梯度链路端到端有效，且加入 LM 损失不会破坏对比目标的稳定性。
 
 ```figure
 ch-infonce-diagonal
 ```
 
-## Build It
+## 动手实现（Build It）
 
-`code/main.py` implements:
+`code/main.py` 实现了：
 
-- `MultimodalModel`, combining a small ViT encoder, the MLP projector, a tiny text-side encoder (mean-pool over embedded ids), and the cross-attention decoder from lesson 61.
-- `info_nce_loss(image_emb, text_emb, temperature)`, the bidirectional CLIP-style contrastive loss.
-- `lm_loss(logits, target_ids, padding_id)`, masked next-token cross-entropy.
-- `make_mock_corpus(seed, n_pairs)`, returning 200 deterministic (image, caption_ids) pairs.
-- A training loop running 50 steps with batch size 16, Adam optimizer, and a learned log-temperature parameter. Both losses are printed every 5 steps.
+- `MultimodalModel`：组合小型 ViT 编码器、MLP 投影器、小型文本侧编码器（对嵌入后的 ID 做均值池化），以及第 61 课的交叉注意力解码器。
+- `info_nce_loss(image_emb, text_emb, temperature)`：双向 CLIP 风格对比损失。
+- `lm_loss(logits, target_ids, padding_id)`：带掩码的下一词元交叉熵。
+- `make_mock_corpus(seed, n_pairs)`：返回 200 对确定性的（图像，描述 ID）样本。
+- 训练循环运行 50 步，批大小为 16，使用 Adam 优化器和可学习的对数温度参数。每 5 步打印两项损失。
 
-Run it:
+运行：
 
 ```bash
 python3 code/main.py
 ```
 
-Output: contrastive loss drops from about `ln(16) = 2.77` toward 2.4; LM loss drops from a random-uniform baseline of `ln(512) ≈ 6.24` toward about 4.7. Both decreases prove the gradient is wired correctly. Real models train for millions of steps; the dynamics are the same.
+输出：对比损失从约 `ln(16) = 2.77` 降至 2.4 左右；LM 损失从随机均匀基线 `ln(512) ≈ 6.24` 降至约 4.7。两者下降证明梯度连接正确。真实模型会训练数百万步，但动态规律相同。
 
-## Use It
+## 实际应用（Use It）
 
-This is the same loss recipe shipped in:
+以下模型采用相同的损失方案：
 
-- **CLIP (2021).** Image-text contrastive only, with a separate frozen-encoder caption probe.
-- **CoCa (2022).** Image-text contrastive plus image-captioning LM loss in one model. The exact pattern this lesson builds.
-- **BLIP (2022) and BLIP-2.** Contrastive plus LM plus image-text matching head. Three losses combined.
-- **SigLIP (2023).** Switches InfoNCE for a sigmoid pair loss; same contrastive role, different functional form.
-- **LLaVA family.** Two-stage training where stage one is alignment (cosine on a frozen LM) and stage two adds LM loss with an unfrozen LM. Lesson 60 maps to stage one; this lesson maps to stage two.
+- **CLIP（2021）。** 仅使用图像文本对比损失，并带有独立的冻结编码器描述探针。
+- **CoCa（2022）。** 在一个模型中组合图像文本对比损失与图像描述 LM 损失，正是本课构建的模式。
+- **BLIP（2022）和 BLIP-2。** 对比损失 + LM 损失 + 图像文本匹配头，共组合三项损失。
+- **SigLIP（2023）。** 用 sigmoid 样本对损失替代 InfoNCE；承担相同的对比作用，但函数形式不同。
+- **LLaVA 系列。** 两阶段训练：第一阶段为对齐（冻结 LM 上的余弦目标），第二阶段解冻 LM 并加入 LM 损失。第 60 课对应第一阶段，本课对应第二阶段。
 
-## Tests
+## 测试（Tests）
 
-`code/test_main.py` covers:
+`code/test_main.py` 覆盖：
 
-- InfoNCE loss is symmetric across image/text rows
-- InfoNCE loss returns 0 when the similarity matrix is a perfect diagonal of large positive numbers
-- LM loss correctly masks padding positions
-- model forward pass produces both losses without errors
-- 5-step training loop reduces the combined loss
+- InfoNCE 损失对图像/文本行具有对称性。
+- 相似度矩阵为大正数构成的完美对角矩阵时，InfoNCE 损失返回 0。
+- LM 损失正确屏蔽填充位置。
+- 模型前向传播可无误地产生两项损失。
+- 5 步训练循环降低组合损失。
 
-Run them:
+运行测试：
 
 ```bash
 python3 -m unittest code/test_main.py
 ```
 
-## Exercises
+## 练习（Exercises）
 
-1. Replace InfoNCE with SigLIP-style sigmoid pair loss and compare convergence on the mock corpus.
+1. 用 SigLIP 风格的 sigmoid 样本对损失替换 InfoNCE，对比模拟语料上的收敛情况。
 
-2. Add a hard-negative mining step: every other batch, select the hardest off-diagonal pair from the previous batch and append it. Train and inspect whether contrastive loss drops faster.
+2. 添加难负例挖掘（Hard-negative mining）步骤：每隔一个批次，从上一批次中选择最难的非对角线样本对并追加进去。训练并检查对比损失是否下降得更快。
 
-3. Add an image-text matching binary head on top of the joint embedding (true/false: do these match?) for a third loss, replicating BLIP's three-head setup.
+3. 在联合嵌入上方添加图像文本匹配二分类头（真/假：两者匹配吗？），作为第三项损失，复现 BLIP 的三头配置。
 
-4. Replace the mock corpus with caption-id sequences drawn from a Markov chain whose transition matrix is conditioned on image hash. The captioning loss should drop further because there is actual learnable signal.
+4. 将模拟语料替换为从马尔可夫链采样的描述 ID 序列，该链的转移矩阵以图像哈希为条件。由于存在真正可学习的信号，描述生成损失应进一步下降。
 
-5. Train the same model with `lm_weight = 0` and again with `lm_weight = 1`. Compare contrastive loss; the LM loss should not regress the ranking objective.
+5. 分别用 `lm_weight = 0` 和 `lm_weight = 1` 训练相同模型。比较对比损失；LM 损失不应使排序目标退化。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What it means |
+| 术语 | 含义 |
 |------|---------------|
-| InfoNCE | Noise contrastive estimation: cross-entropy on a similarity matrix |
-| Temperature | Scalar that controls how peaked the contrastive softmax is |
-| Hard negative | An off-diagonal pair the model finds confusing, useful for sampling |
-| LM loss | Standard next-token cross-entropy on the captioning side |
-| Joint embedding space | The shared space where image and text vectors live after projection |
+| 噪声对比估计（InfoNCE） | 在相似度矩阵上计算交叉熵 |
+| 温度（Temperature） | 控制对比 softmax 尖锐程度的标量 |
+| 难负例（Hard negative） | 让模型感到混淆的非对角线样本对，可用于采样 |
+| 语言模型损失（LM loss） | 描述生成侧的标准下一词元交叉熵 |
+| 联合嵌入空间（Joint embedding space） | 图像和文本向量投影后所在的共享空间 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- CLIP paper for the original contrastive recipe.
-- CoCa paper for contrastive plus captioning in one model.
-- SigLIP paper for the sigmoid pair-loss variant and why it scales better.
+- CLIP 论文：原始对比学习方案。
+- CoCa 论文：在一个模型中结合对比学习与描述生成。
+- SigLIP 论文：sigmoid 样本对损失变体及其扩展性更好的原因。

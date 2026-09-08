@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "id": "using-coding-agents",
-  "title": "Agent-Assisted Engineering",
-  "summary": "Frame, plan, execute, delegate, verify, review, and improve coding-agent work inside real repositories.",
+  "title": "智能体辅助工程（Agent-Assisted Engineering）",
+  "summary": "在真实仓库中，为编码智能体（Coding agent）的工作明确任务、制定计划、执行、委派（Delegate）、验证、评审并持续改进。",
   "estimatedMinutes": 900,
   "lessons": [
     {"order": 1, "path": "phases/14-agent-engineering/31-agent-workbench-why-models-fail", "minutes": 45, "required": true},

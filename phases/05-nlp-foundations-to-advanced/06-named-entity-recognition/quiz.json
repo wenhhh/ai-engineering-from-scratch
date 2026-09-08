@@ -1,102 +1,102 @@
 {
   "lesson": "06-named-entity-recognition",
-  "title": "Named Entity Recognition",
+  "title": "命名实体识别（Named Entity Recognition）",
   "questions": [
     {
       "stage": "pre",
-      "question": "What is BIO tagging?",
+      "question": "什么是 BIO 标注（BIO tagging）？",
       "options": [
-        "A tree representation of entities",
-        "A binary entity vs non-entity scheme",
-        "Per-token labels: B-TYPE for entity start, I-TYPE for inside, O for outside",
-        "A tokenization style"
+        "实体的树形表示",
+        "实体与非实体的二元方案",
+        "逐词元标签：B-TYPE 表示实体开始，I-TYPE 表示内部，O 表示外部",
+        "一种分词风格"
       ],
       "correct": 2,
-      "explanation": "BIO turns span extraction into token classification with B/I/O prefixes."
+      "explanation": "BIO 用 B/I/O 前缀将跨度提取转化为词元分类。"
     },
     {
       "stage": "pre",
-      "question": "Why are rule-based gazetteers brittle in production NER?",
+      "question": "为什么基于规则的专名词典（Gazetteer）在生产 NER 中很脆弱？",
       "options": [
-        "They are slow",
-        "They cannot handle multi-token entities",
-        "They have zero coverage on new entities and cannot disambiguate (e.g. Apple fruit vs company)",
-        "They require GPUs"
+        "速度慢",
+        "无法处理多词元实体",
+        "完全不覆盖新实体，也无法消歧，例如 Apple 是水果还是公司",
+        "需要 GPU"
       ],
       "correct": 2,
-      "explanation": "Gazetteers can match known strings but cannot disambiguate sense or generalize to unseen names."
+      "explanation": "专名词典能匹配已知字符串，却无法区分含义或泛化到未见过的名称。"
     },
     {
       "stage": "check",
-      "question": "What is the key advantage of a CRF over an HMM for NER?",
+      "question": "在 NER 中，条件随机场（CRF）相较隐马尔可夫模型（HMM）的主要优势是什么？",
       "options": [
-        "CRFs avoid the Viterbi algorithm",
-        "CRFs are discriminative and can mix arbitrary features (shape, capitalization, neighbors)",
-        "CRFs are faster",
-        "CRFs never need training data"
+        "CRF 不使用 Viterbi 算法",
+        "CRF 是判别式模型，可以混合任意特征，如词形、大小写和邻近词",
+        "CRF 更快",
+        "CRF 从不需要训练数据"
       ],
       "correct": 1,
-      "explanation": "CRFs are discriminative and let you condition on rich, overlapping features."
+      "explanation": "CRF 属于判别式模型，可将丰富且相互重叠的特征作为条件。"
     },
     {
       "stage": "check",
-      "question": "In a BiLSTM-CRF architecture, what role does the CRF layer play?",
+      "question": "在 BiLSTM-CRF 架构中，CRF 层有什么作用？",
       "options": [
-        "Performs tokenization",
-        "Replaces embeddings",
-        "Pretrains the LSTM",
-        "Enforces valid BIO tag sequences by modeling tag-to-tag transitions on top of LSTM emissions"
+        "执行分词",
+        "替换嵌入",
+        "预训练 LSTM",
+        "在 LSTM 发射分数之上建模标签间转移，约束合法的 BIO 标签序列"
       ],
       "correct": 3,
-      "explanation": "The CRF on top of LSTM features models inter-label dependencies and rules out illegal sequences."
+      "explanation": "位于 LSTM 特征之上的 CRF 建模标签间依赖，排除非法序列。"
     },
     {
       "stage": "check",
-      "question": "Why must NER be evaluated with entity-level F1, not token-level F1?",
+      "question": "为什么 NER 必须用实体级 F1（Entity-level F1），而不是词元级 F1 评估？",
       "options": [
-        "Predicted spans must match true spans exactly; token-level F1 overstates accuracy by counting partial matches",
-        "Entity-level F1 is required by HuggingFace",
-        "Token-level F1 cannot handle BIO",
-        "Entity-level F1 is easier to compute"
+        "预测跨度必须精确匹配真实跨度；词元级 F1 会因计入部分匹配而夸大准确性",
+        "HuggingFace 要求使用实体级 F1",
+        "词元级 F1 无法处理 BIO",
+        "实体级 F1 更容易计算"
       ],
       "correct": 0,
-      "explanation": "Span exact-match is the meaningful metric; token-level F1 inflates scores via partial overlap."
+      "explanation": "跨度精确匹配才是有意义的指标；词元级 F1 会因部分重叠抬高分数。"
     },
     {
       "stage": "post",
-      "question": "What does aggregation_strategy='simple' do in the HuggingFace NER pipeline?",
+      "question": "HuggingFace NER 流水线中的 aggregation_strategy='simple' 做什么？",
       "options": [
-        "Returns only the most confident entity",
-        "Merges contiguous B-X and I-X tokens into a single span",
-        "Lowercases the output",
-        "Skips tokenization"
+        "只返回最有把握的实体",
+        "将连续的 B-X 与 I-X 词元合并为单个跨度",
+        "把输出转为小写",
+        "跳过分词"
       ],
       "correct": 1,
-      "explanation": "It merges contiguous BIO tokens of the same type into span-level entities."
+      "explanation": "它将同类型的连续 BIO 词元合并为跨度级实体。"
     },
     {
       "stage": "post",
-      "question": "Why does standard BIO fail on nested entities?",
+      "question": "为什么标准 BIO 无法处理嵌套实体（Nested entities）？",
       "options": [
-        "BIO is a flat per-token scheme and cannot express two overlapping spans of different types",
-        "BIO requires a transformer",
-        "BIO cannot represent multi-token entities",
-        "BIO drops the type label"
+        "BIO 是扁平的逐词元方案，无法表达不同类型的两个重叠跨度",
+        "BIO 必须使用 Transformer",
+        "BIO 无法表示多词元实体",
+        "BIO 会丢弃类型标签"
       ],
       "correct": 0,
-      "explanation": "BIO assigns one label per token; nested spans need multi-pass or span-based models."
+      "explanation": "BIO 每个词元只分配一个标签；嵌套跨度需要多轮或基于跨度的模型。"
     },
     {
       "stage": "post",
-      "question": "When does classical NER (CRF or BiLSTM-CRF) still beat an LLM in 2026?",
+      "question": "到 2026 年，传统 NER（CRF 或 BiLSTM-CRF）在什么情况下仍胜过 LLM？",
       "options": [
-        "On open-domain narrative",
-        "On nested entities",
-        "Whenever the input is in English",
-        "Under tight latency budgets, abundant labels, stable ontologies, or non-generative regulatory constraints"
+        "开放领域叙事",
+        "嵌套实体",
+        "只要输入是英语",
+        "延迟预算严格、标注充足、本体稳定，或有非生成式监管约束时"
       ],
       "correct": 3,
-      "explanation": "Classical NER wins on latency, labeled-data regimes, fixed ontologies, and on-prem constraints."
+      "explanation": "传统 NER 在延迟、充足标注数据、固定本体和本地部署约束下胜出。"
     }
   ]
 }

@@ -77,29 +77,29 @@ def main():
     labels = rule_based_ner(sentence)
     spans = bio_to_spans(sentence, labels)
 
-    print("tokens  :", sentence)
-    print("labels  :", labels)
-    print("spans   :")
+    print("词元（Tokens，英文示例保留）:", sentence)
+    print("标签（Labels，BIO 枚举保留）:", labels)
+    print("实体跨度（Spans）:")
     for start, end, kind in spans:
         entity = " ".join(sentence[start:end])
         print(f"  [{start}:{end}] {kind:8s} {entity!r}")
 
     print()
-    print("word shapes (useful CRF features):")
+    print("词形模式（Word shapes，可用作条件随机场 CRF 的特征）:")
     for tok in ["Apple", "iPhone", "IBM", "USA-2024", "apple"]:
-        print(f"  {tok:12s} -> shape {word_shape(tok)}")
+        print(f"  {tok:12s} -> 词形模式 {word_shape(tok)}")
 
     print()
-    print("round-trip (spans -> BIO -> spans):")
+    print("往返转换（Round-trip，实体跨度 -> BIO -> 实体跨度）:")
     tokens = "The New York City mayor visited OpenAI .".split()
     gold_spans = [(1, 4, "GPE"), (6, 7, "ORG")]
     bio = spans_to_bio(tokens, gold_spans)
     recovered = bio_to_spans(tokens, bio)
-    print(f"  tokens   : {tokens}")
-    print(f"  bio      : {bio}")
-    print(f"  gold     : {gold_spans}")
-    print(f"  recovered: {recovered}")
-    print(f"  match    : {gold_spans == recovered}")
+    print(f"  词元（Tokens）: {tokens}")
+    print(f"  BIO 标注: {bio}")
+    print(f"  标准答案（Gold）: {gold_spans}")
+    print(f"  还原结果（Recovered）: {recovered}")
+    print(f"  是否匹配: {gold_spans == recovered}")
 
 
 if __name__ == "__main__":

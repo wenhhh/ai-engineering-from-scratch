@@ -1,9 +1,9 @@
-"""Phase 13 Lesson 11: model input through stateless MCP MRTR.
+"""阶段 13 第 11 课：通过无状态 MCP 多轮请求（Multi-round trip request，MRTR）获取模型输入。
 
-Lesson: ../docs/en.md
-Specification: https://modelcontextprotocol.io/specification/2026-07-28/basic/patterns/mrtr
-This example uses only Python's standard library.
-Run: python3 main.py
+课程： ../docs/en.md
+规范： https://modelcontextprotocol.io/specification/2026-07-28/basic/patterns/mrtr
+本示例仅使用 Python 标准库。
+运行： python3 main.py
 """
 
 from __future__ import annotations
@@ -36,13 +36,13 @@ FAKE_REPO = {
 TOOLS = [
     {
         "name": "summarize_repo",
-        "description": "Select representative repository files and summarize them.",
+        "description": "选择有代表性的仓库文件并总结其内容。",
         "inputSchema": {
             "type": "object",
             "properties": {
                 "audience": {
                     "type": "string",
-                    "description": "Audience for the final repository summary.",
+                    "description": "最终仓库总结的目标读者。",
                 }
             },
             "required": [],
@@ -170,7 +170,7 @@ def _sampling_request(prompt: str, *, intelligence: float) -> dict[str, Any]:
             "messages": [
                 {"role": "user", "content": {"type": "text", "text": prompt}}
             ],
-            "systemPrompt": "Return only the requested value.",
+            "systemPrompt": "仅返回所请求的值。",
             "modelPreferences": {
                 "costPriority": round(1.0 - intelligence, 2),
                 "intelligencePriority": intelligence,
@@ -267,7 +267,7 @@ def tools_call(params: dict[str, Any], *, principal: str) -> dict[str, Any]:
             "picked": picked,
             "expiresAt": int(time.time()) + 300,
         }
-        prompt = "Summarize these files in two sentences:\n\n" + combined
+        prompt = "用两句话总结以下文件：\n\n" + combined
         return _input_required("summary", prompt, next_state, intelligence=0.8)
 
     if state["phase"] == "summarize":
@@ -375,10 +375,10 @@ def main() -> None:
             "params": {"_meta": request_meta()},
         }
     )
-    print("discover:", json.dumps(discovery["result"], indent=2))
+    print("发现（Discover）：", json.dumps(discovery["result"], indent=2))
     response, request_ids = run_mrtr()
-    print("independent request ids:", request_ids)
-    print("final:", json.dumps(response["result"], indent=2))
+    print("独立请求的 ID：", request_ids)
+    print("最终结果：", json.dumps(response["result"], indent=2))
 
 
 if __name__ == "__main__":

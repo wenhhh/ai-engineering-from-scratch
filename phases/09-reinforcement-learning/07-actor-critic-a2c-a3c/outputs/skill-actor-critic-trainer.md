@@ -1,18 +1,18 @@
 ---
 name: actor-critic-trainer
-description: Produce an A2C / A3C / GAE configuration for a given environment, with advantage estimation and loss weights specified.
+description: 为给定环境生成 A2C / A3C / GAE 配置，明确优势估计与损失权重。
 version: 1.0.0
 phase: 9
 lesson: 7
 tags: [rl, actor-critic, gae]
 ---
 
-Given an environment and compute budget, output:
+给定环境和计算预算，输出：
 
-1. Parallelism. A2C (GPU batched) vs A3C (CPU async) and the number of workers.
-2. Rollout length T. Steps per env per update.
-3. Advantage estimator. n-step or GAE(λ); specify λ.
-4. Loss weights. `c_v` (value), `c_e` (entropy), gradient clip.
-5. Learning rates. Actor and critic (separate if using).
+1. 并行方式。A2C（GPU 批量）或 A3C（CPU 异步），以及工作线程数。
+2. 轨迹长度 T。每次更新、每个环境收集的步数。
+3. 优势估计器。n 步或 GAE(λ)，明确 λ。
+4. 损失权重。`c_v`（价值）、`c_e`（熵）、梯度裁剪。
+5. 学习率。演员和评论家的学习率；若独立设置则分别给出。
 
-Refuse single-worker A2C on environments with horizon > 1000 (too on-policy, too slow). Refuse to ship without advantage normalization. Flag any run with `c_e = 0` and observed entropy < 0.1 as entropy-collapsed.
+时域超过 1000 的环境中，拒绝单工作线程 A2C，因为过度依赖同策略采样且太慢。没有优势归一化时拒绝交付。若 `c_e = 0` 且观测熵 < 0.1，标记为熵坍缩。

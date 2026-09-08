@@ -94,29 +94,29 @@ def main():
     print("[pointnet]")
     pts = torch.randn(4, 3, 1024)
     net = PointNet(num_classes=10)
-    print(f"  output: {tuple(net(pts).shape)}  params: {sum(p.numel() for p in net.parameters()):,}")
-    print(f"  permutation invariance  max|diff|={permutation_invariance_check():.2e}")
+    print(f"  输出（Output）: {tuple(net(pts).shape)}  参数（Parameters）: {sum(p.numel() for p in net.parameters()):,}")
+    print(f"  排列不变性（Permutation invariance）  max|diff|={permutation_invariance_check():.2e}")
 
-    print("\n[positional encoding]")
+    print("\n[位置编码（Positional encoding）]")
     x = torch.randn(5, 3)
     y = positional_encoding(x, L=10)
-    print(f"  input  {tuple(x.shape)} -> encoded {tuple(y.shape)}")
+    print(f"  输入  {tuple(x.shape)} -> 编码结果（Encoded） {tuple(y.shape)}")
 
-    print("\n[tiny nerf forward]")
+    print("\n[TinyNeRF 前向传播（Forward）]")
     nerf = TinyNeRF()
     x = torch.randn(128, 3)
     d = torch.randn(128, 3)
     sigma, rgb = nerf(x, d)
     print(f"  sigma: {tuple(sigma.shape)}   rgb: {tuple(rgb.shape)}")
 
-    print("\n[volumetric render]")
+    print("\n[体渲染（Volumetric rendering）]")
     t_vals = torch.linspace(2.0, 6.0, 64)
     sigma_ray = torch.rand(64) * 0.5
     rgb_ray = torch.rand(64, 3)
     rendered, depth, weights = volumetric_render(sigma_ray, rgb_ray, t_vals)
-    print(f"  rendered colour:   {rendered.tolist()}")
-    print(f"  depth:             {depth.item():.2f}")
-    print(f"  weights sum:       {weights.sum().item():.3f}")
+    print(f"  渲染颜色（Rendered colour）:   {rendered.tolist()}")
+    print(f"  深度（Depth）:             {depth.item():.2f}")
+    print(f"  权重和（Weights sum）:       {weights.sum().item():.3f}")
 
 
 if __name__ == "__main__":

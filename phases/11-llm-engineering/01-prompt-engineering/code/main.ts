@@ -1,7 +1,7 @@
-// Prompt engineering in TypeScript: pattern catalog, role/context/instruction
-// composition, multi-provider request formatters, simulated LLM dispatch with
-// deterministic scoring. Mirrors code/prompt_engineering.py.
-// Sources:
+// TypeScript 提示词工程（Prompt engineering）: 模式目录、角色/上下文/指令
+// 组合、多服务商请求格式化器，以及带确定性评分的模拟 LLM 分派。
+// 与 code/prompt_engineering.py 对应。
+// 来源:
 //   https://platform.openai.com/docs/guides/text-generation
 //   https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering
 //   https://ai.google.dev/gemini-api/docs/text-generation
@@ -34,14 +34,14 @@ const PROMPT_PATTERNS: Readonly<Record<PatternName, Pattern>> = {
       "You are {role} with {experience}.\nYour communication style is {style}.\nYou prioritize {priority}.\n\n{task}",
     variables: ["role", "experience", "style", "priority", "task"],
     temperature: 0.7,
-    description: "Activates a specific expert distribution in the training data",
+    description: "激活训练数据中特定的专家分布（Expert distribution）",
   },
   few_shot: {
     name: "Few-Shot Pattern",
     template: "Here are examples of the expected input/output format:\n\n{examples}\n\nNow process this input:\n{input}",
     variables: ["examples", "input"],
     temperature: 0.0,
-    description: "Anchors output format with concrete examples",
+    description: "用具体示例固定输出格式",
   },
   chain_of_thought: {
     name: "Chain-of-Thought Pattern",
@@ -49,7 +49,7 @@ const PROMPT_PATTERNS: Readonly<Record<PatternName, Pattern>> = {
       "Think through this step by step.\n\nProblem: {problem}\n\nSteps:\n1. Identify the key components\n2. Analyze each component\n3. Synthesize your findings\n4. State your conclusion\n\nShow your reasoning before the final answer.",
     variables: ["problem"],
     temperature: 0.3,
-    description: "Forces explicit reasoning before the final answer",
+    description: "要求在最终答案前显式给出推理过程（Reasoning）",
   },
   template_fill: {
     name: "Template Fill Pattern",
@@ -57,7 +57,7 @@ const PROMPT_PATTERNS: Readonly<Record<PatternName, Pattern>> = {
       "Extract information from the following text and fill in the template.\n\nText: {text}\n\nTemplate:\n{template_structure}\n\nFill every field. If unknown, write 'N/A'.",
     variables: ["text", "template_structure"],
     temperature: 0.0,
-    description: "Constrains output to named fields",
+    description: "将输出限制在具名字段内",
   },
   critique: {
     name: "Critique Pattern",
@@ -65,7 +65,7 @@ const PROMPT_PATTERNS: Readonly<Record<PatternName, Pattern>> = {
       "Task: {task}\n\nStep 1: Generate an initial response.\nStep 2: Critique it for accuracy, completeness, and clarity.\nStep 3: Produce an improved final version.\n\nLabel each step clearly.",
     variables: ["task"],
     temperature: 0.5,
-    description: "Self-refinement through explicit critique",
+    description: "通过显式批评（Critique）进行自我改进",
   },
   guardrail: {
     name: "Guardrail Pattern",
@@ -73,7 +73,7 @@ const PROMPT_PATTERNS: Readonly<Record<PatternName, Pattern>> = {
       "You are a {role}.\n\nRules:\n- ONLY answer questions about {domain}\n- If outside {domain}, say: 'This is outside my scope.'\n- NEVER make up information. If unsure, say 'I don't know.'\n- {additional_rules}\n\nUser question: {question}",
     variables: ["role", "domain", "additional_rules", "question"],
     temperature: 0.3,
-    description: "Constrains to a domain with explicit boundaries",
+    description: "用明确边界将模型限制在特定领域内",
   },
   decomposition: {
     name: "Decomposition Pattern",
@@ -81,7 +81,7 @@ const PROMPT_PATTERNS: Readonly<Record<PatternName, Pattern>> = {
       "Problem: {problem}\n\nBreak this into sub-problems:\n1. List each sub-problem\n2. Solve each independently\n3. Combine sub-solutions into a final answer\n4. Verify the final answer against the original problem",
     variables: ["problem"],
     temperature: 0.3,
-    description: "Breaks complex problems into manageable pieces",
+    description: "将复杂问题拆成可处理的部分",
   },
   audience_adapt: {
     name: "Audience Adaptation Pattern",
@@ -89,7 +89,7 @@ const PROMPT_PATTERNS: Readonly<Record<PatternName, Pattern>> = {
       "Explain {concept} for the following audience: {audience}.\n\nConstraints:\n- Vocabulary appropriate for {audience}\n- Length: {length}\n- Include {include}\n- Exclude {exclude}",
     variables: ["concept", "audience", "length", "include", "exclude"],
     temperature: 0.5,
-    description: "Adapts explanation to the target audience",
+    description: "根据目标受众调整解释",
   },
   boundary: {
     name: "Boundary Pattern",
@@ -97,7 +97,7 @@ const PROMPT_PATTERNS: Readonly<Record<PatternName, Pattern>> = {
       "You are an assistant that ONLY handles {scope}.\n\nIf the request is in scope, help fully.\nIf out of scope, respond exactly with:\n'{refusal_message}'\n\nDo not attempt to answer out-of-scope questions.\n\nUser: {user_input}",
     variables: ["scope", "refusal_message", "user_input"],
     temperature: 0.0,
-    description: "Hard boundary on what the model responds to",
+    description: "对模型响应范围设置硬性边界",
   },
 } as const;
 
@@ -127,7 +127,7 @@ type BuiltPrompt = {
 function renderTemplate(template: string, vars: Readonly<Record<string, string>>): string {
   return template.replace(/\{(\w+)\}/g, (_, name: string) => {
     const value = vars[name];
-    if (value === undefined) throw new Error("Missing template variable: " + name);
+    if (value === undefined) throw new Error("缺少模板变量: " + name);
     return value;
   });
 }
@@ -140,7 +140,7 @@ function buildPrompt(
   const pattern = PROMPT_PATTERNS[patternName];
   const missing = pattern.variables.filter((v) => !(v in variables));
   if (missing.length > 0) {
-    throw new Error("Missing variables for " + patternName + ": " + missing.join(","));
+    throw new Error("缺少变量，所属模式为 " + patternName + ": " + missing.join(","));
   }
   const rendered = renderTemplate(pattern.template, variables);
   const system = systemOverride ?? "You are an AI assistant using the " + pattern.name + ".";
@@ -328,7 +328,7 @@ function runPromptTest(prompt: BuiltPrompt, models: readonly string[] = Object.k
   for (const name of models) {
     const cfg = MODEL_CONFIGS[name];
     if (!cfg) {
-      throw new Error("Unknown model: " + name + ". Available models: " + Object.keys(MODEL_CONFIGS).join(", "));
+      throw new Error("未知模型: " + name + "。可用模型: " + Object.keys(MODEL_CONFIGS).join(", "));
     }
     const request = FORMATTERS[cfg.provider](prompt, cfg);
     const start = Date.now();
@@ -358,17 +358,17 @@ function compareModels(results: Record<string, ModelResult>, criteria: Criteria)
 
 function main(): void {
   console.log("=".repeat(60));
-  console.log("  PROMPT PATTERN CATALOG");
+  console.log("  提示词模式目录（Prompt Pattern Catalog）");
   console.log("=".repeat(60));
   for (const [name, pattern] of Object.entries(PROMPT_PATTERNS)) {
     console.log("\n  [" + name + "] " + pattern.name);
     console.log("    " + pattern.description);
-    console.log("    Variables: " + pattern.variables.join(", "));
-    console.log("    Recommended temp: " + pattern.temperature);
+    console.log("    变量（Variables）: " + pattern.variables.join(", "));
+    console.log("    推荐温度（Recommended temperature）: " + pattern.temperature);
   }
 
   console.log("\n" + "=".repeat(60));
-  console.log("  SINGLE PROMPT BUILD + TEST");
+  console.log("  单个提示词构建与测试（Single Prompt Build + Test）");
   console.log("=".repeat(60));
 
   const prompt = buildPrompt("persona", {
@@ -378,15 +378,15 @@ function main(): void {
     priority: "reliability over speed",
     task: "Explain why container orchestration matters for microservices.",
   });
-  console.log("\n  System: " + prompt.system);
-  console.log("  Temperature: " + prompt.temperature);
+  console.log("\n  系统（System）: " + prompt.system);
+  console.log("  温度（Temperature）: " + prompt.temperature);
 
   const results = runPromptTest(prompt);
   for (const [model, r] of Object.entries(results)) {
     console.log("\n  [" + model + "]");
-    console.log("    Response: " + r.response.slice(0, 100));
-    console.log("    Tokens: " + JSON.stringify(r.tokens));
-    console.log("    Latency: " + r.apiLatencyMs + "ms");
+    console.log("    回复（Response）: " + r.response.slice(0, 100));
+    console.log("    词元数（Tokens）: " + JSON.stringify(r.tokens));
+    console.log("    延迟（Latency）: " + r.apiLatencyMs + "ms");
   }
 
   type TestCase = { name: string; pattern: PatternName; variables: Record<string, string>; criteria: Criteria };
@@ -423,16 +423,16 @@ function main(): void {
   ];
 
   console.log("\n" + "=".repeat(60));
-  console.log("  TEST SUITE");
+  console.log("  测试套件（Test Suite）");
   console.log("=".repeat(60));
   for (const test of suite) {
     const p = buildPrompt(test.pattern, test.variables);
     const rs = runPromptTest(p);
     const ranked = compareModels(rs, test.criteria);
-    console.log("\n  Test: " + test.name);
-    console.log("  Pattern: " + test.pattern);
+    console.log("\n  测试（Test）: " + test.name);
+    console.log("  模式（Pattern）: " + test.pattern);
     for (const r of ranked) {
-      console.log("    " + r.model.padEnd(20) + " score=" + r.score.toFixed(3) + " tokens=" + r.tokens + " latency=" + r.latency + "ms");
+      console.log("    " + r.model.padEnd(20) + " 分数（score）=" + r.score.toFixed(3) + " 词元数（tokens）=" + r.tokens + " 延迟（latency）=" + r.latency + "ms");
     }
   }
 }

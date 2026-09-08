@@ -49,7 +49,7 @@ class Matrix:
             bracket_l = "|" if 0 < i < self.rows - 1 else ("/" if i == 0 else "\\")
             bracket_r = "|" if 0 < i < self.rows - 1 else ("\\" if i == 0 else "/")
             lines.append(f"  {bracket_l} {row_str} {bracket_r}")
-        header = f"Matrix {self.rows}x{self.cols}:"
+        header = f"矩阵（Matrix）{self.rows}x{self.cols}："
         return header + "\n" + "\n".join(lines)
 
     def __add__(self, other):
@@ -69,7 +69,7 @@ class Matrix:
                     [self.data[i][j] + other.data[i][0] for j in range(self.cols)]
                     for i in range(self.rows)
                 ])
-        raise ValueError(f"Cannot add shapes {self.shape} and {other.shape}")
+        raise ValueError(f"形状（Shape）为 {self.shape} 与 {other.shape} 的矩阵无法相加")
 
     def __sub__(self, other):
         return Matrix([
@@ -92,8 +92,8 @@ class Matrix:
     def matmul(self, other):
         if self.cols != other.rows:
             raise ValueError(
-                f"Cannot multiply shapes {self.shape} and {other.shape}: "
-                f"inner dimensions {self.cols} != {other.rows}"
+                f"形状（Shape）为 {self.shape} 与 {other.shape} 的矩阵无法相乘："
+                f"内维度（Inner dimensions）{self.cols} != {other.rows}"
             )
         return Matrix([
             [
@@ -118,7 +118,7 @@ class Matrix:
 
     def determinant(self):
         if self.rows != self.cols:
-            raise ValueError("Determinant only defined for square matrices")
+            raise ValueError("行列式（Determinant）只对方阵（Square matrices）有定义")
         if self.shape == (1, 1):
             return self.data[0][0]
         if self.shape == (2, 2):
@@ -134,10 +134,10 @@ class Matrix:
 
     def inverse_2x2(self):
         if self.shape != (2, 2):
-            raise ValueError("This method only works for 2x2 matrices")
+            raise ValueError("此方法仅适用于 2x2 矩阵")
         det = self.determinant()
         if abs(det) < 1e-10:
-            raise ValueError("Matrix is singular, no inverse exists")
+            raise ValueError("矩阵是奇异的（Singular），不存在逆矩阵（Inverse）")
         return Matrix([
             [self.data[1][1] / det, -self.data[0][1] / det],
             [-self.data[1][0] / det, self.data[0][0] / det]
@@ -168,7 +168,7 @@ def relu_matrix(m):
 
 def demo_basic_operations():
     print("=" * 60)
-    print("BASIC MATRIX OPERATIONS")
+    print("基本矩阵运算（Basic Matrix Operations）")
     print("=" * 60)
 
     A = Matrix([[1, 2], [3, 4]])
@@ -185,13 +185,13 @@ def demo_basic_operations():
     print("\nA - B =")
     print(A - B)
 
-    print("\nA * 3 (scalar) =")
+    print("\nA * 3（标量，Scalar）=")
     print(A.scalar_multiply(3))
 
-    print("\nA * B (element-wise) =")
+    print("\nA * B（逐元素，Element-wise）=")
     print(A.element_wise_multiply(B))
 
-    print("\nA @ B (matrix multiply) =")
+    print("\nA @ B（矩阵乘法，Matrix multiply）=")
     print(A @ B)
 
     print("\nA^T =")
@@ -200,7 +200,7 @@ def demo_basic_operations():
 
 def demo_determinant_inverse():
     print("\n" + "=" * 60)
-    print("DETERMINANT AND INVERSE")
+    print("行列式与逆矩阵（Determinant and Inverse）")
     print("=" * 60)
 
     A = Matrix([[4, 7], [2, 6]])
@@ -212,33 +212,33 @@ def demo_determinant_inverse():
     print("\nA^-1 =")
     print(A_inv)
 
-    print("\nA @ A^-1 (should be identity) =")
+    print("\nA @ A^-1（应为单位矩阵，Identity）=")
     print(A @ A_inv)
 
     I = Matrix.identity(3)
-    print("\nIdentity 3x3 =")
+    print("\n3x3 单位矩阵（Identity）=")
     print(I)
 
 
 def demo_broadcasting():
     print("\n" + "=" * 60)
-    print("BROADCASTING")
+    print("广播（Broadcasting）")
     print("=" * 60)
 
     output = Matrix([[1, 2, 3], [4, 5, 6]])
     bias = Matrix([[10, 20, 30]])
 
-    print("\nOutput =")
+    print("\n输出（Output）=")
     print(output)
-    print("\nBias =")
+    print("\n偏置（Bias）=")
     print(bias)
-    print("\nOutput + Bias (broadcast) =")
+    print("\nOutput + Bias（广播，Broadcast）=")
     print(output + bias)
 
 
 def demo_neural_network_layer():
     print("\n" + "=" * 60)
-    print("NEURAL NETWORK FORWARD PASS")
+    print("神经网络前向传播（Neural Network Forward Pass）")
     print("=" * 60)
 
     random.seed(42)
@@ -253,29 +253,29 @@ def demo_neural_network_layer():
     W2 = Matrix.random(output_size, hidden_size)
     b2 = Matrix([[0.0]] * output_size)
 
-    print(f"\nInput x: {x.shape}")
+    print(f"\n输入（Input）x：{x.shape}")
     print(f"W1: {W1.shape}")
     print(f"W2: {W2.shape}")
 
     z1 = (W1 @ x) + b1
     h1 = relu_matrix(z1)
-    print(f"\nHidden layer pre-activation z1: {z1.shape}")
+    print(f"\n隐藏层激活前（Hidden layer pre-activation）z1：{z1.shape}")
     print(z1)
-    print(f"\nHidden layer post-ReLU h1: {h1.shape}")
+    print(f"\n隐藏层经过 ReLU 后 h1：{h1.shape}")
     print(h1)
 
     z2 = (W2 @ h1) + b2
-    print(f"\nOutput z2: {z2.shape}")
+    print(f"\n输出（Output）z2：{z2.shape}")
     print(z2)
 
-    print("\nThis is a complete 2-layer neural network forward pass.")
-    print("Layer 1: (4x3) @ (3x1) + (4x1) -> (4x1) -> ReLU -> (4x1)")
-    print("Layer 2: (2x4) @ (4x1) + (2x1) -> (2x1)")
+    print("\n这就是完整的两层神经网络前向传播。")
+    print("第 1 层：(4x3) @ (3x1) + (4x1) -> (4x1) -> ReLU -> (4x1)")
+    print("第 2 层：(2x4) @ (4x1) + (2x1) -> (2x1)")
 
 
 def demo_vectors():
     print("\n" + "=" * 60)
-    print("VECTOR OPERATIONS")
+    print("向量运算（Vector Operations）")
     print("=" * 60)
 
     v = Vector([3, 4])
@@ -288,17 +288,17 @@ def demo_vectors():
     print(f"v * 2 = {v * 2}")
     print(f"v . w = {v.dot(w)}")
     print(f"|v| = {v.magnitude()}")
-    print(f"v normalized = {v.normalize()}")
-    print(f"|v normalized| = {v.normalize().magnitude()}")
+    print(f"v 归一化（Normalized）= {v.normalize()}")
+    print(f"|归一化后的 v| = {v.normalize().magnitude()}")
 
 
 def demo_weight_matrix_intuition():
     print("\n" + "=" * 60)
-    print("WEIGHT MATRIX INTUITION")
+    print("权重矩阵直觉（Weight Matrix Intuition）")
     print("=" * 60)
 
-    print("\nA weight matrix transforms input features into output features.")
-    print("Each row extracts one pattern from the input.\n")
+    print("\n权重矩阵（Weight matrix）将输入特征（Features）变换为输出特征。")
+    print("每一行从输入中提取一种模式（Pattern）。\n")
 
     W = Matrix([
         [1.0, 0.0, 0.0],
@@ -307,16 +307,16 @@ def demo_weight_matrix_intuition():
     ])
     x = Matrix([[0.8], [0.6], [0.1]])
 
-    print("Weight matrix W (3 detectors, 3 inputs):")
+    print("权重矩阵 W（3 个检测器，3 个输入）：")
     print(W)
-    print("\nInput x:")
+    print("\n输入（Input）x：")
     print(x)
     print("\nW @ x =")
     result = W @ x
     print(result)
-    print("\nRow 0 of W = [1, 0, 0]: copies input feature 0")
-    print("Row 1 of W = [0, 1, 0]: copies input feature 1")
-    print("Row 2 of W = [0.5, 0.5, 0]: averages features 0 and 1")
+    print("\nW 的第 0 行 = [1, 0, 0]：复制输入特征 0")
+    print("W 的第 1 行 = [0, 1, 0]：复制输入特征 1")
+    print("W 的第 2 行 = [0.5, 0.5, 0]：对特征 0 和 1 求平均")
 
 
 if __name__ == "__main__":

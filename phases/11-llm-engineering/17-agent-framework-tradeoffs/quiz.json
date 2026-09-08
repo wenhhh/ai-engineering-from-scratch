@@ -3,7 +3,7 @@
   "questions": [
     {
       "stage": "post",
-      "question": "Which framework is the right first pick for a workflow that must resume after a crash, accept a human approval mid-run, and fan out to three retrievers in parallel?",
+      "question": "某工作流必须在崩溃后恢复、在运行中接受人工批准，并并行扇出（Fanout）到三个检索器，首选哪个框架？",
       "options": [
         "LangGraph",
         "Agno",
@@ -15,31 +15,31 @@
     },
     {
       "stage": "post",
-      "question": "Why does LLM-selected routing cost more tokens per turn than explicit routing?",
+      "question": "为什么 LLM 选择路由（LLM-selected Routing）比显式路由（Explicit Routing）每轮消耗更多词元？",
       "options": [
-        "A planner LLM call picks the next step each turn, adding prompt and completion tokens for every decision.",
-        "It duplicates the tool list for every agent in the crew.",
-        "It sends the whole conversation history to a verifier model.",
-        "It pre-fetches the next node in parallel to hedge latency."
+        "每轮都调用规划器 LLM 选择下一步，每次决策都会增加提示词和生成词元。",
+        "它为团队中的每个智能体复制工具列表。",
+        "它将完整对话历史发送给验证模型。",
+        "它并行预取下一节点来抵消延迟。"
       ],
       "correct": 0,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "Proposer-critic dialogue in code review naturally maps to which framework's core abstraction?",
+      "question": "代码审查中的提案者与批评者对话，最自然地映射到哪个框架的核心抽象？",
       "options": [
-        "LangGraph's StateGraph",
-        "AutoGen's GroupChat / ConversableAgent pair",
-        "CrewAI's sequential Crew",
-        "Agno's single Agent with tools"
+        "LangGraph 的 StateGraph",
+        "AutoGen 的 GroupChat / 成对 ConversableAgent",
+        "CrewAI 的顺序 Crew",
+        "Agno 的带工具单 Agent"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "Which framework has built-in storage drivers (SQLite, Postgres, Redis, Mongo, DynamoDB) attached directly to the Agent class for session and memory persistence?",
+      "question": "哪个框架内置 SQLite、Postgres、Redis、Mongo、DynamoDB 存储驱动，可直接附加到 Agent 类，用于会话和记忆持久化（Persistence）？",
       "options": [
         "Agno",
         "CrewAI",
@@ -51,12 +51,12 @@
     },
     {
       "stage": "post",
-      "question": "You have a two-call summarizer: fetch text, summarize. Which option is the right framework choice?",
+      "question": "你有一个两次调用的摘要器：获取文本、生成摘要。应该选择哪种方案？",
       "options": [
-        "AutoGen GroupChat — two agents can argue about the best summary.",
-        "Plain Python with the provider SDK — no framework is the fastest framework for tiny pipelines.",
-        "CrewAI with researcher + summarizer roles — roles make it clearer.",
-        "LangGraph StateGraph — always use a framework for reliability."
+        "AutoGen GroupChat：两个智能体可以争论哪份摘要最好。",
+        "纯 Python 配合供应商 SDK：对于微小流水线，不使用框架就是最快的框架。",
+        "CrewAI 配置研究员和摘要员角色：角色让结构更清晰。",
+        "LangGraph StateGraph：为保障可靠性，始终使用框架。"
       ],
       "correct": 1,
       "explanation": ""

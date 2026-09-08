@@ -1,147 +1,147 @@
-# Verification Gates
+# 验证关卡（Verification Gates）
 
-> The agent does not get to mark its own work as done. A verification gate reads the scope contract, the feedback log, the rule report, and the diff, and answers a single question: is this task actually complete? If the gate says no, the task is not done, no matter what the chat says.
+> 智能体无权自行把工作标记为完成。验证关卡读取范围契约、反馈日志、规则报告与差异，只回答一个问题：这个任务真的完成了吗？如果关卡说没有，无论聊天里怎么说，任务都没有完成。
 
 **Type:** Build
-**Languages:** Python (stdlib)
-**Prerequisites:** Phase 14 · 33 (Rules), Phase 14 · 36 (Scope), Phase 14 · 37 (Feedback)
-**Time:** ~55 minutes
+**Languages:** Python（标准库）
+**Prerequisites:** 阶段 14 · 33（规则），阶段 14 · 36（范围），阶段 14 · 37（反馈）
+**Time:** 约 55 分钟
 
-## Learning Objectives
+## 学习目标（Learning Objectives）
 
-- Define a verification gate as a deterministic function over workbench artifacts.
-- Combine rule report, scope report, feedback records, and diff into a single verdict.
-- Emit a `verification_report.json` the reviewer agent and CI can both read.
-- Refuse to advance a task on any block-severity failure, without exception.
+- 将验证关卡定义为针对工作台产物的确定性函数。
+- 将规则报告、范围报告、反馈记录与差异合并为一个判定。
+- 输出审查智能体与 CI 都能读取的 `verification_report.json`。
+- 出现任何阻断级失败时拒绝推进任务，不设例外。
 
-## The Problem
+## 问题（The Problem）
 
-Agents declare success too easily. Three failure shapes dominate:
+智能体过于轻易地宣布成功。主要有三种失败形态：
 
-- "Looks good." The model read its own diff and decided it was correct.
-- "Tests passed." Said with confidence. No record of the test actually running.
-- "Acceptance met." Acceptance criteria interpreted loosely enough to mean "anything resembling done."
+- “看起来不错。”模型读了自己的差异，就决定它是正确的。
+- “测试通过了。”说得肯定，却没有测试确实运行的记录。
+- “满足验收要求。”把验收标准解释得足够宽松，变成“任何像是完成的东西”。
 
-The workbench fix is a single verification gate that reads the artifacts the agent has already produced and makes the call. The gate is deterministic. The gate is in version control. The gate is wired into CI. The agent cannot bribe it.
+工作台的解决办法是一个统一验证关卡：读取智能体已产出的材料，作出判断。关卡是确定性的，纳入版本控制，接入 CI。智能体无法收买它。
 
-## The Concept
+## 概念（The Concept）
 
 ```mermaid
 flowchart TD
-  Diff[Diff] --> Gate[verify_agent.py]
+  Diff[差异] --> Gate[verify_agent.py]
   Scope[scope_report.json] --> Gate
   Rules[rule_report.json] --> Gate
   Feedback[feedback_record.jsonl] --> Gate
   Gate --> Verdict[verification_report.json]
-  Verdict --> Pass{passed?}
-  Pass -- yes --> Review[Reviewer Agent]
-  Pass -- no --> Refuse[refuse done + surface to human]
+  Verdict --> Pass{通过?}
+  Pass -- 是 --> Review[审查智能体]
+  Pass -- 否 --> Refuse[拒绝完成并告知人工]
 ```
 
-### What the gate checks
+### 关卡检查什么（What the gate checks）
 
-| Check | Source artifact | Severity |
+| 检查 | 来源产物 | 严重度 |
 |-------|-----------------|----------|
-| All acceptance commands ran | `feedback_record.jsonl` | block |
-| All acceptance commands exited zero | `feedback_record.jsonl` | block |
-| Scope check has no forbidden writes | `scope_report.json` | block |
-| Scope check has no off-scope writes | `scope_report.json` | block or warn |
-| All block-severity rules pass | `rule_report.json` | block |
-| No `null` exit codes in feedback | `feedback_record.jsonl` | block |
-| Touched files match `scope.allowed_files` | both | warn |
+| 所有验收命令均已运行 | `feedback_record.jsonl` | block |
+| 所有验收命令退出码均为零 | `feedback_record.jsonl` | block |
+| 范围检查没有禁止写入 | `scope_report.json` | block |
+| 范围检查没有范围外写入 | `scope_report.json` | block 或 warn |
+| 所有阻断级规则均通过 | `rule_report.json` | block |
+| 反馈中没有 `null` 退出码 | `feedback_record.jsonl` | block |
+| 变更文件匹配 `scope.allowed_files` | 两者 | warn |
 
-A `warn` finding annotates the verdict; a `block` finding prevents `passed: true`.
+`warn` 发现为判定添加注释；`block` 发现阻止出现 `passed: true`。
 
-### Deterministic, not probabilistic
+### 确定性，而非概率性（Deterministic, not probabilistic）
 
-The gate must produce the same verdict for the same artifact set every time. No LLM judges. LLM judges belong on the reviewer side (Phase 14 · 39) where the goal is qualitative evaluation, not status.
+同一组产物每次都必须得到相同判定。不能使用 LLM 裁判。LLM 裁判属于审查侧（阶段 14 · 39），其目标是定性评价，而不是状态判定。
 
-### One report, one path
+### 一份报告，一个路径（One report, one path）
 
-The gate emits one `verification_report.json` per task close-out, written under `outputs/verification/<task_id>.json`. CI consumes the same path. Multiple gates with different paths fork the source of truth.
+每次任务收尾时，关卡输出一份 `verification_report.json`，写入 `outputs/verification/<task_id>.json`。CI 消费同一路径。不同路径上的多个关卡会分裂事实来源。
 
-### Refuse without exception
+### 拒绝，不设例外（Refuse without exception）
 
-Block-severity findings cannot be overridden by the agent. They can only be overridden by a human, with a recorded `override_reason` and an `overridden_by` user id. The override is a signed change, not an agent decision.
+智能体不能覆盖阻断级发现。只有人工可以例外放行，且必须记录 `override_reason` 和 `overridden_by` 用户 ID。例外放行是一项签署的变更，不是智能体的决定。
 
 ```figure
 wb-gate-sequence
 ```
 
-## Build It
+## 动手实现（Build It）
 
-`code/main.py` implements:
+`code/main.py` 实现：
 
-- A loader for each input artifact, all stubbed locally so the lesson is self-contained.
-- A `verify(task_id, artifacts) -> VerdictReport` pure function.
-- A printer that shows the per-check results and the final pass/fail.
-- A demo with three task scenarios: clean pass, scope creep, missing acceptance.
+- 各输入产物的加载器，全部使用本地桩数据，让本课自包含。
+- `verify(task_id, artifacts) -> VerdictReport` 纯函数。
+- 显示逐项检查结果及最终通过／失败的打印器。
+- 包含三个任务场景的演示：全部通过、范围蔓延、缺少验收。
 
-Run it:
+运行：
 
 ```
 python3 code/main.py
 ```
 
-Output: three verdict reports, each saved next to the script.
+输出：三份判定报告，各自保存在脚本旁。
 
-## Production patterns in the wild
+## 实际生产中的模式（Production patterns in the wild）
 
-Four patterns elevate the gate from "another lint job" to "the deciding edge."
+四种模式把关卡从“又一个静态检查任务”提升为“最终决策点”。
 
-**Defense-in-depth, not single gate.** Pre-commit hook → CI status check → pre-tool authz hook → pre-merge gate. Each layer is deterministic so a failure in one layer is caught by the next. microservices.io's March 2026 playbook is explicit: the pre-commit hook is non-bypassable because, unlike a model-side skill, it does not depend on the agent following instructions. The verification gate sits at the CI / pre-merge layer.
+**纵深防御（Defense-in-depth），而非单一关卡。** 提交前钩子 → CI 状态检查 → 工具调用前授权钩子 → 合并前关卡。每层都是确定性的，一层漏掉的失败由下一层捕获。microservices.io 的 2026 年 3 月手册明确指出：提交前钩子不可绕过，因为与模型侧技能不同，它不依赖智能体遵守指令。验证关卡位于 CI／合并前这一层。
 
-**Defense by deterministic check, model-judge only for nuance.** Anthropic's 2026 Hybrid Norm pairing: verifiable rewards (unit tests, schema checks, exit codes) answer "did the code solve the problem?" — LLM rubrics answer "is the code readable, secure, on-style?" The gate runs the first class; the reviewer (Phase 14 · 39) runs the second. Mixing them collapses the signal.
+**确定性检查负责防御，模型裁判只处理细微判断。** Anthropic 的 2026 年混合规范（Hybrid Norm）配对方式：可验证奖励（单元测试、结构定义（Schema）检查、退出码）回答“代码解决问题了吗？”；LLM 评分标准回答“代码是否易读、安全、符合风格？”关卡运行第一类，审查者（阶段 14 · 39）运行第二类。混在一起会破坏信号。
 
-**Signed override log, not Slack threads.** Every override emits a row in `outputs/verification/overrides.jsonl` with: timestamp, finding code, reason, signing user, current HEAD commit. The runtime refuses any override that lacks the signature; the audit trail is git-tracked. This is the line between an override policy and an override theater.
+**签署的例外放行日志（Signed Override Log），而非 Slack 讨论串。** 每次放行都向 `outputs/verification/overrides.jsonl` 写入一行，包含时间戳、发现代码、原因、签署用户、当前 HEAD 提交。运行时拒绝缺少签名的放行；审计轨迹由 git 跟踪。这些记录使例外放行政策能够接受审计，而不只是形式上的规定。
 
-**Coverage floor as a first-class check.** A `coverage_report.json` feeds a `coverage_floor` (default 80%) check. The gate fails if measured coverage drops below the floor or below the previous merge's floor by more than 1 percentage point. Without this check, agents quietly delete tests that fail and the verification reports stay green.
+**把覆盖率下限（Coverage Floor）作为一等检查。** `coverage_report.json` 为 `coverage_floor` 检查提供输入，默认下限为 80%。实测覆盖率低于下限，或比上一次合并的下限下降超过 1 个百分点时，关卡失败。没有这项检查，智能体会悄悄删除失败测试，而验证报告仍然全绿。
 
-**`--strict` mode promotes warns to blocks.** For release branches, ship-blocking PRs, or post-incident triage, `--strict` makes every warning a hard fail. The flag is opt-in by branch; not the global default, because strict-on-everything corrodes day-to-day flow.
+**`--strict` 模式把警告升级为阻止。** 对发布分支、阻塞交付的 PR 或事故后排查，`--strict` 将每条警告变为硬失败。该开关按分支选择启用，不作为全局默认，因为对一切严格处理会损害日常流程。
 
-## Use It
+## 实际应用（Use It）
 
-Production patterns:
+生产模式：
 
-- **CI step.** A `verify_agent` job runs the gate against the agent's final artifacts. Merge protection refuses without `passed: true`.
-- **Pre-handoff hook.** The agent runtime calls the gate before generating the handoff doc. No green verdict, no handoff.
-- **Manual triage.** Operators read the report when an agent claims success and a human suspects it.
+- **CI 步骤。** `verify_agent` 任务对智能体的最终产物运行关卡。没有 `passed: true`，合并保护就拒绝放行。
+- **交接前钩子（Pre-handoff Hook）。** 智能体运行时在生成交接文档前调用关卡。没有通过判定，就没有交接。
+- **人工排查（Manual Triage）。** 智能体宣称成功而人工有所怀疑时，操作者读取报告。
 
-The gate is the deciding edge in the workbench flow. Every other surface is upstream of it.
+关卡是工作台流程的最终决策点。其余工作台支撑能力（Workbench Surfaces）都位于它的上游。
 
-## Ship It
+## 交付成果（Ship It）
 
-`outputs/skill-verification-gate.md` wires the gate into a specific project: which acceptance commands feed it, which rules are block-severity, which off-scope writes are tolerated, how the override audit log is stored.
+`outputs/skill-verification-gate.md` 将关卡接入具体项目：哪些验收命令提供输入、哪些规则为阻断级、哪些范围外写入可容忍，以及如何存储例外放行审计日志。
 
-## Exercises
+## 练习（Exercises）
 
-1. Add a `coverage_floor` check: the test command must produce a coverage report with at least 80%. Decide which artifact carries the floor.
-2. Support a `--strict` mode that promotes every `warn` to `block`. Document the cases where strict mode is the right default.
-3. Make the gate produce a Markdown summary in addition to JSON. Defend which fields belong in the summary.
-4. Add a `time_since_last_human_touch` check: any file edited within 60 seconds of a human keystroke is exempt from off-scope flags.
-5. Run the gate on a real agent diff from your product. How many findings are real and how many are noise? Where does the gate need to grow?
+1. 添加 `coverage_floor` 检查：测试命令必须产生至少 80% 的覆盖率报告。决定由哪个产物承载下限。
+2. 支持 `--strict` 模式，将每个 `warn` 升为 `block`。记录哪些情况下应默认使用严格模式。
+3. 让关卡除 JSON 外还输出 Markdown 摘要。说明哪些字段应进入摘要及其依据。
+4. 添加 `time_since_last_human_touch` 检查：人工按键后 60 秒内编辑的任何文件，豁免范围外标记。
+5. 对产品中的真实智能体差异运行关卡。多少发现是真问题，多少是噪声？关卡还需扩展哪里？
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语 | 常见说法 | 实际含义 |
 |------|----------------|------------------------|
-| Verification gate | "The check that stops things" | Deterministic function over workbench artifacts producing a pass/fail verdict |
-| Block severity | "Hard fail" | A finding that prevents `passed: true` and requires a signed override |
-| Override log | "Why we let it through" | Signed entries with reason and user id, audited by review |
-| Acceptance command | "The proof" | A shell command whose zero exit is what `done` means |
-| One report path | "Source of truth" | `outputs/verification/<task_id>.json`, consumed by CI and humans alike |
+| 验证关卡（Verification Gate） | “阻止事情继续的检查” | 针对工作台产物的确定性函数，输出通过／失败判定 |
+| 阻断级严重度（Block Severity） | “硬失败” | 阻止 `passed: true`，且需签署例外放行的发现 |
+| 例外放行日志（Override Log） | “为什么让它通过” | 含原因与用户 ID 的签署条目，由审查进行审计 |
+| 验收命令（Acceptance Command） | “证据” | 零退出状态定义 `done` 的 shell 命令 |
+| 单一报告路径（One Report Path） | “事实来源” | `outputs/verification/<task_id>.json`，CI 与人工共同消费 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [Anthropic, Harness design for long-running application development](https://www.anthropic.com/engineering/harness-design-long-running-apps)
-- [OpenAI Agents SDK guardrails](https://openai.github.io/openai-agents-python/guardrails/)
-- [microservices.io, GenAI dev platform: guardrails](https://microservices.io/post/architecture/2026/03/09/genai-development-platform-part-1-development-guardrails.html) — defense in depth between pre-commit and CI
-- [ICMD, The 2026 Playbook for Agentic AI Ops](https://icmd.app/article/the-2026-playbook-for-agentic-ai-ops-guardrails-costs-and-reliability-at-scale-1776661990431) — approval-gate ladder (draft → approval → auto under thresholds)
-- [Type-Checked Compliance: Deterministic Guardrails (arXiv 2604.01483)](https://arxiv.org/pdf/2604.01483) — Lean 4 as the upper bound of deterministic gating
-- [logi-cmd/agent-guardrails — merge gate spec](https://github.com/logi-cmd/agent-guardrails) — scope + mutation-testing gates
-- [Guardrails AI x MLflow](https://guardrailsai.com/blog/guardrails-mlflow) — deterministic validators as CI scorers
-- [Akira, Real-Time Guardrails for Agentic Systems](https://www.akira.ai/blog/real-time-guardrails-agentic-systems) — pre/post-tool gates
-- Phase 14 · 27 — prompt injection defenses (the gate's adversarial pair)
-- Phase 14 · 36 — the scope contract this gate enforces
-- Phase 14 · 37 — the feedback log this gate scores
-- Phase 14 · 39 — the reviewer agent the gate hands off to
+- [Anthropic：长时间应用开发的执行框架设计（Harness Design for Long-running Application Development）](https://www.anthropic.com/engineering/harness-design-long-running-apps)
+- [OpenAI Agents SDK 护栏（Guardrails）](https://openai.github.io/openai-agents-python/guardrails/)
+- [microservices.io：GenAI 开发平台护栏（GenAI Dev Platform: Guardrails）](https://microservices.io/post/architecture/2026/03/09/genai-development-platform-part-1-development-guardrails.html) —— 提交前与 CI 之间的纵深防御
+- [ICMD：2026 年智能体 AI 运维手册（The 2026 Playbook for Agentic AI Ops）](https://icmd.app/article/the-2026-playbook-for-agentic-ai-ops-guardrails-costs-and-reliability-at-scale-1776661990431) —— 审批关卡阶梯：草稿 → 审批 → 阈值内自动执行
+- [类型检查合规：确定性护栏（Type-Checked Compliance: Deterministic Guardrails，arXiv 2604.01483）](https://arxiv.org/pdf/2604.01483) —— Lean 4 作为确定性关卡的上界
+- [logi-cmd/agent-guardrails：合并关卡规格（Merge Gate Spec）](https://github.com/logi-cmd/agent-guardrails) —— 范围与变异测试关卡
+- [Guardrails AI x MLflow](https://guardrailsai.com/blog/guardrails-mlflow) —— 确定性验证器作为 CI 评分器
+- [Akira：智能体系统实时护栏（Real-Time Guardrails for Agentic Systems）](https://www.akira.ai/blog/real-time-guardrails-agentic-systems) —— 工具调用前后关卡
+- 阶段 14 · 27 —— 提示注入防御（关卡的对抗防御搭档）
+- 阶段 14 · 36 —— 该关卡执行的范围契约
+- 阶段 14 · 37 —— 该关卡评分的反馈日志
+- 阶段 14 · 39 —— 关卡交接给的审查智能体

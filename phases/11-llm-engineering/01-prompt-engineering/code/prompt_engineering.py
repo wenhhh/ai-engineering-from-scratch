@@ -15,7 +15,7 @@ PROMPT_PATTERNS = {
         ),
         "variables": ["role", "experience", "style", "priority", "task"],
         "temperature": 0.7,
-        "description": "Activates a specific expert distribution in the model's training data",
+        "description": "激活模型训练数据中特定的专家分布（Expert distribution）",
     },
     "few_shot": {
         "name": "Few-Shot Pattern",
@@ -26,7 +26,7 @@ PROMPT_PATTERNS = {
         ),
         "variables": ["examples", "input"],
         "temperature": 0.0,
-        "description": "Provides concrete examples to anchor the output format and style",
+        "description": "提供具体示例，固定输出格式与风格",
     },
     "chain_of_thought": {
         "name": "Chain-of-Thought Pattern",
@@ -42,7 +42,7 @@ PROMPT_PATTERNS = {
         ),
         "variables": ["problem"],
         "temperature": 0.3,
-        "description": "Forces explicit reasoning steps before the final answer",
+        "description": "要求在最终答案前显式给出推理步骤（Reasoning steps）",
     },
     "template_fill": {
         "name": "Template Fill Pattern",
@@ -54,7 +54,7 @@ PROMPT_PATTERNS = {
         ),
         "variables": ["text", "template_structure"],
         "temperature": 0.0,
-        "description": "Constrains output to a specific structure with named fields",
+        "description": "将输出限制为包含具名字段的特定结构",
     },
     "critique": {
         "name": "Critique Pattern",
@@ -67,7 +67,7 @@ PROMPT_PATTERNS = {
         ),
         "variables": ["task"],
         "temperature": 0.5,
-        "description": "Self-refinement through explicit critique before final output",
+        "description": "在最终输出前通过显式批评（Critique）进行自我改进",
     },
     "guardrail": {
         "name": "Guardrail Pattern",
@@ -82,7 +82,7 @@ PROMPT_PATTERNS = {
         ),
         "variables": ["role", "domain", "additional_rules", "question"],
         "temperature": 0.3,
-        "description": "Constrains the model to a specific domain with explicit boundaries",
+        "description": "用明确边界将模型限制在特定领域内",
     },
     "meta_prompt": {
         "name": "Meta-Prompt Pattern",
@@ -98,7 +98,7 @@ PROMPT_PATTERNS = {
         ),
         "variables": ["objective", "metric", "model"],
         "temperature": 0.7,
-        "description": "Uses the LLM to generate optimized prompts for other tasks",
+        "description": "使用 LLM 为其他任务生成优化后的提示词",
     },
     "decomposition": {
         "name": "Decomposition Pattern",
@@ -112,7 +112,7 @@ PROMPT_PATTERNS = {
         ),
         "variables": ["problem"],
         "temperature": 0.3,
-        "description": "Breaks complex problems into manageable pieces",
+        "description": "将复杂问题拆成可处理的部分",
     },
     "audience_adapt": {
         "name": "Audience Adaptation Pattern",
@@ -126,7 +126,7 @@ PROMPT_PATTERNS = {
         ),
         "variables": ["concept", "audience", "length", "include", "exclude"],
         "temperature": 0.5,
-        "description": "Adapts explanation complexity to the target audience",
+        "description": "根据目标受众调整解释的复杂度",
     },
     "boundary": {
         "name": "Boundary Pattern",
@@ -140,7 +140,7 @@ PROMPT_PATTERNS = {
         ),
         "variables": ["scope", "refusal_message", "user_input"],
         "temperature": 0.0,
-        "description": "Hard boundary on what the model will and will not respond to",
+        "description": "为模型会响应和不会响应的内容设置硬性边界",
     },
 }
 
@@ -170,11 +170,11 @@ MODEL_CONFIGS = {
 def build_prompt(pattern_name, variables, system_override=None):
     pattern = PROMPT_PATTERNS.get(pattern_name)
     if not pattern:
-        raise ValueError(f"Unknown pattern: {pattern_name}. Available: {list(PROMPT_PATTERNS.keys())}")
+        raise ValueError(f"未知模式: {pattern_name}。可用模式: {list(PROMPT_PATTERNS.keys())}")
 
     missing = [v for v in pattern["variables"] if v not in variables]
     if missing:
-        raise ValueError(f"Missing variables for {pattern_name}: {missing}")
+        raise ValueError(f"缺少变量，所属模式为 {pattern_name}: {missing}")
 
     rendered = pattern["template"].format(**variables)
     system = system_override or f"You are an AI assistant using the {pattern['name']}."
@@ -194,7 +194,7 @@ def build_prompt(pattern_name, variables, system_override=None):
 def build_multi_turn(pattern_name, turns, system_override=None):
     pattern = PROMPT_PATTERNS.get(pattern_name)
     if not pattern:
-        raise ValueError(f"Unknown pattern: {pattern_name}")
+        raise ValueError(f"未知模式: {pattern_name}")
 
     system = system_override or f"You are an AI assistant using the {pattern['name']}."
     messages = [{"role": "system", "content": system}]
@@ -479,26 +479,26 @@ TEST_SUITE = [
 
 def run_test_suite():
     print("=" * 70)
-    print("  PROMPT ENGINEERING TEST SUITE")
+    print("  提示词工程测试套件（Prompt Engineering Test Suite）")
     print("=" * 70)
 
     all_results = []
 
     for test in TEST_SUITE:
         print(f"\n{'=' * 60}")
-        print(f"  Test: {test['name']}")
-        print(f"  Pattern: {test['pattern']}")
+        print(f"  测试（Test）: {test['name']}")
+        print(f"  模式（Pattern）: {test['pattern']}")
         print(f"{'=' * 60}")
 
         prompt = build_prompt(test["pattern"], test["variables"])
-        print(f"\n  System: {prompt['system'][:80]}...")
-        print(f"  User prompt: {prompt['user'][:120]}...")
-        print(f"  Temperature: {prompt['temperature']}")
+        print(f"\n  系统（System）: {prompt['system'][:80]}...")
+        print(f"  用户提示词（User prompt）: {prompt['user'][:120]}...")
+        print(f"  温度（Temperature）: {prompt['temperature']}")
 
         results = run_prompt_test(prompt)
         comparison, ranked = compare_models(results, test["criteria"])
 
-        print(f"\n  {'Model':<25} {'Score':>8} {'Tokens':>8} {'Latency':>10}")
+        print(f"\n  {'模型（Model）':<25} {'分数（Score）':>8} {'词元数（Tokens）':>8} {'延迟（Latency）':>10}")
         print(f"  {'-' * 55}")
         for model_name, data in ranked:
             score = data["scores"]["composite_score"]
@@ -513,7 +513,7 @@ def run_test_suite():
         })
 
     print(f"\n\n{'=' * 70}")
-    print("  SUMMARY: MODEL RANKINGS ACROSS ALL TESTS")
+    print("  摘要: 全部测试中的模型排名")
     print(f"{'=' * 70}")
 
     model_wins = {}
@@ -523,26 +523,26 @@ def run_test_suite():
             model_wins[winner] = model_wins.get(winner, 0) + 1
 
     for model, wins in sorted(model_wins.items(), key=lambda x: x[1], reverse=True):
-        print(f"  {model}: {wins} wins out of {len(all_results)} tests")
+        print(f"  {model}: 胜出 {wins} 次，测试共 {len(all_results)} 项")
 
     return all_results
 
 
 def run_pattern_catalog_demo():
     print("=" * 70)
-    print("  PROMPT PATTERN CATALOG")
+    print("  提示词模式目录（Prompt Pattern Catalog）")
     print("=" * 70)
 
     for name, pattern in PROMPT_PATTERNS.items():
         print(f"\n  [{name}] {pattern['name']}")
         print(f"    {pattern['description']}")
-        print(f"    Variables: {', '.join(pattern['variables'])}")
-        print(f"    Recommended temp: {pattern['temperature']}")
+        print(f"    变量（Variables）: {', '.join(pattern['variables'])}")
+        print(f"    推荐温度（Recommended temperature）: {pattern['temperature']}")
 
 
 def run_single_prompt_demo():
     print(f"\n{'=' * 70}")
-    print("  SINGLE PROMPT BUILD + TEST")
+    print("  单个提示词构建与测试（Single Prompt Build + Test）")
     print("=" * 70)
 
     prompt = build_prompt("persona", {
@@ -553,17 +553,17 @@ def run_single_prompt_demo():
         "task": "Explain why container orchestration matters for microservices.",
     })
 
-    print(f"\n  System message:\n    {prompt['system']}")
-    print(f"\n  User message:\n    {prompt['user'][:200]}...")
-    print(f"\n  Temperature: {prompt['temperature']}")
-    print(f"\n  Pattern metadata: {json.dumps(prompt['metadata'], indent=4)}")
+    print(f"\n  系统消息（System message）:\n    {prompt['system']}")
+    print(f"\n  用户消息（User message）:\n    {prompt['user'][:200]}...")
+    print(f"\n  温度（Temperature）: {prompt['temperature']}")
+    print(f"\n  模式元数据（Pattern metadata）: {json.dumps(prompt['metadata'], indent=4)}")
 
     results = run_prompt_test(prompt)
     for model, result in results.items():
         print(f"\n  [{model}]")
-        print(f"    Response: {result['response'][:100]}...")
-        print(f"    Tokens: {result['tokens']}")
-        print(f"    Latency: {result['api_latency_ms']}ms")
+        print(f"    回复（Response）: {result['response'][:100]}...")
+        print(f"    词元数（Tokens）: {result['tokens']}")
+        print(f"    延迟（Latency）: {result['api_latency_ms']}ms")
 
 
 if __name__ == "__main__":

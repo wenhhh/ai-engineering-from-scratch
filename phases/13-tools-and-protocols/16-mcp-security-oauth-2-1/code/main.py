@@ -1,9 +1,9 @@
-"""Phase 13 Lesson 16: MCP 2026-07-28 authorization simulator.
+"""阶段 13 第 16 课：MCP 2026-07-28 授权模拟器（Authorization simulator）。
 
-Companion to ../docs/en.md. Implements an in-process protocol model with
-protected-resource discovery, CIMD-first enrollment, deprecated DCR fallback,
-PKCE, issuer validation, resource-bound tokens, scope step-up, discovery, and
-tools/list. Lesson 09 supplies the complete Streamable HTTP adapter.
+../docs/en.md 的配套示例。实现进程内协议模型，包含
+受保护资源发现（Protected-resource discovery）、CIMD 优先注册、已弃用的 DCR 回退、
+PKCE、签发者（Issuer）验证、绑定资源的令牌（Resource-bound tokens）、权限范围提升（Scope step-up）、发现与
+tools/list。第 09 课提供完整的可流式 HTTP（Streamable HTTP）适配器。
 """
 
 from __future__ import annotations
@@ -43,7 +43,7 @@ PRIVATE_JWK_FIELDS = {"d", "p", "q", "dp", "dq", "qi", "oth", "k"}
 TOOL_DESCRIPTORS = [
     {
         "name": "notes.create",
-        "description": "Create a note.",
+        "description": "创建笔记。",
         "inputSchema": {
             "type": "object",
             "properties": {"title": {"type": "string"}},
@@ -52,7 +52,7 @@ TOOL_DESCRIPTORS = [
     },
     {
         "name": "notes.delete",
-        "description": "Delete a note by identifier.",
+        "description": "按标识符删除笔记。",
         "inputSchema": {
             "type": "object",
             "properties": {"id": {"type": "string"}},
@@ -61,7 +61,7 @@ TOOL_DESCRIPTORS = [
     },
     {
         "name": "notes.list",
-        "description": "List notes visible to the principal.",
+        "description": "列出主体（Principal）可见的笔记。",
         "inputSchema": {"type": "object", "properties": {}},
     },
 ]
@@ -205,12 +205,12 @@ class AuthorizationServer:
     def _validate_application(metadata: dict[str, Any], *, require_application_type: bool) -> None:
         application_type = metadata.get("application_type")
         if require_application_type and application_type not in {"native", "web"}:
-            raise ValueError("application_type must be native or web")
+            raise ValueError("application_type 必须为 native 或 web（application_type must be native or web）")
         if application_type is not None and application_type not in {"native", "web"}:
-            raise ValueError("application_type must be native or web")
+            raise ValueError("application_type 必须为 native 或 web（application_type must be native or web）")
         redirect_uris = metadata.get("redirect_uris")
         if not isinstance(redirect_uris, list) or not redirect_uris:
-            raise ValueError("redirect_uris is required")
+            raise ValueError("必须提供 redirect_uris（redirect_uris is required）")
         parsed_redirects = []
         for redirect_uri in redirect_uris:
             if (
@@ -220,14 +220,14 @@ class AuthorizationServer:
                 or any(character.isspace() for character in redirect_uri)
             ):
                 raise ValueError(
-                    "redirect_uris entries must be non-empty absolute URIs without fragments"
+                    "redirect_uris 条目必须为非空绝对 URI，且不能包含片段（redirect_uris entries must be non-empty absolute URIs without fragments）"
                 )
             try:
                 parsed = urlparse(redirect_uri)
                 hostname = parsed.hostname
             except ValueError as exc:
                 raise ValueError(
-                    "redirect_uris entries must be non-empty absolute URIs without fragments"
+                    "redirect_uris 条目必须为非空绝对 URI，且不能包含片段（redirect_uris entries must be non-empty absolute URIs without fragments）"
                 ) from exc
             if (
                 not parsed.scheme
@@ -238,38 +238,38 @@ class AuthorizationServer:
                 )
             ):
                 raise ValueError(
-                    "redirect_uris entries must be non-empty absolute URIs without fragments"
+                    "redirect_uris 条目必须为非空绝对 URI，且不能包含片段（redirect_uris entries must be non-empty absolute URIs without fragments）"
                 )
             parsed_redirects.append(parsed)
         if application_type == "web":
             for parsed in parsed_redirects:
                 if parsed.scheme != "https" or parsed.hostname in {"localhost", "127.0.0.1"}:
-                    raise ValueError("web redirect URIs must use remote HTTPS")
+                    raise ValueError("web 重定向 URI 必须使用远程 HTTPS（web redirect URIs must use remote HTTPS）")
 
     def enroll_cimd(self, metadata_url: str, document: dict[str, Any]) -> str:
         if not self.supports_cimd:
-            raise ValueError("CIMD is not supported")
+            raise ValueError("不支持 CIMD（CIMD is not supported）")
         parsed = urlparse(metadata_url)
         if parsed.scheme != "https" or not parsed.netloc or parsed.path in {"", "/"}:
-            raise ValueError("CIMD client_id must be an HTTPS URL with a path")
+            raise ValueError("CIMD client_id 必须为包含路径的 HTTPS URL（CIMD client_id must be an HTTPS URL with a path）")
         if parsed.username is not None or parsed.password is not None:
-            raise ValueError("CIMD client_id must not contain userinfo")
+            raise ValueError("CIMD client_id 不能包含用户信息（CIMD client_id must not contain userinfo）")
         if parsed.fragment:
-            raise ValueError("CIMD client_id must not contain a fragment")
+            raise ValueError("CIMD client_id 不能包含片段（CIMD client_id must not contain a fragment）")
         if any(segment in {".", ".."} for segment in parsed.path.split("/")):
-            raise ValueError("CIMD client_id must not contain dot path segments")
+            raise ValueError("CIMD client_id 不能包含点路径段（CIMD client_id must not contain dot path segments）")
         if document.get("client_id") != metadata_url:
-            raise ValueError("CIMD client_id must equal its metadata URL")
+            raise ValueError("CIMD client_id 必须等于其元数据 URL（CIMD client_id must equal its metadata URL）")
         if not isinstance(document.get("client_name"), str) or not document["client_name"]:
-            raise ValueError("client_name is required")
+            raise ValueError("必须提供 client_name（client_name is required）")
         auth_method = document.get("token_endpoint_auth_method")
         if auth_method is not None and not isinstance(auth_method, str):
-            raise ValueError("token_endpoint_auth_method must be a string")
+            raise ValueError("token_endpoint_auth_method 必须为字符串（token_endpoint_auth_method must be a string）")
         if isinstance(auth_method, str) and auth_method.startswith("client_secret"):
-            raise ValueError("CIMD must not use shared-secret client authentication")
+            raise ValueError("CIMD 不得使用共享密钥客户端认证（CIMD must not use shared-secret client authentication）")
         forbidden_fields = FORBIDDEN_CIMD_SECRET_FIELDS.intersection(document)
         if forbidden_fields:
-            raise ValueError("CIMD must not contain client secrets or private keys")
+            raise ValueError("CIMD 不得包含客户端密钥或私钥（CIMD must not contain client secrets or private keys）")
         jwks = document.get("jwks")
         if isinstance(jwks, dict):
             keys = jwks.get("keys", [])
@@ -277,14 +277,14 @@ class AuthorizationServer:
                 isinstance(key, dict) and PRIVATE_JWK_FIELDS.intersection(key)
                 for key in keys
             ):
-                raise ValueError("CIMD jwks must contain public keys only")
+                raise ValueError("CIMD jwks 只能包含公钥（CIMD jwks must contain public keys only）")
         self._validate_application(document, require_application_type=False)
         self.clients[metadata_url] = {**document, "enrollment": "cimd"}
         return metadata_url
 
     def dynamic_register(self, metadata: dict[str, Any]) -> str:
         if not self.supports_dcr:
-            raise ValueError("DCR is not supported")
+            raise ValueError("不支持 DCR（DCR is not supported）")
         self._validate_application(metadata, require_application_type=True)
         client_id = f"dcr_{secrets.token_hex(6)}"
         self.clients[client_id] = {**metadata, "enrollment": "dcr-compatibility"}
@@ -302,7 +302,7 @@ class AuthorizationServer:
     ) -> dict[str, str]:
         client = self.clients.get(client_id)
         if client is None or redirect_uri not in client["redirect_uris"]:
-            raise ValueError("unknown client or redirect URI")
+            raise ValueError("未知客户端或重定向 URI（unknown client or redirect URI）")
         code = f"code_{secrets.token_hex(8)}"
         self.pending_codes[code] = {
             "client_id": client_id,
@@ -327,21 +327,21 @@ class AuthorizationServer:
         with self._pending_codes_lock:
             record = self.pending_codes.get(code)
             if record is None:
-                raise ValueError("invalid authorization code")
+                raise ValueError("无效授权码（invalid authorization code）")
             if record["expires_at"] <= time.time():
                 self.pending_codes.pop(code, None)
-                raise ValueError("invalid authorization code")
+                raise ValueError("无效授权码（invalid authorization code）")
             if record["client_id"] != client_id:
-                raise ValueError("client_id mismatch")
+                raise ValueError("client_id 不匹配（client_id mismatch）")
             if record["redirect_uri"] != redirect_uri:
-                raise ValueError("redirect_uri mismatch")
+                raise ValueError("redirect_uri 不匹配（redirect_uri mismatch）")
             if record["resource"] != resource:
-                raise ValueError("resource mismatch")
+                raise ValueError("资源不匹配（resource mismatch）")
             challenge = base64.urlsafe_b64encode(
                 hashlib.sha256(verifier.encode()).digest()
             ).rstrip(b"=").decode()
             if not secrets.compare_digest(challenge, record["challenge"]):
-                raise ValueError("PKCE mismatch")
+                raise ValueError("PKCE 不匹配（PKCE mismatch）")
             self.pending_codes.pop(code)
         return Token(
             value=f"tok_{secrets.token_hex(12)}",
@@ -503,7 +503,7 @@ class ResourceServer:
                 result = {
                     "content": [{
                         "type": "text",
-                        "text": f"{params['name']} allowed for {token.subject}",
+                        "text": f"{params['name']} 已允许以下主体调用：{token.subject}",
                     }],
                     "isError": False,
                 }
@@ -534,7 +534,7 @@ class Client:
     def _client_document(self) -> dict[str, Any]:
         return {
             "client_id": CLIENT_METADATA_URL,
-            "client_name": "OAuth lesson client",
+            "client_name": "OAuth 课程客户端",
             "application_type": self.application_type,
             "redirect_uris": [self.redirect_uri],
             "grant_types": ["authorization_code"],
@@ -544,7 +544,7 @@ class Client:
     def enroll(self, auth: AuthorizationServer) -> str:
         metadata = auth.metadata()
         if metadata.get("issuer") != auth.issuer:
-            raise ValueError("authorization metadata issuer mismatch")
+            raise ValueError("授权元数据中的签发者不匹配（authorization metadata issuer mismatch）")
         if metadata.get("client_id_metadata_document_supported"):
             client_id = auth.enroll_cimd(CLIENT_METADATA_URL, self._client_document())
         elif metadata.get("registration_endpoint"):
@@ -552,7 +552,7 @@ class Client:
             fallback.pop("client_id")
             client_id = auth.dynamic_register(fallback)
         else:
-            raise ValueError("authorization server offers no supported client enrollment")
+            raise ValueError("授权服务器未提供受支持的客户端注册方式（authorization server offers no supported client enrollment）")
         self.client_ids_by_issuer[auth.issuer] = client_id
         return client_id
 
@@ -570,7 +570,7 @@ class Client:
             resource=resource,
         )
         if response.get("iss") != auth.issuer:
-            raise ValueError("authorization response issuer mismatch")
+            raise ValueError("授权响应中的签发者不匹配（authorization response issuer mismatch）")
         token = auth.exchange(
             code=response["code"],
             client_id=client_id,
@@ -588,7 +588,7 @@ class Client:
         auth: AuthorizationServer,
     ) -> tuple[int, dict[str, Any] | None, dict[str, str]]:
         if server.issuer != auth.issuer:
-            raise ValueError("protected resource selected a different issuer")
+            raise ValueError("受保护资源选择了不同的签发者（protected resource selected a different issuer）")
         key = (auth.issuer, server.resource)
         token = self.tokens_by_issuer_resource.get(key)
         if token is None:
@@ -611,16 +611,16 @@ def demo() -> None:
     client = Client()
     discover_body, discover_headers = make_discover_request()
     _, discovery, _ = server.discover(discover_body, discover_headers)
-    print("server discovery:", discovery["result"] if discovery else None)
+    print("服务器发现：", discovery["result"] if discovery else None)
     list_body, list_headers = make_tools_list_request()
     _, listing, _ = server.handle(list_body, list_headers)
-    print("tools:", [tool["name"] for tool in listing["result"]["tools"]] if listing else None)
-    print("protected resource metadata:", server.protected_resource_metadata())
+    print("工具：", [tool["name"] for tool in listing["result"]["tools"]] if listing else None)
+    print("受保护资源元数据：", server.protected_resource_metadata())
     print("CIMD client_id:", client.enroll(auth))
     for tool in ("notes.list", "notes.create", "notes.delete"):
         status, response, _ = client.call_with_step_up(tool, server, auth)
         print(tool, status, response.get("result", {}).get("content") if response else None)
-    print("effective client ids by issuer:", sorted(client.client_ids_by_issuer))
+    print("按签发者分组的有效客户端 ID：", sorted(client.client_ids_by_issuer))
 
 
 if __name__ == "__main__":

@@ -2,66 +2,66 @@
   {
     "id": "feateng-pre-1",
     "stage": "pre",
-    "question": "Why is feature engineering often more impactful than choosing a fancier algorithm?",
+    "question": "为什么特征工程（Feature Engineering）往往比选择更复杂的算法影响更大？",
     "options": [
-      "Feature engineering makes the code run faster",
-      "Feature engineering eliminates the need for a test set",
-      "Fancy algorithms cannot process raw data",
-      "Good features expose patterns to the model that raw data hides, making even simple models effective"
+      "特征工程让代码运行更快",
+      "特征工程使测试集不再必要",
+      "复杂算法无法处理原始数据",
+      "好特征向模型揭示原始数据隐藏的模式，使简单模型也有效"
     ],
     "correct": 3,
-    "explanation": "The representation of data matters more than the algorithm. A well-engineered feature like BMI (weight/height^2) directly exposes the relevant pattern, making even logistic regression competitive with complex ensembles."
+    "explanation": "数据表示比算法更重要。BMI（weight/height^2）这样设计良好的特征直接揭示相关模式，使逻辑回归也能与复杂集成模型竞争。"
   },
   {
     "id": "feateng-pre-2",
     "stage": "pre",
-    "question": "What is one-hot encoding?",
+    "question": "什么是独热编码（One-hot Encoding）？",
     "options": [
-      "Replacing each category with its frequency in the dataset",
-      "Creating one binary column per category, with exactly one column set to 1 per row",
-      "Encoding the target variable as a probability",
-      "Converting all features to values between 0 and 1"
+      "将每个类别替换为它在数据集中的频率",
+      "为每个类别创建二元列，每行恰好有一列设为 1",
+      "将目标变量编码为概率",
+      "将所有特征转换为 0 到 1 之间的值"
     ],
     "correct": 1,
-    "explanation": "One-hot encoding creates a binary column for each unique category. For a color feature with values red/blue/green, it produces three columns: is_red, is_blue, is_green."
+    "explanation": "独热编码为每个不同类别创建一个二元列。对于取值为 red/blue/green 的颜色特征，它生成三列：is_red、is_blue、is_green。"
   },
   {
     "id": "feateng-post-1",
     "stage": "post",
-    "question": "What is the data leakage risk with target encoding?",
+    "question": "目标编码（Target Encoding）存在什么数据泄漏风险？",
     "options": [
-      "It makes the model too slow to train",
-      "It replaces categories with the mean target value, which can leak information from the test set if not computed on training data only",
-      "It only works with binary targets",
-      "It creates too many features"
+      "它使模型训练过慢",
+      "它用目标均值替换类别；若不只在训练数据上计算，可能泄漏测试集信息",
+      "它只适用于二元目标",
+      "它创建过多特征"
     ],
     "correct": 1,
-    "explanation": "Target encoding replaces each category with the mean target for that category. If computed on the full dataset (including test data), test labels leak into training features, inflating performance estimates."
+    "explanation": "目标编码用各类别的目标均值替换类别。若在包含测试数据的完整数据集上计算，测试标签就会泄漏到训练特征中，虚增性能估计。"
   },
   {
     "id": "feateng-post-2",
     "stage": "post",
-    "question": "TF-IDF weights a word by its inverse document frequency. What is the effect?",
+    "question": "TF-IDF 按逆文档频率（Inverse Document Frequency）为词赋权。效果是什么？",
     "options": [
-      "All words get equal weight regardless of frequency",
-      "Rare, distinctive words get higher weight while common words get lower weight",
-      "Only the most frequent word in each document is kept",
-      "Common words like 'the' get high weight because they appear frequently"
+      "所有词不论频率高低都获得相同权重",
+      "稀有、有区分力的词权重更高，常见词权重更低",
+      "只保留每篇文档中频率最高的词",
+      "the 等常见词因频繁出现而获得高权重"
     ],
     "correct": 1,
-    "explanation": "IDF = log(total docs / docs containing word). Common words (appearing in many documents) get low IDF. Rare, distinctive words get high IDF, making them more influential in the representation."
+    "explanation": "IDF = log(total docs / docs containing word)。出现在很多文档中的常见词 IDF 低；稀有且有区分力的词 IDF 高，因此对表示的影响更大。"
   },
   {
     "id": "feateng-post-3",
     "stage": "post",
-    "question": "You have two features with correlation 0.98. Why might you remove one?",
+    "question": "两个特征的相关系数为 0.98。为什么可能移除其中一个？",
     "options": [
-      "Highly correlated features always cause the model to crash",
-      "They are redundant -- both carry nearly the same information, and keeping both increases overfitting risk without adding signal",
-      "Correlated features make the data non-stationary",
-      "Correlation above 0.5 means the features are measuring different things"
+      "高度相关的特征总会导致模型崩溃",
+      "它们冗余，携带几乎相同的信息，同时保留会增加过拟合风险，却不增加信号",
+      "相关特征使数据非平稳",
+      "相关性超过 0.5 表示特征衡量的是不同事物"
     ],
     "correct": 1,
-    "explanation": "Features with r=0.98 are nearly redundant. Keeping both adds a noisy duplicate that increases dimensionality, overfitting risk, and multicollinearity without providing new information about the target."
+    "explanation": "r=0.98 的特征几乎冗余。同时保留相当于增加带噪副本，提高维度、过拟合风险和多重共线性，却不提供关于目标的新信息。"
   }
 ]

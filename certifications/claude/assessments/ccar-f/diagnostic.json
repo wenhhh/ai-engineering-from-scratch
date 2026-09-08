@@ -3,25 +3,25 @@
   "version": 2,
   "track": "claude-ccar-f",
   "kind": "diagnostic",
-  "title": "Architect Foundations Diagnostic",
+  "title": "架构师基础级诊断测评（Architect Foundations Diagnostic）",
   "timeLimitMinutes": 30,
   "questions": [
     {
       "id": "ccar-f-d-001",
       "domain": "agentic-architecture-orchestration",
-      "objective": "Choose coordinator and subagent topologies",
+      "objective": "选择协调者与子智能体拓扑（Choose coordinator and subagent topologies）",
       "type": "single",
-      "prompt": "A workflow performs one deterministic checksum calculation between two model decisions. What should implement the checksum?",
+      "prompt": "工作流在两次模型决策之间执行一次确定性的校验和计算。应由什么实现校验和？",
       "options": [
-        "A forked coordinator",
-        "An independent reviewer session",
-        "A new subagent with a long reasoning loop",
-        "Deterministic code or a bounded tool"
+        "分叉的协调者",
+        "独立评审会话",
+        "具有长推理循环的新子智能体",
+        "确定性代码或有边界的工具"
       ],
       "correct": [
         3
       ],
-      "explanation": "A checksum has an exact procedure and gains nothing from an autonomous context. Use code or a narrow tool, reserving subagents for isolated reasoning, specialization, parallel research, or independent review.",
+      "explanation": "校验和有精确流程，自主上下文不会带来收益。应使用代码或窄范围工具，将子智能体留给隔离推理、专业化、并行研究或独立评审。",
       "references": [
         "certifications/claude/lessons/16-multi-agent-orchestration-and-delegation",
         "https://www.anthropic.com/research/building-effective-agents",
@@ -34,20 +34,20 @@
     {
       "id": "ccar-f-d-002",
       "domain": "agentic-architecture-orchestration",
-      "objective": "Enforce prerequisites, decompose concerns, and structure handoffs",
+      "objective": "强制先决条件、分离关注点并结构化交接（Enforce prerequisites, decompose concerns, and structure handoffs）",
       "type": "multiple",
-      "prompt": "A coordinator delegates research to three independent specialists. Which two controls belong outside natural-language coordinator memory? Select two.",
+      "prompt": "协调者将研究委派给三位独立专家。哪两项控制应放在协调者自然语言记忆之外？选择两项。",
       "options": [
-        "The requirement that synthesis waits for complete or explicitly partial specialist results",
-        "Maximum concurrency",
-        "The semantic judgment about which conflict is most important",
-        "The wording of the final executive summary"
+        "综合分析必须等待专家返回完整结果或明确标注的部分结果",
+        "最大并发数",
+        "关于哪个冲突最重要的语义判断",
+        "最终高管摘要的措辞"
       ],
       "correct": [
         0,
         1
       ],
-      "explanation": "Concurrency and stage prerequisites are deterministic invariants and should be enforced structurally. The model remains useful for semantic prioritization and audience-specific synthesis after valid results are available.",
+      "explanation": "并发数和阶段先决条件是确定性不变条件，应从结构上强制执行。有效结果就绪后，模型仍可用于语义优先级判断及面向特定受众的综合分析。",
       "references": [
         "certifications/claude/lessons/16-multi-agent-orchestration-and-delegation",
         "certifications/claude/lessons/31-architect-foundations-scenario-capstone"
@@ -56,19 +56,19 @@
     {
       "id": "ccar-f-d-003",
       "domain": "agentic-architecture-orchestration",
-      "objective": "Implement the tool-use lifecycle from stop reason to tool result",
+      "objective": "实现从停止原因到工具结果的工具调用生命周期（Implement the tool-use lifecycle from stop reason to tool result）",
       "type": "single",
-      "prompt": "Claude returns a tool-use stop reason with two calls. What must the harness do before asking Claude to continue?",
+      "prompt": "Claude 返回工具调用停止原因，并包含两个调用。在要求 Claude 继续前，运行框架必须做什么？",
       "options": [
-        "Execute authorized calls, associate each result with its call ID, append the assistant and tool-result turns, then continue",
-        "Execute both authorized calls and summarize their outputs in a new user message, relying on conversation order instead of preserving each tool-use ID",
-        "Restart the conversation without prior content",
-        "Treat the tool-use stop reason as final completion"
+        "执行已授权调用，将每个结果关联到其调用 ID，追加 assistant 和工具结果轮次，再继续",
+        "执行两个已授权调用，将输出总结在新的 user 消息中，依靠对话顺序而不保留各个工具使用 ID",
+        "不携带先前内容，重新开始对话",
+        "将工具调用停止原因视为最终完成"
       ],
       "correct": [
         0
       ],
-      "explanation": "Tool use is a protocol lifecycle. Results must preserve call identity and conversation order so Claude can connect each observation to the requested action. Authorization and error handling remain harness responsibilities.",
+      "explanation": "工具调用是协议生命周期。结果必须保留调用身份和对话顺序，让 Claude 能将每个观察结果对应到请求的操作。授权与错误处理仍由运行框架负责。",
       "references": [
         "certifications/claude/lessons/10-tool-use-and-agentic-loops",
         "https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview"
@@ -77,20 +77,20 @@
     {
       "id": "ccar-f-d-004",
       "domain": "agentic-architecture-orchestration",
-      "objective": "Resume or fork without carrying stale context",
+      "objective": "恢复或分叉时不携带过时上下文（Resume or fork without carrying stale context）",
       "type": "multiple",
-      "prompt": "A long migration session resumes after the branch and dependency versions changed. Which two actions are strongest? Select two.",
+      "prompt": "长时间迁移会话恢复时，分支和依赖版本已经变化。哪两项行动最合适？选择两项。",
       "options": [
-        "Replay only the writes marked incomplete in the session summary, assuming idempotent edit tools will reconcile any branch differences",
-        "Resume from the compacted summary when it includes the branch name and dependency versions, without comparing them to current external state",
-        "Create a fresh working summary or session when inherited assumptions are no longer trustworthy",
-        "Reconcile current repository state against the durable manifest"
+        "只重放会话摘要中标为未完成的写入，假设幂等编辑工具会协调分支差异",
+        "只要压缩摘要包含分支名和依赖版本，就直接恢复，不与当前外部状态比较",
+        "继承的假设不再可信时，创建新的工作摘要或会话",
+        "将当前仓库状态与持久清单核对"
       ],
       "correct": [
         2,
         3
       ],
-      "explanation": "Safe resume begins with external-state reconciliation. Material divergence may require a new or forked context built from authoritative state. Conversation history and compaction do not provide transactional recovery.",
+      "explanation": "安全恢复始于核对外部状态。存在实质差异时，可能需要基于权威状态建立新的或分叉的上下文。对话历史和压缩不提供事务恢复。",
       "references": [
         "certifications/claude/lessons/17-agent-sdk-sessions-subagents-and-context",
         "https://platform.claude.com/docs/en/agent-sdk/sessions"
@@ -99,19 +99,19 @@
     {
       "id": "ccar-f-d-005",
       "domain": "tool-design-mcp-integration",
-      "objective": "Write precise tool descriptions and boundaries",
+      "objective": "编写精确工具描述和边界（Write precise tool descriptions and boundaries）",
       "type": "single",
-      "prompt": "An agent has tools named search, find, and lookup, each described as finding information. What is the strongest repair?",
+      "prompt": "智能体拥有 search、find 和 lookup 三个工具，每个都被描述为查找信息。最有力的修复是什么？",
       "options": [
-        "Keep the overlapping names but expand each description with its data source, expected latency, and typical example queries",
-        "Rename and describe tools by action, source, positive use, negative use, scope, and side effects",
-        "Add a router model that selects among the unchanged overlapping tools, then retries a different choice whenever the first result is empty",
-        "Give every tool the same broad schema"
+        "保留重叠名称，但在每个描述中增加数据来源、预期延迟及典型查询示例",
+        "按动作、来源、适用情况、不适用情况、作用域和副作用重新命名并描述工具",
+        "增加路由模型，在未修改的重叠工具之间选择，第一次结果为空时就换工具重试",
+        "为每个工具提供相同的宽泛模式"
       ],
       "correct": [
         1
       ],
-      "explanation": "The catalog erased the selection boundaries the model needs. Precise contracts and non-overlapping ownership address the interface defect more directly than added prompt pressure or random retries.",
+      "explanation": "工具目录抹去了模型所需的选择边界。精确契约和互不重叠的职责归属，比增加提示词压力或随机重试更直接地解决接口缺陷。",
       "references": [
         "certifications/claude/lessons/18-tool-contracts-errors-and-progressive-discovery",
         "https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview",
@@ -121,20 +121,20 @@
     {
       "id": "ccar-f-d-006",
       "domain": "tool-design-mcp-integration",
-      "objective": "Return structured and retry-aware MCP errors",
+      "objective": "返回结构化且考虑重试的 MCP 错误（Return structured and retry-aware MCP errors）",
       "type": "multiple",
-      "prompt": "A source search times out after returning 12 of 20 requested records. Which two error fields are essential for safe recovery? Select two.",
+      "prompt": "来源搜索在返回请求的 20 条记录中的 12 条后超时。哪两个错误字段对安全恢复必不可少？选择两项。",
       "options": [
-        "A retryable category and affected scope",
-        "A failed status plus the original query arguments, leaving the client to infer whether any returned records remain valid or a retry is safe",
-        "The valid partial result with provenance and a trace reference",
-        "The complete exception type and stack trace so the client can classify retryability, without an explicit affected scope or partial-result contract"
+        "可重试性类别及受影响范围",
+        "失败状态和原始查询参数，让客户端自行推断已返回记录是否有效及重试是否安全",
+        "有效的部分结果，附来源信息和轨迹引用",
+        "完整异常类型和堆栈，让客户端分类重试性，但不提供明确受影响范围或部分结果契约"
       ],
       "correct": [
         0,
         2
       ],
-      "explanation": "The client must know whether and what to retry while retaining valid work. Structured partial state prevents duplicate effort and silent omissions. Raw internals create exposure without supplying a recovery contract.",
+      "explanation": "客户端必须知道是否重试、重试什么，同时保留有效工作。结构化部分状态防止重复劳动和静默遗漏。原始内部信息会增加暴露，却不能提供恢复契约。",
       "references": [
         "certifications/claude/lessons/18-tool-contracts-errors-and-progressive-discovery",
         "https://modelcontextprotocol.io/specification/latest"
@@ -143,19 +143,19 @@
     {
       "id": "ccar-f-d-007",
       "domain": "tool-design-mcp-integration",
-      "objective": "Scope MCP configuration and resources",
+      "objective": "限定 MCP 配置与资源作用域（Scope MCP configuration and resources）",
       "type": "single",
-      "prompt": "A shared repository needs an MCP server declaration, while each developer supplies a personal credential. Where should these live?",
+      "prompt": "共享仓库需要 MCP 服务器声明，而每位开发者提供个人凭据。它们应放在哪里？",
       "options": [
-        "Version the server declaration together with encrypted credential values that each developer decrypts locally using a shared repository key",
-        "Put the server command in an untracked personal note only",
-        "Version the safe project declaration and reference credentials provisioned outside the repository",
-        "Embed the credential in a tool description"
+        "将服务器声明和加密凭据值一同纳入版本控制，让开发者用共享仓库密钥在本地解密",
+        "只把服务器命令放在未跟踪的个人笔记里",
+        "将安全的项目声明纳入版本控制，并引用在仓库之外配置的凭据",
+        "将凭据嵌入工具描述"
       ],
       "correct": [
         2
       ],
-      "explanation": "Shared configuration should be reviewable and reproducible, while secret values remain outside version control. Environment references or approved secret stores connect the two without exposing credentials.",
+      "explanation": "共享配置应可评审、可复现，而机密值应留在版本控制之外。环境变量引用或获批机密存储可以在不暴露凭据的情况下连接两者。",
       "references": [
         "certifications/claude/lessons/11-mcp-server-design-and-integration",
         "certifications/claude/lessons/18-tool-contracts-errors-and-progressive-discovery"
@@ -164,19 +164,19 @@
     {
       "id": "ccar-f-d-008",
       "domain": "claude-code-configuration-workflows",
-      "objective": "Design CLAUDE.md hierarchy, imports, rules, and memory",
+      "objective": "设计 CLAUDE.md 层级、导入、规则和记忆（Design CLAUDE.md hierarchy, imports, rules, and memory）",
       "type": "single",
-      "prompt": "A root CLAUDE.md contains hundreds of lines that apply only to database migrations. What is the strongest redesign?",
+      "prompt": "根 CLAUDE.md 包含数百行仅适用于数据库迁移的内容。最佳重新设计是什么？",
       "options": [
-        "Delete every migration rule",
-        "Keep the complete migration guidance at the root but add a table of contents and tell Claude to ignore sections outside the files being edited",
-        "Copy the rules into every prompt",
-        "Keep the root as a concise router and move migration guidance into imported or path-scoped project rules"
+        "删除全部迁移规则",
+        "在根文件保留完整迁移指导，但增加目录，并告诉 Claude 忽略与编辑文件无关的章节",
+        "将规则复制进每个提示词",
+        "让根文件作为简洁的路由入口，将迁移指导移至导入文件或按路径限定的项目规则"
       ],
       "correct": [
         3
       ],
-      "explanation": "Guidance should live at the narrowest scope where it is true. A concise root preserves discoverability, while versioned path rules reduce irrelevant context and remain reproducible for the team.",
+      "explanation": "指导应放在其成立的最小作用域内。简洁根文件保留可发现性，版本化路径规则减少无关上下文，并保持团队可复现性。",
       "references": [
         "certifications/claude/lessons/19-claude-code-memory-rules-skills-and-ci",
         "https://docs.anthropic.com/en/docs/claude-code/memory",
@@ -186,20 +186,20 @@
     {
       "id": "ccar-f-d-009",
       "domain": "claude-code-configuration-workflows",
-      "objective": "Choose plan mode, direct execution, or Explore",
+      "objective": "选择计划模式、直接执行或 Explore（Choose plan mode, direct execution, or Explore）",
       "type": "multiple",
-      "prompt": "Which two situations justify planning or isolated exploration before edits? Select two.",
+      "prompt": "哪两种情况值得在编辑前规划或隔离探索？选择两项。",
       "options": [
-        "A formatter command already required by the project",
-        "The change spans unfamiliar subsystems and requirements are incomplete",
-        "A one-line bounded typo fix with an obvious test",
-        "A read-only codebase question would otherwise flood the main implementation context"
+        "项目已要求执行的格式化命令",
+        "修改跨越不熟悉的子系统，且需求不完整",
+        "范围明确的一行拼写修复，有显而易见的测试",
+        "只读代码库问题否则会向主实现上下文灌入大量信息"
       ],
       "correct": [
         1,
         3
       ],
-      "explanation": "Broad ambiguity benefits from an approved plan, and a bounded explorer protects the main context. A small obvious edit or deterministic formatter generally does not need an extra reasoning phase.",
+      "explanation": "广泛的不确定性适合先形成获批计划，有边界的探索者可以保护主上下文。小而明确的编辑或确定性格式化通常不需要额外推理阶段。",
       "references": [
         "certifications/claude/lessons/19-claude-code-memory-rules-skills-and-ci",
         "certifications/claude/lessons/16-multi-agent-orchestration-and-delegation"
@@ -208,19 +208,19 @@
     {
       "id": "ccar-f-d-010",
       "domain": "claude-code-configuration-workflows",
-      "objective": "Run headless CI with structured output and independent review",
+      "objective": "以结构化输出和独立评审运行无界面 CI（Run headless CI with structured output and independent review）",
       "type": "single",
-      "prompt": "What is the strongest starting state for a headless Claude Code pull-request review?",
+      "prompt": "无界面 Claude Code 拉取请求评审，最合适的起始状态是什么？",
       "options": [
-        "A clean commit with declared configuration, bounded read tools, structured findings, and deterministic gates",
-        "A workstation with undocumented user hooks",
-        "A production deployment credential",
-        "A resumed interactive session whose context already includes the pull-request discussion, prior tool results, and the implementer's local configuration"
+        "干净提交，配置明确、读取工具有边界、发现结构化，并设置确定性关卡",
+        "带有未记录用户钩子的工作站",
+        "生产部署凭据",
+        "恢复交互会话，其中已有拉取请求讨论、先前工具结果和实现者本地配置"
       ],
       "correct": [
         0
       ],
-      "explanation": "Fresh declared inputs make CI reproducible and reviewable. Interactive context, hidden local hooks, and deployment credentials introduce unstated state and unnecessary authority.",
+      "explanation": "新鲜且明确声明的输入让 CI 可复现、可评审。交互上下文、隐藏本地钩子和部署凭据引入未声明状态及不必要的权限。",
       "references": [
         "certifications/claude/lessons/19-claude-code-memory-rules-skills-and-ci",
         "https://docs.anthropic.com/en/docs/claude-code/sdk/sdk-headless"
@@ -229,19 +229,19 @@
     {
       "id": "ccar-f-d-011",
       "domain": "prompt-engineering-structured-output",
-      "objective": "Enforce schemas with tool use and tool choice",
+      "objective": "通过工具调用与工具选择强制模式（Enforce schemas with tool use and tool choice）",
       "type": "single",
-      "prompt": "An application needs a typed extraction record but must not perform any external action. What is the strongest design?",
+      "prompt": "应用需要类型化提取记录，但不得执行任何外部操作。最佳设计是什么？",
       "options": [
-        "Allow missing fields to be silently invented",
-        "Use a no-side-effect extraction tool or structured-output mechanism, then validate the result",
-        "Request a fenced JSON example in ordinary text and use permissive extraction plus field defaults whenever the response varies from the example",
-        "Force a production write tool to obtain JSON"
+        "允许悄悄编造缺失字段",
+        "使用无副作用的提取工具或结构化输出机制，然后验证结果",
+        "在普通文本中要求带围栏的 JSON 示例，响应偏离示例时采用宽松提取和字段默认值",
+        "强制调用生产写入工具以取得 JSON"
       ],
       "correct": [
         1
       ],
-      "explanation": "Typed generation and real-world execution have different authority. A no-side-effect contract can enforce shape while semantic and provenance validation determine whether the extracted content is acceptable.",
+      "explanation": "类型化生成与现实世界执行涉及不同权限。无副作用契约可以强制结构，而语义和来源验证决定提取内容是否可接受。",
       "references": [
         "certifications/claude/lessons/20-reliable-extraction-batch-and-reviewers",
         "https://platform.claude.com/docs/en/build-with-claude/structured-outputs"
@@ -250,20 +250,20 @@
     {
       "id": "ccar-f-d-012",
       "domain": "prompt-engineering-structured-output",
-      "objective": "Validate, retry, and feed back semantic errors",
+      "objective": "验证、重试并反馈语义错误（Validate, retry, and feed back semantic errors）",
       "type": "multiple",
-      "prompt": "A valid extraction payload contains a deadline absent from the source. Which two responses are appropriate? Select two.",
+      "prompt": "有效的提取载荷包含来源中没有的截止日期。哪两种响应合适？选择两项。",
       "options": [
-        "Retry only within a bound, then escalate persistent ambiguity",
-        "Retry with progressively stronger instructions until the model returns the same deadline twice, then treat agreement as semantic validation",
-        "Accept the value after a schema check and attach a low-confidence flag, even though the cited source does not support the deadline",
-        "Return a targeted semantic or provenance error naming the field and allowed correction"
+        "只在限定次数内重试，持续含糊时升级处理",
+        "逐步加强指令重试，直到模型两次返回同一日期，再将一致视为语义验证",
+        "通过模式检查后接受该值并加低置信标记，即使引用来源不支持该日期",
+        "返回针对性的语义或来源错误，指出字段和允许的修正"
       ],
       "correct": [
         0,
         3
       ],
-      "explanation": "The failure occurs after schema validation. Specific feedback supports a safe repair such as null or a supported span, while bounded retries prevent ambiguous evidence from becoming endless guessing.",
+      "explanation": "失败发生在模式验证之后。具体反馈支持安全修复，例如使用 null 或有依据的原文片段；有限重试防止含糊证据演变成无休止猜测。",
       "references": [
         "certifications/claude/lessons/20-reliable-extraction-batch-and-reviewers",
         "certifications/claude/lessons/09-structured-output-and-defensive-parsing"
@@ -272,19 +272,19 @@
     {
       "id": "ccar-f-d-013",
       "domain": "prompt-engineering-structured-output",
-      "objective": "Separate generator and independent reviewer passes",
+      "objective": "分离生成者与独立评审轮次（Separate generator and independent reviewer passes）",
       "type": "single",
-      "prompt": "Which input creates the strongest independent review of generated findings?",
+      "prompt": "哪种输入最有助于独立评审生成的发现？",
       "options": [
-        "A request to improve the writing style",
-        "The artifact, sources, and rubric together with the generator's full decision trace and self-rating so the reviewer understands the original rationale",
-        "The artifact, source evidence, evaluation rubric, and required finding schema in a fresh context",
-        "Only the final confidence percentage"
+        "要求改善写作风格",
+        "交付物、来源和量规，加上生成者完整决策轨迹和自评分，让评审者理解原始理由",
+        "在新上下文中提供交付物、来源证据、评估量规和要求的发现模式",
+        "只提供最终置信百分比"
       ],
       "correct": [
         2
       ],
-      "explanation": "A fresh reviewer should inspect the artifact against evidence and criteria without inheriting the generator's narrative. Structured findings also preserve which claim failed and why.",
+      "explanation": "新的评审者应根据证据和标准检查交付物，不继承生成者的叙述。结构化发现还会保留哪项主张失败以及原因。",
       "references": [
         "certifications/claude/lessons/20-reliable-extraction-batch-and-reviewers",
         "certifications/claude/lessons/16-multi-agent-orchestration-and-delegation"
@@ -293,19 +293,19 @@
     {
       "id": "ccar-f-d-014",
       "domain": "context-management-reliability",
-      "objective": "Place facts to reduce lost-in-the-middle failures",
+      "objective": "安排事实位置，减少中间信息遗失（Place facts to reduce lost-in-the-middle failures）",
       "type": "single",
-      "prompt": "A policy fact is buried in a huge context and repeatedly missed. Which design is strongest?",
+      "prompt": "政策事实埋在巨大上下文中，反复被遗漏。哪种设计最合适？",
       "options": [
-        "Duplicate the full corpus several times",
-        "Place the full corpus inside the nominal context window and move the policy question to the beginning, trusting capacity plus task salience to preserve the buried fact",
-        "Remove source metadata",
-        "Place task and invariants clearly, retrieve a focused policy slice with provenance, and restate the decision question near generation"
+        "多次复制完整语料库",
+        "将完整语料库放进标称上下文窗口，把政策问题移到开头，相信容量和任务显著性足以保留埋藏事实",
+        "删除来源元数据",
+        "清楚放置任务和不变条件，检索带来源信息的聚焦政策片段，并在接近生成处重述决策问题"
       ],
       "correct": [
         3
       ],
-      "explanation": "Focused evidence and deliberate placement improve reliable use without flooding the prompt. Capacity alone does not guarantee that a buried fact will control the decision.",
+      "explanation": "聚焦证据和有目的的位置安排可以改善可靠使用，而不淹没提示词。仅有容量并不保证埋藏事实会主导决策。",
       "references": [
         "certifications/claude/lessons/21-long-context-reliability-provenance-and-escalation",
         "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/long-context-tips",
@@ -315,20 +315,20 @@
     {
       "id": "ccar-f-d-015",
       "domain": "context-management-reliability",
-      "objective": "Calibrate confidence and human review",
+      "objective": "校准置信度与人工审核（Calibrate confidence and human review）",
       "type": "multiple",
-      "prompt": "Which two signals are stronger than an uncalibrated self-reported confidence percentage? Select two.",
+      "prompt": "哪两个信号比未经校准的自报置信百分比更有力？选择两项。",
       "options": [
-        "A confidence threshold chosen from the aggregate validation set without separate calibration for the current risk stratum",
-        "Conflict, novelty, and measured error rates for the risk stratum",
-        "Coverage and evidence-support class",
-        "Agreement between two identical reviewer prompts using the same evidence and model configuration"
+        "从总体验证集选择置信阈值，但不单独校准当前风险分层",
+        "冲突、新颖性及该风险分层的实测错误率",
+        "覆盖情况及证据支持类别",
+        "采用相同证据和模型配置的两个相同评审提示词得出一致结果"
       ],
       "correct": [
         1,
         2
       ],
-      "explanation": "Observable evidence, coverage, disagreement, novelty, and empirical errors support calibrated routing. Numeric precision and verbosity do not establish whether confidence matches real correctness.",
+      "explanation": "可观察证据、覆盖、分歧、新颖性和实证错误支持经过校准的路由。数字精度和冗长程度无法证明信心是否对应真实正确性。",
       "references": [
         "certifications/claude/lessons/21-long-context-reliability-provenance-and-escalation",
         "certifications/claude/lessons/14-evals-testing-debugging-and-observability"

@@ -1,46 +1,46 @@
 {
   "lesson": "05-eagle3-speculative-decoding",
-  "title": "EAGLE-3 Speculative Decoding in Production",
+  "title": "生产环境中的 EAGLE-3 推测解码（EAGLE-3 Speculative Decoding in Production）",
   "questions": [
     {
       "stage": "pre",
-      "question": "Why does speculative decoding exploit a gap that exists in plain decode?",
+      "question": "为什么推测解码能够利用普通解码中的空隙？",
       "options": [
-        "Decode does not benefit from batching",
-        "Decode is memory-bound, so the GPU is mostly idle waiting on HBM reads of weights",
-        "Decode is compute-bound, so adding more compute is free",
-        "Decode requires more network bandwidth than prefill"
+        "解码不能从批处理获益",
+        "解码受内存带宽限制，GPU 大部分时间闲置，等待从 HBM 读取权重",
+        "解码受计算限制，因此增加计算是免费的",
+        "解码比预填充需要更多网络带宽"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "What does the acceptance rate alpha measure?",
+      "question": "接受率 alpha 测量什么？",
       "options": [
-        "Latency overhead of the draft model",
-        "Fraction of draft-proposed tokens accepted by the target model",
-        "Cache hit rate of the KV cache",
-        "Fraction of GPU memory used during decode"
+        "草稿模型的延迟开销",
+        "目标模型接受的草稿候选词元比例",
+        "KV 缓存命中率",
+        "解码时使用的 GPU 显存比例"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "What changes in EAGLE-3 compared to EAGLE-2 that pushes alpha to roughly 0.6-0.8 on general chat?",
+      "question": "EAGLE-3 相比 EAGLE-2 改变了什么，使通用聊天 alpha 达到约 0.6-0.8？",
       "options": [
-        "The draft head is trained on multiple target layers rather than just the last layer",
-        "It uses a full-sized draft model of the same family",
-        "It runs on CPU instead of GPU",
-        "It removes the verify step entirely"
+        "在目标模型多层而非仅最后一层训练草稿头",
+        "使用同系列全尺寸草稿模型",
+        "运行在 CPU 而不是 GPU",
+        "完全去掉验证步骤"
       ],
       "correct": 0,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Below roughly what alpha does the lesson say speculative decoding becomes net negative at high concurrency on most 2026 hardware?",
+      "question": "本课指出，多数 2026 年硬件在高并发下，alpha 低于大约多少时推测解码收益为负？",
       "options": [
         "0.85",
         "0.95",
@@ -52,24 +52,24 @@
     },
     {
       "stage": "post",
-      "question": "Which metric should you watch most closely after flipping EAGLE-3 on, even if mean ITL drops?",
+      "question": "开启 EAGLE-3 后，即使平均 ITL 下降，也应最密切关注哪个指标？",
       "options": [
-        "GPU memory utilization",
-        "Cold-start time",
-        "Mean E2E latency",
-        "P99 ITL, because rejected-draft two-passes can serialize under full batch"
+        "GPU 显存利用率",
+        "冷启动时间",
+        "平均端到端延迟",
+        "P99 ITL，因为被拒草稿的双遍执行在满批次下可能串行化"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "Why is speculative decoding opt-in (not default) in vLLM 2026 per the lesson?",
+      "question": "按本课解释，为什么 2026 年 vLLM 推测解码需要主动启用，而非默认开启？",
       "options": [
-        "It is incompatible with PagedAttention",
-        "It only works on Blackwell GPUs",
-        "It requires a separate license",
-        "Acceptance rate depends on workload, and turning it on without measuring alpha is a production anti-pattern"
+        "它不兼容 PagedAttention",
+        "它只能在 Blackwell GPU 上运行",
+        "它需要单独许可证",
+        "接受率取决于工作负载，不测量 alpha 就开启是生产反模式"
       ],
       "correct": 3,
       "explanation": ""

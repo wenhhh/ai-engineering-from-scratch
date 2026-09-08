@@ -1,70 +1,70 @@
 {
   "lesson": "04-multimodal-document-qa",
-  "title": "Capstone 04 — Multimodal Document QA (Vision-First PDF, Tables, Charts)",
+  "title": "综合实践 04：多模态文档问答，视觉优先的 PDF、表格与图表（Multimodal Document QA）",
   "questions": [
     {
       "stage": "pre",
-      "question": "Why does the 2026 frontier prefer vision-first late interaction over OCR-then-text on financial PDFs and scientific papers?",
+      "question": "为什么 2026 年前沿方法在财务 PDF 和科学论文上偏好视觉优先后期交互，而非先 OCR 后文本？",
       "options": [
-        "OCR pipelines mangle rotated tables, dense equations, and chart imagery, losing half the signal",
-        "OCR cannot run on GPUs",
-        "Vision models are cheaper per page",
-        "OCR is slower than rendering"
+        "OCR 流水线会弄乱旋转表格、密集公式和图表图像，丢失一半信号",
+        "OCR 无法在 GPU 上运行",
+        "视觉模型每页更便宜",
+        "OCR 比渲染慢"
       ],
       "correct": 0,
       "explanation": ""
     },
     {
       "stage": "pre",
-      "question": "What does late interaction mean in ColPali-style retrieval?",
+      "question": "ColPali 风格检索中的后期交互是什么意思？",
       "options": [
-        "Each query token scores against every patch token, and per-token maxima are summed via MaxSim",
-        "Embeddings are computed after the user clicks a result",
-        "The reranker only runs on the final candidate",
-        "Embeddings are deferred until eval time"
+        "每个查询词元对每个图像块词元评分，再通过 MaxSim 将各词元最大值求和",
+        "用户点击结果后才计算嵌入",
+        "重排序器只运行于最终候选",
+        "嵌入推迟到评估时计算"
       ],
       "correct": 0,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Roughly how many patch vectors does a ColQwen embedding produce per page, and what storage problem does that create?",
+      "question": "ColQwen 每页大约产生多少图像块向量，会导致什么存储问题？",
       "options": [
-        "Exactly 128 vectors, fitting cleanly in any vector DB",
-        "Around 2048 patch vectors per page, ballooning raw storage compared with single-vector indexes",
-        "1 vector per page, no storage issue",
-        "16 vectors with negligible storage overhead"
+        "恰好 128 个向量，能轻松存入任意向量数据库",
+        "每页约 2048 个图像块向量，相比单向量索引使原始存储膨胀",
+        "每页 1 个向量，没有存储问题",
+        "16 个向量，存储开销可忽略"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "What does DocPruner do in this pipeline?",
+      "question": "DocPruner 在流水线中做什么？",
       "options": [
-        "Removes duplicate PDF pages before ingestion",
-        "Compresses the multi-vector index by keeping high-signal patches at about 50% with negligible accuracy loss",
-        "Crops bounding boxes around evidence regions",
-        "Rewrites the query embedding for shorter vectors"
+        "摄取前删除重复 PDF 页面",
+        "保留约 50% 高信号图像块，压缩多向量索引，准确率损失可忽略",
+        "裁剪证据区域周围的边界框",
+        "重写查询嵌入以缩短向量"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Why is an OCR text channel still spliced in for some pages?",
+      "question": "为什么有些页面仍要接入 OCR 文本通道？",
       "options": [
-        "VLMs cannot read images at 180 DPI",
-        "OCR is the primary retrieval modality",
-        "It improves PDF rendering quality",
-        "Equation-dense and table-heavy pages benefit from a text fallback alongside the image"
+        "VLM 无法读取 180 DPI 图像",
+        "OCR 是主要检索模态",
+        "它提高 PDF 渲染质量",
+        "公式密集和表格较多的页面可受益于与图像并用的文本后备"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "Which benchmark does this capstone target for vision-first retrieval evaluation?",
+      "question": "本综合实践使用哪个基准评估视觉优先检索？",
       "options": [
         "ViDoRe v3",
         "RewardBench-2",
@@ -76,12 +76,12 @@
     },
     {
       "stage": "post",
-      "question": "What does the rubric mean by evidence-region grounding?",
+      "question": "评分标准中的证据区域依据关联是什么意思？",
       "options": [
-        "Re-ranker latency at the p99 tail",
-        "Total number of pages retrieved per query",
-        "Fraction of cited bounding boxes that actually contain the answer span",
-        "Compression ratio achieved by DocPruner"
+        "重排序器的 p99 尾延迟",
+        "每次查询检索的页面总数",
+        "引用边界框确实包含答案片段的比例",
+        "DocPruner 实现的压缩比"
       ],
       "correct": 2,
       "explanation": ""

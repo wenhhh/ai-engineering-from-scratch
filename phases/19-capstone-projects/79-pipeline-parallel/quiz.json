@@ -1,78 +1,78 @@
 {
   "lesson": "79-pipeline-parallel",
-  "title": "Pipeline Parallel and Bubble Analysis",
+  "title": "流水线并行与气泡分析（Pipeline Parallel and Bubble Analysis）",
   "questions": [
     {
       "stage": "pre",
-      "question": "What is the pipeline bubble?",
+      "question": "什么是流水线气泡？",
       "options": [
-        "A network packet",
-        "A bug in NCCL",
-        "Idle time at start and end of the pipeline: stages with no work until the first microbatch reaches them, and after the last microbatch leaves",
-        "Memory leak"
+        "网络包",
+        "NCCL 错误",
+        "流水线首尾空闲：首个微批次到达前，以及最后微批次离开后，阶段无工作",
+        "内存泄漏"
       ],
       "correct": 2,
-      "explanation": "With M microbatches and N stages, per-stage bubble is (N-1)/(M+N-1). Picking M much greater than N shrinks it."
+      "explanation": "M 微批次、N 阶段时，每阶段气泡为 (N-1)/(M+N-1)，M 远大于 N 会缩小它。"
     },
     {
       "stage": "pre",
-      "question": "Why is GPipe's activation memory proportional to M?",
+      "question": "GPipe 激活内存为何正比于 M？",
       "options": [
-        "Hardware limit",
-        "Compiler limit",
-        "Bug",
-        "All M microbatches' activations must be held until the matching backward; nothing frees until the drain begins"
+        "硬件限制",
+        "编译器限制",
+        "错误",
+        "全部 M 个微批次激活必须保留到对应反向，排空开始前不会释放"
       ],
       "correct": 3,
-      "explanation": "GPipe fills the pipeline with all forwards before any backward. Each in-flight microbatch carries its activations until its backward starts."
+      "explanation": "GPipe 先做全部前向再做任何反向。每个在途微批次携带激活直到其反向开始。"
     },
     {
       "stage": "check",
-      "question": "How does 1F1B improve over GPipe?",
+      "question": "1F1B 相对 GPipe 如何改进？",
       "options": [
-        "Higher throughput",
-        "Same bubble but bounded activation memory; once mb 0's forward reaches the last stage, its backward begins and activations free",
-        "Smaller model",
-        "Lower bubble"
+        "吞吐更高",
+        "气泡相同但激活内存有界；微批次 0 前向到最后阶段后立即反向并释放激活",
+        "模型更小",
+        "气泡更低"
       ],
       "correct": 1,
-      "explanation": "Megatron-LM and PipeDream use 1F1B to bound activation memory by pipeline depth, not microbatch count."
+      "explanation": "Megatron-LM 和 PipeDream 用 1F1B 将激活内存限制于流水线深度，而非微批次数。"
     },
     {
       "stage": "check",
-      "question": "Why is equal compute per stage more important than equal parameter count?",
+      "question": "为何逐阶段计算相等比参数量相等更重要？",
       "options": [
-        "Memory aligned",
-        "Aesthetic",
-        "The slowest stage gates every cycle; other stages idle waiting for it. Embedding layers have many parameters but little compute, so partitioning by parameter count misbalances the pipeline",
-        "Easier to code"
+        "内存对齐",
+        "美观",
+        "最慢阶段限制每周期，其他阶段空等；嵌入层参数多计算少，按参数量分区会失衡",
+        "更易编码"
       ],
       "correct": 2,
-      "explanation": "Megatron-LM exposes --num-layers-per-stage as a list to allow uneven layer counts when per-layer cost differs."
+      "explanation": "Megatron-LM 将 --num-layers-per-stage 暴露为列表，使逐层成本不同的阶段可有不同层数。"
     },
     {
       "stage": "check",
-      "question": "What goes wrong if every stage calls send before recv?",
+      "question": "各阶段都先调用 send 再 recv 会怎样？",
       "options": [
-        "Higher bubble",
-        "Slow",
-        "Deadlock on the wire; standard fix is to interleave even-rank send-first and odd-rank recv-first",
-        "Memory leak"
+        "气泡更高",
+        "慢",
+        "通信死锁；标准修复是偶数 rank 先发，奇数 rank 先收",
+        "内存泄漏"
       ],
       "correct": 2,
-      "explanation": "Synchronous send/recv pairs need one side to be receiving when the other sends. The lesson schedules ranks explicitly so the pattern is visible."
+      "explanation": "同步收发要求一方发送时另一方正在接收。本课显式调度 rank，使模式可见。"
     },
     {
       "stage": "post",
-      "question": "Pipeline plus ZeRO-1 combines what two memory wins?",
+      "question": "流水线加 ZeRO-1 组合了哪两种内存收益？",
       "options": [
-        "Activation only",
-        "Nothing",
-        "Per-stage parameter sharding (each rank only holds one stage of layers) plus per-rank optimiser sharding (each rank only holds 1/N of optimiser state for its stage)",
-        "Compression and quantisation"
+        "只有激活",
+        "没有",
+        "逐阶段参数分片（每 rank 只持一阶段层）加逐 rank 优化器分片（每 rank 只持该阶段优化器状态的 1/N）",
+        "压缩与量化"
       ],
       "correct": 2,
-      "explanation": "Pipeline shards layers across ranks; ZeRO shards optimiser state within the data-parallel group at each pipeline rank. Both wins compound."
+      "explanation": "流水线跨 rank 分层，ZeRO 在每个流水线 rank 的数据并行组内分片优化器状态，两种收益叠加。"
     }
   ]
 }

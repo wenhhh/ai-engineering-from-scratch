@@ -1,22 +1,22 @@
 {
   "lesson": "02-inference-platform-economics",
-  "title": "Inference Platform Economics — Fireworks, Together, Baseten, Modal, Replicate, Anyscale",
+  "title": "推理平台经济性（Inference Platform Economics）：Fireworks、Together、Baseten、Modal、Replicate、Anyscale",
   "questions": [
     {
       "stage": "pre",
-      "question": "Which three market segments does the lesson use to organize 2026 inference vendors?",
+      "question": "本课用哪三种细分市场组织 2026 年的推理服务商？",
       "options": [
-        "Single-tenant, multi-tenant, on-prem",
-        "Free, paid, enterprise",
-        "Open-source, commercial, hybrid",
-        "Custom silicon, GPU platforms, API-first marketplaces"
+        "单租户、多租户、本地部署",
+        "免费、付费、企业",
+        "开源、商业、混合",
+        "定制芯片、GPU 平台、API 优先模型市场"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Around what sustained GPU utilization does per-minute billing (Baseten, Modal) start to beat per-token billing (Fireworks, Together)?",
+      "question": "GPU 持续利用率达到多少时，按分钟计费（Baseten、Modal）开始比按词元计费（Fireworks、Together）划算？",
       "options": [
         "5%",
         "90%",
@@ -28,7 +28,7 @@
     },
     {
       "stage": "check",
-      "question": "Which platform is described as Python-native serverless with per-second billing and 2-4s cold starts after pre-warming?",
+      "question": "哪个平台被描述为 Python 原生无服务器平台，按秒计费，预热后冷启动为 2-4s？",
       "options": [
         "Anyscale",
         "Baseten",
@@ -40,19 +40,19 @@
     },
     {
       "stage": "check",
-      "question": "What is Fireworks's notable LoRA pricing differentiator?",
+      "question": "Fireworks 在 LoRA 定价上的显著差异是什么？",
       "options": [
-        "LoRA requests require a separate dedicated GPU contract",
-        "LoRA-served requests are charged at the base model's per-token rate",
-        "LoRA-served requests cost more than base model",
-        "LoRA is not supported at all"
+        "LoRA 请求需要单独签订专用 GPU 合同",
+        "LoRA 请求按基础模型的每词元费率收费",
+        "LoRA 请求比基础模型更贵",
+        "完全不支持 LoRA"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "Which platform fits a regulated healthcare customer that needs SOC 2 Type II, HIPAA-ready posture, and dedicated GPUs?",
+      "question": "哪个平台适合要求 SOC 2 Type II、HIPAA 就绪能力和专用 GPU 的受监管医疗客户？",
       "options": [
         "Together",
         "Anyscale",
@@ -64,12 +64,12 @@
     },
     {
       "stage": "post",
-      "question": "Why does the lesson argue that custom-engine claims are mostly marketing shade at the platform layer?",
+      "question": "为什么本课认为，平台层面的自研引擎宣传大多带有营销色彩？",
       "options": [
-        "Custom engines never outperform vLLM",
-        "Per-token pricing is the only real differentiator",
-        "vLLM and SGLang represent roughly 80% of production open-source inference, so platform differentiation comes more from DX, attribution, and SLAs than engine",
-        "All custom engines are forks of TensorRT-LLM"
+        "自研引擎从不比 vLLM 快",
+        "按词元定价是唯一的实质差异",
+        "vLLM 和 SGLang 约占生产开源推理的 80%，因此平台差异更多来自开发者体验（DX）、归因和 SLA，而非引擎",
+        "所有自研引擎都是 TensorRT-LLM 的分支"
       ],
       "correct": 2,
       "explanation": ""

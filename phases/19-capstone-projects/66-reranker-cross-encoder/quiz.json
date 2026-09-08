@@ -1,78 +1,78 @@
 {
   "lesson": "66-reranker-cross-encoder",
-  "title": "Cross-Encoder Reranker",
+  "title": "交叉编码器重排器（Cross-Encoder Reranker）",
   "questions": [
     {
       "stage": "pre",
-      "question": "What is the architectural difference between a bi-encoder and a cross-encoder?",
+      "question": "双编码器与交叉编码器在架构上有何区别？",
       "options": [
-        "A bi-encoder embeds query and document independently; a cross-encoder reads the concatenated (query, document) sequence with full attention across both",
-        "Bi-encoders are trained; cross-encoders are not",
-        "Bi-encoders use cosine; cross-encoders use dot product",
-        "Cross-encoders run only on GPUs"
+        "双编码器独立嵌入查询和文档；交叉编码器读取拼接的（查询，文档）序列，在两者间执行完全注意力",
+        "双编码器经过训练，交叉编码器不训练",
+        "双编码器用余弦，交叉编码器用点积",
+        "交叉编码器只能在 GPU 上运行"
       ],
       "correct": 0,
-      "explanation": "Cross attention across the join is what gives the cross-encoder its precision; the bi-encoder never sees the query and document together."
+      "explanation": "拼接两侧的交叉关注赋予交叉编码器精确性；双编码器从不同时看到查询和文档。"
     },
     {
       "stage": "pre",
-      "question": "Why can a cross-encoder not be used as the primary retriever on a 10M-document corpus?",
+      "question": "为什么交叉编码器不能作为 1000 万文档语料的主检索器？",
       "options": [
-        "It cannot embed text",
-        "It requires one forward pass per (query, document) pair, which is 10M passes per query",
-        "It does not support negative scores",
-        "It requires the CLS token at the end of the sequence"
+        "它无法嵌入文本",
+        "每个（查询，文档）对都需一次前向传播，每查询需 1000 万次",
+        "它不支持负分数",
+        "它要求 CLS 词元位于序列末尾"
       ],
       "correct": 1,
-      "explanation": "Throughput collapses at corpus scale; the cross-encoder runs once per pair instead of once per document at index time."
+      "explanation": "语料规模下吞吐量崩溃；交叉编码器按每个样本对运行，而非索引时每文档运行一次。"
     },
     {
       "stage": "check",
-      "question": "What is the role of the N parameter in a two-stage retrieve-then-rerank pipeline?",
+      "question": "先检索再重排的两阶段流水线中，参数 N 的作用是什么？",
       "options": [
-        "It is the size of the vocabulary",
-        "It is the cross-encoder hidden dimension",
-        "It is the number of layers in the cross-encoder",
-        "It is the number of candidates returned by the bi-encoder for the cross-encoder to rescore"
+        "词表大小",
+        "交叉编码器隐藏维度",
+        "交叉编码器层数",
+        "双编码器返回给交叉编码器重新评分的候选数"
       ],
       "correct": 3,
-      "explanation": "N is the rerank pool; it caps quality (cross-encoder cannot exceed bi-encoder recall at N) and latency (cross-encoder runs N forward passes)."
+      "explanation": "N 是重排池大小；它限制质量（交叉编码器不能超过双编码器在 N 处的召回率）与延迟（交叉编码器执行 N 次前向传播）。"
     },
     {
       "stage": "check",
-      "question": "Why must you pick N strictly larger than K (typically 3x or more)?",
+      "question": "为什么 N 必须严格大于 K（通常为 3 倍或更多）？",
       "options": [
-        "BM25 requires it for the IDF computation",
-        "Smaller N reduces the embedding dimensionality",
-        "The cross-encoder requires N to be a multiple of K",
-        "If N equals K the cross-encoder cannot reorder, only reweight; rerank lift collapses to zero"
+        "BM25 计算 IDF 需要如此",
+        "较小 N 会降低嵌入维度",
+        "交叉编码器要求 N 为 K 的倍数",
+        "N 等于 K 时交叉编码器无法重排，只能重新赋权，重排收益降为零"
       ],
       "correct": 3,
-      "explanation": "With N = K there is nothing to reorder; the cross-encoder's only job is to pick the right K out of N, which needs N > K."
+      "explanation": "N = K 时无可重排；交叉编码器的任务是从 N 项选出正确 K 项，因此需 N > K。"
     },
     {
       "stage": "check",
-      "question": "What does the cross-encoder's mean-pooling head do in this lesson?",
+      "question": "本课交叉编码器的均值池化头做什么？",
       "options": [
-        "Pools over the vocabulary distribution",
-        "Computes the softmax over the document positions",
-        "Averages the last-layer outputs over non-pad positions and feeds a single linear head to produce one relevance scalar",
-        "Sums the embedding indices"
+        "对词表分布池化",
+        "对文档位置计算 softmax",
+        "对非填充位置的最后层输出取均值，送入单个线性头，产生相关性标量",
+        "累加嵌入索引"
       ],
       "correct": 2,
-      "explanation": "Mean-pool over non-pad positions, then a single linear layer outputs the relevance score; CLS-pooling is an alternative with similar quality."
+      "explanation": "在非填充位置均值池化，再由单个线性层输出相关性分数；CLS 池化是质量相近的替代方案。"
     },
     {
       "stage": "post",
-      "question": "Which production failure mode does logging the rank-1 cross-encoder score help detect?",
+      "question": "记录排名第一的交叉编码器分数，有助于发现哪种生产失效模式？",
       "options": [
-        "Out-of-domain queries: when the top-1 reranker score is below a corpus-specific threshold, the model is signalling that nothing in the corpus actually answers the query",
-        "Network outages",
-        "Vocabulary drift in the tokenizer",
-        "Index corruption in the bi-encoder"
+        "领域外查询：首位重排分数低于语料特定阈值时，模型在表示语料中没有内容真正回答查询",
+        "网络中断",
+        "分词器词表漂移",
+        "双编码器索引损坏"
       ],
       "correct": 0,
-      "explanation": "A consistently low rank-1 score is the cross-encoder telling you the retrieved pool does not contain the answer; surface that to the LLM as low-confidence."
+      "explanation": "首位分数持续低，表示检索池不含答案；应将低置信度传达给 LLM。"
     }
   ]
 }

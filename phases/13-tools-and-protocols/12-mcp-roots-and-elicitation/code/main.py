@@ -1,9 +1,9 @@
-"""Phase 13 Lesson 12: explicit scope and elicitation through MRTR.
+"""阶段 13 第 12 课：通过 MRTR 实现显式作用域（Explicit scope）与信息征询（Elicitation）。
 
-Lesson: ../docs/en.md
-Specification: https://modelcontextprotocol.io/specification/2026-07-28/basic/patterns/mrtr
-This example uses only Python's standard library.
-Run: python3 main.py
+课程： ../docs/en.md
+规范： https://modelcontextprotocol.io/specification/2026-07-28/basic/patterns/mrtr
+本示例仅使用 Python 标准库。
+运行： python3 main.py
 """
 
 from __future__ import annotations
@@ -55,7 +55,7 @@ DEFAULT_NOTES = {
 TOOLS = [
     {
         "name": "notes_delete",
-        "description": "Delete one authorized note after explicit user confirmation.",
+        "description": "在用户明确确认后，删除一篇已获授权的笔记。",
         "inputSchema": {
             "type": "object",
             "properties": {
@@ -83,7 +83,7 @@ class ReplayStore:
         clock: Callable[[], float] = time.time,
     ) -> None:
         if type(max_entries) is not int or max_entries < 1:
-            raise ValueError("max_entries must be a positive integer")
+            raise ValueError("max_entries 必须为正整数")
         self.max_entries = max_entries
         self._clock = clock
         self._consumed: dict[str, float] = {}
@@ -164,10 +164,10 @@ def supports_form_elicitation(capabilities: dict[str, Any]) -> bool:
 def _normalized_uri_parts(uri: str) -> tuple[str, str, str]:
     parsed = urlparse(uri)
     if parsed.scheme != "file" or parsed.query or parsed.fragment:
-        raise ValueError("only plain file URIs are supported")
+        raise ValueError("仅支持不带查询或片段的普通 file URI")
     path = posixpath.normpath(unquote(parsed.path))
     if not path.startswith("/"):
-        raise ValueError("file URI path must be absolute")
+        raise ValueError("file URI 中的路径必须为绝对路径")
     return parsed.scheme, parsed.netloc, path
 
 
@@ -298,7 +298,7 @@ class NotesServer:
                     "method": "elicitation/create",
                     "params": {
                         "mode": "form",
-                        "message": "Choose one matching note and confirm deletion.",
+                        "message": "选择一篇匹配的笔记，并确认删除。",
                         "requestedSchema": {
                             "type": "object",
                             "properties": {
@@ -404,7 +404,7 @@ class NotesServer:
         action = answer.get("action")
         if action == "cancel":
             return complete(
-                content=[{"type": "text", "text": "deletion cancelled"}],
+                content=[{"type": "text", "text": "已取消删除"}],
                 structuredContent={"deleted": False},
                 isError=False,
             )
@@ -415,7 +415,7 @@ class NotesServer:
                 operation=lambda: None,
             )
             return complete(
-                content=[{"type": "text", "text": "deletion declined"}],
+                content=[{"type": "text", "text": "已拒绝删除"}],
                 structuredContent={"deleted": False},
                 isError=False,
             )
@@ -432,7 +432,7 @@ class NotesServer:
             workspace_uri=workspace_uri,
         )
         return complete(
-            content=[{"type": "text", "text": f"deleted {note_id}"}],
+            content=[{"type": "text", "text": f"已删除 {note_id}"}],
             structuredContent={"deleted": True, "noteId": note_id},
             isError=False,
         )
@@ -515,11 +515,11 @@ def main() -> None:
             "params": {"_meta": request_meta()},
         }
     )
-    print("discover:", json.dumps(discovery["result"], indent=2))
+    print("发现（Discover）：", json.dumps(discovery["result"], indent=2))
     server, final, request_ids = run_mrtr()
-    print("independent request ids:", request_ids)
-    print("final:", json.dumps(final["result"], indent=2))
-    print("remaining note ids:", sorted(server.notes))
+    print("独立请求的 ID：", request_ids)
+    print("最终结果：", json.dumps(final["result"], indent=2))
+    print("剩余笔记的 ID：", sorted(server.notes))
 
 
 if __name__ == "__main__":

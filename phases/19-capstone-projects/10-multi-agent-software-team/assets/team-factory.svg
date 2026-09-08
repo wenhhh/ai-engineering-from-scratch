@@ -6,7 +6,7 @@
       .cool { fill: #e6f4ea; stroke: #2e7d32; stroke-width: 1.5; }
       .cold { fill: #dfe9ff; stroke: #2c5ea9; stroke-width: 1.5; }
       .dsk { fill: #e9e6ff; stroke: #5a4fcf; stroke-width: 1.5; }
-      .step { font-size: 12px; font-family: 'Menlo', monospace; fill: #222; }
+      .step { font-size: 9px; font-family: 'Menlo', monospace; fill: #222; }
       .small { font-size: 10px; font-family: 'Menlo', monospace; fill: #555; }
       .caption { font-size: 11px; fill: #555; font-style: italic; }
       .title { font-size: 16px; font-weight: 700; fill: #1a1a1a; }
@@ -15,31 +15,31 @@
     </style>
   </defs>
 
-  <text x="480" y="24" text-anchor="middle" class="title">multi-agent factory — architect / coders / reviewer / tester</text>
+  <text x="480" y="24" text-anchor="middle" class="title">多智能体工厂（Multi-Agent Factory）：架构师 / 编码者 / 评审者 / 测试者</text>
 
   <rect x="380" y="50" width="200" height="44" class="dsk"/>
-  <text x="480" y="70" text-anchor="middle" class="step">Architect (Opus 4.7)</text>
-  <text x="480" y="86" text-anchor="middle" class="small">plan + subtasks + interfaces</text>
+  <text x="480" y="70" text-anchor="middle" class="step">架构师（Architect，Opus 4.7）</text>
+  <text x="480" y="86" text-anchor="middle" class="small">计划 + 子任务 + 接口</text>
 
   <rect x="40" y="130" width="180" height="70" class="cool"/>
-  <text x="130" y="150" text-anchor="middle" class="step">Coder A (Sonnet 4.7)</text>
-  <text x="130" y="168" text-anchor="middle" class="small">worktree A + Daytona</text>
-  <text x="130" y="186" text-anchor="middle" class="small">subtask: parser</text>
+  <text x="130" y="150" text-anchor="middle" class="step">编码者 A（Coder，Sonnet 4.7）</text>
+  <text x="130" y="168" text-anchor="middle" class="small">工作树（Worktree）A + Daytona</text>
+  <text x="130" y="186" text-anchor="middle" class="small">子任务：解析器（Parser）</text>
 
   <rect x="240" y="130" width="180" height="70" class="cool"/>
-  <text x="330" y="150" text-anchor="middle" class="step">Coder B</text>
-  <text x="330" y="168" text-anchor="middle" class="small">worktree B</text>
-  <text x="330" y="186" text-anchor="middle" class="small">subtask: cache</text>
+  <text x="330" y="150" text-anchor="middle" class="step">编码者（Coder）B</text>
+  <text x="330" y="168" text-anchor="middle" class="small">工作树（Worktree）B</text>
+  <text x="330" y="186" text-anchor="middle" class="small">子任务：缓存（Cache）</text>
 
   <rect x="440" y="130" width="180" height="70" class="cool"/>
-  <text x="530" y="150" text-anchor="middle" class="step">Coder C</text>
-  <text x="530" y="168" text-anchor="middle" class="small">worktree C</text>
-  <text x="530" y="186" text-anchor="middle" class="small">subtask: api</text>
+  <text x="530" y="150" text-anchor="middle" class="step">编码者（Coder）C</text>
+  <text x="530" y="168" text-anchor="middle" class="small">工作树（Worktree）C</text>
+  <text x="530" y="186" text-anchor="middle" class="small">子任务：api</text>
 
   <rect x="640" y="130" width="180" height="70" class="cool"/>
-  <text x="730" y="150" text-anchor="middle" class="step">Coder D</text>
-  <text x="730" y="168" text-anchor="middle" class="small">worktree D</text>
-  <text x="730" y="186" text-anchor="middle" class="small">subtask: migration</text>
+  <text x="730" y="150" text-anchor="middle" class="step">编码者（Coder）D</text>
+  <text x="730" y="168" text-anchor="middle" class="small">工作树（Worktree）D</text>
+  <text x="730" y="186" text-anchor="middle" class="small">子任务：迁移（Migration）</text>
 
   <path d="M480,94 L130,130" class="edge"/>
   <path d="M480,94 L330,130" class="edge"/>
@@ -47,8 +47,8 @@
   <path d="M480,94 L730,130" class="edge"/>
 
   <rect x="340" y="240" width="280" height="54" class="cold"/>
-  <text x="480" y="262" text-anchor="middle" class="step">merge coordinator</text>
-  <text x="480" y="280" text-anchor="middle" class="small">3-way merge + LLM conflict resolver</text>
+  <text x="480" y="262" text-anchor="middle" class="step">合并协调者（Merge Coordinator）</text>
+  <text x="480" y="280" text-anchor="middle" class="small">三方合并（3-Way Merge）+ LLM 冲突解决</text>
 
   <path d="M130,200 L440,240" class="edge"/>
   <path d="M330,200 L460,240" class="edge"/>
@@ -56,43 +56,43 @@
   <path d="M730,200 L540,240" class="edge"/>
 
   <rect x="340" y="320" width="280" height="54" class="hot"/>
-  <text x="480" y="342" text-anchor="middle" class="step">Reviewer (GPT-5.4)</text>
-  <text x="480" y="360" text-anchor="middle" class="small">cannot approve diffs it authored</text>
+  <text x="480" y="342" text-anchor="middle" class="step">评审者（Reviewer，GPT-5.4）</text>
+  <text x="480" y="360" text-anchor="middle" class="small">不能批准自己编写的差异（Diff）</text>
   <path d="M480,294 L480,320" class="edge"/>
 
   <rect x="340" y="400" width="280" height="54" class="dsk"/>
-  <text x="480" y="422" text-anchor="middle" class="step">Tester (Gemini 2.5 Pro)</text>
-  <text x="480" y="440" text-anchor="middle" class="small">run suite in clean sandbox</text>
+  <text x="480" y="422" text-anchor="middle" class="step">测试者（Tester，Gemini 2.5 Pro）</text>
+  <text x="480" y="440" text-anchor="middle" class="small">在干净沙箱（Sandbox）中运行套件</text>
   <path d="M480,374 L480,400" class="edge"/>
 
   <rect x="340" y="480" width="280" height="40" class="cool"/>
-  <text x="480" y="504" text-anchor="middle" class="step">PR open</text>
+  <text x="480" y="504" text-anchor="middle" class="step">创建 PR（PR Open）</text>
   <path d="M480,454 L480,480" class="edge"/>
 
   <rect x="40" y="300" width="260" height="240" class="box"/>
-  <text x="170" y="322" text-anchor="middle" class="head">metrics</text>
+  <text x="170" y="322" text-anchor="middle" class="head">指标（Metrics）</text>
   <text x="170" y="344" text-anchor="middle" class="small">SWE-bench Pro pass@1</text>
-  <text x="170" y="362" text-anchor="middle" class="small">wall-clock vs single-agent</text>
-  <text x="170" y="380" text-anchor="middle" class="small">false-approval on bug probe</text>
-  <text x="170" y="398" text-anchor="middle" class="small">token amplification ratio</text>
-  <text x="170" y="416" text-anchor="middle" class="small">merge conflict rate</text>
-  <text x="170" y="440" text-anchor="middle" class="small">target:</text>
-  <text x="170" y="456" text-anchor="middle" class="small">pass@1 &gt; single-agent</text>
-  <text x="170" y="472" text-anchor="middle" class="small">speedup 2-3x on parallel tasks</text>
-  <text x="170" y="490" text-anchor="middle" class="small">token amp &lt; 2x</text>
-  <text x="170" y="508" text-anchor="middle" class="small">false-approve &lt; 5%</text>
-  <text x="170" y="528" text-anchor="middle" class="caption">SWE-AF / MetaGPT / AutoGen shape</text>
+  <text x="170" y="362" text-anchor="middle" class="small">对比单智能体的实际运行时间</text>
+  <text x="170" y="380" text-anchor="middle" class="small">缺陷探测的错误批准率（False-Approval）</text>
+  <text x="170" y="398" text-anchor="middle" class="small">词元放大率（Token Amplification）</text>
+  <text x="170" y="416" text-anchor="middle" class="small">合并冲突率（Merge Conflict Rate）</text>
+  <text x="170" y="440" text-anchor="middle" class="small">目标（Target）：</text>
+  <text x="170" y="456" text-anchor="middle" class="small">pass@1 &gt; 单智能体</text>
+  <text x="170" y="472" text-anchor="middle" class="small">并行任务加速 2–3 倍（Speedup）</text>
+  <text x="170" y="490" text-anchor="middle" class="small">词元放大 &lt; 2x</text>
+  <text x="170" y="508" text-anchor="middle" class="small">错误批准 &lt; 5%</text>
+  <text x="170" y="528" text-anchor="middle" class="caption">SWE-AF / MetaGPT / AutoGen 形态</text>
 
   <rect x="660" y="300" width="260" height="240" class="box"/>
-  <text x="790" y="322" text-anchor="middle" class="head">handoff accounting</text>
-  <text x="790" y="344" text-anchor="middle" class="small">every role boundary = span</text>
-  <text x="790" y="362" text-anchor="middle" class="small">A2A-typed messages</text>
-  <text x="790" y="380" text-anchor="middle" class="small">file-backed task board</text>
-  <text x="790" y="398" text-anchor="middle" class="small">Langfuse role tag + token</text>
-  <text x="790" y="422" text-anchor="middle" class="small">post-mortem histograms:</text>
-  <text x="790" y="438" text-anchor="middle" class="small">plan vague / merge conflict /</text>
-  <text x="790" y="454" text-anchor="middle" class="small">reviewer false-approve /</text>
-  <text x="790" y="470" text-anchor="middle" class="small">tester flake</text>
-  <text x="790" y="496" text-anchor="middle" class="small">shipped with every failed run</text>
-  <text x="790" y="516" text-anchor="middle" class="caption">handoffs are the failure surface</text>
+  <text x="790" y="322" text-anchor="middle" class="head">交接核算（Handoff Accounting）</text>
+  <text x="790" y="344" text-anchor="middle" class="small">每个角色边界 = 跟踪区段（Span）</text>
+  <text x="790" y="362" text-anchor="middle" class="small">A2A 类型化消息（Typed Messages）</text>
+  <text x="790" y="380" text-anchor="middle" class="small">文件支持的任务看板（Task Board）</text>
+  <text x="790" y="398" text-anchor="middle" class="small">Langfuse 角色标签 + 词元</text>
+  <text x="790" y="422" text-anchor="middle" class="small">复盘直方图（Post-Mortem Histograms）：</text>
+  <text x="790" y="438" text-anchor="middle" class="small">计划模糊 / 合并冲突 /</text>
+  <text x="790" y="454" text-anchor="middle" class="small">评审者错误批准 /</text>
+  <text x="790" y="470" text-anchor="middle" class="small">测试者偶发失败（Tester Flake）</text>
+  <text x="790" y="496" text-anchor="middle" class="small">每次失败运行均附带</text>
+  <text x="790" y="516" text-anchor="middle" class="caption">交接是故障面（Failure Surface）</text>
 </svg>

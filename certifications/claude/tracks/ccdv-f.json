@@ -2,22 +2,22 @@
   "id": "claude-ccdv-f",
   "slug": "ccdv-f",
   "examCode": "CCDV-F",
-  "credential": "Claude Certified Developer - Foundations",
-  "shortName": "Developer Foundations",
-  "level": "Foundational technical",
+  "credential": "Claude 认证开发者基础级（Claude Certified Developer - Foundations）",
+  "shortName": "开发者基础级（Developer Foundations）",
+  "level": "技术基础级（Foundational technical）",
   "accent": "blue",
   "badge": {
     "imageUrl": "https://images.credly.com/images/f101c6ac-8a2d-4220-b381-70e3e6c364e3/blob",
     "width": 601,
     "height": 601
   },
-  "summary": "Build, integrate, secure, test, and ship Claude applications, agents, workflows, tools, and MCP servers.",
-  "audience": "Software engineers, AI engineers, and technical builders with Python or TypeScript experience and working knowledge of REST APIs and command-line tools.",
+  "summary": "构建、集成、保护、测试并交付 Claude 应用、智能体、工作流、工具和 MCP 服务器。",
+  "audience": "面向拥有 Python 或 TypeScript 经验，并具备 REST API 和命令行工具应用知识的软件工程师、AI 工程师和技术构建者。",
   "recommendedExperience": [
-    "One to five years of software-engineering experience",
-    "At least six months with Claude or comparable LLM systems",
-    "Fluency with REST APIs, JSON, asynchronous code, and CLI tools",
-    "Working knowledge of agents, context management, and MCP"
+    "一至五年软件工程经验",
+    "至少六个月 Claude 或类似大语言模型（LLM）系统使用经验",
+    "熟练使用 REST API、JSON、异步代码和命令行（CLI）工具",
+    "具备智能体、上下文管理和 MCP 的应用知识"
   ],
   "exam": {
     "items": 53,
@@ -26,21 +26,21 @@
     "passingScaledScore": 720,
     "scoreScale": "100-1000",
     "validityMonths": 12,
-    "format": "Multiple-choice and multiple-response",
-    "delivery": "Proctored online or at a test center",
+    "format": "单项选择与多项选择（Multiple-choice and multiple-response）",
+    "delivery": "在线监考或在考试中心考试",
     "guideVersion": "1.0",
     "effective": "July 2026",
     "officialGuideUrl": "https://everpath-course-content.s3-accelerate.amazonaws.com/instructor%2F6nizmqk8tpzpfjvt6qmmav7rh%2Fpublic%2F1783542875%2FClaude+Certified+Developer+%E2%80%93+Foundations+Exam+Guide.pdf"
   },
   "domains": [
-    {"id": "agents-workflows", "name": "Agents and Workflows", "weight": 14.7, "objectives": ["Choose workflows or agents from task constraints", "Design manager and subagent hierarchies", "Build with the Claude Agent SDK, custom loops, managed agents, and hooks", "Apply tool-loop, memory, context, and framework patterns"]},
-    {"id": "applications-integration", "name": "Applications and Integration", "weight": 33.1, "objectives": ["Translate business needs into functional and infrastructure requirements", "Apply system lifecycle practices", "Use messages, tools, streaming, vision, thinking, caching, batch, and third-party providers", "Apply REST, JSON, async, version-control, review, and refactoring practices", "Design instruction, schema, session, content-boundary, and plugin behavior", "Manage CLAUDE.md, settings, model, prompt, and plugin versions"]},
-    {"id": "claude-code", "name": "Claude Code", "weight": 3.1, "objectives": ["Operate Rules, Skills, Commands, Agents, memory, sessions, headless mode, streaming mode, auto-mode, CLAUDE.md, initialization, and settings"]},
-    {"id": "eval-testing-debugging", "name": "Eval, Testing, and Debugging", "weight": 2.6, "objectives": ["Classify errors, select recovery, analyze traces, and isolate integration failures from model failures"]},
-    {"id": "model-selection-optimization", "name": "Model Selection and Optimization", "weight": 16.8, "objectives": ["Explain tokens, sampling, context, non-determinism, thinking, effort, and prompting modes", "Integrate SDK and transport fundamentals", "Balance model quality, latency, cost, capability, and version changes", "Budget tokens and use prompt caching"]},
-    {"id": "prompt-context-engineering", "name": "Prompt and Context Engineering", "weight": 11.0, "objectives": ["Prevent context drift and bloat with pruning, compaction, and isolation", "Place clear instructions, examples, and constraints", "Sanitize input and iterate prompts", "Validate and defensively consume structured output"]},
-    {"id": "security-safety", "name": "Security and Safety", "weight": 8.1, "objectives": ["Mitigate prompt injection, jailbreaks, data leakage, and unsafe input", "Layer guardrails with least privilege", "Use hooks for deterministic safety controls", "Protect identity, secrets, keys, and access approvals"]},
-    {"id": "tools-mcps", "name": "Tools and MCPs", "weight": 10.6, "objectives": ["Design descriptions, schemas, errors, approvals, and tool sets", "Author and deploy MCP tools, resources, and prompts across transports", "Choose among built-in tools, custom tools, Skills, and MCP"]}
+    {"id": "agents-workflows", "name": "智能体与工作流（Agents and Workflows）", "weight": 14.7, "objectives": ["根据任务约束选择工作流或智能体（Choose workflows or agents from task constraints）", "设计管理者与子智能体层级（Design manager and subagent hierarchies）", "使用 Claude Agent SDK、自定义循环、托管智能体和钩子构建系统（Build with the Claude Agent SDK, custom loops, managed agents, and hooks）", "应用工具循环、记忆、上下文和框架模式（Apply tool-loop, memory, context, and framework patterns）"]},
+    {"id": "applications-integration", "name": "应用与集成（Applications and Integration）", "weight": 33.1, "objectives": ["将业务需求转为功能和基础设施要求（Translate business needs into functional and infrastructure requirements）", "应用系统生命周期实践（Apply system lifecycle practices）", "使用消息、工具、流式传输、视觉、思考、缓存、批处理和第三方服务商（Use messages, tools, streaming, vision, thinking, caching, batch, and third-party providers）", "应用 REST、JSON、异步、版本控制、评审和重构实践（Apply REST, JSON, async, version-control, review, and refactoring practices）", "设计指令、模式、会话、内容边界及插件行为（Design instruction, schema, session, content-boundary, and plugin behavior）", "管理 CLAUDE.md、设置、模型、提示词和插件版本（Manage CLAUDE.md, settings, model, prompt, and plugin versions）"]},
+    {"id": "claude-code", "name": "Claude Code", "weight": 3.1, "objectives": ["操作规则、技能、命令、智能体、记忆、会话、无界面模式、流式模式、自动模式、CLAUDE.md、初始化和设置（Operate Rules, Skills, Commands, Agents, memory, sessions, headless mode, streaming mode, auto-mode, CLAUDE.md, initialization, and settings）"]},
+    {"id": "eval-testing-debugging", "name": "评估、测试与调试（Eval, Testing, and Debugging）", "weight": 2.6, "objectives": ["分类错误、选择恢复方式、分析轨迹，并区分集成失败与模型失败（Classify errors, select recovery, analyze traces, and isolate integration failures from model failures）"]},
+    {"id": "model-selection-optimization", "name": "模型选择与优化（Model Selection and Optimization）", "weight": 16.8, "objectives": ["解释词元、采样、上下文、非确定性、思考、努力程度和提示词模式（Explain tokens, sampling, context, non-determinism, thinking, effort, and prompting modes）", "集成 SDK 与传输基础（Integrate SDK and transport fundamentals）", "平衡模型质量、延迟、成本、能力和版本变化（Balance model quality, latency, cost, capability, and version changes）", "规划词元预算并使用提示词缓存（Budget tokens and use prompt caching）"]},
+    {"id": "prompt-context-engineering", "name": "提示词与上下文工程（Prompt and Context Engineering）", "weight": 11.0, "objectives": ["通过裁剪、压缩和隔离防止上下文漂移与膨胀（Prevent context drift and bloat with pruning, compaction, and isolation）", "放置清晰的指令、示例和约束（Place clear instructions, examples, and constraints）", "净化输入并迭代提示词（Sanitize input and iterate prompts）", "验证并防御性消费结构化输出（Validate and defensively consume structured output）"]},
+    {"id": "security-safety", "name": "安全防护与使用安全（Security and Safety）", "weight": 8.1, "objectives": ["缓解提示词注入、越狱、数据泄露和不安全输入（Mitigate prompt injection, jailbreaks, data leakage, and unsafe input）", "结合最小权限分层设置防护机制（Layer guardrails with least privilege）", "使用钩子实现确定性安全控制（Use hooks for deterministic safety controls）", "保护身份、机密、密钥和访问审批（Protect identity, secrets, keys, and access approvals）"]},
+    {"id": "tools-mcps", "name": "工具与 MCP（Tools and MCPs）", "weight": 10.6, "objectives": ["设计描述、模式、错误、审批和工具集（Design descriptions, schemas, errors, approvals, and tool sets）", "跨传输方式编写和部署 MCP 工具、资源及提示词（Author and deploy MCP tools, resources, and prompts across transports）", "在内置工具、自定义工具、技能和 MCP 之间选择（Choose among built-in tools, custom tools, Skills, and MCP）"]}
   ],
   "lessons": [
     {"path": "certifications/claude/lessons/00-certification-strategy", "domains": ["applications-integration"], "role": "orientation", "required": true},
@@ -60,19 +60,19 @@
     {"path": "certifications/claude/lessons/30-developer-application-capstone", "domains": ["agents-workflows", "applications-integration", "claude-code", "eval-testing-debugging", "model-selection-optimization", "prompt-context-engineering", "security-safety", "tools-mcps"], "role": "capstone", "required": true}
   ],
   "deepDives": [
-    {"path": "phases/14-agent-engineering/01-the-agent-loop", "label": "The Agent Loop", "reason": "Build the loop before using an SDK"},
-    {"path": "phases/14-agent-engineering/17-claude-agent-sdk", "label": "Claude Agent SDK", "reason": "Go deeper on the production SDK surface"},
-    {"path": "phases/13-tools-and-protocols/05-tool-schema-design", "label": "Tool Schema Design", "reason": "Design clear, testable tool contracts"},
-    {"path": "phases/13-tools-and-protocols/07-building-an-mcp-server", "label": "Building an MCP Server", "reason": "Implement the server boundary end to end"},
-    {"path": "phases/14-agent-engineering/27-prompt-injection-defense", "label": "Prompt Injection Defense", "reason": "Threat-model untrusted instructions"},
-    {"path": "phases/14-agent-engineering/30-eval-driven-agent-development", "label": "Eval-Driven Agent Development", "reason": "Use trajectories and final state as release evidence"}
+    {"path": "phases/14-agent-engineering/01-the-agent-loop", "label": "智能体循环（The Agent Loop）", "reason": "先构建循环，再使用 SDK"},
+    {"path": "phases/14-agent-engineering/17-claude-agent-sdk", "label": "Claude Agent SDK", "reason": "深入了解生产 SDK 接口"},
+    {"path": "phases/13-tools-and-protocols/05-tool-schema-design", "label": "工具模式设计（Tool Schema Design）", "reason": "设计清晰且可测试的工具契约"},
+    {"path": "phases/13-tools-and-protocols/07-building-an-mcp-server", "label": "构建 MCP 服务器（Building an MCP Server）", "reason": "端到端实现服务器边界"},
+    {"path": "phases/14-agent-engineering/27-prompt-injection-defense", "label": "提示词注入防御（Prompt Injection Defense）", "reason": "对不可信指令建立威胁模型"},
+    {"path": "phases/14-agent-engineering/30-eval-driven-agent-development", "label": "评估驱动的智能体开发（Eval-Driven Agent Development）", "reason": "将执行轨迹和最终状态作为发布证据"}
   ],
   "assessments": [
-    {"id": "claude-ccdv-f-diagnostic", "path": "certifications/claude/assessments/ccdv-f/diagnostic.json", "kind": "diagnostic", "title": "Developer Foundations Diagnostic", "timeLimitMinutes": 30},
-    {"id": "claude-ccdv-f-mock-01", "path": "certifications/claude/assessments/ccdv-f/mock-01.json", "kind": "mock", "title": "Developer Foundations Full Mock", "timeLimitMinutes": 120}
+    {"id": "claude-ccdv-f-diagnostic", "path": "certifications/claude/assessments/ccdv-f/diagnostic.json", "kind": "diagnostic", "title": "开发者基础级诊断测评（Developer Foundations Diagnostic）", "timeLimitMinutes": 30},
+    {"id": "claude-ccdv-f-mock-01", "path": "certifications/claude/assessments/ccdv-f/mock-01.json", "kind": "mock", "title": "开发者基础级全长模拟考试（Developer Foundations Full Mock）", "timeLimitMinutes": 120}
   ],
   "studyPlans": [
-    {"id": "ccdv-f-21-day", "label": "21-day intensive plan", "durationDays": 21, "hoursPerWeek": 12, "milestones": ["Days 1-4: models, prompts, context, and API mechanics", "Days 5-9: outputs, tools, MCP, and agent loops", "Days 10-14: SDK, security, evaluation, and Claude Code", "Days 15-18: build and defend the capstone", "Days 19-21: full mock and domain remediation"]},
-    {"id": "ccdv-f-42-day", "label": "42-day build plan", "durationDays": 42, "hoursPerWeek": 7, "milestones": ["Week 1: model and API foundations", "Week 2: prompt, context, and output contracts", "Week 3: tools and MCP", "Week 4: agents and security", "Week 5: evaluation, debugging, and Claude Code", "Week 6: capstone and mock"]}
+    {"id": "ccdv-f-21-day", "label": "21 天强化计划（21-day intensive plan）", "durationDays": 21, "hoursPerWeek": 12, "milestones": ["第 1-4 天：模型、提示词、上下文和 API 机制", "第 5-9 天：输出、工具、MCP 和智能体循环", "第 10-14 天：SDK、安全、评估和 Claude Code", "第 15-18 天：构建综合实践并进行答辩", "第 19-21 天：全长模拟考试和领域补习"]},
+    {"id": "ccdv-f-42-day", "label": "42 天构建计划（42-day build plan）", "durationDays": 42, "hoursPerWeek": 7, "milestones": ["第 1 周：模型和 API 基础", "第 2 周：提示词、上下文和输出契约", "第 3 周：工具和 MCP", "第 4 周：智能体和安全", "第 5 周：评估、调试和 Claude Code", "第 6 周：综合实践和模拟考试"]}
   ]
 }

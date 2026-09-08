@@ -1,75 +1,75 @@
 {
   "lesson": "12-edge-inference",
-  "title": "Edge Inference — Apple Neural Engine, Qualcomm Hexagon, WebGPU/WebLLM, Jetson",
+  "title": "边缘推理（Edge Inference）：Apple Neural Engine、Qualcomm Hexagon、WebGPU/WebLLM、Jetson",
   "questions": [
     {
       "stage": "pre",
-      "question": "What is the core constraint that makes mobile LLM inference slower than datacenter, per the lesson?",
+      "question": "按本课说明，移动 LLM 推理慢于数据中心的核心约束是什么？",
       "options": [
-        "Storage capacity",
-        "Wi-Fi latency",
-        "Compute throughput",
-        "Memory bandwidth (mobile DRAM at 50-90 GB/s vs HBM3 at 2-3 TB/s)"
+        "存储容量",
+        "Wi-Fi 延迟",
+        "计算吞吐量",
+        "内存带宽：移动 DRAM 50-90 GB/s，而 HBM3 为 2-3 TB/s"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Why does Apple's Neural Engine avoid CPU-NPU copy overhead?",
+      "question": "为什么 Apple Neural Engine 不需要 CPU-NPU 拷贝开销？",
       "options": [
-        "Apple Silicon ships unified memory — CPU and ANE share the same pool",
-        "It uses PCIe 5.0",
-        "Core ML disables KV cache",
-        "It transcodes weights to FP4 before copy"
+        "Apple Silicon 提供统一内存，CPU 和 ANE 共用池",
+        "它使用 PCIe 5.0",
+        "Core ML 禁用 KV 缓存",
+        "它在拷贝前将权重转码为 FP4"
       ],
       "correct": 0,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Which quantization format does the lesson recommend for WebGPU + WebLLM in the browser?",
+      "question": "本课推荐浏览器 WebGPU + WebLLM 使用什么量化格式？",
       "options": [
         "GGUF Q4_K_M",
         "NVFP4",
         "FP8",
-        "Q4 MLC (q4f16_1) compiled via mlc_llm convert_weight"
+        "通过 mlc_llm convert_weight 编译的 Q4 MLC（q4f16_1）"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Roughly what WebGPU mobile coverage does the lesson report for 2026?",
+      "question": "本课报告 2026 年 WebGPU 移动覆盖率大约是多少？",
       "options": [
-        "Under 10%",
-        "Only iOS Safari",
-        "About 70-75%, with Firefox Android still catching up",
-        "100% across all browsers"
+        "不到 10%",
+        "只有 iOS Safari",
+        "约 70-75%，Firefox Android 仍在追赶",
+        "所有浏览器 100%"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "Why is keeping 128K context impractical on a typical phone?",
+      "question": "为何典型手机上保留 128K 上下文不现实？",
       "options": [
-        "Tokenizers fail above 8K",
-        "Model weights plus KV cache for 32K tokens plus OS overhead easily exceed the 8 GB RAM budget",
-        "WebGPU caps context at 4K",
-        "iOS forbids long context"
+        "分词器超过 8K 就失败",
+        "模型权重、32K 词元的 KV 缓存和系统开销很容易超过 8 GB RAM 预算",
+        "WebGPU 将上下文限制为 4K",
+        "iOS 禁止长上下文"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "Why is voice highlighted as the killer app for edge inference?",
+      "question": "为什么语音被强调为边缘推理最具吸引力的应用？",
       "options": [
-        "Voice models do not need KV cache",
-        "Voice models always fit in 50 MB",
-        "Voice agents are latency-sensitive (first token < 500 ms) and local inference eliminates network latency entirely",
-        "Voice runs in WebAssembly only"
+        "语音模型不需要 KV 缓存",
+        "语音模型总能装入 50 MB",
+        "语音智能体对延迟敏感，首词元 < 500 ms，而本地推理完全消除网络延迟",
+        "语音只运行在 WebAssembly"
       ],
       "correct": 2,
       "explanation": ""

@@ -1,11 +1,11 @@
-"""CrewAI-shaped Crew and Flow primitives in stdlib.
+"""用标准库实现 CrewAI 式团队（Crew）与流程（Flow）原语。
 
-Three-agent crew (researcher, writer, editor) producing a brief on
-"agent engineering 2026". Same crew is run Sequential, Hierarchical, and
-through a Flow to show all three execution shapes.
+由三个智能体（researcher、writer、editor）组成团队，撰写关于
+"agent engineering 2026" 的简报。同一团队分别以顺序式（Sequential）、
+分层式（Hierarchical）和 Flow 运行，展示三种执行结构。
 
-Stdlib + numpy. Mock LLM responses are deterministic hardcoded strings
-keyed off agent role and input prefix.
+使用标准库与 numpy。模拟的 LLM 响应为确定性的硬编码字符串，
+以智能体角色和输入前缀为依据。
 """
 
 from __future__ import annotations
@@ -18,8 +18,8 @@ import numpy as np
 
 
 def tool(name: str) -> Callable[[Callable[..., str]], Callable[..., str]]:
-    """Mirror of CrewAI's @tool decorator. Marks a function as a tool the
-    Agent can call. Docstring is the description; signature is the schema."""
+    """模拟 CrewAI 的 @tool 装饰器，将函数标记为
+    Agent 可调用的工具。文档字符串是工具描述，函数签名是结构定义（Schema）。"""
 
     def decorator(fn: Callable[..., str]) -> Callable[..., str]:
         fn.tool_name = name  # type: ignore[attr-defined]
@@ -31,7 +31,7 @@ def tool(name: str) -> Callable[[Callable[..., str]], Callable[..., str]]:
 
 @tool("Search the web")
 def search(query: str) -> str:
-    """Return top results for the query."""
+    """返回查询的排名靠前结果。"""
     fixtures = {
         "agent engineering": "src1: agent loop, src2: tool use, src3: memory",
         "crewai": "src1: docs intro, src2: flows guide, src3: tools ref",
@@ -71,8 +71,8 @@ class SequentialCrew:
         by_task: dict[int, str] = {}
         for task in self.tasks:
             if task.context:
-                # CrewAI behavior: feed outputs of every declared upstream task
-                # into the current one. Falls back to prior when none declared.
+                # CrewAI 的行为：将每个已声明的上游任务输出
+                # 传给当前任务。未声明上游任务时回退到 prior。
                 joined = "\n\n".join(
                     by_task[id(t)] for t in task.context if id(t) in by_task
                 )
@@ -103,11 +103,11 @@ class HierarchicalCrew:
         for _ in range(self.max_steps):
             pick = self.manager.fn(done, [], None)
             if pick == "done":
-                outputs.append("[manager] done")
+                outputs.append("[manager] 已完成")
                 break
             specialist = self.specialists.get(pick)
             if specialist is None:
-                outputs.append(f"[manager] unknown pick {pick!r}")
+                outputs.append(f"[manager] 未知选择 {pick!r}")
                 break
             out = specialist.fn(current, specialist.tools, self.memory)
             outputs.append(f"[manager -> {specialist.role}] {out}")
@@ -119,8 +119,8 @@ class HierarchicalCrew:
 
 
 class Flow:
-    """Deterministic event-driven workflow. @start fires on kickoff;
-    @listen(topic) fires when another step emits that topic.
+    """确定性的事件驱动工作流（Event-driven workflow）。kickoff 时触发 @start；
+    其他步骤发出对应主题时触发 @listen(topic)。
     """
 
     def __init__(self) -> None:
@@ -156,8 +156,8 @@ class Flow:
 
 
 class Memory:
-    """Four-store memory matching CrewAI's short, long, entity, contextual.
-    Long-term retrieval uses numpy cosine similarity on hashed token vectors.
+    """四存储记忆，对应 CrewAI 的短期（Short-term）、长期（Long-term）、实体（Entity）和上下文（Contextual）记忆。
+    长期检索通过 numpy 计算哈希词元向量的余弦相似度（Cosine similarity）。
     """
 
     def __init__(self, dim: int = 16) -> None:
@@ -199,7 +199,7 @@ class Memory:
 
 def _researcher(prior: Any, tools: list[Callable[..., str]], memory: Memory | None) -> str:
     topic = prior if isinstance(prior, str) else ""
-    # Run whichever search-ish tool the agent was wired with, in order.
+    # 按顺序查找并运行接入该智能体的搜索类工具。
     search_fn = next(
         (t for t in tools if getattr(t, "is_tool", False) and "search" in getattr(t, "tool_name", "").lower()),
         None,
@@ -232,21 +232,21 @@ def _manager(prior: Any, tools: list[Callable[..., str]], memory: Memory | None)
 def build_agents() -> tuple[Agent, Agent, Agent]:
     researcher = Agent(
         role="researcher",
-        goal="find 3 credible sources",
-        backstory="former librarian. terse. cites primaries.",
+        goal="找到 3 个可信来源",
+        backstory="曾任图书管理员，表达简练，引用一手资料。",
         fn=_researcher,
         tools=[search],
     )
     writer = Agent(
         role="writer",
-        goal="turn sources into a draft",
-        backstory="editorial voice. paragraphs of three.",
+        goal="根据资料撰写草稿",
+        backstory="采用编辑式笔调，写成三段。",
         fn=_writer,
     )
     editor = Agent(
         role="editor",
-        goal="tighten draft to final brief",
-        backstory="cuts adjectives. enforces house style.",
+        goal="精简草稿，形成最终简报",
+        backstory="删去形容词，遵循内部写作规范。",
         fn=_editor,
     )
     return researcher, writer, editor
@@ -254,30 +254,30 @@ def build_agents() -> tuple[Agent, Agent, Agent]:
 
 def main() -> None:
     print("=" * 70)
-    print("CREWAI CREW AND FLOW - Phase 14, Lesson 15")
+    print("CrewAI 团队（Crew）与流程（Flow）——第 14 阶段，第 15 课")
     print("=" * 70)
 
     researcher, writer, editor = build_agents()
     memory = Memory()
 
-    print("\n1. SequentialCrew (researcher -> writer -> editor)")
+    print("\n1. 顺序团队（SequentialCrew，researcher -> writer -> editor）")
     seq = SequentialCrew(
         agents=[researcher, writer, editor],
         tasks=[
-            Task("research the topic", "3 sources", researcher),
-            Task("write a draft", "3 paragraphs", writer),
-            Task("edit to final brief", "800 words", editor),
+            Task("研究主题", "3 个来源", researcher),
+            Task("撰写草稿", "3 段", writer),
+            Task("编辑成最终简报", "800 词", editor),
         ],
         memory=memory,
     )
     for line in seq.kickoff({"topic": "agent engineering 2026"}):
         print(f"  {line}")
 
-    print("\n2. HierarchicalCrew (manager routes)")
+    print("\n2. 分层团队（HierarchicalCrew，由 manager 路由）")
     manager = Agent(
         role="manager",
-        goal="pick next specialist",
-        backstory="PM background. routes by missing role.",
+        goal="选择下一位专家",
+        backstory="具有产品经理（PM）背景，根据尚未参与的角色进行路由。",
         fn=_manager,
     )
     hcrew = HierarchicalCrew(
@@ -288,7 +288,7 @@ def main() -> None:
     for line in hcrew.kickoff("agent engineering 2026"):
         print(f"  {line}")
 
-    print("\n3. Flow (deterministic, event-driven)")
+    print("\n3. 流程（Flow，确定性、事件驱动）")
     flow = Flow()
 
     @flow.start
@@ -317,30 +317,30 @@ def main() -> None:
         return None
 
     for step_name, topic, output in flow.kickoff("agent engineering 2026"):
-        print(f"  [{step_name}] topic={topic!r} out={output[:60]}")
+        print(f"  [{step_name}] 主题={topic!r} 输出={output[:60]}")
 
-    print("\n4. Memory: recall_long_term('brief')")
+    print("\n4. 记忆（Memory）：recall_long_term('brief')")
     for role, value, score in memory.recall_long_term("brief"):
-        print(f"  [{role}] score={score:+.3f} value={value[:50]}")
+        print(f"  [{role}] 分数={score:+.3f} 内容={value[:50]}")
 
-    print("\n5. Second kickoff (long-term memory survives)")
+    print("\n5. 再次启动（长期记忆保留）")
     memory.reset_short_term()
     seq2 = SequentialCrew(
         agents=[researcher, writer, editor],
         tasks=[
-            Task("research", "3 sources", researcher),
-            Task("draft", "3 paragraphs", writer),
-            Task("edit", "800 words", editor),
+            Task("研究", "3 个来源", researcher),
+            Task("起草", "3 段", writer),
+            Task("编辑", "800 词", editor),
         ],
         memory=memory,
     )
     seq2.kickoff({"topic": "agent engineering 2026"})
-    print(f"  long_term entries: {len(memory.long_term)}")
-    print(f"  short_term entries (this run): {len(memory.short_term)}")
+    print(f"  长期记忆（long_term）条目数： {len(memory.long_term)}")
+    print(f"  本次运行的短期记忆（short_term）条目数： {len(memory.short_term)}")
 
     print()
-    print("Crew: LLM picks the shape. Flow: code owns the shape.")
-    print("Docs (2026): start production with a Flow; fold Crews in as sub-steps.")
+    print("Crew：LLM 决定执行结构。Flow：代码决定执行结构。")
+    print("文档（2026）：生产环境先采用 Flow，再将 Crew 作为子步骤接入。")
 
 
 if __name__ == "__main__":

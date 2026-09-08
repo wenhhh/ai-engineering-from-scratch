@@ -1,118 +1,118 @@
-# Society of Mind and Multi-Agent Debate
+# 心智社会与多智能体辩论（Society of Mind and Multi-Agent Debate）
 
-> Minsky's 1986 premise — intelligence is a society of specialists — gets rediscovered every decade. In 2023 Du et al. turned it into a concrete algorithm: multiple LLM instances propose answers, read each other's answers, critique, and update. Over N rounds they converge on a consensus that beats zero-shot CoT and reflection on six reasoning and factuality tasks. Two findings matter: both **multiple agents** and **multiple rounds** contribute independently. The society beats a single-agent monologue; the multi-round exchange beats one-shot voting.
+> Minsky 在 1986 年提出：智能是专职成员组成的社会。这一前提每十年就被重新发现。2023 年 Du 等人将其变为具体算法：多个 LLM 实例提出答案、阅读彼此答案、批评并更新。经过 N 轮后，它们收敛到一个共识，在六项推理和事实性任务上胜过零样本思维链（Zero-shot CoT）和反思（Reflection）。两个发现很重要：**多个智能体**和**多轮交互**各自独立贡献收益。社会胜过单智能体独白，多轮交流胜过一次性投票。
 
 **Type:** Learn + Build
 **Languages:** Python (stdlib)
-**Prerequisites:** Phase 16 · 04 (Primitive Model)
-**Time:** ~60 minutes
+**Prerequisites:** Phase 16 · 04 原语模型（Primitive Model）
+**Time:** ~60 分钟
 
-## Problem
+## 问题（Problem）
 
-Self-consistency — sample one model many times and take the majority answer — is the cheapest reasoning improvement you can bolt on. It works, but it saturates fast. You can double your samples and not see another meaningful jump.
+自一致性（Self-consistency），即对一个模型多次采样并取多数答案，是最便宜的附加推理改进。它有效，但很快饱和。样本翻倍也可能不再带来有意义的提升。
 
-Debate breaks the saturation. Instead of N independent samples from one model, N agents read each other's reasoning and revise. The correlation between samples drops (they are no longer i.i.d.), and the convergence point is often correct where i.i.d. voting was confidently wrong.
+辩论（Debate）打破饱和。不是从同一个模型获得 N 个独立样本，而是让 N 个智能体阅读彼此推理并修改答案。样本之间的相关性降低（它们不再独立同分布，i.i.d.）；独立同分布投票自信地答错时，辩论的收敛点却常常正确。
 
-## Concept
+## 概念（Concept）
 
-### The Du et al. 2023 algorithm
+### Du 等人 2023 年算法（The Du et al. 2023 algorithm）
 
-From arXiv:2305.14325 (ICML 2024):
+来自 arXiv:2305.14325（ICML 2024）：
 
-1. Each of N agents produces an initial answer to the question.
-2. For round r = 2..R: each agent is shown the other agents' round r-1 answers and asked "considering these, give your updated answer."
-3. After R rounds, majority-vote the final answers.
+1. N 个智能体各自给出问题的初始答案。
+2. 在 r = 2..R 轮中：向每个智能体展示其余智能体第 r-1 轮答案，要求“考虑这些答案，给出更新后的答案”。
+3. R 轮后，对最终答案进行多数投票。
 
-The paper tests on MMLU, GSM8K, biographies, MATH, and factuality benchmarks. Debate consistently beats CoT and Self-Reflection.
+论文在 MMLU、GSM8K、传记、MATH 和事实性基准上测试。辩论持续胜过思维链（CoT）和自我反思（Self-Reflection）。
 
-### Two independent knobs
+### 两个独立调节维度（Two independent knobs）
 
-Ablations from the same paper:
+同一论文的消融实验（Ablation）：
 
-- **Agent count alone** (1 round, majority vote of N) beats single-agent on most tasks, but plateaus.
-- **Round count alone** (1 agent seeing its own prior reasoning) barely helps — reflection's known weakness.
-- **Both together** produces the big jumps. The multi-round exchange between multiple agents drives the gain.
+- **只增加智能体数量**（1 轮，对 N 个答案多数投票）在多数任务上胜过单智能体，但会进入平台期。
+- **只增加轮数**（1 个智能体查看自己的先前推理）几乎无助益，这是反思的已知弱点。
+- **两者结合**才产生显著提升。多个智能体之间的多轮交流驱动收益。
 
-### Why it works
+### 为什么有效（Why it works）
 
-Two mechanisms:
+两个机制：
 
-1. **Exposure to disagreement.** When an agent sees another agent's reasoning chain with a different conclusion, it has to either justify or update. Either way, the context for round r+1 is richer than round r.
-2. **Correlated error reduction.** In self-consistency, all samples come from the same model, so the errors correlate — you average into a confidently wrong answer. Different models or different seeds decorrelate. Different *debated views* decorrelate further.
+1. **接触分歧。** 智能体看到另一条得出不同结论的推理链时，必须解释自己的答案或更新它。无论哪种，第 r+1 轮上下文都比第 r 轮丰富。
+2. **降低相关错误（Correlated error）。** 自一致性所有样本来自同一个模型，因此错误相关，平均后仍得到自信的错误答案。不同模型或随机种子降低相关性；不同的*辩论视角*进一步降低相关性。
 
-### Heterogeneous debate
+### 异构辩论（Heterogeneous debate）
 
-A-HMAD and related follow-ups use *different base models* for different agents. Llama + Claude + GPT debating reduces monoculture collapse (Lesson 26) because the correlated errors of one model family are not shared by the others.
+A-HMAD 及相关后续工作为不同智能体使用*不同基础模型*。Llama + Claude + GPT 辩论可减少单一模型生态坍塌（Monoculture collapse，第 26 课），因为某一模型族的相关错误不会被其他模型共享。
 
-Downside: a weak model participating in a debate can drag the consensus toward its wrong answer (see "Should we be going MAD?", arXiv:2311.17371).
+缺点：参与辩论的弱模型可能把共识拖向自己的错误答案（见《我们应该采用 MAD 吗？》，arXiv:2311.17371）。
 
-### NLSOM — the 129-agent extension
+### NLSOM：129 智能体扩展（the 129-agent extension）
 
-Zhuge et al. ("Mindstorms in Natural Language-Based Societies of Mind," arXiv:2305.17066) scaled this idea to 129-member societies. The result: specialization and self-organization emerge with scale, and the system outperforms single-agent on tasks like visual question answering.
+Zhuge 等人（《自然语言心智社会中的思维风暴》，arXiv:2305.17066）将这一思想扩展到 129 个成员的社会。结果：专门化和自组织随规模增长而涌现，系统在视觉问答等任务上胜过单智能体。
 
-### Failure modes
+### 故障模式（Failure modes）
 
-- **Sycophancy cascade.** All agents defer to whichever agent sounds most confident. The debate collapses to the loudest voice. Prompting for adversarial roles ("one agent must argue the counter-position") helps.
-- **Topic drift.** Debates over many rounds drift from the original question. Mitigation: re-inject the question every round.
-- **Compute blowup.** N agents × R rounds = N·R LLM calls, each with a context that grows. A 5-agent, 5-round debate is 25 calls at growing context. Cost per question can exceed 10× a single CoT call.
+- **迎合级联（Sycophancy cascade）。** 所有智能体都顺从听起来最自信的智能体。辩论退化为声音最大的那一方。提示词设置对抗角色（“一个智能体必须论证反方立场”）有帮助。
+- **话题漂移（Topic drift）。** 多轮辩论偏离原始问题。缓解：每轮重新注入问题。
+- **计算量激增。** N 个智能体 × R 轮 = N·R 次 LLM 调用，每次上下文还会增长。5 智能体、5 轮辩论就是上下文不断增长的 25 次调用。每题成本可能超过单次 CoT 调用的 10 倍。
 
 ```figure
 multi-agent-debate
 ```
 
-## Build It
+## 动手实现（Build It）
 
-`code/main.py` runs a 3-agent × 3-round debate on a math question where each agent starts with a different (possibly wrong) answer. Agents are scripted — each "updates" by averaging the neighbors' answers weighted by a scripted confidence. Convergence is visible in the round-by-round log.
+`code/main.py` 针对一道数学题运行 3 智能体 × 3 轮辩论，每个智能体从不同的、可能错误的答案开始。智能体是脚本化的：“更新”方式是按脚本设定的置信度，对邻居答案加权平均。逐轮日志中可见收敛过程。
 
-The demo shows two key effects:
+演示展示两个关键效果：
 
-- A single round of exchange moves agents closer to the correct answer.
-- Extra rounds past round 2 show diminishing returns (matches Du et al.'s plateau).
+- 单轮交流使智能体更接近正确答案。
+- 超过第 2 轮后，额外轮次收益递减（与 Du 等人的平台期一致）。
 
-Run:
+运行：
 
 ```
 python3 code/main.py
 ```
 
-## Use It
+## 实际应用（Use It）
 
-`outputs/skill-debate-configurator.md` configures a debate for a new task: number of agents, number of rounds, heterogeneity (same model vs mixed), role assignment (symmetric vs one-adversarial). It also estimates the token cost before you run.
+`outputs/skill-debate-configurator.md` 为新任务配置辩论：智能体数量、轮数、异构性（同模型或混合）、角色分配（对称或一个对抗角色）。还会在运行前估算词元成本。
 
-## Ship It
+## 交付成果（Ship It）
 
-If you ship debate:
+交付辩论系统时：
 
-- **Cap rounds at 3.** Du et al. show 3 rounds capture most of the gain. More is cost, not quality.
-- **Cap agents at 5.** Beyond 5, context bloat and cost dominate.
-- **Heterogeneous by default.** At least two different base models in the pool.
-- **Adversarial slot.** One agent prompted to disagree regardless. Breaks sycophancy.
-- **Log every round.** Debate systems that hide intermediate rounds cannot be debugged or audited.
+- **轮数上限设为 3。** Du 等人表明 3 轮获得大部分收益。再多只增加成本，不改善质量。
+- **智能体上限设为 5。** 超过 5 个后，上下文膨胀和成本占主导。
+- **默认异构。** 池中至少两种不同基础模型。
+- **对抗席位。** 通过提示词要求一个智能体无论如何都持异议，以打破迎合。
+- **记录每轮。** 隐藏中间轮次的辩论系统无法调试或审计。
 
-## Exercises
+## 练习（Exercises）
 
-1. Run `code/main.py`, then set the round count to 5 and watch diminishing returns. At which round does additional convergence stop?
-2. Add a fourth agent with an adversarial role: always disagree with the current majority. Does this break or improve convergence?
-3. Plot (print) the agreement score per round (fraction of agents on the majority answer). When does it hit 1.0 and is that equivalent to "correct"?
-4. Read Du et al. Section 4 ablations. Replicate the "agents-only" vs "rounds-only" vs "both" result using this code.
-5. Read "Should we be going MAD?" (arXiv:2311.17371) and list two debate variants beyond round-robin — e.g., judge-led, chain-of-debate, adversarial.
+1. 运行 `code/main.py`，将轮数设为 5，观察收益递减。到哪轮不再进一步收敛？
+2. 增加第四个对抗角色智能体，始终反对当前多数。这会破坏还是改善收敛？
+3. 绘制（打印）每轮一致度，即采用多数答案的智能体比例。何时达到 1.0？这是否等于“正确”？
+4. 阅读 Du 等人第 4 节消融实验，用本代码复现“仅智能体数量”“仅轮数”“两者结合”的结果。
+5. 阅读《我们应该采用 MAD 吗？》（arXiv:2311.17371），列出轮询之外两种辩论变体，如裁判主导、辩论链、对抗式。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语 | 常见说法 | 实际含义 |
 |------|----------------|------------------------|
-| Society of Mind | "Minsky's idea" | Intelligence as interacting specialists; 1986 framing now operationalized via LLM debate. |
-| Multi-agent debate | "Agents argue" | N agents propose, critique each other, revise over R rounds, majority-vote. |
-| Consensus | "They agree" | Not epistemic truth — just fraction-on-majority-answer. Can be confidently wrong. |
-| Rounds | "Exchange steps" | One round = each agent reads the others and updates once. |
-| Heterogeneous debate | "Mix model families" | Using different base models to decorrelate errors. |
-| Sycophancy cascade | "Everyone agrees with the loud one" | Debate failure where agents defer to the most confident agent regardless of correctness. |
-| NLSOM | "129-agent society" | Natural-language society of mind; Zhuge et al.'s scaled version. |
-| Correlated error | "Same model, same bug" | Why self-consistency saturates; debate across different views decorrelates. |
+| 心智社会（Society of Mind） | “Minsky 的思想” | 智能来自交互的专职成员；1986 年框架如今通过 LLM 辩论实现。 |
+| 多智能体辩论（Multi-agent debate） | “智能体争论” | N 个智能体提案、互相批评、经 R 轮修改，最后多数投票。 |
+| 共识（Consensus） | “它们同意了” | 不是认识论上的真，只是采用多数答案的比例，可能自信地错误。 |
+| 轮次（Rounds） | “交流步骤” | 一轮即每个智能体阅读其他答案并更新一次。 |
+| 异构辩论（Heterogeneous debate） | “混合模型族” | 使用不同基础模型降低错误相关性。 |
+| 迎合级联（Sycophancy cascade） | “都同意声音最大的” | 智能体不顾正确性，顺从最自信智能体的辩论故障。 |
+| 自然语言心智社会（Natural-language society of mind，NLSOM） | “129 智能体社会” | Zhuge 等人的规模化版本。 |
+| 相关错误（Correlated error） | “同模型，同缺陷” | 自一致性饱和的原因；跨视角辩论可降低相关性。 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [Du et al. — Improving Factuality and Reasoning in Language Models through Multiagent Debate](https://arxiv.org/abs/2305.14325) — the reference paper, ICML 2024
-- [Zhuge et al. — Mindstorms in Natural Language-Based Societies of Mind](https://arxiv.org/abs/2305.17066) — 129-agent NLSOM
-- [Should we be going MAD? A Look at Multi-Agent Debate Strategies for LLMs](https://arxiv.org/abs/2311.17371) — benchmarks debate variants
-- [Debate project page](https://composable-models.github.io/llm_debate/) — Du et al.'s code, demos, and ablation details
+- [Du 等：通过多智能体辩论改善语言模型的事实性与推理（Improving Factuality and Reasoning in Language Models through Multiagent Debate）](https://arxiv.org/abs/2305.14325)：参考论文，ICML 2024
+- [Zhuge 等：自然语言心智社会中的思维风暴（Mindstorms in Natural Language-Based Societies of Mind）](https://arxiv.org/abs/2305.17066)：129 智能体 NLSOM
+- [我们应该采用 MAD 吗？LLM 多智能体辩论策略考察（Should we be going MAD? A Look at Multi-Agent Debate Strategies for LLMs）](https://arxiv.org/abs/2311.17371)：辩论变体基准测试
+- [辩论项目页面（Debate project page）](https://composable-models.github.io/llm_debate/)：Du 等人的代码、演示及消融细节

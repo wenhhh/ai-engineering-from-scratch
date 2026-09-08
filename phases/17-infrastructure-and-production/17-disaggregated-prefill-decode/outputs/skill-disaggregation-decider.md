@@ -1,31 +1,31 @@
 ---
 name: disaggregation-decider
-description: Decide whether to adopt disaggregated prefill/decode (Dynamo or llm-d) for a given workload and cluster. Quantify prefill:decode ratios, KV transfer cost, and the expected savings.
+description: 根据工作负载和集群，决定是否采用预填充与解码分离（Dynamo 或 llm-d），并量化两者比例、KV 传输成本和预期节省。
 version: 1.0.0
 phase: 17
 lesson: 17
 tags: [disaggregated-serving, dynamo, llm-d, nixl, kv-transfer, prefill-decode]
 ---
 
-Given workload profile (prompt/output length distribution, model, concurrency), cluster topology (GPUs, fabric, RDMA availability), and current serving cost, produce a disaggregation decision.
+根据工作负载特征（提示词与输出长度分布、模型、并发量）、集群拓扑（GPU、网络、RDMA 可用性）和当前服务成本，给出是否分离的决策。
 
-Produce:
+需要提供：
 
-1. Disaggregate? Yes / No with numbered justification. Baseline: prompts > 512 AND outputs > 200. Fabric: RDMA available helps; TCP-only pushes break-even longer.
-2. Stack choice. NVIDIA Dynamo (managed orchestrator above vLLM/SGLang/TRT-LLM) or llm-d (Kubernetes-native Services). Match to the operational context.
-3. Prefill:decode ratio. Use Dynamo Planner Profiler readouts, or compute from workload shape (prefill TFLOPS vs decode bytes/sec). Example: 2 prefill : 1 decode for RAG-heavy; 1:2 for output-heavy.
-4. KV transfer plan. Named transport (NIXL over InfiniBand / RDMA / TCP fallback). Compute the per-request transfer tax for your prompt P99.
-5. Router integration. Cache-aware router (Phase 17 · 11) must be in front — disaggregation without prefix matching loses the cache win.
-6. Expected savings. Compute vs colocated baseline; cite the published case (30-40% at same SLA).
+1. 是否分离？回答是或否，并按编号说明理由。基准条件：提示词 >512 且输出 >200。网络方面，RDMA 可用有利于分离；只有 TCP 时，需要更长的提示词才能收支相抵。
+2. 服务栈选择。选择 NVIDIA Dynamo（位于 vLLM/SGLang/TRT-LLM 之上的托管编排器）或 llm-d（Kubernetes 原生 Service），并与运维环境匹配。
+3. 预填充与解码比例。使用 Dynamo Planner Profiler 的测量结果，或根据工作负载形态计算（预填充 TFLOPS 与解码字节/秒）。例如，RAG 占主导时采用 2 个预填充实例 : 1 个解码实例；输出占主导时采用 1:2。
+4. KV 传输方案。明确传输方式：NIXL 经由 InfiniBand / RDMA，或回退到 TCP。针对 P99 提示词长度，计算每请求传输开销。
+5. 路由器集成。必须在前端部署缓存感知路由器（阶段 17 · 11）；分离架构若没有前缀匹配，就会失去缓存收益。
+6. 预期节省。与混部基准计算对比，并引用公开案例：相同 SLA 下节省 30–40%。
 
-Hard rejects:
-- Disaggregating short-prompt workloads (<512 tokens). Refuse — the transfer tax dominates.
-- Deploying without a cache-aware router. Refuse — blind routing negates the KV locality.
-- Ignoring topology (rack packing). Refuse — KV transfer over multi-rack hops costs more than RDMA on the same rack.
+必须拒绝的情况：
+- 对短提示词工作负载（<512 词元）采用分离架构。拒绝：传输开销占主导。
+- 部署时没有缓存感知路由器。拒绝：盲目路由会抵消 KV 局部性的好处。
+- 忽略拓扑（同机架集中部署）。拒绝：跨多个机架传输 KV 的成本高于同机架 RDMA。
 
-Refusal rules:
-- If the cluster has < 4 GPUs, refuse — not enough pool diversity for disaggregation to pay off.
-- If no RDMA/InfiniBand and no plans, note that TCP raises the break-even to prompts >2K; re-evaluate.
-- If the team cannot operate two GPU pools with per-role scaling, refuse llm-d and require Dynamo as the managed alternative.
+拒绝规则：
+- 如果集群少于 4 块 GPU，拒绝：资源池配置多样性不足，分离架构难以产生收益。
+- 如果没有 RDMA/InfiniBand，也没有部署计划，说明 TCP 会将收支平衡点推高到提示词 >2K，并重新评估。
+- 如果团队无法运维两个按角色独立扩缩的 GPU 池，拒绝 llm-d，要求使用 Dynamo 作为托管替代方案。
 
-Output: a one-page decision with disaggregate Y/N, stack choice, ratio, transport, router, expected savings. End with the single metric to verify: KV transfer P99 latency; gate on exceeding a plan-specified threshold.
+输出：一页决策，列明是否分离（Y/N）、服务栈、比例、传输方式、路由器和预期节省。最后给出唯一需要验证的指标：KV 传输 P99 延迟；超过方案指定阈值时阻止放行。

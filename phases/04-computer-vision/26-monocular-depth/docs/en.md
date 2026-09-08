@@ -1,113 +1,113 @@
-# Monocular Depth & Geometry Estimation
+# 单目深度与几何估计（Monocular Depth & Geometry Estimation）
 
-> A depth map is a single-channel image where each pixel is a distance from the camera. Predicting it from one RGB frame used to be impossible without stereo or LiDAR. In 2026 a frozen ViT encoder plus a lightweight head gets within a few percent of ground truth.
+> 深度图是单通道图像，每个像素表示到相机的距离。过去，没有立体视觉或激光雷达（Light Detection and Ranging，LiDAR），仅凭一帧 RGB 图像预测深度曾被认为不可能。到 2026 年，冻结的 ViT 编码器加轻量预测头就能将误差控制在真值的几个百分点以内。
 
 **Type:** Build + Use
 **Languages:** Python
-**Prerequisites:** Phase 4 Lesson 14 (ViT), Phase 4 Lesson 17 (Self-Supervised Vision), Phase 4 Lesson 07 (U-Net)
-**Time:** ~60 minutes
+**Prerequisites:** 阶段 4 第 14 课（ViT）、阶段 4 第 17 课（自监督视觉）、阶段 4 第 07 课（U-Net）
+**Time:** 约 60 分钟
 
-## Learning Objectives
+## 学习目标（Learning Objectives）
 
-- Distinguish relative and metric depth and state which one each production model (MiDaS, Marigold, Depth Anything V3, ZoeDepth) solves
-- Use Depth Anything V3 (DINOv2 backbone) to predict depth for arbitrary single images with no calibration
-- Explain why monocular depth works at all from a single image (perspective cues, texture gradients, learned priors) and what it cannot recover (absolute scale, occluded geometry)
-- Lift 2D detections to 3D points using a depth map and pinhole camera intrinsics
+- 区分相对深度与度量深度，指出各生产模型（MiDaS、Marigold、Depth Anything V3、ZoeDepth）解决哪一种
+- 使用基于 DINOv2 骨干网络的 Depth Anything V3，无需标定即可预测任意单张图像的深度
+- 解释单张图像为何能支持单目深度估计，包括透视线索、纹理梯度和学习到的先验，以及无法恢复的内容，包括绝对尺度与被遮挡几何
+- 通过深度图和针孔相机内参，将二维检测提升为三维点
 
-## The Problem
+## 问题（The Problem）
 
-Depth is the missing axis in 2D computer vision. Given RGB, you know where things appear in the image plane; you do not know how far they are. Depth sensors (stereo rigs, LiDAR, time-of-flight) solve this directly but are expensive, fragile, and limited in range.
+深度是二维计算机视觉缺失的轴。给定 RGB，你知道事物出现在图像平面的什么位置，却不知道有多远。深度传感器，例如双目装置、激光雷达和飞行时间（Time of Flight，ToF）传感器，可以直接解决，但成本高、脆弱且量程有限。
 
-Monocular depth estimation — predicting depth from a single RGB frame — used to produce blurry, unreliable output. By 2026 large pretrained encoders changed that: Depth Anything V3 uses a frozen DINOv2 backbone and produces depth maps that generalise across indoor, outdoor, medical, and satellite domains. Marigold reframes depth as a conditional diffusion problem. ZoeDepth regresses true metric distances.
+单目深度估计（Monocular Depth Estimation），即从单帧 RGB 预测深度，过去输出模糊且不可靠。到 2026 年，大型预训练编码器改变了这一点：Depth Anything V3 使用冻结的 DINOv2 骨干网络，生成能泛化到室内、室外、医疗和卫星领域的深度图。Marigold 将深度重构为条件扩散问题，ZoeDepth 则回归真实的度量距离。
 
-Depth is also the bridge between 2D detection and 3D understanding: multiply a detected box's pixels by depth and you lift the 2D object into a 3D point cloud. That is the core of every AR occlusion system, every obstacle-avoidance pipeline, and every "pick up the cup" robot.
+深度也是二维检测与三维理解之间的桥梁：将检测框的像素乘以深度，就能把二维对象提升为三维点云。这是增强现实（Augmented Reality，AR）遮挡系统、避障流水线以及“拿起杯子”机器人的核心。
 
-## The Concept
+## 核心概念（The Concept）
 
-### Relative vs metric depth
+### 相对深度与度量深度（Relative vs metric depth）
 
-- **Relative depth** — ordered `z` values without a real-world unit. "Pixel A is closer than pixel B, but the ratio of distances is not anchored to metres."
-- **Metric depth** — absolute distance in metres from the camera. Requires the model to have learnt the statistical relationship between image cues and real distance.
+- **相对深度（Relative Depth）**：有顺序但没有现实单位的 `z` 值。“像素 A 比像素 B 近，但距离比例没有锚定到米。”
+- **度量深度（Metric Depth）**：以米表示到相机的绝对距离，要求模型学到图像线索与真实距离之间的统计关系。
 
-MiDaS and Depth Anything V3 produce relative depth. Marigold produces relative depth. ZoeDepth, UniDepth, and Metric3D produce metric depth. Metric models are sensitive to camera intrinsics; relative models are not.
+MiDaS、Depth Anything V3 和 Marigold 生成相对深度。ZoeDepth、UniDepth 和 Metric3D 生成度量深度。度量模型对相机内参敏感，相对模型则不是。
 
-### The encoder-decoder pattern
+### 编码器—解码器模式（The encoder-decoder pattern）
 
 ```mermaid
 flowchart LR
-    IMG["Image (H x W x 3)"] --> ENC["Frozen ViT encoder<br/>(DINOv2 / DINOv3)"]
-    ENC --> FEATS["Dense features<br/>(H/14, W/14, d)"]
-    FEATS --> DEC["Depth decoder<br/>(conv upsampler,<br/>DPT-style)"]
-    DEC --> DEPTH["Depth map<br/>(H, W, 1)"]
+    IMG["图像 (H x W x 3)"] --> ENC["冻结 ViT 编码器<br/>(DINOv2 / DINOv3)"]
+    ENC --> FEATS["密集特征<br/>(H/14, W/14, d)"]
+    FEATS --> DEC["深度解码器<br/>（卷积上采样器，<br/>DPT 风格）"]
+    DEC --> DEPTH["深度图<br/>(H, W, 1)"]
 
     style ENC fill:#dbeafe,stroke:#2563eb
     style DEC fill:#fef3c7,stroke:#d97706
     style DEPTH fill:#dcfce7,stroke:#16a34a
 ```
 
-Depth Anything V3 freezes the encoder and trains only the DPT-style decoder. The encoder provides rich features; the decoder interpolates them back to image resolution and regresses depth.
+Depth Anything V3 冻结编码器，仅训练密集预测 Transformer（Dense Prediction Transformer，DPT）风格解码器。编码器提供丰富特征，解码器将其插值回图像分辨率并回归深度。
 
-### Why a single image produces depth at all
+### 为什么单张图像也能产生深度（Why a single image produces depth at all）
 
-A 2D image contains many monocular cues that correlate with depth:
+二维图像包含很多与深度相关的单目线索：
 
-- **Perspective** — parallel lines in 3D converge in 2D.
-- **Texture gradient** — surfaces far away have smaller, denser texture.
-- **Occlusion order** — nearer objects occlude farther ones.
-- **Size constancy** — known objects (cars, humans) give approximate scale.
-- **Atmospheric perspective** — distant objects appear hazier and bluer in outdoor scenes.
+- **透视（Perspective）**：三维中的平行线在二维中会聚。
+- **纹理梯度（Texture Gradient）**：远处表面的纹理更小、更密。
+- **遮挡顺序（Occlusion Order）**：近处对象遮挡远处对象。
+- **大小恒常性（Size Constancy）**：汽车、人体等已知对象提供近似尺度。
+- **大气透视（Atmospheric Perspective）**：室外远处对象显得更朦胧、更偏蓝。
 
-A ViT trained on billions of images internalises these cues. With enough data and a strong backbone, monocular depth hits reasonable accuracy without any explicit 3D supervision.
+在数十亿图像上训练的 ViT 会内化这些线索。有了充足数据与强骨干网络，即使没有明确三维监督，单目深度也能达到合理准确率。
 
-### What monocular depth cannot do
+### 单目深度无法做到什么（What monocular depth cannot do）
 
-- **Absolute metric scale** without intrinsics or a known object in the scene. The network can predict "the cup is twice as far as the spoon" without knowing whether the cup is 1 m or 10 m away.
-- **Occluded geometry** — the back of a chair is unseen and cannot be inferred reliably.
-- **Truly untextured / reflective surfaces** — mirrors, glass, uniform walls. The network reports plausible but wrong depth.
+- 在没有内参或场景中已知对象的情况下恢复**绝对度量尺度（Absolute Metric Scale）**。网络能预测“杯子距离是勺子的两倍”，却不知道杯子在 1 米还是 10 米外。
+- 恢复**被遮挡几何（Occluded Geometry）**：看不到椅子背面，就无法可靠推断。
+- 处理**完全无纹理或反光表面（Untextured / Reflective Surfaces）**，例如镜子、玻璃、均匀墙面。网络会输出看似合理但错误的深度。
 
-### Depth Anything V3 in 2026
+### 2026 年的 Depth Anything V3（Depth Anything V3 in 2026）
 
-- Vanilla DINOv2 ViT-L/14 as encoder (frozen).
-- DPT decoder.
-- Trained on posed image pairs from diverse sources (no explicit depth supervision needed beyond photometric consistency).
-- Predicts spatially consistent geometry from **an arbitrary number of visual inputs, with or without known camera poses**.
-- SOTA across monocular depth, any-view geometry, visual rendering, camera pose estimation.
+- 使用普通 DINOv2 ViT-L/14 作为冻结编码器。
+- 使用 DPT 解码器。
+- 在来自多种来源、带相机位姿的图像对上训练，除了光度一致性外无需明确深度监督。
+- 从**任意数量的视觉输入预测空间一致的几何，无论是否已知相机位姿**。
+- 在单目深度、任意视角几何、视觉渲染和相机位姿估计上达到最先进水平（State of the Art，SOTA）。
 
-This is the drop-in model to call when you need depth in 2026.
+这是 2026 年需要深度时可以直接接入的模型。
 
-### Marigold — diffusion for depth
+### Marigold：用扩散估计深度（Marigold — diffusion for depth）
 
-Marigold (Ke et al., CVPR 2024) reframes depth estimation as conditional image-to-image diffusion. Conditioning: RGB. Target: depth map. Uses a pretrained Stable Diffusion 2 U-Net as backbone. Output depth maps are exceptionally sharp at object boundaries. Trade-off: slower inference than feed-forward models (10-50 denoising steps).
+Marigold（Ke 等，CVPR 2024）将深度估计重构为条件图生图扩散，条件是 RGB，目标是深度图。它以预训练的 Stable Diffusion 2 U-Net 为骨干网络，输出深度图的对象边界格外清晰。代价是推理比前馈模型慢，需要 10–50 步去噪。
 
-### Intrinsics and the pinhole camera
+### 内参与针孔相机（Intrinsics and the pinhole camera）
 
-To lift a pixel `(u, v)` with depth `d` to a 3D point `(X, Y, Z)` in camera coordinates:
+将深度为 `d` 的像素 `(u, v)` 提升为相机坐标系中的三维点 `(X, Y, Z)`：
 
 ```
-fx, fy, cx, cy = camera intrinsics
+fx, fy, cx, cy = 相机内参
 X = (u - cx) * d / fx
 Y = (v - cy) * d / fy
 Z = d
 ```
 
-Intrinsics come from EXIF metadata, a calibration pattern, or a monocular intrinsics estimator (Perspective Fields, UniDepth). Without intrinsics, you can still render a point cloud by assuming a 60-70° FOV and moderate-resolution principals — usable for visualisation, not for measurement.
+内参来自可交换图像文件格式（Exchangeable Image File Format，EXIF）元数据、标定图案或单目内参估计器，例如 Perspective Fields、UniDepth。没有内参时，也可假设 60–70° 视场角（Field of View，FOV）以及适合中等分辨率的主点位置来渲染点云，但仅适合可视化，不适合测量。
 
-### Evaluation
+### 评估（Evaluation）
 
-Two standard metrics:
+两个标准指标：
 
-- **AbsRel** (absolute relative error): `mean(|d_pred - d_gt| / d_gt)`. Lower is better. 0.05-0.1 for production models.
-- **delta < 1.25** (threshold accuracy): fraction of pixels where `max(d_pred/d_gt, d_gt/d_pred) < 1.25`. Higher is better. 0.9+ for SOTA.
+- **绝对相对误差（Absolute Relative Error，AbsRel）**：`mean(|d_pred - d_gt| / d_gt)`，越低越好，生产模型通常为 0.05–0.1。
+- **delta < 1.25（阈值准确率（Threshold Accuracy））**：满足 `max(d_pred/d_gt, d_gt/d_pred) < 1.25` 的像素比例，越高越好，SOTA 超过 0.9。
 
-For relative depth (Depth Anything V3, MiDaS), evaluation uses scale-and-shift invariant versions of both metrics.
+对于相对深度（Depth Anything V3、MiDaS），评估采用这两个指标的尺度与偏移不变版本。
 
 ```figure
 depth-sweep
 ```
 
-## Build It
+## 动手构建（Build It）
 
-### Step 1: Depth metrics
+### 第 1 步：深度指标（Step 1: Depth metrics）
 
 ```python
 import torch
@@ -127,11 +127,11 @@ def delta_accuracy(pred, target, threshold=1.25, mask=None):
     return (ratio < threshold).float().mean().item()
 ```
 
-Always mask invalid depth pixels (zero, NaN, saturated) before evaluation.
+评估前始终屏蔽无效深度像素，包括零值、非数（NaN）和饱和值。
 
-### Step 2: Scale-and-shift alignment
+### 第 2 步：尺度与偏移对齐（Step 2: Scale-and-shift alignment）
 
-For relative-depth models, align prediction to ground truth before computing metrics. Least-squares fit of `a * pred + b = target`:
+对于相对深度模型，计算指标前先将预测与真值对齐。对 `a * pred + b = target` 进行最小二乘拟合：
 
 ```python
 def align_scale_shift(pred, target, mask=None):
@@ -147,9 +147,9 @@ def align_scale_shift(pred, target, mask=None):
     return a * pred + b
 ```
 
-Run `align_scale_shift` before `abs_rel_error` when evaluating MiDaS / Depth Anything.
+评估 MiDaS / Depth Anything 时，先运行 `align_scale_shift`，再运行 `abs_rel_error`。
 
-### Step 3: Lift depth to a point cloud
+### 第 3 步：将深度提升为点云（Step 3: Lift depth to a point cloud）
 
 ```python
 import numpy as np
@@ -170,9 +170,9 @@ pc = depth_to_point_cloud(depth, intr)
 print(f"point cloud shape: {pc.shape}  (H, W, 3)")
 ```
 
-One function, every 3D-lifted application. Export the point cloud to `.ply` and open in MeshLab or CloudCompare.
+一个函数即可服务各种三维提升应用。将点云导出为 `.ply`，用 MeshLab 或 CloudCompare 打开。
 
-### Step 4: Smoke test with a synthetic depth scene
+### 第 4 步：用合成深度场景做冒烟测试（Step 4: Smoke test with a synthetic depth scene）
 
 ```python
 def synthetic_depth(size=96):
@@ -192,7 +192,7 @@ print(f"before align  absRel = {abs_rel_error(pred, gt):.3f}")
 print(f"after align   absRel = {abs_rel_error(aligned, gt):.3f}")
 ```
 
-### Step 5: Depth Anything V3 usage (reference)
+### 第 5 步：Depth Anything V3 用法参考（Step 5: Depth Anything V3 usage (reference)）
 
 ```python
 import torch
@@ -206,56 +206,56 @@ out = pipe(image)
 depth_np = np.array(out["depth"])
 ```
 
-Three lines. `out["depth"]` is a PIL grayscale; convert to numpy for math. For Depth Anything V3 specifically, swap the model id once released; the API is unchanged.
+只需三行。`out["depth"]` 是 PIL 灰度图，转换为 numpy 后即可计算。对于 Depth Anything V3，发布后更换模型标识即可，API 不变。
 
-## Use It
+## 实际应用（Use It）
 
-- **Depth Anything V3** (Meta AI / ByteDance, 2024-2026) — the default for relative depth. Fastest ViT-large-backbone model in production.
-- **Marigold** (ETH, 2024) — highest visual quality, slow inference.
-- **UniDepth** (ETH, 2024) — metric depth with camera intrinsics estimation.
-- **ZoeDepth** (Intel, 2023) — metric depth; older, still reliable.
-- **MiDaS v3.1** — legacy but stable; good baseline for comparison.
+- **Depth Anything V3**（Meta AI / ByteDance，2024–2026）：相对深度默认方案，生产中速度最快的 ViT-large 骨干网络模型。
+- **Marigold**（ETH，2024）：视觉质量最高，推理较慢。
+- **UniDepth**（ETH，2024）：同时估计度量深度与相机内参。
+- **ZoeDepth**（Intel，2023）：度量深度模型，较老但仍可靠。
+- **MiDaS v3.1**：较早但稳定，是良好的比较基线。
 
-Typical integration pattern:
+典型集成模式：
 
-1. RGB frame arrives.
-2. Depth model produces depth map.
-3. Detector produces boxes.
-4. Lift box centroids through depth to 3D; merge with point cloud if available.
-5. Downstream: AR occlusion, path planning, object-size estimation, stereo replacement.
+1. 接收 RGB 帧。
+2. 深度模型生成深度图。
+3. 检测器生成边界框。
+4. 通过深度将边界框中心提升到三维；若有点云则合并。
+5. 下游应用：AR 遮挡、路径规划、对象尺寸估计、替代立体视觉。
 
-For real-time use, Depth Anything V2 Small (INT8 quantised) hits ~30 fps on a consumer GPU at 518x518.
+对于实时用途，INT8 量化的 Depth Anything V2 Small 在消费级 GPU 上、518x518 分辨率下可达到约每秒 30 帧。
 
-## Ship It
+## 交付产物（Ship It）
 
-This lesson produces:
+本课产出：
 
-- `outputs/prompt-depth-model-picker.md` — picks between Depth Anything V3, Marigold, UniDepth, MiDaS given latency, metric-vs-relative need, and scene type.
-- `outputs/skill-depth-to-pointcloud.md` — a skill that builds point clouds from depth maps with correct intrinsics handling and export to `.ply`.
+- `outputs/prompt-depth-model-picker.md`：根据延迟、度量或相对深度需求及场景类型，选择 Depth Anything V3、Marigold、UniDepth 或 MiDaS。
+- `outputs/skill-depth-to-pointcloud.md`：从深度图构建点云的技能，正确处理内参并导出为 `.ply`。
 
-## Exercises
+## 练习（Exercises）
 
-1. **(Easy)** Run Depth Anything V2 on any 10 images of your desk. Save depth as grayscale PNGs and inspect. Identify one object whose predicted depth looks wrong and explain why the monocular cues failed.
-2. **(Medium)** Given RGB + depth from Depth Anything V2, lift to a point cloud and render with `open3d`. Compare two scenes (indoor / outdoor) and note which looks more believable.
-3. **(Hard)** Take five pairs of images that differ only by a known object's position (e.g. bottle moved 30 cm closer). Use UniDepth to predict metric depth on both. Report the predicted distance delta vs the true 30 cm.
+1. **（简单）** 在任意 10 张桌面照片上运行 Depth Anything V2。将深度保存为灰度 PNG 并检查，找出一个深度预测看起来错误的对象，解释单目线索为何失效。
+2. **（中等）** 给定 RGB 与 Depth Anything V2 的深度，提升为点云并用 `open3d` 渲染。比较室内和室外两个场景，记录哪个更可信。
+3. **（困难）** 拍摄五对仅有已知对象位置变化的图像，例如瓶子向相机靠近 30 厘米。用 UniDepth 分别预测度量深度，报告预测距离变化与真实 30 厘米的差异。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语 | 常见说法 | 实际含义 |
 |------|----------------|----------------------|
-| Monocular depth | "Single-image depth" | Depth estimation from one RGB frame, no stereo or LiDAR |
-| Relative depth | "Ordered depth" | Ordered z-values without real-world units |
-| Metric depth | "Absolute distance" | Depth in metres; requires calibration or a model trained with metric supervision |
-| AbsRel | "Absolute relative error" | Mean of |d_pred - d_gt| / d_gt; standard depth metric |
-| Delta accuracy | "delta < 1.25" | Fraction of pixels with prediction within 25% of ground truth |
-| Pinhole camera | "fx, fy, cx, cy" | The camera model used to lift (u, v, d) to (X, Y, Z) |
-| DPT | "Dense Prediction Transformer" | The conv-based decoder used on top of frozen ViT encoders for depth |
-| DINOv2 backbone | "The reason it works" | Self-supervised features that generalise across domains without depth labels |
+| 单目深度（Monocular Depth） | “单图深度” | 从一帧 RGB 估计深度，无需立体视觉或 LiDAR |
+| 相对深度（Relative Depth） | “有序深度” | 有顺序但没有现实单位的 z 值 |
+| 度量深度（Metric Depth） | “绝对距离” | 以米表示的深度，需要标定或接受度量监督训练的模型 |
+| 绝对相对误差（Absolute Relative Error，AbsRel） | “绝对相对误差” | |d_pred - d_gt| / d_gt 的均值，标准深度指标 |
+| 阈值准确率（Delta Accuracy） | “delta < 1.25” | 预测与真值差距在 25% 以内的像素比例 |
+| 针孔相机（Pinhole Camera） | “fx, fy, cx, cy” | 将 (u, v, d) 提升为 (X, Y, Z) 的相机模型 |
+| 密集预测 Transformer（Dense Prediction Transformer，DPT） | “密集预测 Transformer” | 冻结 ViT 编码器之上的卷积解码器，用于深度估计 |
+| DINOv2 骨干网络（DINOv2 Backbone） | “有效的原因” | 无需深度标签就能跨领域泛化的自监督特征 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [Depth Anything V3 paper page](https://depth-anything.github.io/) — SOTA monocular depth with DINOv2 encoder
-- [Marigold (Ke et al., CVPR 2024)](https://marigoldmonodepth.github.io/) — diffusion-based depth estimation
-- [UniDepth (Piccinelli et al., 2024)](https://arxiv.org/abs/2403.18913) — metric depth with intrinsics
-- [MiDaS v3.1 (Intel ISL)](https://github.com/isl-org/MiDaS) — the canonical relative-depth baseline
-- [DINOv3 blog post (Meta)](https://ai.meta.com/blog/dinov3-self-supervised-vision-model/) — the encoder family that lifts depth accuracy
+- [Depth Anything V3 论文页面](https://depth-anything.github.io/)：使用 DINOv2 编码器的 SOTA 单目深度
+- [Marigold（Ke 等，CVPR 2024）](https://marigoldmonodepth.github.io/)：基于扩散的深度估计
+- [UniDepth（Piccinelli 等，2024）](https://arxiv.org/abs/2403.18913)：带内参的度量深度
+- [MiDaS v3.1（Intel ISL）](https://github.com/isl-org/MiDaS)：经典相对深度基线
+- [DINOv3 博客文章（Meta）](https://ai.meta.com/blog/dinov3-self-supervised-vision-model/)：提升深度准确率的编码器家族

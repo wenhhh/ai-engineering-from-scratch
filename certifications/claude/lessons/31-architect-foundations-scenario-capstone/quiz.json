@@ -1,78 +1,78 @@
 {
   "lesson": "31-architect-foundations-scenario-capstone",
-  "title": "Defend One Architecture Across Six Contexts",
+  "title": "在六种情境中论证同一套架构（Defend One Architecture Across Six Contexts）",
   "questions": [
     {
       "stage": "pre",
-      "question": "What should an architect identify before selecting a multi-agent topology?",
+      "question": "在选择多智能体拓扑结构之前，架构师应先明确什么？",
       "options": [
-        "The largest context window available across candidate models and the documents that could fill it",
-        "The maximum agent count that the runtime can schedule within the expected latency and cost envelope",
-        "The decision, evidence, consequence, authority, dependencies, and failure behavior for the work",
-        "The preferred framework and its default orchestration primitives"
+        "候选模型所能提供的最大上下文窗口，以及能够填满它的文档",
+        "运行时在预期延迟和成本范围内能够调度的最大智能体数量",
+        "这项工作的决策、证据、后果、权限、依赖和故障行为",
+        "偏好的框架及其默认编排原语"
       ],
       "correct": 2,
-      "explanation": "Topology follows the work and its boundaries. Feature preference cannot replace requirements, prerequisites, or risk analysis."
+      "explanation": "拓扑结构取决于工作内容及其边界。功能偏好不能替代需求、前置条件或风险分析。"
     },
     {
       "stage": "check",
-      "question": "A support researcher and case analyst are independent, but drafting depends on both. Which structure fits?",
+      "question": "支持业务研究者和工单分析者相互独立，但起草工作依赖两者。哪种结构合适？",
       "options": [
-        "Run all three tasks concurrently and let the draft revise itself whenever either analysis finishes",
-        "Give every role the same write-capable tool so they can resolve missing inputs without orchestration delays",
-        "Allow the drafting role to issue a refund immediately when either analysis indicates customer harm",
-        "Fan out the two independent analyses, validate both results, then draft from their accepted outputs"
+        "并发运行全部三个任务，每当任一分析结束时，让草稿自行修订",
+        "给每个角色相同的可写工具，使其无需等待编排就能解决输入缺失问题",
+        "只要任一分析表明客户受到损害，就允许起草角色立即退款",
+        "扇出两项独立分析，校验两者的结果，再根据通过验收的输出起草"
       ],
       "correct": 3,
-      "explanation": "The first two tasks can run concurrently, while deterministic prerequisites should block drafting until both results are complete or explicitly partial."
+      "explanation": "前两个任务可以并发执行，而确定性的前置条件应阻止起草，直到两个结果都已完成，或明确标记为部分完成。"
     },
     {
       "stage": "check",
-      "question": "Valid JSON contains a value unsupported by its cited source. Which architecture gate failed?",
+      "question": "有效 JSON 中包含一个引用来源无法支持的值。哪道架构门禁失效了？",
       "options": [
-        "Provenance validation after the response passes structural schema validation",
-        "Context budgeting, because missing source detail indicates an undersized evidence window",
-        "Tool authorization, because retrieval returned insufficient evidence",
-        "Schema validation, because structure should prove that cited evidence entails each value"
+        "响应通过结构模式校验之后的来源溯源校验",
+        "上下文预算，因为缺少来源细节说明证据窗口过小",
+        "工具授权，因为检索返回的证据不足",
+        "模式校验，因为结构本应证明所引证据能够推出每个值"
       ],
       "correct": 0,
-      "explanation": "Structural validity passed, but the source does not support the value. The provenance layer must reject or escalate it."
+      "explanation": "结构有效性已经通过，但来源无法支持该值。来源溯源层必须拒绝它或将其升级处理。"
     },
     {
       "stage": "check",
-      "question": "Why should CI start from a clean checkout instead of a resumed developer session?",
+      "question": "为什么 CI 应从干净的检出状态开始，而不是恢复开发者会话？",
       "options": [
-        "CI should avoid tools entirely because any tool result makes the build depend on state outside the versioned repository",
-        "Declared repository and configuration state is reproducible and avoids hidden conversational or local assumptions",
-        "A clean checkout makes model behavior deterministic and removes the need for adversarial evaluation cases",
-        "A resumed session cannot access repository files after its first turn, so later checks would run without implementation context"
+        "CI 应完全避免使用工具，因为任何工具结果都会使构建依赖版本化仓库之外的状态",
+        "明确声明的仓库和配置状态可以复现，并能避免隐藏的对话假设或本地假设",
+        "干净的检出状态能使模型行为变得确定，因此不再需要对抗性评估案例",
+        "恢复的会话在首轮之后无法访问仓库文件，所以后续检查缺少实现上下文"
       ],
       "correct": 1,
-      "explanation": "A clean declared environment supports reproducible findings and prevents interactive state from silently controlling the gate."
+      "explanation": "干净且明确声明的环境有助于复现发现项，并防止交互式状态暗中控制门禁。"
     },
     {
       "stage": "post",
-      "question": "What is the strongest way to adapt one architecture to a new scenario lens?",
+      "question": "将一套架构适配到新的场景视角，最有力的方法是什么？",
       "options": [
-        "Copy the component topology and control placement unchanged, then rename only the scenario-specific entities",
-        "Remove failure tests that encode the original scenario, because retaining them would prevent the architecture from transferring cleanly",
-        "Document the source, authority, tool, configuration, validation, and context deltas while preserving applicable invariants",
-        "Increase the number of specialist agents so each newly discovered scenario difference receives an independent reasoning role"
+        "原样复制组件拓扑和控制位置，只重命名场景特定实体",
+        "删除编码了原场景的故障测试，因为保留它们会妨碍架构顺利迁移",
+        "记录来源、权限、工具、配置、校验和上下文的差异，同时保留适用的不变量",
+        "增加专业智能体数量，让每个新发现的场景差异都对应一个独立推理角色"
       ],
       "correct": 2,
-      "explanation": "Cross-scenario transfer requires explicit variation points. Some controls change, while provenance, errors, bounded authority, and verification generally remain."
+      "explanation": "跨场景迁移需要明确的变化点。有些控制会变化，而来源溯源、错误、受限权限和验证通常应保留。"
     },
     {
       "stage": "post",
-      "question": "A design contains many Claude features but no control for a named policy conflict. How should it be judged?",
+      "question": "某项设计包含许多 Claude 功能，却没有针对指定政策冲突的控制。应如何评价它？",
       "options": [
-        "Ready once schema validation passes for every output, regardless of unresolved policy conflicts",
-        "Ready if the chosen model has enough context to include the entire policy and every potentially conflicting source",
-        "Sophisticated because combining more product features increases the number of boundaries available to absorb policy failures",
-        "Incomplete because feature density does not close or control the named policy-conflict failure path"
+        "只要全部输出通过模式校验，就已就绪，无需考虑未解决的政策冲突",
+        "只要所选模型的上下文足以容纳全部政策和每个可能冲突的来源，就已就绪",
+        "设计成熟，因为组合更多产品功能会增加可以吸收政策故障的边界数量",
+        "设计不完整，因为堆叠功能没有封堵或控制指定的政策冲突故障路径"
       ],
       "correct": 3,
-      "explanation": "Architecture quality is measured by whether boundaries hold under scenario failures, not by the number of products or components used."
+      "explanation": "衡量架构质量的标准是边界能否在场景故障下持续成立，而不是使用了多少产品或组件。"
     }
   ]
 }

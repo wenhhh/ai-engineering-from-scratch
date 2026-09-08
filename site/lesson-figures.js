@@ -16,32 +16,33 @@
     s.id = 'lf-styles';
     s.textContent = [
       '.lf{border:1px solid var(--rule-soft,#ddd);background:var(--bg,#fafaf5);margin:28px 0;padding:0;font-family:var(--font-body,serif)}',
-      '.lf-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:12px 16px;border-bottom:1px solid var(--rule-soft,#ddd);font-family:var(--font-mono,monospace);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-mute,#777)}',
+      '.lf-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:12px;padding:12px 16px;border-bottom:1px solid var(--rule-soft,#ddd);font-family:var(--font-mono,monospace);font-size:.68rem;letter-spacing:0;text-transform:none;color:var(--ink-mute,#777)}',
       '.lf-head .lf-label{color:var(--blueprint,#3553ff)}',
       '.lf-body{padding:16px}',
-      '.lf-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 24px}',
+      '.lf-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px 24px}',
       '@media(max-width:640px){.lf-grid{grid-template-columns:1fr}}',
       '.lf-ctrl{display:flex;flex-direction:column;gap:4px}',
-      '.lf-ctrl label{font-family:var(--font-mono,monospace);font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft,#555);display:flex;justify-content:space-between}',
-      '.lf-ctrl label b{color:var(--blueprint,#3553ff);font-variant-numeric:tabular-nums}',
+      '.lf-ctrl label{font-family:var(--font-mono,monospace);font-size:.7rem;letter-spacing:0;text-transform:none;color:var(--ink-soft,#555);display:flex;gap:8px;overflow-wrap:anywhere;justify-content:space-between}',
+      '.lf-ctrl label b{color:var(--blueprint,#3553ff);flex-shrink:0;font-variant-numeric:tabular-nums}',
       '.lf-ctrl-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px}',
       '.lf-ctrl-head label{display:block}',
       '.lf-ctrl-head>b{color:var(--blueprint,#3553ff);font-family:var(--font-mono,monospace);font-size:.7rem;font-variant-numeric:tabular-nums}',
       '.lf-ctrl input[type=range]{width:100%;accent-color:var(--blueprint,#3553ff)}',
-      '.lf-ctrl select{font-family:var(--font-mono,monospace);font-size:.82rem;padding:4px 6px;background:var(--bg,#fafaf5);color:var(--ink,#1a1a1a);border:1px solid var(--rule-soft,#ddd)}',
+      '.lf-ctrl select{max-width:100%;min-width:0;font-family:var(--font-mono,monospace);font-size:.82rem;padding:4px 6px;background:var(--bg,#fafaf5);color:var(--ink,#1a1a1a);border:1px solid var(--rule-soft,#ddd)}',
       '.lf-out{margin-top:18px;padding-top:14px;border-top:1px dashed var(--rule-soft,#ddd)}',
-      '.lf-num{font-family:var(--font-mono,monospace);font-size:2rem;color:var(--blueprint,#3553ff);font-variant-numeric:tabular-nums;line-height:1}',
-      '.lf-num small{font-size:.9rem;color:var(--ink-soft,#555);letter-spacing:.04em}',
+      '.lf-num{font-family:var(--font-mono,monospace);font-size:2rem;color:var(--blueprint,#3553ff);font-variant-numeric:tabular-nums;line-height:1.2;overflow-wrap:anywhere}',
+      '.lf-num small{font-size:.9rem;color:var(--ink-soft,#555);letter-spacing:0}',
+      '.lf-num.lf-status{font-size:1.1rem;line-height:1.4}',
       '.lf-bar{position:relative;height:10px;background:var(--rule-soft,#eee);margin-top:12px;overflow:hidden}',
       '.lf-bar i{position:absolute;inset:0 auto 0 0;width:100%;background:var(--blueprint,#3553ff);transform:scaleX(0);transform-origin:left center;transition:transform 120ms var(--ease-out,cubic-bezier(.23,1,.32,1))}',
       '.lf-bar.over i{background:var(--warn,#b8870f)}',
-      '.lf-meta{font-family:var(--font-mono,monospace);font-size:.7rem;color:var(--ink-mute,#777);margin-top:8px;letter-spacing:.04em}',
+      '.lf-meta{font-family:var(--font-mono,monospace);font-size:.7rem;color:var(--ink-mute,#777);margin-top:8px;overflow-wrap:anywhere;line-break:anywhere;letter-spacing:0}',
       '.lf-formula{font-family:var(--font-mono,monospace);font-size:.72rem;color:var(--ink-soft,#555);margin-top:6px;word-break:break-word}',
       '.lf-cap{font-family:var(--font-body,serif);font-size:.92rem;color:var(--ink-soft,#555);line-height:1.5;padding:12px 16px;border-top:1px solid var(--rule-soft,#ddd)}',
       '.lesson-figure.lf-animated{border:1px solid var(--rule-soft,#ddd);background:var(--bg,#fafaf5);margin:28px 0;padding:14px}',
       '.lesson-figure.lf-animated svg{display:block;width:100%;height:auto;max-width:760px;margin:0 auto;color:var(--blueprint,#3553ff)}',
       '.lf-out svg{display:block;width:100%;height:auto;max-width:560px;margin:4px auto 0}',
-      '.lf-motion-toggle{display:inline-flex;align-items:center;justify-content:center;min-height:44px;margin:0 0 10px auto;padding:6px 12px;border:1px solid var(--rule-soft,#ddd);background:var(--bg,#fafaf5);color:var(--ink-soft,#555);font-family:var(--font-mono,monospace);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:color 180ms var(--ease-out,cubic-bezier(.23,1,.32,1)),border-color 180ms var(--ease-out,cubic-bezier(.23,1,.32,1)),opacity 180ms var(--ease-out,cubic-bezier(.23,1,.32,1))}',
+      '.lf-motion-toggle{display:inline-flex;align-items:center;justify-content:center;min-height:44px;margin:0 0 10px auto;padding:6px 12px;border:1px solid var(--rule-soft,#ddd);background:var(--bg,#fafaf5);color:var(--ink-soft,#555);font-family:var(--font-mono,monospace);font-size:.68rem;letter-spacing:0;text-transform:none;cursor:pointer;transition:color 180ms var(--ease-out,cubic-bezier(.23,1,.32,1)),border-color 180ms var(--ease-out,cubic-bezier(.23,1,.32,1)),opacity 180ms var(--ease-out,cubic-bezier(.23,1,.32,1))}',
       '.lf-motion-toggle:hover,.lf-motion-toggle:focus-visible{color:var(--blueprint,#3553ff);border-color:var(--blueprint,#3553ff)}',
       '.lf-motion-toggle[aria-pressed=true]{color:var(--blueprint,#3553ff);border-color:var(--blueprint,#3553ff);background:var(--blueprint-tint,rgba(53,83,255,.08))}',
       '.lf-motion-toggle:disabled{cursor:default;opacity:.72}',
@@ -346,14 +347,14 @@
     }
     if (!record.control) return;
     if (record.reduced) {
-      record.control.textContent = 'Motion reduced';
+      record.control.textContent = '已减少动态效果';
       record.control.disabled = true;
-      record.control.setAttribute('aria-label', 'Animation disabled because reduced motion is enabled');
+      record.control.setAttribute('aria-label', '已启用减少动态效果，动画已停用');
       record.control.setAttribute('aria-pressed', 'true');
     } else {
       record.control.disabled = false;
-      record.control.textContent = record.userPaused ? 'Play animation' : 'Pause animation';
-      record.control.setAttribute('aria-label', record.userPaused ? 'Play explanatory animation' : 'Pause explanatory animation');
+      record.control.textContent = record.userPaused ? '播放动画' : '暂停动画';
+      record.control.setAttribute('aria-label', record.userPaused ? '播放说明动画' : '暂停说明动画');
       record.control.setAttribute('aria-pressed', record.userPaused ? 'true' : 'false');
     }
   }
@@ -366,12 +367,12 @@
     var control = el('button', {
       class: 'lf-motion-toggle',
       type: 'button',
-      'aria-label': 'Pause explanatory animation',
+      'aria-label': '暂停说明动画',
       'aria-pressed': 'false'
-    }, ['Pause animation']);
+    }, ['暂停动画']);
     control.addEventListener('click', function () {
       record.userPaused = !record.userPaused;
-      control.setAttribute('aria-label', record.userPaused ? 'Play explanatory animation' : 'Pause explanatory animation');
+      control.setAttribute('aria-label', record.userPaused ? '播放说明动画' : '暂停说明动画');
       updateMotionPolicy(host);
     });
     host.insertBefore(control, host.firstChild || null);
@@ -529,8 +530,8 @@
       var replayControl = el('button', {
         class: 'lf-motion-toggle lf-replay',
         type: 'button',
-        'aria-label': 'Replay explanatory animation'
-      }, ['Replay animation']);
+        'aria-label': '重播说明动画'
+      }, ['重播动画']);
       replayControl.addEventListener('click', replay);
       var record = hostRecord(host);
       host.insertBefore(replayControl, record.control && record.control.nextSibling ? record.control.nextSibling : null);
@@ -561,7 +562,7 @@
     var svgs = host.querySelectorAll ? host.querySelectorAll('svg') : [];
     var figureName = (host.dataset.figure || 'lesson figure').trim().split(/\s+/)[0].replace(/[-_]+/g, ' ');
     var fallbackTitle = textFrom(host, '.lf-label', figureName);
-    var fallbackDesc = textFrom(host, '.lf-cap', 'Interactive explanation for ' + figureName + '.');
+    var fallbackDesc = textFrom(host, '.lf-cap', '交互说明：' + figureName + '.');
     for (var i = 0; i < svgs.length; i++) {
       var svg = svgs[i];
       var title = directSvgChild(svg, 'title');
@@ -650,9 +651,9 @@
       var pct = Math.min(100, gib / REF * 100);
       bar.style.transform = 'scaleX(' + (pct / 100) + ')';
       barWrap.classList.toggle('over', gib > REF);
-      meta.textContent = (gib > REF ? '⚠ exceeds ' : '') + Math.round(gib / REF * 100) + '% of one ' + REF + ' GiB GPU';
-      formula.textContent = '2 · ' + state.layers + ' layers · ' + state.kvHeads + ' kv-heads · ' + state.headDim +
-        ' head-dim · ' + fmtInt(state.seq) + ' tokens · ' + state.batch + ' batch · ' + state.dbytes + ' B';
+      meta.textContent = (gib > REF ? '⚠ 超出 ' : '') + Math.round(gib / REF * 100) + '%，相对于单张 ' + REF + ' GiB GPU';
+      formula.textContent = '2 · ' + state.layers + ' 层 · ' + state.kvHeads + ' 键值头（KV heads）· ' + state.headDim +
+        ' 头维度 · ' + fmtInt(state.seq) + ' 词元（Token）· ' + state.batch + ' 批量 · ' + state.dbytes + ' B';
     };
 
     var dtype = el('select');
@@ -662,18 +663,18 @@
     dtype.addEventListener('change', function () { state.dbytes = Number(dtype.value); state._render(); });
 
     var grid = el('div', { class: 'lf-grid' }, [
-      slider(state, 'seq', 'sequence length', 256, 131072, 256, fmtSeq),
-      slider(state, 'batch', 'batch size', 1, 128, 1),
-      slider(state, 'layers', 'layers', 1, 128, 1),
-      slider(state, 'kvHeads', 'kv heads (GQA)', 1, 128, 1),
-      slider(state, 'headDim', 'head dim', 32, 256, 8),
-      el('div', { class: 'lf-ctrl' }, [el('label', {}, ['dtype']), dtype])
+      slider(state, 'seq', '序列长度（Sequence length）', 256, 131072, 256, fmtSeq),
+      slider(state, 'batch', '批量大小（Batch size）', 1, 128, 1),
+      slider(state, 'layers', '层数', 1, 128, 1),
+      slider(state, 'kvHeads', '键值头（GQA）', 1, 128, 1),
+      slider(state, 'headDim', '头维度（Head dimension）', 32, 256, 8),
+      el('div', { class: 'lf-ctrl' }, [el('label', {}, ['数据类型（Dtype）']), dtype])
     ]);
 
     host.appendChild(el('div', { class: 'lf' }, [
-      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['KV-CACHE SIZER']), el('span', {}, ['drag the dimensions'])]),
+      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['键值缓存估算（KV cache）']), el('span', {}, ['拖动调整维度'])]),
       el('div', { class: 'lf-body' }, [grid, el('div', { class: 'lf-out' }, [num, barWrap, meta, formula])]),
-      el('div', { class: 'lf-cap' }, ['The cache holds one key and one value per token, per layer, per kv-head. It grows linearly with sequence length and batch — which is why long context at high batch is what fills the GPU, not the weights.'])
+      el('div', { class: 'lf-cap' }, ['缓存为每个词元、每层、每个键值头保存一个键和一个值。其大小随序列长度和批量大小线性增长，因此长上下文与大批量占满的是 GPU 缓存空间，而不只是权重。'])
     ]));
     state._render();
   }
@@ -703,20 +704,20 @@
       pts.forEach(function (xi, idx) { svg.appendChild(svgEl('circle', { cx: px(xi), cy: py(fx(xi)), r: idx === pts.length - 1 ? '5' : '3', fill: 'var(--blueprint,#3553ff)' })); });
       var last = pts[pts.length - 1];
       var conv = !diverged && Math.abs(last) < 0.05;
-      status.innerHTML = diverged ? 'diverged' : (conv ? 'converged' : 'x = ' + last.toFixed(3));
-      meta.textContent = diverged ? 'lr too large: each step overshoots the minimum and the loss explodes'
-        : 'final loss f(x) = ' + fx(last).toFixed(4) + '  ·  ' + state.steps + ' steps';
-      formula.textContent = 'x ← x − lr · 2x   (loss f(x) = x²,  diverges when lr > 1)';
+      status.innerHTML = diverged ? '已发散' : (conv ? '已收敛' : 'x = ' + last.toFixed(3));
+      meta.textContent = diverged ? '学习率过大：每一步都越过最小值，损失急剧增大'
+        : '最终损失 f(x) = ' + fx(last).toFixed(4) + '  ·  ' + state.steps + ' 步';
+      formula.textContent = 'x ← x − lr · 2x   （损失 f(x) = x²，lr > 1 时发散）';
     };
     var grid = el('div', { class: 'lf-grid' }, [
-      slider(state, 'lr', 'learning rate', 0.01, 1.2, 0.01),
-      slider(state, 'steps', 'steps', 1, 40, 1),
-      slider(state, 'x0', 'start x', -2.9, 2.9, 0.1)
+      slider(state, 'lr', '学习率（Learning rate）', 0.01, 1.2, 0.01),
+      slider(state, 'steps', '步数', 1, 40, 1),
+      slider(state, 'x0', '初始 x', -2.9, 2.9, 0.1)
     ]);
     host.appendChild(el('div', { class: 'lf' }, [
-      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['GRADIENT DESCENT']), el('span', {}, ['drag the learning rate'])]),
+      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['梯度下降（Gradient Descent）']), el('span', {}, ['拖动调整学习率'])]),
       el('div', { class: 'lf-body' }, [grid, el('div', { class: 'lf-out' }, [svg, el('div', { style: 'margin-top:12px' }, [status]), meta, formula])]),
-      el('div', { class: 'lf-cap' }, ['Each step moves downhill by the gradient times the learning rate. Too small and it crawls; too large and it overshoots and diverges. Training is the search for the rate in between.'])
+      el('div', { class: 'lf-cap' }, ['每一步沿下坡方向移动，幅度为梯度乘以学习率。学习率过小则进展缓慢，过大则越过最小值并发散。训练需要找到两者之间合适的学习率。'])
     ]));
     state._render();
   }
@@ -743,14 +744,14 @@
           el('div', { class: 'lf-bar' }, [bar])
         ]));
       });
-      meta.textContent = 'entropy ' + ent.toFixed(2) + ' bits  ·  ' + (T < 0.6 ? 'sharp / confident' : T > 1.6 ? 'flat / random' : 'balanced');
-      formula.textContent = 'softmax(zᵢ / T),  T = ' + T.toFixed(2) + '   ·   logits [' + logits.join(', ') + ']';
+      meta.textContent = '熵（Entropy）' + ent.toFixed(2) + ' 比特 · ' + (T < 0.6 ? '尖锐／高置信度' : T > 1.6 ? '平坦／随机' : '均衡');
+      formula.textContent = 'softmax(zᵢ / T),  T = ' + T.toFixed(2) + '   ·   未归一化分数（Logits）[' + logits.join(', ') + ']';
     };
-    var grid = el('div', {}, [slider(state, 'T', 'temperature', 0.1, 3.0, 0.05)]);
+    var grid = el('div', {}, [slider(state, 'T', '温度（Temperature）', 0.1, 3.0, 0.05)]);
     host.appendChild(el('div', { class: 'lf' }, [
-      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['SOFTMAX TEMPERATURE']), el('span', {}, ['drag T'])]),
+      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['Softmax 温度（Temperature）']), el('span', {}, ['拖动调整 T'])]),
       el('div', { class: 'lf-body' }, [grid, el('div', { class: 'lf-out' }, [rows, meta, formula])]),
-      el('div', { class: 'lf-cap' }, ['Temperature divides the logits before the exponential. Below 1 it sharpens the distribution toward the top token; above 1 it flattens toward uniform. At T→0 it is argmax; at T→∞ it is a coin flip.'])
+      el('div', { class: 'lf-cap' }, ['温度在指数运算前用于除未归一化分数（Logits）。小于 1 时分布向最高分词元集中，大于 1 时趋于均匀。T→0 时等同于 argmax；T→∞ 时近似随机选择。'])
     ]));
     state._render();
   }
@@ -777,15 +778,15 @@
       svg.appendChild(curve(test, 'var(--blueprint,#3553ff)'));
       svg.appendChild(svgEl('circle', { cx: px(state.d), cy: py(test(state.d)), r: '5', fill: 'var(--blueprint,#3553ff)' }));
       svg.appendChild(svgEl('circle', { cx: px(state.d), cy: py(train(state.d)), r: '4', fill: 'var(--ink-mute,#999)' }));
-      var region = state.d < best - 1 ? 'underfit · high bias' : state.d > best + 1 ? 'overfit · high variance' : 'sweet spot';
-      status.innerHTML = region + ' <small>· degree ' + state.d + '</small>';
-      meta.textContent = 'train err ' + train(state.d).toFixed(2) + '  ·  test err ' + test(state.d).toFixed(2) + '  ·  test min at degree ' + best;
+      var region = state.d < best - 1 ? '欠拟合（Underfitting）· 高偏差' : state.d > best + 1 ? '过拟合（Overfitting）· 高方差' : '最佳平衡点';
+      status.innerHTML = region + ' <small>· 次数 ' + state.d + '</small>';
+      meta.textContent = '训练误差 ' + train(state.d).toFixed(2) + '  ·  测试误差 ' + test(state.d).toFixed(2) + '  ·  测试误差最小时的次数 ' + best;
     };
-    var grid = el('div', {}, [slider(state, 'd', 'model complexity (polynomial degree)', 1, DMAX, 1)]);
+    var grid = el('div', {}, [slider(state, 'd', '模型复杂度（多项式次数）', 1, DMAX, 1)]);
     host.appendChild(el('div', { class: 'lf' }, [
-      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['BIAS – VARIANCE']), el('span', {}, ['drag complexity'])]),
+      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['偏差与方差（Bias–Variance）']), el('span', {}, ['拖动调整复杂度'])]),
       el('div', { class: 'lf-body' }, [grid, el('div', { class: 'lf-out' }, [svg, el('div', { style: 'margin-top:10px' }, [status]), meta])]),
-      el('div', { class: 'lf-cap' }, ['Grey is training error, blue is test error. Simple models miss the signal (high bias); complex models fit the noise (high variance). Test error is their sum, lowest where the two pressures balance.'])
+      el('div', { class: 'lf-cap' }, ['灰色表示训练误差，蓝色表示测试误差。简单模型遗漏信号（高偏差），复杂模型拟合噪声（高方差）。测试误差是两者之和，在二者平衡处最低。'])
     ]));
     state._render();
   }
@@ -812,17 +813,17 @@
         ]));
       });
       var shrink = Math.round((1 - norm / norm0) * 100);
-      status.innerHTML = '‖w‖ = ' + norm.toFixed(2) + ' <small>· ' + shrink + '% smaller</small>';
-      meta.textContent = lam < 0.05 ? 'λ ≈ 0: full-strength weights, risk of overfitting'
-        : lam > 5 ? 'λ large: weights crushed toward 0, model underfits'
-          : 'λ shrinks every weight toward zero, trading fit for smoothness';
+      status.innerHTML = '‖w‖ = ' + norm.toFixed(2) + ' <small>· ' + shrink + '% 缩减</small>';
+      meta.textContent = lam < 0.05 ? 'λ ≈ 0：权重未收缩，有过拟合风险'
+        : lam > 5 ? 'λ 较大：权重被压向 0，模型欠拟合'
+          : 'λ 将各权重向零收缩，以拟合程度换取平滑性';
       formula.textContent = 'J(w) + λ‖w‖²   →   wᵢ ≈ wᵢ⁰ / (1 + λ),  λ = ' + lam.toFixed(2);
     };
-    var grid = el('div', {}, [slider(state, 'lam', 'λ  (regularization strength)', 0, 10, 0.1)]);
+    var grid = el('div', {}, [slider(state, 'lam', 'λ（正则化强度）', 0, 10, 0.1)]);
     host.appendChild(el('div', { class: 'lf' }, [
-      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['L2 REGULARIZATION']), el('span', {}, ['drag λ'])]),
+      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['L2 正则化（Regularization）']), el('span', {}, ['拖动调整 λ'])]),
       el('div', { class: 'lf-body' }, [grid, el('div', { class: 'lf-out' }, [rows, el('div', { style: 'margin-top:12px' }, [status]), meta, formula])]),
-      el('div', { class: 'lf-cap' }, ['L2 adds the squared weight norm to the loss. Raising λ pulls every coefficient toward zero, smoothing the model. Too little and it overfits; too much and it forgets the signal.'])
+      el('div', { class: 'lf-cap' }, ['L2 将权重范数的平方加入损失。增大 λ 会把每个系数拉向零，使模型平滑。过小会过拟合，过大则会丢失信号。'])
     ]));
     state._render();
   }
@@ -853,22 +854,22 @@
       for (i = 0; i <= 160; i++) { var s = N * i / 160; d += (i ? 'L' : 'M') + px(s).toFixed(1) + ' ' + py(lrAt(s, peak), peak).toFixed(1) + ' '; }
       svg.appendChild(svgEl('path', { d: d, fill: 'none', stroke: 'var(--blueprint,#3553ff)', 'stroke-width': '2' }));
       if (state.sched === 'warmup-cosine') { var wx = px(state.warmup / 100 * N); svg.appendChild(svgEl('line', { x1: wx, y1: PAD, x2: wx, y2: H - PAD, stroke: 'var(--rule-soft,#ddd)', 'stroke-width': '1', 'stroke-dasharray': '3 3' })); }
-      meta.textContent = 'peak lr ' + peak.toFixed(3) + (state.sched === 'warmup-cosine' ? '  ·  warmup ' + state.warmup + '% of steps' : '') + '  ·  ' + N + ' steps';
-      formula.textContent = { constant: 'lr = peak', step: 'lr = peak · 0.5^⌊step / (N/3)⌋', exponential: 'lr = peak · e^(−3·step/N)', cosine: 'lr = peak · ½(1 + cos(π·step/N))', 'warmup-cosine': 'linear warmup → cosine decay to 0' }[state.sched];
+      meta.textContent = '峰值学习率 ' + peak.toFixed(3) + (state.sched === 'warmup-cosine' ? '  ·  预热（Warmup）' + state.warmup + '% 的步数' : '') + '  ·  ' + N + ' 步';
+      formula.textContent = { constant: 'lr = peak', step: 'lr = peak · 0.5^⌊step / (N/3)⌋', exponential: 'lr = peak · e^(−3·step/N)', cosine: 'lr = peak · ½(1 + cos(π·step/N))', 'warmup-cosine': '线性预热 → 余弦衰减至 0' }[state.sched];
     };
     var sel = el('select');
-    [['warmup + cosine', 'warmup-cosine'], ['cosine', 'cosine'], ['step decay', 'step'], ['exponential', 'exponential'], ['constant', 'constant']].forEach(function (o) { sel.appendChild(el('option', { value: o[1] }, [o[0]])); });
+    [['预热与余弦（Warmup + Cosine）', 'warmup-cosine'], ['余弦（Cosine）', 'cosine'], ['阶梯衰减（Step Decay）', 'step'], ['指数衰减（Exponential）', 'exponential'], ['恒定（Constant）', 'constant']].forEach(function (o) { sel.appendChild(el('option', { value: o[1] }, [o[0]])); });
     sel.value = state.sched;
     sel.addEventListener('change', function () { state.sched = sel.value; state._render(); });
     var grid = el('div', { class: 'lf-grid' }, [
-      el('div', { class: 'lf-ctrl' }, [el('label', {}, ['schedule']), sel]),
-      slider(state, 'peak', 'peak lr (×10⁻²)', 1, 100, 1),
-      slider(state, 'warmup', 'warmup (% steps)', 0, 30, 1)
+      el('div', { class: 'lf-ctrl' }, [el('label', {}, ['调度（Schedule）']), sel]),
+      slider(state, 'peak', '峰值学习率（×10⁻²）', 1, 100, 1),
+      slider(state, 'warmup', '预热（步数百分比）', 0, 30, 1)
     ]);
     host.appendChild(el('div', { class: 'lf' }, [
-      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['LR SCHEDULE']), el('span', {}, ['pick a schedule'])]),
+      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['学习率调度（LR schedule）']), el('span', {}, ['选择调度方案'])]),
       el('div', { class: 'lf-body' }, [grid, el('div', { class: 'lf-out' }, [svg, meta, formula])]),
-      el('div', { class: 'lf-cap' }, ['The learning rate rarely stays fixed. A short warmup avoids early instability; cosine or step decay then anneals the rate toward zero so late training settles into a good minimum.'])
+      el('div', { class: 'lf-cap' }, ['学习率很少保持不变。短暂预热可避免初期不稳定，随后通过余弦或阶梯衰减使学习率趋向零，让训练后期稳定于合适的最小值。'])
     ]));
     state._render();
   }
@@ -900,22 +901,22 @@
         var renorm = on ? probs[i] / kSum : 0;
         var bar = el('i'); bar.style.transform = 'scaleX(' + renorm.toFixed(3) + ')';
         if (!on) bar.style.background = 'var(--rule-soft,#ccc)';
-        var lab = el('label', {}, [labels[i] + (on ? '' : ' ·'), el('b', {}, [on ? (renorm * 100).toFixed(1) + '%' : 'cut'])]);
+        var lab = el('label', {}, [labels[i] + (on ? '' : ' ·'), el('b', {}, [on ? (renorm * 100).toFixed(1) + '%' : '已剔除'])]);
         if (!on) lab.style.opacity = '0.45';
         rows.appendChild(el('div', { class: 'lf-ctrl' }, [lab, el('div', { class: 'lf-bar' }, [bar])]));
       });
-      meta.textContent = kept + ' of ' + probs.length + ' tokens survive  ·  ' + (T < 0.5 ? 'low T: near-greedy' : T > 1.2 ? 'high T: wild' : 'balanced');
-      formula.textContent = 'softmax(z / T) → keep top-' + (state.k === 0 ? '∞' : state.k) + ' → keep smallest set with cumulative ≥ ' + state.p.toFixed(2) + ' → renormalize';
+      meta.textContent = kept + ' / ' + probs.length + ' 个词元保留 · ' + (T < 0.5 ? '低温度：接近贪心选择' : T > 1.2 ? '高温度：随机性强' : '均衡');
+      formula.textContent = 'softmax(z / T) → 保留 top-' + (state.k === 0 ? '∞' : state.k) + ' → 保留累计概率 ≥ ' + state.p.toFixed(2) + ' → 重新归一化';
     };
     var grid = el('div', { class: 'lf-grid' }, [
-      slider(state, 'T', 'temperature', 0.1, 2.0, 0.05),
-      slider(state, 'k', 'top-k (0 = off)', 0, 10, 1),
-      slider(state, 'p', 'top-p (nucleus)', 0.1, 1.0, 0.05)
+      slider(state, 'T', '温度（Temperature）', 0.1, 2.0, 0.05),
+      slider(state, 'k', '前 k 项（Top-k，0 为关闭）', 0, 10, 1),
+      slider(state, 'p', '核采样（Top-p）', 0.1, 1.0, 0.05)
     ]);
     host.appendChild(el('div', { class: 'lf' }, [
-      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['SAMPLING DECODER']), el('span', {}, ['temperature → top-k → top-p'])]),
+      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['采样解码器（Sampling decoder）']), el('span', {}, ['温度 → 前 k 项（Top-k）→ 核采样（Top-p）'])]),
       el('div', { class: 'lf-body' }, [grid, el('div', { class: 'lf-out' }, [rows, meta, formula])]),
-      el('div', { class: 'lf-cap' }, ['Decoding runs three filters in order. Temperature reshapes the distribution, top-k caps the candidate count, top-p keeps the smallest set covering probability p. What survives is renormalized and sampled from.'])
+      el('div', { class: 'lf-cap' }, ['解码依次经过三道筛选。温度重塑分布，top-k 限制候选数量，top-p 保留累计概率达到 p 的最小集合。最后对保留项重新归一化并采样。'])
     ]));
     state._render();
   }
@@ -934,21 +935,21 @@
       var L = 1.69 + 406.4 / Math.pow(N, 0.34) + 410.7 / Math.pow(D, 0.28);
       var C = 6 * N * D;
       var ratio = D / N;
-      num.innerHTML = L.toFixed(3) + ' <small>loss</small>';
+      num.innerHTML = L.toFixed(3) + ' <small>损失（Loss）</small>';
       var pct = Math.max(2, Math.min(100, (ratio / 20) * 50));
       bar.style.transform = 'scaleX(' + (pct / 100) + ')';
       barWrap.classList.toggle('over', ratio > 30 || ratio < 12);
-      meta.textContent = human(ratio) + ' tokens/param  ·  ' + (ratio < 12 ? 'under-trained: too few tokens' : ratio > 30 ? 'over-trained: spend on params instead' : 'near Chinchilla-optimal (~20)');
-      formula.textContent = 'N = ' + human(N) + ' params · D = ' + human(D) + ' tokens · compute 6ND ≈ ' + human(C) + ' FLOPs';
+      meta.textContent = human(ratio) + ' 词元／参数 · ' + (ratio < 12 ? '训练不足：词元太少' : ratio > 30 ? '训练过量：应将预算用于参数' : '接近 Chinchilla 最优比例（约 20）');
+      formula.textContent = 'N = ' + human(N) + ' 参数 · D = ' + human(D) + ' 词元 · 计算量 6ND ≈ ' + human(C) + ' FLOPs';
     };
     var grid = el('div', { class: 'lf-grid' }, [
-      slider(state, 'logN', 'parameters (10^x)', 7, 12, 0.1),
-      slider(state, 'logD', 'tokens (10^x)', 9, 13, 0.1)
+      slider(state, 'logN', '参数量（10^x）', 7, 12, 0.1),
+      slider(state, 'logD', '词元量（10^x）', 9, 13, 0.1)
     ]);
     host.appendChild(el('div', { class: 'lf' }, [
-      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['SCALING LAWS']), el('span', {}, ['drag params and tokens'])]),
+      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['规模定律（Scaling laws）']), el('span', {}, ['拖动调整参数与词元量'])]),
       el('div', { class: 'lf-body' }, [grid, el('div', { class: 'lf-out' }, [num, barWrap, meta, formula])]),
-      el('div', { class: 'lf-cap' }, ['The Chinchilla fit predicts loss from parameters and tokens. For a fixed compute budget, loss is lowest near 20 tokens per parameter. Most early large models were badly under-trained: too many parameters, too few tokens.'])
+      el('div', { class: 'lf-cap' }, ['Chinchilla 拟合根据参数量和词元量预测损失。在固定计算预算下，每个参数约对应 20 个词元时损失最低。早期大多数大型模型训练不足：参数过多，词元过少。'])
     ]));
     state._render();
   }
@@ -971,22 +972,22 @@
       num.innerHTML = gb.toFixed(gb < 10 ? 2 : 1) + ' <small>GB</small>';
       bar.style.transform = 'scaleX(' + Math.min(1, state.bits / 32) + ')';
       var levels = Math.pow(2, state.bits);
-      var err = state.bits >= 16 ? 'negligible' : state.bits >= 8 ? '< 1% perplexity hit' : state.bits >= 4 ? 'small with good schemes (GPTQ/AWQ)' : 'large: needs care';
-      meta.textContent = Math.round((1 - bytes / bytesFp32) * 100) + '% smaller than fp32  ·  quantization error: ' + err;
-      formula.textContent = human(N) + ' params · ' + state.bits + ' bits = ' + (state.bits >= 16 ? '2^' + state.bits : human(levels)) + ' levels per weight';
+      var err = state.bits >= 16 ? '可忽略' : state.bits >= 8 ? '困惑度（Perplexity）影响 < 1%' : state.bits >= 4 ? '采用合适方案（GPTQ/AWQ）时较小' : '较大：需谨慎';
+      meta.textContent = Math.round((1 - bytes / bytesFp32) * 100) + '%，相对 fp32 的缩减比例 · 量化误差：' + err;
+      formula.textContent = human(N) + ' 参数 · ' + state.bits + ' 比特 = ' + (state.bits >= 16 ? '2^' + state.bits : human(levels)) + ' 个量化级别／权重';
     };
     var sel = el('select');
-    [['fp32 (32-bit)', 32], ['fp16 / bf16 (16-bit)', 16], ['int8 (8-bit)', 8], ['int4 (4-bit)', 4], ['int2 (2-bit)', 2]].forEach(function (o) { sel.appendChild(el('option', { value: o[1] }, [o[0]])); });
+    [['fp32 (32 位)', 32], ['fp16 / bf16 (16 位)', 16], ['int8 (8 位)', 8], ['int4 (4 位)', 4], ['int2 (2 位)', 2]].forEach(function (o) { sel.appendChild(el('option', { value: o[1] }, [o[0]])); });
     sel.value = state.bits;
     sel.addEventListener('change', function () { state.bits = Number(sel.value); state._render(); });
     var grid = el('div', { class: 'lf-grid' }, [
-      slider(state, 'logN', 'parameters (10^x)', 8, 12, 0.05),
-      el('div', { class: 'lf-ctrl' }, [el('label', {}, ['precision']), sel])
+      slider(state, 'logN', '参数量（10^x）', 8, 12, 0.05),
+      el('div', { class: 'lf-ctrl' }, [el('label', {}, ['精度（Precision）']), sel])
     ]);
     host.appendChild(el('div', { class: 'lf' }, [
-      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['QUANTIZATION']), el('span', {}, ['pick the precision'])]),
+      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['量化（Quantization）']), el('span', {}, ['选择精度'])]),
       el('div', { class: 'lf-body' }, [grid, el('div', { class: 'lf-out' }, [num, barWrap, meta, formula])]),
-      el('div', { class: 'lf-cap' }, ['Each weight costs its bit-width in storage. Halving the bits halves the memory and roughly doubles throughput, while the precision lost grows. 8-bit is nearly free; 4-bit needs careful schemes; below that, accuracy falls off.'])
+      el('div', { class: 'lf-cap' }, ['每个权重占用与其位宽对应的存储。位数减半可使内存减半、吞吐量大致翻倍，但精度损失随之增大。8 位几乎没有精度代价；4 位需要审慎的方案；再低则准确率会明显下降。'])
     ]));
     state._render();
   }
@@ -1014,17 +1015,17 @@
       });
       var mx = px(state.pos);
       svg.appendChild(svgEl('line', { x1: mx, y1: PAD, x2: mx, y2: H - PAD, stroke: 'var(--ink-mute,#999)', 'stroke-width': '1', 'stroke-dasharray': '3 3' }));
-      meta.textContent = 'position ' + state.pos + '  ·  base ' + Math.round(base).toLocaleString('en-US') + '  ·  4 of ' + D + ' dimension pairs shown (dark = low dim, fast)';
-      formula.textContent = 'θ(pos, i) = pos / base^(2i/d)   ·   low dims rotate fast, high dims slow';
+      meta.textContent = '位置 ' + state.pos + '  ·  底数 ' + Math.round(base).toLocaleString('en-US') + '  ·  显示 4 / ' + D + ' 对维度（深色表示低维、旋转快）';
+      formula.textContent = 'θ(pos, i) = pos / base^(2i/d)   ·   低维旋转快，高维旋转慢';
     };
     var grid = el('div', { class: 'lf-grid' }, [
-      slider(state, 'pos', 'token position', 0, SEQ, 1),
-      slider(state, 'logBase', 'base (10^x)', 2, 5, 0.1)
+      slider(state, 'pos', '词元位置', 0, SEQ, 1),
+      slider(state, 'logBase', '底数（10^x）', 2, 5, 0.1)
     ]);
     host.appendChild(el('div', { class: 'lf' }, [
-      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['ROTARY POSITION']), el('span', {}, ['drag position and base'])]),
+      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['旋转位置编码（Rotary position）']), el('span', {}, ['拖动调整位置与底数'])]),
       el('div', { class: 'lf-body' }, [grid, el('div', { class: 'lf-out' }, [svg, meta, formula])]),
-      el('div', { class: 'lf-cap' }, ['RoPE rotates each pair of dimensions by an angle that grows with position. Low dimensions use high frequencies (rotate fast, encode nearby order); high dimensions use low frequencies (rotate slowly, encode long-range distance). Raising the base stretches every wavelength, extending usable context.'])
+      el('div', { class: 'lf-cap' }, ['旋转位置编码（RoPE）将每对维度旋转一定角度，角度随位置增长。低维使用高频率（旋转快，编码邻近顺序）；高维使用低频率（旋转慢，编码长距离关系）。增大底数会拉长所有波长，扩展可用上下文。'])
     ]));
     state._render();
   }
@@ -1043,20 +1044,20 @@
       var full = mats * state.d * state.d;
       var lora = mats * 2 * state.d * state.r;
       var frac = lora / full * 100;
-      num.innerHTML = frac.toFixed(frac < 1 ? 3 : 2) + ' <small>% trainable</small>';
+      num.innerHTML = frac.toFixed(frac < 1 ? 3 : 2) + ' <small>% 可训练</small>';
       bar.style.transform = 'scaleX(' + Math.min(1, frac * 0.08) + ')';
-      meta.textContent = human(lora) + ' trainable of ' + human(full) + ' frozen  ·  ' + Math.round(full / lora) + 'x fewer gradients to store';
-      formula.textContent = 'ΔW = B·A,  A∈ℝ^{r×d}, B∈ℝ^{d×r}  →  2·d·r per matrix vs d²  =  2r/d = ' + (2 * state.r / state.d * 100).toFixed(3) + '%';
+      meta.textContent = human(lora) + ' 个可训练参数，对应 ' + human(full) + ' 个冻结参数 · ' + Math.round(full / lora) + ' 倍梯度存储节省';
+      formula.textContent = 'ΔW = B·A,  A∈ℝ^{r×d}, B∈ℝ^{d×r}  →  每个矩阵 2·d·r 个参数，对比 d²，比例 = 2r/d = ' + (2 * state.r / state.d * 100).toFixed(3) + '%';
     };
     var grid = el('div', { class: 'lf-grid' }, [
-      slider(state, 'd', 'model dim d', 512, 8192, 128),
-      slider(state, 'r', 'LoRA rank r', 1, 128, 1),
-      slider(state, 'layers', 'layers (q,v each)', 1, 96, 1)
+      slider(state, 'd', '模型维度 d', 512, 8192, 128),
+      slider(state, 'r', '低秩适配（LoRA）的秩 r', 1, 128, 1),
+      slider(state, 'layers', '层数（每层 q、v）', 1, 96, 1)
     ]);
     host.appendChild(el('div', { class: 'lf' }, [
-      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['LORA RANK']), el('span', {}, ['drag the rank'])]),
+      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['LoRA 秩（Rank）']), el('span', {}, ['拖动调整秩'])]),
       el('div', { class: 'lf-body' }, [grid, el('div', { class: 'lf-out' }, [num, barWrap, meta, formula])]),
-      el('div', { class: 'lf-cap' }, ['LoRA freezes the d×d weight and trains a low-rank update B·A with only 2·d·r parameters. The trainable fraction is 2r/d, so a rank of 8 on a 4096-dim model trains well under one percent of the weights while keeping most of the quality.'])
+      el('div', { class: 'lf-cap' }, ['低秩适配（LoRA）冻结 d×d 权重，仅用 2·d·r 个参数训练低秩更新 B·A。可训练比例为 2r/d，因此在 4096 维模型上使用秩 8，可训练权重远低于百分之一，同时保留大部分质量。'])
     ]));
     state._render();
   }
@@ -1089,14 +1090,14 @@
       var tx = px(state.thr);
       svg.appendChild(svgEl('line', { x1: tx, y1: PAD, x2: tx, y2: H - PAD, stroke: 'var(--warn,#b8870f)', 'stroke-width': '1.5' }));
       status.innerHTML = 'F1 = ' + f1.toFixed(3);
-      meta.textContent = 'precision ' + prec.toFixed(2) + '  ·  recall ' + rec.toFixed(2) + '  ·  TP ' + Math.round(tp) + ' · FP ' + Math.round(fp) + ' · FN ' + Math.round(fn);
-      formula.textContent = 'predict positive when score ≥ ' + state.thr.toFixed(2) + '   ·   raise it for precision, lower it for recall';
+      meta.textContent = '精确率（Precision）' + prec.toFixed(2) + '  ·  召回率（Recall）' + rec.toFixed(2) + '  ·  TP ' + Math.round(tp) + ' · FP ' + Math.round(fp) + ' · FN ' + Math.round(fn);
+      formula.textContent = '分数 ≥ ' + state.thr.toFixed(2) + ' 时预测为正类 · 提高阈值提升精确率，降低阈值提升召回率';
     };
-    var grid = el('div', {}, [slider(state, 'thr', 'decision threshold', 0.02, 0.98, 0.01)]);
+    var grid = el('div', {}, [slider(state, 'thr', '决策阈值（Decision threshold）', 0.02, 0.98, 0.01)]);
     host.appendChild(el('div', { class: 'lf' }, [
-      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['PRECISION / RECALL']), el('span', {}, ['drag the threshold'])]),
+      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['精确率／召回率（Precision / Recall）']), el('span', {}, ['拖动调整阈值'])]),
       el('div', { class: 'lf-body' }, [grid, el('div', { class: 'lf-out' }, [svg, el('div', { style: 'margin-top:10px' }, [status]), meta, formula])]),
-      el('div', { class: 'lf-cap' }, ['Grey is the negative class, blue the positive; the orange line is the threshold. Move it right and you predict positive less often: precision rises, recall falls. F1 is their harmonic mean, highest where the two curves cross.'])
+      el('div', { class: 'lf-cap' }, ['灰色为负类，蓝色为正类，橙线是阈值。向右移动阈值会减少正类预测：精确率上升，召回率下降。F1 是两者的调和平均，在两条曲线交点处最高。'])
     ]));
     state._render();
   }
@@ -1119,14 +1120,14 @@
       svg.appendChild(svgEl('path', { d: d, fill: 'none', stroke: 'var(--blueprint,#3553ff)', 'stroke-width': '2' }));
       svg.appendChild(svgEl('circle', { cx: px(p), cy: py(loss), r: '5', fill: 'var(--blueprint,#3553ff)' }));
       num.innerHTML = loss.toFixed(3) + ' <small>nats</small>';
-      meta.textContent = p > 0.9 ? 'confident and correct: loss near zero' : p < 0.1 ? 'confident and wrong: loss explodes' : 'uncertain: moderate loss';
-      formula.textContent = 'loss = −log(p_true),  p = ' + p.toFixed(3) + '   ·   p→1 gives 0, p→0 gives ∞';
+      meta.textContent = p > 0.9 ? '自信且正确：损失接近零' : p < 0.1 ? '自信却错误：损失急剧增大' : '不确定：损失适中';
+      formula.textContent = '损失 = −log(p_true)，p = ' + p.toFixed(3) + '   ·   p→1 时为 0，p→0 时趋于 ∞';
     };
-    var grid = el('div', {}, [slider(state, 'p', 'probability on the true class', 0.01, 1.0, 0.01)]);
+    var grid = el('div', {}, [slider(state, 'p', '真实类别的概率', 0.01, 1.0, 0.01)]);
     host.appendChild(el('div', { class: 'lf' }, [
-      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['CROSS-ENTROPY LOSS']), el('span', {}, ['drag the probability'])]),
+      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['交叉熵损失（Cross-entropy loss）']), el('span', {}, ['拖动调整概率'])]),
       el('div', { class: 'lf-body' }, [grid, el('div', { class: 'lf-out' }, [svg, el('div', { style: 'margin-top:10px' }, [num]), meta, formula])]),
-      el('div', { class: 'lf-cap' }, ['Cross-entropy charges −log of the probability the model put on the correct answer. Right and confident costs almost nothing; wrong and confident costs a fortune. That asymmetry is what pushes the model to be calibrated, not just correct.'])
+      el('div', { class: 'lf-cap' }, ['交叉熵取模型赋予正确答案的概率的负对数。自信且正确时损失几乎为零；自信却错误时损失很大。这种不对称促使模型不仅预测正确，还要校准（Calibration）置信度。'])
     ]));
     state._render();
   }
@@ -1147,13 +1148,13 @@
       svg.appendChild(vec(CX + R, CY, 'var(--ink-mute,#999)'));
       svg.appendChild(vec(CX + R * cos, CY - R * Math.sin(rad), 'var(--blueprint,#3553ff)'));
       num.innerHTML = cos.toFixed(3) + ' <small>cos θ</small>';
-      meta.textContent = state.deg + '°  ·  ' + (cos > 0.7 ? 'similar' : cos > 0.1 ? 'loosely related' : cos > -0.1 ? 'unrelated (orthogonal)' : 'opposite');
+      meta.textContent = state.deg + '°  ·  ' + (cos > 0.7 ? '相似' : cos > 0.1 ? '弱相关' : cos > -0.1 ? '不相关（正交，Orthogonal）' : '相反');
     };
-    var grid = el('div', {}, [slider(state, 'deg', 'angle between vectors', 0, 180, 1)]);
+    var grid = el('div', {}, [slider(state, 'deg', '向量间夹角', 0, 180, 1)]);
     host.appendChild(el('div', { class: 'lf' }, [
-      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['COSINE SIMILARITY']), el('span', {}, ['drag the angle'])]),
+      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['余弦相似度（Cosine similarity）']), el('span', {}, ['拖动调整角度'])]),
       el('div', { class: 'lf-body' }, [grid, el('div', { class: 'lf-out' }, [svg, el('div', { style: 'margin-top:10px' }, [num]), meta])]),
-      el('div', { class: 'lf-cap' }, ['Embeddings compare by angle, not distance. Cosine is 1 when two vectors point the same way, 0 when orthogonal (unrelated), and negative when opposed. Magnitude drops out, so a long document and a short query can still match.'])
+      el('div', { class: 'lf-cap' }, ['嵌入通过夹角而非距离比较。向量同向时余弦为 1，正交（不相关）时为 0，反向时为负。由于不受大小影响，长文档与短查询也能匹配。'])
     ]));
     state._render();
   }
@@ -1171,18 +1172,18 @@
       var docWords = 1000;
       var seq = Math.round(docWords * tpw);
       var emb = vocab * state.dim;
-      num.innerHTML = human(emb) + ' <small>embedding params</small>';
-      meta.textContent = tpw.toFixed(2) + ' tokens/word  ·  a ' + docWords + '-word doc ≈ ' + seq + ' tokens';
-      formula.textContent = 'vocab ' + human(vocab) + ' × dim ' + state.dim + ' = embedding table  ·  bigger vocab → fewer tokens, larger table';
+      num.innerHTML = human(emb) + ' <small>嵌入参数</small>';
+      meta.textContent = tpw.toFixed(2) + ' 词元／词 · ' + docWords + ' 词文档 ≈ ' + seq + ' 个词元（Token）';
+      formula.textContent = '词表 ' + human(vocab) + ' × 维度 ' + state.dim + ' = 嵌入表 · 词表越大 → 词元越少，表越大';
     };
     var grid = el('div', { class: 'lf-grid' }, [
-      slider(state, 'logV', 'vocabulary (2^x)', 8, 18, 1),
-      slider(state, 'dim', 'embedding dim', 128, 4096, 128)
+      slider(state, 'logV', '词表大小（2^x）', 8, 18, 1),
+      slider(state, 'dim', '嵌入维度', 128, 4096, 128)
     ]);
     host.appendChild(el('div', { class: 'lf' }, [
-      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['TOKENIZER TRADEOFF']), el('span', {}, ['drag the vocab size'])]),
+      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['分词器权衡（Tokenizer tradeoff）']), el('span', {}, ['拖动调整词表大小'])]),
       el('div', { class: 'lf-body' }, [grid, el('div', { class: 'lf-out' }, [num, meta, formula])]),
-      el('div', { class: 'lf-cap' }, ['A larger vocabulary splits text into fewer tokens, so sequences are shorter and cheaper to attend over. But the embedding and output tables scale with vocab size, so the gain is paid back in parameters. Real tokenizers sit where the two pressures balance, around 32K to 128K.'])
+      el('div', { class: 'lf-cap' }, ['较大的词表将文本拆成更少词元，使序列更短，注意力计算更便宜。但嵌入表和输出表随词表增大，收益会转化为参数成本。实际分词器通常在两种压力之间取平衡，词表约为 32K 至 128K。'])
     ]));
     state._render();
   }
@@ -1200,19 +1201,19 @@
       var stride = state.chunk - ov;
       var nChunks = Math.ceil((corpus - ov) / stride);
       var ctx = state.topk * state.chunk;
-      num.innerHTML = fmtInt(nChunks) + ' <small>chunks</small>';
-      meta.textContent = 'top-' + state.topk + ' retrieval feeds ' + fmtInt(ctx) + ' tokens into the prompt  ·  ' + human(nChunks) + ' vectors to store';
-      formula.textContent = 'chunks = ⌈(corpus − overlap) / (chunk − overlap)⌉  ·  corpus = ' + human(corpus) + ' tokens';
+      num.innerHTML = fmtInt(nChunks) + ' <small>分块</small>';
+      meta.textContent = 'top-' + state.topk + ' 检索向提示词输入 ' + fmtInt(ctx) + ' 个词元 · ' + human(nChunks) + ' 个向量需要存储';
+      formula.textContent = '分块数 = ⌈(corpus − overlap) / (chunk − overlap)⌉ · 语料量 = ' + human(corpus) + ' 个词元（Token）';
     };
     var grid = el('div', { class: 'lf-grid' }, [
-      slider(state, 'chunk', 'chunk size (tokens)', 64, 2048, 32),
-      slider(state, 'overlap', 'overlap (tokens)', 0, 256, 8),
-      slider(state, 'topk', 'top-k retrieved', 1, 20, 1)
+      slider(state, 'chunk', '分块大小（词元）', 64, 2048, 32),
+      slider(state, 'overlap', '重叠量（词元）', 0, 256, 8),
+      slider(state, 'topk', '检索前 k 项（Top-k）', 1, 20, 1)
     ]);
     host.appendChild(el('div', { class: 'lf' }, [
-      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['RAG CHUNKING']), el('span', {}, ['drag chunk and k'])]),
+      el('div', { class: 'lf-head' }, [el('span', { class: 'lf-label' }, ['检索增强生成分块（RAG chunking）']), el('span', {}, ['拖动调整分块与 k'])]),
       el('div', { class: 'lf-body' }, [grid, el('div', { class: 'lf-out' }, [num, meta, formula])]),
-      el('div', { class: 'lf-cap' }, ['Small chunks pinpoint the relevant passage but fragment context and multiply the vectors to index. Large chunks keep context whole but dilute each match and blow up the tokens fed into the prompt. Overlap softens boundaries at the cost of more chunks.'])
+      el('div', { class: 'lf-cap' }, ['小分块能精确定位相关段落，但会割裂上下文并增加索引向量数量。大分块保留完整上下文，却稀释单次匹配，并增加传入提示词的词元量。重叠能缓和边界，代价是更多分块。'])
     ]));
     state._render();
   }

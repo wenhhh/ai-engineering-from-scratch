@@ -1,50 +1,50 @@
-# Building an MCP Client: Discovery, Routing, and Dual-Era Fallback
+# 构建 MCP 客户端：发现、路由与双时期回退（Building an MCP Client: Discovery, Routing, and Dual-Era Fallback）
 
-> A modern MCP client repeats its contract on every request. Its hardest compatibility decision is knowing when an old server is truly old and when a modern server is reporting a correctable error.
+> 现代 MCP 客户端在每次请求中重复契约。最难的兼容性决策，是分清服务器确实很旧，还是现代服务器正在报告可纠正的错误。
 
 **Type:** Build
 **Languages:** Python
-**Prerequisites:** Phase 13, Lesson 07
-**Time:** ~85 minutes
+**Prerequisites:** 阶段 13，第 07 课
+**Time:** ~85 分钟
 
-## Learning Objectives
+## 学习目标（Learning Objectives）
 
-- Build every MCP `2026-07-28` request with current metadata.
-- Probe stdio servers with `server/discover` and select a mutually supported version.
-- Authorize a bounded legacy probe only for explicitly allowlisted peers.
-- Accept a legacy era only after validating a positive `initialize` result for a supported revision.
-- Merge deterministic tool lists without silently overwriting collisions.
-- Route calls to the peer that owns each tool without inventing protocol sessions.
+- 用当前元数据构建每个 MCP `2026-07-28` 请求。
+- 用 `server/discover` 探测 stdio 服务器，选择双方支持的版本。
+- 仅为显式列入允许列表的对端授权有界旧版探测。
+- 只有校验了支持修订版的正向 `initialize` 结果后，才接受旧版时期。
+- 合并确定性工具列表，不静默覆盖冲突项。
+- 将调用路由到工具所属对端，不虚构协议会话。
 
-## The Problem
+## 问题（The Problem）
 
-An agent host usually talks to more than one MCP server. It must discover each server, merge tool catalogs, resolve duplicate names, route calls, and recover from transport failure.
+智能体宿主通常会访问多个 MCP 服务器，必须发现各服务器、合并工具目录、解决重名、路由调用，并从传输故障恢复。
 
-The `2026-07-28` revision makes the steady state simpler because each request is self-contained. Compatibility makes startup more subtle. A client may encounter:
+`2026-07-28` 修订版让每个请求自包含，因此稳态更简单。兼容性却让启动更微妙。客户端可能遇到：
 
-- a modern server that supports the preferred version;
-- a modern server that returns a recognized version or header error;
-- a legacy server that has never heard of `server/discover`;
-- a legacy server that stays silent until it receives `initialize`.
+- 支持首选版本的现代服务器；
+- 返回已识别版本或头错误的现代服务器；
+- 从未听说 `server/discover` 的旧版服务器；
+- 收到 `initialize` 之前保持沉默的旧版服务器。
 
-Treating every probe error as legacy is dangerous. A malformed modern request, an overloaded server, a dead process, and an old server can all produce the same timeout or connection close. Those signals are ambiguous. The client must combine explicit operator intent with positive protocol evidence before it chooses the legacy era.
+把所有探测错误都当成旧版很危险。格式错误的现代请求、过载服务器、已死亡进程和旧服务器，都可能产生相同的超时或连接关闭。这些信号有歧义。客户端必须结合显式运维意图和正向协议证据，才能选择旧版时期。
 
-## The Concept
+## 概念（The Concept）
 
-### A peer, not a protocol session
+### 对端，而非协议会话（A peer, not a protocol session）
 
-Keep one transport peer record for each server process or endpoint:
+为每个服务器进程或端点保存一份传输对端（Peer）记录：
 
-- transport handle or send function;
-- selected protocol era and version;
-- last discovered server capabilities;
-- last deterministic tool list;
-- pending request ids for correlation;
-- transport health.
+- 传输句柄或发送函数；
+- 选定的协议时期与版本；
+- 最近发现的服务器能力；
+- 最近一次确定性工具列表；
+- 用于关联的待处理请求 id；
+- 传输健康状态。
 
-This is client bookkeeping. It is not protocol session state. On modern MCP, the server still receives current version and capabilities on every request.
+这是客户端记账，不是协议会话状态。在现代 MCP 上，服务器仍会在每次请求中收到当前版本与能力。
 
-### Build every modern request from scratch
+### 每次从头构建现代请求（Build every modern request from scratch）
 
 ```python
 def modern_request(request_id, method, params, version, capabilities):
@@ -63,117 +63,117 @@ def modern_request(request_id, method, params, version, capabilities):
     }
 ```
 
-Do not attach metadata once to a connection object and assume it reached the wire. Stamp and inspect the final serialized request.
+不要只向连接对象附加一次元数据，就假设它已进入线上传输。应给最终序列化请求写入元数据并检查。
 
-### Modern discovery
+### 现代发现（Modern discovery）
 
-`server/discover` returns supported versions, server capabilities, instructions, cache hints, and recommended server identity. A client chooses the highest mutually supported modern version.
+`server/discover` 返回支持版本、服务器能力、说明、缓存提示和推荐服务器身份。客户端选择双方支持的最高现代版本。
 
-Discovery is optional for a modern-only client, but it is recommended on stdio. Some legacy servers accept an operation before initialization, so sending `tools/list` first can produce an ambiguous success. `server/discover` creates a clean era boundary.
+仅支持现代协议的客户端可以不做发现，但 stdio 推荐做。某些旧版服务器在初始化之前就接受操作，因此先发送 `tools/list` 可能得到含糊的成功结果。`server/discover` 则创建清晰的时期边界。
 
-### The stdio compatibility probe
+### stdio 兼容性探测（The stdio compatibility probe）
 
-A dual-era stdio client sends `server/discover` with its preferred modern metadata before any other request. There are three outcome classes:
+双时期 stdio 客户端在任何其他请求前，以首选现代元数据发送 `server/discover`。有三类结果：
 
-1. **DiscoverResult.** The server is modern. Select a mutually supported version and continue with per-request metadata.
-2. **Recognized modern error.** The server is modern. For `-32022`, choose from `data.supported` and retry with a new request id. For header or capability errors, correct the request. Do not send `initialize`.
-3. **Ambiguous signal.** An unrecognized JSON-RPC error, timeout, connection close, or empty response does not identify an era. Fail closed unless that exact peer is configured for legacy compatibility.
+1. **发现结果（DiscoverResult）。** 服务器是现代的。选择双方支持的版本，继续携带逐请求元数据。
+2. **已识别的现代错误（Recognized modern error）。** 服务器是现代的。对于 `-32022`，从 `data.supported` 选择版本，用新请求 id 重试。对于头或能力错误，纠正请求，不发送 `initialize`。
+3. **歧义信号（Ambiguous signal）。** 未识别的 JSON-RPC 错误、超时、连接关闭或空响应都不能确定时期。除非这个确切对端已配置旧版兼容，否则失败时关闭（Fail closed）。
 
-Recognized modern protocol errors include:
+已识别的现代协议错误包括：
 
-- `-32020` HeaderMismatch
-- `-32021` MissingRequiredClientCapability
-- `-32022` UnsupportedProtocolVersion
+- `-32020` 头不匹配（HeaderMismatch）
+- `-32021` 缺少所需客户端能力（MissingRequiredClientCapability）
+- `-32022` 不支持的协议版本（UnsupportedProtocolVersion）
 
-Recognized modern errors remain modern even when the peer is on the legacy allowlist. Once a server proves that it understands the modern error vocabulary, sending `initialize` would be a downgrade.
+即使对端在旧版允许列表中，已识别的现代错误仍表明它是现代协议。服务器一旦证明理解现代错误词汇，再发送 `initialize` 就是降级。
 
-Do not treat `-32601` as positive legacy evidence. It only makes an explicitly allowlisted peer eligible for one legacy probe. The same rule applies to a timeout, connection close, or empty response.
+不要把 `-32601` 当作正向旧版证据。它只让显式列入允许列表的对端有资格进行一次旧版探测。超时、连接关闭或空响应也遵循同一规则。
 
-### Allowlisting is operator intent, not evidence
+### 允许列表是运维意图，不是证据（Allowlisting is operator intent, not evidence）
 
-Legacy compatibility must be an explicit property of one pinned peer configuration:
+旧版兼容必须是某个固定对端配置的显式属性：
 
 ```python
 client.add_server("archive", archive_transport, allow_legacy=True)
 ```
 
-Bind that choice to the configured command or endpoint. Do not use a wildcard that lets an arbitrary server opt itself into weaker semantics. A peer without `allow_legacy=True` fails after an ambiguous discovery outcome and never receives `initialize`.
+将选择绑定到配置的命令或端点。不要用通配符，让任意服务器自行选择较弱语义。没有 `allow_legacy=True` 的对端在发现结果含糊后失败，绝不收到 `initialize`。
 
-The allowlist grants permission to probe. It does not select the era. The client sends one `initialize` under a transport-enforced deadline, then requires all of the following:
+允许列表授予探测权限，不选择时期。客户端在传输层强制的期限内发送一次 `initialize`，然后要求全部满足：
 
-- a JSON-RPC `2.0` response with the matching request id;
-- exactly one `result` and no `error`;
-- a `protocolVersion` in the client's configured legacy revision set;
-- an object-valued `capabilities` field;
-- a `serverInfo` object with non-empty string `name` and `version` fields.
+- JSON-RPC `2.0` 响应，具有匹配的请求 id；
+- 恰好一个 `result`，且没有 `error`；
+- `protocolVersion` 位于客户端配置的旧版修订集合中；
+- 对象值的 `capabilities` 字段；
+- `serverInfo` 对象，含非空字符串 `name` 和 `version` 字段。
 
-A timeout, connection close, error response, malformed result, mismatched id, or unsupported revision fails closed. Only a structurally valid positive result selects the legacy era. The code passes `legacy_probe_timeout_ms` to the transport adapter; a real stdio or HTTP adapter must enforce that deadline rather than merely record it.
+超时、连接关闭、错误响应、格式错误结果、id 不匹配或不支持的修订版都失败关闭。只有结构有效的正向结果才选择旧版时期。代码向传输适配器传递 `legacy_probe_timeout_ms`；真实 stdio 或 HTTP 适配器必须强制这个期限，不能只是记录。
 
-Cache the selected era for the transport peer. Do not probe again before every call.
+为传输对端缓存选定时期，不要每次调用前重新探测。
 
-### Legacy is a compatibility branch
+### 旧版是兼容分支（Legacy is a compatibility branch）
 
-Once the bounded probe returns valid positive legacy evidence, the client uses the selected legacy version exactly as defined by that revision:
+有界探测返回有效正向旧版证据后，客户端严格按选中修订版的定义使用旧版：
 
-1. Verify the response envelope and correlation id.
-2. Verify the negotiated revision is in the configured legacy set.
-3. Record validated capabilities and server identity.
-4. Send `notifications/initialized` only after all checks pass.
-5. Use legacy request shapes for that transport lifetime.
+1. 验证响应封装与关联 id。
+2. 验证协商修订版位于配置的旧版集合。
+3. 记录已校验能力与服务器身份。
+4. 仅在全部检查通过后发送 `notifications/initialized`。
+5. 在该传输生命周期内使用旧版请求形态。
 
-This branch exists for interoperability with known peers. It is not the default design for new servers or new requests. If the transport restarts or its endpoint changes, discard the peer-era cache and negotiate again.
+此分支用于和已知对端互操作，不是新服务器或新请求的默认设计。传输重启或端点变化时，丢弃对端时期缓存，重新协商。
 
-### Discovering and caching tools
+### 工具发现与缓存（Discovering and caching tools）
 
-For each active peer, call `tools/list`. A modern result includes `resultType`, `ttlMs`, and `cacheScope`. Honor the freshness hint within the correct authorization context. Re-fetch after expiry or a subscribed list-change event.
+为每个活跃对端调用 `tools/list`。现代结果包含 `resultType`、`ttlMs` 和 `cacheScope`。在正确授权上下文内遵守新鲜度提示，到期或收到订阅列表变更事件后重新获取。
 
-Clients must treat a missing `resultType` from a legacy server as `"complete"`. Do not require modern cache fields on a response from an earlier negotiated era.
+客户端必须把旧版服务器缺失的 `resultType` 视为 `"complete"`。不要要求较早协商时期的响应包含现代缓存字段。
 
-The server should return deterministic ordering. The client should also sort before merging so local registry order does not depend on process startup timing.
+服务器应返回确定性排序。客户端也应在合并前排序，避免本地注册表顺序依赖进程启动时序。
 
-### Collision-safe namespace merge
+### 冲突安全的命名空间合并（Collision-safe namespace merge）
 
-Two servers may both expose `search`. Choose a declared policy:
+两个服务器可能都暴露 `search`。选择一种声明的策略：
 
-1. **Prefix on collision.** Keep the first canonical name and expose later collisions as `<server>/<tool>`.
-2. **Reject on collision.** Do not load the duplicate and surface a clear configuration error.
-3. **Silent overwrite.** Never use this. It hides which server receives a model-selected action.
+1. **冲突时加前缀（Prefix on collision）。** 保留首个规范名称，后续冲突以 `<server>/<tool>` 暴露。
+2. **冲突时拒绝（Reject on collision）。** 不加载重复项，呈现明确配置错误。
+3. **静默覆盖（Silent overwrite）。** 绝不使用，它会掩盖模型所选动作由哪个服务器接收。
 
-Store both canonical and local names. The model sees the canonical name. The outgoing `tools/call` uses the local name the owning server declared.
+同时保存规范名称与本地名称。模型看到规范名称，发出的 `tools/call` 使用工具所属服务器声明的本地名称。
 
-### Routing a call
+### 调用路由（Routing a call）
 
-Routing is a pure lookup:
+路由是纯查找：
 
 ```text
-canonical tool name
-  -> peer name + local tool name
-  -> new JSON-RPC request id
-  -> modern request metadata or explicit legacy shape
-  -> matching response id
+规范工具名称
+  -> 对端名称 + 本地工具名称
+  -> 新 JSON-RPC 请求 id
+  -> 现代请求元数据或显式旧版形态
+  -> 匹配的响应 id
 ```
 
-Do not send a call when its owning transport is unavailable. Reconnect or restart the transport, then re-run discovery and `tools/list`. Modern in-flight requests lost on a broken transport can be retried with a new JSON-RPC id when the operation's safety policy permits it.
+工具所属传输不可用时，不要发送调用。重连或重启传输，再运行发现与 `tools/list`。现代在途请求因传输中断而丢失时，只要操作安全策略允许，可以用新 JSON-RPC id 重试。
 
-### Notifications and subscriptions
+### 通知与订阅（Notifications and subscriptions）
 
-Modern list and resource changes arrive only on a client-opened `subscriptions/listen` stream. The client sends the notification filter, waits for `notifications/subscriptions/acknowledged`, and correlates events with the listen request id in notification metadata.
+现代列表与资源变更仅在客户端打开的 `subscriptions/listen` 流上到达。客户端发送通知过滤器，等待 `notifications/subscriptions/acknowledged`，并用通知元数据中的监听请求 id 关联事件。
 
-On disconnect, open a new listen request and refetch relevant lists or resources. Modern streams do not resume with `Last-Event-ID`.
+断开后，打开新的监听请求并重新获取相关列表或资源。现代流不使用 `Last-Event-ID` 恢复。
 
-### No server-initiated requests
+### 没有服务器发起的请求（No server-initiated requests）
 
-Modern servers do not call the client with independent JSON-RPC requests for sampling, elicitation, or roots. They return `input_required`, and the client retries the original request after fulfilling the embedded input requests.
+现代服务器不会通过独立 JSON-RPC 请求调用客户端进行采样、信息征询或根目录获取。它们返回 `input_required`，客户端满足嵌入输入请求后重试原请求。
 
-Do not block the peer's response reader while fulfilling input. Preserve correlation and create a new JSON-RPC id for the retry.
+满足输入时不要阻塞对端的响应读取器。保留关联，并为重试创建新 JSON-RPC id。
 
 ```figure
 tp-client-merge
 ```
 
-## Use It
+## 实际应用（Use It）
 
-`code/main.py` uses in-process peer functions so the protocol decisions stay visible. It connects to two modern peers and one intentionally allowlisted legacy peer, then merges and routes their tools. The transport callable receives a timeout budget so the compatibility branch cannot hide an unbounded probe.
+`code/main.py` 使用进程内对端函数，让协议决策清晰可见。它连接两个现代对端和一个有意列入允许列表的旧版对端，再合并和路由其工具。传输可调用对象接收超时预算，避免兼容分支隐藏无界探测。
 
 ```bash
 cd code
@@ -181,47 +181,47 @@ python3 main.py
 python3 -m unittest discover tests -v
 ```
 
-The tests prove boundaries that normal demos miss:
+测试证明普通演示容易遗漏的边界：
 
-- modern requests repeat metadata;
-- `-32022` retries modern discovery without initialization;
-- recognized modern errors never downgrade, even for an allowlisted peer;
-- timeouts, connection closes, empty responses, and unrecognized errors do not trigger `initialize` without an allowlist;
-- an allowlisted peer becomes legacy only after a valid, supported `initialize` result;
-- malformed and unsupported legacy results leave the peer unavailable;
-- a successfully selected era is cached for the transport lifetime.
+- 现代请求重复元数据；
+- `-32022` 重试现代发现，不初始化；
+- 已识别的现代错误绝不降级，即使对端在允许列表中；
+- 未列入允许列表时，超时、连接关闭、空响应和未识别错误不会触发 `initialize`；
+- 允许列表中的对端，只有返回有效且受支持的 `initialize` 结果后才成为旧版；
+- 格式错误或不支持的旧版结果使对端保持不可用；
+- 成功选择的时期在传输生命周期内缓存。
 
-## Ship It
+## 交付成果（Ship It）
 
-This lesson ships `outputs/skill-mcp-client-harness.md`. It scaffolds modern request stamping, stdio era negotiation, deterministic namespace merge, routing, and a fail-closed legacy compatibility branch.
+本课交付 `outputs/skill-mcp-client-harness.md`，搭建现代请求元数据写入、stdio 时期协商、确定性命名空间合并、路由和失败关闭的旧版兼容分支。
 
-## Exercises
+## 练习（Exercises）
 
-1. Make a fake server return `-32022` with no mutually supported version. Confirm the client fails instead of sending `initialize`.
-2. Allowlist a fake legacy server, make its bounded `initialize` probe time out, and prove the peer stays `unknown` and unavailable.
-3. Add `cacheScope: "private"` tool lists for two authorization contexts. Confirm the client never shares one context's cached result with the other.
-4. Change the collision policy to rejection and make startup fail with both peer names in the error.
-5. Add a finite `subscriptions/listen` simulator. On stream loss, re-listen with a new request id and refetch tools.
+1. 让假服务器返回没有双方支持版本的 `-32022`。确认客户端失败，而不是发送 `initialize`。
+2. 将假旧版服务器列入允许列表，让其有界 `initialize` 探测超时，证明对端仍是 `unknown` 且不可用。
+3. 为两个授权上下文添加 `cacheScope: "private"` 工具列表，确认客户端绝不向另一上下文共享某上下文的缓存结果。
+4. 将冲突策略改为拒绝，使启动失败，错误中包含两个对端名称。
+5. 添加有限的 `subscriptions/listen` 模拟器。流丢失时用新请求 id 重新监听并重新获取工具。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | Meaning |
+| 术语 | 含义 |
 |------|---------|
-| Peer | Client-side record for one server transport and its discovered data |
-| Protocol era | Modern per-request metadata or legacy initialization semantics |
-| Discovery probe | Initial `server/discover` used to identify the stdio era |
-| Recognized modern error | Error that proves modern behavior and forbids legacy fallback |
-| Legacy allowlist | Operator configuration permitting one bounded compatibility probe for a pinned peer |
-| Positive legacy evidence | Valid, correlated `initialize` result for an explicitly supported legacy revision |
-| Merged namespace | Canonical tool names across all active peers |
-| Collision policy | Prefix or reject rule for duplicate tool names |
-| Era cache | Selected modern or legacy behavior stored for one transport peer |
-| Transport recovery | Restart or reconnect, rediscover, relist, and retry safely with a new id |
+| 对端（Peer） | 一个服务器传输及其发现数据的客户端记录 |
+| 协议时期（Protocol era） | 现代逐请求元数据，或旧版初始化语义 |
+| 发现探测（Discovery probe） | 用于识别 stdio 时期的初始 `server/discover` |
+| 已识别的现代错误（Recognized modern error） | 证明现代行为并禁止旧版回退的错误 |
+| 旧版允许列表（Legacy allowlist） | 允许运维配置中固定对端进行一次有界兼容探测 |
+| 正向旧版证据（Positive legacy evidence） | 显式支持的旧版修订版所对应的有效、关联匹配的 `initialize` 结果 |
+| 合并命名空间（Merged namespace） | 所有活跃对端的规范工具名称 |
+| 冲突策略（Collision policy） | 重复工具名的前缀或拒绝规则 |
+| 时期缓存（Era cache） | 为一个传输对端保存的选定现代或旧版行为 |
+| 传输恢复（Transport recovery） | 重启或重连，重新发现、列举，并用新 id 安全重试 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [MCP Specification 2026-07-28](https://modelcontextprotocol.io/specification/2026-07-28/)
-- [MCP Server Discovery](https://modelcontextprotocol.io/specification/2026-07-28/server/discover)
-- [MCP stdio Transport](https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/stdio)
-- [MCP Versioning](https://modelcontextprotocol.io/specification/2026-07-28/basic/versioning)
-- [MCP Tools](https://modelcontextprotocol.io/specification/2026-07-28/server/tools)
+- [MCP 2026-07-28 规范（MCP Specification 2026-07-28）](https://modelcontextprotocol.io/specification/2026-07-28/)
+- [MCP 服务器发现（MCP Server Discovery）](https://modelcontextprotocol.io/specification/2026-07-28/server/discover)
+- [MCP stdio 传输（MCP stdio Transport）](https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/stdio)
+- [MCP 版本管理（MCP Versioning）](https://modelcontextprotocol.io/specification/2026-07-28/basic/versioning)
+- [MCP 工具（MCP Tools）](https://modelcontextprotocol.io/specification/2026-07-28/server/tools)

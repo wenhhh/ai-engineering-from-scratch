@@ -3,25 +3,25 @@
   "version": 2,
   "track": "claude-ccar-p",
   "kind": "mock",
-  "title": "Architect Professional Full Mock",
+  "title": "架构师专业级全长模拟考试（Architect Professional Full Mock）",
   "timeLimitMinutes": 120,
   "questions": [
     {
       "id": "ccar-p-m1-001",
       "domain": "solution-design-architecture",
-      "objective": "Translate business problems into Claude solutions",
+      "objective": "将业务问题转为 Claude 解决方案（Translate business problems into Claude solutions）",
       "type": "single",
-      "prompt": "A claims director asks for a fully autonomous system that will reduce handling time, but supplies no baseline, case boundaries, authority limits, or acceptable error rate. What should the architect do first?",
+      "prompt": "理赔主管要求完全自主的系统降低处理时间，却没有基线、案例边界、权限限制或可接受错误率。架构师首先应做什么？",
       "options": [
-        "Promise a latency target based on a vendor benchmark",
-        "Select the highest-capability Claude model and build a read-only pilot on recent claims, using reviewer agreement to infer suitable case and authority boundaries",
-        "Design a manager agent with one subagent per claim type",
-        "Run structured discovery to define the current workflow, measurable outcome, risk boundaries, authority, and non-goals"
+        "根据厂商基准承诺延迟目标",
+        "选能力最强 Claude 模型，在近期理赔上做只读试点，用审核者一致性推断适当案例和权限边界",
+        "设计每类理赔一个子智能体的管理者架构",
+        "开展结构化需求探索，定义当前工作流、可测量成果、风险边界、权限和非目标"
       ],
       "correct": [
         3
       ],
-      "explanation": "Architecture cannot be evaluated until the business outcome, workflow, error cost, and action authority are explicit. Structured discovery turns a feature request into testable requirements and exposes whether autonomy is justified.",
+      "explanation": "业务成果、工作流、错误成本和行动权限明确前，架构无法评估。结构化探索将功能请求转为可测试需求，并揭示自主性是否合理。",
       "references": [
         "https://everpath-course-content.s3-accelerate.amazonaws.com/instructor%2F6nizmqk8tpzpfjvt6qmmav7rh%2Fpublic%2F1783542810%2FClaude+Certified+Architect+%E2%80%93+Professional+Exam+Guide.pdf",
         "https://www.anthropic.com/research/building-effective-agents",
@@ -31,21 +31,21 @@
     {
       "id": "ccar-p-m1-002",
       "domain": "solution-design-architecture",
-      "objective": "Align designs to value, cost, performance, and SLAs",
+      "objective": "使设计符合价值、成本、性能和 SLA 要求（Align designs to value, cost, performance, and SLAs）",
       "type": "multiple",
-      "prompt": "A support drafting system is being designed for a premium service. Which requirements belong in the initial architecture decision? Select all that apply.",
+      "prompt": "正在为高端服务设计支持草稿系统。哪些要求属于初始架构决策？选择所有适用项。",
       "options": [
-        "Task-quality target on a representative ticket population",
-        "Require one model across all environments for consistency",
-        "Maximum action authority and human-approval triggers",
-        "P95 response latency and expected request volume"
+        "代表性工单总体上的任务质量目标",
+        "要求所有环境使用同一模型以保持一致",
+        "最大行动权限及人工审批触发条件",
+        "P95 响应延迟及预期请求量"
       ],
       "correct": [
         0,
         2,
         3
       ],
-      "explanation": "Quality, performance, scale, and action authority directly constrain the design. A model tier is an implementation choice to test against those requirements, not a business requirement by itself.",
+      "explanation": "质量、性能、规模和行动权限直接约束设计。模型档次是需对照要求测试的实现选择，本身不是业务需求。",
       "references": [
         "https://everpath-course-content.s3-accelerate.amazonaws.com/instructor%2F6nizmqk8tpzpfjvt6qmmav7rh%2Fpublic%2F1783542810%2FClaude+Certified+Architect+%E2%80%93+Professional+Exam+Guide.pdf",
         "https://platform.claude.com/docs/en/about-claude/models/overview",
@@ -55,19 +55,19 @@
     {
       "id": "ccar-p-m1-003",
       "domain": "solution-design-architecture",
-      "objective": "Choose workflow, agentic, or augmented-LLM patterns",
+      "objective": "选择工作流、智能体式或增强大语言模型模式（Choose workflow, agentic, or augmented-LLM patterns）",
       "type": "single",
-      "prompt": "A loan-document process always extracts fields, validates them against deterministic rules, checks two databases, and routes exceptions to a reviewer. Which pattern is strongest?",
+      "prompt": "贷款文档流程始终提取字段、按确定性规则验证、查询两个数据库，再将异常交给审核者。哪种模式最合适？",
       "options": [
-        "A deterministic workflow with bounded Claude extraction and reasoning steps",
-        "An unrestricted agent with access to every banking system",
-        "One structured prompt that includes the documents and copied database values, asks Claude to execute every rule, and routes low-confidence outputs to review",
-        "A peer-to-peer swarm with no coordinator"
+        "确定性工作流，包含有边界的 Claude 提取和推理步骤",
+        "可访问全部银行系统的不受限制智能体",
+        "一个结构化提示词包含文档和复制的数据库值，让 Claude 执行全部规则，将低置信输出交审核",
+        "没有协调者的点对点群体"
       ],
       "correct": [
         0
       ],
-      "explanation": "The sequence and controls are known, so deterministic orchestration provides clearer auditability and failure handling. Agentic planning should be reserved for paths that genuinely depend on evidence discovered during execution.",
+      "explanation": "顺序与控制已知，确定性编排提供更清晰的审计和失败处理。智能体式规划应留给确实依赖执行中发现证据的路径。",
       "references": [
         "https://www.anthropic.com/research/building-effective-agents",
         "https://everpath-course-content.s3-accelerate.amazonaws.com/instructor%2F6nizmqk8tpzpfjvt6qmmav7rh%2Fpublic%2F1783542810%2FClaude+Certified+Architect+%E2%80%93+Professional+Exam+Guide.pdf",
@@ -77,19 +77,19 @@
     {
       "id": "ccar-p-m1-004",
       "domain": "solution-design-architecture",
-      "objective": "Design input, processing, output, and feedback loops",
+      "objective": "设计输入、处理、输出和反馈循环（Design input, processing, output, and feedback loops）",
       "type": "single",
-      "prompt": "A contract-review application produces good summaries but does not improve after reviewers correct missed clauses. Which architectural component is missing?",
+      "prompt": "合同评审应用生成良好摘要，但审核者纠正遗漏条款后系统没有改善。缺少哪个架构组件？",
       "options": [
-        "A larger context window",
-        "A governed feedback loop that captures corrections, labels failure classes, and feeds evaluation and iteration",
-        "A second output formatter",
-        "A reviewer dashboard that displays missed-clause feedback beside each summary but does not convert corrections into governed labels or evaluation cases"
+        "更大上下文窗口",
+        "受治理的反馈循环，捕捉纠正、标注失败类别，并反馈到评估和迭代",
+        "第二个输出格式化器",
+        "在摘要旁展示漏条款反馈的审核仪表盘，但不将纠正转成受治理标签或评估案例"
       ],
       "correct": [
         1
       ],
-      "explanation": "Reviewer corrections create value only when they enter a controlled learning and evaluation loop. The system needs provenance, labels, ownership, and release criteria rather than an unstructured store of comments.",
+      "explanation": "审核者纠正只有进入受控学习和评估循环才创造价值。系统需要来源、标签、负责人和发布标准，而非非结构化评论存储。",
       "references": [
         "https://everpath-course-content.s3-accelerate.amazonaws.com/instructor%2F6nizmqk8tpzpfjvt6qmmav7rh%2Fpublic%2F1783542810%2FClaude+Certified+Architect+%E2%80%93+Professional+Exam+Guide.pdf",
         "https://platform.claude.com/docs/en/test-and-evaluate/develop-tests",
@@ -99,21 +99,21 @@
     {
       "id": "ccar-p-m1-005",
       "domain": "solution-design-architecture",
-      "objective": "Design multi-agent orchestration",
+      "objective": "设计多智能体编排（Design multi-agent orchestration）",
       "type": "multiple",
-      "prompt": "A due-diligence system uses a manager and four specialist agents. Which controls make the hierarchy defensible? Select all that apply.",
+      "prompt": "尽职调查系统使用管理者和四个专家智能体。哪些控制使层级经得起论证？选择所有适用项。",
       "options": [
-        "Let specialists edit one shared report while the manager infers ownership",
-        "Give each specialist a bounded objective, source set, and output contract",
-        "Propagate correlation IDs and budget limits through every delegation",
-        "Use a separate evaluator to verify evidence before the manager synthesizes"
+        "让专家编辑同一报告，由管理者推断归属",
+        "给每位专家有边界目标、来源集和输出契约",
+        "每次委派都传递关联 ID 和预算限制",
+        "管理者综合前，使用独立评估器验证证据"
       ],
       "correct": [
         1,
         2,
         3
       ],
-      "explanation": "Bounded contracts, independent evidence checks, traceability, and inherited budgets keep delegation inspectable. Silent cross-editing destroys ownership and makes failures difficult to attribute or reproduce.",
+      "explanation": "有界契约、独立证据检查、可追溯性和继承预算让委派可检查。静默交叉编辑破坏归属，使失败难以归因或复现。",
       "references": [
         "https://www.anthropic.com/research/building-effective-agents",
         "https://everpath-course-content.s3-accelerate.amazonaws.com/instructor%2F6nizmqk8tpzpfjvt6qmmav7rh%2Fpublic%2F1783542810%2FClaude+Certified+Architect+%E2%80%93+Professional+Exam+Guide.pdf",
@@ -123,19 +123,19 @@
     {
       "id": "ccar-p-m1-006",
       "domain": "solution-design-architecture",
-      "objective": "Decompose complex problems",
+      "objective": "分解复杂问题（Decompose complex problems）",
       "type": "single",
-      "prompt": "A migration plan has discovery, schema design, transformation, verification, and cutover stages. Which decomposition is safest?",
+      "prompt": "迁移计划包含探索、模式设计、转换、验证和切换阶段。哪种分解最安全？",
       "options": [
-        "Start cutover first so the team learns faster",
-        "Give one planning agent the full migration brief and authority to reorder stages whenever new evidence appears, while relying on its session memory for predecessor status",
-        "Model the dependencies, parallelize only independent discovery tasks, and gate transformation and cutover on verified predecessors",
-        "Run every stage in parallel to minimize elapsed time"
+        "先开始切换，让团队学得更快",
+        "给规划智能体完整迁移需求，并授权发现新证据时重排阶段，依靠会话记忆记录前序状态",
+        "建模依赖，只并行独立探索任务，让转换和切换以已验证前序阶段为关卡",
+        "所有阶段并行，最小化总时间"
       ],
       "correct": [
         2
       ],
-      "explanation": "Decomposition must preserve causal dependencies. Independent work may proceed concurrently, while destructive or irreversible stages require accepted inputs, checkpoints, and explicit go or no-go gates.",
+      "explanation": "分解必须保留因果依赖。独立工作可并发，破坏性或不可逆阶段则需要已验收输入、检查点和明确执行或不执行关卡。",
       "references": [
         "https://www.anthropic.com/research/building-effective-agents",
         "https://everpath-course-content.s3-accelerate.amazonaws.com/instructor%2F6nizmqk8tpzpfjvt6qmmav7rh%2Fpublic%2F1783542810%2FClaude+Certified+Architect+%E2%80%93+Professional+Exam+Guide.pdf",
@@ -145,19 +145,19 @@
     {
       "id": "ccar-p-m1-007",
       "domain": "solution-design-architecture",
-      "objective": "Align designs to value, cost, performance, and SLAs",
+      "objective": "使设计符合价值、成本、性能和 SLA 要求（Align designs to value, cost, performance, and SLAs）",
       "type": "single",
-      "prompt": "Two architectures have the same answer accuracy. Design A costs half as much but sends twice as many cases to human review, making total handling cost higher. Which metric should drive the decision?",
+      "prompt": "两种架构答案准确率相同。A 成本减半，却将两倍案例交人工审核，导致总处理成本更高。哪个指标应主导？",
       "options": [
-        "Output token count alone",
-        "Model inference cost alone",
-        "Total automated handling time before human review, because the architecture with lower model cost also produces fast preliminary decisions",
-        "Total cost per successfully completed business outcome, including review and rework"
+        "只看输出词元数",
+        "只看模型推理成本",
+        "人工审核前的总自动处理时间，因为模型成本低的架构也会生成快速初步决策",
+        "每项成功完成业务成果的总成本，包括审核和返工"
       ],
       "correct": [
         3
       ],
-      "explanation": "Architecture economics must include the entire workflow. Cheap inference can be a false economy when it increases review labor, escalations, retries, or downstream correction.",
+      "explanation": "架构经济性必须包含完整工作流。如果廉价推理增加审核劳动、升级处理、重试或下游纠错，就可能是虚假节省。",
       "references": [
         "https://platform.claude.com/docs/en/about-claude/pricing",
         "https://everpath-course-content.s3-accelerate.amazonaws.com/instructor%2F6nizmqk8tpzpfjvt6qmmav7rh%2Fpublic%2F1783542810%2FClaude+Certified+Architect+%E2%80%93+Professional+Exam+Guide.pdf",
@@ -167,21 +167,21 @@
     {
       "id": "ccar-p-m1-008",
       "domain": "solution-design-architecture",
-      "objective": "Design input, processing, output, and feedback loops",
+      "objective": "设计输入、处理、输出和反馈循环（Design input, processing, output, and feedback loops）",
       "type": "multiple",
-      "prompt": "A customer-facing Claude service has a strict availability objective. Which degradation paths should be designed before launch? Select all that apply.",
+      "prompt": "面向客户的 Claude 服务有严格可用性目标。上线前应设计哪些降级路径？选择所有适用项。",
       "options": [
-        "Queues and bounded retries for transient provider failures",
-        "Fallback to a narrower read-only workflow when optional tools fail",
-        "Explicit unavailable or escalate states instead of fabricated answers",
-        "Retry failed requests indefinitely so availability remains high"
+        "针对临时服务商失败的队列和有界重试",
+        "可选工具失败时回退到更窄只读工作流",
+        "明确 unavailable 或 escalate 状态，不编造答案",
+        "无限重试失败请求，以保持高可用性"
       ],
       "correct": [
         0,
         1,
         2
       ],
-      "explanation": "Graceful degradation preserves safe value under partial failure. Explicit states, queues, and bounded retries support the service objective; unlimited retries create load amplification and uncontrolled latency.",
+      "explanation": "优雅降级在部分失败下保留安全价值。明确状态、队列和有界重试支持服务目标；无限重试造成负载放大和不可控延迟。",
       "references": [
         "https://sre.google/sre-book/table-of-contents/",
         "https://platform.claude.com/docs/en/api/messages",
@@ -191,19 +191,19 @@
     {
       "id": "ccar-p-m1-009",
       "domain": "solution-design-architecture",
-      "objective": "Design input, processing, output, and feedback loops",
+      "objective": "设计输入、处理、输出和反馈循环（Design input, processing, output, and feedback loops）",
       "type": "single",
-      "prompt": "An application validates model output but never checks whether a requested refund actually appears in the payment system. Which layer is missing?",
+      "prompt": "应用验证模型输出，却从不检查请求的退款是否实际出现在支付系统。缺少哪层？",
       "options": [
-        "Independent final-state verification against the system of record",
-        "A richer refund-tool response containing the requested amount, model confidence, policy citations, and a success status returned by the orchestration layer",
-        "Prompt caching",
-        "A prompt template"
+        "依据权威记录系统独立验证最终状态",
+        "更丰富的退款工具响应，含请求金额、模型信心、政策引用及编排层返回成功状态",
+        "提示词缓存",
+        "提示词模板"
       ],
       "correct": [
         0
       ],
-      "explanation": "Output validation proves only the response contract. Agentic applications also require a final-state check that confirms the external action and catches confident but unexecuted claims.",
+      "explanation": "输出验证只证明响应契约。智能体式应用还需最终状态检查，确认外部行动，发现自信却未执行的主张。",
       "references": [
         "https://www.anthropic.com/research/building-effective-agents",
         "https://platform.claude.com/docs/en/test-and-evaluate/develop-tests",
@@ -213,19 +213,19 @@
     {
       "id": "ccar-p-m1-010",
       "domain": "solution-design-architecture",
-      "objective": "Choose workflow, agentic, or augmented-LLM patterns",
+      "objective": "选择工作流、智能体式或增强大语言模型模式（Choose workflow, agentic, or augmented-LLM patterns）",
       "type": "single",
-      "prompt": "A global service requires regional data residency and can tolerate a 30-minute recovery point for its knowledge index. Which design is most defensible?",
+      "prompt": "全球服务要求区域数据驻留，知识索引可容忍 30 分钟恢复点。哪种设计最可辩护？",
       "options": [
-        "Keep the regulated source in approved regional storage but query it through one centrally managed cross-region index to simplify recovery and relevance tuning",
-        "Map data classes and provider regions, keep regulated data in approved boundaries, and design regional indexes with tested recovery",
-        "Copy every source into one global prompt",
-        "Ignore residency because prompts are transient"
+        "受监管来源保留在获批区域存储，但用集中跨区域索引查询以简化恢复和相关性调整",
+        "映射数据类别和服务商区域，将受监管数据保留在获批边界，设计经恢复测试的区域索引",
+        "把全部来源复制进一个全球提示词",
+        "因为提示词短暂，所以忽略驻留"
       ],
       "correct": [
         1
       ],
-      "explanation": "Residency and recovery requirements shape storage, retrieval, provider selection, and failover. The design must document approved regions and prove restoration instead of assuming transient model calls remove data obligations.",
+      "explanation": "驻留和恢复要求影响存储、检索、服务商选择和故障转移。设计必须记录获批区域并证明恢复，不能假设短暂模型调用消除数据义务。",
       "references": [
         "https://everpath-course-content.s3-accelerate.amazonaws.com/instructor%2F6nizmqk8tpzpfjvt6qmmav7rh%2Fpublic%2F1783542810%2FClaude+Certified+Architect+%E2%80%93+Professional+Exam+Guide.pdf",
         "https://trust.anthropic.com/",
@@ -235,19 +235,19 @@
     {
       "id": "ccar-p-m1-011",
       "domain": "solution-design-architecture",
-      "objective": "Translate business problems into Claude solutions",
+      "objective": "将业务问题转为 Claude 解决方案（Translate business problems into Claude solutions）",
       "type": "single",
-      "prompt": "An architecture review compares workflow and agent designs but records only the chosen option. What should be added?",
+      "prompt": "架构评审比较工作流和智能体设计，却只记录选中方案。应增加什么？",
       "options": [
-        "The architect's private chain of thought",
-        "A target-state diagram and implementation plan that describe the selected option in enough detail to recreate it if the current architecture owner leaves",
-        "A durable decision record containing context, constraints, rejected alternatives, consequences, verification, and reversal conditions",
-        "A screenshot of the whiteboard only"
+        "架构师私有思维链",
+        "目标状态图和实现计划，足以在架构负责人离开后重建所选方案",
+        "持久决策记录，含背景、约束、排除方案、后果、验证和撤销条件",
+        "仅白板截图"
       ],
       "correct": [
         2
       ],
-      "explanation": "A professional decision record preserves why the choice fit current evidence and what would trigger reconsideration. This supports implementation, review, operations, and later reversal without exposing private reasoning.",
+      "explanation": "专业决策记录保留为什么选择符合当前证据，以及什么会触发重新考虑。它支持实现、评审、运维和后续撤销，无需暴露私有推理。",
       "references": [
         "https://everpath-course-content.s3-accelerate.amazonaws.com/instructor%2F6nizmqk8tpzpfjvt6qmmav7rh%2Fpublic%2F1783542810%2FClaude+Certified+Architect+%E2%80%93+Professional+Exam+Guide.pdf",
         "certifications/claude/lessons/01-claude-product-and-model-landscape"
@@ -256,19 +256,19 @@
     {
       "id": "ccar-p-m1-012",
       "domain": "models-prompting-context",
-      "objective": "Select models from explicit tradeoffs",
+      "objective": "依据明确权衡选择模型（Select models from explicit tradeoffs）",
       "type": "single",
-      "prompt": "A smaller Claude model and a larger model both pass safety gates, but the larger model improves complex reasoning accuracy by 6 points at three times the cost. What should the architect do?",
+      "prompt": "较小 Claude 模型和较大模型都通过安全关卡，较大模型复杂推理准确率提高 6 个点，但成本为三倍。架构师应做什么？",
       "options": [
-        "Use the smaller model for every request because it passes safety gates, then add a human review rule for the complex cases instead of routing by measured value",
-        "Average the two model outputs without validation",
-        "Use the larger model for every request",
-        "Segment the workload, quantify business value of the gain, and route only cases that earn the larger model"
+        "因为小模型通过安全关卡，所以全部使用小模型，为复杂案例增加人工审核，而非按实测价值路由",
+        "不验证就平均两个模型输出",
+        "每次请求都用较大模型",
+        "分割工作负载，量化提升的业务价值，只将值得的案例路由到较大模型"
       ],
       "correct": [
         3
       ],
-      "explanation": "Model selection is workload-specific. Routing preserves economical handling for simple cases while applying additional capability where the measured quality improvement justifies cost and latency.",
+      "explanation": "模型选择取决于工作负载。路由为简单案例保留经济处理，在实测质量提升值得成本和延迟时应用额外能力。",
       "references": [
         "https://platform.claude.com/docs/en/about-claude/models/overview",
         "https://platform.claude.com/docs/en/about-claude/pricing",
@@ -279,21 +279,21 @@
     {
       "id": "ccar-p-m1-013",
       "domain": "models-prompting-context",
-      "objective": "Select models from explicit tradeoffs",
+      "objective": "依据明确权衡选择模型（Select models from explicit tradeoffs）",
       "type": "multiple",
-      "prompt": "A model-routing architecture is proposed. Which controls are required? Select all that apply.",
+      "prompt": "提出了模型路由架构。哪些控制必需？选择所有适用项。",
       "options": [
-        "A representative eval for the router's classification decisions",
-        "Cost and latency telemetry by route",
-        "Route uncertain cases to the cheapest model before escalating",
-        "Fallback behavior when the selected model is unavailable or fails its contract"
+        "对路由器分类决策进行代表性评估",
+        "按路由记录成本和延迟遥测",
+        "不确定案例先交最便宜模型，再升级",
+        "所选模型不可用或未满足契约时的回退行为"
       ],
       "correct": [
         0,
         1,
         3
       ],
-      "explanation": "The router becomes a production decision component and needs its own quality, fallback, and economics evidence. Uncertain high-impact cases generally need stronger review or capability, not automatic cost minimization.",
+      "explanation": "路由器成为生产决策组件，需要自己的质量、回退和经济性证据。不确定的高影响案例通常需要更强审核或能力，而非自动最小化成本。",
       "references": [
         "https://platform.claude.com/docs/en/about-claude/models/overview",
         "https://platform.claude.com/docs/en/test-and-evaluate/develop-tests",
@@ -303,19 +303,19 @@
     {
       "id": "ccar-p-m1-014",
       "domain": "models-prompting-context",
-      "objective": "Design prompts, templates, and guardrails",
+      "objective": "设计提示词、模板和防护机制（Design prompts, templates, and guardrails）",
       "type": "single",
-      "prompt": "A production prompt has grown to 9,000 tokens of duplicated policy, examples, and task-specific rules. What is the strongest redesign?",
+      "prompt": "生产提示词增长到 9,000 词元，包含重复政策、示例和任务规则。最佳重新设计是什么？",
       "options": [
-        "Separate always-needed policy, reusable task modules, scoped examples, and deterministic controls, then evaluate each change",
-        "Remove all constraints and rely on a model upgrade",
-        "Keep one complete prompt but deduplicate exact repeated lines, group the remaining policy and examples by topic, and rely on prompt caching to control cost",
-        "Move every line into the user message"
+        "分离始终需要的政策、可复用任务模块、限定范围示例和确定性控制，再评估每次改变",
+        "移除全部约束，依赖模型升级",
+        "保留完整提示词，只去掉完全重复行，按主题分组剩余政策和示例，依赖缓存控制成本",
+        "每行都移到 user 消息"
       ],
       "correct": [
         0
       ],
-      "explanation": "Modular instruction architecture reduces context cost and conflict. The team should preserve core policy, load specialized procedure only when relevant, enforce invariants outside the prompt, and validate behavior through evals.",
+      "explanation": "模块化指令架构减少上下文成本和冲突。应保留核心政策，只在相关时加载专门流程，在提示词外强制不变条件，并通过评估验证行为。",
       "references": [
         "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/overview",
         "https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview",
@@ -325,19 +325,19 @@
     {
       "id": "ccar-p-m1-015",
       "domain": "models-prompting-context",
-      "objective": "Apply zero-shot, few-shot, and reasoning techniques",
+      "objective": "应用零样本、少样本和推理技术（Apply zero-shot, few-shot, and reasoning techniques）",
       "type": "single",
-      "prompt": "A claims classifier performs well on obvious cases but confuses borderline exclusions. Which prompting intervention is most targeted?",
+      "prompt": "理赔分类器在明显案例上表现良好，却混淆边界除外责任。哪种提示词干预最有针对性？",
       "options": [
-        "Increase output length to 5,000 words",
-        "Add few-shot examples drawn from the difficult boundary cases with correct rationale and labels",
-        "Add a larger balanced sample of routine approved and denied claims so the model sees the overall label distribution, without emphasizing borderline exclusions",
-        "Tell the model it is a world-class classifier"
+        "将输出增加到 5,000 字",
+        "增加来自困难边界案例的少样本示例，附正确理由和标签",
+        "增加更大且均衡的常规获批和拒赔样本，让模型看到总体标签分布，不强调边界除外责任",
+        "告诉模型它是世界级分类器"
       ],
       "correct": [
         1
       ],
-      "explanation": "Few-shot examples are most valuable where category boundaries are ambiguous. Representative hard cases teach the intended distinction, while easy repetition and personas do not address the observed failure.",
+      "explanation": "少样本示例在类别边界含糊时最有价值。代表性困难案例教授预期区别，简单重复和角色设定不针对已观察失败。",
       "references": [
         "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/overview",
         "https://platform.claude.com/docs/en/test-and-evaluate/develop-tests",
@@ -347,19 +347,19 @@
     {
       "id": "ccar-p-m1-016",
       "domain": "models-prompting-context",
-      "objective": "Manage context windows and token use",
+      "objective": "管理上下文窗口和词元用量（Manage context windows and token use）",
       "type": "single",
-      "prompt": "A research agent repeatedly includes 200 pages of source material even though each question needs only a few sections. What is the best architecture?",
+      "prompt": "研究智能体反复加入 200 页来源材料，但每个问题只需几个章节。最佳架构是什么？",
       "options": [
-        "Pre-summarize each source into a short paragraph, concatenate all summaries into a stable context, and retrieve from that compressed corpus without source-level provenance",
-        "Always select the largest context window",
-        "Retrieve and rank relevant sections, preserve provenance, and keep durable state outside the prompt",
-        "Drop source citations to save tokens"
+        "先将每个来源总结为短段，拼接所有摘要为稳定上下文，再从压缩语料检索，不保留来源级追溯",
+        "始终选择最大上下文窗口",
+        "检索并排序相关章节，保留来源，持久状态放在提示词之外",
+        "删除来源引用以节省词元"
       ],
       "correct": [
         2
       ],
-      "explanation": "Context should carry the evidence needed for the current decision, not the entire corpus by default. Retrieval and durable state reduce bloat while provenance preserves verification.",
+      "explanation": "上下文应携带当前决策所需证据，而非默认整个语料库。检索和持久状态减少膨胀，来源追溯保留验证能力。",
       "references": [
         "https://platform.claude.com/docs/en/build-with-claude/context-windows",
         "https://www.anthropic.com/news/contextual-retrieval",
@@ -369,21 +369,21 @@
     {
       "id": "ccar-p-m1-017",
       "domain": "models-prompting-context",
-      "objective": "Reuse stable prompts with caching, modular prompts, and Skills",
+      "objective": "通过缓存、模块化提示词和技能复用稳定提示词（Reuse stable prompts with caching, modular prompts, and Skills）",
       "type": "multiple",
-      "prompt": "A service repeats a long stable policy and tool catalog across requests. Which choices improve cache economics? Select all that apply.",
+      "prompt": "服务在请求间重复长且稳定的政策和工具目录。哪些选择改善缓存经济性？选择所有适用项。",
       "options": [
-        "Place the stable prefix before customer-specific content",
-        "Put tenant metadata first to bind every cached prefix",
-        "Measure cache creation, hit rate, latency, and cost",
-        "Keep reusable prefix bytes stable where practical"
+        "稳定前缀放在客户专属内容之前",
+        "租户元数据放最前以绑定每个缓存前缀",
+        "测量缓存创建、命中率、延迟和成本",
+        "可行时保持可复用前缀字节稳定"
       ],
       "correct": [
         0,
         2,
         3
       ],
-      "explanation": "Prompt caching benefits from stable shared prefixes and empirical measurement. Volatile content near the beginning prevents reuse for everything that follows it.",
+      "explanation": "提示词缓存（Prompt Caching）需要稳定的共享前缀，并通过实际测量评估收益。容易变化的内容如果放在开头附近，会导致其后的所有内容都无法复用缓存。",
       "references": [
         "https://platform.claude.com/docs/en/build-with-claude/prompt-caching",
         "https://platform.claude.com/docs/en/about-claude/pricing",
@@ -393,21 +393,21 @@
     {
       "id": "ccar-p-m1-018",
       "domain": "models-prompting-context",
-      "objective": "Reuse stable prompts with caching, modular prompts, and Skills",
+      "objective": "通过缓存、模块化提示词和技能复用稳定提示词（Reuse stable prompts with caching, modular prompts, and Skills）",
       "type": "multiple",
-      "prompt": "Which content is best packaged as an Agent Skill instead of always placed in the root prompt? Select all that apply.",
+      "prompt": "哪些内容适合封装为智能体技能（Agent Skill），而不是始终放在根提示词？选择所有适用项。",
       "options": [
-        "A universal safety rule that loads only after model risk detection",
-        "Reference files and scripts used by one specialized workflow",
-        "A domain playbook that should load when its task is detected",
-        "A reusable incident-analysis procedure needed only during incidents"
+        "只有模型发现风险后才加载的通用安全规则",
+        "某个专门工作流使用的参考文件和脚本",
+        "检测到相应任务时应加载的领域操作手册",
+        "只在事故期间需要的可复用事故分析流程"
       ],
       "correct": [
         1,
         2,
         3
       ],
-      "explanation": "Skills support progressive disclosure for reusable specialized procedure and assets. A safety invariant needed every time belongs in trusted core policy and deterministic controls.",
+      "explanation": "技能支持对可复用专门流程及资源渐进式披露。每次都需要的安全不变条件应位于可信核心政策和确定性控制中。",
       "references": [
         "https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview",
         "certifications/claude/lessons/01-claude-product-and-model-landscape"
@@ -416,19 +416,19 @@
     {
       "id": "ccar-p-m1-019",
       "domain": "models-prompting-context",
-      "objective": "Apply zero-shot, few-shot, and reasoning techniques",
+      "objective": "应用零样本、少样本和推理技术（Apply zero-shot, few-shot, and reasoning techniques）",
       "type": "single",
-      "prompt": "Extended thinking improves one architecture-planning eval but causes the interactive service to miss its latency objective. What is the strongest response?",
+      "prompt": "扩展思考改善了一项架构规划评估，却让交互服务错过延迟目标。最佳回应是什么？",
       "options": [
-        "Keep extended thinking on the synchronous route and stream a generated progress explanation to users, because perceived responsiveness may offset the measured latency miss",
-        "Disable all reasoning features permanently",
-        "Ignore the latency objective",
-        "Use the measured gain only in an asynchronous or high-complexity route whose service objective can absorb it"
+        "同步路径仍保持扩展思考，流式输出进度解释，因为感知响应速度可能抵消实测延迟超标",
+        "永久关闭全部推理功能",
+        "忽略延迟目标",
+        "只在服务目标能够承受的异步或高复杂度路径使用该实测收益"
       ],
       "correct": [
         3
       ],
-      "explanation": "Reasoning budget must fit the service and task. Routing difficult or asynchronous work to a higher-effort configuration preserves quality without violating the primary interactive path.",
+      "explanation": "推理预算必须适合服务和任务。将困难或异步工作路由到更高努力配置，可以保留质量而不违反主要交互路径要求。",
       "references": [
         "https://platform.claude.com/docs/en/build-with-claude/extended-thinking",
         "https://everpath-course-content.s3-accelerate.amazonaws.com/instructor%2F6nizmqk8tpzpfjvt6qmmav7rh%2Fpublic%2F1783542810%2FClaude+Certified+Architect+%E2%80%93+Professional+Exam+Guide.pdf",
@@ -438,21 +438,21 @@
     {
       "id": "ccar-p-m1-020",
       "domain": "integration",
-      "objective": "Reduce capability bloat",
+      "objective": "减少能力膨胀（Reduce capability bloat）",
       "type": "multiple",
-      "prompt": "An enterprise agent loads 140 overlapping tools on every turn. Which redesigns are appropriate? Select all that apply.",
+      "prompt": "企业智能体每轮加载 140 个重叠工具。哪些重新设计合适？选择所有适用项。",
       "options": [
-        "Group capabilities into coherent domain surfaces",
-        "Use progressive discovery so detailed tools load only when relevant",
-        "Remove or merge overlapping tools based on trajectory evals",
-        "Keep all tools but shorten each description to one sentence"
+        "将能力组织为一致的领域接口",
+        "使用渐进式发现，只在相关时加载详细工具",
+        "依据轨迹评估移除或合并重叠工具",
+        "保留所有工具，只将各描述缩短为一句"
       ],
       "correct": [
         0,
         1,
         2
       ],
-      "explanation": "Capability bloat consumes context and increases selection ambiguity. Domain scoping, progressive discovery, and evidence-driven consolidation preserve useful reach with a smaller active surface.",
+      "explanation": "能力膨胀消耗上下文并增加选择歧义。领域限定、渐进发现和基于证据的整合，以更小活跃接口保留有用覆盖。",
       "references": [
         "https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview",
         "https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview",
@@ -462,21 +462,21 @@
     {
       "id": "ccar-p-m1-021",
       "domain": "integration",
-      "objective": "Find authentication and authorization gaps",
+      "objective": "发现身份验证和授权缺口（Find authentication and authorization gaps）",
       "type": "multiple",
-      "prompt": "An MCP tool accepts tenant_id and user_role directly from model arguments. Which corrections are required? Select all that apply.",
+      "prompt": "MCP 工具直接接受模型参数中的 tenant_id 和 user_role。哪些修正必需？选择所有适用项。",
       "options": [
-        "Authorize the specific operation and resource on the server",
-        "Bind tenant and identity from the authenticated session",
-        "Trust schema-validated tenant and role arguments from the model",
-        "Treat model-provided role as advisory only, never proof of authority"
+        "服务器对具体操作和资源授权",
+        "从已认证会话绑定租户和身份",
+        "信任通过模式验证的模型租户和角色参数",
+        "模型提供角色只作为建议，绝不作为权限证明"
       ],
       "correct": [
         0,
         1,
         3
       ],
-      "explanation": "Schema validity does not establish identity or permission. Authentication comes from trusted session state, and server-side authorization must constrain every resource and action.",
+      "explanation": "模式有效不确立身份或权限。身份验证来自可信会话状态，服务器授权必须约束每项资源和行动。",
       "references": [
         "https://modelcontextprotocol.io/specification/latest/basic/authorization",
         "https://modelcontextprotocol.io/docs/tutorials/security/security_best_practices",
@@ -486,19 +486,19 @@
     {
       "id": "ccar-p-m1-022",
       "domain": "integration",
-      "objective": "Design RAG chunking and indexing",
+      "objective": "设计 RAG 分块和索引（Design RAG chunking and indexing）",
       "type": "single",
-      "prompt": "A corpus contains long legal documents whose meaning depends on sections, clauses, and cross-references. Which chunking strategy is strongest?",
+      "prompt": "语料含长法律文档，其含义依赖章节、条款和交叉引用。哪种分块策略最合适？",
       "options": [
-        "Structure-aware chunks that retain section metadata, overlap where needed, and preserve document and clause identifiers",
-        "Fixed five-character chunks",
-        "Sentence-level chunks grouped into fixed windows after shuffling boilerplate clauses away, with the parent document ID retained for reconstruction",
-        "Uniform token-sized chunks with generous overlap and document IDs, because consistent embedding units simplify indexing and cross-document retrieval at scale"
+        "采用结构感知分块，保留章节元数据，必要时重叠，并保留文档和条款标识符",
+        "固定五字符分块",
+        "将套话条款打乱移开，再将句子分块组合为固定窗口，保留父文档 ID 供重建",
+        "统一按词元长度分块，设置充分重叠和文档 ID，因为一致嵌入单元简化大规模索引与跨文档检索"
       ],
       "correct": [
         0
       ],
-      "explanation": "Structure-aware chunking preserves semantic units and provenance while keeping retrieval granular. Metadata and controlled overlap support cross-reference resolution and later citation checks.",
+      "explanation": "结构感知分块保留语义单元和来源，同时保持检索粒度。元数据和受控重叠支持交叉引用解析及后续引用检查。",
       "references": [
         "https://www.anthropic.com/news/contextual-retrieval",
         "certifications/claude/lessons/04-context-knowledge-memory-and-caching"
@@ -507,19 +507,19 @@
     {
       "id": "ccar-p-m1-023",
       "domain": "integration",
-      "objective": "Match retrieval to data shape and query pattern",
+      "objective": "让检索匹配数据形态与查询模式（Match retrieval to data shape and query pattern）",
       "type": "single",
-      "prompt": "A support assistant retrieves an obsolete cancellation policy even though the new policy is indexed. Which system change most directly addresses the defect?",
+      "prompt": "支持助手检索到过时取消政策，尽管新政策已索引。哪项系统改变最直接修复？",
       "options": [
-        "Increase semantic-ranking weight for cancellation queries and ask the generator to compare any retrieved policy dates before choosing which passage to cite",
-        "Add version, effective-date, and authority metadata; filter or rank to the active policy and test freshness",
-        "Increase generation temperature",
-        "Remove all document identifiers"
+        "增加取消查询的语义排序权重，让生成者在选择引用片段前比较检索到的政策日期",
+        "增加版本、生效日期和权威元数据，过滤或排序到生效政策，并测试新鲜度",
+        "提高生成温度",
+        "删除所有文档标识符"
       ],
       "correct": [
         1
       ],
-      "explanation": "This is a retrieval-governance failure. Explicit authority and temporal metadata let the retriever select the active source and make freshness observable in tests and operations.",
+      "explanation": "这是检索治理失败。明确权威和时间元数据让检索器选择当前来源，并让新鲜度在测试和运行中可观察。",
       "references": [
         "https://www.anthropic.com/news/contextual-retrieval",
         "https://platform.claude.com/docs/en/test-and-evaluate/develop-tests",
@@ -529,21 +529,21 @@
     {
       "id": "ccar-p-m1-024",
       "domain": "integration",
-      "objective": "Match retrieval to data shape and query pattern",
+      "objective": "让检索匹配数据形态与查询模式（Match retrieval to data shape and query pattern）",
       "type": "multiple",
-      "prompt": "A product search must handle exact part numbers and natural-language descriptions. Which retrieval design is appropriate? Select all that apply.",
+      "prompt": "产品搜索必须处理精确零件编号和自然语言描述。哪些检索设计合适？选择所有适用项。",
       "options": [
-        "Lexical retrieval for exact identifiers",
-        "Recall likely catalog entries before retrieval",
-        "A reranking stage evaluated on representative queries",
-        "Semantic retrieval for paraphrased needs"
+        "用词法检索处理精确标识符",
+        "检索前回忆可能目录条目",
+        "在代表性查询上评估的重排序阶段",
+        "用语义检索处理换一种说法表达的需求"
       ],
       "correct": [
         0,
         2,
         3
       ],
-      "explanation": "Exact and semantic queries have different strengths, so hybrid retrieval plus reranking can serve both. Product availability and identifiers require current authoritative data, not model memory.",
+      "explanation": "精确查询与语义查询各有优势，混合检索加重排序可同时服务两者。产品可用性和标识符需要当前权威数据，而非模型记忆。",
       "references": [
         "https://www.anthropic.com/news/contextual-retrieval",
         "https://platform.claude.com/docs/en/test-and-evaluate/develop-tests",
@@ -553,21 +553,21 @@
     {
       "id": "ccar-p-m1-025",
       "domain": "integration",
-      "objective": "Use progressive discovery instead of monolithic context where appropriate",
+      "objective": "适当时采用渐进式发现，而非整体上下文（Use progressive discovery instead of monolithic context where appropriate）",
       "type": "multiple",
-      "prompt": "A large internal platform has hundreds of APIs. Which progressive-discovery design is strongest? Select all that apply.",
+      "prompt": "大型内部平台有数百个 API。哪些渐进发现设计最合适？选择所有适用项。",
       "options": [
-        "Put compressed summaries for every API in root context",
-        "Record discovery and selection in the trace",
-        "Expose a small capability index with concise domain descriptions",
-        "Load detailed schemas only after a domain is selected"
+        "在根上下文放入每个 API 的压缩摘要",
+        "在轨迹记录发现与选择",
+        "公开小型能力索引，附简洁领域描述",
+        "选定领域后才加载详细模式"
       ],
       "correct": [
         1,
         2,
         3
       ],
-      "explanation": "Progressive discovery keeps initial context small while retaining access to deeper capability. Tracing makes routing errors diagnosable; monolithic schemas increase cost and confusion.",
+      "explanation": "渐进式发现保持初始上下文小，同时可访问更深能力。轨迹使路由错误可诊断；整体加载模式增加成本与混淆。",
       "references": [
         "https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview",
         "https://modelcontextprotocol.io/specification",
@@ -577,19 +577,19 @@
     {
       "id": "ccar-p-m1-026",
       "domain": "integration",
-      "objective": "Choose MCP, API, CLI, or agent-to-agent integration",
+      "objective": "选择 MCP、API、CLI 或智能体间集成（Choose MCP, API, CLI, or agent-to-agent integration）",
       "type": "single",
-      "prompt": "One service makes one stable, high-volume call to an internal risk API. No other host needs discovery. Which integration is the best default?",
+      "prompt": "某服务高频调用一个稳定内部风险 API，没有其他宿主需要发现。最佳默认集成是什么？",
       "options": [
-        "A public MCP registry entry",
-        "A small MCP server deployed beside the service so the internal risk capability can later be discovered by additional hosts without changing the client contract",
-        "A direct typed API client with authentication, timeouts, and contract tests",
-        "A new multi-agent protocol"
+        "公开 MCP 注册表条目",
+        "服务旁部署小型 MCP 服务器，便于未来其他宿主发现内部风险能力而不改客户端契约",
+        "直接类型化 API 客户端，具备认证、超时和契约测试",
+        "新的多智能体协议"
       ],
       "correct": [
         2
       ],
-      "explanation": "A direct typed client is the smallest reliable boundary for one stable high-volume integration. MCP or agent-to-agent protocols add value only when interoperability or delegated coordination justifies their lifecycle cost.",
+      "explanation": "一个稳定高频集成使用直接类型化客户端，是最小可靠边界。只有互操作或委派协调值得生命周期成本时，MCP 或智能体间协议才增加价值。",
       "references": [
         "https://modelcontextprotocol.io/specification",
         "https://platform.claude.com/docs/en/api/messages",
@@ -599,19 +599,19 @@
     {
       "id": "ccar-p-m1-027",
       "domain": "integration",
-      "objective": "Choose MCP, API, CLI, or agent-to-agent integration",
+      "objective": "选择 MCP、API、CLI 或智能体间集成（Choose MCP, API, CLI, or agent-to-agent integration）",
       "type": "single",
-      "prompt": "A desktop host and two IDEs need the same governed repository tools and reusable resources. Which option best fits?",
+      "prompt": "一个桌面宿主和两个 IDE 需要相同受治理仓库工具及可复用资源。哪种最合适？",
       "options": [
-        "Duplicate bespoke connectors in each host",
-        "A spreadsheet copied into every session",
-        "Three host-specific connectors generated from one shared integration package, all calling the same governed repository API and consent service",
-        "A reviewed MCP server with negotiated capabilities and host-specific consent"
+        "各宿主重复实现定制连接器",
+        "每次会话复制电子表格",
+        "从同一共享集成包生成三个宿主专属连接器，都调用相同受治理仓库 API 和同意服务",
+        "经评审的 MCP 服务器，具备协商能力和宿主专属同意"
       ],
       "correct": [
         3
       ],
-      "explanation": "MCP standardizes discovery and invocation across compliant hosts while preserving one governed server boundary. Authentication, authorization, consent, and versioning remain necessary.",
+      "explanation": "MCP 在合规宿主间标准化发现和调用，同时保留一个受治理服务器边界。认证、授权、同意和版本化仍必需。",
       "references": [
         "https://modelcontextprotocol.io/specification",
         "https://modelcontextprotocol.io/docs/tutorials/security/security_best_practices",
@@ -621,21 +621,21 @@
     {
       "id": "ccar-p-m1-028",
       "domain": "integration",
-      "objective": "Select observability at scale",
+      "objective": "选择规模化可观测性方案（Select observability at scale）",
       "type": "multiple",
-      "prompt": "A request crosses an API gateway, Claude call, MCP server, and database. Which telemetry is needed for diagnosis at scale? Select all that apply.",
+      "prompt": "请求跨越 API 网关、Claude 调用、MCP 服务器和数据库。大规模诊断需要哪些遥测？选择所有适用项。",
       "options": [
-        "Latency and result class for each boundary",
-        "Versioned model, prompt, tool, and policy identifiers",
-        "A propagated correlation or trace ID",
-        "Log bearer-token fingerprints in every trace span"
+        "各边界延迟和结果类别",
+        "版本化模型、提示词、工具和政策标识符",
+        "贯穿传播的关联或轨迹 ID",
+        "每个轨迹跨度记录 bearer token 指纹"
       ],
       "correct": [
         0,
         1,
         2
       ],
-      "explanation": "Correlation and versioned boundary telemetry reconstruct the request path and identify regressions. Credentials and unrestricted sensitive content should be redacted or omitted from observability.",
+      "explanation": "关联和版本化边界遥测重建请求路径并识别回归。可观测数据中的凭据及不受限敏感内容应脱敏或省略。",
       "references": [
         "https://opentelemetry.io/docs/specs/otel/",
         "https://platform.claude.com/docs/en/test-and-evaluate/develop-tests",
@@ -645,19 +645,19 @@
     {
       "id": "ccar-p-m1-029",
       "domain": "integration",
-      "objective": "Balance accuracy and latency",
+      "objective": "平衡准确性与延迟（Balance accuracy and latency）",
       "type": "single",
-      "prompt": "A RAG pipeline improves recall by issuing five query expansions, but p95 latency exceeds the user objective and answer quality improves only 0.4 points. What should the architect do?",
+      "prompt": "RAG 流水线通过五次查询扩展提高召回，但 p95 延迟超过用户目标，回答质量只提高 0.4 个点。架构师应做什么？",
       "options": [
-        "Use eval evidence to reduce or condition expansion, then measure quality and latency by query slice",
-        "Remove retrieval entirely",
-        "Hide the latency metric from stakeholders",
-        "Keep all five expansions for every query but run them concurrently and cache repeated candidates, optimizing transport latency before changing retrieval behavior"
+        "用评估证据减少扩展或设条件，再按查询切片测量质量和延迟",
+        "完全移除检索",
+        "向利益相关者隐藏延迟指标",
+        "每次查询仍保留五次扩展，但并行执行并缓存重复候选，改变检索行为前先优化传输延迟"
       ],
       "correct": [
         0
       ],
-      "explanation": "The small average quality gain may not earn the latency cost. Conditional expansion for difficult query slices can preserve value while meeting the service objective.",
+      "explanation": "小幅平均质量增益可能不值得延迟成本。仅对困难查询切片扩展，可在满足服务目标的同时保留价值。",
       "references": [
         "https://platform.claude.com/docs/en/test-and-evaluate/develop-tests",
         "https://everpath-course-content.s3-accelerate.amazonaws.com/instructor%2F6nizmqk8tpzpfjvt6qmmav7rh%2Fpublic%2F1783542810%2FClaude+Certified+Architect+%E2%80%93+Professional+Exam+Guide.pdf",
@@ -667,19 +667,19 @@
     {
       "id": "ccar-p-m1-030",
       "domain": "integration",
-      "objective": "Find authentication and authorization gaps",
+      "objective": "发现身份验证和授权缺口（Find authentication and authorization gaps）",
       "type": "single",
-      "prompt": "A third-party model platform is proposed for regulated regional workloads. What must be verified before approval?",
+      "prompt": "拟采用第三方模型平台处理受监管区域工作负载。批准前必须核实什么？",
       "options": [
-        "Only whether it exposes a compatible chat method",
-        "Identity, data processing and residency, model and feature availability, network path, logging, retention, and contractual controls",
-        "Whether its SDK preserves the existing method names, streaming events, and error classes so the application can migrate without code changes",
-        "Whether a demo completes once"
+        "只核实是否有兼容聊天方法",
+        "身份、数据处理和驻留、模型与功能可用性、网络路径、日志、保留及合同控制",
+        "SDK 是否保留方法名、流式事件和错误类，让应用无需改代码就迁移",
+        "演示能否成功一次"
       ],
       "correct": [
         1
       ],
-      "explanation": "API compatibility does not establish compliance or operational suitability. The architect must verify the full data and identity boundary and document which controls remain the customer's responsibility.",
+      "explanation": "API 兼容不能确立合规或运行适用性。架构师必须核实完整数据与身份边界，并记录哪些控制仍由客户负责。",
       "references": [
         "https://trust.anthropic.com/",
         "https://everpath-course-content.s3-accelerate.amazonaws.com/instructor%2F6nizmqk8tpzpfjvt6qmmav7rh%2Fpublic%2F1783542810%2FClaude+Certified+Architect+%E2%80%93+Professional+Exam+Guide.pdf",
@@ -689,21 +689,21 @@
     {
       "id": "ccar-p-m1-031",
       "domain": "integration",
-      "objective": "Choose MCP, API, CLI, or agent-to-agent integration",
+      "objective": "选择 MCP、API、CLI 或智能体间集成（Choose MCP, API, CLI, or agent-to-agent integration）",
       "type": "multiple",
-      "prompt": "A tool times out after it may have created a customer record. Which integration controls are required before retry? Select all that apply.",
+      "prompt": "工具超时，但可能已创建客户记录。重试前需要哪些集成控制？选择所有适用项。",
       "options": [
-        "A stable idempotency key",
-        "A bounded retry policy based on failure class",
-        "Ask a model whether the timed-out write succeeded",
-        "Authoritative reconciliation of the operation outcome"
+        "稳定幂等键",
+        "按失败类别制定的有界重试策略",
+        "询问模型超时写入是否成功",
+        "权威核对操作结果"
       ],
       "correct": [
         0,
         1,
         3
       ],
-      "explanation": "Ambiguous side effects require transaction-level evidence. Idempotency, reconciliation, and classified retry policy prevent duplicates; generation settings cannot determine whether the first write completed.",
+      "explanation": "含糊副作用需要事务级证据。幂等性、核对和分类重试策略防止重复；生成设置无法判断首次写入是否完成。",
       "references": [
         "https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview",
         "https://sre.google/sre-book/table-of-contents/",
@@ -713,21 +713,21 @@
     {
       "id": "ccar-p-m1-032",
       "domain": "evaluation-testing-optimization",
-      "objective": "Define accuracy, latency, cost, safety, and security metrics",
+      "objective": "定义准确性、延迟、成本、安全防护和使用安全指标（Define accuracy, latency, cost, safety, and security metrics）",
       "type": "multiple",
-      "prompt": "Which measures form a balanced production scorecard for an account-support agent? Select all that apply.",
+      "prompt": "哪些指标构成账户支持智能体的均衡生产评分卡？选择所有适用项。",
       "options": [
-        "Cost per successful resolution and human-review minutes",
-        "Track response length and model confidence",
-        "P50 and P95 latency plus availability",
-        "Task success and unsupported-claim rate"
+        "每次成功解决的成本和人工审核分钟数",
+        "追踪响应长度和模型信心",
+        "P50、P95 延迟及可用性",
+        "任务成功率和无依据主张率"
       ],
       "correct": [
         0,
         2,
         3
       ],
-      "explanation": "A balanced scorecard covers quality, reliability, economics, and operational burden. Stylistic counts matter only if tied to a validated user requirement.",
+      "explanation": "均衡评分卡覆盖质量、可靠性、经济性和运营负担。风格计数只有与经验证用户需求关联才有意义。",
       "references": [
         "https://platform.claude.com/docs/en/test-and-evaluate/develop-tests",
         "https://everpath-course-content.s3-accelerate.amazonaws.com/instructor%2F6nizmqk8tpzpfjvt6qmmav7rh%2Fpublic%2F1783542810%2FClaude+Certified+Architect+%E2%80%93+Professional+Exam+Guide.pdf",
@@ -737,21 +737,21 @@
     {
       "id": "ccar-p-m1-033",
       "domain": "evaluation-testing-optimization",
-      "objective": "Build representative datasets and mixed-method test frameworks",
+      "objective": "构建代表性数据集和混合方法测试框架（Build representative datasets and mixed-method test frameworks）",
       "type": "multiple",
-      "prompt": "A team builds an evaluation set from production traffic. Which practices improve validity? Select all that apply.",
+      "prompt": "团队从生产流量构建评估集。哪些实践提高有效性？选择所有适用项。",
       "options": [
-        "Tune prompts against held-out failures until those cases pass",
-        "Represent common, boundary, high-impact, and adversarial slices",
-        "Preserve provenance and label quality while minimizing sensitive data",
-        "Separate development cases from held-out release cases"
+        "针对留出失败案例调提示词直到通过",
+        "覆盖常见、边界、高影响和对抗切片",
+        "在最小化敏感数据的同时保留来源和标签质量",
+        "分开开发案例与留出发布案例"
       ],
       "correct": [
         1,
         2,
         3
       ],
-      "explanation": "Representative slices and trustworthy labels make the set useful, while a held-out partition limits overfitting. Repeated tuning on release cases converts them into development data.",
+      "explanation": "代表性切片和可信标签让数据集有用，留出分区限制过拟合。反复针对发布案例调优会使其变成开发数据。",
       "references": [
         "https://platform.claude.com/docs/en/test-and-evaluate/develop-tests",
         "https://www.nist.gov/itl/ai-risk-management-framework",
@@ -761,19 +761,19 @@
     {
       "id": "ccar-p-m1-034",
       "domain": "evaluation-testing-optimization",
-      "objective": "Build representative datasets and mixed-method test frameworks",
+      "objective": "构建代表性数据集和混合方法测试框架（Build representative datasets and mixed-method test frameworks）",
       "type": "single",
-      "prompt": "An LLM judge gives a helpfulness score. How should the team establish whether the judge is reliable enough for a release gate?",
+      "prompt": "LLM 裁判给出有用性分数。团队如何判断其是否可靠到足以作为发布关卡？",
       "options": [
-        "Ask the judge to score its own accuracy",
-        "Use the same model and prompt as the generator",
-        "Calibrate it against independently labeled human examples and inspect false positives, false negatives, and slice disagreement",
-        "Accept it after prompt-level consistency tests show stable JSON scores across repeated samples, using disagreement with human labels only to refine the judge prompt"
+        "让裁判评价自己的准确性",
+        "使用与生成者相同模型和提示词",
+        "对照独立人工标注示例校准，检查假阳性、假阴性和切片分歧",
+        "提示词级一致性测试在重复采样中产生稳定 JSON 分数后就接受，只用与人工标签的分歧改进裁判提示词"
       ],
       "correct": [
         2
       ],
-      "explanation": "Judge validity is empirical. Human calibration and disagreement analysis reveal rubric ambiguity and shared blind spots that structured output or self-assessment cannot remove.",
+      "explanation": "裁判有效性需要实证。人工校准和分歧分析揭示量规歧义与共享盲点，结构化输出或自评无法消除这些问题。",
       "references": [
         "https://platform.claude.com/docs/en/test-and-evaluate/develop-tests",
         "certifications/claude/lessons/02-model-selection-and-token-economics"
@@ -782,21 +782,21 @@
     {
       "id": "ccar-p-m1-035",
       "domain": "evaluation-testing-optimization",
-      "objective": "Diagnose prompt, hallucination, retrieval, and model failures",
+      "objective": "诊断提示词、幻觉、检索和模型失败（Diagnose prompt, hallucination, retrieval, and model failures）",
       "type": "multiple",
-      "prompt": "A RAG answer cites the wrong policy. Which tests isolate the cause? Select all that apply.",
+      "prompt": "RAG 回答引用错误政策。哪些测试隔离原因？选择所有适用项。",
       "options": [
-        "Evaluate reranker ordering independently",
-        "Measure whether the correct document appeared in the retrieved top-k set",
-        "Give Claude the correct source directly and test answer faithfulness",
-        "Change prompt, reranker, and model together before retesting"
+        "独立评估重排序器顺序",
+        "测量正确文档是否进入检索 top-k 集合",
+        "直接给 Claude 正确来源，测试回答忠实性",
+        "重测前同时改变提示词、重排序器和模型"
       ],
       "correct": [
         0,
         1,
         2
       ],
-      "explanation": "Separate retrieval, ranking, and generation tests localize the failure. Changing every component together may improve one run but destroys causal evidence.",
+      "explanation": "分别测试检索（Retrieval）、排序（Ranking）和生成（Generation），才能定位问题出在哪个环节。同时更改所有组件，或许能改善某一次运行，却会破坏用于判断因果关系的证据。",
       "references": [
         "https://www.anthropic.com/news/contextual-retrieval",
         "https://platform.claude.com/docs/en/test-and-evaluate/develop-tests",
@@ -806,19 +806,19 @@
     {
       "id": "ccar-p-m1-036",
       "domain": "evaluation-testing-optimization",
-      "objective": "Run A/B tests and iterative improvements",
+      "objective": "运行 A/B 测试并迭代改进（Run A/B tests and iterative improvements）",
       "type": "single",
-      "prompt": "Variant B raises offline answer quality by 3 points but increases live abandonment. What should determine rollout?",
+      "prompt": "变体 B 离线回答质量提高 3 个点，但线上放弃率上升。什么应决定发布？",
       "options": [
-        "Offline score alone",
-        "The offline score if it was measured on a representative dataset, while treating abandonment as a temporary interface-adaptation effect after release",
-        "The architect's personal preference",
-        "A predeclared decision rule combining guardrails and the primary live outcome, followed by slice analysis"
+        "只看离线分数",
+        "代表性数据集上的离线分数优先，将放弃率视为发布后暂时界面适应效应",
+        "架构师个人偏好",
+        "预先声明结合防护条件和主要线上成果的决策规则，然后分析切片"
       ],
       "correct": [
         3
       ],
-      "explanation": "Offline quality is one signal. A production experiment should use predeclared business and safety metrics, ensure valid assignment, and inspect important slices before deciding.",
+      "explanation": "离线质量只是一个信号。生产实验应采用预先声明的业务与安全指标，保证有效分配，并在决策前检查重要切片。",
       "references": [
         "https://platform.claude.com/docs/en/test-and-evaluate/develop-tests",
         "https://everpath-course-content.s3-accelerate.amazonaws.com/instructor%2F6nizmqk8tpzpfjvt6qmmav7rh%2Fpublic%2F1783542810%2FClaude+Certified+Architect+%E2%80%93+Professional+Exam+Guide.pdf",
@@ -828,19 +828,19 @@
     {
       "id": "ccar-p-m1-037",
       "domain": "evaluation-testing-optimization",
-      "objective": "Build representative datasets and mixed-method test frameworks",
+      "objective": "构建代表性数据集和混合方法测试框架（Build representative datasets and mixed-method test frameworks）",
       "type": "single",
-      "prompt": "One evaluation run passes all 50 cases. What can the architect conclude?",
+      "prompt": "一次评估运行通过全部 50 个案例。架构师能得出什么？",
       "options": [
-        "Only that one sampled run passed; higher-variance or high-risk cases need repeated measurement and confidence analysis",
-        "The model is deterministic",
-        "The system will always pass those cases",
-        "The current prompt-model combination is ready for launch on the represented cases, provided deterministic checks pass, without estimating run-to-run uncertainty"
+        "只能说明一次采样运行通过；高方差或高风险案例需要重复测量和置信分析",
+        "模型是确定性的",
+        "系统将永远通过这些案例",
+        "当前提示词—模型组合只要确定性检查通过，就可在所代表案例上线，不必估计运行间不确定性"
       ],
       "correct": [
         0
       ],
-      "explanation": "Probabilistic model behavior and changing integrations make one run insufficient evidence of stability. Repeated trials and production monitoring quantify variance and detect distribution shift.",
+      "explanation": "概率性模型行为及变化的集成使单次运行不足以证明稳定。重复试验和生产监控量化方差并检测分布漂移。",
       "references": [
         "https://platform.claude.com/docs/en/test-and-evaluate/develop-tests",
         "https://platform.claude.com/docs/en/about-claude/models/overview",
@@ -850,19 +850,19 @@
     {
       "id": "ccar-p-m1-038",
       "domain": "evaluation-testing-optimization",
-      "objective": "Diagnose prompt, hallucination, retrieval, and model failures",
+      "objective": "诊断提示词、幻觉、检索和模型失败（Diagnose prompt, hallucination, retrieval, and model failures）",
       "type": "single",
-      "prompt": "The provider wire response contains a citation field, but the application trace and UI do not. What should the team inspect first?",
+      "prompt": "服务商网络响应包含引用字段，但应用轨迹和 UI 都没有。首先应检查什么？",
       "options": [
-        "The UI rendering component and browser compatibility layer, because the trace may intentionally omit provider-only citation metadata before display",
-        "SDK deserialization and each application serialization boundary",
-        "The retrieval and citation-generation prompts, because a citation visible on the provider wire may still have been produced from a malformed evidence chunk",
-        "The system prompt"
+        "UI 渲染和浏览器兼容层，因为轨迹可能有意在显示前省略服务商专属引用元数据",
+        "SDK 反序列化和应用每个序列化边界",
+        "检索和引用生成提示词，因为网络上可见引用仍可能来自畸形证据分块",
+        "系统提示词"
       ],
       "correct": [
         1
       ],
-      "explanation": "The field existed at the provider boundary, so the likely defect is integration mapping. Comparing wire, SDK object, service DTO, and UI payload locates where the field disappeared.",
+      "explanation": "字段在服务商边界存在，因此可能是集成映射缺陷。比较网络、SDK 对象、服务 DTO 和 UI 载荷，可定位字段消失处。",
       "references": [
         "https://platform.claude.com/docs/en/api/messages",
         "https://platform.claude.com/docs/en/test-and-evaluate/develop-tests",
@@ -872,19 +872,19 @@
     {
       "id": "ccar-p-m1-039",
       "domain": "evaluation-testing-optimization",
-      "objective": "Optimize tokens, latency, and cost-performance",
+      "objective": "优化词元、延迟及成本性能（Optimize tokens, latency, and cost-performance）",
       "type": "single",
-      "prompt": "Prompt caching cuts input cost by 35 percent, but a stale policy prefix causes incorrect decisions. What is the correct optimization response?",
+      "prompt": "提示词缓存降低输入成本 35%，但过时政策前缀导致错误决策。正确优化回应是什么？",
       "options": [
-        "Increase cache lifetime without measurement",
-        "Remove correctness from the scorecard",
-        "Restore source freshness and versioned invalidation, then evaluate cache economics on correct outputs",
-        "Keep caching enabled but shorten the cache lifetime and add a prompt instruction to prefer newer retrieved policy when it conflicts with the stable prefix"
+        "不测量就延长缓存寿命",
+        "从评分卡删除正确性",
+        "恢复来源新鲜度和版本化失效，再在正确输出上评估缓存经济性",
+        "保持缓存，但缩短寿命并增加指令，要求冲突时优先采用较新检索政策"
       ],
       "correct": [
         2
       ],
-      "explanation": "Optimization is subordinate to correctness. Stable prefixes need explicit content ownership and invalidation so cost savings do not preserve obsolete policy.",
+      "explanation": "优化必须以正确性为前提。稳定前缀需要明确的内容负责人和失效机制（Invalidation），否则为节省成本而保留缓存，可能让过时政策继续生效。",
       "references": [
         "https://platform.claude.com/docs/en/build-with-claude/prompt-caching",
         "https://platform.claude.com/docs/en/test-and-evaluate/develop-tests",
@@ -894,21 +894,21 @@
     {
       "id": "ccar-p-m1-040",
       "domain": "evaluation-testing-optimization",
-      "objective": "Run A/B tests and iterative improvements",
+      "objective": "运行 A/B 测试并迭代改进（Run A/B tests and iterative improvements）",
       "type": "multiple",
-      "prompt": "Which release gates protect against a misleading average improvement? Select all that apply.",
+      "prompt": "哪些发布关卡防止平均改善误导？选择所有适用项。",
       "options": [
-        "No regression beyond threshold in high-impact slices",
-        "Zero new unauthorized side effects",
-        "Gate only on a significant aggregate improvement",
-        "Cost and latency within approved budgets"
+        "高影响切片回归不超过阈值",
+        "新增未授权副作用为零",
+        "只以显著总体改善为关卡",
+        "成本和延迟在获批预算内"
       ],
       "correct": [
         0,
         1,
         3
       ],
-      "explanation": "Non-negotiable safety failures, critical slices, and operational budgets prevent aggregate gains from hiding unacceptable regressions. Averages cannot express every risk boundary.",
+      "explanation": "不可妥协的安全失败、关键切片和运行预算，防止总体增益掩盖不可接受回归。平均值无法表达所有风险边界。",
       "references": [
         "https://platform.claude.com/docs/en/test-and-evaluate/develop-tests",
         "https://www.nist.gov/itl/ai-risk-management-framework",
@@ -918,21 +918,21 @@
     {
       "id": "ccar-p-m1-041",
       "domain": "evaluation-testing-optimization",
-      "objective": "Monitor with logs, traces, and observability",
+      "objective": "通过日志、轨迹和可观测性监控（Monitor with logs, traces, and observability）",
       "type": "multiple",
-      "prompt": "Which information belongs in a production trace for a tool-using Claude workflow? Select all that apply.",
+      "prompt": "使用工具的 Claude 工作流，生产轨迹应包含哪些信息？选择所有适用项。",
       "options": [
-        "Model, prompt, schema, tool, and policy versions",
-        "Encrypted full prompts, retrieved documents, and tool arguments in a restricted trace store so investigators can reproduce any result without source lookups",
-        "Stop reason and redacted tool-decision events",
-        "Correlation IDs and final-state verification result"
+        "模型、提示词、模式、工具和政策版本",
+        "在受限轨迹存储中加密保存完整提示词、检索文档和工具参数，使调查者无需查来源就能复现任意结果",
+        "停止原因及脱敏工具决策事件",
+        "关联 ID 和最终状态验证结果"
       ],
       "correct": [
         0,
         2,
         3
       ],
-      "explanation": "Versioned and correlated decision events support reproduction and incident analysis. Sensitive payloads and credentials should be minimized, redacted, and protected rather than copied into general telemetry.",
+      "explanation": "版本化且相关联的决策事件支持复现与事故分析。敏感载荷和凭据应最小化、脱敏并保护，而非复制进通用遥测。",
       "references": [
         "https://opentelemetry.io/docs/specs/otel/",
         "https://platform.claude.com/docs/en/test-and-evaluate/develop-tests",
@@ -942,21 +942,21 @@
     {
       "id": "ccar-p-m1-042",
       "domain": "governance-safety-risk",
-      "objective": "Layer guardrails and safety controls",
+      "objective": "分层设置防护机制和安全控制（Layer guardrails and safety controls）",
       "type": "multiple",
-      "prompt": "A coding agent can read files, execute commands, and access a package registry. Which layered controls are appropriate? Select all that apply.",
+      "prompt": "编程智能体能读文件、执行命令和访问包注册表。哪些分层控制合适？选择所有适用项。",
       "options": [
-        "A system instruction that assigns Claude the role of a security-conscious senior engineer and requires explicit reasoning before any tool with side effects",
-        "Prompt-level trust-boundary instructions",
-        "Pre-tool policy hooks and explicit approval for consequential actions",
-        "Filesystem and network sandboxing with least privilege"
+        "系统指令将 Claude 设为重视安全的高级工程师，要求任何有副作用工具前明确推理",
+        "提示词层信任边界指令",
+        "工具前置策略钩子，以及重大行动的明确审批",
+        "具有最小权限的文件系统和网络沙箱"
       ],
       "correct": [
         1,
         2,
         3
       ],
-      "explanation": "Defense in depth combines behavioral guidance, deterministic gates, human authority, and infrastructure isolation. Capability claims do not constrain execution or replace enforceable boundaries.",
+      "explanation": "纵深防御（Defense in depth）结合行为指导、确定性关卡、人工权限和基础设施隔离。能力声明不能约束执行，也不能替代可强制边界。",
       "references": [
         "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/mitigate-jailbreaks",
         "https://code.claude.com/docs/en/hooks-guide",
@@ -967,21 +967,21 @@
     {
       "id": "ccar-p-m1-043",
       "domain": "governance-safety-risk",
-      "objective": "Design human-in-the-loop validation",
+      "objective": "设计人在回路验证（Design human-in-the-loop validation）",
       "type": "multiple",
-      "prompt": "Which properties make a human-review step meaningful? Select all that apply.",
+      "prompt": "哪些属性让人工审核步骤具有意义？选择所有适用项。",
       "options": [
-        "A qualified reviewer with evidence and authority",
-        "A defined trigger based on impact, uncertainty, or policy",
-        "A time objective and safe fallback when review is unavailable",
-        "A post-action reviewer checkpoint that can reverse most outcomes and records whether the original model action should remain in effect"
+        "具备资格、证据和权限的审核者",
+        "基于影响、不确定性或政策的明确触发条件",
+        "审核不可用时的时间目标和安全回退",
+        "行动后审核检查点，可撤销多数结果，并记录原模型行动是否应继续生效"
       ],
       "correct": [
         0,
         1,
         2
       ],
-      "explanation": "Human review needs a trigger, accountable role, evidence packet, time budget, and fallback. Review after an irreversible action cannot serve as preauthorization.",
+      "explanation": "人工审核需要触发条件、负责角色、证据包、时间预算和回退。不可逆行动之后的审核不能作为事前授权。",
       "references": [
         "https://everpath-course-content.s3-accelerate.amazonaws.com/instructor%2F6nizmqk8tpzpfjvt6qmmav7rh%2Fpublic%2F1783542810%2FClaude+Certified+Architect+%E2%80%93+Professional+Exam+Guide.pdf",
         "https://www.nist.gov/itl/ai-risk-management-framework",
@@ -991,21 +991,21 @@
     {
       "id": "ccar-p-m1-044",
       "domain": "governance-safety-risk",
-      "objective": "Account for GDPR, HIPAA, FedRAMP, and applicable regulation",
+      "objective": "考虑 GDPR、HIPAA、FedRAMP 及适用法规（Account for GDPR, HIPAA, FedRAMP, and applicable regulation）",
       "type": "multiple",
-      "prompt": "A European customer-service assistant is being designed. Which GDPR-aligned architectural questions should be answered? Select all that apply.",
+      "prompt": "正在设计欧洲客户服务助手。应回答哪些符合 GDPR 的架构问题？选择所有适用项。",
       "options": [
-        "What lawful basis and purpose govern processing",
-        "How data-subject rights and deletion propagate through stores and logs",
-        "Which optional customer fields could improve future personalization, provided the privacy notice describes broad service-improvement use and access is restricted",
-        "Which personal data is necessary and how long it is retained"
+        "处理依据何种合法基础和目的",
+        "数据主体权利和删除如何传递到各存储及日志",
+        "只要隐私通知描述宽泛服务改进用途且访问受限，哪些可选客户字段能改善未来个性化",
+        "哪些个人数据必要，保留多久"
       ],
       "correct": [
         0,
         1,
         3
       ],
-      "explanation": "Purpose limitation, data minimization, retention, and rights handling shape the data lifecycle. Speculative collection conflicts with minimization and increases risk. Legal counsel must confirm obligations for the deployment.",
+      "explanation": "目的限制、数据最小化、保留和权利处理影响数据生命周期。推测性收集违背最小化并增加风险。法律顾问必须确认该部署的义务。",
       "references": [
         "https://eur-lex.europa.eu/eli/reg/2016/679/oj",
         "https://everpath-course-content.s3-accelerate.amazonaws.com/instructor%2F6nizmqk8tpzpfjvt6qmmav7rh%2Fpublic%2F1783542810%2FClaude+Certified+Architect+%E2%80%93+Professional+Exam+Guide.pdf",
@@ -1015,19 +1015,19 @@
     {
       "id": "ccar-p-m1-045",
       "domain": "governance-safety-risk",
-      "objective": "Account for GDPR, HIPAA, FedRAMP, and applicable regulation",
+      "objective": "考虑 GDPR、HIPAA、FedRAMP 及适用法规（Account for GDPR, HIPAA, FedRAMP, and applicable regulation）",
       "type": "single",
-      "prompt": "A healthcare workflow will send protected health information through Claude. What is the architect's strongest first governance action?",
+      "prompt": "医疗工作流将通过 Claude 发送受保护健康信息。架构师最有力的首项治理行动是什么？",
       "options": [
-        "Assume encryption alone makes the workflow compliant",
-        "Ask Claude to certify compliance",
-        "Use the provider's encrypted transport and approved enterprise plan, send complete records to maximize clinical context, and rely on downstream access logs for compliance",
-        "Confirm the covered workflow, approved service configuration and agreements, minimum-necessary data, access controls, auditability, and organizational HIPAA review"
+        "假设仅加密就能合规",
+        "让 Claude 认证合规",
+        "使用服务商加密传输和获批企业套餐，发送完整记录最大化临床上下文，依赖下游访问日志满足合规",
+        "确认适用工作流、获批服务配置及协议、最小必要数据、访问控制、可审计性和组织 HIPAA 审查"
       ],
       "correct": [
         3
       ],
-      "explanation": "HIPAA suitability depends on the complete administrative, technical, contractual, and data-minimization boundary. A model cannot declare the system compliant, and encryption is only one control.",
+      "explanation": "HIPAA 适用性依赖完整管理、技术、合同及数据最小化边界。模型不能宣布系统合规，加密只是其中一项控制。",
       "references": [
         "https://www.hhs.gov/hipaa/for-professionals/security/index.html",
         "https://trust.anthropic.com/",
@@ -1037,19 +1037,19 @@
     {
       "id": "ccar-p-m1-046",
       "domain": "governance-safety-risk",
-      "objective": "Account for GDPR, HIPAA, FedRAMP, and applicable regulation",
+      "objective": "考虑 GDPR、HIPAA、FedRAMP 及适用法规（Account for GDPR, HIPAA, FedRAMP, and applicable regulation）",
       "type": "single",
-      "prompt": "A US government team requires a FedRAMP-authorized boundary. Which statement is correct?",
+      "prompt": "美国政府团队要求 FedRAMP 授权边界。哪项陈述正确？",
       "options": [
-        "The exact cloud service, deployment boundary, region, inherited controls, customer responsibilities, and data flow must be verified",
-        "A local prototype is sufficient evidence",
-        "Use the same model family through any government cloud region, provided encryption, identity federation, and agency logging meet the team's inherited control baseline",
-        "FedRAMP applies only to the user interface"
+        "必须核实具体云服务、部署边界、区域、继承控制、客户责任和数据流",
+        "本地原型就是充分证据",
+        "任何政府云区域都可使用同一模型家族，只要加密、联合身份和机构日志符合团队继承控制基线",
+        "FedRAMP 只适用于用户界面"
       ],
       "correct": [
         0
       ],
-      "explanation": "Authorization attaches to a defined service and control boundary, not a model name in isolation. Architects must verify the approved offering and map inherited versus customer-operated controls.",
+      "explanation": "授权附着于明确服务与控制边界，不是孤立模型名称。架构师必须核实获批产品，并映射继承控制与客户运作控制。",
       "references": [
         "https://www.fedramp.gov/",
         "https://trust.anthropic.com/",
@@ -1059,21 +1059,21 @@
     {
       "id": "ccar-p-m1-047",
       "domain": "governance-safety-risk",
-      "objective": "Address bias, fairness, and transparency",
+      "objective": "处理偏差、公平性和透明性（Address bias, fairness, and transparency）",
       "type": "multiple",
-      "prompt": "A benefits-triage system has acceptable overall accuracy. Which fairness checks are still needed? Select all that apply.",
+      "prompt": "福利分流系统总体准确率可接受。仍需要哪些公平性检查？选择所有适用项。",
       "options": [
-        "Compare error and escalation rates across relevant groups",
-        "Use the acceptable aggregate score plus a balanced overall label distribution as evidence of fairness, then monitor complaints for group-specific problems",
-        "Test accessibility and language slices",
-        "Review whether labels and proxy variables encode historical inequity"
+        "比较相关群体的错误和升级处理率",
+        "用可接受总体分数和均衡总体标签分布证明公平，再监控投诉发现群体问题",
+        "测试无障碍和语言切片",
+        "检查标签和代理变量是否编码历史不平等"
       ],
       "correct": [
         0,
         2,
         3
       ],
-      "explanation": "Aggregate performance can conceal concentrated harm. Slice metrics, data and label review, and accessibility evaluation reveal distributional failures that require governance decisions.",
+      "explanation": "总体表现可能隐藏集中伤害。切片指标、数据及标签评审、无障碍评估揭示需要治理决策的分布性失败。",
       "references": [
         "https://www.nist.gov/itl/ai-risk-management-framework",
         "https://everpath-course-content.s3-accelerate.amazonaws.com/instructor%2F6nizmqk8tpzpfjvt6qmmav7rh%2Fpublic%2F1783542810%2FClaude+Certified+Architect+%E2%80%93+Professional+Exam+Guide.pdf",
@@ -1083,19 +1083,19 @@
     {
       "id": "ccar-p-m1-048",
       "domain": "governance-safety-risk",
-      "objective": "Address bias, fairness, and transparency",
+      "objective": "处理偏差、公平性和透明性（Address bias, fairness, and transparency）",
       "type": "single",
-      "prompt": "Users receive recommendations that affect account access. Which transparency design is strongest?",
+      "prompt": "用户收到影响账户访问的建议。哪种透明性设计最合适？",
       "options": [
-        "Publish private chain-of-thought",
-        "Disclose the AI-assisted role, provide understandable factors and evidence where appropriate, and offer a challenge or escalation path",
-        "Disclose that AI generated the recommendation, show a calibrated confidence band, and direct users to ordinary customer support without exposing decision factors",
-        "Hide that AI contributed so users trust the result"
+        "发布私有思维链",
+        "披露 AI 辅助角色，适当提供可理解因素和证据，并提供质疑或升级处理路径",
+        "披露 AI 生成建议，显示校准置信区间，不揭示决策因素，只引导普通客服",
+        "隐藏 AI 参与以让用户信任"
       ],
       "correct": [
         1
       ],
-      "explanation": "Meaningful transparency explains the system's role, basis, limitations, and recourse without exposing private reasoning or sensitive controls. A bare confidence number is not an explanation.",
+      "explanation": "有意义透明性解释系统角色、依据、限制和救济，不暴露私有推理或敏感控制。单纯置信数字不是解释。",
       "references": [
         "https://www.nist.gov/itl/ai-risk-management-framework",
         "https://everpath-course-content.s3-accelerate.amazonaws.com/instructor%2F6nizmqk8tpzpfjvt6qmmav7rh%2Fpublic%2F1783542810%2FClaude+Certified+Architect+%E2%80%93+Professional+Exam+Guide.pdf",
@@ -1105,21 +1105,21 @@
     {
       "id": "ccar-p-m1-049",
       "domain": "governance-safety-risk",
-      "objective": "Identify LLM failure modes",
+      "objective": "识别大语言模型失败模式（Identify LLM failure modes）",
       "type": "multiple",
-      "prompt": "An external document instructs a procurement agent to approve a new vendor and send credentials. Which controls should prevent harm? Select all that apply.",
+      "prompt": "外部文档要求采购智能体批准新供应商并发送凭据。哪些控制应阻止伤害？选择所有适用项。",
       "options": [
-        "Treat the document as authenticated business intent when its signature image and vendor details match an approved record, then apply ordinary tool approval",
-        "Treat document instructions as untrusted content",
-        "Require authenticated human approval bound to the exact vendor action",
-        "Keep vendor approval and credential access outside automatic model authority"
+        "签名图片和供应商细节匹配获批记录时，将文档视为已认证业务意图，再做普通工具审批",
+        "将文档指令视为不可信内容",
+        "要求已认证人工审批，并绑定确切供应商行动",
+        "供应商审批和凭据访问不纳入模型自动权限"
       ],
       "correct": [
         1,
         2,
         3
       ],
-      "explanation": "Indirect prompt injection exploits legitimate agent authority. Trust labeling, least privilege, and action-bound approval prevent content from authenticating or authorizing itself.",
+      "explanation": "间接提示词注入利用智能体合法权限。信任标签、最小权限和绑定行动的审批，防止内容自行认证或授权。",
       "references": [
         "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/mitigate-jailbreaks",
         "https://modelcontextprotocol.io/docs/tutorials/security/security_best_practices",
@@ -1129,19 +1129,19 @@
     {
       "id": "ccar-p-m1-050",
       "domain": "governance-safety-risk",
-      "objective": "Layer guardrails and safety controls",
+      "objective": "分层设置防护机制和安全控制（Layer guardrails and safety controls）",
       "type": "single",
-      "prompt": "A secret appears in a model trace. What is the correct immediate response?",
+      "prompt": "模型轨迹中出现机密。正确的立即回应是什么？",
       "options": [
-        "Restrict trace access, add the secret pattern to redaction, and monitor the credential for suspicious use before rotating it at the next maintenance window",
-        "Ask the model to forget it",
-        "Contain the affected capability, revoke or rotate the credential, preserve redacted evidence, and investigate actual access",
-        "Delete the trace and continue using the credential"
+        "限制轨迹访问，将机密模式加入脱敏，监控可疑使用，到下次维护窗口再轮换",
+        "让模型忘记",
+        "遏制受影响能力，撤销或轮换凭据，保留脱敏证据，并调查实际访问",
+        "删除轨迹，继续使用凭据"
       ],
       "correct": [
         2
       ],
-      "explanation": "Once exposed, a credential is no longer trustworthy. Containment and rotation reduce ongoing risk, while protected evidence and authoritative logs establish impact and support regression fixes.",
+      "explanation": "凭据一旦暴露就不再可信。遏制和轮换减少持续风险，受保护证据和权威日志确定影响并支持回归修复。",
       "references": [
         "https://code.claude.com/docs/en/security",
         "https://www.nist.gov/itl/ai-risk-management-framework",
@@ -1151,21 +1151,21 @@
     {
       "id": "ccar-p-m1-051",
       "domain": "stakeholder-lifecycle",
-      "objective": "Run structured discovery",
+      "objective": "开展结构化需求探索（Run structured discovery）",
       "type": "multiple",
-      "prompt": "A discovery workshop for an underwriting assistant is beginning. Which questions should the architect prioritize? Select all that apply.",
+      "prompt": "核保助手需求探索工作坊即将开始。架构师应优先问哪些问题？选择所有适用项。",
       "options": [
-        "Which data and systems are authoritative",
-        "Which action follows the output and what happens when it is wrong",
-        "What observable outcome should improve and who owns it",
-        "Which current model leads broad public benchmarks and has the strongest adoption among comparable underwriting teams"
+        "哪些数据和系统具有权威性",
+        "输出之后执行什么行动，错误时会怎样",
+        "哪个可观察成果应改善，由谁负责",
+        "哪个当前模型领先通用公开基准，并在类似核保团队中采用最多"
       ],
       "correct": [
         0,
         1,
         2
       ],
-      "explanation": "Outcome ownership, downstream consequence, and authoritative data define the problem boundary. Model popularity is not a requirement and should not precede discovery.",
+      "explanation": "谁对结果负责、结果会造成什么下游影响，以及哪些数据具有权威性，共同确定了问题的边界。模型是否流行不是需求，也不应在需求梳理之前就决定选型。",
       "references": [
         "https://everpath-course-content.s3-accelerate.amazonaws.com/instructor%2F6nizmqk8tpzpfjvt6qmmav7rh%2Fpublic%2F1783542810%2FClaude+Certified+Architect+%E2%80%93+Professional+Exam+Guide.pdf",
         "certifications/claude/lessons/22-business-discovery-requirements-and-slas"
@@ -1174,19 +1174,19 @@
     {
       "id": "ccar-p-m1-052",
       "domain": "stakeholder-lifecycle",
-      "objective": "Communicate decisions and tradeoffs",
+      "objective": "沟通决策和权衡（Communicate decisions and tradeoffs）",
       "type": "single",
-      "prompt": "Executives ask why the proposed architecture keeps human approval for refunds above a threshold. Which explanation is strongest?",
+      "prompt": "高管问为什么架构对超过阈值的退款保留人工审批。哪种解释最有力？",
       "options": [
-        "The engineering team prefers more screens",
-        "The model is not intelligent enough",
-        "Human review is retained because refunds are external financial actions, so a uniform approval rule across all values is simpler to audit and explain than a calibrated risk threshold",
-        "The threshold balances handling-time benefit with the financial impact, reversibility, policy obligation, and measured uncertainty of higher-value cases"
+        "工程团队偏好更多页面",
+        "模型不够聪明",
+        "退款属于外部财务行动，所以所有金额采用统一审批，比校准风险阈值更易审计和解释",
+        "阈值平衡处理时间收益与高金额案例的财务影响、可逆性、政策义务及实测不确定性"
       ],
       "correct": [
         3
       ],
-      "explanation": "Tradeoff communication should connect the control to value, risk, evidence, and policy. It avoids vague capability claims and explains why the boundary is proportional.",
+      "explanation": "权衡沟通应将控制关联到价值、风险、证据和政策，避免模糊能力主张，并解释边界为何与风险相称。",
       "references": [
         "https://everpath-course-content.s3-accelerate.amazonaws.com/instructor%2F6nizmqk8tpzpfjvt6qmmav7rh%2Fpublic%2F1783542810%2FClaude+Certified+Architect+%E2%80%93+Professional+Exam+Guide.pdf",
         "https://www.nist.gov/itl/ai-risk-management-framework",
@@ -1196,19 +1196,19 @@
     {
       "id": "ccar-p-m1-053",
       "domain": "stakeholder-lifecycle",
-      "objective": "Manage feedback, expectations, and SLAs",
+      "objective": "管理反馈、预期和 SLA（Manage feedback, expectations, and SLAs）",
       "type": "single",
-      "prompt": "A stakeholder says the agent must be 99 percent accurate. What should the architect ask next?",
+      "prompt": "利益相关者说智能体准确率必须达 99%。架构师接下来应问什么？",
       "options": [
-        "Which task population, label, evaluator, time window, error classes, and consequences define that target",
-        "Whether 99 is the stakeholder's favorite number",
-        "Which prompt is longest",
-        "Whether the target refers to offline model accuracy or end-to-end production success, then adopt the stricter definition to avoid understating performance"
+        "哪些任务总体、标签、评估者、时间窗口、错误类别和后果定义该目标",
+        "99 是否是对方喜欢的数字",
+        "哪个提示词最长",
+        "目标是离线模型准确率还是端到端生产成功率，然后采用更严格定义避免低估性能"
       ],
       "correct": [
         0
       ],
-      "explanation": "An accuracy target is meaningless without a denominator, measurement method, and error taxonomy. Operational commitments must name the population and response when objectives are missed.",
+      "explanation": "准确率目标没有分母、测量方法和错误分类就没有意义。运行承诺必须明确总体，以及未达目标时的应对。",
       "references": [
         "https://everpath-course-content.s3-accelerate.amazonaws.com/instructor%2F6nizmqk8tpzpfjvt6qmmav7rh%2Fpublic%2F1783542810%2FClaude+Certified+Architect+%E2%80%93+Professional+Exam+Guide.pdf",
         "https://platform.claude.com/docs/en/test-and-evaluate/develop-tests",
@@ -1218,21 +1218,21 @@
     {
       "id": "ccar-p-m1-054",
       "domain": "stakeholder-lifecycle",
-      "objective": "Document architectures and implementation guidance",
+      "objective": "记录架构和实施指导（Document architectures and implementation guidance）",
       "type": "multiple",
-      "prompt": "Which sections belong in a useful architecture decision record? Select all that apply.",
+      "prompt": "有用的架构决策记录应包含哪些章节？选择所有适用项。",
       "options": [
-        "Options, decision, and rejected alternatives",
-        "Consequences, verification, and reversal conditions",
-        "The final architecture diagram plus implementation milestones and owners, with rejected options and reversal conditions retained in workshop notes",
-        "Context, constraints, and evidence"
+        "选项、决策和排除方案",
+        "后果、验证及撤销条件",
+        "最终架构图、实施里程碑和负责人，将排除选项及撤销条件留在工作坊笔记",
+        "背景、约束和证据"
       ],
       "correct": [
         0,
         1,
         3
       ],
-      "explanation": "A decision record preserves why an option fit the evidence and how it will be validated or reversed. A diagram alone shows structure but not rationale or operational consequences.",
+      "explanation": "决策记录保留某方案为何符合证据，以及如何验证或撤销。单张图只显示结构，不说明理由和运行后果。",
       "references": [
         "https://everpath-course-content.s3-accelerate.amazonaws.com/instructor%2F6nizmqk8tpzpfjvt6qmmav7rh%2Fpublic%2F1783542810%2FClaude+Certified+Architect+%E2%80%93+Professional+Exam+Guide.pdf",
         "certifications/claude/lessons/22-business-discovery-requirements-and-slas"
@@ -1241,21 +1241,21 @@
     {
       "id": "ccar-p-m1-055",
       "domain": "stakeholder-lifecycle",
-      "objective": "Support discovery, design, handoff, monitoring, and iteration",
+      "objective": "支持探索、设计、交接、监控和迭代（Support discovery, design, handoff, monitoring, and iteration）",
       "type": "multiple",
-      "prompt": "Before handing a Claude system from the build team to operations, which artifacts are required? Select all that apply.",
+      "prompt": "构建团队向运维交接 Claude 系统前，需要哪些交付物？选择所有适用项。",
       "options": [
-        "Runbooks, escalation paths, and rollback procedure",
-        "A signed build-team statement that the production-like demo passed its acceptance cases, with unresolved issues documented in the handoff meeting notes",
-        "Service objectives, dashboards, and alert ownership",
-        "Version inventory for model, prompt, tools, data, and policy"
+        "操作手册、升级路径和回滚流程",
+        "构建团队签字声明类生产演示通过验收案例，未决问题记在交接会议笔记中",
+        "服务目标、仪表盘和告警负责人",
+        "模型、提示词、工具、数据和政策版本清单"
       ],
       "correct": [
         0,
         2,
         3
       ],
-      "explanation": "Operations needs measurable service behavior, response procedures, ownership, and versioned dependencies. A successful demo does not define how to detect, contain, or recover from production failure.",
+      "explanation": "运维需要可测量服务行为、响应流程、责任归属和版本化依赖。成功演示不定义如何发现、遏制或恢复生产失败。",
       "references": [
         "https://everpath-course-content.s3-accelerate.amazonaws.com/instructor%2F6nizmqk8tpzpfjvt6qmmav7rh%2Fpublic%2F1783542810%2FClaude+Certified+Architect+%E2%80%93+Professional+Exam+Guide.pdf",
         "https://sre.google/sre-book/table-of-contents/",
@@ -1265,21 +1265,21 @@
     {
       "id": "ccar-p-m1-056",
       "domain": "stakeholder-lifecycle",
-      "objective": "Manage feedback, expectations, and SLAs",
+      "objective": "管理反馈、预期和 SLA（Manage feedback, expectations, and SLAs）",
       "type": "multiple",
-      "prompt": "A high-impact assistant is ready for rollout. Which pilot design is strongest? Select all that apply.",
+      "prompt": "高影响助手准备发布。哪些试点设计最合适？选择所有适用项。",
       "options": [
-        "Grant production authority to a small expert-user cohort with a global kill switch, using rapid incident response instead of draft-only or read-only boundaries",
-        "Collect structured reviewer feedback and failure traces",
-        "Use a bounded population and read-only or draft-only authority",
-        "Define success, safety gates, review load, and rollback before launch"
+        "给少量专家用户群生产权限和全局紧急开关，用快速事故响应替代仅起草或只读边界",
+        "收集结构化审核者反馈和失败轨迹",
+        "限定人群，只读或仅起草权限",
+        "上线前定义成功、安全关卡、审核负载和回滚"
       ],
       "correct": [
         1,
         2,
         3
       ],
-      "explanation": "A bounded pilot tests the riskiest assumptions while limiting harm. Predeclared gates and structured evidence make the decision to expand or stop defensible.",
+      "explanation": "有边界试点在限制伤害的同时测试风险最大的假设。预先声明关卡和结构化证据使扩展或停止决定可辩护。",
       "references": [
         "https://everpath-course-content.s3-accelerate.amazonaws.com/instructor%2F6nizmqk8tpzpfjvt6qmmav7rh%2Fpublic%2F1783542810%2FClaude+Certified+Architect+%E2%80%93+Professional+Exam+Guide.pdf",
         "https://platform.claude.com/docs/en/test-and-evaluate/develop-tests",
@@ -1289,19 +1289,19 @@
     {
       "id": "ccar-p-m1-057",
       "domain": "stakeholder-lifecycle",
-      "objective": "Support discovery, design, handoff, monitoring, and iteration",
+      "objective": "支持探索、设计、交接、监控和迭代（Support discovery, design, handoff, monitoring, and iteration）",
       "type": "single",
-      "prompt": "Reviewers complain that too many safe cases are escalated. What should the lifecycle owner do?",
+      "prompt": "审核者抱怨太多安全案例被升级处理。生命周期负责人应怎么做？",
       "options": [
-        "Raise the escalation confidence threshold immediately based on reviewer complaints, then compare queue volume and incident counts during the next release window",
-        "Measure false-escalation slices, review the trigger and evidence quality, test a candidate change, and monitor safety guardrails",
-        "Tell reviewers to work faster",
-        "Remove human review entirely"
+        "根据投诉立即提高升级置信阈值，下个发布窗口再比较队列量和事故数",
+        "测量错误升级切片，审查触发条件和证据质量，测试候选变更，并监控安全防护指标",
+        "让审核者工作更快",
+        "彻底移除人工审核"
       ],
       "correct": [
         1
       ],
-      "explanation": "Feedback should become a classified, measurable improvement hypothesis. The team can reduce unnecessary review only while preserving the high-impact safety boundary.",
+      "explanation": "反馈应转化为经过分类、可以测量验证的改进假设（Improvement Hypothesis）。只有保留针对高影响操作的安全边界，团队才能减少不必要的审核。",
       "references": [
         "https://platform.claude.com/docs/en/test-and-evaluate/develop-tests",
         "https://everpath-course-content.s3-accelerate.amazonaws.com/instructor%2F6nizmqk8tpzpfjvt6qmmav7rh%2Fpublic%2F1783542810%2FClaude+Certified+Architect+%E2%80%93+Professional+Exam+Guide.pdf",
@@ -1311,19 +1311,19 @@
     {
       "id": "ccar-p-m1-058",
       "domain": "stakeholder-lifecycle",
-      "objective": "Communicate decisions and tradeoffs",
+      "objective": "沟通决策和权衡（Communicate decisions and tradeoffs）",
       "type": "single",
-      "prompt": "How should the same architecture change be communicated to an executive sponsor and an on-call engineer?",
+      "prompt": "同一架构变更应如何分别传达给高管发起人和值班工程师？",
       "options": [
-        "Give both audiences the architecture decision record and full sequence diagram so each receives the same authoritative details and can extract what matters",
-        "Send both the complete source code only",
-        "Explain business outcome, risk, and cost to the sponsor; give dependencies, signals, failure modes, and recovery steps to the engineer",
-        "Hide tradeoffs from the sponsor"
+        "两者都给架构决策记录和完整时序图，让各自从同样权威细节提取所需",
+        "只给两者完整源码",
+        "向发起人解释业务成果、风险和成本；向工程师提供依赖、信号、失败模式和恢复步骤",
+        "向发起人隐藏权衡"
       ],
       "correct": [
         2
       ],
-      "explanation": "Stakeholders need different levels of detail while the underlying decision remains consistent. Communication should support each audience's decisions and responsibilities.",
+      "explanation": "不同利益相关者（Stakeholder）需要不同程度的细节，但所依据的决策必须一致。沟通内容应帮助每类受众作出自己的决策，并履行各自的责任。",
       "references": [
         "https://everpath-course-content.s3-accelerate.amazonaws.com/instructor%2F6nizmqk8tpzpfjvt6qmmav7rh%2Fpublic%2F1783542810%2FClaude+Certified+Architect+%E2%80%93+Professional+Exam+Guide.pdf",
         "certifications/claude/lessons/22-business-discovery-requirements-and-slas"
@@ -1332,21 +1332,21 @@
     {
       "id": "ccar-p-m1-059",
       "domain": "stakeholder-lifecycle",
-      "objective": "Support discovery, design, handoff, monitoring, and iteration",
+      "objective": "支持探索、设计、交接、监控和迭代（Support discovery, design, handoff, monitoring, and iteration）",
       "type": "multiple",
-      "prompt": "A source system is being retired. Which lifecycle actions are required for the Claude application? Select all that apply.",
+      "prompt": "某来源系统即将退役。Claude 应用需要哪些生命周期行动？选择所有适用项。",
       "options": [
-        "Migrate or remove data with retention and deletion controls",
-        "Identify prompts, retrieval indexes, tools, evals, and runbooks that depend on it",
-        "Re-run acceptance and failure tests before cutover",
-        "Keep the old connector disabled but deployable as an emergency fallback, without including it in routine runbooks, tests, or dependency inventories"
+        "按保留和删除控制迁移或移除数据",
+        "识别依赖它的提示词、检索索引、工具、评估及操作手册",
+        "切换前重跑验收和失败测试",
+        "旧连接器保持禁用但可部署，作为紧急回退，却不纳入日常手册、测试或依赖清单"
       ],
       "correct": [
         0,
         1,
         2
       ],
-      "explanation": "Decommissioning is an architectural change across data, integration, evaluation, and operations. Undocumented stale access increases security risk and can silently reintroduce obsolete information.",
+      "explanation": "退役是横跨数据、集成、评估和运维的架构变更。未记录的旧访问增加安全风险，并可能悄悄重新引入过时信息。",
       "references": [
         "https://everpath-course-content.s3-accelerate.amazonaws.com/instructor%2F6nizmqk8tpzpfjvt6qmmav7rh%2Fpublic%2F1783542810%2FClaude+Certified+Architect+%E2%80%93+Professional+Exam+Guide.pdf",
         "https://www.nist.gov/itl/ai-risk-management-framework",
@@ -1356,21 +1356,21 @@
     {
       "id": "ccar-p-m1-060",
       "domain": "developer-productivity-operations",
-      "objective": "Configure Claude tools and team environments",
+      "objective": "配置 Claude 工具和团队环境（Configure Claude tools and team environments）",
       "type": "multiple",
-      "prompt": "A team standardizes Claude Code across repositories. Which configuration belongs in reviewed project scope? Select all that apply.",
+      "prompt": "团队跨仓库标准化 Claude Code。哪些配置属于经评审项目作用域？选择所有适用项。",
       "options": [
-        "Repository-specific constraints and approved hooks",
-        "Versioned team settings needed for consistent safe behavior",
-        "References to production secret names together with sample resolved values so every repository can validate credential format during setup",
-        "Canonical build and test commands"
+        "仓库专属约束和获批钩子",
+        "一致安全行为所需的版本化团队设置",
+        "生产机密名称引用及示例解析值，让每个仓库配置时验证凭据格式",
+        "标准构建和测试命令"
       ],
       "correct": [
         0,
         1,
         3
       ],
-      "explanation": "Shared commands, constraints, hooks, and settings create repeatable behavior. Credentials belong in protected environment or secret-management boundaries, never committed project instructions.",
+      "explanation": "共享命令、约束、钩子和设置形成可重复行为。凭据应放在受保护环境或机密管理边界，绝不提交到项目指令。",
       "references": [
         "https://code.claude.com/docs/en/settings",
         "https://code.claude.com/docs/en/hooks-guide",
@@ -1380,21 +1380,21 @@
     {
       "id": "ccar-p-m1-061",
       "domain": "developer-productivity-operations",
-      "objective": "Improve engineering workflows with AI-assisted tooling",
+      "objective": "使用 AI 辅助工具改善工程工作流（Improve engineering workflows with AI-assisted tooling）",
       "type": "multiple",
-      "prompt": "A headless Claude Code job reviews untrusted pull requests. Which controls are appropriate? Select all that apply.",
+      "prompt": "无界面 Claude Code 任务评审不可信拉取请求。哪些控制合适？选择所有适用项。",
       "options": [
-        "Minimal repository and token permissions",
-        "A short-lived protected-branch token limited to reviewer-generated fixes, allowing the headless job to apply high-confidence findings after tests pass",
-        "Bounded tools, network, time, and structured report output",
-        "No unrelated secrets in the environment"
+        "最小仓库和令牌权限",
+        "短期受保护分支令牌，仅用于评审者生成修复，允许测试通过后应用高置信发现",
+        "有边界工具、网络、时间和结构化报告输出",
+        "环境中没有无关机密"
       ],
       "correct": [
         0,
         2,
         3
       ],
-      "explanation": "Headless automation lacks interactive supervision, so capability and identity must be narrower. Findings should enter normal review and protected merge paths instead of bypassing them.",
+      "explanation": "无界面自动化缺少交互监督，能力与身份必须更窄。发现应进入正常评审和受保护合并路径，而非绕过。",
       "references": [
         "https://code.claude.com/docs/en/headless",
         "https://code.claude.com/docs/en/security",
@@ -1404,21 +1404,21 @@
     {
       "id": "ccar-p-m1-062",
       "domain": "developer-productivity-operations",
-      "objective": "Support debugging and operational incident resolution",
+      "objective": "支持调试和运维事故解决（Support debugging and operational incident resolution）",
       "type": "multiple",
-      "prompt": "An on-call engineer uses Claude to investigate a latency incident. Which inputs and boundaries are most useful? Select all that apply.",
+      "prompt": "值班工程师用 Claude 调查延迟事故。哪些输入和边界最有用？选择所有适用项。",
       "options": [
-        "Short-lived read credentials copied into a protected system prompt so Claude can reproduce failing dependency requests directly from the incident context",
-        "Redacted correlated traces and recent version changes",
-        "Read-only diagnostic tools before any remediation authority",
-        "Service objectives, dependency health, and runbook steps"
+        "将短期读取凭据复制到受保护系统提示词，让 Claude 从事故上下文直接复现失败依赖请求",
+        "脱敏且相关联的轨迹，以及近期版本变化",
+        "在授予任何修复权限前，先提供只读诊断工具",
+        "服务目标、依赖健康状态和操作手册步骤"
       ],
       "correct": [
         1,
         2,
         3
       ],
-      "explanation": "Correlated evidence, objectives, dependency state, and safe diagnostic tools support fast causal analysis. Credentials add exposure and should remain inside trusted integrations.",
+      "explanation": "相关联证据、目标、依赖状态和安全诊断工具支持快速因果分析。凭据增加暴露，应保留在可信集成内部。",
       "references": [
         "https://opentelemetry.io/docs/specs/otel/",
         "https://sre.google/sre-book/table-of-contents/",
@@ -1429,21 +1429,21 @@
     {
       "id": "ccar-p-m1-063",
       "domain": "developer-productivity-operations",
-      "objective": "Configure Claude tools and team environments",
+      "objective": "配置 Claude 工具和团队环境（Configure Claude tools and team environments）",
       "type": "multiple",
-      "prompt": "A team upgrades Claude Code, a plugin, and an MCP server in one release. Which practices reduce operational risk? Select all that apply.",
+      "prompt": "团队一次发布升级 Claude Code、插件和 MCP 服务器。哪些实践减少运行风险？选择所有适用项。",
       "options": [
-        "Run representative canary workflows with rollback instructions",
-        "Inventory changes to tools, hooks, permissions, and network access",
-        "Record and pin versions where supported",
-        "Rely on successful installation and protocol negotiation as compatibility proof, then monitor production canaries instead of running representative workflows before release"
+        "运行代表性金丝雀工作流，并提供回滚说明",
+        "清点工具、钩子、权限和网络访问变化",
+        "支持时记录并固定版本",
+        "将安装成功和协议协商作为兼容证明，发布前不运行代表性工作流，改为监控生产金丝雀"
       ],
       "correct": [
         0,
         1,
         2
       ],
-      "explanation": "Behavior depends on the combined tool and configuration surface. Version records, capability review, canaries, and rollback turn upgrades into controlled operational changes.",
+      "explanation": "行为依赖组合后的工具与配置接口。版本记录、能力评审、金丝雀和回滚让升级成为受控运行变更。",
       "references": [
         "https://code.claude.com/docs/en/settings",
         "https://modelcontextprotocol.io/docs/tutorials/security/security_best_practices",

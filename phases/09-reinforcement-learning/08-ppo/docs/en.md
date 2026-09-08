@@ -1,73 +1,73 @@
-# Proximal Policy Optimization (PPO)
+# 近端策略优化（Proximal Policy Optimization，PPO）
 
-> A2C throws away each rollout after one update. PPO wraps the policy gradient in a clipped importance ratio so you can do 10+ epochs on the same data without the policy exploding. Schulman et al. (2017). Still the default policy-gradient algorithm in 2026.
+> A2C 每次更新后就丢弃轨迹。PPO 在策略梯度中加入经过裁剪的重要性比率，让同一份数据可以训练 10 轮以上而不使策略失控。Schulman 等（2017）提出这一方法，2026 年它仍是默认的策略梯度算法。
 
 **Type:** Build
 **Languages:** Python
-**Prerequisites:** Phase 9 · 06 (REINFORCE), Phase 9 · 07 (Actor-Critic)
-**Time:** ~75 minutes
+**Prerequisites:** 阶段 9 · 06（REINFORCE），阶段 9 · 07（演员—评论家）
+**Time:** 约 75 分钟
 
-## The Problem
+## 问题（The Problem）
 
-A2C (Lesson 07) is on-policy: the gradient `E_{π_θ}[A · ∇ log π_θ]` requires data sampled from the *current* `π_θ`. Take one update, and `π_θ` changes; the data you used is now off-policy. Re-use it and your gradient is biased.
+A2C（第 07 课）是同策略方法：梯度 `E_{π_θ}[A · ∇ log π_θ]` 要求数据来自*当前* `π_θ`。一次更新后 `π_θ` 就改变，刚才的数据已变成离策略数据。再用它，梯度就会有偏。
 
-Rollouts are expensive. On Atari, one rollout across 8 envs × 128 steps = 1024 transitions and a dozen seconds of environment time. Throwing that away after one gradient step is wasteful.
+采集轨迹很昂贵。在 Atari 中，一次轨迹采集跨 8 个环境 × 128 步 = 1024 条转移，需要十几秒环境运行时间。一次梯度更新后就丢弃很浪费。
 
-Trust Region Policy Optimization (TRPO, Schulman 2015) was the first fix: constrain each update so the KL divergence between old and new policy stays below `δ`. Theoretically clean, but requires a conjugate-gradient solve per update. Nobody runs TRPO in 2026.
+信赖域策略优化（Trust Region Policy Optimization，TRPO；Schulman，2015）首先解决了这个问题：约束每次更新，让新旧策略之间的 KL 散度保持低于 `δ`。理论简洁，但每次更新都要做共轭梯度求解。2026 年已经没人运行 TRPO。
 
-PPO (Schulman et al. 2017) replaces the hard trust-region constraint with a simple clipped objective. One extra line of code. Ten epochs per rollout. No conjugate gradients. Good-enough theoretical guarantees. Nine years later it is still the default policy-gradient algorithm for everything from MuJoCo to RLHF.
+PPO（Schulman 等，2017）用简单的裁剪目标替代硬信赖域约束。只多一行代码，每条轨迹可以训练十轮，无需共轭梯度，理论保证也够用。九年后，它仍是从 MuJoCo 到 RLHF 的默认策略梯度算法。
 
-## The Concept
+## 概念（The Concept）
 
-![PPO clipped surrogate objective: ratio clipping at 1 ± ε](../assets/ppo.svg)
+![PPO 裁剪替代目标：在 1 ± ε 处裁剪比率](../assets/ppo.svg)
 
-**The importance ratio.**
+**重要性比率（Importance Ratio）。**
 
 `r_t(θ) = π_θ(a_t | s_t) / π_{θ_old}(a_t | s_t)`
 
-This is the likelihood ratio of the new policy vs the policy that collected the data. `r_t = 1` means no change. `r_t = 2` means the new policy is twice as likely to take `a_t` as the old.
+这是新策略相对于采集数据的策略的似然比。`r_t = 1` 表示没有变化；`r_t = 2` 表示新策略采取 `a_t` 的概率是旧策略的两倍。
 
-**The clipped surrogate.**
+**裁剪替代目标（Clipped Surrogate）。**
 
 `L^{CLIP}(θ) = E_t [ min( r_t(θ) A_t, clip(r_t(θ), 1-ε, 1+ε) A_t ) ]`
 
-Two terms:
+两个分支：
 
-- If the advantage `A_t > 0` and the ratio tries to grow past `1 + ε`, the clip flattens the gradient — don't push a good action further than `+ε` above old probability.
-- If the advantage `A_t < 0` and the ratio tries to grow past `1 - ε` (meaning we would make a bad action more likely compared to its clipped reduction), the clip caps the gradient — don't push a bad action below `-ε`.
+- 若优势 `A_t > 0`，而比率试图超过 `1 + ε`，裁剪使梯度变平：不要将好动作的概率提升到比旧概率高 `+ε` 以上。
+- 若优势 `A_t < 0`，而比率试图越过 `1 - ε`（意味着相对于裁剪后的下降幅度，坏动作会变得更可能），裁剪限制梯度：不要把坏动作压到 `-ε` 以下。
 
-The `min` handles the other direction: if the ratio has moved in the *beneficial* direction, you still get the gradient (no clipping on the side that would hurt you).
+`min` 处理另一个方向：若比率向*有利*方向移动，你仍然得到梯度，在会造成不利影响的一侧不裁剪。
 
-Typical `ε = 0.2`. Plot the objective as a function of `r_t`: a piecewise-linear function with a flat roof on the "good side" and a flat floor on the "bad side."
+典型值是 `ε = 0.2`。以 `r_t` 为自变量绘制目标，会得到分段线性函数：“好的一侧”有平顶，“坏的一侧”有平底。
 
-**The full PPO loss.**
+**完整 PPO 损失。**
 
 `L(θ, φ) = L^{CLIP}(θ) - c_v · (V_φ(s_t) - V_t^{target})² + c_e · H(π_θ(·|s_t))`
 
-Same actor-critic structure as A2C. Three coefficients, usually `c_v = 0.5`, `c_e = 0.01`, `ε = 0.2`.
+与 A2C 相同的演员—评论家结构。三个系数通常取 `c_v = 0.5`、`c_e = 0.01`、`ε = 0.2`。
 
-**The training loop.**
+**训练循环。**
 
-1. Collect `N × T` transitions across `N` parallel envs for `T` steps each.
-2. Compute advantages (GAE), freeze them as constants.
-3. Freeze `π_{θ_old}` as a snapshot of current `π_θ`.
-4. For `K` epochs, for each minibatch of `(s, a, A, V_target, log π_old(a|s))`:
-   - Compute `r_t(θ) = exp(log π_θ(a|s) - log π_old(a|s))`.
-   - Apply `L^{CLIP}` + value loss + entropy.
-   - Gradient step.
-5. Discard the rollout. Return to step 1.
+1. 在 `N` 个并行环境中各采集 `T` 步，共得到 `N × T` 条转移。
+2. 计算优势（GAE），并冻结为常量。
+3. 将 `π_{θ_old}` 冻结为当前 `π_θ` 的快照。
+4. 训练 `K` 轮，对每个 `(s, a, A, V_target, log π_old(a|s))` 小批量：
+   - 计算 `r_t(θ) = exp(log π_θ(a|s) - log π_old(a|s))`。
+   - 应用 `L^{CLIP}`、价值损失和熵项。
+   - 执行梯度更新。
+5. 丢弃轨迹，返回第 1 步。
 
-`K = 10` and minibatches of 64 is a standard hyperparameter set. PPO is robust: the exact numbers rarely matter within ±50%.
+标准超参数组合为 `K = 10`、小批量大小 64。PPO 很稳健：具体数值在 ±50% 内变化通常影响不大。
 
-**KL-penalty variant.** The original paper proposed an alternative using an adaptive KL penalty: `L = L^{PG} - β · KL(π_θ || π_old)` with `β` adjusted based on observed KL. The clipping version became dominant; the KL variant survives in RLHF (where KL to the reference policy is a separate constraint you always want anyway).
+**KL 惩罚变体。** 原始论文还提出自适应 KL 惩罚：`L = L^{PG} - β · KL(π_θ || π_old)`，根据观测到的 KL 调整 `β`。裁剪版后来占据主导，但 KL 变体仍用于 RLHF，因为相对于参考策略的 KL 本来就是需要的独立约束。
 
 ```figure
 ppo-clip
 ```
 
-## Build It
+## 动手实现（Build It）
 
-### Step 1: capture `log π_old(a | s)` at rollout time
+### 第 1 步：采集轨迹时记录 `log π_old(a | s)`（Step 1: capture old log-probability）
 
 ```python
 for step in range(T):
@@ -82,13 +82,13 @@ for step in range(T):
     s = s_next
 ```
 
-The snapshot is taken once, at rollout time. It does not change during the update epochs.
+快照只在采集轨迹时取一次，后续各轮更新中不改变。
 
-### Step 2: compute GAE advantages (Lesson 07)
+### 第 2 步：计算 GAE 优势，第 07 课（Step 2: compute GAE advantages）
 
-Same as A2C. Normalize across the batch.
+与 A2C 相同，在批量内归一化。
 
-### Step 3: clipped surrogate update
+### 第 3 步：裁剪替代目标更新（Step 3: clipped surrogate update）
 
 ```python
 for _ in range(K_EPOCHS):
@@ -114,96 +114,96 @@ for _ in range(K_EPOCHS):
                     theta[i][j] += LR * pg_grad * grad_logpi[i] * x[j]
 ```
 
-The "clipped → zero gradient" pattern is the heart of PPO. If the new policy has already drifted too far in the beneficial direction, the update stops.
+“被裁剪 → 梯度为零”是 PPO 的核心模式。如果新策略已经向有利方向偏移过远，更新就停止。
 
-### Step 4: value and entropy
+### 第 4 步：价值与熵（Step 4: value and entropy）
 
-Add standard MSE to the critic target and an entropy bonus on the actor, same as A2C.
+像 A2C 一样，加入相对于评论家目标的标准 MSE，以及演员的熵奖励。
 
-### Step 5: diagnostics
+### 第 5 步：诊断（Step 5: diagnostics）
 
-Three things to watch every update:
+每次更新监控三项：
 
-- **Mean KL** `E[log π_old - log π_θ]`. Should stay in `[0, 0.02]`. If it blows past `0.1`, reduce `K_EPOCHS` or `LR`.
-- **Clip fraction** — the fraction of samples whose ratio lies outside `[1-ε, 1+ε]`. Should be `~0.1-0.3`. If `~0`, the clip never triggers → raise `LR` or `K_EPOCHS`. If `~0.5+`, you are over-fitting the rollout → lower them.
-- **Explained variance** `1 - Var(V_target - V_pred) / Var(V_target)`. Critic quality metric. Should climb toward 1 as the critic learns.
+- **平均 KL** `E[log π_old - log π_θ]`。应保持在 `[0, 0.02]`；若冲过 `0.1`，减小 `K_EPOCHS` 或 `LR`。
+- **裁剪比例（Clip Fraction）**：比率落在 `[1-ε, 1+ε]` 之外的样本比例。应为 `~0.1-0.3`。若为 `~0`，裁剪从不触发，应提高 `LR` 或 `K_EPOCHS`；若为 `~0.5+`，说明对轨迹过拟合，应降低它们。
+- **解释方差（Explained Variance）** `1 - Var(V_target - V_pred) / Var(V_target)`。衡量评论家质量，随学习应向 1 上升。
 
-## Pitfalls
+## 常见陷阱（Pitfalls）
 
-- **Clip coefficient mistuned.** `ε = 0.2` is the de-facto standard. Going to `0.1` makes updates too timid; `0.3+` invites instability.
-- **Too many epochs.** `K > 20` routinely destabilizes because the policy drifts far from `π_old`. Cap epochs, especially for large networks.
-- **No reward normalization.** Large reward scales eat into the clip range. Normalize rewards (running std) before computing advantages.
-- **Forgetting advantage normalization.** Per-batch zero-mean/unit-std normalization is standard. Skipping it wrecks PPO on most benchmarks.
-- **Learning rate not decayed.** PPO benefits from linear LR decay to zero. Constant LR is often worse.
-- **Importance ratio math errors.** Always `exp(log_new - log_old)` for numerical stability, not `new / old`.
-- **Wrong gradient sign.** Maximize the surrogate = *minimize* `-L^{CLIP}`. A flipped sign is the most common PPO bug.
+- **裁剪系数不合适。** `ε = 0.2` 是事实标准。改为 `0.1` 会让更新过于保守，`0.3+` 则容易不稳定。
+- **训练轮数过多。** `K > 20` 经常因策略偏离 `π_old` 太远而使训练不稳定。限制轮数，尤其是大网络。
+- **没有奖励归一化。** 大奖励尺度会消耗裁剪范围。计算优势前，用运行标准差归一化奖励。
+- **忘记优势归一化。** 按批量归一化为零均值、单位标准差是标准做法。省略会破坏 PPO 在多数基准上的表现。
+- **学习率不衰减。** PPO 受益于线性衰减到零的学习率。常数学习率通常更差。
+- **重要性比率计算错误。** 为保证数值稳定，始终使用 `exp(log_new - log_old)`，而不是 `new / old`。
+- **梯度符号错误。** 最大化替代目标等于*最小化* `-L^{CLIP}`。符号反了是最常见的 PPO 错误。
 
-## Use It
+## 实际应用（Use It）
 
-PPO is 2026's default RL algorithm across a surprising number of domains:
+2026 年，PPO 是众多领域的默认强化学习算法，覆盖范围超出直觉：
 
-| Use case | PPO variant |
+| 使用场景 | PPO 变体 |
 |----------|-------------|
-| MuJoCo / robotics control | PPO with Gaussian policy, GAE(0.95) |
-| Atari / discrete games | PPO with categorical policy, rolling 128-step rollouts |
-| RLHF for LLMs | PPO with KL penalty to reference model, reward from RM at end of response |
-| Large-scale game agents | IMPALA + PPO (AlphaStar, OpenAI Five) |
-| Reasoning LLMs | GRPO (Lesson 12) — PPO variant without critic |
-| Preference-only data | DPO — closed-form collapsing of PPO+KL, no online sampling |
+| MuJoCo / 机器人控制 | 高斯策略、GAE(0.95) 的 PPO |
+| Atari / 离散游戏 | 类别策略、滚动采集 128 步轨迹的 PPO |
+| 大语言模型 RLHF | 相对参考模型施加 KL 惩罚，回答结束时由奖励模型（Reward Model，RM）给奖励的 PPO |
+| 大规模游戏智能体 | IMPALA + PPO（AlphaStar、OpenAI Five） |
+| 推理大语言模型 | GRPO（第 12 课），不带评论家的 PPO 变体 |
+| 仅偏好数据 | DPO：PPO+KL 的闭式化简，无需在线采样 |
 
-The PPO *loss shape* — clipped surrogate + value + entropy — is the scaffolding for DPO, GRPO, and nearly every RLHF pipeline.
+PPO 的*损失结构*，即裁剪替代目标 + 价值 + 熵，是 DPO、GRPO 和几乎所有 RLHF 流水线的基础框架。
 
-## Ship It
+## 交付成果（Ship It）
 
-Save as `outputs/skill-ppo-trainer.md`:
+保存为 `outputs/skill-ppo-trainer.md`：
 
 ```markdown
 ---
 name: ppo-trainer
-description: Produce a PPO training config and a diagnostic plan for a given environment.
+description: 为给定环境生成 PPO 训练配置和诊断计划。
 version: 1.0.0
 phase: 9
 lesson: 8
 tags: [rl, ppo, policy-gradient]
 ---
 
-Given an environment and training budget, output:
+给定环境和训练预算，输出：
 
-1. Rollout size. `N` envs × `T` steps.
-2. Update schedule. `K` epochs, minibatch size, LR schedule.
-3. Surrogate params. `ε` (clip), `c_v`, `c_e`, advantage normalization on.
-4. Advantage. GAE(`λ`) with explicit `γ` and `λ`.
-5. Diagnostics plan. KL, clip fraction, explained variance thresholds with alerts.
+1. 轨迹规模。`N` 个环境 × `T` 步。
+2. 更新调度。`K` 轮、小批量大小、学习率调度。
+3. 替代目标参数。`ε`（裁剪）、`c_v`、`c_e`，开启优势归一化。
+4. 优势。使用 GAE(`λ`)，明确 `γ` 和 `λ`。
+5. 诊断计划。KL、裁剪比例、解释方差的阈值及告警。
 
-Refuse `K > 30` or `ε > 0.3` (unsafe trust region). Refuse any PPO run without advantage normalization or KL/clip monitoring. Flag clip fraction sustained above 0.4 as drift.
+拒绝 `K > 30` 或 `ε > 0.3`，因为信赖域不安全。没有优势归一化或 KL/裁剪监控时，拒绝运行 PPO。裁剪比例持续高于 0.4 时标记为漂移。
 ```
 
-## Exercises
+## 练习（Exercises）
 
-1. **Easy.** Run PPO on 4×4 GridWorld with `ε=0.2, K=4`. Compare sample efficiency to A2C (one epoch per rollout) at matched env steps.
-2. **Medium.** Sweep `K ∈ {1, 4, 10, 30}`. Plot return vs env steps and track mean KL per update. At what `K` does KL explode on this task?
-3. **Hard.** Replace the clipped surrogate with an adaptive KL penalty (`β` doubled if `KL > 2·target`, halved if `KL < target/2`). Compare final return, stability, and clip-free-ness.
+1. **简单。** 在 4×4 网格世界中取 `ε=0.2, K=4` 运行 PPO。在环境步数相同时，与 A2C（每条轨迹训练一轮）比较样本效率。
+2. **中等。** 扫描 `K ∈ {1, 4, 10, 30}`，绘制回报随环境步数变化的曲线，并跟踪每次更新的平均 KL。该任务中 `K` 达到多少时 KL 会爆炸？
+3. **困难。** 用自适应 KL 惩罚替代裁剪替代目标：若 `KL > 2·target` 则将 `β` 翻倍，若 `KL < target/2` 则减半。比较最终回报、稳定性及不依赖裁剪的表现。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语 | 常见说法 | 实际含义 |
 |------|-----------------|-----------------------|
-| Importance ratio | "r_t(θ)" | `π_θ(a\|s) / π_old(a\|s)`; deviation from the policy that collected the data. |
-| Clipped surrogate | "PPO's main trick" | `min(r·A, clip(r, 1-ε, 1+ε)·A)`; flat gradient past the clip on beneficial side. |
-| Trust region | "TRPO / PPO intent" | Limit each update's KL to guarantee monotone improvement. |
-| KL penalty | "Soft trust region" | Alternative PPO: `L - β · KL(π_θ \|\| π_old)`. Adaptive `β`. |
-| Clip fraction | "How often clipping triggers" | Diagnostic — should be 0.1-0.3; outside means mistuned. |
-| Multi-epoch training | "Data reuse" | K epochs on each rollout; variance cost traded for sample efficiency. |
-| On-policy-ish | "Mostly on-policy" | PPO is nominally on-policy but K>1 epochs uses slightly-off-policy data safely. |
-| PPO-KL | "The other PPO" | KL-penalty variant; used in RLHF where KL-to-reference is already a constraint. |
+| 重要性比率（Importance Ratio） | “r_t(θ)” | `π_θ(a\|s) / π_old(a\|s)`；相对于采集数据策略的偏离。 |
+| 裁剪替代目标（Clipped Surrogate） | “PPO 的主要技巧” | `min(r·A, clip(r, 1-ε, 1+ε)·A)`；有利方向超出裁剪边界后梯度变平。 |
+| 信赖域（Trust Region） | “TRPO / PPO 的意图” | 限制每次更新的 KL，以保证单调改进。 |
+| KL 惩罚（KL Penalty） | “软信赖域” | PPO 的替代形式：`L - β · KL(π_θ \|\| π_old)`，使用自适应 `β`。 |
+| 裁剪比例（Clip Fraction） | “多久触发一次裁剪” | 诊断指标，应为 0.1-0.3；超出说明调参不当。 |
+| 多轮训练（Multi-epoch Training） | “数据复用” | 每条轨迹训练 K 轮，以方差代价换取样本效率。 |
+| 近似同策略（On-policy-ish） | “基本同策略” | PPO 名义上是同策略，但 K>1 轮时会安全地使用略微离策略的数据。 |
+| PPO-KL | “另一种 PPO” | KL 惩罚变体，用于本就约束参考策略 KL 的 RLHF。 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [Schulman et al. (2017). Proximal Policy Optimization Algorithms](https://arxiv.org/abs/1707.06347) — the paper.
-- [Schulman et al. (2015). Trust Region Policy Optimization](https://arxiv.org/abs/1502.05477) — TRPO, PPO's predecessor.
-- [Andrychowicz et al. (2021). What Matters In On-Policy RL? A Large-Scale Empirical Study](https://arxiv.org/abs/2006.05990) — every PPO hyperparameter ablated.
-- [Ouyang et al. (2022). Training language models to follow instructions with human feedback](https://arxiv.org/abs/2203.02155) — InstructGPT; the PPO-in-RLHF recipe.
-- [OpenAI Spinning Up — PPO](https://spinningup.openai.com/en/latest/algorithms/ppo.html) — clean modern exposition with PyTorch.
-- [CleanRL PPO implementation](https://github.com/vwxyzjn/cleanrl) — reference single-file PPO used by many papers.
-- [Hugging Face TRL — PPOTrainer](https://huggingface.co/docs/trl/main/en/ppo_trainer) — the production recipe for PPO on language models; read alongside Lesson 09 (RLHF).
-- [Engstrom et al. (2020). Implementation Matters in Deep Policy Gradients](https://arxiv.org/abs/2005.12729) — the "37 code-level optimizations" paper; which PPO tricks are load-bearing and which are folklore.
+- [Schulman 等（2017）：近端策略优化算法](https://arxiv.org/abs/1707.06347)：原始论文。
+- [Schulman 等（2015）：信赖域策略优化](https://arxiv.org/abs/1502.05477)：TRPO，PPO 的前身。
+- [Andrychowicz 等（2021）：同策略强化学习中什么最重要？大规模实证研究](https://arxiv.org/abs/2006.05990)：对 PPO 各项超参数进行消融。
+- [Ouyang 等（2022）：利用人类反馈训练语言模型遵循指令](https://arxiv.org/abs/2203.02155)：InstructGPT，RLHF 中使用 PPO 的方案。
+- [OpenAI Spinning Up：PPO](https://spinningup.openai.com/en/latest/algorithms/ppo.html)：清晰的现代讲解，附 PyTorch 实现。
+- [CleanRL 的 PPO 实现](https://github.com/vwxyzjn/cleanrl)：许多论文使用的单文件 PPO 参考实现。
+- [Hugging Face TRL：PPOTrainer](https://huggingface.co/docs/trl/main/en/ppo_trainer)：语言模型上使用 PPO 的生产方案，结合第 09 课（RLHF）阅读。
+- [Engstrom 等（2020）：深度策略梯度中的实现细节很重要](https://arxiv.org/abs/2005.12729)：“37 项代码级优化”论文，分析哪些 PPO 技巧真正关键，哪些只是经验传说。

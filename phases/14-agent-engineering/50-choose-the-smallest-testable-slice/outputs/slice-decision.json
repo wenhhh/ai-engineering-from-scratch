@@ -4,7 +4,7 @@
     "service-identification"
   ],
   "selected": {
-    "name": "read-only incident replay",
+    "name": "只读事故回放",
     "outcome_value": 4,
     "uncertainty_reduced": 5,
     "effort": 2,
@@ -18,7 +18,7 @@
   },
   "alternatives": [
     {
-      "name": "production auto-remediation",
+      "name": "生产自动修复",
       "outcome_value": 5,
       "uncertainty_reduced": 4,
       "effort": 10,
@@ -31,7 +31,7 @@
       "score": 0.45
     },
     {
-      "name": "dashboard mockup",
+      "name": "仪表盘原型图",
       "outcome_value": 2,
       "uncertainty_reduced": 2,
       "effort": 1,

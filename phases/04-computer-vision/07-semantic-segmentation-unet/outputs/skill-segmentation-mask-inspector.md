@@ -1,43 +1,43 @@
 ---
 name: skill-segmentation-mask-inspector
-description: Report class distribution, predicted-mask statistics, and the classes most likely to be under-predicted or boundary-blurred
+description: 报告类别分布、预测掩码统计，以及最可能预测不足或边界模糊的类别
 version: 1.0.0
 phase: 4
 lesson: 7
 tags: [computer-vision, segmentation, debugging, evaluation]
 ---
 
-# Segmentation Mask Inspector
+# 分割掩码检查器（Segmentation Mask Inspector）
 
-A diagnostic for the gap between "the loss went down" and "the masks actually look right".
+诊断“损失下降了”与“掩码确实正确”之间的差距。
 
-## When to use
+## 使用时机（When to use）
 
-- Right after a training run when mIoU looks fine but visual inspection says otherwise.
-- Before deployment: checking the class balance of predictions against ground truth.
-- When per-class IoU is high for large objects but low for small ones.
-- Debugging boundary artefacts that do not show up in IoU because they are small in pixel count.
+- 训练结束后，mIoU 看起来不错，但视觉检查并非如此。
+- 部署前，对照真实标签检查预测的类别平衡。
+- 大目标的逐类 IoU 高，小目标却低。
+- 调试因像素数量少而未反映在 IoU 中的边界伪影。
 
-## Inputs
+## 输入（Inputs）
 
-- `preds`: (N, H, W) tensor of predicted class IDs.
-- `targets`: (N, H, W) tensor of ground-truth class IDs.
-- `num_classes`: integer.
-- Optional `class_names`: list of C strings.
+- `preds`：形状为 (N, H, W) 的预测类别 ID 张量。
+- `targets`：形状为 (N, H, W) 的真实类别 ID 张量。
+- `num_classes`：整数。
+- 可选的 `class_names`：包含 C 个字符串的列表。
 
-## Steps
+## 步骤（Steps）
 
-1. **Class pixel histograms.** Compute the percentage of pixels per class for `preds` and `targets`. Flag any class where `|pred% - gt%| / max(gt%, 1e-6) > 0.30` (relative deviation above 30%). For classes absent from ground truth (`gt% == 0`), flag any predicted share above `0.3` directly.
+1. **类别像素直方图。** 计算 `preds` 与 `targets` 中每类像素百分比。标记满足 `|pred% - gt%| / max(gt%, 1e-6) > 0.30` 的类别，即相对偏差超过 30%。真实标签中缺失的类别（`gt% == 0`），若预测占比超过 `0.3`，直接标记。
 
-2. **IoU per class** and **boundary F1 per class**. Boundary F1 is computed by dilating each mask by 3 pixels, intersecting, and scoring. Classes with IoU > 0.7 but boundary F1 < 0.5 are blurring edges.
+2. **逐类 IoU** 与**逐类边界 F1**。边界 F1 通过将各掩码膨胀 3 个像素、求交并评分计算。IoU > 0.7 但边界 F1 < 0.5 的类别存在边缘模糊。
 
-3. **Small-object recall.** Separate every ground-truth connected component into size buckets (tiny < 100 px, small < 1000 px, medium < 10000 px, large >= 10000 px). Report recall per bucket per class. Small-object recall below 0.3 while large-object recall is above 0.9 indicates a resolution / receptive-field problem.
+3. **小目标召回率。** 将每个真实连通分量按尺寸分桶：极小 < 100 像素，小 < 1000 像素，中 < 10000 像素，大 >= 10000 像素。按类别、按桶报告召回率。小目标召回率低于 0.3，而大目标高于 0.9，表明分辨率或感受野有问题。
 
-4. **Confusion pairs.** For each class, find the class it most often confuses with (most common wrong predicted class within its ground-truth mask). Report the top 3 pairs.
+4. **混淆对。** 对每类找到最常混淆的类别，即该真实掩码范围内最常见的错误预测类别。报告前三对。
 
-5. **Saturation check (requires `probs` or `logits`, not just `preds`).** If the caller passes the raw per-pixel probability distribution `probs: (N, C, H, W)`, compute the fraction of pixels where `probs.max(dim=1) > 0.99` per class. High saturation (>0.9 of a class's pixels) suggests overconfidence — candidate for label smoothing or calibration. When only argmaxed `preds` are available, skip this step and note it in the report.
+5. **饱和检查，需要 `probs` 或 `logits`，而非只有 `preds`。** 若调用方传入原始逐像素概率分布 `probs: (N, C, H, W)`，逐类计算满足 `probs.max(dim=1) > 0.99` 的像素比例。高饱和度，即超过该类像素的 0.9，提示过度自信，可考虑标签平滑或校准。若只有取过最大值索引的 `preds`，跳过此步，并在报告中注明。
 
-## Report format
+## 报告格式（Report format）
 
 ```
 [mask-inspector]
@@ -52,18 +52,18 @@ A diagnostic for the gap between "the loss went down" and "the masks actually lo
   ...
 
 [confusion pairs]
-  class A confused with class B: <N> pixels (most common)
-  class B confused with class A: <N> pixels
+  类别 A 被混淆为类别 B：<N> 像素（最常见）
+  类别 B 被混淆为类别 A：<N> 像素
   ...
 
 [verdict]
-  most impactful issue: <one sentence>
+  most impactful issue: <一句话>
 ```
 
-## Rules
+## 规则（Rules）
 
-- Sort class rows by descending gt pixel share so the most frequent classes come first.
-- Flag classes with IoU < 0.4 or boundary F1 < 0.3 as `critical`.
-- When small-object recall is the dominant failure, recommend: higher-resolution training, smaller stride at the last encoder stage, or a feature-pyramid decoder.
-- When boundary F1 is the dominant failure, recommend: boundary-aware loss (Lovasz or BoundaryLoss), TTA with horizontal flip, and stride-less decoder.
-- Never output class indices as the only identifier; if `class_names` is provided, use it in every row.
+- 按真实标签像素占比降序排列类别行，让最常见类别在前。
+- 将 IoU < 0.4 或边界 F1 < 0.3 的类别标为 `critical`。
+- 主要问题是小目标召回时，建议更高分辨率训练、减小最后编码器阶段的步幅，或使用特征金字塔解码器。
+- 主要问题是边界 F1 时，建议边界感知损失（Lovasz 或 BoundaryLoss）、带水平翻转的测试时增强（TTA），以及无步幅解码器。
+- 绝不只用类别索引作标识；若提供 `class_names`，每行都使用它。

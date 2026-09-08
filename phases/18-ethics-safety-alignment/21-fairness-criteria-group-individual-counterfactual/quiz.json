@@ -1,75 +1,75 @@
 {
   "lesson": "21-fairness-criteria-group-individual-counterfactual",
-  "title": "Fairness Criteria - Group, Individual, Counterfactual",
+  "title": "公平性标准：群体、个体与反事实（Fairness Criteria — Group, Individual, Counterfactual）",
   "questions": [
     {
       "stage": "pre",
-      "question": "Which best matches the demographic-parity definition for groups A=a and A=a'?",
+      "question": "对于群体 A=a 和 A=a'，哪项最符合人口统计均等的定义？",
       "options": [
-        "Equal predictive value across groups",
-        "Equal true-positive and false-positive rates across groups",
-        "Equal acceptance rates: P(Y=1 | A=a) = P(Y=1 | A=a')",
-        "Equal Lipschitz constant across groups"
+        "各群体的预测值相等",
+        "各群体的真正率和假正率相等",
+        "接受率相等：P(Y=1 | A=a) = P(Y=1 | A=a')",
+        "各群体的 Lipschitz 常数相等"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "What does the Chouldechova / Kleinberg-Mullainathan-Raghavan 2017 impossibility result say?",
+      "question": "Chouldechova／Kleinberg-Mullainathan-Raghavan 2017 的不可能性结果说明了什么？",
       "options": [
-        "Under unequal base rates, demographic parity, equalized odds, and conditional use accuracy equality cannot all hold simultaneously",
-        "Individual fairness implies counterfactual fairness for any DAG",
-        "Counterfactual fairness implies demographic parity",
-        "Group fairness is always achievable by re-weighting"
+        "当基础发生率不相等时，人口统计均等、均等化机会和条件使用准确率相等无法同时成立",
+        "对于任意 DAG，个体公平性都蕴含反事实公平性",
+        "反事实公平性蕴含人口统计均等",
+        "重新加权总能实现群体公平性"
       ],
       "correct": 0,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Dwork et al. 2012 define individual fairness via:",
+      "question": "Dwork 等人 2012 年通过什么定义个体公平性？",
       "options": [
-        "A causal DAG with a sensitive-attribute intervention",
-        "Equal accuracy across protected groups",
-        "A Lipschitz condition on the decision map relative to a task-specific similarity metric, so similar individuals get similar decisions",
-        "Demographic parity at the individual level"
+        "包含敏感属性干预的因果 DAG",
+        "受保护群体的准确率相等",
+        "决策映射相对于任务特定相似度度量满足 Lipschitz 条件，使相似个体得到相似决策",
+        "个体层面的人口统计均等"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Counterfactual fairness (Kusner et al. 2017) requires:",
+      "question": "Kusner 等人 2017 年的反事实公平性要求什么？",
       "options": [
-        "Equal Lipschitz constants for all groups",
-        "Only group-level statistics",
-        "No causal assumptions",
-        "A causal DAG; the decision is unchanged when the individual's sensitive attribute is counterfactually altered"
+        "所有群体的 Lipschitz 常数相等",
+        "只需要群体层面的统计数据",
+        "不需要因果假设",
+        "需要因果 DAG；反事实地改变个体敏感属性后，决策不变"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "Why do backtracking counterfactuals (arXiv:2401.13935) matter for legal compliance?",
+      "question": "为什么回溯反事实（arXiv:2401.13935）对法律合规很重要？",
       "options": [
-        "They replace embedding-based bias metrics",
-        "They eliminate the need for any causal model",
-        "They prove the impossibility theorem is wrong",
-        "Instead of intervening on a protected attribute (which is legally problematic), they ask which combination of actual features would have produced the counterfactual outcome"
+        "它们取代基于嵌入的偏差指标",
+        "它们消除了对任何因果模型的需要",
+        "它们证明不可能性定理是错误的",
+        "它们不对受保护属性进行在法律上有问题的干预，而是询问实际特征的哪种组合会产生反事实结果"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "What does the ICLR Blogposts 2024 philosophical reconciliation argue?",
+      "question": "ICLR Blogposts 2024 的哲学协调观点提出了什么论证？",
       "options": [
-        "With an explicit causal graph, satisfying certain group-fairness measures entails counterfactual fairness, so the apparent opposition between families is partly an artifact of leaving the causal model implicit",
-        "Group and counterfactual fairness are unrelated",
-        "Only individual fairness is justifiable",
-        "The impossibility theorems are resolved by re-weighting"
+        "在明确因果图后，满足某些群体公平性指标就意味着满足反事实公平性，因此各类标准看似对立，部分是因为因果模型未被明确说明",
+        "群体公平性与反事实公平性无关",
+        "只有个体公平性能够得到辩护",
+        "重新加权解决了不可能性定理"
       ],
       "correct": 0,
       "explanation": ""

@@ -16,72 +16,72 @@
     </style>
   </defs>
 
-  <text x="480" y="28" text-anchor="middle" class="title">twelve stages, one manifest, one ship gate</text>
+  <text x="480" y="28" text-anchor="middle" class="title">十二个阶段，一份清单（Manifest），一道发布门槛（Ship Gate）</text>
 
   <!-- Stages grid 4x3 -->
   <g>
     <!-- row 1 -->
     <rect x="30"  y="60" width="180" height="60" class="box"/>
-    <text x="120" y="82" text-anchor="middle" class="label">01 / 02  Tokenizer</text>
-    <text x="120" y="102" text-anchor="middle" class="step">vocab, merges, hash</text>
-    <text x="120" y="115" text-anchor="middle" class="small">~1 hr · ~$5</text>
+    <text x="120" y="82" text-anchor="middle" class="label" style="font-size:10px">01 / 02 分词器（Tokenizer）</text>
+    <text x="120" y="102" text-anchor="middle" class="step">词表、合并规则、哈希</text>
+    <text x="120" y="115" text-anchor="middle" class="small">~1 小时 · ~$5</text>
 
     <rect x="245" y="60" width="180" height="60" class="box"/>
-    <text x="335" y="82" text-anchor="middle" class="label">03  Dataset</text>
-    <text x="335" y="102" text-anchor="middle" class="step">shards, dedup, rows</text>
-    <text x="335" y="115" text-anchor="middle" class="small">~hours · ~$50</text>
+    <text x="335" y="82" text-anchor="middle" class="label">03 数据集（Dataset）</text>
+    <text x="335" y="102" text-anchor="middle" class="step">分片、去重、行数</text>
+    <text x="335" y="115" text-anchor="middle" class="small">~数小时 · ~$50</text>
 
     <rect x="460" y="60" width="180" height="60" class="hot"/>
-    <text x="550" y="82" text-anchor="middle" class="label">04 / 05  Pre-training</text>
-    <text x="550" y="102" text-anchor="middle" class="step">base checkpoint</text>
-    <text x="550" y="115" text-anchor="middle" class="small">days · $$$</text>
+    <text x="550" y="82" text-anchor="middle" class="label" style="font-size:10px">04 / 05 预训练（Pre-training）</text>
+    <text x="550" y="102" text-anchor="middle" class="step">基座检查点（Checkpoint）</text>
+    <text x="550" y="115" text-anchor="middle" class="small">数天 · $$$</text>
 
     <rect x="675" y="60" width="180" height="60" class="box"/>
-    <text x="765" y="82" text-anchor="middle" class="label">06  SFT</text>
-    <text x="765" y="102" text-anchor="middle" class="step">instruction tuned</text>
-    <text x="765" y="115" text-anchor="middle" class="small">~hours · $$</text>
+    <text x="765" y="82" text-anchor="middle" class="label">06 监督微调（SFT）</text>
+    <text x="765" y="102" text-anchor="middle" class="step" style="font-size:9px">指令微调（Instruction Tuned）</text>
+    <text x="765" y="115" text-anchor="middle" class="small">~数小时 · $$</text>
 
     <!-- row 2 -->
     <rect x="30"  y="170" width="180" height="60" class="box"/>
-    <text x="120" y="192" text-anchor="middle" class="label">07  RLHF (PPO)</text>
-    <text x="120" y="212" text-anchor="middle" class="step">reward + policy</text>
-    <text x="120" y="225" text-anchor="middle" class="small">parallel w/ 08</text>
+    <text x="120" y="192" text-anchor="middle" class="label" style="font-size:10px">07 人类反馈强化学习（RLHF）</text>
+    <text x="120" y="212" text-anchor="middle" class="step">奖励 + 策略（PPO）</text>
+    <text x="120" y="225" text-anchor="middle" class="small">与 08 并行</text>
 
     <rect x="245" y="170" width="180" height="60" class="box"/>
-    <text x="335" y="192" text-anchor="middle" class="label">08  DPO</text>
-    <text x="335" y="212" text-anchor="middle" class="step">preference pairs</text>
-    <text x="335" y="225" text-anchor="middle" class="small">parallel w/ 07</text>
+    <text x="335" y="192" text-anchor="middle" class="label">08 直接偏好优化（DPO）</text>
+    <text x="335" y="212" text-anchor="middle" class="step" style="font-size:9px">偏好对（Preference Pairs）</text>
+    <text x="335" y="225" text-anchor="middle" class="small">与 07 并行</text>
 
     <rect x="460" y="170" width="180" height="60" class="box"/>
-    <text x="550" y="192" text-anchor="middle" class="label">09  CAI + GRPO</text>
-    <text x="550" y="212" text-anchor="middle" class="step">self-improvement</text>
-    <text x="550" y="225" text-anchor="middle" class="small">rule rewards</text>
+    <text x="550" y="192" text-anchor="middle" class="label" style="font-size:10px">09 宪法式 AI（CAI）+ GRPO</text>
+    <text x="550" y="212" text-anchor="middle" class="step" style="font-size:9px">自我改进（Self-improvement）</text>
+    <text x="550" y="225" text-anchor="middle" class="small">规则奖励（Rule Rewards）</text>
 
     <rect x="675" y="170" width="180" height="60" class="box"/>
-    <text x="765" y="192" text-anchor="middle" class="label">10  Evaluation</text>
+    <text x="765" y="192" text-anchor="middle" class="label">10 评估（Evaluation）</text>
     <text x="765" y="212" text-anchor="middle" class="step">MMLU, MATH, GPQA</text>
-    <text x="765" y="225" text-anchor="middle" class="small">held-out set</text>
+    <text x="765" y="225" text-anchor="middle" class="small">留出集（Held-out Set）</text>
 
     <!-- row 3 -->
     <rect x="30"  y="280" width="180" height="60" class="box"/>
-    <text x="120" y="302" text-anchor="middle" class="label">11  Quantization</text>
+    <text x="120" y="302" text-anchor="middle" class="label">11 量化（Quantization）</text>
     <text x="120" y="322" text-anchor="middle" class="step">GPTQ / AWQ / GGUF</text>
-    <text x="120" y="335" text-anchor="middle" class="small">4-bit · ~mins</text>
+    <text x="120" y="335" text-anchor="middle" class="small">4 位 · ~数分钟</text>
 
     <rect x="245" y="280" width="180" height="60" class="box"/>
-    <text x="335" y="302" text-anchor="middle" class="label">12  Inference</text>
+    <text x="335" y="302" text-anchor="middle" class="label">12 推理（Inference）</text>
     <text x="335" y="322" text-anchor="middle" class="step">vLLM, TRT-LLM</text>
-    <text x="335" y="335" text-anchor="middle" class="small">continuous batch</text>
+    <text x="335" y="335" text-anchor="middle" class="small">连续批处理（Continuous Batch）</text>
 
     <rect x="460" y="280" width="180" height="60" class="gate"/>
-    <text x="550" y="302" text-anchor="middle" class="label">Ship gate</text>
-    <text x="550" y="322" text-anchor="middle" class="step">regression + KL + $</text>
-    <text x="550" y="335" text-anchor="middle" class="small">numeric thresholds</text>
+    <text x="550" y="302" text-anchor="middle" class="label">发布门槛（Ship Gate）</text>
+    <text x="550" y="322" text-anchor="middle" class="step">回归检查 + KL + $</text>
+    <text x="550" y="335" text-anchor="middle" class="small">数值阈值（Thresholds）</text>
 
     <rect x="675" y="280" width="180" height="60" class="cool"/>
-    <text x="765" y="302" text-anchor="middle" class="label">Artifact store</text>
-    <text x="765" y="322" text-anchor="middle" class="step">content-addressed</text>
-    <text x="765" y="335" text-anchor="middle" class="small">hash, not filename</text>
+    <text x="765" y="302" text-anchor="middle" class="label" style="font-size:10px">交付物存储（Artifact Store）</text>
+    <text x="765" y="322" text-anchor="middle" class="step" style="font-size:9px">内容寻址（Content-addressed）</text>
+    <text x="765" y="335" text-anchor="middle" class="small">按哈希，不按文件名</text>
   </g>
 
   <!-- Flow arrows between columns row1 -->
@@ -114,18 +114,18 @@
 
   <!-- Manifest and cost labels at bottom -->
   <rect x="30" y="380" width="400" height="100" class="box"/>
-  <text x="230" y="402" text-anchor="middle" class="label">Manifest</text>
+  <text x="230" y="402" text-anchor="middle" class="label">运行清单（Manifest）</text>
   <text x="230" y="422" text-anchor="middle" class="step">version, seed, git_commit</text>
-  <text x="230" y="440" text-anchor="middle" class="step">per-stage input/output hash</text>
-  <text x="230" y="458" text-anchor="middle" class="step">cost, wall clock, status</text>
-  <text x="230" y="473" text-anchor="middle" class="small">single file, sufficient to replay</text>
+  <text x="230" y="440" text-anchor="middle" class="step">逐阶段输入/输出哈希（Hash）</text>
+  <text x="230" y="458" text-anchor="middle" class="step">成本、实际时间、状态</text>
+  <text x="230" y="473" text-anchor="middle" class="small">单个文件，足以重放（Replay）</text>
 
   <rect x="460" y="380" width="400" height="100" class="gate"/>
-  <text x="660" y="402" text-anchor="middle" class="label">Gates</text>
-  <text x="660" y="422" text-anchor="middle" class="step">regression: metric ≥ baseline</text>
-  <text x="660" y="440" text-anchor="middle" class="step">KL budget: drift &lt; cap</text>
-  <text x="660" y="458" text-anchor="middle" class="step">safety: refusal rate &lt; 5%</text>
-  <text x="660" y="473" text-anchor="middle" class="step">cost: total &lt; budget</text>
+  <text x="660" y="402" text-anchor="middle" class="label">门槛（Gates）</text>
+  <text x="660" y="422" text-anchor="middle" class="step">回归（Regression）：metric ≥ baseline</text>
+  <text x="660" y="440" text-anchor="middle" class="step">KL 预算（Budget）：drift &lt; cap</text>
+  <text x="660" y="458" text-anchor="middle" class="step">安全（Safety）：拒答率 &lt; 5%</text>
+  <text x="660" y="473" text-anchor="middle" class="step">成本（Cost）：total &lt; budget</text>
 
-  <text x="480" y="508" text-anchor="middle" class="caption">no subjective sign-off — every gate is a number, and every gate is versioned</text>
+  <text x="480" y="508" text-anchor="middle" class="caption">不做主观签字：每项门槛都是数值，且都进行版本管理（Versioning）</text>
 </svg>

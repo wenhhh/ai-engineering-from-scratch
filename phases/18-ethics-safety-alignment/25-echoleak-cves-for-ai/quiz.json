@@ -1,75 +1,75 @@
 {
   "lesson": "25-echoleak-cves-for-ai",
-  "title": "EchoLeak and the Emergence of CVEs for AI",
+  "title": "EchoLeak 与 AI CVE 的出现（EchoLeak and the Emergence of CVEs for AI）",
   "questions": [
     {
       "stage": "pre",
-      "question": "Which best describes EchoLeak (CVE-2025-32711)?",
+      "question": "哪项最准确地描述 EchoLeak（CVE-2025-32711）？",
       "options": [
-        "A zero-click AI command-injection flaw in Microsoft 365 Copilot (CVE-2025-32711, CVSS 9.3) causing unauthorized network information disclosure, with exfiltration via a CSP allowlisted/trusted Microsoft domain",
-        "A hardware vulnerability in NPUs",
-        "A supply-chain attack on PyPI",
-        "A jailbreak via long-context shot stuffing"
+        "Microsoft 365 Copilot 中的零点击 AI 命令注入漏洞（CVE-2025-32711，CVSS 9.3），会导致未经授权的网络信息披露，并通过 CSP 允许或信任的 Microsoft 域名外传数据",
+        "NPU 中的硬件漏洞",
+        "针对 PyPI 的供应链攻击",
+        "通过在长上下文中塞入大量示例实现的越狱"
       ],
       "correct": 0,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "What makes EchoLeak 'zero-click'?",
+      "question": "什么使 EchoLeak 成为“零点击”攻击？",
       "options": [
-        "It runs in the operating-system kernel",
-        "It requires three clicks but no typing",
-        "The victim does not have to open the email; Copilot retrieves it as RAG context during routine queries and the injected instructions execute",
-        "It requires the user to click a link in a Teams chat"
+        "它运行在操作系统内核中",
+        "它需要点击三次，但无须打字",
+        "受害者无须打开邮件；Copilot 在常规查询中将它检索为 RAG 上下文，注入的指令随即执行",
+        "它要求用户点击 Teams 聊天中的链接"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Aim Labs frames EchoLeak as 'LLM Scope Violation'. What three boundaries must each be controlled independently?",
+      "question": "Aim Labs 将 EchoLeak 描述为“LLM 作用域越界”。哪三个边界必须分别独立控制？",
       "options": [
-        "Retrieval, scope, output",
-        "Network, disk, memory",
-        "Prompt, response, log",
-        "Input, model, GPU"
+        "检索、作用域和输出",
+        "网络、磁盘和内存",
+        "提示词、响应和日志",
+        "输入、模型和 GPU"
       ],
       "correct": 0,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "How did Microsoft/GitHub fix CamoLeak (CVSS 9.6, GitHub Copilot Chat)?",
+      "question": "Microsoft／GitHub 如何修复 CamoLeak（CVSS 9.6，GitHub Copilot Chat）？",
       "options": [
-        "Increased context size",
-        "Added an XPIA prompt-injection filter",
-        "Switched the model to Llama Guard",
-        "Disabled image rendering entirely in Copilot Chat (cost: usability) because the alternative attack surface could not be bounded"
+        "增加上下文长度",
+        "加入 XPIA 提示词注入过滤器",
+        "将模型切换为 Llama Guard",
+        "完全禁用 Copilot Chat 的图像渲染，代价是可用性下降，因为另一种选择的攻击面无法界定"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "What pattern in severity calibration did the EchoLeak disclosure reveal?",
+      "question": "EchoLeak 披露揭示了严重程度校准中的什么模式？",
       "options": [
-        "Vendors over-rated the initial CVSS score",
-        "All AI CVEs are automatically rated 10.0",
-        "Vendors initially rated EchoLeak low (information disclosure); Aim Labs's MFA-code exfiltration proof-of-concept escalated the rating to 9.3 — defenders must push for comprehensive PoC for AI-specific vulnerabilities",
-        "Severity ratings are decided by OWASP only"
+        "厂商最初高估了 CVSS 分数",
+        "所有 AI CVE 都自动评为 10.0",
+        "厂商最初将 EchoLeak 评为低严重程度的信息披露；Aim Labs 的 MFA 验证码外传 PoC 使评分升至 9.3，因此防御者必须推动为 AI 特有漏洞提供完整 PoC",
+        "严重程度评分只由 OWASP 决定"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "Where do NIST and OWASP rank prompt injection as of 2024/2025?",
+      "question": "截至 2024／2025 年，NIST 和 OWASP 如何看待提示词注入的威胁地位？",
       "options": [
-        "NIST: outside scope; OWASP: not listed",
-        "Both call it a Tier-2 risk only",
-        "NIST: minor; OWASP: bottom of list",
-        "NIST AI SPD 2024 frames prompt injection as a major information-security risk for generative AI; OWASP 2025 ranks it LLM01 (top application-layer threat)"
+        "NIST：不在范围内；OWASP：未列出",
+        "两者都仅将其称为第 2 级风险",
+        "NIST：轻微；OWASP：排在末尾",
+        "NIST AI SPD 2024 将提示词注入视为生成式 AI 的重大信息安全风险；OWASP 2025 将其列为 LLM01，即应用层首要威胁"
       ],
       "correct": 3,
       "explanation": ""

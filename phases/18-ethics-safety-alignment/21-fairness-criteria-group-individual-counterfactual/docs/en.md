@@ -1,104 +1,104 @@
-# Fairness Criteria — Group, Individual, Counterfactual
+# 公平性标准：群体、个体与反事实（Fairness Criteria — Group, Individual, Counterfactual）
 
-> Three families structure the fairness literature. Group fairness: demographic parity, equalized odds, conditional use accuracy equality — equal rates across protected groups on average. Individual fairness (Dwork et al. 2012): similar individuals receive similar decisions; Lipschitz condition on the decision map. Counterfactual fairness (Kusner et al. 2017): a decision is fair to an individual if it is unchanged when sensitive attributes are counterfactually altered. 2024 theoretical result (NeurIPS 2024): there is an inherent CF-vs-accuracy trade-off; a model-agnostic method converts an optimal-but-unfair predictor into a CF one with bounded accuracy loss. Backtracking counterfactuals (arXiv:2401.13935, January 2024): new paradigm that avoids requiring interventions on legally protected attributes. Philosophical reconciliation (ICLR Blogposts 2024): with causal graphs, satisfying certain group fairness measures entails counterfactual fairness.
+> 公平性文献分为三大类。群体公平性（Group Fairness）包括人口统计均等、均等化机会和条件使用准确率相等，要求受保护群体的平均比率相同。个体公平性（Individual Fairness，Dwork 等，2012）要求相似个体得到相似决策，并对决策映射施加 Lipschitz 条件。反事实公平性（Counterfactual Fairness，Kusner 等，2017）要求：反事实地改变敏感属性后，某人的决策结果不变，才算对该人公平。2024 年的理论结果（NeurIPS 2024）表明，反事实公平性（CF）与准确率之间存在内在取舍；一种模型无关的方法可以将最优但不公平的预测器转换为满足 CF 的预测器，并使准确率损失有界。回溯反事实（Backtracking Counterfactuals，arXiv:2401.13935，2024 年 1 月）提供了新范式，避免要求对法律保护的属性进行干预。哲学层面的协调观点（ICLR Blogposts 2024）认为，在给定因果图时，满足某些群体公平性指标就意味着满足反事实公平性。
 
 **Type:** Learn
 **Languages:** Python (stdlib, three-criteria comparison)
-**Prerequisites:** Phase 18 · 20 (bias), Phase 02 (classical ML)
-**Time:** ~60 minutes
+**Prerequisites:** 阶段 18 · 20（偏差（bias））、阶段 02（经典机器学习（classical ML））
+**Time:** ~60 分钟
 
-## Learning Objectives
+## 学习目标（Learning Objectives）
 
-- State the three group-fairness criteria (demographic parity, equalized odds, conditional use accuracy equality) and one impossibility result.
-- Describe individual fairness via the Dwork et al. 2012 Lipschitz formulation.
-- Describe counterfactual fairness and its causal-graph dependency.
-- Explain backtracking counterfactuals and why they sidestep the intervention-on-protected-attribute problem.
+- 陈述三项群体公平性标准，即人口统计均等、均等化机会和条件使用准确率相等，并说明一个不可能性结果。
+- 使用 Dwork 等人 2012 年的 Lipschitz 表述说明个体公平性。
+- 说明反事实公平性及其对因果图的依赖。
+- 解释回溯反事实，以及它为什么能避开对受保护属性进行干预的问题。
 
-## The Problem
+## 问题（The Problem）
 
-Lesson 20 was about measuring bias. Lesson 21 is about defining the fairness standard the measurement should serve. The three families give structurally different standards — a model can be group-fair and individual-unfair, counterfactually fair and group-unfair. Choosing a standard is a policy decision; no standard is universally optimal.
+第 20 课讨论如何测量偏差。第 21 课讨论如何定义测量应服务的公平性标准。这三类标准在结构上不同：模型可能对群体公平，却对个体不公平；也可能满足反事实公平性，却不满足群体公平性。选择标准是一项政策决策，没有普遍最优的标准。
 
-## The Concept
+## 核心概念（The Concept）
 
-### Group fairness
+### 群体公平性（Group Fairness）
 
-- **Demographic parity.** P(Y=1 | A=a) = P(Y=1 | A=a') for all groups. Equal acceptance rates.
-- **Equalized odds.** P(Y=1 | Y*=y, A=a) = P(Y=1 | Y*=y, A=a'). Equal TPR and FPR across groups.
-- **Conditional use accuracy equality.** P(Y*=y | Y=y, A=a) = P(Y*=y | Y=y, A=a'). Equal predictive value across groups.
+- **人口统计均等（Demographic Parity）。** 对所有群体，P(Y=1 | A=a) = P(Y=1 | A=a')。也就是接受率相等。
+- **均等化机会（Equalized Odds）。** P(Y=1 | Y*=y, A=a) = P(Y=1 | Y*=y, A=a')。各群体的真正率（TPR）和假正率（FPR）相等。
+- **条件使用准确率相等（Conditional Use Accuracy Equality）。** P(Y*=y | Y=y, A=a) = P(Y*=y | Y=y, A=a')。各群体的预测值相等。
 
-Impossibility (Chouldechova, Kleinberg-Mullainathan-Raghavan 2017): these three cannot be satisfied simultaneously under unequal base rates.
+不可能性结果（Chouldechova、Kleinberg-Mullainathan-Raghavan，2017）指出：当基础发生率不相等时，这三项标准无法同时满足。
 
-### Individual fairness
+### 个体公平性（Individual Fairness）
 
-Dwork et al. 2012. A decision map f is individually fair with respect to a task-specific similarity metric d if |f(x) - f(x')| <= L * d(x, x') for some Lipschitz constant L. Similar individuals get similar decisions.
+Dwork 等人于 2012 年提出：对于任务特定的相似度度量 d，如果存在某个 Lipschitz 常数 L，使决策映射 f 满足 |f(x) - f(x')| <= L * d(x, x')，那么它就是个体公平的。相似个体应得到相似决策。
 
-Requires defining d. Policy question, not statistical.
+这要求先定义 d。如何定义是政策问题，而不是统计问题。
 
-### Counterfactual fairness
+### 反事实公平性（Counterfactual Fairness）
 
-Kusner et al. 2017. A decision is counterfactually fair to individual i if, under a causal model of the population, the decision is unchanged when i's sensitive attributes are counterfactually altered.
+Kusner 等人于 2017 年提出：在总体的因果模型下，如果反事实地改变个体 i 的敏感属性后，决策保持不变，那么该决策对 i 就是反事实公平的。
 
-Requires a causal DAG. The DAG is a modeling choice. Counterfactual fairness is only as justified as the DAG.
+这需要因果有向无环图（Causal DAG）。DAG 的选择属于建模决策；反事实公平性主张的合理性取决于该 DAG 是否合理。
 
-### The CF-vs-accuracy trade-off
+### CF 与准确率的取舍（The CF-vs-Accuracy Trade-Off）
 
-NeurIPS 2024 theoretical: there is an inherent trade-off between counterfactual fairness and predictive accuracy. A model-agnostic method can convert an optimal-but-unfair predictor into a CF one, at a bounded accuracy cost. The accuracy cost depends on the magnitude of the sensitive-attribute coefficient in the optimal unfair predictor.
+NeurIPS 2024 的理论结果表明，反事实公平性与预测准确率之间存在内在取舍。一种模型无关的方法可以将最优但不公平的预测器转换为满足 CF 的预测器，并将准确率代价控制在有界范围内。准确率代价取决于最优不公平预测器中敏感属性系数的大小。
 
-### Backtracking counterfactuals
+### 回溯反事实（Backtracking Counterfactuals）
 
-arXiv:2401.13935 (January 2024). Traditional counterfactuals require interventions on the sensitive attribute — "would the decision change if this person had been a different gender." Legally, this is problematic: protected attributes cannot be intervened on in classification law.
+arXiv:2401.13935（2024 年 1 月）。传统反事实要求干预敏感属性，例如“如果这个人是另一种性别，决策会改变吗？”这在法律上存在问题：有关分类的法律不允许对受保护属性进行干预。
 
-Backtracking counterfactuals flip the direction: instead of intervening on the attribute, ask what combination of the individual's actual features would have produced the counterfactual outcome. This sidesteps the legal objection.
+回溯反事实将推理方向反过来：不干预属性，而是询问该个体实际特征的哪种组合会产生反事实结果。这避开了上述法律异议。
 
-### Philosophical reconciliation
+### 哲学层面的协调（Philosophical Reconciliation）
 
-ICLR Blogposts 2024. With a causal graph in hand, satisfying certain group-fairness measures entails counterfactual fairness. The three families are not orthogonal; they are different facets of the same underlying causal structure.
+ICLR Blogposts 2024 提出，在已有因果图的情况下，满足某些群体公平性指标就意味着满足反事实公平性。三类标准并非相互独立，而是同一底层因果结构的不同侧面。
 
-This does not resolve the impossibility theorems (unequal base rates still prevent simultaneous group fairness). But it shows the apparent opposition between "group" and "individual / counterfactual" is partially an artifact of not being explicit about the causal model.
+这并未消除不可能性定理：基础发生率不相等，仍会阻止所有群体公平性标准同时满足。但它表明，“群体”与“个体／反事实”之间看似对立，部分原因在于没有明确说明因果模型。
 
-### Where this fits in Phase 18
+### 在第 18 阶段中的位置（Where This Fits in Phase 18）
 
-Lesson 20 is bias measurement. Lesson 21 is fairness definition. Lesson 22 is privacy (differential privacy). Lesson 23 is watermarking. These are the allocation-adjacent lessons complementing the deception-adjacent Lessons 7-11.
+第 20 课讨论偏差测量，第 21 课讨论公平性定义，第 22 课讨论隐私，具体是差分隐私，第 23 课讨论水印。这些与分配相关的课程，补充了第 7–11 课中与欺骗相关的内容。
 
 ```figure
 an-fairness-trilemma
 ```
 
-## Use It
+## 动手使用（Use It）
 
-`code/main.py` builds a toy binary-classification dataset with a sensitive attribute and unequal base rates. Compute demographic parity, equalized odds, and conditional use accuracy equality on a simple classifier. Observe the three metrics disagreeing. Apply a re-weighting for demographic parity and observe its cost on the other two.
+`code/main.py` 构建了一个包含敏感属性、且各群体基础发生率不相等的玩具二分类数据集。对简单分类器计算人口统计均等、均等化机会和条件使用准确率相等指标，观察三者如何给出不同结论。针对人口统计均等进行重新加权，再观察它给另外两项指标带来的代价。
 
-## Ship It
+## 交付成果（Ship It）
 
-This lesson produces `outputs/skill-fairness-criterion.md`. Given a fairness claim or policy, identifies which criterion is being claimed, whether the model can satisfy the remaining criteria under the claimed unequal base rates, and what causal DAG the claim depends on.
+本课产出 `outputs/skill-fairness-criterion.md`。给定公平性声明或政策，它会识别所声称的标准，判断在声明所述的基础发生率不相等条件下，模型能否满足其余标准，并指出声明依赖什么因果 DAG。
 
-## Exercises
+## 练习（Exercises）
 
-1. Run `code/main.py`. Report the three group metrics on the default data. Apply the demographic-parity-targeted re-weighting and re-report.
+1. 运行 `code/main.py`。报告默认数据上的三项群体指标，应用针对人口统计均等的重新加权，再次报告结果。
 
-2. Implement the Dwork et al. 2012 individual-fairness metric using L2 on non-sensitive features. Report how many pairs violate Lipschitz with constant L=1.
+2. 使用非敏感特征上的 L2 距离，实现 Dwork 等人 2012 年的个体公平性指标。报告有多少个体对违反了常数 L=1 的 Lipschitz 条件。
 
-3. Read Kusner et al. 2017. Construct a simple two-feature causal DAG for resume scoring and identify the counterfactual-fairness condition it implies.
+3. 阅读 Kusner 等人 2017 年的论文。为简历评分构建一个包含两个特征的简单因果 DAG，并指出它所隐含的反事实公平性条件。
 
-4. The 2024 backtracking-counterfactuals paper avoids intervention on protected attributes. Describe a scenario where this matters for legal compliance.
+4. 2024 年的回溯反事实论文避免干预受保护属性。描述一个这种区别对法律合规很重要的场景。
 
-5. The ICLR 2024 reconciliation argues group and counterfactual fairness are facets of the same structure. Pick two of the three criteria in `code/main.py` and state the causal assumption that would make them equivalent.
+5. ICLR 2024 的协调观点认为，群体公平性与反事实公平性是同一结构的不同侧面。从 `code/main.py` 的三项标准中选两项，说明什么因果假设会使它们等价。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语 | 常见说法 | 实际含义 |
 |------|-----------------|------------------------|
-| Demographic parity | "equal rates" | P(Y=1 | A=a) equal across groups |
-| Equalized odds | "equal TPR/FPR" | Equal true-positive and false-positive rates across groups |
-| Conditional use accuracy | "equal PPV/NPV" | Equal predictive values across groups |
-| Individual fairness | "Lipschitz condition" | Similar individuals get similar decisions |
-| Counterfactual fairness | "causal alteration invariance" | Decision unchanged under counterfactual attribute alteration |
-| Backtracking counterfactual | "explain via actuals" | Counterfactual reasoned backward from outcome, not forward from attribute |
-| Impossibility theorem | "the three conflict" | Chouldechova / KMR 2017: group criteria mutually exclusive under unequal base rates |
+| 人口统计均等（Demographic Parity） | “比率相等” | 各群体的 P(Y=1 | A=a) 相等 |
+| 均等化机会（Equalized Odds） | “TPR/FPR 相等” | 各群体的真正率和假正率相等 |
+| 条件使用准确率（Conditional Use Accuracy） | “PPV/NPV 相等” | 各群体的预测值相等 |
+| 个体公平性（Individual Fairness） | “Lipschitz 条件” | 相似个体得到相似决策 |
+| 反事实公平性（Counterfactual Fairness） | “因果改变不变性” | 反事实地改变属性后，决策不变 |
+| 回溯反事实（Backtracking Counterfactual） | “通过实际特征解释” | 从结果向后推理反事实，而不是从属性向前推理 |
+| 不可能性定理（Impossibility Theorem） | “三者冲突” | Chouldechova／KMR 2017：基础发生率不相等时，群体标准无法兼得 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [Dwork et al. — Fairness through Awareness (arXiv:1104.3913)](https://arxiv.org/abs/1104.3913) — individual fairness
-- [Kusner, Loftus, Russell, Silva — Counterfactual Fairness (arXiv:1703.06856)](https://arxiv.org/abs/1703.06856) — counterfactual fairness
-- [Chouldechova — Fair prediction with disparate impact (arXiv:1703.00056)](https://arxiv.org/abs/1703.00056) — impossibility
-- [Backtracking Counterfactuals (arXiv:2401.13935)](https://arxiv.org/abs/2401.13935) — new paradigm for protected-attribute interventions
+- [Dwork 等 —《通过知情实现公平》（arXiv:1104.3913）](https://arxiv.org/abs/1104.3913) — 个体公平性
+- [Kusner、Loftus、Russell、Silva —《反事实公平性》（arXiv:1703.06856）](https://arxiv.org/abs/1703.06856) — 反事实公平性
+- [Chouldechova —《存在差别影响时的公平预测》（arXiv:1703.00056）](https://arxiv.org/abs/1703.00056) — 不可能性
+- [回溯反事实（arXiv:2401.13935）](https://arxiv.org/abs/2401.13935) — 处理受保护属性干预的新范式

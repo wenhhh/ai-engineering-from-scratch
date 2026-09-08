@@ -1,48 +1,58 @@
 {
   "useCaseId": "renewal-risk-assistance-v1",
-  "approvedPurpose": "Prepare evidence-backed renewal-risk summaries for an authorized account manager",
+  "approvedPurpose": "为获授权的客户经理准备有证据支持的续约风险摘要",
   "automationMode": "assist",
   "analysisConfidence": 0.87,
   "consequence": "high",
   "reversible": false,
-  "dataClasses": ["internal", "confidential"],
-  "affectedPeople": "current business customers",
-  "allowedOutputs": ["risk evidence summary", "draft review packet"],
-  "prohibitedActions": ["rank protected groups", "approve discounts", "send offers"],
+  "dataClasses": [
+    "internal",
+    "confidential"
+  ],
+  "affectedPeople": "当前企业客户",
+  "allowedOutputs": [
+    "风险证据摘要",
+    "审核包草稿"
+  ],
+  "prohibitedActions": [
+    "对受保护群体排名",
+    "批准折扣",
+    "发送优惠"
+  ],
   "risks": [
     {
       "id": "personal-data-exposure",
-      "prevent": "Minimize transcripts and remove direct identifiers",
-      "detect": "Scan prompt and output fields before model and reviewer access",
-      "correct": "Contain the workflow, notify the incident owner, and rotate exposed access"
+      "prevent": "最小化对话记录并移除直接标识符",
+      "detect": "在模型和审核者访问前扫描提示词及输出字段",
+      "correct": "遏制工作流，通知事故负责人，并轮换已暴露的访问凭据"
     },
     {
       "id": "unsupported-recommendation",
-      "prevent": "Constrain claims to approved account and policy sources",
-      "detect": "Run claim-evidence validation and expose conflicts",
-      "correct": "Block release and return explicit findings for revision"
+      "prevent": "将主张限定于获批账户和政策来源",
+      "detect": "运行主张—证据验证并呈现冲突",
+      "correct": "阻止发布，返回明确问题供修订"
     },
     {
       "id": "unauthorized-action",
-      "prevent": "Expose read and draft capabilities only",
-      "detect": "Audit denied mutation proposals and approval state",
-      "correct": "Revoke the capability and investigate attempted action"
+      "prevent": "只提供读取和起草能力",
+      "detect": "审计被拒绝的修改提议和批准状态",
+      "correct": "撤销能力并调查操作尝试"
     },
     {
       "id": "uneven-treatment",
-      "prevent": "Define approved criteria and exclude unjustified proxy fields",
-      "detect": "Measure error and escalation rates across affected groups",
-      "correct": "Pause the workflow and repair data, criteria, or review policy"
+      "prevent": "定义获批标准，排除无正当依据的代理字段",
+      "detect": "测量各受影响群体的错误率和升级率",
+      "correct": "暂停工作流，修复数据、标准或审核政策"
     }
   ],
   "approvalPacket": {
     "humanGate": true,
     "authorizedRole": "account-director",
-    "decision": "Approve, revise, reject, or escalate the proposed next step",
-    "evidence": "Source IDs, conflicts, and automated check results",
-    "uncertainty": "Missing or low-authority evidence is listed explicitly",
+    "decision": "批准、修订、拒绝或升级处理拟议下一步",
+    "evidence": "来源 ID、冲突和自动检查结果",
+    "uncertainty": "明确列出缺失或权威性低的证据",
     "untrustedContentCanAuthorize": false
   },
-  "retentionRule": "Retain minimized review evidence for the approved policy period, then delete it",
+  "retentionRule": "按获批政策期限保留最小化审核证据，期满后删除",
   "incidentOwner": "security-and-privacy-on-call"
 }

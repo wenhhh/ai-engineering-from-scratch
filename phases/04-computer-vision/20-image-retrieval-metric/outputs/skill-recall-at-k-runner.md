@@ -1,41 +1,41 @@
 ---
 name: skill-recall-at-k-runner
-description: Write a clean evaluation harness for recall@K with train/val/gallery splits and proper data contract
+description: 编写清晰的 recall@K 评估框架，包含训练集、验证集、候选库划分与适当数据契约
 version: 1.0.0
 phase: 4
 lesson: 20
 tags: [retrieval, evaluation, recall, faiss]
 ---
 
-# Recall@K Runner
+# 前 K 项召回率评估器（Recall@K Runner）
 
-Turn a folder of query and gallery images plus labels into a reproducible recall@K number.
+将查询图像与候选库图像目录及其标签，转为可复现的 recall@K 数值。
 
-## When to use
+## 使用时机（When to use）
 
-- First retrieval benchmark for a new backbone.
-- Tracking embedding quality across fine-tune epochs.
-- Comparing two retrieval systems on the same dataset.
+- 为新主干建立首个检索基准。
+- 跟踪微调各轮次的嵌入质量。
+- 在同一数据集上比较两个检索系统。
 
-## Inputs
+## 输入（Inputs）
 
-- `query_images`: list of paths.
-- `gallery_images`: list of paths (query may or may not overlap).
-- `query_labels`, `gallery_labels`: class or instance IDs.
-- `encoder_fn`: callable `image -> embedding` (precomputed or live).
-- `ks`: list like `[1, 5, 10]`.
+- `query_images`：路径列表。
+- `gallery_images`：路径列表，可能与查询重叠，也可能不重叠。
+- `query_labels`、`gallery_labels`：类别或实例 ID。
+- `encoder_fn`：可调用的 `image -> embedding`，使用预计算结果或实时计算。
+- `ks`：例如 `[1, 5, 10]` 的列表。
 
-## Steps
+## 步骤（Steps）
 
-1. Encode every gallery image once. Save as numpy array.
-2. Encode every query image.
-3. L2-normalise both sets of embeddings.
-4. For each query, compute similarity against all gallery items.
-5. Sort descending, take top max(ks).
-6. For each K, check whether any of the top-K gallery items shares the query's label.
-7. Report `recall@K = fraction of queries that had at least one correct neighbour in top K`.
+1. 为每张候选库图像编码一次，保存为 numpy 数组。
+2. 编码每张查询图像。
+3. 对两组嵌入都进行 L2 归一化。
+4. 对每个查询计算与全部候选库项的相似度。
+5. 降序排列，取前 max(ks) 项。
+6. 对每个 K，检查前 K 个候选库项中是否有任一项与查询标签相同。
+7. 报告 `recall@K = fraction of queries that had at least one correct neighbour in top K`，即前 K 项至少有一个正确邻居的查询占比。
 
-## Output template
+## 输出模板（Output template）
 
 ```python
 import numpy as np
@@ -93,7 +93,7 @@ def evaluate(query_images, query_labels, gallery_images, gallery_labels, encoder
     return recall_at_k(q_emb, g_emb, np.array(query_labels), np.array(gallery_labels), ks)
 ```
 
-## Report
+## 报告（Report）
 
 ```
 [evaluation]
@@ -107,9 +107,9 @@ def evaluate(query_images, query_labels, gallery_images, gallery_labels, encoder
   recall@10: <float>
 ```
 
-## Rules
+## 规则（Rules）
 
-- Normalise embeddings before computing similarity; FAISS IndexFlatIP on normalised vectors equals cosine.
-- When a query's ground-truth label is absent from the gallery, exclude it; otherwise recall is trivially capped below 1.
-- If query and gallery overlap, exclude the query itself from its own top-K or you measure self-similarity, not retrieval.
-- For `num_queries > 10,000`, batch the similarity matmul to avoid OOM.
+- 计算相似度前归一化嵌入；FAISS IndexFlatIP 对归一化向量的内积等于余弦相似度。
+- 查询真值标签不在候选库中时，排除该查询，否则召回率上限必然低于 1。
+- 查询与候选库重叠时，从查询自身的前 K 项中排除它本身，否则测到的是自相似性，而不是检索能力。
+- 当 `num_queries > 10,000` 时，分批计算相似度矩阵乘法，避免内存不足（Out of Memory，OOM）。

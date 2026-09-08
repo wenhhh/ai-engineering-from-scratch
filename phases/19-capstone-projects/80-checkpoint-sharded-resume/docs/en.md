@@ -1,39 +1,39 @@
-# Sharded Checkpoint and Atomic Resume
+# 分片检查点与原子恢复（Sharded Checkpoint and Atomic Resume）
 
-> A 70B-parameter training job is paused by a node failure every few hours. The checkpoint format decides whether you lose 30 minutes or 30 hours. A sharded checkpoint writes every rank's shard in parallel and records ownership in a manifest. Resume loads each rank's shard from its own file, reconstructs the state on the same world size, and the optimiser steps as if nothing happened. Atomic write keeps a half-finished checkpoint from poisoning the next resume.
+> 700 亿参数训练任务每隔几小时就会因节点故障暂停。检查点格式决定损失 30 分钟还是 30 小时。分片检查点并行写各 rank 分片，以清单记录所有权。恢复时各 rank 从自身文件加载分片，在相同 world size 上重建状态，优化器如同未中断般继续更新。原子写入防止半成品检查点破坏下次恢复。
 
 **Type:** Build
 **Languages:** Python
-**Prerequisites:** Phase 19 Track C lessons 42-49
-**Time:** ~90 min
+**Prerequisites:** 阶段 19 路线 C 第 42–49 课
+**Time:** ~90 分钟
 
-## Learning Objectives
+## 学习目标（Learning Objectives）
 
-- Save a multi-rank checkpoint as a per-rank shard file plus a manifest that records which rank owns what.
-- Use the atomic write pattern (write to a temp path then rename) so a crash mid-write never produces a half-finished checkpoint.
-- Resume from the manifest, verifying byte-equal state for both fp16 parameters and the ZeRO optimiser state on every rank.
-- Defend the manifest schema against the three failure modes: world-size change, shard count mismatch, and partial write.
+- 将多 rank 检查点保存为逐 rank 分片文件，加记录所有权的清单。
+- 使用原子写入模式（先临时路径、再重命名），使写入中途崩溃不会产生半成品检查点。
+- 从清单恢复，验证各 rank 的 fp16 参数与 ZeRO 优化器状态逐字节相同。
+- 论证清单模式如何防御 world size 改变、分片数不匹配和部分写入三种失效。
 
-## The Problem
+## 问题（The Problem）
 
-A vanilla checkpoint reads all parameters and optimiser state into rank 0, gathers, and writes a single file. For a 70B model that is 1.1 TB of state through one rank's network port. The write blocks every other rank because they idle waiting for the gather. The IO bandwidth is the slowest single GPU's network link, not the aggregate. On a real cluster the gather-then-write step can take longer than the previous training hour, which means the job ships less than one checkpoint per training day.
+普通检查点将全部参数和优化器状态读入 rank 0，汇集后写单文件。700 亿模型意味着 1.1 TB 状态通过一个 rank 的网络端口。写入阻塞其余 rank，它们空等汇集。I/O 带宽取决于最慢单 GPU 网络链路，而非聚合带宽。真实集群上，先汇集再写可能比此前一小时训练更久，使任务每训练日连一个检查点都交付不了。
 
-Sharded checkpoints flip the pattern: every rank writes its own shard to its own file in parallel. The manifest records which rank owned which shard so resume can put each shard back where it came from. The aggregate write bandwidth scales with the cluster. A 1 TB checkpoint that took 4 hours through one rank takes 4 minutes through 64 ranks. Plus the manifest gives you a contract for incompatible resumes: world-size change is detectable, partial writes are detectable, and the load path can fail loudly rather than silently using stale data.
+分片检查点反转模式：各 rank 并行将自身分片写入自身文件。清单记录分片原属 rank，使恢复可各归原位。聚合写带宽随集群扩展。1 TB 检查点经单 rank 需 4 小时，经 64 rank 只需 4 分钟。清单还为不兼容恢复提供契约：可检测 world size 变化和部分写入，加载路径能明确失败，而非静默使用陈旧数据。
 
-## The Concept
+## 概念（The Concept）
 
 ```mermaid
 flowchart TD
-  S0[rank 0 state] --> W0[write rank0.bin.tmp]
-  S1[rank 1 state] --> W1[write rank1.bin.tmp]
-  S2[rank 2 state] --> W2[write rank2.bin.tmp]
-  S3[rank 3 state] --> W3[write rank3.bin.tmp]
-  W0 & W1 & W2 & W3 --> M[write manifest.json.tmp]
-  M --> R[rename all .tmp to final names]
-  R --> Done[checkpoint complete]
+  S0[rank 0 状态] --> W0[写入 rank0.bin.tmp]
+  S1[rank 1 状态] --> W1[写入 rank1.bin.tmp]
+  S2[rank 2 状态] --> W2[写入 rank2.bin.tmp]
+  S3[rank 3 状态] --> W3[写入 rank3.bin.tmp]
+  W0 & W1 & W2 & W3 --> M[写入 manifest.json.tmp]
+  M --> R[将全部 .tmp 重命名为最终名称]
+  R --> Done[检查点完成]
 ```
 
-### Manifest schema
+### 清单模式（Manifest schema）
 
 ```json
 {
@@ -48,91 +48,91 @@ flowchart TD
 }
 ```
 
-Three fields are load-bearing. `world_size` makes a resume on a different size loudly fail rather than silently corrupt. `sha256` per shard catches partial or corrupted writes. `param_shard_offset` and `param_shard_numel` per shard let the loader reconstruct the flat parameter tensor at the correct position.
+三组字段是核心。`world_size` 让不同规模恢复明确失败，而非静默损坏。逐分片 `sha256` 捕捉部分或损坏写入。逐分片 `param_shard_offset` 与 `param_shard_numel` 让加载器在正确位置重建平坦参数张量。
 
-### Atomic write
+### 原子写入（Atomic write）
 
-The standard pattern: write every shard to `<name>.tmp`, write the manifest to `manifest.json.tmp`, fsync each, then rename. POSIX rename within the same filesystem is atomic; either the new file is fully present or the old one is. A crash before the final rename leaves the previous checkpoint as the live one. Without atomic write a crash can leave a partial shard with a present manifest that points at it, and the load corrupts the optimiser state on resume.
+标准模式：各分片写入 `<name>.tmp`，清单写入 `manifest.json.tmp`，逐一 fsync，再重命名。同文件系统内 POSIX rename 原子执行，要么新文件完整存在，要么旧文件存在。最终重命名前崩溃，仍以上一个检查点为生效版本。没有原子写入，崩溃可能留下部分分片，现存清单又指向它，恢复加载便损坏优化器状态。
 
-### Three failure modes the schema must defend against
+### 模式必须防御的三种失效（Three failure modes the schema must defend against）
 
-| Failure | Symptom | Defence |
+| 失效 | 症状 | 防御 |
 |---------|---------|---------|
-| World-size change | resume on N=8 with manifest from N=4 | world_size mismatch in manifest, fail loudly |
-| Shard count mismatch | resume sees fewer rank*.bin files than shards in manifest | enumerate shards, verify every one exists |
-| Partial write | shard file truncated mid-flush | sha256 verification on load |
+| World size 改变 | 用 N=4 清单在 N=8 恢复 | 检测清单 world_size 不匹配，明确失败 |
+| 分片数不匹配 | rank*.bin 文件少于清单分片数 | 枚举并验证每个分片存在 |
+| 部分写入 | 分片在刷新中途截断 | 加载时验证 sha256 |
 
-Each defence rejects the bad load early; the alternative is silent corruption that surfaces 100 steps later when loss goes to NaN.
+各防御都尽早拒绝错误加载；否则静默损坏可能到 100 步后损失变 NaN 才显现。
 
-### Why per-rank files, not one big file
+### 为何逐 rank 文件而非一个大文件（Why per-rank files, not one big file）
 
-Concurrent write to one file via `O_APPEND` works on POSIX for byte-aligned writes, but in practice the offsets within one shard span MB-sized regions and the locking dominates. Per-rank files have no contention and benefit from striping when the underlying filesystem is parallel (Lustre, GPFS). Production stacks (DeepSpeed, FSDP, NeMo) all use per-rank files for that reason.
+POSIX 上通过 `O_APPEND` 对一个文件并发进行字节对齐写入可行，但实际一个分片内的偏移跨越 MB 级区域，锁开销主导。逐 rank 文件无争用，底层并行文件系统（Lustre、GPFS）还可受益于条带化。生产栈（DeepSpeed、FSDP、NeMo）因此均采用逐 rank 文件。
 
 ```figure
 ci-sharded-checkpoint
 ```
 
-## Build It
+## 动手实现（Build It）
 
-`code/main.py` implements:
+`code/main.py` 实现了：
 
-- `ShardManifest` dataclass with the schema above plus `to_json`/`from_json`.
-- `save_sharded(state_dict_per_rank, dir, step)` that writes every rank's binary state to its own file using the atomic temp-then-rename pattern, then writes the manifest.
-- `load_sharded(dir, expected_world_size)` that reads the manifest, verifies each shard's sha256, and returns per-rank state dicts.
-- A round-trip test: build per-rank state, save, load, assert byte-equal.
+- `ShardManifest` 数据类，包含上述模式及 `to_json`/`from_json`。
+- `save_sharded(state_dict_per_rank, dir, step)`：按先临时文件再重命名的原子模式，将各 rank 二进制状态写入自身文件，再写清单。
+- `load_sharded(dir, expected_world_size)`：读取清单，验证各分片 sha256，返回逐 rank 状态字典。
+- 往返测试：构建逐 rank 状态、保存、加载、断言逐字节相同。
 
-Run it:
+运行：
 
 ```bash
 python3 code/main.py
 ```
 
-Output: 4 shard files plus manifest written, then reloaded with byte-equal verification.
+输出：写入 4 个分片文件和清单，再重新加载，验证逐字节相同。
 
-## Production patterns in the wild
+## 真实生产模式（Production patterns in the wild）
 
-Three patterns harden the checkpoint enough to ship.
+三种模式使检查点足够稳健，可供交付。
 
-**Async write.** Production stacks issue the checkpoint write on a separate thread or process so training continues. The barrier is at next checkpoint: do not start the next save until the previous one is complete. DeepSpeed's `async_io` flag does exactly this. The lesson keeps the write synchronous so the steps are visible.
+**异步写入。** 生产栈在独立线程或进程写检查点，让训练继续。屏障在下次检查点：上次未完成就不开始下次。DeepSpeed 的 `async_io` 标志正是如此。本课保持同步写，使步骤可见。
 
-**Local fast disk first, then async upload.** Write to local NVMe (fast) then async-upload to S3 or GCS. The two-tier pattern keeps the in-cluster checkpoint fast for resume while shipping a durable copy off-cluster for archive. The manifest carries the local path; an upload manifest carries the remote path.
+**先本地快盘，再异步上传。** 先写本地 NVMe，再异步上传 S3 或 GCS。双层模式让集群内检查点快速恢复，同时向集群外归档持久副本。清单携带本地路径，上传清单携带远程路径。
 
-**Rotation matters.** Production runs keep the last K checkpoints (typically 3-5) and rotate the oldest. Without rotation the disk fills mid-run and the next checkpoint fails. With rotation the next save deletes the oldest first, freeing the budget.
+**轮换很重要。** 生产保留最近 K 个检查点（通常 3–5），淘汰最旧。无轮换，磁盘中途写满，下个检查点失败。有轮换，下次保存先删除最旧，释放预算。
 
-## Use It
+## 实际应用（Use It）
 
-Production patterns:
+生产模式：
 
-- **DeepSpeed checkpointing.** `deepspeed.save_checkpoint(tag=step)` writes per-rank files and a `latest` file pointing at the active tag.
-- **PyTorch FSDP checkpointing.** `torch.distributed.checkpoint` saves sharded state with a `Planner` that decides per-rank layout.
-- **NeMo.** Wraps DeepSpeed and FSDP with a uniform `save_to_checkpoint` API that adds metadata.
+- **DeepSpeed 检查点。** `deepspeed.save_checkpoint(tag=step)` 写逐 rank 文件及指向当前标签的 `latest` 文件。
+- **PyTorch FSDP 检查点。** `torch.distributed.checkpoint` 保存分片状态，由 `Planner` 决定逐 rank 布局。
+- **NeMo。** 以统一 `save_to_checkpoint` API 包装 DeepSpeed 与 FSDP，并增加元数据。
 
-## Ship It
+## 交付成果（Ship It）
 
-Lesson 81 saves a sharded checkpoint of the end-to-end DDP+ZeRO run and reloads it on the same world size to prove the resume contract holds.
+第 81 课保存端到端 DDP+ZeRO 运行的分片检查点，在相同 world size 重新加载，证明恢复契约成立。
 
-## Exercises
+## 练习（Exercises）
 
-1. Add async write: kick off the save in a thread and let training continue. Block the next save until the previous one completes.
-2. Add a `last_5_steps` rotation: keep the 5 most recent checkpoints, delete the oldest before saving a new one.
-3. Add a CRC-only fast verification path for the inner-loop reload (rotation rolls a checkpoint into being the new active one without full sha256).
-4. Add a cross-world-size load: shard rebalance from N=4 to N=8 by reading the manifest, concatenating, and re-sharding.
-5. Add an upload to a fake S3 (a second directory) and write the upload manifest. Defend the two-tier storage policy.
+1. 加入异步写入：线程启动保存，训练继续；上次完成前阻塞下次保存。
+2. 加入 `last_5_steps` 轮换：保留最近 5 个检查点，保存新版本前删除最旧。
+3. 加入仅用 CRC 的快速验证路径，用于内循环重新加载（轮换将一个检查点变为新生效版本，不做完整 sha256）。
+4. 加入跨 world size 加载：读取清单、拼接、重新分片，将 N=4 重新均衡到 N=8。
+5. 上传到模拟 S3（第二目录）并写上传清单，论证双层存储策略。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语 | 常见说法 | 实际含义 |
 |------|----------------|------------------------|
-| Sharded checkpoint | "Per-rank save" | Each rank writes its own shard file in parallel |
-| Manifest | "Index" | JSON file recording shard paths, offsets, and sha256 |
-| Atomic write | "tmp then rename" | Write to .tmp then POSIX rename so a crash leaves the previous file live |
-| Partial write | "Truncated shard" | A crash during write produces a corrupt shard; sha256 catches it |
-| Rotation | "Keep last K" | Delete oldest checkpoint before writing new one to bound disk usage |
+| 分片检查点（Sharded checkpoint） | “逐 rank 保存” | 各 rank 并行写自身分片文件 |
+| 清单（Manifest） | “索引” | 记录分片路径、偏移、sha256 的 JSON 文件 |
+| 原子写入（Atomic write） | “先 tmp 后重命名” | 先写 .tmp，再 POSIX rename，使崩溃后旧文件仍生效 |
+| 部分写入（Partial write） | “截断分片” | 写入中崩溃产生损坏分片，由 sha256 捕捉 |
+| 轮换（Rotation） | “保留最近 K 个” | 写新检查点前删除最旧，使磁盘用量有界 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [DeepSpeed checkpointing](https://deepspeed.readthedocs.io/en/latest/model-checkpointing.html)
+- [DeepSpeed 检查点（Checkpointing）](https://deepspeed.readthedocs.io/en/latest/model-checkpointing.html)
 - [PyTorch torch.distributed.checkpoint](https://pytorch.org/docs/stable/distributed.checkpoint.html)
-- [POSIX rename atomicity](https://pubs.opengroup.org/onlinepubs/9699919799/functions/rename.html)
-- Phase 19 Lesson 78 - the ZeRO state this checkpoint is shaped to save
-- Phase 19 Lesson 81 - the end-to-end demo round-trips the saved state
+- [POSIX rename 原子性（Atomicity）](https://pubs.opengroup.org/onlinepubs/9699919799/functions/rename.html)
+- 阶段 19 第 78 课：本检查点设计保存的 ZeRO 状态
+- 阶段 19 第 81 课：端到端演示往返验证保存状态

@@ -2,22 +2,22 @@
   "id": "claude-ccar-p",
   "slug": "ccar-p",
   "examCode": "CCAR-P",
-  "credential": "Claude Certified Architect - Professional",
-  "shortName": "Architect Professional",
-  "level": "Professional architecture",
+  "credential": "Claude 认证架构师专业级（Claude Certified Architect - Professional）",
+  "shortName": "架构师专业级（Architect Professional）",
+  "level": "架构专业级（Professional architecture）",
   "accent": "green",
   "badge": {
     "imageUrl": "https://images.credly.com/images/7583afbc-4aab-4c7d-8af4-d9af72786ab3/blob",
     "width": 600,
     "height": 600
   },
-  "summary": "Own the full lifecycle of secure, observable, production-grade Claude systems from discovery to iteration.",
-  "audience": "Mid- to senior-level solution architects, AI engineers, technical leads, and senior software engineers responsible for end-to-end production systems and cross-functional decisions.",
+  "summary": "负责安全、可观测的生产级 Claude 系统从需求探索到迭代的整个生命周期。",
+  "audience": "面向负责端到端生产系统和跨职能决策的中高级解决方案架构师、AI 工程师、技术负责人和高级软件工程师。",
   "recommendedExperience": [
-    "Three or more years in systems architecture or platform engineering",
-    "Six or more months operating Claude or comparable LLM systems in production",
-    "Experience delivering systems from discovery through deployment and operations",
-    "Ability to defend cost, latency, quality, safety, and maintainability tradeoffs"
+    "至少三年系统架构或平台工程经验",
+    "至少六个月在生产环境运营 Claude 或类似大语言模型（LLM）系统的经验",
+    "具备从需求探索到部署、运维的系统交付经验",
+    "能够论证成本、延迟、质量、安全及可维护性之间的权衡"
   ],
   "exam": {
     "items": 63,
@@ -26,20 +26,20 @@
     "passingScaledScore": 720,
     "scoreScale": "100-1000",
     "validityMonths": 12,
-    "format": "Multiple-choice and multiple-response",
-    "delivery": "Proctored online or at a test center",
+    "format": "单项选择与多项选择（Multiple-choice and multiple-response）",
+    "delivery": "在线监考或在考试中心考试",
     "guideVersion": "1.0",
     "effective": "July 2026",
     "officialGuideUrl": "https://everpath-course-content.s3-accelerate.amazonaws.com/instructor%2F6nizmqk8tpzpfjvt6qmmav7rh%2Fpublic%2F1783542810%2FClaude+Certified+Architect+%E2%80%93+Professional+Exam+Guide.pdf"
   },
   "domains": [
-    {"id": "solution-design-architecture", "name": "Solution Design and Architecture", "weight": 17, "objectives": ["Translate business problems into Claude solutions", "Design input, processing, output, and feedback loops", "Choose workflow, agentic, or augmented-LLM patterns", "Design multi-agent orchestration", "Decompose complex problems", "Align designs to value, cost, performance, and SLAs"]},
-    {"id": "models-prompting-context", "name": "Claude Models, Prompting and Context Engineering", "weight": 13, "objectives": ["Select models from explicit tradeoffs", "Design prompts, templates, and guardrails", "Apply zero-shot, few-shot, and reasoning techniques", "Manage context windows and token use", "Reuse stable prompts with caching, modular prompts, and Skills"]},
-    {"id": "integration", "name": "Integration", "weight": 19, "objectives": ["Reduce capability bloat", "Find authentication and authorization gaps", "Balance accuracy and latency", "Select observability at scale", "Design RAG chunking and indexing", "Match retrieval to data shape and query pattern", "Choose MCP, API, CLI, or agent-to-agent integration", "Use progressive discovery instead of monolithic context where appropriate"]},
-    {"id": "evaluation-testing-optimization", "name": "Evaluation, Testing and Optimization", "weight": 16, "objectives": ["Define accuracy, latency, cost, safety, and security metrics", "Build representative datasets and mixed-method test frameworks", "Run A/B tests and iterative improvements", "Diagnose prompt, hallucination, retrieval, and model failures", "Optimize tokens, latency, and cost-performance", "Monitor with logs, traces, and observability"]},
-    {"id": "governance-safety-risk", "name": "Governance, Safety and Risk Management", "weight": 14, "objectives": ["Layer guardrails and safety controls", "Identify LLM failure modes", "Design human-in-the-loop validation", "Account for GDPR, HIPAA, FedRAMP, and applicable regulation", "Address bias, fairness, and transparency"]},
-    {"id": "stakeholder-lifecycle", "name": "Stakeholder Communication and Lifecycle Management", "weight": 14, "objectives": ["Run structured discovery", "Communicate decisions and tradeoffs", "Manage feedback, expectations, and SLAs", "Document architectures and implementation guidance", "Support discovery, design, handoff, monitoring, and iteration"]},
-    {"id": "developer-productivity-operations", "name": "Developer Productivity and Operational Enablement", "weight": 7, "objectives": ["Configure Claude tools and team environments", "Improve engineering workflows with AI-assisted tooling", "Support debugging and operational incident resolution"]}
+    {"id": "solution-design-architecture", "name": "方案设计与架构（Solution Design and Architecture）", "weight": 17, "objectives": ["将业务问题转为 Claude 解决方案（Translate business problems into Claude solutions）", "设计输入、处理、输出和反馈循环（Design input, processing, output, and feedback loops）", "选择工作流、智能体式或增强大语言模型模式（Choose workflow, agentic, or augmented-LLM patterns）", "设计多智能体编排（Design multi-agent orchestration）", "分解复杂问题（Decompose complex problems）", "使设计符合价值、成本、性能和 SLA 要求（Align designs to value, cost, performance, and SLAs）"]},
+    {"id": "models-prompting-context", "name": "Claude 模型、提示词与上下文工程（Claude Models, Prompting and Context Engineering）", "weight": 13, "objectives": ["依据明确权衡选择模型（Select models from explicit tradeoffs）", "设计提示词、模板和防护机制（Design prompts, templates, and guardrails）", "应用零样本、少样本和推理技术（Apply zero-shot, few-shot, and reasoning techniques）", "管理上下文窗口和词元用量（Manage context windows and token use）", "通过缓存、模块化提示词和技能复用稳定提示词（Reuse stable prompts with caching, modular prompts, and Skills）"]},
+    {"id": "integration", "name": "集成（Integration）", "weight": 19, "objectives": ["减少能力膨胀（Reduce capability bloat）", "发现身份验证和授权缺口（Find authentication and authorization gaps）", "平衡准确性与延迟（Balance accuracy and latency）", "选择规模化可观测性方案（Select observability at scale）", "设计 RAG 分块和索引（Design RAG chunking and indexing）", "让检索匹配数据形态与查询模式（Match retrieval to data shape and query pattern）", "选择 MCP、API、CLI 或智能体间集成（Choose MCP, API, CLI, or agent-to-agent integration）", "适当时采用渐进式发现，而非整体上下文（Use progressive discovery instead of monolithic context where appropriate）"]},
+    {"id": "evaluation-testing-optimization", "name": "评估、测试与优化（Evaluation, Testing and Optimization）", "weight": 16, "objectives": ["定义准确性、延迟、成本、安全防护和使用安全指标（Define accuracy, latency, cost, safety, and security metrics）", "构建代表性数据集和混合方法测试框架（Build representative datasets and mixed-method test frameworks）", "运行 A/B 测试并迭代改进（Run A/B tests and iterative improvements）", "诊断提示词、幻觉、检索和模型失败（Diagnose prompt, hallucination, retrieval, and model failures）", "优化词元、延迟及成本性能（Optimize tokens, latency, and cost-performance）", "通过日志、轨迹和可观测性监控（Monitor with logs, traces, and observability）"]},
+    {"id": "governance-safety-risk", "name": "治理、安全与风险管理（Governance, Safety and Risk Management）", "weight": 14, "objectives": ["分层设置防护机制和安全控制（Layer guardrails and safety controls）", "识别大语言模型失败模式（Identify LLM failure modes）", "设计人在回路验证（Design human-in-the-loop validation）", "考虑 GDPR、HIPAA、FedRAMP 及适用法规（Account for GDPR, HIPAA, FedRAMP, and applicable regulation）", "处理偏差、公平性和透明性（Address bias, fairness, and transparency）"]},
+    {"id": "stakeholder-lifecycle", "name": "利益相关者沟通与生命周期管理（Stakeholder Communication and Lifecycle Management）", "weight": 14, "objectives": ["开展结构化需求探索（Run structured discovery）", "沟通决策和权衡（Communicate decisions and tradeoffs）", "管理反馈、预期和 SLA（Manage feedback, expectations, and SLAs）", "记录架构和实施指导（Document architectures and implementation guidance）", "支持探索、设计、交接、监控和迭代（Support discovery, design, handoff, monitoring, and iteration）"]},
+    {"id": "developer-productivity-operations", "name": "开发者生产力与运维支持（Developer Productivity and Operational Enablement）", "weight": 7, "objectives": ["配置 Claude 工具和团队环境（Configure Claude tools and team environments）", "使用 AI 辅助工具改善工程工作流（Improve engineering workflows with AI-assisted tooling）", "支持调试和运维事故解决（Support debugging and operational incident resolution）"]}
   ],
   "lessons": [
     {"path": "certifications/claude/lessons/00-certification-strategy", "domains": ["stakeholder-lifecycle"], "role": "orientation", "required": true},
@@ -69,20 +69,20 @@
     {"path": "certifications/claude/lessons/32-architect-professional-system-capstone", "domains": ["solution-design-architecture", "models-prompting-context", "integration", "evaluation-testing-optimization", "governance-safety-risk", "stakeholder-lifecycle", "developer-productivity-operations"], "role": "capstone", "required": true}
   ],
   "deepDives": [
-    {"path": "phases/11-llm-engineering/13-production-app", "label": "Production LLM Application", "reason": "Connect model calls to a service boundary"},
-    {"path": "phases/11-llm-engineering/07-advanced-rag", "label": "Advanced RAG", "reason": "Go deeper on retrieval and reranking"},
-    {"path": "phases/17-infrastructure-and-production/13-llm-observability", "label": "LLM Observability", "reason": "Instrument production trajectories"},
-    {"path": "phases/17-infrastructure-and-production/21-ab-testing-llm-features", "label": "A/B Testing LLM Features", "reason": "Compare variants with live evidence"},
-    {"path": "phases/17-infrastructure-and-production/23-sre-for-ai", "label": "SRE for AI", "reason": "Own incidents, SLOs, and recovery"},
-    {"path": "phases/17-infrastructure-and-production/26-compliance-frameworks", "label": "Compliance Frameworks", "reason": "Map obligations to system controls"},
-    {"path": "phases/17-infrastructure-and-production/27-finops-llms", "label": "FinOps for LLMs", "reason": "Manage cost per useful outcome"}
+    {"path": "phases/11-llm-engineering/13-production-app", "label": "生产级大语言模型应用（Production LLM Application）", "reason": "将模型调用接入服务边界"},
+    {"path": "phases/11-llm-engineering/07-advanced-rag", "label": "高级检索增强生成（Advanced RAG）", "reason": "深入学习检索与重排序（Reranking）"},
+    {"path": "phases/17-infrastructure-and-production/13-llm-observability", "label": "大语言模型可观测性（LLM Observability）", "reason": "为生产执行轨迹添加观测能力"},
+    {"path": "phases/17-infrastructure-and-production/21-ab-testing-llm-features", "label": "大语言模型功能的 A/B 测试（A/B Testing LLM Features）", "reason": "通过线上证据比较不同版本"},
+    {"path": "phases/17-infrastructure-and-production/23-sre-for-ai", "label": "AI 站点可靠性工程（SRE for AI）", "reason": "负责事故、服务级别目标（SLO）和恢复"},
+    {"path": "phases/17-infrastructure-and-production/26-compliance-frameworks", "label": "合规框架（Compliance Frameworks）", "reason": "将合规义务映射到系统控制措施"},
+    {"path": "phases/17-infrastructure-and-production/27-finops-llms", "label": "大语言模型财务运营（FinOps for LLMs）", "reason": "管理每项有效成果的成本"}
   ],
   "assessments": [
-    {"id": "claude-ccar-p-diagnostic", "path": "certifications/claude/assessments/ccar-p/diagnostic.json", "kind": "diagnostic", "title": "Architect Professional Diagnostic", "timeLimitMinutes": 30},
-    {"id": "claude-ccar-p-mock-01", "path": "certifications/claude/assessments/ccar-p/mock-01.json", "kind": "mock", "title": "Architect Professional Full Mock", "timeLimitMinutes": 120}
+    {"id": "claude-ccar-p-diagnostic", "path": "certifications/claude/assessments/ccar-p/diagnostic.json", "kind": "diagnostic", "title": "架构师专业级诊断测评（Architect Professional Diagnostic）", "timeLimitMinutes": 30},
+    {"id": "claude-ccar-p-mock-01", "path": "certifications/claude/assessments/ccar-p/mock-01.json", "kind": "mock", "title": "架构师专业级全长模拟考试（Architect Professional Full Mock）", "timeLimitMinutes": 120}
   ],
   "studyPlans": [
-    {"id": "ccar-p-35-day", "label": "35-day professional sprint", "durationDays": 35, "hoursPerWeek": 14, "milestones": ["Days 1-5: discovery, requirements, product selection, and value tradeoffs", "Days 6-10: models, prompts, context, validation, and governance foundations", "Days 11-15: Messages API, structured output, tool loops, and MCP", "Days 16-20: Agent SDK, security, evaluation, Claude Code, and orchestration", "Days 21-25: tool contracts, RAG, identity, observability, and cost", "Days 26-30: enterprise governance, stakeholder lifecycle, and operations", "Days 31-35: capstone defense, full mock, and remediation"]},
-    {"id": "ccar-p-63-day", "label": "63-day production plan", "durationDays": 63, "hoursPerWeek": 8, "milestones": ["Week 1: discovery, value, and product landscape", "Week 2: model, prompt, context, and validation foundations", "Week 3: API lifecycle and structured output", "Week 4: tool loops, MCP, Agent SDK, and security", "Week 5: evaluation, Claude Code, orchestration, and tool contracts", "Week 6: RAG, identity, and integration", "Week 7: observability, latency, cost, and governance", "Week 8: stakeholder lifecycle and operational ownership", "Week 9: capstone, full mock, and remediation"]}
+    {"id": "ccar-p-35-day", "label": "35 天专业级冲刺（35-day professional sprint）", "durationDays": 35, "hoursPerWeek": 14, "milestones": ["第 1-5 天：需求探索、需求定义、产品选择和价值权衡", "第 6-10 天：模型、提示词、上下文、验证和治理基础", "第 11-15 天：Messages API、结构化输出、工具循环和 MCP", "第 16-20 天：Agent SDK、安全、评估、Claude Code 和编排", "第 21-25 天：工具契约、RAG、身份、可观测性和成本", "第 26-30 天：企业治理、利益相关者生命周期和运维", "第 31-35 天：综合实践答辩、全长模拟考试和补习"]},
+    {"id": "ccar-p-63-day", "label": "63 天生产系统计划（63-day production plan）", "durationDays": 63, "hoursPerWeek": 8, "milestones": ["第 1 周：需求探索、价值和产品格局", "第 2 周：模型、提示词、上下文和验证基础", "第 3 周：API 生命周期和结构化输出", "第 4 周：工具循环、MCP、Agent SDK 和安全", "第 5 周：评估、Claude Code、编排和工具契约", "第 6 周：RAG、身份和集成", "第 7 周：可观测性、延迟、成本和治理", "第 8 周：利益相关者生命周期和运维责任", "第 9 周：综合实践、全长模拟考试和补习"]}
   ]
 }

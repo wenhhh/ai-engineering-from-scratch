@@ -1,33 +1,33 @@
 ---
 name: reflexion-buffer
-description: Maintain an episodic-memory buffer of reflections for verbal RL with TTL, dedup, and scoped scope.
+description: 为语言强化学习（Verbal RL）维护情景记忆（Episodic memory）反思缓冲区，支持 TTL、去重和明确的作用域。
 version: 1.0.0
 phase: 14
 lesson: 03
 tags: [reflexion, episodic-memory, self-healing, verbal-rl, sleep-time]
 ---
 
-Given a task class (repeating kind of agent run — e.g. "refactor a function," "close a support ticket"), maintain an episodic-memory buffer of reflections. Each reflection records a failure mode and the corrective insight in natural language. The buffer is prepended to the next trial of the same task class.
+给定任务类别，即重复发生的智能体运行类型，例如“重构一个函数”或“关闭一张支持工单”，维护情景记忆反思缓冲区。每条反思用自然语言记录故障模式与纠正性认识。缓冲区内容前置到同一任务类别的下一次试验中。
 
-Produce:
+请生成：
 
-1. Reflection capture. After a trial ends with an evaluator score below threshold, emit a one-line reflection in the shape "I failed to do X because Y; next time, Z." Discard reflections on external failures (network, upstream 500s) unless they are reproducible.
-2. TTL and dedup. Reflections expire after N trials by default (10 suggested). Exact duplicates collapse. Near-duplicates (>0.9 cosine on a small embedding model, or shared substring >= 80%) keep only the most recent.
-3. Scope policy. Three scopes: task-class (per task name), user (across tasks for same user), agent (across all users). Default is task-class. Escalate to user scope only if the reflection refers to user-specific preferences; never escalate to agent scope automatically.
-4. Compaction. When the buffer exceeds the budget, run sleep-time compaction: cluster near-duplicates, summarize, merge. Compaction runs off the hot path — do not delay the primary agent's response.
-5. Prompt integration. Emit a single block titled "What I learned from prior trials" with a bulleted list. Cap at 6 items in the prompt; overflow goes to a separate summary item ("... and 4 older reflections about timeouts").
+1. 反思记录。试验结束且评估器得分低于阈值时，输出一行反思，格式为“我未能完成 X，因为 Y；下次应当 Z”。丢弃针对外部故障的反思，如网络问题、上游 500 错误，除非它们可以复现。
+2. TTL 与去重。默认在 N 次试验后使反思过期，建议 N 为 10。合并完全重复项。近似重复项只保留最新一条，判定方式是小型嵌入模型的余弦相似度 >0.9，或共享子字符串比例 >= 80%。
+3. 作用域策略（Scope policy）。三个作用域：任务类别（按任务名称）、用户（同一用户跨任务）、智能体（跨所有用户）。默认是任务类别。只有反思涉及用户专属偏好时才提升到用户作用域；绝不能自动提升到智能体作用域。
+4. 压缩（Compaction）。缓冲区超出预算时，执行休眠时压缩：聚类近似重复项、总结、合并。压缩在关键执行路径之外运行，不得延迟主智能体响应。
+5. 提示词集成。输出一个标题为“从先前试验中学到的经验”的独立块，内含项目符号列表。提示词最多包含 6 项；超出内容放入单独的摘要项，例如“……以及 4 条关于超时的较早反思”。
 
-Hard rejects:
+严格禁止：
 
-- Writing reflections as "be more careful next time." That is not actionable. Re-run the reflector with a prompt that forces a concrete next-time instruction.
-- Expiring reflections based on wall-clock time rather than trial count. TTL should be trial-scoped, not time-scoped, for offline-replayable runs.
-- Storing reflections that reference secrets (API keys, tokens, PII). Reject with a specific "contains secret"-class error before committing to the buffer.
+- 将反思写成“下次更小心”。这无法指导行动。用强制给出具体下次操作指令的提示词，重新运行反思器。
+- 按墙上时钟时间而不是试验次数使反思过期。为了支持离线回放，TTL 应以试验为单位，而不是以时间为单位。
+- 保存引用秘密的反思，包括 API 密钥、令牌、个人身份信息（PII）。写入缓冲区之前，以明确的“包含秘密”类错误拒绝。
 
-Refusal rules:
+拒绝规则：
 
-- If no evaluator is attached, refuse and recommend Lesson 05 (Self-Refine/CRITIC) — reflection requires a signal, not a gut feeling.
-- If the task class is one-shot (never recurs), refuse; episodic memory does nothing for a task that never repeats.
+- 如果没有接入评估器，应拒绝，并推荐第 05 课（Self-Refine/CRITIC）；反思需要信号，而不是直觉。
+- 如果任务类别是一次性的、永不重复，应拒绝；情景记忆对不再发生的任务没有作用。
 
-Output: a structured buffer file (JSON with reflection objects: trial id, task class, scope, text, created_at, ttl_remaining), a prompt block for the next trial, and a "stale reflections" report listing entries that will expire soon.
+输出：结构化缓冲区文件（JSON，包含反思对象：试验标识、任务类别、作用域、文本、created_at、ttl_remaining）、供下一次试验使用的提示词块，以及列出即将过期条目的“过时反思”报告。
 
-End with a "what to read next" note pointing to Lesson 06 (context compression) if the buffer keeps hitting its cap, or Lesson 08 (Letta sleep-time compute) to move compaction off the hot path.
+末尾添加“接下来读什么”说明：如果缓冲区不断达到上限，指向第 06 课（上下文压缩）；若要将压缩移出关键执行路径，指向第 08 课（Letta 休眠时计算）。

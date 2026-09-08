@@ -1,27 +1,27 @@
 ---
 name: voice-cloner
-description: Pick cloning approach (zero-shot / conversion / adaptation), consent artifact, watermark, and safety filters for a voice-cloning deployment.
+description: 为声音克隆部署选择克隆方式（零样本、转换或适配）、授权凭证、水印和安全过滤器。
 version: 1.0.0
 phase: 6
 lesson: 08
 tags: [voice-cloning, voice-conversion, watermark, consent, safety]
 ---
 
-Given the task (language, reference length available, adaptation budget, license constraints, consent status, deployment scale), output:
+给定任务（语言、可用参考时长、适配预算、许可约束、授权状态、部署规模），输出：
 
-1. Approach. Zero-shot clone (F5-TTS / VibeVoice / Orpheus / OpenVoice V2) · voice conversion (kNN-VC / OpenVoice V2 tone-color) · speaker adaptation (XTTS v2 + LoRA / VITS full fine-tune).
-2. Reference prep. Required length, SNR (≥ 20 dB), mono 16 kHz+, silence trim, `ref_text` (must match exactly for F5-TTS). Reject music-bed references.
-3. Consent artifact. Explicit recorded consent from voice owner. Template: name + date + purpose + scope + revocation procedure. Store 7+ years.
-4. Watermark. AudioSeal-embedded 16-bit payload on every output. Configure detector in CI to verify presence before publishing audio.
-5. Safety filters. Named-entity (celebrity / politician / minor) prompt-rejection; rate-limit per-user per-hour; audit log of every clone generation; kill-switch.
+1. 方法。零样本克隆（F5-TTS / VibeVoice / Orpheus / OpenVoice V2）、声音转换（kNN-VC / OpenVoice V2 音色转换）或说话人适配（XTTS v2 加低秩适配 LoRA / VITS 全量微调）。
+2. 参考准备。所需长度、信噪比（Signal-to-Noise Ratio，SNR；≥ 20 dB）、单声道 16 kHz 以上、裁去静音、`ref_text`（F5-TTS 必须完全匹配）。拒绝带背景音乐的参考音频。
+3. 授权凭证。声音所有者明确录制的同意。模板为姓名、日期、用途、范围、撤销流程，保存至少 7 年。
+4. 水印。每份输出嵌入 AudioSeal 的 16 位载荷。在持续集成（Continuous Integration，CI）中配置检测器，发布音频前验证水印存在。
+5. 安全过滤。拒绝涉及命名实体（名人、政治人物、未成年人）的提示词；逐用户逐小时限流；记录每次克隆生成的审计日志；设置紧急停用开关。
 
-Refuse to ship cloning without a watermarking strategy. Refuse to clone named celebrities / politicians / minors regardless of consent claims. Refuse references under 3 s or SNR &lt; 20 dB. Refuse F5-TTS for commercial deployments (CC-BY-NC). Refuse cross-lingual clone without explicitly flagging the accent-transfer gap.
+拒绝交付没有水印策略的克隆系统。无论声称是否获同意，都拒绝克隆具名名人、政治人物或未成年人。拒绝短于 3 秒或 SNR &lt; 20 dB 的参考音频。拒绝将 F5-TTS 用于商业部署（CC-BY-NC）。拒绝未明确指出口音迁移差距的跨语言克隆。
 
-Example input: "Accessibility app: let ALS patient bank their voice while still speaking, then speak through TTS after voice loss. English, US."
+示例输入：“无障碍应用：让肌萎缩侧索硬化症（Amyotrophic Lateral Sclerosis，ALS）患者在还能说话时保存自己的声音，失声后通过 TTS 发声。美国英语。”
 
-Example output:
-- Approach: OpenVoice V2 (MIT, zero-shot, 6 s reference). Accessibility use case with inherent consent; patient is voice owner.
-- Reference prep: record 5 × 6 s clips in studio-quality conditions (quiet room, USB mic, 24 kHz). Store raw + transcripts. Build centroid reference for stability.
-- Consent: digital signature + video affirmation attesting to the purpose ("post-diagnosis voice reuse"), stored on encrypted volume with 10-year retention. Revocation hotline.
-- Watermark: AudioSeal 16-bit payload encoding `patient_id` + `clip_id`; detector runs on every generation in CI.
-- Safety: hard-filter named-entity prompts; log every generation; ROI-limited to patient's logged-in app instance. No API exposure.
+示例输出：
+- 方法：OpenVoice V2（MIT、零样本、6 秒参考）。无障碍用例本身包含授权，患者是声音所有者。
+- 参考准备：在录音室级条件下录制 5 × 6 秒片段（安静房间、USB 麦克风、24 kHz）。保存原始音频和转录，构建质心参考以提高稳定性。
+- 授权：数字签名加视频确认，说明用途为“诊断后的声音复用”，存入加密卷，保留 10 年。提供撤销热线。
+- 水印：AudioSeal 的 16 位载荷编码 `patient_id` 和 `clip_id`；CI 中的检测器检查每次生成。
+- 安全：硬性过滤命名实体提示词；记录每次生成；使用范围仅限患者已登录的应用实例，不对外提供 API。

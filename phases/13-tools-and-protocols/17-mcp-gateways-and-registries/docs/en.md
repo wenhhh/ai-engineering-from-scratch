@@ -1,63 +1,63 @@
-# Stateless MCP Gateways and Registry Admission
+# 无状态 MCP 网关与注册表准入（Stateless MCP Gateways and Registry Admission）
 
-> A gateway should make every route explicit. The 2026-07-28 protocol gives it method, name, version, capability, identity, cache, and trace boundaries without a transport session.
+> 网关应让每条路由明确。2026-07-28 协议无需传输会话，就能提供方法、名称、版本、能力、身份、缓存和追踪边界。
 
 **Type:** Learn
 **Languages:** Python
-**Prerequisites:** Phase 13 · 15 (security), Phase 13 · 16 (authorization)
-**Time:** ~75 minutes
+**Prerequisites:** Phase 13 · 15（安全），Phase 13 · 16（授权）
+**Time:** ~75 分钟
 
-## Learning Objectives
+## 学习目标（Learning Objectives）
 
-- Aggregate several MCP servers behind one 2026-07-28 endpoint without session affinity.
-- Validate per-request metadata and routing headers before policy or forwarding.
-- Merge tools with stable namespaces, deterministic order, descriptor pins, RBAC, and private caching.
-- Treat registry records as discovery evidence that still requires admission policy.
-- Route request-scoped SSE, `subscriptions/listen`, MRTR retries, and Tasks extension calls correctly.
-- Isolate legacy handshake and session support from the modern path.
+- 在一个 2026-07-28 端点后聚合多个 MCP 服务器，无需会话亲和性。
+- 在策略或转发之前验证逐请求元数据与路由请求头。
+- 通过稳定命名空间、确定性顺序、描述符固定、RBAC 和私有缓存合并工具。
+- 将注册表记录视为仍需准入策略的发现证据。
+- 正确路由请求范围内 SSE、`subscriptions/listen`、MRTR 重试和 Tasks 扩展调用。
+- 将旧版握手和会话支持与现代路径隔离。
 
-## The Problem
+## 问题（The Problem）
 
-Connecting one client directly to one server is simple. A larger deployment needs a consistent answer to harder questions:
+一个客户端直连一个服务器很简单。更大规模的部署需要对更难的问题给出一致答案：
 
-- Which servers are allowed?
-- Which principal can see and call each tool?
-- What happens when two backends expose the same name?
-- How are descriptor changes reviewed?
-- Where are rate limits and audit events applied?
-- Can any instance handle the next request?
+- 允许哪些服务器？
+- 哪些主体可以看到和调用每个工具？
+- 两个后端暴露相同名称时怎么办？
+- 如何审查描述符变化？
+- 在哪里应用速率限制和审计事件？
+- 任意实例能否处理下一个请求？
 
-A gateway sits between clients and backend MCP servers. It presents one MCP endpoint, applies cross-cutting policy, and forwards approved requests.
+网关位于客户端和后端 MCP 服务器之间。它呈现一个 MCP 端点，应用横切策略，并转发已批准请求。
 
-Older gateway designs often multiplexed one client session into several backend sessions and rewrote `Mcp-Session-Id`. That is a legacy compatibility design. The 2026-07-28 core has no protocol sessions.
+旧网关设计常将一个客户端会话多路复用到多个后端会话，并重写 `Mcp-Session-Id`。这是旧版兼容设计。2026-07-28 核心没有协议会话。
 
-## The Concept
+## 概念（The Concept）
 
-### The modern gateway path
+### 现代网关路径（The modern gateway path）
 
-For each request:
+对每个请求：
 
-1. Authenticate the principal from transport authorization.
-2. Validate `MCP-Protocol-Version`, `Mcp-Method`, `Mcp-Name`, and `params._meta`.
-3. Authorize the principal, resource, method, tool, and arguments.
-4. Apply descriptor, registry, rate, and data policy.
-5. Create a fresh self-contained request for the selected backend.
-6. Validate the backend result and return a gateway result.
-7. Record an audit event without logging secrets.
+1. 根据传输授权认证主体。
+2. 验证 `MCP-Protocol-Version`、`Mcp-Method`、`Mcp-Name` 和 `params._meta`。
+3. 对主体、资源、方法、工具和参数授权。
+4. 应用描述符、注册表、速率及数据策略。
+5. 为选定后端创建新的自包含请求。
+6. 验证后端结果并返回网关结果。
+7. 记录审计事件，但不记录秘密。
 
-No step needs a hidden protocol session. Application state can still exist in databases, explicit handles, Tasks, or integrity-protected MRTR state.
+没有哪一步需要隐藏的协议会话。应用状态仍可存在于数据库、显式句柄、Tasks 或完整性受保护的 MRTR 状态中。
 
-### Runtime policy is the primary gateway decision
+### 运行时策略是网关的首要决定（Runtime policy is the primary gateway decision）
 
-Admission decides which backend version may enter the gateway. It does not authorize a live call. For every request, the gateway recomputes policy from the authenticated principal, issuer and resource, tenant, matched method and name, normalized arguments, admitted descriptor pin, current backend health, capability intersection, data classification, rate state, and any action-bound approval.
+准入决定哪个后端版本可以进入网关，不授权实时调用。对于每个请求，网关根据已认证主体、签发者和资源、租户、匹配的方法和名称、规范化参数、获准描述符固定值、当前后端健康状态、能力交集、数据分类、速率状态以及任何与操作绑定的批准，重新计算策略。
 
-This ordering matters. A Registry record can remain active while a user's role is revoked. A descriptor can remain pinned while a destination argument crosses a tenant boundary. A backend can remain approved while incident policy quarantines state-changing calls. Runtime policy is therefore the primary allow or deny decision, with Registry and descriptor evidence as inputs.
+这个顺序很重要。用户角色被撤销时，Registry 记录可能仍处于活动状态。目的地参数跨越租户边界时，描述符可能仍被固定。事件响应策略隔离状态变更调用时，后端可能仍获批准。因此运行时策略才是主要的允许或拒绝决定，Registry 和描述符证据只是输入。
 
-Do not cache an allow decision under a connection or removed session identifier. If policy is unavailable, follow a declared failure policy by operation class. A safe default is to fail closed for state changes and sensitive reads, while explicitly approved public read paths may use a short-lived last-known policy only when their risk model permits it. Record which policy version and failure path made the decision, then validate the backend result before returning it.
+不要以连接或已移除的会话标识符缓存允许决定。策略不可用时，按操作类别遵循已声明的失败策略。安全默认值是对状态变更和敏感读取采取失败关闭；明确批准的公共读取路径，仅在其风险模型允许时，才可短暂使用最后已知策略。记录由哪个策略版本和失败路径作出决定，并在返回前验证后端结果。
 
-### One POST endpoint
+### 单个 POST 端点（One POST endpoint）
 
-Modern Streamable HTTP sends each JSON-RPC message through POST:
+现代 Streamable HTTP 通过 POST 发送每条 JSON-RPC 消息：
 
 ```text
 POST /mcp
@@ -68,19 +68,19 @@ Mcp-Name: notes.search
 Accept: application/json, text/event-stream
 ```
 
-The gateway can return JSON or request-scoped SSE for that POST. GET and DELETE return 405 for modern requests. `Mcp-Session-Id` and `Last-Event-ID` do not create authority, affinity, or replay behavior.
+网关可为该 POST 返回 JSON 或请求范围内 SSE。现代请求的 GET 和 DELETE 返回 405。`Mcp-Session-Id` 和 `Last-Event-ID` 不产生权限、亲和性或重放行为。
 
-Header and body values must agree. Reject mismatch with `-32020` before looking up a backend. This lets load balancers, gateways, and rate limiters route without parsing the full body while preserving end-to-end integrity.
+请求头与正文值必须一致。在查找后端前以 `-32020` 拒绝不匹配。这让负载均衡器、网关和限流器无需解析完整正文即可路由，同时保留端到端完整性。
 
-Validate in one exact order: JSON-RPC and metadata types, header and body equality, then support for the matched version. A mismatch returns HTTP 400 with `-32020`. If header and body agree on an unsupported version, return HTTP 400 with `-32022` and `data` exactly `{"supported":["2026-07-28"],"requested":"<actual>"}`. An unknown method returns HTTP 404 with `-32601`.
+遵循一个精确验证顺序：JSON-RPC 和元数据类型、请求头与正文相等，然后检查匹配版本的支持情况。不匹配返回 HTTP 400 和 `-32020`。若请求头与正文一致但版本不支持，返回 HTTP 400 和 `-32022`，且 `data` 必须恰为 `{"supported":["2026-07-28"],"requested":"<actual>"}`。未知方法返回 HTTP 404 和 `-32601`。
 
-`ProtocolError` carries optional `data`, and the gateway serializes it into the JSON-RPC error object. A notification has no `id`, so it never receives a JSON-RPC success or error. An accepted HTTP notification returns 202 with an empty body.
+`ProtocolError` 携带可选 `data`，网关将其序列化到 JSON-RPC 错误对象。通知没有 `id`，因此绝不接收 JSON-RPC 成功或错误响应。接受的 HTTP 通知返回 202 和空正文。
 
-### Implement discovery at every layer
+### 每一层都实现发现（Implement discovery at every layer）
 
-The gateway implements `server/discover` for clients. It also discovers each backend so it knows protocol versions, capabilities, and extensions.
+网关为客户端实现 `server/discover`。它也发现每个后端，以了解协议版本、能力和扩展。
 
-Example gateway result:
+网关结果示例：
 
 ```json
 {
@@ -100,13 +100,13 @@ Example gateway result:
 }
 ```
 
-Advertise only the capability intersection the gateway can honor end to end. A backend feature is not automatically safe to expose. A gateway feature with no backend path is not useful to advertise.
+仅声明网关能够端到端兑现的能力交集。后端功能不意味着可安全公开；没有后端路径的网关功能也没有声明价值。
 
-`serverInfo` is self-reported display and diagnostic data. Do not use it as registry or publisher proof.
+`serverInfo` 是自行报告的显示和诊断数据。不要将其用作注册表或发布者证明。
 
-### Per-request client capabilities
+### 逐请求客户端能力（Per-request client capabilities）
 
-Every forwarded request needs a current `_meta` envelope:
+每个转发请求都需要当前 `_meta` 信封：
 
 ```json
 {
@@ -119,11 +119,11 @@ Every forwarded request needs a current `_meta` envelope:
 }
 ```
 
-Do not blindly copy the outer client capabilities to a backend. The gateway is the backend's client. Advertise only features the gateway will mediate correctly.
+不要盲目把外层客户端能力复制到后端。网关才是后端的客户端。仅声明网关会正确调解的功能。
 
-### Deterministic namespacing
+### 确定性命名空间（Deterministic namespacing）
 
-Merge backend tools under stable public names:
+将后端工具合并到稳定公开名称下：
 
 ```text
 notes.search
@@ -132,28 +132,28 @@ issues.list
 issues.open
 ```
 
-Keep a mapping from public name to backend and original tool name. Never choose the first or last collision. A public name is part of the approval and audit contract, so changing it is a migration.
+保留从公开名称到后端和原工具名的映射。绝不在冲突中选择第一个或最后一个。公开名称是批准和审计契约的一部分，因此更名是一项迁移。
 
-`tools/list` must be deterministic. When visibility differs by principal, return `cacheScope: private`. A bounded `ttlMs` reduces backend discovery load without allowing a user-specific list to leak across authorization contexts.
+`tools/list` 必须具有确定性。可见性因主体而异时，返回 `cacheScope: private`。有界的 `ttlMs` 可降低后端发现负载，同时避免用户特定列表跨授权上下文泄露。
 
-Every exposed tool descriptor includes a stable name, description, and object-root `inputSchema`. Namespacing cannot remove required descriptor fields. The complete list result also includes `resultType`, server identity metadata, and cache hints.
+每个公开工具描述符包含稳定名称、描述和以对象为根的 `inputSchema`。命名空间不能移除必需的描述符字段。完整列表结果还包含 `resultType`、服务器身份元数据及缓存提示。
 
-### Pin approved descriptors
+### 固定已批准描述符（Pin approved descriptors）
 
-At admission time, canonicalize the complete descriptor and store its digest under the qualified public name. At list and call time, compare the live descriptor with the approved digest.
+准入时，规范化完整描述符，并将摘要存储在限定公开名称下。列出和调用时，将实时描述符与已批准摘要比较。
 
-If it changes:
+如果变化：
 
-- Remove it from `tools/list`.
-- Reject direct calls.
-- Emit an audit event.
-- Require policy or human re-approval before updating the pin.
+- 从 `tools/list` 移除。
+- 拒绝直接调用。
+- 发出审计事件。
+- 更新固定值前要求策略或人工重新批准。
 
-A gateway is a useful central enforcement point, but it does not turn a first-seen descriptor into a safe one. Initial review remains necessary.
+网关是有用的集中执行点，却不能让首次看到的描述符自动安全。初始审查仍不可少。
 
-### Registries help discover, not decide
+### 注册表帮助发现，不替你决定（Registries help discover, not decide）
 
-A Registry `server.json` provides publication metadata. A package-backed record can look like this:
+Registry 的 `server.json` 提供发布元数据。基于软件包的记录可以如下所示：
 
 ```json
 {
@@ -172,7 +172,7 @@ A Registry `server.json` provides publication metadata. A package-backed record 
 }
 ```
 
-Publication metadata does not carry the gateway's security decision. Keep verified publisher and provenance evidence in separate admission state:
+发布元数据不承载网关的安全决定。将已验证的发布者和来源证据保存在独立准入状态中：
 
 ```json
 {
@@ -187,64 +187,64 @@ Publication metadata does not carry the gateway's security decision. Keep verifi
 }
 ```
 
-The gateway checks the `server.json` shape and joins it to that external state. The gateway still needs an admission policy.
+网关检查 `server.json` 结构，并关联外部状态。网关仍需准入策略。
 
-For each admitted backend, record:
+对每个获准后端，记录：
 
-- Exact registry and record identifier.
-- Verified publisher namespace or domain evidence.
-- Allowed transport and endpoint.
-- Pinned version or approved upgrade policy.
-- Artifact or descriptor digest.
-- Authorization issuer and resource.
-- Reviewer, approval time, and expiry.
+- 精确注册表和记录标识符。
+- 已验证的发布者命名空间或域名证据。
+- 允许的传输和端点。
+- 固定版本或已批准升级策略。
+- 制品或描述符摘要。
+- 授权签发者和资源。
+- 审查者、批准时间和到期时间。
 
-Do not accept a server because its display name resembles a familiar product. Do not treat registry presence as an operational security review. Private servers can be admitted through the same evidence schema even when they never appear in a public registry.
+不要因显示名称类似熟悉产品就接受服务器。不要把注册表中的存在当作运营安全审查。即使从不出现在公共注册表，私有服务器也可以通过同一证据模式准入。
 
-This lesson implements the gateway seam: join publication evidence to local admission before a backend becomes routable. [Lesson 30: MCP Registry Supply Chain, Admission, Drift, and Rollback](../../30-mcp-registry-supply-chain-and-drift/docs/en.md) builds the full control plane for exact namespace proof, artifact provenance, immutable pins, live descriptor drift, Registry status reconciliation, a tamper-evident admission ledger, and evidence-backed rollback. Keep that supply-chain state separate from the per-request runtime decision above.
+本课实现网关接入边界：在后端可路由之前，将发布证据与本地准入关联。[第 30 课：MCP 注册表供应链、准入、漂移与回滚](../../30-mcp-registry-supply-chain-and-drift/docs/en.md) 构建完整控制平面，涵盖精确命名空间证明、制品来源、不可变固定值、实时描述符漂移、Registry 状态协调、防篡改准入账本及有证据支持的回滚。将供应链状态与前述逐请求运行时决定分离。
 
-### Credential mediation
+### 凭据调解（Credential mediation）
 
-The gateway authenticates its callers and separately authenticates to backends. Backend credentials never go to the client.
+网关认证调用者，并单独向后端认证。后端凭据绝不交给客户端。
 
-Keep these bindings explicit:
+明确保留这些绑定：
 
 ```text
 outer principal -> gateway role and policy
 backend issuer + resource -> backend registration and token
 ```
 
-Never pass the outer gateway token to a backend. Never reuse a backend token at a different issuer or resource. If a tool acts on behalf of an end user, preserve that delegation with a designed exchange or claims model rather than impersonating the user with a shared service credential.
+绝不把外层网关令牌传给后端。绝不在不同签发者或资源处复用后端令牌。如果工具代表终端用户操作，应通过经过设计的交换或声明模型保留委托关系，而不是用共享服务凭据冒充用户。
 
-### Rate limits without sessions
+### 无会话速率限制（Rate limits without sessions）
 
-Key limits by authenticated principal, issuer, resource, public tool, cost class, and time window. A session id is absent and would be easy to rotate even if it existed.
+按已认证主体、签发者、资源、公开工具、成本类别和时间窗口设置限额键。会话 id 并不存在，即使存在也很容易轮换。
 
-Apply cheap validation before consuming expensive work. Decide whether rejected calls count against abuse limits, business quotas, or both.
+在消耗昂贵工作之前执行廉价验证。决定被拒绝调用计入滥用限制、业务配额，还是两者都计入。
 
-### Audit the decision chain
+### 审计决定链（Audit the decision chain）
 
-Record enough to reconstruct a call:
+记录足以重建调用的信息：
 
-- Request and trace identifiers.
-- Authenticated principal and issuer.
-- Public tool and backend route.
-- Descriptor pin version.
-- Policy decision and reason.
-- Latency and result class.
-- MRTR round or task identifier when applicable.
+- 请求和追踪标识符。
+- 已认证主体和签发者。
+- 公开工具和后端路由。
+- 描述符固定版本。
+- 策略决定和原因。
+- 延迟和结果类别。
+- 适用时的 MRTR 轮次或任务标识符。
 
-Redact bearer tokens, authorization codes, refresh tokens, raw secrets, and unnecessary sensitive arguments.
+对持有者令牌、授权码、刷新令牌、原始秘密及不必要的敏感参数脱敏。
 
-### Request-scoped SSE
+### 请求范围内 SSE（Request-scoped SSE）
 
-A normal POST may return request-scoped SSE when work streams during that one request. Closing the response stream cancels that in-flight modern HTTP request.
+普通 POST 在单次请求工作流式输出时，可以返回请求范围内 SSE。关闭响应流会取消该进行中的现代 HTTP 请求。
 
-Do not create a separate GET stream and do not promise Last-Event-ID replay. Those are older transport assumptions.
+不要创建独立 GET 流，也不要承诺 Last-Event-ID 重放。那些是旧版传输假设。
 
-### Long-lived change notifications
+### 长连接变更通知（Long-lived change notifications）
 
-For list and resource change notifications, a current client sends `subscriptions/listen` through POST and receives an SSE response. Notification filters use the exact flat fields `toolsListChanged`, `promptsListChanged`, `resourcesListChanged`, and `resourceSubscriptions`:
+对于列表和资源变更通知，当前客户端通过 POST 发送 `subscriptions/listen` 并接收 SSE 响应。通知过滤器使用精确的扁平字段 `toolsListChanged`、`promptsListChanged`、`resourcesListChanged` 和 `resourceSubscriptions`：
 
 ```json
 {
@@ -263,7 +263,7 @@ For list and resource change notifications, a current client sends `subscription
 }
 ```
 
-The first event acknowledges the supported subset. Its subscription identifier is the JSON-RPC id of the request that opened the stream:
+首个事件确认支持的子集。其订阅标识符是打开此流的请求的 JSON-RPC id：
 
 ```json
 {
@@ -280,48 +280,48 @@ The first event acknowledges the supported subset. Its subscription identifier i
 }
 ```
 
-The gateway then forwards only the acknowledged change types. Every notification on that stream carries the same `io.modelcontextprotocol/subscriptionId` in `params._meta`. There is no automatic replay or automatic re-listen. On reconnect, the client reopens the subscription and refreshes the lists it relies on. A server-initiated graceful close returns a final complete result tagged with the same subscription id.
+随后网关仅转发已确认的变更类型。流上的每条通知都在 `params._meta` 中携带相同的 `io.modelcontextprotocol/subscriptionId`。没有自动重放或自动重新监听。重新连接时，客户端重新打开订阅，并刷新依赖的列表。服务器发起的优雅关闭返回标有相同订阅 id 的最终完整结果。
 
-The modern path replaces `resources/subscribe`, `resources/unsubscribe`, and unsolicited standalone GET streaming. Keep those only in a version-gated older path.
+现代路径替代 `resources/subscribe`、`resources/unsubscribe` 和未经请求的独立 GET 流。仅在受版本门控的旧路径中保留它们。
 
-### MRTR through a gateway
+### MRTR 经过网关（MRTR through a gateway）
 
-When a backend returns `resultType: input_required`, the gateway can forward that result only if the outer client supports the needed input request. Preserve `requestState` byte for byte unless the gateway deliberately terminates and reissues the interaction.
+后端返回 `resultType: input_required` 时，只有外层客户端支持所需输入请求，网关才可转发结果。除非网关刻意终止并重新发起交互，否则逐字节保留 `requestState`。
 
-The client retries the original public tool with a fresh JSON-RPC id and `inputResponses`. The gateway re-authorizes the retry, checks the same public route, then forwards a fresh backend request. It must not assume an earlier round granted unlimited approval.
+客户端使用全新 JSON-RPC id 和 `inputResponses` 重试原公开工具。网关重新授权重试，检查相同公开路由，再转发新的后端请求。不能假定早先轮次授予了无限批准。
 
-### Tasks extension routing
+### Tasks 扩展路由（Tasks extension routing）
 
-Tasks are an official extension identified by `io.modelcontextprotocol/tasks`. They are not a core session replacement.
+Tasks 是标识符为 `io.modelcontextprotocol/tasks` 的官方扩展，不是核心会话替代品。
 
-The client declares the extension inside per-request client capabilities, and the gateway advertises it in discovery only when it can preserve the lifecycle end to end. For a supported `tools/call`, the backend alone decides whether to return the ordinary result or `resultType: task`. A task result carries `taskId`, `status`, timestamps, `ttlMs`, and an optional `pollIntervalMs` directly in the result. The task must already be durably readable before that result is sent.
+客户端在逐请求客户端能力中声明扩展；只有能端到端保留生命周期时，网关才在发现中声明它。对于支持的 `tools/call`，仅由后端决定返回普通结果还是 `resultType: task`。任务结果直接携带 `taskId`、`status`、时间戳、`ttlMs` 和可选 `pollIntervalMs`。发送结果前，任务必须已经可持久读取。
 
-The gateway records the authenticated principal and backend route for the opaque task identifier. Subsequent `tasks/get`, `tasks/update`, and `tasks/cancel` calls use `params.taskId` as `Mcp-Name`, which gives intermediaries a routing key. `tasks/get` returns `resultType: complete` with the current task state and inlines the final result or protocol error in a terminal state. `tasks/update` sends keyed `inputResponses` for outstanding task input and returns an empty complete acknowledgment. `tasks/cancel` is a cooperative intent with an empty complete acknowledgment, not a guarantee that work stops.
+网关为不透明任务标识符记录已认证主体和后端路由。后续 `tasks/get`、`tasks/update` 和 `tasks/cancel` 调用以 `params.taskId` 作为 `Mcp-Name`，为中间层提供路由键。`tasks/get` 返回 `resultType: complete` 和当前任务状态，并在终态中内联最终结果或协议错误。`tasks/update` 为未完成任务输入发送按键组织的 `inputResponses`，并返回空的完整确认。`tasks/cancel` 是协作式意图，返回空的完整确认，不保证工作停止。
 
-Do not implement new `tasks/list` or `tasks/result` methods. They belong to the older experimental model. A task that needs input exposes complete embedded requests through `tasks/get`; the client answers them through `tasks/update`, not by retrying the original tool call. The client still polls at the suggested interval; task creation remains server-directed.
+不要实现新的 `tasks/list` 或 `tasks/result` 方法。它们属于旧实验模型。需要输入的任务通过 `tasks/get` 公开完整嵌入请求；客户端通过 `tasks/update` 回答，而非重试原工具调用。客户端仍按建议间隔轮询；创建任务仍由服务器决定。
 
-Durable task route state is application data keyed by the task handle, not a protocol session.
+持久化任务路由状态是以任务句柄为键的应用数据，不是协议会话。
 
-### Compatibility boundary
+### 兼容边界（Compatibility boundary）
 
-If the gateway must serve an older client or backend:
+如果网关必须服务旧客户端或后端：
 
-- Detect the era explicitly.
-- Keep initialization, transport sessions, GET streams, resource subscriptions, and old task vocabulary inside a legacy adapter.
-- Never leak a legacy session id into modern routing or authorization.
-- Prefer a bounded discovery probe and explicit fallback policy over silent downgrade.
+- 显式检测所属时代。
+- 将初始化、传输会话、GET 流、资源订阅和旧任务词汇保留在旧版适配器内。
+- 绝不让旧会话 id 泄入现代路由或授权。
+- 优先使用有界发现探测和显式回退策略，而非静默降级。
 
 ```figure
 t3-gateway-funnel
 ```
 
-## Build It
+## 动手实现（Build It）
 
-`code/main.py` implements an in-process protocol gateway and two backend servers. Each backend receives a fresh current-protocol request. The gateway provides discovery, user-filtered deterministic `tools/list`, namespaced routing, Registry `server.json` plus external admission state, descriptor pins, RBAC, principal-keyed rate limits, audit decisions, and a modeled `subscriptions/listen` SSE acknowledgment.
+`code/main.py` 实现进程内协议网关和两个后端服务器。每个后端接收新的当前协议请求。网关提供发现、按用户过滤的确定性 `tools/list`、命名空间路由、Registry `server.json` 加外部准入状态、描述符固定、RBAC、按主体索引的速率限制、审计决定，以及模拟的 `subscriptions/listen` SSE 确认。
 
-The model receives parsed request bodies, routing headers, and an authenticated bearer identity. It is not a complete HTTP adapter and does not parse `Content-Type` or the full `Accept` contract. Connect it to Lesson 09's Streamable HTTP adapter, which requires `Content-Type: application/json` and an `Accept` value containing both `application/json` and `text/event-stream`.
+模型接收已解析请求正文、路由请求头和已认证持有者身份。它不是完整 HTTP 适配器，不解析 `Content-Type` 或完整 `Accept` 契约。将其连接到第 09 课 Streamable HTTP 适配器，该适配器要求 `Content-Type: application/json`，且 `Accept` 值同时包含 `application/json` 和 `text/event-stream`。
 
-Run it:
+运行：
 
 ```bash
 cd phases/13-tools-and-protocols/17-mcp-gateways-and-registries
@@ -329,48 +329,48 @@ python3 code/main.py
 python3 -m unittest discover code/tests -v
 ```
 
-The demo prints the outer request id and fresh backend request id so the stateless hop is visible.
+演示打印外层请求 id 和新的后端请求 id，让无状态跳转可见。
 
-## Use It
+## 实际应用（Use It）
 
-Replace the in-process backend objects with real current-protocol clients. Keep the same seams:
+将进程内后端对象替换成真正的当前协议客户端。保留相同边界：
 
-- Admission record before connection.
-- Backend discovery before capability exposure.
-- Qualified public name before authorization.
-- Descriptor pin before list or call.
-- Fresh per-request metadata before forwarding.
-- Result validation before returning.
+- 连接前具有准入记录。
+- 公开能力前发现后端。
+- 授权前确定限定公开名称。
+- 列出或调用前固定描述符。
+- 转发前生成新的逐请求元数据。
+- 返回前验证结果。
 
-## Ship It
+## 交付（Ship It）
 
-This lesson ships `outputs/skill-gateway-bootstrap.md`. It produces a modern gateway design covering ingress, discovery, admission, namespaces, authorization, caching, streaming, subscriptions, MRTR, Tasks, observability, and legacy isolation.
+本课交付 `outputs/skill-gateway-bootstrap.md`。它生成现代网关设计，涵盖入口、发现、准入、命名空间、授权、缓存、流式输出、订阅、MRTR、Tasks、可观测性和旧版隔离。
 
-## Exercises
+## 练习（Exercises）
 
-1. Add trace context to the outer and forwarded request metadata and record the correlation in the audit event.
-2. Add a Tasks-capable backend and route `tasks/get` by task id in `Mcp-Name`.
-3. Change one backend descriptor and prove both discovery and direct call are blocked.
-4. Add a principal-specific server capability and explain why discovery must remain privately cached.
-5. Write a legacy adapter interface without adding any legacy state to the modern `Gateway` class.
+1. 向外层和转发请求元数据添加追踪上下文，并在审计事件中记录关联。
+2. 添加支持 Tasks 的后端，并按 `Mcp-Name` 中的任务 id 路由 `tasks/get`。
+3. 改变一个后端描述符，证明发现和直接调用都被阻止。
+4. 添加主体特定服务器能力，并解释为何发现必须保持私有缓存。
+5. 编写旧版适配器接口，不向现代 `Gateway` 类添加任何旧版状态。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | Meaning |
+| 术语 | 含义 |
 |------|---------|
-| MCP gateway | Policy and routing server between clients and backend MCP servers |
-| Admission record | Evidence and policy decision allowing one backend into the gateway |
-| Qualified tool name | Stable public route such as `notes.search` |
-| Descriptor pin | Approved digest checked during discovery and dispatch |
-| Private cache scope | Cached result restricted to one authorization context |
-| Request-scoped SSE | Streaming response attached to one POST request |
-| `subscriptions/listen` | Client-opened SSE stream for selected long-lived change notifications |
-| Task route | Application mapping from an opaque task id to its backend |
-| Legacy adapter | Explicit version-gated boundary for old handshake and session behavior |
+| MCP 网关（MCP gateway） | 位于客户端与后端 MCP 服务器之间的策略与路由服务器 |
+| 准入记录（Admission record） | 允许一个后端进入网关的证据与策略决定 |
+| 限定工具名（Qualified tool name） | 稳定公开路由，例如 `notes.search` |
+| 描述符固定（Descriptor pin） | 在发现和分发时检查的已批准摘要 |
+| 私有缓存作用域（Private cache scope） | 限制在一个授权上下文中的缓存结果 |
+| 请求范围内 SSE（Request-scoped SSE） | 附属于单个 POST 请求的流式响应 |
+| `subscriptions/listen` | 客户端为选定长连接变更通知打开的 SSE 流 |
+| 任务路由（Task route） | 从不透明任务 id 到后端的应用映射 |
+| 旧版适配器（Legacy adapter） | 为旧握手和会话行为设置的显式版本门控边界 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [Streamable HTTP transport](https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/streamable-http)
-- [Server discovery](https://modelcontextprotocol.io/specification/2026-07-28/server/discover)
-- [Official Registry server.json requirements](https://github.com/modelcontextprotocol/registry/blob/main/docs/reference/server-json/official-registry-requirements.md)
-- [MCP Tasks extension](https://tasks.extensions.modelcontextprotocol.io/specification/draft/tasks)
+- [Streamable HTTP 传输](https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/streamable-http)
+- [服务器发现](https://modelcontextprotocol.io/specification/2026-07-28/server/discover)
+- [官方 Registry server.json 要求](https://github.com/modelcontextprotocol/registry/blob/main/docs/reference/server-json/official-registry-requirements.md)
+- [MCP Tasks 扩展](https://tasks.extensions.modelcontextprotocol.io/specification/draft/tasks)

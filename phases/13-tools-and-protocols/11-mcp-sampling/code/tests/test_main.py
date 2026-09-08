@@ -1,4 +1,4 @@
-"""Tests for the stateless MCP MRTR sampling migration lesson."""
+"""无状态 MCP MRTR 采样（Sampling）迁移课程的测试。"""
 
 from __future__ import annotations
 

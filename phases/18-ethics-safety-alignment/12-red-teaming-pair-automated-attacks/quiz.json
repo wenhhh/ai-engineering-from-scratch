@@ -1,58 +1,58 @@
 {
   "lesson": "12-red-teaming-pair-automated-attacks",
-  "title": "Red-Teaming: PAIR and Automated Attacks",
+  "title": "红队测试：PAIR 与自动化攻击（Red-Teaming: PAIR and Automated Attacks）",
   "questions": [
     {
       "stage": "pre",
-      "question": "Why is manual red-teaming insufficient for evaluating frontier models?",
+      "question": "为什么人工红队测试不足以评估前沿模型？",
       "options": [
-        "Manual testers cannot read model outputs",
-        "It does not scale; attack success rate needs a statistical sample against a moving target with every model release",
-        "Manual prompts are always blocked by filters",
-        "Manual testing produces too many false positives"
+        "人工测试者无法阅读模型输出",
+        "它无法扩展；攻击成功率需要统计样本，而且每次模型发布目标都会变化",
+        "人工提示词总被过滤器阻止",
+        "人工测试产生太多误报"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "What does PAIR stand for, and what does it do?",
+      "question": "PAIR 代表什么，它做什么？",
       "options": [
-        "Pre-Action Inspection Reasoning; a defensive scaffolding",
-        "Persuasive Adversarial Iterative Reward; replaces RM with a persuader",
-        "Pairwise Adversarial Inference Routing; routes attacks across models",
-        "Prompt Automatic Iterative Refinement; an attacker LLM iteratively proposes jailbreaks for a target, with prior attempts as in-context feedback"
+        "行动前检查推理（Pre-Action Inspection Reasoning），一种防御框架",
+        "说服式对抗迭代奖励（Persuasive Adversarial Iterative Reward），用说服者替代奖励模型",
+        "成对对抗推理路由（Pairwise Adversarial Inference Routing），跨模型路由攻击",
+        "提示词自动迭代改进（Prompt Automatic Iterative Refinement），攻击者 LLM 迭代提出针对目标的越狱，并以先前尝试作为上下文反馈"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Why is PAIR more efficient than GCG for a black-box target?",
+      "question": "为什么对于黑盒目标，PAIR 比 GCG 更高效？",
       "options": [
-        "GCG requires white-box gradient access and produces unreadable suffixes that cannot use in-context feedback; PAIR is black-box and natural-language with in-context learning",
-        "PAIR ignores the target's response",
-        "GCG only attacks open-source models",
-        "PAIR uses a larger attacker model than GCG"
+        "GCG 需要白盒梯度访问，产生无法利用上下文反馈的不可读后缀；PAIR 是黑盒自然语言方法，可进行上下文学习",
+        "PAIR 忽略目标响应",
+        "GCG 只攻击开源模型",
+        "PAIR 使用比 GCG 更大的攻击者模型"
       ],
       "correct": 0,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Why must Attack Success Rate (ASR) be reported with both a query budget and a judge identity?",
+      "question": "为什么攻击成功率（ASR）必须同时报告查询预算和评判器身份？",
       "options": [
-        "Because judges always agree",
-        "Because ASR varies with how many queries the attacker is allowed and with which LLM judges a response as a jailbreak",
-        "Because budgets are set by JailbreakBench only",
-        "Because ASR is required by export-control regulations"
+        "因为评判器总是一致",
+        "因为 ASR 会随允许攻击者查询的次数，以及由哪个 LLM 判断响应是否构成越狱而变化",
+        "因为预算只由 JailbreakBench 设定",
+        "因为出口管制法规要求 ASR"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "Which of these automated attacks is best described as 'tree-of-attacks with pruning'?",
+      "question": "哪种自动化攻击最适合描述为“带剪枝的攻击树”？",
       "options": [
         "GCG",
         "TAP",
@@ -64,7 +64,7 @@
     },
     {
       "stage": "post",
-      "question": "Which standardized benchmark uses 510 behaviours across 7 categories with semantic and functional harm tests?",
+      "question": "哪个标准化基准包含 7 类 510 种行为，并采用语义和功能性危害测试？",
       "options": [
         "TruthfulQA",
         "WMDP",

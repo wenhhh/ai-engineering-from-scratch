@@ -1,37 +1,62 @@
 [
   {
-    "question": "What training objective does GPT use during pre-training?",
-    "options": ["Sentence classification", "Next-token prediction: given previous tokens, predict the next one", "Image-text alignment", "Masked language modeling (predicting masked tokens)"],
+    "question": "GPT 在预训练中使用什么训练目标？",
+    "options": [
+      "句子分类",
+      "下一词元预测：给定此前词元，预测下一个词元",
+      "图像与文本对齐",
+      "掩码语言建模，预测被遮蔽的词元"
+    ],
     "correct": 1,
-    "explanation": "GPT is a causal (autoregressive) language model trained with next-token prediction. Given tokens [t1, t2, ..., tn], it learns to predict tn+1. The loss is cross-entropy between predicted and actual next tokens.",
+    "explanation": "GPT 是通过下一词元预测（Next-token prediction）训练的因果、自回归（Autoregressive）语言模型。给定 [t1, t2, ..., tn]，学习预测 tn+1。损失是预测与真实下一词元之间的交叉熵（Cross-entropy）。",
     "stage": "pre"
   },
   {
-    "question": "How many transformer layers, attention heads, and embedding dimensions does GPT-2 Small (124M) have?",
-    "options": ["24 layers, 16 heads, 1024 dims", "6 layers, 6 heads, 512 dims", "48 layers, 25 heads, 1600 dims", "12 layers, 12 heads, 768 dims"],
+    "question": "GPT-2 Small（124M）有多少 Transformer 层、注意力头和嵌入维度？",
+    "options": [
+      "24 层、16 个头、1024 维",
+      "6 层、6 个头、512 维",
+      "48 层、25 个头、1600 维",
+      "12 层、12 个头、768 维"
+    ],
     "correct": 3,
-    "explanation": "GPT-2 Small has 12 transformer layers, 12 attention heads per layer, and 768-dimensional embeddings. This architecture has 124 million parameters and can be trained on a single GPU in a few hours.",
+    "explanation": "GPT-2 Small 有 12 层 Transformer，每层 12 个注意力头，嵌入为 768 维。该架构有 1.24 亿参数，可在单张 GPU 上用几小时训练。",
     "stage": "pre"
   },
   {
-    "question": "What is the role of the causal attention mask in GPT?",
-    "options": ["It prevents each token from attending to future tokens, ensuring the model can only use past context for predictions", "It reduces memory usage during training", "It masks out low-confidence attention scores", "It prevents attention to padding tokens"],
+    "question": "GPT 中因果注意力掩码的作用是什么？",
+    "options": [
+      "防止每个词元关注未来词元，确保模型只能用过去上下文预测",
+      "减少训练内存占用",
+      "遮蔽低置信度注意力分数",
+      "防止关注填充词元"
+    ],
     "correct": 0,
-    "explanation": "The causal mask is a triangular matrix that sets future positions to -infinity before softmax. Token at position 5 can attend to positions 1-5 but not 6+. This ensures the model generates tokens left-to-right.",
+    "explanation": "因果掩码（Causal mask）是三角矩阵，在 softmax 前将未来位置设为负无穷。位置 5 的词元能关注位置 1-5，但不能关注 6 及以后。这保证模型从左到右生成词元。",
     "stage": "post"
   },
   {
-    "question": "What does 'temperature' control during text generation?",
-    "options": ["The randomness of token selection: lower temperature makes outputs more deterministic, higher makes them more diverse", "The speed of generation", "The number of tokens generated", "The model's confidence threshold"],
+    "question": "文本生成中的“温度”控制什么？",
+    "options": [
+      "词元选择的随机性：温度越低输出越确定，越高则更多样",
+      "生成速度",
+      "生成词元数量",
+      "模型置信度阈值"
+    ],
     "correct": 0,
-    "explanation": "Temperature divides logits before softmax. Temperature=0.1 makes the distribution very peaked (nearly deterministic). Temperature=1.0 is the training distribution. Temperature>1.0 flattens it, increasing randomness.",
+    "explanation": "温度（Temperature）在 softmax 前用于除逻辑值（Logits）。Temperature=0.1 使分布很尖锐，几乎确定；Temperature=1.0 使用训练分布；Temperature>1.0 使分布变平，增加随机性。",
     "stage": "post"
   },
   {
-    "question": "Why does pre-training require significantly more compute than fine-tuning?",
-    "options": ["Pre-training processes trillions of tokens from scratch to learn general language patterns, while fine-tuning adjusts an already-capable model on thousands of examples", "Pre-training uses a different architecture", "Pre-training uses larger batch sizes", "Fine-tuning doesn't use gradients"],
+    "question": "为什么预训练需要的计算量远多于微调？",
+    "options": [
+      "预训练从零处理万亿级词元来学习通用语言模式，微调则用数千样例调整已有能力的模型",
+      "预训练使用不同架构",
+      "预训练使用更大批次",
+      "微调不使用梯度"
+    ],
     "correct": 0,
-    "explanation": "Pre-training builds all language knowledge from random weights over trillions of tokens. Fine-tuning starts from these learned weights and adjusts them on a much smaller dataset (thousands to millions of examples).",
+    "explanation": "预训练（Pre-training）从随机权重出发，在万亿级词元上建立全部语言知识。微调（Fine-tuning）从这些已学权重出发，在小得多的数据集上调整，通常为数千到数百万样例。",
     "stage": "post"
   }
 ]

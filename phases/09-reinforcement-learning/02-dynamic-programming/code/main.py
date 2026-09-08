@@ -109,23 +109,23 @@ def print_policy(policy, title):
 
 
 def main():
-    print("=== 4x4 stochastic GridWorld (slip=0.1), value iteration ===")
+    print("=== 4x4 随机网格世界（GridWorld，slip=0.1），价值迭代（Value Iteration） ===")
     V_vi, pi_vi, n_vi = value_iteration(gamma=0.99)
-    print_V(V_vi, f"V* (converged in {n_vi} sweeps)")
+    print_V(V_vi, f"V*（经过 {n_vi} 轮扫描收敛）")
     print()
-    print_policy(pi_vi, "optimal policy")
+    print_policy(pi_vi, "最优策略（Optimal Policy）")
 
     print()
-    print("=== Same MDP, policy iteration ===")
+    print("=== 同一马尔可夫决策过程（MDP），策略迭代（Policy Iteration） ===")
     V_pi, pi_pi, n_pi = policy_iteration(gamma=0.99)
-    print_V(V_pi, f"V* (converged in {n_pi} outer iters)")
+    print_V(V_pi, f"V*（经过 {n_pi} 次外层迭代收敛）")
     print()
-    print_policy(pi_pi, "optimal policy")
+    print_policy(pi_pi, "最优策略（Optimal Policy）")
 
     print()
     V_match = max(abs(V_vi[s] - V_pi[s]) for s in states())
-    print(f"sup-norm |V_vi - V_pi| = {V_match:.2e}  (should be ~0)")
-    print(f"policies identical?     {pi_vi == pi_pi}")
+    print(f"上确界范数（Supremum Norm）|V_vi - V_pi| = {V_match:.2e}  （应接近 0）")
+    print(f"两个策略是否一致？     {pi_vi == pi_pi}")
 
 
 if __name__ == "__main__":

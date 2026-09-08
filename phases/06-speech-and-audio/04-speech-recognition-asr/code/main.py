@@ -1,7 +1,7 @@
-"""ASR basics: greedy CTC decode, beam CTC decode, Word Error Rate.
+"""自动语音识别（ASR）基础：CTC 贪心解码（Greedy decode）、束搜索解码（Beam decode）、词错误率（WER）。
 
-Stdlib only. Builds a tiny hand-rolled CTC example and computes WER.
-Run: python3 code/main.py
+仅用标准库。手写一个小型连接时序分类（CTC）示例，并计算 WER。
+运行：python3 code/main.py
 """
 
 import math
@@ -10,7 +10,7 @@ from collections import Counter
 
 
 BLANK = 0
-VOCAB = "_abcdefghijklmnopqrstuvwxyz "  # index 0 is blank
+VOCAB = "_abcdefghijklmnopqrstuvwxyz "  # 索引 0 是空白符（Blank）
 
 
 def ctc_greedy(frame_probs):
@@ -98,34 +98,34 @@ def corrupt(probs, n_swaps=3, swap_strength=0.4):
 
 def main():
     target = "hello world"
-    print("=== Step 1: build per-frame CTC outputs for target ===")
-    print(f"  target: {target!r}")
+    print("=== 步骤 1：为目标构建逐帧 CTC 输出 ===")
+    print(f"  目标（Target，英文字符样例保留）: {target!r}")
     probs = build_frame_probs(target, duration_per_char=3, blank_runs=1)
-    print(f"  frames: {len(probs)}  vocab: {len(VOCAB)}  (index 0 = blank)")
+    print(f"  帧数: {len(probs)}  词表大小: {len(VOCAB)}（索引 0 = 空白符 Blank）")
 
     print()
-    print("=== Step 2: greedy decode (collapse repeats, drop blank) ===")
+    print("=== 步骤 2：贪心解码（Greedy decode，合并重复，删除空白符） ===")
     greedy = ctc_greedy(probs)
-    print(f"  greedy decode: {greedy!r}")
+    print(f"  贪心解码: {greedy!r}")
 
     print()
-    print("=== Step 3: beam search decode (width 8, simplified) ===")
+    print("=== 步骤 3：束搜索解码（Beam search decode，宽度 8，简化版） ===")
     beam = ctc_beam(probs, beam_width=8)
-    print(f"  beam decode:   {beam!r}")
-    print(f"  note: this beam merges consecutive repeats without a blank-intervene state;")
-    print(f"  a proper prefix-tree beam (e.g. ctcdecode) tracks P_blank / P_nonblank and")
-    print(f"  preserves double letters like the two l's in 'hello'.")
+    print(f"  束搜索解码:   {beam!r}")
+    print(f"  注意：此束搜索会合并连续重复字符，未维护空白符介入状态；")
+    print(f"  规范的前缀树束搜索（Prefix-tree beam，如 ctcdecode）跟踪 P_blank / P_nonblank，并")
+    print(f"  保留重复字母，例如 'hello' 中的两个 l。")
 
     print()
-    print("=== Step 4: corrupt logits; beam should beat greedy ===")
+    print("=== 步骤 4：扰动逻辑值（Logits）；束搜索应优于贪心解码 ===")
     corrupted = corrupt(probs, n_swaps=6, swap_strength=0.6)
     g2 = ctc_greedy(corrupted)
     b2 = ctc_beam(corrupted, beam_width=16)
-    print(f"  greedy: {g2!r}")
-    print(f"  beam:   {b2!r}")
+    print(f"  贪心（Greedy）: {g2!r}")
+    print(f"  束搜索（Beam）:   {b2!r}")
 
     print()
-    print("=== Step 5: WER ===")
+    print("=== 步骤 5：词错误率（WER）；perfect/one substit/one deletion/one insert/garbage 为完整匹配/一次替换/一次删除/一次插入/无关文本 ===")
     ref = "hello world this is a test"
     hyps = {
         "perfect":      "hello world this is a test",
@@ -135,10 +135,10 @@ def main():
         "garbage":      "bye everyone nothing here",
     }
     for label, hyp in hyps.items():
-        print(f"  {label:<14} WER = {wer(ref, hyp):.3f}  hyp={hyp!r}")
+        print(f"  {label:<14} WER = {wer(ref, hyp):.3f}  候选文本（Hypothesis）={hyp!r}")
 
     print()
-    print("=== Step 6: best model on LibriSpeech test-clean (2026) ===")
+    print("=== 步骤 6：LibriSpeech test-clean 上的最佳模型（2026） ===")
     table = [
         ("Parakeet-TDT-1.1B", 1.40, "1.1B"),
         ("Canary-1B Flash",   1.48, "1B"),
@@ -146,7 +146,7 @@ def main():
         ("Seamless M4T v2",    1.70, "2.3B"),
         ("wav2vec 2.0 Large",  1.92, "317M"),
     ]
-    print("  | Model                 | WER  | Params |")
+    print("  | 模型（Model）           | WER  | 参数（Params） |")
     for name, w, p in table:
         print(f"  | {name:<21} | {w:.2f} | {p:<6} |")
 

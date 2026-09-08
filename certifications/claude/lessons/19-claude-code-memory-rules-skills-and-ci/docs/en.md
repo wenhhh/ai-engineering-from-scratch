@@ -1,139 +1,116 @@
-# Claude Code Memory, Rules, Skills, and CI
+# Claude Code 记忆、规则、技能与 CI（Claude Code Memory, Rules, Skills, and CI）
 
-> Put stable guidance where its scope is true, and executable constraints where failure is unacceptable.
+> 将稳定指导放在它真正适用的作用域内；不能容忍失败的约束，则应交给可执行机制。
 
 **Type:** Reference
 **Languages:** Python
-**Prerequisites:** [Claude Code Scales Through Shared Constraints](../../15-claude-code-for-development-teams/), [Agent SDK Sessions, Subagents, and Context](../../17-agent-sdk-sessions-subagents-and-context/)
-**Time:** ~210 minutes
+**Prerequisites:** [Claude Code 通过共享约束扩展协作（Claude Code Scales Through Shared Constraints）](../../15-claude-code-for-development-teams/), [Agent SDK 会话、子智能体与上下文（Agent SDK Sessions, Subagents, and Context）](../../17-agent-sdk-sessions-subagents-and-context/)
+**Time:** ~210 分钟
 
-## Learning Objectives
+## 学习目标（Learning Objectives）
 
-- Design project and user instruction hierarchy without context bloat
-- Choose CLAUDE.md, path rules, Skills, commands, agents, hooks, and settings by purpose
-- Author and distribute a real multi-file `SKILL.md` package with narrow tool grants
-- Use plan, direct execution, and bounded subagents with explicit obstacle reports
-- Configure headless Claude Code for reproducible CI evidence
-- Prevent stale memory, broad permissions, and hidden local configuration from controlling team work
+- 设计项目和用户指令层级，避免上下文膨胀
+- 按用途选择 CLAUDE.md、路径规则、技能（Skill）、命令、智能体、钩子和设置
+- 编写并分发真正的多文件 `SKILL.md` 技能包，只预先批准小范围工具
+- 使用规划、直接执行和有边界的子智能体，并明确报告障碍
+- 配置无头（Headless）Claude Code，生成可复现的 CI 证据
+- 防止过时记忆、过宽权限和隐藏的本地配置支配团队工作
 
-## The Problem
+## 问题（The Problem）
 
-A team keeps every instruction in one root `CLAUDE.md`: architecture history,
-formatting, database rules, deployment steps, personal preferences, commands, and
-examples for six languages. It is copied into every task.
+团队把所有指令放入根目录的一个 `CLAUDE.md`：架构历史、格式规范、数据库规则、部署步骤、个人偏好、命令以及六种语言的示例。每个任务都会复制这些内容。
 
-Developers add private overrides. CI has a different configuration. One command
-assumes write access. A broad hook reformats unrelated files. The instructions
-say "always run every test," so a small docs edit triggers a 40-minute suite.
-When the agent ignores a safety rule, the team adds more bold text.
+开发者添加私有覆盖配置，CI 又采用不同配置。一条命令假定自己有写权限，一个范围过宽的钩子会重新格式化无关文件。指令要求“始终运行全部测试”，于是一次小文档修改也触发 40 分钟的测试套件。智能体忽略安全规则时，团队只会添加更多加粗文字。
 
-The problem is not insufficient instruction. The problem is scope, precedence,
-progressive disclosure, and confusing guidance with enforcement.
+问题并不是指令不足，而是作用域、优先级、渐进式披露（Progressive disclosure），以及把指导与强制执行混为一谈。
 
-## The Concept
+## 概念（The Concept）
 
-### Match the Mechanism to the Job
+### 让机制匹配工作（Match the Mechanism to the Job）
 
-| Mechanism | Best use | Avoid |
+| 机制 | 最佳用途 | 避免 |
 |-----------|----------|-------|
-| `CLAUDE.md` | Concise stable repository guidance and pointers | Full manuals, transient state, secrets |
-| Imported files | Shared supporting instructions kept near their owners | Circular or invisible instruction graphs |
-| Path rules | Guidance true only for matching files | Global rules copied into every task |
-| Skill | Reusable process or domain playbook loaded when relevant | One-off facts or hard authorization |
-| Command | Compatibility name for an explicit user-invoked workflow | New multi-step packages without Skill structure |
-| Agent | Bounded role with isolated context and tools | Deterministic utility functions |
-| Hook | Deterministic validation, blocking, normalization, or automation | Open-ended semantic judgment |
-| Settings | Permission, model, plugin, and runtime configuration | Secret values committed to the repository |
+| `CLAUDE.md` | 精简稳定的仓库指导和索引 | 完整手册、临时状态、密钥 |
+| 导入文件（Imported files） | 保存在所属模块附近的共享辅助指令 | 循环或不可见的指令图 |
+| 路径规则（Path rules） | 只对匹配文件成立的指导 | 复制到每个任务的全局规则 |
+| 技能（Skill） | 相关时加载的可复用流程或领域手册 | 一次性事实或硬性授权 |
+| 命令（Command） | 用户显式调用工作流的兼容名称 | 不采用技能结构的新多步骤包 |
+| 智能体（Agent） | 上下文和工具隔离、有边界的角色 | 确定性工具函数 |
+| 钩子（Hook） | 确定性的验证、阻止、规范化或自动化 | 开放式语义判断 |
+| 设置（Settings） | 权限、模型、插件与运行时配置 | 提交到仓库的密钥值 |
 
-Product note, verified 2026-08-09: custom commands have been merged into Skills.
-Files under `.claude/commands/` remain compatible, while
-`.claude/skills/<name>/SKILL.md` is the preferred package for new workflows.
-Exact fields, precedence, and product availability can change. Verify the
-current Claude Code documentation before implementation. The July 2026 CCAR-F
-blueprint expects you to understand the hierarchy, rules, commands, Skills,
-agents, memory, planning, and headless workflows.
+产品说明，核实于 2026-08-09：自定义命令已并入技能。`.claude/commands/` 下的文件仍然兼容，而新工作流优先采用 `.claude/skills/<name>/SKILL.md` 技能包。具体字段、优先级和产品可用性可能变化，实施前应核实当前 Claude Code 文档。2026 年 7 月的 CCAR-F 大纲要求理解层级、规则、命令、技能、智能体、记忆、规划和无头工作流。
 
-### Keep the Root Instruction File Small
+### 保持根指令文件精简（Keep the Root Instruction File Small）
 
-The root file should help a capable new contributor start correctly.
+根文件应帮助有能力的新贡献者正确起步。
 
-Include:
+应包含：
 
-- project purpose and non-obvious architecture boundaries
-- canonical build, test, and formatting commands
-- source-of-truth files
-- security and scope constraints
-- links or imports to deeper guidance
-- verification and contribution expectations
+- 项目用途和不明显的架构边界
+- 标准构建、测试与格式化命令
+- 权威来源文件
+- 安全和范围约束
+- 指向更深入指导的链接或导入
+- 验证与贡献要求
 
-Exclude:
+应排除：
 
-- temporary task status
-- generated inventories
-- long API references
-- personal editor settings
-- secret values
-- instructions that apply only to one directory
+- 临时任务状态
+- 自动生成的清单
+- 冗长 API 参考
+- 个人编辑器设置
+- 密钥值
+- 只适用于单个目录的指令
 
-Treat it as an onboarding router, not a knowledge dump.
+把它当作入门导航，而不是知识堆积场。
 
-### Place Instructions at the Narrowest True Scope
+### 将指令放到真正适用的最窄作用域（Place Instructions at the Narrowest True Scope）
 
 ```mermaid
 flowchart TD
-    U["User preferences\nall projects"] --> P["Project guidance\nrepository"]
-    P --> R1["Path rules\nAPI files"]
-    P --> R2["Path rules\ndocumentation"]
-    P --> R3["Path rules\ninfrastructure"]
-    R1 --> T["Current task context"]
+    U["用户偏好\n所有项目"] --> P["项目指导\n仓库"]
+    P --> R1["路径规则\nAPI 文件"]
+    P --> R2["路径规则\n文档"]
+    P --> R3["路径规则\n基础设施"]
+    R1 --> T["当前任务上下文"]
     R2 --> T
     R3 --> T
 ```
 
-User scope holds personal defaults that should not define team behavior. Project
-scope holds versioned shared decisions. Path-specific rules load only where
-their file patterns apply. Task instructions contain the current request.
+用户作用域保存不应定义团队行为的个人默认偏好。项目作用域保存纳入版本管理的共享决策。路径专用规则仅在文件模式匹配时加载。任务指令包含当前请求。
 
-When two rules conflict, investigate the documented precedence and make the
-project source of truth explicit. Do not depend on a hidden local override for a
-critical workflow.
+两条规则冲突时，调查文档规定的优先级，并明确项目的权威来源。关键工作流不能依赖隐藏的本地覆盖。
 
-### Import Stable Supporting Guidance
+### 导入稳定的辅助指导（Import Stable Supporting Guidance）
 
-Use imports to keep the root file concise while preserving modular ownership.
-For example, database migration policy belongs near database documentation. A
-root pointer keeps it discoverable.
+通过导入保持根文件精简，同时保留模块化归属。例如数据库迁移政策应靠近数据库文档，根文件中的指针保证它可被发现。
 
-Audit the import graph:
+审计导入图：
 
-- every target exists
-- no cycles
-- no broad file import leaks secrets or irrelevant text
-- ownership and update trigger are clear
-- deleted or renamed guidance fails visibly
+- 每个目标都存在
+- 不存在循环
+- 不会因导入范围过大而泄露密钥或带入无关文本
+- 归属和更新触发条件明确
+- 指导被删除或改名时会明确报错
 
-Memory inspection commands can help reveal which instructions are active. Use
-them to debug configuration, not to store unrecoverable project state.
+记忆检查命令可以揭示哪些指令正在生效。用它们调试配置，不要用它们存储无法恢复的项目状态。
 
-### Use Skills for Progressive Disclosure
+### 使用技能实现渐进式披露（Use Skills for Progressive Disclosure）
 
-A Skill packages a repeatable method, references, scripts, and artifacts. Its
-description helps the agent decide when it applies. The full body loads only
-when selected, protecting context for unrelated work.
+技能打包可重复的方法、参考资料、脚本和交付物。描述帮助智能体判断何时适用。只有被选中时才加载完整正文，为无关工作保留上下文。
 
-Good Skills:
+合适的技能包括：
 
-- database migration review
-- incident triage
-- release-note generation
-- threat-model checklist
-- architecture decision interview
+- 数据库迁移评审
+- 事故分诊
+- 发布说明生成
+- 威胁模型检查清单
+- 架构决策访谈
 
-The Skill should define inputs, sequence, evidence, output, and stop conditions.
-It should not embed secrets or grant permissions.
+技能应定义输入、步骤、证据、输出和停止条件，不应嵌入密钥或授予权限。
 
-An actual project Skill lives at `.claude/skills/<skill-name>/SKILL.md`. The
-entry file has YAML frontmatter and Markdown instructions:
+实际项目技能位于 `.claude/skills/<skill-name>/SKILL.md`。入口文件包含 YAML 元数据头与 Markdown 指令：
 
 ```yaml
 ---
@@ -143,100 +120,69 @@ allowed-tools: Read Grep Glob Bash(python3 ${CLAUDE_SKILL_DIR}/scripts/check_sco
 ---
 ```
 
-The description is a trigger contract. State what the Skill does and when it
-applies using language a developer will actually use. Test requests that should
-trigger and near-miss requests that should not. Use
-`disable-model-invocation: true` when only an explicit `/skill-name` invocation
-should load it.
+描述是一份触发契约。用开发者实际会使用的语言说明技能做什么、何时适用。测试应该触发的请求，也测试看似接近却不该触发的请求。如果只能通过显式 `/skill-name` 调用加载，就使用 `disable-model-invocation: true`。
 
-`allowed-tools` pre-approves matching tools for the invocation turn. It does not
-restrict the available tool set, override deny rules, or persist as a session
-grant. Keep the pattern as narrow as the packaged procedure and review project
-Skills before accepting folder trust.
+`allowed-tools` 在调用轮次内预先批准匹配的工具。它不限制可用工具集合，不覆盖拒绝规则，也不会作为会话授权持续生效。模式应与技能包流程一样窄，并在信任文件夹前评审项目技能。
 
-Move detail out of `SKILL.md` and route to it deliberately:
+将细节移出 `SKILL.md`，并明确引导加载：
 
-| Skill file | Purpose | Load condition |
+| 技能文件 | 用途 | 加载条件 |
 |---|---|---|
-| `SKILL.md` | Trigger, core sequence, stop condition, output contract | When the Skill is invoked |
-| `references/review-checklist.md` | Detailed domain evidence | When the core sequence reaches review |
-| `scripts/check_scope.py` | Deterministic path validation | Before reading requested migration files |
-| `examples/accepted.md` | One representative output shape | When format is ambiguous |
+| `SKILL.md` | 触发条件、核心步骤、停止条件、输出契约 | 调用技能时 |
+| `references/review-checklist.md` | 详细领域证据 | 核心步骤进入评审时 |
+| `scripts/check_scope.py` | 确定性路径验证 | 读取请求中的迁移文件前 |
+| `examples/accepted.md` | 一种代表性的输出结构 | 格式不明确时 |
 
-Reference every supporting file from `SKILL.md` so Claude knows why and when to
-open it. Resolve bundled paths through `${CLAUDE_SKILL_DIR}` rather than assuming
-the current working directory. The shipped package under
-[`outputs/migration-review-skill/`](../outputs/migration-review-skill/) is a
-runnable example.
+在 `SKILL.md` 中引用每个辅助文件，让 Claude 知道为什么以及何时打开它。通过 `${CLAUDE_SKILL_DIR}` 解析包内路径，不要假定当前工作目录。交付的 [`outputs/migration-review-skill/`](../outputs/migration-review-skill/) 是可运行示例。
 
-### Use Commands for Explicit User Intent
+### 用命令表达明确用户意图（Use Commands for Explicit User Intent）
 
-Commands are useful when the user deliberately invokes a repeatable workflow.
-Define argument hints, allowed tools, and execution context. If a command needs
-isolation, use a forked context when supported and appropriate.
+用户主动调用可重复工作流时，命令很有用。定义参数提示、允许的工具与执行上下文。若命令需要隔离，在支持且适合时使用分叉上下文。
 
-Examples:
+例如：
 
-- review one migration file
-- generate an ADR from an interview
-- run a targeted test plan
-- inspect a failed CI trace
+- 评审一个迁移文件
+- 根据访谈生成架构决策记录（ADR）
+- 运行针对性测试计划
+- 检查失败的 CI 追踪
 
-Avoid commands that silently write, deploy, or use broad Bash access. The name
-and argument contract should make the consequence clear.
+避免使用会静默写入、部署或获得宽泛 Bash 访问的命令。名称和参数契约应清楚表明后果。
 
-For new work, implement that explicit workflow as a user-invocable Skill.
-Existing `.claude/commands/<name>.md` files still create `/<name>` and can migrate
-without breaking users. Prefer the Skill directory when the procedure needs
-scripts, references, templates, invocation controls, or distribution through a
-plugin.
+新工作应把这类显式工作流实现为用户可调用的技能。现有 `.claude/commands/<name>.md` 文件仍会创建 `/<name>`，可在不影响用户的情况下迁移。流程需要脚本、参考、模板、调用控制或插件分发时，优先使用技能目录。
 
-### Use Subagents as Bounded Evidence Gatherers
+### 让子智能体有边界地收集证据（Use Subagents as Bounded Evidence Gatherers）
 
-Run `/agents` to create and manage reusable subagent definitions. Store a
-project agent under `.claude/agents/` so its role is reviewed with the codebase.
-The `description` tells Claude when to delegate; `tools` restricts its tool pool;
-`maxTurns` supplies a hard turn budget; `isolation: worktree` gives an editing
-agent a separate checkout.
+运行 `/agents` 创建和管理可复用子智能体定义。项目智能体存入 `.claude/agents/`，让其角色与代码库一起接受评审。`description` 告诉 Claude 何时委派；`tools` 限制工具池；`maxTurns` 提供硬性轮次预算；`isolation: worktree` 为编辑智能体提供独立检出。
 
 ```markdown
 ---
 name: migration-auditor
-description: Audit migration safety when a change touches migrations/. Return evidence and blockers; do not edit.
+description: 当变更涉及 migrations/ 时，审查迁移安全性。返回证据和阻塞项；不要编辑文件。
 tools: Read, Grep, Glob, Bash
 maxTurns: 10
 isolation: worktree
 ---
 
-Inspect only the assigned migration and adjacent schema code.
-Stop after ten turns or twenty minutes, whichever comes first.
-Return JSON with status, evidence, blockers, and next_step.
-Never replace missing evidence with an assumption.
+只检查分配的迁移及相邻模式代码。
+十轮或二十分钟后停止，以先到者为准。
+返回包含 status、evidence、blockers 和 next_step 的 JSON。
+绝不以假设替代缺失的证据。
 ```
 
-A turn or time box is a stop condition, not evidence of completion. The parent
-session validates the result and owns integration. Require structured obstacle
-reporting so a subagent that cannot access a file returns `status: blocked`, the
-exact obstacle, attempted evidence, and a narrow `next_step` instead of silently
-widening tools or scope.
+轮次或时间上限是停止条件，不是完成证据。父会话验证结果并负责集成。要求结构化障碍报告：子智能体无法访问文件时，应返回 `status: blocked`、确切障碍、已尝试取得的证据以及小范围的 `next_step`，而不是静默扩大工具或任务范围。
 
-Use worktree isolation only when the subagent edits. A read-only researcher often
-needs only a separate context. Worktrees isolate files and branches, not network,
-credentials, shared Git metadata, or external systems.
+只有子智能体需要编辑时才使用工作树隔离。只读研究者通常只需独立上下文。工作树隔离文件和分支，不隔离网络、凭据、共享 Git 元数据或外部系统。
 
-### Distribute Through the Smallest Shared Surface
+### 通过最小共享范围分发（Distribute Through the Smallest Shared Surface）
 
-Choose distribution from the audience:
+根据受众选择分发方式：
 
-- Commit `.claude/skills/` and `.claude/agents/` for one repository.
-- Put skills, agents, hooks, and MCP definitions in a plugin when several
-  repositories need the same versioned bundle.
-- Publish plugins through a reviewed marketplace and pin a release or commit.
-- Use managed settings for organization policy and marketplace restrictions,
-  not as a dumping ground for every team's procedure.
+- 单个仓库使用时，提交 `.claude/skills/` 和 `.claude/agents/`。
+- 多个仓库需要同一个版本化包时，把技能、智能体、钩子和 MCP 定义放入插件。
+- 通过经过评审的市场发布插件，并固定发行版或提交。
+- 用托管设置实施组织政策和市场限制，不要把所有团队流程都堆入其中。
 
-A project can announce a marketplace and enable reviewed plugins in
-`.claude/settings.json`:
+项目可以在 `.claude/settings.json` 中声明市场并启用经过评审的插件：
 
 ```json
 {
@@ -252,64 +198,46 @@ A project can announce a marketplace and enable reviewed plugins in
 }
 ```
 
-Folder trust still matters, and managed `strictKnownMarketplaces` can restrict
-which sources users may add before any network or filesystem operation. Review
-publisher, version, components, scripts, hooks, MCP servers, permissions,
-updates, and rollback. Project defaults are team configuration; managed settings
-are non-overridable organization policy.
+文件夹信任仍然重要，托管的 `strictKnownMarketplaces` 可在任何网络或文件系统操作之前限制用户能添加的来源。评审发布者、版本、组件、脚本、钩子、MCP 服务器、权限、更新和回滚。项目默认值是团队配置；托管设置是不可覆盖的组织政策。
 
-### Use Path Rules as Local Policy
+### 使用路径规则表达局部政策（Use Path Rules as Local Policy）
 
-Path globs can express rules such as:
+路径通配模式（Glob）可表达以下规则：
 
-- API changes require contract tests
-- migration files are append-only
-- docs use a specific style
-- production configuration cannot contain literal secrets
+- API 修改需要契约测试
+- 迁移文件只能追加
+- 文档使用规定风格
+- 生产配置不能包含字面量密钥
 
-Test glob behavior. A rule that never matches creates false confidence. A glob
-that matches the whole repository recreates root-file bloat.
+测试通配模式的行为。永不匹配的规则会造成虚假信心；匹配整个仓库的模式则再次造成根文件膨胀。
 
-### Separate Planning, Exploration, and Execution
+### 分离规划、探索与执行（Separate Planning, Exploration, and Execution）
 
-Use plan mode when scope or strategy needs approval before mutation. Use an
-exploration subagent for read-only codebase questions that would otherwise bloat
-the main task. Execute directly when the change is already bounded and the next
-safe action is obvious.
+修改之前需要批准范围或策略时，使用规划模式。对于会使主任务上下文膨胀的只读代码库问题，使用探索子智能体。修改范围已经明确、下一步安全操作清楚时，直接执行。
 
-An interview pattern is useful when requirements are missing. Ask questions
-that materially change the implementation, record decisions, then build.
+需求缺失时可以采用访谈模式。提出会实质影响实现的问题，记录决策，然后构建。
 
-Examples and tests improve consistency when they demonstrate the actual
-acceptance boundary. Do not add examples that only repeat instructions.
+示例和测试只有展示实际验收边界，才能提高一致性。不要添加只是重复指令的示例。
 
-### Make Tests Part of the Conversation Contract
+### 让测试成为对话契约的一部分（Make Tests Part of the Conversation Contract）
 
-For a code task:
+对于代码任务：
 
-1. Identify the behavior and smallest relevant verification.
-2. Establish or write a failing test where practical.
-3. Make the bounded change.
-4. Run focused tests.
-5. Run broader gates proportional to risk.
-6. Inspect the actual artifact or behavior.
-7. Report exact evidence and remaining uncertainty.
+1. 确认行为和最小相关验证。
+2. 可行时建立或编写失败测试。
+3. 做有边界的修改。
+4. 运行针对性测试。
+5. 按风险运行更广泛的门禁。
+6. 检查实际交付物或行为。
+7. 报告确切证据和剩余不确定性。
 
-Claude can propose and execute this loop, but deterministic CI decides whether
-the gate passed.
+Claude 可以提出并执行这一循环，但门禁是否通过由确定性 CI 决定。
 
-### Hook Decisions Need Exact Contracts
+### 钩子决策需要精确契约（Hook Decisions Need Exact Contracts）
 
-Claude Code sends JSON to hooks. A command hook either exits `0` and prints one
-structured JSON object to stdout, or exits `2` and writes a blocking reason to
-stderr. Do not mix the two because JSON is parsed only on exit `0`. Exit `1` is
-non-blocking for most events.
+Claude Code 向钩子发送 JSON。命令钩子要么以 `0` 退出，并向 stdout 输出一个结构化 JSON 对象；要么以 `2` 退出，并向 stderr 写入阻止原因。不要混用，因为仅在退出码为 `0` 时才解析 JSON。对大多数事件，退出码 `1` 不会阻止执行。
 
-Event schemas are not interchangeable. `PreToolUse` uses
-`hookSpecificOutput.permissionDecision` with `allow`, `deny`, `ask`, or `defer`.
-`PermissionRequest` uses `hookSpecificOutput.decision.behavior` with `allow` or
-`deny`. Configured deny and ask rules are still evaluated; an allow result does
-not override a matching deny rule.
+事件模式不能互换。`PreToolUse` 使用 `hookSpecificOutput.permissionDecision`，值为 `allow`、`deny`、`ask` 或 `defer`。`PermissionRequest` 使用 `hookSpecificOutput.decision.behavior`，值为 `allow` 或 `deny`。配置中的拒绝与询问规则仍会被评估；允许结果不能覆盖匹配的拒绝规则。
 
 ```json
 {
@@ -323,78 +251,58 @@ not override a matching deny rule.
 }
 ```
 
-Confirm whether exit `2` can block the chosen event. It blocks `PreToolUse` and
-denies `PermissionRequest`; it cannot undo an action observed by `PostToolUse`.
+确认退出码 `2` 能否阻止所选事件。它可以阻止 `PreToolUse`，拒绝 `PermissionRequest`，却不能撤销 `PostToolUse` 已观察到的操作。
 
-### Design Headless CI as a Fresh Reviewer
+### 将无头 CI 设计为全新的评审者（Design Headless CI as a Fresh Reviewer）
 
-Headless Claude Code can run non-interactively with print mode and structured
-output. Verify current flags and schemas before use. Durable principles:
+无头 Claude Code 可使用打印模式和结构化输出进行非交互运行。使用前核实当前标志与模式。长期适用的原则是：
 
-- start from a clean commit and declared inputs
-- use least-privilege tools and settings
-- pin or record the model and configuration
-- set time, turn, and cost bounds
-- request JSON or schema-constrained output
-- separate findings generation from change application
-- run independent review where required
-- include prior findings explicitly when checking remediation
-- make deterministic tests and policy gates authoritative
+- 从干净提交和声明输入开始
+- 使用最小权限的工具与设置
+- 固定或记录模型与配置
+- 设置时间、轮次和成本边界
+- 请求 JSON 或受模式约束的输出
+- 将发现生成与修改应用分离
+- 需要时运行独立评审
+- 检查修复时显式包含先前发现
+- 让确定性测试与政策门禁拥有最终判定权
 
-CI should not inherit an interactive developer session. Reproducibility requires
-fresh state.
+CI 不应继承交互式开发者会话。可复现性要求全新状态。
 
-Product note, verified 2026-08-09: Anthropic's managed Code Review product is a
-research preview for Team and Enterprise plans. It and the official GitHub
-Action are separate operational choices. Managed Code Review reports
-pull-request findings but does not approve or block.
-`anthropics/claude-code-action@v1` runs inside a repository workflow with
-explicit event, GitHub permissions, secret source, settings, tools, model, and
-turn bounds. Neither replaces deterministic gates or the protected merge path.
+产品说明，核实于 2026-08-09：Anthropic 的托管 Code Review 产品是面向 Team 和 Enterprise 套餐的研究预览版。它与官方 GitHub Action 是不同的运维选择。托管 Code Review 报告拉取请求发现，但不批准或阻止合并。`anthropics/claude-code-action@v1` 在仓库工作流中运行，明确配置事件、GitHub 权限、密钥来源、设置、工具、模型和轮次边界。二者均不替代确定性门禁或受保护的合并路径。
 
-### Preserve Findings Across Runs
+### 跨运行保留发现（Preserve Findings Across Runs）
 
-If one run finds issues and another verifies fixes, store findings as structured
-artifacts with stable IDs, files, evidence, severity, and status. Passing only a
-natural-language summary can lose the exact claim being verified.
+若一次运行发现问题，另一次验证修复，应把发现存为结构化交付物，包含稳定 ID、文件、证据、严重程度和状态。只传自然语言摘要可能丢失正在验证的确切主张。
 
-The remediation review receives the original finding, current diff, relevant
-tests, and acceptance rule. It does not need the entire original conversation.
+修复评审收到原始发现、当前差异、相关测试和验收规则，不需要原始完整对话。
 
-## Build It
+## 动手实现（Build It）
 
-## Interactive Lab
+## 交互实验（Interactive Lab）
 
 ```figure
 19-memory-rule-precedence
 ```
 
-Use the precedence explorer to route stable project facts, path-specific
-guidance, reusable Skills, commands, and deterministic hooks to their narrowest
-true scope. Conflicting layers show why hidden local policy cannot govern CI.
+使用优先级探索器，将稳定项目事实、路径专用指导、可复用技能、命令和确定性钩子放到真正适用的最窄作用域。冲突层级会展示为什么隐藏的本地政策不能支配 CI。
 
-## Practice Lab
+## 实践实验（Practice Lab）
 
-Break one documented path glob, inspect which fixture paths load the rule, and
-repair scope without moving narrow guidance back to the root file. Then run the
-shipped Skill checker with one migration path and one traversal attempt:
+破坏一个已记录的路径通配模式，检查哪些夹具路径会加载规则，然后修复作用域，不要把窄范围指导移回根文件。再分别用一个迁移路径和一次目录穿越尝试运行附带的技能检查器：
 
 ```bash
 python3 outputs/migration-review-skill/scripts/check_scope.py migrations/2026_add_index.sql
 python3 outputs/migration-review-skill/scripts/check_scope.py ../secrets.sql
 ```
 
-## Shipped Artifact
+## 交付物（Shipped Artifact）
 
-The filled [`outputs/configuration-scope-audit.md`](../outputs/configuration-scope-audit.md)
-records tested glob fixtures, one allow and deny boundary, a bounded subagent,
-plugin distribution, exact hook output, and the fresh CI contract. The
-[`outputs/migration-review-skill/`](../outputs/migration-review-skill/) directory
-ships an actual `SKILL.md`, deterministic script, and on-demand reference.
+填写完成的 [`outputs/configuration-scope-audit.md`](../outputs/configuration-scope-audit.md) 记录已测试的通配夹具、一组允许与拒绝边界、有边界的子智能体、插件分发、确切钩子输出以及全新 CI 契约。[`outputs/migration-review-skill/`](../outputs/migration-review-skill/) 目录交付真正的 `SKILL.md`、确定性脚本和按需参考资料。
 
-## Verify It
+## 验证（Verify It）
 
-Verify it without Claude, network access, or credentials:
+不使用 Claude、网络或凭据即可验证：
 
 ```bash
 cd certifications/claude/lessons/19-claude-code-memory-rules-skills-and-ci
@@ -402,151 +310,132 @@ python3 code/main.py
 python3 -m unittest discover -s code/tests -v
 ```
 
-The quiz checks mechanism selection and CI remediation.
+测验检查机制选择与 CI 修复。
 
-## Capstone Connection
+## 综合实践衔接（Capstone Connection）
 
-Reuse the result in the Architect Foundations capstone's Claude Code
-configuration section.
+在架构师基础（Architect Foundations）综合实践的 Claude Code 配置章节复用结果。
 
-Design a team configuration for a repository with Python API code, database
-migrations, and documentation.
+为包含 Python API 代码、数据库迁移和文档的仓库设计团队配置。
 
-### Root Guidance
+### 根级指导（Root Guidance）
 
-Keep it under one readable page. Include project map, canonical commands,
-security constraints, and links to path rules.
+限制在可读的一页以内，包含项目地图、标准命令、安全约束以及路径规则链接。
 
-### Path Rules
+### 路径规则（Path Rules）
 
-Create separate rules for:
+分别为以下路径创建规则：
 
-- `src/api/**`: contract and authorization tests
-- `migrations/**`: append-only and rollback requirements
-- `docs/**`: style and link checks
+- `src/api/**`：契约与授权测试
+- `migrations/**`：仅追加与回滚要求
+- `docs/**`：风格与链接检查
 
-### Skills and Commands
+### 技能与命令（Skills and Commands）
 
-Install the shipped migration-review package as
-`.claude/skills/migration-review/`, test one trigger and near miss, and preserve
-its narrow `allowed-tools` grant. Migrate the explicit `/adr` command to a Skill
-when it needs templates or scripts.
+将附带的迁移评审技能包安装为 `.claude/skills/migration-review/`，测试一个应触发和一个接近但不应触发的请求，并保留窄范围的 `allowed-tools` 预批准。显式 `/adr` 命令需要模板或脚本时，将其迁移为技能。
 
-Define one read-only migration-auditor through `/agents`. Give it `maxTurns`, a
-structured `status` / `evidence` / `blockers` / `next_step` result, and a rule to
-stop rather than assume when evidence is missing.
+通过 `/agents` 定义一个只读迁移审计者。为它设置 `maxTurns`，结构化的 `status` / `evidence` / `blockers` / `next_step` 结果，以及证据缺失时停止而不是假设的规则。
 
-### Hooks
+### 钩子（Hooks）
 
-- pre-write: block files outside declared scope
-- post-edit: run the formatter only on edited files
-- pre-Bash: deny destructive or secret-printing commands
-- stop: require exact verification evidence
+- 写入前：阻止超出声明范围的文件
+- 编辑后：只对已编辑文件运行格式化工具
+- Bash 前：拒绝破坏性命令或打印密钥的命令
+- 停止时：要求确切验证证据
 
-### CI Review
+### CI 评审（CI Review）
 
-Run a fresh read-only review that emits JSON findings. A separate job applies
-deterministic tests and policy checks. Store both artifacts.
+从全新状态运行只读评审，输出 JSON 发现。由独立作业执行确定性测试与政策检查，并保存两份交付物。
 
-Then test configuration debugging: introduce a path glob that fails to match and
-prove your audit catches it.
+然后测试配置调试：引入一个无法匹配的路径通配模式，证明审计能够发现。
 
-## Use It
+## 实际应用（Use It）
 
-Configuration should be reviewed like code. Changes can alter permissions,
-context, tools, and automated behavior.
+配置应像代码一样接受评审。配置变化可能改变权限、上下文、工具和自动行为。
 
-Require review for:
+以下情况需要评审：
 
-- new MCP servers or plugins
-- broader tool permissions
-- hooks with write or command effects
-- model or provider changes
-- new imports and path patterns
-- Skills that reach external systems
-- agents with broader tools, higher turn bounds, or worktree isolation
-- plugin marketplaces, enabled plugins, and automatic update policy
-- CI workflows that can apply changes
+- 新增 MCP 服务器或插件
+- 扩大工具权限
+- 具有写入或命令效果的钩子
+- 更换模型或服务商
+- 新增导入和路径模式
+- 访问外部系统的技能
+- 使用更广工具、更高轮次上限或工作树隔离的智能体
+- 插件市场、启用的插件及自动更新政策
+- 能够应用修改的 CI 工作流
 
-Record current behavior with small fixture tasks. A configuration test might
-assert that migration guidance loads only for migration paths, a dangerous
-command is blocked, and a review command returns the expected schema.
+通过小型夹具任务记录当前行为。配置测试可以断言：迁移指导只对迁移路径加载，危险命令被阻止，评审命令返回预期模式。
 
-## Exam Decision Patterns
+## 考试决策模式（Exam Decision Patterns）
 
-When instructions are too large or apply only to some files, move them to scoped
-rules or Skills. When a condition must never be violated, use deterministic
-settings, permissions, hooks, or CI rather than stronger prompt wording.
+指令太大或只适用于部分文件时，移到限定作用域的规则或技能。某个条件绝不能违反时，使用确定性设置、权限、钩子或 CI，而不是加强提示词措辞。
 
-Prefer answers that:
+优先选择以下答案：
 
-- keep `CLAUDE.md` concise and versioned
-- use imports and path-specific rules for narrow guidance
-- package reusable workflows as Skills or explicit commands
-- author Skill trigger descriptions, supporting files, and narrow invocation grants
-- bound subagents by tool set, turns, ownership, and structured obstacle reports
-- distribute one-project configuration directly and cross-project bundles as reviewed plugins
-- fork context for isolated command work where needed
-- use plan or exploration before broad edits
-- run headless CI from clean state with structured output
-- verify remediation against prior finding IDs
+- 保持 `CLAUDE.md` 精简并纳入版本管理
+- 用导入和路径专用规则提供窄范围指导
+- 把可复用工作流打包为技能或显式命令
+- 编写技能触发描述、辅助文件和窄范围调用预批准
+- 用工具集、轮次、归属和结构化障碍报告约束子智能体
+- 直接分发单项目配置，将跨项目包作为经过评审的插件分发
+- 需要时为隔离的命令工作分叉上下文
+- 大范围编辑前先规划或探索
+- 从干净状态运行无头 CI，并提供结构化输出
+- 对照先前发现 ID 验证修复
 
-## Common Traps
+## 常见陷阱（Common Traps）
 
-### Root File as Encyclopedia
+### 把根文件当百科全书（Root File as Encyclopedia）
 
-Everything loads everywhere. Important constraints compete with irrelevant
-detail and decay without ownership.
+所有内容到处加载。重要约束与无关细节争夺注意力，也会因缺少负责人而逐渐失效。
 
-### Private Configuration as Team Policy
+### 把私有配置当团队政策（Private Configuration as Team Policy）
 
-Local behavior cannot be reviewed or reproduced in CI. Put shared decisions in
-project scope.
+本地行为无法评审，也不能在 CI 中复现。共享决策应放在项目作用域。
 
-### Hook as Hidden Build System
+### 把钩子当隐藏构建系统（Hook as Hidden Build System）
 
-Opaque automation makes commands surprising and failures hard to localize. Keep
-hooks small and observable.
+不透明自动化会让命令行为出乎意料，使失败难以定位。保持钩子小巧且可观测。
 
-### AI Review as the Only Gate
+### 将 AI 评审作为唯一门禁（AI Review as the Only Gate）
 
-Model findings support judgment. Deterministic tests, schemas, security policy,
-and approvals enforce invariants.
+模型发现辅助判断；确定性测试、模式、安全政策和审批负责强制不变条件。
 
-## Exercises
+## 练习（Exercises）
 
-1. Reduce an overgrown root instruction file to a one-page router.
-2. Design path rules and write fixture paths that prove each glob matches.
-3. Turn a 200-line workflow prompt into a multi-file Skill with a trigger test, reference file, and deterministic script.
-4. Create a read-only subagent through `/agents`; cap turns and test its blocked obstacle report.
-5. Validate a `PreToolUse` denial and a `PermissionRequest` denial using their distinct JSON shapes.
-6. Package the Skill and agent as a plugin, pin it in a test marketplace, and document rollback.
-7. Create a read-only headless review schema with stable finding IDs.
+1. 把膨胀的根指令文件缩成一页导航。
+2. 设计路径规则，并编写能证明每个通配模式匹配行为的夹具路径。
+3. 将 200 行工作流提示词改为多文件技能，包含触发测试、参考文件和确定性脚本。
+4. 通过 `/agents` 创建只读子智能体；限制轮次并测试其被阻塞时的障碍报告。
+5. 使用各自不同的 JSON 结构，验证 `PreToolUse` 拒绝和 `PermissionRequest` 拒绝。
+6. 将技能与智能体打包为插件，在测试市场固定版本，并记录回滚步骤。
+7. 创建只读无头评审模式，包含稳定的发现 ID。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语 | 常见说法 | 实际含义 |
 |------|-----------------|------------------------|
-| CLAUDE.md | Permanent model memory | Versioned project guidance loaded according to documented scope |
-| Path rule | Extra prompt | Guidance activated only for matching file paths |
-| Skill | A command alias | A reusable process with instructions, references, tools, and outputs loaded on demand |
-| Command | Automation magic | An explicit user-invoked workflow with arguments, tools, and context behavior |
-| `allowed-tools` | A sandbox | A temporary pre-approval for matching tools during the Skill invocation turn |
-| Subagent | Unlimited parallel worker | A separate context with a declared role, tools, turn budget, and result contract |
-| Plugin | A prompt file | A versioned bundle of Skills, agents, hooks, MCP servers, and related configuration |
-| Hook | Model instruction | Deterministic code around a lifecycle event |
-| Headless mode | Interactive chat without UI | Non-interactive execution from declared inputs with machine-readable output |
+| CLAUDE.md | 永久模型记忆 | 按文档规定作用域加载的版本化项目指导 |
+| 路径规则（Path rule） | 额外提示词 | 仅对匹配文件路径激活的指导 |
+| 技能（Skill） | 命令别名 | 按需加载指令、参考、工具和输出的可复用流程 |
+| 命令（Command） | 自动化魔法 | 具有参数、工具及上下文行为的用户显式调用工作流 |
+| `allowed-tools` | 沙箱 | 在技能调用轮次内对匹配工具的临时预批准 |
+| 子智能体（Subagent） | 无限并行工作者 | 具有声明角色、工具、轮次预算和结果契约的独立上下文 |
+| 插件（Plugin） | 提示词文件 | 技能、智能体、钩子、MCP 服务器及相关配置的版本化包 |
+| 钩子（Hook） | 模型指令 | 围绕生命周期事件运行的确定性代码 |
+| 无头模式（Headless mode） | 没有界面的交互聊天 | 基于声明输入、输出机器可读结果的非交互执行 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [Claude Code memory documentation](https://code.claude.com/docs/en/memory)
-- [Claude Code Skills](https://code.claude.com/docs/en/skills)
-- [Claude Code subagents](https://code.claude.com/docs/en/sub-agents)
-- [Claude Code worktrees](https://code.claude.com/docs/en/worktrees)
-- [Claude Code settings](https://code.claude.com/docs/en/settings)
-- [Claude Code plugin marketplaces](https://code.claude.com/docs/en/plugin-marketplaces)
-- [Claude Code hooks](https://code.claude.com/docs/en/hooks)
-- [Claude Code managed Code Review](https://code.claude.com/docs/en/code-review)
+- [Claude Code 记忆文档（memory documentation）](https://code.claude.com/docs/en/memory)
+- [Claude Code 技能（Skills）](https://code.claude.com/docs/en/skills)
+- [Claude Code 子智能体（subagents）](https://code.claude.com/docs/en/sub-agents)
+- [Claude Code 工作树（worktrees）](https://code.claude.com/docs/en/worktrees)
+- [Claude Code 设置（settings）](https://code.claude.com/docs/en/settings)
+- [Claude Code 插件市场（plugin marketplaces）](https://code.claude.com/docs/en/plugin-marketplaces)
+- [Claude Code 钩子（hooks）](https://code.claude.com/docs/en/hooks)
+- [Claude Code 托管 Code Review](https://code.claude.com/docs/en/code-review)
 - [Claude Code GitHub Actions](https://code.claude.com/docs/en/github-actions)
-- [Claude Code headless mode](https://code.claude.com/docs/en/headless)
-- Phase 14, Lessons 33 through 38 for executable instructions, state, scope, and verification
+- [Claude Code 无头模式（headless mode）](https://code.claude.com/docs/en/headless)
+- 阶段 14，第 33 至 38 课：可执行指令、状态、范围与验证

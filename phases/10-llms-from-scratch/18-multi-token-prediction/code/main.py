@@ -1,14 +1,14 @@
-"""DeepSeek-V3 Multi-Token Prediction (MTP) module — stdlib Python.
+"""DeepSeek-V3 多词元预测（Multi-Token Prediction，MTP）模块，使用 Python 标准库。
 
-Implements:
-  - shared embedding table (used by main model and every MTP module)
-  - per-depth MTP module: projection + 1-block transformer + shared head
-  - joint MTP loss across depths
-  - parameter-count accounting (per module, shared, total)
-  - a toy sequential evaluation that matches DeepSeek-V3's Section 2.2 equations
+实现内容:
+  - 共享嵌入表（Embedding table），供主模型和每个 MTP 模块使用
+  - 各深度的 MTP 模块: 投影 + 1 个 Transformer 块 + 共享输出头
+  - 跨深度联合 MTP 损失
+  - 参数量核算（各模块、共享部分、总计）
+  - 与 DeepSeek-V3 第 2.2 节公式一致的小型顺序评估
 
-Pedagogical: single-head linear-projection attention, element-wise SwiGLU.
-The goal is to show the structure of the MTP module, not to train a real LLM.
+教学简化: 单头线性投影注意力、逐元素 SwiGLU。
+目标是展示 MTP 模块结构，而非训练真实 LLM。
 """
 
 from __future__ import annotations
@@ -62,14 +62,14 @@ def softmax(row: List[float]) -> List[float]:
 
 @dataclass
 class MTPModule:
-    """A single depth-k MTP module."""
+    """深度为 k 的单个 MTP 模块。"""
     hidden: int
     ff: int
-    # Projection M_k: input is concat of 2 RMSNorm'd vectors of size h. We
-    # approximate the concat as addition to keep the toy manageable while
-    # preserving the projection structure.
+    # 投影（Projection）M_k: 输入为 2 个经 RMSNorm 处理、大小为 h 的向量的拼接。
+    # 为让小型示例易于处理，同时保留投影结构，
+    # 此处用相加近似拼接（Concatenation）。
     M_k: List[List[float]]
-    # Transformer block: attention q/k/v/out + SwiGLU MLP
+    # Transformer 块: 注意力 q/k/v/out + SwiGLU 多层感知机（MLP）
     Wq: List[List[float]]
     Wk: List[List[float]]
     Wv: List[List[float]]
@@ -95,9 +95,8 @@ def make_mtp_module(hidden: int, ff: int, rng: random.Random) -> MTPModule:
 
 def attention_single(v_in: List[float], Wq: List[List[float]], Wk: List[List[float]],
                      Wv: List[List[float]], Wo: List[List[float]]) -> List[float]:
-    """One-token self-attention stand-in. For a full sequence you would
-    attend over K_cache; here the toy uses a degenerate q=k=self to keep
-    the structure visible. A full implementation is a drop-in replacement."""
+    """单词元自注意力（Self-attention）的模拟实现。完整序列应对 K_cache 计算注意力；
+    此处使用退化的 q=k=self，让结构清晰可见。可直接替换为完整实现。"""
     q = matvec(Wq, v_in)
     k = matvec(Wk, v_in)
     v = matvec(Wv, v_in)
@@ -109,9 +108,9 @@ def attention_single(v_in: List[float], Wq: List[List[float]], Wk: List[List[flo
 
 def mtp_forward(prev_hidden: List[float], next_embed: List[float],
                 module: MTPModule) -> List[float]:
-    """Equation from DeepSeek-V3 Section 2.2:
+    """DeepSeek-V3 第 2.2 节的公式:
         h^(k) = T_k( M_k * [RMSNorm(h^(k-1)); RMSNorm(E(t_{i+k}))] )
-    We use addition as a toy stand-in for concat + linear."""
+    本示例用相加模拟拼接 + 线性变换。"""
     a = rms_norm(prev_hidden)
     b = rms_norm(next_embed)
     folded = add(a, b)
@@ -124,7 +123,7 @@ def mtp_forward(prev_hidden: List[float], next_embed: List[float],
 
 
 def shared_head_logits(hidden: List[float], E: List[List[float]]) -> List[float]:
-    """Tied LM head: reuse the embedding table transposed. logits[v] = E_v . hidden."""
+    """权重绑定的语言模型头（Tied LM head）: 复用转置后的嵌入表。logits[v] = E_v . hidden。"""
     return [sum(E[v][i] * hidden[i] for i in range(len(hidden)))
             for v in range(len(E))]
 
@@ -137,12 +136,12 @@ def cross_entropy(logits: List[float], target: int) -> float:
 def mtp_loss(backbone_hidden: List[List[float]], tokens: List[int],
              modules: List[MTPModule], E: List[List[float]],
              lam: float) -> tuple[float, List[float]]:
-    """Compute joint MTP loss over D depths.
+    """计算 D 个深度上的联合 MTP 损失。
 
-    backbone_hidden[i] is h_i^(0), the main-model output at position i.
-    modules[k-1] is the depth-k MTP module.
-    tokens[i] is t_i. We want to predict t_{i+1}, t_{i+2}, ..., t_{i+D} for
-    each i such that i + D is in range.
+    backbone_hidden[i] 为 h_i^(0)，即主模型在位置 i 的输出。
+    modules[k-1] 是深度为 k 的 MTP 模块。
+    tokens[i] 为 t_i。对每个满足 i + D 在范围内的 i，
+    预测 t_{i+1}, t_{i+2}, ..., t_{i+D}。
     """
     D = len(modules)
     per_depth = [0.0] * D
@@ -202,7 +201,7 @@ def fmt(n: int) -> str:
 def main() -> None:
     rng = random.Random(23)
     print("=" * 70)
-    print("MULTI-TOKEN PREDICTION — DeepSeek-V3 sequential MTP (Phase 10, Lesson 18)")
+    print("多词元预测（Multi-Token Prediction）— DeepSeek-V3 顺序 MTP（阶段 10，第 18 课）")
     print("=" * 70)
     print()
 
@@ -214,7 +213,7 @@ def main() -> None:
     lam = 0.3
 
     print("-" * 70)
-    print(f"Step 1: toy setup  vocab={vocab}, hidden={hidden}, ff={ff}, seq={seq}, D={D}")
+    print(f"步骤 1: 小型示例配置  vocab={vocab}, hidden={hidden}, ff={ff}, seq={seq}, D={D}")
     print("-" * 70)
 
     E = rand_matrix(vocab, hidden, rng, scale=0.2)
@@ -227,14 +226,14 @@ def main() -> None:
     modules = [make_mtp_module(hidden, ff, rng) for _ in range(D)]
 
     total, per_depth = mtp_loss(backbone_hidden, tokens, modules, E, lam=lam)
-    print(f"  per-depth losses   : "
+    print(f"  各深度损失 : "
           + ", ".join(f"L_{k+1}={loss:.3f}" for k, loss in enumerate(per_depth)))
-    print(f"  joint L_MTP (lam={lam})  : {total:.4f}")
-    print(f"  (uniform random-guess reference: {math.log(vocab):.3f} per depth)")
+    print(f"  联合损失 L_MTP (lam={lam})  : {total:.4f}")
+    print(f"  （均匀随机猜测参考值: 每深度 {math.log(vocab):.3f}）")
     print()
 
     print("-" * 70)
-    print("Step 2: parameter accounting")
+    print("步骤 2: 参数量核算（Parameter accounting）")
     print("-" * 70)
     for name, h, ff_h, L, D_h in [
         ("toy",       hidden, ff, 2, D),
@@ -246,17 +245,17 @@ def main() -> None:
         r = count_parameters(vocab=128000 if name != "toy" else vocab,
                              hidden=h, ff=ff_h, n_layers=L, D=D_h)
         print(f"  {name:<22} main={fmt(r.main_total):>7}  "
-              f"+ {D_h} MTP module(s) = {fmt(r.mtp_total):>6}  "
-              f"({100.0 * r.mtp_total / r.main_total:.1f}% overhead)")
+              f"+ {D_h} 个 MTP 模块 = {fmt(r.mtp_total):>6}  "
+              f"({100.0 * r.mtp_total / r.main_total:.1f}% 额外开销）")
     print()
 
     print("-" * 70)
-    print("Step 3: per-depth loss vs training progress (synthetic)")
+    print("步骤 3: 各深度损失与训练进度（合成数据）")
     print("-" * 70)
-    print("  simulate a training step: reduce noise in backbone hidden states")
-    print("  and watch L_1 and L_2 both drop.")
+    print("  模拟一个训练步: 减少主干隐藏状态（Backbone hidden states）中的噪声，")
+    print("  观察 L_1 和 L_2 同时下降。")
     print()
-    print(f"  {'noise':>7}  {'L_1':>6}  {'L_2':>6}  {'L_MTP':>7}")
+    print(f"  {'噪声（noise）':>7}  {'L_1':>6}  {'L_2':>6}  {'L_MTP':>7}")
     for noise_scale in (0.50, 0.30, 0.15, 0.05):
         local_rng = random.Random(42)
         bh = [rms_norm(add(E[tokens[i]],
@@ -268,10 +267,10 @@ def main() -> None:
         print(f"  {noise_scale:>7.2f}  {l1:>6.3f}  {l2:>6.3f}  {total:>7.4f}")
     print()
 
-    print("takeaway: DeepSeek-V3 MTP adds ~1-2% parameters for a dense model and")
-    print("          ~14B out of 671B for the MoE model. Denser training signal +")
-    print("          free speculative-decoding draft at inference (80%+ accept)")
-    print("          with reported 1.8x throughput speedup.")
+    print("要点: DeepSeek-V3 MTP 为稠密模型（Dense model）增加 ~1-2% 的参数，")
+    print("          在混合专家（MoE）模型的 671B 参数中占 ~14B。更密集的训练信号，")
+    print("          加上推理时可直接复用的推测解码草稿（80%+ 接受率），")
+    print("          据报告可带来 1.8x 吞吐量加速。")
 
 
 if __name__ == "__main__":

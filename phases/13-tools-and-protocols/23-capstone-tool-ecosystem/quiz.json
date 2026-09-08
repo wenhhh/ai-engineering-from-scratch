@@ -1,34 +1,34 @@
 {
   "lesson": "23-capstone-tool-ecosystem",
-  "title": "Capstone: Stateless Tool Ecosystem",
+  "title": "综合项目：无状态工具生态系统（Capstone: Stateless Tool Ecosystem）",
   "questions": [
     {
       "stage": "pre",
-      "question": "What does a successful run of this lesson's stdlib harness prove?",
+      "question": "本课标准库测试框架成功运行证明什么？",
       "options": [
-        "The in-process policy and data flow behaved as asserted",
-        "A real MCP transport completed initialization",
-        "An OAuth authorization server issued a valid token",
-        "A collector received every OpenTelemetry span"
+        "进程内策略和数据流符合断言",
+        "真实 MCP 传输完成初始化",
+        "OAuth 授权服务器签发有效令牌",
+        "收集器收到每个 OpenTelemetry 跨度"
       ],
       "correct": 0,
-      "explanation": "The harness uses Python functions, static tokens, fixtures, and in-memory spans. It validates those local boundaries while leaving protocol, authorization, export, browser, and sandbox integration to later tests."
+      "explanation": "框架使用 Python 函数、静态令牌、夹具和内存跨度。它验证本地边界，将协议、授权、导出、浏览器和沙箱集成留给后续测试。"
     },
     {
       "stage": "check",
-      "question": "Which flow matches MCP revision 2026-07-28 for discovering a server and polling long-running work?",
+      "question": "哪条流程符合 MCP 修订 2026-07-28 的服务器发现和长任务轮询？",
       "options": [
-        "server/connect, tools/poll, tasks/status",
-        "server/discover, tools/call returning a task handle, tasks/get",
-        "initialize, tools/call, tasks/result",
-        "GET /mcp, tools/call, tasks/list"
+        "server/connect、tools/poll、tasks/status",
+        "server/discover、tools/call 返回任务句柄、tasks/get",
+        "initialize、tools/call、tasks/result",
+        "GET /mcp、tools/call、tasks/list"
       ],
       "correct": 1,
-      "explanation": "The stateless revision uses mandatory `server/discover`. The optional `io.modelcontextprotocol/tasks` extension returns a task handle and uses `tasks/get`; a terminal task carries its final result. The old handshake, GET endpoint, `tasks/result`, and `tasks/list` are not in this flow."
+      "explanation": "无状态修订使用必需的 `server/discover`。可选 `io.modelcontextprotocol/tasks` 扩展返回任务句柄并使用 `tasks/get`；终态任务携带最终结果。旧握手、GET 端点、`tasks/result` 和 `tasks/list` 不属于此流程。"
     },
     {
       "stage": "check",
-      "question": "How does A2A v1 name the send-message operation in its gRPC and JSON-RPC bindings?",
+      "question": "A2A v1 在 gRPC 和 JSON-RPC 绑定中如何命名发送消息操作？",
       "options": [
         "AgentMessage",
         "message/create",
@@ -36,11 +36,11 @@
         "SendMessage"
       ],
       "correct": 3,
-      "explanation": "A2A v1 uses `SendMessage` for gRPC and JSON-RPC. Its HTTP+JSON binding exposes `POST /message:send`."
+      "explanation": "A2A v1 在 gRPC 和 JSON-RPC 使用 `SendMessage`。HTTP+JSON 绑定公开 `POST /message:send`。"
     },
     {
       "stage": "check",
-      "question": "Which MCP Apps SDK call lets an App request a tool on its originating server?",
+      "question": "哪项 MCP Apps SDK 调用让 App 请求源服务器上的工具？",
       "options": [
         "host.callTool(name, args)",
         "app.callServerTool({ name, arguments })",
@@ -48,31 +48,31 @@
         "server.tools.call(args)"
       ],
       "correct": 1,
-      "explanation": "The App instance calls `callServerTool` with an object containing `name` and optional `arguments`; the host proxies the underlying `tools/call` request."
+      "explanation": "App 实例调用 `callServerTool`，传入含 `name` 和可选 `arguments` 的对象；宿主代理底层 `tools/call` 请求。"
     },
     {
       "stage": "post",
-      "question": "What authority does the capstone Agent Skill provide over MCP tools and the sandbox?",
+      "question": "综合项目 Agent Skill 对 MCP 工具和沙箱提供什么权限？",
       "options": [
-        "It bypasses approval after explicit invocation",
-        "It grants every tool named in the body",
-        "It grants read-only network access",
-        "None; host adapters and policy still authorize each capability"
+        "显式调用后绕过批准",
+        "授予正文中所有工具",
+        "授予只读网络访问",
+        "不提供；宿主适配器和策略仍授权每项能力"
       ],
       "correct": 3,
-      "explanation": "A skill supplies procedure. Discovery, invocation, tool exposure, authorization, credentials, and isolation are enforced by the host and external runtime boundaries."
+      "explanation": "技能提供规程。发现、调用、工具公开、授权、凭据和隔离由宿主及外部运行时边界执行。"
     },
     {
       "stage": "post",
-      "question": "Which evidence best proves that telemetry crossed the production export boundary?",
+      "question": "哪项证据最能证明遥测跨越生产导出边界？",
       "options": [
-        "A skill instruction saying to emit spans",
-        "A local dictionary containing a traceId key",
-        "A diagram of the intended span hierarchy",
-        "Receiver-side collector data with trace and parent assertions"
+        "要求发出跨度的技能指令",
+        "包含 traceId 键的本地字典",
+        "预期跨度层级图",
+        "具有追踪和父级断言的接收端收集器数据"
       ],
       "correct": 3,
-      "explanation": "A receiver-side observation proves the SDK, propagator, exporter, transport, and collector path worked. Local data and diagrams prove only local construction or intent."
+      "explanation": "接收端观察证明 SDK、传播器、导出器、传输和收集器路径有效。本地数据和图只证明本地构造或意图。"
     }
   ]
 }

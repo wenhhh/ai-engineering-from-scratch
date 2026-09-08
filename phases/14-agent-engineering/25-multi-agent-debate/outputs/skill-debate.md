@@ -1,32 +1,32 @@
 ---
 name: debate
-description: Scaffold a multi-agent debate with N debaters, R rounds, configurable topology (full mesh, star, ring), and a convergence rule.
+description: 搭建多智能体辩论骨架，包含 N 个辩论者、R 轮、可配置拓扑（全连接、星形、环形）及收敛规则。
 version: 1.0.0
 phase: 14
 lesson: 25
 tags: [debate, multi-agent, society-of-minds, sparse-topology]
 ---
 
-Given a question class and accuracy target, scaffold a debate protocol.
+给定问题类别和准确率目标，搭建辩论协议骨架。
 
-Produce:
+产出：
 
-1. `Debater` with different prompts (and ideally different models) to avoid homogenization.
-2. Round runner: full mesh, star, or ring topology.
-3. Convergence rule: majority-vote, weighted by confidence, or supermajority-with-fallback.
-4. Round 1 forced disagreement: every debater returns a distinct proposal if possible.
-5. Cost accounting: total critique ops + token cost per question.
+1. 使用不同提示词、最好也使用不同模型的 `Debater`，避免同质化。
+2. 轮次运行器：全连接、星形或环形拓扑。
+3. 收敛规则：多数投票、置信度加权，或带回退机制的超多数。
+4. 第 1 轮强制分歧：每个辩论者尽可能返回不同提议。
+5. 成本核算：每个问题的批评操作总数和词元成本。
 
-Hard rejects:
+必须拒绝的设计：
 
-- All debaters with the same prompt AND same model. Guaranteed groupthink.
-- Full mesh with N >= 6 without checking cost. Debate ops scale O(N*R).
-- No convergence rule. Returning the round-R answer of debater 0 is not convergence.
+- 所有辩论者同时使用相同提示词和相同模型。这必然产生群体思维。
+- N >= 6 时未经成本检查就采用全连接。辩论操作按 O(N*R) 扩展。
+- 没有收敛规则。返回第 0 个辩论者在第 R 轮的答案，不叫收敛。
 
-Refusal rules:
+拒绝规则：
 
-- If the product is latency-sensitive (<1s budget), refuse debate. Use Self-Refine (Lesson 05) or parallel voting (Lesson 12) instead.
-- If the question class is simple factual lookup (capital, date, definition), refuse debate. Lookup + CRITIC (Lesson 05) is cheaper.
-- If the debaters have no disagreement after round 1 on any question in the eval set, refuse the protocol. You need model/prompt diversity.
+- 如果产品对延迟敏感，预算 <1 秒，拒绝辩论。改用 Self-Refine（第 05 课）或并行投票（第 12 课）。
+- 如果问题类别是简单事实查询，如首都、日期、定义，拒绝辩论。查询 + CRITIC（第 05 课）更便宜。
+- 如果评估集所有问题在第 1 轮之后都没有辩论者分歧，拒绝该协议。需要模型或提示词多样性。
 
-Output: `debater.py`, `topology.py`, `convergence.py`, `runner.py`, `README.md` explaining N/R choice, topology rationale, and cost-vs-accuracy measurements on the eval set. End with "what to read next" pointing to Lesson 12 (workflow patterns) if the task is simpler, or Lesson 28 (orchestration patterns) for embedding debate in a larger system.
+输出：`debater.py`、`topology.py`、`convergence.py`、`runner.py`、`README.md`，说明 N/R 选择、拓扑理由，以及评估集上成本与准确率的测量结果。结尾给出“接下来读什么”：任务更简单时指向第 12 课（工作流模式），将辩论嵌入更大系统时指向第 28 课（编排模式）。

@@ -23,8 +23,8 @@ def random_mask_indices(num_patches, mask_ratio=0.75, seed=0):
 
 class DinoHead(torch.nn.Module):
     """
-    Toy DINO head to demonstrate centring + sharpening.
-    Real DINO uses a deeper MLP.
+    用于演示中心化（Centring）与锐化（Sharpening）的简化 DINO 头部（Head）。
+    实际 DINO 使用更深的多层感知机（MLP）。
     """
 
     def __init__(self, in_dim=64, out_dim=128, momentum=0.9):
@@ -53,23 +53,23 @@ def main():
     loss_identical = info_nce(z, z, tau=0.1).item()
     z_random = F.normalize(torch.randn(16, 32), dim=-1)
     loss_random = info_nce(z, z_random, tau=0.1).item()
-    print(f"  identical pairs:  {loss_identical:.3f}  (should be low)")
-    print(f"  random pairs:     {loss_random:.3f}  (should be near log(2N-1) = {torch.log(torch.tensor(31.0)):.3f})")
+    print(f"  相同样本对（Identical pairs）:  {loss_identical:.3f}  （应较低）")
+    print(f"  随机样本对（Random pairs）:     {loss_random:.3f}  （应接近 log(2N-1) = {torch.log(torch.tensor(31.0)):.3f})")
 
-    print("\n[mae mask]")
+    print("\n[掩码自编码器（MAE）掩码（Mask）]")
     visible, masked = random_mask_indices(196, mask_ratio=0.75)
-    print(f"  visible: {len(visible)} / 196")
-    print(f"  masked:  {len(masked)} / 196")
-    print(f"  first 5 visible indices: {visible[:5].tolist()}")
+    print(f"  可见（Visible）: {len(visible)} / 196")
+    print(f"  已遮盖（Masked）:  {len(masked)} / 196")
+    print(f"  前 5 个可见位置索引（Indices）: {visible[:5].tolist()}")
 
-    print("\n[dino centring demo]")
+    print("\n[DINO 中心化（Centring）演示]")
     head = DinoHead(in_dim=64, out_dim=16)
     feats = torch.randn(64, 64)
     teacher_out = head.teacher(feats)
-    print(f"  teacher output max col mean before update: {teacher_out.mean(dim=0).max().item():.3f}")
+    print(f"  更新前教师（Teacher）输出的最大列均值: {teacher_out.mean(dim=0).max().item():.3f}")
     head.update_centre(head.proj(feats))
     teacher_out_after = head.teacher(feats)
-    print(f"  teacher output max col mean after update:  {teacher_out_after.mean(dim=0).max().item():.3f}")
+    print(f"  更新后教师（Teacher）输出的最大列均值:  {teacher_out_after.mean(dim=0).max().item():.3f}")
 
 
 if __name__ == "__main__":

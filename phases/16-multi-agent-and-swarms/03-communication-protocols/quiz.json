@@ -2,38 +2,63 @@
   "questions": [
     {
       "stage": "pre",
-      "question": "What problem does MCP (Model Context Protocol) solve for AI agents?",
-      "options": ["It encrypts communication between agents", "It compresses large context windows to fit in smaller models", "It gives agents a standard way to discover and use tools exposed by external servers, without hardcoding tool implementations", "It provides a standard format for training data"],
+      "question": "模型上下文协议（Model Context Protocol，MCP）为 AI 智能体解决什么问题？",
+      "options": [
+        "加密智能体之间的通信",
+        "压缩大型上下文窗口以适配较小模型",
+        "为智能体提供标准方式来发现和使用外部服务器暴露的工具，无需硬编码工具实现",
+        "为训练数据提供标准格式"
+      ],
       "correct": 2,
-      "explanation": "MCP standardizes tool access: a server exposes tools with JSON schemas, and any MCP-compatible agent can discover and call them. This decouples tool implementation from agent code."
+      "explanation": "MCP 标准化工具访问：服务器通过 JSON 模式暴露工具，任何兼容 MCP 的智能体都能发现并调用它们。这将工具实现与智能体代码解耦。"
     },
     {
       "stage": "pre",
-      "question": "What is the difference between MCP and A2A?",
-      "options": ["MCP is for Python agents and A2A is for JavaScript agents", "MCP is open source and A2A is proprietary", "MCP connects agents to tools (agent-to-tool), while A2A connects agents to other agents (agent-to-agent) for task delegation", "MCP is synchronous and A2A is asynchronous"],
+      "question": "MCP 与 A2A 有什么区别？",
+      "options": [
+        "MCP 用于 Python 智能体，A2A 用于 JavaScript 智能体",
+        "MCP 开源，A2A 是专有协议",
+        "MCP 将智能体连接到工具（智能体到工具），A2A 将智能体连接到其他智能体（智能体到智能体）以委派任务",
+        "MCP 是同步的，A2A 是异步的"
+      ],
       "correct": 2,
-      "explanation": "MCP is the protocol for tool access (an agent calls a tool). A2A is the protocol for agent collaboration (an agent delegates a task to another agent). They solve different layers of the communication problem."
+      "explanation": "MCP 是工具访问协议（智能体调用工具）。A2A 是智能体协作协议（智能体把任务委派给另一智能体）。它们解决通信问题的不同层面。"
     },
     {
       "stage": "post",
-      "question": "In A2A, what is an 'agent card' and why is it important?",
-      "options": ["A security credential that authenticates an agent's identity", "A configuration file that sets the agent's system prompt", "A visual dashboard showing agent performance metrics", "A JSON document at a well-known URL that describes an agent's capabilities, skills, and endpoint, enabling other agents to discover and delegate tasks to it"],
+      "question": "A2A 中的智能体卡片（Agent Card）是什么，为什么重要？",
+      "options": [
+        "用于认证智能体身份的安全凭据",
+        "设置智能体系统提示词的配置文件",
+        "展示智能体性能指标的可视化仪表盘",
+        "位于约定 URL 的 JSON 文档，描述智能体能力、技能和端点，使其他智能体能够发现它并向其委派任务"
+      ],
       "correct": 3,
-      "explanation": "The agent card (hosted at /.well-known/agent.json) is how agents advertise themselves. It lists skills, supported input/output formats, and the task endpoint. Other agents read this card to decide whether and how to delegate work."
+      "explanation": "智能体卡片（托管于 /.well-known/agent.json）是智能体介绍自身的方式。它列出技能、支持的输入输出格式和任务端点。其他智能体阅读卡片后，决定是否委派工作以及如何委派。"
     },
     {
       "stage": "post",
-      "question": "Why do multi-agent systems need structured communication protocols instead of just passing strings between agents?",
-      "options": ["String parsing is computationally expensive for LLMs", "Structured protocols provide type safety, discoverability, error handling, and interoperability between agents built by different teams with different frameworks", "Strings are too large to send over HTTP", "Structured protocols are required by all cloud providers"],
+      "question": "多智能体系统为什么需要结构化通信协议，而不只是传递字符串？",
+      "options": [
+        "对 LLM 来说，字符串解析的计算成本很高",
+        "结构化协议提供类型安全、可发现性、错误处理，以及不同团队用不同框架构建的智能体之间的互操作性",
+        "字符串太大，无法通过 HTTP 发送",
+        "所有云服务商都要求结构化协议"
+      ],
       "correct": 1,
-      "explanation": "Without structured contracts, agents from different teams misinterpret each other's output, error handling is ad-hoc, and there is no way to discover what another agent can do. Protocols provide the shared language that makes multi-agent systems reliable."
+      "explanation": "没有结构化契约，不同团队的智能体会误解彼此输出，错误处理是临时拼凑的，也无法发现另一个智能体能做什么。协议提供共享语言，让多智能体系统可靠运行。"
     },
     {
       "stage": "post",
-      "question": "How does ACP (Agent Communication Protocol) differ from A2A in its design goals?",
-      "options": ["ACP uses WebSockets while A2A uses HTTP", "ACP is faster than A2A for real-time applications", "ACP only works within a single organization while A2A works across organizations", "ACP focuses on enterprise auditability with full message history and compliance tracking, while A2A focuses on lightweight task delegation"],
+      "question": "智能体通信协议（Agent Communication Protocol，ACP）与 A2A 的设计目标有何不同？",
+      "options": [
+        "ACP 使用 WebSocket，而 A2A 使用 HTTP",
+        "实时应用中 ACP 比 A2A 更快",
+        "ACP 只能在单一组织内工作，而 A2A 可以跨组织",
+        "ACP 通过完整消息历史和合规追踪聚焦企业可审计性，A2A 则聚焦轻量级任务委派"
+      ],
       "correct": 3,
-      "explanation": "ACP was designed for enterprise environments where every agent interaction must be auditable, traceable, and compliant. A2A is simpler and focuses on getting tasks done. ACP adds the governance layer that regulated industries require."
+      "explanation": "ACP 面向企业环境设计，要求每次智能体交互都可审计、可追溯且合规。A2A 更简单，专注完成任务。ACP 增加了受监管行业所需的治理层。"
     }
   ]
 }

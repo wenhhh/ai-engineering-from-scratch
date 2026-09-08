@@ -384,11 +384,11 @@ def train_framework():
         Sigmoid(),
     )
 
-    print(f"Model: 4 linear layers (2->16->16->8->1)")
-    print(f"Total parameters: {model.count_parameters()}")
-    print(f"Optimizer: Adam (lr=0.01)")
-    print(f"Loss: Binary Cross-Entropy")
-    print(f"Data: 500 samples (80/20 train/test split)")
+    print(f"模型：4 个线性层（Linear Layers，2->16->16->8->1）")
+    print(f"参数总数： {model.count_parameters()}")
+    print(f"优化器（Optimizer）：Adam（lr=0.01）")
+    print(f"损失：二元交叉熵（Binary Cross-Entropy）")
+    print(f"数据：500 个样本（按 80/20 划分训练集/测试集）")
     print()
 
     criterion = BCELoss()
@@ -428,7 +428,7 @@ def train_framework():
         accuracy = total_correct / total_samples * 100
 
         if epoch % 10 == 0 or epoch == 99:
-            print(f"  Epoch {epoch:3d} | Loss: {avg_loss:.6f} | Train Accuracy: {accuracy:.1f}%")
+            print(f"  轮次（Epoch）{epoch:3d} | 损失：{avg_loss:.6f} | 训练准确率：{accuracy:.1f}%")
 
     model.eval()
     correct = 0
@@ -438,7 +438,7 @@ def train_framework():
         if predicted_class == t[0]:
             correct += 1
     test_accuracy = correct / len(test_data) * 100
-    print(f"\n  Test Accuracy: {test_accuracy:.1f}% ({correct}/{len(test_data)})")
+    print(f"\n  测试准确率（Test Accuracy）： {test_accuracy:.1f}% ({correct}/{len(test_data)})")
 
     return model, test_accuracy
 
@@ -553,51 +553,51 @@ def sample_predictions(model, data):
         ([2.0, 0.0], "outside"),
     ]
 
-    print("\n  Sample Predictions:")
+    print("\n  样本预测（Sample Predictions）：")
     for point, expected in test_points:
         pred = model.forward(point)
         predicted_region = "inside" if pred[0] >= 0.5 else "outside"
-        status = "OK" if predicted_region == expected else "WRONG"
-        print(f"    ({point[0]:5.1f}, {point[1]:5.1f}) -> {pred[0]:.4f} ({predicted_region:7s}, expected {expected:7s}) {status}")
+        status = "正确（OK）" if predicted_region == expected else "错误（Wrong）"
+        print(f"    ({point[0]:5.1f}, {point[1]:5.1f}) -> {pred[0]:.4f} ({predicted_region:7s}, 预期 {expected:7s}) {status}")
 
 
 if __name__ == "__main__":
     print("=" * 70)
-    print("MINI FRAMEWORK -- Phase 3 Capstone")
+    print("迷你框架（Mini Framework）：阶段 3 综合实践（Capstone）")
     print("=" * 70)
     print()
 
     print("-" * 70)
-    print("EXPERIMENT 1: Adam Optimizer (4-layer network)")
+    print("实验 1：Adam 优化器（Optimizer，4 层网络）")
     print("-" * 70)
     model, adam_acc = train_framework()
     sample_predictions(model, None)
 
     print("\n" + "-" * 70)
-    print("EXPERIMENT 2: SGD Optimizer (same architecture)")
+    print("实验 2：随机梯度下降优化器（SGD Optimizer，相同架构）")
     print("-" * 70)
     sgd_acc = train_with_sgd()
-    print(f"  SGD Test Accuracy: {sgd_acc:.1f}%")
+    print(f"  SGD 测试准确率（Test Accuracy）： {sgd_acc:.1f}%")
 
     print("\n" + "-" * 70)
-    print("EXPERIMENT 3: With Dropout (p=0.3)")
+    print("实验 3：使用随机失活（Dropout，p=0.3）")
     print("-" * 70)
     dropout_acc = train_with_dropout()
-    print(f"  Dropout Test Accuracy: {dropout_acc:.1f}%")
+    print(f"  Dropout 测试准确率（Test Accuracy）： {dropout_acc:.1f}%")
 
     print("\n" + "=" * 70)
-    print("COMPARISON")
+    print("比较")
     print("=" * 70)
-    print(f"  Adam (no dropout):     {adam_acc:.1f}%")
-    print(f"  SGD (no dropout):      {sgd_acc:.1f}%")
-    print(f"  Adam + Dropout(0.3):   {dropout_acc:.1f}%")
+    print(f"  Adam （无随机失活）:     {adam_acc:.1f}%")
+    print(f"  SGD （无随机失活）:      {sgd_acc:.1f}%")
+    print(f"  Adam + 随机失活（Dropout，0.3）：   {dropout_acc:.1f}%")
 
     print("\n" + "=" * 70)
-    print("FRAMEWORK COMPONENTS")
+    print("框架组件（Framework Components）")
     print("=" * 70)
-    print(f"  Modules:    Linear, ReLU, Sigmoid, Tanh, Dropout, BatchNorm")
-    print(f"  Containers: Sequential")
-    print(f"  Losses:     MSELoss, BCELoss")
-    print(f"  Optimizers: SGD, Adam")
-    print(f"  Data:       DataLoader (batching + shuffle)")
-    print(f"  Total:      ~500 lines of pure Python")
+    print(f"  模块（Modules）：    Linear, ReLU, Sigmoid, Tanh, Dropout, BatchNorm")
+    print(f"  容器（Containers）： Sequential")
+    print(f"  损失函数（Losses）：     MSELoss, BCELoss")
+    print(f"  优化器（Optimizers）： SGD, Adam")
+    print(f"  数据：DataLoader（分批 Batching + 打乱 Shuffle）")
+    print(f"  总计：~500 行纯 Python")

@@ -1,90 +1,90 @@
 {
   "lesson": "30-eval-driven-agent-development",
-  "title": "Eval-Driven Agent Development",
+  "title": "评估驱动的智能体开发（Eval-Driven Agent Development）",
   "questions": [
     {
       "stage": "pre",
-      "question": "What are the three evaluation layers the lesson names?",
+      "question": "本课列出哪三个评估层？",
       "options": [
-        "Unit, integration, end-to-end",
-        "Smoke, regression, acceptance",
-        "Pre, check, post",
-        "Static benchmarks, custom offline evals, online production evals"
+        "单元、集成、端到端",
+        "冒烟、回归、验收",
+        "课前、检查、课后",
+        "静态基准、自定义离线评估、在线生产评估"
       ],
       "correct": 3,
-      "explanation": "Static (SWE-bench, GAIA), custom offline (LLM-judge, exec, trajectory), online (replays, alerts, cost/latency)."
+      "explanation": "静态包括 SWE-bench、GAIA；自定义离线包括 LLM 裁判、执行、轨迹；在线包括回放、告警、成本和延迟。"
     },
     {
       "stage": "pre",
-      "question": "What is Anthropic's recommended starting point?",
+      "question": "Anthropic 推荐的起点是什么？",
       "options": [
-        "Start with multi-agent debate",
-        "Start with simple prompts, optimize them with comprehensive evaluation, and add multi-step agentic systems only when needed",
-        "Start with a frontier model only",
-        "Start with hierarchical orchestration"
+        "从多智能体辩论开始",
+        "从简单提示词开始，通过全面评估优化，只在需要时增加多步骤智能体系统",
+        "只从前沿模型开始",
+        "从层级式编排开始"
       ],
       "correct": 1,
-      "explanation": "Anthropic explicitly says evaluation is the outer loop that drives every other choice."
+      "explanation": "Anthropic 明确指出，评估是驱动其他所有选择的外层循环。"
     },
     {
       "stage": "check",
-      "question": "What is the evaluator-optimizer tight loop?",
+      "question": "评估器优化器的紧密循环是什么？",
       "options": [
-        "Proposer generates output, evaluator judges, refine until evaluator passes (Self-Refine generalized)",
-        "Sample, sort, deduplicate",
-        "Cache, retry, fail",
-        "Train, evaluate, deploy"
+        "提议者生成输出，评估器判断，改进直到评估器判定通过，即 Self-Refine 的推广",
+        "采样、排序、去重",
+        "缓存、重试、失败",
+        "训练、评估、部署"
       ],
       "correct": 0,
-      "explanation": "It is Self-Refine generalized: any flow can wrap in propose-judge-refine."
+      "explanation": "它是 Self-Refine 的推广：任何流程都能包进提议、判断、改进循环。"
     },
     {
       "stage": "check",
-      "question": "What is the 2026 best practice for where evals live?",
+      "question": "2026 年关于评估放在哪里的最佳实践是什么？",
       "options": [
-        "Owned exclusively by the QA team",
-        "Only run quarterly",
-        "Next to code, run in CI on every PR, gate merges on eval scores",
-        "In a separate vendor dashboard only"
+        "完全由 QA 团队拥有",
+        "仅每季度运行",
+        "与代码放在一起，每个 PR 在 CI 中运行，按评估分数把关合并",
+        "仅在独立厂商仪表盘中"
       ],
       "correct": 2,
-      "explanation": "Co-located with code, CI-gated, regression-tracked is the standard."
+      "explanation": "与代码同处、CI 门禁、回归跟踪，是标准做法。"
     },
     {
       "stage": "check",
-      "question": "Why does the lesson warn against an LLM-judge without grounding?",
+      "question": "本课为什么警告不能使用缺少事实依据的 LLM 裁判？",
       "options": [
-        "It violates Apache 2.0",
-        "Judges hallucinate too; pair with the CRITIC pattern so judgment grounds on external tools",
-        "It is too slow",
-        "It only works on GPUs"
+        "违反 Apache 2.0",
+        "裁判也会幻觉；应配合 CRITIC 模式，通过外部工具为判断提供依据",
+        "太慢",
+        "只能在 GPU 上运行"
       ],
       "correct": 1,
-      "explanation": "CRITIC (Lesson 5) applies: tool-grounded verification keeps the judge honest."
+      "explanation": "CRITIC（第 5 课）同样适用：基于工具的核验确保裁判判断有据。"
     },
     {
       "stage": "post",
-      "question": "What is the danger of over-fitting to evals?",
+      "question": "对评估过拟合有什么风险？",
       "options": [
-        "Vector indices fragment",
-        "Compute cost rises",
-        "Latency drops too far",
-        "Optimizing for the eval set diverges from production usefulness; rotate cases"
+        "向量索引碎片化",
+        "计算成本增加",
+        "延迟降得太低",
+        "针对评估集优化会偏离生产实用性，应轮换用例"
       ],
       "correct": 3,
-      "explanation": "Eval set rotation keeps the optimization aligned with production reality."
+      "explanation": "轮换评估集使优化继续与生产现实一致。"
     },
     {
       "stage": "post",
-      "question": "Why do flaky evals cause problems?",
+      "question": "不稳定评估为什么造成问题？",
       "options": [
-        "They exceed the context window",
-        "They cannot reach the database",
-        "They double inference cost",
-        "Non-deterministic cases produce false alarms; pin seeds and snapshot state"
+        "超过上下文窗口",
+        "无法访问数据库",
+        "推理成本翻倍",
+        "非确定性用例产生误报；应固定种子并保存状态快照"
       ],
       "correct": 3,
-      "explanation": "Flake makes regressions unreadable; determinism (seeds, state snapshots) is required."
+      "explanation": "不稳定性使回归难以解读；必须通过种子和状态快照确保确定性。"
     }
   ]
 }

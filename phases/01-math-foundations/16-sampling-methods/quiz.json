@@ -2,63 +2,63 @@
   "questions": [
     {
       "stage": "pre",
-      "question": "What does temperature < 1.0 do to a language model's output distribution?",
+      "question": "temperature < 1.0 会如何改变语言模型的输出分布？",
       "options": [
-        "Removes all tokens except the top one",
-        "Has no effect on the output",
-        "Makes the distribution more uniform (more random)",
-        "Sharpens the distribution, making the highest-probability token more likely"
+        "移除除第一名之外的所有词元（Token）",
+        "对输出没有影响",
+        "使分布更均匀（更随机）",
+        "使分布更尖锐，让概率最高的词元更容易被选中"
       ],
       "correct": 3,
-      "explanation": "Temperature < 1.0 divides logits by a number less than 1, which amplifies differences between logits. After softmax, the highest-probability token gets an even larger share. Temperature approaches 0 gives greedy (argmax) decoding."
+      "explanation": "Temperature < 1.0 将逻辑值（Logits）除以小于 1 的数，放大逻辑值之间的差异。经过 softmax，概率最高的词元获得更大份额。温度趋近 0 时得到贪心（argmax）解码。"
     },
     {
       "stage": "pre",
-      "question": "What is the key difference between top-k and top-p (nucleus) sampling?",
+      "question": "top-k 与 top-p 核采样（Nucleus Sampling）的关键区别是什么？",
       "options": [
-        "Top-k is faster than top-p",
-        "Top-k keeps a fixed number of tokens; top-p keeps a variable number based on cumulative probability",
-        "Top-p only works with temperature = 1.0",
-        "Top-k works on logits while top-p works on probabilities"
+        "Top-k 比 top-p 更快",
+        "Top-k 保留固定数量的词元，top-p 根据累计概率保留可变数量的词元",
+        "Top-p 只能在 temperature = 1.0 时使用",
+        "Top-k 操作逻辑值，top-p 操作概率"
       ],
       "correct": 1,
-      "explanation": "Top-k always keeps exactly k tokens regardless of the probability distribution. Top-p adaptively keeps the smallest set of tokens whose cumulative probability exceeds p. When the model is confident, top-p keeps few tokens; when uncertain, it keeps many."
+      "explanation": "无论概率分布如何，Top-k 总是恰好保留 k 个词元。Top-p 自适应保留累计概率超过 p 的最小词元集合。模型有把握时保留少量词元，不确定时则保留很多。"
     },
     {
       "stage": "post",
-      "question": "Why can't you backpropagate through a standard sampling operation z ~ N(mu, sigma^2)?",
+      "question": "为什么反向传播无法穿过标准采样操作 z ~ N(mu, sigma^2)？",
       "options": [
-        "The sampling operation is non-deterministic and has no well-defined derivative with respect to mu and sigma",
-        "PyTorch doesn't support normal distributions",
-        "Normal distributions don't have gradients",
-        "The gradient is always exactly zero"
+        "采样操作是非确定性的，关于 mu 和 sigma 没有良好定义的导数",
+        "PyTorch 不支持正态分布",
+        "正态分布没有梯度",
+        "梯度始终恰好为零"
       ],
       "correct": 0,
-      "explanation": "Sampling introduces a stochastic discontinuity — you can't compute d(sample)/d(mu) for a random draw. The reparameterization trick solves this by writing z = mu + sigma * epsilon (where epsilon ~ N(0,1)), making z a deterministic, differentiable function of mu and sigma."
+      "explanation": "采样引入随机的不连续性，无法对一次随机抽样计算 d(sample)/d(mu)。重参数化技巧（Reparameterization Trick）将其写成 z = mu + sigma * epsilon（其中 epsilon ~ N(0,1)），使 z 成为 mu 和 sigma 的确定性可微函数，从而解决这个问题。"
     },
     {
       "stage": "post",
-      "question": "In Metropolis-Hastings MCMC, what happens if the proposal standard deviation is set much too large?",
+      "question": "在 Metropolis-Hastings MCMC 中，如果提议标准差设得过大，会发生什么？",
       "options": [
-        "The chain converges faster because it takes bigger steps",
-        "Most proposals land in low-probability regions and are rejected, so the chain barely moves",
-        "The burn-in period becomes zero",
-        "The stationary distribution changes to a uniform distribution"
+        "步子更大，因此链收敛更快",
+        "大多数提议落在低概率区域并被拒绝，因此链几乎不动",
+        "预热期变为零",
+        "平稳分布变为均匀分布"
       ],
       "correct": 1,
-      "explanation": "With a large proposal standard deviation, proposed points are far from the current position and likely land in low-probability regions. These are rejected, causing the chain to stay stuck at the current point. The optimal acceptance rate is about 23% for high-dimensional Gaussian proposals."
+      "explanation": "提议标准差很大时，提议点远离当前位置，很可能落在低概率区域。它们会被拒绝，使链停在当前点。高维高斯提议的最佳接受率约为 23%。"
     },
     {
       "stage": "post",
-      "question": "In rejection sampling, what happens to the acceptance rate as the dimensionality of the target distribution increases?",
+      "question": "拒绝采样（Rejection Sampling）中，目标分布维数增加时，接受率如何变化？",
       "options": [
-        "It drops exponentially because most of the proposal volume gets rejected",
-        "It stays constant regardless of dimension",
-        "It increases because there are more dimensions to accept in",
-        "It approaches 50% in all cases"
+        "指数下降，因为大部分提议体积被拒绝",
+        "无论维数如何都保持不变",
+        "增加，因为有更多维度可以接受",
+        "所有情况下都趋近 50%"
       ],
       "correct": 0,
-      "explanation": "In high dimensions, the volume of the proposal distribution that overlaps with the target distribution shrinks exponentially. The bound M grows, and the acceptance rate (1/M) drops exponentially. This is the curse of dimensionality for rejection sampling."
+      "explanation": "在高维中，提议分布与目标分布重叠的体积指数缩小。界 M 增大，接受率（1/M）指数下降。这就是拒绝采样的维度灾难（Curse of Dimensionality）。"
     }
   ]
 }

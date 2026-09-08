@@ -2,65 +2,65 @@
   "schemaVersion": 1,
   "kind": "career-route",
   "id": "ai-evaluation-reliability-engineer",
-  "title": "AI Evaluation and Reliability",
-  "workFamily": "AI Evaluation and Reliability",
-  "commonTitles": ["AI Evaluation Engineer", "AI Reliability Engineer", "Machine Learning Site Reliability Engineer"],
-  "summary": "Measure model and agent behavior, expose failure modes, instrument the runtime, and build release and incident controls around evidence.",
-  "keywords": "ai evaluation reliability engineer evals testing observability metrics load canary chaos sre",
-  "decisionPrompt": "Do you want to turn model and system uncertainty into evaluation, observability, release, and recovery evidence?",
-  "mission": "Build on shared foundations to define trustworthy behavior, expose failures, and operate AI releases through measurable reliability controls.",
+  "title": "AI 评估与可靠性（AI Evaluation and Reliability）",
+  "workFamily": "AI 评估与可靠性（AI Evaluation and Reliability）",
+  "commonTitles": ["AI 评估工程师（AI Evaluation Engineer）", "AI 可靠性工程师（AI Reliability Engineer）", "机器学习站点可靠性工程师（Machine Learning Site Reliability Engineer）"],
+  "summary": "衡量模型与智能体（Agent）行为，揭示故障模式（Failure mode），为运行时布设观测点，并围绕证据建立发布与事故控制机制。",
+  "keywords": "AI 评估 可靠性工程师 测试 可观测性 指标 负载 金丝雀 混沌 ai evaluation reliability engineer evals testing observability metrics load canary chaos sre",
+  "decisionPrompt": "你是否希望将模型与系统的不确定性转化为评估、可观测性（Observability）、发布与恢复证据？",
+  "mission": "在共同基础之上定义可信行为、揭示故障，并通过可衡量的可靠性控制机制管理 AI 发布。",
   "responsibilities": [
-    "Design model, LLM, and agent evaluations around real failure risks.",
-    "Instrument inference behavior and system health with useful telemetry.",
-    "Test load, experiments, canaries, and rollback conditions before release.",
-    "Use incidents and chaos tests to improve reliability controls."
+    "围绕真实的故障风险，设计模型、大语言模型（LLM）与智能体评估。",
+    "通过有用的遥测（Telemetry）为推理（Inference）行为与系统健康状况布设观测点。",
+    "发布前测试负载、实验、金丝雀发布（Canary）与回滚（Rollback）条件。",
+    "利用事故与混沌测试（Chaos test）改进可靠性控制机制。"
   ],
   "goodFitIf": [
-    "You prefer measurable evidence to confident completion claims.",
-    "You enjoy finding edge cases, regressions, and system failure paths.",
-    "You want evaluation and operations to share the same release evidence."
+    "相比自信的完成声明，你更重视可衡量的证据。",
+    "你喜欢寻找边界情况（Edge case）、回归问题（Regression）与系统故障路径。",
+    "你希望评估与运维共用同一套发布证据。"
   ],
   "baseline": [
-    "Complete the shared software engineering and AI foundations, or demonstrate equivalent working knowledge.",
-    "Understand model metrics, tests, APIs, and basic production telemetry.",
-    "Be able to reproduce failures and compare behavior across controlled runs."
+    "完成共同的软件工程和 AI 基础课程，或证明具备同等实践知识。",
+    "理解模型指标、测试、API 与基本的生产遥测。",
+    "能够复现故障，并在受控运行之间比较行为。"
   ],
-  "boundary": "This is a specialist overlay after shared foundations and combines adjacent evaluation and reliability work. It does not claim one universal job title or replace live incident and on-call experience.",
-  "timeNote": "The estimate covers lesson time only. Portfolio work and practice take additional time.",
+  "boundary": "这是一条建立在共同基础之上的专业方向路径，结合相邻的评估与可靠性工作。它不声称对应一个通用职位名称，也不能替代实际事故处理与值班（On-call）经验。",
+  "timeNote": "预计时间仅包含课程学习。作品集制作和练习还需额外时间。",
   "portfolioProof": {
-    "title": "Regression and Reliability Gate",
-    "description": "Build an evidence gate that connects behavior evaluation, runtime telemetry, load, rollout, and recovery decisions.",
+    "title": "回归与可靠性门禁（Regression and Reliability Gate）",
+    "description": "构建证据门禁，将行为评估、运行时遥测、负载、发布上线（Rollout）与恢复决策联系起来。",
     "evidence": [
-      "An evaluation set, rubric, and regression thresholds",
-      "A trace schema and observability view",
-      "An SLO and load test report",
-      "A canary and rollback decision record",
-      "A chaos test or incident analysis with corrective actions"
+      "评估集（Evaluation set）、评分量规（Rubric）与回归阈值",
+      "追踪模式（Trace schema）与可观测性视图",
+      "服务等级目标（SLO）与负载测试报告",
+      "金丝雀发布与回滚决策记录",
+      "包含纠正措施的混沌测试或事故分析"
     ]
   },
   "readinessCriteria": [
-    "Can select metrics that match the behavior and failure risk being tested.",
-    "Can build reproducible model, LLM, and agent regression checks.",
-    "Can connect traces, inference metrics, and user-visible outcomes.",
-    "Can define load, SLO, canary, and rollback thresholds.",
-    "Can turn a failure exercise into a tested reliability improvement."
+    "能够选择与受测行为和故障风险匹配的指标。",
+    "能够构建可复现的模型、大语言模型与智能体回归检查。",
+    "能够关联追踪记录（Trace）、推理指标与用户可见的结果。",
+    "能够定义负载、服务等级目标、金丝雀发布与回滚阈值。",
+    "能够将故障演练转化为经过测试的可靠性改进。"
   ],
   "coverage": {
-    "strong": ["Model, LLM, and agent evaluation", "Failure taxonomy and observability", "Inference metrics and load testing", "Experiments, rollout, chaos, and SRE controls"],
-    "partial": ["Human annotation operations", "Incident leadership", "Large distributed infrastructure"],
-    "outsideCourse": ["Production on-call ownership", "Compliance signoff", "Large-scale benchmark laboratory operations"]
+    "strong": ["模型、大语言模型与智能体评估", "故障分类体系（Failure taxonomy）与可观测性", "推理指标与负载测试", "实验、发布上线、混沌测试与站点可靠性工程（SRE）控制机制"],
+    "partial": ["人工标注作业（Human annotation operations）", "事故处置领导工作", "大型分布式基础设施"],
+    "outsideCourse": ["生产值班责任", "合规签核（Compliance signoff）", "大规模基准测试（Benchmark）实验室运作"]
   },
-  "completionClaim": "Completing this route shows that you can build an evidence-based evaluation and reliability gate. It does not guarantee a role or prove experience owning live production incidents.",
+  "completionClaim": "完成本路径表明你能够构建基于证据的评估与可靠性门禁，但不保证获得相关岗位，也不能证明你有主导实际生产事故处理的经验。",
   "sourceBasis": {
     "reviewedAt": "2026-08-29",
-    "method": "Synthesized from current primary job descriptions across AI field, product, platform, data, developer, and evaluation teams."
+    "method": "综合 AI 现场交付、产品、平台、数据、开发者及评估团队当时的一手职位描述整理而成。"
   },
   "estimatedMinutes": 750,
   "stages": [
     {
       "id": "common-core",
-      "title": "Common Core",
-      "outcome": "Define behavior, evaluation layers, failure modes, and trace semantics.",
+      "title": "共同核心（Common Core）",
+      "outcome": "定义行为、评估层次、故障模式与追踪语义（Trace semantics）。",
       "lessonPaths": [
         "phases/02-ml-fundamentals/09-model-evaluation",
         "phases/11-llm-engineering/10-evaluation",
@@ -68,36 +68,36 @@
         "phases/14-agent-engineering/26-failure-modes-agentic",
         "phases/14-agent-engineering/23-otel-genai-conventions"
       ],
-      "artifact": "A layered evaluation plan with a failure taxonomy, trace schema, and regression thresholds."
+      "artifact": "一份分层评估计划，包含故障分类体系、追踪模式与回归阈值。"
     },
     {
       "id": "role-practice",
-      "title": "Role Practice",
-      "outcome": "Measure inference health, production behavior, experiments, and capacity limits.",
+      "title": "岗位实践（Role Practice）",
+      "outcome": "衡量推理健康状况、生产行为、实验与容量上限。",
       "lessonPaths": [
         "phases/17-infrastructure-and-production/08-inference-metrics-goodput",
         "phases/17-infrastructure-and-production/13-llm-observability",
         "phases/17-infrastructure-and-production/21-ab-testing-llm-features",
         "phases/17-infrastructure-and-production/22-load-testing-llm-apis"
       ],
-      "artifact": "An observability and load report that connects service metrics with behavior and user outcomes."
+      "artifact": "一份可观测性与负载报告，将服务指标与行为、用户结果联系起来。"
     },
     {
       "id": "proof-project",
-      "title": "Proof Project",
-      "outcome": "Prove release and recovery behavior under controlled failure.",
+      "title": "能力证明项目（Proof Project）",
+      "outcome": "在受控故障条件下验证发布与恢复行为。",
       "lessonPaths": [
         "phases/17-infrastructure-and-production/20-shadow-canary-progressive",
         "phases/17-infrastructure-and-production/24-chaos-engineering-llm"
       ],
-      "artifact": "A regression and reliability gate with canary thresholds, rollback evidence, and a chaos result."
+      "artifact": "一个回归与可靠性门禁，包含金丝雀发布阈值、回滚证据与混沌测试结果。"
     },
     {
       "id": "interview-readiness-evidence",
-      "title": "Interview and Readiness Evidence",
-      "outcome": "Show how objectives, incidents, and corrective actions form an operating system for reliability.",
+      "title": "面试与能力就绪证据（Interview and Readiness Evidence）",
+      "outcome": "展示目标、事故与纠正措施如何构成可靠性运行管理体系。",
       "lessonPaths": ["phases/17-infrastructure-and-production/23-sre-for-ai"],
-      "artifact": "A reliability case study with SLOs, failure evidence, response decisions, and verified corrective actions."
+      "artifact": "一份可靠性案例研究，包含服务等级目标、故障证据、响应决策与经过验证的纠正措施。"
     }
   ],
   "lessons": [

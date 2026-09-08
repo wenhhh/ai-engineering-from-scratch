@@ -1,75 +1,75 @@
 {
   "lesson": "20-bias-representational-harm",
-  "title": "Bias and Representational Harm in LLMs",
+  "title": "大语言模型中的偏差与表征伤害（Bias and Representational Harm in LLMs）",
   "questions": [
     {
       "stage": "pre",
-      "question": "How does the lesson distinguish representational harm from allocational harm?",
+      "question": "本课如何区分表征伤害与分配伤害？",
       "options": [
-        "Representational is computational; allocational is statistical",
-        "Allocational harm only occurs offline",
-        "Representational harm only matters for vision models",
-        "Representational harm is stereotypes / erasure / demeaning portrayal; allocational harm is unequal material outcomes for a group"
+        "表征伤害是计算问题；分配伤害是统计问题",
+        "分配伤害只发生在线下",
+        "表征伤害只对视觉模型重要",
+        "表征伤害包括刻板印象、抹除和贬低性描绘；分配伤害是群体所遭受的不平等物质结果"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Which of these are the three evaluation-metric categories from Gallegos et al. 2024?",
+      "question": "以下哪项是 Gallegos 等人 2024 年提出的三类评估指标？",
       "options": [
-        "Vision, audio, text",
-        "WEAT, BLEU, ROUGE",
-        "Embedding-based, probability-based, generated-text-based",
-        "Pre-RLHF, mid-RLHF, post-RLHF"
+        "视觉、音频和文本",
+        "WEAT、BLEU 和 ROUGE",
+        "基于嵌入、基于概率和基于生成文本",
+        "RLHF 前、RLHF 中和 RLHF 后"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Why is intersectional fairness evaluation needed in addition to single-axis evaluation?",
+      "question": "为什么除了单轴评估，还需要交叉公平性评估？",
       "options": [
-        "Single-axis measures are computationally cheaper",
-        "Intersectionality is the same as cross-validation",
-        "Single-axis is the only legally allowed approach",
-        "Bias that only emerges at intersections (e.g., gender x race) is missed by evaluations that look at one axis at a time"
+        "单轴测量的计算成本更低",
+        "交叉性与交叉验证相同",
+        "单轴评估是法律唯一允许的方法",
+        "每次只考察一个维度的评估，会漏掉仅在交叉处（例如性别 × 种族）产生的偏差"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "What does WinoIdentity (COLM 2025) introduce?",
+      "question": "WinoIdentity（COLM 2025）引入了什么？",
       "options": [
-        "Uncertainty-based intersectional fairness evaluation that compares the model's uncertainty over outcomes across intersectional identity tuples, not just point predictions",
-        "An adversarial attack on demographic classifiers",
-        "A replacement for WEAT in embedding space",
-        "A new tokenizer for identity terms"
+        "基于不确定性的交叉公平性评估，比较模型在不同交叉身份元组上对结果的不确定性，而不只是点预测",
+        "一种针对人口属性分类器的对抗攻击",
+        "嵌入空间中 WEAT 的替代方法",
+        "一种用于身份词的新分词器"
       ],
       "correct": 0,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "Which of these is a mechanistic-interpretability approach to bias?",
+      "question": "以下哪项属于研究偏差的机制可解释性方法？",
       "options": [
-        "Re-labeling the training set",
-        "Identifying gender neurons in MLP layers, using SAEs to surface race-correlated features, or manipulating specific attention heads (UniBias)",
-        "Switching to DPO from PPO",
-        "Adding more KL regularization"
+        "重新标注训练集",
+        "识别 MLP 层中的性别神经元，用 SAE 揭示与种族相关的特征，或操控特定注意力头（UniBias）",
+        "从 PPO 切换到 DPO",
+        "增加 KL 正则化"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "What does the 10-year meta-critique (arXiv:2508.11067) argue about the bias literature?",
+      "question": "覆盖十年文献的总体批评（arXiv:2508.11067）对偏差研究提出了什么观点？",
       "options": [
-        "It disproportionately focuses on binary-gender bias, neglecting other axes (disability, religion, migration status, multi-lingual identity) that may harm marginalized groups by neglect",
-        "It is balanced across all identity axes",
-        "It avoids quantitative methods",
-        "It overemphasizes intersectionality"
+        "研究过度集中于二元性别偏差，忽视残障、宗教、移民身份和多语言身份等其他维度，这种忽视可能伤害边缘化群体",
+        "研究均衡覆盖所有身份维度",
+        "研究避免使用定量方法",
+        "研究过度强调交叉性"
       ],
       "correct": 0,
       "explanation": ""

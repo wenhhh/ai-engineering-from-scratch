@@ -1,136 +1,136 @@
-# Training Loop and Evaluation
+# 训练循环与评估（Training Loop and Evaluation）
 
-> A loop that does not measure is a loop that lies. This lesson builds the training loop that drives the GPT model: AdamW with weight decay split, a warmup plus cosine learning rate schedule, a `calc_loss_batch` helper, an `evaluate_model` pass on held out data, a `generate_and_print_sample` qualitative probe every K steps, and a JSONL log of losses you can plot after. The same skeleton trains every decoder LLM you will ever build.
+> 不测量的循环会给出假象。本课构建驱动 GPT 的训练循环：按权重衰减分组的 AdamW、预热加余弦学习率调度、`calc_loss_batch` 辅助函数、留出数据上的 `evaluate_model` 评估、每 K 步执行一次的 `generate_and_print_sample` 定性探测，以及供后续绘图的 JSONL 损失日志。同一骨架可以训练你今后构建的每个解码器 LLM。
 
 **Type:** Build
 **Languages:** Python
-**Prerequisites:** Phase 19 lessons 30 to 35
-**Time:** ~90 minutes
+**Prerequisites:** 阶段 19 第 30 至 35 课
+**Time:** ~90 分钟
 
-## Learning Objectives
+## 学习目标（Learning Objectives）
 
-- Build a training loop that computes cross entropy loss with the correct input and target alignment for next token prediction.
-- Configure AdamW with weight decay applied to weight tensors and not to LayerNorm or bias tensors.
-- Implement a learning rate schedule with linear warmup and cosine decay, and read the resulting LR over time.
-- Evaluate on a held out split with `evaluate_model` so the eval loss is comparable across runs.
-- Generate a qualitative sample every K steps with `generate_and_print_sample` to catch divergence before the loss curve does.
-- Persist per step loss to JSONL so you can reload, plot, and ship the training log as a deliverable.
+- 构建训练循环，为下一词元预测正确对齐输入和目标，计算交叉熵（Cross-entropy）损失。
+- 配置 AdamW，使权重衰减（Weight decay）作用于权重张量，而不作用于 LayerNorm 或偏置张量。
+- 实现线性预热（Linear warmup）加余弦衰减（Cosine decay）的学习率调度，读懂学习率随时间的变化。
+- 用 `evaluate_model` 在留出划分（Held-out split）上评估，使各次运行的评估损失可比较。
+- 每 K 步用 `generate_and_print_sample` 生成定性样本，争取比损失曲线更早发现发散。
+- 将逐步损失持久化到 JSONL，以便重新加载、绘图，并将训练日志作为交付物交付。
 
-## The Problem
+## 问题（The Problem）
 
-A training script that prints the loss but does nothing else fails three ways. It cannot tell you if the loss is decreasing for the right reason (the model could overfit the training set and never learn). It cannot tell you if a divergence is starting (the loss can spike for one step and recover, or one step and crash). It cannot tell you what the model has learned (loss is a scalar; a generated sample is a paragraph). All three failures hide unless the loop measures.
+只打印损失、别的什么也不做的训练脚本有三种不足。它无法告诉你损失是否因正确的原因下降：模型可能过拟合训练集，却没有真正学会泛化。它无法告诉你是否开始发散：损失可能突增一步后恢复，也可能突增一步后崩溃。它也无法告诉你模型学到了什么：损失是标量，生成样本却是一段话。不做测量，这三种失败就会被隐藏。
 
-The loop in this lesson measures three ways. Loss on the training batch every step. Loss on a held out batch every K steps. A generated continuation from a fixed prompt every K steps. The training log lands in JSONL so the artifact is the loop's testimony.
+本课循环从三个方面测量：每步测量训练批次损失，每 K 步测量留出批次损失，每 K 步从固定提示词生成续写。训练日志落入 JSONL，使这个交付物成为循环行为的记录。
 
-## The Concept
+## 概念（The Concept）
 
 ```mermaid
 flowchart TB
-  D[(Token tensor<br/>train + val)] --> B[Make batches<br/>input + target shift by one]
-  B --> F[Forward<br/>logits]
-  F --> L[Cross entropy<br/>flatten over batch and time]
-  L --> Bw[Backward]
-  Bw --> Cg[Clip grad norm]
-  Cg --> Step[AdamW step]
-  Step --> Sched[Cosine LR schedule]
-  Sched --> JL[Append step record<br/>to losses.jsonl]
-  JL --> Probe{Step is a probe step?}
-  Probe -- yes --> Eval[evaluate_model on val]
-  Probe -- yes --> Sample[generate_and_print_sample]
-  Probe -- no --> Next[Next step]
+  D[(词元张量<br/>训练 + 验证)] --> B[构建批次<br/>输入 + 移位一位的目标]
+  B --> F[前向传播<br/>逻辑值]
+  F --> L[交叉熵<br/>展平批次与时间维度]
+  L --> Bw[反向传播]
+  Bw --> Cg[裁剪梯度范数]
+  Cg --> Step[AdamW 更新]
+  Step --> Sched[余弦学习率调度]
+  Sched --> JL[追加步骤记录<br/>到 losses.jsonl]
+  JL --> Probe{当前是探测步骤吗？}
+  Probe -- 是 --> Eval[在验证集执行 evaluate_model]
+  Probe -- 是 --> Sample[generate_and_print_sample]
+  Probe -- 否 --> Next[下一步]
   Eval --> Next
   Sample --> Next
 ```
 
-The two non-obvious pieces are the loss alignment and the AdamW decay split.
+其中不易察觉的两个关键点是损失对齐和 AdamW 衰减分组。
 
-### Loss alignment
+### 损失对齐（Loss alignment）
 
-The model predicts the next token at every position. If the input batch is tokens `[t0, t1, t2, t3]`, the target batch must be `[t1, t2, t3, t4]`. Cross entropy is computed on the flat shape `(batch * seq, vocab)` against the flat target `(batch * seq,)`. Forget the shift and you train the model to predict itself, which converges to zero loss while learning nothing useful.
+模型在每个位置预测下一词元。如果输入批次的词元为 `[t0, t1, t2, t3]`，目标批次必须是 `[t1, t2, t3, t4]`。交叉熵基于展平的 `(batch * seq, vocab)` 和目标 `(batch * seq,)` 计算。忘记移位就会训练模型预测自身，损失虽趋于零，却学不到有用内容。
 
-### AdamW decay split
+### AdamW 衰减分组（AdamW decay split）
 
-Weight decay regularizes weight tensors but not normalization scales or biases. Putting decay on the LayerNorm scale slowly drives the scale to zero and breaks normalization. Putting decay on a bias is mathematically harmless but a waste of cycles. The standard split is: matrix shaped tensors (linear weights, embedding tables) get decay, anything that looks like a scale or shift does not.
+权重衰减正则化（Regularize）权重张量，但不应作用于归一化缩放或偏置。对 LayerNorm 缩放施加衰减，会逐渐把它推向零，破坏归一化。对偏置施加衰减在数学上无害，但浪费计算。标准分组是：矩阵形状张量（线性权重、嵌入表）使用衰减，类似缩放或平移的参数不使用。
 
-### Warmup plus cosine schedule
+### 预热加余弦调度（Warmup plus cosine schedule）
 
-Warmup ramps the learning rate from zero to the target over a few hundred steps so the optimizer state has time to populate. Cosine decay drops the learning rate back toward zero over the remaining steps so the final phase fine tunes the weights at a small step size. The combination is the most common schedule in open weights LLM training because it removes most of the brittle moments in the first thousand steps and the last thousand steps.
+预热在数百步内将学习率从零升至目标值，让优化器状态有时间建立。余弦衰减在余下步骤将学习率降回接近零，让最后阶段用小步长微调权重。这是开放权重 LLM 训练中最常见的调度组合，因为它消除了最初一千步和最后一千步中大部分易出问题的时刻。
 
-### Held out evaluation
+### 留出评估（Held out evaluation）
 
-`evaluate_model` runs a fixed number of batches from the validation split, accumulates loss, divides by the batch count, and returns. No gradient. No dropout. The number is reproducible across runs given the same seed and the same split. Reporting the held out loss next to the training loss is how you spot overfitting.
+`evaluate_model` 在验证划分上运行固定数量的批次，累加损失，除以批次数后返回。不计算梯度，不启用随机失活（Dropout）。给定相同种子和划分，结果可在各次运行间复现。将留出损失和训练损失并列报告，是发现过拟合（Overfitting）的方法。
 
-### Qualitative sampling as an early signal
+### 定性采样作为早期信号（Qualitative sampling as an early signal）
 
-A model whose training loss drops nicely but whose generated samples are all the same token is broken. A model whose loss curve looks flat but whose generated samples sharpen into coherent words is learning. The qualitative probe runs faster than reading the full curve and catches modes the scalar misses.
+训练损失下降顺利、生成样本却全是同一词元的模型出了问题。损失曲线看似平坦、生成样本却逐渐变为连贯词语的模型正在学习。定性探测比阅读完整曲线更快，能捕捉标量遗漏的情况。
 
 ```figure
 cap-training-loop
 ```
 
-## Build It
+## 动手实现（Build It）
 
-`code/main.py` implements:
+`code/main.py` 实现：
 
-- `make_batches(token_ids, batch_size, context_length)` which slices a long token tensor into input and target pairs.
-- `calc_loss_batch(model, inputs, targets)` which forwards, flattens, and returns the scalar cross entropy.
-- `evaluate_model(model, val_loader, max_batches)` which iterates a fixed number of validation batches with no grad and returns the mean loss.
-- `generate_and_print_sample(model, prompt, max_new_tokens)` which runs the lesson 35 generation function on a fixed prompt and prints the result.
-- `build_param_groups(model, weight_decay)` which produces the two-group AdamW parameter list.
-- `cosine_with_warmup(step, warmup_steps, total_steps, max_lr, min_lr)` which returns the LR at a given step.
-- `train(...)` which runs the loop, persists `outputs/losses.jsonl`, and prints the eval loss and a sample every `eval_every` steps.
-- A demo that trains a tiny model on synthetic data for a small number of steps, writes a JSONL log, and prints the eval loss and a sample at the probe points. The demo runs in well under a minute on CPU.
+- `make_batches(token_ids, batch_size, context_length)`：将长词元张量切为输入与目标对。
+- `calc_loss_batch(model, inputs, targets)`：执行前向传播、展平，并返回标量交叉熵。
+- `evaluate_model(model, val_loader, max_batches)`：在不计算梯度的条件下迭代固定数量的验证批次，返回平均损失。
+- `generate_and_print_sample(model, prompt, max_new_tokens)`：对固定提示词运行第 35 课的生成函数并打印结果。
+- `build_param_groups(model, weight_decay)`：生成分成两组的 AdamW 参数列表。
+- `cosine_with_warmup(step, warmup_steps, total_steps, max_lr, min_lr)`：返回给定步骤的学习率。
+- `train(...)`：执行循环，持久化 `outputs/losses.jsonl`，并每 `eval_every` 步打印评估损失和一个样本。
+- 演示：在合成数据上训练微型模型少量步骤，写入 JSONL 日志，在探测点打印评估损失和样本。CPU 上远不到一分钟即可运行完毕。
 
-Run it:
+运行：
 
 ```bash
 python3 code/main.py
 ```
 
-Output: per step loss line, eval loss every probe step, a generated sample every probe step, and a final `outputs/losses.jsonl` you can load with `json.loads` per line.
+输出包括逐步损失行、每个探测步骤的评估损失与生成样本，以及最终的 `outputs/losses.jsonl`，可逐行用 `json.loads` 加载。
 
-## Stack
+## 技术栈（Stack）
 
-- `torch` for autograd, optimizer, and modules.
-- `main.py` reimplements the lesson 35 `GPTModel` and supporting modules locally.
+- `torch` 提供自动微分、优化器和模块。
+- `main.py` 在本地重新实现第 35 课的 `GPTModel` 及其支持模块。
 
-## Production patterns in the wild
+## 实际生产模式（Production patterns in the wild）
 
-Three patterns turn the textbook loop into something you can leave running overnight.
+三种模式让教材循环变为可以放心运行一夜的实现。
 
-**Gradient norm clipping is non negotiable.** A bad batch (anomalous data, an LR spike, a numerical edge case) produces a huge gradient that wipes out hours of training. `torch.nn.utils.clip_grad_norm_(params, max_norm=1.0)` after `backward` and before `step` keeps the optimizer in a safe range. The clipping value is a free parameter; one is the default that survives most setups.
+**梯度范数裁剪不可省略（Gradient norm clipping is non negotiable）。** 坏批次（异常数据、学习率突增、数值边界情况）可能产生巨大梯度，毁掉数小时的训练。在 `backward` 后、`step` 前执行 `torch.nn.utils.clip_grad_norm_(params, max_norm=1.0)`，可让优化器保持在安全范围。裁剪值是可调参数；默认值一适用于多数配置。
 
-**Resumable JSONL logging, not pickled state.** Per step loss records as `{"step": int, "train_loss": float, "lr": float}` lines in JSONL are durable: any crash leaves a readable artifact, you can grep, you can plot with thirty lines of Python, and you can resume training by reading the last step. Pickled state ties you to the exact module layout that produced the file, which is brittle across refactors.
+**使用可恢复的 JSONL 日志，而非 pickle 状态（Resumable JSONL logging, not pickled state）。** 将逐步损失以 `{"step": int, "train_loss": float, "lr": float}` 的 JSONL 行保存很耐用：崩溃后仍留下可读交付物，可用 grep 搜索，三十行 Python 即可绘图，还能读取最后一步恢复训练。pickle 状态绑定于生成文件时的精确模块布局，重构后很容易失效。
 
-**Eval batches drawn from a fixed slice.** The validation tokens get sliced into batches at script start, not on the fly. Reproducibility depends on the eval batches being identical from run to run; otherwise comparing eval loss between two runs measures the batch shuffle as much as the model.
+**从固定切片获取评估批次（Eval batches drawn from a fixed slice）。** 验证词元在脚本启动时就被切分成批次，而非临时切分。可复现性依赖各次运行的评估批次完全一致，否则两次运行的评估损失比较既衡量模型，也同样衡量批次顺序变化。
 
-## Use It
+## 实际应用（Use It）
 
-- The loop in this lesson is the same skeleton that trains a 124M model on real data. Swap the synthetic token tensor for a `datasets`-style loader and the loop runs unchanged.
-- The JSONL log is the deliverable that turns a training run into evidence. The next lesson uses one to compare a freshly trained checkpoint with a pretrained one.
-- The qualitative sample probe is the catch-all that scalar loss cannot replace.
+- 本课循环的骨架同样能在真实数据上训练 124M 模型。把合成词元张量换成 `datasets` 风格加载器，循环无需修改。
+- JSONL 日志是将一次训练转化为证据的交付物。下一课用它比较新训练的检查点（Checkpoint）和预训练检查点。
+- 定性样本探测是兜底检查，标量损失无法替代。
 
-## Exercises
+## 练习（Exercises）
 
-1. Add `weight_decay_groups()` unit tests that confirm scale and bias parameters land in the no decay group and linear and embedding weights land in the decay group.
-2. Replace synthetic random tokens with bytes from a small text file so the demo trains on something legible. Verify the generated sample uses characters present in the file.
-3. Add a `min_lr` floor of 10 percent of `max_lr` to the cosine schedule and re-plot.
-4. Save a checkpoint every `eval_every` steps in addition to the JSONL log. Add a `resume_from` flag that reloads model state and optimizer state.
-5. Log per step throughput (tokens per second) next to the loss and confirm it stays in a steady band.
+1. 添加 `weight_decay_groups()` 单元测试，确认缩放和偏置参数进入无衰减组，线性权重和嵌入权重进入衰减组。
+2. 用小文本文件中的字节替换合成随机词元，让演示训练可读内容。验证生成样本使用文件中存在的字符。
+3. 为余弦调度添加等于 `max_lr` 10% 的 `min_lr` 下限，重新绘图。
+4. 除 JSONL 日志外，每 `eval_every` 步保存检查点。添加 `resume_from` 标志，重新加载模型和优化器状态。
+5. 在损失旁记录逐步吞吐量（每秒词元数），确认它保持在稳定区间。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语 | 常见说法 | 实际含义 |
 |------|-----------------|------------------------|
-| Loss alignment | "Shift by one" | Input tokens at positions 0..T-1, target tokens at positions 1..T; cross entropy is computed on flattened shapes |
-| Decay split | "Two groups" | AdamW receives matrix shaped tensors with weight decay and scale or bias tensors with none |
-| Warmup | "Ramp" | The learning rate climbs from zero to its target over a fixed number of steps so the optimizer state can populate |
-| Eval batches | "Held out batches" | A fixed slice of the validation token tensor, sliced once at script start, used identically every probe |
-| Qualitative probe | "Sample print" | A short generation from a fixed prompt printed every K steps to catch failure modes loss alone hides |
+| 损失对齐（Loss alignment） | “移位一位（Shift by one）” | 输入词元在位置 0..T-1，目标在 1..T；在展平后的形状上计算交叉熵 |
+| 衰减分组（Decay split） | “两组（Two groups）” | AdamW 对矩阵形状张量施加权重衰减，对缩放或偏置张量不施加衰减 |
+| 预热（Warmup） | “爬升（Ramp）” | 学习率在固定步数内从零升至目标值，让优化器状态得以建立 |
+| 评估批次（Eval batches） | “留出批次（Held out batches）” | 验证词元张量的固定切片，脚本启动时切分一次，每次探测使用相同批次 |
+| 定性探测（Qualitative probe） | “打印样本（Sample print）” | 每 K 步打印固定提示词的短生成结果，捕捉仅靠损失无法发现的失败模式 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- Phase 19 lesson 35 for the model the loop drives.
-- Phase 19 lesson 37 for loading pretrained weights into the same model.
-- Phase 10 lesson 04 (pre training mini GPT) for the procedure on real data.
-- Phase 10 lesson 10 (evaluation) for the broader eval surface beyond cross entropy loss.
+- 阶段 19 第 35 课：循环驱动的模型。
+- 阶段 19 第 37 课：向同一模型加载预训练权重。
+- 阶段 10 第 04 课（预训练微型 GPT）：真实数据上的流程。
+- 阶段 10 第 10 课（评估）：交叉熵损失之外的更广泛评估内容。

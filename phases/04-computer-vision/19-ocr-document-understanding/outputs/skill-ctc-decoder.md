@@ -1,29 +1,29 @@
 ---
 name: skill-ctc-decoder
-description: Write greedy and beam-search CTC decoders from scratch, including length normalisation
+description: 从零编写贪心与束搜索 CTC 解码器，包括长度归一化
 version: 1.0.0
 phase: 4
 lesson: 19
 tags: [ocr, ctc, decoding, sequence-models]
 ---
 
-# CTC Decoder
+# CTC 解码器（CTC Decoder）
 
-Produce two decoding routines for CTC outputs: greedy (fast) and beam (better on noisy inputs).
+为连接时序分类（Connectionist Temporal Classification，CTC）输出生成两种解码程序：贪心解码（Greedy Decoding），速度快；束搜索（Beam Search），对噪声输入效果更好。
 
-## When to use
+## 使用时机（When to use）
 
-- Running OCR inference on custom CRNN outputs.
-- Benchmarking a pretrained OCR model against different decoders.
-- Implementing a simple beam search without pulling in ctcdecode.
+- 对自定义卷积循环神经网络（Convolutional Recurrent Neural Network，CRNN）输出进行 OCR 推理。
+- 为预训练 OCR 模型比较不同解码器的基准表现。
+- 不引入 ctcdecode，实现简单束搜索。
 
-## Inputs
+## 输入（Inputs）
 
-- `log_probs`: (T, N, C) log-softmax over vocab (index 0 = blank by convention).
-- `vocab`: list of C characters.
-- `beam_width` (beam only): typically 5-10.
+- `log_probs`：词表上的 (T, N, C) log-softmax，约定索引 0 为空白符。
+- `vocab`：包含 C 个字符的列表。
+- `beam_width`（仅束搜索）：通常为 5-10。
 
-## Greedy decoder
+## 贪心解码器（Greedy decoder）
 
 ```python
 def greedy_ctc_decode(log_probs, vocab, blank=0):
@@ -40,7 +40,7 @@ def greedy_ctc_decode(log_probs, vocab, blank=0):
     return out
 ```
 
-## Beam search decoder
+## 束搜索解码器（Beam search decoder）
 
 ```python
 import heapq
@@ -99,10 +99,10 @@ def _logsumexp(a, b):
     return m + math.log(math.exp(a - m) + math.exp(b - m))
 ```
 
-## Rules
+## 规则（Rules）
 
-- The blank index in CTC is 0 by convention in PyTorch's `nn.CTCLoss`.
-- Beam search improves accuracy on low-confidence inputs; on clean inputs the improvement is <1% CER.
-- Never prune the beam below 5; the accuracy-latency trade flattens below that.
-- When running beam search inside a tight latency budget, drop to greedy; the quality hit is small on most production OCR data.
-- For large vocabularies (CJK with 3000+ characters), switch to `ctcdecode` (C++) instead of the pure Python version above; the Python beam quickly becomes the bottleneck.
+- PyTorch `nn.CTCLoss` 中，CTC 空白符索引约定为 0。
+- 束搜索能提高低置信度输入的准确率；干净输入上的字符错误率（Character Error Rate，CER）改善 <1%。
+- 不要把束宽剪到 5 以下，低于该值时准确率与延迟的权衡趋于平坦。
+- 延迟预算紧张时，将束搜索降级为贪心解码；多数生产 OCR 数据的质量损失较小。
+- 大词表，例如包含 3000 个以上字符的中日韩文字，改用 C++ 的 `ctcdecode`，而非上述纯 Python 版本；Python 束搜索很快就会成为瓶颈。

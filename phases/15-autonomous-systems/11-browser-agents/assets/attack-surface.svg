@@ -15,70 +15,70 @@
     </style>
   </defs>
 
-  <text x="440" y="26" text-anchor="middle" class="title">Indirect prompt injection: attack surface and defense layers</text>
+  <text x="440" y="26" text-anchor="middle" class="title">间接提示词注入（Indirect prompt injection）：攻击面与防御层</text>
 
   <rect x="40" y="50" width="800" height="460" class="box"/>
 
   <!-- Untrusted content sources -->
   <rect x="60" y="80" width="200" height="120" class="hot"/>
-  <text x="160" y="102" text-anchor="middle" class="label">out-of-trust content</text>
-  <text x="76" y="128" class="small">• any third-party page</text>
-  <text x="76" y="144" class="small">• user-generated posts</text>
-  <text x="76" y="160" class="small">• search-engine snippets</text>
-  <text x="76" y="176" class="small">• URL fragment / query</text>
-  <text x="76" y="192" class="small">• prior memory entries</text>
+  <text x="160" y="102" text-anchor="middle" class="label">信任区外内容</text>
+  <text x="76" y="128" class="small">• 任何第三方页面</text>
+  <text x="76" y="144" class="small">• 用户生成帖子</text>
+  <text x="76" y="160" class="small">• 搜索引擎摘要</text>
+  <text x="76" y="176" class="small">• URL 片段 / 查询</text>
+  <text x="76" y="192" class="small">• 既有记忆条目</text>
 
   <!-- Agent -->
   <rect x="320" y="80" width="240" height="120" class="cool"/>
-  <text x="440" y="102" text-anchor="middle" class="label">browser agent</text>
-  <text x="336" y="128" class="small">read + reason + act loop</text>
-  <text x="336" y="144" class="small">tool allowlist per task</text>
-  <text x="336" y="160" class="small">scoped credentials only</text>
-  <text x="336" y="176" class="small">session-isolated workspace</text>
-  <text x="336" y="192" class="small">logs retained for audit</text>
+  <text x="440" y="102" text-anchor="middle" class="label">浏览器智能体</text>
+  <text x="336" y="128" class="small">读取 + 推理 + 行动循环</text>
+  <text x="336" y="144" class="small">逐任务工具允许列表</text>
+  <text x="336" y="160" class="small">仅限定范围凭据</text>
+  <text x="336" y="176" class="small">按会话隔离的工作区</text>
+  <text x="336" y="192" class="small">保留日志供审计</text>
 
   <!-- Consequential sinks -->
   <rect x="620" y="80" width="200" height="120" class="cold"/>
-  <text x="720" y="102" text-anchor="middle" class="label">consequential sinks</text>
-  <text x="636" y="128" class="small">• form submits</text>
-  <text x="636" y="144" class="small">• backend tool calls</text>
-  <text x="636" y="160" class="small">• memory writes</text>
-  <text x="636" y="176" class="small">• file downloads</text>
-  <text x="636" y="192" class="small">• credential use</text>
+  <text x="720" y="102" text-anchor="middle" class="label">产生实质后果的操作</text>
+  <text x="636" y="128" class="small">• 表单提交</text>
+  <text x="636" y="144" class="small">• 后端工具调用</text>
+  <text x="636" y="160" class="small">• 记忆写入</text>
+  <text x="636" y="176" class="small">• 文件下载</text>
+  <text x="636" y="192" class="small">• 凭据使用</text>
 
   <path d="M260 140 L320 140" stroke="#1a1a1a" stroke-width="1.5" marker-end="url(#arrow)"/>
   <path d="M560 140 L620 140" stroke="#1a1a1a" stroke-width="1.5" marker-end="url(#arrow)"/>
 
   <!-- Defense layers -->
-  <text x="60" y="230" class="label">defense layers</text>
+  <text x="60" y="230" class="label">防御层</text>
 
   <rect x="60" y="240" width="240" height="100" class="cool"/>
-  <text x="180" y="262" text-anchor="middle" class="label">1. content sanitizer</text>
-  <text x="76" y="284" class="small">strip known-bad patterns</text>
-  <text x="76" y="300" class="small">"ignore previous", "post to"</text>
-  <text x="76" y="316" class="small">catches visible-text injection</text>
-  <text x="76" y="332" class="small">MISSES URL-fragment payloads</text>
+  <text x="180" y="262" text-anchor="middle" class="label">1. 内容清洗器</text>
+  <text x="76" y="284" class="small">移除已知恶意模式</text>
+  <text x="76" y="300" class="small" style="font-size: 8px">忽略先前（"ignore previous"），发布到（"post to"）</text>
+  <text x="76" y="316" class="small">捕获可见文本注入</text>
+  <text x="76" y="332" class="small">遗漏 URL 片段载荷</text>
 
   <rect x="320" y="240" width="240" height="100" class="cold"/>
-  <text x="440" y="262" text-anchor="middle" class="label">2. R/W boundary</text>
-  <text x="336" y="284" class="small">reads free; writes require</text>
-  <text x="336" y="300" class="small">fresh approval when</text>
+  <text x="440" y="262" text-anchor="middle" class="label">2. 读写（R/W）边界</text>
+  <text x="336" y="284" class="small">读取自由；当下方条件成立时，</text>
+  <text x="336" y="300" class="small">写入需要新批准：</text>
   <text x="336" y="316" class="small">content_origin = out-of-trust</text>
-  <text x="336" y="332" class="small">catches fragment injection too</text>
+  <text x="336" y="332" class="small">也捕获片段注入</text>
 
   <rect x="580" y="240" width="240" height="100" class="hot"/>
-  <text x="700" y="262" text-anchor="middle" class="label">3. tool allowlist + HITL</text>
-  <text x="596" y="284" class="small">tool allowlist per task</text>
-  <text x="596" y="300" class="small">HITL on irreversible writes</text>
-  <text x="596" y="316" class="small">propose-then-commit (L15)</text>
-  <text x="596" y="332" class="small">canary tokens on memory (L14)</text>
+  <text x="700" y="262" text-anchor="middle" class="label">3. 工具允许列表 + HITL</text>
+  <text x="596" y="284" class="small">逐任务工具允许列表</text>
+  <text x="596" y="300" class="small">不可逆写入需 HITL</text>
+  <text x="596" y="316" class="small">先提案后提交（第 15 课）</text>
+  <text x="596" y="332" class="small">记忆金丝雀词元（第 14 课）</text>
 
   <!-- Attack corpus -->
   <rect x="60" y="360" width="760" height="130" class="hot"/>
-  <text x="440" y="384" text-anchor="middle" class="label">documented 2025–2026 attacks</text>
-  <text x="80" y="406" class="content">Tainted Memories (Atlas CSRF, 2025) — attacker page binds instructions to the agent's memory</text>
-  <text x="80" y="422" class="content">HashJack (Cato Networks, 2026) — payload hidden in URL fragment / query string</text>
-  <text x="80" y="438" class="content">Perplexity Comet hijacks (2026) — one-click button rides follow-on payload</text>
-  <text x="80" y="458" class="content">OpenAI preparedness head (2025): indirect prompt injection "is not a bug that can be fully patched"</text>
-  <text x="80" y="478" class="small">defense-in-depth: sanitizer + R/W boundary + allowlist + HITL + canaries; any single layer insufficient</text>
+  <text x="440" y="384" text-anchor="middle" class="label">2025–2026 年已记录攻击</text>
+  <text x="80" y="406" class="content">Tainted Memories（Atlas CSRF，2025）：攻击页面将指令绑定至智能体记忆</text>
+  <text x="80" y="422" class="content">HashJack（Cato Networks，2026）：载荷藏于 URL 片段 / 查询字符串</text>
+  <text x="80" y="438" class="content">Perplexity Comet 劫持（2026）：一键按钮携带后续载荷</text>
+  <text x="80" y="458" class="content">OpenAI 准备度负责人（2025）：间接提示词注入“不是可以完全修补的漏洞”</text>
+  <text x="80" y="478" class="small">纵深防御：清洗器 + 读写边界 + 允许列表 + HITL + 金丝雀；任何单层都不足</text>
 </svg>

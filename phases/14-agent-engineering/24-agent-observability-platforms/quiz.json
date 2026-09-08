@@ -1,10 +1,10 @@
 {
   "lesson": "24-agent-observability-platforms",
-  "title": "Agent Observability: Langfuse, Phoenix, Opik",
+  "title": "智能体可观测性：Langfuse、Phoenix、Opik（Agent Observability: Langfuse, Phoenix, Opik）",
   "questions": [
     {
       "stage": "pre",
-      "question": "What license does Langfuse ship under after the June 2025 open-sourcing of formerly commercial modules?",
+      "question": "2025 年 6 月原商业模块开源后，Langfuse 采用什么许可证？",
       "options": [
         "Apache 2.0",
         "GPLv3",
@@ -12,23 +12,23 @@
         "MIT"
       ],
       "correct": 3,
-      "explanation": "Langfuse is MIT, including LLM-as-a-judge, annotation queues, prompt experiments, and Playground after June 2025."
+      "explanation": "Langfuse 采用 MIT；2025 年 6 月之后也包括 LLM 作为裁判、标注队列、提示词实验和 Playground。"
     },
     {
       "stage": "pre",
-      "question": "What is Arize Phoenix strongest at according to the lesson?",
+      "question": "根据本课，Arize Phoenix 最擅长什么？",
       "options": [
-        "Deep agent-specific evaluation: trace clustering, anomaly detection, RAG retrieval relevancy, OpenInference auto-instrumentation",
-        "Automated optimization loop",
-        "Prompt versioning",
-        "Static analysis of code"
+        "深入的智能体专用评估：追踪聚类、异常检测、RAG 检索相关性、OpenInference 自动插桩",
+        "自动优化循环",
+        "提示词版本控制",
+        "代码静态分析"
       ],
       "correct": 0,
-      "explanation": "Phoenix focuses on behavioral drift and RAG evaluation with OpenInference auto-instrumentation."
+      "explanation": "Phoenix 借助 OpenInference 自动插桩，专注行为漂移和 RAG 评估。"
     },
     {
       "stage": "check",
-      "question": "Which platform pairs automated prompt optimization with guardrails (PII redaction, topical constraints) and LLM-judge hallucination detection?",
+      "question": "哪个平台将自动提示词优化与护栏（PII 脱敏、主题约束）、LLM 裁判幻觉检测结合？",
       "options": [
         "Langfuse",
         "Phoenix",
@@ -36,11 +36,11 @@
         "Opik"
       ],
       "correct": 3,
-      "explanation": "Opik centers on the optimization + guardrail loop."
+      "explanation": "Opik 以优化与护栏循环为核心。"
     },
     {
       "stage": "check",
-      "question": "Which platform does the lesson recommend for an all-in-one with prompt management?",
+      "question": "本课推荐哪个平台作为包含提示词管理的一体化方案？",
       "options": [
         "Opik",
         "Datadog APM",
@@ -48,43 +48,43 @@
         "Langfuse"
       ],
       "correct": 3,
-      "explanation": "Langfuse covers tracing + prompt management + evals + session replay end-to-end."
+      "explanation": "Langfuse 端到端覆盖追踪、提示词管理、评估和会话回放。"
     },
     {
       "stage": "check",
-      "question": "What does the lesson say about vendor-published platform benchmarks?",
+      "question": "本课如何看待厂商发布的平台基准？",
       "options": [
-        "They are definitive",
-        "Take them as directional; measure your own corpus",
-        "Only Opik's are reliable",
-        "They are forbidden by OpenTelemetry"
+        "它们是最终定论",
+        "作为方向参考，应在自己的语料上测量",
+        "只有 Opik 的可靠",
+        "OpenTelemetry 禁止它们"
       ],
       "correct": 1,
-      "explanation": "Even the cited 14x gap between Opik and Langfuse should be measured on your own data before deciding."
+      "explanation": "即使本课引用 Opik 与 Langfuse 约 14 倍的差距，也应在自己的数据上测量后再决策。"
     },
     {
       "stage": "post",
-      "question": "Why is tracing without evaluation considered expensive logging?",
+      "question": "为什么没有评估的追踪被视为昂贵的日志？",
       "options": [
-        "Providers charge for spans",
-        "You see runs but you do not score them, so regressions are invisible and bisection is impossible",
-        "Disk costs more than CPU",
-        "Spans cannot be replayed"
+        "提供商按跨度收费",
+        "能看见运行却不给运行评分，因而回归不可见，也无法二分定位",
+        "磁盘比 CPU 贵",
+        "跨度无法回放"
       ],
       "correct": 1,
-      "explanation": "Evals are what turn traces into actionable quality signals."
+      "explanation": "评估将追踪转化为可行动的质量信号。"
     },
     {
       "stage": "post",
-      "question": "What is the lesson's warning about self-rolled LLM-judges?",
+      "question": "本课对自制 LLM 裁判提出什么警告？",
       "options": [
-        "CRITIC applies: judges need external grounding for factual verification or they rubber-stamp",
-        "They must run on GPUs",
-        "They are forbidden by Apache 2.0",
-        "They only work in TypeScript"
+        "CRITIC 同样适用：裁判需要外部依据核验事实，否则会机械批准",
+        "它们必须在 GPU 上运行",
+        "Apache 2.0 禁止它们",
+        "它们只在 TypeScript 中有效"
       ],
       "correct": 0,
-      "explanation": "Without external tool-grounded verification, LLM-judges drift toward rubber-stamping (CRITIC, Lesson 5)."
+      "explanation": "没有基于外部工具的事实核验，LLM 裁判会倾向于机械批准（CRITIC，第 5 课）。"
     }
   ]
 }

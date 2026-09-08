@@ -1,10 +1,10 @@
-"""Phase 13 Lesson 17: a stateless MCP gateway and admission catalog.
+"""阶段 13 第 17 课：无状态 MCP 网关（Gateway）与准入目录（Admission catalog）。
 
-Companion to ../docs/en.md. This in-process protocol model implements current
-discovery, routing validation, deterministic tool aggregation, Registry
-server.json admission, RBAC, rate limits, descriptor pins, stateless backend
-forwarding, and a modeled subscriptions/listen response. Lesson 09 supplies
-the complete Streamable HTTP adapter.
+../docs/en.md 的配套示例。此进程内协议模型实现当前版本的
+发现、路由验证、确定性工具聚合（Deterministic tool aggregation）、Registry
+server.json 准入、基于角色的访问控制（Role-based access control，RBAC）、速率限制（Rate limits）、描述符固定（Descriptor pins）、无状态后端
+转发以及模拟的 subscriptions/listen 响应。第 09 课提供
+完整的可流式 HTTP（Streamable HTTP）适配器。
 """
 
 from __future__ import annotations
@@ -45,7 +45,7 @@ REGISTRY_SERVER_JSON = {
     "notes": {
         "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
         "name": "com.example/notes",
-        "description": "Example notes MCP server.",
+        "description": "示例笔记 MCP 服务器。",
         "version": "1.0.0",
         "packages": [{
             "registryType": "npm",
@@ -57,7 +57,7 @@ REGISTRY_SERVER_JSON = {
     "issues": {
         "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
         "name": "com.example/issues",
-        "description": "Example issues MCP server.",
+        "description": "示例问题跟踪 MCP 服务器。",
         "version": "1.0.0",
         "packages": [{
             "registryType": "npm",
@@ -219,7 +219,7 @@ class BackendServer:
             if tool is None:
                 raise ProtocolError(-32601, "Tool not found")
             result = {
-                "content": [{"type": "text", "text": f"{self.name}.{tool['name']} completed"}],
+                "content": [{"type": "text", "text": f"{self.name}.{tool['name']} 已完成"}],
                 "isError": False,
             }
         else:
@@ -462,8 +462,8 @@ def demo() -> None:
         body, headers = make_request(method, request_id, params)
         status, response = gateway.handle("bearer-alice", body, headers)
         print(status, method, json.dumps(response)[:260])
-    print("forwarded request ids:", gateway.forwarded_request_ids)
-    print("audit:", gateway.audit)
+    print("转发请求的 ID：", gateway.forwarded_request_ids)
+    print("审计（Audit）：", gateway.audit)
 
 
 if __name__ == "__main__":

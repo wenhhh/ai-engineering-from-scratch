@@ -1,37 +1,37 @@
 [
   {
-    "question": "What is the most common mistake people make when writing prompts for LLMs?",
-    "options": ["Not using enough examples", "Writing vague, underspecified instructions that leave the model guessing about format, scope, and constraints", "Using the wrong API", "Using too many tokens"],
+    "question": "为大语言模型（LLM）编写提示词时，人们最常犯什么错误？",
+    "options": ["示例数量不足", "指令模糊且说明不足，让模型猜测格式、范围和约束", "使用了错误的 API", "使用了过多词元（Token）"],
     "correct": 1,
-    "explanation": "LLMs follow instructions literally. 'Write me a marketing email' gives the model no constraints. Specifying tone, audience, length, format, and constraints produces dramatically better results.",
+    "explanation": "LLM 按字面遵循指令。‘帮我写一封营销邮件’没有给模型任何约束。指定语气、受众、长度、格式和约束后，结果会明显改善。",
     "stage": "pre"
   },
   {
-    "question": "What are the four core components of an effective prompt?",
-    "options": ["System, user, assistant, function", "Query, document, answer, score", "Role, context, constraints, and output format", "Input, output, model, temperature"],
+    "question": "有效提示词的四个核心组成部分是什么？",
+    "options": ["系统、用户、助手、函数", "查询、文档、答案、分数", "角色、上下文、约束和输出格式", "输入、输出、模型、温度（Temperature）"],
     "correct": 2,
-    "explanation": "Effective prompts specify: who the model should be (role), what it should know (context), what it should and shouldn't do (constraints), and how to structure the response (output format).",
+    "explanation": "有效提示词会指定：模型应扮演谁（角色）、应了解什么（上下文）、应该和不应该做什么（约束），以及如何组织回答（输出格式）。",
     "stage": "pre"
   },
   {
-    "question": "Why should you include output format instructions in your prompts?",
-    "options": ["It prevents hallucination", "Without format instructions, the model chooses its own structure, which varies between calls and is hard to parse programmatically", "It makes the prompt shorter", "It reduces API costs"],
+    "question": "为什么应在提示词中包含输出格式指令？",
+    "options": ["它能防止幻觉（Hallucination）", "没有格式指令时，模型会自行选择结构，不同调用间结构会变化，程序难以解析", "它能缩短提示词", "它能降低 API 成本"],
     "correct": 1,
-    "explanation": "LLMs are non-deterministic. Without explicit format instructions, one call might return bullet points, the next prose, the next markdown. Specifying format ensures consistent, parseable outputs.",
+    "explanation": "LLM 具有非确定性。没有明确格式指令时，一次调用可能返回要点，下一次返回连续文字，再下一次返回 Markdown。指定格式可以确保输出一致且可解析。",
     "stage": "post"
   },
   {
-    "question": "What is the purpose of a system prompt?",
-    "options": ["To set persistent behavioral rules, role, and constraints that apply to the entire conversation", "To define the model's architecture", "To authenticate the API call", "To compress the conversation history"],
+    "question": "系统提示词（System prompt）的用途是什么？",
+    "options": ["设定适用于整个对话、持续生效的行为规则、角色和约束", "定义模型架构", "对 API 调用进行身份验证", "压缩对话历史"],
     "correct": 0,
-    "explanation": "The system prompt establishes the model's persona, rules, and constraints for the entire session. It runs before every user turn and is the primary mechanism for controlling model behavior in production.",
+    "explanation": "系统提示词为整个会话建立模型的角色、规则和约束。它在每个用户轮次之前运行，是生产环境中控制模型行为的主要机制。",
     "stage": "post"
   },
   {
-    "question": "How should you test whether a prompt change actually improved output quality?",
-    "options": ["Run the prompt on a diverse test set and measure changes in defined metrics (accuracy, format compliance, relevance)", "Ask the model if it's doing better", "Check the API response time", "Read a few outputs and make a judgment call"],
+    "question": "如何测试提示词变更是否确实改善了输出质量？",
+    "options": ["在多样化测试集上运行提示词，衡量预定义指标（准确率、格式合规性、相关性）的变化", "询问模型是否表现更好", "检查 API 响应时间", "阅读少量输出后凭判断下结论"],
     "correct": 0,
-    "explanation": "Evaluating prompt changes on a handful of examples is unreliable. A systematic evaluation harness with diverse test cases and defined metrics shows whether changes help across the distribution, not just cherry-picked examples.",
+    "explanation": "仅用少量示例评估提示词变更并不可靠。具有多样化测试用例和明确指标的系统性评估框架，可以显示变更是否有益于整个分布，而不只是挑选出来的示例。",
     "stage": "post"
   }
 ]

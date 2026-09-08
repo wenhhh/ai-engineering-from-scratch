@@ -1,80 +1,45 @@
-# Reference Architecture Packet: Regional Support Resolution
+# 参考架构材料包：地区客户支持问题解决（Reference Architecture Packet: Regional Support Resolution）
 
-## 1. Executive Decision
+## 1. 管理层决策（Executive Decision）
 
-Approve a six-week, English-only, human-reviewed pilot. Support operations owns
-the outcome: reduce policy-correct first-response time from 11 minutes to under
-3 minutes. No automatic refunds or account deletion. Finance retains refund
-authority. Security, privacy, and regional data owners approve their boundaries.
+批准为期六周、仅面向英语业务且由人工审查的试点。支持运营团队负责业务成果：将符合政策的首次响应时间从 11 分钟降至 3 分钟以内。不自动退款，不删除账户。财务部门保留退款权限。安全、隐私和地区数据负责人分别批准其负责的边界。
 
-## 2. Discovery
+## 2. 调研（Discovery）
 
-The system classifies billing and shipping tickets, retrieves active regional
-policy, reads only the assigned account, drafts a response, and recommends but
-does not execute actions. Quality target is at least 98 percent source-supported
-drafts. P95 target is 8 seconds. Non-goals include autonomous sending, employee
-ranking, account closure, and languages outside the pilot.
+系统对账单和物流工单分类，检索当前有效的地区政策，只读取指定账户，起草回复，并提出操作建议但不执行。质量目标是至少 98% 的草稿得到来源支持，P95 目标为 8 秒。非目标包括自主发送、员工排名、关闭账户，以及试点范围之外的语言。
 
-## 3. Architecture Decisions
+## 3. 架构决策（Architecture Decisions）
 
-Select a deterministic intake, retrieve, draft, validate, and review workflow.
-Reject one augmented call because provenance and failures collapse. Reject an
-adaptive agent because the normal path is known and no measured benefit earns
-variable tool selection. Reconsider if more than 20 percent of accepted tickets
-require safe unmodeled discovery.
+选择确定性的受理、检索、起草、校验和审查工作流。否决单次增强调用，因为来源溯源与故障处理会被混在一起。否决自适应智能体，因为常规路径已知，且没有测得的收益足以证明可变工具选择的必要性。如果超过 20% 的已受理工单需要安全地探索未建模路径，则重新考虑此决策。
 
-## 4. System and Data Views
+## 4. 系统与数据视图（System and Data Views）
 
-Authenticated intake validates ticket and region. Metadata-filtered retrieval
-returns active policy IDs. A bounded draft step receives minimized account facts.
-Schema, semantic, provenance, and policy validators run before the review queue.
-Every edge carries principal, tenant, schema version, timeout, error category,
-trace ID, and owner. Partial evidence produces no action recommendation.
+经过身份认证的受理环节校验工单和地区。经元数据过滤的检索返回当前有效的政策 ID。受限起草步骤接收最小化的账户事实。在进入审查队列之前，运行模式、语义、来源溯源和政策校验器。每条连线都携带主体、租户、模式版本、超时、错误类别、追踪 ID 和负责人。证据不完整时，不提出操作建议。
 
-## 5. RAG and Knowledge
+## 5. RAG 与知识（RAG and Knowledge）
 
-Policy operations owns versioned sources. Heading-aware chunks retain rule,
-exception, region, effective date, authority, and access metadata. Hybrid
-retrieval is filtered before ranking. A validated index is activated atomically;
-the previous index remains rollback. Retrieval gates cover recall, freshness,
-conflict, stale versions, unauthorized sources, and adversarial content.
+政策运营团队负责版本化来源。按标题结构分块时，保留规则、例外、地区、生效日期、权限和访问元数据。混合检索在排序前先过滤。通过校验的索引以原子方式激活，前一版本索引保留用于回滚。检索门禁覆盖召回率、时效性、冲突、过期版本、未授权来源和对抗性内容。
 
-## 6. Integration and Identity
+## 6. 集成与身份（Integration and Identity）
 
-Direct typed service calls fit the first single-host pilot. Each call propagates
-trusted principal and tenant claims. Tools are split into policy read, assigned
-account read, and draft storage. Refund execution is absent. A future executor
-requires exact principal, account, amount, reason, expiry, single use,
-idempotency, and system-of-record reconciliation.
+直接调用带类型约束的服务适合首次单宿主试点。每次调用都传递可信主体和租户声明。工具拆分为政策读取、指定账户读取和草稿存储，不提供退款执行能力。未来的执行者需要精确绑定主体、账户、金额、理由、到期时间和单次使用限制，还需要幂等性，以及与权威记录系统（System of Record）的状态核对。
 
-## 7. Evaluation and Observability
+## 7. 评估与可观测性（Evaluation and Observability）
 
-The golden set stratifies ordinary, ambiguous, stale, conflicting, unauthorized,
-adversarial, regional, and high-risk cases. Release requires 100 percent hard
-control pass, at least 98 percent policy support, P95 below 8 seconds, no
-high-risk regression, and cost per accepted draft within budget. Traces connect
-retrieval, tool, validation, review, and outcome without storing credentials.
+黄金集按普通、含糊、过期、冲突、未授权、对抗性、地区和高风险案例分层。发布要求硬控制 100% 通过、政策支持度至少 98%、P95 低于 8 秒、高风险场景没有回归，以及每份验收通过草稿的成本不超预算。追踪将检索、工具、校验、审查和成果关联起来，但不存储凭据。
 
-## 8. Governance
+## 8. 治理（Governance）
 
-The risk register covers stale policy, cross-tenant access, prompt injection,
-unsupported refunds, unfair language performance, and reviewer overload. Every
-control has an owner, test, evidence, failure response, and review trigger.
-Qualified reviewers receive source-first evidence and reason-coded actions.
-Legal, privacy, security, finance, and domain owners decide their obligations.
+风险登记册覆盖过期政策、跨租户访问、提示词注入、缺乏依据的退款、不同语言表现不公平，以及审查者过载。每项控制都有负责人、测试、证据、失败响应和审查触发条件。具备资格的审查者获得以来源为先的证据，以及带原因代码的操作。法务、隐私、安全、财务和领域负责人分别确定其职责范围内的义务。
 
-## 9. Operations and Handoff
+## 9. 运营与交接（Operations and Handoff）
 
-Rollout proceeds through shadow, 5 percent canary, guarded regional expansion,
-and full pilot. Hard-control, task-quality, P95, freshness, review-load, and cost
-alerts name an owner and runbook. The operating team rehearses stale policy,
-authorization outage, ticket injection, evaluator drift, safe shutdown, and
-rollback before accepting ownership.
+上线依次经过影子模式、5% 金丝雀发布、受控地区扩展和完整试点。硬控制、任务质量、P95、时效性、审查负载和成本告警均明确负责人及运行手册。运营团队在接手责任之前，演练过期政策、授权服务中断、工单注入、评估器漂移、安全停用和回滚。
 
-## 10. Open Decisions
+## 10. 待定决策（Open Decisions）
 
-| Decision | Evidence needed | Owner | Due date | Safe default |
+| 决策 | 所需证据 | 负责人 | 截止日期 | 安全默认方案 |
 |---|---|---|---|---|
-| Add Spanish | representative quality and reviewer capacity | support quality | pilot week 4 | English only |
-| Add refund execution | threat model, policy, idempotency, approval tests | finance and security | after pilot | recommendation only |
-| Move tools to MCP | two-host interoperability and operations evidence | platform architecture | quarterly review | direct API |
+| 增加西班牙语 | 代表性质量证据和审查者容量 | 支持质量团队 | 试点第 4 周 | 仅限英语 |
+| 增加退款执行 | 威胁模型、政策、幂等性和批准测试 | 财务与安全团队 | 试点之后 | 仅提供建议 |
+| 将工具迁移至 MCP | 双宿主互操作性和运营证据 | 平台架构团队 | 季度审查 | 直接 API |

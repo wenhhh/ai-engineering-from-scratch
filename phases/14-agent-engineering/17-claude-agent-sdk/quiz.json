@@ -1,34 +1,34 @@
 {
   "lesson": "17-claude-agent-sdk",
-  "title": "The Harness as a Library — Subagents and Session Store",
+  "title": "库形式的执行框架：子智能体与会话存储（The Harness as a Library — Subagents and Session Store）",
   "questions": [
     {
       "stage": "pre",
-      "question": "What is the difference between the Anthropic Client SDK and the Claude Agent SDK?",
+      "question": "Anthropic Client SDK 与 Claude Agent SDK 有什么区别？",
       "options": [
-        "Client SDK is raw Messages API; Agent SDK is the Claude Code harness shape with built-in tools, MCP, hooks, subagents, and session store",
-        "There is no difference",
-        "Client SDK is for Python only",
-        "Client SDK is paid; Agent SDK is free"
+        "Client SDK 是原始 Messages API；Agent SDK 是 Claude Code 的执行框架（Harness）形式，内置工具、MCP、钩子、子智能体和会话存储",
+        "没有区别",
+        "Client SDK 只面向 Python",
+        "Client SDK 收费，Agent SDK 免费"
       ],
       "correct": 0,
-      "explanation": "Client SDK gives you the loop; Agent SDK ships the loop pre-built."
+      "explanation": "Client SDK 把循环交给你负责；Agent SDK 提供预先构建的循环。"
     },
     {
       "stage": "pre",
-      "question": "What are the two documented purposes of subagents?",
+      "question": "文档列出的子智能体（Subagent）两种用途是什么？",
       "options": [
-        "Authn and authz",
-        "Logging and metrics",
-        "Caching and rate limiting",
-        "Parallelization and context isolation"
+        "身份验证与授权",
+        "日志与指标",
+        "缓存与限速",
+        "并行化与上下文隔离"
       ],
       "correct": 3,
-      "explanation": "Subagents run independent work concurrently and preserve the orchestrator's context budget by isolating context."
+      "explanation": "子智能体并发运行独立工作，并通过上下文隔离保留编排器的上下文预算。"
     },
     {
       "stage": "check",
-      "question": "Which method is NOT part of the session store surface?",
+      "question": "哪个方法不属于会话存储接口？",
       "options": [
         "append",
         "compile_prompt",
@@ -36,11 +36,11 @@
         "list_subkeys"
       ],
       "correct": 1,
-      "explanation": "Session store ships append, load, list_sessions, delete, list_subkeys; compile_prompt is not a session API."
+      "explanation": "会话存储提供 append、load、list_sessions、delete、list_subkeys；compile_prompt 不是会话 API。"
     },
     {
       "stage": "check",
-      "question": "Which is NOT a Claude Agent SDK lifecycle hook?",
+      "question": "哪个不是 Claude Agent SDK 的生命周期钩子？",
       "options": [
         "PreEmbedding",
         "PreToolUse",
@@ -48,43 +48,43 @@
         "PreCompact"
       ],
       "correct": 0,
-      "explanation": "Hooks include PreToolUse, PostToolUse, SessionStart/End, UserPromptSubmit, PreCompact, Stop, Notification. PreEmbedding is not a hook."
+      "explanation": "钩子包括 PreToolUse、PostToolUse、SessionStart/End、UserPromptSubmit、PreCompact、Stop、Notification。PreEmbedding 不是钩子。"
     },
     {
       "stage": "check",
-      "question": "How does trace context propagate across the agent and CLI subprocess?",
+      "question": "追踪上下文如何在智能体与 CLI 子进程之间传播？",
       "options": [
-        "Only via the provider's dashboard",
-        "Through the file system",
-        "Through environment variables only",
-        "Through W3C trace context headers passed into the CLI subprocess"
+        "只能通过提供商仪表盘",
+        "通过文件系统",
+        "仅通过环境变量",
+        "通过传入 CLI 子进程的 W3C 追踪上下文头"
       ],
       "correct": 3,
-      "explanation": "OTel spans on the caller propagate into the CLI subprocess via W3C trace context, so the whole multi-process run is one trace."
+      "explanation": "调用方的 OTel 跨度通过 W3C 追踪上下文传播到 CLI 子进程，因此整个多进程运行属于同一条追踪。"
     },
     {
       "stage": "post",
-      "question": "What is subagent over-spawn and when does it happen?",
+      "question": "什么是子智能体过量创建（Subagent over-spawn），何时发生？",
       "options": [
-        "Spawning more subagents than CPU cores",
-        "Spawning before SessionStart",
-        "Spawning 100 subagents for 100 tiny tasks where overhead dominates; batch instead",
-        "Forgetting to close subagents"
+        "创建的子智能体超过 CPU 核数",
+        "在 SessionStart 之前创建",
+        "为 100 个微小任务创建 100 个子智能体，导致开销占主导；应改为批处理",
+        "忘记关闭子智能体"
       ],
       "correct": 2,
-      "explanation": "Subagents have overhead; batch small tasks instead of spawning one each."
+      "explanation": "子智能体存在开销；应将小任务分批，而不是逐个创建子智能体。"
     },
     {
       "stage": "post",
-      "question": "What does Claude Managed Agents trade off against the self-hosted SDK?",
+      "question": "与自托管 SDK 相比，Claude Managed Agents 做了什么取舍？",
       "options": [
-        "Tracing for streaming",
-        "Tools for memory",
-        "Latency for cost",
-        "Control for managed infrastructure (long-running async, built-in prompt caching, built-in compaction)"
+        "用追踪换流式输出",
+        "用工具换记忆",
+        "用延迟换成本",
+        "用控制权换托管基础设施（长时间异步、内置提示词缓存、内置压缩）"
       ],
       "correct": 3,
-      "explanation": "Managed Agents is the hosted alternative for long-running async work; less control, less ops surface."
+      "explanation": "Managed Agents 是面向长时间异步工作的托管替代方案；控制权更少，运维范围也更小。"
     }
   ]
 }

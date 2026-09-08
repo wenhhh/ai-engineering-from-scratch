@@ -1,78 +1,78 @@
 {
   "lesson": "29-mcp-reliability-cancellation-and-flow-control",
-  "title": "MCP Reliability, Cancellation, and Flow Control",
+  "title": "MCP 可靠性、取消与流量控制（MCP Reliability, Cancellation, and Flow Control）",
   "questions": [
     {
       "stage": "pre",
-      "question": "A mutation response is lost and the client retries with a new JSON-RPC id. What makes the retry safe?",
+      "question": "变更响应丢失，客户端用新的 JSON-RPC ID 重试。什么能保证这次重试安全？",
       "options": [
-        "The new JSON-RPC id automatically deduplicates the mutation",
-        "The tool descriptor includes an idempotentHint",
-        "A durable application idempotency key reused with identical arguments",
-        "The retry uses the same HTTP connection"
+        "新的 JSON-RPC ID 自动对变更去重",
+        "工具描述符包含 idempotentHint",
+        "使用相同参数复用持久的应用幂等键",
+        "重试使用同一个 HTTP 连接"
       ],
       "correct": 2,
-      "explanation": "JSON-RPC ids correlate messages. Business idempotency requires a durable key, an argument fingerprint, and a stored committed result."
+      "explanation": "JSON-RPC ID 关联消息。业务幂等性需要持久键、参数指纹以及存储的已提交结果。"
     },
     {
       "stage": "check",
-      "question": "How does a client cancel an in-flight request over stdio in MCP 2026-07-28?",
+      "question": "在 MCP 2026-07-28 中，客户端如何通过 stdio 取消进行中的请求？",
       "options": [
-        "Call tasks/cancel for the JSON-RPC id",
-        "Send notifications/cancelled with the active request id",
-        "Close a per-request SSE stream",
-        "Send a DELETE request to the MCP endpoint"
+        "针对该 JSON-RPC ID 调用 tasks/cancel",
+        "发送带活动请求 ID 的 notifications/cancelled",
+        "关闭每个请求独有的 SSE 流",
+        "向 MCP 端点发送 DELETE 请求"
       ],
       "correct": 1,
-      "explanation": "stdio has no per-request response stream, so the client sends the fire-and-forget notifications/cancelled notification."
+      "explanation": "stdio 没有每个请求独有的响应流，因此客户端发送无需等待响应的 notifications/cancelled 通知。"
     },
     {
       "stage": "check",
-      "question": "How does a client cancel an in-flight Streamable HTTP request?",
+      "question": "客户端如何取消进行中的 Streamable HTTP 请求？",
       "options": [
-        "Close that request's SSE response stream",
-        "POST notifications/cancelled to the MCP endpoint",
-        "Wait for the server to send notifications/cancelled",
-        "Send Last-Event-ID with an empty value"
+        "关闭该请求的 SSE 响应流",
+        "向 MCP 端点 POST notifications/cancelled",
+        "等待服务器发送 notifications/cancelled",
+        "发送值为空的 Last-Event-ID"
       ],
       "correct": 0,
-      "explanation": "For modern Streamable HTTP, closing the request-specific response stream is the cancellation signal."
+      "explanation": "对于现代 Streamable HTTP，关闭请求专属的响应流就是取消信号。"
     },
     {
       "stage": "check",
-      "question": "Progress keeps arriving before every idle timeout. Which deadline must still end a runaway request?",
+      "question": "每次空闲超时前都有进度到达。仍必须由哪个截止时间终止失控请求？",
       "options": [
-        "An absolute maximum timeout measured from request start",
-        "The next pagination cursor expiry",
-        "The proxy keepalive interval",
-        "The Task polling interval"
+        "从请求开始计算的绝对最大超时",
+        "下一个分页游标的过期时间",
+        "代理保活间隔",
+        "任务轮询间隔"
       ],
       "correct": 0,
-      "explanation": "Valid progress may reset the idle clock, but an absolute maximum deadline must remain in force."
+      "explanation": "有效进度可以重置空闲时钟，但绝对最大截止时间必须始终生效。"
     },
     {
       "stage": "post",
-      "question": "What does a successful tasks/cancel response prove?",
+      "question": "成功的 tasks/cancel 响应能证明什么？",
       "options": [
-        "The durable result was deleted",
-        "The worker has already stopped",
-        "The server acknowledged cancellation intent",
-        "The Task must eventually become cancelled"
+        "持久结果已被删除",
+        "工作线程已经停止",
+        "服务器已确认取消意图",
+        "任务最终必须变为 cancelled"
       ],
       "correct": 2,
-      "explanation": "Task cancellation is cooperative. The Task may remain working, finish first, or reach cancelled after a worker checkpoint."
+      "explanation": "任务取消是协作式的。任务可能保持 working、先完成，或者在工作线程检查点之后进入 cancelled。"
     },
     {
       "stage": "post",
-      "question": "A subscription SSE stream drops after several progress events. Which recovery plan fits MCP 2026-07-28?",
+      "question": "订阅 SSE 流在若干进度事件后断开。哪种恢复计划符合 MCP 2026-07-28？",
       "options": [
-        "Resume from Last-Event-ID and replay every in-flight mutation",
-        "Open a GET event stream and restore Mcp-Session-Id",
-        "Keep the old request id and assume no updates were lost",
-        "Open a new listen request, refetch authoritative state, and avoid unsafe mutation replay"
+        "从 Last-Event-ID 恢复并重放所有进行中的变更",
+        "打开 GET 事件流并恢复 Mcp-Session-Id",
+        "保留旧请求 ID，并假定没有丢失更新",
+        "发起新的监听请求，重新获取权威状态，并避免重放不安全的变更"
       ],
       "correct": 3,
-      "explanation": "Modern MCP streams are not resumable with Last-Event-ID. Recovery uses a new request plus authoritative refetch and explicit retry safety."
+      "explanation": "现代 MCP 流无法通过 Last-Event-ID 恢复。恢复应使用新请求、重新获取权威状态，并明确重试安全性。"
     }
   ]
 }

@@ -1,90 +1,90 @@
 {
   "lesson": "14-autogen-actor-model",
-  "title": "The Actor Model for Agents — Async Messages and Typed Runtimes",
+  "title": "智能体的参与者模型：异步消息与带类型运行时（The Actor Model for Agents — Async Messages and Typed Runtimes）",
   "questions": [
     {
       "stage": "pre",
-      "question": "What is the only legal way actors interact in AutoGen v0.4?",
+      "question": "AutoGen v0.4 中参与者唯一合法的交互方式是什么？",
       "options": [
-        "Direct access to a shared dict",
-        "Mutating each other's prompts",
-        "Shared SQL transactions",
-        "Asynchronous messages exchanged through inboxes; no shared memory"
+        "直接访问共享字典",
+        "修改彼此的提示词",
+        "共享 SQL 事务",
+        "通过收件箱交换异步消息，没有共享内存"
       ],
       "correct": 3,
-      "explanation": "Actors have private state and an inbox; messages are the only interaction."
+      "explanation": "参与者具有私有状态和收件箱，消息是唯一交互方式。"
     },
     {
       "stage": "pre",
-      "question": "What are the three API layers of AutoGen v0.4?",
+      "question": "AutoGen v0.4 的三个 API 层是什么？",
       "options": [
-        "Core, AgentChat, Extensions",
-        "Frontend, Backend, Database",
-        "Tools, Models, Memory",
-        "Plan, Act, Reflect"
+        "Core、AgentChat、Extensions",
+        "前端、后端、数据库",
+        "工具、模型、记忆",
+        "规划、行动、反思"
       ],
       "correct": 0,
-      "explanation": "Core is the low-level actor framework, AgentChat is the task-driven high-level API, Extensions are integrations."
+      "explanation": "Core 是底层参与者框架，AgentChat 是任务驱动高层 API，Extensions 是集成层。"
     },
     {
       "stage": "check",
-      "question": "Why does decoupling delivery from handling give fault isolation?",
+      "question": "为什么投递与处理解耦能够提供故障隔离？",
       "options": [
-        "The runtime catches handler failures in B without crashing A; A's send() returned immediately and never blocked",
-        "Each actor runs on a separate machine",
-        "Handlers are pure functions",
-        "The runtime restarts the OS on failure"
+        "运行时捕获 B 的处理器失败，不使 A 崩溃；A 的 send() 已立即返回，从未阻塞",
+        "每个参与者都在独立机器上运行",
+        "处理器都是纯函数",
+        "运行时失败时重启操作系统"
       ],
       "correct": 0,
-      "explanation": "send() puts the message in the recipient's inbox and returns; a handler crash is local to that actor."
+      "explanation": "send() 将消息放入接收者收件箱后返回，处理器崩溃局限于该参与者。"
     },
     {
       "stage": "check",
-      "question": "Which AgentChat topology rotates agents in a fixed order?",
+      "question": "哪种 AgentChat 拓扑按固定顺序轮转智能体？",
       "options": [
         "SelectorGroupChat",
         "Magentic-One",
         "RoundRobinGroupChat",
-        "Supervisor"
+        "监督者（Supervisor）"
       ],
       "correct": 2,
-      "explanation": "RoundRobinGroupChat is fixed rotation; SelectorGroupChat uses a selector to pick next."
+      "explanation": "RoundRobinGroupChat 是固定轮转；SelectorGroupChat 使用选择器决定下一位。"
     },
     {
       "stage": "check",
-      "question": "What is Magentic-One in this lesson?",
+      "question": "本课中的 Magentic-One 是什么？",
       "options": [
-        "A reference multi-agent team for web browsing, code execution, and file handling built on AgentChat",
-        "An OTel exporter",
-        "A new LLM model",
-        "A serialization format"
+        "建立在 AgentChat 之上的参考多智能体团队，负责网页浏览、代码执行和文件处理",
+        "OTel 导出器",
+        "新的 LLM 模型",
+        "序列化格式"
       ],
       "correct": 0,
-      "explanation": "Magentic-One is Microsoft's reference team that demonstrates the AgentChat API."
+      "explanation": "Magentic-One 是 Microsoft 用来展示 AgentChat API 的参考团队。"
     },
     {
       "stage": "post",
-      "question": "What is the lesson's stated status of AutoGen v0.4 in early 2026?",
+      "question": "本课描述的 AutoGen v0.4 在 2026 年初处于什么状态？",
       "options": [
-        "Deprecated and removed",
-        "Replaced by LangGraph",
-        "Just announced",
-        "Stable but in maintenance mode; Microsoft Agent Framework is the forward path"
+        "已弃用并移除",
+        "被 LangGraph 取代",
+        "刚刚发布",
+        "稳定但处于维护模式；Microsoft Agent Framework 是后续方向"
       ],
       "correct": 3,
-      "explanation": "AutoGen v0.7.x is stable for research; active development has shifted to Microsoft Agent Framework."
+      "explanation": "AutoGen v0.7.x 可稳定用于研究，开发重心已转移到 Microsoft Agent Framework。"
     },
     {
       "stage": "post",
-      "question": "Which observability standard does AutoGen v0.4 emit by default?",
+      "question": "AutoGen v0.4 默认输出哪种可观测性标准？",
       "options": [
         "Datadog APM",
-        "Prometheus metrics only",
-        "OpenTelemetry spans with gen_ai.* attributes per the OTel GenAI semantic conventions",
+        "只有 Prometheus 指标",
+        "按照 OTel GenAI 语义约定，输出带 gen_ai.* 属性的 OpenTelemetry 跨度",
         "StatsD"
       ],
       "correct": 2,
-      "explanation": "Every message emits a span; tool calls carry gen_ai.* attributes per OTel GenAI conventions."
+      "explanation": "每条消息输出一个跨度；工具调用按照 OTel GenAI 约定携带 gen_ai.* 属性。"
     }
   ]
 }

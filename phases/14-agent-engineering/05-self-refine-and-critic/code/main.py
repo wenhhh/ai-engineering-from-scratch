@@ -1,8 +1,8 @@
-"""Toy Self-Refine and CRITIC loop.
+"""教学用 Self-Refine 与 CRITIC 循环。
 
-Task: produce a 3-bullet summary under 60 chars per bullet that does not contain
-known factual errors. Self-Refine uses LLM-style self-critique; CRITIC routes
-verification through an external fact list.
+任务：生成包含 3 个要点的摘要，每个要点少于 60 个字符，且不包含
+已知事实错误。Self-Refine 使用大语言模型（LLM）式自我批评（Self-critique）；
+CRITIC 则通过外部事实列表完成验证。
 """
 
 from __future__ import annotations
@@ -50,10 +50,10 @@ def generate(topic: str, history: list[Attempt]) -> str:
 
 def feedback_self(output: str) -> tuple[str, bool]:
     if "Germany" in output and "Paris" in output:
-        return "first bullet reads wrong, double-check capital", False
+        return "第一个要点看起来有误，请复核首都", False
     if "Europe" in output and "Everest" in output:
-        return "second bullet's continent looks off to me", False
-    return "no issues", True
+        return "第二个要点中的大洲似乎不对", False
+    return "没有问题", True
 
 
 def verify_external(output: str) -> tuple[str, bool]:
@@ -61,14 +61,14 @@ def verify_external(output: str) -> tuple[str, bool]:
     for fact in KNOWN_WRONG_FACTS:
         key = fact.split(" is ")[0] if " is " in fact else fact
         if "paris" in text and "germany" in text:
-            return f"verifier: 'paris is the capital of germany' contradicts reference data", False
+            return f"验证器（Verifier）：'paris is the capital of germany' 与参考数据矛盾", False
         if "everest" in text and "europe" in text:
-            return f"verifier: 'mt everest is in europe' contradicts reference data", False
+            return f"验证器（Verifier）：'mt everest is in europe' 与参考数据矛盾", False
     if len([l for l in output.splitlines() if l.startswith("-")]) != 3:
-        return "verifier: expected 3 bullet lines", False
+        return "验证器：应有 3 行要点", False
     if any(len(l) > 60 for l in output.splitlines()):
-        return "verifier: bullet exceeds 60 chars", False
-    return "verifier: ok", True
+        return "验证器：要点超过 60 个字符", False
+    return "验证器：通过", True
 
 
 def refine(topic: str, prev: str, critique: str, history: list[Attempt]) -> str:
@@ -92,32 +92,32 @@ def print_run(label: str, history: list[Attempt]) -> None:
     print(f"\n{label}")
     print("-" * 60)
     for a in history:
-        tag = "OK " if a.verified else "..."
-        print(f"  iter {a.iteration} {tag} critique: {a.critique}")
+        tag = "通过 " if a.verified else "..."
+        print(f"  第 {a.iteration} 轮 {tag} 批评意见： {a.critique}")
         for line in a.output.splitlines():
             print(f"    {line}")
 
 
 def main() -> None:
     print("=" * 70)
-    print("SELF-REFINE and CRITIC — Phase 14, Lesson 05")
+    print("Self-Refine 与 CRITIC——第 14 阶段，第 05 课")
     print("=" * 70)
 
     hist_self = run_loop("world facts", use_critic=False)
-    print_run("Self-Refine (self-critique only)", hist_self)
+    print_run("Self-Refine（仅自我批评）", hist_self)
 
     hist_critic = run_loop("world facts", use_critic=True)
-    print_run("CRITIC (external verifier)", hist_critic)
+    print_run("CRITIC（外部验证器）", hist_critic)
 
     def summary(hist: list[Attempt]) -> str:
-        return "passed" if hist and hist[-1].verified else "did not converge"
+        return "通过" if hist and hist[-1].verified else "未收敛"
 
     print()
-    print(f"Self-Refine ended: {summary(hist_self)}  after {len(hist_self)} iters")
-    print(f"CRITIC    ended: {summary(hist_critic)}  after {len(hist_critic)} iters")
+    print(f"Self-Refine 结束：{summary(hist_self)}  共 {len(hist_self)} 轮")
+    print(f"CRITIC 结束：{summary(hist_critic)}  共 {len(hist_critic)} 轮")
     print()
-    print("Observation: CRITIC's verifier is grounded against reference data; a")
-    print("self-critic can fail to flag its own confident-sounding hallucination.")
+    print("观察：CRITIC 的验证器以参考数据为依据；")
+    print("自我批评器可能无法识别自己那些听起来很笃定的幻觉（Hallucination）。")
 
 
 if __name__ == "__main__":

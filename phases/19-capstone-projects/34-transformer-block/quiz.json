@@ -1,78 +1,78 @@
 {
   "lesson": "34-transformer-block",
-  "title": "Transformer Block from Scratch",
+  "title": "从零构建 Transformer 块（Transformer Block from Scratch）",
   "questions": [
     {
       "stage": "pre",
-      "question": "Which two sublayers live inside a single decoder transformer block?",
+      "question": "单个解码器 Transformer 块中包含哪两个子层？",
       "options": [
-        "Convolution and recurrent gate",
-        "Multi head causal attention and a position wise MLP, each wrapped in a residual connection",
-        "RNN encoder and decoder",
-        "Embedding lookup and softmax"
+        "卷积（Convolution）和循环门（Recurrent gate）",
+        "多头因果注意力和逐位置 MLP，各自由残差连接包裹",
+        "RNN 编码器和解码器",
+        "嵌入查找和 softmax"
       ],
       "correct": 1,
-      "explanation": "Every modern decoder LLM block is attention plus MLP, each with its own residual path and its own LayerNorm."
+      "explanation": "所有现代解码器 LLM 块都是注意力加 MLP，各有自己的残差路径和 LayerNorm。"
     },
     {
       "stage": "check",
-      "question": "What is the key difference between pre-LN and post-LN at depth?",
+      "question": "在深层网络中，前置层归一化（Pre-LN）与后置层归一化（Post-LN）的关键差别是什么？",
       "options": [
-        "Pre-LN uses different attention math",
-        "Pre-LN works only for encoders",
-        "Pre-LN keeps the residual signal unnormalized so gradients propagate cleanly to the embedding; post-LN puts the norm after the residual add, which shrinks gradients at depth and needs warmup",
-        "Post-LN is faster on GPU"
+        "前置层归一化使用不同的注意力数学",
+        "前置层归一化只适用于编码器",
+        "前置层归一化保持残差信号未归一化，使梯度顺畅传播到嵌入；后置层归一化放在残差相加之后，使深层梯度收缩，需要预热",
+        "后置层归一化在 GPU 上更快"
       ],
       "correct": 2,
-      "explanation": "Pre-LN trains stably without warmup at common learning rates; post-LN is what the 2017 paper shipped and needed warmup."
+      "explanation": "前置层归一化在常见学习率下无需预热即可稳定训练；2017 年论文采用后置层归一化，需要预热。"
     },
     {
       "stage": "check",
-      "question": "What does the causal mask in multi head attention do?",
+      "question": "多头注意力中的因果掩码做什么？",
       "options": [
-        "Drops random tokens",
-        "Sets the upper triangle of the attention logits to negative infinity so token i cannot attend to tokens at positions greater than i",
-        "Normalizes the attention scores",
-        "Picks the longest sequence in the batch"
+        "随机丢弃词元",
+        "将注意力逻辑值（Logits）的上三角设为负无穷，使词元 i 无法关注位置大于 i 的词元",
+        "归一化注意力分数",
+        "选出批次中最长的序列"
       ],
       "correct": 1,
-      "explanation": "Forgetting the causal mask trains a model that can read future tokens; the mask is the only piece that enforces causality."
+      "explanation": "忘记因果掩码会训练出能够读取未来词元的模型；掩码是唯一强制因果性的组件。"
     },
     {
       "stage": "check",
-      "question": "Why use a fused QKV projection instead of three separate linears?",
+      "question": "为什么使用融合 QKV 投影，而非三个独立线性层？",
       "options": [
-        "It avoids a softmax",
-        "It changes the model expressivity",
-        "It removes the residual",
-        "One linear of width 3 times d_model collapses three kernel launches and three matmuls into one, faster on every accelerator and matches the reference GPT-2 implementation"
+        "避免 softmax",
+        "改变模型表达能力",
+        "移除残差",
+        "宽度为 d_model 三倍的一个线性层将三次内核启动和三次矩阵乘法合为一次，在各种加速器上更快，且与 GPT-2 参考实现一致"
       ],
       "correct": 3,
-      "explanation": "Same math, fewer kernels; reference implementations of GPT-2, LLaMA, and Mistral all ship the fused projection."
+      "explanation": "数学相同，内核更少；GPT-2、LLaMA 和 Mistral 的参考实现都采用融合投影。"
     },
     {
       "stage": "post",
-      "question": "Where should dropout NOT be placed in a transformer block?",
+      "question": "Transformer 块中的随机失活（Dropout）不应放在哪里？",
       "options": [
-        "On the residual identity path itself, since that breaks the additive identity that lets the gradient flow at depth",
-        "Inside the feed forward expansion",
-        "On the attention softmax output",
-        "After the second MLP linear"
+        "残差恒等路径本身，因为这会破坏使梯度流经深层网络的加性恒等路径",
+        "前馈扩展内部",
+        "注意力 softmax 输出上",
+        "MLP 第二个线性层之后"
       ],
       "correct": 0,
-      "explanation": "Dropout belongs on the attention output and on the MLP residual update, never on the identity branch of the residual."
+      "explanation": "随机失活应作用于注意力输出和 MLP 残差更新，绝不能作用于残差的恒等分支。"
     },
     {
       "stage": "post",
-      "question": "Why register the causal mask as a buffer rather than allocating it per forward call?",
+      "question": "为什么将因果掩码注册为缓冲区，而非每次前向调用都分配？",
       "options": [
-        "Buffers run on GPU only",
-        "Buffers are encrypted",
-        "Buffers improve numerical accuracy",
-        "The mask depends only on the maximum context length, so allocating it once at construction and slicing the active window per call avoids an allocator hot spot at long context"
+        "缓冲区只能在 GPU 上运行",
+        "缓冲区经过加密",
+        "缓冲区提高数值精度",
+        "掩码只取决于最大上下文长度，因此构造时分配一次、每次调用切取活动窗口，可避免长上下文下的分配热点"
       ],
       "correct": 3,
-      "explanation": "Allocate once with register_buffer, slice per forward; otherwise the mask becomes a per-call allocation cost."
+      "explanation": "通过 register_buffer 分配一次，每次前向传播切片；否则掩码会造成每次调用的分配开销。"
     }
   ]
 }

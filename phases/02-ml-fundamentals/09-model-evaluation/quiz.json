@@ -2,20 +2,20 @@
   {
     "id": "eval-pre-1",
     "stage": "pre",
-    "question": "Why should you never tune hyperparameters based on test set performance?",
+    "question": "为什么绝不能根据测试集性能调整超参数（Hyperparameter）？",
     "options": [
-      "The test set is too small for reliable estimates",
-      "Adjusting the model based on test results effectively trains on the test set, making reported performance meaningless",
-      "Hyperparameters cannot be changed after training",
-      "The test set always has different features than the training set"
+      "测试集太小，无法可靠估计",
+      "根据测试结果调整模型相当于在测试集上训练，使报告的性能失去意义",
+      "训练后不能更改超参数",
+      "测试集的特征总是不同于训练集"
     ],
     "correct": 1,
-    "explanation": "Every time you adjust your model based on test performance, you leak test information into your modeling decisions. The test set must be used exactly once at the end for an unbiased estimate."
+    "explanation": "每次根据测试性能调整模型，都将测试信息泄漏到建模决策中。测试集必须只在最后使用一次，以获得无偏估计。"
   },
   {
     "id": "eval-pre-2",
     "stage": "pre",
-    "question": "A dataset has 95% negative and 5% positive samples. A model predicts 'negative' for every sample. What is its accuracy?",
+    "question": "数据集有 95% 负例、5% 正例。模型将所有样本预测为“负”。其准确率是多少？",
     "options": [
       "0%",
       "95%",
@@ -23,45 +23,45 @@
       "5%"
     ],
     "correct": 1,
-    "explanation": "Accuracy = correct predictions / total = 950/1000 = 95%. This shows why accuracy is misleading for imbalanced data -- a useless model looks great."
+    "explanation": "Accuracy = correct predictions / total = 950/1000 = 95%。这说明准确率为何会在不平衡数据上误导：无用模型看起来也很优秀。"
   },
   {
     "id": "eval-post-1",
     "stage": "post",
-    "question": "In K-fold cross-validation with K=5, how many times is each data point used for validation?",
+    "question": "K=5 的 K 折交叉验证（K-fold Cross-validation）中，每个数据点用于验证多少次？",
     "options": [
-      "Exactly once",
-      "5 times",
-      "It depends on the random seed",
-      "Never -- all data is used for training"
+      "恰好一次",
+      "5 次",
+      "取决于随机种子",
+      "从不，所有数据都用于训练"
     ],
     "correct": 0,
-    "explanation": "In K-fold CV, data is split into K equal folds. Each fold is used as the validation set exactly once while the remaining K-1 folds are used for training."
+    "explanation": "K 折交叉验证将数据分成 K 个等大的折。每折恰好作为验证集一次，其余 K-1 折用于训练。"
   },
   {
     "id": "eval-post-2",
     "stage": "post",
-    "question": "A learning curve shows training score = 0.95 and validation score = 0.60 that does not improve with more data. What should you try?",
+    "question": "学习曲线显示训练分数 = 0.95、验证分数 = 0.60，增加数据也不改善。应尝试什么？",
     "options": [
-      "Increase the learning rate",
-      "Use a simpler model or add regularization to reduce variance (overfitting)",
-      "Remove the validation set to give the model more training data",
-      "Collect more training data"
+      "增大学习率",
+      "使用更简单的模型或增加正则化，以降低方差（过拟合）",
+      "移除验证集，为模型提供更多训练数据",
+      "收集更多训练数据"
     ],
     "correct": 1,
-    "explanation": "A large gap between training (high) and validation (low) scores is high variance (overfitting). The fix is a simpler model, more regularization, or techniques like dropout -- not more data if the gap persists."
+    "explanation": "训练分数高、验证分数低且差距很大，说明高方差，即过拟合。应使用更简单模型、更强正则化或随机失活（Dropout）等技术；若差距持续，不应继续只增加数据。"
   },
   {
     "id": "eval-post-3",
     "stage": "post",
-    "question": "AUC-ROC = 0.5 for a binary classifier. What does this indicate?",
+    "question": "二分类器的 AUC-ROC = 0.5。这表明什么？",
     "options": [
-      "The model perfectly separates the two classes",
-      "The model performs no better than random guessing at ranking positives above negatives",
-      "The model has 50% accuracy",
-      "The model has equal precision and recall"
+      "模型完美分离了两个类别",
+      "模型将正例排在负例前的能力不优于随机猜测",
+      "模型准确率为 50%",
+      "模型精确率等于召回率"
     ],
     "correct": 1,
-    "explanation": "AUC-ROC = 0.5 means the model's ranking of positive and negative examples is no better than random. AUC = 1.0 would be perfect separation. The metric is threshold-independent."
+    "explanation": "AUC-ROC = 0.5 表示模型对正负样本的排序不优于随机。AUC = 1.0 才是完美分离。该指标与阈值无关。"
   }
 ]

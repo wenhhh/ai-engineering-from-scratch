@@ -1,9 +1,9 @@
-"""MemGPT-shaped two-tier memory in stdlib.
+"""用标准库实现 MemGPT 式双层记忆（Two-tier memory）。
 
-Main context is a fixed-size prompt buffer (core dict + messages list).
-Archival memory is an external searchable store. Agents page data in and out
-via memory tools. No LLM call — a scripted agent drives the scenario so the
-control flow is testable offline.
+主上下文（Main context）是固定容量的提示词缓冲区（core 字典 + messages 列表）。
+归档记忆（Archival memory）是外部可搜索存储。智能体通过记忆工具
+调入和调出数据。不调用大语言模型（LLM），场景由脚本式智能体驱动，
+因此可以离线测试控制流。
 """
 
 from __future__ import annotations
@@ -31,10 +31,10 @@ class MainContext:
             self.evicted.append(self.messages.pop(0))
 
     def render(self) -> str:
-        parts: list[str] = ["[core]"]
+        parts: list[str] = ["[核心记忆（Core）]"]
         for key, value in sorted(self.core.items()):
             parts.append(f"  {key}: {value}")
-        parts.append("[messages]")
+        parts.append("[消息（Messages）]")
         for msg in self.messages:
             parts.append(f"  {msg.role}: {msg.text}")
         return "\n".join(parts)
@@ -91,31 +91,31 @@ class MemoryTools:
     def core_memory_append(self, section: str, text: str) -> str:
         existing = self.main.core.get(section, "")
         self.main.core[section] = (existing + " " + text).strip() if existing else text
-        return f"core[{section}] appended: {len(self.main.core[section])} chars"
+        return f"core[{section}] 追加后共 {len(self.main.core[section])} 个字符"
 
     def core_memory_replace(self, section: str, old: str, new: str) -> str:
         current = self.main.core.get(section, "")
         if old not in current:
-            return f"error: {old!r} not in core[{section}]"
+            return f"错误：{old!r} 不在 core[{section}] 中"
         self.main.core[section] = current.replace(old, new)
-        return f"core[{section}] replaced"
+        return f"core[{section}] 已替换"
 
     def archival_memory_insert(self, text: str, tags: tuple[str, ...] = ()) -> str:
         rid = self.archival.insert(text, tags=tags)
-        return f"stored {rid} ({self.archival.count()} records)"
+        return f"已存储 {rid}（共 {self.archival.count()} 条记录）"
 
     def archival_memory_search(self, query: str, top_k: int = 3) -> str:
         hits = self.archival.search(query, top_k=top_k)
         if not hits:
-            return "no matches"
+            return "无匹配结果"
         return "\n".join(f"  {h.rid}: {h.text}" for h in hits)
 
     def conversation_search(self, query: str) -> str:
         q = query.lower()
         for msg in reversed(self.main.evicted + self.main.messages):
             if q in msg.text.lower():
-                return f"found ({msg.role}): {msg.text}"
-        return "no matches"
+                return f"找到（{msg.role}）： {msg.text}"
+        return "无匹配结果"
 
 
 @dataclass
@@ -129,18 +129,18 @@ def run_scripted_agent(tools: MemoryTools, script: list[ToolCall]) -> list[str]:
     for call in script:
         fn = getattr(tools, call.name, None)
         if fn is None:
-            observations.append(f"error: unknown tool {call.name!r}")
+            observations.append(f"错误：未知工具 {call.name!r}")
             continue
         try:
             observations.append(fn(**call.args))
         except Exception as e:
-            observations.append(f"error: {type(e).__name__}: {e}")
+            observations.append(f"错误：{type(e).__name__}：{e}")
     return observations
 
 
 def main() -> None:
     print("=" * 70)
-    print("MEMGPT VIRTUAL CONTEXT — Phase 14, Lesson 07")
+    print("MemGPT 虚拟上下文（Virtual context）——第 14 阶段，第 07 课")
     print("=" * 70)
 
     main_ctx = MainContext(max_messages=3)
@@ -169,28 +169,28 @@ def main() -> None:
     ]
     observations = run_scripted_agent(tools, script)
 
-    print("\ntool trace (memory writes)")
+    print("\n工具轨迹（记忆写入）")
     for call, obs in zip(script, observations):
         print(f"  {call.name}({call.args}) -> {obs}")
 
-    print("\nfilling main context until eviction kicks in")
+    print("\n填充主上下文，直到触发逐出（Eviction）")
     main_ctx.append("user", "what were you saying about tool chains?")
     main_ctx.append("assistant", "let me check archival")
 
-    print(f"\nmain context ({len(main_ctx.messages)} messages, "
-          f"{len(main_ctx.evicted)} evicted)")
+    print(f"\n主上下文（{len(main_ctx.messages)} 条消息，"
+          f"已逐出 {len(main_ctx.evicted)} 条）")
     print(main_ctx.render())
 
-    print("\npage in: archival_memory_search('tool chains drift')")
+    print("\n调入（Page in）：archival_memory_search('tool chains drift')")
     hit = tools.archival_memory_search("tool chains drift", top_k=2)
     print(hit)
 
-    print("\nconversation_search for 'retrieval bot'")
+    print("\n用 conversation_search 搜索 'retrieval bot'")
     print(tools.conversation_search("retrieval bot"))
 
     print()
-    print("pattern: memory is interrupt-driven. agent calls a tool, runtime")
-    print("fetches, result splices back as observation. same as Unix read().")
+    print("模式：记忆由中断驱动（Interrupt-driven）。智能体调用工具，运行时")
+    print("获取数据，再将结果作为观察结果接回上下文，与 Unix read() 相同。")
 
 
 if __name__ == "__main__":

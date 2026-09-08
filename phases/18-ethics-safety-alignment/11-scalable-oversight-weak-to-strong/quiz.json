@@ -1,34 +1,34 @@
 {
   "lesson": "11-scalable-oversight-weak-to-strong",
-  "title": "Scalable Oversight and Weak-to-Strong Generalization",
+  "title": "可扩展监督与弱到强泛化（Scalable Oversight and Weak-to-Strong Generalization）",
   "questions": [
     {
       "stage": "pre",
-      "question": "What is the core question the Superalignment agenda asks?",
+      "question": "超级对齐（Superalignment）研究提出的核心问题是什么？",
       "options": [
-        "Are humans more accurate than reward models?",
-        "Can RLHF scale beyond 1B parameters?",
-        "Can a weaker overseer reliably supervise a stronger, aligned model?",
-        "Can adversarial training remove all backdoors?"
+        "人类是否比奖励模型更准确？",
+        "RLHF 能否扩展到超过 1B 参数？",
+        "较弱的监督者能否可靠监督更强且对齐的模型？",
+        "对抗训练能否移除全部后门？"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "In Burns et al. (2023) weak-to-strong generalization, what is the setup?",
+      "question": "Burns 等人（2023）的弱到强泛化设置是什么？",
       "options": [
-        "A reward model is trained on synthetic data only",
-        "Two strong models debate; a human judges",
-        "A strong model (GPT-4 class) is fine-tuned on labels produced by a weak model (GPT-2 class) and its capability is measured against the strong supervised ceiling",
-        "GPT-2 is fine-tuned on GPT-4 labels"
+        "只在合成数据上训练奖励模型",
+        "两个强模型辩论，由人类评判",
+        "使用弱模型（GPT-2 级别）生成的标签微调强模型（GPT-4 级别），并相对于强模型监督学习上限测量其能力",
+        "用 GPT-4 标签微调 GPT-2"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "How is Performance Gap Recovered (PGR) defined?",
+      "question": "性能差距恢复率（Performance Gap Recovered，PGR）如何定义？",
       "options": [
         "(fine-tuned - weak) / (ceiling - weak)",
         "(weak - ceiling) / ceiling",
@@ -40,36 +40,36 @@
     },
     {
       "stage": "check",
-      "question": "Which of the following is NOT a scalable-oversight mechanism listed in the lesson?",
+      "question": "以下哪项不是本课列出的可扩展监督机制？",
       "options": [
-        "Recursive Reward Modeling",
-        "Tokenizer Distillation",
-        "Task Decomposition",
-        "Debate"
+        "递归奖励建模（Recursive Reward Modeling）",
+        "分词器蒸馏（Tokenizer Distillation）",
+        "任务分解（Task Decomposition）",
+        "辩论（Debate）"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "How are scalable oversight and W2SG complementary?",
+      "question": "可扩展监督与 W2SG 如何互补？",
       "options": [
-        "They both require white-box access",
-        "They both target the same metric",
-        "Scalable oversight improves the overseer's effective signal quality; W2SG closes the gap from whatever imperfect signal the overseer provides",
-        "They are mutually exclusive"
+        "两者都要求白盒访问",
+        "两者都针对同一指标",
+        "可扩展监督改善监督者实际提供的信号质量；W2SG 从监督者提供的任何不完美信号中弥补差距",
+        "两者相互排斥"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "What is the central assumption of the AI-safety-via-debate mechanism?",
+      "question": "通过辩论实现 AI 安全这一机制的核心假设是什么？",
       "options": [
-        "Finding a convincing true answer is easier than finding a convincing false answer",
-        "Debate transcripts are always shorter than direct answers",
-        "The judge is more capable than the debaters",
-        "Both debaters always tell the truth"
+        "找到令人信服的真实答案，比找到令人信服的错误答案更容易",
+        "辩论记录总比直接答案短",
+        "评判者比辩论者更有能力",
+        "双方辩论者总是说真话"
       ],
       "correct": 0,
       "explanation": ""

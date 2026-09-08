@@ -137,7 +137,14 @@ def _bundle_paths(body: str) -> tuple[str, ...]:
 
 def _section_has_content(body: str, title: str) -> bool:
     lines = body.splitlines()
-    heading = re.compile(rf"^##\s+{re.escape(title)}\s*#*\s*$", re.IGNORECASE)
+    translated_title = {
+        "Output contract": "\u8f93\u51fa\u5951\u7ea6",
+        "Failure behavior": "\u5931\u8d25\u884c\u4e3a",
+    }.get(title)
+    title_pattern = re.escape(title)
+    if translated_title:
+        title_pattern += "|" + re.escape(f"{translated_title}\uff08{title}\uff09")
+    heading = re.compile(rf"^##\s+(?:{title_pattern})\s*#*\s*$", re.IGNORECASE)
     for index, line in enumerate(lines):
         if not heading.fullmatch(line):
             continue

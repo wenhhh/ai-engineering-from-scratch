@@ -82,7 +82,7 @@ def invert_matrix(matrix):
 
         pivot = augmented[col][col]
         if abs(pivot) < 1e-12:
-            raise ValueError("Matrix is singular or near-singular")
+            raise ValueError("矩阵为奇异或近似奇异（Singular or near-singular）")
         for j in range(2 * n):
             augmented[col][j] /= pivot
 
@@ -141,7 +141,7 @@ def kl_divergence(p, q):
 
 
 def wasserstein_1d(p, q):
-    assert len(p) == len(q), "Distributions must have the same number of bins"
+    assert len(p) == len(q), "两个分布必须具有相同数量的区间（Bins）"
     n = len(p)
     cdf_p = [0.0] * n
     cdf_q = [0.0] * n
@@ -196,7 +196,7 @@ def find_k_nearest(query, dataset, distance_fn, k=5, **kwargs):
 
 def demo_norms():
     print("=" * 65)
-    print("NORMS: MEASURING VECTOR SIZE")
+    print("范数（Norms）：度量向量大小")
     print("=" * 65)
 
     vectors = [
@@ -206,20 +206,20 @@ def demo_norms():
         ("(1, 2, 3, 4, 5)", [1, 2, 3, 4, 5]),
     ]
 
-    print(f"  {'Vector':<20s} {'L1':>8s} {'L2':>8s} {'L3':>8s} {'L-inf':>8s}")
+    print(f"  {'向量':<20s} {'L1':>8s} {'L2':>8s} {'L3':>8s} {'L-inf':>8s}")
     print(f"  {'-' * 20} {'-' * 8} {'-' * 8} {'-' * 8} {'-' * 8}")
     for name, v in vectors:
         print(f"  {name:<20s} {l1_norm(v):>8.3f} {l2_norm(v):>8.3f} "
               f"{lp_norm(v, 3):>8.3f} {linf_norm(v):>8.3f}")
 
     print()
-    print("  Note: L-inf <= L2 <= L1 always holds.")
+    print("  注意：L-inf <= L2 <= L1 始终成立。")
     print()
 
 
 def demo_distances():
     print("=" * 65)
-    print("DISTANCES BETWEEN TWO POINTS")
+    print("两点间的距离（Distances）")
     print("=" * 65)
 
     a = [1, 2, 3]
@@ -228,19 +228,19 @@ def demo_distances():
     print(f"  A = {a}")
     print(f"  B = {b}")
     print()
-    print(f"  L1 (Manhattan):   {l1_distance(a, b):.4f}")
-    print(f"  L2 (Euclidean):   {l2_distance(a, b):.4f}")
+    print(f"  L1（曼哈顿距离，Manhattan）：   {l1_distance(a, b):.4f}")
+    print(f"  L2（欧氏距离，Euclidean）：   {l2_distance(a, b):.4f}")
     print(f"  L3:               {lp_distance(a, b, 3):.4f}")
-    print(f"  L-inf (Chebyshev):{linf_distance(a, b):.4f}")
-    print(f"  Cosine distance:  {cosine_distance(a, b):.4f}")
-    print(f"  Cosine similarity:{cosine_similarity(a, b):.4f}")
-    print(f"  Dot product:      {dot_product(a, b):.4f}")
+    print(f"  L-inf（Chebyshev 距离）：{linf_distance(a, b):.4f}")
+    print(f"  余弦距离（Cosine distance）：  {cosine_distance(a, b):.4f}")
+    print(f"  余弦相似度（Cosine similarity）：{cosine_similarity(a, b):.4f}")
+    print(f"  点积（Dot product）：      {dot_product(a, b):.4f}")
     print()
 
 
 def demo_cosine_vs_dot():
     print("=" * 65)
-    print("COSINE SIMILARITY vs DOT PRODUCT")
+    print("余弦相似度与点积（Cosine Similarity vs Dot Product）")
     print("=" * 65)
 
     a = [1, 2, 3]
@@ -248,36 +248,36 @@ def demo_cosine_vs_dot():
     c = [3, 1, 0]
 
     print(f"  A = {a}")
-    print(f"  B = {b}  (A scaled by 2)")
-    print(f"  C = {c}  (different direction)")
+    print(f"  B = {b}  （A 缩放为 2 倍）")
+    print(f"  C = {c}  （方向不同）")
     print()
-    print(f"  {'Pair':<10s} {'Cosine':>10s} {'Dot':>10s}")
+    print(f"  {'向量对':<10s} {'余弦':>10s} {'点积':>10s}")
     print(f"  {'-' * 10} {'-' * 10} {'-' * 10}")
-    print(f"  {'A vs B':<10s} {cosine_similarity(a, b):>10.4f} {dot_product(a, b):>10.4f}")
-    print(f"  {'A vs C':<10s} {cosine_similarity(a, c):>10.4f} {dot_product(a, c):>10.4f}")
-    print(f"  {'B vs C':<10s} {cosine_similarity(b, c):>10.4f} {dot_product(b, c):>10.4f}")
+    print(f"  {'A 与 B':<10s} {cosine_similarity(a, b):>10.4f} {dot_product(a, b):>10.4f}")
+    print(f"  {'A 与 C':<10s} {cosine_similarity(a, c):>10.4f} {dot_product(a, c):>10.4f}")
+    print(f"  {'B 与 C':<10s} {cosine_similarity(b, c):>10.4f} {dot_product(b, c):>10.4f}")
     print()
-    print("  Cosine says A and B are identical (same direction).")
-    print("  Dot product says B is more similar because of larger magnitude.")
+    print("  余弦相似度认为 A 和 B 相同（方向一致）。")
+    print("  点积认为 B 更相似，因为其模长（Magnitude）更大。")
     print()
 
     a_norm = normalize_vector(a)
     b_norm = normalize_vector(b)
     c_norm = normalize_vector(c)
 
-    print("  After L2 normalization:")
-    print(f"  {'Pair':<10s} {'Cosine':>10s} {'Dot':>10s}")
+    print("  L2 归一化（Normalization）后：")
+    print(f"  {'向量对':<10s} {'余弦':>10s} {'点积':>10s}")
     print(f"  {'-' * 10} {'-' * 10} {'-' * 10}")
-    print(f"  {'A vs B':<10s} {cosine_similarity(a_norm, b_norm):>10.4f} {dot_product(a_norm, b_norm):>10.4f}")
-    print(f"  {'A vs C':<10s} {cosine_similarity(a_norm, c_norm):>10.4f} {dot_product(a_norm, c_norm):>10.4f}")
+    print(f"  {'A 与 B':<10s} {cosine_similarity(a_norm, b_norm):>10.4f} {dot_product(a_norm, b_norm):>10.4f}")
+    print(f"  {'A 与 C':<10s} {cosine_similarity(a_norm, c_norm):>10.4f} {dot_product(a_norm, c_norm):>10.4f}")
     print()
-    print("  After normalization, cosine and dot product are identical.")
+    print("  归一化后，余弦相似度与点积相同。")
     print()
 
 
 def demo_mahalanobis():
     print("=" * 65)
-    print("MAHALANOBIS DISTANCE")
+    print("马氏距离（Mahalanobis Distance）")
     print("=" * 65)
 
     random.seed(42)
@@ -299,27 +299,27 @@ def demo_mahalanobis():
     mah_along = mahalanobis_distance(mean, point_along, cov)
     mah_perp = mahalanobis_distance(mean, point_perp, cov)
 
-    print(f"  Data: {n} points with correlated features (r ~ 0.8)")
-    print(f"  Mean: ({mean[0]:.2f}, {mean[1]:.2f})")
-    print(f"  Covariance: [[{cov[0][0]:.2f}, {cov[0][1]:.2f}], [{cov[1][0]:.2f}, {cov[1][1]:.2f}]]")
+    print(f"  数据：{n} 个点，特征相关（r ~ 0.8）")
+    print(f"  均值（Mean）： ({mean[0]:.2f}, {mean[1]:.2f})")
+    print(f"  协方差（Covariance）： [[{cov[0][0]:.2f}, {cov[0][1]:.2f}], [{cov[1][0]:.2f}, {cov[1][1]:.2f}]]")
     print()
-    print(f"  Point along correlation axis:  {[round(x, 2) for x in point_along]}")
-    print(f"    L2 distance from mean:       {l2_along:.4f}")
-    print(f"    Mahalanobis distance:         {mah_along:.4f}")
+    print(f"  沿相关轴方向的点：  {[round(x, 2) for x in point_along]}")
+    print(f"    到均值的 L2 距离：       {l2_along:.4f}")
+    print(f"    马氏距离（Mahalanobis distance）：         {mah_along:.4f}")
     print()
-    print(f"  Point perpendicular to axis:   {[round(x, 2) for x in point_perp]}")
-    print(f"    L2 distance from mean:       {l2_perp:.4f}")
-    print(f"    Mahalanobis distance:         {mah_perp:.4f}")
+    print(f"  垂直于相关轴方向的点：   {[round(x, 2) for x in point_perp]}")
+    print(f"    到均值的 L2 距离：       {l2_perp:.4f}")
+    print(f"    马氏距离（Mahalanobis distance）：         {mah_perp:.4f}")
     print()
-    print("  L2 says both points are similar distances from the mean.")
-    print("  Mahalanobis correctly identifies the perpendicular point as")
-    print("  more unusual given the correlation structure of the data.")
+    print("  L2 认为两个点到均值的距离相近。")
+    print("  结合数据的相关结构（Correlation structure），马氏距离")
+    print("  正确地识别出垂直方向上的点更异常。")
     print()
 
 
 def demo_jaccard():
     print("=" * 65)
-    print("JACCARD SIMILARITY (SETS)")
+    print("Jaccard 相似度（Similarity，集合）")
     print("=" * 65)
 
     pairs = [
@@ -333,14 +333,14 @@ def demo_jaccard():
         j = jaccard_similarity(a, b)
         print(f"  A = {sorted(a)}")
         print(f"  B = {sorted(b)}")
-        print(f"  Jaccard similarity: {j:.4f}")
-        print(f"  Jaccard distance:   {1 - j:.4f}")
+        print(f"  Jaccard 相似度： {j:.4f}")
+        print(f"  Jaccard 距离：   {1 - j:.4f}")
         print()
 
 
 def demo_edit_distance():
     print("=" * 65)
-    print("EDIT DISTANCE (LEVENSHTEIN)")
+    print("编辑距离（Edit Distance，Levenshtein）")
     print("=" * 65)
 
     pairs = [
@@ -361,7 +361,7 @@ def demo_edit_distance():
 
 def demo_kl_divergence():
     print("=" * 65)
-    print("KL DIVERGENCE (NOT SYMMETRIC)")
+    print("KL 散度（KL Divergence，不对称）")
     print("=" * 65)
 
     p = [0.9, 0.1]
@@ -374,8 +374,8 @@ def demo_kl_divergence():
     print(f"  Q = {q}")
     print(f"  KL(P || Q) = {kl_pq:.4f} nats")
     print(f"  KL(Q || P) = {kl_qp:.4f} nats")
-    print(f"  Difference: {abs(kl_pq - kl_qp):.4f}")
-    print(f"  KL divergence is NOT a distance metric.")
+    print(f"  差值： {abs(kl_pq - kl_qp):.4f}")
+    print(f"  KL 散度不是距离度量（Distance metric）。")
     print()
 
     p2 = [0.25, 0.25, 0.25, 0.25]
@@ -390,23 +390,23 @@ def demo_kl_divergence():
 
 def demo_wasserstein():
     print("=" * 65)
-    print("WASSERSTEIN DISTANCE (EARTH MOVER'S DISTANCE)")
+    print("Wasserstein 距离（搬土距离，Earth Mover's Distance）")
     print("=" * 65)
 
     cases = [
-        ("Identical",
+        ("完全相同",
          [0.25, 0.25, 0.25, 0.25],
          [0.25, 0.25, 0.25, 0.25]),
-        ("Shifted right by 1",
+        ("向右平移 1",
          [0.5, 0.5, 0.0, 0.0],
          [0.0, 0.5, 0.5, 0.0]),
-        ("Shifted right by 2",
+        ("向右平移 2",
          [0.5, 0.5, 0.0, 0.0],
          [0.0, 0.0, 0.5, 0.5]),
-        ("Opposite ends",
+        ("位于相对两端",
          [1.0, 0.0, 0.0, 0.0],
          [0.0, 0.0, 0.0, 1.0]),
-        ("Spread vs concentrated",
+        ("分散与集中",
          [0.25, 0.25, 0.25, 0.25],
          [0.0, 0.0, 0.0, 1.0]),
     ]
@@ -421,14 +421,14 @@ def demo_wasserstein():
         print(f"    Wasserstein: {w:.4f}    KL: {kl_str}")
         print()
 
-    print("  Wasserstein provides finite, meaningful distances even when")
-    print("  distributions do not overlap (where KL goes to infinity).")
+    print("  即使两个分布没有重叠（此时 KL 散度趋于无穷大），")
+    print("  Wasserstein 距离仍能给出有限且有意义的距离。")
     print()
 
 
 def demo_different_neighbors():
     print("=" * 65)
-    print("SAME DATA, DIFFERENT METRICS, DIFFERENT NEAREST NEIGHBORS")
+    print("相同数据、不同度量（Metrics）、不同最近邻（Nearest Neighbors）")
     print("=" * 65)
 
     random.seed(123)
@@ -449,9 +449,9 @@ def demo_different_neighbors():
 
     query = [1.0, 0.5, -0.5, 1.0, 0.2]
 
-    print(f"  Query: {[round(x, 2) for x in query]}")
+    print(f"  查询（Query）： {[round(x, 2) for x in query]}")
     print()
-    print(f"  {'Point':<8s} {'L1':>8s} {'L2':>8s} {'Cosine':>8s} {'L-inf':>8s}")
+    print(f"  {'点':<8s} {'L1':>8s} {'L2':>8s} {'余弦':>8s} {'L-inf':>8s}")
     print(f"  {'-' * 8} {'-' * 8} {'-' * 8} {'-' * 8} {'-' * 8}")
 
     results = {"L1": [], "L2": [], "Cosine": [], "L-inf": []}
@@ -470,10 +470,10 @@ def demo_different_neighbors():
         print(f"  P{i:<6d} {d_l1:>8.3f} {d_l2:>8.3f} {d_cos:>8.4f} {d_linf:>8.3f}")
 
     print()
-    print("  Nearest neighbor by metric:")
+    print("  各度量得到的最近邻：")
     for metric_name, dists in results.items():
         best = min(dists, key=lambda x: x[1])
-        print(f"    {metric_name:<8s}: Point {best[0]} (distance = {best[1]:.4f})")
+        print(f"    {metric_name:<8s}: 点 {best[0]}（距离 = {best[1]:.4f}）")
 
     l1_best = min(results["L1"], key=lambda x: x[1])[0]
     l2_best = min(results["L2"], key=lambda x: x[1])[0]
@@ -483,14 +483,14 @@ def demo_different_neighbors():
     all_same = (l1_best == l2_best == cos_best == linf_best)
     if not all_same:
         print()
-        print("  The metrics DISAGREE on which point is nearest.")
-        print("  Your distance function defines your notion of similarity.")
+        print("  不同度量对哪个点最近给出了不同结果。")
+        print("  距离函数决定了相似性的含义。")
     print()
 
 
 def demo_embedding_search():
     print("=" * 65)
-    print("EMBEDDING SIMILARITY SEARCH")
+    print("嵌入相似度搜索（Embedding Similarity Search）")
     print("=" * 65)
 
     random.seed(77)
@@ -525,8 +525,8 @@ def demo_embedding_search():
     noise = [random.gauss(0, 0.3) for _ in range(dim)]
     query_embedding = [q + n for q, n in zip(query_embedding, noise)]
 
-    print(f"  Query: '{documents[0]}' (with noise)")
-    print(f"  Embedding dimension: {dim}")
+    print(f"  查询（Query）： '{documents[0]}' （含噪声）")
+    print(f"  嵌入维度（Embedding dimension）： {dim}")
     print()
 
     cosine_scores = []
@@ -545,7 +545,7 @@ def demo_embedding_search():
     l2_ranked = sorted(l2_scores, key=lambda x: x[1])
     dot_ranked = sorted(dot_scores, key=lambda x: -x[1])
 
-    print(f"  {'Rank':<6s} {'Cosine':<35s} {'L2':<35s} {'Dot Product':<35s}")
+    print(f"  {'排名':<6s} {'余弦':<35s} {'L2':<35s} {'点积':<35s}")
     print(f"  {'-' * 6} {'-' * 35} {'-' * 35} {'-' * 35}")
     for rank in range(len(documents)):
         ci, cs = cosine_ranked[rank]
@@ -557,15 +557,15 @@ def demo_embedding_search():
         print(f"  {rank + 1:<6d} {cos_str:<35s} {l2_str:<35s} {dot_str:<35s}")
 
     print()
-    print("  Cosine similarity focuses on direction (topic similarity).")
-    print("  L2 distance is sensitive to magnitude differences.")
-    print("  Dot product blends direction and magnitude.")
+    print("  余弦相似度关注方向（主题相似性）。")
+    print("  L2 距离对模长差异敏感。")
+    print("  点积结合了方向和模长。")
     print()
 
 
 def demo_knn_classification():
     print("=" * 65)
-    print("KNN CLASSIFICATION: DISTANCE METRIC CHANGES THE PREDICTION")
+    print("K 近邻分类（KNN Classification）：距离度量改变预测")
     print("=" * 65)
 
     random.seed(99)
@@ -584,8 +584,8 @@ def demo_knn_classification():
 
     query = [2.8, 2.8]
 
-    print(f"  Query: {query}")
-    print(f"  Training set: {len(training_data)} points, 3 classes")
+    print(f"  查询（Query）： {query}")
+    print(f"  训练集（Training set）：{len(training_data)} 个点，3 个类别")
     print()
 
     k = 3
@@ -603,25 +603,25 @@ def demo_knn_classification():
             votes[label] = votes.get(label, 0) + 1
         prediction = max(votes, key=votes.get)
 
-        print(f"  Metric: {metric_name}")
+        print(f"  度量（Metric）： {metric_name}")
         for d, label, point in neighbors:
-            print(f"    Neighbor: {point}  class={label}  dist={d:.4f}")
-        print(f"    Prediction (k={k}): {prediction}")
+            print(f"    近邻（Neighbor）： {point}  class={label}  dist={d:.4f}")
+        print(f"    预测（Prediction，k={k}）： {prediction}")
         print()
 
 
 def demo_regularization():
     print("=" * 65)
-    print("L1 vs L2 REGULARIZATION EFFECT ON WEIGHTS")
+    print("L1 与 L2 正则化（Regularization）对权重的影响")
     print("=" * 65)
 
     random.seed(42)
     n_features = 10
     weights = [random.gauss(0, 2) for _ in range(n_features)]
 
-    print(f"  Original weights: {[round(w, 3) for w in weights]}")
-    print(f"  L1 norm: {l1_norm(weights):.4f}")
-    print(f"  L2 norm: {l2_norm(weights):.4f}")
+    print(f"  原始权重： {[round(w, 3) for w in weights]}")
+    print(f"  L1 范数： {l1_norm(weights):.4f}")
+    print(f"  L2 范数： {l2_norm(weights):.4f}")
     print()
 
     lr = 0.1
@@ -640,24 +640,24 @@ def demo_regularization():
             grad = lr * 2 * w_l2[i]
             w_l2[i] -= grad
 
-    print(f"  After L1 regularization (50 steps):")
-    print(f"    Weights: {[round(w, 3) for w in w_l1]}")
-    print(f"    Zeros:   {sum(1 for w in w_l1 if w == 0.0)}/{n_features}")
-    print(f"    L1 norm: {l1_norm(w_l1):.4f}")
+    print(f"  L1 正则化后（50 步）：")
+    print(f"    权重（Weights）： {[round(w, 3) for w in w_l1]}")
+    print(f"    零值数：   {sum(1 for w in w_l1 if w == 0.0)}/{n_features}")
+    print(f"    L1 范数： {l1_norm(w_l1):.4f}")
     print()
-    print(f"  After L2 regularization (50 steps):")
-    print(f"    Weights: {[round(w, 3) for w in w_l2]}")
-    print(f"    Zeros:   {sum(1 for w in w_l2 if abs(w) < 1e-10)}/{n_features}")
-    print(f"    L2 norm: {l2_norm(w_l2):.4f}")
+    print(f"  L2 正则化后（50 步）：")
+    print(f"    权重（Weights）： {[round(w, 3) for w in w_l2]}")
+    print(f"    零值数：   {sum(1 for w in w_l2 if abs(w) < 1e-10)}/{n_features}")
+    print(f"    L2 范数： {l2_norm(w_l2):.4f}")
     print()
-    print("  L1 drives 'small' weights to exactly zero (sparsity).")
-    print("  L2 shrinks all weights but none reach exactly zero.")
+    print("  L1 将较小的权重压至严格的零值（稀疏性，Sparsity）。")
+    print("  L2 缩小所有权重，但不会使其严格等于零。")
     print()
 
 
 def demo_norm_ordering():
     print("=" * 65)
-    print("NORM ORDERING: L-inf <= L2 <= L1 (always)")
+    print("范数次序（Norm Ordering）：L-inf <= L2 <= L1（始终成立）")
     print("=" * 65)
 
     random.seed(55)
@@ -671,11 +671,11 @@ def demo_norm_ordering():
         dinf = linf_distance(a, b)
 
         holds = dinf <= d2 <= d1
-        print(f"  dim={dim:>2d}  L1={d1:>8.3f}  L2={d2:>8.3f}  L-inf={dinf:>8.3f}  ordering holds: {holds}")
+        print(f"  dim={dim:>2d}  L1={d1:>8.3f}  L2={d2:>8.3f}  L-inf={dinf:>8.3f}  次序是否成立： {holds}")
 
     print()
-    print("  For any p1 < p2: ||x||_p2 <= ||x||_p1")
-    print("  Higher p values focus on fewer (larger) components.")
+    print("  对于任意 p1 < p2：||x||_p2 <= ||x||_p1")
+    print("  p 越大，越关注少数较大的分量（Components）。")
     print()
 
 

@@ -1,10 +1,10 @@
 {
   "lesson": "28-self-hosted-serving-selection",
-  "title": "Self-Hosted Serving Selection — Matching Engine to Hardware and Scale",
+  "title": "自托管服务选型：让引擎匹配硬件与规模（Self-Hosted Serving Selection — Matching Engine to Hardware and Scale）",
   "questions": [
     {
       "stage": "pre",
-      "question": "Which engine does the lesson pick as the dev-laptop one-command default?",
+      "question": "本课为开发笔记本选择的一条命令默认引擎是什么？",
       "options": [
         "llama.cpp",
         "vLLM",
@@ -16,21 +16,21 @@
     },
     {
       "stage": "check",
-      "question": "What 2025 event changes the default away from TGI for new projects?",
+      "question": "2025 年什么事件使新项目不再默认选择 TGI？",
       "options": [
-        "TGI entered maintenance mode on December 11, 2025 — only bug fixes going forward",
-        "TGI dropped CUDA support",
-        "TGI raised prices",
-        "TGI was acquired by Anthropic"
+        "TGI 于 2025 年 12 月 11 日进入维护模式，此后只修复缺陷",
+        "TGI 取消 CUDA 支持",
+        "TGI 涨价",
+        "TGI 被 Anthropic 收购"
       ],
       "correct": 0,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Which hardware constraint forces llama.cpp and excludes vLLM / TRT-LLM?",
+      "question": "哪种硬件约束要求使用 llama.cpp，并排除 vLLM / TRT-LLM？",
       "options": [
-        "CPU only (no accelerator)",
+        "仅 CPU，没有加速器",
         "AMD MI300X",
         "NVIDIA Hopper",
         "Apple M4"
@@ -40,7 +40,7 @@
     },
     {
       "stage": "check",
-      "question": "Which engine does the lesson position for agentic multi-turn and prefix-heavy workloads thanks to RadixAttention?",
+      "question": "哪种引擎凭借 RadixAttention 被定位为适合多轮智能体和大量前缀复用工作负载？",
       "options": [
         "SGLang",
         "Ollama",
@@ -52,24 +52,24 @@
     },
     {
       "stage": "post",
-      "question": "What dev-to-prod pipeline does the lesson recommend on the same GGUF or HF weights?",
+      "question": "本课建议在相同 GGUF 或 HF 权重上采用什么开发到生产流水线？",
       "options": [
-        "TGI everywhere",
-        "Ollama in dev and Ollama in prod",
-        "Ollama in dev, llama.cpp in staging, vLLM (or SGLang for prefix-heavy) in prod",
-        "Only TRT-LLM, top to bottom"
+        "所有环境都用 TGI",
+        "开发和生产都用 Ollama",
+        "开发用 Ollama，预发布用 llama.cpp，生产用 vLLM；大量前缀复用时用 SGLang",
+        "从头到尾只用 TRT-LLM"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "Why is Ollama discouraged for shared production?",
+      "question": "为什么不建议共享生产使用 Ollama？",
       "options": [
-        "It cannot load GGUF",
-        "It only runs on Windows",
-        "It is closed source",
-        "Go HTTP serialization adds overhead, concurrency management is simpler than vLLM, and OpenTelemetry support lags"
+        "它无法加载 GGUF",
+        "它只在 Windows 上运行",
+        "它闭源",
+        "Go HTTP 序列化增加开销，并发管理比 vLLM 简单，OpenTelemetry 支持落后"
       ],
       "correct": 3,
       "explanation": ""

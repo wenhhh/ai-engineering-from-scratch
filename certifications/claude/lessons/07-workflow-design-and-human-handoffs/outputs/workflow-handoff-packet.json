@@ -4,68 +4,95 @@
   "steps": [
     {
       "id": "intake",
-      "trigger": "source cutoff reached",
+      "trigger": "到达来源截止点",
       "owner": "release-coordinator",
-      "inputs": ["approved tracker view", "signed security status"],
-      "output": "versioned source snapshot",
-      "gate": "all required teams and security status are present",
-      "escalation": "missing or conflicting source state",
-      "fallback": "coordinator uses the manual intake checklist",
+      "inputs": [
+        "获批跟踪器视图",
+        "签署的安全状态"
+      ],
+      "output": "版本化来源快照",
+      "gate": "全部必需团队及安全状态均已提供",
+      "escalation": "来源状态缺失或冲突",
+      "fallback": "协调员使用手动受理清单",
       "nextOwner": "brief-operator",
       "irreversible": false,
       "humanApproval": false
     },
     {
       "id": "draft",
-      "trigger": "source snapshot accepted",
+      "trigger": "来源快照已接受",
       "owner": "brief-operator",
-      "inputs": ["versioned source snapshot"],
-      "output": "structured candidate items and draft brief",
-      "gate": "items retain source IDs and unresolved fields",
-      "escalation": "unsupported claim or missing team",
-      "fallback": "operator completes the manual brief template",
+      "inputs": [
+        "版本化来源快照"
+      ],
+      "output": "结构化候选条目与简报草稿",
+      "gate": "条目保留来源 ID 和未解决字段",
+      "escalation": "无依据主张或缺失团队",
+      "fallback": "操作者填写手动简报模板",
       "nextOwner": "product-manager",
       "irreversible": false,
       "humanApproval": false
     },
     {
       "id": "review",
-      "trigger": "automated checks completed",
+      "trigger": "自动检查已完成",
       "owner": "product-manager",
-      "inputs": ["candidate brief", "claim evidence", "failed checks"],
-      "output": "approve, revise, reject, or escalate decision",
-      "gate": "publication scope and unresolved risks are explicitly decided",
-      "escalation": "security or scope blocker remains",
-      "fallback": "delay publication and notify release owner",
+      "inputs": [
+        "候选简报",
+        "主张证据",
+        "失败检查"
+      ],
+      "output": "批准、修订、拒绝或升级决策",
+      "gate": "明确决定发布范围和未解决风险",
+      "escalation": "安全或范围阻塞项仍存在",
+      "fallback": "延迟发布并通知发布负责人",
       "nextOwner": "publisher",
       "irreversible": false,
       "humanApproval": true
     },
     {
       "id": "publish",
-      "trigger": "review approval recorded",
+      "trigger": "审核批准已记录",
       "owner": "publisher",
-      "inputs": ["approved brief", "approval operation ID"],
-      "output": "published brief with version ID",
-      "gate": "approval binds exact brief hash and destination",
-      "escalation": "approval mismatch or channel unavailable",
-      "fallback": "publish through the tested manual path",
+      "inputs": [
+        "获批简报",
+        "批准操作 ID"
+      ],
+      "output": "带版本 ID 的已发布简报",
+      "gate": "批准绑定确切简报哈希和目标位置",
+      "escalation": "批准不匹配或频道不可用",
+      "fallback": "通过已测试的手动路径发布",
       "nextOwner": "release-coordinator",
       "irreversible": true,
       "humanApproval": true
     }
   ],
-  "checkpoints": ["source-snapshot-accepted", "draft-validated", "review-decision-recorded", "publication-confirmed"],
+  "checkpoints": [
+    "source-snapshot-accepted",
+    "draft-validated",
+    "review-decision-recorded",
+    "publication-confirmed"
+  ],
   "handoff": {
-    "decisionRequired": "Confirm items R-14 and R-19 are authorized for external publication",
+    "decisionRequired": "确认 R-14 和 R-19 条目获准对外发布",
     "deadlineAndOwner": "Friday 11:00 UTC, product-manager",
     "workflowAndSourceVersions": "weekly-release-brief-v1, snapshot 2026-W31",
-    "candidateResult": "Draft brief version b7",
-    "evidence": "Tracker item IDs, signed security status, and claim checks",
-    "checksPassed": ["all teams represented", "source IDs resolve"],
-    "checksFailed": ["R-19 external scope is unresolved"],
-    "uncertainty": "R-19 launch state changed after the source cutoff",
-    "actionsAvailable": ["approve", "revise", "reject", "escalate"],
-    "fallback": "Delay the brief and use the manual release process"
+    "candidateResult": "简报草稿版本 b7",
+    "evidence": "跟踪器条目 ID、签署的安全状态和主张检查",
+    "checksPassed": [
+      "全部团队均已覆盖",
+      "来源 ID 可解析"
+    ],
+    "checksFailed": [
+      "R-19 的对外范围尚未确定"
+    ],
+    "uncertainty": "R-19 的上线状态在来源截止点后发生变化",
+    "actionsAvailable": [
+      "approve",
+      "revise",
+      "reject",
+      "escalate"
+    ],
+    "fallback": "延迟简报，采用手动发布流程"
   }
 }

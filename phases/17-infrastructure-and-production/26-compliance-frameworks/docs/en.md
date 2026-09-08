@@ -1,142 +1,142 @@
-# Compliance — SOC 2, HIPAA, GDPR, PCI-DSS, EU AI Act, ISO 42001
+# 合规：SOC 2、HIPAA、GDPR、PCI-DSS、EU AI Act、ISO 42001（Compliance — SOC 2, HIPAA, GDPR, PCI-DSS, EU AI Act, ISO 42001）
 
-> Multi-framework coverage is table stakes for 2026 enterprise deals. **EU AI Act**: in force since August 1, 2024. Most high-risk requirements enforce August 2, 2026. Fines up to €15M or 3% global annual turnover for high-risk-system obligations (Art. 99(4)); up to €35M or 7% for prohibited AI practices (Art. 99(3)). Applies globally if serving EU users. **Colorado AI Act**: effective June 30, 2026 (delayed from February 2026 by SB25B-004) — impact assessments for high-risk systems, right to appeal AI decisions. Virginia similar for credit/employment/housing/education. **SOC 2 Type II**: de facto B2B AI requirement (Type II, not Type I, for fintech). **GDPR**: largest documented AI-specific fine is €30.5M against Clearview AI (Dutch DPA, Sept 2024); Italy's Garante issued €15M against OpenAI in Dec 2024 (later overturned on appeal in March 2026). Real-time PII redaction at inference is the defensible standard; post-processing cleanup is not enough. **HIPAA**: healthcare bound — cannot send PHI to external AI services without BAA. **PCI-DSS**: AI-interaction-layer coverage requires configuration + contractual agreements, not automatic. **ISO 42001**: emerging AI governance standard, growing procurement requirement alongside ISO 27001. Reference profile: OpenAI maintains SOC 2 Type 2, ISO/IEC 27001:2022, ISO/IEC 27701:2019, GDPR/CCPA/HIPAA (BAA)/FERPA, PCI-DSS for ChatGPT payment components. Cross-framework mapping reduces audit fatigue: access controls map across ISO 27001 A.5.15-5.18, GDPR Art. 32, HIPAA §164.312(a).
+> 多框架覆盖是 2026 年企业交易的基本门槛。**欧盟人工智能法案（EU AI Act）** 自 2024 年 8 月 1 日生效，多数高风险要求于 2026 年 8 月 2 日执行。违反高风险系统义务的罚款最高为 €15M 或全球年营业额的 3%（第 99(4) 条）；违反禁止性 AI 实践的罚款最高为 €35M 或 7%（第 99(3) 条）。只要服务欧盟用户，就可能在全球范围适用。**科罗拉多州人工智能法案（Colorado AI Act）** 于 2026 年 6 月 30 日生效，SB25B-004 将原定 2026 年 2 月的日期推迟；要求高风险系统进行影响评估，并赋予对 AI 决策提出申诉的权利。弗吉尼亚州对信贷、就业、住房和教育也有类似规定。**SOC 2 Type II** 是 B2B AI 事实上的要求；金融科技需要 Type II，而不是 Type I。**GDPR**：有记录的最大 AI 专项罚款是荷兰数据保护机构于 2024 年 9 月对 Clearview AI 处以 €30.5M；意大利 Garante 于 2024 年 12 月对 OpenAI 处以 €15M，后在 2026 年 3 月上诉中被撤销。推理时实时 PII 脱敏是可辩护的标准，事后清理不够。**HIPAA** 适用于医疗：没有 BAA，不能将 PHI 发送给外部 AI 服务。**PCI-DSS** 对 AI 交互层的覆盖需要配置和合同，并非自动获得。**ISO 42001** 是新兴 AI 治理标准，与 ISO 27001 一起日益成为采购要求。参考合规概况：OpenAI 维持 SOC 2 Type 2、ISO/IEC 27001:2022、ISO/IEC 27701:2019、GDPR/CCPA/HIPAA（BAA）/FERPA，以及覆盖 ChatGPT 支付组件的 PCI-DSS。跨框架映射可减少审计疲劳，例如访问控制可映射到 ISO 27001 A.5.15-5.18、GDPR Art. 32、HIPAA §164.312(a)。
 
 **Type:** Learn
-**Languages:** (Python optional — compliance is policy + process, not code)
-**Prerequisites:** Phase 17 · 25 (Security), Phase 17 · 13 (Observability)
-**Time:** ~60 minutes
+**Languages:** （Python 可选；合规依靠策略与流程，而非代码）
+**Prerequisites:** 阶段 17 · 25（安全），阶段 17 · 13（可观测性）
+**Time:** ~60 分钟
 
-## Learning Objectives
+## 学习目标（Learning Objectives）
 
-- Enumerate the seven 2026 frameworks relevant to LLM products and match each to a customer segment.
-- Cite the EU AI Act enforcement timeline (in force August 2024; high-risk enforcement August 2026) and the two-tier fine ceiling (€15M / 3% for high-risk obligations, €35M / 7% for prohibited practices).
-- Explain why post-processing PII cleanup is not enough for GDPR and name real-time inference-layer redaction as the defensible standard.
-- Describe cross-framework control mapping (e.g., access control maps to ISO 27001 A.5.15-5.18 + GDPR Art. 32 + HIPAA §164.312(a)).
+- 列出 2026 年与 LLM 产品相关的七个框架，并将各框架对应到客户群体。
+- 引用 EU AI Act 执行时间线：2024 年 8 月生效，2026 年 8 月执行高风险要求；说明两档罚款上限：高风险义务 €15M / 3%，禁止性实践 €35M / 7%。
+- 解释为什么事后 PII 清理不足以满足可辩护的 GDPR 安排，并指出推理层实时脱敏这一标准。
+- 描述跨框架控制映射，例如访问控制对应 ISO 27001 A.5.15-5.18 + GDPR Art. 32 + HIPAA §164.312(a)。
 
-## The Problem
+## 问题（The Problem）
 
-An enterprise customer's procurement asks for SOC 2 Type II, GDPR, HIPAA BAA, ISO 27001, and "EU AI Act compliance statement." Your team has SOC 2 Type I. You're six months from Type II and haven't started GDPR Article 30 records.
+企业客户采购要求 SOC 2 Type II、GDPR、HIPAA BAA、ISO 27001 和“EU AI Act 合规声明”。你的团队只有 SOC 2 Type I，距离 Type II 还有六个月，连 GDPR 第 30 条记录都没开始准备。
 
-Multi-framework coverage is not an LLM problem — it's an enterprise-SaaS problem, with LLM-specific overlays. Procurement teams in 2026 want a matrix with a row per framework and a column per control, not a PDF.
+多框架覆盖并非 LLM 独有问题，而是企业 SaaS 问题，叠加了 LLM 特有要求。2026 年的采购团队想要一份每行一个框架、每列一项控制的矩阵，而不只是一份 PDF。
 
-## The Concept
+## 概念（The Concept）
 
-### The seven frameworks
+### 七个框架（The seven frameworks）
 
-| Framework | Scope | LLM-specific requirement |
+| 框架 | 范围 | LLM 特有要求 |
 |-----------|-------|--------------------------|
-| SOC 2 Type II | B2B SaaS baseline | Process controls audited over 6-12 months |
-| HIPAA | US healthcare | BAA required; PHI cannot leave infrastructure without signed agreement |
-| GDPR | EU users | Real-time PII redaction; data subject rights; Article 30 records |
-| PCI-DSS | Payment data | Configuration + contracts for AI touching payment |
-| EU AI Act | Serving EU users | Risk tier classification; high-risk systems: conformity assessment, documentation, logging |
-| Colorado AI Act | Serving CO residents | Impact assessments; right to appeal |
-| ISO 42001 | AI governance | Emerging; pairs with ISO 27001 |
+| SOC 2 Type II | B2B SaaS 基准 | 对持续运行 6–12 个月的流程控制进行审计 |
+| HIPAA | 美国医疗 | 必须有 BAA；未签署协议时，PHI 不能离开基础设施 |
+| GDPR | 欧盟用户 | 实时 PII 脱敏、数据主体权利、第 30 条记录 |
+| PCI-DSS | 支付数据 | 涉及支付的 AI 需要配置与合同 |
+| EU AI Act | 服务欧盟用户 | 风险分级；高风险系统需合格评定、文档、日志 |
+| Colorado AI Act | 服务科罗拉多州居民 | 影响评估、申诉权 |
+| ISO 42001 | AI 治理 | 新兴标准，与 ISO 27001 配套 |
 
-### EU AI Act timeline
+### EU AI Act 时间线（EU AI Act timeline）
 
-- August 1, 2024: in force.
-- February 2, 2025: prohibited-AI practices enforced.
-- August 2, 2026: high-risk systems enforced (conformity assessment, documentation, logging).
-- August 2027: high-risk systems in products under harmonized legislation.
+- 2024 年 8 月 1 日：生效。
+- 2025 年 2 月 2 日：执行禁止性 AI 实践规定。
+- 2026 年 8 月 2 日：执行高风险系统要求，包括合格评定、文档、日志。
+- 2027 年 8 月：适用于协调立法所覆盖产品中的高风险系统。
 
-Risk tiers: Unacceptable (banned), High-risk (conformity + logging), Limited-risk (transparency), Minimal-risk (no constraint). Most B2B LLM SaaS is limited-risk; high-risk kicks in for employment, credit, education, law enforcement, migration, essential services.
+风险等级为不可接受（禁止）、高风险（合格评定与日志）、有限风险（透明度）、最低风险（无约束）。多数 B2B LLM SaaS 属于有限风险；就业、信贷、教育、执法、移民和基本服务会进入高风险范围。
 
-Fines (Article 99): up to €15M or 3% global annual turnover for breaches of high-risk-system obligations (Art. 99(4)); up to €35M or 7% for prohibited AI practices (Art. 99(3)); whichever higher applies.
+罚款（第 99 条）：违反高风险系统义务，最高 €15M 或全球年营业额的 3%（第 99(4) 条）；违反禁止性 AI 实践，最高 €35M 或 7%（第 99(3) 条）；适用较高者。
 
-### GDPR — real-time redaction is the standard
+### GDPR：实时脱敏是标准（GDPR — real-time redaction is the standard）
 
-Post-processing cleanup (redact PII after the LLM sees it) is not a defensible posture — the model already saw the data. Real-time inference-layer redaction is the 2026 standard:
+事后清理，即 LLM 已看到数据后才脱敏 PII，无法构成可辩护的安排，因为模型已经接触数据。推理层实时脱敏是 2026 年的标准：
 
-- Entity recognition before the LLM call.
-- Consistent tokenization (Mesh approach) preserves semantics.
-- Store only redacted prompts + consented opt-in raw.
+- LLM 调用前进行实体识别。
+- 一致性令牌化（Mesh 方法）保留语义。
+- 仅存储脱敏提示词，以及用户同意主动选择保留的原文。
 
-Recent enforcement: €30.5M against Clearview AI (Dutch DPA, Sept 2024) is the largest documented AI-specific GDPR fine to date; €15M against OpenAI (Italy's Garante, Dec 2024) is the largest LLM-specific fine, though it was overturned on appeal in March 2026 and the ruling remains under further review. Post-processing claims have failed at audit.
+近期执法：荷兰数据保护机构 2024 年 9 月对 Clearview AI 的 €30.5M 罚款，是迄今有记录的最大 AI 专项 GDPR 罚款；意大利 Garante 2024 年 12 月对 OpenAI 的 €15M 罚款，是最大的 LLM 专项罚款，但已在 2026 年 3 月上诉中被撤销，裁决仍在进一步审查。声称事后处理即可的做法未能通过审计。
 
-### HIPAA — BAA is not optional
+### HIPAA：BAA 不是可选项（HIPAA — BAA is not optional）
 
-You cannot send PHI to external AI services without a signed Business Associate Agreement. All three hyperscaler LLM platforms (Bedrock, Azure OpenAI, Vertex) offer BAAs. OpenAI direct API offers BAA. Anthropic direct API offers BAA. Confirm before sending PHI.
+没有签署业务伙伴协议（Business Associate Agreement），就不能将 PHI 发送给外部 AI 服务。三家超大规模云的 LLM 平台 Bedrock、Azure OpenAI、Vertex 都提供 BAA。OpenAI 直连 API 和 Anthropic 直连 API 也提供 BAA。发送 PHI 前必须确认。
 
-### SOC 2 Type II
+### SOC 2 Type II 的要求（SOC 2 Type II）
 
-Type I: controls designed and documented.
-Type II: controls operate effectively over 6-12 months.
+Type I：控制已设计并形成文档。
+Type II：控制在 6–12 个月内有效运行。
 
-B2B procurement in 2026 defaults to Type II. Type I is a starter; Type II is the gate.
+2026 年 B2B 采购默认要求 Type II。Type I 是起点，Type II 才是门槛。
 
-Common audit drivers: access logs (who saw what), change management (how was it deployed), risk assessments (quarterly), incident response (tested?). Audit log from Phase 17 · 25 is directly reusable.
+常见审计关注点包括访问日志（谁看到了什么）、变更管理（如何部署）、季度风险评估，以及事件响应是否经过测试。阶段 17 · 25 的审计日志可以直接复用。
 
-### Cross-framework mapping
+### 跨框架映射（Cross-framework mapping）
 
-One access control policy satisfies multiple framework controls:
+一项访问控制策略可以满足多个框架控制：
 
-| Control | Frameworks |
+| 控制 | 框架 |
 |---------|-----------|
-| Access logging | ISO 27001 A.5.15-5.18, GDPR Art. 32, HIPAA §164.312(a) |
-| Change management | ISO 27001 A.8.32, PCI DSS Req. 6, HIPAA breach-notification scope |
-| Encryption in transit | ISO 27001 A.8.24, GDPR Art. 32, HIPAA §164.312(e) |
-| Secrets management | ISO 27001 A.8.19, PCI DSS Req. 8, SOC 2 CC6.1 |
+| 访问日志 | ISO 27001 A.5.15-5.18、GDPR Art. 32、HIPAA §164.312(a) |
+| 变更管理 | ISO 27001 A.8.32、PCI DSS Req. 6、HIPAA 泄露通知范围 |
+| 传输中加密 | ISO 27001 A.8.24、GDPR Art. 32、HIPAA §164.312(e) |
+| 密钥管理 | ISO 27001 A.8.19、PCI DSS Req. 8、SOC 2 CC6.1 |
 
-Compliance tools (Drata, Vanta, Secureframe) automate this mapping. Worth the cost at scale.
+Drata、Vanta、Secureframe 等合规工具可以自动完成映射。规模扩大后，这笔费用值得投入。
 
-### ISO 42001 — emerging
+### ISO 42001：新兴标准（ISO 42001 — emerging）
 
-Published late 2023. Growing procurement requirement alongside ISO 27001. Framework for AI governance including risk management, data quality, transparency, human oversight.
+发布于 2023 年末，正与 ISO 27001 一起成为越来越常见的采购要求。它是 AI 治理框架，覆盖风险管理、数据质量、透明度和人工监督。
 
-### OpenAI's reference profile
+### OpenAI 的参考合规概况（OpenAI's reference profile）
 
-OpenAI maintains SOC 2 Type 2, ISO/IEC 27001:2022, ISO/IEC 27701:2019, GDPR/CCPA/HIPAA (BAA)/FERPA, PCI-DSS for ChatGPT payment components. That is roughly the enterprise table stakes in 2026.
+OpenAI 维持 SOC 2 Type 2、ISO/IEC 27001:2022、ISO/IEC 27701:2019、GDPR/CCPA/HIPAA（BAA）/FERPA，以及覆盖 ChatGPT 支付组件的 PCI-DSS。这大致就是 2026 年企业市场的基本门槛。
 
-### Numbers you should remember
+### 应记住的数字（Numbers you should remember）
 
-- EU AI Act fines: up to €15M / 3% (high-risk obligations, Art. 99(4)); up to €35M / 7% (prohibited practices, Art. 99(3)).
-- EU AI Act high-risk enforcement: August 2, 2026.
-- Largest documented AI-specific GDPR fine: €30.5M, Clearview AI (Dutch DPA, Sept 2024).
-- Largest LLM-specific GDPR fine: €15M, OpenAI (Italy's Garante, Dec 2024; overturned on appeal March 2026).
-- SOC 2 Type II window: 6-12 months of operated controls.
-- Colorado AI Act effective date: June 30, 2026 (delayed from February 2026 by SB25B-004).
+- EU AI Act 罚款：高风险义务最高 €15M / 3%（Art. 99(4)）；禁止性实践最高 €35M / 7%（Art. 99(3)）。
+- EU AI Act 高风险要求执行：2026 年 8 月 2 日。
+- 有记录的最大 AI 专项 GDPR 罚款：Clearview AI，€30.5M，荷兰数据保护机构，2024 年 9 月。
+- 最大 LLM 专项 GDPR 罚款：OpenAI，€15M，意大利 Garante，2024 年 12 月；2026 年 3 月上诉撤销。
+- SOC 2 Type II 时间窗口：控制运行 6–12 个月。
+- Colorado AI Act 生效日期：2026 年 6 月 30 日，由 SB25B-004 从 2026 年 2 月推迟。
 
 ```figure
 i4-control-matrix
 ```
 
-## Use It
+## 动手使用（Use It）
 
-`code/main.py` is a compliance-mapping spreadsheet in Python — given a control, lists frameworks it satisfies.
+`code/main.py` 是用 Python 实现的合规映射表：给定一项控制，列出它满足的框架。
 
-## Ship It
+## 交付成果（Ship It）
 
-This lesson produces `outputs/skill-compliance-matrix.md`. Given customer segment and geography, specifies required frameworks and controls.
+本课产出 `outputs/skill-compliance-matrix.md`。它根据客户群体和地区，指定所需框架及控制。
 
-## Exercises
+## 练习（Exercises）
 
-1. Your first enterprise customer requires SOC 2 Type II, HIPAA BAA, EU AI Act statement. What is the minimum viable compliance posture to win the deal?
-2. Classify three hypothetical LLM products under EU AI Act risk tiers. What changes at high-risk?
-3. You accidentally sent PHI to a provider without BAA. Walk through the incident response.
-4. Argue whether ISO 42001 is "necessary in 2026" for a mid-market AI vendor.
-5. Map your LLM audit log fields (Phase 17 · 25) to at least three framework controls.
+1. 首个企业客户要求 SOC 2 Type II、HIPAA BAA 和 EU AI Act 声明。赢得交易所需的最低可行合规安排是什么？
+2. 按 EU AI Act 风险等级对三个假设的 LLM 产品分类。进入高风险后，要求有何变化？
+3. 你意外将 PHI 发给没有 BAA 的提供商。逐步说明事件响应流程。
+4. 论证 ISO 42001 对中型市场 AI 供应商而言，是否“在 2026 年必不可少”。
+5. 将 LLM 审计日志字段（阶段 17 · 25）映射到至少三个框架控制。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语 | 常见说法 | 实际含义 |
 |------|----------------|------------------------|
-| SOC 2 Type II | "audited controls" | Controls operating over 6-12 months, independently attested |
-| HIPAA BAA | "healthcare contract" | Business Associate Agreement; required for PHI |
-| GDPR | "EU privacy" | Real-time PII redaction is the defensible 2026 standard |
-| EU AI Act | "EU AI rules" | High-risk enforcement August 2026; €15M / 3% (high-risk obligations) — €35M / 7% (prohibited practices) |
-| Colorado AI Act | "US AI state law" | June 30, 2026 effective (delayed by SB25B-004); impact assessments |
-| ISO 42001 | "AI governance" | Emerging framework for AI risk + transparency |
-| ISO 27001 | "security ISMS" | Information Security Management System baseline |
-| Conformity assessment | "EU AI doc package" | High-risk requirement: docs, testing, logging |
-| Cross-framework mapping | "one control, many frames" | Single policy satisfies multiple framework controls |
+| SOC 2 Type II | “经审计的控制” | 控制运行 6–12 个月，并经独立鉴证 |
+| HIPAA BAA | “医疗合同” | 业务伙伴协议，处理 PHI 所必需 |
+| GDPR | “欧盟隐私” | 实时 PII 脱敏是 2026 年可辩护的标准 |
+| EU AI Act | “欧盟 AI 规则” | 2026 年 8 月执行高风险要求；高风险义务 €15M / 3%，禁止性实践 €35M / 7% |
+| Colorado AI Act | “美国州级 AI 法” | 2026 年 6 月 30 日生效，由 SB25B-004 推迟，要求影响评估 |
+| ISO 42001 | “AI 治理” | AI 风险与透明度的新兴框架 |
+| ISO 27001 | “安全 ISMS” | 信息安全管理体系基准 |
+| 合格评定（Conformity assessment） | “欧盟 AI 文档包” | 高风险要求：文档、测试、日志 |
+| 跨框架映射（Cross-framework mapping） | “一项控制，多个框架” | 一项策略满足多个框架控制 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [OpenAI Security and Privacy](https://openai.com/security-and-privacy/) — reference compliance profile.
-- [GuardionAI — LLM Compliance 2026: ISO 42001, EU AI Act, SOC 2, GDPR](https://guardion.ai/blog/llm-compliance-guide-iso-42001-eu-ai-act-soc2-gdpr-2026)
-- [Dsalta — SOC 2 Type 2 Audit Guide 2026: 10 AI Controls](https://www.dsalta.com/resources/ai-compliance/soc-2-type-2-audit-guide-2026-10-ai-powered-controls-every-saas-team-needs)
-- [EU AI Act official text](https://eur-lex.europa.eu/eli/reg/2024/1689/oj) — primary source.
-- [Colorado AI Act](https://leg.colorado.gov/bills/sb24-205) — primary source.
-- [ISO/IEC 42001:2023](https://www.iso.org/standard/81230.html) — AI management system standard.
+- [OpenAI 安全与隐私](https://openai.com/security-and-privacy/)：参考合规概况。
+- [GuardionAI：2026 年 LLM 合规，ISO 42001、EU AI Act、SOC 2、GDPR](https://guardion.ai/blog/llm-compliance-guide-iso-42001-eu-ai-act-soc2-gdpr-2026)
+- [Dsalta：2026 年 SOC 2 Type 2 审计指南，10 项 AI 控制](https://www.dsalta.com/resources/ai-compliance/soc-2-type-2-audit-guide-2026-10-ai-powered-controls-every-saas-team-needs)
+- [EU AI Act 官方文本](https://eur-lex.europa.eu/eli/reg/2024/1689/oj)：一手来源。
+- [Colorado AI Act 法案文本](https://leg.colorado.gov/bills/sb24-205)：一手来源。
+- [ISO/IEC 42001:2023](https://www.iso.org/standard/81230.html)：AI 管理体系标准。

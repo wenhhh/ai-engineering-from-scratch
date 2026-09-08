@@ -1,78 +1,78 @@
 {
   "lesson": "59-vit-transformer",
-  "title": "Vision Transformer Encoder",
+  "title": "视觉 Transformer 编码器（Vision Transformer Encoder）",
   "questions": [
     {
       "stage": "pre",
-      "question": "Why does the standard ViT block use pre-LayerNorm placement instead of post-LayerNorm?",
+      "question": "为什么标准 ViT 块采用前置层归一化，而不是后置层归一化？",
       "options": [
-        "Pre-LN runs faster",
-        "Post-LN uses more memory",
-        "Pre-LN trains stably at depth without learning-rate warm-up while post-LN diverges past about 6 layers",
-        "Post-LN is patented"
+        "前置层归一化运行更快",
+        "后置层归一化使用更多内存",
+        "前置层归一化在深层网络中无需学习率预热就能稳定训练，而后置层归一化超过约 6 层便会发散",
+        "后置层归一化受专利保护"
       ],
       "correct": 2,
-      "explanation": "Pre-LN normalizes each sub-layer's input which keeps gradient norms bounded as depth grows."
+      "explanation": "前置层归一化对每个子层的输入进行归一化，使梯度范数在深度增加时保持有界。"
     },
     {
       "stage": "pre",
-      "question": "At hidden=768 with heads=12, what is the per-head dimension and why does it matter?",
+      "question": "当 hidden=768 且 heads=12 时，每个头的维度是多少，为什么重要？",
       "options": [
-        "12, so each head can run on a small GPU",
-        "96, set by ResNet-50",
-        "768, because all heads share the projection",
-        "64, which controls the resolution of each attention map and lets twelve heads attend independently in parallel"
+        "12，使每个头都能在小型 GPU 上运行",
+        "96，由 ResNet-50 决定",
+        "768，因为所有头共享投影",
+        "64，它控制每张注意力图的分辨能力，使十二个头能够独立并行计算注意力"
       ],
       "correct": 3,
-      "explanation": "head_dim = hidden / heads = 64. Each head projects the token to its own 64-D q/k/v and computes its own attention map."
+      "explanation": "head_dim = hidden / heads = 64。每个头将词元投影为自己独立的 64 维 q/k/v，并计算自己的注意力图。"
     },
     {
       "stage": "check",
-      "question": "Does the ViT encoder need a causal attention mask?",
+      "question": "ViT 编码器需要因果注意力掩码吗？",
       "options": [
-        "Only during training",
-        "No: the encoder is bidirectional, every token may attend to every other token in the same sequence",
-        "Yes, like a GPT decoder",
-        "Only for the CLS row"
+        "只在训练时需要",
+        "不需要：编码器是双向的，每个词元都可以关注同一序列中的所有其他词元",
+        "需要，与 GPT 解码器一样",
+        "只有 CLS 行需要"
       ],
       "correct": 1,
-      "explanation": "Vision encoders are bidirectional. Causal masking appears later when a text decoder consumes the cross-attention output."
+      "explanation": "视觉编码器是双向的。后续文本解码器使用交叉注意力输出时，才会出现因果掩码。"
     },
     {
       "stage": "check",
-      "question": "What does the CLS token's final hidden state represent after all 12 blocks?",
+      "question": "经过全部 12 个块后，CLS 词元的最终隐藏状态代表什么？",
       "options": [
-        "A learned vector summary of the entire image that downstream heads project into class logits or contrastive embeddings",
-        "The last patch only",
-        "Random noise",
-        "A copy of the input embedding"
+        "一个学到的整张图像向量摘要，下游头将它投影为类别逻辑值或对比嵌入",
+        "仅代表最后一个图像块",
+        "随机噪声",
+        "输入嵌入的副本"
       ],
       "correct": 0,
-      "explanation": "The CLS token starts empty and accumulates information from every patch through self-attention across all 12 blocks."
+      "explanation": "CLS 词元最初不包含图像内容，通过全部 12 个块中的自注意力，从每个图像块积累信息。"
     },
     {
       "stage": "check",
-      "question": "Why is the feed-forward layer expanded to 4x the hidden dim?",
+      "question": "为什么前馈层扩展到隐藏维度的 4 倍？",
       "options": [
-        "It halves FLOPs",
-        "PyTorch requires 4x",
-        "An empirical sweet spot since the original Transformer; smaller underfits, larger overfits at fixed data budget",
-        "It removes the need for attention"
+        "这会将浮点运算量减半",
+        "PyTorch 要求 4 倍",
+        "这是自原始 Transformer 以来的经验最佳折中；固定数据预算下，更小会欠拟合，更大会过拟合",
+        "它消除了注意力的必要性"
       ],
       "correct": 2,
-      "explanation": "The 4x factor has held across language and vision transformers since 2017. Capacity per parameter peaks here."
+      "explanation": "自 2017 年以来，4 倍系数一直沿用于语言和视觉 Transformer。在这里，单位参数的容量达到峰值。"
     },
     {
       "stage": "post",
-      "question": "Which family extension keeps the block math unchanged but adds prepended learned tokens?",
+      "question": "哪种系列扩展保持块的数学计算不变，却增加了前置可学习词元？",
       "options": [
-        "Causal masking",
-        "RoPE rotation",
-        "Register tokens (DINOv2): a few learned vectors prepended after CLS that capture global statistics and smooth attention maps",
-        "Mixture-of-experts"
+        "因果掩码",
+        "RoPE 旋转",
+        "寄存器词元（DINOv2）：在 CLS 之后前置几个可学习向量，用于捕获全局统计并平滑注意力图",
+        "混合专家（Mixture-of-experts）"
       ],
       "correct": 2,
-      "explanation": "Register tokens stabilize attention without altering the block's math; they are extra slots in the sequence."
+      "explanation": "寄存器词元在不改变块数学计算的情况下稳定注意力；它们是序列中的额外槽位。"
     }
   ]
 }

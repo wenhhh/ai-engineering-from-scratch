@@ -114,8 +114,8 @@ def sft_train(model, dataset, num_epochs=2, lr=2e-5, seq_len=64):
         mask = create_loss_mask(tokens)
         formatted_data.append((tokens, mask))
 
-    print(f"SFT Training: {len(formatted_data)} examples, {num_epochs} epochs, lr={lr}")
-    print(f"Total tokens: {sum(len(t) for t, _ in formatted_data):,}")
+    print(f"监督微调（SFT）训练: {len(formatted_data)} 个样本，{num_epochs} 个轮次，学习率 lr={lr}")
+    print(f"词元总数: {sum(len(t) for t, _ in formatted_data):,}")
     print()
 
     losses = []
@@ -164,7 +164,7 @@ def sft_train(model, dataset, num_epochs=2, lr=2e-5, seq_len=64):
             losses.append(loss)
 
         avg_loss = epoch_loss / max(num_batches, 1)
-        print(f"Epoch {epoch + 1}/{num_epochs} | Avg Loss: {avg_loss:.4f}")
+        print(f"轮次（Epoch）{epoch + 1}/{num_epochs} | 平均损失（Avg Loss）: {avg_loss:.4f}")
 
     return model, losses
 
@@ -191,7 +191,7 @@ def generate_response(model, prompt_tokens, max_new_tokens=50, temperature=0.8):
 
 
 def evaluate_instruction_following(model, instructions):
-    print("Evaluating instruction following:")
+    print("评估指令遵循（Instruction following）:")
     print("-" * 50)
 
     for instruction in instructions:
@@ -208,8 +208,8 @@ def evaluate_instruction_following(model, instructions):
         response_bytes = bytes([t for t in response_tokens if t < 128])
         response_text = response_bytes.decode("utf-8", errors="replace")
 
-        print(f"  Q: {instruction}")
-        print(f"  A: {response_text[:80]}")
+        print(f"  问（Q）: {instruction}")
+        print(f"  答（A）: {response_text[:80]}")
         print()
 
 
@@ -250,7 +250,7 @@ Residual connections and layer normalization stabilize deep networks.
 The model learns to predict the next token given all previous tokens."""
 
     print("=" * 70)
-    print("INSTRUCTION TUNING (SFT) DEMO")
+    print("指令微调演示（Instruction Tuning，SFT）")
     print("=" * 70)
     print()
 
@@ -262,17 +262,17 @@ The model learns to predict the next token given all previous tokens."""
         max_seq_len=128,
         ff_dim=512,
     )
-    print(f"Model: {model.count_parameters():,} parameters")
-    print(f"Config: 4 layers, 4 heads, 128 dims (mini GPT from Lesson 04)")
+    print(f"模型: {model.count_parameters():,} 个参数")
+    print(f"配置: 4 层，4 个注意力头，128 维（第 04 课的 Mini GPT）")
     print()
 
-    print("PRE-SFT: Measuring base model loss on raw text")
+    print("SFT 前: 测量基础模型在原始文本上的损失")
     base_loss = measure_forgetting(model, test_text)
-    print(f"  Base model loss: {base_loss:.4f}")
+    print(f"  基础模型损失: {base_loss:.4f}")
     print()
 
     print("=" * 70)
-    print("SFT TRAINING")
+    print("监督微调训练（SFT Training）")
     print("=" * 70)
 
     model, losses = sft_train(
@@ -280,18 +280,18 @@ The model learns to predict the next token given all previous tokens."""
     )
 
     print()
-    print("POST-SFT: Measuring fine-tuned model loss on raw text")
+    print("SFT 后: 测量微调模型在原始文本上的损失")
     sft_loss = measure_forgetting(model, test_text)
-    print(f"  SFT model loss: {sft_loss:.4f}")
-    print(f"  Change: {((sft_loss - base_loss) / base_loss * 100):+.1f}%")
+    print(f"  SFT 模型损失: {sft_loss:.4f}")
+    print(f"  变化幅度: {((sft_loss - base_loss) / base_loss * 100):+.1f}%")
     if abs(sft_loss - base_loss) / base_loss < 0.15:
-        print("  Minimal forgetting (< 15% change)")
+        print("  遗忘很少（变化 < 15%）")
     else:
-        print("  Significant forgetting detected")
+        print("  检测到明显遗忘")
     print()
 
     print("=" * 70)
-    print("INSTRUCTION FOLLOWING EVALUATION")
+    print("指令遵循评估（Instruction Following Evaluation）")
     print("=" * 70)
     print()
 
@@ -303,7 +303,7 @@ The model learns to predict the next token given all previous tokens."""
     evaluate_instruction_following(model, test_instructions)
 
     print("=" * 70)
-    print("DATA FORMAT EXAMPLES")
+    print("数据格式示例（Data Format Examples）")
     print("=" * 70)
     print()
 
@@ -315,15 +315,15 @@ The model learns to predict the next token given all previous tokens."""
         resp_count = int(mask.sum())
         total_count = len(tokens)
         print(
-            f"  Example {i + 1}: {total_count} tokens, {resp_count} response tokens "
-            f"({resp_count / total_count:.0%} of sequence)"
+            f"  示例 {i + 1}: {total_count} 个词元，其中回复词元 {resp_count} 个 "
+            f"（占序列的 {resp_count / total_count:.0%}）"
         )
-        print(f"    Instruction: {example['instruction']}")
-        print(f"    Response: {example['response']}")
+        print(f"    指令（Instruction）: {example['instruction']}")
+        print(f"    回复（Response）: {example['response']}")
         print()
 
     print("=" * 70)
-    print("TRAINING LOSS CURVE")
+    print("训练损失曲线（Training Loss Curve）")
     print("=" * 70)
     print()
 
@@ -332,4 +332,4 @@ The model learns to predict the next token given all previous tokens."""
         for i in range(0, len(losses), window):
             chunk = losses[i : i + window]
             avg = sum(chunk) / len(chunk)
-            print(f"  Steps {i:3d}-{i + len(chunk) - 1:3d}: avg loss = {avg:.4f}")
+            print(f"  训练步 {i:3d}-{i + len(chunk) - 1:3d}: 平均损失 = {avg:.4f}")

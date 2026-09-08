@@ -1,48 +1,78 @@
 {
   "lesson": "06-mcp-fundamentals",
-  "title": "MCP Fundamentals: Stateless Requests and JSON-RPC",
+  "title": "MCP 基础：无状态请求与 JSON-RPC（MCP Fundamentals: Stateless Requests and JSON-RPC）",
   "questions": [
     {
       "stage": "pre",
-      "question": "What creates protocol state between two MCP 2026-07-28 requests?",
-      "options": ["The HTTP connection", "Nothing in the protocol core", "Mcp-Session-Id", "The stdio process"],
+      "question": "什么在两个 MCP 2026-07-28 请求之间创建协议状态？",
+      "options": [
+        "HTTP 连接",
+        "协议核心中没有任何东西创建它",
+        "Mcp-Session-Id",
+        "stdio 进程"
+      ],
       "correct": 1,
-      "explanation": "The modern protocol core is stateless. Each request carries its own version and capabilities."
+      "explanation": "现代协议核心是无状态的（Stateless）。每次请求携带自己的版本与能力。"
     },
     {
       "stage": "check",
-      "question": "Which two params._meta fields are required on every modern request?",
-      "options": ["clientInfo and cacheScope", "protocolVersion and clientCapabilities", "sessionId and capabilities", "serverInfo and ttlMs"],
+      "question": "每个现代请求都必须包含哪两个 params._meta 字段？",
+      "options": [
+        "clientInfo 和 cacheScope",
+        "protocolVersion 和 clientCapabilities",
+        "sessionId 和 capabilities",
+        "serverInfo 和 ttlMs"
+      ],
       "correct": 1,
-      "explanation": "Protocol version and client capabilities are required. Client identity is recommended."
+      "explanation": "协议版本和客户端能力为必需项，客户端身份为推荐项。"
     },
     {
       "stage": "check",
-      "question": "What method must every modern MCP server implement for up-front discovery?",
-      "options": ["tools/list", "initialize", "server/discover", "notifications/initialized"],
+      "question": "每个现代 MCP 服务器必须实现哪个方法以支持预先发现？",
+      "options": [
+        "tools/list",
+        "initialize",
+        "server/discover",
+        "notifications/initialized"
+      ],
       "correct": 2,
-      "explanation": "server/discover advertises supported versions, capabilities, instructions, and server identity."
+      "explanation": "server/discover 公布支持的版本、能力、说明和服务器身份。"
     },
     {
       "stage": "check",
-      "question": "What does error code -32022 mean?",
-      "options": ["Internal error", "Header mismatch", "Method not found", "Unsupported protocol version"],
+      "question": "错误码 -32022 表示什么？",
+      "options": [
+        "内部错误",
+        "头不匹配",
+        "方法未找到",
+        "不支持的协议版本"
+      ],
       "correct": 3,
-      "explanation": "UnsupportedProtocolVersionError includes the requested version and the versions the server supports."
+      "explanation": "UnsupportedProtocolVersionError 包含请求版本和服务器支持的版本。"
     },
     {
       "stage": "post",
-      "question": "Which result requires ttlMs and cacheScope in MCP 2026-07-28?",
-      "options": ["A JSON-RPC error", "A tools/list result", "A tools/call result", "A cancellation notification"],
+      "question": "MCP 2026-07-28 中哪种结果需要 ttlMs 和 cacheScope？",
+      "options": [
+        "JSON-RPC 错误",
+        "tools/list 结果",
+        "tools/call 结果",
+        "取消通知"
+      ],
       "correct": 1,
-      "explanation": "List results and resources/read are cacheable results with required cache hints."
+      "explanation": "列表结果和 resources/read 属于可缓存结果，必须包含缓存提示。"
     },
     {
       "stage": "post",
-      "question": "How should a server choose capabilities for the current request?",
-      "options": ["Read them from Mcp-Session-Id", "Infer them from the process", "Reuse the first request's declaration", "Read them from the current request metadata"],
+      "question": "服务器应如何选择当前请求的能力？",
+      "options": [
+        "从 Mcp-Session-Id 读取",
+        "从进程推断",
+        "复用第一个请求的声明",
+        "从当前请求元数据读取"
+      ],
       "correct": 3,
-      "explanation": "A server must not infer modern capabilities from connection or previous-request state."
+      "explanation": "服务器不得从连接或先前请求状态推断现代协议能力。"
     }
   ]
 }

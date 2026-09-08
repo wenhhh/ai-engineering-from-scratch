@@ -1,37 +1,37 @@
 [
   {
-    "question": "What mathematical operation does a perceptron perform on its inputs before applying the activation function?",
-    "options": ["Weighted sum plus bias", "Eigenvalue decomposition", "Matrix inversion", "Fourier transform"],
+    "question": "感知机（Perceptron）在应用激活函数之前，会对输入执行什么数学运算？",
+    "options": ["加权求和并加上偏置（Bias）", "特征值分解（Eigenvalue Decomposition）", "矩阵求逆（Matrix Inversion）", "傅里叶变换（Fourier Transform）"],
     "correct": 0,
-    "explanation": "A perceptron computes the dot product of inputs and weights, adds a bias term, then passes the result through a step function. This weighted sum plus bias is the core computation.",
+    "explanation": "感知机计算输入与权重的点积，加上偏置项，再将结果传入阶跃函数（Step Function）。加权求和并加上偏置就是其核心运算。",
     "stage": "pre"
   },
   {
-    "question": "What does 'linearly separable' mean for a classification problem?",
-    "options": ["A single straight line (or hyperplane) can perfectly separate the classes", "The data can be sorted in order", "The features have a linear relationship with the label", "The data has only two dimensions"],
+    "question": "对于分类问题，“线性可分（Linearly Separable）”是什么意思？",
+    "options": ["一条直线（或超平面）就能完全分开各类别", "数据可以按顺序排列", "特征与标签之间存在线性关系", "数据只有两个维度"],
     "correct": 0,
-    "explanation": "A dataset is linearly separable when you can draw a single hyperplane that perfectly divides the input space into the correct classes. AND and OR are linearly separable; XOR is not.",
+    "explanation": "如果一个超平面就能将输入空间完全划分为正确的类别，数据集就是线性可分的。与（AND）和或（OR）是线性可分的；异或（XOR）不是。",
     "stage": "pre"
   },
   {
-    "question": "Why does a single perceptron fail to learn the XOR function?",
-    "options": ["The step function prevents gradient flow", "XOR has too many inputs", "The learning rate is too low", "XOR is not linearly separable -- no single line can separate the classes"],
+    "question": "为什么单个感知机无法学会 XOR 函数？",
+    "options": ["阶跃函数阻止了梯度流动", "XOR 的输入太多", "学习率太低", "XOR 线性不可分，没有一条直线能分开各类别"],
     "correct": 3,
-    "explanation": "XOR places [0,1] and [1,0] on one side and [0,0] and [1,1] on the other. No single straight line can separate these groups, so a single perceptron, which can only draw one linear boundary, cannot solve XOR.",
+    "explanation": "XOR 将 [0,1] 和 [1,0] 分为一组，将 [0,0] 和 [1,1] 分为另一组。没有一条直线能分开这两组，因此只能产生一条线性边界的单个感知机无法解决 XOR。",
     "stage": "post"
   },
   {
-    "question": "In the perceptron learning rule, what happens when the prediction matches the target?",
-    "options": ["Nothing changes -- error is zero so the update is zero", "The learning rate is halved", "Weights are set to zero", "Weights are doubled"],
+    "question": "在感知机学习规则中，预测与目标一致时会发生什么？",
+    "options": ["不作任何修改，误差为零，因此更新量为零", "学习率减半", "权重设为零", "权重翻倍"],
     "correct": 0,
-    "explanation": "The update rule is w_i = w_i + lr * error * x_i. When prediction equals target, error = 0, so all weight updates are zero. The perceptron only adjusts when it makes a mistake.",
+    "explanation": "更新规则为 w_i = w_i + lr * error * x_i。预测等于目标时，error = 0，所以所有权重更新量都为零。感知机只在出错时调整。",
     "stage": "post"
   },
   {
-    "question": "How is XOR solved using multiple perceptrons?",
-    "options": ["By adding more inputs to a single perceptron", "By removing the bias term", "By using a larger learning rate on a single perceptron", "By combining OR, NAND, and AND perceptrons in two layers"],
+    "question": "如何使用多个感知机解决 XOR？",
+    "options": ["为单个感知机增加输入", "移除偏置项", "提高单个感知机的学习率", "将 OR、NAND 和 AND 感知机组合成两层网络"],
     "correct": 3,
-    "explanation": "XOR = (x1 OR x2) AND NOT(x1 AND x2). A hidden layer with an OR neuron and a NAND neuron feeds into an output AND neuron, creating a nonlinear decision boundary from linear components.",
+    "explanation": "XOR = (x1 OR x2) AND NOT(x1 AND x2)。由一个 OR 神经元和一个 NAND 神经元构成的隐藏层向输出层的 AND 神经元提供输入，从而用线性组件构造非线性决策边界。",
     "stage": "post"
   }
 ]

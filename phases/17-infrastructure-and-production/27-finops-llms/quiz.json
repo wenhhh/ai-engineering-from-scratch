@@ -1,75 +1,75 @@
 {
   "lesson": "27-finops-llms",
-  "title": "FinOps for LLMs — Unit Economics and Multi-Tenant Attribution",
+  "title": "LLM 的 FinOps：单位经济性与多租户归因（FinOps for LLMs — Unit Economics and Multi-Tenant Attribution）",
   "questions": [
     {
       "stage": "pre",
-      "question": "Why does traditional FinOps break on LLM spend?",
+      "question": "为什么传统 FinOps 无法直接处理 LLM 支出？",
       "options": [
-        "LLMs don't cost money",
-        "Cloud providers refuse to itemize",
-        "LLM bills are always free",
-        "Costs are token-transactions rather than resource-uptime; tags don't auto-propagate from API calls and you must stamp user/task/tenant at the call site"
+        "LLM 不花钱",
+        "云提供商拒绝列明细",
+        "LLM 账单总是免费",
+        "成本来自词元交易而非资源运行时间；API 调用不会自动传播标签，必须在调用点标记用户、任务、租户"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Which three attribution dimensions does the lesson require instrumenting on day one?",
+      "question": "本课要求从第一天埋点哪三个归因维度？",
       "options": [
-        "Provider, model, API version",
-        "Region, AZ, datacenter",
-        "Per-user (user_id), per-task (task_id + route), per-tenant (tenant_id)",
-        "GPU, CPU, RAM"
+        "提供商、模型、API 版本",
+        "区域、可用区、数据中心",
+        "按用户（user_id）、按任务（task_id + route）、按租户（tenant_id）",
+        "GPU、CPU、RAM"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Which four token layers should be broken out in cost attribution?",
+      "question": "成本归因应拆分哪四个词元层？",
       "options": [
-        "GPU, CPU, RAM, storage",
-        "Cache, model, gateway, observability",
-        "Input, output, network, disk",
-        "Prompt, tool, memory, response"
+        "GPU、CPU、RAM、存储",
+        "缓存、模型、网关、可观测性",
+        "输入、输出、网络、磁盘",
+        "提示词（prompt）、工具（tool）、记忆（memory）、响应（response）"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "What is the kill-switch trigger in the enforcement ladder?",
+      "question": "分级约束中，紧急停止开关的触发条件是什么？",
       "options": [
-        "Spend over $1 in a minute",
-        "Any 5xx response",
-        "Tenant spend z-score > 4 relative to baseline; auto-pause tenant and page on-call",
-        "Latency P50 > 2s"
+        "一分钟支出超过 $1",
+        "任何 5xx 响应",
+        "租户支出相对基准的 z-score >4，自动暂停租户并呼叫值班人员",
+        "延迟 P50 >2s"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "Which unit metric does the lesson recommend instead of $/M tokens?",
+      "question": "本课推荐用什么单位指标替代每百万词元美元数？",
       "options": [
-        "Cost per second",
-        "Cost per GPU-hour",
-        "Cost per product outcome (e.g. cost per resolved support ticket, cost per generated article, cost per successful agent task)",
-        "Cost per gateway"
+        "每秒成本",
+        "每 GPU 小时成本",
+        "每项产品结果成本，例如每张已解决客服工单、每篇生成文章、每次成功智能体任务的成本",
+        "每网关成本"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "Which attribution pattern does the lesson call the highest-accuracy one mature teams use?",
+      "question": "本课将哪种模式称为成熟团队使用、准确率最高的归因方式？",
       "options": [
-        "Tag-and-aggregate only",
-        "Model-based allocation",
-        "Telemetry joiner — join traces to billing via trace IDs",
-        "Sampling and extrapolation"
+        "仅打标签后聚合",
+        "基于模型的分摊",
+        "遥测关联器：通过 trace ID 关联链路与账单",
+        "抽样与外推"
       ],
       "correct": 2,
       "explanation": ""

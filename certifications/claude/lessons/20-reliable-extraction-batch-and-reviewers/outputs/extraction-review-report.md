@@ -1,39 +1,25 @@
-# Extraction Review Report: Support Policy Changes
+# 提取评审报告：客服政策变更（Extraction Review Report: Support Policy Changes）
 
-## Extraction Contract
+## 提取契约（Extraction Contract） <!-- ## Extraction Contract -->
 
-Each record includes policy ID, effective date or `null`, region, action type,
-threshold or `null`, evidence span, source version, and review state. Unknown is
-representable and additional fields are rejected.
+每条记录包含政策 ID、生效日期或 `null`、地区、操作类型、阈值或 `null`、证据片段、来源版本和评审状态。未知状态可以表示，额外字段会被拒绝。
 
-## Batch Manifest
+## 批处理清单（Batch Manifest） <!-- ## Batch Manifest -->
 
-Job `policy-w32-review` contains 40 inputs joined by stable `custom_id`, source
-version, schema `policy-change-2`, and expected output. The fixture returns
-shuffled results with two dependency failures and preserves 38 successful
-records. The dated planning assumption is a 50% Message Batches cost reduction,
-an up-to-24-hour service window, and no guaranteed latency SLA; deployment must
-recheck the current API documentation.
+作业 `policy-w32-review` 包含 40 个输入，通过稳定的 `custom_id`、来源版本、模式 `policy-change-2` 和预期输出关联。夹具返回乱序（shuffled）结果，其中有两项依赖失败，并保留 38 条成功记录。注明日期的规划假设为 Message Batches 成本降低 50%，服务窗口最长 24 小时（24-hour），且没有保证延迟的 SLA（no guaranteed latency）；部署时必须重新检查当前 API 文档。
 
-## Validation Layers
+## 验证层（Validation Layers） <!-- ## Validation Layers -->
 
-Syntax parsed 40 of 40. Schema accepted 40. Semantic validation rejected one
-deadline before its source effective date. Provenance validation rejected one
-invented threshold absent from its evidence span.
+语法（syntax）层解析了 40 条中的 40 条。模式（schema）层接受 40 条。语义（semantic）验证拒绝一个早于来源生效日期的截止日期。来源（provenance）验证拒绝一个证据片段中不存在的编造阈值。
 
-## Reviewer Findings
+## 评审发现（Reviewer Findings） <!-- ## Reviewer Findings -->
 
-An independent reviewer returned stable findings `REV-017` and `REV-018` with
-field, source span, reason, and disposition. It did not silently rewrite output.
+独立（independent）评审者返回稳定发现 `REV-017` 和 `REV-018`，附有字段、来源片段、原因和处置意见。它没有静默重写输出。
 
-## Adjudication
+## 裁决（Adjudication） <!-- ## Adjudication -->
 
-The qualified policy owner set the unsupported threshold to `null`, confirmed
-the deadline exception, and recorded reason codes. Repeated ambiguity escalates
-instead of entering another retry.
+具备资格的政策负责人将无依据阈值设为 `null`，确认截止日期例外，并记录原因码。反复出现的歧义会升级处理，而不是进入下一次重试。
 
-## Metrics
+## 指标（Metrics） <!-- ## Metrics -->
 
-Field precision: 0.98. Evidence-support rate: 1.00 after adjudication. High-risk
-false positives: 0. Reviewer disagreement: 2 of 40. Cost per accepted record:
-0.014 units.
+字段精确率：0.98。裁决后证据支持率：1.00。高风险假阳性：0。评审者分歧：40 条中 2 条。每条获接受记录成本：0.014 单位。

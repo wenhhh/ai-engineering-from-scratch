@@ -1,12 +1,11 @@
-"""Toy RadixAttention scheduler — stdlib Python.
+"""简化的基数注意力（RadixAttention）调度器，仅使用 Python 标准库。
 
-Simulate an SGLang-style radix-tree KV cache plus two schedulers:
-  FCFS         : naive first-come first-served
-  CACHE_AWARE  : depth-first dispatch on hottest branch
+模拟 SGLang 式基数树（Radix Tree）键值缓存（KV Cache），对比两种调度器：
+  FCFS         ：朴素的先到先服务（First-Come, First-Served）
+  CACHE_AWARE  ：优先沿最热门分支进行深度优先调度
 
-Also show how scrambled prompt ordering collapses hit rate. Pedagogical
-constants — the shape matches the published numbers, not the absolute
-latencies.
+同时展示打乱提示词（Prompt）顺序如何导致命中率骤降。常量用于教学，
+模拟结果与公开数据的趋势一致，不代表绝对延迟。
 """
 
 from __future__ import annotations
@@ -16,7 +15,7 @@ from collections import defaultdict
 import random
 
 
-KV_BUDGET_BLOCKS = 160    # small budget so eviction bites under FCFS
+KV_BUDGET_BLOCKS = 160    # 使用较小预算，让 FCFS 下的缓存淘汰（Eviction）影响显现出来
 BLOCK_TOKENS = 16
 
 
@@ -39,18 +38,18 @@ class Request:
 
 
 class RadixCache:
-    """Represent the tree as a dict: path_tuple -> blocks (last_used)."""
+    """以字典表示树：路径元组 path_tuple 映射到块数 blocks 和最近使用时间 last_used。"""
 
     def __init__(self, budget_blocks: int = KV_BUDGET_BLOCKS):
         self.budget = budget_blocks
         self.used = 0
         self.time = 0
-        # key: tuple of segments. value: (blocks, last_used)
+        # 键为片段元组，值为 [块数 blocks，最近使用时间 last_used]。
         self.nodes: dict[tuple[str, ...], list[int]] = {}
 
     def walk(self, segments: list[str]) -> int:
-        """Return number of tokens that are already cached at the longest matching
-        prefix, bumping last_used along the path."""
+        """返回最长匹配前缀（Longest Matching Prefix）中已缓存的词元数，
+        并沿路径更新 last_used。"""
         reused = 0
         self.time += 1
         for i in range(1, len(segments) + 1):
@@ -63,7 +62,7 @@ class RadixCache:
         return reused
 
     def insert(self, segments: list[str]) -> None:
-        """Insert any missing segments on the path, evicting LRU leaves if over budget."""
+        """补入路径中缺失的片段；超出预算时，淘汰最近最少使用（LRU）的叶节点。"""
         for i in range(1, len(segments) + 1):
             key = tuple(segments[:i])
             if key in self.nodes:
@@ -130,7 +129,7 @@ def workload_rag(n: int = 80, docs: int = 4, seed: int = 1) -> list[Request]:
 
 
 def workload_scrambled(n: int = 80, docs: int = 4, seed: int = 1) -> list[Request]:
-    """Prompts reorder [SYSTEM, TOOLS, DOC] randomly. Tree cannot share the prefix."""
+    """随机重排提示词的 [SYSTEM, TOOLS, DOC] 片段，使树无法共享前缀。"""
     rng = random.Random(seed)
     reqs = []
     for i in range(n):
@@ -144,30 +143,30 @@ def workload_scrambled(n: int = 80, docs: int = 4, seed: int = 1) -> list[Reques
 
 
 def report(label: str, res: dict) -> None:
-    print(f"{label:44}  hit_rate={res['hit_rate']:6.1%}   "
-          f"saved={res['saved']:>6}/{res['total']:<6} tok   reqs={res['reqs']}")
+    print(f"{label:44}  命中率={res['hit_rate']:6.1%}   "
+          f"复用词元={res['saved']:>6}/{res['total']:<6}   请求数={res['reqs']}")
 
 
 def main() -> None:
     print("=" * 88)
-    print("TOY RADIX CACHE — cache hit rate across schedulers and orderings")
+    print("简化基数树缓存（Radix Cache）：不同调度器与片段顺序下的缓存命中率")
     print("=" * 88)
 
     rag = workload_rag()
-    report("RAG workload | FCFS", simulate(rag, "FCFS"))
-    report("RAG workload | CACHE_AWARE", simulate(rag, "CACHE_AWARE"))
+    report("检索增强生成（RAG）工作负载 | FCFS", simulate(rag, "FCFS"))
+    report("RAG 工作负载 | 缓存感知（CACHE_AWARE）", simulate(rag, "CACHE_AWARE"))
 
     scrambled = workload_scrambled()
-    report("RAG scrambled prefix | FCFS", simulate(scrambled, "FCFS"))
-    report("RAG scrambled prefix | CACHE_AWARE", simulate(scrambled, "CACHE_AWARE"))
+    report("RAG 前缀打乱 | FCFS", simulate(scrambled, "FCFS"))
+    report("RAG 前缀打乱 | 缓存感知（CACHE_AWARE）", simulate(scrambled, "CACHE_AWARE"))
 
     print()
     print("=" * 88)
-    print("KEY FINDING")
+    print("关键发现")
     print("-" * 88)
-    print("  Fixed ordering + cache-aware scheduler : hit rate clears 80% on RAG.")
-    print("  Scrambled prefix order : hit rate collapses — the tree cannot find shared paths.")
-    print("  Real cases: 7% -> 74% hit rate by moving dynamic content out of the prefix.")
+    print("  固定片段顺序并使用缓存感知调度器：RAG 工作负载的命中率超过 80%。")
+    print("  打乱前缀顺序：树找不到共享路径，命中率骤降。")
+    print("  实际案例：将动态内容移出前缀后，命中率从 7% 提高到 74%。")
 
 
 if __name__ == "__main__":

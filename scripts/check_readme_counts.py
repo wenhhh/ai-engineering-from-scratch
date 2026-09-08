@@ -58,27 +58,27 @@ PATTERNS: tuple[CountPattern, ...] = (
         description="lesson-count badge URL",
     ),
     CountPattern(
-        regex=re.compile(r'alt="(\d+) lessons"'),
+        regex=re.compile(r'alt="(\d+)(?: lessons| 课)"'),
         field="lessons",
         description="lesson-count badge alt text",
     ),
     CountPattern(
-        regex=re.compile(r"^> (\d+) lessons\. \d+ phases\.", re.MULTILINE),
+        regex=re.compile(r"^> (\d+)(?: lessons\. \d+ phases\.| 课，\d+ 个阶段，)", re.MULTILINE),
         field="lessons",
         description="hero blockquote lesson count",
     ),
     CountPattern(
-        regex=re.compile(r"^> \d+ lessons\. (\d+) phases\.", re.MULTILINE),
+        regex=re.compile(r"^> \d+(?: lessons\. | 课，)(\d+)(?: phases\.| 个阶段，)", re.MULTILINE),
         field="phases",
         description="hero blockquote phase count",
     ),
     CountPattern(
-        regex=re.compile(r"This curriculum is the spine\. (\d+) phases,"),
+        regex=re.compile(r"(?:This curriculum is the spine\. |本课程提供贯穿始终的主线：)(\d+)(?: phases,| 个阶段、)"),
         field="phases",
         description="'spine' prose phase count",
     ),
     CountPattern(
-        regex=re.compile(r"This curriculum is the spine\. \d+ phases, (\d+) lessons,"),
+        regex=re.compile(r"(?:This curriculum is the spine\. \d+ phases, |本课程提供贯穿始终的主线：\d+ 个阶段、)(\d+)(?: lessons,| 课、)"),
         field="lessons",
         description="'spine' prose lesson count",
     ),
@@ -88,27 +88,27 @@ PATTERNS: tuple[CountPattern, ...] = (
         description="phase-count badge URL",
     ),
     CountPattern(
-        regex=re.compile(r'alt="(\d+) phases"'),
+        regex=re.compile(r'alt="(\d+)(?: phases| 个阶段)"'),
         field="phases",
         description="phase-count badge alt text",
     ),
     CountPattern(
-        regex=re.compile(r"portfolio of (\d+) artifacts"),
+        regex=re.compile(r"(?:portfolio of |包含 )(\d+)(?: artifacts| 件交付物)"),
         field="lessons",
         description="'portfolio of N artifacts' (one artifact per lesson)",
     ),
     CountPattern(
-        regex=re.compile(r"The repo ships (\d+) skills"),
+        regex=re.compile(r"(?:The repo ships |本仓库提供 )(\d+)(?: skills| 个技能)"),
         field="skills",
         description="toolkit section skill count",
     ),
     CountPattern(
-        regex=re.compile(r"The repo ships \d+ skills and (\d+) prompts"),
+        regex=re.compile(r"(?:The repo ships \d+ skills and |本仓库提供 \d+ 个技能和 )(\d+)(?: prompts| 个提示词)"),
         field="prompts",
         description="toolkit section prompt count",
     ),
     CountPattern(
-        regex=re.compile(r"MIT-licensed, (\d+) lessons\."),
+        regex=re.compile(r"(?:MIT-licensed, |采用 MIT 许可证，共 )(\d+)(?: lessons\.| 课)"),
         field="lessons",
         description="sponsor section lesson count",
     ),
@@ -210,6 +210,11 @@ def expand_phase_display(display: str) -> list[str]:
     return out
 
 
+def canonical_title(value: str) -> str:
+    return " · ".join(re.sub(r"^.*（([^（）]+)）$", r"\1", part.strip())
+                      for part in value.split(" · "))
+
+
 def check_book_volumes() -> list[str]:
     """Pin the three presentation copies of the volume tables to book/volumes.json.
 
@@ -236,7 +241,7 @@ def check_book_volumes() -> list[str]:
         if not m or "aiefs-vol" not in m.group(3):
             errors.append(f"README.md book table: no row for {where}")
         else:
-            if m.group(1) != f"{title} · {subtitle}":
+            if canonical_title(m.group(1)) != canonical_title(f"{title} · {subtitle}"):
                 errors.append(
                     f"README.md book table {where}: name cell {m.group(1)!r} != "
                     f"{title!r} · {subtitle!r}"
@@ -255,7 +260,7 @@ def check_book_volumes() -> list[str]:
         if not m:
             errors.append(f"book/README.md table: no row for {where}")
         else:
-            if m.group(1) != title:
+            if canonical_title(m.group(1)) != canonical_title(title):
                 errors.append(
                     f"book/README.md table {where}: title {m.group(1)!r} != {title!r}"
                 )
@@ -276,7 +281,7 @@ def check_book_volumes() -> list[str]:
                 errors.append(
                     f"site/index.html books array {where}: slug {m.group(1)!r} != {slug!r}"
                 )
-            if m.group(2) != title or m.group(3) != subtitle:
+            if canonical_title(m.group(2)) != canonical_title(title) or canonical_title(m.group(3)) != canonical_title(subtitle):
                 errors.append(
                     f"site/index.html books array {where}: title/subtitle drift "
                     f"({m.group(2)!r}, {m.group(3)!r})"

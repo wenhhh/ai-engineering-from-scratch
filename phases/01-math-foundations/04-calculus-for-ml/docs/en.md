@@ -1,341 +1,341 @@
-# Calculus for Machine Learning
+# 面向机器学习的微积分（Calculus for Machine Learning）
 
-> Derivatives tell you which way is downhill. That is all a neural network needs to learn.
+> 导数指出下坡方向，神经网络便能据此学习。
 
 **Type:** Learn
 **Language:** Python
-**Prerequisites:** Phase 1, Lessons 01-03
-**Time:** ~60 minutes
+**Prerequisites:** 阶段 1，第 01–03 课
+**Time:** ~60 分钟
 
-## Learning Objectives
+## 学习目标（Learning Objectives）
 
-- Compute numerical and analytical derivatives for common ML functions (x^2, sigmoid, cross-entropy)
-- Implement gradient descent from scratch to minimize a loss function in 1D and 2D
-- Derive the gradient of a linear regression model and train it via manual weight updates
-- Explain the Hessian matrix, Taylor series approximations, and their connection to optimization methods
+- 计算常见机器学习函数的数值导数（Numerical derivative）与解析导数（Analytical derivative），包括 x^2、Sigmoid 和交叉熵
+- 从零实现梯度下降（Gradient descent），最小化一维、二维损失函数
+- 推导线性回归模型的梯度，通过手动更新权重训练模型
+- 解释海森矩阵（Hessian matrix）、泰勒级数近似（Taylor series approximation）及其与优化方法的联系
 
-## The Problem
+## 问题（The Problem）
 
-You have a neural network with millions of weights. Each weight is a knob. You need to figure out which direction to turn every single knob to make the model slightly less wrong. Calculus gives you that direction.
+一个神经网络可能有数百万个权重，每个权重都像一个调节旋钮。你需要判断每个旋钮该往哪个方向转，才能让模型少错一点。微积分给出了这个方向。
 
-Without calculus, training a neural network would mean trying random changes and hoping for the best. With derivatives, you know exactly how each weight affects the error. You turn every knob the right way, every time.
+没有微积分，训练神经网络就只能随机尝试修改并期待好结果。有了导数，就能知道每个权重如何影响误差，让每次调节都有方向依据。
 
-## The Concept
+## 核心概念（The Concept）
 
-### What is a derivative?
+### 什么是导数（What is a derivative?）
 
-A derivative measures the rate of change. For a function y = f(x), the derivative f'(x) tells you: if you nudge x by a tiny amount, how much does y change?
+导数（Derivative）衡量变化率。对于函数 y = f(x)，导数 f'(x) 告诉你：将 x 改变一点点，y 会变化多少？
 
-Geometrically, the derivative is the slope of the tangent line at a point.
+从几何上看，导数就是曲线在某点处切线（Tangent line）的斜率。
 
-**f(x) = x^2:**
+**f(x) = x^2：**
 
-| x | f(x) | f'(x) (slope) |
+| x | f(x) | f'(x)，斜率 |
 |---|------|---------------|
-| 0 | 0    | 0 (flat, at the bottom) |
-| 1 | 1    | 2 |
-| 2 | 4    | 4 (tangent line slope at this point) |
-| 3 | 9    | 6 |
+| 0 | 0 | 0，切线水平，位于底部 |
+| 1 | 1 | 2 |
+| 2 | 4 | 4，该点的切线斜率 |
+| 3 | 9 | 6 |
 
-At x=2, the slope is 4. If you move x a tiny bit to the right, y increases by about 4 times that amount. At x=0, the slope is 0. You are at the bottom of the bowl.
+x=2 时，斜率为 4。如果 x 向右移动一点，y 大约增加该位移量的 4 倍。x=0 时斜率为 0，此时位于碗状曲线的底部。
 
-The formal definition:
+形式化定义：
 
-```
+```text
 f'(x) = lim   f(x + h) - f(x)
         h->0  -----------------
                      h
 ```
 
-In code, you skip the limit and just use a very small h. That is the numerical derivative.
+在代码中，不直接计算极限，而是使用很小的 h，这就是数值导数。
 
-### Partial derivatives: one variable at a time
+### 偏导数：每次只改变一个变量（Partial derivatives: one variable at a time）
 
-Real functions have many inputs. A neural network loss depends on thousands of weights. A partial derivative holds all variables constant except one, then takes the derivative with respect to that one.
+实际函数往往有多个输入，神经网络的损失依赖数千个权重。偏导数（Partial derivative）将其他变量固定，仅对其中一个变量求导。
 
-```
+```text
 f(x, y) = x^2 + 3xy + y^2
 
-df/dx = 2x + 3y     (treat y as a constant)
-df/dy = 3x + 2y     (treat x as a constant)
+df/dx = 2x + 3y     （将 y 视为常数）
+df/dy = 3x + 2y     （将 x 视为常数）
 ```
 
-Each partial derivative answers: if I nudge just this one weight, how does the loss change?
+每个偏导数都回答：只改变这一个权重时，损失会如何变化？
 
-### The gradient: vector of all partial derivatives
+### 梯度：所有偏导数组成的向量（The gradient: vector of all partial derivatives）
 
-The gradient collects every partial derivative into one vector. For a function f(x, y, z), the gradient is:
+梯度（Gradient）将所有偏导数组合成一个向量。对于 f(x, y, z)，梯度为：
 
-```
+```text
 grad f = [ df/dx, df/dy, df/dz ]
 ```
 
-The gradient points in the direction of steepest ascent. To minimize a function, go in the opposite direction.
+梯度指向函数上升最快的方向。要最小化函数，就朝相反方向走。
 
-**Contour plot of f(x,y) = x^2 + y^2:**
+**f(x,y) = x^2 + y^2 的等高线图（Contour plot）：**
 
-The function forms a bowl shape with concentric circles as contour lines. The minimum is at (0, 0).
+该函数形成碗状曲面，等高线是一组同心圆，最小值位于 (0, 0)。
 
-| Point | grad f | -grad f (descent direction) |
+| 点 | grad f | -grad f，下降方向 |
 |-------|--------|----------------------------|
-| (1, 1) | [2, 2] (points uphill, away from minimum) | [-2, -2] (points downhill, toward minimum) |
-| (0, 0) | [0, 0] (flat, at the minimum) | [0, 0] |
+| (1, 1) | [2, 2]，指向上坡，远离最小值 | [-2, -2]，指向下坡，靠近最小值 |
+| (0, 0) | [0, 0]，梯度为零，位于最小值 | [0, 0] |
 
-This is gradient descent in a picture. Compute the gradient, negate it, take a step.
+这就是梯度下降的直观图景：计算梯度，取反，再迈一步。
 
-### The connection to optimization
+### 与优化的联系（The connection to optimization）
 
-Training a neural network is optimization. You have a loss function L(w1, w2, ..., wn) that measures how wrong the model is. You want to minimize it.
+训练神经网络就是一个优化（Optimization）问题。损失函数（Loss function）L(w1, w2, ..., wn) 衡量模型错得有多严重，目标是将它最小化。
 
-```
-Gradient descent update rule:
+```text
+梯度下降更新规则：
 
   w_new = w_old - learning_rate * dL/dw
 
-For every weight:
-  1. Compute the partial derivative of loss with respect to that weight
-  2. Subtract a small multiple of it from the weight
-  3. Repeat
+对每个权重：
+  1. 计算损失对该权重的偏导数
+  2. 从权重中减去偏导数乘以一个较小系数的值
+  3. 重复
 ```
 
-The learning rate controls step size. Too big and you overshoot. Too small and you crawl.
+学习率（Learning rate）控制步长。太大容易越过目标，太小则进展缓慢。
 
-**Loss landscape (1D slice):**
+**损失地形（Loss landscape）的一维切片：**
 
-The loss function L(w) forms a curve with peaks and valleys as the weight w varies.
+随着权重 w 变化，损失函数 L(w) 形成有峰有谷的曲线。
 
-| Feature | Description |
+| 特征 | 说明 |
 |---------|-------------|
-| Global minimum | The lowest point on the entire curve -- the best solution |
-| Local minimum | A valley that is lower than its neighbors but not the lowest overall |
-| Slope | Gradient descent follows the slope downhill from any starting point |
+| 全局最小值（Global minimum） | 整条曲线的最低点，即最佳解 |
+| 局部最小值（Local minimum） | 比周围低，但不是全局最低的谷底 |
+| 斜率（Slope） | 梯度下降从初始点沿斜率指示的下坡方向前进 |
 
-Gradient descent follows the slope downhill. It can get stuck in local minima, but in high-dimensional spaces (millions of weights) this is rarely a practical problem.
+梯度下降沿斜率下坡，可能停在局部最小值。不过，在数百万权重构成的高维空间中，这通常不是实际工作的主要问题。
 
-### Numerical vs analytical derivatives
+### 数值导数与解析导数（Numerical vs analytical derivatives）
 
-There are two ways to compute a derivative.
+计算导数有两种方式。
 
-Analytical: apply calculus rules by hand. For f(x) = x^2, the derivative is f'(x) = 2x. Exact. Fast.
+解析求导：手动应用微积分规则。例如 f(x) = x^2 的导数是 f'(x) = 2x，结果精确，计算快。
 
-Numerical: approximate using the definition. Compute f(x+h) and f(x-h) for a tiny h, then use the difference.
+数值求导：利用定义近似导数。取很小的 h，计算 f(x+h) 和 f(x-h)，再求差值。
 
-```
-Numerical (central difference):
+```text
+数值方法（中心差分）：
 
 f'(x) ~= f(x + h) - f(x - h)
           -----------------------
                   2h
 
-h = 0.0001 works well in practice
+实践中 h = 0.0001 通常效果不错
 ```
 
-Numerical derivatives are slower but work for any function. Analytical derivatives are fast but require you to derive the formula. Neural network frameworks use a third approach: automatic differentiation, which computes exact derivatives mechanically. You will see that in Phase 3.
+数值导数较慢，但适用于任意函数；解析导数计算快，却需要推导公式。神经网络框架采用第三种方式：自动微分（Automatic differentiation），按机械规则计算精确导数。阶段 3 将介绍它。
 
-### Derivatives by hand for simple functions
+### 手算简单函数的导数（Derivatives by hand for simple functions）
 
-These are the derivatives you will see over and over in ML.
+以下导数会在机器学习中反复出现。
 
-```
-Function        Derivative       Used in
+```text
+函数            导数             应用位置
 --------        ----------       -------
-f(x) = x^2     f'(x) = 2x      Loss functions (MSE)
-f(x) = wx + b  f'(w) = x        Linear layer (gradient w.r.t. weight)
-                f'(b) = 1        Linear layer (gradient w.r.t. bias)
-                f'(x) = w        Linear layer (gradient w.r.t. input)
-f(x) = e^x     f'(x) = e^x     Softmax, attention
-f(x) = ln(x)   f'(x) = 1/x     Cross-entropy loss
-f(x) = 1/(1+e^-x)  f'(x) = f(x)(1-f(x))   Sigmoid activation
+f(x) = x^2     f'(x) = 2x      损失函数（MSE）
+f(x) = wx + b  f'(w) = x        线性层，对权重的梯度
+                f'(b) = 1        线性层，对偏置的梯度
+                f'(x) = w        线性层，对输入的梯度
+f(x) = e^x     f'(x) = e^x     Softmax、注意力
+f(x) = ln(x)   f'(x) = 1/x     交叉熵损失（Cross-entropy loss）
+f(x) = 1/(1+e^-x)  f'(x) = f(x)(1-f(x))   Sigmoid 激活函数
 ```
 
-For f(x) = x^2:
+对于 f(x) = x^2：
 
-```
+```text
 f(x) = x^2    f'(x) = 2x
 
-  x    f(x)   f'(x)   meaning
-  -2    4      -4      slope tilts left (decreasing)
-  -1    1      -2      slope tilts left (decreasing)
-   0    0       0      flat (minimum!)
-   1    1       2      slope tilts right (increasing)
-   2    4       4      slope tilts right (increasing)
+  x    f(x)   f'(x)   含义
+  -2    4      -4      斜率为负，函数递减
+  -1    1      -2      斜率为负，函数递减
+   0    0       0      斜率为零，处于最小值
+   1    1       2      斜率为正，函数递增
+   2    4       4      斜率为正，函数递增
 ```
 
-For f(w) = wx + b with x=3, b=1:
+对于 f(w) = wx + b，令 x=3、b=1：
 
-```
+```text
 f(w) = 3w + 1    f'(w) = 3
 
-The derivative with respect to w is just x.
-If x is big, a small change in w causes a big change in output.
+对 w 的导数就是 x。
+x 较大时，w 的小幅变化会引起输出的较大变化。
 ```
 
-### The chain rule
+### 链式法则（The chain rule）
 
-When functions are composed, the chain rule tells you how to differentiate.
+函数复合时，链式法则（Chain rule）告诉我们如何求导。
 
-```
-If y = f(g(x)), then dy/dx = f'(g(x)) * g'(x)
+```text
+若 y = f(g(x))，则 dy/dx = f'(g(x)) * g'(x)
 
-Example: y = (3x + 1)^2
-  outer: f(u) = u^2       f'(u) = 2u
-  inner: g(x) = 3x + 1    g'(x) = 3
+示例： y = (3x + 1)^2
+  外层： f(u) = u^2       f'(u) = 2u
+  内层： g(x) = 3x + 1    g'(x) = 3
   dy/dx = 2(3x + 1) * 3 = 6(3x + 1)
 ```
 
-Neural networks are chains of functions: input -> linear -> activation -> linear -> activation -> loss. Backpropagation is the chain rule applied repeatedly from output to input. That is the entire algorithm.
+神经网络是一串函数：输入 -> 线性层 -> 激活函数 -> 线性层 -> 激活函数 -> 损失。反向传播（Backpropagation）就是从输出到输入反复应用链式法则，这便是整个算法的核心。
 
-### The Hessian Matrix
+### 海森矩阵（The Hessian Matrix）
 
-The gradient tells you the slope. The Hessian tells you the curvature.
+梯度告诉你斜率，海森矩阵则告诉你曲率（Curvature）。
 
-The Hessian is the matrix of second-order partial derivatives. For a function f(x1, x2, ..., xn), entry (i, j) of the Hessian is:
+海森矩阵由二阶偏导数组成。对于函数 f(x1, x2, ..., xn)，其第 (i, j) 个元素为：
 
-```
+```text
 H[i][j] = d^2f / (dx_i * dx_j)
 ```
 
-For a 2-variable function f(x, y):
+对于二元函数 f(x, y)：
 
-```
+```text
 H = | d^2f/dx^2    d^2f/dxdy |
     | d^2f/dydx    d^2f/dy^2 |
 ```
 
-**What the Hessian tells you at a critical point (where gradient = 0):**
+**在驻点（Critical point），即梯度为 0 的位置，海森矩阵可以告诉你：**
 
-| Hessian property | Meaning | Example surface |
+| 海森矩阵性质 | 含义 | 曲面示例 |
 |-----------------|---------|-----------------|
-| Positive definite (all eigenvalues > 0) | Local minimum | Bowl pointing up |
-| Negative definite (all eigenvalues < 0) | Local maximum | Bowl pointing down |
-| Indefinite (mixed eigenvalues) | Saddle point | Horse saddle shape |
+| 正定（Positive definite），所有特征值 > 0 | 局部最小值 | 开口向上的碗 |
+| 负定（Negative definite），所有特征值 < 0 | 局部最大值 | 开口向下的碗 |
+| 不定（Indefinite），特征值有正有负 | 鞍点（Saddle point） | 马鞍形曲面 |
 
-**Example:** f(x, y) = x^2 - y^2 (a saddle function)
+**示例：** f(x, y) = x^2 - y^2，是一个鞍形函数。
 
-```
+```text
 df/dx = 2x       df/dy = -2y
 d^2f/dx^2 = 2    d^2f/dy^2 = -2    d^2f/dxdy = 0
 
 H = | 2   0 |
     | 0  -2 |
 
-Eigenvalues: 2 and -2 (one positive, one negative)
---> Saddle point at (0, 0)
+特征值：2 和 -2，一正一负
+--> (0, 0) 是鞍点
 ```
 
-Compare with f(x, y) = x^2 + y^2 (a bowl):
+对比碗状函数 f(x, y) = x^2 + y^2：
 
-```
+```text
 H = | 2  0 |
     | 0  2 |
 
-Eigenvalues: 2 and 2 (both positive)
---> Local minimum at (0, 0)
+特征值：2 和 2，均为正
+--> (0, 0) 是局部最小值点
 ```
 
-**Why the Hessian matters in ML:**
+**海森矩阵为何对机器学习重要：**
 
-Newton's method uses the Hessian to take better optimization steps than gradient descent. Instead of just following the slope, it accounts for curvature:
+牛顿法（Newton's method）利用海森矩阵选择比梯度下降更合适的优化步长。它不仅看斜率，还考虑曲率：
 
+```text
+牛顿法更新：    w_new = w_old - H^(-1) * gradient
+梯度下降：   w_new = w_old - lr * gradient
 ```
-Newton's update:    w_new = w_old - H^(-1) * gradient
-Gradient descent:   w_new = w_old - lr * gradient
-```
 
-Newton's method converges faster because the Hessian "rescales" the gradient -- steep directions get smaller steps, flat directions get larger steps.
+牛顿法收敛更快，因为海森矩阵会对梯度“重新缩放”：陡峭方向的步子较小，平缓方向的步子较大。
 
-The catch: for a neural network with N parameters, the Hessian is N x N. A model with 1 million parameters would need a 1 trillion-entry matrix. That is why we use approximations.
+代价在于：对于含 N 个参数的神经网络，海森矩阵的大小为 N x N。100 万参数的模型需要一个包含 1 万亿个元素的矩阵，因此必须使用近似方法。
 
-| Method | What it uses | Cost | Convergence |
+| 方法 | 使用的信息 | 成本 | 收敛速度 |
 |--------|-------------|------|-------------|
-| Gradient descent | First derivatives only | O(N) per step | Slow (linear) |
-| Newton's method | Full Hessian | O(N^3) per step | Fast (quadratic) |
-| L-BFGS | Approximate Hessian from gradient history | O(N) per step | Medium (superlinear) |
-| Adam | Per-parameter adaptive rates (diagonal Hessian approx) | O(N) per step | Medium |
-| Natural gradient | Fisher information matrix (statistical Hessian) | O(N^2) per step | Fast |
+| 梯度下降（Gradient descent） | 仅一阶导数 | 每步 O(N) | 慢，线性收敛 |
+| 牛顿法（Newton's method） | 完整海森矩阵 | 每步 O(N^3) | 快，二次收敛 |
+| L-BFGS | 利用梯度历史近似海森矩阵 | 每步 O(N) | 中等，超线性收敛 |
+| Adam | 逐参数自适应学习率，近似对角海森矩阵 | 每步 O(N) | 中等 |
+| 自然梯度（Natural gradient） | 费舍尔信息矩阵（Fisher information matrix），统计意义上的海森矩阵 | 每步 O(N^2) | 快 |
 
-In practice, Adam is the default optimizer for deep learning. It approximates second-order information cheaply by tracking the running mean and variance of gradients per parameter.
+实践中，Adam 是深度学习的默认优化器。它跟踪各参数梯度的移动均值与方差，以较低成本近似二阶信息。
 
-### Taylor Series Approximation
+### 泰勒级数近似（Taylor Series Approximation）
 
-Any smooth function can be approximated locally by a polynomial:
+任意光滑函数都可以在局部用多项式近似：
 
-```
+```text
 f(x + h) = f(x) + f'(x)*h + (1/2)*f''(x)*h^2 + (1/6)*f'''(x)*h^3 + ...
 ```
 
-The more terms you include, the better the approximation -- but only near the point x.
+保留的项越多，近似通常越好，但这只适用于点 x 附近。
 
-**Why Taylor series matter for ML:**
+**泰勒级数为何对机器学习重要：**
 
-- **First-order Taylor = gradient descent.** When you use f(x + h) ~ f(x) + f'(x)*h, you are making a linear approximation. Gradient descent minimizes this linear model to choose h = -lr * f'(x).
+- **一阶泰勒近似对应梯度下降。** 使用 f(x + h) ~ f(x) + f'(x)*h 时，是在做线性近似。梯度下降通过最小化这个线性模型，选择 h = -lr * f'(x)。
 
-- **Second-order Taylor = Newton's method.** Using f(x + h) ~ f(x) + f'(x)*h + (1/2)*f''(x)*h^2, you get a quadratic model. Minimizing it gives h = -f'(x)/f''(x) -- Newton's step.
+- **二阶泰勒近似对应牛顿法。** 使用 f(x + h) ~ f(x) + f'(x)*h + (1/2)*f''(x)*h^2，可得到二次模型。最小化该模型得到 h = -f'(x)/f''(x)，即牛顿步（Newton's step）。
 
-- **Loss function design.** MSE and cross-entropy are smooth, which means their Taylor expansions are well-behaved. This is not an accident. Smooth losses make optimization predictable.
+- **损失函数设计。** 均方误差（MSE）和交叉熵（Cross-entropy）是光滑的，因此泰勒展开的性质良好。这并非巧合：光滑损失使优化过程更可预测。
 
-```
-Approximation order    What it captures    Optimization method
+```text
+近似阶数               描述的信息          优化方法
 -------------------    -----------------   -------------------
-0th order (constant)   Just the value      Random search
-1st order (linear)     Slope               Gradient descent
-2nd order (quadratic)  Curvature           Newton's method
-Higher orders          Finer structure     Rarely used in ML
+零阶（常数）           只有函数值          随机搜索
+一阶（线性）           斜率                梯度下降
+二阶（二次）           曲率                牛顿法
+更高阶                 更细致的结构        机器学习中很少使用
 ```
 
-The key insight: all gradient-based optimization is really about approximating the loss function locally and stepping to the minimum of that approximation.
+关键认识是：所有基于梯度的优化，实际上都在局部近似损失函数，再向该近似的最小值迈进。
 
-### Integrals in ML
+### 机器学习中的积分（Integrals in ML）
 
-Derivatives tell you rates of change. Integrals compute accumulations -- area under a curve.
+导数给出变化率，积分（Integral）则计算累积量，也就是曲线下的面积。
 
-In ML, you rarely compute integrals by hand, but the concept is everywhere:
+机器学习中很少手算积分，但相关概念随处可见：
 
-**Probability.** For a continuous random variable with density p(x):
-```
+**概率（Probability）。** 对概率密度为 p(x) 的连续随机变量：
+```text
 P(a < X < b) = integral from a to b of p(x) dx
 ```
-The area under the probability density curve between a and b is the probability of landing in that range.
+概率密度曲线在 a 与 b 之间的面积，就是变量落入该区间的概率。
 
-**Expected value.** The average outcome weighted by probability:
-```
+**期望值（Expected value）。** 按概率加权的平均结果：
+```text
 E[f(X)] = integral of f(x) * p(x) dx
 ```
-The expected loss over a data distribution is an integral. Training minimizes an empirical approximation of this.
+数据分布上的期望损失是一个积分。训练最小化的是它的经验近似。
 
-**KL divergence.** Measures how different two distributions are:
-```
+**KL 散度（KL divergence）。** 衡量两个分布的差异：
+```text
 KL(p || q) = integral of p(x) * log(p(x) / q(x)) dx
 ```
-Used in VAEs, knowledge distillation, and Bayesian inference.
+用于变分自编码器（VAE）、知识蒸馏（Knowledge distillation）和贝叶斯推断（Bayesian inference）。
 
-**Normalization constants.** In Bayesian inference:
-```
+**归一化常数（Normalization constants）。** 贝叶斯推断中：
+```text
 p(w | data) = p(data | w) * p(w) / integral of p(data | w) * p(w) dw
 ```
-The denominator is an integral over all possible parameter values. It is often intractable, which is why we use approximations like MCMC and variational inference.
+分母是对所有可能参数值的积分。它往往难以直接求解，因此会使用马尔可夫链蒙特卡洛（MCMC）和变分推断（Variational inference）等近似方法。
 
-| Integral concept | Where it appears in ML |
+| 积分概念 | 机器学习中的应用 |
 |-----------------|----------------------|
-| Area under curve | Probability from density functions |
-| Expected value | Loss functions, risk minimization |
-| KL divergence | VAEs, policy optimization, distillation |
-| Normalization | Bayesian posteriors, softmax denominator |
-| Marginal likelihood | Model comparison, evidence lower bound (ELBO) |
+| 曲线下面积 | 根据密度函数计算概率 |
+| 期望值 | 损失函数、风险最小化（Risk minimization） |
+| KL 散度 | VAE、策略优化（Policy optimization）、蒸馏 |
+| 归一化 | 贝叶斯后验（Posterior）、Softmax 分母 |
+| 边际似然（Marginal likelihood） | 模型比较、证据下界（ELBO） |
 
-### Multivariable Chain Rule in a Computation Graph
+### 计算图中的多元链式法则（Multivariable Chain Rule in a Computation Graph）
 
-The chain rule does not just apply to scalar functions in a line. In a neural network, variables fan out and merge. Here is how derivatives flow through a simple forward pass:
+链式法则不仅适用于串联的标量函数。神经网络中的变量会分叉，也会汇合。下面展示一次简单前向传播中导数所对应的计算路径：
 
 ```mermaid
 graph LR
-    x["x (input)"] -->|"*w"| z1["z1 = w*x"]
+    x["x（输入）"] -->|"*w"| z1["z1 = w*x"]
     z1 -->|"+b"| z2["z2 = w*x + b"]
     z2 -->|"sigmoid"| a["a = sigmoid(z2)"]
-    a -->|"loss fn"| L["L = -(y*log(a) + (1-y)*log(1-a))"]
+    a -->|"损失函数"| L["L = -(y*log(a) + (1-y)*log(1-a))"]
 ```
 
-The backward pass computes gradients right to left:
+反向传播从右向左计算梯度：
 
 ```mermaid
 graph RL
@@ -345,15 +345,15 @@ graph RL
     dz2 -->|"dz2/db = 1"| db["dL/db = dL/dz2 * 1"]
 ```
 
-Each arrow multiplies by the local derivative. The gradient for any parameter is the product of all local derivatives along the path from loss to that parameter. When paths branch and merge, you sum the contributions (multivariate chain rule).
+每条箭头对应乘以一个局部导数（Local derivative）。任意参数的梯度，是从损失到该参数的路径上所有局部导数的乘积。路径分叉、汇合时，要将各条路径的贡献相加，这就是多元链式法则。
 
-This is all backpropagation is: the chain rule applied systematically through a computation graph, from output to inputs.
+反向传播的全部核心就是：沿计算图（Computation graph）从输出到输入，系统地应用链式法则。
 
-### The Jacobian matrix
+### 雅可比矩阵（The Jacobian matrix）
 
-When a function maps a vector to a vector (like a neural network layer), its derivative is a matrix. The Jacobian contains every partial derivative of every output with respect to every input.
+函数将向量映射到向量时，例如神经网络的一层，其导数是一个矩阵。雅可比矩阵（Jacobian）包含每个输出对每个输入的偏导数。
 
-For f: R^n -> R^m, the Jacobian J is an m x n matrix:
+对于 f: R^n -> R^m，雅可比矩阵 J 的形状为 m x n：
 
 | | x1 | x2 | ... | xn |
 |---|---|---|---|---|
@@ -362,39 +362,39 @@ For f: R^n -> R^m, the Jacobian J is an m x n matrix:
 | ... | ... | ... | ... | ... |
 | fm | dfm/dx1 | dfm/dx2 | ... | dfm/dxn |
 
-You will not compute Jacobians by hand for neural networks. PyTorch handles it. But knowing it exists helps you understand shapes in backpropagation: if a layer maps R^n to R^m, its Jacobian is m x n. The gradient flows backward through the transpose of this matrix.
+你不必手算神经网络的雅可比矩阵，PyTorch 会处理。但知道它的存在，有助于理解反向传播中的形状：若网络层将 R^n 映射到 R^m，其雅可比矩阵为 m x n，梯度通过该矩阵的转置向后传播。
 
-### Why this matters for neural networks
+### 为什么这对神经网络重要（Why this matters for neural networks）
 
-Every weight in a neural network gets a gradient. The gradient tells you how to adjust that weight to reduce the loss.
+神经网络的每个权重都会得到一个梯度，指出该如何调整权重来降低损失。
 
 ```mermaid
 graph LR
-    subgraph Forward["Forward Pass"]
-        I["input"] --> W1["W1"] --> R["relu"] --> W2["W2"] --> S["softmax"] --> L["loss"]
+    subgraph Forward["前向传播（Forward Pass）"]
+        I["输入"] --> W1["W1"] --> R["relu"] --> W2["W2"] --> S["softmax"] --> L["损失"]
     end
 ```
 
 ```mermaid
 graph RL
-    subgraph Backward["Backward Pass"]
+    subgraph Backward["反向传播（Backward Pass）"]
         dL["dL/dloss"] --> dW2["dL/dW2"] --> d2["..."] --> dW1["dL/dW1"]
     end
 ```
 
-Each weight update:
+每个权重的更新：
 - `W1 = W1 - lr * dL/dW1`
 - `W2 = W2 - lr * dL/dW2`
 
-The forward pass computes the prediction and loss. The backward pass computes the gradient of the loss with respect to every weight. Then every weight takes a small step downhill. Repeat for millions of steps. That is deep learning.
+前向传播计算预测和损失，反向传播计算损失对每个权重的梯度，然后让所有权重向下坡方向走一小步。重复数百万步，这就是深度学习。
 
 ```figure
 derivative-tangent
 ```
 
-## Build It
+## 动手实现（Build It）
 
-### Step 1: Numerical derivative from scratch
+### 步骤 1：从零实现数值导数（Numerical derivative from scratch）
 
 ```python
 def numerical_derivative(f, x, h=1e-7):
@@ -409,9 +409,9 @@ for x in [-2, -1, 0, 1, 2]:
     print(f"x={x:2d}  f'(x) numerical={numerical:.6f}  analytical={analytical:.1f}")
 ```
 
-The numerical derivative matches the analytical one to many decimal places.
+数值导数与解析导数在小数点后多位上吻合。
 
-### Step 2: Partial derivatives and gradients
+### 步骤 2：偏导数与梯度（Partial derivatives and gradients）
 
 ```python
 def numerical_gradient(f, point, h=1e-7):
@@ -434,7 +434,7 @@ print(f"Numerical gradient at (1,2): {[f'{g:.4f}' for g in grad]}")
 print(f"Analytical gradient at (1,2): [2*1+3*2, 3*1+2*2] = [{2*1+3*2}, {3*1+2*2}]")
 ```
 
-### Step 3: Gradient descent to find the minimum of f(x) = x^2
+### 步骤 3：用梯度下降寻找 f(x) = x^2 的最小值（Gradient descent）
 
 ```python
 x = 5.0
@@ -445,9 +445,9 @@ for step in range(20):
     print(f"step {step:2d}  x={x:8.4f}  f(x)={x**2:10.6f}")
 ```
 
-Starting at x=5, each step moves closer to x=0 (the minimum).
+从 x=5 开始，每一步都会更接近最小值点 x=0。
 
-### Step 4: Gradient descent on a 2D function
+### 步骤 4：二维函数的梯度下降（Gradient descent on a 2D function）
 
 ```python
 def f_2d(point):
@@ -464,7 +464,7 @@ for step in range(30):
         print(f"step {step:2d}  point=({point[0]:7.4f}, {point[1]:7.4f})  f={loss:.6f}")
 ```
 
-### Step 5: Comparing numerical and analytical derivatives
+### 步骤 5：对比数值导数与解析导数（Comparing numerical and analytical derivatives）
 
 ```python
 import math
@@ -487,7 +487,7 @@ for name, f, df in test_functions:
     print(f"{name:<12} {num:12.6f} {ana:12.6f} {err:12.2e}")
 ```
 
-### Step 6: Computing the Hessian numerically
+### 步骤 6：用数值方法计算海森矩阵（Computing the Hessian numerically）
 
 ```python
 def hessian_2d(f, x, y, h=1e-5):
@@ -508,9 +508,9 @@ print(f"Saddle Hessian: {H_saddle}")  # [[2, 0], [0, -2]] -- mixed signs
 print(f"Bowl Hessian:   {H_bowl}")    # [[2, 0], [0, 2]]  -- both positive
 ```
 
-The Hessian of the saddle function has eigenvalues 2 and -2 (mixed signs, confirming a saddle point). The bowl has eigenvalues 2 and 2 (both positive, confirming a minimum).
+鞍形函数的海森矩阵具有特征值 2 和 -2，符号不同，确认该点为鞍点。碗状函数的特征值为 2 和 2，均为正，确认该点为最小值点。
 
-### Step 7: Taylor approximation in action
+### 步骤 7：实际应用泰勒近似（Taylor approximation in action）
 
 ```python
 import math
@@ -531,9 +531,9 @@ for h in [0.1, 0.5, 1.0, 2.0]:
     print(f"h={h:.1f}  sin(h)={true_val:.4f}  order1={t1:.4f}  order2={t2:.4f}")
 ```
 
-Near x0=0, sin(x) ~ x (first-order Taylor). The approximation is excellent for small h but breaks down for large h. This is why gradient descent works best with small learning rates -- each step assumes the linear approximation is accurate.
+x0=0 附近，sin(x) ~ x，这是一阶泰勒近似。h 较小时近似很好，h 较大时误差明显。这说明为什么梯度下降适合较小的学习率：每一步都假设线性近似足够准确。
 
-### Step 8: Why this matters for a neural network
+### 步骤 8：将这些知识用于神经网络（Why this matters for a neural network）
 
 ```python
 import random
@@ -569,11 +569,11 @@ print(f"\nLearned: y = {w:.2f}x + {b:.2f}")
 print(f"Actual:  y = 2x + 1")
 ```
 
-Every gradient-based training loop follows this pattern: predict, compute loss, compute gradients, update weights.
+每个基于梯度的训练循环都遵循这一流程：预测、计算损失、计算梯度、更新权重。
 
-## Use It
+## 实际应用（Use It）
 
-With NumPy, the same operations are faster and more concise:
+用 NumPy 实现相同操作，代码更简洁，速度也更快：
 
 ```python
 import numpy as np
@@ -596,32 +596,32 @@ for epoch in range(200):
 print(f"Learned: y = {w:.2f}x + {b:.2f}")
 ```
 
-You just built gradient descent from scratch. PyTorch automates the gradient computation, but the update loop is identical.
+你已经从零实现了梯度下降。PyTorch 会自动计算梯度，但更新循环完全相同。
 
-## Exercises
+## 练习（Exercises）
 
-1. Implement `numerical_second_derivative(f, x)` using `numerical_derivative` called twice. Verify that the second derivative of x^3 at x=2 is 12.
-2. Use gradient descent to find the minimum of f(x, y) = (x - 3)^2 + (y + 1)^2. Start from (0, 0). The answer should converge to (3, -1).
-3. Add momentum to the gradient descent loop: maintain a velocity vector that accumulates past gradients. Compare convergence speed with and without momentum on f(x) = x^4 - 3x^2.
+1. 通过两次调用 `numerical_derivative` 实现 `numerical_second_derivative(f, x)`，验证 x^3 在 x=2 处的二阶导数为 12。
+2. 用梯度下降寻找 f(x, y) = (x - 3)^2 + (y + 1)^2 的最小值，从 (0, 0) 开始，结果应收敛到 (3, -1)。
+3. 为梯度下降循环添加动量（Momentum）：维护一个累积历史梯度的速度向量。对 f(x) = x^4 - 3x^2，比较有无动量时的收敛速度。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语 | 常见说法 | 准确含义 |
 |------|----------------|----------------------|
-| Derivative | "The slope" | The rate of change of a function at a point. Tells you how much the output changes per unit change in input. |
-| Partial derivative | "Derivative of one variable" | The derivative with respect to one variable while all others are held constant. |
-| Gradient | "Direction of steepest ascent" | A vector of all partial derivatives. Points in the direction that increases the function fastest. |
-| Gradient descent | "Go downhill" | Subtract the gradient (times a learning rate) from the parameters to reduce the loss. The core of neural network training. |
-| Learning rate | "Step size" | A scalar that controls how big each gradient descent step is. Too large: diverge. Too small: converge slowly. |
-| Chain rule | "Multiply the derivatives" | The rule for differentiating composed functions: df/dx = df/dg * dg/dx. The mathematical basis of backpropagation. |
-| Jacobian | "Matrix of derivatives" | When a function maps vectors to vectors, the Jacobian is the matrix of all partial derivatives of outputs with respect to inputs. |
-| Numerical derivative | "Finite differences" | Approximating a derivative by evaluating the function at two nearby points and computing the slope between them. |
-| Backpropagation | "Reverse-mode autodiff" | Computing gradients layer by layer from output to input using the chain rule. How neural networks learn. |
-| Hessian | "Matrix of second derivatives" | The matrix of all second-order partial derivatives. Describes the curvature of a function. Positive definite Hessian at a critical point means local minimum. |
-| Taylor series | "Polynomial approximation" | Approximating a function near a point using its derivatives: f(x+h) ~ f(x) + f'(x)h + (1/2)f''(x)h^2 + ... The basis for understanding why gradient descent and Newton's method work. |
-| Integral | "Area under the curve" | The accumulation of a quantity over a range. In ML, integrals define probabilities, expected values, and KL divergence. |
+| 导数（Derivative） | “斜率” | 函数在某点的变化率，表示输入每变化一个单位，输出会变化多少。 |
+| 偏导数（Partial derivative） | “对一个变量求导” | 固定其他变量，对其中一个变量求得的导数。 |
+| 梯度（Gradient） | “上升最快的方向” | 所有偏导数组成的向量，指向函数增长最快的方向。 |
+| 梯度下降（Gradient descent） | “下坡” | 从参数中减去梯度乘以学习率，以降低损失，是神经网络训练的核心。 |
+| 学习率（Learning rate） | “步长” | 控制每次梯度下降步幅的标量，太大易发散，太小则收敛慢。 |
+| 链式法则（Chain rule） | “导数相乘” | 复合函数的求导规则：df/dx = df/dg * dg/dx，是反向传播的数学基础。 |
+| 雅可比矩阵（Jacobian） | “导数矩阵” | 向量到向量函数中，所有输出对所有输入的偏导数组成的矩阵。 |
+| 数值导数（Numerical derivative） | “有限差分（Finite differences）” | 计算两个相邻点的函数值，再通过两点间斜率近似导数。 |
+| 反向传播（Backpropagation） | “反向模式自动微分（Reverse-mode autodiff）” | 利用链式法则，从输出到输入逐层计算梯度，是神经网络学习的机制。 |
+| 海森矩阵（Hessian） | “二阶导数矩阵” | 所有二阶偏导数组成的矩阵，描述函数曲率；驻点处海森矩阵正定，表示局部最小值。 |
+| 泰勒级数（Taylor series） | “多项式近似” | 利用导数近似某点附近的函数：f(x+h) ~ f(x) + f'(x)h + (1/2)f''(x)h^2 + ...，有助于理解梯度下降和牛顿法。 |
+| 积分（Integral） | “曲线下面积” | 某个量在区间上的累积；机器学习中用积分定义概率、期望值和 KL 散度。 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [3Blue1Brown: Essence of Calculus](https://www.3blue1brown.com/topics/calculus) - visual intuition for derivatives, integrals, and the chain rule
-- [Stanford CS231n: Backpropagation](https://cs231n.github.io/optimization-2/) - how gradients flow through neural network layers
+- [3Blue1Brown：微积分的本质（Essence of Calculus）](https://www.3blue1brown.com/topics/calculus)：建立导数、积分和链式法则的视觉直觉
+- [斯坦福 CS231n：反向传播（Backpropagation）](https://cs231n.github.io/optimization-2/)：梯度如何流经神经网络各层

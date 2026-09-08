@@ -134,31 +134,31 @@ def main():
         "The device impressed the audience."
     )
 
-    print("=== toy rule-based coreference ===")
-    print(f"document: {doc}")
+    print("=== 基于规则的小型共指消解（Coreference resolution） ===")
+    print(f"文档（Document，保留英文以演示代词规则）: {doc}")
     print()
 
     mentions = extract_mentions(doc)
-    print(f"extracted {len(mentions)} mentions:")
+    print(f"提取了 {len(mentions)} 个提及（Mentions，类型和特征枚举保留）:")
     for m in mentions:
-        print(f"  [{m['type']:<7}] {m['text']:<22} feats={m['features']}")
+        print(f"  [{m['type']:<7}] {m['text']:<22} 特征（Features）={m['features']}")
 
     print()
     links = resolve(mentions)
-    print("pronoun links:")
+    print("代词链接（Pronoun links）:")
     for pronoun, antecedent in links:
         ant_text = antecedent["text"] if antecedent else "<none>"
         print(f"  {pronoun['text']:<8} -> {ant_text}")
 
     print()
-    print("clusters:")
+    print("聚类（Clusters）:")
     for i, cluster in enumerate(clusters(mentions, links)):
         if len(cluster) > 1:
-            print(f"  cluster {i}: {cluster}")
+            print(f"  簇（Cluster） {i}: {cluster}")
 
     print()
-    print("note: rules handle easy pronouns; production models are span-based neural.")
-    print("note: neuter pronoun 'it' / 'its' prefers neuter-head nominals like 'the company'.")
+    print("注意：规则处理简单的代词情况；生产模型是基于跨度（Span-based）的神经网络。")
+    print("注意：中性代词（Neuter pronoun）'it' / 'its' 优先关联 'the company' 等以中性词为中心词的名词短语。")
 
 
 if __name__ == "__main__":

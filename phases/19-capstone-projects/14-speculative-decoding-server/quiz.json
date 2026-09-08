@@ -1,87 +1,87 @@
 {
   "lesson": "14-speculative-decoding-server",
-  "title": "Capstone 14 — Speculative-Decoding Inference Server",
+  "title": "综合实践 14：投机解码推理服务器（Speculative-Decoding Inference Server）",
   "questions": [
     {
       "stage": "pre",
-      "question": "What is the two-layer mechanism behind speculative decoding?",
+      "question": "投机解码（Speculative Decoding）背后的双层机制是什么？",
       "options": [
-        "Two target models alternate per token",
-        "An embedding model and a synthesizer",
-        "A retrieval cache and a reranker",
-        "A draft model proposes k candidate tokens; the target model verifies them in a single pass"
+        "两个目标模型逐词元交替",
+        "嵌入模型与综合生成器",
+        "检索缓存与重排序器",
+        "草稿模型（Draft Model）提出 k 个候选词元，目标模型一次验证"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "pre",
-      "question": "What does EAGLE-3 do that ngram drafts do not?",
+      "question": "EAGLE-3 做了 ngram 草稿未做的什么事情？",
       "options": [
-        "It avoids tokenization entirely",
-        "It runs only on CPUs",
-        "It trains draft heads on the target model's hidden states for higher acceptance rates",
-        "It replaces the target model"
+        "完全避免分词（Tokenization）",
+        "只在 CPU 上运行",
+        "用目标模型隐藏状态（Hidden State）训练草稿头，以提高接受率",
+        "替代目标模型"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Why is p99 tail latency reported across batch sizes 1, 8, and 32?",
+      "question": "为什么按批量 1、8、32 报告 p99 尾部延迟（Tail Latency）？",
       "options": [
-        "Steady-state tokens-per-second can hide that the verify pass on rejection is more expensive than vanilla decoding",
-        "vLLM cannot serve batch sizes below 8",
-        "p99 only matters at batch size 32",
-        "Tail latency is independent of batch size"
+        "稳态每秒词元数可能掩盖拒绝时验证计算比普通解码更昂贵的事实",
+        "vLLM 无法服务小于 8 的批量",
+        "p99 仅在批量 32 时重要",
+        "尾部延迟与批量大小无关"
       ],
       "correct": 0,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Why does acceptance rate drift when the traffic distribution shifts?",
+      "question": "为什么流量分布变化时接受率（Acceptance Rate）会漂移？",
       "options": [
-        "Draft alignment depends on the input distribution: ShareGPT, code, and domain data exercise different patterns",
-        "The OS scheduler reshuffles GPU memory",
-        "Quantization changes at runtime",
-        "vLLM rotates models hourly"
+        "草稿对齐取决于输入分布：ShareGPT、代码和领域数据触发不同模式",
+        "操作系统调度器重新排列显存",
+        "量化在运行时改变",
+        "vLLM 每小时轮换模型"
       ],
       "correct": 0,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Which Kubernetes HPA signal does the deployment scale on?",
+      "question": "部署根据哪个 Kubernetes HPA 信号扩缩容？",
       "options": [
-        "Disk IOPS",
-        "CPU utilization",
-        "Queue-wait time on inference requests",
-        "Cluster autoscaler nodes"
+        "磁盘每秒输入输出操作数（Input/Output Operations Per Second，IOPS）",
+        "CPU 利用率",
+        "推理请求的队列等待时间（Queue-Wait Time）",
+        "集群自动扩缩容器节点"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "What does P-EAGLE add over serial EAGLE-3?",
+      "question": "相比串行 EAGLE-3，P-EAGLE 增加什么？",
       "options": [
-        "Quantization to FP4 weights",
-        "Removal of the target model",
-        "Parallel speculation across a tree of draft branches verified in one target pass",
-        "Automatic dataset curation"
+        "量化为 FP4 权重",
+        "移除目标模型",
+        "在草稿分支树上并行投机，由目标一次验证",
+        "自动数据集整理"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "Which throughput target does the rubric demand against the non-speculative baseline?",
+      "question": "评分标准要求相对非投机基线达到什么吞吐量目标？",
       "options": [
-        "At least 2.5x at matched quality on two models",
-        "Any improvement above baseline",
-        "Roughly 1.1x at matched quality",
-        "Exactly 10x throughput at any quality"
+        "两个模型在质量匹配时至少达到 2.5 倍",
+        "任何高于基线的改善",
+        "质量匹配时约 1.1 倍",
+        "任意质量下恰好达到 10 倍吞吐量"
       ],
       "correct": 0,
       "explanation": ""

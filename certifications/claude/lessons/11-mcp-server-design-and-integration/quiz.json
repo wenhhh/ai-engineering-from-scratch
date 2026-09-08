@@ -1,78 +1,78 @@
 {
   "lesson": "11-mcp-server-design-and-integration",
-  "title": "MCP Separates Capability From Host",
+  "title": "MCP 将能力与宿主分离（MCP Separates Capability From Host）",
   "questions": [
     {
       "stage": "pre",
-      "question": "In MCP, which component owns the user experience, model interaction, consent policy, and one or more protocol clients?",
+      "question": "MCP 中哪个组件负责用户体验、模型交互、同意政策及一个或多个协议客户端？",
       "options": [
-        "The server that executes capabilities and chooses how the host presents them",
-        "The host application that coordinates the model, user, and server clients",
-        "The resource provider that resolves URIs and stores conversation state",
-        "The tool handler that selects a model for each invocation"
+        "执行能力并决定宿主呈现方式的服务器",
+        "协调模型、用户与服务器客户端的宿主应用",
+        "解析 URI 并保存对话状态的资源提供者",
+        "为每次调用选模型的工具处理器"
       ],
       "correct": 1,
-      "explanation": "The host owns the AI application experience and policy. A client communicates with one server, and the server executes its advertised capabilities."
+      "explanation": "宿主负责 AI 应用体验和政策。客户端与一个服务器通信，服务器执行公布能力。"
     },
     {
       "stage": "check",
-      "question": "Which metadata must a current MCP 2026-07-28 client include in every request?",
+      "question": "当前 MCP 2026-07-28 客户端每个请求必须带什么元数据？",
       "options": [
-        "Only clientInfo because the server infers version from the connection",
-        "An initialized flag and a Last-Event-ID header",
-        "Protocol version and client capabilities in params._meta",
-        "A protocol session ID and the server capabilities negotiated during initialize"
+        "只有 clientInfo，服务器从连接推断版本",
+        "initialized 标志和 Last-Event-ID 头",
+        "params._meta 中的协议版本和客户端能力",
+        "协议会话 ID 及 initialize 协商的服务器能力"
       ],
       "correct": 2,
-      "explanation": "Every request carries io.modelcontextprotocol/protocolVersion and io.modelcontextprotocol/clientCapabilities. clientInfo should also be sent, but it is optional and self-reported."
+      "explanation": "每个请求携带 io.modelcontextprotocol/protocolVersion 和 io.modelcontextprotocol/clientCapabilities。也应发送 clientInfo，但它可选且自报。"
     },
     {
       "stage": "check",
-      "question": "A tools/call needs roots, sampling, and elicitation input. What is the current wire pattern?",
+      "question": "tools/call 需要 roots、sampling 和 elicitation 输入，当前通信模式是什么？",
       "options": [
-        "The server creates an MCP session, stores pending callbacks, and waits for notifications/initialized",
-        "The client preloads every possible root, approval answer, and model output into every initial tool argument",
-        "The server sends three independent JSON-RPC requests on the open connection",
-        "Return input_required, then retry the original method with inputResponses, exact requestState, and a new ID"
+        "服务器创建会话、保存回调并等待 notifications/initialized",
+        "客户端在每个初始工具参数预载所有可能根目录、批准答案和模型输出",
+        "服务器在打开连接上发送三个独立 JSON-RPC 请求",
+        "返回 input_required，再用 inputResponses、原样 requestState 和新 ID 重试原方法"
       ],
       "correct": 3,
-      "explanation": "MRTR embeds requested client input in an input_required result. The client gathers responses and retries the original request with a new ID, inputResponses, and the exact requestState."
+      "explanation": "MRTR 在 input_required 结果中嵌入客户端输入请求。客户端收集响应，以新 ID、inputResponses 和原样 requestState 重试。"
     },
     {
       "stage": "check",
-      "question": "What must a server/discover response include to describe current protocol support?",
+      "question": "server/discover 响应必须包含什么来描述当前协议支持？",
       "options": [
-        "A resultType and the exact supportedVersions field, plus advertised capabilities",
-        "A negotiatedVersion field and the protocol session expiry",
-        "A server-initiated roots/list request followed by a capability response tied to the connection",
-        "Only a tools array because clients infer all other capabilities"
+        "resultType、确切 supportedVersions 字段和公布能力",
+        "negotiatedVersion 和协议会话过期时间",
+        "服务器主动 roots/list 后返回绑定连接的能力响应",
+        "只有 tools 数组，其余能力由客户端推断"
       ],
       "correct": 0,
-      "explanation": "Current servers must implement server/discover. Its complete result reports supportedVersions and capabilities, and should include serverInfo."
+      "explanation": "当前服务器必须实现 server/discover，其 complete 结果报告 supportedVersions 和能力，也应包含 serverInfo。"
     },
     {
       "stage": "post",
-      "question": "Why can an MCP MRTR requestState value not be trusted merely because the server originally created it?",
+      "question": "为何不能仅因 requestState 原由服务器创建就信任它？",
       "options": [
-        "JSON-RPC always converts opaque strings into executable instructions",
-        "It crossed the client boundary and may have been changed",
-        "The protocol requires clients to decode, normalize, and edit requestState before every retry",
-        "Every load balancer replaces requestState with its own session cookie"
+        "JSON-RPC 总把不透明字符串变成可执行指令",
+        "它穿过客户端边界，可能已被修改",
+        "协议要求客户端每次重试前解码、规范化并编辑它",
+        "所有负载均衡器都将其替换为自己的会话 cookie"
       ],
       "correct": 1,
-      "explanation": "requestState travels through the client and is attacker-controlled on return. Protect security-sensitive state with HMAC or AEAD and bind it to identity, expiry, method, and important arguments."
+      "explanation": "requestState 经客户端返回时是攻击者可控输入。用 HMAC 或 AEAD 保护敏感状态，绑定身份、有效期、方法和重要参数。"
     },
     {
       "stage": "post",
-      "question": "Which deployment description matches current MCP 2026-07-28 Streamable HTTP?",
+      "question": "哪种部署符合当前 MCP 2026-07-28 Streamable HTTP？",
       "options": [
-        "An initialize POST that returns Mcp-Session-Id and requires a DELETE on shutdown",
-        "A server-owned WebSocket session that carries direct sampling requests",
-        "One POST endpoint, per-request JSON or SSE responses, and no protocol session",
-        "A POST endpoint for requests and a permanent GET stream resumed with Last-Event-ID"
+        "initialize POST 返回 Mcp-Session-Id，关闭时 DELETE",
+        "服务器所有的 WebSocket 会话承载直接采样请求",
+        "一个 POST 端点，逐请求 JSON 或 SSE 响应，没有协议会话",
+        "POST 请求端点加永久 GET 流，用 Last-Event-ID 恢复"
       ],
       "correct": 2,
-      "explanation": "Current Streamable HTTP uses a single POST endpoint and self-describing requests. It removed the GET stream, protocol sessions, session deletion, and Last-Event-ID resumption."
+      "explanation": "当前 Streamable HTTP 使用单 POST 端点和自描述请求，移除了 GET 流、协议会话、会话删除和 Last-Event-ID 恢复。"
     }
   ]
 }

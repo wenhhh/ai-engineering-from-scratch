@@ -1,61 +1,61 @@
-# MCP Tool Contracts and Content
+# MCP 工具契约与内容（MCP Tool Contracts and Content）
 
-> A tool is safe to automate only when discovery, arguments, results, pagination, and transport metadata agree on one contract.
+> 只有发现、参数、结果、分页和传输元数据对同一契约达成一致，工具才适合安全自动化。
 
 **Type:** Build
 **Languages:** Python
-**Prerequisites:** Phase 13, Lessons 07, 09, and 10
-**Time:** ~120 minutes
+**Prerequisites:** Phase 13，第 07、09 和 10 课
+**Time:** ~120 分钟
 
-## Learning Objectives
+## 学习目标（Learning Objectives）
 
-- Define tool inputs and outputs with JSON Schema 2020-12.
-- Validate structured results without assuming they are JSON objects.
-- Choose between text, image, audio, resource links, and embedded resources.
-- Reject unsafe `x-mcp-header` definitions before a tool reaches the model.
-- Encode parameter-header values and verify exact header-to-body parity.
-- Traverse cursor pagination without interpreting cursor values.
-- Bound and authorize `completion/complete` suggestions.
+- 用 JSON Schema 2020-12 定义工具输入输出。
+- 验证结构化结果，不假定它们都是 JSON 对象。
+- 在文本、图片、音频、资源链接和嵌入资源之间选择。
+- 工具进入模型前拒绝不安全 `x-mcp-header` 定义。
+- 编码参数请求头值，验证请求头与正文精确一致。
+- 不解释游标值，遍历游标分页。
+- 对 `completion/complete` 建议设界并授权。
 
-## The Problem
+## 问题（The Problem）
 
-Calling a Python function is easy. Calling a remote capability through an AI host is a contract problem.
+调用 Python 函数很容易，通过 AI 宿主调用远程能力却是契约问题。
 
-The server publishes a descriptor. The client turns that descriptor into model context and user interface. The model creates arguments. A gateway may route the request from mirrored headers. The server executes the tool. The client then decides whether the result is safe and valid enough to return to the model.
+服务器发布描述符，客户端将其转为模型上下文和 UI。模型创建参数，网关可能根据镜像请求头路由。服务器执行工具，客户端随后决定结果是否足够安全、有效，可以交给模型。
 
-One weak boundary corrupts the whole chain.
+一个薄弱边界会破坏整条链。
 
-Consider five failures:
+考虑五种失败：
 
-- The descriptor says the result is an object, but the server returns an array.
-- The client stops pagination when `nextCursor` is an empty string.
-- A token parameter is mirrored into an HTTP header and becomes visible to intermediaries.
-- A Unicode routing value is sent as a raw header, then the gateway and origin interpret different bytes.
-- A completion endpoint suggests a production environment to a caller who cannot access it.
+- 描述符说结果是对象，服务器却返回数组。
+- `nextCursor` 是空字符串时，客户端停止分页。
+- 令牌参数被镜像到 HTTP 请求头，对中间层可见。
+- Unicode 路由值作为原始请求头发送，网关和源站解释不同字节。
+- 补全端点向无权访问的调用方建议生产环境。
 
-None of these failures is fixed by better prompting. They require explicit protocol and application contracts.
+更好的提示词修复不了这些失败，需要明确协议和应用契约。
 
-## The Contract Pipeline
+## 契约流水线（The Contract Pipeline）
 
-Treat each tool call as five gates:
+将每次工具调用视为五道门：
 
-1. **Discover.** Read a deterministic, paginated tool list.
-2. **Admit.** Validate each descriptor and apply local security policy.
-3. **Invoke.** Validate arguments and build transport metadata.
-4. **Execute.** Run the handler and classify failures correctly.
-5. **Consume.** Validate content blocks and structured output before model use.
+1. **发现（Discover）。** 读取确定性分页工具列表。
+2. **准入（Admit）。** 验证每个描述符，应用本地安全策略。
+3. **调用（Invoke）。** 验证参数并构建传输元数据。
+4. **执行（Execute）。** 运行处理器并正确分类失败。
+5. **消费（Consume）。** 模型使用前验证内容块和结构化输出。
 
 ```figure
 mcp-contract-pipeline
 ```
 
-The host owns the admission and consumption gates. A server cannot force a client to trust its annotations, schemas, or outputs.
+宿主拥有准入和消费门槛。服务器不能强迫客户端信任注解、模式或输出。
 
-## JSON Schema Is a Runtime Boundary
+## JSON Schema 是运行时边界（JSON Schema Is a Runtime Boundary）
 
-In MCP `2026-07-28`, `inputSchema` and `outputSchema` use JSON Schema. When `$schema` is absent, the default dialect is 2020-12.
+MCP `2026-07-28` 中，`inputSchema` 和 `outputSchema` 使用 JSON Schema。缺少 `$schema` 时，默认方言是 2020-12。
 
-The input schema must be a schema object. A tool with no arguments should still say exactly what it accepts:
+输入模式必须是模式对象。无参数工具仍应精确说明接受什么：
 
 ```json
 {
@@ -64,26 +64,22 @@ The input schema must be a schema object. A tool with no arguments should still 
 }
 ```
 
-This is stricter than `{ "type": "object" }`, which accepts arbitrary properties.
+这比接受任意属性的 `{ "type": "object" }` 更严格。
 
-An output schema is optional. Once a server publishes one, every complete tool
-result commits to returning conforming `structuredContent`, including results
-with `isError: true`. The error flag classifies execution outcome; it does not
-waive the published output contract. Clients should validate the result instead
-of trusting the descriptor.
+输出模式可选。一旦服务器发布，每个完整工具结果都承诺返回符合模式的 `structuredContent`，包括 `isError: true`。错误标志分类执行结果，不豁免已发布输出契约。客户端应验证结果，不应只信描述符。
 
-### Structured content is any JSON value
+### 结构化内容可以是任意 JSON 值（Structured content is any JSON value）
 
-Do not hard-code `structuredContent` as a dictionary. It can be:
+不要将 `structuredContent` 硬编码为字典。它可以是：
 
-- an object;
-- an array;
-- a string;
-- a number;
-- a boolean;
-- `null`.
+- 对象；
+- 数组；
+- 字符串；
+- 数字；
+- 布尔值；
+- `null`。
 
-This tool returns an array:
+此工具返回数组：
 
 ```json
 {
@@ -99,7 +95,7 @@ This tool returns an array:
 }
 ```
 
-Its successful result is valid:
+其成功结果有效：
 
 ```json
 {
@@ -115,42 +111,42 @@ Its successful result is valid:
 }
 ```
 
-For compatibility, structured results should also include serialized JSON in a text block. The text is not the validation source. `structuredContent` is.
+为兼容，结构化结果还应在文本块包含序列化 JSON。文本不是验证来源，`structuredContent` 才是。
 
-### A small validator still teaches the boundary
+### 小验证器也能教授边界（A small validator still teaches the boundary）
 
-The lesson uses a deliberate JSON Schema subset because it stays inside the Python standard library. It checks the mechanisms used by the sample tools:
+本课为保持 Python 标准库范围，刻意采用 JSON Schema 子集，检查示例工具使用的机制：
 
-- object, array, string, integer, number, boolean, and null types;
-- required properties;
-- `additionalProperties: false`;
-- array items;
-- enum values;
-- minimum string length.
+- 对象、数组、字符串、整数、数字、布尔和 null 类型；
+- 必需属性；
+- `additionalProperties: false`；
+- 数组项；
+- 枚举值；
+- 最小字符串长度。
 
-This is not a replacement for a complete production validator. The reusable lesson is where validation happens: after discovery for descriptors, before execution for arguments, and before consumption for structured results.
+这不替代完整生产验证器。可复用经验是验证位置：发现后验证描述符，执行前验证参数，消费前验证结构化结果。
 
-## Content Blocks Carry Different Costs
+## 内容块成本不同（Content Blocks Carry Different Costs）
 
-The `content` array can combine several content types.
+`content` 数组可组合多种内容类型。
 
-| Type | Use it for | Main boundary |
+| 类型 | 用途 | 主要边界 |
 |------|------------|---------------|
-| `text` | Human and model-readable summaries | Treat text as untrusted output |
-| `image` | Visual evidence encoded as base64 | Validate media type and size |
-| `audio` | Spoken or recorded output encoded as base64 | Validate media type and duration limits |
-| `resource_link` | A URI the client may fetch later | Reauthorize the later resource read |
-| `resource` | Data embedded directly in the result | Enforce payload and content limits now |
+| `text` | 人和模型可读摘要 | 将文本视为不可信输出 |
+| `image` | base64 编码视觉证据 | 验证媒体类型和大小 |
+| `audio` | base64 编码语音或录音输出 | 验证媒体类型和时长限制 |
+| `resource_link` | 客户端稍后可获取的 URI | 后续资源读取重新授权 |
+| `resource` | 结果中直接嵌入的数据 | 立即执行载荷和内容限制 |
 
-A resource link is not proof that the resource appears in `resources/list`. It is a reference returned by this tool call. The client still applies its resource policy when it follows the URI.
+资源链接不证明该资源出现在 `resources/list`，它只是此次工具调用返回的引用。跟随 URI 时，客户端仍应用资源策略。
 
-An embedded resource avoids another round trip but increases the current response size. Use links for large or independently changing artifacts. Use embedded resources for small evidence that must travel atomically with the result.
+嵌入资源避免一次往返，却增大当前响应。大制品或独立变化制品用链接；必须与结果原子同行的小证据用嵌入资源。
 
-The lesson's `evidence_bundle` result includes all five types. The client validates each block before accepting the result.
+本课 `evidence_bundle` 结果包含全部五种类型。客户端接受结果前验证每块。
 
-## `x-mcp-header` Is Routing Metadata
+## `x-mcp-header` 是路由元数据（Routing Metadata）
 
-A property inside `inputSchema` may declare `x-mcp-header`. Over Streamable HTTP, the client mirrors that argument into `Mcp-Param-{name}`.
+`inputSchema` 内属性可声明 `x-mcp-header`。通过 Streamable HTTP，客户端将参数镜像到 `Mcp-Param-{name}`。
 
 ```json
 {
@@ -161,76 +157,57 @@ A property inside `inputSchema` may declare `x-mcp-header`. Over Streamable HTTP
 }
 ```
 
-With `region: "eu-west"`, the transport can emit:
+对 `region: "eu-west"`，传输可发出：
 
 ```http
 Mcp-Param-Region: eu-west
 ```
 
-The annotation exists so a load balancer, gateway, or policy engine can route without parsing the JSON body. It is not a place to put credentials.
+注解让负载均衡器、网关或策略引擎无需解析 JSON 正文即可路由，不是放凭据的地方。
 
-The protocol constrains the annotation:
+协议约束注解：
 
-- the header name is non-empty and follows HTTP field-name token syntax;
-- header names are unique without regard to case;
-- the property type is string, integer, or boolean;
-- `number` is not allowed;
-- the annotation appears only on a direct member of `inputSchema.properties`;
-- integer values stay within `-9007199254740991` through `9007199254740991`.
+- 请求头名非空，遵循 HTTP 字段名词法语法；
+- 不区分大小写的名称唯一；
+- 属性类型是字符串、整数或布尔；
+- 不允许 `number`；
+- 注解仅出现在 `inputSchema.properties` 的直接成员；
+- 整数值在 `-9007199254740991` 到 `9007199254740991` 内。
 
-The location rule is syntactic and fail-closed. Walk the entire schema tree,
-not just the properties your validator happens to understand. Reject an
-annotation under a nested object's `properties`, a `oneOf` branch, `items`, a
-definition reached by `$ref`, or any output schema. Resolving a reference does
-not turn the referenced node into a direct top-level property.
+位置规则是语法性的，失败关闭。遍历整个模式树，不只看验证器碰巧理解的属性。拒绝嵌套对象 `properties`、`oneOf` 分支、`items`、通过 `$ref` 到达的定义，以及任何输出模式下的注解。解析引用不会让被引用节点变成直接顶层属性。
 
-This lesson adds a deployment policy: reject descriptors that mirror names such as `password`, `secret`, `token`, `api_key`, or `authorization`. The official specification advises server authors not to mirror sensitive parameters. A client can turn that advice into a hard admission rule.
+本课添加部署策略：拒绝镜像 `password`、`secret`、`token`、`api_key` 或 `authorization` 等名称的描述符。官方规范建议作者不要镜像敏感参数；客户端可把建议变为硬准入规则。
 
-Audit the header name, not its value. The sample code records `Mcp-Param-Region` while keeping `eu-west` out of the audit event.
+审计请求头名，不审计值。示例记录 `Mcp-Param-Region`，不让 `eu-west` 进入审计事件。
 
-### Encode values before building HTTP headers
+### 构建 HTTP 请求头前编码值（Encode values before building HTTP headers）
 
-A parameter value may travel as plain text only when it is a non-empty string
-of visible ASCII characters from `!` through `~` and does not resemble the
-encoding sentinel. Everything else uses this exact form:
+仅当值为非空字符串，全部是 `!` 至 `~` 的可见 ASCII，且不像编码哨兵时，才可作为明文传输。其他情况使用精确形式：
 
 ```text
 =?base64?{Base64UTF8}?=
 ```
 
-`Base64UTF8` is standard base64 over the exact UTF-8 bytes. Do not trim,
-normalize, or replace the value first. Encode Unicode, empty strings, spaces,
-tabs, control characters, CR or LF, leading or trailing whitespace, and any
-value beginning with `=?base64?`. Encoding a sentinel-looking value again is
-what lets the receiver recover the literal original text instead of decoding
-it as transport syntax.
+`Base64UTF8` 是精确 UTF-8 字节的标准 base64。不要先裁剪、规范化或替换值。对 Unicode、空串、空格、制表符、控制字符、CR 或 LF、首尾空白，以及任何以 `=?base64?` 开头的值编码。对看似哨兵的值再次编码，才能让接收端恢复原始字面文本，而非将其解读为传输语法。
 
-Booleans render as lowercase `true` or `false`. Integers render in base 10 and
-must stay inside the JavaScript safe integer range. Values outside that range
-are rejected instead of rounded by an intermediary.
+布尔值呈现为小写 `true` 或 `false`。整数用十进制，并必须在 JavaScript 安全整数范围内。超出值直接拒绝，而非让中间层舍入。
 
-### The server checks the mirrored copy
+### 服务器检查镜像副本（The server checks the mirrored copy）
 
-Header generation is only the client half. At the Streamable HTTP boundary,
-the server must:
+请求头生成只是客户端一半。在 Streamable HTTP 边界，服务器必须：
 
-1. find recognized `Mcp-Param-*` names without regard to header-name case;
-2. decode the exact base64 sentinel form when present;
-3. compare the decoded text with the corresponding JSON body argument exactly;
-4. reject a missing, duplicated, unexpected, malformed, or mismatched
-   recognized header before dispatch.
+1. 不区分请求头名大小写，查找已识别 `Mcp-Param-*` 名称；
+2. 存在精确 base64 哨兵形式时解码；
+3. 将解码文本与对应 JSON 正文参数精确比较；
+4. 分发前拒绝缺失、重复、意外、格式错误或不匹配的已识别请求头。
 
-The rejection is HTTP `400` with JSON-RPC error code `-32020`. Neither the
-body value nor its encoded header form belongs in the audit record. Record the
-recognized header name and the rejection category only.
+拒绝为 HTTP `400` 加 JSON-RPC 错误码 `-32020`。正文值及其编码请求头形式都不应进入审计，只记录已识别请求头名称和拒绝类别。
 
-`code/main.py` models this boundary directly. [Lesson 09](../../09-mcp-transports/)
-covers the wider Streamable HTTP validation order, including method and
-protocol-version parity.
+`code/main.py` 直接模拟此边界。[第 09 课](../../09-mcp-transports/) 覆盖更广的 Streamable HTTP 验证顺序，包括方法和协议版本一致性。
 
-## Pagination Cursors Are Opaque
+## 分页游标不透明（Pagination Cursors Are Opaque）
 
-MCP list operations use cursor pagination. The server selects page size and cursor format. The client gets one decision:
+MCP 列表操作使用游标分页。服务器选择页大小和游标格式，客户端只有一个决定：
 
 ```python
 if result.get("nextCursor") is None:
@@ -238,31 +215,31 @@ if result.get("nextCursor") is None:
 cursor = result["nextCursor"]
 ```
 
-Do not write this:
+不要这样写：
 
 ```python
 if not result.get("nextCursor"):
     break
 ```
 
-An empty string is a valid cursor. Truthiness would stop too early.
+空字符串是有效游标，真值判断会过早停止。
 
-Clients must not decode a cursor, increment it, compare it with a prior cursor for ordering, or infer a page number. A server may sign a cursor, bind it to a catalog version, or map it to private state. That is the server's implementation detail.
+客户端不得解码、递增游标，不能与先前游标比较顺序，也不能推断页码。服务器可签名游标、绑定目录版本或映射到私有状态，那是服务器实现细节。
 
-The sample server deliberately returns `""` after the first page. The client must send that exact value on the second request. Its trace is:
+示例服务器刻意在第一页后返回 `""`。客户端第二次请求必须发送精确值。追踪如下：
 
 ```text
-<first request with no cursor>
-<second request with cursor "">
+<首次请求不带游标>
+<第二次请求带游标 "">
 ```
 
-Invalid cursors produce JSON-RPC invalid params, code `-32602`.
+无效游标产生 JSON-RPC 参数无效错误，代码 `-32602`。
 
-## Completion Is an Authorization Surface
+## 补全是授权接口面（Completion Is an Authorization Surface）
 
-`completion/complete` provides suggestions for prompt arguments and resource-template arguments. It is useful for interactive forms, but it can leak names that ordinary list methods protect.
+`completion/complete` 为提示词参数和资源模板参数提供建议。它有助于交互表单，却可能泄露普通列表方法保护的名称。
 
-A completion request names a reference and the argument being completed:
+补全请求指出引用和正在补全的参数：
 
 ```json
 {
@@ -280,75 +257,72 @@ A completion request names a reference and the argument being completed:
 }
 ```
 
-The result returns at most 100 values and may report `total` plus `hasMore`.
+结果最多返回 100 个值，可报告 `total` 和 `hasMore`。
 
-Apply the same authorization boundary used by the referenced prompt or resource. An analyst in the sample receives `development` and `staging`. Only an operator can receive `production`.
+应用与被引用提示词或资源相同的授权边界。示例分析员收到 `development` 和 `staging`，只有操作员可收到 `production`。
 
-Production completion also needs:
+生产补全还需要：
 
-- input validation;
-- caller-aware filtering;
-- request debouncing in the client;
-- rate limiting in the server;
-- bounded result counts;
-- logs that do not expose sensitive suggestion values.
+- 输入验证；
+- 调用方感知过滤；
+- 客户端请求防抖；
+- 服务器限流；
+- 有界结果数；
+- 不暴露敏感建议值的日志。
 
-Completion is assistance, not discovery bypass.
+补全是辅助，不是发现绕过通道。
 
-## Two Error Layers
+## 两层错误（Two Error Layers）
 
-Keep protocol errors separate from tool execution errors.
+分开协议错误和工具执行错误。
 
-Use a JSON-RPC error when the MCP request cannot be dispatched correctly:
+MCP 请求无法正确分发时使用 JSON-RPC 错误：
 
-- unknown tool name;
-- malformed request shape;
-- missing request metadata;
-- invalid cursor.
+- 未知工具名；
+- 请求结构错误；
+- 缺少请求元数据；
+- 无效游标。
 
-Use a complete tool result with `isError: true` when the invocation reached the tool and the tool reports an actionable failure:
+调用到达工具，工具报告可处理失败时，使用带 `isError: true` 的完整结果：
 
-- a report source is unavailable;
-- a date is outside the supported range;
-- a business rule rejects the requested operation.
+- 报告来源不可用；
+- 日期超出支持范围；
+- 业务规则拒绝请求操作。
 
-Models can often repair a tool execution error. They cannot repair a server that violated its own output schema.
+模型常能修复工具执行错误，却不能修复违反自身输出模式的服务器。
 
-If the tool declares an output schema, model an actionable failure inside that
-schema. The sample `route_report` failure returns its requested region with
-`accepted: false`, alongside human-readable error text and `isError: true`.
+工具声明输出模式时，在该模式内建模可处理失败。示例 `route_report` 失败返回请求区域和 `accepted: false`，同时带人类可读错误文本及 `isError: true`。
 
-## Build It
+## 动手实现（Build It）
 
-`code/main.py` builds both sides of the boundary with the Python standard library.
+`code/main.py` 用 Python 标准库构建边界两端。
 
-The server implements:
+服务器实现：
 
-- per-request MCP metadata validation;
-- `server/discover` with tools and completions capabilities;
-- deterministic `tools/list` pagination;
-- four tool descriptors, including one that must be rejected;
-- array structured output;
-- every current tool content block type;
-- a Streamable HTTP parity gate that decodes recognized parameter headers and
-  returns HTTP `400` plus JSON-RPC `-32020` on mismatch;
-- authorized and rate-limited completion.
+- 逐请求 MCP 元数据验证；
+- 带工具和补全能力的 `server/discover`；
+- 确定性 `tools/list` 分页；
+- 四个工具描述符，其中一个必须拒绝；
+- 数组结构化输出；
+- 当前全部工具内容块类型；
+- 解码已识别参数请求头、在不匹配时返回 HTTP `400` 和 JSON-RPC `-32020` 的 Streamable HTTP 一致性门槛；
+- 已授权且限流的补全。
 
-The client implements:
+客户端实现：
 
-- descriptor admission;
-- full-tree `x-mcp-header` placement validation and sensitive-field policy;
-- exact plain-visible-ASCII or base64 UTF-8 value encoding;
-- an opaque cursor loop that follows an empty string;
-- argument and result validation;
-- content-block validation;
-- header audit events containing names but not values.
+- 描述符准入；
+- 全树 `x-mcp-header` 位置验证和敏感字段策略；
+- 精确的普通可见 ASCII 或 base64 UTF-8 值编码；
+- 跟随空字符串的不透明游标循环；
+- 参数和结果验证；
+- 内容块验证；
+- 只含名称、不含值的请求头审计事件。
 
-The deliberately unsafe descriptor is teaching data. It proves that one rejected tool does not prevent valid tools from loading.
+刻意不安全的描述符是教学数据，证明一个工具被拒绝不妨碍有效工具加载。
 
-## Use It
+## 实际应用（Use It）
 
-From the repository root:
+从仓库根目录运行：
 
 ```bash
 cd phases/13-tools-and-protocols/28-mcp-tool-contracts-and-content/code
@@ -356,124 +330,110 @@ python3 main.py
 python3 -m unittest discover tests -v
 ```
 
-The demo prints admitted tools, the rejected descriptor, both pagination
-requests, structured array content, content-block types, mirrored header
-names, whether the value required encoding, the HTTP parity status, and
-caller-filtered completion values.
+演示打印获准工具、被拒绝描述符、两次分页请求、结构化数组内容、内容块类型、镜像请求头名称、值是否需编码、HTTP 一致性状态，以及按调用方过滤的补全值。
 
-## Interactive Lab
+## 交互实验（Interactive Lab）
 
-Open `code/main.py` and locate `TOOLS`.
+打开 `code/main.py` 并找到 `TOOLS`。
 
-1. Change `tag_catalog.outputSchema.type` from `array` to `object`.
-2. Run the demo. The client should reject the returned array.
-3. Restore the schema.
-4. Keep the first page's `nextCursor` as `""`, then make the final page return
-   `nextCursor: None` instead of omitting the field.
-5. Run the tests and compare the cursor trace.
-6. Add `x-mcp-header: "Authorization"` to a string property.
-7. Confirm descriptor admission rejects it before invocation.
-8. Try `region` values containing Unicode, a newline, surrounding spaces, and
-   the literal text `=?base64?SGVsbG8=?=`. Decode each emitted header and prove
-   the original value survives exactly.
-9. Move the annotation under `oneOf`, `items`, or a `$ref` definition. Confirm
-   each descriptor is rejected even if that branch is never used by the demo.
-10. Remove the recognized header or change its decoded value. Confirm the HTTP
-    boundary returns status `400` and JSON-RPC code `-32020`.
+1. 将 `tag_catalog.outputSchema.type` 从 `array` 改为 `object`。
+2. 运行演示，客户端应拒绝返回数组。
+3. 恢复模式。
+4. 保持第一页 `nextCursor` 为 `""`，将最后一页改为返回 `nextCursor: None`，而非省略。
+5. 运行测试，比较游标追踪。
+6. 给字符串属性添加 `x-mcp-header: "Authorization"`。
+7. 确认调用前描述符准入拒绝它。
+8. 尝试含 Unicode、换行、周围空格和字面文本 `=?base64?SGVsbG8=?=` 的 `region` 值。解码每个请求头，证明原值精确保留。
+9. 将注解移到 `oneOf`、`items` 或 `$ref` 定义下。确认即使演示未使用该分支，每个描述符也被拒绝。
+10. 移除已识别请求头或改变解码值。确认 HTTP 边界返回状态 `400` 和 JSON-RPC 代码 `-32020`。
 
-The point is not to memorize a JSON shape. It is to watch each gate fail at the boundary that owns it.
+重点不是记 JSON 结构，而是观察每道门在所属边界失败。
 
-## Practice Lab
+## 实践实验（Practice Lab）
 
-Extend the contract lab with a `search_evidence` tool.
+用 `search_evidence` 工具扩展契约实验。
 
-Requirements:
+要求：
 
-1. Its input schema accepts `query`, `limit`, and a safe `region` routing field.
-2. Its output schema is an array of objects with `uri`, `title`, and `score`.
-3. The result includes compatibility text and a resource link per item.
-4. Arguments reject unknown properties.
-5. `limit` is bounded by application validation.
-6. A caller without access to one URI never sees that URI through completion or tool output.
-7. Tests include a nonconforming score, an invalid header annotation, and a two-page list.
-8. Header-value tests cover visible ASCII, Unicode, control characters,
-   whitespace, sentinel-looking text, and both JavaScript-safe integer bounds.
-9. The HTTP fixture accepts case-insensitive header names but rejects missing
-   or mismatched recognized values with status `400` and code `-32020`.
+1. 输入模式接受 `query`、`limit` 和安全 `region` 路由字段。
+2. 输出模式为对象数组，含 `uri`、`title` 和 `score`。
+3. 结果包含兼容文本和每项资源链接。
+4. 参数拒绝未知属性。
+5. 应用验证对 `limit` 设界。
+6. 无权访问某 URI 的调用方，不得通过补全或工具输出看到它。
+7. 测试包含不合规分数、无效请求头注解和两页列表。
+8. 请求头值测试覆盖可见 ASCII、Unicode、控制字符、空白、看似哨兵文本和两个 JavaScript 安全整数边界。
+9. HTTP 夹具接受不区分大小写的请求头名，但缺失或不匹配已识别值时返回状态 `400` 和代码 `-32020`。
 
-## Shipped Artifact
+## 交付物（Shipped Artifact）
 
-`outputs/skill-mcp-contract-reviewer.md` is a flat, reusable review skill. Give it a tool descriptor, sample results, pagination behavior, and completion policy. It returns an admission decision, result-validation plan, header policy, and concrete failure tests.
+`outputs/skill-mcp-contract-reviewer.md` 是扁平可复用审查技能。给它工具描述符、样例结果、分页行为和补全策略，它返回准入决定、结果验证计划、请求头策略和具体失败测试。
 
-## Verify It
+## 验证结果（Verify It）
 
-The lesson is complete when these statements are true:
+以下陈述成立时本课完成：
 
-- `tools/list` returns the same logical order on repeated calls.
-- The client performs a second request when `nextCursor` is `""`.
-- The unsafe sensitive-header descriptor is excluded while other tools remain available.
-- An array passes its array output schema.
-- An object fails that same array schema.
-- Error results cannot omit or violate a published output schema.
-- Text, image, audio, resource link, and embedded resource blocks validate.
-- Header audit events contain names and no values.
-- Plain visible ASCII remains plain; Unicode, control, padded, empty, and
-  sentinel-looking values round-trip through exact base64 UTF-8 encoding.
-- Mirrored integers outside the JavaScript safe range are rejected.
-- Annotations under `oneOf`, `items`, nested objects, `$ref` definitions, or
-  output schemas are rejected during admission.
-- Case-insensitive recognized header names pass only when the decoded value
-  exactly matches the body; missing or mismatched copies produce HTTP `400`
-  and JSON-RPC `-32020`.
-- Analyst completion never returns `production`.
-- A tool failure uses `isError: true`; a malformed protocol call uses JSON-RPC `error`.
+- `tools/list` 重复调用返回相同逻辑顺序。
+- `nextCursor` 为 `""` 时客户端发第二次请求。
+- 排除不安全敏感请求头描述符，其他工具仍可用。
+- 数组通过其数组输出模式。
+- 对象在同一数组模式下失败。
+- 错误结果不能省略或违反已发布输出模式。
+- 文本、图片、音频、资源链接和嵌入资源块均通过验证。
+- 请求头审计事件有名称、无值。
+- 普通可见 ASCII 保持明文；Unicode、控制、填充、空值和看似哨兵值通过精确 base64 UTF-8 编码往返。
+- 超出 JavaScript 安全范围的镜像整数被拒绝。
+- `oneOf`、`items`、嵌套对象、`$ref` 定义或输出模式下的注解在准入时拒绝。
+- 不区分大小写的已识别请求头名，仅当解码值精确匹配正文才通过；缺失或不匹配副本产生 HTTP `400` 和 JSON-RPC `-32020`。
+- 分析员补全永不返回 `production`。
+- 工具失败使用 `isError: true`；格式错误协议调用使用 JSON-RPC `error`。
 
-## Production Failure Modes
+## 生产失败模式（Production Failure Modes）
 
-| Failure | What the learner sees | Correct response |
+| 失败 | 学习者看到什么 | 正确响应 |
 |---------|-----------------------|------------------|
-| Client assumes object output | Valid arrays fail or are silently wrapped | Validate against the published schema without object-only types |
-| Empty cursor treated as false | Final pages disappear | Continue whenever `nextCursor` is present and non-null |
-| Sensitive value mirrored | Secret appears in proxy, WAF, or trace data | Reject the descriptor and keep secrets in protected request data |
-| Raw Unicode or whitespace mirrored | Gateway and origin disagree or the value is normalized | Use exact base64 UTF-8 sentinel encoding and compare after decoding |
-| Annotation hidden in a schema branch | A client misses routing metadata during admission | Traverse the entire schema tree and allow only direct top-level properties |
-| Large integer mirrored | JavaScript intermediary rounds the routing value | Reject values outside the JavaScript safe integer range |
-| Header and body disagree | Gateway routes one target while the origin executes another | Reject before dispatch with HTTP `400` and JSON-RPC `-32020` |
-| Output schema ignored | Downstream code consumes corrupt structure | Validate before model or application use |
-| Resource link trusted automatically | Caller follows an unauthorized URI | Reauthorize every resource read |
-| Completion shares global suggestions | Hidden tenant names leak | Filter by caller, reference, and authorization |
-| Tool annotations treated as policy | Destructive operation bypasses confirmation | Enforce authorization and approval outside annotations |
-| One malformed tool breaks discovery | Entire server becomes unavailable | Reject the bad descriptor and admit valid tools independently |
+| 客户端假定对象输出 | 有效数组失败或被静默包装 | 按发布模式验证，不限定对象 |
+| 空游标视为假 | 最后几页消失 | `nextCursor` 存在且非 null 就继续 |
+| 镜像敏感值 | 秘密出现在代理、WAF 或追踪数据 | 拒绝描述符，秘密保留在受保护请求数据 |
+| 镜像原始 Unicode 或空白 | 网关和源站不一致，或值被规范化 | 精确 base64 UTF-8 哨兵编码，解码后比较 |
+| 注解藏在模式分支 | 客户端准入时遗漏路由元数据 | 遍历全树，仅允许直接顶层属性 |
+| 镜像大整数 | JavaScript 中间层舍入路由值 | 拒绝安全整数范围外值 |
+| 请求头正文不一致 | 网关路由一个目标，源站执行另一个 | 分发前返回 HTTP `400` 和 JSON-RPC `-32020` |
+| 忽略输出模式 | 下游消费损坏结构 | 模型或应用使用前验证 |
+| 自动信任资源链接 | 调用方跟随未授权 URI | 每次资源读取重新授权 |
+| 补全共享全局建议 | 隐藏租户名泄露 | 按调用方、引用和授权过滤 |
+| 工具注解当策略 | 破坏性操作绕过确认 | 在注解外执行授权和批准 |
+| 一个坏工具破坏发现 | 整台服务器不可用 | 独立拒绝坏描述符、准入有效工具 |
 
-## Capstone Connection
+## 与综合实践的联系（Capstone Connection）
 
-The Phase 13 capstone needs a gateway that can merge tools from several servers. This lesson provides its admission core.
+Phase 13 综合项目需要合并多服务器工具的网关。本课提供其准入核心。
 
-Use the artifact to grade four pieces of capstone evidence:
+用制品评判四项综合项目证据：
 
-- deterministic and complete paginated discovery;
-- descriptor validation before model exposure;
-- validated structured output plus bounded content blocks;
-- completion and routing metadata that preserve authorization boundaries.
+- 确定且完整的分页发现；
+- 模型公开前的描述符验证；
+- 已验证结构化输出加有界内容块；
+- 保留授权边界的补全和路由元数据。
 
-Do not claim gateway compatibility from a successful `tools/call` alone. Capture the descriptor, page trace, admitted tool set, rejected tool set, and one validated result.
+不要仅凭成功 `tools/call` 声称网关兼容。捕获描述符、分页追踪、获准工具集、拒绝工具集和一个已验证结果。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | Meaning |
+| 术语 | 含义 |
 |------|---------|
-| `inputSchema` | JSON Schema object defining accepted tool arguments |
-| `outputSchema` | Optional JSON Schema defining `structuredContent` |
-| `structuredContent` | Any JSON value produced by a tool result |
-| Content block | Typed text, image, audio, resource link, or embedded resource |
-| `x-mcp-header` | Schema annotation that mirrors a primitive argument into Streamable HTTP metadata |
-| Opaque cursor | Server-issued pagination token whose value the client does not interpret |
-| Completion reference | Prompt name or resource URI/template whose argument is being completed |
-| Admission | Client decision to expose or reject a discovered descriptor |
+| `inputSchema` | 定义接受工具参数的 JSON Schema 对象 |
+| `outputSchema` | 定义 `structuredContent` 的可选 JSON Schema |
+| `structuredContent` | 工具结果产生的任意 JSON 值 |
+| 内容块（Content block） | 类型化文本、图片、音频、资源链接或嵌入资源 |
+| `x-mcp-header` | 将原始类型参数镜像到 Streamable HTTP 元数据的模式注解 |
+| 不透明游标（Opaque cursor） | 服务器签发、客户端不解释其值的分页令牌 |
+| 补全引用（Completion reference） | 正在补全参数的提示词名或资源 URI/模板 |
+| 准入（Admission） | 客户端公开或拒绝已发现描述符的决定 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [MCP Tools](https://modelcontextprotocol.io/specification/2026-07-28/server/tools)
-- [MCP Completion](https://modelcontextprotocol.io/specification/2026-07-28/server/utilities/completion)
-- [MCP Pagination](https://modelcontextprotocol.io/specification/2026-07-28/server/utilities/pagination)
-- [MCP Streamable HTTP Parameter Headers](https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/streamable-http#custom-headers-from-tool-parameters)
+- [MCP 工具](https://modelcontextprotocol.io/specification/2026-07-28/server/tools)
+- [MCP 补全](https://modelcontextprotocol.io/specification/2026-07-28/server/utilities/completion)
+- [MCP 分页](https://modelcontextprotocol.io/specification/2026-07-28/server/utilities/pagination)
+- [MCP Streamable HTTP 参数请求头](https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/streamable-http#custom-headers-from-tool-parameters)

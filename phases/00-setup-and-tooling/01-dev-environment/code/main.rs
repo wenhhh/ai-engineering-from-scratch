@@ -1,12 +1,12 @@
-// Lesson: Dev Environment (phase 00 / lesson 01)
-// Topic: verify that the four-layer toolchain (system, package managers, runtimes, libs)
-// is reachable from a Rust binary. Spawns each tool with `--version`, captures stdout,
-// reports PASS/FAIL plus the parsed version string. Stdlib only.
-// Refs:
+// 课程：开发环境（Dev Environment），阶段 00 / 第 01 课。
+// 主题：验证 Rust 二进制程序能否访问四层工具链（Toolchain）：系统、包管理器、运行时和库。
+// 使用 `--version` 启动每个工具，捕获标准输出（stdout），
+// 报告 PASS/FAIL 及解析后的版本字符串。仅使用标准库（Standard library）。
+// 参考资料：
 //   https://doc.rust-lang.org/std/process/struct.Command.html
 //   https://doc.rust-lang.org/std/process/struct.Output.html
 //   https://doc.rust-lang.org/book/ch12-00-an-io-project.html
-// Build: rustc --edition 2021 code/main.rs -o /tmp/lesson_dev_env && /tmp/lesson_dev_env
+// 构建：rustc --edition 2021 code/main.rs -o /tmp/lesson_dev_env && /tmp/lesson_dev_env
 
 use std::process::{Command, ExitCode};
 
@@ -35,7 +35,7 @@ fn run_check(check: &Check) -> Result<String, String> {
         .map_err(|e| format!("{}: {}", check.program, e))?;
 
     if !output.status.success() {
-        return Err(format!("exit code {:?}", output.status.code()));
+        return Err(format!("退出码（Exit code）{:?}", output.status.code()));
     }
 
     let combined = if !output.stdout.is_empty() {
@@ -47,7 +47,7 @@ fn run_check(check: &Check) -> Result<String, String> {
     let raw = String::from_utf8_lossy(combined);
     let line = raw.lines().next().unwrap_or("").trim().to_string();
     if line.is_empty() {
-        Err("empty version output".to_string())
+        Err("版本输出为空".to_string())
     } else {
         Ok(line)
     }
@@ -63,9 +63,9 @@ fn parse_minor_python(version_line: &str) -> Option<(u32, u32)> {
 
 fn print_header() {
     println!();
-    println!("=== AI Engineering from Scratch — Environment Check (Rust) ===");
+    println!("=== 从零开始的 AI 工程（AI Engineering from Scratch）：环境检查（Rust）===");
     println!();
-    println!("Layer 1 (system) -> Layer 2 (package managers) -> Layer 3 (runtimes) -> Layer 4 (libs)");
+    println!("第 1 层：系统（System）-> 第 2 层：包管理器（Package managers）-> 第 3 层：运行时（Runtimes）-> 第 4 层：库（Libraries）");
     println!();
 }
 
@@ -79,7 +79,7 @@ fn main() -> ExitCode {
 
     let mut python_ok = true;
 
-    println!("Required tools:");
+    println!("必需工具：");
     for check in CHECKS.iter().filter(|c| !c.optional) {
         required_total += 1;
         match run_check(check) {
@@ -88,7 +88,7 @@ fn main() -> ExitCode {
                     match parse_minor_python(&version) {
                         Some((major, minor)) if (major, minor) >= (3, 10) => {}
                         _ => {
-                            println!("  [FAIL] {:<14} {} (need parseable Python 3.10+)", check.name, version);
+                            println!("  [FAIL] {:<14} {}（需要可解析的 Python 3.10+ 版本）", check.name, version);
                             python_ok = false;
                             continue;
                         }
@@ -107,7 +107,7 @@ fn main() -> ExitCode {
     }
 
     println!();
-    println!("Optional tools:");
+    println!("可选工具：");
     for check in CHECKS.iter().filter(|c| c.optional) {
         optional_total += 1;
         match run_check(check) {
@@ -116,22 +116,22 @@ fn main() -> ExitCode {
                 println!("  [PASS] {:<14} {}", check.name, version);
             }
             Err(_) => {
-                println!("  [skip] {:<14} not installed", check.name);
+                println!("  [skip] {:<14} 未安装", check.name);
             }
         }
     }
 
     println!();
-    println!("Summary: {}/{} required, {}/{} optional",
+    println!("汇总：必需工具 {}/{}，可选工具 {}/{}",
              required_pass, required_total, optional_pass, optional_total);
 
     if required_pass == required_total && python_ok {
         println!();
-        println!("Environment is ready. Start with Phase 1.");
+        println!("环境已就绪。请从阶段 1 开始。");
         ExitCode::SUCCESS
     } else {
         println!();
-        println!("Fix the failed checks above, then run this again.");
+        println!("请修复上述失败项，然后重新运行本检查。");
         ExitCode::from(1)
     }
 }

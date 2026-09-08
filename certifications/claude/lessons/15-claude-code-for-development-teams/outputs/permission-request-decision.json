@@ -3,7 +3,7 @@
     "hookEventName": "PermissionRequest",
     "decision": {
       "behavior": "deny",
-      "message": "External publishing requires an interactive human approval.",
+      "message": "对外发布必须取得交互式人工审批。",
       "interrupt": false
     }
   }

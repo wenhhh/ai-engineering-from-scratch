@@ -1,67 +1,67 @@
-# Actor-Critic — A2C and A3C
+# 演员—评论家：A2C 与 A3C（Actor-Critic — A2C and A3C）
 
-> REINFORCE is noisy. Add a critic that learns `V̂(s)`, subtract it from the return, and you get an advantage that has the same expectation but far lower variance. That is actor-critic. A2C runs it synchronously; A3C runs it across threads. Both are the mental model for every modern deep-RL method.
+> REINFORCE 噪声很大。加入学习 `V̂(s)` 的评论家，并从回报中减去它，就得到期望相同而方差低得多的优势。这就是演员—评论家（Actor-Critic）。A2C 同步运行，A3C 跨线程运行。两者都是理解现代深度强化学习方法的思维模型。
 
 **Type:** Build
 **Languages:** Python
-**Prerequisites:** Phase 9 · 04 (TD Learning), Phase 9 · 06 (REINFORCE)
-**Time:** ~75 minutes
+**Prerequisites:** 阶段 9 · 04（TD 学习），阶段 9 · 06（REINFORCE）
+**Time:** 约 75 分钟
 
-## The Problem
+## 问题（The Problem）
 
-Vanilla REINFORCE works, but its variance is terrible. Monte Carlo returns `G_t` can swing over a factor of 10 between episodes. Multiplying that noise by `∇ log π` and averaging produces a gradient estimator that takes thousands of episodes to move the policy the same distance you could move it with far fewer DQN updates.
+普通 REINFORCE 有效，但方差很糟。蒙特卡洛回报 `G_t` 在不同回合间可能相差超过 10 倍。将这种噪声乘以 `∇ log π` 再平均，得到的梯度估计器需要数千个回合，才能让策略移动与少量 DQN 更新相同的距离。
 
-The variance comes from using raw returns. If you subtract a baseline `b(s_t)` — any function of state, including a learned value — the expectation is unchanged and the variance drops. The best tractable baseline is `V̂(s_t)`. Now the quantity multiplying `∇ log π` is the *advantage*:
+方差来自使用原始回报。减去基线 `b(s_t)`，也就是任意状态函数，包括学到的价值，期望不会改变，方差却会下降。可实际计算的最佳基线是 `V̂(s_t)`。此时与 `∇ log π` 相乘的量就是*优势（Advantage）*：
 
 `A(s, a) = G - V̂(s)`
 
-An action is good if it produced above-average return; bad if below. REINFORCE with a learned critic is *actor-critic*. The critic gives the actor a low-variance teacher. This is every deep-policy method after 2015 (A2C, A3C, PPO, SAC, IMPALA).
+动作产生高于平均水平的回报就好，低于平均水平就差。带有学习型评论家的 REINFORCE 就是*演员—评论家*。评论家为演员提供低方差的教学信号。这是 2015 年后所有深度策略方法（A2C、A3C、PPO、SAC、IMPALA）的共同结构。
 
-## The Concept
+## 概念（The Concept）
 
-![Actor-critic: policy net plus value net, TD residual as advantage](../assets/actor-critic.svg)
+![演员—评论家：策略网络加价值网络，以 TD 残差作为优势](../assets/actor-critic.svg)
 
-**Two networks, one shared loss:**
+**两个网络，一个共同损失：**
 
-- **Actor** `π_θ(a | s)`: the policy. Sampled to act. Trained with policy gradient.
-- **Critic** `V_φ(s)`: estimates expected return from state. Trained to minimize `(V_φ(s) - target)²`.
+- **演员（Actor）** `π_θ(a | s)`：策略，通过采样来行动，通过策略梯度训练。
+- **评论家（Critic）** `V_φ(s)`：估计从状态出发的期望回报，通过最小化 `(V_φ(s) - target)²` 训练。
 
-**The advantage.** Two standard forms:
+**优势。** 两种标准形式：
 
-- *MC advantage:* `A_t = G_t - V_φ(s_t)`. Unbiased, higher variance.
-- *TD advantage:* `A_t = r_{t+1} + γ V_φ(s_{t+1}) - V_φ(s_t)`. Biased (uses `V_φ`), far lower variance. Also called the *TD residual* `δ_t`.
+- *MC 优势：* `A_t = G_t - V_φ(s_t)`。无偏，方差较高。
+- *TD 优势：* `A_t = r_{t+1} + γ V_φ(s_{t+1}) - V_φ(s_t)`。有偏，因为使用 `V_φ`，但方差低得多。也称 *TD 残差（TD Residual）* `δ_t`。
 
-**n-step advantage.** Interpolate between the two:
+**n 步优势（n-step Advantage）。** 在两者之间插值：
 
 `A_t^{(n)} = r_{t+1} + γ r_{t+2} + … + γ^{n-1} r_{t+n} + γ^n V_φ(s_{t+n}) - V_φ(s_t)`
 
-`n = 1` is pure TD. `n = ∞` is MC. Most implementations use `n = 5` for Atari, `n = 2048` for PPO on MuJoCo.
+`n = 1` 是纯 TD，`n = ∞` 是 MC。多数实现中 Atari 使用 `n = 5`，MuJoCo 上的 PPO 使用 `n = 2048`。
 
-**Generalized Advantage Estimation (GAE).** Schulman et al. (2016) proposed an exponentially weighted average over all n-step advantages:
+**广义优势估计（Generalized Advantage Estimation，GAE）。** Schulman 等（2016）提出对所有 n 步优势做指数加权平均：
 
 `A_t^{GAE} = Σ_{l=0}^{∞} (γλ)^l δ_{t+l}`
 
-with `λ ∈ [0, 1]`. `λ = 0` is TD (low variance, high bias). `λ = 1` is MC (high variance, unbiased). `λ = 0.95` is the 2026 default — tune until the bias/variance dial is where you want it.
+其中 `λ ∈ [0, 1]`。`λ = 0` 对应 TD（低方差、高偏差），`λ = 1` 对应 MC（高方差、无偏）。`λ = 0.95` 是 2026 年的默认值；调整它，直到偏差与方差达到所需权衡。
 
-**A2C: synchronous advantage actor-critic.** Collect `T` steps across `N` parallel environments. Compute advantages for each step. Update actor and critic on the combined batch. Repeat. The simpler, more-scalable sibling of A3C.
+**A2C：同步优势演员—评论家（Advantage Actor-Critic）。** 从 `N` 个并行环境各收集 `T` 步，计算每步优势，在合并批量上更新演员和评论家，然后重复。它是 A3C 更简单、更易扩展的同类方法。
 
-**A3C: asynchronous advantage actor-critic.** Mnih et al. (2016). Spawn `N` worker threads, each running an env. Each worker computes gradients locally on its own rollout, then asynchronously applies them to a shared parameter server. No replay buffer needed — workers decorrelate by running different trajectories. A3C proved you could train on CPUs at scale. In 2026, GPU-based A2C (batched parallel envs) dominates because GPUs want large batches.
+**A3C：异步优势演员—评论家（Asynchronous Advantage Actor-Critic）。** Mnih 等（2016）提出。启动 `N` 个工作线程，每个运行一个环境。各工作线程根据自身轨迹在本地计算梯度，再异步应用到共享参数服务器。无需回放缓冲区，因为不同轨迹使工作线程的数据去相关。A3C 证明了可以在 CPU 上大规模训练。2026 年，基于 GPU 的 A2C（批量并行环境）占主导，因为 GPU 更适合大批量。
 
-**The combined loss.**
+**组合损失。**
 
 `L(θ, φ) = -E[ A_t · log π_θ(a_t | s_t) ]  +  c_v · E[(V_φ(s_t) - G_t)²]  -  c_e · E[H(π_θ(·|s_t))]`
 
-Three terms: policy-gradient loss, value regression, entropy bonus. `c_v ~ 0.5`, `c_e ~ 0.01` are canonical starting points.
+三项分别是策略梯度损失、价值回归和熵奖励。`c_v ~ 0.5`、`c_e ~ 0.01` 是经典起始值。
 
 ```figure
 actor-critic
 ```
 
-## Build It
+## 动手实现（Build It）
 
-### Step 1: a critic
+### 第 1 步：评论家（Step 1: a critic）
 
-Linear critic `V_φ(s) = w · features(s)` updated with MSE:
+用均方误差（Mean Squared Error，MSE）更新线性评论家 `V_φ(s) = w · features(s)`：
 
 ```python
 def critic_update(w, x, target, lr):
@@ -72,11 +72,11 @@ def critic_update(w, x, target, lr):
     return v_hat
 ```
 
-On a tabular env the critic converges in a few hundred episodes. On Atari, replace the linear critic with a shared CNN trunk + value head.
+在表格环境中，评论家几百个回合就能收敛。在 Atari 上，用共享 CNN 主干加价值输出头替换线性评论家。
 
-### Step 2: n-step advantage
+### 第 2 步：n 步优势（Step 2: n-step advantage）
 
-Given a rollout of length `T` and a bootstrapped final `V(s_T)`:
+给定长度为 `T` 的轨迹，以及用于自举的末尾 `V(s_T)`：
 
 ```python
 def compute_advantages(rewards, values, gamma=0.99, lam=0.95, last_value=0.0):
@@ -91,9 +91,9 @@ def compute_advantages(rewards, values, gamma=0.99, lam=0.95, last_value=0.0):
     return advantages, returns
 ```
 
-`returns` is the critic target. `advantages` is what multiplies `∇ log π`.
+`returns` 是评论家的目标；`advantages` 用来与 `∇ log π` 相乘。
 
-### Step 3: combined update
+### 第 3 步：组合更新（Step 3: combined update）
 
 ```python
 for step_i, (x, a, _r, probs) in enumerate(traj):
@@ -110,88 +110,88 @@ for step_i, (x, a, _r, probs) in enumerate(traj):
             theta[i][j] += lr_a * adv * grad_logpi * x[j]
 ```
 
-On-policy, one rollout per update, separate learning rates for actor and critic.
+采用同策略方式，每条轨迹更新一次，演员与评论家使用独立学习率。
 
-### Step 4: parallelization (A3C vs A2C)
+### 第 4 步：并行化，A3C 与 A2C（Step 4: parallelization）
 
-- **A3C:** spin up `N` threads. Each runs its own env and its own forward pass. Periodically push gradient updates to a shared master. No locks on the master — races are ok, they just add noise.
-- **A2C:** run `N` env instances in a single process, stack observations into a `[N, obs_dim]` batch, batched forward pass, batched backward pass. Higher GPU utilization, deterministic, easier to reason about. The default in 2026.
+- **A3C：** 启动 `N` 个线程，各自运行环境与前向传播，定期向共享主节点推送梯度更新。主节点不加锁，竞态可以接受，只会增加噪声。
+- **A2C：** 在单进程中运行 `N` 个环境实例，将观测堆叠为 `[N, obs_dim]` 批量，批量前向、批量反向传播。GPU 利用率更高，具有确定性，也更易分析，是 2026 年的默认方案。
 
-Our toy code is single-threaded for clarity; rewriting to batched A2C is three lines of numpy.
+为便于理解，玩具代码采用单线程；改为批量 A2C 只需三行 numpy。
 
-## Pitfalls
+## 常见陷阱（Pitfalls）
 
-- **Critic bias before actor gradient.** If the critic is random, its baseline is uninformative and you are training on pure noise. Warm up the critic for a few hundred steps before turning on the policy gradient, or use a slow actor learning rate.
-- **Advantage normalization.** Normalize advantages to zero-mean/unit-std per batch. Stabilizes training massively at near-zero cost.
-- **Shared trunk.** Use a shared feature extractor for actor and critic on image inputs. Separate heads. The shared features free-ride on both losses.
-- **On-policy contract.** A2C reuses data for exactly one update. More and your gradient is biased (importance-sampling correction is what PPO adds).
-- **Entropy collapse.** Without `c_e > 0`, policy becomes near-deterministic in a few hundred updates and stops exploring.
-- **Reward scale.** Advantage magnitudes depend on reward scale. Normalize rewards (e.g., running-std dividing) for consistent gradient magnitudes across tasks.
+- **演员梯度之前的评论家偏差。** 评论家若是随机的，基线就没有信息，相当于在纯噪声上训练。开启策略梯度前先预热评论家几百步，或采用较低的演员学习率。
+- **优势归一化。** 每个批量内将优势归一化为零均值、单位标准差，几乎不增加成本，却能显著稳定训练。
+- **共享主干。** 图像输入下，演员和评论家使用共享特征提取器、独立输出头。共享特征能同时受益于两种损失。
+- **同策略约定。** A2C 的每份数据只能更新一次。再多梯度就会有偏；PPO 添加的正是重要性采样修正。
+- **熵坍缩。** 没有 `c_e > 0` 时，策略几百次更新后就会近乎确定，并停止探索。
+- **奖励尺度。** 优势幅度依赖奖励尺度。将奖励归一化，例如除以运行标准差，让不同任务的梯度幅度一致。
 
-## Use It
+## 实际应用（Use It）
 
-A2C/A3C are rarely the final choice in 2026 but they are the architecture everything later refines:
+2026 年很少最终选择 A2C/A3C，但后续方法都在改进它们的架构：
 
-| Method | Relation to A2C |
+| 方法 | 与 A2C 的关系 |
 |--------|----------------|
-| PPO | A2C + clipped importance ratio for multi-epoch updates |
-| IMPALA | A3C + V-trace off-policy correction |
-| SAC (Phase 9 · 07) | Off-policy A2C with a soft-value critic (next lesson) |
-| GRPO (Phase 9 · 12) | A2C without the critic — group-relative advantage |
-| DPO | A2C collapsed into a preference-ranking loss, no sampling |
-| AlphaStar / OpenAI Five | A2C with league training + imitation pre-training |
+| PPO | A2C 加裁剪的重要性比率，支持多轮更新 |
+| IMPALA | A3C 加 V-trace 离策略修正 |
+| SAC（阶段 9 · 07） | 带软价值评论家的离策略 A2C（下一课） |
+| GRPO（阶段 9 · 12） | 去掉评论家的 A2C，使用组相对优势 |
+| DPO | 将 A2C 化为偏好排序损失，无需采样 |
+| AlphaStar / OpenAI Five | A2C 加联赛训练与模仿预训练 |
 
-If you see "advantage" in a 2026 paper, think actor-critic.
+在 2026 年的论文中看到“优势”，就应想到演员—评论家。
 
-## Ship It
+## 交付成果（Ship It）
 
-Save as `outputs/skill-actor-critic-trainer.md`:
+保存为 `outputs/skill-actor-critic-trainer.md`：
 
 ```markdown
 ---
 name: actor-critic-trainer
-description: Produce an A2C / A3C / GAE configuration for a given environment, with advantage estimation and loss weights specified.
+description: 为给定环境生成 A2C / A3C / GAE 配置，明确优势估计与损失权重。
 version: 1.0.0
 phase: 9
 lesson: 7
 tags: [rl, actor-critic, gae]
 ---
 
-Given an environment and compute budget, output:
+给定环境和计算预算，输出：
 
-1. Parallelism. A2C (GPU batched) vs A3C (CPU async) and the number of workers.
-2. Rollout length T. Steps per env per update.
-3. Advantage estimator. n-step or GAE(λ); specify λ.
-4. Loss weights. `c_v` (value), `c_e` (entropy), gradient clip.
-5. Learning rates. Actor and critic (separate if using).
+1. 并行方式。A2C（GPU 批量）或 A3C（CPU 异步），以及工作线程数。
+2. 轨迹长度 T。每次更新、每个环境收集的步数。
+3. 优势估计器。n 步或 GAE(λ)，明确 λ。
+4. 损失权重。`c_v`（价值）、`c_e`（熵）、梯度裁剪。
+5. 学习率。演员和评论家的学习率；若独立设置则分别给出。
 
-Refuse single-worker A2C on environments with horizon > 1000 (too on-policy, too slow). Refuse to ship without advantage normalization. Flag any run with `c_e = 0` and observed entropy < 0.1 as entropy-collapsed.
+时域超过 1000 的环境中，拒绝单工作线程 A2C，因为过度依赖同策略采样且太慢。没有优势归一化时拒绝交付。若 `c_e = 0` 且观测熵 < 0.1，标记为熵坍缩。
 ```
 
-## Exercises
+## 练习（Exercises）
 
-1. **Easy.** Train actor-critic with MC advantage (`G_t - V(s_t)`) on 4×4 GridWorld. Compare sample efficiency to REINFORCE-with-running-mean-baseline from Lesson 06.
-2. **Medium.** Switch to TD-residual advantage (`r + γ V(s') - V(s)`). Measure variance of the advantage batches. By how much does it drop?
-3. **Hard.** Implement GAE(λ). Sweep `λ ∈ {0, 0.5, 0.9, 0.95, 1.0}`. Plot final return vs sample efficiency. Where is the bias/variance sweet spot for this task?
+1. **简单。** 在 4×4 网格世界上，用 MC 优势（`G_t - V(s_t)`）训练演员—评论家。与第 06 课使用运行均值基线的 REINFORCE 比较样本效率。
+2. **中等。** 改用 TD 残差优势（`r + γ V(s') - V(s)`），衡量各批量优势的方差。降低了多少？
+3. **困难。** 实现 GAE(λ)，扫描 `λ ∈ {0, 0.5, 0.9, 0.95, 1.0}`，绘制最终回报与样本效率的关系。该任务的偏差—方差最佳折中点在哪里？
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语 | 常见说法 | 实际含义 |
 |------|-----------------|-----------------------|
-| Actor | "The policy net" | `π_θ(a\|s)`, updated by policy gradient. |
-| Critic | "The value net" | `V_φ(s)`, updated by MSE regression to returns / TD targets. |
-| Advantage | "How much better than average" | `A(s, a) = Q(s, a) - V(s)` or its estimators. Multiplier for `∇ log π`. |
-| TD residual | "δ" | `δ_t = r + γ V(s') - V(s)`; one-step advantage estimate. |
-| GAE | "The interpolation knob" | Exponentially weighted sum of n-step advantages, parameterized by `λ`. |
-| A2C | "Synchronous actor-critic" | Batched across envs; one gradient step per rollout. |
-| A3C | "Async actor-critic" | Worker threads push gradients to a shared param server. Original paper; less common in 2026. |
-| Bootstrap | "Use V at the horizon" | Truncate the rollout, add `γ^n V(s_{t+n})` to close the sum. |
+| 演员（Actor） | “策略网络” | `π_θ(a\|s)`，通过策略梯度更新。 |
+| 评论家（Critic） | “价值网络” | `V_φ(s)`，通过对回报 / TD 目标做 MSE 回归更新。 |
+| 优势（Advantage） | “比平均好多少” | `A(s, a) = Q(s, a) - V(s)` 或其估计器，用来乘以 `∇ log π`。 |
+| TD 残差（TD Residual） | “δ” | `δ_t = r + γ V(s') - V(s)`；单步优势估计。 |
+| 广义优势估计（GAE） | “插值旋钮” | n 步优势的指数加权和，由 `λ` 参数化。 |
+| 优势演员—评论家（A2C） | “同步演员—评论家” | 跨环境组成批量，每段轨迹做一次梯度更新。 |
+| 异步优势演员—评论家（A3C） | “异步演员—评论家” | 工作线程向共享参数服务器推送梯度；原始论文的方法，2026 年较少使用。 |
+| 自举（Bootstrap） | “在时域末端使用 V” | 截断轨迹，加上 `γ^n V(s_{t+n})` 补足求和。 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [Mnih et al. (2016). Asynchronous Methods for Deep Reinforcement Learning](https://arxiv.org/abs/1602.01783) — A3C, the original async actor-critic paper.
-- [Schulman et al. (2016). High-Dimensional Continuous Control Using Generalized Advantage Estimation](https://arxiv.org/abs/1506.02438) — GAE.
-- [Sutton & Barto (2018). Ch. 13 — Actor-Critic Methods](http://incompleteideas.net/book/RLbook2020.pdf) — foundations; pair this with Ch. 9 on function approximation when the critic is a neural net.
-- [Espeholt et al. (2018). IMPALA](https://arxiv.org/abs/1802.01561) — scalable distributed actor-critic with V-trace off-policy correction.
-- [OpenAI Baselines / Stable-Baselines3](https://stable-baselines3.readthedocs.io/) — production A2C/PPO implementations worth reading.
-- [Konda & Tsitsiklis (2000). Actor-Critic Algorithms](https://papers.nips.cc/paper/1786-actor-critic-algorithms) — the foundational convergence result for the two-timescale actor-critic decomposition.
+- [Mnih 等（2016）：深度强化学习的异步方法](https://arxiv.org/abs/1602.01783)：A3C，最初的异步演员—评论家论文。
+- [Schulman 等（2016）：使用广义优势估计进行高维连续控制](https://arxiv.org/abs/1506.02438)：GAE。
+- [Sutton 与 Barto（2018）：第 13 章，演员—评论家方法](http://incompleteideas.net/book/RLbook2020.pdf)：理论基础；评论家为神经网络时，应结合第 9 章的函数逼近阅读。
+- [Espeholt 等（2018）：IMPALA](https://arxiv.org/abs/1802.01561)：带 V-trace 离策略修正的可扩展分布式演员—评论家。
+- [OpenAI Baselines / Stable-Baselines3](https://stable-baselines3.readthedocs.io/)：值得阅读的生产级 A2C/PPO 实现。
+- [Konda 与 Tsitsiklis（2000）：演员—评论家算法](https://papers.nips.cc/paper/1786-actor-critic-algorithms)：双时间尺度演员—评论家分解的基础收敛结果。

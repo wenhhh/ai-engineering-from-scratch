@@ -1,78 +1,78 @@
 {
   "lesson": "51-literature-retrieval",
-  "title": "Literature Retrieval",
+  "title": "文献检索（Literature Retrieval）",
   "questions": [
     {
       "stage": "pre",
-      "question": "Why does the retrieval client run a BM25 pass and a citation graph pass?",
+      "question": "为什么检索客户端运行一遍 BM25 和一遍引用图检索？",
       "options": [
-        "Because the mock APIs require it",
-        "Because the parser fails otherwise",
-        "Because BM25 needs the graph to build its index",
-        "Because lexical hits miss foundational papers with different vocabulary, and graph hits miss papers that share no citation with the seed"
+        "模拟 API 要求这样",
+        "否则解析器失败",
+        "BM25 需要图来建索引",
+        "词法命中会漏掉使用不同词汇的奠基论文，图命中会漏掉与种子无引用关系的论文"
       ],
       "correct": 3,
-      "explanation": "Each pass catches what the other misses. Lexical covers shared vocabulary; the graph covers ancestor and descendant papers regardless of vocabulary."
+      "explanation": "两遍互补：词法覆盖共享词汇，图覆盖不论词汇是否相同的祖先与后继论文。"
     },
     {
       "stage": "pre",
-      "question": "Why is the citation graph traversal capped at two hops?",
+      "question": "为什么引用图遍历最多两跳？",
       "options": [
-        "Because the Python recursion limit forbids three hops",
-        "Because beyond two hops the result set tends to drift off topic and overwhelm downstream ranking",
-        "Because BM25 only scores two hops away",
-        "Because the corpus only stores two layers of citations"
+        "Python 递归限制禁止三跳",
+        "超过两跳，结果易偏题并压垮下游排序",
+        "BM25 只能评分两跳以内",
+        "语料只存两层引用"
       ],
       "correct": 1,
-      "explanation": "Two hops is the practical ceiling. Three hops blows up the result set on a connected graph and rarely returns more on topic papers."
+      "explanation": "两跳是实用上限。三跳在连通图上使结果规模爆炸，却很少返回更多切题论文。"
     },
     {
       "stage": "check",
-      "question": "What does idf evaluate to for a term that appears in every document?",
+      "question": "词项出现在每份文档时，idf 是多少？",
       "options": [
-        "Negative infinity",
-        "A large positive value",
-        "Undefined; the BM25 implementation skips it",
-        "A value near zero"
+        "负无穷",
+        "很大的正值",
+        "未定义，BM25 跳过它",
+        "接近零"
       ],
       "correct": 3,
-      "explanation": "When df equals N the numerator and denominator inside the log are close, and the +1 keeps the term non negative but small. The contribution of universally common terms is near zero."
+      "explanation": "df 等于 N 时，对数内的分子与分母接近，+1 使该项非负但很小。普遍出现词项的贡献接近零。"
     },
     {
       "stage": "check",
-      "question": "Which keys does the merge step use to dedup hits from the two passes?",
+      "question": "合并步骤用什么键对两遍命中去重？",
       "options": [
-        "BM25 score bucket",
-        "Stable paper id",
-        "Year and first author",
-        "Title text"
+        "BM25 分数桶",
+        "稳定论文 ID",
+        "年份和第一作者",
+        "标题文本"
       ],
       "correct": 1,
-      "explanation": "Paper id is the stable handle. Title and author are duplicated across versions, year alone is ambiguous."
+      "explanation": "论文 ID 是稳定引用。标题与作者在版本间重复，仅年份则含糊。"
     },
     {
       "stage": "check",
-      "question": "What does graph_score return for a paper that is two hops from the seed set?",
+      "question": "距种子集两跳的论文，graph_score 返回什么？",
       "options": [
-        "The BM25 score divided by ten",
-        "0.3 by default",
-        "1.0 by default",
-        "Zero"
+        "BM25 分数除以十",
+        "默认 0.3",
+        "默认 1.0",
+        "零"
       ],
       "correct": 1,
-      "explanation": "The default graph score schedule is 1.0 at zero hops, 0.6 at one hop, 0.3 at two hops, and zero beyond that."
+      "explanation": "默认图分数：零跳 1.0，一跳 0.6，两跳 0.3，更远为零。"
     },
     {
       "stage": "check",
-      "question": "Why is the corpus loaded once into a RetrievalClient instead of refetched per query?",
+      "question": "为什么语料只加载进 RetrievalClient 一次，而非每查询重新获取？",
       "options": [
-        "Because the recency score requires it",
-        "Because the BM25 index and citation graph are built once at construction time and reused across queries",
-        "Because the mock APIs are slow on every call",
-        "Because the parser is global"
+        "时效性评分要求这样",
+        "BM25 索引与引用图在构造时建一次，跨查询复用",
+        "模拟 API 每次都慢",
+        "解析器是全局的"
       ],
       "correct": 1,
-      "explanation": "Index construction is the expensive step. Reusing the index amortises that cost across every query the client handles."
+      "explanation": "建索引成本高，复用可将成本摊到客户端处理的所有查询。"
     }
   ]
 }

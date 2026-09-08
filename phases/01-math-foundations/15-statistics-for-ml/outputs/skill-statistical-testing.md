@@ -1,101 +1,101 @@
 ---
 name: skill-statistical-testing
-description: Choose the right statistical test for comparing ML models and evaluating experiments
+description: 为机器学习模型比较与实验评估选择合适的统计检验
 version: 1.0.0
 phase: 1
 lesson: 15
 tags: [statistics, hypothesis-testing, model-comparison]
 ---
 
-# Statistical Testing for ML
+# 机器学习统计检验（Statistical Testing for ML）
 
-How to pick the right test when comparing models, running A/B experiments, or validating results.
+比较模型、运行 A/B 实验或验证结果时，如何选择合适的检验。
 
-## Decision Checklist
+## 决策检查清单（Decision Checklist）
 
-1. What are you comparing? Means, proportions, distributions, or correlations?
-2. How many groups? One sample vs reference, two groups, or multiple groups?
-3. Are observations paired (same test set, same folds) or independent?
-4. Is the data normally distributed? If n < 30 and not clearly normal, use non-parametric.
-5. Is the data continuous, ordinal, or categorical?
-6. How many tests are you running? Apply correction if more than one.
+1. 比较什么？均值、比例、分布，还是相关性？
+2. 有多少组？一个样本与参考值比较、两组，还是多组？
+3. 观测是配对的（相同测试集、相同折），还是独立的？
+4. 数据是否正态分布？如果 n < 30 且并不明确为正态，使用非参数检验。
+5. 数据是连续、有序，还是分类的？
+6. 进行多少次检验？多于一次时应进行校正。
 
-## Decision tree
+## 决策树（Decision tree）
 
 ```text
-Comparing means?
-  Two groups?
-    Paired (same data splits)? --> Paired t-test (or Wilcoxon signed-rank if non-normal)
-    Independent? --> Welch's t-test (or Mann-Whitney U if non-normal)
-  Multiple groups?
-    Paired? --> Repeated measures ANOVA (or Friedman test)
-    Independent? --> One-way ANOVA (or Kruskal-Wallis)
+比较均值？
+  两组？
+    配对（相同数据划分）？ --> 配对 t 检验（非正态时用威尔科克森符号秩检验）
+    独立？ --> 韦尔奇 t 检验（非正态时用曼-惠特尼 U 检验）
+  多组？
+    配对？ --> 重复测量方差分析（或弗里德曼检验）
+    独立？ --> 单因素方差分析（或克鲁斯卡尔-沃利斯检验）
 
-Comparing proportions?
-  Two groups? --> Chi-squared test or Fisher's exact test (small n)
-  Multiple groups? --> Chi-squared test
+比较比例？
+  两组？ --> 卡方检验或费舍尔精确检验（n 较小时）
+  多组？ --> 卡方检验
 
-Comparing distributions?
-  Is one distribution a reference? --> Kolmogorov-Smirnov test
-  Are both empirical? --> Two-sample KS test
+比较分布？
+  一个分布为参考？ --> 柯尔莫哥洛夫-斯米尔诺夫检验
+  两者都是经验分布？ --> 双样本 KS 检验
 
-Measuring association?
-  Both continuous, roughly normal? --> Pearson correlation
-  Ordinal or non-normal? --> Spearman rank correlation
-  Categorical x Categorical? --> Chi-squared test of independence
+衡量关联？
+  两者都连续且大致正态？ --> 皮尔逊相关
+  有序或非正态？ --> 斯皮尔曼秩相关
+  分类 x 分类？ --> 卡方独立性检验
 
-Running many tests?
-  Apply Bonferroni correction: alpha_adjusted = alpha / number_of_tests
-  Or use Holm-Bonferroni (less conservative, still controls family-wise error)
+进行多次检验？
+  应用邦费罗尼校正：alpha_adjusted = alpha / number_of_tests
+  或使用霍尔姆-邦费罗尼校正（较不保守，仍控制族错误率）
 ```
 
-## When to use each test
+## 各检验的适用场景（When to use each test）
 
-| Test | Data type | Assumptions | ML use case |
+| 检验 | 数据类型 | 假设 | 机器学习应用场景 |
 |---|---|---|---|
-| Paired t-test | Continuous, paired | Normal differences | Compare 2 models on same k-fold splits |
-| Wilcoxon signed-rank | Continuous/ordinal, paired | None (non-parametric) | Compare 2 models, small k (5-10 folds) |
-| Welch's t-test | Continuous, independent | Roughly normal | Compare model on two separate datasets |
-| Mann-Whitney U | Continuous/ordinal, independent | None | Compare latency distributions |
-| ANOVA | Continuous, 3+ groups | Normal, equal variance | Compare multiple model architectures |
-| Kruskal-Wallis | Continuous/ordinal, 3+ groups | None | Compare multiple models, non-normal metrics |
-| Chi-squared | Categorical counts | Expected count >= 5 | Compare class distributions, confusion matrices |
-| Fisher's exact | Categorical counts | Small samples | Rare event comparison |
-| KS test | Continuous | None | Check if predictions follow expected distribution |
-| Bootstrap CI | Any statistic | None | Confidence interval for AUC, F1, any metric |
-| McNemar's test | Paired binary | None | Compare two classifiers on same test set |
+| 配对 t 检验（Paired t-Test） | 连续、配对 | 差值正态 | 在相同 k 折划分上比较 2 个模型 |
+| 威尔科克森符号秩（Wilcoxon Signed-Rank） | 连续/有序、配对 | 无（非参数） | k 较小（5-10 折）时比较 2 个模型 |
+| 韦尔奇 t 检验（Welch's t-Test） | 连续、独立 | 大致正态 | 在两个独立数据集上比较模型 |
+| 曼-惠特尼 U（Mann-Whitney U） | 连续/有序、独立 | 无 | 比较延迟分布 |
+| 方差分析（Analysis of Variance，ANOVA） | 连续、3 组及以上 | 正态、等方差 | 比较多个模型架构 |
+| 克鲁斯卡尔-沃利斯（Kruskal-Wallis） | 连续/有序、3 组及以上 | 无 | 比较多个模型的非正态指标 |
+| 卡方（Chi-squared） | 分类计数 | 期望计数 >= 5 | 比较类别分布、混淆矩阵 |
+| 费舍尔精确（Fisher's Exact） | 分类计数 | 小样本 | 稀有事件比较 |
+| 柯尔莫哥洛夫-斯米尔诺夫检验（Kolmogorov-Smirnov，KS） | 连续 | 无 | 检查预测是否服从预期分布 |
+| 自助法置信区间（Bootstrap CI） | 任意统计量 | 无 | AUC、F1 或任意指标的置信区间 |
+| 麦克尼马尔检验（McNemar's Test） | 配对二元 | 无 | 在相同测试集上比较两个分类器 |
 
-## Model comparison recipe
+## 模型比较步骤（Model comparison recipe）
 
-1. Define metric and significance level (alpha = 0.05) before running experiments.
-2. Run both models on the same k-fold cross-validation splits (k = 5 or 10).
-3. Collect paired scores: (a_1, b_1), (a_2, b_2), ..., (a_k, b_k).
-4. Compute differences: d_i = b_i - a_i.
-5. Run paired test (Wilcoxon for k <= 10, paired t-test for k > 10 or normal diffs).
-6. Report: p-value, mean difference, 95% confidence interval, effect size (Cohen's d).
-7. If p < alpha AND effect size is meaningful, the difference is real and worth acting on.
+1. 实验前定义指标与显著性水平（alpha = 0.05）。
+2. 在相同的 k 折交叉验证划分上运行两个模型（k = 5 或 10）。
+3. 收集配对得分：(a_1, b_1), (a_2, b_2), ..., (a_k, b_k)。
+4. 计算差值：d_i = b_i - a_i。
+5. 运行配对检验（k <= 10 时用 Wilcoxon，k > 10 或差值正态时用配对 t 检验）。
+6. 报告：p 值、平均差值、95% 置信区间、效应量（Effect Size，Cohen's d）。
+7. 如果 p < alpha **且**效应量有实际意义，差异就是真实且值得采取行动的。
 
-## Common mistakes
+## 常见错误（Common mistakes）
 
-- Using an independent test when data is paired. If both models were evaluated on the same test folds, you must use a paired test. Independent tests throw away the pairing and lose statistical power.
-- Reporting p < 0.05 without effect size. A statistically significant 0.1% accuracy improvement is not worth deploying. Always compute Cohen's d or the raw mean difference.
-- Comparing models across different test sets. The test set MUST be identical for both models. Different test sets make comparison meaningless.
-- Running 20 comparisons and reporting the best one without Bonferroni correction. With 20 tests at alpha = 0.05, you expect 1 false positive by chance.
-- Using accuracy on imbalanced data. On a 99% majority class, a trivial classifier achieves 99%. Use F1, precision-recall AUC, or Matthews correlation coefficient.
-- Treating cross-validation folds as independent samples. They share training data, which violates the independence assumption. The corrected resampled t-test accounts for this.
+- 数据配对却使用独立检验。如果两个模型在相同测试折上评估，必须使用配对检验。独立检验丢弃配对信息，会降低统计功效（Statistical Power）。
+- 报告 p < 0.05 却不报告效应量。统计显著的 0.1% 准确率提升并不值得部署。始终计算 Cohen's d 或原始均值差。
+- 跨不同测试集比较模型。两个模型的测试集必须完全相同，否则比较没有意义。
+- 进行 20 次比较，只报告最好的一次，却不做邦费罗尼校正（Bonferroni Correction）。在 alpha = 0.05 下进行 20 次检验，预期会偶然出现 1 个假阳性。
+- 对不平衡数据使用准确率。当多数类占 99% 时，一个简单分类器就能达到 99%。应使用 F1、精确率-召回率曲线下面积（Precision-Recall AUC）或马修斯相关系数（Matthews Correlation Coefficient）。
+- 将交叉验证折当作独立样本。它们共享训练数据，违反独立性假设。校正的重采样 t 检验（Corrected Resampled t-Test）会考虑这一点。
 
-## Quick reference: effect size interpretation
+## 速查：效应量解释（Quick reference: effect size interpretation）
 
-| Cohen's d | Interpretation |
+| Cohen's d | 解释 |
 |---|---|
-| 0.2 | Small effect |
-| 0.5 | Medium effect |
-| 0.8 | Large effect |
-| > 1.0 | Very large effect |
+| 0.2 | 小效应 |
+| 0.5 | 中等效应 |
+| 0.8 | 大效应 |
+| > 1.0 | 很大效应 |
 
-| What to report | Why |
+| 报告内容 | 原因 |
 |---|---|
-| p-value | Is the difference real? |
-| Confidence interval | How big could the difference be? |
-| Effect size (Cohen's d) | Is the difference meaningful? |
-| Sample size (n or k folds) | Can we trust the result? |
+| p 值（p-value） | 差异是真实的吗？ |
+| 置信区间（Confidence Interval） | 差异可能有多大？ |
+| 效应量（Cohen's d） | 差异有实际意义吗？ |
+| 样本量（n 或 k 折） | 能相信结果吗？ |

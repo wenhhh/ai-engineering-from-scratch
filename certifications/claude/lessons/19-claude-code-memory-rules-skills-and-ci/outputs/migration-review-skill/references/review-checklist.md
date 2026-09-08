@@ -1,19 +1,19 @@
-# Migration Review Checklist
+# 迁移评审清单（Migration Review Checklist）
 
-## Forward
+## 正向执行（Forward）
 
-- Identify the schema and data transition.
-- Check compatibility with the currently deployed application version.
-- Estimate locks, transaction duration, and affected row volume.
+- 确认模式和数据如何转换。
+- 检查与当前已部署应用版本的兼容性。
+- 估算锁、事务持续时间和受影响的行数。
 
-## Rollback
+## 回滚（Rollback）
 
-- State whether rollback is safe, lossy, or impossible.
-- Keep destructive cleanup separate from the compatibility migration.
-- Name the restore or compensating path when reversal is not possible.
+- 说明回滚是安全、有损还是不可能。
+- 将破坏性清理与兼容性迁移分开。
+- 无法逆转时，指明恢复或补偿路径。
 
-## Evidence
+## 证据（Evidence）
 
-- Record the exact validation command and result.
-- Link each risk to a file and statement.
-- Leave the decision blocked when production volume or compatibility evidence is missing.
+- 记录确切验证命令和结果。
+- 将每项风险关联到文件和语句。
+- 缺少生产数据量或兼容性证据时，让决策保持阻塞状态。

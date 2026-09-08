@@ -1,15 +1,15 @@
-"""Phase 13 Lesson 05 - tool schema design linter.
+"""阶段 13 第 05 课：工具模式设计检查器（Tool schema design linter）。
 
-Audits a tool registry against design rules from the lesson:
-  - names: snake_case, verb-noun, no arguments, no tense markers
-  - descriptions: Use-when pattern, length bounds, no injection keywords
-  - schemas: typed properties, required list, enum on closed sets
-  - shape: atomic vs monolithic (flag `action: str` if enum size > 3)
+依据本课设计规则审计工具注册表（Tool registry）：
+  - 名称：snake_case、动词加名词、不含参数、不含时态标记
+  - 描述：Use-when 句式、长度限制、不含注入关键词
+  - 模式：属性具有类型、包含 required 列表、封闭集合使用 enum
+  - 结构：原子工具与单体工具对比（enum 大小 > 3 时标记 `action: str`）
 
-Run on GOOD_REGISTRY (passes) and BAD_REGISTRY (fails on every rule).
-Stdlib only.
+对 GOOD_REGISTRY（通过）和 BAD_REGISTRY（各项规则均有失败）运行检查。
+仅使用标准库。
 
-Run: python code/main.py
+运行： python code/main.py
 """
 
 from __future__ import annotations
@@ -30,7 +30,7 @@ TENSE_MARKERS = ("_was_", "_will_", "_been_", "_yesterday", "_tomorrow")
 
 @dataclass
 class Finding:
-    severity: str   # block / warn / nit
+    severity: str   # 阻断（block）/ 警告（warn）/ 小问题（nit）
     path: str
     message: str
 
@@ -41,55 +41,55 @@ class Finding:
 def lint_name(name: str) -> list[Finding]:
     f: list[Finding] = []
     if not SNAKE_CASE.match(name):
-        f.append(Finding("block", name, "name must be snake_case"))
+        f.append(Finding("block", name, "名称必须采用 snake_case"))
     if any(m in name for m in TENSE_MARKERS):
-        f.append(Finding("warn", name, "name includes tense marker"))
+        f.append(Finding("warn", name, "名称含有时态标记"))
     if re.search(r"_(in|for|at|by)_\w+$", name):
-        f.append(Finding("warn", name, "argument appears embedded in name"))
+        f.append(Finding("warn", name, "名称中似乎嵌入了参数"))
     if "_" not in name and len(name) > 12:
-        f.append(Finding("nit", name, "long single-word name"))
+        f.append(Finding("nit", name, "单个单词构成的名称过长"))
     return f
 
 
 def lint_description(desc: str, tool_name: str) -> list[Finding]:
     f: list[Finding] = []
     if len(desc) < 40:
-        f.append(Finding("block", tool_name, f"description under 40 chars: {len(desc)}"))
+        f.append(Finding("block", tool_name, f"描述不足 40 个字符： {len(desc)}"))
     if len(desc) > 1024:
-        f.append(Finding("block", tool_name, f"description over 1024 chars: {len(desc)}"))
+        f.append(Finding("block", tool_name, f"描述超过 1024 个字符： {len(desc)}"))
     low = desc.lower()
     if "use when" not in low:
-        f.append(Finding("warn", tool_name, "description missing 'Use when' pattern"))
+        f.append(Finding("warn", tool_name, "描述缺少 'Use when' 句式"))
     if "do not use" not in low:
-        f.append(Finding("warn", tool_name, "description missing 'Do not use for' disambiguation"))
+        f.append(Finding("warn", tool_name, "描述缺少 'Do not use for' 消歧说明"))
     for pattern in INJECTION_PATTERNS:
         if re.search(pattern, low):
             f.append(Finding("block", tool_name,
-                             f"possible tool-poisoning pattern: {pattern!r}"))
+                             f"可能的工具投毒（Tool poisoning）模式： {pattern!r}"))
     return f
 
 
 def lint_schema(schema: dict, tool_name: str) -> list[Finding]:
     f: list[Finding] = []
     if schema.get("type") != "object":
-        f.append(Finding("block", tool_name, "schema root must be object"))
+        f.append(Finding("block", tool_name, "模式根节点必须为 object"))
         return f
     if "required" not in schema:
-        f.append(Finding("warn", tool_name, "schema missing 'required' list"))
+        f.append(Finding("warn", tool_name, "模式缺少 'required' 列表"))
     props = schema.get("properties", {})
     for key, sub in props.items():
         path = f"{tool_name}.{key}"
         if "type" not in sub:
-            f.append(Finding("block", path, "field has no type"))
+            f.append(Finding("block", path, "字段没有类型"))
         if sub.get("type") == "string" and "description" not in sub:
             if key not in ("id", "uuid"):
-                f.append(Finding("nit", path, "string field lacks description"))
+                f.append(Finding("nit", path, "字符串字段缺少描述"))
         if key == "action" and sub.get("type") == "string":
             values = sub.get("enum", [])
             if len(values) > 3 or not values:
                 f.append(Finding("warn", tool_name,
-                                 f"monolithic 'action' string (enum len={len(values)}); "
-                                 "split into atomic tools"))
+                                 f"单体式 'action' 字符串（enum 长度={len(values)}); "
+                                 "拆分为原子工具（Atomic tools）"))
     return f
 
 
@@ -107,7 +107,7 @@ def lint_registry(registry: list[dict]) -> list[Finding]:
     names = [t["name"] for t in registry]
     for n in names:
         if names.count(n) > 1:
-            all_findings.append(Finding("block", n, "duplicate tool name"))
+            all_findings.append(Finding("block", n, "工具名称重复"))
     for tool in registry:
         all_findings.extend(lint_tool(tool))
     return all_findings
@@ -123,7 +123,7 @@ GOOD_REGISTRY = [
         "input_schema": {
             "type": "object",
             "properties": {
-                "tag": {"type": "string", "description": "Optional tag filter"},
+                "tag": {"type": "string", "description": "可选的标签筛选条件"},
             },
             "required": [],
             "additionalProperties": False,
@@ -138,7 +138,7 @@ GOOD_REGISTRY = [
         "input_schema": {
             "type": "object",
             "properties": {
-                "query": {"type": "string", "description": "Free-text search query"},
+                "query": {"type": "string", "description": "自由文本搜索查询"},
                 "limit": {"type": "integer", "minimum": 1, "maximum": 50},
             },
             "required": ["query"],
@@ -154,9 +154,9 @@ GOOD_REGISTRY = [
         "input_schema": {
             "type": "object",
             "properties": {
-                "title": {"type": "string", "description": "Note title"},
-                "body": {"type": "string", "description": "Markdown-formatted body"},
-                "tag": {"type": "string", "description": "Optional single tag"},
+                "title": {"type": "string", "description": "笔记标题"},
+                "body": {"type": "string", "description": "Markdown 格式的正文"},
+                "tag": {"type": "string", "description": "可选的单个标签"},
             },
             "required": ["title", "body"],
             "additionalProperties": False,
@@ -199,25 +199,25 @@ BAD_REGISTRY = [
 
 def report(name: str, registry: list[dict]) -> None:
     print("-" * 72)
-    print(f"REGISTRY : {name} ({len(registry)} tools)")
+    print(f"注册表（Registry）：{name}（{len(registry)} 个工具）")
     findings = lint_registry(registry)
     if not findings:
-        print("  PASS : no findings")
+        print("  通过：未发现问题")
         return
     severities: dict[str, int] = {}
     for f in findings:
         severities[f.severity] = severities.get(f.severity, 0) + 1
         print(f"  {f}")
     total = sum(severities.values())
-    print(f"  summary: {total} findings "
-          f"({severities.get('block', 0)} block, "
-          f"{severities.get('warn', 0)} warn, "
-          f"{severities.get('nit', 0)} nit)")
+    print(f"  汇总：{total} 个问题 "
+          f"({severities.get('block', 0)} 项阻断，"
+          f"{severities.get('warn', 0)} 项警告，"
+          f"{severities.get('nit', 0)} 项小问题）")
 
 
 def main() -> None:
     print("=" * 72)
-    print("PHASE 13 LESSON 05 - TOOL SCHEMA LINTER")
+    print("阶段 13 第 05 课：工具模式检查器（Tool Schema Linter）")
     print("=" * 72)
     print()
     report("GOOD_REGISTRY", GOOD_REGISTRY)

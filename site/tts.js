@@ -312,7 +312,7 @@
       .replace(/\s+([,.;:!?])/g, '$1')
       .trim();
     var replacements = [
-      [/\bCI\s*\/\s*CD\b/gi, 'C I slash C D'],
+      [/\bCI\s*\/\s*CD\b/gi, 'C I 斜杠 C D'],
       [/\bLLMs?\b/g, function (match) { return match === 'LLMs' ? 'L L M s' : 'L L M'; }],
       [/\bAPIs?\b/g, function (match) { return match === 'APIs' ? 'A P I s' : 'A P I'; }],
       [/\bMCP\b/g, 'M C P'],
@@ -321,9 +321,9 @@
       [/\bJSON\b/g, 'J S O N'],
       [/\bHTTP\b/g, 'H T T P'],
       [/\bSDKs?\b/g, function (match) { return match === 'SDKs' ? 'S D K s' : 'S D K'; }],
-      [/\s*[→⇒]\s*/g, ' leads to '],
-      [/\s*≤\s*/g, ' less than or equal to '],
-      [/\s*≥\s*/g, ' greater than or equal to '],
+      [/\s*[→⇒]\s*/g, ' 导致 '],
+      [/\s*≤\s*/g, ' 小于或等于 '],
+      [/\s*≥\s*/g, ' 大于或等于 '],
     ];
     for (var i = 0; i < replacements.length; i++) value = value.replace(replacements[i][0], replacements[i][1]);
     return value.replace(/\s+/g, ' ').trim();
@@ -400,7 +400,7 @@
     var headerCells = table ? Array.prototype.slice.call(table.querySelectorAll('thead tr:first-child > th, thead tr:first-child > td')) : [];
     var inHead = !!row.closest('thead');
     if (inHead || cells.every(function (cell) { return cell.tagName === 'TH'; })) {
-      return 'Table columns. ' + cells.map(function (cell) { return clean(cell.textContent); }).filter(Boolean).join('. ');
+      return '表格列。' + cells.map(function (cell) { return clean(cell.textContent); }).filter(Boolean).join('. ');
     }
     return cells.map(function (cell, index) {
       var value = clean(cell.textContent);
@@ -454,11 +454,11 @@
           var letter = el.querySelector('.opt-letter');
           var label = letter ? clean(letter.textContent || '') : '';
           var rest = label ? clean(text.slice(label.length)) : text;
-          text = 'Option ' + (label ? label + '. ' : '') + rest;
+          text = '选项 ' + (label ? label + '. ' : '') + rest;
         } else if (el.matches('.quiz-explanation')) {
           text = 'Explanation. ' + text;
         } else if (el.matches('.lf-label')) {
-          text = 'Interactive figure: ' + text + '.';
+          text = '交互图表：' + text + '.';
         }
       }
       if (text.length < 2) continue;
@@ -606,7 +606,7 @@
     els.voice.innerHTML = '';
     var def = document.createElement('option');
     def.value = '';
-    def.textContent = 'Auto — ' + (best ? best.name : locale.toUpperCase());
+    def.textContent = '自动：' + (best ? best.name : locale.toUpperCase());
     els.voice.appendChild(def);
     for (var i = 0; i < list.length; i++) {
       var o = document.createElement('option');
@@ -867,13 +867,13 @@
 
   function start(silentIfEmpty, fromEl, scopeEl) {
     if (!supported) {
-      if (!silentIfEmpty) flash('Read aloud is unavailable in this browser');
+      if (!silentIfEmpty) flash('此浏览器不支持朗读');
       return false;
     }
     state.scope = scopeEl && document.contains(scopeEl) ? scopeEl : null;
     state.chunks = collect(state.scope);
     if (!state.chunks.length) {
-      if (!silentIfEmpty) flash('Nothing to read on this page');
+      if (!silentIfEmpty) flash('此页面没有可朗读的内容');
       state.scope = null;
       return false;
     }
@@ -1016,7 +1016,7 @@
     document.addEventListener('keydown', retry, true);
     setTimeout(function () {
       if (isPlaying() && !synth.speaking) {
-        flash('Press play or click the page to continue reading');
+        flash('按播放按钮或点击页面以继续朗读');
       }
     }, 1200);
   }
@@ -1098,7 +1098,7 @@
     state.stalls++;
     // Give up on the fourth ignored attempt; a fifth only skips one more chunk.
     if (state.stalls >= 4) {
-      fail('Speech engine stopped responding');
+      fail('语音引擎停止响应');
       return;
     }
     var local = state.stalls >= 2 && !state.forcedLocal ? localVoice() : null;
@@ -1106,7 +1106,7 @@
       // A cloud voice that keeps dropping will not recover on its own; move to
       // an offline voice, which is plainer but does not cut out.
       state.forcedLocal = local;
-      flash('Switched to ' + local.name + ' — the previous voice kept cutting out');
+      flash('已切换到 ' + local.name + '，之前的语音持续中断');
     } else if (state.stalls >= 3) {
       // Still stalling after the fallback: skip the chunk rather than retry it
       // forever, so the rest of the article is still read.
@@ -1169,12 +1169,12 @@
       els.toggle.setAttribute(
         'aria-label',
         isPaused()
-          ? 'Resume reading aloud'
+          ? '继续朗读'
           : state.mode === 'error'
-            ? 'Dismiss read aloud error'
+            ? '关闭朗读错误提示'
             : active
-              ? 'Stop reading aloud'
-              : 'Read this page aloud'
+              ? '停止朗读'
+              : '朗读此页面'
       );
       els.toggle.title = els.toggle.getAttribute('aria-label');
     }
@@ -1188,25 +1188,25 @@
     els.bar.classList.toggle('is-reading', isPlaying() || isWaiting());
     if (!active) return;
     els.playPause.textContent = isPaused() ? '▶' : '⏸';
-    els.playPause.setAttribute('aria-label', isPaused() ? 'Resume' : 'Pause');
+    els.playPause.setAttribute('aria-label', isPaused() ? '继续' : '暂停');
     els.playPause.disabled = isWaiting() || state.mode === 'error';
     if (isWaiting()) {
-      els.status.textContent = 'Loading the next lesson…';
+      els.status.textContent = '正在加载下一课…';
       els.progress.removeAttribute('value');
       return;
     }
     if (state.mode === 'error') {
-      els.status.textContent = state.message || 'Read aloud stopped';
+      els.status.textContent = state.message || '朗读已停止';
       els.progress.value = 0;
       return;
     }
     var current = state.chunks[state.index] || {};
-    var section = current.section ? current.section.slice(0, 52) : 'Page';
+    var section = current.section ? current.section.slice(0, 52) : '页面';
     var minutes = remainingMinutes();
     els.status.textContent =
-      (isPaused() ? 'Paused' : 'Reading') + ' · ' + section + ' · ' +
+      (isPaused() ? '已暂停' : '正在朗读') + ' · ' + section + ' · ' +
       Math.min(state.index + 1, state.chunks.length) + '/' + state.chunks.length +
-      (minutes ? ' · ' + minutes + ' min left' : '');
+      (minutes ? ' · ' + minutes + ' 分钟剩余' : '');
     els.progress.max = Math.max(1, state.chunks.length);
     els.progress.value = Math.min(state.index + 1, state.chunks.length);
   }
@@ -1258,8 +1258,8 @@
     btn.id = 'ttsToggle';
     btn.setAttribute('data-header-persistent', 'true');
     btn.innerHTML = icon();
-    btn.setAttribute('aria-label', 'Read this page aloud');
-    btn.title = 'Read this page aloud';
+    btn.setAttribute('aria-label', '朗读此页面');
+    btn.title = '朗读此页面';
     btn.setAttribute('aria-pressed', 'false');
     placeToggle(btn);
     var compact = window.matchMedia && window.matchMedia('(max-width: 1100px)');
@@ -1270,8 +1270,8 @@
     }
     if (!supported) {
       btn.disabled = true;
-      btn.setAttribute('aria-label', 'Read aloud unavailable in this browser');
-      btn.title = 'Read aloud unavailable in this browser';
+      btn.setAttribute('aria-label', '此浏览器不支持朗读');
+      btn.title = '此浏览器不支持朗读';
       return btn;
     }
     btn.addEventListener('click', function () {
@@ -1322,9 +1322,9 @@
     if (els.collapse) {
       els.collapse.innerHTML = state.collapsed ? icon() : '▾';
       els.collapse.setAttribute('aria-expanded', state.collapsed ? 'false' : 'true');
-      var label = state.collapsed ? 'Expand read aloud controls' : 'Collapse controls';
+      var label = state.collapsed ? '展开朗读控件' : '收起控件';
       els.collapse.setAttribute('aria-label', label);
-      els.collapse.title = label + ' (drag to move)';
+      els.collapse.title = label + '（拖动以移动）';
     }
     schedulePlacementBoundsRefresh();
   }
@@ -1607,24 +1607,24 @@
     bar.id = 'ttsBar';
     bar.hidden = true;
     bar.setAttribute('role', 'region');
-    bar.setAttribute('aria-label', 'Read aloud controls');
+    bar.setAttribute('aria-label', '朗读控件');
     bar.innerHTML =
-      '<button type="button" class="tts-btn" data-tts="prev" aria-label="Previous passage">⏪</button>' +
-      '<button type="button" class="tts-btn tts-btn-main" data-tts="playpause" aria-label="Pause">⏸</button>' +
-      '<button type="button" class="tts-btn" data-tts="next" aria-label="Next passage">⏩</button>' +
-      '<span class="tts-status" id="ttsStatus" aria-live="polite">Reading</span>' +
-      '<progress class="tts-progress" id="ttsProgress" max="1" value="0" aria-label="Narration progress"></progress>' +
-      '<label class="tts-field"><span>Speed</span>' +
-      '<select class="tts-select" id="ttsRate" aria-label="Reading speed">' +
+      '<button type="button" class="tts-btn" data-tts="prev" aria-label="上一段">⏪</button>' +
+      '<button type="button" class="tts-btn tts-btn-main" data-tts="playpause" aria-label="暂停">⏸</button>' +
+      '<button type="button" class="tts-btn" data-tts="next" aria-label="下一段">⏩</button>' +
+      '<span class="tts-status" id="ttsStatus" aria-live="polite">正在朗读</span>' +
+      '<progress class="tts-progress" id="ttsProgress" max="1" value="0" aria-label="朗读进度"></progress>' +
+      '<label class="tts-field"><span>语速</span>' +
+      '<select class="tts-select" id="ttsRate" aria-label="朗读速度">' +
       '<option value="0.75">0.75x</option><option value="1">1x</option>' +
       '<option value="1.25">1.25x</option><option value="1.5">1.5x</option>' +
       '<option value="1.75">1.75x</option><option value="2">2x</option></select></label>' +
-      '<label class="tts-field tts-field-voice"><span>Voice</span>' +
-      '<select class="tts-select" id="ttsVoice" aria-label="Voice"></select></label>' +
-      '<button type="button" class="tts-btn tts-btn-reset" data-tts="reset" aria-label="Reset player position" hidden>Dock</button>' +
-      '<button type="button" class="tts-btn tts-btn-stop" data-tts="stop" aria-label="Stop reading">Stop</button>' +
+      '<label class="tts-field tts-field-voice"><span>语音</span>' +
+      '<select class="tts-select" id="ttsVoice" aria-label="语音"></select></label>' +
+      '<button type="button" class="tts-btn tts-btn-reset" data-tts="reset" aria-label="重置播放器位置" hidden>停靠</button>' +
+      '<button type="button" class="tts-btn tts-btn-stop" data-tts="stop" aria-label="停止朗读">停止</button>' +
       '<button type="button" class="tts-btn tts-btn-collapse" data-tts="collapse" ' +
-      'aria-label="Collapse controls" aria-expanded="true" title="Collapse (drag to move)">▾</button>';
+      'aria-label="收起控件" aria-expanded="true" title="收起（拖动可移动）">▾</button>';
     document.body.appendChild(bar);
 
     els.bar = bar;
@@ -1698,8 +1698,8 @@
     btn.className = 'tts-from-here';
     btn.id = 'ttsFromHere';
     btn.hidden = true;
-    btn.innerHTML = '<span aria-hidden="true">▶</span> Read from here';
-    btn.title = 'Read from here (Alt+R)';
+    btn.innerHTML = '<span aria-hidden="true">▶</span> 从此处朗读';
+    btn.title = '从此处朗读 (Alt+R)';
     // mousedown would clear the selection before the click lands.
     btn.addEventListener('mousedown', function (e) {
       e.preventDefault();

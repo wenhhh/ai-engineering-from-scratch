@@ -1,26 +1,26 @@
 {
   "lesson": "01-instruction-following-alignment-signal",
-  "title": "Instruction-Following as Alignment Signal",
+  "title": "将指令遵循作为对齐信号（Instruction-Following as Alignment Signal）",
   "questions": [
     {
       "stage": "pre",
-      "question": "Why does a raw pre-trained language model often respond to 'write a Python function that reverses a list' with another prompt instead of code?",
+      "question": "为什么未经处理的预训练语言模型，在收到“编写一个反转列表的 Python 函数”时，常常返回另一个提示词（Prompt），而不是代码？",
       "options": [
-        "Its temperature defaults to zero",
-        "Its vocabulary lacks Python tokens",
-        "It is trained to complete web-style text, where prompts continue with more prompts",
-        "It cannot represent function signatures without fine-tuning"
+        "它的温度参数（Temperature）默认为零",
+        "它的词表缺少 Python 词元（Token）",
+        "它接受的训练是补全网页风格的文本，而这些文本中的提示词后面会接着更多提示词",
+        "未经微调（Fine-tuning），它就无法表示函数签名"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Which loss does the InstructGPT reward model use over pairwise preference labels?",
+      "question": "InstructGPT 的奖励模型（Reward Model）在成对偏好标签上使用哪种损失函数？",
       "options": [
-        "Cross-entropy between predicted and true reward",
-        "Mean squared error on labeler scores",
-        "Hinge loss with a fixed margin",
+        "预测奖励与真实奖励之间的交叉熵（Cross-entropy）",
+        "针对标注员评分的均方误差（Mean squared error）",
+        "具有固定间隔的合页损失（Hinge loss）",
         "Bradley-Terry: -log sigmoid(r(x, y_w) - r(x, y_l))"
       ],
       "correct": 3,
@@ -28,48 +28,48 @@
     },
     {
       "stage": "check",
-      "question": "What is the KL penalty in stage 3 of InstructGPT primarily protecting against?",
+      "question": "InstructGPT 第 3 阶段的 KL 惩罚（KL penalty）主要防范什么？",
       "options": [
-        "Catastrophic forgetting of tokenizer statistics",
-        "The optimizer finding adversarial high-reward strings that exploit the reward model",
-        "Overflowing context windows during sampling",
-        "Numerical instability in PPO gradient updates"
+        "对分词器（Tokenizer）统计信息的灾难性遗忘（Catastrophic forgetting）",
+        "优化器找到利用奖励模型漏洞的高奖励对抗字符串",
+        "采样过程中上下文窗口（Context Window）溢出",
+        "PPO 梯度更新中的数值不稳定"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "What problem does PPO-ptx mix into the RL objective to mitigate?",
+      "question": "PPO-ptx 在强化学习（RL）目标中混入额外训练项，是为了缓解什么问题？",
       "options": [
-        "The alignment tax: regression on benchmarks RLHF did not target",
-        "Tokenizer mismatch between SFT and RM",
-        "The KL term becoming negative",
-        "The reward model drifting during PPO"
+        "对齐税（Alignment tax）：在并非 RLHF 目标的基准测试上出现性能退化",
+        "SFT 与奖励模型之间的分词器不匹配",
+        "KL 项变成负数",
+        "奖励模型在 PPO 过程中发生偏移"
       ],
       "correct": 0,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "A 1.3B InstructGPT was preferred over the 175B base GPT-3 about 70% of the time. What does this say about alignment and capability?",
+      "question": "在约 70% 的情况下，人们更偏好 1.3B 的 InstructGPT，而不是 175B 的基础 GPT-3。这说明对齐（Alignment）与能力（Capability）有什么关系？",
       "options": [
-        "Alignment is a different axis from capability, and the base model sets the capability floor",
-        "Preference rates above 50% prove the proxy reward equals human values",
-        "Capability and alignment are the same axis at scale",
-        "Bigger base models always lose to small aligned models"
+        "对齐与能力是不同的维度，基础模型决定能力下限",
+        "偏好率超过 50% 就证明代理奖励等同于人类价值观",
+        "规模足够大时，能力与对齐属于同一个维度",
+        "更大的基础模型总是输给较小的对齐模型"
       ],
       "correct": 0,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "Which of the following is the reward model in InstructGPT initialized from?",
+      "question": "InstructGPT 的奖励模型由下列哪一项初始化？",
       "options": [
-        "The base pre-trained model with the LM head intact",
-        "The SFT model with the LM head replaced by a scalar head",
-        "A separate encoder-only transformer",
-        "A random scalar regressor with no pretraining"
+        "保留语言模型头（LM head）的预训练基础模型",
+        "将语言模型头替换为标量头（Scalar head）的 SFT 模型",
+        "一个独立的纯编码器 Transformer",
+        "一个未经预训练的随机标量回归器"
       ],
       "correct": 1,
       "explanation": ""

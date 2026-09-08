@@ -2,66 +2,66 @@
   {
     "id": "logreg-pre-1",
     "stage": "pre",
-    "question": "What is the range of the sigmoid function's output?",
+    "question": "Sigmoid 函数的输出范围是什么？",
     "options": [
-      "0 to 1 (exclusive)",
-      "-1 to 1",
-      "Negative infinity to positive infinity",
-      "0 to positive infinity"
+      "0 到 1（不含端点）",
+      "-1 到 1",
+      "负无穷到正无穷",
+      "0 到正无穷"
     ],
     "correct": 0,
-    "explanation": "The sigmoid function 1/(1+e^(-z)) outputs values strictly between 0 and 1, which can be interpreted as probabilities."
+    "explanation": "Sigmoid 函数 1/(1+e^(-z)) 的输出严格位于 0 和 1 之间，可以解释为概率。"
   },
   {
     "id": "logreg-pre-2",
     "stage": "pre",
-    "question": "Why is logistic regression called 'regression' even though it is used for classification?",
+    "question": "逻辑回归（Logistic Regression）用于分类，为什么名称中仍有“回归”？",
     "options": [
-      "It minimizes mean squared error like linear regression",
-      "It predicts continuous values that are then rounded",
-      "The name comes from the logistic (sigmoid) function it uses, not from regression analysis",
-      "It was originally designed for regression and later adapted"
+      "它像线性回归一样最小化均方误差",
+      "它先预测连续值，再进行取整",
+      "名称来自使用的逻辑函数（Sigmoid），而非回归分析",
+      "它最初为回归设计，后来才改作分类"
     ],
     "correct": 2,
-    "explanation": "The name comes from the logistic function (sigmoid). Despite the name, logistic regression is a classification algorithm that outputs class probabilities."
+    "explanation": "名称来自逻辑函数（Sigmoid）。尽管名为回归，它实际是输出类别概率的分类算法。"
   },
   {
     "id": "logreg-post-1",
     "stage": "post",
-    "question": "Why is binary cross-entropy used instead of MSE for logistic regression?",
+    "question": "为什么逻辑回归使用二元交叉熵（Binary Cross-entropy），而不是 MSE？",
     "options": [
-      "MSE can only be used with linear models",
-      "Cross-entropy works only when the dataset is balanced",
-      "Cross-entropy is faster to compute",
-      "MSE with sigmoid creates a non-convex cost surface with local minima, while cross-entropy is convex"
+      "MSE 只能用于线性模型",
+      "交叉熵只在数据集平衡时有效",
+      "交叉熵计算更快",
+      "MSE 与 Sigmoid 结合产生含局部最小值的非凸代价曲面，而交叉熵是凸的"
     ],
     "correct": 3,
-    "explanation": "MSE combined with the sigmoid activation creates a non-convex cost surface with many local minima. Binary cross-entropy with sigmoid is convex, guaranteeing a single global minimum."
+    "explanation": "MSE 与 Sigmoid 激活结合会产生含许多局部最小值的非凸代价曲面。二元交叉熵与 Sigmoid 结合则是凸的，保证存在单一全局最小值。"
   },
   {
     "id": "logreg-post-2",
     "stage": "post",
-    "question": "A spam filter has precision = 0.95 and recall = 0.60. What does this mean in practical terms?",
+    "question": "垃圾邮件过滤器的精确率 precision = 0.95，召回率 recall = 0.60。这在实践中意味着什么？",
     "options": [
-      "60% of flagged emails are spam, and 95% of all spam is caught",
-      "When it flags an email as spam, it is correct 95% of the time, but it only catches 60% of actual spam",
-      "95% of all emails are correctly classified, and 60% of spam is caught",
-      "The model is 95% accurate on the test set and 60% on the training set"
+      "标记邮件中 60% 是垃圾邮件，并找出了全部垃圾邮件的 95%",
+      "它标记为垃圾邮件的判断有 95% 是正确的，但只找出了实际垃圾邮件的 60%",
+      "全部邮件中 95% 分类正确，并找出了垃圾邮件的 60%",
+      "模型在测试集上准确率为 95%，在训练集上为 60%"
     ],
     "correct": 1,
-    "explanation": "Precision = 0.95 means 95% of emails predicted as spam are actually spam (few false alarms). Recall = 0.60 means only 60% of actual spam is caught (40% slips through)."
+    "explanation": "Precision = 0.95 表示预测为垃圾邮件的邮件中，95% 实际是垃圾邮件，误报较少。Recall = 0.60 表示只找出了实际垃圾邮件的 60%，另有 40% 漏过。"
   },
   {
     "id": "logreg-post-3",
     "stage": "post",
-    "question": "In softmax regression for 4 classes, what is true about the output probabilities?",
+    "question": "对于四分类 Softmax 回归，以下关于输出概率的描述哪项正确？",
     "options": [
-      "Only the top-2 classes receive nonzero probabilities",
-      "The outputs are raw scores, not probabilities",
-      "The four output probabilities sum to 1, and the class with the highest probability is the prediction",
-      "Each class gets an independent probability between 0 and 1"
+      "只有排名前 2 的类别获得非零概率",
+      "输出是原始分数，而不是概率",
+      "四个输出概率之和为 1，概率最高的类别就是预测结果",
+      "每个类别获得一个独立的 0 到 1 之间的概率"
     ],
     "correct": 2,
-    "explanation": "Softmax converts a vector of raw scores into probabilities that sum to 1. The predicted class is the one with the highest probability."
+    "explanation": "Softmax 将原始分数向量转换为总和为 1 的概率。概率最高的类别就是预测类别。"
   }
 ]

@@ -1,31 +1,31 @@
 ---
 name: video-vlm-frame-planner
-description: Plan frame sampling, per-frame pooling, output format, and benchmark targets for a video-language model deployment.
+description: 为视频语言模型部署规划帧采样、逐帧池化、输出格式和基准目标。
 version: 1.0.0
 phase: 12
 lesson: 17
 tags: [video-vlm, temporal-grounding, tmrope, dynamic-fps, benchmarks]
 ---
 
-Given a video task (action recognition, temporal grounding, summarization, monitoring, agent-workflow replay) and a deployment constraint (model context, latency budget, throughput), emit a frame sampling and output plan.
+给定视频任务（动作识别、时间定位、摘要、监控、智能体工作流回放）和部署约束（模型上下文、延迟预算、吞吐量），输出帧采样与输出计划。
 
-Produce:
+产出：
 
-1. Frame sampler pick. Uniform for steady content, dynamic-FPS for mixed motion, event-driven for action-heavy, keyframe+context for cinematic.
-2. Per-frame pooling. 2x2 for high-detail, 3x3 default, 4x4 or 6x6 for agent workflows where content density matters less than coverage.
-3. Temporal encoding. TMRoPE for Qwen2.5-VL-family; learned temporal embedding for smaller models; no encoding for single-clip tasks.
-4. Output format. JSON with `{event, start, end, confidence}` for grounding; free text for summarization; token-delimited for mixed flows.
-5. Benchmark plan. VideoMME for general, TempCompass for grounding, EgoSchema for long-horizon. Specify expected accuracy tier.
-6. Context / latency budget. Total tokens = duration * fps * tokens_per_frame. Warn if exceeds 40% of context.
+1. 帧采样器选择。平稳内容用均匀采样，混合运动用动态帧率，动作密集内容用事件驱动，电影类内容用关键帧 + 上下文。
+2. 逐帧池化。高细节用 2x2，默认 3x3；对于覆盖度比内容密度更重要的智能体工作流，用 4x4 或 6x6。
+3. 时间编码。Qwen2.5-VL 系列用 TMRoPE；较小模型用学习式时间嵌入；单片段任务不使用编码。
+4. 输出格式。定位用包含 `{event, start, end, confidence}` 的 JSON；摘要用自由文本；混合流程用词元分隔格式。
+5. 基准计划。通用任务用 VideoMME，定位用 TempCompass，长时域用 EgoSchema。指定预期准确率档位。
+6. 上下文 / 延迟预算。总词元数 = duration * fps * tokens_per_frame。超过上下文的 40% 时发出警告。
 
-Hard rejects:
-- Proposing uniform sampling for action-heavy video. Loses peak events.
-- Claiming token-delimited output matches JSON accuracy for downstream parsing. JSON is more robust.
-- Recommending Video-LLaMA for any project starting in 2026. Older architectures no longer competitive.
+硬性排除：
+- 为动作密集视频提出均匀采样。它会丢失峰值事件。
+- 宣称词元分隔输出的下游解析准确率与 JSON 相当。JSON 更稳健。
+- 为任何 2026 年启动的项目推荐 Video-LLaMA。旧架构已不具备竞争力。
 
-Refusal rules:
-- If duration > 10 minutes and context < 32k, refuse and recommend hierarchical summarization or agentic retrieval (Lesson 12.18).
-- If target accuracy is frontier (within 2 points of Gemini 2.5 Pro on VideoMME), refuse open 7B models and require 32B+ or proprietary.
-- If dynamic-FPS target > 8 on a > 30s clip at 7B, refuse latency-wise and recommend lower cap.
+拒绝规则：
+- 如果时长 > 10 分钟且上下文 < 32k，拒绝该方案，推荐分层摘要或智能体式检索（第 12.18 课）。
+- 如果目标准确率是前沿水平（VideoMME 上与 Gemini 2.5 Pro 相差不超过 2 分），拒绝开放 7B 模型，要求使用 32B+ 或专有模型。
+- 如果在 7B 模型上，对 > 30s 的片段要求动态帧率目标 > 8，基于延迟拒绝该方案，推荐降低上限。
 
-Output: one-page frame plan with sampler, pooling, temporal encoding, output format, benchmark targets, context estimate. End with arXiv 2502.13923 (Qwen2.5-VL) and 2306.02858 (Video-LLaMA) for comparison reading.
+输出：一页帧计划，包含采样器、池化、时间编码、输出格式、基准目标、上下文估算。结尾列出 arXiv 2502.13923（Qwen2.5-VL）和 2306.02858（Video-LLaMA），供比较阅读。

@@ -1,35 +1,35 @@
 ---
 name: minimal-workbench
-description: Lay down the three-file minimum viable agent workbench for any repo — short AGENTS.md router, durable agent_state.json, and a JSON task_board.json keyed to the project's current backlog.
+description: 为任意仓库写入最小可行三文件智能体工作台：简短 AGENTS.md 路由器、持久 agent_state.json，以及对应当前待办清单的 JSON task_board.json。
 version: 1.0.0
 phase: 14
 lesson: 32
 tags: [workbench, agents-md, state, task-board, scaffold]
 ---
 
-Given a repo path and a short backlog, scaffold the minimum viable agent workbench.
+给定仓库路径与简短待办清单，搭建最小可行智能体工作台。
 
-Produce:
+产出：
 
-1. `AGENTS.md` no longer than 80 lines. It must route to: the state file, the task board, the deeper rules doc (even if empty), and the verification command. No prose tutorials in this file.
-2. `agent_state.json` with these keys: `active_task_id`, `touched_files`, `assumptions`, `blockers`, `next_action`. All optional fields default to empty array or empty string, never `null` for arrays.
-3. `task_board.json` as a JSON array of tasks. Each task has `id`, `goal`, `owner` (`builder` | `reviewer` | `human`), `acceptance` (list of strings), and `status` (`todo` | `in_progress` | `done` | `blocked`).
-4. `docs/agent-rules.md` placeholder with a single H2 per surface so later lessons can fill it.
+1. 不超过 80 行的 `AGENTS.md`。必须路由到状态文件、任务板、深层规则文档（即使为空）和验证命令。此文件不写散文式教程。
+2. `agent_state.json` 包含以下键：`active_task_id`、`touched_files`、`assumptions`、`blockers`、`next_action`。所有可选字段默认空数组或空字符串，数组绝不使用 `null`。
+3. `task_board.json` 为任务 JSON 数组。每个任务包含 `id`、`goal`、`owner`（`builder` | `reviewer` | `human`）、`acceptance`（字符串列表）和 `status`（`todo` | `in_progress` | `done` | `blocked`）。
+4. `docs/agent-rules.md` 占位文档，每项工作台支撑能力（Workbench Surfaces）对应一个 H2 标题，供后续课程填充。
 
-Hard rejects:
+必须拒绝的设计：
 
-- `AGENTS.md` over 80 lines or under 10 lines. Too long and the agent skips it; too short and it carries no routing.
-- A state file that references chat history instead of the repo. The repo is the system of record.
-- A task board without `acceptance`. Tasks without acceptance criteria become "looks good" rubber stamps.
-- Tasks whose `owner` is `agent` or `model`. Owners are roles, not entities.
+- `AGENTS.md` 超过 80 行或少于 10 行。过长会被跳过，过短则无法承载路由。
+- 状态文件引用聊天历史而非仓库。仓库才是权威记录系统。
+- 任务板没有 `acceptance`。没有验收标准的任务会变成“看起来不错”的机械批准。
+- 任务的 `owner` 是 `agent` 或 `model`。负责人应是角色，而非实体。
 
-Refusal rules:
+拒绝规则：
 
-- If the repo has no verification command, refuse to write `AGENTS.md` until one is supplied or stubbed. A router pointing at a missing gate is worse than no router.
-- If the backlog has more than 12 open tasks, refuse and ask the user to split it. Boards over a screen drift into planning theater.
-- If the project ships with secrets in tracked files, refuse to write the state file and surface the secret leak as a blocking finding first.
+- 如果仓库没有验证命令，在提供命令或建立桩之前拒绝写入 `AGENTS.md`。指向缺失门禁的路由器比没有路由器更糟。
+- 如果待办清单超过 12 个未完成任务，应拒绝并要求用户拆分。超过一屏的任务板会滑向形式化规划。
+- 如果项目在跟踪文件中携带密钥，应拒绝写状态文件，先将密钥泄漏报告为阻塞性发现。
 
-Output structure:
+输出结构：
 
 ```
 <repo>/
@@ -40,8 +40,8 @@ Output structure:
     └── agent-rules.md
 ```
 
-End with "what to read next" pointing to:
+结尾给出“接下来读什么”，指向：
 
-- Lesson 33 for turning the rules placeholder into executable constraints.
-- Lesson 34 for the durable state schema.
-- Lesson 36 for the scope contract per task.
+- 第 33 课：将规则占位文档变为可执行约束。
+- 第 34 课：持久状态结构定义（Schema）。
+- 第 36 课：每任务范围契约。

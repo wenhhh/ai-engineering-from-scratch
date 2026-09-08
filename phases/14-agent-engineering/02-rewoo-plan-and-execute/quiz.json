@@ -1,90 +1,90 @@
 {
   "lesson": "02-rewoo-plan-and-execute",
-  "title": "ReWOO and Plan-and-Execute: Decoupled Planning",
+  "title": "ReWOO 与先规划后执行：解耦规划（ReWOO and Plan-and-Execute: Decoupled Planning）",
   "questions": [
     {
       "stage": "pre",
-      "question": "Why does ReAct's prompt grow quadratically with depth?",
+      "question": "为什么 ReAct 的提示词总量随深度呈二次增长？",
       "options": [
-        "Each step carries the full prior context including every previous thought and observation",
-        "The model re-tokenizes itself on every step",
-        "Tool schemas are duplicated per call",
-        "The provider charges per byte rather than per token"
+        "每一步都携带完整的先前上下文，包括之前的每次思考和观察",
+        "模型每一步都对自身重新分词",
+        "每次调用都复制工具的结构定义（Schema）",
+        "提供商按字节而不是词元计费"
       ],
       "correct": 0,
-      "explanation": "ReAct re-includes prior thoughts and observations on each step, making total prompt length grow with the square of the depth."
+      "explanation": "ReAct 每一步都会重新包含先前的思考与观察，使提示词总长度随深度的平方增长。"
     },
     {
       "stage": "pre",
-      "question": "What is the three-role split that defines ReWOO?",
+      "question": "定义 ReWOO 的三角色划分是什么？",
       "options": [
-        "Planner, Workers, Solver",
-        "Reader, Writer, Reviewer",
-        "Generator, Critic, Optimizer",
-        "Actor, Evaluator, Reflector"
+        "规划器（Planner）、执行器（Workers）、求解器（Solver）",
+        "阅读者（Reader）、写作者（Writer）、评审者（Reviewer）",
+        "生成器（Generator）、批评器（Critic）、优化器（Optimizer）",
+        "行动者（Actor）、评估器（Evaluator）、反思器（Reflector）"
       ],
       "correct": 0,
-      "explanation": "ReWOO separates a Planner that emits a DAG, Workers that fetch evidence, and a Solver that composes the final answer."
+      "explanation": "ReWOO 将输出 DAG 的规划器、获取证据的执行器和组合最终答案的求解器分开。"
     },
     {
       "stage": "check",
-      "question": "What headline numbers does the paper report for ReWOO vs ReAct on HotpotQA?",
+      "question": "论文报告了 ReWOO 相比 ReAct 在 HotpotQA 上的哪些主要指标？",
       "options": [
-        "10x fewer tokens and -2 accuracy",
-        "~5x fewer tokens and +4 absolute accuracy",
-        "Same tokens and +1 accuracy",
-        "~2x more tokens and +10 accuracy"
+        "词元用量降至 1/10，准确率下降 2 个百分点",
+        "词元用量约降至 1/5，准确率提高 4 个百分点",
+        "词元用量相同，准确率提高 1 个百分点",
+        "词元用量约增至 2 倍，准确率提高 10 个百分点"
       ],
       "correct": 1,
-      "explanation": "ReWOO reports about a 5x token reduction and +4 absolute accuracy on HotpotQA compared to ReAct."
+      "explanation": "ReWOO 报告，相比 ReAct，在 HotpotQA 上的词元用量约降至 1/5，准确率提高了 4 个百分点。"
     },
     {
       "stage": "check",
-      "question": "What does a placeholder like #E1 inside a ReWOO plan node mean?",
+      "question": "ReWOO 计划节点中的 #E1 这类占位符是什么意思？",
       "options": [
-        "A reference substituted at dispatch time with the output of an earlier worker node",
-        "A planner version identifier",
-        "An error code returned by worker 1",
-        "A retry counter for evidence fetching"
+        "引用较早执行器节点的输出，在分派时替换",
+        "规划器版本标识",
+        "执行器 1 返回的错误码",
+        "证据获取的重试计数器"
       ],
       "correct": 0,
-      "explanation": "Plan nodes use evidence references like #E1, #E2 that the executor substitutes with the output of upstream workers."
+      "explanation": "计划节点使用 #E1、#E2 等证据引用，执行器会将其替换为上游执行器的输出。"
     },
     {
       "stage": "check",
-      "question": "Why does ReWOO localize failures better than ReAct?",
+      "question": "为什么 ReWOO 比 ReAct 更便于定位故障？",
       "options": [
-        "The Planner re-emits a fresh DAG after every error",
-        "Workers crash the run on any error",
-        "ReWOO retries every failed call up to ten times",
-        "An error in a worker becomes a string the Solver sees alongside the original plan, so degradation is per-node not per-step"
+        "每次错误后，规划器都会重新输出一个新 DAG",
+        "执行器遇到任何错误都会使整次运行崩溃",
+        "ReWOO 对每次失败调用最多重试十次",
+        "执行器错误变成字符串，求解器结合原始计划查看它，因此按节点而非按步骤降级"
       ],
       "correct": 3,
-      "explanation": "Per-node failure with the original plan in context lets the Solver degrade gracefully rather than reasoning mid-stream out of an error."
+      "explanation": "按节点定位故障，并在上下文中保留原始计划，让求解器能够平稳降级，而不必在执行中途推理如何摆脱错误。"
     },
     {
       "stage": "post",
-      "question": "Which task shape best fits Plan-and-Act over plain ReWOO?",
+      "question": "哪类任务更适合 Plan-and-Act，而不是普通 ReWOO？",
       "options": [
-        "A pure arithmetic question",
-        "A 40-step web or mobile navigation trajectory",
-        "A two-step factoid lookup",
-        "A single-turn classification"
+        "纯算术问题",
+        "40 步的网页或移动端导航轨迹",
+        "两步的事实查询",
+        "单轮分类"
       ],
       "correct": 1,
-      "explanation": "Plan-and-Act is built for long-horizon (over 30 steps) web and mobile agents where a single ReAct trajectory loses coherence."
+      "explanation": "Plan-and-Act 面向长时程（超过 30 步）的网页和移动智能体；在这类任务中，单条 ReAct 轨迹会失去连贯性。"
     },
     {
       "stage": "post",
-      "question": "What does ReWOO's planner distillation result imply for production agents?",
+      "question": "ReWOO 的规划器蒸馏（Planner distillation）结果对生产智能体意味着什么？",
       "options": [
-        "Frontier models must be used at every step",
-        "A small planner (around 7B) can match a large teacher because the planner never sees observations",
-        "Planning quality drops below 7B parameters",
-        "Distillation requires gradient-based RL data"
+        "每一步都必须使用前沿模型",
+        "由于规划器从不接触观察结果，小规划器（约 7B）可以达到大型教师模型的水平",
+        "参数少于 7B 时规划质量会下降",
+        "蒸馏需要基于梯度的强化学习数据"
       ],
       "correct": 1,
-      "explanation": "Because the planner does not see observations, plan traces from a large teacher transfer cleanly to a small fine-tuned planner."
+      "explanation": "由于规划器不接触观察结果，大型教师模型的计划轨迹可以直接迁移到经过微调的小规划器中。"
     }
   ]
 }

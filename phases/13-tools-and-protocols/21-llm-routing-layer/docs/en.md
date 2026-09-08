@@ -1,154 +1,154 @@
-# LLM Routing Layer — LiteLLM, OpenRouter, Portkey
+# LLM 路由层：LiteLLM、OpenRouter、Portkey（LLM Routing Layer）
 
-> Provider lock-in is expensive. Different tool-calling workloads suit different models. Routing gateways give one API surface, retries, failover, cost tracking, and guardrails. Three archetypes dominate 2026: LiteLLM (open-source self-hosted), OpenRouter (managed SaaS), Portkey (production-grade, open-sourced in March 2026). This lesson names the decision criteria and walks a stdlib routing gateway.
+> 提供方锁定代价高昂。不同工具调用工作负载适合不同模型。路由网关提供统一 API、重试、故障转移、成本追踪和防护措施。2026 年由三类方案主导：LiteLLM（开源自托管）、OpenRouter（托管 SaaS）、Portkey（生产级，2026 年 3 月开源）。本课列出决策标准，并演示标准库路由网关。
 
 **Type:** Learn
 **Languages:** Python (stdlib, routing + failover + cost tracker)
-**Prerequisites:** Phase 13 · 02 (function calling), Phase 13 · 17 (gateways)
-**Time:** ~45 minutes
+**Prerequisites:** Phase 13 · 02（函数调用），Phase 13 · 17（网关）
+**Time:** ~45 分钟
 
-## Learning Objectives
+## 学习目标（Learning Objectives）
 
-- Distinguish self-hosted, managed, and production-grade routing options.
-- Implement a fallback chain that retries on provider failures in a defined priority order.
-- Track per-request cost and token usage across providers.
-- Decide between LiteLLM, OpenRouter, and Portkey for a given production constraint.
+- 区分自托管、托管和生产级路由选项。
+- 实现按确定优先顺序在提供方失败时重试的回退链。
+- 跨提供方追踪逐请求成本和词元用量。
+- 根据给定生产约束，在 LiteLLM、OpenRouter 和 Portkey 之间选择。
 
-## The Problem
+## 问题（The Problem）
 
-Scenarios where provider routing matters:
+提供方路由发挥作用的场景：
 
-1. **Cost.** Claude Sonnet costs 3x what Haiku costs. For a triage task, Haiku is enough; for a synthesis task, Sonnet is worth it. Route per-request.
+1. **成本（Cost）。** Claude Sonnet 的成本是 Haiku 的三倍。分诊任务用 Haiku 足够，综合生成任务则值得用 Sonnet。逐请求路由。
 
-2. **Failover.** OpenAI has a bad hour. Every request fails. You want automatic fallback to Anthropic without redeploying.
+2. **故障转移（Failover）。** OpenAI 某个小时出故障，每个请求都失败。你希望无需重新部署就自动回退到 Anthropic。
 
-3. **Latency.** A live chat UI needs fast time-to-first-token. A batch summarizer does not. Route by latency SLA.
+3. **延迟（Latency）。** 实时聊天 UI 需要较短的首词元时间，批量摘要器则不需要。按延迟服务等级协议（SLA）路由。
 
-4. **Compliance.** EU users must stay in EU regions. Route by region.
+4. **合规（Compliance）。** 欧盟用户必须留在欧盟区域。按区域路由。
 
-5. **Experimentation.** A/B two models on the same workload. Route by test bucket.
+5. **实验（Experimentation）。** 在同一工作负载上对两个模型做 A/B 测试。按测试分桶路由。
 
-Hand-coding all of this per integration is repetitive. A routing gateway gives one OpenAI-compatible API and handles the rest.
+每次集成都手写这些逻辑很重复。路由网关提供一个兼容 OpenAI 的 API，并处理其余工作。
 
-## The Concept
+## 概念（The Concept）
 
-### OpenAI-compatible proxy shape
+### 兼容 OpenAI 的代理结构（OpenAI-compatible proxy shape）
 
-Everyone speaks OpenAI-shape. The routing gateway exposes `/v1/chat/completions`, accepts the OpenAI schema, and internally proxies to Anthropic / Gemini / Cohere / Ollama / anything. The client does not care.
+所有人都使用 OpenAI 结构。路由网关公开 `/v1/chat/completions`，接受 OpenAI 模式，内部代理到 Anthropic / Gemini / Cohere / Ollama 或任何其他后端。客户端无需关心。
 
-### Model aliases
+### 模型别名（Model aliases）
 
-Instead of a pinned snapshot id, your code says `our_smart_model`. The gateway maps aliases to real models. When a provider ships a new generation, you change the alias server-side; your code does not touch a thing.
+代码不写固定快照 id，而写 `our_smart_model`。网关将别名映射到真实模型。提供方发布新一代时，只需在服务器端改别名，代码完全不动。
 
-### Fallback chains
+### 回退链（Fallback chains）
 
 ```
-primary: openai/gpt-4o
-on 5xx: anthropic/claude-3-5-sonnet
-on 5xx: google/gemini-1.5-pro
-on 5xx: refuse
+主选: openai/gpt-4o
+遇到 5xx: anthropic/claude-3-5-sonnet
+遇到 5xx: google/gemini-1.5-pro
+遇到 5xx: 拒绝
 ```
 
-Gateways define this in a config. Retries count against a budget so fallback cascades do not explode cost.
+网关在配置中定义它。重试计入预算，防止级联回退导致成本失控。
 
-### Semantic caching
+### 语义缓存（Semantic caching）
 
-Identical-or-near-identical prompts hit a cache instead of the provider. Savings on repeated agent loops can be 30 to 60 percent. Keys are embedding-based; near-identical prompts share a cache slot.
+相同或近乎相同的提示词命中缓存，而不访问提供方。在重复智能体循环上可节省 30% 至 60%。键基于嵌入，近似提示词共享缓存槽。
 
-### Guardrails
+### 防护措施（Guardrails）
 
-Gateway-level:
+网关级措施：
 
-- **PII redaction.** Regex or ML-based pass before sending prompts.
-- **Policy violations.** Reject prompts with prohibited content.
-- **Output filters.** Scrub completions for leaks.
+- **PII 脱敏（PII redaction）。** 发送提示词前使用正则表达式或机器学习处理。
+- **策略违规（Policy violations）。** 拒绝包含禁止内容的提示词。
+- **输出过滤（Output filters）。** 清理补全中的泄露内容。
 
-Portkey and Kong both ship opinionated guardrails. LiteLLM leaves them optional.
+Portkey 和 Kong 都提供带预设取舍的防护措施。LiteLLM 将其保留为可选。
 
-### Per-key rate limits
+### 逐密钥速率限制（Per-key rate limits）
 
-One API key = one team. Per-key budgets prevent one team from consuming the shared quota. Most gateways support this.
+一个 API 密钥对应一个团队。逐密钥预算防止某团队耗尽共享配额。大多数网关支持此功能。
 
-### Self-hosted vs managed trade-offs
+### 自托管与托管的权衡（Self-hosted vs managed trade-offs）
 
-| Factor | LiteLLM (self-hosted) | OpenRouter (managed) | Portkey (production) |
+| 因素 | LiteLLM（自托管） | OpenRouter（托管） | Portkey（生产） |
 |--------|----------------------|----------------------|----------------------|
-| Code | Open source, Python | Managed SaaS | Open source (Mar 2026) + managed |
-| Setup | Deploy a proxy | Sign up | Either |
-| Providers | 100+ | 300+ | 100+ |
-| Billing | Your own keys | OpenRouter credits | Your own keys |
-| Observability | OpenTelemetry | Dashboard | Full OTel + PII redaction |
-| Best for | Teams that want full control | Rapid prototyping | Production with compliance |
+| 代码 | 开源，Python | 托管 SaaS | 开源（2026 年 3 月）+ 托管 |
+| 设置 | 部署代理 | 注册账户 | 两者均可 |
+| 提供方 | 100+ | 300+ | 100+ |
+| 计费 | 自有密钥 | OpenRouter 额度 | 自有密钥 |
+| 可观测性 | OpenTelemetry | 仪表盘 | 完整 OTel + PII 脱敏 |
+| 最适合 | 希望完全控制的团队 | 快速原型 | 有合规要求的生产环境 |
 
-LiteLLM wins when you have an SRE team and want data sovereignty. OpenRouter wins when you want a single subscription and no infra. Portkey wins when you need guardrails and compliance out of the box.
+有 SRE 团队并希望拥有数据主权时，LiteLLM 更适合。希望单一订阅且不管基础设施时，OpenRouter 更适合。需要开箱即用防护与合规时，Portkey 更适合。
 
-### Cost tracking
+### 成本追踪（Cost tracking）
 
-Every request carries `provider`, `model`, `input_tokens`, `output_tokens`. Multiply by per-model per-token prices (pulled from a pricing sheet the gateway maintains). Per-user / per-team / per-project aggregation.
+每个请求携带 `provider`、`model`、`input_tokens`、`output_tokens`。乘以各模型的逐词元价格，价格来自网关维护的价目表。按用户、团队和项目聚合。
 
-### MCP plus routing
+### MCP 加路由（MCP plus routing）
 
-A gateway can route both LLM calls AND MCP sampling requests. When a sampling request's modelPreferences prefer a specific model, the gateway translates to the right backend. This is where Phase 13 · 17 (MCP gateway) and this lesson's routing gateway sometimes merge into one service.
+网关可同时路由 LLM 调用和 MCP 采样请求。当采样请求的 modelPreferences 偏好特定模型时，网关转译到正确后端。Phase 13 · 17 的 MCP 网关和本课路由网关有时在此合并为一个服务。
 
-### Routing strategies
+### 路由策略（Routing strategies）
 
-- **Static priority.** First in list; fall back on error.
-- **Load balancing.** Round-robin or weighted.
-- **Cost-aware.** Pick the cheapest model meeting latency / quality.
-- **Latency-aware.** Pick the fastest model in the last N minutes.
-- **Task-aware.** Prompt classifier routes coding to one model, summarization to another.
+- **静态优先级（Static priority）。** 先用列表第一项，出错回退。
+- **负载均衡（Load balancing）。** 轮询或加权。
+- **成本感知（Cost-aware）。** 选择满足延迟和质量的最便宜模型。
+- **延迟感知（Latency-aware）。** 选择过去 N 分钟最快的模型。
+- **任务感知（Task-aware）。** 提示词分类器将编码路由到一个模型，将摘要路由到另一个。
 
 ```figure
 tp-router-failover
 ```
 
-## Use It
+## 实际应用（Use It）
 
-`code/main.py` implements a routing gateway in ~150 lines: accepts OpenAI-shaped requests, translates to per-provider stubs, runs a priority fallback chain, tracks per-request cost, and applies a PII redaction pass on inputs. Run it with three scenarios: normal request, primary-provider outage triggering fallback, PII leakage caught by redaction.
+`code/main.py` 用约 150 行实现路由网关：接受 OpenAI 结构请求，转换到逐提供方桩实现，运行优先级回退链，追踪逐请求成本，并对输入执行 PII 脱敏。运行三个场景：正常请求、主提供方中断触发回退、PII 泄露被脱敏捕获。
 
-What to look at:
+观察：
 
-- `ROUTES` dict: alias -> priority-ordered list of concrete providers.
-- Fallback loop retries on 5xx.
-- Cost tracker multiplies token usage by per-model rates.
-- PII redactor scrubs SSN-shaped patterns before forwarding.
+- `ROUTES` 字典：别名到按优先顺序排列的具体提供方列表。
+- 回退循环在 5xx 时重试。
+- 成本追踪器将词元用量乘以各模型费率。
+- PII 脱敏器在转发前清理类似美国社会安全号码（SSN）的模式。
 
-## Ship It
+## 交付（Ship It）
 
-This lesson produces `outputs/skill-routing-config-designer.md`. Given a workload profile (latency, cost, compliance), the skill picks LiteLLM / OpenRouter / Portkey and produces a routing config.
+本课生成 `outputs/skill-routing-config-designer.md`。给定延迟、成本和合规工作负载画像，该技能选择 LiteLLM / OpenRouter / Portkey 并生成路由配置。
 
-## Exercises
+## 练习（Exercises）
 
-1. Run `code/main.py`. Trigger the outage scenario; confirm fallback lands on the second provider and cost is attributed correctly.
+1. 运行 `code/main.py`。触发中断场景，确认回退到第二个提供方，且成本归属正确。
 
-2. Add semantic caching: SHA256 of the prompt is a lookup key; cache hits return instantly. Measure cost savings on a repeated call.
+2. 添加语义缓存：提示词的 SHA256 作为查找键，命中时立即返回。测量重复调用的成本节省。
 
-3. Add a prompt classifier that routes "code ..." prompts to an alias favoring intelligence and "summarize ..." prompts to an alias favoring speed.
+3. 添加提示词分类器，将“code ...”提示词路由到偏重智能的别名，将“summarize ...”提示词路由到偏重速度的别名。
 
-4. Design per-team budgets: each team has a monthly spend cap; gateway refuses requests once cap is hit. Pick an enforcement granularity (per-request or windowed).
+4. 设计逐团队预算：每个团队有月度支出上限，达到后网关拒绝请求。选择执行粒度，逐请求或按窗口。
 
-5. Read LiteLLM, OpenRouter, and Portkey docs side by side. Name the one feature each ships that the other two do not.
+5. 并排阅读 LiteLLM、OpenRouter 和 Portkey 文档。分别说出各自提供而另外两者没有的一项功能。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语 | 常见说法 | 实际含义 |
 |------|----------------|------------------------|
-| Routing gateway | "LLM proxy" | One-API-surface layer in front of many providers |
-| OpenAI-compatible | "Speaks the OpenAI schema" | Accepts `/v1/chat/completions` shape, translates to any backend |
-| Model alias | "our_smart_model" | Name in your code that the gateway maps to a concrete model |
-| Fallback chain | "Retry list" | Ordered list of providers attempted on failure |
-| Semantic caching | "Prompt-embedding cache" | Key is embedding of the prompt; near-duplicates share a cache hit |
-| Guardrails | "Input/output filters" | Redact PII, reject policy violations |
-| Per-key rate limit | "Team budget" | Quota scoped to an API key |
-| Cost tracking | "Per-request spend" | Aggregate token usage x price per model |
-| LiteLLM | "The open proxy" | Self-hostable OSS routing gateway |
-| OpenRouter | "The managed SaaS" | Hosted gateway with credit-based billing |
-| Portkey | "The production option" | Open-source + managed with guardrails built in |
+| 路由网关（Routing gateway） | “LLM 代理” | 位于多个提供方之前的统一 API 层 |
+| 兼容 OpenAI（OpenAI-compatible） | “使用 OpenAI 模式” | 接受 `/v1/chat/completions` 结构，转换到任意后端 |
+| 模型别名（Model alias） | “our_smart_model” | 代码中的名称，由网关映射到具体模型 |
+| 回退链（Fallback chain） | “重试列表” | 失败时依次尝试的有序提供方列表 |
+| 语义缓存（Semantic caching） | “提示词嵌入缓存” | 键是提示词嵌入，近似重复共享缓存命中 |
+| 防护措施（Guardrails） | “输入输出过滤器” | 脱敏 PII，拒绝策略违规 |
+| 逐密钥速率限制（Per-key rate limit） | “团队预算” | 限定在 API 密钥范围内的配额 |
+| 成本追踪（Cost tracking） | “逐请求支出” | 聚合词元用量乘各模型价格 |
+| LiteLLM | “开放代理” | 可自托管的开源路由网关 |
+| OpenRouter | “托管 SaaS” | 按额度计费的托管网关 |
+| Portkey | “生产选项” | 开源加托管，内置防护措施 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [LiteLLM — docs](https://docs.litellm.ai/) — self-hosted routing gateway
-- [OpenRouter — quickstart](https://openrouter.ai/docs/quickstart) — managed routing SaaS
-- [Portkey — docs](https://portkey.ai/docs) — production routing with guardrails
-- [TrueFoundry — LiteLLM vs OpenRouter](https://www.truefoundry.com/blog/litellm-vs-openrouter) — decision guide
-- [Relayplane — LLM gateway comparison 2026](https://relayplane.com/blog/llm-gateway-comparison-2026) — vendor survey
+- [LiteLLM：文档](https://docs.litellm.ai/) - 自托管路由网关
+- [OpenRouter：快速入门](https://openrouter.ai/docs/quickstart) - 托管路由 SaaS
+- [Portkey：文档](https://portkey.ai/docs) - 带防护的生产路由
+- [TrueFoundry：LiteLLM 与 OpenRouter](https://www.truefoundry.com/blog/litellm-vs-openrouter) - 决策指南
+- [Relayplane：2026 年 LLM 网关比较](https://relayplane.com/blog/llm-gateway-comparison-2026) - 供应商调查

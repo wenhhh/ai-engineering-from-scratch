@@ -14,54 +14,54 @@
     </style>
   </defs>
 
-  <text x="480" y="26" text-anchor="middle" class="title">the DPO family tree — six preference losses, one closed-form ancestor</text>
+  <text x="480" y="26" text-anchor="middle" class="title">DPO 系列：六种偏好损失，同一个闭式起点</text>
 
   <rect x="340" y="60" width="280" height="80" class="box"/>
-  <text x="480" y="85" text-anchor="middle" class="head">RLHF-with-KL optimum</text>
+  <text x="480" y="85" text-anchor="middle" class="head">带 KL 约束的 RLHF 最优解</text>
   <text x="480" y="108" text-anchor="middle" class="step">pi*(y|x) ∝ pi_ref * exp(r / beta)</text>
-  <text x="480" y="126" text-anchor="middle" class="small">substitute into Bradley-Terry → DPO</text>
+  <text x="480" y="126" text-anchor="middle" class="small">代入 Bradley-Terry → DPO</text>
 
   <rect x="50" y="180" width="200" height="110" class="hot"/>
   <text x="150" y="202" text-anchor="middle" class="head">DPO</text>
   <text x="60" y="224" class="small">-log sig(beta * log(pi/pi_ref)_w</text>
   <text x="60" y="240" class="small">     - beta * log(pi/pi_ref)_l)</text>
-  <text x="60" y="262" class="small">unbounded implicit reward;</text>
-  <text x="60" y="278" class="small">chosen prob can fall.</text>
+  <text x="60" y="262" class="small">隐式奖励（Implicit reward）无界；</text>
+  <text x="60" y="278" class="small">被选中回答的概率可能下降。</text>
 
   <rect x="270" y="180" width="200" height="110" class="cool"/>
   <text x="370" y="202" text-anchor="middle" class="head">IPO</text>
   <text x="280" y="224" class="small">(margin - 1/(2 beta))^2</text>
-  <text x="280" y="246" class="small">bounded gap;</text>
-  <text x="280" y="262" class="small">preference strength</text>
-  <text x="280" y="278" class="small">proportional.</text>
+  <text x="280" y="246" class="small">奖励差距有界；</text>
+  <text x="280" y="262" class="small">差距与偏好强度</text>
+  <text x="280" y="278" class="small">（Preference strength）成正比。</text>
 
   <rect x="490" y="180" width="200" height="110" class="cold"/>
   <text x="590" y="202" text-anchor="middle" class="head">KTO</text>
   <text x="500" y="224" class="small">sigma(beta * log-ratio - z_ref)</text>
-  <text x="500" y="246" class="small">unpaired single-label data;</text>
-  <text x="500" y="262" class="small">loss-averse weight</text>
-  <text x="500" y="278" class="small">on undesirable.</text>
+  <text x="500" y="246" class="small">使用非配对的单标签数据；</text>
+  <text x="500" y="262" class="small">对不期望的输出使用</text>
+  <text x="500" y="278" class="small">损失厌恶（Loss aversion）权重。</text>
 
   <rect x="710" y="180" width="200" height="110" class="dsk"/>
   <text x="810" y="202" text-anchor="middle" class="head">SimPO</text>
-  <text x="720" y="224" class="small">no pi_ref;</text>
-  <text x="720" y="246" class="small">length-normalized</text>
-  <text x="720" y="262" class="small">log pi + margin gamma.</text>
-  <text x="720" y="278" class="small">kills length bias.</text>
+  <text x="720" y="224" class="small">不使用 pi_ref；</text>
+  <text x="720" y="246" class="small">对 log pi 按长度归一化，</text>
+  <text x="720" y="262" class="small">再加间隔 gamma。</text>
+  <text x="720" y="278" class="small">消除长度偏差（Length bias）。</text>
 
   <rect x="270" y="320" width="200" height="110" class="box"/>
   <text x="370" y="342" text-anchor="middle" class="head">ORPO</text>
   <text x="280" y="364" class="small">NLL(y_w) + lambda * OR(w, l)</text>
-  <text x="280" y="386" class="small">single-stage from base;</text>
-  <text x="280" y="402" class="small">no separate SFT checkpoint.</text>
-  <text x="280" y="420" class="small">self-regularized.</text>
+  <text x="280" y="386" class="small">从基础模型开始单阶段训练；</text>
+  <text x="280" y="402" class="small">不需要单独的 SFT 检查点。</text>
+  <text x="280" y="420" class="small">方法自身提供正则化。</text>
 
   <rect x="490" y="320" width="200" height="110" class="hot"/>
   <text x="590" y="342" text-anchor="middle" class="head">BPO (ICLR 2026)</text>
-  <text x="500" y="364" class="small">DPO + anchor penalty on</text>
-  <text x="500" y="386" class="small">decreases of log pi(y_w).</text>
-  <text x="500" y="402" class="small">fixes degraded chosen.</text>
-  <text x="500" y="420" class="small">+10.1% math on L3.1-8B.</text>
+  <text x="500" y="364" class="small">DPO 加锚定惩罚，</text>
+  <text x="500" y="386" class="small">惩罚 log pi(y_w) 的下降。</text>
+  <text x="500" y="402" class="small">修复被选中回答退化的问题。</text>
+  <text x="500" y="420" class="small">L3.1-8B 数学准确率 +10.1%。</text>
 
   <path d="M 480 140 L 150 180" stroke="#888" stroke-width="1" fill="none"/>
   <path d="M 480 140 L 370 180" stroke="#888" stroke-width="1" fill="none"/>
@@ -71,9 +71,9 @@
   <path d="M 150 290 L 590 320" stroke="#888" stroke-width="1" fill="none"/>
 
   <rect x="50" y="460" width="860" height="140" class="box"/>
-  <text x="480" y="484" text-anchor="middle" class="head">choosing among them — 2026</text>
-  <text x="70" y="510" class="small">paired prefs, well-normalized → DPO · length bias visible → SimPO · saturating at high beta → IPO</text>
-  <text x="70" y="530" class="small">unpaired binary feedback → KTO · single-stage base-to-aligned → ORPO · chosen log-prob dropping → BPO</text>
-  <text x="70" y="552" class="small">every lab runs a battery. the optimum is not the same for math reasoning and safety behaviour.</text>
-  <text x="70" y="574" class="small">Rafailov et al. (NeurIPS 2024) prove DAAs still over-optimize — Goodhart does not care which loss you chose.</text>
+  <text x="480" y="484" text-anchor="middle" class="head">如何选择：2026</text>
+  <text x="70" y="510" class="small">偏好配对且归一化良好 → DPO · 长度偏差明显 → SimPO · 高 beta 下饱和 → IPO</text>
+  <text x="70" y="530" class="small">非配对二元反馈 → KTO · 从基础到对齐模型单阶段训练 → ORPO · 被选中回答对数概率下降 → BPO</text>
+  <text x="70" y="552" class="small">每家实验室都会运行一系列测试。数学推理与安全行为的最优选择并不相同。</text>
+  <text x="70" y="574" class="small">Rafailov 等人（NeurIPS 2024）证明 DAA 仍会过度优化；古德哈特现象（Goodhart）不取决于你选择哪种损失。</text>
 </svg>

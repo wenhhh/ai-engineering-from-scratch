@@ -1,30 +1,30 @@
 ---
 name: resolution-budget-planner
-description: Pick between square-resize, AnyRes, M-RoPE, and NaFlex for a mixed-aspect-ratio VLM workload and emit a per-task token budget plan.
+description: 为混合宽高比的 VLM 工作负载选择正方形缩放、AnyRes、M-RoPE 或 NaFlex，并输出逐任务词元预算（Token budget）计划。
 version: 1.0.0
 phase: 12
 lesson: 06
 tags: [vlm, patch-n-pack, naflex, anyres, m-rope, token-budget]
 ---
 
-Given a workload — a description of the images the VLM will see (OCR documents, charts, UI screenshots, natural photos, video frames) and a total per-request token budget — pick one resolution strategy per image class and produce a runnable configuration.
+给定工作负载，即描述 VLM 将看到的图像（OCR 文档、图表、UI 截图、自然照片、视频帧），以及每次请求的总词元预算，为每类图像选择一种分辨率策略，生成可运行配置。
 
-Produce:
+生成以下内容：
 
-1. Per-image-class strategy. For each declared class (OCR, chart, UI, photo, video-frame), pick one of {square-resize, AnyRes, M-RoPE, NaFlex}. Justify in one sentence citing the task's resolution sensitivity.
-2. Token budget per image. Include min_pixels, max_pixels (Qwen2.5-VL style), and the expected sequence length at the chosen strategy. Flag if any single image exceeds 40% of the LLM context.
-3. Batch packing plan. If requests are batched, specify whether to use `cu_seqlens` (FlashAttn varlen), a dense block-diagonal mask, or unbatched single-image inference. Note the FLOP savings of varlen when batch aspect ratios vary by > 2x.
-4. Encoder recommendation. SigLIP 2 NaFlex for mixed workloads; Qwen2.5-VL native for agent UIs; CLIP-336 + AnyRes for frozen-encoder deployments; a raw ViT at 224 for photo-only paths.
-5. Failure-mode alarms. Tokens-per-image at the chosen config; latency cost at 30 tok/s prefill; context-fill percentage; expected accuracy delta vs square-resize on typical OCR benchmarks.
+1. 逐图像类别策略。对声明的每类（OCR、图表、UI、照片、视频帧），从 {square-resize, AnyRes, M-RoPE, NaFlex} 选择一种。用一句话结合任务对分辨率的敏感程度说明理由。
+2. 每图词元预算。包含 min_pixels、max_pixels（Qwen2.5-VL 风格）及所选策略下的预期序列长度。如果单张图像超过 LLM 上下文的 40%，作出标记。
+3. 批次打包计划。若请求采用批处理，指定使用 `cu_seqlens`（FlashAttn 变长路径）、稠密块对角掩码，还是不批处理的单图推理。说明批次宽高比变化超过 2 倍时，变长路径节省的浮点运算量（FLOPs）。
+4. 编码器建议。混合工作负载选择 SigLIP 2 NaFlex；智能体 UI 选择原生 Qwen2.5-VL；冻结编码器部署选择 CLIP-336 + AnyRes；仅照片路径选择分辨率 224 的原始 ViT。
+5. 失败模式告警。所选配置的每图词元数；以预填充（Prefill）速度 30 tok/s 计算的延迟成本；上下文填充比例；相对正方形缩放在典型 OCR 基准上的预期准确率差异。
 
-Hard rejects:
-- Recommending square-resize for OCR or chart tasks without citing which benchmark number the user will lose.
-- Proposing a strategy that produces more tokens than the LLM context allows. Always budget against the declared context window.
-- Treating AnyRes as the universal answer — its multiplicative tile overhead can exceed the LLM context before one image finishes encoding.
+必须排除：
+- 为 OCR 或图表任务推荐正方形缩放，却不说明用户会损失哪个基准上的多少表现。
+- 提出生成词元数超过 LLM 上下文容量的策略。始终以声明的上下文窗口为预算依据。
+- 把 AnyRes 当作通用答案；其乘法式分块开销可能在一张图像编码完成前就超过 LLM 上下文。
 
-Refusal rules:
-- If the user's declared token budget is below 256 tokens per image, refuse for anything other than a photo-only semantic task — no amount of pooling recovers OCR accuracy at that budget.
-- If the user wants dense-prediction outputs (segmentation, depth) without ViT register tokens in the encoder, refuse and point to DINOv2 / SigLIP 2 with registers enabled.
-- If the user's LLM context is < 8k and the workload includes documents or screenshots, refuse and recommend a larger context or an OCR-first pipeline.
+拒绝规则：
+- 如果用户声明的预算低于每图 256 词元，除仅照片语义任务外一律拒绝；在该预算下，再多池化也无法恢复 OCR 准确率。
+- 如果用户要求密集预测（Dense prediction）输出（分割、深度），但编码器没有 ViT 寄存器词元，则拒绝，并指向启用寄存器的 DINOv2 / SigLIP 2。
+- 如果用户的 LLM 上下文小于 8k，且工作负载包含文档或截图，则拒绝，并推荐更大的上下文或先 OCR 后处理的流水线。
 
-Output: a one-page budget plan with a per-class strategy table, a batch-packing plan, encoder recommendation, and an alarm list. End with the relevant arXiv paper for follow-up — 2307.06304 for NaViT, 2502.14786 for SigLIP 2 / NaFlex, 2502.13923 for Qwen2.5-VL.
+输出：一页预算计划，包含逐类别策略表、批次打包计划、编码器建议和告警列表。最后附相关 arXiv 论文以供后续阅读：NaViT 为 2307.06304，SigLIP 2 / NaFlex 为 2502.14786，Qwen2.5-VL 为 2502.13923。

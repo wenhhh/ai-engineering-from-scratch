@@ -1,78 +1,78 @@
 {
   "lesson": "27-skill-evals-packaging-and-portability",
-  "title": "Skill Evals, Packaging, and Portability",
+  "title": "技能评估、打包与可移植性（Skill Evals, Packaging, and Portability）",
   "questions": [
     {
       "stage": "pre",
-      "question": "Which evaluation set best reveals whether a skill description over-triggers in the lesson model?",
+      "question": "哪种评估集最能揭示课程模型中技能描述是否过度触发？",
       "options": [
-        "Clear positive prompts plus semantically close prompts that should remain negative",
-        "Only one successful end-to-end demonstration",
-        "A list of supported file extensions",
-        "Only prompts copied from the skill name"
+        "明确正例，加语义接近但应保持负例的提示词",
+        "仅一次成功端到端演示",
+        "支持文件扩展名列表",
+        "仅从技能名称复制的提示词"
       ],
       "correct": 0,
-      "explanation": "Easy positives measure whether the intended task can trigger. Near-miss negatives measure whether adjacent tasks trigger incorrectly, which is necessary to calculate false positives and precision."
+      "explanation": "简单正例测预期任务能否触发，近似未命中负例测相邻任务是否错误触发，是计算假阳性和精确率所必需。"
     },
     {
       "stage": "check",
-      "question": "A trigger test has 8 true positives and 2 false positives. What is its precision?",
+      "question": "触发测试有 8 个真阳性、2 个假阳性，精确率是多少？",
       "options": [
-        "0.8 recall, but precision cannot be computed",
+        "召回率 0.8，但无法算精确率",
         "0.8",
         "0.2",
         "1.0"
       ],
       "correct": 1,
-      "explanation": "Precision is true positives divided by all predicted positives: 8 / (8 + 2) = 0.8. Recall needs the false-negative count, which this scenario does not provide."
+      "explanation": "精确率是真阳性除以全部预测阳性：8 / (8 + 2) = 0.8。召回率需要本题未提供的假阴性计数。"
     },
     {
       "stage": "check",
-      "question": "Why compare baseline and with-skill artifacts using the same assertions?",
+      "question": "为什么用相同断言比较基线和使用技能制品？",
       "options": [
-        "To guarantee the skill works in every host",
-        "To remove the need for trigger tests",
-        "To let the skill modify the expected result during evaluation",
-        "To measure whether the skill improves the task output rather than merely activating"
+        "保证技能在所有宿主有效",
+        "消除触发测试需要",
+        "让技能在评估中修改预期结果",
+        "测量技能是否改善任务输出，而非只是激活"
       ],
       "correct": 3,
-      "explanation": "Activation is not the outcome. A shared artifact contract tests whether loading the skill changes required headings, evidence, schema, or forbidden content while keeping the measurement comparable to baseline."
+      "explanation": "激活不是结果。共享制品契约测试加载技能是否改变必需标题、证据、模式或禁止内容，同时与基线保持可比。"
     },
     {
       "stage": "check",
-      "question": "A host loads SKILL.md but drops `references/` and `scripts/` during installation. How should a portability matrix classify a bundle that requires both?",
+      "question": "宿主加载 SKILL.md，却在安装时丢弃 `references/` 和 `scripts/`。需要两者的包应如何分类？",
       "options": [
-        "Native, because the frontmatter loaded",
-        "Adapter required, with the missing companion-file and script capabilities listed",
-        "Unsupported, even if an adapter could preserve files",
-        "Guaranteed portable after renaming the directory"
+        "原生支持，因为前置元数据加载了",
+        "需要适配器，并列出缺失配套文件和脚本能力",
+        "即使适配器可保留文件也不支持",
+        "重命名目录后保证可移植"
       ],
       "correct": 1,
-      "explanation": "The host understands the core file, so it is not wholly unsupported. It still cannot satisfy the package's declared requirements natively, and the matrix should name the exact adapter work instead of flattening portability to yes or no."
+      "explanation": "宿主理解核心文件，不是完全不支持，但不能原生满足包要求。矩阵应点明适配器工作，而非将可移植性压成是或否。"
     },
     {
       "stage": "post",
-      "question": "What does a repeated-run rate add beyond one passing trigger evaluation?",
+      "question": "重复运行比率比一次通过的触发评估增加什么？",
       "options": [
-        "A replacement for structural package lint",
-        "Permission for the skill to execute bundled scripts",
-        "Evidence about consistency across multiple executions of each case",
-        "A universal host invocation command"
+        "替代结构检查",
+        "授予执行包内脚本权限",
+        "每个案例多次执行一致性的证据",
+        "通用宿主调用命令"
       ],
       "correct": 2,
-      "explanation": "A single run can hide nondeterminism. Per-case repeated-run rates reveal flaky activation or artifact production, while structural lint, runtime permissions, and host adapters remain separate concerns."
+      "explanation": "单次运行可隐藏不确定性。逐案例重复比率揭示不稳定激活或制品生成；结构检查、运行时权限和宿主适配器仍是独立关注点。"
     },
     {
       "stage": "post",
-      "question": "Which release gate is most complete for an Agent Skill bundle?",
+      "question": "哪个 Agent Skill 包发布门槛最完整？",
       "options": [
-        "The bundle has many reference files and a long description",
-        "The skill works on the author's machine without a baseline",
-        "SKILL.md exists and one positive prompt activates it",
-        "All six layers pass, local captured-mode values have matching source-bound digests, and an out-of-bundle trusted attestation binds the complete evidence root"
+        "包有很多参考文件和长描述",
+        "在作者机器有效，没有基线",
+        "SKILL.md 存在，一个正例激活",
+        "六层全部通过，本地捕获模式值有匹配的来源绑定摘要，且包外可信证明绑定完整证据根"
       ],
       "correct": 3,
-      "explanation": "The six layers are package structure; trigger routing with precision, recall, and repeated-run stability; instruction and artifact behavior; script correctness; safety and authority; and packaging plus portability, including a manifest-verified clean install. Every layer must pass. Source-bound local digests detect mismatches but can be recomputed with relabeled fixtures, so production readiness also requires an external attestation whose exact trusted SHA-256 binds the complete evidence root."
+      "explanation": "六层是包结构；带精确率、召回率和重复稳定性的触发路由；指令与制品行为；脚本正确性；安全与权限；含清单验证干净安装的打包和可移植性。每层都必须通过。来源绑定本地摘要检测不匹配，但可随重新标记夹具重算，因此生产就绪还需要精确信任 SHA-256 绑定完整证据根的外部证明。"
     }
   ]
 }

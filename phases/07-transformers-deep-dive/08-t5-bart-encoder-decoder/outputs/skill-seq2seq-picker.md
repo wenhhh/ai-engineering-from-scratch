@@ -1,18 +1,18 @@
 ---
 name: seq2seq-picker
-description: Choose encoder-decoder vs decoder-only for a new sequence-to-sequence task.
+description: 为新的序列到序列任务选择编码器—解码器或仅解码器。
 version: 1.0.0
 phase: 7
 lesson: 8
 tags: [transformers, t5, bart, seq2seq]
 ---
 
-Given a seq2seq task (translation / summarization / speech-to-text / structured extraction / rewrite), input and output length distributions, and quality vs latency priorities, output:
+给定序列到序列（Sequence-to-Sequence，Seq2seq）任务（翻译、摘要、语音转文本、结构化抽取、改写）、输入输出长度分布，以及质量与延迟优先级，输出：
 
-1. Architecture. One of: encoder-decoder (T5 / BART / Whisper-style), decoder-only instruction-tuned, encoder-only + prompt template. One-sentence reason.
-2. Pretraining objective. Span corruption (T5), denoising (BART), next-token (decoder-only), or "skip pretraining, fine-tune existing checkpoint." Name the checkpoint.
-3. Input formatting. Task prefix string (T5 style) vs system prompt (decoder-only) vs raw tokens (BART). Include BOS/EOS handling.
-4. Decoding strategy. Beam search width and length penalty (translation/summary), or nucleus/min-p (chat-like tasks). State which for the task.
-5. Eval. Task-appropriate metric: BLEU / ROUGE / WER / F1 / exact match. Include test split size.
+1. 架构。从编码器—解码器（T5 / BART / Whisper 式）、指令微调的仅解码器、仅编码器与提示模板组合中选择。用一句话说明理由。
+2. 预训练目标。片段破坏（T5）、去噪（BART）、下一词元预测（仅解码器），或“跳过预训练，微调现有检查点”。指明检查点。
+3. 输入格式。任务前缀字符串（T5 式）、系统提示词（仅解码器）或原始词元（BART）。包括序列起始/结束（BOS/EOS）处理。
+4. 解码策略。束搜索宽度与长度惩罚（翻译/摘要），或核采样/min-p（类聊天任务）。指明本任务采用哪种。
+5. 评估。适合任务的指标：BLEU / ROUGE / 词错误率（Word Error Rate，WER）/ F1 / 精确匹配。包括测试集大小。
 
-Refuse to recommend encoder-only for generative outputs. Refuse to recommend encoder-decoder when the input is already a conversation — decoder-only fits conversation memory naturally. Flag any choice of decoder-only for speech-to-text without mentioning Whisper as the baseline to beat.
+拒绝为生成式输出推荐仅编码器。当输入已经是对话时，拒绝推荐编码器—解码器，因为仅解码器天然适合对话记忆。若语音转文本选择仅解码器，却未提及必须超越的 Whisper 基线，予以标明。

@@ -1,4 +1,4 @@
-"""Tests for current MCP authorization and stateless requests."""
+"""当前 MCP 授权与无状态请求的测试。"""
 
 from __future__ import annotations
 

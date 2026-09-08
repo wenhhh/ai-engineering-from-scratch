@@ -1,77 +1,77 @@
 ---
 name: prompt-tensor-debugger
-description: Step-by-step debugging prompt for tensor shape errors in deep learning code
+description: 用于逐步调试深度学习代码中张量形状错误的提示词
 phase: 1
 lesson: 12
 ---
 
-I have a tensor shape error in my deep learning code. Help me fix it.
+我的深度学习代码出现了张量（Tensor）形状错误。请帮我修复。
 
-**Error message:** [paste the error here]
+**错误消息：** [在此粘贴错误]
 
-**My tensor shapes:**
-- [name]: [shape]
-- [name]: [shape]
+**我的张量形状：**
+- [名称]: [形状]
+- [名称]: [形状]
 
-**The operation I'm trying to do:** [describe it]
+**我尝试执行的运算：** [描述运算]
 
 ---
 
-When debugging, follow this exact process:
+调试时严格按照以下流程：
 
-**Step 1: Identify the operation type.**
-What operation produced the error? Map it to one of these:
-- Matrix multiply / Linear layer (inner dimensions must match)
-- Broadcasting (align from right, each dim must be equal or 1)
-- Concatenation (all dims match except the cat dimension)
-- Convolution (expects specific rank and channel position)
-- Reshape (total elements must be preserved)
+**第 1 步：识别运算类型。**
+哪种运算产生了错误？将其归入以下类型之一：
+- 矩阵乘法 / 线性层（内部维度必须匹配）
+- 广播（Broadcasting，从右对齐，各对应维度必须相等或为 1）
+- 拼接（Concatenation，除拼接维度外，所有维度都匹配）
+- 卷积（Convolution，要求特定的阶数与通道位置）
+- 重塑（Reshape，必须保持元素总数不变）
 
-**Step 2: Write out the shape contract.**
-For the identified operation, write the expected shapes explicitly:
+**第 2 步：写出形状约束（Shape Contract）。**
+针对识别出的运算，明确写出预期形状：
+```text
+matmul(A, B): A 为 (..., m, k)，B 为 (..., k, n) -> (..., m, n)
+broadcast(A, B): 右对齐，每对维度必须（相等）或（其中一个为 1）
+cat([A, B], dim=d): 除维度 d 外，所有维度都匹配
+Linear(in_f, out_f): 输入的最后一维必须等于 in_f
+Conv2d(in_c, out_c, k): 输入必须为 (B, in_c, H, W)
 ```
-matmul(A, B): A is (..., m, k), B is (..., k, n) -> (..., m, n)
-broadcast(A, B): align right, each pair must be (equal) or (one is 1)
-cat([A, B], dim=d): all dims match except dim d
-Linear(in_f, out_f): input last dim must equal in_f
-Conv2d(in_c, out_c, k): input must be (B, in_c, H, W)
-```
 
-**Step 3: Find the mismatch.**
-Compare actual shapes against the contract. Identify the exact dimension that violates the rule.
+**第 3 步：找出不匹配之处。**
+将实际形状与约束对比，找出违反规则的具体维度。
 
-**Step 4: Choose the minimal fix.**
-Pick from this table:
+**第 4 步：选择最小修复方案。**
+从下表中选择：
 
-| Symptom | Fix |
+| 症状 | 修复方案 |
 |---|---|
-| Missing batch dimension | `.unsqueeze(0)` |
-| Missing channel dimension | `.unsqueeze(1)` |
-| Extra size-1 dimension | `.squeeze(dim)` |
-| Inner dims wrong for matmul | `.transpose(-1, -2)` or check weight shape |
-| Need NCHW from NHWC | `.permute(0, 3, 1, 2)` |
-| Need NHWC from NCHW | `.permute(0, 2, 3, 1)` |
-| Flatten spatial dims for linear | `.flatten(1)` or `.reshape(B, -1)` |
-| Split heads: (B,T,D) to (B,H,T,D/H) | `.reshape(B, T, H, D//H).transpose(1, 2)` |
-| Merge heads: (B,H,T,D/H) to (B,T,D) | `.transpose(1, 2).reshape(B, T, H*(D//H))` |
-| Non-contiguous tensor with .view() | `.contiguous().view(...)` or use `.reshape(...)` |
+| 缺少批量维 | `.unsqueeze(0)` |
+| 缺少通道维 | `.unsqueeze(1)` |
+| 多余的大小为 1 的维度 | `.squeeze(dim)` |
+| matmul 的内部维度错误 | `.transpose(-1, -2)` 或检查权重形状 |
+| 需要将 NHWC 转为 NCHW | `.permute(0, 3, 1, 2)` |
+| 需要将 NCHW 转为 NHWC | `.permute(0, 2, 3, 1)` |
+| 为线性层展平空间维度 | `.flatten(1)` 或 `.reshape(B, -1)` |
+| 拆分注意力头：(B,T,D) 转为 (B,H,T,D/H) | `.reshape(B, T, H, D//H).transpose(1, 2)` |
+| 合并注意力头：(B,H,T,D/H) 转为 (B,T,D) | `.transpose(1, 2).reshape(B, T, H*(D//H))` |
+| 对非连续张量调用 .view() | `.contiguous().view(...)` 或使用 `.reshape(...)` |
 
-**Step 5: Verify the fix.**
-Show the resulting shapes at each step. Confirm total elements are preserved across any reshape. Confirm the operation's shape contract is now satisfied.
+**第 5 步：验证修复。**
+展示每一步的结果形状。确认所有重塑操作都保持元素总数不变，并确认现在已经满足运算的形状约束。
 
-**Step 6: Check for silent bugs.**
-Even if shapes match, verify:
-- Broadcasting is happening along the intended axis (not accidentally)
-- Reduction is summing over the right dimension
-- The batch dimension (dim 0) survives through the entire forward pass
-- Transpose + reshape is used (not just reshape) when dimension ordering matters
+**第 6 步：检查静默错误。**
+即使形状匹配，也要验证：
+- 广播沿预期的轴发生，而不是意外广播
+- 归约（Reduction）沿正确维度求和
+- 批量维（维度 0）在整个前向传播中保留
+- 当维度顺序重要时，使用了 transpose + reshape，而不只是 reshape
 
-Format your response as:
-```
-OPERATION: [what operation failed]
-EXPECTED: [shape contract]
-ACTUAL: [what shapes were provided]
-MISMATCH: [which dimension, why]
-FIX: [exact code]
-RESULT: [shapes after fix]
+按以下格式回答：
+```text
+运算: [哪种运算失败]
+预期: [形状约束]
+实际: [提供了哪些形状]
+不匹配: [哪个维度，原因是什么]
+修复: [确切代码]
+结果: [修复后的形状]
 ```

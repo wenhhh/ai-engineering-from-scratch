@@ -1,22 +1,22 @@
 {
   "lesson": "72-code-exec-metric",
-  "title": "Code Exec Metric",
+  "title": "代码执行指标（Code Exec Metric）",
   "questions": [
     {
       "stage": "pre",
-      "question": "Why does the runner spawn a fresh Python subprocess per candidate rather than calling exec inline?",
+      "question": "为什么每个候选启动新 Python 子进程，而不内联调用 exec？",
       "options": [
-        "It avoids polluting builtins",
-        "exec is deprecated in modern Python",
-        "It is faster than exec",
-        "It isolates timeouts, output overruns, and dangerous imports from the host eval process"
+        "避免污染内置对象",
+        "现代 Python 已弃用 exec",
+        "比 exec 更快",
+        "将超时、输出超限和危险导入与宿主评估进程隔离"
       ],
       "correct": 3,
-      "explanation": "An infinite loop or runaway memory allocation in candidate code crashes only the subprocess. The host eval keeps making progress."
+      "explanation": "候选代码中的无限循环或失控内存分配只使子进程崩溃，宿主评估仍能继续推进。"
     },
     {
       "stage": "pre",
-      "question": "What is the score for a task with three assertions when two pass and one fails?",
+      "question": "三条断言中两条通过、一条失败，任务得分是多少？",
       "options": [
         "0.667",
         "1.0",
@@ -24,11 +24,11 @@
         "0.5"
       ],
       "correct": 0,
-      "explanation": "Score is passed divided by total. Two of three is 0.667. The exit code is assertion_fail."
+      "explanation": "分数为通过数除以总数。三条中的两条为 0.667，退出码为 assertion_fail。"
     },
     {
       "stage": "check",
-      "question": "Which exit code does the runner return when the candidate code does not parse?",
+      "question": "候选代码无法解析时，运行器返回哪种退出码？",
       "options": [
         "syntax_error",
         "error",
@@ -36,43 +36,43 @@
         "assertion_fail"
       ],
       "correct": 0,
-      "explanation": "compile() raises SyntaxError inside the runner, the inner script catches it and writes exit_code=syntax_error."
+      "explanation": "运行器内 compile() 抛出 SyntaxError，内部脚本捕获并写入 exit_code=syntax_error。"
     },
     {
       "stage": "check",
-      "question": "Why is wall-clock timeout the load-bearing control rather than the import denylist?",
+      "question": "为何实际时间超时而非导入拒绝列表是核心控制？",
       "options": [
-        "Imports cannot be denied in Python",
-        "subprocess.run does not support denylists",
-        "Most failures are infinite loops, and a determined adversary can bypass any in-process denylist",
-        "Wall-clock is checked at compile time"
+        "Python 无法拒绝导入",
+        "subprocess.run 不支持拒绝列表",
+        "多数失败是无限循环，而有决心的攻击者可绕过任何进程内拒绝列表",
+        "编译时检查实际时间"
       ],
       "correct": 2,
-      "explanation": "Denylists catch lazy code, timeouts catch infinite loops. The denylist is a backstop, the timeout is the floor."
+      "explanation": "拒绝列表拦住简单代码，超时拦住无限循环。拒绝列表是后备，超时是基础。"
     },
     {
       "stage": "check",
-      "question": "What does pass_at_k(n, c, k) return when n - c < k?",
+      "question": "n - c < k 时 pass_at_k(n, c, k) 返回什么？",
       "options": [
-        "One, because the sample must contain at least one passing solution",
-        "c / n, the empirical pass rate",
-        "Zero, because the sample is undefined",
-        "Raises ValueError"
+        "一，因为样本必含至少一个通过解",
+        "c / n，即经验通过率",
+        "零，因为样本未定义",
+        "抛出 ValueError"
       ],
       "correct": 0,
-      "explanation": "If there are fewer fails than the sample size, every sample of size k necessarily includes at least one pass, so the probability is 1."
+      "explanation": "失败数少于样本大小时，每个大小为 k 的样本都必含至少一个通过项，因此概率为 1。"
     },
     {
       "stage": "post",
-      "question": "How does the runner surface an output overflow, and why is the cap 256 KB?",
+      "question": "运行器如何呈现输出溢出，为何上限为 256 KB？",
       "options": [
-        "Stderr only; size matches the OS pipe default",
-        "The score value, expressed as a percentage with two decimals",
-        "Stdout from the subprocess is streamed; once the 256 KB running total is crossed the child is killed and the task is recorded as exit_code=error with detail \"output overflow\"",
-        "The candidate source size, capped so generated code stays small"
+        "只写标准错误；大小匹配操作系统管道默认值",
+        "用保留两位小数的百分比分数值表示",
+        "流式读取子进程标准输出；累计超过 256 KB 就杀掉子进程，将任务记为 exit_code=error，详情为 \"output overflow\"",
+        "限制候选源代码大小，使生成代码保持短小"
       ],
       "correct": 2,
-      "explanation": "The cap protects the host. Candidate code that floods stdout gets killed mid-stream; the runner normalises the result under exit_code=error with detail \"output overflow\" rather than minting a new exit code."
+      "explanation": "上限保护宿主。淹没标准输出的候选会在流式处理中被杀掉；运行器将结果归一化为 exit_code=error、详情 \"output overflow\"，而非另造退出码。"
     }
   ]
 }

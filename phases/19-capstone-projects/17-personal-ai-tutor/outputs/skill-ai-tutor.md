@@ -1,47 +1,47 @@
 ---
 name: ai-tutor
-description: Ship an adaptive multimodal personal tutor for a specific subject with Bayesian knowledge tracing, a curriculum graph, safety filters, and a measured two-week efficacy study.
+description: 交付特定学科的自适应多模态个人导师，具备贝叶斯知识追踪、课程图谱、安全过滤，并进行两周效果研究测量。
 version: 1.0.0
 phase: 19
 lesson: 17
 tags: [capstone, tutor, adaptive, bkt, fsrs, livekit, multimodal, coppa]
 ---
 
-Given a subject (K-12 algebra or intro Python), build a personal tutor with text + voice + photo-math input, Bayesian knowledge tracing learner model, curriculum-graph-driven concept selection, COPPA-aware memory, and safety filters. Run a two-week efficacy study with 10 learners.
+给定学科（K-12 代数或 Python 入门），构建个人导师，具备文本、语音、数学题拍照输入，贝叶斯知识追踪（Bayesian Knowledge Tracing，BKT）学习者模型，课程图谱驱动概念选择，考虑 COPPA 的记忆与安全过滤。让 10 名学习者参加两周效果研究。
 
-Build plan:
+构建计划（Build Plan）：
 
-1. Curriculum graph in Neo4j: 50-150 concept nodes with prerequisite edges and attached OER content (OpenStax, Open Textbook).
-2. Learner model: Bayesian knowledge tracing with priors for guess/slip/learn-rate per concept; per-learner persisted state.
-3. Tutor policy (LangGraph over Claude Sonnet 4.7 with prompt caching): read_signal -> select_concept (graph walk) -> scaffold (Socratic) -> update_mastery.
-4. Memory: agentmemory-style persistent episodic + semantic store; COPPA-aware auto-delete after 1 year; parent-accessible deletion.
-5. Voice: LiveKit Agents worker with Whisper-v3-turbo ASR and Cartesia Sonic-2 TTS; reuse capstone 03 pipeline.
-6. Photo math: dots.ocr or PaliGemma 2 for equation recognition; feed structured input to the tutor.
-7. Safety: Llama Guard 4 input/output; age-appropriate filter blocking self-harm/adult/violence; learner-scoped memory isolation.
-8. Weekly PDF progress reports per learner.
-9. Efficacy study: 10 learners, pre-test (standardized 30-question baseline), 2 weeks of sessions (3/week), post-test; compare against non-adaptive linear cohort.
+1. Neo4j 课程图谱（Curriculum Graph）：50–150 个概念节点，附先修边与开放教育资源（Open Educational Resources，OER）内容，如 OpenStax、Open Textbook。
+2. 学习者模型（Learner Model）：BKT 使用逐概念猜测／失误／学习率先验；逐学习者持久保存状态。
+3. 导师策略（Tutor Policy，LangGraph 调用 Claude Sonnet 4.7，启用提示词缓存）：read_signal -> select_concept（图遍历）-> scaffold（苏格拉底式）-> update_mastery。
+4. 记忆（Memory）：agentmemory 风格持久情景与语义存储；考虑 COPPA，一年后自动删除；家长可操作删除。
+5. 语音：LiveKit Agents 工作者，采用 Whisper-v3-turbo ASR 和 Cartesia Sonic-2 TTS；复用综合实践 03 流水线。
+6. 数学题拍照：dots.ocr 或 PaliGemma 2 识别方程，将结构化输入交给导师。
+7. 安全：Llama Guard 4 处理输入／输出；适龄过滤器阻断自伤、成人内容、暴力；按学习者隔离记忆。
+8. 逐学习者每周生成 PDF 进度报告。
+9. 效果研究（Efficacy Study）：10 名学习者，标准化 30 题前测基线，两周每周 3 次交互，随后后测；与非自适应线性教学组比较。
 
-Assessment rubric:
+评估标准（Assessment Rubric）：
 
-| Weight | Criterion | Measurement |
+| 权重 | 标准 | 衡量方式 |
 |:-:|---|---|
-| 25 | Learning gain delta | Pre/post-test delta in the 10-learner 2-week study |
-| 20 | Socratic fidelity | Rubric score on transcript samples |
-| 20 | Multimodal UX | Voice + photo + text coherence end to end |
-| 20 | Safety + privacy posture | Llama Guard 4 pass rate + COPPA-aware retention + cross-learner isolation |
-| 15 | Curriculum breadth and graph quality | Concept coverage + prerequisite graph consistency |
+| 25 | 学习增益变化 | 10 学习者两周研究的前后测变化 |
+| 20 | 苏格拉底式忠实度（Socratic Fidelity） | 对交互记录样本按标准评分 |
+| 20 | 多模态用户体验（UX） | 语音、照片、文本端到端连贯性 |
+| 20 | 安全与隐私保障 | Llama Guard 4 通过率 + 考虑 COPPA 的保留策略 + 学习者间隔离 |
+| 15 | 课程广度与图谱质量 | 概念覆盖 + 先修图一致性 |
 
-Hard rejects:
+直接判定不合格的情况（Hard Rejects）：
 
-- Tutor policies that answer-dump instead of asking the next question. Socratic is a hard requirement.
-- Learner models that do not update per interaction. BKT is a floor.
-- Memory without COPPA-aware retention. Unacceptable for a K-12 audience.
-- Efficacy claims without a non-adaptive baseline cohort.
+- 导师直接倾倒答案，而非提出下一问题。苏格拉底式是硬性要求。
+- 学习者模型不逐交互更新。BKT 是最低要求。
+- 记忆没有考虑 COPPA 的保留策略，对 K-12 用户不可接受。
+- 声称有效，却没有非自适应基线组。
 
-Refusal rules:
+拒绝规则（Refusal Rules）：
 
-- Refuse to deploy without Llama Guard 4 on both input and output.
-- Refuse to persist learner data without a parent-accessible deletion surface.
-- Refuse to claim "adaptive" without running the non-adaptive baseline alongside.
+- 输入与输出未同时使用 Llama Guard 4 时，拒绝部署。
+- 没有家长可用删除入口时，拒绝持久保存学习者数据。
+- 未同时运行非自适应基线时，拒绝声称“自适应”。
 
-Output: a repo containing the curriculum graph, the BKT learner model, the LangGraph tutor policy, the multimodal input handlers, the LiveKit voice pipeline, the safety pipeline, the parental dashboard, the efficacy-study runner, the pre/post test harness, and a write-up documenting the learning gain delta versus the linear baseline with confidence intervals.
+输出：一个仓库，包含课程图谱、BKT 学习者模型、LangGraph 导师策略、多模态输入处理器、LiveKit 语音流水线、安全流水线、家长仪表盘、效果研究运行器、前后测框架，以及记录相对线性基线学习增益并附置信区间（Confidence Interval）的报告。

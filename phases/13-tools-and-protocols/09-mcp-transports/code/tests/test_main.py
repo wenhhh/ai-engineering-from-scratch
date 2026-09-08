@@ -225,7 +225,7 @@ class StreamableHttpTests(unittest.TestCase):
                 allow = exc.headers.get("Allow")
                 exc.close()
             else:
-                self.fail(f"{method} unexpectedly succeeded")
+                self.fail(f"{method} 意外成功")
             self.assertEqual(status, 405)
             self.assertEqual(allow, "POST")
 

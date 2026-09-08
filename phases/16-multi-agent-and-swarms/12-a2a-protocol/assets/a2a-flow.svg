@@ -16,23 +16,23 @@
       .edge { stroke: #1a1a1a; stroke-width: 1.2; fill: none; }
     </style>
   </defs>
-  <text x="450" y="28" text-anchor="middle" class="title">A2A protocol — agent-to-agent discovery, task, artifact</text>
+  <text x="450" y="28" text-anchor="middle" class="title">A2A 协议：智能体间发现、任务与交付物</text>
 
   <rect x="40" y="60" width="180" height="380" class="cool"/>
-  <text x="130" y="82" text-anchor="middle" class="head">Client Agent</text>
-  <text x="130" y="104" text-anchor="middle" class="small">LangGraph? CrewAI? custom?</text>
-  <text x="130" y="124" text-anchor="middle" class="small">doesn't matter to A2A</text>
+  <text x="130" y="82" text-anchor="middle" class="head">客户端智能体</text>
+  <text x="130" y="104" text-anchor="middle" class="small">LangGraph？CrewAI？自定义？</text>
+  <text x="130" y="124" text-anchor="middle" class="small">对 A2A 并不重要</text>
 
   <rect x="680" y="60" width="180" height="380" class="hot"/>
-  <text x="770" y="82" text-anchor="middle" class="head">Remote Agent</text>
+  <text x="770" y="82" text-anchor="middle" class="head">远程智能体</text>
   <text x="770" y="104" text-anchor="middle" class="small">code-review-agent</text>
-  <text x="770" y="124" text-anchor="middle" class="small">opaque implementation</text>
+  <text x="770" y="124" text-anchor="middle" class="small">不透明实现</text>
 
   <line x1="220" y1="160" x2="680" y2="160" class="edge" marker-end="url(#arrow)"/>
   <text x="450" y="152" text-anchor="middle" class="small">GET /.well-known/agent.json</text>
 
   <line x1="680" y1="200" x2="220" y2="200" class="edge" marker-end="url(#arrow)"/>
-  <text x="450" y="192" text-anchor="middle" class="small">Agent Card: skills, endpoints, auth, modalities</text>
+  <text x="450" y="192" text-anchor="middle" class="small">智能体卡片：技能、端点、认证、模态</text>
 
   <line x1="220" y1="240" x2="680" y2="240" class="edge" marker-end="url(#arrow)"/>
   <text x="450" y="232" text-anchor="middle" class="small">POST /tasks {skill: review-python, payload: {...}}</text>
@@ -41,15 +41,15 @@
   <text x="450" y="272" text-anchor="middle" class="small">201 task_id=baf1fc13, state=submitted</text>
 
   <line x1="220" y1="320" x2="680" y2="320" class="edge" marker-end="url(#arrow)"/>
-  <text x="450" y="312" text-anchor="middle" class="small">GET /tasks/baf1fc13 (poll)</text>
+  <text x="450" y="312" text-anchor="middle" class="small">GET /tasks/baf1fc13（轮询）</text>
 
   <line x1="680" y1="360" x2="220" y2="360" class="edge" marker-end="url(#arrow)"/>
   <text x="450" y="352" text-anchor="middle" class="small">state=completed, artifact={type: structured, data: {...}}</text>
 
   <rect x="250" y="395" width="400" height="40" class="cold"/>
-  <text x="450" y="420" text-anchor="middle" class="small">lifecycle: submitted → working → completed / failed / canceled</text>
+  <text x="450" y="420" text-anchor="middle" class="small">生命周期：submitted → working → completed / failed / canceled</text>
 
   <rect x="40" y="460" width="820" height="50" class="box"/>
-  <text x="450" y="482" text-anchor="middle" class="head">A2A (horizontal, agent↔agent) vs MCP (vertical, agent↔tool) — production uses both</text>
-  <text x="450" y="500" text-anchor="middle" class="small">150+ orgs by April 2026 · Google Vertex AI Agent Builder · Microsoft Agent Framework · LangGraph / CrewAI / AutoGen adapters</text>
+  <text x="450" y="482" text-anchor="middle" class="head">A2A（横向，智能体↔智能体）与 MCP（纵向，智能体↔工具）：生产中两者并用</text>
+  <text x="450" y="500" text-anchor="middle" class="small">截至 2026 年 4 月有 150+ 组织 · Google Vertex AI Agent Builder · Microsoft Agent Framework · LangGraph / CrewAI / AutoGen 适配器</text>
 </svg>

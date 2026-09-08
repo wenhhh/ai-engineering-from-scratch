@@ -2,38 +2,63 @@
   "questions": [
     {
       "stage": "pre",
-      "question": "Why does SimCLR need batch sizes of 512-8192 while supervised ImageNet training works with batch 256?",
-      "options": ["Each sample needs many negative examples to produce a useful contrastive signal; the batch itself is the pool of negatives. Small batches starve the InfoNCE loss of negatives and training collapses or stalls", "Batch norm requires it", "Contrastive loss divides by batch size", "SimCLR is slower"],
+      "question": "为什么 SimCLR 需要 512-8192 的批量大小，而监督式 ImageNet 训练使用 256 就能工作？",
+      "options": [
+        "每个样本需要很多负样本才能产生有用的对比信号，批次本身就是负样本池。小批次让 InfoNCE 损失缺少负样本，导致训练坍塌或停滞",
+        "批归一化要求如此",
+        "对比损失要除以批量大小",
+        "SimCLR 更慢"
+      ],
       "correct": 0,
-      "explanation": "InfoNCE loss ranks the positive pair against all other samples in the batch. A batch of 32 gives 30 negatives per positive; 1024 gives 2046. More negatives = sharper contrastive signal. MoCo introduced a momentum queue of past features so effective negatives scale beyond the batch size; this is the standard trick when GPU memory limits batch size."
+      "explanation": "InfoNCE 损失将正样本对与批次中所有其他样本比较排序。批量 32 时，每个正样本有 30 个负样本；1024 时有 2046 个。负样本越多，对比信号越清晰。MoCo 引入过去特征的动量队列，让有效负样本数量突破批量大小限制，这是 GPU 显存限制批量时的标准技巧。"
     },
     {
       "stage": "pre",
-      "question": "What prevents DINO from collapsing to a constant output?",
-      "options": ["Large batch size", "The momentum schedule", "Strong augmentation alone", "A combination of centring (subtract per-dimension EMA mean from the teacher output) and sharpening (low teacher temperature); centring stops one dimension from dominating, sharpening stops the output collapsing to uniform"],
+      "question": "什么能防止 DINO 坍塌为常数输出？",
+      "options": [
+        "大批量",
+        "动量调度",
+        "仅靠强增强",
+        "中心化与锐化的组合：从教师输出减去各维指数移动平均均值，并使用较低教师温度；中心化防止某一维占主导，锐化防止输出坍塌为均匀分布"
+      ],
       "correct": 3,
-      "explanation": "DINO does not use explicit negatives. Without centring, one output dimension can dominate and the student learns to always predict it. Without sharpening (low teacher temperature), the teacher's output becomes near-uniform and the student learns to match uniform, which is also collapse. The two together keep the output diverse across dimensions and peaked per sample."
+      "explanation": "DINO 不使用显式负样本。没有中心化，某个输出维度可能占主导，学生便学会始终预测它。没有锐化，即较低教师温度，教师输出会接近均匀分布，学生也学会匹配均匀分布，这同样是坍塌。两者结合，使输出跨维度保持多样性，同时每个样本有明确峰值。"
     },
     {
       "stage": "post",
-      "question": "MAE masks 75% of patches. BERT masks 15% of tokens. Why the difference?",
-      "options": ["75% is arbitrary", "BERT requires 15% by design", "Image patches have low entropy — neighbours are highly correlated — so masking only 15% would be trivially solvable by local extrapolation. Masking 75% forces the encoder to learn global semantic features to reconstruct the missing patches", "Text tokens are larger than image patches"],
+      "question": "MAE 遮蔽 75% 的图像块，而 BERT 遮蔽 15% 的词元。为什么不同？",
+      "options": [
+        "75% 是随意选择的",
+        "BERT 的设计强制要求 15%",
+        "图像块熵较低，相邻块高度相关，只遮蔽 15% 时通过局部外推就能轻松解决。遮蔽 75% 迫使编码器学习全局语义特征，以重建缺失块",
+        "文本词元比图像块更大"
+      ],
       "correct": 2,
-      "explanation": "The mask ratio should match the information density of the modality. Text: 15% is enough because each token has many plausible completions. Images: neighbouring pixels almost determine each other, so low mask ratios are solvable without real representation learning. MAE's 75% is calibrated to force semantic understanding."
+      "explanation": "遮蔽比例应匹配模态的信息密度。文本中，每个词元有很多合理补全，因此 15% 已足够。图像中，相邻像素几乎互相确定，低遮蔽比例无需真正学习表示也能解决。MAE 的 75% 是为迫使模型理解语义而设定的。"
     },
     {
       "stage": "post",
-      "question": "After self-supervised pretraining, the 'linear probe' evaluation trains only what?",
-      "options": ["A full MLP classifier head", "The entire encoder", "The positional embedding", "A single linear classifier on top of the frozen encoder features; this isolates feature quality from fine-tuning dynamics"],
+      "question": "自监督预训练后，“线性探测（Linear Probe）”评估只训练什么？",
+      "options": [
+        "完整 MLP 分类头",
+        "整个编码器",
+        "位置嵌入",
+        "冻结编码器特征之上的单个线性分类器，将特征质量与微调过程的影响隔离"
+      ],
       "correct": 3,
-      "explanation": "Linear probe freezes the encoder and fits Linear(features -> num_classes) on a labelled downstream dataset. The accuracy is a direct measure of the feature space's linear separability — a proxy for feature quality. Fine-tuning the whole backbone adds nonlinear capacity and usually lifts accuracy a few points, but mixes in optimisation effects. Both numbers are reported in SSL papers."
+      "explanation": "线性探测冻结编码器，在有标签下游数据集上拟合 Linear(features -> num_classes)。准确率直接衡量特征空间的线性可分性，可作为特征质量的近似指标。微调整个主干会增加非线性能力，通常提高数个百分点，但也混入优化效果。自监督论文会同时报告两者。"
     },
     {
       "stage": "post",
-      "question": "Why does MAE use an asymmetric encoder-decoder design (big encoder on 25% visible patches, small decoder on all tokens)?",
-      "options": ["The decoder needs its own backbone", "Memory constraints", "Masked tokens confuse self-attention", "The encoder never processes mask tokens; a small decoder only handles reconstruction. This makes encoder FLOPs proportional to visible patches (1/4 of full input) and lets pretraining run 3x faster than naive designs that process all tokens through the full encoder"],
+      "question": "为什么 MAE 使用非对称编码器解码器设计，即大型编码器处理 25% 可见块，小型解码器处理全部词元？",
+      "options": [
+        "解码器需要自己的主干",
+        "内存约束",
+        "掩码词元会干扰自注意力",
+        "编码器从不处理掩码词元，小型解码器只负责重建。这使编码器浮点运算量与可见块数成正比，为完整输入的 1/4，比让全部词元通过完整编码器的朴素设计预训练快 3 倍"
+      ],
       "correct": 3,
-      "explanation": "The key efficiency win in MAE: the expensive encoder only ever sees visible patches, which is 25% of the input. Mask tokens appear only in the shallow decoder. This makes pretraining roughly 3x faster than BEiT (which processes all tokens through the encoder) with equal or better downstream accuracy."
+      "explanation": "MAE 的关键效率优势是：昂贵的编码器始终只看可见图像块，即输入的 25%。掩码词元只出现在浅层解码器中。因此相比让全部词元通过编码器的 BEiT，预训练约快 3 倍，下游准确率相当或更好。"
     }
   ]
 }

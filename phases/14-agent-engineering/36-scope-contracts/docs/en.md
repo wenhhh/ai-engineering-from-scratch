@@ -1,70 +1,70 @@
-# Scope Contracts and Task Boundaries
+# 范围契约与任务边界（Scope Contracts and Task Boundaries）
 
-> The model does not know where the work ends. A scope contract is a per-task file that says where the work begins, where it ends, and how to roll back if it spills. The contract turns "stay in scope" from a wish into a check.
+> 模型不知道工作在哪里结束。范围契约是每个任务对应的文件，说明工作从哪里开始、在哪里结束，以及越界时如何回滚。它把“保持在范围内”从愿望变为可检查的约束。
 
 **Type:** Build
-**Languages:** Python (stdlib)
-**Prerequisites:** Phase 14 · 32 (Minimal Workbench), Phase 14 · 33 (Rules as Constraints)
-**Time:** ~50 minutes
+**Languages:** Python（标准库）
+**Prerequisites:** 阶段 14 · 32（最小工作台），阶段 14 · 33（规则即约束）
+**Time:** 约 50 分钟
 
-## Learning Objectives
+## 学习目标（Learning Objectives）
 
-- Write a scope contract that an agent reads at task start and a verifier reads at task end.
-- Specify allowed files, forbidden files, acceptance criteria, rollback plan, and approval boundaries.
-- Implement a scope checker that compares a diff against the contract and flags violations.
-- Make scope creep visible, automatic, and reviewable.
+- 编写供智能体在任务开始时读取、供验证器在任务结束时读取的范围契约。
+- 指定允许文件、禁止文件、验收标准、回滚计划与审批边界。
+- 实现范围检查器，将差异与契约比较并标记违规。
+- 让范围蔓延可见、可自动检测、可供审查。
 
-## The Problem
+## 问题（The Problem）
 
-Agents creep. The task is "fix the login bug." The diff touches the login route, the email helper, the database driver, the README, and the release script. Each touch had a plausible reason in the moment. Together they are a different change than the one that was reviewed.
+智能体的工作范围会蔓延。任务是“修复登录错误”，差异却涉及登录路由、邮件辅助程序、数据库驱动、README 和发布脚本。每次改动在当时都有看似合理的原因，但合在一起，已经不是最初审查的那项变更。
 
-Scope creep is the most under-monitored failure mode in agent work because the agent narrates each step in good faith. The fix is not a stricter prompt. The fix is a contract on disk that says what was promised and a check that compares the result against the promise.
+范围蔓延是智能体工作中监测最不足的失败模式，因为智能体会善意地解释每一步。解决办法不是更严格的提示词，而是磁盘上的契约：记录承诺，再用检查将结果与承诺比较。
 
-## The Concept
+## 概念（The Concept）
 
 ```mermaid
 flowchart LR
-  Task[Task] --> Contract[scope_contract.json]
-  Contract --> Agent[Agent Loop]
-  Agent --> Diff[final diff]
+  Task[任务] --> Contract[scope_contract.json]
+  Contract --> Agent[智能体循环]
+  Agent --> Diff[最终差异]
   Diff --> Checker[scope_checker.py]
   Contract --> Checker
-  Checker --> Verdict{in scope?}
-  Verdict -- yes --> Verify[Verification Gate]
-  Verdict -- no --> Block[block + open question]
+  Checker --> Verdict{范围内?}
+  Verdict -- 是 --> Verify[验证关卡]
+  Verdict -- 否 --> Block[阻止并提出待解问题]
 ```
 
-### What goes in a scope contract
+### 范围契约包含什么（What goes in a scope contract）
 
-| Field | Purpose |
+| 字段 | 用途 |
 |-------|---------|
-| `task_id` | Links to the task on the board |
-| `goal` | One sentence the reviewer can verify |
-| `allowed_files` | Globs the agent may write |
-| `forbidden_files` | Globs the agent must not touch even by accident |
-| `acceptance_criteria` | Test commands or assertion lines that prove done |
-| `rollback_plan` | One paragraph the operator can execute if a halt is required |
-| `approvals_required` | Actions outside scope that need explicit human sign-off |
+| `task_id` | 关联看板上的任务 |
+| `goal` | 审查者能够验证的一句话目标 |
+| `allowed_files` | 智能体可以写入的通配模式（Globs） |
+| `forbidden_files` | 智能体即使无意也不得触碰的通配模式 |
+| `acceptance_criteria` | 证明完成的测试命令或断言 |
+| `rollback_plan` | 需要中止时，操作者能够执行的一段回滚说明 |
+| `approvals_required` | 范围外且需要人工明确批准的操作 |
 
-A contract without `forbidden_files` is incomplete. The negative space is half the contract.
+缺少 `forbidden_files` 的契约是不完整的。禁止事项占契约的一半。
 
-### Globs, not raw paths
+### 使用通配模式，而非原始路径（Globs, not raw paths）
 
-Real repos move files. Pin contracts to globs (`app/**/*.py`, `tests/test_signup*.py`) so a refactor between sessions does not invalidate the contract.
+实际仓库会移动文件。让契约绑定通配模式（`app/**/*.py`、`tests/test_signup*.py`），这样会话之间的重构就不会使契约失效。
 
-### Rollback is part of scope
+### 回滚也是范围的一部分（Rollback is part of scope）
 
-Listing how to roll back forces the contract author to think about what could go wrong. A contract you cannot roll back from is a contract that should not be approved.
+写清如何回滚，会迫使契约作者思考可能出什么问题。无法回滚的契约不应获得批准。
 
-### Scope check is a diff check
+### 范围检查就是差异检查（Scope check is a diff check）
 
-The agent writes a diff. The checker reads the diff, the allowed globs, the forbidden globs, and a list of any acceptance commands that ran. Each violation is a tagged finding the verification gate can refuse.
+智能体产出差异。检查器读取差异、允许的通配模式、禁止的通配模式，以及已经运行的验收命令列表。每项违规都是带标签的发现，验证关卡可以据此拒绝放行。
 
-### Two altitudes of scope: the feature list and the task contract
+### 范围的两个层级：功能清单与任务契约（Two altitudes of scope: the feature list and the task contract）
 
-The scope contract bounds one task. It does not bound the project. An agent can stay perfectly inside a contract for the login fix and still, on the next turn, decide the project also needs a settings page, a dark mode toggle, and a rewrite of the router. The contract was never asked which work was in scope for the project, only which files were in scope for the task.
+范围契约约束一个任务，不约束整个项目。智能体可以完全遵守登录修复契约，却在下一轮决定项目还需要设置页、深色模式开关和路由器重写。契约从未被要求回答哪些工作属于项目范围，只回答哪些文件属于任务范围。
 
-That second altitude needs its own primitive: a `feature_list.json` the agent reads at session start. It is the project backlog as a machine-readable, ordered file. The agent picks exactly one feature whose `status` is `todo`, writes its `id` into the active scope contract, and is forbidden from starting a second feature in the same session. "One feature at a time" stops being a line in the prompt the agent can rationalize past and becomes a value it reads off disk and a check the gate enforces.
+第二个层级需要自己的原语：智能体在会话开始时读取的 `feature_list.json`。它是以机器可读、有序文件表示的项目待办清单。智能体只能选择一个 `status` 为 `todo` 的功能，将其 `id` 写入当前范围契约，并且不得在同一会话中开始第二个功能。“一次只做一个功能”不再是智能体可以找理由绕过的提示词，而成为从磁盘读取的值和关卡强制执行的检查。
 
 ```json
 {
@@ -78,93 +78,93 @@ That second altitude needs its own primitive: a `feature_list.json` the agent re
 }
 ```
 
-| Field | Purpose |
+| 字段 | 用途 |
 |-------|---------|
-| `active` | The single feature the current session may touch; empty means pick one and set it |
-| `features[].id` | Stable slug the scope contract's `task_id` points at |
-| `features[].status` | `todo`, `in_progress`, `done`, `blocked`; only one `in_progress` at a time |
-| `features[].goal` | One sentence the reviewer can verify |
-| `features[].done_when` | The acceptance line that flips `in_progress` to `done` |
+| `active` | 当前会话唯一可以处理的功能；为空时需选一个并设置 |
+| `features[].id` | 范围契约的 `task_id` 指向的稳定短标识 |
+| `features[].status` | `todo`、`in_progress`、`done`、`blocked`；同一时间只能有一个 `in_progress` |
+| `features[].goal` | 审查者能够验证的一句话目标 |
+| `features[].done_when` | 将 `in_progress` 转为 `done` 的验收条件 |
 
-Two rules make the list load-bearing instead of decorative. First, the invariant "at most one `in_progress`" is itself a startup check (Phase 14 · 33): if the list shows two, the session refuses to start until a human resolves it. Second, the feature list is a file, not a chat message, because the chat scrolls out of context and the file persists across sessions and across agents. The handoff (Phase 14 · 40) writes the finished feature's status back to `done` so the next session opens to an accurate board instead of re-deriving what is left.
+两条规则使清单承担实际约束，而非装饰。首先，“最多一个 `in_progress`”这一不变量本身就是启动检查（阶段 14 · 33）：若清单中有两个，会话拒绝启动，直到人工解决。其次，功能清单是文件而非聊天消息，因为聊天会滚出上下文，文件却能跨会话、跨智能体保留。交接（阶段 14 · 40）将已完成功能的状态写回 `done`，让下一次会话打开准确的看板，而不必重新推导还剩什么。
 
-The contract and the list compose by least privilege, the same merge described below: the task contract's `allowed_files` must sit inside whatever the active feature touches, never outside it.
+契约与清单按最小权限原则组合，与下文的合并方式相同：任务契约的 `allowed_files` 必须位于当前功能涉及的范围内，绝不能超出。
 
 ```figure
 wb-scope-bounce
 ```
 
-## Build It
+## 动手实现（Build It）
 
-`code/main.py` implements:
+`code/main.py` 实现：
 
-- `scope_contract.json` schema (subset of JSON Schema, glob arrays).
-- A diff parser that turns a list of touched files plus a list of run commands into a `RunSummary`.
-- A `scope_check` that returns `(violations, in_scope, off_scope)` against the contract.
-- Two demo runs: one that stays in scope, one that creeps. The checker flags the creep with the exact file and reason.
+- `scope_contract.json` 的结构定义（Schema），使用 JSON Schema 的子集和通配模式数组。
+- 差异解析器，将变更文件列表和已运行命令列表转换为 `RunSummary`。
+- `scope_check`，依据契约返回 `(violations, in_scope, off_scope)`。
+- 两次演示运行：一次守住范围，一次发生蔓延。检查器以确切文件和原因标记越界。
 
-Run it:
+运行：
 
 ```
 python3 code/main.py
 ```
 
-Output: the contract, the two runs, the per-run verdicts, and a saved `scope_report.json`.
+输出：契约、两次运行、每次运行的判定，以及保存的 `scope_report.json`。
 
-## Production patterns in the wild
+## 实际生产中的模式（Production patterns in the wild）
 
-A practitioner running "specsmaxxing" (scope contracts in YAML before invoking the agent) reports rabbit-hole rate dropped from 52% to 21% in three weeks without changing the agent. The contract did the work, not the model. Three patterns make the gain stick.
+一位采用“规格强化（specsmaxxing）”的实践者，在调用智能体前用 YAML 编写范围契约，报告称三周内无效深挖率从 52% 降至 21%，没有更换智能体。发挥作用的是契约，而非模型。三种模式能让收益持续。
 
-**Violation budgets, not binary failures.** `agent-guardrails` (the OSS merge gate used by Claude Code, Cursor, Windsurf, Codex via MCP) ships a `violationBudget` per task: minor scope slips within budget are surfaced as warnings; only when the budget is exceeded does the merge gate refuse. Pair with `violationSeverity: "error" | "warning"`. The budget is the difference between a gate that ships and a gate that gets disabled by the team that hated it.
+**违规预算（Violation Budgets），而非非黑即白的失败。** `agent-guardrails` 是 Claude Code、Cursor、Windsurf、Codex 通过 MCP 使用的开源合并关卡，为每个任务提供 `violationBudget`：预算内的轻微越界显示为警告，只有超出预算才拒绝合并。配合 `violationSeverity: "error" | "warning"` 使用。合理的预算决定了团队能否持续使用关卡交付变更，还是最终因无法忍受它而将其禁用。
 
-**Severity asymmetry by path family.** Off-scope writes to `docs/**` are usually `warn`; off-scope writes to `scripts/**`, `migrations/**`, `config/prod/**` are always `block`. This asymmetry has to live in the contract, not in the runtime, because it is project-specific and changes per task.
+**按路径类别设置不对称严重度（Severity Asymmetry）。** 对 `docs/**` 的范围外写入通常为 `warn`；对 `scripts/**`、`migrations/**`、`config/prod/**` 的范围外写入始终为 `block`。这种不对称必须写在契约中，而不是运行时中，因为它因项目而异，也随任务变化。
 
-**Time and network budgets next to file budgets.** A `time_budget_minutes` field bounds the wall clock; the runtime refuses to continue past it without re-approval. A `network_egress` allowlist on hostnames prevents the agent from quietly hitting an external API that was not part of the task. These are scope dimensions too; the file globs are necessary, not sufficient.
+**文件预算之外，还要有时间与网络预算。** `time_budget_minutes` 字段约束实际经过时间；超时后，运行时未经重新批准就拒绝继续。针对主机名的 `network_egress` 允许列表，防止智能体悄悄调用任务范围外的外部 API。这些也是范围维度；文件通配模式是必要条件，但不充分。
 
-**Multi-contract merge semantics (least privilege).** When two scope contracts apply (e.g., a project-wide contract plus a task-specific one), the merge is: **intersect** `allowed_files` (both contracts must permit the path), **union** `forbidden_files` (either can prohibit), `time_budget_minutes` is the most restrictive (min), `approvals_required` accumulates. `network_egress` is `None` for no enforcement, `[]` for deny-all, `[...]` as an allowlist; under merge, `None` defers to the other side, two lists intersect, and deny-all stays deny-all. State this in the contract schema so the merge is mechanical and reviewable.
+**多契约合并语义（Multi-contract Merge Semantics）：最小权限。** 两份范围契约同时适用时（例如项目级契约与任务专属契约），合并规则是：对 `allowed_files` 取**交集**（两份契约都必须允许该路径），对 `forbidden_files` 取**并集**（任意一份都可禁止），`time_budget_minutes` 取最严格值（最小值），`approvals_required` 累积。`network_egress` 为 `None` 表示不强制限制，`[]` 表示全部拒绝，`[...]` 表示允许列表；合并时 `None` 采用另一方的约束，两份列表取交集，全部拒绝仍保持全部拒绝。将这些语义写入契约的结构定义（Schema），让合并能够按固定规则执行并接受审查。
 
-## Use It
+## 实际应用（Use It）
 
-Production patterns:
+生产模式：
 
-- **Claude Code slash commands.** A `/scope` command writes the contract and pins it as session context. Subagents read the contract before acting.
-- **GitHub PRs.** Push the contract as a JSON file in the PR body or as a checked-in artifact. CI runs the scope checker against the merge diff.
-- **LangGraph interrupts.** A scope violation triggers an interrupt; the handler asks the human whether the contract needs to grow or the agent needs to back off.
+- **Claude Code 斜杠命令（Slash Commands）。** `/scope` 命令写入契约，并将其固定为会话上下文。子智能体行动前读取契约。
+- **GitHub PR。** 将契约作为 JSON 文件放入 PR 正文，或作为纳入版本控制的产物推送。CI 针对合并差异运行范围检查器。
+- **LangGraph 中断（Interrupts）。** 范围违规触发中断；处理器询问人工，是扩大契约范围，还是让智能体退回边界内。
 
-The contract travels with the task. When the task closes, the contract is archived under `outputs/scope/closed/`.
+契约跟随任务流转。任务关闭时，契约归档至 `outputs/scope/closed/`。
 
-## Ship It
+## 交付成果（Ship It）
 
-`outputs/skill-scope-contract.md` generates a scope contract for a task description and a glob-aware checker that runs in CI on every agent diff.
+`outputs/skill-scope-contract.md` 根据任务描述生成范围契约，以及能识别通配模式、在 CI 中对每份智能体差异运行的检查器。
 
-## Exercises
+## 练习（Exercises）
 
-1. Add a `network_egress` field listing allowed external hosts. Refuse runs that touch other hosts.
-2. Extend the checker to fail soft on `docs/**` and hard on `scripts/**`. Justify the asymmetry.
-3. Make the contract derive `allowed_files` from a `goal` field using a static rule set (no LLM). What goes wrong on the first edge case?
-4. Add a `time_budget_minutes` and refuse to continue once the wall clock exceeds it.
-5. Run two contracts against the same diff. What is the right merge semantics when both apply?
+1. 添加 `network_egress` 字段，列出允许访问的外部主机。拒绝访问其他主机的运行。
+2. 扩展检查器：对 `docs/**` 采用软失败，对 `scripts/**` 采用硬失败。解释这种不对称的依据。
+3. 让契约通过静态规则集（不用 LLM）从 `goal` 字段推导 `allowed_files`。遇到第一个边界情况会出什么问题？
+4. 添加 `time_budget_minutes`，实际经过时间超出时拒绝继续。
+5. 对同一份差异运行两份契约。两者同时适用时，正确的合并语义是什么？
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语 | 常见说法 | 实际含义 |
 |------|----------------|------------------------|
-| Scope contract | "The task brief" | Per-task JSON listing allowed/forbidden files, acceptance, rollback |
-| Scope creep | "It also touched..." | Files outside the contract changed in the same task |
-| Rollback plan | "We can revert" | The one-paragraph operator runbook for halting |
-| Approval boundary | "Needs sign-off" | An action listed in the contract as requiring explicit human approval |
-| Diff check | "Path audit" | Comparing touched files against the contract globs |
+| 范围契约（Scope Contract） | “任务简报” | 每任务 JSON，列出允许／禁止文件、验收条件与回滚方案 |
+| 范围蔓延（Scope Creep） | “它还动了……” | 同一任务修改了契约范围外的文件 |
+| 回滚计划（Rollback Plan） | “可以撤销” | 操作者中止工作时使用的一段操作手册 |
+| 审批边界（Approval Boundary） | “需要签字同意” | 契约中明确列为需要人工批准的操作 |
+| 差异检查（Diff Check） | “路径审计” | 将变更文件与契约的通配模式比较 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [LangGraph human-in-the-loop interrupts](https://langchain-ai.github.io/langgraph/concepts/human_in_the_loop/)
-- [OpenAI Agents SDK tool approval policies](https://platform.openai.com/docs/guides/agents-sdk)
-- [logi-cmd/agent-guardrails — merge gates and scope validation](https://github.com/logi-cmd/agent-guardrails) — violation budgets, severity tiers
-- [Dev|Journal, Preventing AI Agent Configuration Drift with Agent Contract Testing](https://earezki.com/ai-news/2026-05-05-i-built-a-tiny-ci-tool-to-keep-ai-agent-configs-from-drifting-in-my-repo/) — `--strict` mode without external deps
-- [Agentic Coding Is Not a Trap (production logs)](https://dev.to/jtorchia/agentic-coding-is-not-a-trap-i-answered-the-viral-hn-post-with-my-own-production-logs-33d9) — specsmaxxing receipts: 52% → 21%
-- [OpenCode permission globs](https://opencode.ai/docs/agents/) — fine-grained per-permission scope
-- [Knostic, AI Coding Agent Security: Threat Models and Protection Strategies](https://www.knostic.ai/blog/ai-coding-agent-security) — scope as part of least privilege
-- [Augment Code, AI Spec Template](https://www.augmentcode.com/guides/ai-spec-template) — three-tier boundary system (must/ask/never)
-- Phase 14 · 27 — prompt injection defenses that pair with scope locks
-- Phase 14 · 33 — the rule set this contract specializes per task
-- Phase 14 · 38 — the verification gate the checker reports into
+- [LangGraph 人工介入中断（Human-in-the-loop Interrupts）](https://langchain-ai.github.io/langgraph/concepts/human_in_the_loop/)
+- [OpenAI Agents SDK 工具审批策略（Tool Approval Policies）](https://platform.openai.com/docs/guides/agents-sdk)
+- [logi-cmd/agent-guardrails：合并关卡与范围验证（Merge Gates and Scope Validation）](https://github.com/logi-cmd/agent-guardrails) —— 违规预算、严重度分级
+- [Dev|Journal：通过智能体契约测试防止配置漂移（Preventing AI Agent Configuration Drift with Agent Contract Testing）](https://earezki.com/ai-news/2026-05-05-i-built-a-tiny-ci-tool-to-keep-ai-agent-configs-from-drifting-in-my-repo/) —— 无外部依赖的 `--strict` 模式
+- [智能体编程不是陷阱：生产日志（Agentic Coding Is Not a Trap）](https://dev.to/jtorchia/agentic-coding-is-not-a-trap-i-answered-the-viral-hn-post-with-my-own-production-logs-33d9) —— 规格强化的实证：52% → 21%
+- [OpenCode 权限通配模式（Permission Globs）](https://opencode.ai/docs/agents/) —— 按权限细分范围
+- [Knostic：AI 编程智能体安全：威胁模型与保护策略（AI Coding Agent Security: Threat Models and Protection Strategies）](https://www.knostic.ai/blog/ai-coding-agent-security) —— 将范围纳入最小权限原则
+- [Augment Code：AI 规格模板（AI Spec Template）](https://www.augmentcode.com/guides/ai-spec-template) —— 三级边界系统：必须／询问／禁止（must/ask/never）
+- 阶段 14 · 27 —— 与范围锁配合的提示注入防御
+- 阶段 14 · 33 —— 本契约按任务具体化的规则集
+- 阶段 14 · 38 —— 检查器上报结果的验证关卡

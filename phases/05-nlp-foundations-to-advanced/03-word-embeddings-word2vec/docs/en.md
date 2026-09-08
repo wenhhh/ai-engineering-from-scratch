@@ -1,48 +1,48 @@
-# Word Embeddings — Word2Vec from Scratch
+# 词嵌入：从零实现 Word2Vec（Word Embeddings — Word2Vec from Scratch）
 
-> A word is the company it keeps. Train a shallow net on that idea and geometry falls out.
+> 认识一个词，要看它与谁相伴。用这个想法训练浅层网络，几何结构就会涌现。
 
 **Type:** Build
 **Languages:** Python
-**Prerequisites:** Phase 5 · 02 (BoW + TF-IDF), Phase 3 · 03 (Backpropagation from Scratch)
-**Time:** ~75 minutes
+**Prerequisites:** 阶段 5 · 02（词袋与 TF-IDF，BoW + TF-IDF），阶段 3 · 03（从零实现反向传播，Backpropagation from Scratch）
+**Time:** ~75 分钟
 
-## The Problem
+## 问题（The Problem）
 
-TF-IDF knows `dog` and `puppy` are different words. It does not know they mean nearly the same thing. A classifier trained on `dog` cannot generalize to a review about `puppy`. You can paper over this by listing synonyms, but that fails on rare terms, domain jargon, and every language you did not anticipate.
+TF-IDF 知道 `dog` 和 `puppy` 是不同的词，却不知道它们含义接近。在 `dog` 上训练的分类器无法泛化到关于 `puppy` 的评论。列出同义词可以暂时弥补，但面对稀有词、领域行话和未曾预料的语言，这个办法会失效。
 
-You want a representation where `dog` and `puppy` land close together in space. Where `king - man + woman` lands near `queen`. Where a model trained on `dog` transfers some signal to `puppy` for free.
+你需要一种表示，使 `dog` 与 `puppy` 在空间中彼此接近，使 `king - man + woman` 落在 `queen` 附近，使在 `dog` 上训练的模型能不花额外代价就向 `puppy` 迁移部分信号。
 
-Word2Vec gave us that space. Two layer neural network, trillion-token training runs, published in 2013. The architecture is almost embarrassingly simple. The results reshaped NLP for a decade.
+Word2Vec 给了我们这样的空间：两层神经网络、万亿词元规模的训练，发表于 2013 年。架构简单得令人意外，其成果却重塑了随后十年的 NLP。
 
-## The Concept
+## 概念（The Concept）
 
-**Distributional hypothesis** (Firth, 1957): "You shall know a word by the company it keeps." If two words appear in similar contexts, they probably mean similar things.
+**分布假说（Distributional hypothesis）**（Firth，1957）：“认识一个词，要看它与谁相伴。”如果两个词出现在相似上下文中，它们的含义也很可能相似。
 
-Word2Vec comes in two flavors, both exploiting that idea.
+Word2Vec 有两种形式，都利用这个想法。
 
-- **Skip-gram.** Given a center word, predict the surrounding words. `cat -> (the, sat, on)` with window size 2.
-- **CBOW (continuous bag of words).** Given surrounding words, predict the center. `(the, sat, on) -> cat`.
+- **跳字模型（Skip-gram）。** 给定中心词，预测周围的词。窗口大小为 2 时，`cat -> (the, sat, on)`。
+- **连续词袋（Continuous bag of words，CBOW）。** 给定周围的词，预测中心词。`(the, sat, on) -> cat`。
 
-Skip-gram is slower to train but handles rare words better. It became the default.
+跳字模型训练较慢，但处理稀有词更好，因此成为默认选择。
 
-The network has one hidden layer with no nonlinearity. Input is a one-hot vector over the vocabulary. Output is a softmax over the vocabulary. After training, you throw away the output layer. The hidden layer weights are the embeddings.
+网络只有一个隐藏层（Hidden layer），没有非线性。输入是词表上的独热向量（One-hot vector），输出是词表上的 softmax。训练后丢弃输出层，隐藏层权重就是嵌入（Embedding）。
 
 ```
-one-hot(center) ── W ──▶ hidden (d-dim) ── W' ──▶ softmax(vocab)
+one-hot(center) ── W ──▶ 隐藏层 hidden (d-dim) ── W' ──▶ softmax(vocab)
                           ^
-                          this is the embedding
+                          这里就是嵌入（embedding）
 ```
 
-The trick: softmax over 100k words is prohibitively expensive. Word2Vec uses **negative sampling** to turn it into a binary classification task. Predict "did this context word appear near this center word, yes or no". Sample a handful of negative (non-co-occurring) words per training pair instead of computing softmax over the whole vocabulary.
+诀窍在于：对 100k 个词计算 softmax 的成本高得难以承受。Word2Vec 用**负采样（Negative sampling）**将其转化为二分类任务，预测“这个上下文词是否出现在这个中心词附近”。每个训练词对只采样少量不共现的负例词，而不是对整个词表计算 softmax。
 
 ```figure
 word-vector-arithmetic
 ```
 
-## Build It
+## 动手实现（Build It）
 
-### Step 1: training pairs from a corpus
+### 步骤 1：从语料库生成训练词对（Training pairs from a corpus）
 
 ```python
 def skipgram_pairs(docs, window=2):
@@ -64,11 +64,11 @@ def skipgram_pairs(docs, window=2):
  ...]
 ```
 
-Every (center, context) pair in a window is a positive training example.
+窗口内每个（中心词，上下文词）词对都是一个正训练样本。
 
-### Step 2: embedding tables
+### 步骤 2：嵌入表（Embedding tables）
 
-Two matrices. `W` is the center-word embedding table (the one you keep). `W'` is the context-word table (often discarded, sometimes averaged with `W`).
+使用两个矩阵：`W` 是中心词嵌入表，也就是最终保留的表；`W'` 是上下文词表，通常丢弃，有时与 `W` 取平均。
 
 ```python
 import numpy as np
@@ -81,11 +81,11 @@ def init_embeddings(vocab_size, dim, seed=0):
     return W, W_prime
 ```
 
-Small random init. Vocab size 10k and dim 100 is realistic; for teaching, 50 vocab x 16 dim is enough to see the geometry.
+用小幅随机值初始化。10k 词表、100 维是实际可用的规模；教学中，50 个词 × 16 维就足以观察几何结构。
 
-### Step 3: negative sampling objective
+### 步骤 3：负采样目标（Negative sampling objective）
 
-For each positive pair `(center, context)`, sample `k` random words from the vocabulary as negatives. Train the model so the dot product `W[center] · W'[context]` is high for positives and low for negatives.
+对每个正例词对 `(center, context)`，从词表随机采样 `k` 个词作为负例。训练模型，使点积 `W[center] · W'[context]` 在正例上较高，在负例上较低。
 
 ```python
 def sigmoid(x):
@@ -111,9 +111,9 @@ def train_pair(W, W_prime, center_idx, context_idx, negative_indices, lr):
     W[center_idx] -= lr * grad_center
 ```
 
-The magic formula: logistic loss on positive pair (want sigmoid near 1) plus logistic loss on negative pairs (want sigmoid near 0). Gradients flow to both tables. Full derivation is in the original paper; walk through it once with pencil and paper if you want it to stick.
+关键公式是：正例词对的逻辑损失（Logistic loss，期望 sigmoid 接近 1），加上负例词对的逻辑损失（期望 sigmoid 接近 0）。梯度流向两张表。完整推导见原始论文；想记牢，就用纸笔亲自推一遍。
 
-### Step 4: train on a toy corpus
+### 步骤 4：在玩具语料库上训练（Train on a toy corpus）
 
 ```python
 def train(docs, dim=16, window=2, k_neg=5, epochs=100, lr=0.05, seed=0):
@@ -134,9 +134,9 @@ def train(docs, dim=16, window=2, k_neg=5, epochs=100, lr=0.05, seed=0):
     return vocab, W
 ```
 
-After enough epochs on a large corpus, words that share contexts have similar center embeddings. On a toy corpus, you see the effect faintly. On billions of tokens, you see it dramatically.
+在大型语料库上训练足够多轮后，共享上下文的词会有相似的中心词嵌入。在玩具语料上，这种效果不明显；在数十亿词元上则十分明显。
 
-### Step 5: the analogy trick
+### 步骤 5：类比技巧（The analogy trick）
 
 ```python
 def nearest(vocab, W, target_vec, topk=5, exclude=None):
@@ -162,18 +162,18 @@ def analogy(vocab, W, a, b, c, topk=5):
     return nearest(vocab, W, v, topk=topk, exclude={vocab[a], vocab[b], vocab[c]})
 ```
 
-On pre-trained 300d Google News vectors:
+在预训练的 300d Google News 向量上：
 
 ```python
 >>> analogy(vocab, W, "man", "king", "woman")
 [('queen', 0.71), ('monarch', 0.62), ('princess', 0.59), ...]
 ```
 
-`king - man + woman = queen`. Not because the model knows what royalty is. Because the vector `(king - man)` captures something like "royal", and adding it to `woman` lands near the royal-female region.
+`king - man + woman = queen`。这不是因为模型知道王室是什么，而是因为向量 `(king - man)` 捕捉了类似“王室”的属性，加到 `woman` 上便落到王室女性对应的区域附近。
 
-## Use It
+## 实际应用（Use It）
 
-Writing Word2Vec from scratch is teaching. Production NLP uses `gensim`.
+从零编写 Word2Vec 是为了教学；生产 NLP 使用 `gensim`。
 
 ```python
 from gensim.models import Word2Vec
@@ -198,70 +198,70 @@ print(model.wv["cat"])
 print(model.wv.most_similar("cat", topn=3))
 ```
 
-For real work, you almost never train Word2Vec yourself. You download pre-trained vectors.
+实际工作中，你几乎不会自己训练 Word2Vec，而是下载预训练向量。
 
-- **GloVe** — Stanford's co-occurrence-matrix factorization approach. 50d, 100d, 200d, 300d checkpoints. Good general coverage. Lesson 04 covers GloVe specifically.
-- **fastText** — Facebook's Word2Vec extension that embeds character n-grams. Handles out-of-vocabulary words by composing subwords. Lesson 04.
-- **Pretrained Word2Vec on Google News** — 300d, 3M word vocabulary, published 2013. Still downloaded daily.
+- **GloVe**：Stanford 提出的共现矩阵分解（Co-occurrence-matrix factorization）方法，提供 50d、100d、200d、300d 检查点，通用覆盖较好。第 04 课专门介绍 GloVe。
+- **fastText**：Facebook 对 Word2Vec 的扩展，为字符 n 元组（Character n-gram）生成嵌入，通过组合子词处理词表外词。见第 04 课。
+- **Google News 上的预训练 Word2Vec**：300d，3M 词表，发表于 2013 年，至今仍每天有人下载。
 
-### When Word2Vec still wins in 2026
+### 2026 年 Word2Vec 仍然胜出的场景（When Word2Vec still wins in 2026）
 
-- Lightweight domain-specific retrieval. Train on medical abstracts in an hour on a laptop, get specialized vectors no general model captures.
-- Analogy-style feature engineering. `gender_vector = mean(man - woman pairs)`. Subtract it from other words to get a gender-neutral axis. Still used in fairness research.
-- Interpretability. 100d is small enough to plot via PCA or t-SNE and actually see clusters form.
-- Anywhere inference has to run on-device with no GPU. Word2Vec lookup is a single row fetch.
+- 轻量领域专用检索。在笔记本电脑上用医学摘要训练一小时，就能获得通用模型无法捕捉的专用向量。
+- 类比式特征工程（Analogy-style feature engineering）。`gender_vector = mean(man - woman pairs)`。从其他词中减去它，可得到性别中立的轴。公平性研究仍在使用这种方法。
+- 可解释性（Interpretability）。100d 足够小，可以用主成分分析（PCA）或 t-SNE 绘图，实际看到簇的形成。
+- 任何必须在无 GPU 的设备端运行推理的场景。Word2Vec 查找只需读取一行。
 
-### Where Word2Vec fails
+### Word2Vec 的失效场景（Where Word2Vec fails）
 
-The polysemy wall. `bank` has one vector. `river bank` and `financial bank` share it. `table` (spreadsheet vs. furniture) shares it. A classifier downstream cannot distinguish the senses from the vector.
+一词多义（Polysemy）是障碍。`bank` 只有一个向量，`river bank` 和 `financial bank` 共用它。`table` 的电子表格与家具含义也共用一个向量。下游分类器无法仅凭该向量区分词义。
 
-Contextual embeddings (ELMo, BERT, every transformer since) solved this by producing a different vector for each occurrence of the word based on surrounding context. That is the jump from Word2Vec to BERT: from static to contextual. Phase 7 covers the transformer half.
+上下文嵌入（Contextual embedding），包括 ELMo、BERT 以及后来的各种 Transformer，通过根据周围上下文为词的每次出现生成不同向量解决了这个问题。从 Word2Vec 到 BERT 的跃迁，正是从静态到上下文化。阶段 7 介绍 Transformer 这一部分。
 
-The out-of-vocabulary problem is the other failure. Word2Vec has never seen `Zoomer-approved` if it was not in training data. No fallback. fastText fixes this with subword composition (lesson 04).
+另一个失效点是词表外（Out-of-vocabulary，OOV）问题。如果训练数据没有 `Zoomer-approved`，Word2Vec 就从未见过它，也没有回退办法。fastText 用子词组合解决这一问题（第 04 课）。
 
-## Ship It
+## 交付成果（Ship It）
 
-Save as `outputs/skill-embedding-probe.md`:
+保存为 `outputs/skill-embedding-probe.md`：
 
 ```markdown
 ---
 name: embedding-probe
-description: Inspect a word2vec model. Run analogies, find neighbors, diagnose quality.
+description: 检查 word2vec 模型，执行类比（Analogy）、查找邻居并诊断质量。
 version: 1.0.0
 phase: 5
 lesson: 03
 tags: [nlp, embeddings, debugging]
 ---
 
-You probe trained word embeddings to verify they are working. Given a `gensim.models.KeyedVectors` object and a vocabulary, you run:
+你探查训练好的词嵌入，验证它们能否正常工作。给定 `gensim.models.KeyedVectors` 对象和词表，执行：
 
-1. Three canonical analogy tests. `king : man :: queen : woman`. `paris : france :: tokyo : japan`. `walking : walked :: swimming : ?`. Report the top-1 result and its cosine.
-2. Five nearest-neighbor tests on domain-specific words the user supplies. Print top-5 neighbors with cosines.
-3. One symmetry check. `similarity(a, b) == similarity(b, a)` to within float precision.
-4. One degenerate check. If any embedding has a norm below 0.01 or above 100, the model has a training bug. Flag it.
+1. 三项经典类比测试：`king : man :: queen : woman`、`paris : france :: tokyo : japan`、`walking : walked :: swimming : ?`。报告排名第 1 的结果及其余弦值。
+2. 对用户提供的领域专用词执行五项最近邻（Nearest-neighbor）测试，打印前 5 个邻居及其余弦值。
+3. 一项对称性检查：在浮点精度范围内满足 `similarity(a, b) == similarity(b, a)`。
+4. 一项退化检查：若任意嵌入的范数（Norm）低于 0.01 或高于 100，说明模型有训练缺陷，应标记出来。
 
-Refuse to declare a model good on analogy accuracy alone. Analogy benchmarks are gameable and do not transfer to downstream tasks. Recommend intrinsic + downstream evaluation together.
+拒绝仅凭类比准确率就判定模型良好。类比基准可以被针对性优化，且不能迁移到下游任务。建议结合内在评估（Intrinsic evaluation）与下游评估（Downstream evaluation）。
 ```
 
-## Exercises
+## 练习（Exercises）
 
-1. **Easy.** Run the training loop on a tiny corpus (20 sentences about cats and dogs). After 200 epochs, verify `nearest(vocab, W, W[vocab["cat"]])` returns `dog` in its top 3. If not, increase epochs or vocabulary.
-2. **Medium.** Add subsampling of frequent words. Words with frequency above `10^-5` are dropped from training pairs with probability proportional to their frequency. Measure the effect on rare-word similarity.
-3. **Hard.** Train a model on the 20 Newsgroups corpus. Compute two bias axes: `he - she` and `doctor - nurse`. Project occupation words onto both axes. Report which occupations have the largest bias gap. This is the kind of probe fairness researchers use.
+1. **简单。** 在微型语料库（20 个关于猫狗的句子）上运行训练循环。200 轮后，验证 `nearest(vocab, W, W[vocab["cat"]])` 返回的前 3 名中包含 `dog`；否则增加训练轮数或词表大小。
+2. **中等。** 添加高频词下采样（Subsampling）：频率高于 `10^-5` 的词，以与其频率成比例的概率从训练词对中丢弃。测量这对稀有词相似度的影响。
+3. **困难。** 在 20 Newsgroups 语料库上训练模型，计算两个偏差轴：`he - she` 和 `doctor - nurse`。将职业词投影到这两个轴上，报告哪些职业的偏差差距最大。这类探查正是公平性研究人员使用的方法。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语 | 常见说法 | 实际含义 |
 |------|-----------------|-----------------------|
-| Word embedding | Word as a vector | A dense, low-dim (typically 100-300) representation learned from context. |
-| Skip-gram | Word2Vec trick | Predict context words from center word. Slower than CBOW, better for rare words. |
-| Negative sampling | Training shortcut | Replace softmax over full vocab with binary classification against `k` random words. |
-| Static embedding | One vector per word | Same vector regardless of context. Fails on polysemy. |
-| Contextual embedding | Context-sensitive vector | Different vector for each occurrence based on surrounding words. What transformers produce. |
-| OOV | Out of vocabulary | Word not seen in training. Word2Vec cannot produce a vector for these. |
+| 词嵌入（Word embedding） | 用向量表示词 | 从上下文学习的稠密低维表示，通常为 100-300 维。 |
+| 跳字模型（Skip-gram） | Word2Vec 技巧 | 根据中心词预测上下文词，比 CBOW 慢，但更适合稀有词。 |
+| 负采样（Negative sampling） | 训练捷径 | 用针对 `k` 个随机词的二分类替代整个词表上的 softmax。 |
+| 静态嵌入（Static embedding） | 每个词一个向量 | 无论上下文如何都使用同一个向量，无法处理一词多义。 |
+| 上下文嵌入（Contextual embedding） | 对上下文敏感的向量 | 根据周围的词，为每次出现生成不同向量；Transformer 生成的就是这种表示。 |
+| 词表外（OOV） | 不在词表中 | 训练中未见过的词，Word2Vec 无法为其生成向量。 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [Mikolov et al. (2013). Distributed Representations of Words and Phrases and their Compositionality](https://arxiv.org/abs/1310.4546) — the negative-sampling paper. Short and readable.
-- [Rong, X. (2014). word2vec Parameter Learning Explained](https://arxiv.org/abs/1411.2738) — the clearest derivation of the gradients, if the original paper's math feels dense.
-- [gensim Word2Vec tutorial](https://radimrehurek.com/gensim/models/word2vec.html) — production training settings that actually work.
+- [Mikolov 等（2013）：词与短语的分布式表示及其组合性（Distributed Representations of Words and Phrases and their Compositionality）](https://arxiv.org/abs/1310.4546)：负采样论文，篇幅短，易于阅读。
+- [Rong, X.（2014）：word2vec 参数学习详解（word2vec Parameter Learning Explained）](https://arxiv.org/abs/1411.2738)：如果原论文的数学内容难读，这里提供最清楚的梯度推导。
+- [gensim Word2Vec 教程](https://radimrehurek.com/gensim/models/word2vec.html)：实际有效的生产训练设置。

@@ -1,37 +1,62 @@
 [
   {
-    "question": "A 7B parameter model in FP16 needs how much VRAM just for weights?",
-    "options": ["14 GB", "28 GB", "7 GB", "56 GB"],
+    "question": "7B 参数模型使用 FP16，仅权重需要多少显存（Video RAM，VRAM）？",
+    "options": [
+      "14 GB",
+      "28 GB",
+      "7 GB",
+      "56 GB"
+    ],
     "correct": 0,
-    "explanation": "Each parameter in FP16 is 2 bytes. 7 billion * 2 bytes = 14 GB. With Adam optimizer states (2 copies) and gradients, total training memory is roughly 56 GB before accounting for activations.",
+    "explanation": "FP16 每个参数占 2 字节。70 亿 * 2 字节 = 14 GB。加上两份 Adam 优化器状态和梯度，不计激活时训练总内存约为 56 GB。",
     "stage": "pre"
   },
   {
-    "question": "What are the three types of parallelism used in distributed training?",
-    "options": ["Batch, sequence, and token parallelism", "Forward, backward, and optimizer parallelism", "Data parallelism, tensor parallelism, and pipeline parallelism", "CPU, GPU, and TPU parallelism"],
+    "question": "分布式训练使用哪三种并行方式？",
+    "options": [
+      "批次并行、序列并行、词元并行",
+      "前向并行、反向并行、优化器并行",
+      "数据并行、张量并行、流水线并行",
+      "CPU、GPU、TPU 并行"
+    ],
     "correct": 2,
-    "explanation": "Data parallelism replicates the model on each GPU and splits the data. Tensor parallelism splits individual layers across GPUs. Pipeline parallelism splits the model's layers into stages across GPUs.",
+    "explanation": "数据并行（Data parallelism）在每张 GPU 复制模型并拆分数据；张量并行（Tensor parallelism）把单层拆到多个 GPU；流水线并行（Pipeline parallelism）把模型的层分成不同阶段，分布到多个 GPU。",
     "stage": "pre"
   },
   {
-    "question": "What does FSDP (Fully Sharded Data Parallel) do that standard DDP does not?",
-    "options": ["It uses a different optimizer", "It processes data faster", "It supports more GPUs", "It shards model parameters, gradients, and optimizer states across GPUs instead of replicating the full model on each"],
+    "question": "全分片数据并行（Fully Sharded Data Parallel，FSDP）能做什么，而标准 DDP 不能？",
+    "options": [
+      "使用不同优化器",
+      "更快处理数据",
+      "支持更多 GPU",
+      "把模型参数、梯度和优化器状态分片到多个 GPU，而不是每卡复制完整模型"
+    ],
     "correct": 3,
-    "explanation": "Standard DDP replicates the entire model on every GPU (wasteful). FSDP shards parameters across GPUs so each holds only a fraction. Parameters are gathered on-demand for computation and released after.",
+    "explanation": "标准分布式数据并行（Distributed Data Parallel，DDP）在每卡复制完整模型，造成浪费。FSDP 将参数分片，每卡只保存一部分，计算时按需收集，用完后释放。",
     "stage": "post"
   },
   {
-    "question": "What is DeepSpeed ZeRO Stage 3?",
-    "options": ["A learning rate schedule", "It partitions optimizer states, gradients, AND model parameters across GPUs, achieving maximum memory efficiency", "A quantization method", "A data preprocessing pipeline"],
+    "question": "什么是 DeepSpeed ZeRO 阶段 3？",
+    "options": [
+      "一种学习率调度",
+      "把优化器状态、梯度和模型参数全部划分到多个 GPU，实现最高内存效率",
+      "一种量化方法",
+      "一种数据预处理流水线"
+    ],
     "correct": 1,
-    "explanation": "ZeRO Stage 1 shards optimizer states, Stage 2 adds gradient sharding, Stage 3 adds parameter sharding. Stage 3 gives maximum memory savings, allowing training of models that far exceed single-GPU memory.",
+    "explanation": "ZeRO 阶段 1 分片优化器状态，阶段 2 再分片梯度，阶段 3 再分片参数。阶段 3 节省最多内存，使远超单卡显存的模型也能训练。",
     "stage": "post"
   },
   {
-    "question": "Why is gradient synchronization necessary in data-parallel training?",
-    "options": ["To speed up the forward pass", "Each GPU computes gradients on different data; averaging gradients across GPUs ensures all replicas update identically", "To reduce memory usage", "To prevent overfitting"],
+    "question": "为什么数据并行训练必须同步梯度？",
+    "options": [
+      "加快前向传播",
+      "各卡在不同数据上计算梯度，跨 GPU 平均梯度保证所有副本执行相同更新",
+      "降低内存占用",
+      "防止过拟合"
+    ],
     "correct": 1,
-    "explanation": "In data parallelism, each GPU processes a different batch and computes different gradients. AllReduce averages these gradients across all GPUs so every replica applies the same update and stays in sync.",
+    "explanation": "数据并行中，每张 GPU 处理不同批次并计算不同梯度。全归约（AllReduce）在所有 GPU 间平均这些梯度，使每个副本应用相同更新，保持同步。",
     "stage": "post"
   }
 ]

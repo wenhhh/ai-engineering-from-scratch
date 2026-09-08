@@ -1,244 +1,211 @@
-# Enterprise Governance, Compliance, and Human Review
+# 企业治理、合规与人工评审（Enterprise Governance, Compliance, and Human Review）
 
-> Governance is the system that decides who may take which risk with whose data.
+> 治理决定谁可以使用谁的数据、承担哪种风险。
 
 **Type:** Reference
 **Languages:** Python
-**Prerequisites:** [Put Authority Around Capability](../../06-governance-safety-and-responsible-use/), [Integration Protocols, Identity, and Least Privilege](../../25-integration-protocols-identity-and-least-privilege/); Phase 17, Lesson 26
-**Time:** ~150 minutes
+**Prerequisites:** [用权限约束能力（Put Authority Around Capability）](../../06-governance-safety-and-responsible-use/), [集成协议、身份与最小权限（Integration Protocols, Identity, and Least Privilege）](../../25-integration-protocols-identity-and-least-privilege/); 阶段 17，第 26 课
+**Time:** ~150 分钟
 
-## Learning Objectives
+## 学习目标（Learning Objectives）
 
-- Convert policy and regulatory obligations into owned technical controls
-- Classify data and map it across prompts, tools, storage, logs, and review
-- Design human review from risk, authority, and reversibility
-- Evaluate bias, fairness, transparency, and contestability in context
-- Build evidence for approval, monitoring, incident response, and audit
+- 将政策和监管义务转化为有负责人的技术控制
+- 对数据分类，映射它在提示词、工具、存储、日志和评审中的流动
+- 根据风险、权限和可逆性设计人工评审
+- 结合情境评估偏差、公平性、透明度和可申诉性
+- 为审批、监控、事故响应和审计建立证据
 
-## The Problem
+## 问题（The Problem）
 
-A healthcare team proposes a Claude workflow that summarizes patient messages,
-recommends a routing category, and drafts a response. The design document says:
-"The model does not retain data, all outputs are reviewed by a human, and the
-system complies with HIPAA."
+医疗团队提出一个 Claude 工作流：概括患者消息、建议分流类别并起草回复。设计文档写道：“模型不保留数据，所有输出都经人工评审，系统符合 HIPAA。”
 
-None of those statements is an architecture.
+这些陈述没有一条算架构。
 
-Data may appear in API payloads, files, caches, batch storage, logs, traces,
-support systems, and reviewer tools. "Human review" says nothing about reviewer
-qualification, evidence, workload, or authority. Compliance depends on the
-specific use, contracts, configuration, region, controls, and legal analysis.
-An architect cannot declare it with one sentence.
+数据可能出现在 API 载荷、文件、缓存、批存储、日志、追踪、支持系统和评审工具中。“人工评审”没有说明评审者资质、证据、工作量或权限。合规取决于具体用途、合同、配置、地区、控制和法律分析，架构师不能用一句话宣告。
 
-The right response is not automatic rejection. It is a governed design with a
-data map, risk decisions, control owners, evidence, and escalation to security,
-privacy, legal, clinical, or compliance experts where required.
+正确响应不是自动否决，而是设计受治理的系统：包含数据地图、风险决策、控制负责人、证据，并在需要时升级给安全、隐私、法律、临床或合规专家。
 
-This lesson teaches architecture judgment. It is not legal advice.
+本课教授架构判断，不提供法律建议。
 
-## The Concept
+## 概念（The Concept）
 
-### Start With a Risk Decision
+### 从风险决策开始（Start With a Risk Decision）
 
-Governance begins by identifying:
+治理首先识别：
 
-- decision or action the system influences
-- people who can benefit or be harmed
-- data classes involved
-- error and abuse modes
-- reversibility
-- required authority
-- applicable organizational and external obligations
-- owner who accepts residual risk
+- 系统影响的决策或操作
+- 可能受益或受害的人
+- 涉及的数据类别
+- 错误与滥用模式
+- 可逆性
+- 所需权限
+- 适用的组织和外部义务
+- 接受剩余风险的负责人
 
-Do not start with a generic list of guardrails. A content filter, approval queue,
-or encryption control is valuable only when it addresses a named risk at a
-specific boundary.
+不要从通用防护清单开始。内容过滤、审批队列或加密控制只有在特定边界解决明确风险时才有价值。
 
-### Map Data Through the Whole System
+### 映射数据在整个系统中的流动（Map Data Through the Whole System）
 
 ```mermaid
 flowchart LR
-    U["User or source system"] --> A["Application boundary"]
-    A --> P["Prompt and context"]
+    U["用户或来源系统"] --> A["应用边界"]
+    A --> P["提示词与上下文"]
     P --> M["Claude API"]
-    A --> T["Tools and retrieval"]
-    M --> O["Output and validation"]
+    A --> T["工具与检索"]
+    M --> O["输出与验证"]
     T --> O
-    O --> H["Human review"]
-    O --> L["Logs, traces, and evals"]
-    H --> R["System of record"]
-    L --> D["Retention and deletion"]
+    O --> H["人工评审"]
+    O --> L["日志、追踪与评估"]
+    H --> R["权威记录系统"]
+    L --> D["保留与删除"]
 ```
 
-For each edge and store, record:
+对每条连线和存储记录：
 
-- data category and purpose
-- source and data subject where relevant
-- fields required versus optional
-- identity and access
-- encryption and key ownership
-- provider and subprocessor boundary
-- region or residency requirement
-- retention and deletion behavior
-- use in model improvement or evaluation
-- incident and access-audit evidence
+- 数据类别和用途
+- 适用时记录来源和数据主体
+- 必需与可选字段
+- 身份和访问
+- 加密与密钥归属
+- 服务商与次级处理商边界
+- 地区或数据驻留要求
+- 保留与删除行为
+- 是否用于模型改进或评估
+- 事故和访问审计证据
 
-Product features can have different retention and eligibility behavior. Files,
-batch processing, code execution, MCP connectors, hosted sessions, and standard
-Messages requests may not share the same boundary. Check current official
-documentation and your agreement for the exact feature combination.
+不同产品功能的数据保留和资格要求可能不同。文件、批处理、代码执行、MCP 连接器、托管会话和标准 Messages 请求未必共享同一边界。针对确切功能组合，核对当前官方文档和协议。
 
-### Minimize Before Protecting
+### 先最小化，再保护（Minimize Before Protecting）
 
-Security controls are stronger when unnecessary data never enters the system.
+不必要的数据根本不进入系统时，安全控制更强。
 
-Apply this order:
+按以下顺序：
 
-1. Remove fields the task does not need.
-2. Pseudonymize or aggregate where identity is not required.
-3. Restrict the feature or provider boundary from explicit requirements.
-4. Limit identity, scope, retention, and logs.
-5. Protect remaining data with encryption, monitoring, and incident controls.
+1. 移除任务不需要的字段。
+2. 不需要身份时，使用假名化或聚合。
+3. 根据明确需求限制功能或服务商边界。
+4. 限制身份、权限范围、保留和日志。
+5. 用加密、监控和事故控制保护仍然需要的数据。
 
-"Tell Claude not to remember" is not a retention control. Configuration and
-contractual behavior define retention.
+“告诉 Claude 不要记住”不是保留控制。保留由配置和合同行为定义。
 
-### Build a Control Matrix
+### 建立控制矩阵（Build a Control Matrix）
 
-Controls fall into several types.
+控制分为几类。
 
-| Type | Purpose | Example |
+| 类型 | 用途 | 示例 |
 |------|---------|---------|
-| Preventive | Stop an unsafe event | Scope gate blocks an unauthorized write |
-| Detective | Reveal a problem | Alert on sensitive-field leakage in sampled outputs |
-| Corrective | Limit or repair harm | Revoke access, roll back model route, correct affected record |
-| Governance | Assign and review authority | Named owner re-approves the use case after material change |
+| 预防性（Preventive） | 阻止不安全事件 | 范围门禁阻止未授权写入 |
+| 检测性（Detective） | 揭示问题 | 对抽样输出中的敏感字段泄漏告警 |
+| 纠正性（Corrective） | 限制或修复伤害 | 撤销访问、回滚模型路由、修正受影响记录 |
+| 治理性（Governance） | 分配并评审权限 | 实质变化后，由指定负责人重新批准用例 |
 
-For each control, record owner, implementation, evidence, test, failure response,
-and review frequency. A control without an owner and test is a hope.
+对每项控制记录负责人、实现、证据、测试、失败响应和评审频率。没有负责人和测试的控制只是愿望。
 
-### Layer Model and System Guardrails
+### 分层设置模型与系统防护（Layer Model and System Guardrails）
 
-Use several boundaries:
+使用多个边界：
 
-- input validation and classification
-- trusted-source separation from untrusted content
-- prompt instructions and examples
-- minimal tool exposure
-- authentication and authorization
-- schema and semantic output validation
-- action limits and approvals
-- post-deployment monitoring and red-team tests
+- 输入验证与分类
+- 将可信来源与不可信内容分离
+- 提示词指令和示例
+- 最小工具暴露
+- 身份认证与授权
+- 模式和语义输出验证
+- 操作限制与审批
+- 部署后监控和红队测试
 
-Prompt guardrails influence generation. System guardrails enforce invariants.
-Neither replaces the other.
+提示词防护影响生成，系统防护强制不变条件，两者不能互相替代。
 
-### Design Human Review as a Control
+### 将人工评审设计为控制（Design Human Review as a Control）
 
-Human-in-the-loop is useful when the reviewer can improve the decision and has
-the information, time, competence, and authority to do it.
+人在回路（Human-in-the-loop，HITL）只有在评审者能改善决策，并有信息、时间、能力和权限时才有用。
 
-Define:
+定义：
 
-- trigger: risk class, low evidence, conflict, uncertainty, or sampled case
-- reviewer: role and qualification
-- packet: source evidence, model output, tool trajectory, flags, and proposed action
-- decision: approve, edit, reject, escalate, or request evidence
-- service level: time budget and queue capacity
-- fallback: safe behavior if review is unavailable
-- audit: identity, rationale, timestamp, and final action
+- 触发条件：风险类别、证据不足、冲突、不确定性或抽样案例
+- 评审者：角色与资质
+- 证据包：来源证据、模型输出、工具轨迹、标记和拟议操作
+- 决策：批准、编辑、拒绝、升级或请求证据
+- 服务等级：时间预算和队列容量
+- 后备方案：评审不可用时的安全行为
+- 审计：身份、理由、时间戳和最终操作
 
-Avoid automation bias. Reviewers need a reason to inspect the evidence, not a
-polished answer that encourages rubber-stamping. Consider showing source excerpts
-before generated conclusions, or requiring structured reason codes.
+避免自动化偏见（Automation bias）。评审者需要有理由检查证据，而不是被精美答案引导得只做形式批准。考虑先展示来源片段、后展示生成结论，或要求结构化原因码。
 
-### Match Review to Risk
+### 让评审匹配风险（Match Review to Risk）
 
-| Risk | Example | Review pattern |
+| 风险 | 示例 | 评审模式 |
 |------|---------|----------------|
-| Low | Internal draft with easy undo | Automated checks plus sampled review |
-| Medium | Customer-facing recommendation | Threshold or exception review |
-| High | Financial, legal, clinical, or destructive action | Qualified approval before action |
-| Unknown | New use case or weak evidence | Hold, escalate, and gather evidence |
+| 低 | 易撤销的内部草稿 | 自动检查加抽样评审 |
+| 中 | 面向客户的建议 | 阈值或例外评审 |
+| 高 | 财务、法律、临床或破坏性操作 | 操作前由具备资格者批准 |
+| 未知 | 新用例或薄弱证据 | 暂停、升级并收集证据 |
 
-Confidence emitted by the same model is not a reliable safety boundary. Use
-observable evidence, calibrated evaluators, deterministic conditions, and
-qualified review.
+同一模型给出的置信度不是可靠安全边界。使用可观测证据、经过校准的评估器、确定性条件和合格评审。
 
-### Treat Fairness as a Contextual Requirement
+### 把公平性当作情境需求（Treat Fairness as a Contextual Requirement）
 
-Bias means systematic error or representation that can disadvantage people.
-Fairness is not one universal metric.
+偏差（Bias）指可能使人处于不利地位的系统性错误或表示。公平性（Fairness）不存在一个通用指标。
 
-Ask:
+询问：
 
-- What decision is being made?
-- Which groups may experience different error rates or access?
-- Which protected or sensitive attributes are present, inferred, or proxied?
-- Which fairness definition fits the legal and ethical context?
-- What tradeoffs exist with accuracy, privacy, and individual treatment?
-- Who has authority to choose and review the criterion?
+- 正在作出什么决策？
+- 哪些群体可能经历不同错误率或访问机会？
+- 哪些受保护或敏感属性被直接使用、推断或代理？
+- 哪种公平定义符合该法律和伦理情境？
+- 与准确率、隐私和个体待遇存在哪些取舍？
+- 谁有权选择并评审标准？
 
-Test representative slices and intersectional groups where appropriate. Small
-sample sizes create uncertainty, which should be reported rather than hidden.
+适当时测试代表性切片和交叉群体。小样本带来的不确定性应报告，而非隐藏。
 
-### Provide Transparency and Contestability
+### 提供透明度与可申诉性（Provide Transparency and Contestability）
 
-People need different explanations.
+不同人需要不同解释。
 
-- End users need to know when AI materially influences an interaction and how
-  to challenge a harmful outcome.
-- Reviewers need evidence, uncertainty, and control context.
-- Operators need versions, traces, and failure categories.
-- Auditors need policy mapping, tests, ownership, and retained evidence.
-- Executives need residual risk, business impact, and decision status.
+- 最终用户需要知道 AI 何时实质影响交互，以及如何质疑有害结果。
+- 评审者需要证据、不确定性和控制背景。
+- 运维人员需要版本、追踪和失败类别。
+- 审计者需要政策映射、测试、归属和保留证据。
+- 管理者需要剩余风险、业务影响和决策状态。
 
-Do not expose chain-of-thought or sensitive system instructions as an
-explanation. Provide source-based reasons, applied rules, relevant factors, and
-the human appeal path.
+不要把思维链或敏感系统指令作为解释暴露。提供基于来源的理由、适用规则、相关因素和人工申诉路径。
 
-### Plan for Change
+### 为变化做准备（Plan for Change）
 
-Reassess when any material element changes:
+任何实质要素变化时重新评估：
 
-- use case or affected population
-- model or provider
-- prompt or tool authority
-- data source, retention, or region
-- evaluation result or incident pattern
-- law, policy, or contract
-- deployment scale
+- 用例或受影响人群
+- 模型或服务商
+- 提示词或工具权限
+- 数据来源、保留或地区
+- 评估结果或事故模式
+- 法律、政策或合同
+- 部署规模
 
-Version the risk assessment and control evidence. A launch approval does not
-cover an unrelated future system.
+对风险评估和控制证据做版本管理。一次上线批准不覆盖无关的未来系统。
 
-## Build It
+## 动手实现（Build It）
 
-## Interactive Lab
+## 交互实验（Interactive Lab）
 
 ```figure
 27-governance-approval-flow
 ```
 
-Use the approval-flow explorer to vary consequence, reversibility, evidence,
-reviewer qualification, queue capacity, and fallback. It makes visible when a
-human review label is a real control and when it is only a bottleneck.
+使用审批流程探索器，改变后果、可逆性、证据、评审者资质、队列容量和后备方案。它展示“人工评审”标签何时是真控制，何时只是瓶颈。
 
-## Practice Lab
+## 实践实验（Practice Lab）
 
-Remove the review fallback or one control owner from a copy of the packet,
-observe the blocked state, and repair the governance design.
+从证据包副本中移除评审后备方案或一个控制负责人，观察阻塞状态，再修复治理设计。
 
-## Shipped Artifact
+## 交付物（Shipped Artifact）
 
-The filled [`outputs/governance-control-packet.md`](../outputs/governance-control-packet.md)
-contains a risk register, data boundary, preventive, detective, corrective, and
-governance controls, plus a staffed approval path.
+填写完成的 [`outputs/governance-control-packet.md`](../outputs/governance-control-packet.md) 包含风险登记表、数据边界、预防性、检测性、纠正性和治理性控制，以及有人员保障的审批路径。
 
-## Verify It
+## 验证（Verify It）
 
-Verify its ownership and failure response deterministically:
+以确定性方式验证归属和失败响应：
 
 ```bash
 cd certifications/claude/lessons/27-enterprise-governance-compliance-and-hitl
@@ -246,140 +213,117 @@ python3 code/main.py
 python3 -m unittest discover -s code/tests -v
 ```
 
-The quiz checks governance and reassessment decisions.
+测验检查治理和重新评估决策。
 
-## Capstone Connection
+## 综合实践衔接（Capstone Connection）
 
-Carry this packet into the Architect Professional capstone's governance and
-human-review section.
+将此包带入专业架构师（Architect Professional）综合实践的治理与人工评审章节。
 
-Create a governance packet for a high-impact Claude workflow.
+为高影响 Claude 工作流创建治理包。
 
-### Step 1: Risk Register
+### 步骤 1：风险登记表（Step 1: Risk Register）
 
 ```markdown
-| Risk | Cause | Affected party | Impact | Likelihood | Control | Owner | Residual risk |
+| 风险 | 原因 | 受影响方 | 影响 | 可能性 | 控制 | 负责人 | 剩余风险 |
 |------|-------|----------------|--------|------------|---------|-------|---------------|
 ```
 
-Include accidental failure, misuse, prompt injection, insider access, dependency
-failure, stale knowledge, unfair performance, and reviewer overload.
+包含意外失败、误用、提示词注入、内部人员访问、依赖失败、知识过时、表现不公平和评审者过载。
 
-### Step 2: Data Map
+### 步骤 2：数据地图（Step 2: Data Map）
 
-List every payload, store, log, cache, evaluation set, human interface, and
-external service. Mark data purpose, minimum fields, retention, deletion,
-identity, region, and contractual boundary.
+列出每个载荷、存储、日志、缓存、评估集、人工界面和外部服务。标明数据用途、最少字段、保留、删除、身份、地区和合同边界。
 
-### Step 3: Control Matrix
+### 步骤 3：控制矩阵（Step 3: Control Matrix）
 
 ```markdown
-| Control | Risk addressed | Boundary | Owner | Evidence | Test | On failure |
+| 控制 | 所解决风险 | 边界 | 负责人 | 证据 | 测试 | 失败时 |
 |---------|----------------|----------|-------|----------|------|------------|
 ```
 
-Include at least one preventive, detective, corrective, and governance control.
+至少各包含一项预防性、检测性、纠正性和治理性控制。
 
-### Step 4: Human Review Design
+### 步骤 4：人工评审设计（Step 4: Human Review Design）
 
-Specify triggers, reviewer qualifications, evidence packet, actions, queue SLO,
-fallback, and audit record. Calculate expected review volume. If the queue cannot
-meet the SLO, the design is incomplete.
+规定触发条件、评审者资质、证据包、操作、队列 SLO、后备方案和审计记录。计算预期评审量。如果队列无法满足 SLO，设计就不完整。
 
-### Step 5: Approval and Reassessment
+### 步骤 5：审批与重新评估（Step 5: Approval and Reassessment）
 
-Name the technical, security, privacy, domain, and business decisions that need
-separate owners. Define material-change triggers and the next review date.
+指出需要不同负责人承担的技术、安全、隐私、领域和业务决策。定义实质变化触发条件和下次评审日期。
 
-## Use It
+## 实际应用（Use It）
 
-For the patient-message workflow, a safer first release might draft a routing
-recommendation for a qualified reviewer without sending a response or changing
-the medical record. It uses minimum necessary fields, trusted clinical sources,
-strict tenant and role authorization, source-linked output, high-risk keyword
-and evidence checks, and a safe fallback when the reviewer queue is unavailable.
+患者消息工作流较安全的首版，可以只为合格评审者起草分流建议，不发送回复，也不改病历。它使用最少必要字段、可信临床来源、严格租户和角色授权、关联来源的输出、高风险关键词与证据检查，并在评审队列不可用时采用安全后备方案。
 
-The team then validates:
+团队随后验证：
 
-- task accuracy by message class
-- false-negative behavior for urgent cases
-- demographic and language slices where permitted and appropriate
-- source support and stale-data handling
-- reviewer agreement, time, and overrides
-- privacy, access, retention, and deletion controls
-- incident, rollback, and audit behavior
+- 按消息类别划分的任务准确率
+- 紧急案例的假阴性行为
+- 在允许且适当时的人口统计和语言切片
+- 来源支持和过时数据处理
+- 评审者一致性、时间和覆盖决策
+- 隐私、访问、保留和删除控制
+- 事故、回滚和审计行为
 
-Legal, privacy, security, and clinical owners decide whether the resulting
-evidence satisfies the applicable obligations. The architect supplies the map,
-controls, tests, and residual-risk statement.
+法律、隐私、安全和临床负责人判断结果证据是否满足适用义务。架构师提供地图、控制、测试和剩余风险说明。
 
-## Exam Decision Patterns
+## 考试决策模式（Exam Decision Patterns）
 
-When a scenario includes regulated or sensitive data, do not infer that an
-internal use is automatically allowed. Minimize, classify, verify policy and
-contract, and involve the proper authority.
+场景涉及受监管或敏感数据时，不要推断内部用途就自动获准。最小化、分类、核实政策与合同，并让适当权威参与。
 
-Prefer answers that:
+优先选择以下答案：
 
-- remove or anonymize unnecessary identifiers
-- map feature-specific data boundaries and retention
-- layer model and deterministic controls
-- bind high-impact actions to qualified approval
-- test representative slices and adverse cases
-- provide evidence and an appeal or escalation path
-- name control owners and reassessment triggers
+- 移除或匿名化不必要标识
+- 映射功能专用数据边界和保留
+- 分层组合模型和确定性控制
+- 将高影响操作绑定合格审批
+- 测试代表性切片和不利案例
+- 提供证据与申诉或升级路径
+- 明确控制负责人和重评触发条件
 
-Avoid answers that treat a prompt, model confidence, generic review, or vendor
-claim as complete governance.
+避免把提示词、模型置信度、泛泛评审或供应商声明当成完整治理的答案。
 
-## Common Traps
+## 常见陷阱（Common Traps）
 
-### Compliance by Product Name
+### 凭产品名认定合规（Compliance by Product Name）
 
-Eligibility can depend on feature, configuration, agreement, region, and data
-flow. Verify the exact architecture.
+资格可能取决于功能、配置、协议、地区和数据流。应验证确切架构。
 
-### Human Review as a Checkbox
+### 把人工评审当勾选项（Human Review as a Checkbox）
 
-An unqualified or overloaded reviewer without evidence cannot reliably reduce
-risk.
+缺少证据且不合格或过载的评审者，无法可靠降低风险。
 
-### Logging for Audit Without Minimization
+### 为审计记录日志却不最小化（Logging for Audit Without Minimization）
 
-Verbose logs can create a new sensitive data store. Retain the minimum evidence
-under appropriate access and deletion controls.
+详尽日志可能形成新的敏感数据存储。保留最少证据，并实施适当访问和删除控制。
 
-### One Fairness Metric
+### 单一公平指标（One Fairness Metric）
 
-Different fairness definitions can conflict. Choose from context, law, harm, and
-stakeholder decision, then report tradeoffs.
+不同公平定义可能冲突。根据情境、法律、伤害和相关方决策选择，再报告取舍。
 
-## Exercises
+## 练习（Exercises）
 
-1. Build a data map for a support workflow using files, an MCP connector, batch
-   evaluation, and human review.
-2. Design a review queue for 10,000 daily tasks with a 5 percent trigger rate and
-   calculate staffing assumptions.
-3. Write a control test that proves unauthorized tenant data never reaches model
-   context.
-4. Define a contestability path for a user harmed by an AI-assisted decision.
-5. Create material-change criteria that force governance reassessment.
+1. 为使用文件、MCP 连接器、批评估和人工评审的客服工作流建立数据地图。
+2. 为每天 10,000 个任务、5% 触发率设计评审队列，计算人员配置假设。
+3. 编写控制测试，证明未授权租户数据绝不进入模型上下文。
+4. 为受到 AI 辅助决策伤害的用户定义申诉路径。
+5. 创建强制重新评估治理的实质变化标准。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语 | 常见说法 | 实际含义 |
 |------|-----------------|------------------------|
-| Governance | A policy document | Decisions, ownership, controls, evidence, and review over a system lifecycle |
-| Data minimization | Encrypt everything | Do not collect or send fields the purpose does not require |
-| Human-in-the-loop | A person sees output | A defined control with trigger, qualified owner, evidence, authority, and fallback |
-| Residual risk | A hidden problem | Risk remaining after controls, explicitly accepted by an authorized owner |
-| Fairness | Equal accuracy | A context-specific criterion with tradeoffs and affected stakeholders |
-| Contestability | Customer support | A meaningful path to challenge, review, and correct an outcome |
+| 治理（Governance） | 政策文档 | 系统生命周期中的决策、归属、控制、证据和评审 |
+| 数据最小化（Data minimization） | 加密一切 | 不收集或发送用途不需要的字段 |
+| 人在回路（Human-in-the-loop） | 有人看输出 | 有触发条件、合格负责人、证据、权限和后备方案的明确控制 |
+| 剩余风险（Residual risk） | 隐藏问题 | 控制后仍存在、由获授权负责人明确接受的风险 |
+| 公平性（Fairness） | 相等准确率 | 具有取舍和受影响相关方的情境专用标准 |
+| 可申诉性（Contestability） | 客服 | 能够实质质疑、评审并修正结果的路径 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [Claude API data retention documentation](https://platform.claude.com/docs/en/manage-claude/api-and-data-retention) for current feature-specific boundaries
-- [Anthropic Trust Center](https://trust.anthropic.com/) for current security and compliance materials
-- [Claude's Constitution](https://www.anthropic.com/constitution) for Anthropic's public model-behavior framework
-- Phase 17, Lesson 26 for compliance architecture
-- Phase 18, Lessons 20 and 21 for bias and fairness
+- [Claude API 数据保留文档（data retention documentation）](https://platform.claude.com/docs/en/manage-claude/api-and-data-retention)：当前功能专用边界
+- [Anthropic Trust Center](https://trust.anthropic.com/)：当前安全与合规材料
+- [Claude 宪法（Claude's Constitution）](https://www.anthropic.com/constitution)：Anthropic 公开模型行为框架
+- 阶段 17，第 26 课：合规架构
+- 阶段 18，第 20 和 21 课：偏差与公平性

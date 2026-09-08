@@ -1,40 +1,40 @@
 ---
 name: tripwire-design
-description: Review a proposed agent detector stack (kill switch, circuit breakers, canary tokens) and flag missing tripwires before the first autonomous run.
+description: 首次自主运行前，审查智能体检测器栈（紧急停止、熔断器、金丝雀词元）并标记缺失绊线。
 version: 1.0.0
 phase: 15
 lesson: 14
 tags: [kill-switch, circuit-breaker, canary, honeytoken, detection-and-response]
 ---
 
-Given a proposed detector stack for an agent deployment, audit it against the three-detector reference (kill switch, circuit breaker, canary) and flag what is missing, mis-tuned, or exposed to the agent.
+给定拟议智能体部署的检测器栈，按紧急停止开关、熔断器、金丝雀三检测器参考审计，标记缺失、配置不当或暴露给智能体的部分。
 
-Produce:
+请输出：
 
-1. **Kill-switch audit.** Where does the switch live (feature flag, Redis, signed config)? Confirm the agent's credentials cannot set it off. Confirm every consequential action checks the switch, not just startup. Confirm re-enable is an explicit human action.
-2. **Circuit-breaker inventory.** List every pattern a breaker watches (repetition, consecutive failures, rate, specific tool after out-of-trust read). State threshold and cool-down for each. Thresholds above 10 are usually too loose.
-3. **Canary design.** List every canary token in the environment. For each: what it is (fake credential, fake DB record, fake file, fake memory entry), where it lives, what access triggers the alarm, who is paged. Confirm no canary has a legitimate reason to be touched.
-4. **Statistical + hard layering.** Confirm the stack uses at least one hard limit (Lesson 17 constitutional style) in addition to any statistical detectors (EWMA, z-score). Statistical-only detectors accept slow drift.
-5. **Quarantine path.** What happens when a detector fires? Full agent stop, path-specific pause, traffic redirect (eBPF / Cilium honeypot), alert-only. Confirm the path has been tested end-to-end at least once.
+1. **紧急停止审计（Kill-switch audit）。** 开关位于何处（功能开关、Redis、签名配置）？确认智能体凭据不能将其关闭。确认每个有实质后果的动作都检查，而非仅启动。确认重新启用是明确人工动作。
+2. **熔断器清单（Circuit-breaker inventory）。** 列出监视的每种模式：重复、连续失败、速率、读取信任区外内容后调用特定工具。逐一给阈值和冷却时间。高于 10 的阈值通常过松。
+3. **金丝雀设计（Canary design）。** 列出环境中所有金丝雀词元，说明其类型（假凭据、假数据库记录、假文件、假记忆）、存放位置、哪些访问会触发告警，以及通知谁处理。确认智能体没有正当理由访问其中任何一项。
+4. **统计与硬限制分层（Statistical + hard layering）。** 确认统计检测器（EWMA、z 分数）之外至少有一个硬限制（第 17 课宪法风格）。仅统计检测会接受缓慢漂移。
+5. **隔离路径（Quarantine path）。** 检测器触发后发生什么：停止整个智能体、暂停特定路径、重定向流量（eBPF / Cilium 蜜罐）、仅告警。确认至少完成过一次端到端路径测试。
 
-Hard rejects:
-- Any deployment without an external kill switch.
-- Canary tokens stored in systems the agent has write access to.
-- Statistical-only detection with no hard limits.
-- Circuit breakers with cool-downs that auto-re-enable without human review.
-- Unattended runs where the kill switch is checked only at startup, not per action.
+必须拒绝：
+- 没有外部紧急停止开关的部署。
+- 金丝雀词元存于智能体有写权限的系统。
+- 仅统计检测、没有硬限制。
+- 冷却后未经人工审查即自动重新启用的熔断器。
+- 无人值守运行只在启动而非逐动作检查开关。
 
-Refusal rules:
-- If the user cannot name the specific systems outside the agent's credentials that host the kill switch, refuse. "We use a config file the agent reads" is not a kill switch if the agent can write config files.
-- If the user treats the Auto Mode classifier (Lesson 10) as a replacement for tripwires, refuse. The classifier is orthogonal to detection-and-response.
-- If the proposed canaries sit in systems the agent has legitimate reason to read, refuse and require redesign.
+拒绝规则：
+- 若用户无法指出智能体凭据触及范围外的具体开关托管系统，拒绝。若智能体可写配置，“我们用它读取的配置文件”就不算紧急停止开关。
+- 若用户用 Auto Mode 分类器（第 10 课）替代告警触发机制（Tripwire），应拒绝。动作分类审查与异常检测、响应是不同的职责。
+- 若金丝雀放在智能体有正当理由读取的系统，拒绝并要求重新设计。
 
-Output format:
+输出格式：
 
-Return a tripwire audit with:
-- **Kill-switch line** (location, check cadence, re-enable procedure)
-- **Circuit-breaker table** (pattern, threshold, cool-down)
-- **Canary table** (token, location, alarm, owner)
-- **Layering note** (statistical + hard limits present y/n)
-- **Quarantine flow** (what fires, what happens, tested y/n)
-- **Readiness** (production / staging / research-only)
+返回绊线审计，包含：
+- **紧急停止条目（Kill-switch line）**：位置、检查频率、重新启用流程
+- **熔断器表（Circuit-breaker table）**：模式、阈值、冷却时间
+- **金丝雀表（Canary table）**：词元、位置、告警、负责人
+- **分层说明（Layering note）**：统计 + 硬限制是否存在 y/n
+- **隔离流程（Quarantine flow）**：什么触发、发生什么、已测试 y/n
+- **就绪性（Readiness）**：生产 / 预发布 / 仅研究

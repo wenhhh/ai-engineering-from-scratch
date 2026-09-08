@@ -1,78 +1,78 @@
 {
   "lesson": "29-associate-workflow-capstone",
-  "title": "Ship a Week of Work, Not a Perfect Prompt",
+  "title": "交付一周工作，而非完美提示词（Ship a Week of Work, Not a Perfect Prompt）",
   "questions": [
     {
       "stage": "pre",
-      "question": "What is the central capstone deliverable?",
+      "question": "综合实践的核心交付物是什么？",
       "options": [
-        "A polished prompt that drafts the weekly brief directly from the approved source archive",
-        "A memorized comparison of models, context limits, product surfaces, and feature availability",
-        "An automatic publication service that removes human approval from the recurring reporting process",
-        "A governed decision workflow with sources, validation, authority, handoff, and recovery"
+        "直接根据已批准来源档案起草周报的精致提示词",
+        "背熟模型、上下文限制、产品使用界面和功能可用性的比较",
+        "移除周期报告人工审批的自动发布服务",
+        "包含来源、验证、权限、交接和恢复的受治理决策工作流"
       ],
       "correct": 3,
-      "explanation": "The capstone integrates the full Associate skill set around an observable, reviewable workflow."
+      "explanation": "综合实践围绕可观测、可评审工作流整合全部 Associate 技能。"
     },
     {
       "stage": "check",
-      "question": "Why freeze a weekly source snapshot?",
+      "question": "为什么冻结每周来源快照？",
       "options": [
-        "To ensure generation and review refer to the same versioned evidence boundary",
-        "To remove the need for source ownership because versioning establishes authority automatically",
-        "To replace claim citations with one link to the weekly archive",
-        "To guarantee that each source remains permanently correct after the documented cutoff time"
+        "确保生成和评审基于同一个版本化证据边界",
+        "消除来源归属需求，因为版本管理自动建立权威",
+        "用一个每周档案链接替代主张引用",
+        "保证记录的截止时点后，每个来源永久正确"
       ],
       "correct": 0,
-      "explanation": "A snapshot makes the run reproducible and exposes changes that require a separate delta review."
+      "explanation": "快照使运行可复现，并暴露需要单独差异评审的变化。"
     },
     {
       "stage": "check",
-      "question": "Which capstone property belongs in deterministic Python validation?",
+      "question": "哪项综合实践属性应由确定性 Python 验证？",
       "options": [
-        "Whether leadership prefers the brief's tone, framing, and level of detail",
-        "Whether every claim's source ID exists in the versioned registry used for the run",
-        "Whether the assigned reviewer has enough competence and decision authority",
-        "Whether the source policies produce ethically sufficient outcomes for affected people"
+        "管理层是否偏好这份简报的语气、叙述框架和细节程度",
+        "每项断言的来源 ID 是否都存在于本次运行使用的版本化注册表中",
+        "被指派的审查者是否具备足够的专业能力和决策权限",
+        "来源政策对受影响的人所产生的成果，在伦理层面是否充分"
       ],
       "correct": 1,
-      "explanation": "Referential integrity is exact and repeatable. Ethical sufficiency and reviewer qualification require organizational judgment."
+      "explanation": "引用完整性精确且可重复。伦理充分性与评审者资质需要组织判断。"
     },
     {
       "stage": "check",
-      "question": "A signed source changes after the director approves the brief. What should happen?",
+      "question": "总监批准简报后，签署来源发生变化，应做什么？",
       "options": [
-        "Ask the model to ignore the changed fields so the approved draft remains reproducible against its prior prompt",
-        "Publish the approved brief and record the source change for the next weekly reporting cycle",
-        "Invalidate the publication gate, compare the new source with the approved snapshot, and review the delta",
-        "Delete the earlier snapshot and rebuild the source registry so reviewers see only the latest evidence"
+        "要求模型忽略变化字段，让批准草稿仍可按旧提示词复现",
+        "发布已批准简报，下周报告周期再记录来源变化",
+        "使发布门禁失效，比较新来源与批准快照，并评审差异",
+        "删除旧快照，重建注册表，让评审者只看到最新证据"
       ],
       "correct": 2,
-      "explanation": "Approval applies to a particular evidence snapshot. A material change must be evaluated before release."
+      "explanation": "审批适用于特定证据快照。发布前必须评估实质变化。"
     },
     {
       "stage": "post",
-      "question": "The workflow repeatedly misses one regional exception. What is the strongest response?",
+      "question": "工作流反复遗漏某个区域例外。最佳响应是什么？",
       "options": [
-        "Pause the region until its inputs match the standard reporting format used elsewhere",
-        "Strengthen confidence wording so reviewers can distinguish conclusions from regional exceptions",
-        "Continue correcting the regional exception manually during every weekly human review",
-        "Add the failure to the evaluation set and repair source, prompt, or coverage controls"
+        "暂停该地区的工作，直到其输入符合其他地区使用的标准报告格式",
+        "强化置信度措辞，让审查者能够区分结论与地区例外情况",
+        "在每周的每次人工审查中，继续手动修正该地区的例外情况",
+        "将失败加入评估集，并修复来源、提示词或覆盖控制"
       ],
       "correct": 3,
-      "explanation": "A durable case and system repair close the learning loop and prevent recurrence."
+      "explanation": "持久案例与系统修复闭合学习循环，防止重演。"
     },
     {
       "stage": "post",
-      "question": "When is the capstone ready for a limited release?",
+      "question": "综合实践何时可以有限发布？",
       "options": [
-        "After normal and failure tests pass, blockers are resolved, human authority and fallback work, and current product facts are verified",
-        "When every workflow stage is automated, input variation has been eliminated, and the release no longer depends on human intervention",
-        "After one end-to-end demonstration passes and the team records every remaining defect for monitoring during the pilot",
-        "When the highest-capability model is selected and its benchmark results exceed the baseline for the average workflow case"
+        "正常和故障测试通过、阻塞项解决、人工权限与回退方案有效，且当前产品事实已核实之后",
+        "当工作流的每个阶段都已自动化、输入差异已经消除，而且发布不再依赖人工介入时",
+        "在一次端到端演示通过，且团队将所有剩余缺陷都记录下来以便在试点期间监控之后",
+        "当选用了能力最强的模型，而且其基准测试结果在平均工作流案例上超过基线时"
       ],
       "correct": 0,
-      "explanation": "Readiness is evidence across quality, governance, operations, recovery, and current product configuration."
+      "explanation": "就绪需要覆盖质量、治理、运维、恢复和当前产品配置的证据。"
     }
   ]
 }

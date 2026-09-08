@@ -1,10 +1,10 @@
-"""Phase 13 Lesson 02 - function calling deep dive across three providers.
+"""阶段 13 第 02 课：深入比较三个服务商的函数调用（Function calling）。
 
-Takes one canonical Tool, emits the OpenAI, Anthropic, and Gemini declaration
-payloads, then parses a hand-crafted response of each shape back into a
-provider-agnostic Call object. Stdlib only; no network.
+接收一个规范化的 Tool，生成 OpenAI、Anthropic 和 Gemini 的声明载荷（Payload），
+再将手工构造的各类响应解析为
+与服务商无关的 Call 对象。仅使用标准库，不访问网络。
 
-Run: python code/main.py
+运行： python code/main.py
 """
 
 from __future__ import annotations
@@ -38,8 +38,8 @@ class ToolChoice:
 WEATHER = Tool(
     name="get_weather",
     description=(
-        "Use when the user asks about current conditions in a named city. "
-        "Do not use for forecasts or historical weather data."
+        "用户询问指定城市的当前天气时使用。"
+        "不要用于天气预报或历史天气数据。"
     ),
     input_schema={
         "type": "object",
@@ -232,12 +232,12 @@ def diff_line(a: str, b: str, c: str) -> None:
 
 def main() -> None:
     print("=" * 72)
-    print("PHASE 13 LESSON 02 - FUNCTION CALLING DEEP DIVE")
+    print("阶段 13 第 02 课：函数调用深入解析（Function Calling Deep Dive）")
     print("=" * 72)
-    print("\nCanonical tool:")
+    print("\n规范化工具（Canonical tool）：")
     print(json.dumps(asdict(WEATHER), indent=2))
 
-    print("\n--- provider declarations ---")
+    print("\n--- 服务商声明（Provider declarations） ---")
     print("\nOpenAI:")
     print(json.dumps(to_openai(WEATHER), indent=2))
     print("\nAnthropic:")
@@ -245,17 +245,17 @@ def main() -> None:
     print("\nGemini:")
     print(json.dumps(to_gemini(WEATHER), indent=2))
 
-    print("\n--- tool_choice translation ---")
+    print("\n--- tool_choice 格式转换 ---")
     for mode in ("auto", "none", "required", "force"):
         tc = ToolChoice(mode=mode, tool_name="get_weather" if mode == "force" else None)
-        print(f"\nmode = {mode!r}")
+        print(f"\n模式 = {mode!r}")
         diff_line(
             json.dumps(tool_choice_openai(tc)),
             json.dumps(tool_choice_anthropic(tc)),
             json.dumps(tool_choice_gemini(tc)),
         )
 
-    print("\n--- parsing provider responses ---")
+    print("\n--- 解析服务商响应 ---")
     oa = parse_openai(OPENAI_RESPONSE)[0]
     an = parse_anthropic(ANTHROPIC_RESPONSE)[0]
     gm = parse_gemini(GEMINI_RESPONSE)[0]
@@ -263,23 +263,23 @@ def main() -> None:
     print(f"Anthropic  : {an}")
     print(f"Gemini     : {gm}")
 
-    print("\n--- id prefixes ---")
+    print("\n--- ID 前缀 ---")
     print(f"  OpenAI     : {oa.id} (call_...)")
     print(f"  Anthropic  : {an.id} (toolu_...)")
-    print(f"  Gemini     : {gm.id} (fc- / UUID from Gemini 3+)")
+    print(f"  Gemini     : {gm.id} (fc- / Gemini 3+ 提供的 UUID)")
 
-    print("\n--- args type after parsing ---")
-    print(f"  OpenAI raw args type : string -> {type(oa.args).__name__}")
-    print(f"  Anthropic raw args   : object -> {type(an.args).__name__}")
-    print(f"  Gemini raw args      : object -> {type(gm.args).__name__}")
+    print("\n--- 解析后的参数类型 ---")
+    print(f"  OpenAI 原始参数类型 : string -> {type(oa.args).__name__}")
+    print(f"  Anthropic 原始参数   : object -> {type(an.args).__name__}")
+    print(f"  Gemini 原始参数      : object -> {type(gm.args).__name__}")
 
-    print("\n--- equivalence check ---")
+    print("\n--- 等价性检查（Equivalence check） ---")
     all_names = {oa.name, an.name, gm.name}
     all_args = {json.dumps(oa.args, sort_keys=True),
                 json.dumps(an.args, sort_keys=True),
                 json.dumps(gm.args, sort_keys=True)}
-    print(f"  same tool name across providers : {len(all_names) == 1}")
-    print(f"  same args payload across providers : {len(all_args) == 1}")
+    print(f"  各服务商的工具名称相同 : {len(all_names) == 1}")
+    print(f"  各服务商的参数载荷相同 : {len(all_args) == 1}")
 
 
 if __name__ == "__main__":

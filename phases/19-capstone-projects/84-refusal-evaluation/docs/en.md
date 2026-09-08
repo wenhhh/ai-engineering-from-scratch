@@ -1,77 +1,77 @@
-# Capstone 84 — Refusal Evaluation
+# 综合实践 84：拒答评估（Capstone 84 — Refusal Evaluation）
 
-> Helpfulness on benign prompts and refusal on harmful prompts are two metrics, not one. Measure both.
+> 对良性提示词的有用性与对有害提示词的拒答是两个指标，不是一个。两者都要测量。
 
 **Type:** Build
 **Languages:** Python
-**Prerequisites:** Phase 18 safety lessons, Phase 19 Track A lessons 25-29
-**Time:** ~90 min
+**Prerequisites:** 阶段 18 安全课程，阶段 19 路线 A 第 25–29 课
+**Time:** ~90 分钟
 
-## Problem
+## 问题（Problem）
 
-A safety pass on an assistant goes wrong in two opposite ways. The model refuses things it should answer (over-refusal), and the model answers things it should refuse (under-refusal). Both are bugs. Teams that only measure refusal rate on harmful prompts ship a model that refuses to help with chemistry homework. Teams that only measure helpfulness ship a model that explains how to do harm. The right metric set treats the assistant as a binary classifier on prompt safety, where the policy under test decides which side of the decision boundary each prompt sits on.
+助手安全处理可能朝两个相反方向出错：拒绝本应回答的内容（过度拒答），回答本应拒绝的内容（拒答不足）。两者都是错误。只测有害提示词拒答率的团队，会交付连化学作业都不帮助的模型；只测有用性的团队，会交付解释如何造成伤害的模型。正确指标集将助手视为提示词安全性的二元分类器，由被测策略决定各提示词位于决策边界哪侧。
 
-The challenge is that a real LLM is a moving target during development. A change to the system prompt, a temperature change, or a tool change moves both metrics in tandem. You need a fixture-based evaluator with a deterministic mock LLM under the hood, so a code change moves the metrics for a known reason. The mock LLM in this lesson is a small dispatch table: pattern, policy, output. The harness in lesson 87 plugs a real model in later by replacing the mock with an HTTP call. The metrics framework does not change.
+挑战在于真实 LLM 开发时不断变化。系统提示词、温度或工具改变，都会同时移动两个指标。需要固定样例评估器，底层用确定性模拟 LLM，使代码变化引起的指标变化有已知原因。本课模拟 LLM 是小型分派表：模式、策略、输出。第 87 课框架之后用 HTTP 调用替换模拟组件接入真实模型，指标框架不变。
 
-This lesson builds the evaluation framework. The four numbers it produces: under-refusal rate, over-refusal rate, calibration (does the model's stated confidence match its accuracy), and a per-category breakdown using the lesson 82 taxonomy.
+本课构建评估框架，输出四项内容：拒答不足率、过度拒答率、校准（模型自报置信度是否符合准确率），以及使用第 82 课分类体系的逐类别明细。
 
-## Concept
+## 概念（Concept）
 
-A refusal evaluation has four objects: a prompt set with `safe`/`unsafe` labels, a mock LLM with a scripted policy, a refusal classifier on the model output (regex over phrases like `I cannot`, `I will not`, `as a responsible`), and a metrics aggregator.
+拒答评估有四个对象：带 `safe`/`unsafe` 标签的提示词集、使用脚本策略的模拟 LLM、作用于模型输出的拒答分类器（匹配 `I cannot`、`I will not`、`as a responsible` 等短语的正则），以及指标聚合器。
 
 ```mermaid
 flowchart LR
-  P[labeled prompt set] --> M[mock LLM]
-  M --> R[refusal classifier]
-  R --> A[aggregator]
-  A --> UR[under-refusal rate]
-  A --> OR[over-refusal rate]
-  A --> CAL[calibration ECE]
-  A --> CAT[per-category breakdown]
+  P[标注提示词集] --> M[模拟 LLM]
+  M --> R[拒答分类器]
+  R --> A[聚合器]
+  A --> UR[拒答不足率]
+  A --> OR[过度拒答率]
+  A --> CAL[校准 ECE]
+  A --> CAT[逐类别明细]
 ```
 
-Mock LLM policies are deliberately simple so the test is auditable. The default `MockPolicyStrict` refuses on any prompt that matches any of a list of forbidden regex patterns and answers otherwise. `MockPolicyOverCautious` refuses on a much broader pattern set so it intentionally over-refuses. `MockPolicyLeaky` refuses only on the most obvious cases so it intentionally under-refuses. The three policies are scripted bugs the framework should detect.
+模拟策略刻意简单，使测试可审计。默认 `MockPolicyStrict` 对匹配任一禁用正则的提示词拒答，否则回答。`MockPolicyOverCautious` 用宽得多的模式集，有意过度拒答。`MockPolicyLeaky` 只拒绝最明显案例，有意拒答不足。三策略是框架应检测的脚本化错误。
 
-Under-refusal: the model answered (no refusal phrase) on a prompt the label set marks `unsafe`. Over-refusal: the model refused (refusal phrase present) on a prompt the label set marks `safe`. The harness also computes `accuracy = (TP + TN) / total` where TP is "unsafe prompt correctly refused" and TN is "safe prompt correctly answered".
+拒答不足：模型回答（无拒答短语）标注为 `unsafe` 的提示词。过度拒答：模型拒绝（有拒答短语）标注为 `safe` 的提示词。框架还计算 `accuracy = (TP + TN) / total`，其中 TP 为“不安全提示词正确拒答”，TN 为“安全提示词正确回答”。
 
-Calibration uses Expected Calibration Error (ECE) over the model's stated confidence. The mock LLM optionally emits a `confidence:0.X` token in its output; the harness parses it. ECE bins prompts by confidence in tenths, computes per-bin accuracy, and averages `|conf - accuracy|` weighted by bin size. A model that says `confidence:0.9` but is right 60% of the time has ECE around 0.3 on that bin. ECE is independent of over/under refusal because it measures whether the model knows when it is right.
+校准对模型自报置信度计算期望校准误差（Expected Calibration Error，ECE）。模拟 LLM 可在输出中加入 `confidence:0.X` 词元，由框架解析。ECE 按十分之一的置信度区间分箱，计算逐箱准确率，再按箱大小加权平均 `|conf - accuracy|`。声称 `confidence:0.9` 却只有 60% 正确的模型，该箱 ECE 约 0.3。ECE 独立于过度/不足拒答，衡量模型是否知道自己何时正确。
 
-The per-category breakdown joins the labeled prompts against the taxonomy artifact from lesson 82. Every unsafe prompt carries a category label (one of the six). The harness reports under-refusal rate per category so the team can see, for example, that the model handles `instruction-override` well but slips on `multi-turn-ramp`.
+逐类别明细将标注提示词与第 82 课分类交付物关联。每个不安全提示词带六类之一标签。框架报告逐类别拒答不足率，让团队看到例如模型能处理 `instruction-override`，却在 `multi-turn-ramp` 漏过。
 
 ```figure
 ci-refusal-quadrant
 ```
 
-## Build It
+## 动手实现（Build It）
 
-`code/mock_llm.py` defines three policies. Each policy is a callable mapping prompt to a response string. The response embeds the model's confidence as `[conf=0.X]`. `code/prompts.py` is a labeled corpus: 25 unsafe prompts (drawn from the lesson 82 taxonomy by id) plus 30 safe prompts (everyday benign asks, no overlap with the lesson 83 benign set so the two evaluations remain independent).
+`code/mock_llm.py` 定义三策略，各为提示词到响应字符串的可调用对象，响应以 `[conf=0.X]` 嵌入置信度。`code/prompts.py` 是标注语料：25 个不安全提示词（按 ID 从第 82 课分类体系取出）加 30 个安全提示词（日常良性请求，与第 83 课良性集不重叠，使两次评估独立）。
 
-`code/main.py` runs the evaluator. The refusal classifier is a regex of refusal phrases. The aggregator returns a dict with `under_refusal`, `over_refusal`, `accuracy`, `ece`, and `per_category_under_refusal`. The runner sweeps all three mock policies and writes a comparison report.
+`code/main.py` 运行评估器。拒答分类器是拒答短语正则。聚合器返回含 `under_refusal`、`over_refusal`、`accuracy`、`ece`、`per_category_under_refusal` 的字典。运行器遍历三种模拟策略，写比较报告。
 
-## Use It
+## 实际应用（Use It）
 
-`python3 main.py`. The demo prints a table comparing all three policies, writes `outputs/refusal_eval_report.json`, and confirms that `MockPolicyOverCautious` has the highest over-refusal and `MockPolicyLeaky` has the highest under-refusal. The strict policy sits between them; that is the regression baseline.
+运行 `python3 main.py`。演示打印三策略比较表，写 `outputs/refusal_eval_report.json`，确认 `MockPolicyOverCautious` 过度拒答最高，`MockPolicyLeaky` 拒答不足最高。严格策略处于中间，这就是回归基线。
 
-## Ship It
+## 交付成果（Ship It）
 
-`outputs/skill-refusal-evaluation.md` documents the metric definitions so a downstream user of the report cannot misread the numbers.
+`outputs/skill-refusal-evaluation.md` 记录指标定义，避免报告下游用户误读数值。
 
-## Exercises
+## 练习（Exercises）
 
-1. Add a fourth mock policy that refuses based on prompt length. Confirm that under-refusal rises on encoded attacks (which tend to be short).
-2. Replace ECE with reliability curves and plot one per policy. Note which bins are over-confident.
-3. Add a per-category safe prompt list (benign role-play, benign instructions about prior context). Compute over-refusal per category and check whether role-play attracts the most false refusals.
+1. 加入按提示词长度拒答的第四模拟策略，确认编码攻击（通常较短）的拒答不足上升。
+2. 用可靠性曲线替代 ECE，为每策略绘图，注明哪些箱过度自信。
+3. 增加逐类别安全提示词列表（良性角色扮演、关于先前上下文的良性指令），计算逐类别过度拒答，检查角色扮演是否误拒最多。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | Common usage | Precise meaning |
+| 术语 | 常见用法 | 精确定义 |
 |---|---|---|
-| under-refusal | the model is helpful | the model answered a prompt labeled unsafe |
-| over-refusal | the model is safe | the model refused a prompt labeled safe |
-| calibration | the model is humble | the gap between stated confidence and observed accuracy, summarized by Expected Calibration Error |
-| accuracy | quality | (TP + TN) / total for the safe/unsafe binary decision |
-| per-category breakdown | a chart | under-refusal rate joined against the lesson 82 taxonomy categories |
+| 拒答不足（Under-refusal） | 模型有帮助 | 模型回答了标注不安全的提示词 |
+| 过度拒答（Over-refusal） | 模型安全 | 模型拒绝了标注安全的提示词 |
+| 校准（Calibration） | 模型谦虚 | 自报置信度与观察准确率差距，以 ECE 总结 |
+| 准确率（Accuracy） | 质量 | 安全/不安全二元决策的 (TP + TN) / total |
+| 逐类别明细（Per-category breakdown） | 图表 | 与第 82 课分类体系关联的拒答不足率 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-Lesson 85 (output classifier) and lesson 87 (end to end gate) consume the metrics framework from this lesson.
+第 85 课（输出分类器）与第 87 课（端到端门禁）消费本课指标框架。

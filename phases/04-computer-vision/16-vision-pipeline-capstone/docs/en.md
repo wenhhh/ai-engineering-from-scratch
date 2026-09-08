@@ -1,60 +1,60 @@
-# Build a Complete Vision Pipeline — Capstone
+# 构建完整视觉流水线：综合项目（Build a Complete Vision Pipeline — Capstone）
 
-> A production vision system is a chain of models and rules stitched with data contracts. The pieces are already in this phase; the capstone wires them together end-to-end.
+> 生产视觉系统是用数据契约连接起来的一串模型与规则。本阶段已经提供各个部件，综合项目将它们端到端连接起来。
 
 **Type:** Build
 **Languages:** Python
-**Prerequisites:** Phase 4 Lessons 01-15
-**Time:** ~120 minutes
+**Prerequisites:** 阶段 4 第 01-15 课
+**Time:** 约 120 分钟
 
-## Learning Objectives
+## 学习目标（Learning Objectives）
 
-- Design a production vision pipeline that detects objects, classifies them, and emits structured JSON — with every failure path handled
-- Plug a detector (Mask R-CNN or YOLO), a classifier (ConvNeXt-Tiny), and a data contract (Pydantic) into one service
-- Benchmark the end-to-end pipeline and identify the first bottleneck (usually preprocessing, then the detector)
-- Ship a minimal FastAPI service that accepts an image upload, runs the pipeline, and returns detections with classifications
+- 设计生产视觉流水线，检测目标、进行分类、输出结构化 JSON，并处理所有失败路径
+- 将检测器（Mask R-CNN 或 YOLO）、分类器（ConvNeXt-Tiny）和数据契约（Pydantic）整合到一个服务中
+- 对端到端流水线做基准测试，找出首要瓶颈，通常先是预处理，然后是检测器
+- 交付最小 FastAPI 服务，接受图像上传、运行流水线、返回检测与分类结果
 
-## The Problem
+## 问题（The Problem）
 
-Individual vision models are useful; vision products are chains of them. A retail shelf audit is a detector plus a product classifier plus a price-OCR pipeline. Autonomous driving is a 2D detector plus a 3D detector plus a segmenter plus a tracker plus a planner. A medical pre-screen is a segmenter plus a region classifier plus a clinician UI.
+单个视觉模型很有用，而视觉产品由一串模型组成。零售货架审计是检测器、商品分类器和价格光学字符识别（Optical Character Recognition，OCR）流水线的组合。自动驾驶由二维检测器、三维检测器、分割器、跟踪器和规划器组成。医疗预筛查由分割器、区域分类器和医生用户界面组成。
 
-Wiring those chains is the part that separates a ML prototype from a product. Every interface between models is a new place for bugs. Every coordinate transform, every normalisation, every mask resize is a silent-failure candidate. A pipeline is as strong as its weakest interface.
+将这些模型连接起来，正是机器学习（Machine Learning，ML）原型与产品的区别。模型间的每个接口都是新的出错点。每次坐标变换、归一化、掩码缩放都可能静默失败。流水线的可靠性受最薄弱接口限制。
 
-This capstone sets up the minimum viable pipeline: detection + classification + structured output + a serving layer. Everything else in Phase 4 slots into this skeleton: swap Mask R-CNN for YOLOv8, add a OCR head, add a segmentation branch, add a tracker. The architecture is stable; the pieces are pluggable.
+本综合项目建立最小可行流水线：检测、分类、结构化输出和服务层。阶段 4 的其他内容都可装入这个骨架：将 Mask R-CNN 换为 YOLOv8、增加 OCR 头、分割分支或跟踪器。架构保持稳定，部件可插拔。
 
-## The Concept
+## 概念（The Concept）
 
-### The pipeline
+### 流水线（The pipeline）
 
 ```mermaid
 flowchart LR
-    REQ["HTTP request<br/>+ image bytes"] --> LOAD["Decode<br/>+ preprocess"]
-    LOAD --> DET["Detector<br/>(YOLO / Mask R-CNN)"]
-    DET --> CROP["Crop + resize<br/>each detection"]
-    CROP --> CLS["Classifier<br/>(ConvNeXt-Tiny)"]
-    CLS --> AGG["Aggregate<br/>detections + classes"]
-    AGG --> SCHEMA["Pydantic<br/>validation"]
-    SCHEMA --> RESP["JSON response"]
+    REQ["HTTP 请求<br/>+ 图像字节"] --> LOAD["解码<br/>+ 预处理"]
+    LOAD --> DET["检测器<br/>(YOLO / Mask R-CNN)"]
+    DET --> CROP["逐个检测区域<br/>裁剪与缩放"]
+    CROP --> CLS["分类器<br/>(ConvNeXt-Tiny)"]
+    CLS --> AGG["聚合<br/>检测与类别"]
+    AGG --> SCHEMA["Pydantic<br/>校验"]
+    SCHEMA --> RESP["JSON 响应"]
 
-    REQ -.->|error| RESP
+    REQ -.->|错误| RESP
 
     style DET fill:#fef3c7,stroke:#d97706
     style CLS fill:#dbeafe,stroke:#2563eb
     style SCHEMA fill:#dcfce7,stroke:#16a34a
 ```
 
-Seven stages. The two model stages are expensive; the five other stages are where the bugs live.
+共七个阶段。两个模型阶段成本高，其他五个阶段则容易出现错误。
 
-### Data contracts with Pydantic
+### 使用 Pydantic 定义数据契约（Data contracts with Pydantic）
 
-Every model boundary becomes a typed object. This turns silent failures into loud ones.
+每个模型边界都转为带类型的对象，让静默失败变为明确报错。
 
 ```
 Detection(
-    box: tuple[float, float, float, float],   # (x1, y1, x2, y2), absolute pixels
+    box: tuple[float, float, float, float],   # (x1, y1, x2, y2)，绝对像素坐标
     score: float,                              # [0, 1]
-    class_id: int,                             # from detector's label map
-    mask: Optional[list[list[int]]],           # RLE-encoded if present
+    class_id: int,                             # 来自检测器标签映射
+    mask: Optional[list[list[int]]],           # 若存在则使用 RLE 编码
 )
 
 PipelineResult(
@@ -65,39 +65,39 @@ PipelineResult(
 )
 ```
 
-When a detector returns boxes in `(cx, cy, w, h)` instead of `(x1, y1, x2, y2)`, Pydantic's validation fails at the boundary and you find out immediately instead of debugging a downstream crop that silently returns empty regions.
+如果检测器返回 `(cx, cy, w, h)` 格式边界框，而非 `(x1, y1, x2, y2)`，Pydantic 校验会在边界处失败，让你立即发现，而不是排查下游裁剪为什么静默返回空区域。
 
-### Where latency goes
+### 延迟花在哪里（Where latency goes）
 
-Three truths hold in nearly every vision pipeline:
+几乎所有视觉流水线都符合三个事实：
 
-1. **Preprocessing is often the biggest single block.** Decoding JPEGs, converting colour spaces, resizing — these are CPU-bound and easy to forget.
-2. **The detector dominates GPU time.** 70-90% of GPU time is in the detection forward pass.
-3. **Postprocessing (NMS, RLE encode/decode) is cheap on GPU, expensive on CPU.** Always profile with the actual target.
+1. **预处理通常是开销最大的单个环节。** JPEG 解码、颜色空间转换、缩放都受 CPU 限制，而且容易被忽略。
+2. **检测器占据大部分 GPU 时间。** 70-90% 的 GPU 时间花在检测前向传播上。
+3. **后处理在 GPU 上便宜，在 CPU 上昂贵。** 包括非极大值抑制（Non-Maximum Suppression，NMS）、游程编码（Run-Length Encoding，RLE）编解码。始终在实际目标上分析性能。
 
-Knowing the distribution is what turns optimisation into a prioritised list.
+了解耗时分布，才能把优化工作排出优先级。
 
-### Failure modes
+### 失效模式（Failure modes）
 
-- **Empty detections** — return empty list, do not crash. Log.
-- **Out-of-bounds boxes** — clamp to image size before cropping.
-- **Tiny crops** — skip classification for boxes smaller than the classifier's minimum input.
-- **Corrupt upload** — 400 response with a specific error code, not 500.
-- **Model load failure** — fail at service startup, not at first request.
+- **空检测结果（Empty detections）**：返回空列表，不要崩溃，并记录日志。
+- **越界框（Out-of-bounds boxes）**：裁剪前将坐标限制在图像尺寸内。
+- **过小裁剪（Tiny crops）**：边界框小于分类器最小输入时，跳过分类。
+- **损坏上传（Corrupt upload）**：返回带具体错误码的 400 响应，而非 500。
+- **模型加载失败（Model load failure）**：在服务启动时失败，而不是等到首个请求。
 
-A production pipeline handles each of these without writing generic `try/except` that hides the failure. Every failure gets a named code and a response.
+生产流水线应逐项处理，而不是编写会隐藏失败的通用 `try/except`。每种失败都有具名错误码和响应。
 
-### Batching
+### 批处理（Batching）
 
-A production service serves multiple clients. Batching detections and classifications across requests multiplies throughput. The trade-off: extra latency from waiting for a batch to fill. Typical setup: collect requests for up to 20ms, batch together, process, distribute responses. `torchserve` and `triton` do this natively; small services with predictable load roll their own micro-batcher.
+生产服务面向多个客户端。跨请求批量执行检测与分类，可成倍提高吞吐量。代价是等待批次凑齐带来的额外延迟。典型设置是最多收集 20 毫秒请求，合成批次、处理、分发响应。`torchserve` 与 `triton` 原生支持；负载可预测的小服务可以自行实现微批处理器（Microbatcher）。
 
 ```figure
 v4-vision-pipeline
 ```
 
-## Build It
+## 动手构建（Build It）
 
-### Step 1: Data contracts
+### 第 1 步：数据契约（Step 1: Data contracts）
 
 ```python
 from pydantic import BaseModel, Field
@@ -124,9 +124,9 @@ class PipelineResult(BaseModel):
     inference_ms: float
 ```
 
-Five seconds of code saves an hour of debugging on any serious pipeline.
+对于任何严肃的流水线，几秒钟写出的代码都能节省一小时排错。
 
-### Step 2: A minimal Pipeline class
+### 第 2 步：最小 Pipeline 类（Step 2: A minimal Pipeline class）
 
 ```python
 import time
@@ -215,9 +215,9 @@ class VisionPipeline:
         )
 ```
 
-Every interface is typed. Every failure path has a specific handling decision.
+每个接口都有类型，每条失败路径都有具体处理决策。
 
-### Step 3: Wire a detector and a classifier
+### 第 3 步：连接检测器与分类器（Step 3: Wire a detector and a classifier）
 
 ```python
 from torchvision.models.detection import maskrcnn_resnet50_fpn_v2
@@ -236,7 +236,7 @@ result = pipe.run(test_image, image_id="demo")
 print(result.model_dump_json(indent=2)[:500])
 ```
 
-### Step 4: FastAPI service
+### 第 4 步：FastAPI 服务（Step 4: FastAPI service）
 
 ```python
 from fastapi import FastAPI, UploadFile, HTTPException
@@ -265,9 +265,9 @@ async def detect_endpoint(file: UploadFile):
     return result.model_dump()
 ```
 
-Run with `uvicorn main:app --host 0.0.0.0 --port 8000`. Test with `curl -F 'file=@dog.jpg' http://localhost:8000/detect`.
+使用 `uvicorn main:app --host 0.0.0.0 --port 8000` 运行。使用 `curl -F 'file=@dog.jpg' http://localhost:8000/detect` 测试。
 
-### Step 5: Benchmark the pipeline
+### 第 5 步：流水线基准测试（Step 5: Benchmark the pipeline）
 
 ```python
 import time
@@ -306,49 +306,49 @@ def benchmark(pipe, num_runs=20, image_size=(400, 600)):
         print(f"{stage:12s}  p50={times[len(times)//2]:7.1f} ms  p95={times[int(len(times)*0.95)]:7.1f} ms")
 ```
 
-Typical output on CPU: preprocess ~3 ms, detect 300-500 ms, classify 20-40 ms, total 350-550 ms. On GPU, detect is 20-40 ms and the preprocess + classify start to matter more in relative terms.
+CPU 上的典型输出：预处理约 3 毫秒，检测 300-500 毫秒，分类 20-40 毫秒，总计 350-550 毫秒。GPU 上检测为 20-40 毫秒，预处理与分类的相对占比开始增大。
 
-## Use It
+## 实际使用（Use It）
 
-Production templates converge to the same structure, plus:
+生产模板趋向相同结构，并增加以下内容：
 
-- **Model versioning** — always log the model name and weights hash in the response.
-- **Per-request trace IDs** — log every stage timing for every request so you can correlate slow responses with stages.
-- **Fallback path** — if the classifier times out, return detections without classifications rather than failing the whole request.
-- **Safety filters** — NSFW / PII filters run after classification, before the response leaves the service.
-- **Batch endpoint** — a `/detect_batch` accepting a list of image URLs for bulk processing.
+- **模型版本管理（Model versioning）**：始终在响应中记录模型名称与权重哈希。
+- **逐请求跟踪 ID（Per-request trace IDs）**：为每个请求记录各阶段耗时，便于将慢响应与具体阶段关联。
+- **降级路径（Fallback path）**：分类器超时时，返回不带分类的检测结果，而不是让整个请求失败。
+- **安全过滤器（Safety filters）**：不宜工作场所内容（Not Safe for Work，NSFW）与个人可识别信息（Personally Identifiable Information，PII）过滤在分类后、响应离开服务前运行。
+- **批量端点（Batch endpoint）**：提供接受图像 URL 列表的 `/detect_batch`，用于批量处理。
 
-For production serving, `torchserve`, `Triton Inference Server`, and `BentoML` handle batching, versioning, metrics, and health checks out of the box. Running `FastAPI` directly is fine for prototypes and small-scale products.
+生产服务可用 `torchserve`、`Triton Inference Server`、`BentoML`，它们开箱即用地处理批处理、版本管理、指标与健康检查。原型和小规模产品直接运行 `FastAPI` 也可以。
 
-## Ship It
+## 交付成果（Ship It）
 
-This lesson produces:
+本课产出：
 
-- `outputs/prompt-vision-service-shape-reviewer.md` — a prompt that reviews a vision service's code for contract/response shape violations and names the first breaking bug.
-- `outputs/skill-pipeline-budget-planner.md` — a skill that, given target latency and throughput, assigns a time budget to every pipeline stage and flags which stage will miss its budget first.
+- `outputs/prompt-vision-service-shape-reviewer.md`：审查视觉服务代码中违反契约或响应结构的问题，并指出首个破坏性错误的提示词。
+- `outputs/skill-pipeline-budget-planner.md`：根据目标延迟和吞吐量，为各流水线阶段分配时间预算，并标记哪个阶段最先超预算的技能。
 
-## Exercises
+## 练习（Exercises）
 
-1. **(Easy)** Run the pipeline on 10 images from any open dataset. Report the average time per stage and the distribution of detection counts per image.
-2. **(Medium)** Add a mask output field to `Detection` and encode it as RLE. Verify the JSON stays under 1MB even for a 10-object image.
-3. **(Hard)** Add a micro-batcher in front of the classifier: collect crops for up to 10 ms, classify them all in one GPU call, return results per request. Measure the throughput gain at 5 concurrent requests per second and the latency added.
+1. **（简单）** 在任意开放数据集的 10 张图像上运行流水线。报告各阶段平均耗时，以及每张图像检测数量的分布。
+2. **（中等）** 为 `Detection` 增加掩码输出字段，以 RLE 编码。验证即使图像包含 10 个目标，JSON 也保持在 1MB 以下。
+3. **（困难）** 在分类器之前增加微批处理器：最多收集 10 毫秒裁剪图，在一次 GPU 调用中全部分类，并按请求返回结果。测量每秒 5 个并发请求时的吞吐量增益与新增延迟。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语 | 常见说法 | 实际含义 |
 |------|----------------|----------------------|
-| Pipeline | "The system" | An ordered chain of preprocessing, inference, and postprocessing steps with a typed interface between each pair |
-| Data contract | "The schema" | Pydantic / dataclass definitions that every stage input and output conforms to; catches integration bugs at the boundary |
-| Preprocessing | "Before the model" | Decoding, colour conversion, resizing, normalising; usually the biggest CPU time sink |
-| Postprocessing | "After the model" | NMS, mask resize, threshold, RLE encode; cheap on GPU, expensive on CPU |
-| Microbatcher | "Collect then forward" | Aggregator that waits a fixed window for multiple requests, runs a single batched forward pass |
-| Trace ID | "Request id" | Per-request identifier logged at every stage so slow requests can be traced end-to-end |
-| Failure code | "Named error" | Specific error code per failure class instead of generic 500; enables client retry logic |
-| Health check | "Readiness probe" | Cheap endpoint that reports whether the service can answer; loadbalancers rely on this |
+| 流水线（Pipeline） | “系统” | 预处理、推理、后处理的有序链条，相邻步骤间都有带类型接口 |
+| 数据契约（Data contract） | “模式” | 各阶段输入输出遵循的 Pydantic / dataclass 定义，在边界发现集成错误 |
+| 预处理（Preprocessing） | “模型之前” | 解码、颜色转换、缩放、归一化，通常是最大的 CPU 时间开销 |
+| 后处理（Postprocessing） | “模型之后” | NMS、掩码缩放、阈值处理、RLE 编码，在 GPU 上便宜，在 CPU 上昂贵 |
+| 微批处理器（Microbatcher） | “先收集再前向” | 在固定窗口内等待多个请求，再执行一次批量前向传播的聚合器 |
+| 跟踪 ID（Trace ID） | “请求 ID” | 在各阶段记录的逐请求标识，支持端到端追踪慢请求 |
+| 失败码（Failure code） | “具名错误” | 每类失败对应具体错误码，而非通用 500，支持客户端重试逻辑 |
+| 健康检查（Health check） | “就绪探针” | 低成本端点，报告服务能否响应；负载均衡器依赖它 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [Full Stack Deep Learning — Deploying Models](https://fullstackdeeplearning.com/course/2022/lecture-5-deployment/) — the canonical overview of production ML deployment
-- [BentoML docs](https://docs.bentoml.com) — serving framework with batching, versioning, and metrics
-- [torchserve docs](https://pytorch.org/serve/) — PyTorch's official serving library
-- [NVIDIA Triton Inference Server](https://developer.nvidia.com/triton-inference-server) — high-throughput serving with batching and multi-model support
+- [全栈深度学习：模型部署](https://fullstackdeeplearning.com/course/2022/lecture-5-deployment/)：生产机器学习部署的经典概览
+- [BentoML 文档](https://docs.bentoml.com)：提供批处理、版本管理与指标的服务框架
+- [torchserve 文档](https://pytorch.org/serve/)：PyTorch 官方服务库
+- [NVIDIA Triton 推理服务器](https://developer.nvidia.com/triton-inference-server)：支持批处理与多模型的高吞吐服务

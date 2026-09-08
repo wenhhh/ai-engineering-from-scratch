@@ -1,102 +1,102 @@
 {
   "lesson": "10-attention-mechanism",
-  "title": "Attention Mechanism — The Breakthrough",
+  "title": "注意力机制：关键突破（Attention Mechanism — The Breakthrough）",
   "questions": [
     {
       "stage": "pre",
-      "question": "What problem in seq2seq did Bahdanau attention solve?",
+      "question": "Bahdanau 注意力（Attention）解决了 seq2seq 的什么问题？",
       "options": [
-        "Tokenization mismatch",
-        "Beam search latency",
-        "The fixed-size context-vector bottleneck where the decoder only saw the encoder's final state",
-        "Vanishing gradients in encoders"
+        "分词不匹配",
+        "束搜索延迟",
+        "解码器只能看到编码器最终状态的定长上下文向量瓶颈",
+        "编码器梯度消失"
       ],
       "correct": 2,
-      "explanation": "Attention lets the decoder consult every encoder state, not just the last one."
+      "explanation": "注意力让解码器查看每个编码器状态，而不只是最后一个。"
     },
     {
       "stage": "pre",
-      "question": "What is the attention context vector at decoder step t?",
+      "question": "解码步骤 t 的注意力上下文向量是什么？",
       "options": [
-        "The encoder's final hidden state",
-        "The decoder's input embedding",
-        "A random projection",
-        "A weighted average of encoder hidden states where the weights come from a query-key score"
+        "编码器最终隐藏状态",
+        "解码器输入嵌入",
+        "随机投影",
+        "编码器隐藏状态的加权平均，权重来自查询与键的评分"
       ],
       "correct": 3,
-      "explanation": "Context = sum of alpha_i * h_i, a step-dependent weighted average of encoder states."
+      "explanation": "Context = sum of alpha_i * h_i，即随步骤变化的编码器状态加权平均。"
     },
     {
       "stage": "check",
-      "question": "In Bahdanau (additive) attention, what role does the vector v_a play?",
+      "question": "Bahdanau 加性注意力（Additive attention）中，向量 v_a 起什么作用？",
       "options": [
-        "It encodes positions",
-        "It biases the softmax",
-        "It controls dropout",
-        "It is the projection that turns the attention-dim hidden combination into a scalar score per encoder position"
+        "编码位置",
+        "给 softmax 加偏置",
+        "控制 dropout",
+        "将注意力维度的隐藏组合投影为各编码器位置的标量分数"
       ],
       "correct": 3,
-      "explanation": "v_a dot-products with tanh(W_a s + U_a h) to collapse a d_attn vector into a scalar score."
+      "explanation": "v_a 与 tanh(W_a s + U_a h) 做点积，将 d_attn 向量缩为标量分数。"
     },
     {
       "stage": "check",
-      "question": "In Luong's 'dot' attention variant, what constraint must hold?",
+      "question": "Luong 的 'dot' 注意力变体必须满足什么约束？",
       "options": [
-        "Beam search is required",
-        "Decoder state and encoder state must share the same dimensionality (d_s == d_h)",
-        "Softmax must be log-space",
-        "The encoder must be bidirectional"
+        "必须使用束搜索",
+        "解码器与编码器状态维度相同（d_s == d_h）",
+        "softmax 必须在对数空间",
+        "编码器必须双向"
       ],
       "correct": 1,
-      "explanation": "dot uses s^T h with no projection, so dimensions must match exactly."
+      "explanation": "dot 直接使用 s^T h，没有投影，因此维度必须精确匹配。"
     },
     {
       "stage": "check",
-      "question": "Which Q/K/V mapping describes classical (Bahdanau/Luong) attention?",
+      "question": "哪种 Q/K/V 映射描述传统 Bahdanau/Luong 注意力？",
       "options": [
-        "Q from encoder, K and V from decoder",
-        "Q, K, V are three independent learned projections of the source",
-        "Q = decoder state; K and V = encoder states (same tensor)",
-        "Q is random, K and V are learned"
+        "Q 来自编码器，K 和 V 来自解码器",
+        "Q、K、V 是源的三个独立学习投影",
+        "Q = 解码器状态；K 和 V = 编码器状态，是同一张量",
+        "Q 随机，K 和 V 通过学习获得"
       ],
       "correct": 2,
-      "explanation": "In classical attention, keys and values are both encoder states; transformers split K and V via learned projections."
+      "explanation": "传统注意力中，键和值都是编码器状态；Transformer 通过学习投影将 K、V 分开。"
     },
     {
       "stage": "post",
-      "question": "Why is reporting raw attention weights as 'explanation' considered fragile?",
+      "question": "为什么将原始注意力权重作为“解释”并不可靠？",
       "options": [
-        "Research (e.g. Jain and Wallace, 2019) showed attention distributions can be permuted without changing predictions on some tasks",
-        "Attention weights are not differentiable",
-        "Attention weights leak labels",
-        "They are too small to plot"
+        "研究（如 Jain 与 Wallace，2019）表明，某些任务中可置换注意力分布而不改变预测",
+        "注意力权重不可微",
+        "注意力权重泄漏标签",
+        "权重太小无法绘图"
       ],
       "correct": 0,
-      "explanation": "Attention weights are correlated with predictions but not faithful explanations without ablation/counterfactual checks."
+      "explanation": "注意力权重与预测相关，但没有消融或反事实检查，就不能算忠实的解释。"
     },
     {
       "stage": "post",
-      "question": "Which step bridges Bahdanau attention to transformer self-attention?",
+      "question": "哪一步将 Bahdanau 注意力连接到 Transformer 自注意力（Self-attention）？",
       "options": [
-        "Querying a sequence against itself with separately learned Q, K, and V projections, run in parallel heads",
-        "Dropping beam search",
-        "Replacing softmax with sigmoid",
-        "Adding more RNN layers"
+        "用分别学习的 Q、K、V 投影让序列查询自身，并在多个头中并行执行",
+        "去掉束搜索",
+        "用 sigmoid 替代 softmax",
+        "增加 RNN 层"
       ],
       "correct": 0,
-      "explanation": "Self-attention queries the same sequence, with split K and V projections, parallelized across heads."
+      "explanation": "自注意力查询同一序列，K 与 V 投影分开，并跨多个头并行。"
     },
     {
       "stage": "post",
-      "question": "What is one practical use case for masking in attention?",
+      "question": "注意力中使用掩码（Masking）的一个实际用途是什么？",
       "options": [
-        "Replacing dropout",
-        "Encoding positions",
-        "Setting attention weight for padding tokens to zero so they do not contribute to the context vector",
-        "Reducing model size"
+        "替代 dropout",
+        "编码位置",
+        "将填充词元的注意力权重设为零，使其不贡献上下文向量",
+        "缩小模型"
       ],
       "correct": 2,
-      "explanation": "Masking padding (or future tokens in a decoder) prevents the softmax from spreading weight onto invalid positions."
+      "explanation": "屏蔽填充词元或解码器未来词元，可防止 softmax 将权重分配给无效位置。"
     }
   ]
 }

@@ -1,8 +1,8 @@
-"""Letta-shaped memory blocks with a sleep-time consolidation agent.
+"""Letta 式记忆块（Memory block），配合休眠期整合智能体。
 
-Primary agent writes raw facts during turns. Sleep-time agent runs between
-turns, off the critical path, and consolidates blocks. Scripted so it runs
-offline.
+主智能体在交互轮次中写入原始事实。休眠期智能体在轮次之间运行，
+不占用关键路径（Critical path），负责整合记忆块。使用预设脚本，
+因此可离线运行。
 """
 
 from __future__ import annotations
@@ -29,19 +29,19 @@ class Block:
 
     def replace(self, old: str, new: str) -> str:
         if old not in self.value:
-            return f"error: {old!r} not in {self.label}"
+            return f"错误：{old!r} 不在 {self.label} 中"
         prev = self.value
         self.value = self.value.replace(old, new)
         self.version += 1
         self.history.append(prev)
-        return f"{self.label} v{self.version} replaced"
+        return f"{self.label} v{self.version} 已替换"
 
     def rewrite(self, new: str) -> str:
         prev = self.value
         self.value = new
         self.version += 1
         self.history.append(prev)
-        return f"{self.label} v{self.version} rewritten ({len(self.value)}/{self.limit})"
+        return f"{self.label} v{self.version} 已重写 ({len(self.value)}/{self.limit})"
 
     def near_limit(self, threshold: float = 0.8) -> bool:
         return len(self.value) >= int(self.limit * threshold)
@@ -105,7 +105,7 @@ class Archival:
 
 
 class PrimaryAgent:
-    """Handles turns. Writes raw facts fast; never summarizes or consolidates."""
+    """处理交互轮次。快速写入原始事实，从不做摘要或整合。"""
 
     def __init__(self, blocks: BlockStore, archival: Archival) -> None:
         self.blocks = blocks
@@ -113,7 +113,7 @@ class PrimaryAgent:
         self.trace: list[str] = []
 
     def turn(self, user_text: str, writes: list[tuple[str, str, str]]) -> str:
-        self.trace.append(f"user: {user_text}")
+        self.trace.append(f"用户：{user_text}")
         for kind, label_or_text, payload in writes:
             if kind == "block_append":
                 block = self.blocks.get(label_or_text)
@@ -122,14 +122,14 @@ class PrimaryAgent:
             elif kind == "archival_insert":
                 rid = self.archival.insert(payload)
                 self.trace.append(f"  archival_insert -> {rid}")
-        response = f"response to: {user_text}"
-        self.trace.append(f"assistant: {response}")
+        response = f"回复：{user_text}"
+        self.trace.append(f"助手：{response}")
         return response
 
 
 class SleepTimeAgent:
-    """Off the critical path. Summarizes near-limit blocks, invalidates
-    contradicted archival records, no user latency cost.
+    """在关键路径之外运行。对接近容量上限的记忆块做摘要，
+    将被新事实否定的归档记录标为无效，不增加用户等待时间。
     """
 
     def __init__(self, blocks: BlockStore, archival: Archival) -> None:
@@ -138,7 +138,7 @@ class SleepTimeAgent:
         self.trace: list[str] = []
 
     def run(self, contradictions: list[tuple[str, str]]) -> None:
-        self.trace.append("sleep-time pass start")
+        self.trace.append("休眠期处理开始")
         for label in self.blocks.labels():
             block = self.blocks.get(label)
             if block is None:
@@ -146,15 +146,15 @@ class SleepTimeAgent:
             if block.near_limit():
                 summary = _summarize(block.value, block.limit // 2)
                 result = block.rewrite(summary)
-                self.trace.append(f"  consolidate {label}: {result}")
+                self.trace.append(f"  整合 {label}： {result}")
         for claim, reason in contradictions:
             for record in self.archival.all_records():
                 if record.valid and claim.lower() in record.text.lower():
                     self.archival.invalidate(record.rid)
                     self.trace.append(
-                        f"  invalidate {record.rid} ({reason}): {record.text[:50]}..."
+                        f"  标为无效 {record.rid} ({reason}): {record.text[:50]}..."
                     )
-        self.trace.append("sleep-time pass end")
+        self.trace.append("休眠期处理结束")
 
 
 def _summarize(text: str, target_len: int) -> str:
@@ -173,24 +173,24 @@ def _summarize(text: str, target_len: int) -> str:
 
 def main() -> None:
     print("=" * 70)
-    print("LETTA MEMORY BLOCKS + SLEEP-TIME COMPUTE — Phase 14, Lesson 08")
+    print("Letta 记忆块与休眠期计算（Sleep-time compute）——第 14 阶段，第 08 课")
     print("=" * 70)
 
     blocks = BlockStore()
-    blocks.create("human", "facts about the user", limit=180)
-    blocks.create("persona", "the agent's self-concept", limit=160)
-    blocks.create("task", "the current task scope", limit=220)
+    blocks.create("human", "关于用户的事实", limit=180)
+    blocks.create("persona", "智能体的自我认知", limit=160)
+    blocks.create("task", "当前任务范围", limit=220)
     archival = Archival()
 
     primary = PrimaryAgent(blocks, archival)
     sleep = SleepTimeAgent(blocks, archival)
 
     primary.turn(
-        "my name is ava, I ship agents for a living, I live in Berlin",
+        "我叫 ava，以交付智能体为业，住在 Berlin",
         [("block_append", "human", "name=ava role=ships_agents city=Berlin")],
     )
     primary.turn(
-        "today help me plan a 30-lesson curriculum on agent engineering",
+        "今天请帮我规划一套 30 课的智能体工程课程",
         [
             ("block_append", "task", "plan 30-lesson agent curriculum, target senior eng"),
             ("archival_insert", "",
@@ -198,7 +198,7 @@ def main() -> None:
         ],
     )
     primary.turn(
-        "I moved to Lisbon last month; update your notes",
+        "我上个月搬到了 Lisbon；请更新你的记录",
         [
             ("block_append", "human", "city=Lisbon (updated from Berlin)"),
             ("archival_insert", "",
@@ -206,38 +206,38 @@ def main() -> None:
         ],
     )
     primary.turn(
-        "also the curriculum target is senior and staff engineers, not junior",
+        "另外，课程面向高级和 Staff 工程师，不是初级工程师",
         [("block_append", "task",
           "audience=senior+staff eng, cite arXiv and first-party framework docs")],
     )
 
-    print("\nprimary turns (writes are fast and raw)")
+    print("\n主智能体轮次（快速写入原始事实）")
     for line in primary.trace:
         print(f"  {line}")
 
-    print("\nblocks after primary phase (pre-consolidation)")
+    print("\n主智能体处理后的记忆块（整合前）")
     print(blocks.render())
 
     sleep.run(contradictions=[
         ("ava lives in Berlin",
-         "human block updated city to Lisbon; Berlin archival claim is stale"),
+         "human 记忆块中的城市已更新为 Lisbon；Berlin 的归档事实已过时"),
     ])
 
-    print("\nsleep-time trace")
+    print("\n休眠期轨迹")
     for line in sleep.trace:
         print(f"  {line}")
 
-    print("\nblocks after sleep-time (consolidated)")
+    print("\n休眠期处理后的记忆块（已整合）")
     print(blocks.render())
 
-    print("\narchival state")
+    print("\n归档状态")
     for record in archival.all_records():
-        status = "VALID  " if record.valid else "INVALID"
+        status = "有效   " if record.valid else "无效"
         print(f"  {record.rid} [{status}] {record.text}")
 
     print()
-    print("key property: primary-turn latency is unchanged by consolidation.")
-    print("sleep-time can run a stronger, slower model — it is off the path.")
+    print("关键性质：整合不会改变主智能体交互轮次的延迟。")
+    print("休眠期可以运行更强但更慢的模型，因为它不占用关键路径。")
 
 
 if __name__ == "__main__":

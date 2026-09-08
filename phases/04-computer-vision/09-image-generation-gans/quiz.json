@@ -2,38 +2,63 @@
   "questions": [
     {
       "stage": "pre",
-      "question": "Why does GAN training use the non-saturating generator loss -log(D(G(z))) instead of log(1 - D(G(z)))?",
-      "options": ["They are mathematically different and produce better equilibria", "It is required by PyTorch", "It speeds up the discriminator", "Early in training D(G(z)) is near zero, so log(1 - D(G(z))) has vanishing gradient; -log(D(G(z))) has large gradient there so G receives a useful signal"],
+      "question": "为什么 GAN 训练使用非饱和生成器损失 -log(D(G(z)))，而非 log(1 - D(G(z)))？",
+      "options": [
+        "二者数学上不同，会产生更好的均衡",
+        "PyTorch 要求如此",
+        "它加快判别器",
+        "训练早期 D(G(z)) 接近零，log(1 - D(G(z))) 的梯度消失，而 -log(D(G(z))) 在此处梯度很大，使 G 得到有用信号"
+      ],
       "correct": 3,
-      "explanation": "The two losses share the same gradient direction but very different magnitudes when D(G(z)) is small. log(1 - D(G(z))) plateaus at zero gradient there. The non-saturating form stays informative across the whole range. Goodfellow noted this tweak in the original paper and every modern GAN uses it."
+      "explanation": "当 D(G(z)) 很小时，两种损失的梯度方向相同，大小却差异很大。log(1 - D(G(z))) 在此处进入近乎零梯度的平台，非饱和形式则在整个范围保持信息量。Goodfellow 在原始论文就提到这一调整，现代 GAN 都使用它。"
     },
     {
       "stage": "pre",
-      "question": "DCGAN's rules say to use strided convolutions instead of pooling. Why?",
-      "options": ["Pooling is non-learnable and throws away information the generator might need; strided convs let the network learn its own downsampling, which empirically produces sharper generated images", "Pooling is incompatible with batch norm", "Pooling is slower on GPUs", "Pooling breaks gradient flow"],
+      "question": "DCGAN 规则要求用带步幅卷积替代池化，为什么？",
+      "options": [
+        "池化不可学习，会丢弃生成器可能需要的信息；带步幅卷积让网络学习自己的下采样，实验上能生成更清晰图像",
+        "池化与批归一化不兼容",
+        "池化在 GPU 上更慢",
+        "池化破坏梯度流"
+      ],
       "correct": 0,
-      "explanation": "Max-pool is a hand-picked downsampling that discards everything but the max. In a generative setting the model benefits from a learned downsampling that can preserve information across the stride. Strided convolutions in D and strided transposed convolutions in G were the architectural change that made DCGANs trainable."
+      "explanation": "最大池化是人工选择的下采样，除最大值外丢弃所有信息。生成任务中，可学习下采样能够在跨步时保留信息，对模型有益。D 中的带步幅卷积与 G 中的带步幅转置卷积，是让 DCGAN 可训练的架构变化。"
     },
     {
       "stage": "post",
-      "question": "You train a GAN and notice G produces almost identical samples regardless of the input noise. Which failure is this?",
-      "options": ["Oscillation", "Vanishing gradients", "Mode collapse — G has found a narrow region of the data distribution that consistently fools D and has no incentive to explore; fixes include spectral norm, minibatch discrimination, or a larger batch", "The dataset is too small"],
+      "question": "训练 GAN 时，无论输入噪声如何，G 都产生几乎相同的样本，这是什么失败？",
+      "options": [
+        "振荡",
+        "梯度消失",
+        "模式崩溃：G 找到了数据分布中能持续骗过 D 的狭窄区域，没有探索动力；可用谱归一化、小批次判别或更大批次修复",
+        "数据集太小"
+      ],
       "correct": 2,
-      "explanation": "Mode collapse is the characteristic GAN failure where samples lack diversity. The diagnostic is obvious: noise in, same image out. Fixes all target the discriminator's ability to punish lack of diversity, either by making D more expressive (spectral norm, minibatch discrimination) or by giving G less room to collapse (larger batch, conditional labels)."
+      "explanation": "模式崩溃是 GAN 样本缺乏多样性的典型失败，诊断很直观：输入噪声，输出同一图像。修复都围绕惩罚缺少多样性，或增强 D 的表达能力，例如谱归一化、小批次判别，或压缩 G 崩溃的空间，例如更大批次、条件标签。"
     },
     {
       "stage": "post",
-      "question": "Why do DCGAN training scripts use Adam with betas=(0.5, 0.999) instead of the default (0.9, 0.999)?",
-      "options": ["It is a typo propagated through tutorials", "A lower beta1 reduces momentum; in an adversarial game, heavy momentum keeps each optimizer in the wrong direction too long when the other network's behaviour changes, which causes instability", "The default is broken", "Adam is only supported with beta1=0.5 on CUDA"],
+      "question": "为什么 DCGAN 训练脚本使用 Adam 的 betas=(0.5, 0.999)，而非默认 (0.9, 0.999)？",
+      "options": [
+        "这是教程间传播的笔误",
+        "较低 beta1 减少动量；对抗博弈中，另一网络行为变化后，较大动量会让优化器沿错误方向持续过久，导致不稳定",
+        "默认值有错误",
+        "CUDA 上 Adam 只支持 beta1=0.5"
+      ],
       "correct": 1,
-      "explanation": "Adam's default beta1=0.9 averages gradients over roughly 10 steps. In a stationary objective that is helpful. In an adversarial game where the loss landscape shifts every D and G update, that averaging delays the optimizer's response and causes oscillation. Radford et al. found beta1=0.5 much more stable, and it is now the GAN default."
+      "explanation": "Adam 默认 beta1=0.9 近似平均约 10 步梯度。目标稳定时这有帮助，但对抗博弈中，每次 D、G 更新都会改变损失地形，平均会延迟优化器响应并引起振荡。Radford 等发现 beta1=0.5 稳定得多，如今已是 GAN 默认设置。"
     },
     {
       "stage": "post",
-      "question": "A colleague reports a GAN with D loss near zero and G loss increasing over training. What is happening and how do you fix it?",
-      "options": ["The generator is correctly overfitting", "Nothing — this is the equilibrium", "The discriminator has become too strong and drives G's gradient to zero; fixes include a smaller D, spectral norm, label smoothing on real labels (0.9 instead of 1.0), or switching to WGAN-GP", "Both nets are improving correctly"],
+      "question": "同事报告 GAN 的 D 损失接近零，G 损失在训练中持续上升。发生了什么，如何修复？",
+      "options": [
+        "生成器正在正确地过拟合",
+        "没有问题，这是均衡",
+        "判别器过强，使 G 梯度趋零；可缩小 D、使用谱归一化、平滑真实标签（用 0.9 替代 1.0），或改用 WGAN-GP",
+        "两个网络都在正确改善"
+      ],
       "correct": 2,
-      "explanation": "D's loss near zero means D is perfect on both real and fake. At that point the BCE gradient to G vanishes: G sees a near-zero signal no matter what it outputs. The fix is to weaken D or use a loss that does not saturate. Spectral norm (limits D's Lipschitz constant) and WGAN-GP (uses Earth-Mover distance instead of BCE) are the two standard rescues."
+      "explanation": "D 损失接近零，意味着它完美区分真假。此时传给 G 的 BCE 梯度消失，无论输出什么，G 看到的信号都接近零。修复是削弱 D 或使用不饱和损失。谱归一化限制 D 的 Lipschitz 常数，WGAN-GP 用推土机距离替代 BCE，是两种标准挽救方法。"
     }
   ]
 }

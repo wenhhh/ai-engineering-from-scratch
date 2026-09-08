@@ -1,78 +1,78 @@
 {
   "lesson": "18-tool-contracts-errors-and-progressive-discovery",
-  "title": "Tool Contracts, Errors, and Progressive Discovery",
+  "title": "工具契约、错误与渐进式发现（Tool Contracts, Errors, and Progressive Discovery）",
   "questions": [
     {
       "stage": "pre",
-      "question": "Three tools named search, find, and lookup have nearly identical descriptions. What should be fixed first?",
+      "question": "名为 search、find 和 lookup 的三个工具描述几乎相同。首先应修复什么？",
       "options": [
-        "Keep the catalog but retry selection with examples of prior successful calls",
-        "Create distinct action, source, use-case, schema, and side-effect boundaries",
-        "Expose all three tools to every role so an agent can recover from a weak first choice",
-        "Use a stronger model to infer overlapping schema differences"
+        "保留目录，但用之前成功调用的示例重新尝试选择",
+        "建立不同的操作、来源、使用场景、模式和副作用边界",
+        "向每个角色暴露全部三个工具，以便首次选择不佳时恢复",
+        "使用更强的模型推断重叠模式之间的差异"
       ],
       "correct": 1,
-      "explanation": "The catalog removed the information needed for selection. Distinct names, descriptions, negative uses, schemas, and authority boundaries repair the interface structurally."
+      "explanation": "目录删去了选择所需的信息。不同名称、描述、不适用场景、模式和权限边界能从结构上修复接口。"
     },
     {
       "stage": "check",
-      "question": "What should a structured authorization error communicate?",
+      "question": "结构化授权错误应传达什么？",
       "options": [
-        "A request to switch models and repeat the call with more conservative arguments",
-        "A generic failure category plus an automatic retry delay that conceals policy details",
-        "Category, non-retryable state, safe message, and the proper approval or access next step",
-        "The internal stack trace and rejected identity claims so the agent can diagnose access"
+        "要求切换到另一个模型，并使用更保守的参数再次发起这次调用",
+        "返回通用失败类别和自动重试延迟，从而隐藏政策的具体细节",
+        "类别、不可重试状态、安全消息，以及适当的审批或访问权限申请步骤",
+        "返回内部堆栈追踪以及被拒绝的身份声明，让智能体能够诊断访问问题"
       ],
       "correct": 2,
-      "explanation": "Authorization will not change through blind retry. The harness needs a safe category and escalation action without internal or credential leakage."
+      "explanation": "盲目重试不会改变授权。运行框架需要安全的错误类别和升级处理动作，且不能泄露内部信息或凭据。"
     },
     {
       "stage": "check",
-      "question": "When should an application force a structured output tool?",
+      "question": "什么时候应用应强制使用结构化输出工具？",
       "options": [
-        "Whenever a conversation may eventually call a tool, so every response stays structured",
-        "When an action is authorized in the prompt but the client cannot inspect its arguments",
-        "When the model must both format a refund request and execute the transaction",
-        "When it needs a typed, validated record with no real-world side effect"
+        "只要对话最终可能调用工具，就让每次响应都保持结构化",
+        "操作在提示词中获得授权，但客户端无法检查其参数时",
+        "模型必须同时格式化退款请求并执行交易时",
+        "需要带类型、经过验证且不产生现实副作用的记录时"
       ],
       "correct": 3,
-      "explanation": "A schema-only tool can enforce the output contract. Real-world execution remains a separate authorized action and should not be forced merely to obtain JSON."
+      "explanation": "仅用于模式的工具可以强制输出契约。现实执行仍是独立的授权操作，不应仅为了获得 JSON 而强制执行。"
     },
     {
       "stage": "check",
-      "question": "Why use progressive discovery for a large tool catalog?",
+      "question": "为什么大型工具目录要使用渐进式发现？",
       "options": [
-        "It reduces context and selection load while preserving a small stable starting surface",
-        "It guarantees selected tools are safe because discovery occurs only after a model request",
-        "It keeps credentials out of integration code by loading them with descriptions",
-        "It makes undiscovered tools unreachable, so execution authorization is unnecessary"
+        "它在保留小而稳定的初始接口的同时，降低上下文和选择负担",
+        "它保证选中的工具都是安全的，因为工具发现只会在模型提出请求之后发生",
+        "它通过将凭据与工具描述一起加载，避免在集成代码中存放凭据",
+        "它让尚未发现的工具无法被访问，因此执行时无需再进行授权检查"
       ],
       "correct": 0,
-      "explanation": "Loading relevant capabilities on demand can improve context, selection, and cache behavior. Scoped discovery and execution authorization are still required."
+      "explanation": "按需加载相关能力可以改善上下文、选择和缓存表现，但仍须限定发现作用域，并实施执行授权。"
     },
     {
       "stage": "post",
-      "question": "Where should a team store shared MCP server declarations and personal secret values?",
+      "question": "团队应在哪里存储共享 MCP 服务器声明和个人密钥值？",
       "options": [
-        "Commit declarations and encrypted secret values together as one shared configuration",
-        "Shared safe declarations in project scope; secret values in environment or approved secret storage",
-        "Store secret references and resolved values in descriptions visible only to the host",
-        "Place declarations in project instructions and have each user provide secrets in prompts"
+        "把声明和加密密钥值一起提交，形成统一共享配置",
+        "安全的共享声明放在项目作用域；密钥值放在环境或批准的密钥存储中",
+        "把密钥引用及解析后的值存入仅宿主可见的描述",
+        "将声明放在项目指令中，让每位用户在提示词中提供密钥"
       ],
       "correct": 1,
-      "explanation": "Project configuration supports versioned collaboration, while secret values must remain outside version control and be provisioned through a secure mechanism."
+      "explanation": "项目配置支持版本化协作，而密钥值必须留在版本控制之外，通过安全机制提供。"
     },
     {
       "stage": "post",
-      "question": "A static policy document is exposed as a tool called get_policy without side effects. Which MCP primitive may express the boundary more directly?",
+      "question": "静态政策文档通过无副作用工具 get_policy 暴露。哪种 MCP 原语可能更直接地表达这个边界？",
       "options": [
-        "An agent-to-agent task assigned to a policy specialist with document access",
-        "An approval hook that injects the document after confirming the intended use",
-        "A resource exposing the policy as URI-addressed contextual data",
-        "A read-only tool because model-selected retrieval should always use the tools primitive"
+        "将一项智能体间任务分配给能够访问文档的政策专家",
+        "使用审批钩子，在确认预期用途之后将文档注入上下文",
+        "将政策作为通过 URI 寻址的上下文数据暴露为资源",
+        "使用只读工具，因为由模型选择的检索始终都应采用工具这一原语"
       ],
       "correct": 2,
-      "explanation": "A resource represents contextual data the host or model can read. Tools are best reserved for model-requested actions or computations."
+      "explanation": "资源表示宿主或模型能够读取的上下文数据。工具更适合保留给模型请求的操作或计算。"
     }
   ]
 }

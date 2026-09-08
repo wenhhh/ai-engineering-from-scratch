@@ -103,20 +103,20 @@ def main():
     rng = random.Random(42)
     Q_ql, ret_ql = q_learning(episodes, rng=rng)
 
-    print(f"=== 4x4 GridWorld, {episodes} episodes, alpha=0.1, eps=0.1, gamma=0.99 ===")
+    print(f"=== 4x4 网格世界（GridWorld），{episodes} 个回合（Episode），alpha=0.1, eps=0.1, gamma=0.99 ===")
     print()
-    print("learning curves (mean return per block of 500 episodes):")
+    print("学习曲线（Learning Curve）：每 500 个回合一组的平均回报")
     for i, (a, b) in enumerate(zip(block_means(ret_sarsa, 500), block_means(ret_ql, 500))):
-        print(f"  block {i+1}: sarsa={a:7.2f}   q-learning={b:7.2f}")
+        print(f"  第 {i+1} 组：sarsa={a:7.2f}   q-learning={b:7.2f}")
 
     print()
-    print_policy(greedy_policy(Q_sarsa), "SARSA greedy policy")
+    print_policy(greedy_policy(Q_sarsa), "SARSA 贪心策略（Greedy Policy）")
     print()
-    print_policy(greedy_policy(Q_ql), "Q-learning greedy policy")
+    print_policy(greedy_policy(Q_ql), "Q 学习（Q-learning）的贪心策略")
 
     print()
-    print(f"final mean return (last 500 eps):  sarsa={sum(ret_sarsa[-500:])/500:.2f}   q-learning={sum(ret_ql[-500:])/500:.2f}")
-    print("(optimal return on this 4x4 GridWorld = -6.0)")
+    print(f"最终平均回报（最后 500 个回合）：sarsa={sum(ret_sarsa[-500:])/500:.2f}   q-learning={sum(ret_ql[-500:])/500:.2f}")
+    print("（该 4x4 网格世界的最优回报 = -6.0）")
 
 
 if __name__ == "__main__":

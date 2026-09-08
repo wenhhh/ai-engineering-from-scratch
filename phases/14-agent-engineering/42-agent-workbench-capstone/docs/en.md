@@ -1,26 +1,26 @@
-# Capstone: Ship a Reusable Agent Workbench Pack
+# 综合项目：交付可复用智能体工作台包（Capstone: Ship a Reusable Agent Workbench Pack）
 
-> The mini-track ends with a pack you drop into any repo. Eleven lessons of surfaces compressed into a directory you can `cp -r` and have an agent working reliably the next morning. The capstone is the artifact this curriculum trades on.
+> 这条小型学习路线以一个可放入任何仓库的包收尾。前面十一课介绍的工作台支撑能力（Workbench Surfaces）被整合进一个目录，执行 `cp -r` 即可复制，让智能体第二天早上就能可靠地工作。综合项目就是这套课程拿得出手的产物。
 
 **Type:** Build
-**Languages:** Python (stdlib)
-**Prerequisites:** Phases 14 · 31 to 14 · 41
-**Time:** ~75 minutes
+**Languages:** Python（标准库）
+**Prerequisites:** 阶段 14 · 31 至 14 · 41
+**Time:** 约 75 分钟
 
-## Learning Objectives
+## 学习目标（Learning Objectives）
 
-- Package the seven workbench surfaces into one drop-in directory.
-- Pin the schemas, scripts, and templates so a new repo gets a known-good baseline.
-- Add a single installer script that lays down the pack idempotently.
-- Decide what stays in the pack and what stays out, defending the cut for each.
+- 将七项工作台支撑能力（Workbench Surfaces）打包进一个即插即用目录。
+- 固定结构定义（Schema）、脚本与模板，让新仓库获得已知良好基线。
+- 添加一个以幂等方式安装工作台包的安装脚本。
+- 决定哪些内容纳入包、哪些不纳入，并逐项说明取舍依据。
 
-## The Problem
+## 问题（The Problem）
 
-A workbench that lives in a Google Doc, a chat history, and three half-remembered scripts is a workbench that gets rebuilt every quarter. The cure is a versioned pack: a repo or directory with the surfaces, the schemas, the scripts, and a one-command installer.
+散落在 Google Doc、聊天历史和三份只记得一半的脚本里的工作台，每季度都得重建。解决办法是版本化工作台包：一个包含支撑能力、结构定义（Schema）、脚本和单命令安装器的仓库或目录。
 
-You will end this lesson with `outputs/agent-workbench-pack/` shipped on disk and a `bin/install.sh` that drops it into any target repo.
+完成本课时，磁盘上将有 `outputs/agent-workbench-pack/`，以及把它放入任意目标仓库的 `bin/install.sh`。
 
-## The Concept
+## 概念（The Concept）
 
 ```mermaid
 flowchart TD
@@ -28,11 +28,11 @@ flowchart TD
   Pack --> Schemas[schemas/]
   Pack --> Scripts[scripts/]
   Pack --> Bin[bin/install.sh]
-  Bin --> Repo[target repo]
-  Repo --> Surfaces[all seven workbench surfaces wired]
+  Bin --> Repo[目标仓库]
+  Repo --> Surfaces[七项工作台支撑能力（Workbench Surfaces）全部接通]
 ```
 
-### The pack layout
+### 包布局（The pack layout）
 
 ```
 outputs/agent-workbench-pack/
@@ -56,103 +56,103 @@ outputs/agent-workbench-pack/
 └── README.md
 ```
 
-### What stays in, what stays out
+### 纳入与排除（What stays in, what stays out）
 
-In:
+纳入：
 
-- Surface schemas. They are the contract.
-- The four scripts above. They are the runtime.
-- The four docs. They are the rules and the rubric.
+- 支撑能力的结构定义（Schema）。它们就是契约。
+- 上述四个脚本。它们就是运行时。
+- 四份文档。它们就是规则与评分标准。
 
-Out:
+排除：
 
-- Project-specific tasks. Tasks belong on the target repo's board, not in the pack.
-- Vendor SDK calls. The pack is framework-agnostic.
-- Onboarding prose. The pack lives next to the team's existing onboarding, not inside it.
+- 项目专属任务。任务属于目标仓库看板，不属于工作台包。
+- 厂商 SDK 调用。工作台包不依赖框架。
+- 入门说明。包放在团队现有入门材料旁，而非融入其中。
 
-### The installer
+### 安装器（The installer）
 
-A short `bin/install.sh` (or `bin/install.py`):
+一个简短的 `bin/install.sh`（或 `bin/install.py`）：
 
-1. Refuses to install over an existing pack without `--force`.
-2. Copies the pack into the target repo.
-3. Wires up CI if a `.github/workflows/` exists.
-4. Prints next steps: fill in the board, set acceptance commands, run the init script.
+1. 没有 `--force` 时拒绝覆盖已有工作台包。
+2. 将包复制到目标仓库。
+3. 若存在 `.github/workflows/`，接通 CI。
+4. 打印后续步骤：填写看板、设置验收命令、运行初始化脚本。
 
-### Versioning
+### 版本管理（Versioning）
 
-The pack carries a `VERSION` file. Schema bumps and script changes that require migrations bump the major. Doc-only changes bump the patch. The target repo's `agent_state.json` records which pack version it was initialized against.
+包携带 `VERSION` 文件。需要迁移的结构定义升级与脚本变更提升主版本；仅文档变更提升补丁版本。目标仓库的 `agent_state.json` 记录初始化时使用的包版本。
 
 ```figure
 wb-pack-install
 ```
 
-## Build It
+## 动手实现（Build It）
 
-`code/main.py` assembles the pack into `outputs/agent-workbench-pack/` next to the lesson, seeded with the schemas and scripts from the previous lessons in this mini-track and the docs you already wrote.
+`code/main.py` 在课程旁组装 `outputs/agent-workbench-pack/`，以本路线前面课程的结构定义、脚本和已编写文档作为初始内容。
 
-Run it:
+运行：
 
 ```
 python3 code/main.py
 ```
 
-The script copies and pins the surfaces, writes the README, prints the pack tree, and exits zero. Re-running is idempotent.
+脚本复制各项支撑能力所需文件并固定其版本，写入 README，打印包目录树，并以退出码 0 退出。重跑具有幂等性。
 
-## Production patterns in the wild
+## 实际生产中的模式（Production patterns in the wild）
 
-A pack is only valuable if it survives forks, updates, and an unfriendly upstream. Four patterns make that work.
+工作台包只有经得起分叉、更新和不友好的上游才有价值。四种模式让它做到这一点。
 
-**`VERSION` is the contract, not the marketing.** Major bumps require a state migration. Minor bumps require a checker re-run. Patch bumps are doc-only. The installer writes `.workbench-version` into the target repo on every install; `lint_pack.py` refuses to ship if the target's lock disagrees with the pack's `VERSION`. This is how `npm`, `Cargo`, and `pyproject.toml` survive 10 years of churn; nothing about agents changes the rules.
+**`VERSION` 是契约，不是营销。** 主版本升级要求状态迁移，次版本升级要求重跑检查器，补丁版本仅改文档。安装器每次安装都向目标仓库写入 `.workbench-version`；目标锁定版本与包的 `VERSION` 不一致时，`lint_pack.py` 拒绝交付。这正是 `npm`、`Cargo` 和 `pyproject.toml` 经受十年变化的方式；智能体没有改变这些规则。
 
-**Single source for cross-tool distribution.** Nx ships one `nx ai-setup` that lays down `AGENTS.md`, `CLAUDE.md`, `.cursor/rules/`, `.github/copilot-instructions.md`, and an MCP server from a single config. The pack should do the same; the installer emits the symlinks (`ln -s AGENTS.md CLAUDE.md`) so a single source of truth fans out to every coding agent. Forking the pack to support one tool over another is a failure mode.
+**跨工具分发采用单一来源（Single Source）。** Nx 用一个 `nx ai-setup` 从单一配置生成 `AGENTS.md`、`CLAUDE.md`、`.cursor/rules/`、`.github/copilot-instructions.md` 和 MCP 服务器。包也应如此；安装器生成符号链接（`ln -s AGENTS.md CLAUDE.md`），让单一事实来源分发给所有编程智能体。为支持某个工具而分叉工作台包是一种失败模式。
 
-**`uninstall.sh` that refuses on non-trivial state.** Uninstalling the pack must not delete the user's `agent_state.json`, `task_board.json`, or `outputs/`. The uninstaller removes the schemas, scripts, docs, and `AGENTS.md` (with `--keep-agents-md` opt-out) and refuses to proceed if state files have any uncommitted changes. State belongs to the user; the pack does not own it.
+**`uninstall.sh` 遇到不可忽略状态时拒绝执行。** 卸载不得删除用户的 `agent_state.json`、`task_board.json` 或 `outputs/`。卸载器移除结构定义、脚本、文档和 `AGENTS.md`（可用 `--keep-agents-md` 保留）；若状态文件有任何未提交变更，则拒绝继续。状态属于用户，不属于工作台包。
 
-**Skill-as-publishable. SkillKit-style distribution.** The pack ships as a SkillKit skill: `skillkit install agent-workbench-pack` lays it down across 32 AI agents from a single source. The pack repo is the source of truth; SkillKit is the distribution channel. Vendor lock-in collapses; the seven surfaces stay the same.
+**技能作为可发布产物（Skill-as-publishable），采用 SkillKit 风格分发。** 工作台包以 SkillKit 技能发布：`skillkit install agent-workbench-pack` 从单一来源安装到 32 种 AI 智能体。包仓库是事实来源，SkillKit 是分发渠道。厂商锁定被打破，七项支撑能力保持相同。
 
-## Use It
+## 实际应用（Use It）
 
-Three places the pack ships:
+包的三种交付形式：
 
-- **As a directory you drop into a repo.** `cp -r outputs/agent-workbench-pack /path/to/repo`.
-- **As a public template repo.** Fork-and-customize, with `VERSION` controlling drift.
-- **As a SkillKit skill.** Wired into your agent product so a single command lays it down.
+- **放入仓库的目录。** `cp -r outputs/agent-workbench-pack /path/to/repo`。
+- **公开模板仓库。** 分叉后定制，通过 `VERSION` 控制漂移。
+- **SkillKit 技能。** 接入智能体产品，用一条命令安装。
 
-The pack is the recipe. Each install is a serving.
+包是配方，每次安装是按配方做出的一份成品。
 
-## Ship It
+## 交付成果（Ship It）
 
-`outputs/skill-workbench-pack.md` generates a project-tuned pack: rules sharpened to the team's history, scope globs matched to the repo, rubric dimensions extended with one domain-specific entry.
+`outputs/skill-workbench-pack.md` 生成项目定制包：依据团队历史明确规则，让范围通配模式匹配仓库，并为评分标准增加一个领域专属维度。
 
-## Exercises
+## 练习（Exercises）
 
-1. Decide which optional fifth doc deserves promotion into the canonical pack. Defend the cut.
-2. Rewrite the installer as Python with a `--dry-run` flag. Compare ergonomics against bash.
-3. Add a `bin/uninstall.sh` that safely removes the pack and refuses if state files have non-trivial history. What counts as non-trivial?
-4. Add a `lint_pack.py` that fails when the pack drifts from `VERSION`. Wire it into CI for the pack's own repo.
-5. Author the migration runbook from a hand-rolled workbench to this pack. What is the order of operations that minimizes downtime?
+1. 决定哪份可选的第五份文档值得纳入规范包，并说明取舍依据。
+2. 用 Python 重写安装器并添加 `--dry-run`。比较它与 bash 的使用体验。
+3. 添加 `bin/uninstall.sh`，安全移除工作台包；若状态文件有不可忽略的历史，则拒绝执行。什么算不可忽略？
+4. 添加 `lint_pack.py`，包与 `VERSION` 不一致时失败。将其接入包自身仓库的 CI。
+5. 编写从手工工作台迁移到该包的操作手册。什么操作顺序可以最小化停机时间？
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语 | 常见说法 | 实际含义 |
 |------|----------------|------------------------|
-| Workbench pack | "The starter kit" | A versioned directory carrying all seven surfaces |
-| Installer | "Setup script" | `bin/install.sh` that lays the pack down idempotently |
-| Pack version | "VERSION" | Major bumps for schema/script changes, patch for doc-only |
-| Drop-in pack | "cp -r and go" | Pack works without per-repo customization on day one |
-| Forkable template | "GitHub template" | Public repo that GitHub's "Use this template" can clone from |
+| 工作台包（Workbench Pack） | “启动套件” | 携带全部七项支撑能力的版本化目录 |
+| 安装器（Installer） | “设置脚本” | 以幂等方式安装包的 `bin/install.sh` |
+| 包版本（Pack Version） | “VERSION” | 结构定义（Schema）／脚本变更提升主版本，仅文档变更提升补丁版本 |
+| 即插即用包（Drop-in Pack） | “cp -r 就能用” | 第一天无需逐仓库定制即可工作 |
+| 可分叉模板（Forkable Template） | “GitHub 模板” | 可通过 GitHub“使用此模板（Use this template）”克隆的公开仓库 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- Phases 14 · 31 to 14 · 41 — every surface this pack bundles
-- [SkillKit](https://github.com/rohitg00/skillkit) — install this skill across 32 AI agents
-- [Nx Blog, Teach Your AI Agent How to Work in a Monorepo](https://nx.dev/blog/nx-ai-agent-skills) — single-source generator across six tools
-- [agents.md — the open spec](https://agents.md/) — what your pack's router must implement
-- [HKUDS/OpenHarness](https://github.com/HKUDS/OpenHarness) — reference implementation of a pack-equivalent
-- [andrewgarst/agentic_harness](https://github.com/andrewgarst/agentic_harness) — Redis-backed reference with eval suite
-- [Augment Code, A good AGENTS.md is a model upgrade](https://www.augmentcode.com/blog/how-to-write-good-agents-dot-md-files) — pack docs quality bar
-- [Anthropic, Effective harnesses for long-running agents](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents)
-- [Anthropic, Harness design for long-running application development](https://www.anthropic.com/engineering/harness-design-long-running-apps)
-- Phase 14 · 30 — eval-driven agent development that consumes the pack's verification gate
-- Phase 14 · 41 — the before/after benchmark this pack improves on
+- 阶段 14 · 31 至 14 · 41 —— 包中包含的每项支撑能力
+- [SkillKit](https://github.com/rohitg00/skillkit) —— 在 32 种 AI 智能体中安装此技能
+- [Nx Blog：教 AI 智能体如何在单仓库中工作（Teach Your AI Agent How to Work in a Monorepo）](https://nx.dev/blog/nx-ai-agent-skills) —— 面向六种工具的单一来源生成器
+- [agents.md：开放规格（The Open Spec）](https://agents.md/) —— 包的路由入口必须实现的要求
+- [HKUDS/OpenHarness](https://github.com/HKUDS/OpenHarness) —— 等效工作台包的参考实现
+- [andrewgarst/agentic_harness](https://github.com/andrewgarst/agentic_harness) —— 基于 Redis、包含评估套件的参考实现
+- [Augment Code：好的 AGENTS.md 就是模型升级（A Good AGENTS.md Is a Model Upgrade）](https://www.augmentcode.com/blog/how-to-write-good-agents-dot-md-files) —— 包文档的质量标准
+- [Anthropic：长时间运行智能体的有效执行框架（Effective Harnesses for Long-running Agents）](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents)
+- [Anthropic：长时间应用开发的执行框架设计（Harness Design for Long-running Application Development）](https://www.anthropic.com/engineering/harness-design-long-running-apps)
+- 阶段 14 · 30 —— 消费包中验证关卡的评估驱动智能体开发
+- 阶段 14 · 41 —— 该包所改进的前后对比基准

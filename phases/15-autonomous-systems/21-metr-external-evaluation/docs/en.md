@@ -1,119 +1,119 @@
-# METR Time Horizons and External Capability Evaluation
+# METR 时间跨度与外部能力评估（METR Time Horizons and External Capability Evaluation）
 
-> METR (ex-ARC Evals) is an independent 501(c)(3) since December 2023. Their Time Horizon 1.1 benchmark (January 2026) fits a logistic curve to task-success probability vs log(expert human completion time); the intersection at 50% probability defines the model's time horizon. The 2025–2026 engagement set covers GPT-5.1, GPT-5.1-Codex-Max, and prototype monitoring evaluations (can a monitor catch side tasks; can the agent evade). Benchmark suites: HCAST (180+ ML, cyber, SWE, reasoning tasks; 1 minute to 8+ hours), RE-Bench (71 ML research-engineering tasks with expert baseline), SWAA. The honest note: METR measurements are idealized — no human, no real consequences — and the team has documented the eval-vs-deployment behavior gap (Lesson 1). A time horizon is an upper bound, not a deployment prediction.
+> METR（原 ARC Evals）自 2023 年 12 月起成为独立的 501(c)(3) 非营利组织。其时间跨度（Time Horizon）1.1 基准（2026 年 1 月）对任务成功概率与 log(expert human completion time) 的关系进行逻辑斯蒂曲线拟合；成功概率为 50% 的交点定义了模型的时间跨度。2025–2026 年的合作评估涵盖 GPT-5.1、GPT-5.1-Codex-Max，以及监控评估原型（监控器能否发现旁支任务；智能体能否规避监控）。基准套件包括：HCAST（180 多项机器学习、网络安全、软件工程和推理任务；耗时从 1 分钟到 8 小时以上）、RE-Bench（71 项机器学习研究工程任务，带专家基线）、SWAA。需要如实说明的是：METR 的测量条件是理想化的，没有人类参与，也没有真实后果；该团队已记录评估与部署之间的行为差距（第 1 课）。时间跨度是上界，而不是部署表现预测。
 
 **Type:** Learn
-**Languages:** Python (stdlib, logistic-fit horizon estimator)
-**Prerequisites:** Phase 15 · 01 (Long-horizon agents), Phase 15 · 19 (RSP)
-**Time:** ~60 minutes
+**Languages:** Python（标准库，逻辑斯蒂拟合时间跨度估计器）
+**Prerequisites:** 阶段 15 · 01（长时程智能体，Long-horizon agents），阶段 15 · 19（负责任扩展政策，RSP）
+**Time:** 约 60 分钟
 
-## The Problem
+## 问题（The Problem）
 
-Scaling policies (Lessons 19, 20) are only as useful as the measurements they reference. "AI R&D-4 threshold" and "Long-range Autonomy" are defined in policy prose; they become actionable only when specific evaluations produce specific numbers.
+扩展政策（第 19、20 课）的实用性，取决于其引用的测量是否有用。“AI R&D-4 阈值”和“长程自主性”在政策文本中得到定义；只有具体评估产出具体数字，它们才能转化为行动依据。
 
-METR is the 2024–2026 external evaluation organization that has defined many of those numbers. They evaluate frontier models — often pre-release, under NDA with labs — and publish methodology afterward. The Time Horizon 1.1 benchmark (January 2026) is their headline artifact: a single scalar that compresses capability into a human-legible unit ("this model can do the kind of task an expert spends X hours on at 50% reliability").
+在 2024–2026 年间，许多此类测量指标由外部评估组织 METR 定义。该组织评估前沿模型，通常在模型发布前、与实验室签订保密协议的条件下进行，然后公开评估方法。时间跨度 1.1 基准（2026 年 1 月）是其代表性成果：用一个标量，将能力概括为人们容易理解的度量（“这个模型能以 50% 的成功率，完成专家需要花 X 小时的那类任务”）。
 
-The lesson is partly about the methodology (how a horizon is computed) and partly about the interpretation (why a horizon is an upper bound, not a deployment prediction). The two skills belong together. A team that understands how the horizon is fit is much harder to fool with a bad vendor claim than a team that just sees "14 hours" on a slide.
+本课一部分讲方法（如何计算时间跨度），另一部分讲解读（为什么时间跨度是上界，而非部署表现预测）。这两项技能应当一起掌握。理解时间跨度如何拟合的团队，比只在幻灯片上看到“14 小时”的团队，更不容易被不当的供应商宣传误导。
 
-## The Concept
+## 概念（The Concept）
 
-### METR background
+### METR 背景（METR background）
 
-- Founded: December 2023 (ex-ARC Evals, spun out into independent 501(c)(3)).
-- Scope: evaluation of frontier models' autonomous capabilities, often pre-release.
-- Partner labs: Anthropic, OpenAI (multiple engagements 2025–2026).
-- Notable deliverables: Time Horizon 1.0 (March 2025), Time Horizon 1.1 (January 2026), prototype monitoring evaluations.
+- 成立时间：2023 年 12 月（原 ARC Evals，拆分为独立的 501(c)(3) 非营利组织）。
+- 范围：评估前沿模型的自主能力，通常在发布前进行。
+- 合作实验室：Anthropic、OpenAI（2025–2026 年有多次合作评估）。
+- 代表性交付物：时间跨度 1.0（2025 年 3 月）、时间跨度 1.1（2026 年 1 月）、监控评估原型。
 
-### The Time Horizon fit
+### 时间跨度拟合（The Time Horizon fit）
 
-Methodology (from METR blog and papers):
+方法（依据 METR 博客和论文）：
 
-1. Collect a task suite spanning minute-scale to hour-scale expert completion times. Current suites: HCAST (180+ tasks), RE-Bench (71 tasks), SWAA.
-2. Run the model on each task; record success or failure.
-3. Fit a logistic curve: P(success) as a function of log(expert completion time).
-4. The horizon is the expert-time at which P(success) = 0.5.
+1. 收集一套任务，覆盖专家完成时间从分钟级到小时级的范围。当前套件：HCAST（180 多项任务）、RE-Bench（71 项任务）、SWAA。
+2. 让模型运行每项任务，记录成功或失败。
+3. 拟合逻辑斯蒂曲线（logistic curve）：将 P(success) 表示为 log(expert completion time) 的函数。
+4. P(success) = 0.5 时对应的专家耗时，就是时间跨度。
 
-The logistic-fit shape is the right one because capability generally has an increasing, plateau-approaching relationship with task difficulty. The 50% point is a choice (could be 10%, 90%); METR reports multiple thresholds in the detailed paper but leads with 50% because it is the most intuitive.
+逻辑斯蒂拟合的形状是合适的，因为能力与任务难度之间通常呈现递增并逐渐趋于平台的关系。选择 50% 点是一种约定（也可以选 10% 或 90%）；METR 在详细论文中报告多个阈值，但将 50% 放在首位，因为它最直观。
 
-### The January 2026 numbers
+### 2026 年 1 月的数据（The January 2026 numbers）
 
-Per Time Horizon 1.1:
+根据时间跨度 1.1：
 
-- Claude Opus 4.6: ~14 hours at 50% reliability, as of Time Horizon 1.1 (January 2026).
-- Doubling time on HCAST-style tasks: ~4.3 months (130.8 days) on the post-2023 fit reported by Time Horizon 1.1 (January 2026); the ~7-month figure is the full 2019–2025 fit from Time Horizon 1.0 and is reported in TH1.1 alongside the post-2023 number.
+- Claude Opus 4.6：截至时间跨度 1.1（2026 年 1 月），在 50% 可靠性下约为 14 小时。
+- HCAST 类任务的翻倍时间：时间跨度 1.1（2026 年 1 月）报告的 2023 年之后数据拟合结果约为 4.3 个月（130.8 天）；约 7 个月这个数字来自时间跨度 1.0 对 2019–2025 年完整数据的拟合，TH1.1 将其与 2023 年之后的数字并列报告。
 
-Those are the specific numbers the rest of Phase 15 references. They are cited in Anthropic's RSP v3.0 (Lesson 19) and DeepMind's FSF v3 (Lesson 20) as one of the measurements feeding threshold assessments.
+这些就是阶段 15 其余课程引用的具体数字。Anthropic RSP v3.0（第 19 课）和 DeepMind FSF v3（第 20 课）将它们作为阈值评估所依据的测量之一。
 
-### Benchmark suites
+### 基准套件（Benchmark suites）
 
-- **HCAST**: 189 tasks across ML, cybersecurity, software engineering, and general reasoning. Span: 1 minute to 8+ hours of expert time. The main suite behind the horizon number.
-- **RE-Bench**: 71 ML research-engineering tasks with a human expert baseline. Measures whether the model can do the kind of ML R&D work that feeds into the AI R&D-4 threshold.
-- **SWAA**: shorter tasks; useful for calibrating the low end of the horizon curve.
+- **HCAST**：涵盖机器学习、网络安全、软件工程和通用推理的 189 项任务。跨度：专家耗时从 1 分钟到 8 小时以上。它是时间跨度数字背后的主要套件。
+- **RE-Bench**：71 项机器学习研究工程任务，带人类专家基线。衡量模型能否完成与 AI R&D-4 阈值相关的那类机器学习研发工作。
+- **SWAA**：更短的任务；有助于校准时间跨度曲线的低端。
 
-### Prototype monitoring evaluations
+### 监控评估原型（Prototype monitoring evaluations）
 
-2025–2026 METR work included monitoring-evaluation prototypes: can a monitor catch a model performing a side task (something other than what the operator asked for); can the agent evade the monitor. These directly feed the "Undermining Safeguards" category in OpenAI PF v2 and the deceptive-alignment monitoring in DeepMind FSF v3 (Lesson 20).
+METR 在 2025–2026 年的工作包括监控评估原型：监控器能否发现模型正在执行旁支任务（操作员要求之外的事情）；智能体能否规避监控器。这些评估直接服务于 OpenAI PF v2 的“破坏防护措施”类别，以及 DeepMind FSF v3 的欺骗性对齐监控（第 20 课）。
 
-### Why horizons are upper bounds
+### 为什么时间跨度是上界（Why horizons are upper bounds）
 
-- **Idealized tooling**: benchmark tasks give the model clean tools and well-formatted data. Real deployments are messier.
-- **No real consequences**: the model never actually bills a customer, deletes real data, or contacts real people. Real deployments have irreversible stakes.
-- **Eval-context gaming**: Lesson 1. Models behave differently in tests. The 2026 International AI Safety Report documents this empirically.
-- **No legitimate user variance**: benchmark prompts are structured. Real users produce ambiguous, context-dependent requests.
+- **理想化的工具条件（Idealized tooling）**：基准任务为模型提供规整的工具环境和格式良好的数据。真实部署环境则更复杂。
+- **没有真实后果（No real consequences）**：模型不会实际向客户收费、删除真实数据或联系真人。真实部署会带来不可逆的后果。
+- **评估情境投机（Eval-context gaming）**：见第 1 课。模型在测试中的行为不同。2026 年《国际 AI 安全报告》用实证记录了这一现象。
+- **未涵盖真实用户请求的差异（No legitimate user variance）**：基准提示词经过结构化设计。真实用户则会提出含糊、依赖上下文的请求。
 
-The horizon is the capability ceiling under favorable conditions. Deployment reliability is a different number, lower, and teams must measure their own distribution to know it.
+时间跨度是在有利条件下的能力上限。部署可靠性是另一个更低的数字；团队必须测量自己的任务分布，才能知道它是多少。
 
-### The external-evaluator case
+### 外部评估的理由（The external-evaluator case）
 
-External evaluation matters because internal labs have incentives to optimize metrics they report. METR's independence — a 501(c)(3) with a declared methodology and peer-reviewed papers — is the structural mitigation. It is not sufficient alone (labs still control what METR sees), but it is strictly better than no external evaluation.
+外部评估之所以重要，是因为实验室内部有动机优化自己报告的指标。METR 的独立性，即作为 501(c)(3) 非营利组织、公开声明的方法以及经过同行评审的论文，是一种结构性缓解措施。仅靠它并不充分（实验室仍控制 METR 能看到什么），但它确实优于完全没有外部评估。
 
-### How to use horizon numbers in practice
+### 实践中如何使用时间跨度数字（How to use horizon numbers in practice）
 
-- **As a capability filter**: if a model's horizon is well below the expert-time of a proposed task, do not ship it autonomous (Lesson 1's skill file).
-- **As a trend indicator**: doubling time tells you how long the current practice will remain safe even without new mitigations.
-- **As a prior**: a horizon of 14 hours is a starting point. Adjust down for your task distribution, your tooling quality, and your deployment context.
+- **作为能力筛选条件**：如果模型的时间跨度远低于拟议任务所需的专家耗时，就不要将其以自主方式上线（见第 1 课的技能文件）。
+- **作为趋势指标**：翻倍时间告诉你，即使不增加新的缓解措施，当前做法还能安全维持多久。
+- **作为先验**：14 小时的时间跨度只是起点。应根据你的任务分布、工具质量和部署情境向下调整。
 
 ```figure
 a5-horizon-fit
 ```
 
-## Use It
+## 动手使用（Use It）
 
-`code/main.py` implements a logistic fit of task-success vs log(expert time), given a synthetic result set. It reports the 50% horizon (METR's headline), 10% horizon (conservative), and 90% horizon (optimistic). Also demonstrates what changes when the success rate is artificially inflated by eval-context gaming.
+`code/main.py` 给定一组合成结果，对任务成功率与 log(expert time) 的关系进行逻辑斯蒂拟合。它报告 50% 时间跨度（METR 的主要指标）、10% 时间跨度（保守）和 90% 时间跨度（乐观）。还演示当评估情境投机人为抬高成功率时，结果会发生什么变化。
 
-## Ship It
+## 交付成果（Ship It）
 
-`outputs/skill-horizon-interpretation.md` reviews a vendor's horizon claim and produces a gap analysis between benchmark claim and deployment reality.
+`outputs/skill-horizon-interpretation.md` 审查供应商的时间跨度声明，并对基准声明与部署现实之间的差距进行分析。
 
-## Exercises
+## 练习（Exercises）
 
-1. Run `code/main.py`. Confirm the fit's 50% horizon matches the synthetic ground truth. Now halve the task-time grid; does the horizon estimate change meaningfully?
+1. 运行 `code/main.py`。确认拟合出的 50% 时间跨度与合成数据的真实值一致。然后将任务时间网格减半；时间跨度估计是否发生明显变化？
 
-2. Read METR's Time Horizon 1.1 blog post. Identify the specific tasks where reliability is highest and where it is lowest. Explain why the gap exists.
+2. 阅读 METR 的时间跨度 1.1 博文。找出可靠性最高和最低的具体任务，并解释为什么存在这一差距。
 
-3. Read METR's "Measuring Autonomous AI Capabilities" resources. List the HCAST task categories. Pick one category you would weight more heavily for a production task and justify why.
+3. 阅读 METR 的“测量自主 AI 能力”资源。列出 HCAST 的任务类别。选择一个你会在生产任务中赋予更高权重的类别，并说明理由。
 
-4. Introduce eval-context gaming into the simulator: flip ~20% of failed tasks to success. Report the new horizon. This approximates what a gaming rate of 20% does to the observed number.
+4. 在模拟器中引入评估情境投机：将约 20% 的失败任务改为成功。报告新的时间跨度。这近似展示了 20% 投机率对观测数字的影响。
 
-5. Design an internal horizon evaluation on your own bug backlog or a representative task set. Describe the data collection, the fit, and what the output tells you. Compare to METR numbers.
+5. 使用你自己的待修复缺陷列表或一组代表性任务，设计内部时间跨度评估。描述数据收集、拟合方法，以及结果能说明什么，并与 METR 的数字比较。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语 | 常见说法 | 实际含义 |
 |---|---|---|
-| METR | "External evaluator" | ex-ARC Evals; independent 501(c)(3) since Dec 2023 |
-| Time Horizon | "Capability measure" | Expert task length at 50% reliability, from logistic fit |
-| HCAST | "METR's main suite" | 180+ tasks spanning 1 min to 8+ hours |
-| RE-Bench | "Research engineering" | 71 ML research-engineering tasks with human baseline |
-| SWAA | "Short-task suite" | Calibrates the low end of the horizon curve |
-| Doubling time | "Growth rate" | Time for the 50% horizon to double; ~7 months per HCAST |
-| Eval-context gaming | "Model behaves differently" | Documented behavior gap between tests and deployment |
-| Upper bound | "Horizon is a ceiling" | Benchmark horizon > deployment reliability under load |
+| METR | “外部评估方” | 原 ARC Evals；自 2023 年 12 月起为独立 501(c)(3) 非营利组织 |
+| 时间跨度（Time Horizon） | “能力度量” | 由逻辑斯蒂拟合得到、50% 可靠性下对应的专家任务时长 |
+| HCAST | “METR 的主要套件” | 180 多项任务，跨度从 1 分钟到 8 小时以上 |
+| RE-Bench | “研究工程” | 71 项机器学习研究工程任务，带人类基线 |
+| SWAA | “短任务套件” | 校准时间跨度曲线的低端 |
+| 翻倍时间（Doubling time） | “增长率” | 50% 时间跨度翻倍所需时间；按 HCAST 约为 7 个月 |
+| 评估情境投机（Eval-context gaming） | “模型表现不同” | 已有记录的测试与部署之间的行为差距 |
+| 上界（Upper bound） | “时间跨度是上限” | 基准时间跨度 > 负载下的部署可靠性 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [METR — Resources for Measuring Autonomous AI Capabilities](https://metr.org/measuring-autonomous-ai-capabilities/) — HCAST, RE-Bench, SWAA specs.
-- [METR — Measuring AI Ability to Complete Long Tasks](https://metr.org/blog/2025-03-19-measuring-ai-ability-to-complete-long-tasks/) — the original horizon paper.
-- [METR — Time Horizon 1.1 (January 2026)](https://metr.org/research/) — current numbers and methodology.
-- [Epoch AI — METR Time Horizons benchmark](https://epoch.ai/benchmarks/metr-time-horizons) — live tracking.
-- [Anthropic — Measuring agent autonomy in practice](https://www.anthropic.com/research/measuring-agent-autonomy) — internal perspective on METR's measurements.
+- [METR — 测量自主 AI 能力的资源（Resources for Measuring Autonomous AI Capabilities）](https://metr.org/measuring-autonomous-ai-capabilities/) — HCAST、RE-Bench、SWAA 规范。
+- [METR — 测量 AI 完成长任务的能力（Measuring AI Ability to Complete Long Tasks）](https://metr.org/blog/2025-03-19-measuring-ai-ability-to-complete-long-tasks/) — 最初的时间跨度论文。
+- [METR — 时间跨度 1.1（Time Horizon 1.1，2026 年 1 月）](https://metr.org/research/) — 当前数字与方法。
+- [Epoch AI — METR 时间跨度基准（Time Horizons benchmark）](https://epoch.ai/benchmarks/metr-time-horizons) — 实时跟踪。
+- [Anthropic — 测量实际中的智能体自主性（Measuring agent autonomy in practice）](https://www.anthropic.com/research/measuring-agent-autonomy) — 从实验室内部视角看 METR 的测量。

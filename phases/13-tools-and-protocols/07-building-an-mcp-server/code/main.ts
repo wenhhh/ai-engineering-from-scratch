@@ -1,8 +1,8 @@
-// Phase 13 Lesson 07: a stateless MCP server over stdio.
-// Lesson: phases/13-tools-and-protocols/07-building-an-mcp-server/docs/en.md
-// Specification: https://modelcontextprotocol.io/specification/2026-07-28/
-// Implements discovery, three server primitives, and per-request validation.
-// Run: npx tsx main.ts --demo
+// 阶段 13 第 07 课：通过标准输入输出（stdio）运行的无状态 MCP 服务器。
+// 课程： phases/13-tools-and-protocols/07-building-an-mcp-server/docs/en.md
+// 规范： https://modelcontextprotocol.io/specification/2026-07-28/
+// 实现发现（Discovery）、三种服务器原语（Server primitives）以及逐请求验证。
+// 运行： npx tsx main.ts --demo
 
 import { randomUUID } from "node:crypto";
 import { createInterface } from "node:readline";
@@ -46,7 +46,7 @@ const NOTES: Record<string, Note> = {
 const TOOLS: JsonObject[] = [
   {
     name: "notes_search",
-    description: "Search note titles and bodies by keyword.",
+    description: "按关键词搜索笔记标题与正文。",
     inputSchema: {
       type: "object",
       properties: {
@@ -59,7 +59,7 @@ const TOOLS: JsonObject[] = [
   },
   {
     name: "notes_create",
-    description: "Create a new note.",
+    description: "创建新笔记。",
     inputSchema: {
       type: "object",
       properties: {
@@ -73,7 +73,7 @@ const TOOLS: JsonObject[] = [
   },
   {
     name: "notes_list",
-    description: "List notes, optionally filtered by tag.",
+    description: "列出笔记，可选择按标签筛选。",
     inputSchema: {
       type: "object",
       properties: { tag: { type: "string" } },
@@ -86,8 +86,8 @@ const TOOLS: JsonObject[] = [
 const PROMPTS: JsonObject[] = [
   {
     name: "review_note",
-    description: "Critique a note and propose concrete improvements.",
-    arguments: [{ name: "note_id", description: "Note identifier", required: true }],
+    description: "评议笔记并提出具体改进建议。",
+    arguments: [{ name: "note_id", description: "笔记标识符（Identifier）", required: true }],
   },
 ];
 
@@ -208,11 +208,11 @@ function executeList(arguments_: JsonObject): JsonObject[] {
 
 function executeSearch(arguments_: JsonObject): JsonObject[] {
   if (typeof arguments_.query !== "string" || !arguments_.query) {
-    throw new Error("query must be a non-empty string");
+    throw new Error("query 必须为非空字符串");
   }
   const limit = arguments_.limit ?? 10;
   if (!Number.isInteger(limit) || limit < 1 || limit > 50) {
-    throw new Error("limit must be an integer from 1 through 50");
+    throw new Error("limit 必须为 1 至 50 之间的整数");
   }
   const query = arguments_.query.toLowerCase();
   const hits = Object.entries(NOTES)
@@ -225,7 +225,7 @@ function executeSearch(arguments_: JsonObject): JsonObject[] {
 
 function executeCreate(arguments_: JsonObject): JsonObject[] {
   if (typeof arguments_.title !== "string" || typeof arguments_.body !== "string") {
-    throw new Error("title and body must be strings");
+    throw new Error("title 和 body 必须为字符串");
   }
   const id = `note-${randomUUID().replaceAll("-", "").slice(0, 6)}`;
   NOTES[id] = {
@@ -234,7 +234,7 @@ function executeCreate(arguments_: JsonObject): JsonObject[] {
     tag: typeof arguments_.tag === "string" ? arguments_.tag : "",
   };
   return [
-    { type: "text", text: `Created ${id}` },
+    { type: "text", text: `已创建 ${id}` },
     { type: "resource", resource: { uri: `notes://${id}`, text: arguments_.body } },
   ];
 }
@@ -250,7 +250,7 @@ function handleDiscover(): JsonObject {
     {
       supportedVersions: [...SUPPORTED_VERSIONS],
       capabilities: structuredClone(SERVER_CAPABILITIES),
-      instructions: "Use tools for note actions, resources for note bodies, and prompts for reviews.",
+      instructions: "使用工具（Tools）操作笔记，使用资源（Resources）获取笔记正文，使用提示词（Prompts）进行评议。",
     },
     { ttlMs: 3_600_000, cacheScope: "public" },
   );
@@ -270,7 +270,7 @@ function handleToolsCall(params: JsonObject): JsonObject {
   const executor = TOOL_EXECUTORS[params.name];
   if (!executor) {
     return complete({
-      content: [{ type: "text", text: `Unknown tool: ${params.name}` }],
+      content: [{ type: "text", text: `未知工具： ${params.name}` }],
       isError: true,
     });
   }
@@ -329,11 +329,11 @@ function handlePromptsGet(params: JsonObject): JsonObject {
   const note = NOTES[arguments_.note_id];
   if (!note) throw new RpcProblem(-32602, "note_id must name an existing note");
   return complete({
-    description: "Review the note and propose concrete improvements.",
+    description: "评审笔记并提出具体改进建议。",
     messages: [
       {
         role: "user",
-        content: { type: "text", text: `Review this note and propose improvements:\n\n${note.body}` },
+        content: { type: "text", text: `评审以下笔记并提出改进建议：\n\n${note.body}` },
       },
     ],
   });
@@ -393,7 +393,7 @@ function demo(): void {
     makeRequest(7, "prompts/get", { name: "review_note", arguments: { note_id: "note-1" } }),
     makeRequest(8, "tools/list", {}, "2027-01-01"),
   ];
-  console.log("MCP 2026-07-28 stateless notes server, TypeScript");
+  console.log("MCP 2026-07-28 无状态笔记服务器（Stateless notes server）, TypeScript");
   for (const message of scenarios) {
     console.log(`\n${message.method} id=${message.id}`);
     console.log(JSON.stringify(dispatch(message), null, 2).slice(0, 700));

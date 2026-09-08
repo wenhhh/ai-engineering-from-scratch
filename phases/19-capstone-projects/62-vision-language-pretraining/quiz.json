@@ -1,78 +1,78 @@
 {
   "lesson": "62-vision-language-pretraining",
-  "title": "Vision-Language Pretraining",
+  "title": "视觉语言预训练（Vision-Language Pretraining）",
   "questions": [
     {
       "stage": "pre",
-      "question": "What two distinct capabilities does combining InfoNCE and LM loss train into one model?",
+      "question": "结合 InfoNCE 和 LM 损失，会在一个模型中训练出哪两种不同能力？",
       "options": [
-        "Ranking (find the right image for a caption) and generation (write a caption for an image)",
-        "Compression and decompression",
-        "Speed and accuracy",
-        "Tokenization and detokenization"
+        "排序（为描述找到正确图像）和生成（为图像写出描述）",
+        "压缩和解压缩",
+        "速度和准确性",
+        "分词和反分词"
       ],
       "correct": 0,
-      "explanation": "InfoNCE handles ranking; LM loss handles generation. CoCa, BLIP, and friends combine both in one training pass."
+      "explanation": "InfoNCE 负责排序，LM 损失负责生成。CoCa、BLIP 等模型在一轮训练中结合两者。"
     },
     {
       "stage": "pre",
-      "question": "In InfoNCE for a batch of N pairs, how many positive pairs and negative pairs are formed?",
+      "question": "对一批 N 对样本计算 InfoNCE 时，会形成多少正例对和负例对？",
       "options": [
-        "N positives along the diagonal of the similarity matrix and N*(N-1) negatives off-diagonal",
-        "N positives and N negatives",
-        "1 positive and N negatives",
-        "N^2 positives"
+        "相似度矩阵对角线上有 N 个正例，非对角线上有 N*(N-1) 个负例",
+        "N 个正例和 N 个负例",
+        "1 个正例和 N 个负例",
+        "N^2 个正例"
       ],
       "correct": 0,
-      "explanation": "The N matching pairs sit on the diagonal; everything off-diagonal is a negative."
+      "explanation": "N 个匹配对位于对角线；所有非对角线元素都是负例。"
     },
     {
       "stage": "check",
-      "question": "Why is the contrastive temperature usually a learned parameter?",
+      "question": "为什么对比学习的温度通常设为可学习参数？",
       "options": [
-        "It avoids using Adam",
-        "PyTorch requires it",
-        "Learned tau is faster on GPU",
-        "Hand-tuning is fragile; letting tau learn allows the model to find the right softmax peakedness as the embedding scale evolves during training"
+        "这样可以不使用 Adam",
+        "PyTorch 要求如此",
+        "可学习的 tau 在 GPU 上更快",
+        "手动调参不稳健；让 tau 自行学习，可使模型在训练过程中随着嵌入尺度变化找到合适的 softmax 尖锐程度"
       ],
       "correct": 3,
-      "explanation": "CLIP introduced learned log-tau so the contrastive softmax stays in the useful regime as embedding norms grow."
+      "explanation": "CLIP 引入可学习的 log-tau，使嵌入范数增长时，对比 softmax 仍保持在有效区间。"
     },
     {
       "stage": "check",
-      "question": "Which sub-modules receive gradient from the LM loss but not from the contrastive loss?",
+      "question": "哪个子模块接收 LM 损失的梯度，却不接收对比损失的梯度？",
       "options": [
-        "The MLP projector",
-        "The vision encoder",
-        "The text-side encoder",
-        "The cross-attention decoder"
+        "MLP 投影器",
+        "视觉编码器",
+        "文本侧编码器",
+        "交叉注意力解码器"
       ],
       "correct": 3,
-      "explanation": "Contrastive loss does not touch the decoder; LM loss does not touch the text-side mean-pool encoder."
+      "explanation": "对比损失不涉及解码器；LM 损失不涉及文本侧均值池化编码器。"
     },
     {
       "stage": "check",
-      "question": "What does ignore_index=PAD_ID accomplish in the LM cross-entropy?",
+      "question": "LM 交叉熵中的 ignore_index=PAD_ID 有什么作用？",
       "options": [
-        "Speeds up the loss",
-        "Encrypts pad tokens",
-        "Masks padding positions out of the loss so the model is not punished for predicting tokens after the caption ends",
-        "Reorders tokens"
+        "加快损失计算",
+        "加密填充词元",
+        "将填充位置从损失中排除，避免模型因预测描述结束后的词元而受罚",
+        "重新排列词元"
       ],
       "correct": 2,
-      "explanation": "Padding positions carry no signal; ignoring them stops the loss from learning to predict pad."
+      "explanation": "填充位置没有信号；忽略这些位置可避免损失驱动模型学习预测填充。"
     },
     {
       "stage": "post",
-      "question": "Why is a 50-step demo on synthetic data enough to call the lesson complete?",
+      "question": "为什么在合成数据上运行 50 步演示，就足以认为本课实践完成？",
       "options": [
-        "The model reaches state of the art at 50 steps",
-        "50 steps is the maximum supported",
-        "The demo proves the gradient plumbing works end to end; production training shape is identical but runs for millions of steps on real data",
-        "Real data would change the architecture"
+        "模型在 50 步时达到最先进水平",
+        "最多只支持 50 步",
+        "演示证明梯度链路端到端有效；生产训练结构相同，只是在真实数据上运行数百万步",
+        "真实数据会改变架构"
       ],
       "correct": 2,
-      "explanation": "The dynamics demonstrated (both losses decrease, no NaN, stable tau) are the same dynamics a billion-image run would show; just scaled up."
+      "explanation": "演示中的动态规律（两项损失下降、无 NaN、tau 稳定）与十亿图像训练相同，只是后者规模更大。"
     }
   ]
 }

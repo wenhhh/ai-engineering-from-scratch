@@ -1,78 +1,78 @@
 {
   "lesson": "60-projection-layer-modality-align",
-  "title": "Projection Layer for Modality Alignment",
+  "title": "模态对齐投影层（Projection Layer for Modality Alignment）",
   "questions": [
     {
       "stage": "pre",
-      "question": "Why does the vision encoder produce tokens that the text decoder cannot consume directly?",
+      "question": "为什么视觉编码器生成的词元不能被文本解码器直接使用？",
       "options": [
-        "Image tokens are encrypted",
-        "Image tokens are too short",
-        "They are in a different file format",
-        "Image tokens live in a basis the encoder learned during vision pretraining with no correspondence to the decoder's word vectors"
+        "图像词元被加密了",
+        "图像词元太短",
+        "它们采用不同的文件格式",
+        "图像词元处于编码器在视觉预训练期间学到的一组基中，与解码器的词向量没有对应关系"
       ],
       "correct": 3,
-      "explanation": "The two encoders learn independent bases; a bridge module is required to align them in a shared space."
+      "explanation": "两个编码器学习了独立的基，需要一个连接模块将它们对齐到共享空间。"
     },
     {
       "stage": "pre",
-      "question": "Why is the two-layer MLP enough for modality alignment in practice?",
+      "question": "为什么实践中两层 MLP 足以完成模态对齐？",
       "options": [
-        "One-layer projections are forbidden",
-        "PyTorch requires two layers",
-        "One non-linear bend (GELU) between two linear projections is empirically enough to align CLIP-style features with text embeddings",
-        "Deeper projections are illegal"
+        "单层投影被禁止",
+        "PyTorch 要求两层",
+        "经验上，两个线性投影之间的一次非线性弯曲（GELU），足以将 CLIP 风格特征与文本嵌入对齐",
+        "更深的投影不合法"
       ],
       "correct": 2,
-      "explanation": "LLaVA and its descendants ship this two-layer MLP because the non-linearity fixes curvature mismatches a single linear cannot."
+      "explanation": "LLaVA 及其后续模型采用这种两层 MLP，因为非线性能修复单层线性无法处理的曲率不匹配。"
     },
     {
       "stage": "check",
-      "question": "Why is the vision encoder frozen during this alignment stage?",
+      "question": "为什么在这个对齐阶段冻结视觉编码器？",
       "options": [
-        "The encoder is empty",
-        "The 86M-parameter encoder cannot be retrained on a small mock corpus; the 1.3M-parameter projection alone is light enough to align in minutes",
-        "Frozen means faster wall time",
-        "PyTorch does not support training the encoder"
+        "编码器是空的",
+        "无法用小型模拟语料重新训练 8600 万参数的编码器；仅有 130 万参数的投影足够轻量，可以在几分钟内完成对齐",
+        "冻结意味着实际耗时更短",
+        "PyTorch 不支持训练编码器"
       ],
       "correct": 1,
-      "explanation": "Freezing the encoder and text table makes the projection the only thing learning, which is the operational shape of every adapter-based VLM."
+      "explanation": "冻结编码器和文本表，让投影成为唯一学习的部分，这正是各种基于适配器的 VLM 的运行方式。"
     },
     {
       "stage": "check",
-      "question": "What does cosine_alignment_loss(image_emb, text_emb) return when the two vectors point in opposite directions?",
+      "question": "当两个向量方向相反时，cosine_alignment_loss(image_emb, text_emb) 返回什么？",
       "options": [
-        "Infinity",
+        "无穷大",
         "1.0",
         "0.0",
         "2.0"
       ],
       "correct": 3,
-      "explanation": "Loss is 1 - cos(angle). Antiparallel vectors have cos = -1, so the loss is 1 - (-1) = 2.0."
+      "explanation": "损失为 1 - cos(angle)。反平行向量满足 cos = -1，因此损失是 1 - (-1) = 2.0。"
     },
     {
       "stage": "check",
-      "question": "Why does CLS pooling get used to produce a single image-level vector from 197 tokens?",
+      "question": "为什么使用 CLS 池化从 197 个词元生成单个图像级向量？",
       "options": [
-        "It saves disk space",
-        "PyTorch sums tokens automatically",
-        "Patch tokens are unused",
-        "Captions are one vector per sample so the image side also needs one vector; the CLS token is the encoder's built-in image summary"
+        "它节省磁盘空间",
+        "PyTorch 会自动将词元求和",
+        "图像块词元没有用途",
+        "每个样本的描述对应一个向量，因此图像侧也需要一个向量；CLS 词元是编码器内置的图像摘要"
       ],
       "correct": 3,
-      "explanation": "Alignment is one image vector against one caption vector; CLS pooling produces that image vector with no extra parameters."
+      "explanation": "对齐比较一个图像向量与一个描述向量；CLS 池化无需额外参数就能生成这个图像向量。"
     },
     {
       "stage": "post",
-      "question": "Which production system maps most directly to the lesson 60 pattern?",
+      "question": "哪个生产系统最直接对应第 60 课的模式？",
       "options": [
-        "LLaVA 1.5: frozen vision encoder, frozen LLM, train only a two-layer MLP projection",
+        "LLaVA 1.5：冻结视觉编码器和 LLM，只训练一个两层 MLP 投影",
         "PaLM",
         "AlphaFold",
         "Stable Diffusion"
       ],
       "correct": 0,
-      "explanation": "LLaVA's stage-one training is exactly this: a frozen encoder and LM with a two-layer MLP bridge as the sole trainable piece."
+      "explanation": "LLaVA 的第一阶段训练正是如此：冻结编码器和语言模型，只将两层 MLP 连接模块作为可训练部分。"
     }
   ]
 }

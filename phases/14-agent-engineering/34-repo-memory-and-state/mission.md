@@ -1,27 +1,27 @@
-# Mission - Repo Memory and Durable State
+# 任务：仓库记忆与持久状态（Mission - Repo Memory and Durable State）
 
-## Goal
-Author JSON Schemas for `agent_state.json` and `task_board.json`, build a `StateManager` that loads, validates, mutates, and writes atomically, and prove the round-trip across two turns.
+## 目标（Goal）
+为 `agent_state.json` 和 `task_board.json` 编写 JSON 结构定义（JSON Schema），构建可加载、校验、修改并原子写入的 `StateManager`，证明跨两轮的往返一致性。
 
-## Inputs
-- The three-file workbench shape from lesson 32
-- A stdlib-only validator covering required, type, enum, pattern, and items
+## 输入（Inputs）
+- 第 32 课的三文件工作台结构
+- 仅标准库的验证器，覆盖 required、type、enum、pattern、items
 
-## Deliverables
-- `agent_state.schema.json` and `task_board.schema.json` next to the code
-- `StateManager.load`, `StateManager.update`, `StateManager.commit` with temp-and-rename writes
-- A demo run that mutates state across two turns and reloads cleanly
+## 交付物（Deliverables）
+- 代码旁的 `agent_state.schema.json` 和 `task_board.schema.json`
+- 采用临时文件加重命名写入的 `StateManager.load`、`StateManager.update`、`StateManager.commit`
+- 跨两轮修改状态并正常重载的演示运行
 
-## Acceptance
-- `python3 code/main.py` exits zero
-- A bad write (missing required field, bad enum) is refused, not persisted
-- `workdir/agent_state.json` after the run validates against the schema
+## 验收（Acceptance）
+- `python3 code/main.py` 退出码为 0
+- 错误写入，如缺失必需字段、错误枚举，被拒绝而非持久化
+- 运行后的 `workdir/agent_state.json` 通过结构定义（Schema）校验
 
-## Out of scope
-- SQLite or external storage backends. The local file is the lesson.
-- LangGraph checkpointers, Letta memory blocks. Same idea, different storage; out of scope here.
+## 范围之外（Out of scope）
+- SQLite 或外部存储后端。本课聚焦本地文件。
+- LangGraph 检查点存储器、Letta 记忆块。同样思想，不同存储，不在本课范围。
 
-## References
-- `docs/en.md` - full lesson
-- `code/main.py` - reference implementation
-- `outputs/skill-state-schema.md` - extracted skill
+## 参考（References）
+- `docs/en.md`：完整课程
+- `code/main.py`：参考实现
+- `outputs/skill-state-schema.md`：提取出的技能

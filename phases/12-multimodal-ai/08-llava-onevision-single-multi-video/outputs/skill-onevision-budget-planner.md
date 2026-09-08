@@ -1,30 +1,30 @@
 ---
 name: onevision-budget-planner
-description: Allocate LLaVA-OneVision-style unified visual-token budgets across single-image, multi-image, and video scenarios for a target product mix.
+description: 根据目标产品任务组合，在单图、多图和视频场景间分配 LLaVA-OneVision 式统一视觉词元预算（Visual-token budget）。
 version: 1.0.0
 phase: 12
 lesson: 08
 tags: [llava-onevision, token-budget, curriculum, multi-image, video]
 ---
 
-Given a product's expected task distribution — percentages of single-image, multi-image, and video requests — and a per-sample visual-token budget, emit a per-scenario allocation plan and a training curriculum.
+给定产品预期任务分布（单图、多图、视频请求的百分比）和每样本视觉词元预算，输出逐场景分配计划与训练课程（Curriculum）。
 
-Produce:
+生成以下内容：
 
-1. Per-scenario config. Single-image: AnyRes tile count + thumbnail + pooling factor; multi-image: images-per-sample + per-image pooling; video: frame count + per-frame pooling.
-2. Token budget balance. Each scenario's total tokens should land within ±30% of the target budget; flag any scenario that falls below 70% of target (under-tokenized) or above 130% (context risk).
-3. Curriculum plan. Three stages (SI → OV → TT) with data weights. For the TT stage, use the user's product mix.
-4. Expected emergent skills. Given the user's product mix, predict which LLaVA-OneVision-style emergent capabilities are likely to appear (multi-camera, set-of-mark, screenshot-agent, or product-specific variants).
-5. Training-data ballpark. Approximate token / image / frame counts needed per stage given 7B base LLM, citing OneVision-1.5 data scale.
+1. 逐场景配置。单图：AnyRes 图块数 + 缩略图 + 池化因子；多图：每样本图像数 + 每图池化；视频：帧数 + 每帧池化。
+2. 词元预算平衡。每种场景总词元数应落在目标预算的 ±30% 内；低于目标 70%（词元不足）或超过 130%（上下文风险）时作出标记。
+3. 课程计划。三个阶段（SI → OV → TT），附数据权重。TT 阶段使用用户产品任务组合。
+4. 预期涌现技能。根据用户产品任务组合，预测可能出现的 LLaVA-OneVision 式涌现能力：多摄像头、标记集、截图智能体，或产品特定变体。
+5. 训练数据粗估。给定 7B 基础 LLM，估计各阶段所需词元/图像/帧数，引用 OneVision-1.5 数据规模。
 
-Hard rejects:
-- Proposing stage orders that put video or multi-image before single-image. OneVision shows this loses 2-4 MMMU.
-- Allocating all budget to video when the product is 80% single-image. Waste, not balance.
-- Assuming AnyRes-16 (4x4 grid) fits in a 4k token budget without aggressive pooling. It does not.
+必须排除：
+- 将视频或多图放在单图之前的阶段顺序。OneVision 表明这会损失 2-4 个 MMMU 百分点。
+- 产品 80% 是单图，却把全部预算分给视频。这是浪费，不是平衡。
+- 假设 AnyRes-16（4x4 网格）无需强力池化就能放入 4k 词元预算。实际上不能。
 
-Refusal rules:
-- If the per-sample token budget is below 1024, refuse for multi-image or video use cases — below that floor, the scenarios collapse.
-- If the user wants 5+ frames of video at full 729-token resolution, refuse; recommend 3x pooling or fewer frames.
-- If the product distribution omits single-image entirely, refuse and recommend Qwen2.5-VL-style M-RoPE instead — OneVision's curriculum assumes single-image as the perception base.
+拒绝规则：
+- 如果每样本词元预算低于 1024，则拒绝多图或视频用途；低于这一底线，场景能力会崩溃。
+- 如果用户要求 5+ 帧视频保持完整 729 词元分辨率，则拒绝，推荐 3 倍池化或更少帧数。
+- 如果产品分布完全不包含单图，则拒绝，并推荐 Qwen2.5-VL 式 M-RoPE；OneVision 课程假定单图作为感知基础。
 
-Output: a one-page plan with per-scenario token config, curriculum stage weights, emergent-skill predictions, and a data-scale estimate. End with pointers to arXiv 2408.03326 (OneVision) and arXiv 2509.23661 (OneVision-1.5 fully open).
+输出：一页计划，包含逐场景词元配置、课程阶段权重、涌现技能预测和数据规模估计。最后指向 arXiv 2408.03326（OneVision）与 arXiv 2509.23661（完全开放的 OneVision-1.5）。

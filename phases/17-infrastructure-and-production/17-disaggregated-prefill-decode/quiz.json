@@ -1,75 +1,75 @@
 {
   "lesson": "17-disaggregated-prefill-decode",
-  "title": "Disaggregated Prefill/Decode — NVIDIA Dynamo and llm-d",
+  "title": "预填充与解码分离（Disaggregated Prefill/Decode）：NVIDIA Dynamo 与 llm-d",
   "questions": [
     {
       "stage": "pre",
-      "question": "Why do prefill and decode want different optimal GPU configurations?",
+      "question": "为什么预填充和解码需要不同的最优 GPU 配置？",
       "options": [
-        "Prefill must run on AMD and decode on NVIDIA",
-        "They use different model weights",
-        "Prefill is compute-bound on matmul throughput; decode is memory-bound on HBM bandwidth, so colocating them wastes one resource",
-        "Decode requires more network bandwidth"
+        "预填充必须使用 AMD，解码必须使用 NVIDIA",
+        "两者使用不同模型权重",
+        "预填充受矩阵乘法计算吞吐量限制，解码受 HBM 内存带宽限制，因此混部会浪费其中一种资源",
+        "解码需要更多网络带宽"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "What transport does NVIDIA Dynamo use to move KV cache between the prefill and decode pools?",
+      "question": "NVIDIA Dynamo 用什么传输机制在预填充池与解码池之间移动 KV 缓存？",
       "options": [
-        "gRPC bidi only",
-        "NIXL (RDMA/InfiniBand when available, TCP fallback)",
-        "Plain HTTP",
-        "Shared filesystem on NFS"
+        "仅使用 gRPC 双向流",
+        "NIXL（优先使用可用的 RDMA/InfiniBand，否则回退到 TCP）",
+        "普通 HTTP",
+        "NFS 共享文件系统"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "When does disaggregation NOT pay off according to the lesson?",
+      "question": "按照本课说明，何时采用分离架构不划算？",
       "options": [
-        "RAG with 8K+ prefixes",
-        "MoE workloads on Blackwell",
-        "Multi-tenant serving with shared system prompts",
-        "Prompts under 512 tokens and outputs under 200 tokens, where the KV transfer tax dominates the gain"
+        "前缀超过 8K 的 RAG",
+        "Blackwell 上的 MoE 工作负载",
+        "共享系统提示词的多租户服务",
+        "提示词少于 512 词元且输出少于 200 词元，KV 传输开销超过收益"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "What is the core architectural difference between Dynamo and llm-d?",
+      "question": "Dynamo 和 llm-d 在架构上的核心区别是什么？",
       "options": [
-        "Dynamo is open source; llm-d is closed",
-        "Dynamo runs on CPU; llm-d on GPU",
-        "Dynamo is a stack-above orchestrator over vLLM/SGLang/TRT-LLM; llm-d is Kubernetes-native with prefill/decode/router as independent Services",
-        "Dynamo requires AMD; llm-d requires NVIDIA"
+        "Dynamo 开源，llm-d 闭源",
+        "Dynamo 在 CPU 上运行，llm-d 在 GPU 上运行",
+        "Dynamo 是位于 vLLM/SGLang/TRT-LLM 之上的编排器；llm-d 是 Kubernetes 原生架构，预填充、解码和路由器分别作为独立 Service",
+        "Dynamo 要求 AMD，llm-d 要求 NVIDIA"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "Which Dynamo components automatically tune the prefill:decode ratio for an SLO?",
+      "question": "Dynamo 的哪些组件会根据 SLO 自动调节预填充与解码比例？",
       "options": [
-        "Marlin kernels",
-        "Planner Profiler and SLA Planner",
+        "Marlin 内核",
+        "Planner Profiler 和 SLA Planner",
         "Cluster Autoscaler",
-        "Sidecar proxy and Envoy filter"
+        "边车代理与 Envoy 过滤器"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "How does disaggregation interact with cache-aware routing from Phase 17 · 11?",
+      "question": "分离架构如何与阶段 17 · 11 的缓存感知路由配合？",
       "options": [
-        "Disaggregation disables KV cache reuse entirely",
-        "The cache-aware router can land a request on the decode pool already holding its prefix; on miss it flows prefill -> decode, so the two compound",
-        "They are mutually exclusive",
-        "Cache-aware routing is only for colocated serving"
+        "分离架构会完全禁用 KV 缓存复用",
+        "缓存感知路由器可将请求发送到已持有其前缀的解码池；未命中时沿预填充 -> 解码路径执行，因此两者收益可以叠加",
+        "两者互斥",
+        "缓存感知路由仅适用于混部服务"
       ],
       "correct": 1,
       "explanation": ""

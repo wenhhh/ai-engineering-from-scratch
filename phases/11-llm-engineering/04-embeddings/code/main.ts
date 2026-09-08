@@ -1,7 +1,7 @@
-// Embeddings + semantic search in TypeScript: TF-IDF embedder, cosine /
-// dot / euclidean / hamming metrics, vector index, Matryoshka truncation,
-// binary quantization. Mirrors code/embeddings.py.
-// Sources:
+// TypeScript 嵌入（Embeddings）+ 语义搜索（Semantic search）: TF-IDF 嵌入器、余弦相似度 /
+// 点积 / 欧氏距离 / 汉明距离度量、向量索引、套娃式截断（Matryoshka truncation）、
+// 二值量化（Binary quantization）。与 code/embeddings.py 对应。
+// 来源:
 //   https://platform.openai.com/docs/guides/embeddings
 //   https://docs.voyageai.com/docs/embeddings
 //   https://huggingface.co/BAAI/bge-m3
@@ -10,8 +10,8 @@ type Vec = readonly number[];
 type Doc = { readonly text: string; readonly source?: string };
 
 function chunkText(text: string, chunkSize = 200, overlap = 50): string[] {
-  if (chunkSize <= 0) throw new Error("chunkSize must be positive");
-  if (overlap >= chunkSize) throw new Error("overlap must be less than chunkSize");
+  if (chunkSize <= 0) throw new Error("chunkSize 必须为正数");
+  if (overlap >= chunkSize) throw new Error("overlap 必须小于 chunkSize");
   const words = text.split(/\s+/).filter((w) => w.length > 0);
   const out: string[] = [];
   let start = 0;
@@ -247,17 +247,17 @@ const SAMPLE_DOCS: readonly Doc[] = [
 
 function main(): void {
   console.log("=".repeat(60));
-  console.log("STEP 1: Chunking");
+  console.log("步骤 1: 分块（Chunking）");
   console.log("=".repeat(60));
   const sample = SAMPLE_DOCS[0].text;
   const fixedChunks = chunkText(sample, 30, 10);
   const sentenceChunks = chunkBySentences(sample, 30);
-  console.log("  Document words: " + sample.split(/\s+/).length);
-  console.log("  Fixed chunks (30 / 10): " + fixedChunks.length);
-  console.log("  Sentence chunks (max 30): " + sentenceChunks.length);
+  console.log("  文档词数: " + sample.split(/\s+/).length);
+  console.log("  固定分块（30 / 10）: " + fixedChunks.length);
+  console.log("  按句分块（最多 30）: " + sentenceChunks.length);
 
   console.log("\n" + "=".repeat(60));
-  console.log("STEP 2: Embedding");
+  console.log("步骤 2: 嵌入（Embedding）");
   console.log("=".repeat(60));
   const miniDocs: readonly string[] = [
     "The cat sat on the mat",
@@ -269,39 +269,39 @@ function main(): void {
   const embedder = new TfIdfEmbedder();
   embedder.fit(miniDocs);
   const embeddings = embedder.embedBatch(miniDocs);
-  console.log("  Vocabulary size: " + embedder.dim);
-  console.log("  Embedding dimensions: " + embeddings[0].length);
+  console.log("  词表大小（Vocabulary size）: " + embedder.dim);
+  console.log("  嵌入维度（Embedding dimensions）: " + embeddings[0].length);
   miniDocs.forEach((doc, i) => {
     const nz = embeddings[i].filter((v) => v !== 0).length;
-    console.log("    [" + i + "] " + JSON.stringify(doc.slice(0, 40)) + " -> " + nz + " non-zero");
+    console.log("    [" + i + "] " + JSON.stringify(doc.slice(0, 40)) + " -> " + nz + " 个非零项");
   });
 
   console.log("\n" + "=".repeat(60));
-  console.log("STEP 3: Similarity Metrics");
+  console.log("步骤 3: 相似度度量（Similarity Metrics）");
   console.log("=".repeat(60));
   const pairs: ReadonlyArray<{ i: number; j: number; desc: string }> = [
-    { i: 0, j: 1, desc: "cat/mat vs dog/rug" },
-    { i: 0, j: 2, desc: "cat/mat vs ML" },
-    { i: 3, j: 4, desc: "payment declined vs charge didn't go through" },
-    { i: 2, j: 3, desc: "ML vs payment declined" },
+    { i: 0, j: 1, desc: "猫/垫子（cat/mat）与狗/地毯（dog/rug）" },
+    { i: 0, j: 2, desc: "猫/垫子（cat/mat）与机器学习（ML）" },
+    { i: 3, j: 4, desc: "支付被拒（payment declined）与扣款未成功（charge didn't go through）" },
+    { i: 2, j: 3, desc: "机器学习（ML）与支付被拒（payment declined）" },
   ];
   for (const { i, j, desc } of pairs) {
     const c = cosineSimilarity(embeddings[i], embeddings[j]);
     const d = dotProduct(embeddings[i], embeddings[j]);
     const e = euclideanDistance(embeddings[i], embeddings[j]);
     console.log("\n  " + desc);
-    console.log("    Cosine:    " + c.toFixed(4));
-    console.log("    Dot:       " + d.toFixed(4));
-    console.log("    Euclidean: " + e.toFixed(4));
+    console.log("    余弦相似度（Cosine）:    " + c.toFixed(4));
+    console.log("    点积（Dot）:       " + d.toFixed(4));
+    console.log("    欧氏距离（Euclidean）: " + e.toFixed(4));
   }
 
   console.log("\n" + "=".repeat(60));
-  console.log("STEP 4: Semantic Search");
+  console.log("步骤 4: 语义搜索（Semantic Search）");
   console.log("=".repeat(60));
   const engine = new SemanticSearchEngine(50, 10);
   const nChunks = engine.indexDocuments(SAMPLE_DOCS);
-  console.log("  Indexed " + SAMPLE_DOCS.length + " documents into " + nChunks + " chunks");
-  console.log("  Vocabulary size: " + engine.embedder.dim);
+  console.log("  已索引 " + SAMPLE_DOCS.length + " 篇文档，分成 " + nChunks + " 个块");
+  console.log("  词表大小（Vocabulary size）: " + engine.embedder.dim);
 
   const queries = [
     "What is the refund policy for enterprise customers?",
@@ -311,7 +311,7 @@ function main(): void {
     "How much does the Professional plan cost?",
   ];
   for (const q of queries) {
-    console.log("\n  Query: " + JSON.stringify(q));
+    console.log("\n  查询（Query）: " + JSON.stringify(q));
     const results = engine.search(q, 3);
     for (const r of results) {
       console.log("    [" + r.metadata.source + "] score=" + r.score.toFixed(4) + " | " + r.text.slice(0, 70) + "...");
@@ -319,7 +319,7 @@ function main(): void {
   }
 
   console.log("\n" + "=".repeat(60));
-  console.log("STEP 5: Matryoshka Truncation");
+  console.log("步骤 5: 套娃式截断（Matryoshka Truncation）");
   console.log("=".repeat(60));
   const fullDim = engine.embedder.dim;
   const qFull = engine.embedder.embed("refund policy enterprise");
@@ -331,7 +331,7 @@ function main(): void {
   }
 
   console.log("\n" + "=".repeat(60));
-  console.log("STEP 6: Binary Quantization");
+  console.log("步骤 6: 二值量化（Binary Quantization）");
   console.log("=".repeat(60));
   const qVec = engine.embedder.embed("API rate limits");
   const full = engine.index.search(qVec, 5, "cosine");
@@ -339,16 +339,16 @@ function main(): void {
   const fullIds = new Set(full.map((r) => r.index));
   const binIds = new Set(binary.map((r) => r.index));
   const overlap = [...fullIds].filter((x) => binIds.has(x)).length;
-  console.log("  Full top-5 indices:   " + [...fullIds].join(","));
-  console.log("  Binary top-5 indices: " + [...binIds].join(","));
-  console.log("  Overlap: " + overlap + "/5");
+  console.log("  全精度 top-5 索引:   " + [...fullIds].join(","));
+  console.log("  二值 top-5 索引: " + [...binIds].join(","));
+  console.log("  重合（Overlap）: " + overlap + "/5");
   const storageFull = fullDim * 4;
   const storageBinary = Math.ceil(fullDim / 8);
-  console.log("  Float32: " + storageFull + " bytes, Binary: " + storageBinary + " bytes (" + (storageFull / storageBinary).toFixed(0) + "x)");
+  console.log("  Float32: " + storageFull + " 字节， 二值（Binary）: " + storageBinary + " 字节（" + (storageFull / storageBinary).toFixed(0) + "x)");
 
-  console.log("\n  In production, replace TfIdfEmbedder with:");
+  console.log("\n  在生产环境中，将 TfIdfEmbedder 替换为:");
   console.log("    OpenAI text-embedding-3-small (1536d)");
-  console.log("    BGE-M3 (1024d, open)");
+  console.log("    BGE-M3（1024d，开放）");
   console.log("    Voyage-3 (1024d)");
 }
 

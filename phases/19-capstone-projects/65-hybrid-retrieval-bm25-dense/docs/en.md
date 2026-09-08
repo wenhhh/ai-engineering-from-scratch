@@ -1,147 +1,147 @@
-# Hybrid Retrieval with BM25 and Dense Embeddings
+# BM25 与稠密嵌入的混合检索（Hybrid Retrieval with BM25 and Dense Embeddings）
 
-> Lexical and semantic retrieval fail on opposite query distributions. Hybrid retrieval with reciprocal rank fusion does not interpolate, it votes - and the vote wins on every query class.
+> 词法检索与语义检索在相反的查询分布上失效。采用倒数排名融合的混合检索不是插值，而是投票，而投票在每类查询上都胜出。
 
 **Type:** Build
 **Languages:** Python
-**Prerequisites:** Phase 11 lessons 04 (embeddings), 06 (RAG); Phase 19 Track B foundations (lessons 20-29); Phase 19 lesson 64 (chunking strategies)
-**Time:** ~90 minutes
+**Prerequisites:** 阶段 11 第 04 课（嵌入）、06 课（RAG）；阶段 19 路线 B 基础（第 20–29 课）；阶段 19 第 64 课（分块策略）
+**Time:** ~90 分钟
 
-## Learning Objectives
-- Implement BM25 from scratch from the Robertson and Sparck Jones formulation, with field weighting, document length normalization, and tunable k1 and b.
-- Build a dense retriever on top of a deterministic mock embedding so the loop runs offline.
-- Implement reciprocal rank fusion exactly as Cormack, Clarke, and Buettcher published it in 2009, and explain why it dominates score-weighted interpolation.
-- Tune the RRF k constant and the per-modality weights and read the trade-offs on a small fixture corpus.
+## 学习目标（Learning Objectives）
+- 根据 Robertson 和 Sparck Jones 的公式从零实现 BM25，包含字段加权、文档长度归一化，以及可调的 k1 和 b。
+- 基于确定性模拟嵌入构建稠密检索器，让循环可离线运行。
+- 按 Cormack、Clarke 和 Buettcher 在 2009 年发表的形式精确实现倒数排名融合，并解释其为何优于分数加权插值。
+- 调整 RRF 的 k 常数和各模态权重，在小型固定语料上观察权衡。
 
-## The Problem
+## 问题（The Problem）
 
-Lexical search wins when the query carries a literal identifier the corpus contains verbatim. A query for `AbortMultipartOnFail` returns the right Go function via BM25 in microseconds. The same query, embedded, sits at the boundary of three similarity clusters and a dense retriever ranks the wrong file first.
+当查询带有语料中原样出现的标识符时，词法搜索胜出。查询 `AbortMultipartOnFail` 时，BM25 可在微秒级返回正确 Go 函数。同一查询的嵌入却落在三个相似簇的边界，稠密检索器将错误文件排在首位。
 
-Dense search wins when the query is paraphrased away from the corpus's literal tokens. A user asking "how do we handle cancelled uploads" never typed the word abort or multipart. BM25 returns the documentation chunk on "uploading large files" because that page contains the word uploads. Dense retrieval finds the abort function whose summary mentions cancellation.
+当查询的改述偏离语料的字面词元时，稠密搜索胜出。用户问“我们如何处理取消的上传”，没有输入 abort 或 multipart。BM25 返回“上传大文件”文档块，因为其中有 uploads 一词。稠密检索则找到摘要中提及取消操作的中止函数。
 
-The choice between the two is not a static one. The query distribution is the variable. A production RAG system handles both classes from the same endpoint, so retrieval has to handle both at once. That is hybrid retrieval. The merge step is the part that has to be right.
+两者间的选择不是固定的，变量是查询分布。生产 RAG 系统通过同一端点处理两类查询，因此检索必须同时支持两者。这就是混合检索（Hybrid retrieval），而合并步骤必须正确。
 
-## The Concept
+## 概念（The Concept）
 
 ```mermaid
 flowchart LR
-  Query[Query] --> BM25[BM25 Index]
-  Query --> Dense[Dense Index]
-  BM25 --> RanksA[Ranked List A]
-  Dense --> RanksB[Ranked List B]
-  RanksA --> RRF[Reciprocal Rank Fusion]
+  Query[查询] --> BM25[BM25 索引]
+  Query --> Dense[稠密索引]
+  BM25 --> RanksA[排序列表 A]
+  Dense --> RanksB[排序列表 B]
+  RanksA --> RRF[倒数排名融合]
   RanksB --> RRF
-  RRF --> Top[Top-k Chunks]
+  RRF --> Top[前 k 个块]
 ```
 
-### BM25 in one paragraph
+### 一段话理解 BM25（BM25 in one paragraph）
 
-BM25 scores a query-document pair by summing, over query terms, an inverse document frequency factor multiplied by a saturating term-frequency factor that includes a length-normalization correction. Two knobs. `k1` controls term-frequency saturation; the default 1.5 is the published recommendation and you should not move it without a benchmark. `b` controls how much document length matters; the default 0.75 says longer documents are penalized, but not linearly.
+BM25 对查询中的每个词，将逆文档频率因子乘以包含长度归一化修正的饱和词频因子，再求和，得到查询与文档的分数。它有两个调节项。`k1` 控制词频饱和，默认 1.5 是论文推荐值，没有基准测试支持不要修改。`b` 控制文档长度的影响；默认 0.75 表示惩罚较长文档，但不是线性惩罚。
 
-The IDF formula uses the smoothed Robertson and Sparck Jones definition, which is `log((N - df + 0.5) / (df + 0.5) + 1)`. The plus-one inside the log keeps the IDF positive when a term appears in more than half the corpus. This matters in small corpora where stopwords are technically rare.
+IDF 使用平滑的 Robertson 和 Sparck Jones 定义，即 `log((N - df + 0.5) / (df + 0.5) + 1)`。对数内部加一，使某词出现在一半以上语料中时，IDF 仍为正。这在停用词从计数上也算稀少的小语料中很重要。
 
-Field weighting lets you tell BM25 that a match on the symbol name counts more than a match in the body. Implementation is a multiplier on the term counts during indexing, not at scoring time. That keeps the math identical and avoids a separate score per field.
+字段加权（Field weighting）允许告诉 BM25：符号名中的匹配比正文中的匹配更重要。实现是在索引时对词计数施加乘数，而不是评分时加权。这样数学形式不变，也无需逐字段单独评分。
 
-### Dense retrieval in one paragraph
+### 一段话理解稠密检索（Dense retrieval in one paragraph）
 
-Embed each chunk into a fixed-dimension vector with an embedding model. At query time, embed the query, cosine-rank every chunk by similarity, and return the top-k. The model is the variable that decides quality. The retrieval algorithm itself is two lines: dot product and sort.
+通过嵌入模型将每块转换成固定维度向量。查询时嵌入查询，按余弦相似度对所有块排序，返回前 k 项。模型是决定质量的变量。检索算法本身只有两行：点积和排序。
 
-This lesson uses a deterministic hash-based embedding so you can read the fusion math without a network call. The hash sums token-keyed offsets into a 96-dimensional vector and normalizes. The cosine ranks are deterministic across runs, which is what the test suite requires.
+本课采用确定性的哈希嵌入，让你无须网络调用即可阅读融合数学。哈希将以词元为键的偏移累加到 96 维向量，再归一化。跨次运行的余弦排名确定，这正是测试套件所需。
 
-### Reciprocal rank fusion, the published formula
+### 倒数排名融合的原始公式（Reciprocal rank fusion, the published formula）
 
-Two ranked lists. For each candidate that appears in either list, sum its reciprocal-rank contributions. The 2009 paper used `1 / (k + rank)` with k equal to 60 as the default. Sort by total score. That is the whole algorithm.
+给定两个排序列表，对出现在任一列表中的每个候选，将其倒数排名贡献求和。2009 年论文采用 `1 / (k + rank)`，默认 k 为 60。按总分排序，就是整个算法。
 
-The published constant k = 60 is not arbitrary. With k = 60 the rank-1 contribution is 1 / 61 and the rank-10 contribution is 1 / 70. The contribution decays slowly so deep candidates still vote. Smaller k makes the top results dominate. Larger k flattens the contribution curve.
+论文中的常数 k = 60 不是随意选取的。k = 60 时，第 1 名贡献 1 / 61，第 10 名贡献 1 / 70。贡献衰减缓慢，较深位置的候选仍能投票。较小 k 让顶部结果占主导，较大 k 让贡献曲线更平。
 
-Two tunable knobs in our implementation. The `k` constant. A pair of per-modality weights so you can boost BM25 or dense when you have prior evidence one is better on your corpus. Multiplying the rank contribution by the weight is the simplest principled implementation; it preserves the rank-decay shape and stays scale-free.
+我们的实现有两项可调内容：`k` 常数，以及一对模态权重。当已有证据表明某种方式更适合语料时，可提升 BM25 或稠密检索的权重。将排名贡献乘以权重，是最简单且有原则的实现；它保留排名衰减形状，也不依赖分数尺度。
 
-### Why fusion beats score-weighted interpolation
+### 融合为何优于分数加权插值（Why fusion beats score-weighted interpolation）
 
-BM25 scores are unbounded and corpus-dependent. Cosine similarities are bounded in -1 to 1. A linear combination `alpha * bm25 + (1 - alpha) * cosine` requires per-corpus alpha tuning and breaks every time you reindex. The rank-based fusion does not. Two ranks are comparable across modalities. The published RRF baseline beats score-interpolation in every public TREC track since 2010.
+BM25 分数无界且依赖语料，余弦相似度范围为 -1 至 1。线性组合 `alpha * bm25 + (1 - alpha) * cosine` 需要按语料调整 alpha，每次重建索引都会失效。基于排名的融合不会如此。不同模态的排名可以比较。自 2010 年以来，公开 TREC 各赛道中，论文的 RRF 基线均优于分数插值。
 
-This is the same argument you hear about RankFusion vs RRF in Vespa and Weaviate documentation. They came to the same conclusion: stay rank-based unless you have very strong evidence to interpolate scores.
+Vespa 和 Weaviate 文档中关于 RankFusion 与 RRF 的讨论也是同一论点。结论相同：除非有很强证据支持分数插值，否则坚持基于排名。
 
 ```figure
 rrf-fusion
 ```
 
-## Build It
+## 动手实现（Build It）
 
-`code/main.py` implements:
+`code/main.py` 实现了：
 
-- `tokenize(text)` - a fast regex tokenizer.
-- `BM25Index` - field-weighted, with `add` and `search` and tunable k1, b.
-- `mock_embed`, `DenseIndex` - the same deterministic embedding as lesson 64 so chunks are comparable.
-- `rrf(rankings, k, weights)` - the published fusion with multi-modality weights.
-- `HybridRetriever` - combines BM25 and dense.
-- A demo `main()` that loads a small fixture corpus, runs three queries that target each retriever's strength and weakness, and prints the rankings each modality produced plus the fused list.
+- `tokenize(text)`：快速正则分词器。
+- `BM25Index`：字段加权，提供 `add` 和 `search`，支持调整 k1、b。
+- `mock_embed`、`DenseIndex`：采用第 64 课相同的确定性嵌入，使块可比较。
+- `rrf(rankings, k, weights)`：附带多模态权重的原始融合公式。
+- `HybridRetriever`：组合 BM25 与稠密检索。
+- 演示 `main()`：加载小型固定语料，运行三个针对各检索器优缺点的查询，打印每种模态的排名及融合列表。
 
-Run it:
+运行：
 
 ```bash
 python3 code/main.py
 ```
 
-Read the demo output side by side. The literal identifier query lands at BM25 rank 1, dense rank 4, RRF rank 1. The paraphrased query lands at BM25 rank 6, dense rank 1, RRF rank 1. The ambiguous query lands at BM25 rank 3, dense rank 3, RRF rank 1. The fusion is not a tie-breaker; it is the system that wins on every query class.
+并排阅读演示输出。字面标识符查询在 BM25 中排第 1、稠密检索第 4、RRF 第 1。改述查询分别排第 6、第 1、第 1。歧义查询分别排第 3、第 3、第 1。融合不是平局裁决器，而是在每类查询上都胜出的系统。
 
-## Tuning the knobs
+## 调节参数（Tuning the knobs）
 
-| Knob | Default | Move it up when | Move it down when |
+| 参数 | 默认值 | 何时调高 | 何时调低 |
 |------|---------|----------------|------------------|
-| BM25 k1 | 1.5 | Terms repeat in documents and you want frequency to matter more | Documents are short and term repetition is noise |
-| BM25 b | 0.75 | Long documents really do say less per word | Document length is uncorrelated with topic |
-| RRF k | 60 | Deep candidates should keep voting | The top-1 should dominate |
-| BM25 weight | 1.0 | Your corpus contains literal identifiers and queries match them | Your queries are user-paraphrased |
-| Dense weight | 1.0 | Queries are paraphrased | Queries are literal |
+| BM25 k1 | 1.5 | 文档中词语重复，希望词频影响更大 | 文档短，词语重复只是噪声 |
+| BM25 b | 0.75 | 长文档确实每词信息更少 | 文档长度与主题无关 |
+| RRF k | 60 | 较深候选应继续投票 | 第 1 名应占主导 |
+| BM25 权重 | 1.0 | 语料包含字面标识符，查询与之匹配 | 查询是用户改述 |
+| 稠密权重 | 1.0 | 查询经过改述 | 查询是字面匹配 |
 
-Tune by re-running lesson 68's eval harness on your held-out query set, not by intuition.
+应在留出查询集上重新运行第 68 课评估框架来调参，而不是凭直觉。
 
-## Failure modes the demo will hide
+## 演示会掩盖的失效模式（Failure modes the demo will hide）
 
-**Out-of-vocabulary tokens.** BM25's IDF is computed from the corpus, so terms only in the query contribute zero. Dense embeddings hallucinate a vector for the same term. On out-of-corpus identifiers the dense modality returns plausible-looking but wrong neighbors. The fusion absorbs this because BM25 returns nothing and the rank contribution drops out, but only if you de-duplicate by document, not by chunk.
+**词表外词元（Out-of-vocabulary tokens）。** BM25 的 IDF 根据语料计算，因此只在查询中出现的词贡献为零。稠密嵌入会为同一个词生成一个臆测向量。对于语料外标识符，稠密模态返回看似合理却错误的邻居。BM25 不返回结果，相应排名贡献消失，融合因而吸收这种影响，但前提是按文档去重，而不是按块去重。
 
-**Stop-token domination.** BM25 against the word "the" produces a uniform ranking over the corpus. Filter stop tokens in the indexer or accept that high-IDF terms dominate naturally.
+**停用词元主导（Stop-token domination）。** 对 “the” 一词运行 BM25，会在整个语料上产生均匀排名。可在索引器中滤除停用词元，或接受高 IDF 词自然占主导。
 
-**Identical content across modalities.** If your corpus is small enough that the top-1 of BM25 is also the top-1 of dense, RRF gives you the same top-1 with the same neighbors. That is correct behavior, not a failure, but it makes the fusion look invisible. Add an adversarial query pair in your eval to verify the fusion is actually working.
+**跨模态相同内容（Identical content across modalities）。** 如果语料足够小，BM25 与稠密检索的首位相同，RRF 会给出相同首位和相同邻居。这是正确行为，不是失效，但会让融合看似没有作用。在评估中加入一对对抗查询，验证融合确实有效。
 
-## Use It
+## 实际应用（Use It）
 
-Production patterns:
+生产模式：
 
-- Index BM25 in process; the bottleneck is the term-frequency dictionary, not the vectors.
-- Index dense vectors in a separate store (in this lesson we use a flat list; in production you would use HNSW).
-- Run both queries in parallel; the fusion is a constant-time merge over the union.
-- Persist the modality of each retrieved hit so a downstream reranker can see which modality voted for it.
+- 在进程内建立 BM25 索引；瓶颈是词频字典，不是向量。
+- 将稠密向量索引放入独立存储（本课用平面列表，生产中会用 HNSW）。
+- 并行运行两类查询；融合是对并集的常数时间合并。
+- 保存每个检索命中的模态，供下游重排器查看哪种模态为其投票。
 
-## Ship It
+## 交付成果（Ship It）
 
-Lesson 66 takes the fused top-k from this lesson and reranks with a cross-encoder. Lesson 68 evaluates the entire pipeline with precision, recall, MRR, and nDCG. The hybrid retriever in this lesson is the first stage of the end-to-end system in lesson 69.
+第 66 课接收本课融合后的前 k 项，用交叉编码器重排。第 68 课用精确率、召回率、MRR 和 nDCG 评估整条流水线。本课混合检索器是第 69 课端到端系统的第一阶段。
 
-## Exercises
+## 练习（Exercises）
 
-1. Replace `mock_embed` with a real model from your provider. Re-run the demo and report how the dense-only ranking changes on the paraphrased query.
-2. Add a third modality: chunk summaries indexed separately and fused as a third ranked list. Measure the gain.
-3. Sweep RRF k across 10, 30, 60, 100, 200. Plot the recall@k curve from lesson 68. Report the value of k where the curve peaks on your corpus.
-4. Implement BM25F properly (per-field length normalization rather than the multiplier trick) and compare on a corpus where symbol matches matter most.
+1. 用服务商的真实模型替换 `mock_embed`。重新运行演示，报告改述查询的纯稠密排名如何变化。
+2. 添加第三种模态：单独索引块摘要，作为第三个排序列表融合。测量收益。
+3. 扫描 RRF k 值 10、30、60、100、200，绘制第 68 课的 recall@k 曲线，报告在你的语料上曲线峰值对应的 k。
+4. 正确实现 BM25F（逐字段长度归一化，而非乘数技巧），在符号匹配最重要的语料上比较。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语 | 常见说法 | 实际含义 |
 |------|-----------------|------------------------|
-| BM25 | "Lexical search" | Probabilistic ranking with idf x saturating tf x length normalization |
-| RRF | "Rank fusion" | Sum of 1 / (k + rank) across ranked lists; k = 60 default |
-| k1 | "TF saturation" | Controls how fast a repeated term stops adding more score |
-| b | "Length penalty" | 0 means ignore document length, 1 means full normalization |
-| Field weighting | "Symbol boost" | Repeat tokens during indexing to boost matches in that field |
-| Rank-based vs score-based fusion | "Why RRF beats linear" | Ranks are comparable across modalities; scores are not |
+| BM25 | “词法搜索” | idf x 饱和 tf x 长度归一化的概率排序 |
+| 倒数排名融合（RRF） | “排名融合” | 跨排序列表对 1 / (k + rank) 求和；默认 k = 60 |
+| k1 | “词频饱和” | 控制重复词多久后不再增加多少分数 |
+| b | “长度惩罚” | 0 表示忽略文档长度，1 表示完全归一化 |
+| 字段加权（Field weighting） | “符号提升” | 索引时重复词元，提高该字段匹配的权重 |
+| 排名融合与分数融合（Rank-based vs score-based fusion） | “为何 RRF 优于线性组合” | 排名跨模态可比，分数不可比 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- Cormack, Clarke, Buettcher, "Reciprocal Rank Fusion outperforms Condorcet and individual rank learning methods", SIGIR 2009
-- Robertson, Walker, Beaulieu, Gatford, Payne, "Okapi at TREC-3" (the original BM25 paper)
-- [Vespa: Hybrid Retrieval with BM25 and Embeddings](https://docs.vespa.ai/en/tutorials/hybrid-search.html)
-- [Weaviate: Hybrid Search](https://weaviate.io/developers/weaviate/search/hybrid)
-- Phase 11 lesson 06 - RAG fundamentals
-- Phase 19 lesson 64 - chunkers whose output is indexed here
-- Phase 19 lesson 66 - cross-encoder reranker that consumes the fused top-k
+- Cormack、Clarke、Buettcher：《倒数排名融合优于 Condorcet 和独立排名学习方法（Reciprocal Rank Fusion outperforms Condorcet and individual rank learning methods）》，SIGIR 2009
+- Robertson、Walker、Beaulieu、Gatford、Payne：《TREC-3 中的 Okapi（Okapi at TREC-3）》（原始 BM25 论文）
+- [Vespa：BM25 与嵌入的混合检索（Hybrid Retrieval with BM25 and Embeddings）](https://docs.vespa.ai/en/tutorials/hybrid-search.html)
+- [Weaviate：混合搜索（Hybrid Search）](https://weaviate.io/developers/weaviate/search/hybrid)
+- 阶段 11 第 06 课：RAG 基础
+- 阶段 19 第 64 课：本课索引输入的分块器
+- 阶段 19 第 66 课：消费融合后前 k 项的交叉编码器重排器

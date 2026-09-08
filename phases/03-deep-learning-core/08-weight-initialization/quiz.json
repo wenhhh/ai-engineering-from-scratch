@@ -1,37 +1,62 @@
 [
   {
-    "question": "What happens if you initialize all weights in a neural network to zero?",
-    "options": ["The network diverges", "Zero init is the recommended default", "The network trains normally but slowly", "All neurons compute identical outputs and receive identical gradients, so the network has only 1 effective neuron per layer"],
+    "question": "将神经网络所有权重初始化为零会怎样？",
+    "options": [
+      "网络发散",
+      "零初始化是推荐的默认值",
+      "网络正常训练但较慢",
+      "所有神经元输出相同、梯度相同，因此每层只有 1 个有效神经元"
+    ],
     "correct": 3,
-    "explanation": "With zero weights, every neuron in a layer computes the same function, receives the same gradient, and updates identically. This 'symmetry' means hundreds of parameters behave as one.",
+    "explanation": "权重为零时，同一层每个神经元计算相同函数、接收相同梯度、进行相同更新。这种“对称性（Symmetry）”使数百个参数表现得像一个。",
     "stage": "pre"
   },
   {
-    "question": "Why does the scale of random weight initialization matter?",
-    "options": ["Scale only matters for the output layer", "If variance is too high, activations explode; if too low, activations vanish -- both prevent training", "Larger weights train faster", "It doesn't matter as long as weights are nonzero"],
+    "question": "随机权重初始化的尺度为什么重要？",
+    "options": [
+      "尺度只对输出层重要",
+      "方差过高导致激活爆炸，过低导致激活消失，两者都阻止训练",
+      "权重越大训练越快",
+      "只要权重非零，尺度就不重要"
+    ],
     "correct": 1,
-    "explanation": "Each layer multiplies variance by fan_in * Var(w). If this product is > 1, signal explodes exponentially through layers. If < 1, it vanishes. Proper initialization keeps this product at exactly 1.",
+    "explanation": "每层将方差乘以 fan_in * Var(w)。乘积 > 1，信号逐层指数级爆炸；< 1，信号消失。正确初始化将该乘积保持为 1。",
     "stage": "pre"
   },
   {
-    "question": "What is the formula for Kaiming/He initialization variance?",
-    "options": ["Var(w) = 1/fan_in", "Var(w) = 2/fan_in", "Var(w) = 1/(fan_in + fan_out)", "Var(w) = 2/(fan_in + fan_out)"],
+    "question": "Kaiming/He 初始化的方差公式是什么？",
+    "options": [
+      "Var(w) = 1/fan_in",
+      "Var(w) = 2/fan_in",
+      "Var(w) = 1/(fan_in + fan_out)",
+      "Var(w) = 2/(fan_in + fan_out)"
+    ],
     "correct": 1,
-    "explanation": "Kaiming init uses Var(w) = 2/fan_in. The factor of 2 compensates for ReLU zeroing half the activations (negative values become 0), which effectively halves the fan_in.",
+    "explanation": "Kaiming 初始化使用 Var(w) = 2/fan_in。系数 2 补偿 ReLU 将一半激活置零（负值变为 0）的影响，因为这实际上让 fan_in 减半。",
     "stage": "post"
   },
   {
-    "question": "When should you use Xavier/Glorot initialization instead of Kaiming/He?",
-    "options": ["When using Adam optimizer", "When training on small datasets", "When using sigmoid or tanh activations, which don't zero half the outputs like ReLU", "Always -- Xavier is universally better"],
+    "question": "何时应使用 Xavier/Glorot 初始化而非 Kaiming/He？",
+    "options": [
+      "使用 Adam 优化器时",
+      "在小数据集上训练时",
+      "使用 Sigmoid 或 tanh 时，它们不像 ReLU 那样将一半输出置零",
+      "始终如此，Xavier 普遍更好"
+    ],
     "correct": 2,
-    "explanation": "Xavier init uses Var(w) = 2/(fan_in + fan_out), designed for activations that are roughly linear near zero (sigmoid, tanh). Kaiming's extra factor of 2 compensates for ReLU's half-zeroing, which Xavier doesn't need.",
+    "explanation": "Xavier 使用 Var(w) = 2/(fan_in + fan_out)，针对零附近近似线性的激活（Sigmoid、tanh）设计。Kaiming 额外的系数 2 补偿 ReLU 的半数置零效应，Xavier 不需要它。",
     "stage": "post"
   },
   {
-    "question": "Why does GPT-2 scale residual layer weights by 1/sqrt(2N)?",
-    "options": ["To improve tokenization", "To speed up training", "Each residual addition increases variance, so scaling prevents the accumulated signal from growing unbounded through N layers", "To reduce the number of parameters"],
+    "question": "GPT-2 为什么将残差层权重乘以 1/sqrt(2N)？",
+    "options": [
+      "改善分词",
+      "加快训练",
+      "每次残差相加都会增加方差，缩放防止累积信号经过 N 层时无界增长",
+      "减少参数数量"
+    ],
     "correct": 2,
-    "explanation": "Residual connections add sublayer output to the input: x = x + sublayer(x). Each addition increases variance. With N residual layers, variance grows proportionally to N. Scaling by 1/sqrt(2N) keeps the signal stable.",
+    "explanation": "残差连接将子层输出加到输入上：x = x + sublayer(x)。每次相加增加方差，N 个残差层使方差按 N 的比例增长。乘以 1/sqrt(2N) 可保持信号稳定。",
     "stage": "post"
   }
 ]

@@ -1,75 +1,75 @@
 {
   "lesson": "25-security-secrets-audit",
-  "title": "Security — Secrets, API Key Rotation, Audit Logs, Guardrails",
+  "title": "安全：密钥、API 密钥轮换、审计日志与防护（Security — Secrets, API Key Rotation, Audit Logs, Guardrails）",
   "questions": [
     {
       "stage": "pre",
-      "question": "What is the 2026 standard pattern for LLM service credentials?",
+      "question": "2026 年 LLM 服务凭据的标准模式是什么？",
       "options": [
-        "Hardcode API keys in config files for speed",
-        "Email the key to each engineer",
-        "Store keys in a Slack channel",
-        "Centralized vault pulled by an AI gateway at runtime via IAM role; rotate in vault and all apps pick up in minutes"
+        "为提高速度，将 API 密钥硬编码在配置文件中",
+        "将密钥邮件发给每位工程师",
+        "把密钥存入 Slack 频道",
+        "集中式保险库，由 AI 网关在运行时通过 IAM 角色获取；保险库轮换后，所有应用几分钟内取得新值"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "What rotation cadence does the lesson recommend for API keys, vault root tokens, and CI/CD credentials?",
+      "question": "本课建议 API 密钥、保险库根令牌、CI/CD 凭据采用什么轮换频率？",
       "options": [
-        "Within 90 days, automated where possible, logged and tracked when manual",
-        "Only when leaked",
-        "Never",
-        "Every 5 years"
+        "90 天以内，尽可能自动化，手动时记录并跟踪",
+        "仅泄露时轮换",
+        "从不轮换",
+        "每 5 年轮换"
       ],
       "correct": 0,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Why is consistent tokenization (Mesh approach) used for PII scrubbing?",
+      "question": "PII 清洗为什么使用一致性令牌化（Mesh 方法）？",
       "options": [
-        "It encrypts the prompt to the model",
-        "It is required by ISO 27001",
-        "Same source value maps to the same placeholder, so the LLM preserves code and relationship semantics across the prompt",
-        "It uses less memory than regex"
+        "将提示词加密后发给模型",
+        "ISO 27001 要求这样做",
+        "同一源值映射为同一占位符，让 LLM 保留整个提示词中的代码与关系语义",
+        "比正则表达式占用更少内存"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "What egress posture does the lesson recommend for LLM service subnets?",
+      "question": "本课建议 LLM 服务子网采用什么出站安排？",
       "options": [
-        "Whitelist a small set of domains (api.openai.com, api.anthropic.com, vector DB, vault) and drop everything else, with an allowlist-only DNS resolver",
-        "Block all egress including providers",
-        "Allow DNS but block HTTP",
-        "Allow all outbound traffic"
+        "仅允许少量域名，如 api.openai.com、api.anthropic.com、向量数据库和保险库，其余全部丢弃，并使用仅允许列表的 DNS 解析器",
+        "阻断所有出站，包括提供商",
+        "允许 DNS，但阻断 HTTP",
+        "允许所有出站流量"
       ],
       "correct": 0,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "What did the 2026 Vercel supply-chain incident teach about CI/CD credentials?",
+      "question": "2026 年 Vercel 供应链事件对 CI/CD 凭据有什么启示？",
       "options": [
-        "CI/CD credentials are low-risk and can stay in env files",
-        "CI/CD secrets cannot be stolen",
-        "Vercel was unaffected",
-        "CI/CD credentials are prod-equivalent — store in vault, scope narrowly, rotate aggressively"
+        "CI/CD 凭据风险低，可以保留在环境文件中",
+        "CI/CD 密钥不会被盗",
+        "Vercel 未受影响",
+        "CI/CD 凭据等同于生产凭据，应存入保险库、严格限制范围、频繁轮换"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "Which audit log fields does the lesson recommend keeping for every LLM call?",
+      "question": "本课建议每次 LLM 调用保留哪些审计字段？",
       "options": [
-        "Only the cost",
-        "Timestamp, user/tenant, prompt hash (not raw), model + version, token counts, cost, response hash, any guardrail trips",
-        "Just the raw prompt",
-        "Only the response"
+        "只有成本",
+        "时间戳、用户与租户、提示词哈希（非原文）、模型与版本、词元数量、成本、响应哈希、任何防护触发",
+        "只有原始提示词",
+        "只有响应"
       ],
       "correct": 1,
       "explanation": ""

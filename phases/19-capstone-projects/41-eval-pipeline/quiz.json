@@ -1,78 +1,78 @@
 {
   "lesson": "phase-19/41-eval-pipeline",
-  "title": "Full Evaluation Pipeline",
+  "title": "完整评估管线（Full Evaluation Pipeline）",
   "questions": [
     {
       "stage": "pre",
-      "question": "Before reading: a colleague reports their model has perplexity 4.2 on the held-out set. They ask if the model is good. What is the most defensible response?",
+      "question": "阅读前：同事报告模型在留出集上困惑度为 4.2，问模型是否优秀。最合理的回答是什么？",
       "options": [
-        "Yes: perplexity below 5 means the model is good.",
-        "Perplexity tells you how well the model fits the language distribution. It says nothing about whether the model follows instructions or returns correct answers.",
-        "Perplexity is meaningless without an explicit prompt.",
-        "Only judge models can answer that question."
+        "是：困惑度低于 5 就表示模型优秀。",
+        "困惑度说明模型对语言分布的拟合程度，不说明它能否遵循指令或返回正确答案。",
+        "没有显式提示词，困惑度就没有意义。",
+        "只有裁判模型能回答。"
       ],
       "correct": 1,
-      "explanation": "Perplexity is one dimension. A model can have low perplexity and still be wrong on factual tasks, or have decent perplexity and still produce bad-quality answers. You need multiple evals, each measuring a different dimension."
+      "explanation": "困惑度只是一个维度。模型可能困惑度低却答错事实任务，也可能困惑度尚可却产生低质量答案。需要多项评估，各测不同维度。"
     },
     {
       "stage": "check",
-      "question": "The perplexity eval sums per-token negative log-likelihood over non-pad positions and divides by the total non-pad token count. Why not average per-batch perplexities instead?",
+      "question": "困惑度评估对非填充位置的逐词元负对数似然求和，再除以非填充词元总数。为什么不直接平均逐批困惑度？",
       "options": [
-        "Perplexity is undefined for batched data.",
-        "Averaging per-batch perplexities is mathematically equivalent.",
-        "Batches contain padded tokens that must always be averaged.",
-        "Averaging per-batch perplexities under-weights short sequences (their per-batch ppl carries more variance) and produces a biased aggregate."
+        "困惑度对批量数据没有定义。",
+        "平均逐批困惑度在数学上等价。",
+        "批次含填充词元，它们必须始终参与平均。",
+        "平均逐批困惑度会低估短序列权重（其逐批 ppl 方差更大），产生有偏汇总。"
       ],
       "correct": 3,
-      "explanation": "Per-token aggregation is the textbook definition and avoids batch-size and length biases. Per-batch averaging is a common bug; on a fixture with varying sequence lengths it produces a different number from the correct one."
+      "explanation": "逐词元汇总符合教材定义，避免批量大小与长度偏差。逐批平均是常见错误，在变长序列夹具上会得到不同于正确结果的数值。"
     },
     {
       "stage": "check",
-      "question": "Token F1 returns 1.0 when both prediction and reference are empty. Which other case must return a specific value?",
+      "question": "预测与参考都为空时，词元 F1 返回 1.0。哪种其他情况必须返回特定值？",
       "options": [
-        "When pred is empty but reference is non-empty, F1 must be 1.0.",
-        "When pred contains exactly one matching token, F1 must be 0.5.",
-        "When pred is non-empty but reference is empty, F1 must be undefined.",
-        "When only one of pred or reference is empty, F1 must be 0.0."
+        "pred 为空而参考非空时，F1 必须为 1.0。",
+        "pred 恰好包含一个匹配词元时，F1 必须为 0.5。",
+        "pred 非空但参考为空时，F1 必须未定义。",
+        "pred 与参考中仅一方为空时，F1 必须为 0.0。"
       ],
       "correct": 3,
-      "explanation": "Empty-empty is a vacuous match. Mixed empty-non-empty is the unambiguous miss case: there is content on one side and nothing on the other. The SQuAD convention is F1 = 0 in that case."
+      "explanation": "空与空是空匹配；一方为空、一方非空则明确不匹配：一边有内容，另一边没有。SQuAD 惯例规定此时 F1 = 0。"
     },
     {
       "stage": "check",
-      "question": "The aggregator normalises perplexity with `1 / (1 + log(max(ppl, 1.0)))`. What does this guarantee about the normalised score?",
+      "question": "汇总器通过 `1 / (1 + log(max(ppl, 1.0)))` 归一化困惑度。这保证归一化分数具有什么性质？",
       "options": [
-        "It is always in [0, 1] and decreases monotonically as raw perplexity grows.",
-        "It is always in [0, 1] and increases monotonically as raw perplexity grows.",
-        "It is unbounded above.",
-        "It only returns 0 or 1 (binary)."
+        "始终在 [0, 1] 内，随原始困惑度增大而单调递减。",
+        "始终在 [0, 1] 内，随原始困惑度增大而单调递增。",
+        "没有上界。",
+        "只返回 0 或 1（二值）。"
       ],
       "correct": 0,
-      "explanation": "Perplexity 1 (theoretical floor) maps to 1.0. Infinity maps to 0. The score is in [0, 1] and lower perplexity is better, which matches the direction of the other normalised metrics."
+      "explanation": "困惑度 1（理论下限）映射为 1.0，无穷映射为 0。分数在 [0, 1] 内，困惑度越低越好，与其他归一化指标方向一致。"
     },
     {
       "stage": "post",
-      "question": "You swap the mock judge for a real frontier-model judge. What is the minimum change to the pipeline?",
+      "question": "将模拟裁判换成真实前沿模型裁判，管线最少需要什么修改？",
       "options": [
-        "Rewrite the aggregator to accept a different score range.",
-        "Add a new entry to DEFAULT_WEIGHTS.",
-        "Replace the `judge_fn` argument to `judge_eval` with a function that has the same signature: (instruction, prediction, reference) -> JudgeVerdict.",
-        "Migrate the entire eval suite to async I/O."
+        "重写汇总器，接受不同分数范围。",
+        "给 DEFAULT_WEIGHTS 添加新条目。",
+        "将 `judge_eval` 的 `judge_fn` 参数替换为同签名函数：(instruction, prediction, reference) -> JudgeVerdict。",
+        "将整个评估套件迁移到异步 I/O。"
       ],
       "correct": 2,
-      "explanation": "The judge interface is `(instruction, prediction, reference) -> JudgeVerdict`. Any function with that signature drops in. The pipeline is decoupled from the judge implementation by that boundary, which is the point."
+      "explanation": "裁判接口为 `(instruction, prediction, reference) -> JudgeVerdict`，同签名函数均可直接接入。该边界将管线与裁判实现解耦，这正是目的。"
     },
     {
       "stage": "post",
-      "question": "Your aggregate score is 0.72, but exact-match is 0.40 and judge is 4.5/5. Which trade-off is the model making?",
+      "question": "总分为 0.72，完全匹配为 0.40，裁判为 4.5/5。模型在作什么权衡？",
       "options": [
-        "The aggregate is mis-computed.",
-        "The model is overfitting on the LM corpus.",
-        "The judge is mis-aligned with exact-match by definition.",
-        "The model is hitting the gold string exactly less often, but the judge thinks the open-form answers are decent."
+        "总分算错了。",
+        "模型在语言建模语料上过拟合。",
+        "裁判按定义就与完全匹配不一致。",
+        "模型较少精确命中标准字符串，但裁判认为开放式答案质量不错。"
       ],
       "correct": 3,
-      "explanation": "Low EM with high judge suggests paraphrase: the answers are right in substance but not character-for-character with the gold. This is exactly the dimension that EM misses and judge captures. The trade-off is informative, not a bug."
+      "explanation": "低完全匹配、高裁判分提示存在改述：答案实质正确，但不与标准答案逐字符一致。这正是完全匹配遗漏、裁判捕捉的维度。该权衡提供信息，并非错误。"
     }
   ]
 }

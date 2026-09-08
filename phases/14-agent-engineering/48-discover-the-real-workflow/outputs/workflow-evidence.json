@@ -3,46 +3,46 @@
   "issues": [],
   "direct_evidence_ratio": 0.67,
   "friction_points": [
-    "owner lookup",
-    "context switching"
+    "查找负责人",
+    "上下文切换"
   ],
   "steps": [
     {
       "order": 1,
-      "actor": "on-call engineer",
-      "action": "opens the alert",
+      "actor": "值班工程师",
+      "action": "打开告警",
       "evidence": [
         {
           "source": "screen recording 01",
-          "observation": "alert lacks service owner",
+          "observation": "告警缺少服务负责人",
           "direct": true,
           "confidence": 0.95
         }
       ],
-      "friction": "owner lookup"
+      "friction": "查找负责人"
     },
     {
       "order": 2,
-      "actor": "on-call engineer",
-      "action": "searches dashboards",
+      "actor": "值班工程师",
+      "action": "搜索仪表盘",
       "evidence": [
         {
           "source": "incident 184",
-          "observation": "three dashboards opened",
+          "observation": "打开了三个仪表盘",
           "direct": true,
           "confidence": 0.9
         }
       ],
-      "friction": "context switching"
+      "friction": "上下文切换"
     },
     {
       "order": 3,
-      "actor": "incident commander",
-      "action": "approves mitigation",
+      "actor": "事故指挥者",
+      "action": "批准缓解措施",
       "evidence": [
         {
           "source": "runbook",
-          "observation": "production writes require approval",
+          "observation": "生产写入需要审批",
           "direct": false,
           "confidence": 0.8
         }

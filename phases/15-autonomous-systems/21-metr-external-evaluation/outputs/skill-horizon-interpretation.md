@@ -1,40 +1,40 @@
 ---
 name: horizon-interpretation
-description: Review a vendor's time-horizon claim and produce a gap analysis between benchmark claim and deployment reality.
+description: 审查供应商的时间跨度声明，分析基准声明与部署现实之间的差距。
 version: 1.0.0
 phase: 15
 lesson: 21
 tags: [metr, time-horizon, hcast, re-bench, eval-vs-deploy, external-evaluation]
 ---
 
-Given a vendor's published time-horizon claim (e.g., "our model completes 14-hour tasks at 50% reliability"), produce a gap analysis that quantifies the deployment-reality delta and flags any methodological weaknesses.
+给定供应商公开发布的时间跨度（time horizon）声明（例如“我们的模型以 50% 的可靠性完成 14 小时任务”），生成差距分析，量化其与部署现实之间的差异，并标记方法上的任何弱点。
 
-Produce:
+请生成：
 
-1. **Methodology audit.** Identify the task suite (HCAST, RE-Bench, SWAA, or proprietary). Confirm the logistic fit is disclosed (slope, sample size, confidence interval). A horizon without methodology disclosure is a marketing claim.
-2. **Task distribution fit.** Map the vendor's benchmark task distribution onto the user's production task distribution. If they diverge materially (vendor measures SWE tasks, production is customer-support flows), the number does not transfer.
-3. **Eval-context gap.** Apply a 10–40% gap between benchmark horizon and deployment reality. Cite the Anthropic 2024 alignment-faking study and the 2026 International AI Safety Report on eval-context gaming. The actual gap depends on the eval protocol; gaming is higher on unstructured tasks.
-4. **Tooling gap.** Benchmark tooling is clean and well-instrumented. Production tooling is messier. Estimate an additional 5–30% reliability discount.
-5. **Human-in-the-loop assumption.** Benchmarks assume no HITL. Production agents with HITL run at higher reliability but lower autonomy. Adjust the horizon interpretation accordingly.
+1. **方法审计（Methodology audit）。** 确定任务套件（HCAST、RE-Bench、SWAA 或专有套件）。确认逻辑斯蒂拟合信息已披露（斜率、样本量、置信区间）。未披露方法的时间跨度只是一项营销声明。
+2. **任务分布匹配（Task distribution fit）。** 将供应商的基准任务分布映射到用户的生产任务分布。如果两者存在实质差异（供应商测量软件工程任务，而生产环境是客户支持流程），这个数字就不能迁移。
+3. **评估情境差距（Eval-context gap）。** 按基准时间跨度与实际部署表现之间存在 10–40% 的差距，修正估计值。引用 Anthropic 2024 年对齐伪装研究，以及 2026 年《国际 AI 安全报告》中关于评估情境投机的内容。实际差距取决于评估协议；非结构化任务中的投机程度更高。
+4. **工具差距（Tooling gap）。** 基准测试的工具环境规整，且配有完善的观测手段；生产工具环境则更复杂。估计这会使可靠性额外降低 5–30%。
+5. **人在回路假设（Human-in-the-loop assumption）。** 基准假设没有人在回路（HITL）。带 HITL 的生产智能体可靠性更高，但自主性更低。相应调整对时间跨度的解读。
 
-Hard rejects:
-- Horizon claims with no source methodology or sample size.
-- Claims that a benchmark horizon predicts deployment reliability.
-- Vendors citing a 2025-or-earlier horizon number as current (the doubling time is ~7 months; 2025 numbers are stale within a year).
-- Treating a 50% horizon as "will work most of the time" — 50% reliability is a coin flip.
+硬性拒绝条件（Hard rejects）：
+- 没有来源方法或样本量的时间跨度声明。
+- 声称基准时间跨度能够预测部署可靠性。
+- 将 2025 年或更早的时间跨度数字当作当前数据引用的供应商（翻倍时间约为 7 个月；2025 年的数字在一年内就会过时）。
+- 把 50% 时间跨度当作“大部分时间都能工作”：50% 可靠性相当于抛硬币。
 
-Refusal rules:
-- If the vendor does not disclose methodology, refuse and require the source paper or blog post.
-- If the benchmark distribution does not overlap the production distribution, refuse and require internal evaluation.
-- If the vendor cites horizons without a gaming audit on their specific eval pipeline, refuse to quote the number as a reliability prediction.
+拒绝规则（Refusal rules）：
+- 如果供应商未披露方法，拒绝并要求提供来源论文或博文。
+- 如果基准分布与生产分布不重叠，拒绝并要求开展内部评估。
+- 如果供应商引用时间跨度，却没有对其具体评估流水线开展投机审计，拒绝把这个数字引用为可靠性预测。
 
-Output format:
+输出格式（Output format）：
 
-Return a horizon-interpretation memo with:
-- **Source methodology** (suite, fit method, sample size, CI)
-- **Distribution overlap** (benchmark vs production; % mapping)
-- **Eval-context gap estimate** (low / med / high with rationale)
-- **Tooling gap estimate** (low / med / high)
-- **HITL assumption** (benchmark-style autonomous vs production HITL)
-- **Deploy-adjusted horizon** (horizon after gap and tooling discounts)
-- **Readiness verdict** (production / staging / research-only)
+返回一份时间跨度解读备忘录，包含：
+- **来源方法**（套件、拟合方法、样本量、置信区间 CI）
+- **分布重叠**（基准与生产；映射百分比）
+- **评估情境差距估计**（low / med / high，附理由）
+- **工具差距估计**（low / med / high）
+- **HITL 假设**（基准式自主运行或生产环境 HITL）
+- **部署调整后的时间跨度**（应用情境与工具折减后的时间跨度）
+- **就绪判断**（production / staging / research-only）

@@ -221,6 +221,42 @@ class ReleaseGateTests(unittest.TestCase):
         self.assertFalse(shipped["passed"])
         self.assertTrue(any("Output contract" in issue for issue in shipped["issues"]))
 
+    def test_english_and_chinese_sections_preserve_contract_in_both_linters(self) -> None:
+        bundle = make_bundle(self.root)
+        skill_path = bundle / "SKILL.md"
+        original = skill_path.read_text(encoding="utf-8")
+        shipped = load_bundled_evaluator()
+        output = "\u8f93\u51fa\u5951\u7ea6\uff08Output contract\uff09"
+        failure = "\u5931\u8d25\u884c\u4e3a\uff08Failure behavior\uff09"
+        for output_title, failure_title, valid in (
+            ("Output contract", "Failure behavior", True),
+            (output, failure, True),
+            (output, "Failure behavior", True),
+            ("Output contract", failure, True),
+            ("\u8f93\u51fa\u5951\u7ea6", failure, False),
+            (output + " extra", failure, False),
+            (output, "\u5931\u8d25\u884c\u4e3a\uff08Output contract\uff09", False),
+        ):
+            translated = original.replace("## Output contract", f"## {output_title}")
+            translated = translated.replace("## Failure behavior", f"## {failure_title}")
+            for empty_section in (None, "output", "failure"):
+                with self.subTest(
+                    output=output_title, failure=failure_title, empty=empty_section
+                ):
+                    body = translated
+                    if empty_section == "output":
+                        body = body.replace(
+                            "Return a JSON release report with every check and its evidence.", ""
+                        )
+                    elif empty_section == "failure":
+                        body = body.replace(
+                            "Stop with a failed check and do not publish or modify the bundle.", ""
+                        )
+                    skill_path.write_text(body, encoding="utf-8")
+                    expected = valid and empty_section is None
+                    self.assertEqual(lint_package(bundle).valid, expected)
+                    self.assertEqual(shipped.lint(bundle)["passed"], expected)
+
     def test_runtime_extension_requires_explicit_allowlist_in_both_linters(self) -> None:
         bundle = make_bundle(self.root)
         skill_path = bundle / "SKILL.md"

@@ -1,39 +1,39 @@
 ---
 name: skill-image-text-retriever
-description: Build an image embedding index with any CLIP checkpoint; support query-by-text and query-by-image
+description: 使用任意 CLIP 检查点构建图像嵌入索引，支持文本查询与图像查询
 version: 1.0.0
 phase: 4
 lesson: 18
 tags: [clip, retrieval, faiss, zero-shot]
 ---
 
-# Image-Text Retriever
+# 图文检索器（Image-Text Retriever）
 
-Turn a folder of images into a searchable index using CLIP embeddings.
+使用 CLIP 嵌入将图像目录转为可搜索索引。
 
-## When to use
+## 使用时机（When to use）
 
-- Building a zero-shot image search on an internal catalog.
-- Deduplicating near-identical images by embedding distance.
-- Building a quick "find similar" component without a labelled dataset.
+- 为内部目录构建零样本图像搜索。
+- 通过嵌入距离去除近乎相同的图像。
+- 没有有标签数据集时，快速构建“查找相似项”组件。
 
-## Inputs
+## 输入（Inputs）
 
-- `image_folder`: directory of image files.
-- `clip_model`: HuggingFace id like `openai/clip-vit-base-patch32` or `google/siglip-base-patch16-224`.
-- `index_type`: flat | IVF | HNSW.
-- `embedding_dim`: inferred from the model.
+- `image_folder`：图像文件目录。
+- `clip_model`：Hugging Face id，例如 `openai/clip-vit-base-patch32` 或 `google/siglip-base-patch16-224`。
+- `index_type`：flat | IVF | HNSW。
+- `embedding_dim`：从模型推断。
 
-## Steps
+## 步骤（Steps）
 
-1. Load the CLIP model and preprocessor.
-2. Batch-encode every image in the folder. Save embeddings as (N, D) float32 + filename list.
-3. Build a FAISS index over the embeddings. Use inner-product on L2-normalised vectors for cosine similarity.
-4. Expose two query interfaces:
-   - `search_by_text(text, k)` — embed the text, search.
-   - `search_by_image(image_path, k)` — embed the image, search.
+1. 加载 CLIP 模型与预处理器。
+2. 批量编码目录内每张图像，将嵌入保存为 (N, D) float32，并保存文件名列表。
+3. 基于嵌入构建 FAISS 索引。在 L2 归一化向量上使用内积（Inner Product），得到余弦相似度（Cosine Similarity）。
+4. 暴露两个查询接口：
+   - `search_by_text(text, k)`：嵌入文本并搜索。
+   - `search_by_image(image_path, k)`：嵌入图像并搜索。
 
-## Output template
+## 输出模板（Output template）
 
 ```python
 import os
@@ -100,21 +100,21 @@ class ImageTextRetriever:
         return [(self.filenames[i], float(d)) for d, i in zip(dist[0], idx[0])]
 ```
 
-## Report
+## 报告（Report）
 
 ```
 [retriever]
-  model:          <name>
+  model:          <名称>
   num_images:     <int>
   dim:            <int>
   index_type:     flat | IVF | HNSW
   index_size_mb:  <float>
 ```
 
-## Rules
+## 规则（Rules）
 
-- Always L2-normalise embeddings before indexing; FAISS's inner product on normalised vectors equals cosine similarity.
-- For < 100k images, `IndexFlatIP` (exact) is simplest and fastest.
-- For 100k-10M, `IndexIVFFlat` is the standard trade-off.
-- For > 10M, use HNSW or a product-quantised variant.
-- Never rebuild the index on every query; embed once, search many times.
+- 建索引前始终对嵌入进行 L2 归一化；FAISS 对归一化向量的内积等于余弦相似度。
+- 图像少于 100k 时，精确检索 `IndexFlatIP` 最简单、最快。
+- 100k-10M 时，`IndexIVFFlat` 是标准权衡。
+- 超过 10M 时，使用分层可导航小世界图（Hierarchical Navigable Small World，HNSW）或乘积量化（Product Quantization）变体。
+- 不要每次查询都重建索引；嵌入一次，多次搜索。

@@ -13,70 +13,70 @@
     </style>
   </defs>
 
-  <text x="440" y="26" text-anchor="middle" class="title">voice assistant pipeline — 7 components, 1 turn</text>
+  <text x="440" y="26" text-anchor="middle" class="title">语音助手流水线（Voice Assistant Pipeline）：7 组件，1 轮次</text>
 
   <rect x="20" y="55" width="100" height="90" class="box"/>
-  <text x="70" y="78" text-anchor="middle" class="label">1. mic</text>
-  <text x="70" y="96" text-anchor="middle" class="content">16 kHz mono</text>
-  <text x="70" y="114" text-anchor="middle" class="content">20 ms chunks</text>
+  <text x="70" y="78" text-anchor="middle" class="label" style="font-size: 11px">1. 麦克风（Mic）</text>
+  <text x="70" y="96" text-anchor="middle" class="content">16 kHz 单声道</text>
+  <text x="70" y="114" text-anchor="middle" class="content" style="font-size: 8.6px">20 ms 块（Chunks）</text>
 
   <line x1="122" y1="100" x2="140" y2="100" stroke="#1a1a1a" stroke-width="1.5" marker-end="url(#arr)"/>
 
   <rect x="142" y="55" width="100" height="90" class="hot"/>
-  <text x="192" y="78" text-anchor="middle" class="label">2. VAD</text>
+  <text x="192" y="78" text-anchor="middle" class="label" style="font-size: 9.2px">2. 语音检测（VAD）</text>
   <text x="192" y="96" text-anchor="middle" class="content">Silero</text>
-  <text x="192" y="114" text-anchor="middle" class="content">+ pre-roll</text>
+  <text x="192" y="114" text-anchor="middle" class="content" style="font-size: 8.7px">+ 预录（Pre-Roll）</text>
 
   <line x1="244" y1="100" x2="262" y2="100" stroke="#1a1a1a" stroke-width="1.5" marker-end="url(#arr)"/>
 
   <rect x="264" y="55" width="100" height="90" class="box"/>
-  <text x="314" y="78" text-anchor="middle" class="label">3. STT</text>
-  <text x="314" y="96" text-anchor="middle" class="content">Whisper / Parakeet</text>
-  <text x="314" y="114" text-anchor="middle" class="content">streaming</text>
+  <text x="314" y="78" text-anchor="middle" class="label">3. 转录（STT）</text>
+  <text x="314" y="96" text-anchor="middle" class="content" style="font-size: 8.1px">Whisper / Parakeet</text>
+  <text x="314" y="114" text-anchor="middle" class="content" style="font-size: 9.3px">流式（Streaming）</text>
 
   <line x1="366" y1="100" x2="384" y2="100" stroke="#1a1a1a" stroke-width="1.5" marker-end="url(#arr)"/>
 
   <rect x="386" y="55" width="130" height="90" class="box"/>
-  <text x="451" y="78" text-anchor="middle" class="label">4. LLM + tools</text>
+  <text x="451" y="78" text-anchor="middle" class="label" style="font-size: 10.1px">4. 大模型（LLM）+ 工具</text>
   <text x="451" y="96" text-anchor="middle" class="content">GPT-4o / Claude</text>
-  <text x="451" y="114" text-anchor="middle" class="content">stream + JSON tools</text>
+  <text x="451" y="114" text-anchor="middle" class="content">流式 + JSON 工具</text>
 
   <line x1="518" y1="100" x2="536" y2="100" stroke="#1a1a1a" stroke-width="1.5" marker-end="url(#arr)"/>
 
   <rect x="538" y="55" width="110" height="90" class="hot"/>
-  <text x="593" y="78" text-anchor="middle" class="label">5. TTS</text>
-  <text x="593" y="96" text-anchor="middle" class="content">Kokoro / Cartesia</text>
-  <text x="593" y="114" text-anchor="middle" class="content">stream from token 20</text>
+  <text x="593" y="78" text-anchor="middle" class="label">5. 合成（TTS）</text>
+  <text x="593" y="96" text-anchor="middle" class="content" style="font-size: 9.5px">Kokoro / Cartesia</text>
+  <text x="593" y="114" text-anchor="middle" class="content">第 20 词元起流式</text>
 
   <line x1="650" y1="100" x2="668" y2="100" stroke="#1a1a1a" stroke-width="1.5" marker-end="url(#arr)"/>
 
   <rect x="670" y="55" width="100" height="90" class="box"/>
-  <text x="720" y="78" text-anchor="middle" class="label">6. speaker</text>
-  <text x="720" y="96" text-anchor="middle" class="content">opus out</text>
-  <text x="720" y="114" text-anchor="middle" class="content">PLC enabled</text>
+  <text x="720" y="78" text-anchor="middle" class="label" style="font-size: 8.4px">6. 扬声器（Speaker）</text>
+  <text x="720" y="96" text-anchor="middle" class="content">Opus 输出</text>
+  <text x="720" y="114" text-anchor="middle" class="content" style="font-size: 8.9px">启用丢包隐藏（PLC）</text>
 
   <line x1="772" y1="100" x2="790" y2="100" stroke="#1a1a1a" stroke-width="1.5" marker-end="url(#arr)"/>
 
   <rect x="792" y="55" width="70" height="90" class="box"/>
-  <text x="827" y="78" text-anchor="middle" class="label">7. user</text>
-  <text x="827" y="114" text-anchor="middle" class="content">ear</text>
+  <text x="827" y="78" text-anchor="middle" class="label" style="font-size: 8px"><tspan x="827" dy="-5">7. 用户</tspan><tspan x="827" dy="10">（User）</tspan></text>
+  <text x="827" y="114" text-anchor="middle" class="content" style="font-size: 9.9px">耳朵（Ear）</text>
 
   <path d="M827,55 Q800,30 100,30 Q60,30 60,55" class="line" stroke="#c0392b" stroke-width="1.2" stroke-dasharray="5,3" fill="none"/>
-  <text x="440" y="24" text-anchor="middle" class="caption" fill="#c0392b">barge-in: if user speaks, VAD cancels TTS + LLM, restart from (2)</text>
+  <text x="440" y="24" text-anchor="middle" class="caption" fill="#c0392b" style="font-size: 10px" dy="22">插话（Barge-In）：用户开口，VAD 取消 TTS 与 LLM，从 (2) 重启</text>
 
   <rect x="20" y="175" width="840" height="130" class="box"/>
-  <text x="440" y="197" text-anchor="middle" class="label">the three failure modes you will hit</text>
-  <text x="50" y="225" class="content">1. first-word clip — VAD triggers late; user's "hey" is lost. Keep 200-400 ms pre-roll buffer.</text>
-  <text x="50" y="245" class="content">2. barge-in confusion — LLM keeps generating after user interrupts. Wire VAD → cancel-LLM.</text>
-  <text x="50" y="265" class="content">3. silence hallucinations — Whisper says "Thanks for watching" on silent warm-up. Always VAD-gate.</text>
-  <text x="50" y="290" class="caption">in production, log every turn + P50/P95/P99 per-stage histograms before shipping.</text>
+  <text x="440" y="197" text-anchor="middle" class="label">会遇到的三种失效模式（Failure Modes）</text>
+  <text x="50" y="225" class="content">1. 首词截断（First-Word Clip）：VAD 触发晚，漏掉“嘿”。保留 200–400 ms 预录缓冲。</text>
+  <text x="50" y="245" class="content">2. 插话混乱（Barge-In）：用户打断后 LLM 仍生成。连接 VAD → 取消 LLM。</text>
+  <text x="50" y="265" class="content">3. 静音幻觉（Hallucinations）：Whisper 静音预热时说“感谢观看”。始终 VAD 门控。</text>
+  <text x="50" y="290" class="caption">生产交付前记录每个轮次（Turn），以及逐阶段 P50/P95/P99 直方图。</text>
 
   <rect x="20" y="315" width="840" height="155" class="hot"/>
-  <text x="440" y="337" text-anchor="middle" class="label">2026 reference stacks (pick by target latency + license)</text>
-  <text x="50" y="363" class="content">LiveKit + Deepgram + GPT-4o + Cartesia        350-500 ms   industry default</text>
-  <text x="50" y="381" class="content">Pipecat + Whisper-stream + GPT-4o + Kokoro    500-800 ms   DIY open-source</text>
-  <text x="50" y="399" class="content">Moshi (full-duplex, single model)              200-300 ms   different architecture — lesson 15</text>
-  <text x="50" y="417" class="content">Vapi / Retell (managed)                        300-500 ms   fastest to ship</text>
-  <text x="50" y="435" class="content">whisper.cpp + llama.cpp + Kokoro-ONNX          offline      edge / privacy</text>
-  <text x="50" y="460" class="caption">add wake-word gate (Porcupine) for always-on consumer devices; never log raw audio &gt; 30 days.</text>
+  <text x="440" y="337" text-anchor="middle" class="label">2026 年参考栈（Reference Stacks），按目标延迟与许可选择</text>
+  <text x="50" y="363" class="content">LiveKit + Deepgram + GPT-4o + Cartesia　350–500 ms　行业默认</text>
+  <text x="50" y="381" class="content">Pipecat + Whisper-stream + GPT-4o + Kokoro　500–800 ms　开源自建</text>
+  <text x="50" y="399" class="content">Moshi（全双工 Full-Duplex，单模型）200–300 ms　不同架构，见第 15 课</text>
+  <text x="50" y="417" class="content">Vapi / Retell（托管 Managed）300–500 ms　交付最快</text>
+  <text x="50" y="435" class="content">whisper.cpp + llama.cpp + Kokoro-ONNX　离线（Offline）　边缘端 / 隐私</text>
+  <text x="50" y="460" class="caption">持续监听消费设备加唤醒词（Wake Word）门控 Porcupine；原始音频不得保留 &gt; 30 天。</text>
 </svg>

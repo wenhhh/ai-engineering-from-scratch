@@ -1,78 +1,78 @@
 {
   "lesson": "20-reliable-extraction-batch-and-reviewers",
-  "title": "Reliable Extraction, Batch, and Independent Reviewers",
+  "title": "可靠提取、批处理与独立评审者（Reliable Extraction, Batch, and Independent Reviewers）",
   "questions": [
     {
       "stage": "pre",
-      "question": "An extraction pipeline always returns schema-valid JSON but invents missing dates. What is the primary gap?",
+      "question": "提取流水线始终返回符合模式的 JSON，却编造缺失日期。主要缺口是什么？",
       "options": [
-        "A nullable absence state plus semantic and evidence validation",
-        "A discovery step that gives the model access to date-normalization tools",
-        "A stricter parser for invalid date formats",
-        "A larger extraction model that infers likely dates from surrounding document context"
+        "可空的缺失状态，以及语义和证据验证",
+        "让模型能够访问日期归一化工具的发现步骤",
+        "对无效日期格式更严格的解析器",
+        "能根据周围文档上下文推断可能日期的更大提取模型"
       ],
       "correct": 0,
-      "explanation": "The schema forces a value and checks only shape. Representing unknown explicitly and verifying claims against source evidence prevents validly formatted invention."
+      "explanation": "模式强制给出值，却只检查结构。显式表示未知，并根据来源证据验证主张，可以防止格式正确的编造。"
     },
     {
       "stage": "check",
-      "question": "Which few-shot example is most useful for reducing false-positive obligations?",
+      "question": "哪种少样本示例最有助于减少误判为义务的假阳性？",
       "options": [
-        "Another clear obligation with new wording but the same straightforward boundary",
-        "A near-miss background statement labeled as not an obligation with the boundary explained",
-        "A longer contract excerpt containing several obligations but no labeled negative cases",
-        "A stylistically similar extraction example from another category with no boundary note"
+        "措辞不同但边界同样简单的另一个明确义务",
+        "标为非义务并解释边界的、看似接近的背景陈述",
+        "包含多项义务却没有标注负例的更长合同片段",
+        "风格相似、来自其他类别却没有边界说明的提取示例"
       ],
       "correct": 1,
-      "explanation": "Boundary examples teach the judgment that separates a plausible near miss from the target class. Repeating easy positives adds little information."
+      "explanation": "边界示例教会模型区分貌似接近的非目标与目标类别。重复简单正例增加的信息很少。"
     },
     {
       "stage": "check",
-      "question": "What should happen after repeated semantic validation failure on an ambiguous source?",
+      "question": "模糊来源反复未通过语义验证后，应做什么？",
       "options": [
-        "Relax semantic validation for this record while keeping schema and evidence checks",
-        "Raise the reasoning budget for another bounded retry",
-        "Return an explicit unresolved state and escalate to qualified review",
-        "Select the most frequent candidate across bounded retries and mark it low confidence"
+        "放宽该记录的语义验证，保留模式与证据检查",
+        "提高推理预算，再进行一次有边界的重试",
+        "返回明确的未解决状态，并升级给具备资格的评审者",
+        "在有限重试中选最常见候选，并标为低置信度"
       ],
       "correct": 2,
-      "explanation": "Bounded retry prevents cost and latency loops from converting ambiguity into confident fabrication. The source needs review or additional evidence."
+      "explanation": "有边界的重试避免成本和延迟循环把歧义变成自信编造。来源需要评审或补充证据。"
     },
     {
       "stage": "check",
-      "question": "Why use stable custom IDs in batch processing?",
+      "question": "批处理中为什么要使用稳定的自定义 ID？",
       "options": [
-        "They carry the authenticated user's tool authority into each asynchronous request",
-        "They ensure every request receives the same price and completion deadline",
-        "They let the model correlate nearby requests and improve consistency across the batch",
-        "Results may complete out of order and need reliable reconciliation"
+        "把已认证用户的工具权限带入每个异步请求",
+        "保证每个请求具有相同价格和完成期限",
+        "让模型关联相邻请求，改善整批一致性",
+        "结果可能乱序完成，需要可靠对账"
       ],
       "correct": 3,
-      "explanation": "Stable IDs join each result to source, version, and expected output regardless of completion order, retries, or partial job failure."
+      "explanation": "无论完成顺序、重试或作业部分失败如何，稳定 ID 都能把结果关联到来源、版本和预期输出。"
     },
     {
       "stage": "post",
-      "question": "When is real-time processing stronger than batch?",
+      "question": "什么时候实时处理比批处理更合适？",
       "options": [
-        "An interactive task whose model must call and observe external tools before continuing",
-        "A nightly reclassification whose results can be reconciled before the next day",
-        "A static extraction archive with no immediate user or downstream dependency",
-        "A large evaluation backfill of independent requests with stable custom identifiers"
+        "交互任务中，模型必须调用并观察外部工具后才能继续",
+        "夜间重新分类，可在次日之前对账结果",
+        "没有即时用户或下游依赖的静态提取归档",
+        "包含独立请求和稳定自定义标识的大规模评估补处理"
       ],
       "correct": 0,
-      "explanation": "Adaptive mid-request tool loops need immediate observations and continuation. Batch fits asynchronous, tool-independent work when the service window is acceptable."
+      "explanation": "请求中途自适应的工具循环需要即时观察并继续。服务窗口可接受时，批处理适合异步且不依赖工具的工作。"
     },
     {
       "stage": "post",
-      "question": "What should an independent extraction reviewer receive?",
+      "question": "独立提取评审者应收到什么？",
       "options": [
-        "The final category, confidence, and explanation without source text to avoid anchoring",
-        "Source, candidate record, evidence, and an explicit rubric in a fresh context",
-        "The source and final record without a rubric, allowing an independent standard to emerge",
-        "The generator's complete reasoning transcript so the reviewer can assess its intent"
+        "只给最终类别、置信度和解释，不给来源文本，以避免锚定",
+        "在全新上下文中提供来源、候选记录、证据及明确评分标准",
+        "提供来源和最终记录，不给评分标准，让其自行形成独立标准",
+        "生成者完整推理记录，以便评审者评估其意图"
       ],
       "correct": 1,
-      "explanation": "Controlled inputs and a fresh context help the reviewer test evidence support and criteria without inheriting the generator's framing."
+      "explanation": "受控输入和全新上下文有助于评审者检验证据支持与标准，而不继承生成者的叙述框架。"
     }
   ]
 }

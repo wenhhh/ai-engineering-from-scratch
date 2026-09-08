@@ -1,56 +1,56 @@
 ---
 name: skill-llm-evaluation
-description: Decision framework for choosing the right LLM evaluation strategy based on task type, budget, and requirements
+description: 根据任务类型、预算和要求选择恰当大语言模型评估策略的决策框架
 version: 1.0.0
 phase: 10
 lesson: 10
 tags: [evaluation, evals, benchmarks, llm-as-judge, elo, metrics]
 ---
 
-# LLM Evaluation Strategy
+# 大语言模型评估策略（LLM Evaluation Strategy）
 
-When evaluating an LLM system, apply this decision framework to choose the right approach.
+评估大语言模型（Large Language Model，LLM）系统时，应用本决策框架选择合适的方法。
 
-## When to use each eval type
+## 各类评估的适用时机（When to use each eval type）
 
-**Benchmarks (MMLU, HumanEval, SWE-bench):** You are doing initial model selection. You need to narrow 10 candidate models to 3. Benchmarks give rough ranking at zero cost. Do not use benchmarks as your final evaluation.
+**基准测试（Benchmarks，MMLU、HumanEval、SWE-bench）：**你正在初步筛选模型，需要将 10 个候选缩减到 3 个。基准测试能以零成本提供粗略排名。不要把基准测试作为最终评估。
 
-**Custom evals:** You are building for production. You have a specific task with specific failure modes. Custom evals are the only evaluation that predicts real-world performance. Minimum 50 test cases for prototype, 200+ for production.
+**自定义评估（Custom Evals）：**你正在构建生产系统，有具体任务和具体故障模式。只有自定义评估能预测真实场景的表现。原型至少需要 50 个测试用例，生产需要 200 个以上。
 
-**LLM-as-judge:** Your task is open-ended (summarization, writing, conversation). Exact match and token overlap metrics are too rigid. LLM-as-judge costs ~$0.01 per judgment and agrees with humans ~80% of the time. Always use a rubric, not a vague prompt.
+**大语言模型裁判（LLM-as-judge）：**任务是开放式的（摘要、写作、对话），精确匹配和词元重叠指标过于僵硬。大语言模型裁判每次判断成本约 $0.01，与人类约有 80% 的一致率。始终使用评分量表（Rubric），不要使用含糊的提示词。
 
-**Human evals:** The stakes are high and automated metrics disagree. Human eval is the ground truth but costs $0.10-$2.00 per judgment. Reserve for ambiguous cases and periodic calibration of automated metrics.
+**人工评估（Human Evals）：**任务风险较高，且自动指标结论不一致。人工评估是真值，但每次判断花费 $0.10-$2.00。应留给有歧义的情况，并用来定期校准自动指标。
 
-**ELO from pairwise comparisons:** You are comparing multiple models on the same task. Pairwise is more reliable than absolute scoring because humans (and LLM judges) are better at relative judgments.
+**成对比较的 ELO 评分（ELO from Pairwise Comparisons）：**你正在比较多个模型在同一任务上的表现。成对比较比绝对评分更可靠，因为人类和大语言模型裁判更擅长相对判断。
 
-## Scoring function selection
+## 选择评分函数（Scoring function selection）
 
-- **Exact match**: classification, entity extraction, structured outputs with known answers
-- **Token F1**: extraction tasks where partial credit matters
-- **ROUGE-L**: summarization, translation
-- **BLEU**: machine translation
-- **LLM-as-judge**: open-ended generation, conversational quality, helpfulness
-- **Execution-based**: code generation (run the code, check if tests pass)
-- **Schema compliance**: structured outputs (does the JSON match the schema?)
+- **精确匹配（Exact Match）**：分类、实体抽取、答案已知的结构化输出
+- **词元 F1（Token F1）**：需要给部分正确答案计分的抽取任务
+- **ROUGE-L**：摘要、翻译
+- **双语评估替补（Bilingual Evaluation Understudy，BLEU）**：机器翻译
+- **大语言模型裁判（LLM-as-judge）**：开放式生成、对话质量、有用性
+- **基于执行（Execution-based）**：代码生成（运行代码，检查测试是否通过）
+- **模式符合度（Schema Compliance）**：结构化输出（JSON 是否匹配模式？）
 
-## Red flags in eval design
+## 评估设计中的危险信号（Red flags in eval design）
 
-- Eval set smaller than 50 cases: results are statistically meaningless
-- No edge cases: you are measuring happy-path performance, which is always higher than real-world
-- Single metric: different metrics tell different stories, use at least two
-- No versioning: you cannot track improvement without versioned eval sets
-- Eval set contamination: never include eval examples in fine-tuning data or few-shot prompts
-- Testing only one model: you need a baseline (even a simple heuristic) for comparison
+- 评估集少于 50 个用例：结果没有统计意义
+- 没有边界情况：衡量的是正常路径表现，它总是高于现实表现
+- 只有一个指标：不同指标反映不同方面，至少使用两个
+- 没有版本管理：没有版本化评估集，就无法跟踪改善
+- 评估集污染（Eval Set Contamination）：绝不能把评估示例放入微调数据或少样本提示词（Few-shot Prompts）
+- 只测试一个模型：需要基线（即使只是简单的启发式方法）来比较
 
-## Eval pipeline checklist
+## 评估流水线检查清单（Eval pipeline checklist）
 
-1. Define the task precisely (not "answer questions" but "classify support tickets into 5 categories")
-2. Create test cases across happy path, edge cases, and known regressions
-3. Select 2-3 scoring functions appropriate for the task type
-4. Set pass/fail thresholds based on production requirements
-5. Automate execution: one command runs the full suite
-6. Version everything: test cases, scoring functions, prompts, model versions
-7. Run on every change: prompt updates, model swaps, code deployments
-8. Track trends: a single score is noise, a trendline is signal
-9. Calibrate against human judgment quarterly
-10. Add regression cases whenever a production failure is discovered
+1. 精确定义任务（不是“回答问题”，而是“将支持工单分为 5 类”）
+2. 创建覆盖正常路径、边界情况和已知回归问题的测试用例
+3. 选择 2-3 个适合该任务类型的评分函数
+4. 根据生产要求设置通过与失败阈值
+5. 自动执行：一条命令运行完整套件
+6. 对一切进行版本管理：测试用例、评分函数、提示词、模型版本
+7. 每次变更都运行：提示词更新、模型替换、代码部署
+8. 跟踪趋势：单个分数是噪声，趋势线才是信号
+9. 每季度以人类判断为依据进行校准
+10. 每当发现生产故障，就添加回归用例

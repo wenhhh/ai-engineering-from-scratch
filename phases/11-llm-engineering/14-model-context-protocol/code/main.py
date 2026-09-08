@@ -1,9 +1,9 @@
-"""Phase 11 Lesson 14: a stateless MCP server and in-process client.
+"""第 11 阶段第 14 课：无状态（stateless）MCP 服务端与进程内客户端。
 
-Implements the 2026-07-28 request contract with per-request metadata,
-server/discover, typed results, and the three server primitives. The transport
-is in memory so the protocol remains visible and the demo stays stdlib-only.
-Spec: https://modelcontextprotocol.io/specification/2026-07-28
+实现 2026-07-28 请求契约，包括逐请求元数据（per-request metadata）、
+server/discover、带类型的结果（typed results），以及三种服务端原语（primitives）。
+传输在内存中进行，便于观察协议，同时使演示仅依赖标准库。
+规范： https://modelcontextprotocol.io/specification/2026-07-28
 """
 
 from __future__ import annotations
@@ -228,7 +228,7 @@ class MCPServer:
             try:
                 text = resource.handler()
                 if not isinstance(text, str):
-                    raise TypeError("resource handler must return text")
+                    raise TypeError("资源处理器（resource handler）必须返回文本")
             except Exception:
                 return self._error(request_id, -32603, "resource handler failed")
             result = self._complete(
@@ -271,7 +271,7 @@ class MCPServer:
             try:
                 rendered = prompt.handler(**arguments)
                 if not isinstance(rendered, str):
-                    raise TypeError("prompt handler must return text")
+                    raise TypeError("提示词处理器（prompt handler）必须返回文本")
             except Exception:
                 return self._error(request_id, -32603, "prompt handler failed")
             result = self._complete(
@@ -303,7 +303,7 @@ class MCPClient:
             {"jsonrpc": "2.0", "id": self._id, "method": method, "params": request_params}
         )
         if response is None:
-            raise RuntimeError("request did not receive a response")
+            raise RuntimeError("请求未收到响应")
         if "error" in response:
             raise RuntimeError(response["error"]["message"])
         return response["result"]
@@ -353,27 +353,27 @@ def main() -> None:
     client = MCPClient(server)
     discovery = client.request("server/discover")
     info = discovery["_meta"][SERVER_INFO_KEY]
-    print(f"Discovered {info['name']} (protocol {discovery['supportedVersions'][0]})")
+    print(f"已发现 {info['name']}（协议版本 {discovery['supportedVersions'][0]}）")
 
     tools = client.request("tools/list")["tools"]
-    print(f"\n{len(tools)} tool(s) discovered:")
+    print(f"\n发现 {len(tools)} 个工具（tools）：")
     for tool in tools:
-        flag = " [destructive]" if tool.get("annotations", {}).get("destructiveHint") else ""
+        flag = " [破坏性操作（destructive）]" if tool.get("annotations", {}).get("destructiveHint") else ""
         print(f"  - {tool['name']}{flag}: {tool['description']}")
 
     add_result = client.request("tools/call", {"name": "add", "arguments": {"a": 40, "b": 2}})
-    print("\nCall add(40, 2) ->", add_result["content"][0]["text"])
+    print("\n调用 add(40, 2) ->", add_result["content"][0]["text"])
 
     resources = client.request("resources/list")["resources"]
-    print(f"\n{len(resources)} resource(s): {resources[0]['uri']}")
+    print(f"\n{len(resources)} 个资源（resources）： {resources[0]['uri']}")
     config = client.request("resources/read", {"uri": "config://app"})
-    print("Read config://app ->", config["contents"][0]["text"])
+    print("读取 config://app ->", config["contents"][0]["text"])
 
     prompt = client.request(
         "prompts/get",
         {"name": "code_review", "arguments": {"language": "Python", "code": "x = 1\n"}},
     )
-    print("\nRender code_review prompt ->", prompt["messages"][0]["content"]["text"][:80])
+    print("\n渲染 code_review 提示词（prompt）->", prompt["messages"][0]["content"]["text"][:80])
 
 
 if __name__ == "__main__":

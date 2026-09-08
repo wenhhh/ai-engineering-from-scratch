@@ -1,40 +1,40 @@
-# Transfer Learning & Fine-Tuning
+# 迁移学习与微调（Transfer Learning & Fine-Tuning）
 
-> Somebody else spent a million GPU hours teaching a network what edges, textures, and object parts look like. You should borrow those features before training your own.
+> 别人已经花了一百万 GPU 小时，教会网络识别边缘、纹理和物体部件。自己训练前，应先借用这些特征。
 
 **Type:** Build
 **Languages:** Python
-**Prerequisites:** Phase 4 Lesson 03 (CNNs), Phase 4 Lesson 04 (Image Classification)
-**Time:** ~75 minutes
+**Prerequisites:** 阶段 4 第 03 课（卷积神经网络），阶段 4 第 04 课（图像分类）
+**Time:** ~75 分钟
 
-## Learning Objectives
+## 学习目标（Learning Objectives）
 
-- Distinguish feature extraction from fine-tuning and pick the right one based on dataset size, domain distance, and compute budget
-- Load a pretrained backbone, replace its classifier head, and train only the head to a working baseline in under 20 lines
-- Progressively unfreeze layers with discriminative learning rates so early generic features get smaller updates than late task-specific ones
-- Diagnose the three common failures: feature drift from too-high LR on unfrozen blocks, BN statistics collapse on tiny datasets, and catastrophic forgetting
+- 区分特征提取与微调，根据数据集规模、领域距离和计算预算选择合适方法
+- 加载预训练骨干网络、替换分类头，用不到 20 行代码仅训练任务头，得到可用基线
+- 使用差异化学习率逐步解冻层，使早期通用特征的更新小于后期任务专用特征
+- 诊断三类常见问题：解冻模块学习率过高导致特征漂移，小数据集上的 BN 统计量崩溃，以及灾难性遗忘
 
-## The Problem
+## 问题（The Problem）
 
-Training a ResNet-50 on ImageNet costs around 2,000 GPU-hours. Very few teams have that budget for every task they ship. What almost every team actually ships is a pretrained backbone with a new head trained on a few hundred or few thousand task-specific images.
+在 ImageNet 上训练 ResNet-50 约需 2,000 GPU 小时。很少有团队能为每项交付任务投入这笔预算。几乎所有团队实际交付的，都是预训练骨干网络，加上用几百或几千张任务专用图像训练的新任务头。
 
-This is not a shortcut. The first conv block of any ImageNet-trained CNN learns edges and Gabor-like filters. The next few blocks learn textures and simple motifs. The middle blocks learn object parts. The final blocks learn combinations that start to look like the 1,000 ImageNet categories. The first 90% of that hierarchy transfers almost unchanged to medical imaging, industrial inspection, satellite data, and every other vision task — because nature has a limited vocabulary of edges and textures. The last 10% is what you actually train.
+这不是走捷径。任何在 ImageNet 上训练的 CNN，其第一个卷积模块都会学习边缘和类似 Gabor 的滤波器。接下来的几个模块学习纹理与简单图案，中间模块学习物体部件，最后的模块学习逐渐接近 ImageNet 1,000 个类别的组合。这一层级结构的前 90% 几乎可以原样迁移到医学成像、工业检测、卫星数据及其他视觉任务，因为自然界的边缘和纹理种类有限。最后 10% 才是你实际训练的部分。
 
-Getting transfer right has three bugs waiting for you: destroying pretrained features with a too-high learning rate, starving the model of information by freezing too much, and letting BatchNorm's running statistics drift toward a tiny dataset that the rest of the network never learnt from. This lesson walks each of them on purpose.
+正确迁移时有三类错误在等待你：学习率过高破坏预训练特征，冻结过多使模型无法获得足够信息，以及让 BatchNorm 的运行统计量偏向一个网络其余部分从未学习过的小数据集。本课会有意逐一探讨它们。
 
-## The Concept
+## 概念（The Concept）
 
-### Feature extraction vs fine-tuning
+### 特征提取与微调的区别（Feature extraction vs fine-tuning）
 
-Two regimes, picked by how much you trust the pretrained features and how much data you have.
+两种训练方式，取决于你对预训练特征的信任程度，以及手中数据量。
 
 ```mermaid
 flowchart TB
-    subgraph FE["Feature extraction — backbone frozen"]
-        FE1["Pretrained backbone<br/>(no gradient)"] --> FE2["New head<br/>(trained)"]
+    subgraph FE["特征提取：骨干冻结"]
+        FE1["预训练骨干<br/>（无梯度）"] --> FE2["新任务头<br/>（参与训练）"]
     end
-    subgraph FT["Fine-tuning — end-to-end"]
-        FT1["Pretrained backbone<br/>(tiny LR)"] --> FT2["New head<br/>(normal LR)"]
+    subgraph FT["微调：端到端"]
+        FT1["预训练骨干<br/>（极小学习率）"] --> FT2["新任务头<br/>（正常学习率）"]
     end
 
     style FE1 fill:#e5e7eb,stroke:#6b7280
@@ -43,50 +43,50 @@ flowchart TB
     style FT2 fill:#dcfce7,stroke:#16a34a
 ```
 
-Rules of thumb:
+经验规则：
 
-| Dataset size | Domain distance | Recipe |
+| 数据集规模 | 领域距离 | 配方 |
 |--------------|-----------------|--------|
-| < 1k images | close to ImageNet | Freeze backbone, train head only |
-| 1k-10k | close | Freeze first 2-3 stages, fine-tune the rest |
-| 10k-100k | any | Fine-tune end-to-end with discriminative LR |
-| 100k+ | far | Fine-tune everything; consider training from scratch if domain is far enough |
+| < 1 千张图像 | 接近 ImageNet | 冻结骨干，仅训练任务头 |
+| 1 千至 1 万 | 近 | 冻结前 2–3 个阶段，微调其余部分 |
+| 1 万至 10 万 | 任意 | 使用差异化学习率端到端微调 |
+| 10 万以上 | 远 | 微调全部参数；若领域足够远，考虑从零训练 |
 
-"Close to ImageNet" roughly means natural RGB photos with object-like content. Medical CT scans, overhead satellite imagery, and microscopy are far domains — the features still help, but you will need to let more layers adapt.
+“接近 ImageNet”大致指包含物体内容的自然 RGB 照片。医学 CT 扫描、俯视卫星图像和显微图像属于远领域：特征仍有帮助，但需要让更多层适应。
 
-### Why freezing works at all
+### 冻结为何有效（Why freezing works at all）
 
-The ImageNet features a CNN learns are not specialised to the 1,000 categories. They are specialised to the statistics of natural images: edges at specific orientations, textures, contrast patterns, shape primitives. Those statistics are stable across almost every visual domain a human can name. That is why a model trained on ImageNet and evaluated zero-shot on CIFAR-10 with just a new linear head (no fine-tuning of the backbone) reaches 80%+ accuracy. The head is learning which of the already-learnt features to weight for this task.
+CNN 学到的 ImageNet 特征并非专为那 1,000 个类别设计，而是针对自然图像的统计特性：特定方向的边缘、纹理、对比模式和基本形状。这些统计特性在人们能说出的几乎所有视觉领域都很稳定。因此，ImageNet 训练模型只加一个新线性头、不微调骨干，在 CIFAR-10 上进行零样本评估就能达到 80% 以上准确率。任务头学习的是：该任务应如何对已有特征加权。
 
-### Discriminative learning rates
+### 差异化学习率（Discriminative learning rates）
 
-When you do unfreeze, early layers should train slower than late layers. Early layers encode generic features that you want to preserve; late layers encode task-specific structure that you need to move a lot.
+解冻时，早期层应比后期层训练得更慢。早期层编码的是需要保留的通用特征，后期层编码的是需要大幅调整的任务专用结构。
 
 ```
-Typical recipe:
+典型配方：
 
-  stage 0 (stem + first group): lr = base_lr / 100    (mostly fixed)
-  stage 1:                       lr = base_lr / 10
-  stage 2:                       lr = base_lr / 3
-  stage 3 (last backbone group): lr = base_lr
-  head:                          lr = base_lr  (or slightly higher)
+  阶段 0（输入干层 + 第一组）：lr = base_lr / 100    （基本固定）
+  阶段 1：                       lr = base_lr / 10
+  阶段 2：                       lr = base_lr / 3
+  阶段 3（最后一组骨干模块）：   lr = base_lr
+  任务头：                       lr = base_lr  （或略高）
 ```
 
-In PyTorch this is just a list of parameter groups passed to the optimizer. One model, five learning rates, zero extra code.
+在 PyTorch 中，这只是传给优化器的参数组列表。一个模型、五种学习率，无需额外代码。
 
-### The BatchNorm problem
+### BatchNorm 问题（The BatchNorm problem）
 
-BN layers hold `running_mean` and `running_var` buffers that were computed on ImageNet. If your task has a different pixel distribution — different lighting, different sensor, different colour space — those buffers are wrong. Three options in order of preference:
+BN 层保存了在 ImageNet 上计算的 `running_mean` 和 `running_var` 缓冲区。如果任务的像素分布不同，例如光照、传感器或颜色空间不同，这些缓冲区就不正确。按优先顺序有三种选择：
 
-1. **Fine-tune with BN in train mode.** Let BN update its running statistics along with everything else. Default choice when the task dataset is medium-sized (>= 5k examples).
-2. **Freeze BN in eval mode.** Keep the ImageNet statistics and train only the weights. Correct when your dataset is small enough that BN's moving average would be noisy.
-3. **Replace BN with GroupNorm.** Removes the moving-average problem entirely. Used in detection and segmentation backbones where batch size per GPU is tiny.
+1. **让 BN 保持训练模式进行微调。** BN 与其他部分一起更新运行统计量。任务数据集规模中等（>= 5 千个样本）时，这是默认选择。
+2. **将 BN 冻结在评估模式。** 保留 ImageNet 统计量，仅训练权重。当数据集小到 BN 移动平均会产生噪声时，这是正确选择。
+3. **用组归一化（GroupNorm）替换 BN。** 完全消除移动平均问题。常用于每张 GPU 批次很小的检测和分割骨干网络。
 
-Getting this wrong silently tanks accuracy by 5-15%.
+处理错误会悄悄使准确率下降 5–15%。
 
-### Head design
+### 任务头设计（Head design）
 
-The classifier head is 1-3 linear layers plus an optional dropout. Every torchvision backbone ships a default head that you replace:
+分类头由 1–3 个线性层和可选的随机失活组成。每个 torchvision 骨干都带有可以替换的默认任务头：
 
 ```
 backbone.fc = nn.Linear(backbone.fc.in_features, num_classes)          # ResNet
@@ -94,34 +94,34 @@ backbone.classifier[1] = nn.Linear(..., num_classes)                    # Effici
 backbone.heads.head = nn.Linear(..., num_classes)                       # torchvision ViT
 ```
 
-For small datasets, a single linear layer is usually enough. Adding a hidden layer (Linear -> ReLU -> Dropout -> Linear) helps when the task distribution is farther from the backbone's training distribution.
+对小数据集，一个线性层通常足够。当任务分布与骨干训练分布相距较远时，增加隐藏层（Linear -> ReLU -> Dropout -> Linear）会有帮助。
 
-### Layer-wise LR decay
+### 逐层学习率衰减（Layer-wise LR decay）
 
-A smoother version of discriminative LR used in modern fine-tuning (BEiT, DINOv2, ViT-B fine-tunes). Instead of grouping layers into stages, give every layer a slightly smaller LR than the one above it:
+现代微调（BEiT、DINOv2、ViT-B 微调）使用的一种更平滑的差异化学习率。不再将层按阶段分组，而是让每一层的学习率略小于其上一层：
 
 ```
 lr_layer_k = base_lr * decay^(L - k)
 ```
 
-With decay = 0.75 and L = 12 transformer blocks, the first block trains at `0.75^11 ≈ 0.04x` the head's LR. Matters more for transformer fine-tunes than for CNNs, where stage-grouped LRs are usually enough.
+当 decay = 0.75、L = 12 个 Transformer 模块时，第一个模块的学习率为任务头的 `0.75^11 ≈ 0.04x`。这对 Transformer 微调比 CNN 更重要；CNN 通常按阶段分组设置学习率就足够。
 
-### What to evaluate
+### 评估什么（What to evaluate）
 
-Transfer-learning runs need two numbers you would not track on a scratch run:
+迁移学习需要跟踪两个从零训练时不会记录的数值：
 
-- **Pretrained-only accuracy** — the head's accuracy with the backbone frozen. This is your floor.
-- **Fine-tuned accuracy** — the same model after end-to-end training. This is your ceiling.
+- **仅使用预训练特征的准确率（Pretrained-only accuracy）**：骨干冻结时任务头的准确率。这是下限。
+- **微调后准确率（Fine-tuned accuracy）**：相同模型端到端训练后的准确率。这是上限。
 
-If fine-tuned is less than pretrained-only, you have a learning-rate or BN bug. Always print both.
+若微调后低于仅使用预训练特征的结果，说明学习率或 BN 有错误。始终打印两者。
 
 ```figure
 transfer-learning
 ```
 
-## Build It
+## 动手实现（Build It）
 
-### Step 1: Load a pretrained backbone and inspect it
+### 第 1 步：加载并检查预训练骨干（Step 1: Load a pretrained backbone and inspect it）
 
 ```python
 import torch
@@ -135,9 +135,9 @@ print("classifier head:", backbone.fc)
 print("feature dim:", backbone.fc.in_features)
 ```
 
-`ResNet18` has four stages (`layer1..layer4`) plus a stem and a `fc` head. Every torchvision classification backbone has an analogous structure.
+`ResNet18` 有四个阶段（`layer1..layer4`），另有输入干层和 `fc` 任务头。每个 torchvision 分类骨干都有类似结构。
 
-### Step 2: Feature extraction — freeze everything, replace the head
+### 第 2 步：特征提取，冻结全部参数并替换任务头（Step 2: Feature extraction — freeze everything, replace the head）
 
 ```python
 def make_feature_extractor(num_classes=10):
@@ -154,11 +154,11 @@ print(f"trainable: {trainable:>10,}")
 print(f"frozen:    {frozen:>10,}")
 ```
 
-Only `model.fc` is trainable. The backbone is a frozen feature extractor.
+只有 `model.fc` 可训练，骨干是冻结的特征提取器。
 
-### Step 3: Discriminative fine-tuning
+### 第 3 步：差异化微调（Step 3: Discriminative fine-tuning）
 
-A utility that builds parameter groups with stage-specific learning rates.
+构建具有阶段专用学习率的参数组的工具函数。
 
 ```python
 def discriminative_param_groups(model, base_lr=1e-3, decay=0.3):
@@ -189,11 +189,11 @@ for g in groups:
     print(f"{g['name']:>10s}  lr={g['lr']:.2e}  params={sum(p.numel() for p in g['params']):>8,}")
 ```
 
-`decay=0.3` means each stage trains at 30% of the rate of the next one. `fc` gets `base_lr`, `layer4` gets `0.3 * base_lr`, `conv1` gets `0.3^5 * base_lr ≈ 0.00243 * base_lr`. Extreme sounding; empirically it works.
+`decay=0.3` 表示每个阶段的学习率是下一阶段的 30%。`fc` 使用 `base_lr`，`layer4` 使用 `0.3 * base_lr`，`conv1` 使用 `0.3^5 * base_lr ≈ 0.00243 * base_lr`。听起来极端，实验上却有效。
 
-### Step 4: BatchNorm handling
+### 第 4 步：处理 BatchNorm（Step 4: BatchNorm handling）
 
-Helper to freeze BN running statistics without freezing its weights.
+冻结 BN 运行统计量而不冻结其权重的辅助函数。
 
 ```python
 def freeze_bn_stats(model):
@@ -205,9 +205,9 @@ def freeze_bn_stats(model):
     return model
 ```
 
-Call it after you set `model.train()` at the start of every epoch. `model.train()` flips everything to training mode; this reverses it only for BN layers.
+每个轮次开始时设置 `model.train()` 后调用它。`model.train()` 会将所有模块切换到训练模式，这个函数只对 BN 层反向切换。
 
-### Step 5: A minimal end-to-end fine-tuning loop
+### 第 5 步：最小端到端微调循环（Step 5: A minimal end-to-end fine-tuning loop）
 
 ```python
 from torch.optim import SGD
@@ -251,11 +251,11 @@ def fine_tune(model, train_loader, val_loader, device, epochs=5, base_lr=1e-3, f
     return model
 ```
 
-Five epochs with the above recipe on CIFAR-10 takes `ResNet18-IMAGENET1K_V1` from ~70% zero-shot linear-probe accuracy to ~93% fine-tuned accuracy. The head alone would plateau around 86% without ever touching the backbone.
+在 CIFAR-10 上按上述配方训练五个轮次，可将 `ResNet18-IMAGENET1K_V1` 从约 70% 的零样本线性探测准确率提高到约 93% 的微调准确率。若始终不触碰骨干，只训练任务头，准确率会在约 86% 处进入平台期。
 
-### Step 6: Progressive unfreezing
+### 第 6 步：逐步解冻（Step 6: Progressive unfreezing）
 
-A schedule that unfreezes one stage per epoch from the end toward the beginning. Mitigates feature drift at the cost of some extra epochs.
+从后向前，每个轮次解冻一个阶段的调度方法。以多训练几个轮次为代价，减轻特征漂移。
 
 ```python
 def progressive_unfreeze_schedule(model):
@@ -281,11 +281,11 @@ def progressive_unfreeze_schedule(model):
     return start, unfreeze
 ```
 
-Call `start()` once before the first epoch. Call `unfreeze(epoch)` at the start of each epoch. Rebuild the optimizer whenever the set of trainable parameters changes, otherwise the frozen params still hold cached moments that confuse it.
+首个轮次前调用一次 `start()`，每个轮次开始时调用 `unfreeze(epoch)`。可训练参数集合每次改变，都要重建优化器，否则冻结参数仍保留的缓存矩会干扰它。
 
-## Use It
+## 实际应用（Use It）
 
-For most real tasks, `torchvision.models` + three lines is enough. The heavier machinery above matters when you run into the problems that library defaults cannot fix.
+多数实际任务只需 `torchvision.models` 加三行代码。遇到库默认设置无法解决的问题时，上述更复杂的机制才重要。
 
 ```python
 from torchvision.models import resnet50, ResNet50_Weights
@@ -295,40 +295,40 @@ model.fc = nn.Linear(model.fc.in_features, num_classes)
 optimizer = torch.optim.AdamW(model.parameters(), lr=1e-4, weight_decay=1e-4)
 ```
 
-Two other production-grade defaults:
+另外两个生产级默认选择：
 
-- `timm` ships ~800 pretrained vision backbones with a consistent API (`timm.create_model("resnet50", pretrained=True, num_classes=10)`). For any fine-tune beyond the torchvision zoo, it is the standard.
-- For transformers, `transformers.AutoModelForImageClassification.from_pretrained(name, num_labels=N)` gives you ViT / BEiT / DeiT with the same loading semantics as text models.
+- `timm` 提供约 800 个预训练视觉骨干，采用一致 API（`timm.create_model("resnet50", pretrained=True, num_classes=10)`）。超出 torchvision 模型库范围的微调，通常都使用它。
+- 对 Transformer，`transformers.AutoModelForImageClassification.from_pretrained(name, num_labels=N)` 提供 ViT / BEiT / DeiT，加载语义与文本模型相同。
 
-## Ship It
+## 交付成果（Ship It）
 
-This lesson produces:
+本课产出：
 
-- `outputs/prompt-fine-tune-planner.md` — a prompt that picks feature-extraction vs progressive vs end-to-end fine-tuning based on dataset size, domain distance, and compute budget.
-- `outputs/skill-freeze-inspector.md` — a skill that, given a PyTorch model, reports which parameters are trainable, which BatchNorm layers are in eval mode, and whether the optimizer is actually being fed the trainable parameters.
+- `outputs/prompt-fine-tune-planner.md`：根据数据集规模、领域距离和计算预算，在特征提取、逐步微调和端到端微调之间选择的提示词。
+- `outputs/skill-freeze-inspector.md`：给定 PyTorch 模型，报告哪些参数可训练、哪些 BatchNorm 层处于评估模式，以及优化器是否实际接收可训练参数的技能。
 
-## Exercises
+## 练习（Exercises）
 
-1. **(Easy)** Train a `ResNet18` as a linear probe (backbone frozen) and as a full fine-tune on the same synthetic-CIFAR dataset. Report both accuracies side by side. Explain which gap tells you the features transfer well and which tells you they do not.
-2. **(Medium)** Introduce a bug on purpose: set `base_lr = 1e-1` on the backbone stage instead of the head. Show the training loss explode, then recover by applying the `discriminative_param_groups` helper. Record the LR at which each stage starts diverging.
-3. **(Hard)** Take a medical imaging dataset (e.g. CheXpert-small, PatchCamelyon, or HAM10000) and compare three regimes: (a) ImageNet-pretrained frozen backbone + linear head; (b) ImageNet-pretrained fine-tune end-to-end; (c) scratch training. Report accuracy and compute cost for each. At what dataset size does scratch training become competitive?
+1. **（简单）** 在同一合成 CIFAR 数据集上，将 `ResNet18` 分别作为线性探测器（冻结骨干）和完整微调模型训练。并列报告两种准确率。解释什么样的差距说明特征迁移良好，什么样的差距说明迁移不好。
+2. **（中等）** 故意引入错误：将 `base_lr = 1e-1` 设在骨干阶段，而非任务头。展示训练损失爆炸，再通过 `discriminative_param_groups` 辅助函数恢复。记录每个阶段开始发散的学习率。
+3. **（困难）** 选择医学成像数据集，例如 CheXpert-small、PatchCamelyon 或 HAM10000，比较三种方式：(a) ImageNet 预训练冻结骨干加线性头；(b) ImageNet 预训练后端到端微调；(c) 从零训练。报告各自准确率和计算成本。数据集达到多大时，从零训练开始具有竞争力？
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语 | 常见说法 | 实际含义 |
 |------|----------------|----------------------|
-| Feature extraction | "Freeze and train head" | Backbone parameters frozen, only the new classifier head receives gradient |
-| Fine-tuning | "Retrain end-to-end" | All parameters trainable, usually with much smaller LR than scratch training |
-| Discriminative LR | "Smaller LR for early layers" | Optimizer parameter groups where early-stage LR is a fraction of late-stage LR |
-| Layer-wise LR decay | "Smooth LR gradient" | Per-layer LR multiplied by decay^(L - k); common in transformer fine-tunes |
-| Catastrophic forgetting | "The model lost ImageNet" | A too-high LR overwrites pretrained features before the new task signal is learnt |
-| BN statistics drift | "Running mean is wrong" | BatchNorm running_mean/var computed on a different distribution than the current task, silently hurting accuracy |
-| Linear probe | "Frozen backbone + linear head" | Evaluation of pretrained features — accuracy of the best linear classifier on top of the frozen representation |
-| Catastrophic collapse | "Everything predicts one class" | Happens when fine-tuning with an LR high enough to destroy features before gradients from the head can stabilise |
+| 特征提取（Feature extraction） | “冻结骨干，训练任务头” | 骨干参数冻结，只有新的分类头接收梯度 |
+| 微调（Fine-tuning） | “端到端重训” | 全部参数可训练，学习率通常远低于从零训练 |
+| 差异化学习率（Discriminative LR） | “早期层用小学习率” | 优化器参数组中，早期阶段学习率是后期阶段的一部分 |
+| 逐层学习率衰减（Layer-wise LR decay） | “平滑的学习率梯度” | 各层学习率乘以 decay^(L - k)，常用于 Transformer 微调 |
+| 灾难性遗忘（Catastrophic forgetting） | “模型忘了 ImageNet” | 学习率过高，在学到新任务信号之前就覆盖预训练特征 |
+| BN 统计量漂移（BN statistics drift） | “运行均值错了” | BatchNorm 的 running_mean/var 在不同于当前任务的分布上计算，悄悄损害准确率 |
+| 线性探测（Linear probe） | “冻结骨干加线性头” | 对预训练特征的评估，即冻结表征之上最佳线性分类器的准确率 |
+| 灾难性崩溃（Catastrophic collapse） | “所有输入都预测成同一类” | 微调学习率高到在任务头梯度稳定前就破坏特征时发生 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [How transferable are features in deep neural networks? (Yosinski et al., 2014)](https://arxiv.org/abs/1411.1792) — the paper that quantified feature transferability across layers
-- [Universal Language Model Fine-tuning (ULMFiT, Howard & Ruder, 2018)](https://arxiv.org/abs/1801.06146) — the original discriminative LR / progressive unfreezing recipe; the ideas transfer directly to vision
-- [timm documentation](https://huggingface.co/docs/timm) — the reference for modern vision backbones and the exact fine-tune defaults they were trained with
-- [A Simple Framework for Linear-Probe Evaluation (Kornblith et al., 2019)](https://arxiv.org/abs/1805.08974) — why linear-probe accuracy matters and how to report it correctly
+- [深度神经网络特征的可迁移性如何？（Yosinski 等，2014）](https://arxiv.org/abs/1411.1792)：量化不同层特征可迁移性的论文
+- [通用语言模型微调（ULMFiT，Howard 与 Ruder，2018）](https://arxiv.org/abs/1801.06146)：差异化学习率与逐步解冻的原始配方，思想可直接迁移到视觉
+- [timm 文档](https://huggingface.co/docs/timm)：现代视觉骨干及其训练时精确微调默认配置的参考
+- [线性探测评估的简易框架（Kornblith 等，2019）](https://arxiv.org/abs/1805.08974)：线性探测准确率为何重要，以及如何正确报告

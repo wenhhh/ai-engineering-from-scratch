@@ -1,78 +1,78 @@
 {
   "lesson": "63-multimodal-eval",
-  "title": "Multimodal Evaluation",
+  "title": "多模态评估（Multimodal Evaluation）",
   "questions": [
     {
       "stage": "pre",
-      "question": "Why is training loss alone an insufficient measure of a multimodal model's quality?",
+      "question": "为什么仅靠训练损失不足以衡量多模态模型的质量？",
       "options": [
-        "Loss is a string",
-        "Loss values are random",
-        "Training loss measures fit on the training distribution; eval surfaces (retrieval, VQA, captioning) measure whether the model generalizes to held-out tasks",
-        "Loss is hard to compute"
+        "损失是字符串",
+        "损失值是随机的",
+        "训练损失衡量对训练分布的拟合；评估任务（检索、VQA、描述生成）衡量模型能否泛化到留出任务",
+        "损失难以计算"
       ],
       "correct": 2,
-      "explanation": "Loss minimization is necessary but not sufficient. Held-out metrics on three task surfaces measure what the model can actually do."
+      "explanation": "损失最小化是必要条件，但不是充分条件。三类任务的留出指标衡量模型实际能做什么。"
     },
     {
       "stage": "pre",
-      "question": "What is R@5 measuring in a 100-sample retrieval eval?",
+      "question": "在 100 样本检索评估中，R@5 衡量什么？",
       "options": [
-        "Fraction of queries whose correct match lands in the top 5 retrieved candidates out of 100",
-        "Five percent accuracy",
-        "Five queries per second",
-        "The fifth caption is always correct"
+        "正确匹配位于 100 个候选中检索前 5 名的查询比例",
+        "百分之五的准确率",
+        "每秒五个查询",
+        "第五条描述总是正确"
       ],
       "correct": 0,
-      "explanation": "R@K = fraction of queries with the target in the top K ranked candidates. Higher is better."
+      "explanation": "R@K = 目标位于排名前 K 个候选中的查询比例，越高越好。"
     },
     {
       "stage": "check",
-      "question": "Why does BLEU-4 take the geometric mean of 1- to 4-gram precisions instead of the arithmetic mean?",
+      "question": "为什么 BLEU-4 取 1 至 4 元语法精确率的几何均值，而不是算术均值？",
       "options": [
-        "Geometric mean is bigger",
-        "PyTorch supports only geometric mean",
-        "Arithmetic is slower",
-        "Geometric mean is zero if any n-gram precision is zero, which is the strict matching property BLEU wants; smoothing handles the zero case"
+        "几何均值更大",
+        "PyTorch 只支持几何均值",
+        "算术计算更慢",
+        "任意阶 n 元语法精确率为零时，几何均值为零，这是 BLEU 所要求的严格匹配属性；平滑处理负责应对零值"
       ],
       "correct": 3,
-      "explanation": "The geometric mean enforces that ALL n-gram orders contribute; a 4-gram precision of zero collapses the score before smoothing."
+      "explanation": "几何均值要求所有 n 元语法阶数都有贡献；平滑前，4 元语法精确率为零会让整个得分归零。"
     },
     {
       "stage": "check",
-      "question": "What does the brevity penalty in BLEU-4 protect against?",
+      "question": "BLEU-4 的简短惩罚防止什么？",
       "options": [
-        "Memory leaks",
-        "Long captions getting penalized",
-        "Short captions gaming high precision by emitting only safe high-frequency tokens; BP < 1 when generated < reference length",
-        "Tokenizer errors"
+        "内存泄漏",
+        "长描述受到惩罚",
+        "短描述仅输出稳妥的高频词元来获取高精确率；生成长度小于参考长度时 BP < 1",
+        "分词器错误"
       ],
       "correct": 2,
-      "explanation": "Without BP a one-word caption matching one reference word would score 1.0. BP shrinks the score for too-short generations."
+      "explanation": "没有 BP 时，只匹配参考中一个词的单词描述会得到 1.0。BP 会降低过短生成结果的分数。"
     },
     {
       "stage": "check",
-      "question": "Why does multi-reference BLEU usually score higher than single-reference BLEU on the same generation?",
+      "question": "对于相同生成结果，多参考 BLEU 通常为何高于单参考 BLEU？",
       "options": [
-        "Each n-gram in the generation can match any reference, so the clipped count is higher when more references are available",
-        "Single-reference is broken",
-        "References cost extra memory",
-        "The math is different"
+        "生成结果中的每个 n 元语法可以匹配任意参考，因此参考越多，截断计数越高",
+        "单参考存在故障",
+        "参考占用额外内存",
+        "数学不同"
       ],
       "correct": 0,
-      "explanation": "More references give the n-gram more chances to be matched; clipped counts grow and the precision rises."
+      "explanation": "更多参考让 n 元语法有更多匹配机会；截断计数增大，精确率上升。"
     },
     {
       "stage": "post",
-      "question": "Which eval surface uses no model embeddings and only id-level matching?",
+      "question": "哪种评估不使用模型嵌入，只进行 ID 层面的匹配？",
       "options": [
-        "Cosine similarity",
+        "余弦相似度",
         "BLEU-4",
-        "VQA exact match: a predicted answer id is compared directly to a reference id with no embedding step",
-        "Retrieval"
+        "VQA 完全匹配：直接比较预测答案 ID 和参考 ID，不经过嵌入步骤",
+        "检索"
       ],
       "correct": 2,
-      "explanation": "VQA exact match is an integer comparison after the model emits its answer token; no embedding or similarity math involved."
+      "explanation": "VQA 完全匹配是在模型输出答案词元后进行整数比较，不涉及嵌入或相似度计算。"
     }
   ]
 }

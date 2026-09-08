@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 520" role="img" aria-labelledby="title desc">
-  <title id="title">AI Engineering Learning Paths</title>
-  <desc id="desc">AI Engineering connects four core learning paths: building and deploying AI applications, software engineering fundamentals, agent-assisted engineering, and product judgment and delivery.</desc>
+  <title id="title">AI 工程学习路径（AI Engineering Learning Paths）</title>
+  <desc id="desc">AI 工程（AI Engineering）连接四条核心学习路径：构建和部署 AI 应用（Building and deploying AI applications）、软件工程基础（Software engineering fundamentals）、智能体辅助工程（Agent-assisted engineering），以及产品判断与交付（Product judgment and delivery）。</desc>
   <style>
     .bg{fill:#fafaf5}.line{fill:none;stroke:#3553ff;stroke-width:2}.node{fill:#fafaf5;stroke:#1a1a1a;stroke-width:2}.root{fill:#fafaf5;stroke:#1a1a1a;stroke-width:3}.label{fill:#1a1a1a;font:600 19px ui-monospace,SFMono-Regular,Menlo,monospace;text-anchor:middle}.small{fill:#555;font:400 14px ui-monospace,SFMono-Regular,Menlo,monospace;text-anchor:middle}
     @media(prefers-color-scheme:dark){.bg{fill:#080b18}.node,.root{fill:#10162c;stroke:#d9dded}.label{fill:#f4f1e8}.small{fill:#aab2cf}.line{stroke:#7892ff}}
@@ -8,26 +8,26 @@
   <rect class="bg" width="1200" height="520"/>
   <path class="line" d="M600 142V190M165 190H1035M165 190V244M455 190V244M745 190V244M1035 190V244"/>
   <rect class="node root" x="425" y="58" width="350" height="84" rx="4"/>
-  <text class="label" x="600" y="94">AI ENGINEERING</text>
-  <text class="small" x="600" y="119">learn the system, the work, and the build</text>
+  <text class="label" x="600" y="94">AI 工程（AI Engineering）</text>
+  <text class="small" x="600" y="119">理解系统、工作与构建过程</text>
   <g>
     <rect class="node" x="30" y="244" width="270" height="184" rx="4"/>
-    <text class="label" x="165" y="286"><tspan x="165">BUILDING AND DEPLOYING</tspan><tspan x="165" dy="26">AI APPLICATIONS</tspan></text>
-    <text class="small" x="165" y="354"><tspan x="165">models, data, evaluation</tspan><tspan x="165" dy="22">serving, release, operation</tspan></text>
+    <text class="label" x="165" y="286"><tspan x="165">构建和部署 AI 应用</tspan><tspan x="165" dy="20" font-size="11">（Building and deploying</tspan><tspan x="165" dy="15" font-size="11">AI applications）</tspan></text>
+    <text class="small" x="165" y="354" style="font-size:11px"><tspan x="165">模型（Models）· 数据（Data）</tspan><tspan x="165" dy="22">评估（Evaluation）· 服务部署（Serving）</tspan><tspan x="165" dy="22">发布（Release）· 运维（Operation）</tspan></text>
   </g>
   <g>
     <rect class="node" x="320" y="244" width="270" height="184" rx="4"/>
-    <text class="label" x="455" y="286"><tspan x="455">SOFTWARE ENGINEERING</tspan><tspan x="455" dy="26">FUNDAMENTALS</tspan></text>
-    <text class="small" x="455" y="354"><tspan x="455">repositories, interfaces</tspan><tspan x="455" dy="22">tests, security, operations</tspan></text>
+    <text class="label" x="455" y="286"><tspan x="455">软件工程基础</tspan><tspan x="455" dy="20" font-size="11">（Software engineering</tspan><tspan x="455" dy="15" font-size="11">fundamentals）</tspan></text>
+    <text class="small" x="455" y="354" style="font-size:11px"><tspan x="455">代码仓库（Repositories）</tspan><tspan x="455" dy="18">接口（Interfaces）</tspan><tspan x="455" dy="18">测试（Tests）· 安全（Security）</tspan><tspan x="455" dy="18">运维（Operations）</tspan></text>
   </g>
   <g>
     <rect class="node" x="610" y="244" width="270" height="184" rx="4"/>
-    <text class="label" x="745" y="286"><tspan x="745">AGENT-ASSISTED</tspan><tspan x="745" dy="26">ENGINEERING</tspan></text>
-    <text class="small" x="745" y="354"><tspan x="745">frame, plan, delegate</tspan><tspan x="745" dy="22">verify, review, improve</tspan></text>
+    <text class="label" x="745" y="286"><tspan x="745">智能体辅助工程</tspan><tspan x="745" dy="20" font-size="11">（Agent-assisted engineering）</tspan></text>
+    <text class="small" x="745" y="354" style="font-size:11px"><tspan x="745">界定问题 · 制订计划 · 委派任务</tspan><tspan x="745" dy="22">验证结果 · 审查 · 改进</tspan></text>
   </g>
   <g>
     <rect class="node" x="900" y="244" width="270" height="184" rx="4"/>
-    <text class="label" x="1035" y="286"><tspan x="1035">PRODUCT JUDGMENT</tspan><tspan x="1035" dy="26">AND DELIVERY</tspan></text>
-    <text class="small" x="1035" y="354"><tspan x="1035">outcomes, evidence, risk</tspan><tspan x="1035" dy="22">scope, metrics, feedback</tspan></text>
+    <text class="label" x="1035" y="286"><tspan x="1035">产品判断与交付</tspan><tspan x="1035" dy="20" font-size="11">（Product judgment and delivery）</tspan></text>
+    <text class="small" x="1035" y="354" style="font-size:11px"><tspan x="1035">成果（Outcomes）· 证据（Evidence）</tspan><tspan x="1035" dy="22">风险（Risk）· 范围（Scope）</tspan><tspan x="1035" dy="22">指标（Metrics）· 反馈（Feedback）</tspan></text>
   </g>
 </svg>

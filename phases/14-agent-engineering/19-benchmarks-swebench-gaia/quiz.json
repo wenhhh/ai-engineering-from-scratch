@@ -1,90 +1,90 @@
 {
   "lesson": "19-benchmarks-swebench-gaia",
-  "title": "Benchmarks: SWE-bench, GAIA, AgentBench",
+  "title": "基准测试：SWE-bench、GAIA、AgentBench（Benchmarks: SWE-bench, GAIA, AgentBench）",
   "questions": [
     {
       "stage": "pre",
-      "question": "What does SWE-bench's evaluator check on a candidate patch?",
+      "question": "SWE-bench 的评估器会对候选补丁检查什么？",
       "options": [
-        "Patch length under 200 lines",
-        "Previously failing tests now pass (FAIL_TO_PASS) and previously passing tests still pass (PASS_TO_PASS)",
-        "BLEU score against the reference fix",
-        "Patch passes a separate LLM judge"
+        "补丁少于 200 行",
+        "此前失败的测试现在通过（FAIL_TO_PASS），此前通过的测试仍然通过（PASS_TO_PASS）",
+        "与参考修复比较的 BLEU 分数",
+        "补丁通过另一个 LLM 裁判"
       ],
       "correct": 1,
-      "explanation": "The harness gates on test transitions: bug-revealing tests must flip while regression tests must stay green."
+      "explanation": "评估执行框架（Harness）以测试状态转换为门禁：暴露缺陷的测试必须转为通过，回归测试必须保持通过。"
     },
     {
       "stage": "pre",
-      "question": "Why does SWE-bench Verified exist?",
+      "question": "SWE-bench Verified 为什么存在？",
       "options": [
-        "It includes more languages",
-        "It runs faster",
-        "OpenAI's 500-task human-curated subset removes ambiguous issues and unreliable tests",
-        "It uses a different patch format"
+        "它包含更多语言",
+        "它运行更快",
+        "OpenAI 人工筛选的 500 任务子集去除了含糊问题和不可靠测试",
+        "它采用不同补丁格式"
       ],
       "correct": 2,
-      "explanation": "Verified is the cleaner subset for credible reporting."
+      "explanation": "Verified 是用于可信报告的更干净子集。"
     },
     {
       "stage": "check",
-      "question": "What did SWE-bench+ find about successful patches?",
+      "question": "SWE-bench+ 对成功补丁有什么发现？",
       "options": [
-        "32.67% leaked solution text in the issue and 31.08% had suspiciously weak test coverage",
-        "Patches always exceeded 1000 lines",
-        "There is no contamination",
-        "All patches were memorized"
+        "32.67% 的问题文本泄漏了解答，31.08% 的测试覆盖薄弱而可疑",
+        "补丁始终超过 1000 行",
+        "没有污染",
+        "所有补丁都是记忆所得"
       ],
       "correct": 0,
-      "explanation": "SWE-bench+ flagged solution leakage and weak coverage on a large fraction of successful patches."
+      "explanation": "SWE-bench+ 在相当一部分成功补丁中标记了解答泄漏和覆盖薄弱的问题。"
     },
     {
       "stage": "check",
-      "question": "What is GAIA's design philosophy?",
+      "question": "GAIA 的设计理念是什么？",
       "options": [
-        "Hard for humans, easy for AI",
-        "Pure benchmark of vector retrieval",
-        "Only single-turn questions",
-        "Conceptually simple for humans (about 92%) but hard for AI (early GPT-4 with plugins: about 15%)"
+        "对人类困难，对 AI 简单",
+        "纯粹衡量向量检索",
+        "只有单轮问题",
+        "概念上对人类简单（约 92%），但对 AI 困难（早期带插件的 GPT-4 约 15%）"
       ],
       "correct": 3,
-      "explanation": "GAIA is intentionally easy-for-humans, hard-for-AI, testing reasoning + tools + modality."
+      "explanation": "GAIA 有意设计成对人类简单、对 AI 困难，测试推理、工具和模态能力。"
     },
     {
       "stage": "check",
-      "question": "Which is NOT one of AgentBench's environment categories?",
+      "question": "哪项不是 AgentBench 的环境类别？",
       "options": [
-        "Games (Alfworld, LTP)",
-        "Web (WebShop, Mind2Web)",
-        "Gradient (RL, IRL)",
-        "Code (Bash, DB, KG)"
+        "游戏（Alfworld、LTP）",
+        "网页（WebShop、Mind2Web）",
+        "梯度（RL、IRL）",
+        "代码（Bash、DB、KG）"
       ],
       "correct": 2,
-      "explanation": "AgentBench covers code, games, web, and open-ended generation. There is no gradient category."
+      "explanation": "AgentBench 覆盖代码、游戏、网页和开放式生成，没有梯度类别。"
     },
     {
       "stage": "post",
-      "question": "What does the lesson identify as the wrong way to report SWE-bench numbers?",
+      "question": "本课指出哪种报告 SWE-bench 数字的方式是错误的？",
       "options": [
-        "Reporting per-repo breakdowns",
-        "Reporting one aggregate number without mentioning Verified or SWE-bench+ context",
-        "Reporting step counts",
-        "Reporting wall-clock"
+        "报告按仓库拆分的结果",
+        "只报告一个汇总数字，不提 Verified 或 SWE-bench+ 的背景",
+        "报告步骤数",
+        "报告实际耗时"
       ],
       "correct": 1,
-      "explanation": "Single-number fixation hides contamination and cost; always report Verified and per-distribution context."
+      "explanation": "执着于单个数字会掩盖污染和成本；始终报告 Verified 及分布背景。"
     },
     {
       "stage": "post",
-      "question": "Which dimension do these benchmarks NOT measure?",
+      "question": "这些基准不衡量哪个维度？",
       "options": [
-        "Test transitions",
-        "Step counts",
-        "Per-task success",
-        "Real-world operational cost (tokens, wall-clock), adversarial safety, and your own domain"
+        "测试状态转换",
+        "步骤数",
+        "逐任务成功情况",
+        "现实运行成本（词元、实际耗时）、对抗安全性和你自己的领域"
       ],
       "correct": 3,
-      "explanation": "Benchmarks aggregate; they do not capture cost, adversarial robustness, or your domain."
+      "explanation": "基准进行汇总，并不捕获成本、对抗稳健性或你的领域表现。"
     }
   ]
 }

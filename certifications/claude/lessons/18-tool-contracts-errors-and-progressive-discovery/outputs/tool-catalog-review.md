@@ -1,34 +1,25 @@
-# Tool Catalog Review: Support Evidence
+# 工具目录评审：客服证据（Tool Catalog Review: Support Evidence）
 
-## Catalog Boundary
+## 目录边界（Catalog Boundary） <!-- ## Catalog Boundary -->
 
-The policy role receives active-policy search and source lookup. It receives no
-account tool or write capability. Every tool has a tenant-aware execution scope.
+政策角色只获得有效政策搜索和来源查询，不获得账户工具或写入能力。每个工具都有感知租户的执行作用域（execution scope）。
 
-## Tool Contracts
+## 工具契约（Tool Contracts） <!-- ## Tool Contracts -->
 
-`search_active_policy`: use when a support policy governs the answer; do not use
-for account facts or public research. `read_assigned_account`: use when the
-authenticated case needs account facts; do not use for policy or other tenants.
+`search_active_policy`：适用条件（use when）是答案受客服政策约束；不适用于（do not use）账户事实或公开研究。`read_assigned_account`：在经过身份验证的案例需要账户事实时使用；不用于政策或其他租户。
 
-## Error Matrix
+## 错误矩阵（Error Matrix） <!-- ## Error Matrix -->
 
-Validation is retryable only after changed input. Authorization is non-retryable
-until access or approval changes. A dependency timeout is retryable once and
-preserves any partial result plus trace ID.
+验证（validation）失败仅在修改输入后才可重试。授权（authorization）失败在权限或审批改变之前不可重试（non-retryable）。依赖超时可重试一次，并保留所有部分结果（partial result）与追踪 ID。
 
-## Progressive Discovery
+## 渐进式发现（Progressive Discovery） <!-- ## Progressive Discovery -->
 
-The starting surface exposes search for capability names allowed to the role.
-Specialized definitions load only after scoped discovery; restricted names are
-not revealed.
+初始接口提供搜索能力，且只搜索该角色获准访问的能力名称。专用定义仅在限定作用域的发现之后加载；不暴露受限名称。
 
-## Authorization
+## 授权（Authorization） <!-- ## Authorization -->
 
-Discovery never grants execution. The service checks principal, tenant, current
-scope, object ownership, and bound approval for every call.
+发现绝不授予执行权限。每次调用，服务都检查主体、租户、当前权限范围、对象归属和绑定审批。
 
-## Selection Fixtures
+## 选择测试夹具（Selection Fixtures） <!-- ## Selection Fixtures -->
 
-Twelve fixtures cover policy versus account questions, public research, no-tool
-answers, validation, authorization, conflict, timeout, and partial results.
+十二个测试夹具覆盖政策与账户问题的区分、公开研究、无需工具的答案，以及验证、授权、冲突、超时和部分结果。

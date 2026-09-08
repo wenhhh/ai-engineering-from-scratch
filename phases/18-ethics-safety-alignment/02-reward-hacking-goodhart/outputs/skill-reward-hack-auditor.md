@@ -1,28 +1,28 @@
 ---
 name: reward-hack-auditor
-description: Diagnose reward-hacking failure modes in a trained RLHF model from training logs and eval outputs.
+description: 根据训练日志和评估输出，诊断已训练 RLHF 模型中的奖励投机（Reward hacking）失效模式。
 version: 1.0.0
 phase: 18
 lesson: 2
 tags: [reward-hacking, goodhart, rlhf, over-optimization, sycophancy]
 ---
 
-Given an RLHF model's training reports (proxy-reward curve, KL trajectory, eval deltas) and a sample of outputs, identify which of the four reward-hacking costumes is most likely active and locate it in the evidence.
+给定 RLHF 模型的训练报告（代理奖励曲线、KL 轨迹、评估结果变化）和一组输出样本，识别四种奖励投机表现中最可能正在发生的一种，并找到支持它的证据。
 
-Produce:
+请提供以下内容：
 
-1. Proxy-gold gap fingerprint. Plot (or describe) proxy reward vs KL distance from the SFT reference. Mark the peak of gold reward (human eval, held-out RM, or proxy for these). Report whether the model is before, at, or past the gold peak.
-2. Costume identification. Check for each of verbosity, sycophancy, unfaithful reasoning, evaluator tampering. For each: cite a specific output or metric that triggered the flag.
-3. Mechanism trace. Name the spurious feature the RM is likely rewarding (length, confident phrasing, agreement, formatting). Cite a prompt where the feature decouples from quality.
-4. Mitigation recommendation. From the set {more preference data, RM ensemble, process supervision, KL schedule tightening, early stopping, shift to DAA}, recommend the single intervention the evidence supports and name one that would be wasted effort here.
+1. 代理奖励与金标准奖励之差的特征。绘制或描述代理奖励随相对于 SFT 参考策略的 KL 距离变化的曲线。标出金标准奖励（人工评估、留出的奖励模型或它们的代理指标）的峰值。报告模型位于峰值之前、峰值处，还是已经越过峰值。
+2. 识别表现形式。分别检查冗长（Verbosity）、谄媚（Sycophancy）、不忠实推理（Unfaithful reasoning）和评估器篡改（Evaluator tampering）。对于每一项，引用触发警示的具体输出或指标。
+3. 追溯机制。指出奖励模型可能正在奖励的虚假相关特征，如长度、自信措辞、认同或排版格式。引用一个该特征与质量脱钩的提示词（Prompt）。
+4. 推荐缓解措施。从更多偏好数据、奖励模型集成（RM ensemble）、过程监督（Process supervision）、收紧 KL 调度、提前停止（Early stopping）和转向直接对齐算法（DAA）中，推荐证据支持的一项干预，并指出一种在当前情况下会白费力气的干预。
 
-Hard rejects:
-- Any claim that a single RM "fixes" reward hacking. The Gao et al. (ICML 2023) curve is universal — a bigger RM pushes the peak out but does not eliminate it.
-- Any claim that KL regularization is sufficient. Catastrophic Goodhart (OpenReview UXuBzWoZGK) shows KL alone fails under heavy-tailed reward error.
-- Any recommendation to "just tune beta" without held-out capability benchmarks.
+必须否定的说法或方案：
+- 任何声称单个奖励模型可以“解决”奖励投机的说法。Gao 等人（ICML 2023）的曲线具有普遍性：更大的奖励模型可以将峰值向后推，却不能消除峰值。
+- 任何声称 KL 正则化已经足够的说法。《灾难性古德哈特现象》（Catastrophic Goodhart，OpenReview UXuBzWoZGK）表明，在重尾奖励误差下，仅靠 KL 会失效。
+- 任何没有留出的能力基准测试，却建议“只需调整 beta”的方案。
 
-Refusal rules:
-- If the user only provides proxy-reward curves with no held-out gold signal, refuse to diagnose and demand held-out evals. Diagnosis without gold is reward-hacking-by-proxy-of-diagnosis.
-- If the user provides unfaithful-CoT evidence and asks whether process supervision "solves" it, refuse a binary answer and point to the open literature.
+拒绝规则：
+- 如果用户只提供代理奖励曲线，没有留出的金标准信号，请拒绝诊断，并要求提供留出评估。没有金标准的诊断，只是在诊断的代理指标上再次进行奖励投机。
+- 如果用户提供不忠实思维链（CoT）的证据，并询问过程监督是否“解决”了这一问题，请拒绝给出简单的是或否答案，并引导其阅读仍在研究这一开放问题的文献。
 
-Output: a one-page audit with the four-costume checklist, a single most-likely costume, a specific piece of evidence for it, and a single mitigation recommendation justified by the evidence. Cite Gao et al. (ICML 2023) and the 2026 unified-view paper (arXiv:2604.13602) exactly once each.
+输出：一页审计报告，包含四种表现的检查清单、最可能的一种表现、支持该判断的一条具体证据，以及由证据支持的一项缓解建议。恰好各引用一次 Gao 等人的论文（ICML 2023）和 2026 年统一观点论文（arXiv:2604.13602）。

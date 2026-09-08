@@ -1,24 +1,24 @@
-# Result Evaluator
+# 结果评估器（Result Evaluator）
 
-> The runner produced numbers. The evaluator decides whether those numbers are an improvement, a regression, or noise. Build the verdict path that turns metrics into a one line conclusion.
+> 运行器产出了数值。评估器（Evaluator）负责判断这些数值代表改进、退步还是噪声。构建判定流程，将指标转化为一句结论。
 
 **Type:** Build
 **Languages:** Python
-**Prerequisites:** Phase 19 Track A lessons 20-29
-**Time:** ~90 minutes
+**Prerequisites:** 阶段 19 方向 A 第 20–29 课
+**Time:** ~90 分钟
 
-## Learning Objectives
-- Compare a candidate run against a baseline using direction aware improvement and a fixed threshold.
-- Run a paired t test from scratch over per seed metrics and read the resulting p value.
-- Normalise log scaled metrics so a downstream report can blend them with linear metrics.
-- Emit a per hypothesis verdict that the orchestrator can attach to the queue from lesson fifty.
-- Keep every step pure so the same inputs always produce the same verdict.
+## 学习目标（Learning Objectives）
+- 根据指标的优化方向和固定阈值，比较候选运行与基线（Baseline）。
+- 从零实现针对各随机种子指标的配对 t 检验（Paired t Test），并解读得到的 p 值。
+- 对对数尺度指标进行归一化，让下游报告能将其与线性指标一起使用。
+- 为每个假设输出判定，供编排器附加到第 50 课的队列中。
+- 保持每一步都是纯函数，确保相同输入始终产生相同判定。
 
-## Why a paired test
+## 为什么使用配对检验（Why a paired test）
 
-A single number from the runner does not say whether the change is real. The same configuration with a different seed gives a different perplexity. The change might be noise. The right comparison is paired: the same seeds with the same data, ran once with the candidate and once with the baseline. Each seed contributes a difference. The mean of those differences is the effect. The standard error of those differences is the noise floor.
+运行器输出的单个数值无法说明变化是否真实。同一配置换一个随机种子，就会得到不同的困惑度（Perplexity）。这种变化可能只是噪声。正确的比较应当配对：使用相同种子和相同数据，分别运行一次候选配置与基线配置。每个种子贡献一个差值。这些差值的均值就是效应，其标准误（Standard Error）就是噪声底限。
 
-The lesson implements the test from scratch. There is no `scipy.stats`. The math is small enough to read in one screen.
+本课从零实现检验，不使用 `scipy.stats`。全部数学计算足够简短，一屏就能读完。
 
 ```text
 diffs    = [a_i - b_i for i in seeds]
@@ -29,11 +29,11 @@ df       = n - 1
 p_value  = two_sided_p(t_stat, df)
 ```
 
-The two sided p value uses a regularised incomplete beta function. The lesson ships a small implementation that uses the Lentz continued fraction. The whole thing is sixty lines of stdlib math.
+双侧 p 值使用正则化不完全贝塔函数（Regularised Incomplete Beta Function）计算。本课提供一个使用 Lentz 连分数（Continued Fraction）的小型实现，全部只需 60 行标准库数学代码。
 
-## Direction aware improvement
+## 考虑优化方向的改进量（Direction aware improvement）
 
-Some metrics improve when they go up (accuracy, throughput). Others improve when they go down (loss, perplexity, wall time). The evaluator carries a `direction` field on each metric.
+有些指标越高越好，例如准确率和吞吐量；另一些越低越好，例如损失、困惑度和实际耗时。评估器为每个指标保留一个 `direction` 字段。
 
 ```text
 if direction == "higher_is_better":
@@ -42,35 +42,35 @@ elif direction == "lower_is_better":
     improvement = (baseline - candidate) / abs(baseline)
 ```
 
-Improvement is signed. A negative improvement on a higher is better metric means the candidate is worse. The verdict path reads the sign and the magnitude together.
+改进量带有正负号。对于越高越好的指标，负改进量意味着候选配置更差。判定流程同时考虑符号和幅度。
 
-A flat threshold (`improvement_threshold=0.02`, two percent) decides whether the change is large enough to call. Below that the verdict is "noise" regardless of the p value; the loop is not interested in changes the user could not measure.
+固定阈值（`improvement_threshold=0.02`，即百分之二）决定变化是否大到足以给出结论。低于这个值时，无论 p 值如何，都判为噪声（noise）；该循环不关心用户无法测量出来的变化。
 
 ```figure
 cg-paired-verdict
 ```
 
-## Architecture
+## 架构（Architecture）
 
 ```mermaid
 flowchart TD
-    A[ExperimentResult candidate] --> N[normalise metrics]
-    B[ExperimentResult baseline] --> N
-    N --> I[direction aware improvement]
-    N --> T[paired t test]
-    I --> V[verdict path]
+    A[ExperimentResult 候选结果] --> N[指标归一化]
+    B[ExperimentResult 基线结果] --> N
+    N --> I[考虑优化方向的改进量]
+    N --> T[配对 t 检验]
+    I --> V[判定流程]
     T --> V
-    V --> O[Verdict record]
-    O --> Q[attach to hypothesis queue]
+    V --> O[Verdict 记录]
+    O --> Q[附加到假设队列]
 ```
 
-The evaluator runs three independent computations and joins them in the verdict path. Each computation is a pure function with no shared state.
+评估器执行三项独立计算，并在判定流程中汇总结果。每项计算都是不共享状态的纯函数（Pure Function）。
 
-## Log normalisation
+## 对数归一化（Log normalisation）
 
-Perplexity is exponential in loss. A 0.1 drop in loss is a much larger drop in perplexity. Comparing perplexity directly across two configurations is fine, but blending it with linear metrics in a single report requires normalisation.
+困惑度随损失呈指数变化。损失下降 0.1，对应的困惑度下降幅度会大得多。直接比较两种配置的困惑度没有问题，但若要在同一份报告中把它与线性指标混合使用，就需要归一化。
 
-The lesson normalises any metric whose `scale` field is `"log"` by taking the natural log before computing the improvement. The threshold is then applied in log space. A perplexity drop from 32 to 28 is `log(28) - log(32) = -0.133` on a lower is better metric, which is well above the two percent threshold.
+本课对 `scale` 字段为 `"log"` 的指标先取自然对数，再计算改进量。随后在对数空间中应用阈值。对于越低越好的指标，困惑度从 32 降至 28 对应 `log(28) - log(32) = -0.133`，明显超过百分之二的阈值。
 
 ```text
 if scale == "log":
@@ -81,15 +81,15 @@ else:
     b = baseline
 ```
 
-Metrics with `scale="linear"` (default) skip the transform. The same code path handles both.
+`scale="linear"`（默认值）的指标跳过这一步变换。两者使用同一条代码路径。
 
-## Per seed paired test
+## 按随机种子配对检验（Per seed paired test）
 
-The runner from lesson fifty-two emits one final metrics blob per run. For the paired test the evaluator needs one blob per seed for the candidate and one per seed for the baseline. The orchestrator runs the same experiment under both configurations across a list of seeds and hands the evaluator two lists of `ExperimentResult` records.
+第 52 课的运行器为每次运行输出一份最终指标数据。配对检验要求候选配置和基线配置分别为每个种子提供一份指标数据。编排器遍历种子列表，在两种配置下运行相同实验，再把两个 `ExperimentResult` 记录列表交给评估器。
 
-The evaluator pairs them by seed (the seed lives in `result.metrics["seed"]`) and walks the requested metric. If the seeds do not match across the two lists, the evaluator raises a `PairingError`. The orchestrator should re run.
+评估器按种子配对（种子位于 `result.metrics["seed"]`），并遍历指定指标。如果两个列表的种子不匹配，评估器抛出 `PairingError`，编排器应重新运行实验。
 
-## The Verdict shape
+## 判定记录结构（The Verdict shape）
 
 ```text
 Verdict
@@ -99,35 +99,35 @@ Verdict
   scale                  : "linear" | "log"
   candidate_mean         : float
   baseline_mean          : float
-  improvement            : float       (signed, fraction; see direction rules)
-  p_value                : float | None  (None if n < 2)
+  improvement            : float       （带符号的比例；参见方向规则）
+  p_value                : float | None  （n < 2 时为 None）
   significance_threshold : float
   improvement_threshold  : float
   verdict                : "improved" | "regressed" | "noise" | "failed"
   rationale              : str
 ```
 
-The verdict path is a small decision table:
+判定流程是一张小型决策表：
 
 ```text
-1. If any candidate result has terminal != "ok": verdict = "failed"
-2. else if |improvement| < improvement_threshold:  verdict = "noise"
-3. else if p_value is None or p_value > significance: verdict = "noise"
-4. else if improvement > 0:                          verdict = "improved"
-5. else:                                             verdict = "regressed"
+1. 如果任一候选结果满足 terminal != "ok"：verdict = "failed"
+2. 否则，如果 |improvement| < improvement_threshold：verdict = "noise"
+3. 否则，如果 p_value 为 None 或 p_value > significance：verdict = "noise"
+4. 否则，如果 improvement > 0：verdict = "improved"
+5. 否则：verdict = "regressed"
 ```
 
-Rationale is a one line human readable sentence the orchestrator can log against the hypothesis id.
+判定理由是一句人类可读的说明，编排器可以将其连同假设 ID 写入日志。
 
-## How to read the code
+## 如何阅读代码（How to read the code）
 
-`code/main.py` defines `MetricSpec`, `Verdict`, `Evaluator`, the t statistic and incomplete beta helpers, and a deterministic demo. The t test is implemented in pure stdlib math; numpy is used only to read the metrics list and compute means and variances.
+`code/main.py` 定义了 `MetricSpec`、`Verdict`、`Evaluator`、t 统计量和不完全贝塔函数辅助工具，以及一个确定性演示。t 检验完全使用标准库数学功能实现；numpy 只用于读取指标列表并计算均值和方差。
 
-`code/tests/test_evaluator.py` covers the improved path, the regressed path, the noise path (small improvement), the noise path (low n), the failed terminal path, the log normalised path, the t test against a known reference value, and the pairing error.
+`code/tests/test_evaluator.py` 覆盖改进路径、退步路径、噪声路径（改进量过小）、噪声路径（n 过小）、失败终态路径、对数归一化路径、与已知参考值对照的 t 检验，以及配对错误。
 
-## Where this slots in
+## 在流程中的位置（Where this slots in）
 
-Lesson fifty produced the hypothesis queue. Lesson fifty-one filtered out anything the literature settled. Lesson fifty-two ran the experiment under candidate and baseline configurations across seeds. Lesson fifty-three reads those runs and writes the verdict. The orchestrator stitches the four together:
+第 50 课生成假设队列，第 51 课过滤掉文献已有定论的假设，第 52 课跨多个种子分别运行候选配置和基线配置。第 53 课读取这些运行结果并写出判定。编排器将四者串联起来：
 
 ```text
 for hypothesis in queue:
@@ -142,4 +142,4 @@ for hypothesis in queue:
     attach(hypothesis, verdict)
 ```
 
-That orchestrator is not in this lesson; the four lessons compose into it without any glue beyond the dataclasses each one defines.
+本课不包含该编排器；这四课定义的数据类（Dataclass）已经足以将它们组合起来，不需要其他衔接代码。

@@ -1,11 +1,11 @@
-"""End-to-end LLM pipeline orchestrator.
+"""端到端 LLM 流水线编排器（Pipeline orchestrator）。
 
-Twelve stages wired as a DAG. Each stage is a placeholder that emits a typed
-artifact with a content-addressed hash. The orchestrator resolves dependencies,
-runs stages, records a manifest, and applies eval gates before shipping.
+十二个阶段连接为有向无环图（DAG）。每个阶段目前是占位实现，输出带类型且
+具有内容寻址哈希（Content-addressed hash）的交付物（Artifact）。编排器解析
+依赖、运行阶段、记录清单（Manifest），并在交付前应用评估门禁（Eval gates）。
 
-No network, no GPUs, stdlib only. Replace each stage's `run` with the real
-training script from the corresponding Phase 10 lesson.
+无需网络或 GPU，仅使用标准库。请将各阶段的 `run` 替换为第 10 阶段对应课程的
+真实训练脚本。
 """
 
 from __future__ import annotations
@@ -68,7 +68,7 @@ class Manifest:
 
 
 class ArtifactStore:
-    """In-memory stand-in for an S3 / R2 / GCS bucket addressed by SHA-256."""
+    """在内存中模拟通过 SHA-256 寻址的 S3 / R2 / GCS 存储桶（Bucket）。"""
 
     def __init__(self) -> None:
         self._store: dict[str, bytes] = {}
@@ -89,8 +89,8 @@ class ArtifactStore:
 
 
 def simulate_stage(name: str, stage_type: str, inputs: list[str], seed: int) -> tuple[bytes, float, float]:
-    """Placeholder: emits a deterministic blob, a wall-clock, and a cost.
-    Swap this for the real Phase 10 lesson scripts."""
+    """占位实现: 输出确定性的二进制数据（Blob）、实际经过时间（Wall-clock）与成本。
+    请替换为第 10 阶段课程的真实脚本。"""
 
     payload = {
         "stage": name,
@@ -115,27 +115,27 @@ def simulate_stage(name: str, stage_type: str, inputs: list[str], seed: int) -> 
 
 
 def plan(manifest: Manifest) -> str:
-    """Validate the manifest, print the DAG, compute the cost estimate."""
+    """验证清单（Manifest），打印有向无环图（DAG），计算成本估算。"""
 
-    lines = ["PLAN"]
+    lines = ["计划（PLAN）"]
     lines.append("=" * 60)
     lines.append(f"pipeline_version  : {manifest.pipeline_version}")
     lines.append(f"seed              : {manifest.seed}")
     lines.append(f"budget_usd        : ${manifest.budget_usd:,.0f}")
     lines.append("")
-    lines.append("dag:")
+    lines.append("有向无环图（dag）:")
     for name, deps, stage_type in STAGES:
         dep_str = ", ".join(deps) if deps else "-"
         lines.append(f"  {name:28s}  [{stage_type}]  <- {dep_str}")
     lines.append("")
-    lines.append("gates:")
+    lines.append("门禁（gates）:")
     for metric, gate in manifest.gates.items():
         lines.append(f"  {metric:22s}  {gate['op']}  {gate['value']}")
     return "\n".join(lines)
 
 
 def run(manifest: Manifest, store: ArtifactStore, injected_eval: dict | None = None) -> Manifest:
-    """Execute stages in DAG order. Halts on budget or hash failure."""
+    """按照 DAG 顺序执行阶段。超出预算或哈希检查失败时停止。"""
 
     name_to_hash: dict[str, str] = {}
 
@@ -143,7 +143,7 @@ def run(manifest: Manifest, store: ArtifactStore, injected_eval: dict | None = N
         input_hashes = [name_to_hash[d] for d in deps]
         for h in input_hashes:
             if not store.has(h):
-                raise RuntimeError(f"input hash missing for stage {name}: {h[:12]}...")
+                raise RuntimeError(f"缺少输入哈希，所属阶段为 {name}: {h[:12]}...")
 
         blob, wall, cost = simulate_stage(name, stage_type, input_hashes, manifest.seed)
         output_hash = store.put(blob)
@@ -179,21 +179,21 @@ def run(manifest: Manifest, store: ArtifactStore, injected_eval: dict | None = N
 
 
 def gate(manifest: Manifest) -> tuple[bool, list[str]]:
-    """Apply each gate. Return (ship?, reasons)."""
+    """应用每个门禁。返回（是否交付，原因），即 (ship?, reasons)。"""
 
     reasons = []
     all_pass = True
     for metric, g in manifest.gates.items():
         value = manifest.eval_metrics.get(metric)
         if value is None:
-            reasons.append(f"HOLD: missing metric {metric}")
+            reasons.append(f"HOLD: 缺少指标 {metric}")
             all_pass = False
             continue
 
         passed = (value >= g["value"]) if g["op"] == ">=" else (value <= g["value"])
         if not passed:
             reasons.append(
-                f"HOLD: {metric}={value} fails gate {g['op']} {g['value']}"
+                f"HOLD: {metric}={value} 未通过门禁 {g['op']} {g['value']}"
             )
             all_pass = False
         else:
@@ -233,7 +233,7 @@ def main(argv: list[str]) -> int:
         print(plan(manifest))
         print()
         print("=" * 60)
-        print("RUN")
+        print("运行（RUN）")
         print("=" * 60)
         t0 = time.time()
         manifest = run(manifest, store)
@@ -243,13 +243,13 @@ def main(argv: list[str]) -> int:
                 f"hash={s.output_hash[:10] if s.output_hash else '-':10s} "
                 f"cost=${s.cost_usd:7.0f}  wall={s.wall_clock_sec:6.0f}s"
             )
-        print(f"\nartifacts stored : {len(store)}")
-        print(f"total cost_usd   : ${manifest.total_cost_usd:,.0f}")
-        print(f"wall (simulated) : {time.time() - t0:.3f}s of orchestrator overhead")
+        print(f"\n已存储交付物数 : {len(store)}")
+        print(f"总成本 cost_usd   : ${manifest.total_cost_usd:,.0f}")
+        print(f"实际经过时间（模拟） : 编排器开销为 {time.time() - t0:.3f}s")
 
         print()
         print("=" * 60)
-        print("GATE (passing eval)")
+        print("门禁（GATE，评估通过）")
         print("=" * 60)
         ok, reasons = gate(manifest)
         for r in reasons:
@@ -258,7 +258,7 @@ def main(argv: list[str]) -> int:
 
         print()
         print("=" * 60)
-        print("GATE (failing eval)")
+        print("门禁（GATE，评估失败）")
         print("=" * 60)
         manifest.eval_metrics["mmlu"] = 42.0
         manifest.eval_metrics["kl_from_reference"] = 40.0
@@ -268,8 +268,8 @@ def main(argv: list[str]) -> int:
         print("  -> " + ("SHIP" if ok2 else "HOLD"))
         return 0
 
-    print(f"unknown command: {command}", file=sys.stderr)
-    print("usage: main.py [plan|run|gate|demo]", file=sys.stderr)
+    print(f"未知命令: {command}", file=sys.stderr)
+    print("用法: main.py [plan|run|gate|demo]", file=sys.stderr)
     return 1
 
 

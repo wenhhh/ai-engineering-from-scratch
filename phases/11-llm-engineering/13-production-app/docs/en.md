@@ -1,186 +1,186 @@
-# Building a Production LLM Application
+# 构建生产级大语言模型应用（Building a Production LLM Application）
 
-> You have built prompts, embeddings, RAG pipelines, function calling, caching layers, and guardrails. Separately. In isolation. Like practicing guitar scales without ever playing a song. This lesson is the song. You will wire every component from Lessons 01-12 into a single production-ready service. Not a toy. Not a demo. A system that handles real traffic, fails gracefully, streams tokens, tracks costs, and survives its first 10,000 users.
+> 你已经分别构建提示词、嵌入、RAG 流水线、函数调用、缓存层和护栏。它们彼此独立，就像只练吉他音阶却从没演奏歌曲。本课就是那首歌曲：将第 01-12 课的所有组件接成一个可用于生产的服务。不是玩具或演示，而是能处理真实流量、平滑应对失败、流式输出词元、跟踪成本，并服务首批 10,000 用户的系统。
 
 **Type:** Build (Capstone)
 **Languages:** Python
-**Prerequisites:** Phase 11 Lessons 01-15
-**Time:** ~120 minutes
-**Related:** Phase 11 · 14 (MCP) for replacing bespoke tool schemas with a shared protocol; Phase 11 · 15 (Prompt Caching) for 50-90% cost reduction on stable prefixes. Both are expected in every serious 2026 production stack.
+**Prerequisites:** 阶段 11 第 01-15 课
+**Time:** 约 120 分钟
+**相关内容（Related）：** 阶段 11 · 14（MCP）用共享协议替代定制工具模式；阶段 11 · 15（提示词缓存）使稳定前缀成本降低 50-90%。2026 年严肃的生产技术栈都应包含两者。
 
-## Learning Objectives
+## 学习目标（Learning Objectives）
 
-- Wire all Phase 11 components (prompts, RAG, function calling, caching, guardrails) into a single production-ready service
-- Implement streaming token delivery, graceful error handling, and request timeout management
-- Build observability into the application: request logging, cost tracking, latency percentiles, and error rate dashboards
-- Deploy the application with health checks, rate limiting, and a fallback strategy for provider outages
+- 将阶段 11 所有组件（提示词、RAG、函数调用、缓存、护栏）接入一个生产就绪服务。
+- 实现词元流式传输、平滑错误处理和请求超时管理。
+- 为应用构建可观测性：请求日志、成本跟踪、延迟百分位、错误率看板。
+- 部署带健康检查、限流及提供商故障回退策略的应用。
 
-## The Problem
+## 问题（The Problem）
 
-Building an LLM feature takes an afternoon. Shipping an LLM product takes months.
+构建一个大语言模型功能只需一下午，交付一个产品却需数月。
 
-The gap is not intelligence. It is infrastructure. Your prototype calls OpenAI, gets a response, prints it. Works on your laptop. Then reality arrives:
+差距不在智能，而在基础设施。原型调用 OpenAI、获取并打印响应，在笔记本上运行正常。然后现实来了：
 
-- A user sends a 50,000-token document. Your context window overflows.
-- Two users ask the same question 4 seconds apart. You pay for both.
-- The API returns a 500 error at 2am. Your service crashes.
-- A user asks the model to generate SQL. The model outputs `DROP TABLE users`.
-- Your monthly bill hits $12,000 and you have no idea which feature caused it.
-- Response time averages 8 seconds. Users leave after 3.
+- 用户发送 50,000 词元文档，上下文窗口溢出。
+- 两名用户间隔 4 秒问同一问题，你为两次都付费。
+- 凌晨 2 点 API 返回 500，服务崩溃。
+- 用户要求生成 SQL，模型输出 `DROP TABLE users`。
+- 月账单达 $12,000，却不知道哪个功能造成。
+- 平均响应 8 秒，用户 3 秒后就离开。
 
-Every LLM application in production today -- Perplexity, Cursor, ChatGPT, Notion AI -- solved these problems. Not by being smarter about prompts. By being rigorous about engineering.
+如今投入生产的应用，如 Perplexity、Cursor、ChatGPT、Notion AI，都解决了这些问题，靠的不是更巧妙的提示词，而是严谨工程。
 
-This is the capstone. You will build a complete production LLM service that integrates prompt management (L01-02), embeddings and vector search (L04-07), function calling (L09), evaluation (L10), caching (L11), guardrails (L12), streaming, error handling, observability, and cost tracking. One service. Every component wired together.
+这是综合项目（capstone）。你将构建完整生产服务，集成提示词管理（L01-02）、嵌入与向量搜索（L04-07）、函数调用（L09）、评估（L10）、缓存（L11）、护栏（L12）、流式传输、错误处理、可观测性及成本跟踪。一个服务，所有组件相连。
 
-## The Concept
+## 概念（The Concept）
 
-### Production Architecture
+### 生产架构（Production Architecture）
 
-Every serious LLM application follows the same flow. The details vary. The structure does not.
+严肃的大语言模型应用都遵循相同流程，细节可变，结构不变。
 
 ```mermaid
 graph LR
-    Client["Client<br/>(Web, Mobile, API)"]
-    GW["API Gateway<br/>Auth + Rate Limit"]
-    PR["Prompt Router<br/>Template Selection"]
-    Cache["Semantic Cache<br/>Embedding Lookup"]
-    LLM["LLM Call<br/>Streaming"]
-    Guard["Guardrails<br/>Input + Output"]
-    Eval["Eval Logger<br/>Quality Tracking"]
-    Cost["Cost Tracker<br/>Token Accounting"]
-    Resp["Response<br/>SSE Stream"]
+    Client["客户端<br/>（Web、移动端、API）"]
+    GW["API 网关<br/>认证 + 限流"]
+    PR["提示词路由器<br/>模板选择"]
+    Cache["语义缓存<br/>嵌入查询"]
+    LLM["大语言模型调用<br/>流式传输"]
+    Guard["护栏<br/>输入 + 输出"]
+    Eval["评估日志器<br/>质量跟踪"]
+    Cost["成本跟踪器<br/>词元核算"]
+    Resp["响应<br/>SSE 流"]
 
     Client --> GW --> Guard
-    Guard -->|Input Check| PR
+    Guard -->|输入检查| PR
     PR --> Cache
-    Cache -->|Hit| Resp
-    Cache -->|Miss| LLM
+    Cache -->|命中| Resp
+    Cache -->|未命中| LLM
     LLM --> Guard
-    Guard -->|Output Check| Eval
+    Guard -->|输出检查| Eval
     Eval --> Cost --> Resp
 ```
 
-The request enters through an API gateway that handles authentication and rate limiting. Input guardrails check for prompt injection and banned content before the prompt router selects the right template. A semantic cache checks if a similar question was answered recently. On a cache miss, the LLM is called with streaming enabled. Output guardrails validate the response. The eval logger records quality metrics. The cost tracker accounts for every token. The response streams back to the client.
+请求经负责认证与限流的 API 网关进入。输入护栏检查提示词注入和禁止内容，随后路由器选择合适模板。语义缓存检查近期是否回答过相似问题；未命中则启用流式调用模型。输出护栏校验响应，评估日志器记录质量指标，成本跟踪器核算每个词元，响应流式返回客户端。
 
-Seven components. Each one is a lesson you already completed. The engineering is in the wiring.
+七个组件，每个都对应已完成的一课。工程工作在于把它们连接起来。
 
-### The Stack
+### 技术栈（The Stack）
 
-| Component | Lesson | Technology | Purpose |
+| 组件 | 课程 | 技术 | 用途 |
 |-----------|--------|------------|---------|
-| API Server | -- | FastAPI + Uvicorn | HTTP endpoints, SSE streaming, health checks |
-| Prompt Templates | L01-02 | Jinja2 / string templates | Versioned prompt management with variable injection |
-| Embeddings | L04 | text-embedding-3-small | Semantic similarity for cache and RAG |
-| Vector Store | L06-07 | In-memory (prod: Pinecone/Qdrant) | Nearest neighbor search for context retrieval |
-| Function Calling | L09 | Tool registry + JSON Schema | External data access, structured actions |
-| Evaluation | L10 | Custom metrics + logging | Response quality, latency, accuracy tracking |
-| Caching | L11 | Semantic cache (embedding-based) | Avoid redundant LLM calls, reduce cost and latency |
-| Guardrails | L12 | Regex + classifier rules | Block prompt injection, PII, unsafe content |
-| Cost Tracker | L11 | Token counter + pricing table | Per-request and aggregate cost accounting |
-| Streaming | -- | Server-Sent Events (SSE) | Token-by-token delivery, sub-second first token |
+| API 服务器 | -- | FastAPI + Uvicorn | HTTP 端点、SSE 流、健康检查 |
+| 提示词模板 | L01-02 | Jinja2 / 字符串模板 | 带变量注入的版本化提示词管理 |
+| 嵌入 | L04 | text-embedding-3-small | 缓存和 RAG 的语义相似度 |
+| 向量存储 | L06-07 | 内存（生产：Pinecone/Qdrant） | 通过最近邻搜索检索上下文 |
+| 函数调用 | L09 | 工具注册表 + JSON Schema | 外部数据访问、结构化操作 |
+| 评估 | L10 | 自定义指标 + 日志 | 跟踪响应质量、延迟、准确率 |
+| 缓存 | L11 | 语义缓存（基于嵌入） | 避免重复模型调用，降低成本延迟 |
+| 护栏 | L12 | 正则 + 分类器规则 | 阻止注入、PII、不安全内容 |
+| 成本跟踪器 | L11 | 词元计数器 + 价格表 | 每请求及汇总成本核算 |
+| 流式传输 | -- | 服务器发送事件（SSE） | 逐词元传输，首词元不到一秒 |
 
-### Streaming: Why It Matters
+### 流式传输为何重要（Streaming: Why It Matters）
 
-A GPT-5 response with 500 output tokens takes 3-8 seconds to fully generate. Without streaming, the user stares at a spinner for the entire duration. With streaming, the first token arrives in 200-500ms. The total time is the same. The perceived latency drops by 90%.
+GPT-5 完整生成 500 输出词元需 3-8 秒。不使用流式传输，用户全程只能看加载动画；使用后首词元在 200-500ms 到达。总时间相同，感知延迟却降低 90%。
 
 ```mermaid
 sequenceDiagram
-    participant C as Client
-    participant S as Server
-    participant L as LLM API
+    participant C as 客户端
+    participant S as 服务器
+    participant L as 大语言模型 API
 
     C->>S: POST /chat (stream=true)
-    S->>L: API call (stream=true)
+    S->>L: API 调用 (stream=true)
     L-->>S: token: "The"
     S-->>C: SSE: data: {"token": "The"}
     L-->>S: token: " capital"
     S-->>C: SSE: data: {"token": " capital"}
     L-->>S: token: " of"
     S-->>C: SSE: data: {"token": " of"}
-    Note over L,S: ...continues token by token...
+    Note over L,S: ……逐词元继续……
     L-->>S: [DONE]
     S-->>C: SSE: data: [DONE]
 ```
 
-Three protocols for streaming:
+三种流式传输协议：
 
-| Protocol | Latency | Complexity | When to Use |
+| 协议 | 延迟 | 复杂度 | 使用时机 |
 |----------|---------|------------|-------------|
-| Server-Sent Events (SSE) | Low | Low | Most LLM apps. Unidirectional, HTTP-based, works everywhere |
-| WebSockets | Low | Medium | Bidirectional needs: voice, real-time collaboration |
-| Long Polling | High | Low | Legacy clients that cannot handle SSE or WebSockets |
+| 服务器发送事件（SSE） | 低 | 低 | 多数模型应用；单向、基于 HTTP、广泛兼容 |
+| WebSockets | 低 | 中 | 双向需求：语音、实时协作 |
+| 长轮询（Long Polling） | 高 | 低 | 无法处理 SSE 或 WebSockets 的旧客户端 |
 
-SSE is the default choice. OpenAI, Anthropic, and Google all stream via SSE. Your server receives chunks from the LLM API and forwards them to the client as SSE events. The client uses `EventSource` (browser) or `httpx` (Python) to consume the stream.
+SSE 是默认选择，OpenAI、Anthropic 和 Google 都使用它。服务器接收模型 API 的数据块，以 SSE 事件转发客户端。客户端用 `EventSource`（浏览器）或 `httpx`（Python）消费流。
 
-### Error Handling: The Three Layers
+### 错误处理的三层（Error Handling: The Three Layers）
 
-Production LLM apps fail in three distinct ways. Each requires a different recovery strategy.
+生产应用有三种不同失败方式，各需不同恢复策略。
 
-**Layer 1: API failures.** The LLM provider returns 429 (rate limit), 500 (server error), or times out. Solution: exponential backoff with jitter. Start at 1 second, double each retry, add random jitter to prevent thundering herd. Maximum 3 retries.
+**第 1 层：API 失败。** 提供商返回 429（限流）、500（服务器错误）或超时。解决：带抖动的指数退避，从 1 秒开始，每次重试翻倍，加入随机抖动防止惊群，最多重试 3 次。
 
 ```
-Attempt 1: immediate
-Attempt 2: 1s + random(0, 0.5s)
-Attempt 3: 2s + random(0, 1.0s)
-Attempt 4: 4s + random(0, 2.0s)
-Give up: return fallback response
+尝试 1：立即
+尝试 2：1s + random(0, 0.5s)
+尝试 3：2s + random(0, 1.0s)
+尝试 4：4s + random(0, 2.0s)
+放弃：返回回退响应
 ```
 
-**Layer 2: Model failures.** The model returns malformed JSON, hallucinates a function name, or produces an output that fails validation. Solution: retry with a corrected prompt. Include the error in the retry message so the model can self-correct.
+**第 2 层：模型失败。** 返回格式错误的 JSON、编造函数名，或输出未通过校验。解决：用纠正后的提示词重试，在重试消息中加入错误，让模型自我纠正。
 
-**Layer 3: Application failures.** A downstream service is unreachable, the vector store is slow, a guardrail throws an exception. Solution: graceful degradation. If RAG context is unavailable, proceed without it. If the cache is down, bypass it. Never let a secondary system crash the primary flow.
+**第 3 层：应用失败。** 下游服务不可达、向量存储慢、护栏抛异常。解决：平滑降级。RAG 上下文不可用就不带它继续，缓存宕机就绕过。绝不让辅助系统拖垮主流程。
 
-| Failure | Retry? | Fallback | User Impact |
+| 失败 | 重试？ | 回退 | 用户影响 |
 |---------|--------|----------|-------------|
-| API 429 (rate limit) | Yes, with backoff | Queue the request | "Processing, please wait..." |
-| API 500 (server error) | Yes, 3 attempts | Switch to fallback model | Transparent to user |
-| API timeout (>30s) | Yes, 1 attempt | Shorter prompt, smaller model | Slightly lower quality |
-| Malformed output | Yes, with error context | Return raw text | Minor formatting issues |
-| Guardrail block | No | Explain why request was blocked | Clear error message |
-| Vector store down | No retry on vector store | Skip RAG context | Lower quality, still functional |
-| Cache down | No retry on cache | Direct LLM call | Higher latency, higher cost |
+| API 429（限流） | 是，退避 | 请求入队 | “处理中，请稍候……” |
+| API 500（服务器错误） | 是，3 次尝试 | 切换回退模型 | 用户无感 |
+| API 超时（>30s） | 是，1 次尝试 | 更短提示词、更小模型 | 质量略低 |
+| 格式错误输出 | 是，携带错误上下文 | 返回原始文本 | 轻微格式问题 |
+| 护栏阻止 | 否 | 解释阻止原因 | 清晰错误消息 |
+| 向量存储宕机 | 不重试向量存储 | 跳过 RAG 上下文 | 质量下降但仍可用 |
+| 缓存宕机 | 不重试缓存 | 直接调用模型 | 延迟和成本更高 |
 
-**Fallback model chain.** When your primary model is unavailable, fall through a chain:
+**回退模型链（Fallback model chain）。** 主模型不可用时，沿链回退：
 
 ```
-claude-sonnet-5 -> gpt-4o -> gpt-4o-mini -> cached response -> "Service temporarily unavailable"
+claude-sonnet-5 -> gpt-4o -> gpt-4o-mini -> 缓存响应 -> “服务暂时不可用”
 ```
 
-Each step trades quality for availability. The user always gets something.
+每步以质量换可用性，用户始终能得到响应。
 
-### Observability: What to Measure
+### 可观测性：测量什么（Observability: What to Measure）
 
-You cannot improve what you cannot see. Every production LLM app needs three pillars of observability.
+看不见就无法改进。每个生产应用都需可观测性的三大支柱。
 
-**Structured logging.** Every request produces a JSON log entry with: request ID, user ID, prompt template name, model used, input tokens, output tokens, latency (ms), cache hit/miss, guardrail pass/fail, cost (USD), and any errors.
+**结构化日志（Structured logging）。** 每请求产生 JSON 日志：请求 ID、用户 ID、提示词模板名、所用模型、输入词元、输出词元、延迟（毫秒）、缓存命中/未命中、护栏通过/失败、成本（美元）及错误。
 
-**Tracing.** A single user request touches 5-8 components. OpenTelemetry traces let you see the full journey: how long did embedding take? Was it a cache hit? How long was the LLM call? Did the guardrail add latency? Without tracing, debugging production issues is guesswork.
+**追踪（Tracing）。** 单个请求经过 5-8 个组件。OpenTelemetry 追踪展示完整路径：嵌入耗时多少？缓存命中了吗？模型调用多长？护栏增加延迟了吗？没有追踪，生产调试只能猜。
 
-**Metrics dashboard.** The five numbers every LLM team watches:
+**指标看板（Metrics dashboard）。** 每个模型团队都应关注的五个数字：
 
-| Metric | Target | Why |
+| 指标 | 目标 | 原因 |
 |--------|--------|-----|
-| P50 latency | < 2s | Median user experience |
-| P99 latency | < 10s | Tail latency drives churn |
-| Cache hit rate | > 30% | Direct cost savings |
-| Guardrail block rate | < 5% | Too high = false positives annoying users |
-| Cost per request | < $0.01 | Unit economics viability |
+| P50 延迟 | < 2s | 中位用户体验 |
+| P99 延迟 | < 10s | 尾延迟导致流失 |
+| 缓存命中率 | > 30% | 直接节省成本 |
+| 护栏阻止率 | < 5% | 太高表示误报困扰用户 |
+| 每请求成本 | < $0.01 | 单位经济效益可行性 |
 
-### A/B Testing Prompts in Production
+### 生产中的提示词 A/B 测试（A/B Testing Prompts in Production）
 
-Your prompt is not finished when it works. It is finished when you have data proving it outperforms the alternative.
+提示词能工作还不算完成，有数据证明它优于替代方案才算。
 
-**Shadow mode.** Run a new prompt on 100% of traffic but only log the results -- do not show them to users. Compare quality metrics against the current prompt. No user risk, full data.
+**影子模式（Shadow mode）。** 在 100% 流量上运行新提示词，只记录结果，不展示给用户。与当前提示词比较质量指标。用户无风险，数据完整。
 
-**Percentage rollout.** Route 10% of traffic to the new prompt. Monitor metrics. If quality holds, increase to 25%, then 50%, then 100%. If quality drops, instant rollback.
+**按比例发布（Percentage rollout）。** 将 10% 流量路由到新提示词，监控指标。质量保持则升至 25%、50%、100%；质量下降立即回滚。
 
 ```mermaid
 graph TD
-    R["Incoming Request"]
+    R["传入请求"]
     H["Hash(user_id) mod 100"]
-    A["Prompt v1 (90%)"]
-    B["Prompt v2 (10%)"]
-    L["Log Both Results"]
+    A["提示词 v1（90%）"]
+    B["提示词 v2（10%）"]
+    L["记录两组结果"]
     
     R --> H
     H -->|0-89| A
@@ -189,98 +189,98 @@ graph TD
     B --> L
 ```
 
-Use a deterministic hash of the user ID, not random selection. This ensures each user gets a consistent experience across requests within the same experiment.
+使用用户 ID 的确定性哈希，而非随机选择，确保同一实验内每位用户跨请求体验一致。
 
-### Real Architecture Examples
+### 真实架构示例（Real Architecture Examples）
 
-**Perplexity.** User query enters. A search engine retrieves 10-20 web pages. Pages are chunked, embedded, and reranked. Top 5 chunks become RAG context. The LLM generates an answer with citations, streamed back in real-time. Two models: a fast one for search query reformulation, a strong one for answer synthesis. Estimated 50M+ queries/day.
+**Perplexity。** 用户查询进入，搜索引擎检索 10-20 网页，页面分块、嵌入、重排，前 5 块成为 RAG 上下文。模型生成带引用答案，实时流式返回。两个模型分别负责快速搜索查询改写和高质量答案综合。估计每天超过 50M 查询。
 
-**Cursor.** The open file, surrounding files, recent edits, and terminal output form the context. A prompt router decides: small model for autocomplete (Cursor-small, ~20ms), large model for chat (Claude Sonnet 4.6 / GPT-5, ~3s). Context is aggressively compressed -- only relevant code sections, not entire files. Codebase embeddings provide long-range context. Speculative edits stream diffs, not full files. MCP integration lets third-party tools plug in without per-tool code changes.
+**Cursor。** 打开的文件、周边文件、近期编辑和终端输出组成上下文。提示词路由器决定：自动补全用小模型（Cursor-small，约 20ms），聊天用大模型（Claude Sonnet 4.6 / GPT-5，约 3s）。上下文强力压缩，只保留相关代码片段而非整文件；代码库嵌入提供远距离上下文。推测编辑流式输出差异，而非完整文件。MCP 集成让第三方工具无需逐工具修改代码即可接入。
 
-**ChatGPT.** Plugins, function calling, and MCP servers let the model access the web, run code, generate images, and query databases. A routing layer decides which capabilities to invoke. Memory persists user preferences across sessions. The system prompt is 1,500+ tokens of behavioral rules, cached via prompt caching. Multiple models serve different features: GPT-5 for chat, GPT-Image for images, Whisper for voice, o4-mini for deep reasoning.
+**ChatGPT。** 插件、函数调用和 MCP 服务器让模型访问网页、运行代码、生成图像、查询数据库。路由层决定调用哪些能力，记忆跨会话保存用户偏好。系统提示词含 1,500 多词元行为规则，通过提示词缓存复用。不同模型提供不同功能：GPT-5 聊天、GPT-Image 图像、Whisper 语音、o4-mini 深度推理。
 
-### Scaling
+### 扩展（Scaling）
 
-| Scale | Architecture | Infra |
+| 规模 | 架构 | 基础设施 |
 |-------|-------------|-------|
-| 0-1K DAU | Single FastAPI server, sync calls | 1 VM, $50/month |
-| 1K-10K DAU | Async FastAPI, semantic cache, queue | 2-4 VMs + Redis, $500/month |
-| 10K-100K DAU | Horizontal scaling, load balancer, async workers | Kubernetes, $5K/month |
-| 100K+ DAU | Multi-region, model routing, dedicated inference | Custom infra, $50K+/month |
+| 0-1K 日活 | 单 FastAPI 服务器、同步调用 | 1 台虚拟机，$50/月 |
+| 1K-10K 日活 | 异步 FastAPI、语义缓存、队列 | 2-4 台虚拟机 + Redis，$500/月 |
+| 10K-100K 日活 | 水平扩展、负载均衡、异步工作器 | Kubernetes，$5K/月 |
+| 100K+ 日活 | 多区域、模型路由、专用推理 | 自定义基础设施，$50K+/月 |
 
-Key scaling patterns:
+关键扩展模式：
 
-- **Async everywhere.** Never block a web server thread on an LLM call. Use `asyncio` and `httpx.AsyncClient`.
-- **Queue-based processing.** For non-real-time tasks (summarization, analysis), push to a queue (Redis, SQS) and process with workers. Return a job ID, let the client poll.
-- **Connection pooling.** Reuse HTTP connections to LLM providers. Creating a new TLS connection per request adds 100-200ms.
-- **Horizontal scaling.** LLM apps are I/O bound, not CPU bound. A single async server handles 100+ concurrent requests. Scale servers, not cores.
+- **全面异步。** 绝不让模型调用阻塞 Web 服务器线程，使用 `asyncio` 和 `httpx.AsyncClient`。
+- **队列处理。** 非实时任务（摘要、分析）推入队列（Redis、SQS），由工作器处理。返回任务 ID，让客户端轮询。
+- **连接池。** 复用提供商 HTTP 连接。每请求新建 TLS 连接会增加 100-200ms。
+- **水平扩展。** 模型应用受 I/O 而非 CPU 限制。单异步服务器可处理 100 多并发请求，应扩服务器数量，而非核心数。
 
-### Cost Projection
+### 成本预测（Cost Projection）
 
-Before you ship, estimate your monthly cost. This spreadsheet decides if your business model works.
+发布前估算月成本，这张表决定商业模式是否可行。
 
-| Variable | Value | Source |
+| 变量 | 值 | 来源 |
 |----------|-------|--------|
-| Daily Active Users (DAU) | 10,000 | Analytics |
-| Queries per user per day | 5 | Product analytics |
-| Avg input tokens per query | 1,500 | Measured (system + context + user) |
-| Avg output tokens per query | 400 | Measured |
-| Input price per 1M tokens | $5.00 | OpenAI GPT-5 pricing |
-| Output price per 1M tokens | $15.00 | OpenAI GPT-5 pricing |
-| Cache hit rate | 35% | Measured from cache metrics |
-| Effective daily queries | 32,500 | 50,000 * (1 - 0.35) |
+| 日活用户（DAU） | 10,000 | 分析系统 |
+| 每用户每日查询 | 5 | 产品分析 |
+| 每查询平均输入词元 | 1,500 | 实测（系统 + 上下文 + 用户） |
+| 每查询平均输出词元 | 400 | 实测 |
+| 每百万输入词元价格 | $5.00 | OpenAI GPT-5 定价 |
+| 每百万输出词元价格 | $15.00 | OpenAI GPT-5 定价 |
+| 缓存命中率 | 35% | 缓存指标实测 |
+| 每日有效查询 | 32,500 | 50,000 * (1 - 0.35) |
 
-**Monthly LLM cost:**
-- Input: 32,500 queries/day x 1,500 tokens x 30 days / 1M x $2.50 = **$3,656**
-- Output: 32,500 queries/day x 400 tokens x 30 days / 1M x $10.00 = **$3,900**
-- **Total: $7,556/month** (with caching saving ~$4,070/month)
+**每月大语言模型成本：**
+- 输入：32,500 查询/天 x 1,500 词元 x 30 天 / 1M x $2.50 = **$3,656**
+- 输出：32,500 查询/天 x 400 词元 x 30 天 / 1M x $10.00 = **$3,900**
+- **总计：$7,556/月**（缓存节省约 $4,070/月）。
 
-Without caching, the same traffic costs $11,625/month. A 35% cache hit rate saves 35% on LLM costs. This is why Lesson 11 exists.
+没有缓存，相同流量需 $11,625/月。35% 缓存命中率节省 35% 模型成本，这就是第 11 课存在的原因。
 
-### The Deployment Checklist
+### 部署清单（The Deployment Checklist）
 
-15 items. Ship nothing until every box is checked.
+15 项，全部勾选后才能发布。
 
-| # | Item | Category |
+| # | 项目 | 类别 |
 |---|------|----------|
-| 1 | API keys stored in environment variables, not code | Security |
-| 2 | Rate limiting per user (10-50 req/min default) | Protection |
-| 3 | Input guardrails active (prompt injection, PII) | Safety |
-| 4 | Output guardrails active (content filtering, format validation) | Safety |
-| 5 | Semantic cache configured and tested | Cost |
-| 6 | Streaming enabled for all chat endpoints | UX |
-| 7 | Exponential backoff on all LLM API calls | Reliability |
-| 8 | Fallback model chain configured | Reliability |
-| 9 | Structured logging with request IDs | Observability |
-| 10 | Cost tracking per request and per user | Business |
-| 11 | Health check endpoint returning dependency status | Ops |
-| 12 | Max token limits on input and output | Cost/Safety |
-| 13 | Timeout on all external calls (30s default) | Reliability |
-| 14 | CORS configured for production domains only | Security |
-| 15 | Load test with 100 concurrent users passing | Performance |
+| 1 | API 密钥放环境变量，不放代码 | 安全 |
+| 2 | 每用户限流（默认每分钟 10-50 请求） | 保护 |
+| 3 | 输入护栏启用（提示词注入、PII） | 安全 |
+| 4 | 输出护栏启用（内容过滤、格式校验） | 安全 |
+| 5 | 语义缓存已配置并测试 | 成本 |
+| 6 | 所有聊天端点启用流式传输 | 用户体验 |
+| 7 | 所有模型 API 调用指数退避 | 可靠性 |
+| 8 | 回退模型链已配置 | 可靠性 |
+| 9 | 带请求 ID 的结构化日志 | 可观测性 |
+| 10 | 每请求、每用户成本跟踪 | 业务 |
+| 11 | 健康检查端点返回依赖状态 | 运维 |
+| 12 | 输入输出最大词元限制 | 成本/安全 |
+| 13 | 所有外部调用超时（默认 30s） | 可靠性 |
+| 14 | CORS 只配置生产域名 | 安全 |
+| 15 | 通过 100 并发用户负载测试 | 性能 |
 
 ```figure
 l5-prod-app-paths
 ```
 
-## Build It
+## 动手构建（Build It）
 
-This is the capstone. One file. Every component wired together.
+这是综合项目，一个文件连接所有组件。
 
-The code builds a complete production LLM service with:
-- FastAPI server with health checks and CORS
-- Prompt template management with versioning and A/B testing
-- Semantic caching using cosine similarity on embeddings
-- Input and output guardrails (prompt injection, PII, content safety)
-- Simulated LLM calls with streaming (SSE)
-- Exponential backoff with jitter and fallback model chain
-- Cost tracking per request and aggregate
-- Structured logging with request IDs
-- Evaluation logging for quality tracking
+代码构建完整生产服务，包含：
+- 带健康检查和 CORS 的 FastAPI 服务器。
+- 支持版本及 A/B 测试的提示词模板管理。
+- 使用嵌入余弦相似度的语义缓存。
+- 输入输出护栏（注入、PII、内容安全）。
+- 带流式传输（SSE）的模拟模型调用。
+- 带抖动的指数退避及回退模型链。
+- 每请求及汇总成本跟踪。
+- 带请求 ID 的结构化日志。
+- 用于质量跟踪的评估日志。
 
-### Step 1: Core Infrastructure
+### 第 1 步：核心基础设施（Core Infrastructure）
 
-The foundation. Configuration, logging, and the data structures every component depends on.
+基础部分：配置、日志和所有组件依赖的数据结构。
 
 ```python
 import asyncio
@@ -381,9 +381,9 @@ class CostTracker:
         }
 ```
 
-### Step 2: Prompt Management
+### 第 2 步：提示词管理（Prompt Management）
 
-Versioned prompt templates with A/B testing support. Each template has a name, version, and the template string. The router selects based on request context and experiment assignment.
+支持 A/B 测试的版本化提示词模板。每模板有名称、版本和模板字符串，路由器根据请求上下文及实验分组选择。
 
 ```python
 @dataclass
@@ -474,9 +474,9 @@ def select_prompt(template_name, user_id, variables):
     return template, rendered
 ```
 
-### Step 3: Semantic Cache
+### 第 3 步：语义缓存（Semantic Cache）
 
-Embedding-based cache that matches semantically similar queries. Two questions phrased differently but meaning the same thing will hit the cache.
+基于嵌入的缓存，匹配语义相似查询。两个措辞不同但含义相同的问题会命中缓存。
 
 ```python
 def simple_embedding(text, dim=64):
@@ -557,9 +557,9 @@ class SemanticCache:
         }
 ```
 
-### Step 4: Guardrails
+### 第 4 步：护栏（Guardrails）
 
-Input validation catches prompt injection and PII before the LLM sees it. Output validation catches unsafe content before the user sees it. Two walls. Nothing passes unchecked.
+输入校验在模型看到前捕获注入与 PII；输出校验在用户看到前捕获不安全内容。两道墙，所有内容都经过检查。
 
 ```python
 INJECTION_PATTERNS = [
@@ -632,9 +632,9 @@ def check_output_guardrails(text):
     return GuardrailResult(passed=True)
 ```
 
-### Step 5: LLM Caller with Retry and Streaming
+### 第 5 步：支持重试和流式传输的模型调用器（LLM Caller with Retry and Streaming）
 
-The core LLM interface. Exponential backoff with jitter on failures. Fallback through the model chain. Streaming support for token-by-token delivery.
+核心模型接口：失败时带抖动指数退避，沿模型链回退，支持逐词元流式传输。
 
 ```python
 def estimate_tokens(text):
@@ -734,9 +734,9 @@ async def stream_response(text):
         await asyncio.sleep(random.uniform(0.02, 0.08))
 ```
 
-### Step 6: The Request Pipeline
+### 第 6 步：请求流水线（The Request Pipeline）
 
-The orchestrator. Takes a raw user request, runs it through every component, and returns a structured result.
+编排器接收原始用户请求，让它经过每个组件，返回结构化结果。
 
 ```python
 class ProductionLLMService:
@@ -901,7 +901,7 @@ class ProductionLLMService:
         }
 ```
 
-### Step 7: Run the Full Demo
+### 第 7 步：运行完整演示（Run the Full Demo）
 
 ```python
 async def run_production_demo():
@@ -1016,11 +1016,11 @@ if __name__ == "__main__":
     main()
 ```
 
-## Use It
+## 实际使用（Use It）
 
-### FastAPI Server (Production Deployment)
+### FastAPI 服务器（生产部署，Production Deployment）
 
-The demo above runs as a script. For production, wrap it in FastAPI with proper endpoints.
+上面的演示作为脚本运行。生产环境用 FastAPI 包装，提供合适端点。
 
 ```python
 # from fastapi import FastAPI, HTTPException
@@ -1072,11 +1072,11 @@ The demo above runs as a script. For production, wrap it in FastAPI with proper 
 #     uvicorn.run(app, host="0.0.0.0", port=8000)
 ```
 
-To run this as a real server, uncomment and install dependencies: `pip install fastapi uvicorn`. Hit `http://localhost:8000/docs` for auto-generated API docs.
+要作为真实服务器运行，取消注释并安装依赖：`pip install fastapi uvicorn`。访问 `http://localhost:8000/docs` 查看自动生成的 API 文档。
 
-### Real API Integration
+### 真实 API 集成（Real API Integration）
 
-Replace the simulated LLM calls with actual provider SDKs.
+用真实提供商 SDK 替换模拟模型调用。
 
 ```python
 # import openai
@@ -1107,7 +1107,7 @@ Replace the simulated LLM calls with actual provider SDKs.
 #             yield text
 ```
 
-### Docker Deployment
+### Docker 部署（Docker Deployment）
 
 ```dockerfile
 # FROM python:3.12-slim
@@ -1119,51 +1119,51 @@ Replace the simulated LLM calls with actual provider SDKs.
 # CMD ["uvicorn", "production_app:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "4"]
 ```
 
-Four workers. Each handles async I/O. A single box with 4 workers serves 400+ concurrent LLM requests because they are all waiting on network I/O, not CPU.
+四个工作进程，各处理异步 I/O。单机四进程可服务 400 多并发模型请求，因为它们都在等网络 I/O，而不是 CPU。
 
-## Ship It
+## 交付产物（Ship It）
 
-This lesson produces `outputs/prompt-architecture-reviewer.md` -- a reusable prompt that reviews the architecture of any LLM application against the production checklist. Give it a description of your system and it returns a gap analysis.
+本课产出 `outputs/prompt-architecture-reviewer.md`，可复用提示词，对照生产清单审查任意模型应用架构。提供系统描述，它返回差距分析。
 
-It also produces `outputs/skill-production-checklist.md` -- a decision framework for shipping LLM applications to production, covering every component from this lesson with specific thresholds and pass/fail criteria.
+还产出 `outputs/skill-production-checklist.md`，用于生产发布的决策框架，覆盖本课所有组件，给出具体阈值与通过/失败标准。
 
-## Exercises
+## 练习（Exercises）
 
-1. **Add RAG integration.** Build a simple in-memory vector store with 20 documents. When the template is `rag_answer`, embed the query, find the 3 most similar documents, and inject them as context. Measure how response quality changes with and without RAG context. Track retrieval latency separately from LLM latency.
+1. **加入 RAG 集成。** 构建含 20 文档的简单内存向量存储。模板为 `rag_answer` 时嵌入查询，找到最相似的 3 篇文档并注入上下文。测量有无 RAG 上下文时响应质量变化，分别跟踪检索和模型延迟。
 
-2. **Implement real function calling.** Add a tool registry (from Lesson 09) to the service. When a user asks a question that requires external data (weather, calculation, search), the pipeline should detect this, execute the tool, and include the result in the prompt. Add a `tools_used` field to the response.
+2. **实现真实函数调用。** 向服务添加第 09 课工具注册表。用户问题需要外部数据（天气、计算、搜索）时，流水线应检测、执行工具、把结果加入提示词。响应添加 `tools_used` 字段。
 
-3. **Build a cost alerting system.** Track cost per user per day. When a user exceeds $0.50/day, switch them to `gpt-4o-mini`. When total daily cost exceeds $100, activate emergency mode: cache-only responses for repeated queries, `gpt-4o-mini` for everything else, reject requests over 2,000 input tokens. Test with a simulated traffic spike.
+3. **构建成本告警系统。** 跟踪每用户每日成本，超过 $0.50/天则切换为 `gpt-4o-mini`。日总成本超过 $100 时启动应急模式：重复查询仅用缓存，其余用 `gpt-4o-mini`，拒绝超过 2,000 输入词元的请求。用模拟流量激增测试。
 
-4. **Implement prompt versioning with rollback.** Store all prompt versions with timestamps. Add an endpoint that shows quality metrics (latency, user ratings, error rate) per prompt version. Implement automatic rollback: if a new prompt version has 2x the error rate of the previous version over 100 requests, automatically revert.
+4. **实现带回滚的提示词版本管理。** 保存所有版本及时间戳，添加按版本展示质量指标（延迟、用户评分、错误率）的端点。实现自动回滚：100 请求内，新版错误率达到旧版两倍就自动恢复旧版。
 
-5. **Add OpenTelemetry tracing.** Instrument every component (cache lookup, guardrail check, LLM call, cost calculation) as a separate span. Each span records its duration. Export traces to the console. Show the full trace for a single request, with each component's contribution to total latency visible.
+5. **添加 OpenTelemetry 追踪。** 将各组件（缓存查询、护栏检查、模型调用、成本计算）埋点为独立跨度（span），记录各自耗时，导出追踪到控制台。展示单请求完整追踪及每组件对总延迟的贡献。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语 | 常见说法 | 实际含义 |
 |------|----------------|----------------------|
-| API Gateway | "The frontend" | The entry point that handles authentication, rate limiting, CORS, and request routing before any LLM logic runs |
-| Prompt Router | "Template selector" | Logic that picks the right prompt template based on request type, A/B experiment assignment, and user context |
-| Semantic Cache | "Smart cache" | A cache keyed by embedding similarity rather than exact string match -- two differently-phrased identical questions return the same cached response |
-| SSE (Server-Sent Events) | "Streaming" | A unidirectional HTTP protocol where the server pushes events to the client -- used by OpenAI, Anthropic, and Google for token-by-token delivery |
-| Exponential Backoff | "Retry logic" | Waiting 1s, 2s, 4s, 8s between retries (doubling each time) with random jitter to prevent all clients retrying simultaneously |
-| Fallback Chain | "Model cascade" | An ordered list of models tried in sequence -- when the primary fails, fall through to cheaper or more available alternatives |
-| Graceful Degradation | "Partial failure handling" | When a secondary component fails (cache, RAG, guardrails), the system continues with reduced functionality rather than crashing |
-| Cost Per Request | "Unit economics" | The total LLM spend (input tokens + output tokens at model pricing) for a single user request -- the number that determines if your business model works |
-| Shadow Mode | "Dark launch" | Running a new prompt or model on real traffic but only logging results, not showing them to users -- risk-free A/B testing |
-| Health Check | "Readiness probe" | An endpoint that returns the status of all dependencies (cache, LLM availability, guardrails) -- used by load balancers and Kubernetes to route traffic |
+| API 网关（API Gateway） | “前端” | 模型逻辑运行前处理认证、限流、CORS 及请求路由的入口 |
+| 提示词路由器（Prompt Router） | “模板选择器” | 根据请求类型、A/B 实验分组、用户上下文选择模板的逻辑 |
+| 语义缓存（Semantic Cache） | “智能缓存” | 以嵌入相似度而非精确字符串匹配为键；措辞不同的同一问题返回相同缓存响应 |
+| 服务器发送事件（SSE，Server-Sent Events） | “流式传输” | 服务器向客户端推送事件的单向 HTTP 协议，OpenAI、Anthropic、Google 用它逐词元传输 |
+| 指数退避（Exponential Backoff） | “重试逻辑” | 重试间等待 1s、2s、4s、8s，每次翻倍并加随机抖动，防止所有客户端同时重试 |
+| 回退链（Fallback Chain） | “模型级联” | 按顺序尝试的模型列表，主模型失败就转向更便宜或可用性更高的替代者 |
+| 平滑降级（Graceful Degradation） | “部分失败处理” | 辅助组件（缓存、RAG、护栏）失败时，以减少的功能继续而非崩溃 |
+| 每请求成本（Cost Per Request） | “单位经济效益” | 单用户请求的模型总费用（按模型价格计算输入 + 输出词元），决定商业模式是否可行 |
+| 影子模式（Shadow Mode） | “暗发布” | 在真实流量上运行新提示词或模型，只记录结果不给用户看，无风险 A/B 测试 |
+| 健康检查（Health Check） | “就绪探针” | 返回全部依赖（缓存、模型可用性、护栏）状态的端点，供负载均衡器和 Kubernetes 路由流量 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [FastAPI Documentation](https://fastapi.tiangolo.com/) -- the async Python framework used in this lesson, with native SSE streaming and automatic OpenAPI docs
-- [OpenAI Production Best Practices](https://platform.openai.com/docs/guides/production-best-practices) -- rate limits, error handling, and scaling guidance from the largest LLM API provider
-- [Anthropic API Reference](https://docs.anthropic.com/en/api/messages-streaming) -- streaming implementation details for Claude, including server-sent events and tool use during streaming
-- [OpenTelemetry Python SDK](https://opentelemetry.io/docs/languages/python/) -- the standard for distributed tracing, used to instrument every component of an LLM pipeline
-- [Semantic Caching with GPTCache](https://github.com/zilliztech/GPTCache) -- production semantic caching library that implements the concepts from this lesson at scale
-- [Hamel Husain, "Your AI Product Needs Evals"](https://hamel.dev/blog/posts/evals/) -- the definitive guide on evaluation-driven development for LLM applications, complementing the eval component in this capstone
-- [Eugene Yan, "Patterns for Building LLM-based Systems"](https://eugeneyan.com/writing/llm-patterns/) -- architectural patterns (guardrails, RAG, caching, routing) seen across production LLM deployments at major tech companies
-- [vLLM documentation](https://docs.vllm.ai/) -- PagedAttention-based serving: the default self-hosted inference layer used under the FastAPI capstone in this lesson.
-- [Hugging Face TGI](https://huggingface.co/docs/text-generation-inference/index) -- Text Generation Inference: Rust server with continuous batching, Flash Attention, and Medusa speculative decoding; the HF-native alternative to vLLM.
-- [NVIDIA TensorRT-LLM documentation](https://nvidia.github.io/TensorRT-LLM/) -- the highest-throughput path on NVIDIA hardware; quantization, in-flight batching, and FP8 kernels for enterprise deployments.
-- [Hamel Husain -- Optimizing Latency: TGI vs vLLM vs CTranslate2 vs mlc](https://hamel.dev/notes/llm/inference/03_inference.html) -- measured comparison of throughput and latency across the main serving frameworks.
+- [FastAPI 文档](https://fastapi.tiangolo.com/)：本课使用的异步 Python 框架，具有原生 SSE 流和自动 OpenAPI 文档。
+- [OpenAI 生产最佳实践](https://platform.openai.com/docs/guides/production-best-practices)：最大模型 API 提供商给出的限流、错误处理和扩展指南。
+- [Anthropic API 参考](https://docs.anthropic.com/en/api/messages-streaming)：Claude 流式实现细节，包括服务器发送事件及流式期间工具使用。
+- [OpenTelemetry Python SDK](https://opentelemetry.io/docs/languages/python/)：分布式追踪标准，用于为模型流水线各组件埋点。
+- [使用 GPTCache 的语义缓存](https://github.com/zilliztech/GPTCache)：规模化实现本课概念的生产语义缓存库。
+- [Hamel Husain，《你的 AI 产品需要评估（Your AI Product Needs Evals）》](https://hamel.dev/blog/posts/evals/)：模型应用评估驱动开发权威指南，补充本综合项目评估组件。
+- [Eugene Yan，《构建大语言模型系统的模式（Patterns for Building LLM-based Systems）》](https://eugeneyan.com/writing/llm-patterns/)：主要科技公司生产部署中的架构模式（护栏、RAG、缓存、路由）。
+- [vLLM 文档](https://docs.vllm.ai/)：基于 PagedAttention 的服务，本课 FastAPI 综合项目下的默认自托管推理层。
+- [Hugging Face TGI](https://huggingface.co/docs/text-generation-inference/index)：Text Generation Inference，具备连续批处理、Flash Attention、Medusa 推测解码的 Rust 服务器，是 HF 原生的 vLLM 替代方案。
+- [NVIDIA TensorRT-LLM 文档](https://nvidia.github.io/TensorRT-LLM/)：NVIDIA 硬件上最高吞吐量路径，为企业部署提供量化、进行中批处理和 FP8 内核。
+- [Hamel Husain：优化延迟，TGI、vLLM、CTranslate2 与 mlc 对比](https://hamel.dev/notes/llm/inference/03_inference.html)：主要服务框架吞吐量与延迟的实测比较。

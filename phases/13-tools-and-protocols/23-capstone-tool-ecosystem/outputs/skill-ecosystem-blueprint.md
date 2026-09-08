@@ -1,33 +1,33 @@
 ---
 name: ecosystem-blueprint
-description: Produce a full Phase 13 ecosystem architecture given a product need; name primitives, security posture, telemetry, and packaging.
+description: 根据产品需求生成完整 Phase 13 生态系统架构，列出原语、安全设计、遥测和打包。
 version: "1.0.0"
 phase: "13"
 lesson: "23"
 tags: [mcp, capstone, ecosystem, architecture, a2a, otel]
 ---
 
-Given a product need (research, summarization, automation, any agent-driven workflow), produce the full architecture.
+给定产品需求，如研究、摘要、自动化或任何智能体驱动工作流，生成完整架构。
 
-Produce:
+生成内容（Produce）：
 
-1. MCP surface. Define `server/discover`, the per-request protocol metadata, tools, resources, prompts, and cache policy. Name any `ui://` Apps.
-2. Extensions. If work is asynchronous, declare `io.modelcontextprotocol/tasks` and design `tasks/get`, `tasks/update`, and `tasks/cancel`. Keep the initial handle at `resultType: task`, make polling results `resultType: complete`, and do not use `tasks/result` or `tasks/list`.
-3. Security posture. OAuth 2.1 scope set, gateway RBAC matrix, pinned hash manifest, Rule of Two audit.
-4. A2A collaboration. Identify any sub-agent calls. Define their Agent Cards.
-5. Telemetry. OTel GenAI span hierarchy. Exporter and backend choice.
-6. Packaging. AGENTS.md, SKILL.md, and deployment surface (Docker Compose, K8s).
-7. Mapping to Phase 13 lessons. Which lesson each design choice traces back to.
+1. MCP 接口面。定义 `server/discover`、逐请求协议元数据、工具、资源、提示词和缓存策略。列出任何 `ui://` Apps。
+2. 扩展。异步工作声明 `io.modelcontextprotocol/tasks`，设计 `tasks/get`、`tasks/update` 和 `tasks/cancel`。初始句柄保持 `resultType: task`，轮询结果为 `resultType: complete`，不用 `tasks/result` 或 `tasks/list`。
+3. 安全设计。OAuth 2.1 作用域集合、网关 RBAC 矩阵、固定哈希清单、三取二规则审计。
+4. A2A 协作。识别所有子智能体调用，定义其智能体卡片。
+5. 遥测。OTel GenAI 跨度层级、导出器和后端选择。
+6. 打包。AGENTS.md、SKILL.md 及部署接口面，使用 Docker Compose、K8s。
+7. Phase 13 课程映射。每个设计选择追溯到哪一课。
 
-Hard rejects:
-- Any architecture that combines untrusted input, sensitive data, and consequential action in a single turn (Rule of Two).
-- Any architecture without trace propagation across MCP and A2A hops.
-- Any architecture without at least one fallback provider on the LLM layer.
-- Any current MCP design that depends on `initialize`, `Mcp-Session-Id`, `tasks/result`, or `tasks/list`.
+必须拒绝（Hard rejects）：
+- 在单轮中结合不可信输入、敏感数据和实际后果操作的架构，违反三取二规则。
+- 没有跨 MCP 和 A2A 跳转追踪传播的架构。
+- LLM 层没有至少一个回退提供方的架构。
+- 依赖 `initialize`、`Mcp-Session-Id`、`tasks/result` 或 `tasks/list` 的当前 MCP 设计。
 
-Refusal rules:
-- If the product need is better served by a direct LLM call, refuse to scaffold the full ecosystem.
-- If the team lacks the operational capacity for a gateway, recommend a managed gateway and document the trust transfer.
-- If the architecture involves payments, require a separately reviewed payment authorization protocol and explicit signoff.
+拒绝规则（Refusal rules）：
+- 产品需求用直接 LLM 调用更合适时，拒绝搭建完整生态系统。
+- 团队缺乏网关运维能力时，建议托管网关并记录信任转移。
+- 架构涉及支付时，要求单独审查的支付授权协议和明确签字批准。
 
-Output: a one-page blueprint with the primitives, security posture, A2A hops, telemetry plan, packaging, and lesson map. End with one sentence identifying the single hardest operational risk for the deployment.
+输出（Output）：一页蓝图，包含原语、安全设计、A2A 跳转、遥测计划、打包和课程映射。最后用一句话指出部署中最难的一项运维风险。

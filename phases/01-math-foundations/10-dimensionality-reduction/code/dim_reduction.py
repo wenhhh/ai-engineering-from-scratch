@@ -42,7 +42,7 @@ class PCA:
 
 def demo_synthetic():
     print("=" * 60)
-    print("PCA on synthetic 3D data")
+    print("对合成三维数据应用主成分分析（PCA）")
     print("=" * 60)
 
     np.random.seed(42)
@@ -58,20 +58,20 @@ def demo_synthetic():
     pca = PCA(n_components=2)
     X_reduced = pca.fit_transform(X)
 
-    print(f"Original shape: {X.shape}")
-    print(f"Reduced shape:  {X_reduced.shape}")
-    print(f"Explained variance ratios: {pca.explained_variance_ratio_}")
-    print(f"Total variance captured: {sum(pca.explained_variance_ratio_):.4f}")
+    print(f"原始形状（Shape）： {X.shape}")
+    print(f"降维后形状：  {X_reduced.shape}")
+    print(f"解释方差比例（Explained variance ratios）： {pca.explained_variance_ratio_}")
+    print(f"捕获的总方差（Variance）比例： {sum(pca.explained_variance_ratio_):.4f}")
 
     X_reconstructed = pca.inverse_transform(X_reduced)
     mse = np.mean((X - X_reconstructed) ** 2)
-    print(f"Reconstruction MSE: {mse:.6f}")
+    print(f"重建均方误差（Reconstruction MSE）： {mse:.6f}")
     print()
 
 
 def demo_mnist():
     print("=" * 60)
-    print("PCA on MNIST digits")
+    print("对 MNIST 手写数字应用 PCA")
     print("=" * 60)
 
     from sklearn.datasets import fetch_openml
@@ -82,11 +82,11 @@ def demo_mnist():
 
     pca_50 = PCA(n_components=50)
     X_pca50 = pca_50.fit_transform(X)
-    print(f"50 components capture {sum(pca_50.explained_variance_ratio_):.2%} of variance")
+    print(f"50 个主成分（Components）捕获 {sum(pca_50.explained_variance_ratio_):.2%} 的方差")
 
     pca_2d = PCA(n_components=2)
     X_pca2d = pca_2d.fit_transform(X)
-    print(f"2 components capture {sum(pca_2d.explained_variance_ratio_):.2%} of variance")
+    print(f"2 个主成分捕获 {sum(pca_2d.explained_variance_ratio_):.2%} 的方差")
 
     for k in [10, 50, 200]:
         pca_k = PCA(n_components=k)
@@ -102,7 +102,7 @@ def demo_mnist():
 
 def demo_sklearn_comparison(X, X_ours):
     print("=" * 60)
-    print("Comparison: our PCA vs sklearn PCA")
+    print("对比：本课 PCA 与 sklearn PCA")
     print("=" * 60)
 
     from sklearn.decomposition import PCA as SklearnPCA
@@ -113,17 +113,17 @@ def demo_sklearn_comparison(X, X_ours):
     pca_ours = PCA(n_components=2)
     pca_ours.fit(X)
 
-    print(f"Our explained variance:     {pca_ours.explained_variance_ratio_}")
-    print(f"Sklearn explained variance: {sklearn_pca.explained_variance_ratio_}")
+    print(f"本课实现的解释方差（Explained variance）：     {pca_ours.explained_variance_ratio_}")
+    print(f"sklearn 的解释方差： {sklearn_pca.explained_variance_ratio_}")
 
     diff = np.abs(np.abs(X_ours) - np.abs(X_sklearn))
-    print(f"Max absolute difference (sign-invariant): {diff.max():.10f}")
+    print(f"最大绝对差（忽略符号，Sign-invariant）： {diff.max():.10f}")
     print()
 
 
 def demo_tsne(X, y):
     print("=" * 60)
-    print("t-SNE on MNIST (5000 samples)")
+    print("对 MNIST 应用 t-SNE（5000 个样本）")
     print("=" * 60)
 
     from sklearn.manifold import TSNE
@@ -133,15 +133,15 @@ def demo_tsne(X, y):
 
     tsne = TSNE(n_components=2, perplexity=30, random_state=42)
     X_tsne = tsne.fit_transform(X_pca)
-    print(f"t-SNE output shape: {X_tsne.shape}")
-    print(f"t-SNE x range: [{X_tsne[:, 0].min():.1f}, {X_tsne[:, 0].max():.1f}]")
-    print(f"t-SNE y range: [{X_tsne[:, 1].min():.1f}, {X_tsne[:, 1].max():.1f}]")
+    print(f"t-SNE 输出形状： {X_tsne.shape}")
+    print(f"t-SNE 的 x 范围： [{X_tsne[:, 0].min():.1f}, {X_tsne[:, 0].max():.1f}]")
+    print(f"t-SNE 的 y 范围： [{X_tsne[:, 1].min():.1f}, {X_tsne[:, 1].max():.1f}]")
     print()
 
 
 def demo_umap(X, y):
     print("=" * 60)
-    print("UMAP on MNIST (5000 samples)")
+    print("对 MNIST 应用 UMAP（5000 个样本）")
     print("=" * 60)
 
     try:
@@ -152,18 +152,18 @@ def demo_umap(X, y):
 
         reducer = UMAP(n_components=2, n_neighbors=15, min_dist=0.1, random_state=42)
         X_umap = reducer.fit_transform(X_pca)
-        print(f"UMAP output shape: {X_umap.shape}")
-        print(f"UMAP x range: [{X_umap[:, 0].min():.1f}, {X_umap[:, 0].max():.1f}]")
-        print(f"UMAP y range: [{X_umap[:, 1].min():.1f}, {X_umap[:, 1].max():.1f}]")
+        print(f"UMAP 输出形状： {X_umap.shape}")
+        print(f"UMAP 的 x 范围： [{X_umap[:, 0].min():.1f}, {X_umap[:, 0].max():.1f}]")
+        print(f"UMAP 的 y 范围： [{X_umap[:, 1].min():.1f}, {X_umap[:, 1].max():.1f}]")
     except ImportError:
-        print("Install umap-learn to run this demo: pip install umap-learn")
+        print("要运行此演示，请安装 umap-learn：pip install umap-learn")
 
     print()
 
 
 def demo_pca_preprocessing(X, y):
     print("=" * 60)
-    print("PCA as preprocessing for logistic regression")
+    print("将 PCA 用作逻辑回归（Logistic regression）的预处理（Preprocessing）")
     print("=" * 60)
 
     from sklearn.decomposition import PCA as SklearnPCA
@@ -230,7 +230,7 @@ def reconstruction_error(X, X_reconstructed):
 
 def demo_kernel_pca():
     print("=" * 60)
-    print("KERNEL PCA: Concentric circles")
+    print("核主成分分析（Kernel PCA）：同心圆（Concentric circles）")
     print("=" * 60)
 
     np.random.seed(42)
@@ -253,12 +253,12 @@ def demo_kernel_pca():
     inner_range_linear = (X_linear[labels == 0].min(), X_linear[labels == 0].max())
     outer_range_linear = (X_linear[labels == 1].min(), X_linear[labels == 1].max())
 
-    print(f"\n  Data: {n_per_ring} points per ring, 2 concentric circles")
-    print("\n  Linear PCA (1 component):")
-    print(f"    Inner ring range: [{inner_range_linear[0]:.2f}, {inner_range_linear[1]:.2f}]")
-    print(f"    Outer ring range: [{outer_range_linear[0]:.2f}, {outer_range_linear[1]:.2f}]")
+    print(f"\n  数据：2 个同心圆，每个圆环 {n_per_ring} 个点")
+    print("\n  线性 PCA（1 个主成分）：")
+    print(f"    内环范围： [{inner_range_linear[0]:.2f}, {inner_range_linear[1]:.2f}]")
+    print(f"    外环范围： [{outer_range_linear[0]:.2f}, {outer_range_linear[1]:.2f}]")
     overlap = inner_range_linear[1] > outer_range_linear[0] and outer_range_linear[1] > inner_range_linear[0]
-    print(f"    Overlapping: {overlap} (linear PCA cannot separate circles)")
+    print(f"    是否重叠：{overlap}（线性 PCA 无法分离圆环）")
 
     X_kpca = kernel_pca(X_circles, n_components=2, kernel="rbf", gamma=0.5)
 
@@ -266,11 +266,11 @@ def demo_kernel_pca():
     outer_mean = X_kpca[labels == 1, 0].mean()
     separation = abs(outer_mean - inner_mean)
 
-    print("\n  Kernel PCA (RBF, gamma=0.5, 2 components):")
-    print(f"    Inner ring PC1 mean: {inner_mean:.4f}")
-    print(f"    Outer ring PC1 mean: {outer_mean:.4f}")
-    print(f"    Separation on PC1: {separation:.4f}")
-    print("    Kernel PCA separates the circles in the first component")
+    print("\n  核 PCA（径向基函数 RBF，gamma=0.5，2 个主成分）：")
+    print(f"    内环 PC1 均值： {inner_mean:.4f}")
+    print(f"    外环 PC1 均值： {outer_mean:.4f}")
+    print(f"    PC1 上的分离程度（Separation）： {separation:.4f}")
+    print("    核 PCA 在第一个主成分上分离圆环")
 
     for g in [0.1, 0.5, 1.0, 5.0]:
         X_k = kernel_pca(X_circles, n_components=2, kernel="rbf", gamma=g)
@@ -284,7 +284,7 @@ def demo_kernel_pca():
 
 def demo_reconstruction_error():
     print("=" * 60)
-    print("RECONSTRUCTION ERROR vs NUMBER OF COMPONENTS")
+    print("重建误差与主成分数量（Reconstruction Error vs Number of Components）")
     print("=" * 60)
 
     np.random.seed(42)
@@ -301,8 +301,8 @@ def demo_reconstruction_error():
     total_var_pca.fit(X)
     all_eigenvalues = total_var_pca.eigenvalues
 
-    print(f"\n  Data: {n_samples} samples, {n_features} features, {n_informative} informative")
-    print(f"\n  {'k':>4s}  {'Recon MSE':>12s}  {'Explained Var':>14s}  {'Cumulative':>11s}")
+    print(f"\n  数据：{n_samples} 个样本、{n_features} 个特征，其中 {n_informative} 个携带有效信息")
+    print(f"\n  {'k':>4s}  {'重建 MSE':>12s}  {'解释方差':>14s}  {'累计比例':>11s}")
     print(f"  {'':->4s}  {'':->12s}  {'':->14s}  {'':->11s}")
 
     cumulative = 0.0
@@ -315,9 +315,9 @@ def demo_reconstruction_error():
         ev = pca_k.explained_variance_ratio_[-1] if k > 0 else 0
         print(f"  {k:>4d}  {mse:>12.4f}  {ev:>14.6f}  {cumulative:>11.4f}")
 
-    print(f"\n  The data is effectively {n_informative}-dimensional.")
-    print(f"  After k={n_informative}, reconstruction error drops to near-noise level.")
-    print("  Additional components capture only noise variance.")
+    print(f"\n  数据的有效维度为 {n_informative}。")
+    print(f"  在 k={n_informative} 之后，重建误差降至接近噪声水平。")
+    print("  额外主成分仅捕获噪声方差。")
     print()
 
 

@@ -2,38 +2,63 @@
   "questions": [
     {
       "stage": "pre",
-      "question": "A YOLO detector with grid 13x13, 3 anchors per cell, and 20 classes produces a head output of shape (N, 13, 13, 3, 25). Why is the last dimension 25?",
-      "options": ["It is padding to the next power of 2", "25 is the number of classes in COCO", "4 box coords + 1 bias + 20 classes", "4 box coords + 1 objectness + 20 classes = 5 + C"],
+      "question": "YOLO 检测器网格为 13x13，每单元有 3 个锚框、20 个类别，检测头输出形状为 (N, 13, 13, 3, 25)。为什么最后一维是 25？",
+      "options": [
+        "为了填充到下一个 2 的幂",
+        "25 是 COCO 的类别数",
+        "4 个框坐标 + 1 个偏置 + 20 个类别",
+        "4 个框坐标 + 1 个目标存在性分数 + 20 个类别 = 5 + C"
+      ],
       "correct": 3,
-      "explanation": "Every anchor emits four box regression targets (tx, ty, tw, th), one objectness score, and C class logits. For YOLO-style detectors the per-anchor dimension is always 5 + C. On COCO with 80 classes it is 85; on PASCAL VOC with 20 it is 25."
+      "explanation": "每个锚框输出四个框回归目标 (tx, ty, tw, th)、一个目标存在性分数，以及 C 个类别逻辑值。YOLO 风格检测器的每锚框维数始终为 5 + C。COCO 有 80 类，因此为 85；PASCAL VOC 有 20 类，因此为 25。"
     },
     {
       "stage": "pre",
-      "question": "Why does YOLO predict tx, ty through a sigmoid before adding the grid cell?",
-      "options": ["Sigmoid is required by the convolution", "To prevent NaN during training", "To normalise them to [0, 1] so the centre stays inside the cell and cannot escape to a neighbouring cell's territory", "To make the box larger"],
+      "question": "为什么 YOLO 在加上网格单元坐标之前，要让预测 tx、ty 通过 sigmoid？",
+      "options": [
+        "卷积要求使用 sigmoid",
+        "为了防止训练出现 NaN",
+        "将它们归一化到 [0, 1]，使中心留在单元内部，不能进入相邻单元范围",
+        "为了让框更大"
+      ],
       "correct": 2,
-      "explanation": "sigmoid(tx) is in [0, 1], so (sigmoid(tx) + cell_x) * stride places the centre somewhere inside the cell at column cell_x. This constraint keeps each cell responsible for only the objects centred within its own area, which is the assumption that makes grid-based training stable."
+      "explanation": "sigmoid(tx) 位于 [0, 1]，因此 (sigmoid(tx) + cell_x) * stride 将中心放在第 cell_x 列单元的内部。这一约束让每个单元只负责中心位于自己区域内的目标，而该假设使基于网格的训练保持稳定。"
     },
     {
       "stage": "post",
-      "question": "Your detector predicts 15 boxes around a single object after the head. You apply NMS with iou_threshold=0.45 and get back 1 box. What did NMS do?",
-      "options": ["It averaged all 15 predictions", "It sorted the 15 boxes by score, kept the highest-scoring, and deleted every box whose IoU with it exceeded 0.45; the other 14 all overlapped the winner above the threshold so one remained", "It picked a random survivor", "It merged the boxes geometrically"],
+      "question": "检测头对单个目标预测了 15 个框。使用 iou_threshold=0.45 的 NMS 后只剩 1 个框，NMS 做了什么？",
+      "options": [
+        "对全部 15 个预测求平均",
+        "按分数排列 15 个框，保留最高分框，删除与它 IoU 超过 0.45 的框；其余 14 个都与最高分框重叠超过阈值，因此只剩一个",
+        "随机选择一个幸存框",
+        "在几何上合并这些框"
+      ],
       "correct": 1,
-      "explanation": "NMS is a greedy deduplication: sort by score, keep the top, remove everything close to it (IoU > threshold), repeat. It does not merge or average. That is why detection latency benchmarks include NMS time and why modern models like RT-DETR replace it with a learned alternative."
+      "explanation": "NMS 是贪心去重：按分数排序，保留最高分框，删除所有足够接近的框，即 IoU > 阈值，然后重复。它不合并，也不求平均。因此检测延迟基准包含 NMS 时间，而 RT-DETR 等现代模型用可学习的替代方法取代它。"
     },
     {
       "stage": "post",
-      "question": "Your model has mAP@0.5 = 0.75 but mAP@0.5:0.95 = 0.32. What is the most accurate interpretation?",
-      "options": ["The dataset has too many classes", "The model finds the right objects but its boxes are not tightly localised — fine at IoU 0.5, fail at IoU 0.7+", "The model is broken; mAP@0.5 must equal mAP@0.5:0.95", "The inference threshold is too high"],
+      "question": "模型 mAP@0.5 = 0.75，但 mAP@0.5:0.95 = 0.32。最准确的解释是什么？",
+      "options": [
+        "数据集类别太多",
+        "模型找到了正确目标，但框定位不够贴合，在 IoU 0.5 时合格，在 IoU 0.7 以上失败",
+        "模型坏了，mAP@0.5 必须等于 mAP@0.5:0.95",
+        "推理阈值过高"
+      ],
       "correct": 1,
-      "explanation": "mAP@0.5 is lenient about localisation; mAP@0.5:0.95 averages over strict thresholds up to 0.95. A big gap between the two means the boxes are in roughly the right place but not tight. Typical fixes: CIoU/DIoU box loss, higher-resolution features, anchor sets better tuned to the dataset."
+      "explanation": "mAP@0.5 对定位要求宽松，mAP@0.5:0.95 则在最高达到 0.95 的严格阈值上求平均。两者差距大，意味着框大致在正确位置，但不够贴合。常见修复包括 CIoU/DIoU 框损失、更高分辨率特征，以及更贴合数据集的锚框集合。"
     },
     {
       "stage": "post",
-      "question": "YOLO loss weights lambda_coord=5.0 and lambda_noobj=0.5 roughly mirror the original paper. What do these ratios encode?",
-      "options": ["The fact that most cells have no object, so the no-object cells must be downweighted or they would dominate the total loss; and the fact that box regression is a smaller-scale loss than cross-entropy, so it needs upweighting to produce comparable gradients", "GPU memory trade-offs", "The number of anchors per cell", "Random choices the authors never justified"],
+      "question": "YOLO 损失权重 lambda_coord=5.0、lambda_noobj=0.5 大致对应原始论文。这些比例体现什么？",
+      "options": [
+        "多数单元无目标，需要降低无目标单元权重，否则它们会主导总损失；框回归损失的数值尺度小于交叉熵，因此需要提高权重以产生可比梯度",
+        "GPU 内存取舍",
+        "每个单元的锚框数量",
+        "作者从未解释的随机选择"
+      ],
       "correct": 0,
-      "explanation": "In a 13x13 grid there are 169 cells, usually with one to five objects. The 160+ empty cells all contribute objectness loss; without a small lambda_noobj they would overwhelm the positive signal. Conversely, MSE box loss is numerically small next to cross-entropy, so lambda_coord > 1 keeps its gradients comparable. Both ratios are about balancing per-component gradient magnitudes."
+      "explanation": "13x13 网格有 169 个单元，通常只有一到五个目标。160 多个空单元都会贡献目标存在性损失；若 lambda_noobj 不够小，它们就会淹没正例信号。相反，MSE 框损失的数值比交叉熵小，因此用 lambda_coord > 1 保持梯度可比。两个比例都用于平衡各部分梯度量级。"
     }
   ]
 }

@@ -10,7 +10,7 @@ def tokenize(text):
 class BM25:
     def __init__(self, corpus, k1=1.5, b=0.75):
         if not corpus:
-            raise ValueError("BM25 corpus must not be empty")
+            raise ValueError("BM25 语料库（Corpus）不得为空")
         self.corpus = [tokenize(d) for d in corpus]
         self.k1 = k1
         self.b = b
@@ -88,28 +88,28 @@ def main():
     bm25 = BM25(corpus)
 
     query = "what happens if someone lies to get money"
-    print(f"query: {query}\n")
+    print(f"查询（Query，英文查询与检索语料保留）: {query}\n")
 
     sparse = bm25.rank(query, top_k=5)
-    print("BM25 (sparse):")
+    print("BM25（稀疏检索，Sparse）:")
     for score, idx in sparse:
         print(f"  {score:.3f}  {corpus[idx]}")
     print()
 
     dense = fake_dense_rank(query, corpus, top_k=5)
-    print("fake-dense (shape demonstration):")
+    print("模拟稠密检索（Fake-dense，仅演示流程形态）:")
     for score, idx in dense:
         print(f"  {score:.3f}  {corpus[idx]}")
     print()
 
     fused = reciprocal_rank_fusion([sparse, dense])[:5]
-    print("RRF fused:")
+    print("倒数排名融合（RRF）结果:")
     for score, idx in fused:
         print(f"  {score:.4f}  {corpus[idx]}")
 
     print()
-    print("note: this code uses a toy 'fake-dense' ranker for teaching.")
-    print("real dense retrieval needs a sentence-transformer encoder; see docs/en.md.")
+    print("注意：此代码使用用于教学的小型“模拟稠密”排序器（Fake-dense ranker）。")
+    print("实际稠密检索（Dense retrieval）需要 sentence-transformer 编码器；见 docs/en.md。")
 
 
 if __name__ == "__main__":

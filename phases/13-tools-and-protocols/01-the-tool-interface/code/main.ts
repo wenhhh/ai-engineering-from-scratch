@@ -1,15 +1,15 @@
-// Phase 13 Lesson 01 — the tool interface, in TypeScript.
+// 阶段 13 第 01 课：TypeScript 实现的工具接口（Tool interface）。
 //
-// Mirrors code/main.py: describe -> decide -> execute -> observe.
-// The "decide" step is faked with a keyword router so the loop runs offline;
-// replace with any real provider client and the shape stays the same.
+// 对应 code/main.py：描述 -> 决策 -> 执行 -> 观察。
+// 通过关键词路由器模拟“决策”步骤，使循环能够离线运行；
+// 替换为任意真实服务商客户端后，结构保持一致。
 //
-// Spec references:
-//   OpenAI tool calling     https://platform.openai.com/docs/guides/function-calling
-//   Anthropic tool use      https://docs.anthropic.com/en/docs/build-with-claude/tool-use
-//   MCP tool primitive      https://modelcontextprotocol.io/specification/2026-07-28
+// 规范参考：
+//   OpenAI 工具调用（Tool calling）     https://platform.openai.com/docs/guides/function-calling
+//   Anthropic 工具使用（Tool use）      https://docs.anthropic.com/en/docs/build-with-claude/tool-use
+//   MCP 工具原语（Tool primitive）      https://modelcontextprotocol.io/specification/2026-07-28
 //
-// Run: npx tsx code/main.ts
+// 运行： npx tsx code/main.ts
 
 import { randomUUID } from "node:crypto";
 
@@ -74,8 +74,8 @@ const REGISTRY: Tool[] = [
   {
     name: "add",
     description:
-      "Use when the user asks for the sum of two numbers. " +
-      "Do not use for subtraction, product, or symbolic algebra.",
+      "用户要求计算两个数之和时使用。" +
+      "不要用于减法、乘法或符号代数（Symbolic algebra）。",
     inputSchema: {
       type: "object",
       properties: {
@@ -89,8 +89,8 @@ const REGISTRY: Tool[] = [
   {
     name: "get_time",
     description:
-      "Use when the user asks what time it is. " +
-      "Do not use for historical dates or future scheduling.",
+      "用户询问当前时间时使用。" +
+      "不要用于查询历史日期或安排未来日程。",
     inputSchema: {
       type: "object",
       properties: {
@@ -103,8 +103,8 @@ const REGISTRY: Tool[] = [
   {
     name: "get_weather",
     description:
-      "Use when the user asks about current conditions in a named city. " +
-      "Do not use for forecasts or historical weather data.",
+      "用户询问指定城市的当前天气时使用。" +
+      "不要用于天气预报或历史天气数据。",
     inputSchema: {
       type: "object",
       properties: {
@@ -123,11 +123,11 @@ function validate(schema: JsonSchema, value: unknown): string[] {
 
   if (t === "object") {
     if (typeof value !== "object" || value === null || Array.isArray(value)) {
-      return [`expected object, got ${describeType(value)}`];
+      return [`预期为对象（Object），实际为 ${describeType(value)}`];
     }
     const obj = value as Record<string, unknown>;
     for (const field of schema.required ?? []) {
-      if (!(field in obj)) errors.push(`missing required field '${field}'`);
+      if (!(field in obj)) errors.push(`缺少必填字段 '${field}'`);
     }
     for (const [key, sub] of Object.entries(schema.properties ?? {})) {
       if (key in obj) errors.push(...validate(sub, obj[key]));
@@ -136,13 +136,13 @@ function validate(schema: JsonSchema, value: unknown): string[] {
   }
 
   if (t === "number" && typeof value !== "number") {
-    errors.push(`expected number, got ${describeType(value)}`);
+    errors.push(`预期为数值（Number），实际为 ${describeType(value)}`);
   }
   if (t === "string" && typeof value !== "string") {
-    errors.push(`expected string, got ${describeType(value)}`);
+    errors.push(`预期为字符串（String），实际为 ${describeType(value)}`);
   }
   if (schema.enum && !schema.enum.includes(value as never)) {
-    errors.push(`value ${JSON.stringify(value)} not in enum ${JSON.stringify(schema.enum)}`);
+    errors.push(`值 ${JSON.stringify(value)} 不在枚举（Enum）中 ${JSON.stringify(schema.enum)}`);
   }
   return errors;
 }
@@ -157,12 +157,12 @@ function newCallId(): string {
   return `call_${randomUUID().replace(/-/g, "").slice(0, 8)}`;
 }
 
-// Stand-in for the model. Routes by keyword so the loop runs offline.
-// Production substitute: replace with a provider call returning the same shape.
+// 模型的替身。根据关键词路由，使循环能够离线运行。
+// 生产环境替代方式：换成返回相同结构的服务商调用。
 function fakeDecide(userMsg: string, history: HistoryEntry[]): Decision {
   const last = history[history.length - 1];
   if (last && last.role === "tool") {
-    return { content: `Final answer built from tool output: ${last.content}` };
+    return { content: `根据工具输出生成的最终回答：${last.content}` };
   }
   const msg = userMsg.toLowerCase();
 
@@ -199,12 +199,12 @@ function fakeDecide(userMsg: string, history: HistoryEntry[]): Decision {
     };
   }
 
-  return { content: "I cannot route that query to any registered tool." };
+  return { content: "无法将该查询路由至任何已注册工具。" };
 }
 
 function runLoop(userMsg: string): void {
   console.log("=".repeat(72));
-  console.log(`USER : ${userMsg}`);
+  console.log(`用户： ${userMsg}`);
   console.log("-".repeat(72));
 
   const toolsByName = new Map(REGISTRY.map((t) => [t.name, t]));
@@ -214,34 +214,34 @@ function runLoop(userMsg: string): void {
     const decision = fakeDecide(userMsg, history);
 
     if ("content" in decision) {
-      console.log(`TURN ${turn} DECIDE : final answer`);
-      console.log(`MODEL : ${decision.content}`);
+      console.log(`第 ${turn} 轮 决策（Decide）：最终回答`);
+      console.log(`模型： ${decision.content}`);
       return;
     }
 
     for (const call of decision.toolCalls) {
       const tool = toolsByName.get(call.name);
-      console.log(`TURN ${turn} DECIDE : call ${call.name} id=${call.id}`);
-      console.log(`           args = ${JSON.stringify(call.arguments)}`);
+      console.log(`第 ${turn} 轮 决策（Decide）：调用 ${call.name} id=${call.id}`);
+      console.log(`           参数 = ${JSON.stringify(call.arguments)}`);
 
       if (!tool) {
-        console.log(`           ERROR : unknown tool ${call.name}`);
+        console.log(`           错误：未知工具 ${call.name}`);
         return;
       }
       const errs = validate(tool.inputSchema, call.arguments);
       if (errs.length > 0) {
-        console.log(`           VALIDATION ERRORS : ${JSON.stringify(errs)}`);
+        console.log(`           验证错误：${JSON.stringify(errs)}`);
         return;
       }
       if (tool.consequential) {
-        console.log("           GATE : tool is consequential, would confirm");
+        console.log("           门禁（Gate）：该工具会产生实际影响，需要确认");
       }
 
       const start = performance.now();
       const result = tool.executor(call.arguments);
       const ms = performance.now() - start;
       console.log(
-        `TURN ${turn} EXECUTE: ${tool.name} -> ${JSON.stringify(result)} [${ms.toFixed(2)} ms]`,
+        `第 ${turn} 轮 执行（Execute）： ${tool.name} -> ${JSON.stringify(result)} [${ms.toFixed(2)} ms]`,
       );
       history.push({
         role: "tool",
@@ -250,16 +250,16 @@ function runLoop(userMsg: string): void {
         content: JSON.stringify(result),
       });
     }
-    console.log(`TURN ${turn} OBSERVE: history length = ${history.length}`);
+    console.log(`第 ${turn} 轮 观察（Observe）：历史记录长度 = ${history.length}`);
   }
-  console.log("LOOP TERMINATED : hit MAX_TURNS circuit breaker");
+  console.log("循环已终止：触发 MAX_TURNS 熔断器（Circuit breaker）");
 }
 
 function describeRegistry(): void {
-  console.log("TOOL REGISTRY");
+  console.log("工具注册表（Tool registry）");
   console.log("-".repeat(72));
   for (const t of REGISTRY) {
-    const kind = t.consequential ? "consequential" : "pure";
+    const kind = t.consequential ? "有实际影响（Consequential）" : "纯函数（Pure）";
     console.log(`  ${t.name.padEnd(14)} [${kind}] - ${t.description}`);
   }
   console.log();
@@ -267,7 +267,7 @@ function describeRegistry(): void {
 
 function main(): void {
   console.log("=".repeat(72));
-  console.log("PHASE 13 LESSON 01 - THE TOOL INTERFACE (TypeScript port)");
+  console.log("阶段 13 第 01 课：工具接口（The Tool Interface） （TypeScript 移植版）");
   console.log("=".repeat(72));
   describeRegistry();
   const queries = [

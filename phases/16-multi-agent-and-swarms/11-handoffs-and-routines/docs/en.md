@@ -1,27 +1,27 @@
-# Handoffs and Routines — Stateless Orchestration
+# 交接与例程：无状态编排（Handoffs and Routines — Stateless Orchestration）
 
-> OpenAI's Swarm (October 2024) distilled multi-agent orchestration to two primitives: **routines** (instructions + tools as a system prompt) and **handoffs** (a tool that returns another Agent). No state machine, no branching DSL — the LLM routes by calling the right handoff tool. The OpenAI Agents SDK (March 2025) is the production successor. Swarm itself remains the cleanest conceptual reference — its entire source fits in a few hundred lines. The pattern is viral because the API surface is roughly "agent = prompt + tools; handoff = function returning agent." Limitation: stateless, so memory is the caller's problem.
+> OpenAI Swarm（2024 年 10 月）将多智能体编排提炼为两种原语：**例程（Routine）**，即作为系统提示词的指令 + 工具；**交接（Handoff）**，即返回另一个 Agent 的工具。没有状态机或分支领域特定语言（DSL），LLM 调用正确交接工具来路由。OpenAI Agents SDK（2025 年 3 月）是生产继任者。Swarm 本身仍是最清晰的概念参考，全部源码仅几百行。模式广泛流行，因为接口大致就是“智能体 = 提示词 + 工具；交接 = 返回智能体的函数”。局限是无状态，因此记忆由调用者负责。
 
 **Type:** Learn + Build
 **Languages:** Python (stdlib)
-**Prerequisites:** Phase 16 · 04 (Primitive Model)
-**Time:** ~60 minutes
+**Prerequisites:** Phase 16 · 04 原语模型（Primitive Model）
+**Time:** ~60 分钟
 
-## Problem
+## 问题（Problem）
 
-Every multi-agent framework wants you to learn its DSL: LangGraph nodes and edges, CrewAI crews and tasks, AutoGen GroupChat and managers. The DSLs are real abstractions, but they make the thing feel heavier than it needs to be.
+每个多智能体框架都要求学习其 DSL：LangGraph 节点和边、CrewAI 团队和任务、AutoGen GroupChat 和管理者。DSL 是真实抽象，但让事情显得比实际需要更沉重。
 
-Swarm pushes in the opposite direction: use the tool-calling capability the model already has. Handoffs become tool calls. The orchestrator is whichever agent currently holds the conversation. The state machine is implicit in the agents' system prompts.
+Swarm 反其道而行，使用模型已有的工具调用能力。交接成为工具调用，当前持有对话的智能体就是编排者，状态机隐含在智能体系统提示词中。
 
-## Concept
+## 概念（Concept）
 
-### Two primitives
+### 两种原语（Two primitives）
 
-**Routine.** A system prompt that defines an agent's role and available tools. Think of it like a scoped set of instructions: "you are a triage agent; if the user asks about refunds, hand off to the refund agent."
+**例程（Routine）。** 定义智能体角色和可用工具的系统提示词，可视为一组限定范围的指令：“你是分流智能体；若用户询问退款，交接给退款智能体。”
 
-**Handoff.** A tool the agent can call that returns a new Agent object. The Swarm runtime detects the Agent return value and switches the active agent for the next turn.
+**交接（Handoff）。** 智能体可调用、返回新 Agent 对象的工具。Swarm 运行时检测 Agent 返回值，将下一轮的活动智能体切换为它。
 
-That is the entire abstraction.
+这就是全部抽象。
 
 ```
 def transfer_to_refunds():
@@ -34,106 +34,106 @@ triage_agent = Agent(
 )
 ```
 
-The triage agent's system prompt makes it choose the right handoff based on the user message. The LLM's tool-calling does the routing.
+分流智能体系统提示词让它根据用户消息选择正确交接。LLM 工具调用负责路由。
 
-### Why it is viral
+### 为何流行（Why it is viral）
 
-- **Small API.** Two concepts to learn.
-- **Uses what the model already does.** Tool calling is already production-grade across providers.
-- **No state-machine burden.** You do not describe the graph; the agents' prompts describe who they hand off to.
+- **小型 API。** 只需学习两个概念。
+- **复用模型已有能力。** 各服务商的工具调用已经达到生产级。
+- **没有状态机负担。** 不必描述图；智能体提示词描述交接给谁。
 
-### The stateless trade
+### 无状态权衡（The stateless trade）
 
-Swarm is explicitly stateless between runs. The framework keeps a message history during a run, but it does not persist anything. Memory, continuity, long-running tasks — all the caller's problem.
+Swarm 明确在运行之间无状态。框架运行中保存消息历史，但不持久化任何内容。记忆、连续性、长任务都由调用者负责。
 
-In production (OpenAI Agents SDK, March 2025) this was one of the main things that changed: the SDK adds built-in session management, guardrails, and tracing while keeping the handoff primitive.
+生产继任者 OpenAI Agents SDK（2025 年 3 月）的主要变化之一就是这点：保留交接原语，同时增加内置会话管理、防护机制和追踪。
 
-### When Swarm/handoffs fit
+### Swarm/交接何时适合（When Swarm/handoffs fit）
 
-- **Triage patterns.** Front-line agent routes user to a specialist.
-- **Skill-based handoffs.** "If the task needs code, call the coder; if it needs research, call the researcher."
-- **Short, bounded conversations.** Customer support, FAQ-to-ticket, simple workflows.
+- **分流模式（Triage patterns）。** 一线智能体把用户路由给专职智能体。
+- **基于技能的交接。** “任务需要代码就调用编码者，需要研究就调用研究员。”
+- **短而有界的对话。** 客服、常见问题到工单、简单工作流。
 
-### When Swarm struggles
+### Swarm 的困难场景（When Swarm struggles）
 
-- **Long sessions with shared memory.** Handoffs reset the conversation state to the new agent's prompt plus history. No persistent state across agents without caller-managed memory.
-- **Parallel execution.** Handoff is one-at-a-time — the active agent switches. Parallelism requires the caller orchestrating multiple Swarm runs.
-- **Audit and replay.** Stateless runs are hard to replay exactly; the LLM's handoff choice is not deterministic.
+- **有共享记忆的长会话。** 交接将对话状态重设为新智能体提示词加历史。没有调用者管理的记忆，就没有跨智能体持久状态。
+- **并行执行。** 交接每次只切换一个活动智能体。并行需要调用者编排多次 Swarm 运行。
+- **审计与重放。** 无状态运行难以精确重放；LLM 的交接选择非确定性。
 
-### OpenAI Agents SDK (March 2025)
+### OpenAI Agents SDK（2025 年 3 月 / March 2025）
 
-The production successor adds:
+生产继任者增加：
 
-- **Session state.** Persistent thread across runs.
-- **Guardrails.** Input/output validation hooks.
-- **Tracing.** Every tool call and handoff is logged.
-- **Handoff filters.** Control what context transfers on handoff.
+- **会话状态（Session state）。** 跨运行持久对话线程。
+- **防护机制（Guardrails）。** 输入输出验证钩子。
+- **追踪（Tracing）。** 记录每次工具调用和交接。
+- **交接过滤器（Handoff filters）。** 控制交接转移哪些上下文。
 
-The handoff primitive survives; production ergonomics get added around it.
+交接原语得以保留，周围增加了生产易用性功能。
 
-### Swarm vs GroupChat
+### Swarm 与 GroupChat（Swarm vs GroupChat）
 
-Both use LLM-driven routing, but they differ on **who picks next**:
+两者都用 LLM 驱动路由，但**谁选下一位**不同：
 
-- GroupChat: a selector (function or LLM) picks the next speaker from outside.
-- Swarm: the current agent picks its successor by calling a handoff tool.
+- GroupChat：外部选择器（函数或 LLM）选择下一发言者。
+- Swarm：当前智能体通过交接工具选择继任者。
 
-Swarm is "agent decides what's next"; GroupChat is "manager decides what's next." Swarm's decision lives in the active agent's tool call; GroupChat's lives in the `GroupChatManager`.
+Swarm 是“智能体决定下一步”，GroupChat 是“管理者决定下一步”。Swarm 决策位于活动智能体的工具调用，GroupChat 决策位于 `GroupChatManager`。
 
 ```figure
 sw-handoff-routing
 ```
 
-## Build It
+## 动手实现（Build It）
 
-`code/main.py` implements Swarm from scratch: an Agent dataclass, a handoff mechanism (tool returns Agent), and a run loop that detects agent switches.
+`code/main.py` 从零实现 Swarm：Agent 数据类、交接机制（工具返回 Agent）、检测智能体切换的运行循环。
 
-Demo: a triage agent routes to refund, sales, or support specialists. Each specialist has its own tools. The run loop prints each handoff.
+演示：分流智能体路由给退款、销售或支持专职智能体。各自拥有工具，运行循环打印每次交接。
 
-Run:
+运行：
 
 ```
 python3 code/main.py
 ```
 
-## Use It
+## 实际应用（Use It）
 
-`outputs/skill-handoff-designer.md` designs a handoff topology for a given task: which agents exist, which handoffs they can call, what context transfers.
+`outputs/skill-handoff-designer.md` 为给定任务设计交接拓扑：有哪些智能体、各可调用哪些交接、转移哪些上下文。
 
-## Ship It
+## 交付成果（Ship It）
 
-Checklist:
+检查清单：
 
-- **Handoff logging.** Every handoff writes a trace event with from-agent, to-agent, context snapshot.
-- **Context transfer rules.** Decide what moves on handoff: full history (expensive), last N messages, or a summary.
-- **Guardrail on handoff.** A handoff to a specialist with different tool permissions must be authenticated — otherwise prompt injection can force unwanted handoffs.
-- **Loop detection.** Two agents handing back and forth is a common failure; detect with a simple last-K ring check.
-- **Fallback agent.** If a handoff target does not exist, fall back to a safe default.
+- **交接日志。** 每次交接写入包含来源智能体、目标智能体、上下文快照的追踪事件。
+- **上下文转移规则。** 决定转移完整历史（昂贵）、最近 N 条消息，还是摘要。
+- **交接防护机制。** 向不同工具权限的专职智能体交接必须认证，否则提示词注入可强制触发非预期交接。
+- **循环检测。** 两个智能体来回交接是常见故障；用简单的最近 K 次环检查检测。
+- **兜底智能体。** 目标不存在时，回退到安全默认智能体。
 
-## Exercises
+## 练习（Exercises）
 
-1. Run `code/main.py`, triage to the refund agent. Confirm the second turn's active agent is refund.
-2. Add a loop-detection rule: if the same two agents have handed off 3 times in a row, force an exit. Design the fallback.
-3. Read the OpenAI Agents SDK docs on handoff filters. Implement a "summarize-on-handoff" version: the outgoing agent compresses context to a bullet summary before the incoming agent takes over.
-4. Compare the Swarm handoff to a GroupChatManager selector. Which pattern makes prompt injection worse, and why?
-5. Read the Swarm cookbook (https://developers.openai.com/cookbook/examples/orchestrating_agents). Identify one explicit design decision Swarm makes that OpenAI Agents SDK changed or kept.
+1. 运行 `code/main.py`，分流到退款智能体，确认第二轮活动智能体是退款智能体。
+2. 增加循环检测规则：同两个智能体连续交接 3 次就强制退出，设计兜底行为。
+3. 阅读 OpenAI Agents SDK 交接过滤器文档。实现“交接时摘要”：移交方先把上下文压缩为要点摘要，再让接收方接管。
+4. 比较 Swarm 交接与 GroupChatManager 选择器。哪种模式使提示词注入更严重，为什么？
+5. 阅读 Swarm 示例指南（https://developers.openai.com/cookbook/examples/orchestrating_agents），指出 OpenAI Agents SDK 改变或保留的一项明确 Swarm 设计决策。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语 | 常见说法 | 实际含义 |
 |------|----------------|------------------------|
-| Routine | "The agent prompt" | System prompt + tool list. Defines role and available handoffs. |
-| Handoff | "Transfer to another agent" | A tool the active agent can call that returns a new Agent. The runtime switches active agent. |
-| Stateless | "No memory between runs" | Swarm does not persist anything; memory is the caller's responsibility. |
-| Active agent | "Who's speaking now" | The agent currently holding the conversation. Handoff changes this. |
-| Context transfer | "What moves on handoff" | Policy for what history the incoming agent sees: full, last N, or summarized. |
-| Handoff loop | "Agents ping-pong" | Failure mode where two agents keep handing back to each other. |
-| OpenAI Agents SDK | "Production Swarm" | March 2025 successor; adds sessions, guardrails, tracing on top of the handoff primitive. |
-| Handoff filter | "Gate on transfer" | SDK feature to inspect and modify context at the handoff boundary. |
+| 例程（Routine） | “智能体提示词” | 系统提示词 + 工具列表，定义角色和可用交接。 |
+| 交接（Handoff） | “转给另一个智能体” | 活动智能体可调用、返回新 Agent 的工具，运行时切换活动智能体。 |
+| 无状态（Stateless） | “运行间没有记忆” | Swarm 不持久化任何内容，记忆由调用者负责。 |
+| 活动智能体（Active agent） | “现在谁在说” | 当前持有对话的智能体，交接改变它。 |
+| 上下文转移（Context transfer） | “交接带走什么” | 接收智能体可见历史的策略：完整、最近 N 条或摘要。 |
+| 交接循环（Handoff loop） | “智能体来回推” | 两个智能体不断交回彼此的故障模式。 |
+| OpenAI Agents SDK | “生产级 Swarm” | 2025 年 3 月继任者，在交接原语之上增加会话、防护、追踪。 |
+| 交接过滤器（Handoff filter） | “转移关卡” | SDK 在交接边界检查和修改上下文的功能。 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [OpenAI cookbook — Orchestrating Agents: Routines and Handoffs](https://developers.openai.com/cookbook/examples/orchestrating_agents) — the reference articulation
-- [OpenAI Swarm repo](https://github.com/openai/swarm) — original implementation, kept as conceptual reference
-- [OpenAI Agents SDK docs](https://openai.github.io/openai-agents-python/) — production successor with sessions and tracing
-- [Anthropic handoff-in-Claude notes](https://docs.anthropic.com/en/docs/claude-code) — how Claude Code subagents use a handoff-like pattern via `Task`
+- [OpenAI 示例指南：编排智能体，例程与交接（Orchestrating Agents: Routines and Handoffs）](https://developers.openai.com/cookbook/examples/orchestrating_agents)：参考阐述
+- [OpenAI Swarm 仓库（repo）](https://github.com/openai/swarm)：保留作概念参考的原始实现
+- [OpenAI Agents SDK 文档（docs）](https://openai.github.io/openai-agents-python/)：提供会话与追踪的生产继任者
+- [Anthropic Claude 交接说明（handoff-in-Claude notes）](https://docs.anthropic.com/en/docs/claude-code)：Claude Code 子智能体如何通过 `Task` 使用类似交接的模式

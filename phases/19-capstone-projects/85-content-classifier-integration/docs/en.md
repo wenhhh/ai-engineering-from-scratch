@@ -1,83 +1,83 @@
-# Capstone 85 — Content Classifier Integration
+# 综合实践 85：内容分类器集成（Capstone 85 — Content Classifier Integration）
 
-> Classifiers on the output side answer a different question than rules on the input side. Both need a policy router.
+> 输出侧分类器回答的问题不同于输入侧规则。两者都需要策略路由器。
 
 **Type:** Build
 **Languages:** Python
-**Prerequisites:** Phase 18 safety lessons, Phase 19 Track A lessons 25-29
-**Time:** ~90 min
+**Prerequisites:** 阶段 18 安全课程，阶段 19 路线 A 第 25–29 课
+**Time:** ~90 分钟
 
-## Problem
+## 问题（Problem）
 
-Inputs are not the only attack surface. A model that passed every input check can still produce an output that leaks PII, repeats slurs from its training distribution, or echoes the system prompt back to the user in response to a clever question. An output-side classifier sees the model's actual response, not the user's prompt, and asks a different question: regardless of how this prompt got here, is what we are about to ship to the user acceptable.
+输入不是唯一攻击面。通过全部输入检查的模型仍可能输出泄漏个人身份信息（PII）的内容、重复训练分布中的侮辱语，或在巧妙提问下将系统提示词回显给用户。输出侧分类器看到的是实际响应，而非用户提示词；它问的是：不论提示词如何到达这里，即将交付的内容是否可接受？
 
-Teams often skip output classification because input classification feels sufficient and because output classifiers introduce extra latency. Both arguments lose. Skipping output classification gives an attacker a one-shot bypass: any new attack family that the input pipeline does not cover will land on the user. Latency is real but addressable: classifiers can run in parallel with token streaming, with the gate buffering the final chunk and applying the classifier verdict before flush.
+团队常跳过输出分类，因为觉得输入分类足够，或输出分类增加延迟。两种理由都站不住。跳过输出分类会给攻击者一次绕过机会：输入流水线未覆盖的新攻击家族都会直接抵达用户。延迟真实存在但可解决：分类器与词元流式输出并行，门禁缓冲最后块，在刷新输出前应用分类判定。
 
-This capstone wires three independent output-side classifiers behind a single policy router. Toxicity (rule-based slur and harassment detection). PII (regex for emails, phone numbers, SSN-shaped strings, credit-card-shaped strings, IP addresses). Instruction leakage (a heuristic for system prompt echo, comparing the output to a known system prompt by trigram overlap). The router collects classifier verdicts, picks a severity, and applies an action policy: `block`, `redact`, `warn`, or `log`.
+本综合实践将三个独立输出分类器接入同一策略路由器：毒性（规则检测侮辱和骚扰）、PII（匹配邮箱、电话、社会安全号码形状、信用卡形状、IP 地址的正则）、指令泄漏（按三元组重叠将输出与已知系统提示词比较，启发式检测回显）。路由器收集判定，选严重程度，应用动作策略：`block`、`redact`、`warn` 或 `log`。
 
-## Concept
+## 概念（Concept）
 
-Each classifier is a callable returning a `ClassifierVerdict` with `name`, `score in [0,1]`, `severity` (`none`, `low`, `medium`, `high`), and `findings` (a list of strings describing what it flagged). The router takes a list of verdicts and applies a rule table:
+各分类器返回 `ClassifierVerdict`，含 `name`、`score in [0,1]`、`severity`（`none`、`low`、`medium`、`high`），以及 `findings`（描述标记内容的字符串列表）。路由器接收判定列表，应用规则表：
 
-| Severity | Action |
+| 严重程度 | 动作 |
 |---|---|
-| high | block (drop output, return policy refusal) |
-| medium | redact (apply per-classifier redactor to the output) |
-| low | warn (log and append a soft notice to the response) |
-| none | log (record verdict in the trace, ship as-is) |
+| high | 拦截（block）：丢弃输出，返回策略拒答 |
+| medium | 脱敏（redact）：对输出应用各分类器脱敏器 |
+| low | 警告（warn）：记录并在响应后附温和提示 |
+| none | 记录（log）：将判定写入轨迹，原样交付 |
 
 ```mermaid
 flowchart TB
-  M[model output] --> T[toxicity]
-  M --> P[pii]
-  M --> I[instruction-leakage]
-  T --> R{router}
+  M[模型输出] --> T[毒性]
+  M --> P[个人身份信息]
+  M --> I[指令泄漏]
+  T --> R{路由器}
   P --> R
   I --> R
-  R -->|max severity = high| BL[block]
-  R -->|max severity = medium| RD[redact]
-  R -->|max severity = low| WN[warn]
-  R -->|max severity = none| LG[log]
+  R -->|最高严重程度 = high| BL[拦截]
+  R -->|最高严重程度 = medium| RD[脱敏]
+  R -->|最高严重程度 = low| WN[警告]
+  R -->|最高严重程度 = none| LG[记录]
 ```
 
-The router takes the maximum severity across classifiers and applies the corresponding action. Block wins. A redact + warn becomes redact. A log + warn becomes warn. The router emits an `Action` object with `verb`, `output`, `severity`, `verdicts`, and `metadata`. Downstream, the safety gate in lesson 87 logs the metadata into a trace and either ships the redacted output, ships the original with a warning, or replaces the output with a policy refusal.
+路由器取各分类器的最高严重程度并应用对应动作。拦截优先；脱敏加警告为脱敏，记录加警告为警告。路由器输出含 `verb`、`output`、`severity`、`verdicts`、`metadata` 的 `Action`。下游第 87 课门禁将元数据记入轨迹，交付脱敏输出、带警告原文，或用策略拒答替代输出。
 
-Each classifier has its own redactor. The PII classifier replaces `name@example.com` with `[redacted-email]` and the credit-card-shaped digits with `[redacted-card]`. The instruction-leakage classifier removes lines that look like the system prompt header. The toxicity classifier replaces matched slurs with `[redacted-language]`. Redaction is independent so a toxicity-and-PII output flows through both redactors.
+各分类器有自己的脱敏器。PII 将 `name@example.com` 替换为 `[redacted-email]`，信用卡形状数字替换为 `[redacted-card]`。指令泄漏分类器移除看似系统提示词头部的行。毒性分类器将匹配侮辱语替换为 `[redacted-language]`。脱敏独立进行，因此同时有毒性和 PII 的输出会经过两者。
 
-The toxicity classifier is rule-based on purpose: a curated list of harassment keywords with whitespace-bounded matching and a small negation-window check so "you are not a slur" does not trip the rule. The list is deliberately short (the lesson is about plumbing, not lexicon-building). The PII classifier uses standard regexes for the common shapes. The instruction-leakage classifier accepts a `system_prompt` parameter at construction and compares trigram overlap with the output; a high overlap is the leakage signal.
+毒性分类器有意基于规则：精选骚扰关键词列表，以空白为边界匹配，并检查小型否定窗口，使“你并不是某个侮辱词所说的人”不触发。列表刻意短，本课关注连接而非构建词库。PII 使用匹配常见形状的标准正则。指令泄漏分类器构造时接收 `system_prompt`，与输出比较三元组重叠，高重叠即泄漏信号。
 
 ```figure
 cd-output-router
 ```
 
-## Build It
+## 动手实现（Build It）
 
-`code/classifiers.py` defines all three classifiers. Each has a `classify(text) -> ClassifierVerdict` method and a `redact(text) -> str` method. `code/main.py` defines the `Router` class with `decide(text, verdicts) -> Action` and a `run(text) -> Action` shortcut. The demo wires the three classifiers behind one router and runs a small corpus of crafted outputs that exercise each severity.
+`code/classifiers.py` 定义三分类器，各有 `classify(text) -> ClassifierVerdict` 和 `redact(text) -> str` 方法。`code/main.py` 定义 `Router`，提供 `decide(text, verdicts) -> Action` 和捷径 `run(text) -> Action`。演示将三者接入一个路由器，在刻意编写的小型输出语料上检验各严重程度。
 
-## Use It
+## 实际应用（Use It）
 
-Run `python3 main.py`. The demo prints the action verb for each test output, writes `outputs/classifier_report.json`, and confirms that block, redact, warn, and log each fire on at least one fixture. Latency is artificially zero because all classifiers are rule-based; for a real model with neural classifiers, the same plumbing applies after the per-classifier latency goes up.
+运行 `python3 main.py`。演示打印各测试输出的动作动词，写 `outputs/classifier_report.json`，确认 block、redact、warn、log 各至少触发一条样例。分类器均基于规则，因此延迟在演示中人为视为零；真实模型用神经分类器时，各分类器延迟增加，但连接方式相同。
 
-## Ship It
+## 交付成果（Ship It）
 
-`outputs/skill-content-classifier-integration.md` documents the verdict and action structures so the gate in lesson 87 can consume them.
+`outputs/skill-content-classifier-integration.md` 记录判定与动作结构，供第 87 课门禁消费。
 
-## Exercises
+## 练习（Exercises）
 
-1. Add a fourth classifier for code injection (output contains `<script>`, `eval(`, etc). Decide its severity policy and integrate it.
-2. Make the router apply a per-classifier severity weight so PII counts more than toxicity. Demonstrate the change on the same fixtures.
-3. Add a confidence threshold so low-score verdicts downgrade by one severity level. Sweep the threshold and report how block rate changes.
+1. 添加代码注入第四分类器，检测输出含 `<script>`、`eval(` 等。决定严重程度策略并集成。
+2. 路由器应用逐分类器严重程度权重，使 PII 比毒性更重要，在相同样例上展示变化。
+3. 加入置信度阈值，使低分判定降低一级严重程度。扫描阈值，报告拦截率变化。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | Common usage | Precise meaning |
+| 术语 | 常见用法 | 精确定义 |
 |---|---|---|
-| output classifier | a model that detects bad outputs | a callable returning a structured verdict with severity, score, and findings, plus a redactor |
-| severity | how bad it is | one of none, low, medium, high |
-| router | a switch | a function from verdict list to action (block, redact, warn, log) |
-| redact | hide the bad parts | per-classifier replacement of matched spans with a tag like [redacted-pii] |
-| instruction leakage | the model leaks the system prompt | a heuristic comparing model output to a known system prompt by trigram overlap |
+| 输出分类器（Output classifier） | 检测坏输出的模型 | 返回严重程度、分数、发现的结构化判定，并提供脱敏器的可调用对象 |
+| 严重程度（Severity） | 有多坏 | none、low、medium、high 之一 |
+| 路由器（Router） | 开关 | 从判定列表到动作（block、redact、warn、log）的函数 |
+| 脱敏（Redact） | 隐藏坏部分 | 各分类器将匹配区间替换为 [redacted-pii] 等标签 |
+| 指令泄漏（Instruction leakage） | 模型泄漏系统提示词 | 按三元组重叠将输出与已知系统提示词比较的启发式 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-Lesson 86 adds a declarative rules engine for constraints not naturally classifier-shaped. Lesson 87 composes both with the input-side detector.
+第 86 课为不适合分类器表达的约束添加声明式规则引擎，第 87 课将两者与输入检测器组合。

@@ -1,82 +1,82 @@
-# Learning Rate Schedules and Warmup
+# 学习率调度与预热（Learning Rate Schedules and Warmup）
 
-> The learning rate is the single most important hyperparameter. Not the architecture. Not the dataset size. Not the activation function. The learning rate. If you tune nothing else, tune this.
+> 最重要的单个超参数是学习率。不是架构，不是数据集大小，也不是激活函数，就是学习率。其他都不调，也要调它。
 
 **Type:** Build
 **Languages:** Python
-**Prerequisites:** Lesson 03.06 (Optimizers), Lesson 03.08 (Weight Initialization)
-**Time:** ~90 minutes
+**Prerequisites:** 第 03.06 课（优化器，Optimizers），第 03.08 课（权重初始化，Weight Initialization）
+**Time:** ~90 分钟
 
-## Learning Objectives
+## 学习目标（Learning Objectives）
 
-- Implement constant, step decay, cosine annealing, warmup + cosine, and 1cycle learning rate schedules from scratch
-- Demonstrate the three failure modes of learning rate selection: divergence (too high), stalling (too low), and oscillation (no decay)
-- Explain why warmup is necessary for Adam-based optimizers and how it stabilizes early training
-- Compare convergence speed across all five schedules on the same task and select the appropriate one for a given training budget
+- 从零实现恒定、阶梯衰减、余弦退火、预热加余弦以及单周期（1cycle）学习率调度
+- 演示学习率选择的三种失效模式：发散（过高）、停滞（过低）以及振荡（不衰减）
+- 解释基于 Adam 的优化器为什么需要预热（Warmup），以及预热如何稳定早期训练
+- 在相同任务上比较五种调度的收敛速度，为给定训练预算选择合适方案
 
-## The Problem
+## 问题（The Problem）
 
-Set the learning rate to 0.1. Training diverges -- loss jumps to infinity in 3 steps. Set it to 0.0001. Training crawls -- after 100 epochs, the model has barely moved from random. Set it to 0.01. Training works for 50 epochs, then the loss oscillates around a minimum it can never reach because the steps are too large.
+学习率设为 0.1，训练发散，3 步内损失升至无穷大。设为 0.0001，训练缓慢爬行，100 轮后模型仍几乎停在随机状态。设为 0.01，前 50 轮训练正常，随后损失在永远无法抵达的最小值周围振荡，因为步子太大。
 
-The optimal learning rate is not a constant. It changes during training. Early on, you want large steps to cover ground quickly. Late in training, you want tiny steps to settle into a sharp minimum. The difference between a 90% accurate model and a 95% accurate model is often just the schedule.
+最优学习率不是常数，而是随训练变化。早期需要大步快速探索，后期需要小步收敛到尖锐的最小值。准确率 90% 与 95% 的模型，差别往往仅在调度。
 
-Every major model published in the last three years uses a learning rate schedule. Llama 3 used peak lr=3e-4 with 2000 warmup steps and cosine decay to 3e-5. GPT-3 used lr=6e-4 with warmup over 375 million tokens. These are not arbitrary choices. They are the result of extensive hyperparameter sweeps that cost millions of dollars.
+过去三年发表的每个主要模型都使用学习率调度。Llama 3 使用峰值 lr=3e-4、2000 步预热，再余弦衰减至 3e-5。GPT-3 使用 lr=6e-4，在前 3.75 亿词元上预热。这些选择不是随意的，而是耗资数百万美元的大规模超参数搜索结果。
 
-You need to understand schedules because the defaults will not work for your problem. When you fine-tune a pretrained model, the right schedule is different than training from scratch. When you increase batch size, the warmup period needs to change. When training breaks at step 10,000, you need to know whether it's a schedule problem or something else.
+你需要理解调度，因为默认值未必适合你的问题。微调预训练模型与从零训练需要不同调度；增大批量大小，预热时长也需变化；第 10,000 步训练失败时，你必须判断问题来自调度还是其他因素。
 
-## The Concept
+## 概念（The Concept）
 
-### Constant Learning Rate
+### 恒定学习率（Constant Learning Rate）
 
-The simplest approach. Pick a number, use it for every step.
+最简单的方法：选一个数，每一步都用它。
 
 ```
 lr(t) = lr_0
 ```
 
-Rarely optimal. It's either too high for the end of training (oscillation around the minimum) or too low for the beginning (wasted compute on tiny steps). Works fine for small models and debugging. A terrible choice for anything that trains for more than an hour.
+它很少最优：要么在训练后期过高（围绕最小值振荡），要么在早期过低（用微小步长浪费计算）。适合小模型和调试，但训练超过一小时的任务选它就很糟。
 
-### Step Decay
+### 阶梯衰减（Step Decay）
 
-The old-school approach from the ResNet era. Cut the learning rate by a factor (usually 10x) at fixed epochs.
+ResNet 时代的传统方法，在固定轮次按比例降低学习率，通常降低 10 倍。
 
 ```
 lr(t) = lr_0 * gamma^(floor(epoch / step_size))
 ```
 
-Where gamma = 0.1 and step_size = 30 means: lr drops by 10x every 30 epochs. ResNet-50 used this -- lr=0.1, drop by 10x at epochs 30, 60, and 90.
+gamma = 0.1、step_size = 30 意味着每 30 轮将 lr 降至原来的 1/10。ResNet-50 就用了它：lr=0.1，第 30、60、90 轮各降低 10 倍。
 
-The problem: the optimal decay points depend on the dataset and architecture. Move to a different problem and you need to re-tune when to drop. The transitions are abrupt -- loss can spike when the rate suddenly changes.
+问题是最优衰减时点取决于数据集和架构。换个问题就需要重新调节何时下降。切换很突然，学习率骤变可能导致损失尖峰。
 
-### Cosine Annealing
+### 余弦退火（Cosine Annealing）
 
-Smooth decay from the maximum learning rate to a minimum, following a cosine curve:
+沿余弦曲线从最大学习率平滑衰减到最小值：
 
 ```
 lr(t) = lr_min + 0.5 * (lr_max - lr_min) * (1 + cos(pi * t / T))
 ```
 
-Where t is the current step and T is the total number of steps.
+其中 t 为当前步数，T 为总步数。
 
-At t=0, the cosine term is 1, so lr = lr_max. At t=T, the cosine term is -1, so lr = lr_min. The decay is gentle at first, accelerates in the middle, and becomes gentle again near the end.
+t=0 时，余弦项为 1，因此 lr = lr_max；t=T 时，余弦项为 -1，因此 lr = lr_min。开始时衰减平缓，中间加快，临近结束时再次放缓。
 
-This is the default for most modern training runs. No hyperparameters to tune beyond lr_max and lr_min. The cosine shape matches the empirical observation that most learning happens in the middle of training -- you want reasonable step sizes during that critical period.
+这是多数现代训练任务的默认方案。除 lr_max 和 lr_min 外，没有超参数需要调节。余弦形状符合经验观察：大部分学习发生在训练中期，关键时期应保持合理步长。
 
-### Warmup: Why You Start Small
+### 预热：为什么从小步开始（Warmup: Why You Start Small）
 
-Adam and other adaptive optimizers maintain running estimates of gradient mean and variance. At step 0, these estimates are initialized to zero. The first few gradient updates are based on garbage statistics. If your learning rate is large during this period, the model takes huge, poorly-directed steps.
+Adam 和其他自适应优化器维护梯度均值与方差的移动估计。第 0 步时，这些估计初始化为零，最初几次梯度更新依据的是不可靠统计。如果此时学习率很大，模型就会迈出巨大而方向不准的步子。
 
-Warmup fixes this. Start with a tiny learning rate (often lr_max / warmup_steps or even zero) and linearly ramp up to lr_max over the first N steps. By the time you reach the full learning rate, Adam's statistics have stabilized.
+预热解决了这一点。先用很小的学习率，通常为 lr_max / warmup_steps，甚至为零，再在前 N 步线性升至 lr_max。达到完整学习率时，Adam 的统计已经稳定。
 
 ```
-lr(t) = lr_max * (t / warmup_steps)     for t < warmup_steps
+lr(t) = lr_max * (t / warmup_steps)     当 t < warmup_steps 时
 ```
 
-Typical warmup: 1-5% of total training steps. Llama 3 trained for ~1.8 trillion tokens and warmed up for 2000 steps. GPT-3 warmed up over 375 million tokens.
+典型预热时长为总训练步数的 1-5%。Llama 3 用约 1.8 万亿词元训练，预热 2000 步。GPT-3 在前 3.75 亿词元上预热。
 
-### Linear Warmup + Cosine Decay
+### 线性预热加余弦衰减（Linear Warmup + Cosine Decay）
 
-The modern default. Ramp up linearly, then decay with cosine:
+现代默认方案：先线性升高，再余弦衰减：
 
 ```
 if t < warmup_steps:
@@ -86,69 +86,69 @@ else:
     lr(t) = lr_min + 0.5 * (lr_max - lr_min) * (1 + cos(pi * progress))
 ```
 
-This is what Llama, GPT, PaLM, and most modern transformers use. The warmup prevents early instability. The cosine decay settles the model into a good minimum.
+Llama、GPT、PaLM 和多数现代 Transformer 都使用它。预热防止早期不稳定，余弦衰减使模型落在良好最小值上。
 
-### 1cycle Policy
+### 单周期策略（1cycle Policy）
 
-Leslie Smith's discovery (2018): ramp the learning rate up from a low value to a high value in the first half of training, then ramp it back down in the second half. Counterintuitive -- why would you *increase* the learning rate midway through?
+Leslie Smith 在 2018 年发现：训练前半程将学习率从低值升至高值，后半程再降下来。这很反直觉，为什么在训练中途*提高*学习率？
 
-The theory: a high learning rate acts as regularization by adding noise to the optimization trajectory. The model explores more of the loss landscape during the ramp-up phase, finding better basins. The ramp-down phase then refines within the best basin found.
+理论是：高学习率向优化轨迹加入噪声，起到正则化（Regularization）作用。升高阶段让模型探索更多损失曲面，找到更好的盆地（Basin）；降低阶段则在找到的最佳盆地中精细优化。
 
 ```
-Phase 1 (0 to T/2):    lr ramps from lr_max/25 to lr_max
-Phase 2 (T/2 to T):    lr ramps from lr_max to lr_max/10000
+阶段 1（0 到 T/2）：学习率从 lr_max/25 升至 lr_max
+阶段 2（T/2 到 T）：学习率从 lr_max 降至 lr_max/10000
 ```
 
-1cycle often trains faster than cosine annealing for a fixed compute budget. The tradeoff: you must know the total number of steps in advance.
+固定计算预算下，1cycle 往往比余弦退火训练更快。代价是必须提前知道总步数。
 
-### Schedule Shapes
+### 调度形状（Schedule Shapes）
 
 ```mermaid
 graph LR
-    subgraph "Constant"
+    subgraph "恒定（Constant）"
         C1["lr"] --- C2["lr"] --- C3["lr"]
     end
 
-    subgraph "Step Decay"
+    subgraph "阶梯衰减（Step Decay）"
         S1["0.1"] --- S2["0.1"] --- S3["0.01"] --- S4["0.001"]
     end
 
-    subgraph "Cosine Annealing"
-        CS1["lr_max"] --> CS2["gradual"] --> CS3["steep"] --> CS4["lr_min"]
+    subgraph "余弦退火（Cosine Annealing）"
+        CS1["lr_max"] --> CS2["缓慢"] --> CS3["陡峭"] --> CS4["lr_min"]
     end
 
-    subgraph "Warmup + Cosine"
-        WC1["0"] --> WC2["lr_max"] --> WC3["cosine"] --> WC4["lr_min"]
+    subgraph "预热加余弦（Warmup + Cosine）"
+        WC1["0"] --> WC2["lr_max"] --> WC3["余弦"] --> WC4["lr_min"]
     end
 ```
 
-### Decision Flowchart
+### 决策流程图（Decision Flowchart）
 
 ```mermaid
 flowchart TD
-    Start["Choosing a LR schedule"] --> Know{"Know total<br/>training steps?"}
+    Start["选择学习率调度"] --> Know{"知道训练<br/>总步数吗？"}
 
-    Know -->|"Yes"| Budget{"Compute budget?"}
-    Know -->|"No"| Constant["Use constant LR<br/>with manual decay"]
+    Know -->|"是"| Budget{"计算预算？"}
+    Know -->|"否"| Constant["使用恒定学习率<br/>配合手动衰减"]
 
-    Budget -->|"Large (days/weeks)"| WarmCos["Warmup + Cosine Decay<br/>(Llama/GPT default)"]
-    Budget -->|"Small (hours)"| OneCycle["1cycle Policy<br/>(fastest convergence)"]
-    Budget -->|"Moderate"| Cosine["Cosine Annealing<br/>(safe default)"]
+    Budget -->|"大（数天/数周）"| WarmCos["预热加余弦衰减<br/>（Llama/GPT 默认）"]
+    Budget -->|"小（数小时）"| OneCycle["单周期策略（1cycle）<br/>（收敛最快）"]
+    Budget -->|"中等"| Cosine["余弦退火<br/>（稳妥默认）"]
 
-    WarmCos --> Warmup["Warmup = 1-5% of steps"]
-    OneCycle --> FindLR["Find lr_max with LR range test"]
-    Cosine --> MinLR["Set lr_min = lr_max / 10"]
+    WarmCos --> Warmup["预热 = 步数的 1-5%"]
+    OneCycle --> FindLR["通过学习率范围测试找 lr_max"]
+    Cosine --> MinLR["设置 lr_min = lr_max / 10"]
 ```
 
-### Real Numbers from Published Models
+### 已发表模型的实际数值（Real Numbers from Published Models）
 
 ```mermaid
 graph TD
-    subgraph "Published LR Configs"
-        L3["Llama 3 (405B)<br/>Peak: 3e-4<br/>Warmup: 2000 steps<br/>Schedule: Cosine to 3e-5"]
-        G3["GPT-3 (175B)<br/>Peak: 6e-4<br/>Warmup: 375M tokens<br/>Schedule: Cosine to 0"]
-        R50["ResNet-50<br/>Peak: 0.1<br/>Warmup: none<br/>Schedule: Step decay x0.1 at 30,60,90"]
-        B["BERT (340M)<br/>Peak: 1e-4<br/>Warmup: 10K steps<br/>Schedule: Linear decay"]
+    subgraph "已发表的学习率配置"
+        L3["Llama 3 (405B)<br/>峰值：3e-4<br/>预热：2000 步<br/>调度：余弦衰减至 3e-5"]
+        G3["GPT-3 (175B)<br/>峰值：6e-4<br/>预热：375M 词元<br/>调度：余弦衰减至 0"]
+        R50["ResNet-50<br/>峰值：0.1<br/>无预热<br/>调度：第 30、60、90 轮阶梯衰减 x0.1"]
+        B["BERT (340M)<br/>峰值：1e-4<br/>预热：10K 步<br/>调度：线性衰减"]
     end
 ```
 
@@ -156,11 +156,11 @@ graph TD
 lr-schedule
 ```
 
-## Build It
+## 动手实现（Build It）
 
-### Step 1: Schedule Functions
+### 步骤 1：调度函数（Step 1: Schedule Functions）
 
-Each function takes the current step and returns the learning rate at that step.
+每个函数接收当前步数，返回该步的学习率。
 
 ```python
 import math
@@ -198,9 +198,9 @@ def one_cycle_schedule(step, lr=0.01, total_steps=1000, **kwargs):
         return lr * (1 - progress) + (lr / 10000) * progress
 ```
 
-### Step 2: Visualize All Schedules
+### 步骤 2：可视化全部调度（Step 2: Visualize All Schedules）
 
-Print a text-based plot showing how each schedule evolves over training.
+打印文本图，展示各调度如何随训练变化。
 
 ```python
 def visualize_schedule(name, schedule_fn, total_steps=500, **kwargs):
@@ -218,9 +218,9 @@ def visualize_schedule(name, schedule_fn, total_steps=500, **kwargs):
         print(f"  Step {s:4d}: lr={lr_val:.6f} {bar}")
 ```
 
-### Step 3: Training Network
+### 步骤 3：训练网络（Step 3: Training Network）
 
-A simple two-layer network on the circle dataset, same as previous lessons, but now we vary the schedule.
+使用与前几课相同的简单双层网络和圆形数据集，但现在改变调度。
 
 ```python
 import random
@@ -304,9 +304,9 @@ def train_with_schedule(schedule_fn, schedule_name, data, epochs=300, base_lr=0.
     return epoch_losses
 ```
 
-### Step 4: Compare All Schedules
+### 步骤 4：比较全部调度（Step 4: Compare All Schedules）
 
-Train the same network with each schedule and compare final loss and convergence behavior.
+使用每种调度训练相同网络，比较最终损失及收敛行为。
 
 ```python
 def compare_schedules(data):
@@ -328,9 +328,9 @@ def compare_schedules(data):
         print(f"{name:<20} {losses[0]:>12.6f} {losses[mid_idx]:>12.6f} {losses[-1]:>12.6f} {best:>12.6f}")
 ```
 
-### Step 5: LR Too High vs Too Low
+### 步骤 5：学习率过高与过低（Step 5: LR Too High vs Too Low）
 
-Demonstrate the three failure modes: too high (divergence), too low (crawling), and just right.
+演示三种情况：过高（发散）、过低（缓慢爬行）以及恰当。
 
 ```python
 def lr_sensitivity(data):
@@ -358,9 +358,9 @@ def lr_sensitivity(data):
         print(f"  {lr:>10.4f} {start:>12.6f} {end_str:>12} {status:>15}")
 ```
 
-## Use It
+## 实际应用（Use It）
 
-PyTorch provides schedulers in `torch.optim.lr_scheduler`:
+PyTorch 在 `torch.optim.lr_scheduler` 中提供调度器：
 
 ```python
 import torch
@@ -377,7 +377,7 @@ for step in range(1000):
     scheduler.step()
 ```
 
-For warmup + cosine, use a lambda scheduler or the `get_cosine_schedule_with_warmup` from HuggingFace:
+预热加余弦可以使用 lambda 调度器，或 HuggingFace 的 `get_cosine_schedule_with_warmup`：
 
 ```python
 from transformers import get_cosine_schedule_with_warmup
@@ -389,43 +389,43 @@ scheduler = get_cosine_schedule_with_warmup(
 )
 ```
 
-The HuggingFace function is what most Llama and GPT fine-tuning scripts use. When in doubt, use warmup + cosine with warmup = 3-5% of total steps. It works for almost everything.
+多数 Llama 和 GPT 微调脚本都使用这个 HuggingFace 函数。不确定时，使用预热加余弦，预热占总步数的 3-5%，它几乎适用于所有情况。
 
-## Ship It
+## 交付成果（Ship It）
 
-This lesson produces:
-- `outputs/prompt-lr-schedule-advisor.md` -- a prompt that recommends the right learning rate schedule and hyperparameters for your training setup
+本课产出：
+- `outputs/prompt-lr-schedule-advisor.md`：根据训练设置推荐合适学习率调度和超参数的提示词
 
-## Exercises
+## 练习（Exercises）
 
-1. Implement exponential decay: lr(t) = lr_0 * gamma^t where gamma = 0.999. Compare to cosine annealing on the circle dataset.
+1. 实现指数衰减（Exponential Decay）：lr(t) = lr_0 * gamma^t，其中 gamma = 0.999。在圆形数据集上与余弦退火比较。
 
-2. Implement the learning rate range test (Leslie Smith): train for a few hundred steps while exponentially increasing the LR from 1e-7 to 1. Plot loss vs LR. The optimal max LR is just before the loss starts increasing.
+2. 实现学习率范围测试（LR Range Test，Leslie Smith）：训练数百步，同时将学习率从 1e-7 指数级升至 1。绘制损失与学习率的关系。损失开始上升之前的学习率，就是最优的最大学习率。
 
-3. Train with warmup + cosine but vary the warmup length: 0%, 1%, 5%, 10%, 20% of total steps. Find the sweet spot where training is most stable.
+3. 使用预热加余弦训练，分别让预热占总步数的 0%、1%、5%、10%、20%，找出训练最稳定的合适时长。
 
-4. Implement cosine annealing with warm restarts (SGDR): reset the learning rate to lr_max every T steps and decay again. Compare to standard cosine on a longer training run.
+4. 实现带热重启的余弦退火（SGDR）：每 T 步将学习率重置为 lr_max，再次衰减。在更长的训练任务中与标准余弦比较。
 
-5. Build a "schedule surgeon" that monitors training loss and automatically switches from warmup to cosine when the loss stabilizes, and reduces lr if the loss plateaus for too long.
+5. 构建“调度调整器”，监控训练损失，在损失稳定时自动从预热切换到余弦，并在平台期持续过久时降低 lr。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语 | 常见说法 | 实际含义 |
 |------|----------------|----------------------|
-| Learning rate | "How fast the model learns" | The scalar that multiplies the gradient to determine the parameter update size |
-| Schedule | "Change the LR over time" | A function that maps training step to learning rate, designed to optimize convergence |
-| Warmup | "Start with a small LR" | Linearly ramping the LR from near-zero to the target value over the first N steps to stabilize optimizer statistics |
-| Cosine annealing | "Smooth LR decay" | Decreasing the LR following a cosine curve from lr_max to lr_min over training |
-| Step decay | "Drop LR at milestones" | Multiplying the LR by a factor (usually 0.1) at fixed epoch intervals |
-| 1cycle policy | "Up then down" | Leslie Smith's method of ramping LR up then down in a single cycle for faster convergence |
-| LR range test | "Find the best learning rate" | Training briefly while increasing LR to find the value where loss starts diverging |
-| Cosine with warm restarts | "Reset and repeat" | Periodically resetting the LR to lr_max and decaying again (SGDR) |
-| Eta min | "The floor for the LR" | The minimum learning rate that the schedule decays to |
-| Peak learning rate | "The maximum LR" | The highest LR reached during training, typically after warmup |
+| 学习率（Learning Rate） | “模型学得多快” | 乘以梯度以确定参数更新大小的标量 |
+| 调度（Schedule） | “随时间改变学习率” | 将训练步数映射到学习率、旨在优化收敛的函数 |
+| 预热（Warmup） | “从小学习率开始” | 前 N 步将学习率从接近零线性升至目标值，以稳定优化器统计 |
+| 余弦退火（Cosine Annealing） | “平滑衰减学习率” | 训练期间沿余弦曲线将学习率从 lr_max 降至 lr_min |
+| 阶梯衰减（Step Decay） | “在里程碑降低学习率” | 每隔固定轮次将学习率乘以一个因子，通常为 0.1 |
+| 单周期策略（1cycle Policy） | “先升后降” | Leslie Smith 提出的学习率单周期升降方法，用于更快收敛 |
+| 学习率范围测试（LR Range Test） | “找出最佳学习率” | 短暂训练并不断提高学习率，找出损失开始发散的值 |
+| 带热重启的余弦调度（Cosine with Warm Restarts） | “重置再重复” | 定期将学习率重置为 lr_max，然后再次衰减（SGDR） |
+| 最小学习率（Eta Min） | “学习率下限” | 调度衰减到的最小学习率 |
+| 峰值学习率（Peak Learning Rate） | “最大学习率” | 训练期间达到的最高学习率，通常在预热结束时达到 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- Loshchilov & Hutter, "SGDR: Stochastic Gradient Descent with Warm Restarts" (2017) -- introduced cosine annealing and warm restarts
-- Smith, "Super-Convergence: Very Fast Training of Neural Networks Using Large Learning Rates" (2018) -- the 1cycle policy paper
-- Touvron et al., "Llama 2: Open Foundation and Fine-Tuned Chat Models" (2023) -- documents the warmup + cosine schedule used at scale
-- Goyal et al., "Accurate, Large Minibatch SGD: Training ImageNet in 1 Hour" (2017) -- linear scaling rule and warmup for large batch training
+- Loshchilov 与 Hutter，《SGDR：带热重启的随机梯度下降（SGDR: Stochastic Gradient Descent with Warm Restarts）》（2017）：提出余弦退火和热重启
+- Smith，《超级收敛：使用大学习率快速训练神经网络（Super-Convergence: Very Fast Training of Neural Networks Using Large Learning Rates）》（2018）：1cycle 策略论文
+- Touvron 等，《Llama 2：开放基础模型与微调聊天模型（Llama 2: Open Foundation and Fine-Tuned Chat Models）》（2023）：记录大规模训练使用的预热加余弦调度
+- Goyal 等，《精确的大批量 SGD：一小时训练 ImageNet（Accurate, Large Minibatch SGD: Training ImageNet in 1 Hour）》（2017）：大批量训练中的线性缩放规则与预热

@@ -26,10 +26,10 @@ def cosine(a, b):
 
 def chunk_fixed(text, size, overlap=0):
     if size <= 0:
-        raise ValueError("size must be positive")
+        raise ValueError("size 必须为正数")
     step = size - overlap
     if step <= 0:
-        raise ValueError("overlap must be less than size")
+        raise ValueError("overlap 必须小于 size")
     return [text[i:i + size] for i in range(0, len(text), step) if text[i:i + size].strip()]
 
 
@@ -111,24 +111,24 @@ Chapter 4. Confidentiality. Both parties agree to keep trade secrets confidentia
 
 Chapter 5. Miscellaneous. This agreement is governed by the laws of the State of California. Disputes shall be resolved by arbitration."""
 
-    print("=== strategy comparison ===")
+    print("=== 分块策略比较（Strategy comparison，英文合同、查询和答案片段保留） ===")
     print()
 
     fixed = chunk_fixed(doc, size=300, overlap=50)
-    print(f"fixed (300 chars, 50 overlap):    {len(fixed)} chunks")
+    print(f"固定分块（Fixed，300 字符，重叠 50）:    {len(fixed)} 个块")
 
     rec = chunk_recursive(doc, size=300)
-    print(f"recursive (300 chars):            {len(rec)} chunks")
+    print(f"递归分块（Recursive，300 字符）:            {len(rec)} 个块")
 
     sem = chunk_semantic(doc)
-    print(f"semantic (hash-trick):            {len(sem)} chunks")
+    print(f"语义分块（Semantic，哈希技巧）:            {len(sem)} 个块")
 
     sent = chunk_sentence(doc, sentences_per_chunk=3)
-    print(f"sentence (3 per chunk):           {len(sent)} chunks")
+    print(f"按句分块（Sentence，每块 3 句）:           {len(sent)} 个块")
 
     pc = chunk_parent_child(doc, parent_size=800, child_size=200)
     parents = {m["parent_idx"] for m in pc}
-    print(f"parent-child (800 / 200):         {len(pc)} children, {len(parents)} parents")
+    print(f"父子分块（Parent-child，800 / 200）:         {len(pc)} 个子块，{len(parents)} 个父块")
 
     queries = [
         ("When can either party terminate?", ["ninety days", "thirty days"]),
@@ -137,15 +137,15 @@ Chapter 5. Miscellaneous. This agreement is governed by the laws of the State of
     ]
 
     print()
-    print("=== recall@3 on 3 queries ===")
+    print("=== 3 个查询的召回率（Recall）@3 ===")
     for name, chunks in [("fixed", fixed), ("recursive", rec), ("semantic", sem),
                          ("sentence", sent), ("parent", [m["parent"] for m in pc])]:
         hits = sum(retrieve_recall(chunks, q, gold) for q, gold in queries)
         print(f"  {name:<12}: {hits} / {len(queries)}")
 
     print()
-    print("note: hash-trick embedder is noisy.")
-    print("production embedders (BGE, text-3) give 20-40 pp higher recall on the same chunks.")
+    print("注意：哈希技巧嵌入器（Hash-trick embedder）的噪声较大。")
+    print("生产级嵌入器（BGE、text-3）在相同分块上可使召回率高出 20-40 个百分点（pp）。")
 
 
 if __name__ == "__main__":

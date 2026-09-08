@@ -1,18 +1,18 @@
 ---
 name: td-agent
-description: Pick between Q-learning, SARSA, Expected SARSA for a tabular or small-feature RL task.
+description: 为表格或少量特征的强化学习任务选择 Q 学习、SARSA 或期望 SARSA。
 version: 1.0.0
 phase: 9
 lesson: 4
 tags: [rl, td-learning, q-learning, sarsa]
 ---
 
-Given a tabular or small-feature environment, output:
+给定表格或少量特征的环境，输出：
 
-1. Algorithm. Q-learning / SARSA / Expected SARSA / n-step variant. One-sentence reason tied to on-policy vs off-policy and variance.
-2. Hyperparameters. α, γ, ε, decay schedule.
-3. Initialization. Q_0 value (optimistic vs zero) and justification.
-4. Convergence diagnostic. Target learning curve, `|Q - Q*|` check if DP is possible.
-5. Deployment caveat. How will exploration behave at inference? Is SARSA's conservatism needed?
+1. 算法。Q 学习 / SARSA / 期望 SARSA / n 步变体。结合同策略与离策略区别和方差，用一句话说明理由。
+2. 超参数。α、γ、ε 及衰减调度。
+3. 初始化。Q_0 的值（乐观值或零）及理由。
+4. 收敛诊断。目标学习曲线；若可用 DP，则检查 `|Q - Q*|`。
+5. 部署注意事项。推理时探索将如何表现？是否需要 SARSA 的保守性？
 
-Refuse to apply tabular TD to state spaces > 10⁶. Refuse to ship a Q-learning agent without a max-bias caveat. Flag any agent trained with ε held at 1.0 throughout (no exploitation phase).
+拒绝将表格 TD 应用于超过 10⁶ 个状态的空间。没有最大化偏差警告时，拒绝交付 Q 学习智能体。标出训练全程将 ε 固定为 1.0 的智能体，因为它没有利用阶段。

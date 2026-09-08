@@ -2,66 +2,66 @@
   {
     "id": "knn-pre-1",
     "stage": "pre",
-    "question": "KNN is called a 'lazy learner.' What does that mean?",
+    "question": "KNN 被称为“惰性学习器（Lazy Learner）”。这是什么意思？",
     "options": [
-      "It converges slowly during training",
-      "It uses a simplified version of the loss function",
-      "It does no computation at training time and computes everything at prediction time",
-      "It only works on small datasets"
+      "它训练时收敛缓慢",
+      "它使用简化版损失函数",
+      "它训练时不计算，所有计算都在预测时进行",
+      "它只适用于小数据集"
     ],
     "correct": 2,
-    "explanation": "Lazy learning means KNN stores the training data and does no work during 'training.' All computation (distance calculations, voting) happens when a prediction is requested."
+    "explanation": "惰性学习意味着 KNN 存储训练数据，在“训练”期间不做计算。所有计算，包括距离计算和投票，都在请求预测时发生。"
   },
   {
     "id": "knn-pre-2",
     "stage": "pre",
-    "question": "Why is feature scaling critical for KNN?",
+    "question": "为什么特征缩放（Feature Scaling）对 KNN 至关重要？",
     "options": [
-      "KNN cannot handle negative numbers without scaling",
-      "KNN uses gradient descent which requires normalized inputs",
-      "Feature scaling reduces the number of neighbors needed",
-      "Distance calculations are dominated by features with larger ranges, making scaling necessary for fair comparisons"
+      "不缩放时 KNN 无法处理负数",
+      "KNN 使用梯度下降，需要归一化输入",
+      "特征缩放减少所需邻居数量",
+      "取值范围较大的特征会主导距离计算，因此必须缩放才能公平比较"
     ],
     "correct": 3,
-    "explanation": "KNN relies on distances. A feature ranging 0-1000 will dominate a feature ranging 0-1 in distance calculations. Scaling puts all features on comparable ranges."
+    "explanation": "KNN 依赖距离。距离计算中，范围 0–1000 的特征会压过范围 0–1 的特征。缩放使各特征处于可比较的范围。"
   },
   {
     "id": "knn-post-1",
     "stage": "post",
-    "question": "In 100 dimensions with uniform random points, what happens to the ratio of max distance to min distance?",
+    "question": "在包含均匀随机点的 100 维空间中，最大距离与最小距离之比会怎样？",
     "options": [
-      "It increases dramatically, making neighbors more distinct",
-      "It approaches 1, making all points nearly equidistant from each other",
-      "It stays the same as in 2 dimensions",
-      "It becomes negative due to numerical overflow"
+      "急剧增大，使邻居更容易区分",
+      "趋近于 1，使所有点彼此几乎等距",
+      "与二维时保持相同",
+      "因数值溢出变为负数"
     ],
     "correct": 1,
-    "explanation": "This is the curse of dimensionality. In high dimensions, distances converge: max_dist / min_dist approaches 1. When all points are equidistant, 'nearest' becomes meaningless."
+    "explanation": "这就是维度灾难（Curse of Dimensionality）。高维中距离趋同，max_dist / min_dist 趋近于 1。所有点等距时，“最近”就失去意义。"
   },
   {
     "id": "knn-post-2",
     "stage": "post",
-    "question": "Which distance metric is most appropriate for comparing text documents represented as TF-IDF vectors?",
+    "question": "比较表示为 TF-IDF 向量的文本文档，哪种距离度量最合适？",
     "options": [
-      "Chebyshev distance",
-      "Cosine distance",
-      "L2 (Euclidean) distance",
-      "L1 (Manhattan) distance"
+      "切比雪夫距离（Chebyshev Distance）",
+      "余弦距离（Cosine Distance）",
+      "L2 欧氏距离（Euclidean Distance）",
+      "L1 曼哈顿距离（Manhattan Distance）"
     ],
     "correct": 1,
-    "explanation": "Cosine distance measures the angle between vectors, ignoring magnitude. For text, document length (magnitude) is noise -- direction captures meaning. Cosine consistently outperforms L1/L2 for text."
+    "explanation": "余弦距离衡量向量夹角，忽略模长。对文本而言，文档长度（模长）是噪声，方向表达含义。文本任务中余弦距离持续优于 L1/L2。"
   },
   {
     "id": "knn-post-3",
     "stage": "post",
-    "question": "What happens to the KNN decision boundary as K increases from 1 to N (the full dataset size)?",
+    "question": "K 从 1 增加到 N（整个数据集大小）时，KNN 决策边界会怎样？",
     "options": [
-      "The boundary becomes more complex and detailed",
-      "The boundary stays the same regardless of K",
-      "The boundary becomes circular",
-      "The boundary smooths out, eventually predicting the majority class for every point"
+      "边界变得更复杂、更细致",
+      "无论 K 如何变化，边界都不变",
+      "边界变为圆形",
+      "边界逐渐平滑，最终对每个点都预测多数类"
     ],
     "correct": 3,
-    "explanation": "K=1 produces jagged boundaries that follow every point (overfitting). As K increases, boundaries smooth out. K=N means every query considers all points, always predicting the majority class (maximum bias)."
+    "explanation": "K=1 产生跟随每个点的锯齿状边界，即过拟合。K 增大时边界变平滑。K=N 意味着每次查询都考虑所有点，始终预测多数类，偏差最大。"
   }
 ]

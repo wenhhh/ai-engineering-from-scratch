@@ -1,78 +1,78 @@
 {
   "lesson": "27-enterprise-governance-compliance-and-hitl",
-  "title": "Enterprise Governance, Compliance, and Human Review",
+  "title": "企业治理、合规与人工评审（Enterprise Governance, Compliance, and Human Review）",
   "questions": [
     {
       "stage": "pre",
-      "question": "A team says a sensitive-data workflow is compliant because every output receives human review. What is the main problem with that claim?",
+      "question": "团队声称敏感数据工作流合规，因为每个输出都经人工评审。该声明的主要问题是什么？",
       "options": [
-        "The only missing evidence is a benchmark proving reviewers outperform the model on average cases",
-        "The review stage should be replaced by a second model because automated consistency is easier to audit than reviewer judgment",
-        "Compliance follows from an enterprise plan and encrypted transport, so the team only needs to document those product settings",
-        "It omits the data flow, feature configuration, reviewer design, control evidence, and authorized compliance decision"
+        "唯一缺少的是证明评审者在普通案例上优于模型的基准",
+        "应以第二个模型替代评审，因为自动一致性比人工判断更容易审计",
+        "企业套餐和加密传输就能保证合规，只需记录产品设置",
+        "遗漏数据流、功能配置、评审设计、控制证据和获授权的合规决策"
       ],
       "correct": 3,
-      "explanation": "Review is one possible control. Governance requires the exact data boundary, obligations, technical controls, owners, tests, residual risk, and decisions by qualified authorities."
+      "explanation": "评审只是可能的一项控制。治理需要确切数据边界、义务、技术控制、负责人、测试、剩余风险及合格权威的决策。"
     },
     {
       "stage": "check",
-      "question": "Which action follows data minimization?",
+      "question": "哪项操作遵循数据最小化？",
       "options": [
-        "Remove identity fields that the task does not require before sending data",
-        "Pseudonymize identifiers after the provider response while leaving the original request payload unchanged",
-        "Log every input field, encrypted, for future incident reconstruction",
-        "Send every available field but instruct the model to ignore attributes unrelated to the current task"
+        "发送数据前移除任务不需要的身份字段",
+        "服务商响应后才对标识假名化，原请求载荷不变",
+        "加密记录每个输入字段，以便未来重建事故",
+        "发送全部可用字段，但要求模型忽略与任务无关属性"
       ],
       "correct": 0,
-      "explanation": "Minimization prevents unnecessary data from entering the system. Encryption and access controls then protect the data that remains necessary."
+      "explanation": "最小化阻止不必要数据进入系统。随后用加密和访问控制保护仍然必要的数据。"
     },
     {
       "stage": "check",
-      "question": "What makes human review a real control?",
+      "question": "什么使人工评审成为真正控制？",
       "options": [
-        "Two reviewers approve every output, regardless of risk, evidence quality, queue capacity, authority, or reversibility",
-        "A defined trigger, qualified reviewer, evidence packet, authority, service level, fallback, and audit record",
-        "Use model confidence alone to route low-scoring outputs to an available reviewer",
-        "Every output enters a general review queue, where any available reviewer chooses what evidence and escalation are needed"
+        "不考虑风险、证据质量、队列容量、权限或可逆性，由两名评审者批准每个输出",
+        "明确触发条件、合格评审者、证据包、权限、服务等级、后备方案和审计记录",
+        "只用模型置信度把低分输出交给空闲评审者",
+        "每个输出进入通用队列，由任意空闲评审者决定需要什么证据和升级"
       ],
       "correct": 1,
-      "explanation": "Review reduces risk only when the person can detect and act on the failure within an operationally viable process. The design must specify each boundary."
+      "explanation": "只有评审者能在运维上可行的流程中发现并处理失败，评审才降低风险。设计必须规定每个边界。"
     },
     {
       "stage": "check",
-      "question": "Why should an architect verify retention for each enabled feature?",
+      "question": "架构师为什么应为每项启用功能验证保留政策？",
       "options": [
-        "Feature retention determines model accuracy and context capacity even when the deployed data path remains unchanged",
-        "Prompt wording selects the provider retention tier, and each feature accepts a different retention instruction",
-        "Files, batch, hosted sessions, tools, and standard requests can cross different storage and eligibility boundaries",
-        "All hosted features inherit one retention policy, so the team must verify that shared policy only once for the account"
+        "即使部署数据路径不变，功能保留也决定模型准确率和上下文容量",
+        "提示词措辞选择服务商保留档次，每项功能接受不同保留指令",
+        "文件、批处理、托管会话、工具和标准请求可能跨越不同存储与资格边界",
+        "所有托管功能继承一个保留政策，所以每个账户只需验证一次"
       ],
       "correct": 2,
-      "explanation": "The concrete data flow depends on the features and agreement in use. Governance must evaluate the deployed combination against current official documentation."
+      "explanation": "具体数据流取决于所用功能和协议。治理必须依据当前官方文档评估部署组合。"
     },
     {
       "stage": "post",
-      "question": "A high-impact workflow has an aggregate quality gain but a large regression for one affected group. What is the strongest response?",
+      "question": "高影响工作流总体质量提高，但一个受影响群体严重回归。最佳响应是什么？",
       "options": [
-        "Replace the group slice with a larger overall sample and apply the same aggregate threshold to every future release",
-        "Route the affected group to a larger model while keeping the rollout open, since model capacity is the most likely cause",
-        "Deploy the aggregate improvement, monitor the affected group in production, and wait for a larger sample before deciding on a separate control later",
-        "Investigate the slice, assess harm and uncertainty, involve the proper owner, and block or constrain rollout until the risk decision is made"
+        "用更大的总体样本替代群体切片，对所有未来发布使用同一总体阈值",
+        "保持上线，把该群体路由到更大模型，因为容量最可能是原因",
+        "部署总体改进，在生产监控该群体，等样本更大再决定单独控制",
+        "调查切片、评估伤害与不确定性、让适当负责人参与，并在风险决策前阻止或限制上线"
       ],
       "correct": 3,
-      "explanation": "Aggregate performance cannot average away a material group harm. The team needs contextual fairness analysis, evidence, authority, and a controlled deployment decision."
+      "explanation": "总体表现不能平均掉实质群体伤害。团队需要结合情境的公平分析、证据、权限和受控部署决策。"
     },
     {
       "stage": "post",
-      "question": "Which event should trigger governance reassessment?",
+      "question": "哪项事件应触发治理重评？",
       "options": [
-        "A material change to use case, model, data, tool authority, scale, policy, or observed risk",
-        "Any documentation-format change, because every editorial revision invalidates the architecture's approval boundary",
-        "Wait for the annual governance review unless a highest-severity production incident occurs",
-        "Only a change to the base model, because prompts, data, tools, scale, and policy do not alter approved risk"
+        "用例、模型、数据、工具权限、规模、政策或已观察风险发生实质变化",
+        "任何文档格式变化，因为每次编辑都使架构审批边界失效",
+        "除非最高严重级别生产事故，否则等年度治理评审",
+        "只有基础模型变化，因为提示词、数据、工具、规模和政策不改变批准风险"
       ],
       "correct": 0,
-      "explanation": "Approval applies to a specific architecture and risk profile. Material changes can alter affected people, data boundaries, controls, and residual risk, so the decision must be revisited."
+      "explanation": "审批适用于具体架构和风险状况。实质变化可能改变受影响人群、数据边界、控制和剩余风险，因此必须重新审视决策。"
     }
   ]
 }

@@ -1,61 +1,61 @@
-# Gradient Checkpointing and Activation Recomputation
+# 梯度检查点与激活重计算（Gradient Checkpointing and Activation Recomputation）
 
-> Backprop keeps every intermediate activation. At 70B parameters and 128K context that is 3 TB of activations per rank. Checkpointing trades FLOPs for memory: recompute instead of save. The question is which segments to drop, and the answer is not "all of them."
+> 反向传播（Backpropagation）保留每个中间激活。在 70B 参数、128K 上下文下，每个进程（Rank）的激活占用达 3 TB。检查点（Checkpointing）用浮点运算量（Floating-Point Operations，FLOPs）换内存：不保存，改为重新计算。问题是丢弃哪些分段，答案不是“全部”。
 
 **Type:** Build
 **Languages:** Python (with numpy, optional torch)
-**Prerequisites:** Phase 10 Lesson 04 (Pre-Training Mini-GPT), Phase 10 Lesson 05 (Scaling & Distributed)
-**Time:** ~70 minutes
+**Prerequisites:** 阶段 10 第 04 课（预训练 Mini-GPT）、阶段 10 第 05 课（扩展与分布式）
+**Time:** 约 70 分钟
 
-## The Problem
+## 问题（The Problem）
 
-Training a transformer stores, for each layer, the inputs to every op that is differentiated in backward: the attention inputs, the Q/K/V projections, the softmax output, the FFN inputs, the norm outputs, and the residual stream. For a layer with hidden size `d`, sequence length `L`, batch `B`, this is on the order of `12 * B * L * d` floats per layer.
+训练 Transformer 时，每层都保存反向求导所需的各操作输入：注意力输入、Q/K/V 投影、softmax 输出、前馈网络（Feed-Forward Network，FFN）输入、归一化输出和残差流（Residual Stream）。隐藏维度 `d`、序列长度 `L`、批量 `B` 的层，每层约需 `12 * B * L * d` 个浮点数。
 
-For `d=8192, L=8192, B=1`, that's 800 MB/layer in BF16. A 64-layer model is 51 GB of activations — and that's before you multiply by microbatch size, before you add attention-softmax intermediates (`L^2` per head), and before you factor tensor-parallel partial copies.
+在 `d=8192, L=8192, B=1` 时，BF16 下每层约 800 MB，64 层模型激活约 51 GB。这还没乘微批量大小，没加注意力 softmax 中间量（每头 `L^2`），也没计入张量并行的部分副本。
 
-The two-sided bill: BF16 weights plus optimizer state might fit in 80GB, but activations push you past. Gradient checkpointing (aka activation recomputation) is the standard fix. Drop most activations; redo the forward during backward to get them back. Cost: extra FLOPs. Benefit: memory drops by the ratio of checkpoint segments to total layers.
+成本来自两面：BF16 权重加优化器状态可能装得进 80GB，但激活会使总量超限。梯度检查点（Gradient Checkpointing），又称激活重计算（Activation Recomputation），是标准解决方案：丢弃大部分激活，反向期间重做前向将其恢复。代价是额外 FLOPs，收益是内存按检查点分段数相对总层数的比例下降。
 
-Done naively, checkpointing costs roughly 33% more forward-pass FLOPs per step. Done well — selective checkpointing per the "smart selection" of Korthikanti et al. — you save 5x memory for under 5% FLOP overhead. And with FP8 matmuls, FSDP offload, and expert-parallel MoE this really matters: you can't afford either the memory or the wasted compute.
+朴素检查点每步增加约 33% 前向 FLOPs。若采用 Korthikanti 等人的“智能选择”进行选择性检查点（Selective Checkpointing），可以低于 5% 的 FLOP 开销节省 5 倍内存。配合 FP8 矩阵乘法、FSDP 卸载和专家并行 MoE，这一点尤其重要：内存和浪费的计算都负担不起。
 
-## The Concept
+## 概念（The Concept）
 
-### What Backward Actually Needs
+### 反向实际需要什么（What Backward Actually Needs）
 
-`output = layer(input)`. Backward wants `grad_input` and `grad_params`. To compute them it needs:
+`output = layer(input)`。反向需要 `grad_input` 和 `grad_params`，计算它们需要：
 
-- `input` (to compute `grad_params = input.T @ grad_output` for linear layers)
-- some activation derivative intermediates (the derivative of ReLU/GELU/softmax depends on the activation value)
+- `input`，线性层用它计算 `grad_params = input.T @ grad_output`。
+- 部分激活导数中间量，ReLU/GELU/softmax 的导数依赖激活值。
 
-The forward pass stores these automatically in the autograd graph. Every `tensor.retain_grad()` and every op that needs its input retains a reference.
+前向自动在自动求导图（Autograd Graph）中保存这些内容。每次 `tensor.retain_grad()`，以及每个需要输入的操作，都会保留引用。
 
-### Naive Full Checkpointing
+### 朴素全量检查点（Naive Full Checkpointing）
 
-Split the network into `N` segments. During forward, store only the *input* to each segment. When backward needs intermediates, rerun the segment's forward pass to materialize them, then differentiate.
+将网络拆为 `N` 段。前向只保存各段的*输入*。反向需要中间量时，重新运行该段前向，将中间量重新物化（Rematerialization），再求导。
 
-Example: 32-layer transformer split into 32 segments of 1 layer each.
+例如：32 层 Transformer 拆为 32 段，每段 1 层。
 
-- Memory: 32 layer-inputs (small) vs 32 * (activation volume per layer) (huge).
-- Extra compute: 1 extra forward per segment, i.e., ~33% more forward FLOPs total (since backward is 2x forward, full step becomes 1 + 1 + 2 = 4 units instead of 1 + 2 = 3).
+- 内存：32 个层输入（小），对比 32 *（每层激活量）（大）。
+- 额外计算：每段多一次前向，总前向 FLOPs 约增加 33%；由于反向是前向两倍，完整训练步从 1 + 2 = 3 单位变为 1 + 1 + 2 = 4 单位。
 
-This is the original Chen et al. 2016 recipe: one checkpoint every `sqrt(L)` layers to balance memory and compute. For L=64, that's 8 checkpoints.
+这是 Chen 等人 2016 年的原始方法：每 `sqrt(L)` 层一个检查点，平衡内存与计算。L=64 时为 8 个检查点。
 
-### Selective Checkpointing (Korthikanti 2022)
+### 选择性检查点（Selective Checkpointing，Korthikanti 2022）
 
-Not all activations cost the same. The attention softmax output is `B*L*L*heads` and grows *quadratically* with sequence length. The FFN hidden activation is `B*L*4d` and grows linearly. For long sequences the softmax dominates.
+各激活的成本不同。注意力 softmax 输出大小为 `B*L*L*heads`，随序列长度*二次*增长；FFN 隐藏激活为 `B*L*4d`，线性增长。长序列下 softmax 占主导。
 
-Selective checkpointing keeps the cheap-to-store activations (linear projections, residuals) and recomputes only the expensive ones (attention). You pay minimal FLOPs to recompute but save the O(L^2) memory.
+选择性检查点保留存储便宜的激活，如线性投影、残差，只重算存储昂贵的注意力激活。只付出少量重算 FLOPs，就能省下 O(L^2) 内存。
 
-Megatron-Core implements this as "selective" activation recomputation. Used in most 2024+ frontier training runs.
+Megatron-Core 将其实现为“选择性”激活重计算。2024 年起多数前沿训练都采用此方法。
 
-### Offload
+### 卸载（Offload）
 
-Alternative to recompute: ship activations to CPU RAM between forward and backward. Requires PCIe bandwidth; beneficial when idle bandwidth exceeds the cost of rematerialization. Mixed strategies are common: checkpoint some layers, offload others.
+重计算的替代方案是：在前向与反向之间把激活送到中央处理器（Central Processing Unit，CPU）内存。它需要 PCIe 带宽，空闲带宽相对于重新物化成本足够有利时可获益。常见混合策略是某些层做检查点，其他层卸载。
 
-FSDP2 ships offload as a first-class option. Offload shines when GPU is bottlenecked on memory but CPU-GPU transfer has headroom.
+完全分片数据并行第二版（Fully Sharded Data Parallel 2，FSDP2）将卸载作为原生选项。当 GPU 受内存限制、CPU-GPU 传输仍有余量时，卸载很有效。
 
-### Recompute Cost Model
+### 重计算成本模型（Recompute Cost Model）
 
-Per-step FLOPs with naive checkpointing every `k` layers out of `L`:
+在 `L` 层中每 `k` 层设置朴素检查点，每步 FLOPs 为：
 
 ```
 flops_fwd_normal = L * f_layer
@@ -69,52 +69,52 @@ flops_total_ckpt = 4 * L * f_layer
 overhead = 4 / 3 - 1 = 0.33 = 33%
 ```
 
-With selective checkpointing you recompute only the attention kernel, not the whole layer:
+选择性检查点只重算注意力内核（Kernel），不重算整层：
 
 ```
 flops_recompute_selective = L * f_attention ~= L * f_layer * 0.15
 overhead_selective = (3 + 0.15) / 3 - 1 = 0.05 = 5%
 ```
 
-### Memory Savings Model
+### 内存节省模型（Memory Savings Model）
 
-Activation volume per layer: `A`. For `L` layers, total activation memory: `L * A`.
+每层激活量为 `A`。`L` 层总激活内存为 `L * A`。
 
-Full checkpoint (segment size 1): store only `L * input_volume` (~`L * 1/10 A` for a standard transformer). Saves ~`9 * L * A * 1/10`.
+全量检查点（分段大小 1）只保存 `L * input_volume`，标准 Transformer 约为 `L * 1/10 A`，节省约 `9 * L * A * 1/10`。
 
-Checkpoint every `k` layers: store `L/k * A` plus `k-1` layers' worth within the active segment.
+每 `k` 层一个检查点：保存 `L/k * A`，加上当前活动段内 `k-1` 层的激活。
 
-At `k = sqrt(L)`, memory and recompute cost both scale with `sqrt(L)` — the optimal tradeoff for uniform-cost layers.
+当 `k = sqrt(L)`，内存和重计算成本都随 `sqrt(L)` 缩放，是各层成本相同时的最佳权衡。
 
-### When Not to Checkpoint
+### 何时不做检查点（When Not to Checkpoint）
 
-- The innermost layers of a pipeline stage already in-flight. They have to finish anyway.
-- The first and last layers if they dominate the stage's compute (rare in transformers).
-- Attention kernels already using FlashAttention — Flash already recomputes the softmax fast, so additional layer-level checkpointing adds little on top.
+- 已在执行的流水线阶段最内层，它们无论如何都必须完成。
+- 若首尾层主导阶段计算，则不对其做检查点；Transformer 中较少见。
+- 已使用 FlashAttention 的注意力内核。Flash 已快速重算 softmax，额外层级检查点新增收益很少。
 
-### Implementation Patterns
+### 实现模式（Implementation Patterns）
 
-1. **Function wrapper:** wrap a segment in `torch.utils.checkpoint.checkpoint(fn, input)`. PyTorch stores only `input`, recomputes everything else on backward.
+1. **函数包装（Function Wrapper）：** 用 `torch.utils.checkpoint.checkpoint(fn, input)` 包装分段。PyTorch 只保存 `input`，其他内容在反向重算。
 
-2. **Decorator-based:** label layers as checkpointable; the trainer decides at config time which segments get wrapped.
+2. **装饰器方式（Decorator-Based）：** 将层标记为可检查点化，由训练器在配置时决定包装哪些段。
 
-3. **Manual explicit recompute:** write the backward pass yourself, calling a custom `recompute_forward` that duplicates the forward with the stored input.
+3. **手动显式重算（Manual Explicit Recompute）：** 自己编写反向传播，调用自定义 `recompute_forward`，用保存的输入重复前向。
 
-All three give the same functional result. Wrappers are the standard idiom.
+三者功能结果相同，包装器是标准惯用法。
 
-### Interaction with TP / PP / FP8
+### 与 TP / PP / FP8 的交互（Interaction with TP / PP / FP8）
 
-- **Tensor parallel:** checkpoint inputs must be gathered or rescattered on recompute; handle the communication cost.
-- **Pipeline parallel:** typical pattern is to checkpoint each pipeline-stage's forward so reverse-order microbatches can reuse activation memory.
-- **FP8 recompute:** amax histories updated during recompute must match the original forward's, or the FP8 scale drifts. Most frameworks snapshot the scale.
+- **张量并行（Tensor Parallelism，TP）：** 重算时检查点输入必须收集或重新分散，需要处理通信成本。
+- **流水线并行（Pipeline Parallelism，PP）：** 通常对各流水线阶段的前向设置检查点，让逆序微批次复用激活内存。
+- **FP8 重计算（FP8 Recompute）：** 重算期间更新的 amax 历史必须与原始前向一致，否则 FP8 缩放漂移。多数框架会保存缩放快照。
 
 ```figure
 activation-recompute
 ```
 
-## Build It
+## 动手实现（Build It）
 
-### Step 1: A Toy Model With Segments
+### 步骤 1：分段玩具模型（Step 1: A Toy Model With Segments）
 
 ```python
 import numpy as np
@@ -142,7 +142,7 @@ def model_forward(x, params):
     return h, activations
 ```
 
-### Step 2: Naive Backward Needing All Activations
+### 步骤 2：需要全部激活的朴素反向（Step 2: Naive Backward Needing All Activations）
 
 ```python
 def model_backward(grad_output, activations, params):
@@ -165,7 +165,7 @@ def model_backward(grad_output, activations, params):
     return g, grads
 ```
 
-### Step 3: Checkpoint-Every-k Memory
+### 步骤 3：每 k 层检查点的内存（Step 3: Checkpoint-Every-k Memory）
 
 ```python
 def model_forward_checkpointed(x, params, k=4):
@@ -194,7 +194,7 @@ def model_backward_checkpointed(grad_output, saved_inputs, params, k=4):
     return g, grads
 ```
 
-### Step 4: Cost Model
+### 步骤 4：成本模型（Step 4: Cost Model）
 
 ```python
 def checkpoint_cost(n_layers, segment_size, flops_per_layer=1.0):
@@ -224,7 +224,7 @@ def selective_checkpoint_cost(n_layers, attention_fraction=0.15,
     }
 ```
 
-### Step 5: Memory Estimator
+### 步骤 5：内存估算器（Step 5: Memory Estimator）
 
 ```python
 def activation_memory_mb(n_layers, hidden=8192, seq=8192,
@@ -240,14 +240,14 @@ def memory_after_checkpoint(n_layers, segment_size, hidden=8192,
     return saved / 1e6
 ```
 
-### Step 6: Optimal Segment Size
+### 步骤 6：最佳分段大小（Step 6: Optimal Segment Size）
 
 ```python
 def optimal_segment(n_layers):
     return int(round(np.sqrt(n_layers)))
 ```
 
-### Step 7: Selective Checkpoint Decision
+### 步骤 7：选择性检查点决策（Step 7: Selective Checkpoint Decision）
 
 ```python
 def should_recompute(layer_type, activation_bytes, recompute_flops_ratio):
@@ -258,49 +258,49 @@ def should_recompute(layer_type, activation_bytes, recompute_flops_ratio):
     return False
 ```
 
-## Use It
+## 使用方法（Use It）
 
-- **torch.utils.checkpoint**: `from torch.utils.checkpoint import checkpoint` — the canonical wrapper in PyTorch. Wraps a function; stores only inputs, recomputes on backward.
-- **Megatron-Core activation recomputation**: supports `selective`, `full`, and `block` modes. Standard in 2024+ frontier training.
-- **FSDP2 offload**: `module.to_empty(device="cpu")` with `offload_policy` in FSDP2 shards activations to CPU instead of recomputing.
-- **DeepSpeed ZeRO-Offload**: CPU offload for optimizer states and activations, complementing checkpointing.
+- **torch.utils.checkpoint**：`from torch.utils.checkpoint import checkpoint`，PyTorch 的标准包装器。包装函数，只保存输入，反向时重算。
+- **Megatron-Core 激活重计算（Activation Recomputation）**：支持 `selective`、`full`、`block` 模式，是 2024 年起前沿训练的标准选项。
+- **FSDP2 卸载（Offload）**：`module.to_empty(device="cpu")` 配合 FSDP2 的 `offload_policy`，将激活分片到 CPU，而非重算。
+- **DeepSpeed ZeRO-Offload**：将优化器状态和激活卸载到 CPU，补充检查点策略。
 
-## Ship It
+## 交付成果（Ship It）
 
-This lesson produces `outputs/prompt-activation-recompute-policy.md` — a prompt that takes your model config (layers, hidden, seq, batch) and available GPU memory and emits a per-layer recompute policy (none / selective / full / offload).
+本课产出 `outputs/prompt-activation-recompute-policy.md`，提示词接收模型配置（层数、隐藏维度、序列长度、批量）和可用 GPU 内存，输出逐层重计算策略（none / selective / full / offload）。
 
-## Exercises
+## 练习（Exercises）
 
-1. Verify correctness. Run `model_forward` + `model_backward` (full activations) vs `model_forward_checkpointed` + `model_backward_checkpointed` (segments). Parameter gradients must be identical to machine precision.
+1. 验证正确性。比较 `model_forward` + `model_backward`（完整激活）与 `model_forward_checkpointed` + `model_backward_checkpointed`（分段）。参数梯度必须在机器精度范围内相同。
 
-2. Sweep segment size `k` from 1 to `L`. Plot FLOP overhead and memory. Find the knee of the curve.
+2. 将分段大小 `k` 从 1 扫描到 `L`，绘制 FLOP 开销和内存曲线，找出拐点。
 
-3. Implement selective checkpointing: store the attention-module input but not its intermediates. Measure the FLOP overhead vs full-layer checkpointing for a 32-layer model at seq=8192.
+3. 实现选择性检查点：保存注意力模块输入，但不保存中间量。对 seq=8192 的 32 层模型，测量相对于整层检查点的 FLOP 开销。
 
-4. Add offload. Save segment inputs to a simulated "CPU buffer" (a separate list). Measure "PCIe bandwidth" as bytes/time and find the breakeven point between offload and recompute.
+4. 增加卸载。将分段输入保存到模拟的“CPU 缓冲区”（独立列表）。按字节/时间测量“PCIe 带宽”，找到卸载与重算的盈亏平衡点。
 
-5. Benchmark a real PyTorch transformer with and without `torch.utils.checkpoint`. Measure memory (via `torch.cuda.max_memory_allocated`) and step time.
+5. 对真实 PyTorch Transformer 开启和关闭 `torch.utils.checkpoint` 做基准测试。通过 `torch.cuda.max_memory_allocated` 测内存，同时测每步时间。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语 | 常见说法 | 实际含义 |
 |------|----------------|----------------------|
-| Gradient checkpointing | "Save memory by redoing forward" | Store segment inputs only; recompute intermediates during backward to get gradient-support tensors |
-| Activation recomputation | "Same as checkpointing" | The HPC-flavored name for the same technique |
-| Segment size (k) | "How many layers per checkpoint" | Number of layers whose intermediates are dropped and rematerialized together |
-| Selective checkpointing | "Korthikanti's trick" | Recompute only expensive-to-store activations (attention softmax); keep cheap ones |
-| Full checkpointing | "The naive version" | Recompute every layer's intermediates in every segment |
-| Block checkpointing | "Coarse-grained" | Checkpoint whole transformer blocks; largest granularity |
-| FLOP overhead | "The compute tax" | Extra FLOPs per step = (recompute FLOPs) / (fwd + bwd FLOPs); 33% naive, 5% selective |
-| Activation offload | "Ship to CPU" | Move activations to CPU RAM across forward->backward; alternative to recompute |
-| sqrt-L rule | "The classical optimum" | For uniform-cost layers, optimal checkpoint spacing is sqrt(L) layers |
-| Attention-softmax volume | "The O(L^2) problem" | L^2 * heads * batch floats; dominates activation memory at long contexts |
+| 梯度检查点（Gradient Checkpointing） | “重做前向以省内存” | 只保存分段输入，反向重算中间量，得到梯度所需张量 |
+| 激活重计算（Activation Recomputation） | “就是检查点” | 同一技术在高性能计算（High-Performance Computing，HPC）中的称呼 |
+| 分段大小 k（Segment Size） | “每检查点多少层” | 一同丢弃并重新物化中间量的层数 |
+| 选择性检查点（Selective Checkpointing） | “Korthikanti 的技巧” | 只重算存储昂贵的激活，如注意力 softmax，保留便宜的 |
+| 全量检查点（Full Checkpointing） | “朴素版本” | 重算每段每层的中间量 |
+| 块检查点（Block Checkpointing） | “粗粒度” | 对整个 Transformer 块设置检查点，粒度最大 |
+| FLOP 开销（FLOP Overhead） | “计算税” | 每步额外 FLOPs = (recompute FLOPs) / (fwd + bwd FLOPs)；朴素为 33%，选择性为 5% |
+| 激活卸载（Activation Offload） | “送到 CPU” | 前向到反向期间将激活转移到 CPU 内存，替代重计算 |
+| sqrt-L 规则（sqrt-L Rule） | “经典最优值” | 各层成本相同时，最佳检查点间隔为 sqrt(L) 层 |
+| 注意力 softmax 体积（Attention-Softmax Volume） | “O(L^2) 问题” | L^2 * heads * batch 个浮点数，长上下文下主导激活内存 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [Chen et al., 2016 -- "Training Deep Nets with Sublinear Memory Cost"](https://arxiv.org/abs/1604.06174) -- the original paper that formalized gradient checkpointing
-- [Korthikanti et al., 2022 -- "Reducing Activation Recomputation in Large Transformer Models"](https://arxiv.org/abs/2205.05198) -- selective activation recomputation and the formal cost analysis
-- [Pudipeddi et al., 2020 -- "Training Large Neural Networks with Constant Memory using a New Execution Algorithm"](https://arxiv.org/abs/2002.05645) -- alternative constant-memory approach via reverse-mode rematerialization
-- [Ren et al., 2021 -- "ZeRO-Offload: Democratizing Billion-Scale Model Training"](https://arxiv.org/abs/2101.06840) -- activation offload at scale
-- [PyTorch torch.utils.checkpoint docs](https://pytorch.org/docs/stable/checkpoint.html) -- the standard API
-- [Megatron-Core activation recomputation documentation](https://docs.nvidia.com/nemo-framework/user-guide/latest/nemotoolkit/features/memory_optimizations.html) -- selective, full, and block modes
+- [Chen 等人，2016：以次线性内存成本训练深度网络](https://arxiv.org/abs/1604.06174)：正式提出梯度检查点的原始论文。
+- [Korthikanti 等人，2022：减少大型 Transformer 模型的激活重计算](https://arxiv.org/abs/2205.05198)：选择性重计算及形式化成本分析。
+- [Pudipeddi 等人，2020：使用新执行算法以恒定内存训练大型神经网络](https://arxiv.org/abs/2002.05645)：通过反向模式重新物化实现恒定内存的替代方案。
+- [Ren 等人，2021：ZeRO-Offload，让十亿级模型训练普及](https://arxiv.org/abs/2101.06840)：大规模激活卸载。
+- [PyTorch torch.utils.checkpoint 文档](https://pytorch.org/docs/stable/checkpoint.html)：标准应用程序接口（Application Programming Interface，API）。
+- [Megatron-Core 激活重计算文档](https://docs.nvidia.com/nemo-framework/user-guide/latest/nemotoolkit/features/memory_optimizations.html)：selective、full、block 模式。

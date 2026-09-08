@@ -1,18 +1,18 @@
 ---
 name: dp-solver
-description: Solve a small tabular MDP exactly via policy iteration or value iteration. Report convergence behavior.
+description: 通过策略迭代或价值迭代精确求解小型表格 MDP，并报告收敛行为。
 version: 1.0.0
 phase: 9
 lesson: 2
 tags: [rl, dynamic-programming, bellman]
 ---
 
-Given an MDP with a known model, output:
+给定模型已知的 MDP，输出：
 
-1. Choice. Policy iteration vs value iteration. Reason tied to |S|, |A|, γ.
-2. Initialization. V_0, starting policy. Convergence sensitivity.
-3. Stopping. Sup-norm tolerance ε. Expected number of sweeps.
-4. Verification. V*(s_0) computed exactly. Greedy policy extracted.
-5. Use. How this baseline will be used to debug/evaluate sampling-based methods.
+1. 选择。采用策略迭代还是价值迭代，结合 |S|、|A|、γ 说明理由。
+2. 初始化。给出 V_0、初始策略，以及收敛对初始化的敏感性。
+3. 停止条件。给出上确界范数容差 ε 和预计扫描轮数。
+4. 验证。精确计算 V*(s_0)，并提取贪心策略。
+5. 用途。说明如何用这一基线调试或评估基于采样的方法。
 
-Refuse to run DP on state spaces > 10⁷. Refuse to claim convergence without a sup-norm check. Flag any γ ≥ 1 on an infinite-horizon task as a guarantee violation.
+拒绝在超过 10⁷ 个状态的空间上运行 DP。没有上确界范数检查时，拒绝声称已收敛。将无限时域任务中的任何 γ ≥ 1 标记为违反收敛保证。

@@ -1,75 +1,75 @@
 {
   "lesson": "24-chaos-engineering-llm",
-  "title": "Chaos Engineering for LLM Production",
+  "title": "LLM 生产环境的混沌工程（Chaos Engineering for LLM Production）",
   "questions": [
     {
       "stage": "pre",
-      "question": "Which five prerequisites does the lesson require before running chaos in production?",
+      "question": "本课要求在生产运行混沌前具备哪五项前提？",
       "options": [
-        "Slack channel, sticker pack, mascot, hashtag, blog post",
-        "Vector database only",
-        "SLI/SLO, observability, automated rollback, structured runbooks, on-call",
-        "Three frontier models"
+        "Slack 频道、贴纸包、吉祥物、话题标签、博客文章",
+        "只有向量数据库",
+        "SLI/SLO、可观测性、自动回滚、结构化运行手册、值班机制",
+        "三个前沿模型"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Which four planes does the chaos architecture have, plus the feedback loop?",
+      "question": "混沌架构包含哪四个平面，以及什么反馈环路？",
       "options": [
-        "Frontend, backend, mobile, web",
-        "Ingest, transform, store, serve",
-        "Train, eval, deploy, archive",
-        "Control, target, safety, observability — with feedback into SLO adjustments"
+        "前端、后端、移动端、网页",
+        "摄取、转换、存储、服务",
+        "训练、评测、部署、归档",
+        "控制、目标、安全、可观测性，并反馈到 SLO 调整"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "What does the burn-rate alert guardrail do during chaos experiments?",
+      "question": "混沌实验中的消耗速率告警护栏做什么？",
       "options": [
-        "Pauses the experiment when daily error-budget burn exceeds roughly 2x expected",
-        "Auto-promotes the experiment to production",
-        "Disables observability",
-        "Speeds up the experiment"
+        "每日错误预算消耗超过预期约 2 倍时暂停实验",
+        "自动将实验推进到生产",
+        "禁用可观测性",
+        "加快实验"
       ],
       "correct": 0,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Which is an LLM-specific chaos experiment listed in the lesson?",
+      "question": "下列哪项是本课列出的 LLM 特有混沌实验？",
       "options": [
-        "Random fan-speed reduction",
-        "Reboot the entire datacenter",
-        "KV eviction storm that forces vLLM block-budget saturation",
-        "Drop all DNS"
+        "随机降低风扇转速",
+        "重启整个数据中心",
+        "强制耗尽 vLLM 块预算的 KV 驱逐风暴",
+        "丢弃所有 DNS"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "Which cadence does the lesson recommend for chaos exercises?",
+      "question": "本课建议的混沌演练节奏是什么？",
       "options": [
-        "Yearly only",
-        "Daily full-prod outages",
-        "Never",
-        "Weekly small canary, monthly game day with postmortem, quarterly cross-team resilience audit"
+        "仅每年一次",
+        "每天让整个生产中断",
+        "从不演练",
+        "每周小范围金丝雀，每月演练日加复盘，每季度跨团队韧性审计"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "What LLM-specific failure mode does the malformed-prompt experiment uncover?",
+      "question": "畸形提示词实验会发现什么 LLM 特有失效模式？",
       "options": [
-        "Tokenizer stalls that lock up a worker on inputs like deeply nested unicode or huge UTF-8 codepoints",
-        "GPU undervolt",
-        "Network packet loss",
-        "Disk I/O contention"
+        "深层嵌套 Unicode 或超大 UTF-8 码点等输入导致分词器停滞，卡住工作进程",
+        "GPU 欠压",
+        "网络丢包",
+        "磁盘 I/O 争用"
       ],
       "correct": 0,
       "explanation": ""

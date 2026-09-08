@@ -1,98 +1,98 @@
-# Speculative Decoding — Draft, Verify, Repeat
+# 推测解码：起草、验证、重复（Speculative Decoding — Draft, Verify, Repeat）
 
-> Autoregressive decoding is serial. Each token waits for the previous one. Speculative decoding breaks the chain: a cheap model drafts N tokens, the expensive model verifies all N in one forward pass. When the draft is right you paid one big forward for N generations.
+> 自回归解码是串行的，每个词元等待前一个。推测解码打破这条依赖链：低成本模型起草 N 个词元，高成本模型一次前向验证全部 N 个。草稿正确时，一次大模型前向就完成 N 次生成。
 
 **Type:** Build
 **Languages:** Python
-**Prerequisites:** Phase 7 · 07 (GPT Causal LM), Phase 7 · 12 (KV Cache & Flash Attention)
-**Time:** ~60 minutes
+**Prerequisites:** 阶段 7 · 07（GPT 因果语言模型），阶段 7 · 12（KV 缓存与 Flash Attention）
+**Time:** ~60 分钟
 
-## The Problem
+## 问题（The Problem）
 
-A 70B LLM sampling one token takes ~30 ms on an H100. A 3B draft model takes ~3 ms. If we let the 3B draft 5 tokens ahead, then run the 70B *once* to verify all 5, the total is `5×3 + 30 = 45 ms` for up to 5 accepted tokens — versus `5×30 = 150 ms` for straight-line generation. That is the full speculative-decoding pitch: trade a small amount of extra GPU memory (draft model) for 2–4× lower decode latency.
+70B 大语言模型在 H100 上采样一个词元约 30 ms，3B 草稿模型约 3 ms。如果让 3B 提前起草 5 个词元，再用 70B *一次*验证全部 5 个，总计 `5×3 + 30 = 45 ms`，最多接受 5 个词元；直接生成则需 `5×30 = 150 ms`。推测解码的全部价值就是用少量额外 GPU 内存放草稿模型，换取低 2–4 倍的解码延迟。
 
-The trick has to preserve the distribution. Speculative sampling, introduced by Leviathan et al. (2023) and by Chen et al. concurrently, guarantees that the output sequence is **identically distributed** to what the big model would have produced on its own. No quality tradeoff. Just faster.
+这个技巧必须保持分布。Leviathan 等（2023）与同期 Chen 等提出的推测采样，保证输出序列与大模型独立生成的序列**分布完全相同**。不牺牲质量，只加速。
 
-Four families of draft-verifier pairs dominate 2026 inference:
+四类草稿—验证组合主导 2026 年推理：
 
-1. **Vanilla speculative (Leviathan 2023).** Separate draft model (e.g., Llama 3 1B) + verifier (e.g., Llama 3 70B).
-2. **Medusa (Cai 2024).** Multiple decoding heads on the verifier predict positions `t+1..t+k` in parallel. No separate draft model.
-3. **EAGLE family (Li 2024, 2025).** Lightweight draft that reuses the verifier's hidden states; closer acceptance rate than vanilla; 3–4× typical.
-4. **Lookahead decoding (Fu 2024).** Jacobi iteration; no draft model required at all. Self-speculation. Niche but dependency-free.
+1. **标准推测解码（Vanilla speculative，Leviathan，2023）。** 独立草稿模型，如 Llama 3 1B，加验证模型，如 Llama 3 70B。
+2. **Medusa（Cai，2024）。** 验证模型上的多个解码头并行预测位置 `t+1..t+k`，无需独立草稿模型。
+3. **EAGLE 家族（Li，2024、2025）。** 轻量草稿复用验证模型隐藏状态，比标准方案有更高接受率，通常快 3–4 倍。
+4. **前瞻解码（Lookahead decoding，Fu，2024）。** Jacobi 迭代，完全不需要草稿模型。自我推测，较小众但无需依赖。
 
-Every production inference stack in 2026 ships speculative decoding by default. vLLM, TensorRT-LLM, SGLang, and llama.cpp all support at least vanilla + EAGLE-2.
+2026 年所有生产推理技术栈默认提供推测解码。vLLM、TensorRT-LLM、SGLang、llama.cpp 至少都支持标准方案和 EAGLE-2。
 
-## The Concept
+## 概念（The Concept）
 
-### The core algorithm
+### 核心算法（The core algorithm）
 
-Given a verifier `M_q` and a cheaper draft `M_p`:
+给定验证模型 `M_q` 与更便宜的草稿模型 `M_p`：
 
-1. Let `x_1..x_k` be the prefix already decoded.
-2. **Draft**: use `M_p` to autoregressively propose `d_{k+1}, d_{k+2}, ..., d_{k+N}` with draft probabilities `p_1..p_N`.
-3. **Verify in parallel**: run `M_q` once on `x_1..x_k, d_{k+1}, ..., d_{k+N}`, getting verifier probabilities `q_1..q_{N+1}` for positions `k+1..k+N+1`.
-4. **Accept/reject each draft token left to right**: for each `i`, accept with probability `min(1, q_i(d_i) / p_i(d_i))`.
-5. On first rejection at position `j`: sample `t_j` from the "residual" distribution `(q_j - p_j)_+` normalized. All drafts after `j` are discarded.
-6. On accepting all `N`: sample one extra token `t_{N+1}` from `q_{N+1}` (the free bonus token).
+1. 设 `x_1..x_k` 为已解码前缀。
+2. **起草**：用 `M_p` 自回归提出 `d_{k+1}, d_{k+2}, ..., d_{k+N}`，草稿概率为 `p_1..p_N`。
+3. **并行验证**：在 `x_1..x_k, d_{k+1}, ..., d_{k+N}` 上运行一次 `M_q`，得到位置 `k+1..k+N+1` 的验证概率 `q_1..q_{N+1}`。
+4. **从左至右接受或拒绝草稿词元**：对每个 `i`，以概率 `min(1, q_i(d_i) / p_i(d_i))` 接受。
+5. 在位置 `j` 首次拒绝时，从归一化“残差”分布 `(q_j - p_j)_+` 采样 `t_j`。丢弃 `j` 之后所有草稿。
+6. 若全部 `N` 个都接受，从 `q_{N+1}` 额外采样一个 `t_{N+1}`，即免费奖励词元。
 
-The residual distribution trick is the mathematical insight that keeps the output distributed exactly as if `M_q` had sampled from scratch.
+残差分布技巧是关键数学洞见，使输出分布精确等同于 `M_q` 从零采样。
 
-### What determines speedup
+### 什么决定加速比（What determines speedup）
 
-Let `α` = expected acceptance rate per draft token. Let `c` = draft-to-verifier cost ratio. Per step:
+设 `α` 为每草稿词元预期接受率，`c` 为草稿与验证成本比。每步：
 
-- Naive generation makes 1 big-model call per token.
-- Speculative makes 1 big-model call per `(1 - α^{N+1}) / (1 - α) ≈ 1/(1-α)` tokens when `α` is high.
+- 朴素生成每词元调用一次大模型。
+- `α` 较高时，推测解码每 `(1 - α^{N+1}) / (1 - α) ≈ 1/(1-α)` 个词元调用一次大模型。
 
-Typical rule of thumb at `α = 0.75` and `N = 5`: 3× fewer big-model calls. Draft cost is 5× cheap. Total wall-clock drops ~2.5×.
+典型经验：`α = 0.75`、`N = 5` 时，大模型调用减少 3 倍。草稿成本是 5 次低成本调用，总实际耗时约减少 2.5 倍。
 
-**α depends on:**
+**α 取决于：**
 
-- How well the draft approximates the verifier. Same family / same training data boosts α significantly.
-- Decoding strategy. Greedy draft against greedy verifier: high α. Temperature sampling: harder to match; acceptance drops.
-- Task type. Code and structured output accept more (predictable); free-form creative writing accepts less.
+- 草稿逼近验证模型的程度。同家族、同训练数据可显著提高 α。
+- 解码策略。贪心草稿对贪心验证模型时 α 高；温度采样更难匹配，接受率下降。
+- 任务类型。代码和结构化输出更可预测，接受率更高；自由创作接受率更低。
 
-### Medusa — drafts without a draft model
+### Medusa：没有草稿模型的草稿（Medusa — drafts without a draft model）
 
-Medusa replaces the draft model with extra output heads on the verifier. At position `t`:
+Medusa 用验证模型上的额外输出头替代草稿模型。在位置 `t`：
 
 ```
-shared trunk → hidden h_t
-    ├── head_0: predict token at t+1  (standard LM head)
-    ├── head_1: predict token at t+2
-    ├── head_2: predict token at t+3
-    ├── head_3: predict token at t+4
+共享主干 → 隐藏状态 h_t
+    ├── head_0：预测 t+1 的词元（标准语言模型头）
+    ├── head_1：预测 t+2 的词元
+    ├── head_2：预测 t+3 的词元
+    ├── head_3：预测 t+4 的词元
 ```
 
-Each head outputs its own logits. At inference you sample from each head to get a candidate sequence, then verify with one forward pass using a tree-attention scheme that considers all candidate continuations at once.
+每个头输出自己的逻辑值。推理时从各头采样形成候选序列，再用树注意力方案一次前向验证，同时考虑全部候选续写。
 
-Pros: no second model. Cons: adds trainable parameters; needs a supervised fine-tuning stage (~1B tokens); acceptance rate is a bit lower than vanilla speculative with a good draft.
+优点是没有第二个模型。缺点是增加可训练参数，需要约 1B 词元的监督微调阶段，接受率略低于具有优质草稿模型的标准推测解码。
 
-### EAGLE — better draft by reusing hidden states
+### EAGLE：复用隐藏状态得到更好草稿（EAGLE — better draft by reusing hidden states）
 
-EAGLE-1/2/3 (Li et al., 2024–2025) makes the draft model a tiny transformer (typically 1 layer) that ingests the verifier's last-layer hidden states. Because the draft sees the verifier's feature representation, its predictions correlate strongly with the verifier's output distribution. Acceptance rates climb from ~0.6 (vanilla) to 0.85+.
+EAGLE-1/2/3（Li 等，2024–2025）使用微型 Transformer 草稿模型，通常 1 层，接收验证模型最后一层隐藏状态。草稿看到验证模型的特征表示，预测与验证输出分布高度相关，接受率从标准方案约 0.6 提高到 0.85+。
 
-EAGLE-3 (2025) added tree search over candidate continuations. vLLM and SGLang ship EAGLE-2/3 as the default spec pathway for Llama 3/4 and Qwen 3.
+EAGLE-3（2025）增加候选续写树搜索。vLLM 和 SGLang 将 EAGLE-2/3 作为 Llama 3/4 与 Qwen 3 的默认推测路径。
 
-### The KV cache dance
+### KV 缓存的协调（The KV cache dance）
 
-Verification feeds `N` draft tokens into the verifier in one forward pass. This extends the verifier's KV cache by `N` entries. If some drafts are rejected, you must roll the cache back to the accepted prefix length.
+验证把 `N` 个草稿词元一次前向送入验证模型，其 KV 缓存增长 `N` 项。若拒绝部分草稿，必须回滚缓存到已接受前缀长度。
 
-Production implementations (vLLM's `--speculative-model`, TensorRT-LLM's LookaheadDecoder) handle this with scratch KV buffers. Write first, commit on acceptance. It's not conceptually hard, but it is fiddly.
+生产实现（vLLM 的 `--speculative-model`、TensorRT-LLM 的 LookaheadDecoder）用临时 KV 缓冲区处理：先写入，接受后提交。概念不难，但细节繁琐。
 
 ```figure
 draft-verify-tokens
 ```
 
-## Build It
+## 动手实现（Build It）
 
-See `code/main.py`. We implement the core speculative-sampling algorithm (rejection step + residual distribution) with:
+参见 `code/main.py`。实现核心推测采样算法，即拒绝步骤与残差分布，包含：
 
-- A "big model" that is a deterministic-softmax over a hand-coded distribution (so we can verify acceptance math analytically).
-- A "draft model" that is a perturbation of the big model.
-- An acceptance / rejection loop that produces the same marginal distribution as direct sampling.
+- “大模型”：对手写分布执行确定性 softmax，便于解析验证接受概率数学。
+- “草稿模型”：对大模型分布进行扰动。
+- 接受/拒绝循环，产生与直接采样相同的边缘分布。
 
-### Step 1: the rejection step
+### 第 1 步：拒绝步骤（Step 1: the rejection step）
 
 ```python
 def accept_or_reject(q_prob, p_prob, draft_token, u):
@@ -100,9 +100,9 @@ def accept_or_reject(q_prob, p_prob, draft_token, u):
     return u < min(1.0, ratio)
 ```
 
-`u` is a uniform random number. `q_prob` is the verifier's probability for the drafted token. `p_prob` is the draft model's probability. The Leviathan theorem is that this Bernoulli decision, followed by sampling from the residual on rejection, preserves the verifier's distribution exactly.
+`u` 是均匀随机数，`q_prob` 是验证模型赋予草稿词元的概率，`p_prob` 是草稿模型的概率。Leviathan 定理说明，这个伯努利决策加上拒绝后的残差采样，精确保留验证模型分布。
 
-### Step 2: residual distribution
+### 第 2 步：残差分布（Step 2: residual distribution）
 
 ```python
 def residual_dist(q, p):
@@ -111,9 +111,9 @@ def residual_dist(q, p):
     return [r / s for r in raw]
 ```
 
-Subtract `p` from `q` element-wise, clamp negative values to zero, renormalize. Sample from this on any rejection.
+逐元素从 `q` 减去 `p`，负值截为零，再归一化。发生拒绝时从此分布采样。
 
-### Step 3: one speculative step
+### 第 3 步：一次推测步骤（Step 3: one speculative step）
 
 ```python
 def spec_step(prefix, q_model, p_model, N, rng):
@@ -143,19 +143,19 @@ def spec_step(prefix, q_model, p_model, N, rng):
     return prefix
 ```
 
-Five accepted → one bonus → six tokens produced in one verifier pass.
+接受五个，加一个奖励词元，一次验证前向产生六个词元。
 
-### Step 4: measure acceptance rate
+### 第 4 步：测量接受率（Step 4: measure acceptance rate）
 
-Run 10,000 speculative steps at varying draft-quality levels. Plot acceptance rate vs. KL divergence between draft and verifier distributions. You should see a clean monotone relationship.
+在不同草稿质量下运行 10,000 次推测步骤，绘制接受率与草稿/验证分布之间相对熵（Kullback–Leibler Divergence，KL 散度）的关系，应看到明确单调关系。
 
-### Step 5: verify distribution equivalence
+### 第 5 步：验证分布等价性（Step 5: verify distribution equivalence）
 
-Empirically: the histogram of tokens produced by the speculative loop should match the histogram produced by sampling directly from the verifier. This is the Leviathan theorem in practice. A chi-square test confirms within sampling error.
+实测推测循环生成词元的直方图，应与直接从验证模型采样的直方图一致。这是 Leviathan 定理的实践体现，卡方检验可确认差异在采样误差内。
 
-## Use It
+## 实际应用（Use It）
 
-Production:
+生产部署：
 
 ```bash
 # vLLM with EAGLE
@@ -170,57 +170,57 @@ vllm serve meta-llama/Llama-3.1-70B-Instruct \
     --num-speculative-tokens 5
 ```
 
-TensorRT-LLM has the fastest Medusa path as of mid-2026. `faster-whisper` wraps speculative decoding for Whisper-large with a small draft.
+截至 2026 年中，TensorRT-LLM 提供最快的 Medusa 路径。`faster-whisper` 为 Whisper-large 封装了小草稿模型的推测解码。
 
-**Picking a draft:**
+**选择草稿方案：**
 
-| Strategy | When to pick | Speedup |
+| 策略 | 何时选择 | 加速比 |
 |----------|--------------|---------|
-| Vanilla draft (1B/3B Llama family) | Fast prototype, no training | 1.8–2.3× |
-| Medusa heads | You can fine-tune the verifier | 2–3× |
-| EAGLE-2 / 3 | Production, max speed | 3–4× |
-| Lookahead | No draft, no training, no extra params | 1.3–1.6× |
+| 标准草稿（1B/3B Llama 家族） | 快速原型，无需训练 | 1.8–2.3× |
+| Medusa 头 | 可以微调验证模型 | 2–3× |
+| EAGLE-2 / 3 | 生产环境，追求最高速度 | 3–4× |
+| 前瞻解码 | 无草稿、无训练、无额外参数 | 1.3–1.6× |
 
-**When NOT to spec-decode:**
+**何时不使用推测解码：**
 
-- Single-sequence generation of 1–5 tokens. Overhead dominates.
-- Wildly creative / high-temperature sampling (α drops).
-- Memory-constrained deployments (draft model adds VRAM).
+- 单序列只生成 1–5 个词元，额外开销占主导。
+- 高创造性或高温度采样，α 会下降。
+- 内存受限部署，草稿模型会增加显存。
 
-## Ship It
+## 交付成果（Ship It）
 
-See `outputs/skill-spec-decode-picker.md`. The skill picks a speculative decoding strategy (vanilla / Medusa / EAGLE / lookahead) and tuning parameters (N, draft temperature) for a new inference workload.
+参见 `outputs/skill-spec-decode-picker.md`。该技能为新推理负载选择推测解码策略（标准、Medusa、EAGLE、前瞻）与调节参数（N、草稿温度）。
 
-## Exercises
+## 练习（Exercises）
 
-1. **Easy.** Run `code/main.py`. Confirm the speculative token distribution matches the verifier's direct-sample distribution on 50,000 tokens within chi-square p > 0.05.
-2. **Medium.** Plot speedup (tokens per big-model forward) as a function of `N` for `α = 0.5, 0.7, 0.85`. Identify the optimal `N` for each α. (Hint: expected tokens per verify call = `(1 - α^{N+1}) / (1 - α)`.)
-3. **Hard.** Implement a tiny Medusa: take the capstone GPT from Lesson 14, add 3 extra LM heads that predict positions t+2, t+3, t+4. Train on tinyshakespeare with a joint multi-head loss. Compare acceptance rates vs a vanilla draft made by truncating the same model.
-4. **Hard.** Implement rollback: start with a 10-token prefix KV cache, feed 5 draft tokens, simulate a rejection at position 3. Verify your cache reads correctly match "prefix + first 2 accepted drafts" at the next iteration.
+1. **简单。** 运行 `code/main.py`，在 50,000 词元上确认推测分布与验证模型直接采样分布一致，卡方检验 p > 0.05。
+2. **中等。** 在 `α = 0.5, 0.7, 0.85` 下绘制加速比（每大模型前向产生的词元数）关于 `N` 的函数，找出各 α 最优 `N`。（提示：每验证调用的预期词元数 = `(1 - α^{N+1}) / (1 - α)`。）
+3. **困难。** 实现微型 Medusa：取第 14 课综合实践 GPT，添加 3 个额外语言模型头，预测 t+2、t+3、t+4。在 tinyshakespeare 上用联合多头损失训练，与截断同一模型得到的标准草稿比较接受率。
+4. **困难。** 实现回滚：从 10 词元前缀 KV 缓存开始，输入 5 个草稿，模拟在位置 3 拒绝。验证下次迭代读取缓存正确对应“前缀加前 2 个已接受草稿”。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语 | 常见说法 | 实际含义 |
 |------|-----------------|-----------------------|
-| Draft model | "The cheap one" | A smaller model that proposes candidate tokens; usually 10–50× cheaper than the verifier. |
-| Verifier | "The big one" | The target model whose distribution we preserve; runs once per speculative step. |
-| Acceptance rate (α) | "How often the draft is right" | Per-token probability that the verifier accepts the draft. 0.7–0.9 typical. |
-| Residual distribution | "The rejection fallback" | `(q - p)_+` normalized; sampling from this on rejection preserves the verifier's distribution. |
-| Bonus token | "The free one" | When all N drafts accepted, sample one more from the verifier's next-step distribution. |
-| Medusa | "Draft-less speculative" | Multiple LM heads on the verifier predict positions t+1..t+k in parallel. |
-| EAGLE | "Hidden-state draft" | Tiny transformer draft conditioned on the verifier's last-layer hidden states. |
-| Lookahead decoding | "Jacobi iteration" | Self-speculation using a fixed-point iteration; no draft model. |
-| Tree attention | "Verify many candidates at once" | Branching verification that considers several draft continuations simultaneously. |
-| KV rollback | "Undo rejected drafts" | Scratch KV buffer; commit on acceptance, discard on reject. |
+| 草稿模型（Draft model） | “便宜的那个” | 提出候选词元的较小模型，通常比验证模型便宜 10–50 倍。 |
+| 验证模型（Verifier） | “大的那个” | 我们要保持其分布的目标模型，每推测步骤运行一次。 |
+| 接受率（Acceptance rate，α） | “草稿多常正确” | 验证模型接受草稿的逐词元概率，通常 0.7–0.9。 |
+| 残差分布（Residual distribution） | “拒绝后的备用分布” | 归一化的 `(q - p)_+`，拒绝时从中采样可保留验证模型分布。 |
+| 奖励词元（Bonus token） | “免费的那个” | 全部 N 个草稿被接受时，再从验证模型下一步分布采样一个。 |
+| Medusa | “无独立草稿的推测” | 验证模型上的多个语言模型头并行预测 t+1..t+k。 |
+| EAGLE | “隐藏状态草稿” | 以验证模型最后一层隐藏状态为条件的微型 Transformer 草稿。 |
+| 前瞻解码（Lookahead decoding） | “Jacobi 迭代” | 通过不动点迭代自我推测，无需草稿模型。 |
+| 树注意力（Tree attention） | “同时验证多个候选” | 同时考虑多条草稿续写的分支验证。 |
+| KV 回滚（KV rollback） | “撤销拒绝的草稿” | 临时 KV 缓冲区，接受时提交，拒绝时丢弃。 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [Leviathan, Kalman, Matias (2023). Fast Inference from Transformers via Speculative Decoding](https://arxiv.org/abs/2211.17192) — the core algorithm and the equivalence theorem.
-- [Chen et al. (2023). Accelerating Large Language Model Decoding with Speculative Sampling](https://arxiv.org/abs/2302.01318) — concurrent introduction; clean Bernoulli-rejection proof.
-- [Cai et al. (2024). Medusa: Simple LLM Inference Acceleration Framework with Multiple Decoding Heads](https://arxiv.org/abs/2401.10774) — Medusa paper; tree-attention verification.
-- [Li et al. (2024). EAGLE: Speculative Sampling Requires Rethinking Feature Uncertainty](https://arxiv.org/abs/2401.15077) — EAGLE-1; hidden-state-conditioned draft.
-- [Li et al. (2024). EAGLE-2: Faster Inference of Language Models with Dynamic Draft Trees](https://arxiv.org/abs/2406.16858) — EAGLE-2; dynamic tree depth.
-- [Li et al. (2025). EAGLE-3: Scaling up Inference Acceleration of Large Language Models via Training-Time Test](https://arxiv.org/abs/2503.01840) — EAGLE-3.
-- [Fu et al. (2024). Break the Sequential Dependency of LLM Inference Using Lookahead Decoding](https://arxiv.org/abs/2402.02057) — lookahead, no-draft approach.
-- [vLLM docs — Speculative Decoding](https://docs.vllm.ai/en/latest/features/spec_decode.html) — canonical production reference with all four strategies wired up.
-- [SafeAILab / EAGLE reference implementation](https://github.com/SafeAILab/EAGLE) — the reference code for EAGLE-1/2/3.
+- [Leviathan、Kalman、Matias（2023）：通过推测解码实现 Transformer 快速推理（Fast Inference from Transformers via Speculative Decoding）](https://arxiv.org/abs/2211.17192)：核心算法与等价定理。
+- [Chen 等（2023）：用推测采样加速大语言模型解码（Accelerating Large Language Model Decoding with Speculative Sampling）](https://arxiv.org/abs/2302.01318)：同期提出，伯努利拒绝证明清晰。
+- [Cai 等（2024）：Medusa：具有多个解码头的简易大语言模型推理加速框架（Medusa: Simple LLM Inference Acceleration Framework with Multiple Decoding Heads）](https://arxiv.org/abs/2401.10774)：Medusa 论文与树注意力验证。
+- [Li 等（2024）：EAGLE：推测采样需要重新思考特征不确定性（EAGLE: Speculative Sampling Requires Rethinking Feature Uncertainty）](https://arxiv.org/abs/2401.15077)：EAGLE-1，隐藏状态条件草稿。
+- [Li 等（2024）：EAGLE-2：用动态草稿树加速语言模型推理（EAGLE-2: Faster Inference of Language Models with Dynamic Draft Trees）](https://arxiv.org/abs/2406.16858)：EAGLE-2，动态树深度。
+- [Li 等（2025）：EAGLE-3：通过训练时测试扩大大语言模型推理加速（EAGLE-3: Scaling up Inference Acceleration of Large Language Models via Training-Time Test）](https://arxiv.org/abs/2503.01840)：EAGLE-3。
+- [Fu 等（2024）：用前瞻解码打破大语言模型推理的串行依赖（Break the Sequential Dependency of LLM Inference Using Lookahead Decoding）](https://arxiv.org/abs/2402.02057)：无草稿的前瞻方案。
+- [vLLM 文档：推测解码（Speculative Decoding）](https://docs.vllm.ai/en/latest/features/spec_decode.html)：接入全部四种策略的典型生产参考。
+- [SafeAILab / EAGLE 参考实现](https://github.com/SafeAILab/EAGLE)：EAGLE-1/2/3 参考代码。

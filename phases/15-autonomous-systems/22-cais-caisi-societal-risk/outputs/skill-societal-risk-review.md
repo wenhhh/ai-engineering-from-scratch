@@ -1,40 +1,40 @@
 ---
 name: societal-risk-review
-description: Review a deployment for societal-scale-risk posture using the CAIS four-risk framework and CAISI / SB-53 regulatory context.
+description: 结合 CAIS 四类风险框架以及 CAISI / SB-53 监管背景，审查部署的社会规模风险应对状况。
 version: 1.0.0
 phase: 15
 lesson: 22
 tags: [cais, caisi, four-risk-framework, organizational-risk, sb-53, societal-risk]
 ---
 
-Given a proposed or operating AI deployment, produce a societal-scale-risk review that tags the deployment against the CAIS four-risk framework, inventories organizational-risk sub-levers, and names the regulatory surface.
+给定一项拟议或正在运行的 AI 部署，生成社会规模风险（societal-scale risk）审查：按照 CAIS 四类风险框架为部署打标签，列出组织风险的各项干预手段，并说明涉及哪些监管要求。
 
-Produce:
+请生成：
 
-1. **Four-risk tagging.** For each of the four categories (malicious use, AI races, organizational risks, rogue AIs), state whether the deployment touches it and how. A deployment can touch multiple categories; "does not apply" must be justified in one sentence.
-2. **Organizational-risk inventory.** Score the deployment against the four sub-levers: safety culture, audit rigor, multi-layered defenses, information security. Any lever scored "missing" is a flagged gap.
-3. **Regulatory surface.** Name the applicable regulatory frameworks: EU AI Act (if in EU or serving EU users), California SB-53 (if signed and applicable), CAISI voluntary agreements (if the lab has signed one). Compliance is a deployment gate, not a deployment nice-to-have.
-4. **External-evaluation posture.** Name the external evaluations the deployment or its base model has undergone (METR, CAISI, Apollo, Gray Swan, etc.). No external evaluation is a flagged gap for long-horizon autonomous deployments.
-5. **Structural-force exposure.** Estimate how much competitive-deployment pressure the organization is under and how that trades against the organizational-risk levers. Teams under heavy race pressure de-prioritize audit first; this is the CAIS finding.
+1. **四类风险标注（Four-risk tagging）。** 对四个类别（恶意使用、AI 竞赛、组织风险、失控 AI），逐一说明部署是否涉及，以及如何涉及。一个部署可以涉及多个类别；“不适用”必须用一句话说明理由。
+2. **组织风险清单（Organizational-risk inventory）。** 根据四项干预手段为部署评分：安全文化、审计严格程度、多层防御、信息安全。任何被评为“缺失”的项都必须标记为缺口。
+3. **监管范围（Regulatory surface）。** 列明适用的监管框架：欧盟《AI 法案》（EU AI Act，如果部署在欧盟或服务欧盟用户）、加利福尼亚州 SB-53（如果已签署且适用）、CAISI 自愿协议（如果实验室已签订）。合规是部署关卡，不是可有可无的加分项。
+4. **外部评估状况（External-evaluation posture）。** 列出部署或其基础模型接受过的外部评估（METR、CAISI、Apollo、Gray Swan 等）。对于长时程自主部署，没有外部评估必须标记为缺口。
+5. **面临的结构性压力（Structural-force exposure）。** 估计组织因竞争而承受多大的部署压力，以及这种压力会迫使组织牺牲哪些风险干预措施。CAIS 的研究发现，团队承受强烈的竞赛压力时，首先会降低审计的优先级。
 
-Hard rejects:
-- Deployments touching harmful-capability categories without a hardcoded-prohibition layer (Lesson 17).
-- Deployments in competitive-race conditions with no independent audit.
-- Long-horizon autonomous deployments with no external capability evaluation.
-- EU deployments with no Article 14 HITL (Lesson 15).
-- California deployments with no incident-reporting process if SB-53 is signed.
+硬性拒绝条件（Hard rejects）：
+- 涉及有害能力类别，却没有硬编码禁令层的部署（第 17 课）。
+- 处于竞争性竞赛环境，却没有独立审计的部署。
+- 没有外部能力评估的长时程自主部署。
+- 没有第 14 条所要求的人在回路（HITL）的欧盟部署（第 15 课）。
+- 如果 SB-53 已签署，没有事件报告流程的加州部署。
 
-Refusal rules:
-- If the user cannot name the external evaluator for the base model, refuse and require identification first. Self-evaluation alone is insufficient.
-- If the user treats "we have a scaling policy" as compliance with catastrophic-risk regulation, refuse and require specific regulatory-surface mapping.
-- If the user proposes deploying under race pressure without audit, refuse and name the CAIS finding on organizational risk.
+拒绝规则（Refusal rules）：
+- 如果用户无法说出基础模型的外部评估方，拒绝并要求先明确身份。仅靠自我评估并不充分。
+- 如果用户把“我们有扩展政策”当作符合灾难性风险法规，拒绝并要求提供具体的监管要求映射。
+- 如果用户提议在竞赛压力下不经审计就部署，拒绝并指出 CAIS 关于组织风险的研究发现。
 
-Output format:
+输出格式（Output format）：
 
-Return a societal-risk review with:
-- **Four-risk row table** (category, touched y/n, nature)
-- **Organizational-risk scorecard** (safety culture / audit / defenses / infosec)
-- **Regulatory surface** (applicable frameworks with compliance status)
-- **External-evaluation posture** (evaluator, scope, cadence)
-- **Structural-force exposure** (low / medium / high with rationale)
-- **Deployment readiness** (production / staging / research-only)
+返回一份社会风险审查，包含：
+- **四类风险表**（类别、是否涉及 y/n、性质）
+- **组织风险评分卡**（安全文化 / 审计 / 防御 / 信息安全）
+- **监管范围**（适用框架及合规状态）
+- **外部评估状况**（评估方、范围、频率）
+- **面临的结构性压力**（low / medium / high，附理由）
+- **部署就绪情况**（production / staging / research-only）

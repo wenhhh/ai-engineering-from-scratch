@@ -1,34 +1,34 @@
 {
   "lesson": "07-memory-virtual-context-memgpt",
-  "title": "Agent Memory — Virtual Context and Memory Paging",
+  "title": "智能体记忆：虚拟上下文与记忆分页（Agent Memory — Virtual Context and Memory Paging）",
   "questions": [
     {
       "stage": "pre",
-      "question": "What OS analogy does MemGPT build on?",
+      "question": "MemGPT 建立在哪种操作系统类比之上？",
       "options": [
-        "Virtual memory: main context as RAM, external store as disk, memory tools as page in and out",
-        "Processes and threads",
-        "Network sockets",
-        "File descriptors"
+        "虚拟内存：主上下文是 RAM，外部存储是磁盘，记忆工具负责页面换入、换出",
+        "进程与线程",
+        "网络套接字",
+        "文件描述符"
       ],
       "correct": 0,
-      "explanation": "MemGPT maps prompt to RAM, external store to disk, and memory tools to page-fault-style transfers."
+      "explanation": "MemGPT 将提示词映射为 RAM、外部存储映射为磁盘、记忆工具映射为缺页式传输。"
     },
     {
       "stage": "pre",
-      "question": "Why do bigger context windows not fully solve memory?",
+      "question": "为什么更大的上下文窗口不能完全解决记忆问题？",
       "options": [
-        "The model refuses long input",
-        "Long context costs nothing",
-        "Overflow, dilution of attention, and lack of cross-session persistence still bite even with 128k windows",
-        "Providers cap them at 4k tokens"
+        "模型拒绝长输入",
+        "长上下文没有成本",
+        "即使使用 128k 窗口，溢出、注意力稀释和缺少跨会话持久化仍然存在",
+        "提供商将窗口限制为 4k 词元"
       ],
       "correct": 2,
-      "explanation": "Mem0 measured 128k-window baselines still missing facts a 4k agent with external memory catches; overflow, dilution, and persistence remain."
+      "explanation": "Mem0 测得，128k 窗口基线仍会漏掉拥有外部记忆的 4k 智能体能捕获的事实；溢出、稀释和持久化问题仍然存在。"
     },
     {
       "stage": "check",
-      "question": "Which of these is NOT one of MemGPT's canonical memory tools?",
+      "question": "以下哪项不是 MemGPT 的经典记忆工具？",
       "options": [
         "archival_memory_search",
         "core_memory_append",
@@ -36,23 +36,23 @@
         "gradient_memory_update"
       ],
       "correct": 3,
-      "explanation": "There is no gradient memory tool; the surface is core/archival/conversation operations."
+      "explanation": "不存在梯度记忆工具；接口包括核心、归档和对话操作。"
     },
     {
       "stage": "check",
-      "question": "What does the interrupt pattern do in MemGPT?",
+      "question": "MemGPT 中的中断模式（Interrupt pattern）做什么？",
       "options": [
-        "It halts the entire agent run on any error",
-        "Mid-conversation the agent invokes a memory tool, the runtime executes it, and the result splices into the next turn",
-        "It bypasses the context window entirely",
-        "It triggers a model retrain"
+        "任何错误都会停止整个智能体运行",
+        "对话中途，智能体调用记忆工具，运行时执行它，结果拼接到下一轮",
+        "完全绕过上下文窗口",
+        "触发模型重新训练"
       ],
       "correct": 1,
-      "explanation": "Memory-as-interrupt: invoke memory tool, runtime fetches, result returns as a new observation on the next turn (like a Unix read())."
+      "explanation": "将记忆视为中断：调用记忆工具，运行时获取数据，结果在下一轮作为新观察结果返回，类似 Unix read()。"
     },
     {
       "stage": "check",
-      "question": "Which production system did MemGPT evolve into in 2024?",
+      "question": "MemGPT 在 2024 年演变为哪个生产系统？",
       "options": [
         "Pinecone",
         "Mem0",
@@ -60,31 +60,31 @@
         "Letta"
       ],
       "correct": 3,
-      "explanation": "MemGPT became Letta in September 2024; the research repo cpacker/MemGPT still exists as the origin."
+      "explanation": "MemGPT 于 2024 年 9 月演变为 Letta；研究仓库 cpacker/MemGPT 仍作为起源保留。"
     },
     {
       "stage": "post",
-      "question": "What is memory poisoning in this context?",
+      "question": "这里的记忆投毒（Memory poisoning）是什么？",
       "options": [
-        "Reading from disk when RAM is available",
-        "Embedding model version drift",
-        "A bug that corrupts vector indices",
-        "An attacker's content gets stored as a memory note and is re-ingested on future recalls"
+        "有 RAM 可用时仍从磁盘读取",
+        "嵌入模型版本偏移",
+        "破坏向量索引的错误",
+        "攻击者内容被保存为记忆笔记，在未来回忆时重新摄入"
       ],
       "correct": 3,
-      "explanation": "External memory is retrieved text; if attacker-reachable content lands in a memory note the agent re-ingests it next session."
+      "explanation": "外部记忆是检索文本；如果攻击者可触达的内容进入记忆笔记，智能体会在下一次会话重新摄入。"
     },
     {
       "stage": "post",
-      "question": "Why does the lesson say production memory systems are MemGPT variants?",
+      "question": "为什么本课说生产记忆系统都是 MemGPT 的变体？",
       "options": [
-        "Letta, Mem0, Assistants threads, and Claude Agent SDK all run the two-tier (or more) paged-memory pattern; differences are operational shape",
-        "They share weights",
-        "They use the same vector DB",
-        "MemGPT owns the trademark"
+        "Letta、Mem0、Assistants 线程和 Claude Agent SDK 都运行两层或更多层的分页记忆模式，区别在运行形态",
+        "它们共享权重",
+        "它们使用相同的向量数据库",
+        "MemGPT 拥有商标"
       ],
       "correct": 0,
-      "explanation": "Pick by operational shape, not pattern; all share the MemGPT page in/out skeleton."
+      "explanation": "应按运行形态而不是模式选择；它们共享 MemGPT 换入、换出的基本结构。"
     }
   ]
 }

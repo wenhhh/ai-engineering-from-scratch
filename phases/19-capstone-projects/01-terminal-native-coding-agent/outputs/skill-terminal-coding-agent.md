@@ -1,46 +1,46 @@
 ---
 name: terminal-coding-agent
-description: Build and evaluate a terminal-native coding agent against SWE-bench Pro with bounded cost, sandboxed tools, and full 2026 hook surface.
+description: 构建终端原生编码智能体，以受限成本、沙箱工具和完整的 2026 钩子接口，在 SWE-bench Pro 上评估。
 version: 1.0.0
 phase: 19
 lesson: 01
 tags: [capstone, coding-agent, claude-code, swe-bench, mcp, hooks, sandbox]
 ---
 
-Given a target repository and a natural-language task, build a harness that plans, executes in a sandbox, and opens a pull request. Match or beat the mini-swe-agent baseline on a 30-task SWE-bench Pro subset while staying under a $5-per-task budget.
+给定目标仓库和自然语言任务，构建能够规划、在沙箱执行并创建拉取请求（Pull Request，PR）的运行框架（Harness）。在 SWE-bench Pro 的 30 任务子集上达到或超过 mini-swe-agent 基线，同时将每任务预算控制在 5 美元以下。
 
-Build plan:
+构建计划：
 
-1. Stand up a Bun + Ink TUI harness with a plan pane, a tool-call stream, and a live token/dollar budget.
-2. Define six tools (read_file, edit_file, ripgrep, tree_sitter_symbols, run_shell, git) over Model Context Protocol StreamableHTTP. Every call returns at most 4k tokens.
-3. Run every tool call inside an E2B or Daytona sandbox on a fresh `git worktree add` branch. Never touch the host filesystem.
-4. Wire all eight 2026 hook events: SessionStart, SessionEnd, PreToolUse, PostToolUse, UserPromptSubmit, Notification, Stop, PreCompact. Ship at least four user-authored hooks (destructive-command guard, token accounting, OTel span emitter, trace bundle writer).
-5. Enforce three budgets: 50 turns, 200k tokens, $5 dollars. PreCompact fires at 150k and summarizes older turns.
-6. Emit OpenTelemetry spans with GenAI semantic conventions to a self-hosted Langfuse.
-7. On success, push the branch and open a PR with the plan and trace bundle in the body.
-8. Evaluate against mini-swe-agent on a 30-issue SWE-bench Pro Python subset and record pass@1, turns, tokens, and dollars per task.
+1. 搭建 Bun + Ink 终端用户界面（TUI）框架，包含计划面板、工具调用流，以及实时词元 / 美元预算。
+2. 通过模型上下文协议（Model Context Protocol，MCP）StreamableHTTP 定义六个工具：read_file、edit_file、ripgrep、tree_sitter_symbols、run_shell、git。每次调用最多返回 4k 词元。
+3. 所有工具调用都在 E2B 或 Daytona 沙箱内的新 `git worktree add` 分支上执行，绝不接触宿主文件系统。
+4. 接入全部八种 2026 钩子事件：SessionStart、SessionEnd、PreToolUse、PostToolUse、UserPromptSubmit、Notification、Stop、PreCompact。至少交付四个用户编写的钩子：破坏性命令防护、词元记账、OTel 跨度发射器、追踪包写入器。
+5. 执行三项预算限制：50 轮、200k 词元、5 美元。PreCompact 在 150k 时触发并概括旧轮次。
+6. 将符合 GenAI 语义约定的 OpenTelemetry 跨度（Span）发送到自托管 Langfuse。
+7. 成功后推送分支并创建 PR，正文包含计划与追踪包。
+8. 在 SWE-bench Pro Python 的 30 问题子集上与 mini-swe-agent 比较，记录每任务 pass@1、轮数、词元和美元成本。
 
-Assessment rubric:
+评估标准：
 
-| Weight | Criterion | Measurement |
+| 权重 | 标准 | 衡量方式 |
 |:-:|---|---|
-| 25 | SWE-bench Pro pass@1 | Matched 30-task subset vs mini-swe-agent baseline |
-| 20 | Architecture clarity | Plan/act/observe separation, hook surface, tool schema readability |
-| 20 | Safety | Sandbox escape red-team + destructive-command guard audit |
-| 20 | Observability | 100% of tool calls spanned, token accounting per turn |
-| 15 | Developer UX | Cold-start under 2s, crash recovery, Ctrl-C cancel semantics |
+| 25 | SWE-bench Pro pass@1 | 相同 30 任务子集上对比 mini-swe-agent 基线 |
+| 20 | 架构清晰度 | 规划 / 行动 / 观察分离、钩子接口、工具模式可读性 |
+| 20 | 安全 | 沙箱逃逸红队测试 + 破坏性命令防护审计 |
+| 20 | 可观测性 | 100% 工具调用有跨度，逐轮词元记账 |
+| 15 | 开发者体验 | 冷启动低于 2s，崩溃恢复，Ctrl-C 取消语义 |
 
-Hard rejects:
+直接不予验收的情况：
 
-- Harness that shells out to git on the host filesystem instead of inside the sandbox.
-- Any agent that can write outside the worktree or curl external URLs without an explicit allowlist hook.
-- Eval numbers reported without a matched baseline run on the same 30 issues.
-- "Pass rate" claims that depend on `git reset --hard` between retries; SWE-bench Pro is pass@1.
+- 框架通过 shell 在宿主文件系统上运行 git，而非在沙箱内运行。
+- 智能体可以写入工作树外，或在没有显式允许列表钩子的情况下 curl 外部 URL。
+- 报告评估数值，却未在相同 30 个问题上运行匹配基线。
+- “通过率”依赖重试之间执行 `git reset --hard`；SWE-bench Pro 衡量 pass@1。
 
-Refusal rules:
+拒绝规则：
 
-- Refuse to push directly to main under any configuration. PR branches only.
-- Refuse to disable the destructive-command guard. It is a hard requirement of the rubric.
-- Refuse to run without a budget ceiling. Open-ended runs contaminate the eval comparison.
+- 任何配置下都拒绝直接推送 main，只使用 PR 分支。
+- 拒绝禁用破坏性命令防护，这是评分标准的硬性要求。
+- 拒绝没有预算上限的运行；无限制运行会污染评估比较。
 
-Output: a repo containing the harness, a fixed 30-task SWE-bench Pro eval harness with matched mini-swe-agent baseline run, an OpenTelemetry trace archive for at least 5 full runs, and a write-up naming which tasks the harness solves that the baseline does not and vice versa. End with a section on the top three failure modes you observed and the hook change that fixed each.
+输出：包含运行框架的仓库；固定 30 任务的 SWE-bench Pro 评估框架及匹配的 mini-swe-agent 基线运行；至少 5 次完整运行的 OpenTelemetry 追踪归档；一份说明，列出框架能解决但基线不能解决的任务，反之亦然。结尾说明观察到的前三种失效模式，以及分别修复它们的钩子改动。

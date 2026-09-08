@@ -1,82 +1,82 @@
-# Whisper — Architecture & Fine-Tuning
+# Whisper：架构与微调（Whisper — Architecture & Fine-Tuning）
 
-> Whisper is a 30-second-window transformer encoder-decoder, trained on 680k hours of multilingual weakly-supervised audio-text pairs. One architecture, multiple tasks, robust across 99 languages. The 2026 reference ASR.
+> Whisper 是窗口为 30 秒的 Transformer 编码器–解码器，在 68 万小时多语言弱监督音频–文本对上训练。一个架构支持多项任务，在 99 种语言上表现稳健，是 2026 年的参考自动语音识别模型。
 
 **Type:** Build
 **Languages:** Python
-**Prerequisites:** Phase 6 · 04 (ASR), Phase 5 · 10 (Attention), Phase 7 · 05 (Full Transformer)
-**Time:** ~75 minutes
+**Prerequisites:** 阶段 6 · 04（自动语音识别），阶段 5 · 10（注意力），阶段 7 · 05（完整 Transformer）
+**Time:** ~75 分钟
 
-## The Problem
+## 问题（The Problem）
 
-Whisper, released by OpenAI in September 2022, was the first ASR model to ship as a commodity: paste audio, get text, 99 languages, robust to noise, runs on a laptop. By 2024 OpenAI had shipped Large-v3 and Turbo variants; by 2026, Whisper is the default baseline for everything from podcast transcription to voice assistants to YouTube subtitles.
+OpenAI 于 2022 年 9 月发布 Whisper，这是首个以通用现成工具形式交付的自动语音识别（Automatic Speech Recognition，ASR）模型：输入音频、获得文本，支持 99 种语言、耐受噪声，还能在笔记本电脑上运行。到 2024 年，OpenAI 已推出 Large-v3 和 Turbo；到 2026 年，从播客转录、语音助手到 YouTube 字幕，Whisper 都是默认基线。
 
-But Whisper is not a pipeline you can treat as a black box forever. Domain shift kills it — technical jargon, speaker accents, proper nouns, short clips, silence. You need to know:
+但你不能永远把 Whisper 当成黑箱流水线。领域偏移会让它失效：技术术语、说话人口音、专有名词、短片段和静音都可能出问题。你需要知道：
 
-1. What it actually is inside.
-2. How to give it chunked, streaming, or long-form audio correctly.
-3. When to fine-tune and how.
+1. 它的内部到底是什么。
+2. 如何正确输入分块、流式或长音频。
+3. 何时需要微调，以及如何微调。
 
-## The Concept
+## 概念（The Concept）
 
-![Whisper encoder-decoder, tasks, chunked inference, fine-tune](../assets/whisper.svg)
+![Whisper 编码器–解码器、任务、分块推理与微调](../assets/whisper.svg)
 
-**Architecture.** Standard transformer encoder-decoder.
+**架构（Architecture）。** 标准 Transformer 编码器–解码器。
 
-- Input: 30-second log-mel spectrogram, 80 mels, 10 ms hop → 3000 frames. Clips shorter are zero-padded, clips longer are chunked.
-- Encoder: conv-downsample (stride 2) + `N` transformer blocks. For Large-v3: 32 layers, 1280-dim, 20 heads.
-- Decoder: `N` transformer blocks with causal self-attn + cross-attn to encoder output. Same size as encoder.
-- Output: BPE tokens over a 51,865-token vocab.
+- 输入：30 秒对数梅尔频谱图，80 维梅尔特征，10 ms 帧移 → 3000 帧。较短片段补零，较长片段分块。
+- 编码器：卷积降采样（步幅 2）加 `N` 个 Transformer 块。Large-v3 为 32 层、1280 维、20 个头。
+- 解码器：`N` 个 Transformer 块，包含因果自注意力和对编码器输出的交叉注意力，大小与编码器相同。
+- 输出：在包含 51,865 个词元的词表上生成字节对编码（Byte-Pair Encoding，BPE）词元。
 
-Large-v3 has 1.55B params. Turbo uses a 4-layer decoder (from 32), cutting latency 8× with a <1% WER hit.
+Large-v3 有 15.5 亿参数。Turbo 将解码器从 32 层减为 4 层，延迟缩短 8 倍，词错误率退化不到 1%。
 
-**The prompt format.** Whisper is a multitask model steered by special tokens in the decoder prompt:
+**提示词格式（Prompt Format）。** Whisper 是多任务模型，通过解码器提示词中的特殊词元控制任务：
 
 ```
 <|startoftranscript|><|en|><|transcribe|><|notimestamps|> Hello world.<|endoftext|>
 ```
 
-- `<|en|>` — language tag; forces translation-vs-transcription behavior.
-- `<|transcribe|>` or `<|translate|>` — translate English output from any-language input, or verbatim.
-- `<|notimestamps|>` — skip word-level timestamps (faster).
+- `<|en|>`：语言标签，强制控制翻译与转录行为。
+- `<|transcribe|>` 或 `<|translate|>`：逐字转录，或将任意语言输入翻译为英语输出。
+- `<|notimestamps|>`：跳过词级时间戳，速度更快。
 
-The prompt is what lets one model do many tasks. Change `<|en|>` to `<|fr|>` and it transcribes French.
+提示词让一个模型执行多种任务。把 `<|en|>` 改为 `<|fr|>`，它就转录法语。
 
-**30-second window.** Everything is pinned to 30 seconds. Longer clips need chunking; shorter clips are padded. Windows are not streamed natively — this is why WhisperX, Whisper-Streaming, and faster-whisper exist.
+**30 秒窗口（30-Second Window）。** 所有处理都固定在 30 秒窗口上，长音频分块，短音频填充。窗口并非原生流式处理，这就是 WhisperX、Whisper-Streaming 和 faster-whisper 存在的原因。
 
-**Log-mel normalization.** `(log_mel - mean) / std` where the stats come from Whisper's own training corpus. You *must* use Whisper's preprocessing (`whisper.audio.log_mel_spectrogram`), not `librosa.feature.melspectrogram`.
+**对数梅尔归一化（Log-Mel Normalization）。** `(log_mel - mean) / std`，统计量来自 Whisper 自身训练语料。你*必须*使用 Whisper 的预处理（`whisper.audio.log_mel_spectrogram`），而非 `librosa.feature.melspectrogram`。
 
-### Variants in 2026
+### 2026 年的变体（Variants in 2026）
 
-| Variant | Params | Latency (A100) | WER (LibriSpeech-clean) |
+| 变体 | 参数量 | 延迟（A100） | 词错误率（LibriSpeech-clean） |
 |---------|--------|----------------|------------------------|
-| Tiny | 39M | 1× realtime | 5.4% |
-| Base | 74M | 1× | 4.1% |
-| Small | 244M | 1× | 3.0% |
-| Medium | 769M | 1× | 2.7% |
-| Large-v3 | 1.55B | 2× | 1.8% |
-| Large-v3-turbo | 809M | 8× | 1.58% |
-| Whisper-Streaming (2024) | 1.55B | streaming | 2.0% |
+| Tiny | 3900 万 | 1× 实时 | 5.4% |
+| Base | 7400 万 | 1× | 4.1% |
+| Small | 2.44 亿 | 1× | 3.0% |
+| Medium | 7.69 亿 | 1× | 2.7% |
+| Large-v3 | 15.5 亿 | 2× | 1.8% |
+| Large-v3-turbo | 8.09 亿 | 8× | 1.58% |
+| Whisper-Streaming（2024） | 15.5 亿 | 流式 | 2.0% |
 
-### Fine-tuning
+### 微调（Fine-tuning）
 
-Canonical workflow in 2026:
+2026 年的标准流程：
 
-1. Collect 10–100 hours of target-domain audio with aligned transcripts.
-2. Run `transformers.Seq2SeqTrainer` with `generate_with_loss` callback.
-3. Parameter-efficient: LoRA on `q_proj`, `k_proj`, `v_proj` of attention layers reduces GPU memory 4× with <0.3 WER cost.
-4. Freeze the encoder if you have <10 hours. Only tune the decoder.
-5. Use Whisper's own tokenizer and prompt format; never swap tokenizers.
+1. 收集 10–100 小时带对齐转录文本的目标领域音频。
+2. 使用带 `generate_with_loss` 回调的 `transformers.Seq2SeqTrainer`。
+3. 参数高效方法：在注意力层的 `q_proj`、`k_proj`、`v_proj` 上使用低秩适配（Low-Rank Adaptation，LoRA），GPU 内存需求降至 1/4，WER 代价小于 0.3。
+4. 数据不足 10 小时时冻结编码器，只微调解码器。
+5. 使用 Whisper 自带分词器和提示词格式，绝不替换分词器。
 
-Community results: fine-tuning Medium on 20 hours of medical dictation drops WER from 12% to 4.5% on medical vocabulary. Fine-tuning Turbo on 4 hours of Icelandic drops WER from 18% to 6%.
+社区结果：用 20 小时医疗口述微调 Medium，医疗词汇上的 WER 从 12% 降至 4.5%；用 4 小时冰岛语微调 Turbo，WER 从 18% 降至 6%。
 
 ```figure
 sp-asr-attention
 ```
 
-## Build It
+## 动手实现（Build It）
 
-### Step 1: run Whisper out of the box
+### 第 1 步：直接运行 Whisper（Step 1: run Whisper out of the box）
 
 ```python
 import whisper
@@ -93,9 +93,9 @@ for seg in result["segments"]:
     print(f"[{seg['start']:.2f}–{seg['end']:.2f}] {seg['text']}")
 ```
 
-Key defaults you should always override: `temperature=0.0` (sampling defaults to 0.0 → 0.2 → 0.4 … fallback chain), `condition_on_previous_text=False` (prevents the cascading hallucination problem), and `no_speech_threshold=0.6` (silence detection).
+应始终覆盖的关键默认值：`temperature=0.0`（采样默认采用 0.0 → 0.2 → 0.4 … 的回退链）、`condition_on_previous_text=False`（防止级联幻觉）和 `no_speech_threshold=0.6`（静音检测）。
 
-### Step 2: chunked long-form
+### 第 2 步：长音频分块（Step 2: chunked long-form）
 
 ```python
 # whisperx is the 2026 reference for long-form with word-level timestamps
@@ -104,9 +104,9 @@ model = whisperx.load_model("large-v3-turbo", device="cuda", compute_type="float
 segments = model.transcribe("1hour.mp3", batch_size=16, chunk_size=30)
 ```
 
-WhisperX adds (1) Silero VAD gating, (2) word-level alignment via wav2vec 2.0, (3) diarization via `pyannote.audio`. The 2026 workhorse for production transcription.
+WhisperX 增加了三项功能：(1) Silero 语音活动检测（Voice Activity Detection，VAD）门控，(2) 通过 wav2vec 2.0 做词级对齐，(3) 通过 `pyannote.audio` 做说话人分离（Diarization）。它是 2026 年生产转录的主力工具。
 
-### Step 3: fine-tune with LoRA
+### 第 3 步：用 LoRA 微调（Step 3: fine-tune with LoRA）
 
 ```python
 from transformers import WhisperForConditionalGeneration, WhisperProcessor
@@ -121,9 +121,9 @@ model = get_peft_model(model, lora)
 # model.print_trainable_parameters()  -> ~3M trainable / 809M total
 ```
 
-Then standard Trainer loop. Checkpoint every 1000 steps. Evaluate with WER on held-out.
+随后使用标准 Trainer 循环，每 1000 步保存检查点，在留出集上用词错误率（Word Error Rate，WER）评估。
 
-### Step 4: inspect what each layer learns
+### 第 4 步：查看每层学到了什么（Step 4: inspect what each layer learns）
 
 ```python
 # Grab cross-attention weights during decode to see what the decoder attends to.
@@ -136,56 +136,56 @@ with torch.inference_mode():
 # out.cross_attentions: layer × head × step × src_len
 ```
 
-Visualize with a heatmap — you will see diagonal alignment as decoder steps scan through encoder frames. That diagonal is Whisper's notion of word timestamps.
+用热力图可视化，你会看到解码步骤扫描编码器帧时形成对角线对齐。这条对角线就是 Whisper 对词时间戳的内部表示。
 
-## Use It
+## 实际应用（Use It）
 
-The 2026 stack:
+2026 年的技术栈：
 
-| Situation | Pick |
+| 情况 | 选择 |
 |-----------|------|
-| General English, offline | Large-v3-turbo via `whisperx` |
-| Mobile / edge | Whisper-Tiny quantized (int8) or Moonshine |
-| Multilingual long-form | Large-v3 via `whisperx` + diarization |
-| Low-resource language | Fine-tune Medium or Turbo with LoRA |
-| Streaming (2 s latency) | Whisper-Streaming or Parakeet-TDT |
-| Word-level timestamps | WhisperX (forced alignment via wav2vec 2.0) |
+| 通用英语、离线 | 通过 `whisperx` 使用 Large-v3-turbo |
+| 移动端 / 边缘端 | int8 量化 Whisper-Tiny 或 Moonshine |
+| 多语言长音频 | 通过 `whisperx` 使用 Large-v3，加说话人分离 |
+| 低资源语言 | 用 LoRA 微调 Medium 或 Turbo |
+| 流式（延迟 2 秒） | Whisper-Streaming 或 Parakeet-TDT |
+| 词级时间戳 | WhisperX（通过 wav2vec 2.0 强制对齐） |
 
-`faster-whisper` (CTranslate2 backend) is the fastest CPU+GPU inference runtime in 2026 — 4× faster than vanilla with identical output.
+`faster-whisper`（CTranslate2 后端）是 2026 年最快的 CPU+GPU 推理运行时，比原版快 4 倍，输出相同。
 
-## Pitfalls that still ship in 2026
+## 2026 年仍会进入生产的问题（Pitfalls that still ship in 2026）
 
-- **Hallucinated text on silence.** Whisper trained on captions includes "Thanks for watching!", "Subscribe!", song lyrics. Always VAD-gate before calling.
-- **`condition_on_previous_text` cascade.** One hallucination pollutes subsequent windows. Set `False` unless you need fluency across chunks.
-- **Short-clip padding.** A 2-second clip padded to 30 seconds can hallucinate in the trailing silence. Use `pad=False` or VAD-gate.
-- **Wrong mel stats.** Using librosa's mels instead of Whisper's produces near-random output. Use `whisper.audio.log_mel_spectrogram`.
+- **静音上产生幻觉文本。** Whisper 的字幕训练数据包括“感谢观看！”、“请订阅！”和歌词。调用前始终使用 VAD 门控。
+- **`condition_on_previous_text` 级联。** 一次幻觉会污染后续窗口。除非需要跨块流畅性，否则设为 `False`。
+- **短片段填充。** 2 秒音频填充至 30 秒后，尾部静音可能触发幻觉。使用 `pad=False` 或 VAD 门控。
+- **错误的梅尔统计量。** 使用 librosa 的梅尔特征而非 Whisper 的，会产生近似随机的输出。使用 `whisper.audio.log_mel_spectrogram`。
 
-## Ship It
+## 交付成果（Ship It）
 
-Save as `outputs/skill-whisper-tuner.md`. Design a Whisper fine-tune or inference pipeline for a given domain.
+保存为 `outputs/skill-whisper-tuner.md`。为给定领域设计 Whisper 微调或推理流水线。
 
-## Exercises
+## 练习（Exercises）
 
-1. **Easy.** Run `code/main.py`. It tokenizes a Whisper-style prompt, computes decoded shape budgets, and prints the chunk schedule for a 10-minute clip.
-2. **Medium.** Install `faster-whisper`, transcribe a 10-minute podcast, compare WER against a human transcript. Try `language="auto"` vs forced `language="en"`.
-3. **Hard.** Using HF `datasets`, pick a language Whisper struggles with (e.g., Urdu), fine-tune Medium with LoRA for 2 epochs on 2 hours, and report WER delta.
+1. **简单。** 运行 `code/main.py`。它对 Whisper 风格提示词分词，计算解码的形状预算，并打印 10 分钟音频的分块计划。
+2. **中等。** 安装 `faster-whisper`，转录 10 分钟播客，与人工转录比较 WER。尝试 `language="auto"` 与强制 `language="en"`。
+3. **困难。** 使用 Hugging Face 的 `datasets`，选择 Whisper 不擅长的语言（如乌尔都语），在 2 小时数据上用 LoRA 微调 Medium 两轮，报告 WER 变化。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语 | 常见说法 | 实际含义 |
 |------|-----------------|-----------------------|
-| 30-sec window | Whisper's limit | Hard input cap; chunk longer audio. |
-| SOT | Start-of-transcript | `<\|startoftranscript\|>` kicks off the decoder prompt. |
-| Timestamps token | Temporal alignment | Every 0.02 s offset is a special token in the 51k vocab. |
-| Turbo | The fast variant | 4-decoder layers, 8× faster, <1% WER regression. |
-| WhisperX | The long-form wrapper | VAD + Whisper + wav2vec alignment + diarization. |
-| LoRA fine-tune | Efficient tuning | Add low-rank adapters to attention; train ~0.3% of params. |
-| Hallucination | The silent failure | Whisper produces fluent English from noise/silence. |
+| 30 秒窗口（30-Sec Window） | Whisper 的限制 | 硬性输入上限，长音频需分块。 |
+| 转录起始（Start-of-Transcript，SOT） | 转录的开头 | `<\|startoftranscript\|>` 启动解码器提示词。 |
+| 时间戳词元（Timestamps Token） | 时间对齐 | 每 0.02 秒偏移对应 51k 词表中的一个特殊词元。 |
+| Turbo | 快速变体 | 4 层解码器、快 8 倍、WER 退化 <1%。 |
+| WhisperX | 长音频封装 | VAD + Whisper + wav2vec 对齐 + 说话人分离。 |
+| LoRA 微调（LoRA Fine-Tune） | 高效调优 | 在注意力中加入低秩适配器，训练约 0.3% 参数。 |
+| 幻觉（Hallucination） | 静默故障 | Whisper 从噪声或静音生成流畅英语。 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [Radford et al. (2022). Whisper paper](https://arxiv.org/abs/2212.04356) — the original architecture and training recipe.
-- [OpenAI (2024). Whisper Large-v3-turbo release](https://github.com/openai/whisper/discussions/2363) — 4-layer decoder, 8× speedup.
-- [Bain et al. (2023). WhisperX](https://arxiv.org/abs/2303.00747) — long-form, word-aligned, diarized.
-- [Systran — faster-whisper repo](https://github.com/SYSTRAN/faster-whisper) — CTranslate2-backed, 4× faster.
-- [HuggingFace — Whisper fine-tune tutorial](https://huggingface.co/blog/fine-tune-whisper) — canonical LoRA / full-FT walkthrough.
+- [Radford 等（2022）：Whisper 论文](https://arxiv.org/abs/2212.04356)：原始架构与训练方案。
+- [OpenAI（2024）：Whisper Large-v3-turbo 发布说明](https://github.com/openai/whisper/discussions/2363)：4 层解码器，8 倍加速。
+- [Bain 等（2023）：WhisperX 论文](https://arxiv.org/abs/2303.00747)：长音频、词级对齐和说话人分离。
+- [Systran：faster-whisper 仓库](https://github.com/SYSTRAN/faster-whisper)：基于 CTranslate2，快 4 倍。
+- [Hugging Face：Whisper 微调教程](https://huggingface.co/blog/fine-tune-whisper)：标准 LoRA / 全量微调教程。

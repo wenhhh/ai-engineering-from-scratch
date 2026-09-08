@@ -1,85 +1,85 @@
 ---
 name: skill-prompt-patterns
-description: Decision framework for choosing the right prompt pattern based on task type, reliability requirements, and target model
+description: 根据任务类型、可靠性要求和目标模型选择合适提示词模式（Prompt pattern）的决策框架
 version: 1.0.0
 phase: 11
 lesson: 01
 tags: [prompt-engineering, patterns, llm, temperature, cross-model, few-shot, chain-of-thought]
 ---
 
-# Prompt Pattern Selection Guide
+# 提示词模式选择指南（Prompt Pattern Selection Guide）
 
-When building an LLM-powered feature, choose your prompt pattern before writing the prompt. The pattern determines the structure. The content fills it in.
+构建由大语言模型（LLM）驱动的功能时，先选择提示词模式（Prompt pattern），再编写提示词。模式决定结构，内容填充结构。
 
-## Pattern Decision Matrix
+## 模式决策矩阵（Pattern Decision Matrix）
 
-| Task Type | Primary Pattern | Secondary Pattern | Temperature | Few-Shot Needed? |
+| 任务类型 | 主要模式 | 辅助模式 | 温度（Temperature） | 是否需要少样本（Few-Shot）？ |
 |-----------|----------------|-------------------|-------------|-----------------|
-| Data extraction | Template Fill | Few-Shot | 0.0 | Yes (2-3 examples) |
-| Classification | Few-Shot | Guardrail | 0.0 | Yes (3-5 examples) |
-| Summarization | Persona + Template | Audience Adapt | 0.3 | No |
-| Code generation | Persona | Chain-of-Thought | 0.0 | Optional |
-| Creative writing | Persona | Critique | 0.7-1.0 | No |
-| Multi-step reasoning | Chain-of-Thought | Decomposition | 0.3 | Optional |
-| Question answering | Persona + Guardrail | Boundary | 0.3 | No |
-| Prompt generation | Meta-Prompt | Critique | 0.7 | Yes (1-2 examples) |
-| Content moderation | Guardrail + Boundary | Few-Shot | 0.0 | Yes (5+ examples) |
-| Translation/adaptation | Audience Adapt | Few-Shot | 0.3 | Yes (2-3 examples) |
+| 数据抽取 | 模板填充（Template Fill） | 少样本（Few-Shot） | 0.0 | 是（2-3 个示例） |
+| 分类 | 少样本 | 防护（Guardrail） | 0.0 | 是（3-5 个示例） |
+| 摘要 | 角色设定（Persona）+ 模板 | 受众适配（Audience Adapt） | 0.3 | 否 |
+| 代码生成 | 角色设定 | 思维链（Chain-of-Thought） | 0.0 | 可选 |
+| 创意写作 | 角色设定 | 批评（Critique） | 0.7-1.0 | 否 |
+| 多步骤推理 | 思维链 | 分解（Decomposition） | 0.3 | 可选 |
+| 问答 | 角色设定 + 防护 | 边界（Boundary） | 0.3 | 否 |
+| 提示词生成 | 元提示词（Meta-Prompt） | 批评 | 0.7 | 是（1-2 个示例） |
+| 内容审核 | 防护 + 边界 | 少样本 | 0.0 | 是（5+ 个示例） |
+| 翻译/改写 | 受众适配 | 少样本 | 0.3 | 是（2-3 个示例） |
 
-## When to Use Each Pattern
+## 各模式的适用时机（When to Use Each Pattern）
 
-**Persona Pattern**: use for every prompt as a baseline. The only question is how specific to make the role. For generic tasks, a broad role suffices. For domain-specific tasks, the role should name the domain, seniority level, and context.
+**角色设定模式（Persona Pattern）**：作为每个提示词的基础。唯一需要决定的是角色应具体到什么程度。一般任务采用宽泛角色即可；领域专属任务应在角色中注明领域、资历和背景。
 
-**Few-Shot Pattern**: use when output format matters more than content. If the model needs to produce a specific JSON shape, CSV format, or classification label, examples are more effective than instructions. Rule of thumb: 2-3 examples for simple formats, 5+ for complex or ambiguous formats.
+**少样本模式（Few-Shot Pattern）**：输出格式比内容更重要时使用。如果模型需要产出特定 JSON 结构、CSV 格式或分类标签，示例比指令更有效。经验规则：简单格式用 2-3 个示例，复杂或存在歧义的格式用 5+ 个。
 
-**Chain-of-Thought Pattern**: use for math, logic, multi-step analysis, and any task where the model needs to "show its work." Improves accuracy by 10-40% on reasoning tasks (Wei et al., 2022). Do NOT use for simple factual lookups or extraction -- it wastes tokens.
+**思维链模式（Chain-of-Thought Pattern）**：用于数学、逻辑、多步骤分析，以及任何需要模型“展示解题过程”的任务。在推理任务上可使准确率提高 10-40%（Wei 等，2022）。不要用于简单事实查询或抽取，这会浪费词元。
 
-**Template Fill Pattern**: use for structured extraction where every output must have the same shape. Works best with temperature=0.0 and explicit "N/A" handling for missing fields.
+**模板填充模式（Template Fill Pattern）**：用于每次输出都必须采用相同结构的结构化抽取。配合 temperature=0.0，并明确要求缺失字段用“N/A”处理时，效果最好。
 
-**Critique Pattern**: use when quality matters more than speed. The model generates, critiques, and improves. Roughly doubles token cost but significantly improves accuracy and completeness. Best for high-stakes outputs (reports, recommendations, public-facing content).
+**批评模式（Critique Pattern）**：质量比速度更重要时使用。模型先生成，再批评，最后改进。词元成本大约翻倍，但准确性和完整性显著提高。最适合影响重大的输出（报告、建议、面向公众的内容）。
 
-**Guardrail Pattern**: use for any user-facing system. Always include: scope boundaries, refusal behavior for out-of-scope requests, and explicit "I don't know" handling. Combine with input validation on the application side.
+**防护模式（Guardrail Pattern）**：用于任何面向用户的系统。始终包含：范围边界、对超出范围请求的拒答行为，以及明确的“我不知道”处理方式。与应用端输入验证配合使用。
 
-**Meta-Prompt Pattern**: use to generate prompts for new tasks. Instead of writing a prompt from scratch, describe the task and let the model write the prompt. Then test and iterate. Saves time on initial prompt development.
+**元提示词模式（Meta-Prompt Pattern）**：用于为新任务生成提示词。无需从零手写，只需描述任务，让模型编写提示词，再测试、迭代。它能节省提示词初期开发时间。
 
-**Decomposition Pattern**: use for complex problems that benefit from divide-and-conquer. The model breaks the problem into parts, solves each, and combines. Most effective for tasks with 3-7 sub-problems.
+**分解模式（Decomposition Pattern）**：用于适合分而治之（Divide-and-conquer）的复杂问题。模型把问题拆成多个部分，逐一求解，再合并。对包含 3-7 个子问题的任务最有效。
 
-**Audience Adaptation Pattern**: use when the same content needs to serve different audiences. Specify the audience explicitly -- do not rely on the model guessing from context.
+**受众适配模式（Audience Adaptation Pattern）**：同一内容需要服务不同受众时使用。明确指定受众，不要依赖模型从上下文中猜测。
 
-**Boundary Pattern**: use for production systems that must NEVER answer certain types of questions. Stronger than guardrails because it defines a hard scope with an exact refusal message. Essential for compliance-sensitive domains.
+**边界模式（Boundary Pattern）**：用于绝不能回答某类问题的生产系统。它比防护模式更强，因为它定义了硬性范围和精确的拒答消息。对合规敏感领域必不可少。
 
-## Cross-Model Compatibility
+## 跨模型兼容性（Cross-Model Compatibility）
 
-Patterns ranked by how consistently they work across GPT-4o, Claude 3.5 Sonnet, Gemini 1.5 Pro, and Llama 3:
+按在 GPT-4o、Claude 3.5 Sonnet、Gemini 1.5 Pro 和 Llama 3 上的效果一致性排列模式：
 
-| Pattern | Cross-Model Consistency | Notes |
+| 模式 | 跨模型一致性 | 说明 |
 |---------|------------------------|-------|
-| Few-Shot | Very high | Examples transfer well across all models |
-| Template Fill | Very high | Explicit structure leaves little room for divergence |
-| Chain-of-Thought | High | All major models support "think step by step" |
-| Persona | High | Works everywhere but different models respond to different role specificity levels |
-| Guardrail | Moderate | Claude follows guardrails most strictly; GPT-4o sometimes drifts in long conversations |
-| Critique | Moderate | Quality of self-critique varies significantly by model |
-| Meta-Prompt | Moderate | GPT-4o and Claude produce different prompt styles |
-| Boundary | Low-Moderate | Refusal behavior varies; test per model |
+| 少样本 | 很高 | 示例能在所有模型间良好迁移 |
+| 模板填充 | 很高 | 明确结构使输出几乎没有偏离空间 |
+| 思维链 | 高 | 所有主流模型都支持“逐步思考” |
+| 角色设定 | 高 | 普遍有效，但不同模型适合不同的角色具体程度 |
+| 防护 | 中等 | Claude 最严格地遵守防护要求；GPT-4o 在长对话中有时会偏离 |
+| 批评 | 中等 | 不同模型的自我批评质量差异显著 |
+| 元提示词 | 中等 | GPT-4o 与 Claude 生成的提示词风格不同 |
+| 边界 | 低至中等 | 拒答行为存在差异；应逐个模型测试 |
 
-## Common Mistakes
+## 常见错误（Common Mistakes）
 
-1. **Using Chain-of-Thought for everything**: CoT adds tokens and latency. Only use it when reasoning steps are needed.
-2. **Too many constraints**: more than 5-7 constraints and the model starts dropping some. Prioritize the 3 most important.
-3. **Contradictory persona + constraints**: "You are a creative writer" + "Never use metaphors" confuses the model.
-4. **No temperature specification**: leaving temperature at default (usually 1.0) when you need deterministic output.
-5. **Copy-pasting prompts across models**: always test. A prompt tuned for GPT-4o may underperform on Claude and vice versa.
-6. **Ignoring system message**: putting everything in the user message instead of using the system message for persistent rules.
-7. **Over-relying on negative constraints**: "Do NOT do X, Y, Z, A, B, C" is less effective than "ONLY do W." Positive framing gives the model a clear target.
+1. **凡事都用思维链**：CoT 会增加词元和延迟。仅在需要推理步骤时使用。
+2. **约束过多**：超过 5-7 条约束，模型就会开始遗漏。优先保留最重要的 3 条。
+3. **角色与约束矛盾**：“你是一位创意作家”加上“绝不使用比喻”会让模型困惑。
+4. **不指定温度**：需要确定性输出时，仍将温度留在默认值（通常为 1.0）。
+5. **在不同模型间复制粘贴提示词**：始终测试。为 GPT-4o 调整的提示词在 Claude 上可能表现较差，反之亦然。
+6. **忽略系统消息**：把所有内容放进用户消息，而不用系统消息承载持续生效的规则。
+7. **过度依赖否定约束**：“不要做 X、Y、Z、A、B、C”不如“只做 W”有效。肯定表达给模型一个清晰目标。
 
-## Reliability Targets
+## 可靠性目标（Reliability Targets）
 
-| Use Case | Pattern Combination | Expected Accuracy | Token Cost |
+| 使用场景 | 模式组合 | 预期准确率 | 词元成本 |
 |----------|-------------------|-------------------|------------|
-| Production extraction | Template + Few-Shot | 95%+ | Low (500-1K) |
-| User-facing Q&A | Persona + Guardrail + Boundary | 90%+ | Medium (1-2K) |
-| Code generation | Persona + Chain-of-Thought | 85%+ | Medium (1-3K) |
-| Content generation | Persona + Critique | 90%+ quality | High (2-4K, double pass) |
-| Classification | Few-Shot + Guardrail | 95%+ | Low (300-800) |
-| Complex analysis | Decomposition + Chain-of-Thought | 85%+ | High (3-5K) |
+| 生产级抽取 | 模板 + 少样本 | 95%+ | 低（500-1K） |
+| 面向用户的问答 | 角色设定 + 防护 + 边界 | 90%+ | 中（1-2K） |
+| 代码生成 | 角色设定 + 思维链 | 85%+ | 中（1-3K） |
+| 内容生成 | 角色设定 + 批评 | 90%+ 质量 | 高（2-4K，两遍处理） |
+| 分类 | 少样本 + 防护 | 95%+ | 低（300-800） |
+| 复杂分析 | 分解 + 思维链 | 85%+ | 高（3-5K） |

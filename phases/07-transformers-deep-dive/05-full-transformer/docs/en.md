@@ -1,104 +1,104 @@
-# The Full Transformer — Encoder + Decoder
+# 完整 Transformer：编码器与解码器（The Full Transformer — Encoder + Decoder）
 
-> Attention is the star. Everything else — residuals, normalization, feed-forward, cross-attention — is the scaffolding that lets you stack it deep.
+> 注意力是主角。残差、归一化、前馈网络和交叉注意力等其他部分，是让它能够深度堆叠的支撑结构。
 
 **Type:** Build
 **Languages:** Python
-**Prerequisites:** Phase 7 · 02 (Self-Attention), Phase 7 · 03 (Multi-Head Attention), Phase 7 · 04 (Positional Encoding)
-**Time:** ~75 minutes
+**Prerequisites:** 阶段 7 · 02（自注意力），阶段 7 · 03（多头注意力），阶段 7 · 04（位置编码）
+**Time:** ~75 分钟
 
-## The Problem
+## 问题（The Problem）
 
-A single attention layer is a feature extractor, not a model. One matmul per layer is not enough capacity for language. You need depth — and depth breaks without the right plumbing.
+单个注意力层是特征提取器，而不是模型。每层一次矩阵乘法不足以提供语言任务所需的容量。你需要深度，而没有正确连接，深度就会造成问题。
 
-The 2017 Vaswani paper packaged six design decisions that turned one attention layer into a stackable block. Every transformer since — encoder-only (BERT), decoder-only (GPT), encoder-decoder (T5) — inherits the same skeleton. In 2026 the blocks have been refined (RMSNorm, SwiGLU, pre-norm, RoPE) but the skeleton is identical.
+2017 年 Vaswani 的论文整合了六项设计决策，将一个注意力层变成可堆叠的模块。此后所有 Transformer，无论仅编码器（BERT）、仅解码器（GPT）还是编码器—解码器（T5），都继承同一骨架。2026 年的模块已有改进（RMSNorm、SwiGLU、前置归一化、RoPE），但骨架完全相同。
 
-This lesson is the skeleton. Next lessons specialize it — 06 for encoders, 07 for decoders, 08 for encoder-decoder.
+本课讲解这副骨架。后续课程分别细化：第 06 课讲编码器，第 07 课讲解码器，第 08 课讲编码器—解码器。
 
-## The Concept
+## 概念（The Concept）
 
-![Encoder and decoder block internals, wired](../assets/full-transformer.svg)
+![编码器与解码器模块内部及连接方式](../assets/full-transformer.svg)
 
-### The six pieces
+### 六个组成部分（The six pieces）
 
-1. **Embedding + positional signal.** Tokens → vectors. Position injected via RoPE (modern) or sinusoidal (classic).
-2. **Self-attention.** Every position attends to every other. Masked in decoders.
-3. **Feed-forward network (FFN).** Position-wise two-layer MLP: `W_2 · activation(W_1 · x)`. Expansion ratio 4× by default.
-4. **Residual connection.** `x + sublayer(x)`. Without this, gradients vanish past ~6 layers.
-5. **Layer normalization.** `LayerNorm` or `RMSNorm` (modern). Stabilizes the residual stream.
-6. **Cross-attention (decoder only).** Queries come from the decoder, keys and values from the encoder output.
+1. **嵌入与位置信号。** 词元转为向量。通过 RoPE（现代）或正弦编码（经典）注入位置。
+2. **自注意力（Self-Attention）。** 每个位置关注其他所有位置。解码器中使用掩码。
+3. **前馈网络（Feed-Forward Network，FFN）。** 逐位置的两层多层感知机（Multi-Layer Perceptron，MLP）：`W_2 · activation(W_1 · x)`。默认扩展比例为 4×。
+4. **残差连接（Residual Connection）。** `x + sublayer(x)`。没有它，超过约 6 层后梯度就会消失。
+5. **层归一化（Layer Normalization）。** `LayerNorm` 或现代的 `RMSNorm`，稳定残差流。
+6. **交叉注意力（Cross-Attention，仅解码器）。** 查询来自解码器，键和值来自编码器输出。
 
-Watch a vector flow through one block: attention mixes across positions, the residual carries it forward, the FFN transforms it, and norm keeps the stream stable.
+观察向量流经一个模块：注意力跨位置混合信息，残差将其向前传递，FFN 执行变换，归一化保持流的稳定。
 
 ```figure
 transformer-block
 ```
 
-### Encoder block (used by BERT, T5 encoder)
+### 编码器模块，供 BERT、T5 编码器使用（Encoder block (used by BERT, T5 encoder)）
 
 ```
-x → LN → MHA(self) → + → LN → FFN → + → out
+x → LN → MHA(自注意力) → + → LN → FFN → + → 输出
                      ^              ^
                      |              |
-                     └── residual ──┘
+                     └── 残差连接 ──┘
 ```
 
-Encoder is bidirectional. No masking. All positions see all positions.
+编码器是双向的，没有掩码，所有位置都能看到所有位置。
 
-### Decoder block (used by GPT, T5 decoder)
+### 解码器模块，供 GPT、T5 解码器使用（Decoder block (used by GPT, T5 decoder)）
 
 ```
-x → LN → MHA(masked self) → + → LN → MHA(cross to encoder) → + → LN → FFN → + → out
+x → LN → MHA(带掩码自注意力) → + → LN → MHA(与编码器交叉注意力) → + → LN → FFN → + → 输出
 ```
 
-Decoder has three sublayers per block. The middle one — cross-attention — is the only place information flows from encoder to decoder. In a pure decoder-only architecture (GPT), cross-attention is omitted and you just have masked self-attention + FFN.
+解码器每个模块有三个子层。中间的交叉注意力是信息从编码器流向解码器的唯一位置。在纯解码器架构（GPT）中，交叉注意力被省略，只保留带掩码自注意力与 FFN。
 
-### Pre-norm vs post-norm
+### 前置与后置归一化（Pre-norm vs post-norm）
 
-Original paper: `x + sublayer(LN(x))` vs `LN(x + sublayer(x))`. Post-norm lost favor around 2019 — it is harder to train deeply without careful warmup. Pre-norm (`LN` *before* sublayer) is the 2026 default: Llama, Qwen, GPT-3+, Mistral all use it.
+原始论文涉及的比较是 `x + sublayer(LN(x))` 与 `LN(x + sublayer(x))`。后置归一化在 2019 年前后失去青睐，因为没有精细预热就难以训练深层网络。前置归一化（子层*之前*应用 `LN`）是 2026 年默认方案：Llama、Qwen、GPT-3+、Mistral 都使用它。
 
-### The 2026 modernized block
+### 2026 年的现代化模块（The 2026 modernized block）
 
-Vaswani 2017 shipped LayerNorm + ReLU. Modern stacks replaced both. What production blocks actually look like:
+Vaswani 2017 使用 LayerNorm 与 ReLU。现代技术栈将两者都替换了。生产模块的实际配置如下：
 
-| Component | 2017 | 2026 |
+| 组件 | 2017 | 2026 |
 |-----------|------|------|
-| Normalization | LayerNorm | RMSNorm |
-| FFN activation | ReLU | SwiGLU |
-| FFN expansion | 4× | 2.6× (SwiGLU uses three matrices, total params match) |
-| Position | Sinusoidal absolute | RoPE |
-| Attention | Full MHA | GQA (or MLA) |
-| Bias terms | Yes | No |
+| 归一化 | LayerNorm | RMSNorm |
+| FFN 激活 | ReLU | SwiGLU |
+| FFN 扩展比例 | 4× | 2.6×（SwiGLU 使用三个矩阵，总参数量相同） |
+| 位置 | 正弦绝对位置 | RoPE |
+| 注意力 | 完整 MHA | GQA（或 MLA） |
+| 偏置项 | 有 | 无 |
 
-RMSNorm drops the mean-centering of LayerNorm (one fewer subtraction), which saves compute and is empirically at least as stable. SwiGLU (`Swish(W1 x) ⊙ W3 x`) consistently outperforms ReLU/GELU FFN by ~0.5 point ppl in the Llama, PaLM and Qwen papers.
+均方根归一化（Root Mean Square Normalization，RMSNorm）去掉 LayerNorm 的均值中心化，少一次减法，节省计算，且实测至少同样稳定。在 Llama、PaLM 和 Qwen 论文中，SwiGLU（`Swish(W1 x) ⊙ W3 x`）相较 ReLU/GELU FFN，困惑度稳定改善约 0.5 点。
 
-### Parameter count
+### 参数量（Parameter count）
 
-For one block with `d_model = d` and FFN expansion `r`:
+对于 `d_model = d`、FFN 扩展比例为 `r` 的一个模块：
 
-- MHA: `4 · d²` (Q, K, V, O projections)
-- FFN (SwiGLU): `3 · d · (r · d)` ≈ `3rd²`
-- Norms: negligible
+- MHA：`4 · d²`（Q、K、V、O 投影）
+- FFN（SwiGLU）：`3 · d · (r · d)` ≈ `3rd²`
+- 归一化：可忽略
 
-At `d = 4096, r = 2.6, layers = 32` (roughly Llama 3 8B), total: `32 · (4·4096² + 3·2.6·4096²) ≈ 32 · (16 + 32) M = ~1.5B parameters per layer × 32 ≈ 7B` (plus embeddings and head). Matches published counts.
+在 `d = 4096, r = 2.6, layers = 32`（大致为 Llama 3 8B）时，总量为：`32 · (4·4096² + 3·2.6·4096²) ≈ 32 · (16 + 32) M = ~1.5B parameters per layer × 32 ≈ 7B`（再加嵌入和输出头）。这与公布数量一致。
 
-## Build It
+## 动手实现（Build It）
 
-### Step 1: the building blocks
+### 第 1 步：基础模块（Step 1: the building blocks）
 
-Using the tiny `Matrix` class from Lesson 03 (copied to this file for independence):
+使用第 03 课的微型 `Matrix` 类（为保持独立，复制到本文件）：
 
-- `layer_norm(x, eps=1e-5)` — subtract mean, divide by std.
-- `rms_norm(x, eps=1e-6)` — divide by RMS. No mean subtraction.
-- `gelu(x)` and `silu(x) * W3 x` (SwiGLU).
-- `ffn_swiglu(x, W1, W2, W3)`.
-- `encoder_block(x, params)` and `decoder_block(x, enc_out, params)`.
+- `layer_norm(x, eps=1e-5)`：减均值、除标准差。
+- `rms_norm(x, eps=1e-6)`：除以均方根，不减均值。
+- `gelu(x)` 与 `silu(x) * W3 x`（SwiGLU）。
+- `ffn_swiglu(x, W1, W2, W3)`。
+- `encoder_block(x, params)` 与 `decoder_block(x, enc_out, params)`。
 
-See `code/main.py` for the full wiring.
+完整连接见 `code/main.py`。
 
-### Step 2: wire a 2-layer encoder and a 2-layer decoder
+### 第 2 步：连接两层编码器与两层解码器（Step 2: wire a 2-layer encoder and a 2-layer decoder）
 
-Stack them. Pass the encoder output into every decoder cross-attention. Add a final LN before the output projection.
+将模块堆叠，把编码器输出传入解码器的每个交叉注意力层。在输出投影前添加最终层归一化。
 
 ```python
 def encode(tokens, params):
@@ -114,61 +114,61 @@ def decode(target_tokens, encoder_out, params):
     return x
 ```
 
-### Step 3: run forward on a toy example
+### 第 3 步：在玩具示例上执行前向传播（Step 3: run forward on a toy example）
 
-Feed a 6-token source and a 5-token target through. Verify the output shape is `(5, vocab)`. No training — this lesson is about the architecture, not the loss.
+输入 6 个词元的源序列与 5 个词元的目标序列。验证输出形状为 `(5, vocab)`。不进行训练，本课关注架构而非损失。
 
-### Step 4: swap in RMSNorm + SwiGLU
+### 第 4 步：换入 RMSNorm 与 SwiGLU（Step 4: swap in RMSNorm + SwiGLU）
 
-Replace LayerNorm and ReLU-FFN with RMSNorm and SwiGLU. Confirm shapes still match. This is the 2026 modernization with one function substitution.
+将 LayerNorm 和 ReLU-FFN 替换为 RMSNorm 和 SwiGLU，确认形状仍匹配。一次函数替换即可完成 2026 年式现代化。
 
-## Use It
+## 实际应用（Use It）
 
-The PyTorch/TF reference implementations: `nn.TransformerEncoderLayer`, `nn.TransformerDecoderLayer`. But most 2026 production code rolls its own block because:
+PyTorch/TF 的参考实现是 `nn.TransformerEncoderLayer`、`nn.TransformerDecoderLayer`。但多数 2026 年生产代码自行实现模块，因为：
 
-- Flash Attention is called inside attention, not via `nn.MultiheadAttention`.
-- GQA / MLA are not in the stdlib reference.
-- RoPE, RMSNorm, SwiGLU are not the PyTorch defaults.
+- Flash Attention 在注意力内部调用，而非通过 `nn.MultiheadAttention`。
+- 标准库参考实现没有 GQA / MLA。
+- RoPE、RMSNorm、SwiGLU 不是 PyTorch 的默认配置。
 
-HF `transformers` has clean reference blocks you should read: `modeling_llama.py` is the canonical 2026 decoder-only block. It's ~500 lines and worth walking through once.
+HuggingFace 的 `transformers` 有值得阅读的清晰参考模块：`modeling_llama.py` 是 2026 年典型的仅解码器模块，约 500 行，值得完整读一次。
 
-**Encoder vs decoder vs encoder-decoder — when to pick:**
+**编码器、解码器与编码器—解码器如何选择：**
 
-| Need | Pick | Example |
+| 需求 | 选择 | 示例 |
 |------|------|---------|
-| Classification, embeddings, QA over text | Encoder-only | BERT, DeBERTa, ModernBERT |
-| Text generation, chat, code, reasoning | Decoder-only | GPT, Llama, Claude, Qwen |
-| Structured input → structured output (translation, summarization) | Encoder-decoder | T5, BART, Whisper |
+| 分类、嵌入、文本问答 | 仅编码器 | BERT, DeBERTa, ModernBERT |
+| 文本生成、聊天、代码、推理过程 | 仅解码器 | GPT, Llama, Claude, Qwen |
+| 结构化输入 → 结构化输出（翻译、摘要） | 编码器—解码器 | T5, BART, Whisper |
 
-Decoder-only won language because it scales cleanest and handles both comprehension and generation. Encoder-decoder is still best when the input has a clear "source sequence" identity (translation, speech recognition, structured tasks).
+仅解码器在语言领域胜出，因为它扩展最直接，兼顾理解与生成。当输入具有明确“源序列”身份时，例如翻译、语音识别、结构化任务，编码器—解码器仍最合适。
 
-## Ship It
+## 交付成果（Ship It）
 
-See `outputs/skill-transformer-block-reviewer.md`. The skill reviews a new transformer block implementation against the 2026 defaults and flags missing pieces (pre-norm, RoPE, RMSNorm, GQA, FFN expansion ratio).
+参见 `outputs/skill-transformer-block-reviewer.md`。该技能对照 2026 年默认配置审查新 Transformer 模块实现，标出缺失部分（前置归一化、RoPE、RMSNorm、GQA、FFN 扩展比例）。
 
-## Exercises
+## 练习（Exercises）
 
-1. **Easy.** Count the parameters in your encoder_block at `d_model=512, n_heads=8, ffn_expansion=4, swiglu=True`. Validate by implementing the block and using `sum(p.numel() for p in block.parameters())`.
-2. **Medium.** Switch from post-norm to pre-norm. Initialize both and measure the activation norm after 12 stacked layers on random input. Post-norm's activations should explode; pre-norm's should stay bounded.
-3. **Hard.** Implement a 4-layer encoder-decoder on a toy copy task (copy `x` reversed). Train 100 steps. Report loss. Swap in RMSNorm + SwiGLU + RoPE — does loss drop?
+1. **简单。** 在 `d_model=512, n_heads=8, ffn_expansion=4, swiglu=True` 下计算 encoder_block 的参数量。实现模块，并用 `sum(p.numel() for p in block.parameters())` 验证。
+2. **中等。** 从后置归一化切换到前置归一化。初始化两者，在随机输入下测量堆叠 12 层后的激活范数。后置归一化的激活应爆炸，前置归一化的激活应保持有界。
+3. **困难。** 在玩具复制任务上实现 4 层编码器—解码器（逆序复制 `x`）。训练 100 步并报告损失。换入 RMSNorm、SwiGLU、RoPE 后，损失是否下降？
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语 | 常见说法 | 实际含义 |
 |------|-----------------|-----------------------|
-| Block | "One transformer layer" | Stack of norm + attention + norm + FFN, wrapped in residual connections. |
-| Residual | "Skip connection" | `x + f(x)` output; enables gradient flow through deep stacks. |
-| Pre-norm | "Normalize before, not after" | Modern: `x + sublayer(LN(x))`. Trains deeper without warmup gymnastics. |
-| RMSNorm | "LayerNorm without the mean" | Divide by RMS; one less op, same empirical stability. |
-| SwiGLU | "The FFN everyone switched to" | `Swish(W1 x) ⊙ W3 x → W2`. Beats ReLU/GELU on LM ppl. |
-| Cross-attention | "How the decoder sees the encoder" | MHA with Q from decoder, K/V from encoder outputs. |
-| FFN expansion | "How wide the middle MLP is" | Ratio of hidden-size to d_model, usually 4 (LayerNorm) or 2.6 (SwiGLU). |
-| Bias-free | "Drop the +b terms" | Modern stacks omit biases in linear layers; slight ppl improvement, smaller model. |
+| 模块（Block） | “一个 Transformer 层” | 归一化、注意力、归一化、FFN 的堆叠，外包残差连接。 |
+| 残差（Residual） | “跳跃连接” | 输出 `x + f(x)`，使梯度能流过深层堆叠。 |
+| 前置归一化（Pre-norm） | “先归一化，而非后归一化” | 现代方案 `x + sublayer(LN(x))`，无需复杂预热即可训练更深网络。 |
+| 均方根归一化（RMSNorm） | “不减均值的 LayerNorm” | 除以均方根，少一次操作，实测稳定性相同。 |
+| SwiGLU | “大家都换用的 FFN” | `Swish(W1 x) ⊙ W3 x → W2`，语言模型困惑度优于 ReLU/GELU。 |
+| 交叉注意力（Cross-attention） | “解码器如何看到编码器” | Q 来自解码器、K/V 来自编码器输出的 MHA。 |
+| FFN 扩展比例（FFN expansion） | “中间 MLP 有多宽” | 隐藏大小与 d_model 之比，通常为 4（LayerNorm）或 2.6（SwiGLU）。 |
+| 无偏置（Bias-free） | “去掉 +b 项” | 现代技术栈在线性层省略偏置；困惑度略有改善，模型更小。 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [Vaswani et al. (2017). Attention Is All You Need](https://arxiv.org/abs/1706.03762) — original block spec.
-- [Xiong et al. (2020). On Layer Normalization in the Transformer Architecture](https://arxiv.org/abs/2002.04745) — why pre-norm beats post-norm deeply.
-- [Zhang, Sennrich (2019). Root Mean Square Layer Normalization](https://arxiv.org/abs/1910.07467) — RMSNorm.
-- [Shazeer (2020). GLU Variants Improve Transformer](https://arxiv.org/abs/2002.05202) — the SwiGLU paper.
-- [HuggingFace `modeling_llama.py`](https://github.com/huggingface/transformers/blob/main/src/transformers/models/llama/modeling_llama.py) — canonical 2026 decoder-only block.
+- [Vaswani 等（2017）：注意力就是你所需要的一切（Attention Is All You Need）](https://arxiv.org/abs/1706.03762)：原始模块规范。
+- [Xiong 等（2020）：论 Transformer 架构中的层归一化（On Layer Normalization in the Transformer Architecture）](https://arxiv.org/abs/2002.04745)：深层网络中前置归一化为何优于后置归一化。
+- [Zhang、Sennrich（2019）：均方根层归一化（Root Mean Square Layer Normalization）](https://arxiv.org/abs/1910.07467)：RMSNorm。
+- [Shazeer（2020）：GLU 变体改进 Transformer（GLU Variants Improve Transformer）](https://arxiv.org/abs/2002.05202)：SwiGLU 论文。
+- [HuggingFace 的 `modeling_llama.py`](https://github.com/huggingface/transformers/blob/main/src/transformers/models/llama/modeling_llama.py)：2026 年典型仅解码器模块。

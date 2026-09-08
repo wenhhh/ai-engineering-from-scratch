@@ -1,78 +1,78 @@
 {
   "lesson": "74-leaderboard-aggregation",
-  "title": "Leaderboard Aggregation",
+  "title": "排行榜聚合（Leaderboard Aggregation）",
   "questions": [
     {
       "stage": "pre",
-      "question": "Why does the aggregator require every input score to be in [0, 1]?",
+      "question": "为何聚合器要求每个输入分数位于 [0, 1]？",
       "options": [
-        "Without a common scale, a single metric with a 0-100 range dominates the per-model mean",
-        "Numpy requires it",
-        "It is the bin range for ECE",
-        "Markdown rendering expects two decimals"
+        "没有共同尺度时，单个 0–100 范围的指标会主导逐模型均值",
+        "Numpy 要求如此",
+        "这是 ECE 分箱范围",
+        "Markdown 渲染要求两位小数"
       ],
       "correct": 0,
-      "explanation": "If pass-rate is in [0,1] and BLEU is in [0,100], the latter swamps the average. Normalisation belongs at the metric layer and is checked here."
+      "explanation": "通过率在 [0,1] 而 BLEU 在 [0,100] 时，后者压倒平均值。归一化属于指标层，在这里检查。"
     },
     {
       "stage": "pre",
-      "question": "What information does mean score hide that win-rate exposes?",
+      "question": "胜率揭示平均分掩盖的什么信息？",
       "options": [
-        "The bootstrap interval",
-        "Whether the model is well calibrated",
-        "Per-task wins resist outliers and scale shifts; mean is sensitive to both",
-        "The number of tasks completed"
+        "自助法区间",
+        "模型是否良好校准",
+        "逐任务胜出抵抗离群值和尺度变化，均值对两者敏感",
+        "完成任务数"
       ],
       "correct": 2,
-      "explanation": "Win-rate counts task-by-task wins. A model can have a high mean from one easy task and still lose most pairwise comparisons."
+      "explanation": "胜率统计逐任务胜出。模型可因一个简单任务获得高均值，却输掉多数成对比较。"
     },
     {
       "stage": "check",
-      "question": "How does bootstrap_mean_ci estimate the confidence interval?",
+      "question": "bootstrap_mean_ci 如何估计置信区间？",
       "options": [
-        "By assuming a normal distribution on the mean",
-        "By resampling task scores with replacement, computing the mean over each sample, then taking the alpha/2 and 1 - alpha/2 percentiles",
-        "By computing the standard deviation analytically",
-        "By calling scipy.stats.bootstrap"
+        "假设均值服从正态分布",
+        "有放回重采样任务分数，计算每个样本均值，再取 alpha/2 和 1 - alpha/2 分位点",
+        "解析计算标准差",
+        "调用 scipy.stats.bootstrap"
       ],
       "correct": 1,
-      "explanation": "Non-parametric percentile bootstrap on the per-task scores; no distributional assumption, no scipy."
+      "explanation": "对逐任务分数做非参数百分位自助法，不假设分布，不用 scipy。"
     },
     {
       "stage": "check",
-      "question": "When does the pairwise diff CI report `significant`?",
+      "question": "成对差异置信区间何时报告 `significant`？",
       "options": [
-        "When both models have more than thirty tasks",
-        "When the CI does not contain zero",
-        "When the win-rates are unequal",
-        "When the mean difference is larger than 0.1"
+        "两模型都有超过三十任务时",
+        "置信区间不包含零时",
+        "胜率不等时",
+        "均值差超过 0.1 时"
       ],
       "correct": 1,
-      "explanation": "A CI that strictly excludes zero means the difference is unlikely to be zero at the chosen level; that is the operational definition the lesson uses."
+      "explanation": "严格排除零的区间表示差异在所选水平下不太可能为零，这是本课采用的操作定义。"
     },
     {
       "stage": "check",
-      "question": "Why is the pairwise bootstrap paired rather than independent?",
+      "question": "为何成对自助法采用配对而非独立方式？",
       "options": [
-        "Paired bootstrap respects that the same task feeds both models; differences are computed task by task before resampling",
-        "Paired bootstrap is the only one numpy supports",
-        "Paired bootstrap runs faster",
-        "Independent bootstrap is illegal in Python"
+        "配对自助法尊重两模型使用相同任务，重采样前逐任务计算差异",
+        "numpy 只支持配对自助法",
+        "配对自助法更快",
+        "Python 不允许独立自助法"
       ],
       "correct": 0,
-      "explanation": "Paired bootstrap reduces noise: we sample over tasks, not over models, so the comparison is on the same task set every iteration."
+      "explanation": "配对自助法降低噪声：按任务而非模型采样，使每轮都在相同任务集上比较。"
     },
     {
       "stage": "post",
-      "question": "Why does the aggregator return per-category means alongside the headline number?",
+      "question": "为何除主要数值外还返回逐类别均值？",
       "options": [
-        "Headline mean can mask category-level weakness (good overall, bad at code); per-category exposes that",
-        "Per-category means run faster than overall mean",
-        "It is required by JSON Schema",
-        "Markdown rendering requires it"
+        "总均值可能掩盖类别弱项（整体好、代码差），逐类别可暴露它",
+        "逐类别均值比总均值更快",
+        "JSON Schema 要求如此",
+        "Markdown 渲染要求如此"
       ],
       "correct": 0,
-      "explanation": "A model can win on aggregate by being okay everywhere or by dominating one category. Per-category breakdown lets the consumer see which."
+      "explanation": "模型可能靠各方面尚可取得聚合优势，也可能靠一个类别占优。分类明细让消费者看出是哪一种。"
     }
   ]
 }

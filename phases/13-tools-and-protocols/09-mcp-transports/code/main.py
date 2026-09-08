@@ -1,8 +1,8 @@
-"""Phase 13 Lesson 09: stateless MCP Streamable HTTP.
-Lesson: phases/13-tools-and-protocols/09-mcp-transports/docs/en.md
-Specification: https://modelcontextprotocol.io/specification/2026-07-28/
-Implements POST-only transport, header validation, JSON, and finite SSE.
-Run: python3 main.py
+"""阶段 13 第 09 课：无状态 MCP 可流式 HTTP（Streamable HTTP）。
+课程： phases/13-tools-and-protocols/09-mcp-transports/docs/en.md
+规范： https://modelcontextprotocol.io/specification/2026-07-28/
+实现仅使用 POST 的传输、请求头验证、JSON 与有限持续时间的服务器发送事件（Server-Sent Events，SSE）。
+运行： python3 main.py
 """
 
 from __future__ import annotations
@@ -41,7 +41,7 @@ ROUTING_HEADERS = ("MCP-Protocol-Version", "Mcp-Method", "Mcp-Name")
 TOOLS = [
     {
         "name": "ping",
-        "description": "Return pong for a transport health check.",
+        "description": "返回 pong，用于传输健康检查（Health check）。",
         "inputSchema": {"type": "object", "properties": {}, "required": []},
         "annotations": {"readOnlyHint": True, "idempotentHint": True},
     }
@@ -258,7 +258,7 @@ def dispatch(message: dict[str, Any]) -> dict[str, Any] | None:
                 {
                     "supportedVersions": SUPPORTED_VERSIONS.copy(),
                     "capabilities": SERVER_CAPABILITIES.copy(),
-                    "instructions": "Call ping for a transport health check.",
+                    "instructions": "调用 ping 执行传输健康检查。",
                 },
                 ttl_ms=3_600_000,
                 cache_scope="public",
@@ -273,7 +273,7 @@ def dispatch(message: dict[str, Any]) -> dict[str, Any] | None:
             if params.get("name") != "ping" or not isinstance(params.get("arguments", {}), dict):
                 result = complete(
                     {
-                        "content": [{"type": "text", "text": "Unknown or invalid tool"}],
+                        "content": [{"type": "text", "text": "未知或无效的工具"}],
                         "isError": True,
                     }
                 )
@@ -502,39 +502,39 @@ def post(url: str, message: dict[str, Any], headers: Mapping[str, str]) -> tuple
 def probe() -> None:
     server = serve()
     url = f"http://127.0.0.1:{server.server_port}/mcp"
-    print("MCP 2026-07-28 Streamable HTTP probe")
+    print("MCP 2026-07-28 可流式 HTTP 探测（MCP 2026-07-28 Streamable HTTP probe）")
 
     discover = make_request(1, "server/discover")
     status, _, _ = post(url, discover, http_headers_for(discover, origin="http://evil.example"))
-    print(f"  invalid Origin: HTTP {status}")
+    print(f"  无效的 Origin： HTTP {status}")
 
     status, headers, payload = post(url, discover, http_headers_for(discover))
     print(
-        f"  discovery: HTTP {status}, version={payload['result']['supportedVersions'][0]}, "
-        f"session-header={headers.get('Mcp-Session-Id')}"
+        f"  发现（Discovery）： HTTP {status}, version={payload['result']['supportedVersions'][0]}, "
+        f"会话头={headers.get('Mcp-Session-Id')}"
     )
 
     listing = make_request(2, "tools/list")
     removed = {"Mcp-Session-Id": "ignored", "Last-Event-ID": "ignored"}
     status, headers, payload = post(url, listing, http_headers_for(listing, extra=removed))
     print(
-        f"  removed headers ignored: HTTP {status}, tool={payload['result']['tools'][0]['name']}, "
-        f"echo={headers.get('Mcp-Session-Id')}"
+        f"  已忽略移除的请求头： HTTP {status}, tool={payload['result']['tools'][0]['name']}, "
+        f"回显={headers.get('Mcp-Session-Id')}"
     )
 
     mismatched = http_headers_for(listing)
     mismatched["Mcp-Method"] = "tools/call"
     status, _, payload = post(url, listing, mismatched)
-    print(f"  header mismatch: HTTP {status}, code={payload['error']['code']}")
+    print(f"  请求头不匹配： HTTP {status}, code={payload['error']['code']}")
 
     future = make_request(3, "tools/list", version="2027-01-01")
     status, _, payload = post(url, future, http_headers_for(future))
-    print(f"  unsupported version: HTTP {status}, code={payload['error']['code']}")
+    print(f"  不支持的版本： HTTP {status}, code={payload['error']['code']}")
 
     notification = make_request(4, "tools/list")
     del notification["id"]
     status, _, payload = post(url, notification, http_headers_for(notification))
-    print(f"  accepted notification: HTTP {status}, empty-body={payload == ''}")
+    print(f"  已接受通知： HTTP {status}, 响应体为空={payload == ''}")
 
     for method in ("GET", "DELETE"):
         request = urllib.request.Request(
@@ -558,7 +558,7 @@ def probe() -> None:
     print(
         f"  subscriptions/listen: HTTP {status}, "
         f"SSE={('notifications/subscriptions/acknowledged' in stream)}, "
-        f"tagged={SUBSCRIPTION_ID_KEY in stream}"
+        f"已标记={SUBSCRIPTION_ID_KEY in stream}"
     )
 
     server.shutdown()
@@ -570,7 +570,7 @@ def main() -> None:
         probe()
         return
     server = serve("127.0.0.1", 8017)
-    print("MCP 2026-07-28 endpoint: http://127.0.0.1:8017/mcp")
+    print("MCP 2026-07-28 端点（Endpoint）： http://127.0.0.1:8017/mcp")
     try:
         while True:
             time.sleep(60)

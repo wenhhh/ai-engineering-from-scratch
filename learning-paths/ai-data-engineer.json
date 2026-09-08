@@ -2,101 +2,101 @@
   "schemaVersion": 1,
   "kind": "career-route",
   "id": "ai-data-engineer",
-  "title": "AI Data Systems",
-  "workFamily": "AI Data Systems",
-  "commonTitles": ["AI Data Engineer", "Machine Learning Data Engineer", "Retrieval Engineer"],
-  "summary": "Build reliable data, feature, embedding, retrieval, evaluation, and observability pipelines for AI systems.",
-  "keywords": "ai data engineer pipelines feature engineering embeddings retrieval rag quality observability",
-  "decisionPrompt": "Do you want to make the data behind training, retrieval, evaluation, and production behavior trustworthy?",
-  "mission": "Build on shared foundations to create traceable AI data systems that transform source data into measurable model and retrieval inputs.",
+  "title": "AI 数据系统（AI Data Systems）",
+  "workFamily": "AI 数据系统（AI Data Systems）",
+  "commonTitles": ["AI 数据工程师（AI Data Engineer）", "机器学习数据工程师（Machine Learning Data Engineer）", "检索工程师（Retrieval Engineer）"],
+  "summary": "为 AI 系统构建可靠的数据、特征（Feature）、嵌入（Embedding）、检索（Retrieval）、评估（Evaluation）与可观测性（Observability）流水线。",
+  "keywords": "AI 数据工程师 流水线 特征工程 嵌入 检索 质量 可观测性 ai data engineer pipelines feature engineering embeddings retrieval rag quality observability",
+  "decisionPrompt": "你是否希望让支撑训练、检索、评估与生产行为的数据值得信赖？",
+  "mission": "在共同基础之上构建可追溯的 AI 数据系统，将源数据转化为质量可衡量的模型与检索输入。",
   "responsibilities": [
-    "Design reproducible ingestion, transformation, and feature pipelines.",
-    "Build embedding and retrieval paths with explicit quality measures.",
-    "Detect leakage, drift, missing data, and retrieval regressions.",
-    "Instrument data-dependent behavior from source through production."
+    "设计可复现的数据摄取（Ingestion）、转换（Transformation）与特征流水线。",
+    "构建具有明确质量指标的嵌入与检索链路。",
+    "检测数据泄漏（Leakage）、漂移（Drift）、缺失数据与检索效果退化（Regression）。",
+    "为依赖数据的行为布设观测点，覆盖从数据源到生产运行的全过程。"
   ],
   "goodFitIf": [
-    "You care about lineage, repeatability, and data quality more than demos.",
-    "You enjoy tracing model behavior back to data and retrieval decisions.",
-    "You want to connect data systems with measurable AI outcomes."
+    "相比演示，你更关注数据血缘（Lineage）、可重复性与数据质量。",
+    "你喜欢从模型行为追溯到数据与检索决策。",
+    "你希望将数据系统与可衡量的 AI 成效联系起来。"
   ],
   "baseline": [
-    "Complete the shared software engineering and AI foundations, or demonstrate equivalent working knowledge.",
-    "Be comfortable with tabular data, features, train and test splits, and basic evaluation.",
-    "Be able to inspect files, schemas, and pipeline output from code."
+    "完成共同的软件工程和 AI 基础课程，或证明具备同等实践知识。",
+    "熟悉表格数据、特征、训练集与测试集划分，以及基本评估。",
+    "能够通过代码检查文件、模式（Schema）和流水线输出。"
   ],
-  "boundary": "This is a specialist overlay after shared foundations. It samples training, feature, and retrieval data work, but does not claim mastery of every warehouse, lake, streaming, or governance platform.",
-  "timeNote": "The estimate covers lesson time only. Portfolio work and practice take additional time.",
+  "boundary": "这是一条建立在共同基础之上的专业方向路径，选取训练、特征与检索数据工作进行实践，但不声称能让你精通所有数据仓库（Warehouse）、数据湖（Data lake）、流处理（Streaming）或治理平台。",
+  "timeNote": "预计时间仅包含课程学习。作品集制作和练习还需额外时间。",
   "portfolioProof": {
-    "title": "Traceable AI Data Pipeline",
-    "description": "Build a reproducible data and retrieval path whose inputs, transformations, quality checks, and downstream effects can be inspected.",
+    "title": "可追溯 AI 数据流水线（Traceable AI Data Pipeline）",
+    "description": "构建可复现的数据与检索链路，使输入、转换、质量检查和下游影响均可检查。",
     "evidence": [
-      "A reproducible ingestion and transformation pipeline",
-      "Leakage, schema, and data quality checks",
-      "Embedding and retrieval evaluation results",
-      "Observability for data-dependent failures",
-      "A provenance and rollback note"
+      "可复现的数据摄取与转换流水线",
+      "数据泄漏、模式与数据质量检查",
+      "嵌入与检索评估结果",
+      "针对数据相关故障的可观测性",
+      "一份数据溯源（Provenance）与回滚（Rollback）说明"
     ]
   },
   "readinessCriteria": [
-    "Can explain lineage from raw data to model or retrieval input.",
-    "Can prevent leakage and verify feature transformations.",
-    "Can measure retrieval quality separately from generation quality.",
-    "Can identify a data, embedding, retrieval, or model cause from evidence.",
-    "Can reproduce a pipeline result and document how to roll it back."
+    "能够解释从原始数据到模型或检索输入的数据血缘。",
+    "能够防止数据泄漏并验证特征转换。",
+    "能够将检索质量与生成质量分开衡量。",
+    "能够依据证据辨别原因出在数据、嵌入、检索还是模型。",
+    "能够复现流水线结果，并记录回滚方法。"
   ],
   "coverage": {
-    "strong": ["Data and feature pipelines", "Embeddings and retrieval", "RAG evaluation", "AI observability"],
-    "partial": ["Lineage and schema evolution", "Pipeline orchestration and backfills", "Data governance"],
-    "outsideCourse": ["Enterprise warehouse or lake ownership", "Compliance authority", "Live data platform on-call experience"]
+    "strong": ["数据与特征流水线（Data and feature pipelines）", "嵌入与检索（Embeddings and retrieval）", "检索增强生成评估（RAG evaluation）", "AI 可观测性（AI observability）"],
+    "partial": ["数据血缘与模式演进（Lineage and schema evolution）", "流水线编排与历史数据回填（Pipeline orchestration and backfills）", "数据治理（Data governance）"],
+    "outsideCourse": ["企业数据仓库或数据湖的运维责任", "合规决策权限（Compliance authority）", "实际数据平台的值班（On-call）经验"]
   },
-  "completionClaim": "Completing this route shows that you can build and evaluate a traceable AI data pipeline. It does not guarantee a role or establish experience operating an enterprise data platform.",
+  "completionClaim": "完成本路径表明你能够构建和评估可追溯的 AI 数据流水线，但不保证获得相关岗位，也不能证明你有企业数据平台的运维经验。",
   "sourceBasis": {
     "reviewedAt": "2026-08-29",
-    "method": "Synthesized from current primary job descriptions across AI field, product, platform, data, developer, and evaluation teams."
+    "method": "综合 AI 现场交付、产品、平台、数据、开发者及评估团队当时的一手职位描述整理而成。"
   },
   "estimatedMinutes": 915,
   "stages": [
     {
       "id": "common-core",
-      "title": "Common Core",
-      "outcome": "Build reproducible data, feature, and language-model preparation pipelines.",
+      "title": "共同核心（Common Core）",
+      "outcome": "构建可复现的数据、特征与语言模型准备流水线。",
       "lessonPaths": [
         "phases/00-setup-and-tooling/09-data-management",
         "phases/02-ml-fundamentals/08-feature-engineering",
         "phases/02-ml-fundamentals/13-ml-pipelines",
         "phases/10-llms-from-scratch/03-data-pipelines"
       ],
-      "artifact": "A versioned pipeline with deterministic transforms, split checks, and a reproducible run record."
+      "artifact": "一条版本化流水线，包含确定性转换、数据集划分检查和可复现的运行记录。"
     },
     {
       "id": "role-practice",
-      "title": "Role Practice",
-      "outcome": "Build context and retrieval paths whose quality can be measured independently.",
+      "title": "岗位实践（Role Practice）",
+      "outcome": "构建质量能够独立衡量的上下文（Context）与检索链路。",
       "lessonPaths": [
         "phases/11-llm-engineering/04-embeddings",
         "phases/11-llm-engineering/05-context-engineering",
         "phases/11-llm-engineering/06-rag",
         "phases/11-llm-engineering/07-advanced-rag"
       ],
-      "artifact": "A retrieval system with a documented corpus, index configuration, and retrieval metrics."
+      "artifact": "一个检索系统，包含有文档说明的语料库（Corpus）、索引配置与检索指标。"
     },
     {
       "id": "proof-project",
-      "title": "Proof Project",
-      "outcome": "Connect the data path to an evaluated production-style application.",
+      "title": "能力证明项目（Proof Project）",
+      "outcome": "将数据链路接入经过评估、按生产方式构建的应用。",
       "lessonPaths": [
         "phases/11-llm-engineering/10-evaluation",
         "phases/11-llm-engineering/13-production-app"
       ],
-      "artifact": "A traceable AI data pipeline with end-to-end quality checks and application-level evaluation."
+      "artifact": "一条可追溯的 AI 数据流水线，包含端到端质量检查与应用级评估。"
     },
     {
       "id": "interview-readiness-evidence",
-      "title": "Interview and Readiness Evidence",
-      "outcome": "Show how telemetry separates data, retrieval, and generation failures.",
+      "title": "面试与能力就绪证据（Interview and Readiness Evidence）",
+      "outcome": "展示如何通过遥测（Telemetry）区分数据、检索与生成故障。",
       "lessonPaths": ["phases/17-infrastructure-and-production/13-llm-observability"],
-      "artifact": "A failure analysis that links a production symptom to the responsible data or retrieval stage."
+      "artifact": "一份故障分析，将生产环境的症状关联到引发问题的数据或检索阶段。"
     }
   ],
   "lessons": [

@@ -161,19 +161,19 @@
   }
 
   function minutes(track) {
-    return examValue(track, ['durationMinutes', 'minutes', 'timeLimitMinutes'], 'Not listed');
+    return examValue(track, ['durationMinutes', 'minutes', 'timeLimitMinutes'], '未列出');
   }
 
   function questions(track) {
-    return examValue(track, ['questionCount', 'questions', 'items'], 'Not listed');
+    return examValue(track, ['questionCount', 'questions', 'items'], '未列出');
   }
 
   function passing(track) {
-    return examValue(track, ['passingScaledScore', 'passingScore', 'passingScaled'], 'See official guide');
+    return examValue(track, ['passingScaledScore', 'passingScore', 'passingScaled'], '参见官方指南');
   }
 
   function price(track) {
-    var value = examValue(track, ['price', 'fee', 'priceUsd', 'feeUsd'], 'See official provider');
+    var value = examValue(track, ['price', 'fee', 'priceUsd', 'feeUsd'], '参见官方提供方');
     if (typeof value === 'number') return '$' + value;
     return value;
   }
@@ -213,19 +213,19 @@
 
   function examFacts(track) {
     return [
-      { value: questions(track), label: 'Questions' },
-      { value: String(minutes(track)).match(/^\d+$/) ? minutes(track) + ' min' : minutes(track), label: 'Time limit' },
-      { value: passing(track), label: 'Passing score' },
-      { value: price(track), label: 'Exam fee' },
-      { value: examValue(track, ['format'], 'Closed book'), label: 'Format' },
-      { value: examValue(track, ['validityMonths', 'validForMonths'], 'See provider'), label: 'Validity' },
+      { value: questions(track), label: '题目数' },
+      { value: String(minutes(track)).match(/^\d+$/) ? minutes(track) + ' 分钟' : minutes(track), label: '时限' },
+      { value: passing(track), label: '及格分数' },
+      { value: price(track), label: '考试费用' },
+      { value: ({'Multiple-choice and multiple-response': '单选与多选（Multiple-choice and Multiple-response）', 'Scenario-based multiple-choice and multiple-response; four scenarios drawn from six': '基于场景的单选与多选：从六个场景中抽取四个'})[examValue(track, ['format'], '闭卷')] || examValue(track, ['format'], '闭卷'), label: '形式' },
+      { value: examValue(track, ['validityMonths', 'validForMonths'], '参见提供方'), label: '有效期' },
     ];
   }
 
   function renderCardFacts(track, limit) {
     return examFacts(track).slice(0, limit || 3).map(function (fact) {
       var value = fact.value;
-      if (fact.label === 'Validity' && typeof value === 'number') value += ' months';
+      if (fact.label === '有效期' && typeof value === 'number') value += ' 个月';
       return '<div class="cert-card-fact"><strong>' + esc(value) + '</strong><span class="cert-fact-label">' + esc(fact.label) + '</span></div>';
     }).join('');
   }
@@ -252,9 +252,9 @@
       return includeAllLinks || String(link.label || '').toLowerCase().indexOf('faq') !== -1;
     }) : [];
     mount.hidden = false;
-    mount.innerHTML = '<div><strong>Official exam access is currently restricted</strong><p>' + esc(notice) + '</p></div>' +
-      (links.length ? '<div class="cert-source-links" aria-label="Official certification sources">' + links.map(function (link) {
-        return '<a href="' + attr(link.url) + '" target="_blank" rel="noopener">' + esc(link.label || 'Official source') + ' ↗</a>';
+    mount.innerHTML = '<div><strong>目前官方考试访问受限</strong><p>' + esc(notice) + '</p></div>' +
+      (links.length ? '<div class="cert-source-links" aria-label="官方认证来源">' + links.map(function (link) {
+        return '<a href="' + attr(link.url) + '" target="_blank" rel="noopener">' + esc(link.label || '官方来源') + ' ↗</a>';
       }).join('') + '</div>' : '');
   }
 
@@ -268,24 +268,24 @@
     if (!grid) return;
 
     if (!certs.program || !tracks().length) {
-      grid.innerHTML = '<div class="cert-empty">Certification tracks are being assembled. Run <code>node site/build.js</code> after adding the program manifests.</div>';
-      if (summary) summary.textContent = 'The local certification catalog has not been generated yet.';
+      grid.innerHTML = '<div class="cert-empty">认证路径正在整理中。添加项目清单后，请运行 <code>node site/build.js</code>。</div>';
+      if (summary) summary.textContent = '本地认证目录尚未生成。';
       return;
     }
 
-    if (title) title.textContent = 'AI certification curriculum';
-    if (summary) summary.textContent = 'Free, independent, open-source preparation for AI engineering credentials. Start with Claude, with more certification families coming next.';
+    if (title) title.textContent = 'AI 认证课程';
+    if (summary) summary.textContent = '免费、独立、开源的 AI 工程（AI Engineering）认证备考课程。从 Claude 开始，后续将加入更多认证系列。';
     if (meta) {
       var verified = program.verifiedAt || program.lastVerified || program.updatedAt;
-      meta.innerHTML = metaChip('Claude available now') +
-        metaChip(tracks().length + ' role-based tracks') +
-        metaChip(Object.keys(certs.lessonsByPath || {}).length + ' certification lessons') +
-        metaChip(verified ? 'Verified ' + formatDate(verified) : 'Versioned source material');
+      meta.innerHTML = metaChip('Claude 课程现已可用') +
+        metaChip(tracks().length + ' 条按岗位划分的路径') +
+        metaChip(Object.keys(certs.lessonsByPath || {}).length + ' 节认证课程') +
+        metaChip(verified ? '已核验 ' + formatDate(verified) : '已版本化的来源材料');
     }
     renderAccessNotice('certAccessNotice', program, true);
     var notice = document.getElementById('certProgramNotice');
     if (notice && program.disclaimer) {
-      notice.innerHTML = '<strong>Independent preparation</strong><p>' + esc(program.disclaimer) + '</p>' +
+      notice.innerHTML = '<strong>独立备考</strong><p>' + esc(program.disclaimer) + '</p>' +
         (program.scoringNotice ? '<p>' + esc(program.scoringNotice) + '</p>' : '');
     }
 
@@ -295,11 +295,11 @@
       var delay = Math.min(index * 30, 80);
       var badge = renderTrackBadge(track);
       return '<a class="cert-track-card cert-catalog-arrival" style="--cert-arrival-delay:' + delay + 'ms" href="certification?id=' + encodeURIComponent(track.id) + '">' +
-        '<div class="cert-card-top"><span class="cert-card-code">' + esc(track.examCode || track.shortName || track.slug) + '</span><span class="cert-status">' + esc(track.level || 'Study path') + '</span></div>' +
+        '<div class="cert-card-top"><span class="cert-card-code">' + esc(track.examCode || track.shortName || track.slug) + '</span><span class="cert-status">' + esc(({Foundations: '基础（Foundations）', Foundational: '基础（Foundational）', Professional: '专业（Professional）', 'Foundational architecture': '基础架构（Foundational Architecture）', 'Professional architecture': '专业架构（Professional Architecture）', 'Foundational technical': '技术基础（Foundational Technical）', Associate: '助理（Associate）', Advanced: '高级（Advanced）', Intermediate: '中级（Intermediate）'})[track.level] || track.level || '学习路径') + '</span></div>' +
         '<div class="cert-card-identity' + (badge ? ' has-badge' : '') + '"><h3>' + esc(track.credential || track.title || track.shortName || track.id) + '</h3>' + badge + '</div>' +
-        '<p>' + esc(track.summary || track.audience || 'A practical route through this certification blueprint.') + '</p>' +
+        '<p>' + esc(track.summary || track.audience || '覆盖本认证考纲的实践路径。') + '</p>' +
         '<div class="cert-card-facts">' + renderCardFacts(track, 3) + '</div>' +
-        '<div class="cert-card-footer"><span>' + lessonCount + ' lessons · ' + domains + ' domains</span><span>Open path →</span></div>' +
+        '<div class="cert-card-footer"><span>' + lessonCount + ' 节课 · ' + domains + ' 个领域</span><span>打开路径 →</span></div>' +
       '</a>';
     }).join('');
   }
@@ -350,8 +350,8 @@
 
   function renderTrackSeo(track) {
     var name = track.credential || track.title || track.shortName || track.id;
-    document.title = name + ' - Free certification preparation';
-    var description = track.summary || 'Free, independent certification preparation with lessons and original practice.';
+    document.title = name + ' · 免费认证备考';
+    var description = track.summary || '免费、独立的认证备考课程与原创练习。';
     var desc = document.querySelector('meta[name="description"]');
     if (desc) desc.setAttribute('content', description);
     var canonical = document.querySelector('link[rel="canonical"]');
@@ -359,13 +359,13 @@
   }
 
   function renderTrackNotFound(hero) {
-    document.title = 'Certification track not found - AI Engineering from Scratch';
+    document.title = '未找到认证路径 - 从零开始的 AI 工程';
     var description = document.querySelector('meta[name="description"]');
-    if (description) description.setAttribute('content', 'Choose an available certification preparation track.');
+    if (description) description.setAttribute('content', '请选择可用的认证备考路径。');
     var canonical = document.querySelector('link[rel="canonical"]');
     if (canonical) canonical.setAttribute('href', 'https://aiengineeringfromscratch.com/certifications.html');
     var breadcrumb = document.getElementById('trackBreadcrumb');
-    if (breadcrumb) breadcrumb.textContent = 'Not found';
+    if (breadcrumb) breadcrumb.textContent = '未找到';
     var main = document.getElementById('main');
     if (main) {
       Array.from(main.querySelectorAll('.cert-section, .cert-access-notice, .cert-notice')).forEach(function (section) {
@@ -373,7 +373,7 @@
       });
     }
     hero.classList.add('is-not-found');
-    hero.innerHTML = '<div class="cert-track-not-found-copy"><div class="cert-eyebrow">TRACK NOT FOUND</div><h1>Choose an available certification path.</h1><p class="cert-track-summary">This track ID does not match the current certification catalog.</p><div class="cert-track-hero-actions"><a class="cert-action" href="certifications.html">All certifications</a></div></div>';
+    hero.innerHTML = '<div class="cert-track-not-found-copy"><div class="cert-eyebrow">未找到路径</div><h1>请选择可用的认证路径。</h1><p class="cert-track-summary">此路径 ID 与当前认证目录不匹配。</p><div class="cert-track-hero-actions"><a class="cert-action" href="certifications.html">全部认证</a></div></div>';
   }
 
   function renderTrack() {
@@ -397,19 +397,19 @@
     }) || refs[0];
     var firstPath = lessonRefPath(firstIncomplete);
 
-    hero.innerHTML = '<div class="cert-eyebrow">' + esc(track.examCode || track.shortName || 'CERTIFICATION TRACK') + '</div>' +
+    hero.innerHTML = '<div class="cert-eyebrow">' + esc(track.examCode || track.shortName || '认证路径') + '</div>' +
       '<h1>' + esc(track.credential || track.title || track.shortName || track.id) + '</h1>' +
       '<p class="cert-track-summary">' + esc(track.summary || track.audience || '') + '</p>' +
       '<div class="cert-meta-row">' + examFacts(track).map(function (fact) {
         var value = fact.value;
-        if (fact.label === 'Validity' && typeof value === 'number') value += ' months';
+        if (fact.label === '有效期' && typeof value === 'number') value += ' 个月';
         return metaChip(fact.label + ': ' + value);
       }).join('') + '</div>' +
       '<div class="cert-track-hero-actions">' +
-        (firstPath ? '<a class="cert-action" href="lesson?path=' + encodeURIComponent(firstPath) + '&track=' + encodeURIComponent(track.id) + '">' + (complete ? 'Continue path' : 'Start learning') + '</a>' : '') +
-        '<a class="cert-action secondary" href="#trackAssessments">Practice readiness</a>' +
-        '<a class="cert-action secondary" href="' + attr(TUTOR_GUIDE_URL) + '" target="_blank" rel="noopener" aria-label="Learn with an AI tutor on GitHub (opens in a new tab)">Learn with an AI tutor on GitHub ↗</a>' +
-        (track.exam && track.exam.officialGuideUrl ? '<a class="cert-action secondary" href="' + attr(track.exam.officialGuideUrl) + '" target="_blank" rel="noopener">Official exam guide</a>' : '') +
+        (firstPath ? '<a class="cert-action" href="lesson?path=' + encodeURIComponent(firstPath) + '&track=' + encodeURIComponent(track.id) + '">' + (complete ? '继续路径' : '开始学习') + '</a>' : '') +
+        '<a class="cert-action secondary" href="#trackAssessments">备考就绪度练习</a>' +
+        '<a class="cert-action secondary" href="' + attr(TUTOR_GUIDE_URL) + '" target="_blank" rel="noopener" aria-label="在 GitHub 使用 AI 导师学习（在新标签页打开）">在 GitHub 使用 AI 导师学习 ↗</a>' +
+        (track.exam && track.exam.officialGuideUrl ? '<a class="cert-action secondary" href="' + attr(track.exam.officialGuideUrl) + '" target="_blank" rel="noopener">官方考试指南</a>' : '') +
       '</div>';
 
     renderAccessNotice('trackAccessNotice', data().program || {}, false);
@@ -439,9 +439,9 @@
     var percent = total ? Math.round((complete / total) * 100) : 0;
     var assessments = Array.isArray(track.assessments) ? track.assessments : [];
     var attempted = assessments.filter(function (meta) { return assessmentBest(meta.id); }).length;
-    mount.innerHTML = '<div class="cert-progress-head"><div><div class="cert-eyebrow">LOCAL PROGRESS</div><h2 id="progressTitle">Your progress</h2></div><div class="cert-progress-number">' + percent + '%</div></div>' +
+    mount.innerHTML = '<div class="cert-progress-head"><div><div class="cert-eyebrow">本地进度</div><h2 id="progressTitle">你的进度</h2></div><div class="cert-progress-number">' + percent + '%</div></div>' +
       '<div class="cert-progress-bar" role="progressbar" aria-labelledby="progressTitle" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + percent + '"><div class="cert-progress-fill" style="--cert-progress:' + (percent / 100) + '"></div></div>' +
-      '<div class="cert-progress-detail"><span>' + complete + ' of ' + total + ' lessons complete</span><span>' + attempted + ' of ' + assessments.length + ' assessments attempted</span><span>' + (progressIsPersistent() ? 'Stored only in this browser' : 'Browser storage unavailable; progress is temporary') + '</span></div>';
+      '<div class="cert-progress-detail"><span>' + complete + ' / ' + total + ' 节课已完成</span><span>' + attempted + ' / ' + assessments.length + ' 项评估已尝试</span><span>' + (progressIsPersistent() ? '仅存储在此浏览器中' : '浏览器存储不可用；进度为临时数据') + '</span></div>';
   }
 
   function renderDomains(track) {
@@ -450,8 +450,8 @@
     var domains = Array.isArray(track.domains) ? track.domains : [];
     mount.innerHTML = domains.length ? domains.map(function (domain) {
       var objectives = Array.isArray(domain.objectives) ? domain.objectives : [];
-      return '<article class="cert-domain-row"><div class="cert-domain-weight">' + esc(domain.weight != null ? domain.weight + '%' : 'CORE') + '</div><div><h3>' + esc(domain.name || domain.title || domain.id) + '</h3><div class="cert-card-code">' + esc(domain.id || '') + '</div></div><ul class="cert-objectives">' + objectives.map(function (objective) { return '<li>' + esc(objective) + '</li>'; }).join('') + '</ul></article>';
-    }).join('') : '<div class="cert-empty">Domain details are not available in this track manifest yet.</div>';
+      return '<article class="cert-domain-row"><div class="cert-domain-weight">' + esc(domain.weight != null ? domain.weight + '%' : '核心') + '</div><div><h3>' + esc(domain.name || domain.title || domain.id) + '</h3><div class="cert-card-code">' + esc(domain.id || '') + '</div></div><ul class="cert-objectives">' + objectives.map(function (objective) { return '<li>' + esc(objective) + '</li>'; }).join('') + '</ul></article>';
+    }).join('') : '<div class="cert-empty">本路径清单尚未提供领域详情。</div>';
   }
 
   function renderLessons(track) {
@@ -464,14 +464,14 @@
       var lesson = findLesson(path);
       var done = lessonIsComplete(path);
       var domains = Array.isArray(normalized.domains) ? normalized.domains : [];
-      var origin = path.indexOf('phases/') === 0 ? 'Core curriculum' : (normalized.role || lesson.type || 'Certification lesson');
+      var origin = path.indexOf('phases/') === 0 ? '核心课程' : (({orientation: '入门导览（Orientation）', core: '核心课程', capstone: '综合实践（Capstone）', Learn: '学习', Build: '动手实现（Build）', Reference: '参考'})[normalized.role || lesson.type] || normalized.role || lesson.type || '认证课程');
       return '<article class="cert-lesson-row' + (done ? ' is-complete' : '') + '">' +
         '<div class="cert-lesson-num">' + String(index + 1).padStart(2, '0') + '</div>' +
-        '<div class="cert-lesson-copy"><h3>' + esc(lesson.name) + '</h3><p>' + esc((done ? 'Complete · ' : '') + origin + (lesson.summary ? ' · ' + lesson.summary : '')) + '</p></div>' +
-        '<div class="cert-domain-chips">' + domains.map(function (domain) { return '<span class="cert-domain-chip">' + esc(domain) + '</span>'; }).join('') + '</div>' +
-        '<a class="cert-lesson-open" href="lesson?path=' + encodeURIComponent(path) + '&track=' + encodeURIComponent(track.id) + '">' + (done ? 'Review' : 'Open') + ' →</a>' +
+        '<div class="cert-lesson-copy"><h3>' + esc(lesson.name) + '</h3><p>' + esc((done ? '已完成 · ' : '') + origin + (lesson.summary ? ' · ' + lesson.summary : '')) + '</p></div>' +
+        '<div class="cert-domain-chips">' + domains.map(function (domain) { return '<span class="cert-domain-chip">' + esc(domainLabel(track, domain)) + '</span>'; }).join('') + '</div>' +
+        '<a class="cert-lesson-open" href="lesson?path=' + encodeURIComponent(path) + '&track=' + encodeURIComponent(track.id) + '">' + (done ? '复习' : '打开') + ' →</a>' +
       '</article>';
-    }).join('') : '<div class="cert-empty">Lessons have not been added to this track yet.</div>';
+    }).join('') : '<div class="cert-empty">此路径尚未添加课程。</div>';
   }
 
   function renderDeepDives(track) {
@@ -489,11 +489,11 @@
       var path = normalized.path || '';
       var lesson = findLesson(path);
       var title = normalized.label || lesson.name;
-      var reason = normalized.reason || lesson.summary || 'Additional context from the core AI Engineering from Scratch curriculum.';
+      var reason = normalized.reason || lesson.summary || '来自《从零开始的 AI 工程》核心课程的补充背景。';
       return '<article class="cert-deep-dive-row">' +
         '<div class="cert-deep-dive-badge">OPTIONAL</div>' +
         '<div class="cert-lesson-copy"><h3>' + esc(title) + '</h3><p>' + esc(reason) + '</p></div>' +
-        '<a class="cert-lesson-open" href="' + attr(lessonReferenceHref(path, track)) + '">Open lesson →</a>' +
+        '<a class="cert-lesson-open" href="' + attr(lessonReferenceHref(path, track)) + '">打开课程 →</a>' +
       '</article>';
     }).join('');
   }
@@ -511,8 +511,8 @@
       var latest = attempts[0] || null;
       var count = assessment.questionCount || meta.questionCount || (Array.isArray(assessment.questions) ? assessment.questions.length : 0);
       var limit = assessment.timeLimitMinutes || meta.timeLimitMinutes || 0;
-      return '<article class="cert-assessment-card"><div class="cert-assessment-head"><span class="cert-assessment-kind">' + esc(assessment.kind || 'Practice') + '</span><span class="cert-card-code">' + count + ' questions' + (limit ? ' · ' + limit + ' min' : '') + '</span></div><h3>' + esc(assessment.title || meta.title || 'Practice assessment') + '</h3><p>' + esc(assessment.summary || assessment.description || 'Original scenario practice with feedback after submission.') + '</p><div class="cert-assessment-best">' + (best ? 'Best practice score: ' + best.percent + '%' : 'Not attempted on this device') + '</div><div class="cert-track-hero-actions"><a class="cert-action" href="assessment.html?id=' + encodeURIComponent(meta.id) + '">' + (latest ? 'Try again' : 'Start practice') + '</a>' + (latest ? '<a class="cert-action secondary" href="assessment.html?id=' + encodeURIComponent(meta.id) + '&result=latest">Review latest result</a>' : '') + '</div></article>';
-    }).join('') : '<div class="cert-empty">Practice assessments are being prepared for this track.</div>';
+      return '<article class="cert-assessment-card"><div class="cert-assessment-head"><span class="cert-assessment-kind">' + esc(({diagnostic: '诊断评估（Diagnostic）', mock: '模拟考试（Mock）'})[assessment.kind] || assessment.kind || '练习') + '</span><span class="cert-card-code">' + count + ' 道题' + (limit ? ' · ' + limit + ' 分钟' : '') + '</span></div><h3>' + esc(assessment.title || meta.title || '练习评估') + '</h3><p>' + esc(assessment.summary || assessment.description || '原创场景练习，提交后显示反馈。') + '</p><div class="cert-assessment-best">' + (best ? '最佳练习分数：' + best.percent + '%' : '尚未在此设备上尝试') + '</div><div class="cert-track-hero-actions"><a class="cert-action" href="assessment.html?id=' + encodeURIComponent(meta.id) + '">' + (latest ? '再试一次' : '开始练习') + '</a>' + (latest ? '<a class="cert-action secondary" href="assessment.html?id=' + encodeURIComponent(meta.id) + '&result=latest">查看最近结果</a>' : '') + '</div></article>';
+    }).join('') : '<div class="cert-empty">正在为此路径准备练习评估。</div>';
   }
 
   function normalizePlans(value) {
@@ -536,10 +536,10 @@
         steps = Object.keys(steps).map(function (key) { return key + ': ' + steps[key]; });
       }
       if (!Array.isArray(steps)) steps = [];
-      var pace = plan.duration || plan.pace || (plan.durationDays ? plan.durationDays + ' days' : plan.id || 'Study plan');
-      var workload = plan.hoursPerWeek ? plan.hoursPerWeek + ' hours per week' : '';
-      return '<article class="cert-plan-card"><div class="cert-card-code">' + esc(pace) + '</div><h3>' + esc(plan.title || plan.label || plan.name || 'Study plan') + '</h3><p>' + esc(plan.description || plan.summary || workload) + '</p>' + (steps.length ? '<ul>' + steps.map(function (step) { return '<li>' + esc(typeof step === 'string' ? step : step.title || step.name || JSON.stringify(step)) + '</li>'; }).join('') + '</ul>' : '') + '</article>';
-    }).join('') : '<div class="cert-empty">Use the lesson order above as the default study plan.</div>';
+      var pace = plan.duration || plan.pace || (plan.durationDays ? plan.durationDays + ' 天' : plan.id || '学习计划');
+      var workload = plan.hoursPerWeek ? plan.hoursPerWeek + ' 小时／周' : '';
+      return '<article class="cert-plan-card"><div class="cert-card-code">' + esc(pace) + '</div><h3>' + esc(plan.title || plan.label || plan.name || '学习计划') + '</h3><p>' + esc(plan.description || plan.summary || workload) + '</p>' + (steps.length ? '<ul>' + steps.map(function (step) { return '<li>' + esc(typeof step === 'string' ? step : step.title || step.name || JSON.stringify(step)) + '</li>'; }).join('') + '</ul>' : '') + '</article>';
+    }).join('') : '<div class="cert-empty">以以上课程顺序作为默认学习计划。</div>';
   }
 
   function normalizeQuestion(question, index) {
@@ -634,7 +634,7 @@
     if (!mount) return;
     if (!assessment && located && located.meta.path && window.AIFSContentSource) {
       fetch(window.AIFSContentSource.repoUrl(located.meta.path)).then(function (response) {
-        if (!response.ok) throw new Error('Could not load practice data');
+        if (!response.ok) throw new Error('无法加载练习数据');
         return response.json();
       }).then(function (loaded) {
         assessment = Object.assign({}, loaded, located.meta, { id: id });
@@ -651,18 +651,18 @@
   }
 
   function renderAssessmentError(mount) {
-    mount.innerHTML = '<div class="cert-error"><h1>Assessment not found</h1><p>This practice set is not available in the generated certification data.</p><a class="cert-action" href="certifications.html">All certifications</a></div>';
+    mount.innerHTML = '<div class="cert-error"><h1>未找到评估</h1><p>生成的认证数据中没有此练习集。</p><a class="cert-action" href="certifications.html">全部认证</a></div>';
   }
 
   function renderAssessmentLoaded(mount, assessment, track, forceForm) {
     var questions = (assessment.questions || []).map(normalizeQuestion);
     if (!questions.length) {
-      mount.innerHTML = '<div class="cert-error"><h1>Practice is being written</h1><p>This assessment has metadata but no questions yet.</p><a class="cert-action" href="' + (track ? 'certification?id=' + encodeURIComponent(track.id) : 'certifications.html') + '">Back to track</a></div>';
+      mount.innerHTML = '<div class="cert-error"><h1>练习正在编写中</h1><p>此评估已有元数据，但尚无题目。</p><a class="cert-action" href="' + (track ? 'certification?id=' + encodeURIComponent(track.id) : 'certifications.html') + '">返回路径</a></div>';
       return;
     }
-    var title = assessment.title || 'Practice assessment';
+    var title = assessment.title || '练习评估';
     var version = assessmentVersion(assessment);
-    document.title = title + ' - AI Engineering from Scratch';
+    document.title = title + ' · 从零开始的 AI 工程';
     var existing = assessmentAttempts(assessment.id, version);
     if (!forceForm && query('result') === 'latest' && existing && existing[0]) {
       renderAssessmentResults(mount, assessment, track, questions, existing[0]);
@@ -681,10 +681,10 @@
       if (window.AIFSCertProgress) window.AIFSCertProgress.saveDraft(assessment.id, version, draft);
     }
 
-    mount.innerHTML = '<div class="assessment-shell"><div class="cert-breadcrumb"><a href="certifications.html">Certifications</a><span>/</span>' + (track ? '<a href="certification?id=' + encodeURIComponent(track.id) + '">' + esc(track.examCode || track.shortName || track.id) + '</a><span>/</span>' : '') + '<span>Practice</span></div><section class="assessment-hero"><div class="cert-eyebrow">' + esc(assessment.kind || 'PRACTICE') + '</div><h1>' + esc(title) + '</h1><p>' + esc(assessment.summary || assessment.description || 'Work through the original scenarios, then submit to reveal explanations and domain feedback.') + '</p><p class="assessment-scoring-note">Submit whenever you are ready. Unanswered questions count as incorrect.</p><div class="cert-meta-row">' + metaChip(questions.length + ' original questions') + metaChip(limit ? limit + ' minute limit' : 'Untimed') + metaChip(progressIsPersistent() ? 'Saved locally' : 'Progress lasts for this page only') + '</div></section>' +
-      '<div class="cert-notice"><strong>Practice score only</strong><p>Your result is a percentage created by this open-source course. It is not an official scaled exam score, credential decision, or guarantee of passing.</p></div>' +
-      (limit ? '<div class="cert-timer" id="assessmentTimer" role="timer" aria-live="off" aria-label="Time remaining"><span>Time remaining</span><strong id="assessmentTimerValue">' + formatRemaining(draft.deadlineAt - Date.now()) + '</strong></div>' : '') +
-      '<form class="assessment-form" id="assessmentForm" tabindex="-1" aria-label="Assessment questions">' + questions.map(function (question, index) { return renderQuestion(question, index, draft.answers[question.id] || []); }).join('') + '<div class="cert-submit-row"><p>You can submit a partial attempt. Unanswered questions count as incorrect, and explanations appear after submission.</p><button class="cert-action" type="submit">Submit practice</button></div></form></div>';
+    mount.innerHTML = '<div class="assessment-shell"><div class="cert-breadcrumb"><a href="certifications.html">认证课程</a><span>/</span>' + (track ? '<a href="certification?id=' + encodeURIComponent(track.id) + '">' + esc(track.examCode || track.shortName || track.id) + '</a><span>/</span>' : '') + '<span>练习</span></div><section class="assessment-hero"><div class="cert-eyebrow">' + esc(({diagnostic: '诊断评估（Diagnostic）', mock: '模拟考试（Mock）'})[assessment.kind] || assessment.kind || '练习') + '</div><h1>' + esc(title) + '</h1><p>' + esc(assessment.summary || assessment.description || '完成原创场景题后提交，查看解析与领域反馈。') + '</p><p class="assessment-scoring-note">准备好后即可提交。未作答题目按错误计分。</p><div class="cert-meta-row">' + metaChip(questions.length + ' 道原创题目') + metaChip(limit ? limit + ' 分钟时限' : '不限时') + metaChip(progressIsPersistent() ? '已保存到本地' : '进度仅在当前页面有效') + '</div></section>' +
+      '<div class="cert-notice"><strong>仅为练习分数</strong><p>结果是本开源课程计算的百分比，并非官方考试量表分数、认证判定或通过保证。</p></div>' +
+      (limit ? '<div class="cert-timer" id="assessmentTimer" role="timer" aria-live="off" aria-label="剩余时间"><span>剩余时间</span><strong id="assessmentTimerValue">' + formatRemaining(draft.deadlineAt - Date.now()) + '</strong></div>' : '') +
+      '<form class="assessment-form" id="assessmentForm" tabindex="-1" aria-label="评估题目">' + questions.map(function (question, index) { return renderQuestion(question, index, draft.answers[question.id] || [], track); }).join('') + '<div class="cert-submit-row"><p>可以只完成部分题目后提交。未作答题目按错误计分，提交后显示解析。</p><button class="cert-action" type="submit">提交练习</button></div></form></div>';
 
     var form = document.getElementById('assessmentForm');
     form.addEventListener('change', function (event) {
@@ -716,10 +716,15 @@
     return String(value).replace(/(["\\])/g, '\\$1');
   }
 
-  function renderQuestion(question, index, selected) {
+  function domainLabel(track, id) {
+    var domain = track && (track.domains || []).find(function (entry) { return entry.id === id; });
+    return domain ? (domain.name || domain.title || id) : (id === 'general' ? '综合' : id);
+  }
+
+  function renderQuestion(question, index, selected, track) {
     var inputType = question.type === 'multiple' ? 'checkbox' : 'radio';
     selected = Array.isArray(selected) ? selected : [];
-    return '<fieldset class="cert-question"><legend><div class="cert-question-head"><span class="cert-question-kicker">Question ' + (index + 1) + ' · ' + esc(question.domain) + '</span><span class="cert-question-kicker">' + (question.type === 'multiple' ? 'Select all that apply' : 'Choose one') + '</span></div><div class="cert-question-prompt">' + esc(question.prompt) + '</div></legend><div class="cert-option-list">' + question.options.map(function (option, optionIndex) {
+    return '<fieldset class="cert-question"><legend><div class="cert-question-head"><span class="cert-question-kicker">题目 ' + (index + 1) + ' · ' + esc(domainLabel(track, question.domain)) + '</span><span class="cert-question-kicker">' + (question.type === 'multiple' ? '选择所有符合的选项' : '单选') + '</span></div><div class="cert-question-prompt">' + esc(question.prompt) + '</div></legend><div class="cert-option-list">' + question.options.map(function (option, optionIndex) {
       var isSelected = selected.map(Number).indexOf(optionIndex) !== -1;
       var checked = isSelected ? ' checked' : '';
       return '<label class="cert-option' + (isSelected ? ' is-selected' : '') + '"><input type="' + inputType + '" name="question-' + attr(question.id) + '" value="' + optionIndex + '" data-question="' + attr(question.id) + '"' + checked + '><span>' + esc(option) + '</span></label>';
@@ -814,12 +819,12 @@
         return '<li>' + renderInternalLessonReference(ref, track) + '</li>';
       }).join('');
       if (!links) {
-        links = '<li><a href="#' + attr(item.reviewIds[0]) + '">Review the missed explanation →</a></li>';
+        links = '<li><a href="#' + attr(item.reviewIds[0]) + '">查看答错题目的解析 →</a></li>';
       }
       return '<article class="cert-remediation-domain"><h3>' + esc(domain ? domain.name : item.id) + '</h3><span>' + item.score.correct + '/' + item.score.total + ' · ' + item.percent + '%</span><ul class="cert-remediation-links">' + links + '</ul></article>';
     }).join('');
 
-    return '<section class="cert-remediation" aria-labelledby="remediationTitle"><div class="cert-eyebrow">TARGETED REMEDIATION</div><h2 id="remediationTitle">Study the decisions you missed</h2><p>Every lesson below comes from an internal reference on a question you missed. Revisit the decision, then start a fresh attempt.</p><div class="cert-remediation-grid">' + cards + '</div></section>';
+    return '<section class="cert-remediation" aria-labelledby="remediationTitle"><div class="cert-eyebrow">针对性补习</div><h2 id="remediationTitle">学习答错的决策题</h2><p>以下课程均来自答错题目的内部参考链接。复习相关决策后，再开始新的练习。</p><div class="cert-remediation-grid">' + cards + '</div></section>';
   }
 
   function renderAssessmentResults(mount, assessment, track, questions, attempt) {
@@ -833,7 +838,7 @@
     }).join('');
     var remediationHtml = renderRemediation(track, questions, attempt);
     var latestResultHref = 'assessment.html?id=' + encodeURIComponent(assessment.id) + '&result=latest';
-    mount.innerHTML = '<div class="assessment-shell cert-results"><div class="cert-breadcrumb"><a href="certifications.html">Certifications</a><span>/</span>' + (track ? '<a href="certification?id=' + encodeURIComponent(track.id) + '">' + esc(track.examCode || track.shortName || track.id) + '</a><span>/</span>' : '') + '<span>Results</span></div><section class="cert-results-summary" id="assessmentResultsSummary" tabindex="-1" aria-label="Assessment result"><div class="cert-results-head"><div><div class="cert-eyebrow">PRACTICE RESULT</div><div class="cert-results-score">' + scoreSummary.percent + '%</div></div><div><strong>' + scoreSummary.correct + ' of ' + scoreSummary.total + ' exact answers</strong><p>' + (attempt.timedOut ? 'Submitted when the timer expired.' : 'Submitted in ' + formatDuration(attempt.durationMs)) + '</p></div></div><div class="cert-domain-score-grid">' + domainHtml + '</div><div class="cert-notice"><strong>Not an official scaled score</strong><p>This percentage measures this original practice set only. It cannot predict or guarantee the provider\'s scaled certification result.</p></div><div class="cert-track-hero-actions"><button class="cert-action" type="button" id="assessmentRetake">Start a fresh attempt</button><a class="cert-action secondary" href="' + attr(latestResultHref) + '">Revisit latest result</a>' + (track ? '<a class="cert-action secondary" href="certification?id=' + encodeURIComponent(track.id) + '">Return to track</a>' : '') + '</div></section>' + remediationHtml + '<section aria-labelledby="reviewTitle"><div class="cert-section-heading"><div><div class="cert-eyebrow">REVIEW</div><h2 id="reviewTitle">Decisions and explanations</h2></div><p>Use every miss to identify the domain and decision rule you need to revisit.</p></div>' + questions.map(function (question, index) { return renderReview(question, index, attemptAnswers[question.id] || [], track); }).join('') + '</section></div>';
+    mount.innerHTML = '<div class="assessment-shell cert-results"><div class="cert-breadcrumb"><a href="certifications.html">认证课程</a><span>/</span>' + (track ? '<a href="certification?id=' + encodeURIComponent(track.id) + '">' + esc(track.examCode || track.shortName || track.id) + '</a><span>/</span>' : '') + '<span>结果</span></div><section class="cert-results-summary" id="assessmentResultsSummary" tabindex="-1" aria-label="评估结果"><div class="cert-results-head"><div><div class="cert-eyebrow">练习结果</div><div class="cert-results-score">' + scoreSummary.percent + '%</div></div><div><strong>' + scoreSummary.correct + ' / ' + scoreSummary.total + ' 道完全正确的答案</strong><p>' + (attempt.timedOut ? '计时结束时已自动提交。' : '提交用时 ' + formatDuration(attempt.durationMs)) + '</p></div></div><div class="cert-domain-score-grid">' + domainHtml + '</div><div class="cert-notice"><strong>并非官方量表分数</strong><p>此百分比仅衡量本原创练习集的表现，不能预测或保证提供方的认证量表分数。</p></div><div class="cert-track-hero-actions"><button class="cert-action" type="button" id="assessmentRetake">开始新的练习</button><a class="cert-action secondary" href="' + attr(latestResultHref) + '">查看最近结果</a>' + (track ? '<a class="cert-action secondary" href="certification?id=' + encodeURIComponent(track.id) + '">返回路径</a>' : '') + '</div></section>' + remediationHtml + '<section aria-labelledby="reviewTitle"><div class="cert-section-heading"><div><div class="cert-eyebrow">复习</div><h2 id="reviewTitle">决策与解析</h2></div><p>利用每道错题确定需要复习的领域及决策规则。</p></div>' + questions.map(function (question, index) { return renderReview(question, index, attemptAnswers[question.id] || [], track); }).join('') + '</section></div>';
     var retake = document.getElementById('assessmentRetake');
     if (retake) retake.addEventListener('click', function () {
       if (window.AIFSCertProgress) window.AIFSCertProgress.clearDraft(assessment.id, assessmentVersion(assessment));
@@ -845,10 +850,10 @@
   }
 
   function formatDuration(ms) {
-    if (!isFiniteNumber(ms) || ms < 0) return 'an unknown duration';
+    if (!isFiniteNumber(ms) || ms < 0) return '未知时长';
     var mins = Math.floor(ms / 60000);
     var secs = Math.floor((ms % 60000) / 1000);
-    return mins + 'm ' + secs + 's';
+    return mins + ' 分 ' + secs + ' 秒';
   }
 
   function renderReview(question, index, picked, track) {
@@ -859,10 +864,10 @@
     var refs = question.references.map(function (ref) {
       if (typeof ref === 'string') {
         if (/^https?:\/\//i.test(ref)) {
-          var sourceLabel = 'External source';
+          var sourceLabel = '外部来源';
           try {
             var sourceUrl = new URL(ref);
-            sourceLabel = (/\.pdf$/i.test(sourceUrl.pathname) ? 'Exam guide' : sourceUrl.hostname.replace(/^www\./, '')) + ' ↗';
+            sourceLabel = (/\.pdf$/i.test(sourceUrl.pathname) ? '考试指南' : sourceUrl.hostname.replace(/^www\./, '')) + ' ↗';
           } catch (_) {}
           return '<li><a href="' + attr(ref) + '" target="_blank" rel="noopener">' + esc(sourceLabel) + '</a></li>';
         }
@@ -881,7 +886,7 @@
       }
       return '<li>' + esc(label) + '</li>';
     }).join('');
-    return '<article class="cert-review ' + (ok ? 'is-correct' : 'is-wrong') + '" id="review-' + attr(question.id || index + 1) + '"><div class="cert-question-kicker">Question ' + (index + 1) + ' · ' + esc(question.domain) + ' · ' + (ok ? 'Correct' : 'Review') + '</div><h3>' + esc(question.prompt) + '</h3><div class="cert-review-answer"><strong>Your answer</strong><p>' + esc(pickedLabels.length ? pickedLabels.join('; ') : 'No answer') + '</p></div>' + (!ok ? '<div class="cert-review-answer"><strong>Correct answer</strong><p>' + esc(correctLabels.join('; ')) + '</p></div>' : '') + '<div class="cert-review-explanation"><strong>Why</strong><p>' + esc(question.explanation || 'No explanation has been added yet.') + '</p></div>' + (refs ? '<ul class="cert-reference-list">' + refs + '</ul>' : '') + '</article>';
+    return '<article class="cert-review ' + (ok ? 'is-correct' : 'is-wrong') + '" id="review-' + attr(question.id || index + 1) + '"><div class="cert-question-kicker">题目 ' + (index + 1) + ' · ' + esc(domainLabel(track, question.domain)) + ' · ' + (ok ? '正确' : '待复习') + '</div><h3>' + esc(question.prompt) + '</h3><div class="cert-review-answer"><strong>你的答案</strong><p>' + esc(pickedLabels.length ? pickedLabels.join('; ') : '未作答') + '</p></div>' + (!ok ? '<div class="cert-review-answer"><strong>正确答案</strong><p>' + esc(correctLabels.join('; ')) + '</p></div>' : '') + '<div class="cert-review-explanation"><strong>原因</strong><p>' + esc(question.explanation || '尚未添加解析。') + '</p></div>' + (refs ? '<ul class="cert-reference-list">' + refs + '</ul>' : '') + '</article>';
   }
 
   function init() {

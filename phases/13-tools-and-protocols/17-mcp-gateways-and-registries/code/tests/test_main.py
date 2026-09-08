@@ -1,4 +1,4 @@
-"""Tests for the stateless MCP gateway."""
+"""无状态 MCP 网关（Gateway）的测试。"""
 
 from __future__ import annotations
 

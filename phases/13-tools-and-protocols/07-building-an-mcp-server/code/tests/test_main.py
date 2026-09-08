@@ -38,7 +38,7 @@ class McpServerTests(unittest.TestCase):
     def test_typescript_ids_are_limited_to_safe_integer_bounds(self) -> None:
         node = shutil.which("node")
         if node is None:
-            self.skipTest("Node.js is unavailable")
+            self.skipTest("Node.js 不可用")
         version = subprocess.run(
             [node, "--version"],
             capture_output=True,
@@ -48,7 +48,7 @@ class McpServerTests(unittest.TestCase):
         version_parts = version.removeprefix("v").split("-", 1)[0].split(".")
         node_version = tuple(int(part) for part in version_parts[:3])
         if len(node_version) < 3 or node_version < (22, 6, 0):
-            self.skipTest("Node.js 22.6.0+ is required for TypeScript strip mode")
+            self.skipTest("TypeScript 类型擦除模式（Strip mode）需要 Node.js 22.6.0+")
 
         accepted = [-(2**53 - 1), 2**53 - 1]
         rejected = [-(2**53), 2**53, 1.5, True]

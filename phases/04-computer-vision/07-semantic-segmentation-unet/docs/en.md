@@ -1,149 +1,149 @@
-# Semantic Segmentation — U-Net
+# 语义分割：U-Net（Semantic Segmentation — U-Net）
 
-> Segmentation is classification at every pixel. U-Net makes it work by pairing a downsampling encoder with an upsampling decoder and wiring skip connections between them.
+> 分割就是对每个像素分类。U-Net 将下采样编码器与上采样解码器配对，并在两者之间加入跳跃连接，使这一任务得以实现。
 
 **Type:** Build
 **Languages:** Python
-**Prerequisites:** Phase 4 Lesson 03 (CNNs), Phase 4 Lesson 04 (Image Classification)
-**Time:** ~75 minutes
+**Prerequisites:** 阶段 4 第 03 课（卷积神经网络），阶段 4 第 04 课（图像分类）
+**Time:** ~75 分钟
 
-## Learning Objectives
+## 学习目标（Learning Objectives）
 
-- Distinguish semantic, instance, and panoptic segmentation and pick the right task for a given problem
-- Build a U-Net from scratch in PyTorch with encoder blocks, a bottleneck, a decoder with transposed convolutions, and skip connections
-- Implement pixel-wise cross-entropy, Dice loss, and the combined loss that is the current default for medical and industrial segmentation
-- Read IoU and Dice metrics per class and diagnose whether a bad score comes from small-object recall, boundary accuracy, or class imbalance
+- 区分语义分割、实例分割和全景分割，为给定问题选择正确任务
+- 用 PyTorch 从零构建 U-Net，包含编码器模块、瓶颈、带转置卷积的解码器和跳跃连接
+- 实现逐像素交叉熵、Dice 损失，以及医学和工业分割当前默认使用的组合损失
+- 阅读逐类别 IoU 与 Dice 指标，诊断低分源自小目标召回率、边界精度还是类别不平衡
 
-## The Problem
+## 问题（The Problem）
 
-Classification outputs one label per image. Detection outputs a handful of boxes per image. Segmentation outputs one label per pixel. For an input of size `H x W`, the output is a tensor of shape `H x W` (semantic) or `H x W x N_instances` (instance). That is millions of predictions per image, not one.
+分类每张图像输出一个标签，检测每张图像输出几个框，分割则每个像素输出一个标签。对于尺寸为 `H x W` 的输入，输出张量形状为 `H x W`（语义分割）或 `H x W x N_instances`（实例分割）。每张图像需要数百万次预测，而非一次。
 
-The structure of segmentation is why it powers almost every dense-prediction vision product: medical imaging (tumour masks), autonomous driving (road, lane, obstacle), satellite (building footprints, crop boundaries), document parsing (layout zones), robotics (graspable regions). None of those tasks can be solved by putting a box around the object; they need the exact silhouette.
+这种结构使分割支撑了几乎所有密集预测视觉产品：医学成像中的肿瘤掩码，自动驾驶中的道路、车道和障碍物，卫星图像中的建筑轮廓与农田边界，文档解析中的布局区域，以及机器人中的可抓取区域。这些任务都无法仅靠给物体画一个框解决，而是需要精确轮廓。
 
-The architectural problem is simple to state and not simple to solve: you need the network to see the global context of an image (what kind of scene is this) and the local pixel detail (exactly which pixel is road vs pavement) simultaneously. A standard CNN compresses spatially to gain context, which throws away the detail. U-Net was the design that got both.
+架构问题说起来简单，解决起来并不简单：网络必须同时看到图像的全局上下文，即这是什么场景，以及局部像素细节，即哪个像素是车道、哪个是人行道。标准 CNN 通过空间压缩获得上下文，却丢掉细节。U-Net 的设计兼得二者。
 
-## The Concept
+## 概念（The Concept）
 
-### Semantic vs instance vs panoptic
+### 语义、实例与全景分割（Semantic vs instance vs panoptic）
 
 ```mermaid
 flowchart LR
-    IN["Input image"] --> SEM["Semantic<br/>(pixel → class)"]
-    IN --> INS["Instance<br/>(pixel → object id,<br/>only foreground classes)"]
-    IN --> PAN["Panoptic<br/>(every pixel → class + id)"]
+    IN["输入图像"] --> SEM["语义分割<br/>（像素 → 类别）"]
+    IN --> INS["实例分割<br/>（像素 → 物体 ID，<br/>仅前景类别）"]
+    IN --> PAN["全景分割<br/>（每个像素 → 类别 + ID）"]
 
     style SEM fill:#dbeafe,stroke:#2563eb
     style INS fill:#fef3c7,stroke:#d97706
     style PAN fill:#dcfce7,stroke:#16a34a
 ```
 
-- **Semantic** says "this pixel is road, that pixel is car." Two cars next to each other collapse into a single blob.
-- **Instance** says "this pixel is car #3, that pixel is car #5." Ignores background stuff ("stuff" = sky, road, grass).
-- **Panoptic** unifies both: every pixel gets a class label, every instance gets a unique id, stuff and things both segmented.
+- **语义分割（Semantic segmentation）**说“这个像素是道路，那个像素是汽车”。两辆相邻汽车会合成一块。
+- **实例分割（Instance segmentation）**说“这个像素属于 3 号车，那个像素属于 5 号车”。它忽略天空、道路、草地等背景区域（Stuff）。
+- **全景分割（Panoptic segmentation）**统一二者：每个像素都有类别标签，每个实例都有唯一 ID，背景区域与可数物体都被分割。
 
-This lesson covers semantic. The next lesson (Mask R-CNN) covers instance.
+本课讲语义分割，下一课 Mask R-CNN 讲实例分割。
 
-### The U-Net shape
+### U-Net 的结构（The U-Net shape）
 
 ```mermaid
 flowchart LR
-    subgraph ENC["Encoder (contracting)"]
+    subgraph ENC["编码器（收缩）"]
         E1["64<br/>H x W"] --> E2["128<br/>H/2 x W/2"]
         E2 --> E3["256<br/>H/4 x W/4"]
         E3 --> E4["512<br/>H/8 x W/8"]
     end
-    subgraph BOT["Bottleneck"]
+    subgraph BOT["瓶颈"]
         B1["1024<br/>H/16 x W/16"]
     end
-    subgraph DEC["Decoder (expanding)"]
+    subgraph DEC["解码器（扩张）"]
         D4["512<br/>H/8 x W/8"] --> D3["256<br/>H/4 x W/4"]
         D3 --> D2["128<br/>H/2 x W/2"]
         D2 --> D1["64<br/>H x W"]
     end
     E4 --> B1 --> D4
-    E1 -. skip .-> D1
-    E2 -. skip .-> D2
-    E3 -. skip .-> D3
-    E4 -. skip .-> D4
-    D1 --> OUT["1x1 conv<br/>classes"]
+    E1 -. 跳跃连接 .-> D1
+    E2 -. 跳跃连接 .-> D2
+    E3 -. 跳跃连接 .-> D3
+    E4 -. 跳跃连接 .-> D4
+    D1 --> OUT["1x1 卷积<br/>类别"]
 
     style ENC fill:#dbeafe,stroke:#2563eb
     style BOT fill:#fef3c7,stroke:#d97706
     style DEC fill:#dcfce7,stroke:#16a34a
 ```
 
-The encoder halves spatial resolution four times and doubles channels. The decoder reverses: doubles spatial resolution four times and halves channels. The skip connections concatenate matching encoder features with decoder features at every resolution. The final 1x1 conv maps `64 -> num_classes` at full resolution.
+编码器四次将空间分辨率减半，并将通道数翻倍。解码器反向操作：四次将空间分辨率翻倍，并将通道数减半。跳跃连接在每个分辨率上，将对应编码器特征与解码器特征拼接。最后的 1x1 卷积在完整分辨率下完成 `64 -> num_classes` 映射。
 
-Why skip connections are necessary: the decoder has seen only small feature maps by the time it tries to output pixel-level predictions. Without the skips it cannot localise edges accurately because that information was compressed away in the encoder. Skip connections hand it the high-resolution feature maps the encoder computed on the way down.
+跳跃连接不可或缺，是因为解码器尝试输出像素级预测时，此前只看到很小的特征图。没有跳跃连接，它无法精确定位边缘，因为这些信息已在编码器中被压缩掉。跳跃连接把编码器下采样过程中计算的高分辨率特征图交给解码器。
 
-### Transposed vs bilinear upsample
+### 转置卷积与双线性上采样（Transposed vs bilinear upsample）
 
-The decoder has to expand spatial dimensions. Two options:
+解码器必须扩大空间维度，有两种选择：
 
-- **Transposed convolution** (`nn.ConvTranspose2d`) — learnable upsample. Historical U-Net default. Can produce checkerboard artifacts if stride and kernel size do not divide evenly.
-- **Bilinear upsample + 3x3 conv** — smooth upsample followed by a conv. Fewer artifacts, fewer parameters, now the modern default.
+- **转置卷积（Transposed convolution）**（`nn.ConvTranspose2d`）：可学习的上采样，是早期 U-Net 默认方案。若卷积核大小不能被步幅整除，可能产生棋盘格伪影。
+- **双线性上采样加 3x3 卷积（Bilinear upsample + 3x3 conv）**：先平滑上采样，再接卷积。伪影和参数更少，已成为现代默认方案。
 
-Both appear in the wild. For a first U-Net, bilinear is safer.
+实际系统中两者都有。初次构建 U-Net 时，双线性更稳妥。
 
-### Cross-entropy on a pixel grid
+### 像素网格上的交叉熵（Cross-entropy on a pixel grid）
 
-For semantic segmentation with C classes, the model output is `(N, C, H, W)`. The target is `(N, H, W)` with integer class IDs. Cross-entropy is identical to the classification case, just applied at every spatial position:
+对于 C 类语义分割，模型输出为 `(N, C, H, W)`，目标为包含整数类别 ID 的 `(N, H, W)`。交叉熵与分类时相同，只是应用于每个空间位置：
 
 ```
 Loss = mean over (n, h, w) of -log( softmax(logits[n, :, h, w])[target[n, h, w]] )
 ```
 
-`F.cross_entropy` in PyTorch handles this shape natively. No reshape needed.
+PyTorch 的 `F.cross_entropy` 原生支持该形状，无需重塑。
 
-### Dice loss and why you need it
+### Dice 损失及其必要性（Dice loss and why you need it）
 
-Cross-entropy treats every pixel equally. That is wrong when one class dominates the frame (medical imaging: 99% background, 1% tumour). The network can score 99% accuracy by predicting background everywhere and still be useless.
+交叉熵平等对待每个像素。当某类占据绝大多数画面时，这并不合适，例如医学成像中 99% 背景、1% 肿瘤。网络只要处处预测背景就能达到 99% 准确率，却毫无用处。
 
-Dice loss solves this by directly optimising the overlap between predicted and true mask:
+Dice 损失直接优化预测掩码与真实掩码的重叠，解决这一问题：
 
 ```
 Dice(p, y) = 2 * sum(p * y) / (sum(p) + sum(y) + epsilon)
 Dice_loss = 1 - Dice
 ```
 
-where `p` is the sigmoid/softmax probability map for a class and `y` is the binary ground-truth mask. The loss is zero only when the overlap is perfect. Because it is ratio-based, class imbalance is irrelevant.
+其中 `p` 是某类的 sigmoid/softmax 概率图，`y` 是二值真实掩码。只有完全重叠时损失才为零。因为基于比例，类别不平衡不会影响它。
 
-In practice, use the **combined loss**:
+实践中使用**组合损失（Combined loss）**：
 
 ```
 L = L_cross_entropy + lambda * L_dice       (lambda ~ 1)
 ```
 
-Cross-entropy gives stable gradients early in training; Dice focuses the tail of training on actually matching the mask shape. This combination is the medical-imaging default and hard to beat on any class-imbalanced dataset.
+交叉熵在训练早期提供稳定梯度，Dice 让训练后期专注于真正匹配掩码形状。这一组合是医学成像默认方案，在任何类别不平衡数据集上都很难被超越。
 
-### Evaluation metrics
+### 评估指标（Evaluation metrics）
 
-- **Pixel accuracy** — percent of pixels predicted correctly. Cheap. Broken on imbalanced data for the same reason as accuracy in classification.
-- **IoU per class** — intersection over union for each class's mask; average across classes = mIoU.
-- **Dice (F1 on pixels)** — similar to IoU; `Dice = 2 * IoU / (1 + IoU)`. Medical imaging prefers Dice, driving community prefers IoU; they are monotonically related.
-- **Boundary F1** — measures how close predicted boundaries are to ground-truth boundaries, penalising even small shifts. Important for high-precision tasks like semiconductor inspection.
+- **像素准确率（Pixel accuracy）**：预测正确的像素百分比，计算便宜。但在不平衡数据上失效，原因与分类准确率相同。
+- **逐类别交并比（IoU per class）**：各类掩码的交并比，按类别求平均得到 mIoU。
+- **Dice，像素上的 F1**：与 IoU 类似，`Dice = 2 * IoU / (1 + IoU)`。医学成像更常用 Dice，自动驾驶社区更常用 IoU，二者单调相关。
+- **边界 F1（Boundary F1）**：衡量预测边界与真实边界的接近程度，即使小偏移也会受罚。对半导体检测等高精度任务很重要。
 
-Report IoU per class, not just mIoU. Mean IoU hides a class at 15% when nine others are at 85%.
+应报告逐类别 IoU，而不只是 mIoU。其他九类为 85% 时，平均值会掩盖某一类只有 15% 的事实。
 
-### Input resolution trade-off
+### 输入分辨率取舍（Input resolution trade-off）
 
-U-Net's encoder halves resolution four times, so the input must be divisible by 16. Medical images are often 512x512 or 1024x1024. Autonomous-driving crops are 2048x1024. The memory cost of U-Net scales with `H * W * C_max`, and at 1024x1024 with 1024 bottleneck channels the forward pass already uses gigabytes of VRAM.
+U-Net 编码器四次将分辨率减半，因此输入尺寸必须能被 16 整除。医学图像常为 512x512 或 1024x1024，自动驾驶裁剪为 2048x1024。U-Net 内存成本随 `H * W * C_max` 增长；1024x1024 输入配 1024 瓶颈通道时，仅前向传播就已占用数 GB 显存。
 
-Two standard workarounds:
-1. Tile the input — process 256x256 tiles with overlap and stitch.
-2. Replace the bottleneck with dilated convolutions that keep spatial resolution higher but widen receptive field (the DeepLab family).
+两种标准应对方式：
+1. 将输入分块，处理相互重叠的 256x256 图块，再拼接。
+2. 用空洞卷积（Dilated convolution）替换瓶颈，在保持较高空间分辨率的同时扩大感受野，例如 DeepLab 家族。
 
-For a first model, a 256x256 input with a 64-channel-base U-Net trains comfortably on 8 GB VRAM.
+首个模型使用 256x256 输入和基础通道数为 64 的 U-Net，在 8 GB 显存上即可顺畅训练。
 
 ```figure
 segmentation-flood
 ```
 
-## Build It
+## 动手实现（Build It）
 
-### Step 1: Encoder block
+### 第 1 步：编码器模块（Step 1: Encoder block）
 
-Two 3x3 convs with batch norm and ReLU. The first conv changes channel count; the second keeps it.
+两个 3x3 卷积配批归一化和 ReLU。第一个卷积改变通道数，第二个保持通道数。
 
 ```python
 import torch
@@ -166,9 +166,9 @@ class DoubleConv(nn.Module):
         return self.net(x)
 ```
 
-This block is reused throughout. `bias=False` because BN's beta handles the bias.
+整个网络复用这一模块。设置 `bias=False`，因为 BN 的 beta 负责偏置。
 
-### Step 2: Down and up blocks
+### 第 2 步：下采样与上采样模块（Step 2: Down and up blocks）
 
 ```python
 class Down(nn.Module):
@@ -197,9 +197,9 @@ class Up(nn.Module):
         return self.conv(x)
 ```
 
-The spatial-only shape check (`shape[-2:]`) handles inputs whose dimensions are not divisible by 16; a safe `F.interpolate` aligns the tensor before the concat. Comparing the full shape would also trigger on channel-count differences, which should be a loud error, not a silent interpolate.
+只检查空间形状（`shape[-2:]`），可处理尺寸不能被 16 整除的输入；安全调用 `F.interpolate`，在拼接前对齐张量。若比较完整形状，通道数差异也会触发处理，而通道差异应该显式报错，不应悄悄插值。
 
-### Step 3: The U-Net
+### 第 3 步：U-Net（Step 3: The U-Net）
 
 ```python
 class UNet(nn.Module):
@@ -234,9 +234,9 @@ print(f"output: {net(x).shape}")
 print(f"params: {sum(p.numel() for p in net.parameters()):,}")
 ```
 
-Output shape `(1, 2, 256, 256)` — same spatial size as the input, `num_classes` channels. About 7.7M parameters at `base=32`.
+输出形状为 `(1, 2, 256, 256)`，空间尺寸与输入相同，有 `num_classes` 个通道。`base=32` 时约 770 万参数。
 
-### Step 4: Losses
+### 第 4 步：损失（Step 4: Losses）
 
 ```python
 def dice_loss(logits, targets, num_classes, eps=1e-6):
@@ -255,9 +255,9 @@ def combined_loss(logits, targets, num_classes, lam=1.0):
     return ce + lam * dc, {"ce": ce.item(), "dice": dc.item()}
 ```
 
-Dice is computed per class then averaged (macro Dice). The `eps` prevents division by zero on classes absent from the batch.
+先逐类计算 Dice，再取平均，得到宏平均 Dice。`eps` 防止批次中缺失类别导致除零。
 
-### Step 5: IoU metric
+### 第 5 步：IoU 指标（Step 5: IoU metric）
 
 ```python
 @torch.no_grad()
@@ -273,11 +273,11 @@ def iou_per_class(logits, targets, num_classes):
     return ious
 ```
 
-Returns a vector of length C. `nan` marks classes absent from the batch — do not average over those when computing mIoU.
+返回长度为 C 的向量。`nan` 标记批次中缺失的类别，计算 mIoU 时不要将它们纳入平均。
 
-### Step 6: Synthetic dataset for end-to-end verification
+### 第 6 步：用于端到端验证的合成数据集（Step 6: Synthetic dataset for end-to-end verification）
 
-Generate shapes on coloured backgrounds so the network has to learn shape, not pixel colour.
+在彩色背景上生成图形，使网络必须学习形状，而非像素颜色。
 
 ```python
 import numpy as np
@@ -323,9 +323,9 @@ class SegDataset(Dataset):
         return img, mask
 ```
 
-Three classes: background (0), circles (1), squares (2). The network must learn to distinguish shape.
+三个类别：背景 (0)、圆形 (1)、正方形 (2)。网络必须学会区分形状。
 
-### Step 7: Training loop
+### 第 7 步：训练循环（Step 7: Training loop）
 
 ```python
 def train_one_epoch(model, loader, optimizer, device, num_classes):
@@ -345,11 +345,11 @@ def train_one_epoch(model, loader, optimizer, device, num_classes):
     return loss_sum / total, iou_sum / len(loader)
 ```
 
-Run this for 10-30 epochs on the synthetic dataset and watch mIoU climb past 0.9 for the shape classes. Note the `nan_to_num(0)` treats classes absent from a batch as zero; for accurate per-class IoU, mask by presence and use `torch.nanmean` across batches at evaluation time rather than averaging here.
+在合成数据集上训练 10–30 个轮次，观察形状类别的 mIoU 超过 0.9。注意，`nan_to_num(0)` 将批次中缺失的类别视为零；要准确计算逐类 IoU，评估时应按类别是否存在进行掩码处理，并跨批次使用 `torch.nanmean`，而不是在这里直接平均。
 
-## Use It
+## 实际应用（Use It）
 
-For production, `segmentation_models_pytorch` ("smp") wraps every standard segmentation architecture with any torchvision or timm backbone. Three lines:
+生产中，`segmentation_models_pytorch`（简称 smp）用任意 torchvision 或 timm 骨干封装各种标准分割架构。只需三行：
 
 ```python
 import segmentation_models_pytorch as smp
@@ -362,42 +362,42 @@ model = smp.Unet(
 )
 ```
 
-Also worth knowing for real work:
-- **DeepLabV3+** replaces max-pool-based downsampling with dilated convs so the bottleneck keeps resolution; faster boundaries on satellite and driving data.
-- **SegFormer** swaps the conv encoder for a hierarchical transformer; current SOTA on many benchmarks.
-- **Mask2Former** / **OneFormer** unify semantic, instance, and panoptic segmentation in a single architecture.
+实际工作中还值得了解：
+- **DeepLabV3+** 用空洞卷积替代基于最大池化的下采样，使瓶颈保持分辨率；在卫星与驾驶数据上更快处理边界。
+- **SegFormer** 用层次化 Transformer 替换卷积编码器，在许多基准上达到当前最佳水平。
+- **Mask2Former** / **OneFormer** 用单一架构统一语义、实例和全景分割。
 
-All three are drop-in replacements in `smp` or `transformers` with the same data loader.
+三者都可在 `smp` 或 `transformers` 中直接替换，并沿用相同数据加载器。
 
-## Ship It
+## 交付成果（Ship It）
 
-This lesson produces:
+本课产出：
 
-- `outputs/prompt-segmentation-task-picker.md` — a prompt that picks between semantic, instance, and panoptic segmentation and names the architecture for a given task.
-- `outputs/skill-segmentation-mask-inspector.md` — a skill that reports class distribution, predicted-mask statistics, and the classes that are under-predicted or boundary-blurred.
+- `outputs/prompt-segmentation-task-picker.md`：为给定任务选择语义、实例或全景分割，并指出架构的提示词。
+- `outputs/skill-segmentation-mask-inspector.md`：报告类别分布、预测掩码统计，以及预测不足或边界模糊类别的技能。
 
-## Exercises
+## 练习（Exercises）
 
-1. **(Easy)** Implement `bce_dice_loss` for a binary segmentation task (foreground vs background). Verify on a synthetic two-class dataset that the combined loss converges faster than BCE alone when the foreground is 5% of pixels.
-2. **(Medium)** Replace the `nn.Upsample + conv` up-block with a `nn.ConvTranspose2d` up-block. Train both on the synthetic dataset and compare mIoU. Observe where checkerboard artifacts appear in the transposed-conv version.
-3. **(Hard)** Take a real segmentation dataset (Oxford-IIIT Pets, Cityscapes mini split, or a medical subset) and train the U-Net to within 2 IoU points of the `smp.Unet` reference. Report per-class IoU and identify which classes benefit most from adding Dice to the loss.
+1. **（简单）** 为前景与背景的二值分割任务实现 `bce_dice_loss`。在合成二分类数据集上验证：前景占像素 5% 时，组合损失比单独使用二元交叉熵（BCE）收敛更快。
+2. **（中等）** 用 `nn.ConvTranspose2d` 上采样模块替换 `nn.Upsample + conv` 模块。在合成数据集上训练两者并比较 mIoU，观察转置卷积版本在哪些位置出现棋盘格伪影。
+3. **（困难）** 使用真实分割数据集，例如 Oxford-IIIT Pets、Cityscapes 小型划分或医学子集，将 U-Net 训练到与 `smp.Unet` 参考结果相差不超过 2 个 IoU 百分点。报告逐类别 IoU，指出哪些类别从加入 Dice 损失中受益最大。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语 | 常见说法 | 实际含义 |
 |------|----------------|----------------------|
-| Semantic segmentation | "Label every pixel" | Per-pixel classification into C classes; instances of the same class merge |
-| Instance segmentation | "Label every object" | Separates distinct instances of the same class; foreground-only |
-| Panoptic segmentation | "Semantic + instance" | Every pixel gets a class; every thing instance also gets a unique id |
-| Skip connection | "U-Net bridge" | Concatenation of encoder features into matching-resolution decoder features; preserves high-frequency detail |
-| Transposed conv | "Deconvolution" | Learnable upsampling; can produce checkerboard artifacts |
-| Dice loss | "Overlap loss" | 1 - 2|A ∩ B| / (|A| + |B|); optimises mask overlap directly and is robust to class imbalance |
-| mIoU | "Mean intersection over union" | Average IoU across classes; the community-standard metric for segmentation |
-| Boundary F1 | "Boundary accuracy" | F1 score computed on boundary pixels only; matters for precision-critical tasks |
+| 语义分割（Semantic segmentation） | “标记每个像素” | 逐像素分为 C 类，同类实例会合并 |
+| 实例分割（Instance segmentation） | “标记每个物体” | 区分同类中的不同实例，只处理前景 |
+| 全景分割（Panoptic segmentation） | “语义加实例” | 每个像素有类别，每个可数物体实例还有唯一 ID |
+| 跳跃连接（Skip connection） | “U-Net 桥梁” | 将编码器特征拼接到对应分辨率的解码器特征中，保留高频细节 |
+| 转置卷积（Transposed conv） | “反卷积” | 可学习上采样，可能产生棋盘格伪影 |
+| Dice 损失（Dice loss） | “重叠损失” | 1 - 2|A ∩ B| / (|A| + |B|)；直接优化掩码重叠，对类别不平衡稳健 |
+| 平均交并比（Mean Intersection over Union，mIoU） | “交并比的平均值” | 跨类别平均 IoU，是分割社区标准指标 |
+| 边界 F1（Boundary F1） | “边界准确率” | 仅在边界像素上计算的 F1，对精度关键任务很重要 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [U-Net: Convolutional Networks for Biomedical Image Segmentation (Ronneberger et al., 2015)](https://arxiv.org/abs/1505.04597) — the original paper; the figure everyone copies is on page 2
-- [Fully Convolutional Networks (Long et al., 2015)](https://arxiv.org/abs/1411.4038) — the paper that first made segmentation an end-to-end conv problem
-- [segmentation_models_pytorch](https://github.com/qubvel/segmentation_models.pytorch) — the reference for production segmentation; every standard architecture plus every standard loss
-- [Lessons learned from training SOTA segmentation (kaggle.com competitions)](https://www.kaggle.com/code/iafoss/carvana-unet-pytorch) — a walkthrough of why TTA, pseudo-labeling, and class weights matter on real data
+- [U-Net：用于生物医学图像分割的卷积网络（Ronneberger 等，2015）](https://arxiv.org/abs/1505.04597)：原始论文，常被引用的那张图在第 2 页
+- [全卷积网络（Long 等，2015）](https://arxiv.org/abs/1411.4038)：首次将分割变为端到端卷积问题的论文
+- [segmentation_models_pytorch 分割模型库](https://github.com/qubvel/segmentation_models.pytorch)：生产分割参考，包含各种标准架构与标准损失
+- [训练最佳水平分割模型的经验（Kaggle 竞赛）](https://www.kaggle.com/code/iafoss/carvana-unet-pytorch)：讲解测试时增强（TTA）、伪标签和类别权重为何对真实数据重要

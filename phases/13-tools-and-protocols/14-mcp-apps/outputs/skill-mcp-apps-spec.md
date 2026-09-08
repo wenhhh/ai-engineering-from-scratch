@@ -1,49 +1,49 @@
 ---
 name: mcp-apps-spec
-description: Design and review an MCP App contract on the stateless 2026-07-28 protocol.
+description: 在无状态 2026-07-28 协议上设计与审查 MCP App 契约。
 version: 2.0.0
 phase: 13
 lesson: 14
 tags: [mcp, apps, stateless, ui-resources, csp, sandbox]
 ---
 
-Given an MCP tool that may need an interactive view, produce a framework-neutral contract.
+给定一个可能需要交互视图的 MCP 工具，生成与框架无关的契约。
 
-## Required inputs
+## 必需输入（Required inputs）
 
-- Tool name, arguments, ordinary text result, and structured result.
-- User interactions the view must support.
-- Data sensitivity and whether responses vary by authorization context.
-- Browser permissions and external origins the view needs.
-- Text-only behavior for hosts without Apps support.
+- 工具名称、参数、普通文本结果和结构化结果。
+- 视图必须支持的用户交互。
+- 数据敏感性，以及响应是否随授权上下文变化。
+- 视图需要的浏览器权限与外部来源。
+- 不支持 Apps 的宿主使用的纯文本行为。
 
-## Produce
+## 生成内容（Produce）
 
-1. Current core envelope. Show `2026-07-28`, per-request `protocolVersion`, `clientCapabilities`, recommended `clientInfo`, matching `Mcp-Method` and `Mcp-Name` headers, and `resultType` responses.
-2. Discovery entry. Advertise `io.modelcontextprotocol/ui` in `server/discover`, with conservative `ttlMs` and `cacheScope`.
-3. Tool declaration. Put nested `_meta.ui.resourceUri` on the tool returned by `tools/list`. Do not wait for `tools/call` to reveal the UI.
-4. Resource contract. Include deterministic `resources/list` metadata before `resources/read`. Give one canonical `ui://` URI, stable name and description, `text/html;profile=mcp-app`, cache hints, CSP domain lists (`connectDomains`, `resourceDomains`, `frameDomains`, `baseUriDomains`), and the minimum permissions object.
-5. Result contract. Return useful text and structured data whether or not the host renders the App.
-6. Bridge contract. List every Apps `ui/*` or proxied method, exact message origin, argument schema, result schema, and host-side consent check.
-7. Fallback. Describe the tool and result when the client omits the Apps extension capability.
-8. Verification table. Cover HTTP 400 `-32020` header mismatch before routing, HTTP 400 `-32022` with exact supported and requested version data, HTTP 400 `-32021` with `data.requiredCapabilities`, HTTP 404 `-32601`, 202 empty-body notifications, CSP violation, untrusted content, unauthorized bridge calls, and text fallback.
-9. Transport boundary. If the implementation receives parsed requests and headers, label it an in-process protocol model and connect it to Lesson 09's complete Streamable HTTP adapter. A real adapter must require JSON Content-Type and an Accept value containing JSON plus SSE.
+1. 当前核心信封。展示 `2026-07-28`、逐请求的 `protocolVersion`、`clientCapabilities`、建议提供的 `clientInfo`、匹配的 `Mcp-Method` 和 `Mcp-Name` 请求头，以及 `resultType` 响应。
+2. 发现条目。在 `server/discover` 中声明 `io.modelcontextprotocol/ui`，使用保守的 `ttlMs` 和 `cacheScope`。
+3. 工具声明。将嵌套的 `_meta.ui.resourceUri` 放在 `tools/list` 返回的工具上。不要等到 `tools/call` 才公开 UI。
+4. 资源契约。在 `resources/read` 之前提供确定性的 `resources/list` 元数据。给出一个规范的 `ui://` URI、稳定名称和描述、`text/html;profile=mcp-app`、缓存提示、CSP 域列表（`connectDomains`、`resourceDomains`、`frameDomains`、`baseUriDomains`）及最小权限对象。
+5. 结果契约。无论宿主是否渲染 App，都返回有用的文本和结构化数据。
+6. 桥接契约。列出每个 Apps `ui/*` 方法或代理方法、精确消息来源、参数模式、结果模式及宿主端同意检查。
+7. 回退。描述客户端省略 Apps 扩展能力时的工具与结果。
+8. 验证表。覆盖路由前请求头不匹配的 HTTP 400 `-32020`、包含精确支持版本和请求版本数据的 HTTP 400 `-32022`、带 `data.requiredCapabilities` 的 HTTP 400 `-32021`、HTTP 404 `-32601`、202 空正文通知、CSP 违规、不可信内容、未经授权的桥接调用及文本回退。
+9. 传输边界。如果实现接收已解析的请求和请求头，应将其标为进程内协议模型，并连接到第 09 课的完整 Streamable HTTP 适配器。真正的适配器必须要求 JSON Content-Type，且 Accept 值同时包含 JSON 和 SSE。
 
-## Hard rejects
+## 必须拒绝（Hard rejects）
 
-- A core `initialize`, `notifications/initialized`, or `Mcp-Session-Id` path presented as current MCP.
-- A wildcard `postMessage` target origin or a receiver that skips `event.origin` validation.
-- A UI binding revealed only after the tool runs.
-- Wildcard CSP domain lists, unbounded network origins, or permissions without a visible feature.
-- User-controlled HTML inserted without a defined sanitization boundary.
-- A consequential UI action that treats an iframe click as host authorization.
-- A server that advertises resources but omits `resources/list`.
-- Any JSON-RPC response body for a notification without an `id`.
+- 将核心 `initialize`、`notifications/initialized` 或 `Mcp-Session-Id` 路径呈现为当前 MCP。
+- `postMessage` 目标来源使用通配符，或接收端跳过 `event.origin` 验证。
+- 仅在工具运行后才公开 UI 绑定。
+- CSP 域列表使用通配符、网络来源不受限，或权限没有对应可见功能。
+- 插入用户控制的 HTML，却未定义净化边界。
+- 会产生实际后果的 UI 操作，将 iframe 点击当作宿主授权。
+- 服务器声明资源却省略 `resources/list`。
+- 为没有 `id` 的通知生成任何 JSON-RPC 响应正文。
 
-## Compatibility boundary
+## 兼容边界（Compatibility boundary）
 
-Legacy flat UI metadata may be read as a fallback, but new output uses nested `_meta.ui.resourceUri`. `ui/initialize` is allowed only when identified as the Apps postMessage handshake. It never stands in for removed MCP core initialization.
+可以读取旧式扁平 UI 元数据作为回退，但新输出使用嵌套的 `_meta.ui.resourceUri`。只有明确标识为 Apps postMessage 握手时，才允许使用 `ui/initialize`。它绝不代替已移除的 MCP 核心初始化。
 
-## Output format
+## 输出格式（Output format）
 
-Return a compact design with these headings: Core Wire, Discovery, Tool, Resource, Result, Bridge, Security, Fallback, Verification. End with the single riskiest origin, permission, or consent assumption.
+返回紧凑的设计，使用以下标题：核心线上协议（Core Wire）、发现（Discovery）、工具（Tool）、资源（Resource）、结果（Result）、桥接（Bridge）、安全（Security）、回退（Fallback）、验证（Verification）。最后指出风险最高的一项来源、权限或同意假设。

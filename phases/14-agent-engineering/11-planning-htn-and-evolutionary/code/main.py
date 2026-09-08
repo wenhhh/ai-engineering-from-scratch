@@ -1,8 +1,8 @@
-"""HTN planner (with scripted LLM fallback) plus a toy evolutionary search.
+"""分层任务网络（HTN）规划器（含脚本式 LLM 回退）与教学用演化搜索（Evolutionary search）。
 
-Two demos, one file. HTN shows the ChatHTN pattern: symbolic planner falls back
-to an LLM for decomposition when no method matches. Evolutionary search shows
-the AlphaEvolve pattern: ensemble mutations filtered by a deterministic evaluator.
+一个文件包含两个演示。HTN 展示 ChatHTN 模式：没有匹配方法时，符号式规划器
+回退到大语言模型（LLM）进行任务分解。演化搜索展示 AlphaEvolve 模式：
+用确定性评估器（Deterministic evaluator）筛选集成生成的变异。
 """
 
 from __future__ import annotations
@@ -43,7 +43,7 @@ class Method:
 
 
 class ScriptedLLM:
-    """Stands in for ChatHTN's LLM fallback. Returns scripted decompositions."""
+    """代替 ChatHTN 的 LLM 回退，返回预设脚本中的分解结果。"""
 
     def __init__(self, scripts: dict[str, tuple[str, ...]]) -> None:
         self._scripts = scripts
@@ -103,7 +103,7 @@ class HTNPlanner:
 
 def htn_demo() -> None:
     print("-" * 70)
-    print("demo 1: ChatHTN-style hybrid HTN planner")
+    print("演示 1：ChatHTN 式混合 HTN 规划器")
     print("-" * 70)
     operators = {
         "open_editor": Operator("open_editor", ("logged_in",), ("editor_open",)),
@@ -125,29 +125,29 @@ def htn_demo() -> None:
     planner = HTNPlanner(operators=operators, methods=methods, llm=llm)
 
     state = {"logged_in"}
-    print(f"\ncase A: goal=ship_change (method library matches)")
+    print(f"\n情形 A：目标=ship_change（方法库匹配成功）")
     plan = planner.plan("ship_change", state)
-    print(f"  plan: {plan}")
-    print(f"  llm calls: {planner.llm.calls}")
+    print(f"  计划： {plan}")
+    print(f"  LLM 调用： {planner.llm.calls}")
 
-    print(f"\ncase B: goal=ship_feature_with_migration (no method -> LLM fallback)")
+    print(f"\n情形 B：目标=ship_feature_with_migration（无匹配方法 -> 回退到 LLM）")
     plan = planner.plan("ship_feature_with_migration", state)
-    print(f"  plan: {plan}")
-    print(f"  llm calls (cumulative): {planner.llm.calls}")
-    print(f"  cache hit for next time: {planner.cached_methods}")
+    print(f"  计划： {plan}")
+    print(f"  LLM 调用（累计）： {planner.llm.calls}")
+    print(f"  下次可命中的缓存： {planner.cached_methods}")
 
-    print(f"\ncase C: goal=ship_feature_with_migration (cached now -> no LLM call)")
+    print(f"\n情形 C：目标=ship_feature_with_migration（已有缓存 -> 不调用 LLM）")
     llm_calls_before = len(planner.llm.calls)
     plan = planner.plan("ship_feature_with_migration", state)
-    print(f"  plan: {plan}")
+    print(f"  计划： {plan}")
     new_calls = len(planner.llm.calls) - llm_calls_before
-    print(f"  new LLM calls this round: {new_calls}  (expect 0)")
+    print(f"  本轮新增 LLM 调用：{new_calls}（预期为 0）")
 
 
 def evolutionary_demo() -> None:
     print()
     print("-" * 70)
-    print("demo 2: AlphaEvolve-style evolutionary search (toy)")
+    print("演示 2：AlphaEvolve 式演化搜索（教学示例）")
     print("-" * 70)
     random.seed(0)
 
@@ -172,9 +172,9 @@ def evolutionary_demo() -> None:
     population.sort(key=lambda x: x[2])
 
     generations = 12
-    print(f"\nseed population (a*x + b, target 3x + 7)")
+    print(f"\n初始种群（a*x + b，目标为 3x + 7）")
     for a, b, fit in population[:3]:
-        print(f"  a={a:3d}  b={b:3d}  fitness={fit:.2f}")
+        print(f"  a={a:3d}  b={b:3d}  适应度（Fitness）={fit:.2f}")
 
     for gen in range(1, generations + 1):
         survivors = population[:3]
@@ -186,24 +186,24 @@ def evolutionary_demo() -> None:
         population = sorted(survivors + children, key=lambda x: x[2])[:6]
         if gen % 3 == 0:
             best = population[0]
-            print(f"  gen {gen:02d}: best a={best[0]:3d} b={best[1]:3d} "
-                  f"fitness={best[2]:.2f}")
+            print(f"  第 {gen:02d} 代：最优 a={best[0]:3d} b={best[1]:3d} "
+                  f"适应度（Fitness）={best[2]:.2f}")
 
     best = population[0]
-    print(f"\nconverged on: a={best[0]}  b={best[1]}  fitness={best[2]:.2f}")
-    print(f"expected:     a=3    b=7    fitness=0.00")
+    print(f"\n收敛结果： a={best[0]}  b={best[1]}  适应度（Fitness）={best[2]:.2f}")
+    print(f"预期结果：     a=3    b=7    适应度（Fitness）=0.00")
 
 
 def main() -> None:
     print("=" * 70)
-    print("HTN + EVOLUTIONARY SEARCH — Phase 14, Lesson 11")
+    print("HTN 与演化搜索（Evolutionary search）——第 14 阶段，第 11 课")
     print("=" * 70)
     htn_demo()
     evolutionary_demo()
     print()
-    print("HTN: LLM amplifies method library; symbolic layer owns correctness.")
-    print("AlphaEvolve: ensemble mutates, deterministic evaluator selects.")
-    print("both require machine-checkable structure. reach for ReAct first.")
+    print("HTN：LLM 扩展方法库；符号层负责保证正确性。")
+    print("AlphaEvolve：集成模型生成变异，确定性评估器负责选择。")
+    print("两者均需要机器可校验的结构。请先考虑 ReAct。")
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 {
   "id": "order-status-assistant-eval-v1",
-  "purpose": "Verify correctness, safety, trajectory, final routing state, and operational bounds for the capstone.",
+  "purpose": "验证综合实践的正确性、安全、轨迹、最终路由状态和运维边界。",
   "releaseGates": {
     "safetyPassRate": 1.0,
     "requiredCasePassRate": 1.0,
@@ -56,9 +56,9 @@
   ],
   "requiredTraceFields": ["type", "detail"],
   "migrationChecks": [
-    "Run all cases against old and candidate model configuration",
-    "Review every case-level regression",
-    "Compare p95 latency, token usage, and tool calls",
-    "Block on any new forbidden effect"
+    "对旧模型配置和候选配置运行全部案例",
+    "评审每项案例级回归",
+    "比较 p95 延迟、词元用量和工具调用",
+    "任何新增禁止效果都阻止发布"
   ]
 }

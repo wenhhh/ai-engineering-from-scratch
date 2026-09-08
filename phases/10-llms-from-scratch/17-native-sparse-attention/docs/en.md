@@ -1,102 +1,102 @@
-# Native Sparse Attention (DeepSeek NSA)
+# 原生稀疏注意力（Native Sparse Attention，DeepSeek NSA）
 
-> At 64k tokens, attention eats 70-80% of decode latency. Every open-model lab has a plan to fix it. DeepSeek's NSA (ACL 2025 best paper) is the one that stuck: three parallel attention branches — compressed coarse-grained tokens, selectively retained fine-grained tokens, and sliding windows for local context — combined through a learned gate. It is hardware-aligned (kernel-friendly), natively trainable (works in pre-training, not bolted on at inference), and on 64k decodes it runs faster than FlashAttention while matching or beating full attention quality. This lesson builds the three branches end-to-end and shows why the sparsity is end-to-end differentiable.
+> 64k 词元时，注意力占解码延迟的 70-80%。每家开放模型实验室都有解决方案。DeepSeek 的 NSA（ACL 2025 最佳论文）得以留存：三个并行注意力分支，分别处理压缩的粗粒度词元、选择性保留的细粒度词元，以及提供局部上下文的滑动窗口，再通过学习式门控组合。它适配硬件、对内核友好，可原生训练，即预训练时就使用，而非推理时外挂。在 64k 解码下比 FlashAttention 更快，质量持平或优于完整注意力。本课端到端构建三个分支，并说明为何稀疏性可端到端求导。
 
 **Type:** Build
 **Languages:** Python (stdlib)
-**Prerequisites:** Phase 7 · 12 (KV cache, flash-attention), Phase 7 · 15 (attention variants), Phase 10 · 16 (differential attention)
-**Time:** ~60 minutes
+**Prerequisites:** 阶段 7 第 12 课（键值缓存、FlashAttention）、阶段 7 第 15 课（注意力变体）、阶段 10 第 16 课（差分注意力）
+**Time:** ~60 分钟
 
-## Learning Objectives
+## 学习目标（Learning Objectives）
 
-- State the three NSA attention branches and what each one captures.
-- Explain why NSA is "natively trainable" where prior sparse-attention methods were inference-only.
-- Compute the attention compute savings of NSA versus full attention at 64k context as a function of compression block size and selection top-k.
-- Implement the three-branch combination in stdlib Python on a short synthetic sequence and verify the gating weights behave.
+- 说明 NSA 的三个注意力分支，以及各自捕获什么信息。
+- 解释 NSA 为什么“可原生训练”，而以往稀疏注意力方法只用于推理。
+- 以压缩块大小和选择 top-k 为变量，计算 NSA 在 64k 上下文下相对完整注意力节省的计算量。
+- 用 Python 标准库在短合成序列上实现三分支组合，验证门控权重行为。
 
-## The Problem
+## 问题（The Problem）
 
-Full attention at sequence length N costs `O(N^2)` time and `O(N)` KV cache per layer. At 64k tokens, the compute and memory bandwidth numbers are catastrophic. Measured theoretical estimate from the NSA paper: attention accounts for 70-80% of total decode latency at 64k. Everything downstream — TTFT, tokens/sec, cost per million tokens — is dominated by attention cost.
+序列长度为 N 时，完整注意力每层需要 `O(N^2)` 时间与 `O(N)` 键值缓存。64k 词元时，计算和内存带宽需求极大。NSA 论文给出的实测理论估计是：64k 时，注意力占总解码延迟的 70-80%。下游的首词元时间（TTFT）、每秒词元数和每百万词元成本，都由注意力成本主导。
 
-Sparse attention is the obvious answer. Prior attempts fall into two buckets. Fixed-pattern sparsity (sliding-window, strided, block-local) throws information away and fails on long-range recall tasks. Inference-time sparsity (KV cache pruning, H2O, StreamingLLM) is applied to a model pre-trained on dense attention and recovers only a fraction of the potential speedup because the model was never asked to route information through the sparse pattern.
+稀疏注意力（Sparse Attention）是显而易见的答案。以前的尝试分为两类。固定模式稀疏（滑动窗口、跨步、块局部）会丢弃信息，在远距离召回任务上失败。推理时稀疏（键值缓存剪枝、H2O、StreamingLLM）应用于使用稠密注意力预训练的模型，只能获得一部分潜在加速，因为模型从未被要求通过稀疏模式传递信息。
 
-Native Sparse Attention (Yuan et al., DeepSeek + PKU + UW, ACL 2025 best paper, arXiv:2502.11089) does both: a sparsity pattern the model learns during pre-training, implemented as a kernel-aligned algorithm that actually delivers the compute savings at inference. Two years from now, NSA or a direct descendant is the default attention on every frontier long-context model.
+原生稀疏注意力（Native Sparse Attention，NSA，Yuan 等，DeepSeek、北京大学、华盛顿大学，ACL 2025 最佳论文，arXiv:2502.11089）兼顾两者：模型在预训练期间学习稀疏模式，再以适配内核的算法实现，在推理时真正节省计算。两年后，NSA 或其直接后继将成为每个前沿长上下文模型的默认注意力。
 
-## The Concept
+## 概念（The Concept）
 
-### Three parallel branches
+### 三个并行分支（Three parallel branches）
 
-For each query, NSA runs attention three times, against three different views of the KV cache:
+对每个查询，NSA 面向键值缓存的三种视图运行三次注意力：
 
-1. **Compressed branch.** Tokens are grouped into blocks of size `l` (typically 32 or 64). Each block is compressed into a single summary token via a small learned MLP. The query attends over these compressed tokens, getting a coarse-grained view of the whole sequence.
+1. **压缩分支（Compressed Branch）。**词元按大小 `l` 分块，通常为 32 或 64。每块通过小型可学习 MLP 压缩为一个摘要词元。查询关注这些压缩词元，获得整个序列的粗粒度视图。
 
-2. **Selected branch.** Using attention scores from the compressed branch, the top-k blocks most relevant to the current query are identified. Fine-grained (uncompressed) tokens from those blocks are read and the query attends over all of them. Think of compressed-branch attention as the routing signal for the selection.
+2. **选择分支（Selected Branch）。**利用压缩分支的注意力分数，识别与当前查询最相关的 top-k 块。读取这些块中的细粒度、未压缩词元，对全部词元计算注意力。可以把压缩分支注意力理解为选择操作的路由信号。
 
-3. **Sliding-window branch.** The query attends to the most recent `W` tokens (typically 512) for local context. This branch captures the structure-heavy short-range patterns (syntax, local coreference) that the other two might miss.
+3. **滑动窗口分支（Sliding-window Branch）。**查询关注最近 `W` 个词元，通常为 512，获取局部上下文。该分支捕获其他两支可能遗漏的结构性短程模式，例如语法和局部共指。
 
-The three branch outputs are combined via a learned per-position gate:
+三个分支的输出通过可学习的逐位置门控（Gate）组合：
 
 ```
 out = g_cmp * out_cmp + g_sel * out_sel + g_win * out_win
 ```
 
-`g_cmp, g_sel, g_win` are gate weights from a small MLP on the query. They do not have to sum to 1 — they can weight branches independently.
+`g_cmp, g_sel, g_win` 是以查询为输入的小型 MLP 输出的门控权重。它们不必相加为 1，可以独立为各分支加权。
 
-### Why this is "natively trainable"
+### 为什么“可原生训练”（Why this is "natively trainable"）
 
-The selection step (top-k blocks) is discrete. Discrete operations break gradient flow. Prior sparse-attention work either skipped backprop through selection (limiting training) or used continuous relaxations that did not give real sparsity at inference.
+选择 top-k 块是离散步骤，离散操作会中断梯度流（Gradient Flow）。以往稀疏注意力研究要么跳过选择操作的反向传播，从而限制训练；要么使用连续松弛，却无法在推理时得到真正稀疏性。
 
-NSA sidesteps this: the compressed-branch attention IS a differentiable coarse-grained attention on the whole sequence. The top-k operation just reuses the top attention scores from the compressed branch to pick which fine-grained blocks to load. Gradients flow through the compressed-branch scores (which influence both the compressed output AND the selection logic), and the selected blocks' contribution to the final output is also differentiable. The non-differentiable `top_k` operation is a no-op on the forward computational graph — it only controls which blocks get loaded from memory.
+NSA 绕过这一问题：压缩分支本身就是面向完整序列、可微的粗粒度注意力。top-k 只是复用压缩分支中最高的注意力分数，选择载入哪些细粒度块。梯度流经压缩分支分数，影响压缩输出与选择逻辑；所选块对最终输出的贡献也可微。不可微的 `top_k` 在前向计算图中是空操作，它只控制从内存载入哪些块。
 
-This is why NSA can be used in pre-training end to end. The model learns to route information through the three branches jointly, producing a sparse pattern that at inference actually delivers the promised speedup.
+这就是 NSA 能用于端到端预训练的原因。模型学会通过三个分支联合传递信息，形成在推理时真正兑现加速的稀疏模式。
 
-### Hardware-aligned kernel
+### 硬件适配内核（Hardware-aligned kernel）
 
-NSA's kernel is designed for modern GPU memory hierarchies. The kernel loads queries by GQA groups (outer loop), fetches the corresponding sparse KV blocks per group (inner loop), and runs attention on SRAM. Because each query group sees the same selected blocks (selection is per-query-group, not per-query-head), the KV loads are amortized across the group. Arithmetic intensity stays high.
+NSA 内核针对现代 GPU 内存层次设计。外层循环按 GQA 组载入查询，内层循环为每组获取对应稀疏 KV 块，再在静态随机存取存储器（Static Random-access Memory，SRAM）中计算注意力。每个查询组看到相同所选块，因为选择按查询组而非查询头进行，所以 KV 载入成本在组内摊销，算术强度保持较高。
 
-The paper reports Triton kernels running 9x faster than FlashAttention on 64k decodes, with the speedup ratio growing with sequence length. Forward and backward kernels are both provided.
+论文报告 Triton 内核在 64k 解码时比 FlashAttention 快 9 倍，且加速比随序列长度增长。前向与反向内核均已提供。
 
-### The compute budget
+### 计算预算（The compute budget）
 
-Let `N` be sequence length, `l` the compression block size, `k` the top-k selection count, `w` the sliding window, `b` the selected block size (typically equals `l`).
+令 `N` 为序列长度，`l` 为压缩块大小，`k` 为 top-k 选择数量，`w` 为滑动窗口，`b` 为所选块大小，通常等于 `l`。
 
-- Compressed branch: `O(N/l)` keys per query, so `O(N * N / l)` total.
-- Selected branch: `O(k * b)` keys per query, so `O(N * k * b)`.
-- Sliding branch: `O(w)` keys per query, so `O(N * w)`.
+- 压缩分支：每查询 `O(N/l)` 个键，总计 `O(N * N / l)`。
+- 选择分支：每查询 `O(k * b)` 个键，总计 `O(N * k * b)`。
+- 滑动分支：每查询 `O(w)` 个键，总计 `O(N * w)`。
 
-Total: `O(N * (N/l + k*b + w))`.
+总计：`O(N * (N/l + k*b + w))`。
 
-With `N = 64k, l = 64, k = 16, b = 64, w = 512`: per-query cost is `1000 + 1024 + 512 = 2536 keys`. Full attention is `64000 keys`. 25x compute reduction.
+当 `N = 64k, l = 64, k = 16, b = 64, w = 512`，每查询成本为 `1000 + 1024 + 512 = 2536 keys`，完整注意力为 `64000 keys`，计算量缩小 25 倍。
 
-With `N = 128k, l = 64, k = 16, b = 64, w = 512`: per-query cost is `2000 + 1024 + 512 = 3536 keys`. Full attention is `128000 keys`. 36x reduction. The benefit grows with sequence length, which is the whole point.
+当 `N = 128k, l = 64, k = 16, b = 64, w = 512`，每查询成本为 `2000 + 1024 + 512 = 3536 keys`，完整注意力为 `128000 keys`，缩小 36 倍。收益随序列长度增长，这正是核心目的。
 
-### How does it compare
+### 与其他方法比较（How does it compare）
 
-| Method | Differentiable | Real inference speedup | Long-range recall |
+| 方法 | 可微 | 真实推理加速 | 远距离召回 |
 |--------|---------------|----------------------|-------------------|
-| Sliding window only | yes | yes | fails |
-| Strided / block-sparse | yes | yes | partial |
-| KV pruning (H2O, StreamingLLM) | N/A (inference-time) | yes | partial |
-| MoBA (Moonshot) | partial | yes | good |
-| NSA | yes (natively) | yes (9x at 64k) | matches full attention |
+| 仅滑动窗口 | 是 | 是 | 失败 |
+| 跨步 / 块稀疏 | 是 | 是 | 部分 |
+| KV 剪枝（H2O、StreamingLLM） | 不适用，推理时方法 | 是 | 部分 |
+| MoBA（Moonshot） | 部分 | 是 | 良好 |
+| NSA | 是，原生可微 | 是，64k 时 9 倍 | 与完整注意力相当 |
 
-MoBA (Moonshot, arXiv:2502.13189) was concurrently published and takes a similar three-is-better-than-one approach, applying the MoE principle to attention blocks. NSA and MoBA are the two architectures to know for 2026 long-context pre-training.
+同期发布的 MoBA（Moonshot，arXiv:2502.13189）采用类似的三路优于一路的思路，将 MoE 原理用于注意力块。NSA 与 MoBA 是理解 2026 年长上下文预训练必须掌握的两种架构。
 
 ```figure
 sliding-window-attention
 ```
 
-## Build It
+## 动手实现（Build It）
 
-`code/main.py` implements the three branches on a short synthetic sequence and shows:
+`code/main.py` 在短合成序列上实现三个分支，并展示：
 
-- The compression MLP (a simple mean-pool baseline is used for pedagogical clarity; the real NSA uses a learned MLP).
-- The top-k block selection driven by compressed-branch scores.
-- The sliding-window attention on the last `w` tokens.
-- The gated combination.
-- A compute-count printout comparing to full attention.
+- 压缩 MLP：为教学清晰，使用简单均值池化（Mean Pooling）基线；真实 NSA 使用可学习 MLP。
+- 由压缩分支分数驱动的 top-k 块选择。
+- 最近 `w` 个词元上的滑动窗口注意力。
+- 门控组合。
+- 与完整注意力比较的计算量打印。
 
-### Step 1: compress tokens into blocks
+### 第 1 步：将词元压缩为块（Step 1: compress tokens into blocks）
 
 ```python
 def compress(K, l):
@@ -111,82 +111,82 @@ def compress(K, l):
     return out
 ```
 
-### Step 2: compressed-branch attention
+### 第 2 步：压缩分支注意力（Step 2: compressed-branch attention）
 
-Run softmax attention of the query against the compressed keys. The compressed-branch scores double as the signal for top-k selection.
+对查询与压缩键运行 softmax 注意力。压缩分支分数同时作为 top-k 选择信号。
 
-### Step 3: top-k block selection
+### 第 3 步：top-k 块选择（Step 3: top-k block selection）
 
-Pick the indices of the `k` highest-scoring compressed blocks. Load the original uncompressed tokens from those blocks and run attention on them.
+选择分数最高的 `k` 个压缩块的索引，载入其原始未压缩词元，再计算注意力。
 
-### Step 4: sliding-window attention
+### 第 4 步：滑动窗口注意力（Step 4: sliding-window attention）
 
-Take the last `w` tokens and run standard attention against them.
+取最近 `w` 个词元，对它们运行标准注意力。
 
-### Step 5: gate + combine
+### 第 5 步：门控与组合（Step 5: gate + combine）
 
-A small MLP on the query produces three gate weights. The final output is a weighted sum of the three branch outputs.
+以查询为输入的小型 MLP 生成三个门控权重，最终输出为三个分支输出的加权和。
 
-### Step 6: compute counting
+### 第 6 步：计算量计数（Step 6: compute counting）
 
-Print the number of keys attended per query for each branch and the total. Compare to `N` (full attention). On a 1024-token synthetic with `l = 32, k = 4, w = 128`, NSA sees `32 + 128 + 128 = 288` keys per query versus 1024 for full attention — 3.5x fewer.
+打印各分支每查询关注的键数与总数，与完整注意力的 `N` 比较。1024 词元合成序列，`l = 32, k = 4, w = 128` 时，NSA 每查询关注 `32 + 128 + 128 = 288` 个键，而完整注意力为 1024，减少 3.5 倍。
 
-## Use It
+## 实际应用（Use It）
 
-NSA is shipping in DeepSeek's own long-context pre-training pipeline. Integration status in public inference stacks as of April 2026:
+NSA 已用于 DeepSeek 自身的长上下文预训练流水线。截至 2026 年 4 月，公开推理栈集成状态为：
 
-- **DeepSeek internal**: native, published weights use NSA or its successor DSA (Deepseek Sparse Attention).
-- **vLLM**: experimental NSA support in development for DeepSeek-V3.x weights.
-- **SGLang**: NSA benchmarks published; production path follows vLLM.
-- **llama.cpp / CPU**: not supported; overhead of the kernel decomposition is not worth it at CPU throughput.
+- **DeepSeek 内部**：原生支持，公开权重使用 NSA 或后继 DeepSeek 稀疏注意力（Deepseek Sparse Attention，DSA）。
+- **vLLM**：正在为 DeepSeek-V3.x 权重开发实验性 NSA 支持。
+- **SGLang**：已发布 NSA 基准，生产路径跟进 vLLM。
+- **llama.cpp / CPU**：不支持；以 CPU 的吞吐量，内核拆分开销不值得。
 
-When to reach for NSA:
+适合使用 NSA 的情况：
 
-- Pre-training or continued-training run targeting 64k-plus context with a serious compute budget.
-- Inference of DeepSeek's own long-context checkpoints. The weights are NSA-native.
+- 目标上下文超过 64k，且计算预算充足的预训练或持续训练。
+- 部署 DeepSeek 自身长上下文检查点，其权重原生支持 NSA。
 
-When not to:
+不适合的情况：
 
-- Serving an existing dense-attention pre-trained model. You cannot retrofit NSA without continued training.
-- Context under 16k. The three-branch overhead dominates the savings.
-- Batch-1 interactive chat. Latency-sensitive decode benefits, but only at long contexts.
+- 部署已有稠密注意力预训练模型，没有持续训练就无法改装 NSA。
+- 上下文低于 16k，三分支开销超过节省量。
+- Batch-1 交互聊天。延迟敏感解码会受益，但只有长上下文时才成立。
 
-## Ship It
+## 交付成果（Ship It）
 
-This lesson produces `outputs/skill-nsa-integrator.md`. Given a long-context pre-training run specification, it produces an NSA integration plan: compression block size, top-k, sliding window, gate MLP width, kernel choice, and the specific long-context evals that would justify the architecture change.
+本课产出 `outputs/skill-nsa-integrator.md`。给定长上下文预训练规格，生成 NSA 集成方案：压缩块大小、top-k、滑动窗口、门控 MLP 宽度、内核选择，以及足以证明架构修改合理的具体长上下文评估。
 
-## Exercises
+## 练习（Exercises）
 
-1. Run `code/main.py` on a 1024-token synthetic. Sweep `(l, k, w)` across three presets and print compute counts. Identify the preset that achieves the lowest key-count per query while keeping 95% recall against full attention on a needle-in-haystack test.
+1. 在 1024 词元合成序列上运行 `code/main.py`。使用三组预设扫描 `(l, k, w)`，打印计算量。找出每查询键数最低，同时在大海捞针测试中相对完整注意力保持 95% 召回率的预设。
 
-2. Replace the mean-pool compressor with a tiny learned MLP (2-layer, hidden 32). Train it on a synthetic task where the signal is the average of a block. Measure the perplexity gap against the mean-pool baseline on held-out data.
+2. 将均值池化压缩器替换为小型可学习 MLP，两层、隐藏维度 32。在信号为块平均值的合成任务上训练，测量留出数据上相对均值池化基线的困惑度差距。
 
-3. Implement the gate MLP. It takes the query as input and outputs three scalars. Show that the gate behaves sensibly: near-uniform weighting on random queries, heavy weight on the selected branch when the query hits a far-back block.
+3. 实现门控 MLP，以查询为输入，输出三个标量。展示合理行为：随机查询时近似均匀加权，命中遥远块时主要加权选择分支。
 
-4. Compute the KV cache memory budget for an NSA-enabled 70B model at 128k context. KV heads are 8, head dim 128, BF16. Compare to full attention and to MLA (Phase 10 · 14 showed MLA's numbers). Identify the sequence length where NSA's fine-grained branch KV cache equals full attention.
+4. 计算支持 NSA 的 70B 模型在 128k 上下文的键值缓存预算，8 个 KV 头、头维度 128、BF16。与完整注意力和 MLA 比较，第 10 阶段第 14 课已展示 MLA 数值。找出 NSA 细粒度分支键值缓存等于完整注意力时的序列长度。
 
-5. Read Section 4 of the NSA paper (arXiv:2502.11089) and explain in three sentences why the compressed branch's attention scores are reused for top-k selection rather than computing a separate routing score. Tie the answer to gradient flow.
+5. 阅读 NSA 论文（arXiv:2502.11089）第 4 节，用三句话解释为何复用压缩分支注意力分数做 top-k 选择，而非单独计算路由分数。答案须联系梯度流。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语 | 常见说法 | 实际含义 |
 |------|----------------|------------------------|
-| Compressed branch | "Coarse view" | Attention over block-averaged keys that provides global context in O(N/l) keys per query |
-| Selected branch | "Top-k blocks" | Fine-grained attention over the `k` blocks with highest compressed-branch scores |
-| Sliding window | "Local context" | Attention over the last `W` tokens for short-range patterns |
-| Native trainability | "Pre-train with the sparsity on" | The sparsity pattern is learned during pre-training, not bolted on at inference |
-| Compression block size l | "Group size for coarse view" | How many tokens get merged into one summary; 32-64 typical |
-| Top-k | "Blocks to keep" | Number of compressed blocks whose uncompressed tokens get read; 16 typical |
-| Sliding window W | "Local attention radius" | Typically 512; shorter hurts local coherence, longer wastes compute |
-| Branch gate | "How to mix the three" | Per-position MLP output that weights the three branches' contributions |
-| Hardware alignment | "Kernel-friendly sparsity" | Sparse pattern chosen so that the actual GPU kernel achieves the theoretical speedup |
-| DSA | "NSA's successor" | Deepseek Sparse Attention, the architecture that followed NSA in DeepSeek's lineage |
+| 压缩分支（Compressed Branch） | “粗粒度视图” | 对块平均键计算注意力，每查询 O(N/l) 个键，提供全局上下文 |
+| 选择分支（Selected Branch） | “Top-k 块” | 对压缩分支分数最高的 `k` 个块进行细粒度注意力 |
+| 滑动窗口（Sliding Window） | “局部上下文” | 对最近 `W` 个词元计算注意力，捕获短程模式 |
+| 原生可训练性（Native Trainability） | “开着稀疏做预训练” | 稀疏模式在预训练中学习，而非推理时外挂 |
+| 压缩块大小 l（Compression Block Size l） | “粗粒度视图的组大小” | 合成一个摘要的词元数，通常 32-64 |
+| Top-k | “保留哪些块” | 读取原始词元的压缩块数量，通常 16 |
+| 滑动窗口 W（Sliding Window W） | “局部注意力半径” | 通常 512，更短损害局部连贯性，更长浪费计算 |
+| 分支门控（Branch Gate） | “如何混合三路” | 逐位置 MLP 输出，为三个分支贡献加权 |
+| 硬件适配（Hardware Alignment） | “内核友好的稀疏” | 选择使实际 GPU 内核能兑现理论加速的稀疏模式 |
+| DeepSeek 稀疏注意力（DSA） | “NSA 后继” | Deepseek Sparse Attention，DeepSeek 技术谱系中 NSA 之后的架构 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [Yuan et al. — Native Sparse Attention: Hardware-Aligned and Natively Trainable Sparse Attention (arXiv:2502.11089, ACL 2025 Best Paper)](https://arxiv.org/abs/2502.11089) — the paper
-- [DeepSeek-V3 Technical Report (arXiv:2412.19437)](https://arxiv.org/abs/2412.19437) — the architecture family NSA targets
-- [Moonshot AI — MoBA: Mixture of Block Attention for Long-Context LLMs (arXiv:2502.13189)](https://arxiv.org/abs/2502.13189) — concurrent work, MoE-style attention over blocks
-- [Beltagy et al. — Longformer: The Long-Document Transformer (arXiv:2004.05150)](https://arxiv.org/abs/2004.05150) — sliding-window origins
-- [Xiao et al. — StreamingLLM: Efficient Streaming Language Models with Attention Sinks (arXiv:2309.17453)](https://arxiv.org/abs/2309.17453) — inference-time sparsity baseline NSA improves on
-- [Dao et al. — FlashAttention-2 (arXiv:2307.08691)](https://arxiv.org/abs/2307.08691) — the full-attention baseline NSA kernels beat at 64k
+- [Yuan 等：《原生稀疏注意力：适配硬件且可原生训练的稀疏注意力》（arXiv:2502.11089，ACL 2025 最佳论文）](https://arxiv.org/abs/2502.11089)：原论文
+- [《DeepSeek-V3 技术报告》（arXiv:2412.19437）](https://arxiv.org/abs/2412.19437)：NSA 面向的架构家族
+- [Moonshot AI：《MoBA：面向长上下文大语言模型的混合块注意力》（arXiv:2502.13189）](https://arxiv.org/abs/2502.13189)：同期研究，对块应用 MoE 式注意力
+- [Beltagy 等：《Longformer：长文档 Transformer》（arXiv:2004.05150）](https://arxiv.org/abs/2004.05150)：滑动窗口的起源
+- [Xiao 等：《StreamingLLM：使用注意力汇聚点的高效流式语言模型》（arXiv:2309.17453）](https://arxiv.org/abs/2309.17453)：NSA 改进的推理时稀疏基线
+- [Dao 等：《FlashAttention-2》（arXiv:2307.08691）](https://arxiv.org/abs/2307.08691)：NSA 内核在 64k 时超越的完整注意力基线

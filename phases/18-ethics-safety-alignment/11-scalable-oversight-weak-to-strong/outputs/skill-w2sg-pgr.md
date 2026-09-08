@@ -1,34 +1,34 @@
 ---
 name: w2sg-pgr
-description: Audit a scalable-oversight or W2SG claim via the performance-gap-recovered metric.
+description: 通过性能差距恢复率（PGR）指标，审计可扩展监督或弱到强泛化（W2SG）主张。
 version: 1.0.0
 phase: 18
 lesson: 11
 tags: [scalable-oversight, weak-to-strong, pgr, debate, recursive-reward-modeling]
 ---
 
-Given a scalable-oversight or W2SG paper / report, audit whether the setup supports its claim.
+给定可扩展监督或 W2SG 论文与报告，审计其设置是否支持主张。
 
-Produce:
+请提供以下内容：
 
-1. Weak / strong identification. Explicitly name the weak supervisor and the strong model. Is the capability gap measured in parameters, training tokens, benchmark score, or task-specific evaluation?
-2. Ceiling definition. What is the strong model's supervised ceiling on the task? Without a ceiling, PGR cannot be computed.
-3. PGR computation. PGR = (fine-tuned - weak) / (ceiling - weak). Check sign, magnitude, and denominator. Small denominators inflate PGR artificially.
-4. Prior-leakage check. Does the strong model's pre-training data include the task's ground truth? If yes, "recovery" may be prior retrieval rather than generalization.
-5. Alignment-vs-capability split. Is the weak-to-strong gap a capability gap or an alignment gap? Burns et al. 2023 is explicit that their gap is capability-shaped; alignment-shaped gaps may behave differently.
+1. 弱者与强者识别。明确指出弱监督者和强模型。能力差距用参数量、训练词元数、基准分数，还是任务专用评估衡量？
+2. 上限定义。强模型在任务上的监督学习上限是什么？没有上限就无法计算 PGR。
+3. PGR 计算。PGR = (fine-tuned - weak) / (ceiling - weak)。检查符号、大小和分母。较小分母会人为放大 PGR。
+4. 先验泄漏检查。强模型预训练数据是否包含任务的真实答案？如果是，“恢复”可能只是检索先验，而不是泛化。
+5. 对齐与能力区分。弱强差距是能力差距还是对齐差距？Burns 等人 2023 年明确指出，他们研究的是能力型差距，对齐型差距可能有不同表现。
 
-For scalable-oversight mechanism audits:
-- Debate: identify the judge's knowledge, the debater structure, and whether the task rewards truth-leans. Cite Khan et al. 2024 (arXiv:2402.06782) on where debate helps and fails.
-- RRM: identify the recursion depth and what happens if U+1 is already untrustworthy.
-- Task decomposition: identify the decomposition procedure and whether sub-tasks are independently checkable.
+对于可扩展监督机制的审计：
+- 辩论（Debate）：识别评判者的知识、辩论者结构，以及任务是否奖励倾向真实的答案。引用 Khan 等人 2024 年论文（arXiv:2402.06782），说明辩论在哪些情形有帮助、在哪些情形失效。
+- 递归奖励建模（RRM）：识别递归深度，以及如果 U+1 已经不可信会怎样。
+- 任务分解（Task decomposition）：识别分解过程，以及子任务能否独立检查。
 
-Hard rejects:
-- Any PGR claim without a ceiling on gold labels.
-- Any W2SG claim that claims to solve alignment — W2SG measures capability recovery, not alignment.
-- Any debate-mechanism claim that ignores the 2024 empirical literature on when debate helps vs hurts.
+必须否定的说法或方案：
+- 任何没有金标准标签上限的 PGR 主张。
+- 任何声称 W2SG 解决了对齐的说法。W2SG 测量的是能力恢复，而不是对齐。
+- 任何忽略 2024 年关于辩论何时有益、何时有害的实证文献的辩论机制主张。
 
-Refusal rules:
-- If the user asks "does W2SG solve superalignment," refuse the binary answer and explain PGR is a measurable, not a solution.
-- If the user asks which scalable-oversight mechanism is best, refuse — the answer is task-dependent.
+拒绝规则：
+- 如果用户问“W2SG 解决超级对齐了吗”，请拒绝简单的是或否答案，并解释 PGR 是可测量指标，不是解决方案。
+- 如果用户问哪种可扩展监督机制最好，请拒绝唯一答案，因为答案取决于任务。
 
-Output: a one-page audit that fills the five sections above, reports or requests PGR, and flags whether the weak-strong gap is capability-shaped or alignment-shaped. Cite Burns et al. 2023 and Lang et al. (arXiv:2501.13124) once each.
+输出：一页审计，填写上述五部分，报告或要求提供 PGR，并指出弱强差距属于能力型还是对齐型。分别引用一次 Burns 等人 2023 年的论文和 Lang 等人的论文（arXiv:2501.13124）。

@@ -1,10 +1,10 @@
-"""VAD cascade + turn-detection state machine.
+"""语音活动检测（VAD）级联 + 轮次检测状态机（Turn-detection state machine）。
 
-Three-tier cascade: energy gate → (pretend) Silero → turn-detector state machine.
-Run a synthetic stream: speech + silence + cough + speech, verify
-the turn-detector fires START and END at the right moments.
+三级级联（Cascade）：能量门控（Energy gate）→ 模拟 Silero → 轮次检测状态机。
+运行合成流：语音 + 静音 + 咳嗽 + 语音，验证
+轮次检测器在正确时刻触发 START 和 END。
 
-Stdlib only. Run: python3 code/main.py
+仅用标准库。运行：python3 code/main.py
 """
 
 import math
@@ -82,7 +82,7 @@ def main():
         for _ in range(count):
             chunks.append((kind, synth_chunk(kind, rng)))
 
-    print(f"=== stream: {len(chunks)} chunks of 20 ms = {len(chunks)*20} ms total ===")
+    print(f"=== 流（Stream）：{len(chunks)} 个 20 ms 块 = 总计 {len(chunks)*20} ms ===")
     print()
 
     td_silero = TurnDetector()
@@ -102,33 +102,33 @@ def main():
         if s_event:
             events_silero.append((i * 20, s_event, truth))
 
-    print("=== energy-only VAD turn events (many false positives on cough) ===")
+    print("=== 仅能量 VAD 的轮次事件（咳嗽造成大量误报）；START/END 为开始/结束，speech/silence/cough 为语音/静音/咳嗽 ===")
     for ms, ev, truth in events_energy:
-        print(f"  t={ms:>4} ms  {ev:<5}  (at {truth})")
+        print(f"  t={ms:>4} ms  {ev:<5}  （当前真值 {truth}）")
 
     print()
-    print("=== Silero-style VAD turn events (rejects cough) ===")
+    print("=== Silero 风格 VAD 的轮次事件（排除咳嗽） ===")
     for ms, ev, truth in events_silero:
-        print(f"  t={ms:>4} ms  {ev:<5}  (at {truth})")
+        print(f"  t={ms:>4} ms  {ev:<5}  （当前真值 {truth}）")
 
     print()
-    print("=== 2026 VAD cheatsheet ===")
+    print("=== 2026 VAD 速查表 ===")
     rows = [
         ("WebRTC VAD (Google, 2013)", "50.0% TPR @ 5% FPR", "BSD"),
-        ("Silero VAD (2020-2026)",    "87.7% TPR @ 5% FPR", "MIT — default open"),
-        ("Cobra VAD (Picovoice)",     "98.9% TPR @ 5% FPR", "commercial"),
-        ("pyannote segmentation",     "~95% TPR @ 5% FPR",  "MIT-ish — diarization-grade"),
+        ("Silero VAD (2020-2026)",    "87.7% TPR @ 5% FPR", "MIT，默认开放方案"),
+        ("Cobra VAD (Picovoice)",     "98.9% TPR @ 5% FPR", "商业（Commercial）"),
+        ("pyannote segmentation",     "~95% TPR @ 5% FPR",  "类似 MIT，达到说话人分离（Diarization）级别"),
     ]
-    print("  | VAD                       | accuracy            | license               |")
+    print("  | VAD                       | 准确率（Accuracy） | 许可证（License） |")
     for name, acc, lic in rows:
         print(f"  | {name:<25} | {acc:<19} | {lic:<21} |")
 
     print()
-    print("takeaways:")
-    print("  - energy-only VAD fires on every transient; not for production")
-    print("  - Silero VAD handles the cough without firing a turn start")
-    print("  - 500 ms silence hangover = conversational sweet spot")
-    print("  - add the flush trick for sub-200 ms end-to-end voice agents")
+    print("要点:")
+    print("  - 仅能量 VAD 会对每个瞬态（Transient）触发，不适合生产环境")
+    print("  - Silero VAD 处理咳嗽时不会触发轮次开始")
+    print("  - 500 ms 静音延续（Silence hangover）是对话体验的合适平衡点")
+    print("  - 加入刷新技巧（Flush trick），实现低于 200 ms 的端到端语音智能体")
 
 
 if __name__ == "__main__":

@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "id": "building-and-deploying-ai-applications",
-  "title": "Building and Deploying AI Applications",
-  "summary": "Build an AI feature from prompt and structured output through retrieval, evaluation, production serving, observability, and release.",
+  "title": "构建与部署 AI 应用（Building and Deploying AI Applications）",
+  "summary": "构建一项 AI 功能，覆盖从提示词（Prompt）与结构化输出（Structured output），到检索（Retrieval）、评估（Evaluation）、生产服务（Production serving）、可观测性（Observability）及发布的全过程。",
   "estimatedMinutes": 780,
   "lessons": [
     {"order": 1, "path": "phases/11-llm-engineering/01-prompt-engineering", "minutes": 60, "required": true},

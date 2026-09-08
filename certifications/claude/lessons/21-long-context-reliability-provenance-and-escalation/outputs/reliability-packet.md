@@ -1,32 +1,25 @@
-# Reliability Packet: Repository Security Review
+# 可靠性包：仓库安全评审（Reliability Packet: Repository Security Review）
 
-## Scope and Coverage
+## 范围与覆盖率（Scope and Coverage） <!-- ## Scope and Coverage -->
 
-The manifest requires 24 files. The first pass reviewed 18 of 24; six omitted
-files remain named under `services/payments/**`. Two valid findings are retained.
+清单要求检查 24 个文件。首轮评审 24 个中的 18 个（18 of 24）；六个省略的（omitted）文件仍明确列在 `services/payments/**` 下。保留两项有效发现。
 
-## Provenance Envelope
+## 来源封装（Provenance Envelope） <!-- ## Provenance Envelope -->
 
-Evidence `policy-auth-017` carries repository URI, source version `3a91c7e`,
-effective date, authority, Markdown content type, heading and line location,
-extractor version, and observed time.
+证据 `policy-auth-017` 携带仓库 URI、来源版本（source version）`3a91c7e`、生效日期、权威性、Markdown 内容类型（content type）、标题与行位置（location）、提取器版本以及观察时间。
 
-## Partial Result
+## 部分结果（Partial Result） <!-- ## Partial Result -->
 
-State is partial, not complete. A retryable dependency timeout names the six
-unreviewed files, trace `8801`, two finding IDs, and full artifact reference.
+状态为 partial，而不是 complete。可重试的依赖超时明确指出六个未评审文件、追踪 `8801`、两个发现 ID 和完整交付物引用。
 
-## Conflict
+## 冲突（Conflict） <!-- ## Conflict -->
 
-Two approved policies disagree about token rotation. Both versions and exact
-spans remain visible; no precedence rule is invented.
+两份已批准政策对词元轮换存在分歧。两个版本及确切片段都保持可见，不编造优先级规则。
 
-## Escalation
+## 升级处理（Escalation） <!-- ## Escalation -->
 
-Security architecture is the owner. The safe next action is to stop rollout,
-resolve precedence, then review only the named coverage gap.
+负责人（owner）是安全架构团队。安全下一步（safe next action）是停止上线，解决优先级问题，然后只评审明确列出的覆盖缺口。
 
-## Human Review
+## 人工评审（Human Review） <!-- ## Human Review -->
 
-Review every severe finding, partial result, and policy conflict, plus a random sample
-of ordinary passes. Record disposition and correction reason.
+评审每项严重发现、部分结果和政策冲突，并对普通通过项随机抽样（random sample）。记录处置意见与修正原因。

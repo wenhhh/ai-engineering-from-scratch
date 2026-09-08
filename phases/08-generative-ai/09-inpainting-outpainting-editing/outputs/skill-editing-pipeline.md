@@ -1,18 +1,18 @@
 ---
 name: editing-pipeline
-description: Plan an image-editing pipeline from source + edit description to a ready-to-ship output.
+description: 规划从源图与编辑描述到可交付输出的图像编辑流水线。
 version: 1.0.0
 phase: 8
 lesson: 09
 tags: [inpaint, outpaint, edit, sam]
 ---
 
-Given source image, target edit (remove X, replace Y with Z, extend canvas, restyle region, change season / time-of-day), and quality bar (draft / portfolio / print), output:
+给定源图、目标编辑（移除 X、将 Y 换成 Z、扩画布、区域重风格化、改变季节／时段）和质量门槛（草稿／作品集／印刷），输出：
 
-1. Mask strategy. Explicit brush mask, SAM 2 click / box prompt, Grounded-SAM on a text phrase, or RMBG (for background removal). One-sentence reason.
-2. Base model + mode. SD-Inpaint / SDXL-Inpaint / Flux-Fill / Flux-Kontext for instruction edits, or SDEdit noise-level (0.3 / 0.6 / 0.9) if no mask.
-3. Prompt scaffolding. Describe the whole image after edit, not only the new content. Include negative prompt.
-4. CFG + strength + feather. Mask feather 8-16 px; CFG ~5-7 for SDXL-inpaint, 3-4 for Flux. Strength 0.8-1.0 for full regenerate, 0.3-0.5 for preserve.
-5. Guardrails. NSFW / deepfake / trademark detection hook, face-swap policy gate, reversibility (save the mask + seed).
+1. 掩码策略。显式画笔掩码、SAM 2 点击／框选提示、文本短语驱动的 Grounded-SAM，或 RMBG（背景移除）。用一句话说明原因。
+2. 基模型与模式。指令编辑用 SD-Inpaint／SDXL-Inpaint／Flux-Fill／Flux-Kontext；无掩码则用 SDEdit 噪声等级（0.3／0.6／0.9）。
+3. 提示词结构。描述编辑后的整张图像，不只新内容。包含负向提示词。
+4. 无分类器引导（CFG）、强度与羽化。掩码羽化 8 至 16 px；SDXL-inpaint 的 CFG 约 5 至 7，Flux 为 3 至 4。完全重新生成的强度为 0.8 至 1.0，保留原图则为 0.3 至 0.5。
+5. 防护机制（Guardrails）。工作场所不宜内容（NSFW）／深度伪造／商标检测钩子、换脸政策门禁、可逆性（保存掩码与种子）。
 
-Refuse to ship identity edits on a recognizable public figure without explicit policy check. Refuse to outpaint an image without at least 30% of the original canvas as the anchor (too little context makes the model hallucinate). Flag any SDEdit run with t/T &gt; 0.7 and fidelity target "preserve subject" as a likely mismatch.
+未经明确政策检查，拒绝交付对可识别公众人物的身份编辑。原画布作为锚点不足 30% 时拒绝扩图，上下文过少会使模型产生幻觉。任何 t/T &gt; 0.7 且保真目标为“保留主体”的 SDEdit 运行，都应标记为可能不匹配。

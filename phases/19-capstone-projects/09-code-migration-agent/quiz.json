@@ -1,73 +1,73 @@
 {
   "lesson": "09-code-migration-agent",
-  "title": "Capstone 09 — Code Migration Agent (Repo-Level Language / Runtime Upgrade)",
+  "title": "综合实践 09：代码迁移智能体（Code Migration Agent，仓库级语言／运行时升级）",
   "questions": [
     {
       "stage": "pre",
-      "question": "Why does the pipeline combine a deterministic substrate with an agent layer rather than using just one?",
+      "question": "为什么流水线将确定性底层（Deterministic Substrate）与智能体层组合，而不是只用其中一种？",
       "options": [
-        "Agents alone are faster than recipes",
-        "OpenRewrite or libcst handles 70-80% of mechanical rewrites safely and cheaply, leaving the agent for the ambiguous long tail",
-        "Determinism is needed only for the build system",
-        "Deterministic recipes are slower than LLMs"
+        "单用智能体比配方更快",
+        "OpenRewrite 或 libcst 安全、低成本地处理 70–80% 的机械重写，将有歧义的长尾情况留给智能体",
+        "只有构建系统需要确定性",
+        "确定性配方比 LLM 更慢"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "pre",
-      "question": "What signal does the pipeline use as ground truth for a successful migration?",
+      "question": "流水线将哪个信号作为迁移成功的真实参考标准（Ground Truth）？",
       "options": [
-        "Agent self-grading on a rubric",
-        "Reviewer approval on the PR",
-        "Diff size below a hard limit",
-        "Green CI in the sandbox without a coverage regression beyond a small threshold"
+        "智能体按评分标准自评",
+        "PR 上的评审批准",
+        "差异大小低于硬性上限",
+        "沙箱中 CI 通过，且覆盖率退化未超过较小阈值"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Which budget caps does the agent loop enforce per repo?",
+      "question": "智能体循环对每个仓库强制执行哪些预算上限？",
       "options": [
-        "30 minutes wall-clock, $8 cost, and 20 agent turns",
-        "1 hour wall-clock and 100 turns",
-        "Unlimited time and cost; abort only on errors",
-        "No turn limit, $100 ceiling"
+        "实际运行时间 30 分钟、成本 8 美元、20 个智能体轮次",
+        "实际运行时间 1 小时、100 轮",
+        "时间和成本无限；只在出错时中止",
+        "无轮次限制，100 美元上限"
       ],
       "correct": 0,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "What gate fires when coverage drops more than about 2% after migration?",
+      "question": "迁移后覆盖率下降超过约 2% 时，会触发什么关卡？",
       "options": [
-        "The deterministic substrate replays its recipes",
-        "The repo gets filed under a coverage_regression failure class instead of opening a clean PR",
-        "The agent automatically force-pushes a fix",
-        "The reviewer is bypassed"
+        "确定性底层重放配方",
+        "仓库归入 coverage_regression 失败类别，而不是创建通过验收的 PR",
+        "智能体自动强制推送修复",
+        "绕过评审人员"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Why is the failure taxonomy treated as a deliverable rather than a side artifact?",
+      "question": "为什么失败分类体系（Failure Taxonomy）被视为正式交付物，而非附带产物？",
       "options": [
-        "It replaces the test suite",
-        "It is required by GitHub branch protection",
-        "It satisfies a compliance checklist",
-        "It groups failed repos by class so future recipe authors can target the top failure modes"
+        "它替代测试套件",
+        "GitHub 分支保护要求它",
+        "它满足合规清单",
+        "它按类别归组失败仓库，使未来的配方作者能优先处理主要失败模式"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "Which public benchmark does the capstone target for Java 8 to 17 migration?",
+      "question": "本综合实践针对 Java 8 到 17 迁移采用哪个公共基准？",
       "options": [
         "MMLU-Pro",
-        "MigrationBench from Amazon",
+        "Amazon 的 MigrationBench",
         "ViDoRe v3",
         "SWE-bench Pro"
       ],
@@ -76,12 +76,12 @@
     },
     {
       "stage": "post",
-      "question": "What does the agent integration rubric measure about the fix distribution?",
+      "question": "智能体集成评分标准衡量修复分布的什么方面？",
       "options": [
-        "Number of dependencies pinned",
-        "The number of force-pushes per repo",
-        "The fraction of fixes handled by OpenRewrite versus authored by the agent layer",
-        "Tokenization speed of the source file"
+        "固定版本的依赖数量",
+        "每仓库的强制推送次数",
+        "由 OpenRewrite 处理与由智能体层编写的修复比例",
+        "源文件的分词（Tokenization）速度"
       ],
       "correct": 2,
       "explanation": ""

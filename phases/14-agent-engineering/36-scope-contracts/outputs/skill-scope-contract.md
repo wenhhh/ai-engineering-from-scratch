@@ -1,35 +1,35 @@
 ---
 name: scope-contract
-description: Generate per-task scope contracts with allowed/forbidden globs, acceptance criteria, and rollback plan, plus a CI-ready glob-aware checker that runs on every agent diff.
+description: 为每个任务生成包含允许／禁止通配模式、验收标准与回滚计划的范围契约，并生成可接入 CI、对每份智能体差异运行的通配模式检查器。
 version: 1.0.0
 phase: 14
 lesson: 36
 tags: [scope, contract, globs, diff-check, ci]
 ---
 
-Given a task description and a repo layout, produce a scope contract and a diff-aware checker.
+根据任务描述与仓库布局，生成范围契约（Scope Contract）和能够检查差异的检查器。
 
-Produce:
+产出：
 
-1. `scope_contract.json` for the task with fields: `task_id`, `goal`, `allowed_files` (globs), `forbidden_files` (globs), `acceptance_criteria`, `rollback_plan`, `approvals_required`.
-2. `tools/scope_check.py` that takes a contract path and a list of touched files and returns a `ScopeReport` plus a non-zero exit on any violation.
-3. CI step (`.github/workflows/scope-check.yml` or equivalent) that runs the checker against the merge diff.
-4. `outputs/scope/closed/<task_id>.json` archival convention so contracts ship with the change history.
+1. 任务的 `scope_contract.json`，字段包括：`task_id`、`goal`、`allowed_files`（通配模式）、`forbidden_files`（通配模式）、`acceptance_criteria`、`rollback_plan`、`approvals_required`。
+2. `tools/scope_check.py`，接收契约路径和变更文件列表，返回 `ScopeReport`；存在任何违规时以非零状态退出。
+3. CI 步骤（`.github/workflows/scope-check.yml` 或等效实现），对合并差异运行检查器。
+4. `outputs/scope/closed/<task_id>.json` 归档约定，让契约随变更历史一起交付。
 
-Hard rejects:
+直接拒绝：
 
-- A contract without `forbidden_files`. Negative space is part of the contract.
-- A contract that lists raw paths instead of globs for code directories. Refactors invalidate raw paths overnight.
-- A `rollback_plan` field that is empty or "see runbook." Spell it out.
-- Approvals listed as "case by case." Approval boundaries must be enumerable.
+- 缺少 `forbidden_files` 的契约。禁止事项是契约的一部分。
+- 对代码目录列原始路径而非通配模式的契约。一次重构就可能使原始路径失效。
+- 为空或只写“参见操作手册”的 `rollback_plan` 字段。必须写明具体步骤。
+- 将审批列为“视情况而定”。审批边界必须能够逐项列举。
 
-Refusal rules:
+拒绝规则：
 
-- If the task description does not constrain a region of the repo, refuse to author `allowed_files` from the description alone. Ask for the directory the task lives in.
-- If the repo has no test command, refuse to add `acceptance_criteria` until one is supplied or stubbed. A contract that cannot be verified is a wish.
-- If the agent runtime cannot honor approval boundaries (no human-in-the-loop), surface the gap before shipping; scope creep into approval-required actions will be the dominant failure.
+- 若任务描述没有限定仓库区域，拒绝仅凭描述编写 `allowed_files`。询问任务所在目录。
+- 若仓库没有测试命令，在提供命令或桩实现前拒绝添加 `acceptance_criteria`。无法验证的契约只是愿望。
+- 若智能体运行时无法执行审批边界（没有人工介入机制），交付前指出缺口；越界执行需审批的操作将成为主要失败模式。
 
-Output structure:
+输出结构：
 
 ```
 <repo>/
@@ -43,8 +43,8 @@ Output structure:
         └── scope-check.yml
 ```
 
-End with "what to read next" pointing to:
+结尾给出“接下来读什么”，指向：
 
-- Lesson 37 for runtime feedback that links commands run back to the contract.
-- Lesson 38 for the verification gate that consumes the scope report.
-- Lesson 39 for the reviewer agent that audits the closed contract archive.
+- 第 37 课：将已运行命令关联回契约的运行时反馈（Runtime Feedback）。
+- 第 38 课：消费范围报告的验证关卡（Verification Gate）。
+- 第 39 课：审计已关闭契约归档的审查智能体（Reviewer Agent）。

@@ -1,37 +1,62 @@
 [
   {
-    "question": "What is the chain rule in the context of neural networks?",
-    "options": ["A technique for batching data", "A method for initializing weights", "A rule for chaining layers together", "If y = f(g(x)), then dy/dx = f'(g(x)) * g'(x) -- multiply derivatives along the path"],
+    "question": "神经网络中的链式法则（Chain Rule）是什么？",
+    "options": [
+      "一种数据分批技术",
+      "一种权重初始化方法",
+      "一种连接网络层的规则",
+      "若 y = f(g(x))，则 dy/dx = f'(g(x)) * g'(x)，即沿路径将导数相乘"
+    ],
     "correct": 3,
-    "explanation": "The chain rule lets you compute the derivative of a composite function by multiplying the local derivatives at each step. Backpropagation applies this systematically through the computational graph.",
+    "explanation": "链式法则通过将每一步的局部导数相乘，计算复合函数的导数。反向传播沿计算图系统地应用这一法则。",
     "stage": "pre"
   },
   {
-    "question": "Why is backpropagation more efficient than computing each gradient independently?",
-    "options": ["It uses less memory", "It computes all gradients in a single backward pass instead of one forward pass per parameter", "It only works on small networks", "It avoids using the chain rule"],
+    "question": "为什么反向传播比独立计算每个梯度更高效？",
+    "options": [
+      "它使用更少内存",
+      "它在一次反向传播中算出所有梯度，而非为每个参数执行一次前向传播",
+      "它只适用于小网络",
+      "它不使用链式法则"
+    ],
     "correct": 1,
-    "explanation": "Computing gradients independently requires one forward pass per parameter (millions of passes for a large network). Backpropagation computes all gradients in one backward pass by reusing intermediate values stored during the forward pass.",
+    "explanation": "独立计算梯度需要为每个参数执行一次前向传播，大型网络要执行数百万次。反向传播复用前向传播时保存的中间值，在一次反向计算中求出全部梯度。",
     "stage": "pre"
   },
   {
-    "question": "In the backward pass, why do we use '+=' instead of '=' when accumulating gradients?",
-    "options": ["It's a Python convention", "A value might be used in multiple operations, so its gradient is the sum of gradients from all paths", "It makes the code run faster", "It prevents overflow"],
+    "question": "反向传播累积梯度时，为什么使用 '+=' 而非 '='？",
+    "options": [
+      "这是 Python 惯例",
+      "一个值可能用于多项操作，其梯度是所有路径传来梯度的总和",
+      "这样代码运行更快",
+      "这样能防止溢出"
+    ],
     "correct": 1,
-    "explanation": "When a Value is used as input to multiple operations (e.g., x used in both x*w1 and x*w2), its total gradient is the sum of the gradients flowing back from each operation. Using += accumulates these correctly.",
+    "explanation": "当一个 Value 是多项操作的输入（例如 x 同时用于 x*w1 和 x*w2）时，其总梯度等于各操作反传梯度的总和。使用 += 才能正确累积这些梯度。",
     "stage": "post"
   },
   {
-    "question": "What causes the vanishing gradient problem in deep sigmoid networks?",
-    "options": ["The loss function is poorly chosen", "The network has too many parameters", "The learning rate is too small", "Sigmoid's derivative has a maximum of 0.25, so gradients shrink exponentially through layers"],
+    "question": "深层 Sigmoid 网络中梯度消失的原因是什么？",
+    "options": [
+      "损失函数选择不当",
+      "网络参数太多",
+      "学习率太小",
+      "Sigmoid 导数最大为 0.25，因此梯度逐层指数级缩小"
+    ],
     "correct": 3,
-    "explanation": "The sigmoid derivative peaks at 0.25 (when z=0). Each layer multiplies the gradient by at most 0.25, so after 10 layers the gradient is at most 0.25^10 = ~0.000001 of the original signal.",
+    "explanation": "Sigmoid 导数在 z=0 时达到最大值 0.25。每层最多将梯度乘以 0.25，因此经过 10 层，梯度最多为原始信号的 0.25^10 = ~0.000001。",
     "stage": "post"
   },
   {
-    "question": "Why does topological sort matter in the backward pass?",
-    "options": ["It reduces memory usage", "It speeds up the forward pass", "It ensures each node's gradient is fully accumulated before propagating to its children", "It makes the code cleaner"],
+    "question": "为什么拓扑排序（Topological Sort）对反向传播很重要？",
+    "options": [
+      "它减少内存使用",
+      "它加快前向传播",
+      "它保证每个节点的梯度完整累积后，再传给子节点",
+      "它让代码更整洁"
+    ],
     "correct": 2,
-    "explanation": "Topological sort ensures we process nodes in the correct order: a node's gradient must be fully accumulated from all downstream paths before we propagate through it. Without this ordering, gradients would be incomplete.",
+    "explanation": "拓扑排序保证节点处理顺序正确：必须先累积所有下游路径传来的梯度，再通过该节点传播。缺少这一顺序，梯度就会不完整。",
     "stage": "post"
   }
 ]

@@ -1,48 +1,78 @@
 {
   "lesson": "53-prototype-pilot-or-production",
-  "title": "Prototype, Pilot, or Production",
+  "title": "原型、试点或生产（Prototype, Pilot, or Production）",
   "questions": [
     {
       "stage": "pre",
-      "question": "What primarily distinguishes prototype, pilot, and production?",
-      "options": ["Programming language", "Visual polish", "Model size", "The learning question, real exposure, consequence, and ownership"],
+      "question": "区分原型、试点与生产的主要因素是什么？",
+      "options": [
+        "编程语言",
+        "视觉精致程度",
+        "模型大小",
+        "需要弄清的问题、对真实用户和数据的接触程度、后果与责任归属"
+      ],
       "correct": 3,
-      "explanation": "The stages are different evidence and responsibility environments."
+      "explanation": "各阶段是不同的证据与责任环境。"
     },
     {
       "stage": "check",
-      "question": "When is the prototype stage appropriate?",
-      "options": ["Only for UI", "When the unknown can be answered without real users or real data", "Whenever production is difficult", "After public launch"],
+      "question": "何时适合原型阶段？",
+      "options": [
+        "仅 UI",
+        "无需真实用户或真实数据即可回答未知项时",
+        "只要生产困难",
+        "公开发布之后"
+      ],
       "correct": 1,
-      "explanation": "A prototype should answer the mechanism question with minimal consequence."
+      "explanation": "原型应以最小后果回答机制问题。"
     },
     {
       "stage": "check",
-      "question": "What must a pilot include?",
-      "options": ["No stop rule", "Automatic authority", "Bounded audience, owner, rollback, audit, metrics, and exit criteria", "Unlimited audience"],
+      "question": "试点必须包含什么？",
+      "options": [
+        "没有停止规则",
+        "自动赋予权限",
+        "有界受众、负责人、回滚、审计、指标与退出标准",
+        "无限受众"
+      ],
       "correct": 2,
-      "explanation": "A pilot exposes realistic conditions inside explicit limits."
+      "explanation": "试点在明确限制内接触真实条件。"
     },
     {
       "stage": "check",
-      "question": "When does a deployed build become production in the meaningful sense?",
-      "options": ["When the organization accepts continuous reliability, risk, and operational ownership", "When it has a URL", "When the prototype looks polished", "At the first commit"],
+      "question": "已部署构建何时才真正成为生产？",
+      "options": [
+        "组织接受持续的可靠性、风险与运营责任时",
+        "有 URL 时",
+        "原型看起来精致时",
+        "首次提交时"
+      ],
       "correct": 0,
-      "explanation": "Production is an ongoing responsibility, not merely a hosting state."
+      "explanation": "生产是持续责任，不只是托管状态。"
     },
     {
       "stage": "post",
-      "question": "What does stage drift mean?",
-      "options": ["A pilot ends", "A prototype gains users, data, or authority without gaining controls and ownership", "A metric changes", "A branch is renamed"],
+      "question": "阶段漂移是什么意思？",
+      "options": [
+        "试点结束",
+        "原型获得用户、数据或权限，却没有相应控制和责任归属",
+        "指标改变",
+        "分支重命名"
+      ],
       "correct": 1,
-      "explanation": "Uncontrolled exposure turns a learning artifact into an unsafe service."
+      "explanation": "若不加控制地让原型接触用户、数据或权限，用于获取认识的产物就会变成不安全的服务。"
     },
     {
       "stage": "post",
-      "question": "Why must stage boundaries be enforced technically?",
-      "options": ["A warning banner cannot prevent access or authority", "Documentation is illegal", "It replaces ownership", "It improves color contrast"],
+      "question": "为什么必须以技术手段执行阶段边界？",
+      "options": [
+        "警告横幅不能阻止访问或权限使用",
+        "文档违法",
+        "它替代责任归属",
+        "它提高颜色对比度"
+      ],
       "correct": 0,
-      "explanation": "Configuration, access control, and telemetry make the stage observable and enforceable."
+      "explanation": "配置、访问控制与遥测让阶段可观察、可执行。"
     }
   ]
 }

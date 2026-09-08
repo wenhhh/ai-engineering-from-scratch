@@ -1,33 +1,33 @@
 ---
 name: rewoo-planner
-description: Generate a validated ReWOO plan DAG from a user request and tool catalog.
+description: 根据用户请求和工具目录生成经过验证的 ReWOO 计划有向无环图（DAG）。
 version: 1.0.0
 phase: 14
 lesson: 02
 tags: [rewoo, plan-and-execute, planning, dag, distillation]
 ---
 
-Given a user request and a tool catalog (name, input schema, description), produce a ReWOO plan: a DAG of steps with tool calls and evidence references (`#E1`, `#E2`, ...). Validate the plan before handing it to an executor.
+给定用户请求和工具目录（名称、输入结构定义（Schema）、描述），生成 ReWOO 计划：由步骤组成的有向无环图（DAG），其中包含工具调用和证据引用（Evidence reference），如 `#E1`、`#E2` 等。交给执行器之前先验证计划。
 
-Produce:
+请生成：
 
-1. A plan DAG. Each node has id (`E1`, `E2`, ...), tool name, argument dict (strings may contain `#E<k>` references), and optional `parallel_group` label.
-2. Validation output. Acyclicity check via topological sort; reference resolution check (every `#E<k>` has a preceding producer); tool existence check (every tool name is in the catalog); arg schema check (each argument matches the tool's input schema).
-3. Parallelism hint. For every topological level, list the nodes that can execute concurrently.
-4. Planner/solver split recommendation. If the plan has fewer than 3 steps, recommend ReAct instead. If the plan has an unbounded loop requirement (replanning on every step), recommend Plan-and-Execute with replanner. If the plan exceeds 30 steps or targets web/mobile, recommend Plan-and-Act with synthetic plan data.
+1. 计划 DAG。每个节点包含标识（`E1`、`E2` 等）、工具名称、参数字典（字符串可包含 `#E<k>` 引用），以及可选的 `parallel_group` 标签。
+2. 验证结果。通过拓扑排序检查无环性；检查引用是否可解析（每个 `#E<k>` 都有一个在它之前生成结果的节点）；检查工具是否存在（每个工具名称都在目录中）；检查参数是否符合结构定义（Schema），即每个参数都符合工具的输入要求。
+3. 并行提示。为每个拓扑层列出可同时执行的节点。
+4. 规划器（Planner）/ 求解器（Solver）划分建议。计划少于 3 步时，建议改用 ReAct。如果计划需要无界循环，即每一步都重新规划，建议使用带重规划器（Replanner）的先规划后执行（Plan-and-Execute）。计划超过 30 步或面向网页、移动端时，建议使用带合成计划数据的先规划后行动（Plan-and-Act）。
 
-Hard rejects:
+严格禁止：
 
-- Plans with cycles. ReWOO assumes a DAG; cycles are a ReAct or LATS concern.
-- Plans that reference `#E<k>` where `k` does not exist yet in the topological order. Emit the specific edge that fails.
-- Plans that call tools not in the catalog. Do not invent tools to make a plan work.
-- Plans where the argument type for a reference does not match the tool's schema (e.g., `#E1` substitutes a string but the tool expects an int).
+- 有环计划。ReWOO 假设计划是 DAG；循环属于 ReAct 或 LATS 的处理范围。
+- 引用 `#E<k>` 时，`k` 在拓扑顺序中尚不存在的计划。输出出错的具体边。
+- 调用目录外工具的计划。不能为了让计划成立而虚构工具。
+- 引用的参数类型不符合工具结构定义（Schema）的计划，例如 `#E1` 被替换为字符串，而工具要求整数。
 
-Refusal rules:
+拒绝规则：
 
-- If the task is open-ended exploration (unknown tools needed, unknown steps), refuse and recommend ReAct or LATS (Lesson 04).
-- If the tool catalog contains destructive tools without a gating approval tool, refuse and point to Lesson 09 (permissions, sandboxing).
+- 如果任务是开放式探索，所需工具与步骤未知，应拒绝，并建议使用 ReAct 或 LATS（第 04 课）。
+- 如果工具目录包含破坏性工具，却没有充当门禁的审批工具，应拒绝，并指向第 09 课（权限、沙箱）。
 
-Output: a structured plan (JSON or YAML), a validation report, a parallelism map, and a follow-up action pointing to the executor (ReWOO Worker), a replanner (Plan-and-Execute), or a larger trajectory-sampling loop (Plan-and-Act).
+输出：结构化计划（JSON 或 YAML）、验证报告、并行关系图，以及下一步行动，指向执行器（ReWOO Worker）、重规划器（Plan-and-Execute）或更大的轨迹采样循环（Plan-and-Act）。
 
-End with a "what to read next" note pointing to Lesson 03 (Reflexion) if the task class has been attempted before, or Lesson 04 (LATS) if the plan would benefit from search.
+末尾添加“接下来读什么”说明：如果之前尝试过这一类任务，指向第 03 课（Reflexion）；如果计划能从搜索中获益，指向第 04 课（LATS）。

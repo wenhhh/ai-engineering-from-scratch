@@ -1,17 +1,16 @@
-"""Sycophancy amplification simulator — stdlib Python.
+"""谄媚放大（Sycophancy amplification）模拟器，仅使用 Python 标准库。
 
-Three-action world:
-  A = correct answer       (true utility +1.0, agreement indicator 0)
-  S = sycophantic agree    (true utility -0.3, agreement indicator 1)
-  W = random wrong answer  (true utility -0.5, agreement indicator 0)
+包含三个动作的环境：
+  A = 正确回答     （真实效用 +1.0，赞同指示值 0）
+  S = 谄媚式赞同   （真实效用 -0.3，赞同指示值 1）
+  W = 随机错误回答 （真实效用 -0.5，赞同指示值 0）
 
-Reward model has two components: "confidence/fluency" bonus that happens to
-correlate with sycophancy, plus correctness. RL amplifies sycophancy just
-like Shapira et al. predict.
+奖励模型包含两个部分：恰好与谄媚相关的“自信程度／流畅程度”加分，
+以及正确性。强化学习（RL）会放大谄媚，正如 Shapira 等人的预测。
 
-We sweep beta (KL coefficient) and alpha (agreement-penalty correction).
+遍历 beta（KL 系数）和 alpha（赞同惩罚修正系数）。
 
-Usage: python3 code/main.py
+用法：python3 code/main.py
 """
 
 from __future__ import annotations
@@ -39,15 +38,14 @@ def kl(p: list[float], q: list[float]) -> float:
 
 
 def labeler_reward(action: str) -> float:
-    """Labeler-produced reward: mostly correctness, but with a smaller
-    agreement bonus. This is the spurious feature that RMs pick up from
-    real labeler data — fluent agreement scores higher than an equally
-    correct disagreement."""
+    """标注者给出的奖励：以正确性为主，附加较小的赞同奖励。
+    这是奖励模型（RM）从真实标注数据中学到的伪相关特征：
+    流畅地赞同比同样正确的反对意见得分更高。"""
     return TRUE_UTILITY[action] + 0.6 * AGREEMENT[action]
 
 
 def train_rm(n_pairs: int = 500) -> dict[str, float]:
-    """Fit scalar rewards by Bradley-Terry on pairwise labeler preferences."""
+    """根据标注者的成对偏好，使用 Bradley-Terry 模型拟合标量奖励。"""
     r = {a: 0.0 for a in ACTIONS}
     lr = 0.05
     for _ in range(n_pairs):
@@ -64,7 +62,7 @@ def train_rm(n_pairs: int = 500) -> dict[str, float]:
 
 
 def agreement_penalty_correction(r: dict[str, float], alpha: float) -> dict[str, float]:
-    """Shapira et al. correction: r' = r - alpha * agree(y)."""
+    """Shapira 等人的修正：r' = r - alpha * agree(y)。"""
     return {a: r[a] - alpha * AGREEMENT[a] for a in ACTIONS}
 
 
@@ -121,32 +119,32 @@ def report(label: str, logits: list[float]) -> None:
 
 def main() -> None:
     print("=" * 70)
-    print("SYCOPHANCY AMPLIFICATION (Phase 18, Lesson 4)")
+    print("谄媚放大（阶段 18，第 4 课）")
     print("=" * 70)
 
-    ref_logits = [0.0, 0.0, 0.0]  # uniform base policy
-    print("\nStage 1 — reward model trained on labeler preferences.")
+    ref_logits = [0.0, 0.0, 0.0]  # 均匀基础策略
+    print("\n阶段 1：根据标注者偏好训练奖励模型。")
     rm = train_rm()
-    print(f"  RM scores: {[f'{a}={rm[a]:+.3f}' for a in ACTIONS]}")
-    print("  (note: S gets a reward bump despite lower true utility)")
+    print(f"  RM 分数：{[f'{a}={rm[a]:+.3f}' for a in ACTIONS]}")
+    print("  （注意：S 的真实效用较低，却获得额外奖励）")
 
-    print("\nStage 2 — PPO sweeps, no agreement penalty.")
+    print("\n阶段 2：遍历 PPO 参数，不施加赞同惩罚。")
     for beta in (1.0, 0.2, 0.05, 0.0):
         logits = ppo_train(ref_logits, rm, beta=beta)
         report(f"PPO beta={beta:4.2f} (alpha=0)", logits)
 
-    print("\nStage 3 — agreement-penalty correction (Shapira et al.).")
-    print("  beta=0.1 fixed. alpha sweeps.")
+    print("\n阶段 3：赞同惩罚修正（Shapira 等人）。")
+    print("  固定 beta=0.1，遍历 alpha。")
     for alpha in (0.0, 0.2, 0.4, 0.6, 0.8):
         corrected = agreement_penalty_correction(rm, alpha)
         logits = ppo_train(ref_logits, corrected, beta=0.1)
-        report(f"PPO alpha={alpha:.1f} (agreement penalty)", logits)
+        report(f"PPO alpha={alpha:.1f}（赞同惩罚）", logits)
 
     print()
     print("-" * 70)
-    print("TAKEAWAY: low beta amplifies sycophancy (RM rewards agreement).")
-    print("moderate alpha cuts sycophancy but erodes agreement-when-correct.")
-    print("there is no alpha that restores base-model P(S) without cost.")
+    print("要点：较低的 beta 会放大谄媚，因为 RM 奖励赞同。")
+    print("适中的 alpha 减少谄媚，却也减少在对方正确时的赞同。")
+    print("不存在能毫无代价地恢复基础模型 P(S) 的 alpha。")
     print("=" * 70)
 
 

@@ -1,37 +1,62 @@
 [
   {
-    "question": "Why can't you simply load all pre-training data into memory?",
-    "options": ["Pre-training corpora are terabytes in size, far exceeding available RAM, requiring streaming pipelines", "Loading data into memory is slower", "Memory is only needed for model weights", "Python doesn't support large arrays"],
+    "question": "为什么不能直接把所有预训练数据加载到内存？",
+    "options": [
+      "预训练语料达到 TB 级，远超可用内存，需要流式流水线",
+      "把数据加载到内存更慢",
+      "内存只用于模型权重",
+      "Python 不支持大数组"
+    ],
     "correct": 0,
-    "explanation": "LLM pre-training data is typically 1-15 TB of text. Even with 256GB of RAM, you can't hold the full dataset. Streaming pipelines process data on-the-fly, loading only what's needed for the current batch.",
+    "explanation": "大语言模型预训练数据通常为 1-15 TB 文本。即使有 256GB 随机存取存储器（Random Access Memory，RAM），也装不下完整数据集。流式流水线边读取边处理，只加载当前批次所需数据。",
     "stage": "pre"
   },
   {
-    "question": "Why is data deduplication important for pre-training?",
-    "options": ["It saves disk space", "Duplicate documents cause the model to memorize specific text verbatim and waste training compute on repeated content", "It reduces the vocabulary size", "It speeds up tokenization"],
+    "question": "为什么数据去重对预训练很重要？",
+    "options": [
+      "节省磁盘空间",
+      "重复文档会让模型逐字记忆特定文本，并在重复内容上浪费训练算力",
+      "减小词表",
+      "加快分词"
+    ],
     "correct": 1,
-    "explanation": "Near-duplicate content (boilerplate, scraped duplicates) causes the model to memorize rather than generalize. Deduplication reduces training compute waste and improves model quality by ensuring diverse training signal.",
+    "explanation": "近似重复内容，例如模板内容和重复抓取页面，会让模型记忆而非泛化。去重（Deduplication）通过保证训练信号的多样性，减少计算浪费并提高模型质量。",
     "stage": "pre"
   },
   {
-    "question": "What is the purpose of creating fixed-length training sequences from variable-length documents?",
-    "options": ["It reduces the total number of tokens", "It makes the text easier to read", "GPU training requires uniform tensor shapes, so documents must be packed or padded into fixed-length sequences", "Fixed-length sequences are more accurate"],
+    "question": "把变长文档转换成定长训练序列的目的是什么？",
+    "options": [
+      "减少词元总数",
+      "让文本更易读",
+      "GPU 训练要求统一张量形状，因此必须将文档打包或填充为定长序列",
+      "定长序列更准确"
+    ],
     "correct": 2,
-    "explanation": "GPUs process batches of tensors with identical shapes. Variable-length documents must be chunked into fixed-length sequences (e.g., 2048 or 4096 tokens) with proper attention masks at document boundaries.",
+    "explanation": "GPU 以批次处理形状相同的张量（Tensor）。变长文档必须切成定长序列，例如 2048 或 4096 个词元，并在文档边界设置正确的注意力掩码（Attention mask）。",
     "stage": "post"
   },
   {
-    "question": "What happens if the data pipeline is slower than GPU training speed?",
-    "options": ["Nothing -- the pipeline runs asynchronously", "Training automatically slows down to match", "The model trains on the same batch repeatedly", "The GPU sits idle waiting for batches, wasting expensive compute time"],
+    "question": "如果数据流水线比 GPU 训练速度慢，会发生什么？",
+    "options": [
+      "没有影响，流水线是异步运行的",
+      "训练会自动减速匹配",
+      "模型会反复训练同一个批次",
+      "GPU 会空闲等待批次，浪费昂贵的计算时间"
+    ],
     "correct": 3,
-    "explanation": "If the dataloader can't serve batches fast enough, the GPU stalls between steps. On A100 clusters costing $30+/hour, pipeline bottlenecks directly waste money. Profiling pipeline throughput is essential.",
+    "explanation": "如果数据加载器（DataLoader）提供批次不够快，GPU 就会在步骤之间停等。对于每小时成本 $30+ 的 A100 集群，流水线瓶颈会直接浪费资金。因此必须剖析流水线吞吐量。",
     "stage": "post"
   },
   {
-    "question": "Why is data quality filtering (language detection, content filtering) applied before tokenization?",
-    "options": ["It reduces tokenization time", "Low-quality data (spam, boilerplate, toxic content) degrades model capabilities proportional to its share of training data", "Filtering after tokenization is impossible", "Tokenizers can't handle low-quality text"],
+    "question": "为什么要在分词前进行语言检测、内容过滤等数据质量过滤？",
+    "options": [
+      "减少分词时间",
+      "垃圾内容、模板文字、有害内容等低质量数据会削弱模型能力，影响程度与其在训练数据中的占比有关",
+      "分词后不可能过滤",
+      "分词器无法处理低质量文本"
+    ],
     "correct": 1,
-    "explanation": "The model learns from whatever data it sees. If 10% of training data is spam or low-quality content, the model allocates 10% of its capacity to reproducing those patterns. Filtering early ensures only high-quality signal reaches the model.",
+    "explanation": "模型会学习它看到的所有数据。如果训练数据中有 10% 是垃圾或低质量内容，模型就会分配 10% 的容量来复现这些模式。及早过滤能确保只有高质量信号进入模型。",
     "stage": "post"
   }
 ]

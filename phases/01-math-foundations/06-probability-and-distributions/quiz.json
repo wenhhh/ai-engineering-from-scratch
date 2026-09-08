@@ -2,38 +2,38 @@
   "questions": [
     {
       "stage": "pre",
-      "question": "What is the difference between a probability mass function (PMF) and a probability density function (PDF)?",
-      "options": ["PMFs always sum to 0.5, PDFs integrate to 1", "PMFs give exact probabilities for discrete outcomes, while PDFs give densities for continuous variables that must be integrated over an interval to get probability", "There is no difference; they are the same concept with different names", "PMFs are used for continuous variables, PDFs for discrete variables"],
+      "question": "概率质量函数（Probability Mass Function，PMF）和概率密度函数（Probability Density Function，PDF）有什么区别？",
+      "options": ["PMF 的总和始终为 0.5，PDF 的积分为 1", "PMF 给出离散结果的确切概率，而 PDF 给出连续变量的密度，必须对区间积分才能得到概率", "没有区别，只是同一概念的不同名称", "PMF 用于连续变量，PDF 用于离散变量"],
       "correct": 1,
-      "explanation": "For discrete variables, the PMF gives P(X=k) directly. For continuous variables, the PDF f(x) is a density -- P(a<=X<=b) requires integrating f(x) from a to b. The density at a single point is not a probability."
+      "explanation": "对于离散变量，PMF 直接给出 P(X=k)。对于连续变量，PDF f(x) 是密度，求 P(a<=X<=b) 需要将 f(x) 从 a 到 b 积分。单点处的密度不是概率。"
     },
     {
       "stage": "pre",
-      "question": "What does the Central Limit Theorem state?",
-      "options": ["The mean of many independent random samples converges to a normal distribution regardless of the source distribution", "All data follows a normal distribution", "The probability of rare events decreases as sample size increases", "Large datasets always have low variance"],
+      "question": "中心极限定理（Central Limit Theorem，CLT）说明了什么？",
+      "options": ["许多独立随机样本的平均值趋近正态分布，而不取决于来源分布", "所有数据都服从正态分布", "罕见事件的概率随样本量增加而减小", "大型数据集的方差总是很小"],
       "correct": 0,
-      "explanation": "The CLT says that the average of many independent random variables approaches a Gaussian, no matter what the original distribution looks like. This explains why the normal distribution appears everywhere."
+      "explanation": "CLT 表明，不论原始分布是什么形状，许多独立随机变量的平均值都会趋近高斯分布。这解释了正态分布为何随处可见。"
     },
     {
       "stage": "post",
-      "question": "Why does softmax subtract the maximum logit before exponentiating (the 'softmax trick')?",
-      "options": ["To make all probabilities equal", "To prevent numerical overflow from exponentiating large numbers while producing mathematically identical results", "To speed up the computation by reducing the number of exponentiations", "To normalize the logits to have mean zero"],
+      "question": "为什么 softmax 在求指数之前要减去最大的 logit（即 softmax 技巧）？",
+      "options": ["让所有概率相等", "防止大数求指数导致数值溢出，同时产生数学上完全相同的结果", "通过减少指数运算次数加快计算", "将 logits 归一化为均值为零"],
       "correct": 1,
-      "explanation": "exp(100) overflows to infinity. Subtracting max(logits) shifts all values so the largest is 0. exp(0)=1 is safe. The subtraction cancels out in the normalization, giving identical probabilities."
+      "explanation": "exp(100) 会溢出为无穷大。减去 max(logits) 会平移所有值，使最大值为 0。exp(0)=1 是安全的。这个减法在归一化时会抵消，因此得到相同的概率。"
     },
     {
       "stage": "post",
-      "question": "Cross-entropy loss for classification simplifies to -log(q(true_class)). What does this mean intuitively?",
-      "options": ["Multiply the predicted probabilities by the true labels", "Penalize the model based on how low its predicted probability is for the correct class -- lower prediction means higher loss", "Average the log probabilities across all classes", "Compute the entropy of the true distribution"],
+      "question": "分类的交叉熵损失（Cross-entropy Loss）可简化为 -log(q(true_class))。直观上这意味着什么？",
+      "options": ["将预测概率乘以真实标签", "根据模型给正确类别的预测概率有多低来惩罚模型，预测概率越低，损失越高", "对所有类别的对数概率取平均", "计算真实分布的熵"],
       "correct": 1,
-      "explanation": "If the model predicts 0.9 for the correct class, loss = -log(0.9) = 0.105 (low). If it predicts 0.01, loss = -log(0.01) = 4.6 (high). The loss punishes low confidence in the correct answer."
+      "explanation": "如果模型给正确类别的预测概率为 0.9，loss = -log(0.9) = 0.105（低）。如果预测为 0.01，loss = -log(0.01) = 4.6（高）。该损失惩罚对正确答案缺乏信心的预测。"
     },
     {
       "stage": "post",
-      "question": "Why do language models work with log probabilities instead of raw probabilities?",
-      "options": ["Multiplying many small probabilities causes numerical underflow to zero; log probabilities convert products to sums, avoiding this", "Log probabilities are easier to interpret visually", "Raw probabilities cannot represent values less than 0.01", "Log probabilities are required by the transformer architecture"],
+      "question": "为什么语言模型使用对数概率（Log Probability）而不是原始概率？",
+      "options": ["许多小概率相乘会数值下溢为零；对数概率将乘积转为求和，避免这一问题", "对数概率更容易从视觉上解释", "原始概率不能表示小于 0.01 的值", "Transformer 架构要求使用对数概率"],
       "correct": 0,
-      "explanation": "P(sentence) = P(word1) * P(word2) * ... quickly underflows to 0.0 with float64. Log P(sentence) = log P(word1) + log P(word2) + ... stays in a finite range. Products become sums."
+      "explanation": "使用 float64 时，P(sentence) = P(word1) * P(word2) * ... 会迅速下溢为 0.0。Log P(sentence) = log P(word1) + log P(word2) + ... 保持在有限范围内。乘积变成了求和。"
     }
   ]
 }

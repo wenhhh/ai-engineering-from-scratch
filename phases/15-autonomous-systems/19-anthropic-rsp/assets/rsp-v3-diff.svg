@@ -13,44 +13,44 @@
     </style>
   </defs>
 
-  <text x="440" y="26" text-anchor="middle" class="title">RSP v2 (2023) → v3.0 (Feb 24, 2026): what changed</text>
+  <text x="440" y="26" text-anchor="middle" class="title">RSP v2（2023）→ v3.0（2026-02-24）：变化（what changed）</text>
 
   <rect x="40" y="50" width="800" height="460" class="box"/>
 
   <!-- Two columns: additions / removals -->
   <rect x="60" y="80" width="370" height="280" class="cool"/>
-  <text x="245" y="104" text-anchor="middle" class="label">additions in v3.0</text>
-  <text x="76" y="126" class="content">• two-tier mitigation schedule</text>
-  <text x="76" y="142" class="small">  (Anthropic-unilateral vs industry recommendation)</text>
-  <text x="76" y="162" class="content">• AI R&amp;D-4 threshold (research automation)</text>
-  <text x="76" y="178" class="small">  once crossed: publish affirmative case</text>
-  <text x="76" y="198" class="content">• Frontier Safety Roadmap (standing doc)</text>
-  <text x="76" y="214" class="content">• Risk Report (standing doc, retrospective)</text>
-  <text x="76" y="234" class="content">• RAND SL-4 security referenced</text>
-  <text x="76" y="250" class="small">  (in the industry-recommendation tier)</text>
-  <text x="76" y="270" class="content">• acknowledgement: "confidently ruling out</text>
-  <text x="76" y="286" class="content">   AI R&amp;D-4 is becoming difficult"</text>
-  <text x="76" y="318" class="small">v3.0 announcement notes the threshold is a live concern</text>
-  <text x="76" y="334" class="small">even on current-gen Claude Opus 4.6</text>
+  <text x="245" y="104" text-anchor="middle" class="label">v3.0 新增内容（additions）</text>
+  <text x="76" y="126" class="content">• 两层缓解措施（two-tier mitigation）</text>
+  <text x="76" y="142" class="small">  （Anthropic 单方面行动与行业建议）</text>
+  <text x="76" y="162" class="content">• AI R&amp;D-4 阈值（研究自动化）</text>
+  <text x="76" y="178" class="small">  一旦跨过：发布正面论证（affirmative case）</text>
+  <text x="76" y="198" class="content" style="font-size: 10px">• 前沿安全路线图（Frontier Safety Roadmap），持续维护</text>
+  <text x="76" y="214" class="content">• 风险报告（Risk Report），持续维护、回顾性</text>
+  <text x="76" y="234" class="content">• 引用 RAND SL-4 安全标准</text>
+  <text x="76" y="250" class="small">  （位于行业建议层）</text>
+  <text x="76" y="270" class="content">• 承认：“要有把握地排除</text>
+  <text x="76" y="286" class="content">   达到 AI R&amp;D-4 的可能性，正变得困难”</text>
+  <text x="76" y="318" class="small">v3.0 公告指出，该阈值已是现实中的关注点</text>
+  <text x="76" y="334" class="small">即使对当前一代 Claude Opus 4.6 也是如此</text>
 
   <rect x="450" y="80" width="370" height="280" class="hot"/>
-  <text x="635" y="104" text-anchor="middle" class="label">removals / softenings in v3.0</text>
-  <text x="466" y="126" class="content">• 2023 pause commitment REMOVED</text>
-  <text x="466" y="142" class="small">  (explicit training-pause clause dropped)</text>
-  <text x="466" y="162" class="content">• quantitative thresholds softened</text>
-  <text x="466" y="178" class="small">  to qualitative judgments</text>
-  <text x="466" y="198" class="content">• specific mitigations replaced with</text>
-  <text x="466" y="214" class="content">  "affirmative case" framing</text>
-  <text x="466" y="234" class="content">• independent review kept weak</text>
-  <text x="466" y="250" class="small">  (internal Safety Advisory Group primary)</text>
-  <text x="466" y="270" class="content">• industry-recommendation tier allows</text>
-  <text x="466" y="286" class="content">  policy-advocacy framing without commitment</text>
+  <text x="635" y="104" text-anchor="middle" class="label" style="font-size: 11px">v3.0 删除或放宽的内容（removals / softenings）</text>
+  <text x="466" y="126" class="content">• 删除 2023 年暂停承诺（pause commitment）</text>
+  <text x="466" y="142" class="small">  （删除了明确的训练暂停条款）</text>
+  <text x="466" y="162" class="content">• 放宽定量阈值（quantitative thresholds）</text>
+  <text x="466" y="178" class="small">  改为定性判断（qualitative judgments）</text>
+  <text x="466" y="198" class="content">• 具体缓解措施被替换为</text>
+  <text x="466" y="214" class="content">  “正面论证（affirmative case）”表述</text>
+  <text x="466" y="234" class="content">• 独立评审仍然薄弱</text>
+  <text x="466" y="250" class="small">  （主要依赖内部安全顾问组）</text>
+  <text x="466" y="270" class="content">• 行业建议层允许</text>
+  <text x="466" y="286" class="content">  只提出政策倡议而不作承诺</text>
 
   <!-- SaferAI rating -->
   <rect x="60" y="380" width="760" height="110" class="warn"/>
-  <text x="440" y="404" text-anchor="middle" class="label">SaferAI independent rating</text>
-  <text x="80" y="426" class="content">v2 (2023): 2.2 — moderate</text>
-  <text x="80" y="442" class="content">v3.0 (2026): 1.9 — weak (joins OpenAI Preparedness and DeepMind FSF in "weak" category)</text>
-  <text x="80" y="462" class="content">downgrade drivers: qualitative thresholds · pause removal · limited independent oversight</text>
-  <text x="80" y="482" class="small">policy gets less rigorous while looking more polished; reading closely is the skill.</text>
+  <text x="440" y="404" text-anchor="middle" class="label">SaferAI 独立评级（independent rating）</text>
+  <text x="80" y="426" class="content">v2（2023）：2.2 — 中等（moderate）</text>
+  <text x="80" y="442" class="content">v3.0（2026）：1.9 — 弱（weak），与 OpenAI Preparedness、DeepMind FSF 同属“弱”等级</text>
+  <text x="80" y="462" class="content">降级原因：定性阈值 · 删除暂停承诺 · 独立监督有限</text>
+  <text x="80" y="482" class="small">政策写得更精致，要求却更宽松；关键是逐条读懂具体约束。</text>
 </svg>

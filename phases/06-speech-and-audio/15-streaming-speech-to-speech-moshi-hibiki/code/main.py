@@ -1,14 +1,14 @@
-"""Moshi-style full-duplex simulation.
+"""Moshi 风格全双工（Full-duplex）模拟。
 
-Models the shape of Moshi's parallel-stream architecture:
-  - user Mimi token stream (input)
-  - moshi Mimi token stream (output)
-  - moshi text stream (inner monologue)
+模拟 Moshi 并行流架构（Parallel-stream architecture）的结构：
+  - 用户 Mimi 词元流（Token stream，输入）
+  - Moshi Mimi 词元流（输出）
+  - Moshi 文本流（内心独白，Inner monologue）
 
-Runs a cartoon "conversation" through the loop; measures latency per
-80 ms frame. No real codec or transformer — just structure.
+在循环中运行简化“对话”，测量每个
+80 ms 帧的延迟。不含实际编解码器（Codec）或 Transformer，只展示结构。
 
-Run: python3 code/main.py
+运行：python3 code/main.py
 """
 
 import math
@@ -53,7 +53,7 @@ def simulate_user_speech(n_frames):
 
 
 def main():
-    print(f"=== Moshi-style full-duplex simulation — {FRAME_MS} ms frames, {CODEBOOKS} codebooks ===")
+    print(f"=== Moshi 风格全双工模拟，{FRAME_MS} ms 帧，{CODEBOOKS} 个码本（Codebooks） ===")
     print()
 
     user_audio_stream = simulate_user_speech(25)
@@ -82,37 +82,37 @@ def main():
         frame_ms = (time.time() - frame_start) * 1000
         per_frame_ms.append(frame_ms)
 
-    print(f"processed {len(user_audio_stream)} frames ({len(user_audio_stream)*FRAME_MS} ms wall audio)")
-    print(f"  user_mimi:    {len(user_mimi)} × {CODEBOOKS} codebooks")
-    print(f"  moshi_mimi:   {len(moshi_mimi)} × {CODEBOOKS} codebooks")
-    print(f"  moshi_text:   {len(moshi_text)} tokens   (first 5: {moshi_text[:5]})")
+    print(f"已处理 {len(user_audio_stream)} 帧（音频实际时长 {len(user_audio_stream)*FRAME_MS} ms）")
+    print(f"  user_mimi:    {len(user_mimi)} × {CODEBOOKS} 个码本")
+    print(f"  moshi_mimi:   {len(moshi_mimi)} × {CODEBOOKS} 个码本")
+    print(f"  moshi_text:   {len(moshi_text)} 个词元（Tokens，前 5 个，保留词元标识: {moshi_text[:5]}）")
 
     print()
-    print("=== per-frame latency ===")
+    print("=== 每帧延迟（Per-frame latency） ===")
     avg = sum(per_frame_ms) / len(per_frame_ms)
     p95 = sorted(per_frame_ms)[int(len(per_frame_ms) * 0.95)]
-    print(f"  mean: {avg:.2f} ms   p95: {p95:.2f} ms   target: &lt; 80 ms per frame (realtime)")
+    print(f"  均值: {avg:.2f} ms   p95: {p95:.2f} ms   目标: 每帧 &lt; 80 ms（实时 Realtime）")
 
     print()
-    print("=== 2026 streaming S2S model cheatsheet ===")
+    print("=== 2026 流式语音到语音（Streaming S2S）模型速查表 ===")
     rows = [
-        ("Moshi (Kyutai)",       "200 ms L4",   "full-duplex dialogue, EN+FR",    "CC-BY 4.0"),
-        ("Hibiki",                "12.5 Hz",    "EN↔FR streaming translation",   "CC-BY 4.0"),
-        ("Hibiki-Zero (Feb 26)",  "12.5 Hz",    "5 langs, no aligned data",       "CC-BY 4.0"),
-        ("Sesame CSM-1B",         "200 ms",      "context-TTS (not full duplex)", "Apache-2.0"),
-        ("GPT-4o Realtime",        "~300 ms",     "closed, API",                   "commercial"),
-        ("Gemini 2.5 Live",       "~350 ms",     "closed, API",                   "commercial"),
+        ("Moshi (Kyutai)",       "200 ms L4",   "全双工对话，英语+法语",    "CC-BY 4.0"),
+        ("Hibiki",                "12.5 Hz",    "英语↔法语流式翻译（Streaming translation）",   "CC-BY 4.0"),
+        ("Hibiki-Zero（26 年 2 月）",  "12.5 Hz",    "5 种语言，无对齐数据",       "CC-BY 4.0"),
+        ("Sesame CSM-1B",         "200 ms",      "上下文 TTS（非全双工）", "Apache-2.0"),
+        ("GPT-4o Realtime",        "~300 ms",     "闭源，API",                   "商业（Commercial）"),
+        ("Gemini 2.5 Live",       "~350 ms",     "闭源，API",                   "商业（Commercial）"),
     ]
-    print("  | model                | latency   | description                     | license      |")
+    print("  | 模型（Model） | 延迟（Latency） | 描述（Description） | 许可证（License） |")
     for name, lat, desc, lic in rows:
         print(f"  | {name:<20} | {lat:<9} | {desc:<30}  | {lic:<12} |")
 
     print()
-    print("takeaways:")
-    print("  - full-duplex architecture: 2 parallel Mimi streams + text inner-monologue")
-    print("  - 160 ms theoretical latency floor (80 ms frame + 80 ms acoustic delay)")
-    print("  - Moshi is best voice-companion; pipelines (lesson 12) still win for tool-use")
-    print("  - Hibiki is streaming translation; same shape, different training data")
+    print("要点:")
+    print("  - 全双工架构：2 路并行 Mimi 流 + 文本内心独白（Inner monologue）")
+    print("  - 理论延迟下限 160 ms（80 ms 帧 + 80 ms 声学延迟 Acoustic delay）")
+    print("  - Moshi 最适合语音陪伴；工具使用（Tool use）仍以流水线（第 12 课）更优")
+    print("  - Hibiki 用于流式翻译；结构相同，训练数据不同")
 
 
 if __name__ == "__main__":

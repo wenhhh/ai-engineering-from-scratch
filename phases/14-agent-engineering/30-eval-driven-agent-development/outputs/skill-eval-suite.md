@@ -1,33 +1,33 @@
 ---
 name: eval-suite
-description: Build a three-layer eval suite (static benchmarks, custom offline, online production) with evaluator-optimizer loop and CI gates.
+description: 构建三层评估套件（静态基准、自定义离线、在线生产），包含评估器优化器循环和 CI 门禁。
 version: 1.0.0
 phase: 14
 lesson: 30
 tags: [evaluation, ci, regression, benchmarks, llm-judge]
 ---
 
-Given an agent product, build a three-layer eval suite wired into CI.
+给定智能体产品，构建接入 CI 的三层评估套件。
 
-Produce:
+产出：
 
-1. **Static benchmark layer** — at least one relevant benchmark (SWE-bench Verified for code, BFCL V4 for tool use, WebArena for web, OSWorld for desktop, GAIA for generalist). Always report the +-audited score alongside.
-2. **Custom offline layer** — at least one LLM-judge rubric scored on domain-specific dimensions (factual, tone, scope, refusal quality). At least one execution-based case that probes actual state after the agent runs. At least one trajectory-based case with a gold path.
-3. **Online eval layer** — session replays, guardrail-triggered alerts, per-step cost/latency tracking through OTel GenAI spans (Lesson 23).
-4. **Evaluator-optimizer runner** — wrap the agent in propose / judge / refine with a round cap.
-5. **CI gate** — fail the build on >=5% regression vs baseline. Track baseline over time.
-6. **Case mapping** — every guardrail and every learned rule from the Phase 14 lessons has at least one case.
+1. **静态基准层（Static benchmark layer）**：至少一个相关基准，代码用 SWE-bench Verified，工具使用用 BFCL V4，网页用 WebArena，桌面用 OSWorld，通用能力用 GAIA。始终同时报告 + 审计后的分数。
+2. **自定义离线层（Custom offline layer）**：至少一个按领域维度评分的 LLM 裁判量规，涵盖事实、语气、范围、拒绝质量。至少一个基于执行的用例，在智能体运行后探测实际状态。至少一个带黄金路径的轨迹用例。
+3. **在线评估层（Online eval layer）**：会话回放、护栏触发告警，通过 OTel GenAI 跨度逐步骤跟踪成本和延迟（第 23 课）。
+4. **评估器优化器运行器（Evaluator-optimizer runner）**：用提议、判断、改进循环包裹智能体，并限制轮次。
+5. **CI 门禁（CI gate）**：相对基线回归 >=5% 时使构建失败。持续跟踪基线。
+6. **用例映射（Case mapping）**：第 14 阶段课程中的每个护栏和每个学到的规则，至少对应一个用例。
 
-Hard rejects:
+必须拒绝的设计：
 
-- Eval suite with no baseline. You cannot detect regression without a reference.
-- LLM-judge without external grounding on factual tasks. CRITIC pattern (Lesson 05) is required.
-- Flaky cases without pinned seeds or snapshot state. False alarms erode the team's trust in evals.
+- 评估套件没有基线。没有参照就无法检测回归。
+- 事实任务中 LLM 裁判没有外部依据。必须采用 CRITIC 模式（第 05 课）。
+- 不稳定用例没有固定种子或状态快照。误报会侵蚀团队对评估的信任。
 
-Refusal rules:
+拒绝规则：
 
-- If the user wants "just the happy path," refuse. Every failure mode (Lesson 26) should have a case.
-- If the user wants "no CI gate," refuse for products hitting paying users. Eval drift is invisible otherwise.
-- If the user wants "all LLM-judges," refuse on factual and compliance tasks. Execution-based or programmatic evaluators are required there.
+- 如果用户要求“只测正常路径”，应拒绝。每种失效模式（第 26 课）都应有用例。
+- 如果用户要求“不要 CI 门禁”，对面向付费用户的产品应拒绝，否则评估漂移不可见。
+- 如果用户要求“全部用 LLM 裁判”，在事实与合规任务上应拒绝。这些任务需要基于执行或程序化的评估器。
 
-Output: `cases/benchmarks/`, `cases/custom/`, `cases/online/`, `runner.py`, `ci_gate.py`, `README.md` explaining rubrics, baselines, and the Phase 14 mapping table. End with "what to read next" pointing to Lesson 24 (observability), Lesson 26 (failure modes), or Lesson 23 (OTel) for the substrate.
+输出：`cases/benchmarks/`、`cases/custom/`、`cases/online/`、`runner.py`、`ci_gate.py`、`README.md`，说明评分量规、基线和第 14 阶段映射表。结尾给出“接下来读什么”，指向第 24 课（可观测性）、第 26 课（失效模式），或作为基础的第 23 课（OTel）。

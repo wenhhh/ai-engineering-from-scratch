@@ -1,23 +1,23 @@
-# A2A — The Agent-to-Agent Protocol
+# A2A：智能体间协议（The Agent-to-Agent Protocol）
 
-> Google announced A2A in April 2025; by April 2026 the spec is at https://a2a-protocol.org/latest/specification/ and 150+ organizations back it. A2A is the horizontal complement to MCP (Lesson 13): where MCP is vertical (agent ↔ tools), A2A is peer-to-peer (agent ↔ agent). It defines Agent Cards (discovery), tasks with artifacts (text, structured data, video), opaque task lifecycles, and auth. Production systems increasingly pair MCP with A2A. Google Cloud rolled A2A support into Vertex AI Agent Builder during 2025-2026.
+> Google 于 2025 年 4 月宣布 A2A；到 2026 年 4 月，规范位于 https://a2a-protocol.org/latest/specification/，已有 150 多个组织支持。A2A 是 MCP（第 13 课）的横向补充：MCP 是纵向（智能体 ↔ 工具），A2A 是对等（智能体 ↔ 智能体）。它定义智能体卡片（发现）、带交付物的任务（文本、结构化数据、视频）、不透明任务生命周期和认证。生产系统越来越多地结合 MCP 与 A2A。Google Cloud 在 2025–2026 年为 Vertex AI Agent Builder 加入 A2A 支持。
 
 **Type:** Learn + Build
 **Languages:** Python (stdlib, `http.server`, `json`)
-**Prerequisites:** Phase 16 · 04 (Primitive Model)
-**Time:** ~75 minutes
+**Prerequisites:** Phase 16 · 04 原语模型（Primitive Model）
+**Time:** ~75 分钟
 
-## Problem
+## 问题（Problem）
 
-Your agent needs to call another agent on another system. How? You can expose an HTTP endpoint, define a bespoke JSON schema, and hope the other side speaks it. Every pair of agents becomes a custom integration.
+你的智能体需要调用另一系统上的智能体，如何做？可以暴露 HTTP 端点、定义定制 JSON 模式，并期待对方理解。每对智能体都变成定制集成。
 
-A2A is the universal wire protocol for that call. Standard discovery, standard task model, standard transport, standard artifacts. Like HTTP+REST but for agents as first-class citizens.
+A2A 是用于这种调用的通用传输协议。标准发现、任务模型、传输、交付物。类似 HTTP+REST，但把智能体作为一等公民。
 
-## Concept
+## 概念（Concept）
 
-### The four elements
+### 四个要素（The four elements）
 
-**Agent Card.** A JSON document at `/.well-known/agent.json` describing the agent: name, skills, endpoints, supported modalities, auth requirements. Discovery happens by reading the card.
+**智能体卡片（Agent Card）。** 位于 `/.well-known/agent.json` 的 JSON 文档，描述名称、技能、端点、支持模态、认证要求。通过读取卡片完成发现。
 
 ```
 GET https://agent.example.com/.well-known/agent.json
@@ -32,138 +32,138 @@ GET https://agent.example.com/.well-known/agent.json
   }
 ```
 
-**Task.** The unit of work. An async, stateful object with a lifecycle: `submitted → working → completed / failed / canceled`. A client sends a task, polls or subscribes for updates.
+**任务（Task）。** 工作单位，是具有生命周期的异步有状态对象：`submitted → working → completed / failed / canceled`。客户端发送任务，轮询或订阅更新。
 
-**Artifact.** The result type produced by a task. Text, structured JSON, image, video, audio. Artifacts are typed so different modalities are first-class.
+**交付物（Artifact）。** 任务产出的结果类型：文本、结构化 JSON、图像、视频、音频。交付物带类型，使不同模态都是一等公民。
 
-**Opaque lifecycle.** A2A does not prescribe *how* the remote agent solves the task. The client sees state transitions and artifacts; the implementation is free to use any framework.
+**不透明生命周期（Opaque lifecycle）。** A2A 不规定远程智能体*如何*解决任务。客户端看到状态转换与交付物，实现可自由使用任何框架。
 
-### The MCP/A2A split
+### MCP/A2A 分工（The MCP/A2A split）
 
-- **MCP** (Lesson 13): agent ↔ tool. The agent reads/writes via JSON-RPC to a tool server. Stateless by default.
-- **A2A**: agent ↔ agent. Peer protocol; both sides are agents with their own reasoning.
+- **MCP**（第 13 课）：智能体 ↔ 工具。智能体通过 JSON-RPC 对工具服务器读写，默认无状态。
+- **A2A**：智能体 ↔ 智能体。对等协议，双方都是具有自身推理的智能体。
 
-Production multi-agent systems use both. An A2A peer calls MCP tools on its side. The split keeps the two concerns clean.
+生产多智能体系统同时使用两者。A2A 对等方在自身一侧调用 MCP 工具，分工使两个关注点清晰。
 
-### Discovery flow
+### 发现流程（Discovery flow）
 
 ```
-Client                     Agent server
+客户端                     智能体服务器
   ├──GET /.well-known/agent.json──>
-  <──Agent Card JSON─────────────
+  <──智能体卡片（Agent Card）JSON─
   ├──POST /tasks {skill, input}──>
   <──201 task_id, state=submitted
   ├──GET /tasks/{id}──────────────>
-  <──state=working, 42% done──────
+  <──state=working，已完成 42%────
   ├──GET /tasks/{id}──────────────>
   <──state=completed, artifacts──
 ```
 
-Or with streaming: SSE subscription to `/tasks/{id}/events` for push updates.
+也可流式处理：通过 SSE 订阅 `/tasks/{id}/events` 接收推送更新。
 
-### Auth
+### 认证（Auth）
 
-A2A supports three common patterns:
+A2A 支持三种常见模式：
 
-- **Bearer token** — OAuth2 or opaque.
-- **mTLS** — mutual TLS; organizations prove identity to each other.
-- **Signed requests** — HMAC over the payload.
+- **持有者令牌（Bearer token）**：OAuth2 或不透明令牌。
+- **双向 TLS（mTLS）**：组织相互证明身份。
+- **签名请求（Signed requests）**：对有效载荷计算 HMAC。
 
-Auth is declared in the Agent Card; clients discover and comply.
+认证要求在智能体卡片中声明，客户端发现后遵循。
 
-### 150+ organizations by April 2026
+### 到 2026 年 4 月已有 150 多个组织（150+ organizations by April 2026）
 
-Enterprise adoption drove A2A scale. The headline: A2A became the way enterprise agent systems cross trust boundaries. Google Cloud shipped Vertex AI Agent Builder A2A support; Microsoft Agent Framework supports it; most major frameworks (LangGraph, CrewAI, AutoGen) ship A2A adapters.
+企业采用推动 A2A 扩展。关键在于：A2A 成为企业智能体跨信任边界的方式。Google Cloud 为 Vertex AI Agent Builder 推出 A2A 支持，Microsoft Agent Framework 也支持，多数主要框架（LangGraph、CrewAI、AutoGen）提供 A2A 适配器。
 
-### Where A2A wins
+### A2A 的优势（Where A2A wins）
 
-- **Cross-organization calls.** Agent at company A calls agent at company B. Without A2A, every pair is a bespoke contract.
-- **Heterogeneous frameworks.** LangGraph agent calls CrewAI agent calls custom Python agent. A2A normalizes.
-- **Typed artifacts.** Video result, structured JSON, audio — all first-class.
-- **Long-running tasks.** Opaque lifecycle + polling makes hours-long tasks straightforward.
+- **跨组织调用。** A 公司智能体调用 B 公司智能体。没有 A2A，每对都需定制契约。
+- **异构框架。** LangGraph 智能体调用 CrewAI，再调用自定义 Python 智能体，A2A 统一接口。
+- **类型化交付物。** 视频结果、结构化 JSON、音频都是一等公民。
+- **长任务。** 不透明生命周期 + 轮询使数小时任务易于处理。
 
-### Where A2A struggles
+### A2A 的困难场景（Where A2A struggles）
 
-- **Latency-sensitive micro-calls.** A2A's lifecycle is async. Sub-millisecond agent-to-agent does not fit; use direct RPC.
-- **Tight-coupled in-process agents.** If both agents run in the same Python process, A2A's HTTP round-trip is overkill.
-- **Small teams.** Spec overhead is real; internal-only agents may not need the formality.
+- **延迟敏感的微调用。** A2A 生命周期是异步的，不适合亚毫秒智能体间调用，应直接用 RPC。
+- **进程内紧耦合智能体。** 两者同处一个 Python 进程时，A2A 的 HTTP 往返过于繁重。
+- **小团队。** 规范有实际开销，纯内部智能体未必需要如此正式。
 
-### A2A vs ACP, ANP, NLIP
+### A2A 与 ACP、ANP、NLIP（A2A vs ACP, ANP, NLIP）
 
-Several related specs emerged in 2024-2026:
+2024–2026 年出现了数种相关规范：
 
-- **ACP** (IBM/Linux Foundation) — predecessor to A2A, narrower scope.
-- **ANP** (Agent Network Protocol) — peer-discovery-heavy, decentralized-first.
-- **NLIP** (Ecma Natural Language Interaction Protocol, standardized December 2025) — natural-language content type.
+- **ACP**（IBM/Linux Foundation）：A2A 前身，范围更窄。
+- **ANP**（Agent Network Protocol）：侧重对等发现，去中心化优先。
+- **NLIP**（Ecma 自然语言交互协议，Natural Language Interaction Protocol，2025 年 12 月标准化）：自然语言内容类型。
 
-A2A is the most-adopted peer protocol as of April 2026. See arXiv:2505.02279 (Liu et al., "A Survey of Agent Interoperability Protocols") for the comparison.
+截至 2026 年 4 月，A2A 是采用最多的对等协议。比较见 arXiv:2505.02279，Liu 等《智能体互操作协议综述》。
 
 ```figure
 sw-agent-card-discovery
 ```
 
-## Build It
+## 动手实现（Build It）
 
-`code/main.py` implements an A2A-minimal server and client using `http.server` and JSON. The server:
+`code/main.py` 使用 `http.server` 和 JSON 实现最小 A2A 服务器与客户端。服务器：
 
-- exposes `/.well-known/agent.json`,
-- accepts `POST /tasks`,
-- manages task state,
-- returns artifacts on `GET /tasks/{id}`.
+- 暴露 `/.well-known/agent.json`，
+- 接收 `POST /tasks`，
+- 管理任务状态，
+- 通过 `GET /tasks/{id}` 返回交付物。
 
-The client:
+客户端：
 
-- fetches the Agent Card,
-- submits a task,
-- polls until completion,
-- reads the artifact.
+- 获取智能体卡片，
+- 提交任务，
+- 轮询直到完成，
+- 读取交付物。
 
-Run:
+运行：
 
 ```
 python3 code/main.py
 ```
 
-The script starts the server in a background thread, then runs the client against it. You see the complete flow: discovery, submit, poll, artifact.
+脚本在后台线程启动服务器，再运行客户端访问它。你会看到完整流程：发现、提交、轮询、交付物。
 
-## Use It
+## 实际应用（Use It）
 
-`outputs/skill-a2a-integrator.md` designs an A2A integration: Agent Card contents, task schemas, auth choice, streaming vs polling.
+`outputs/skill-a2a-integrator.md` 设计 A2A 集成：智能体卡片内容、任务模式、认证选择、流式或轮询。
 
-## Ship It
+## 交付成果（Ship It）
 
-Checklist:
+检查清单：
 
-- **Pin the spec version.** A2A is still evolving; the Agent Card should declare the protocol version.
-- **Idempotent task creation.** Duplicate submissions (network retries) should produce one task.
-- **Artifact schemas.** Declare what shapes the agent returns; consumers should validate.
-- **Rate limits + auth.** A2A is public-facing; apply standard web security.
-- **Dead-letter for failed tasks.** Inspect patterns over time for recurring failure types.
+- **固定规范版本。** A2A 仍在演进，智能体卡片应声明协议版本。
+- **幂等任务创建。** 重复提交（网络重试）应只产生一个任务。
+- **交付物模式。** 声明智能体返回形状，消费者应验证。
+- **限流 + 认证。** A2A 面向公网，应用标准 Web 安全措施。
+- **失败任务进入死信。** 随时间检查模式，识别反复出现的故障类型。
 
-## Exercises
+## 练习（Exercises）
 
-1. Run `code/main.py`. Confirm the client discovers the server and receives the correct artifact.
-2. Add a second skill to the server (e.g., "summarize"). Update the Agent Card. Write a client that picks the skill based on task type.
-3. Implement an SSE streaming endpoint: `/tasks/{id}/events` that emits state changes. What does the client need to do differently?
-4. Read the A2A spec (https://a2a-protocol.org/latest/specification/). Identify three things the spec mandates that this demo does not implement.
-5. Compare A2A (Agent Card discovery) to MCP (server-side capability listing via `listTools`). What is the tradeoff between self-describing agents and capability-probing?
+1. 运行 `code/main.py`，确认客户端发现服务器并收到正确交付物。
+2. 为服务器增加第二项技能（如“summarize”），更新智能体卡片，编写按任务类型选择技能的客户端。
+3. 实现发出状态变化的 SSE 端点 `/tasks/{id}/events`。客户端需要怎样改变？
+4. 阅读 A2A 规范（https://a2a-protocol.org/latest/specification/），指出规范要求但演示未实现的三项内容。
+5. 比较 A2A 卡片发现与 MCP 通过 `listTools` 列举服务器能力。自描述智能体和能力探测之间有何权衡？
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语 | 常见说法 | 实际含义 |
 |------|----------------|------------------------|
-| A2A | "Agent-to-agent" | Peer protocol for agents to call other agents across systems. Google 2025. |
-| Agent Card | "The agent's business card" | JSON at `/.well-known/agent.json` describing skills, endpoints, auth. |
-| Task | "The unit of work" | Async stateful object with a lifecycle; artifacts produced on completion. |
-| Artifact | "The result" | Typed output: text, structured JSON, image, video, audio. First-class media. |
-| Opaque lifecycle | "How it's solved is the agent's business" | Client sees state transitions; server is free to choose framework/tools. |
-| Discovery | "Finding the agent" | `GET /.well-known/agent.json` returns the card. |
-| MCP vs A2A | "Tools vs peers" | MCP: vertical agent ↔ tool. A2A: horizontal agent ↔ agent. |
-| ACP / ANP / NLIP | "Sibling protocols" | Adjacent specs; A2A is the most-adopted 2026. |
+| A2A | “智能体到智能体” | 跨系统调用其他智能体的对等协议，Google 2025。 |
+| 智能体卡片（Agent Card） | “智能体名片” | `/.well-known/agent.json` 中描述技能、端点、认证的 JSON。 |
+| 任务（Task） | “工作单位” | 有生命周期的异步有状态对象，完成后产出交付物。 |
+| 交付物（Artifact） | “结果” | 类型化输出：文本、结构化 JSON、图像、视频、音频，媒体是一等公民。 |
+| 不透明生命周期（Opaque lifecycle） | “如何解决归智能体管” | 客户端看到状态转换，服务器自由选择框架/工具。 |
+| 发现（Discovery） | “找到智能体” | `GET /.well-known/agent.json` 返回卡片。 |
+| MCP 与 A2A（MCP vs A2A） | “工具与对等方” | MCP 纵向智能体 ↔ 工具，A2A 横向智能体 ↔ 智能体。 |
+| ACP / ANP / NLIP | “兄弟协议” | 相邻规范，2026 年 A2A 采用最多。 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [A2A specification](https://a2a-protocol.org/latest/specification/) — the canonical spec
-- [Google Developers Blog — A2A announcement](https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/) — April 2025 launch post
-- [A2A GitHub repo](https://github.com/a2aproject/A2A) — reference implementations and SDKs
-- [Liu et al. — A Survey of Agent Interoperability Protocols](https://arxiv.org/html/2505.02279v1) — MCP, ACP, A2A, ANP comparison
+- [A2A 规范（A2A specification）](https://a2a-protocol.org/latest/specification/)：标准规范
+- [Google Developers Blog：A2A 公告（A2A announcement）](https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/)：2025 年 4 月发布文章
+- [A2A GitHub 仓库（repo）](https://github.com/a2aproject/A2A)：参考实现与 SDK
+- [Liu 等：智能体互操作协议综述（A Survey of Agent Interoperability Protocols）](https://arxiv.org/html/2505.02279v1)：MCP、ACP、A2A、ANP 对比

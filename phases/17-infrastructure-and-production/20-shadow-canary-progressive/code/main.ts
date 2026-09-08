@@ -1,30 +1,27 @@
 /**
- * Shadow + canary + progressive rollout — TypeScript port + policy engine.
+ * 影子流量（Shadow）、金丝雀发布（Canary）与渐进式发布（Progressive Rollout），TypeScript 移植版与策略引擎。
  *
- * Three policies:
- *   1. Shadow mode: duplicates each request to candidate; logs the deltas;
- *      never returns candidate output to the user. Catches cost/length
- *      regressions before any user exposure.
- *   2. Canary rollout: progressive traffic shift through stages with five
- *      LLM-specific gates. Halts the moment any gate breaches.
- *   3. Progressive policy: combines shadow → canary → 100%, with a policy
- *      flag that supports seconds-not-hours rollback.
+ * 三种策略：
+ *   1. 影子模式（Shadow Mode）：将每个请求复制给候选版本，记录差异，不向用户返回候选输出；
+ *      在用户接触候选版本前发现成本或输出长度退化（Regression）。
+ *   2. 金丝雀发布：分阶段转移流量，设置五道大语言模型（LLM）专用关卡（Gate）；
+ *      任一关卡超限就立即停止发布。
+ *   3. 渐进式策略：串联影子流量、金丝雀与 100% 全量发布，通过策略开关实现秒级回滚。
  *
- * Plus the same canary simulator main.py runs (six stages, five gates, six
- * regression scenarios) so the numbers reproduce.
+ * 还包含与 main.py 相同的金丝雀模拟器：六个阶段、五道关卡、六种退化场景，使数值可复现。
  *
- * Citations:
- *   - Argo Rollouts (Kubernetes progressive delivery)
+ * 参考资料：
+ *   - Argo Rollouts：Kubernetes 渐进式交付（Progressive Delivery）
  *     https://argo-rollouts.readthedocs.io/
- *   - Flagger (progressive delivery operator)
+ *   - Flagger：渐进式交付控制器（Operator）
  *     https://docs.flagger.app/
- *   - Non-determinism ~15% run-to-run cited in docs/en.md (GPU FP
- *     non-associativity + batch-size variance + sampling).
+ *   - docs/en.md 引用的多次运行间约 15% 非确定性（Non-determinism），来自 GPU 浮点运算
+ *     不满足结合律、批大小变化和采样。
  *
- * Runs on Node 20+ stdlib. No npm deps.
+ * 基于 Node 20 及以上版本的标准库运行，不依赖 npm 包。
  */
 
-// -- Baseline + gates ------------------------------------------------------
+// -- 基线（Baseline）与关卡 -------------------------------------------------
 
 type Metrics = {
   latencyP99Ms: number;
@@ -42,8 +39,8 @@ const BASELINE: Metrics = {
   thumbsDownRate: 0.03,
 };
 
-// Multipliers above baseline that constitute a breach. Set high enough to
-// stay above the LLM non-determinism noise floor (~15% per docs/en.md).
+// 超过基线多少倍视为超限。阈值应高于 LLM 非确定性的噪声下限（Noise Floor），
+// docs/en.md 给出的该下限约为 15%。
 const GATES: Record<keyof Metrics, number> = {
   latencyP99Ms: 1.5,
   costPerReq: 1.2,
@@ -54,7 +51,7 @@ const GATES: Record<keyof Metrics, number> = {
 
 const STAGES = [0.01, 0.1, 0.25, 0.5, 0.75, 1.0];
 
-// -- Mulberry32 PRNG ------------------------------------------------------
+// -- Mulberry32 伪随机数生成器（PRNG） ---------------------------------------
 
 function makeRng(seed: number): () => number {
   let s = seed >>> 0;
@@ -71,7 +68,7 @@ function stageSeed(i: number): number {
   return 11 + i * 3;
 }
 
-// -- Regression injector --------------------------------------------------
+// -- 性能退化注入器 ---------------------------------------------------------
 
 type Regression = {
   latencyMult: number;
@@ -91,7 +88,7 @@ const NO_REGRESSION: Regression = {
 
 function measureStage(_stage: number, reg: Regression, seed: number): Metrics {
   const rng = makeRng(seed);
-  // Noise floor is the non-determinism docs/en.md describes: ~±8% per measurement.
+  // 噪声下限对应 docs/en.md 描述的非确定性：每次测量约 ±8%。
   const noise = (v: number): number => v * (0.92 + rng() * 0.16);
   return {
     latencyP99Ms: noise(BASELINE.latencyP99Ms * reg.latencyMult),
@@ -110,7 +107,7 @@ function checkGates(metrics: Metrics): (keyof Metrics)[] {
   return breaches;
 }
 
-// -- Policy engine --------------------------------------------------------
+// -- 策略引擎（Policy Engine） ----------------------------------------------
 
 type ShadowSample = {
   baselineCost: number;
@@ -123,7 +120,7 @@ type ShadowReport = {
   n: number;
   meanCostDeltaPct: number;
   meanLatencyDeltaPct: number;
-  // True if shadow alone justifies halting before canary.
+  // 仅凭影子流量结果就足以在金丝雀发布前停止时，为 true。
   alert: boolean;
   reasons: string[];
 };
@@ -143,8 +140,7 @@ function shadowEvaluate(samples: ShadowSample[]): ShadowReport {
   let costN = 0;
   let latN = 0;
   for (const s of samples) {
-    // Skip rows with non-positive baselines so a single zero row cannot turn
-    // the average into Infinity/NaN and corrupt the gate decision.
+    // 跳过基线非正的行，避免单个零值让平均数变成 Infinity/NaN，导致关卡判定失真。
     if (s.baselineCost > 0) {
       costDelta += (s.candidateCost - s.baselineCost) / s.baselineCost;
       costN++;
@@ -157,8 +153,8 @@ function shadowEvaluate(samples: ShadowSample[]): ShadowReport {
   const meanCost = costN > 0 ? (costDelta / costN) * 100 : 0;
   const meanLat = latN > 0 ? (latDelta / latN) * 100 : 0;
   const reasons: string[] = [];
-  if (meanCost > 30) reasons.push(`cost +${meanCost.toFixed(1)}% (>30%)`);
-  if (meanLat > 50) reasons.push(`latency +${meanLat.toFixed(1)}% (>50%)`);
+  if (meanCost > 30) reasons.push(`成本 +${meanCost.toFixed(1)}%（>30%）`);
+  if (meanLat > 50) reasons.push(`延迟 +${meanLat.toFixed(1)}%（>50%）`);
   return {
     n: samples.length,
     meanCostDeltaPct: meanCost,
@@ -185,8 +181,8 @@ function canaryRollout(reg: Regression): CanaryDecision {
   return { promoted: true, stagesAdvanced: STAGES.length, breaches: [] };
 }
 
-// PolicyEngine wraps a feature flag — flip pinnedModel from candidate back to
-// baseline in O(1). Mirrors LaunchDarkly/Flagsmith/Unleash flag-flip rollback.
+// PolicyEngine 封装特性开关（Feature Flag），在 O(1) 时间内将 pinnedModel 从候选切回基线，
+// 对应 LaunchDarkly / Flagsmith / Unleash 的开关回滚方式。
 class PolicyEngine {
   private baselineDigest: string;
   private pinnedDigest: string;
@@ -202,9 +198,8 @@ class PolicyEngine {
     this.rolloutPct = pct;
   }
 
-  // Constant-time rollback — what your runbook flips. Repins to the
-  // baseline captured at construction time (or the most recent rollback
-  // override).
+  // 常量时间回滚，供操作手册（Runbook）中的切换步骤调用。
+  // 重新固定到构造时记录的基线，或最近一次回滚时显式覆盖的基线。
   rollback(baselineDigest?: string): void {
     if (baselineDigest !== undefined) this.baselineDigest = baselineDigest;
     this.pinnedDigest = this.baselineDigest;
@@ -218,42 +213,41 @@ class PolicyEngine {
   }
 }
 
-// -- Reporting ------------------------------------------------------------
+// -- 结果报告 --------------------------------------------------------------
 
 function rolloutReport(name: string, reg: Regression): void {
   console.log(`\n${name}`);
   console.log(
-    `Regression: latency=${reg.latencyMult}, cost=${reg.costMult}, error=${reg.errorMult}, len=${reg.outputLenMult}, thumbs=${reg.thumbsDownMult}`,
+    `退化倍数：延迟=${reg.latencyMult}，成本=${reg.costMult}，错误率=${reg.errorMult}，输出长度=${reg.outputLenMult}，负反馈率=${reg.thumbsDownMult}`,
   );
   for (let i = 0; i < STAGES.length; i++) {
     const stage = STAGES[i];
     const metrics = measureStage(stage, reg, stageSeed(i));
     const breaches = checkGates(metrics);
     const status =
-      breaches.length === 0 ? "PASS" : `HALT (${breaches.join(",")})`;
+      breaches.length === 0 ? "通过" : `停止发布（超限字段：${breaches.join(",")}）`;
     const pct = Math.round(stage * 100);
     console.log(
-      `  stage ${String(pct).padStart(3)}%  ` +
-        `lat_p99=${metrics.latencyP99Ms.toFixed(0).padStart(5)}  ` +
-        `cost=$${metrics.costPerReq.toFixed(4)}  ` +
-        `err=${(metrics.errorRate * 100).toFixed(1).padStart(4)}%  ` +
-        `thumbs_dn=${(metrics.thumbsDownRate * 100).toFixed(1).padStart(4)}%  ` +
+      `  流量阶段 ${String(pct).padStart(3)}%  ` +
+        `P99 延迟=${metrics.latencyP99Ms.toFixed(0).padStart(5)}  ` +
+        `成本=${metrics.costPerReq.toFixed(4)} 美元  ` +
+        `错误率=${(metrics.errorRate * 100).toFixed(1).padStart(4)}%  ` +
+        `负反馈率=${(metrics.thumbsDownRate * 100).toFixed(1).padStart(4)}%  ` +
         `${status}`,
     );
     if (breaches.length > 0) {
-      console.log("  → ROLLBACK (policy flip, pinned model reverted)");
+      console.log("  → 回滚（Rollback）：切换策略，将固定模型版本恢复为基线");
       return;
     }
   }
-  console.log("  → PROMOTED to 100%");
+  console.log("  → 发布成功，流量提升至 100%");
 }
 
-// -- Demo ------------------------------------------------------------------
+// -- 演示 ------------------------------------------------------------------
 
 function shadowDemo(): void {
-  console.log("--- Shadow-mode evaluation (zero user impact) ---");
-  // Three scenarios: candidate roughly comparable, candidate cheaper, candidate
-  // 40% more expensive (the docs' canonical bad scenario).
+  console.log("--- 影子模式（Shadow Mode）评估，不影响用户 ---");
+  // 三种场景：候选版本大致相当、更便宜，以及贵 40%（文档中的典型问题场景）。
   const rng = makeRng(99);
   const mkSamples = (costMult: number, latMult: number): ShadowSample[] =>
     Array.from({ length: 200 }, () => ({
@@ -264,23 +258,23 @@ function shadowDemo(): void {
     }));
 
   const scenarios: { name: string; samples: ShadowSample[] }[] = [
-    { name: "comparable candidate", samples: mkSamples(1.05, 1.02) },
-    { name: "candidate 20% cheaper", samples: mkSamples(0.8, 0.95) },
-    { name: "candidate 40% more expensive (rollback case)", samples: mkSamples(1.4, 1.0) },
+    { name: "候选版本大致相当", samples: mkSamples(1.05, 1.02) },
+    { name: "候选版本便宜 20%", samples: mkSamples(0.8, 0.95) },
+    { name: "候选版本贵 40%，应回滚", samples: mkSamples(1.4, 1.0) },
   ];
 
   for (const s of scenarios) {
     const r = shadowEvaluate(s.samples);
     console.log(
-      `  ${s.name}: n=${r.n} cost_delta=${r.meanCostDeltaPct.toFixed(1)}%  ` +
-        `lat_delta=${r.meanLatencyDeltaPct.toFixed(1)}%  ` +
-        `alert=${r.alert}${r.reasons.length ? "  reasons=" + r.reasons.join("; ") : ""}`,
+      `  ${s.name}：样本数=${r.n} 成本变化=${r.meanCostDeltaPct.toFixed(1)}%  ` +
+        `延迟变化=${r.meanLatencyDeltaPct.toFixed(1)}%  ` +
+        `告警=${r.alert}${r.reasons.length ? "  原因=" + r.reasons.join("; ") : ""}`,
     );
   }
 }
 
 function policyEngineDemo(): void {
-  console.log("\n--- PolicyEngine — promote then rollback in O(1) ---");
+  console.log("\n--- 策略引擎（PolicyEngine）：发布后以 O(1) 时间回滚 ---");
   const engine = new PolicyEngine("baseline-digest");
   engine.promote("candidate-digest-v2", 0.1);
   const rng = makeRng(42);
@@ -289,59 +283,59 @@ function policyEngineDemo(): void {
     if (engine.pick(rng).chose === "candidate") candidateCount++;
   }
   console.log(
-    `  after promote to 10%: ${candidateCount}/1000 picks chose candidate (target ~100)`,
+    `  发布到 10% 后：1000 次选择中 ${candidateCount} 次选中候选版本，目标约 100 次`,
   );
   engine.rollback();
   let postCount = 0;
   for (let i = 0; i < 1000; i++) {
     if (engine.pick(rng).chose === "candidate") postCount++;
   }
-  console.log(`  after rollback: ${postCount}/1000 (target 0)`);
+  console.log(`  回滚后：${postCount}/1000 次选中候选版本，目标为 0`);
 }
 
 function canaryDemo(): void {
   console.log("\n" + "=".repeat(95));
-  console.log("CANARY ROLLOUT — six stages, five gates, injected regressions");
+  console.log("金丝雀发布（Canary Rollout）：六个阶段、五道关卡、注入性能退化");
   console.log("=".repeat(95));
 
-  rolloutReport("Clean promotion", NO_REGRESSION);
-  rolloutReport("Small cost regression (10%) — within gate", {
+  rolloutReport("无退化的正常发布", NO_REGRESSION);
+  rolloutReport("成本小幅上升 10%，未超过关卡阈值", {
     ...NO_REGRESSION,
     costMult: 1.1,
   });
-  rolloutReport("Cost regression 25%", { ...NO_REGRESSION, costMult: 1.25 });
-  rolloutReport("Latency regression 80%", {
+  rolloutReport("成本上升 25%", { ...NO_REGRESSION, costMult: 1.25 });
+  rolloutReport("延迟上升 80%", {
     ...NO_REGRESSION,
     latencyMult: 1.8,
   });
-  rolloutReport("Thumbs-down regression 60%", {
+  rolloutReport("负反馈率上升 60%", {
     ...NO_REGRESSION,
     thumbsDownMult: 1.6,
   });
-  rolloutReport("Quality silent + cost creep", {
+  rolloutReport("质量悄然下降，成本逐渐上升", {
     ...NO_REGRESSION,
     costMult: 1.15,
     thumbsDownMult: 1.45,
   });
 
-  // Programmatic outcome of canaryRollout() for the same six scenarios.
-  console.log("\n--- canaryRollout() programmatic verdict ---");
+  // canaryRollout() 对相同六种场景给出的程序化结果。
+  console.log("\n--- canaryRollout() 程序化判定 ---");
   const scenarios: { name: string; reg: Regression }[] = [
-    { name: "clean", reg: NO_REGRESSION },
-    { name: "cost 10%", reg: { ...NO_REGRESSION, costMult: 1.1 } },
-    { name: "cost 25%", reg: { ...NO_REGRESSION, costMult: 1.25 } },
-    { name: "latency 80%", reg: { ...NO_REGRESSION, latencyMult: 1.8 } },
-    { name: "thumbs 60%", reg: { ...NO_REGRESSION, thumbsDownMult: 1.6 } },
+    { name: "无退化", reg: NO_REGRESSION },
+    { name: "成本上升 10%", reg: { ...NO_REGRESSION, costMult: 1.1 } },
+    { name: "成本上升 25%", reg: { ...NO_REGRESSION, costMult: 1.25 } },
+    { name: "延迟上升 80%", reg: { ...NO_REGRESSION, latencyMult: 1.8 } },
+    { name: "负反馈率上升 60%", reg: { ...NO_REGRESSION, thumbsDownMult: 1.6 } },
     {
-      name: "cost 15% + thumbs 45%",
+      name: "成本上升 15%，负反馈率上升 45%",
       reg: { ...NO_REGRESSION, costMult: 1.15, thumbsDownMult: 1.45 },
     },
   ];
   for (const s of scenarios) {
     const d = canaryRollout(s.reg);
     const verdict = d.promoted
-      ? "PROMOTED"
-      : `HALT @ stage ${d.stagesAdvanced} on ${d.breaches.join(",")}`;
+      ? "发布成功"
+      : `第 ${d.stagesAdvanced} 阶段停止，超限字段：${d.breaches.join(",")}`;
     console.log(`  ${s.name.padEnd(28)} → ${verdict}`);
   }
 }

@@ -48,10 +48,10 @@
       { keyTimes: '0;' + tf(t0) + ';' + tf(t1) + ';1', calcMode: 'spline', keySplines: LIN + ';' + EASE + ';' + LIN }));
   }
 
-  // ── n5-subword-merge: BPE lattice, frequent pairs merge upward ─────────────
+  // ── n5-subword-merge: BPE 格（Lattice），高频词元对向上合并 ──
   function subwordMerge(host) {
     var D = 6, svg = svgEl('svg', { viewBox: '0 0 520 240' });
-    svg.appendChild(txt(20, 26, 'merge queue: (l,o) (e,r) (lo,w) (low,er)', { fill: SOFT, 'font-size': '11' }));
+    svg.appendChild(txt(20, 26, '合并队列：(l,o) (e,r) (lo,w) (low,er)', { fill: SOFT, 'font-size': '11' }));
     var chars = ['l', 'o', 'w', 'e', 'r'], cx = [110, 175, 240, 305, 370];
     chars.forEach(function (c, i) {
       svg.appendChild(svgEl('rect', { x: cx[i] - 17, y: 188, width: 34, height: 26, rx: 3, fill: 'none', stroke: RULE, 'stroke-width': '1.5' }));
@@ -76,15 +76,15 @@
       fadeRise(g, D, m.t + 0.07, m.t + 0.15, 8);
       svg.appendChild(g);
     });
-    card(host, 'SUBWORD TOKENIZATION', 'pairs merge into tokens', svg,
-      'Byte-pair encoding starts from characters and repeatedly merges the most frequent adjacent pair: (l,o) and (e,r) first, then (lo,w), then (low,er). Frequent words end up as single tokens while rare words split into familiar pieces, so no input is ever out of vocabulary.');
+    card(host, '子词分词（Subword Tokenization）', '逐对合并为词元', svg,
+      '字节对编码（Byte-pair Encoding，BPE）从字符出发，反复合并出现频率最高的相邻对：先是 (l,o) 和 (e,r)，再是 (lo,w)，最后是 (low,er)。常见词最终成为单个词元（Token），少见词则拆成已知片段，因此任何输入都不会落在词表之外。');
   }
 
-  // ── n5-crosslingual-bridge: a task head travels the shared-space bridge ────
+  // ── n5-crosslingual-bridge: 任务头（Task head）沿共享空间（Shared-space）桥梁移动 ──
   function crosslingualBridge(host) {
     var D = 5, svg = svgEl('svg', { viewBox: '0 0 520 220' });
-    svg.appendChild(txt(260, 20, 'fine-tuned task head', { 'text-anchor': 'middle', fill: SOFT, 'font-size': '10' }));
-    [[24, 'English · labeled', 40, 146, true], [346, 'Urdu · unlabeled', 362, 468, false]].forEach(function (side, s) {
+    svg.appendChild(txt(260, 20, '微调后的任务头（Task Head）', { 'text-anchor': 'middle', fill: SOFT, 'font-size': '10' }));
+    [[24, '英语（English）· 有标签', 40, 146, true], [346, '乌尔都语（Urdu）· 无标签', 362, 468, false]].forEach(function (side, s) {
       svg.appendChild(svgEl('rect', { x: side[0], y: 56, width: 150, height: 120, rx: 4, fill: 'none', stroke: RULE, 'stroke-width': '1.5' }));
       svg.appendChild(txt(side[0] + 75, 48, side[1], { 'text-anchor': 'middle', fill: SOFT, 'font-size': '10' }));
       [0, 1, 2].forEach(function (i) {
@@ -95,7 +95,7 @@
       });
     });
     svg.appendChild(svgEl('circle', { cx: 260, cy: 120, r: 42, fill: 'none', stroke: BP, 'stroke-width': '1.5', 'stroke-dasharray': '4 3' }));
-    svg.appendChild(txt(260, 178, 'shared space', { 'text-anchor': 'middle', fill: SOFT, 'font-size': '10' }));
+    svg.appendChild(txt(260, 178, '共享空间（Shared Space）', { 'text-anchor': 'middle', fill: SOFT, 'font-size': '10' }));
     var bridge = svgEl('path', { d: 'M 174 78 C 214 26 306 26 346 78', fill: 'none', stroke: BP, 'stroke-width': '1.5' });
     draw(bridge, 200, D, 0.04, 0.14);
     svg.appendChild(bridge);
@@ -103,20 +103,20 @@
     pulse.appendChild(svgEl('animateMotion', { path: 'M 174 78 C 214 26 306 26 346 78', dur: D + 's', repeatCount: 'indefinite', calcMode: 'linear', keyPoints: '0;0;1;1', keyTimes: '0;0.18;0.55;1' }));
     pulse.appendChild(anim('opacity', '0;0;1;1;0;0', D, { keyTimes: '0;0.15;0.2;0.55;0.6;1' }));
     svg.appendChild(pulse);
-    svg.appendChild(txt(99, 198, 'fine-tune here', { 'text-anchor': 'middle', fill: MUTE, 'font-size': '10' }));
-    svg.appendChild(txt(421, 198, 'zero-shot here', { 'text-anchor': 'middle', fill: MUTE, 'font-size': '10' }));
-    card(host, 'CROSS-LINGUAL TRANSFER', 'one space, many languages', svg,
-      'A single encoder pretrained across a hundred languages puts sentences with the same meaning near each other in one shared space. Fine-tune a task head on English labels and carry it across the bridge: it scores Urdu text with zero Urdu labels, and a few hundred target-language examples close most of the remaining gap.');
+    svg.appendChild(txt(99, 198, '在此微调（Fine-tuning）', { 'text-anchor': 'middle', fill: MUTE, 'font-size': '10' }));
+    svg.appendChild(txt(421, 198, '在此零样本应用（Zero-shot）', { 'text-anchor': 'middle', fill: MUTE, 'font-size': '10' }));
+    card(host, '跨语言迁移（Cross-lingual Transfer）', '多种语言，共享一个空间', svg,
+      '在上百种语言上预训练的同一个编码器，会把含义相同的句子放到共享空间中相近的位置。用带标签的英语数据微调任务头（Task Head），再迁移到另一种语言：无需乌尔都语标签，就能为乌尔都语文本打分；加入几百个目标语言样本，还能缩小剩余的大部分差距。');
   }
 
-  // ── n5-chunk-cuts: three cut rules slice the same document bar ─────────────
+  // ── n5-chunk-cuts: 三种切分规则（Cut rules）划分同一文档条 ──
   function chunkCuts(host) {
     var D = 5.5, svg = svgEl('svg', { viewBox: '0 0 520 240' });
-    svg.appendChild(txt(20, 24, 'same document, three ways to cut', { fill: SOFT, 'font-size': '11' }));
+    svg.appendChild(txt(20, 24, '同一篇文档，三种切分方式', { fill: SOFT, 'font-size': '11' }));
     var rows = [
-      { y: 56, lab: 'fixed 512', note: 'equal windows, cuts land mid-sentence', cuts: [206, 303, 400], t: 0.06 },
-      { y: 124, lab: 'recursive', note: 'try \\n\\n first, then . , then space', cuts: [220, 350], t: 0.4 },
-      { y: 192, lab: 'semantic', note: 'cut where sentence similarity drops', cuts: [280, 430], t: 0.72 }
+      { y: 56, lab: '固定 512', note: '等长窗口，切分点可能落在句子中间', cuts: [206, 303, 400], t: 0.06 },
+      { y: 124, lab: '递归切分', note: '先尝试 \\n\\n，再尝试 .，最后尝试空格', cuts: [220, 350], t: 0.4 },
+      { y: 192, lab: '语义切分', note: '在相邻句子相似度下降的位置切分', cuts: [280, 430], t: 0.72 }
     ];
     rows.forEach(function (r) {
       svg.appendChild(txt(20, r.y + 13, r.lab, { fill: SOFT, 'font-size': '11' }));
@@ -134,14 +134,14 @@
     var dot = svgEl('circle', { cx: 303, cy: 48, r: 3, fill: WARN });
     fadeIn(dot, D, 0.26, 0.3);
     svg.appendChild(dot);
-    card(host, 'CHUNKING FOR RAG', 'same text, three cut rules', svg,
-      'The document is identical in every row; only the cut points differ. Fixed windows are cheap but split mid-sentence (the marked cut), recursive splitting backs off from paragraph breaks to sentences to spaces, and semantic splitting cuts where adjacent-sentence similarity drops. Recursive 512-token chunks remain the benchmark default.');
+    card(host, '检索增强生成（RAG）的文本分块（Chunking）', '同一文本，三种切分规则', svg,
+      '每行都是同一篇文档，只有切分点不同。固定窗口（Fixed Window）成本低，但会从句子中间切断，图中已标出这样的切分点；递归切分（Recursive Splitting）依次尝试段落边界、句子和空格；语义切分（Semantic Splitting）则在相邻句子相似度下降的位置切分。递归生成 512 词元文本块仍是基准测试的默认方案。');
   }
 
-  // ── n5-judge-gauge: (query, context, answer) in, needle sweeps to a score ──
+  // ── n5-judge-gauge: 输入 (query, context, answer)，即查询、上下文、答案，指针扫至评分 ──
   function judgeGauge(host) {
     var D = 5, svg = svgEl('svg', { viewBox: '0 0 520 200' });
-    ['query', 'context', 'answer'].forEach(function (s, i) {
+    ['查询', '上下文', '回答'].forEach(function (s, i) {
       var y = 58 + i * 36, t0 = 0.05 + i * 0.07;
       var g = svgEl('g', {}, [
         svgEl('rect', { x: 24, y: y, width: 92, height: 26, rx: 3, fill: 'none', stroke: RULE, 'stroke-width': '1.5' }),
@@ -152,8 +152,8 @@
       svg.appendChild(g);
     });
     svg.appendChild(svgEl('rect', { x: 180, y: 52, width: 120, height: 112, rx: 4, fill: 'none', stroke: BP, 'stroke-width': '1.8' }));
-    svg.appendChild(txt(240, 100, 'LLM judge', { 'text-anchor': 'middle' }));
-    svg.appendChild(txt(240, 120, 'rubric: faithfulness', { 'text-anchor': 'middle', fill: SOFT, 'font-size': '9' }));
+    svg.appendChild(txt(240, 100, '大模型评审', { 'text-anchor': 'middle' }));
+    svg.appendChild(txt(240, 120, '评分标准：忠实度', { 'text-anchor': 'middle', fill: SOFT, 'font-size': '9' }));
     [0, 1, 2].forEach(function (i) {
       var b = 0.34 + i * 0.05;
       var dot = svgEl('circle', { cx: 222 + i * 16, cy: 142, r: 3, fill: BP });
@@ -180,20 +180,20 @@
     svg.appendChild(score);
     svg.appendChild(txt(370, 172, '0', { 'text-anchor': 'middle', fill: MUTE, 'font-size': '9' }));
     svg.appendChild(txt(462, 172, '1', { 'text-anchor': 'middle', fill: MUTE, 'font-size': '9' }));
-    card(host, 'LLM AS JUDGE', 'rubric in, score out', svg,
-      'A judge model reads the query, the retrieved context, and the answer, applies a rubric, and returns a score between 0 and 1. RAGAS, DeepEval, and G-Eval are all built on this loop; the trust work is freezing the judge version and auditing its bias toward long answers.');
+    card(host, '大模型评审（LLM-as-a-Judge）', '依据评分标准输出分数', svg,
+      '评审模型读取查询（Query）、检索得到的上下文（Context）及回答（Answer），按照评分标准（Rubric）返回 0 到 1 之间的分数，图中评估的是忠实度（Faithfulness）。RAGAS、DeepEval 和 G-Eval 都建立在这一循环之上。要使评审可信，需要固定评审模型版本，并审计它偏爱长回答的倾向。');
   }
 
-  // ── n5-slot-tracker: chat turns edit a slot-value dict, corrections included ─
+  // ── n5-slot-tracker: 各轮对话编辑槽位值字典（Slot-value dict），包括更正内容 ──
   function slotTracker(host) {
     var D = 6, svg = svgEl('svg', { viewBox: '0 0 520 260' });
     var turns = [
-      { y: 64, s: '"cheap place in the north"', t: 0.04 },
-      { y: 124, s: '"actually, make it moderate"', t: 0.36 },
-      { y: 184, s: '"and add Italian"', t: 0.66 }
+      { y: 64, s: '“北边便宜一点的餐馆”', t: 0.04 },
+      { y: 124, s: '“还是改成中等价位吧”', t: 0.36 },
+      { y: 184, s: '“再加上意大利菜”', t: 0.66 }
     ];
     turns.forEach(function (u, i) {
-      svg.appendChild(txt(24, u.y - 8, 'turn ' + (i + 1), { fill: MUTE, 'font-size': '9' }));
+      svg.appendChild(txt(24, u.y - 8, '第 ' + (i + 1) + ' 轮', { fill: MUTE, 'font-size': '9' }));
       var g = svgEl('g', {}, [
         svgEl('rect', { x: 24, y: u.y, width: 206, height: 28, rx: 4, fill: 'none', stroke: RULE, 'stroke-width': '1.5' }),
         txt(34, u.y + 18, u.s, { 'font-family': BODY, 'font-size': '12' })
@@ -201,7 +201,7 @@
       fadeRise(g, D, u.t, u.t + 0.06, 6);
       svg.appendChild(g);
     });
-    svg.appendChild(txt(330, 46, 'dialogue state', { fill: SOFT, 'font-size': '10' }));
+    svg.appendChild(txt(330, 46, '对话状态（Dialogue State）', { fill: SOFT, 'font-size': '10' }));
     svg.appendChild(svgEl('line', { x1: 330, y1: 54, x2: 496, y2: 54, stroke: RULE, 'stroke-width': '1' }));
     [['price', 86], ['area', 126], ['cuisine', 166]].forEach(function (r) {
       svg.appendChild(txt(330, r[1], r[0], { fill: SOFT, 'font-size': '11' }));
@@ -223,15 +223,15 @@
     draw(arc, 190, D, 0.44, 0.52);
     arc.appendChild(anim('opacity', '0;0;1;1;0;0', D, { keyTimes: '0;0.42;0.46;0.62;0.7;1' }));
     svg.appendChild(arc);
-    svg.appendChild(txt(24, 240, 'JGA: a turn counts only if every slot is right', { fill: MUTE, 'font-size': '10' }));
-    card(host, 'DIALOGUE STATE TRACKING', 'the state is a dict', svg,
-      'Three turns, three edits to one slot-value dictionary: price and area fill first, then a correction overwrites cheap with moderate, then cuisine arrives. Joint goal accuracy scores a turn only when every slot matches, which makes mid-dialogue corrections the hardest part of tracking.');
+    svg.appendChild(txt(24, 240, 'JGA：只有全部槽位正确，才将这一轮计为正确', { fill: MUTE, 'font-size': '10' }));
+    card(host, '对话状态跟踪（Dialogue State Tracking）', '用字典保存状态', svg,
+      '三轮对话对同一个槽位—值字典（Slot-value Dictionary）进行了三次修改：先填入价格（price）和区域（area），再把便宜（cheap）改为中等价位（moderate），最后补充菜系（cuisine），即意大利菜（italian）；北边（north）保持不变。联合目标准确率（Joint Goal Accuracy，JGA）仅在所有槽位都匹配时才将该轮计为正确，因此对话中的临时更正是状态跟踪最难处理的部分。');
   }
 
-  // ── n5-patch-stream: an image grid unrolls into a token sequence ───────────
+  // ── n5-patch-stream: 图像网格展开为词元序列（Token sequence） ──
   function patchStream(host) {
     var D = 5, svg = svgEl('svg', { viewBox: '0 0 520 260' });
-    svg.appendChild(txt(110, 32, 'image, 3 x 3 patches', { 'text-anchor': 'middle', fill: SOFT, 'font-size': '10' }));
+    svg.appendChild(txt(110, 32, '图像：3×3 个图块（Patches）', { 'text-anchor': 'middle', fill: SOFT, 'font-size': '10' }));
     svg.appendChild(svgEl('rect', { x: 56, y: 44, width: 110, height: 110, fill: 'none', stroke: RULE, 'stroke-width': '1.5', 'stroke-dasharray': '4 3' }));
     var ops = ['0.15', '0.45', '0.25', '0.6', '0.35', '0.2', '0.5', '0.3', '0.55'];
     ops.forEach(function (op, k) {
@@ -255,12 +255,12 @@
     cls.appendChild(inner);
     svg.appendChild(cls);
     svg.appendChild(txt(83, 248, '0', { 'text-anchor': 'middle', fill: MUTE, 'font-size': '8' }));
-    svg.appendChild(txt(255, 190, 'flatten + linearly project, add position embeddings', { 'text-anchor': 'middle', fill: SOFT, 'font-size': '10' }));
-    card(host, 'VIT PATCHIFY', 'an image becomes a sequence', svg,
-      'A vision transformer never convolves: the image is cut into fixed patches, each patch is flattened and linearly projected, and the patches queue up as tokens behind a learned [CLS] token. Position embeddings are the only memory of the original grid; from there it is the standard transformer encoder.');
+    svg.appendChild(txt(255, 190, '展平并线性投影，加入位置嵌入（Position Embeddings）', { 'text-anchor': 'middle', fill: SOFT, 'font-size': '10' }));
+    card(host, '视觉 Transformer 图像分块（ViT Patchify）', '将图像转为序列', svg,
+      '视觉 Transformer（Vision Transformer，ViT）不执行卷积：先把图像切成固定大小的图块（Patches），逐块展平并线性投影，再将它们作为词元排在可学习的 [CLS] 词元之后。位置嵌入（Position Embeddings）是对原始网格位置的唯一记录；后续处理就是标准的 Transformer 编码器。');
   }
 
-  // ── n5-mel-decode: waveform to mel columns to typed transcript ─────────────
+  // ── n5-mel-decode: 波形（Waveform）变为 mel 列，再变为逐字打出的转写文本（Transcript） ──
   function melDecode(host) {
     var D = 5, svg = svgEl('svg', { viewBox: '0 0 520 240' });
     var pts = [], x;
@@ -269,44 +269,44 @@
       pts.push(x + ',' + (36 + Math.sin(x * 0.35) * a).toFixed(1));
     }
     svg.appendChild(svgEl('polyline', { points: pts.join(' '), fill: 'none', stroke: SOFT, 'stroke-width': '1' }));
-    svg.appendChild(txt(250, 40, 'audio · 16 kHz', { fill: MUTE, 'font-size': '9' }));
+    svg.appendChild(txt(250, 40, '音频 · 16 kHz', { fill: MUTE, 'font-size': '9' }));
     var hs = [34, 52, 40, 64, 48, 70, 44, 58, 38];
     hs.forEach(function (h, c) {
       var r = svgEl('rect', { x: 24 + c * 22, y: 140 - h, width: 16, height: h, rx: 1, fill: BP, 'fill-opacity': '0.8' });
       fadeRise(r, D, 0.05 + c * 0.045, 0.13 + c * 0.045, 4);
       svg.appendChild(r);
     });
-    svg.appendChild(txt(24, 156, 'log-mel spectrogram · 80 bins', { fill: MUTE, 'font-size': '9' }));
+    svg.appendChild(txt(24, 156, '对数梅尔频谱图 · 80 个频带', { fill: MUTE, 'font-size': '9' }));
     svg.appendChild(svgEl('line', { x1: 208, y1: 118, x2: 246, y2: 92, stroke: RULE, 'stroke-width': '1.5' }));
     svg.appendChild(svgEl('rect', { x: 250, y: 76, width: 100, height: 26, rx: 3, fill: 'none', stroke: BP, 'stroke-width': '1.5' }));
-    svg.appendChild(txt(300, 93, 'encoder', { 'text-anchor': 'middle', 'font-size': '11' }));
+    svg.appendChild(txt(300, 93, '编码器', { 'text-anchor': 'middle', 'font-size': '11' }));
     svg.appendChild(svgEl('rect', { x: 250, y: 112, width: 100, height: 26, rx: 3, fill: 'none', stroke: BP, 'stroke-width': '1.5' }));
-    svg.appendChild(txt(300, 129, 'decoder', { 'text-anchor': 'middle', 'font-size': '11' }));
+    svg.appendChild(txt(300, 129, '解码器', { 'text-anchor': 'middle', 'font-size': '11' }));
     svg.appendChild(svgEl('path', { d: 'M 300 138 C 300 170 120 170 90 200', fill: 'none', stroke: RULE, 'stroke-width': '1', 'stroke-dasharray': '3 3' }));
-    svg.appendChild(txt(24, 186, 'decoder output, one token at a time', { fill: MUTE, 'font-size': '9' }));
+    svg.appendChild(txt(24, 186, '解码器逐词元输出', { fill: MUTE, 'font-size': '9' }));
     var toks = [['<|en|>', 24, WARN], ['<|transcribe|>', 78, WARN], ['The', 186, INK], ['sky', 218, INK], ['is', 248, INK], ['clear.', 268, INK]];
     toks.forEach(function (t, i) {
       var e = txt(t[1], 212, t[0], { fill: t[2], 'font-size': '11' });
       fadeIn(e, D, 0.5 + i * 0.07, 0.56 + i * 0.07);
       svg.appendChild(e);
     });
-    card(host, 'WHISPER PIPELINE', 'spectrogram in, text out', svg,
-      'Whisper hears with its eyes: the waveform becomes a log-mel spectrogram, the encoder reads spectrogram frames the way a ViT reads patches, and the decoder types the transcript one token at a time, steered by special tokens that select the language and the task.');
+    card(host, 'Whisper 流水线（Pipeline）', '输入频谱图，输出文本', svg,
+      'Whisper 通过读取音频的图像表示来识别语音：波形先转换为对数梅尔频谱图（Log-mel Spectrogram），编码器（Encoder）像 ViT 读取图块那样读取频谱帧，解码器（Decoder）再逐词元输出转写文本。特殊词元（Special Tokens）控制语言和任务选择。');
   }
 
-  // ── n5-block-stack: the capstone assembles itself bottom-up ────────────────
+  // ── n5-block-stack: 综合实践（Capstone）自下而上自动组装 ──
   function blockStack(host) {
     var D = 5, svg = svgEl('svg', { viewBox: '0 0 520 260' });
-    svg.appendChild(txt(200, 252, 'characters in (B, N)', { 'text-anchor': 'middle', fill: MUTE, 'font-size': '9' }));
+    svg.appendChild(txt(200, 252, '字符输入（B, N）', { 'text-anchor': 'middle', fill: MUTE, 'font-size': '9' }));
     var embed = svgEl('g', {}, [
       svgEl('rect', { x: 100, y: 206, width: 200, height: 28, rx: 3, fill: 'none', stroke: RULE, 'stroke-width': '1.5' }),
-      txt(200, 224, 'token + position embed', { 'text-anchor': 'middle', 'font-size': '11' })
+      txt(200, 224, '词元嵌入 + 位置嵌入', { 'text-anchor': 'middle', 'font-size': '11' })
     ]);
     fadeRise(embed, D, 0.05, 0.13, 10);
     svg.appendChild(embed);
     [[168, 0.18, false], [138, 0.26, true], [108, 0.34, false]].forEach(function (b) {
       var kids = [svgEl('rect', { x: 100, y: b[0], width: 200, height: 26, rx: 3, fill: BP, 'fill-opacity': '0.06', stroke: BP, 'stroke-width': '1.5' })];
-      if (b[2]) { kids.push(txt(200, b[0] + 17, 'causal attn + SwiGLU', { 'text-anchor': 'middle', 'font-size': '11', fill: BP })); }
+      if (b[2]) { kids.push(txt(200, b[0] + 17, '因果注意力 + SwiGLU', { 'text-anchor': 'middle', 'font-size': '11', fill: BP })); }
       var g = svgEl('g', {}, kids);
       fadeRise(g, D, b[1], b[1] + 0.08, 10);
       svg.appendChild(g);
@@ -316,13 +316,13 @@
     svg.appendChild(xl);
     var headG = svgEl('g', {}, [
       svgEl('rect', { x: 100, y: 70, width: 200, height: 26, rx: 3, fill: 'none', stroke: RULE, 'stroke-width': '1.5' }),
-      txt(200, 87, 'RMSNorm + LM head', { 'text-anchor': 'middle', 'font-size': '11' })
+      txt(200, 87, 'RMSNorm + 语言模型头', { 'text-anchor': 'middle', 'font-size': '11' })
     ]);
     fadeRise(headG, D, 0.44, 0.52, 10);
     svg.appendChild(headG);
-    svg.appendChild(txt(316, 224, 'lesson 04', { fill: MUTE, 'font-size': '8' }));
-    svg.appendChild(txt(316, 155, 'lessons 03 + 05 + 07', { fill: MUTE, 'font-size': '8' }));
-    svg.appendChild(txt(316, 87, 'lesson 05', { fill: MUTE, 'font-size': '8' }));
+    svg.appendChild(txt(316, 224, '第 04 课', { fill: MUTE, 'font-size': '8' }));
+    svg.appendChild(txt(316, 155, '第 03、05、07 课', { fill: MUTE, 'font-size': '8' }));
+    svg.appendChild(txt(316, 87, '第 05 课', { fill: MUTE, 'font-size': '8' }));
     var up = svgEl('line', { x1: 200, y1: 70, x2: 200, y2: 54, stroke: BP, 'stroke-width': '1.5' });
     draw(up, 18, D, 0.54, 0.6);
     svg.appendChild(up);
@@ -331,8 +331,8 @@
       fadeIn(e, D, 0.62 + i * 0.07, 0.68 + i * 0.07);
       svg.appendChild(e);
     });
-    card(host, 'TRANSFORMER CAPSTONE', 'thirteen lessons, one model', svg,
-      'The capstone stacks the whole phase into one decoder-only model: embeddings at the base, L repeated blocks of causal attention and a SwiGLU feed-forward, then a final norm and LM head that samples Shakespeare character by character. Small enough for a laptop, correct enough to scale.');
+    card(host, 'Transformer 综合实践（Capstone）', '十三课的内容，组装成一个模型', svg,
+      '综合实践将整个阶段的内容组装成仅解码器模型（Decoder-only Model）：底层是嵌入（Embeddings），中间重复 L 层因果注意力（Causal Attention）与 SwiGLU 前馈网络（Feed-forward Network），顶部是最终归一化层及语言模型头（LM Head），逐字符采样生成莎士比亚风格文本。模型小到能在笔记本电脑上运行，实现也足以支持进一步扩展。');
   }
 
   LF.register({

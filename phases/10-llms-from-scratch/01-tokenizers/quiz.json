@@ -1,37 +1,37 @@
 [
   {
-    "question": "What is the primary purpose of a tokenizer in an LLM pipeline?",
-    "options": ["To translate text between languages", "To compress text for storage", "To convert text into a sequence of integers that the model can process", "To remove stop words from text"],
+    "question": "分词器（Tokenizer）在大语言模型（Large Language Model，LLM）流水线中的主要作用是什么？",
+    "options": ["在不同语言之间翻译文本", "压缩文本以便存储", "将文本转换为模型可以处理的整数序列", "删除文本中的停用词"],
     "correct": 2,
-    "explanation": "LLMs process numbers, not text. The tokenizer converts every character, word, and symbol into integer IDs from a fixed vocabulary. This conversion is not neutral -- it determines how the model 'sees' language.",
+    "explanation": "大语言模型处理数字，而不是文本。分词器将每个字符、单词和符号转换为固定词表中的整数 ID。这种转换并非中性的，它决定模型如何‘看待’语言。",
     "stage": "pre"
   },
   {
-    "question": "What does BPE (Byte Pair Encoding) do to build its vocabulary?",
-    "options": ["Randomly assigns IDs to substrings", "Uses a dictionary lookup for whole words", "Splits text into individual characters only", "Iteratively merges the most frequent adjacent pair of tokens until reaching the target vocabulary size"],
+    "question": "字节对编码（Byte Pair Encoding，BPE）如何构建词表？",
+    "options": ["随机为子串分配 ID", "对完整单词查字典", "仅将文本拆分为单个字符", "迭代合并最频繁的相邻词元对，直到达到目标词表大小"],
     "correct": 3,
-    "explanation": "BPE starts with individual bytes/characters and repeatedly merges the most common adjacent pair. 'th' + 'e' becomes 'the'. After thousands of merges, common words become single tokens while rare words are split into subword pieces.",
+    "explanation": "BPE 从单个字节或字符开始，不断合并最常见的相邻对。'th' + 'e' 变成 'the'。经过数千次合并，常见词成为单个词元，罕见词则拆分为子词片段。",
     "stage": "pre"
   },
   {
-    "question": "Why does vocabulary size create a tradeoff in LLM design?",
-    "options": ["Vocabulary size doesn't affect model performance", "Smaller vocabularies are always more efficient", "Larger vocabularies always perform better", "Too small creates long sequences (more computation); too large wastes embedding parameters on rare tokens"],
+    "question": "为什么词表大小会在大语言模型设计中带来权衡？",
+    "options": ["词表大小不影响模型性能", "词表越小总是越高效", "词表越大总是表现越好", "过小会产生长序列，增加计算量；过大会在罕见词元上浪费嵌入参数"],
     "correct": 3,
-    "explanation": "Small vocabulary (e.g., character-level) means every word is many tokens, increasing sequence length and computation. Large vocabulary wastes parameters on tokens that rarely appear in training data. Most LLMs use 32K-100K tokens.",
+    "explanation": "小词表，例如字符级词表，意味着每个词都需要多个词元，从而增加序列长度和计算量。大词表则会在训练数据中很少出现的词元上浪费参数。多数大语言模型使用 32K-100K 个词元。",
     "stage": "post"
   },
   {
-    "question": "What problem does byte-level fallback solve in tokenization?",
-    "options": ["It ensures any input (emoji, rare scripts, binary data) can be encoded without 'unknown' tokens", "It improves model accuracy", "It reduces vocabulary size", "It speeds up tokenization"],
+    "question": "字节级回退（Byte-level fallback）解决了分词中的什么问题？",
+    "options": ["确保任何输入，包括表情符号、罕见文字、二进制数据，都能编码而不出现‘未知’词元", "提高模型准确率", "减小词表", "加快分词速度"],
     "correct": 0,
-    "explanation": "With byte-level fallback, the tokenizer can fall back to raw byte values (256 possible) for any character not in the vocabulary. This guarantees complete coverage -- no input is ever 'unknown.'",
+    "explanation": "借助字节级回退，分词器遇到词表外字符时，可以回退到原始字节值，共有 256 种可能。这保证了完整覆盖，不会有任何输入被视为‘未知’。",
     "stage": "post"
   },
   {
-    "question": "How does the tokenizer affect non-English language performance in LLMs?",
-    "options": ["Tokenizers work equally well for all languages", "Non-English text is always character-tokenized", "Tokenization doesn't affect language performance", "Languages underrepresented in training data get worse token merges, requiring more tokens per word and wasting context window"],
+    "question": "分词器如何影响大语言模型在非英语语言上的表现？",
+    "options": ["分词器对所有语言的效果都一样", "非英语文本总是按字符分词", "分词不影响语言表现", "训练数据中占比不足的语言学到的词元合并较差，每个词需要更多词元，浪费上下文窗口"],
     "correct": 3,
-    "explanation": "BPE merges are learned from training data. If Japanese text is 5% of the corpus, Japanese characters get fewer merges, requiring 2-5x more tokens per word than English. This effectively shrinks the context window for non-English text.",
+    "explanation": "BPE 合并规则从训练数据中学习。如果日文只占语料的 5%，日文字符得到的合并就更少，每个词需要的词元数会是英文的 2-5 倍。这实际上缩小了非英语文本的上下文窗口。",
     "stage": "post"
   }
 ]

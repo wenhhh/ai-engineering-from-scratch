@@ -294,7 +294,7 @@ def make_housing_data(n=200, seed=42):
 if __name__ == "__main__":
     data = make_housing_data(200)
 
-    print("=== Raw Data Sample ===")
+    print("=== 原始数据样本（Raw Data Sample） ===")
     for row in data[:3]:
         print(f"  {row}")
 
@@ -302,42 +302,42 @@ if __name__ == "__main__":
     age_raw = [d["age"] for d in data]
     prices = [d["price"] for d in data]
 
-    print("\n=== Missing Value Handling ===")
+    print("\n=== 缺失值处理（Missing Value Handling） ===")
     sqft_missing = sum(1 for v in sqft_raw if v is None)
     age_missing = sum(1 for v in age_raw if v is None)
-    print(f"  sqft missing: {sqft_missing}/{len(sqft_raw)}")
-    print(f"  age missing: {age_missing}/{len(age_raw)}")
+    print(f"  sqft 缺失数： {sqft_missing}/{len(sqft_raw)}")
+    print(f"  age 缺失数： {age_missing}/{len(age_raw)}")
 
     sqft_indicator = add_missing_indicator(sqft_raw)
     age_indicator = add_missing_indicator(age_raw)
     sqft_imputed, sqft_fill = impute_median(sqft_raw)
     age_imputed, age_fill = impute_mean(age_raw)
-    print(f"  sqft filled with median: {sqft_fill:.0f}")
-    print(f"  age filled with mean: {age_fill:.1f}")
+    print(f"  sqft 使用中位数（Median）填充： {sqft_fill:.0f}")
+    print(f"  age 使用均值（Mean）填充： {age_fill:.1f}")
 
-    print("\n=== Numerical Transforms ===")
+    print("\n=== 数值变换（Numerical Transforms） ===")
     sqft_scaled = standardize(sqft_imputed)
     age_scaled = min_max_scale(age_imputed)
     sqft_log = log_transform(sqft_imputed)
     age_binned = bin_values(age_imputed, n_bins=5)
-    print(f"  sqft standardized: mean={sum(sqft_scaled)/len(sqft_scaled):.4f}, std={math.sqrt(sum(v**2 for v in sqft_scaled)/len(sqft_scaled)):.4f}")
-    print(f"  age min-max: [{min(age_scaled):.2f}, {max(age_scaled):.2f}]")
-    print(f"  age bins: {sorted(set(age_binned))}")
+    print(f"  sqft 标准化（Standardized）：均值（mean）={sum(sqft_scaled)/len(sqft_scaled):.4f}, 标准差（std）={math.sqrt(sum(v**2 for v in sqft_scaled)/len(sqft_scaled)):.4f}")
+    print(f"  age 最小-最大缩放（Min-Max）： [{min(age_scaled):.2f}, {max(age_scaled):.2f}]")
+    print(f"  age 分箱（Bins）： {sorted(set(age_binned))}")
 
-    print("\n=== Categorical Encoding ===")
+    print("\n=== 类别编码（Categorical Encoding） ===")
     neighborhoods = [d["neighborhood"] for d in data]
 
     ohe, ohe_cats = one_hot_encode(neighborhoods)
-    print(f"  One-hot categories: {ohe_cats}")
-    print(f"  Sample encoding: {neighborhoods[0]} -> {ohe[0]}")
+    print(f"  独热编码（One-hot）类别： {ohe_cats}")
+    print(f"  编码样例： {neighborhoods[0]} -> {ohe[0]}")
 
     le, le_map = label_encode(neighborhoods)
-    print(f"  Label encoding map: {le_map}")
+    print(f"  标签编码映射（Label Encoding Map）： {le_map}")
 
     te, te_map = target_encode(neighborhoods, prices, smoothing=10)
-    print(f"  Target encoding: {({k: round(v) for k, v in te_map.items()})}")
+    print(f"  目标编码（Target Encoding）： {({k: round(v) for k, v in te_map.items()})}")
 
-    print("\n=== Text Features ===")
+    print("\n=== 文本特征（Text Features） ===")
     descriptions = [
         "large modern house with pool",
         "small cozy cottage near downtown",
@@ -346,45 +346,45 @@ if __name__ == "__main__":
         "rustic cabin in rural area",
     ]
     cv, cv_vocab = count_vectorize(descriptions)
-    print(f"  Vocabulary size: {len(cv_vocab)}")
-    print(f"  Doc 0 non-zero features: {sum(1 for v in cv[0] if v > 0)}")
+    print(f"  词表大小（Vocabulary Size）： {len(cv_vocab)}")
+    print(f"  文档 0 的非零特征数： {sum(1 for v in cv[0] if v > 0)}")
 
     tf, tf_vocab = tfidf(descriptions)
-    print(f"  TF-IDF vocabulary size: {len(tf_vocab)}")
+    print(f"  词频-逆文档频率（TF-IDF）词表大小： {len(tf_vocab)}")
     top_words = sorted(tf_vocab.keys(), key=lambda w: tf[0][tf_vocab[w]], reverse=True)[:3]
-    print(f"  Doc 0 top TF-IDF words: {top_words}")
+    print(f"  文档 0 中 TF-IDF 值最高的词： {top_words}")
 
-    print("\n=== Polynomial Features ===")
+    print("\n=== 多项式特征（Polynomial Features） ===")
     sample_row = [sqft_scaled[0], age_scaled[0]]
     poly = polynomial_features(sample_row, degree=2)
-    print(f"  Input: {[round(v, 4) for v in sample_row]}")
-    print(f"  Polynomial: {[round(v, 4) for v in poly]}")
-    print(f"  Features: [x1, x2, x1^2, x2^2, x1*x2]")
+    print(f"  输入： {[round(v, 4) for v in sample_row]}")
+    print(f"  多项式（Polynomial）： {[round(v, 4) for v in poly]}")
+    print(f"  特征：[x1, x2, x1^2, x2^2, x1*x2]")
 
-    print("\n=== Feature Selection ===")
+    print("\n=== 特征选择（Feature Selection） ===")
     feature_matrix = [
         [sqft_scaled[i], age_scaled[i], float(sqft_indicator[i]), float(age_indicator[i])]
         + ohe[i]
         for i in range(len(data))
     ]
 
-    print(f"  Total features: {len(feature_matrix[0])}")
+    print(f"  特征总数： {len(feature_matrix[0])}")
 
     surviving_var = variance_threshold(feature_matrix, threshold=0.01)
-    print(f"  After variance threshold (0.01): {len(surviving_var)} features kept")
+    print(f"  应用方差阈值（Variance Threshold，0.01）后：保留 {len(surviving_var)} 个特征")
 
     surviving_corr = remove_correlated(feature_matrix, threshold=0.9)
-    print(f"  After correlation filter (0.9): {len(surviving_corr)} features kept")
+    print(f"  应用相关性过滤（Correlation Filter，0.9）后：保留 {len(surviving_corr)} 个特征")
 
     binary_prices = [1 if p > sum(prices) / len(prices) else 0 for p in prices]
-    print("\n  Mutual information with target:")
+    print("\n  与目标的互信息（Mutual Information）：")
     feature_names = ["sqft", "age", "sqft_missing", "age_missing"] + [f"neigh_{c}" for c in ohe_cats]
     for j in range(len(feature_matrix[0])):
         col = [feature_matrix[i][j] for i in range(len(feature_matrix))]
         mi = mutual_information(col, binary_prices, n_bins=10)
         print(f"    {feature_names[j]}: MI={mi:.4f}")
 
-    print("\n  Correlation with price:")
+    print("\n  与 price 的相关性（Correlation）：")
     for j in range(len(feature_matrix[0])):
         col = [feature_matrix[i][j] for i in range(len(feature_matrix))]
         corr = correlation(col, prices)

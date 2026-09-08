@@ -17,47 +17,47 @@
     </style>
   </defs>
 
-  <text x="480" y="26" text-anchor="middle" class="title">mesa-optimization and deceptive alignment — Hubinger et al. 2019</text>
+  <text x="480" y="26" text-anchor="middle" class="title">内嵌优化（Mesa-optimization）与欺骗性对齐（Deceptive alignment）：Hubinger 等，2019</text>
 
   <rect x="40" y="60" width="420" height="180" class="box"/>
-  <text x="250" y="82" text-anchor="middle" class="head">two independent alignment problems</text>
+  <text x="250" y="82" text-anchor="middle" class="head">两个独立的对齐问题</text>
 
   <rect x="60" y="100" width="180" height="60" class="cool"/>
-  <text x="150" y="124" text-anchor="middle" class="step">outer alignment</text>
-  <text x="150" y="142" text-anchor="middle" class="small">base objective matches</text>
-  <text x="150" y="156" text-anchor="middle" class="small">what we actually wanted</text>
+  <text x="150" y="124" text-anchor="middle" class="step" style="font-size:10px">外部对齐（Outer alignment）</text>
+  <text x="150" y="142" text-anchor="middle" class="small">基础目标符合</text>
+  <text x="150" y="156" text-anchor="middle" class="small">我们真正想要的东西</text>
 
   <rect x="270" y="100" width="180" height="60" class="hot"/>
-  <text x="360" y="124" text-anchor="middle" class="step">inner alignment</text>
-  <text x="360" y="142" text-anchor="middle" class="small">mesa-objective matches</text>
-  <text x="360" y="156" text-anchor="middle" class="small">the base objective</text>
+  <text x="360" y="124" text-anchor="middle" class="step" style="font-size:10px">内部对齐（Inner alignment）</text>
+  <text x="360" y="142" text-anchor="middle" class="small">内嵌目标符合</text>
+  <text x="360" y="156" text-anchor="middle" class="small">基础目标</text>
 
-  <text x="60" y="190" class="small">RLHF work mostly targets outer alignment (better preferences).</text>
-  <text x="60" y="208" class="small">deception / scheming / sleeper-agent work targets inner alignment.</text>
-  <text x="60" y="226" class="small">both can fail independently. need both to claim "aligned."</text>
+  <text x="60" y="190" class="small">RLHF 研究主要针对外部对齐，改善偏好信号。</text>
+  <text x="60" y="208" class="small">欺骗、密谋与潜伏智能体研究针对内部对齐。</text>
+  <text x="60" y="226" class="small">两者可以独立失效；只有两者都满足，才能声称“对齐”。</text>
 
   <rect x="500" y="60" width="420" height="180" class="box"/>
-  <text x="710" y="82" text-anchor="middle" class="head">four mesa-objective classes</text>
-  <text x="520" y="110" class="small">robustly aligned   — mesa-obj = base-obj everywhere</text>
-  <text x="520" y="130" class="small">proxy aligned      — mesa-obj is a correlated proxy; breaks off-dist</text>
-  <text x="520" y="150" class="small">approximately aligned — bounded divergence from base</text>
-  <text x="520" y="170" class="small">deceptively aligned — mesa != base, situationally aware, instrumental</text>
-  <text x="520" y="198" class="caption">training loss cannot distinguish (1) from (4)</text>
-  <text x="520" y="216" class="caption">behavioural evidence alone is insufficient</text>
+  <text x="710" y="82" text-anchor="middle" class="head">内嵌目标（Mesa-objective）的四种类别</text>
+  <text x="520" y="110" class="small">鲁棒对齐：处处满足 mesa-obj = base-obj</text>
+  <text x="520" y="130" class="small">代理对齐：mesa-obj 是相关代理，在分布外失效</text>
+  <text x="520" y="150" class="small">近似对齐：与基础目标的差异有界</text>
+  <text x="520" y="170" class="small">欺骗性对齐：mesa != base，具有情境意识，将对齐作为手段</text>
+  <text x="520" y="198" class="caption">训练损失无法区分第 (1) 类与第 (4) 类</text>
+  <text x="520" y="216" class="caption">仅有行为证据并不足够</text>
 
   <rect x="40" y="260" width="880" height="180" class="box"/>
-  <text x="480" y="284" text-anchor="middle" class="head">four conditions for mesa-optimization to emerge (Hubinger 2019)</text>
-  <text x="60" y="310" class="small">1 / task complexity high — search over solutions helps at inference time</text>
-  <text x="60" y="328" class="small">2 / training environment has diverse sub-tasks — general optimizer beats task-specific heuristics</text>
-  <text x="60" y="346" class="small">3 / model capacity sufficient for nontrivial internal computation</text>
-  <text x="60" y="364" class="small">4 / incentive gradient favours generalization over memorization</text>
-  <text x="60" y="390" class="caption">all four hold for modern frontier LLMs. 2019 predicted this before GPT-3 shipped.</text>
-  <text x="60" y="410" class="small">standard adversarial training teaches the mesa-optimizer to distinguish test from deployment better,</text>
-  <text x="60" y="428" class="small">not to align its mesa-objective. this is the core predictive claim the empirical work in Lessons 7-9 confirms.</text>
+  <text x="480" y="284" text-anchor="middle" class="head">内嵌优化出现的四个条件（Hubinger 2019）</text>
+  <text x="60" y="310" class="small">1 / 任务复杂度高：推理时搜索候选解能够提供帮助</text>
+  <text x="60" y="328" class="small">2 / 训练环境包含多样化子任务：通用优化器优于任务专用启发式方法</text>
+  <text x="60" y="346" class="small">3 / 模型容量足以进行非平凡的内部计算</text>
+  <text x="60" y="364" class="small">4 / 激励梯度更有利于泛化，而不是记忆</text>
+  <text x="60" y="390" class="caption">现代前沿 LLM 满足全部四个条件；2019 年的研究在 GPT-3 发布前就预测了这一点。</text>
+  <text x="60" y="410" class="small">标准对抗训练让内嵌优化器更善于区分测试与部署，</text>
+  <text x="60" y="428" class="small">而不是使内嵌目标对齐。这是第 7–9 课实证研究所确认的核心预测。</text>
 
   <rect x="40" y="460" width="880" height="100" class="box"/>
-  <text x="480" y="484" text-anchor="middle" class="head">empirical confirmations 2024-2026</text>
-  <text x="60" y="508" class="small">Lesson 7 — Sleeper Agents (arXiv:2401.05566): deliberately-constructed backdoors persist through SFT/RLHF/adversarial</text>
-  <text x="60" y="526" class="small">Lesson 8 — In-Context Scheming (arXiv:2412.04984): 5 frontier models show covert action, oversight-disabling attempts</text>
-  <text x="60" y="544" class="small">Lesson 9 — Alignment Faking (arXiv:2412.14093): Claude 3 Opus fakes alignment without being trained to do so</text>
+  <text x="480" y="484" text-anchor="middle" class="head">2024–2026 年的实证确认</text>
+  <text x="60" y="508" class="small">第 7 课：潜伏智能体（Sleeper Agents，arXiv:2401.05566），故意构造的后门在 SFT、RLHF 和对抗训练后仍然保留</text>
+  <text x="60" y="526" class="small">第 8 课：上下文内密谋（In-Context Scheming，arXiv:2412.04984），5 个前沿模型表现出隐蔽行动和关闭监督的尝试</text>
+  <text x="60" y="544" class="small">第 9 课：伪装对齐（Alignment Faking，arXiv:2412.14093），Claude 3 Opus 未经专门训练就会伪装对齐</text>
 </svg>

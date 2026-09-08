@@ -1,129 +1,129 @@
-# Frame the Task Before the Agent Writes Code
+# 在智能体写代码前界定任务（Frame the Task Before the Agent Writes Code）
 
-> A coding agent can implement a clear task quickly. It can also implement an unclear task quickly. The speed is the same. The cost is not.
+> 编程智能体能快速实现清晰任务，也能快速实现含糊任务。速度相同，成本不同。
 
 **Type:** Learn + Build
-**Languages:** Python (stdlib)
-**Prerequisites:** Phase 14 lessons 31 and 36
-**Time:** ~60 minutes
+**Languages:** Python（标准库）
+**Prerequisites:** 阶段 14 第 31、36 课
+**Time:** 约 60 分钟
 
-## Learning Objectives
+## 学习目标（Learning Objectives）
 
-- Turn a request into a bounded task frame before editing.
-- Separate repository facts from assumptions and open questions.
-- Define allowed paths, forbidden paths, and acceptance evidence.
-- Decide when reconnaissance is sufficient to begin work.
+- 在编辑前将请求转为有边界的任务框架（Task Frame）。
+- 区分仓库事实、假设与待解问题。
+- 定义允许路径、禁止路径与验收证据。
+- 判断何时已有足够侦察信息，可以开始工作。
 
-## The Expensive Failure
+## 代价高昂的失败（The Expensive Failure）
 
-“Add duplicate email protection” sounds specific. It is not. Does uniqueness belong in the API, domain service, or database? Is comparison case-sensitive? Which error shape is already public? Is a migration allowed? Which test proves the behavior?
+“添加重复邮箱保护”听起来具体，其实不然。唯一性属于 API、领域服务还是数据库？比较是否区分大小写？哪种错误格式已经公开？允许数据库迁移吗？哪个测试证明行为？
 
-A capable agent will fill those gaps with plausible choices. That is the dangerous case because the implementation can be clean, tested, and still incompatible with the system.
+有能力的智能体会用看似合理的选择填补空白。这才是危险情形：实现可以整洁、经过测试，却仍与系统不兼容。
 
-The first unit of coding-agent work is therefore not an edit. It is a task frame backed by repository evidence.
+因此，编程智能体工作的第一个单位不是编辑，而是有仓库证据支撑的任务框架。
 
-## The Task Frame
+## 任务框架（The Task Frame）
 
-A useful frame has six fields:
+有用的框架包含六个字段：
 
-| Field | Question |
+| 字段 | 问题 |
 |---|---|
-| Goal | What observable behavior must change? |
-| Repository facts | What did you verify in code, tests, config, or history? |
-| Allowed paths | Where may the change land? |
-| Forbidden paths | What must remain untouched? |
-| Acceptance evidence | Which commands or observations prove the goal? |
-| Unknowns | Which decisions still need evidence or human judgment? |
+| 目标（Goal） | 哪种可观察行为必须改变？ |
+| 仓库事实（Repository Facts） | 你在代码、测试、配置或历史中验证了什么？ |
+| 允许路径（Allowed Paths） | 变更可以落在哪里？ |
+| 禁止路径（Forbidden Paths） | 哪些内容必须保持不动？ |
+| 验收证据（Acceptance Evidence） | 哪些命令或观察能够证明目标？ |
+| 未知项（Unknowns） | 哪些决定仍需证据或人工判断？ |
 
-Facts need receipts. “The API uses 409 for duplicates” is not a fact until you can point to the existing test or handler. A file path and line is enough. A command result is better when behavior matters.
+事实需要凭据。“API 对重复情况使用 409”只有能指向现有测试或处理器才是事实。文件路径加行号即可；涉及行为时，命令结果更好。
 
 ```mermaid
 flowchart LR
-  R[Request] --> I[Inspect repository]
-  I --> F[Facts with evidence]
-  F --> B[Bounded task frame]
-  B --> D{Unknown blocks design?}
-  D -->|Yes| Q[Ask or investigate]
-  D -->|No| P[Plan the change]
+  R[请求] --> I[检查仓库]
+  I --> F[有证据的事实]
+  F --> B[有边界的任务框架]
+  B --> D{未知项阻碍设计?}
+  D -->|是| Q[询问或调查]
+  D -->|否| P[规划变更]
 ```
 
-## Reconnaissance Is a Search for Constraints
+## 侦察就是寻找约束（Reconnaissance Is a Search for Constraints）
 
-Do not read the entire repository. Search for the surfaces that constrain the change:
+不必通读整个仓库，而应找到会约束这次变更的相关部分：
 
-1. The current behavior and its caller.
-2. The closest existing test.
-3. The public contract or serialized shape.
-4. The project instructions that govern the path.
-5. The build and verification commands.
-6. Similar completed changes that reveal local patterns.
+1. 当前行为及其调用方。
+2. 最接近的现有测试。
+3. 公开契约或序列化格式。
+4. 管理该路径的项目指令。
+5. 构建与验证命令。
+6. 揭示本地模式的相似已完成变更。
 
-Stop when every planned decision is either supported by evidence, explicitly delegated, or listed as an unknown. More reading after that point is often avoidance.
+当每项拟作出的决策都有证据支撑、已被明确授权，或已列为待解决的未知项时，就可以停止调查。此后继续阅读，往往是在回避行动。
 
-## Unknowns Are Not Failures
+## 未知项不是失败（Unknowns Are Not Failures）
 
-An unknown is a controlled gap. An assumption is an uncontrolled answer to that gap.
+未知项是已经识别并纳入管理的信息缺口；假设则是在未加核实的情况下，直接替这个缺口填上答案。
 
-Classify each unknown:
+为每个未知项分类：
 
-- **Discoverable:** the repository or running system can answer it.
-- **Decidable:** the task contract gives the agent authority to choose.
-- **Human:** the choice changes product behavior, cost, risk, or public compatibility.
-- **Deferred:** the choice is outside this slice and belongs in non-goals.
+- **可发现（Discoverable）：** 仓库或运行中的系统能够回答。
+- **可决定（Decidable）：** 任务契约授权智能体选择。
+- **需人工（Human）：** 选择会改变产品行为、成本、风险或公开兼容性。
+- **延期（Deferred）：** 选择在当前切片之外，应纳入非目标。
 
-The agent should continue through discoverable and delegated unknowns. It should pause at human unknowns before the choice is buried in code.
+智能体应继续解决可发现和已授权的未知项。对于需人工的未知项，应在选择被埋进代码前暂停。
 
-## Acceptance Before Implementation
+## 实现前定义验收（Acceptance Before Implementation）
 
-Write the proof before the patch. The proof can be:
+先写证据方案，再写补丁。证据可以是：
 
-- a focused unit or integration test command;
-- a browser journey with a named viewport and expected state;
-- a wire request and exact response contract;
-- a performance measurement with a threshold;
-- a scope check that confirms no unrelated file changed.
+- 聚焦的单元或集成测试命令；
+- 指定视口与预期状态的浏览器操作流程；
+- 网络请求与确切响应契约；
+- 带阈值的性能测量；
+- 确认未改动无关文件的范围检查。
 
-“Tests pass” is not a proof plan. Name the authoritative test and the claim it supports.
+“测试通过”不是证据计划。应指明权威测试及其支持的主张。
 
-## Build It
+## 动手实现（Build It）
 
-The lab creates a `TaskFrame`, validates its boundaries and evidence, and writes `outputs/task-frame.md`.
+实验创建 `TaskFrame`，验证其边界与证据，并写入 `outputs/task-frame.md`。
 
-Run from this lesson directory:
+在本课目录运行：
 
 ```bash
 python3 code/main.py
 python3 -m unittest discover code/tests -v
 ```
 
-Break the example in four ways: remove the goal, remove a fact receipt, overlap an allowed and forbidden path, and remove the acceptance command. The validator should refuse each frame for a different reason.
+用四种方式破坏示例：删除目标、删除一项事实凭据、让允许与禁止路径重叠、删除验收命令。验证器应分别以不同原因拒绝每个框架。
 
-## Use It in a Real Repository
+## 在真实仓库中使用（Use It in a Real Repository）
 
-Before asking an agent to edit:
+要求智能体编辑前：
 
-1. Write the goal as a behavior, not a file change.
-2. Record two or three facts with exact evidence.
-3. Name the smallest allowed path set.
-4. Name negative space explicitly.
-5. Write the command or observation that closes the task.
-6. List the decisions you have not earned yet.
+1. 把目标写成行为，而非文件改动。
+2. 记录两三项带确切证据的事实。
+3. 指定最小允许路径集合。
+4. 明确写出禁止事项。
+5. 写出能关闭任务的命令或观察。
+6. 列出尚无充分依据作出的决定。
 
-The frame should fit on one screen. If it cannot, the task may contain multiple independently verifiable changes.
+框架应能放进一屏。若放不下，任务可能包含多个可独立验证的变更。
 
-## Exercises
+## 练习（Exercises）
 
-1. Frame a real bug from one of your repositories without proposing a solution.
-2. Find one claim in the frame that is actually an assumption. Replace it with evidence.
-3. Add a human unknown whose answer would change the public contract.
-4. Split one broad allowed path into the smallest safe set.
-5. Add a scope receipt to the acceptance evidence.
+1. 为自己仓库中的真实错误界定任务，但不提出解决方案。
+2. 找出框架中实际上是假设的一项主张，用证据替换。
+3. 添加一个需人工回答、且答案会改变公开契约的未知项。
+4. 将一个宽泛允许路径拆为最小安全集合。
+5. 在验收证据中加入范围凭据。
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [Nuseibeh and Easterbrook, Requirements Engineering: A Roadmap](https://www.cs.toronto.edu/~sme/papers/2000/ICSE2000.pdf), for anchoring implementation to real-world goals and evolving constraints.
-- [Yang et al., SWE-agent: Agent-Computer Interfaces Enable Automated Software Engineering](https://arxiv.org/abs/2405.15793), for evidence that the interface around a coding agent changes its effectiveness.
+- [Nuseibeh 与 Easterbrook：需求工程路线图（Requirements Engineering: A Roadmap）](https://www.cs.toronto.edu/~sme/papers/2000/ICSE2000.pdf)，讨论如何让实现锚定现实目标与不断演变的约束。
+- [Yang 等：SWE-agent，智能体与计算机接口实现自动化软件工程（SWE-agent: Agent-Computer Interfaces Enable Automated Software Engineering）](https://arxiv.org/abs/2405.15793)，提供编程智能体周围的接口会改变其效能的证据。
 
-## What You Keep
+## 保留产物（What You Keep）
 
-Keep `outputs/task-frame.md`. It is the input to the next lesson, where the frame becomes an evidence-backed execution plan.
+保留 `outputs/task-frame.md`。它是下一课的输入，届时框架将变成有证据支撑的执行计划。

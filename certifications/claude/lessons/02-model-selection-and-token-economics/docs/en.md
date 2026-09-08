@@ -1,49 +1,49 @@
-# Spend Capability Where Failure Is Expensive
+# 将能力投入到失败代价高的地方（Spend Capability Where Failure Is Expensive）
 
-> Model selection is not a ranking exercise. It is an allocation problem across quality, latency, context, and cost.
+> 模型选择不是排名，而是在质量、延迟、上下文和成本之间分配资源的问题。
 
 **Type:** Learn
 **Languages:** Python
-**Prerequisites:** [Choose the Smallest Surface That Can Carry the Work](../../01-claude-product-and-model-landscape/), [Caching, Rate Limiting and Cost Optimization](../../../../../phases/11-llm-engineering/11-caching-cost/)
-**Time:** ~90 minutes
+**Prerequisites:** [选择足以承载工作的最小产品形态（Choose the Smallest Surface That Can Carry the Work）](../../01-claude-product-and-model-landscape/), [缓存、速率限制与成本优化（Caching, Rate Limiting and Cost Optimization）](../../../../../phases/11-llm-engineering/11-caching-cost/)
+**Time:** ~90 分钟
 
-## Learning Objectives
+## 学习目标（Learning Objectives）
 
-- Estimate token and workflow cost without relying on a memorized price table.
-- Select a model using measured quality, latency, and consequence.
-- Explain sampling non-determinism and why a release claim needs repeated evaluation.
-- Choose speed, effort, and thinking settings only after current model and platform verification.
-- Distinguish model failure from prompt, context, source, and workflow failure.
-- Use routing, caching, batching, and output limits as separate optimization levers.
+- 不依赖背诵价格表，估算词元（Token）与工作流成本。
+- 根据实测质量、延迟和后果选择模型。
+- 解释采样（Sampling）的非确定性，以及为何发布结论需要重复评估。
+- 核实当前模型与平台后，再选择速度、投入程度（Effort）和思考（Thinking）设置。
+- 区分模型故障与提示词、上下文、来源和工作流故障。
+- 将路由（Routing）、缓存（Caching）、批处理（Batching）和输出上限作为独立优化手段使用。
 
-## The Problem
+## 问题背景（The Problem）
 
-A support team routes every request to the most capable model. The first month looks successful. Quality is high, but response time is inconsistent and the bill is four times the forecast.
+一个支持团队将所有请求路由到能力最强的模型。第一个月看似成功：质量很高，但响应时间不稳定，账单达到预测的四倍。
 
-The manager responds by moving everything to the fastest model. Cost falls. Escalation summaries now omit exceptions, and complex refund cases receive confident but incomplete recommendations.
+经理于是将所有任务改用最快模型。成本下降了，但升级处理摘要开始遗漏例外条款，复杂退款案例也得到了自信却不完整的建议。
 
-Both designs use model names as policy. Neither describes the work.
+两种设计都把模型名称当成政策，却都没有描述工作本身。
 
-A production decision starts with the cost of failure. A typo in an internal brainstorm is cheap. A missing exception in a refund decision is more expensive. The model, prompt, context, source quality, and review process should reflect that difference.
+生产决策应从失败代价入手。内部头脑风暴中的错别字代价很低，退款决策遗漏例外条款的代价则更高。模型、提示词、上下文、来源质量和审核流程都应体现这一区别。
 
-## The Concept
+## 核心概念（The Concept）
 
-### Tokens are a workload measure
+### 词元是工作负载的度量（Tokens are a workload measure）
 
-Models process tokens, not pages or words. Input tokens include instructions, conversation history, supplied documents, tool definitions, and retrieved content. Output tokens include the response and, depending on the product or API, reasoning-related computation or other billed units described by current pricing.
+模型处理的是词元，不是页数或单词数。输入词元包含指令、对话历史、给定文档、工具定义和检索内容。输出词元包含回答；视产品或 API 而定，也可能包含推理相关计算或当前定价说明中的其他计费单位。
 
-For planning, separate four buckets:
+规划时，将输入分成四类：
 
 ```text
 total input = stable instructions + task input + retrieved knowledge + prior turns
 total output = requested answer + structured metadata
 ```
 
-Do not hide all input inside one number. Stable instructions may benefit from caching. Retrieved knowledge may be pruned. Prior turns may be summarized or discarded. Task input usually cannot be removed.
+不要把所有输入都隐藏在一个数字里。稳定指令可能受益于缓存；检索知识可以裁剪；历史轮次可以总结或丢弃；任务输入通常无法删除。
 
-### Use variables before live prices
+### 先使用变量，再代入实时价格（Use variables before live prices）
 
-Prices change. The durable equation does not:
+价格会变，长期适用的等式不会变：
 
 ```text
 request cost = input_tokens / 1,000,000 x input_rate
@@ -51,7 +51,7 @@ request cost = input_tokens / 1,000,000 x input_rate
              + tool or feature charges
 ```
 
-For a workflow:
+对于工作流：
 
 ```text
 workflow cost = request cost x requests per case x cases per month
@@ -59,145 +59,145 @@ workflow cost = request cost x requests per case x cases per month
               + failure and rework cost
 ```
 
-Review and rework matter. A cheaper model that creates twice as much human correction may be the expensive choice.
+审核和返工很重要。便宜模型如果造成两倍的人工修正工作，反而可能是更贵的选择。
 
-Consider an illustrative, not current, rate card. Model A costs 1 unit for input and 5 for output. Model B costs 3 and 15. A case uses 20,000 input tokens and 2,000 output tokens. Model B costs three times as much per call. If Model A passes 98 percent of triage cases and hard cases can be detected, route the ordinary work to A and escalate the uncertain remainder. If hard cases cannot be detected safely, the routing design is incomplete.
+考虑一份示意而非当前价格表：模型 A 的输入费率为 1 单位，输出为 5；模型 B 分别为 3 和 15。一个案例使用 20,000 个输入词元和 2,000 个输出词元，模型 B 每次调用的成本是 A 的三倍。如果模型 A 能通过 98% 的分流案例，而且困难案例能够被识别，就将常规工作交给 A，把不确定的剩余部分升级处理。如果无法安全识别困难案例，路由设计就还不完整。
 
-### Quality needs a threshold, not a vibe
+### 质量需要阈值，而不是感觉（Quality needs a threshold, not a vibe）
 
-Define the minimum acceptable result before testing models. Useful dimensions include:
+测试模型前，定义最低可接受结果。可用维度包括：
 
-- Required facts present.
-- Unsupported claims absent.
-- Instructions followed.
-- Output schema valid.
-- Latency below the workflow limit.
-- Human correction time below a threshold.
-- Safety and privacy controls preserved.
+- 包含必需事实。
+- 不包含无依据主张。
+- 遵守指令。
+- 输出模式（Schema）有效。
+- 延迟低于工作流限制。
+- 人工修正时间低于阈值。
+- 安全与隐私控制得以保留。
 
-The best model is the least expensive option that clears every required threshold with adequate margin. Average quality alone is not enough. A model can score well overall while failing every high-consequence edge case.
+最佳模型是在留有足够余量的情况下通过全部必需阈值、且成本最低的选择。仅看平均质量不够；模型可能总体得分很好，却在每个后果严重的边界案例上失败。
 
-### Sampling produces a distribution, not a replay
+### 采样产生的是分布，不是重放（Sampling produces a distribution, not a replay）
 
-At each generated token, a language model has a distribution over possible continuations. Sampling selects from that distribution. A temperature setting, on models that accept it, changes how concentrated the distribution is. It does not turn model inference into a deterministic function.
+生成每个词元时，语言模型都对可能的后续内容给出概率分布，采样从中作出选择。对于支持温度设置的模型，温度会改变分布的集中程度，但不会把模型推理变成确定性函数。
 
-Official Anthropic API documentation states that even temperature zero is not fully deterministic. Identical requests can produce different results through the first-party API and partner clouds. A pinned model ID stabilizes the model weights, but Anthropic's model-versioning documentation also says serving infrastructure such as routing, safety classifiers, and sampling logic can change.
+Anthropic 官方 API 文档指出，即使温度为零，也并非完全确定。通过第一方 API 或合作云发送相同请求，仍可能得到不同结果。固定模型 ID 可以稳定模型权重，但 Anthropic 模型版本文档也说明，路由、安全分类器和采样逻辑等服务基础设施仍可能变化。
 
-This changes what counts as evidence:
+这改变了什么才算证据：
 
-- One passing response proves one response passed.
-- A single average hides tail failures and run-to-run variation.
-- Deterministic validators can check schema and arithmetic, but they cannot make generation deterministic.
-- Repeated trials on the same versioned task reveal minimum quality, variance, severe failures, and tail latency.
-- A model, prompt, tool, platform, or serving-mode change requires a fresh comparison.
+- 一次回答通过，只能证明那一次回答通过了。
+- 单个平均值会隐藏尾部失败和运行间波动。
+- 确定性校验器可以检查模式和算术，但不能让生成变得确定。
+- 对同一版本化任务重复试验，可以揭示最低质量、方差、严重失败和尾延迟（Tail latency）。
+- 模型、提示词、工具、平台或服务模式变化后，需要重新比较。
 
-Use at least three independent runs per configuration for a small learning exercise. Production sample size must come from the risk and variance you observe, not from this minimum. Compare risk slices separately and prefer gates such as minimum critical-case quality and p95 latency over one flattering mean.
+小型学习练习中，每种配置至少独立运行三次。生产样本量应由观察到的风险和方差决定，而不是照搬这个最低次数。应分别比较不同风险分组，优先使用关键案例最低质量和 p95 延迟等门槛，而不是一个好看的均值。
 
-Sampling controls themselves are changeable product facts. As verified on August 9, 2026, current Anthropic Messages guidance says Claude 4.7 and later reject non-default `temperature`, `top_p`, or `top_k` values. Older supported models may still accept some of them. Never copy a sampling setting from an older request without checking the current model and platform documentation.
+采样控制本身也是可变产品事实。按 2026 年 8 月 9 日的核实结果，当时 Anthropic Messages 指南说明 Claude 4.7 及以后版本拒绝非默认的 `temperature`、`top_p` 或 `top_k` 值。仍受支持的旧模型可能接受其中部分参数。未核查当前模型和平台文档前，不要从旧请求复制采样设置。
 
-### Diagnose the failure layer
+### 诊断故障层次（Diagnose the failure layer）
 
-When output is weak, ask where the failure originated:
+输出不佳时，先判断故障源头：
 
-1. **Requirement failure:** Success was never defined.
-2. **Source failure:** The necessary fact was absent or stale.
-3. **Context failure:** Relevant evidence was buried, truncated, or mixed with conflicting material.
-4. **Prompt failure:** Instructions or output criteria were unclear.
-5. **Model failure:** The model lacked the capability despite good inputs and criteria.
-6. **Workflow failure:** Review, escalation, or tool behavior was missing.
+1. **需求故障（Requirement failure）：** 从未定义成功标准。
+2. **来源故障（Source failure）：** 必需事实缺失或过时。
+3. **上下文故障（Context failure）：** 相关证据被淹没、截断，或与冲突材料混在一起。
+4. **提示词故障（Prompt failure）：** 指令或输出标准不清晰。
+5. **模型故障（Model failure）：** 输入和标准良好，但模型仍缺乏所需能力。
+6. **工作流故障（Workflow failure）：** 缺少审核、升级处理或工具行为。
 
-Upgrading the model helps mainly with layer five. It may conceal the others for a while, which makes the system harder to debug.
+升级模型主要帮助解决第五层。它可能暂时掩盖其他层的问题，从而让系统更难调试。
 
-### Latency has several components
+### 延迟包含多个部分（Latency has several components）
 
-Users experience more than total wall-clock time:
+用户体验到的不只是总耗时：
 
-- Time before the first visible output.
-- Time between streamed chunks.
-- Total generation time.
-- Tool and retrieval time.
-- Human approval time.
+- 首次可见输出前的等待时间。
+- 流式数据块之间的间隔。
+- 总生成时间。
+- 工具和检索时间。
+- 人工批准时间。
 
-A more capable model may reduce the number of retries while taking longer per call. A smaller model may respond quickly but create more loops. Measure the complete workflow.
+更强的模型可能每次调用更慢，却减少重试次数。小模型可能响应很快，却造成更多循环。应测量完整工作流。
 
-### Route by observable constraints
+### 根据可观察约束进行路由（Route by observable constraints）
 
-A simple routing policy might classify work into three lanes:
+简单路由政策可以把工作分成三条通道：
 
-| Lane | Example | Policy |
+| 通道（Lane） | 示例（Example） | 政策（Policy） |
 |---|---|---|
-| Routine | Format a supplied update | Fast model, strict template |
-| Ambiguous | Compare conflicting notes | Balanced model, source requirements |
-| Consequential | Recommend an exception | Capable model plus mandatory review |
+| 常规（Routine） | 整理给定更新的格式 | 快速模型，严格模板 |
+| 模糊（Ambiguous） | 比较冲突笔记 | 均衡模型，明确来源要求 |
+| 重大后果（Consequential） | 建议采用例外处理 | 高能力模型，加上强制审核 |
 
-The classifier itself can fail. Use deterministic signals where possible: document length, task type, sensitivity label, requested action, or explicit user selection. Log route decisions and audit misroutes.
+分类器本身也会失败。尽可能使用确定性信号：文档长度、任务类型、敏感度标签、请求操作或用户明确选择。记录路由决策，并审计错误路由。
 
 ```mermaid
 flowchart LR
-    A["Classify task and consequence"] --> B["Try smallest qualified model"]
-    B --> C{"Meets measured gate?"}
-    C -->|"Yes"| D["Return for normal review"]
-    C -->|"No"| E["Diagnose failure layer"]
-    E --> F{"Capability failure?"}
-    F -->|"Yes"| G["Escalate model or thinking mode"]
-    F -->|"No"| H["Repair source, prompt, context, or workflow"]
+    A["分类任务与后果"] --> B["尝试满足资格的最小模型"]
+    B --> C{"是否通过实测门槛？"}
+    C -->|"是"| D["返回并进入常规审核"]
+    C -->|"否"| E["诊断故障层次"]
+    E --> F{"是否为能力不足？"}
+    F -->|"是"| G["升级模型或思考模式"]
+    F -->|"否"| H["修复来源、提示词、上下文或工作流"]
 ```
 
-### Caching, batching, and limits solve different problems
+### 缓存、批处理和上限解决不同问题（Caching, batching, and limits solve different problems）
 
-**Prompt caching** reduces the cost and latency of repeatedly processing stable prompt prefixes when the current model and platform support it. It does not make stale instructions correct.
+**提示词缓存（Prompt caching）**在当前模型和平台支持时，减少重复处理稳定提示词前缀的成本与延迟。它不会让过时指令变正确。
 
-**Semantic caching** reuses a prior result for a sufficiently similar request. It needs a freshness policy and is risky for personalized, rapidly changing, or consequential work.
+**语义缓存（Semantic caching）**为足够相似的请求复用先前结果。它需要时效政策，对于个性化、快速变化或后果重大的工作具有风险。
 
-**Batch processing** trades response time for cost and throughput. It fits offline work such as nightly classification or bulk extraction, not interactive work with a user waiting.
+**批处理（Batch processing）**以响应时间换取成本和吞吐量，适合夜间分类或批量提取等离线工作，不适合用户正在等待的交互工作。
 
-**Output limits** prevent unnecessarily long responses. They also truncate work if set below the task's requirement. Ask for the smallest useful output and validate completeness.
+**输出上限（Output limits）**防止回答不必要地冗长，但低于任务要求时也会截断工作。要求最小有用输出，并验证完整性。
 
-**Context pruning** removes irrelevant input before it is billed and before it distracts the model. More context is not automatically more knowledge.
+**上下文裁剪（Context pruning）**在无关输入产生费用、干扰模型前移除它。更多上下文并不自动等于更多知识。
 
-### A configuration is a dated bundle
+### 配置是一组带日期的选择（A configuration is a dated bundle）
 
-Model choice is only one configuration lever:
+模型选择只是配置手段之一：
 
-| Lever | What it changes | What to measure |
+| 手段（Lever） | 改变什么（What it changes） | 测量什么（What to measure） |
 |---|---|---|
-| Model | Baseline capability, price, supported features, and lifecycle | Quality by risk slice, cost, latency, compatibility |
-| Speed | Serving speed where a fast mode is supported, often at a price premium | Output tokens per second, time to first token, p95 latency, accepted-outcome cost |
-| Effort | How much work and token spend the model applies across text, thinking, and tool use where supported | Quality, tool-call count, output tokens, latency, cost |
-| Thinking | Whether and how the model allocates explicit reasoning where supported | Hard-case quality, thinking tokens, total output, latency, cost |
-| Prompt and output contract | Instructions, evidence boundaries, format, and requested length | Instruction following, schema validity, correction time |
-| Sampling | Randomness controls on model generations that still accept them | Outcome variation, severe failures, style diversity |
+| 模型（Model） | 基础能力、价格、支持功能和生命周期 | 各风险分组的质量、成本、延迟、兼容性 |
+| 速度（Speed） | 支持快速模式时的服务速度，通常价格更高 | 每秒输出词元、首词元时间、p95 延迟、每个合格结果的成本 |
+| 投入程度（Effort） | 在支持的平台上，模型在文本、思考和工具使用中投入的工作量与词元消耗 | 质量、工具调用次数、输出词元、延迟、成本 |
+| 思考（Thinking） | 在支持的平台上，模型是否以及如何分配显式推理 | 困难案例质量、思考词元、总输出、延迟、成本 |
+| 提示词与输出契约（Prompt and output contract） | 指令、证据边界、格式和要求长度 | 指令遵循、模式有效性、修正时间 |
+| 采样（Sampling） | 仍接受采样控制的模型代际中的随机性控制 | 结果波动、严重失败、风格多样性 |
 
-As verified on August 9, 2026, the official models overview lists `claude-sonnet-5` and `claude-opus-5` as the exact Claude API IDs. Sonnet 5 has adaptive thinking on by default, accepts disabled thinking, and supports the low and high effort values used in the artifact. Opus 5 accepts adaptive thinking and the medium effort value used in the artifact.
+按 2026 年 8 月 9 日的核实结果，官方模型概览将 `claude-sonnet-5` 和 `claude-opus-5` 列为确切的 Claude API ID。Sonnet 5 默认启用自适应思考，允许关闭思考，并支持交付物中使用的 low 和 high 投入程度值。Opus 5 接受自适应思考和交付物中的 medium 投入程度值。
 
-Fast mode is narrower. Current official documentation lists Opus 5 and Opus 4.8, not Sonnet 5, and limits the feature to the Claude API, including Managed Agents rather than partner platforms. It is a research preview that requires access, `speed: "fast"`, and the `anthropic-beta: fast-mode-2026-02-01` header. It uses the same model with faster inference and premium pricing; it does not promise higher intelligence. Availability, support, and pricing can change independently.
+快速模式的适用范围更窄。当前官方文档列出的是 Opus 5 和 Opus 4.8，不包括 Sonnet 5，并将功能限定在 Claude API 内，包括 Managed Agents，而非合作平台。它是需要访问资格的研究预览，要求 `speed: "fast"` 和 `anthropic-beta: fast-mode-2026-02-01` 请求头。它以溢价提供同一模型的更快推理，不承诺更高智能。可用性、支持范围和价格可以独立变化。
 
-Do not build a permanent compatibility matrix into routing code or study notes. Before every experiment:
+不要把永久兼容矩阵写进路由代码或学习笔记。每次实验前：
 
-1. Record the exact model ID and platform.
-2. Open the current official pages for model support, thinking, effort, speed, and pricing.
-3. Mark each proposed configuration as `docs-supported` or `docs-unsupported` with a date and source. Documentation support does not prove that your account has preview access.
-4. Do not trial an unsupported combination or assume it will silently fall back.
-5. Run supported configurations repeatedly against the same task set and gate.
+1. 记录确切模型 ID 和平台。
+2. 打开当前关于模型支持、思考、投入程度、速度和定价的官方页面。
+3. 为每种拟用配置标注 `docs-supported` 或 `docs-unsupported`，附上日期和来源。文档支持不证明账户拥有预览访问资格。
+4. 不要试验不受支持的组合，也不要假设它会静默回退。
+5. 使用同一任务集和门槛，重复运行受支持配置。
 
-Change one lever at a time when the platform permits it. If support forces you to change both model and speed, call that a routing alternative, not proof that speed alone caused the outcome.
+平台允许时，每次只改变一个因素。如果支持范围迫使你同时改变模型和速度，应称之为路由替代方案，而不是速度单独导致结果变化的证据。
 
-### A scaled exam score is not a percentage
+### 换算考试分数不是百分比（A scaled exam score is not a percentage）
 
-As verified on August 9, 2026, Anthropic's certification FAQ reports results on a scaled score from 100 to 1,000 with a minimum passing score of 720. Scaling equates exam forms that can have different difficulty.
+按 2026 年 8 月 9 日的核实结果，Anthropic 认证常见问题说明，考试结果采用 100 至 1,000 的换算分数，最低及格分为 720。换算用于等值处理难度可能不同的试卷。
 
-Therefore, 720 is never evidence that 72 percent correct is the raw pass line. This curriculum's quiz and mock percentages are raw practice scores. They are not convertible to the official scaled score and cannot predict an exam result.
+因此，720 绝不证明原始及格线是 72% 正确率。本课程测验和模拟考试的百分比是原始练习得分，不能转换为官方换算分数，也无法预测考试结果。
 
-## Build It
+## 动手实现（Build It）
 
-Create a ten-case model selection benchmark for a weekly operations workflow.
+为每周运营工作流创建包含十个案例的模型选择基准。
 
-- Four routine formatting and classification cases.
-- Three ambiguous synthesis cases.
-- Two cases with conflicting source material.
-- One consequential case that must escalate to a human.
+- 四个常规格式整理与分类案例。
+- 三个含糊的综合分析案例。
+- 两个来源材料冲突的案例。
+- 一个后果重大、必须升级给人工处理的案例。
 
-Define a rubric before running any model:
+运行任何模型前，先定义评分量表（Rubric）：
 
 ```json
 {
@@ -210,51 +210,51 @@ Define a rubric before running any model:
 }
 ```
 
-Test the smallest plausible model family first. Record input and output tokens, latency, rubric score, and correction time. Escalate only the failing cases. Compare the routed workflow against sending all ten cases to the larger model.
+先测试可能胜任的最小模型家族，记录输入与输出词元、延迟、量表分数和修正时间。仅升级失败案例。将路由工作流与十个案例全部交给大模型的方案比较。
 
-Your report must answer:
+报告必须回答：
 
-- Which cases can safely use the smaller model?
-- Which observable signal routes a case upward?
-- Which failures were not model failures?
-- How much cost does routing save under an illustrative volume?
-- What happens when the router is uncertain?
+- 哪些案例可以安全使用小模型？
+- 哪种可观察信号会将案例向上路由？
+- 哪些失败并非模型故障？
+- 在示意业务量下，路由节省多少成本？
+- 路由器不确定时怎么办？
 
-Then create a mode-trials artifact for one ambiguous or consequential case:
+然后，为一个模糊或后果重大的案例创建模式试验交付物：
 
-1. Define minimum quality, maximum p95 latency, maximum mean cost, and a minimum repeated-run count before seeing results.
-2. Propose at least three configurations that vary speed, effort, or thinking.
-3. Verify each exact model and platform combination in current official documentation. Preserve one documented unsupported combination as a rejected option.
-4. Run every supported configuration at least three times with the same prompt, sources, tools, and grading rubric.
-5. Record quality, latency, cost, and an outcome fingerprint for every run.
-6. Reconcile minimum quality, p95 latency, and mean cost from raw runs.
-7. Select the least costly supported configuration that clears every gate.
+1. 在看到结果前定义最低质量、最大 p95 延迟、最大平均成本和最低重复运行次数。
+2. 提出至少三种改变速度、投入程度或思考设置的配置。
+3. 在最新官方文档中核实每个确切模型与平台组合，保留一个文档明确不支持的组合作为被拒绝选项。
+4. 对每种受支持配置，使用相同提示词、来源、工具和评分量表至少运行三次。
+5. 每次记录质量、延迟、成本和结果指纹（Outcome fingerprint）。
+6. 根据原始运行结果核算最低质量、p95 延迟和平均成本。
+7. 选择通过全部门槛且成本最低的受支持配置。
 
-The provided artifact compares low and high effort, adaptive and disabled thinking, standard and fast serving on one model, and an unsupported fast combination. Its `standard` speed is a normalized experiment label for omitting the request field. Its fast configuration separately records the required preview access, request field, and beta header. It is a dated example, not a reusable compatibility table or proof of account entitlement.
+提供的交付物比较了低与高投入程度、自适应与关闭思考、同一模型上的标准与快速服务，以及一个不受支持的快速组合。其中 `standard` 速度是省略请求字段时使用的归一化实验标签。快速配置单独记录所需预览资格、请求字段和 beta 请求头。这是带日期的示例，不是可复用兼容表，也不证明账户拥有使用资格。
 
-## Interactive Lab
+## 交互实验（Interactive Lab）
 
-Use the risk figure to change consequence, uncertainty, reversibility, and review strength. It makes the hidden cost of a false pass visible before you optimize token spend.
+使用风险图调整后果、不确定性、可逆性和审核强度。它让错误放行的隐藏代价在优化词元开销前变得可见。
 
 ```figure
 02-responsible-ai-risk
 ```
 
-## Practice Lab
+## 实践实验（Practice Lab）
 
-Run the ten-case routing benchmark. Change a consequential case to skip review, duplicate a case ID, or misstate the routed cost and watch deterministic validation fail. Then remove a repeated mode run, change a reconciled p95 value, attempt the documented unsupported mode, or select a configuration that fails cost. Repair the evidence instead of weakening the gate.
+运行十案例路由基准。让重大后果案例跳过审核、重复案例 ID，或错误填写路由成本，观察确定性验证失败。随后删除一次重复模式运行、修改已核算的 p95 值、尝试文档不支持的模式，或选择成本不达标的配置。修复证据，不要放宽门槛。
 
-## Shipped Artifact
+## 交付物（Shipped Artifact）
 
-`outputs/model-routing-benchmark.json` preserves the ten-case routing contract across routine, ambiguous, conflicting-source, and consequential work. It includes measured gates, chosen lanes, token estimates, review time, and a comparison between routing and using the larger model for every case.
+`outputs/model-routing-benchmark.json` 保留了覆盖常规、模糊、来源冲突和重大后果工作的十案例路由契约，包括实测门槛、所选通道、词元估算、审核时间，以及路由与全部使用大模型的比较。
 
-`outputs/mode-trials.json` is the applied configuration artifact. It records current-doc evidence, speed, effort, thinking, fast-mode request prerequisites, repeated quality, p95 latency, mean cost, unsupported combinations, the selected mode, and rerun triggers.
+`outputs/mode-trials.json` 是实际配置交付物，记录当前文档证据、速度、投入程度、思考、快速模式请求前提、重复质量、p95 延迟、平均成本、不受支持组合、所选模式和重跑触发条件。
 
-The support statements are dated from official documentation and use `docs-supported`, not live-request-verified, as their status. The quality, latency, and cost values are illustrative exercise data, not provider runs or benchmark results. Replace them with repeated results from your own task set and account.
+支持声明来自带日期的官方文档，状态使用 `docs-supported`，而不是“已通过实时请求验证”。质量、延迟和成本是教学示例数据，并非提供商实际运行或基准结果。应将它们替换为你自己的任务集和账户上的重复运行结果。
 
-## Verify It
+## 验证结果（Verify It）
 
-Verify the benchmark without calling a provider:
+无需调用提供商即可验证基准：
 
 ```bash
 cd certifications/claude/lessons/02-model-selection-and-token-economics/code
@@ -262,98 +262,98 @@ python3 main.py
 python3 -m unittest discover tests -v
 ```
 
-The validator preserves the original benchmark checks and separately validates the mode trials. It requires current official support evidence, an explicit illustrative-measurement label, fast-mode request prerequisites, at least three repeated runs per docs-supported mode, observed outcome fingerprints, reconciled summaries, an unattempted docs-unsupported option, and selection of the least costly passing configuration. It makes no hardcoded claim about which future model supports which mode.
+校验器保留原始基准检查，并单独验证模式试验。它要求：当前官方支持证据、明确的示意测量标签、快速模式请求前提、每种文档支持模式至少三次重复运行、观察到的结果指纹、核算一致的摘要、未尝试运行的文档不支持选项，以及选择成本最低的达标配置。它没有硬编码任何未来模型支持何种模式的主张。
 
-## Capstone Connection
+## 与综合实践的联系（Capstone Connection）
 
-The quiz tests routing, failure-layer diagnosis, and cost reasoning. Use the validated benchmark as model-selection evidence in capstones 29 through 32, then replace the illustrative measurements with results from your own representative cases.
+测验考查路由、故障层次诊断和成本推理。将验证后的基准用作第 29 至 32 课综合实践的模型选择证据，再用你自己的代表性案例结果替换示意测量值。
 
-## Use It
+## 实际应用（Use It）
 
-Use this decision sentence:
+使用以下决策句式：
 
 ```text
-For [task class], choose [model family or mode] because it clears [quality gate]
-across [repeated runs] within [p95 latency and mean cost limit]. Escalate when
-[observable condition], and require [review rule] when [consequence threshold].
-Model, platform, speed, effort, and thinking support checked in official docs on [date].
+对于[任务类别]，选择[模型系列或模式]，因为它在[重复运行次数]中均通过了[质量门禁]，
+且符合[p95 延迟与平均成本上限]。出现[可观测条件]时升级处理；
+达到[后果阈值]时，必须执行[审查规则]。
+模型、平台、速度、推理强度和思考支持已于[日期]依据官方文档核验。
 ```
 
-If your justification is only "it is smarter," you have not finished the decision.
+如果理由只是“它更聪明”，决策就还没完成。
 
-Review the live models overview and pricing pages before running the benchmark. Save the exact model identifiers in the benchmark results, not in the timeless policy. This prevents a model alias change from silently invalidating your evidence.
+运行基准前查阅实时模型概览和价格页。将确切模型标识符保存在基准结果中，而不是永久政策中，以免模型别名变化悄悄使证据失效。
 
-Keep unsupported configurations in the decision record, not in production requests. Their rejection explains why a tempting mode was not tested and creates a clear trigger for future verification.
+把不受支持的配置留在决策记录中，而不是生产请求中。拒绝理由解释了为何没有测试某个诱人的模式，也为未来核实提供了明确触发条件。
 
-## Exam Decision Patterns
+## 考试决策模式（Exam Decision Patterns）
 
-- Fix missing criteria, sources, and context before paying for more capability.
-- Use the smallest model that clears a representative quality gate.
-- Include human correction and failure cost, not only token price.
-- Route consequential or ambiguous work upward using observable signals.
-- Batch only when the workflow tolerates delayed completion.
-- Cache stable, reusable material only when freshness and isolation permit it.
-- Treat model features, pricing, and limits as dated facts.
-- Repeat probabilistic evaluations; a low temperature or pinned model ID does not guarantee identical output.
-- Compare speed, effort, and thinking as measured configuration choices, not status levels.
-- Treat 720 as a scaled certification score, never as a raw percentage.
+- 为更强能力付费前，先修复缺失标准、来源和上下文。
+- 使用能通过代表性质量门槛的最小模型。
+- 除词元价格外，还计入人工修正与失败成本。
+- 根据可观察信号，将后果重大或含糊的工作向上路由。
+- 只有工作流容忍延迟完成时，才采用批处理。
+- 只有时效性与隔离条件允许时，才缓存稳定、可复用材料。
+- 将模型功能、定价和上限视为带日期的事实。
+- 重复执行概率性评估；低温度或固定模型 ID 不保证输出相同。
+- 将速度、投入程度和思考作为实测配置选择比较，而不是视为等级象征。
+- 将 720 视为换算认证分数，绝不视为原始百分比。
 
-## Common Traps
+## 常见陷阱（Common Traps）
 
-- Choosing by family reputation instead of a task benchmark.
-- Comparing models on one easy example.
-- Reporting average quality while hiding critical-case failures.
-- Calling every poor output a model limitation.
-- Adding context until cost and distraction rise together.
-- Reusing cached output after the underlying source changes.
-- Omitting review time from the cost model.
-- Routing with an opaque classifier and no audit trail.
-- Declaring a prompt deterministic because one run passed or temperature was low.
-- Copying a speed, effort, thinking, or sampling setting from a different model or platform.
-- Silently downgrading an unsupported mode instead of failing closed and recording the incompatibility.
-- Comparing mean latency while hiding a tail that violates the user-facing objective.
-- Converting the 720 scaled exam threshold into a raw 72 percent target.
+- 根据家族声誉而不是任务基准选择模型。
+- 只用一个简单示例比较模型。
+- 报告平均质量，却隐藏关键案例失败。
+- 把所有差输出都归为模型局限。
+- 持续增加上下文，使成本与干扰同时上升。
+- 底层来源变化后仍复用缓存输出。
+- 成本模型遗漏审核时间。
+- 用不透明分类器路由，且没有审计轨迹。
+- 因一次运行通过或温度低，就宣称提示词具有确定性。
+- 从其他模型或平台复制速度、投入程度、思考或采样设置。
+- 对不受支持模式静默降级，而不是拒绝执行并记录不兼容。
+- 比较平均延迟，却隐藏违反用户目标的尾部延迟。
+- 将 720 的换算及格线转换为 72% 的原始目标。
 
-## Exercises
+## 练习（Exercises）
 
-1. Calculate monthly cost symbolically for a workflow with 50,000 cases and two model tiers.
-2. Write three deterministic routing signals for a support workflow.
-3. Diagnose five failures as requirement, source, context, prompt, model, or workflow problems.
-4. Identify a task that should use batch processing and one that must remain interactive.
-5. Verify one current thinking feature in official documentation and record model, platform, and date.
-6. Run one configuration three times, preserve outcome fingerprints, and explain what a single run would have hidden.
-7. Find one currently unsupported mode combination in official documentation and record it without sending a request.
+1. 用符号计算包含 50,000 个案例、两个模型层级的工作流月成本。
+2. 为支持工作流写出三个确定性路由信号。
+3. 将五种故障诊断为需求、来源、上下文、提示词、模型或工作流问题。
+4. 找出一个应使用批处理的任务，以及一个必须保持交互的任务。
+5. 在官方文档中核实一项当前思考功能，记录模型、平台和日期。
+6. 将一种配置运行三次，保留结果指纹，解释单次运行会隐藏什么。
+7. 在官方文档中找到一个当前不受支持的模式组合，只记录，不发送请求。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | Meaning |
+| 术语（Term） | 含义（Meaning） |
 |---|---|
-| Token economics | The relationship between input, output, request volume, model rates, and workflow cost |
-| Quality gate | A measurable threshold a candidate configuration must clear |
-| Routing | Selecting a model or execution lane from task signals |
-| Escalation | Moving uncertain or consequential work to greater capability or human review |
-| Prompt caching | Reusing provider-side computation for stable prompt material |
-| Rework cost | Human or machine effort required to correct an inadequate output |
-| Sampling | Selecting generated tokens from model probability distributions |
-| Mode trial | A repeated, dated evaluation of one exact model, platform, speed, effort, and thinking configuration |
-| Tail latency | A high-percentile latency measure such as p95 that exposes slow requests hidden by an average |
-| Scaled score | A transformed exam result used to equate forms, not a raw percentage correct |
+| 词元经济性（Token economics） | 输入、输出、请求量、模型费率与工作流成本之间的关系 |
+| 质量门槛（Quality gate） | 候选配置必须通过的可测量阈值 |
+| 路由（Routing） | 根据任务信号选择模型或执行通道 |
+| 升级处理（Escalation） | 将不确定或后果重大的工作转交更强能力或人工审核 |
+| 提示词缓存（Prompt caching） | 对稳定提示词材料复用提供商侧计算 |
+| 返工成本（Rework cost） | 修正不合格输出所需的人工或机器投入 |
+| 采样（Sampling） | 从模型概率分布中选择生成词元 |
+| 模式试验（Mode trial） | 对确切模型、平台、速度、投入程度和思考配置开展带日期的重复评估 |
+| 尾延迟（Tail latency） | p95 等高分位延迟指标，揭示均值隐藏的慢请求 |
+| 换算分数（Scaled score） | 用于等值处理不同试卷的转换后成绩，不是原始正确率 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [Models overview](https://platform.claude.com/docs/en/about-claude/models/overview)
-- [Create a Message API reference](https://platform.claude.com/docs/en/api/messages/create)
-- [Working with Messages](https://platform.claude.com/docs/en/build-with-claude/working-with-messages)
-- [Model IDs and versioning](https://platform.claude.com/docs/en/about-claude/models/model-ids-and-versions)
-- [What's new in Claude Sonnet 5](https://platform.claude.com/docs/en/about-claude/models/whats-new-sonnet-5)
-- [What's new in Claude Opus 5](https://platform.claude.com/docs/en/about-claude/models/whats-new-opus-5)
-- [Claude pricing](https://platform.claude.com/docs/en/about-claude/pricing)
-- [Thinking](https://platform.claude.com/docs/en/build-with-claude/thinking)
-- [Effort](https://platform.claude.com/docs/en/build-with-claude/effort)
-- [Fast mode](https://platform.claude.com/docs/en/build-with-claude/fast-mode)
-- [Prompt caching](https://platform.claude.com/docs/en/build-with-claude/prompt-caching)
-- [Batch processing](https://platform.claude.com/docs/en/build-with-claude/batch-processing)
-- [Anthropic certification FAQ](https://anthropic-partners.skilljar.com/page/faq-certifications)
-- [Caching, Rate Limiting and Cost Optimization](../../../../../phases/11-llm-engineering/11-caching-cost/)
-- [Prompt and Semantic Caching Economics](../../../../../phases/17-infrastructure-and-production/14-prompt-semantic-caching/)
-- [Model Routing as a Cost-Reduction Primitive](../../../../../phases/17-infrastructure-and-production/16-model-routing/)
+- [模型概览](https://platform.claude.com/docs/en/about-claude/models/overview)
+- [创建消息 API 参考](https://platform.claude.com/docs/en/api/messages/create)
+- [使用 Messages](https://platform.claude.com/docs/en/build-with-claude/working-with-messages)
+- [模型 ID 与版本管理](https://platform.claude.com/docs/en/about-claude/models/model-ids-and-versions)
+- [Claude Sonnet 5 新功能](https://platform.claude.com/docs/en/about-claude/models/whats-new-sonnet-5)
+- [Claude Opus 5 新功能](https://platform.claude.com/docs/en/about-claude/models/whats-new-opus-5)
+- [Claude 定价](https://platform.claude.com/docs/en/about-claude/pricing)
+- [思考（Thinking）](https://platform.claude.com/docs/en/build-with-claude/thinking)
+- [投入程度（Effort）](https://platform.claude.com/docs/en/build-with-claude/effort)
+- [快速模式（Fast mode）](https://platform.claude.com/docs/en/build-with-claude/fast-mode)
+- [提示词缓存（Prompt caching）](https://platform.claude.com/docs/en/build-with-claude/prompt-caching)
+- [批处理（Batch processing）](https://platform.claude.com/docs/en/build-with-claude/batch-processing)
+- [Anthropic 认证常见问题](https://anthropic-partners.skilljar.com/page/faq-certifications)
+- [缓存、速率限制与成本优化](../../../../../phases/11-llm-engineering/11-caching-cost/)
+- [提示词与语义缓存经济性](../../../../../phases/17-infrastructure-and-production/14-prompt-semantic-caching/)
+- [作为成本削减基础手段的模型路由](../../../../../phases/17-infrastructure-and-production/16-model-routing/)

@@ -1,15 +1,14 @@
 #!/usr/bin/env python3
-"""Assemble course lessons into book volumes and render them with pandoc.
+"""将课程组装为分卷图书，并使用 pandoc 渲染。
 
-Usage:
-    python3 scripts/build_book.py                 # assemble + epub for all volumes
+用法：
+    python3 scripts/build_book.py                 # 组装全部分卷并生成 EPUB
     python3 scripts/build_book.py --volume language
-    python3 scripts/build_book.py --pdf           # also render PDF (xelatex)
-    python3 scripts/build_book.py --assemble-only # markdown only, no pandoc
+    python3 scripts/build_book.py --pdf           # 同时生成 PDF（xelatex）
+    python3 scripts/build_book.py --assemble-only # 仅组装 Markdown，不调用 pandoc
 
-The book is deliberately a companion to the repo and the website, not a
-replacement. Interactive figures, quizzes, and runnable code stay online;
-every chapter ends with the links that take the reader there.
+图书用于配合仓库和网站学习，不替代在线内容。
+交互图表、测验和可运行代码保留在线，每章末尾提供相应链接。
 """
 
 import argparse
@@ -72,34 +71,34 @@ def fenced_div(cls, *lines):
 
 def continue_box(u, has_quiz):
     lines = [
-        "**Continue online.** The living edition of this chapter has more than the page can hold:",
+        "**在线继续学习。** 本章的在线版本提供纸面之外的学习内容：",
         "",
-        f"- Animated, interactive figures and the web text: <{u['web']}>",
-        f"- Runnable code for every step: <{u['code']}>",
+        f"- 动画、交互图表和网页正文：<{u['web']}>",
+        f"- 每个步骤的可运行代码：<{u['code']}>",
     ]
     if has_quiz:
-        lines.append(f"- The chapter quiz, graded in the browser: <{u['web']}>")
+        lines.append(f"- 本章测验，可在浏览器中自动评分：<{u['web']}>")
     lines += [
         "",
-        "The repository moves faster than any printing. When the book and the repo disagree, trust the repo.",
+        "仓库的更新快于印刷出版。图书与仓库内容不一致时，以仓库为准。",
     ]
     return fenced_div("continue-online", *lines)
 
 
 def fence_end(src, i):
-    """Index of the line that closes the fence opened at src[i] (len(src) if unclosed)."""
+    """返回 src[i] 所开围栏的结束行索引；未闭合时返回 len(src)。"""
     j = i + 1
     while j < len(src) and src[j].strip() != "```":
         j += 1
     return j
 
 
-BOOK_LANG = "en"  # set by --lang; selects translated source when available
+BOOK_LANG = "zh"  # 本分支保留 en.md 路径，但权威源文档已是中文。
 
 
 def _lesson_source(phase, lesson):
     en = ROOT / "phases" / phase / lesson / "docs" / "en.md"
-    if BOOK_LANG != "en":
+    if BOOK_LANG not in ("en", "zh", "zh-CN"):
         tr = ROOT / "i18n" / BOOK_LANG / "phases" / phase / lesson / "docs" / f"{BOOK_LANG}.md"
         if tr.is_file():
             return tr
@@ -128,26 +127,26 @@ def transform_lesson(phase, lesson_dir):
                 fig_id = block[0].strip() if block else "figure"
                 out += fenced_div(
                     "interactive-figure",
-                    f"**Interactive figure: `{fig_id}`.** This one moves. Watch it animate and drag its controls in the web edition: <{u['web']}>",
+                    f"**交互图表（Interactive Figure）：`{fig_id}`。** 请在网页版本中观看动画并拖动控件：<{u['web']}>",
                 )
             elif info == "mermaid":
                 rendered = render_mermaid(block)
                 if rendered:
-                    out += ["", f"![diagram]({rendered})", ""]
+                    out += ["", f"![图表]({rendered})", ""]
                 else:
                     out += fenced_div(
                         "interactive-figure",
-                        f"**Diagram.** Rendered live in the web edition: <{u['web']}>",
+                        f"**图表。** 在网页版本中实时渲染：<{u['web']}>",
                     )
             else:
                 out += src[i : end + 1]
             i = end + 1
             continue
 
-        if line.startswith("## Ship It"):
+        if re.match(r"^## (?:Ship It|[^\n]+（Ship It）)", line):
             out += fenced_div(
                 "continue-online",
-                f"**This chapter ships an artifact.** The course version of this lesson produces a reusable prompt or agent skill. It lives in the repository, ready to install: <{u['repo']}>",
+                f"**本章提供可复用的交付物（Artifact）。** 在线课程会产出提示词（Prompt）或智能体技能（Agent Skill），文件位于仓库中，可供安装使用：<{u['repo']}>",
             )
             i += 1
             while i < len(src):
@@ -162,10 +161,10 @@ def transform_lesson(phase, lesson_dir):
                 i += 1
             continue
 
-        if line.startswith("## Exercises"):
+        if re.match(r"^## (?:Exercises|[^\n]+（Exercises）)", line):
             out.append(line)
             out.append("")
-            out.append(f"Starter code and the lesson's working implementation: <{u['code']}>")
+            out.append(f"起始代码与本课的可运行实现：<{u['code']}>")
             i += 1
             continue
 
@@ -173,7 +172,7 @@ def transform_lesson(phase, lesson_dir):
         i += 1
 
     if not balanced:
-        raise ValueError(f"unbalanced code fence in {lesson_dir / 'docs' / 'en.md'}")
+        raise ValueError(f"代码围栏未闭合：{lesson_dir / 'docs' / 'en.md'}")
 
     out += continue_box(u, has_quiz)
     return out
@@ -216,10 +215,10 @@ def render_mermaid(block):
         return str(svg.relative_to(ROOT))
     except subprocess.CalledProcessError as exc:
         detail = (exc.stderr or b"").decode(errors="replace").strip()[:300]
-        print(f"warning: mermaid render failed for {mmd.name}: {detail}", file=sys.stderr)
+        print(f"警告：Mermaid 图表 {mmd.name} 渲染失败：{detail}", file=sys.stderr)
         return None
     except subprocess.TimeoutExpired:
-        print(f"warning: mermaid render timed out for {mmd.name}", file=sys.stderr)
+        print(f"警告：Mermaid 图表 {mmd.name} 渲染超时", file=sys.stderr)
         return None
 
 
@@ -254,35 +253,35 @@ def series_map(vol):
         phases = ", ".join(p.split("-")[0] for p in v["phases"])
         rows.append(f"| {marker}{v['number']}{marker} | {marker}{v['title']}{marker} — {v['subtitle']} | {phases} |")
     return "\n".join([
-        "| Vol | Title | Course phases |",
+        "| 卷 | 标题 | 课程阶段 |",
         "|-----|-------|---------------|",
     ] + rows)
 
 
 def how_to_use(vol):
-    return f"""# About This Volume {{.unnumbered}}
+    return f"""# 关于本卷 {{.unnumbered}}
 
-This is Volume {vol['number']} of *{CONFIG['series']}*, a six-volume compilation of the open course of the same name. Each volume stands alone; cross-references cite course phase numbers, which map to volumes like this:
+本书是《{CONFIG['series']}》第 {vol['number']} 卷。这套六卷图书整理自同名开放课程，各卷可以独立阅读。交叉引用使用课程阶段编号，对应关系如下：
 
 {series_map(vol)}
 
-The chapters in this volume come from course phases {', '.join(p.split('-')[0] for p in vol['phases'])}. Chapter prerequisites name phases, not volumes; use the table above to translate.
+本卷内容来自课程阶段 {', '.join(p.split('-')[0] for p in vol['phases'])}。先修要求引用的是阶段编号，而不是卷号；请根据上表查找对应分卷。
 
-# How to Use This Book {{.unnumbered}}
+# 如何使用本书 {{.unnumbered}}
 
-This volume is one loop of a larger machine, and it works best when you run the whole loop:
+本卷是整套学习流程的一部分，建议完成以下完整步骤：
 
-1. **Read the chapter here.** The prose, the derivations, and the code walkthroughs are complete on the page.
-2. **Run the code from the repository.** Every chapter has a `code/` directory with a working implementation you can run and break: <{REPO}>
-3. **Open the web edition for what paper cannot do.** Animated figures you can watch and drag, and a quiz per chapter that grades itself: <{SITE}>
+1. **在书中阅读章节。** 本书完整保留正文、推导过程和代码讲解。
+2. **运行仓库中的代码。** 每章的 `code/` 目录都包含可运行实现。运行它、修改它，并观察哪些改动会出错：<{REPO}>
+3. **使用纸面无法提供的网页功能。** 观看和操作动态图表，完成每章自动评分的测验：<{SITE}>
 
-The repository is the living edition. Lessons are updated as the field moves; the book is a snapshot with a version number. When they disagree, the repo is right.
+仓库中的课程会随领域发展持续更新，图书则是带有版本号的快照。两者不一致时，以仓库为准。
 
-## Learning with an AI {{.unnumbered}}
+## 使用 AI 辅助学习 {{.unnumbered}}
 
-This course is built to be read by agents as well as people. The machine-readable index of every lesson lives at <{SITE}/llms.txt>. If you learn with an AI assistant, paste this and go:
+本课程既供人阅读，也便于智能体（Agent）使用。所有课程的机器可读索引位于 <{SITE}/llms.txt>。借助 AI 助手学习时，可以使用以下提示词：
 
-> I am working through *{CONFIG["series"]}, Volume {vol["number"]}: {vol["title"]}*. Fetch {SITE}/llms.txt, find the lesson I name, and act as my tutor: quiz me on its Key Terms, review my solutions to its Exercises, and walk me through its code from the repository.
+> 我正在学习《{CONFIG["series"]}》第 {vol["number"]} 卷《{vol["title"]}》。请获取 {SITE}/llms.txt，找到我指定的课程，并担任我的导师：围绕关键术语（Key Terms）提问，审阅我的练习（Exercises）解答，并带我逐步理解仓库中的代码。
 """
 
 
@@ -293,8 +292,8 @@ def assemble(vol):
     for part_idx, phase in enumerate(vol["phases"]):
         title = clean_phase_title(phase_title(phase))
         parts.append(
-            f"\n# Part {ROMAN[part_idx]} — {title} {{.unnumbered .part}}\n\n"
-            f"*Course phase {phase.split('-')[0]}. Live edition with animated figures and quizzes: <{SITE}/catalog.html>*\n"
+            f"\n# 第 {ROMAN[part_idx]} 部分：{title} {{.unnumbered .part}}\n\n"
+            f"*课程阶段 {phase.split('-')[0]}。含动态图表与测验的在线版本：<{SITE}/catalog.html>*\n"
         )
         for lesson_dir in lesson_dirs(phase):
             parts.append("\n".join(transform_lesson(phase, lesson_dir)))
@@ -310,10 +309,10 @@ def metadata(vol):
     meta.write_text(
         "---\n"
         f"title: \"{CONFIG['series']}\"\n"
-        f"subtitle: \"Volume {vol['number']} — {vol['title']}: {vol['subtitle']}\"\n"
+        f"subtitle: \"第 {vol['number']} 卷：{vol['title']}：{vol['subtitle']}\"\n"
         f"author: \"{CONFIG['author']}\"\n"
-        "lang: en\n"
-        "toc-title: Contents\n"
+        f"lang: {'zh-Hans' if BOOK_LANG == 'zh' else BOOK_LANG}\n"
+        "toc-title: 目录\n"
         "---\n",
         encoding="utf-8",
     )
@@ -339,10 +338,9 @@ def render(vol, md, chapters, pdf=False):
     subprocess.run(cmd, check=True, cwd=ROOT)
     results = [epub]
     if pdf and BOOK_LANG in ("ar", "fa", "ur", "he"):
-        # right-to-left scripts need a bidi engine + Arabic/Hebrew fonts that the
-        # xelatex theme does not ship; the EPUB (above) handles RTL natively, so
-        # skip the PDF rather than emit a broken left-to-right one.
-        print(f"note: skipping {BOOK_LANG} PDF for {vol['slug']} (RTL not wired for PDF); EPUB produced", file=sys.stderr)
+        # 从右向左书写需要双向排版引擎和阿拉伯文/希伯来文字体，当前 xelatex 主题未提供。
+        # 上方 EPUB 原生支持 RTL；跳过不受支持的 PDF，避免输出方向错误的页面。
+        print(f"说明：{vol['slug']} 尚不支持 {BOOK_LANG} 的从右向左（RTL）PDF 排版，已跳过 PDF；EPUB 已生成", file=sys.stderr)
         pdf = False
     if pdf:
         titlepage = BUILD / f"{vol['slug']}-titlepage.tex"
@@ -372,10 +370,10 @@ def render(vol, md, chapters, pdf=False):
             "--resource-path", str(ROOT),
             "--include-in-header", str(ROOT / "book" / "theme.tex"),
             "--include-before-body", str(titlepage),
-            "-M", f"title-meta={CONFIG['series']} Volume {vol['number']}: {vol['title']}",
+            "-M", f"title-meta={CONFIG['series']} 第 {vol['number']} 卷：{vol['title']}",
             "-M", "author-meta=aiengineeringfromscratch.com",
-            "-M", f"lang={BOOK_LANG}",
-            "-V", "toc-title=Contents",
+            "-M", f"lang={'zh-Hans' if BOOK_LANG == 'zh' else BOOK_LANG}",
+            "-V", "toc-title=目录",
             "-V", "documentclass=book",
             "-V", "classoption=oneside,openany",
             "-V", "geometry=margin=1in",
@@ -387,18 +385,18 @@ def render(vol, md, chapters, pdf=False):
             cmd_pdf += ["-V", f"mainfont={serif}"]
         if mono:
             cmd_pdf += ["-V", f"monofont={mono}"]
-        # CJK scripts need a matching font; DejaVu already covers
-        # Latin/Cyrillic/Greek/Devanagari for the other languages.
+        # 中日韩文字（CJK）需要对应字体；其他语言的拉丁、西里尔、希腊及天城文字由 DejaVu 覆盖。
         cjk_candidates = {
-            "zh": ["Noto Sans CJK SC", "Noto Serif CJK SC", "Source Han Serif SC"],
+            "zh": ["Noto Serif CJK SC", "Source Han Serif SC", "Noto Sans CJK SC", "Songti SC", "PingFang SC"],
             "zh-TW": ["Noto Sans CJK TC", "Noto Serif CJK TC", "Source Han Serif TC"],
             "ja": ["Noto Sans CJK JP", "Noto Serif CJK JP", "Source Han Serif JP"],
             "ko": ["Noto Sans CJK KR", "Noto Serif CJK KR", "Source Han Serif KR"],
         }
         if BOOK_LANG in cjk_candidates:
             cjk = pick_font(cjk_candidates[BOOK_LANG])
-            if cjk:
-                cmd_pdf += ["-V", f"CJKmainfont={cjk}"]
+            if not cjk:
+                raise RuntimeError(f"无法生成 {BOOK_LANG} PDF：未找到对应的中日韩（CJK）字体；请安装 Noto CJK 字体后重试。")
+            cmd_pdf += ["-V", f"CJKmainfont={cjk}", "-V", f"CJKmonofont={cjk}"]
         subprocess.run(cmd_pdf, check=True, cwd=ROOT)
         results.append(pdf_out)
     return results
@@ -410,22 +408,22 @@ def check_phases():
         for phase in vol["phases"]:
             claimed.add(phase)
             if not (PHASES / phase).is_dir() or not lesson_dirs(phase):
-                sys.exit(f"volume {vol['slug']}: phase {phase} is missing or has no lessons")
+                sys.exit(f"分卷 {vol['slug']}：阶段 {phase} 不存在或没有课程")
     for d in sorted(PHASES.iterdir()):
         if d.is_dir() and d.name not in claimed:
-            print(f"warning: phase directory {d.name} is not claimed by any volume", file=sys.stderr)
+            print(f"警告：阶段目录 {d.name} 未归入任何分卷", file=sys.stderr)
 
 
 def main():
     global BOOK_LANG
     ap = argparse.ArgumentParser()
-    ap.add_argument("--volume", help="build one volume by slug")
-    ap.add_argument("--pdf", action="store_true", help="also render PDF via xelatex")
-    ap.add_argument("--assemble-only", action="store_true", help="skip pandoc")
-    ap.add_argument("--lang", default="en",
-                    help="build a translated edition from i18n/<lang>/ (English fallback per lesson)")
+    ap.add_argument("--volume", help="根据分卷短标识（Slug）构建单卷")
+    ap.add_argument("--pdf", action="store_true", help="同时通过 xelatex 生成 PDF")
+    ap.add_argument("--assemble-only", action="store_true", help="仅组装，不调用 pandoc")
+    ap.add_argument("--lang", default="zh",
+                    help="默认构建本分支中文版本；其他语言从 i18n/<lang>/ 读取，缺失时使用本分支源文件")
     args = ap.parse_args()
-    BOOK_LANG = args.lang
+    BOOK_LANG = "zh" if args.lang == "zh-CN" else args.lang
 
     check_phases()
 
@@ -433,11 +431,11 @@ def main():
     if args.volume:
         vols = [v for v in vols if v["slug"] == args.volume]
         if not vols:
-            sys.exit(f"unknown volume: {args.volume}")
+            sys.exit(f"未知分卷：{args.volume}")
 
     for vol in vols:
         md, chapters, words = assemble(vol)
-        print(f"vol {vol['number']} {vol['slug']}: {chapters} chapters, {words:,} words -> {md}")
+        print(f"第 {vol['number']} 卷 {vol['slug']}：{chapters} 章，{words:,} 个空白分隔文本单元 -> {md}")
         if not args.assemble_only:
             for artifact in render(vol, md, chapters, pdf=args.pdf):
                 size = artifact.stat().st_size // 1024

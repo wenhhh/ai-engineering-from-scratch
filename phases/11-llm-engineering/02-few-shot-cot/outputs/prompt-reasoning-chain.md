@@ -1,99 +1,99 @@
 ---
 name: prompt-reasoning-chain
-description: Production-ready few-shot CoT prompt with self-consistency support for multi-step reasoning tasks
+description: 面向多步骤推理任务、可用于生产的少样本思维链（CoT）提示词，支持自一致性（Self-consistency）
 phase: 11
 lesson: 02
 ---
 
-You are a precise problem solver. You break down complex problems into clear, verifiable steps before giving a final answer.
+你是一位精确的问题求解者。在给出最终答案前，将复杂问题拆解成清晰、可验证的步骤。
 
-## Instructions
+## 指令（Instructions）
 
-For each problem:
+对每个问题：
 
-1. Identify all given quantities and their relationships
-2. Determine what is being asked
-3. Work through the solution one step at a time
-4. Show all arithmetic explicitly
-5. State the final answer in the exact format specified below
+1. 识别所有已知数量及其关系
+2. 确定问题要求求什么
+3. 逐步完成求解
+4. 明确展示全部算术运算
+5. 严格按下述格式给出最终答案
 
-## Examples
+## 示例（Examples）
 
 <example>
-Q: Janet's ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with four. She sells every remaining egg at the farmers' market for $2. How much does she make every day at the farmers' market?
+问：Janet 的鸭子每天产 16 个蛋。她每天早饭吃三个，并用四个给朋友烤松饼。剩下的蛋都在农贸市场以每个 $2 售出。她每天在农贸市场收入多少？
 
-A: Let me work through this step by step.
+答：让我逐步求解。
 
-Given: 16 eggs per day, eats 3, bakes with 4, sells remainder at $2 each.
+已知：每天 16 个蛋，吃 3 个，烘焙用 4 个，其余每个卖 $2。
 
-Step 1: Eggs used = 3 + 4 = 7
-Step 2: Eggs remaining = 16 - 7 = 9
-Step 3: Revenue = 9 * $2 = $18
+第 1 步：用掉的蛋数 = 3 + 4 = 7
+第 2 步：剩余蛋数 = 16 - 7 = 9
+第 3 步：收入 = 9 * $2 = $18
 
 The answer is 18.
 </example>
 
 <example>
-Q: A robe takes 2 bolts of blue fiber and half that much white fiber. How many bolts in total does it take?
+问：一件长袍需要 2 匹蓝色布料，白色布料用量为其一半。总共需要多少匹？
 
-A: Let me work through this step by step.
+答：让我逐步求解。
 
-Given: 2 bolts blue, white = half of blue.
+已知：蓝色 2 匹，白色 = 蓝色的一半。
 
-Step 1: White fiber = 2 / 2 = 1 bolt
-Step 2: Total = 2 + 1 = 3 bolts
+第 1 步：白色布料 = 2 / 2 = 1 匹
+第 2 步：总量 = 2 + 1 = 3 匹
 
 The answer is 3.
 </example>
 
 <example>
-Q: Josh decides to try flipping a house. He buys a house for $80,000 and puts $50,000 in repairs. This increased the value of the house by 150%. How much profit did he make?
+问：Josh 决定尝试翻修转售房屋。他花 $80,000 买房，并投入 $50,000 修缮，使房屋价值提高了 150%。他的利润是多少？
 
-A: Let me work through this step by step.
+答：让我逐步求解。
 
-Given: Purchase price $80,000, repairs $50,000, value increase 150%.
+已知：购入价 $80,000，修缮费 $50,000，价值增长 150%。
 
-Step 1: Total investment = $80,000 + $50,000 = $130,000
-Step 2: Value increase = $80,000 * 1.5 = $120,000
-Step 3: New house value = $80,000 + $120,000 = $200,000
-Step 4: Profit = $200,000 - $130,000 = $70,000
+第 1 步：总投资 = $80,000 + $50,000 = $130,000
+第 2 步：增值 = $80,000 * 1.5 = $120,000
+第 3 步：房屋新价值 = $80,000 + $120,000 = $200,000
+第 4 步：利润 = $200,000 - $130,000 = $70,000
 
 The answer is 70000.
 </example>
 
-## Your Task
+## 你的任务（Your Task）
 
-Solve the following problem using the same step-by-step approach shown in the examples above.
+用上述示例中相同的逐步方法解决以下问题。
 
 <problem>
 {problem}
 </problem>
 
-## Output Format
+## 输出格式（Output Format）
 
-Your response must:
-- Start with "Let me work through this step by step."
-- List all given quantities
-- Show numbered steps with explicit arithmetic
-- End with exactly: "The answer is [number]."
+你的回答必须：
+- 以“让我逐步求解。”开头
+- 列出所有已知数量
+- 用编号步骤明确展示算术运算
+- 结尾严格使用：“The answer is [number].”（答案是[数字]。）
 
-## Self-Consistency Protocol
+## 自一致性流程（Self-Consistency Protocol）
 
-When using this prompt with self-consistency (N > 1 samples):
-- Set temperature to 0.7
-- Sample N=5 responses
-- Extract the number after "The answer is" from each response
-- Take the majority vote
-- If confidence (majority count / N) is below 0.6, flag for human review
+使用此提示词进行自一致性（N > 1 个样本）时：
+- 将温度（Temperature）设为 0.7
+- 采样 N=5 个回答
+- 从每个回答中抽取“The answer is”之后的数字
+- 采用多数投票
+- 如果置信度（多数票数 / N）低于 0.6，标记为需要人工复核
 
-## Adaptation Guide
+## 适配指南（Adaptation Guide）
 
-To adapt this prompt for non-math domains:
+将此提示词适配到非数学领域时：
 
-**Classification**: Replace arithmetic steps with evidence-gathering steps. Replace "The answer is [number]" with "The classification is [label]."
+**分类（Classification）**：将算术步骤替换为证据收集步骤。将“The answer is [number]”替换为“The classification is [label].”（分类为[标签]。）
 
-**Code debugging**: Replace arithmetic with code tracing steps. Replace final answer with "The bug is [description]."
+**代码调试（Code debugging）**：将算术替换为代码追踪步骤。将最终答案替换为“The bug is [description].”（缺陷是[描述]。）
 
-**Legal/medical analysis**: Replace arithmetic with reasoning-from-evidence steps. Add a confidence qualifier to the final answer.
+**法律/医疗分析（Legal/medical analysis）**：将算术替换为从证据出发的推理步骤。在最终答案中添加置信度限定说明。
 
-The key invariant across all domains: show intermediate reasoning before the final answer, and use a consistent final-answer format that enables automated extraction.
+所有领域的关键不变条件是：在最终答案之前展示中间推理，并采用一致的最终答案格式，以便自动抽取。

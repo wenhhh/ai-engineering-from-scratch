@@ -1,32 +1,32 @@
 ---
 name: otel-genai
-description: Instrument an agent with OpenTelemetry GenAI semantic conventions — invoke_agent, chat, tool_call spans with correct attributes and opt-in content capture.
+description: 按 OpenTelemetry GenAI 语义约定为智能体插桩，提供带正确属性的 invoke_agent、chat、tool_call 跨度，内容采集仅在显式启用后进行。
 version: 1.0.0
 phase: 14
 lesson: 23
 tags: [opentelemetry, genai, observability, tracing, semantic-conventions]
 ---
 
-Given an agent runtime, wire OTel GenAI semantic conventions.
+给定智能体运行时，接入 OTel GenAI 语义约定。
 
-Produce:
+产出：
 
-1. `invoke_agent` span per agent run. Kind CLIENT for remote agent services, INTERNAL for in-process. Name: `invoke_agent {gen_ai.agent.name}`.
-2. `chat` span per LLM call with `gen_ai.operation.name=chat`, `gen_ai.provider.name`, `gen_ai.request.model`, `gen_ai.response.model`.
-3. `tool_call` span per tool invocation with `gen_ai.tool.name` and, when applicable, `gen_ai.data_source.id` (RAG corpus / memory store).
-4. Opt-in content capture: default OFF; when ON, store inputs/outputs externally and record `*.reference_id` on spans.
-5. Context propagation: use W3C trace context headers so multi-process runs (Claude Agent SDK CLI subprocess) stitch into one trace.
+1. 每次智能体运行一个 `invoke_agent` 跨度。远程智能体服务用 CLIENT 类型，进程内用 INTERNAL。名称为 `invoke_agent {gen_ai.agent.name}`。
+2. 每次 LLM 调用一个 `chat` 跨度，带 `gen_ai.operation.name=chat`、`gen_ai.provider.name`、`gen_ai.request.model`、`gen_ai.response.model`。
+3. 每次工具调用一个 `tool_call` 跨度，带 `gen_ai.tool.name`，适用时还带 `gen_ai.data_source.id`，标识 RAG 语料库或记忆存储。
+4. 显式启用内容采集：默认关闭；开启后将输入与输出存储到外部，并在跨度中记录 `*.reference_id`。
+5. 上下文传播：使用 W3C 追踪上下文头，将多进程运行（Claude Agent SDK CLI 子进程）拼接为同一条追踪。
 
-Hard rejects:
+必须拒绝的设计：
 
-- Capturing full prompts/outputs inline by default. PII and secret leakage risk; also violates the spec.
-- Missing `gen_ai.provider.name`. Multi-provider dashboards break.
-- Orphan tool spans. Always set parent-child relation via active context.
+- 默认在跨度内嵌入完整提示词与输出。这会泄露 PII 和密钥，也违反规范。
+- 缺少 `gen_ai.provider.name`。多提供商仪表盘会失效。
+- 孤立工具跨度。始终通过活跃上下文建立父子关系。
 
-Refusal rules:
+拒绝规则：
 
-- If the runtime cannot propagate context across process boundaries, refuse. Multi-process trace stitching is required for Claude Agent SDK + CLI users.
-- If the product has regulatory constraints (HIPAA, GDPR), refuse inline content capture. External store with access control only.
-- If the backend does not set `OTEL_SEMCONV_STABILITY_OPT_IN=gen_ai_latest_experimental`, warn: attribute names may change on collector upgrade.
+- 如果运行时不能跨进程边界传播上下文，应拒绝。Claude Agent SDK + CLI 用户必须能拼接多进程追踪。
+- 如果产品受到 HIPAA、GDPR 等监管约束，应拒绝内嵌内容采集，只能使用带访问控制的外部存储。
+- 如果后端未设置 `OTEL_SEMCONV_STABILITY_OPT_IN=gen_ai_latest_experimental`，应警告：收集器升级时属性名可能改变。
 
-Output: `tracer.py`, `attributes.py`, `content_store.py`, `README.md` explaining span structure, stability opt-in, and content-capture policy. End with "what to read next" pointing to Lesson 24 (backends: Langfuse, Phoenix, Opik) or Lesson 17 for Claude Agent SDK trace-context propagation.
+输出：`tracer.py`、`attributes.py`、`content_store.py`、`README.md`，说明跨度结构、稳定性显式启用和内容采集策略。结尾给出“接下来读什么”，指向第 24 课（Langfuse、Phoenix、Opik 后端）或第 17 课的 Claude Agent SDK 追踪上下文传播。

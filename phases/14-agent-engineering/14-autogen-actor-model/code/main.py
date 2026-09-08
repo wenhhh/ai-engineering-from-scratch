@@ -1,8 +1,8 @@
-"""A stdlib actor runtime modeled on AutoGen v0.4 Core.
+"""以 AutoGen v0.4 Core 为模型、使用标准库实现的参与者（Actor）运行时。
 
-Actors have private state and an inbox. Messages are the only interaction.
-Failures in one actor are caught by the runtime and routed to a dead-letter
-queue; other actors keep running.
+各参与者拥有私有状态与收件箱，仅通过消息交互。
+某个参与者发生故障时，运行时捕获故障并将消息转入死信队列（Dead-letter queue）；
+其他参与者继续运行。
 """
 
 from __future__ import annotations
@@ -47,7 +47,7 @@ class Runtime:
                       topic=topic, body=body, mid=self.counter)
         self.queue.append(msg)
         self.trace.append(
-            f"[send m{msg.mid:03d}] {sender} -> {recipient} topic={topic} body={body}"
+            f"[发送 m{msg.mid:03d}] {sender} -> {recipient} 主题={topic} 正文={body}"
         )
 
     def run_until_idle(self) -> None:
@@ -56,19 +56,19 @@ class Runtime:
             msg = self.queue.popleft()
             actor = self.actors.get(msg.recipient)
             if actor is None:
-                self.dead_letters.append((msg, f"no actor {msg.recipient!r}"))
-                self.trace.append(f"[DLQ m{msg.mid:03d}] no actor {msg.recipient!r}")
+                self.dead_letters.append((msg, f"没有参与者 {msg.recipient!r}"))
+                self.trace.append(f"[DLQ m{msg.mid:03d}] 没有参与者 {msg.recipient!r}")
                 continue
             try:
                 actor.receive(msg, self)
                 self.trace.append(
-                    f"[recv m{msg.mid:03d}] {actor.name} handled topic={msg.topic}"
+                    f"[接收 m{msg.mid:03d}] {actor.name} 已处理主题={msg.topic}"
                 )
             except Exception as e:
                 self.dead_letters.append((msg, f"{type(e).__name__}: {e}"))
                 self.trace.append(
-                    f"[FAIL m{msg.mid:03d}] {actor.name} raised "
-                    f"{type(e).__name__}: {e}  (others keep running)"
+                    f"[失败 m{msg.mid:03d}] {actor.name} 抛出 "
+                    f"{type(e).__name__}: {e}  （其他参与者继续运行）"
                 )
             processed += 1
 
@@ -83,9 +83,9 @@ class ReviewerAgent(Actor):
             code = str(message.body)
             issues = []
             if "eval(" in code:
-                issues.append("uses eval")
+                issues.append("使用了 eval")
             if "except:" in code:
-                issues.append("bare except")
+                issues.append("使用了裸 except（Bare except）")
             ok = len(issues) == 0
             self.verdicts.append((code, ok))
             runtime.send(
@@ -95,7 +95,7 @@ class ReviewerAgent(Actor):
                 body={"ok": ok, "issues": issues},
             )
         elif message.topic == "crash_me":
-            raise RuntimeError("simulated handler failure")
+            raise RuntimeError("模拟处理函数故障")
 
 
 class ChecklistAgent(Actor):
@@ -122,7 +122,7 @@ class ChecklistAgent(Actor):
 
 def main() -> None:
     print("=" * 70)
-    print("AUTOGEN V0.4 ACTOR RUNTIME (STDLIB) — Phase 14, Lesson 14")
+    print("AutoGen v0.4 参与者运行时（Actor runtime，标准库）——第 14 阶段，第 14 课")
     print("=" * 70)
 
     runtime = Runtime()
@@ -151,19 +151,19 @@ def main() -> None:
 
     runtime.run_until_idle()
 
-    print("\nmessage trace")
+    print("\n消息轨迹")
     for line in runtime.trace:
         print(f"  {line}")
 
-    print(f"\nchecklist consensus: {checklist.consensus}")
-    print(f"dead-letter queue:   {len(runtime.dead_letters)} message(s)")
+    print(f"\n检查清单的共识（Consensus）： {checklist.consensus}")
+    print(f"死信队列（Dead-letter queue）：{len(runtime.dead_letters)} 条消息")
     for msg, reason in runtime.dead_letters:
         print(f"  DLQ m{msg.mid:03d} ({reason}) "
-              f"{msg.sender} -> {msg.recipient} topic={msg.topic}")
+              f"{msg.sender} -> {msg.recipient} 主题={msg.topic}")
 
     print()
-    print("property: reviewer's crash on 'crash_me' did not stop")
-    print("the 'review' messages from being processed. fault isolation.")
+    print("性质：reviewer 在处理 'crash_me' 时崩溃，")
+    print("并未阻止 'review' 消息被处理。这就是故障隔离（Fault isolation）。")
 
 
 if __name__ == "__main__":

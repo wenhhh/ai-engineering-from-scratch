@@ -1,58 +1,58 @@
 {
   "lesson": "70-task-spec-format",
-  "title": "Task Spec Format",
+  "title": "任务规格格式（Task Spec Format）",
   "questions": [
     {
       "stage": "pre",
-      "question": "Why freeze the task record schema before writing scoring code?",
+      "question": "为什么编写评分代码前要固定任务记录模式？",
       "options": [
-        "It locks the contract so metrics, runners, and post-processors agree on field names",
-        "It allows arbitrary new metric names without further changes",
-        "It makes the JSON parser run faster",
-        "It removes the need for a validator"
+        "锁定契约，使指标、运行器和后处理器对字段名达成一致",
+        "可任意添加新指标名而无须其他修改",
+        "使 JSON 解析器更快",
+        "无需验证器"
       ],
       "correct": 0,
-      "explanation": "The schema is the contract every downstream consumer reads from. Locking it lets you change components independently without breaking the rest."
+      "explanation": "模式是所有下游消费者读取的契约。锁定后可独立更换组件而不破坏其余部分。"
     },
     {
       "stage": "pre",
-      "question": "What is the closed vocabulary that the metric_name field accepts?",
+      "question": "metric_name 字段接受的封闭词汇表是什么？",
       "options": [
-        "Any string the task author chooses",
-        "Only exact_match and f1",
-        "Whatever the runner is configured to recognise",
+        "任务作者选择的任意字符串",
+        "只有 exact_match 和 f1",
+        "运行器配置能识别的任意值",
         "exact_match, f1, bleu_4, rouge_l, accuracy, code_exec"
       ],
       "correct": 3,
-      "explanation": "The lesson pins the metric vocabulary to six names. Adding one requires a new lesson and a new validator entry."
+      "explanation": "本课固定六个指标名。增加一个需要新课程和验证器新条目。"
     },
     {
       "stage": "check",
-      "question": "What does the validator do when it sees an unknown top-level field on a record?",
+      "question": "验证器遇到记录中的未知顶层字段时做什么？",
       "options": [
-        "Logs a warning but accepts the record",
-        "Strips it and continues",
-        "Renames it to metadata.unknown",
-        "Returns a validation error and rejects the record"
+        "记录警告但接受记录",
+        "删除字段并继续",
+        "重命名为 metadata.unknown",
+        "返回验证错误并拒绝记录"
       ],
       "correct": 3,
-      "explanation": "Unknown fields are a forward-compatibility hazard. The validator rejects them so the schema stays the only source of truth."
+      "explanation": "未知字段是前向兼容风险。验证器拒绝它们，使模式保持唯一事实来源。"
     },
     {
       "stage": "check",
-      "question": "Why are few-shot examples attached to the task record rather than computed by the runner?",
+      "question": "为何少样本示例附在任务记录上，而不由运行器计算？",
       "options": [
-        "Few-shot is only used during fine-tuning",
-        "Author intent is part of the eval; binding examples to the task removes per-model variance in prompt construction",
-        "It saves disk space",
-        "The runner does not have file I/O"
+        "少样本只在微调中使用",
+        "作者意图属于评估；示例绑定任务可消除不同模型构建提示词的差异",
+        "节省磁盘空间",
+        "运行器没有文件 I/O"
       ],
       "correct": 1,
-      "explanation": "Few-shot composition is part of the eval definition, not the model interface. Putting it in the task means every model sees the same prompt."
+      "explanation": "少样本组合属于评估定义，而非模型接口。放入任务可保证各模型看到相同提示词。"
     },
     {
       "stage": "check",
-      "question": "Which category-metric pair is illegal under the validator?",
+      "question": "验证器不允许哪种类别与指标组合？",
       "options": [
         "code_exec + code_exec",
         "summary + rouge_l",
@@ -60,19 +60,19 @@
         "mcq + bleu_4"
       ],
       "correct": 3,
-      "explanation": "BLEU on a single letter is meaningless. The validator enforces that mcq tasks use exact_match or accuracy only."
+      "explanation": "对单字母计算 BLEU 没有意义。验证器要求 mcq 任务只用 exact_match 或 accuracy。"
     },
     {
       "stage": "post",
-      "question": "What does the post_process rule extract_letter return when the generation is `Answer: C is correct`?",
+      "question": "生成结果为 `Answer: C is correct` 时，后处理规则 extract_letter 返回什么？",
       "options": [
         "Answer",
-        "An empty string",
-        "The full string unchanged",
+        "空字符串",
+        "原样完整字符串",
         "C"
       ],
       "correct": 3,
-      "explanation": "extract_letter returns the first character matching [A-E] in the generation. The string has C at the start of the body."
+      "explanation": "extract_letter 返回生成结果中首个匹配 [A-E] 的字符。该字符串正文开头为 C。"
     }
   ]
 }

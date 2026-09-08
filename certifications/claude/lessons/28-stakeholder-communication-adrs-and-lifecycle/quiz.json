@@ -1,78 +1,78 @@
 {
   "lesson": "28-stakeholder-communication-adrs-and-lifecycle",
-  "title": "Stakeholder Communication, ADRs, and Lifecycle Ownership",
+  "title": "相关方沟通、ADR 与生命周期归属（Stakeholder Communication, ADRs, and Lifecycle Ownership）",
   "questions": [
     {
       "stage": "pre",
-      "question": "An executive review receives only a detailed component diagram. What critical information is missing?",
+      "question": "管理层评审只收到详细组件图。缺少什么关键信息？",
       "options": [
-        "A dependency inventory showing whether the proposed design is technically feasible",
-        "A model benchmark and prompt transcript so the group can compare raw answer quality before discussing ownership",
-        "The business decision, options, consequences, residual risk, evidence, and owner",
-        "A line-by-line implementation plan so executives can estimate engineering effort without the delivery team's input"
+        "说明拟议设计是否技术可行的依赖清单",
+        "模型基准和提示词记录，让小组在讨论归属前比较原始答案质量",
+        "业务决策、选项、后果、剩余风险、证据和负责人",
+        "逐行实施计划，让管理层无需交付团队参与即可估算工程投入"
       ],
       "correct": 2,
-      "explanation": "Executives need to decide whether expected value justifies investment and residual risk. Components matter only as evidence for that decision."
+      "explanation": "管理层需要判断预期价值是否值得投资和剩余风险。组件只有作为该决策的证据才重要。"
     },
     {
       "stage": "check",
-      "question": "Why should an ADR include rejected alternatives?",
+      "question": "为什么 ADR 应包含被否决方案？",
       "options": [
-        "To make every considered option appear equally credible",
-        "To stop future teams revisiting the decision after constraints change",
-        "To replace implementation tests with the written decision record",
-        "To preserve which constraints and evidence made other choices weaker"
+        "让每个考虑过的选项看起来同样可信",
+        "防止未来团队在约束变化后重审决策",
+        "用书面决策记录替代实施测试",
+        "保留哪些约束与证据使其他选择较弱"
       ],
       "correct": 3,
-      "explanation": "Rejected options preserve tradeoff context. Future teams can revisit the decision rationally when evidence or constraints change instead of repeating hidden analysis."
+      "explanation": "被否决方案保留取舍背景。未来团队可在证据或约束变化时合理重审，而不是重复隐藏分析。"
     },
     {
       "stage": "check",
-      "question": "When is an operational handoff complete?",
+      "question": "运维交接何时完成？",
       "options": [
-        "When the receiving owners can monitor, evaluate, recover, change, and support the system under agreed acceptance criteria",
-        "When the implementation team stays on call indefinitely, so the receiving team never needs independent recovery or change capability",
-        "When the deck, runbook, and repository have been delivered, even if receiving owners have not exercised them",
-        "When one production request succeeds and the implementation team has documented the nominal workflow"
+        "接收方负责人能够依据约定的验收标准，监控、评估、恢复、变更和支持系统时",
+        "实施团队无限期持续值班，使接收团队永远不需要具备独立恢复系统或实施变更的能力时",
+        "演示文稿、运行手册和仓库已经交付时，即使接收方负责人尚未实际演练过这些材料",
+        "一条生产请求执行成功，而且实施团队已经把正常工作流记录下来时"
       ],
       "correct": 0,
-      "explanation": "Handoff transfers demonstrated operating ability and responsibility. Dashboards, runbooks, evaluation, rollback, access, review capacity, and ownership must be ready."
+      "explanation": "交接转移经过证明的运行能力与责任。仪表盘、手册、评估、回滚、访问、评审容量和归属必须就绪。"
     },
     {
       "stage": "check",
-      "question": "What is the strongest way to assign lifecycle ownership?",
+      "question": "分配生命周期归属最可靠的方法是什么？",
       "options": [
-        "Wait until the first incident reveals which team has the operational access and expertise to respond",
-        "Name owners and approvers for each decision, artifact, control, metric, and operational response",
-        "Give one AI team end-to-end ownership so fewer groups must coordinate lifecycle decisions",
-        "Assign ownership to the model-routing service so changes to prompts, knowledge, controls, and policy stay synchronized"
+        "等首次事故揭示哪个团队具有响应所需访问和专业知识",
+        "为每项决策、交付物、控制、指标和运维响应指定负责人及批准者",
+        "让一个 AI 团队端到端负责，以减少需协调生命周期决策的团队",
+        "把归属交给模型路由服务，使提示词、知识、控制和政策同步变化"
       ],
       "correct": 1,
-      "explanation": "Specific assets and decisions change at different rates and require different authority. Concrete ownership prevents silent decay and unclear escalation."
+      "explanation": "不同资产和决策变化速度不同，所需权限也不同。具体归属防止静默退化和升级不清。"
     },
     {
       "stage": "post",
-      "question": "A pilot has high login counts but reviewer time and correction rate doubled. What should the steering group conclude?",
+      "question": "试点登录次数高，但评审时间和修正率翻倍。指导小组应得出什么结论？",
       "options": [
-        "Expand the pilot immediately so a larger user sample can determine whether the correction rate is statistically stable",
-        "Treat the login growth as proof of adoption because reviewer effort is an implementation cost that should fall after scale",
-        "Usage alone is insufficient; evaluate outcome, rework, review burden, quality, and cost per accepted result",
-        "Exclude reviewer time from the scorecard because human correction sits outside measured AI performance"
+        "立即扩大试点，让更大的用户样本能够确定修正率在统计上是否稳定",
+        "将登录增长视为用户采用的证明，因为审查者的投入属于规模扩大后应当下降的实施成本",
+        "仅有用量还不够；应评估成果、返工、审查负担、质量和每份验收通过结果的成本",
+        "将审查者的时间排除在评分卡之外，因为人工修正不属于被测量的 AI 性能"
       ],
       "correct": 2,
-      "explanation": "The workflow may have shifted work instead of reducing it. Adoption must connect to the intended business and quality outcomes without hidden operational burden."
+      "explanation": "工作流可能只是转移工作，没有减少工作。采用必须关联预期业务和质量结果，不能藏着运维负担。"
     },
     {
       "stage": "post",
-      "question": "What is a useful reversal condition in an architecture decision?",
+      "question": "什么是架构决策中有用的逆转条件？",
       "options": [
-        "A scheduled date when the team must reconsider the decision, regardless of whether any relevant evidence has changed",
-        "A general quality-improvement goal used as the condition that triggers future architecture reconsideration",
-        "Any stakeholder question about the architecture, even when the question does not challenge a constraint or outcome",
-        "A measurable event, such as P95 latency or review load exceeding an agreed bound, that triggers reconsideration"
+        "预定一个日期，届时无论任何相关证据是否变化，团队都必须重新考虑该决策",
+        "将一项通用的质量改进目标，作为今后触发重新考虑架构决策的条件",
+        "利益相关方针对架构提出的任何问题，即使该问题并未质疑任何约束或成果",
+        "P95 延迟或审查负载超过约定边界等可衡量事件，触发重新考虑"
       ],
       "correct": 3,
-      "explanation": "A reversal condition turns uncertainty into a planned response. It identifies evidence that invalidates the current tradeoff and prompts a controlled decision review."
+      "explanation": "逆转条件把不确定性转为计划响应，指出使当前取舍失效的证据，触发受控决策评审。"
     }
   ]
 }

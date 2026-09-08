@@ -1,7 +1,7 @@
-"""Load-test anti-pattern demonstrator — stdlib Python.
+"""负载测试（Load Test）反模式（Anti-pattern）演示器，仅使用 Python 标准库。
 
-Simulates how uniform prompts inflate reported throughput via prefix-cache
-and request-coalescing, while realistic distribution reveals the true ceiling.
+模拟内容相同的提示词如何通过前缀缓存（Prefix Cache）与请求合并（Request Coalescing）
+虚增报告吞吐量；采用真实分布才能揭示实际吞吐上限。
 """
 
 from __future__ import annotations
@@ -14,7 +14,7 @@ import statistics
 PREFIX_CACHE_HIT_TTFT_MS = 80
 PREFIX_CACHE_MISS_TTFT_MS = 800
 TPOT_MS = 15
-BATCH_EFFICIENCY_SHARED_PREFIX = 0.8  # batch serves 1/0.8 = 1.25x fewer slots
+BATCH_EFFICIENCY_SHARED_PREFIX = 0.8  # 批处理占用的槽位减少，比例为 1/0.8 = 1.25 倍
 
 
 @dataclass
@@ -40,7 +40,7 @@ def make_realistic_workload(n: int = 500, seed: int = 7) -> list[Request]:
 def simulate(reqs: list[Request], concurrency: int) -> dict:
     cache: set[str] = set()
     ttft_samples: list[float] = []
-    # serialize in groups of "concurrency"
+    # 以 concurrency 为组大小，逐组串行处理。
     for i in range(0, len(reqs), concurrency):
         batch = reqs[i:i + concurrency]
         unique_prefixes = len({r.prefix_hash for r in batch})
@@ -64,25 +64,25 @@ def simulate(reqs: list[Request], concurrency: int) -> dict:
 
 def main() -> None:
     print("=" * 95)
-    print("PROMPT-UNIFORMITY TRAP — same test harness, different prompt distributions")
+    print("提示词同质化陷阱：同一测试框架（Test Harness），不同提示词分布")
     print("=" * 95)
 
     for concurrency in (10, 50, 200):
-        print(f"\nConcurrency = {concurrency}")
-        header = f"{'Workload':22}  {'n':>5}  {'TTFT_P50':>9}  {'TTFT_P99':>9}  {'mean':>7}  cache_hits"
+        print(f"\n并发数（Concurrency）= {concurrency}")
+        header = f"{'工作负载':22}  {'样本数':>5}  {'TTFT_P50':>9}  {'TTFT_P99':>9}  {'平均延迟':>7}  缓存命中数"
         print(header)
         print("-" * len(header))
 
         uniform = make_uniform_workload(500)
         u = simulate(uniform, concurrency)
-        print(f"{'UNIFORM':22}  {u['n']:5}  {u['p50']:8.0f}ms  {u['p99']:8.0f}ms  {u['mean']:6.0f}ms  {u['cache_hits']:4}")
+        print(f"{'相同提示词（UNIFORM）':22}  {u['n']:5}  {u['p50']:8.0f}ms  {u['p99']:8.0f}ms  {u['mean']:6.0f}ms  {u['cache_hits']:4}")
 
         realistic = make_realistic_workload(500)
         r = simulate(realistic, concurrency)
-        print(f"{'REALISTIC':22}  {r['n']:5}  {r['p50']:8.0f}ms  {r['p99']:8.0f}ms  {r['mean']:6.0f}ms  {r['cache_hits']:4}")
+        print(f"{'真实分布（REALISTIC）':22}  {r['n']:5}  {r['p50']:8.0f}ms  {r['p99']:8.0f}ms  {r['mean']:6.0f}ms  {r['cache_hits']:4}")
 
-    print("\nRead: uniform prompts make your endpoint look fast. Realistic prompts tell the truth.")
-    print("LLMPerf: --mean-input-tokens + --stddev-input-tokens. Always.")
+    print("\n结果解读：相同提示词会让端点（Endpoint）看起来很快，真实分布的提示词才能反映实际情况。")
+    print("使用 LLMPerf 时，始终同时设置 --mean-input-tokens 和 --stddev-input-tokens。")
 
 
 if __name__ == "__main__":

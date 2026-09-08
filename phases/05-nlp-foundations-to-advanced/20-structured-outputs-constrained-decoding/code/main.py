@@ -17,7 +17,7 @@ class PhoneFSM:
             return ["-"]
         if state == 12:
             return []
-        raise ValueError(f"unknown state {state}")
+        raise ValueError(f"未知状态（State） {state}")
 
     def transition(self, state, ch):
         if ch not in self.valid_next(state):
@@ -93,35 +93,35 @@ def main():
     alphabet = list("0123456789-")
     fsm = PhoneFSM()
 
-    print("=== phone number generation: 20 samples ===")
-    print(f"target pattern: {PHONE_REGEX}")
+    print("=== 电话号码生成：20 个样本（Samples） ===")
+    print(f"目标模式（Pattern）: {PHONE_REGEX}")
     print()
 
-    print("UNCONSTRAINED (random-logit, no masking):")
+    print("无约束（Unconstrained，随机逻辑值，无掩码）:")
     unc_valid = 0
     for seed in range(20):
         s = generate_unconstrained(alphabet, max_len=12, seed=seed)
         ok = bool(re.fullmatch(PHONE_REGEX, s))
         unc_valid += int(ok)
-        tag = "  OK" if ok else "FAIL"
+        tag = "通过（OK）" if ok else "失败（FAIL）"
         print(f"  [{tag}] {s}")
-    print(f"  => valid: {unc_valid} / 20")
+    print(f"  => 有效样本: {unc_valid} / 20")
 
     print()
-    print("CONSTRAINED (FSM-masked logits):")
+    print("有约束（Constrained，有限状态机 FSM 对逻辑值 Logits 应用掩码）:")
     con_valid = 0
     for seed in range(20):
         s = generate_constrained(alphabet, fsm, seed=seed)
         ok = bool(re.fullmatch(PHONE_REGEX, s))
         con_valid += int(ok)
-        tag = "  OK" if ok else "FAIL"
+        tag = "通过（OK）" if ok else "失败（FAIL）"
         print(f"  [{tag}] {s}")
-    print(f"  => valid: {con_valid} / 20")
+    print(f"  => 有效样本: {con_valid} / 20")
 
     print()
-    print("note: the toy LLM emits uniform-random logits.")
-    print("masking invalid tokens at each step is the only difference.")
-    print("real constrained decoding uses the same mask over a 100k+ vocabulary.")
+    print("注意：此简化大语言模型（LLM）输出均匀随机的逻辑值（Logits）。")
+    print("唯一差别是在每一步屏蔽无效词元（Tokens）。")
+    print("实际约束解码（Constrained decoding）在 100k+ 的词表上使用同样的掩码。")
 
 
 if __name__ == "__main__":

@@ -1,32 +1,32 @@
 ---
 name: benchmark-harness
-description: Build a SWE-bench-style harness for a codebase with FAIL_TO_PASS / PASS_TO_PASS gating, contamination checks, and step-count metrics.
+description: 为代码库构建 SWE-bench 式评估执行框架（Harness），包含 FAIL_TO_PASS / PASS_TO_PASS 门禁、污染检查和步骤数指标。
 version: 1.0.0
 phase: 14
 lesson: 19
 tags: [swe-bench, gaia, agentbench, harness, evaluation]
 ---
 
-Given a codebase and a list of (bug, fix) pairs, build a benchmark harness that gates on real unit tests and records operational metrics.
+给定代码库和一组（缺陷、修复）对，构建以真实单元测试把关并记录运行指标的基准评估执行框架（Harness）。
 
-Produce:
+产出：
 
-1. Per-task definition: `(tid, description, state_before, fail_to_pass_tests, pass_to_pass_tests, solution)`.
-2. A runner that applies the agent's patch, runs the repo's test suite in a sandbox, and records: FTP pass count, PTP pass count, step count, tokens, wall-clock, cost.
-3. A contamination check: pattern-match the issue text against the produced patch; flag >=30% overlap.
-4. A reporter that emits per-task and aggregate scores as JSON, plus P50/P75/P95 step and cost.
-5. A CI job that runs the harness on every PR and fails on >=5% regression.
+1. 每个任务的定义：`(tid, description, state_before, fail_to_pass_tests, pass_to_pass_tests, solution)`。
+2. 运行器：应用智能体的补丁，在沙箱中运行仓库测试套件，记录 FTP 通过数、PTP 通过数、步骤数、词元数、实际耗时和成本。
+3. 污染检查：将问题文本与生成的补丁做模式匹配；重叠 >=30% 时标记。
+4. 报告器：以 JSON 输出逐任务和汇总分数，以及步骤数和成本的 P50/P75/P95。
+5. CI 作业：每个 PR 都运行评估执行框架，性能退步 >=5% 时判定失败。
 
-Hard rejects:
+必须拒绝的设计：
 
-- Harness that reports only a single aggregate number. Require per-task results + distributions.
-- Harness that runs tests without a sandbox. Agent-provided patches are untrusted code.
-- Harness with no PASS_TO_PASS gate. Patches that break other tests silently regress the product.
+- 只报告单个汇总数字的执行框架。必须提供逐任务结果和分布。
+- 不使用沙箱就运行测试的执行框架。智能体提供的补丁是不可信代码。
+- 没有 PASS_TO_PASS 门禁的执行框架。破坏其他测试的补丁会让产品功能退步，却不触发告警。
 
-Refusal rules:
+拒绝规则：
 
-- If the user asks for "just the FAIL_TO_PASS score," refuse. Add PASS_TO_PASS; breaking existing tests is a worse regression than missing the fix.
-- If the tests are not pinned to a specific commit, refuse. Drift in tests makes scores incomparable across runs.
-- If the tasks overlap with issue text seen during training, flag it explicitly.
+- 如果用户要求“只要 FAIL_TO_PASS 分数”，应拒绝。加入 PASS_TO_PASS；破坏现有测试比未修好缺陷造成的回归更严重。
+- 如果测试没有固定到具体提交，应拒绝。测试漂移会使不同运行的分数无法比较。
+- 如果任务与训练期间见过的问题文本重叠，应明确标记。
 
-Output: `tasks.py`, `harness.py`, `contamination.py`, `report.py`, `README.md` explaining the sandbox, the gates, the contamination policy. End with "what to read next" pointing to Lesson 30 for eval-driven development on top of the harness.
+输出：`tasks.py`、`harness.py`、`contamination.py`、`report.py`、`README.md`，说明沙箱、门禁和污染策略。结尾给出“接下来读什么”，指向第 30 课，了解如何在评估执行框架之上开展评估驱动开发。

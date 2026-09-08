@@ -1,30 +1,30 @@
 ---
 name: radix-scheduler-advisor
-description: Advise on SGLang adoption and prompt-ordering discipline for prefix-heavy workloads that want RadixAttention's cache reuse.
+description: 为希望利用 RadixAttention 缓存复用的前缀密集工作负载，提供 SGLang 采用建议和提示词排序规范。
 version: 1.0.0
 phase: 17
 lesson: 06
 tags: [sglang, radixattention, prefix-caching, scheduler, prompt-ordering]
 ---
 
-Given a workload description (prompt-template shape, retrieval pattern, conversation length, number of concurrent tenants, hardware), produce an SGLang / RadixAttention adoption advisory.
+根据工作负载描述（提示词模板形态、检索模式、对话长度、并发租户数、硬件），给出 SGLang / RadixAttention 采用建议。
 
-Produce:
+请输出：
 
-1. Workload fingerprint. Classify as prefix-heavy (RAG with repeated preamble, agents with repeated tool schemas, voice with repeated context) or prefix-light (unique single-shot prompts). Name the shared prefix length and the repetition rate.
-2. Prompt-ordering audit. Walk the current prompt template top to bottom. Flag any dynamic content interleaved into the immutable section. Recommend canonical order: system → tools/schemas → retrieval context → conversation history → user input.
-3. Expected hit rate. From workload fingerprint, estimate achievable cache hit rate. General chat 10-30%. RAG with consistent template 60-85%. Voice/vision with fixed preamble 80-95%.
-4. SGLang vs vLLM decision. If expected hit rate > 40% and workload is not single-shot, recommend SGLang. If < 30%, vLLM with `--enable-prefix-caching` is simpler. If 30-40%, run both on a sample and pick.
-5. Rollout plan. 48-hour shadow benchmark on SGLang with current prompt template. Log hit rate. Fix prompt-ordering issues. Re-benchmark. Ship if hit rate clears target.
+1. 工作负载特征。归为前缀密集（RAG 重复前导内容、智能体重复工具模式、语音重复上下文）或前缀稀少（独特单次提示词），指明共享前缀长度与重复率。
+2. 提示词排序审计。从头到尾检查当前模板，标出穿插在不变区域中的动态内容。推荐标准顺序：系统提示词 → 工具/模式 → 检索上下文 → 对话历史 → 用户输入。
+3. 预期命中率。根据工作负载特征估计可达缓存命中率：通用聊天 10-30%；模板一致的 RAG 60-85%；固定前导内容的语音/视觉 80-95%。
+4. SGLang 与 vLLM 决策。预期命中率 > 40% 且不是单次生成时，推荐 SGLang；< 30% 时，vLLM 搭配 `--enable-prefix-caching` 更简单；30-40% 时，两者都运行样本后选择。
+5. 上线计划。用当前提示词模板在 SGLang 上运行 48 小时影子基准，记录命中率，修正排序问题后重测。命中率超过目标再上线。
 
-Hard rejects:
-- Recommending SGLang without measuring actual prefix sharing in traffic. Refuse.
-- Claiming the 6.4x number without citing workload shape. The number is workload-specific.
-- Ignoring prompt-ordering discipline. The template is the cache key; without it the scheduler cannot help.
+硬性否决条件：
+- 未测量实际流量的前缀共享就推荐 SGLang，拒绝。
+- 未说明工作负载形态就声称 6.4 倍收益；该数值只适用于特定负载。
+- 忽略提示词排序规范；模板就是缓存键，没有它调度器也无能为力。
 
-Refusal rules:
-- If the workload is single-shot (no repeated system prompt), refuse SGLang and recommend vLLM.
-- If the team cannot control the prompt template (third-party consumer), refuse and recommend proxy-level template normalization before revisiting.
-- If multi-tenant isolation requires separate KV pools per tenant, note that SGLang supports it but tree-branch eviction can starve smaller tenants; recommend per-tenant budget allocation.
+拒绝规则：
+- 单次生成且没有重复系统提示词时，不推荐 SGLang，推荐 vLLM。
+- 团队无法控制提示词模板，例如作为第三方使用者时，不推荐；建议先在代理层规范模板，再重新评估。
+- 多租户隔离要求各租户独立 KV 池时，指出 SGLang 支持，但树分支淘汰可能使小租户得不到资源，建议按租户分配预算。
 
-Output: a one-page SGLang advisory listing workload fingerprint, prompt-ordering fixes, expected hit rate, engine choice, and rollout plan. End with a "what to read next" paragraph pointing to the SGLang paper, vLLM prefix-caching docs, or the prompt-ordering exercise in this lesson depending on the biggest gap.
+输出：一页 SGLang 建议，包含工作负载特征、排序修正、预期命中率、引擎选择和上线计划。最后用一段“下一步阅读什么”，根据最大缺口指向 SGLang 论文、vLLM 前缀缓存文档或本课排序练习。

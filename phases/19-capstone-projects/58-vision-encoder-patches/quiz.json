@@ -1,46 +1,46 @@
 {
   "lesson": "58-vision-encoder-patches",
-  "title": "Vision Encoder Patches",
+  "title": "视觉编码器图像块（Vision Encoder Patches）",
   "questions": [
     {
       "stage": "pre",
-      "question": "Why does a Vision Transformer use patches instead of feeding one pixel per token?",
+      "question": "为什么视觉 Transformer（Vision Transformer）使用图像块，而不是将每个像素作为一个词元输入？",
       "options": [
-        "Patches are required by PyTorch",
-        "Pixel-per-token sequences explode attention compute quadratically and lose tractability at typical resolutions",
-        "Patches improve image quality",
-        "It avoids using a tokenizer"
+        "PyTorch 要求使用图像块",
+        "每像素一个词元的序列会使注意力计算量按平方增长，在典型分辨率下变得难以处理",
+        "图像块能够改善图像质量",
+        "这样可以避免使用分词器"
       ],
       "correct": 1,
-      "explanation": "A 224x224 image is 150528 pixel tokens. Attention is quadratic in length, so 16x16 patching shrinks the sequence to 196 tokens and makes the model tractable."
+      "explanation": "一张 224x224 图像对应 150528 个像素词元。注意力开销与长度平方成正比，因此切成 16x16 图像块会将序列缩短为 196 个词元，使模型可以处理。"
     },
     {
       "stage": "pre",
-      "question": "What is the relationship between Conv2d with kernel = stride = patch_size and flatten-then-linear?",
+      "question": "kernel = stride = patch_size 的 Conv2d 与先展平再线性变换有什么关系？",
       "options": [
-        "Conv2d adds non-linearity",
-        "They produce different outputs",
-        "Conv2d is a faster way to spell the same linear projection over each patch",
-        "Flatten-then-linear is impossible"
+        "Conv2d 增加非线性",
+        "两者产生不同输出",
+        "Conv2d 是对各图像块执行相同线性投影的更快写法",
+        "先展平再线性变换是不可能的"
       ],
       "correct": 2,
-      "explanation": "Each Conv2d output location dot-products the patch pixels with one filter, which is identical to flatten-then-linear."
+      "explanation": "每个 Conv2d 输出位置将图像块像素与一个滤波器做点积，这与先展平再线性变换完全一致。"
     },
     {
       "stage": "check",
-      "question": "Why is the 2D sinusoidal position embedding deterministic instead of learned?",
+      "question": "为什么二维正弦位置嵌入是确定性的，而不是通过学习得到？",
       "options": [
-        "Fixed sin/cos signals interpolate cleanly to grids the model never saw, which is useful when resolution changes",
-        "Random init is required",
-        "It saves disk space",
-        "Learned positions are illegal"
+        "固定 sin/cos 信号能顺畅插值到模型从未见过的网格，在分辨率改变时很有用",
+        "必须随机初始化",
+        "它可以节省磁盘空间",
+        "可学习位置不合法"
       ],
       "correct": 0,
-      "explanation": "Fixed sinusoidal positions are deterministic across resolutions and let the same encoder run on inputs it was not trained on."
+      "explanation": "固定正弦位置在不同分辨率下都是确定性的，使同一个编码器能够处理训练时未见过的输入。"
     },
     {
       "stage": "check",
-      "question": "What is the output sequence length of a 224x224 image with patch_size=16 and one CLS token?",
+      "question": "一张 224x224 图像在 patch_size=16 且包含一个 CLS 词元时，输出序列长度是多少？",
       "options": [
         "224",
         "256",
@@ -48,31 +48,31 @@
         "197"
       ],
       "correct": 3,
-      "explanation": "224/16 = 14, so 14x14 = 196 patches, plus one CLS token for 197 total tokens."
+      "explanation": "224/16 = 14，因此 14x14 = 196 个图像块，加上一个 CLS 词元，共 197 个词元。"
     },
     {
       "stage": "check",
-      "question": "Why is reconstruction (unfold then unflatten) a useful sanity check on the patch front end?",
+      "question": "为什么重建（先展开再还原展平）是图像块前端的一项有效合理性检查？",
       "options": [
-        "It speeds up inference",
-        "Round-tripping pixels through patch-flatten with no projection must equal the input; failure means the unfold math is wrong",
-        "It improves accuracy",
-        "It is required by ONNX"
+        "它加快推理",
+        "不经过投影时，像素经过图像块展平再还原必须等于输入；失败说明展开的数学计算有误",
+        "它提高准确率",
+        "ONNX 要求这样做"
       ],
       "correct": 1,
-      "explanation": "The patch step is invertible without projection. If the round-trip drifts, the unfold logic is bugged and the rest of the encoder is unsafe."
+      "explanation": "没有投影时，图像块步骤可逆。如果往返变换产生偏差，说明展开逻辑有错误，编码器后续部分也不可靠。"
     },
     {
       "stage": "post",
-      "question": "What changes when you swap a learned position embedding for the 2D sinusoidal one in this lesson?",
+      "question": "将可学习位置嵌入替换为本课的二维正弦位置嵌入，会发生什么变化？",
       "options": [
-        "Nothing changes",
-        "Sinusoidal positions are random per step",
-        "Learned positions can fit a fixed resolution slightly better; sinusoidal positions transfer to new resolutions without retraining",
-        "Sinusoidal positions cost more parameters"
+        "没有任何变化",
+        "正弦位置每一步都是随机的",
+        "可学习位置能略好地拟合固定分辨率；正弦位置无需重新训练即可迁移到新分辨率",
+        "正弦位置需要更多参数"
       ],
       "correct": 2,
-      "explanation": "Learned positions are flexible at one resolution. Sinusoidal positions cost zero parameters and survive resolution shifts."
+      "explanation": "可学习位置在单一分辨率下具有灵活性。正弦位置不增加参数，并能适应分辨率变化。"
     }
   ]
 }

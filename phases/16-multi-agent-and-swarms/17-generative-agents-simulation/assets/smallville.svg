@@ -15,59 +15,59 @@
       .caption { font-size: 11px; fill: #555; font-style: italic; }
     </style>
   </defs>
-  <text x="480" y="28" text-anchor="middle" class="title">Generative agents — three components from Park et al. 2023</text>
+  <text x="480" y="28" text-anchor="middle" class="title">生成式智能体：Park 等 2023 年三组件</text>
 
   <rect x="40" y="60" width="280" height="220" class="cool"/>
-  <text x="180" y="84" text-anchor="middle" class="head">memory stream</text>
-  <text x="180" y="108" text-anchor="middle" class="step">append-only log</text>
-  <text x="60" y="136" class="small">[t=0]  observation :: saw Isabella</text>
-  <text x="60" y="154" class="small">[t=1]  observation :: invited to party</text>
-  <text x="60" y="172" class="small">[t=2]  reflection  :: I enjoy parties</text>
-  <text x="60" y="190" class="small">[t=3]  plan        :: attend at 5pm</text>
-  <text x="60" y="208" class="small">[t=4]  action      :: head to cafe</text>
-  <text x="180" y="240" text-anchor="middle" class="caption">retrieval: recency + importance + relevance</text>
-  <text x="180" y="258" text-anchor="middle" class="caption">top-k feeds prompts</text>
+  <text x="180" y="84" text-anchor="middle" class="head">记忆流（Memory stream）</text>
+  <text x="180" y="108" text-anchor="middle" class="step">仅追加日志</text>
+  <text x="60" y="136" class="small">[t=0] observation :: 见到 Isabella</text>
+  <text x="60" y="154" class="small">[t=1] observation :: 获邀参加聚会</text>
+  <text x="60" y="172" class="small">[t=2] reflection :: 我喜欢聚会</text>
+  <text x="60" y="190" class="small">[t=3] plan :: 下午 5 点参加</text>
+  <text x="60" y="208" class="small">[t=4] action :: 前往咖啡馆</text>
+  <text x="180" y="240" text-anchor="middle" class="caption">检索：近因性 + 重要性 + 相关性</text>
+  <text x="180" y="258" text-anchor="middle" class="caption">前 k 条进入提示词</text>
 
   <rect x="340" y="60" width="280" height="220" class="cold"/>
-  <text x="480" y="84" text-anchor="middle" class="head">reflection</text>
-  <text x="480" y="108" text-anchor="middle" class="step">higher-order beliefs</text>
-  <text x="480" y="136" text-anchor="middle" class="small">periodic trigger:</text>
-  <text x="480" y="154" text-anchor="middle" class="small">unprocessed importance &gt; threshold</text>
-  <text x="480" y="180" text-anchor="middle" class="small">prompt: "given recent memories,</text>
-  <text x="480" y="196" text-anchor="middle" class="small">what is a higher-level insight?"</text>
-  <text x="480" y="222" text-anchor="middle" class="small">output: new reflection entries</text>
-  <text x="480" y="240" text-anchor="middle" class="small">re-ingested into the stream</text>
-  <text x="480" y="258" text-anchor="middle" class="caption">without reflection: no belief formation</text>
+  <text x="480" y="84" text-anchor="middle" class="head">反思（Reflection）</text>
+  <text x="480" y="108" text-anchor="middle" class="step">高阶信念</text>
+  <text x="480" y="136" text-anchor="middle" class="small">周期触发：</text>
+  <text x="480" y="154" text-anchor="middle" class="small">未处理重要性 &gt; 阈值</text>
+  <text x="480" y="180" text-anchor="middle" class="small">提示词：“根据近期记忆，</text>
+  <text x="480" y="196" text-anchor="middle" class="small">有什么更高层洞见？”</text>
+  <text x="480" y="222" text-anchor="middle" class="small">输出：新反思条目</text>
+  <text x="480" y="240" text-anchor="middle" class="small">重新摄入记忆流</text>
+  <text x="480" y="258" text-anchor="middle" class="caption">无反思：无法形成信念</text>
 
   <rect x="640" y="60" width="280" height="220" class="box"/>
-  <text x="780" y="84" text-anchor="middle" class="head">plan</text>
-  <text x="780" y="108" text-anchor="middle" class="step">day / hour / action</text>
-  <text x="780" y="136" text-anchor="middle" class="small">day: go to work, have dinner</text>
-  <text x="780" y="156" text-anchor="middle" class="small">hour: 9am cafe, 12pm lunch...</text>
-  <text x="780" y="176" text-anchor="middle" class="small">action: walk to cafe, order coffee</text>
-  <text x="780" y="206" text-anchor="middle" class="small">revision trigger:</text>
-  <text x="780" y="222" text-anchor="middle" class="small">observation contradicts plan</text>
-  <text x="780" y="240" text-anchor="middle" class="small">only affected segment re-plans</text>
-  <text x="780" y="258" text-anchor="middle" class="caption">without plan: reactive noise</text>
+  <text x="780" y="84" text-anchor="middle" class="head">计划（Plan）</text>
+  <text x="780" y="108" text-anchor="middle" class="step">日 / 小时 / 行动</text>
+  <text x="780" y="136" text-anchor="middle" class="small">日：上班、晚餐</text>
+  <text x="780" y="156" text-anchor="middle" class="small">小时：9 点咖啡馆、12 点午餐...</text>
+  <text x="780" y="176" text-anchor="middle" class="small">行动：走到咖啡馆、点咖啡</text>
+  <text x="780" y="206" text-anchor="middle" class="small">修订触发：</text>
+  <text x="780" y="222" text-anchor="middle" class="small">观察与计划矛盾</text>
+  <text x="780" y="240" text-anchor="middle" class="small">只重规划受影响片段</text>
+  <text x="780" y="258" text-anchor="middle" class="caption">无计划：反应式噪声</text>
 
   <rect x="40" y="310" width="880" height="200" class="hot"/>
-  <text x="480" y="334" text-anchor="middle" class="head">emergent behavior — Valentine's Day party</text>
+  <text x="480" y="334" text-anchor="middle" class="head">涌现行为：情人节聚会</text>
 
-  <text x="70" y="362" class="step">tick 0</text>
-  <text x="140" y="362" class="small">agent-0 (Isabella) is seeded with: "host party at cafe, 5pm"</text>
+  <text x="70" y="362" class="step">时间步 0</text>
+  <text x="160" y="362" class="small">agent-0（Isabella）初始目标：“下午 5 点咖啡馆办聚会”</text>
 
-  <text x="70" y="382" class="step">tick 0-2</text>
-  <text x="140" y="382" class="small">Isabella invites neighbors; each invitation becomes an observation in their stream</text>
+  <text x="70" y="382" class="step">时间步 0-2</text>
+  <text x="160" y="382" class="small">Isabella 邀请邻居，每次邀请成为他们记忆流中的观察</text>
 
-  <text x="70" y="402" class="step">tick 1-3</text>
-  <text x="140" y="402" class="small">invited neighbors reflect -&gt; belief "I am invited to a party" -&gt; plan to attend</text>
+  <text x="70" y="402" class="step">时间步 1-3</text>
+  <text x="160" y="402" class="small">获邀者反思 -&gt; 信念“我获邀参加聚会” -&gt; 计划参加</text>
 
-  <text x="70" y="422" class="step">tick 2-4</text>
-  <text x="140" y="422" class="small">invitees tell other neighbors; second-degree spread</text>
+  <text x="70" y="422" class="step">时间步 2-4</text>
+  <text x="160" y="422" class="small">获邀者告诉其他邻居，二度传播</text>
 
-  <text x="70" y="442" class="step">tick 5</text>
-  <text x="140" y="442" class="small">three components converge: 3-5 agents arrive at the cafe on time</text>
+  <text x="70" y="442" class="step">时间步 5</text>
+  <text x="160" y="442" class="small">三组件共同作用：3-5 个智能体按时到咖啡馆</text>
 
-  <text x="70" y="470" class="caption">single seed + three components = coordinated arrival without an orchestrator</text>
-  <text x="70" y="490" class="caption">documented failures: spatial norms (closed stores, single-person bathrooms)</text>
+  <text x="70" y="470" class="caption">单个初始目标 + 三组件 = 无编排者的协调到达</text>
+  <text x="70" y="490" class="caption">已记录故障：空间规范（闭店、单人卫生间）</text>
 </svg>

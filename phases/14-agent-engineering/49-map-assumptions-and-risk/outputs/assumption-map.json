@@ -1,31 +1,31 @@
 [
   {
-    "statement": "Engineers can identify the right service from alert context",
+    "statement": "工程师能根据告警上下文识别正确服务",
     "impact": 5,
     "uncertainty": 5,
     "irreversibility": 2,
-    "test": "Replay ten incidents with a read-only prototype",
+    "test": "用只读原型回放十次事故",
     "evidence": "",
     "risk_score": 27,
     "status": "open"
   },
   {
-    "statement": "Automatic remediation is acceptable",
+    "statement": "自动修复可接受",
     "impact": 5,
     "uncertainty": 4,
     "irreversibility": 5,
-    "test": "Do not automate; test approval workflow first",
+    "test": "先不自动化；先测试审批工作流",
     "evidence": "",
     "risk_score": 25,
     "status": "open"
   },
   {
-    "statement": "Two-minute diagnosis matters",
+    "statement": "两分钟诊断有意义",
     "impact": 4,
     "uncertainty": 2,
     "irreversibility": 1,
-    "test": "Interview five incident commanders",
-    "evidence": "four of five confirmed",
+    "test": "访谈五名事故指挥者",
+    "evidence": "五人中四人确认",
     "risk_score": 9,
     "status": "tested"
   }

@@ -59,7 +59,7 @@ impl BPETokenizer {
 
             let display = String::from_utf8_lossy(&new_bytes);
             println!(
-                "Merge {}: ({}, {}) -> {} = {:?}",
+                "合并（Merge）{}: ({}, {}) -> {} = {:?}",
                 i + 1,
                 best_pair.0,
                 best_pair.1,
@@ -102,13 +102,13 @@ fn main() {
     );
 
     println!("{}", "=".repeat(60));
-    println!("Training BPE tokenizer");
+    println!("训练字节对编码分词器（BPE Tokenizer）");
     println!("{}", "=".repeat(60));
 
     let mut tokenizer = BPETokenizer::new();
     tokenizer.train(corpus, 30);
 
-    println!("\nVocabulary size: {}", tokenizer.vocab_size());
+    println!("\n词表大小（Vocabulary size）: {}", tokenizer.vocab_size());
 
     let test_sentences = vec![
         "The cat sat on the mat.",
@@ -118,7 +118,7 @@ fn main() {
     ];
 
     println!("\n{}", "=".repeat(60));
-    println!("Encoding test sentences");
+    println!("编码测试句子（Encoding test sentences）");
     println!("{}", "=".repeat(60));
 
     for sentence in test_sentences {
@@ -126,15 +126,15 @@ fn main() {
         let decoded = tokenizer.decode(&encoded);
         let raw_bytes = sentence.len();
 
-        println!("\nOriginal:  {}", sentence);
-        println!("Encoded:   {:?}", encoded);
-        println!("Decoded:   {}", decoded);
-        println!("Tokens:    {} (from {} bytes)", encoded.len(), raw_bytes);
-        println!("Ratio:     {:.2}", encoded.len() as f64 / raw_bytes as f64);
+        println!("\n原文（Original）:  {}", sentence);
+        println!("编码结果（Encoded）:   {:?}", encoded);
+        println!("解码结果（Decoded）:   {}", decoded);
+        println!("词元（Tokens）:    {} （原始字节数: {}）", encoded.len(), raw_bytes);
+        println!("比率（Ratio）:     {:.2}", encoded.len() as f64 / raw_bytes as f64);
     }
 
     println!("\n{}", "=".repeat(60));
-    println!("Performance: encode 100K iterations");
+    println!("性能（Performance）: 执行 100K 次编码");
     println!("{}", "=".repeat(60));
 
     let test = "The cat sat on the mat and the dog sat on the log.";
@@ -144,7 +144,7 @@ fn main() {
     }
     let elapsed = start.elapsed();
     println!(
-        "100K encodes in {:.2}ms ({:.0} encodes/sec)",
+        "100K 次编码耗时 {:.2}ms（每秒 {:.0} 次编码）",
         elapsed.as_secs_f64() * 1000.0,
         100_000.0 / elapsed.as_secs_f64()
     );

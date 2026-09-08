@@ -2,66 +2,66 @@
   {
     "id": "svm-pre-1",
     "stage": "pre",
-    "question": "What are support vectors in an SVM?",
+    "question": "SVM 中的支持向量（Support Vectors）是什么？",
     "options": [
-      "All data points in the training set",
-      "The feature vectors after kernel transformation",
-      "The weight vectors learned during training",
-      "The training points closest to the decision boundary that determine the hyperplane"
+      "训练集中的所有数据点",
+      "经过核变换的特征向量",
+      "训练过程中学到的权重向量",
+      "最靠近决策边界、决定超平面的训练点"
     ],
     "correct": 3,
-    "explanation": "Support vectors are the training points that lie exactly on the margin boundaries. They are the only points that determine the decision hyperplane. Removing non-support-vector points does not change the boundary."
+    "explanation": "支持向量是恰好位于间隔边界上的训练点，只有它们决定决策超平面。移除非支持向量点不会改变边界。"
   },
   {
     "id": "svm-pre-2",
     "stage": "pre",
-    "question": "What does the SVM maximize when finding the decision boundary?",
+    "question": "SVM 寻找决策边界时最大化什么？",
     "options": [
-      "The complexity of the decision boundary",
-      "The margin -- the distance between the decision boundary and the nearest points of each class",
-      "The total distance from all points to the boundary",
-      "The number of correctly classified training points"
+      "决策边界的复杂度",
+      "间隔（Margin），即决策边界与每类最近点之间的距离",
+      "所有点到边界的总距离",
+      "正确分类的训练点数量"
     ],
     "correct": 1,
-    "explanation": "SVMs find the hyperplane that maximizes the margin between the two classes. A wider margin leads to better generalization on unseen data."
+    "explanation": "SVM 寻找使两类之间间隔最大的超平面。更宽的间隔带来对未见数据更好的泛化。"
   },
   {
     "id": "svm-post-1",
     "stage": "post",
-    "question": "What happens when you increase the C parameter in an SVM?",
+    "question": "增大 SVM 的 C 参数会发生什么？",
     "options": [
-      "The margin gets narrower, fewer misclassifications are tolerated, and the model may overfit",
-      "The number of support vectors always increases",
-      "The margin gets wider and more misclassifications are allowed",
-      "The kernel function changes from linear to RBF"
+      "间隔变窄，容忍的误分类减少，模型可能过拟合",
+      "支持向量数量总会增加",
+      "间隔变宽，允许更多误分类",
+      "核函数从线性核变成 RBF 核"
     ],
     "correct": 0,
-    "explanation": "Large C penalizes misclassifications heavily, producing a narrow margin that closely fits the training data. This can lead to overfitting. Small C allows more violations for a wider, more regularized margin."
+    "explanation": "大 C 对误分类施加重罚，产生紧贴训练数据的窄间隔，可能导致过拟合。小 C 允许更多违反约束的点，得到更宽、正则化更强的间隔。"
   },
   {
     "id": "svm-post-2",
     "stage": "post",
-    "question": "How does the kernel trick enable SVMs to learn nonlinear boundaries?",
+    "question": "核技巧（Kernel Trick）如何使 SVM 学习非线性边界？",
     "options": [
-      "It replaces the SVM with a neural network",
-      "It computes dot products in a high-dimensional space without explicitly mapping data to that space",
-      "It removes outliers from the dataset before training",
-      "It adds polynomial features to the input data directly"
+      "用神经网络替换 SVM",
+      "无须将数据显式映射到高维空间，就计算该空间中的点积",
+      "训练前移除数据集中的异常值",
+      "直接向输入数据添加多项式特征"
     ],
     "correct": 1,
-    "explanation": "The kernel trick replaces every dot product x_i . x_j with K(x_i, x_j), computing the dot product in a high-dimensional (even infinite-dimensional for RBF) feature space without ever constructing it."
+    "explanation": "核技巧将每个点积 x_i . x_j 替换为 K(x_i, x_j)，无须构造高维特征空间即可计算其中的点积；RBF 对应的空间甚至是无限维。"
   },
   {
     "id": "svm-post-3",
     "stage": "post",
-    "question": "Hinge loss is zero when y * f(x) >= 1. What does this mean in terms of classification?",
+    "question": "y * f(x) >= 1 时合页损失（Hinge Loss）为零。这在分类上意味着什么？",
     "options": [
-      "The point is a noise sample that should be ignored",
-      "The point is misclassified",
-      "The point is exactly on the decision boundary",
-      "The point is correctly classified and lies outside the margin"
+      "该点是应忽略的噪声样本",
+      "该点被误分类",
+      "该点恰好位于决策边界上",
+      "该点分类正确，且位于间隔之外"
     ],
     "correct": 3,
-    "explanation": "When y * f(x) >= 1, the point is correctly classified AND lies on or beyond the margin boundary. Only points inside the margin or misclassified (y * f(x) < 1) contribute to the hinge loss."
+    "explanation": "y * f(x) >= 1 时，该点分类正确，且位于间隔边界上或其外侧。只有间隔内或被误分类的点（y * f(x) < 1）对合页损失有贡献。"
   }
 ]

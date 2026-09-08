@@ -1,101 +1,101 @@
-# Capstone Lesson 27: Eval Harness with Fixture Tasks
+# 综合项目第 27 课：基于任务夹具的评估框架（Capstone Lesson 27: Eval Harness with Fixture Tasks）
 
-> A coding agent is only as good as the suite of tasks you measure it against. This lesson builds an evaluation harness that takes a folder of fixture tasks, runs each through a candidate agent, scores pass or fail through a deterministic verifier, and aggregates the results into pass@1, pass@k, mean latency, and mean cost. The harness is the source of truth that lets you tell a regression from a refactor.
+> 编码智能体的质量，取决于你用来衡量它的任务套件。本课构建评估框架（Evaluation Harness）：读取一个任务夹具（Fixture Task）目录，将每个任务交给候选智能体运行，以确定性验证器（Deterministic Verifier）判定通过或失败，再汇总为 pass@1、pass@k、平均延迟和平均成本。框架提供事实依据，让你区分回归与重构。
 
 **Type:** Build
 **Languages:** Python (stdlib)
-**Prerequisites:** Phase 19 · 25 (verification gates), Phase 19 · 26 (sandbox runner), Phase 14 · 30 (eval-driven agent development), Phase 14 · 19 (SWE-bench and GAIA benchmarks)
-**Time:** ~90 minutes
+**Prerequisites:** 第 19 阶段第 25 课（验证关卡）、第 26 课（沙箱运行器），第 14 阶段第 30 课（评估驱动的智能体开发）、第 19 课（SWE-bench 与 GAIA 基准）
+**Time:** 约 90 分钟
 
-## Learning Objectives
+## 学习目标（Learning Objectives）
 
-- Define a fixture task as a triple of goal, setup, and verifier.
-- Score multiple sample runs per task and compute pass@1 and pass@k.
-- Aggregate latency and cost into mean and 95th-percentile metrics.
-- Wire deterministic verifiers (file diff, exit code, regex match) into reusable functions.
-- Emit a structured JSON report a regression-tracking script can ingest.
+- 将任务夹具定义为目标、准备步骤和验证器组成的三元组。
+- 对每个任务的多次采样运行评分，计算 pass@1 和 pass@k。
+- 将延迟与成本汇总为均值和第 95 百分位指标。
+- 将确定性验证器（文件差异、退出码、正则匹配）封装为可复用函数。
+- 输出回归跟踪脚本可读取的结构化 JSON 报告。
 
-## The Problem
+## 问题（The Problem）
 
-Three failure modes plague agent benchmarks built without an eval harness.
+没有评估框架的智能体基准测试，会受到三类失败模式困扰。
 
-The first is unverified pass. The agent says it fixed the bug, the human glances at the diff, the suite is marked green, and three weeks later the regression test surfaces the same bug. The agent had reasoned plausibly without actually fixing anything.
+第一类是未经验证的通过。智能体声称已修复错误，人扫一眼差异便把套件标绿，三周后回归测试却发现同一个错误。智能体给出了貌似合理的推理，实际什么也没修好。
 
-The second is undetected regression. A change to the prompt template makes the agent 4% better on the loud task and 14% worse on the quiet one. Without a goldset and a per-task score, the regression rides into main and surfaces only when a customer complains.
+第二类是未检测到的回归。提示词模板变化让智能体在受关注的任务上提升 4%，却在不受关注的任务上退步 14%。没有黄金测试集（Goldset）和逐任务分数，回归就会进入 main，直到客户投诉才暴露。
 
-The third is per-task drift. The eval was run on Monday with 100 tasks and on Friday with 95 of them, because somebody renamed five fixtures. The pass rate looks like a 5% improvement. It isn't.
+第三类是任务集合漂移。周一评估运行一百个任务，周五只运行其中九十五个，因为有人重命名了五个夹具。通过率看起来提升了 5%，实际并非如此。
 
-The harness is the program that turns these failures into facts. It runs every fixture, every time, in a reproducible order, against a verifier that returns true or false on a deterministic check.
+框架将这些问题转化为可核实的事实：每次以可复现的顺序运行每个夹具，交给通过确定性检查返回真或假的验证器。
 
-## The Concept
+## 概念（The Concept）
 
 ```mermaid
 flowchart LR
   F1[fixtures/task_001/<br/>task.json + expected/] --> Harness
   F2[fixtures/task_002/<br/>...] --> Harness
-  Harness[Harness<br/>for each task:<br/>setup / run agent k samples /<br/>verify each sample /<br/>record latency, cost]
-  Harness --> Report[EvalReport<br/>pass@1 / pass@k<br/>mean ms / p95 ms<br/>mean cost]
+  Harness[评估框架 Harness<br/>对每个任务：<br/>准备环境 / 运行智能体采样 k 次 /<br/>验证每次采样 /<br/>记录延迟与成本]
+  Harness --> Report[EvalReport<br/>pass@1 / pass@k<br/>平均毫秒数 / p95 毫秒数<br/>平均成本]
 ```
 
-A `FixtureTask` is a small JSON file plus an optional `expected/` directory. The JSON declares an `id`, a `goal` (the prompt fed to the agent), a `setup` block (files to drop into the scratch dir), and a `verifier` block. The verifier block names a function in the harness's verifier registry and supplies its arguments.
+`FixtureTask` 由一个小型 JSON 文件和可选的 `expected/` 目录组成。JSON 声明 `id`、`goal`（传给智能体的提示词）、`setup` 块（放入临时工作目录的文件）以及 `verifier` 块。验证器块指定框架验证器注册表中的函数名称，并提供参数。
 
-Three verifier shapes cover the majority of useful tasks.
+三种验证器结构可以覆盖大多数有价值的任务。
 
-The first is `file_equals`. After the agent runs, compare a named file against an expected content. This catches "fix this bug in this exact way" tasks.
+第一种是 `file_equals`：智能体运行后，将指定文件与预期内容比较，适合“按这一确切方式修复此错误”的任务。
 
-The second is `regex_match`. The named file's contents are matched against a regex. This catches "the function must exist and return X" tasks where there are many acceptable solutions.
+第二种是 `regex_match`：将指定文件内容与正则表达式匹配，适合“函数必须存在并返回 X”这类允许多种解法的任务。
 
-The third is `shell_exit_zero`. The harness runs a shell command (through the sandbox from lesson 26) and passes the task only if the command exits zero. This catches "the tests must pass" tasks.
+第三种是 `shell_exit_zero`：框架通过第 26 课的沙箱运行 shell 命令，只有退出码为零才判定通过，适合“测试必须通过”的任务。
 
-The harness runs each task `k` times. Pass@k is `1 - (1 - p)^k` where p is the empirical pass rate; the harness also reports raw counts so you can spot variance. Latency is wall-clock per sample. Cost is whatever the agent self-reports (token count, USD, or both); the harness sums it across samples and presents the per-task and aggregate numbers.
+框架将每个任务运行 `k` 次。Pass@k 为 `1 - (1 - p)^k`，其中 p 是经验通过率；框架也报告原始计数，便于发现方差。延迟是每次采样的真实耗时；成本由智能体自报，可以是词元数、美元或两者。框架对各采样求和，并给出逐任务与整体数值。
 
 ```figure
 pass-at-k
 ```
 
-## Architecture
+## 架构（Architecture）
 
 ```mermaid
 flowchart TD
-  Harness[EvalHarness] -->|load| Task[FixtureTask<br/>goal / setup / verifier]
-  Harness --> Loop[for each task:<br/>prepare scratch dir from setup<br/>for sample in range k:<br/>run candidate task, scratch_dir -> SampleResult<br/>verify sample, task -> bool<br/>record per-task aggregate]
+  Harness[EvalHarness] -->|加载| Task[FixtureTask<br/>goal / setup / verifier]
+  Harness --> Loop[对每个任务：<br/>根据 setup 准备临时工作目录<br/>对 range k 中每次采样：<br/>运行 candidate task, scratch_dir -> SampleResult<br/>验证 sample, task -> bool<br/>记录逐任务汇总]
   Loop --> TaskReport[TaskReport<br/>task_id / k / passes / pass_rate<br/>mean_latency / mean_cost]
-  TaskReport -->|aggregate| EvalReport[EvalReport<br/>total tasks / pass@1 / pass@k / p95 latency]
+  TaskReport -->|汇总| EvalReport[EvalReport<br/>任务总数 / pass@1 / pass@k / p95 延迟]
 ```
 
-The candidate is a callable: `Callable[[FixtureTask, str], SampleResult]`. The harness creates the scratch directory via `tempfile.mkdtemp()` and passes its path as a plain string. The harness does not care how the candidate works. The candidate could be a deterministic patch applier (useful for harness self-tests), a real LLM agent, a fuzzer. The contract is the SampleResult.
+候选实现是可调用对象：`Callable[[FixtureTask, str], SampleResult]`。框架通过 `tempfile.mkdtemp()` 创建临时工作目录，将其路径作为普通字符串传入。框架不关心候选实现的工作方式：它可以是确定性的补丁应用器（适合框架自测）、真实的大语言模型（Large Language Model，LLM）智能体，或模糊测试器（Fuzzer）。双方契约是 SampleResult。
 
-## What you will build
+## 构建内容（What you will build）
 
-`main.py` ships:
+`main.py` 提供：
 
-1. `FixtureTask` dataclass.
-2. `SampleResult` dataclass: success_self_reported, latency_ms, cost_units, edits.
-3. `TaskReport`, `EvalReport` dataclasses with `to_dict()`.
-4. `VerifierRegistry` mapping verifier name to function. Built-in verifiers: file_equals, regex_match, shell_exit_zero.
-5. `EvalHarness` class. Runs a directory of tasks against a candidate. Returns EvalReport.
-6. Five fixture tasks bundled in `tasks/`:
-   - off-by-one in `fizzbuzz`
-   - missing return in `factorial`
-   - typo in error message
-   - empty function body
-   - off-by-one in linked-list traversal
-7. A deterministic reference candidate (`apply_known_fixes`) the harness uses to demonstrate a clean pass@1 of 1.0.
-8. Demo prints the EvalReport JSON and exits zero.
+1. `FixtureTask` 数据类（Dataclass）。
+2. `SampleResult` 数据类：success_self_reported、latency_ms、cost_units、edits。
+3. 带 `to_dict()` 的 `TaskReport`、`EvalReport` 数据类。
+4. `VerifierRegistry`，将验证器名称映射到函数。内置验证器为 file_equals、regex_match、shell_exit_zero。
+5. `EvalHarness` 类，将任务目录交给候选实现运行并返回 EvalReport。
+6. `tasks/` 中附带五个任务夹具：
+   - `fizzbuzz` 中的边界偏一错误（Off-by-One Error）
+   - `factorial` 中缺失返回语句
+   - 错误消息中的拼写错误
+   - 空函数体
+   - 链表遍历中的边界偏一错误
+7. 确定性的参考候选实现（`apply_known_fixes`），用于演示 pass@1 达到 1.0 的完整通过结果。
+8. 打印 EvalReport JSON 并以退出码零结束的演示。
 
-The fixture tasks are bundled as JSON files in `tasks/` plus paired source files in `tasks/<id>/buggy/` and `tasks/<id>/expected/`. The harness copies buggy into a scratch dir, hands it to the candidate, and verifies against expected.
+任务夹具由 `tasks/` 中的 JSON 文件以及 `tasks/<id>/buggy/`、`tasks/<id>/expected/` 中配对的源文件组成。框架将 buggy 复制到临时工作目录，交给候选实现，再对照 expected 验证。
 
-## Why pass@k and not just pass@1
+## 为什么需要 pass@k，而不只是 pass@1（Why pass@k and not just pass@1）
 
-Real LLM agents are stochastic. A pass@1 of 0.6 looks like a failure. A pass@5 of 0.95 says the agent gets the right answer most of the time but is choosing wrong on early samples. The fix is sampling and ranking, not always more training. Pass@k makes that visible.
+真实 LLM 智能体具有随机性。pass@1 为 0.6 看起来像失败；pass@5 为 0.95 则表明智能体多数情况下能够找到正确答案，只是早期采样选错了。改进方法是采样与排序，不一定总是增加训练。Pass@k 让这种情况可见。
 
-Pass@k is reported alongside pass@1 because pass@k papers over a real failure: if the model gets the right answer once in twenty tries you do not have a useful agent. The harness shows both.
+报告 pass@k 时也要报告 pass@1，因为 pass@k 会掩盖真实失败：模型二十次才答对一次，并不意味着智能体有用。框架同时展示两者。
 
-## How this composes with the rest of Track A
+## 与路线 A 的其他部分组合（How this composes with the rest of Track A）
 
-Lesson 25 produced the gate chain. Lesson 26 produced the sandbox. The harness uses the sandbox for any `shell_exit_zero` verifier. Lesson 28 wraps each harness run in an OTel trace. Lesson 29 runs the end-to-end demo against one of the bundled fixtures and asserts pass@1 = 1.0 for the reference candidate.
+第 25 课构建关卡链，第 26 课构建沙箱。框架将沙箱用于所有 `shell_exit_zero` 验证器。第 28 课用 OpenTelemetry 追踪（OpenTelemetry Trace，OTel Trace）包装每次框架运行。第 29 课针对附带夹具之一运行端到端演示，并断言参考候选实现满足 pass@1 = 1.0。
 
-## Running it
+## 运行（Running it）
 
 ```bash
 cd phases/19-capstone-projects/27-eval-harness-fixture-tasks
@@ -103,4 +103,4 @@ python3 code/main.py
 python3 -m pytest code/tests/ -v
 ```
 
-The demo prints the EvalReport in JSON, including pass@1, pass@5, mean latency, and per-task breakdown. The exit code is zero. The tests cover the verifier functions, the pass@k math, fixture loading, and the harness end-to-end against the bundled reference candidate.
+演示以 JSON 打印 EvalReport，包含 pass@1、pass@5、平均延迟及逐任务明细，退出码为零。测试覆盖验证器函数、pass@k 数学计算、夹具加载，以及框架与附带参考候选实现的端到端运行。

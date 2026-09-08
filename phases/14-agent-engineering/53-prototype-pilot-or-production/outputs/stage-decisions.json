@@ -2,7 +2,7 @@
   {
     "stage": "prototype",
     "decision": {
-      "unknown": "Can the service be identified from an alert?",
+      "unknown": "能根据告警识别服务吗？",
       "real_users_required": false,
       "real_data_required": false,
       "consequence": 2,
@@ -10,15 +10,15 @@
       "operational_readiness": false
     },
     "required_controls": [
-      "synthetic or recorded inputs",
-      "discardable implementation",
-      "learning question"
+      "合成或已录制输入",
+      "可丢弃实现",
+      "学习问题"
     ]
   },
   {
     "stage": "pilot",
     "decision": {
-      "unknown": "Will engineers trust the recommendation?",
+      "unknown": "工程师会信任建议吗？",
       "real_users_required": true,
       "real_data_required": true,
       "consequence": 4,
@@ -26,17 +26,17 @@
       "operational_readiness": false
     },
     "required_controls": [
-      "limited audience",
-      "rollback",
-      "human owner",
-      "audit trail",
-      "exit criteria"
+      "受限受众",
+      "回滚",
+      "人工负责人",
+      "审计轨迹",
+      "退出标准"
     ]
   },
   {
     "stage": "production",
     "decision": {
-      "unknown": "Can the workflow meet its SLO?",
+      "unknown": "工作流能达到其 SLO 吗？",
       "real_users_required": true,
       "real_data_required": true,
       "consequence": 2,
@@ -44,14 +44,14 @@
       "operational_readiness": true
     },
     "required_controls": [
-      "service level objective",
-      "on-call owner",
-      "security review",
-      "cost and capacity controls",
-      "rollback",
-      "recovery",
-      "continuous monitoring",
-      "retirement path"
+      "服务等级目标",
+      "值班负责人",
+      "安全审查",
+      "成本与容量控制",
+      "回滚",
+      "恢复",
+      "持续监控",
+      "退役路径"
     ]
   }
 ]

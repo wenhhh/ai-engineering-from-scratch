@@ -1,246 +1,220 @@
-# Stakeholder Communication, ADRs, and Lifecycle Ownership
+# 相关方沟通、ADR 与生命周期归属（Stakeholder Communication, ADRs, and Lifecycle Ownership）
 
-> An architecture is not delivered when the diagram is finished. It is delivered when the next owner can operate the decision.
+> 架构不是画完图就交付了，而是下一位负责人能够把决策落实到运行中，才算交付。
 
 **Type:** Reference
 **Languages:** Python
-**Prerequisites:** [Business Discovery, Requirements, and SLAs](../../22-business-discovery-requirements-and-slas/), [Enterprise Governance, Compliance, and Human Review](../../27-enterprise-governance-compliance-and-hitl/); Phase 17, Lesson 23
-**Time:** ~135 minutes
+**Prerequisites:** [业务调研、需求与 SLA（Business Discovery, Requirements, and SLAs）](../../22-business-discovery-requirements-and-slas/), [企业治理、合规与人工评审（Enterprise Governance, Compliance, and Human Review）](../../27-enterprise-governance-compliance-and-hitl/); 阶段 17，第 23 课
+**Time:** ~135 分钟
 
-## Learning Objectives
+## 学习目标（Learning Objectives）
 
-- Communicate one architecture at executive, product, engineering, and control levels
-- Write decision records that preserve tradeoffs and reversal conditions
-- Turn a design into implementation guidance, rollout gates, and named ownership
-- Define handoff acceptance and operational readiness
-- Run feedback and change management across the system lifecycle
+- 在管理层、产品、工程和控制层面沟通同一架构
+- 编写保留取舍与逆转条件的决策记录
+- 将设计转化为实施指导、上线门禁和明确归属
+- 定义交接验收与运维就绪条件
+- 在系统全生命周期运行反馈和变更管理
 
-## The Problem
+## 问题（The Problem）
 
-An architect presents a detailed multi-agent diagram to an executive steering
-group. The diagram contains model routes, MCP servers, vector indexes, event
-queues, evaluators, and tracing. Nobody can answer three basic questions:
+架构师向管理层指导小组展示详细多智能体图，包含模型路由、MCP 服务器、向量索引、事件队列、评估器和追踪，却没人能回答三个基本问题：
 
-- What business decision is being approved?
-- Which risk remains after the proposed controls?
-- Who owns the system after launch?
+- 正在批准什么业务决策？
+- 拟议控制实施后还剩什么风险？
+- 上线后谁负责系统？
 
-The same design is later handed to engineering as a slide. Critical choices
-live only in meeting memory. Operations receives no SLO or rollback rule. The
-policy team does not know it owns knowledge freshness. Reviewers discover their
-queue only during the pilot.
+同一设计随后以幻灯片交给工程团队。关键选择只存在于会议记忆。运维没有收到 SLO 或回滚规则。政策团队不知道自己负责知识时效，评审者直到试点才发现要处理队列。
 
-The design can be technically correct and still be undeliverable. Communication
-and lifecycle ownership are architecture responsibilities.
+设计即使技术正确，也可能无法交付。沟通与生命周期归属是架构职责。
 
-## The Concept
+## 概念（The Concept）
 
-### One System Needs Several Views
+### 同一系统需要多个视图（One System Needs Several Views）
 
-Different stakeholders need different decisions, not different truths.
+不同相关方需要不同决策，不是不同事实。
 
-| Audience | Primary question | Minimum evidence |
+| 受众 | 主要问题 | 最少证据 |
 |----------|------------------|------------------|
-| Executive | Is the value worth the residual risk and investment? | outcome, baseline, target, options, cost range, risk decision |
-| Product and operations | How does the workflow and user experience change? | journey, exceptions, review, SLOs, adoption plan |
-| Engineering | What must be built and how do boundaries behave? | components, contracts, identity, errors, versions, tests |
-| Security and privacy | Where do data and authority cross boundaries? | data map, threat model, controls, retention, evidence |
-| Domain owner | Is the output valid for the real task? | evaluation cases, sources, policy, escalation, change ownership |
-| SRE and support | How is failure detected, limited, and recovered? | telemetry, alerts, runbooks, rollback, dependencies |
+| 管理层 | 价值是否值得剩余风险和投资？ | 结果、基线、目标、选项、成本范围、风险决策 |
+| 产品与运营 | 工作流和用户体验怎样变化？ | 旅程、例外、评审、SLO、采用计划 |
+| 工程 | 必须构建什么，边界如何工作？ | 组件、契约、身份、错误、版本、测试 |
+| 安全与隐私 | 数据和权限在哪里跨边界？ | 数据地图、威胁模型、控制、保留、证据 |
+| 领域负责人 | 输出对真实任务是否有效？ | 评估案例、来源、政策、升级、变更归属 |
+| SRE 与支持 | 如何发现、限制并恢复失败？ | 遥测、告警、操作手册、回滚、依赖 |
 
-Do not simplify by removing the decision. Translate the same decision into the
-evidence each audience uses.
+不要通过删掉决策来简化。应把同一决策转化为每类受众使用的证据。
 
-### Build an Architecture Narrative
+### 构建架构叙述（Build an Architecture Narrative）
 
-A useful review follows a decision sequence:
+有效评审遵循决策顺序：
 
-1. Current workflow and measurable problem.
-2. Constraints and risks that shape the solution.
-3. Options considered.
-4. Recommended architecture and why it wins.
-5. Consequences and rejected alternatives.
-6. Verification and rollout plan.
-7. Residual risk and approvals required.
-8. Ownership through operation and change.
+1. 当前工作流和可衡量问题。
+2. 塑造方案的约束与风险。
+3. 考虑过的选项。
+4. 推荐架构及胜出理由。
+5. 后果和被否决方案。
+6. 验证与上线计划。
+7. 剩余风险和所需审批。
+8. 运行和变化期间的归属。
 
-Leading with a component diagram forces the audience to reconstruct this logic.
-Give them the logic first.
+先展示组件图，会迫使受众自己重建逻辑。应先提供逻辑。
 
-### Use Diagrams to Answer One Question
+### 用图回答一个问题（Use Diagrams to Answer One Question）
 
 ```mermaid
 flowchart LR
-    D["Discovery\noutcome and constraints"] --> A["Architecture\noptions and decision"]
-    A --> B["Build\ncontracts and tests"]
-    B --> V["Validate\noffline evidence"]
-    V --> P["Pilot\nguarded production evidence"]
-    P --> O["Operate\nSLOs and incidents"]
-    O --> I["Iterate\nfeedback and change review"]
+    D["调研\n结果与约束"] --> A["架构\n选项与决策"]
+    A --> B["构建\n契约与测试"]
+    B --> V["验证\n离线证据"]
+    V --> P["试点\n受防护的生产证据"]
+    P --> O["运行\nSLO 与事故"]
+    O --> I["迭代\n反馈与变更评审"]
     I --> D
 ```
 
-A context diagram answers who and what crosses the system boundary. A data-flow
-diagram answers where sensitive data moves. A sequence diagram answers how one
-trajectory works. A deployment diagram answers runtime ownership. A control
-map answers where risk is prevented, detected, and corrected.
+上下文图回答谁、什么跨越系统边界；数据流图回答敏感数据移到哪里；时序图回答一条轨迹如何运作；部署图回答运行时归属；控制地图回答风险在哪里被预防、检测和纠正。
 
-One overloaded diagram answers none of them well.
+一张承载过多内容的图，无法很好回答任何一个问题。
 
-### Record Decisions, Not Meeting Transcripts
+### 记录决策，而非会议对话（Record Decisions, Not Meeting Transcripts）
 
-An ADR should be short enough to read and complete enough to revisit.
+ADR 应短到愿意读，也完整到能够重新审视。
 
-Required fields:
+必需字段：
 
-- status and decision owner
-- context and constraints
-- options and evidence
-- decision and rationale
-- consequences and residual risk
-- rejected alternatives
-- verification plan
-- reversal conditions and review date
+- 状态与决策负责人
+- 背景与约束
+- 选项与证据
+- 决策与理由
+- 后果和剩余风险
+- 被否决方案
+- 验证计划
+- 逆转条件和评审日期
 
-The rejected alternatives matter. Without them, a future team repeats the same
-analysis or changes the design without understanding which constraint it breaks.
+被否决方案很重要。没有它们，未来团队会重复相同分析，或在不了解会违反哪条约束时改变设计。
 
-Use explicit confidence. "We estimate" is more honest and useful than presenting
-an untested latency or cost number as fact.
+明确表达置信程度。“我们估计”比把未测试延迟或成本当事实更诚实，也更有用。
 
-### Turn Architecture Into Contracts
+### 将架构转为契约（Turn Architecture Into Contracts）
 
-Implementation guidance needs machine-checkable boundaries:
+实施指导需要机器可检查的边界：
 
-- request and response schemas
-- identity and authorization requirements
-- versioning and compatibility rules
-- timeout, retry, cancellation, and idempotency behavior
-- structured error categories
-- data classification and retention
-- prompt, model, tool, and knowledge ownership
-- evaluation fixtures and release gates
-- observability fields and redaction
+- 请求与响应模式
+- 身份和授权要求
+- 版本管理和兼容规则
+- 超时、重试、取消和幂等行为
+- 结构化错误类别
+- 数据分类和保留
+- 提示词、模型、工具和知识归属
+- 评估夹具和发布门禁
+- 可观测性字段和脱敏
 
-An architecture packet should point to these contracts. It should not duplicate
-every line of implementation.
+架构包应指向这些契约，不必复制每行实现。
 
-### Define Ownership by Decision
+### 按决策定义归属（Define Ownership by Decision）
 
-"The AI team owns it" is too broad.
+“AI 团队负责”太宽泛。
 
-Name owners for:
+为以下项目指定负责人：
 
-- business outcome
-- product workflow and user communication
-- prompt and output contract
-- model selection and routing
-- tool and integration service
-- knowledge-source freshness
-- identity and permissions
-- evaluation labels and acceptance thresholds
-- safety and compliance controls
-- runtime SLO and incident response
-- vendor and cost management
-- deprecation and retirement
+- 业务结果
+- 产品工作流和用户沟通
+- 提示词与输出契约
+- 模型选择和路由
+- 工具与集成服务
+- 知识来源时效
+- 身份与权限
+- 评估标签和接受阈值
+- 安全与合规控制
+- 运行时 SLO 和事故响应
+- 供应商与成本管理
+- 弃用和退役
 
-Separate the person who recommends a change from the person authorized to accept
-its risk.
+区分提出变更建议的人，与有权接受风险的人。
 
-### Design Handoff Acceptance
+### 设计交接验收（Design Handoff Acceptance）
 
-Handoff is complete when the receiving team can operate and change the system
-safely, not when a document link is sent.
+接收团队能安全运行和修改系统时，交接才完成，而不是发送文档链接时。
 
-Acceptance criteria:
+验收标准：
 
-- owners and escalation contacts confirmed
-- architecture and ADRs current
-- dependencies and access provisioned
-- dashboards and alerts live
-- runbooks rehearsed through failure drills
-- evaluation suite runnable and baselines stored
-- rollback tested
-- data retention and deletion verified
-- reviewer queue staffed
-- known limitations communicated
-- change and incident processes agreed
+- 确认负责人和升级联系人
+- 架构与 ADR 最新
+- 依赖和访问已就绪
+- 仪表盘与告警已运行
+- 通过失败演练实践操作手册
+- 评估套件可运行，基线已保存
+- 回滚已测试
+- 数据保留和删除已验证
+- 评审队列有人值守
+- 已沟通知识局限
+- 已约定变更和事故流程
 
-Use a joint acceptance review. The receiving owner should demonstrate recovery
-from a simulated failure.
+进行联合验收评审。接收负责人应演示从模拟失败中恢复。
 
-### Plan Adoption as Part of the Workflow
+### 把采用规划纳入工作流（Plan Adoption as Part of the Workflow）
 
-AI systems change how people work. Training only on the interface is insufficient.
-Users need to know:
+AI 系统改变工作方式。只培训界面操作不够，用户需要知道：
 
-- which tasks are in scope
-- what evidence to inspect
-- when to edit, reject, or escalate
-- which data may be entered
-- what the system records
-- how to report harmful or incorrect behavior
-- what happens when the service is unavailable
+- 哪些任务在范围内
+- 要检查什么证据
+- 何时编辑、拒绝或升级
+- 可以输入哪些数据
+- 系统记录什么
+- 如何报告有害或错误行为
+- 服务不可用时会发生什么
 
-Measure adoption with outcome and quality, not logins alone. A high usage number
-can reflect forced process or repeated rework.
+用结果和质量衡量采用，而非只有登录次数。高用量可能反映强制流程或重复返工。
 
-### Communicate Incidents by Impact and Decision
+### 围绕影响与决策沟通事故（Communicate Incidents by Impact and Decision）
 
-During an incident, separate confirmed fact, current impact, mitigation, and
-unknowns.
+事故期间，区分已确认事实、当前影响、缓解措施和未知项。
 
 ```text
-Impact: Which users, tasks, or records may be affected?
-Evidence: What telemetry or evaluation confirms it?
-Containment: What capability is disabled or routed safely?
-Recovery: What must pass before restoration?
-Follow-up: Which control, owner, or assumption changes?
+影响：哪些用户、任务或记录可能受影响？
+证据：哪些遥测或评估确认了它？
+遏制：哪项能力被停用或安全路由？
+恢复：恢复服务前必须通过什么？
+后续：哪项控制、负责人或假设需要变化？
 ```
 
-Do not speculate about model intent. Describe observable system behavior and
-the control response.
+不要猜测模型意图。描述可观测系统行为和控制响应。
 
-### Keep Lifecycle Evidence Connected
+### 保持生命周期证据关联（Keep Lifecycle Evidence Connected）
 
-Each production outcome should be traceable to:
+每个生产结果都应能追溯到：
 
-- requirement and decision
-- system and configuration version
-- test and approval evidence
-- deployment and runtime trace
-- human review or override
-- downstream outcome
-- change request if the evidence reveals a problem
+- 需求与决策
+- 系统和配置版本
+- 测试与审批证据
+- 部署和运行时追踪
+- 人工评审或覆盖决策
+- 下游结果
+- 证据揭示问题时对应的变更请求
 
-This chain supports debugging, governance, and rational iteration.
+这条链支持调试、治理和有依据的迭代。
 
-## Build It
+## 动手实现（Build It）
 
-## Interactive Lab
+## 交互实验（Interactive Lab）
 
 ```figure
 28-adr-lifecycle
 ```
 
-Use the ADR lifecycle explorer to move one decision from discovery through
-build, validation, pilot, operation, incident, and reconsideration. Change the
-evidence or reversal condition and observe which owner must act next.
+使用 ADR 生命周期探索器，让一项决策经过调研、构建、验证、试点、运行、事故和重新考虑。改变证据或逆转条件，观察下一步哪个负责人必须行动。
 
-## Practice Lab
+## 实践实验（Practice Lab）
 
-Fail the stale-retrieval tabletop drill, trace the changed evidence to its
-decision owner, and update the ADR instead of editing only the diagram.
+让过时检索的桌面推演失败，把变化证据追溯到决策负责人，并更新 ADR，而不是只改图。
 
-## Shipped Artifact
+## 交付物（Shipped Artifact）
 
-The filled [`outputs/delivery-handoff-packet.md`](../outputs/delivery-handoff-packet.md)
-connects an executive decision, ADR, engineering contracts, operations drill,
-and ownership map.
+填写完成的 [`outputs/delivery-handoff-packet.md`](../outputs/delivery-handoff-packet.md) 关联管理层决策、ADR、工程契约、运维演练和归属地图。
 
-## Verify It
+## 验证（Verify It）
 
-Verify its decisions, owners, recovery proof, and measurable reversal trigger:
+验证其决策、负责人、恢复证明和可衡量的逆转触发条件：
 
 ```bash
 cd certifications/claude/lessons/28-stakeholder-communication-adrs-and-lifecycle
@@ -248,132 +222,112 @@ python3 code/main.py
 python3 -m unittest discover -s code/tests -v
 ```
 
-The quiz checks communication and lifecycle decisions.
+测验检查沟通与生命周期决策。
 
-## Capstone Connection
+## 综合实践衔接（Capstone Connection）
 
-Use the verified delivery packet as the final handoff section of the Architect
-Professional capstone.
+将经过验证的交付包用作专业架构师（Architect Professional）综合实践的最终交接章节。
 
-Create a delivery packet with five artifacts.
+创建包含五个交付物的交付包。
 
-### 1. Executive Decision Brief
+### 1. 管理层决策简报（1. Executive Decision Brief）
 
-One page: problem, baseline, target, options, recommendation, investment range,
-top risks, verification, and decision requested.
+一页内容：问题、基线、目标、选项、推荐、投资范围、主要风险、验证和请求作出的决策。
 
-### 2. Architecture Decision Record
+### 2. 架构决策记录（2. Architecture Decision Record）
 
-Capture the selected pattern and at least two rejected alternatives. Include
-reversal conditions.
+记录所选模式和至少两个被否决方案，包含逆转条件。
 
-### 3. Engineering Contract Index
+### 3. 工程契约索引（3. Engineering Contract Index）
 
 ```markdown
-| Boundary | Contract | Owner | Version rule | Failure rule | Test |
+| 边界 | 契约 | 负责人 | 版本规则 | 失败规则 | 测试 |
 |----------|----------|-------|--------------|--------------|------|
 ```
 
-### 4. Operational Readiness Checklist
+### 4. 运维就绪清单（4. Operational Readiness Checklist）
 
-Include dashboards, alerts, runbooks, access, evaluation, rollback, dependencies,
-review capacity, and incident communication.
+包含仪表盘、告警、操作手册、访问、评估、回滚、依赖、评审容量和事故沟通。
 
-### 5. Ownership and Change Map
+### 5. 归属与变更地图（5. Ownership and Change Map）
 
 ```markdown
-| Decision or asset | Operating owner | Change approver | Evidence | Review trigger |
+| 决策或资产 | 运行负责人 | 变更批准者 | 证据 | 评审触发条件 |
 |-------------------|-----------------|-----------------|----------|----------------|
 ```
 
-Run a tabletop exercise. Simulate stale retrieval causing unsafe recommendations,
-a failed authorization service, and evaluator drift. The receiving team should
-identify impact, contain the capability, recover from a known-safe version, and
-record follow-up ownership.
+进行桌面推演。模拟过时检索导致不安全建议、授权服务失败和评估器漂移。接收团队应识别影响、限制能力、从已知安全版本恢复，并记录后续归属。
 
-## Use It
+## 实际应用（Use It）
 
-For an enterprise research assistant, provide these views:
+对于企业研究助手，提供以下视图：
 
-- Executive: reduced analyst cycle time, evidence quality target, budget, and
-  residual confidentiality risk.
-- Product: query journey, insufficient-evidence state, citation experience, and
-  feedback path.
-- Engineering: retrieval, model, tool, identity, and evaluation contracts.
-- Security: tenant boundary, source permissions, logs, retention, and incident
-  controls.
-- Operations: freshness, latency, cost, error, and quality dashboards with
-  rollback rules.
+- 管理层：分析周期缩短、证据质量目标、预算和剩余保密风险。
+- 产品：查询旅程、证据不足状态、引用体验和反馈路径。
+- 工程：检索、模型、工具、身份和评估契约。
+- 安全：租户边界、来源权限、日志、保留和事故控制。
+- 运维：时效、延迟、成本、错误和质量仪表盘，以及回滚规则。
 
-The facts remain consistent. The detail follows the decision each audience owns.
+事实保持一致，细节根据每类受众负责的决策调整。
 
-At the end of the pilot, review more than accuracy. Compare analyst time, citation
-inspection, reviewer workload, adoption by task class, cost per accepted report,
-and incidents. Decide to expand, revise, constrain, or stop.
+试点结束时，不只检查准确率。比较分析人员时间、引用检查、评审工作量、按任务类别划分的采用、每份获接受报告成本和事故。决定扩展、修订、限制还是停止。
 
-## Exam Decision Patterns
+## 考试决策模式（Exam Decision Patterns）
 
-When a scenario asks how to communicate tradeoffs, state business consequence,
-technical evidence, rejected alternatives, and residual risk in language suited
-to the audience.
+场景询问如何沟通取舍时，用适合受众的语言说明业务后果、技术证据、被否决方案和剩余风险。
 
-Prefer answers that:
+优先选择以下答案：
 
-- run structured discovery before commitment
-- document context, options, and consequences
-- assign owners to prompts, data, tools, controls, metrics, and operations
-- define implementation and failure contracts
-- require operational readiness and handoff acceptance
-- connect feedback to versioned change decisions
+- 承诺前进行结构化调研
+- 记录背景、选项和后果
+- 为提示词、数据、工具、控制、指标和运维分配负责人
+- 定义实施与失败契约
+- 要求运维就绪和交接验收
+- 把反馈关联到版本化变更决策
 
-Avoid answers that hand over a diagram without SLOs, runbooks, evaluators,
-ownership, or rollback.
+避免只交图却没有 SLO、操作手册、评估器、归属或回滚的答案。
 
-## Common Traps
+## 常见陷阱（Common Traps）
 
-### One Deck for Every Audience
+### 所有受众使用同一套幻灯片（One Deck for Every Audience）
 
-Either executives drown in implementation or engineers receive vague claims.
-Use consistent views tuned to decisions.
+要么管理层淹没在实现细节里，要么工程师只收到模糊主张。应使用事实一致、按决策调整的视图。
 
-### Architecture as a Launch Artifact
+### 把架构当上线交付物（Architecture as a Launch Artifact）
 
-Architecture changes with evidence, scale, dependencies, and risk. Keep decisions
-and diagrams versioned through operation.
+架构随证据、规模、依赖和风险变化。在运行期间持续版本化决策与图表。
 
-### Ownership by Team Name
+### 按团队名称分配归属（Ownership by Team Name）
 
-A team label does not identify who updates a stale source, accepts an eval change,
-or responds to an alert. Assign concrete decisions.
+团队标签不能说明谁更新过时来源、接受评估变化或响应告警。应分配具体决策。
 
-### Adoption Equals Value
+### 采用等于价值（Adoption Equals Value）
 
-Usage can rise while quality, review burden, or total handling time worsens.
-Measure the outcome.
+用量上升时，质量、评审负担或总处理时间仍可能恶化。应测量结果。
 
-## Exercises
+## 练习（Exercises）
 
-1. Turn a technical architecture into a one-page executive decision brief.
-2. Write an ADR with a measurable reversal condition.
-3. Create a handoff drill for a tool that begins returning partial results.
-4. Assign owners for every changeable artifact in a RAG application.
-5. Design an adoption scorecard that includes quality, rework, and user trust.
+1. 将技术架构转为一页管理层决策简报。
+2. 编写具有可衡量逆转条件的 ADR。
+3. 为开始返回部分结果的工具创建交接演练。
+4. 为 RAG 应用中每个可变交付物分配负责人。
+5. 设计包含质量、返工和用户信任的采用评分卡。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语 | 常见说法 | 实际含义 |
 |------|-----------------|------------------------|
-| Stakeholder | Anyone invited to a meeting | A person or group who owns, affects, or bears a decision or outcome |
-| ADR | Architecture documentation | A focused record of one decision, its context, alternatives, and consequences |
-| Handoff | Send the documents | Transfer operational ability and accepted responsibility with evidence |
-| Operational readiness | Deployment succeeded | Owners, controls, observability, recovery, evaluation, and support are proven |
-| Adoption | Number of users | Sustained workflow use that produces the intended outcome without hidden burden |
-| Reversal condition | Lack of confidence | Evidence that triggers a planned architecture or scope change |
+| 相关方（Stakeholder） | 受邀开会的任何人 | 负责、影响或承担某项决策或结果的人或群体 |
+| ADR | 架构文档 | 聚焦单项决策及其背景、替代方案和后果的记录 |
+| 交接（Handoff） | 发送文档 | 以证据转移运行能力和已接受责任 |
+| 运维就绪（Operational readiness） | 部署成功 | 负责人、控制、可观测性、恢复、评估和支持均已证明就绪 |
+| 采用（Adoption） | 用户数 | 持续使用工作流，产生预期结果且没有隐藏负担 |
+| 逆转条件（Reversal condition） | 缺乏信心 | 触发计划内架构或范围变更的证据 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [Claude Platform documentation](https://platform.claude.com/docs/en/home) for current implementation boundaries
-- [Building effective agents](https://www.anthropic.com/research/building-effective-agents) for explaining workflow and agent choices
-- Phase 17, Lesson 23 for SRE practices
-- Phase 14, Lesson 40 for structured technical handoffs
-- Phase 17, Lesson 24 for incident response and operational recovery
+- [Claude Platform 文档（documentation）](https://platform.claude.com/docs/en/home)：当前实施边界
+- [构建有效智能体（Building effective agents）](https://www.anthropic.com/research/building-effective-agents)：解释工作流和智能体选择
+- 阶段 17，第 23 课：SRE 实践
+- 阶段 14，第 40 课：结构化技术交接
+- 阶段 17，第 24 课：事故响应与运维恢复

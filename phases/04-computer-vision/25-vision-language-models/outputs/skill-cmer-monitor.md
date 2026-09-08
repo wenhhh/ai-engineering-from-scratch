@@ -1,31 +1,31 @@
 ---
 name: skill-cmer-monitor
-description: Instrument a production VLM endpoint with Cross-Modal Error Rate monitoring, dashboards, and alerts
+description: 为生产 VLM 端点接入跨模态错误率监控、仪表盘和告警
 version: 1.0.0
 phase: 4
 lesson: 25
 tags: [vlm, production, monitoring, hallucination]
 ---
 
-# CMER Monitor
+# 跨模态错误率监控器（CMER Monitor）
 
-Treat cross-modal alignment as a first-class production KPI.
+将跨模态对齐作为首要生产关键绩效指标（Key Performance Indicator，KPI）。
 
-## When to use
+## 适用场景（When to use）
 
-- Deploying any VLM endpoint that produces text grounded on images.
-- Investigating reports of hallucinated responses.
-- Tracking whether an input distribution shift degrades model grounding.
+- 部署任何依据图像生成文本的视觉语言模型（Vision-Language Model，VLM）端点。
+- 调查关于幻觉响应的反馈。
+- 跟踪输入分布变化是否削弱模型基于图像作答的能力。
 
-## Inputs
+## 输入（Inputs）
 
-- `vlm_output`: generated text.
-- `text_confidence`: mean per-token probability after softmax, in `[0, 1]`. Compute as `exp(mean(log_probs))`. Do not pass raw logits; raw logits are unbounded and `conf_threshold` assumes a probability.
-- `image_embedding`: CLIP-family embedding of the image (DINOv3, SigLIP, CLIP).
-- `text_embedding`: CLIP-family embedding of the generated text.
-- Optional `prompt_type`: label for grouping (vqa / ocr / captioning / agent).
+- `vlm_output`：生成文本。
+- `text_confidence`：softmax 后各词元的平均概率，位于 `[0, 1]`，按 `exp(mean(log_probs))` 计算。不要传入原始逻辑值（Logits）；它们没有范围限制，而 `conf_threshold` 假定输入为概率。
+- `image_embedding`：由 CLIP 家族编码器（DINOv3、SigLIP、CLIP）生成的图像嵌入。
+- `text_embedding`：由 CLIP 家族编码器生成的输出文本嵌入。
+- 可选 `prompt_type`：分组标签（vqa / ocr / captioning / agent）。
 
-## Per-request computation
+## 每请求计算（Per-request computation）
 
 ```python
 import torch
@@ -40,42 +40,42 @@ def cmer_flag(image_emb, text_emb, text_conf, sim_thr=0.25, conf_thr=0.8):
     return {"sim": sim, "flagged": flagged}
 ```
 
-Embeddings are 1-D PyTorch tensors (`torch.float32`) from an independent CLIP-family encoder. If you use NumPy arrays, swap `.norm()` for `np.linalg.norm(...)` and cast the output accordingly.
+嵌入是独立 CLIP 家族编码器输出的一维 PyTorch 张量（`torch.float32`）。如果使用 NumPy 数组，将 `.norm()` 替换为 `np.linalg.norm(...)`，并相应转换输出类型。
 
-Store `sim`, `text_conf`, `flagged`, `prompt_type`, `timestamp`, `model_version`, `request_id` to your monitoring pipeline (Prometheus, DataDog, OpenTelemetry).
+将 `sim`、`text_conf`、`flagged`、`prompt_type`、`timestamp`、`model_version`、`request_id` 存入监控流水线，例如 Prometheus、DataDog、OpenTelemetry。
 
-## Aggregate metric
+## 聚合指标（Aggregate metric）
 
 ```
-CMER = (flagged requests in window) / (total requests in window)
+CMER =（窗口内被标记的请求数）/（窗口内总请求数）
 ```
 
-Report per endpoint, per prompt_type, per model version.
+按端点、prompt_type 和模型版本分别报告。
 
-## Alert thresholds
+## 告警阈值（Alert thresholds）
 
-- Baseline CMER: establish over 7 days of normal traffic.
-- Warning: CMER >= 1.5x baseline for 1 hour.
-- Critical: CMER >= 2x baseline for 30 minutes or > 15% absolute for any window.
+- 基线 CMER：通过 7 天正常流量建立。
+- 警告：CMER >= 基线的 1.5 倍，持续 1 小时。
+- 严重：CMER >= 基线的 2 倍，持续 30 分钟；或任意窗口内绝对值 > 15%。
 
-## Dashboard panels
+## 仪表盘面板（Dashboard panels）
 
-1. CMER over time (5-minute bucket, 7-day window).
-2. CMER by prompt_type (stacked bar).
-3. Distribution of `sim` per hour (histogram).
-4. Top hallucinated outputs (sample 20 flagged responses per day for human review).
+1. CMER 时间曲线：5 分钟分桶、7 天窗口。
+2. 按 prompt_type 展示 CMER：堆叠条形图。
+3. 每小时 `sim` 分布：直方图。
+4. 典型幻觉输出：每天抽取 20 条被标记响应供人工复核。
 
-## Actions when CMER spikes
+## CMER 突增时的行动（Actions when CMER spikes）
 
-1. Sample the flagged requests.
-2. Verify the model version has not changed inadvertently.
-3. Check the input distribution (new file format? new image source? compressed differently?).
-4. Route the affected traffic to human review until the spike resolves.
-5. If the spike is persistent, fine-tune or replace the model; do not suppress the alert.
+1. 抽样检查被标记的请求。
+2. 确认模型版本没有意外变化。
+3. 检查输入分布：是否出现新文件格式、新图像来源或不同压缩方式？
+4. 将受影响流量转交人工复核，直至突增消退。
+5. 如果持续不退，微调或替换模型，不要屏蔽告警。
 
-## Rules
+## 规则（Rules）
 
-- Never compute CMER using the VLM's own embeddings; use an independent encoder (DINOv3, SigLIP, or CLIP-L/14). Otherwise you are measuring the model's self-consistency, not alignment.
-- Always log the raw `sim` value, not just the `flagged` bit; distribution shifts show up in the lower quartile before the flag rate changes.
-- Do not ship a VLM endpoint without CMER monitoring; hallucinations are the dominant production failure mode and silent without this metric.
-- For sensitive domains (medical, legal, financial), raise `sim_threshold` to 0.35 or higher; the flag condition is `sim < sim_threshold`, so a higher threshold catches more outputs as potentially ungrounded — the right default for high-stakes use.
+- 不要用 VLM 自身的嵌入计算 CMER；使用独立编码器（DINOv3、SigLIP 或 CLIP-L/14）。否则测到的是模型自洽性，而非对齐程度。
+- 始终记录原始 `sim` 值，不仅记录 `flagged` 标志；在标记率变化之前，分布偏移就会体现在下四分位数上。
+- 不要交付没有 CMER 监控的 VLM 端点；幻觉是主要生产失效模式，没有该指标就可能悄然发生。
+- 对医疗、法律、金融等敏感领域，将 `sim_threshold` 提高到 0.35 或更高。标记条件为 `sim < sim_threshold`，因此更高阈值会将更多输出标记为可能缺乏图像依据，适合作为高风险用途的默认设置。

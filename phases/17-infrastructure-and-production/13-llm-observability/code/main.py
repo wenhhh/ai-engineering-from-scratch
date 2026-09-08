@@ -1,7 +1,7 @@
-"""Observability sampling and cost simulator — stdlib Python.
+"""可观测性（Observability）采样与成本模拟器，仅使用 Python 标准库。
 
-Simulates a 1M-trace day across retention strategies. Reports storage cost
-and what's lost under each. Pedagogical: costs are 2026 approximations.
+模拟每天 100 万条调用轨迹（Trace）在不同保留策略下的结果，报告存储成本与丢失的数据。
+本例用于教学，成本采用 2026 年近似值。
 """
 
 from __future__ import annotations
@@ -10,10 +10,10 @@ from dataclasses import dataclass
 import random
 
 
-BYTES_PER_TRACE = 4_500            # prompt + response + metadata
-COST_PER_GB_MONTH = 0.023          # S3 standard
-OBSERVABILITY_INGEST_PER_GB = 0.50 # e.g. Datadog-class
-ARIZE_AX_PER_GB = 0.005            # zero-copy claim
+BYTES_PER_TRACE = 4_500            # 提示词（Prompt）+ 响应 + 元数据（Metadata）
+COST_PER_GB_MONTH = 0.023          # S3 标准存储
+OBSERVABILITY_INGEST_PER_GB = 0.50 # 例如 Datadog 级别的平台
+ARIZE_AX_PER_GB = 0.005            # 零拷贝（Zero-copy）方案的宣称价格
 
 
 @dataclass
@@ -25,11 +25,11 @@ class Strategy:
 
 
 STRATEGIES = [
-    Strategy("100% retain",                1.00, True, True),
-    Strategy("10% random sample",          0.10, False, False),
-    Strategy("5% success + 100% errors",   0.05, True, False),
-    Strategy("5% success + errors + $$$",  0.05, True, True),
-    Strategy("1% aggregates only",         0.01, True, True),
+    Strategy("保留 100%",                1.00, True, True),
+    Strategy("随机采样 10%",          0.10, False, False),
+    Strategy("5% 成功轨迹 + 全部错误",   0.05, True, False),
+    Strategy("5% 成功轨迹 + 错误 + 高成本轨迹",  0.05, True, True),
+    Strategy("仅 1% 聚合数据",         0.01, True, True),
 ]
 
 
@@ -63,24 +63,24 @@ def simulate_day(strategy: Strategy, traces_per_day: int = 1_000_000) -> dict:
 
 
 def report(row: dict) -> None:
-    print(f"{row['name']:30}  retained={row['retained']:7}  "
-          f"lost={row['lost']:7}  {row['gb_per_day']:6.2f} GB/day  "
-          f"mono=${row['monolithic_month']:8.2f}  "
-          f"arize=${row['arize_month']:6.2f}  "
-          f"s3=${row['s3_month']:5.2f}")
+    print(f"{row['name']:30}  保留={row['retained']:7}  "
+          f"丢失={row['lost']:7}  {row['gb_per_day']:6.2f} GB/日  "
+          f"一体化平台月费={row['monolithic_month']:8.2f} 美元  "
+          f"Arize 月费={row['arize_month']:6.2f} 美元  "
+          f"S3 月费={row['s3_month']:5.2f} 美元")
 
 
 def main() -> None:
     print("=" * 120)
-    print("OBSERVABILITY SAMPLING — 1M traces/day, 2026 price approximations")
+    print("可观测性采样：每天 100 万条轨迹，采用 2026 年近似价格")
     print("=" * 120)
     for s in STRATEGIES:
         report(simulate_day(s))
 
     print()
-    print("Read: 100% retention on Datadog-class costs hundreds of $/day.")
-    print("5% success + 100% errors + high-cost keeps signal, cuts 90% of bill.")
-    print("Arize AX zero-copy pattern wins at scale when you already have a data lake.")
+    print("结果解读：在 Datadog 级平台上保留全部轨迹，每天花费数百美元。")
+    print("保留 5% 成功轨迹、全部错误及高成本轨迹，可以留住关键信号，将账单降低 90%。")
+    print("如果已有数据湖（Data Lake），Arize AX 的零拷贝（Zero-copy）模式在大规模场景下更有优势。")
 
 
 if __name__ == "__main__":

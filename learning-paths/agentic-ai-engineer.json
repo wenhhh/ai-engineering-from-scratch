@@ -2,65 +2,65 @@
   "schemaVersion": 1,
   "kind": "career-route",
   "id": "agentic-ai-engineer",
-  "title": "Agent Systems Engineering",
-  "workFamily": "Agent Systems Engineering",
-  "commonTitles": ["Agent Systems Engineer", "Agentic AI Engineer", "AI Agent Engineer"],
-  "summary": "Engineer tool-using agent loops with explicit context, memory, orchestration, safety, evaluation, and production control.",
-  "keywords": "agentic ai engineer agents tools mcp memory orchestration safety evaluation runtime observability",
-  "decisionPrompt": "Do you want to engineer tool-using systems whose state, decisions, failures, and controls remain observable?",
-  "mission": "Build on shared foundations to create agent systems with explicit tool contracts, state, safety boundaries, evaluation, and runtime evidence.",
+  "title": "智能体系统工程（Agent Systems Engineering）",
+  "workFamily": "智能体系统工程（Agent Systems Engineering）",
+  "commonTitles": ["智能体系统工程师（Agent Systems Engineer）", "智能体 AI 工程师（Agentic AI Engineer）", "AI 智能体工程师（AI Agent Engineer）"],
+  "summary": "构建使用工具的智能体循环（Agent loop），明确管理上下文、记忆、编排、安全、评估及生产运行控制。",
+  "keywords": "智能体 工具 记忆 编排 安全 评估 运行时 可观测性 agentic ai engineer agents tools mcp memory orchestration safety evaluation runtime observability",
+  "decisionPrompt": "你是否想构建使用工具的系统，并让其状态、决策、故障和控制机制始终可观察？",
+  "mission": "在共同基础之上，构建工具契约、状态、安全边界、评估和运行时证据均明确可查的智能体系统。",
   "responsibilities": [
-    "Design tool contracts and close the thought, action, observation loop.",
-    "Control context, memory, state transitions, and orchestration.",
-    "Model failures and defend tool and instruction boundaries.",
-    "Evaluate behavior and operate the runtime from traces and controls."
+    "设计工具契约（Tool contract），使思考、行动、观察形成闭环。",
+    "管理上下文（Context）、记忆（Memory）、状态转换（State transition）和编排（Orchestration）。",
+    "对故障建模，守住工具与指令的边界。",
+    "评估行为，并依据追踪记录（Trace）和控制机制管理运行时（Runtime）。"
   ],
   "goodFitIf": [
-    "You enjoy reasoning about stateful systems, control flow, and failure recovery.",
-    "You want autonomy to be bounded by explicit contracts and evidence.",
-    "You prefer testable orchestration over opaque agent demos."
+    "你喜欢分析有状态系统（Stateful system）、控制流（Control flow）和故障恢复（Failure recovery）。",
+    "你希望通过明确契约和证据约束系统的自主行为。",
+    "相比内部过程不透明的智能体演示，你更重视可测试的编排。"
   ],
   "baseline": [
-    "Complete the shared software engineering and AI foundations, or demonstrate equivalent working knowledge.",
-    "Be able to build an API-backed LLM application and read structured traces.",
-    "Understand basic testing, state management, and security boundaries."
+    "完成共同的软件工程和 AI 基础课程，或证明具备同等实践知识。",
+    "能够构建通过 API 调用大语言模型（LLM）的应用，并阅读结构化追踪记录。",
+    "理解基本测试、状态管理和安全边界。"
   ],
-  "boundary": "This is a specialist overlay after shared foundations. MCP is one integration surface, not the definition of agent systems engineering, and the route does not replace distributed systems or live operations experience.",
-  "timeNote": "The estimate covers lesson time only. Portfolio work and practice take additional time.",
+  "boundary": "这是一条建立在共同基础之上的专业方向路径。模型上下文协议（MCP）只是一种集成接口，不等于智能体系统工程的全部；本路径也不能替代分布式系统或实际运维经验。",
+  "timeNote": "预计时间仅包含课程学习。作品集制作和练习还需额外时间。",
   "portfolioProof": {
-    "title": "Observable Agent System",
-    "description": "Build a bounded agent workflow whose tools, state, memory, failure behavior, and release evidence can be inspected.",
+    "title": "可观测智能体系统（Observable Agent System）",
+    "description": "构建边界明确的智能体工作流，使工具、状态、记忆、故障行为及发布证据都可检查。",
     "evidence": [
-      "A typed tool registry and agent loop",
-      "Explicit state and memory behavior",
-      "Failure and prompt injection tests",
-      "An agent evaluation suite",
-      "Runtime traces with stop, retry, and escalation evidence"
+      "带类型约束的工具注册表（Typed tool registry）及智能体循环",
+      "明确的状态与记忆行为",
+      "故障及提示词注入（Prompt injection）测试",
+      "智能体评估套件（Agent evaluation suite）",
+      "包含停止、重试和升级处理证据的运行时追踪记录"
     ]
   },
   "readinessCriteria": [
-    "Can separate tool capability from agent decision policy.",
-    "Can explain what enters context, what persists, and what expires.",
-    "Can model state transitions and orchestration failure paths.",
-    "Can test prompt injection, tool misuse, loops, and false completion claims.",
-    "Can evaluate behavior from trajectories and operate it from traces."
+    "能够区分工具能力与智能体决策策略。",
+    "能够说明哪些内容进入上下文、哪些持久保留、哪些会过期。",
+    "能够对状态转换和编排失败路径建模。",
+    "能够测试提示词注入、工具误用、循环及虚假的完成声明。",
+    "能够依据执行轨迹（Trajectory）评估行为，并根据追踪记录开展运行管理。"
   ],
   "coverage": {
-    "strong": ["Tool contracts and agent loops", "Context, memory, and state", "Orchestration and failure modes", "Agent safety, evaluation, and observability"],
-    "partial": ["Distributed agent systems", "Human approval experience", "Long-running workflow durability"],
-    "outsideCourse": ["Production fleet ownership", "Provider-internal model control", "Years of live on-call experience"]
+    "strong": ["工具契约与智能体循环", "上下文、记忆与状态", "编排与故障模式（Failure mode）", "智能体安全、评估与可观测性（Observability）"],
+    "partial": ["分布式智能体系统（Distributed agent system）", "人工审批体验（Human approval experience）", "长时间运行工作流的持久可靠性（Durability）"],
+    "outsideCourse": ["生产智能体集群的运维责任", "服务提供商内部的模型控制", "多年生产值班（On-call）经验"]
   },
-  "completionClaim": "Completing this route shows that you can build and evaluate an observable agent system. It does not guarantee a role or prove experience operating a production agent fleet.",
+  "completionClaim": "完成本路径表明你能够构建和评估可观测的智能体系统，但不保证获得相关岗位，也不能证明你有生产智能体集群的运维经验。",
   "sourceBasis": {
     "reviewedAt": "2026-08-29",
-    "method": "Synthesized from current primary job descriptions across AI field, product, platform, data, developer, and evaluation teams."
+    "method": "综合 AI 现场交付、产品、平台、数据、开发者及评估团队当时的一手职位描述整理而成。"
   },
   "estimatedMinutes": 865,
   "stages": [
     {
       "id": "common-core",
-      "title": "Common Core",
-      "outcome": "Build a typed tool surface and a bounded agent loop.",
+      "title": "共同核心（Common Core）",
+      "outcome": "构建带类型约束的工具接口和边界明确的智能体循环。",
       "lessonPaths": [
         "phases/13-tools-and-protocols/01-the-tool-interface",
         "phases/13-tools-and-protocols/05-tool-schema-design",
@@ -68,40 +68,40 @@
         "phases/14-agent-engineering/01-the-agent-loop",
         "phases/14-agent-engineering/06-tool-use-and-function-calling"
       ],
-      "artifact": "A deterministic agent loop with typed tools, validation, stop conditions, and a transcript."
+      "artifact": "一个确定性智能体循环，包含带类型约束的工具、校验、停止条件和完整交互记录。"
     },
     {
       "id": "role-practice",
-      "title": "Role Practice",
-      "outcome": "Make context, memory, state, and orchestration explicit and testable.",
+      "title": "岗位实践（Role Practice）",
+      "outcome": "使上下文、记忆、状态和编排明确可查、可以测试。",
       "lessonPaths": [
         "phases/11-llm-engineering/05-context-engineering",
         "phases/14-agent-engineering/07-memory-virtual-context-memgpt",
         "phases/14-agent-engineering/13-langgraph-stateful-graphs",
         "phases/14-agent-engineering/28-orchestration-patterns"
       ],
-      "artifact": "A stateful workflow with a context budget, memory policy, checkpoints, and recovery paths."
+      "artifact": "一个有状态工作流，包含上下文预算（Context budget）、记忆策略（Memory policy）、检查点（Checkpoint）和恢复路径。"
     },
     {
       "id": "proof-project",
-      "title": "Proof Project",
-      "outcome": "Stress the system against realistic failures and unsafe inputs before release.",
+      "title": "能力证明项目（Proof Project）",
+      "outcome": "发布前，针对真实故障和不安全输入，对系统进行压力测试。",
       "lessonPaths": [
         "phases/14-agent-engineering/26-failure-modes-agentic",
         "phases/14-agent-engineering/27-prompt-injection-defense",
         "phases/14-agent-engineering/30-eval-driven-agent-development"
       ],
-      "artifact": "An observable agent system with adversarial tests, trajectory evaluations, and explicit release gates."
+      "artifact": "一个可观测的智能体系统，包含对抗测试（Adversarial test）、轨迹评估（Trajectory evaluation）和明确的发布门禁（Release gate）。"
     },
     {
       "id": "interview-readiness-evidence",
-      "title": "Interview and Readiness Evidence",
-      "outcome": "Show that the runtime can be operated from controls and trace evidence.",
+      "title": "面试与能力就绪证据（Interview and Readiness Evidence）",
+      "outcome": "证明能够依据控制机制与追踪证据管理运行时。",
       "lessonPaths": [
         "phases/14-agent-engineering/29-production-runtimes",
         "phases/14-agent-engineering/24-agent-observability-platforms"
       ],
-      "artifact": "A case study with architecture, failure evidence, runtime controls, traces, and justified tradeoffs."
+      "artifact": "一份案例研究，包含架构、故障证据、运行时控制、追踪记录，以及有依据的技术取舍。"
     }
   ],
   "lessons": [

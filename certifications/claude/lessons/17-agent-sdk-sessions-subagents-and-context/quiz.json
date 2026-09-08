@@ -1,78 +1,78 @@
 {
   "lesson": "17-agent-sdk-sessions-subagents-and-context",
-  "title": "Agent SDK Sessions, Subagents, and Context",
+  "title": "Agent SDK 会话、子智能体与上下文（Agent SDK Sessions, Subagents, and Context）",
   "questions": [
     {
       "stage": "pre",
-      "question": "Where should an agent store authoritative task completion, approvals, and external side-effect IDs?",
+      "question": "智能体应把任务完成情况、审批及外部副作用 ID 的权威记录存在哪里？",
       "options": [
-        "In the session summary so resumption preserves completion and approval claims",
-        "In a stable system instruction listing approvals and last-known side-effect IDs",
-        "In durable external state with references loaded into context",
-        "In a structured confidence record attached to each completed operation"
+        "存入会话摘要，以便恢复时保留完成和审批声明",
+        "存入稳定的系统指令，列出审批及最后已知的副作用 ID",
+        "存入持久化外部状态，再将引用加载到上下文",
+        "存入附在每项已完成操作上的结构化置信度记录"
       ],
       "correct": 2,
-      "explanation": "Conversation is a working set. Durable state provides versioning, reconciliation, idempotency, and recovery across sessions or context loss."
+      "explanation": "对话只是工作集。持久化状态提供版本管理、对账、幂等性，以及跨会话或上下文丢失后的恢复能力。"
     },
     {
       "stage": "check",
-      "question": "When is forking a session stronger than resuming it?",
+      "question": "什么时候分叉会话比恢复会话更合适？",
       "options": [
-        "When no prior state exists and two agents need independently written plans",
-        "When the original task is complete but its session should remain available for reference",
-        "When continuing the same reconciled plan after any external-state tool call",
-        "When exploring an alternative must preserve the original branch and isolate mutations"
+        "不存在先前状态，且两个智能体需要独立编写计划时",
+        "原任务已完成，但需要保留其会话供参考时",
+        "任意外部状态工具调用之后，要继续同一个已核对计划时",
+        "探索替代方案时必须保留原分支，并隔离修改时"
       ],
       "correct": 3,
-      "explanation": "A fork preserves a common starting point while allowing isolated exploration. Resume continues one valid trajectory after external-state reconciliation."
+      "explanation": "分叉保留共同起点，同时允许隔离探索。恢复则是在核对外部状态后，沿一条仍然有效的轨迹继续。"
     },
     {
       "stage": "check",
-      "question": "What does compaction solve?",
+      "question": "压缩（Compaction）解决什么问题？",
       "options": [
-        "Context size pressure while retaining a compact current working set",
-        "Revalidation of user identity and current scopes after a long pause",
-        "Durable recording of approvals and external transactions across restarts",
-        "Reconciliation of ambiguous side effects that may have completed before timeout"
+        "缓解上下文大小压力，同时保留精简的当前工作集",
+        "在长时间暂停后重新验证用户身份和当前权限范围",
+        "跨重启持久记录审批和外部事务",
+        "核实超时前可能已完成、结果不明的副作用"
       ],
       "correct": 0,
-      "explanation": "Compaction reduces context volume. Durable state, authorization, and side-effect reconciliation remain separate system responsibilities."
+      "explanation": "压缩减少上下文体积。持久化状态、授权和副作用对账仍是系统各自独立的职责。"
     },
     {
       "stage": "check",
-      "question": "Which use is best for a pre-tool hook?",
+      "question": "哪种工作最适合交给工具调用前钩子（Pre-tool hook）？",
       "options": [
-        "Choose which unresolved hypothesis deserves the next research pass",
-        "Block a write outside the declared file scope",
-        "Rewrite an explanation until a grader considers it sufficiently persuasive",
-        "Decide whether a legal clause creates material risk under the current facts"
+        "选择下一轮研究应调查哪个尚未解决的假设",
+        "阻止超出声明文件范围的写入",
+        "不断重写解释，直到评分者认为它足够有说服力",
+        "判断某项法律条款在当前事实下是否构成重大风险"
       ],
       "correct": 1,
-      "explanation": "Scope is a deterministic invariant that can be checked before execution. Semantic judgments belong in the model with evaluation and appropriate review."
+      "explanation": "范围是可在执行前检查的确定性不变条件。语义判断应交给模型，并配合评估与适当的评审。"
     },
     {
       "stage": "post",
-      "question": "A timeout occurs after a refund request may have succeeded. What should happen before retry?",
+      "question": "退款请求可能已成功，随后发生超时。重试前应做什么？",
       "options": [
-        "Retry immediately with the same key because identical requests are always safe",
-        "Resume with a larger model and infer completion from the session event sequence",
-        "Reconcile the idempotency key and external result to determine whether the side effect occurred",
-        "Mark the call failed locally, then issue a new refund operation identifier"
+        "立即使用同一个键重试，因为相同请求总是安全的",
+        "使用更大的模型恢复，并根据会话事件序列推断是否完成",
+        "核对幂等键与外部结果，确定副作用是否已经发生",
+        "在本地将调用标记为失败，然后发出新的退款操作标识"
       ],
       "correct": 2,
-      "explanation": "An unknown outcome can make a retry duplicate a high-impact action. Reconciliation establishes current truth and makes the next operation safe."
+      "explanation": "结果不明时，重试可能重复执行高影响操作。对账确定当前事实，使下一次操作能够安全进行。"
     },
     {
       "stage": "post",
-      "question": "A dependency changed materially since an agent session paused. What is the strongest continuation strategy?",
+      "question": "智能体会话暂停后，一个依赖发生了实质性变化。最可靠的继续策略是什么？",
       "options": [
-        "Append all prior tool logs so the existing context can adapt without replanning",
-        "Fork from the paused session without reconciliation so the original branch is preserved",
-        "Resume the old plan but ask the agent to account for the dependency while working",
-        "Revalidate state, mark stale assumptions, and start or fork with a fresh structured plan"
+        "追加全部历史工具日志，让既有上下文在不重新规划的情况下适应变化",
+        "不进行对账，直接从暂停的会话分叉，以保留原分支",
+        "恢复旧计划，但要求智能体在工作中考虑依赖变化",
+        "重新验证状态，标记过时假设，并用最新结构化计划新建或分叉会话"
       ],
       "correct": 3,
-      "explanation": "Material external change invalidates the prior trajectory. A fresh working context built from durable current state avoids forcing stale assumptions through resume."
+      "explanation": "实质性外部变化会使原有执行轨迹失效。基于持久化当前状态构建新的工作上下文，可以避免恢复时强行沿用过时假设。"
     }
   ]
 }

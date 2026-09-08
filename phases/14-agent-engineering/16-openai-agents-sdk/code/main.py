@@ -1,8 +1,8 @@
-"""OpenAI Agents SDK-shaped runtime in stdlib.
+"""用标准库实现 OpenAI Agents SDK 式运行时。
 
-Five primitives: Agent, FunctionTool, Handoff, Guardrail, Tracing.
-Handoffs are tools named transfer_to_<agent>. Guardrails trip on input/output.
-A span tree mirrors what the real SDK emits.
+五个原语：智能体（Agent）、函数工具（FunctionTool）、交接（Handoff）、防护机制（Guardrail）与追踪（Tracing）。
+交接是名为 transfer_to_<agent> 的工具。输入或输出会触发防护机制。
+跨度树（Span tree）模拟真实 SDK 产生的追踪结构。
 """
 
 from __future__ import annotations
@@ -106,7 +106,7 @@ class Runner:
                     agent_span.children.append(
                         Span(name="tool_error",
                              attributes={"tool": tool_name,
-                                         "reason": "unknown tool"})
+                                         "reason": "未知工具"})
                     )
                     final_output = f"error: unknown tool {tool_name}"
                     break
@@ -173,25 +173,25 @@ def _support_policy(user_input: str) -> dict[str, Any]:
 
 def _pii_check(text: str) -> tuple[bool, str]:
     if "ssn" in text.lower():
-        return False, "refuses to process social security numbers"
-    return True, "ok"
+        return False, "拒绝处理社会保障号码"
+    return True, "通过"
 
 
 def _length_check(text: str) -> tuple[bool, str]:
-    return len(text) < 200, f"output {len(text)} chars"
+    return len(text) < 200, f"输出为 {len(text)} 个字符"
 
 
 def main() -> None:
     print("=" * 70)
-    print("OPENAI AGENTS SDK SHAPE — Phase 14, Lesson 16")
+    print("OpenAI Agents SDK 结构——第 14 阶段，第 16 课")
     print("=" * 70)
 
-    billing = Agent(name="billing", instructions="handle refunds and invoices",
+    billing = Agent(name="billing", instructions="处理退款与发票",
                     policy=_billing_policy)
-    support = Agent(name="support", instructions="handle bugs and errors",
+    support = Agent(name="support", instructions="处理缺陷与错误",
                     policy=_support_policy)
     triage = Agent(
-        name="triage", instructions="route queries to the right specialist",
+        name="triage", instructions="将查询路由给合适的专家",
         policy=_triage_policy,
         handoffs=[Handoff(target=billing), Handoff(target=support)],
     )
@@ -207,19 +207,19 @@ def main() -> None:
         "share my ssn with the team",
     ]
     for case in cases:
-        print(f"\n--- case: {case} ---")
+        print(f"\n--- 示例：{case} ---")
         runner.trace = Span(name="run", attributes={"user_input": case[:40]})
         try:
             out = runner.run(triage, case)
-            print(f"final: {out}")
+            print(f"最终结果： {out}")
         except GuardrailTripped as e:
-            print(f"GUARDRAIL: {e}")
-        print("span tree:")
+            print(f"防护机制（Guardrail）： {e}")
+        print("跨度树（Span tree）：")
         _print_span(runner.trace, indent=1)
 
     print()
-    print("every handoff is a tool named transfer_to_<agent>.")
-    print("every guardrail trip is a structured exception, not a crash.")
+    print("每次交接都是名为 transfer_to_<agent> 的工具调用。")
+    print("每次触发防护机制都会产生结构化异常，而不是导致崩溃。")
 
 
 if __name__ == "__main__":

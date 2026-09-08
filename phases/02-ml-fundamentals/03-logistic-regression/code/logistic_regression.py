@@ -26,11 +26,11 @@ X, y = zip(*combined)
 X = list(X)
 y = list(y)
 
-print(f"Generated {N} samples (2 classes, 2 features)")
-print(f"Class 0 center: (2, 2), Class 1 center: (5, 5)")
-print(f"First 5 samples:")
+print(f"生成了 {N} 个样本（2 个类别，2 个特征）")
+print(f"类别 0 的中心：(2, 2)，类别 1 的中心：(5, 5)")
+print(f"前 5 个样本：")
 for i in range(5):
-    print(f"  Features: [{X[i][0]:.2f}, {X[i][1]:.2f}], Label: {y[i]}")
+    print(f"  特征（Features）： [{X[i][0]:.2f}, {X[i][1]:.2f}], 标签（Label）： {y[i]}")
 
 
 class LogisticRegression:
@@ -74,7 +74,7 @@ class LogisticRegression:
             loss = self.compute_loss(X, y)
             self.loss_history.append(loss)
             if epoch % print_every == 0:
-                print(f"  Epoch {epoch:4d} | Loss: {loss:.4f} | w: [{self.weights[0]:.3f}, {self.weights[1]:.3f}] | b: {self.bias:.3f}")
+                print(f"  轮次（Epoch）{epoch:4d} | 损失（Loss）： {loss:.4f} | w: [{self.weights[0]:.3f}, {self.weights[1]:.3f}] | b: {self.bias:.3f}")
         return self
 
     def accuracy(self, X, y):
@@ -86,14 +86,14 @@ split = int(0.8 * N)
 X_train, X_test = X[:split], X[split:]
 y_train, y_test = y[:split], y[split:]
 
-print("\n=== Training Logistic Regression ===")
+print("\n=== 训练逻辑回归（Logistic Regression） ===")
 model = LogisticRegression(n_features=2, learning_rate=0.1)
 model.fit(X_train, y_train, epochs=1000, print_every=200)
 
-print(f"\nTrain accuracy: {model.accuracy(X_train, y_train):.4f}")
-print(f"Test accuracy:  {model.accuracy(X_test, y_test):.4f}")
-print(f"Weights: [{model.weights[0]:.4f}, {model.weights[1]:.4f}]")
-print(f"Bias: {model.bias:.4f}")
+print(f"\n训练准确率（Train Accuracy）： {model.accuracy(X_train, y_train):.4f}")
+print(f"测试准确率（Test Accuracy）：  {model.accuracy(X_test, y_test):.4f}")
+print(f"权重（Weights）： [{model.weights[0]:.4f}, {model.weights[1]:.4f}]")
+print(f"偏置（Bias）： {model.bias:.4f}")
 
 
 class ClassificationMetrics:
@@ -121,34 +121,34 @@ class ClassificationMetrics:
         return 2 * p * r / (p + r) if (p + r) > 0 else 0
 
     def print_confusion_matrix(self):
-        print(f"\n  Confusion Matrix:")
-        print(f"                  Predicted")
-        print(f"                  Pos   Neg")
-        print(f"  Actual Pos     {self.tp:4d}  {self.fn:4d}")
-        print(f"  Actual Neg     {self.fp:4d}  {self.tn:4d}")
+        print(f"\n  混淆矩阵（Confusion Matrix）:")
+        print(f"                  预测值（Predicted）")
+        print(f"                  正类（Pos）   负类（Neg）")
+        print(f"  实际正类（Actual Pos）     {self.tp:4d}  {self.fn:4d}")
+        print(f"  实际负类（Actual Neg）     {self.fp:4d}  {self.tn:4d}")
 
     def print_report(self):
         self.print_confusion_matrix()
-        print(f"\n  Accuracy:  {self.accuracy():.4f}")
-        print(f"  Precision: {self.precision():.4f}")
-        print(f"  Recall:    {self.recall():.4f}")
-        print(f"  F1 Score:  {self.f1():.4f}")
+        print(f"\n  准确率（Accuracy）：  {self.accuracy():.4f}")
+        print(f"  精确率（Precision）： {self.precision():.4f}")
+        print(f"  召回率（Recall）：    {self.recall():.4f}")
+        print(f"  F1 分数（F1 Score）：  {self.f1():.4f}")
 
 
 y_pred_test = [model.predict(x) for x in X_test]
-print("\n=== Classification Report (Test Set) ===")
+print("\n=== 分类报告（Classification Report，测试集） ===")
 metrics = ClassificationMetrics(y_test, y_pred_test)
 metrics.print_report()
 
 
-print("\n=== Decision Boundary ===")
+print("\n=== 决策边界（Decision Boundary） ===")
 w1, w2 = model.weights
 b = model.bias
-print(f"Decision boundary: {w1:.4f}*x1 + {w2:.4f}*x2 + {b:.4f} = 0")
+print(f"决策边界（Decision Boundary）： {w1:.4f}*x1 + {w2:.4f}*x2 + {b:.4f} = 0")
 if abs(w2) > 1e-10:
-    print(f"Solved for x2:     x2 = {-w1/w2:.4f}*x1 + {-b/w2:.4f}")
+    print(f"解出 x2：     x2 = {-w1/w2:.4f}*x1 + {-b/w2:.4f}")
 
-print("\nSample predictions near the boundary:")
+print("\n边界附近样本的预测结果：")
 test_points = [
     [3.0, 3.0],
     [3.5, 3.5],
@@ -159,7 +159,7 @@ test_points = [
 for point in test_points:
     prob = model.predict_proba(point)
     pred = model.predict(point)
-    print(f"  [{point[0]}, {point[1]}] -> prob={prob:.4f}, class={pred}")
+    print(f"  [{point[0]}, {point[1]}] -> 概率（prob）={prob:.4f}, 类别（class）={pred}")
 
 
 class SoftmaxRegression:
@@ -208,7 +208,7 @@ class SoftmaxRegression:
                     self.weights[k][j] -= self.lr * (grad_w[k][j] / n)
                 self.biases[k] -= self.lr * (grad_b[k] / n)
             if epoch % print_every == 0:
-                print(f"  Epoch {epoch:4d} | Loss: {total_loss / n:.4f}")
+                print(f"  轮次（Epoch）{epoch:4d} | 损失（Loss）： {total_loss / n:.4f}")
         return self
 
     def accuracy(self, X, y):
@@ -238,24 +238,24 @@ y_train_3 = y_3class[:split_3]
 X_test_3 = X_3class[split_3:]
 y_test_3 = y_3class[split_3:]
 
-print("\n=== Multi-class Softmax Regression (3 classes) ===")
+print("\n=== 多分类 Softmax 回归（Softmax Regression，3 个类别） ===")
 softmax_model = SoftmaxRegression(n_features=2, n_classes=3, learning_rate=0.1)
 softmax_model.fit(X_train_3, y_train_3, epochs=1000, print_every=200)
-print(f"\nTrain accuracy: {softmax_model.accuracy(X_train_3, y_train_3):.4f}")
-print(f"Test accuracy:  {softmax_model.accuracy(X_test_3, y_test_3):.4f}")
+print(f"\n训练准确率（Train Accuracy）： {softmax_model.accuracy(X_train_3, y_train_3):.4f}")
+print(f"测试准确率（Test Accuracy）：  {softmax_model.accuracy(X_test_3, y_test_3):.4f}")
 
-print("\nSample predictions:")
+print("\n样本预测结果：")
 for i in range(5):
     probs = softmax_model.predict_proba(X_test_3[i])
     pred = softmax_model.predict(X_test_3[i])
-    print(f"  True: {y_test_3[i]}, Predicted: {pred}, Probs: [{', '.join(f'{p:.3f}' for p in probs)}]")
+    print(f"  真实值： {y_test_3[i]}, 预测值： {pred}, 概率（Probs）： [{', '.join(f'{p:.3f}' for p in probs)}]")
 
 
-print("\n=== Threshold Tuning ===")
-print("Default threshold: 0.5. Adjusting trades precision for recall.\n")
+print("\n=== 阈值调优（Threshold Tuning） ===")
+print("默认阈值为 0.5。调整阈值可以权衡精确率（Precision）与召回率（Recall）。\n")
 
 thresholds = [0.3, 0.4, 0.5, 0.6, 0.7]
-print(f"{'Threshold':>10} {'Accuracy':>10} {'Precision':>10} {'Recall':>10} {'F1':>10}")
+print(f"{'阈值（Threshold）':>10} {'准确率（Accuracy）':>10} {'精确率（Precision）':>10} {'召回率（Recall）':>10} {'F1':>10}")
 print("-" * 52)
 
 for t in thresholds:
@@ -264,8 +264,8 @@ for t in thresholds:
     print(f"{t:>10.1f} {m.accuracy():>10.4f} {m.precision():>10.4f} {m.recall():>10.4f} {m.f1():>10.4f}")
 
 
-print("\n=== Why Linear Regression Fails for Classification ===")
-print("Fitting linear regression to binary labels:")
+print("\n=== 线性回归（Linear Regression）为何不适合分类 ===")
+print("对二元标签（Binary Labels）拟合线性回归：")
 x_hours = list(range(1, 11))
 y_pass = [0, 0, 0, 0, 1, 1, 1, 1, 1, 1]
 
@@ -277,18 +277,18 @@ denominator = sum((x_hours[i] - x_mean) ** 2 for i in range(n))
 w_lin = numerator / denominator
 b_lin = y_mean - w_lin * x_mean
 
-print(f"\nLinear fit: y = {w_lin:.4f}*x + {b_lin:.4f}")
-print(f"{'Hours':>6} {'Actual':>8} {'Linear':>8} {'Sigmoid':>8}")
+print(f"\n线性拟合（Linear Fit）： y = {w_lin:.4f}*x + {b_lin:.4f}")
+print(f"{'小时（Hours）':>6} {'实际值（Actual）':>8} {'线性（Linear）':>8} {'Sigmoid':>8}")
 for h, actual in zip(x_hours, y_pass):
     lin_pred = w_lin * h + b_lin
     sig_pred = sigmoid(3 * (h - 4.5))
     print(f"{h:>6d} {actual:>8d} {lin_pred:>8.3f} {sig_pred:>8.3f}")
 
-print("\nLinear regression gives values outside [0, 1].")
-print("Logistic regression keeps everything in [0, 1] as probabilities.")
+print("\n线性回归的输出会超出 [0, 1]。")
+print("逻辑回归将所有输出限制在 [0, 1] 内，作为概率。")
 
 
-print("\n=== Scikit-learn Comparison ===")
+print("\n=== Scikit-learn 对比 ===")
 try:
     from sklearn.linear_model import LogisticRegression as SklearnLR
     from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
@@ -313,13 +313,13 @@ try:
     lr.fit(X_tr_sc, y_tr)
     y_pred_sk = lr.predict(X_te_sc)
 
-    print(f"Accuracy:  {accuracy_score(y_te, y_pred_sk):.4f}")
-    print(f"Precision: {precision_score(y_te, y_pred_sk):.4f}")
-    print(f"Recall:    {recall_score(y_te, y_pred_sk):.4f}")
+    print(f"准确率（Accuracy）：  {accuracy_score(y_te, y_pred_sk):.4f}")
+    print(f"精确率（Precision）： {precision_score(y_te, y_pred_sk):.4f}")
+    print(f"召回率（Recall）：    {recall_score(y_te, y_pred_sk):.4f}")
     print(f"F1:        {f1_score(y_te, y_pred_sk):.4f}")
-    print(f"\nConfusion Matrix:\n{confusion_matrix(y_te, y_pred_sk)}")
-    print(f"\nClassification Report:\n{classification_report(y_te, y_pred_sk)}")
+    print(f"\n混淆矩阵（Confusion Matrix）:\n{confusion_matrix(y_te, y_pred_sk)}")
+    print(f"\n分类报告（Classification Report）：\n{classification_report(y_te, y_pred_sk)}")
 
 except ImportError:
-    print("scikit-learn not installed. Install with: pip install scikit-learn")
-    print("The from-scratch implementations above work without any dependencies.")
+    print("未安装 scikit-learn。安装命令：pip install scikit-learn")
+    print("上述从零实现的版本无需任何依赖即可运行。")

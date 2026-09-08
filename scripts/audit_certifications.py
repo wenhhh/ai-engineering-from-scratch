@@ -45,7 +45,7 @@ LESSON_NAME_RE = re.compile(r"^[0-9]{2}-[a-z0-9]+(?:-[a-z0-9]+)*$")
 ID_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 FIELD_RE = re.compile(r"^\*\*(?P<name>[^*]+):\*\*\s*(?P<value>.+)$", re.MULTILINE)
 H1_RE = re.compile(r"^#\s+\S", re.MULTILINE)
-LEARNING_OBJECTIVES_RE = re.compile(r"^##\s+Learning Objectives\s*$", re.MULTILINE)
+CJK_RE = re.compile(r"[\u3400-\u9fff]")
 FIGURE_FENCE_RE = re.compile(r"```figure\s*\n\s*([a-z0-9-]+)", re.MULTILINE)
 CODE_EXTENSIONS = {".py": "Python", ".ts": "TypeScript", ".rs": "Rust", ".jl": "Julia"}
 QUIZ_KEYS = {"stage", "question", "options", "correct", "explanation"}
@@ -71,6 +71,30 @@ PARITY_HEADINGS = (
     "Verify It",
     "Capstone Connection",
 )
+CHINESE_HEADINGS = {
+    "Learning Objectives": ("学习目标",),
+    "Interactive Lab": ("交互实验",),
+    "Practice Lab": ("实践实验",),
+    "Shipped Artifact": ("交付物", "交付产物", "随课产物"),
+    "Verify It": ("验证结果", "验证"),
+    "Capstone Connection": ("与综合实践的联系", "与综合项目的联系", "综合实践衔接"),
+}
+
+
+def has_heading(text: str, heading: str) -> bool:
+    english = re.escape(heading)
+    chinese = "|".join(re.escape(label) for label in CHINESE_HEADINGS[heading])
+    return bool(re.search(rf"^##[ \t]+(?:{english}|(?:{chinese})（{english}）)[ \t]*$", text, re.MULTILINE))
+
+
+def word_equivalents(text: str) -> float:
+    # ponytail: two Han characters approximate one word; semantic quality needs human review.
+    return len(CJK_RE.findall(text)) / 2 + len(re.findall(r"\w+", CJK_RE.sub(" ", text)))
+
+
+def has_non_affiliation(text: str) -> bool:
+    text = text.lower()
+    return "anthropic" in text and any(statement in text for statement in ("not affiliated", "无隶属关系"))
 EXPECTED_FIGURES = {
     "00": "00-certification-route-map",
     "01": "01-claude-model-fit",
@@ -212,7 +236,7 @@ def check_answer_quality(audit: Audit, path: Path, questions: list[Any]) -> None
         incorrect = [index for index in range(len(options)) if index not in correct_set]
         for metric, lengths in (
             ("characters", [len(str(option)) for option in options]),
-            ("words", [len(re.findall(r"\w+", str(option))) for option in options]),
+            ("word equivalents", [word_equivalents(str(option)) for option in options]),
         ):
             correct_lengths = [lengths[index] for index in correct]
             incorrect_lengths = [lengths[index] for index in incorrect]
@@ -222,7 +246,7 @@ def check_answer_quality(audit: Audit, path: Path, questions: list[Any]) -> None
                 length_strategy_hits[(metric, "longest")] += 1
         if len(correct) == 1:
             single_count += 1
-            lengths = [len(re.findall(r"\w+", str(option))) for option in options]
+            lengths = [word_equivalents(str(option)) for option in options]
             correct_length = lengths[correct[0]]
             if lengths.count(correct_length) == 1 and correct_length == max(lengths):
                 unique_longest_correct += 1
@@ -381,14 +405,15 @@ def check_lesson(audit: Audit, lesson_dir: Path) -> None:
         check_lesson_quiz(audit, lesson_dir)
         return
     text = doc_path.read_text(encoding="utf-8")
-    if len(text.split()) < 800:
-        audit.add("C020", doc_path, f"lesson is too thin for certification preparation: {len(text.split())} words, minimum 800")
+    length = word_equivalents(text)
+    if length < 800:
+        audit.add("C020", doc_path, f"lesson is too thin for certification preparation: {length:g} word equivalents, minimum 800")
     if not H1_RE.search(text):
         audit.add("C020", doc_path, "missing top-level heading")
-    if not LEARNING_OBJECTIVES_RE.search(text):
+    if not has_heading(text, "Learning Objectives"):
         audit.add("C020", doc_path, "missing Learning Objectives section")
     for heading in PARITY_HEADINGS:
-        if not re.search(rf"^##\s+{re.escape(heading)}\s*$", text, re.MULTILINE):
+        if not has_heading(text, heading):
             audit.add("C029", doc_path, f"missing full-parity section '## {heading}'")
     expected_figure = EXPECTED_FIGURES.get(lesson_dir.name[:2])
     figure_ids = set(FIGURE_FENCE_RE.findall(text))
@@ -464,8 +489,8 @@ def check_assessment_question(
             audit.add("C057", path, f"{location} multiple question must have at least two correct indices")
         if question_type == "multiple" and len(correct) >= len(options):
             audit.add("C057", path, f"{location} multiple question cannot mark every option correct")
-    if not isinstance(question.get("explanation"), str) or len(question["explanation"].split()) < 20:
-        audit.add("C058", path, f"{location}.explanation must provide a substantive rationale")
+    if not isinstance(question.get("explanation"), str) or word_equivalents(question["explanation"]) < 20:
+        audit.add("C058", path, f"{location}.explanation must provide a substantive rationale (minimum 20 word equivalents; length heuristic only)")
     references = question.get("references")
     if not isinstance(references, list) or not references or not all(isinstance(item, str) and item.strip() for item in references):
         audit.add("C059", path, f"{location}.references must contain at least one source or lesson reference")
@@ -776,8 +801,12 @@ def check_ai_native_learning_surface(audit: Audit, actual_lessons: set[str]) -> 
         "not affiliated",
         "not included in the repository's EPUB/PDF book workflow",
     )
+    chinese_guide_tokens = {
+        "not affiliated": "与 Anthropic 无隶属关系",
+        "not included in the repository's EPUB/PDF book workflow": "不将其纳入仓库的 EPUB/PDF 电子书流程",
+    }
     for token in guide_tokens:
-        if token not in guide:
+        if token not in guide and not (token in chinese_guide_tokens and chinese_guide_tokens[token] in guide):
             audit.add("C080", GETTING_STARTED_PATH, f"AI-native learner guide is missing {token!r}")
 
     skill_tokens = (
@@ -791,8 +820,13 @@ def check_ai_native_learning_surface(audit: Audit, actual_lessons: set[str]) -> 
         "Never invent fake API code",
         "book-generation pipeline",
     )
+    chinese_skill_tokens = {
+        "Assessment mode": "测评模式（Assessment Mode）",
+        "Never invent fake API code": "不得编造虚假 API 代码",
+        "book-generation pipeline": "不得送入仓库的电子书生成流水线",
+    }
     for token in skill_tokens:
-        if token not in skill:
+        if token not in skill and (token not in chinese_skill_tokens or chinese_skill_tokens[token] not in skill):
             audit.add("C080", CERT_SKILL_PATH, f"certification tutor skill is missing {token!r}")
 
     if wrapper != skill:
@@ -807,11 +841,13 @@ def check_ai_native_learning_surface(audit: Audit, actual_lessons: set[str]) -> 
         "intentionally not converted into the books",
     )
     for token in readme_tokens:
-        if token not in root_readme:
+        chinese_book_boundary = token == "intentionally not converted into the books" and "认证课程有意不纳入书籍转换流程" in root_readme
+        if token not in root_readme and not chinese_book_boundary:
             audit.add("C080", ROOT_README_PATH, f"root README is missing certification onboarding text {token!r}")
 
     for token in ("GETTING_STARTED.md", "../../skills/claude-certification/SKILL.md", "outside the EPUB/PDF book workflow"):
-        if token not in cert_readme:
+        chinese_boundary = token == "outside the EPUB/PDF book workflow" and "不将它纳入 EPUB/PDF 电子书流程" in cert_readme
+        if token not in cert_readme and not chinese_boundary:
             audit.add("C080", CERT_README_PATH, f"certification README is missing {token!r}")
     for lesson_path in sorted(actual_lessons):
         relative = lesson_path.removeprefix("certifications/claude/") + "/"
@@ -840,10 +876,11 @@ def run_audit() -> Audit:
     for field in ("name", "provider", "publisher", "lastVerified", "guideVersion", "guideEffective", "summary", "disclaimer", "scoringNotice", "sourcePolicy"):
         require_string(audit, PROGRAM_PATH, program.get(field), field)
     disclaimer = str(program.get("disclaimer", "")).lower()
-    if "not affiliated" not in disclaimer or "not" not in disclaimer or "anthropic" not in disclaimer:
+    if not has_non_affiliation(disclaimer):
         audit.add("C007", PROGRAM_PATH, "disclaimer must state that the curriculum is not affiliated with Anthropic")
     for page in PUBLIC_CERT_PAGES:
-        if not page.is_file() or "not affiliated" not in page.read_text(encoding="utf-8").lower():
+        page_text = page.read_text(encoding="utf-8").lower() if page.is_file() else ""
+        if not any(statement in page_text for statement in ("not affiliated", "无隶属关系")):
             audit.add("C007", page, "public certification page must display the non-affiliation statement")
 
     declared_tracks = program.get("tracks")
@@ -867,7 +904,7 @@ def run_audit() -> Audit:
     readme_text = CERT_README_PATH.read_text(encoding="utf-8") if CERT_README_PATH.is_file() else ""
     readme_counts = {
         code: int(count)
-        for code, count in re.findall(r"^\|\s*(CC[A-Z-]+)\s*\|.*\|\s*(\d+)\s+lessons\s*\|$", readme_text, re.MULTILINE)
+        for code, count in re.findall(r"^\|\s*(CC[A-Z-]+)\s*\|.*\|\s*(\d+)\s*(?:lessons|课)\s*\|$", readme_text, re.MULTILINE)
     }
     for track in tracks_by_id.values():
         exam_code = track.get("examCode")

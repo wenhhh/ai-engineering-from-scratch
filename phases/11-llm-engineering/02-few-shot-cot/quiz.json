@@ -1,37 +1,37 @@
 [
   {
-    "question": "What is the key difference between zero-shot and few-shot prompting?",
-    "options": ["Zero-shot gives only the instruction; few-shot includes example input-output demonstrations before the actual query", "Zero-shot doesn't use a system prompt", "Few-shot uses a different model", "Zero-shot is faster"],
+    "question": "零样本（Zero-shot）与少样本（Few-shot）提示的关键区别是什么？",
+    "options": ["零样本只给指令；少样本在实际查询前提供输入输出示范", "零样本不使用系统提示词", "少样本使用不同模型", "零样本更快"],
     "correct": 0,
-    "explanation": "Few-shot prompting includes worked examples (demonstrations) that show the model the expected pattern. This is like showing someone how to fill out a form before asking them to fill out their own.",
+    "explanation": "少样本提示包含完整示例（示范），向模型展示预期模式。这就像让别人填写自己的表格前，先演示如何填写。",
     "stage": "pre"
   },
   {
-    "question": "What does 'Chain of Thought' prompting do?",
-    "options": ["It instructs the model to show intermediate reasoning steps before giving the final answer, improving accuracy on multi-step problems", "It generates longer responses", "It chains multiple API calls together", "It connects multiple models in sequence"],
+    "question": "思维链（Chain of Thought）提示有什么作用？",
+    "options": ["要求模型在最终答案之前展示中间推理步骤，提高多步骤问题的准确率", "生成更长的回答", "将多个 API 调用串联起来", "按顺序连接多个模型"],
     "correct": 0,
-    "explanation": "CoT prompting (e.g., 'Let's think step by step') gives the model 'scratch paper' to work through problems. On GSM8K math problems, this alone improved GPT-4o accuracy from 78% to 91%.",
+    "explanation": "CoT 提示（例如‘让我们逐步思考’）为模型提供求解问题的‘草稿纸’。在 GSM8K 数学题上，仅此就使 GPT-4o 的准确率从 78% 提高到 91%。",
     "stage": "pre"
   },
   {
-    "question": "How does Tree-of-Thought differ from Chain-of-Thought?",
-    "options": ["It explores multiple reasoning paths in parallel and evaluates which path leads to the best answer", "It uses a tree data structure for storage", "It uses a different model", "It's just a longer chain of thought"],
+    "question": "思维树（Tree-of-Thought）与思维链有什么不同？",
+    "options": ["并行探索多条推理路径，评估哪条能得到最佳答案", "使用树数据结构存储", "使用不同模型", "只是一条更长的思维链"],
     "correct": 0,
-    "explanation": "CoT follows a single reasoning path. Tree-of-Thought generates multiple candidate paths, evaluates them (possibly with the LLM itself), and selects the best one. This helps on problems where the first reasoning path might be wrong.",
+    "explanation": "CoT 沿单条推理路径前进。思维树生成多条候选路径，评估它们（可以用 LLM 本身），再选择最佳路径。这有助于解决第一条推理路径可能出错的问题。",
     "stage": "post"
   },
   {
-    "question": "When selecting few-shot examples, what matters most?",
-    "options": ["Using the shortest examples", "Choosing diverse examples that cover different cases and demonstrate the exact format and reasoning pattern you want", "Using as many examples as possible", "Using examples from the test set"],
+    "question": "选择少样本示例时，最重要的是什么？",
+    "options": ["使用最短的示例", "选择覆盖不同情况的多样化示例，并展示所需的精确格式和推理模式", "尽可能多地使用示例", "使用测试集中的示例"],
     "correct": 1,
-    "explanation": "Example quality trumps quantity. 3-5 diverse, well-formatted examples that cover different edge cases teach the model the pattern better than 20 repetitive examples that waste context window tokens.",
+    "explanation": "示例质量胜过数量。3-5 个格式良好、覆盖不同边界情况的多样化示例，比 20 个浪费上下文窗口词元的重复示例更能教会模型模式。",
     "stage": "post"
   },
   {
-    "question": "Why does CoT prompting improve accuracy even though the model has the same knowledge with or without it?",
-    "options": ["It uses more compute", "It activates hidden model capabilities", "It changes the model weights", "Generating intermediate tokens creates a larger effective context for the final answer, allowing the model to condition on its own reasoning"],
+    "question": "无论是否使用 CoT，模型知识都相同，为什么 CoT 提示仍能提高准确率？",
+    "options": ["它使用更多计算", "它激活模型隐藏能力", "它改变模型权重", "生成中间词元为最终答案建立更大的有效上下文，使模型能够以自身推理为条件继续生成"],
     "correct": 3,
-    "explanation": "Without CoT, the model must jump directly to the answer in one token. With CoT, each intermediate step is a token the model conditions on for the next step. The model essentially 'thinks out loud,' building up to the answer.",
+    "explanation": "没有 CoT，模型必须用一个词元直接跳到答案。有 CoT 时，每个中间步骤都是下一步生成所依据的词元。模型实质上是在‘把思考说出来’，逐步形成答案。",
     "stage": "post"
   }
 ]

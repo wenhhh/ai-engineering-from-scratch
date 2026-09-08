@@ -1,13 +1,13 @@
 ---
 name: skill-pytorch-patterns
-description: Reference patterns for PyTorch training, evaluation, and deployment
+description: PyTorch 训练、评估与部署的参考模式
 version: 1.0.0
 phase: 03
 lesson: 11
 tags: [pytorch, training, deep-learning, gpu, patterns]
 ---
 
-## Canonical Training Loop
+## 标准训练循环（Canonical Training Loop）
 
 ```python
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -33,7 +33,7 @@ for epoch in range(num_epochs):
             outputs = model(inputs)
 ```
 
-## Mixed Precision Training
+## 混合精度训练（Mixed Precision Training）
 
 ```python
 from torch.amp import autocast, GradScaler
@@ -50,9 +50,9 @@ for inputs, targets in train_loader:
     scaler.update()
 ```
 
-Use when: training on GPU with float16-capable hardware (V100, A100, H100, RTX 3090+). Expect ~1.5-2x speedup and ~50% memory reduction.
+适用场景：在支持 float16 的 GPU 硬件（V100、A100、H100、RTX 3090+）上训练。预期提速约 1.5-2x，内存减少约 50%。
 
-## Gradient Accumulation
+## 梯度累积（Gradient Accumulation）
 
 ```python
 accumulation_steps = 4
@@ -67,9 +67,9 @@ for i, (inputs, targets) in enumerate(train_loader):
         optimizer.zero_grad()
 ```
 
-Use when: effective batch size needs to be larger than GPU memory allows. Dividing loss by accumulation_steps keeps gradient scale consistent.
+适用场景：需要的有效批量大小超过 GPU 内存允许的范围。将损失除以 accumulation_steps，可以保持梯度尺度一致。
 
-## Save and Load
+## 保存与加载（Save and Load）
 
 ```python
 torch.save({
@@ -84,9 +84,9 @@ model.load_state_dict(checkpoint["model_state_dict"])
 optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
 ```
 
-Always save optimizer state for resuming training. For inference-only, save just `model.state_dict()`.
+为了恢复训练，始终保存优化器状态。仅用于推理时，只保存 `model.state_dict()`。
 
-## Custom Dataset
+## 自定义数据集（Custom Dataset）
 
 ```python
 class CustomDataset(torch.utils.data.Dataset):
@@ -107,7 +107,7 @@ class CustomDataset(torch.utils.data.Dataset):
         ...
 ```
 
-## DataLoader Configuration
+## DataLoader 配置（DataLoader Configuration）
 
 ```python
 train_loader = torch.utils.data.DataLoader(
@@ -121,14 +121,14 @@ train_loader = torch.utils.data.DataLoader(
 )
 ```
 
-| Parameter | What it does | When to use |
+| 参数 | 作用 | 使用时机 |
 |-----------|-------------|-------------|
-| num_workers=4 | Parallel data loading | Always on multi-core machines |
-| pin_memory=True | Page-locked CPU memory | When training on GPU |
-| drop_last=True | Drop incomplete final batch | When using BatchNorm |
-| persistent_workers=True | Keep workers alive across epochs | When num_workers > 0 |
+| num_workers=4 | 并行数据加载 | 多核机器上始终使用 |
+| pin_memory=True | 页锁定 CPU 内存（Page-Locked Memory） | GPU 训练时 |
+| drop_last=True | 丢弃最后一个不完整批次 | 使用 BatchNorm 时 |
+| persistent_workers=True | 跨轮次保持工作进程存活 | num_workers > 0 时 |
 
-## Learning Rate Schedules
+## 学习率调度（Learning Rate Schedules）
 
 ```python
 scheduler = torch.optim.lr_scheduler.OneCycleLR(
@@ -145,9 +145,9 @@ for epoch in range(num_epochs):
         scheduler.step()
 ```
 
-OneCycleLR: best default for most tasks. Warms up to max_lr, then cosine decays. Call `scheduler.step()` after every batch, not every epoch.
+OneCycleLR 是多数任务的最佳默认选择。先预热至 max_lr，再余弦衰减。每个批次之后调用 `scheduler.step()`，而不是每轮之后。
 
-## Weight Initialization
+## 权重初始化（Weight Initialization）
 
 ```python
 def init_weights(module):
@@ -161,7 +161,7 @@ def init_weights(module):
 model.apply(init_weights)
 ```
 
-## Inference Mode
+## 推理模式（Inference Mode）
 
 ```python
 model.eval()
@@ -170,15 +170,15 @@ with torch.inference_mode():
     outputs = model(inputs)
 ```
 
-`torch.inference_mode()` is faster than `torch.no_grad()` because it disables autograd entirely rather than just suppressing gradient computation.
+`torch.inference_mode()` 比 `torch.no_grad()` 更快，因为它完全关闭自动求导，而不只是抑制梯度计算。
 
-## Common Mistakes Checklist
+## 常见错误检查清单（Common Mistakes Checklist）
 
-1. Applying softmax before CrossEntropyLoss (it includes log_softmax internally)
-2. Forgetting to call model.eval() during validation
-3. Forgetting to move tensors to the same device as the model
-4. Not calling optimizer.zero_grad() (gradients accumulate by default)
-5. Using torch.no_grad() during training (disables gradient computation)
-6. Setting num_workers too high (spawns too many processes, thrashes memory)
-7. Not using pin_memory=True when training on GPU
-8. Saving the entire model object instead of state_dict (breaks on refactor)
+1. 在 CrossEntropyLoss 前应用 Softmax，它内部已经包含 log_softmax
+2. 验证时忘记调用 model.eval()
+3. 忘记将张量移到模型所在设备
+4. 不调用 optimizer.zero_grad()，梯度默认会累积
+5. 训练期间使用 torch.no_grad()，导致梯度计算关闭
+6. num_workers 设置过高，产生过多进程并使内存频繁换页
+7. GPU 训练时未使用 pin_memory=True
+8. 保存整个模型对象而非 state_dict，重构后会失效

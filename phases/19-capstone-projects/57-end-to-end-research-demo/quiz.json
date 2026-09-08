@@ -1,78 +1,78 @@
 {
   "lesson": "57-end-to-end-research-demo",
-  "title": "End-to-End Research Demo",
+  "title": "端到端研究演示（End-to-End Research Demo）",
   "questions": [
     {
       "stage": "pre",
-      "question": "What is the demo's job in this lesson?",
+      "question": "本课中演示的任务是什么？",
       "options": [
-        "To benchmark the scheduler against a baseline",
-        "To call a real language model on each branch",
-        "To replace the earlier lessons with a single new framework",
-        "To compose the primitives from the earlier lessons through plain Python imports"
+        "将调度器与基线做性能比较",
+        "在每个分支上调用真实语言模型",
+        "用一个新框架替换前面的课程",
+        "通过普通 Python 导入组合前面课程的基础组件"
       ],
       "correct": 3,
-      "explanation": "The demo is a composition test. Each stage exists in its own lesson. The demo imports them and wires the report. No new framework, no new abstractions."
+      "explanation": "演示是一项组合测试。每个阶段都存在于各自的课程中。演示导入它们并接通报告，不引入新框架或新抽象。"
     },
     {
       "stage": "pre",
-      "question": "Why does the lesson load earlier lessons via importlib instead of a normal package import?",
+      "question": "为什么本课通过 importlib 加载前面的课程，而不是使用普通包导入？",
       "options": [
-        "Because importlib is faster",
-        "Because each earlier lesson is a standalone code/ folder, not an installed package; importlib loads them by file path",
-        "Because asyncio requires importlib",
-        "Because the lessons share a module name and would collide"
+        "因为 importlib 更快",
+        "因为每课都是独立的 code/ 文件夹，而非已安装的包；importlib 按文件路径加载它们",
+        "因为 asyncio 要求 importlib",
+        "因为课程共享同一模块名，会发生冲突"
       ],
       "correct": 1,
-      "explanation": "The lessons are not installed packages. Each ships a main.py inside its own code/ folder. importlib.util.spec_from_file_location loads them by path without polluting the global module namespace."
+      "explanation": "这些课程不是已安装的包。每课在自己的 code/ 文件夹内提供 main.py。importlib.util.spec_from_file_location 按路径加载它们，不污染全局模块命名空间。"
     },
     {
       "stage": "check",
-      "question": "How does the best-result picker decide between branches when more than one triggered a paper?",
+      "question": "多个分支触发论文事件时，最佳结果选择器如何选择？",
       "options": [
-        "It picks the branch with the highest mean reward, breaking ties alphabetically by branch id",
-        "It picks the branch with the most experiments run",
-        "It picks at random for fairness",
-        "It picks the first triggered branch"
+        "选择平均奖励最高的分支，平局按分支 ID 的字母顺序处理",
+        "选择实验运行次数最多的分支",
+        "为公平起见随机选择",
+        "选择最先触发的分支"
       ],
       "correct": 0,
-      "explanation": "Highest mean wins. Ties break on branch id so the demo is deterministic. Random would defeat the determinism test."
+      "explanation": "平均值最高者胜出。平局按分支 ID 处理，使演示具有确定性。随机选择会使确定性测试失效。"
     },
     {
       "stage": "check",
-      "question": "What error does the picker raise when the scheduler reports zero paper triggers?",
+      "question": "调度器报告零个论文触发事件时，选择器抛出什么错误？",
       "options": [
         "ValueError",
-        "It returns None",
+        "返回 None",
         "PaperValidationError",
-        "NoTriggerError, which short-circuits the demo before the writer runs"
+        "NoTriggerError，在撰写器运行之前短路演示"
       ],
       "correct": 3,
-      "explanation": "NoTriggerError is the typed failure mode. Returning None would let the writer run on a malformed input and break later with a less actionable error."
+      "explanation": "NoTriggerError 是具有明确类型的失败模式。返回 None 会让撰写器对格式错误的输入继续运行，稍后才以较难据此处理的错误失败。"
     },
     {
       "stage": "post",
-      "question": "Why does the demo run twice with the same seed in the determinism test?",
+      "question": "为什么确定性测试中要用相同种子运行演示两次？",
       "options": [
-        "To catch a memory leak",
-        "To assert that the picked branch, reward, and paper section ids are identical across runs",
-        "To exercise asyncio twice",
-        "To prove that the scheduler is fair"
+        "为了发现内存泄漏",
+        "为了断言两次运行选中的分支、奖励和论文章节 ID 完全相同",
+        "为了执行两次 asyncio",
+        "为了证明调度器公平"
       ],
       "correct": 1,
-      "explanation": "Determinism is part of the contract. Two runs with the same seed must produce the same artifacts. The test pins that."
+      "explanation": "确定性是契约的一部分。相同种子的两次运行必须产生相同产物，测试固定了这一要求。"
     },
     {
       "stage": "post",
-      "question": "What does the demo report contain after a successful run?",
+      "question": "成功运行后，演示报告包含什么？",
       "options": [
-        "Only the final LaTeX file",
-        "Just the experiment count and a status string",
-        "A model prompt and completion log",
-        "scheduler_report, best_branch, best_reward, critic_result, paper_manifest, and stop_reason"
+        "只有最终 LaTeX 文件",
+        "只有实验数量和一个状态字符串",
+        "模型提示词和补全日志",
+        "scheduler_report、best_branch、best_reward、critic_result、paper_manifest 和 stop_reason"
       ],
       "correct": 3,
-      "explanation": "Every stage's output is preserved. The report is a composition of upstream outputs, not a transformed summary. Downstream tooling reads the manifest; debuggers read the trace inside scheduler_report."
+      "explanation": "每个阶段的输出都被保留。报告是上游输出的组合，而不是经过变换的摘要。下游工具读取清单；调试人员读取 scheduler_report 中的追踪记录。"
     }
   ]
 }

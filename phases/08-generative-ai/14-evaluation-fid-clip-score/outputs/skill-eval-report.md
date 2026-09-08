@@ -1,19 +1,19 @@
 ---
 name: eval-report
-description: Plan a full generative-model evaluation: sample quality, adherence, preference, failure audit.
+description: 规划完整生成模型评估，覆盖样本质量、遵循、偏好和失效审计。
 version: 1.0.0
 phase: 8
 lesson: 14
 tags: [evaluation, fid, clip, elo]
 ---
 
-Given a new generative-model checkpoint, a reference baseline, and a modality (image / video / audio / 3D), output a full eval plan:
+给定新生成模型检查点、参考基线和模态（图像／视频／音频／3D），输出完整评估计划：
 
-1. Sample quality. FID / FD-DINO / CMMD on 10-30k samples vs held-out real set. Matched resolution. Report 3-seed mean +/- std.
-2. Adherence. CLIP score / CMMD on prompt-image pairs. Include HPSv2 + ImageReward + PickScore for text-to-image. For video, add vision-language metrics (V-Eval). For audio, CLAP + MOS.
-3. Pairwise preference. Blinded A/B on 200-2000 prompts vs baseline. Human + LLM-judge + PartiPrompts coverage.
-4. Category breakdown. Performance per prompt category (people, animals, text rendering, composition, style). Flag regressions per category even if global metrics improve.
-5. Safety / misuse. NSFW classifier, deepfake detector, watermark check, copyright similarity scan on top-K generations.
-6. Sign-off. Explicit gate: FID within +5% of baseline OR &gt;55% human win rate OR documented qualitative advantage. No single-metric claims.
+1. 样本质量。在 10k 至 30k 样本上相对留出真实集计算 FID／FD-DINO／CMMD。匹配分辨率，报告 3 种子的均值 +/- 标准差。
+2. 遵循。提示词与图像对的 CLIP 分数／CMMD。文生图加入 HPSv2、ImageReward、PickScore；视频加入视觉语言指标（V-Eval）；音频加入 CLAP 与平均意见分（MOS）。
+3. 配对偏好。在 200 至 2000 个提示词上与基线盲测 A/B，覆盖人类、LLM 裁判、PartiPrompts。
+4. 类别拆解。逐提示词类别（人、动物、文字渲染、构图、风格）报告性能。即使整体指标提高，也标记各类回归。
+5. 安全／滥用。工作场所不宜内容（NSFW）分类器、深度伪造检测器、水印检查、对前 K 个生成结果进行版权相似度扫描。
+6. 签核。明确门禁：FID 不超过基线 +5%，或人类胜率 &gt;55%，或有记录的定性优势。不得仅靠单一指标作结论。
 
-Refuse to report FID at N &lt; 5000. Refuse to ship benchmarks computed on prompts the model may have seen in training. Refuse to report only LLM-judge results without human cross-check. Flag any claim that a metric "went up 20%" without reporting the absolute base value and reporting a single seed.
+N &lt; 5000 时拒绝报告 FID。拒绝交付在模型训练时可能见过的提示词上计算的基准。没有人类交叉核对，拒绝只报告 LLM 裁判结果。声称指标“上升 20%”却不报告绝对基值、且仅报告一个种子的，应标记。

@@ -1,78 +1,78 @@
 {
   "lesson": "69-end-to-end-rag-system",
-  "title": "End-to-End RAG System",
+  "title": "端到端 RAG 系统（End-to-End RAG System）",
   "questions": [
     {
       "stage": "pre",
-      "question": "Why is the integration test the only honest grade of a six-component RAG pipeline?",
+      "question": "为何集成测试是六组件 RAG 流水线唯一诚实的评分方式？",
       "options": [
-        "The components run on different machines",
-        "The chunker is the only component that matters",
-        "Production servers cannot run individual stage tests",
-        "Each stage's isolated metric does not predict the system's metric because each stage interacts with the next; the only valid grade is the whole pipeline run end to end against the same qrels"
+        "组件运行在不同机器上",
+        "分块器是唯一重要组件",
+        "生产服务器不能运行独立阶段测试",
+        "各阶段相互作用，孤立指标不能预测系统指标；唯一有效评分是在同一 qrels 上端到端运行整条流水线"
       ],
       "correct": 3,
-      "explanation": "Isolated wins do not compose; the pipeline is graded on the joint output."
+      "explanation": "孤立优势不会自动组合；流水线按联合输出评分。"
     },
     {
       "stage": "pre",
-      "question": "What is the role of refuse-on-low-confidence in the answer generator?",
+      "question": "答案生成器的低置信度拒答有什么作用？",
       "options": [
-        "It logs every refusal to disk",
-        "It returns 'I do not know' when the reranker top-1 score sits below a corpus-specific threshold, preventing hallucinated answers when the retrieved context does not address the query",
-        "It blocks queries longer than 100 tokens",
-        "It triggers a re-retrieval with a different chunker"
+        "把每次拒答记录到磁盘",
+        "重排器首位分数低于语料特定阈值时返回“我不知道”，避免上下文未回应查询时生成幻觉答案",
+        "阻止超过 100 词元的查询",
+        "触发使用不同分块器的重新检索"
       ],
       "correct": 1,
-      "explanation": "A consistently low rank-1 score is the model telling you nothing in the corpus answers this query; refuse rather than hallucinate."
+      "explanation": "首位分数持续低表示语料中没有内容回答查询；应拒答而非编造。"
     },
     {
       "stage": "check",
-      "question": "Why are the rerank training triples kept disjoint from the eval queries?",
+      "question": "为何重排训练三元组必须与评估查询分离？",
       "options": [
-        "To prevent train-test leakage; if the eval queries overlap the rerank training set the eval looks magical and the regression test does not catch real drift",
-        "Because RRF cannot fuse overlapping lists",
-        "Because the cross-encoder requires distinct vocabularies",
-        "To save GPU memory"
+        "防止训练测试泄漏；查询重叠会让评估看似神奇，回归测试却捕捉不到真实漂移",
+        "因为 RRF 无法融合重叠列表",
+        "因为交叉编码器要求不同词表",
+        "节省 GPU 内存"
       ],
       "correct": 0,
-      "explanation": "Strict separation is the basic hygiene; otherwise the rerank metric does not predict production behavior."
+      "explanation": "严格分离是基本规范，否则重排指标无法预测生产行为。"
     },
     {
       "stage": "check",
-      "question": "What is the purpose of the self-terminating demo's exit code?",
+      "question": "自行结束的演示退出码有什么用途？",
       "options": [
-        "It is required by Python",
-        "The reranker uses it as a training signal",
-        "Cosmetic",
-        "It encodes pass/fail against the metric thresholds; a CI smoke test can plug the demo into the pipeline and gate the merge on a non-zero exit"
+        "Python 要求如此",
+        "重排器将其用作训练信号",
+        "装饰作用",
+        "编码指标阈值的通过/失败状态；CI 冒烟测试可接入演示，以非零退出码阻止合并"
       ],
       "correct": 3,
-      "explanation": "Exit code 0 means thresholds met; non-zero means regression. That is the contract a CI gate consumes."
+      "explanation": "退出码 0 表示达到阈值，非零表示回归，这就是 CI 门禁使用的契约。"
     },
     {
       "stage": "check",
-      "question": "What does a citation anchor look like in this pipeline?",
+      "question": "本流水线的引用锚点是什么样？",
       "options": [
-        "JSON-RPC envelope",
+        "JSON-RPC 信封",
         "[doc_id:chunk_index]",
-        "Markdown link with the source URL",
-        "The literal embedding vector"
+        "带源 URL 的 Markdown 链接",
+        "原始嵌入向量"
       ],
       "correct": 1,
-      "explanation": "The generator emits the (doc_id, chunk_index) tuple as an anchor so a downstream UI or auditor can map every claim back to its source chunk."
+      "explanation": "生成器将 (doc_id, chunk_index) 元组作为锚点输出，供下游 UI 或审计者将每个论断映射到源块。"
     },
     {
       "stage": "post",
-      "question": "Which failure mode is invisible to the mock generator and must be tested with a real LLM before shipping?",
+      "question": "哪种失效模式对模拟生成器不可见，交付前必须使用真实 LLM 测试？",
       "options": [
-        "Latency",
-        "Hallucination: the mock generator only emits text from retrieved chunks and cannot invent content; a real LLM can ignore the chunks and generate ungrounded answers",
-        "Tokenization",
-        "Vector index size"
+        "延迟",
+        "幻觉：模拟生成器只输出检索块文本，不能编造；真实 LLM 可能忽略块并生成无依据答案",
+        "分词",
+        "向量索引大小"
       ],
       "correct": 1,
-      "explanation": "The mock cannot test the generator's safety against hallucinated content; only a real model swap-in can."
+      "explanation": "模拟组件无法测试生成器防止幻觉内容的安全性；只有换入真实模型才行。"
     }
   ]
 }

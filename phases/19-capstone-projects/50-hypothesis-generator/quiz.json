@@ -1,78 +1,78 @@
 {
   "lesson": "50-hypothesis-generator",
-  "title": "Hypothesis Generator",
+  "title": "假设生成器（Hypothesis Generator）",
   "questions": [
     {
       "stage": "pre",
-      "question": "Why does the generator produce a ranked queue instead of a single hypothesis?",
+      "question": "为什么生成器输出排序队列，而非单一假设？",
       "options": [
-        "Because the runner needs depth so it can pop the next hypothesis when the first one fails",
-        "Because the mock model only emits lists",
-        "Because the embedding requires more than one input",
-        "Because the parser cannot read a single block"
+        "运行器需要候选深度，首个失败时可弹出下一个假设",
+        "模拟模型只能输出列表",
+        "嵌入要求多于一个输入",
+        "解析器不能读取单个块"
       ],
       "correct": 0,
-      "explanation": "The point of generating a queue is to amortise sampling cost across the loop. When the first hypothesis fails the runner pops the next without a fresh sampling pass."
+      "explanation": "生成队列是为在循环中摊薄采样成本。首个假设失败，运行器直接弹出下一个，无需重新采样。"
     },
     {
       "stage": "pre",
-      "question": "What does the temperature ramp accomplish on each pass?",
+      "question": "温度递增每轮实现什么？",
       "options": [
-        "It widens the sampling distribution so later drafts can land further from the seed",
-        "It increases the embedding dimension",
-        "It raises the parser tolerance",
-        "It triples the seed value"
+        "拓宽采样分布，使后续草稿能离种子更远",
+        "增大嵌入维度",
+        "提高解析器容差",
+        "将种子值乘三"
       ],
       "correct": 0,
-      "explanation": "Higher temperature widens the sampling distribution. The ramp encourages each pass to drift further so the novelty filter has something to do."
+      "explanation": "较高温度拓宽采样分布。递增鼓励各轮进一步偏离，让新颖性过滤有所筛选。"
     },
     {
       "stage": "check",
-      "question": "When does the novelty filter reject a draft?",
+      "question": "新颖性过滤何时拒绝草稿？",
       "options": [
-        "When its rank score is below the threshold",
-        "When its minimum cosine distance to any prior survivor falls below the novelty threshold",
-        "When its parser passes but its tag count is wrong",
-        "When its draft pass is greater than the queue length"
+        "排序分数低于阈值",
+        "到任何此前保留项的最小余弦距离低于新颖性阈值",
+        "解析通过但标签数错误",
+        "草稿轮次大于队列长度"
       ],
       "correct": 1,
-      "explanation": "Novelty is the minimum distance to prior survivors. If that distance is below the threshold the draft is a near duplicate and is dropped."
+      "explanation": "新颖性是到此前保留项的最小距离。低于阈值就是近重复，应丢弃。"
     },
     {
       "stage": "check",
-      "question": "Which three components combine in the rank score?",
+      "question": "排序分数结合哪三个分量？",
       "options": [
-        "Latency, throughput, cost",
-        "Novelty, specificity, testability",
-        "Temperature, seed, pass index",
-        "Variables, metric, baseline length"
+        "延迟、吞吐量、成本",
+        "新颖性（Novelty）、具体性（Specificity）、可检验性（Testability）",
+        "温度、种子、轮次索引",
+        "变量、指标、基线长度"
       ],
       "correct": 1,
-      "explanation": "The rank score is a weighted sum of novelty, specificity, and testability. Each sub score lives between zero and one."
+      "explanation": "排序分数为新颖性、具体性和可检验性的加权和，各子分数在零到一之间。"
     },
     {
       "stage": "check",
-      "question": "Why is the mock language model keyed on a temperature bucket rather than the raw float?",
+      "question": "为什么模拟语言模型以温度桶为键，而非原始浮点数？",
       "options": [
-        "Because buckets make the schedule discrete so a small temperature change can pick a different scripted draft",
-        "Because the embedding requires it",
-        "Because the parser needs an integer",
-        "Because floats cannot be hashed"
+        "桶使调度离散化，小幅温度变化即可选择不同预编排草稿",
+        "嵌入要求这样",
+        "解析器需要整数",
+        "浮点数不能哈希"
       ],
       "correct": 0,
-      "explanation": "Buckets discretise the continuous schedule. Two adjacent temperatures can map to different buckets and pull different drafts from the scripted bank, which is how the mock simulates varied sampling."
+      "explanation": "桶将连续调度离散化，相邻温度可映射不同桶，从预编排库取不同草稿，模拟多样采样。"
     },
     {
       "stage": "check",
-      "question": "What happens if every draft from the mock model fails the parser?",
+      "question": "模拟模型的每份草稿都解析失败时会怎样？",
       "options": [
-        "The generator raises a hard error",
-        "The queue is empty and each pass logs a parse rejection so the failure mode is auditable",
-        "The novelty threshold is lowered automatically",
-        "The runner retries with a fresh prompt"
+        "生成器抛出硬错误",
+        "队列为空，每轮记录解析拒绝，使失败可审计",
+        "自动降低新颖性阈值",
+        "运行器用新提示词重试"
       ],
       "correct": 1,
-      "explanation": "Parser failures are recorded as logs with a parse reject reason. The queue can come back empty without crashing the loop, and the logs explain why."
+      "explanation": "解析失败以带拒绝原因的日志记录。队列可为空而不使循环崩溃，日志解释原因。"
     }
   ]
 }

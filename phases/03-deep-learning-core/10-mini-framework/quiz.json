@@ -1,37 +1,62 @@
 [
   {
-    "question": "What three responsibilities does the Module abstraction have in a deep learning framework?",
-    "options": ["Load data, preprocess data, augment data", "forward() for computation, backward() for gradients, parameters() for trainable weights", "Compile, optimize, deploy", "Tokenize, embed, decode"],
+    "question": "深度学习框架中的 Module 抽象有哪三项职责？",
+    "options": [
+      "加载数据、预处理数据、增强数据",
+      "forward() 负责计算，backward() 负责梯度，parameters() 负责可训练权重",
+      "编译、优化、部署",
+      "分词、嵌入、解码"
+    ],
     "correct": 1,
-    "explanation": "Every Module implements forward() to compute output, backward() to propagate gradients, and parameters() to expose trainable weights. This uniform interface lets any module be composed with any other.",
+    "explanation": "每个 Module 都实现 forward() 来计算输出、backward() 来传播梯度、parameters() 来暴露可训练权重。统一接口让任何模块都能与其他模块组合。",
     "stage": "pre"
   },
   {
-    "question": "Why does Sequential process modules in reverse order during the backward pass?",
-    "options": ["Reverse order uses less memory", "Gradients flow from the loss backward through the network, so the last layer computes gradients first", "It prevents gradient explosion", "It's arbitrary -- either direction works"],
+    "question": "Sequential 为什么在反向传播时逆序处理模块？",
+    "options": [
+      "逆序使用更少内存",
+      "梯度从损失沿网络反向流动，因此最后一层先计算梯度",
+      "防止梯度爆炸",
+      "顺序随意，两个方向都可以"
+    ],
     "correct": 1,
-    "explanation": "The backward pass starts at the loss and propagates gradients toward the input. The last layer receives the loss gradient first, computes its local gradients, and passes them to the previous layer.",
+    "explanation": "反向传播从损失开始，将梯度传向输入。最后一层先收到损失梯度，计算局部梯度后传给上一层。",
     "stage": "pre"
   },
   {
-    "question": "Why is optimizer.zero_grad() a separate call instead of being done automatically?",
-    "options": ["It allows gradient accumulation across multiple batches before taking a single optimizer step", "It makes debugging easier", "It saves memory", "It's a PyTorch design mistake"],
+    "question": "optimizer.zero_grad() 为什么单独调用，而不是自动执行？",
+    "options": [
+      "允许跨多个批次累积梯度，再执行一次优化器更新",
+      "更容易调试",
+      "节省内存",
+      "这是 PyTorch 设计错误"
+    ],
     "correct": 0,
-    "explanation": "Separating zero_grad from step enables gradient accumulation: you can run backward() multiple times (across mini-batches) and sum the gradients before calling step(). This simulates larger batch sizes.",
+    "explanation": "将 zero_grad 与 step 分离支持梯度累积：可以跨小批量多次运行 backward()，将梯度求和后再调用 step()，模拟更大批量。",
     "stage": "post"
   },
   {
-    "question": "What is the correct order of operations in a training loop?",
-    "options": ["backward, forward, zero_grad, step", "forward, loss, zero_grad, backward, step", "forward, zero_grad, backward, loss, step", "zero_grad, forward, loss, backward, step"],
+    "question": "训练循环的正确操作顺序是什么？",
+    "options": [
+      "backward, forward, zero_grad, step",
+      "forward, loss, zero_grad, backward, step",
+      "forward, zero_grad, backward, loss, step",
+      "zero_grad, forward, loss, backward, step"
+    ],
     "correct": 3,
-    "explanation": "The standard pattern: zero_grad (clear old gradients), forward (compute predictions), loss (compute scalar loss), backward (compute gradients), step (update parameters). Getting this order wrong causes subtle bugs.",
+    "explanation": "标准模式是 zero_grad（清除旧梯度）、forward（计算预测）、loss（计算标量损失）、backward（计算梯度）、step（更新参数）。顺序错误会导致隐蔽问题。",
     "stage": "post"
   },
   {
-    "question": "What is the role of the DataLoader in the framework?",
-    "options": ["It splits data into batches and optionally shuffles between epochs for mini-batch gradient descent", "It computes the loss function", "It initializes the weights", "It trains the model"],
+    "question": "DataLoader 在框架中起什么作用？",
+    "options": [
+      "将数据分批，并可选地在各轮间打乱顺序，用于小批量梯度下降",
+      "计算损失函数",
+      "初始化权重",
+      "训练模型"
+    ],
     "correct": 0,
-    "explanation": "The DataLoader handles two practical concerns: batching (you can't fit all data in memory) and shuffling (random order prevents the model from memorizing data sequence).",
+    "explanation": "DataLoader 处理两个实际问题：分批（全部数据无法装入内存）和打乱（随机顺序防止模型记住数据次序）。",
     "stage": "post"
   }
 ]

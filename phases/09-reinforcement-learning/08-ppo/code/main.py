@@ -207,7 +207,7 @@ def main():
     w = init_w(rng)
 
     updates = 60
-    print(f"=== PPO on 4x4 GridWorld ({updates} updates, 8 envs x 50 steps, eps=0.2, K=4) ===")
+    print(f"=== 4x4 网格世界（GridWorld）中的近端策略优化（PPO）：{updates} 次更新，8 个环境 x 50 步，eps=0.2, K=4 ===")
     print()
 
     for it in range(updates):
@@ -216,13 +216,13 @@ def main():
         mean_kl, clip_frac = ppo_update(theta, w, buffer, advantages, returns, rng=rng)
         if (it + 1) % 10 == 0:
             mean_ret = evaluate(theta, random.Random(it))
-            print(f"  update {it+1:3d}  mean_return={mean_ret:6.2f}  mean_KL={mean_kl:+.4f}  clip_frac={clip_frac:.3f}")
+            print(f"  更新 {it+1:3d}  平均回报（mean_return）={mean_ret:6.2f}  平均 KL={mean_kl:+.4f}  裁剪比例（clip_frac）={clip_frac:.3f}")
 
     print()
-    print_policy(greedy_policy(theta), "greedy policy")
+    print_policy(greedy_policy(theta), "贪心策略（Greedy Policy）")
     final = evaluate(theta, random.Random(999), episodes=200)
     print()
-    print(f"final evaluated return (200 episodes) = {final:.2f}  (optimal = -6.0)")
+    print(f"最终评估回报（200 个回合）= {final:.2f}  （最优值 = -6.0）")
 
 
 if __name__ == "__main__":

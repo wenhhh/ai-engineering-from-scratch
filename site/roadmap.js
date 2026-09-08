@@ -29,10 +29,10 @@
   ];
 
   var STAGES = [
-    { id: 'foundations', number: '01', name: 'Foundations', startTier: 0, endTier: 3, focusPhase: 0 },
-    { id: 'model-disciplines', number: '02', name: 'Model disciplines', startTier: 4, endTier: 6, focusPhase: 7 },
-    { id: 'engineering-systems', number: '03', name: 'Engineering systems', startTier: 7, endTier: 11, focusPhase: 11 },
-    { id: 'capstone-proof', number: '04', name: 'Capstone proof', startTier: 12, endTier: 12, focusPhase: 19 }
+    { id: 'foundations', number: '01', name: '基础知识', startTier: 0, endTier: 3, focusPhase: 0 },
+    { id: 'model-disciplines', number: '02', name: '模型领域', startTier: 4, endTier: 6, focusPhase: 7 },
+    { id: 'engineering-systems', number: '03', name: '工程系统', startTier: 7, endTier: 11, focusPhase: 11 },
+    { id: 'capstone-proof', number: '04', name: '综合实践验证（Capstone）', startTier: 12, endTier: 12, focusPhase: 19 }
   ];
 
   var NODE_W = 210;
@@ -208,7 +208,7 @@
     for (var i = 0; i < STAGES.length; i++) {
       var stage = STAGES[i];
       html += '<button class="roadmap-stage-jump" type="button" data-stage-target="' + stage.id + '">' +
-        '<span>Zone ' + stage.number + '</span><strong>' + escapeHtml(stage.name) + '</strong>' +
+        '<span>区域 ' + stage.number + '</span><strong>' + escapeHtml(stage.name) + '</strong>' +
       '</button>';
     }
     nav.innerHTML = html;
@@ -217,7 +217,7 @@
   function renderJumpOptions() {
     var select = document.getElementById('roadmapJump');
     if (!select) return;
-    var html = '<option value="">Jump to a phase</option>';
+    var html = '<option value="">跳转到阶段</option>';
     for (var i = 0; i < PHASES.length; i++) {
       var phase = PHASES[i];
       html += '<option value="' + phase.id + '">' + formatPhase(phase.id) + ' · ' + escapeHtml(phase.name) + '</option>';
@@ -237,7 +237,7 @@
     setText('roadmapLessonCount', String(totalLessons));
     setText('roadmapProgressCount', completedLessons + ' / ' + totalLessons);
     var recommendation = recommendedPhase();
-    setText('roadmapNextPhase', recommendation ? 'Phase ' + formatPhase(recommendation.id) : 'Complete');
+    setText('roadmapNextPhase', recommendation ? '阶段 ' + formatPhase(recommendation.id) : '已完成');
   }
 
   function renderGraph() {
@@ -362,7 +362,7 @@
         height: endY - startY
       }));
       var number = svgEl('text', { class: 'roadmap-stage-band-number', x: 32, y: startY + 18 });
-      number.textContent = 'ZONE ' + stage.number;
+      number.textContent = '区域 ' + stage.number;
       layer.appendChild(number);
       var label = svgEl('text', { class: 'roadmap-stage-band-label', x: 90, y: startY + 18 });
       label.textContent = stage.name;
@@ -379,7 +379,7 @@
       class: 'roadmap-node',
       'data-phase': phase.id,
       'data-tts-read': '',
-      'data-tts-section': 'Phase ' + formatPhase(phase.id) + ': ' + phase.name,
+      'data-tts-section': '阶段 ' + formatPhase(phase.id) + ': ' + phase.name,
       'data-tts-label': narration,
       transform: 'translate(' + pos.x + ',' + pos.y + ')',
       tabindex: '-1',
@@ -395,7 +395,7 @@
     surface.appendChild(svgEl('rect', { class: 'roadmap-node-focus', x: -4, y: -4, width: NODE_W + 8, height: NODE_H + 8 }));
 
     var code = svgEl('text', { class: 'roadmap-node-code', x: 14, y: 18 });
-    code.textContent = 'PHASE ' + formatPhase(phase.id);
+    code.textContent = '阶段 ' + formatPhase(phase.id);
     surface.appendChild(code);
 
     var stateText = svgEl('text', {
@@ -420,7 +420,7 @@
     }
 
     var meta = svgEl('text', { class: 'roadmap-node-meta', x: NODE_W - 14, y: 68, 'text-anchor': 'end' });
-    meta.textContent = progress.done + '/' + progress.total + ' COMPLETE';
+    meta.textContent = progress.done + '/' + progress.total + ' 已完成';
     surface.appendChild(meta);
     surface.appendChild(svgEl('rect', { class: 'roadmap-node-progress-track', x: 14, y: 74, width: NODE_W - 28, height: 4 }));
     surface.appendChild(svgEl('rect', {
@@ -459,15 +459,15 @@
 
   function phaseNarration(phase, state, progress) {
     var requirements = (PREREQS[phase.id] || []).map(function (id) {
-      return phaseMap[id] ? phaseMap[id].name : 'Phase ' + formatPhase(id);
+      return phaseMap[id] ? phaseMap[id].name : '阶段 ' + formatPhase(id);
     });
     var unlocks = (children[phase.id] || []).map(function (id) {
-      return phaseMap[id] ? phaseMap[id].name : 'Phase ' + formatPhase(id);
+      return phaseMap[id] ? phaseMap[id].name : '阶段 ' + formatPhase(id);
     });
-    var text = 'Phase ' + formatPhase(phase.id) + ': ' + phase.name + '. ' + state.label + '. ' +
-      progress.done + ' of ' + progress.total + ' lessons completed.';
-    text += requirements.length ? ' Direct prerequisites: ' + requirements.join(', ') + '.' : ' This is the starting phase.';
-    text += unlocks.length ? ' Immediately unlocks: ' + unlocks.join(', ') + '.' : ' This is a final destination.';
+    var text = '阶段 ' + formatPhase(phase.id) + ': ' + phase.name + '. ' + state.label + '. ' +
+      progress.done + ' / ' + progress.total + ' 节课已完成。';
+    text += requirements.length ? ' 直接先修阶段：' + requirements.join(', ') + '.' : ' 这是起始阶段。';
+    text += unlocks.length ? ' 直接解锁：' + unlocks.join(', ') + '.' : ' 这是最终目标。';
     return text;
   }
 
@@ -724,7 +724,7 @@
     var jump = document.getElementById('roadmapJump');
     if (jump) jump.value = '';
     renderEmptyInspector(!(options && options.animate === false));
-    setText('roadmapGraphStatus', 'Route focus cleared.');
+    setText('roadmapGraphStatus', '已清除路线焦点。');
     if (updateHistory && window.location.hash) {
       history.replaceState({}, '', window.location.pathname + window.location.search);
     }
@@ -912,7 +912,7 @@
     var id = parseInt(match[1], 10);
     if (!phaseMap[id]) {
       if (selectedId !== null) clearSelection(false);
-      setText('roadmapGraphStatus', 'No roadmap phase matches this link.');
+      setText('roadmapGraphStatus', '路线图中没有与此链接匹配的阶段。');
       return;
     }
     selectPhase(id, { updateHistory: false });
@@ -998,12 +998,12 @@
   function renderEmptyInspector(animate) {
     var recommendation = recommendedPhase();
     var recommendationHtml = recommendation
-      ? '<div class="roadmap-recommendation"><span>Recommended next</span><button type="button" data-route-phase="' + recommendation.id + '">Phase ' + formatPhase(recommendation.id) + ' · ' + escapeHtml(recommendation.name) + '</button></div>'
+      ? '<div class="roadmap-recommendation"><span>推荐下一步</span><button type="button" data-route-phase="' + recommendation.id + '">阶段 ' + formatPhase(recommendation.id) + ' · ' + escapeHtml(recommendation.name) + '</button></div>'
       : '';
     updateInspector(
-      '<span class="roadmap-inspector-eyebrow">Route inspector</span>' +
-      '<h2>Choose a phase</h2>' +
-      '<p class="roadmap-inspector-copy">Select a node to illuminate the exact route into it, every phase it unlocks, and the best lesson to continue from your local progress.</p>' +
+      '<span class="roadmap-inspector-eyebrow">路线详情</span>' +
+      '<h2>选择阶段</h2>' +
+      '<p class="roadmap-inspector-copy">选择节点，查看通往该节点的完整路线、解锁的全部阶段，以及根据本地学习进度推荐的后续课程。</p>' +
       recommendationHtml,
       !!animate
     );
@@ -1020,27 +1020,27 @@
     var directUnlocks = children[id] || [];
     var lesson = nextLessonForPhase(phase);
     var lessonLink = lesson ? lessonPageUrl(lesson) : '';
-    var actionLabel = progress.done === progress.total && progress.total > 0 ? 'Review phase' : (progress.done > 0 ? 'Continue phase' : 'Start phase');
+    var actionLabel = progress.done === progress.total && progress.total > 0 ? '复习阶段' : (progress.done > 0 ? '继续阶段' : '开始阶段');
     updateInspector(
-      '<span class="roadmap-inspector-eyebrow">Phase ' + formatPhase(id) + '</span>' +
+      '<span class="roadmap-inspector-eyebrow">阶段 ' + formatPhase(id) + '</span>' +
       '<h2>' + escapeHtml(phase.name) + '</h2>' +
       '<span class="roadmap-inspector-state">' + state.label + '</span>' +
       '<p class="roadmap-inspector-copy">' + escapeHtml(phase.desc || '') + '</p>' +
       '<div class="roadmap-inspector-progress">' +
-        '<div class="roadmap-inspector-progress-head"><span>Your progress</span><strong>' + progress.done + ' / ' + progress.total + '</strong></div>' +
+        '<div class="roadmap-inspector-progress-head"><span>你的进度</span><strong>' + progress.done + ' / ' + progress.total + '</strong></div>' +
         '<div class="roadmap-inspector-progress-bar" aria-hidden="true"><span style="--inspector-progress:' + (progress.percent / 100) + '"></span></div>' +
       '</div>' +
       '<div class="roadmap-inspector-context">' +
-        '<div class="roadmap-inspector-stat"><strong>' + Object.keys(ancestors).length + '</strong><span class="roadmap-inspector-stat-label">All prerequisites</span></div>' +
-        '<div class="roadmap-inspector-stat"><strong>' + Object.keys(descendants).length + '</strong><span class="roadmap-inspector-stat-label">Phases unlocked</span></div>' +
+        '<div class="roadmap-inspector-stat"><strong>' + Object.keys(ancestors).length + '</strong><span class="roadmap-inspector-stat-label">全部先修阶段</span></div>' +
+        '<div class="roadmap-inspector-stat"><strong>' + Object.keys(descendants).length + '</strong><span class="roadmap-inspector-stat-label">解锁阶段</span></div>' +
       '</div>' +
       '<div class="roadmap-route-sections">' +
-        renderRouteSection('Direct prerequisites', directPrereqs, 'This is the starting point.') +
-        renderRouteSection('Immediately unlocks', directUnlocks, 'This is a final destination.') +
+        renderRouteSection('直接先修阶段', directPrereqs, '这是起点。') +
+        renderRouteSection('直接解锁', directUnlocks, '这是最终目标。') +
       '</div>' +
       '<div class="roadmap-actions">' +
         (lessonLink ? '<a class="roadmap-action roadmap-action-primary" href="' + lessonLink + '">' + actionLabel + '</a>' : '') +
-        '<a class="roadmap-action" href="' + phaseGithubUrl(phase) + '" target="_blank" rel="noopener">View phase on GitHub</a>' +
+        '<a class="roadmap-action" href="' + phaseGithubUrl(phase) + '" target="_blank" rel="noopener">在 GitHub 查看阶段</a>' +
       '</div>',
       animate !== false
     );
@@ -1061,15 +1061,15 @@
   function announceSelection(id) {
     var ancestors = Object.keys(getAncestors(id)).length;
     var descendants = Object.keys(getDescendants(id)).length;
-    setText('roadmapGraphStatus', 'Phase ' + formatPhase(id) + ' selected. ' + ancestors + ' prerequisite phases and ' + descendants + ' downstream phases highlighted.');
+    setText('roadmapGraphStatus', '阶段 ' + formatPhase(id) + ' 已选中。' + ancestors + ' 个先修阶段及 ' + descendants + ' 个后续阶段已高亮。');
   }
 
   function phaseState(id) {
     var progress = phaseProgress[id] || { done: 0, total: 0 };
-    if (progress.total > 0 && progress.done === progress.total) return { label: 'Complete' };
-    if (progress.done > 0) return { label: 'In progress' };
-    if (prerequisitesComplete(id)) return { label: 'Ready' };
-    return { label: 'Upcoming' };
+    if (progress.total > 0 && progress.done === progress.total) return { label: '已完成' };
+    if (progress.done > 0) return { label: '进行中' };
+    if (prerequisitesComplete(id)) return { label: '可开始' };
+    return { label: '待开始' };
   }
 
   function prerequisitesComplete(id) {
@@ -1190,7 +1190,7 @@
 
   function showDataError() {
     var wrap = document.getElementById('roadmapGraphWrap');
-    if (wrap) wrap.innerHTML = '<p>Roadmap data could not be loaded. Rebuild the site and refresh this page.</p>';
+    if (wrap) wrap.innerHTML = '<p>无法加载路线图数据。请重新构建站点并刷新页面。</p>';
   }
 
   function escapeHtml(value) {

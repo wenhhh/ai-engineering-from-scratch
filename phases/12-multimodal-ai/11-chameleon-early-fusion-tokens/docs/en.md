@@ -1,150 +1,150 @@
-# Chameleon and Early-Fusion Token-Only Multimodal Models
+# Chameleon 与早期融合的纯词元多模态模型（Chameleon and Early-Fusion Token-Only Multimodal Models）
 
-> Every VLM we have seen so far keeps images and text separate. Visual tokens come from a vision encoder, flow into a projector, then meet text inside the LLM. The vision and text vocabularies never overlap. Chameleon (Meta, May 2024) asked: what if they did? Train a VQ-VAE that turns an image into a sequence of discrete tokens from a shared vocabulary. Every multimodal document is now one sequence — text tokens and image tokens interleaved, a single autoregressive loss. Side effect: the model can generate mixed-modality outputs — alternating text and image tokens in a single inference call. This lesson reads the early-fusion thesis and builds a toy version end to end.
+> 到目前为止，每个 VLM 都把图像与文本分开。视觉词元来自视觉编码器，经过投影器，再在 LLM 内与文本相遇。视觉与文本词表从不重叠。Chameleon（Meta，2024 年 5 月）提出：如果让它们共享词表呢？训练一个 VQ-VAE，将图像转换为共享词表中的离散词元序列。每篇多模态文档现在都是一个序列，文本词元与图像词元交错，共用单一自回归损失。附带效果是模型能生成混合模态输出，在一次推理调用中交替输出文本和图像词元。本课阅读早期融合（Early fusion）的主张，并端到端构建玩具版本。
 
 **Type:** Build
-**Languages:** Python (stdlib, VQ-VAE tokenizer + interleaved decoder)
-**Prerequisites:** Phase 12 · 05, Phase 8 (Generative AI)
-**Time:** ~180 minutes
+**Languages:** Python（标准库，VQ-VAE 分词器 + 交错解码器）
+**Prerequisites:** 阶段 12 · 05、阶段 8（生成式 AI，Generative AI）
+**Time:** ~180 分钟
 
-## Learning Objectives
+## 学习目标（Learning Objectives）
 
-- Explain why a shared vocabulary + single loss changes what the model can do.
-- Describe how a VQ-VAE tokenizes an image into a discrete sequence compatible with a transformer's next-token objective.
-- Name Chameleon's training-stability tricks: QK-Norm, dropout placement, LayerNorm ordering.
-- Compare Chameleon vs BLIP-2's Q-Former approach and describe when each is the right choice.
+- 解释为何共享词表 + 单一损失会改变模型的能力。
+- 描述 VQ-VAE 如何将图像分词为兼容变换器下一词元目标的离散序列。
+- 说出 Chameleon 的训练稳定技巧：QK-Norm、随机失活（Dropout）位置、LayerNorm 顺序。
+- 比较 Chameleon 与 BLIP-2 的 Q-Former 方法，描述各自适用情况。
 
-## The Problem
+## 问题（The Problem）
 
-Adapter-based VLMs (LLaVA, BLIP-2, Qwen-VL) treat text and image as two different things. A text token goes through `embed(text_token)`; an image goes through `visual_encoder(image) → projector → ... pseudo_tokens`. The model has two input paths that merge partway in.
+基于适配器的 VLM（LLaVA、BLIP-2、Qwen-VL）将文本和图像视为不同事物。文本词元经过 `embed(text_token)`，图像经过 `visual_encoder(image) → projector → ... pseudo_tokens`。模型有两条输入路径，中途合并。
 
-Three consequences:
+这带来三个结果：
 
-1. The LLM can only consume images, not emit them. Output is text only.
-2. Mixed-modality documents (alternating paragraphs and images, as in an article) are awkward — you either parse the multimodal input outside the model or chain generations.
-3. Distributional mismatch. Visual tokens and text tokens live in different regions of the hidden space, creating subtle alignment issues.
+1. LLM 只能接收图像，不能输出图像。输出仅为文本。
+2. 混合模态文档（例如文章中交替出现的段落和图像）处理起来不便，必须在模型外解析多模态输入，或串联多次生成。
+3. 分布不匹配。视觉词元和文本词元位于隐藏空间的不同区域，产生细微对齐问题。
 
-Chameleon rejects the premise: images are just sequences of discrete tokens from a shared vocabulary. Train the model on interleaved documents, one loss, one autoregressive decoder, and you unlock mixed-modality generation for free.
+Chameleon 拒绝这一前提：图像就是共享词表中的离散词元序列。用交错文档、单一损失和单一自回归解码器训练模型，就能自然获得混合模态生成能力。
 
-## The Concept
+## 概念（The Concept）
 
-### VQ-VAE as image tokenizer
+### 作为图像分词器的 VQ-VAE（VQ-VAE as image tokenizer）
 
-The tokenizer is a vector-quantized variational autoencoder. The architecture:
+分词器是向量量化变分自编码器（Vector-quantized variational autoencoder）。架构为：
 
-- Encoder: CNN + ViT that maps image to a spatial feature map, say 32x32 features of dim 256.
-- Codebook: a learned vocabulary of K vectors (Chameleon uses 8192), also dim 256.
-- Quantization: for each spatial feature, look up the nearest codebook entry by L2 distance. Replace the continuous feature with the integer index.
-- Decoder: CNN that takes quantized features back to pixels.
+- 编码器：CNN + ViT，将图像映射为空间特征图，例如 32x32 个 256 维特征。
+- 码本（Codebook）：包含 K 个向量的可学习词表（Chameleon 使用 8192），同样为 256 维。
+- 量化（Quantization）：对每个空间特征，按 L2 距离查找最近码本条目，用整数索引替换连续特征。
+- 解码器：将量化特征转换回像素的 CNN。
 
-Training: VAE reconstruction loss + commitment loss + codebook loss. The codebook indices form a discrete alphabet for images.
+训练采用 VAE 重建损失 + 承诺损失（Commitment loss）+ 码本损失。码本索引构成图像的离散字母表。
 
-For Chameleon: one image becomes 32*32 = 1024 tokens drawn from a vocabulary of 8192. Concatenate with text tokens (from the LLM's BPE vocabulary, say 32000). Final vocabulary: 40192. The transformer sees one sequence, one loss.
+Chameleon 中，一张图像变为 32*32 = 1024 个词元，取自大小为 8192 的词表。与文本词元拼接（来自 LLM 的 BPE 词表，例如 32000），最终词表为 40192。变换器看到一个序列，使用一种损失。
 
-### The shared vocabulary
+### 共享词表（The shared vocabulary）
 
-Chameleon's vocabulary combines text tokens, image tokens, and modality separators. Each token has a single ID. The input embedding layer maps every ID to a D-dim hidden vector. The output projection maps hidden back to vocab logits. Softmax picks the next token, whatever modality.
+Chameleon 词表结合文本词元、图像词元和模态分隔符。每个词元有唯一 ID。输入嵌入层将每个 ID 映射到 D 维隐藏向量；输出投影将隐藏向量映射回词表的未归一化分数（Logits）。Softmax 选择下一词元，不论模态。
 
-Separators matter: `<image>` and `</image>` tags bracket the image-token sequence. At generation time, if the model emits `<image>`, downstream software knows the next 1024 tokens are VQ indices to send to the decoder for pixel rendering.
+分隔符很重要：`<image>` 与 `</image>` 标签包围图像词元序列。生成时，如果模型输出 `<image>`，下游软件就知道随后 1024 个词元是 VQ 索引，应送到解码器渲染像素。
 
-### Mixed-modality generation
+### 混合模态生成（Mixed-modality generation）
 
-Inference is next-token prediction in the shared vocabulary. Example prompt: "Draw a cat and describe it." Chameleon emits:
+推理就是共享词表中的下一词元预测。提示词示例：“画一只猫并描述它。”Chameleon 输出：
 
 ```
-<image> 4821 1029 2891 ... (1024 image tokens) </image>
-The cat is orange, sitting on a windowsill...
+<image> 4821 1029 2891 ...（1024 个图像词元）</image>
+猫是橘色的，坐在窗台上……
 ```
 
-The model picks the order autonomously — it may produce image then text, text then image, or interleave. Same decoder, same loss.
+模型自主选择顺序：可能先图像后文本、先文本后图像，或交错输出。使用同一解码器和同一损失。
 
-Compare to adapter VLMs where generation is text-only. Chameleon reopens the question of model output modalities.
+相比之下，适配器 VLM 只能生成文本。Chameleon 重新打开了模型输出模态的选择空间。
 
-### Training stability — QK-Norm, dropout, LayerNorm ordering
+### 训练稳定性：QK-Norm、随机失活、LayerNorm 顺序（Training stability — QK-Norm, dropout, LayerNorm ordering）
 
-Early-fusion training is unstable at scale. Chameleon's paper documents three tricks:
+大规模早期融合训练不稳定。Chameleon 论文记录了三项技巧：
 
-- QK-Norm. Apply LayerNorm to the query and key projections inside attention, before the dot product. Prevents logit magnitude explosion at depth. Used by multiple post-2024 large models.
-- Dropout placement. Dropout after every residual-add, not just after attention and MLP. More regularization required when gradients from image tokens can dominate.
-- LayerNorm ordering. Pre-LN on the residual branch (standard), plus an extra LN on the skip connection of the last block. Stabilizes final-layer gradient flow.
+- QK-Norm。在注意力内部、点积之前，对查询和键投影应用层归一化（LayerNorm）。防止深层未归一化分数幅度爆炸。2024 年之后多个大型模型使用它。
+- 随机失活位置。每次残差相加后都应用随机失活，而不只是注意力和 MLP 之后。图像词元梯度可能占主导时，需要更强正则化。
+- LayerNorm 顺序。残差分支采用标准的 Pre-LN，并在最后一块的跳跃连接上额外增加 LN，稳定最终层梯度流。
 
-Without these tricks, 34B-param Chameleon training diverged at multiple checkpoints. With them, it converges. The training recipe is as much of the contribution as the architecture.
+没有这些技巧，34B 参数 Chameleon 训练曾在多个检查点发散；加入后才收敛。训练方案与架构同样是贡献的重要部分。
 
-### The tokenizer's reconstruction ceiling
+### 分词器重建上限（The tokenizer's reconstruction ceiling）
 
-VQ-VAE is lossy. At 8192 codebook entries and 1024 tokens per 512x512 image, reconstruction PSNR caps around 26-28 dB. This is enough for recognizable image gen but visibly worse than continuous-space diffusion (Stable Diffusion 3 achieves 32+ dB).
+VQ-VAE 是有损的。码本 8192 条目、每张 512x512 图像 1024 词元时，重建峰值信噪比（PSNR）上限约为 26-28 dB。这足以生成可识别图像，但明显差于连续空间扩散（Stable Diffusion 3 达到 32+ dB）。
 
-The tokenizer is the bottleneck. Better tokenizers (MAGVIT-v2, IBQ, SBER-MoVQGAN) lift the ceiling. Emu3 (Lesson 12.12) achieves SDXL-quality generation via a better tokenizer alone.
+分词器是瓶颈。更好的分词器（MAGVIT-v2、IBQ、SBER-MoVQGAN）提高上限。Emu3（第 12.12 课）仅通过更好的分词器，就达到 SDXL 质量的生成。
 
-### Chameleon vs BLIP-2 / LLaVA
+### Chameleon 与 BLIP-2 / LLaVA（Chameleon vs BLIP-2 / LLaVA）
 
-Chameleon (early fusion, shared vocab):
-- One loss, one decoder.
-- Generates mixed-modality output.
-- Tokenizer is the quality ceiling.
-- Expensive: VQ-VAE decoder per generated image on inference path.
+Chameleon（早期融合，共享词表）：
+- 一种损失，一个解码器。
+- 生成混合模态输出。
+- 分词器决定质量上限。
+- 成本高：推理路径上每张生成图像都需要 VQ-VAE 解码器。
 
-BLIP-2 / LLaVA (late fusion, separate towers):
-- Vision in, text out only.
-- Reuses pretrained LLM.
-- No tokenizer bottleneck for understanding.
-- Cheap: single forward pass.
+BLIP-2 / LLaVA（晚期融合，独立双塔）：
+- 输入视觉，只输出文本。
+- 复用预训练 LLM。
+- 理解任务不受分词器瓶颈限制。
+- 成本低：单次前向传播。
 
-Pick by task. If you need image generation, Chameleon family. If you only need understanding, adapter-VLM is simpler and reuses more pretrained compute.
+按任务选择。需要图像生成时，选择 Chameleon 家族；只需理解时，适配器 VLM 更简单，也复用更多预训练计算。
 
-### Fuyu and AnyGPT
+### Fuyu 与 AnyGPT（Fuyu and AnyGPT）
 
-Fuyu (Adept, 2023) is a related approach: skip the separate vision encoder entirely, feed raw image patches through the LLM's input projection as if they were tokens, no tokenizer. Simpler than Chameleon, loses the shared-vocab output generation.
+Fuyu（Adept，2023）是相关方法：完全跳过独立视觉编码器，把原始图像块当作词元，通过 LLM 输入投影送入，不使用分词器。比 Chameleon 简单，但失去了共享词表的输出生成能力。
 
-AnyGPT (Zhan et al., 2024) extends Chameleon to four modalities: text, image, speech, music. Same VQ-VAE trick for each, shared transformer. Any-to-any generation. Covered more in Lesson 12.16.
+AnyGPT（Zhan 等人，2024）将 Chameleon 扩展到四种模态：文本、图像、语音、音乐。每种模态使用同样的 VQ-VAE 技巧，共享变换器，实现任意到任意生成。第 12.16 课进一步讨论。
 
 ```figure
 vq-codebook
 ```
 
-## Use It
+## 实际应用（Use It）
 
-`code/main.py` builds a toy end-to-end early-fusion model:
+`code/main.py` 构建玩具端到端早期融合模型：
 
-- A tiny VQ-VAE-style quantizer that maps 8x8 patches to codebook indices (K=16).
-- A shared vocabulary of (text ids 0..31) + (image ids 32..47) + (separators 48, 49).
-- A toy autoregressive decoder (bigram table) trained on synthetic captions + image-token sequences.
-- Sampling loop that emits alternating text + image tokens given a prompt.
+- 微型 VQ-VAE 式量化器，将 8x8 图像块映射为码本索引（K=16）。
+- 共享词表：文本 ID 0..31 + 图像 ID 32..47 + 分隔符 48、49。
+- 玩具自回归解码器（二元组表），在合成描述 + 图像词元序列上训练。
+- 采样循环，根据提示词交替输出文本与图像词元。
 
-The code intentionally keeps the transformer tiny (bigrams) so you can trace the signal flow end to end.
+代码有意把变换器保持得很小（使用二元组），让你可以端到端追踪信号流。
 
-## Ship It
+## 交付成果（Ship It）
 
-This lesson produces `outputs/skill-tokenizer-vs-adapter-picker.md`. Given a product spec (understand only vs understand + generate, required image quality, cost budget), it picks between Chameleon-family (early fusion) and LLaVA-family (late fusion) and justifies with quantitative rules of thumb.
+本课交付 `outputs/skill-tokenizer-vs-adapter-picker.md`。给定产品规格（仅理解，或理解 + 生成）、所需图像质量和成本预算，它在 Chameleon 家族（早期融合）与 LLaVA 家族（晚期融合）之间选择，并用定量经验规则说明理由。
 
-## Exercises
+## 练习（Exercises）
 
-1. Chameleon uses K=8192 codebook entries and 1024 tokens per 512x512 image. Estimate the compression ratio vs a 24-bit RGB image. Is it lossy? How lossy?
+1. Chameleon 使用 K=8192 个码本条目，每张 512x512 图像 1024 词元。估算相对 24 位 RGB 图像的压缩率。有损吗？损失多少？
 
-2. A 4K image (3840x2160) at the same VQ-VAE density produces how many image tokens? Can a Chameleon-style model generate a 4K image in one inference call? What breaks first — context, tokenizer quality, or KV cache?
+2. 4K 图像（3840x2160）在相同 VQ-VAE 密度下生成多少图像词元？Chameleon 式模型能在一次推理调用中生成 4K 图像吗？先出问题的是上下文、分词器质量还是 KV 缓存？
 
-3. Implement QK-Norm in pure Python. Given a 64-dim query and key, show the dot product before and after LayerNorm. Why is magnitude control important at depth?
+3. 用纯 Python 实现 QK-Norm。给定 64 维查询和键，展示 LayerNorm 前后的点积。为什么深层幅度控制很重要？
 
-4. Read Chameleon Section 2.3 on training stability. Describe the exact failure mode the paper observed at 34B without QK-Norm. What was the "norm explosion" signature?
+4. 阅读 Chameleon 第 2.3 节的训练稳定性内容。描述论文在 34B、没有 QK-Norm 时观察到的具体失败模式。“范数爆炸”的特征是什么？
 
-5. Extend the toy decoder to emit a mixed-modality response given a text-only prompt. Measure how often the model picks image-first vs text-first given training-data distribution 60% text-first / 40% image-first.
+5. 扩展玩具解码器，根据纯文本提示词生成混合模态回答。在训练数据 60% 先文本、40% 先图像的分布下，测量模型选择先图像与先文本的频率。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语（Term） | 常见说法 | 准确含义 |
 |------|-----------------|------------------------|
-| Early fusion | "Unified tokens" | Images converted to discrete tokens sharing the transformer's vocabulary from step one |
-| VQ-VAE | "Image tokenizer" | CNN + ViT + codebook that maps images to integer indices the transformer can predict |
-| Shared vocabulary | "One dictionary" | A single token ID space covering text + image + modality separators |
-| QK-Norm | "Attention stabilizer" | LayerNorm applied to query and key before their dot product, prevents norm blowup |
-| Mixed-modality generation | "Text + image output" | Inference that autonomously produces interleaved text and image tokens in one pass |
-| Codebook size | "K entries" | Number of discrete vectors the VQ-VAE can quantize to; trades compression for fidelity |
-| Tokenizer ceiling | "Reconstruction limit" | Best PSNR achievable by decoding VQ tokens; bounds the model's image quality |
+| 早期融合（Early fusion） | “统一词元” | 从第一步起，图像转换为与变换器共享词表的离散词元 |
+| VQ-VAE | “图像分词器” | CNN + ViT + 码本，将图像映射为变换器可以预测的整数索引 |
+| 共享词表（Shared vocabulary） | “一本词典” | 覆盖文本 + 图像 + 模态分隔符的统一词元 ID 空间 |
+| QK-Norm | “注意力稳定器” | 在查询和键点积前应用 LayerNorm，防止范数爆炸 |
+| 混合模态生成（Mixed-modality generation） | “文本 + 图像输出” | 在一次过程中自主生成交错文本和图像词元的推理 |
+| 码本大小（Codebook size） | “K 个条目” | VQ-VAE 可量化到的离散向量数量，权衡压缩与保真度 |
+| 分词器上限（Tokenizer ceiling） | “重建极限” | 解码 VQ 词元能达到的最佳 PSNR，限制模型图像质量 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [Chameleon Team — Chameleon: Mixed-Modal Early-Fusion Foundation Models (arXiv:2405.09818)](https://arxiv.org/abs/2405.09818)
-- [Aghajanyan et al. — CM3 (arXiv:2201.07520)](https://arxiv.org/abs/2201.07520)
-- [Yu et al. — CM3Leon (arXiv:2309.02591)](https://arxiv.org/abs/2309.02591)
-- [Zhan et al. — AnyGPT (arXiv:2402.12226)](https://arxiv.org/abs/2402.12226)
-- [Adept — Fuyu-8B blog (adept.ai)](https://www.adept.ai/blog/fuyu-8b)
+- [Chameleon 团队：《Chameleon：混合模态早期融合基础模型（Mixed-Modal Early-Fusion Foundation Models）》（arXiv:2405.09818）](https://arxiv.org/abs/2405.09818)
+- [Aghajanyan 等人：CM3（arXiv:2201.07520）](https://arxiv.org/abs/2201.07520)
+- [Yu 等人：CM3Leon（arXiv:2309.02591）](https://arxiv.org/abs/2309.02591)
+- [Zhan 等人：AnyGPT（arXiv:2402.12226）](https://arxiv.org/abs/2402.12226)
+- [Adept：Fuyu-8B 博客（adept.ai）](https://www.adept.ai/blog/fuyu-8b)

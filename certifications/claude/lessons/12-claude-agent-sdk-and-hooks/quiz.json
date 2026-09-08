@@ -1,78 +1,78 @@
 {
   "lesson": "12-claude-agent-sdk-and-hooks",
-  "title": "The Agent SDK Is a Harness, Not Permission",
+  "title": "Agent SDK 是运行框架，不是行动授权（The Agent SDK Is a Harness, Not Permission）",
   "questions": [
     {
       "stage": "pre",
-      "question": "Which statement correctly distinguishes the main agent harness levels?",
+      "question": "以下哪项正确区分了主要的智能体运行框架层次？",
       "options": [
-        "Agent SDK is the typed name for raw REST, while Tool Runner is available only inside Managed Agents",
-        "Tool Runner handles a Messages tool loop, Agent SDK adds a broader harness, and Managed Agents adds a remote event-driven service",
-        "Managed Agents transfers business authorization and final-state validation to the configured agent",
-        "Tool Runner, Agent SDK, and Managed Agents differ mainly in model quality and naming; all three own the same loop, tool, and session boundary"
+        "Agent SDK 是原始 REST 的类型化名称，而 Tool Runner 只能在 Managed Agents 内使用",
+        "Tool Runner 处理 Messages 工具循环，Agent SDK 增加更完整的运行框架，Managed Agents 增加远程事件驱动服务",
+        "Managed Agents 将业务授权和最终状态校验交给配置好的智能体",
+        "Tool Runner、Agent SDK 和 Managed Agents 主要在模型质量和名称上不同；三者负责相同的循环、工具和会话边界"
       ],
       "correct": 1,
-      "explanation": "These surfaces automate different amounts of state, tools, sessions, and hosting. None transfers business authorization, tenant policy, or outcome verification."
+      "explanation": "这些接口自动处理的状态、工具、会话和托管工作量不同，但都不会接管业务授权、租户策略或结果验证。"
     },
     {
       "stage": "check",
-      "question": "Which control should deny a dangerous command before it executes?",
+      "question": "哪个控制应在危险命令执行之前拒绝它？",
       "options": [
-        "A final-state evaluator after execution",
-        "A session instruction that asks the agent to explain risky commands before use",
-        "A pre-tool policy hook backed by a sandbox",
-        "A post-tool hook that redacts the command result before it reaches the model"
+        "执行之后的最终状态评估器",
+        "要求智能体在使用前解释风险命令的会话指令",
+        "由沙箱支撑的工具前策略钩子",
+        "在命令结果到达模型前进行脱敏的工具后钩子"
       ],
       "correct": 2,
-      "explanation": "A pre-tool hook can block before side effects. The sandbox limits damage if policy code fails, while post-tool checks are too late to prevent execution."
+      "explanation": "工具前钩子可以在副作用发生前阻止执行；策略代码失效时，沙箱可限制损害，而工具后检查已来不及阻止执行。"
     },
     {
       "stage": "check",
-      "question": "When is a subagent most justified?",
+      "question": "什么情况下最有理由使用子智能体？",
       "options": [
-        "When task completion and approvals should remain inside one model's private context",
-        "When deterministic work needs a separate context",
-        "When several agents need unrestricted write access to the same files at the same time",
-        "When an independent reviewer needs isolated context and read-only tools"
+        "任务完成情况与审批应留在同一模型的私有上下文中时",
+        "确定性工作需要独立上下文时",
+        "多个智能体需要同时不受限制地写同一批文件时",
+        "独立审查者需要隔离上下文和只读工具时"
       ],
       "correct": 3,
-      "explanation": "Subagents earn their cost through isolation, narrow permissions, independent evaluation, or genuinely parallel bounded work."
+      "explanation": "子智能体通过隔离、狭窄权限、独立评估或真正可并行的有界工作，才值得其成本。"
     },
     {
       "stage": "check",
-      "question": "A managed-agent SSE connection closes after a session.status_running event. No persisted end_turn event was observed. What should the application do?",
+      "question": "托管智能体的 SSE 连接在 session.status_running 事件后关闭，尚未观察到持久化的 end_turn 事件。应用应怎么做？",
       "options": [
-        "Reconnect or list persisted events from the stored cursor and reconcile session status",
-        "Mark the session complete because closing SSE is the transport form of end_turn",
-        "Start a replacement session and copy only the preview text into it",
-        "Repeat the most recent tool call because no terminal event means it did not execute"
+        "从存储的游标重连或列出持久化事件，并核对会话状态",
+        "标记会话完成，因为关闭 SSE 就是传输层的 end_turn",
+        "启动替代会话，只把预览文本复制过去",
+        "重复最近一次工具调用，因为没有终结事件说明它未执行"
       ],
       "correct": 0,
-      "explanation": "Stream deltas and connection state are not durable completion evidence. Persist event IDs and cursors, deduplicate replays, and use the session's persisted state machine."
+      "explanation": "流增量和连接状态不是持久的完成证据。应保存事件 ID 与游标，对重放去重，并依据会话的持久化状态机处理。"
     },
     {
       "stage": "post",
-      "question": "Claude proposes clicking a purchase button from a screenshot. Which control sequence is strongest?",
+      "question": "Claude 根据截图提出点击购买按钮。以下哪个控制顺序最可靠？",
       "options": [
-        "Execute an in-bounds click in the sandbox because its coordinates are typed, then ask the user to confirm the purchase after it appears",
-        "Validate the fresh screenshot and target, require bound human approval, sandbox the action, then verify a new screenshot",
-        "Use a managed agent so the built-in sandbox can authorize financial actions automatically",
-        "Trust the model's risk label when the provider's prompt-injection classifier did not request confirmation"
+        "坐标已有类型，就先在沙箱中执行范围内点击，购买出现后再让用户确认",
+        "校验新截图和目标，取得与操作绑定的人工审批，在沙箱中执行，再验证新截图",
+        "改用托管智能体，让内置沙箱自动批准财务操作",
+        "只要提供商的提示词注入分类器未要求确认，就信任模型的风险标签"
       ],
       "correct": 1,
-      "explanation": "Computer Use remains client-executed. Fresh visual state, typed action validation, sandboxing, human approval for consequences, and post-action evidence form the control boundary."
+      "explanation": "Computer Use 仍由客户端执行。新鲜视觉状态、有类型的操作校验、沙箱、有实质后果操作的人工审批和操作后证据共同构成控制边界。"
     },
     {
       "stage": "post",
-      "question": "Which evidence best validates a three-sprint long-running agent task?",
+      "question": "什么证据最能验证一个分三个周期执行的长时间智能体任务？",
       "options": [
-        "The agent summary records completion after each sprint and the final output is coherent",
-        "The same session resumes successfully after each compaction without losing its task list",
-        "Each sprint has a durable artifact, acceptance tests, trace, and independent evaluator decision",
-        "Separate subagents complete every sprint and agree on the final status"
+        "智能体摘要在每周期后记录完成，最终输出也连贯",
+        "同一会话在每次压缩后成功恢复，且没有丢失任务清单",
+        "每周期都有持久化产物、验收测试、追踪记录和独立评估器决定",
+        "不同子智能体完成每周期工作，并就最终状态达成一致"
       ],
       "correct": 2,
-      "explanation": "Long-horizon coherence comes from bounded contracts and external verification, not self-report, compaction, or agent count."
+      "explanation": "长期一致性来自有界契约与外部验证，而不是自述、上下文压缩或智能体数量。"
     }
   ]
 }

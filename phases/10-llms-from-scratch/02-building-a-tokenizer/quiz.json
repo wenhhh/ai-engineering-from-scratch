@@ -1,37 +1,62 @@
 [
   {
-    "question": "Why does a basic BPE tokenizer break on multilingual or code input?",
-    "options": ["BPE only works on ASCII", "BPE is inherently monolingual", "Multilingual text can't be tokenized", "Without proper Unicode handling, byte fallback, and pre-tokenization regex, it produces incorrect or inefficient token sequences"],
+    "question": "为什么基础 BPE 分词器在多语言或代码输入上会出问题？",
+    "options": [
+      "BPE 只能处理 ASCII",
+      "BPE 天生只支持单语言",
+      "多语言文本无法分词",
+      "缺少正确的 Unicode 处理、字节回退和预分词正则表达式时，会生成错误或低效的词元序列"
+    ],
     "correct": 3,
-    "explanation": "A naive BPE implementation may not handle multi-byte Unicode characters, may merge across word boundaries incorrectly, and may not have byte-level fallback for characters outside the trained vocabulary.",
+    "explanation": "简单的 BPE 实现可能无法处理多字节 Unicode 字符，可能错误地跨词边界合并，也可能没有为训练词表以外的字符提供字节级回退（Byte-level fallback）。",
     "stage": "pre"
   },
   {
-    "question": "What is the role of pre-tokenization regex in a production tokenizer?",
-    "options": ["It splits text at word boundaries before BPE merges, preventing merges across spaces and word boundaries", "It compresses whitespace", "It converts text to lowercase", "It removes punctuation"],
+    "question": "预分词正则表达式在生产级分词器中的作用是什么？",
+    "options": [
+      "在 BPE 合并前按词边界拆分文本，防止跨空格和词边界合并",
+      "压缩空白",
+      "将文本转为小写",
+      "删除标点"
+    ],
     "correct": 0,
-    "explanation": "Pre-tokenization regex splits text into chunks (typically at word boundaries, numbers, and punctuation) so BPE merges only happen within chunks. Without this, BPE could merge 'end' with the space before the next word.",
+    "explanation": "预分词（Pre-tokenization）正则表达式把文本拆成块，通常在词边界、数字和标点处拆分，使 BPE 合并只发生在块内。否则，BPE 可能会把 'end' 与下一个词前的空格合并。",
     "stage": "pre"
   },
   {
-    "question": "What is a special token and why are tokenizers designed to handle them?",
-    "options": ["Reserved tokens like <|endoftext|> or [PAD] that control model behavior and must be encoded as single, specific IDs", "Tokens with the highest embedding values", "Tokens used only during evaluation", "Tokens that appear frequently"],
+    "question": "什么是特殊词元，为什么分词器要专门处理它们？",
+    "options": [
+      "像 <|endoftext|> 或 [PAD] 这样的保留词元，用于控制模型行为，必须编码为单个指定 ID",
+      "嵌入值最高的词元",
+      "仅在评估时使用的词元",
+      "出现频繁的词元"
+    ],
     "correct": 0,
-    "explanation": "Special tokens serve structural purposes: marking document boundaries, padding sequences, indicating start/end of generation. They must be recognized and encoded as their exact IDs, not broken into subwords.",
+    "explanation": "特殊词元（Special tokens）承担结构性作用：标记文档边界、填充序列、指示生成开始或结束。必须识别它们并编码为精确 ID，而不能拆成子词。",
     "stage": "post"
   },
   {
-    "question": "How do you evaluate whether a custom tokenizer is good?",
-    "options": ["By measuring compression ratio (tokens per character) across diverse text and comparing to established tokenizers like tiktoken", "By checking if it can tokenize your name", "By measuring encoding speed only", "By counting the vocabulary size"],
+    "question": "如何评估自定义分词器是否优秀？",
+    "options": [
+      "在多种文本上测量压缩比，即每字符词元数，并与 tiktoken 等成熟分词器比较",
+      "检查能否对你的名字分词",
+      "只测量编码速度",
+      "统计词表大小"
+    ],
     "correct": 0,
-    "explanation": "Compression ratio (bytes per token or tokens per word) measures efficiency. A good tokenizer produces fewer tokens for the same text, which means more content fits in the context window. Compare across languages and domains.",
+    "explanation": "压缩比（Compression ratio），例如每词元字节数或每词词元数，用于衡量效率。好的分词器对相同文本产生更少词元，让上下文窗口容纳更多内容。应跨语言、跨领域比较。",
     "stage": "post"
   },
   {
-    "question": "Why is byte-level BPE preferred over word-level tokenization for modern LLMs?",
-    "options": ["Word-level tokenization is more accurate", "It can represent any input without unknown tokens while still learning efficient subword merges for common patterns", "It produces smaller vocabularies", "It's faster"],
+    "question": "为什么现代大语言模型更倾向于字节级 BPE 而不是词级分词？",
+    "options": [
+      "词级分词更准确",
+      "可以表示任何输入而不产生未知词元，同时为常见模式学习高效的子词合并",
+      "生成的词表更小",
+      "速度更快"
+    ],
     "correct": 1,
-    "explanation": "Word-level tokenizers can't handle unseen words (producing [UNK] tokens). Byte-level BPE starts from raw bytes (guaranteeing coverage of any input) and learns merges for common sequences, balancing coverage with efficiency.",
+    "explanation": "词级分词器不能处理未见过的词，会产生 [UNK]。字节级 BPE 从原始字节出发，保证覆盖任意输入，并学习常见序列的合并，在覆盖率与效率之间取得平衡。",
     "stage": "post"
   }
 ]

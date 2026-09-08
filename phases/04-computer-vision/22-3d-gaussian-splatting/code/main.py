@@ -118,23 +118,23 @@ def main():
     model = Splats2D(num_splats=48, image_size=48).to(device)
     opt = torch.optim.Adam(model.parameters(), lr=0.08)
 
-    print("Fitting 48 2D Gaussians to a red circle + blue square...")
+    print("用 48 个二维高斯（2D Gaussians）拟合红色圆形与蓝色方形...")
     for step in range(300):
         pred = model((48, 48))
         loss = F.mse_loss(pred, target)
         opt.zero_grad(); loss.backward(); opt.step()
         if step % 50 == 0:
-            print(f"  step {step:3d}  mse {loss.item():.4f}")
+            print(f"  步骤（Step） {step:3d}  均方误差（MSE） {loss.item():.4f}")
 
     with torch.no_grad():
         final = F.mse_loss(model((48, 48)), target).item()
-    print(f"final mse: {final:.4f}")
+    print(f"最终均方误差（MSE）: {final:.4f}")
 
-    print("\nSpherical harmonics sanity check:")
+    print("\n球谐函数（Spherical harmonics）合理性检查:")
     sh = torch.randn(1, 16, 3)
     dirs = F.normalize(torch.tensor([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]), dim=-1)
     rgb = eval_sh_degree_3(sh, dirs)
-    print(f"  SH(16, 3) evaluated at 3 directions -> {tuple(rgb.shape)}")
+    print(f"  在 3 个方向求值 SH(16, 3) -> {tuple(rgb.shape)}")
 
 
 if __name__ == "__main__":

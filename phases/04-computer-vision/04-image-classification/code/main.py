@@ -202,13 +202,13 @@ def main():
         tr_loss, tr_acc = train_one_epoch(model, train_loader, optimizer, device, 10, use_mixup=True)
         va_loss, va_acc, cm = evaluate(model, val_loader, device, 10)
         scheduler.step()
-        print(f"epoch {epoch}  lr {current_lr:.4f}  "
-              f"train {tr_loss:.3f}/{tr_acc:.3f}  val {va_loss:.3f}/{va_acc:.3f}")
+        print(f"轮次（Epoch） {epoch}  学习率（LR） {current_lr:.4f}  "
+              f"训练损失/准确率 {tr_loss:.3f}/{tr_acc:.3f}  验证损失/准确率 {va_loss:.3f}/{va_acc:.3f}")
 
     prec, rec, f1 = per_class_report(cm)
-    print("\nper-class metrics:")
+    print("\n各类别指标（Per-class metrics）:")
     for c in range(10):
-        print(f"  class {c}  prec {prec[c]:.3f}  rec {rec[c]:.3f}  f1 {f1[c]:.3f}")
+        print(f"  类别 {c}  精确率（Precision） {prec[c]:.3f}  召回率（Recall） {rec[c]:.3f}  F1 {f1[c]:.3f}")
 
 
 if __name__ == "__main__":

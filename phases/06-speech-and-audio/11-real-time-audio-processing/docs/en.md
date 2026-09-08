@@ -1,60 +1,60 @@
-# Real-Time Audio Processing
+# 实时音频处理（Real-Time Audio Processing）
 
-> Batch pipelines process a file. Real-time pipelines process the next 20 milliseconds before the next 20 arrive. Every conversational AI, broadcast studio, and telephony bot lives and dies by this latency budget.
+> 批处理流水线处理文件，实时流水线必须在下一个 20 毫秒到达前处理完当前 20 毫秒。对话式 AI、广播工作室和电话机器人都受这一延迟预算约束。
 
 **Type:** Build
 **Languages:** Python
-**Prerequisites:** Phase 6 · 02 (Spectrograms), Phase 6 · 04 (ASR), Phase 6 · 07 (TTS)
-**Time:** ~75 minutes
+**Prerequisites:** 阶段 6 · 02（频谱图），阶段 6 · 04（自动语音识别），阶段 6 · 07（文本转语音）
+**Time:** ~75 分钟
 
-## The Problem
+## 问题（The Problem）
 
-You want a voice assistant that feels alive. Human conversational turn-taking latency is ~230 ms (silence-to-response). Anything above 500 ms feels robotic; above 1500 ms feels broken. The budget for a full **hear → understand → respond → speak** loop in 2026 is:
+你希望语音助手像真人一样及时回应。人类对话轮次切换延迟约 230 ms（从静音到响应）。超过 500 ms 显得机械，超过 1500 ms 则像系统出了故障。2026 年完整的**听见 → 理解 → 回应 → 说出**循环预算如下：
 
-| Stage | Budget |
+| 阶段 | 预算 |
 |-------|--------|
-| Mic → buffer | 20 ms |
-| VAD | 10 ms |
-| ASR (streaming) | 150 ms |
-| LLM (first token) | 100 ms |
-| TTS (first chunk) | 100 ms |
-| Render → speaker | 20 ms |
-| **Total** | **~400 ms** |
+| 麦克风 → 缓冲区 | 20 ms |
+| 语音活动检测（VAD） | 10 ms |
+| 自动语音识别（ASR，流式） | 150 ms |
+| 大语言模型（LLM，首词元） | 100 ms |
+| 文本转语音（TTS，首块） | 100 ms |
+| 渲染 → 扬声器 | 20 ms |
+| **总计** | **~400 ms** |
 
-Moshi (Kyutai, 2024) clocked 200 ms full-duplex. GPT-4o-realtime (2024) clocks ~320 ms. Cascaded pipelines in 2022 shipped at 2500 ms. The 10× improvement came from three techniques: (1) streaming everywhere, (2) asynchronous pipelining with partial results, (3) interruptible generation.
+Moshi（Kyutai，2024）实现了 200 ms 全双工，GPT-4o-realtime（2024）约 320 ms。2022 年的级联流水线交付延迟为 2500 ms。10 倍提升来自三项技术：(1) 全链路流式，(2) 利用部分结果的异步流水线，(3) 可中断生成。
 
-## The Concept
+## 概念（The Concept）
 
-![Streaming audio pipeline with ring buffer, VAD gate, interruption](../assets/real-time.svg)
+![包含环形缓冲区、语音活动门控和中断的流式音频流水线](../assets/real-time.svg)
 
-**Frame / chunk / window.** Real-time audio flows as fixed-size blocks. Common choice: 20 ms (320 samples at 16 kHz). Everything downstream must keep up with this cadence.
+**帧 / 块 / 窗口（Frame / Chunk / Window）。** 实时音频以固定大小块流动，常用 20 ms（16 kHz 下 320 个采样点）。所有下游处理都必须跟上这一节奏。
 
-**Ring buffer.** Fixed-size circular buffer. Producer thread writes new frames, consumer thread reads. Prevents allocations in the hot path. Size ≈ maximum-latency × sample-rate; a 2-second 16 kHz ring = 32,000 samples.
+**环形缓冲区（Ring Buffer）。** 固定大小的循环缓冲区，生产者线程写新帧，消费者线程读取，避免热点路径分配内存。大小约等于最大延迟乘采样率；2 秒、16 kHz 的环形缓冲区包含 32,000 个采样点。
 
-**VAD (Voice Activity Detection).** Gates downstream work when nobody is speaking. Silero VAD 4.0 (2024) runs <1 ms per 30 ms frame on CPU. `webrtcvad` is the older alternative.
+**语音活动检测（Voice Activity Detection，VAD）。** 无人说话时停止下游工作。Silero VAD 4.0（2024）在 CPU 上处理每 30 ms 帧耗时 <1 ms。`webrtcvad` 是较早的替代方案。
 
-**Streaming ASR.** Models that emit partial transcripts as audio arrives. Parakeet-CTC-0.6B in streaming mode (NeMo, 2024) does 2–5% WER at 320 ms latency. Whisper-Streaming (Macháček et al., 2023) chunks Whisper for near-streaming at ~2 s latency.
+**流式自动语音识别（Streaming ASR）。** 音频到达时就输出部分转录。Parakeet-CTC-0.6B 的流式模式（NeMo，2024）在 320 ms 延迟下实现 2–5% 词错误率。Whisper-Streaming（Macháček 等，2023）通过分块让 Whisper 近似流式工作，延迟约 2 秒。
 
-**Interruption.** When the user speaks while the assistant is talking, you must (a) detect the barge-in, (b) stop the TTS, (c) discard the remaining LLM output. All within 100 ms, or the user perceives deaf assistant.
+**中断（Interruption）。** 用户在助手说话时开口，系统必须：(a) 检测插话，(b) 停止 TTS，(c) 丢弃剩余 LLM 输出。所有操作需在 100 ms 内完成，否则用户会觉得助手听不见。
 
-**WebRTC Opus transport.** 20 ms frames, 48 kHz, adaptive bitrate 8–128 kbps. Standard for browser and mobile. LiveKit, Daily.co, Pion are the 2026 stacks for building voice apps.
+**WebRTC Opus 传输（WebRTC Opus Transport）。** 20 ms 帧、48 kHz、自适应码率 8–128 kbps，是浏览器和移动端标准。LiveKit、Daily.co、Pion 是 2026 年构建语音应用的技术栈。
 
-**Jitter buffer.** Network packets arrive out of order / late. The jitter buffer reorders and smooths; too small → audible gaps, too large → latency. 60–80 ms typical.
+**抖动缓冲区（Jitter Buffer）。** 网络包会乱序或迟到，抖动缓冲区负责重排和平滑。过小会出现可听间隙，过大则增加延迟，典型为 60–80 ms。
 
-### Common gotchas
+### 常见问题（Common gotchas）
 
-- **Thread contention.** Python's GIL + heavy models can starve the audio thread. Use a C-callback audio library (sounddevice, PortAudio) and keep Python off the hot path.
-- **Sample-rate conversion latency.** Resampling inside the pipeline adds 5–20 ms. Either resample upfront or use a zero-latency resampler (PolyPhase, `soxr_hq`).
-- **TTS priming.** Even fast TTS like Kokoro has a 100–200 ms warm-up on first request. Cache model + warm it with a dummy run before the first real turn.
-- **Echo cancellation.** Without AEC, TTS output re-enters the mic and triggers ASR on the bot's own voice. WebRTC AEC3 is the open-source default.
+- **线程争用。** Python 全局解释器锁（Global Interpreter Lock，GIL）加重型模型可能饿死音频线程。使用 C 回调音频库（sounddevice、PortAudio），让 Python 离开热点路径。
+- **采样率转换延迟。** 流水线内部重采样增加 5–20 ms。提前重采样，或使用零延迟重采样器（PolyPhase、`soxr_hq`）。
+- **TTS 预热。** 即使 Kokoro 等快速 TTS，首次请求也需 100–200 ms 预热。缓存模型，并在首个真实轮次前做一次虚拟运行。
+- **回声消除。** 没有声学回声消除（Acoustic Echo Cancellation，AEC），TTS 输出会重入麦克风，让 ASR 识别机器人自身声音。WebRTC AEC3 是默认开源方案。
 
 ```figure
 nyquist-aliasing
 ```
 
-## Build It
+## 动手实现（Build It）
 
-### Step 1: ring buffer
+### 第 1 步：环形缓冲区（Step 1: ring buffer）
 
 ```python
 import collections
@@ -70,16 +70,16 @@ class RingBuffer:
         return len(self.buf)
 ```
 
-Capacity determines max buffering latency. 32,000 samples at 16 kHz = 2 s.
+容量决定最大缓冲延迟。16 kHz 下的 32,000 个采样点等于 2 秒。
 
-### Step 2: VAD gate
+### 第 2 步：VAD 门控（Step 2: VAD gate）
 
 ```python
 def simple_energy_vad(frame, threshold=0.01):
     return sum(x * x for x in frame) / len(frame) > threshold ** 2
 ```
 
-Replace with Silero VAD in production:
+生产环境换成 Silero VAD：
 
 ```python
 import torch
@@ -87,7 +87,7 @@ vad, _ = torch.hub.load("snakers4/silero-vad", "silero_vad")
 is_speech = vad(torch.tensor(frame), 16000).item() > 0.5
 ```
 
-### Step 3: streaming ASR
+### 第 3 步：流式 ASR（Step 3: streaming ASR）
 
 ```python
 # Parakeet-CTC-0.6B streaming via NeMo
@@ -99,7 +99,7 @@ for chunk in audio_stream():
     print(partial_text, end="\r")
 ```
 
-### Step 4: interruption handler
+### 第 4 步：中断处理器（Step 4: interruption handler）
 
 ```python
 class Dialog:
@@ -119,56 +119,56 @@ class Dialog:
             speaker.write(tts_chunk)
 ```
 
-Hinges on async I/O and cancellable TTS streaming. WebRTC peerconnection.stop() on the audio track is the canonical way.
+关键是异步输入输出和可取消的 TTS 流。对音轨调用 WebRTC peerconnection.stop() 是标准做法。
 
-## Use It
+## 实际应用（Use It）
 
-The 2026 stack:
+2026 年的技术栈：
 
-| Layer | Pick |
+| 层 | 选择 |
 |-------|------|
-| Transport | LiveKit (WebRTC) or Pion (Go) |
+| 传输 | LiveKit（WebRTC）或 Pion（Go） |
 | VAD | Silero VAD 4.0 |
-| Streaming ASR | Parakeet-CTC-0.6B or Whisper-Streaming |
-| LLM first-token | Groq, Cerebras, vLLM-streaming |
-| Streaming TTS | Kokoro or ElevenLabs Turbo v2.5 |
-| Echo cancel | WebRTC AEC3 |
-| End-to-end native | OpenAI Realtime API or Moshi |
+| 流式 ASR | Parakeet-CTC-0.6B 或 Whisper-Streaming |
+| LLM 首词元 | Groq、Cerebras、vLLM-streaming |
+| 流式 TTS | Kokoro 或 ElevenLabs Turbo v2.5 |
+| 回声消除 | WebRTC AEC3 |
+| 端到端原生 | OpenAI Realtime API 或 Moshi |
 
-## Pitfalls
+## 常见陷阱（Pitfalls）
 
-- **Buffering 500 ms to be safe.** The buffer *is* your latency floor. Shrink it.
-- **Not pinning threads.** Audio callback on a priority-lower-than-UI thread = glitches under load.
-- **TTS chunks too small.** Sub-200 ms chunks make vocoder artifacts audible. 320 ms chunks are the sweet spot.
-- **No jitter buffer.** Real networks are jittery; without smoothing you get pops.
-- **Single-shot error handling.** Audio pipelines must be crash-proof. One exception kills the session.
+- **为保险而缓冲 500 ms。** 缓冲区*就是*延迟下限，应缩小。
+- **不固定线程调度。** 音频回调运行在线程优先级低于界面线程的位置，负载下就会出现音频故障。
+- **TTS 块过小。** 小于 200 ms 的块会使声码器伪影可听，320 ms 是较佳折中。
+- **没有抖动缓冲区。** 真实网络存在抖动，不平滑会产生爆音。
+- **一次性错误处理。** 音频流水线必须能抵御崩溃，一次异常就可能结束会话。
 
-## Ship It
+## 交付成果（Ship It）
 
-Save as `outputs/skill-realtime-designer.md`. Design a real-time audio pipeline with concrete latency budgets per stage.
+保存为 `outputs/skill-realtime-designer.md`。设计各阶段有明确延迟预算的实时音频流水线。
 
-## Exercises
+## 练习（Exercises）
 
-1. **Easy.** Run `code/main.py`. Simulates a ring buffer + energy VAD; prints stage latencies for a fake 10-second stream.
-2. **Medium.** Using `sounddevice`, build a passthrough loop that processes your mic in 20 ms frames and prints VAD state at each frame.
-3. **Hard.** Build a full duplex echo test with `aiortc`: browser → WebRTC → Python → WebRTC → browser. Measure glass-to-glass latency with a 1 kHz pulse.
+1. **简单。** 运行 `code/main.py`，模拟环形缓冲区和能量 VAD，打印模拟 10 秒流的各阶段延迟。
+2. **中等。** 用 `sounddevice` 构建直通循环，以 20 ms 帧处理麦克风输入，每帧打印 VAD 状态。
+3. **困难。** 用 `aiortc` 构建全双工回声测试：浏览器 → WebRTC → Python → WebRTC → 浏览器。用 1 kHz 脉冲测量端到端延迟。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语 | 常见说法 | 实际含义 |
 |------|-----------------|-----------------------|
-| Ring buffer | The circular queue | Fixed-size, lock-free (or SPSC-locked) FIFO for audio frames. |
-| VAD | Silence gate | Model or heuristic marking speech vs non-speech. |
-| Streaming ASR | Real-time STT | Emits partial text as audio arrives; bounded lookahead. |
-| Jitter buffer | Network smoother | Queue reordering out-of-order packets; 60–80 ms typical. |
-| AEC | Echo cancellation | Subtracts speaker-to-mic feedback path. |
-| Barge-in | User interrupt | System detects user speech mid-TTS; must cancel playback. |
-| Full duplex | Simultaneous both ways | User and bot can talk at the same time; Moshi is full duplex. |
+| 环形缓冲区（Ring Buffer） | 循环队列 | 固定大小、无锁或单生产者单消费者锁保护的音频帧先进先出队列。 |
+| 语音活动检测（VAD） | 静音门控 | 标记语音与非语音的模型或启发式算法。 |
+| 流式 ASR（Streaming ASR） | 实时语音转文本 | 音频到达即输出部分文本，前瞻有界。 |
+| 抖动缓冲区（Jitter Buffer） | 网络平滑器 | 对乱序包重排的队列，典型 60–80 ms。 |
+| 声学回声消除（AEC） | 消除回声 | 消除扬声器到麦克风的反馈路径。 |
+| 插话（Barge-In） | 用户打断 | 系统在 TTS 期间检测到用户语音，必须取消播放。 |
+| 全双工（Full Duplex） | 双向同时进行 | 用户与机器人可同时说话，Moshi 是全双工。 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [Macháček et al. (2023). Whisper-Streaming](https://arxiv.org/abs/2307.14743) — chunked near-streaming Whisper.
-- [Kyutai (2024). Moshi](https://kyutai.org/Moshi.pdf) — full-duplex 200 ms latency.
-- [LiveKit Agents framework (2024)](https://docs.livekit.io/agents/) — production audio agent orchestration.
-- [Silero VAD repo](https://github.com/snakers4/silero-vad) — sub-1 ms VAD, Apache 2.0.
-- [WebRTC AEC3 paper](https://webrtc.googlesource.com/src/+/main/modules/audio_processing/aec3/) — echo cancellation under open source.
+- [Macháček 等（2023）：Whisper-Streaming 论文](https://arxiv.org/abs/2307.14743)：分块近似流式 Whisper。
+- [Kyutai（2024）：Moshi 论文](https://kyutai.org/Moshi.pdf)：全双工，200 ms 延迟。
+- [LiveKit Agents 框架（2024）](https://docs.livekit.io/agents/)：生产级音频智能体编排。
+- [Silero VAD 仓库](https://github.com/snakers4/silero-vad)：不到 1 ms 的 VAD，Apache 2.0。
+- [WebRTC AEC3 论文与实现](https://webrtc.googlesource.com/src/+/main/modules/audio_processing/aec3/)：开源回声消除。

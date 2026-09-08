@@ -1,34 +1,34 @@
 ---
 name: debate-configurator
-description: Configure a multi-agent debate for a given task, estimating quality gain and token cost before running.
+description: 为给定任务配置多智能体辩论，在运行前估计质量收益与词元成本。
 version: 1.0.0
 phase: 16
 lesson: 07
 tags: [multi-agent, debate, society-of-mind, consensus]
 ---
 
-Given a question or task, produce a debate configuration ready to run on any agent framework (LangGraph, AutoGen, custom loop).
+给定问题或任务，生成可在任意智能体框架（LangGraph、AutoGen、自定义循环）运行的辩论配置。
 
-Produce:
+产出：
 
-1. **Task-fit check.** Is this task consensus-improvable? Debate helps reasoning, factuality, and decomposition; it does not help tasks that are already deterministic (arithmetic, code compilation) or purely generative (creative writing).
-2. **Agent count.** 3, 4, or 5. Default 3; 4+ only if cost-insensitive and task needs more diverse views.
-3. **Round count.** 2 or 3. Default 3; rarely more. Cite the Du et al. plateau.
-4. **Heterogeneity.** Same base model (simpler, cheaper, more correlated errors) or mixed family (Llama + Claude + GPT; decorrelates; more expensive, needs a routing layer).
-5. **Role assignment.** Symmetric (all agents have the same role) vs one-adversarial (one agent instructed to disagree). Adversarial slot is cheap insurance against sycophancy cascades.
-6. **Aggregation method.** Majority vote (discrete answers), weighted average (numeric), or LLM-judge synthesis (open-ended).
-7. **Cost estimate.** N agents × R rounds × median tokens per turn. State the dollar estimate given current provider pricing.
+1. **任务适配检查。** 共识能否改善此任务？辩论有助于推理、事实性和分解，不适合已经确定性的任务（算术、代码编译）或纯生成任务（创意写作）。
+2. **智能体数量。** 3、4 或 5。默认 3；仅不敏感于成本且需要更多样视角时才用 4 个及以上。
+3. **轮数。** 2 或 3。默认 3，很少更多。引用 Du 等人的平台期发现。
+4. **异构性。** 相同基础模型（更简单便宜，但错误更相关），或混合模型族（Llama + Claude + GPT，降低相关性；更贵，需要路由层）。
+5. **角色分配。** 对称（所有智能体角色相同）或一个对抗角色（指示一个智能体持异议）。对抗席位是防范迎合级联的低成本保障。
+6. **聚合方法。** 多数投票（离散答案）、加权平均（数值）或 LLM 裁判综合（开放问题）。
+7. **成本估计。** N 个智能体 × R 轮 × 每轮词元中位数。按当前服务商定价给出美元估算。
 
-Hard rejects:
+必须排除：
 
-- Any config with more than 5 agents or more than 3 rounds without a concrete cost-justification.
-- Symmetric-only debates on tasks with known sycophancy risk.
-- Using debate for tasks that have a deterministic verifier (compile, test, exact math) — run the verifier instead.
+- 没有具体成本理由就配置超过 5 个智能体或超过 3 轮。
+- 已知有迎合风险的任务仅采用对称辩论。
+- 对有确定性验证器的任务（编译、测试、精确数学）采用辩论，应直接运行验证器。
 
-Refusal rules:
+拒绝规则：
 
-- If the task is simple factual lookup, refuse and recommend retrieval-augmented single-agent.
-- If the task is generative (write a poem), refuse — debate drags outputs toward the mean.
-- If the user has not set a token/dollar budget, refuse and ask for one. Debate is 5-15× the cost of single-agent.
+- 若任务只是简单事实查找，拒绝并推荐检索增强单智能体。
+- 若任务是生成式的（写诗），拒绝；辩论会把输出拉向平均水平。
+- 若用户未设置词元/美元预算，拒绝并要求提供。辩论成本是单智能体的 5-15 倍。
 
-Output: one-page config brief. Start with the task-fit check, close with the total cost estimate.
+输出：一页配置简报。以任务适配检查开头，以总成本估计结尾。

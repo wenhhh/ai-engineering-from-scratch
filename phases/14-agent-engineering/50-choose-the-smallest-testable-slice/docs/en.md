@@ -1,102 +1,102 @@
-# Choose the Smallest Slice That Can Change the Decision
+# 选择能够改变决定的最小切片（Choose the Smallest Slice That Can Change the Decision）
 
-> Small is useful only when it proves something important. A tiny build that cannot change the next decision is merely incomplete.
+> 缩小范围只有在能够证明重要事项时才有价值。一个很小的实现若不能改变下一步决策，就只是一个不完整的实现。
 
 **Type:** Learn + Build
-**Languages:** Python (stdlib)
-**Prerequisites:** Phase 14 lesson 49
-**Time:** ~65 minutes
+**Languages:** Python（标准库）
+**Prerequisites:** 阶段 14 第 49 课
+**Time:** 约 65 分钟
 
-## Learning Objectives
+## 学习目标（Learning Objectives）
 
-- Define a slice by the assumptions it proves.
-- Balance outcome value, uncertainty reduction, effort, and consequence.
-- Prefer reversible evidence over premature production commitment.
-- Reject slices that omit the risky part of the workflow.
+- 根据切片证明的假设定义它。
+- 平衡成效价值、不确定性降低、投入与后果。
+- 优先获取可逆证据，避免过早投入生产。
+- 拒绝遗漏工作流风险部分的切片。
 
-## Vertical Means Evidence End to End
+## 垂直意味着端到端证据（Vertical Means Evidence End to End）
 
-A useful slice crosses the minimum real workflow needed to observe an outcome. It can be narrow in users, data, duration, and capability. It should not be narrow by removing the exact uncertainty you need to test.
+有用的切片应贯通观察成效所必需的最小真实工作流。它可以限制用户范围、数据量、持续时间和能力，但不能为了缩小范围，把恰好需要检验的不确定性排除在外。
 
-Examples:
+例如：
 
-- A read-only replay across ten real incidents tests service identification and operator trust.
-- A polished dashboard on synthetic data may test comprehension but not data feasibility.
-- A production auto-remediator tests everything at once with unacceptable consequence.
+- 对十次真实事故进行只读回放，测试服务识别与操作者信任。
+- 使用合成数据的精致仪表盘可能测试理解，却不能测试数据可行性。
+- 生产自动修复器一次测试全部内容，后果却不可接受。
 
-## Define Required Proof First
+## 先定义必需证明（Define Required Proof First）
 
-Take the highest-risk open assumptions and turn them into a required proof set. A candidate slice is eligible only if it covers that set.
+将风险最高的未解假设转成必需证明集合。候选切片只有覆盖该集合才有资格。
 
-Then compare eligible slices on:
+然后比较合格切片：
 
-| Dimension | Direction |
+| 维度 | 方向 |
 |---|---|
-| Outcome value | More is better |
-| Uncertainty reduced | More is better |
-| Effort | Less is better |
-| Consequence | Less is better |
-| Reversibility | More is better |
+| 成效价值（Outcome Value） | 越多越好 |
+| 降低的不确定性（Uncertainty Reduced） | 越多越好 |
+| 投入（Effort） | 越少越好 |
+| 后果（Consequence） | 越小越好 |
+| 可逆性（Reversibility） | 越高越好 |
 
-The lab’s score is intentionally simple. The eligibility gate matters more than the arithmetic.
+实验评分刻意保持简单。资格关卡比算术更重要。
 
 ```mermaid
 flowchart TD
-  R[Required proof] --> C1[Candidate slice 1]
-  R --> C2[Candidate slice 2]
-  R --> C3[Candidate slice 3]
-  C1 --> G{Covers all proof?}
+  R[必需证明] --> C1[候选切片 1]
+  R --> C2[候选切片 2]
+  R --> C3[候选切片 3]
+  C1 --> G{覆盖全部证明?}
   C2 --> G
   C3 --> G
-  G -->|No| X[Reject]
-  G -->|Yes| S[Compare evidence per effort and risk]
-  S --> B[Build one slice]
+  G -->|否| X[拒绝]
+  G -->|是| S[比较相对投入与风险的证据收益]
+  S --> B[构建一个切片]
 ```
 
-## Common False Minimums
+## 常见的伪最小方案（Common False Minimums）
 
-- **The UI-only minimum:** removes the data and operational uncertainty.
-- **The infrastructure-only minimum:** proves technical possibility without user value.
-- **The happy-path minimum:** omits the exception that creates most risk.
-- **The demo minimum:** produces a persuasive artifact but no repeatable measurement.
-- **The platform minimum:** builds reusable machinery before one workflow earns it.
+- **仅 UI 的最小方案：** 移除了数据与运营不确定性。
+- **仅基础设施的最小方案：** 证明技术可能性，却没有用户价值。
+- **仅正常路径的最小方案：** 遗漏产生大部分风险的异常。
+- **演示型最小方案：** 产出有说服力的产物，却没有可重复测量。
+- **平台型最小方案：** 尚无一个工作流证明合理性，就构建可复用机制。
 
-## Add a Stop Rule
+## 添加停止规则（Add a Stop Rule）
 
-Before implementation, write what happens if the slice fails:
+实现前写明切片失败时怎么办：
 
-- abandon the outcome;
-- change the target user or situation;
-- test a different mechanism;
-- collect better evidence;
-- narrow authority further.
+- 放弃该成效；
+- 改变目标用户或情境；
+- 测试不同机制；
+- 收集更好证据；
+- 进一步收窄权限。
 
-If every result leads to “keep building,” the slice is not an experiment.
+若每个结果都导向“继续构建”，切片就不是实验。
 
-## Build It
+## 动手实现（Build It）
 
-The lab filters candidates by required proof, scores eligible slices, and writes `outputs/slice-decision.json`.
+实验按必需证明筛选候选，对合格切片评分，并写入 `outputs/slice-decision.json`。
 
 ```bash
 python3 code/main.py
 python3 -m unittest discover code/tests -v
 ```
 
-Add a cheaper candidate that proves only one required assumption. It should remain ineligible even if its numerical score is high.
+添加一个更便宜、但只证明一项必需假设的候选。即使数值评分很高，它也应保持不合格。
 
-## Exercises
+## 练习（Exercises）
 
-1. Design three slices for the same outcome at different consequence levels.
-2. State the required proof set before scoring them.
-3. Remove one capability while preserving the decisive evidence.
-4. Add a stop rule for a failed pilot.
-5. Identify a reusable platform component that should wait until after the slice.
+1. 为同一成效设计三个后果级别不同的切片。
+2. 评分前说明必需证明集合。
+3. 移除一项能力，同时保留决定性证据。
+4. 为失败的试点添加停止规则。
+5. 找出一个应等切片完成后再构建的可复用平台组件。
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [Barry Boehm, A Spiral Model of Software Development and Enhancement](https://dl.acm.org/doi/10.1145/12944.12948), for matching each development cycle to the risks it must resolve.
-- [Lenarduzzi and Taibi, MVP Explained: A Systematic Mapping Study on the Definitions of Minimal Viable Product](https://arxiv.org/abs/1609.07592), for the ambiguity around “minimum” and “viable” in software product practice.
+- [Barry Boehm：软件开发与改进的螺旋模型（A Spiral Model of Software Development and Enhancement）](https://dl.acm.org/doi/10.1145/12944.12948)，讨论让每个开发周期匹配它必须解决的风险。
+- [Lenarduzzi 与 Taibi：MVP 释义，最小可行产品定义的系统映射研究（MVP Explained: A Systematic Mapping Study on the Definitions of Minimal Viable Product）](https://arxiv.org/abs/1609.07592)，讨论软件产品实践中“最小”与“可行”的歧义。
 
-## What You Keep
+## 保留产物（What You Keep）
 
-Keep `outputs/slice-decision.json`. It records why this slice is the smallest one that can change the decision.
+保留 `outputs/slice-decision.json`。它记录为何这个切片是能够改变决定的最小方案。

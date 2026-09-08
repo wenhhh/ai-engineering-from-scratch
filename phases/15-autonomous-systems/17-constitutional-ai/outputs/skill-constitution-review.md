@@ -1,40 +1,40 @@
 ---
 name: constitution-review
-description: Audit a deployment's constitutional layer — hardcoded prohibitions, soft-coded defaults, operator-adjustable bounds, and four-tier hierarchy resolution.
+description: 审计部署宪法层：硬编码禁令、软编码默认值、运维方可调边界、四级体系冲突解决。
 version: 1.0.0
 phase: 15
 lesson: 17
 tags: [constitutional-ai, rule-override, hierarchy, cai, rlaif, hardcoded-prohibition]
 ---
 
-Given a deployment's constitutional layer (system prompt, operator config, declared principles), audit it against the Claude Constitution reference and flag missing hardcoded prohibitions, ambiguous principles, or misordered tiers.
+给定部署宪法层（系统提示词、运维配置、声明原则），对照 Claude 宪法参考审计，标记缺失硬编码禁令、模糊原则、级别错序。
 
-Produce:
+请输出：
 
-1. **Hardcoded prohibition inventory.** List every prohibition that must not bend regardless of operator or user instruction. Minimum floor: bioweapons / CBRN uplift, CSAM, critical infrastructure attack planning, false-identity-when-asked. Additions are deployment-specific (e.g., financial services adds specific fraud prohibitions).
-2. **Soft-coded defaults.** List every behaviour the operator can adjust. For each, state the declared bound. An "adjustable" setting with no bound is a back-door override.
-3. **Tier ordering.** Confirm the resolution order is: safety > ethics > guidelines > helpfulness. If helpfulness ever wins over ethics in the implemented resolver, flag as a deployment break.
-4. **Principle ambiguity flags.** Identify any principle whose text leaves room for materially different interpretations. Ambiguity compounds over training cycles (principle drift).
-5. **Layer completeness.** Confirm runtime-layer controls (Lessons 10, 13, 14) are present in addition to the constitutional layer. Constitution alone is insufficient; runtime alone is insufficient.
+1. **硬编码禁令清单（Hardcoded prohibition inventory）。** 列出无论运维方或用户指令都不可让步的禁令。最低底线：生物武器 / CBRN 能力提升、CSAM、关键基础设施攻击规划、被询问时提供虚假身份。可按部署增加，例如金融服务的特定欺诈禁令。
+2. **软编码默认值（Soft-coded defaults）。** 列出部署运营方可以调整的行为，并说明每项调整的明确边界。没有边界的“可调”设置，实际上提供了绕过规则的后门。
+3. **级别顺序（Tier ordering）。** 确认顺序为安全 > 伦理 > 指南 > 助益性。实际解析器中若助益性曾胜过伦理，标记为部署缺陷。
+4. **原则模糊性标记（Principle ambiguity flags）。** 指出文本留有实质不同解释空间的原则。模糊性会跨训练周期累积，即原则漂移。
+5. **层完整性（Layer completeness）。** 确认宪法层外也有运行时控制（第 10、13、14 课）。仅宪法不够，仅运行时也不够。
 
-Hard rejects:
-- Deployments without any hardcoded prohibition layer.
-- Operator config that claims to override a hardcoded prohibition (even by renaming).
-- Tier orders that place helpfulness above ethics.
-- Principle text so general it cannot be evaluated ("be good").
-- Treating Constitutional AI as a replacement for runtime controls.
+必须拒绝：
+- 没有任何硬编码禁令层的部署。
+- 声称覆盖硬编码禁令的运维配置，即使通过重命名。
+- 助益性高于伦理的级别顺序。
+- 过于笼统、以至于无法评估是否遵守的原则文本，如“做好事”。
+- 用宪法式 AI 替代运行时控制。
 
-Refusal rules:
-- If the user names a hardcoded prohibition but cannot point to a runtime-layer backstop for it, flag the deployment as single-layer and refuse production.
-- If the operator config includes an adjustable "safety" setting with no declared bound, refuse.
-- If the user treats the 2023 participatory-constitution findings as actionable in the current deployment, check: the 2026 Constitution did not incorporate them, so "inherits democratically" is a claim the deployment cannot back up.
+拒绝规则：
+- 若用户说出硬编码禁令，却无法指出运行时兜底，标记为单层部署，拒绝生产。
+- 若运维配置含可调“安全”设置却无声明边界，拒绝。
+- 若用户认为 2023 年参与式宪法发现可直接适用于当前部署，核查：2026 宪法未纳入它们，所以部署无法支持“继承民主原则”的声明。
 
-Output format:
+输出格式：
 
-Return a constitutional audit with:
-- **Hardcoded floor** (prohibitions, enforcement layer: weights / inference / both)
-- **Soft-coded defaults** (setting, operator bound, user-visible y/n)
-- **Tier order** (listed; confirmed safety > ethics > guidelines > helpfulness)
-- **Ambiguity flags** (principle, specific ambiguity, proposed tightening)
-- **Layer completeness** (constitutional y/n, runtime controls y/n, both required)
-- **Readiness** (production / staging / research-only)
+返回宪法审计，包含：
+- **硬编码底线（Hardcoded floor）**：禁令、执行层（权重 / 推理 / 两者）
+- **软编码默认值（Soft-coded defaults）**：设置、运维方边界、用户可见 y/n
+- **级别顺序（Tier order）**：列出并确认安全 > 伦理 > 指南 > 助益性
+- **模糊性标记（Ambiguity flags）**：原则、具体模糊性、收紧提案
+- **层完整性（Layer completeness）**：宪法 y/n、运行时控制 y/n，两者必需
+- **就绪性（Readiness）**：生产 / 预发布 / 仅研究

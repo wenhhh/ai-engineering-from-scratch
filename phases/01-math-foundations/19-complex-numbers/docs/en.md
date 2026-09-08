@@ -1,115 +1,115 @@
-# Complex Numbers for AI
+# AI 中的复数（Complex Numbers for AI）
 
-> The square root of -1 is not imaginary. It is the key to rotations, frequencies, and half of signal processing.
+> -1 的平方根并非虚构。它是旋转、频率以及半个信号处理领域的关键。
 
 **Type:** Learn
 **Language:** Python
-**Prerequisites:** Phase 1, Lessons 01-04 (linear algebra, calculus)
-**Time:** ~60 minutes
+**Prerequisites:** 第 1 阶段，第 01–04 课（线性代数、微积分）
+**Time:** ~60 分钟
 
-## Learning Objectives
+## 学习目标（Learning Objectives）
 
-- Perform complex arithmetic (add, multiply, divide, conjugate) in both rectangular and polar form
-- Apply Euler's formula to convert between complex exponentials and trigonometric functions
-- Implement the Discrete Fourier Transform using complex roots of unity
-- Explain how complex rotations underlie RoPE and sinusoidal positional encodings in transformers
+- 在直角坐标形式与极坐标形式下进行复数运算：加、乘、除和求共轭
+- 应用欧拉公式，在复指数与三角函数之间转换
+- 使用复单位根实现离散傅里叶变换
+- 解释复数旋转如何支撑 Transformer 中的 RoPE 与正弦位置编码
 
-## The Problem
+## 问题背景（The Problem）
 
-You open a paper on Fourier transforms and there is `i` everywhere. You look at transformer positional encodings and see `sin` and `cos` at different frequencies -- the real and imaginary parts of complex exponentials. You read about quantum computing and find everything expressed in complex vector spaces.
+打开一篇傅里叶变换论文，你会发现到处都是 `i`。查看 Transformer 的位置编码，会看到不同频率的 `sin` 和 `cos`，它们正是复指数的实部与虚部。阅读量子计算资料时，又会发现所有内容都用复向量空间表达。
 
-Complex numbers seem abstract. A number system built on the square root of -1 feels like a mathematical trick. But it is not a trick. It is the natural language of rotations and oscillations. Every time something spins, vibrates, or oscillates, complex numbers are the right tool.
+复数看起来很抽象。建立在 -1 平方根上的数系，似乎只是一种数学技巧。但它并不是技巧，而是旋转与振荡的自然语言。只要某个事物在旋转、振动或振荡，复数就是合适的工具。
 
-Without understanding complex numbers, you cannot understand the Discrete Fourier Transform. You cannot understand FFT. You cannot understand how RoPE (Rotary Position Embedding) works in modern language models. You cannot understand why sinusoidal positional encodings in the original Transformer paper use the frequencies they do.
+不理解复数，就无法理解离散傅里叶变换（Discrete Fourier Transform，DFT），也无法理解快速傅里叶变换（Fast Fourier Transform，FFT）。你将无法理解现代语言模型中的旋转位置嵌入（Rotary Position Embedding，RoPE），也无法理解原始 Transformer 论文的正弦位置编码为何使用那些频率。
 
-This lesson builds complex arithmetic from scratch, connects it to geometry, and shows you exactly where complex numbers appear in machine learning.
+本课从零构建复数运算，将其与几何联系起来，并准确展示复数在机器学习中的应用位置。
 
-## The Concept
+## 核心概念（The Concept）
 
-### What is a complex number?
+### 什么是复数（What is a complex number?）
 
-A complex number has two parts: a real part and an imaginary part.
+复数（Complex Number）有两部分：实部（Real Part）和虚部（Imaginary Part）。
 
 ```
 z = a + bi
 
-where:
-  a is the real part
-  b is the imaginary part
-  i is the imaginary unit, defined by i^2 = -1
+其中：
+  a 为实部
+  b 为虚部
+  i 为虚数单位，定义为 i^2 = -1
 ```
 
-That is it. You extend the number line into a plane. The real numbers sit on one axis. The imaginary numbers sit on the other. Every complex number is a point in this plane.
+仅此而已。你把数轴扩展成一个平面：实数位于一条轴上，虚数位于另一条轴上，每个复数都是平面内的一个点。
 
-### Complex arithmetic
+### 复数运算（Complex arithmetic）
 
-**Addition.** Add the real parts together, add the imaginary parts together.
+**加法。** 实部相加，虚部相加。
 
 ```
 (a + bi) + (c + di) = (a + c) + (b + d)i
 
-Example: (3 + 2i) + (1 + 4i) = 4 + 6i
+示例： (3 + 2i) + (1 + 4i) = 4 + 6i
 ```
 
-**Multiplication.** Use the distributive law and remember that i^2 = -1.
+**乘法。** 使用分配律，并记住 i^2 = -1。
 
 ```
 (a + bi)(c + di) = ac + adi + bci + bdi^2
                  = ac + adi + bci - bd
                  = (ac - bd) + (ad + bc)i
 
-Example: (3 + 2i)(1 + 4i) = 3 + 12i + 2i + 8i^2
+示例： (3 + 2i)(1 + 4i) = 3 + 12i + 2i + 8i^2
                             = 3 + 14i - 8
                             = -5 + 14i
 ```
 
-**Conjugate.** Flip the sign of the imaginary part.
+**共轭（Conjugate）。** 将虚部符号反转。
 
 ```
-conjugate of (a + bi) = a - bi
+(a + bi) 的共轭 = a - bi
 ```
 
-The product of a complex number and its conjugate is always real:
+复数与其共轭的乘积始终为实数：
 
 ```
 (a + bi)(a - bi) = a^2 + b^2
 ```
 
-**Division.** Multiply numerator and denominator by the conjugate of the denominator.
+**除法。** 分子和分母同时乘以分母的共轭。
 
 ```
 (a + bi) / (c + di) = (a + bi)(c - di) / (c^2 + d^2)
 ```
 
-This eliminates the imaginary part from the denominator, giving you a clean complex number.
+这样会消去分母的虚部，得到整洁的复数形式。
 
-### The complex plane
+### 复平面（The complex plane）
 
-The complex plane maps every complex number to a 2D point. The horizontal axis is the real axis, the vertical axis is the imaginary axis.
+复平面（Complex Plane）将每个复数映射为二维点。横轴是实轴，纵轴是虚轴。
 
 ```
-z = 3 + 2i  corresponds to the point (3, 2)
-z = -1 + 0i corresponds to the point (-1, 0) on the real axis
-z = 0 + 4i  corresponds to the point (0, 4) on the imaginary axis
+z = 3 + 2i  对应点 (3, 2)
+z = -1 + 0i 对应点 (-1, 0) 位于实轴上
+z = 0 + 4i  对应点 (0, 4) 位于虚轴上
 ```
 
-A complex number is simultaneously a point and a vector from the origin. This dual interpretation is what makes complex numbers useful for geometry.
+复数既是一个点，也是从原点出发的向量。这种双重解释使复数适合处理几何问题。
 
-### Polar form
+### 极坐标形式（Polar form）
 
-Any point in the plane can be described by its distance from the origin and its angle from the positive real axis.
+平面内任意点都可以用到原点的距离，以及相对实轴正方向的角度来描述。
 
 ```
 z = r * (cos(theta) + i*sin(theta))
 
-where:
-  r = |z| = sqrt(a^2 + b^2)     (magnitude, or modulus)
-  theta = atan2(b, a)             (phase, or argument)
+其中：
+  r = |z| = sqrt(a^2 + b^2)     （幅值，又称模）
+  theta = atan2(b, a)             （相位，又称辐角）
 ```
 
-Rectangular form (a + bi) is good for addition. Polar form (r, theta) is good for multiplication.
+直角坐标形式（Rectangular Form，a + bi）适合加法，极坐标形式（Polar Form，r, theta）适合乘法。
 
-**Multiplication in polar form.** Multiply the magnitudes, add the angles.
+**极坐标形式下的乘法。** 幅值相乘，角度相加。
 
 ```
 z1 = r1 * e^(i*theta1)
@@ -118,149 +118,149 @@ z2 = r2 * e^(i*theta2)
 z1 * z2 = (r1 * r2) * e^(i*(theta1 + theta2))
 ```
 
-This is why complex numbers are perfect for rotations. Multiplying by a complex number with magnitude 1 is a pure rotation.
+这就是复数非常适合描述旋转的原因。乘以模为 1 的复数，就是纯旋转。
 
-### Euler's formula
+### 欧拉公式（Euler's formula）
 
-The bridge between complex exponentials and trigonometry:
+欧拉公式（Euler's Formula）连接复指数与三角函数：
 
 ```
 e^(i*theta) = cos(theta) + i*sin(theta)
 ```
 
-This is the most important formula in this lesson. When theta = pi:
+这是本课最重要的公式。当 theta = pi 时：
 
 ```
 e^(i*pi) = cos(pi) + i*sin(pi) = -1 + 0i = -1
 
-Therefore: e^(i*pi) + 1 = 0
+因此： e^(i*pi) + 1 = 0
 ```
 
-Five fundamental constants (e, i, pi, 1, 0) linked in one equation.
+五个基本常数 e、i、pi、1、0 被一个等式联系起来。
 
-### Why Euler's formula matters for ML
+### 欧拉公式为何对机器学习重要（Why Euler's formula matters for ML）
 
-Euler's formula says that `e^(i*theta)` traces the unit circle as theta varies. At theta = 0, you are at (1, 0). At theta = pi/2, you are at (0, 1). At theta = pi, you are at (-1, 0). At theta = 3*pi/2, you are at (0, -1). A full rotation is theta = 2*pi.
+欧拉公式表明，随着 theta 变化，`e^(i*theta)` 沿单位圆运动。theta = 0 时位于 (1, 0)；theta = pi/2 时位于 (0, 1)；theta = pi 时位于 (-1, 0)；theta = 3*pi/2 时位于 (0, -1)。完整旋转一周对应 theta = 2*pi。
 
-This means complex exponentials ARE rotations. And rotations are everywhere in signal processing and ML.
+这意味着复指数就是旋转，而旋转在信号处理与机器学习中无处不在。
 
-### Connection to 2D rotations
+### 与二维旋转的联系（Connection to 2D rotations）
 
-Multiplying the complex number (x + yi) by e^(i*theta) rotates the point (x, y) by angle theta around the origin.
+将复数 (x + yi) 乘以 e^(i*theta)，相当于将点 (x, y) 绕原点旋转 theta 角。
 
 ```
-Rotation via complex multiplication:
+通过复数乘法旋转：
   (x + yi) * (cos(theta) + i*sin(theta))
   = (x*cos(theta) - y*sin(theta)) + (x*sin(theta) + y*cos(theta))i
 
-Rotation via matrix multiplication:
+通过矩阵乘法旋转：
   [cos(theta)  -sin(theta)] [x]   [x*cos(theta) - y*sin(theta)]
   [sin(theta)   cos(theta)] [y] = [x*sin(theta) + y*cos(theta)]
 ```
 
-They produce identical results. Complex multiplication IS 2D rotation. The rotation matrix is just complex multiplication written in matrix notation.
+两者结果完全相同。复数乘法就是二维旋转，旋转矩阵只是用矩阵记法表达复数乘法。
 
 ```mermaid
 graph TD
-    subgraph "Complex Multiplication = 2D Rotation"
-        A["z = x + yi<br/>Point (x, y)"] -->|"multiply by e^(i*theta)"| B["z' = z * e^(i*theta)<br/>Point rotated by theta"]
+    subgraph "复数乘法 = 二维旋转"
+        A["z = x + yi<br/>点 (x, y)"] -->|"乘以 e^(i*theta)"| B["z' = z * e^(i*theta)<br/>点旋转 theta 后"]
     end
-    subgraph "Equivalent Matrix Form"
-        C["vector [x, y]"] -->|"multiply by rotation matrix"| D["[x cos theta - y sin theta,<br/> x sin theta + y cos theta]"]
+    subgraph "等价矩阵形式"
+        C["向量 [x, y]"] -->|"乘以旋转矩阵"| D["[x cos theta - y sin theta,<br/> x sin theta + y cos theta]"]
     end
-    B -.->|"same result"| D
+    B -.->|"结果相同"| D
 ```
 
-### Phasors and rotating signals
+### 相量与旋转信号（Phasors and rotating signals）
 
-A complex exponential e^(i*omega*t) is a point rotating around the unit circle at angular frequency omega. As t increases, the point traces the circle.
+复指数 e^(i*omega*t) 表示以角频率 omega 绕单位圆旋转的点。随着 t 增大，该点沿圆运动。
 
-The real part of this rotating point is cos(omega*t). The imaginary part is sin(omega*t). A sinusoidal signal is the shadow of a rotating complex number.
+这个旋转点的实部为 cos(omega*t)，虚部为 sin(omega*t)。正弦信号就是旋转复数的投影。
 
 ```
 e^(i*omega*t) = cos(omega*t) + i*sin(omega*t)
 
-Real part:      cos(omega*t)    -- a cosine wave
-Imaginary part: sin(omega*t)    -- a sine wave
+实部：      cos(omega*t)    -- 余弦波
+虚部： sin(omega*t)    -- 正弦波
 ```
 
-This is the phasor representation. Instead of tracking a wiggly sine wave, you track a smoothly rotating arrow. Phase shifts become angle offsets. Amplitude changes become magnitude changes. Addition of signals becomes vector addition.
+这就是相量（Phasor）表示。你无需跟踪起伏的正弦波，而是跟踪平滑旋转的箭头。相移变为角度偏移，振幅变化变为模的变化，信号相加变为向量相加。
 
-### Roots of unity
+### 单位根（Roots of unity）
 
-The N-th roots of unity are N points equally spaced on the unit circle:
+N 次单位根（Roots of Unity）是单位圆上等距分布的 N 个点：
 
 ```
-w_k = e^(2*pi*i*k/N)    for k = 0, 1, 2, ..., N-1
+w_k = e^(2*pi*i*k/N)    其中 k = 0, 1, 2, ..., N-1
 ```
 
-For N = 4, the roots are: 1, i, -1, -i (the four compass points).
-For N = 8, you get the four compass points plus the four diagonals.
+N = 4 时，单位根为 1、i、-1、-i，对应四个正方向。
+N = 8 时，在四个正方向之外，还增加四个对角方向。
 
-Roots of unity are the foundation of the Discrete Fourier Transform. The DFT decomposes a signal into components at these N equally-spaced frequencies.
+单位根是离散傅里叶变换的基础。DFT 将信号分解为这 N 个等间隔频率上的分量。
 
-### Connection to the DFT
+### 与 DFT 的联系（Connection to the DFT）
 
-The Discrete Fourier Transform of a signal x[0], x[1], ..., x[N-1] is:
+信号 x[0], x[1], ..., x[N-1] 的离散傅里叶变换为：
 
 ```
 X[k] = sum_{n=0}^{N-1} x[n] * e^(-2*pi*i*k*n/N)
 ```
 
-Each X[k] measures how much the signal correlates with the k-th root of unity -- a complex sinusoid at frequency k. The DFT breaks a signal into N rotating phasors and tells you the amplitude and phase of each one.
+每个 X[k] 衡量信号与第 k 个单位根，即频率 k 处复正弦波的相关程度。DFT 将信号拆成 N 个旋转相量，并给出每个相量的幅值和相位。
 
-### Why i is not imaginary
+### 为什么 i 并不虚构（Why i is not imaginary）
 
-The word "imaginary" is a historical accident. Descartes used it dismissively. But i is no more imaginary than negative numbers were when people first rejected them. Negative numbers answer "what do you subtract 5 from 3 to get?" The imaginary unit answers "what do you square to get -1?"
+“虚数”一词是历史偶然。Descartes 最初用它表达轻视。但 i 并不比人们最初拒绝接受的负数更虚构。负数回答“3 减去 5 得到什么”，虚数单位回答“什么数的平方为 -1”。
 
-More usefully: i is a 90-degree rotation operator. Multiply a real number by i once, you rotate 90 degrees to the imaginary axis. Multiply by i again (i^2), you rotate another 90 degrees -- now you are pointing in the negative real direction. That is why i^2 = -1. It is not mysterious. It is a half-turn built from two quarter-turns.
+更有用的理解是：i 是一个 90 度旋转算子。实数乘一次 i，就旋转 90 度到虚轴；再乘一次 i，即 i^2，又旋转 90 度，此时指向实轴负方向。这就是 i^2 = -1 的原因。它并不神秘，只是两次四分之一周旋转构成半周旋转。
 
-This is why complex numbers are everywhere in engineering. Anything that rotates -- electromagnetic waves, quantum states, signal oscillations, positional encodings -- is naturally described by complex numbers.
+这解释了复数为何遍布工程领域。任何旋转的对象，如电磁波、量子态、信号振荡和位置编码，都能用复数自然描述。
 
-### Complex exponentials vs trigonometric functions
+### 复指数与三角函数（Complex exponentials vs trigonometric functions）
 
-Before Euler's formula, engineers wrote signals as A*cos(omega*t + phi) -- amplitude A, frequency omega, phase phi. This works but makes arithmetic painful. Adding two cosines with different phases requires trigonometric identities.
+在欧拉公式出现之前，工程师把信号写作 A*cos(omega*t + phi)，其中 A 为振幅、omega 为频率、phi 为相位。这种表示有效，但运算麻烦。两个不同相位的余弦相加，需要使用三角恒等式。
 
-With complex exponentials, the same signal is A*e^(i*(omega*t + phi)). Adding two signals is just adding two complex numbers. Multiplying (modulating) is just multiplying magnitudes and adding angles. Phase shifts become angle additions. Frequency shifts become multiplications by phasors.
+用复指数表示，同一信号写作 A*e^(i*(omega*t + phi))。两个信号相加就是两个复数相加；相乘（调制）就是模相乘、角度相加；相移变为角度相加；频移变为乘以相量。
 
-The entire field of signal processing switched to complex exponential notation because the math is cleaner. The "real signal" is always just the real part of the complex representation. The imaginary part is carried along as bookkeeping, making all the algebra work out naturally.
+整个信号处理领域转向复指数记法，是因为数学表达更简洁。“真实信号”始终只是复数表示的实部，虚部作为辅助信息一同保留，使代数运算自然成立。
 
-### Connection to transformers
+### 与 Transformer 的联系（Connection to transformers）
 
-**Sinusoidal positional encodings** (original Transformer paper):
+**正弦位置编码（Sinusoidal Positional Encodings）**，来自原始 Transformer 论文：
 
 ```
 PE(pos, 2i) = sin(pos / 10000^(2i/d))
 PE(pos, 2i+1) = cos(pos / 10000^(2i/d))
 ```
 
-The sin and cos pairs are the real and imaginary parts of complex exponentials at different frequencies. Each frequency provides a different "resolution" for encoding position. Low frequencies change slowly (coarse position). High frequencies change quickly (fine position). Together they give each position a unique frequency fingerprint.
+sin 与 cos 对是不同频率复指数的实部与虚部。每个频率为位置编码提供不同的“分辨率”。低频变化缓慢，表示粗粒度位置；高频变化迅速，表示细粒度位置。它们共同赋予每个位置独特的频率指纹。
 
-**RoPE (Rotary Position Embedding)** takes this further. It explicitly multiplies query and key vectors by complex rotation matrices. The relative position between two tokens becomes a rotation angle. Attention is computed using these rotated vectors, making the model sensitive to relative position through complex multiplication.
+**旋转位置嵌入（RoPE）** 更进一步：它显式地将查询向量（Query）和键向量（Key）乘以复数旋转矩阵。两个词元（Token）的相对位置变成旋转角。使用旋转后的向量计算注意力（Attention），使模型通过复数乘法感知相对位置。
 
-| Operation | Algebraic Form | Geometric Meaning |
+| 运算 | 代数形式 | 几何意义 |
 |-----------|---------------|-------------------|
-| Addition | (a+c) + (b+d)i | Vector addition in the plane |
-| Multiplication | (ac-bd) + (ad+bc)i | Rotate and scale |
-| Conjugate | a - bi | Reflect over real axis |
-| Magnitude | sqrt(a^2 + b^2) | Distance from origin |
-| Phase | atan2(b, a) | Angle from positive real axis |
-| Division | multiply by conjugate | Reverse rotation and rescale |
-| Power | r^n * e^(i*n*theta) | Rotate n times, scale by r^n |
+| 加法 | (a+c) + (b+d)i | 平面内的向量相加 |
+| 乘法 | (ac-bd) + (ad+bc)i | 旋转与缩放 |
+| 共轭 | a - bi | 关于实轴反射 |
+| 模 | sqrt(a^2 + b^2) | 到原点的距离 |
+| 相位 | atan2(b, a) | 相对实轴正方向的角度 |
+| 除法 | 乘以共轭 | 反向旋转并重新缩放 |
+| 幂 | r^n * e^(i*n*theta) | 旋转 n 次，缩放 r^n 倍 |
 
 ```mermaid
 graph LR
-    subgraph "Unit Circle"
+    subgraph "单位圆"
         direction TB
         U1["e^(i*0) = 1"] -.-> U2["e^(i*pi/2) = i"]
         U2 -.-> U3["e^(i*pi) = -1"]
         U3 -.-> U4["e^(i*3pi/2) = -i"]
         U4 -.-> U1
     end
-    subgraph "Applications"
-        A1["Euler's formula:<br/>e^(i*theta) = cos + i*sin"]
-        A2["DFT uses roots of unity:<br/>e^(2*pi*i*k/N)"]
-        A3["RoPE uses rotation:<br/>q * e^(i*m*theta)"]
+    subgraph "应用"
+        A1["欧拉公式：<br/>e^(i*theta) = cos + i*sin"]
+        A2["DFT 使用单位根：<br/>e^(2*pi*i*k/N)"]
+        A3["RoPE 使用旋转：<br/>q * e^(i*m*theta)"]
     end
     U1 --> A1
     U1 --> A2
@@ -271,11 +271,11 @@ graph LR
 roots-of-unity
 ```
 
-## Build It
+## 动手实现（Build It）
 
-### Step 1: Complex class
+### 第 1 步：Complex 类（Step 1: Complex class）
 
-Build a Complex number class that supports arithmetic, magnitude, phase, and conversion between rectangular and polar forms.
+构建 Complex 复数类，支持算术运算、模、相位，以及直角坐标形式与极坐标形式之间的转换。
 
 ```python
 import math
@@ -309,7 +309,7 @@ class Complex:
         return Complex(self.real, -self.imag)
 ```
 
-### Step 2: Polar conversion and Euler's formula
+### 第 2 步：极坐标转换与欧拉公式（Step 2: Polar conversion and Euler's formula）
 
 ```python
 def to_polar(z):
@@ -322,20 +322,20 @@ def euler(theta):
     return Complex(math.cos(theta), math.sin(theta))
 ```
 
-Verify: `euler(theta).magnitude()` should always be 1.0. `euler(0)` should give (1, 0). `euler(pi)` should give (-1, 0).
+验证：`euler(theta).magnitude()` 应始终为 1.0；`euler(0)` 应得到 (1, 0)；`euler(pi)` 应得到 (-1, 0)。
 
-### Step 3: Rotation
+### 第 3 步：旋转（Step 3: Rotation）
 
-Rotating a point (x, y) by angle theta is one complex multiplication:
+将点 (x, y) 旋转 theta 角，只需一次复数乘法：
 
 ```python
 point = Complex(3, 4)
 rotated = point * euler(math.pi / 4)
 ```
 
-The magnitude stays the same. Only the angle changes.
+模保持不变，只有角度改变。
 
-### Step 4: DFT from complex arithmetic
+### 第 4 步：用复数运算实现 DFT（Step 4: DFT from complex arithmetic）
 
 ```python
 def dft(signal):
@@ -350,11 +350,11 @@ def dft(signal):
     return result
 ```
 
-This is the O(N^2) DFT. Each output X[k] is the sum of the signal samples multiplied by roots of unity.
+这是 O(N^2) 的 DFT。每个输出 X[k] 都是信号样本乘以单位根后的总和。
 
-### Step 5: Inverse DFT
+### 第 5 步：逆 DFT（Step 5: Inverse DFT）
 
-The inverse DFT reconstructs the original signal from its spectrum. The only changes from the forward DFT: flip the sign in the exponent and divide by N.
+逆 DFT 根据频谱重建原始信号。与正向 DFT 相比，只需改变指数的符号，并除以 N。
 
 ```python
 def idft(spectrum):
@@ -369,24 +369,24 @@ def idft(spectrum):
     return result
 ```
 
-This gives you perfect reconstruction. Apply DFT, then IDFT, and you get back the original signal to machine precision. No information is lost.
+这实现了完美重建。先应用 DFT，再应用逆离散傅里叶变换（Inverse Discrete Fourier Transform，IDFT），就能在机器精度范围内恢复原始信号，不丢失任何信息。
 
-### Step 6: Roots of unity
+### 第 6 步：单位根（Step 6: Roots of unity）
 
 ```python
 def roots_of_unity(N):
     return [euler(2 * math.pi * k / N) for k in range(N)]
 ```
 
-Verify two properties:
-- Every root has magnitude exactly 1.
-- The sum of all N roots is zero (they cancel out by symmetry).
+验证两个性质：
+- 每个根的模恰好为 1。
+- 所有 N 个根的和为零，因为它们因对称性而相互抵消。
 
-These properties are what make the DFT invertible. The roots of unity form an orthogonal basis for the frequency domain.
+正是这些性质使 DFT 可逆。单位根构成频域的正交基。
 
-## Use It
+## 实际应用（Use It）
 
-Python has built-in complex number support. The literal `j` represents the imaginary unit.
+Python 内置复数支持，字面量 `j` 表示虚数单位。
 
 ```python
 z = 3 + 2j
@@ -401,7 +401,7 @@ print(cmath.phase(z))
 print(cmath.exp(1j * cmath.pi))
 ```
 
-For arrays, numpy handles complex numbers natively:
+对于数组，numpy 原生支持复数：
 
 ```python
 import numpy as np
@@ -418,44 +418,44 @@ spectrum = np.fft.fft(signal)
 freqs = np.fft.fftfreq(128, d=1/128)
 ```
 
-## Ship It
+## 交付成果（Ship It）
 
-Run `code/complex_numbers.py` to generate `outputs/skill-complex-arithmetic.md`.
+运行 `code/complex_numbers.py`，生成 `outputs/skill-complex-arithmetic.md`。
 
-## Exercises
+## 练习（Exercises）
 
-1. **Complex arithmetic by hand.** Compute (2 + 3i) * (4 - i) and verify with the code. Then compute (5 + 2i) / (1 - 3i). Draw both results on the complex plane and check that multiplication rotated and scaled the first number.
+1. **手算复数。** 计算 (2 + 3i) * (4 - i)，并用代码验证。然后计算 (5 + 2i) / (1 - 3i)。在复平面上画出两个结果，检查乘法是否对第一个数进行了旋转和缩放。
 
-2. **Rotation sequence.** Start with the point (1, 0). Multiply by e^(i*pi/6) twelve times. Verify that you return to (1, 0) after 12 multiplications. Print the coordinates at each step and confirm they trace a regular 12-gon.
+2. **旋转序列。** 从点 (1, 0) 开始，连续乘以 e^(i*pi/6) 十二次。验证经过 12 次乘法后回到 (1, 0)。打印每一步的坐标，确认它们构成正十二边形。
 
-3. **DFT of a known signal.** Create a signal that is the sum of sin(2*pi*3*t) and 0.5*sin(2*pi*7*t) sampled at 32 points. Run your DFT. Verify that the magnitude spectrum has peaks at frequencies 3 and 7, with the peak at 7 being half the height of the peak at 3.
+3. **已知信号的 DFT。** 创建 sin(2*pi*3*t) 与 0.5*sin(2*pi*7*t) 之和的信号，在 32 个点采样。运行你的 DFT，验证幅度谱在频率 3 和 7 处有峰，且频率 7 处的峰高为频率 3 处的一半。
 
-4. **Roots of unity visualization.** Compute the 8th roots of unity. Verify that they sum to zero. Verify that multiplying any root by the primitive root e^(2*pi*i/8) gives the next root.
+4. **单位根可视化。** 计算 8 次单位根，验证它们的和为零。验证任意一个根乘以本原单位根 e^(2*pi*i/8) 都得到下一个根。
 
-5. **Rotation matrix equivalence.** For 10 random angles and 10 random points, verify that complex multiplication gives the same result as matrix-vector multiplication with the 2x2 rotation matrix. Print the maximum numerical difference.
+5. **与旋转矩阵等价。** 对 10 个随机角度和 10 个随机点，验证复数乘法与 2x2 旋转矩阵的矩阵向量乘法结果相同。打印最大数值差异。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What it means |
+| 术语 | 含义 |
 |------|---------------|
-| Complex number | A number a + bi where a is the real part, b is the imaginary part, and i^2 = -1 |
-| Imaginary unit | The number i, defined by i^2 = -1. Not imaginary in the philosophical sense -- it is a rotation operator |
-| Complex plane | The 2D plane where the x-axis is real and the y-axis is imaginary. Also called the Argand plane |
-| Magnitude (modulus) | The distance from the origin: sqrt(a^2 + b^2). Written as \|z\| |
-| Phase (argument) | The angle from the positive real axis: atan2(b, a). Written as arg(z) |
-| Conjugate | The mirror image across the real axis: conjugate of a + bi is a - bi |
-| Polar form | Expressing z as r * e^(i*theta) instead of a + bi. Makes multiplication easy |
-| Euler's formula | e^(i*theta) = cos(theta) + i*sin(theta). Connects exponentials to trigonometry |
-| Phasor | A rotating complex number e^(i*omega*t) representing a sinusoidal signal |
-| Roots of unity | The N complex numbers e^(2*pi*i*k/N) for k = 0 to N-1. N equally spaced points on the unit circle |
-| DFT | Discrete Fourier Transform. Decomposes a signal into complex sinusoidal components using roots of unity |
-| RoPE | Rotary Position Embedding. Uses complex multiplication to encode relative position in transformer attention |
+| 复数（Complex Number） | 形如 a + bi 的数，a 为实部，b 为虚部，i^2 = -1 |
+| 虚数单位（Imaginary Unit） | 由 i^2 = -1 定义的数 i。并非哲学意义上的虚构，它是旋转算子 |
+| 复平面（Complex Plane） | x 轴为实轴、y 轴为虚轴的二维平面，也称 Argand 平面 |
+| 幅值/模（Magnitude/Modulus） | 到原点的距离：sqrt(a^2 + b^2)，记为 \|z\| |
+| 相位/辐角（Phase/Argument） | 相对实轴正方向的角度：atan2(b, a)，记为 arg(z) |
+| 共轭（Conjugate） | 关于实轴的镜像：a + bi 的共轭为 a - bi |
+| 极坐标形式（Polar Form） | 将 z 表示为 r * e^(i*theta)，而非 a + bi，使乘法更容易 |
+| 欧拉公式（Euler's Formula） | e^(i*theta) = cos(theta) + i*sin(theta)，连接指数函数与三角函数 |
+| 相量（Phasor） | 表示正弦信号的旋转复数 e^(i*omega*t) |
+| 单位根（Roots of Unity） | k 从 0 到 N-1 时的 N 个复数 e^(2*pi*i*k/N)，即单位圆上等距分布的 N 个点 |
+| 离散傅里叶变换（DFT） | 使用单位根，将信号分解为复正弦分量 |
+| 旋转位置嵌入（RoPE） | 使用复数乘法在 Transformer 注意力中编码相对位置 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [Visual Introduction to Euler's Formula](https://betterexplained.com/articles/intuitive-understanding-of-eulers-formula/) - builds geometric intuition without heavy notation
-- [Su et al.: RoFormer (2021)](https://arxiv.org/abs/2104.09864) - the paper introducing Rotary Position Embedding using complex rotations
-- [Vaswani et al.: Attention Is All You Need (2017)](https://arxiv.org/abs/1706.03762) - the original Transformer paper with sinusoidal positional encodings
-- [3Blue1Brown: Euler's formula with introductory group theory](https://www.youtube.com/watch?v=mvmuCPvRoWQ) - visual explanation of why e^(i*pi) = -1
-- [Needham: Visual Complex Analysis](https://global.oup.com/academic/product/visual-complex-analysis-9780198534464) - the best visual treatment of complex numbers, full of geometric insight
-- [Strang: Introduction to Linear Algebra, Ch. 10](https://math.mit.edu/~gs/linearalgebra/) - complex numbers in the context of linear algebra and eigenvalues
+- [欧拉公式的直观介绍（Visual Introduction to Euler's Formula）](https://betterexplained.com/articles/intuitive-understanding-of-eulers-formula/)：无需繁重符号即可建立几何直觉
+- [Su 等：RoFormer（2021）](https://arxiv.org/abs/2104.09864)：提出使用复数旋转的位置嵌入的论文
+- [Vaswani 等：注意力就是你所需要的一切（Attention Is All You Need，2017）](https://arxiv.org/abs/1706.03762)：包含正弦位置编码的原始 Transformer 论文
+- [3Blue1Brown：用入门群论理解欧拉公式（Euler's formula with introductory group theory）](https://www.youtube.com/watch?v=mvmuCPvRoWQ)：直观解释 e^(i*pi) = -1 的原因
+- [Needham：复分析的可视化方法（Visual Complex Analysis）](https://global.oup.com/academic/product/visual-complex-analysis-9780198534464)：复数最出色的可视化讲解，包含丰富几何洞见
+- [Strang：线性代数导论第 10 章（Introduction to Linear Algebra, Ch. 10）](https://math.mit.edu/~gs/linearalgebra/)：在线性代数和特征值背景下介绍复数

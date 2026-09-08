@@ -2,66 +2,66 @@
   {
     "id": "ensemble-pre-1",
     "stage": "pre",
-    "question": "Why does combining multiple weak classifiers into an ensemble improve accuracy?",
+    "question": "为什么将多个弱分类器（Weak Classifiers）组合为集成能提高准确率？",
     "options": [
-      "Weak classifiers are always faster than strong classifiers",
-      "Each weak classifier memorizes a different part of the test set",
-      "Ensembles always use more training data than single models",
-      "If the classifiers make different errors, majority voting cancels out individual mistakes"
+      "弱分类器始终比强分类器更快",
+      "每个弱分类器记忆测试集的不同部分",
+      "集成始终比单个模型使用更多训练数据",
+      "如果分类器犯不同的错误，多数投票就能抵消个体错误"
     ],
     "correct": 3,
-    "explanation": "The key is diversity. If classifiers make independent errors, majority voting means a wrong answer must fool more than half the models. Errors cancel out, and the ensemble accuracy exceeds any individual."
+    "explanation": "关键在于多样性（Diversity）。如果分类器的错误相互独立，多数投票意味着错误答案必须骗过超过一半的模型。错误相互抵消，集成准确率便超过任何单个模型。"
   },
   {
     "id": "ensemble-pre-2",
     "stage": "pre",
-    "question": "What is the main difference between bagging and boosting?",
+    "question": "装袋（Bagging）与提升（Boosting）的主要区别是什么？",
     "options": [
-      "Bagging requires labeled data; boosting works unsupervised",
-      "Bagging trains models in parallel on random subsets; boosting trains models sequentially, focusing on previous errors",
-      "Bagging reduces bias; boosting reduces variance",
-      "Bagging uses deep neural networks; boosting uses decision trees"
+      "装袋需要带标签数据；提升使用无监督方式",
+      "装袋在随机子集上并行训练模型；提升顺序训练模型，重点关注之前的错误",
+      "装袋降低偏差；提升降低方差",
+      "装袋使用深度神经网络；提升使用决策树"
     ],
     "correct": 1,
-    "explanation": "Bagging trains models independently on bootstrap samples (parallel, reduces variance). Boosting trains models sequentially, with each new model focusing on the mistakes of the ensemble so far (reduces bias)."
+    "explanation": "装袋在自助样本上独立训练模型（并行，降低方差）。提升顺序训练模型，每个新模型都关注当前集成的错误（降低偏差）。"
   },
   {
     "id": "ensemble-post-1",
     "stage": "post",
-    "question": "In AdaBoost, what happens to the sample weight of a misclassified training point after each round?",
+    "question": "在 AdaBoost 中，每轮结束后，被误分类训练点的样本权重会怎样变化？",
     "options": [
-      "It increases, so the next weak learner focuses more on this hard example",
-      "It decreases, so the next learner ignores it",
-      "It stays the same",
-      "It is removed from the training set"
+      "权重增大，让下一个弱学习器更关注这个难样本",
+      "权重减小，让下一个学习器忽略它",
+      "保持不变",
+      "该样本被移出训练集"
     ],
     "correct": 0,
-    "explanation": "AdaBoost increases the weights of misclassified samples after each round. This forces the next weak learner to pay more attention to the examples the ensemble currently gets wrong."
+    "explanation": "AdaBoost 在每轮后提高误分类样本的权重，迫使下一个弱学习器更加关注当前集成预测错误的样本。"
   },
   {
     "id": "ensemble-post-2",
     "stage": "post",
-    "question": "A random forest with 100 trees has the same test accuracy as 200 trees. Adding more trees to 500 also shows no improvement. Why?",
+    "question": "含 100 棵树的随机森林与含 200 棵树的测试准确率相同，增加到 500 棵也没有改善。为什么？",
     "options": [
-      "After enough trees, variance reduction plateaus and adding more trees provides diminishing returns without increasing overfitting",
-      "500 trees is the maximum allowed",
-      "The trees are all identical so adding more has no effect",
-      "The random forest is underfitting and needs a different algorithm"
+      "树足够多后，方差降低进入平台期；继续增加树的收益递减，但不会加剧过拟合",
+      "最多只能使用 500 棵树",
+      "所有树完全相同，因此增加树没有效果",
+      "随机森林欠拟合，需要换一种算法"
     ],
     "correct": 0,
-    "explanation": "Random forests do not overfit with more trees (unlike boosting). However, variance reduction plateaus once enough diverse trees have been averaged. More trees just add compute cost without improving accuracy."
+    "explanation": "与提升不同，随机森林不会因为增加树而过拟合。不过，对足够多样化的树求平均之后，方差降低会进入平台期。更多树只会增加计算成本，而不再提高准确率。"
   },
   {
     "id": "ensemble-post-3",
     "stage": "post",
-    "question": "Gradient boosting fits each new tree to what quantity?",
+    "question": "梯度提升（Gradient Boosting）让每棵新树拟合什么量？",
     "options": [
-      "The predictions of the previous tree",
-      "The original target values",
-      "Random subsets of features",
-      "The residuals (errors) of the current ensemble's predictions"
+      "前一棵树的预测",
+      "原始目标值",
+      "随机特征子集",
+      "当前集成预测的残差（误差）"
     ],
     "correct": 3,
-    "explanation": "In gradient boosting, each new tree is trained to predict the residuals (negative gradient of the loss) of the current ensemble. This sequentially reduces the remaining error."
+    "explanation": "在梯度提升中，每棵新树都被训练来预测当前集成的残差（损失的负梯度），从而逐步降低剩余误差。"
   }
 ]

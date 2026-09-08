@@ -1,15 +1,15 @@
-// Phase 14 Lesson 13 — LangGraph-shaped stateful graph, in TypeScript.
+// 第 14 阶段第 13 课——TypeScript 实现的 LangGraph 式有状态图（Stateful graph）。
 //
-// Mirrors code/main.py: State is a plain object, nodes return Update objects,
-// the runtime serializes state after every node so resume picks up exactly
-// where it left off. Human gate pauses; an external approval lets resume()
-// continue from the next node.
+// 对应 code/main.py：State 是普通对象，节点返回 Update 对象，
+// 运行时在每个节点后序列化状态，确保恢复时精确接续
+// 先前的执行位置。人工门禁（Human gate）会暂停执行；外部批准后，resume()
+// 可从下一节点继续。
 //
-// References:
+// 参考资料：
 //   LangGraph (TS)         https://langchain-ai.github.io/langgraphjs/
-//   StateGraph reference   https://langchain-ai.github.io/langgraphjs/reference/classes/langgraph.StateGraph.html
+//   StateGraph 参考资料   https://langchain-ai.github.io/langgraphjs/reference/classes/langgraph.StateGraph.html
 //
-// Run: npx tsx code/main.ts
+// 运行： npx tsx code/main.ts
 
 type State = Record<string, unknown>;
 type Update = Record<string, unknown>;
@@ -106,11 +106,11 @@ class Runner {
     const { sessionId, initialState, resumeFrom, stateOverride } = opts;
     let state: State = structuredClone(stateOverride ?? initialState);
     let current = resumeFrom ?? this.graph.entry;
-    if (!current) throw new Error("no entry node set");
+    if (!current) throw new Error("未设置入口节点");
 
     while (current && current !== END) {
       const fn = this.graph.nodes.get(current);
-      if (!fn) throw new Error(`unknown node ${JSON.stringify(current)}`);
+      if (!fn) throw new Error(`未知节点 ${JSON.stringify(current)}`);
       const update = fn(state) ?? {};
       state = { ...state, ...update };
       this.checkpointer.save(sessionId, current, state);
@@ -151,13 +151,13 @@ function sales(state: State): Update {
 
 function humanGate(state: State): Update {
   if (!state.human_approval) {
-    return { _pause_reason: "awaiting human approval", step: (state.step as number ?? 0) + 1 };
+    return { _pause_reason: "等待人工批准", step: (state.step as number ?? 0) + 1 };
   }
   return { step: (state.step as number ?? 0) + 1 };
 }
 
 function send(state: State): Update {
-  return { output: `sent ${state.ticket as string | undefined}`, step: (state.step as number ?? 0) + 1 };
+  return { output: `已发送 ${state.ticket as string | undefined}`, step: (state.step as number ?? 0) + 1 };
 }
 
 function buildGraph(): StateGraph {
@@ -185,7 +185,7 @@ function buildGraph(): StateGraph {
 
 function main(): void {
   console.log("=".repeat(70));
-  console.log("LANGGRAPH STATE MACHINE — Phase 14, Lesson 13 (TypeScript port)");
+  console.log("LangGraph 状态机（State machine）——第 14 阶段，第 13 课（TypeScript 移植版）");
   console.log("=".repeat(70));
 
   const graph = buildGraph();
@@ -199,30 +199,30 @@ function main(): void {
     human_approval: false,
   };
 
-  console.log("\nfirst run (will pause at human_gate)");
+  console.log("\n首次运行（将在 human_gate 暂停）");
   try {
     const final = runner.run({ sessionId: session, initialState: initial });
-    console.log(`  final: ${JSON.stringify(final)}`);
+    console.log(`  最终结果：${JSON.stringify(final)}`);
   } catch (err) {
     if (err instanceof PausedAtNode) {
-      console.log(`  PAUSED at ${err.node}`);
-      console.log(`  state at pause: ${JSON.stringify(err.state)}`);
+      console.log(`  暂停于 ${err.node}`);
+      console.log(`  暂停时的状态：${JSON.stringify(err.state)}`);
     } else {
       throw err;
     }
   }
 
-  console.log("\ncheckpoint history");
+  console.log("\n检查点（Checkpoint）历史");
   for (const [node, snap] of ckpt.history(session)) {
     console.log(
-      `  ${node}  route=${snap.route as string | undefined}  ` +
-        `ticket=${snap.ticket as string | undefined}  step=${snap.step as number | undefined}`,
+      `  ${node}  路由=${snap.route as string | undefined}  ` +
+        `工单=${snap.ticket as string | undefined}  步骤=${snap.step as number | undefined}`,
     );
   }
 
-  console.log("\nhuman approves; resume from next node after human_gate");
+  console.log("\n人工批准；从 human_gate 后的下一节点恢复");
   const latest = ckpt.loadLatest(session);
-  if (!latest) throw new Error("no checkpoint");
+  if (!latest) throw new Error("没有检查点");
   const [lastNode, lastState] = latest;
   const approved: State = { ...lastState, human_approval: true };
   delete approved._pause_reason;
@@ -234,11 +234,11 @@ function main(): void {
     resumeFrom: "send",
     stateOverride: approved,
   });
-  console.log(`  final: ${JSON.stringify(final)}`);
+  console.log(`  最终结果：${JSON.stringify(final)}`);
 
   console.log();
-  console.log("property: state serializes after every node; resume is exact.");
-  console.log("no fresh re-runs after step 38 fails; pick up at step 39.");
+  console.log("性质：每个节点执行后都序列化状态，确保精确恢复。");
+  console.log("第 38 步失败后无需从头重跑，从第 39 步接续执行。");
 }
 
 main();

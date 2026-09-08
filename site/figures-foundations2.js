@@ -1,10 +1,10 @@
-/* figures-foundations2.js — interactive lesson figures for Phase 4 (computer
-   vision), Phase 6 (speech & audio), and Phase 8 (generative AI). Loads after
-   lesson-figures.js and registers widgets through window.LF. Vanilla ES5, no
-   deps, theme via CSS vars. Authoring is the same fenced block in docs/en.md:
+/* figures-foundations2.js — 阶段 4（计算机视觉（Computer vision））、阶段 6（语音与音频（Speech & audio））
+   及阶段 8（生成式 AI（Generative AI））的交互课程图表。在
+   lesson-figures.js 之后加载，通过 window.LF 注册组件。原生 ES5，
+   无依赖，主题由 CSS 变量控制。编写时仍在 docs/en.md 中使用相同的围栏块：
        ```figure
        data-augmentation
-       ``` */
+       ```  */
 (function () {
   'use strict';
   var LF = window.LF;
@@ -21,7 +21,7 @@
   }
   function tx(s) { return document.createTextNode(s); }
 
-  // ── data-augmentation: one source image, four transformed copies ───────────
+  // ── data-augmentation: 一张源图像，四个变换后的副本 ──
   function dataAugmentation(host) {
     var SRC = [
       [0, 0, 6, 6, 0, 0],
@@ -57,7 +57,7 @@
       while (svg.firstChild) svg.removeChild(svg.firstChild);
       var gap = 16, x0 = 8, y0 = 28;
       var cell = Math.min(18, (520 - 2 * x0 - 30 - (state.copies - 1) * gap) / (N * (state.copies + 1)), (200 - y0 - 8) / N);
-      svg.appendChild(svgEl('text', { x: x0, y: 18, fill: 'var(--ink-mute,#777)', 'font-size': '10', 'font-family': 'monospace' }, [tx('source')]));
+      svg.appendChild(svgEl('text', { x: x0, y: 18, fill: 'var(--ink-mute,#777)', 'font-size': '10', 'font-family': 'monospace' }, [tx('原图（Source）')]));
       var p, r, c;
       for (r = 0; r < N; r++) for (c = 0; c < N; c++) {
         svg.appendChild(svgEl('rect', { x: x0 + c * cell, y: y0 + r * cell, width: cell - 1, height: cell - 1, fill: 'var(--blueprint,#3553ff)', opacity: (0.08 + 0.9 * SRC[r][c] / 9).toFixed(3) }));
@@ -65,26 +65,26 @@
       var bx = x0 + N * cell + 30;
       for (p = 1; p <= state.copies; p++) {
         var px0 = bx + (p - 1) * (N * cell + gap);
-        svg.appendChild(svgEl('text', { x: px0, y: 18, fill: 'var(--warn,#b8870f)', 'font-size': '10', 'font-family': 'monospace' }, [tx('aug ' + p)]));
+        svg.appendChild(svgEl('text', { x: px0, y: 18, fill: 'var(--warn,#b8870f)', 'font-size': '10', 'font-family': 'monospace' }, [tx('增强 ' + p)]));
         for (r = 0; r < N; r++) for (c = 0; c < N; c++) {
           svg.appendChild(svgEl('rect', { x: px0 + c * cell, y: y0 + r * cell, width: cell - 1, height: cell - 1, fill: 'var(--blueprint,#3553ff)', opacity: (0.08 + 0.9 * sample(r, c, p) / 9).toFixed(3) }));
         }
       }
       var base = 1000;
-      meta.textContent = 'each pass yields a fresh view  ·  ' + base + ' images x ' + (state.copies + 1) + ' = ' + fmtInt(base * (state.copies + 1)) + ' effective examples';
-      formula.textContent = 'augment(x) preserves the label while changing the pixels  ·  the model sees more variation, generalizes better';
+      meta.textContent = '每次处理产生新视图 · ' + base + ' 张图像 x ' + (state.copies + 1) + ' = ' + fmtInt(base * (state.copies + 1)) + ' 个有效样本';
+      formula.textContent = 'augment(x) 改变像素但保留标签 · 模型看到更多变化，泛化（Generalization）更好';
     };
     var grid = el('div', { class: 'lf-grid' }, [
-      select(state, 'mode', 'transform', [['horizontal flip', 'flip'], ['rotate 90', 'rotate'], ['random crop', 'crop'], ['color jitter', 'color']]),
-      slider(state, 'copies', 'augmented copies', 1, 4, 1)
+      select(state, 'mode', '变换（Transform）', [['水平翻转（Horizontal Flip）', 'flip'], ['旋转 90°（Rotate）', 'rotate'], ['随机裁剪（Random Crop）', 'crop'], ['颜色抖动（Color Jitter）', 'color']]),
+      slider(state, 'copies', '增强副本数（Augmented Copies）', 1, 4, 1)
     ]);
-    host.appendChild(shell('DATA AUGMENTATION', 'pick a transform',
+    host.appendChild(shell('数据增强（Data Augmentation）', '选择变换',
       grid, [svg, meta, formula],
-      'Augmentation applies label-preserving transforms — flips, rotations, crops, color shifts — to each training image, so one labelled example becomes many. The network never sees the exact same input twice and learns features that survive these changes, which expands the effective dataset and curbs overfitting without collecting more data.'));
+      '数据增强（Data Augmentation）对每张训练图像应用保留标签的变换，包括翻转、旋转、裁剪和颜色变化，让一个标注样本变成多个。网络不会两次看到完全相同的输入，而是学习在这些变化下仍成立的特征，从而扩大有效数据集，并在不收集更多数据的情况下抑制过拟合（Overfitting）。'));
     state._render();
   }
 
-  // ── transfer-learning: freeze a pretrained backbone, train the head ────────
+  // ── transfer-learning: 冻结预训练骨干（Pretrained backbone），训练头部（Head） ──
   function transferLearning(host) {
     var TOTAL = 24, FULL = 24e6;
     var state = { frozen: 18 };
@@ -102,23 +102,23 @@
         var isFrozen = i < frozen;
         svg.appendChild(svgEl('rect', { x: x0 + i * bw, y: y0, width: bw - 1.5, height: bh, fill: isFrozen ? 'var(--rule-soft,#ddd)' : 'var(--blueprint,#3553ff)', opacity: isFrozen ? '0.9' : '0.85' }));
       }
-      svg.appendChild(svgEl('text', { x: x0, y: y0 - 10, fill: 'var(--ink-mute,#777)', 'font-size': '11', 'font-family': 'monospace' }, [tx('input →  ' + frozen + ' frozen (grey)  ·  ' + trainable + ' trainable (blue)  → head')]));
+      svg.appendChild(svgEl('text', { x: x0, y: y0 - 10, fill: 'var(--ink-mute,#777)', 'font-size': '11', 'font-family': 'monospace' }, [tx('输入（Input）→ ' + frozen + ' 层冻结（灰色）· ' + trainable + ' 层可训练（蓝色）→ 任务头（Head）')]));
       var fracTrain = trainable / TOTAL;
       var trainableParams = FULL * fracTrain;
       var epochs = Math.max(2, Math.round(2 + 22 * fracTrain));
-      svg.appendChild(svgEl('text', { x: x0, y: y0 + bh + 22, fill: 'var(--ink-mute,#777)', 'font-size': '11', 'font-family': 'monospace' }, [tx('gradients flow only through the blue layers')]));
-      num.innerHTML = human(trainableParams) + ' <small>trainable params</small>';
-      meta.textContent = Math.round(fracTrain * 100) + '% of the backbone trains  ·  about ' + epochs + ' epochs to converge on a small dataset';
-      formula.textContent = 'frozen layers keep pretrained weights, contribute no gradients  ·  fewer trainable params → less data and compute needed';
+      svg.appendChild(svgEl('text', { x: x0, y: y0 + bh + 22, fill: 'var(--ink-mute,#777)', 'font-size': '11', 'font-family': 'monospace' }, [tx('梯度（Gradient）仅流经蓝色层')]));
+      num.innerHTML = human(trainableParams) + ' <small>可训练参数（Trainable Params）</small>';
+      meta.textContent = Math.round(fracTrain * 100) + '% 的骨干网络（Backbone）参与训练 · 小数据集上约需 ' + epochs + ' 轮（Epoch）收敛';
+      formula.textContent = '冻结层保留预训练权重，不贡献梯度 · 可训练参数越少 → 所需数据与计算量越少';
     };
-    var grid = el('div', {}, [slider(state, 'frozen', 'layers frozen', 0, TOTAL, 1)]);
-    host.appendChild(shell('TRANSFER LEARNING', 'drag the freeze line',
+    var grid = el('div', {}, [slider(state, 'frozen', '冻结层数（Frozen Layers）', 0, TOTAL, 1)]);
+    host.appendChild(shell('迁移学习（Transfer Learning）', '调整冻结边界',
       grid, [svg, num, meta, formula],
-      'A pretrained backbone already knows generic features — edges, textures, shapes. Transfer learning freezes those lower layers and trains only the top few plus a new head on the target task. Fewer trainable parameters means fewer gradients to store, far less data to fit, and faster convergence; freeze more when your dataset is tiny, fewer when it is large and different.'));
+      '预训练骨干网络（Pretrained Backbone）已经掌握边缘、纹理和形状等通用特征。迁移学习（Transfer Learning）冻结这些底层，只针对目标任务训练顶部少数层和新的任务头（Head）。可训练参数越少，需要存储的梯度越少，拟合所需数据越少，收敛也越快；数据集很小时多冻结一些，数据量大且与原任务差异较大时少冻结一些。'));
     state._render();
   }
 
-  // ── batchnorm-inference: batch stats in training vs running averages ───────
+  // ── batchnorm-inference: 训练时的批次统计（Batch stats）与运行平均值（Running averages）对比 ──
   function batchnormInference(host) {
     var POP_MEAN = 0.0, POP_STD = 1.0;
     var state = { batch: 8, seed: 3 };
@@ -138,26 +138,26 @@
       svg.appendChild(svgEl('line', { x1: PAD, y1: 70, x2: W - PAD, y2: 70, stroke: 'var(--rule-soft,#eee)', 'stroke-width': '1' }));
       for (i = 0; i < n; i++) { svg.appendChild(svgEl('circle', { cx: px(xs[i]), cy: 70, r: '4', fill: 'var(--blueprint,#3553ff)', opacity: '0.8' })); }
       svg.appendChild(svgEl('line', { x1: px(bMean), y1: 50, x2: px(bMean), y2: 90, stroke: 'var(--warn,#b8870f)', 'stroke-width': '2' }));
-      svg.appendChild(svgEl('text', { x: PAD, y: 44, fill: 'var(--warn,#b8870f)', 'font-size': '11', 'font-family': 'monospace' }, [tx('training: this batch  μ=' + bMean.toFixed(2) + '  σ=' + bStd.toFixed(2))]));
+      svg.appendChild(svgEl('text', { x: PAD, y: 44, fill: 'var(--warn,#b8870f)', 'font-size': '11', 'font-family': 'monospace' }, [tx('训练（Training）：当前批次 μ=' + bMean.toFixed(2) + '  σ=' + bStd.toFixed(2))]));
       svg.appendChild(svgEl('line', { x1: PAD, y1: 150, x2: W - PAD, y2: 150, stroke: 'var(--rule-soft,#eee)', 'stroke-width': '1' }));
       svg.appendChild(svgEl('line', { x1: px(POP_MEAN), y1: 130, x2: px(POP_MEAN), y2: 170, stroke: 'var(--blueprint,#3553ff)', 'stroke-width': '2' }));
-      svg.appendChild(svgEl('text', { x: PAD, y: 124, fill: 'var(--ink-mute,#777)', 'font-size': '11', 'font-family': 'monospace' }, [tx('inference: running avg  μ=' + POP_MEAN.toFixed(2) + '  σ=' + POP_STD.toFixed(2))]));
+      svg.appendChild(svgEl('text', { x: PAD, y: 124, fill: 'var(--ink-mute,#777)', 'font-size': '11', 'font-family': 'monospace' }, [tx('推理（Inference）：滑动平均 μ=' + POP_MEAN.toFixed(2) + '  σ=' + POP_STD.toFixed(2))]));
       var err = Math.abs(bMean - POP_MEAN) + Math.abs(bStd - POP_STD);
-      num.innerHTML = err.toFixed(3) + ' <small>batch-vs-population gap</small>';
-      meta.textContent = n + ' samples per batch  ·  ' + (n <= 4 ? 'small batch: noisy estimates, unstable normalization' : n >= 32 ? 'large batch: stable estimates close to the population' : 'moderate batch: usable estimates');
-      formula.textContent = 'train: normalize by THIS batch μ,σ  ·  eval: normalize by running averages collected during training';
+      num.innerHTML = err.toFixed(3) + ' <small>批次与总体的差距（Batch vs Population）</small>';
+      meta.textContent = n + ' 个样本/批次 · ' + (n <= 4 ? '小批次：估计噪声较大，归一化不稳定' : n >= 32 ? '大批次：估计稳定，接近总体' : '中等批次：估计可用');
+      formula.textContent = '训练：用当前批次的 μ、σ 归一化 · 评估：用训练时积累的滑动平均值（Running Average）归一化';
     };
     var grid = el('div', { class: 'lf-grid' }, [
-      slider(state, 'batch', 'batch size', 1, 64, 1),
-      slider(state, 'seed', 'resample batch', 1, 20, 1)
+      slider(state, 'batch', '批次大小（Batch Size）', 1, 64, 1),
+      slider(state, 'seed', '重新采样批次（Resample）', 1, 20, 1)
     ]);
-    host.appendChild(shell('BATCHNORM: TRAIN vs EVAL', 'drag the batch size',
+    host.appendChild(shell('批归一化：训练与评估（BatchNorm）', '调整批次大小',
       grid, [svg, num, meta, formula],
-      'During training BatchNorm normalizes each activation by the mean and variance of the current mini-batch (orange), and quietly accumulates a running average. At inference it switches to those frozen running averages (blue) so a single input is processed deterministically. Small batches make the per-batch statistics noisy, which is why tiny batches hurt BatchNorm and motivate Group or Layer Norm.'));
+      '训练时，批归一化（BatchNorm）用当前小批次（Mini-batch）的均值和方差归一化各激活值（橙色），同时累积滑动平均值（Running Average）。推理（Inference）时改用固定的滑动平均值（蓝色），让单个输入得到确定性的处理结果。小批次会让批次统计量噪声增大，因此过小的批次不利于 BatchNorm，也推动了组归一化（Group Norm）和层归一化（Layer Norm）的使用。'));
     state._render();
   }
 
-  // ── ctc-collapse: per-frame chars collapse to a transcript ─────────────────
+  // ── ctc-collapse: 逐帧字符折叠为转写文本（Transcript） ──
   function ctcCollapse(host) {
     var FRAMES = ['_', 'h', 'h', 'e', '_', 'l', 'l', '_', 'l', 'l', 'o', 'o', '_'];
     var state = { stage: 2 };
@@ -180,8 +180,8 @@
       else if (state.stage === 1) { shown = collapseRepeats(FRAMES); }
       else { shown = removeBlanks(collapseRepeats(FRAMES)); }
       var x0 = 20, y0 = 50, cw = 36, i;
-      var stageLabel = state.stage === 0 ? 'raw per-frame argmax (' + FRAMES.length + ' frames)'
-        : state.stage === 1 ? 'merge adjacent repeats' : 'drop blank token "_"';
+      var stageLabel = state.stage === 0 ? '原始逐帧 argmax（' + FRAMES.length + ' 帧）'
+        : state.stage === 1 ? '合并相邻重复符号' : '删除空白词元（Blank Token）"_"';
       svg.appendChild(svgEl('text', { x: x0, y: 30, fill: 'var(--ink-mute,#777)', 'font-size': '11', 'font-family': 'monospace' }, [tx(stageLabel)]));
       for (i = 0; i < shown.length; i++) {
         var blank = shown[i] === '_';
@@ -189,20 +189,20 @@
         svg.appendChild(svgEl('text', { x: x0 + i * cw + (cw - 4) / 2, y: y0 + 24, fill: 'var(--bg,#fafaf5)', 'font-size': '16', 'font-family': 'monospace', 'text-anchor': 'middle' }, [tx(blank ? '∅' : shown[i])]));
       }
       var transcript = removeBlanks(collapseRepeats(FRAMES)).join('');
-      svg.appendChild(svgEl('text', { x: x0, y: y0 + 70, fill: 'var(--warn,#b8870f)', 'font-size': '13', 'font-family': 'monospace' }, [tx('final transcript: "' + transcript + '"')]));
-      num.innerHTML = shown.length + ' <small>symbols at this stage</small>';
-      meta.textContent = state.stage === 0 ? 'the acoustic model emits one symbol per audio frame, with repeats and blanks'
-        : state.stage === 1 ? 'repeated runs of the same symbol become one' : 'blanks are removed, leaving the text';
-      formula.textContent = 'CTC decode: collapse repeats first, THEN remove blanks  ·  the blank lets the model separate true double letters';
+      svg.appendChild(svgEl('text', { x: x0, y: y0 + 70, fill: 'var(--warn,#b8870f)', 'font-size': '13', 'font-family': 'monospace' }, [tx('最终转写（Transcript）："' + transcript + '"')]));
+      num.innerHTML = shown.length + ' <small>个当前阶段符号（Symbols）</small>';
+      meta.textContent = state.stage === 0 ? '声学模型（Acoustic Model）每个音频帧输出一个符号，包含重复与空白'
+        : state.stage === 1 ? '连续重复的相同符号合为一个' : '删除空白，只留下文本';
+      formula.textContent = 'CTC 解码（Decode）：先合并重复，再删除空白 · 空白让模型区分真正的重复字母';
     };
-    var grid = el('div', {}, [slider(state, 'stage', 'decode stage (0 raw → 1 merge → 2 final)', 0, 2, 1)]);
-    host.appendChild(shell('CTC COLLAPSE', 'step through decoding',
+    var grid = el('div', {}, [slider(state, 'stage', '解码阶段（Decode）：0 原始 → 1 合并 → 2 最终', 0, 2, 1)]);
+    host.appendChild(shell('CTC 折叠（CTC Collapse）', '逐步查看解码',
       grid, [svg, num, meta, formula],
-      'CTC lets an acoustic model emit one label per frame without knowing the alignment. Decoding runs two steps in order: first collapse any run of identical symbols into one, then delete the blank token. The blank is essential — it sits between two real "l" frames so that "hello" keeps both letters instead of merging them into one.'));
+      '连接时序分类（Connectionist Temporal Classification，CTC）让声学模型在不知道对齐关系（Alignment）的情况下，为每一帧输出一个标签。解码依次执行两步：先将连续相同符号合为一个，再删除空白词元（Blank Token）。空白不可缺少：它位于两个真正的 "l" 帧之间，使 "hello" 保留两个字母，而不会将它们合成一个。'));
     state._render();
   }
 
-  // ── mfcc-pipeline: spectrogram → mel → log → DCT → keep N coeffs ────────────
+  // ── mfcc-pipeline: 频谱图（Spectrogram）→ mel → log → DCT → 保留 N 个系数 ──
   function mfccPipeline(host) {
     var state = { keep: 13 };
     var MELS = 40;
@@ -213,7 +213,7 @@
 
     state._render = function () {
       while (svg.firstChild) svg.removeChild(svg.firstChild);
-      var stages = ['spectrogram', 'mel filterbank', 'log', 'DCT', 'MFCC'];
+      var stages = ['频谱图', '梅尔滤波器组', 'log', 'DCT', 'MFCC'];
       var x0 = 16, y0 = 30, sw = 96, gap = 4, i;
       for (i = 0; i < stages.length; i++) {
         var sx = x0 + i * (sw + gap);
@@ -229,19 +229,19 @@
         var energy = Math.exp(-i * 0.12);
         svg.appendChild(svgEl('rect', { x: bx + i * bw, y: by, width: bw - 0.8, height: 36, fill: kept ? 'var(--blueprint,#3553ff)' : 'var(--rule-soft,#ddd)', opacity: kept ? (0.3 + 0.7 * energy).toFixed(3) : '0.5' }));
       }
-      svg.appendChild(svgEl('text', { x: bx, y: by - 6, fill: 'var(--ink-mute,#777)', 'font-size': '10', 'font-family': 'monospace' }, [tx('cepstral coefficients: blue kept, grey discarded (' + MELS + ' total)')]));
-      num.innerHTML = state.keep + ' <small>MFCC coefficients kept</small>';
-      meta.textContent = 'keeping the first ' + state.keep + ' of ' + MELS + ' coefficients  ·  ' + (state.keep <= 8 ? 'coarse: smooth spectral envelope only' : state.keep >= 26 ? 'fine: includes pitch-like detail and noise' : 'typical for speech (12-13)');
-      formula.textContent = 'STFT power → mel filterbank → log → DCT → keep low coefficients  ·  the DCT compacts the envelope into the first few';
+      svg.appendChild(svgEl('text', { x: bx, y: by - 6, fill: 'var(--ink-mute,#777)', 'font-size': '10', 'font-family': 'monospace' }, [tx('倒谱系数（Cepstral Coefficient）：蓝色保留，灰色丢弃（共 ' + MELS + ' 个）')]));
+      num.innerHTML = state.keep + ' <small>个保留的 MFCC 系数（Coefficients）</small>';
+      meta.textContent = '保留前 ' + state.keep + ' / ' + MELS + ' 个系数 · ' + (state.keep <= 8 ? '粗略：仅保留平滑频谱包络' : state.keep >= 26 ? '精细：包含类似音高的细节与噪声' : '语音常用范围（12–13）');
+      formula.textContent = 'STFT 功率 → 梅尔滤波器组 → log → DCT → 保留低阶系数 · DCT 将包络压缩到前几个系数';
     };
-    var grid = el('div', {}, [slider(state, 'keep', 'cepstral coefficients kept', 4, 40, 1)]);
-    host.appendChild(shell('MFCC PIPELINE', 'drag the coefficient count',
+    var grid = el('div', {}, [slider(state, 'keep', '保留的倒谱系数（Cepstral Coefficients）', 4, 40, 1)]);
+    host.appendChild(shell('梅尔频率倒谱系数流水线（MFCC Pipeline）', '调整系数数量',
       grid, [svg, num, meta, formula],
-      'MFCCs run a fixed pipeline: take the spectrogram, warp it onto mel-spaced filters, take the log to mimic loudness perception, then apply a DCT. The DCT packs the smooth spectral envelope into the first few coefficients, so keeping only the lowest 12-13 captures the vocal-tract shape that distinguishes phonemes while discarding pitch and noise in the higher coefficients.'));
+      '梅尔频率倒谱系数（Mel-frequency Cepstral Coefficients，MFCC）采用固定流水线：先取频谱图（Spectrogram），映射到按梅尔尺度（Mel Scale）排列的滤波器，再取对数来模拟响度感知，最后应用离散余弦变换（Discrete Cosine Transform，DCT）。DCT 将平滑频谱包络（Spectral Envelope）集中到前几个系数中，因此只保留最低的 12–13 个，就能捕捉区分音素（Phoneme）的声道形状，同时丢弃高阶系数中的音高与噪声。'));
     state._render();
   }
 
-  // ── autoencoder-bottleneck: reconstruction quality vs latent dim ───────────
+  // ── autoencoder-bottleneck: 重建质量（Reconstruction quality）与潜在维度（Latent dim）的关系 ──
   function autoencoderBottleneck(host) {
     var DIN = 16;
     var SIGNAL = [];
@@ -278,23 +278,23 @@
       for (i = 0; i < DIN; i++) { od += (i ? 'L' : 'M') + px(i).toFixed(1) + ' ' + py(SIGNAL[i]).toFixed(1) + ' '; rd += (i ? 'L' : 'M') + px(i).toFixed(1) + ' ' + py(rec[i]).toFixed(1) + ' '; }
       svg.appendChild(svgEl('path', { d: od, fill: 'none', stroke: 'var(--ink-mute,#999)', 'stroke-width': '2' }));
       svg.appendChild(svgEl('path', { d: rd, fill: 'none', stroke: 'var(--blueprint,#3553ff)', 'stroke-width': '2', 'stroke-dasharray': '5 3' }));
-      svg.appendChild(svgEl('text', { x: x0, y: y0 + gh + 22, fill: 'var(--ink-mute,#777)', 'font-size': '11', 'font-family': 'monospace' }, [tx('grey = input (' + DIN + ' dims)   ·   blue dashed = reconstruction from ' + state.latent + '-dim bottleneck')]));
+      svg.appendChild(svgEl('text', { x: x0, y: y0 + gh + 22, fill: 'var(--ink-mute,#777)', 'font-size': '11', 'font-family': 'monospace' }, [tx('灰色 = 输入（' + DIN + ' 维）· 蓝色虚线 = 重建结果，来自 ' + state.latent + ' 维瓶颈（Bottleneck）')]));
       var mse = 0;
       for (i = 0; i < DIN; i++) { mse += (rec[i] - SIGNAL[i]) * (rec[i] - SIGNAL[i]); }
       mse /= DIN;
       var ratio = DIN / state.latent;
-      num.innerHTML = mse.toFixed(4) + ' <small>reconstruction MSE</small>';
-      meta.textContent = ratio.toFixed(1) + 'x compression (' + DIN + ' → ' + state.latent + ')  ·  ' + (state.latent <= 2 ? 'bottleneck too small: detail is lost' : state.latent >= DIN - 1 ? 'wide bottleneck: near-perfect but no compression' : 'compresses while keeping the main structure');
-      formula.textContent = 'x → encoder → z (' + state.latent + ' dims) → decoder → x̂  ·  the bottleneck forces the network to keep only what matters';
+      num.innerHTML = mse.toFixed(4) + ' <small>重建均方误差（Reconstruction MSE）</small>';
+      meta.textContent = ratio.toFixed(1) + ' 倍压缩（Compression，' + DIN + ' → ' + state.latent + ')  ·  ' + (state.latent <= 2 ? '瓶颈过窄：细节丢失' : state.latent >= DIN - 1 ? '瓶颈较宽：几乎完美，但没有压缩' : '压缩的同时保留主要结构');
+      formula.textContent = 'x → 编码器（Encoder）→ z（' + state.latent + ' 维）→ 解码器（Decoder）→ x̂ · 瓶颈迫使网络只保留重要信息';
     };
-    var grid = el('div', {}, [slider(state, 'latent', 'bottleneck dimension', 1, DIN, 1)]);
-    host.appendChild(shell('AUTOENCODER BOTTLENECK', 'drag the latent dim',
+    var grid = el('div', {}, [slider(state, 'latent', '瓶颈维度（Bottleneck Dimension）', 1, DIN, 1)]);
+    host.appendChild(shell('自编码器瓶颈（Autoencoder Bottleneck）', '调整潜在维度（Latent Dimension）',
       grid, [svg, num, meta, formula],
-      'An autoencoder squeezes its input through a narrow bottleneck and rebuilds it on the far side. A wide bottleneck copies everything but learns nothing; a tiny one forces the network to discard detail and keep only the dominant structure, so reconstruction error rises as compression increases. The sweet spot keeps the signal while throwing away the noise — that learned code is the useful representation.'));
+      '自编码器（Autoencoder）将输入压入狭窄瓶颈，再在另一端重建。宽瓶颈可以复制一切，却学不到东西；极窄的瓶颈迫使网络丢弃细节，只保留主要结构，因此压缩程度越高，重建误差（Reconstruction Error）越大。合适的宽度会保留信号、丢弃噪声，学到的编码（Code）就是有用的表示（Representation）。'));
     state._render();
   }
 
-  // ── normalizing-flow: invertible map, base → target, log-det Jacobian ──────
+  // ── normalizing-flow: 可逆映射（Invertible map），基础分布 → 目标分布，雅可比行列式对数（Log-det Jacobian） ──
   function normalizingFlow(host) {
     var state = { a: 1.4 };
     var W = 520, H = 210, PAD = 34;
@@ -326,20 +326,20 @@
       for (i = 0; i < pts.length; i++) { bd += (i ? 'L' : 'M') + px(pts[i].z).toFixed(1) + ' ' + py(pts[i].pz).toFixed(1) + ' '; td += (i ? 'L' : 'M') + px(pts[i].x).toFixed(1) + ' ' + py(pts[i].px).toFixed(1) + ' '; }
       svg.appendChild(svgEl('path', { d: bd, fill: 'none', stroke: 'var(--ink-mute,#999)', 'stroke-width': '2' }));
       svg.appendChild(svgEl('path', { d: td, fill: 'none', stroke: 'var(--blueprint,#3553ff)', 'stroke-width': '2.2' }));
-      svg.appendChild(svgEl('text', { x: PAD, y: PAD - 6, fill: 'var(--ink-mute,#777)', 'font-size': '11', 'font-family': 'monospace' }, [tx('grey = base Gaussian p(z)   ·   blue = pushed-forward density p(x)')]));
+      svg.appendChild(svgEl('text', { x: PAD, y: PAD - 6, fill: 'var(--ink-mute,#777)', 'font-size': '11', 'font-family': 'monospace' }, [tx('灰色 = 基础高斯分布 p(z) · 蓝色 = 推前密度（Pushforward）p(x)')]));
       var logdetAt0 = Math.log(Math.abs(dfwd(0, a)));
-      num.innerHTML = logdetAt0.toFixed(3) + ' <small>log|det J| at z=0</small>';
-      meta.textContent = 'flow strength a = ' + a.toFixed(2) + '  ·  ' + (a < 0.3 ? 'near identity: target stays close to the base' : a > 1.8 ? 'strong warp: density piles up where the map compresses' : 'moderate warp into a multi-modal shape');
-      formula.textContent = 'x = z + a·tanh(z)  invertible  ·  p(x) = p(z) / |dx/dz|  ·  log p(x) = log p(z) − log|det J|';
+      num.innerHTML = logdetAt0.toFixed(3) + ' <small>z=0 处的 log|det J|</small>';
+      meta.textContent = '流变换强度（Flow Strength）a = ' + a.toFixed(2) + '  ·  ' + (a < 0.3 ? '接近恒等映射：目标接近基础分布' : a > 1.8 ? '强变形：映射压缩的位置密度增大' : '中等变形，形成多峰形状（Multimodal）');
+      formula.textContent = 'x = z + a·tanh(z)，可逆（Invertible）· p(x) = p(z) / |dx/dz| · log p(x) = log p(z) − log|det J|';
     };
-    var grid = el('div', {}, [slider(state, 'a', 'flow strength a', 0, 2.5, 0.05)]);
-    host.appendChild(shell('NORMALIZING FLOW', 'drag the flow parameter',
+    var grid = el('div', {}, [slider(state, 'a', '流变换强度（Flow Strength）a', 0, 2.5, 0.05)]);
+    host.appendChild(shell('归一化流（Normalizing Flow）', '调整流参数',
       grid, [svg, num, meta, formula],
-      'A normalizing flow maps a simple base density (grey Gaussian) through an invertible function to a complex target (blue). Because the map is invertible, the change-of-variables formula gives the exact density: divide by the absolute Jacobian determinant, or in logs, subtract log|det J|. Where the map stretches space the density thins; where it compresses, the density piles up — and because everything is exact, the flow can be trained by maximum likelihood.'));
+      '归一化流（Normalizing Flow）通过可逆函数（Invertible Function），将简单基础密度（灰色高斯分布）映射为复杂目标密度（蓝色）。由于映射可逆，变量替换公式（Change-of-variables Formula）给出精确密度：除以雅可比行列式（Jacobian Determinant）的绝对值，或在对数域减去 log|det J|。映射拉伸空间的位置，密度降低；压缩的位置，密度升高。计算完全精确，因此可用最大似然（Maximum Likelihood）训练归一化流。'));
     state._render();
   }
 
-  // ── score-matching: score vector field and Langevin sampling steps ─────────
+  // ── score-matching: 得分向量场（Score vector field）与朗之万采样（Langevin sampling）步骤 ──
   function scoreMatching(host) {
     var state = { steps: 18, step: 0.06 };
     var W = 520, H = 240, PAD = 24;
@@ -380,17 +380,17 @@
       svg.appendChild(svgEl('path', { d: path, fill: 'none', stroke: 'var(--blueprint,#3553ff)', 'stroke-width': '1.6', 'stroke-dasharray': '4 3' }));
       svg.appendChild(svgEl('circle', { cx: gx(px), cy: gy(py), r: '5', fill: 'var(--warn,#b8870f)' }));
       var finalDens = dens(px, py);
-      num.innerHTML = finalDens.toFixed(3) + ' <small>density at the sample</small>';
-      meta.textContent = state.steps + ' Langevin steps  ·  the sample climbs the grey arrows into a high-density mode';
-      formula.textContent = 'score s(x) = ∇ₓ log p(x)  ·  Langevin: x ← x + ε·s(x) (+ noise)  ·  arrows point toward where data is dense';
+      num.innerHTML = finalDens.toFixed(3) + ' <small>样本处密度（Density）</small>';
+      meta.textContent = state.steps + ' 步朗之万迭代（Langevin）· 样本沿灰色箭头上升，进入高密度峰';
+      formula.textContent = '得分（Score）s(x) = ∇ₓ log p(x) · Langevin：x ← x + ε·s(x)（+ 噪声）· 箭头指向数据密集处';
     };
     var grid = el('div', { class: 'lf-grid' }, [
-      slider(state, 'steps', 'Langevin steps', 0, 40, 1),
-      slider(state, 'step', 'step size ε', 0.01, 0.2, 0.01)
+      slider(state, 'steps', '朗之万步数（Langevin Steps）', 0, 40, 1),
+      slider(state, 'step', '步长（Step Size）ε', 0.01, 0.2, 0.01)
     ]);
-    host.appendChild(shell('SCORE MATCHING', 'drag the steps',
+    host.appendChild(shell('得分匹配（Score Matching）', '调整步数',
       grid, [svg, num, meta, formula],
-      'A score-based model learns the score — the gradient of the log-density — shown here as the grey vector field pointing toward where data is dense. Generation needs no explicit density: start from noise and repeatedly step along the score (Langevin dynamics, with a little added noise each step). The orange sample follows the arrows out of the empty regions and settles into a high-density mode, which is exactly how diffusion models draw samples.'));
+      '基于得分的模型（Score-based Model）学习得分（Score），即对数密度的梯度；图中用指向数据密集处的灰色向量场（Vector Field）表示。生成不需要显式密度：从噪声出发，反复沿得分方向迈步，即朗之万动力学（Langevin Dynamics），每步还加入少量噪声。橙色样本沿箭头离开稀疏区域，最终落入高密度峰；扩散模型（Diffusion Model）正是这样采样的。'));
     state._render();
   }
 

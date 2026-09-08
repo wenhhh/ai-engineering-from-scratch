@@ -1,78 +1,78 @@
 {
   "lesson": "81-end-to-end-distributed-train",
-  "title": "End-to-End Distributed Training",
+  "title": "端到端分布式训练（End-to-End Distributed Training）",
   "questions": [
     {
       "stage": "pre",
-      "question": "Why does a capstone matter when each lesson already had its own tests?",
+      "question": "每课已有测试，综合实践为何仍重要？",
       "options": [
-        "Composition is a separate property: pieces can pass unit tests but the integration deadlocks, the loss diverges, or the memory grows when they run together",
-        "Cosmetic",
-        "Slower",
-        "Easier to grade"
+        "组合是独立属性：各部分单测通过，一起运行仍可能死锁、损失发散或内存增长",
+        "装饰作用",
+        "更慢",
+        "更易评分"
       ],
       "correct": 0,
-      "explanation": "End-to-end tests catch wiring bugs that no piece tests in isolation: rendezvous, barrier order, gather contracts."
+      "explanation": "端到端测试捕捉独立测试无法覆盖的连接错误：会合、屏障顺序、汇集契约。"
     },
     {
       "stage": "pre",
-      "question": "What four invariants does the demo verify?",
+      "question": "演示验证哪四个不变量？",
       "options": [
-        "Speed",
-        "Tokens per second",
-        "Hardware",
-        "(a) loss runs to step 20 without NaN, (b) every rank's parameter norm agrees, (c) per-rank optimiser memory equals the ZeRO-1 formula, (d) the step-10 checkpoint reloads byte-equal"
+        "速度",
+        "每秒词元数",
+        "硬件",
+        "(a) 损失运行到第 20 步无 NaN，(b) 各 rank 参数范数一致，(c) 逐 rank 优化器内存符合 ZeRO-1 公式，(d) 第 10 步检查点重载后逐字节相同"
       ],
       "correct": 3,
-      "explanation": "Each invariant catches a different composition bug: NaN catches divergence, norm-agree catches sync drift, memory catches sharding bugs, checkpoint catches write atomicity."
+      "explanation": "各不变量捕捉不同组合错误：NaN 捕捉发散，范数一致捕捉同步漂移，内存捕捉分片错误，检查点捕捉写入原子性。"
     },
     {
       "stage": "check",
-      "question": "Why is the model a tiny GPT instead of an MLP?",
+      "question": "为什么模型用微型 GPT 而非 MLP？",
       "options": [
-        "Required",
-        "Look fancy",
-        "GPT adds LayerNorm running statistics, embedding gradient shape, and softmax+cross-entropy edge cases that an MLP would hide",
-        "Faster"
+        "要求如此",
+        "显得高级",
+        "GPT 增加 LayerNorm 运行统计、嵌入梯度形状、softmax+交叉熵边界，这些会被 MLP 掩盖",
+        "更快"
       ],
       "correct": 2,
-      "explanation": "MLP gradient sync was verified in lesson 77; the capstone needs a model with more edge cases to prove composition under realistic ops."
+      "explanation": "MLP 梯度同步已在第 77 课验证；综合实践需要更多边界模型，证明真实操作下的组合。"
     },
     {
       "stage": "check",
-      "question": "What does self-terminating mean in this context?",
+      "question": "此处自行结束意味着什么？",
       "options": [
-        "Process kills itself",
-        "Fixed step count (20), exit 0 on completion, no human in the loop; if any piece deadlocks the demo never returns and CI catches it",
-        "Crash recovery",
-        "Manual"
+        "进程自杀",
+        "固定 20 步、完成退出 0、无人在回路；任一部分死锁则演示不返回，由 CI 捕捉",
+        "崩溃恢复",
+        "手动"
       ],
       "correct": 1,
-      "explanation": "A bounded run with exit 0 lets the test rig assert termination; while-True loops mask deadlocks."
+      "explanation": "退出 0 的有界运行允许测试装置断言终止；while-True 循环会掩盖死锁。"
     },
     {
       "stage": "check",
-      "question": "How does the demo combine DDP and ZeRO?",
+      "question": "演示如何结合 DDP 与 ZeRO？",
       "options": [
-        "ZeRO only",
-        "Both at once",
-        "DDP-style broadcast at init for parameter sync, ZeRO-1's reduce_scatter+allgather replaces optimiser.step; DDP gradient allreduce is subsumed into ZeRO's reduce_scatter",
-        "DDP only"
+        "只有 ZeRO",
+        "两者同时",
+        "初始化用 DDP 风格广播同步参数，ZeRO-1 的 reduce_scatter+allgather 替代 optimiser.step；DDP 梯度 allreduce 被 ZeRO reduce_scatter 吸收",
+        "只有 DDP"
       ],
       "correct": 2,
-      "explanation": "ZeRO-1 owns the gradient sync via reduce_scatter, so DDP's separate allreduce is not needed; the broadcast at init is the only DDP-specific call that survives."
+      "explanation": "ZeRO-1 用 reduce_scatter 负责梯度同步，无需 DDP 独立 allreduce；唯一保留的 DDP 专属调用是初始化广播。"
     },
     {
       "stage": "post",
-      "question": "Why does production use wall-clock checkpoint cadence instead of step count?",
+      "question": "生产为何按实际时间而非步数保存检查点？",
       "options": [
-        "Looks cleaner",
-        "Faster",
-        "Required by NCCL",
-        "Step time varies with sequence length and microbatch count; a 10-minute cadence catches the same compute regardless of model size"
+        "看起来更整洁",
+        "更快",
+        "NCCL 要求",
+        "步时随序列长度和微批次数变化；10 分钟周期不论模型大小都覆盖相同计算时间"
       ],
       "correct": 3,
-      "explanation": "The lesson uses step-based for clarity; production runs typically save every 5-15 minutes of wall-clock."
+      "explanation": "本课为清晰按步，生产通常每 5–15 分钟实际时间保存。"
     }
   ]
 }

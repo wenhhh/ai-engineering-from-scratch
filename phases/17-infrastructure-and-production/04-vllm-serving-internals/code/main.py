@@ -1,14 +1,13 @@
-"""Toy continuous-batching scheduler — stdlib Python.
+"""简化的连续批处理（Continuous Batching）调度器，仅使用 Python 标准库。
 
-Simulates four serving modes on the same workload:
-  NAIVE            : one request at a time, no batching
-  STATIC           : pad to batch boundary, wait for slowest
-  CONTINUOUS       : iteration-level admit/release
-  CONTINUOUS+CHUNK : continuous + chunked prefill (512-token slices)
+在同一组工作负载下模拟四种推理服务模式：
+  NAIVE            ：逐个处理请求，不组批
+  STATIC           ：填充至批次边界，等待最慢的请求完成
+  CONTINUOUS       ：每次迭代都可接纳新请求、释放已完成请求
+  CONTINUOUS+CHUNK ：连续批处理加分块预填充（Chunked Prefill），每块 512 个词元
 
-Reports throughput (tok / virt-sec), mean TTFT, and P99 ITL so you can
-reproduce the shape of the vLLM benchmarks without a GPU. Pedagogical:
-the latency constants are illustrative, not measured.
+报告吞吐量（每模拟秒的词元数）、平均首词元延迟（TTFT）和 P99 词元间延迟（ITL），
+无需 GPU 即可复现 vLLM 基准测试的趋势。本例用于教学，延迟常量是示意值，并非实测数据。
 """
 
 from __future__ import annotations
@@ -19,12 +18,12 @@ import random
 import statistics
 
 
-FORWARD_LATENCY_PER_TOKEN = 0.0005   # 0.5 ms per decode token in the batch
-PREFILL_LATENCY_PER_TOKEN = 0.00004  # prefill ~12x cheaper per token than decode
-BATCH_OVERHEAD = 0.0002              # fixed overhead per forward call
+FORWARD_LATENCY_PER_TOKEN = 0.0005   # 批次中每个解码（Decode）词元耗时 0.5 ms
+PREFILL_LATENCY_PER_TOKEN = 0.00004  # 单词元预填充（Prefill）成本约为解码的 1/12
+BATCH_OVERHEAD = 0.0002              # 每次前向计算（Forward Pass）的固定开销
 CHUNK_SIZE = 512
 KV_BLOCK_SIZE = 16
-KV_BLOCKS_AVAILABLE = 1800           # toy KV block budget
+KV_BLOCKS_AVAILABLE = 1800           # 简化模型的键值缓存（KV Cache）块预算
 
 
 @dataclass
@@ -57,7 +56,7 @@ def make_workload(n: int = 60, seed: int = 7) -> list[Request]:
     reqs = []
     now = 0.0
     for i in range(n):
-        now += rng.expovariate(40.0)   # ~40 req/s arrival
+        now += rng.expovariate(40.0)   # 平均每秒到达约 40 个请求
         prompt_len = rng.choice([128, 256, 512, 2048, 8192])
         out_len = rng.randint(50, 300)
         reqs.append(Request(i, prompt_len, out_len, now))
@@ -71,13 +70,13 @@ def report(label: str, reqs: list[Request], sim_end: float) -> None:
     throughput = total_out / sim_end if sim_end else 0
     mean_ttft = statistics.mean(ttfts) * 1000 if ttfts else 0
     p99_itl = sorted(itls)[int(0.99 * len(itls)) - 1] * 1000 if itls else 0
-    print(f"{label:28}  throughput={throughput:6.0f} tok/s   "
-          f"mean_TTFT={mean_ttft:6.1f} ms   "
-          f"P99_ITL={p99_itl:5.1f} ms   finished={sum(r.done for r in reqs)}/{len(reqs)}")
+    print(f"{label:28}  吞吐量={throughput:6.0f} 词元/秒   "
+          f"平均 TTFT={mean_ttft:6.1f} ms   "
+          f"P99 ITL={p99_itl:5.1f} ms   已完成={sum(r.done for r in reqs)}/{len(reqs)}")
 
 
 def simulate_naive(reqs: list[Request]) -> float:
-    """One at a time. Prefill the whole prompt, then decode until done."""
+    """逐个处理请求：先预填充完整提示词（Prompt），再解码至完成。"""
     now = 0.0
     for r in reqs:
         if now < r.arrived_at:
@@ -96,7 +95,7 @@ def simulate_naive(reqs: list[Request]) -> float:
 
 
 def simulate_static(reqs: list[Request], batch: int = 16) -> float:
-    """Group into fixed batches; wait for the slowest to finish."""
+    """组成固定批次，等待批内最慢的请求完成。"""
     now = 0.0
     i = 0
     while i < len(reqs):
@@ -177,29 +176,29 @@ def simulate_continuous(reqs: list[Request], chunked: bool) -> float:
 
 def main() -> None:
     print("=" * 80)
-    print("TOY vLLM SCHEDULER — four modes on the same 60-request workload")
+    print("简化 vLLM 调度器：同一组 60 个请求，四种服务模式")
     print("=" * 80)
 
     base = make_workload()
     w1 = [Request(r.req_id, r.prompt_len, r.output_len, r.arrived_at) for r in base]
     end = simulate_naive(w1)
-    report("NAIVE", w1, end)
+    report("朴素逐请求（NAIVE）", w1, end)
 
     w2 = [Request(r.req_id, r.prompt_len, r.output_len, r.arrived_at) for r in base]
     end = simulate_static(w2)
-    report("STATIC (batch=16, padded)", w2, end)
+    report("静态批处理（STATIC，批大小 16，填充）", w2, end)
 
     w3 = [Request(r.req_id, r.prompt_len, r.output_len, r.arrived_at) for r in base]
     end = simulate_continuous(w3, chunked=False)
-    report("CONTINUOUS (no chunk)", w3, end)
+    report("连续批处理（CONTINUOUS，不分块）", w3, end)
 
     w4 = [Request(r.req_id, r.prompt_len, r.output_len, r.arrived_at) for r in base]
     end = simulate_continuous(w4, chunked=True)
-    report("CONTINUOUS + CHUNKED", w4, end)
+    report("连续批处理与分块预填充（CONTINUOUS + CHUNKED）", w4, end)
 
     print()
-    print("Read the CONTINUOUS+CHUNKED row. That is what vLLM ships as default.")
-    print("The gap between STATIC and CONTINUOUS is the whole reason vLLM exists.")
+    print("请看 CONTINUOUS+CHUNKED 行，这就是 vLLM 默认采用的方案。")
+    print("静态批处理与连续批处理之间的差距，正是 vLLM 的价值所在。")
 
 
 if __name__ == "__main__":

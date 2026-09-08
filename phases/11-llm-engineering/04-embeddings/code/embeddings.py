@@ -118,7 +118,7 @@ class VectorIndex:
             elif metric == "hamming":
                 score = -hamming_distance(binarize(query_vector), binarize(vec))
             else:
-                raise ValueError(f"Unknown metric: {metric}")
+                raise ValueError(f"未知度量（Metric）: {metric}")
             scores.append((i, score))
         scores.sort(key=lambda x: x[1], reverse=True)
         results = []
@@ -247,24 +247,24 @@ SAMPLE_DOCUMENTS = [
 
 if __name__ == "__main__":
     print("=" * 60)
-    print("STEP 1: Document Chunking")
+    print("步骤 1: 文档分块（Document Chunking）")
     print("=" * 60)
 
     sample = SAMPLE_DOCUMENTS[0]
     fixed_chunks = chunk_text(sample, chunk_size=30, overlap=10)
     sentence_chunks = chunk_by_sentences(sample, max_chunk_tokens=30)
-    print(f"  Document length: {len(sample.split())} words")
-    print(f"\n  Fixed-size chunking (30 words, 10 overlap):")
-    print(f"    Chunks: {len(fixed_chunks)}")
+    print(f"  文档长度: {len(sample.split())} 个词")
+    print(f"\n  固定大小分块（Fixed-size chunking，30 个词，重叠 10 个）:")
+    print(f"    块数（Chunks）: {len(fixed_chunks)}")
     for i, chunk in enumerate(fixed_chunks[:3]):
         print(f"    [{i}] {chunk[:80]}...")
-    print(f"\n  Sentence-based chunking (max 30 tokens):")
-    print(f"    Chunks: {len(sentence_chunks)}")
+    print(f"\n  按句分块（Sentence-based chunking，最多 30 个词元）:")
+    print(f"    块数（Chunks）: {len(sentence_chunks)}")
     for i, chunk in enumerate(sentence_chunks[:3]):
         print(f"    [{i}] {chunk[:80]}...")
 
     print("\n" + "=" * 60)
-    print("STEP 2: Embedding")
+    print("步骤 2: 嵌入（Embedding）")
     print("=" * 60)
 
     mini_docs = [
@@ -278,22 +278,22 @@ if __name__ == "__main__":
     embedder.fit(mini_docs)
     embeddings = embedder.embed_batch(mini_docs)
 
-    print(f"  Vocabulary size: {len(embedder.vocab)}")
-    print(f"  Embedding dimensions: {len(embeddings[0])}")
-    print(f"  Non-zero entries per embedding:")
+    print(f"  词表大小（Vocabulary size）: {len(embedder.vocab)}")
+    print(f"  嵌入维度（Embedding dimensions）: {len(embeddings[0])}")
+    print(f"  每个嵌入的非零项:")
     for i, emb in enumerate(embeddings):
         nonzero = int(np.count_nonzero(emb))
-        print(f"    [{i}] \"{mini_docs[i][:40]}\" -> {nonzero} non-zero dims")
+        print(f"    [{i}] \"{mini_docs[i][:40]}\" -> {nonzero} 个非零维度")
 
     print("\n" + "=" * 60)
-    print("STEP 3: Similarity Metrics Comparison")
+    print("步骤 3: 相似度度量比较（Similarity Metrics Comparison）")
     print("=" * 60)
 
     pairs = [
-        (0, 1, "cat/mat vs dog/rug (similar)"),
-        (0, 2, "cat/mat vs ML (unrelated)"),
-        (3, 4, "payment declined vs charge didn't go through (same meaning)"),
-        (2, 3, "ML vs payment declined (unrelated)")
+        (0, 1, "猫/垫子（cat/mat）与狗/地毯（dog/rug，相似）"),
+        (0, 2, "猫/垫子（cat/mat）与机器学习（ML，无关）"),
+        (3, 4, "支付被拒（payment declined）与扣款未成功（charge didn't go through，含义相同）"),
+        (2, 3, "机器学习（ML）与支付被拒（payment declined，无关）")
     ]
 
     for i, j, desc in pairs:
@@ -301,12 +301,12 @@ if __name__ == "__main__":
         dot = dot_product(embeddings[i], embeddings[j])
         euc = euclidean_distance(embeddings[i], embeddings[j])
         print(f"\n  {desc}:")
-        print(f"    Cosine:    {cos:.4f}")
-        print(f"    Dot:       {dot:.4f}")
-        print(f"    Euclidean: {euc:.4f}")
+        print(f"    余弦相似度（Cosine）:    {cos:.4f}")
+        print(f"    点积（Dot）:       {dot:.4f}")
+        print(f"    欧氏距离（Euclidean）: {euc:.4f}")
 
     print("\n" + "=" * 60)
-    print("STEP 4: Semantic Search Engine")
+    print("步骤 4: 语义搜索引擎（Semantic Search Engine）")
     print("=" * 60)
 
     engine = SemanticSearchEngine(chunk_size=50, overlap=10)
@@ -318,9 +318,9 @@ if __name__ == "__main__":
         "uptime-sla.md"
     ]
     num_chunks = engine.index_documents(SAMPLE_DOCUMENTS, source_names)
-    print(f"  Indexed {len(SAMPLE_DOCUMENTS)} documents into {num_chunks} chunks")
-    print(f"  Vocabulary size: {len(engine.embedder.vocab)} terms")
-    print(f"  Embedding dimensions: {len(engine.embedder.vocab)}")
+    print(f"  已将 {len(SAMPLE_DOCUMENTS)} 篇文档建立索引，共 {num_chunks} 个块")
+    print(f"  词表大小（Vocabulary size）: {len(engine.embedder.vocab)} 个词项")
+    print(f"  嵌入维度（Embedding dimensions）: {len(engine.embedder.vocab)}")
 
     queries = [
         "What is the refund policy for enterprise customers?",
@@ -331,17 +331,17 @@ if __name__ == "__main__":
     ]
 
     for query in queries:
-        print(f"\n  Query: \"{query}\"")
+        print(f"\n  查询（Query）: \"{query}\"")
         results = engine.search_with_scores(query, top_k=3)
         for r in results:
             print(f"    [{r['source']}] score={r['score']:.4f} | {r['text'][:70]}...")
 
     print("\n" + "=" * 60)
-    print("STEP 5: Metric Comparison on Full Corpus")
+    print("步骤 5: 完整语料上的度量比较")
     print("=" * 60)
 
     test_query = "How is data encrypted at rest?"
-    print(f"  Query: \"{test_query}\"")
+    print(f"  查询（Query）: \"{test_query}\"")
     comparison = compare_metrics(engine, test_query, top_k=3)
     for metric, hits in comparison.items():
         print(f"\n  {metric.upper()}:")
@@ -349,7 +349,7 @@ if __name__ == "__main__":
             print(f"    score={h['score']:>8.4f} | {h['preview']}...")
 
     print("\n" + "=" * 60)
-    print("STEP 6: Embedding Truncation (Matryoshka Simulation)")
+    print("步骤 6: 嵌入截断（Embedding Truncation，套娃式 Matryoshka 模拟）")
     print("=" * 60)
 
     full_dim = len(engine.embedder.vocab)
@@ -364,7 +364,7 @@ if __name__ == "__main__":
         print(f"  dims={dims:>4d} ({frac*100:>5.1f}%): cosine={sim:.4f}")
 
     print("\n" + "=" * 60)
-    print("STEP 7: Binary Quantization")
+    print("步骤 7: 二值量化（Binary Quantization）")
     print("=" * 60)
 
     query_vec = engine.embedder.embed("API rate limits")
@@ -375,20 +375,20 @@ if __name__ == "__main__":
     binary_ids = [r["index"] for r in results_binary]
     overlap = len(set(full_ids) & set(binary_ids))
 
-    print(f"  Query: \"API rate limits\"")
-    print(f"  Full-precision top-5 indices: {full_ids}")
-    print(f"  Binary quant top-5 indices:   {binary_ids}")
-    print(f"  Overlap: {overlap}/5 ({overlap/5*100:.0f}%)")
+    print(f"  查询（Query）: \"API rate limits\"")
+    print(f"  全精度 top-5 索引: {full_ids}")
+    print(f"  二值量化 top-5 索引:   {binary_ids}")
+    print(f"  重合（Overlap）: {overlap}/5 ({overlap/5*100:.0f}%)")
 
     storage_full = full_dim * 4
     storage_binary = math.ceil(full_dim / 8)
-    print(f"\n  Storage per vector:")
-    print(f"    Float32: {storage_full:,} bytes")
-    print(f"    Binary:  {storage_binary:,} bytes")
-    print(f"    Ratio:   {storage_full/storage_binary:.0f}x reduction")
+    print(f"\n  每向量存储量:")
+    print(f"    Float32: {storage_full:,} 字节")
+    print(f"    二值（Binary）:  {storage_binary:,} 字节")
+    print(f"    比率（Ratio）:   {storage_full/storage_binary:.0f}x 缩减")
 
     print("\n" + "=" * 60)
-    print("STEP 8: Chunk Size Experiment")
+    print("步骤 8: 分块大小实验（Chunk Size Experiment）")
     print("=" * 60)
 
     test_query = "What is the refund policy for enterprise customers?"
@@ -397,21 +397,21 @@ if __name__ == "__main__":
         n = eng.index_documents(SAMPLE_DOCUMENTS)
         results = eng.search(test_query, top_k=3)
         top_score = results[0]["score"] if results else 0
-        print(f"  chunk_size={chunk_size:>3d}: {n:>3d} chunks, "
+        print(f"  chunk_size={chunk_size:>3d}: {n:>3d} 个块， "
               f"top_score={top_score:.4f}, "
               f"top_preview=\"{results[0]['text'][:50]}...\"")
 
     print("\n" + "=" * 60)
-    print("SUMMARY")
+    print("总结（Summary）")
     print("=" * 60)
-    print(f"  Documents indexed: {len(SAMPLE_DOCUMENTS)}")
-    print(f"  Total chunks: {num_chunks}")
-    print(f"  Vocabulary size: {len(engine.embedder.vocab)}")
-    print(f"  Embedding dimensions: {len(engine.embedder.vocab)}")
-    print("  Metrics implemented: cosine, dot product, euclidean, hamming")
-    print("  Chunking: fixed-size + sentence-based")
-    print("  Advanced: Matryoshka truncation, binary quantization")
-    print("\n  In production, replace SimpleEmbedder with:")
-    print("    OpenAI text-embedding-3-small (1536d, $0.02/1M tokens)")
-    print("    BGE-M3 (1024d, free, open source)")
-    print("    Voyage-3 (1024d, $0.06/1M tokens)")
+    print(f"  已索引文档数: {len(SAMPLE_DOCUMENTS)}")
+    print(f"  分块总数: {num_chunks}")
+    print(f"  词表大小（Vocabulary size）: {len(engine.embedder.vocab)}")
+    print(f"  嵌入维度（Embedding dimensions）: {len(engine.embedder.vocab)}")
+    print("  已实现的度量: 余弦相似度（Cosine）、点积（Dot product）、欧氏距离（Euclidean）、汉明距离（Hamming）")
+    print("  分块: 固定大小 + 按句分块")
+    print("  进阶: 套娃式截断（Matryoshka truncation）、二值量化")
+    print("\n  在生产环境中，将 SimpleEmbedder 替换为:")
+    print("    OpenAI text-embedding-3-small (1536d, $0.02/1M 词元)")
+    print("    BGE-M3 (1024d, 免费、开源)")
+    print("    Voyage-3 (1024d, $0.06/1M 词元)")

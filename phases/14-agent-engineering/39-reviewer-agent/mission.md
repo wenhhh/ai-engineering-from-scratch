@@ -1,27 +1,27 @@
-# Mission - Reviewer Agent: Separate Builder from Marker
+# 任务：审查智能体，分离构建者与评分者（Mission - Reviewer Agent: Separate Builder from Marker）
 
-## Goal
-Build a reviewer loop that reads the builder's artifacts read-only and emits a `review_report.json` scored across five dimensions, totalling out of 10, with a verdict of pass, soft_fail, or hard_fail.
+## 目标（Goal）
+构建审查循环，以只读方式读取构建者产物，输出按五个维度评分的 `review_report.json`，总分 10 分，判定为 pass、soft_fail 或 hard_fail。
 
-## Inputs
-- `ReviewerInputs` bundling diff, state, feedback, and verification verdict from prior lessons
-- Rubric dimensions: problem fit, scope discipline, assumptions, verification quality, handoff readiness
+## 输入（Inputs）
+- `ReviewerInputs`，打包前面课程的差异、状态、反馈与验证判定
+- 评分维度：问题匹配度、范围纪律、假设、验证质量、交接就绪度
 
-## Deliverables
-- One scoring function per dimension (stub-grade for the lesson, deterministic)
-- `review_report.json` writer with five scores, total, and verdict
-- Two demo cases: a clean change and a "right tests, wrong problem" change
+## 交付物（Deliverables）
+- 每维一个评分函数（本课使用确定性桩评分）
+- 包含五项分数、总分和判定的 `review_report.json` 写入器
+- 两个演示案例：干净变更和“测试正确、问题错了”的变更
 
-## Acceptance
-- `python3 code/main.py` exits zero
-- The clean change scores at least 7 with verdict `pass`
-- The wrong-problem change drops below 5 on at least one dimension and verdict flips to `hard_fail`
+## 验收（Acceptance）
+- `python3 code/main.py` 的退出码为 0
+- 干净变更至少得 7 分，判定为 `pass`
+- 问题错了的变更至少一个维度低于 5，判定转为 `hard_fail`
 
-## Out of scope
-- Real LLM calls. The lesson stubs each dimension; the skill swaps in a model later.
-- Editing the diff. The reviewer reads, scores, and reports. Patches are the builder's job next turn.
+## 范围外（Out of scope）
+- 真实 LLM 调用。本课为每维提供桩实现；技能稍后替换为模型。
+- 编辑差异。审查者读取、评分、报告。修补属于构建者下一轮的工作。
 
-## References
-- `docs/en.md` - full lesson
-- `code/main.py` - reference implementation
-- `outputs/skill-reviewer-agent.md` - extracted skill
+## 参考（References）
+- `docs/en.md`：完整课程
+- `code/main.py`：参考实现
+- `outputs/skill-reviewer-agent.md`：提炼出的技能

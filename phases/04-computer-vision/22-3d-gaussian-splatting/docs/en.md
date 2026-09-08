@@ -1,134 +1,134 @@
-# 3D Gaussian Splatting from Scratch
+# 从零构建三维高斯泼溅（3D Gaussian Splatting from Scratch）
 
-> A scene is a cloud of millions of 3D Gaussians. Each one has a position, orientation, scale, opacity, and a colour that depends on viewing direction. Rasterise them, backprop through the rasterisation, done.
+> 场景是由数百万个三维高斯构成的点云。每个高斯都有位置、朝向、尺度、不透明度，以及随观察方向变化的颜色。将它们光栅化，再穿过光栅化反向传播，就完成了。
 
 **Type:** Build
 **Languages:** Python
-**Prerequisites:** Phase 4 Lesson 13 (3D Vision & NeRF), Phase 1 Lesson 12 (Tensor Operations), Phase 4 Lesson 10 (Diffusion basics optional)
-**Time:** ~90 minutes
+**Prerequisites:** 阶段 4 第 13 课（三维视觉与 NeRF），阶段 1 第 12 课（张量运算），阶段 4 第 10 课（扩散基础，可选）
+**Time:** 约 90 分钟
 
-## Learning Objectives
+## 学习目标（Learning Objectives）
 
-- Explain why 3D Gaussian Splatting replaced NeRF as the production default for photorealistic 3D reconstruction in 2026
-- State the six per-Gaussian parameters (position, rotation quaternion, scale, opacity, spherical harmonics colour, optional feature) and how many floats each contributes
-- Implement a 2D Gaussian splatting rasterizer from scratch using `alpha` compositing, then show how the 3D case projects to the same loop
-- Use `nerfstudio`, `gsplat`, or `SuperSplat` to reconstruct a scene from 20-50 photos and export to the `KHR_gaussian_splatting` glTF extension or the OpenUSD 26.03 `UsdVolParticleField3DGaussianSplat` schema
+- 解释为什么三维高斯泼溅在 2026 年取代 NeRF，成为逼真三维重建的生产默认方案
+- 列出每个高斯的六类参数：位置、旋转四元数、尺度、不透明度、球谐颜色、可选特征，以及各占多少浮点数
+- 从零实现使用 `alpha` 合成的二维高斯泼溅光栅器，再说明三维情况如何投影到相同循环
+- 使用 `nerfstudio`、`gsplat` 或 `SuperSplat` 从 20-50 张照片重建场景，导出为 glTF 扩展 `KHR_gaussian_splatting` 或 OpenUSD 26.03 的 `UsdVolParticleField3DGaussianSplat` 模式
 
-## The Problem
+## 问题（The Problem）
 
-A NeRF stores a scene as the weights of an MLP. Every rendered pixel is hundreds of MLP queries along a ray. Training takes hours, rendering takes seconds, and the weights cannot be edited — if you want to move a chair inside a scene, you have to retrain.
+神经辐射场（Neural Radiance Field，NeRF）将场景存为多层感知机（Multilayer Perceptron，MLP）权重。每个渲染像素都要沿光线查询 MLP 数百次。训练数小时，渲染数秒，而且权重无法直接编辑；想移动场景中的椅子，就得重新训练。
 
-3D Gaussian Splatting (Kerbl, Kopanas, Leimkühler, Drettakis, SIGGRAPH 2023) replaced all of that. A scene is an explicit set of 3D Gaussians. Rendering is GPU rasterisation at 100+ fps. Training takes minutes. Editing is direct: translate a subset of Gaussians and you have moved the chair. By 2026 the Khronos Group has ratified a glTF extension for Gaussian splats, OpenUSD 26.03 ships a Gaussian splat schema, Zillow and Apartments.com render real estate with them, and most new research papers on 3D reconstruction are variants on the core 3DGS idea.
+三维高斯泼溅（3D Gaussian Splatting，3DGS；Kerbl、Kopanas、Leimkühler、Drettakis，SIGGRAPH 2023）改变了这一切。场景是显式三维高斯集合，GPU 光栅化渲染超过每秒 100 帧，训练只需数分钟。编辑直接进行：平移部分高斯，就移动了椅子。到 2026 年，Khronos Group 已批准高斯泼溅 glTF 扩展，OpenUSD 26.03 提供高斯泼溅模式，Zillow 与 Apartments.com 用其渲染房产，大多数新的三维重建论文都是核心 3DGS 思路的变体。
 
-The mental model is simple, the math has enough moving parts that most introductions start at rasterisation and skip past the projections and spherical harmonics. This lesson builds the whole thing — a 2D version first, then the 3D extension.
+理解框架很简单，但数学中涉及不少环节，多数介绍从光栅化开始，跳过投影和球谐。本课构建完整流程，先做二维版本，再扩展到三维。
 
-## The Concept
+## 概念（The Concept）
 
-### What a Gaussian carries
+### 一个高斯携带什么（What a Gaussian carries）
 
-One 3D Gaussian is a parametric blob in space with these attributes:
+一个三维高斯是空间中的参数化分布，具有以下属性：
 
 ```
-position         mu         (3,)    centre in world coordinates
-rotation         q          (4,)    unit quaternion encoding orientation
-scale            s          (3,)    log-scales per axis (exponentiated at render time)
-opacity          alpha      (1,)    post-sigmoid opacity [0, 1]
-SH coefficients  c_lm       (3 * (L+1)^2,)   view-dependent colour
+位置             mu         (3,)    世界坐标中的中心
+旋转             q          (4,)    编码朝向的单位四元数
+尺度             s          (3,)    各轴对数尺度，渲染时取指数
+不透明度         alpha      (1,)    sigmoid 后的不透明度 [0, 1]
+SH 系数          c_lm       (3 * (L+1)^2,)   视角相关颜色
 ```
 
-Rotation + scale build a 3x3 covariance: `Sigma = R S S^T R^T`. That is the shape of the Gaussian in 3D. Spherical harmonics let the colour change with viewing direction — specular highlights, subtle sheen, view-dependent glow — without storing per-view textures. With SH degree 3 you get 16 coefficients per colour channel, 48 floats per Gaussian for colour alone.
+旋转与尺度构成 3x3 协方差（Covariance）：`Sigma = R S S^T R^T`，定义高斯的三维形状。球谐函数（Spherical Harmonics，SH）让颜色随观察方向变化，表达镜面高光、细微光泽、视角相关辉光，而无需存储逐视角纹理。SH 阶数为 3 时，每颜色通道有 16 个系数，仅颜色每个高斯就占 48 个浮点数。
 
-A scene typically has 1-5 million Gaussians. Each stores roughly 60 floats (3 + 4 + 3 + 1 + 48 + misc). That is 240 MB for a five-million-Gaussian scene — far smaller than the equivalent point cloud with per-point texture, and an order of magnitude smaller than a NeRF's MLP weights re-rendered at high resolution.
+场景通常有 100 万至 500 万个高斯，每个约存储 60 个浮点数，即 3 + 4 + 3 + 1 + 48 + 其他。五百万高斯场景因此为 240 MB，远小于带逐点纹理的等效点云，也比高分辨率重渲染对应的 NeRF MLP 权重小一个数量级。
 
-### Rasterisation, not ray marching
+### 光栅化，而非光线步进（Rasterisation, not ray marching）
 
 ```mermaid
 flowchart LR
-    SCENE["Millions of 3D Gaussians<br/>(position, rotation, scale,<br/>opacity, SH colour)"] --> PROJ["Project to 2D<br/>(camera extrinsics + intrinsics)"]
-    PROJ --> TILES["Assign to tiles<br/>(16x16 screen-space)"]
-    TILES --> SORT["Depth-sort<br/>per tile"]
-    SORT --> ALPHA["Alpha-composite<br/>front-to-back"]
-    ALPHA --> PIX["Pixel colour"]
+    SCENE["数百万三维高斯<br/>（位置、旋转、尺度、<br/>不透明度、SH 颜色）"] --> PROJ["投影到二维<br/>（相机外参与内参）"]
+    PROJ --> TILES["分配到瓦片<br/>（屏幕空间 16x16）"]
+    TILES --> SORT["每瓦片<br/>按深度排序"]
+    SORT --> ALPHA["从前到后<br/>Alpha 合成"]
+    ALPHA --> PIX["像素颜色"]
 
     style SCENE fill:#dbeafe,stroke:#2563eb
     style ALPHA fill:#fef3c7,stroke:#d97706
     style PIX fill:#dcfce7,stroke:#16a34a
 ```
 
-Five steps, all GPU-friendly. No MLP query per pixel. A single RTX 3080 Ti renders 6 million splats at 147 fps.
+五步都适合 GPU，无需逐像素查询 MLP。单张 RTX 3080 Ti 可按每秒 147 帧渲染 600 万个泼溅图元。
 
-### The projection step
+### 投影步骤（The projection step）
 
-The 3D Gaussian at world position `mu` with 3D covariance `Sigma` projects to a 2D Gaussian at screen position `mu'` with 2D covariance `Sigma'`:
+世界位置为 `mu`、三维协方差为 `Sigma` 的三维高斯，投影成屏幕位置 `mu'`、二维协方差 `Sigma'` 的二维高斯：
 
 ```
 mu' = project(mu)
 Sigma' = J W Sigma W^T J^T          (2 x 2)
 
-W = viewing transform (rotation + translation of camera)
-J = Jacobian of the perspective projection at mu'
+W = 视图变换（相机旋转与平移）
+J = mu' 处透视投影的雅可比矩阵
 ```
 
-The 2D Gaussian's footprint is an ellipse whose axes are the eigenvectors of `Sigma'`. Every pixel inside that ellipse receives the Gaussian's contribution, weighted by `exp(-0.5 * (p - mu')^T Sigma'^-1 (p - mu'))`.
+二维高斯的覆盖范围是椭圆，其轴由 `Sigma'` 的特征向量给出。椭圆内每个像素接收高斯贡献，权重为 `exp(-0.5 * (p - mu')^T Sigma'^-1 (p - mu'))`。
 
-### The alpha-compositing rule
+### Alpha 合成规则（The alpha-compositing rule）
 
-For one pixel, the Gaussians that cover it are sorted back-to-front (or equivalently front-to-back with inverted formula). Colour is composited with the same equation as every semi-transparent rasteriser since the 1980s:
+对于一个像素，覆盖它的高斯按从后到前排序，或使用反向公式等价地从前到后排序。颜色采用自 20 世纪 80 年代以来所有半透明光栅器使用的相同方程合成：
 
 ```
 C_pixel = sum_i alpha_i * T_i * c_i
 
-T_i = prod_{j < i} (1 - alpha_j)       transmittance up to i
-alpha_i = opacity_i * exp(-0.5 * d^T Sigma'^-1 d)   local contribution
-c_i = eval_SH(SH_i, view_direction)    view-dependent colour
+T_i = prod_{j < i} (1 - alpha_j)       到 i 为止的透射率
+alpha_i = opacity_i * exp(-0.5 * d^T Sigma'^-1 d)   局部贡献
+c_i = eval_SH(SH_i, view_direction)    视角相关颜色
 ```
 
-This is **the same equation as NeRF's volumetric render**, just over an explicit sparse set of Gaussians instead of dense samples along a ray. That identity is why rendered quality matches NeRF — both are integrating the same radiance-field equation.
+这与 **NeRF 体渲染的方程相同**，只是作用于显式稀疏高斯集合，而不是沿光线的稠密采样。这种一致性解释了为何渲染质量能匹配 NeRF，两者积分的是同一个辐射场方程。
 
-### Why this is differentiable
+### 为什么可微（Why this is differentiable）
 
-Every step — projection, tile assignment, alpha compositing, SH evaluation — is differentiable with respect to the Gaussian parameters. Given a ground-truth image, compute rendered pixel loss, backprop through the rasteriser, update all `(mu, q, s, alpha, c_lm)` by gradient descent. Over ~30,000 iterations the Gaussians find their right positions, scales, and colours.
+每一步，包括投影、瓦片分配、alpha 合成、SH 求值，都对高斯参数可微。给定真值图像，计算渲染像素损失，穿过光栅器反向传播，用梯度下降更新全部 `(mu, q, s, alpha, c_lm)`。约 30,000 次迭代后，高斯找到合适的位置、尺度和颜色。
 
-### Densification and pruning
+### 致密化与剪枝（Densification and pruning）
 
-A fixed set of Gaussians cannot cover a complex scene. Training includes two adaptive mechanisms:
+固定高斯集合无法覆盖复杂场景。训练包含两种自适应机制：
 
-- **Clone** a Gaussian at its current position when its gradient magnitude is high but its scale is small — the reconstruction needs more detail here.
-- **Split** a large-scale Gaussian into two smaller ones when its gradient is high — one big Gaussian is too smooth to fit the region.
-- **Prune** Gaussians whose opacity drops below a threshold — they are not contributing.
+- 当高斯梯度幅值高、尺度小时，在当前位置**克隆（Clone）**它，表示此处重建需要更多细节。
+- 当大尺度高斯梯度高时，将其**分裂（Split）**为两个更小高斯，因为一个大高斯过于平滑，无法拟合该区域。
+- **剪枝（Prune）**不透明度低于阈值的高斯，它们没有贡献。
 
-Densification runs every N iterations. A scene typically grows from ~100k initial Gaussians (seeded from SfM points) to 1-5M at the end of training.
+每 N 次迭代执行致密化。场景通常从由运动恢复结构（Structure from Motion，SfM）点初始化的约 100k 个高斯，增长到训练结束的 1-5M。
 
-### Spherical harmonics in one paragraph
+### 一段话理解球谐函数（Spherical harmonics in one paragraph）
 
-View-dependent colour is a function `c(direction)` on the unit sphere. Spherical harmonics are the sphere's Fourier basis. Truncate at degree `L` and you get `(L+1)^2` basis functions per channel. Evaluating the colour for a new view is a dot product between the learned SH coefficients and the basis evaluated at the viewing direction. Degree 0 = one coefficient = constant colour. Degree 3 = 16 coefficients = enough to capture Lambertian shading, specular, and mild reflection. SD Gaussian Splatting papers use degree 3 by default.
+视角相关颜色是单位球面上的函数 `c(direction)`。球谐函数是球面的傅里叶基。截断到阶数 `L`，每个通道得到 `(L+1)^2` 个基函数。新视角颜色的求值，就是可学习 SH 系数与在观察方向处求值的基之间做点积。0 阶等于一个系数，即常量颜色。3 阶等于 16 个系数，足以表达朗伯明暗、镜面高光与轻微反射。SD Gaussian Splatting 论文默认使用 3 阶。
 
-### The 2026 production stack
+### 2026 年生产技术栈（The 2026 production stack）
 
 ```
-1. Capture         smartphone / DJI drone / handheld scanner
-2. SfM / MVS       COLMAP or GLOMAP derives camera poses + sparse points
-3. Train 3DGS      nerfstudio / gsplat / inria official / PostShot (~10-30 min on RTX 4090)
-4. Edit            SuperSplat / SplatForge (clean floaters, segment)
-5. Export          .ply -> glTF KHR_gaussian_splatting or .usd (OpenUSD 26.03)
-6. View            Cesium / Unreal / Babylon.js / Three.js / Vision Pro
+1. 采集            智能手机 / DJI 无人机 / 手持扫描仪
+2. SfM / 多视图立体视觉（MVS）  COLMAP 或 GLOMAP 求相机位姿与稀疏点
+3. 训练 3DGS       nerfstudio / gsplat / inria 官方 / PostShot（RTX 4090 上约 10-30 分钟）
+4. 编辑            SuperSplat / SplatForge（清理漂浮伪影、分割）
+5. 导出            .ply -> glTF KHR_gaussian_splatting 或 .usd（OpenUSD 26.03）
+6. 查看            Cesium / Unreal / Babylon.js / Three.js / Vision Pro
 ```
 
-### 4D and generative variants
+### 四维与生成式变体（4D and generative variants）
 
-- **4D Gaussian Splatting** — Gaussians are functions of time; used for volumetric video (Superman 2026, A$AP Rocky's "Helicopter").
-- **Generative splats** — text-to-splat models (Marble by World Labs) that hallucinate entire scenes.
-- **3D Gaussian Unscented Transform** — NVIDIA NuRec's variant for autonomous driving simulation.
+- **四维高斯泼溅（4D Gaussian Splatting）**：高斯随时间变化，用于体积视频，例如 2026 年《Superman》和 A$AP Rocky 的《Helicopter》。
+- **生成式泼溅（Generative splats）**：从文本生成高斯泼溅的模型，例如 World Labs 的 Marble，可以生成整个场景。
+- **三维高斯无迹变换（3D Gaussian Unscented Transform）**：NVIDIA NuRec 用于自动驾驶仿真的变体。
 
 ```figure
 cv3-gaussian-splat
 ```
 
-## Build It
+## 动手构建（Build It）
 
-### Step 1: A 2D Gaussian
+### 第 1 步：二维高斯（Step 1: A 2D Gaussian）
 
-We first build a 2D rasteriser. The 3D case reduces to it after projection.
+先构建二维光栅器，三维情况投影后可归约为它。
 
 ```python
 import torch
@@ -153,11 +153,11 @@ def eval_2d_gaussian(means, covs, points):
     return density.view(G, H, W)
 ```
 
-`einsum` does the quadratic form `diff^T Sigma^-1 diff` for every (Gaussian, pixel) pair.
+`einsum` 对每个高斯、像素对计算二次型 `diff^T Sigma^-1 diff`。
 
-### Step 2: 2D splatting rasteriser
+### 第 2 步：二维泼溅光栅器（Step 2: 2D splatting rasteriser）
 
-Alpha-compositing front-to-back. Depth in 2D is meaningless, so we use a learned per-Gaussian scalar for order.
+从前到后执行 alpha 合成。二维中深度没有意义，因此为每个高斯学习一个标量用于排序。
 
 ```python
 def rasterise_2d(means, covs, colours, opacities, depths, image_size):
@@ -195,9 +195,9 @@ def rasterise_2d(means, covs, colours, opacities, depths, image_size):
     return out
 ```
 
-Not fast — a real implementation uses tile-based CUDA kernels — but exactly the right math and fully differentiable.
+速度不快，实际实现使用基于瓦片的 CUDA 内核，但数学完全正确，而且完全可微。
 
-### Step 3: A trainable 2D splat scene
+### 第 3 步：可训练二维泼溅场景（Step 3: A trainable 2D splat scene）
 
 ```python
 class Splats2D(nn.Module):
@@ -229,9 +229,9 @@ class Splats2D(nn.Module):
         return rasterise_2d(self.means, covs, colours, opacities, self.depth, image_size)
 ```
 
-`log_scale`, `opacity_logit`, and `colour_logits` are all unconstrained parameters mapped through the right activation at render time. This is the standard pattern for every 3DGS implementation.
+`log_scale`、`opacity_logit`、`colour_logits` 都是无约束参数，渲染时经适当激活函数映射。这是所有 3DGS 实现的标准模式。
 
-### Step 4: Fit 2D Gaussians to a target image
+### 第 4 步：用二维高斯拟合目标图像（Step 4: Fit 2D Gaussians to a target image）
 
 ```python
 import math
@@ -261,23 +261,23 @@ for step in range(200):
         print(f"step {step:3d}  mse {loss.item():.4f}")
 ```
 
-Over 200 steps the 64 Gaussians settle into the two shapes. That is the entire idea — gradient-descent on explicit geometric primitives.
+200 步后，64 个高斯会排列成两个形状。这就是完整思路：对显式几何图元进行梯度下降。
 
-### Step 5: From 2D to 3D
+### 第 5 步：从二维到三维（Step 5: From 2D to 3D）
 
-The 3D extension keeps the same loop. The additions:
+三维扩展保留相同循环，增加以下内容：
 
-1. Per-Gaussian rotation is a quaternion instead of a single angle.
-2. Covariance is `R S S^T R^T` with `R` built from the quaternion and `S = diag(exp(log_scale))`.
-3. Projection `(mu, Sigma) -> (mu', Sigma')` uses the camera extrinsics and the Jacobian of the perspective projection at `mu`.
-4. Colour becomes a spherical-harmonics expansion; evaluate it at the viewing direction.
-5. Depth-sort is from actual camera-space z instead of a learned scalar.
+1. 每个高斯的旋转由四元数表示，而不是单个角度。
+2. 协方差为 `R S S^T R^T`，其中 `R` 由四元数构建，`S = diag(exp(log_scale))`。
+3. 投影 `(mu, Sigma) -> (mu', Sigma')` 使用相机外参与 `mu` 处透视投影的雅可比矩阵（Jacobian）。
+4. 颜色变为球谐展开，在观察方向处求值。
+5. 按真实相机空间 z 深度排序，而不是使用可学习标量。
 
-Every production implementation (`gsplat`, `inria/gaussian-splatting`, `nerfstudio`) does exactly this on the GPU with tile-based CUDA kernels.
+各生产实现，包括 `gsplat`、`inria/gaussian-splatting`、`nerfstudio`，都用基于瓦片的 CUDA 内核在 GPU 上完成这一流程。
 
-### Step 6: Spherical harmonics evaluation
+### 第 6 步：球谐求值（Step 6: Spherical harmonics evaluation）
 
-The SH basis up to degree 3 has 16 terms per channel. Evaluation:
+截至 3 阶的 SH 基每通道有 16 项，求值如下：
 
 ```python
 def eval_sh_degree_3(sh_coeffs, dirs):
@@ -310,11 +310,11 @@ def eval_sh_degree_3(sh_coeffs, dirs):
     return result
 ```
 
-Learned `sh_coeffs` store the "colour in every direction" for that Gaussian. At render time you evaluate against the current view direction and get a 3-vector RGB.
+可学习的 `sh_coeffs` 存储该高斯“各方向的颜色”。渲染时针对当前观察方向求值，得到 RGB 三维向量。
 
-## Use It
+## 实际使用（Use It）
 
-For real 3DGS work, use `gsplat` (Meta) or `nerfstudio`:
+实际 3DGS 工作使用 `gsplat`（Meta）或 `nerfstudio`：
 
 ```bash
 pip install nerfstudio gsplat
@@ -322,48 +322,48 @@ ns-download-data example
 ns-train splatfacto --data path/to/data
 ```
 
-`splatfacto` is nerfstudio's 3DGS trainer. The run takes 10-30 minutes on an RTX 4090 for a typical scene.
+`splatfacto` 是 nerfstudio 的 3DGS 训练器。典型场景在 RTX 4090 上运行需 10-30 分钟。
 
-Export options that matter in 2026:
+2026 年值得关注的导出选项：
 
-- `.ply` — raw Gaussian cloud (portable, largest file).
-- `.splat` — PlayCanvas / SuperSplat quantised format.
-- glTF `KHR_gaussian_splatting` — Khronos standard, portable across viewers (Feb 2026 RC).
-- OpenUSD `UsdVolParticleField3DGaussianSplat` — USD-native, for NVIDIA Omniverse and Vision Pro pipelines.
+- `.ply`：原始高斯点云，可移植、文件最大。
+- `.splat`：PlayCanvas / SuperSplat 量化格式。
+- glTF `KHR_gaussian_splatting`：Khronos 标准，可跨查看器移植，2026 年 2 月发布候选版（Release Candidate，RC）。
+- OpenUSD `UsdVolParticleField3DGaussianSplat`：USD 原生，用于 NVIDIA Omniverse 与 Vision Pro 流水线。
 
-For 4D / dynamic scenes, `4DGS` and `Deformable-3DGS` extend the same machinery with time-varying means and opacities.
+对于四维或动态场景，`4DGS` 与 `Deformable-3DGS` 通过随时间变化的均值和不透明度扩展相同机制。
 
-## Ship It
+## 交付成果（Ship It）
 
-This lesson produces:
+本课产出：
 
-- `outputs/prompt-3dgs-capture-planner.md` — a prompt that plans a capture session (number of photos, camera path, lighting) for a given scene type.
-- `outputs/skill-3dgs-export-router.md` — a skill that picks the right export format (`.ply` / `.splat` / glTF / USD) given the downstream viewer or engine.
+- `outputs/prompt-3dgs-capture-planner.md`：为给定场景类型规划采集活动，包括照片数量、相机路径与光照的提示词。
+- `outputs/skill-3dgs-export-router.md`：根据下游查看器或引擎，选择合适导出格式（`.ply` / `.splat` / glTF / USD）的技能。
 
-## Exercises
+## 练习（Exercises）
 
-1. **(Easy)** Run the 2D splat trainer above on a different synthetic image. Vary `num_splats` in `[16, 64, 256]` and plot MSE vs step for each. Identify the point of diminishing returns.
-2. **(Medium)** Extend the 2D rasteriser to support per-Gaussian RGB colours that depend on a scalar "view angle" through a degree-2 harmonic. Train on a pair of target images and verify the model reconstructs both.
-3. **(Hard)** Clone `nerfstudio` and train `splatfacto` on a 20-photo capture of any scene you have (desk, plant, face, room). Export to glTF `KHR_gaussian_splatting` and open it in a viewer (Three.js `GaussianSplats3D`, SuperSplat, Babylon.js V9). Report training time, number of Gaussians, and rendered fps.
+1. **（简单）** 对另一张合成图像运行上述二维泼溅训练器。将 `num_splats` 设为 `[16, 64, 256]`，分别绘制均方误差（MSE）随步数变化的曲线，找出收益递减点。
+2. **（中等）** 扩展二维光栅器，通过二阶谐波使每个高斯的 RGB 颜色依赖标量“观察角度”。在一对目标图像上训练，验证模型能重建两者。
+3. **（困难）** 克隆 `nerfstudio`，用任意可采集场景的 20 张照片训练 `splatfacto`，例如书桌、植物、面部、房间。导出为 glTF `KHR_gaussian_splatting`，在 Three.js `GaussianSplats3D`、SuperSplat 或 Babylon.js V9 查看器打开。报告训练时间、高斯数量和渲染帧率。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语 | 常见说法 | 实际含义 |
 |------|----------------|----------------------|
-| 3DGS | "Gaussian splats" | Explicit scene representation as millions of 3D Gaussians with per-Gaussian position, rotation, scale, opacity, SH colour |
-| Covariance | "Shape of the Gaussian" | `Sigma = R S S^T R^T`; orientation and anisotropic scale of one Gaussian |
-| Alpha compositing | "Back-to-front blend" | Same equation as NeRF's volumetric render, now over an explicit sparse set |
-| Densification | "Clone and split" | Adaptive addition of new Gaussians where reconstruction is under-fit |
-| Pruning | "Delete low-opacity" | Remove Gaussians that have collapsed to near-zero opacity during training |
-| Spherical harmonics | "View-dependent colour" | Fourier basis on the sphere; stores colour as a function of viewing direction |
-| Splatfacto | "nerfstudio's 3DGS" | The easiest path to training 3DGS in 2026 |
-| `KHR_gaussian_splatting` | "glTF standard" | Khronos 2026 extension that makes 3DGS portable across viewers and engines |
+| 三维高斯泼溅（3DGS） | “高斯泼溅图元” | 用数百万三维高斯显式表示场景，每个高斯携带位置、旋转、尺度、不透明度和球谐颜色 |
+| 协方差（Covariance） | “高斯形状” | `Sigma = R S S^T R^T`，表示高斯朝向与各向异性尺度 |
+| Alpha 合成（Alpha compositing） | “从后到前混合” | 与 NeRF 体渲染方程相同，此处作用于显式稀疏集合 |
+| 致密化（Densification） | “克隆与分裂” | 在重建欠拟合处自适应增加高斯 |
+| 剪枝（Pruning） | “删除低不透明度图元” | 移除训练中不透明度趋近零的高斯 |
+| 球谐函数（Spherical harmonics） | “视角相关颜色” | 球面上的傅里叶基，将颜色存为观察方向的函数 |
+| Splatfacto | “nerfstudio 的 3DGS” | 2026 年最简单的 3DGS 训练路径 |
+| `KHR_gaussian_splatting` | “glTF 标准” | Khronos 2026 年扩展，让 3DGS 可跨查看器与引擎移植 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [3D Gaussian Splatting for Real-Time Radiance Field Rendering (Kerbl et al., SIGGRAPH 2023)](https://repo-sam.inria.fr/fungraph/3d-gaussian-splatting/) — the original paper
-- [gsplat (Meta/nerfstudio)](https://github.com/nerfstudio-project/gsplat) — production-quality CUDA rasteriser
-- [nerfstudio Splatfacto](https://docs.nerf.studio/nerfology/methods/splat.html) — reference training recipe
-- [Khronos KHR_gaussian_splatting extension](https://github.com/KhronosGroup/glTF/blob/main/extensions/2.0/Khronos/KHR_gaussian_splatting/README.md) — the 2026 portable format
-- [OpenUSD 26.03 release notes](https://openusd.org/release/) — `UsdVolParticleField3DGaussianSplat` schema
-- [THE FUTURE 3D State of Gaussian Splatting 2026](https://www.thefuture3d.com/blog-0/2026/4/4/state-of-gaussian-splatting-2026) — industry overview
+- [用于实时辐射场渲染的三维高斯泼溅（Kerbl 等，SIGGRAPH 2023）](https://repo-sam.inria.fr/fungraph/3d-gaussian-splatting/)：原始论文
+- [gsplat（Meta/nerfstudio）](https://github.com/nerfstudio-project/gsplat)：生产级 CUDA 光栅器
+- [nerfstudio Splatfacto](https://docs.nerf.studio/nerfology/methods/splat.html)：参考训练方案
+- [Khronos KHR_gaussian_splatting 扩展](https://github.com/KhronosGroup/glTF/blob/main/extensions/2.0/Khronos/KHR_gaussian_splatting/README.md)：2026 年可移植格式
+- [OpenUSD 26.03 发布说明](https://openusd.org/release/)：`UsdVolParticleField3DGaussianSplat` 模式
+- [THE FUTURE 3D：2026 年高斯泼溅现状](https://www.thefuture3d.com/blog-0/2026/4/4/state-of-gaussian-splatting-2026)：行业概览

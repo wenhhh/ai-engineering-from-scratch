@@ -2,38 +2,38 @@
   "questions": [
     {
       "stage": "pre",
-      "question": "What does the pipe operator '|' do in a shell command?",
-      "options": ["Runs two commands in parallel", "Combines two files into one", "Sends the standard output of one command as standard input to the next", "Saves the output of a command to a file"],
+      "question": "shell 命令中的管道运算符（Pipe Operator）'|' 有什么作用？",
+      "options": ["并行运行两个命令", "将两个文件合成一个", "将一个命令的标准输出作为下一个命令的标准输入", "将命令输出保存到文件"],
       "correct": 2,
-      "explanation": "The pipe operator connects commands in a pipeline. For example, 'cat log.txt | grep error' sends the contents of log.txt as input to grep, which filters for lines containing 'error'."
+      "explanation": "管道运算符将命令连接成流水线。例如，'cat log.txt | grep error' 将 log.txt 的内容作为 grep 的输入，由 grep 筛选包含 'error' 的行。"
     },
     {
       "stage": "pre",
-      "question": "What happens to a running process when you close the terminal that started it?",
-      "options": ["The process pauses until you open a new terminal", "The process continues running in the background", "The process receives a hangup signal (SIGHUP) and typically terminates", "The process automatically migrates to a system service"],
+      "question": "关闭启动进程的终端时，正在运行的进程会怎样？",
+      "options": ["进程暂停，直到打开新终端", "进程继续在后台运行", "进程收到挂断信号（SIGHUP），通常会终止", "进程自动迁移为系统服务"],
       "correct": 2,
-      "explanation": "Closing the terminal sends SIGHUP to child processes, which causes them to terminate by default. Tools like tmux, nohup, or screen prevent this."
+      "explanation": "关闭终端会向子进程（Child Process）发送 SIGHUP，默认会导致其终止。tmux、nohup 或 screen 等工具可以避免这种情况。"
     },
     {
       "stage": "post",
-      "question": "What is the key advantage of tmux over using 'nohup command &' for long-running training jobs?",
-      "options": ["tmux automatically restarts failed processes", "tmux uses less CPU than nohup", "tmux lets you detach, reattach, and see live output with multiple panes", "tmux compresses the process output to save disk space"],
+      "question": "对于长时间运行的训练任务，tmux 相比 'nohup command &' 的主要优势是什么？",
+      "options": ["tmux 自动重启失败的进程", "tmux 比 nohup 使用更少 CPU", "tmux 支持分离、重新附加，并通过多个窗格查看实时输出", "tmux 压缩进程输出以节省磁盘空间"],
       "correct": 2,
-      "explanation": "tmux creates persistent sessions you can detach from and reattach to later, with live output visible in multiple panes. nohup only logs to a file with no way to interact or reattach."
+      "explanation": "tmux 创建持久会话，可以先分离（Detach），稍后重新附加（Reattach），并在多个窗格中查看实时输出。nohup 只能将日志写入文件，无法交互或重新附加。"
     },
     {
       "stage": "post",
-      "question": "What does 'python train.py > output.log 2>&1' accomplish?",
-      "options": ["Runs train.py and saves only errors to output.log", "Runs train.py with double the memory allocation", "Runs train.py twice and logs the second run", "Runs train.py and redirects both standard output and standard error to output.log"],
+      "question": "'python train.py > output.log 2>&1' 完成什么操作？",
+      "options": ["运行 train.py，只将错误保存到 output.log", "以双倍内存分配运行 train.py", "运行 train.py 两次，并记录第二次运行", "运行 train.py，将标准输出和标准错误都重定向到 output.log"],
       "correct": 3,
-      "explanation": "'> output.log' redirects stdout to the file. '2>&1' sends stderr to the same place as stdout. The result is both normal output and errors captured in one file."
+      "explanation": "'> output.log' 将标准输出（stdout）重定向到文件。'2>&1' 将标准错误（stderr）发送到标准输出所在位置。结果是普通输出和错误都被记录在同一个文件中。"
     },
     {
       "stage": "post",
-      "question": "Which command lets you access a remote Jupyter notebook running on port 8888 of a GPU box from your local browser?",
+      "question": "哪个命令能让本地浏览器访问远程 GPU 机器上运行在端口 8888 的 Jupyter 笔记本？",
       "options": ["ssh -L 8888:localhost:8888 user@gpu-box", "ssh user@gpu-box --forward-port 8888", "scp -P 8888 user@gpu-box:~/notebook.ipynb", "rsync -avz user@gpu-box:8888 localhost:8888"],
       "correct": 0,
-      "explanation": "SSH local port forwarding (-L) maps a remote port to your local machine. After this command, opening localhost:8888 in your browser accesses the remote Jupyter server."
+      "explanation": "SSH 本地端口转发（Local Port Forwarding，-L）将远程端口映射到本机。执行此命令后，在浏览器打开 localhost:8888 就能访问远程 Jupyter 服务器。"
     }
   ]
 }

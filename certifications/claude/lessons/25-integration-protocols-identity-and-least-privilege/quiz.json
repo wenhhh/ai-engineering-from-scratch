@@ -1,78 +1,78 @@
 {
   "lesson": "25-integration-protocols-identity-and-least-privilege",
-  "title": "Integration Protocols, Identity, and Least Privilege",
+  "title": "集成协议、身份与最小权限（Integration Protocols, Identity, and Least Privilege）",
   "questions": [
     {
       "stage": "pre",
-      "question": "Support staff only read tickets and draft replies, but their agent also has refund and account-deletion tools. What best reduces risk?",
+      "question": "客服只读工单和起草回复，但智能体还有退款与账户删除工具。什么最能降低风险？",
       "options": [
-        "Route sensitive tool calls to a larger model that can reason more reliably about authorization",
-        "Keep the capabilities visible but require each tool description to repeat the role's policy limits",
-        "Remove the unnecessary tools and scopes from that role",
-        "Keep every tool but log sensitive calls"
+        "将敏感工具调用路由给更大模型，使其更可靠地推理授权",
+        "保持能力可见，但要求每个工具描述重复角色政策限制",
+        "从该角色移除多余工具和权限范围",
+        "保留所有工具，但记录敏感调用"
       ],
       "correct": 2,
-      "explanation": "Least privilege removes capabilities the role does not need. Logging and warnings can support controls but leave the unnecessary authority and attack surface intact."
+      "explanation": "最小权限移除角色不需要的能力。日志和警告可以辅助控制，却保留了多余权限和攻击面。"
     },
     {
       "stage": "check",
-      "question": "Why are capability discovery and execution authorization separate controls?",
+      "question": "为什么能力发现与执行授权是独立控制？",
       "options": [
-        "Discovery is evaluated when a session begins, so authorization is only required for tools reached outside the advertised catalog",
-        "Discovery limits context, so execution authorization is redundant",
-        "Discovery filters capabilities at the host, while the integration protocol automatically authorizes every advertised operation",
-        "Hiding tools reduces exposure, while execution authorization prevents direct or stale unauthorized calls"
+        "发现在会话开始时评估，所以只需对目录之外访问的工具授权",
+        "发现限制上下文，因此执行授权多余",
+        "发现在宿主过滤能力，集成协议自动授权所有公布操作",
+        "隐藏工具减少暴露，执行授权阻止直接或基于过时权限的未授权调用"
       ],
       "correct": 3,
-      "explanation": "A narrow catalog improves selection and exposure, but a caller may still reach an endpoint or permissions may change. The service must authorize every execution."
+      "explanation": "窄目录改善选择和暴露面，但调用者仍可能访问端点，权限也可能变化。服务必须对每次执行授权。"
     },
     {
       "stage": "check",
-      "question": "When is MCP a stronger fit than a direct API?",
+      "question": "什么时候 MCP 比直接 API 更合适？",
       "options": [
-        "When multiple hosts need standardized dynamic discovery of capabilities across server boundaries",
-        "When one stable service needs the lowest latency",
-        "When an integration needs the protocol layer to infer user identity and grant permissions without a separate policy service",
-        "When any Claude application needs tool calls and wants one protocol to replace service-specific authorization"
+        "多个宿主需要跨服务器边界标准化动态发现能力时",
+        "一个稳定服务需要最低延迟时",
+        "集成需要协议层推断用户身份并授予权限，而不使用独立政策服务时",
+        "任何 Claude 应用需要工具调用，希望用统一协议替代服务专用授权时"
       ],
       "correct": 0,
-      "explanation": "MCP earns its extra boundary through standardized capability discovery and integration across hosts. A known low-overhead service call may remain clearer as a direct API."
+      "explanation": "MCP 通过标准化能力发现和跨宿主集成，证明额外边界值得存在。已知且低开销的服务调用仍可能用直接 API 更清晰。"
     },
     {
       "stage": "check",
-      "question": "What must a reliable approval bind to?",
+      "question": "可靠审批必须绑定什么？",
       "options": [
-        "The model's confidence, risk classification, and stated reason for selecting the proposed capability",
-        "Exact action, parameters, requester, approver authority, and expiration",
-        "The tool name and approving tenant",
-        "The current prompt and conversation identifier so all tool calls within that model turn inherit approval"
+        "模型置信度、风险分类及选择能力的理由",
+        "确切操作、参数、请求者、批准者权限和过期时间",
+        "工具名和批准租户",
+        "当前提示词与对话标识，让该模型轮次内所有工具调用继承审批"
       ],
       "correct": 1,
-      "explanation": "Approval is valid for a specific proposed effect under a specific identity and time window. Changed parameters require a new decision."
+      "explanation": "审批只对特定身份与时间窗口内的具体拟议影响有效。参数变化需要新决策。"
     },
     {
       "stage": "post",
-      "question": "A tool returns an authorization error. How should an agent harness classify it?",
+      "question": "工具返回授权错误，智能体运行框架应如何分类？",
       "options": [
-        "Route the request to a stronger model so it can revise the tool parameters until authorization succeeds",
-        "Retry with the same credentials after exponential backoff because authorization services can be temporarily inconsistent",
-        "Non-retryable unless access or approval state changes, with a safe escalation action",
-        "Record the failure as a tool warning, omit the restricted effect, and continue as though the workflow succeeded"
+        "交给更强模型，让它修改参数直到授权成功",
+        "用相同凭据指数退避重试，因为授权服务可能暂时不一致",
+        "权限或审批状态改变前不可重试，并附安全升级操作",
+        "记为工具警告，省略受限效果，像工作流成功一样继续"
       ],
       "correct": 2,
-      "explanation": "Repeating the same unauthorized request cannot succeed. A structured error should explain the safe next step without leaking secret details."
+      "explanation": "重复同一个未授权请求不会成功。结构化错误应说明安全下一步，而不泄露密钥细节。"
     },
     {
       "stage": "post",
-      "question": "Why is an application-wide service API key insufficient for per-user authorization?",
+      "question": "为什么应用级服务 API 密钥不足以实现逐用户授权？",
       "options": [
-        "It prevents downstream audit logs from recording the application identity or the requested service operation",
-        "It authenticates only the client transport and therefore cannot invoke downstream service endpoints directly",
-        "It expires at application scope, so a user request can outlive the credential before authorization is checked",
-        "It identifies broad application authority but may not carry the human principal, tenant, or current scopes"
+        "它阻止下游审计日志记录应用身份或请求的服务操作",
+        "它只认证客户端传输，因此不能直接调用下游端点",
+        "它按应用作用域过期，所以用户请求可能在授权检查前超过凭据有效期",
+        "它标识宽泛应用权限，却未必携带人类主体、租户或当前权限范围"
       ],
       "correct": 3,
-      "explanation": "The downstream service needs trusted claims about the actual principal and requested action. Broad application credentials can collapse user boundaries into unenforceable prompt instructions."
+      "explanation": "下游服务需要关于真实主体和请求操作的可信声明。宽泛应用凭据可能把用户边界压成无法强制执行的提示词指令。"
     }
   ]
 }

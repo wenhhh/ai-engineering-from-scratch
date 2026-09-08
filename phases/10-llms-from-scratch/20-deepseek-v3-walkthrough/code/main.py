@@ -1,14 +1,13 @@
-"""DeepSeek-V3 architecture calculator — stdlib Python.
+"""DeepSeek-V3 架构计算器（Architecture calculator），使用 Python 标准库。
 
-Given the DeepSeek-V3 config, computes:
-  - total parameter count by component
-  - active parameter count per forward (MoE sparse)
-  - KV cache at 128k context (MLA vs GQA hypothetical)
-  - per-layer breakdown (attention / MLP / experts / router / norms)
+给定 DeepSeek-V3 配置，计算:
+  - 各组件的总参数量
+  - 每次前向传播的活跃参数量（MoE 稀疏激活）
+  - 128k 上下文下的 KV 缓存（MLA 与假设的 GQA 比较）
+  - 逐层明细（注意力 / MLP / 专家 / 路由器 / 归一化）
 
-Also runs what-if variants: rank 256 MLA, 512 experts, top-16 routing. The
-goal is reading-a-config-becomes-reading-the-architecture. Same style as the
-Phase 10 · 14 calculator, specialized to DeepSeek-V3's full detail.
+还运行假设变体: 秩为 256 的 MLA、512 个专家、top-16 路由。目标是让读取配置
+成为理解架构的过程。风格与阶段 10 第 14 课计算器相同，专门覆盖 DeepSeek-V3 的细节。
 """
 
 from __future__ import annotations
@@ -53,12 +52,12 @@ class ComponentParams:
 
 def mla_attention_params(hidden: int, n_heads: int, head_dim: int,
                          kv_lora: int, q_lora: int) -> int:
-    """MLA attention parameter count.
-    Q path: hidden -> q_lora -> n_heads * head_dim  (two matmuls).
-    K path: hidden -> kv_lora   (one matmul).
-    V path: hidden -> kv_lora -> n_heads * head_dim  (decompression).
-    K decompression to n_heads * head_dim for attention scoring.
-    Output projection: n_heads * head_dim -> hidden.
+    """多头潜在注意力（MLA）参数量。
+    Q 路径: hidden -> q_lora -> n_heads * head_dim（两次矩阵乘法）。
+    K 路径: hidden -> kv_lora（一次矩阵乘法）。
+    V 路径: hidden -> kv_lora -> n_heads * head_dim（解压缩）。
+    将 K 解压缩至 n_heads * head_dim，用于注意力评分。
+    输出投影: n_heads * head_dim -> hidden。
     """
     q_down = hidden * q_lora
     q_up = q_lora * (n_heads * head_dim)
@@ -82,9 +81,9 @@ def rmsnorm_params(hidden: int) -> int:
 
 
 def mtp_module_params(hidden: int, ff: int) -> int:
-    """Per DeepSeek paper Section 2.2: projection M_k (2h x h) + transformer
-    block. We use dense MLP here for the MTP block (conservative) — the
-    actual published overhead is 14B, which includes MoE structure."""
+    """依据 DeepSeek 论文第 2.2 节: 投影 M_k（2h x h）+ Transformer 块。
+    此处在 MTP 块中使用稠密 MLP（保守估计），公开报告的实际额外参数为 14B，
+    其中包含 MoE 结构。"""
     projection = 2 * hidden * hidden
     attention = 4 * hidden * hidden
     mlp = swiglu_mlp_params(hidden, ff)
@@ -213,51 +212,51 @@ def print_report(name: str, cfg: dict, ctx: int | None = None) -> None:
     r = compute_totals(cfg, ctx=ctx)
     print(f"\n{name}")
     print("-" * 70)
-    print(f"  total params       : {fmt(r.total)}")
-    print(f"  active params      : {fmt(r.active)}")
-    print(f"  active ratio       : {r.active_ratio:.1%}")
-    print(f"  embedding          : {fmt(r.emb)}")
-    print(f"  attention / layer  : {fmt(r.per_layer_attn)}  (MLA)")
-    print(f"  moe block / layer  : {fmt(r.per_layer_moe_block)}  (total)")
-    print(f"  active moe / layer : {fmt(r.per_layer_active)}  (per forward)")
+    print(f"  总参数量 : {fmt(r.total)}")
+    print(f"  活跃参数量 : {fmt(r.active)}")
+    print(f"  活跃比例 : {r.active_ratio:.1%}")
+    print(f"  嵌入（Embedding） : {fmt(r.emb)}")
+    print(f"  每层注意力参数 : {fmt(r.per_layer_attn)}  (MLA)")
+    print(f"  每层 MoE 块参数 : {fmt(r.per_layer_moe_block)}  （总计）")
+    print(f"  每层活跃 MoE 参数 : {fmt(r.per_layer_active)}  （每次前向传播）")
     ctx_used = ctx or cfg["max_position_embeddings"]
-    print(f"  KV cache BF16, {ctx_used:,} ctx : {fmt_bytes(r.kv_cache_bytes)}")
-    print(f"  GQA(8/128) reference       : {fmt_bytes(r.gqa_kv_cache_bytes_ref)}")
-    print(f"  MLA savings              : "
+    print(f"  BF16 KV 缓存，{ctx_used:,} 上下文 : {fmt_bytes(r.kv_cache_bytes)}")
+    print(f"  GQA(8/128) 参考值       : {fmt_bytes(r.gqa_kv_cache_bytes_ref)}")
+    print(f"  MLA 节省比例              : "
           f"{(1 - r.kv_cache_bytes / r.gqa_kv_cache_bytes_ref) * 100:.0f}%")
 
 
 def main() -> None:
     print("=" * 70)
-    print("DEEPSEEK-V3 ARCHITECTURE WALKTHROUGH (Phase 10, Lesson 20)")
+    print("DeepSeek-V3 架构详解（Architecture Walkthrough，阶段 10，第 20 课）")
     print("=" * 70)
 
-    print_report("DeepSeek-V3 (published config)", DEEPSEEK_V3, ctx=131_072)
+    print_report("DeepSeek-V3（公开配置）", DEEPSEEK_V3, ctx=131_072)
 
     variant = dict(DEEPSEEK_V3)
     variant["kv_lora_rank"] = 256
-    print_report("DeepSeek-V3 (MLA rank 256 what-if)", variant, ctx=131_072)
+    print_report("DeepSeek-V3（假设 MLA 秩为 256）", variant, ctx=131_072)
 
     variant = dict(DEEPSEEK_V3)
     variant["num_experts"] = 512
     variant["num_experts_per_tok"] = 8
-    print_report("DeepSeek-V3 (512 experts, top-8 what-if)", variant,
+    print_report("DeepSeek-V3（假设 512 个专家、top-8）", variant,
                  ctx=131_072)
 
     variant = dict(DEEPSEEK_V3)
     variant["num_experts_per_tok"] = 16
-    print_report("DeepSeek-V3 (256 experts, top-16 what-if)", variant,
+    print_report("DeepSeek-V3（假设 256 个专家、top-16）", variant,
                  ctx=131_072)
 
     print()
     print("=" * 70)
-    print("HEADLINE: total 671B published, this calculator hits ~476B-490B")
+    print("关键结果: 公开总参数量为 671B，本计算器得到 ~476B-490B")
     print("-" * 70)
-    print("  The delta comes from additional structural parameters the report")
-    print("  itemizes in Section 2 appendix: expert-specific biases, shared")
-    print("  expert scaling, MoE-shaped MTP module, and sub-components this")
-    print("  simplified calculator groups together. Order of magnitude and")
-    print("  ratios (e.g. 5-6% active/total) match the paper exactly.")
+    print("  差异来自报告第 2 节附录列出的额外结构参数:")
+    print("  专家专属偏置（Expert-specific biases）、共享")
+    print("  专家缩放、MoE 结构的 MTP 模块，以及此简化计算器")
+    print("  合并处理的子组件。数量级与")
+    print("  比例（例如 5-6% 的活跃/总量比）与论文完全一致。")
 
 
 if __name__ == "__main__":

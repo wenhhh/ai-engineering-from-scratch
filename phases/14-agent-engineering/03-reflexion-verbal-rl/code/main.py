@@ -1,7 +1,7 @@
-"""Toy Reflexion loop — Actor, Evaluator, Self-Reflector, Episodic memory.
+"""教学用 Reflexion 循环——行动器（Actor）、评估器（Evaluator）、自我反思器（Self-Reflector）与情景记忆（Episodic memory）。
 
-Task: pick three integers from 1..9 that sum to a target. The Actor is
-scripted to start with a bad strategy and adapt when reflections are present.
+任务：从 1..9 中选出三个整数，使其和等于目标值。行动器按预设脚本
+从错误策略开始，并在存在反思记录时调整策略。
 """
 
 from __future__ import annotations
@@ -30,14 +30,14 @@ class EpisodicMemory:
 
     def as_prompt(self) -> str:
         if not self.items:
-            return "(no prior reflections)"
-        lines = [f"- trial {r.trial}: {r.text}" for r in self.items]
+            return "（无先前反思）"
+        lines = [f"- 第 {r.trial} 次尝试： {r.text}" for r in self.items]
         return "\n".join(lines)
 
 
 class Actor:
-    """Scripted policy. Without reflections it stays on bad choices; with
-    at least one reflection it moves toward the target sum."""
+    """预设脚本策略。没有反思时持续做出错误选择；
+    只要有至少一条反思，就开始向目标和靠近。"""
 
     def act(self, memory: EpisodicMemory) -> list[int]:
         n = len(memory.items)
@@ -58,10 +58,10 @@ def binary_evaluator(attempt: list[int], target: int) -> tuple[bool, int]:
 class SelfReflector:
     def reflect(self, attempt: list[int], delta: int) -> str:
         if delta < 0:
-            return f"sum {sum(attempt)} is {-delta} short; pick larger values"
+            return f"当前和为 {sum(attempt)}，还差 {-delta}；请选择更大的数值"
         if delta > 0:
-            return f"sum {sum(attempt)} overshoots by {delta}; pick smaller values"
-        return "succeeded"
+            return f"当前和为 {sum(attempt)}，超出 {delta}；请选择更小的数值"
+        return "成功"
 
 
 @dataclass
@@ -93,32 +93,32 @@ def summarize(trials: list[TrialResult], name: str) -> None:
     print(f"\n{name}")
     print("-" * 60)
     for r in trials:
-        mark = "OK " if r.success else "..."
-        print(f"  trial {r.trial}: {r.attempt} sum={sum(r.attempt)} "
-              f"delta={r.delta:+d} {mark} -> {r.reflection}")
+        mark = "成功 " if r.success else "..."
+        print(f"  第 {r.trial} 次尝试：{r.attempt} 和={sum(r.attempt)} "
+              f"差值={r.delta:+d} {mark} -> {r.reflection}")
     last = trials[-1]
-    print(f"  final: {'success' if last.success else 'failed'} "
-          f"at trial {last.trial}")
+    print(f"  最终结果：{'成功' if last.success else '失败'} "
+          f"在第 {last.trial} 次尝试时")
 
 
 def main() -> None:
     print("=" * 70)
-    print(f"REFLEXION — pick three ints in [1..9] summing to {TARGET}")
-    print("Phase 14, Lesson 03")
+    print(f"Reflexion——从 [1..9] 选三个整数，使其和为 {TARGET}")
+    print("第 14 阶段，第 03 课")
     print("=" * 70)
 
     trials_no_mem = run_reflexion(max_trials=4, use_memory=False)
-    summarize(trials_no_mem, "BASELINE (no episodic memory)")
+    summarize(trials_no_mem, "基线（Baseline，不使用情景记忆）")
 
     trials_mem = run_reflexion(max_trials=4, use_memory=True)
-    summarize(trials_mem, "REFLEXION (episodic memory on)")
+    summarize(trials_mem, "Reflexion（启用情景记忆）")
 
     baseline_steps = len(trials_no_mem)
     reflex_steps = len(trials_mem)
     print()
-    print(f"baseline used {baseline_steps} trials; reflexion used {reflex_steps}.")
-    print("Without a reflection in the prompt, the scripted actor never adapts.")
-    print("With one reflection, the actor corrects; with two, it converges.")
+    print(f"基线使用了 {baseline_steps} 次尝试；Reflexion 使用了 {reflex_steps} 次。")
+    print("提示词（Prompt）中没有反思记录时，脚本式行动器始终不会调整。")
+    print("有一条反思时，行动器开始纠正；有两条时，便收敛到目标。")
 
 
 if __name__ == "__main__":

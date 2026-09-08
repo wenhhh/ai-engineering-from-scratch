@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "id": "shaping-the-build",
-  "title": "Product Judgment and Delivery",
-  "summary": "Turn evidence into outcomes, assumptions, testable slices, executable specifications, measurement plans, and owned feedback loops.",
+  "title": "产品判断与交付（Product Judgment and Delivery）",
+  "summary": "将证据转化为预期成效（Outcome）、假设（Assumption）、可测试切片（Testable slice）、可执行规格（Executable specification）、衡量计划与责任明确的反馈循环（Feedback loop）。",
   "estimatedMinutes": 550,
   "lessons": [
     {"order": 1, "path": "phases/14-agent-engineering/47-outcomes-before-output", "minutes": 60, "required": true},

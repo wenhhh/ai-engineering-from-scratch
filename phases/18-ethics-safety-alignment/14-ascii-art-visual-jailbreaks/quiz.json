@@ -1,75 +1,75 @@
 {
   "lesson": "14-ascii-art-visual-jailbreaks",
-  "title": "ASCII Art and Visual Jailbreaks",
+  "title": "ASCII 艺术与视觉越狱（ASCII Art and Visual Jailbreaks）",
   "questions": [
     {
       "stage": "pre",
-      "question": "Why do token-level and semantic-level safety filters miss ArtPrompt-style attacks?",
+      "question": "为什么词元级和语义级安全过滤器会漏掉 ArtPrompt 风格攻击？",
       "options": [
-        "ArtPrompt always uses base64 encoding",
-        "ArtPrompt requires fine-tuning the model",
-        "ArtPrompt operates at the visual recognition level: the filter sees harmless punctuation while the model reads the rendered letters as a word",
-        "ArtPrompt is only effective on multimodal models"
+        "ArtPrompt 总使用 base64 编码",
+        "ArtPrompt 需要微调模型",
+        "ArtPrompt 作用于视觉识别层面：过滤器看到无害标点，而模型将绘制的字母读成词语",
+        "ArtPrompt 只对多模态模型有效"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "What are the two steps of ArtPrompt as described in Jiang et al. (ACL 2024)?",
+      "question": "Jiang 等人（ACL 2024）描述的 ArtPrompt 两个步骤是什么？",
       "options": [
-        "Tokenizer mismatch, then context truncation",
-        "Random search, then perplexity boosting",
-        "Translation to French, then back-translation",
-        "Word identification of safety-relevant tokens, then ASCII-art substitution and cloaked-prompt generation"
+        "分词器不匹配，然后截断上下文",
+        "随机搜索，然后提高困惑度",
+        "翻译成法语，然后回译",
+        "识别与安全有关的词元，再进行 ASCII 艺术替换并生成伪装提示词"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Why does perplexity-filter (PPL) defense fail on ArtPrompt?",
+      "question": "为什么困惑度过滤（PPL）防御对 ArtPrompt 失效？",
       "options": [
-        "Perplexity filters are disabled by default",
-        "Perplexity is not measurable on ASCII art",
-        "Perplexity always equals zero on cloaked input",
-        "ASCII art has high perplexity, but so does any legitimate structured input; thresholds that block the attack also block legitimate content"
+        "困惑度过滤器默认关闭",
+        "ASCII 艺术无法测量困惑度",
+        "伪装输入的困惑度总为零",
+        "ASCII 艺术困惑度高，但合法结构化输入也如此；阻止攻击的阈值也会阻止合法内容"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "What does the ViTC benchmark measure?",
+      "question": "ViTC 基准测量什么？",
       "options": [
-        "The model's training-data toxicity",
-        "The model's tool-calling accuracy",
-        "The model's ability to read non-semantic visual prompts (ASCII art, wingdings, similar encoded text)",
-        "The model's ability to compress vision data"
+        "模型训练数据的毒性",
+        "模型工具调用准确率",
+        "模型读取非语义视觉提示词的能力，例如 ASCII 艺术、Wingdings 和类似编码文本",
+        "模型压缩视觉数据的能力"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "What does StructuralSleight generalize ArtPrompt to?",
+      "question": "StructuralSleight 将 ArtPrompt 推广到了什么？",
       "options": [
-        "Image inputs only",
-        "Long-context shot stuffing",
-        "Adversarial token suffixes via gradient search",
-        "Uncommon Text-Encoded Structures (UTES): trees, graphs, nested JSON, CSV-in-JSON, diff-style code, etc."
+        "只有图像输入",
+        "长上下文样本填充",
+        "通过梯度搜索生成对抗词元后缀",
+        "非常见文本编码结构（UTES），包括树、图、嵌套 JSON、JSON 中的 CSV、diff 风格代码等"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "What is the capability-safety tradeoff implied by ViTC results?",
+      "question": "ViTC 结果意味着怎样的能力与安全权衡？",
       "options": [
-        "Larger context windows reduce ArtPrompt success",
-        "Visual recognition is unrelated to ArtPrompt success",
-        "The better the model reads non-semantic visual text, the more effective ArtPrompt-style attacks are on it",
-        "Smaller models are always more secure"
+        "更大上下文窗口降低 ArtPrompt 成功率",
+        "视觉识别与 ArtPrompt 成功率无关",
+        "模型越善于读取非语义视觉文本，ArtPrompt 风格攻击对它越有效",
+        "更小的模型总是更安全"
       ],
       "correct": 2,
       "explanation": ""

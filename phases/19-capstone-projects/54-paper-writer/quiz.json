@@ -1,58 +1,58 @@
 {
   "lesson": "54-paper-writer",
-  "title": "Paper Writer",
+  "title": "论文撰写器（Paper Writer）",
   "questions": [
     {
       "stage": "pre",
-      "question": "Why does the writer declare sections, figures, and citations as data before any prose is written?",
+      "question": "为什么撰写器在撰写任何正文之前，就把章节、图和文献引用声明为数据？",
       "options": [
-        "Because BibTeX cannot resolve forward references",
-        "Because LaTeX requires a forward declaration",
-        "Because the model needs a system prompt",
-        "Because the structure is the contract: the harness can validate completeness before prose generation"
+        "因为 BibTeX 无法解析前向引用",
+        "因为 LaTeX 需要前向声明",
+        "因为模型需要系统提示词",
+        "因为结构就是契约：执行框架可以在生成正文之前验证完整性"
       ],
       "correct": 3,
-      "explanation": "Structure-first lets the harness validate uniqueness, citation coverage, and figure coverage before invoking the prose generator. The skeleton is the contract."
+      "explanation": "结构优先让执行框架能在调用正文生成器之前，检查唯一性、文献引用覆盖和图覆盖。骨架就是契约。"
     },
     {
       "stage": "pre",
-      "question": "What does the figure-injection step produce from an experiment manifest?",
+      "question": "图注入步骤从实验清单生成什么？",
       "options": [
-        "A list of Figure records with stable ids and paths normalised to the paper directory",
-        "A bibliography stub",
-        "A PDF compiled from artifacts",
-        "A model prompt with figure descriptions"
+        "一组 Figure 记录，具有稳定 ID，以及相对于论文目录规范化的路径",
+        "一个参考文献占位文件",
+        "一个根据产物编译出的 PDF",
+        "一个包含图描述的模型提示词"
       ],
       "correct": 0,
-      "explanation": "read_experiment_manifest returns Figure records. Ids are deterministic, paths are normalised, captions come from the manifest."
+      "explanation": "read_experiment_manifest 返回 Figure 记录。ID 是确定性的，路径经过规范化，图注来自清单。"
     },
     {
       "stage": "check",
-      "question": "Which validation failure raises PaperValidationError before any file is written?",
+      "question": "哪种校验失败会在任何文件写入之前抛出 PaperValidationError？",
       "options": [
-        "An abstract longer than 200 words",
-        "An odd number of authors",
-        "A section that cites a key not declared in the bibliography",
-        "A figure path that does not exist on disk"
+        "摘要超过 200 词",
+        "作者人数为奇数",
+        "某章节引用了参考文献中未声明的键",
+        "图路径在磁盘上不存在"
       ],
       "correct": 2,
-      "explanation": "Missing bibliography keys, duplicate figure ids, empty title, empty abstract, and unknown figure refs all raise PaperValidationError. Existence on disk is not enforced because the LaTeX compiler enforces it later."
+      "explanation": "参考文献键缺失、图 ID 重复、标题为空、摘要为空，以及未知的图引用，都会抛出 PaperValidationError。此处不强制检查文件在磁盘上是否存在，因为 LaTeX 编译器稍后会检查。"
     },
     {
       "stage": "check",
-      "question": "Why is the prose generator a callable injected into PaperWriter rather than a method on it?",
+      "question": "为什么正文生成器是注入 PaperWriter 的可调用对象，而不是它自身的方法？",
       "options": [
-        "Because tests can swap a deterministic MockProseGenerator for a model call without touching the writer",
-        "Because LaTeX requires a callback",
-        "Because the dataclass cannot hold state",
-        "Because Python does not allow methods to take Paper as an argument"
+        "因为测试可以用确定性的 MockProseGenerator 替换模型调用，而不改动撰写器",
+        "因为 LaTeX 需要回调",
+        "因为数据类不能保存状态",
+        "因为 Python 不允许方法接收 Paper 参数"
       ],
       "correct": 0,
-      "explanation": "The writer takes the prose generator as a dependency. The test substitutes MockProseGenerator. Production substitutes a model call. The writer is unchanged."
+      "explanation": "撰写器将正文生成器作为依赖接收。测试替换为 MockProseGenerator，生产环境替换为模型调用，撰写器保持不变。"
     },
     {
       "stage": "post",
-      "question": "What three files does PaperWriter.write emit on success?",
+      "question": "PaperWriter.write 成功时输出哪三个文件？",
       "options": [
         "paper.tex, references.bib, manifest.json",
         "manifest.json, prose.txt, paper.pdf",
@@ -60,19 +60,19 @@
         "outline.json, paper.tex, figures.tar"
       ],
       "correct": 0,
-      "explanation": "paper.tex is the LaTeX source. references.bib is the bibliography. manifest.json is the structured artifact the critic loop reads next."
+      "explanation": "paper.tex 是 LaTeX 源文件，references.bib 是参考文献文件，manifest.json 是下一步评审循环读取的结构化产物。"
     },
     {
       "stage": "post",
-      "question": "Why is the manifest part of the writer's contract instead of just the LaTeX file?",
+      "question": "为什么撰写器的契约包含清单，而不只是 LaTeX 文件？",
       "options": [
-        "Because downstream tooling (critics, dashboards) reads structured manifests, not LaTeX",
-        "Because manifest.json is the only file BibTeX accepts",
-        "Because LaTeX is too large to parse",
-        "Because LaTeX compilers reject untyped sections"
+        "因为下游工具（评审器、仪表盘）读取结构化清单，而不是 LaTeX",
+        "因为 manifest.json 是 BibTeX 唯一接受的文件",
+        "因为 LaTeX 太大而无法解析",
+        "因为 LaTeX 编译器拒绝无类型章节"
       ],
       "correct": 0,
-      "explanation": "The manifest is a stable interface for downstream stages. Critics and dashboards inspect manifest.json. LaTeX is the human-readable artifact, not the machine interface."
+      "explanation": "清单是下游阶段的稳定接口。评审器和仪表盘检查 manifest.json。LaTeX 是供人阅读的产物，不是机器接口。"
     }
   ]
 }

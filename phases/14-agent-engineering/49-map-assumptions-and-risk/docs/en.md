@@ -1,105 +1,105 @@
-# Map Assumptions and Resolve the Riskiest One First
+# 绘制假设地图，先解决风险最高的一项（Map Assumptions and Resolve the Riskiest One First）
 
-> A roadmap hides uncertainty inside features. An assumption map exposes what must be true before those features deserve to exist.
+> 路线图把不确定性藏在功能里。假设地图揭示：哪些条件必须成立，这些功能才值得存在。
 
 **Type:** Learn + Build
-**Languages:** Python (stdlib)
-**Prerequisites:** Phase 14 lesson 48
-**Time:** ~65 minutes
+**Languages:** Python（标准库）
+**Prerequisites:** 阶段 14 第 48 课
+**Time:** 约 65 分钟
 
-## Learning Objectives
+## 学习目标（Learning Objectives）
 
-- Convert proposed work into explicit assumptions.
-- Score impact, uncertainty, and irreversibility separately.
-- Choose the next experiment by risk, not enthusiasm.
-- Replace tested assumptions with evidence and decisions.
+- 将拟议工作转为明确假设。
+- 分别评估影响、不确定性与不可逆性。
+- 根据风险而非热情选择下一项实验。
+- 用证据与决定替换已测试假设。
 
-## Every Build Contains Bets
+## 每次构建都包含押注（Every Build Contains Bets）
 
-An incident tool may depend on all of these being true:
+事故工具可能依赖以下条件全部成立：
 
-- alert context contains enough information to identify a service;
-- engineers trust a recommendation they did not derive themselves;
-- the desired response time matters operationally;
-- required data can be accessed without unsafe authority;
-- the workflow happens often enough to justify maintenance.
+- 告警上下文有足够信息识别服务；
+- 工程师信任并非自己推导的建议；
+- 期望响应时间在运维上有意义；
+- 无需不安全权限即可访问所需数据；
+- 工作流发生频率足以证明维护投入合理。
 
-These are not implementation tasks. They are conditions for the build to be valuable, usable, feasible, and safe.
+这些不是实现任务，而是构建有价值、可用、可行且安全的条件。
 
-## Assumption Classes
+## 假设类别（Assumption Classes）
 
-| Class | Question |
+| 类别 | 问题 |
 |---|---|
-| Value | Will the outcome matter enough? |
-| Usability | Can the user understand and act on it? |
-| Feasibility | Can the system produce it with available data and constraints? |
-| Viability | Can the organization sustain cost, ownership, and operation? |
-| Safety | Can it fail without unacceptable consequence? |
+| 价值（Value） | 成效是否足够重要？ |
+| 可用性（Usability） | 用户能否理解并据此行动？ |
+| 技术可行性（Feasibility） | 系统能否在现有数据与约束下产出它？ |
+| 运营可持续性（Viability） | 组织能否承担成本、责任与运营？ |
+| 安全性（Safety） | 失败时能否避免不可接受的后果？ |
 
-Write assumptions as falsifiable statements. “The feature is useful” cannot be tested. “Eight of ten on-call engineers identify the correct service faster with the read-only result” can.
+把假设写成可证伪陈述。“功能有用”无法测试。“十名值班工程师中有八名，凭只读结果能更快识别正确服务”则可以。
 
-## Risk Is Not One Number
+## 风险不是单个数字（Risk Is Not One Number）
 
-The lab uses three dimensions from one to five:
+实验使用三个 1 至 5 分维度：
 
-- **Impact:** damage if the assumption is false.
-- **Uncertainty:** weakness of current evidence.
-- **Irreversibility:** cost of learning after commitment.
+- **影响（Impact）：** 假设为假时的损害。
+- **不确定性（Uncertainty）：** 当前证据的薄弱程度。
+- **不可逆性（Irreversibility）：** 已经投入实施之后，才发现新情况所需付出的代价。
 
-The example score multiplies impact and uncertainty, then adds irreversibility. The formula is not universal. Its purpose is to force the team to state why one unknown should be resolved before another.
+示例分数将影响与不确定性相乘，再加上不可逆性。公式并非通用；目的是迫使团队说明，为何某个未知项应先于另一个解决。
 
 ```mermaid
 flowchart LR
-  A[Assumptions] --> S[Score risk]
-  S --> H[Highest open risk]
-  H --> X[Cheapest decisive experiment]
-  X --> E{Evidence}
-  E -->|Supports| B[Bounded build]
-  E -->|Rejects| R[Reframe or stop]
+  A[假设] --> S[风险评分]
+  S --> H[最高未解风险]
+  H --> X[最便宜的决定性实验]
+  X --> E{证据}
+  E -->|支持| B[有边界的构建]
+  E -->|否定| R[重新界定或停止]
 ```
 
-## Design an Experiment, Not a Confirmation Ritual
+## 设计实验，而非确认仪式（Design an Experiment, Not a Confirmation Ritual）
 
-A useful test has:
+有用的测试具备：
 
-- a claim that could be false;
-- a population or realistic sample;
-- an observable result;
-- a threshold decided before the result;
-- a next decision for pass, fail, and ambiguous evidence.
+- 可能为假的主张；
+- 人群或真实样本；
+- 可观察结果；
+- 看到结果前决定的阈值；
+- 对通过、失败与模糊证据分别设定的下一步决定。
 
-Avoid tests that only demonstrate that the team can build the idea.
+避免只演示团队能把想法做出来的测试。
 
-## Reversibility Changes Order
+## 可逆性改变顺序（Reversibility Changes Order）
 
-High-consequence, irreversible choices need earlier evidence. A read-only replay can precede a production integration. A temporary adapter can precede a data migration. A human-approved recommendation can precede automatic action.
+后果重大且不可逆的选择需要更早获得证据。只读回放可先于生产集成，临时适配器可先于数据迁移，人工批准的建议可先于自动行动。
 
-The shape of the build should follow the shape of uncertainty.
+如何安排构建工作，应取决于尚待解决的不确定性。
 
-## Build It
+## 动手实现（Build It）
 
-The lab ranks assumptions, distinguishes tested from open claims, selects the highest open risk, and writes `outputs/assumption-map.json`.
+实验对假设排序，区分已测试与未解决主张，选择最高未解风险，并写入 `outputs/assumption-map.json`。
 
 ```bash
 python3 code/main.py
 python3 -m unittest discover code/tests -v
 ```
 
-Change the evidence on the highest-risk assumption and observe how the next experiment changes.
+改变最高风险假设的证据，观察下一项实验如何变化。
 
-## Exercises
+## 练习（Exercises）
 
-1. Write five assumptions for a feature you want to build.
-2. Add one safety assumption that your feature list omitted.
-3. Define a threshold that would cause you to stop the build.
-4. Replace one large experiment with a cheaper decisive test.
-5. Compare risk ranking with roadmap priority and explain the mismatch.
+1. 为想构建的功能写五项假设。
+2. 添加功能清单遗漏的一项安全假设。
+3. 定义一个会导致停止构建的阈值。
+4. 用更便宜的决定性测试替换一个大型实验。
+5. 比较风险排名与路线图优先级，解释不一致之处。
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [Barry Boehm, A Spiral Model of Software Development and Enhancement](https://dl.acm.org/doi/10.1145/12944.12948), for a risk-driven development cycle that resolves uncertainty before deeper commitment.
-- [Dardenne, van Lamsweerde, and Fickas, Goal-Directed Requirements Acquisition](https://doi.org/10.1016/0167-6423(93)90021-G), for refining goals while surfacing obstacles and constraints.
+- [Barry Boehm：软件开发与改进的螺旋模型（A Spiral Model of Software Development and Enhancement）](https://dl.acm.org/doi/10.1145/12944.12948)，讨论在投入更深之前解决不确定性的风险驱动开发循环。
+- [Dardenne、van Lamsweerde 与 Fickas：目标导向需求获取（Goal-Directed Requirements Acquisition）](https://doi.org/10.1016/0167-6423(93)90021-G)，讨论细化目标，同时揭示障碍与约束。
 
-## What You Keep
+## 保留产物（What You Keep）
 
-Keep `outputs/assumption-map.json`. The next lesson uses it to choose the smallest slice that can produce decisive evidence.
+保留 `outputs/assumption-map.json`。下一课用它选择能产生决定性证据的最小切片。

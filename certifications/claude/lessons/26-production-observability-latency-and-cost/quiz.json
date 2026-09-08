@@ -1,78 +1,78 @@
 {
   "lesson": "26-production-observability-latency-and-cost",
-  "title": "Production Observability, Latency, and Cost",
+  "title": "生产可观测性、延迟与成本（Production Observability, Latency, and Cost）",
   "questions": [
     {
       "stage": "pre",
-      "question": "A dashboard shows 99.9 percent successful API calls, but users report wrong answers. What is missing?",
+      "question": "仪表盘显示 API 调用成功率 99.9%，用户却报告错误答案。缺少什么？",
       "options": [
-        "A lower generation temperature recorded as an attribute on every successful model span",
-        "Task-quality and trajectory evaluation connected to system traces",
-        "A larger model for semantic errors",
-        "A transport retry metric that separates transient HTTP failures from successful first-attempt requests"
+        "在每个成功模型跨度上记录较低生成温度",
+        "关联到系统追踪的任务质量与轨迹评估",
+        "用于语义错误的更大模型",
+        "区分暂时 HTTP 失败和首次即成功请求的传输重试指标"
       ],
       "correct": 1,
-      "explanation": "Transport success only proves the protocol completed. The system needs evidence about retrieval, tools, validation, final-state quality, and downstream outcomes."
+      "explanation": "传输成功只证明协议完成。系统需要检索、工具、验证、最终状态质量和下游结果证据。"
     },
     {
       "stage": "check",
-      "question": "Why should a team monitor P95 latency as well as P50?",
+      "question": "团队为什么除了 P50，还应监控 P95 延迟？",
       "options": [
-        "P95 combines response time and model accuracy so a team can detect quality degradation in slow requests",
-        "P95 approximates the slowest request",
-        "P95 exposes slow paths such as retries, large contexts, and tool timeouts that the median hides",
-        "P50 is unstable at production traffic volumes, while P95 remains comparable across any sample size"
+        "P95 结合响应时间和模型准确率，让团队检测慢请求的质量下降",
+        "P95 近似最慢请求",
+        "P95 暴露中位数隐藏的重试、长上下文和工具超时等慢路径",
+        "P50 在生产流量下不稳定，而 P95 在任意样本量间都可比较"
       ],
       "correct": 2,
-      "explanation": "The median describes the ordinary path. Tail percentiles reveal a slower cohort that can dominate user complaints and timeout behavior."
+      "explanation": "中位数描述普通路径。尾部分位数揭示可能主导用户投诉和超时的较慢群体。"
     },
     {
       "stage": "check",
-      "question": "Which cost comparison best supports model routing decisions?",
+      "question": "哪种成本比较最能支持模型路由决策？",
       "options": [
-        "The average provider charge per model call, including cached and uncached input tokens",
-        "The monthly application infrastructure spend allocated across all attempted tasks, regardless of acceptance",
-        "The output-token price for each model multiplied by the median completion length",
-        "Total model, tool, retry, review, and correction cost per accepted task outcome"
+        "每次模型调用的平均服务商费用，包括缓存和未缓存输入词元",
+        "应用月度基础设施开销除以全部尝试任务，不考虑接受情况",
+        "每个模型输出词元价格乘以完成长度中位数",
+        "每个获接受任务结果的模型、工具、重试、评审和修正总成本"
       ],
       "correct": 3,
-      "explanation": "A cheaper call can create more retries and review. Cost per successful outcome incorporates the full trajectory and enables a fair architecture comparison."
+      "explanation": "便宜调用可能带来更多重试和评审。每个成功结果成本包含完整轨迹，使架构比较公平。"
     },
     {
       "stage": "check",
-      "question": "What is the primary purpose of a distributed trace in a Claude application?",
+      "question": "Claude 应用中分布式追踪的主要用途是什么？",
       "options": [
-        "Connect model, retrieval, tool, validation, retry, and approval spans for one trajectory",
-        "Store complete user inputs and credentials so every production failure can be reproduced from one record",
-        "Guarantee task correctness by proving that every required model, retrieval, and tool span completed successfully",
-        "Replace aggregate service metrics"
+        "连接同一轨迹的模型、检索、工具、验证、重试和审批跨度",
+        "存储完整用户输入和凭据，让每个生产失败都能从一条记录复现",
+        "证明所有必需模型、检索和工具跨度成功完成，从而保证任务正确",
+        "替代聚合服务指标"
       ],
       "correct": 0,
-      "explanation": "A trace reveals where time and failure occurred across the end-to-end path. Metrics aggregate behavior, while evaluations determine correctness."
+      "explanation": "追踪揭示端到端路径中时间和失败发生在哪里。指标聚合行为，评估判断正确性。"
     },
     {
       "stage": "post",
-      "question": "After a release, P95 latency and cost rise while P50 stays stable. Which investigation is most useful?",
+      "question": "发布后 P95 延迟和成本上升，P50 稳定。哪项调查最有用？",
       "options": [
-        "Treat the stable median as evidence that the release is healthy and wait for the tail to converge with more traffic",
-        "Inspect slow-path retries, rate limits, large inputs, tool timeouts, and cache misses by release version",
-        "Disable detailed tracing because added span collection is the most likely cause of the higher cost and tail latency",
-        "Shorten all prompts with higher median token use"
+        "把稳定中位数当成发布健康证据，等待更多流量让尾部收敛",
+        "按发布版本检查慢路径重试、限流、大输入、工具超时和缓存未命中",
+        "关闭详细追踪，因为新增跨度采集最可能造成成本和尾延迟增加",
+        "缩短所有词元中位用量较高的提示词"
       ],
       "correct": 1,
-      "explanation": "The shape points to a slow cohort rather than a universal slowdown. Versioned traces and strata can identify retries, tools, input size, and cache behavior in that cohort."
+      "explanation": "这种形态指向慢群体，而非普遍变慢。版本化追踪和分层可识别该群体的重试、工具、输入大小与缓存行为。"
     },
     {
       "stage": "post",
-      "question": "Which rollout policy is strongest for a new architecture variant?",
+      "question": "新架构变体最稳妥的上线政策是什么？",
       "options": [
-        "Canary the variant while monitoring transport errors and latency, then evaluate task quality after reaching full traffic",
-        "Route all low-risk traffic to the cheapest variant first, then add quality evaluation if user complaints increase",
-        "Shadow, canary, guarded expansion, and automatic rollback using quality, safety, latency, and cost gates",
-        "Release to all users after the offline suite and one production demo pass, then compare aggregate metrics with the prior release"
+        "金丝雀期间监控传输错误和延迟，全流量后才评估任务质量",
+        "先把全部低风险流量给最便宜变体，投诉增加时再添加质量评估",
+        "采用影子、金丝雀、受控扩量和自动回滚，以质量、安全、延迟和成本作为门禁",
+        "离线套件和一次生产演示通过后全量发布，再与前版比较聚合指标"
       ],
       "correct": 2,
-      "explanation": "Progressive exposure limits harm while collecting live evidence. Multiple gates prevent an economic improvement from hiding quality or safety regression."
+      "explanation": "渐进暴露在收集真实证据时限制伤害。多重门禁防止经济性改善掩盖质量或安全回归。"
     }
   ]
 }

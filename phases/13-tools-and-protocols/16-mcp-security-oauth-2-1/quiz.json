@@ -1,22 +1,22 @@
 {
   "lesson": "16-mcp-security-oauth-2-1",
-  "title": "MCP Authorization: CIMD, Issuer Binding, PKCE, and Step-Up",
+  "title": "MCP 授权：CIMD、签发者绑定、PKCE 与权限提升（MCP Authorization: CIMD, Issuer Binding, PKCE, and Step-Up）",
   "questions": [
     {
       "stage": "pre",
-      "question": "Which mechanism is preferred for new MCP OAuth client enrollment in 2026-07-28?",
+      "question": "2026-07-28 中，新的 MCP OAuth 客户端登记优先采用什么机制？",
       "options": [
-        "An access token in the URL",
+        "URL 中的访问令牌",
         "Mcp-Session-Id",
-        "Client ID Metadata Documents",
-        "Dynamic Client Registration"
+        "客户端 ID 元数据文档（Client ID Metadata Documents）",
+        "动态客户端注册（Dynamic Client Registration）"
       ],
       "correct": 2,
-      "explanation": "CIMD is preferred; DCR is deprecated and retained as a compatibility path."
+      "explanation": "优先使用 CIMD；DCR 已弃用，仅作为兼容路径保留。"
     },
     {
       "stage": "check",
-      "question": "What application_type should a desktop client with a loopback redirect declare during DCR fallback?",
+      "question": "使用环回重定向的桌面客户端，在 DCR 回退期间应声明什么 application_type？",
       "options": [
         "web",
         "stateless",
@@ -24,47 +24,47 @@
         "confidential"
       ],
       "correct": 2,
-      "explanation": "Desktop, mobile, command-line, and loopback clients are native applications."
+      "explanation": "桌面、移动、命令行和环回客户端属于原生应用。"
     },
     {
       "stage": "check",
-      "question": "What must a client do with an authorization response iss value?",
+      "question": "客户端必须如何处理授权响应中的 iss 值？",
       "options": [
-        "Normalize it and compare hostnames",
-        "Store it as clientInfo",
-        "Ignore it after PKCE succeeds",
-        "Compare it exactly with the recorded issuer before using the response"
+        "规范化后比较主机名",
+        "将其存为 clientInfo",
+        "PKCE 成功后忽略它",
+        "使用响应之前，与记录的签发者精确比较"
       ],
       "correct": 3,
-      "explanation": "RFC 9207 issuer checking prevents authorization response mix-up between issuers."
+      "explanation": "RFC 9207 签发者检查防止不同签发者的授权响应混淆。"
     },
     {
       "stage": "check",
-      "question": "How should a client key issuer-minted OAuth credentials and access tokens?",
+      "question": "客户端应如何为签发者生成的 OAuth 凭据和访问令牌设置键？",
       "options": [
-        "Issuer-minted credentials by issuer and tokens by issuer plus resource",
-        "All registrations and tokens under one global client name",
-        "By the server display name only",
-        "By protocol session identifier"
+        "凭据按签发者索引，令牌按签发者加资源索引",
+        "所有注册和令牌都放在一个全局客户端名称下",
+        "仅按服务器显示名称",
+        "按协议会话标识符"
       ],
       "correct": 0,
-      "explanation": "Issuer and resource keys prevent minted credentials from crossing security authorities or audiences. A self-hosted CIMD URL remains portable."
+      "explanation": "签发者和资源键防止生成的凭据跨越安全授权方或受众。自行托管的 CIMD URL 仍可迁移使用。"
     },
     {
       "stage": "post",
-      "question": "A resource returns 403 with scope notes:delete. What is the correct next step?",
+      "question": "资源返回 403，作用域为 notes:delete。正确的下一步是什么？",
       "options": [
-        "Add notes:delete locally without authorization",
-        "Explain the scope, obtain consent, authorize for it, then retry with a new request id",
-        "Send the MCP token to a downstream API",
-        "Reuse the current token and ignore the challenge"
+        "未经授权就在本地添加 notes:delete",
+        "解释作用域、取得同意、为其授权，再以新请求 id 重试",
+        "将 MCP 令牌发送到下游 API",
+        "复用当前令牌并忽略质询"
       ],
       "correct": 1,
-      "explanation": "Step-up obtains a newly authorized token before retrying the operation."
+      "explanation": "权限提升在重试操作之前获取新授权的令牌。"
     },
     {
       "stage": "post",
-      "question": "What is the RFC 9728 metadata URL for the MCP resource https://notes.example.com/mcp?",
+      "question": "MCP 资源 https://notes.example.com/mcp 的 RFC 9728 元数据 URL 是什么？",
       "options": [
         "https://notes.example.com/.well-known/oauth-protected-resource/mcp",
         "https://auth.example.com/.well-known/oauth-protected-resource",
@@ -72,7 +72,7 @@
         "https://notes.example.com/mcp/.well-known/oauth-protected-resource"
       ],
       "correct": 0,
-      "explanation": "RFC 9728 preserves the protected resource path after the well-known segment, so the /mcp suffix is required."
+      "explanation": "RFC 9728 在 well-known 段之后保留受保护资源路径，因此必须有 /mcp 后缀。"
     }
   ]
 }

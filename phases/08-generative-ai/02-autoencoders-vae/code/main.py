@@ -46,7 +46,7 @@ def clamp(v, lo, hi):
 
 
 def forward(x, params, eps):
-    """Forward pass with a fixed epsilon for the reparameterization."""
+    """使用固定 epsilon 进行重参数化（Reparameterization）的前向传播。"""
     enc, dec = params["enc"], params["dec"]
     h_enc = tanh(add(matmul(enc["W1"], x), enc["b1"]))
     mu = add(matmul(enc["W_mu"], h_enc), enc["b_mu"])
@@ -69,7 +69,7 @@ def loss_value(x, fwd, beta):
 
 
 def backward(x, fwd, params, beta):
-    """Hand-written backprop. Returns gradient dict matching params shape."""
+    """手写反向传播（Backpropagation）。返回与 params 形状匹配的梯度字典。"""
     enc, dec = params["enc"], params["dec"]
     mu, log_sigma2, sigma = fwd["mu"], fwd["log_sigma2"], fwd["sigma"]
     z, h_dec, h_enc = fwd["z"], fwd["h_dec"], fwd["h_enc"]
@@ -80,14 +80,14 @@ def backward(x, fwd, params, beta):
     # d recon / d x_hat = 2(x_hat - x)
     d_x_hat = [2 * (a - b) for a, b in zip(x_hat, x)]
 
-    # decoder: x_hat = W_out @ h_dec + b_out
+    # 解码器（Decoder）： x_hat = W_out @ h_dec + b_out
     grads["dec"]["b_out"] = d_x_hat[:]
     grads["dec"]["W_out"] = [[d * h for h in h_dec] for d in d_x_hat]
 
     # d loss / d h_dec = W_out^T @ d_x_hat
     d_h_dec = [sum(dec["W_out"][i][j] * d_x_hat[i] for i in range(len(d_x_hat)))
                for j in range(len(h_dec))]
-    # through tanh
+    # 通过 tanh 反向传播
     d_pre_dec = [dg * g for dg, g in zip(d_h_dec, tanh_grad(h_dec))]
     grads["dec"]["b1"] = d_pre_dec[:]
     grads["dec"]["W1"] = [[d * zi for zi in z] for d in d_pre_dec]
@@ -96,13 +96,13 @@ def backward(x, fwd, params, beta):
     d_z = [sum(dec["W1"][i][j] * d_pre_dec[i] for i in range(len(d_pre_dec)))
            for j in range(len(z))]
 
-    # reparameterization: z = mu + sigma * eps, sigma = exp(0.5 * log_sigma2)
+    # 重参数化（Reparameterization）： z = mu + sigma * eps, sigma = exp(0.5 * log_sigma2)
     # d z / d mu = 1, d z / d log_sigma2 = 0.5 * sigma * eps
     d_mu_recon = d_z[:]
     eps_used = [(z[i] - mu[i]) / max(sigma[i], 1e-8) for i in range(len(z))]
     d_lv_recon = [0.5 * d_z[i] * sigma[i] * eps_used[i] for i in range(len(z))]
 
-    # KL term: 0.5 * sum(exp(lv) + mu^2 - lv - 1)
+    # KL 散度项： 0.5 * sum(exp(lv) + mu^2 - lv - 1)
     # d KL / d mu = mu ; d KL / d lv = 0.5 * (exp(lv) - 1)
     d_mu = [d_mu_recon[i] + beta * mu[i] for i in range(len(mu))]
     d_lv = [d_lv_recon[i] + beta * 0.5 * (math.exp(log_sigma2[i]) - 1)
@@ -113,7 +113,7 @@ def backward(x, fwd, params, beta):
     grads["enc"]["b_sig"] = d_lv[:]
     grads["enc"]["W_sig"] = [[d * h for h in h_enc] for d in d_lv]
 
-    # d loss / d h_enc from both mu and log_sigma2 paths
+    # d loss / d h_enc 来自 mu 和 log_sigma2 两条路径
     d_h_enc = [0.0] * len(h_enc)
     for j in range(len(h_enc)):
         for i in range(len(d_mu)):
@@ -161,7 +161,7 @@ def main():
 
     beta = 0.2
     lr = 0.01
-    print(f"=== training tiny VAE: {in_dim}-D input, {z_dim}-D latent, beta={beta} ===")
+    print(f"=== 训练微型变分自编码器（VAE）：{in_dim} 维输入，{z_dim} 维潜在表示（Latent），beta={beta} ===")
     for epoch in range(40):
         losses, recons, kls = [], [], []
         for x in data:
@@ -172,20 +172,20 @@ def main():
             apply_update(params, grads, lr)
             losses.append(total); recons.append(recon); kls.append(kl)
         if (epoch + 1) % 5 == 0:
-            print(f"epoch {epoch+1:2d}: loss {mean(losses):.3f}  recon {mean(recons):.3f}  KL {mean(kls):.3f}")
+            print(f"轮次（Epoch）{epoch+1:2d}：损失 {mean(losses):.3f}  重建损失（Recon）{mean(recons):.3f}  KL {mean(kls):.3f}")
 
     print()
-    print("=== reconstruction on held-out sample ===")
+    print("=== 留出样本（Held-out sample）的重建 ===")
     x_test = sample_mixture(1, in_dim, rng)[0]
     eps = [0.0] * z_dim
     fwd = forward(x_test, params, eps)
     mse = sum((a - b) ** 2 for a, b in zip(x_test, fwd["x_hat"]))
     print("  x     =", [f"{v:+.2f}" for v in x_test])
     print("  x_hat =", [f"{v:+.2f}" for v in fwd["x_hat"]])
-    print(f"  mse = {mse:.3f}")
+    print(f"  均方误差（MSE）= {mse:.3f}")
 
     print()
-    print("=== samples from N(0, I) through decoder ===")
+    print("=== 将 N(0, I) 样本送入解码器 ===")
     for _ in range(4):
         z = [rng.gauss(0, 1) for _ in range(z_dim)]
         h = tanh(add(matmul(params["dec"]["W1"], z), params["dec"]["b1"]))
@@ -193,8 +193,8 @@ def main():
         print(f"  z={[f'{zi:+.2f}' for zi in z]}  ->  x_hat={[f'{v:+.2f}' for v in x_hat]}")
 
     print()
-    print("takeaway: decoder turns N(0, I) samples into structured 8-D vectors")
-    print("          that resemble the two-cluster training data.")
+    print("要点：解码器将 N(0, I) 样本转为带结构的 8 维向量，")
+    print("          其形态类似于包含两个簇（Clusters）的训练数据。")
 
 
 if __name__ == "__main__":

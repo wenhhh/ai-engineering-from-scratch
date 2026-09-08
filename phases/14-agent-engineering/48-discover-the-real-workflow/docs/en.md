@@ -1,105 +1,105 @@
-# Discover the Workflow People Actually Perform
+# 发现人们实际执行的工作流（Discover the Workflow People Actually Perform）
 
-> Requirements are not waiting in a meeting to be collected. They are scattered across actions, workarounds, records, and disagreements.
+> 需求并不是在会议中等着被收集。它们散落在动作、变通办法、记录与分歧中。
 
 **Type:** Learn + Build
-**Languages:** Python (stdlib)
-**Prerequisites:** Phase 14 lesson 47
-**Time:** ~70 minutes
+**Languages:** Python（标准库）
+**Prerequisites:** 阶段 14 第 47 课
+**Time:** 约 70 分钟
 
-## Learning Objectives
+## 学习目标（Learning Objectives）
 
-- Model the current workflow as ordered actions with evidence.
-- Separate direct observation from reported or inferred behavior.
-- Locate friction, handoffs, authority, and hidden state.
-- Keep uncertain claims visible instead of turning them into requirements.
+- 将当前工作流建模为带证据的有序动作。
+- 区分直接观察与转述或推断的行为。
+- 定位阻力、交接、权限与隐藏状态。
+- 保持不确定主张可见，不把它们直接变为需求。
 
-## Start with the Current System
+## 从当前系统开始（Start with the Current System）
 
-Do not begin by asking what features people want. Begin by reconstructing what happens now.
+不要先问人们想要什么功能。先还原现在发生什么。
 
-For each step, record:
+每个步骤记录：
 
-| Field | Example |
+| 字段 | 示例 |
 |---|---|
-| Actor | On-call engineer |
-| Trigger | Production alert arrives |
-| Action | Opens alert, then searches dashboards |
-| Input | Alert payload and deployment record |
-| Output | Candidate service and owner |
-| Friction | Context switching across three tools |
-| Authority | Incident commander approves a write |
-| Evidence | Screen recording, incident log, runbook |
+| 行动者（Actor） | 值班工程师 |
+| 触发（Trigger） | 生产告警到达 |
+| 动作（Action） | 打开告警，然后搜索仪表盘 |
+| 输入（Input） | 告警载荷与部署记录 |
+| 输出（Output） | 候选服务与负责人 |
+| 阻力（Friction） | 在三个工具间切换上下文 |
+| 权限（Authority） | 事故指挥者批准写入 |
+| 证据（Evidence） | 屏幕录制、事故日志、操作手册 |
 
-The workflow is larger than the screen. It includes waiting, copy-paste, side channels, approval, error recovery, and the steps people have stopped noticing.
+工作流不止屏幕所见。它包括等待、复制粘贴、旁路渠道、审批、错误恢复，以及人们已不再留意的步骤。
 
-## Evidence Has Strength
+## 证据有强弱（Evidence Has Strength）
 
-Use a simple evidence ladder:
+使用简单的证据阶梯：
 
-1. **Direct behavior:** observation, trace, recording, or system event.
-2. **Artifact:** ticket, runbook, log, form, or completed output.
-3. **Reported behavior:** a person describes what they do.
-4. **Inference:** the team concludes what probably happens.
+1. **直接行为（Direct Behavior）：** 观察、追踪、录制或系统事件。
+2. **产物（Artifact）：** 工单、操作手册、日志、表单或完成的输出。
+3. **转述行为（Reported Behavior）：** 某人描述自己怎么做。
+4. **推断（Inference）：** 团队推测大概发生了什么。
 
-All four can be useful. Only the first two prove current behavior directly. Label the rest so confidence does not silently inflate.
+四种都可能有用。只有前两种直接证明当前行为。标注其余类型，防止置信度悄悄膨胀。
 
 ```mermaid
 flowchart TD
-  T[Trigger] --> A1[Actor action]
-  A1 --> H[Handoff]
-  H --> A2[Next actor action]
-  A2 --> O[Outcome]
-  E1[Direct evidence] -.supports.-> A1
-  E2[Artifact] -.supports.-> H
-  E3[Reported behavior] -.supports.-> A2
+  T[触发] --> A1[行动者动作]
+  A1 --> H[交接]
+  H --> A2[下一位行动者动作]
+  A2 --> O[成效]
+  E1[直接证据] -.支持.-> A1
+  E2[产物] -.支持.-> H
+  E3[转述行为] -.支持.-> A2
 ```
 
-## Search for Four Things
+## 寻找四类信息（Search for Four Things）
 
-- **Friction:** repeated effort, delay, re-entry, or recovery.
-- **Hidden state:** facts carried in memory, chat, or personal notes.
-- **Authority:** the person or system allowed to make a consequential change.
-- **Exceptions:** the case where the normal workflow stops being normal.
+- **阻力（Friction）：** 重复劳动、延迟、重复录入或恢复。
+- **隐藏状态（Hidden State）：** 保存在记忆、聊天或个人笔记中的事实。
+- **权限（Authority）：** 被允许进行重大变更的人或系统。
+- **异常（Exceptions）：** 正常工作流不再正常的情形。
 
-AI features often fail at handoffs and exceptions because the happy path was the only path shaped.
+AI 功能常在交接与异常处失败，因为设计时只考虑了正常路径。
 
-## Do Not Average Away Disagreement
+## 不要用平均抹去分歧（Do Not Average Away Disagreement）
 
-Two users can perform different workflows for good reasons. Preserve the variants until you understand whether they represent:
+两名用户可能因合理原因执行不同工作流。在理解差异代表什么之前，保留各个变体：
 
-- different roles;
-- different risk levels;
-- legacy and current process;
-- expertise differences;
-- a genuine policy disagreement.
+- 不同角色；
+- 不同风险级别；
+- 旧流程与现行流程；
+- 专业能力差异；
+- 真正的政策分歧。
 
-An averaged workflow can describe nobody.
+平均后的工作流可能不符合任何人。
 
-## Build It
+## 动手实现（Build It）
 
-The lab stores evidence on every workflow step, validates ordering and confidence, calculates the direct-evidence ratio, and writes `outputs/workflow-evidence.json`.
+实验在每个工作流步骤存储证据，验证顺序与置信度，计算直接证据比例，并写入 `outputs/workflow-evidence.json`。
 
 ```bash
 python3 code/main.py
 python3 -m unittest discover code/tests -v
 ```
 
-Add an exception path in which the deployment record is missing. Keep the main order intact and record where the branch begins.
+添加部署记录缺失的异常路径。保持主顺序不变，记录分支从何处开始。
 
-## Exercises
+## 练习（Exercises）
 
-1. Reconstruct one workflow from a log without interviewing anyone.
-2. Interview a user and mark every claim that still lacks direct evidence.
-3. Add one authority boundary and one failure-recovery step.
-4. Model two workflow variants without merging them.
-5. Identify a proposed feature that removes a visible step but leaves hidden work untouched.
+1. 不访谈任何人，仅根据日志还原一个工作流。
+2. 访谈用户，并标记仍缺乏直接证据的每项主张。
+3. 添加一个权限边界与一个失败恢复步骤。
+4. 对两个工作流变体分别建模，不合并它们。
+5. 找出一项拟议功能：它移除了可见步骤，却未改变隐藏工作。
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [Nuseibeh and Easterbrook, Requirements Engineering: A Roadmap](https://www.cs.toronto.edu/~sme/papers/2000/ICSE2000.pdf), especially its treatment of elicitation as interpretation, modelling, and validation rather than simple capture.
-- [Gotel and Finkelstein, An Analysis of the Requirements Traceability Problem](https://doi.org/10.1109/ICRE.1994.292398), for the difficulty of preserving the relationship between requirements and their sources.
+- [Nuseibeh 与 Easterbrook：需求工程路线图（Requirements Engineering: A Roadmap）](https://www.cs.toronto.edu/~sme/papers/2000/ICSE2000.pdf)，尤其关注将需求获取视为解释、建模与验证，而非简单收集。
+- [Gotel 与 Finkelstein：需求可追溯性问题分析（An Analysis of the Requirements Traceability Problem）](https://doi.org/10.1109/ICRE.1994.292398)，讨论维持需求与其来源关系的困难。
 
-## What You Keep
+## 保留产物（What You Keep）
 
-Keep `outputs/workflow-evidence.json`. It turns observed friction and uncertainty into an assumption map in the next lesson.
+保留 `outputs/workflow-evidence.json`。下一课将观察到的阻力与不确定性转为假设地图。

@@ -1,75 +1,75 @@
 {
   "lesson": "13-many-shot-jailbreaking",
-  "title": "Many-Shot Jailbreaking",
+  "title": "多样本越狱（Many-Shot Jailbreaking）",
   "questions": [
     {
       "stage": "pre",
-      "question": "Which context-window property does many-shot jailbreaking (MSJ) exploit?",
+      "question": "多样本越狱（MSJ）利用了上下文窗口的哪种性质？",
       "options": [
-        "Tokenizer ambiguities on Unicode characters",
-        "Very long context windows that admit hundreds of faux user-assistant turns of harmful compliance before the target query",
-        "Position embeddings rotating beyond 2048 tokens",
-        "Sliding-window attention truncating the system prompt"
+        "分词器对 Unicode 字符的歧义",
+        "很长的上下文窗口允许在目标查询前加入数百轮伪造的有害服从用户与助手对话",
+        "位置嵌入在超过 2048 个词元后旋转",
+        "滑动窗口注意力截断系统提示词"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "How does attack success rate (ASR) scale with shot count in MSJ?",
+      "question": "MSJ 的攻击成功率（ASR）如何随样本数变化？",
       "options": [
-        "Step function at 100 shots",
-        "Linear with negative slope",
-        "Logistic, plateauing at 50%",
-        "Power-law in shot count; does not plateau, keeps climbing"
+        "在 100 个样本处呈阶跃函数",
+        "负斜率线性关系",
+        "逻辑斯蒂曲线，在 50% 处进入平台期",
+        "随样本数呈幂律，不进入平台期，而是继续上升"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Why does MSJ share a mechanism with benign in-context learning (ICL)?",
+      "question": "为什么 MSJ 与良性上下文学习（ICL）共享机制？",
       "options": [
-        "Both bypass tokenization",
-        "Both rely on RLHF",
-        "Both require a hidden scratchpad",
-        "Both depend on the model extracting task structure from in-context examples and executing it on the query"
+        "两者都绕过分词",
+        "两者都依赖 RLHF",
+        "两者都需要隐藏草稿区",
+        "两者都依赖模型从上下文示例提取任务结构，并在查询上执行"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "What is the central defense dilemma for MSJ?",
+      "question": "MSJ 的核心防御困境是什么？",
       "options": [
-        "Defenses must run on every token of the response",
-        "Defenses need GPU clusters",
-        "Defenses must be applied at sampling temperature zero",
-        "Suppressing pattern extraction from long contexts would also disable benign in-context learning; defenses must distinguish harmful from benign patterns"
+        "防御必须检查响应的每个词元",
+        "防御需要 GPU 集群",
+        "防御必须在零采样温度下应用",
+        "抑制长上下文模式提取也会禁用良性上下文学习，因此防御必须区分有害与良性模式"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "Anthropic's classifier-based prompt modification defense reduces MSJ attack success from what to what on tested settings?",
+      "question": "Anthropic 基于分类器的提示词修改防御，在测试设置中将 MSJ 攻击成功率从多少降至多少？",
       "options": [
-        "From 30% to 25%",
-        "From 99% to 50%",
-        "From 61% to 2%",
-        "It increases ASR"
+        "从 30% 到 25%",
+        "从 99% 到 50%",
+        "从 61% 到 2%",
+        "它会增加 ASR"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "How does MSJ interact with PAIR (Lesson 12)?",
+      "question": "MSJ 与 PAIR（第 12 课）如何相互作用？",
       "options": [
-        "MSJ composes with PAIR; using PAIR to find an attack structure and then filling it with many shots can reach higher ASR than either alone",
-        "PAIR neutralizes MSJ",
-        "They are mutually exclusive",
-        "PAIR only works on closed-source models"
+        "MSJ 可以与 PAIR 组合，先用 PAIR 找到攻击结构，再填入大量样本，能够达到比单独使用任一种方法更高的 ASR",
+        "PAIR 会抵消 MSJ",
+        "两者相互排斥",
+        "PAIR 只适用于闭源模型"
       ],
       "correct": 0,
       "explanation": ""

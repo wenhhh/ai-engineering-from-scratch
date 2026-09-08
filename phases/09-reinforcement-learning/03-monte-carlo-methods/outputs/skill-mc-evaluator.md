@@ -1,18 +1,18 @@
 ---
 name: mc-evaluator
-description: Evaluate a policy via Monte Carlo rollouts and produce a convergence report with DP-comparison if available.
+description: 通过蒙特卡洛轨迹评估策略，生成收敛报告，并在可用时与 DP 比较。
 version: 1.0.0
 phase: 9
 lesson: 3
 tags: [rl, monte-carlo, evaluation]
 ---
 
-Given an environment (episodic, with reset+step API) and a policy, output:
+给定一个环境（按回合运行，提供 reset+step API）和一个策略，输出：
 
-1. Method. First-visit vs every-visit MC. Reason.
-2. Episode budget. Target number, variance diagnostic, expected standard error.
-3. Exploration plan. ε schedule (if needed) or exploring starts.
-4. Gold-standard comparison. DP-optimal V* if tabular; otherwise a bound from a Q-learning / PPO baseline.
-5. Termination check. Max-step cap, timeouts, handling of non-terminating trajectories.
+1. 方法。首次访问还是每次访问 MC，并说明理由。
+2. 回合预算。目标回合数、方差诊断、预期标准误差。
+3. 探索计划。ε 调度（如需要）或探索性起点。
+4. 金标准比较。表格任务使用 DP 最优 V*；否则使用 Q 学习 / PPO 基线提供的界。
+5. 终止检查。最大步数限制、超时、非终止轨迹的处理方式。
 
-Refuse to run MC on non-episodic tasks without a finite horizon cap. Refuse to report V^π estimates from fewer than 100 episodes per state for tabular tasks. Flag any policy with zero-variance actions as an exploration risk.
+没有有限时域上限时，拒绝对非回合式任务运行 MC。对于表格任务，每个状态不足 100 个回合时拒绝报告 V^π 估计。将动作方差为零的策略标记为探索风险。

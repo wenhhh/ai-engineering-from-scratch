@@ -1,78 +1,78 @@
 {
   "lesson": "10-mcp-resources-and-prompts",
-  "title": "MCP Resources and Prompts",
+  "title": "MCP 资源与提示词（MCP Resources and Prompts）",
   "questions": [
     {
       "stage": "pre",
-      "question": "A host needs to retrieve a stable architecture note by URI. Which MCP primitive fits best?",
+      "question": "宿主需要按 URI 获取一份稳定架构笔记，哪种 MCP 原语最合适？",
       "options": [
-        "A resource",
-        "A cancellation notification",
-        "A protocol session",
-        "A destructive tool"
+        "资源",
+        "取消通知",
+        "协议会话",
+        "破坏性工具"
       ],
       "correct": 0,
-      "explanation": "A resource exposes addressable content through a URI. A tool performs an operation, while sessions and cancellation do not model readable content."
+      "explanation": "资源通过 URI 暴露可寻址内容。工具执行操作，而会话和取消不用于建模可读内容。"
     },
     {
       "stage": "check",
-      "question": "What should a 2026-07-28 server return when resources/read receives an unknown resource URI?",
+      "question": "resources/read 收到未知资源 URI 时，2026-07-28 服务器应返回什么？",
       "options": [
-        "A resources/list_changed notification",
-        "JSON-RPC error -32601",
-        "An empty successful contents array",
-        "JSON-RPC error -32602"
+        "resources/list_changed 通知",
+        "JSON-RPC 错误 -32601",
+        "成功的空 contents 数组",
+        "JSON-RPC 错误 -32602"
       ],
       "correct": 3,
-      "explanation": "The current Resources contract uses invalid parameters, code -32602, for an invalid or unknown resource URI. Empty success would hide a caller error."
+      "explanation": "当前资源契约对无效或未知资源 URI 使用无效参数错误码 -32602。空成功会掩盖调用者错误。"
     },
     {
       "stage": "check",
-      "question": "Which cache policy is safest for a user-owned note returned by resources/read?",
+      "question": "resources/read 返回用户拥有的笔记，哪种缓存策略最安全？",
       "options": [
-        "Public because the URI is stable",
-        "Shared across users when the MIME type matches",
-        "Private with a bounded TTL",
-        "Public with an unlimited TTL"
+        "URI 稳定，所以公开",
+        "MIME 类型匹配时跨用户共享",
+        "私有，且 TTL 有界",
+        "公开且 TTL 无上限"
       ],
       "correct": 2,
-      "explanation": "A user-owned result should not cross identity boundaries. A bounded private cache can reduce repeated reads while preserving the authorization context."
+      "explanation": "用户拥有的结果不应跨身份边界。有限期私有缓存可以减少重复读取，同时保留授权上下文。"
     },
     {
       "stage": "check",
-      "question": "What identifies every notification on a subscriptions/listen response stream?",
+      "question": "什么标识 subscriptions/listen 响应流上的每条通知？",
       "options": [
-        "The original listen request ID in subscription metadata",
-        "The resource MIME type",
-        "A newly generated protocol session",
-        "The server process ID"
+        "订阅元数据中的原始监听请求 ID",
+        "资源 MIME 类型",
+        "新生成的协议会话",
+        "服务器进程 ID"
       ],
       "correct": 0,
-      "explanation": "The JSON-RPC ID of subscriptions/listen becomes io.modelcontextprotocol/subscriptionId and is repeated in the acknowledgment and every later event."
+      "explanation": "subscriptions/listen 的 JSON-RPC ID 成为 io.modelcontextprotocol/subscriptionId，并在确认与每个后续事件中重复。"
     },
     {
       "stage": "post",
-      "question": "Why must resources/list and prompts/list be deterministic for the same request inputs?",
+      "question": "为什么相同请求输入的 resources/list 和 prompts/list 必须具有确定性？",
       "options": [
-        "To grant public access to all returned entries",
-        "To avoid validating pagination cursors",
-        "To stabilize caches, snapshots, and host interfaces",
-        "To make list membership depend on a prior read"
+        "授予所有返回条目的公开访问权",
+        "避免校验分页游标",
+        "稳定缓存、快照和宿主界面",
+        "让列表成员依赖先前读取"
       ],
       "correct": 2,
-      "explanation": "Stable membership and ordering prevent noisy cache misses and changing interfaces. Authorization can still affect visibility because credentials are explicit request input."
+      "explanation": "稳定成员与顺序避免无谓缓存未命中和界面变化。授权仍可影响可见性，因为凭据是显式请求输入。"
     },
     {
       "stage": "post",
-      "question": "What must a current MCP server expose even when clients may call resources/list directly?",
+      "question": "即使客户端可以直接调用 resources/list，当前 MCP 服务器仍必须暴露什么？",
       "options": [
-        "A resources/subscribe method for every URI",
-        "An initialize method that creates a protocol session",
-        "A standalone HTTP GET event stream",
-        "server/discover with supported revisions and capabilities"
+        "为每个 URI 提供 resources/subscribe 方法",
+        "创建协议会话的 initialize 方法",
+        "独立 HTTP GET 事件流",
+        "包含支持修订版与能力的 server/discover"
       ],
       "correct": 3,
-      "explanation": "Servers must implement server/discover so clients can obtain one capability and version snapshot. Calling it remains optional for a client, which may call another method and handle a structured version error."
+      "explanation": "服务器必须实现 server/discover，让客户端取得一份能力与版本快照。客户端仍可选择不调用它，而调用其他方法并处理结构化版本错误。"
     }
   ]
 }

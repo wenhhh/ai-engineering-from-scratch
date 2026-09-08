@@ -1,134 +1,134 @@
-# LLaVA-OneVision: Single-Image, Multi-Image, Video in One Model
+# LLaVA-OneVision：一个模型处理单图、多图与视频（LLaVA-OneVision: Single-Image, Multi-Image, Video in One Model）
 
-> Before LLaVA-OneVision (Li et al., August 2024) the open-VLM world had separate lineages: LLaVA-1.5 for single images, multi-image models like Mantis and VILA, video models like Video-LLaVA and Video-LLaMA. Each won its benchmark and failed at the others. LLaVA-OneVision argued a single curriculum could train one model to dominate all three scenarios, and that the emergent task-transfer effects (single-image skills exported to video, multi-image reasoning exported to single-image) beat the sum of specialists. The recipe is deceptively simple: a visual-token budget that stays constant across scenarios, plus an explicit curriculum that moves from single-image to OneVision (multi-image) to video. This lesson reads the budget, the curriculum, and the emergent behaviors.
+> LLaVA-OneVision（Li 等人，2024 年 8 月）之前，开放 VLM 世界有相互独立的谱系：处理单图的 LLaVA-1.5，Mantis、VILA 等多图模型，以及 Video-LLaVA、Video-LLaMA 等视频模型。每种模型在自己的基准上胜出，却无法胜任其他场景。LLaVA-OneVision 主张，通过统一课程式训练（Curriculum），可让一个模型在三种场景中都领先；涌现的任务迁移效应，包括单图技能迁移到视频、多图推理迁移到单图，甚至优于各个专用模型的总和。方案看似简单：跨场景保持恒定的视觉词元预算，加上从单图到 OneVision（多图）再到视频的显式训练课程。本课将阅读预算、训练课程及涌现行为。
 
 **Type:** Build
-**Languages:** Python (stdlib, token budget solver + curriculum planner)
-**Prerequisites:** Phase 12 · 05 (LLaVA), Phase 12 · 06 (any-resolution)
-**Time:** ~180 minutes
+**Languages:** Python（标准库，词元预算求解器 + 课程规划器）
+**Prerequisites:** 阶段 12 · 05（LLaVA）、阶段 12 · 06（任意分辨率）
+**Time:** ~180 分钟
 
-## Learning Objectives
+## 学习目标（Learning Objectives）
 
-- Design a visual-token budget that holds constant across single-image, multi-image, and video inputs.
-- Order a training curriculum that transfers skills from single-image to video without catastrophic forgetting.
-- Explain why a single model beats specialists at the same parameter count when curriculum is done right.
-- Name the three emergent capabilities reported by LLaVA-OneVision: multi-camera reasoning, set-of-mark prompting, iPhone-screenshot agent.
+- 设计在单图、多图和视频输入之间保持恒定的视觉词元预算。
+- 安排从单图向视频迁移技能的训练课程，避免灾难性遗忘（Catastrophic forgetting）。
+- 解释在课程安排正确时，为什么同样参数量的统一模型优于专用模型。
+- 说出 LLaVA-OneVision 报告的三项涌现能力：多摄像头推理、标记集提示（Set-of-mark prompting）、iPhone 截图智能体。
 
-## The Problem
+## 问题（The Problem）
 
-Image, multi-image, and video each stress a model differently.
+单图、多图和视频分别对模型提出不同要求。
 
-Single-image wants high-resolution tokens (AnyRes, ~2880 visual tokens) to catch OCR and fine detail. Budget per sample: one image, 2880 tokens.
+单图需要高分辨率词元（AnyRes，约 2880 个视觉词元），以识别 OCR 和细节。每样本预算：一张图像，2880 词元。
 
-Multi-image wants several images at moderate resolution (~576 tokens each) so reasoning across images fits in context. Budget per sample: 4-8 images, 576 each, 2300-4600 tokens.
+多图需要若干中等分辨率图像（每张约 576 词元），使跨图推理能放进上下文。每样本预算：4-8 张图像，每张 576 词元，总计 2300-4600 词元。
 
-Video wants many frames at low resolution (~196 tokens per frame after pooling) to capture temporal dynamics. Budget per sample: 8-32 frames, 196 each, 1600-6200 tokens.
+视频需要许多低分辨率帧（池化后每帧约 196 词元），以捕捉时间动态。每样本预算：8-32 帧，每帧 196 词元，总计 1600-6200 词元。
 
-If you train separate models, you pick one budget. If you train one model, you need the budget to scale sensibly across scenarios without blowing context.
+训练独立模型时，可以选定一种预算。训练统一模型时，预算必须随场景合理调整，而不挤爆上下文。
 
-Pre-OneVision, the default answer was "train one scenario, ignore the others." Video-LLaVA retrofitted video onto an image model with extra training stages. LLaVA-NeXT added multi-image support with tiling. None handled all three cleanly.
+OneVision 之前，默认答案是“训练一个场景，忽略其他场景”。Video-LLaVA 通过额外训练阶段为图像模型补上视频能力。LLaVA-NeXT 通过分块加入多图支持。没有哪个能妥善处理全部三种场景。
 
-## The Concept
+## 概念（The Concept）
 
-### The OneVision token budget
+### OneVision 词元预算（The OneVision token budget）
 
-LLaVA-OneVision picks a unified visual-token budget of approximately 3000-4000 tokens per sample, allocated differently per scenario:
+LLaVA-OneVision 选择每样本约 3000-4000 词元的统一视觉预算，按场景采用不同分配：
 
-- Single image: AnyRes-9 (3x3 tiles + thumbnail), each tile at 384 with 729 patches, aggressive bilinear pooling 2x2 → 182 per tile. Total: 9 * 182 + 182 = 1820 tokens. Or AnyRes-4 at 729-per-tile = 2916 + 729.
-- Multi-image: each image at moderate resolution (384, no tiling), 729 tokens with no pooling. Budget 6 images → 4374 tokens.
-- Video: 32 frames at 384 resolution with aggressive 3x3 bilinear pool → 81 tokens per frame. Total: 32 * 81 = 2592 tokens.
+- 单图：AnyRes-9（3x3 图块 + 缩略图），每块分辨率 384、729 个图像块，强力 2x2 双线性池化 → 每块 182 词元。总计：9 * 182 + 182 = 1820 词元。或者采用每块 729 词元的 AnyRes-4，总计 2916 + 729。
+- 多图：每张图像为中等分辨率（384，不分块），不池化，729 词元。6 张图像预算 → 4374 词元。
+- 视频：32 帧，分辨率 384，强力 3x3 双线性池化 → 每帧 81 词元。总计：32 * 81 = 2592 词元。
 
-The allocation maintains roughly constant total tokens. The LLM never sees a batch that blows its context. The encoder produces different geometry per scenario, but the LLM consumes the same budget.
+这种分配保持总词元数大致恒定。LLM 不会遇到超出上下文的批次。编码器针对不同场景生成不同几何结构，但 LLM 消耗相同预算。
 
-### The three-stage curriculum
+### 三阶段课程（The three-stage curriculum）
 
-LLaVA-OneVision trains in three stages:
+LLaVA-OneVision 分三阶段训练：
 
-1. Single-image SFT (stage SI). All data is single-image-plus-text. Train on high-resolution AnyRes input. This teaches perception, OCR, and fine-grained understanding. Uses LLaVA-NeXT data plus OneVision-specific single-image data.
-2. OneVision SFT (stage OV). Mix single-image + multi-image + video (uniformly sampled frames). Train on the unified token budget. This teaches the model to handle heterogeneous batch shapes. No weight reset — continues from stage SI.
-3. Task transfer (stage TT). Continue with a target task mix, typically heavier on multi-image or video depending on product. Optional fine-tune for deployment.
+1. 单图监督微调（SFT，SI 阶段）。全部数据都是单图加文本，在高分辨率 AnyRes 输入上训练，教授感知、OCR 和细粒度理解。使用 LLaVA-NeXT 数据及 OneVision 专用单图数据。
+2. OneVision SFT（OV 阶段）。混合单图 + 多图 + 视频（均匀采样帧），按统一词元预算训练，教会模型处理异构批次形状。不重置权重，从 SI 阶段继续。
+3. 任务迁移（Task transfer，TT 阶段）。继续使用目标任务组合，通常依产品而偏重多图或视频。属于可选的部署微调。
 
-Critical: the curriculum order matters. Training video-first or multi-image-first produces worse image performance than single-image-first, even with the same data. The paper ablates this explicitly.
+关键是课程顺序。即便数据相同，先训练视频或多图，图像表现也不如先单图。论文明确对此进行了消融。
 
-### Why curriculum works
+### 为什么课程式训练有效（Why curriculum works）
 
-Single-image training builds the perceptual base. Patch tokens carry fine-grained visual features; the LLM learns to integrate them with text. Multi-image and video introduce structural challenges (which image is which, what happened first) that are hard to learn without a strong perceptual base.
+单图训练建立感知基础。图像块词元携带细粒度视觉特征，LLM 学习将其与文本整合。多图和视频引入结构挑战，例如哪张图是哪张、什么先发生；没有扎实感知基础，这些很难学会。
 
-If you train all scenarios from scratch together, the model underfits perception (limited single-image data per batch) and overfits structure (lots of multi-image / video data). Result: a model that follows cross-image reasoning patterns but is visually shallow.
+如果所有场景一起从零训练，模型会在感知上欠拟合（每批单图数据有限），在结构上过拟合（大量多图/视频数据）。结果是模型遵循跨图推理模式，但视觉理解浅薄。
 
-Curriculum ordering gives you perception strength from stage SI, then compositional/temporal reasoning from stage OV, without losing either.
+课程顺序让模型先从 SI 阶段获得感知能力，再从 OV 阶段获得组合与时间推理能力，同时保留两者。
 
-### Emergent cross-scenario skills
+### 跨场景涌现技能（Emergent cross-scenario skills）
 
-The LLaVA-OneVision paper reports three emergent capabilities:
+LLaVA-OneVision 论文报告三项涌现能力：
 
-1. Multi-camera reasoning. Trained on multi-image + video separately; at inference, asked to reason about a multi-camera driving scene. The model correctly integrates the views despite never seeing that exact format in training.
-2. Set-of-mark prompting. User annotates objects in an image with numbered marks; the model reasons about "what is mark 3 doing relative to mark 7." Trained on neither marks nor annotation; learned from the combination of spatial grounding + multi-image reference.
-3. iPhone-screenshot agent. User provides a screenshot of an iPhone screen and asks to plan the next click. Trained on UI screenshots, video of user workflows, and multi-image before/after pairs. Generalizes to the agent use case.
+1. 多摄像头推理。训练时分别使用多图和视频；推理时要求理解多摄像头驾驶场景。尽管训练中从未见过这种确切格式，模型仍能正确整合视角。
+2. 标记集提示。用户用编号标记图中对象，模型推理“标记 3 相对标记 7 正在做什么”。训练中既没有标记也没有标注，而是通过空间依据关联与多图引用的组合学会。
+3. iPhone 截图智能体。用户提供 iPhone 屏幕截图，要求规划下一次点击。模型训练过 UI 截图、用户工作流视频和多图前后对照，因此泛化到智能体用途。
 
-These are not trained tasks; they emerge from the curriculum's compositional structure.
+这些并非直接训练过的任务，而是从课程的组合结构中涌现。
 
-### Visual-token pooling
+### 视觉词元池化（Visual-token pooling）
 
-The token budget requires pooling. OneVision uses bilinear interpolation on the 2D patch grid: 24x24 = 576 patches becomes 12x12 = 144 (2x factor) or 8x8 = 64 (3x factor). Pooling is done in patch-grid space, not token space, to preserve locality.
+词元预算要求池化。OneVision 在二维图像块网格上使用双线性插值（Bilinear interpolation）：24x24 = 576 个图像块变成 12x12 = 144（2 倍因子），或 8x8 = 64（3 倍因子）。池化在图像块网格空间进行，而非词元空间，以保留局部性。
 
-The choice of pooling factor per scenario is itself a hyperparameter. Less pooling = more tokens = richer representation. More pooling = fewer tokens = more frames / images fit.
+每种场景的池化因子本身就是超参数（Hyperparameter）。更少池化 = 更多词元 = 更丰富表示；更多池化 = 更少词元 = 能放入更多帧/图像。
 
 ### LLaVA-OneVision-1.5
 
-The 2025 follow-up (LLaVA-OneVision-1.5, arXiv 2509.23661) is "fully open" in training data, model weights, and code. Matches the proprietary gap on some benchmarks and democratizes the recipe. Same curriculum, more data, better base LLM. No architecture change.
+2025 年后续版本 LLaVA-OneVision-1.5（arXiv 2509.23661）在训练数据、模型权重和代码上“完全开放”。它在某些基准上弥合了与专有模型的差距，并让更多人能够使用该方案。课程相同，数据更多，基础 LLM 更好，架构没有变化。
 
-### Contrast with Qwen2.5-VL
+### 与 Qwen2.5-VL 对照（Contrast with Qwen2.5-VL）
 
-Qwen2.5-VL (Lesson 12.09) makes different choices. It uses M-RoPE and dynamic FPS instead of fixed pooling. Its budget scales with input — a 1-minute video uses more tokens than a 5-second video. LLaVA-OneVision fixes the budget and scales the pooling. Both work; they trade configurability for predictability.
+Qwen2.5-VL（第 12.09 课）选择不同。它使用 M-RoPE 和动态 FPS，取代固定池化。预算随输入扩展：1 分钟视频比 5 秒视频使用更多词元。LLaVA-OneVision 固定预算，调整池化。两者都有效，在可配置性与可预测性之间作出不同权衡。
 
 ```figure
 l5-onevision-budget
 ```
 
-## Use It
+## 实际应用（Use It）
 
-`code/main.py` is a curriculum and budget planner for a OneVision-style VLM. Given a token budget per sample and a target scenario mix (say 40% single-image, 30% multi-image, 30% video), it:
+`code/main.py` 为 OneVision 式 VLM 规划课程与预算。给定每样本词元预算和目标场景组合（例如 40% 单图、30% 多图、30% 视频），它会：
 
-- Allocates resolution, pooling factor, and frames per scenario.
-- Checks that every scenario fits within the shared budget.
-- Reports expected token count, LLM FLOPs, and which scenarios are under-tokenized.
-- Prints a stage-by-stage training schedule.
+- 为每种场景分配分辨率、池化因子和帧数。
+- 检查每种场景都能放入共享预算。
+- 报告预期词元数、LLM 浮点运算量（FLOPs），以及哪些场景词元不足。
+- 打印逐阶段训练调度。
 
-Use it to plan a OneVision fine-tune or to sanity-check a VLM deployment's per-request cost.
+用它规划 OneVision 微调，或检查 VLM 部署的逐请求成本是否合理。
 
-## Ship It
+## 交付成果（Ship It）
 
-This lesson produces `outputs/skill-onevision-budget-planner.md`. Given a target task distribution and a per-sample budget, it emits the AnyRes factor, per-frame pooling, video frame count, and curriculum stage weights. Use this whenever you train or fine-tune a unified-scenario VLM.
+本课交付 `outputs/skill-onevision-budget-planner.md`。给定目标任务分布和每样本预算，它输出 AnyRes 因子、逐帧池化、视频帧数与课程阶段权重。每次训练或微调统一场景 VLM 时使用此技能。
 
-## Exercises
+## 练习（Exercises）
 
-1. Your product supports 80% single-image, 10% multi-image (2-4 images), 10% video (8-16 frames). Design the token budget. Where would you put the extra budget you save from not doing heavy multi-image?
+1. 产品支持 80% 单图、10% 多图（2-4 张图像）、10% 视频（8-16 帧）。设计词元预算。不做重度多图处理节省出的额外预算，应放在哪里？
 
-2. Read LLaVA-OneVision Section 4.3 (emergent capabilities). Propose a fourth emergent skill the curriculum would likely unlock but the paper did not report.
+2. 阅读 LLaVA-OneVision 第 4.3 节（涌现能力）。提出一种课程可能激发、但论文未报告的第四项涌现技能。
 
-3. Swap the curriculum order — train multi-image first, then single-image, then video. Predict which benchmarks degrade and why.
+3. 交换课程顺序：先多图，再单图，最后视频。预测哪些基准会下降，以及原因。
 
-4. The paper reports video benchmarks trained on only 8 frames per sample. Does that generalize to 30-second videos at inference? What breaks first — the token budget or the temporal reasoning?
+4. 论文报告的视频基准训练每样本只用 8 帧。这能泛化到推理时的 30 秒视频吗？先出问题的是词元预算，还是时间推理？
 
-5. Bilinear pooling of 24x24 patches to 12x12 is a 4x reduction per dim. Implement the pooling in stdlib Python and verify that the mean over each 2x2 block matches the bilinear output.
+5. 将 24x24 图像块双线性池化到 12x12，是每个维度缩减 4 倍。用 Python 标准库实现池化，验证每个 2x2 块的均值与双线性输出一致。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语（Term） | 常见说法 | 准确含义 |
 |------|-----------------|------------------------|
-| OneVision scenario | "Single-image, multi-image, or video" | One of three input shapes the unified VLM handles; the budget stays constant across |
-| Token budget | "How many tokens per sample" | Total visual tokens the LLM sees per training / inference sample, typically 3000-4000 |
-| Curriculum | "Training order" | Stage ordering (single-image → multi-image → video) chosen for emergent transfer |
-| Bilinear pooling | "Token shrink" | Applying bilinear interpolation to the patch grid (2D) to reduce token count while preserving locality |
-| Emergent skill | "Not trained, still works" | Capability that appears at inference without matching training data, due to curriculum composition |
-| AnyRes-k | "k-tile setup" | k sub-tiles of fixed resolution plus one thumbnail, typical k ∈ {4, 9} |
-| Task transfer | "Cross-scenario generalization" | Skills learned on single-image that apply to video (and vice versa) via shared backbone |
+| OneVision 场景（OneVision scenario） | “单图、多图或视频” | 统一 VLM 处理的三种输入形状之一；跨场景保持预算恒定 |
+| 词元预算（Token budget） | “每样本多少词元” | LLM 在每个训练/推理样本中看到的视觉词元总数，通常为 3000-4000 |
+| 课程（Curriculum） | “训练顺序” | 为涌现迁移而选择的阶段顺序：单图 → 多图 → 视频 |
+| 双线性池化（Bilinear pooling） | “缩减词元” | 对二维图像块网格应用双线性插值，在保留局部性的同时减少词元数 |
+| 涌现技能（Emergent skill） | “没训练过，仍能做到” | 由于课程组合而在推理时出现、没有匹配训练数据的能力 |
+| AnyRes-k | “k 图块设置” | k 个固定分辨率子图块加一张缩略图，典型 k ∈ {4, 9} |
+| 任务迁移（Task transfer） | “跨场景泛化” | 通过共享骨干网络，将单图学到的技能应用于视频，反之亦然 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [Li et al. — LLaVA-OneVision (arXiv:2408.03326)](https://arxiv.org/abs/2408.03326)
-- [LLaVA-OneVision-1.5: Fully Open Framework (arXiv:2509.23661)](https://arxiv.org/abs/2509.23661)
-- [Lin et al. — Video-LLaVA (arXiv:2311.10122)](https://arxiv.org/abs/2311.10122)
-- [Lin et al. — VILA (arXiv:2312.07533)](https://arxiv.org/abs/2312.07533)
-- [Wang et al. — Qwen2-VL (arXiv:2409.12191)](https://arxiv.org/abs/2409.12191)
+- [Li 等人：LLaVA-OneVision（arXiv:2408.03326）](https://arxiv.org/abs/2408.03326)
+- [LLaVA-OneVision-1.5：完全开放框架（Fully Open Framework）（arXiv:2509.23661）](https://arxiv.org/abs/2509.23661)
+- [Lin 等人：Video-LLaVA（arXiv:2311.10122）](https://arxiv.org/abs/2311.10122)
+- [Lin 等人：VILA（arXiv:2312.07533）](https://arxiv.org/abs/2312.07533)
+- [Wang 等人：Qwen2-VL（arXiv:2409.12191）](https://arxiv.org/abs/2409.12191)

@@ -1,78 +1,78 @@
 {
   "lesson": "03-prompting-and-task-decomposition",
-  "title": "Turn a Request Into a Testable Contract",
+  "title": "将请求转化为可测试的契约（Turn a Request Into a Testable Contract）",
   "questions": [
     {
       "stage": "pre",
-      "question": "What should you define before optimizing the wording of a complex prompt?",
+      "question": "优化复杂提示词的措辞前，应先定义什么？",
       "options": [
-        "Observable success criteria tied to representative inputs and failure conditions",
-        "The desired output format and maximum length without defining correctness",
-        "A detailed expert persona intended to improve confidence and domain vocabulary",
-        "The model family and maximum context budget available to the production workflow"
+        "与代表性输入和失败条件关联的可观察成功标准",
+        "只定义期望输出格式和最大长度，不定义正确性",
+        "旨在增强自信和领域词汇的详细专家人设",
+        "生产工作流可用的模型家族和最大上下文预算"
       ],
       "correct": 0,
-      "explanation": "Without observable criteria, prompt changes cannot be evaluated and fluent failure can look successful."
+      "explanation": "没有可观察标准，就无法评估提示词修改，流畅的失败也可能看起来成功。"
     },
     {
       "stage": "check",
-      "question": "A report has accurate extraction but unsupported recommendations. Where is the most useful decomposition boundary?",
+      "question": "报告提取准确，但建议没有依据。最有用的分解边界在哪里？",
       "options": [
-        "Combine extraction and analysis after retrieval",
-        "Between extraction and analysis, with an evidence gate",
-        "Between every paragraph so each section receives its own independent model call",
-        "Between analysis and formatting, after recommendations have already been accepted"
+        "检索后合并提取与分析",
+        "在提取与分析之间设置证据门槛",
+        "每段之间都设边界，让每节独立调用模型",
+        "在分析与格式整理之间，此时建议已被接受"
       ],
       "correct": 1,
-      "explanation": "Verifying extracted evidence before interpretation localizes the failure and prevents unsupported analysis from flowing downstream."
+      "explanation": "解释前验证提取证据，能够定位故障，防止无依据分析流入下游。"
     },
     {
       "stage": "check",
-      "question": "What makes a few-shot example most useful for a classification task?",
+      "question": "分类任务中，什么让少样本示例最有价值？",
       "options": [
-        "It shows a typical positive example with its label",
-        "It matches the average input length and uses the model's preferred response style",
-        "It shows an important boundary or ambiguous case with a correct label",
-        "It repeats a previously correct example using different wording but the same easy distinction"
+        "展示一个典型正面示例及其标签",
+        "匹配平均输入长度，并使用模型偏好的回答风格",
+        "展示一个重要边界或模糊案例及正确标签",
+        "用不同措辞重复以前正确的示例，但保留相同的简单区别"
       ],
       "correct": 2,
-      "explanation": "Boundary examples teach the distinction the model must apply, while repetitive easy examples add little signal."
+      "explanation": "边界示例教会模型应用必要的区别，重复简单示例则增加不了多少信号。"
     },
     {
       "stage": "check",
-      "question": "Two supplied sources conflict. What should the prompt specify?",
+      "question": "两个给定来源冲突时，提示词应规定什么？",
       "options": [
-        "A process that combines both claims whenever neither source can be discarded",
-        "A citation rule that reports only the selected source and suppresses the disagreement",
-        "A recency-first rule that always selects the most recently modified document",
-        "An authority order and conflict-reporting behavior"
+        "无法舍弃任何来源时，就合并两项主张的流程",
+        "只报告所选来源并隐藏分歧的引用规则",
+        "始终选择最近修改文档的时效优先规则",
+        "权威优先顺序和冲突报告行为"
       ],
       "correct": 3,
-      "explanation": "A source hierarchy separates authority from recency and tells Claude how to expose unresolved conflicts."
+      "explanation": "来源层级区分权威性与时效性，并告诉 Claude 如何呈现未解决冲突。"
     },
     {
       "stage": "post",
-      "question": "Repeated prompt edits do not fix a missing policy exception. What is the best next action?",
+      "question": "反复修改提示词仍无法补上缺失的政策例外。最佳下一步是什么？",
       "options": [
-        "Diagnose whether the authoritative source is absent or buried",
-        "Add an explicit accuracy reminder and require a confidence score for every policy claim",
-        "Reduce the number of constraints so the model can infer exceptions more freely",
-        "Escalate to a larger model before inspecting the supplied evidence and context placement"
+        "诊断权威来源是缺失了，还是被淹没了",
+        "增加明确准确性提醒，要求每项政策主张附置信分",
+        "减少约束，让模型更自由地推断例外",
+        "检查给定证据和上下文位置前先升级大模型"
       ],
       "correct": 0,
-      "explanation": "The failure may be in the source or context layer. Wording changes cannot reliably recover unavailable evidence."
+      "explanation": "故障可能位于来源或上下文层。改措辞无法可靠找回不可用证据。"
     },
     {
       "stage": "post",
-      "question": "Which prompt instruction creates the safest uncertainty behavior?",
+      "question": "哪条提示指令提供了最安全的不确定性处理方式？",
       "options": [
-        "Return an empty response whenever any requested field lacks direct supporting evidence",
-        "State what is not established, name the missing source, and avoid unsupported inference",
-        "Provide the most likely complete answer and label any low-confidence values for later review",
-        "Estimate missing values from adjacent evidence but separate those estimates from sourced facts"
+        "任一请求字段缺少直接支持证据时，都返回空回答",
+        "说明哪些事项尚未确定，指出缺失来源，避免无依据推断",
+        "提供最可能的完整答案，将低置信度值标出供以后审核",
+        "根据相邻证据估算缺失值，但将估算与有来源事实分开"
       ],
       "correct": 1,
-      "explanation": "Designed abstention keeps evidence gaps visible and prevents fluency from converting uncertainty into fact."
+      "explanation": "设计好的弃答行为让证据缺口保持可见，避免流畅表达把不确定性变成事实。"
     }
   ]
 }

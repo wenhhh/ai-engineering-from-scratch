@@ -193,7 +193,7 @@ class OptimizerTestNetwork:
             accuracy = correct / len(data) * 100
             losses.append((avg_loss, accuracy))
             if epoch % 75 == 0 or epoch == epochs - 1:
-                print(f"    Epoch {epoch:3d}: loss={avg_loss:.4f}, accuracy={accuracy:.1f}%")
+                print(f"    轮次（Epoch）{epoch:3d}：损失={avg_loss:.4f}，准确率={accuracy:.1f}%")
         return losses
 
 
@@ -202,7 +202,7 @@ def bias_correction_demo():
     beta2 = 0.999
     gradient = 1.0
 
-    print("  Step | m_raw  | m_corrected | v_raw    | v_corrected")
+    print("  步数（Step）| 原始 m（m_raw）| 校正 m（m_corrected）| 原始 v（v_raw）| 校正 v（v_corrected）")
     print("  " + "-" * 55)
 
     m = 0.0
@@ -217,9 +217,9 @@ def bias_correction_demo():
 
 if __name__ == "__main__":
     print("=" * 60)
-    print("STEP 1: SGD on a Simple Function")
+    print("步骤 1：用随机梯度下降（SGD）优化简单函数")
     print("=" * 60)
-    print("  Minimizing f(x) = (x - 3)^2, starting at x = 10")
+    print("  从 x = 10 开始，最小化 f(x) = (x - 3)^2")
     x = [10.0]
     sgd = SGD(lr=0.1)
     for step in range(20):
@@ -227,22 +227,22 @@ if __name__ == "__main__":
         sgd.step(x, grad)
         loss = (x[0] - 3.0) ** 2
         if step % 5 == 0 or step == 19:
-            print(f"    Step {step:2d}: x={x[0]:.6f}, loss={loss:.6f}")
+            print(f"    步数（Step）{step:2d}：x={x[0]:.6f}，损失={loss:.6f}")
 
     print("\n" + "=" * 60)
-    print("STEP 2: Bias Correction in Adam")
+    print("步骤 2：Adam 的偏差校正（Bias Correction）")
     print("=" * 60)
-    print("  Showing how raw moments are biased toward zero initially")
+    print("  展示原始矩（Raw Moments）在初始阶段如何偏向零")
     bias_correction_demo()
 
     print("\n" + "=" * 60)
-    print("STEP 3: Optimizer Comparison on Circle Dataset")
+    print("步骤 3：在圆形数据集上比较优化器（Optimizers）")
     print("=" * 60)
     data = make_circle_data()
 
     configs = [
-        ("SGD (lr=0.05)", SGD(lr=0.05)),
-        ("SGD+Momentum (lr=0.05, beta=0.9)", SGDMomentum(lr=0.05, beta=0.9)),
+        ("随机梯度下降（SGD，lr=0.05）", SGD(lr=0.05)),
+        ("随机梯度下降+动量（SGD+Momentum，lr=0.05, beta=0.9）", SGDMomentum(lr=0.05, beta=0.9)),
         ("Adam (lr=0.001)", Adam(lr=0.001)),
         ("AdamW (lr=0.001, wd=0.01)", AdamW(lr=0.001, weight_decay=0.01)),
     ]
@@ -255,7 +255,7 @@ if __name__ == "__main__":
         results[name] = history
 
     print("\n" + "=" * 60)
-    print("FINAL COMPARISON")
+    print("最终比较")
     print("=" * 60)
     for name, history in results.items():
         final_loss, final_acc = history[-1]
@@ -264,11 +264,11 @@ if __name__ == "__main__":
             if acc >= 85.0:
                 first_90 = epoch
                 break
-        reached = f"epoch {first_90}" if first_90 is not None else "never"
-        print(f"  {name:40s}: acc={final_acc:.1f}%, loss={final_loss:.4f}, reached 85%: {reached}")
+        reached = f"第 {first_90} 轮（Epoch）" if first_90 is not None else "未达到"
+        print(f"  {name:40s}: 准确率={final_acc:.1f}%，损失={final_loss:.4f}，达到 85% 的轮次：{reached}")
 
     print("\n" + "=" * 60)
-    print("STEP 4: Weight Decay Effect")
+    print("步骤 4：权重衰减（Weight Decay）的效果")
     print("=" * 60)
     random.seed(42)
     large_weights = [random.uniform(-5, 5) for _ in range(10)]
@@ -278,7 +278,7 @@ if __name__ == "__main__":
     opt_adam = Adam(lr=0.001)
     opt_adamw = AdamW(lr=0.001, weight_decay=0.1)
 
-    print(f"  Initial weight L2 norm: {math.sqrt(sum(w*w for w in large_weights)):.4f}")
+    print(f"  初始权重 L2 范数（L2 Norm）： {math.sqrt(sum(w*w for w in large_weights)):.4f}")
 
     for step in range(100):
         grads = [random.gauss(0, 0.1) for _ in range(10)]
@@ -287,7 +287,7 @@ if __name__ == "__main__":
 
     norm_adam = math.sqrt(sum(w * w for w in weights_adam))
     norm_adamw = math.sqrt(sum(w * w for w in weights_adamw))
-    print(f"  After 100 steps:")
-    print(f"    Adam  weight L2 norm: {norm_adam:.4f}")
-    print(f"    AdamW weight L2 norm: {norm_adamw:.4f}")
-    print(f"    AdamW shrinks weights {norm_adam/max(0.001, norm_adamw):.1f}x more")
+    print(f"  100 步之后：")
+    print(f"    Adam 权重 L2 范数： {norm_adam:.4f}")
+    print(f"    AdamW 权重 L2 范数： {norm_adamw:.4f}")
+    print(f"    AdamW 将权重进一步缩小了 {norm_adam/max(0.001, norm_adamw):.1f} 倍")

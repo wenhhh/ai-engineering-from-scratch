@@ -1,50 +1,50 @@
-# End-to-End Eval Runner
+# 端到端评估运行器（End-to-End Eval Runner）
 
-> Five lessons of plumbing, one lesson to glue them. The runner reads the task spec from lesson 70, calls a model through an adapter, scores with lessons 71 and 72, attaches the calibration report from lesson 73, and emits the leaderboard from lesson 74. Demo self-terminates.
+> 五课铺设组件，一课将它们连接。运行器读取第 70 课任务规格，通过适配器调用模型，用第 71、72 课评分，附上第 73 课校准报告，输出第 74 课排行榜。演示自行结束。
 
 **Type:** Build
 **Languages:** Python
-**Prerequisites:** Phase 19 Track B foundations, lessons 70 through 74
-**Time:** ~90 min
+**Prerequisites:** 阶段 19 路线 B 基础，第 70 至 74 课
+**Time:** ~90 分钟
 
-## Learning objectives
+## 学习目标（Learning objectives）
 
-- Define a `ModelAdapter` interface that any model (mock, local, API) can satisfy with a small method surface.
-- Run the eval over a fixture JSONL file with parallel task execution across a worker pool.
-- Compose the metric layer (exact_match, F1, BLEU-4, ROUGE-L, code_exec) with the calibration layer in one pass.
-- Emit per-model `EvalRun` records and feed them straight into the leaderboard aggregator.
-- Output both a JSON report and a markdown table; self-terminate with exit zero on a clean run, non-zero on validation or runtime failure.
+- 定义 `ModelAdapter` 接口，使任意模型（模拟、本地、API）都能通过少量方法满足要求。
+- 在固定 JSONL 文件上评估，通过工作池并行执行任务。
+- 一轮处理组合指标层（exact_match、F1、BLEU-4、ROUGE-L、code_exec）与校准层。
+- 输出逐模型 `EvalRun` 记录，直接交给排行榜聚合器。
+- 同时输出 JSON 报告和 Markdown 表；正常运行自行以零退出，验证或运行失败时非零退出。
 
 ```figure
 eval-grid
 ```
 
-## The pipeline
+## 流水线（The pipeline）
 
 ```mermaid
 flowchart TD
-    A[tasks.jsonl from lesson 70] --> B[validate]
-    B --> C[render prompts]
-    C --> D[model adapter generate]
+    A[第 70 课 tasks.jsonl] --> B[验证]
+    B --> C[渲染提示词]
+    C --> D[模型适配器生成]
     D --> E[post_process]
     E --> F{metric_name}
-    F -->|exact_match/f1/bleu_4/rouge_l/accuracy| G[score from lesson 71]
-    F -->|code_exec| H[run_candidate from lesson 72]
-    G --> R[EvalRun record]
+    F -->|exact_match/f1/bleu_4/rouge_l/accuracy| G[第 71 课 score]
+    F -->|code_exec| H[第 72 课 run_candidate]
+    G --> R[EvalRun 记录]
     H --> R
-    D --> S[confidence and per-token nll]
-    S --> T[CalibrationReport from lesson 73]
-    R --> U[aggregate from lesson 74]
-    T --> V[per-model calibration block]
-    U --> W[leaderboard JSON + markdown]
+    D --> S[置信度与逐词元 nll]
+    S --> T[第 73 课 CalibrationReport]
+    R --> U[第 74 课 aggregate]
+    T --> V[逐模型校准块]
+    U --> W[排行榜 JSON + Markdown]
     V --> W
 ```
 
-The runner is the integration point. Each lesson 70 through 74 owns one module that the runner composes. The runner does not duplicate any logic from those modules: it imports them.
+运行器是集成点。第 70 至 74 课各负责一个模块，由运行器组合。运行器不重复模块逻辑，而是导入它们。
 
-## The adapter interface
+## 适配器接口（The adapter interface）
 
-The adapter is the seam between the runner and any model. The interface is intentionally small.
+适配器连接运行器与任意模型，接口刻意保持小。
 
 ```python
 class ModelAdapter:
@@ -53,37 +53,37 @@ class ModelAdapter:
     def generate(self, prompt: str, task: TaskSpec) -> Generation: ...
 ```
 
-`Generation` is a dataclass with:
+`Generation` 是数据类，包含：
 
-- `text`: the model's free-form output
-- `confidence`: a float in `[0, 1]` representing the model's self-reported probability for the answer
-- `token_nll`: optional sum of negative log-likelihoods over the generated tokens
-- `token_count`: optional number of generated tokens
+- `text`：模型的自由形式输出。
+- `confidence`：`[0, 1]` 内浮点值，表示模型自报的答案概率。
+- `token_nll`：可选的生成词元负对数似然之和。
+- `token_count`：可选的生成词元数。
 
-Mock adapters in the runner provide three flavours: `RuleBasedAdapter` (deterministic, near-perfect), `NoisyAdapter` (overconfident, often wrong), and `BiasedAdapter` (good at one category, terrible at another). The demo runs all three over the lesson 70 fixture.
+运行器提供三种模拟适配器：`RuleBasedAdapter`（确定性、近乎完美）、`NoisyAdapter`（过度自信、经常错误）、`BiasedAdapter`（擅长一类、另一类极差）。演示在第 70 课固定集上运行三者。
 
-## Parallel execution
+## 并行执行（Parallel execution）
 
-The runner uses `concurrent.futures.ThreadPoolExecutor` to run tasks in parallel per model. The worker count defaults to the smaller of eight and the task count. Threads are sufficient because the bottleneck for real model calls is network I/O. The code-exec path spawns its own subprocess inside the task and the executor only schedules the wait.
+运行器使用 `concurrent.futures.ThreadPoolExecutor` 为每个模型并行运行任务。工作线程数默认取八与任务数中较小者。真实模型调用的瓶颈是网络 I/O，线程足够。代码执行路径在任务内启动自己的子进程，执行器只调度等待。
 
-For deterministic tests, the runner exposes `run_eval(adapters, tasks, parallel=False)` so tests can pin the execution order.
+为保证测试确定性，运行器暴露 `run_eval(adapters, tasks, parallel=False)`，让测试固定执行顺序。
 
-## The single-pass scoring loop
+## 单轮评分循环（The single-pass scoring loop）
 
-For each task:
+对每个任务：
 
-1. Render the prompt (few-shot prefix plus the prompt body).
-2. Call the adapter and time the call.
-3. Post-process the generation per the task's rule.
-4. Dispatch to the metric layer.
-5. Build an `EvalRun` record with the score and metric metadata.
-6. Append the `(confidence, correct)` pair to the calibration buffer.
+1. 渲染提示词（少样本前缀加正文）。
+2. 调用适配器并计时。
+3. 按任务规则后处理生成结果。
+4. 分派到指标层。
+5. 构建包含分数和指标元数据的 `EvalRun` 记录。
+6. 将 `(confidence, correct)` 对加入校准缓冲区。
 
-The `correct` signal is `score >= 1.0` for exact_match-style metrics (`exact_match`, `accuracy`, `code_exec`) and `score >= 0.5` for graded metrics. The threshold lives in `_correct_from_score` and the runner does not expose a public override.
+对于完全匹配类指标（`exact_match`、`accuracy`、`code_exec`），`correct` 信号为 `score >= 1.0`；分级指标为 `score >= 0.5`。阈值位于 `_correct_from_score`，运行器不暴露公开覆盖选项。
 
-## Aggregation
+## 聚合（Aggregation）
 
-After every task has a result, the runner calls `aggregate` and `pairwise_diffs` from lesson 74 and `CalibrationReport.from_predictions` from lesson 73. The output is a single JSON envelope:
+每个任务都有结果后，运行器调用第 74 课的 `aggregate`、`pairwise_diffs`，以及第 73 课的 `CalibrationReport.from_predictions`。输出是单一 JSON 信封：
 
 ```json
 {
@@ -101,35 +101,35 @@ After every task has a result, the runner calls `aggregate` and `pairwise_diffs`
 }
 ```
 
-The runner also writes a markdown table to stdout so the user can paste the result into a PR review.
+运行器还将 Markdown 表写到标准输出，方便用户贴入 PR 评审。
 
-## Self-terminating demo
+## 自行结束的演示（Self-terminating demo）
 
-The demo runs three mock adapters over the ten fixture tasks from lesson 70. Wall time should sit under ten seconds. The exit code is zero on a clean run.
+演示在第 70 课十个固定任务上运行三个模拟适配器。实际用时应少于十秒。正常运行的退出码为零。
 
-The clean-run criteria are:
+正常运行条件是：
 
-- Every task validated under lesson 70.
-- Every task scored under lessons 71 and 72.
-- The calibration report aggregated under lesson 73 without errors.
-- The leaderboard ranked the rule-based adapter strictly above the random adapter.
+- 每个任务通过第 70 课验证。
+- 每个任务由第 71、72 课评分。
+- 校准报告通过第 73 课无误聚合。
+- 排行榜中基于规则的适配器严格高于随机适配器。
 
-If any of those break, the runner exits non-zero with a structured error in the JSON envelope.
+任一条件失败，运行器以非零退出，并在 JSON 信封中返回结构化错误。
 
-## What this lesson does not do
+## 本课不做什么（What this lesson does not do）
 
-It does not call a real model. It does not implement an API key flow or rate-limit handling. It does not implement streaming or partial generation; the adapter returns one generation per call. It does not do retries or caching. Those concerns live at the adapter layer; the runner is metric-agnostic and provider-agnostic.
+不调用真实模型，不实现 API 密钥流程或限流处理，不实现流式或部分生成（适配器每次返回一个完整生成结果），也不做重试或缓存。这些属于适配器层；运行器不依赖具体指标和服务商。
 
-## How to read the code
+## 如何阅读代码（How to read the code）
 
-`main.py` is the integration. It imports from the other five lesson modules through a small `_load_sibling` helper that resolves them by relative path. The dataclasses `Generation`, `EvalReport`, and `ModelAdapter` are defined locally. The mock adapters are at the bottom of the file.
+`main.py` 负责集成，通过按相对路径定位的小型 `_load_sibling` 辅助函数导入另外五课模块。数据类 `Generation`、`EvalReport`、`ModelAdapter` 在本地定义，模拟适配器位于文件底部。
 
-Read `main.py` top to bottom. Skim the imports, then look at `run_eval`, then `_score_one`, then the adapters. The demo at the end is the entry point.
+从上到下阅读 `main.py`。略看导入，再看 `run_eval`、`_score_one` 和适配器。末尾演示是入口。
 
-The tests in `code/tests/test_runner.py` pin the adapter interface, the single-pass loop, the parallel-vs-sequential equivalence, the calibration buffer, and the JSON envelope shape.
+`code/tests/test_runner.py` 固定适配器接口、单轮循环、并行与串行等价性、校准缓冲区和 JSON 信封结构。
 
-## Going further
+## 进一步探索（Going further）
 
-This runner is the floor. A production eval system adds: a results cache keyed by `(task_id, model_id, model_version)`, a cost ledger that tracks dollars and tokens per run, a retry layer that backs off on rate limits, a sampling policy for pass-at-k tasks, and a streaming output format for long suites. Each of those is a single concern that wraps the runner without changing the metric or aggregation layers. That separation is the point of the contract.
+本运行器是基础。生产评估系统还会加入：以 `(task_id, model_id, model_version)` 为键的结果缓存，跟踪每次运行美元与词元消耗的成本账本，限流时退避的重试层，pass-at-k 任务采样策略，以及长套件的流式输出格式。每项都是包装运行器的单一职责，无须改变指标或聚合层。这种分离正是契约的意义。
 
-Add an adapter for a real provider after you have the mocks working. Pick one with a free tier, write thirty lines of glue, watch the leaderboard light up. Then add the second provider and let the harness do the work.
+模拟组件可用后，再为真实服务商添加适配器。选择有免费额度的服务商，写三十行连接代码，观察排行榜开始工作。然后接入第二家，让框架完成其余工作。

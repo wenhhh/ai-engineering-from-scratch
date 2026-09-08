@@ -1,133 +1,133 @@
-# Role Specialization — Planner, Critic, Executor, Verifier
+# 角色专门化：规划者、批评者、执行者、验证者（Role Specialization — Planner, Critic, Executor, Verifier）
 
-> The most common multi-agent decomposition in 2026: one agent plans, one executes, one critiques or verifies. MetaGPT (arXiv:2308.00352) formalizes this as SOPs encoded into role prompts — Product Manager, Architect, Project Manager, Engineer, QA Engineer — following `Code = SOP(Team)`. ChatDev (arXiv:2307.07924) chains designer, programmer, reviewer, tester through a "chat chain" with "communicative dehallucination" (agents explicitly request missing details). The verifier is load-bearing: Cemri et al. (MAST, arXiv:2503.13657) show every multi-agent failure can be traced to missing or broken verification. PwC reported 7× accuracy gain (10% → 70%) from structured validation loops in CrewAI.
+> 2026 年最常见的多智能体分工：一个规划，一个执行，一个批评或验证。MetaGPT（arXiv:2308.00352）将其形式化为编码在角色提示词中的标准操作规程（Standard Operating Procedure，SOP）：产品经理、架构师、项目经理、工程师、质量保证工程师，遵循 `Code = SOP(Team)`。ChatDev（arXiv:2307.07924）通过“聊天链（Chat chain）”串联设计者、程序员、评审员、测试员，并采用“沟通式去幻觉（Communicative dehallucination）”，即智能体明确索取缺失细节。验证者承担关键作用：Cemri 等人（MAST，arXiv:2503.13657）表明，每种多智能体失败都可追溯到验证缺失或失效。PwC 报告，CrewAI 中的结构化验证循环带来 7 倍准确率提升（10% → 70%）。
 
 **Type:** Learn + Build
 **Languages:** Python (stdlib)
-**Prerequisites:** Phase 16 · 04 (Primitive Model), Phase 16 · 05 (Supervisor)
-**Time:** ~60 minutes
+**Prerequisites:** Phase 16 · 04 原语模型（Primitive Model）, Phase 16 · 05 监督者（Supervisor）
+**Time:** ~60 分钟
 
-## Problem
+## 问题（Problem）
 
-Generic multi-agent systems produce generic output. Three coders in a group chat write three flavors of the same mediocre code. You can add more agents, add more rounds, and still not cross the quality threshold.
+通用多智能体系统产出通用结果。群聊中三个编码者写出同样平庸代码的三种版本。增加智能体、增加轮次，仍可能达不到质量门槛。
 
-The fix is not more agents — it is *different* agents. Assign distinct roles. Give the critic tools the planner does not have. Give the verifier an objective test suite. Now the system has internal disagreement with grounded correction, not just parallel guessing.
+解决办法不是更多智能体，而是*不同*的智能体。分配不同角色，给批评者规划者没有的工具，给验证者客观测试套件。系统由此获得有依据纠正的内部异议，而非并行猜测。
 
-## Concept
+## 概念（Concept）
 
-### The four canonical roles
+### 四种标准角色（The four canonical roles）
 
-**Planner.** Reads the goal, produces a step list or a spec. Tools: knowledge retrieval, docs. Output: structured plan.
+**规划者（Planner）。** 读取目标，产出步骤列表或规范。工具：知识检索、文档。输出：结构化计划。
 
-**Executor.** Reads one plan step at a time, produces the artifact. Tools: the actual work tools (code compiler, shell, API client). Output: the artifact.
+**执行者（Executor）。** 每次读取计划中的一步，产出交付物。工具：实际工作工具（代码编译器、shell、API 客户端）。输出：交付物。
 
-**Critic.** Reads the executor's output against the planner's intent. Tools: read-only access to the artifact, static analysis. Output: accept/reject with reasons.
+**批评者（Critic）。** 依据规划者意图审阅执行者输出。工具：交付物只读访问、静态分析。输出：接受/拒绝及理由。
 
-**Verifier.** Reads the artifact and runs a deterministic check. Tools: test runner, type checker, schema validator. Output: pass/fail with evidence.
+**验证者（Verifier）。** 读取交付物，运行确定性检查。工具：测试运行器、类型检查器、模式校验器。输出：通过/失败及证据。
 
-Critic is subjective, opinionated, often LLM-based. Verifier is objective, deterministic, often code-based. They are not the same role.
+批评者主观、有立场，通常基于 LLM；验证者客观、确定性，通常基于代码。两者不是同一角色。
 
-### MetaGPT's SOP pattern
+### MetaGPT 的 SOP 模式（MetaGPT's SOP pattern）
 
-MetaGPT (arXiv:2308.00352) encodes software engineering SOPs as role prompts:
+MetaGPT（arXiv:2308.00352）将软件工程 SOP 编码为角色提示词：
 
-- **Product Manager** writes the PRD.
-- **Architect** produces the system design.
-- **Project Manager** splits tasks.
-- **Engineer** implements.
-- **QA Engineer** runs tests.
+- **产品经理（Product Manager）**编写产品需求文档（PRD）。
+- **架构师（Architect）**产出系统设计。
+- **项目经理（Project Manager）**拆分任务。
+- **工程师（Engineer）**实现。
+- **质量保证工程师（QA Engineer）**运行测试。
 
-Each role has a strict input/output schema. The role prompt says what the role *is* and what it *must produce*. The `Code = SOP(Team)` formulation — deterministic SOPs turn a team of LLMs into a predictable pipeline.
+每个角色都有严格的输入输出模式。角色提示词说明角色*是什么*以及*必须产出什么*。`Code = SOP(Team)` 的表述意味着：确定性 SOP 将 LLM 团队变为可预测流水线。
 
-### ChatDev's communicative dehallucination
+### ChatDev 的沟通式去幻觉（ChatDev's communicative dehallucination）
 
-ChatDev adds a key move: when an executor needs a specific detail that was not in the plan, it explicitly asks the designer before continuing. This prevents the classic LLM failure of plausibly inventing the detail.
+ChatDev 增加一个关键动作：执行者需要计划中未给出的具体细节时，先明确询问设计者再继续。这可防止 LLM 看似合理地编造细节这一典型失败。
 
-Implementation: the role prompt includes "when you need specific information you were not given, ask the relevant role by name before producing output."
+实现方式：角色提示词包含“需要未提供的具体信息时，先按角色名称询问相关角色，再产出结果”。
 
-### Why verifier matters most
+### 验证者为何最重要（Why verifier matters most）
 
-Cemri et al. (MAST) traced 1642 multi-agent execution failures. 21.3% were verification gaps — the system shipped an answer no one had checked. The remaining 79% often trace back to "there was a check that failed silently or was never run." Verification is the load-bearing role.
+Cemri 等人（MAST）追踪了 1642 次多智能体执行失败。21.3% 是验证缺口（Verification gap），即系统交付了无人检查的答案。其余 79% 往往可追溯到“有检查，但静默失败或根本没运行”。验证者承担关键作用。
 
-PwC reported (CrewAI deployments, 2025) that adding a structured validation loop moved accuracy from 10% to 70%. 7× gain from one role.
+PwC 报告（2025 年 CrewAI 部署），增加结构化验证循环后，准确率从 10% 提升至 70%。一个角色带来 7 倍收益。
 
-### Critic vs verifier
+### 批评者与验证者（Critic vs verifier）
 
-- A critic is an LLM reviewing an artifact for quality. Subjective. Can be fooled by plausible prose.
-- A verifier is a deterministic program running on the artifact. Objective. Gives pass/fail with evidence.
+- 批评者是评审交付物质量的 LLM。主观，可能被看似合理的文字蒙蔽。
+- 验证者是在交付物上运行的确定性程序。客观，给出带证据的通过/失败结果。
 
-Use both. Critic catches taste issues the verifier cannot articulate. Verifier catches bugs the critic cannot see because they show up only at runtime.
+两者都用。批评者发现验证者无法表述的品味问题；验证者发现仅在运行时出现、批评者看不到的缺陷。
 
-### The anti-pattern
+### 反模式（The anti-pattern）
 
-Every role in your system is an LLM and every role's output is "looks good to me." Classic MAST failure mode. Add at least one verifier whose pass/fail is decided by code, not by an LLM.
+系统每个角色都是 LLM，每个角色的输出都是“我看没问题”。这是典型 MAST 故障模式。至少增加一个由代码而非 LLM 决定通过/失败的验证者。
 
-### Framework mappings
+### 框架映射（Framework mappings）
 
-- **CrewAI** — `Agent(role, goal, backstory)` is the textbook specialization surface.
-- **LangGraph** — nodes can have specialized prompts; edges enforce the pipeline.
-- **AutoGen** — role-specific ConversableAgents with one-word names in a GroupChat.
-- **OpenAI Agents SDK** — handoff tools between role-specialized Agents.
+- **CrewAI**：`Agent(role, goal, backstory)` 是教科书式专门化接口。
+- **LangGraph**：节点可有专门提示词，边强制执行流水线。
+- **AutoGen**：GroupChat 中使用单词名称、面向特定角色的 ConversableAgents。
+- **OpenAI Agents SDK**：角色专门化 Agents 之间的交接工具。
 
 ```figure
 swarm-roles
 ```
 
-## Build It
+## 动手实现（Build It）
 
-`code/main.py` implements a 4-role pipeline building a simple Python function:
+`code/main.py` 实现构建简单 Python 函数的 4 角色流水线：
 
-- **Planner** produces a spec.
-- **Executor** generates a code string.
-- **Critic** (LLM-simulated) flags obvious issues.
-- **Verifier** runs the generated code in a sandbox (`exec`) against a test case.
+- **规划者（Planner）**产出规范。
+- **执行者（Executor）**生成代码字符串。
+- **批评者（Critic）**模拟 LLM，指出明显问题。
+- **验证者（Verifier）**在沙箱（`exec`）中运行生成代码，用测试用例检验。
 
-Demo runs twice: once where the executor produces correct code (critic + verifier both pass), once where the executor produces off-spec code (critic misses the bug because it looks plausible, verifier catches it because the test fails).
+演示运行两次：一次执行者生成正确代码，批评者和验证者都通过；另一次生成偏离规范的代码，批评者因代码看起来合理而漏掉缺陷，验证者因测试失败而发现。
 
-Run:
+运行：
 
 ```
 python3 code/main.py
 ```
 
-## Use It
+## 实际应用（Use It）
 
-`outputs/skill-role-designer.md` takes a task and produces the role roster (3-5 roles), the input/output schema per role, and the verifier check. Use this before wiring agents into a framework.
+`outputs/skill-role-designer.md` 接收任务，产出角色名单（3-5 个角色）、每个角色的输入输出模式和验证者检查。在将智能体接入框架前使用。
 
-## Ship It
+## 交付成果（Ship It）
 
-Checklist:
+检查清单：
 
-- **At least one deterministic verifier.** Never all-LLM.
-- **Explicit I/O schema per role.** The planner returns a spec, not prose; the executor reads that schema.
-- **Communicative dehallucination.** Executor must ask the planner when info is missing; never invent it.
-- **Critic/verifier ordering.** Run critic first (cheap, catches design issues), verifier second (slow, catches bugs).
-- **Loop budget.** Max 2 critic-executor revision rounds before escalating to human.
+- **至少一个确定性验证者。** 绝不全部使用 LLM。
+- **每个角色明确输入输出模式。** 规划者返回规范而非散文；执行者读取该模式。
+- **沟通式去幻觉。** 信息缺失时执行者必须询问规划者，绝不编造。
+- **批评者/验证者顺序。** 先运行批评者（便宜，发现设计问题），再运行验证者（慢，发现缺陷）。
+- **循环预算。** 批评者与执行者最多修改 2 轮，再升级交由人类。
 
-## Exercises
+## 练习（Exercises）
 
-1. Run `code/main.py` and observe how the verifier catches the bug the critic missed. Add a static-analysis check (count occurrences of `return`) as an additional verifier. What does it catch that the runtime test misses?
-2. Add a 5th role: "requirements analyst" that translates user wish into planner-ready spec. What communicative dehallucination requests should flow up to it?
-3. Read MetaGPT Section 3 ("Agents"). List the input/output schema of each of MetaGPT's 5 roles.
-4. Read ChatDev's chat-chain diagram (arXiv:2307.07924 Figure 3). Identify where communicative dehallucination breaks a loop that would otherwise be infinite.
-5. PwC's 7× accuracy gain came from verification loops. Hypothesize three tasks where adding a verifier would not help — where deterministic checking of correctness is impossible or prohibitively expensive.
+1. 运行 `code/main.py`，观察验证者如何发现批评者遗漏的缺陷。增加统计 `return` 次数的静态分析检查作为额外验证者。它能发现运行时测试漏掉的什么问题？
+2. 增加第五个角色“需求分析员”，将用户愿望转换为可交给规划者的规范。哪些沟通式去幻觉问题应向上提交给它？
+3. 阅读 MetaGPT 第 3 节“智能体（Agents）”，列出其 5 个角色的输入输出模式。
+4. 阅读 ChatDev 聊天链图（arXiv:2307.07924 图 3），指出沟通式去幻觉在哪打破原本无限的循环。
+5. PwC 的 7 倍准确率收益来自验证循环。设想三个增加验证者也无帮助的任务：无法确定性检查正确性，或检查成本高得难以承担。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语 | 常见说法 | 实际含义 |
 |------|----------------|------------------------|
-| Role specialization | "Different agents, different jobs" | Distinct system prompts tuned for planner/executor/critic/verifier roles. |
-| SOP pattern | "Encoded standard operating procedure" | MetaGPT's framing: strict I/O schemas per role turn a team into a pipeline. |
-| Communicative dehallucination | "Ask before inventing" | ChatDev pattern: executor asks planner when a detail is missing rather than making one up. |
-| Critic | "LLM reviewer" | Subjective, opinionated reviewer. Catches taste issues. Can be fooled by plausible prose. |
-| Verifier | "Deterministic check" | Code-based pass/fail. Test runner, type checker, schema validator. Cannot be fooled. |
-| Verification gap | "No one checked" | 21.3% of MAST failures. Answer shipped without a check that would have caught the bug. |
-| Revision loop | "Critic sends it back" | Critic rejection triggers executor re-run with feedback. Needs a budget. |
-| All-LLM anti-pattern | "Looks good to me" | Every role is an LLM, no deterministic check. Classic MAST failure. |
+| 角色专门化（Role specialization） | “不同智能体，不同工作” | 为规划者/执行者/批评者/验证者调校不同系统提示词。 |
+| SOP 模式（SOP pattern） | “编码的标准操作规程” | MetaGPT 思路：每个角色严格的输入输出模式把团队变成流水线。 |
+| 沟通式去幻觉（Communicative dehallucination） | “先问，别编” | ChatDev 模式：缺细节时执行者问规划者，而非编造。 |
+| 批评者（Critic） | “LLM 评审员” | 主观、有立场的评审者，发现品味问题，但可能被合理文字蒙蔽。 |
+| 验证者（Verifier） | “确定性检查” | 基于代码判定通过/失败，如测试运行器、类型检查器、模式校验器，不会被蒙蔽。 |
+| 验证缺口（Verification gap） | “没人检查” | 占 MAST 失败的 21.3%。交付答案时未运行本能发现缺陷的检查。 |
+| 修改循环（Revision loop） | “批评者退回” | 批评者拒绝后，执行者根据反馈重跑，需要预算。 |
+| 全 LLM 反模式（All-LLM anti-pattern） | “我看没问题” | 每个角色都是 LLM，没有确定性检查，是典型 MAST 故障。 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [Hong et al. — MetaGPT: Meta Programming for Multi-Agent Collaboration](https://arxiv.org/abs/2308.00352) — the SOP-as-role-prompt reference paper
-- [Qian et al. — Communicative Agents for Software Development (ChatDev)](https://arxiv.org/abs/2307.07924) — chat chain + communicative dehallucination
-- [Cemri et al. — Why Do Multi-Agent LLM Systems Fail?](https://arxiv.org/abs/2503.13657) — MAST taxonomy; verification gaps are 21.3% of failures
-- [CrewAI docs — Agent roles](https://docs.crewai.com/en/introduction) — production role specification surface
+- [Hong 等：MetaGPT，多智能体协作元编程（MetaGPT: Meta Programming for Multi-Agent Collaboration）](https://arxiv.org/abs/2308.00352)：SOP 作为角色提示词的参考论文
+- [Qian 等：软件开发沟通智能体（Communicative Agents for Software Development，ChatDev）](https://arxiv.org/abs/2307.07924)：聊天链 + 沟通式去幻觉
+- [Cemri 等：多智能体 LLM 系统为何失败（Why Do Multi-Agent LLM Systems Fail?）](https://arxiv.org/abs/2503.13657)：MAST 分类法，验证缺口占失败的 21.3%
+- [CrewAI 文档：智能体角色（Agent roles）](https://docs.crewai.com/en/introduction)：生产角色定义接口

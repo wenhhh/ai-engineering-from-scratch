@@ -28,10 +28,10 @@
       return total + (Array.isArray(phase.lessons) ? phase.lessons.length : 0);
     }, 0);
     var values = {
-      mastheadLessonCount: lessonTotal + ' lessons',
-      mastheadPhaseCount: PHASES.length + ' phases',
-      prefaceLessonCount: lessonTotal + ' lessons',
-      prefacePhaseCount: PHASES.length + ' phases'
+      mastheadLessonCount: lessonTotal + ' 节课',
+      mastheadPhaseCount: PHASES.length + ' 个阶段',
+      prefaceLessonCount: lessonTotal + ' 节课',
+      prefacePhaseCount: PHASES.length + ' 个阶段'
     };
     Object.keys(values).forEach(function (id) {
       var target = document.getElementById(id);
@@ -146,7 +146,7 @@
       var statusClass = p.status.replace(/ /g, '-');
       var roman = toRoman(p.id);
       var num = String(p.id).padStart(2, '0');
-      html += '<div class="toc-row" data-phase="' + i + '" role="button" tabindex="0" aria-haspopup="dialog" aria-label="Open Phase ' + num + ': ' + escapeHtml(p.name) + '">';
+      html += '<div class="toc-row" data-phase="' + i + '" role="button" tabindex="0" aria-haspopup="dialog" aria-label="打开阶段 ' + num + ': ' + escapeHtml(p.name) + '">';
       html += '<span class="toc-num">' + roman + '.</span>';
       html += '<div><span class="toc-status ' + statusClass + '"></span><span class="toc-name">' + escapeHtml(p.name) + '</span></div>';
       html += '<span class="toc-meta">' + done + ' / ' + total + '</span>';
@@ -203,7 +203,7 @@
     modal.setAttribute('aria-modal', 'true');
     modal.setAttribute('aria-labelledby', 'modalTitle');
     modal.setAttribute('aria-describedby', 'modalDesc');
-    closeBtn.setAttribute('aria-label', 'Close phase details');
+    closeBtn.setAttribute('aria-label', '关闭阶段详情');
 
     document.addEventListener('click', function (e) {
       var row = e.target.closest('.toc-row, .phase-card');
@@ -248,7 +248,7 @@
     if (resetBtn) {
       resetBtn.addEventListener('click', function () {
         if (!window.AIFSProgress) return;
-        var ok = window.confirm('Clear all your local progress (quiz answers and completed lessons)? This cannot be undone.');
+        var ok = window.confirm('清除本地全部学习进度（测验答案和已完成课程）？此操作无法撤销。');
         if (!ok) return;
         window.AIFSProgress.reset();
       });
@@ -264,7 +264,7 @@
     currentPhaseIdx = idx;
     modalReturnFocus = document.activeElement;
 
-    document.getElementById('modalPhaseNum').textContent = 'PHASE ' + String(p.id).padStart(2, '0');
+    document.getElementById('modalPhaseNum').textContent = '阶段 ' + String(p.id).padStart(2, '0');
     document.getElementById('modalTitle').textContent = p.name;
     document.getElementById('modalDesc').textContent = p.desc;
 
@@ -300,22 +300,22 @@
       var canOpen = (l.status === 'complete' || userComplete) && lessonPath;
       var lessonUrl = canOpen ? 'lesson?path=' + encodeURIComponent(lessonPath) : '';
       var lessonLabel = escapeHtml(l.name);
-      var lessonMeta = '<span class="modal-lesson-meta"><span class="modal-lesson-type" data-type="' + escapeHtml(l.type) + '"' + (l.combines ? ' title="Combines: ' + escapeHtml(l.combines) + '"' : '') + '>' + escapeHtml(l.type) + '</span><span aria-hidden="true">·</span><span class="modal-lesson-lang">' + escapeHtml(l.lang) + '</span></span>';
+      var lessonMeta = '<span class="modal-lesson-meta"><span class="modal-lesson-type" data-type="' + escapeHtml(l.type) + '"' + (l.combines ? ' title="组合内容：' + escapeHtml(l.combines) + '"' : '') + '>' + escapeHtml(({ Learn: '学习', Build: '动手实现（Build）', Reference: '参考', Capstone: '综合实践（Capstone）' })[l.type] || l.type) + '</span><span aria-hidden="true">·</span><span class="modal-lesson-lang">' + escapeHtml(l.lang) + '</span></span>';
 
       html += '<div class="modal-lesson' + (userComplete ? ' user-done' : '') + '">';
       if (canOpen) {
-        html += '<a href="' + lessonUrl + '" class="modal-lesson-open" aria-label="Open lesson: ' + lessonLabel + '">';
+        html += '<a href="' + lessonUrl + '" class="modal-lesson-open" aria-label="打开课程：' + lessonLabel + '">';
         html += '<span class="modal-lesson-copy"><span class="modal-lesson-name">' + lessonLabel + '</span>' + lessonMeta + '</span>';
-        html += '<span class="modal-lesson-cta">' + (userComplete ? 'Review' : 'Open lesson') + '<span aria-hidden="true">→</span></span></a>';
+        html += '<span class="modal-lesson-cta">' + (userComplete ? '复习' : '打开课程') + '<span aria-hidden="true">→</span></span></a>';
       } else {
         html += '<span class="modal-lesson-open is-unavailable" aria-disabled="true">';
         html += '<span class="modal-lesson-copy"><span class="modal-lesson-name">' + lessonLabel + '</span>' + lessonMeta + '</span>';
-        html += '<span class="modal-lesson-cta">Coming soon</span></span>';
+        html += '<span class="modal-lesson-cta">即将推出</span></span>';
       }
 
       var toggleHtml = '';
       if (hasProgress && canOpen) {
-        toggleHtml = '<button type="button" class="modal-lesson-toggle' + (userComplete ? ' done' : '') + '" data-path="' + lessonPath + '" title="' + (userComplete ? 'Mark as not done' : 'Mark complete') + '" aria-label="' + (userComplete ? 'Mark as not done' : 'Mark complete') + '"><span class="modal-lesson-check" aria-hidden="true">' + (userComplete ? '✓' : '') + '</span><span class="modal-lesson-toggle-label">' + (userComplete ? 'Done' : 'Mark done') + '</span></button>';
+        toggleHtml = '<button type="button" class="modal-lesson-toggle' + (userComplete ? ' done' : '') + '" data-path="' + lessonPath + '" title="' + (userComplete ? '标记为未完成' : '标记为已完成') + '" aria-label="' + (userComplete ? '标记为未完成' : '标记为已完成') + '"><span class="modal-lesson-check" aria-hidden="true">' + (userComplete ? '✓' : '') + '</span><span class="modal-lesson-toggle-label">' + (userComplete ? '已完成' : '标记完成') + '</span></button>';
       }
       html += toggleHtml;
       html += '</div>';
@@ -345,12 +345,12 @@
       var pct = Math.round((userDone / p.lessons.length) * 100);
       if (progEl) {
         progEl.style.display = '';
-        progEl.innerHTML = '<span><strong class="modal-progress-count">' + userDone + '</strong> of ' + p.lessons.length + ' lessons complete</span><span class="modal-progress-pct">' + pct + '%</span>';
+        progEl.innerHTML = '<span><strong class="modal-progress-count">' + userDone + '</strong> / ' + p.lessons.length + ' 节课已完成</span><span class="modal-progress-pct">' + pct + '%</span>';
       }
       if (barEl && barFill) {
         barEl.style.display = '';
         barEl.setAttribute('role', 'progressbar');
-        barEl.setAttribute('aria-label', p.name + ' progress');
+        barEl.setAttribute('aria-label', p.name + ' 学习进度');
         barEl.setAttribute('aria-valuemin', '0');
         barEl.setAttribute('aria-valuemax', '100');
         barEl.setAttribute('aria-valuenow', String(pct));
@@ -393,8 +393,8 @@
   function wireCopyButton(btn, label, getText) {
     if (!btn || !label) return;
     var revertTimer = null;
-    var defaultLabel = label.textContent || 'copy';
-    var defaultAriaLabel = btn.getAttribute('aria-label') || 'Copy command';
+    var defaultLabel = label.textContent || '复制';
+    var defaultAriaLabel = btn.getAttribute('aria-label') || '复制命令';
     function resetCopyState() {
       label.textContent = defaultLabel;
       btn.classList.remove('copied');
@@ -405,15 +405,15 @@
       revertTimer = setTimeout(resetCopyState, 1500);
     }
     function confirmCopied() {
-      label.textContent = 'copied';
+      label.textContent = '已复制';
       btn.classList.add('copied');
-      btn.setAttribute('aria-label', 'Command copied');
+      btn.setAttribute('aria-label', '命令已复制');
       scheduleReset();
     }
     function reportCopyFailure() {
-      label.textContent = 'retry';
+      label.textContent = '重试';
       btn.classList.remove('copied');
-      btn.setAttribute('aria-label', 'Copy failed. Try again');
+      btn.setAttribute('aria-label', '复制失败，请重试');
       scheduleReset();
     }
     function fallbackCopy(text) {
@@ -539,7 +539,7 @@
         dot.setAttribute('aria-pressed', active ? 'true' : 'false');
       });
       caption.setAttribute('aria-live', announce ? 'polite' : 'off');
-      caption.textContent = 'Plate ' + (current + 1) + ' of ' + panels.length + '. ' + panels[current].getAttribute('data-caption');
+      caption.textContent = '图版 ' + (current + 1) + ' / ' + panels.length + '. ' + panels[current].getAttribute('data-caption');
       previous.disabled = current === 0;
       next.disabled = current === panels.length - 1;
     }

@@ -98,7 +98,7 @@ def accumulate_d_grad(x, c, target, D, num_classes, grads):
 
 
 def update_g(noise, cs, G, D, num_classes, lr, l1_w=0.0, targets=None):
-    """Non-saturating G loss + optional conditional L1 toward a target."""
+    """非饱和生成器损失（Non-saturating G loss）+ 可选的面向目标的条件 L1 损失。"""
     grads = init_grads(G)
     for i, z in enumerate(noise):
         c = cs[i]
@@ -160,7 +160,7 @@ def main():
     D = init_mlp(1 + num_classes, hidden, 1, rng)
 
     batch, g_lr, d_lr = 32, 0.02, 0.01
-    print("=== conditional GAN on two-mode mixture (class 0 -> -2, class 1 -> +2) ===")
+    print("=== 双模态混合上的条件生成对抗网络（Conditional GAN，类别 0 -> -2，类别 1 -> +2）===")
     for step in range(1, 601):
         reals = sample_real_conditional(batch, num_classes, rng)
         cs = [c for _, c in reals]
@@ -178,21 +178,21 @@ def main():
                 c = rng.randrange(num_classes)
                 z = [rng.gauss(0, 1) for _ in range(z_dim)]
                 probes[c].append(g_forward(z, c, G, num_classes)[0][0])
-            line = f"step {step:4d}:"
+            line = f"步数（Step）{step:4d}："
             for c in range(num_classes):
-                line += f"  class {c}: mean {mean(probes[c]):+.2f}  (n={len(probes[c])})"
+                line += f"  类别（Class）{c}：均值（Mean） {mean(probes[c]):+.2f}  (n={len(probes[c])})"
             print(line)
 
     print()
-    print("=== sampling per class ===")
+    print("=== 按类别采样（Sampling）===")
     for c in range(num_classes):
         z_batch = [[rng.gauss(0, 1) for _ in range(z_dim)] for _ in range(6)]
         outs = [g_forward(z, c, G, num_classes)[0][0] for z in z_batch]
-        print(f"  class {c}: " + " ".join(f"{v:+.2f}" for v in outs))
+        print(f"  类别（Class）{c}： " + " ".join(f"{v:+.2f}" for v in outs))
 
     print()
-    print("takeaway: G(z, c) learns a class-specific sampler.")
-    print("          same architecture, one extra input, totally different samples.")
+    print("要点：G(z, c) 学习按类别生成的采样器（Class-specific sampler）。")
+    print("          相同的架构，多一个输入，得到完全不同的样本。")
 
 
 if __name__ == "__main__":

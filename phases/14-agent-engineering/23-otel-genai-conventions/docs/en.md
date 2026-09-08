@@ -1,132 +1,132 @@
-# OpenTelemetry GenAI Semantic Conventions
+# OpenTelemetry GenAI 语义约定（OpenTelemetry GenAI Semantic Conventions）
 
-> OpenTelemetry's GenAI SIG (launched April 2024) defines the standard schema for agent telemetry. Span names, attributes, and content-capture rules converge across vendors so agent traces mean the same thing in Datadog, Grafana, Jaeger, and Honeycomb.
+> OpenTelemetry 的 GenAI 特别兴趣小组（SIG，成立于 2024 年 4 月）为智能体遥测制定标准数据模式（Schema）。跨度名称、属性和内容采集规则在厂商之间趋于统一，使智能体追踪在 Datadog、Grafana、Jaeger 和 Honeycomb 中具有相同含义。
 
 **Type:** Learn + Build
-**Languages:** Python (stdlib)
-**Prerequisites:** Phase 14 · 13 (LangGraph), Phase 14 · 24 (Observability Platforms)
-**Time:** ~60 minutes
+**Languages:** Python（标准库）
+**Prerequisites:** 第 14 阶段 · 13（LangGraph），第 14 阶段 · 24（可观测性平台）
+**Time:** 约 60 分钟
 
-## Learning Objectives
+## 学习目标（Learning Objectives）
 
-- Name the GenAI span categories: model/client, agent, tool.
-- Distinguish `invoke_agent` CLIENT vs INTERNAL spans and when each applies.
-- List the top-level GenAI attributes: provider name, request model, data-source ID.
-- Explain the content-capture contract: opt-in, `OTEL_SEMCONV_STABILITY_OPT_IN`, external-reference recommendation.
+- 列出 GenAI 跨度类别：模型/客户端、智能体、工具。
+- 区分 `invoke_agent` 的 CLIENT 和 INTERNAL 跨度，以及各自适用的情况。
+- 列出顶层 GenAI 属性：提供商名称、请求模型、数据源 ID。
+- 解释内容采集契约：显式启用、`OTEL_SEMCONV_STABILITY_OPT_IN`，以及外部引用建议。
 
-## The Problem
+## 问题（The Problem）
 
-Every vendor invents their own span names. Ops teams end up building per-framework dashboards. OpenTelemetry's GenAI SIG fixes this by defining one standard the whole ecosystem targets.
+每家厂商都发明自己的跨度名称，运维团队最终不得不为每个框架分别搭建仪表盘。OpenTelemetry 的 GenAI SIG 通过定义整个生态共同遵循的标准解决这一问题。
 
-## The Concept
+## 概念（The Concept）
 
-### Span categories
+### 跨度类别（Span categories）
 
-1. **Model / client spans.** Cover raw LLM calls. Emitted by provider SDKs (Anthropic, OpenAI, Bedrock) and framework model adapters.
-2. **Agent spans.** `create_agent` (when the agent is constructed) and `invoke_agent` (when it runs).
-3. **Tool spans.** One per tool invocation; connected to the agent span by parent-child relation.
+1. **模型 / 客户端跨度（Model / client spans）。** 覆盖原始 LLM 调用，由提供商 SDK（Anthropic、OpenAI、Bedrock）和框架模型适配器发出。
+2. **智能体跨度（Agent spans）。** `create_agent` 在构造智能体时发出，`invoke_agent` 在运行时发出。
+3. **工具跨度（Tool spans）。** 每次工具调用一个，通过父子关系连接到智能体跨度。
 
-### Agent span naming
+### 智能体跨度命名（Agent span naming）
 
-- Span name: `invoke_agent {gen_ai.agent.name}` if named; fallback to `invoke_agent`.
-- Span kind:
-  - **CLIENT** — for remote agent services (OpenAI Assistants API, Bedrock Agents).
-  - **INTERNAL** — for in-process agent frameworks (LangChain, CrewAI, local ReAct).
+- 跨度名称：如果智能体有名称，使用 `invoke_agent {gen_ai.agent.name}`，否则回退到 `invoke_agent`。
+- 跨度类型：
+  - **CLIENT**：用于远程智能体服务，如 OpenAI Assistants API、Bedrock Agents。
+  - **INTERNAL**：用于进程内智能体框架，如 LangChain、CrewAI、本地 ReAct。
 
-### Key attributes
+### 关键属性（Key attributes）
 
-- `gen_ai.provider.name` — `anthropic`, `openai`, `aws.bedrock`, `google.vertex`.
-- `gen_ai.request.model` — the model ID.
-- `gen_ai.response.model` — the resolved model (may differ from request due to routing).
-- `gen_ai.agent.name` — agent identifier.
-- `gen_ai.operation.name` — `chat`, `completion`, `invoke_agent`, `tool_call`.
-- `gen_ai.data_source.id` — for RAG: which corpus or store was consulted.
+- `gen_ai.provider.name`：`anthropic`、`openai`、`aws.bedrock`、`google.vertex`。
+- `gen_ai.request.model`：模型 ID。
+- `gen_ai.response.model`：最终解析出的模型，可能因路由而不同于请求模型。
+- `gen_ai.agent.name`：智能体标识。
+- `gen_ai.operation.name`：`chat`、`completion`、`invoke_agent`、`tool_call`。
+- `gen_ai.data_source.id`：针对 RAG，标识查询了哪个语料库或存储。
 
-Technology-specific conventions exist for Anthropic, Azure AI Inference, AWS Bedrock, OpenAI.
+Anthropic、Azure AI Inference、AWS Bedrock、OpenAI 都有各自技术专用的约定。
 
-### Content capture
+### 内容采集（Content capture）
 
-The default rule: instrumentations SHOULD NOT capture inputs/outputs by default. Capture is opt-in via:
+默认规则：插桩默认不应（SHOULD NOT）采集输入和输出。通过以下属性显式启用采集：
 
 - `gen_ai.system_instructions`
 - `gen_ai.input.messages`
 - `gen_ai.output.messages`
 
-Recommended production pattern: store content externally (S3, your log store), record references on spans (pointer IDs, not prose). This is the Lesson 27 content-poisoning defense wired into observability.
+推荐的生产模式：将内容存储在外部，如 S3 或你的日志存储，在跨度中记录引用，即指针 ID，而非正文。这是将第 27 课的内容投毒防御接入可观测性。
 
-### Stability
+### 稳定性（Stability）
 
-Most conventions are experimental as of March 2026. Opt in to the stable preview with:
+截至 2026 年 3 月，大多数约定仍处于实验阶段。通过以下方式启用稳定预览：
 
 ```
 OTEL_SEMCONV_STABILITY_OPT_IN=gen_ai_latest_experimental
 ```
 
-Datadog v1.37+ maps GenAI attributes natively into its LLM Observability schema. Other backends (Grafana, Honeycomb, Jaeger) support the raw attributes.
+Datadog v1.37+ 将 GenAI 属性原生映射到其 LLM Observability 数据模式（Schema）。其他后端（Grafana、Honeycomb、Jaeger）支持原始属性。
 
-### Where this pattern goes wrong
+### 模式的失效点（Where this pattern goes wrong）
 
-- **Capturing full prompts in spans.** PII, secrets, customer data in traces that ops can read. Store externally.
-- **No `gen_ai.provider.name`.** Multi-provider dashboards break when attribution is missing.
-- **Spans without parent links.** Orphaned tool spans. Always propagate context.
-- **Not setting stability opt-in.** Your attributes may get renamed on backend upgrade.
+- **在跨度中采集完整提示词（Capturing full prompts in spans）。** PII、密钥和客户数据进入运维人员可读的追踪。应存储到外部。
+- **缺少 `gen_ai.provider.name`（No provider name）。** 缺少归属信息会破坏多提供商仪表盘。
+- **跨度没有父链接（Spans without parent links）。** 工具跨度成为孤立记录。始终传播上下文。
+- **未设置稳定性显式启用项（Not setting stability opt-in）。** 后端升级可能重命名你的属性。
 
 ```figure
 ae-genai-span-tree
 ```
 
-## Build It
+## 动手实现（Build It）
 
-`code/main.py` implements a stdlib span emitter matching GenAI conventions:
+`code/main.py` 使用标准库实现符合 GenAI 约定的跨度发射器：
 
-- `Span` with GenAI attribute schema.
-- `Tracer` with `start_span`, nested contexts.
-- A scripted agent run that emits: `create_agent`, `invoke_agent` (INTERNAL), per-tool spans, `chat` spans for LLM calls.
-- A content-capture mode that stores prompts externally and records IDs on spans.
+- 遵循 GenAI 属性结构定义（Schema）的 `Span`。
+- 带 `start_span` 和嵌套上下文的 `Tracer`。
+- 脚本化智能体运行，发出 `create_agent`、`invoke_agent`（INTERNAL）、逐工具跨度，以及 LLM 调用的 `chat` 跨度。
+- 内容采集模式将提示词存储到外部，并在跨度中记录 ID。
 
-Run it:
+运行：
 
 ```
 python3 code/main.py
 ```
 
-Output: a span tree with all required GenAI attributes, and an "external store" showing the opt-in content references.
+输出：包含全部必需 GenAI 属性的跨度树，以及展示显式启用内容引用的“外部存储”。
 
-## Use It
+## 实际应用（Use It）
 
-- **Datadog LLM Observability** (v1.37+) maps attributes natively.
-- **Langfuse / Phoenix / Opik** (Lesson 24) — auto-instrument the ecosystem.
-- **Jaeger / Honeycomb / Grafana Tempo** — raw OTel traces; build dashboards from GenAI attributes.
-- **Self-hosted** — run the OTel Collector with a GenAI processor.
+- **Datadog LLM Observability**（v1.37+）：原生映射属性。
+- **Langfuse / Phoenix / Opik**（第 24 课）：对生态自动插桩。
+- **Jaeger / Honeycomb / Grafana Tempo**：原始 OTel 追踪；根据 GenAI 属性构建仪表盘。
+- **自托管（Self-hosted）**：运行带 GenAI 处理器的 OTel Collector。
 
-## Ship It
+## 交付成果（Ship It）
 
-`outputs/skill-otel-genai.md` wires OTel GenAI spans into an existing agent with content-capture defaults and external-reference storage.
+`outputs/skill-otel-genai.md` 将 OTel GenAI 跨度接入现有智能体，配置内容采集默认值和外部引用存储。
 
-## Exercises
+## 练习（Exercises）
 
-1. Instrument your Lesson 01 ReAct loop with `invoke_agent` (INTERNAL) + per-tool spans. Send to a Jaeger instance.
-2. Add content capture in "references only" mode: prompts to SQLite, span attributes carry only row IDs.
-3. Read the spec for `gen_ai.data_source.id`. Wire it into your Lesson 09 Mem0 search.
-4. Set `OTEL_SEMCONV_STABILITY_OPT_IN=gen_ai_latest_experimental` and verify your attributes don't get renamed by the collector.
-5. Build a dashboard: "which tool errors correlate with which models" from GenAI attributes alone.
+1. 为第 01 课 ReAct 循环加入 `invoke_agent`（INTERNAL）和逐工具跨度，将其发送到 Jaeger 实例。
+2. 添加“仅引用”模式的内容采集：提示词存到 SQLite，跨度属性只携带行 ID。
+3. 阅读 `gen_ai.data_source.id` 规范，将它接入第 09 课的 Mem0 搜索。
+4. 设置 `OTEL_SEMCONV_STABILITY_OPT_IN=gen_ai_latest_experimental`，验证收集器不会重命名属性。
+5. 仅根据 GenAI 属性构建仪表盘，回答“哪些工具错误与哪些模型相关”。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语 | 常见说法 | 实际含义 |
 |------|----------------|------------------------|
-| GenAI SIG | "OpenTelemetry GenAI group" | OTel working group defining the schema |
-| invoke_agent | "Agent span" | Name of the span representing an agent run |
-| CLIENT span | "Remote call" | Span for a call to a remote agent service |
-| INTERNAL span | "In-process" | Span for an in-process agent run |
-| gen_ai.provider.name | "Provider" | anthropic / openai / aws.bedrock / google.vertex |
-| gen_ai.data_source.id | "RAG source" | Which corpus/store a retrieval hit |
-| Content capture | "Prompt logging" | Opt-in capture of messages; store externally in prod |
-| Stability opt-in | "Preview mode" | Env var to pin experimental conventions |
+| GenAI SIG | “OpenTelemetry GenAI 小组” | 制定数据模式（Schema）的 OTel 工作组 |
+| invoke_agent | “智能体跨度” | 表示智能体运行的跨度名称 |
+| CLIENT 跨度 | “远程调用” | 调用远程智能体服务的跨度 |
+| INTERNAL 跨度 | “进程内” | 进程内智能体运行的跨度 |
+| gen_ai.provider.name | “提供商” | anthropic / openai / aws.bedrock / google.vertex |
+| gen_ai.data_source.id | “RAG 来源” | 检索命中了哪个语料库或存储 |
+| 内容采集（Content capture） | “提示词日志” | 显式启用消息采集；生产环境存到外部 |
+| 稳定性显式启用（Stability opt-in） | “预览模式” | 用于固定实验约定的环境变量 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [OpenTelemetry GenAI semantic conventions](https://opentelemetry.io/docs/specs/semconv/gen-ai/) — the spec
-- [OpenAI Agents SDK](https://openai.github.io/openai-agents-python/) — GenAI spans by default
-- [AutoGen v0.4 (Microsoft Research)](https://www.microsoft.com/en-us/research/articles/autogen-v0-4-reimagining-the-foundation-of-agentic-ai-for-scale-extensibility-and-robustness/) — OTel spans built in
-- [Claude Agent SDK](https://platform.claude.com/docs/en/agent-sdk/overview) — W3C trace context propagation
+- [OpenTelemetry GenAI 语义约定](https://opentelemetry.io/docs/specs/semconv/gen-ai/)：规范
+- [OpenAI Agents SDK](https://openai.github.io/openai-agents-python/)：默认提供 GenAI 跨度
+- [AutoGen v0.4（Microsoft Research）](https://www.microsoft.com/en-us/research/articles/autogen-v0-4-reimagining-the-foundation-of-agentic-ai-for-scale-extensibility-and-robustness/)：内置 OTel 跨度
+- [Claude Agent SDK](https://platform.claude.com/docs/en/agent-sdk/overview)：W3C 追踪上下文传播

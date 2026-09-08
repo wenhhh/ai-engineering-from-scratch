@@ -1,7 +1,7 @@
-"""GPT-style causal language modeling — causal mask, loss shift, sampling.
+"""GPT 风格的因果语言建模（Causal language modeling）：因果掩码、损失移位和采样。
 
-Pure stdlib. Tiny "GPT" with random weights demonstrates the mask,
-next-token prediction, and four sampling strategies on a 20-token vocab.
+仅用标准库。带随机权重的微型 "GPT" 演示掩码（Mask）、
+下一词元预测（Next-token prediction），以及在 20 词元词表上的四种采样策略。
 """
 
 import math
@@ -36,7 +36,7 @@ def apply_softmax_row(row):
 
 
 def cross_entropy_shifted(logits_per_pos, target_ids):
-    """Next-token CE: logit_i vs target_{i+1}."""
+    """下一词元交叉熵（CE）：logit_i 对照 target_{i+1}。"""
     total = 0.0
     count = 0
     for i in range(len(target_ids) - 1):
@@ -115,7 +115,7 @@ def sample_min_p(logits, min_p, rng, temperature=1.0):
 
 
 def demo_causal_mask():
-    print("=== causal attention matrix (post-softmax) ===")
+    print("=== 因果注意力矩阵（Causal attention matrix，Softmax 后）===")
     n = 6
     rng = random.Random(42)
     raw = [[rng.gauss(0, 1) for _ in range(n)] for _ in range(n)]
@@ -124,46 +124,46 @@ def demo_causal_mask():
     attn = [apply_softmax_row(row) for row in masked]
     for i, row in enumerate(attn):
         print("  " + "  ".join(f"{v:.3f}" for v in row))
-    print("  (every row is a valid probability distribution over positions 0..i)")
+    print("  （每行都是位置 0..i 上的有效概率分布）")
     print()
 
 
 def demo_sampling():
-    print("=== sampling strategies on a fake next-token distribution ===")
+    print("=== 模拟下一词元分布的采样策略（英文词表保持原样）===")
     vocab = ["the", "cat", "dog", "sat", "ran", "jumped", "on", "mat", "floor", "."]
     logits = [3.2, 1.1, 2.8, 0.4, 0.9, 1.5, -0.2, 2.1, 0.7, 0.1]
     probs = softmax(logits)
-    print("token       logit   prob")
+    print("词元（Token）       未归一化得分（Logit）   概率（Prob）")
     for w, l, p in zip(vocab, logits, probs):
         print(f"  {w:<8}  {l:+.2f}   {p:.3f}")
     print()
 
     rng = random.Random(0)
-    print("greedy:         " + vocab[sample_greedy(probs)])
-    print("temp=0.7:       " + vocab[sample_temperature(logits, 0.7, rng)])
-    print("temp=2.0:       " + vocab[sample_temperature(logits, 2.0, rng)])
-    print("top-k=3:        " + vocab[sample_top_k(logits, 3, rng)])
-    print("top-p=0.9:      " + vocab[sample_top_p(logits, 0.9, rng)])
-    print("min-p=0.1:      " + vocab[sample_min_p(logits, 0.1, rng)])
+    print("贪心（Greedy）：         " + vocab[sample_greedy(probs)])
+    print("温度（Temp）=0.7：       " + vocab[sample_temperature(logits, 0.7, rng)])
+    print("温度（Temp）=2.0：       " + vocab[sample_temperature(logits, 2.0, rng)])
+    print("前 k 项采样（Top-k）=3：        " + vocab[sample_top_k(logits, 3, rng)])
+    print("核采样（Top-p）=0.9：      " + vocab[sample_top_p(logits, 0.9, rng)])
+    print("最小概率采样（Min-p）=0.1：      " + vocab[sample_min_p(logits, 0.1, rng)])
     print()
 
 
 def demo_ce_loss():
-    print("=== cross-entropy next-token loss ===")
+    print("=== 下一词元交叉熵损失（Cross-entropy loss）===")
     vocab_size = 10
     seq = [3, 1, 7, 0, 4, 9]
     rng = random.Random(7)
     logits = [[rng.gauss(0, 1) for _ in range(vocab_size)] for _ in seq]
-    # Boost correct next-token slightly to simulate a "slightly-trained" model
+    # 略微提高正确下一词元的得分，模拟“经过少量训练”的模型
     for i in range(len(seq) - 1):
         logits[i][seq[i + 1]] += 2.0
     loss_trained = cross_entropy_shifted(logits, seq)
-    # Unbiased random
+    # 无偏随机值
     logits_rand = [[rng.gauss(0, 1) for _ in range(vocab_size)] for _ in seq]
     loss_rand = cross_entropy_shifted(logits_rand, seq)
-    print(f"loss with biased logits (trained-ish):  {loss_trained:.3f}")
-    print(f"loss with random logits:                {loss_rand:.3f}")
-    print(f"random-baseline loss (ln V = ln {vocab_size}):      {math.log(vocab_size):.3f}")
+    print(f"偏置得分的损失（近似训练后）：  {loss_trained:.3f}")
+    print(f"随机得分的损失：                {loss_rand:.3f}")
+    print(f"随机基线损失（ln V = ln {vocab_size}):      {math.log(vocab_size):.3f}")
     print()
 
 
@@ -171,7 +171,7 @@ def main():
     demo_causal_mask()
     demo_sampling()
     demo_ce_loss()
-    print("takeaway: the mask is one line. the rest is the same transformer.")
+    print("要点：掩码只需一行，其余部分仍是同一个 Transformer。")
 
 
 if __name__ == "__main__":

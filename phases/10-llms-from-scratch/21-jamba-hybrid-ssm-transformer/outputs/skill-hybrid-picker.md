@@ -1,31 +1,31 @@
 ---
 name: hybrid-picker
-description: Pick between pure Transformer, Jamba-style hybrid, and pure SSM for a given workload.
+description: 根据工作负载，在纯 Transformer、Jamba 式混合架构（Hybrid）和纯状态空间模型（State Space Model，SSM）之间选择。
 version: 1.0.0
 phase: 10
 lesson: 21
 tags: [jamba, mamba, ssm, hybrid, long-context, memory-budget, architecture]
 ---
 
-Given a workload specification (context length profile p50/p99, task mix, memory budget per GPU, target throughput, quality-vs-speed priority), recommend between a pure Transformer (+MoE +MLA), a Jamba-style hybrid, and a pure Mamba model.
+给定工作负载规格（上下文长度分布 p50/p99、任务组合、每 GPU 内存预算、目标吞吐量、质量与速度的优先级），在纯 Transformer（+MoE +MLA）、Jamba 式混合模型和纯 Mamba 之间推荐。
 
-Produce:
+产出：
 
-1. Context-length bucket. Short (under 16k), medium (16k-64k), long (64k-256k), or ultra-long (256k-plus). Drives the first-pass decision.
-2. Architecture recommendation. Pick one of pure Transformer, 1:7 hybrid, 1:3 hybrid, 1:15 hybrid, or pure Mamba. Justify using the context bucket plus the task's in-context-recall demands.
-3. Memory budget check. Compute KV cache + SSM state at target context. Confirm it fits on the target accelerator after accounting for weights and activation memory (typically 10-20 GB on top of weights and KV cache).
-4. Quality tradeoff disclosure. Document the quality cost of the chosen sparsity level. Hybrids below 1:7 ratio degrade on in-context retrieval by measurable amounts; pure Mamba fails on some state-tracking tasks.
-5. Inference stack compatibility. Confirm the chosen architecture is supported by the target stack (vLLM, TensorRT-LLM, SGLang, llama.cpp). Hybrids have thinner tooling coverage than pure Transformers.
+1. 上下文长度分档。短（小于 16k）、中（16k–64k）、长（64k–256k）或超长（256k 以上），用来驱动初步决策。
+2. 架构推荐。从纯 Transformer、1:7 混合、1:3 混合、1:15 混合或纯 Mamba 中选择。结合长度分档和任务的上下文内回忆（In-Context Recall）需求论证。
+3. 内存预算检查。计算目标上下文的键值缓存（Key-Value Cache，KV Cache）加 SSM 状态。计入权重和激活内存（Activation Memory）后，确认可装入目标加速器；激活通常在权重及 KV 缓存之外再占 10–20 GB。
+4. 质量权衡披露。记录所选稀疏水平的质量代价。比例低于 1:7 的混合模型在上下文内检索上会出现可测退化；纯 Mamba 在某些状态跟踪（State Tracking）任务上会失败。
+5. 推理栈兼容性。确认目标栈（vLLM、TensorRT-LLM、SGLang、llama.cpp）支持所选架构。混合模型的工具覆盖弱于纯 Transformer。
 
-Hard rejects:
-- Jamba-style hybrid for context under 16k. The architectural overhead is not justified.
-- Pure Mamba for reasoning-heavy or multi-document cross-reference tasks. State-tracking limits bite.
-- Sub-1:15 hybrid ratios. Below this, in-context recall is unreliable.
-- Any recommendation that does not fit the computed memory budget on the specified accelerator.
+必须拒绝的情况：
+- 上下文小于 16k 却采用 Jamba 式混合模型，架构开销缺乏理由。
+- 重推理或跨文档交叉引用任务采用纯 Mamba，状态跟踪限制会产生影响。
+- 混合比例低于 1:15。低于此比例，上下文内回忆不可靠。
+- 计算出的内存预算无法装入指定加速器的任何推荐。
 
-Refusal rules:
-- If the workload is genuinely mixed short and long context, refuse the hybrid recommendation and recommend the pure Transformer (with MLA if possible) — hybrids shine on long-context workloads specifically.
-- If the accelerator is consumer-grade (24GB or less), refuse hybrid-size models and recommend a distilled small hybrid or a quantized pure Transformer.
-- If the workload is latency-sensitive batch-1 generation and the model is new (no existing deployment path), refuse and recommend a well-supported pure Transformer with speculative decoding (Phase 10 · 15) as the simpler path.
+拒绝规则：
+- 若工作负载确实混合短、长上下文，拒绝推荐混合模型，改为推荐纯 Transformer，尽可能采用多头潜在注意力（Multi-Head Latent Attention，MLA）；混合模型专长于长上下文负载。
+- 若加速器为消费级（24GB 或更少），拒绝混合模型这一规模，推荐蒸馏的小型混合模型或量化纯 Transformer。
+- 若工作负载是延迟敏感、批量为 1 的生成，且模型较新、没有现成部署路径，则拒绝，推荐支持成熟的纯 Transformer 加推测解码（Speculative Decoding）（阶段 10 · 15），作为更简单的方案。
 
-Output: a one-page recommendation listing context bucket, architecture choice, KV cache at target context, quality tradeoff disclosure, and inference stack compatibility. End with a "what to monitor" paragraph naming the specific long-context evaluation (RULER, LongBench, needle-in-haystack) that would confirm the recommendation in the first 10k production requests.
+输出：一页推荐，列出上下文分档、架构选择、目标上下文的 KV 缓存、质量权衡及推理栈兼容性。以“监控内容”段落结尾，明确前 10k 个生产请求中用于验证推荐的长上下文评估：RULER、LongBench 或大海捞针（Needle-in-a-Haystack）。

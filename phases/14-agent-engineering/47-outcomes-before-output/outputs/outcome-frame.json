@@ -2,19 +2,19 @@
   "status": "ready-to-discover",
   "issues": [],
   "frame": {
-    "user": "on-call engineer",
-    "situation": "a production alert arrives during an incident",
-    "current_behavior": "searches three dashboards before finding the affected service",
-    "desired_outcome": "identifies the failing service and safe next action within two minutes",
+    "user": "值班工程师",
+    "situation": "事故期间收到生产告警",
+    "current_behavior": "搜索三个仪表盘后才找到受影响服务",
+    "desired_outcome": "在两分钟内识别故障服务与安全的下一步动作",
     "constraints": [
-      "read-only during diagnosis",
-      "must preserve the audit trail"
+      "诊断期间只读",
+      "必须保留审计轨迹"
     ],
     "non_goals": [
-      "automatic remediation",
-      "replacing the incident commander"
+      "自动修复",
+      "取代事故指挥者"
     ],
-    "proposed_output": "incident assistant"
+    "proposed_output": "事故助手"
   },
-  "next_question": "What evidence would show that the desired outcome was achieved for the on-call engineer?"
+  "next_question": "什么证据能表明值班工程师已达成期望成效？"
 }

@@ -37,17 +37,17 @@ def main():
     candidates = list(LANGUAGE_FEATURES)
     targets = ["marathi", "urdu", "arabic", "japanese"]
 
-    print("=== source language selection (qWALS-style similarity) ===")
+    print("=== 源语言选择（Source language selection，qWALS 风格相似度，语言枚举保留） ===")
     for target in targets:
         ranking = rank_source_languages(target, candidates)[:4]
-        print(f"\n  target: {target}")
+        print(f"\n  目标语言（Target）: {target}")
         for source, sim in ranking:
             expected = simulate_transfer_accuracy(target, source)
-            print(f"    source={source:10s}  sim={sim:.2f}  simulated_acc={expected:.0%}")
+            print(f"    源语言（Source）={source:10s}  相似度={sim:.2f}  模拟准确率={expected:.0%}")
 
     print()
-    print("note: real similarity comes from qWALS / lang2vec, not a 3-feature toy.")
-    print("key insight: for Marathi, Hindi is a better source than English.")
+    print("注意：实际相似度来自 qWALS / lang2vec，而非这个只含 3 个特征的小型示例。")
+    print("关键结论：对马拉地语（Marathi），印地语（Hindi）比英语（English）更适合作为源语言。")
 
 
 if __name__ == "__main__":

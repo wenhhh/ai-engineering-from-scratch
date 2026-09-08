@@ -1,78 +1,78 @@
 {
   "lesson": "67-query-rewriting-hyde",
-  "title": "Query Rewriting: HyDE, Multi-Query, and Decomposition",
+  "title": "查询改写：HyDE、多查询与分解（Query Rewriting: HyDE, Multi-Query, and Decomposition）",
   "questions": [
     {
       "stage": "pre",
-      "question": "What is the core mechanism of HyDE (Hypothetical Document Embeddings)?",
+      "question": "HyDE（假设文档嵌入）的核心机制是什么？",
       "options": [
-        "Embed the user query through a larger model",
-        "Hash the query and look it up in a cache",
-        "Run the query through multiple retrievers and pick the best one",
-        "Generate a fake answer with an LLM, embed that hypothetical document, and retrieve against its vector instead of the query vector"
+        "通过更大模型嵌入用户查询",
+        "哈希查询并查缓存",
+        "让查询经过多个检索器，选择最佳者",
+        "用 LLM 生成虚构答案，嵌入该假设文档，用其向量替代查询向量检索"
       ],
       "correct": 3,
-      "explanation": "HyDE writes a document-shaped passage in the corpus voice and retrieves on that embedding; the query vector is replaced."
+      "explanation": "HyDE 用语料表达方式撰写文档式段落，并据其嵌入检索；查询向量被替换。"
     },
     {
       "stage": "pre",
-      "question": "Why is it acceptable for the LLM-generated hypothetical document in HyDE to be factually wrong?",
+      "question": "为什么 HyDE 中 LLM 生成的假设文档事实错误也可以接受？",
       "options": [
-        "The reranker repairs factual errors",
-        "The LLM call is rolled back when wrong",
-        "The retriever cares about the token distribution, not factual correctness; the hypothetical's vector lands near the real passage",
-        "The user never sees the hypothetical"
+        "重排器修复事实错误",
+        "错误时回滚 LLM 调用",
+        "检索器关心词元分布而非事实正确性；假设文本向量落在真实段落附近",
+        "用户永远看不到假设文本"
       ],
       "correct": 2,
-      "explanation": "Retrieval is similarity in embedding space; if the hypothetical's vocabulary matches the corpus, the vector lands in the right region."
+      "explanation": "检索衡量嵌入空间相似性；假设文本词汇与语料匹配时，向量就落在正确区域。"
     },
     {
       "stage": "check",
-      "question": "What is the difference between multi-query expansion and query decomposition?",
+      "question": "多查询扩展与查询分解有何区别？",
       "options": [
-        "Multi-query produces N paraphrases of the same question; decomposition produces sub-questions that together cover a multi-topic question",
-        "Decomposition runs locally; multi-query requires a remote model",
-        "They are identical",
-        "Multi-query uses cosine; decomposition uses BM25"
+        "多查询产生同一问题的 N 个改述；分解产生共同覆盖多主题问题的子问题",
+        "分解本地运行，多查询需要远程模型",
+        "两者完全相同",
+        "多查询用余弦，分解用 BM25"
       ],
       "correct": 0,
-      "explanation": "Paraphrases preserve intent; sub-questions split a multi-topic query into independently answerable pieces."
+      "explanation": "改述保留意图，子问题把多主题查询拆为可独立回答的部分。"
     },
     {
       "stage": "check",
-      "question": "When does query decomposition over-split and hurt retrieval?",
+      "question": "查询分解何时会过度切分并损害检索？",
       "options": [
-        "When BM25 is disabled",
-        "When the corpus is too small",
-        "When the query is atomic (single-topic), the decomposer invents fake sub-questions and the retrievals all return the same document with reduced rank",
-        "When the query is too long for the LLM"
+        "禁用 BM25 时",
+        "语料过小时",
+        "查询为原子（单主题）问题时，分解器编造虚假子问题，各次检索返回同一文档但排名降低",
+        "查询超过 LLM 长度限制时"
       ],
       "correct": 2,
-      "explanation": "Decomposing an atomic query splits it into fake sub-questions; their retrievals dilute the merge so the right document ranks lower."
+      "explanation": "分解原子查询会造出虚假子问题，其检索稀释合并结果，使正确文档排名降低。"
     },
     {
       "stage": "check",
-      "question": "Why do the three rewriting strategies fuse with RRF rather than score interpolation?",
+      "question": "三种改写策略为何用 RRF 融合，而不是分数插值？",
       "options": [
-        "Score interpolation requires per-corpus calibration; RRF combines rank-based contributions without calibration, which is required when fusing N retrievals from different rewrites",
-        "Score interpolation cannot handle more than two lists",
-        "RRF runs on GPUs and score interpolation does not",
-        "RRF is the only operation supported by Python"
+        "分数插值需要按语料校准；RRF 无需校准即可组合排名贡献，适合合并不同改写的 N 次检索",
+        "分数插值不能处理两个以上列表",
+        "RRF 在 GPU 上运行而分数插值不能",
+        "RRF 是 Python 唯一支持的操作"
       ],
       "correct": 0,
-      "explanation": "Same argument as lesson 65; rank-based fusion does not need per-corpus alpha tuning and stays stable across rewriter outputs."
+      "explanation": "理由同第 65 课：排名融合不需逐语料调整 alpha，对不同改写输出保持稳定。"
     },
     {
       "stage": "post",
-      "question": "What is the latency floor when running all three rewriters in parallel?",
+      "question": "三种改写器并行运行时，延迟下限是什么？",
       "options": [
-        "Three LLM calls in series",
-        "The slowest single retrieval",
-        "One LLM call (the rewriters and retrievals run in parallel; the LLM call is the floor)",
-        "Zero, because the rewriters cache everything"
+        "串行三次 LLM 调用",
+        "最慢的单次检索",
+        "一次 LLM 调用（改写器与检索均并行，LLM 调用决定下限）",
+        "零，因为改写器缓存一切"
       ],
       "correct": 2,
-      "explanation": "All three rewriters fan out to a model call; if they run in parallel the floor is one model call latency, then the retrievals run in parallel after."
+      "explanation": "三种改写器都扇出到模型调用；并行时下限是一次模型调用延迟，之后检索再并行运行。"
     }
   ]
 }

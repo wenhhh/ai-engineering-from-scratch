@@ -1,25 +1,21 @@
-# Phase 6: Speech & Audio
+# 阶段 6：语音与音频（Phase 6: Speech & Audio）
 
-> The other half of human communication. Hear, understand, speak.
+> 人类沟通的另一半：听见、理解、表达。
 
-## Start this phase on GitHub
+## 在 GitHub 开始本阶段（Start this phase on GitHub）
 
-**Prerequisites:** Phase 1 vectors, matrices, and probability. The first demo
-uses only the Python standard library.
+**Prerequisites:** 阶段 1 的向量、矩阵与概率。首个演示仅使用 Python 标准库。
 
-**First lesson:** [Audio Fundamentals](01-audio-fundamentals/)
+**第一课：** [音频基础](01-audio-fundamentals/)
 
-Run this command from the repository root:
+在仓库根目录运行：
 
 ```bash
 python3 phases/06-speech-and-audio/01-audio-fundamentals/code/main.py
 ```
 
-Keep the command, exit code, detected frequency peaks, alias frequency, and an
-explanation of why a low-pass filter must run before downsampling.
+保留命令、退出码、检测到的频率峰值、混叠频率，并解释为何降采样前必须低通滤波。
 
-**Next action:** Change the source tone and predict its aliased frequency,
-then continue to [Spectrograms and Mel Features](02-spectrograms-mel-features/).
+**下一步：** 改变源音调，预测其混叠频率，然后继续[频谱图与梅尔特征](02-spectrograms-mel-features/)。
 
-Browse the [full Phase 6 lesson list](../../README.md#phase-6) or the
-[cross-phase roadmap](../../ROADMAP.md).
+浏览[阶段 6 完整课程列表](../../README.md#phase-6)或[跨阶段路线图](../../ROADMAP.md)。

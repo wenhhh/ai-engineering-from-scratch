@@ -2,38 +2,63 @@
   "questions": [
     {
       "stage": "pre",
-      "question": "You feed a 224x224 RGB image to a conv with kernel_size=3, stride=1, padding=0. What is the output spatial size?",
-      "options": ["222x222", "224x224", "74x74", "112x112"],
+      "question": "将 224x224 的 RGB 图像输入 kernel_size=3、stride=1、padding=0 的卷积层，输出空间尺寸是多少？",
+      "options": [
+        "222x222",
+        "224x224",
+        "74x74",
+        "112x112"
+      ],
       "correct": 0,
-      "explanation": "Output size = (H - K + 2P) / S + 1 = (224 - 3 + 0) / 1 + 1 = 222. Without padding, every 3x3 convolution shrinks the feature map by 2 pixels on each axis — one pixel off each border."
+      "explanation": "输出尺寸 = (H - K + 2P) / S + 1 = (224 - 3 + 0) / 1 + 1 = 222。没有填充时，每个 3x3 卷积都会使特征图的每个轴缩小 2 个像素，即两侧边界各减少一个像素。"
     },
     {
       "stage": "pre",
-      "question": "A conv layer has in_channels=3, out_channels=64, kernel_size=3, with bias. How many learnable parameters?",
-      "options": ["576", "1,792", "1,728", "192"],
+      "question": "卷积层设置为 in_channels=3、out_channels=64、kernel_size=3，并带偏置。可学习参数有多少个？",
+      "options": [
+        "576",
+        "1,792",
+        "1,728",
+        "192"
+      ],
       "correct": 1,
-      "explanation": "C_out * C_in * K * K + C_out = 64 * 3 * 3 * 3 + 64 = 1,728 + 64 = 1,792. The +C_out is one bias per output channel. Compare that to a dense layer on the same input (224*224*3 -> 64 = about 9.6M params) and you see why convolution is the right prior for images."
+      "explanation": "C_out * C_in * K * K + C_out = 64 * 3 * 3 * 3 + 64 = 1,728 + 64 = 1,792。+C_out 表示每个输出通道有一个偏置。与相同输入的全连接层（224*224*3 -> 64，约 960 万参数）比较，就能看出为什么卷积是图像的合适先验。"
     },
     {
       "stage": "post",
-      "question": "Why do modern CNNs prefer stacks of 3x3 convolutions over a single 5x5 or 7x7 conv?",
-      "options": ["3x3 is the only kernel size that supports padding", "Large kernels overflow GPU registers", "3x3 convolutions are hardware-accelerated; larger ones are not", "Two 3x3 convs cover the same 5x5 receptive field with fewer parameters (2 * 9 vs 25) and add an extra non-linearity between them"],
+      "question": "为什么现代 CNN 更倾向于堆叠 3x3 卷积，而不是使用一个 5x5 或 7x7 卷积？",
+      "options": [
+        "3x3 是唯一支持填充的卷积核大小",
+        "大卷积核会导致 GPU 寄存器溢出",
+        "3x3 卷积有硬件加速，更大的卷积没有",
+        "两个 3x3 卷积覆盖相同的 5x5 感受野，参数更少（2 * 9 对比 25），中间还多一次非线性变换"
+      ],
       "correct": 3,
-      "explanation": "Stacking 3x3 convs gives the same receptive field as one large conv but with fewer parameters and more non-linearities, which increases expressive power. VGG proved this empirically and every modern family (ResNet, ConvNeXt) inherited the design."
+      "explanation": "堆叠 3x3 卷积能获得与一个大卷积相同的感受野，同时参数更少、非线性变换更多，从而增强表达能力。VGG 通过实验证明了这一点，现代网络家族（ResNet、ConvNeXt）都继承了这种设计。"
     },
     {
       "stage": "post",
-      "question": "What does the im2col transformation actually do?",
-      "options": ["It concatenates all images in a batch into a single 2D matrix", "It extracts every kernel-sized receptive window from the input and stacks them as columns so that convolution becomes a single matrix multiply", "It converts float32 pixels to int8 for faster arithmetic", "It compresses the image to fit in GPU cache"],
+      "question": "im2col 变换实际做了什么？",
+      "options": [
+        "将一个批次中的所有图像拼接为单个二维矩阵",
+        "提取输入中每个卷积核大小的感受野窗口，将它们堆叠为列，使卷积变成一次矩阵乘法",
+        "将 float32 像素转换成 int8，以加速算术运算",
+        "压缩图像，使其能放入 GPU 缓存"
+      ],
       "correct": 1,
-      "explanation": "im2col reshapes the input so that each column is one flattened receptive field. Flattening the kernel into a row reduces convolution to cols @ w_flat.T, a single GEMM call that GPUs execute thousands of times faster than a quadruple Python loop. Every production conv library is some variant of this."
+      "explanation": "im2col 重塑输入，使每列对应一个展平的感受野。将卷积核展平成一行，就能把卷积化为 cols @ w_flat.T，也就是一次通用矩阵乘法（General Matrix Multiplication，GEMM）调用；GPU 执行它的速度比四重 Python 循环快数千倍。生产卷积库都是这一思路的某种变体。"
     },
     {
       "stage": "post",
-      "question": "You stack four 3x3 convolutions (all stride 1, no pooling). What is the receptive field of a neuron in the final layer?",
-      "options": ["3x3 — each conv is 3x3", "5x5 — two convs give 5x5 and depth does not help", "9x9 — every conv adds 2 on each side: 1 + 4*(3-1) = 9", "15x15 — every conv triples the receptive field"],
+      "question": "堆叠四个 3x3 卷积（步幅均为 1，无池化），最后一层神经元的感受野是多少？",
+      "options": [
+        "3x3，因为每个卷积都是 3x3",
+        "5x5，两个卷积得到 5x5，增加深度没有帮助",
+        "9x9，每个卷积在各方向增加 2：1 + 4*(3-1) = 9",
+        "15x15，每个卷积都使感受野扩大三倍"
+      ],
       "correct": 2,
-      "explanation": "For L stacked K x K convs with stride 1, receptive field = 1 + L * (K - 1). With L=4 and K=3 that is 1 + 4*2 = 9. The same formula generalises with stride: receptive field grows multiplicatively through strided layers, which is why a deep network with downsampling can cover the whole image in ten or fifteen blocks."
+      "explanation": "对于堆叠的 L 个步幅为 1 的 K x K 卷积，感受野 = 1 + L * (K - 1)。当 L=4、K=3 时，就是 1 + 4*2 = 9。该公式也能推广到有步幅的情形：感受野通过带步幅的层按乘法扩大，因此具有下采样的深层网络只需十到十五个模块就能覆盖整幅图像。"
     }
   ]
 }

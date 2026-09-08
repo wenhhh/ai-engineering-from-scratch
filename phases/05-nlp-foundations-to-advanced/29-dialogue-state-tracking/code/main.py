@@ -83,7 +83,7 @@ def update_state(state, utterance):
 
 
 def render_dialog(turns):
-    return "\n".join(f"  user: {u}" for u in turns)
+    return "\n".join(f"  用户（User）: {u}" for u in turns)
 
 
 def main():
@@ -116,26 +116,26 @@ def main():
         },
     ]
 
-    print("=== rule-based DST ===")
+    print("=== 基于规则的对话状态跟踪（DST），英文对话及槽位键值保留 ===")
     jga_correct = 0
     for i, d in enumerate(dialogues):
         state = {"cuisine": None, "area": None, "price": None, "people": None}
-        print(f"\ndialogue {i}:")
+        print(f"\n对话（Dialogue） {i}:")
         for turn in d["turns"]:
             state = update_state(state, turn)
-            print(f"  user: {turn}")
-            print(f"  state: {state}")
+            print(f"  用户（User）: {turn}")
+            print(f"  状态（State）: {state}")
         ok = state == d["gold"]
         jga_correct += int(ok)
-        print(f"  gold:  {d['gold']}")
-        print(f"  match: {'  OK' if ok else 'MISS'}")
+        print(f"  标准答案（Gold）:  {d['gold']}")
+        print(f"  匹配结果: {'正确（OK）' if ok else '错误（MISS）'}")
 
     print()
-    print(f"=== Joint Goal Accuracy: {jga_correct}/{len(dialogues)} ({100 * jga_correct / len(dialogues):.1f}%) ===")
+    print(f"=== 联合目标准确率（Joint Goal Accuracy）: {jga_correct}/{len(dialogues)} ({100 * jga_correct / len(dialogues):.1f}%) ===")
     print()
-    print("note: rule-based works in narrow domains with canonical vocabulary.")
-    print("open-vocab slots (restaurant name, reservation time) need LLM-based DST.")
-    print("production pattern: regenerate-whole-state with Instructor + Pydantic schema.")
+    print("注意：基于规则的方法适用于使用规范词表（Canonical vocabulary）的狭窄领域。")
+    print("开放词表槽位（Open-vocab slots，如餐厅名称、预订时间）需要基于大语言模型（LLM）的 DST。")
+    print("生产模式：使用 Instructor + Pydantic 模式（Schema）重新生成完整状态（Regenerate-whole-state）。")
 
 
 if __name__ == "__main__":

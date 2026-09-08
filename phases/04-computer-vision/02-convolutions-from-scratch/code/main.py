@@ -108,14 +108,14 @@ def test_against_naive():
 
 def main():
     shape, diff = test_against_naive()
-    print(f"conv equivalence: naive vs im2col     shape={shape}   max|diff|={diff:.2e}")
+    print(f"卷积（Convolution）等价性：朴素实现（Naive）与 im2col 对比     形状={shape}   max|diff|={diff:.2e}")
 
     x = synthetic_step_image()
     y = apply_kernel(x[0], KERNELS["sobel_x"])
-    print("\nsobel_x on a left/right step image (first five rows):")
+    print("\nsobel_x 作用于左右阶跃图像（Step image，前五行）:")
     print(y[:5].round(1))
 
-    print("\noutput size cheatsheet  (H=32):")
+    print("\n输出尺寸（Output size）速查表  (H=32):")
     for k, p, s in [(3, 0, 1), (3, 1, 1), (3, 1, 2), (2, 0, 2), (7, 3, 2)]:
         print(f"  K={k} P={p} S={s}  ->  H_out={output_size(32, k, p, s)}")
 
@@ -125,9 +125,9 @@ def main():
         [(3, 1), (3, 1), (3, 1)],
         [(3, 1), (3, 2), (3, 1), (3, 2)],
     ]
-    print("\nreceptive field grows with depth:")
+    print("\n感受野（Receptive field）随深度增长:")
     for stack in stacks:
-        print(f"  layers={stack}  ->  RF={receptive_field(stack)}")
+        print(f"  层（Layers）={stack}  ->  RF={receptive_field(stack)}")
 
 
 if __name__ == "__main__":

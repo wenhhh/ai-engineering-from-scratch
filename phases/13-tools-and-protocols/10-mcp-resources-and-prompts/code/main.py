@@ -1,8 +1,8 @@
-"""Runnable companion to docs/en.md for MCP protocol version 2026-07-28.
-Official resources contract: https://modelcontextprotocol.io/specification/2026-07-28/server/resources
-Official prompts contract: https://modelcontextprotocol.io/specification/2026-07-28/server/prompts
-Official subscription contract: https://modelcontextprotocol.io/specification/2026-07-28/basic/patterns/subscriptions
-The simulator keeps transport details small so the wire invariants remain visible.
+"""docs/en.md 的可运行配套示例，适用于 MCP 协议版本 2026-07-28。
+官方资源契约（Resources contract）： https://modelcontextprotocol.io/specification/2026-07-28/server/resources
+官方提示词契约（Prompts contract）： https://modelcontextprotocol.io/specification/2026-07-28/server/prompts
+官方订阅契约（Subscription contract）： https://modelcontextprotocol.io/specification/2026-07-28/basic/patterns/subscriptions
+模拟器简化传输细节，便于观察线上协议不变量（Wire invariants）。
 """
 
 from __future__ import annotations
@@ -17,33 +17,33 @@ SERVER_INFO = {"name": "lesson-resource-server", "version": "2.0.0"}
 
 NOTES = {
     "notes://note-2": {
-        "name": "Release checklist",
-        "description": "Checks to run before publishing",
+        "name": "发布检查清单（Release checklist）",
+        "description": "发布前需要执行的检查",
         "mimeType": "text/markdown",
-        "text": "# Release\n\n- Run tests\n- Confirm the tag",
+        "text": "# 发布（Release）\n\n- 运行测试\n- 确认标签",
     },
     "notes://note-1": {
-        "name": "Architecture decision",
-        "description": "Why the service uses a stateless protocol boundary",
+        "name": "架构决策（Architecture decision）",
+        "description": "服务为何采用无状态协议边界",
         "mimeType": "text/markdown",
-        "text": "# Decision\n\nKeep protocol requests self-contained.",
+        "text": "# 决策（Decision）\n\n让协议请求包含处理所需的全部信息。",
     },
 }
 
 PROMPTS = {
     "release_brief": {
-        "title": "Draft a release brief",
-        "description": "Turn release facts into a concise user-facing brief",
+        "title": "起草发布简报（Release brief）",
+        "description": "将发布事实整理为面向用户的简明简报",
         "arguments": [
-            {"name": "audience", "description": "Who will read the brief", "required": True}
+            {"name": "audience", "description": "简报的读者", "required": True}
         ],
     },
     "review_note": {
-        "title": "Review a note",
-        "description": "Review one note for a named concern",
+        "title": "评审笔记（Review a note）",
+        "description": "围绕指定关注点评审一篇笔记",
         "arguments": [
-            {"name": "uri", "description": "The note resource URI", "required": True},
-            {"name": "focus", "description": "The review focus", "required": False},
+            {"name": "uri", "description": "笔记资源 URI", "required": True},
+            {"name": "focus", "description": "评审关注点", "required": False},
         ],
     },
 }
@@ -103,7 +103,7 @@ def server_discover(_: dict[str, Any]) -> dict[str, Any]:
             "resources": {"listChanged": True, "subscribe": True},
             "prompts": {"listChanged": True},
         },
-        instructions="Read notes by URI and let users select review prompts.",
+        instructions="通过 URI 读取笔记，并让用户选择评审提示词。",
         ttlMs=3_600_000,
         cacheScope="public",
     )
@@ -144,12 +144,12 @@ def prompts_get(params: dict[str, Any]) -> dict[str, Any]:
         if uri not in NOTES:
             raise RpcError(-32602, "review_note requires a known resource URI", {"uri": uri})
         focus = arguments.get("focus", "correctness")
-        text = f"Review the resource {uri} for {focus}. Cite the URI in every finding."
+        text = f"评审资源 {uri}，关注 {focus}。每项发现都应引用该 URI。"
     else:
         audience = arguments.get("audience")
         if not isinstance(audience, str) or not audience.strip():
             raise RpcError(-32602, "release_brief requires audience")
-        text = f"Draft a release brief for {audience}. Separate verified facts from open questions."
+        text = f"为 {audience} 起草发布简报。将已验证事实与待解问题分开列出。"
     return complete(
         description=PROMPTS[name]["description"],
         messages=[{"role": "user", "content": {"type": "text", "text": text}}],

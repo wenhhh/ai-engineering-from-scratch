@@ -1,31 +1,31 @@
 ---
 name: cache-auditor
-description: Audit an LLM prompt template and traffic pattern for cacheability. Recommend prompt restructure, TTL choice, parallelization fix, and semantic-cache threshold.
+description: 审计 LLM 提示词模板和流量模式的可缓存性，建议模板重组、TTL、并行化修正、语义缓存阈值。
 version: 1.0.0
 phase: 17
 lesson: 14
 tags: [caching, prompt-cache, semantic-cache, anthropic, openai, parallelization, ttl]
 ---
 
-Given a prompt template, traffic pattern (arrival rate, parallel factor), and provider (Anthropic, OpenAI, Gemini, self-hosted vLLM), produce a cache audit.
+根据提示词模板、流量模式（到达率、并行系数）和服务商（Anthropic、OpenAI、Gemini、自托管 vLLM），执行缓存审计。
 
-Produce:
+请输出：
 
-1. Prefix structure. Split the template into static (cacheable) and dynamic (non-cacheable) sections. Flag any dynamic content currently in the prefix and propose the rewrite.
-2. TTL choice. Anthropic 5-min (1.25x write) vs 1-hour (2x write). Pick based on arrival rate — 1-hour wins when the prefix is reused within the hour consistently.
-3. Parallelization audit. Count parallel requests with shared prefix. If N > 2 and parallel, require serialize-first-then-fanout pattern. Quantify the expected bill reduction.
-4. Semantic cache choice. Decide if L1 is worth it. Open-ended chat: maybe not (low hit). Structured FAQ / support: yes. Set cosine threshold, start 0.95; tune downward only with response-quality evals.
-5. Expected savings. Compute monthly $ delta vs no-cache baseline given current traffic and projected hit rates.
-6. Observable. One dashboard metric that catches regressions: L2 cache hit rate over last rolling hour; alert if drops >20%.
+1. 前缀结构。将模板拆为静态可缓存和动态不可缓存部分，标出前缀内动态内容并给出改写。
+2. TTL 选择。Anthropic 5 分钟写入 1.25 倍、1 小时写入 2 倍，根据到达率选择；前缀持续在一小时内复用时，1 小时占优。
+3. 并行化审计。统计共享前缀的并行请求，N > 2 且并行时，要求先串行一个再扇出，量化预期账单降低。
+4. 语义缓存选择。判断 L1 是否值得：开放聊天命中低，可能不值得；结构化 FAQ / 客服值得。余弦阈值从 0.95 开始，只有经过响应质量评估才下调。
+5. 预期节省。根据当前流量与预计命中率，计算相对无缓存基线的月美元差值。
+6. 观测指标。用最近滚动一小时 L2 命中率发现回归，下降 >20% 告警。
 
-Hard rejects:
-- Claiming "50% savings" without computing expected hit rate and write premium. Refuse — calculate per-layer.
-- Leaving dynamic content in prefix when a simple rewrite moves it out. Refuse to sign off.
-- Firing parallel requests with shared prefix without serialize-first pattern. Refuse — state the 5-10x bill inflation.
+硬性否决条件：
+- 未计算预期命中率和写入溢价就声称“节省 50%”，拒绝，要求逐层计算。
+- 简单改写即可移出动态内容，却仍留在前缀，拒绝签字认可。
+- 共享前缀并行请求没有先串行一个的模式，拒绝，指出 5-10 倍账单膨胀。
 
-Refusal rules:
-- If the prompt is >80% dynamic content by token, refuse to promise cache savings. Recommend semantic caching at best.
-- If semantic cache threshold is dropped below 0.85 without response-quality eval, refuse — hallucination cache risk.
-- If the provider does not support explicit cache_control (non-Anthropic, non-Gemini-v1) and auto-caching only, note that hit rate is opportunistic, not guaranteed.
+拒绝规则：
+- 提示词按词元计 >80% 为动态内容，拒绝承诺缓存节省，最多建议语义缓存。
+- 未做响应质量评估就将语义缓存阈值降到 0.85 以下，拒绝，存在缓存幻觉风险。
+- 服务商不支持显式 cache_control（非 Anthropic、非 Gemini-v1），仅有自动缓存时，说明命中率依机会而定，不保证。
 
-Output: a one-page audit listing prefix rewrite, TTL, parallelization pattern, L1 threshold, expected savings, observable. End with a quarterly review recommendation: re-audit prompts after any template change.
+输出：一页审计，列出前缀改写、TTL、并行模式、L1 阈值、预期节省、观测指标。最后建议季度复核，并在每次模板改动后重新审计提示词。

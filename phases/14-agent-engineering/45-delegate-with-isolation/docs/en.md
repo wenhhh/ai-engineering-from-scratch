@@ -1,109 +1,109 @@
-# Delegate Agent Work with Isolation and Merge Contracts
+# 通过隔离与合并契约委派智能体工作（Delegate Agent Work with Isolation and Merge Contracts）
 
-> Parallel agents save wall time only when the work is independent. Otherwise they convert one clear task into a coordination problem with a faster failure rate.
+> 只有工作彼此独立，并行智能体才能节省实际时间。否则，它们只是把一个清晰任务变成失败速度更快的协调问题。
 
 **Type:** Learn + Build
-**Languages:** Python (stdlib)
-**Prerequisites:** Phase 14 lessons 39 and 44
-**Time:** ~70 minutes
+**Languages:** Python（标准库）
+**Prerequisites:** 阶段 14 第 39、44 课
+**Time:** 约 70 分钟
 
-## Learning Objectives
+## 学习目标（Learning Objectives）
 
-- Decide whether delegation is justified by real independence.
-- Give each worker exclusive file ownership and explicit proof.
-- Compute execution waves from dependencies.
-- Design a merge contract for combining agent work safely.
+- 根据真实独立性判断委派是否合理。
+- 为每个工作者分配独占文件所有权与明确证明。
+- 根据依赖计算执行波次。
+- 设计合并契约，安全组合智能体工作。
 
-## The Parallelism Test
+## 并行性检验（The Parallelism Test）
 
-Do not delegate because more agents are available. Delegate when at least one of these is true:
+不要因为可用智能体更多就委派。至少满足以下一项才委派：
 
-- two investigations can answer different unknowns independently;
-- two implementations own disjoint files and contracts;
-- a reviewer can inspect a completed artifact without changing it;
-- a slow external check can run while local work continues.
+- 两项调查可以独立回答不同未知项；
+- 两项实现拥有不相交的文件与契约；
+- 审查者可检查已完成产物而不修改它；
+- 缓慢的外部检查可与本地工作同时运行。
 
-Keep work serial when agents need the same files, the same unresolved decision, or the same mutable environment.
+若智能体需要相同文件、同一未决决定或同一可变环境，就保持串行。
 
-## A Work Unit Is a Contract
+## 工作单元就是契约（A Work Unit Is a Contract）
 
-Each delegated unit needs:
+每个委派单元需要：
 
-| Field | Meaning |
+| 字段 | 含义 |
 |---|---|
-| Goal | One observable result |
-| Owner | One accountable worker |
-| Paths | Exclusive write ownership |
-| Dependencies | Completed units required before starting |
-| Proof | Exact evidence returned to the integrator |
-| Handoff | Files changed, decisions made, remaining risk |
+| 目标（Goal） | 一个可观察结果 |
+| 负责人（Owner） | 一个承担责任的工作者 |
+| 路径（Paths） | 独占写入所有权 |
+| 依赖（Dependencies） | 开始前必须完成的单元 |
+| 证明（Proof） | 返回给集成者的确切证据 |
+| 交接（Handoff） | 变更文件、所作决定、剩余风险 |
 
-“Handle the backend” is not a work unit. “Implement the duplicate check in `app/accounts.py` and prove it with the focused account test” is.
+“处理后端”不是工作单元。“在 `app/accounts.py` 中实现重复检查，并用聚焦账户测试证明它”才是。
 
-## Isolation Has Three Layers
+## 隔离的三个层次（Isolation Has Three Layers）
 
-1. **Filesystem isolation:** separate worktrees or sandboxes prevent accidental shared edits.
-2. **Ownership isolation:** contracts prevent two workers from intentionally editing the same path.
-3. **State isolation:** separate logs and outputs prevent one worker from overwriting another worker’s evidence.
+1. **文件系统隔离（Filesystem Isolation）：** 独立工作树或沙箱防止意外共享编辑。
+2. **所有权隔离（Ownership Isolation）：** 契约防止两个工作者有意编辑同一路径。
+3. **状态隔离（State Isolation）：** 独立日志与输出防止一个工作者覆盖另一个的证据。
 
-Filesystem isolation does not solve ownership. Two clean worktrees can still produce conflicting designs. The merge contract must resolve shared interfaces before work begins.
+文件系统隔离不能解决所有权。两个干净工作树仍可能产出冲突设计。合并契约必须在工作开始前解决共享接口问题。
 
 ```mermaid
 flowchart TD
-  P[Approved plan] --> A[API work unit]
-  P --> D[Docs work unit]
-  A --> H1[Proof and handoff]
-  D --> H2[Proof and handoff]
-  H1 --> R[Read-only integration review]
+  P[已批准计划] --> A[API 工作单元]
+  P --> D[文档工作单元]
+  A --> H1[证明与交接]
+  D --> H2[证明与交接]
+  H1 --> R[只读集成审查]
   H2 --> R
-  R --> G[Full verification gate]
+  R --> G[完整验证关卡]
 ```
 
-## The Integrator Does Not Rebuild the Work
+## 集成者不重做工作（The Integrator Does Not Rebuild the Work）
 
-The integrator should:
+集成者应：
 
-1. confirm each handoff matches its assigned scope;
-2. read the proof output, not just the worker’s summary;
-3. combine changes in dependency order;
-4. run the full cross-unit gate;
-5. reject hidden scope expansion;
-6. record conflicts as new decisions, not silent edits.
+1. 确认每份交接符合分配范围；
+2. 阅读证明输出，而不只是工作者摘要；
+3. 按依赖顺序组合变更；
+4. 运行完整的跨单元关卡；
+5. 拒绝隐藏的范围扩大；
+6. 将冲突记录为新决定，而非静默编辑。
 
-If integration requires rewriting most of a worker’s result, the original decomposition was wrong.
+如果集成需要重写工作者的大部分结果，原始拆分就是错的。
 
-## Human and Agent Roles
+## 人工与智能体角色（Human and Agent Roles）
 
-Delegation does not remove human judgment. The human still owns choices that change public behavior, risk, authority, or irreversible cost. Agents can own bounded investigation, implementation, verification, and review.
+委派不会消除人工判断。改变公开行为、风险、权限或不可逆成本的选择仍属于人工。智能体可以承担有边界的调查、实现、验证与审查。
 
-This is calibrated autonomy: the system grants freedom where evidence and rollback are strong, and requires a checkpoint where consequence is high.
+这就是校准自主性（Calibrated Autonomy）：证据和回滚保障充分时给予自由，后果重大时设置检查点。
 
-## Build It
+## 动手实现（Build It）
 
-The lab checks path overlap, validates dependencies, computes safe execution waves, and writes `outputs/delegation-plan.json`.
+实验检查路径重叠、验证依赖、计算安全执行波次，并写入 `outputs/delegation-plan.json`。
 
-Run:
+运行：
 
 ```bash
 python3 code/main.py
 python3 -m unittest discover code/tests -v
 ```
 
-Change the docs unit to own `app/`. The plan should block because that parent path overlaps the API unit.
+将文档单元改为拥有 `app/`。计划应被阻止，因为该父路径与 API 单元重叠。
 
-## Exercises
+## 练习（Exercises）
 
-1. Decompose a real change into two independent work units and one integrator.
-2. Find a proposed parallel split that only looks independent. State the shared decision.
-3. Add a read-only research worker whose output is a fact table.
-4. Add a merge gate that checks the final changed-file set against all unit contracts.
-5. Define a cancellation rule for a worker whose dependency becomes invalid.
+1. 将真实变更拆为两个独立工作单元和一个集成者。
+2. 找出一个只是看似独立的并行拆分，说明其共享决定。
+3. 添加一个只读研究工作者，输出事实表。
+4. 添加合并关卡，将最终变更文件集合与全部单元契约比对。
+5. 为依赖失效的工作者定义取消规则。
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [Reid Smith, The Contract Net Protocol](https://doi.org/10.1109/TC.1980.1675516), for an early formal treatment of distributed task allocation and result reporting.
-- [Eric Horvitz, Principles of Mixed-Initiative User Interfaces](https://dl.acm.org/doi/10.1145/302979.303030), for deciding when automation should act and when it should return control to a person.
+- [Reid Smith：契约网协议（The Contract Net Protocol）](https://doi.org/10.1109/TC.1980.1675516)，对分布式任务分配与结果报告的早期形式化论述。
+- [Eric Horvitz：混合主动用户界面原则（Principles of Mixed-Initiative User Interfaces）](https://dl.acm.org/doi/10.1145/302979.303030)，讨论自动化何时应行动，何时应把控制权交还人工。
 
-## What You Keep
+## 保留产物（What You Keep）
 
-Keep `outputs/delegation-plan.json`. It records why the split is safe, who owns each path, and what proof integration must receive.
+保留 `outputs/delegation-plan.json`。它记录拆分为何安全、每条路径由谁负责，以及集成必须收到什么证据。

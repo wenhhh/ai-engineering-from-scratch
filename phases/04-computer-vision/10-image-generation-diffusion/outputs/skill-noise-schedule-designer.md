@@ -1,68 +1,68 @@
 ---
 name: skill-noise-schedule-designer
-description: Produce a linear, cosine, or sigmoid beta schedule given T and target corruption level, plus SNR plot
+description: 根据 T 和目标破坏程度生成线性、余弦或 sigmoid beta 调度，并给出信噪比图
 version: 1.0.0
 phase: 4
 lesson: 10
 tags: [computer-vision, diffusion, noise-schedule, training]
 ---
 
-# Noise Schedule Designer
+# 噪声调度设计器（Noise Schedule Designer）
 
-A beta schedule controls how much signal is retained at each diffusion step. Poor schedules cap training efficiency and sample quality at every downstream decision.
+Beta 调度控制每个扩散步骤保留多少信号。差的调度会限制后续所有选择的训练效率和样本质量。
 
-## When to use
+## 使用时机（When to use）
 
-- Starting a new diffusion training run and picking T and beta.
-- Debugging a diffusion model that produces blurry samples (schedule too aggressive) or fails to learn structure (schedule too mild).
-- Comparing designs across papers that report different schedules.
+- 开始新的扩散训练，选择 T 与 beta。
+- 调试生成模糊样本的模型，可能是调度太激进；或无法学习结构的模型，可能是调度太温和。
+- 比较不同论文中使用不同调度的设计。
 
-## Inputs
+## 输入（Inputs）
 
-- `T`: number of timesteps, typically 100-1000.
-- `type`: linear | cosine | sigmoid.
-- `target_alpha_bar_final`: fraction of signal to keep at t=T, default 0.001 (99.9% corrupted).
-- Optional `image_resolution` — larger images benefit from schedules that corrupt more slowly (cosine or shifted schedules).
+- `T`：时间步数，通常为 100–1000。
+- `type`：linear | cosine | sigmoid。
+- `target_alpha_bar_final`：t=T 时保留的信号比例，默认 0.001，即 99.9% 被破坏。
+- 可选的 `image_resolution`：大图像更适合破坏较慢的调度，例如余弦或平移调度。
 
-## Schedule formulas
+## 调度公式（Schedule formulas）
 
-### Linear
+### 线性（Linear）
 ```
 beta_t = beta_start + (beta_end - beta_start) * (t - 1) / (T - 1)
 ```
-Defaults: beta_start=1e-4, beta_end=0.02 (DDPM paper).
+默认 beta_start=1e-4、beta_end=0.02，来自 DDPM 论文。
 
-### Cosine (Nichol & Dhariwal, 2021)
+### 余弦（Cosine，Nichol 与 Dhariwal，2021）
 ```
 alpha_bar_t = cos^2((t/T + s) / (1 + s) * pi/2)
 beta_t = 1 - alpha_bar_t / alpha_bar_{t-1}
 ```
-s = 0.008. Keeps signal around longer; better at low step counts.
+s = 0.008。保留信号更久，低步数时更好。
 
-### Sigmoid
+### S 形函数（Sigmoid）
 ```
 alpha_bar_t = 1 / (1 + exp(k * (t/T - 0.5)))
 ```
-k = 6 to 12. Good middle ground; used by some SDXL variants.
+k = 6 至 12。是合适的折中，一些 SDXL 变体采用它。
 
-## Steps
+## 步骤（Steps）
 
-1. Compute betas per formula.
-2. Precompute `alphas`, `alphas_cumprod`, `sqrt_alphas_cumprod`, `sqrt_one_minus_alphas_cumprod`.
-3. Compute SNR_t = alpha_bar_t / (1 - alpha_bar_t); produce an SNR-over-time summary.
-4. Verify `alphas_cumprod[T-1]` is within 10% of `target_alpha_bar_final`; else tune beta_end (linear), s (cosine), or k (sigmoid) and retry.
-5. Report three checkpoints:
-   - `t=T*0.25` — early corruption
-   - `t=T*0.5` — midway
-   - `t=T*0.75` — near-final
+1. 按公式计算 betas。
+2. 预计算 `alphas`、`alphas_cumprod`、`sqrt_alphas_cumprod`、`sqrt_one_minus_alphas_cumprod`。
+3. 计算信噪比（Signal-to-Noise Ratio，SNR）：SNR_t = alpha_bar_t / (1 - alpha_bar_t)，生成其随时间变化的摘要。
+4. 验证 `alphas_cumprod[T-1]` 与 `target_alpha_bar_final` 的偏差在 10% 以内；否则调整线性的 beta_end、余弦的 s 或 sigmoid 的 k，重新尝试。
+5. 报告三个检查点：
+   - `t=T*0.25`：早期破坏
+   - `t=T*0.5`：中点
+   - `t=T*0.75`：接近末尾
 
-## Report
+## 报告（Report）
 
 ```
 [schedule]
-  type:   <name>
-  T:      <int>
-  beta_start: <float>   beta_end: <float>
+  type:   <名称>
+  T:      <整数>
+  beta_start: <浮点数>   beta_end: <浮点数>
 
 [signal retention]
   t=0.25T:  alpha_bar=<X>  SNR=<X>
@@ -71,13 +71,13 @@ k = 6 to 12. Good middle ground; used by some SDXL variants.
   t=T:      alpha_bar=<X>  SNR=<X>
 
 [warnings]
-  - <if alpha_bar collapses before 0.75T>
-  - <if beta_end produces NaN in log-SNR>
+  - <若 alpha_bar 在 0.75T 之前崩塌>
+  - <若 beta_end 使 log-SNR 出现 NaN>
 ```
 
-## Rules
+## 规则（Rules）
 
-- Never emit a schedule with any `alpha_bar_t <= 0`; clamp values under 1e-5 and warn.
-- Cosine is the default recommendation for low-step-count sampling (< 30 steps).
-- Linear is the default for `quality_target == research` — DDPM baselines are reported with linear schedules.
-- When `image_resolution > 256`, recommend shifting the schedule (Chen, 2023) to retain more signal at high resolutions.
+- 绝不生成包含任意 `alpha_bar_t <= 0` 的调度；将低于 1e-5 的值截到下限，并警告。
+- 低步数采样（< 30 步）默认推荐余弦。
+- 对 `quality_target == research` 默认线性，DDPM 基线采用线性调度报告。
+- 当 `image_resolution > 256`，建议平移调度（Chen，2023），在高分辨率下保留更多信号。

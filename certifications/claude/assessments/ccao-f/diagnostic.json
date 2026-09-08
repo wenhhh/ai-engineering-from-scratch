@@ -3,25 +3,25 @@
   "version": 2,
   "track": "claude-ccao-f",
   "kind": "diagnostic",
-  "title": "Associate Foundations Diagnostic",
+  "title": "助理基础级诊断测评（Associate Foundations Diagnostic）",
   "timeLimitMinutes": 25,
   "questions": [
     {
       "id": "ccao-d-001",
       "domain": "prompting-task-execution",
-      "objective": "Create effective prompts for business and technical tasks",
+      "objective": "为业务和技术任务创建有效提示词（Create effective prompts for business and technical tasks）",
       "type": "single",
-      "prompt": "A director asks Claude to produce a comprehensive monthly report, but gives no audience, sources, or definition of success. What should the operator do first?",
+      "prompt": "一位主管要求 Claude 生成全面的月度报告，却没有提供受众、来源或成功标准。操作者首先应该做什么？",
       "options": [
-        "Add a role saying Claude is an expert director",
-        "Choose the most capable available model and keep the original request",
-        "Choose the strongest available model and ask it to infer an executive audience, likely sources, and a comprehensive structure",
-        "Define the decision, audience, authoritative sources, constraints, output shape, and pass criteria"
+        "添加角色设定，说明 Claude 是经验丰富的主管",
+        "选择当前能力最强的模型，并保留原始请求",
+        "选择当前最强的模型，让它推断高管受众、可能的来源及全面的结构",
+        "明确所要支持的决策、受众、权威来源、约束、输出结构和通过标准"
       ],
       "correct": [
         3
       ],
-      "explanation": "The missing artifact is a prompt contract. It makes the outcome and checks observable before generation. More length, a role, or a larger model cannot establish absent requirements or evidence.",
+      "explanation": "缺少的交付物是提示词契约（Prompt contract）。它让目标结果和检查项在生成前就可观察。增加篇幅、角色设定或模型规模，都无法补上缺失的需求或证据。",
       "references": [
         "certifications/claude/lessons/03-prompting-and-task-decomposition",
         "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/overview"
@@ -30,20 +30,20 @@
     {
       "id": "ccao-d-002",
       "domain": "prompting-task-execution",
-      "objective": "Decompose complex requests into manageable work",
+      "objective": "将复杂请求分解为可管理工作（Decompose complex requests into manageable work）",
       "type": "multiple",
-      "prompt": "A team is building a source-backed policy briefing. Which two stage boundaries most improve verification? Select two.",
+      "prompt": "团队正在编写有来源支持的政策简报。哪两处阶段边界最能改善验证？选择两项。",
       "options": [
-        "Let separate conversations independently discover sources and draft sections, then reconcile citations only after the full briefing is assembled",
-        "Verify the source inventory before extracting claims",
-        "Draft recommendations during extraction; check later",
-        "Verify extracted claims before interpreting patterns"
+        "让不同对话独立寻找来源并起草各节，只在完整简报组装后统一核对引用",
+        "在提取主张前验证来源清单",
+        "在提取时起草建议，之后再检查",
+        "在解释规律前验证提取出的主张"
       ],
       "correct": [
         1,
         3
       ],
-      "explanation": "Source approval and claim extraction are meaningful verification boundaries. Arbitrary paragraph splits add coordination cost, while recommending before evidence validation pushes defects downstream.",
+      "explanation": "来源审批和主张提取是有意义的验证边界。随意按段拆分会增加协调成本；在证据验证前提出建议，会把缺陷传递到下游。",
       "references": [
         "certifications/claude/lessons/03-prompting-and-task-decomposition",
         "https://www.anthropic.com/research/building-effective-agents"
@@ -52,19 +52,19 @@
     {
       "id": "ccao-d-003",
       "domain": "output-evaluation-validation",
-      "objective": "Fact-check against authoritative evidence",
+      "objective": "依据权威证据核查事实（Fact-check against authoritative evidence）",
       "type": "single",
-      "prompt": "A response cites a real policy page beside the claim that all refunds require director approval. The page only says some refunds require approval. What is the primary defect?",
+      "prompt": "回答在“所有退款都需要主管批准”这一主张旁引用了真实政策页面。但页面只说部分退款需要批准。主要缺陷是什么？",
       "options": [
-        "The claim overreaches the cited evidence",
-        "The response needs a friendlier tone",
-        "The citation is acceptable because the linked page discusses the same refund policy and therefore supports the stronger summary",
-        "The context window is necessarily full"
+        "主张超出了所引用证据能支持的范围",
+        "回答需要更友好的语气",
+        "引用可以接受，因为链接页面讨论同一退款政策，因此支持更强的概括",
+        "上下文窗口必然已经满了"
       ],
       "correct": [
         0
       ],
-      "explanation": "Citation presence is not proof. The universal claim is stronger than the source, so claim-evidence entailment fails. Tone and context capacity do not repair the factual overreach.",
+      "explanation": "存在引用不等于有证明。全称主张强于来源，因此主张与证据之间的蕴含关系（Entailment）不成立。语气和上下文容量无法修复这种事实越界。",
       "references": [
         "certifications/claude/lessons/05-output-evaluation-and-validation",
         "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/reduce-hallucinations"
@@ -73,20 +73,20 @@
     {
       "id": "ccao-d-004",
       "domain": "output-evaluation-validation",
-      "objective": "Choose when human review or additional verification is required",
+      "objective": "判断何时需要人工审核或额外验证（Choose when human review or additional verification is required）",
       "type": "multiple",
-      "prompt": "Which two checks should be handled first by deterministic code rather than subjective model judgment? Select two.",
+      "prompt": "哪两项检查应优先交给确定性代码，而非主观的模型判断？选择两项。",
       "options": [
-        "Whether JSON parses against the required schema",
-        "Whether an executive will find the recommendation persuasive",
-        "Whether a policy tradeoff is ethically acceptable",
-        "Whether regional subtotals equal the stated total"
+        "JSON 是否可解析并符合要求的模式（Schema）",
+        "高管是否会认为建议有说服力",
+        "政策权衡在伦理上是否可以接受",
+        "各地区小计之和是否等于所列总计"
       ],
       "correct": [
         0,
         3
       ],
-      "explanation": "Schema validity and arithmetic reconciliation have exact repeatable answers. Ethical acceptability and audience persuasion require contextual criteria and often qualified human judgment.",
+      "explanation": "模式有效性和算术核对有精确、可重复的答案。伦理可接受性和对受众的说服力需要结合情境的标准，而且往往需要具备资格的人员判断。",
       "references": [
         "certifications/claude/lessons/05-output-evaluation-and-validation",
         "https://platform.claude.com/docs/en/test-and-evaluate/develop-tests"
@@ -95,19 +95,19 @@
     {
       "id": "ccao-d-005",
       "domain": "product-model-selection",
-      "objective": "Choose among Projects, research, chat, and artifacts",
+      "objective": "在 Projects、研究、聊天和 Artifacts 之间选择（Choose among Projects, research, chat, and artifacts）",
       "type": "single",
-      "prompt": "A team repeats the same internal planning workflow each week using maintained instructions and an approved reference set. Which starting surface best fits?",
+      "prompt": "团队每周重复同一内部规划工作流，使用持续维护的指令和已批准的参考资料集。哪种起始入口最合适？",
       "options": [
-        "Any surface, because governance is identical",
-        "A Claude Project, if its current plan and data controls are approved",
-        "A fresh one-off chat each week with the approved references pasted manually and the instructions copied from the prior run",
-        "Public web research as the source of internal policy"
+        "任何入口都行，因为治理完全相同",
+        "Claude Project，前提是当前套餐及数据控制已获批准",
+        "每周新开一次性聊天，手动粘贴已批准参考资料，并从上次运行复制指令",
+        "将公开网络研究作为内部政策来源"
       ],
       "correct": [
         1
       ],
-      "explanation": "Projects are designed for recurring work with persistent instructions and knowledge. The organization must still verify current availability, plan controls, and data handling. Research does not replace internal sources of record.",
+      "explanation": "Projects 面向使用持久指令和知识的重复工作而设计。组织仍须核实当前可用性、套餐控制及数据处理方式。研究不能替代内部权威记录来源。",
       "references": [
         "certifications/claude/lessons/01-claude-product-and-model-landscape",
         "https://support.claude.com/en/articles/9517075-what-are-projects"
@@ -116,20 +116,20 @@
     {
       "id": "ccao-d-006",
       "domain": "product-model-selection",
-      "objective": "Balance quality, speed, and cost",
+      "objective": "平衡质量、速度和成本（Balance quality, speed, and cost）",
       "type": "multiple",
-      "prompt": "Which two practices make a model-selection recommendation durable? Select two.",
+      "prompt": "哪两种做法能让模型选择建议保持长期适用？选择两项。",
       "options": [
-        "Memorize one permanent ranking of model names",
-        "Record changeable prices, limits, and feature availability with a verification date",
-        "Test representative risk cases against explicit quality and latency gates",
-        "Ignore review and rework cost"
+        "记住一份永久有效的模型名称排名",
+        "记录可能变化的价格、限制和功能可用性，并注明核实日期",
+        "针对明确的质量和延迟门槛，测试有代表性的风险案例",
+        "忽略审核和返工成本"
       ],
       "correct": [
         1,
         2
       ],
-      "explanation": "A durable selection is evidence-based and date-stamps facts that can drift. Model labels and price tables change, and total workflow cost includes correction and failure.",
+      "explanation": "持久适用的选择应基于证据，并为可能漂移的事实标注日期。模型名称和价格表会变化，完整工作流成本还包括纠错与失败成本。",
       "references": [
         "certifications/claude/lessons/02-model-selection-and-token-economics",
         "https://platform.claude.com/docs/en/about-claude/models/overview",
@@ -139,19 +139,19 @@
     {
       "id": "ccao-d-007",
       "domain": "workflow-integration-solution-design",
-      "objective": "Augment or redesign existing workflows",
+      "objective": "增强或重新设计现有工作流（Augment or redesign existing workflows）",
       "type": "single",
-      "prompt": "Analysts spend hours writing explanations for differences between two conflicting systems. What is the strongest first intervention?",
+      "prompt": "分析师花费数小时，为两个相互冲突系统之间的差异编写解释。最有力的第一步干预是什么？",
       "options": [
-        "Remove all human checkpoints",
-        "Automate a structured explanation of every discrepancy while leaving the conflicting source and reconciliation process unchanged",
-        "Redesign the source and reconciliation process before automating the symptom",
-        "Use an open-ended agent with write access"
+        "移除所有人工检查点",
+        "自动生成每处差异的结构化解释，但保持冲突来源和对账流程不变",
+        "在自动化处理症状前，重新设计来源和对账流程",
+        "使用具有写入权限的开放式智能体"
       ],
       "correct": [
         2
       ],
-      "explanation": "The underlying waste is inconsistent source state. Generating explanations faster preserves the failure. Workflow discovery should identify redesign opportunities before automation.",
+      "explanation": "根本浪费来自不一致的来源状态。更快地生成解释仍会保留这个问题。工作流探索应在自动化之前识别重新设计的机会。",
       "references": [
         "certifications/claude/lessons/07-workflow-design-and-human-handoffs",
         "https://www.anthropic.com/research/building-effective-agents"
@@ -160,20 +160,20 @@
     {
       "id": "ccao-d-008",
       "domain": "workflow-integration-solution-design",
-      "objective": "Communicate value and limitations to stakeholders",
+      "objective": "向利益相关者传达价值和限制（Communicate value and limitations to stakeholders）",
       "type": "multiple",
-      "prompt": "Which two items belong in a handoff to the person who must approve a high-impact recommendation? Select two.",
+      "prompt": "向必须批准高影响建议的人员交接时，应包含哪两项内容？选择两项。",
       "options": [
-        "Known uncertainty and explicit approve, revise, reject, or escalate options",
-        "Supporting and conflicting evidence with failed checks",
-        "A concise model rationale and calibrated confidence band, without conflicting sources or details of which checks failed",
-        "The proposed decision, confidence score, and a single approve or escalate choice, with evidence available only through a separate request"
+        "已知的不确定性，以及明确的批准、修改、拒绝或升级处理选项",
+        "支持证据、冲突证据和未通过的检查",
+        "简洁的模型推理说明和经过校准的置信区间，但不提供冲突来源或具体哪些检查失败",
+        "建议决策、置信分数，以及单一的批准或升级处理选择；证据只有另行请求才提供"
       ],
       "correct": [
         0,
         1
       ],
-      "explanation": "A meaningful handoff equips the owner to verify and intervene. Confidence without evidence and a ceremonial button do not create informed human control.",
+      "explanation": "有意义的交接应让负责人能够验证和干预。没有证据的信心表述和形式化按钮，无法形成知情的人工控制。",
       "references": [
         "certifications/claude/lessons/07-workflow-design-and-human-handoffs",
         "certifications/claude/lessons/29-associate-workflow-capstone"
@@ -182,19 +182,19 @@
     {
       "id": "ccao-d-009",
       "domain": "configuration-knowledge-management",
-      "objective": "Configure Projects with instructions and knowledge",
+      "objective": "为 Projects 配置指令和知识（Configure Projects with instructions and knowledge）",
       "type": "single",
-      "prompt": "Where should a recurring behavioral rule such as exposing conflicts between policy sources primarily live?",
+      "prompt": "“揭示政策来源之间的冲突”这类重复使用的行为规则，主要应放在哪里？",
       "options": [
-        "Inside an unrelated historical file",
-        "Only in a remembered user preference",
-        "In a cached response",
-        "In maintained Project instructions"
+        "放在无关的历史文件里",
+        "只作为记住的用户偏好",
+        "放在缓存回答中",
+        "放在持续维护的 Project 指令中"
       ],
       "correct": [
         3
       ],
-      "explanation": "Persistent behavioral guidance belongs in maintained instructions. The policy evidence itself belongs in governed knowledge. Memory and caching serve different purposes.",
+      "explanation": "持久行为指导应放在持续维护的指令中。政策证据本身应放在受治理的知识中。记忆和缓存服务于不同目的。",
       "references": [
         "certifications/claude/lessons/04-context-knowledge-memory-and-caching",
         "https://support.claude.com/en/articles/9517075-what-are-projects"
@@ -203,20 +203,20 @@
     {
       "id": "ccao-d-010",
       "domain": "configuration-knowledge-management",
-      "objective": "Maintain configurations and sources over time",
+      "objective": "随时间维护配置和来源（Maintain configurations and sources over time）",
       "type": "multiple",
-      "prompt": "Which two metadata fields most directly help prevent stale or superseded knowledge from remaining active? Select two.",
+      "prompt": "哪两个元数据字段最直接有助于防止过时或已被取代的知识继续生效？选择两项。",
       "options": [
-        "The model and prompt version that last consumed the source without producing a validation failure",
-        "The source owner's name and the model version used for the most recent successful answer",
-        "Review date",
-        "Supersedes relationship"
+        "上次使用该来源且未产生验证失败的模型版本和提示词版本",
+        "来源负责人的姓名，以及最近一次成功回答使用的模型版本",
+        "复核日期",
+        "替代关系（Supersedes relationship）"
       ],
       "correct": [
         2,
         3
       ],
-      "explanation": "A review date creates a freshness trigger, and a supersedes relationship identifies the prior source to retire. Presentation and model labels do not govern source lifecycle.",
+      "explanation": "复核日期为新鲜度检查提供触发点，替代关系则指出应退役的先前来源。呈现形式和模型名称无法治理来源生命周期。",
       "references": [
         "certifications/claude/lessons/04-context-knowledge-memory-and-caching",
         "https://support.claude.com/en/articles/11176164-use-connectors-to-extend-claude-s-capabilities"
@@ -225,19 +225,19 @@
     {
       "id": "ccao-d-011",
       "domain": "governance-risk-responsible-use",
-      "objective": "Apply privacy, data-sensitivity, and regulatory constraints",
+      "objective": "应用隐私、数据敏感性和监管约束（Apply privacy, data-sensitivity, and regulatory constraints）",
       "type": "single",
-      "prompt": "An employee wants to paste confidential customer transcripts into an unapproved personal Claude account. What is the correct first response?",
+      "prompt": "员工想把机密客户对话记录粘贴到未经批准的个人 Claude 账户中。正确的第一步回应是什么？",
       "options": [
-        "Stop and use the organization's data policy and approved surface review",
-        "Proceed in the personal account after adding a prompt instruction not to retain or reveal any transcript content",
-        "Remove only the transcript titles",
-        "Ask for a shorter summary"
+        "停止，并依据组织数据政策审核获批使用入口",
+        "在提示词中添加不保留或泄露对话内容的指令后，继续使用个人账户",
+        "只删除对话记录标题",
+        "要求更短的摘要"
       ],
       "correct": [
         0
       ],
-      "explanation": "Prompt text cannot approve a surface or enforce contractual data handling. The use must stop until purpose, classification, product terms, and organizational controls are resolved.",
+      "explanation": "提示词文本无法批准一个入口，也无法执行合同约定的数据处理。在使用目的、数据分类、产品条款和组织控制明确之前，必须停止此用途。",
       "references": [
         "certifications/claude/lessons/06-governance-safety-and-responsible-use",
         "https://platform.claude.com/docs/en/manage-claude/api-and-data-retention",
@@ -247,20 +247,20 @@
     {
       "id": "ccao-d-012",
       "domain": "governance-risk-responsible-use",
-      "objective": "Recognize ethical implications and escalate risk",
+      "objective": "识别伦理影响并升级风险（Recognize ethical implications and escalate risk）",
       "type": "multiple",
-      "prompt": "A workflow recommends eligibility decisions that materially affect people. Which two controls are essential? Select two.",
+      "prompt": "某工作流提出会实质影响人们的资格决定建议。哪两项控制必不可少？选择两项。",
       "options": [
-        "Segmented fairness evaluation and a correction or appeal path",
-        "Automatic execution for decisions that pass a strict output schema and confidence threshold, with periodic human audit afterward",
-        "An authorized human gate with evidence and power to reject",
-        "A neutrality instruction plus aggregate accuracy monitoring, without predefined affected-group slices or appeal handling"
+        "按群体分段进行公平性评估，并提供纠正或申诉路径",
+        "对通过严格输出模式和置信阈值的决定自动执行，之后定期人工审计",
+        "设置有授权的人工关卡，提供证据并允许拒绝",
+        "加入中立性指令并监控总体准确率，但不预先定义受影响群体切片或申诉处理"
       ],
       "correct": [
         0,
         2
       ],
-      "explanation": "High-impact decisions need meaningful authority, evidence, fairness analysis, and remedy. A vague instruction or machine-readable format does not control ethical or organizational risk.",
+      "explanation": "高影响决策需要实质权限、证据、公平性分析和补救。模糊指令或机器可读格式不能控制伦理或组织风险。",
       "references": [
         "certifications/claude/lessons/06-governance-safety-and-responsible-use",
         "https://trust.anthropic.com/"
@@ -269,19 +269,19 @@
     {
       "id": "ccao-d-013",
       "domain": "troubleshooting-optimization",
-      "objective": "Diagnose underperforming prompts and poor outputs",
+      "objective": "诊断表现不佳的提示词和劣质输出（Diagnose underperforming prompts and poor outputs）",
       "type": "single",
-      "prompt": "A report repeatedly omits an exception that is absent from every supplied source. What should be fixed first?",
+      "prompt": "报告反复遗漏某项例外，而所有已提供来源中都没有这项例外。首先应修复什么？",
       "options": [
-        "The output token allowance and report structure before checking whether the governing source was supplied",
-        "The source layer",
-        "The output token limit only",
-        "The writing tone"
+        "先调整输出词元额度和报告结构，再检查是否提供了适用的权威来源",
+        "来源层",
+        "只调整输出词元上限",
+        "写作语气"
       ],
       "correct": [
         1
       ],
-      "explanation": "A model cannot reliably apply evidence it never receives. Add or retrieve the authoritative exception before changing model capability or surface details.",
+      "explanation": "模型无法可靠应用从未收到的证据。应先添加或检索权威例外规定，再改变模型能力或入口细节。",
       "references": [
         "certifications/claude/lessons/02-model-selection-and-token-economics",
         "certifications/claude/lessons/03-prompting-and-task-decomposition"
@@ -290,20 +290,20 @@
     {
       "id": "ccao-d-014",
       "domain": "troubleshooting-optimization",
-      "objective": "Optimize workflows for efficiency and effectiveness",
+      "objective": "优化工作流的效率与效果（Optimize workflows for efficiency and effectiveness）",
       "type": "multiple",
-      "prompt": "A recurring API workflow is accurate but too expensive. Which two changes preserve an evidence-based quality gate? Select two.",
+      "prompt": "重复执行的 API 工作流准确但成本过高。哪两项改变能保留基于证据的质量关卡？选择两项。",
       "options": [
-        "Validate only an initial sample after each release and treat subsequent routine classifications as equivalent until an incident occurs",
-        "Cache a stable repeated prompt prefix when current API behavior supports it",
-        "Route by provider price and public benchmark ranking, then evaluate only the cases that users challenge",
-        "Route observable routine cases to a cheaper passing model and audit exceptions"
+        "每次发布后只验证初始样本，在发生事故前都将后续常规分类视为等价",
+        "当前 API 行为支持时，缓存稳定且重复的提示词前缀",
+        "按服务商价格和公开基准排名路由，只评估用户质疑的案例",
+        "将可观察的常规案例路由到更便宜且通过质量检查的模型，并审计异常"
       ],
       "correct": [
         1,
         3
       ],
-      "explanation": "Routing and caching are separate efficiency levers that can preserve quality when measured and monitored. Removing validation or selecting by price alone ignores failure and rework cost.",
+      "explanation": "路由和缓存是独立的效率手段，在测量和监控下可以保持质量。移除验证或只按价格选择，会忽略失败和返工成本。",
       "references": [
         "certifications/claude/lessons/02-model-selection-and-token-economics",
         "https://platform.claude.com/docs/en/build-with-claude/prompt-caching"

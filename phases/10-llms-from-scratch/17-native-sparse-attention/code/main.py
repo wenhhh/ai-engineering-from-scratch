@@ -1,13 +1,12 @@
-"""Native Sparse Attention (DeepSeek NSA) in stdlib Python.
+"""使用 Python 标准库实现原生稀疏注意力（Native Sparse Attention，DeepSeek NSA）。
 
-Implements the three parallel branches from Yuan et al. 2025:
-  - compressed branch: coarse-grained attention over block-averaged keys
-  - selected branch: fine-grained attention over top-k uncompressed blocks
-  - sliding-window branch: attention over the last W tokens
+实现 Yuan 等人在 2025 年提出的三个并行分支:
+  - 压缩分支（Compressed branch）: 对块均值键计算粗粒度注意力
+  - 选择分支（Selected branch）: 对 top-k 未压缩块计算细粒度注意力
+  - 滑动窗口分支（Sliding-window branch）: 对最后 W 个词元计算注意力
 
-Combines them with a gate and prints the per-query key count for each branch
-vs. full attention. Scales the key-count report to 64k and 128k contexts to
-show the long-sequence savings NSA targets.
+通过门控（Gate）组合三个分支，打印各分支每次查询的键数量，与全注意力比较。
+将键数量报告扩展到 64k 和 128k 上下文，展示 NSA 面向长序列的开销节省。
 """
 
 from __future__ import annotations
@@ -31,7 +30,7 @@ def softmax(row: List[float]) -> List[float]:
 
 def attention(q: List[float], K: List[List[float]],
               V: List[List[float]]) -> tuple[List[float], List[float]]:
-    """Returns (weights, output)."""
+    """返回 (weights, output)，即（权重，输出）。"""
     d = len(q)
     scale = math.sqrt(d)
     scores = [dot(q, k) / scale for k in K]
@@ -42,8 +41,8 @@ def attention(q: List[float], K: List[List[float]],
 
 
 def compress_mean(K: List[List[float]], l: int) -> List[List[float]]:
-    """Collapse every l consecutive keys into their mean. Real NSA uses a
-    learned MLP here — mean-pool is the pedagogical baseline."""
+    """将每 l 个连续键合并为其均值。真实 NSA 在此处使用学得的多层感知机（MLP），
+    均值池化（Mean-pool）只是教学基线。"""
     n = len(K)
     d = len(K[0])
     n_blocks = (n + l - 1) // l
@@ -63,7 +62,7 @@ def top_k_blocks(scores: List[float], k: int) -> List[int]:
 
 def fine_grained_keys(K: List[List[float]], V: List[List[float]], l: int,
                       block_indices: List[int]) -> tuple[List[List[float]], List[List[float]]]:
-    """Load the raw (uncompressed) tokens from the selected blocks."""
+    """从选定块中加载原始（未压缩）词元。"""
     k_out, v_out = [], []
     for b in block_indices:
         start, end = b * l, min((b + 1) * l, len(K))
@@ -80,7 +79,7 @@ def sliding_window(K: List[List[float]], V: List[List[float]],
 
 
 def gate(q: List[float], Wg: List[List[float]]) -> List[float]:
-    """Gate MLP: 1-layer linear + sigmoid, produces 3 branch weights."""
+    """门控 MLP: 1 层线性变换 + sigmoid，生成 3 个分支权重。"""
     logits = [dot(q, Wg[i]) for i in range(3)]
     return [1.0 / (1.0 + math.exp(-x)) for x in logits]
 
@@ -126,8 +125,8 @@ def nsa_step(q: List[float], K: List[List[float]], V: List[List[float]],
 
 def synthesize_sequence(n: int, d: int, signal_blocks: List[int], l: int,
                         rng: random.Random) -> tuple[List[List[float]], List[List[float]], List[float]]:
-    """Build K, V where `signal_blocks` carry a shared pattern and the query
-    is aligned to that pattern. The rest is Gaussian noise."""
+    """构建 K、V，其中 `signal_blocks` 承载共享模式，查询与该模式对齐。
+    其余部分为高斯噪声（Gaussian noise）。"""
     pattern = [rng.gauss(0, 1) for _ in range(d)]
     norm = math.sqrt(sum(x * x for x in pattern))
     pattern = [x / norm for x in pattern]
@@ -152,7 +151,7 @@ def count_nsa(N: int, l: int, k: int, W: int) -> int:
 def main() -> None:
     rng = random.Random(11)
     print("=" * 70)
-    print("NATIVE SPARSE ATTENTION — DeepSeek NSA (Phase 10, Lesson 17)")
+    print("原生稀疏注意力（Native Sparse Attention）— DeepSeek NSA（阶段 10，第 17 课）")
     print("=" * 70)
     print()
 
@@ -162,8 +161,8 @@ def main() -> None:
     signal_blocks = [3, 17, 28]
 
     print("-" * 70)
-    print(f"Step 1: synthetic N={n}, d={d}, signal at blocks {signal_blocks}")
-    print(f"        config: l={l} (compression block), k={k} (top-k), W={W} (sliding window)")
+    print(f"步骤 1: 合成数据 N={n}, d={d}，信号位于块 {signal_blocks}")
+    print(f"        配置: l={l}（压缩块），k={k}（top-k），W={W}（滑动窗口）")
     print("-" * 70)
 
     K, V, q = synthesize_sequence(n=n, d=d, signal_blocks=signal_blocks, l=l, rng=rng)
@@ -171,25 +170,25 @@ def main() -> None:
 
     out, info = nsa_step(q, K, V, Wg, NSAConfig(l=l, k=k, W=W))
 
-    print(f"  compressed branch keys : {info['cmp_keys']}")
-    print(f"  selected branch keys   : {info['sel_keys']}  (blocks {info['selected_blocks']})")
-    print(f"  sliding window keys    : {info['win_keys']}")
-    print(f"  total keys attended    : {info['total_keys']}")
-    print(f"  full-attention keys    : {info['full_keys']}  ({info['full_keys'] / info['total_keys']:.1f}x more)")
-    print(f"  gate weights (cmp/sel/win): "
+    print(f"  压缩分支键数 : {info['cmp_keys']}")
+    print(f"  选择分支键数 : {info['sel_keys']}  （块 {info['selected_blocks']}）")
+    print(f"  滑动窗口键数 : {info['win_keys']}")
+    print(f"  参与注意力的键总数 : {info['total_keys']}")
+    print(f"  全注意力键数 : {info['full_keys']}  （为其 {info['full_keys'] / info['total_keys']:.1f}x）")
+    print(f"  门控权重（压缩/选择/窗口，cmp/sel/win）: "
           f"{info['gates'][0]:.3f} / {info['gates'][1]:.3f} / {info['gates'][2]:.3f}")
     print()
 
     hit_signal = [b for b in info["selected_blocks"] if b in signal_blocks]
     miss_signal = [b for b in signal_blocks if b not in info["selected_blocks"]]
-    print(f"  signal blocks retrieved: {hit_signal}  (missed: {miss_signal})")
+    print(f"  检索到的信号块: {hit_signal}（遗漏: {miss_signal}）")
     print()
 
     print("-" * 70)
-    print("Step 2: compute savings at production context lengths")
+    print("步骤 2: 生产级上下文长度下的计算节省")
     print("-" * 70)
     print(f"  {'N':>8} {'l':>4} {'k':>4} {'W':>5}  "
-          f"{'NSA keys':>10}  {'full keys':>10}  {'savings':>9}")
+          f"{'NSA 键数':>10}  {'全注意力键数':>10}  {'节省倍数':>9}")
     for N_prod, l_prod, k_prod, W_prod in [
         (4_096, 32, 8, 256),
         (16_384, 32, 16, 512),
@@ -205,20 +204,20 @@ def main() -> None:
     print()
 
     print("-" * 70)
-    print("Step 3: block-size vs top-k sweep (cost at N=65536, W=512)")
+    print("步骤 3: 块大小与 top-k 扫描（N=65536, W=512 时的开销）")
     print("-" * 70)
-    print(f"  {'l':>4} {'k':>4}  {'keys':>8}  {'vs full':>8}")
+    print(f"  {'l':>4} {'k':>4}  {'键数（keys）':>8}  {'相对全注意力':>8}")
     for l_p in (32, 64, 128):
         for k_p in (8, 16, 32):
             cost = count_nsa(65_536, l_p, k_p, 512)
             print(f"  {l_p:>4} {k_p:>4}  {cost:>8,}  {65_536/cost:>7.1f}x")
     print()
 
-    print("takeaway: NSA's 3-branch decomposition turns O(N^2) attention into")
-    print("          O(N * (N/l + k*l + W)). At 64k-128k context, 25x-36x")
-    print("          fewer keys per query. Gradient flows through the")
-    print("          compressed-branch scores, so top-k selection is natively")
-    print("          trainable.")
+    print("要点: NSA 的 3 分支分解将 O(N^2) 注意力转换为")
+    print("          O(N * (N/l + k*l + W))。在 64k-128k 上下文中，每次查询")
+    print("          所需键数减少 25x-36x。梯度通过")
+    print("          压缩分支的分数流动，因此 top-k 选择机制")
+    print("          原生支持训练。")
 
 
 if __name__ == "__main__":

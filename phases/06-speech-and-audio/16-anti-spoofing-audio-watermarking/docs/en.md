@@ -1,82 +1,82 @@
-# Voice Anti-Spoofing & Audio Watermarking — ASVspoof 5, AudioSeal, WaveVerify
+# 语音防伪与音频水印：ASVspoof 5、AudioSeal、WaveVerify（Voice Anti-Spoofing & Audio Watermarking — ASVspoof 5, AudioSeal, WaveVerify）
 
-> Voice cloning shipped faster than defenses. 2026 production voice systems need two things: a detector (AASIST, RawNet2) that classifies real vs fake speech, and a watermark (AudioSeal) that survives compression and editing. Ship both or do not ship voice cloning.
+> 声音克隆的交付速度超过了防护。2026 年生产语音系统需要两样东西：区分真实与伪造语音的检测器（AASIST、RawNet2），以及经压缩和编辑仍保留的水印（AudioSeal）。两者都交付，否则不要交付声音克隆。
 
 **Type:** Build
 **Languages:** Python
-**Prerequisites:** Phase 6 · 06 (Speaker Recognition), Phase 6 · 08 (Voice Cloning)
-**Time:** ~75 minutes
+**Prerequisites:** 阶段 6 · 06（说话人识别），阶段 6 · 08（声音克隆）
+**Time:** ~75 分钟
 
-## The Problem
+## 问题（The Problem）
 
-Three related defenses:
+三种相关防护：
 
-1. **Anti-spoofing / deepfake detection.** Given an audio clip, is it synthetic or real? ASVspoof benchmarks (ASVspoof 2019 → 2021 → 5) are the gold standard.
-2. **Audio watermarking.** Embed an imperceptible signal in generated audio that a detector can extract later. AudioSeal (Meta) and WavMark are the open options.
-3. **Authenticated provenance.** Cryptographic signing of audio files + metadata. C2PA / Content Authenticity Initiative.
+1. **防伪 / 深度伪造检测（Anti-Spoofing / Deepfake Detection）。** 给定音频，判断是合成还是真实。ASVspoof 基准（2019 → 2021 → 5）是黄金标准。
+2. **音频水印（Audio Watermarking）。** 在生成音频中嵌入不可感知信号，供检测器之后提取。AudioSeal（Meta）与 WavMark 是开放选择。
+3. **可信来源证明（Authenticated Provenance）。** 对音频文件与元数据做密码学签名，如 C2PA / 内容真实性倡议（Content Authenticity Initiative）。
 
-Detection handles adversaries who don't cooperate. Watermarking handles compliance — AI-generated audio should be identifiable as such. Both are required in 2026.
+检测应对不配合的攻击者，水印处理合规：AI 生成音频应能被识别为 AI 生成。2026 年两者都需要。
 
-## The Concept
+## 概念（The Concept）
 
-![Anti-spoofing vs watermarking vs provenance — three defense layers](../assets/spoofing-watermark.svg)
+![防伪、水印与来源证明：三层防护](../assets/spoofing-watermark.svg)
 
-### ASVspoof 5 — the 2024-2025 benchmark
+### ASVspoof 5：2024–2025 年基准（ASVspoof 5 — the 2024-2025 benchmark）
 
-Biggest change from prior editions:
+相较此前版本的最大变化：
 
-- **Crowdsourced data** (not studio clean) — realistic conditions.
-- **~2000 speakers** (vs ~100 before).
-- **32 attack algorithms.** TTS + voice conversion + adversarial perturbation.
-- **Two tracks.** Countermeasure (CM) standalone detection; Spoofing-robust ASV (SASV) for biometric systems.
+- **众包数据**，不再是录音室干净音频，更贴近真实条件。
+- **约 2000 名说话人**，此前约 100 名。
+- **32 种攻击算法。** 文本转语音、声音转换和对抗扰动。
+- **两条赛道。** 对抗措施（Countermeasure，CM）独立检测，以及面向生物识别系统的抗伪造自动说话人验证（Spoofing-Robust ASV，SASV）。
 
-State-of-the-art on ASVspoof 5: ~7.23% EER. On the older ASVspoof 2019 LA: 0.42% EER. Real-world deployment: expect 5-10% EER on in-the-wild clips.
+ASVspoof 5 最先进等错误率约 7.23%；旧的 ASVspoof 2019 LA 为 0.42%。真实部署中，对自然环境音频应预期 5–10% 等错误率。
 
-### AASIST and RawNet2 — detection model families
+### AASIST 与 RawNet2：检测模型家族（AASIST and RawNet2 — detection model families）
 
-**AASIST** (2021, updated through 2026). Graph-attention on spectral features. Current SOTA on ASVspoof 5 countermeasure task.
+**AASIST**（2021，持续更新至 2026）。对频谱特征做图注意力，是当前 ASVspoof 5 对抗措施任务的最先进方案。
 
-**RawNet2.** Convolutional front-end over raw waveform + TDNN backbone. Simpler baseline; still competitive with fine-tuning.
+**RawNet2。** 原始波形卷积前端加时延神经网络（TDNN）骨干。更简单的基线，微调后仍有竞争力。
 
-**NeXt-TDNN + SSL features.** 2025 variant: ECAPA-style + WavLM features + focal loss. Achieves the 0.42% EER on ASVspoof 2019 LA.
+**NeXt-TDNN 加自监督学习（SSL）特征。** 2025 年变体：ECAPA 风格、WavLM 特征和焦点损失，在 ASVspoof 2019 LA 上实现 0.42% 等错误率。
 
-### AudioSeal — the 2024 watermark default
+### AudioSeal：2024 年默认水印（AudioSeal — the 2024 watermark default）
 
-Meta's **AudioSeal** (Jan 2024, v0.2 Dec 2024). Key design:
+Meta 的 **AudioSeal**（2024 年 1 月，v0.2 于 2024 年 12 月发布）。关键设计：
 
-- **Localized.** Detects the watermark per-frame at 16 kHz sample resolution (1/16000 s).
-- **Generator + detector jointly trained.** Generator learns to embed inaudible signal; detector learns to find it through augmentations.
-- **Robust.** Survives MP3 / AAC compression, EQ, speed-shift ±10%, noise mix +10 dB SNR.
-- **Fast.** Detector runs at 485× realtime; 1000× faster than WavMark.
-- **Capacity.** 16-bit payload (can encode model ID, generation timestamp, user ID) embeddable in each utterance.
+- **局部定位。** 在 16 kHz 采样分辨率（1/16000 秒）下逐帧检测水印。
+- **生成器与检测器联合训练。** 生成器学习嵌入不可听信号，检测器学习在增强变换后找出它。
+- **稳健。** 经 MP3 / AAC 压缩、均衡、±10% 变速、混入 +10 dB 信噪比噪声后仍能保留。
+- **快速。** 检测器运行速度为实时 485 倍，比 WavMark 快 1000 倍。
+- **容量。** 每条语句可嵌入 16 位载荷，编码模型标识、生成时间戳、用户标识。
 
-### WavMark
+### WavMark（WavMark）
 
-The pre-AudioSeal open baseline. Invertible neural network, 32 bits/sec. Problems:
+AudioSeal 之前的开放基线，可逆神经网络，32 位/秒。问题包括：
 
-- Synchronization brute-force is slow.
-- Can be removed by Gaussian noise or MP3 compression.
-- Not real-time friendly.
+- 同步暴力搜索很慢。
+- 可被高斯噪声或 MP3 压缩移除。
+- 不适合实时处理。
 
-### WaveVerify (July 2025)
+### WaveVerify，2025 年 7 月（WaveVerify (July 2025)）
 
-Addresses AudioSeal's weaknesses — specifically temporal manipulations (reversal, speed). Uses FiLM-based generator + Mixture-of-Experts detector. Competitive with AudioSeal on standard attacks; handles temporal edits.
+针对 AudioSeal 的弱点，尤其是时间变换（反转、变速）。使用基于特征级线性调制（Feature-Wise Linear Modulation，FiLM）的生成器和混合专家（Mixture-of-Experts，MoE）检测器。在标准攻击上与 AudioSeal 相当，还能处理时间编辑。
 
-### The gap adversaries exploit
+### 攻击者利用的缺口（The gap adversaries exploit）
 
-From AudioMarkBench: "under pitch shift, all watermarks show Bit Recovery Accuracy below 0.6, indicating near-complete removal." **Pitch-shift is the universal attack.** No 2026 watermark is fully robust to aggressive pitch modification. This is why you need detection (AASIST) alongside watermarking.
+AudioMarkBench 指出：“音高偏移下，所有水印的比特恢复准确率低于 0.6，表明水印几乎完全被移除。”**音高偏移是通用攻击。** 2026 年没有水印能完全抵御强烈音高修改，因此水印之外还需要 AASIST 检测。
 
-### C2PA / Content Authenticity Initiative
+### C2PA 与内容真实性倡议（C2PA / Content Authenticity Initiative）
 
-Not an ML technique — a manifest format. Audio files carry cryptographically signed metadata about creation tool, author, date. Audobox / Seamless use it. Good for provenance; does nothing if a bad actor re-encodes and strips metadata.
+它不是机器学习技术，而是清单格式。音频文件携带有关创建工具、作者、日期的密码学签名元数据，Audobox / Seamless 使用它。适合来源证明，但恶意者重编码并剥离元数据时就无能为力。
 
 ```figure
 v4-audio-watermark
 ```
 
-## Build It
+## 动手实现（Build It）
 
-### Step 1: a simple spectral-feature detector (toy)
+### 第 1 步：简单频谱特征检测器，教学示例（Step 1: a simple spectral-feature detector (toy)）
 
 ```python
 def spectral_rolloff(spec, percentile=0.85):
@@ -97,9 +97,9 @@ def is_suspicious(audio):
     return rolloff / len(spec) > 0.92
 ```
 
-Synthetic speech often has unusually flat high-frequency energy. Production detectors use AASIST, not this. But the intuition holds.
+合成语音常具有异常平坦的高频能量。生产检测用 AASIST，而不是这段代码，但直觉成立。
 
-### Step 2: AudioSeal embed + detect
+### 第 2 步：AudioSeal 嵌入与检测（Step 2: AudioSeal embed + detect）
 
 ```python
 from audioseal import AudioSeal
@@ -118,7 +118,7 @@ result, decoded_payload = detector.detect_watermark(watermarked, sample_rate=160
 # decoded_payload: 16 bits; match against embedded payload
 ```
 
-### Step 3: evaluation — EER
+### 第 3 步：等错误率评估（Step 3: evaluation — EER）
 
 ```python
 def eer(real_scores, fake_scores):
@@ -132,7 +132,7 @@ def eer(real_scores, fake_scores):
     return best[1]
 ```
 
-### Step 4: the production integration
+### 第 4 步：生产集成（Step 4: the production integration）
 
 ```python
 def safe_tts(text, voice, clone_reference=None):
@@ -144,53 +144,53 @@ def safe_tts(text, voice, clone_reference=None):
     return audio_with_wm, manifest
 ```
 
-Every generation ships: (1) watermark, (2) signed manifest, (3) retention-policy-compliant audit log.
+每次生成都附带：(1) 水印，(2) 签名清单，(3) 符合保留策略的审计日志。
 
-## Use It
+## 实际应用（Use It）
 
-| Use case | Defense |
+| 用例 | 防护 |
 |----------|---------|
-| Shipping TTS / voice cloning | AudioSeal embed on every output (non-negotiable) |
-| Biometric voice unlock | AASIST + ECAPA ensemble; liveness challenge |
-| Call-center fraud detection | AASIST on 20% sample of incoming calls |
-| Podcast authenticity | C2PA signing on upload, AudioSeal if AI-generated |
-| Research / training detectors | ASVspoof 5 train/dev/eval sets |
+| 交付 TTS / 声音克隆 | 每份输出嵌入 AudioSeal，不可省略 |
+| 声纹解锁 | AASIST 与 ECAPA 集成，加活体挑战 |
+| 呼叫中心欺诈检测 | 对 20% 来电样本运行 AASIST |
+| 播客真实性 | 上传时 C2PA 签名；AI 生成时加 AudioSeal |
+| 研究 / 训练检测器 | ASVspoof 5 训练、开发、评估集 |
 
-## Pitfalls
+## 常见陷阱（Pitfalls）
 
-- **Watermark without detector ever running.** Pointless. Ship the detector in your CI.
-- **Detection without calibration.** AASIST trained on ASVspoof LA overfits; real-world accuracy drops. Calibrate on your domain.
-- **Pitch-shift gap.** Aggressive pitch shift removes most watermarks. Have a detection fallback.
-- **Metadata strip-and-rehost.** C2PA is trivially bypassable by re-encoding. Always add cryptographic + perceptual (watermark) defense together.
-- **Liveness as detection.** Ask user to say a random phrase. Prevents replay attacks but not real-time cloning.
+- **加水印却从不运行检测器。** 毫无意义。将检测器放入持续集成（CI）。
+- **检测未经校准。** 在 ASVspoof LA 上训练的 AASIST 会过拟合，真实准确率下降，应在自己的领域校准。
+- **音高偏移缺口。** 强烈变调移除多数水印，需要检测回退。
+- **剥离元数据后重新托管。** 重编码很容易绕过 C2PA，始终同时加入密码学和感知层（水印）防护。
+- **把活体挑战当检测。** 要求用户说随机短语可防重放，不能防实时克隆。
 
-## Ship It
+## 交付成果（Ship It）
 
-Save as `outputs/skill-spoof-defender.md`. Pick detection model, watermark, provenance manifest, and operational playbook for a voice-gen deployment.
+保存为 `outputs/skill-spoof-defender.md`。为语音生成部署选择检测模型、水印、来源清单和运营操作手册。
 
-## Exercises
+## 练习（Exercises）
 
-1. **Easy.** Run `code/main.py`. Toy detector + toy watermark embed/detect on synthetic audio.
-2. **Medium.** Install `audioseal`, embed a 16-bit payload in a TTS output, re-decode. Corrupt the audio with noise and measure Bit Recovery Accuracy.
-3. **Hard.** Fine-tune a RawNet2 or AASIST on ASVspoof 2019 LA. Measure EER. Test on a held-out set of F5-TTS-generated clips — see how OOD detection degrades.
+1. **简单。** 运行 `code/main.py`，在合成音频上使用教学检测器及教学水印嵌入、检测。
+2. **中等。** 安装 `audioseal`，在 TTS 输出嵌入 16 位载荷并重新解码。用噪声破坏音频，测量比特恢复准确率。
+3. **困难。** 在 ASVspoof 2019 LA 上微调 RawNet2 或 AASIST，测量等错误率。再测试留出的 F5-TTS 生成片段，观察分布外（Out-of-Distribution，OOD）检测如何退化。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语 | 常见说法 | 实际含义 |
 |------|-----------------|-----------------------|
-| ASVspoof | The benchmark | Biennial challenge; 2024 = ASVspoof 5. |
-| CM (countermeasure) | Detector | Classifier: real speech vs synthetic / converted. |
-| SASV | Speaker verif + CM | Integrated biometric + spoof detection. |
-| AudioSeal | Meta watermark | Localized, 16-bit payload, 485× faster than WavMark. |
-| Bit Recovery Accuracy | Watermark survival | Fraction of payload bits recovered after attack. |
-| C2PA | Provenance manifest | Cryptographic metadata about creation / authorship. |
-| AASIST | Detector family | Graph-attention-based anti-spoofing SOTA. |
+| ASVspoof | 那个基准 | 两年一届挑战赛，2024 年为 ASVspoof 5。 |
+| 对抗措施（Countermeasure，CM） | 检测器 | 区分真实语音与合成 / 转换语音的分类器。 |
+| 抗伪造自动说话人验证（SASV） | 说话人验证加 CM | 集成生物识别与伪造检测。 |
+| AudioSeal | Meta 水印 | 可局部定位、16 位载荷，比 WavMark 快 485 倍。 |
+| 比特恢复准确率（Bit Recovery Accuracy） | 水印存活率 | 攻击后恢复的载荷比特比例。 |
+| 内容来源与真实性联盟标准（C2PA） | 来源清单 | 关于创建与作者身份的密码学元数据。 |
+| AASIST | 检测器家族 | 基于图注意力的最先进防伪方案。 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [Todisco et al. (2024). ASVspoof 5](https://dl.acm.org/doi/10.1016/j.csl.2025.101825) — the current benchmark.
-- [Defossez et al. (2024). AudioSeal](https://arxiv.org/abs/2401.17264) — the watermark default.
-- [Chen et al. (2025). WaveVerify](https://arxiv.org/abs/2507.21150) — MoE detector for temporal attacks.
-- [Jung et al. (2022). AASIST](https://arxiv.org/abs/2110.01200) — the SOTA detection backbone.
-- [AudioMarkBench (2024)](https://proceedings.neurips.cc/paper_files/paper/2024/file/5d9b7775296a641a1913ab6b4425d5e8-Paper-Datasets_and_Benchmarks_Track.pdf) — robustness evaluation.
-- [C2PA specification](https://c2pa.org/specifications/specifications/) — provenance manifest format.
+- [Todisco 等（2024）：ASVspoof 5 论文](https://dl.acm.org/doi/10.1016/j.csl.2025.101825)：当前基准。
+- [Defossez 等（2024）：AudioSeal 论文](https://arxiv.org/abs/2401.17264)：默认水印方案。
+- [Chen 等（2025）：WaveVerify 论文](https://arxiv.org/abs/2507.21150)：应对时间攻击的混合专家检测器。
+- [Jung 等（2022）：AASIST 论文](https://arxiv.org/abs/2110.01200)：最先进检测骨干。
+- [AudioMarkBench 基准（2024）](https://proceedings.neurips.cc/paper_files/paper/2024/file/5d9b7775296a641a1913ab6b4425d5e8-Paper-Datasets_and_Benchmarks_Track.pdf)：稳健性评估。
+- [C2PA 规范](https://c2pa.org/specifications/specifications/)：来源清单格式。

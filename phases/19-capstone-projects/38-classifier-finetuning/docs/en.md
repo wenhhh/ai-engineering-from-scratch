@@ -1,139 +1,139 @@
-# Capstone Lesson 38: Classifier Fine-Tuning by Head Swap
+# 综合实践第 38 课：更换模型头进行分类器微调（Capstone Lesson 38: Classifier Fine-Tuning by Head Swap）
 
-> Track B's first capstone. A pretrained language model is a stack of self-attention blocks ending in a token-prediction head. When you want spam vs ham, the head is wrong but the body is mostly right. This lesson rips the head off, glues a two-class linear layer onto the pooled representation, and trains the classifier two different ways: final-layer only, and full fine-tuning. The eval is precision, recall, and F1 on a held-out split. You learn what each strategy buys you and what it costs.
+> 路线 B 的首个综合实践（Capstone）。预训练语言模型由一组自注意力块堆叠而成，末端是词元预测头。要区分垃圾短信与正常短信时，模型头不合适，主体却大体可用。本课移除原头，在池化表示上接一个二分类线性层，再以两种方式训练分类器：仅训练最后一层，以及全量微调。评估指标为留出划分上的精确率、召回率和 F1。你将了解各策略的收益与成本。
 
 **Type:** Build
 **Languages:** Python (torch, numpy)
-**Prerequisites:** Phase 19 lessons 30-37 (NLP LLM track: tokenizer, embedding table, attention block, transformer body, pre-training loop, checkpointing, generation, perplexity)
-**Time:** ~90 minutes
+**Prerequisites:** 阶段 19 第 30–37 课（NLP LLM 路线：分词器、嵌入表、注意力块、Transformer 主体、预训练循环、检查点保存、生成、困惑度）
+**Time:** ~90 分钟
 
-## Learning Objectives
+## 学习目标（Learning Objectives）
 
-- Replace a language-model head with a classification head without re-initialising the body.
-- Implement two training regimes: frozen body (head-only) and full fine-tuning, sharing one training loop.
-- Build a tokeniser-aware data pipeline that pads, masks padding, and pools attention output.
-- Compute precision, recall, F1, and a confusion matrix from raw logits.
-- Reason about the trade-off between parameter count, training time, and head-room.
+- 不重新初始化主体，将语言模型头替换为分类头（Classification head）。
+- 用同一训练循环实现两种训练方式：冻结主体（仅训练模型头，Head-only）与全量微调（Full fine-tuning）。
+- 构建适配分词器的数据管线，完成填充、填充掩码和注意力输出池化（Pooling）。
+- 从原始逻辑值（Logits）计算精确率（Precision）、召回率（Recall）、F1 和混淆矩阵（Confusion matrix）。
+- 分析参数数量、训练时间与性能提升空间之间的权衡。
 
-## The Problem
+## 问题（The Problem）
 
-You pre-trained a small transformer on a generic corpus. The output head projects the last hidden state to a 1000-token vocabulary. You now have 800 SMS messages labelled spam or ham and you want a binary classifier. Three options exist.
+你已在通用语料库上预训练小型 Transformer。输出头将最后隐藏状态投影到 1000 词元的词汇表。现在你有 800 条标注为垃圾或正常的短信，需要一个二分类器。有三种选择。
 
-The wrong option is to train a fresh classifier from scratch on 800 examples. The body of the pretrained model already encodes useful structure: word identity, position, simple co-occurrence. Throwing it away wastes the compute that built it.
+错误选择是在 800 个样本上从零训练全新分类器。预训练模型主体已编码词语身份、位置、简单共现等有用结构。丢弃它，会浪费建立这些结构所用的计算。
 
-The two right options are head swap with the body frozen, and head swap with the body trainable. Head-only training is fast, almost free in memory, and rarely overfits with this little data. Full fine-tuning is slower, can overfit on small data, but reaches higher accuracy when the downstream domain drifts from the pretraining corpus.
+两个正确选择分别是更换模型头并冻结主体，以及更换模型头并允许训练主体。仅训练头速度快、内存成本几乎可忽略，在这样少的数据下也很少过拟合。全量微调更慢，小数据下可能过拟合，但下游领域偏离预训练语料时，可以达到更高准确率。
 
-This lesson builds both, so you can compare them on the same fixture.
+本课同时实现两种方式，让你在同一测试夹具（Fixture）上比较。
 
-## The Concept
-
-```mermaid
-flowchart LR
-  T[Tokens] --> E[Token + position<br/>embeddings]
-  E --> B[Transformer body<br/>N blocks]
-  B --> H1[Old: LM head<br/>vocab projection]
-  B --> H2[New: classifier head<br/>linear to 2 logits]
-  H2 --> L[Cross-entropy loss<br/>vs label]
-```
-
-The model is a function `f_theta(tokens) -> hidden_states`. The head is a function `g_phi(hidden) -> logits`. Swapping heads means keeping `theta` and replacing `g_phi`. The body's parameters are the expensive part. The head is a single linear layer.
-
-Two trainable parameter sets matter:
-
-- `theta` (the body): tens of thousands of weights per attention block.
-- `phi` (the head): `hidden_dim * num_classes` weights plus a bias.
-
-In head-only training you compute gradients against `phi` and zero them against `theta`. PyTorch lets you do this by setting `requires_grad=False` on body parameters. The optimiser then sees only the head and the body stays frozen.
-
-In full fine-tuning you let gradients flow back through the whole stack. The body's weights drift to fit the classification objective. The risk is catastrophic forgetting on small data: the body's pretraining gets washed out by overfitting noise.
-
-## The Pooling Question
-
-A classifier needs one vector per sequence, not one vector per token. Three common choices:
-
-- **Mean pool**: average the hidden states across the sequence, weighted by the attention mask.
-- **CLS pool**: prepend a special token and use only its output. This is what BERT does.
-- **Last-token pool**: use the last non-padding token. This is what GPT-class classifiers do.
-
-This lesson uses mean pooling with explicit attention-mask weighting. It is the simplest, gives a stable signal across sequence lengths, and does not require pretraining a CLS token.
+## 概念（The Concept）
 
 ```mermaid
 flowchart LR
-  H[Hidden states<br/>B x T x D] --> M[Mask out pads]
-  M --> S[Sum across T]
-  S --> N[Divide by<br/>non-pad count]
-  N --> P[Pooled<br/>B x D]
-  P --> C[Classifier head<br/>D x 2]
+  T[词元] --> E[词元 + 位置<br/>嵌入]
+  E --> B[Transformer 主体<br/>N 个块]
+  B --> H1[旧：语言模型头<br/>词汇表投影]
+  B --> H2[新：分类头<br/>线性映射到 2 个逻辑值]
+  H2 --> L[交叉熵损失<br/>与标签比较]
 ```
 
-## The Data
+模型是函数 `f_theta(tokens) -> hidden_states`，模型头是函数 `g_phi(hidden) -> logits`。更换模型头意味着保留 `theta`，替换 `g_phi`。主体参数是成本高的部分，模型头只有一个线性层。
 
-Eight hundred SMS messages, balanced 400 spam and 400 ham, are generated deterministically in `code/main.py`. The generator uses a fixed seed, picks templates and substitutes slot fillers, and emits messages between 5 and 25 tokens long. Real datasets have noise this fixture does not. The point of the fixture is reproducibility.
+有两组需要关注的可训练参数：
 
-The data splits 80/20: 640 train, 160 test. Splits are stratified so the test set keeps the 50/50 balance. A held-out set with a known balance lets precision and recall be read as honest numbers.
+- `theta`（主体）：每个注意力块数万个权重。
+- `phi`（模型头）：`hidden_dim * num_classes` 个权重加偏置。
 
-## The Metrics
+仅训练头时，对 `phi` 计算梯度，对 `theta` 的梯度置零。PyTorch 允许通过将主体参数设为 `requires_grad=False` 来实现。优化器于是只处理模型头，主体保持冻结。
 
-Binary classification with class 1 as the positive class (spam). Counts are:
+全量微调则允许梯度回流整个堆叠，主体权重随之变化以适配分类目标。小数据下的风险是灾难性遗忘（Catastrophic forgetting）：对噪声的过拟合冲掉了主体的预训练知识。
 
-- `TP`: predicted spam, was spam.
-- `FP`: predicted spam, was ham.
-- `FN`: predicted ham, was spam.
-- `TN`: predicted ham, was ham.
+## 池化问题（The Pooling Question）
 
-The three headline metrics:
+分类器每个序列需要一个向量，而不是每个词元一个向量。常见的三种选择：
 
-- `precision = TP / (TP + FP)`. Of the messages flagged spam, what fraction actually are?
-- `recall = TP / (TP + FN)`. Of the actual spam, what fraction did the model flag?
-- `F1 = 2 * P * R / (P + R)`. The harmonic mean of the two.
+- **均值池化（Mean pool）**：按注意力掩码加权，对序列中的隐藏状态取平均。
+- **CLS 池化（CLS pool）**：在前面添加特殊词元，只使用它的输出。BERT 采用此方式。
+- **末词元池化（Last-token pool）**：使用最后一个非填充词元。GPT 类分类器采用此方式。
 
-A confusion matrix prints the four counts as a 2x2 grid. The demo writes this to stdout for both training regimes.
+本课使用显式注意力掩码加权的均值池化。这种方式最简单，不同序列长度下信号稳定，也不需要预训练 CLS 词元。
+
+```mermaid
+flowchart LR
+  H[隐藏状态<br/>B x T x D] --> M[掩蔽填充位置]
+  M --> S[沿 T 求和]
+  S --> N[除以<br/>非填充数量]
+  N --> P[池化结果<br/>B x D]
+  P --> C[分类头<br/>D x 2]
+```
+
+## 数据（The Data）
+
+`code/main.py` 确定性生成 800 条短信，垃圾和正常各 400 条，类别平衡。生成器使用固定种子，选择模板并替换槽位内容，生成长度为 5 至 25 个词元的短信。真实数据集存在该夹具没有的噪声，夹具的目的是可复现。
+
+数据按 80/20 划分：640 条训练、160 条测试。采用分层划分（Stratified split），使测试集保留 50/50 平衡。类别比例已知的留出集，可以让精确率与召回率如实反映表现。
+
+## 指标（The Metrics）
+
+二分类将类别 1 作为正类（垃圾短信）。计数为：
+
+- `TP`：预测垃圾，实际为垃圾。
+- `FP`：预测垃圾，实际为正常。
+- `FN`：预测正常，实际为垃圾。
+- `TN`：预测正常，实际为正常。
+
+三个主要指标：
+
+- `precision = TP / (TP + FP)`：标为垃圾的短信中，实际垃圾占多少？
+- `recall = TP / (TP + FN)`：实际垃圾短信中，模型标出了多少？
+- `F1 = 2 * P * R / (P + R)`：两者的调和平均数（Harmonic mean）。
+
+混淆矩阵以 2x2 网格打印四个计数。演示将两种训练方式的矩阵输出到标准输出（stdout）。
 
 ```figure
 cap-classifier-head-swap
 ```
 
-## Architecture
+## 架构（Architecture）
 
 ```mermaid
 flowchart TD
-  Toks[(SMS fixture<br/>800 labelled)] --> Tok[ByteTokenizer<br/>vocab 260]
-  Tok --> DS[ClassificationDataset<br/>pad + mask]
-  DS --> DL[DataLoader<br/>batched]
-  DL --> M[Classifier<br/>body + mean-pool + head]
-  M --> L[Cross-entropy loss]
-  L --> O[Adam optimiser]
-  O -->|head-only| M
-  O -->|full FT| M
-  M --> E[Evaluator<br/>P / R / F1]
+  Toks[(短信夹具<br/>800 条标注数据)] --> Tok[ByteTokenizer<br/>词汇表 260]
+  Tok --> DS[ClassificationDataset<br/>填充 + 掩码]
+  DS --> DL[DataLoader<br/>组批]
+  DL --> M[分类器<br/>主体 + 均值池化 + 模型头]
+  M --> L[交叉熵损失]
+  L --> O[Adam 优化器]
+  O -->|仅训练头| M
+  O -->|全量微调| M
+  M --> E[评估器<br/>P / R / F1]
 ```
 
-The body is a deliberately tiny transformer: vocab 260, hidden 64, 4 heads, 2 blocks, max sequence 32. It is small enough to train both regimes to convergence inside ninety seconds on CPU. It is not pretrained in the lesson; instead, the `pretrain_quick` helper does five epochs of LM training on the same fixture's text to give the body a non-trivial starting point. This keeps the lesson self-contained.
+主体是刻意设计的微型 Transformer：词汇表 260、隐藏维度 64、4 个头、2 个块、最大序列 32。规模小到可以在 CPU 上九十秒内将两种方式都训练至收敛。本课不提供已预训练的主体；而是由 `pretrain_quick` 辅助函数在同一夹具文本上进行五轮语言模型训练，为主体提供非平凡起点，使课程保持独立完整。
 
-## What you will build
+## 你将构建什么（What you will build）
 
-The implementation is one `main.py` plus one test module (`code/tests/test_main.py`).
+实现由一个 `main.py` 和一个测试模块（`code/tests/test_main.py`）组成。
 
-1. `ByteTokenizer`: maps bytes to ids, reserves a pad id.
-2. `Block`: a transformer block with multi-head attention and a feed-forward layer. Pre-norm.
-3. `LMBody`: token + position embeddings plus a stack of blocks. Returns hidden states.
-4. `MeanPool`: mask-weighted average over the sequence axis.
-5. `Classifier`: body, pool, linear head. The body is the same instance across regimes.
-6. `freeze_body` and `unfreeze_body`: toggle `requires_grad` on body parameters.
-7. `train_classifier`: one shared loop. Accepts the model and an optimiser configured for whichever parameter group is trainable.
-8. `evaluate`: runs the test set and returns `Metrics(precision, recall, f1, confusion)`.
-9. `run_demo`: pretrains the body briefly, then trains and evaluates head-only, then full, prints both reports, and exits zero.
+1. `ByteTokenizer`：将字节映射到 ID，预留填充 ID。
+2. `Block`：包含多头注意力与前馈层的 Transformer 块，采用前置归一化（Pre-norm）。
+3. `LMBody`：词元与位置嵌入加块堆叠，返回隐藏状态。
+4. `MeanPool`：沿序列轴按掩码加权平均。
+5. `Classifier`：主体、池化、线性头。两种方式使用同一主体实例。
+6. `freeze_body` 和 `unfreeze_body`：切换主体参数的 `requires_grad`。
+7. `train_classifier`：共用循环，接收模型及针对当前可训练参数组配置的优化器。
+8. `evaluate`：运行测试集，返回 `Metrics(precision, recall, f1, confusion)`。
+9. `run_demo`：短暂预训练主体，然后训练并评估仅训练头方式，再进行全量微调，打印两份报告并以零退出。
 
-## Why the comparison matters
+## 为什么比较重要（Why the comparison matters）
 
-The head-only regime usually trains faster and underfits more gracefully. On this fixture you typically see precision near 0.9 and recall near 0.85 after twenty epochs of head-only training. Full fine-tuning takes about three times longer and lands within a couple of points either way, depending on the random seed.
+仅训练头通常更快，欠拟合（Underfitting）也更温和。在本夹具上，仅训练头二十轮后，通常能看到精确率接近 0.9、召回率接近 0.85。全量微调耗时约三倍，结果上下相差几个百分点，取决于随机种子。
 
-The lesson does not pick a winner. It teaches you to read the numbers and the cost. On 800 examples and a tiny body, head-only is the right call. On 80,000 examples and a bigger body, full fine-tuning starts to pay off. The contract you take from this lesson is the API: the same `train_classifier` function handles both, and the toggle is one call.
+本课不选胜者，而是教你读懂数值和成本。800 个样本加微型主体时，仅训练头是合适选择。80000 个样本加更大主体时，全量微调开始值得投入。你从本课带走的是 API 契约：同一个 `train_classifier` 处理两种方式，一次调用即可切换。
 
-## Stretch goals
+## 拓展目标（Stretch goals）
 
-- Add a third regime that unfreezes only the last block. This is sometimes called partial fine-tuning. It costs less than full FT and learns more than head-only.
-- Add a learning-rate scheduler. A cosine schedule on the head plus a smaller constant rate on the body is a common production setup.
-- Replace mean pooling with a learned attention pool: a small attention layer with one learned query. This often beats mean pool on longer sequences.
+- 添加只解冻最后一个块的第三种方式，有时称为部分微调（Partial fine-tuning）。它比全量微调成本低，比仅训练头学得更多。
+- 添加学习率调度器（Learning-rate scheduler）。模型头使用余弦调度、主体使用更小恒定学习率，是常见生产配置。
+- 用可学习注意力池化（Learned attention pool）替换均值池化：一个带单个可学习查询的小型注意力层。在较长序列上，它往往优于均值池化。
 
-The implementation gives you the hooks. The tests pin the contract. The numbers are yours to push.
+实现提供了扩展钩子，测试固定了契约，指标能提高到哪里由你探索。

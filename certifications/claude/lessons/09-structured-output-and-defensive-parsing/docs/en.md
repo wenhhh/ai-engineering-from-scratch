@@ -1,24 +1,24 @@
-# Structured Output Is an Untrusted Contract
+# 结构化输出是不可信契约（Structured Output Is an Untrusted Contract）
 
-> Valid JSON is not a valid business decision. Parse the bytes, validate the shape, verify the meaning, then permit the action.
+> 有效 JSON 不等于有效业务决策。先解析字节、验证结构、核实含义，再允许操作。
 
 **Type:** Build
 **Languages:** Python
-**Prerequisites:** [Validate the Claim, Not the Confidence](../../05-output-evaluation-and-validation/), [The Messages API Is a State Machine](../../08-messages-api-and-application-lifecycle/)
-**Time:** ~95 minutes
+**Prerequisites:** [验证主张，而不是相信自信语气（Validate the Claim, Not the Confidence）](../../05-output-evaluation-and-validation/), [Messages API 是状态机（The Messages API Is a State Machine）](../../08-messages-api-and-application-lifecycle/)
+**Time:** ~95 分钟
 
-## Learning Objectives
+## 学习目标（Learning Objectives）
 
-- Distinguish JSON syntax, schema validity, semantic validity, and authorization
-- Design narrow schemas that make invalid states difficult to express
-- Parse Claude output without unsafe cleanup or optimistic coercion
-- Repair invalid responses with bounded, evidence-rich retries
-- Evolve output contracts without silently breaking consumers
-- Test structured output at adversarial and streaming boundaries
+- 区分 JSON 语法、模式有效性、语义有效性和授权
+- 设计范围狭窄的模式，让无效状态难以表达
+- 不使用不安全清理或乐观类型转换来解析 Claude 输出
+- 使用有界且证据充分的重试修复无效响应
+- 演进输出契约，不静默破坏消费者
+- 在对抗与流式边界测试结构化输出
 
-## The JSON That Should Have Failed
+## 本应失败的 JSON（The JSON That Should Have Failed）
 
-Your support application requests a priority from 1 to 5. The response is:
+支持应用要求优先级为 1 至 5，响应却是：
 
 ```json
 {
@@ -29,42 +29,42 @@ Your support application requests a priority from 1 to 5. The response is:
 }
 ```
 
-The JSON parser succeeds. The object has every expected key. The application routes it as the highest emergency priority, skips human review, and pages an on-call engineer.
+JSON 解析成功，对象有全部预期键。应用将其作为最高紧急优先级路由，跳过人工审核，并呼叫值班工程师。
 
-The model did not violate JSON. Your application failed to enforce the contract.
+模型没有违反 JSON，是应用未落实契约。
 
-Structured output has four gates:
+结构化输出有四道门槛：
 
-1. **Syntax:** Is there exactly one parseable JSON value?
-2. **Shape:** Does the value match types, required fields, enums, bounds, and additional-property rules?
-3. **Semantics:** Do the fields agree with domain facts and each other?
-4. **Authority:** Is the requested downstream action permitted?
+1. **语法（Syntax）：** 是否恰好有一个可解析 JSON 值？
+2. **结构（Shape）：** 是否符合类型、必需字段、枚举、边界和额外属性规则？
+3. **语义（Semantics）：** 字段是否符合领域事实，彼此一致？
+4. **权限（Authority）：** 请求的下游操作是否获准？
 
-Passing an earlier gate never implies passing a later one.
+通过前一道门槛从不意味着通过后一道。
 
 ```mermaid
 flowchart LR
-    Raw[Raw model output] --> Parse[Strict JSON parse]
-    Parse --> Schema[Schema validation]
-    Schema --> Meaning[Semantic checks]
-    Meaning --> Policy[Authorization and policy]
-    Policy --> Consume[Typed application object]
-    Parse --> Repair[Bounded repair]
+    Raw[原始模型输出] --> Parse[严格 JSON 解析]
+    Parse --> Schema[模式验证]
+    Schema --> Meaning[语义检查]
+    Meaning --> Policy[授权与政策]
+    Policy --> Consume[类型化应用对象]
+    Parse --> Repair[有界修复]
     Schema --> Repair
-    Meaning --> Escalate[Human review or safe fallback]
-    Policy --> Deny[Deterministic denial]
+    Meaning --> Escalate[人工审核或安全回退]
+    Policy --> Deny[确定性拒绝]
     Repair --> Raw
 ```
 
-## Prompting for JSON Is Not a Contract
+## 要求 JSON 不等于契约（Prompting for JSON Is Not a Contract）
 
-"Return JSON only" is an instruction. It improves probability. It does not make invalid output impossible, protect against schema drift, or validate the business meaning.
+“只返回 JSON”是一条指令，只会提高概率，不会让无效输出不可能发生，也不会防止模式漂移或验证业务含义。
 
-When the current model and API support structured outputs, you can provide a JSON Schema and ask the platform to constrain generation. This reduces syntax and shape failures. It still does not prove that a cited order exists, that a refund is authorized, or that the category is correct.
+当前模型和 API 支持结构化输出时，可提供 JSON Schema 让平台约束生成，减少语法和结构失败。但这仍不证明引用订单存在、退款获授权或类别正确。
 
-Product note, verified 2026-08-09: structured-output availability, supported schema keywords, incompatibilities with other features, and model support can change. Check [Structured outputs](https://platform.claude.com/docs/en/build-with-claude/structured-outputs) before shipping. Keep application-side validation even when constrained decoding is enabled.
+产品说明，核实于 2026-08-09：结构化输出可用性、支持的模式关键字、与其他功能的不兼容情况和模型支持都会变化。交付前查阅[结构化输出](https://platform.claude.com/docs/en/build-with-claude/structured-outputs)。即使启用约束解码（Constrained decoding），也保留应用侧验证。
 
-The application owns the schema. Version it like an API.
+应用负责模式，应像 API 一样进行版本管理。
 
 ```json
 {
@@ -94,15 +94,15 @@ The application owns the schema. Version it like an API.
 }
 ```
 
-This schema earns its strictness. The consumer expects exactly four fields. An unexpected `debug_context` field could carry private text into logs. An integer bound prevents `9`. An enum prevents category spellings from fragmenting analytics.
+这个模式的严格性有价值。消费者只期待四个字段；意外的 `debug_context` 字段可能把私人文本带入日志，整数边界阻止 `9`，枚举防止类别拼写不一致割裂分析统计。
 
-## Design Schemas From Consumer Decisions
+## 从消费者决策设计模式（Design Schemas From Consumer Decisions）
 
-Do not begin with "What can Claude generate?" Begin with "What must the next deterministic component decide?"
+不要先问“Claude 能生成什么”，先问“下一个确定性组件必须决定什么”。
 
-If the consumer chooses a queue, give it an enum. If it sorts priority, give it a bounded integer. If uncertainty changes routing, represent uncertainty explicitly instead of hoping it appears in prose.
+消费者选队列，就给枚举；排序优先级，就给有界整数；不确定性改变路由，就明确表示，而不是期待它出现在文章里。
 
-Compare these contracts:
+比较以下契约：
 
 ```json
 {"answer": "Probably a billing issue. It seems urgent."}
@@ -118,56 +118,56 @@ Compare these contracts:
 }
 ```
 
-The second object makes routing and verification possible. It can still be wrong, but it is inspectable.
+第二个对象使路由和验证成为可能。它仍可能错，但可以检查。
 
-Use these design rules:
+使用以下设计规则：
 
-- Prefer enums over free-form labels.
-- Use required fields only when every valid response can supply them.
-- Use `null` deliberately for "known absence," not as a general escape hatch.
-- Reject additional properties unless consumers intentionally support extension.
-- Bound strings and arrays to control cost and storage.
-- Include evidence identifiers when facts must be traceable.
-- Encode actions as proposals, not proof of authorization.
-- Give schemas stable names and versions.
+- 优先枚举，而非自由文本标签。
+- 只有每个有效响应都能提供时，才将字段设为必需。
+- 有意识地用 `null` 表示“已知不存在”，不要当通用逃生口。
+- 消费者未明确支持扩展时，拒绝额外属性。
+- 限制字符串和数组以控制成本与存储。
+- 事实必须可追溯时，包含证据标识符。
+- 将操作编码为提议，而非授权证明。
+- 给模式稳定名称和版本。
 
-Avoid one giant schema that represents unrelated modes through dozens of optional fields. Use a tagged union or separate endpoint contracts. Invalid states multiply when every field is optional.
+避免用几十个可选字段的大模式表示互不相关的模式，应使用带标签联合（Tagged union）或独立端点契约。所有字段都可选时，无效状态会大量增加。
 
-## Parse Strictly
+## 严格解析（Parse Strictly）
 
-Optimistic cleanup hides failures. Consider this pattern:
+乐观清理会隐藏失败。考虑：
 
 ```python
 raw = raw.replace("```json", "").replace("```", "")
 payload = json.loads(raw)
 ```
 
-It appears friendly, but it changes the contract after generation. A response containing commentary, two JSON objects, or user-controlled fence text may be transformed into something the model never actually returned as a single value.
+看似友好，却在生成后改变契约。含评论、两个 JSON 对象或用户控制围栏文本的响应，可能被改造成模型从未以单一值返回过的内容。
 
-Prefer strict parsing:
+优先严格解析：
 
 ```python
 payload = json.loads(raw)
 validate_against_schema(payload)
 ```
 
-If the contract says one JSON object, reject markdown fences and trailing prose. Record the failure class. A repair attempt can then receive precise errors.
+契约要求一个 JSON 对象时，拒绝 Markdown 围栏和尾部文章，记录失败类别，使修复尝试获得精确错误。
 
-Do not silently coerce:
+不要静默转换：
 
-- `"4"` is not an integer.
-- `1` is not a boolean.
-- `"false"` is not false.
-- A comma-separated string is not an array.
-- A missing field is not equivalent to a safe default unless the schema declares that default and the application applies it deliberately.
+- `"4"` 不是整数。
+- `1` 不是布尔值。
+- `"false"` 不等于 false。
+- 逗号分隔字符串不是数组。
+- 缺失字段不等于安全默认值，除非模式声明默认值且应用有意识地应用。
 
-Python makes one case especially subtle: `bool` is a subclass of `int`. A naive `isinstance(True, int)` check accepts a boolean where an integer is required. The runnable validator rejects it explicitly.
+Python 有个微妙情况：`bool` 是 `int` 子类。简单的 `isinstance(True, int)` 会在要求整数的位置接受布尔值，可运行校验器明确拒绝它。
 
-## Validate Meaning After Shape
+## 结构之后验证含义（Validate Meaning After Shape）
 
-A schema can prove that `invoice_id` is a string. It cannot prove that the invoice exists or belongs to the authenticated user.
+模式能证明 `invoice_id` 是字符串，不能证明发票存在或属于认证用户。
 
-Semantic checks use trusted application data:
+语义检查使用可信应用数据：
 
 ```python
 if payload["invoice_id"] not in invoices_for(authenticated_user):
@@ -177,118 +177,106 @@ if payload["refund_amount"] > verified_charge_amount:
     raise SemanticError("refund exceeds verified charge")
 ```
 
-Cross-field rules matter too. `needs_human: false` may be invalid when `uncertainty: high`. A proposed `action: close_account` may require an approval token. A citation ID must resolve to a source that actually supports the claim.
+跨字段规则同样重要。`uncertainty: high` 时，`needs_human: false` 可能无效；提议 `action: close_account` 可能需要批准令牌；引用 ID 必须解析到真正支持主张的来源。
 
-The model may help produce a proposal. Deterministic code verifies identity, ownership, monetary bounds, permissions, and state transitions.
+模型可以帮助提出建议，由确定性代码核实身份、所有权、金额边界、权限和状态转换。
 
-## Repair With a Budget
+## 在预算内修复（Repair With a Budget）
 
-An invalid output does not always require failure. A syntax or schema error may be repairable if the task is low risk and the correction does not invent missing evidence.
+无效输出不总要直接失败。任务低风险且修正不虚构缺失证据时，语法或模式错误可能可修复。
 
-A repair loop should include:
+修复循环应包括：
 
-1. The original task and unchanged trusted context.
-2. The schema or a precise contract summary.
-3. Machine-generated validation errors with field paths.
-4. A strict maximum number of attempts.
-5. A terminal fallback or escalation.
+1. 原始任务和不变的可信上下文。
+2. 模式或精确契约摘要。
+3. 带字段路径的机器生成验证错误。
+4. 严格最大尝试次数。
+5. 最终回退或升级处理。
 
 ```text
-Repair the previous output.
-Return one JSON object and no surrounding text.
-Validation errors:
-- $.priority: expected integer from 1 through 5
-- $.needs_human: required field is missing
-Do not invent evidence that was not present in the source.
+修复上一次输出。
+返回一个 JSON 对象，不附周边文本。
+验证错误：
+- $.priority：应为 1 至 5 的整数
+- $.needs_human：缺少必需字段
+不得虚构来源中不存在的证据。
 ```
 
-Do not paste raw exception dumps, secrets, database records, or arbitrary untrusted strings into a higher-trust instruction area. Validation feedback is data. Delimit it and keep trusted repair instructions separate.
+不要把原始异常转储、秘密、数据库记录或任意不可信字符串粘贴进更高信任指令区。验证反馈是数据，应分隔并与可信修复指令分开。
 
-Two attempts often reveal whether the failure is stochastic formatting or a deeper contract mismatch. Infinite retries burn budget and can amplify a prompt-injection payload. Count attempts, tokens, latency, and repeated error fingerprints.
+两次尝试通常能揭示是随机格式错误，还是更深契约不匹配。无限重试消耗预算，还可能放大注入载荷。统计尝试次数、词元、延迟和重复错误指纹。
 
-If the source lacks required evidence, repairing the JSON is the wrong operation. Return an explicit incomplete state or escalate.
+来源缺乏必需证据时，修 JSON 是错误操作，应返回明确不完整状态或升级处理。
 
-## Tool Inputs and Final Outputs Are Different Contracts
+## 工具输入与最终输出是不同契约（Tool Inputs and Final Outputs Are Different Contracts）
 
-Claude tool use also supplies structured input, but it serves a different boundary.
+Claude 工具使用也提供结构化输入，但服务不同边界。
 
-- A tool input schema helps the model construct a call.
-- The tool handler still validates values and authorizes the caller.
-- A tool result is untrusted external data when it comes from a remote service.
-- The final application output has its own consumer-facing schema.
+- 工具输入模式帮助模型构造调用。
+- 工具处理器仍须验证值并授权调用者。
+- 来自远程服务的工具结果是不可信外部数据。
+- 最终应用输出有自己的消费者模式。
 
-Do not reuse a broad internal tool schema as a public response contract. Internal fields may expose implementation details or secrets. Map verified tool results into a minimal final object.
+不要将宽泛内部工具模式复用为公开响应契约。内部字段可能暴露实现细节或秘密，应将已验证工具结果映射为最小最终对象。
 
-Similarly, never execute an action because the final JSON contains `"approved": true`. Approval comes from authenticated application state, not model output.
+同样，不要因最终 JSON 包含 `"approved": true` 就执行操作。批准来自认证应用状态，而不是模型输出。
 
-When tool use is the structured-output mechanism, know the three public
-`tool_choice` decisions used by the CCAR-F guide:
+以工具使用作为结构化输出机制时，要掌握 CCAR-F 指南中的三种公开 `tool_choice` 决策：
 
-| Choice | Model behavior | Use when |
+| 选择（Choice） | 模型行为（Model behavior） | 适用条件（Use when） |
 |---|---|---|
-| `auto` | The model may call a tool or return conversational text | Either path is valid |
-| `any` | The model must call one of the supplied tools | A typed tool result is required but several schemas are valid |
-| `{"type":"tool","name":"extract_metadata"}` | The named tool must be selected | One known extraction must happen before later work |
+| `auto` | 可以调用工具或返回对话文本 | 两种路径都有效 |
+| `any` | 必须调用给定工具之一 | 必需类型化工具结果，但多个模式都有效 |
+| `{"type":"tool","name":"extract_metadata"}` | 必须选指定工具 | 后续工作前必须完成某项已知提取 |
 
-For a final machine-readable response, prefer the current native structured
-output surface when it supports the required schema and feature combination.
-Use a tool schema when the workflow is genuinely selecting or invoking a tool.
-In both cases, semantic checks and authorization remain application work.
+最终机器可读响应，应优先选择支持所需模式和功能组合的当前原生结构化输出功能。工作流真正选择或调用工具时，才使用工具模式。两种情况下，语义检查与授权都仍是应用责任。
 
-## Pydantic Is a Validator Implementation, Not the Contract
+## Pydantic 是校验器实现，不是契约（Pydantic Is a Validator Implementation, Not the Contract）
 
-The public CCAR-F guide names Pydantic alongside JSON Schema validation and
-validation-retry loops. In Python, a Pydantic model can generate a schema,
-coerce or reject input according to its configuration, and express cross-field
-validation. It does not make model claims true or grant downstream authority.
+公开 CCAR-F 指南将 Pydantic 与 JSON Schema 验证及验证重试循环并列。在 Python 中，Pydantic 模型能生成模式、按配置转换或拒绝输入，并表达跨字段验证，但不能让模型主张成真，也不赋予下游权限。
 
-This repository stays stdlib-first, so the runnable lab implements the relevant
-checks directly. If your production application already uses Pydantic, map the
-same four gates explicitly:
+本仓库优先标准库，因此实验直接实现相关检查。生产应用已用 Pydantic 时，明确映射相同四道门槛：
 
 ```text
-JSON parse -> Pydantic shape validation -> domain validation -> authorization
+JSON 解析 -> Pydantic 结构验证 -> 领域验证 -> 授权
 ```
 
-Inspect coercion behavior. A validator that silently turns `"4"` into `4` may
-be appropriate at one external boundary and unacceptable at another. Feed
-bounded, field-level validation errors into repair, and escalate when the source
-lacks the required evidence.
+检查类型转换行为。静默把 `"4"` 转成 `4`，在某个外部边界可能合适，在另一个则不可接受。将有界、字段级错误送入修复；来源缺少必需证据时升级处理。
 
-## Streaming Produces Partial Syntax
+## 流式传输产生部分语法（Streaming Produces Partial Syntax）
 
-JSON received through a stream is incomplete until the relevant content block ends. The prefix `{"category":"bill` is not invalid yet. It is unfinished.
+通过流接收的 JSON 在相关内容块结束前都不完整。前缀 `{"category":"bill` 尚不能说无效，只是未完成。
 
-Buffer the structured block. Do not repeatedly parse every character unless you use a parser designed for incremental JSON and understand its partial-state semantics. Do not trigger downstream actions when one required field happens to appear early.
+缓存结构化块。除非使用专为增量 JSON 设计且理解其部分状态语义的解析器，不要每来一个字符就解析。某个必需字段恰好先出现，也不应触发下游操作。
 
-When the block completes:
+块完成时：
 
-1. Confirm the stream reached a valid terminal event.
-2. Parse exactly once.
-3. Validate the schema.
-4. Validate semantics and policy.
-5. Commit the downstream state transition atomically.
+1. 确认流到达有效终止事件。
+2. 恰好解析一次。
+3. 验证模式。
+4. 验证语义与政策。
+5. 原子提交下游状态转换。
 
-If the stream disconnects, discard or quarantine the partial object. A UI may show provisional text, but the application contract is not complete.
+流断开时丢弃或隔离部分对象。界面可以显示临时文本，但应用契约尚未完成。
 
-## Schema Evolution Is an API Migration
+## 模式演进就是 API 迁移（Schema Evolution Is an API Migration）
 
-Suppose version 1 returns `priority` as an integer. Version 2 replaces it with `severity: "low" | "medium" | "high"`. Deploying the prompt first breaks old consumers. Deploying the consumer first may reject old output.
+假设版本 1 返回整数 `priority`，版本 2 改为 `severity: "low" | "medium" | "high"`。先部署提示词会破坏旧消费者，先部署消费者可能拒绝旧输出。
 
-Use one of these strategies:
+使用以下策略之一：
 
-- Add a contract version field and support both during migration.
-- Deploy a tolerant reader for a narrowly planned compatibility window.
-- Run parallel generation and compare results before switching.
-- Translate new output into the old internal type at an adapter boundary.
+- 增加契约版本字段，迁移期同时支持两者。
+- 在狭窄、事先规划的兼容窗口部署宽容读取器。
+- 切换前并行生成并比较结果。
+- 在适配器边界将新输出转换为旧内部类型。
 
-Never change a schema silently. Record schema version, prompt version, model version, and validator version in traces. Regression evals must cover old and new examples, edge values, omitted fields, unexpected fields, hostile strings, and large inputs.
+不要静默修改模式。在追踪中记录模式、提示词、模型和校验器版本。回归评估应覆盖新旧示例、边界值、遗漏字段、意外字段、恶意字符串和大输入。
 
-## Build the Validator and Repair Loop
+## 构建校验器与修复循环（Build the Validator and Repair Loop）
 
-`code/main.py` implements a useful subset of JSON Schema with no external dependency. It validates objects, required fields, additional properties, primitive types, enums, numeric bounds, string bounds, arrays, and nested paths. It then wraps the validator in a bounded extractor.
+`code/main.py` 无外部依赖实现实用的 JSON Schema 子集，验证对象、必需字段、额外属性、基本类型、枚举、数值边界、字符串边界、数组和嵌套路径，再将校验器包装为有界提取器。
 
-Run it:
+运行：
 
 ```bash
 cd certifications/claude/lessons/09-structured-output-and-defensive-parsing/code
@@ -296,27 +284,27 @@ python3 main.py
 python3 -m unittest discover tests -v
 ```
 
-The first scripted response uses `"high"` where an integer is required. The second repairs the field. Tests prove that markdown fences, missing fields, Boolean-as-integer values, unexpected fields, and exhausted retries fail explicitly.
+首个脚本响应在需要整数的位置使用 `"high"`，第二个修复字段。测试证明 Markdown 围栏、缺失字段、布尔冒充整数、意外字段和重试耗尽都明确失败。
 
-In production, prefer a mature validator supported by your application stack. The point of the handwritten subset is to expose the checks a library performs, not to replace a complete JSON Schema implementation.
+生产中优先使用应用技术栈支持的成熟校验器。手写子集是为了揭示库执行的检查，不是替代完整 JSON Schema 实现。
 
-## Interactive Lab
+## 交互实验（Interactive Lab）
 
-Use the recovery figure to send candidate outputs through syntax, schema, semantic, and authorization gates. Spend the repair budget on a structural error, then compare that result with a missing-evidence failure that must escalate.
+使用恢复图，让候选输出经过语法、模式、语义和授权门槛。将修复预算用于结构错误，再与必须升级的证据缺失失败比较。
 
 ```figure
 09-structured-output-recovery
 ```
 
-## Practice Lab
+## 实践实验（Practice Lab）
 
-Run the bounded extractor, then submit fenced JSON, a Boolean integer, an unexpected field, and two invalid attempts. Identify whether syntax, shape, meaning, or authorization owns each failure.
+运行有界提取器，提交带围栏 JSON、布尔整数、意外字段和两次无效尝试。指出每次故障属于语法、结构、含义还是授权。
 
-## Shipped Artifact
+## 交付物（Shipped Artifact）
 
-`outputs/validated-triage.json` is the filled contract produced by the provider-free repair demo. Run `python3 main.py` to reproduce it, then run the unit suite. A test compares the checked-in artifact with `demo()` and the remaining tests cover fences, missing fields, Boolean integers, additional properties, bounded repair, and exhausted retries.
+`outputs/validated-triage.json` 是无需提供商的修复演示产出的完整契约。运行 `python3 main.py` 复现，再运行单元测试。一项测试将签入交付物与 `demo()` 比较，其余覆盖围栏、缺失字段、布尔整数、额外属性、有界修复和重试耗尽。
 
-## Verify It
+## 验证结果（Verify It）
 
 ```bash
 cd certifications/claude/lessons/09-structured-output-and-defensive-parsing/code
@@ -324,35 +312,35 @@ python3 main.py
 python3 -m unittest discover tests -v
 ```
 
-## Capstone Connection
+## 与综合实践的联系（Capstone Connection）
 
-The quiz checks which gate owns each failure. Use the validated object and repair evidence in Developer capstone 30 and Architect capstones 31 and 32.
+测验检查各故障由哪道门槛负责。在 Developer 第 30 课和 Architect 第 31、32 课综合实践中使用已验证对象与修复证据。
 
-## Exam Decision Rules
+## 考试决策规则（Exam Decision Rules）
 
-- If output parses but violates a range or enum, choose schema validation, not prompt cleanup.
-- If output matches the schema but conflicts with trusted records, choose semantic verification.
-- If the object proposes a privileged action, authorize from application identity and policy.
-- If formatting fails transiently, use a bounded repair with exact validation feedback.
-- If evidence is missing, escalate or return an explicit incomplete state instead of repairing facts.
-- If streaming is incomplete, do not parse or act as though the contract finished.
-- If a schema changes, version and migrate it like any public API.
-- If constrained generation is available, use it to reduce errors but keep downstream validation.
+- 可解析但违反范围或枚举时，选择模式验证，不是提示词清理。
+- 符合模式但与可信记录冲突时，选择语义验证。
+- 对象提议特权操作时，依据应用身份和政策授权。
+- 格式偶发失败时，用精确反馈进行有界修复。
+- 证据缺失时升级或返回明确不完整状态，不修造事实。
+- 流不完整时，不要当契约已完成来解析或行动。
+- 模式变化时，像公开 API 一样版本化并迁移。
+- 有约束生成时，用它减少错误，但保留下游验证。
 
-## Exercises
+## 练习（Exercises）
 
-1. Add `evidence_ids` as an array of bounded strings. Write tests for a valid list, an integer item, and a list that exceeds your chosen limit.
-2. Add the cross-field rule that `uncertainty: high` requires `needs_human: true`.
-3. Create a semantic validator that confirms an invoice belongs to the authenticated user without exposing the complete invoice record to the model.
-4. Add a `contract_version` field and implement a version 1 to version 2 adapter.
-5. Feed the validator ten adversarial strings: fences, duplicate objects, unexpected fields, escaped control text, huge summaries, Boolean integers, and nested prompt-injection language.
-6. Recreate the triage contract as a Pydantic model in a separate production sandbox. Compare strict and coercing behavior without adding Pydantic as a dependency to this lesson.
+1. 添加有界字符串数组 `evidence_ids`，测试有效列表、整数元素和超出所选上限的列表。
+2. 添加跨字段规则：`uncertainty: high` 要求 `needs_human: true`。
+3. 创建语义校验器，确认发票属于认证用户，不向模型暴露完整发票记录。
+4. 添加 `contract_version`，实现版本 1 到版本 2 适配器。
+5. 给校验器十个对抗字符串：围栏、重复对象、意外字段、转义控制文本、巨大摘要、布尔整数和嵌套注入语言。
+6. 在单独生产沙箱中用 Pydantic 重建分流契约，比较严格与转换行为，不将 Pydantic 加为本课依赖。
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [Structured outputs](https://platform.claude.com/docs/en/build-with-claude/structured-outputs)
-- [Messages API reference](https://platform.claude.com/docs/en/api/messages)
-- [Tool use overview](https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview)
-- [Increase output consistency](https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/increase-consistency)
-- [JSON Schema specification](https://json-schema.org/specification)
-- [Claude Certified Architect Foundations exam guide](https://everpath-course-content.s3-accelerate.amazonaws.com/instructor%2F6nizmqk8tpzpfjvt6qmmav7rh%2Fpublic%2F1783542750%2FClaude+Certified+Architect+%E2%80%93+Foundations+Exam+Guide.pdf)
+- [结构化输出](https://platform.claude.com/docs/en/build-with-claude/structured-outputs)
+- [Messages API 参考](https://platform.claude.com/docs/en/api/messages)
+- [工具使用概览](https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview)
+- [提高输出一致性](https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/increase-consistency)
+- [JSON Schema 规范](https://json-schema.org/specification)
+- [Claude Certified Architect Foundations 考试指南](https://everpath-course-content.s3-accelerate.amazonaws.com/instructor%2F6nizmqk8tpzpfjvt6qmmav7rh%2Fpublic%2F1783542750%2FClaude+Certified+Architect+%E2%80%93+Foundations+Exam+Guide.pdf)

@@ -63,7 +63,7 @@ class OpenVocabSeg(ABC):
 
 
 class StubOpenVocabSeg(OpenVocabSeg):
-    """Pipeline-testable stand-in for SAM 3 / Grounded SAM 2."""
+    """可用于流水线测试（Pipeline testing）的 SAM 3 / Grounded SAM 2 替身（Stand-in）。"""
 
     def detect(self, image, concept):
         h, w = image.shape[:2]
@@ -98,7 +98,7 @@ def run_multi_concept(model: OpenVocabSeg, image: np.ndarray, user_utterance: st
 
 
 def main():
-    print("[split_concepts]")
+    print("[概念拆分（split_concepts）：保留英文输入，演示连接词和分隔符拆分]")
     for s in [
         "cats, dogs and balloons",
         "yellow school bus",
@@ -107,18 +107,18 @@ def main():
     ]:
         print(f"  {s!r:45s} -> {split_concepts(s)}")
 
-    print("\n[rle encode/decode roundtrip]")
+    print("\n[游程编码（RLE）编码/解码往返验证（Roundtrip）]")
     mask = (np.random.default_rng(0).random((16, 16)) > 0.5).astype(np.uint8)
     rle = rle_encode(mask)
     restored = rle_decode(rle, mask.shape)
     diff = int(np.abs(mask.astype(int) - restored.astype(int)).sum())
-    print(f"  mask shape {mask.shape}  rle length {len(rle)}  roundtrip diff {diff}")
+    print(f"  掩码形状（Mask shape） {mask.shape}  RLE 长度 {len(rle)}  往返差异 {diff}")
 
-    print("\n[multi-concept detection on stub]")
+    print("\n[替身（Stub）上的多概念检测（Multi-concept detection），保留英文概念和 JSON 键]")
     image = np.zeros((240, 320, 3), dtype=np.uint8)
     stub = StubOpenVocabSeg()
     detections = run_multi_concept(stub, image, "oranges, apples")
-    print(f"  {len(detections)} detections")
+    print(f"  {len(detections)} 个检测结果（Detections）")
     for d in detections:
         summary = {
             "concept": d.concept,

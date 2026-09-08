@@ -61,7 +61,7 @@ def toy_retrieve(question, top_k=2):
 
 
 def main():
-    print("=== extractive metrics ===")
+    print("=== 抽取式问答指标（Extractive metrics，保留英文日期样例） ===")
     cases = [
         ("June 29, 2007", "June 29, 2007"),
         ("June 29th, 2007", "June 29, 2007"),
@@ -72,18 +72,18 @@ def main():
     for pred, gold in cases:
         em = exact_match(pred, gold)
         f1 = token_f1(pred, gold)
-        print(f"  pred={pred!r:20s} gold={gold!r:20s} EM={em:.0f}  F1={f1:.2f}")
+        print(f"  预测（Pred）={pred!r:20s} 标准答案（Gold）={gold!r:20s} EM={em:.0f}  F1={f1:.2f}")
     print()
-    print("note: EM punishes paraphrase. F1 is partial credit. neither captures semantics.")
+    print("注意：精确匹配（EM）会惩罚释义表达（Paraphrase）。F1 给予部分得分。两者都无法衡量语义。")
     print()
 
-    print("=== toy retrieval ===")
+    print("=== 小型检索（Toy retrieval，保留英文查询与语料） ===")
     q = "When was the first iPhone released?"
     results = toy_retrieve(q)
     top_score = results[0][0]
     refuse = refusal_from_score(top_score)
-    print(f"  query: {q}")
-    print(f"  top score: {top_score:.3f}  refuse: {refuse}")
+    print(f"  查询（Query）: {q}")
+    print(f"  最高得分（Top score）: {top_score:.3f}  是否拒答（Refuse）: {refuse}")
     for s, d in results:
         print(f"    {s:.3f}  {d}")
 

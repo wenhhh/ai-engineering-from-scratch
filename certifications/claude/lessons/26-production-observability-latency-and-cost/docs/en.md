@@ -1,223 +1,181 @@
-# Production Observability, Latency, and Cost
+# 生产可观测性、延迟与成本（Production Observability, Latency, and Cost）
 
-> A green API call can still be a failed task.
+> API 调用显示成功，任务仍可能失败。
 
 **Type:** Build
 **Languages:** Python
-**Prerequisites:** [RAG, Retrieval, and Data Pipelines](../../24-rag-retrieval-and-data-pipelines/); Phase 11, Lesson 10; Phase 17, Lessons 08, 13, and 27
-**Time:** ~150 minutes
+**Prerequisites:** [RAG、检索与数据流水线（RAG, Retrieval, and Data Pipelines）](../../24-rag-retrieval-and-data-pipelines/); 阶段 11，第 10 课；阶段 17，第 08、13 和 27 课
+**Time:** ~150 分钟
 
-## Learning Objectives
+## 学习目标（Learning Objectives）
 
-- Separate system reliability from task quality and business outcome
-- Design logs, metrics, and traces for Claude requests and agent trajectories
-- Diagnose latency across model, retrieval, tools, queues, and retries
-- Measure total cost and cost per successful outcome
-- Define alerts and rollout gates from service objectives
+- 区分系统可靠性、任务质量和业务结果
+- 为 Claude 请求和智能体轨迹设计日志、指标与追踪
+- 跨模型、检索、工具、队列和重试诊断延迟
+- 测量总成本与每个成功结果的成本
+- 根据服务目标定义告警和上线门禁
 
-## The Problem
+## 问题（The Problem）
 
-A production dashboard reports 99.9 percent successful API calls. Customers are
-still complaining.
+生产仪表盘报告 API 调用成功率为 99.9%，客户却仍在抱怨。
 
-The model returns HTTP 200, but some answers use stale sources. A tool times out
-and the agent silently continues. Long prompts miss the cache because a timestamp
-was placed near the beginning. P95 latency has doubled while the average looks
-acceptable. A cheaper model lowered call price but increased retries and human
-review.
+模型返回 HTTP 200，但部分答案使用过时来源。工具超时后，智能体静默继续。长提示词因开头附近放了时间戳而无法命中缓存。P95 延迟翻倍，平均值却仍可接受。更便宜的模型降低调用单价，却增加重试和人工评审。
 
-The dashboard measures transport success. The product depends on task success.
-Observability must connect the two.
+仪表盘测量传输成功，产品依赖任务成功。可观测性必须把二者联系起来。
 
-## The Concept
+## 概念（The Concept）
 
-### Observe Four Layers
+### 观察四个层次（Observe Four Layers）
 
 ```mermaid
 flowchart TD
-    B["Business outcome\nresolution, adoption, saved time"]
-    Q["Task quality\nfactuality, completeness, safety"]
-    T["Trajectory\nretrieval, tools, retries, approvals"]
-    S["System\nlatency, errors, saturation, cost"]
+    B["业务结果\n解决率、采用率、节省时间"]
+    Q["任务质量\n事实性、完整性、安全"]
+    T["轨迹\n检索、工具、重试、审批"]
+    S["系统\n延迟、错误、饱和度、成本"]
     S --> T --> Q --> B
 ```
 
-System signals tell you whether components ran. Trajectory signals tell you what
-the application did. Quality signals tell you whether the result met the task.
-Business signals tell you whether the workflow created value.
+系统信号告诉你组件是否运行；轨迹信号告诉你应用做了什么；质量信号告诉你结果是否满足任务；业务信号告诉你工作流是否创造价值。
 
-Do not collapse them into one "success" field.
+不要把它们压成一个“成功”字段。
 
-### Logs, Metrics, and Traces Have Different Jobs
+### 日志、指标和追踪职责不同（Logs, Metrics, and Traces Have Different Jobs）
 
-Logs record discrete events: request accepted, retrieval returned no candidates,
-tool rejected authorization, output failed schema validation, reviewer escalated.
-Use structured fields so operators can group and filter them.
+日志（Log）记录离散事件：请求被接受、检索无候选、工具拒绝授权、输出未通过模式验证、评审者升级处理。使用结构化字段，让运维人员分组和过滤。
 
-Metrics aggregate behavior over time: request rate, error rate, P95 latency,
-token use, cache hits, retrieval recall, task pass rate, and cost per success.
-They drive dashboards and alerts.
+指标（Metric）聚合一段时间的行为：请求率、错误率、P95 延迟、词元用量、缓存命中、检索召回率、任务通过率和每次成功成本。它们驱动仪表盘与告警。
 
-Traces connect the full trajectory. One trace should show model calls, retrieval,
-tool execution, validation, retries, and human approval with parent-child timing.
-Without the trace, a slow request looks like one opaque block.
+追踪（Trace）连接完整轨迹。一条追踪应以父子时间关系展示模型调用、检索、工具执行、验证、重试和人工审批。没有追踪，慢请求就像一个不透明的大块。
 
-### Trace the Semantic Contract
+### 追踪语义契约（Trace the Semantic Contract）
 
-Capture enough information to reproduce and classify the outcome:
+收集足以复现和分类结果的信息：
 
-- trace, request, session, and user-safe identifiers
-- application, prompt, model, tool, knowledge, and eval versions
-- input class and risk tier
-- token counts and cache reads or writes
-- stop reasons and tool names
-- tool duration and structured error category
-- validation and policy decisions
-- evaluator results and human edits
-- final state and downstream outcome
+- 追踪、请求、会话及可安全使用的用户标识
+- 应用、提示词、模型、工具、知识和评估版本
+- 输入类别和风险等级
+- 词元数及缓存读写
+- 停止原因和工具名称
+- 工具时长和结构化错误类别
+- 验证与政策决策
+- 评估结果和人工编辑
+- 最终状态与下游结果
 
-Do not log secrets, raw credentials, or unnecessary personal data. For sensitive
-inputs, store hashes, classes, counts, or access-controlled references instead
-of plaintext.
+不要记录密钥、原始凭据或不必要的个人数据。敏感输入应存哈希、类别、计数或受访问控制的引用，而不是明文。
 
-### Separate System Success From Task Success
+### 区分系统成功与任务成功（Separate System Success From Task Success）
 
-System success asks whether the request completed according to protocol. Task
-success asks whether the output met the defined rubric. A valid JSON response can
-be factually wrong. An agent can end normally without completing the requested
-state change.
+系统成功问请求是否按协议完成；任务成功问输出是否满足评分标准。有效 JSON 可能事实错误，智能体也可能正常结束却未完成请求的状态变化。
 
-For agent systems, evaluate both:
+智能体系统应同时评估：
 
-- final state: did the intended artifact or system state exist?
-- trajectory: were tools, permissions, evidence, and budgets used correctly?
+- 最终状态：目标交付物或系统状态是否存在？
+- 轨迹：工具、权限、证据和预算是否正确使用？
 
-Text matching alone misses both.
+单纯文本匹配会漏掉两者。
 
-### Decompose Latency
+### 分解延迟（Decompose Latency）
 
-End-to-end latency includes:
+端到端延迟包含排队、上下文组装、模型、检索、工具、校验、重试和审批各环节的时间：
 
 ```text
 queue + context assembly + model + retrieval + tools + validation + retries + approval
 ```
 
-Track P50 and P95 at every major span. P50 describes the ordinary path. P95
-exposes slow tools, long contexts, rate limits, and retries.
+在每个主要跨度（Span）跟踪 P50 和 P95。P50 描述普通路径，P95 暴露慢工具、长上下文、限流和重试。
 
-For streaming experiences, include time to first useful output. Time to first
-token can look good while the user waits for citations, tool results, or a final
-validated answer.
+流式体验要包含首次有用输出时间。首词元时间看起来很好，用户却可能仍在等引用、工具结果或最终验证答案。
 
-For background and batch systems, measure deadline completion and throughput.
-A 30-second batch item can be acceptable if the entire job finishes within its
-business window.
+后台和批处理系统测量按期完成与吞吐量。若整个作业在业务窗口内结束，单个批项目耗时 30 秒也可接受。
 
-### Optimize From Evidence
+### 根据证据优化（Optimize From Evidence）
 
-Common latency interventions:
+常见延迟改进措施：
 
-- route simple work to a faster suitable model
-- reduce irrelevant context
-- place stable prompt prefixes for caching
-- retrieve fewer, better candidates
-- run independent tool calls concurrently
-- move non-interactive workloads to batch
-- enforce time, turn, and retry budgets
-- cache deterministic tool results where freshness permits
+- 将简单工作路由给更快且合适的模型
+- 减少无关上下文
+- 设置稳定提示词前缀以利用缓存
+- 检索更少、更好的候选
+- 并发运行独立工具调用
+- 将非交互负载移到批处理
+- 强制时间、轮次和重试预算
+- 时效允许时缓存确定性工具结果
 
-Each can change quality or safety. Measure the tradeoff on a representative
-evaluation set.
+每项都可能改变质量或安全，应在代表性评估集上测量取舍。
 
-### Measure Cost Per Successful Outcome
+### 测量每个成功结果的成本（Measure Cost Per Successful Outcome）
 
-Token price is one component.
+词元价格只是一个组成部分。总成本还包括缓存写入与读取、工具、基础设施、审查和修正；每次成功的成本，是总成本除以验收通过的任务成果数量。
 
 ```text
 total cost = model + cache writes and reads + tools + infrastructure + review + correction
 cost per success = total cost / accepted task outcomes
 ```
 
-Failed requests still cost money. So do safe rejections, retries, reviewer time,
-and incident correction. Report input, output, cache, and tool costs separately
-so the team can act on them.
+失败请求仍花钱，安全拒绝、重试、评审时间和事故修正也一样。分别报告输入、输出、缓存和工具成本，让团队能够采取行动。
 
-Cost per successful outcome is the comparison that matters when selecting a
-model or architecture variant.
+选择模型或架构变体时，真正重要的比较是每个成功结果的成本。
 
-### Understand Prompt Cache Shape
+### 理解提示词缓存结构（Understand Prompt Cache Shape）
 
-Prompt caching reuses a stable prefix. Changes near the front can invalidate
-everything after them. Place stable tool definitions, system instructions, and
-large reference material before dynamic user content when current documentation
-supports that cache layout.
+提示词缓存复用稳定前缀。靠前的变化可能使后面全部缓存失效。当前文档支持该布局时，将稳定工具定义、系统指令和大型参考材料放在动态用户内容之前。
 
-Track cache-read and cache-write tokens. A cache feature flag without a hit-rate
-metric is not an optimization.
+跟踪缓存读取与写入词元。只有缓存功能开关，没有命中率指标，不算优化。
 
-Tool definitions, model settings, thinking configuration, and other request
-changes can affect cache behavior. Verify against current official documentation
-because details evolve.
+工具定义、模型设置、思考配置和其他请求变化可能影响缓存行为。细节会演变，应对照当前官方文档核实。
 
-### Build Actionable Alerts
+### 构建可采取行动的告警（Build Actionable Alerts）
 
-Alert on user and operator decisions, not every metric movement.
+围绕用户和运维决策告警，而不是每次数值波动都告警。
 
-Good alerts include:
+好的告警包括：
 
-- task pass rate below SLO for a meaningful window
-- safety control failure or unauthorized action attempt
-- P95 latency exceeding user tolerance
-- retrieval freshness lag
-- tool error-category spike
-- cache hit collapse after a deployment
-- cost per success above budget
-- evaluator disagreement or label drift
+- 在有意义的窗口内任务通过率低于 SLO
+- 安全控制失败或未授权操作尝试
+- P95 延迟超出用户容忍度
+- 检索时效滞后
+- 工具某类错误激增
+- 部署后缓存命中骤降
+- 每次成功成本超预算
+- 评估者分歧或标签漂移
 
-Every alert needs an owner, runbook, evidence link, and escalation path. If nobody
-knows what action follows, it is dashboard decoration.
+每项告警都需要负责人、操作手册（Runbook）、证据链接和升级路径。若没人知道下一步做什么，它只是仪表盘装饰。
 
-### Use Rollouts to Limit Evidence Risk
+### 通过分阶段上线限制证据风险（Use Rollouts to Limit Evidence Risk）
 
-Offline evaluation is necessary, not sufficient. Production traffic contains new
-queries, data, load, and integrations.
+离线评估必要但不充分。生产流量包含新的查询、数据、负载和集成。
 
-Use:
+采用：
 
-1. shadow evaluation with no user impact
-2. small canary by tenant or traffic percentage
-3. guarded expansion with automatic rollback
-4. full rollout after quality, latency, cost, and safety gates pass
+1. 不影响用户的影子评估
+2. 按租户或流量比例进行小规模金丝雀发布
+3. 带自动回滚的受控扩量
+4. 质量、延迟、成本和安全门禁通过后全量上线
 
-Compare against a stable baseline and stratify by task class. An aggregate gain
-can hide a serious regression for a high-risk segment.
+对比稳定基线，按任务类别分层。总体提升可能掩盖高风险分群的严重回归。
 
-## Build It
+## 动手实现（Build It）
 
-## Interactive Lab
+## 交互实验（Interactive Lab）
 
 ```figure
 26-latency-cost-slo
 ```
 
-Use the SLO explorer to change task success, cache rate, retry cost, P50, and
-P95 independently. It exposes variants where cheaper calls or healthy transport
-still fail the user, quality, or cost-per-success gate.
+使用 SLO 探索器，独立改变任务成功率、缓存率、重试成本、P50 和 P95。它会揭示调用更便宜或传输健康，却仍未通过用户、质量或每次成功成本门禁的变体。
 
-## Practice Lab
+## 实践实验（Practice Lab）
 
-Add a cheap failed trace and observe cost per success increase even though unit
-price falls. Then identify the first gate that should block rollout.
+加入一条便宜的失败追踪，观察单价下降而每次成功成本上升。然后找出应首先阻止上线的门禁。
 
-## Shipped Artifact
+## 交付物（Shipped Artifact）
 
-[`outputs/release-scorecard.json`](../outputs/release-scorecard.json) is a filled
-baseline and candidate comparison with independent quality, latency, cache, and
-economic gates.
+[`outputs/release-scorecard.json`](../outputs/release-scorecard.json) 是填写完成的基线与候选比较，包含独立的质量、延迟、缓存和经济性门禁。
 
-## Verify It
+## 验证（Verify It）
 
-Reproduce and test the aggregation:
+复现并测试聚合：
 
 ```bash
 cd certifications/claude/lessons/26-production-observability-latency-and-cost/code
@@ -225,14 +183,13 @@ python3 main.py
 python3 -m unittest discover tests -v
 ```
 
-The quiz checks diagnosis and rollout decisions.
+测验检查诊断与上线决策。
 
-## Capstone Connection
+## 综合实践衔接（Capstone Connection）
 
-Carry the scorecard into the Architect Professional capstone's evaluation,
-observability, and canary gates.
+将评分卡带入专业架构师（Architect Professional）综合实践的评估、可观测性和金丝雀门禁。
 
-The lab aggregates synthetic trace records using only Python.
+实验只用 Python 聚合合成追踪记录。
 
 ```bash
 cd certifications/claude/lessons/26-production-observability-latency-and-cost/code
@@ -240,115 +197,96 @@ python3 main.py
 python3 -m unittest discover tests -v
 ```
 
-### Step 1: Represent One Task Trajectory
+### 步骤 1：表示一条任务轨迹（Step 1: Represent One Task Trajectory）
 
-`Trace` stores a compact end-to-end record: variant, latency, token counts,
-cost, system result, task result, cache state, and error category. A production
-trace would contain child spans and access-controlled references rather than one
-flat object.
+`Trace` 存储精简的端到端记录：变体、延迟、词元数、成本、系统结果、任务结果、缓存状态和错误类别。生产追踪应包含子跨度与受访问控制的引用，而非一个扁平对象。
 
-### Step 2: Aggregate Without Hiding Failure
+### 步骤 2：聚合但不隐藏失败（Step 2: Aggregate Without Hiding Failure）
 
-`summarize` reports system and task success separately. It calculates nearest-rank
-P50 and P95, cache-read rate, error categories, total cost, and cost per task
-success. Failed attempts remain in the cost numerator.
+`summarize` 分开报告系统和任务成功，计算最近秩法 P50 和 P95、缓存读取率、错误类别、总成本和每次任务成功成本。失败尝试仍留在成本分子中。
 
-### Step 3: Compare Variants
+### 步骤 3：比较变体（Step 3: Compare Variants）
 
-`by_variant` prevents a cached or routed design from being averaged into the
-baseline. Compare quality, latency, and cost together.
+`by_variant` 防止缓存或路由设计被平均进基线。一起比较质量、延迟和成本。
 
-### Step 4: Evaluate Service Objectives
+### 步骤 4：评估服务目标（Step 4: Evaluate Service Objectives）
 
-`evaluate_objectives` applies minimum task success and maximum latency and cost
-thresholds. A variant must pass every required gate. Do not average a safety or
-quality failure away with lower cost.
+`evaluate_objectives` 应用最低任务成功率、最高延迟和成本阈值。变体必须通过每个必需门禁。不要用低成本平均掉安全或质量失败。
 
-## Use It
+## 实际应用（Use It）
 
-Start with one production question: "Why did task success drop after release?"
+从一个生产问题开始：“为什么发布后任务成功率下降？”
 
-Filter traces by application and release version. Stratify by input class. Check
-system errors, then retrieval and tool spans, then validator and evaluator
-results. Compare prompt, model, knowledge, and tool versions. Identify the
-earliest divergence from the baseline trajectory.
+按应用和发布版本过滤追踪，按输入类别分层。先查系统错误，再查检索与工具跨度，然后查校验器与评估结果。比较提示词、模型、知识和工具版本，找出相对基线轨迹最早发生分歧的位置。
 
-If P95 latency rises while P50 stays stable, inspect slow-path behavior: retries,
-rate limits, large inputs, tool timeouts, and approval waits. If cost rises with
-stable token price, inspect call count, context length, cache hits, and review.
+P95 上升而 P50 稳定时，检查慢路径：重试、限流、大输入、工具超时和审批等待。词元价格稳定而成本上升时，检查调用次数、上下文长度、缓存命中和评审。
 
-Keep a release scorecard:
+保留发布评分卡：
 
-| Gate | Baseline | Candidate | Required |
+| 门禁 | 基线 | 候选 | 要求 |
 |------|----------|-----------|----------|
-| Task pass rate | | | no regression in high-risk strata |
-| Safety pass rate | | | 100 percent on hard controls |
-| P95 latency | | | within SLO |
-| Cost per success | | | within budget |
-| Retrieval recall | | | within tolerance |
-| Human review minutes | | | no hidden workflow burden |
+| 任务通过率 | | | 高风险分层无回归 |
+| 安全通过率 | | | 硬控制 100% 通过 |
+| P95 延迟 | | | 在 SLO 内 |
+| 每次成功成本 | | | 在预算内 |
+| 检索召回率 | | | 在容忍范围内 |
+| 人工评审分钟数 | | | 没有隐藏工作流负担 |
 
-## Exam Decision Patterns
+## 考试决策模式（Exam Decision Patterns）
 
-If API success is high but users report bad results, add or inspect semantic
-quality and trajectory evidence. If a document refresh precedes wrong answers,
-trace retrieval before changing models.
+API 成功率高但用户报告差结果时，添加或检查语义质量与轨迹证据。错误答案出现在文档刷新后时，先追踪检索，再改变模型。
 
-Prefer answers that:
+优先选择以下答案：
 
-- use logs, metrics, and traces together
-- separate transport, task, and business success
-- monitor P95 rather than only averages
-- compare cost per successful outcome
-- version prompts, models, tools, and knowledge
-- gate rollouts on quality, latency, cost, and safety
-- give every alert an owner and runbook
+- 联合使用日志、指标和追踪
+- 区分传输、任务和业务成功
+- 监控 P95，而非只有平均值
+- 比较每个成功结果的成本
+- 版本化提示词、模型、工具和知识
+- 用质量、延迟、成本和安全作为上线门禁
+- 为每个告警指定负责人和操作手册
 
-## Common Traps
+## 常见陷阱（Common Traps）
 
-### Logging Full Prompts by Default
+### 默认记录完整提示词（Logging Full Prompts by Default）
 
-This can leak personal data, secrets, or regulated content. Record the minimum
-safe evidence and keep sensitive references under access control.
+这可能泄露个人数据、密钥或受监管内容。记录最少安全证据，对敏感引用实施访问控制。
 
-### One Aggregate Quality Score
+### 单一聚合质量分数（One Aggregate Quality Score）
 
-It can hide regressions by language, risk tier, task, or customer. Stratify.
+它可能掩盖语言、风险等级、任务或客户维度的回归。应分层。
 
-### Average Latency
+### 平均延迟（Average Latency）
 
-A small slow cohort can damage experience while the mean remains stable. Track
-tail latency and timeout rate.
+少量慢请求群体可能损害体验，平均值却保持稳定。跟踪尾延迟与超时率。
 
-### Cost per Call
+### 单次调用成本（Cost per Call）
 
-It rewards cheap failures. Use cost per accepted outcome and include review and
-correction.
+它奖励便宜的失败。使用每个获接受结果的成本，并包含评审与修正。
 
-## Exercises
+## 练习（Exercises）
 
-1. Extend the lab with child spans for retrieval and two tools.
-2. Add input-risk strata and prove an aggregate improvement can hide a critical
-   regression.
-3. Create a cache-invalidation experiment and measure hit rate, P95, and cost.
-4. Design an alert for tool authorization failures with an owner and runbook.
-5. Write a canary policy that rolls back on any hard-control failure.
+1. 扩展实验，为检索和两个工具添加子跨度。
+2. 添加输入风险分层，证明总体改善可能掩盖关键回归。
+3. 创建缓存失效实验，测量命中率、P95 和成本。
+4. 为工具授权失败设计带负责人和操作手册的告警。
+5. 编写金丝雀政策，在任何硬控制失败时回滚。
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语 | 常见说法 | 实际含义 |
 |------|-----------------|------------------------|
-| Log | Debug text | A structured event with safe evidence and identifiers |
-| Metric | Any number | An aggregation over time used to understand or control behavior |
-| Trace | A request ID | The connected timing and outcome of a full trajectory |
-| Task success | HTTP 200 | The requested outcome met its rubric and constraints |
-| P95 latency | Slowest request | The value at or below which 95 percent of measured requests complete |
-| Cost per success | Model price | Total expected cost divided by accepted task outcomes |
+| 日志（Log） | 调试文本 | 带安全证据和标识的结构化事件 |
+| 指标（Metric） | 任意数字 | 用于理解或控制行为的时间聚合 |
+| 追踪（Trace） | 请求 ID | 完整轨迹中相互连接的计时和结果 |
+| 任务成功（Task success） | HTTP 200 | 请求结果满足评分标准和约束 |
+| P95 延迟（P95 latency） | 最慢请求 | 95% 的测量请求在此值或更低时间内完成 |
+| 每次成功成本（Cost per success） | 模型价格 | 预期总成本除以获接受任务结果数 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [Claude usage and cost API documentation](https://platform.claude.com/docs/en/build-with-claude/usage-cost-api) for current usage reporting
-- [Prompt caching documentation](https://platform.claude.com/docs/en/build-with-claude/prompt-caching) for current cache behavior
-- Phase 17, Lesson 13 for LLM observability
-- Phase 17, Lesson 27 for LLM financial operations
-- Phase 17, Lessons 20 and 21 for progressive delivery and A/B testing
+- [Claude 用量与成本 API 文档（usage and cost API documentation）](https://platform.claude.com/docs/en/build-with-claude/usage-cost-api)：当前用量报告
+- [提示词缓存文档（Prompt caching documentation）](https://platform.claude.com/docs/en/build-with-claude/prompt-caching)：当前缓存行为
+- 阶段 17，第 13 课：LLM 可观测性
+- 阶段 17，第 27 课：LLM 财务运营
+- 阶段 17，第 20 和 21 课：渐进式交付与 A/B 测试

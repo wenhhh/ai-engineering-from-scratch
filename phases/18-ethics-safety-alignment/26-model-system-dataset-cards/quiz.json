@@ -1,75 +1,75 @@
 {
   "lesson": "26-model-system-dataset-cards",
-  "title": "Model, System, and Dataset Cards",
+  "title": "模型卡、系统卡与数据集卡（Model, System, and Dataset Cards）",
   "questions": [
     {
       "stage": "pre",
-      "question": "Which best describes the original Mitchell et al. (2019) Model Card?",
+      "question": "哪项最准确地描述 Mitchell 等人 2019 年提出的原始模型卡？",
       "options": [
-        "A model checkpoint manifest only",
-        "A regulatory legal contract",
-        "A 'nutrition label' for ML models: training data, intended use, factors, metrics, evaluation data, quantitative disaggregated analyses, ethical considerations, caveats",
-        "An OpenAPI specification"
+        "仅包含模型检查点清单",
+        "监管法律合同",
+        "机器学习模型的“营养标签”：训练数据、预期用途、因素、指标、评估数据、分组定量分析、伦理考量和注意事项",
+        "OpenAPI 规范"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "What did Oreamuno et al. (2023) find about ethical-considerations adoption in Hugging Face model cards?",
+      "question": "Oreamuno 等人 2023 年发现，Hugging Face 模型卡中伦理考量的采用情况如何？",
       "options": [
-        "No model card has any text at all",
-        "Approximately 0.3% document ethical considerations",
-        "Approximately 80% document ethical considerations",
-        "All model cards document them"
+        "没有任何模型卡包含文本",
+        "约 0.3% 记录了伦理考量",
+        "约 80% 记录了伦理考量",
+        "所有模型卡都记录了伦理考量"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "What does Pushkarna et al. (Google 2022) Data Cards' telescopic / periscopic / microscopic layering provide?",
+      "question": "Pushkarna 等人（Google，2022）的数据卡采用远观／中观／微观分层，提供了什么？",
       "options": [
-        "A pre-RLHF audit checklist",
-        "A telescope-themed visualization library",
-        "A boundary-object framing where the same document serves different readers (non-experts, ML practitioners, auditors) via three zoom levels of detail",
-        "A privacy-preserving query interface"
+        "RLHF 前的审计检查表",
+        "以望远镜为主题的可视化库",
+        "边界对象框架：同一文档通过三个细节层级服务不同读者，包括非专家、机器学习实践者和审计者",
+        "保护隐私的查询接口"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "What scope does a System Card cover that Model Cards do not?",
+      "question": "系统卡覆盖了模型卡未覆盖的什么范围？",
       "options": [
-        "Only the tokenizer",
-        "End-to-end AI system: model + safety stack + deployment context, including security capabilities, prompt-injection protection, data-exfiltration detection, alignment, and incident response",
-        "Only the prompt template",
-        "Only the dataset"
+        "仅覆盖分词器",
+        "端到端 AI 系统：模型、安全工具栈和部署上下文，包括安保能力、提示词注入防护、数据外传检测、对齐和事件响应",
+        "仅覆盖提示词模板",
+        "仅覆盖数据集"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "What did Liang et al. (2024) report about model-card detail and Hugging Face download rate?",
+      "question": "Liang 等人 2024 年报告，模型卡详尽程度与 Hugging Face 下载率有何关系？",
       "options": [
-        "Only ethical-considerations sections affected downloads",
-        "Detail decreased download rates",
-        "Detailed model cards drive a +29.0% weekly download lift on HF for the treatment group vs control (diff-in-diff); adoption pressure is now market-driven, not only compliance-driven",
-        "Detail had no effect on downloads"
+        "只有伦理考量部分影响下载量",
+        "更详尽会降低下载率",
+        "通过双重差分（Diff-in-Diff）比较处理组与对照组，详尽模型卡使 HF 每周下载量提升 +29.0%；采用压力如今也来自市场，而不只来自合规",
+        "详尽程度对下载量没有影响"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "What does Laminator (Duddu et al. 2024) contribute to documentation?",
+      "question": "Laminator（Duddu 等，2024）对文档作出了什么贡献？",
       "options": [
-        "An automated benchmarking harness",
-        "Verifiable attestations via hardware TEE / cryptographic signatures, so the card can carry a proof-of-claim instead of just a claim",
-        "An LLM-based summary generator",
-        "A replacement for the Datasheets standard"
+        "自动化基准测试框架",
+        "通过硬件 TEE 或密码学签名提供可验证证明，使卡片携带声明的证据，而不只是声明本身",
+        "基于 LLM 的摘要生成器",
+        "数据集说明书标准的替代品"
       ],
       "correct": 1,
       "explanation": ""

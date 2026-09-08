@@ -1,22 +1,22 @@
 {
   "lesson": "29-moderation-systems-openai-perspective-llamaguard",
-  "title": "Moderation Systems - OpenAI, Perspective, Llama Guard",
+  "title": "内容审核系统（Moderation Systems）— OpenAI、Perspective、Llama Guard",
   "questions": [
     {
       "stage": "pre",
-      "question": "What is OpenAI's omni-moderation-latest (2024)?",
+      "question": "OpenAI 的 omni-moderation-latest（2024）是什么？",
       "options": [
-        "A C2PA watermarking endpoint",
-        "A GPT-4o-based moderation classifier that handles text and images in one call, returning a 13-category response schema (harassment, hate, self-harm, sexual, violence, illicit, with sub-categories), free for most developers",
-        "An RLHF reward model",
-        "A reasoning-focused frontier model"
+        "C2PA 水印端点",
+        "基于 GPT-4o 的审核分类器，一次调用处理文本和图像，返回含 13 个类别的响应结构（骚扰、仇恨、自残、性内容、暴力、违法及其子类别），对大多数开发者免费",
+        "RLHF 奖励模型",
+        "专注推理的前沿模型"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Which of these is NOT one of OpenAI Moderation's primary top-level categories?",
+      "question": "以下哪项不是 OpenAI Moderation 的主要顶层类别？",
       "options": [
         "election-interference",
         "violence",
@@ -28,48 +28,48 @@
     },
     {
       "stage": "check",
-      "question": "What are the three layers of the standard 2026 moderation pattern?",
+      "question": "2026 年标准审核模式有哪三层？",
       "options": [
-        "Input moderation (pre-generation), Output moderation (post-generation), Custom moderation (domain rules)",
-        "Telescopic / periscopic / microscopic",
-        "Probe / detector / harness",
-        "Tokenizer / model / detokenizer"
+        "输入审核（生成前）、输出审核（生成后）、自定义审核（领域规则）",
+        "远观／中观／微观",
+        "探针／检测器／测试框架",
+        "分词器／模型／反分词器"
       ],
       "correct": 0,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "What is Perspective API (Google Jigsaw) primarily designed to score?",
+      "question": "Perspective API（Google Jigsaw）主要用于对什么评分？",
       "options": [
-        "Reward over user satisfaction",
-        "Reasoning quality",
-        "Watermark strength",
-        "Toxicity (with severe-toxicity, insult, profanity, threat, identity-attack sub-dimensions) as a pre-LLM-era content-moderation baseline"
+        "针对用户满意度的奖励",
+        "推理质量",
+        "水印强度",
+        "有害性，包括严重有害性、侮辱、粗俗语言、威胁和身份攻击等子维度，作为 LLM 时代之前的内容审核基线"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "What is one failure mode of input-only moderation?",
+      "question": "仅输入审核的一种失效模式是什么？",
       "options": [
-        "It does not catch model output failures or hallucinations; encoding attacks (Lessons 12-14) can bypass input classifiers entirely",
-        "It cannot run on GPUs",
-        "It always blocks legitimate content",
-        "It removes the need for output classifiers"
+        "它无法捕捉模型输出失效或幻觉；编码攻击（第 12–14 课）可以完全绕过输入分类器",
+        "它无法在 GPU 上运行",
+        "它总会阻止合法内容",
+        "它消除了对输出分类器的需要"
       ],
       "correct": 0,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "What is the Azure Content Moderator deprecation and migration target?",
+      "question": "Azure Content Moderator 的弃用安排和迁移目标是什么？",
       "options": [
-        "Merged into Llama Guard 4",
-        "Replaced by Perspective API",
-        "Deprecated February 2024, retired March 15, 2027; migration target is Azure AI Content Safety (LLM-based, integrated with Azure OpenAI)",
-        "Deprecated immediately with no replacement"
+        "并入 Llama Guard 4",
+        "由 Perspective API 替代",
+        "2024 年 2 月弃用，2027 年 3 月 15 日退役；迁移目标是 Azure AI Content Safety，后者基于 LLM 并与 Azure OpenAI 集成",
+        "立即弃用且没有替代产品"
       ],
       "correct": 2,
       "explanation": ""

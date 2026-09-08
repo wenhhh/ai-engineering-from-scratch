@@ -1,6 +1,6 @@
-# Full transformer in Julia: encoder + decoder blocks (pre-norm), multi-head
-# attention, SwiGLU FFN, LayerNorm and RMSNorm forward + backward gradient
-# check against finite differences. Stdlib only. Sources:
+# 用 Julia 实现完整 Transformer：编码器和解码器块（预归一化 Pre-norm）、多头
+# 注意力（Attention）、SwiGLU 前馈网络、LayerNorm 和 RMSNorm 的前向与反向梯度，
+# 并用有限差分（Finite differences）检验梯度。仅用标准库。参考来源：
 #   https://arxiv.org/abs/1706.03762
 #   https://arxiv.org/abs/1910.07467
 #   https://docs.julialang.org/en/v1/stdlib/LinearAlgebra/
@@ -139,13 +139,13 @@ function multi_head_attention(X::Matrix{Float64},
                              Wv::Matrix{Float64}, Wo::Matrix{Float64};
                              n_heads::Int=1, causal::Bool=false,
                              kv_source::Union{Nothing, Matrix{Float64}}=nothing)
-    @assert n_heads > 0 "n_heads must be > 0"
+    @assert n_heads > 0 "n_heads 必须 > 0"
     Q = X * Wq
     kv_input = kv_source === nothing ? X : kv_source
     K = kv_input * Wk
     V = kv_input * Wv
     d_total = size(Q, 2)
-    @assert d_total % n_heads == 0 "projected dimension must be divisible by n_heads"
+    @assert d_total % n_heads == 0 "投影维度（Projected dimension）必须能被 n_heads 整除"
     d_head = d_total ÷ n_heads
     head_outs = Matrix{Float64}[]
     for h in 1:n_heads
@@ -180,8 +180,8 @@ end
 
 function BlockParams(d::Int, n_heads::Int, ffn_expansion::Float64,
                     rng::AbstractRNG; use_swiglu::Bool=true)
-    @assert n_heads > 0 "n_heads must be > 0"
-    @assert d % n_heads == 0 "d must be divisible by n_heads"
+    @assert n_heads > 0 "n_heads 必须 > 0"
+    @assert d % n_heads == 0 "d 必须能被 n_heads 整除"
     h = Int(round(d * ffn_expansion))
     Wq = randn_matrix(rng, d, d)
     Wk = randn_matrix(rng, d, d)
@@ -243,7 +243,7 @@ end
 
 function gradient_check_layer_norm()
     println("=" ^ 60)
-    println("LAYER NORM: ANALYTIC vs NUMERICAL GRADIENT")
+    println("层归一化（LayerNorm）：解析梯度与数值梯度")
     println("=" ^ 60)
     rng = MersenneTwister(0)
     X = randn(rng, 4, 6)
@@ -254,13 +254,13 @@ function gradient_check_layer_norm()
     analytic = layer_norm_backward(X, v)
     numeric = numerical_grad(loss_fn, copy(X))
     err = maximum(abs.(analytic .- numeric))
-    @printf("\nMax abs error (LayerNorm): %.3e\n", err)
+    @printf("\n最大绝对误差（Max abs error） (LayerNorm): %.3e\n", err)
 end
 
 
 function gradient_check_rms_norm()
     println("\n" * "=" ^ 60)
-    println("RMS NORM: ANALYTIC vs NUMERICAL GRADIENT")
+    println("均方根归一化（RMSNorm）：解析梯度与数值梯度")
     println("=" ^ 60)
     rng = MersenneTwister(2)
     X = randn(rng, 4, 6)
@@ -271,35 +271,35 @@ function gradient_check_rms_norm()
     analytic = rms_norm_backward(X, v)
     numeric = numerical_grad(loss_fn, copy(X))
     err = maximum(abs.(analytic .- numeric))
-    @printf("\nMax abs error (RMSNorm): %.3e\n", err)
+    @printf("\n最大绝对误差（Max abs error） (RMSNorm): %.3e\n", err)
 end
 
 
 function compare_norm_outputs()
     println("\n" * "=" ^ 60)
-    println("LAYERNORM vs RMSNORM OUTPUTS")
+    println("LayerNorm 与 RMSNorm 输出对比")
     println("=" ^ 60)
     rng = MersenneTwister(7)
     X = randn(rng, 3, 6)
     Y_ln = layer_norm(X)
     Y_rms = rms_norm(X)
-    println("\nLayerNorm row means (should be ~0):")
+    println("\nLayerNorm 各行均值（应接近 0）：")
     for i in 1:3
-        @printf("  row %d: mean=%+.6f  std=%.6f\n",
+        @printf("  第 %d 行：均值（Mean）=%+.6f  标准差（Std）=%.6f\n",
                 i, sum(Y_ln[i, :]) / 6, sqrt(sum(Y_ln[i, :] .^ 2) / 6))
     end
-    println("\nRMSNorm row RMS (should be ~1):")
+    println("\nRMSNorm 各行均方根（RMS，应接近 1）：")
     for i in 1:3
-        @printf("  row %d: mean=%+.6f  rms=%.6f\n",
+        @printf("  第 %d 行：均值（Mean）=%+.6f  均方根（RMS）=%.6f\n",
                 i, sum(Y_rms[i, :]) / 6, sqrt(sum(Y_rms[i, :] .^ 2) / 6))
     end
-    println("\nRMSNorm leaves the row mean intact; LayerNorm centers it.")
+    println("\nRMSNorm 保留行均值；LayerNorm 将其中心化（Centering）。")
 end
 
 
 function demo_full_transformer()
     println("\n" * "=" ^ 60)
-    println("FULL TRANSFORMER FORWARD PASS")
+    println("完整 Transformer 前向传播（Forward pass）")
     println("=" ^ 60)
     rng = MersenneTwister(42)
     d = 8
@@ -324,19 +324,19 @@ function demo_full_transformer()
         dec_out = decoder_block(dec_out, enc_out, p)
     end
 
-    @printf("\nsource shape:           (%d, %d)\n", size(src, 1), size(src, 2))
-    @printf("encoder output shape:   (%d, %d)\n", size(enc_out, 1), size(enc_out, 2))
-    @printf("target shape:           (%d, %d)\n", size(tgt, 1), size(tgt, 2))
-    @printf("decoder output shape:   (%d, %d)\n", size(dec_out, 1), size(dec_out, 2))
-    println("\nfirst 3 rows of encoder output:")
+    @printf("\n源序列形状（Source shape）：           (%d, %d)\n", size(src, 1), size(src, 2))
+    @printf("编码器输出形状（Encoder output shape）：   (%d, %d)\n", size(enc_out, 1), size(enc_out, 2))
+    @printf("目标序列形状（Target shape）：           (%d, %d)\n", size(tgt, 1), size(tgt, 2))
+    @printf("解码器输出形状（Decoder output shape）：   (%d, %d)\n", size(dec_out, 1), size(dec_out, 2))
+    println("\n编码器输出的前 3 行：")
     for i in 1:3
         println("  " * join([@sprintf("%+.3f", enc_out[i, j]) for j in 1:4], "  "))
     end
-    println("\nfirst 3 rows of decoder output:")
+    println("\n解码器输出的前 3 行：")
     for i in 1:3
         println("  " * join([@sprintf("%+.3f", dec_out[i, j]) for j in 1:4], "  "))
     end
-    println("\nstack: 2-layer encoder + 2-layer decoder, pre-norm, RMSNorm, SwiGLU.")
+    println("\n堆叠：2 层编码器（Encoder）+ 2 层解码器（Decoder），预归一化（Pre-norm）、RMSNorm、SwiGLU。")
 end
 
 

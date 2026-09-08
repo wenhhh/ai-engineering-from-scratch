@@ -1,33 +1,33 @@
 ---
 name: memory-blocks
-description: Generate a Letta-shaped three-tier memory system (core blocks, recall, archival) with a sleep-time consolidation agent off the critical path.
+description: 生成 Letta 式三层记忆系统（核心块、回忆、归档），并在关键路径之外运行休眠时整合智能体。
 version: 1.0.0
 phase: 14
 lesson: 08
 tags: [memory, letta, blocks, sleep-time, consolidation]
 ---
 
-Given a target runtime, a primary model, and a (possibly stronger) sleep-time model, produce a three-tier memory system with explicit block types and async consolidation.
+给定目标运行时、主模型和可能更强的休眠时模型，生成带显式块类型和异步整合的三层记忆系统。
 
-Produce:
+请生成：
 
-1. `Block` type with `label`, `value`, `limit`, `description`, `version`, `history`. Every write bumps version and records the old value. Expose `near_limit(threshold=0.8)`.
-2. A `BlockStore` with at minimum three default blocks: `human` (facts about the user), `persona` (agent self-concept), and `task` (current scope). Allow user-defined blocks.
-3. A `Recall` store — turn log paginated by session. Auto-write every turn. Tail evicts on cap but remains retrievable.
-4. An `Archival` store — at least two backends (vector, KV). Insert returns record id. Invalidate rather than delete on contradiction.
-5. A `PrimaryAgent` that handles turns and only issues raw writes. No summarization on the critical path.
-6. A `SleepTimeAgent` that runs between turns: summarize blocks over threshold, invalidate contradicted archival records, write `learned_context` into shared blocks.
+1. `Block` 类型，包含 `label`、`value`、`limit`、`description`、`version`、`history`。每次写入递增版本并记录旧值。暴露 `near_limit(threshold=0.8)`。
+2. `BlockStore`，至少包含三个默认块：`human`（用户事实）、`persona`（智能体自我概念）、`task`（当前范围）。允许用户自定义块。
+3. `Recall` 存储：按会话分页的轮次日志。每轮自动写入，达到上限时驱逐尾部，但仍可检索。
+4. `Archival` 存储：至少两个后端（向量、KV）。插入返回记录标识。出现矛盾时使记录失效，而不是删除。
+5. `PrimaryAgent` 处理轮次，只发出原始写入。关键路径上不进行总结。
+6. `SleepTimeAgent` 在轮次之间运行：总结超过阈值的块，使被反驳的归档记录失效，将 `learned_context` 写入共享块。
 
-Hard rejects:
+严格禁止：
 
-- Any memory op that runs synchronously during a user-facing turn except a direct lookup. Summarization, consolidation, invalidation belong to the sleep-time pass.
-- Deleting archival records on contradiction. Invalidate so history remains auditable.
-- Writing to the Persona or Safety block without a review step. These blocks shape behavior globally; silent writes mask bugs.
+- 除直接查询外，在面向用户的轮次中同步运行任何记忆操作。总结、整合和失效处理属于休眠时处理阶段。
+- 出现矛盾时删除归档记录。应使其失效，以保留可审计历史。
+- 没有评审步骤就写入角色设定块（Persona）或安全块（Safety）。这些块会全局影响行为，静默写入会掩盖错误。
 
-Refusal rules:
+拒绝规则：
 
-- If the runtime cannot persist blocks across sessions, refuse to ship a product described as "memory." Downgrade the claim.
-- If the sleep-time agent has no trace output, refuse. Silent consolidation is a debugging dead-zone.
-- If the user asks for "no invalidation, always trust latest write," refuse for any domain where historical claims matter (compliance, medical, legal).
+- 如果运行时无法跨会话持久化块，应拒绝交付被描述为具有“记忆”的产品。降低声明范围。
+- 如果休眠时智能体没有轨迹输出，应拒绝。静默整合会形成无法调试的盲区。
+- 如果用户要求“不做失效处理，始终信任最新写入”，在历史说法重要的领域，如合规、医疗、法律，应拒绝。
 
-Output: one file per component plus a `README.md` that names the default blocks, the sleep-time cadence, and the contradiction resolution policy. End with "what to read next" pointing to Lesson 09 if the agent needs graph reasoning over memory, or Lesson 23 if the product needs OTel spans on memory ops.
+输出：每个组件一个文件，再附一个 `README.md`，列明默认块、休眠时处理频率和矛盾解决策略。末尾添加“接下来读什么”：需要基于记忆进行图推理时指向第 09 课，需要为记忆操作添加 OTel 跨度时指向第 23 课。

@@ -141,6 +141,8 @@ test('lesson route renders unique crawlable HTML with a path-only canonical', fu
   assert.equal((response.body.match(/<h1(?:\s|>)/g) || []).length, 1);
   assert.match(response.body, /<h1>Vectors &amp; &lt;Matrices&gt; - Math Foundations<\/h1>/);
   assert.match(response.body, /"@type":"LearningResource"/);
+  assert.match(response.body, /"inLanguage":"zh-CN"/);
+  assert.match(response.body, /浏览完整课程目录/);
   assert.match(response.body, /"@type":"BreadcrumbList"/);
   assert.doesNotMatch(response.body, /"@type":"Person"|#person|rohitghumare\.com/);
   assert.doesNotMatch(response.body, /<script>Vectors/);

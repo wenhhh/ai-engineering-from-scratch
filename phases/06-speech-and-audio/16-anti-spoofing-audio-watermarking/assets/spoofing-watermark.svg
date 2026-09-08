@@ -11,45 +11,45 @@
     </style>
   </defs>
 
-  <text x="440" y="26" text-anchor="middle" class="title">three defensive layers — detection + watermarking + provenance</text>
+  <text x="440" y="26" text-anchor="middle" class="title">三层防护：检测（Detection）+ 水印（Watermarking）+ 来源证明（Provenance）</text>
 
   <rect x="20" y="55" width="270" height="170" class="box"/>
-  <text x="155" y="78" text-anchor="middle" class="label">A. anti-spoof detection</text>
+  <text x="155" y="78" text-anchor="middle" class="label">A. 防伪检测（Anti-Spoof Detection）</text>
   <text x="155" y="96" text-anchor="middle" class="tag">ASVspoof 5 · AASIST · RawNet2</text>
-  <text x="35" y="124" class="content">input audio  →  classifier</text>
-  <text x="35" y="142" class="content">output: "real" or "synthetic"</text>
-  <text x="35" y="162" class="content">EER 0.42% on ASVspoof 2019 LA</text>
-  <text x="35" y="180" class="content">EER 7.23% on ASVspoof 5 (real-world)</text>
-  <text x="35" y="208" class="caption">handles uncooperative adversaries</text>
+  <text x="35" y="124" class="content">输入音频 → 分类器（Classifier）</text>
+  <text x="35" y="142" class="content">输出："real" 或 "synthetic"</text>
+  <text x="35" y="162" class="content">ASVspoof 2019 LA 等错误率（EER）0.42%</text>
+  <text x="35" y="180" class="content">ASVspoof 5（真实环境）EER 7.23%</text>
+  <text x="35" y="208" class="caption">应对不配合的攻击者（Adversaries）</text>
 
   <rect x="305" y="55" width="270" height="170" class="hot"/>
-  <text x="440" y="78" text-anchor="middle" class="label">B. audio watermarking</text>
+  <text x="440" y="78" text-anchor="middle" class="label">B. 音频水印（Audio Watermarking）</text>
   <text x="440" y="96" text-anchor="middle" class="tag">AudioSeal · WaveVerify</text>
-  <text x="320" y="124" class="content">generator embeds signal</text>
-  <text x="320" y="142" class="content">detector extracts payload</text>
-  <text x="320" y="162" class="content">16-bit payload per clip</text>
-  <text x="320" y="180" class="content">survives MP3 / EQ / noise</text>
-  <text x="320" y="208" class="caption">&gt; 99% bit accuracy pre-attack</text>
+  <text x="320" y="124" class="content">生成器（Generator）嵌入信号</text>
+  <text x="320" y="142" class="content">检测器（Detector）提取载荷</text>
+  <text x="320" y="162" class="content">每段 16 位载荷（Payload）</text>
+  <text x="320" y="180" class="content">耐受 MP3 / 均衡（EQ）/ 噪声</text>
+  <text x="320" y="208" class="caption">攻击前比特准确率（Bit Accuracy）&gt; 99%</text>
 
   <rect x="590" y="55" width="270" height="170" class="box"/>
-  <text x="725" y="78" text-anchor="middle" class="label">C. provenance manifest</text>
-  <text x="725" y="96" text-anchor="middle" class="tag">C2PA · CAI</text>
-  <text x="605" y="124" class="content">signed JSON manifest</text>
-  <text x="605" y="142" class="content">creator · tool · timestamp</text>
-  <text x="605" y="162" class="content">cryptographic hash</text>
-  <text x="605" y="180" class="content">verifiable off-band</text>
-  <text x="605" y="208" class="caption">bypassable by re-encoding → pair with watermark</text>
+  <text x="725" y="78" text-anchor="middle" class="label">C. 来源清单（Provenance Manifest）</text>
+  <text x="725" y="96" text-anchor="middle" class="tag">来源标准 C2PA，真实性倡议 CAI</text>
+  <text x="605" y="124" class="content">签名 JSON 清单（Manifest）</text>
+  <text x="605" y="142" class="content">创建者（Creator）、工具、时间戳</text>
+  <text x="605" y="162" class="content">密码学哈希（Cryptographic Hash）</text>
+  <text x="605" y="180" class="content">可带外验证（Off-Band）</text>
+  <text x="605" y="208" class="caption">重编码可绕过 → 搭配水印（Watermark）</text>
 
   <rect x="20" y="245" width="840" height="95" class="box"/>
-  <text x="440" y="267" text-anchor="middle" class="label">the gaps each defense has — why you need all three</text>
-  <text x="40" y="294" class="content">detection:    degrades OOD; overfits to training-time generators</text>
-  <text x="40" y="312" class="content">watermarking: pitch-shift breaks every 2026 watermark (bit acc &lt; 60%)</text>
-  <text x="40" y="330" class="content">provenance:   trivially strippable by re-encoding → does nothing alone</text>
+  <text x="440" y="267" text-anchor="middle" class="label">各项防护的缺口（Gaps）：为何三者缺一不可</text>
+  <text x="40" y="294" class="content">检测：分布外（OOD）退化，对训练时生成器过拟合</text>
+  <text x="40" y="312" class="content">水印：音高偏移（Pitch-Shift）破坏 2026 年所有水印，比特准确率 &lt; 60%</text>
+  <text x="40" y="330" class="content">来源证明（Provenance）：重编码即可剥离 → 单独使用无效</text>
 
   <rect x="20" y="350" width="840" height="105" class="hot"/>
-  <text x="440" y="372" text-anchor="middle" class="label">2026 production checklist for any voice-gen deploy</text>
-  <text x="40" y="398" class="content">1. AudioSeal embed on every generation (detector shipped in CI)</text>
-  <text x="40" y="416" class="content">2. C2PA-sign manifest with model id + user id + timestamp</text>
-  <text x="40" y="434" class="content">3. AASIST / RawNet2 detector running on inbound call audio (fraud, replay)</text>
-  <text x="40" y="452" class="content">4. audit log + 30-day retention + consent artifact + rate-limit + kill-switch</text>
+  <text x="440" y="372" text-anchor="middle" class="label">2026 年语音生成部署生产检查清单（Production Checklist）</text>
+  <text x="40" y="398" class="content">1. 每次生成嵌入 AudioSeal，检测器部署到持续集成（CI）</text>
+  <text x="40" y="416" class="content">2. 清单含模型标识、用户标识、时间戳，并用 C2PA 签名</text>
+  <text x="40" y="434" class="content">3. 对入站通话音频运行 AASIST / RawNet2 检测器，防欺诈和重放（Replay）</text>
+  <text x="40" y="452" class="content">4. 审计日志（Audit Log）、保留 30 天、授权凭证、限流、紧急停用开关</text>
 </svg>

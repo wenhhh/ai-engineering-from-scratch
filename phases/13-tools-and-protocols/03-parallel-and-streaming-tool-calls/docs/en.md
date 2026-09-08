@@ -1,22 +1,22 @@
-# Parallel Tool Calls and Streaming with Tools
+# 并行工具调用与工具流式传输（Parallel Tool Calls and Streaming with Tools）
 
-> Three independent weather lookups serialized is three round trips. Run them in parallel and total time collapses to the slowest single call. Every frontier provider now emits multiple tool calls in a single turn. The payoff is real; the plumbing is subtle. This lesson walks both halves: the parallel fan-out and the streamed-argument reassembly, with emphasis on the id-correlation trap.
+> 三次独立天气查询串行执行，就是三次往返。并行运行后，总时间缩短到最慢一次调用的耗时。如今所有前沿提供商都能在一轮中发出多个工具调用。收益实在，但连接机制有细节。本课讲解并行扇出（Fan-out）与流式参数重组两部分，重点关注 id 关联陷阱。
 
 **Type:** Build
 **Languages:** Python (stdlib, thread pool + streaming harness)
-**Prerequisites:** Phase 13 · 02 (function calling deep dive)
-**Time:** ~75 minutes
+**Prerequisites:** 阶段 13 · 02（深入函数调用）
+**Time:** ~75 分钟
 
-## Learning Objectives
+## 学习目标（Learning Objectives）
 
-- Explain why `parallel_tool_calls: true` exists and when to disable it.
-- Correlate streamed argument chunks to the right tool-call id during parallel fan-out.
-- Reassemble partial `arguments` strings into complete JSON without parsing early.
-- Run a three-city weather benchmark that demonstrates sequential vs parallel latency.
+- 解释为什么存在 `parallel_tool_calls: true`，以及何时应禁用。
+- 并行扇出期间，将流式参数片段关联到正确的工具调用 id。
+- 将部分 `arguments` 字符串重组为完整 JSON，不提前解析。
+- 运行三个城市的天气基准测试，展示串行与并行延迟。
 
-## The Problem
+## 问题（The Problem）
 
-Without parallel calls, an agent answering "what is the weather in Bengaluru, Tokyo, and Zurich" does this:
+没有并行调用时，智能体回答“班加罗尔、东京和苏黎世的天气怎么样”的过程如下：
 
 ```
 user -> LLM
@@ -29,9 +29,9 @@ host -> run executor, reply with result
 LLM -> final text answer
 ```
 
-Three LLM round trips, each of which also pays the executor latency. Roughly 4x the ideal wall-clock time.
+三次 LLM 往返，每次还要支付执行器延迟，总实际耗时约为理想值的 4 倍。
 
-With parallel calls:
+使用并行调用后：
 
 ```
 user -> LLM
@@ -40,49 +40,49 @@ host -> run all three executors concurrently, reply with three results
 LLM -> final text answer
 ```
 
-One LLM round trip. Executor time is the maximum of the three, not the sum. Production benchmarks on OpenAI, Anthropic, and Gemini show 60 to 70 percent wall-clock reduction on fan-out workloads.
+一次 LLM 往返。执行器耗时是三者的最大值，而非总和。OpenAI、Anthropic 和 Gemini 的生产基准显示，扇出工作负载的实际耗时减少了 60% 到 70%。
 
-The price is correlation complexity. When the three calls complete out of order, your results must carry the matching `tool_call_id` so the model can line them up. When results stream, you must assemble partial argument fragments into complete JSON before executing. Gemini 3 added unique ids in part to solve a real-world issue where two parallel calls to the same tool were indistinguishable.
+代价是关联更复杂。三个调用乱序完成时，结果必须携带匹配的 `tool_call_id`，模型才能正确对齐。流式返回时，你必须在执行前将部分参数片段组装成完整 JSON。Gemini 3 增加唯一 id，部分原因就是解决现实中同一工具的两个并行调用无法区分的问题。
 
-## The Concept
+## 概念（The Concept）
 
-### Enabling parallel
+### 启用并行（Enabling parallel）
 
-- **OpenAI.** `parallel_tool_calls: true` on by default. Set `false` to force serial.
-- **Anthropic.** Parallel via `disable_parallel_tool_use: false` (default on Claude 3.5 and up). Set `true` for serial.
-- **Gemini.** Always parallel-capable; `tool_config.function_calling_config.mode = "AUTO"` lets the model decide.
+- **OpenAI。** `parallel_tool_calls: true` 默认启用。设为 `false` 强制串行。
+- **Anthropic。** 通过 `disable_parallel_tool_use: false` 启用并行（Claude 3.5 及以上默认值）。设为 `true` 使用串行。
+- **Gemini。** 始终支持并行；`tool_config.function_calling_config.mode = "AUTO"` 让模型决定。
 
-Disable parallel when tools have ordering dependencies (`create_file` then `write_file`), when one call's output informs another's input, or when the rate limiter cannot handle fan-out.
+当工具存在顺序依赖（先 `create_file` 再 `write_file`）、一个调用的输出影响另一个的输入，或限流器无法承受扇出时，应禁用并行。
 
-### Id correlation
+### Id 关联（Id correlation）
 
-Every call the model emits has an `id`. Every result the host returns must include the same id. Without this, results are ambiguous.
+模型发出的每次调用都有一个 `id`。宿主返回的每个结果必须包含同一个 id，否则结果就有歧义。
 
-- **OpenAI.** `tool_call_id` on each tool-role message.
-- **Anthropic.** `tool_use_id` on each `tool_result` block.
-- **Gemini.** `id` on each `functionResponse` (Gemini 3 and up; Gemini 2 matched by name which broke for same-name parallel calls).
+- **OpenAI。** 每条 tool 角色消息中的 `tool_call_id`。
+- **Anthropic。** 每个 `tool_result` 块中的 `tool_use_id`。
+- **Gemini。** 每个 `functionResponse` 中的 `id`（Gemini 3 及以上；Gemini 2 按名称匹配，遇到同名并行调用就失效）。
 
-### Running calls concurrently
+### 并发运行调用（Running calls concurrently）
 
-The host runs each call's executor on its own thread, coroutine, or remote worker. The simplest harness uses a thread pool; production uses asyncio with `asyncio.gather` or structured concurrency. Order of completion is unpredictable — the id is the identifier.
+宿主在各自的线程、协程或远程工作进程上运行每个调用的执行器。最简单的运行框架采用线程池；生产环境使用 asyncio 配合 `asyncio.gather`，或使用结构化并发（Structured concurrency）。完成顺序无法预测，id 才是标识。
 
-One common bug: reply with results in call-list order instead of completion order. This usually works because the model only cares about `tool_call_id`, but if a result is dropped or duplicated, out-of-order submission makes debugging harder. Prefer to reply in completion order with explicit ids.
+一个常见问题是按调用列表顺序而非完成顺序返回结果。这通常能工作，因为模型只关心 `tool_call_id`；但若某个结果丢失或重复，乱序提交会增加调试难度。优先按完成顺序回复，并显式携带 id。
 
-### Streaming tool calls
+### 流式工具调用（Streaming tool calls）
 
-When the model streams, `arguments` arrive in pieces. Three separate streams of chunks for three parallel calls interleave on the wire. You need one accumulator per id.
+模型流式输出时，`arguments` 分片到达。三个并行调用的三组片段流在线路上交错传输。每个 id 都需要一个累积器（Accumulator）。
 
-Shape by provider:
+各提供商的形态：
 
-- **OpenAI.** Each chunk is `choices[0].delta.tool_calls[i].function.arguments` (partial string). The chunk carries `index` (position in the call list). You accumulate per-index, read `id` when it first appears, and parse JSON when `finish_reason = "tool_calls"`.
-- **Anthropic.** Stream events are `message_start`, then one `content_block_start` per block with type `tool_use` (containing id, name, empty input). `content_block_delta` events carry `input_json_delta` chunks. `content_block_stop` closes each block.
-- **Gemini.** `streamFunctionCallArguments` (Gemini 3 and up) emits chunks with a `functionCallId` so calls interleave cleanly. Before Gemini 3, streaming returned one complete call at a time.
+- **OpenAI。** 每个片段是 `choices[0].delta.tool_calls[i].function.arguments`（部分字符串）。片段携带 `index`（调用列表中的位置）。按 index 累积，在 `id` 首次出现时读取，并在 `finish_reason = "tool_calls"` 时解析 JSON。
+- **Anthropic。** 流事件先是 `message_start`，随后每个类型为 `tool_use` 的块都有一个 `content_block_start`（包含 id、name、空 input）。`content_block_delta` 事件携带 `input_json_delta` 片段。`content_block_stop` 结束各块。
+- **Gemini。** `streamFunctionCallArguments`（Gemini 3 及以上）输出带 `functionCallId` 的片段，使调用可以清楚地交错。在 Gemini 3 之前，流式传输一次返回一个完整调用。
 
-### Partial JSON and the parse-early trap
+### 部分 JSON 与提前解析陷阱（Partial JSON and the parse-early trap）
 
-You cannot parse `arguments` until it is complete. Partial JSON such as `{"city": "Beng` is not valid and will raise. The correct gate is the provider's end-of-call signal: OpenAI's `finish_reason = "tool_calls"`, Anthropic's `content_block_stop`, or Gemini's stream-end event. Only then attempt `json.loads`. A more robust approach uses an incremental JSON parser that yields events as structure completes; OpenAI's streaming guide recommends this for UX that shows a live "thinking" indicator. Brace-counting is unreliable as a completeness test (braces inside quoted strings or escaped content cause false positives) and should only be used as an informal debug heuristic.
+`arguments` 完整之前无法解析。`{"city": "Beng` 这样的部分 JSON 无效，会抛出异常。正确门禁是提供商的调用结束信号：OpenAI 的 `finish_reason = "tool_calls"`、Anthropic 的 `content_block_stop` 或 Gemini 的流结束事件。只有此时才尝试 `json.loads`。更稳健的做法是使用增量 JSON 解析器，在结构完成时产出事件；OpenAI 的流式指南推荐用它实现实时“思考中”指示器的用户体验。用大括号计数判断完整性不可靠，带引号字符串或转义内容中的大括号会造成误判，因此只能作为非正式调试启发式方法。
 
-### Out-of-order completion
+### 乱序完成（Out-of-order completion）
 
 ```
 call_A: fast API, returns first
@@ -90,7 +90,7 @@ call_B: slow API, returns second
 call_C: median API, returns third
 ```
 
-The host reply must still cite the ids:
+宿主回复仍必须引用 id：
 
 ```
 [{role: "tool", tool_call_id: "call_A", content: ...},
@@ -98,67 +98,67 @@ The host reply must still cite the ids:
  {role: "tool", tool_call_id: "call_C", content: ...}]
 ```
 
-Order in the reply does not matter for correctness on OpenAI or Anthropic. Gemini accepts any order so long as ids match.
+在 OpenAI 或 Anthropic 上，回复中的顺序不影响正确性。Gemini 也接受任意顺序，只要 id 匹配。
 
-### Benchmark: sequential vs parallel
+### 基准测试：串行与并行（Benchmark: sequential vs parallel）
 
-The harness in `code/main.py` simulates three executors with 400, 600, and 800 ms latency. Sequential runs it in 1800 ms total. Parallel runs it in max(400, 600, 800) = 800 ms. The difference is constant, not proportional, so the savings grow with tool count.
+`code/main.py` 中的运行框架模拟延迟分别为 400、600 和 800 ms 的三个执行器。串行总耗时 1800 ms，并行耗时 max(400, 600, 800) = 800 ms。差异是常数，而不是比例，因此工具数量越多，节省越多。
 
-Real-world caveat: parallel calls stress downstream APIs. A 10-way fan-out to a rate-limited service will fail. Phase 13 · 17 covers gateway-level backpressure; retry semantics are planned for a future phase.
+现实中的注意事项：并行调用会给下游 API 带来压力。对受限流的服务进行 10 路扇出会失败。阶段 13 · 17 讲解网关级背压（Backpressure）；重试语义计划在后续阶段介绍。
 
-### Streaming fan-out wall-clock
+### 流式扇出的实际耗时（Streaming fan-out wall-clock）
 
-If the model itself streams, you can start executing as soon as one call's arguments are complete, rather than waiting for all calls to finalize. This is an optimization OpenAI documents but not all SDKs expose. The harness in this lesson does it: as soon as the simulated stream yields a complete argument object, the host kicks off that call.
+如果模型本身流式输出，一个调用的参数完成后就可开始执行，无需等待全部调用完成。这是 OpenAI 文档描述的一项优化，但并非所有 SDK 都暴露它。本课运行框架实现了这一点：模拟流一旦产出完整参数对象，宿主立即启动该调用。
 
 ```figure
 tp-parallel-fanout
 ```
 
-## Use It
+## 实际应用（Use It）
 
-`code/main.py` has two halves. The first runs three simulated weather calls sequentially and in parallel using `concurrent.futures.ThreadPoolExecutor` and prints wall-clock time. The second half replays a fake streaming response — chunks of `arguments` for three parallel calls interleaved on one stream — and reassembles them per-id with `StreamAccumulator`. No LLM, no network, just the reassembly logic.
+`code/main.py` 有两部分。前半部分用 `concurrent.futures.ThreadPoolExecutor` 串行和并行运行三个模拟天气调用，打印实际耗时。后半部分重放一个假的流式响应：三个并行调用的 `arguments` 片段交错出现在同一条流中，并用 `StreamAccumulator` 按 id 重组。不用 LLM，不用网络，只有重组逻辑。
 
-What to look at:
+重点查看：
 
-- The sequential timer hits 1.8 seconds. The parallel timer hits 0.8 seconds on the same fake latencies.
-- The accumulator handles chunks arriving out of order by buffering per-id and parsing only when each call's JSON is complete.
-- The executor kicks off as soon as an id's arguments finalize, not after all streams end.
+- 相同的模拟延迟下，串行计时达到 1.8 秒，并行计时达到 0.8 秒。
+- 累积器按 id 缓冲以处理乱序到达的片段，并且仅在每次调用的 JSON 完整后解析。
+- 某个 id 的参数完成后就启动执行器，而不是等待所有流结束。
 
-## Ship It
+## 交付成果（Ship It）
 
-This lesson produces `outputs/skill-parallel-call-safety-check.md`. Given a tool registry, the skill audits which tools are safe to parallelize, which have ordering dependencies, and which would overwhelm downstream rate limits — returning a revised registry with per-tool `parallel_safe` flags.
+本课产出 `outputs/skill-parallel-call-safety-check.md`。给定工具注册表，技能审计哪些工具能安全并行、哪些存在顺序依赖、哪些会压垮下游速率限制，并返回带逐工具 `parallel_safe` 标记的修订注册表。
 
-## Exercises
+## 练习（Exercises）
 
-1. Run `code/main.py` and vary the simulated latencies. Confirm that the parallel-to-sequential ratio is approximately `max/sum` (real runs deviate slightly from the ideal because of thread scheduling, serialization, and harness overhead). At what latency distribution does parallel stop mattering?
+1. 运行 `code/main.py`，改变模拟延迟。确认并行与串行耗时之比约为 `max/sum`（实际运行受线程调度、序列化和运行框架开销影响，会略偏离理想值）。什么样的延迟分布会使并行不再重要？
 
-2. Extend the accumulator to handle a "call was cancelled mid-stream" case by dropping its buffer and emitting a `cancelled` event. What provider documents this case explicitly? Check Anthropic's `content_block_stop` semantics and OpenAI's `finish_reason: "length"` behavior.
+2. 扩展累积器，处理“调用在流中途取消”：丢弃其缓冲区并输出 `cancelled` 事件。哪家提供商明确记录了这种情况？查看 Anthropic 的 `content_block_stop` 语义和 OpenAI 的 `finish_reason: "length"` 行为。
 
-3. Replace the thread pool with `asyncio.gather`. Benchmark both. You should see small wins on async because of lower context-switch cost, but only if executors do real I/O.
+3. 用 `asyncio.gather` 替换线程池，对两者做基准测试。因为上下文切换成本更低，异步方式应有小幅收益，但前提是执行器进行真实 I/O。
 
-4. Pick two tools that should NOT parallelize (e.g. `create_file` then `write_file`). Add an `ordering_dependency` graph to the registry and gate the parallel fan-out on that graph. This is the minimum machinery for dependency-aware scheduling, which a future agent-engineering phase formalizes.
+4. 选择两个不应并行的工具，例如先 `create_file` 再 `write_file`。在注册表添加 `ordering_dependency` 图，并依据该图为并行扇出设置门禁。这是依赖感知调度的最小机制，后续智能体工程阶段会将其形式化。
 
-5. Read OpenAI's parallel-function-calling section and Anthropic's `disable_parallel_tool_use` docs. Identify the one real-world tool type where Anthropic recommends disabling parallelism. (Hint: consequential mutations on the same resource.)
+5. 阅读 OpenAI 的并行函数调用章节和 Anthropic 的 `disable_parallel_tool_use` 文档。找出 Anthropic 建议禁用并行的一类现实工具。（提示：对同一资源进行会产生实际后果的修改。）
 
-## Key Terms
+## 关键术语（Key Terms）
 
-| Term | What people say | What it actually means |
+| 术语 | 通俗说法 | 实际含义 |
 |------|----------------|------------------------|
-| Parallel tool calls | "Fan-out in one turn" | Model emits multiple tool calls in a single assistant message |
-| `parallel_tool_calls` | "OpenAI's flag" | Enable or disable multi-call emission |
-| `disable_parallel_tool_use` | "Anthropic's inverse" | Opt-out flag; default is parallel enabled |
-| Tool call id | "Correlation handle" | Per-call identifier the result message must echo |
-| Accumulator | "Stream buffer" | Per-id string buffer for partial `arguments` chunks |
-| Out-of-order completion | "Fastest first" | Parallel calls finish in unpredictable order; ids are the glue |
-| Dependency graph | "Ordering constraints" | Tools whose outputs feed into inputs of other tools; cannot parallelize |
-| Parse-early trap | "JSON.parse exploded" | Attempting to parse an incomplete `arguments` string |
-| `streamFunctionCallArguments` | "Gemini 3 feature" | Streamed argument chunks with unique id per call |
-| Completion-order reply | "Don't wait for all" | Reply with results as they arrive, keyed by id |
+| 并行工具调用（Parallel tool calls） | “一轮扇出” | 模型在单条 assistant 消息中发出多个工具调用 |
+| `parallel_tool_calls` | “OpenAI 的标志” | 启用或禁用多调用输出 |
+| `disable_parallel_tool_use` | “Anthropic 的反向开关” | 退出并行的标志，默认启用并行 |
+| 工具调用 id（Tool call id） | “关联句柄” | 每次调用的标识符，结果消息必须回传 |
+| 累积器（Accumulator） | “流缓冲区” | 每个 id 一个字符串缓冲区，用于部分 `arguments` 片段 |
+| 乱序完成（Out-of-order completion） | “最快的先完成” | 并行调用按不可预测的顺序结束，靠 id 关联 |
+| 依赖图（Dependency graph） | “顺序约束” | 工具输出成为其他工具的输入，无法并行 |
+| 提前解析陷阱（Parse-early trap） | “JSON.parse 炸了” | 尝试解析不完整的 `arguments` 字符串 |
+| `streamFunctionCallArguments` | “Gemini 3 功能” | 每次调用具有唯一 id 的流式参数片段 |
+| 按完成顺序回复（Completion-order reply） | “不用等全部完成” | 结果到达就按 id 返回 |
 
-## Further Reading
+## 延伸阅读（Further Reading）
 
-- [OpenAI — Parallel function calling](https://platform.openai.com/docs/guides/function-calling#parallel-function-calling) — default behavior and the opt-out flag
-- [Anthropic — Tool use: implementing tool use](https://docs.anthropic.com/en/docs/agents-and-tools/tool-use/implementing-tool-use) — `disable_parallel_tool_use` and result batching
-- [Google — Gemini function calling parallel section](https://ai.google.dev/gemini-api/docs/function-calling) — id-correlated parallel calls from Gemini 3
-- [OpenAI — Streaming responses with tools](https://platform.openai.com/docs/api-reference/responses-streaming) — chunked argument reassembly for OpenAI streams
-- [Anthropic — Streaming messages](https://docs.anthropic.com/en/api/messages-streaming) — `content_block_delta` with `input_json_delta`
+- [OpenAI：并行函数调用（Parallel function calling）](https://platform.openai.com/docs/guides/function-calling#parallel-function-calling)：默认行为与退出并行的标志
+- [Anthropic：工具使用的实现（Tool use: implementing tool use）](https://docs.anthropic.com/en/docs/agents-and-tools/tool-use/implementing-tool-use)：`disable_parallel_tool_use` 与结果批处理
+- [Google：Gemini 函数调用并行章节（Gemini function calling parallel section）](https://ai.google.dev/gemini-api/docs/function-calling)：从 Gemini 3 开始的 id 关联并行调用
+- [OpenAI：使用工具的流式响应（Streaming responses with tools）](https://platform.openai.com/docs/api-reference/responses-streaming)：OpenAI 流中的参数分片重组
+- [Anthropic：流式消息（Streaming messages）](https://docs.anthropic.com/en/api/messages-streaming)：携带 `input_json_delta` 的 `content_block_delta`

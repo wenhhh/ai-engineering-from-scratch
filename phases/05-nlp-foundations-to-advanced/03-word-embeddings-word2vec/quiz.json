@@ -1,102 +1,102 @@
 {
   "lesson": "03-word-embeddings-word2vec",
-  "title": "Word Embeddings — Word2Vec from Scratch",
+  "title": "词嵌入：从零实现 Word2Vec（Word Embeddings — Word2Vec from Scratch）",
   "questions": [
     {
       "stage": "pre",
-      "question": "What is the distributional hypothesis?",
+      "question": "什么是分布假说（Distributional hypothesis）？",
       "options": [
-        "All words can be embedded in 300 dimensions",
-        "Frequent words carry the most meaning",
-        "You shall know a word by the company it keeps",
-        "Words are uniformly distributed across documents"
+        "所有词都能嵌入到 300 维空间中",
+        "高频词承载最多含义",
+        "认识一个词，要看它与谁相伴",
+        "词在各文档间均匀分布"
       ],
       "correct": 2,
-      "explanation": "Firth's (1957) distributional hypothesis: similar contexts imply similar meanings."
+      "explanation": "Firth（1957）的分布假说：相似上下文意味着相似含义。"
     },
     {
       "stage": "pre",
-      "question": "Why is plain softmax over the vocabulary impractical in Word2Vec?",
+      "question": "为什么在 Word2Vec 中对词表直接使用普通 softmax 不切实际？",
       "options": [
-        "Softmax cannot model probabilities",
-        "Softmax has no gradient",
-        "Computing softmax over 100k+ vocabulary terms is prohibitively expensive per training step",
-        "It causes vanishing gradients"
+        "softmax 不能建模概率",
+        "softmax 没有梯度",
+        "每个训练步骤都对 100k+ 个词计算 softmax，成本高得难以承受",
+        "它导致梯度消失"
       ],
       "correct": 2,
-      "explanation": "Full-vocabulary softmax is too expensive; negative sampling reformulates it as binary classification."
+      "explanation": "全词表 softmax 成本过高；负采样（Negative sampling）将其重构为二分类。"
     },
     {
       "stage": "check",
-      "question": "What is the difference between skip-gram and CBOW?",
+      "question": "跳字模型（Skip-gram）与连续词袋（CBOW）有何区别？",
       "options": [
-        "Skip-gram predicts context words from the center; CBOW predicts the center from context",
-        "Skip-gram predicts the center word from context; CBOW does the reverse",
-        "Skip-gram trains a deep network; CBOW is shallow",
-        "Skip-gram uses bigrams; CBOW uses unigrams"
+        "跳字模型从中心词预测上下文词；CBOW 从上下文预测中心词",
+        "跳字模型从上下文预测中心词；CBOW 则相反",
+        "跳字模型训练深层网络；CBOW 是浅层网络",
+        "跳字模型使用二元词组；CBOW 使用一元词组"
       ],
       "correct": 0,
-      "explanation": "Skip-gram: center -> context. CBOW: context -> center."
+      "explanation": "跳字模型：中心词 -> 上下文。CBOW：上下文 -> 中心词。"
     },
     {
       "stage": "check",
-      "question": "In negative sampling, what is the objective for the positive pair (center, context)?",
+      "question": "在负采样中，正例词对 (center, context) 的目标是什么？",
       "options": [
-        "Minimize their dot product",
-        "Force them to be orthogonal",
-        "Maximize sigmoid(W[center] dot W'[context]) so it is close to 1",
-        "Decorrelate the vectors"
+        "最小化它们的点积",
+        "迫使它们正交",
+        "最大化 sigmoid(W[center] dot W'[context])，使其接近 1",
+        "使向量去相关"
       ],
       "correct": 2,
-      "explanation": "Positive pairs train sigmoid near 1; sampled negatives train sigmoid near 0."
+      "explanation": "正例词对使 sigmoid 接近 1；采样负例使 sigmoid 接近 0。"
     },
     {
       "stage": "check",
-      "question": "After training Word2Vec, which weight matrix becomes the word embeddings?",
+      "question": "Word2Vec 训练完成后，哪个权重矩阵成为词嵌入？",
       "options": [
-        "A separate post-training projection",
-        "Both, multiplied together",
-        "The hidden-to-output W' matrix",
-        "The input-to-hidden W matrix (center-word table)"
+        "训练后单独生成的投影",
+        "两者相乘",
+        "隐藏层到输出层的 W' 矩阵",
+        "输入层到隐藏层的 W 矩阵，即中心词表"
       ],
       "correct": 3,
-      "explanation": "The center-word table W is the standard embedding output; W' is often discarded or averaged in."
+      "explanation": "中心词表 W 是标准嵌入输出；W' 通常丢弃，或参与取平均。"
     },
     {
       "stage": "post",
-      "question": "Why does Word2Vec fail on polysemy (e.g. 'bank')?",
+      "question": "为什么 Word2Vec 无法处理一词多义（Polysemy），例如 'bank'？",
       "options": [
-        "Negative sampling drops rare meanings",
-        "It ignores rare words",
-        "The window size is too small",
-        "It assigns one static vector per word, so 'river bank' and 'financial bank' share the same vector"
+        "负采样丢弃了稀有含义",
+        "它忽略稀有词",
+        "窗口太小",
+        "每个词只有一个静态向量，因此 'river bank' 和 'financial bank' 共用同一向量"
       ],
       "correct": 3,
-      "explanation": "Static embeddings cannot disambiguate senses; contextual embeddings (ELMo/BERT) fix this."
+      "explanation": "静态嵌入（Static embedding）无法消除词义歧义；上下文嵌入（ELMo/BERT）解决了这一点。"
     },
     {
       "stage": "post",
-      "question": "When would you still reach for Word2Vec over a transformer in 2026?",
+      "question": "到 2026 年，什么情况下你仍会选择 Word2Vec 而不是 Transformer？",
       "options": [
-        "When dialog quality matters",
-        "When you need contextual disambiguation",
-        "Lightweight, on-device, domain-specific retrieval where a single row lookup is the latency budget",
-        "When inputs are very long"
+        "重视对话质量时",
+        "需要上下文消歧时",
+        "轻量、设备端、领域专用检索，延迟预算只容许一次行查找",
+        "输入非常长时"
       ],
       "correct": 2,
-      "explanation": "Word2Vec wins on tiny latency budgets, on-device inference, or fast domain-specific training."
+      "explanation": "Word2Vec 在极小延迟预算、设备端推理或快速领域专用训练中占优。"
     },
     {
       "stage": "post",
-      "question": "What enables the famous analogy 'king - man + woman ~ queen'?",
+      "question": "著名类比 'king - man + woman ~ queen' 为什么成立？",
       "options": [
-        "Skip-gram trains on royal vocabularies",
-        "Vector arithmetic captures linear directions like 'royal' that transfer across genders",
-        "The model encodes royalty as a flag bit",
-        "Cosine similarity is invariant to gender"
+        "跳字模型在王室词表上训练",
+        "向量运算捕捉到可跨性别迁移的“王室”等线性方向",
+        "模型将王室属性编码为一个标志位",
+        "余弦相似度对性别不变"
       ],
       "correct": 1,
-      "explanation": "Directions in embedding space encode relational features, so adding/subtracting moves systematically."
+      "explanation": "嵌入空间中的方向编码关系特征，因此加减运算会产生有规律的移动。"
     }
   ]
 }

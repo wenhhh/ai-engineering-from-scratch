@@ -1,37 +1,37 @@
 [
   {
-    "question": "What is the biggest gap between an LLM demo and a production LLM application?",
-    "options": ["The model quality", "Infrastructure: error handling, streaming, cost tracking, rate limiting, fallbacks, observability, and graceful degradation under load", "The choice of API provider", "The prompt quality"],
+    "question": "LLM 演示与生产级 LLM 应用之间最大的差距是什么？",
+    "options": ["模型质量", "基础设施：错误处理、流式传输（Streaming）、成本追踪、速率限制（Rate Limiting）、回退（Fallback）、可观测性（Observability），以及负载下的优雅降级（Graceful Degradation）", "API 供应商的选择", "提示词质量"],
     "correct": 1,
-    "explanation": "A demo calls an API and prints the response. Production must handle timeouts, provider outages, concurrent users, cost budgets, streaming delivery, logging, and graceful degradation. The model is the easy part.",
+    "explanation": "演示只需调用 API 并打印响应。生产环境必须处理超时、供应商故障、并发用户、成本预算、流式交付、日志和优雅降级。模型反而是容易的部分。",
     "stage": "pre"
   },
   {
-    "question": "Why is streaming token delivery important in production LLM applications?",
-    "options": ["It improves model accuracy", "It uses less memory", "Users perceive the first token arriving quickly as faster, even if total generation time is the same -- reducing perceived latency from seconds to milliseconds", "It reduces cost"],
+    "question": "为什么流式交付词元（Token）对生产级 LLM 应用很重要？",
+    "options": ["它提高模型准确率", "它使用更少内存", "即使总生成时间相同，首个词元快速到达也会让用户觉得更快，将感知延迟从秒级降至毫秒级", "它降低成本"],
     "correct": 2,
-    "explanation": "Without streaming, users wait 3-10 seconds seeing nothing before the full response appears. With streaming, the first token arrives in ~200ms and text flows continuously, making the experience feel responsive.",
+    "explanation": "没有流式传输时，用户等待 3–10 秒且看不到任何内容，然后完整响应才出现。采用流式传输后，首个词元约在 200 毫秒到达，文本持续输出，让体验更及时。",
     "stage": "pre"
   },
   {
-    "question": "What should happen when your LLM API provider has an outage?",
-    "options": ["Retry indefinitely until the provider recovers", "Show users an error page", "The application should automatically fall back to an alternative provider or return a graceful degraded response", "Switch to a local model"],
+    "question": "当你的 LLM API 供应商发生故障时，应用应如何处理？",
+    "options": ["无限重试，直到供应商恢复", "向用户显示错误页", "应用应自动回退到其他供应商，或返回优雅降级后的响应", "切换到本地模型"],
     "correct": 2,
-    "explanation": "Production systems need fallback strategies: try Provider B if Provider A fails, serve cached responses for common queries, or return a helpful 'temporarily unavailable' message. Never let a provider outage crash your application.",
+    "explanation": "生产系统需要回退策略：供应商 A 失败时尝试供应商 B，为常见查询提供缓存响应，或返回有帮助的“暂时不可用”消息。绝不能让供应商故障使你的应用崩溃。",
     "stage": "post"
   },
   {
-    "question": "What observability metrics should a production LLM application track?",
-    "options": ["Only error counts", "Only model accuracy", "Request latency (P50/P95/P99), cost per request, error rates, token usage, cache hit rates, and quality scores from automated evals", "Only monthly cost"],
+    "question": "生产级 LLM 应用应追踪哪些可观测性（Observability）指标？",
+    "options": ["仅错误数量", "仅模型准确率", "请求延迟（P50/P95/P99）、单请求成本、错误率、词元用量、缓存命中率和自动评估的质量分数", "仅月成本"],
     "correct": 2,
-    "explanation": "Comprehensive observability covers: latency percentiles (for SLA compliance), cost tracking (for budget management), error rates (for reliability), token usage (for optimization), and quality metrics (for regression detection).",
+    "explanation": "完整的可观测性涵盖：延迟百分位数（用于满足服务级别协议 SLA）、成本追踪（用于预算管理）、错误率（用于保障可靠性）、词元用量（用于优化）和质量指标（用于检测退化）。",
     "stage": "post"
   },
   {
-    "question": "Why should you implement rate limiting in your LLM application?",
-    "options": ["To make the application seem exclusive", "To prevent individual users from exhausting your API budget, protect against abuse, and ensure fair access during high traffic", "To reduce model accuracy", "Rate limiting is only needed for free tiers"],
+    "question": "为什么应该在 LLM 应用中实现速率限制（Rate Limiting）？",
+    "options": ["让应用显得稀缺", "防止个别用户耗尽 API 预算，抵御滥用，并在高流量期间保障公平访问", "降低模型准确率", "只有免费套餐才需要速率限制"],
     "correct": 1,
-    "explanation": "Without rate limiting, a single user (or bot) can exhaust your daily API budget in minutes. Rate limiting protects your costs, prevents abuse, and ensures all users get reasonable response times during peak load.",
+    "explanation": "没有速率限制时，单个用户或机器人就能在几分钟内耗尽每日 API 预算。速率限制能够保护成本、防止滥用，并确保所有用户在峰值负载下获得合理的响应时间。",
     "stage": "post"
   }
 ]

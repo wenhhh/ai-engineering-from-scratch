@@ -1,11 +1,10 @@
-"""Architecture calculator for open LLMs.
+"""开放 LLM 的架构计算器（Architecture calculator）。
 
-Given a HuggingFace-style config dict, compute parameter counts by component,
-KV cache at max context, MLP ratio, and a verdict on the architecture. Ships
-with configs for Llama 3 8B, Mistral 7B, Mixtral 8x7B, DeepSeek V3, Qwen 2.5,
-and GPT-2 Small for direct comparison.
+给定 HuggingFace 风格的配置字典，计算各组件参数量、最大上下文下的 KV 缓存、
+多层感知机（MLP）比例，并给出架构结论。内置 Llama 3 8B、Mistral 7B、
+Mixtral 8x7B、DeepSeek V3、Qwen 2.5 和 GPT-2 Small 的配置，便于直接比较。
 
-Stdlib only. No torch, no downloads. The point is to read configs, not weights.
+仅使用标准库。无需 torch，也无需下载。重点是读取配置，而不是权重。
 """
 
 from __future__ import annotations
@@ -256,37 +255,37 @@ def fmt_bytes(b: int) -> str:
 def print_breakdown(b: Breakdown, config: dict) -> None:
     print(f"\n{b.name}")
     print("-" * 70)
-    print(f"  architecture    : {b.verdict}")
-    print(f"  total params    : {fmt_billions(b.total_params)}")
-    print(f"  active params   : {fmt_billions(b.active_params)}")
-    print(f"  embedding       : {fmt_billions(b.embedding_params)}")
-    print(f"  attn / layer    : {fmt_billions(b.attn_params_per_layer)}")
-    print(f"  mlp  / layer    : {fmt_billions(b.mlp_params_per_layer)}  "
-          f"(ratio ff/h = {b.mlp_ratio:.2f})")
-    print(f"  context length  : {config['max_position_embeddings']:,}")
-    print(f"  KV cache BF16   : {fmt_bytes(b.kv_cache_bytes_bf16)}  (per sequence at max context)")
+    print(f"  架构（Architecture）    : {b.verdict}")
+    print(f"  总参数量（Total params）    : {fmt_billions(b.total_params)}")
+    print(f"  活跃参数量（Active params）   : {fmt_billions(b.active_params)}")
+    print(f"  嵌入（Embedding）       : {fmt_billions(b.embedding_params)}")
+    print(f"  每层注意力参数（attn / layer）    : {fmt_billions(b.attn_params_per_layer)}")
+    print(f"  每层 MLP 参数（mlp / layer）    : {fmt_billions(b.mlp_params_per_layer)}  "
+          f"（比例 ff/h = {b.mlp_ratio:.2f}）")
+    print(f"  上下文长度（Context length）  : {config['max_position_embeddings']:,}")
+    print(f"  BF16 键值缓存（KV cache）   : {fmt_bytes(b.kv_cache_bytes_bf16)}  （最大上下文下的每条序列）")
 
 
 def main() -> None:
     print("=" * 70)
-    print("OPEN MODEL ARCHITECTURE WALKTHROUGH")
+    print("开放模型架构详解（Open Model Architecture Walkthrough）")
     print("=" * 70)
     for name, config in CONFIGS.items():
         b = analyze(name, config)
         print_breakdown(b, config)
     print()
     print("=" * 70)
-    print("HEADLINE RATIOS")
+    print("关键比例（Headline Ratios）")
     print("=" * 70)
     for name, config in CONFIGS.items():
         b = analyze(name, config)
         ratio = b.active_params / b.total_params if b.total_params else 1.0
         print(
             f"  {name:18s}  "
-            f"total={fmt_billions(b.total_params):>8s}  "
-            f"active={fmt_billions(b.active_params):>8s}  "
+            f"总参数量（total）={fmt_billions(b.total_params):>8s}  "
+            f"活跃参数量（active）={fmt_billions(b.active_params):>8s}  "
             f"active/total={ratio:.2%}  "
-            f"attn={b.attention_scheme}"
+            f"注意力方案（attn）={b.attention_scheme}"
         )
 
 

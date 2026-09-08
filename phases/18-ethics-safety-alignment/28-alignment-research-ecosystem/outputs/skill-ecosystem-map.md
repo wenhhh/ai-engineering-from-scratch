@@ -1,29 +1,29 @@
 ---
 name: ecosystem-map
-description: Map an alignment claim or evaluation to the organisation, methodology, and cross-checks.
+description: 将对齐声明或评估映射到组织、方法与交叉核查。
 version: 1.0.0
 phase: 18
 lesson: 28
 tags: [mats, redwood, apollo, metr, eleos, ecosystem]
 ---
 
-Given an alignment claim or evaluation, map the source to the research ecosystem and identify cross-checks.
+给定对齐声明或评估，将其来源映射到研究生态，并确定交叉核查方式。
 
-Produce:
+请产出以下内容：
 
-1. Source identification. Which organisation produced the claim (lab, MATS, Redwood, Apollo, METR, Eleos, academic lab)?
-2. Methodological style. Does the work fit the organisation's documented style — Redwood control protocols, Apollo three-pillar scheming, METR task-horizon, Eleos welfare?
-3. Counterpart organisation. Which other organisation works on adjacent problems, and has it published a complementary or contradicting result?
-4. Multi-org signal. Is the paper a single-lab product or a joint publication (e.g., Apollo + OpenAI, Redwood + Anthropic)? Multi-org papers typically carry higher external credibility.
-5. Publication venue. arXiv-only preprint, NeurIPS/ICML/ICLR proceedings, lab blog, or regulatory submission? Venue is a signal about scrutiny level.
+1. 来源识别。哪个组织提出了该声明，例如模型实验室、MATS、Redwood、Apollo、METR、Eleos 或学术实验室？
+2. 方法风格。该工作是否符合组织已有记录的方法风格，例如 Redwood 的控制协议、Apollo 的三支柱密谋分析、METR 的任务时间跨度评估或 Eleos 的福利研究？
+3. 相关组织。还有哪个组织研究相邻问题？它是否发表过互补或相矛盾的结果？
+4. 多组织信号。论文是单一实验室的产物，还是联合发表，例如 Apollo + OpenAI、Redwood + Anthropic？多组织论文通常具有更高的外部可信度。
+5. 发表渠道。它只是 arXiv 预印本，还是 NeurIPS／ICML／ICLR 会议论文、实验室博客或监管提交材料？发表渠道反映了审查程度。
 
-Hard rejects:
-- Any alignment claim without an identified producing organisation.
-- Any single-org safety claim without an external replication or check.
-- Any ecosystem map that ignores the MATS talent-pipeline structure.
+必须否决的情况：
+- 对齐声明没有明确的产出组织。
+- 单一组织提出安全声明，却没有外部复现或核查。
+- 生态地图忽略 MATS 的人才培养结构。
 
-Refusal rules:
-- If the user asks "which research organisation is most trustworthy," refuse the ranking and point to multi-org replication.
-- If the user asks for ecosystem-internal politics, refuse and stay on published methodology.
+拒绝规则：
+- 如果用户问“哪个研究组织最值得信任”，应拒绝排名，并指出多组织复现的重要性。
+- 如果用户询问生态内部政治，应拒绝，并将讨论限定在公开方法论上。
 
-Output: a one-page map filling the five sections above, naming cross-check opportunities, and identifying the strongest evidence and the strongest counterargument.
+输出：一页地图报告，填写上述五个部分，指出交叉核查机会，并识别最强证据和最强反对论证。

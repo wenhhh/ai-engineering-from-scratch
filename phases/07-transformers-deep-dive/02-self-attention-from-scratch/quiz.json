@@ -2,38 +2,63 @@
   "questions": [
     {
       "stage": "pre",
-      "question": "Why does vanilla self-attention scale the dot product by 1/sqrt(d_k)?",
-      "options": ["To make the output values between 0 and 1", "To normalize the query and key vectors to unit length", "To prevent dot products from growing large in high dimensions, which would push softmax into regions with tiny gradients", "To reduce the computational cost of the matrix multiplication"],
+      "question": "标准自注意力（Self-Attention）为什么用 1/sqrt(d_k) 缩放点积？",
+      "options": [
+        "让输出值介于 0 和 1 之间",
+        "把查询向量与键向量归一化为单位长度",
+        "防止点积在高维下变大，把 softmax 推入梯度极小的区域",
+        "降低矩阵乘法的计算成本"
+      ],
       "correct": 2,
-      "explanation": "When d_k is large, the dot product of random vectors grows proportionally to sqrt(d_k). Without scaling, softmax receives large inputs, producing near-one-hot outputs where gradients vanish."
+      "explanation": "d_k 较大时，随机向量的点积按 sqrt(d_k) 成比例增长。不缩放时，softmax 接收大输入，产生接近独热（One-Hot）的输出，梯度因而消失。"
     },
     {
       "stage": "pre",
-      "question": "What are the three projections in self-attention?",
-      "options": ["Encoder, decoder, and cross-attention", "Query, key, and value -- each a learned linear projection of the same input", "Embedding, position, and segment", "Input, hidden, and output"],
+      "question": "自注意力中的三个投影是什么？",
+      "options": [
+        "编码器、解码器和交叉注意力",
+        "查询、键和值，各自都是同一输入的学习线性投影",
+        "嵌入、位置和片段",
+        "输入、隐藏和输出"
+      ],
       "correct": 1,
-      "explanation": "Self-attention projects the input through three different weight matrices to produce queries (what am I looking for?), keys (what do I contain?), and values (what do I output if matched?)."
+      "explanation": "自注意力通过三个不同权重矩阵投影输入，生成查询（我在找什么？）、键（我包含什么？）和值（匹配后输出什么？）。"
     },
     {
       "stage": "post",
-      "question": "In multi-head attention with 8 heads and d_model=512, what is the dimension of each head?",
-      "options": ["512 -- each head sees the full dimension", "64 -- d_model is split evenly across heads (512/8=64)", "4096 -- each head expands the representation", "8 -- one dimension per head"],
+      "question": "多头注意力（Multi-Head Attention）有 8 个头、d_model=512 时，每个头的维度是多少？",
+      "options": [
+        "512，每个头看到完整维度",
+        "64，d_model 在各头之间均分（512/8=64）",
+        "4096，每个头扩展表示",
+        "8，每个头一个维度"
+      ],
       "correct": 1,
-      "explanation": "Multi-head attention splits d_model into h heads, each operating on d_k = d_model/h dimensions. With 512/8 = 64 dimensions per head, the total computation cost equals single-head attention at full dimension."
+      "explanation": "多头注意力将 d_model 拆成 h 个头，每个头处理 d_k = d_model/h 维。每个头为 512/8 = 64 维时，总计算成本等于全维度单头注意力。"
     },
     {
       "stage": "post",
-      "question": "What does the causal mask in autoregressive attention prevent?",
-      "options": ["It prevents each position from attending to future positions, ensuring the model can only use past context when predicting the next token", "It prevents the model from attending to its own position", "It prevents the model from attending to padding tokens", "It prevents attention weights from becoming too large"],
+      "question": "自回归注意力中的因果掩码（Causal Mask）阻止什么？",
+      "options": [
+        "阻止每个位置关注未来位置，确保预测下一词元时模型只能使用过去的上下文",
+        "阻止模型关注自身位置",
+        "阻止模型关注填充词元",
+        "阻止注意力权重变得过大"
+      ],
       "correct": 0,
-      "explanation": "In autoregressive generation, token t must not see tokens t+1, t+2, etc. The causal mask sets future positions to -infinity before softmax, zeroing out their attention weights."
+      "explanation": "自回归生成中，词元 t 不能看到 t+1、t+2 等词元。因果掩码在 softmax 前将未来位置设为 -infinity，使其注意力权重变为零。"
     },
     {
       "stage": "post",
-      "question": "Why does self-attention have O(n^2) complexity in sequence length n?",
-      "options": ["Because the model has n layers stacked on top of each other", "Because backpropagation through attention requires n^2 gradient computations", "Because the feedforward layers after attention are quadratic", "Because every token computes attention scores with every other token, producing an n x n attention matrix"],
+      "question": "为什么自注意力对序列长度 n 的复杂度为 O(n^2)？",
+      "options": [
+        "因为模型有 n 层相互堆叠",
+        "因为注意力反向传播需要 n^2 次梯度计算",
+        "因为注意力后的前馈层是二次复杂度",
+        "因为每个词元都与其他每个词元计算注意力分数，产生 n x n 的注意力矩阵"
+      ],
       "correct": 3,
-      "explanation": "The QK^T matrix multiplication produces an n x n attention matrix where entry (i,j) is the attention from token i to token j. Both computation and memory scale as O(n^2), which is why long-context models need techniques like FlashAttention."
+      "explanation": "QK^T 矩阵乘法产生 n x n 注意力矩阵，其中条目 (i,j) 表示词元 i 对词元 j 的注意力。计算和内存均按 O(n^2) 扩展，因此长上下文模型需要 FlashAttention 等技术。"
     }
   ]
 }

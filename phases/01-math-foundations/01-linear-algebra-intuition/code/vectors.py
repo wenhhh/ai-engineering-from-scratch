@@ -133,7 +133,7 @@ class Matrix:
 
 
 if __name__ == "__main__":
-    print("=== Vectors ===")
+    print("=== 向量（Vectors）===")
     a = Vector([1, 2, 3])
     b = Vector([4, 5, 6])
     print(f"a = {a}")
@@ -143,24 +143,24 @@ if __name__ == "__main__":
     print(f"a * 3 = {a * 3}")
     print(f"a · b = {a.dot(b)}")
     print(f"|a| = {a.magnitude():.4f}")
-    print(f"â (normalized) = {a.normalize()}")
+    print(f"â（归一化，Normalized）= {a.normalize()}")
     print(f"cosine_similarity(a, b) = {a.cosine_similarity(b):.4f}")
 
-    print("\n=== Matrices ===")
+    print("\n=== 矩阵（Matrices）===")
     rotation_90 = Matrix([[0, -1], [1, 0]])
     point = Vector([3, 1])
     rotated = rotation_90 @ point
-    print(f"Rotate {point} by 90° → {rotated}")
+    print(f"将 {point} 旋转（Rotate）90° → {rotated}")
 
-    print("\n=== Angle Between Vectors ===")
+    print("\n=== 向量夹角（Angle Between Vectors）===")
     v1 = Vector([1, 0])
     v2 = Vector([0, 1])
     v3 = Vector([1, 1])
-    print(f"Angle between {v1} and {v2}: {v1.angle_between(v2):.1f} degrees")
-    print(f"Angle between {v1} and {v3}: {v1.angle_between(v3):.1f} degrees")
-    print(f"Angle between {v1} and {v1}: {v1.angle_between(v1):.1f} degrees")
+    print(f"{v1} 与 {v2} 的夹角：{v1.angle_between(v2):.1f} 度")
+    print(f"{v1} 与 {v3} 的夹角：{v1.angle_between(v3):.1f} 度")
+    print(f"{v1} 与 {v1} 的夹角：{v1.angle_between(v1):.1f} 度")
 
-    print("\n=== Projection ===")
+    print("\n=== 投影（Projection）===")
     a = Vector([3, 4])
     b = Vector([1, 0])
     proj = a.project_onto(b)
@@ -171,15 +171,15 @@ if __name__ == "__main__":
     print(f"residual = {residual}")
     print(f"residual dot b = {residual.dot(b):.6f}")
 
-    print("\n=== Linear Independence ===")
+    print("\n=== 线性无关（Linear Independence）===")
     e1 = Vector([1, 0, 0])
     e2 = Vector([0, 1, 0])
     e3 = Vector([0, 0, 1])
     dep = Vector([2, 1, 0])
-    print(f"{{e1, e2, e3}} independent: {is_independent([e1, e2, e3])}")
-    print(f"{{e1, e2, 2*e1+e2}} independent: {is_independent([e1, e2, dep])}")
+    print(f"{{e1, e2, e3}} 是否线性无关：{is_independent([e1, e2, e3])}")
+    print(f"{{e1, e2, 2*e1+e2}} 是否线性无关：{is_independent([e1, e2, dep])}")
 
-    print("\n=== Gram-Schmidt Orthogonalization ===")
+    print("\n=== Gram-Schmidt 正交化（Orthogonalization）===")
     u1 = Vector([1, 1, 0])
     u2 = Vector([1, 0, 1])
     u3 = Vector([0, 1, 1])
@@ -192,20 +192,20 @@ if __name__ == "__main__":
     for i, vec in enumerate(basis):
         print(f"|u{i+1}| = {vec.magnitude():.6f}")
 
-    print("\n=== Matrix Rank ===")
+    print("\n=== 矩阵的秩（Matrix Rank）===")
     full_rank = Matrix([[1, 0], [0, 1]])
     rank_deficient = Matrix([[1, 2], [2, 4]])
     rectangular = Matrix([[1, 0, 0], [0, 1, 0]])
-    print(f"Identity 2x2 rank: {full_rank.rank()}")
-    print(f"[[1,2],[2,4]] rank: {rank_deficient.rank()}")
-    print(f"[[1,0,0],[0,1,0]] rank: {rectangular.rank()}")
+    print(f"2x2 单位矩阵（Identity）的秩：{full_rank.rank()}")
+    print(f"[[1,2],[2,4]] 的秩：{rank_deficient.rank()}")
+    print(f"[[1,0,0],[0,1,0]] 的秩：{rectangular.rank()}")
 
-    print("\n=== Neural Network Layer (Matrix x Vector) ===")
+    print("\n=== 神经网络层（Neural Network Layer）：矩阵 x 向量 ===")
     import random
     random.seed(42)
     weights = Matrix([[random.gauss(0, 0.1) for _ in range(3)] for _ in range(2)])
     input_vec = Vector([1.0, 0.5, -0.3])
     output = weights @ input_vec
-    print(f"Input (3D):  {input_vec}")
-    print(f"Output (2D): {output}")
-    print("^ This is literally what a neural network layer does.")
+    print(f"输入（Input，3D）： {input_vec}")
+    print(f"输出（Output，2D）：{output}")
+    print("^ 神经网络层执行的正是这一运算。")

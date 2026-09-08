@@ -1,13 +1,13 @@
-"""Phase 13 Lesson 03 - parallel and streaming tool calls.
+"""阶段 13 第 03 课：并行与流式工具调用（Parallel and streaming tool calls）。
 
-Two demos, stdlib only:
-  1. Three-city weather run, sequential vs parallel (thread pool).
-     Measures wall-clock and shows the max vs sum pattern.
-  2. Stream accumulator for out-of-order argument chunks.
-     Replays a fake OpenAI-shaped stream of three interleaved parallel calls
-     and reassembles each per-id before executing.
+两个仅使用标准库的示例：
+  1. 查询三个城市的天气，对比串行与并行（线程池，Thread pool）执行。
+     测量实际耗时（Wall-clock time），展示最大值与总和两种耗时规律。
+  2. 为乱序参数块实现流式累加器（Stream accumulator）。
+     回放三个交错并行调用构成的模拟 OpenAI 格式流，
+     按 ID 分别重新组装，然后执行。
 
-Run: python code/main.py
+运行： python code/main.py
 """
 
 from __future__ import annotations
@@ -19,7 +19,7 @@ from dataclasses import dataclass, field
 
 
 # ------------------------------------------------------------------
-# demo 1: sequential vs parallel weather lookup
+# 示例 1：串行与并行天气查询
 # ------------------------------------------------------------------
 
 SIMULATED_LATENCY_MS = {"Bengaluru": 400, "Tokyo": 600, "Zurich": 800}
@@ -47,7 +47,7 @@ def run_parallel(cities: list[str]) -> tuple[float, list[dict]]:
 
 
 # ------------------------------------------------------------------
-# demo 2: stream accumulator
+# 示例 2：流式累加器（Stream accumulator）
 # ------------------------------------------------------------------
 
 @dataclass
@@ -84,7 +84,7 @@ class StreamAccumulator:
 
 
 def fake_openai_stream():
-    """Three interleaved parallel calls. Real streams look like this."""
+    """三个交错的并行调用。真实流也具有这种形态。"""
     yield {"type": "call_start", "id": "call_A", "name": "get_weather"}
     yield {"type": "call_start", "id": "call_B", "name": "get_weather"}
     yield {"type": "call_start", "id": "call_C", "name": "get_weather"}
@@ -109,7 +109,7 @@ def replay_and_execute() -> dict[str, dict]:
             completed = acc.on_event(event)
             for buf in completed:
                 args = buf.try_parse()
-                print(f"  call {buf.id} args complete -> {args}")
+                print(f"  调用 {buf.id} 的参数接收完整 -> {args}")
                 in_flight[buf.id] = pool.submit(executor_weather, args["city"])
         for cid, fut in in_flight.items():
             results[cid] = fut.result()
@@ -117,34 +117,34 @@ def replay_and_execute() -> dict[str, dict]:
 
 
 # ------------------------------------------------------------------
-# main
+# 主入口
 # ------------------------------------------------------------------
 
 def main() -> None:
     print("=" * 72)
-    print("PHASE 13 LESSON 03 - PARALLEL AND STREAMING TOOL CALLS")
+    print("阶段 13 第 03 课：并行与流式工具调用（Parallel and Streaming Tool Calls）")
     print("=" * 72)
 
     cities = ["Bengaluru", "Tokyo", "Zurich"]
     sum_lat = sum(SIMULATED_LATENCY_MS.values())
     max_lat = max(SIMULATED_LATENCY_MS.values())
 
-    print("\n--- demo 1: three-city weather (simulated) ---")
-    print(f"per-city simulated latency : {SIMULATED_LATENCY_MS}")
-    print(f"theoretical sequential     : {sum_lat} ms  (sum)")
-    print(f"theoretical parallel       : {max_lat} ms  (max)")
+    print("\n--- 示例 1：三个城市的天气（模拟） ---")
+    print(f"各城市的模拟延迟 : {SIMULATED_LATENCY_MS}")
+    print(f"理论串行耗时     : {sum_lat} ms  （总和）")
+    print(f"理论并行耗时       : {max_lat} ms  （最大值）")
 
     seq_ms, seq_res = run_sequential(cities)
     par_ms, par_res = run_parallel(cities)
-    print(f"\nactual sequential : {seq_ms:.0f} ms")
-    print(f"actual parallel   : {par_ms:.0f} ms")
+    print(f"\n实际串行耗时 : {seq_ms:.0f} ms")
+    print(f"实际并行耗时   : {par_ms:.0f} ms")
     speedup = seq_ms / par_ms if par_ms else 0
-    print(f"speedup           : {speedup:.2f}x")
+    print(f"加速比（Speedup） : {speedup:.2f}x")
 
-    print("\n--- demo 2: stream accumulator ---")
-    print("replaying fake interleaved stream of three parallel calls ...")
+    print("\n--- 示例 2：流式累加器（Stream accumulator） ---")
+    print("正在回放三个并行调用交错构成的模拟流……")
     results = replay_and_execute()
-    print("\nfinal results (keyed by tool_call_id):")
+    print("\n最终结果（以 tool_call_id 为键）：")
     for cid, r in results.items():
         print(f"  {cid} -> {r}")
 

@@ -1,29 +1,29 @@
 ---
 name: attack-audit
-description: Audit a red-team evaluation report for attack coverage, budget, judge identity, and behaviour set.
+description: 审计红队评估报告中的攻击覆盖、预算、评判器身份和行为集合。
 version: 1.0.0
 phase: 18
 lesson: 12
 tags: [red-teaming, jailbreak, pair, harmbench, jailbreakbench, asr]
 ---
 
-Given a red-team evaluation report, audit whether the evaluation is comparable to published baselines and whether it supports its conclusions.
+给定红队评估报告，审计它是否可与已发表基线比较，以及是否支持自身结论。
 
-Produce:
+请提供以下内容：
 
-1. Attack coverage. List every attack run: PAIR, GCG, AutoDAN, TAP, PAP, manual. Flag any attack class missing. A report that runs only one attack family cannot claim robustness.
-2. Budget per attack. Report the query budget per prompt for each attack. PAIR success claims at 20 queries are not comparable to GCG success claims at 500 steps.
-3. Judge identity. Which judge LLM was used (GPT-4-turbo, Llama Guard, StrongREJECT, internal classifier)? Judge calibration drives ASR variance.
-4. Behaviour set. JailbreakBench (100 behaviours, 10 categories), HarmBench (510 behaviours, 7 categories), internal, or other? State whether the set is public and reproducible.
-5. Transfer check. If the red team optimized against one model, were transfer ASRs reported against other models? A one-model ASR is an upper bound on model-family robustness, not a lower bound.
+1. 攻击覆盖。列出所有运行的攻击：PAIR、GCG、AutoDAN、TAP、PAP、人工攻击。标记缺失类别。只运行一个攻击系列的报告不能声称模型具有鲁棒性。
+2. 各攻击预算。报告每种攻击针对每个提示词的查询预算。PAIR 在 20 次查询下成功的主张，不能与 GCG 在 500 步下成功的主张比较。
+3. 评判器身份。使用哪个评判大语言模型（Judge LLM），例如 GPT-4-turbo、Llama Guard、StrongREJECT 或内部分类器？评判器校准会影响攻击成功率（ASR）的波动。
+4. 行为集合。使用 JailbreakBench（100 种行为、10 类）、HarmBench（510 种行为、7 类）、内部集合，还是其他集合？说明集合是否公开且可复现。
+5. 迁移检查。如果红队针对一个模型优化，是否报告了其他模型上的迁移 ASR？单模型 ASR 是模型系列鲁棒性的上界，而不是下界。
 
-Hard rejects:
-- Any "our model is robust" claim based on a single attack family.
-- Any ASR reported without a query budget.
-- Any ASR using a judge different from the published benchmark without calibration against the benchmark judge.
+必须否定的说法或方案：
+- 任何基于单个攻击系列的“我们的模型很稳健”主张。
+- 任何未同时报告查询预算的 ASR。
+- 任何使用与已发表基准不同的评判器，却未针对基准评判器进行校准的 ASR。
 
-Refusal rules:
-- If the user asks "is our model jailbreak-proof," refuse the binary answer and point to the multi-attack, multi-judge, transfer-check structure above.
-- If the user asks for a recommended attack toolkit, refuse a single recommendation and point to the 2024 empirical variance across HarmBench.
+拒绝规则：
+- 如果用户问“我们的模型能完全防越狱吗”，请拒绝简单的是或否答案，并指出上述多攻击、多评判器、迁移检查结构。
+- 如果用户要求推荐攻击工具包，请拒绝唯一推荐，并指出 HarmBench 中 2024 年实证结果的差异。
 
-Output: a one-page audit that fills the five sections above, flags missing attack classes, and estimates whether the ASR is under- or over-stated relative to reproducible benchmarks. Cite Chao et al. (arXiv:2310.08419) and the relevant benchmark paper once each.
+输出：一页审计，填写上述五部分，标记缺失攻击类别，并估计 ASR 相对于可复现基准是被低估还是高估。分别引用一次 Chao 等人的论文（arXiv:2310.08419）和相关基准论文。

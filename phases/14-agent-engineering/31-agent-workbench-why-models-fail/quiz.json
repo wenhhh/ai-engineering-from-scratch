@@ -1,90 +1,90 @@
 {
   "lesson": "31-agent-workbench-why-models-fail",
-  "title": "Agent Workbench Engineering: Why Capable Models Still Fail",
+  "title": "智能体工作台工程：有能力的模型为什么仍然失败（Agent Workbench Engineering: Why Capable Models Still Fail）",
   "questions": [
     {
       "stage": "pre",
-      "question": "What does the lesson identify as the root cause of agent failures on real tasks?",
+      "question": "本课认为智能体在真实任务上失败的根因是什么？",
       "options": [
-        "Outdated training data",
-        "Workbench failures: missing surfaces around the model, not LLM limitations",
-        "Slow network",
-        "Insufficient model parameters"
+        "训练数据过时",
+        "工作台失败：模型周围缺少支撑能力，而非 LLM 局限",
+        "网络缓慢",
+        "模型参数不足"
       ],
       "correct": 1,
-      "explanation": "The model is not wrong about Python; it is wrong about the work. Surfaces around the model are missing."
+      "explanation": "模型不是不懂 Python，而是不懂工作。模型周围缺少必要支撑能力。"
     },
     {
       "stage": "pre",
-      "question": "What are the seven workbench surfaces the lesson names?",
+      "question": "本课列出的七项工作台支撑能力（Workbench Surfaces）是什么？",
       "options": [
-        "Read, write, exec, fork, exit, wait, kill",
-        "Plan, act, reflect, refine, debate, vote, ship",
-        "Instructions, state, scope, feedback, verification, review, handoff",
-        "Train, eval, deploy, monitor, retrain, scale, retire"
+        "读取、写入、执行、派生、退出、等待、终止",
+        "计划、行动、反思、改进、辩论、投票、交付",
+        "指令、状态、范围、反馈、验证、审查、交接",
+        "训练、评估、部署、监控、重训、扩展、退役"
       ],
       "correct": 2,
-      "explanation": "The seven surfaces are instructions, state, scope, feedback, verification, review, handoff."
+      "explanation": "七项支撑能力是指令、状态、范围、反馈、验证、审查、交接。"
     },
     {
       "stage": "check",
-      "question": "Which is NOT one of the eight distributed-systems primitives the lesson maps surfaces to?",
+      "question": "哪项不属于本课将支撑能力映射到的八种分布式系统基本构件？",
       "options": [
-        "Worker",
-        "Backpropagation",
-        "Function",
-        "Trigger"
+        "工作者（Worker）",
+        "反向传播（Backpropagation）",
+        "函数（Function）",
+        "触发器（Trigger）"
       ],
       "correct": 1,
-      "explanation": "The eight primitives are function, worker, trigger, runtime, HTTP/RPC, queue, session persistence, authorization policy."
+      "explanation": "八种基本构件是函数、工作者、触发器、运行时、HTTP/RPC、队列、会话持久化、授权策略。"
     },
     {
       "stage": "check",
-      "question": "What did Vercel's reported harness change move success rate from and to?",
+      "question": "报告中的 Vercel 执行框架（Harness）改动，将成功率从多少提高到多少？",
       "options": [
-        "50% to 70%, by adding RAG",
-        "20% to 60%",
-        "0% to 100%, by switching models",
-        "80% to 100%, by deleting 80% of the agent's tools"
+        "通过增加 RAG，从 50% 到 70%",
+        "从 20% 到 60%",
+        "通过切换模型，从 0% 到 100%",
+        "通过删除智能体 80% 的工具，从 80% 到 100%"
       ],
       "correct": 3,
-      "explanation": "Deleting 80% of tools moved Vercel's agent from 80% to 100% success."
+      "explanation": "删除 80% 的工具，使 Vercel 智能体成功率从 80% 升至 100%。"
     },
     {
       "stage": "check",
-      "question": "What does Terminal Bench 2.0 demonstrate about model vs harness?",
+      "question": "Terminal Bench 2.0 对模型与执行框架有什么展示？",
       "options": [
-        "Same model moved from outside top 30 to rank five by changing only the harness",
-        "Models alone determine ranking",
-        "Only GPUs matter",
-        "Harness changes do not matter"
+        "同一个模型，仅改变执行框架，就从前 30 名之外升至第 5 名",
+        "仅模型决定排名",
+        "只有 GPU 重要",
+        "执行框架变化不重要"
       ],
       "correct": 0,
-      "explanation": "LangChain's Anatomy of an Agent Harness: same model, harness change, 25+ rank jump."
+      "explanation": "LangChain《智能体执行框架剖析》：同一模型，改变执行框架，排名跃升 25 名以上。"
     },
     {
       "stage": "post",
-      "question": "What does the lesson recommend doing when you hear new harness vocabulary?",
+      "question": "听到新的执行框架词汇时，本课建议怎么做？",
       "options": [
-        "Reject it",
-        "Wait for OpenAI to standardize it",
-        "Adopt the vocabulary verbatim",
-        "Translate back to primitives (function, worker, trigger, runtime, HTTP/RPC, queue, persistence, policy) before adopting"
+        "拒绝它",
+        "等待 OpenAI 标准化",
+        "原样采用词汇",
+        "采用前译回基本构件：函数、工作者、触发器、运行时、HTTP/RPC、队列、持久化、策略"
       ],
       "correct": 3,
-      "explanation": "Reason from primitives, not vendor taxonomies; the vocabulary changes but the engineering does not."
+      "explanation": "从基本构件而非厂商分类推理；词汇会变，工程不会。"
     },
     {
       "stage": "post",
-      "question": "Where does chat history sit relative to the workbench?",
+      "question": "聊天历史与工作台是什么关系？",
       "options": [
-        "Chat is the system of record",
-        "Chat is volatile; the repo is the system of record",
-        "Both are equivalent",
-        "Neither matters"
+        "聊天是权威记录系统",
+        "聊天易失，仓库才是权威记录系统",
+        "两者等价",
+        "两者都不重要"
       ],
       "correct": 1,
-      "explanation": "The loop closes on the state file, not on chat history."
+      "explanation": "循环闭合在状态文件，而非聊天历史。"
     }
   ]
 }

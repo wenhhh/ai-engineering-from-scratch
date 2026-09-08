@@ -1,30 +1,30 @@
 ---
 name: parallel-call-safety-check
-description: Audit a tool registry for safe parallelization. Mark each tool parallel_safe, note ordering dependencies, and flag downstream rate-limit risk.
+description: 审计工具注册表是否能安全并行。为每个工具标记 parallel_safe，记录顺序依赖，并标出下游限流风险。
 version: 1.0.0
 phase: 13
 lesson: 03
 tags: [parallel-tool-calls, streaming, correlation, rate-limits]
 ---
 
-Given a tool registry (list of tools with names, descriptions, and executors), return an annotated copy with `parallel_safe: bool`, `ordering_deps: [tool_name]`, and `rate_limit_group: name` fields added.
+给定工具注册表（包含名称、描述和执行器的工具列表），返回带注解的副本，增加 `parallel_safe: bool`、`ordering_deps: [tool_name]` 和 `rate_limit_group: name` 字段。
 
-Produce:
+产出：
 
-1. Per-tool classification. For each tool, decide: safe to run in parallel within the same turn (pure reads, different resources); unsafe (mutations, shared resources, external rate limits).
-2. Dependency graph. Identify pairs where one tool's output should feed another's input. Cannot parallelize within a turn. Mark with `ordering_deps`.
-3. Rate-limit grouping. Tools that hit the same downstream API share a group. Host should cap per-group concurrency, not per-tool.
-4. Safety recommendations. For each unsafe tool, state whether to disable parallel for that turn, queue, or shard by resource.
-5. Provider-specific flags. Recommend `parallel_tool_calls=false` on OpenAI or `disable_parallel_tool_use=true` on Anthropic when any unsafe tool is in the set.
+1. 逐工具分类（Per-tool classification）。判断每个工具在同一轮中并行是否安全：安全（纯读取、不同资源）；不安全（修改、共享资源、外部速率限制）。
+2. 依赖图（Dependency graph）。找出一个工具的输出应成为另一个输入的工具对。它们不能在一轮内并行，用 `ordering_deps` 标记。
+3. 限流分组（Rate-limit grouping）。调用同一下游 API 的工具共享一组。宿主应按组限制并发，而不是按工具。
+4. 安全建议（Safety recommendations）。为每个不安全工具说明应在该轮禁用并行、排队，还是按资源分片。
+5. 提供商专属标志（Provider-specific flags）。工具集合中存在任何不安全工具时，建议 OpenAI 使用 `parallel_tool_calls=false`，或 Anthropic 使用 `disable_parallel_tool_use=true`。
 
-Hard rejects:
-- Any registry with no classification after the audit. Default-deny; unknown means unsafe.
-- Any write-path tool on a shared resource marked `parallel_safe: true`. Race conditions.
-- Any tool that hits a rate-limited external API without a `rate_limit_group`.
+硬性拒绝条件：
+- 审计后仍无分类的任何注册表。默认拒绝，未知意味着不安全。
+- 共享资源上的任何写入路径工具被标为 `parallel_safe: true`，会产生竞态条件。
+- 调用受限流的外部 API 却没有 `rate_limit_group` 的任何工具。
 
-Refusal rules:
-- If asked to mark all tools parallel-safe without inspection, refuse.
-- If the registry includes consequential tools on the same resource (`delete_file` and `write_file` on the same path), refuse to parallelize and direct to Phase 14 · 09 for sandbox-level serialization.
-- If the user argues that their tools never race, refuse and ask for the proof (tests, logs, or a formal argument). Racing happens silently in production.
+拒绝规则：
+- 要求不经检查将所有工具标为并行安全时，拒绝。
+- 注册表包含作用于同一资源的实际后果工具时（同一路径上的 `delete_file` 与 `write_file`），拒绝并行化，转到阶段 14 · 09 了解沙箱级串行化。
+- 用户声称工具从不发生竞态时，拒绝并要求证据（测试、日志或形式化论证）。竞态会在生产中悄然发生。
 
-Output: a revised registry as a JSON blob with the three new fields per tool, followed by a short summary naming the highest-risk parallelization choice and the recommended mitigation. End with a suggested `tool_choice` override for the current turn.
+输出：以 JSON 数据块提供修订后的注册表，每个工具包含三个新字段；随后用简短总结指出风险最高的并行化选择及建议的缓解措施。最后给出当前轮次的 `tool_choice` 覆盖设置建议。

@@ -71,6 +71,9 @@
     "continuity": 1000,
     "cachedReference": 10000
   },
-  "cachedPrefixSourceIds": ["project-instructions", "refund-policy-uk"],
-  "invalidationRule": "Invalidate when an included source changes status, effective date, content hash, or approval"
+  "cachedPrefixSourceIds": [
+    "project-instructions",
+    "refund-policy-uk"
+  ],
+  "invalidationRule": "所含来源的状态、生效日期、内容哈希或批准情况变化时，使缓存失效"
 }

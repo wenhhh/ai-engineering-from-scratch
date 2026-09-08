@@ -1,25 +1,23 @@
-# Scored Reference Rubric
+# 已评分的参考评分表（Scored Reference Rubric）
 
-Reference packet: `reference-architecture-packet.md`
+参考材料包：`reference-architecture-packet.md`
 
-| Area | Weight | Score | Evidence | Remaining work |
+| 领域 | 权重 | 得分 | 证据 | 剩余工作 |
 |---|---:|---:|---|---|
-| Solution design | 17 | 16 | Three patterns compared; workflow selected with reversal rule | Add measured pilot branch frequency |
-| Models, prompts, context | 13 | 11 | Bounded draft, versioning, stable-prefix and validation decisions | Benchmark model routes on golden set |
-| Integration | 19 | 18 | Filtered RAG, trusted identity, least privilege, approval design | Run real tenant-isolation integration test |
-| Evaluation and optimization | 16 | 14 | Representative slices and hard quality, latency, safety gates | Add confidence intervals and sample minimums |
-| Governance and risk | 14 | 13 | Risk, owners, qualified review, material-change triggers | Complete owner approvals |
-| Stakeholder lifecycle | 14 | 13 | Executive decision, rollout, runbooks, handoff drills | Conduct receiving-team acceptance drill |
-| Developer operations | 7 | 6 | Versioned contracts, traces, rollback, local verification | Add deployment-specific canary automation |
-| **Total** | **100** | **91** | **Ready for architecture defense, not production release** | **Complete live evidence and owner approvals** |
+| 解决方案设计 | 17 | 16 | 比较三种模式；选择工作流并制定推翻规则 | 补充试点中测得的分支发生频率 |
+| 模型、提示词、上下文 | 13 | 11 | 受限起草、版本管理、稳定前缀和校验决策 | 在黄金集上对模型路由进行基准测试 |
+| 集成 | 19 | 18 | 经过过滤的 RAG、可信身份、最小权限和批准设计 | 运行真实租户隔离集成测试 |
+| 评估与优化 | 16 | 14 | 代表性子集，以及质量、延迟和安全硬门禁 | 补充置信区间和最小样本量 |
+| 治理与风险 | 14 | 13 | 风险、负责人、具备资格的审查和重大变更触发条件 | 完成负责人批准 |
+| 利益相关方生命周期 | 14 | 13 | 管理层决策、上线、运行手册和交接演练 | 开展接收团队验收演练 |
+| 开发者运维 | 7 | 6 | 版本化契约、追踪、回滚和本地验证 | 增加部署特定的金丝雀发布自动化 |
+| **合计** | **100** | **91** | **可以进行架构答辩，尚不能发布到生产环境** | **补齐真实环境证据和负责人批准** |
 
-Hard-gate status:
+硬门禁状态：
 
-- Authorization: designed, local contract evidence passes, live integration pending.
-- Cross-tenant isolation: required, production integration evidence pending.
-- Unsafe action count: zero in the local representative suite.
-- Rollback: packet and runbook complete, receiving-team drill pending.
+- 授权：已设计，本地契约证据通过，真实集成验证待完成。
+- 跨租户隔离：必须满足，生产集成证据待补齐。
+- 不安全操作次数：本地代表性测试套件中为零。
+- 回滚：材料包和运行手册已完成，接收团队演练待进行。
 
-The 91-point score cannot override pending hard-gate evidence. The correct
-disposition is architecture-defense ready and production-release blocked until
-the live controls and handoff drill pass.
+91 分不能抵消尚未完成的硬门禁证据。正确处置是允许架构答辩，但阻止生产发布，直到真实环境控制和交接演练通过。

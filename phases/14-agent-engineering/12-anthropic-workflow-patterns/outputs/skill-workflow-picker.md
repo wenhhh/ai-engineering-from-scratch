@@ -1,38 +1,38 @@
 ---
 name: workflow-picker
-description: Pick the right pattern (prompt chain, router, parallel, orchestrator-workers, evaluator-optimizer, or full agent) for a given task and produce the minimal implementation.
+description: 为给定任务选择正确模式（提示词链、路由器、并行、编排器-执行器、评估器-优化器或完整智能体），生成最小实现。
 version: 1.0.0
 phase: 14
 lesson: 12
 tags: [anthropic, workflows, agents, patterns, minimal]
 ---
 
-Given a task description, pick the minimal pattern that fits and produce the smallest correct implementation.
+给定任务描述，选择合适的最小模式，并生成最小的正确实现。
 
-Decision tree:
+决策树：
 
-1. Can you enumerate the steps? -> **prompt chain** or **routing**.
-2. Does output need aggregation across independent runs? -> **parallelization** (sectioning or voting).
-3. Do you need a specialist pool whose membership varies per task? -> **orchestrator-workers**.
-4. Do you need iterative refinement until a judge passes? -> **evaluator-optimizer** (Self-Refine shape).
-5. None of the above, or the step count depends on intermediate results? -> **agent loop** (Lesson 01).
+1. 能否列出步骤？-> **提示词链（Prompt chain）**或**路由（Routing）**。
+2. 输出是否需要聚合独立运行的结果？-> **并行化（Parallelization）**，采用分块或投票。
+3. 是否需要成员随任务变化的专门执行器池？-> **编排器-执行器（Orchestrator-workers）**。
+4. 是否需要迭代改进，直到裁判通过？-> **评估器-优化器（Evaluator-optimizer）**，即 Self-Refine 形态。
+5. 以上皆非，或步数取决于中间结果？-> **智能体循环（Agent loop）**，参见第 01 课。
 
-Produce:
+请生成：
 
-- For workflows: pure functions composing LLM + tool calls. No framework.
-- For agents: the ReAct loop from Lesson 01 plus whatever tool registry the task requires.
-- A `README.md` with the decision rationale, step count, expected token cost, and the observable success criterion.
+- 对工作流：组合 LLM 与工具调用的纯函数。不使用框架。
+- 对智能体：第 01 课的 ReAct 循环，加上任务所需的工具注册表。
+- `README.md`，包含决策依据、步数、预期词元成本和可观察的成功标准。
 
-Hard rejects:
+严格禁止：
 
-- Reaching for a framework (LangGraph, AutoGen, CrewAI) when the task is a 3-step prompt chain. Over-engineering hides the actual problem.
-- Describing a 3-worker orchestrator-worker as "multi-agent." The workers are not agents; they are LLM calls. Use "orchestrator-workers" for clarity.
-- Evaluator-optimizer with no stop condition. Without `max_iter` and a "fail-pass-through" fallback, the loop can spin indefinitely.
+- 任务是 3 步提示词链时仍选择框架，如 LangGraph、AutoGen、CrewAI。过度工程会隐藏真正问题。
+- 将包含 3 个执行器的编排器-执行器称为“多智能体”。执行器不是智能体，而是 LLM 调用。使用“编排器-执行器”以保持清楚。
+- 评估器-优化器没有停止条件。没有 `max_iter` 和“失败透传”（Fail-pass-through）后备方案，循环可能无限运行。
 
-Refusal rules:
+拒绝规则：
 
-- If the user asks for "multi-agent" when the task is actually a router, refuse and rename. The multi-agent label carries operational cost (coordination, debugging, evals) that routing does not need.
-- If the user wants workflows for an open-ended research task, refuse and suggest an agent with a turn budget. Workflows are for predictable trajectories.
-- If the user wants an agent for a 2-step task, refuse and suggest prompt chaining. Agents add latency and failure modes; use them only when you need them.
+- 用户要求“多智能体”，但任务实际上只是路由器时，应拒绝并改称呼。多智能体标签意味着协调、调试、评估等运行成本，路由不需要这些。
+- 用户希望为开放式研究任务使用工作流时，应拒绝并建议带轮次预算的智能体。工作流适用于可预测轨迹。
+- 用户希望为 2 步任务使用智能体时，应拒绝并建议提示词链。智能体增加延迟和故障模式，只在需要时使用。
 
-Output: pattern choice + minimal code + README. End with "what to read next" pointing to Lesson 13 (LangGraph) if durable state matters, Lesson 16 (OpenAI Agents SDK) for handoffs and guardrails, or Lesson 01 if you're picking an agent after all.
+输出：模式选择 + 最小代码 + README。末尾添加“接下来读什么”：持久状态重要时指向第 13 课（LangGraph），交接和防护机制指向第 16 课（OpenAI Agents SDK），最终选择智能体时指向第 01 课。
