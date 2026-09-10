@@ -1,8 +1,7 @@
-"""Companion code for:
-certifications/claude/lessons/30-developer-application-capstone/docs/en.md
-It combines validation, policy, tools, tracing, and deterministic evaluation.
-Protocol ideas follow official Anthropic Messages and evaluation guidance.
-"""
+"""第 30 课 Developer Application 综合项目配套代码。
+
+对应 docs/en.md：组合输入校验、策略、工具循环、Messages 请求边界和可选 live-wire 路径。默认测试保持离线；
+真实网络路径只有在显式提供凭据时才可能运行。"""
 
 from __future__ import annotations
 
@@ -25,13 +24,13 @@ ANTHROPIC_VERSION = "2023-06-01"
 
 
 class MessagesTransport(Protocol):
-    """Small dependency-injection boundary for a Messages API call."""
+    """用于 Messages API 调用的小型依赖注入边界。"""
 
     def create_message(self, payload: dict[str, Any]) -> dict[str, Any]: ...
 
 
 class AnthropicMessagesHTTPTransport:
-    """Opt-in stdlib HTTP transport that never logs or persists its API key."""
+    """显式启用的标准库 HTTP transport；不会记录或持久化 API key。"""
 
     def __init__(
         self,
@@ -70,7 +69,7 @@ class AnthropicMessagesHTTPTransport:
 
 
 def build_live_order_request(request: str, model: str) -> dict[str, Any]:
-    """Build an inspectable wire payload with the same bounded lookup contract."""
+    """按同一有界查询契约构造可检查的 wire payload。"""
     return {
         "model": model,
         "max_tokens": 128,
@@ -95,7 +94,7 @@ def build_live_order_request(request: str, model: str) -> dict[str, Any]:
 
 
 def run_live_wire(transport: MessagesTransport, request: str, model: str) -> dict[str, Any]:
-    """Exercise the real serialization boundary and return only safe metadata."""
+    """真实经过序列化边界，并只返回安全元数据。"""
     response = transport.create_message(build_live_order_request(request, model))
     content = response.get("content")
     if response.get("type") != "message" or response.get("role") != "assistant" or not isinstance(content, list):

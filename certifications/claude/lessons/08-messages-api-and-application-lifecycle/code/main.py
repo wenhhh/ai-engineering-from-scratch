@@ -1,8 +1,7 @@
-"""Companion code for:
-certifications/claude/lessons/08-messages-api-and-application-lifecycle/docs/en.md
-It models the Messages API lifecycle without network calls.
-Protocol concepts follow the official Anthropic Messages API documentation.
-"""
+"""第 08 课 Messages API 与应用生命周期配套代码。
+
+对应 docs/en.md：在离线脚本 transport 上演示访问模式选择、会话推进、流式事件、多模态请求与资产边界。
+它不发送真实 API 请求；协议字段与固定响应用于验证应用状态机。"""
 
 from __future__ import annotations
 
@@ -16,7 +15,7 @@ from typing import Any, Callable, Iterable
 
 
 class ProtocolError(ValueError):
-    """Raised when a simulated provider response violates the protocol."""
+    """模拟 provider 响应违反协议时抛出的异常。"""
 
 
 @dataclass(frozen=True)
@@ -28,7 +27,7 @@ class RunResult:
 
 @dataclass(frozen=True)
 class AccessNeeds:
-    """Workload facts used to choose a client and completion pattern."""
+    """用于选择客户端与完成模式的工作负载事实。"""
 
     supported_sdk: bool = True
     custom_transport: bool = False
@@ -38,7 +37,7 @@ class AccessNeeds:
 
 
 def choose_access_pattern(needs: AccessNeeds) -> dict[str, str]:
-    """Choose SDK versus REST separately from sync, stream, or batch."""
+    """分别选择 SDK/REST 访问方式与同步、流式或批处理完成模式。"""
     if needs.independent_requests < 1:
         raise ValueError("independent_requests must be positive")
     if needs.progressive_output and needs.can_wait and needs.independent_requests > 1:
@@ -55,7 +54,7 @@ def choose_access_pattern(needs: AccessNeeds) -> dict[str, str]:
 
 
 class ScriptedTransport:
-    """A stateless transport that returns scripted API responses."""
+    """返回脚本化 API 响应的无状态 transport。"""
 
     def __init__(self, responses: list[dict[str, Any]]) -> None:
         self._responses = copy.deepcopy(responses)
@@ -69,7 +68,7 @@ class ScriptedTransport:
 
 
 class MessageLifecycle:
-    """Own conversation state and advance it until the model ends the turn."""
+    """持有会话状态，并推进到模型结束当前轮次。"""
 
     def __init__(
         self,
@@ -157,7 +156,7 @@ def _text_from_blocks(blocks: list[dict[str, Any]]) -> str:
 
 
 def collect_stream_text(events: Iterable[dict[str, Any]]) -> str:
-    """Collect only text deltas while checking that a stream terminates."""
+    """只收集文本增量，同时检查流是否正确终止。"""
     chunks: list[str] = []
     stopped = False
     for event in events:
@@ -191,7 +190,7 @@ DOCUMENT_MEDIA_TYPES = {"application/pdf", "text/plain"}
 
 
 def build_multimodal_request(prompt: str, image_bytes: bytes, reusable_file_id: str) -> dict[str, Any]:
-    """Build an offline request body with inline vision and a reusable file asset."""
+    """构造包含内联视觉内容和可复用文件资产的离线请求体。"""
     if not prompt.strip():
         raise ValueError("prompt must not be empty")
     if not image_bytes:
@@ -225,7 +224,7 @@ def build_multimodal_request(prompt: str, image_bytes: bytes, reusable_file_id: 
 
 
 def validate_multimodal_request(request: dict[str, Any], owned_file_ids: set[str]) -> list[str]:
-    """Validate content blocks and reject file references outside an application allowlist."""
+    """校验内容块，并拒绝应用允许列表之外的文件引用。"""
     errors: list[str] = []
     messages = request.get("messages")
     if not isinstance(messages, list) or len(messages) != 1 or not isinstance(messages[0], dict):
@@ -270,7 +269,7 @@ def validate_multimodal_request(request: dict[str, Any], owned_file_ids: set[str
 
 
 def asset_boundary_ledger(request: dict[str, Any]) -> list[dict[str, str]]:
-    """Return auditable asset metadata without copying asset bytes or opaque file IDs."""
+    """返回可审计的资产元数据，不复制资产字节或不透明文件 ID。"""
     ledger: list[dict[str, str]] = []
     content = request["messages"][0]["content"]
     for block in content:
@@ -300,7 +299,7 @@ def asset_boundary_ledger(request: dict[str, Any]) -> list[dict[str, str]]:
 
 
 def multimodal_lab_fixture() -> dict[str, Any]:
-    """Create the deterministic access and asset fixture shipped with the lesson."""
+    """创建课程随附的确定性访问与资产夹具。"""
     owned_file_id = "file_offline_policy_fixture"
     one_pixel_png = base64.b64decode(
         "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII="

@@ -1,4 +1,7 @@
-"""Tests for the end-to-end eval runner."""
+"""端到端评测运行器的单元测试。
+
+仅翻译说明；任务夹具、适配器结果、指标键、排名及断言保持原样。
+"""
 
 from __future__ import annotations
 

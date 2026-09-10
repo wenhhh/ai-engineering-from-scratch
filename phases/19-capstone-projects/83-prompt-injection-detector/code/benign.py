@@ -1,8 +1,6 @@
-"""Benign prompt corpus for false-positive measurement.
+"""用于测量误报率的正常提示语料。
 
-Hand-built. These prompts must NOT trigger the detector. If they do, the
-rules are over-broad and need narrowing.
-"""
+这些提示由人工构造，原则上不应触发检测器；如果触发，说明规则过宽，需要收窄。"""
 
 BENIGN_PROMPTS = [
     "Summarize the meeting notes from yesterday in three bullet points.",

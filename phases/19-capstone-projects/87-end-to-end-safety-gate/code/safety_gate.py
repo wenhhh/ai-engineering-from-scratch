@@ -1,9 +1,7 @@
-"""SafetyGate composes detector, token-filter, classifier, and rules engine
-into a single request lifecycle with a deterministic aggregation table.
+"""SafetyGate 将检测器、生成中词元过滤器、输出分类器和规则引擎组合为确定性的请求生命周期。
 
-Imports from sibling lesson directories via sys.path injection so the lesson
-remains a single end-to-end demo without needing to package code.
-"""
+它直接从相邻课程导入教学实现，并按固定聚合表决定 block、redact、warn 或 allow。
+这些本地启发式和模拟组件用于展示组合方式，不构成生产安全边界或真实模型审核保证。"""
 
 from __future__ import annotations
 

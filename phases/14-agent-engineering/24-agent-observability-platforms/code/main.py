@@ -1,7 +1,11 @@
-"""Stdlib trace collector + LLM-judge evaluator.
+"""使用标准库实现追踪收集器，并模拟由 LLM 担任评判者的评测流程。
 
-Mirrors what Langfuse / Phoenix / Opik do with richer UIs: ingest spans,
-group by session, score with an LLM judge, surface failure categories.
+对应 Langfuse、Phoenix、Opik 等平台所展示的一类工作流：接收 span（追踪片段）、
+按会话分组、给出评分，并汇总失败类别。
+
+译注：scripted_llm_judge 是固定规则评分器，不调用 LLM，也未接入任何可观测性平台。
+PASS/WARN/FAIL 分别表示通过、警告、失败；rate_limited 表示触发速率限制。
+这些标签和遥测字段保留英文，避免改变聚合与判定。下方平台侧重点沿用原文快照。
 """
 
 from __future__ import annotations
@@ -95,7 +99,7 @@ def summarize(collector: TraceCollector) -> list[SessionSummary]:
 
 def main() -> None:
     print("=" * 70)
-    print("AGENT OBSERVABILITY PLATFORMS — Phase 14, Lesson 24")
+    print("智能体可观测性平台——阶段 14，第 24 课")
     print("=" * 70)
 
     collector = TraceCollector()
@@ -130,22 +134,22 @@ def main() -> None:
     for span in ok_spans + err_spans + slow_spans:
         collector.ingest(span)
 
-    print("\nsummary per session (what Langfuse/Phoenix/Opik show)")
+    print("\n按会话汇总（模拟 Langfuse/Phoenix/Opik 中的一类视图）")
     for summary in summarize(collector):
         score, verdict = scripted_llm_judge(collector.by_session()[summary.session_id])
-        print(f"  {summary.session_id}  verdict={verdict}  score={score:.2f}  "
-              f"spans={summary.trace_count}  errors={summary.error_count}")
+        print(f"  {summary.session_id}  判定={verdict}  评分={score:.2f}  "
+              f"追踪片段数={summary.trace_count}  错误数={summary.error_count}")
         if summary.failure_reasons:
             for reason, count in summary.failure_reasons.most_common():
-                print(f"    failure: {reason} x{count}")
+                print(f"    失败类别：{reason} x{count}")
 
     total_errors = sum(s.error_count for s in summarize(collector))
     total_sessions = len(collector.by_session())
-    print(f"\naggregate: {total_errors} errors across {total_sessions} sessions")
+    print(f"\n汇总：{total_errors} 个错误，分布于 {total_sessions} 个会话")
     print()
-    print("Langfuse: prompt versions tied to traces.")
-    print("Phoenix: RAG relevancy + drift/clustering.")
-    print("Opik: optimization + guardrail enforcement.")
+    print("Langfuse：将提示词版本与追踪记录关联。")
+    print("Phoenix：RAG 相关性分析，以及漂移和聚类分析。")
+    print("Opik：优化与安全约束执行。")
 
 
 if __name__ == "__main__":

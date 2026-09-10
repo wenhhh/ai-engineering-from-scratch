@@ -1,12 +1,13 @@
-"""Assemble the lesson 34 transformer block into a 124M parameter GPT model.
+"""将第 34 课的 Transformer 块组装成约 1.24 亿参数的 GPT 模型。
 
-Twelve blocks, a token embedding, a learned position embedding, a final LayerNorm,
-and a language model head that ties to the token embedding. Parameter count
-lands on ~124M at the reference configuration. The demo also runs a tiny
-configuration end to end and exercises generation with temperature, top-k, and
-multinomial sampling under a sliding window context.
+参考配置包含十二个块、词元嵌入、可学习位置嵌入、最终层归一化和语言模型输出头。
+输出头与词元嵌入共享权重时，参数量约为 1.24 亿。演示还使用微型配置执行生成，
+展示温度、top-k、多项分布采样与滑动上下文窗口。
+在课程目录运行：python3 code/main.py
 
-Run: python3 code/main.py
+译注：参考模型在本地从随机参数构建，未载入预训练权重。生成的是词元 ID，
+并不代表已获得语言能力。滑动窗口每步重新计算整个活动窗口，没有 KV 缓存；
+显示“距 1.24 亿的差距”不是一项独立的 5% 阈值断言。
 """
 
 from __future__ import annotations
@@ -21,7 +22,7 @@ import torch.nn.functional as F
 
 @dataclass
 class GPTConfig:
-    """Reference 124M configuration matches the GPT-2 small architecture."""
+    """与 GPT-2 small 基本架构对应的约 1.24 亿参数参考配置；不代表加载了预训练模型。"""
 
     vocab_size: int = 50257
     context_length: int = 1024
@@ -105,7 +106,7 @@ class FeedForward(nn.Module):
 
 
 class TransformerBlock(nn.Module):
-    """Pre-LN block. Lesson 34 explains both configurations; the GPT-2 reference is pre-LN."""
+    """Pre-LN 块。第 34 课说明两种归一化位置；此处采用 GPT-2 参考配置的 Pre-LN。"""
 
     def __init__(self, cfg: GPTConfig) -> None:
         super().__init__()
@@ -121,7 +122,7 @@ class TransformerBlock(nn.Module):
 
 
 class GPTModel(nn.Module):
-    """A decoder only transformer language model with weight tied LM head."""
+    """仅含解码器的 Transformer 语言模型，可将输出头权重与词元嵌入绑定。"""
 
     def __init__(self, cfg: GPTConfig) -> None:
         super().__init__()
@@ -173,7 +174,7 @@ class GPTModel(nn.Module):
 
 
 def count_parameters(model: nn.Module) -> int:
-    """Count unique parameters. Weight tied tensors are counted once."""
+    """统计不重复的参数；共享权重只计一次。"""
     seen: dict[int, int] = {}
     for param in model.parameters():
         seen[id(param)] = param.numel()
@@ -197,10 +198,10 @@ def generate(
     top_k: int | None = None,
     seed: int | None = None,
 ) -> torch.Tensor:
-    """Autoregressive generation with multinomial sampling, temperature, top-k.
+    """使用温度、top-k 和多项分布采样进行自回归生成。
 
-    Holds the active window to model.cfg.context_length by sliding the oldest
-    tokens out when the running sequence overflows.
+    将活动窗口限制在 model.cfg.context_length 内，序列过长时不再向模型传入
+    最早的词元。返回值仍保留完整提示和所有新增词元，而不是仅返回活动窗口。
     """
     if temperature <= 0:
         raise ValueError("temperature must be positive")
@@ -228,36 +229,36 @@ def generate(
 def demo() -> None:
     torch.manual_seed(0)
 
-    print("Building 124M reference GPT...")
+    print("构建约 1.24 亿参数的参考 GPT……")
     ref_cfg = GPTConfig()
     ref_model = GPTModel(ref_cfg)
     ref_params = count_parameters(ref_model)
-    print(f"  reference params         : {ref_params:,}")
-    print(f"  expected near 124M       : within 5% target {abs(ref_params - 124_000_000) / 124_000_000:.2%}")
+    print(f"  参考模型参数量          ：{ref_params:,}")
+    print(f"  距 1.24 亿参数的相对差距（目标在 5% 内）：{abs(ref_params - 124_000_000) / 124_000_000:.2%}")
 
     head_tied = ref_model.lm_head.weight.data_ptr() == ref_model.tok_embed.weight.data_ptr()
-    print(f"  weight tying enforced    : {head_tied}")
+    print(f"  权重是否实际共享        ：{head_tied}")
     assert head_tied, "weight tying should share storage"
 
-    print("\nUntying and re-counting to confirm the 38M delta...")
+    print("\n取消权重绑定，重新计数以检查约 3800 万参数的差额……")
     untied_cfg = GPTConfig(weight_tying=False)
     untied_model = GPTModel(untied_cfg)
     untied_params = count_parameters(untied_model)
     delta = untied_params - ref_params
     expected_delta = ref_cfg.vocab_size * ref_cfg.d_model
-    print(f"  untied params            : {untied_params:,}")
-    print(f"  delta                    : {delta:,}")
-    print(f"  expected (vocab*d_model) : {expected_delta:,}")
+    print(f"  未绑定时的参数量        ：{untied_params:,}")
+    print(f"  参数差额                ：{delta:,}")
+    print(f"  预期差额（词表大小×嵌入维度）：{expected_delta:,}")
     assert delta == expected_delta
 
-    print("\nSingle forward through 124M reference, batch 1, seq 32...")
+    print("\n对参考模型执行一次前向传播：批大小 1，序列长度 32……")
     tokens = torch.randint(0, ref_cfg.vocab_size, (1, 32))
     with torch.no_grad():
         logits = ref_model(tokens)
-    print(f"  logits shape             : {tuple(logits.shape)}")
+    print(f"  logits 形状             ：{tuple(logits.shape)}")
     assert logits.shape == (1, 32, ref_cfg.vocab_size)
 
-    print("\nGenerating with a tiny model end to end (faster demo)...")
+    print("\n使用微型模型完成生成流程，以缩短演示耗时……")
     tiny_cfg = GPTConfig(
         vocab_size=512,
         context_length=64,
@@ -268,7 +269,7 @@ def demo() -> None:
     )
     tiny_model = GPTModel(tiny_cfg)
     tiny_params = count_parameters(tiny_model)
-    print(f"  tiny params              : {tiny_params:,}")
+    print(f"  微型模型参数量          ：{tiny_params:,}")
 
     prompt = torch.tensor([[1, 2, 3, 4, 5]], dtype=torch.long)
     generated = generate(
@@ -279,17 +280,17 @@ def demo() -> None:
         top_k=20,
         seed=42,
     )
-    print(f"  prompt                   : {prompt.tolist()[0]}")
-    print(f"  generated tokens         : {generated.tolist()[0]}")
+    print(f"  提示词元 ID             ：{prompt.tolist()[0]}")
+    print(f"  完整生成序列的词元 ID   ：{generated.tolist()[0]}")
     assert generated.shape == (1, prompt.shape[1] + 12)
 
-    print("\nSliding window check: prompt longer than context...")
+    print("\n滑动窗口检查：提示长度超过上下文窗口……")
     long_prompt = torch.randint(0, tiny_cfg.vocab_size, (1, 80))
     generated_long = generate(tiny_model, long_prompt, max_new_tokens=4, temperature=1.0, top_k=10, seed=0)
-    print(f"  long prompt shape        : {tuple(long_prompt.shape)}")
-    print(f"  generated shape          : {tuple(generated_long.shape)}")
+    print(f"  长提示形状              ：{tuple(long_prompt.shape)}")
+    print(f"  完整生成序列形状        ：{tuple(generated_long.shape)}")
     assert generated_long.shape == (1, 84)
-    print("\nModel assembly check passed.")
+    print("\n模型组装检查通过。")
 
 
 if __name__ == "__main__":

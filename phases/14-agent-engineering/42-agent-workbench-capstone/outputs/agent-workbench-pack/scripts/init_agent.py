@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
-"""Workbench init script. See Phase 14 · 35 for the from-scratch build."""
+"""工作台初始化脚本。从零实现的过程见阶段 14 第 35 课。
+
+此打包版仅保留运行时、依赖、命令、环境和状态检查，不含课程完整示例的缓存与 LKG 差异检查。
+探针名称和 pass/warn/fail 判定保留英文；missing 表示缺失，all importable 表示全部可导入，
+no state file yet 表示尚无状态文件。测试命令探针只检查 PATH，不运行真实测试。
+"""
 
 from __future__ import annotations
 
@@ -64,7 +69,7 @@ def main() -> int:
         print(f"  {name:<{width}}  {status:>4}  {detail}")
     failed = [n for n, s, _ in probes if s == "fail"]
     if failed:
-        print(f"\ninit failed: {failed}", file=sys.stderr)
+        print(f"\n初始化失败：{failed}", file=sys.stderr)
         return 1
     return 0
 

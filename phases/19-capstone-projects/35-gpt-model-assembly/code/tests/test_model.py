@@ -1,4 +1,7 @@
-"""Unit tests for the assembled GPT model and generation pipeline."""
+"""组装后的 GPT 模型及生成流程测试。
+
+保留参考配置、权重共享、参数计数、采样种子、滑动窗口与断言原样。
+"""
 
 from __future__ import annotations
 

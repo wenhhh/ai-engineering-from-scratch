@@ -1,4 +1,8 @@
-"""Tests for full checkpoint, atomic save, and sharded resume."""
+"""完整检查点、原子文件替换和分片恢复测试。
+
+断言与可信的本地检查点夹具保持原样；成功往返测试不等于
+已经验证断电持久性、多文件事务或不可信检查点的加载安全性。
+"""
 
 from __future__ import annotations
 

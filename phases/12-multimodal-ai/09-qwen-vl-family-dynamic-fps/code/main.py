@@ -1,11 +1,16 @@
-"""Qwen-VL family: M-RoPE positions + dynamic-FPS sampler + JSON tool-call parser.
+"""Qwen-VL 系列：M-RoPE 位置编码、动态帧率采样器与 JSON 工具调用解析器。
 
-Three toy implementations:
-  1. M-RoPE rotation table across text, image, and video tokens.
-  2. Dynamic-FPS sampler that picks frames-per-second from a target token budget.
-  3. JSON-output parser for Qwen2.5-VL-style agent tool calls.
+三个简化实现：
+  1. 跨文本、图像和视频词元的 M-RoPE 旋转表。
+  2. 根据目标词元预算选择每秒采样帧数的动态帧率（dynamic FPS）采样器。
+  3. 解析 Qwen2.5-VL 风格智能体工具调用的 JSON 输出。
 
-Stdlib only. The intent is a working mental model, not production code.
+仅使用标准库。目的是建立可实际操作的认知模型，而不是提供生产代码。
+
+译注：运动等级 high、medium、low 分别表示高、中、低，参与采样分支判断。
+解析器的四个英文夹具保留原值，依次演示鼠标左键点击、带“正在点击”说明
+的 JSON、缺少右花括号的输入文本调用，以及向下滚动。第三个夹具中的
+ hello 表示“你好”；缺失花括号是故意构造的错误，不能在翻译时修复。
 """
 
 from __future__ import annotations
@@ -25,7 +30,7 @@ class MRoPEConfig:
 
 
 def mrope_angles(cfg: MRoPEConfig, t: int, h: int, w: int) -> list[float]:
-    """Return per-pair rotation angles for each band given a (t, h, w) position."""
+    """给定 (t, h, w) 位置，返回各维度分段中每一对分量的旋转角度。"""
     angles = []
     for dim, pos in [(cfg.temporal_dim, t), (cfg.height_dim, h), (cfg.width_dim, w)]:
         band = []
@@ -38,7 +43,7 @@ def mrope_angles(cfg: MRoPEConfig, t: int, h: int, w: int) -> list[float]:
 
 
 def mrope_rotate(cfg: MRoPEConfig, vec: list[float], t: int, h: int, w: int) -> list[float]:
-    """Apply M-RoPE to a vector of length cfg.hidden."""
+    """对长度为 cfg.hidden 的向量应用 M-RoPE。"""
     out = list(vec)
     axes = [
         (cfg.temporal_dim, t, 0),
@@ -90,7 +95,7 @@ class VideoPlan:
 
 
 def parse_tool_call(raw: str) -> dict:
-    """Qwen2.5-VL emits JSON tool calls; parse with fallback."""
+    """解析 Qwen2.5-VL 输出的 JSON 工具调用，并提供兜底解析。"""
     try:
         return json.loads(raw)
     except json.JSONDecodeError:
@@ -105,40 +110,40 @@ def parse_tool_call(raw: str) -> dict:
 
 
 def demo_mrope() -> None:
-    print("\nM-RoPE position rotations for hidden=48 (16 per band)")
+    print("\nM-RoPE 位置旋转，hidden=48（每个维度分段占 16 维）")
     print("-" * 60)
     cfg = MRoPEConfig(hidden=48, temporal_dim=16, height_dim=16, width_dim=16)
     positions = [
-        ("text token i=0",      0, 0, 0),
-        ("text token i=12",     12, 0, 0),
-        ("image patch (h=5, w=7)", 0, 5, 7),
-        ("video frame t=3 (h=5, w=7)", 3, 5, 7),
+        ("文本词元 i=0",      0, 0, 0),
+        ("文本词元 i=12",     12, 0, 0),
+        ("图像图块（h=5, w=7）", 0, 5, 7),
+        ("视频帧 t=3（h=5, w=7）", 3, 5, 7),
     ]
     for name, t, h, w in positions:
         angles = mrope_angles(cfg, t, h, w)
         first_pair = [round(a[0], 4) for a in angles]
-        print(f"  {name:<30} first-pair angles (t, h, w) = {first_pair}")
+        print(f"  {name:<30} 首对分量的角度 (t, h, w) = {first_pair}")
 
 
 def demo_sampler() -> None:
-    print("\nDYNAMIC-FPS SAMPLER (tokens_per_frame=81 after 3x pool)")
+    print("\n动态帧率采样器（3 倍池化后 tokens_per_frame=81）")
     print("-" * 60)
     videos = [
-        ("30s tennis rally (high motion)",   30.0, "high"),
-        ("30s recipe demo (medium motion)",  30.0, "medium"),
-        ("10min security loop (low motion)", 600.0, "low"),
-        ("1min UI agent replay (medium)",    60.0, "medium"),
+        ("30 秒网球多拍回合（高运动量）",   30.0, "high"),
+        ("30 秒烹饪演示（中等运动量）",  30.0, "medium"),
+        ("10 分钟循环安防视频（低运动量）", 600.0, "low"),
+        ("1 分钟 UI 智能体回放（中等运动量）",    60.0, "medium"),
     ]
     budget = 32768
-    print(f"budget {budget} tokens per video:")
+    print(f"每段视频的预算为 {budget} 个词元：")
     for name, dur, motion in videos:
         plan = VideoPlan(duration_s=dur, tokens_per_frame=81, budget=budget, motion=motion)
         n_frames = len(plan.frame_times())
-        print(f"  {name:<38}  fps={plan.fps()}  frames={n_frames:>4}  tokens={plan.total_tokens():>6}")
+        print(f"  {name:<38}  fps={plan.fps()}  帧数={n_frames:>4}  词元数={plan.total_tokens():>6}")
 
 
 def demo_tool_parser() -> None:
-    print("\nQWEN2.5-VL TOOL-CALL PARSER")
+    print("\nQwen2.5-VL 工具调用解析器")
     print("-" * 60)
     examples = [
         '{"tool": "mouse_click", "coords": [1024, 512], "button": "left"}',
@@ -148,14 +153,14 @@ def demo_tool_parser() -> None:
     ]
     for raw in examples:
         parsed = parse_tool_call(raw)
-        print(f"  raw    : {raw}")
-        print(f"  parsed : {parsed}")
+        print(f"  原始输入：{raw}")
+        print(f"  解析结果：{parsed}")
         print()
 
 
 def main() -> None:
     print("=" * 60)
-    print("QWEN-VL FAMILY (Phase 12, Lesson 09)")
+    print("Qwen-VL 系列（阶段 12，第 09 课）")
     print("=" * 60)
 
     demo_mrope()
@@ -163,12 +168,12 @@ def main() -> None:
     demo_tool_parser()
 
     print("=" * 60)
-    print("LINEAGE SUMMARY")
+    print("演进脉络")
     print("-" * 60)
-    print("  Qwen-VL   (2023) : 448 res, grounding, Q-Former")
-    print("  Qwen2-VL  (2024) : M-RoPE, native res, MLP projector")
-    print("  Qwen2.5-VL(2025) : dynamic FPS, abs-time tokens, JSON agent mode")
-    print("  Qwen3-VL  (2025) : Qwen3 base, thinking mode, OCR scale")
+    print("  Qwen-VL   (2023)：448 分辨率、视觉定位（grounding）、Q-Former")
+    print("  Qwen2-VL  (2024)：M-RoPE、原生分辨率、MLP 投影器")
+    print("  Qwen2.5-VL(2025)：动态帧率、绝对时间词元、JSON 智能体模式")
+    print("  Qwen3-VL  (2025)：基于 Qwen3、思考模式、扩大 OCR 规模")
 
 
 if __name__ == "__main__":

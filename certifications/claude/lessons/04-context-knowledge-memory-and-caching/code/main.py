@@ -1,8 +1,7 @@
-"""Companion code for:
-certifications/claude/lessons/04-context-knowledge-memory-and-caching/docs/en.md
-It validates source lifecycle metadata, prompt budget, and cache eligibility.
-The scenario runner keeps correctness separate from cache economics.
-"""
+"""第 04 课上下文、知识、记忆与缓存配套代码。
+
+对应 docs/en.md：校验来源生命周期、上下文放置、记忆边界和缓存策略。这里验证的是教学资料包中的声明与结构，
+并未连接真实知识库、Memory 服务或缓存基础设施。"""
 
 from __future__ import annotations
 

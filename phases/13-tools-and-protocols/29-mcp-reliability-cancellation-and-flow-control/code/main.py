@@ -1,8 +1,10 @@
-"""Phase 13 Lesson 29: MCP reliability, cancellation, and flow control.
-Lesson: ../docs/en.md
-Cancellation: https://modelcontextprotocol.io/specification/2026-07-28/basic/patterns/cancellation
-Transport: https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/streamable-http
-This deterministic simulator uses only Python's standard library.
+"""阶段 13，第 29 课：MCP 可靠性、取消与流量控制。
+课程文档：../docs/en.md
+取消机制：https://modelcontextprotocol.io/specification/2026-07-28/basic/patterns/cancellation
+传输机制：https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/streamable-http
+本确定性模拟器仅使用 Python 标准库；说明依据仓库固定快照，不代表最新规范核验。
+模拟区分请求取消、持久任务取消和副作用去重，不把发送取消通知当作执行必然终止。
+SQL、状态值、幂等记录和错误消息保留原值，中文旁注解释其含义。
 """
 
 from __future__ import annotations
@@ -25,7 +27,7 @@ CANCELLED = "cancelled"
 
 
 class ReliabilityError(ValueError):
-    """Raised when a reliability invariant is violated."""
+    """当可靠性不变量被破坏时抛出。"""
 
 
 @dataclass
@@ -48,7 +50,7 @@ class InFlightRequest:
 
 
 class RequestCoordinator:
-    """Model request cancellation and completion races without wall-clock sleeps."""
+    """无需按现实时间休眠，即可模拟请求取消与完成之间的竞态。"""
 
     def __init__(self) -> None:
         self.requests: dict[int | str, InFlightRequest] = {}
@@ -66,14 +68,19 @@ class RequestCoordinator:
         progress_token: int | str | None = None,
     ) -> InFlightRequest:
         if type(request_id) not in (int, str):
+            # 请求诊断：请求 ID 必须是整数或字符串。
             raise ReliabilityError("request id must be an integer or string")
         if progress_token is not None and type(progress_token) not in (int, str):
+            # 进度诊断：进度词元必须是整数或字符串。
             raise ReliabilityError("progress token must be an integer or string")
         if request_id in self.requests:
+            # 请求诊断：尚在跟踪的请求 ID 必须唯一。
             raise ReliabilityError("request ids must be unique while tracked")
         if transport not in {STDIO, STREAMABLE_HTTP}:
+            # 传输诊断：不支持此传输方式。
             raise ReliabilityError("unsupported transport")
         if idle_timeout_ms <= 0 or max_timeout_ms < idle_timeout_ms:
+            # 超时诊断：超时值必须为正，且总时限不得小于空闲超时。
             raise ReliabilityError("timeouts must be positive and maximum must cover idle")
         request = InFlightRequest(
             request_id=request_id,
@@ -100,6 +107,7 @@ class RequestCoordinator:
         if request.state != IN_PROGRESS or request.progress_token is None:
             return None
         if request.last_progress is not None and value <= request.last_progress:
+            # 进度诊断：进度值必须递增。
             raise ReliabilityError("progress must increase")
         request.last_progress = value
         request.last_activity_ms = now_ms
@@ -132,6 +140,8 @@ class RequestCoordinator:
         idle_due = now_ms - request.last_activity_ms >= request.idle_timeout_ms
         if not hard_due and not idle_due:
             return None
+        # 取消原因：达到请求总时限。
+        # 取消原因：达到空闲超时。
         reason = "maximum timeout" if hard_due else "idle timeout"
         return self.client_cancel_signal(request_id, reason=reason)
 
@@ -155,7 +165,7 @@ class RequestCoordinator:
         }
 
     def receive_stdio_cancellation(self, notification: dict[str, Any]) -> None:
-        """Process the fire-and-forget notification and never return JSON-RPC."""
+        """处理无需回复的取消通知，绝不为该通知返回 JSON-RPC 响应。"""
 
         if notification.get("method") != "notifications/cancelled":
             return None
@@ -220,9 +230,11 @@ class RequestCoordinator:
             or request.operation != "subscriptions/listen"
         ):
             raise ReliabilityError(
+                # 取消诊断：服务器发送的 notifications/cancelled 在本契约中仅用于 stdio 的 subscriptions/listen。
                 "server-sent notifications/cancelled is reserved for stdio subscriptions/listen"
             )
         if request.state != IN_PROGRESS:
+            # 订阅诊断：订阅请求已不再处于进行中状态。
             raise ReliabilityError("subscription request is no longer in progress")
         request.state = CANCELLED
         return {
@@ -230,6 +242,7 @@ class RequestCoordinator:
             "method": "notifications/cancelled",
             "params": {
                 "requestId": request_id,
+                # 取消原因：服务器关闭了订阅。
                 "reason": "subscription closed by server",
             },
         }
@@ -247,20 +260,23 @@ def classify_retry(
     idempotency_key: str | None,
 ) -> RetryDecision:
     if not side_effect:
+        # 重试说明：按应用契约，此操作为只读操作。
         return RetryDecision("safe", "operation is read-only by application contract")
     if idempotency_key:
         return RetryDecision(
             "conditional",
+            # 重试说明：只能使用相同幂等键和完全相同的参数进行重试。
             "retry only with the same idempotency key and identical arguments",
         )
     return RetryDecision(
         "unsafe",
+        # 重试说明：更换 JSON-RPC ID 无法避免副作用重复执行。
         "a new JSON-RPC id cannot deduplicate a side effect",
     )
 
 
 class MutationLedger:
-    """Commit a simulated mutation and its idempotency record atomically."""
+    """将模拟的状态变更与其幂等记录作为一个原子事务提交。"""
 
     def __init__(self, database_path: str | Path) -> None:
         self.database_path = str(database_path)
@@ -311,6 +327,7 @@ class MutationLedger:
                 "SELECT executions FROM mutation_counter WHERE singleton = 1"
             ).fetchone()
         if row is None:
+            # 存储诊断：缺少状态变更计数器。
             raise ReliabilityError("mutation counter is missing")
         return int(row[0])
 
@@ -332,6 +349,7 @@ class MutationLedger:
         idempotency_key: str | None = None,
     ) -> dict[str, Any]:
         if cents <= 0:
+            # 操作诊断：扣款金额必须为正。
             raise ReliabilityError("charge must be positive")
         fingerprint = self._fingerprint(account, cents)
         with self._lock:
@@ -350,6 +368,7 @@ class MutationLedger:
                         stored_fingerprint, stored_json = stored
                         if stored_fingerprint != fingerprint:
                             raise ReliabilityError(
+                                # 幂等诊断：同一幂等键被用于不同的参数。
                                 "idempotency key was reused with different arguments"
                             )
                         self._connection.execute("COMMIT")
@@ -359,6 +378,7 @@ class MutationLedger:
                     "SELECT executions FROM mutation_counter WHERE singleton = 1"
                 ).fetchone()
                 if row is None:
+                    # 存储诊断：缺少状态变更计数器。
                     raise ReliabilityError("mutation counter is missing")
                 execution_number = int(row[0]) + 1
                 result = {
@@ -401,7 +421,7 @@ class DurableTask:
 
 
 class DurableTaskService:
-    """Keep durable task cancellation separate from in-flight request cancellation."""
+    """将持久任务的取消与正在处理的单次请求的取消分开管理。"""
 
     def __init__(self) -> None:
         self.tasks: dict[str, DurableTask] = {}
@@ -431,10 +451,11 @@ class DurableTaskService:
 
 
 class BoundedSseBuffer:
-    """Bound progress memory while preserving a final response."""
+    """限制进度消息占用的内存，同时保留最终响应。"""
 
     def __init__(self, capacity: int) -> None:
         if capacity < 2:
+            # 缓冲区诊断：SSE 缓冲区容量至少为 2。
             raise ReliabilityError("SSE buffer capacity must be at least two")
         self.capacity = capacity
         self.events: list[dict[str, Any]] = []
@@ -466,6 +487,7 @@ class BoundedSseBuffer:
     def push_final(self, response: dict[str, Any]) -> None:
         while len(self.events) >= self.capacity:
             if not self._drop_oldest_progress():
+                # 缓冲区诊断：不得丢弃最终响应。
                 raise ReliabilityError("buffer cannot discard a final response")
         self.events.append({"kind": "final", "response": response})
 
@@ -503,6 +525,7 @@ def reconnect_plan(
 
 def retry_delay_ms(client_id: str, attempt: int) -> int:
     if attempt < 0:
+        # 重试诊断：尝试编号不得为负。
         raise ReliabilityError("attempt must be non-negative")
     ceiling = min(8_000, 250 * (2**attempt))
     floor = max(1, ceiling // 2)
@@ -536,6 +559,7 @@ def main() -> None:
         max_timeout_ms=2_000,
     )
     completed_response = coordinator.complete(8, {"resultType": "complete"})
+    # 演示取消原因：用户操作到达较晚。
     late_signal = coordinator.client_cancel_signal(8, reason="late user action")
     coordinator.receive_stdio_cancellation(late_signal)
 
@@ -566,14 +590,14 @@ def main() -> None:
     before_checkpoint = tasks.tasks["task-29"].status
     after_checkpoint = tasks.worker_checkpoint("task-29").status
 
-    print("cancel before completion returns:", cancelled_response)
-    print("complete before cancel keeps response:", completed_response is not None)
-    print("idempotent receipts equal:", first_charge["receipt"] == second_charge["receipt"])
-    print("mutation executions:", mutation_executions)
-    print("buffer size and dropped progress:", len(buffer.events), buffer.dropped_progress)
-    print("final response preserved:", any(event["kind"] == "final" for event in buffer.events))
-    print("task cancel acknowledgement:", task_ack["resultType"])
-    print("task status before and after worker checkpoint:", before_checkpoint, after_checkpoint)
+    print("先取消后完成时返回：", cancelled_response)
+    print("先完成后取消是否保留响应：", completed_response is not None)
+    print("幂等回执是否相同：", first_charge["receipt"] == second_charge["receipt"])
+    print("状态变更执行次数：", mutation_executions)
+    print("缓冲区大小与丢弃的进度消息数：", len(buffer.events), buffer.dropped_progress)
+    print("是否保留最终响应：", any(event["kind"] == "final" for event in buffer.events))
+    print("任务取消确认：", task_ack["resultType"])
+    print("工作进程检查点前后的任务状态：", before_checkpoint, after_checkpoint)
 
 
 if __name__ == "__main__":

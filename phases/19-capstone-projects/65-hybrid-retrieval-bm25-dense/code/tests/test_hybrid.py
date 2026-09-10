@@ -1,4 +1,7 @@
-"""Tests for BM25, dense, RRF, and the hybrid retriever wiring."""
+"""BM25、稠密检索、RRF 与混合检索器接线的单元测试。
+
+只翻译说明和注释；词项、查询、文档 ID、排名期望及断言保持原样。
+"""
 
 from __future__ import annotations
 
@@ -86,7 +89,7 @@ class TestRRF(unittest.TestCase):
         l1 = [(d1, 9.0), (d2, 5.0), (d3, 1.0)]
         l2 = [(d2, 9.0), (d1, 5.0), (d3, 1.0)]
         fused = rrf([l1, l2], k=60)
-        # d1 and d2 share rank 1+2, so each should beat d3
+        # d1 与 d2 分占第 1、2 名，因此两者都应优于 d3。
         self.assertIn(fused[0][0].doc_id, {"a", "b"})
         self.assertEqual(fused[-1][0].doc_id, "c")
 
@@ -98,7 +101,7 @@ class TestRRF(unittest.TestCase):
         flat = rrf([l1, l2], k=60, weights=[1.0, 1.0])
         bm25_heavy = rrf([l1, l2], k=60, weights=[5.0, 1.0])
         self.assertEqual(bm25_heavy[0][0].doc_id, "a")
-        # under flat weights ties are broken by insertion order
+        # 权重相同出现并列时，按插入顺序打破平局。
         self.assertEqual({d.doc_id for d, _ in flat[:2]}, {"a", "b"})
 
     def test_weights_length_mismatch_raises(self) -> None:

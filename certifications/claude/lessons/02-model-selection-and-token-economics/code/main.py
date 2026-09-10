@@ -1,9 +1,7 @@
-"""Companion code for:
-certifications/claude/lessons/02-model-selection-and-token-economics/docs/en.md
-It validates and summarizes a ten-case local model-routing benchmark.
-It also validates repeated mode trials against dated support evidence and gates.
-Rates are illustrative units, so no provider price or credential is required.
-"""
+"""第 02 课模型选择与词元经济性配套代码。
+
+对应 docs/en.md：校验并汇总模型路由、词元预算、缓存与批处理等成本假设。所有价格、模型标识和计算输入
+属于固定课程快照；这里是教学计算器，不是实时账单或最新价格查询。"""
 
 from __future__ import annotations
 

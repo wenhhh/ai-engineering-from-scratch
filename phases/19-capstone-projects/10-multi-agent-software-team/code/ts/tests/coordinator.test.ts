@@ -1,17 +1,21 @@
+/**
+ * 角色编排与拒绝规则测试。仅翻译名称与说明，不改断言、测试输入或命令夹具。
+ */
+
 import { strict as assert } from "node:assert";
 import { test } from "node:test";
 import { Agent, CoderAgent, PlannerAgent, ReviewerAgent } from "../src/agent.js";
 import { Coordinator } from "../src/coordinator.js";
 import type { Message, Role } from "../src/types.js";
 
-test("coordinator rotation cycles through every role", () => {
+test("初始轮转列表包含三个不同角色", () => {
   const c = new Coordinator();
   const first = c.rotation();
   assert.equal(first.length, 3);
   assert.equal(new Set(first).size, 3);
 });
 
-test("coordinator rotation differs after a tick", () => {
+test("一次步进后轮转顺序发生变化", () => {
   const c = new Coordinator();
   const before = c.rotation().join(",");
   c.run(
@@ -28,7 +32,7 @@ test("coordinator rotation differs after a tick", () => {
   assert.notEqual(before, after);
 });
 
-test("issue is approved within twelve turns", () => {
+test("示例问题在十二轮内获得模拟批准", () => {
   const c = new Coordinator();
   const result = c.run({
     from: "user",
@@ -41,7 +45,7 @@ test("issue is approved within twelve turns", () => {
   assert.ok(result.turns <= 12);
 });
 
-test("approval message lives in the log", () => {
+test("日志包含批准消息", () => {
   const c = new Coordinator();
   c.run({
     from: "user",
@@ -54,7 +58,7 @@ test("approval message lives in the log", () => {
   assert.ok(topics.includes("review.approved"));
 });
 
-test("workspace contains the plan and the refund file", () => {
+test("工作空间包含计划和退款文件", () => {
   const c = new Coordinator();
   c.run({
     from: "user",
@@ -68,7 +72,7 @@ test("workspace contains the plan and the refund file", () => {
   assert.ok(files.includes("refunds.py"));
 });
 
-test("rotation visits all roles given a custom agent set", () => {
+test("自定义角色集合的轮转起点遍历全部角色", () => {
   class StubAgent extends Agent {
     constructor(public readonly role: Role) {
       super();
@@ -99,7 +103,7 @@ test("rotation visits all roles given a custom agent set", () => {
   assert.equal(seen.size, 3);
 });
 
-test("PlannerAgent, CoderAgent, ReviewerAgent expose their roles", () => {
+test("三个智能体类型公开对应的角色标识", () => {
   assert.equal(new PlannerAgent().role, "planner");
   assert.equal(new CoderAgent().role, "coder");
   assert.equal(new ReviewerAgent().role, "reviewer");

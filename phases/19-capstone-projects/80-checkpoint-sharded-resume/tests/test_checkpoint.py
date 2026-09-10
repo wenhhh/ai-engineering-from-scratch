@@ -1,4 +1,7 @@
-"""Unit tests for the sharded checkpoint module."""
+"""分片检查点模块的单元测试。
+
+只翻译说明；文件格式、manifest、哈希、失败注入与断言保持原样。
+"""
 
 from __future__ import annotations
 

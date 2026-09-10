@@ -1,3 +1,11 @@
+/**
+ * 固定英文快照中的 MCP 请求模型：元数据校验、发现、工具列表与调用。
+ * 版本 2026-07-28 及字段和错误码按原例保留，本轮不重新核验标准的最新状态。
+ * validateSchema 只实现 object/string/enum 与部分对象约束，不是完整 JSON Schema 验证器。
+ * 描述和错误消息是协议载荷，保持原值并提供中文释义；每个请求自行携带元数据。
+ * 无 id 的通知直接忽略；业务事件存储仍有进程内状态，未实现认证、审批或审计。
+ */
+
 import type {
   JsonSchema,
   JsonRpcRequest,
@@ -46,14 +54,17 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 function validateSchema(value: unknown, schema: JsonSchema, path: string): string[] {
   if (schema.type === "object") {
+    // 校验错误：指定路径必须是对象。
     if (!isRecord(value)) return [`${path} must be an object`];
     const issues: string[] = [];
     const properties = schema.properties ?? {};
     for (const required of schema.required ?? []) {
+      // 校验错误：缺少必需属性。
       if (!Object.hasOwn(value, required)) issues.push(`${path}.${required} is required`);
     }
     if (schema.additionalProperties === false) {
       for (const key of Object.keys(value)) {
+        // 校验错误：不允许额外属性。
         if (!Object.hasOwn(properties, key)) issues.push(`${path}.${key} is not allowed`);
       }
     }
@@ -65,9 +76,11 @@ function validateSchema(value: unknown, schema: JsonSchema, path: string): strin
     return issues;
   }
   if (schema.type === "string" && typeof value !== "string") {
+    // 校验错误：指定路径必须是字符串。
     return [`${path} must be a string`];
   }
   if (schema.enum && !schema.enum.includes(value as string)) {
+    // 校验错误：值必须属于给定枚举。
     return [`${path} must be one of ${schema.enum.join(", ")}`];
   }
   return [];
@@ -116,23 +129,28 @@ function complete(
 
 function validateRequest(msg: JsonRpcRequest): Record<string, unknown> {
   if (!isRecord(msg.params)) {
+    // 请求错误：params 必须是对象。
     throw new RpcProblem(-32602, "params must be an object");
   }
   const meta = msg.params._meta;
   if (!isRecord(meta)) {
+    // 请求错误：必须提供 params._meta。
     throw new RpcProblem(-32602, "params._meta is required");
   }
   const requested = meta[PROTOCOL_VERSION_KEY];
   if (typeof requested !== "string") {
+    // 请求错误：必须提供字符串形式的协议版本。
     throw new RpcProblem(-32602, `${PROTOCOL_VERSION_KEY} is required`);
   }
   if (!(SUPPORTED_VERSIONS as readonly string[]).includes(requested)) {
+    // 版本协商错误：不支持请求的协议版本。
     throw new RpcProblem(-32022, "Unsupported protocol version", {
       supported: [...SUPPORTED_VERSIONS],
       requested,
     });
   }
   if (!isRecord(meta[CLIENT_CAPABILITIES_KEY])) {
+    // 请求错误：必须提供客户端能力对象。
     throw new RpcProblem(-32602, `${CLIENT_CAPABILITIES_KEY} is required`);
   }
   const clientInfo = meta[CLIENT_INFO_KEY];
@@ -142,6 +160,7 @@ function validateRequest(msg: JsonRpcRequest): Record<string, unknown> {
       typeof clientInfo.name !== "string" ||
       typeof clientInfo.version !== "string")
   ) {
+    // 请求错误：可选的客户端信息结构无效。
     throw new RpcProblem(-32602, `${CLIENT_INFO_KEY} is malformed`);
   }
   return msg.params;
@@ -152,6 +171,7 @@ function handleDiscover(): Record<string, unknown> {
     {
       supportedVersions: [...SUPPORTED_VERSIONS],
       capabilities: SERVER_CAPABILITIES,
+      // 服务器说明：使用故障工具列举、查看和确认故障事件；原协议文本保留。
       instructions: "Use incident tools to list, inspect, and acknowledge incidents.",
     },
     { ttlMs: 3_600_000, cacheScope: "public" },
@@ -172,11 +192,13 @@ function handleToolsCall(
   const name = params.name;
   const rawArgs = params.arguments ?? {};
   if (typeof name !== "string" || !name) {
+    // 请求错误：tools/call 需要非空字符串工具名。
     throw new RpcProblem(-32602, "tools/call requires a non-empty string name");
   }
   const executor = context.executors[name];
   const descriptor = context.descriptors.find((candidate) => candidate.name === name);
   if (!executor || !descriptor) {
+    // 请求错误：未知工具；保留测试匹配的英文前缀。
     throw new RpcProblem(-32602, `Unknown tool: ${name}`);
   }
   const schemaIssues = validateSchema(rawArgs, descriptor.inputSchema, "arguments");
@@ -185,6 +207,7 @@ function handleToolsCall(
       content: [
         {
           type: "text",
+          // 工具错误：参数未通过本例 schema 子集校验；不调用执行器。
           text: `Invalid arguments for ${name}: ${schemaIssues.join("; ")}`,
         },
       ],
@@ -225,11 +248,13 @@ export function dispatch(context: ServerContext, msg: JsonRpcRequest): JsonRpcRe
     if (msg.method === "tools/call") {
       return { jsonrpc: "2.0", id, result: handleToolsCall(context, params) };
     }
+    // 协议错误：未实现该方法。
     return rpcError(id, -32601, `Method not found: ${msg.method}`);
   } catch (err) {
     if (err instanceof RpcProblem) {
       return rpcError(id, err.code, err.message, err.data);
     }
+    // 协议错误：内部错误；异常详情原样附加。
     return rpcError(id, -32603, "Internal error", { detail: String(err) });
   }
 }

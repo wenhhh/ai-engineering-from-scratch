@@ -1,16 +1,16 @@
-"""
-Full evaluation pipeline for a tiny language model.
+"""微型语言模型的完整评估流程示例。
 
-See: phases/19-capstone-projects/41-eval-pipeline/docs/en.md
+参见：phases/19-capstone-projects/41-eval-pipeline/docs/en.md
 
-Implements:
-  - perplexity_eval (held-out language modelling)
-  - exact_match_eval (short-form factual)
-  - token_f1_eval (open-form similarity)
-  - judge_eval (mock LLM-as-judge with deterministic scoring)
-  - Aggregator (per-eval normalisation + weighted mean)
-  - run_demo: trains a tiny TinyGPT briefly, runs all four evals, writes
-    report.json next to this file, exits 0 on success.
+包含语言模型困惑度、简短回答完全匹配率、基于词项重合的 F1、确定性规则裁判，
+以及逐指标归一化后的加权聚合。默认演示先短暂训练 TinyGPT，再运行四类评估，
+将 report.json 写入本源码所在目录。聚合分数大于零且不是 NaN 时返回 0。
+
+译注：实际演示训练和评估复用了同一份 LM_CORPUS 与 EM_PAIRS，因此这两项不是
+独立留出评估。裁判只比较标准化文本和词项重合，不读取指令语义、不调用大语言模型。
+各指标及权重是教学性选择；正聚合分数只表明该门槛通过，不等于模型可用或评测有效。
+较长指令可能截断掉 RESP 或全部回答，未实现通用的空目标防护。
+原始英文语料、参考答案与机器字段保留；这些夹具没有在本轮重新核验外部事实。
 """
 
 from __future__ import annotations
@@ -31,7 +31,7 @@ from torch.utils.data import DataLoader, Dataset
 
 
 # ---------------------------------------------------------------------------
-# Tokeniser and TinyGPT (shared across lessons 38-41).
+# 分词器与 TinyGPT；与第 38—41 课复用相似组件，但各课具体实现并不完全相同。
 # ---------------------------------------------------------------------------
 
 
@@ -133,7 +133,7 @@ class TinyGPT(nn.Module):
 
 
 # ---------------------------------------------------------------------------
-# Eval result dataclasses
+# 评估结果数据类
 # ---------------------------------------------------------------------------
 
 
@@ -165,7 +165,7 @@ class EvalResult:
 
 
 # ---------------------------------------------------------------------------
-# Normalisation and string utilities
+# 标准化与字符串辅助函数
 # ---------------------------------------------------------------------------
 
 
@@ -195,7 +195,7 @@ def tokenize_text(text: str) -> List[str]:
 
 
 # ---------------------------------------------------------------------------
-# Fixtures
+# 固定英文夹具：保留语料、查询和参考答案，避免改变训练与评估实验
 # ---------------------------------------------------------------------------
 
 
@@ -356,7 +356,7 @@ JUDGE_SET = [
 
 
 # ---------------------------------------------------------------------------
-# Datasets
+# 数据集
 # ---------------------------------------------------------------------------
 
 
@@ -379,7 +379,7 @@ class LMTextDataset(Dataset):
 
 
 # ---------------------------------------------------------------------------
-# Perplexity eval
+# 困惑度评估
 # ---------------------------------------------------------------------------
 
 
@@ -401,7 +401,7 @@ def perplexity_eval(
         logits = model(ids, key_pad_mask=attn)
         pred = logits[:, :-1, :].contiguous()
         target = ids[:, 1:].contiguous()
-        target_mask = attn[:, 1:].contiguous()  # exclude pad targets
+        target_mask = attn[:, 1:].contiguous()  # 排除填充目标
         loss_per_pos = F.cross_entropy(
             pred.view(-1, pred.size(-1)),
             target.view(-1),
@@ -438,7 +438,7 @@ def perplexity_eval(
 
 
 # ---------------------------------------------------------------------------
-# Generative evals (EM, F1, judge)
+# 生成式评估：完全匹配、词项 F1 与裁判分数
 # ---------------------------------------------------------------------------
 
 
@@ -549,7 +549,7 @@ def token_f1_eval(
 
 
 # ---------------------------------------------------------------------------
-# Mock LLM-as-judge
+# 模拟裁判：确定性文本规则，不是真实大语言模型
 # ---------------------------------------------------------------------------
 
 
@@ -560,27 +560,27 @@ class JudgeVerdict:
 
 
 def mock_judge(instruction: str, prediction: str, reference: str) -> JudgeVerdict:
-    """Deterministic judge: scores prediction on a 1-5 scale.
+    """确定性规则裁判，输出 1—5 分。
 
-    The scoring rules are:
-      5: normalised prediction equals normalised reference.
-      4: token-F1 >= 0.8
-      3: token-F1 in [0.5, 0.8)
-      2: token-F1 in [0.2, 0.5)
-      1: otherwise
+    5：标准化后的预测与参考相同。
+    4：词项 F1 >= 0.8。
+    3：词项 F1 位于 [0.5, 0.8)。
+    2：词项 F1 位于 [0.2, 0.5)。
+    1：其他情况。
+    instruction 参数未用于评分，不能视为真正的语义裁判。
     """
     norm_pred = normalise_for_em(prediction)
     norm_ref = normalise_for_em(reference)
     if norm_pred == norm_ref:
-        return JudgeVerdict(score=5, rationale="exact match after normalisation")
+        return JudgeVerdict(score=5, rationale="标准化后完全匹配")
     f1 = token_f1_score(prediction, reference)
     if f1 >= 0.8:
-        return JudgeVerdict(score=4, rationale=f"high token overlap (F1={f1:.2f})")
+        return JudgeVerdict(score=4, rationale=f"词项重合度高（F1={f1:.2f})")
     if f1 >= 0.5:
-        return JudgeVerdict(score=3, rationale=f"moderate token overlap (F1={f1:.2f})")
+        return JudgeVerdict(score=3, rationale=f"词项重合度中等（F1={f1:.2f})")
     if f1 >= 0.2:
-        return JudgeVerdict(score=2, rationale=f"weak token overlap (F1={f1:.2f})")
-    return JudgeVerdict(score=1, rationale=f"low token overlap (F1={f1:.2f})")
+        return JudgeVerdict(score=2, rationale=f"词项重合度较低（F1={f1:.2f})")
+    return JudgeVerdict(score=1, rationale=f"词项重合度低（F1={f1:.2f})")
 
 
 def judge_eval(
@@ -609,7 +609,7 @@ def judge_eval(
 
 
 # ---------------------------------------------------------------------------
-# Aggregator
+# 聚合器
 # ---------------------------------------------------------------------------
 
 
@@ -622,7 +622,7 @@ DEFAULT_WEIGHTS = {
 
 
 def normalise_metric(name: str, value: float) -> float:
-    """Map a raw metric onto [0, 1]."""
+    """按本例的手工映射将指标转换到 [0, 1]；这种映射不代表统一校准后的任务质量。"""
     if name == "perplexity":
         if value <= 0 or math.isinf(value) or math.isnan(value):
             return 0.0
@@ -656,7 +656,7 @@ class FinalReport:
 
 def aggregate(results: Sequence[EvalResult], weights: Optional[Dict[str, float]] = None) -> FinalReport:
     weights = dict(weights or DEFAULT_WEIGHTS)
-    # Normalise weights so they sum to 1.
+    # 归一化本次评估对应的权重，使其总和为 1；不单独拒绝所有负权重。
     total_w = sum(weights.get(r.name, 0.0) for r in results)
     if total_w <= 0:
         raise ValueError("no positive weights match the eval names")
@@ -674,13 +674,13 @@ def aggregate(results: Sequence[EvalResult], weights: Optional[Dict[str, float]]
 
 
 # ---------------------------------------------------------------------------
-# Pretty printer
+# 可读报告输出
 # ---------------------------------------------------------------------------
 
 
 def render_report(report: FinalReport, log: Callable[[str], None] = print) -> None:
-    log("EVAL REPORT")
-    log("  eval          raw        normalised   weight")
+    log("评估报告")
+    log("  评估项        原始值     归一化值     权重")
     log("  ------------  ---------  -----------  ------")
     for name in sorted(report.per_eval.keys()):
         raw = report.per_eval[name]
@@ -692,11 +692,11 @@ def render_report(report: FinalReport, log: Callable[[str], None] = print) -> No
         weight = report.weights[name]
         log(f"  {name:<12}  {raw_repr}  {norm:>11.3f}  {weight:>6.2f}")
     log("  ------------  ---------  -----------  ------")
-    log(f"  AGGREGATE                            {report.aggregate:.3f}")
+    log(f"  聚合分数                             {report.aggregate:.3f}")
 
 
 # ---------------------------------------------------------------------------
-# Demo: train a tiny model briefly and run all four evals.
+# 演示：短暂训练微型模型，然后运行四类评估。
 # ---------------------------------------------------------------------------
 
 
@@ -713,10 +713,10 @@ class EvalConfig:
 
 
 def train_small(model: TinyGPT, tok: InstructionTokenizer, cfg: EvalConfig) -> List[float]:
-    """A short pretraining pass on the LM corpus + EM pairs so the model is non-random.
+    """在 LM 语料和完全匹配题目上短暂训练，使模型经历参数更新。
 
-    This is enough to make all four metrics non-trivial without locking in a
-    specific quality bar.
+    这两份数据也用于后续评估，因此不能把相应分数称为独立留出结果。
+    本函数没有设定可泛化的模型质量门槛。
     """
     pairs: List[List[int]] = []
     for text in LM_CORPUS:
@@ -750,37 +750,37 @@ def run_demo(cfg: Optional[EvalConfig] = None, write_json: bool = True) -> int:
     np.random.seed(cfg.seed)
     random.seed(cfg.seed)
 
-    print("EVAL PIPELINE DEMO")
-    print(f"fixtures: lm={len(LM_CORPUS)} em={len(EM_PAIRS)} f1={len(F1_PAIRS)} judge={len(JUDGE_SET)}")
+    print("评估流水线演示")
+    print(f"夹具数量：语言模型={len(LM_CORPUS)} 完全匹配={len(EM_PAIRS)} 词项 F1={len(F1_PAIRS)} 裁判={len(JUDGE_SET)}")
     print("")
 
     tok = InstructionTokenizer()
     model = TinyGPT(cfg.vocab, cfg.hidden, cfg.heads, cfg.depth, cfg.max_len)
 
-    print(f"[training] {cfg.train_epochs} epochs over the LM + EM combined corpus...")
+    print(f"[训练] {cfg.train_epochs} 轮，使用语言模型语料与完全匹配题目的合并数据……")
     losses = train_small(model, tok, cfg)
-    print(f"           final epoch loss = {losses[-1]:.4f}")
+    print(f"           末轮损失 = {losses[-1]:.4f}")
     print("")
 
-    print("[evaluating]")
+    print("[评估]")
     ppl_res = perplexity_eval(model, tok, LM_CORPUS, cfg.max_len)
     em_res = exact_match_eval(model, tok, EM_PAIRS)
     f1_res = token_f1_eval(model, tok, F1_PAIRS)
     j_res = judge_eval(model, tok, JUDGE_SET)
-    print(f"  perplexity   = {ppl_res.metric:.3f}")
-    print(f"  exact_match  = {em_res.metric:.3f}")
-    print(f"  token_f1     = {f1_res.metric:.3f}")
-    print(f"  judge (1-5)  = {j_res.metric:.3f}")
+    print(f"  困惑度       = {ppl_res.metric:.3f}")
+    print(f"  完全匹配率   = {em_res.metric:.3f}")
+    print(f"  词项 F1      = {f1_res.metric:.3f}")
+    print(f"  裁判分（1—5）= {j_res.metric:.3f}")
     print("")
 
     report = aggregate([ppl_res, em_res, f1_res, j_res])
     render_report(report)
 
     print("")
-    print("[per-task spot checks]")
+    print("[逐类抽查部分样本]")
     for res in [em_res, f1_res, j_res]:
         for rec in res.records[:2]:
-            print(f"  {res.name:>11s}  inst='{rec.instruction[:35]}' pred='{rec.prediction[:35]}' score={rec.score:.2f}")
+            print(f"  {res.name:>11s}  指令='{rec.instruction[:35]}' 预测='{rec.prediction[:35]}' 分数={rec.score:.2f}")
 
     if write_json:
         here = os.path.dirname(os.path.abspath(__file__))
@@ -788,9 +788,10 @@ def run_demo(cfg: Optional[EvalConfig] = None, write_json: bool = True) -> int:
         with open(out_path, "w", encoding="utf-8") as fh:
             json.dump(report.to_dict(), fh, indent=2, default=str)
         print("")
-        print(f"wrote {out_path}")
+        print(f"已写入 {out_path}")
 
     if report.aggregate <= 0.0 or math.isnan(report.aggregate):
+        # 错误契约保留原文：聚合分数不为正，或为 NaN。
         print("ERROR: aggregate score is not positive", file=sys.stderr)
         return 1
     return 0

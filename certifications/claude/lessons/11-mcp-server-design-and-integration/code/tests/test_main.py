@@ -1,4 +1,4 @@
-"""Tests for the lesson 11 stateless MCP 2026-07-28 simulator."""
+"""第 11 课无状态 MCP 模拟器测试。"""
 
 import json
 import pathlib

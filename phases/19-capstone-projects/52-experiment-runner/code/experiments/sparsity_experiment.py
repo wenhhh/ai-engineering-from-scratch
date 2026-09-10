@@ -1,13 +1,13 @@
-"""Mock experiment script: reads a config json, prints intermediate and final metrics.
+"""模拟实验脚本：读取 JSON 配置，输出中间指标与最终指标。
 
-Honoured knobs:
-    k          : int    sparsity setting; higher k drops perplexity (synthetic)
-    steps      : int    number of inner training steps to simulate
-    sleep_s    : float  sleep per step; used to force timeouts in tests
-    allocate_mb: int    extra bytes to hold; used to force the memory poller
-    __seed     : int    deterministic seed for the numpy random pass
+支持的配置项：
+    k          : int    稀疏性参数；在合成公式中，增大 k 会降低困惑度，效果在 32 处封顶
+    steps      : int    要模拟的内部训练步数
+    sleep_s    : float  每步等待秒数；测试用它触发超时
+    allocate_mb: int    额外持有的内存，按 1024² 字节计；可用于触发内存轮询器
+    __seed     : int    NumPy 随机数的固定种子
 
-Stdlib + numpy. The script is intentionally small; the lesson is the runner.
+依赖标准库和 NumPy。脚本刻意保持简单，本课重点是运行器，不执行真实模型训练。
 """
 
 from __future__ import annotations
@@ -22,6 +22,7 @@ import numpy as np
 
 def main() -> int:
     if len(sys.argv) < 2:
+        # 缺少配置路径；JSON 错误值保留。
         print(json.dumps({"error": "missing config path"}), file=sys.stderr)
         return 2
     cfg_path = sys.argv[1]
@@ -29,6 +30,7 @@ def main() -> int:
         with open(cfg_path, "rt", encoding="utf-8") as fh:
             cfg = json.load(fh)
     except (OSError, json.JSONDecodeError) as exc:
+        # 配置无法读取或解析。
         print(json.dumps({"error": f"bad config: {exc}"}), file=sys.stderr)
         return 2
 

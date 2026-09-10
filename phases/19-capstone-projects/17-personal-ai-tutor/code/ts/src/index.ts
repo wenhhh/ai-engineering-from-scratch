@@ -1,7 +1,14 @@
-// Personal AI Tutor: TypeScript web-app half of the capstone stack.
-// Python side ships the learner model and tutor policy; this project exposes
-// /lesson/next (topo-walk over curriculum DAG) and /lesson/:id/submit.
-// Refs: docs/en.md (this lesson),
+/**
+ * 课程遍历演示与 HTTP 适配器。
+ * 演示使用确定性伪随机数模拟正确率，并直接推进逻辑时钟；不与真实学习者交互。
+ * 选课原因保留 new_eligible/review_overdue 枚举，中文释义见 types.ts。
+ * 过大请求体错误中的 exceeds 参与 HTTP 413 分支匹配，不翻译该错误字符串。
+ */
+
+// 个人 AI 导师：综合项目的 TypeScript HTTP 应用部分。
+// Python 另行演示 BKT 与辅导策略；本项目暴露以下独立接口：
+// /lesson/next（课程图拓扑遍历）与 /lesson/:id/submit。
+// 课程参考：../../docs/zh.md；以下链接来自固定英文原文。
 //   Bayesian Knowledge Tracing: https://en.wikipedia.org/wiki/Bayesian_knowledge_tracing
 //   FSRS spaced-repetition: https://github.com/open-spaced-repetition/fsrs4anki
 
@@ -16,10 +23,10 @@ function runDemo(): void {
   const topo = topoOrder(CURRICULUM);
 
   process.stdout.write("=".repeat(72) + "\n");
-  process.stdout.write("PHASE 19 LESSON 17 - personal tutor (TypeScript)\n");
+  process.stdout.write("阶段 19 第 17 课：个人导师（TypeScript）\n");
   process.stdout.write("=".repeat(72) + "\n");
 
-  process.stdout.write(`\ntopological order: ${topo.join(", ")}\n`);
+  process.stdout.write(`\n拓扑顺序：${topo.join(", ")}\n`);
 
   let now = Date.now();
   const learnerCorrectRate = 0.75;
@@ -32,25 +39,25 @@ function runDemo(): void {
   for (let step = 0; step < 14; step += 1) {
     const pick = pickNextLesson(topo, index, store.all(), now);
     if (!pick) {
-      process.stdout.write(`\nstep ${step}: curriculum complete\n`);
+      process.stdout.write(`\n第 ${step} 步：当前没有可选课程或到期复习\n`);
       break;
     }
     const correct = rng() < learnerCorrectRate;
     const updated = store.record(pick.lesson.id, correct, now);
     process.stdout.write(
-      `\nstep ${step}: ${pick.lesson.id} (${pick.lesson.title}) ${pick.reason}, ` +
-        `learner ${correct ? "correct" : "wrong"}, ` +
-        `score=${updated.score.toFixed(2)}, next_due=+${Math.floor(updated.interval_ms / 1000)}s\n`,
+      `\n第 ${step} 步：${pick.lesson.id}（${pick.lesson.title}），选择原因=${pick.reason}，` +
+        `学习者${correct ? "答对" : "答错"}，` +
+        `分数=${updated.score.toFixed(2)}，下次复习在 ${Math.floor(updated.interval_ms / 1000)} 秒后\n`,
     );
     now = updated.next_due_at + 1;
   }
 
-  process.stdout.write("\nfinal mastery snapshot:\n");
+  process.stdout.write("\n最终掌握度快照：\n");
   for (const id of topo) {
     const m = store.peek(id);
     if (!m) continue;
     process.stdout.write(
-      `  ${id}: score=${m.score.toFixed(2)} attempts=${m.attempts} successes=${m.successes}\n`,
+      `  ${id}：分数=${m.score.toFixed(2)}，作答次数=${m.attempts}，答对次数=${m.successes}\n`,
     );
   }
 }
@@ -106,7 +113,7 @@ function runServer(port: number): void {
     });
   });
   server.listen(port, () => {
-    process.stdout.write(`tutor api on http://localhost:${port}\n`);
+    process.stdout.write(`导师 API 地址：http://localhost:${port}\n`);
   });
 }
 
@@ -117,12 +124,12 @@ function parsePort(argv: string[], defaultPort: number): number {
   if (portFlag < 0) return defaultPort;
   const raw = argv[portFlag + 1];
   if (raw === undefined) {
-    process.stderr.write("--port requires a value\n");
+    process.stderr.write("--port 需要提供值\n");
     process.exit(2);
   }
   const n = Number(raw);
   if (!Number.isInteger(n) || n < 1 || n > 65535) {
-    process.stderr.write(`invalid --port ${raw}: must be integer in 1..65535\n`);
+    process.stderr.write(`--port 值 ${raw} 无效：必须是 1..65535 范围的整数\n`);
     process.exit(2);
   }
   return n;

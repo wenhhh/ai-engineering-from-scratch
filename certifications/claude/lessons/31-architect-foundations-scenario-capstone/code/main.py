@@ -3,7 +3,7 @@
 # Guide URL: https://everpath-course-content.s3-accelerate.amazonaws.com/instructor%2F6nizmqk8tpzpfjvt6qmmav7rh%2Fpublic%2F1783542750%2FClaude+Certified+Architect+%E2%80%93+Foundations+Exam+Guide.pdf
 # This standard-library validator checks architecture packet invariants. It does not call Claude.
 
-"""Validate an original CCAR-F architecture scenario packet."""
+"""校验一个原创 CCAR-F 架构场景资料包。覆盖五个架构域与实现交接；这是确定性 readiness 检查，不代表系统已部署或容量已经实测。"""
 
 from __future__ import annotations
 
@@ -47,12 +47,12 @@ SUPPORTED_SCHEMA_TYPES = {"array", "boolean", "integer", "null", "number", "obje
 
 
 def issue(domain: str, code: str, message: str, location: str) -> dict[str, str]:
-    """Return one stable architecture finding."""
+    """返回一条稳定的架构 finding。"""
     return {"domain": domain, "code": code, "message": message, "location": location}
 
 
 def find_cycle(tasks: list[dict[str, Any]]) -> bool:
-    """Detect dependency cycles after unknown prerequisite checks."""
+    """在完成未知前置依赖检查后检测依赖环。"""
     dependencies = {str(task["id"]): list(task.get("prerequisites", [])) for task in tasks}
     visiting: set[str] = set()
     visited: set[str] = set()
@@ -239,7 +239,7 @@ def validate_handoff(value: Any) -> list[dict[str, str]]:
 
 
 def evaluate_packet(packet: Any) -> dict[str, Any]:
-    """Validate all five architecture domains and the implementation handoff."""
+    """校验全部五个架构域以及实现交接。"""
     if not isinstance(packet, dict):
         findings = [issue("packet", "invalid_packet", "Packet must be an object.", "packet")]
         return {"status": "blocked", "findings": findings, "metrics": {"errors": 1, "domains": 0}}
@@ -266,7 +266,7 @@ def evaluate_packet(packet: Any) -> dict[str, Any]:
 
 
 def build_demo_packet() -> dict[str, Any]:
-    """Return an original passing support-resolution architecture packet."""
+    """返回原创的、可通过校验的支持解决方案架构资料包。"""
     error_contract = ["category", "retryable", "partial_result", "trace_id"]
     return {
         "scenario": {

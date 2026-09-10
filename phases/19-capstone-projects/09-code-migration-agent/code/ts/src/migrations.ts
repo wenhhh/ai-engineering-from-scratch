@@ -1,3 +1,10 @@
+/**
+ * 逐文件迁移状态机与合成仓库夹具。
+ * 改写行数、编译失败、测试数量都是随机模拟；没有运行配方、构建或测试。
+ * 每次 tickOne 推进一个文件并计费，然后检查预算；没有实际修复失败文件的回退循环。
+ * 仓库路径、状态值、配方标识及错误字符串保留原值。
+ */
+
 import { randomUUID } from "node:crypto";
 import { BUDGET_USD, MAX_TURNS, chargeTurn, checkBudget } from "./cost.js";
 import type {
@@ -85,6 +92,7 @@ export function advanceFile(file: FileDiff, rng: () => number = Math.random): vo
   }
   if (next === "building" && rng() < 0.15) {
     file.status = "failed";
+    // 模拟编译错误：找不到 javax.annotation.Nullable 符号。
     file.lastError =
       "compile error: cannot find symbol javax.annotation.Nullable";
   }

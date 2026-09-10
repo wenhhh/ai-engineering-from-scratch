@@ -1,45 +1,48 @@
-"""Regulatory framework timeline printer — stdlib Python.
+"""AI 监管框架时间线打印器，仅使用 Python 标准库。
 
-Prints a unified timeline of the EU AI Act, GPAI Code of Practice, Transparency
-Code, UK AISI rebrand, US CAISI rebrand, and Korean AI Framework Act milestones.
+展示固定原文中的欧盟《人工智能法案》、通用人工智能（GPAI）实践守则、
+透明度守则、英国 AISI 与美国 CAISI 名称变化，以及韩国 AI 基本法等里程碑。
+只提供参考表；原文把来源指向 docs/en.md，本源码本身不含逐条来源链接。
+运行方式：python3 code/main.py
 
-Reference-only; primary sources cited in docs/en.md.
-
-Usage: python3 code/main.py
+译注：所有日期、政策状态与评价保留为固定英文快照，不代表本轮核验后的
+当前法律。日期中的 -00 表示原文未给出具体日，并不是有效的公历日期。
+适用法律、过渡期、义务主体和后续修订必须另行确认，不能直接按此简表做
+合规判断；结尾“遵守最严格者”的原文建议也不能替代逐法域适用性分析。
 """
 
 from __future__ import annotations
 
 
 TIMELINE = [
-    ("2024-08-01", "EU AI Act enters into force"),
-    ("2024-12-00", "Korean AI Framework Act passed by National Assembly"),
-    ("2025-01-00", "Korean AI Framework Act enacted (effective Jan 2026)"),
-    ("2025-02-02", "EU AI Act: prohibited practices and AI literacy apply"),
-    ("2025-02-00", "UK AISI renamed -> AI Security Institute"),
-    ("2025-06-00", "US AISI renamed -> CAISI (Center for AI Standards and Innovation)"),
-    ("2025-07-10", "GPAI Code of Practice published (3 chapters, 12 commitments)"),
-    ("2025-08-02", "EU AI Act: GPAI + governance obligations apply"),
-    ("2025-12-17", "Transparency Code for Article 50 first draft"),
-    ("2026-01-00", "Korean AI Framework Act effective"),
-    ("2026-03-00", "Transparency Code second draft"),
-    ("2026-06-00", "Transparency Code final version"),
-    ("2026-08-02", "EU AI Act: full applicability + Article 50 transparency + penalties"),
-    ("2027-08-02", "EU AI Act: legacy GPAI + embedded high-risk systems"),
+    ("2024-08-01", "欧盟《人工智能法案》生效"),
+    ("2024-12-00", "韩国 AI 基本法由国会通过"),
+    ("2025-01-00", "韩国 AI 基本法公布（原文标注：2026 年 1 月施行）"),
+    ("2025-02-02", "欧盟《人工智能法案》：禁止性做法和 AI 素养相关规定开始适用"),
+    ("2025-02-00", "英国 AISI 更名为 AI Security Institute（AI 安全保障研究所）"),
+    ("2025-06-00", "美国 AISI 更名为 CAISI（AI 标准与创新中心）"),
+    ("2025-07-10", "GPAI 实践守则发布（原文标注：3 章、12 项承诺）"),
+    ("2025-08-02", "欧盟《人工智能法案》：GPAI 及治理相关义务开始适用"),
+    ("2025-12-17", "针对第 50 条的透明度守则首份草案"),
+    ("2026-01-00", "韩国 AI 基本法施行"),
+    ("2026-03-00", "透明度守则第二份草案"),
+    ("2026-06-00", "透明度守则最终版（原文时间表）"),
+    ("2026-08-02", "欧盟《人工智能法案》：原文所称全面适用、第 50 条透明度义务与处罚"),
+    ("2027-08-02", "欧盟《人工智能法案》：存量 GPAI 及嵌入式高风险系统相关节点（原文概括）"),
 ]
 
 
 def main() -> None:
     print("=" * 78)
-    print("AI REGULATORY TIMELINE (Phase 18, Lesson 24)")
+    print("AI 监管时间线（阶段 18，第 24 课；固定原文快照）")
     print("=" * 78)
     for date, event in TIMELINE:
         print(f"  {date}  {event}")
     print("\n" + "=" * 78)
-    print("TAKEAWAY: EU AI Act sets the global bar. full enforcement August 2026.")
-    print("UK narrowed to frontier security. US pivoted pro-growth. Korea is the")
-    print("first Asian comprehensive framework. deployers in multiple jurisdictions")
-    print("comply with the strictest, which is usually the EU.")
+    print("原文观点：欧盟《人工智能法案》树立全球基准，并将 2026 年 8 月列为全面执行节点。")
+    print("原文将英国概括为聚焦前沿安全、美国转向促进增长，")
+    print("并称韩国率先在亚洲建立全面框架；这些评价未在本轮核验。")
+    print("原文建议跨法域部署参考最严格要求，通常指向欧盟；实际适用义务仍须逐项确认。")
     print("=" * 78)
 
 

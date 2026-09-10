@@ -1,6 +1,6 @@
 {
   "id": "task_005_linked_list_traversal",
-  "goal": "linked_list_length(head) should count every node in the linked list starting at head, including head itself. The buggy version starts counting from head.next, dropping one node. Fix it by initialising the counter to 0 and incrementing for every node walked.",
+  "goal": "linked_list_length(head) 应从 head 开始统计链表全部节点，包括 head 自身。有缺陷的版本从 head.nxt 开始计数，漏掉了首节点。将计数器初始化为 0，并对遍历到的每个节点递增一次。",
   "verifier": {
     "name": "file_equals",
     "args": { "path": "linked_list.py" }

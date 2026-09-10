@@ -1,7 +1,14 @@
-"""Toy Pipecat-style voice pipeline: VAD  STT  LLM  TTS  transport.
+"""Pipecat 风格的简化语音流水线：VAD 语音活动检测 -> STT 语音转文字
+-> LLM 语言模型 -> TTS 文字转语音 -> 传输层。
 
-Frames travel DOWNSTREAM (source to sink) and UPSTREAM (cancel/control).
-A scripted input shows normal flow plus a barge-in cancel that stops TTS.
+数据帧沿下游方向（downstream，从输入端到输出端）传递；取消和控制帧向上游
+（upstream）传播。预设输入展示正常流程，以及向 TTS 和 LLM 传播取消信号。
+
+译注：这是同步、纯文本模拟，不连接 Pipecat、LiveKit 或真实语音模型。
+第二个场景在整段模拟语音已经交付后才发送取消帧，因此并未实际演示“说到一半被打断”。
+英文对话按空白拆词，必须保留才能维持交付词数和轨迹。hello 表示问候，
+refund please 表示请求退款；预设回复分别询问需要什么帮助，以及退款订单号。
+cancelled 表示已取消，emitted 表示已输出，sent ... words 表示已发送相应数量的词。
 """
 
 from __future__ import annotations
@@ -119,7 +126,7 @@ def link(*processors: Processor) -> None:
 
 def main() -> None:
     print("=" * 70)
-    print("VOICE PIPELINE (PIPECAT-SHAPED) — Phase 14, Lesson 22")
+    print("语音流水线（PIPECAT 风格）——阶段 14，第 22 课")
     print("=" * 70)
 
     vad = VAD("vad")
@@ -134,23 +141,23 @@ def main() -> None:
     transport = Transport("transport")
     link(vad, stt, llm, tts, transport)
 
-    print("\nscenario 1: normal flow")
+    print("\n场景 1：正常流转")
     vad.process(Frame("audio_chunk", "hello"))
-    print(f"  transport delivered: {transport.delivered[-1]}")
+    print(f"  传输层已交付：{transport.delivered[-1]}")
 
-    print("\nscenario 2: barge-in mid-utterance")
+    print("\n场景 2：插话取消信号（本同步模拟在交付完成后发送）")
     tts.cancelled = False
     vad.process(Frame("audio_chunk", "refund please"))
     transport.process(Frame("cancel", None, direction="upstream"))
 
-    print("  trace across pipeline")
+    print("  流水线各阶段的轨迹")
     for proc in (vad, stt, llm, tts, transport):
         for line in proc.trace:
             print(f"    {proc.name}: {line}")
 
     print()
-    print("barge-in needs UPSTREAM cancel frames that propagate back to TTS+LLM.")
-    print("sum latency per stage; premium stack lands at 450-600ms end-to-end.")
+    print("插话打断需要向上游传播取消帧，让 TTS 与 LLM 都收到信号。")
+    print("端到端延迟需累加各阶段耗时；原文给出的优选技术栈参考值为 450—600 ms，本例未测量。")
 
 
 if __name__ == "__main__":

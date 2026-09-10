@@ -94,7 +94,7 @@ function runtimeRouteLinks(filename) {
 
 test('plain static preview rewrites every route-producing site surface', () => {
   const surfaces = [
-    ['index.html', /Start the Course/],
+    ['index.html', /(?:Start the Course|开始课程)/],
     ['catalog.html', /data-generated-discovery="lesson"/],
     ['lesson.html', /lesson-nav-btn next/],
     ['certifications.html', /certification\?id=/],
@@ -116,7 +116,7 @@ test('plain static preview rewrites every route-producing site surface', () => {
   const directFileLinks = runtimeRouteLinks('learning-paths.html').map(testLink);
   loadRouteRuntime('file:///tmp/ai-engineering-from-scratch/site/learning-paths.html', directFileLinks);
   assert.equal(directFileLinks.every(link => link.value().startsWith('lesson.html?')), true);
-  assert.match(fs.readFileSync(path.join(__dirname, 'learning-paths.html'), 'utf8'), />Study specialist lessons<\/a>/);
+  assert.match(fs.readFileSync(path.join(__dirname, 'learning-paths.html'), 'utf8'), />(?:Study specialist lessons|学习专项课程)<\/a>/);
 });
 
 test('shared adapter covers dynamically inserted links, click races, and command palette navigation', () => {

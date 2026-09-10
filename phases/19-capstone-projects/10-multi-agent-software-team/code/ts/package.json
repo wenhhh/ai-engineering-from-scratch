@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "version": "0.1.0",
-  "description": "Multi-file TypeScript skeleton for the multi-agent software team capstone.",
+  "description": "多智能体软件团队综合项目的多文件 TypeScript 示例框架。",
   "scripts": {
     "start": "tsx src/index.ts",
     "typecheck": "tsc --noEmit",

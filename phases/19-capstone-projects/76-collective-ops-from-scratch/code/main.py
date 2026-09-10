@@ -1,17 +1,19 @@
-"""Collective communication primitives over multiprocessing.Queue, verified against gloo.
+"""基于 multiprocessing.Queue 从零实现集合通信，并与 Gloo 结果核对。
 
-Implements ring allreduce, tree broadcast, allgather, reduce_scatter on a queue
-mesh that wires N ranks into a ring. Every primitive is checked byte-for-byte
-against torch.distributed initialised with the gloo backend on the same tensor
-and the same world size. The per-rank byte counter proves the 2T(N-1)/N
-scaling of ring allreduce.
+在将 N 个 rank 接成队列网格的教学实现上提供 ring allreduce、树形广播、
+allgather 与 reduce_scatter。每种原语都与相同 world size、相同张量上的
+torch.distributed Gloo 参考结果比较；另外统计每 rank 发送的字节数，检查
+ring allreduce 的 2T(N-1)/N 通信量公式。
 
-Run: python3 code/main.py
+运行：python3 code/main.py
 
-The mesh workers use the 'fork' multiprocessing context so child processes
-inherit Queue file descriptors without pickling. The gloo reference workers
-use 'spawn' because torch.distributed needs a clean process. Both contexts
-ship in stdlib multiprocessing.
+队列网格工作进程使用 fork，使子进程继承 Queue 文件描述符；Gloo 参考
+进程使用 spawn，以获得干净的分布式进程环境。两者均来自标准库
+multiprocessing。
+
+译注：这是单机 CPU 教学实现；“逐字节验证”最终实际按张量数值比较与
+容差判断，通信字节计数也只覆盖本例显式 send 的载荷，不代表真实网络
+协议总开销或多机性能。后端、rank、操作名和张量输入保持原值。
 """
 
 from __future__ import annotations
@@ -30,18 +32,17 @@ RECV_TIMEOUT_S = 30.0
 
 
 def _loopback_iface() -> str:
-    """Return the loopback interface name; macOS uses lo0, Linux uses lo."""
+    """返回回环网卡名；macOS 使用 lo0，Linux 使用 lo。"""
     import sys as _sys
     return "lo0" if _sys.platform == "darwin" else "lo"
 
 
 @dataclass
 class Mesh:
-    """A point-to-point mesh wired as a fully-connected graph of queues.
+    """由队列构成的点对点全连接网格。
 
-    Each rank holds out_queues[dst] and in_queues[src]. The ring algorithms
-    only use neighbour edges; the full mesh keeps the API general so future
-    lessons can experiment with tree topologies without rewiring.
+    每个 rank 持有 out_queues[dst] 和 in_queues[src]。环形算法只使用
+    相邻边；保留全连接网格是为了让后续课程可尝试树形拓扑而无需重接线。
     """
 
     rank: int
@@ -67,7 +68,7 @@ class Mesh:
 
 
 def build_queue_grid(ctx, world_size: int):
-    """Allocate a (world_size, world_size) grid of queues using the given context."""
+    """使用给定 multiprocessing context 分配 world_size × world_size 的队列网格。"""
     grid = [[None] * world_size for _ in range(world_size)]
     for src in range(world_size):
         for dst in range(world_size):
@@ -85,11 +86,10 @@ def mesh_from_grid(rank: int, world_size: int, grid, byte_counter) -> Mesh:
 
 
 def ring_allreduce(mesh: Mesh, tensor: torch.Tensor) -> torch.Tensor:
-    """Ring allreduce in two passes (reduce-scatter then allgather).
+    """两阶段 ring allreduce：先 reduce-scatter，再 allgather。
 
-    Splits the tensor into world_size equal chunks (padding with zeros so the
-    chunk count divides evenly). After the call every rank holds the same
-    summed tensor at the original shape.
+    将张量切成 world_size 个等长分块；必要时在末尾补零。完成后，
+    每个 rank 都持有恢复为原始形状的同一求和张量。
     """
     w = mesh.world_size
     r = mesh.rank
@@ -118,11 +118,10 @@ def ring_allreduce(mesh: Mesh, tensor: torch.Tensor) -> torch.Tensor:
 
 
 def broadcast(mesh: Mesh, tensor: torch.Tensor, src: int) -> torch.Tensor:
-    """Tree broadcast in ceil(log2(world_size)) hops.
+    """在 ceil(log2(world_size)) 轮内完成树形广播。
 
-    At round r, the set of ranks that hold the value doubles. Source rank
-    seeds the value; non-source ranks ignore their input and receive from
-    a peer that already holds it.
+    每轮让持有值的 rank 数量近似翻倍。源 rank 提供初始值；其他 rank
+    忽略自己的输入，从已经持有值的对端接收。
     """
     w = mesh.world_size
     r = mesh.rank
@@ -147,10 +146,10 @@ def broadcast(mesh: Mesh, tensor: torch.Tensor, src: int) -> torch.Tensor:
 
 
 def allgather(mesh: Mesh, tensor: torch.Tensor) -> torch.Tensor:
-    """Allgather via N-1 ring rotations.
+    """通过 N-1 次环形轮转实现 allgather。
 
-    Each rank inputs one shard of length T and outputs all shards concatenated
-    in rank order with total length T * world_size.
+    每个 rank 输入长度为 T 的分片，输出按 rank 顺序拼接的全部分片，
+    总长度为 T × world_size。
     """
     w = mesh.world_size
     r = mesh.rank
@@ -169,13 +168,12 @@ def allgather(mesh: Mesh, tensor: torch.Tensor) -> torch.Tensor:
 
 
 def reduce_scatter(mesh: Mesh, tensor: torch.Tensor) -> torch.Tensor:
-    """Reduce-scatter as the first half of ring allreduce.
+    """将 ring allreduce 的前半段作为 reduce-scatter。
 
-    Input is a tensor of length world_size * T. Output is the rank's chunk of
-    length T holding the sum across all ranks for that index range. The
-    underlying ring algorithm parks the full sum at index (r + 1) % W; we
-    return that chunk and label it as rank r's output to match
-    torch.distributed's contract that rank r owns chunks[r].
+    输入长度为 world_size × T；输出为长度 T 的 rank 分块，其中包含所有
+    rank 在对应索引范围上的求和。底层环算法最终把完整和停在
+    (r + 1) % W 位置；这里取出对应分块，并按 torch.distributed 的契约
+    将它标记为 rank r 拥有的 chunks[r]。
     """
     w = mesh.world_size
     r = mesh.rank
@@ -235,10 +233,10 @@ def _gloo_worker(rank: int, world_size: int, op: str, tensor_bytes: bytes,
 
 def gloo_reference(op: str, world_size: int,
                    per_rank_tensors: list) -> list:
-    """Run the same operation through torch.distributed gloo for verification.
+    """通过 torch.distributed 的 Gloo 后端运行同一操作作为参考。
 
-    Uses file-based init (file:// URI) because TCP init through libuv has
-    known issues on macOS with concurrent process group creation.
+    使用 file:// 方式初始化，因为课程环境中 macOS 上并发创建进程组时，
+    TCP/libuv 初始化可能出现兼容问题。
     """
     ctx = mp.get_context("spawn")
     out_queue = ctx.Queue()
@@ -300,7 +298,7 @@ def _mesh_worker(rank: int, world_size: int, op: str,
 def run_mesh(op: str, world_size: int,
              per_rank_tensors: list,
              src: int = 0) -> tuple:
-    """Run the chosen primitive on the queue mesh and return per-rank outputs plus byte total."""
+    """在队列网格上运行指定集合通信原语，返回各 rank 输出和总字节计数。"""
     ctx = mp.get_context("fork")
     grid = build_queue_grid(ctx, world_size)
     byte_counter = ctx.Value("q", 0)
@@ -332,7 +330,7 @@ def run_mesh(op: str, world_size: int,
 
 def verify_against_gloo(op: str, world_size: int,
                         per_rank_tensors: list) -> tuple:
-    """Compare mesh implementation against gloo reference, return (match, max_abs_diff)."""
+    """将队列实现与 Gloo 参考比较，返回 (是否匹配, 最大绝对差异)。"""
     mesh_out, _ = run_mesh(op, world_size, per_rank_tensors)
     gloo_out = gloo_reference(op, world_size, per_rank_tensors)
     max_diff = 0.0
@@ -348,7 +346,7 @@ def main() -> int:
     n = 64
     torch.manual_seed(7)
     per_rank = [torch.randn(n, dtype=torch.float32) for _ in range(world_size)]
-    print(f"world_size={world_size}, tensor_len={n}, dtype=float32")
+    print(f"进程数={world_size}，张量长度={n}, dtype=float32")
     print(f"{'op':<16} {'gloo_match':<12} {'max_abs_diff':<14}")
     for op in PRIMITIVES:
         if op == "broadcast":
@@ -362,9 +360,9 @@ def main() -> int:
     expected_per_rank_bytes = 2 * (world_size - 1) * (n // world_size) * 4
     _, total_bytes = run_mesh("allreduce", world_size, per_rank)
     per_rank_bytes = total_bytes / world_size
-    print(f"\nallreduce per-rank bytes: measured={per_rank_bytes:.0f} "
-          f"expected={expected_per_rank_bytes} "
-          f"formula=2T(N-1)/N with T={n*4} bytes")
+    print(f"\nallreduce 每 rank 字节数：实测={per_rank_bytes:.0f} "
+          f"期望={expected_per_rank_bytes} "
+          f"公式 2T(N-1)/N，其中 T={n*4} 字节")
     return 0
 
 

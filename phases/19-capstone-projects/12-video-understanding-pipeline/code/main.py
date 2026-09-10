@@ -1,12 +1,16 @@
-"""Video understanding pipeline — multi-vector scene index scaffold.
+"""视频理解流水线：每个场景包含多个向量的索引示例。
 
-The hard architectural primitive is a multi-vector-per-scene index with
-three representations (caption, frame, transcript), queried in parallel and
-merged with reciprocal rank fusion, then refined by a temporal-grounding
-step that picks a sub-window inside the best scene. This scaffold implements
-the index shape, the triple-query fusion, and the sub-window grounding.
+每个场景保存描述、画面标签和转写三种表示，分别检索后用倒数排名融合（RRF）
+合并结果，再在排名第一的场景内按转写词位置缩小时段。本例演示索引结构、
+三路排名融合与时序定位的占位实现。
 
-Run:  python main.py
+运行：python main.py
+
+译注：没有加载视频、抽帧、语音转写或调用视觉模型。画面向量来自文字标签，
+嵌入由 Python hash 构造；跨进程重现排名需固定 PYTHONHASHSEED。
+三路检索按顺序执行，并非并行。时序定位假定转写词在场景内均匀分布，
+不是帧级或音频对齐证据；本例不回答车辆计数或动作先后问题，只返回候选时段。
+英文语料和查询影响哈希、分词与排名，因此保留原值并提供中文旁注。
 """
 
 from __future__ import annotations
@@ -40,7 +44,7 @@ def cosine(a: list[float], b: list[float]) -> float:
 
 
 # ---------------------------------------------------------------------------
-# scene record  --  multi-vector: caption / frame / transcript
+# 场景记录：描述／画面标签／转写三种向量。
 # ---------------------------------------------------------------------------
 
 @dataclass
@@ -51,7 +55,7 @@ class Scene:
     end_ms: int
     caption: str
     transcript: str
-    frame_tags: str              # stand-in for frame embedding features
+    frame_tags: str              # 用文字标签代替真实画面嵌入特征。
     caption_emb: list[float] = field(default_factory=list)
     frame_emb: list[float] = field(default_factory=list)
     transcript_emb: list[float] = field(default_factory=list)
@@ -63,29 +67,47 @@ class Scene:
 
 
 SAMPLE = [
+    # 描述夹具：天际线上的日出，航拍画面。
     Scene("vid_001", 0,       0,  32_000, "sunrise over skyline, drone footage",
+          # 转写夹具：我们从东京这里开始。
           "we start here in tokyo",
+          # 画面标签：天际线、建筑、黎明、橙色天空、薄雾。
           "skyline buildings dawn orange sky haze"),
+    # 描述夹具：有行人的繁忙路口。
     Scene("vid_001", 1,  32_000,  68_000, "busy intersection with pedestrians",
+          # 转写夹具：日出后的涩谷十字路口。
           "shibuya crossing after sunrise",
+          # 画面标签：街道、行人、步行、汽车、交通信号。
           "street people walking cars traffic signal"),
+    # 描述夹具：车辆在红灯前停下。
     Scene("vid_001", 2,  68_000, 132_000, "cars stopped at a red light",
+          # 转写夹具：让我数一下驶近的车辆。
           "let me count the vehicles approaching",
+          # 画面标签：汽车、红灯、排队、路口、车道。
           "cars red light queue crossing lanes"),
+    # 描述夹具：厨房里厨师先倒入食材，再搅拌。
     Scene("vid_001", 3, 132_000, 170_000, "kitchen scene chef pouring then stirring",
+          # 转写夹具：先倒入，再慢慢搅拌。
           "first we pour then we stir it slowly",
+          # 画面标签：厨师、锅、炉灶、倒入、搅拌、食材。
           "chef pan stove pour stir ingredient"),
+    # 描述夹具：厨师为完成的菜肴装盘。
     Scene("vid_001", 4, 170_000, 210_000, "chef plating the finished dish",
+          # 转写夹具：菜肴装盘展示。
           "plated presentation of the dish",
+          # 画面标签：盘子、装饰、勺子、收尾、菜肴。
           "plate garnish spoon finishing dish"),
+    # 描述夹具：日落时的海浪。
     Scene("vid_002", 0,       0,  40_000, "ocean waves at sunset",
+          # 转写夹具：海边美丽的傍晚。
           "beautiful evening at the shore",
+          # 画面标签：海洋、波浪、日落、天空、海岸。
           "ocean waves sunset sky shore"),
 ]
 
 
 # ---------------------------------------------------------------------------
-# triple-vector query + RRF merge
+# 三路向量检索与倒数排名融合（RRF）。
 # ---------------------------------------------------------------------------
 
 def multi_vector_search(query: str, scenes: list[Scene], k: int = 5) -> list[tuple[Scene, float]]:
@@ -109,11 +131,11 @@ def multi_vector_search(query: str, scenes: list[Scene], k: int = 5) -> list[tup
 
 
 # ---------------------------------------------------------------------------
-# temporal grounding stub  --  refine start/end within the best scene
+# 时序定位桩：在最佳场景内缩小起止时段。
 # ---------------------------------------------------------------------------
 
 def ground_window(query: str, scene: Scene) -> tuple[int, int]:
-    """Stand-in: pick a sub-window of the scene based on query keyword position."""
+    """占位实现：按查询关键词在转写中的位置选择子时段。"""
     q = set(tokenize(query))
     t_tokens = tokenize(scene.transcript)
     if not q or not t_tokens:
@@ -130,7 +152,7 @@ def ground_window(query: str, scene: Scene) -> tuple[int, int]:
 
 
 # ---------------------------------------------------------------------------
-# demo
+# 演示。
 # ---------------------------------------------------------------------------
 
 def fmt_ms(ms: int) -> str:
@@ -144,22 +166,26 @@ def main() -> None:
         s.embed()
 
     queries = [
+        # 查询夹具：有多少辆车经过路口？
         ("how many cars pass through the intersection", False),
+        # 查询夹具：先倒入还是先搅拌？
         ("what happened first pour or stir", False),
+        # 查询夹具：菜肴装盘。
         ("plating of the dish", True),
+        # 查询夹具：日落时的大海。
         ("ocean at sunset", True),
     ]
 
     for q, descriptive in queries:
-        print(f"\nQ: {q}  (descriptive={descriptive})")
+        print(f"\n查询：{q}  （描述型查询={descriptive}）")
         hits = multi_vector_search(q, scenes, k=3)
         for sc, score in hits:
-            print(f"  scene {sc.video_id}/{sc.scene_id} @ [{fmt_ms(sc.start_ms)}-{fmt_ms(sc.end_ms)}] "
-                  f"score={score:.4f}  cap='{sc.caption[:40]}'")
+            print(f"  场景 {sc.video_id}/{sc.scene_id} @ [{fmt_ms(sc.start_ms)}-{fmt_ms(sc.end_ms)}] "
+                  f"得分={score:.4f}  描述='{sc.caption[:40]}'")
         top = hits[0][0]
         start, end = ground_window(q, top)
-        print(f"  grounded window: [{fmt_ms(start)}-{fmt_ms(end)}] "
-              f"(narrowed from {fmt_ms(top.start_ms)}-{fmt_ms(top.end_ms)})")
+        print(f"  定位时段：[{fmt_ms(start)}-{fmt_ms(end)}] "
+              f"（原始时段：{fmt_ms(top.start_ms)}-{fmt_ms(top.end_ms)}）")
 
 
 if __name__ == "__main__":

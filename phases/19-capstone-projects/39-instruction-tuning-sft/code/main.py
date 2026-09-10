@@ -1,17 +1,16 @@
-"""
-Instruction tuning by supervised fine-tuning (SFT).
+"""通过监督微调（SFT）进行指令训练。
 
-See: phases/19-capstone-projects/39-instruction-tuning-sft/docs/en.md
+参见：phases/19-capstone-projects/39-instruction-tuning-sft/docs/en.md
 
-Builds:
-  - byte-level tokenizer with INST / RESP / PAD specials
-  - SFT dataset over 200 instruction-response pairs
-  - collate function that masks instruction + pad tokens with -100
-  - TinyGPT (decoder-only transformer) body and LM head
-  - SFT loop, greedy generator, exact-match metric
-  - run_demo that trains for 20 epochs and prints per-category exact-match.
+包含具有 INST／RESP／PAD 特殊词元的字节分词器、200 组指令—回答夹具、
+将指令和填充标签设为 -100 的批次拼接、仅含解码器的 TinyGPT、训练循环、
+贪心生成与完全匹配指标。默认演示训练 20 轮，再输出各类别的留出集完全匹配率。
 
-Exits 0 when the trained model beats the random baseline of 0.0 on the held-out set.
+译注：实际从随机初始化的微型模型开始，没有加载预训练模型。
+只有最终匹配率严格高于实测未训练基线时，演示才返回 0；不保证基线或最终匹配率
+一定是原文预设的数值。按类别分层划分样本，不保证同一基础事实／模板家族互斥。
+200 组英文夹具全部保留，避免改动字节长度、截断位置、标签与匹配实验。
+空回答没有被编码器拒绝，仍可能产生全掩蔽标签；预留空间并不保证输入中存在回答字节。
 """
 
 from __future__ import annotations
@@ -30,12 +29,12 @@ from torch.utils.data import DataLoader, Dataset
 
 
 # ---------------------------------------------------------------------------
-# Tokeniser
+# 分词器
 # ---------------------------------------------------------------------------
 
 
 class InstructionTokenizer:
-    """Byte-level tokenizer with INST, RESP, PAD specials."""
+    """字节级分词器，含 INST、RESP 和 PAD 特殊词元。"""
 
     INST_ID = 256
     RESP_ID = 257
@@ -44,14 +43,15 @@ class InstructionTokenizer:
     IGNORE_INDEX = -100
 
     def encode_pair(self, instruction: str, response: str, max_len: int) -> Tuple[List[int], int]:
-        """Return (token_ids, response_start_index). Truncates to max_len if
-        needed but always keeps the RESP marker plus at least one response
-        token so SFT collation never produces fully-masked labels."""
+        """返回 (token_ids, response_start_index)，必要时截断到 max_len。
+
+        为 RESP 标记和至少一个回答字节预留空间；但回答本身为空时不会凭空生成字节，
+        因此“永远不会出现全掩蔽标签”并不对所有输入成立。"""
         if max_len < 3:
             raise ValueError("max_len must be >= 3 to fit INST, RESP, and one response token")
         inst_bytes = list(instruction.encode("utf-8", errors="ignore"))
         resp_bytes = list(response.encode("utf-8", errors="ignore"))
-        # Reserve 2 control tokens + at least 1 response byte.
+        # 为 2 个控制词元和至少 1 个回答字节预留空间。
         max_inst = max_len - 3
         inst_bytes = inst_bytes[:max_inst]
         ids = [self.INST_ID] + inst_bytes + [self.RESP_ID]
@@ -60,8 +60,9 @@ class InstructionTokenizer:
         return ids, resp_start
 
     def encode_prefix(self, instruction: str, max_len: int) -> List[int]:
-        """Encode just the instruction prefix for generation. Always keeps the
-        RESP marker so the model sees the same boundary as during training."""
+        """仅编码生成所需的指令前缀，并保留 RESP 标记。
+
+        这样模型在生成时可以看到与训练相同的指令／回答边界。"""
         if max_len < 2:
             raise ValueError("max_len must be >= 2 to fit INST and RESP")
         inst_bytes = list(instruction.encode("utf-8", errors="ignore"))[: max_len - 2]
@@ -69,13 +70,14 @@ class InstructionTokenizer:
         return ids
 
     def decode_response(self, ids: Sequence[int]) -> str:
-        """Decode a generated response, dropping specials."""
+        """解码生成的回答，丢弃特殊词元。"""
         chunk = bytes(i for i in ids if i < 256)
+        # 译注：非法 UTF-8 字节会被替换为 U+FFFD；该字符再编码占 3 字节。因此最多生成 N 个字节词元，不保证解码文本重新编码后仍不超过 N 字节。
         return chunk.decode("utf-8", errors="replace")
 
 
 # ---------------------------------------------------------------------------
-# Tiny GPT
+# 微型 GPT
 # ---------------------------------------------------------------------------
 
 
@@ -99,7 +101,7 @@ class CausalSelfAttention(nn.Module):
         causal = self.causal_mask[:T, :T].view(1, 1, T, T)
         att = att.masked_fill(~causal, float("-inf"))
         if key_pad_mask is not None:
-            # key_pad_mask: B x T, 1 for real, 0 for pad.
+            # key_pad_mask 形状为 B×T：实际词元为 1，填充为 0。
             km = key_pad_mask.view(B, 1, 1, T).to(torch.bool)
             att = att.masked_fill(~km, float("-inf"))
         weights = F.softmax(att, dim=-1)
@@ -144,7 +146,7 @@ class TinyGPT(nn.Module):
 
 
 # ---------------------------------------------------------------------------
-# Instruction fixture
+# 指令夹具；英文事实、模板和回答参与训练与精确匹配，保留原值
 # ---------------------------------------------------------------------------
 
 
@@ -240,12 +242,12 @@ def _arithmetic_response(a: int, b: int, op: str) -> str:
 
 
 def make_dataset(seed: int = 0) -> Tuple[List[Dict[str, str]], List[str]]:
-    """Returns (pairs, categories). Each pair has instruction, response."""
+    """返回 (pairs, categories)；每条记录包含 instruction 和 response。"""
     rng = random.Random(seed)
     pairs: List[Dict[str, str]] = []
     categories: List[str] = []
 
-    # Capitals (40 pairs: 10 base x 4 templates)
+    # 首都：10 个基础事实 × 4 种模板，共 40 组。
     cap_templates = [
         "What is the capital of {country}?",
         "Name the capital city of {country}.",
@@ -268,7 +270,7 @@ def make_dataset(seed: int = 0) -> Tuple[List[Dict[str, str]], List[str]]:
             )
             categories.append("capitals")
 
-    # Arithmetic (30 pairs: 10 base x 3 templates)
+    # 算术：10 道基础题 × 3 种模板，共 30 组。
     arith_templates = [
         "Compute {a} {op} {b}.",
         "What is {a} {op} {b}?",
@@ -284,7 +286,7 @@ def make_dataset(seed: int = 0) -> Tuple[List[Dict[str, str]], List[str]]:
             )
             categories.append("arithmetic")
 
-    # Lists (30 pairs: 10 base x 3 templates)
+    # 列表：10 组基础条目 × 3 种模板，共 30 组。
     list_templates = [
         "List three {name}.",
         "Give me three {name}.",
@@ -300,7 +302,7 @@ def make_dataset(seed: int = 0) -> Tuple[List[Dict[str, str]], List[str]]:
             )
             categories.append("lists")
 
-    # Summaries (30 pairs: 10 base x 3 templates)
+    # 摘要：10 段基础文本 × 3 种模板，共 30 组。
     sum_templates = [
         "Summarise: {text}",
         "One-sentence summary of: {text}",
@@ -311,7 +313,7 @@ def make_dataset(seed: int = 0) -> Tuple[List[Dict[str, str]], List[str]]:
             pairs.append({"instruction": t.format(text=text), "response": summary})
             categories.append("summaries")
 
-    # Code (30 pairs: 10 base x 3 templates)
+    # 代码：10 项基础任务 × 3 种模板，共 30 组。
     code_templates = [
         "Write python code to {task}.",
         "Python: {task}.",
@@ -322,7 +324,7 @@ def make_dataset(seed: int = 0) -> Tuple[List[Dict[str, str]], List[str]]:
             pairs.append({"instruction": t.format(task=task), "response": code})
             categories.append("code")
 
-    # Definitions (40 pairs: 10 base x 4 templates)
+    # 定义：10 个基础术语 × 4 种模板，共 40 组。
     def_templates = [
         "Define {term}.",
         "What is a {term}?",
@@ -334,7 +336,7 @@ def make_dataset(seed: int = 0) -> Tuple[List[Dict[str, str]], List[str]]:
             pairs.append({"instruction": t.format(term=term), "response": defn})
             categories.append("definitions")
 
-    # Total = 40 + 30 + 30 + 30 + 30 + 40 = 200. Shuffle and return.
+    # 合计 40 + 30 + 30 + 30 + 30 + 40 = 200 组，打乱后返回。
     order = list(range(len(pairs)))
     rng.shuffle(order)
     return [pairs[i] for i in order], [categories[i] for i in order]
@@ -346,7 +348,7 @@ def split_dataset(
     test_frac: float = 0.2,
     seed: int = 0,
 ) -> Tuple[List[Dict[str, str]], List[str], List[Dict[str, str]], List[str]]:
-    """Stratified split by category."""
+    """按类别分层划分样本；不按基础事实或模板家族分组去重。"""
     rng = random.Random(seed)
     by_cat: Dict[str, List[int]] = {}
     for i, c in enumerate(cats):
@@ -370,7 +372,7 @@ def split_dataset(
 
 
 # ---------------------------------------------------------------------------
-# Dataset and collate
+# 数据集与批次拼接
 # ---------------------------------------------------------------------------
 
 
@@ -399,7 +401,7 @@ def sft_collate(
     pad_id: int = InstructionTokenizer.PAD_ID,
     ignore_index: int = InstructionTokenizer.IGNORE_INDEX,
 ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
-    """Pad to longest in batch and build labels with -100 mask on instruction + pad."""
+    """填充到本批最长序列，并将指令／边界和填充标签设为 -100；标签移位在 shifted_loss 中完成。"""
     max_t = max(len(x[0]) for x in batch)
     input_ids: List[List[int]] = []
     labels: List[List[int]] = []
@@ -408,15 +410,15 @@ def sft_collate(
         seq_len = len(ids)
         pad = [pad_id] * (max_t - seq_len)
         padded = list(ids) + pad
-        # The label at position i is what input_ids[i+1] should be; we then
-        # mask out positions corresponding to instruction and to padding.
+        # 这里先复制未移位标签；预测位置与下一词元的对齐稍后由 shifted_loss 完成。
+        # 下面将指令和填充位置从损失目标中掩蔽。
         lbl: List[int] = list(padded)
         for i in range(len(lbl)):
             if i < resp_start:
-                # Instruction or boundary token: do not train on predicting these.
+                # 指令或边界词元：不将预测这些词元计入训练损失。
                 lbl[i] = ignore_index
             elif i >= seq_len:
-                # Padding region.
+                # 填充区域。
                 lbl[i] = ignore_index
         am = [1] * seq_len + [0] * (max_t - seq_len)
         input_ids.append(padded)
@@ -432,8 +434,8 @@ def sft_collate(
 def shifted_loss(
     logits: torch.Tensor, labels: torch.Tensor, ignore_index: int = InstructionTokenizer.IGNORE_INDEX
 ) -> torch.Tensor:
-    """Standard causal LM loss: predict next token, ignore the masked positions."""
-    # Position i predicts position i+1 in labels.
+    """标准因果语言模型损失：预测下一词元，并忽略已掩蔽的目标位置。"""
+    # 第 i 个位置预测 labels 中第 i+1 个位置。
     pred = logits[:, :-1, :].contiguous()
     target = labels[:, 1:].contiguous()
     return F.cross_entropy(
@@ -444,7 +446,7 @@ def shifted_loss(
 
 
 # ---------------------------------------------------------------------------
-# Training and generation
+# 训练与生成
 # ---------------------------------------------------------------------------
 
 
@@ -502,9 +504,9 @@ def train_sft(
         if eval_pairs is not None and tok is not None and ep % eval_every == 0:
             em = exact_match_set(model, tok, eval_pairs, cfg.max_len)
             report.eval_em.append(em)
-            log(f"  epoch {ep:>3d}: loss={avg:.4f}  EM={em:.3f}")
+            log(f"  训练轮次 {ep:>3d}：损失={avg:.4f}  EM={em:.3f}")
         elif ep % eval_every == 0:
-            log(f"  epoch {ep:>3d}: loss={avg:.4f}")
+            log(f"  训练轮次 {ep:>3d}：损失={avg:.4f}")
     if eval_pairs is not None and tok is not None:
         report.final_em = exact_match_set(model, tok, eval_pairs, cfg.max_len)
     return report
@@ -520,7 +522,7 @@ def generate(
     max_new_tokens: int = 64,
     seed: int = 0,
 ) -> str:
-    """Greedy (temperature=0) or sampled generation. Stops on two consecutive sentence-ends."""
+    """温度不大于 0 时贪心生成，否则采样；连续两个句末标点、控制词元、PAD 或长度上限均会终止。"""
     model.eval()
     rng = torch.Generator()
     rng.manual_seed(seed)
@@ -542,7 +544,7 @@ def generate(
         if next_id == tok.PAD_ID:
             break
         if next_id == tok.INST_ID or next_id == tok.RESP_ID:
-            # Model produced a control token. Stop.
+            # 模型生成控制词元，停止。
             break
         ids.append(next_id)
         out_chars.append(next_id)
@@ -556,7 +558,7 @@ def generate(
 
 
 # ---------------------------------------------------------------------------
-# Metrics
+# 指标
 # ---------------------------------------------------------------------------
 
 
@@ -602,7 +604,7 @@ def per_category_em(
 
 
 # ---------------------------------------------------------------------------
-# Demo
+# 演示
 # ---------------------------------------------------------------------------
 
 
@@ -624,17 +626,17 @@ def run_demo(cfg: Optional[SFTConfig] = None) -> int:
         collate_fn=lambda b: sft_collate(b),
     )
 
-    print("INSTRUCTION TUNING (SFT) DEMO")
-    print(f"train={len(tr_pairs)} test={len(te_pairs)} max_len={cfg.max_len}")
-    print(f"categories: {sorted(set(cats))}")
+    print("指令监督微调（SFT）演示")
+    print(f"训练样本数={len(tr_pairs)} 测试样本数={len(te_pairs)} 最大长度={cfg.max_len}")
+    print(f"类别 ID：{sorted(set(cats))}")
     print("")
 
     model = build_model(cfg)
     initial_em = exact_match_set(model, tok, te_pairs, cfg.max_len)
-    print(f"baseline (untrained) EM = {initial_em:.3f}")
+    print(f"未训练基线的完全匹配率 EM = {initial_em:.3f}")
     print("")
 
-    print("[training]")
+    print("[训练]")
     report = train_sft(
         model,
         train_dl,
@@ -645,24 +647,25 @@ def run_demo(cfg: Optional[SFTConfig] = None) -> int:
     )
 
     print("")
-    print("[per-category exact-match on held-out]")
+    print("[留出集各类别完全匹配率]")
     cat_em = per_category_em(model, tok, te_pairs, te_cats, cfg.max_len)
     for cat in sorted(cat_em):
         print(f"  {cat:>12s}: {cat_em[cat]:.3f}")
 
     print("")
-    print("[sample generations]")
+    print("[生成样本]")
     for pair in te_pairs[:3]:
         pred = generate(model, tok, pair["instruction"], max_len=cfg.max_len)
-        match = "MATCH" if exact_match(pred, pair["response"]) else "MISS "
-        print(f"  [{match}] inst: {pair['instruction']}")
-        print(f"          gold: {pair['response']}")
-        print(f"          pred: {pred}")
+        match = "匹配" if exact_match(pred, pair["response"]) else "不匹配"
+        print(f"  [{match}] 指令：{pair['instruction']}")
+        print(f"          参考答案：{pair['response']}")
+        print(f"          预测答案：{pred}")
 
     print("")
-    print(f"FINAL EXACT MATCH = {report.final_em:.3f}  (baseline was {initial_em:.3f})")
+    print(f"最终完全匹配率 = {report.final_em:.3f}（未训练基线为 {initial_em:.3f})")
 
     if report.final_em <= initial_em:
+        # 错误契约保留原文：训练后的完全匹配率没有严格超过未训练模型的基线。
         print("ERROR: training did not improve EM over the untrained baseline", file=sys.stderr)
         return 1
     return 0

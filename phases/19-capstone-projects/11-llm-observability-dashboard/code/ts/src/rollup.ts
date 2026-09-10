@@ -1,3 +1,9 @@
+/**
+ * 按模型汇总请求数、错误数、输入／输出词元、估算费用和延迟分位数。
+ * percentile 对已排序数组线性插值；空数组返回 0，调用方需自行保证 p 在有效范围内。
+ * 统计只覆盖缓冲区内现存 span，不等同于全量长期请求统计。
+ */
+
 import { spanCostUsd, spanLatencyMs, spanModel } from "./pricing.js";
 import type { GenAISpan, ModelRollup } from "./types.js";
 

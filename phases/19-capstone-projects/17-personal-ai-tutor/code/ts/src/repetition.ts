@@ -1,3 +1,8 @@
+/**
+ * 简化间隔重复调度：答对则翻倍，答错则减半，并限制为一分钟至三十天。
+ * 没有 FSRS 的可学习参数、记忆稳定性或难度模型，不能当作真实 FSRS 实现。
+ */
+
 import { BASE_INTERVAL_MS } from "./types.js";
 
 export const MIN_INTERVAL_MS = 60_000;

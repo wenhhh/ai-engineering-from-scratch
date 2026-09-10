@@ -1,4 +1,4 @@
-"""Opt-in real Messages API test. It skips unless credentials are explicit."""
+"""可选的真实 Messages API 测试；除非显式提供凭据，否则跳过。"""
 
 import os
 import pathlib

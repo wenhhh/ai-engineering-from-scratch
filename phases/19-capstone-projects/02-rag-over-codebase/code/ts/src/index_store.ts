@@ -1,3 +1,8 @@
+/**
+ * 稠密索引与 BM25 索引。
+ * 模拟嵌入采用稳定的 FNV-1a 哈希，不是训练所得的语义向量。分词规则仅接收 ASCII 字母、数字和下划线。
+ */
+
 import type { Chunk, RankedChunk } from "./types.ts";
 
 const TOKEN_RE = /[a-z0-9_]+/g;
@@ -6,7 +11,7 @@ export function tokenize(text: string): string[] {
   return text.toLowerCase().match(TOKEN_RE) ?? [];
 }
 
-// Tiny deterministic 32-bit hash (FNV-1a) so embeddings are stable across runs.
+// 简易确定性 32 位哈希（FNV-1a），使模拟嵌入在不同运行间保持一致。
 export function fnv1a(s: string): number {
   let h = 0x811c9dc5;
   for (let i = 0; i < s.length; i++) {
@@ -16,6 +21,7 @@ export function fnv1a(s: string): number {
   return h >>> 0;
 }
 
+// 将词项哈希累加到向量并归一化；空输入得到零向量。
 export function fakeEmbed(text: string, dim = 64): number[] {
   const vec = new Array<number>(dim).fill(0);
   for (const tok of tokenize(text)) {
@@ -29,6 +35,7 @@ export function fakeEmbed(text: string, dim = 64): number[] {
   return vec.map((v) => v / norm);
 }
 
+// 计算余弦相似度；长度不一致时保留原英文异常，任一零向量则返回 0。
 export function cosine(a: readonly number[], b: readonly number[]): number {
   if (a.length !== b.length) {
     throw new Error(
@@ -70,6 +77,7 @@ export class DenseIndex {
   }
 }
 
+// 保存文档词频、文档频率和平均长度；查询时使用 BM25 公式逐文档打分。
 export class BM25Index {
   k1 = 1.5;
   b = 0.75;
@@ -85,7 +93,7 @@ export class BM25Index {
       for (let i = 0; i < times; i++) out.push(...toks);
       return out;
     };
-    // Field-weighted tokenization: symbol x4, summary x2, body x1.
+    // 按字段加权分词：符号词项重复 4 次，摘要 2 次，正文 1 次。
     const tokens = [
       ...repeat(tokenize(chunk.symbol), 4),
       ...repeat(tokenize(chunk.summary), 2),

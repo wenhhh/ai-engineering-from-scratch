@@ -1,12 +1,16 @@
-"""End-to-end fine-tuning pipeline orchestrator scaffold.
+"""端到端微调流水线：编排器示例框架。
 
-The hard architectural primitive is a reproducible pipeline DAG: data hygiene
--> SFT -> preference tuning -> quantization -> serving -> eval -> model card,
-where each stage is declaratively configured (YAML-ish dict here) and each
-stage consumes the previous stage's artifact by content hash. This scaffold
-models the DAG, the artifact manifest, and the contamination check.
+本例用产物清单与内容哈希表达数据清洗、SFT、偏好优化、量化、服务部署、
+评测和模型卡之间的依赖。配置以类似 YAML 的字典传入，阶段按固定列表依次运行。
 
-Run:  python main.py
+运行：python main.py
+
+译注：这是内存中的模拟流水线，不会真正清洗数据、训练模型、量化权重、
+部署服务或执行基准评测，也不需要 GPU。它没有实现通用 DAG 调度或逐步落盘快照。
+部分产物引用前序载荷的哈希，但服务端点没有绑定量化产物的哈希，评测也没有
+调用该端点，因此不能视为完整可复现的训练与发布链路。污染检查始终报告零重叠，
+后续阶段也未将其作为阻断门禁。工具版本、模型名称、性能数字和模型卡标准均为
+固定原例中的占位标签，不代表本轮核验过的兼容性、实测结果或合规结论。
 """
 
 from __future__ import annotations
@@ -19,13 +23,13 @@ from typing import Callable
 
 
 # ---------------------------------------------------------------------------
-# artifact + manifest  --  content-hashed bookkeeping
+# 产物与清单：以载荷的内容哈希记录产物。
 # ---------------------------------------------------------------------------
 
 @dataclass
 class Artifact:
     name: str
-    kind: str         # "dataset" | "checkpoint" | "quant" | "endpoint" | "report"
+    kind: str         # 机器类型：数据集／检查点／量化产物／服务端点／报告。
     payload: dict
     produced_by: str
     produced_at: float = field(default_factory=time.time)
@@ -51,7 +55,7 @@ class Manifest:
 
 
 # ---------------------------------------------------------------------------
-# stages  --  each returns a new Artifact given prior manifest and config
+# 流水线阶段：根据已有清单与配置返回新产物。
 # ---------------------------------------------------------------------------
 
 Stage = Callable[[Manifest, dict], Artifact]
@@ -76,7 +80,7 @@ def stage_contamination(m: Manifest, cfg: dict) -> Artifact:
     ds = m.get("dataset")
     overlap = []
     for bench in ("MMLU-Pro", "MT-Bench-v2", "RewardBench-2"):
-        # simulated MinHash check; real pipeline uses Datatrove MinHashLSH
+        # MinHash 检查占位：这里直接填入零重叠；真实实现需要另接去重与污染检测工具。
         overlap.append({"bench": bench, "overlap_examples": 0})
     return Artifact("contamination_check", "report", {
         "dataset_hash": ds.content_hash(),
@@ -109,6 +113,7 @@ def stage_dpo(m: Manifest, cfg: dict) -> Artifact:
 
 def stage_quantize(m: Manifest, cfg: dict) -> Artifact:
     ckpt = m.get("dpo_checkpoint")
+    # 量化产物标识；stage_serve 虽然取得该产物，却没有使用其内容或记录其哈希。
     return Artifact("quants", "quant", {
         "from": ckpt.content_hash(),
         "gptq_int4_gb": 4.6,
@@ -118,6 +123,7 @@ def stage_quantize(m: Manifest, cfg: dict) -> Artifact:
 
 
 def stage_serve(m: Manifest, cfg: dict) -> Artifact:
+    # 量化产物标识；stage_serve 虽然取得该产物，却没有使用其内容或记录其哈希。
     quants = m.get("quants")
     return Artifact("endpoint", "endpoint", {
         "backend": "vLLM 0.7 + EAGLE-3",
@@ -143,16 +149,18 @@ def stage_eval(m: Manifest, cfg: dict) -> Artifact:
 def stage_model_card(m: Manifest, cfg: dict) -> Artifact:
     return Artifact("model_card", "report", {
         "standard": "MOF 2026",
+        # 模型卡中的许可、安全与评测声明均为固定布尔值，不执行真实性检查。
         "data_license_declared": True,
         "training_config_hash": m.get("sft_checkpoint").content_hash(),
         "eval_attached": True,
         "safety_attached": True,
+        # 原例中的复现命令占位；本课程 code 目录没有提供该脚本和配置文件，不能直接视为可运行命令。
         "reproducibility_command": "./pipeline.sh config/llama3.3-8b-domainX.yaml",
     }, produced_by="mof-template")
 
 
 # ---------------------------------------------------------------------------
-# DAG orchestrator  --  runs stages in order, snapshots manifest each step
+# 顺序编排器：每步更新内存清单；没有把快照保存到磁盘。
 # ---------------------------------------------------------------------------
 
 PIPELINE: list[tuple[str, Stage]] = [
@@ -170,10 +178,10 @@ PIPELINE: list[tuple[str, Stage]] = [
 def run_pipeline(cfg: dict) -> Manifest:
     m = Manifest()
     for name, stage_fn in PIPELINE:
-        print(f"[{name:14s}] running...")
+        print(f"[{name:14s}] 正在运行……")
         art = stage_fn(m, cfg)
         m.add(art)
-        print(f"[{name:14s}] -> artifact '{art.name}' hash={art.content_hash()}")
+        print(f"[{name:14s}] -> 产物 '{art.name}' 内容哈希={art.content_hash()}")
     return m
 
 
@@ -182,19 +190,20 @@ def main() -> None:
         "base_model": "llama-3.3-8b",
         "raw_examples": 300_000,
         "seed": 7,
+        # 配置列出 DPO 的 beta，但 stage_dpo 使用固定值 0.08，没有读取此配置项。
         "dpo_beta": 0.08,
     }
-    print("=== fine-tuning pipeline run ===")
+    print("=== 微调流水线模拟运行 ===")
     m = run_pipeline(cfg)
     print()
-    print("=== manifest ===")
+    print("=== 产物清单 ===")
     for name, kind, h, by in m.summary():
-        print(f"  {name:18s} {kind:10s} {h} by {by}")
+        print(f"  {name:18s} {kind:10s} {h} 生成方：{by}")
     print()
-    print("=== eval report ===")
+    print("=== 模拟评测报告 ===")
     print(json.dumps(m.get("eval_report").payload, indent=2))
     print()
-    print("=== served endpoint ===")
+    print("=== 模拟服务端点 ===")
     print(json.dumps(m.get("endpoint").payload, indent=2))
 
 

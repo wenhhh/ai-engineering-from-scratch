@@ -1,4 +1,7 @@
-"""Tests for the function call dispatcher: timeout, retry, idempotency, concurrency."""
+"""函数调用分发器测试：超时、重试、幂等键和并发限制。
+
+只翻译说明；异步处理器、时序设置、错误预期和断言保持原样。
+"""
 
 from __future__ import annotations
 

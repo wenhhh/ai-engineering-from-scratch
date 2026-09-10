@@ -1,33 +1,38 @@
+/**
+ * 代码库 RAG 的回归测试。
+ * 仅翻译测试名称与本说明；查询夹具、断言、错误诊断和预期数值不变。
+ */
+
 import { test } from "node:test";
 import { strict as assert } from "node:assert";
 import { BM25Index, DenseIndex, cosine, fakeEmbed, fnv1a, tokenize } from "../src/index_store.ts";
 import { SAMPLE_CORPUS } from "../src/corpus.ts";
 import { anchor } from "../src/types.ts";
 
-test("tokenize: lowercases and splits on non-word characters", () => {
+test("tokenize：转为小写并按分词规则提取词项", () => {
   assert.deepEqual(tokenize("Abort-Multipart_Upload!"), ["abort", "multipart_upload"]);
 });
 
-test("fnv1a: deterministic 32-bit unsigned output", () => {
+test("fnv1a：产生确定性的 32 位无符号输出", () => {
   const a = fnv1a("hello");
   const b = fnv1a("hello");
   assert.equal(a, b);
   assert.ok(a >= 0 && a <= 0xffffffff);
 });
 
-test("fakeEmbed: returns a unit vector", () => {
+test("fakeEmbed：非空样本返回单位向量", () => {
   const v = fakeEmbed("authorization opa check");
   let norm = 0;
   for (const x of v) norm += x * x;
   assert.ok(Math.abs(Math.sqrt(norm) - 1.0) < 1e-9);
 });
 
-test("cosine: identical vectors give 1.0", () => {
+test("cosine：相同非零向量的相似度为 1.0", () => {
   const v = fakeEmbed("rank fusion");
   assert.ok(Math.abs(cosine(v, v) - 1.0) < 1e-9);
 });
 
-test("BM25Index: ranks 'authorization' above unrelated S3 chunks", () => {
+test("BM25Index：授权查询优先于不相关的 S3 分块", () => {
   const bm25 = new BM25Index();
   for (const c of SAMPLE_CORPUS) bm25.add(c);
   const hits = bm25.search("authorization check");
@@ -39,7 +44,7 @@ test("BM25Index: ranks 'authorization' above unrelated S3 chunks", () => {
   );
 });
 
-test("DenseIndex: returns top-k by cosine score, descending", () => {
+test("DenseIndex：按余弦得分降序返回前 k 项", () => {
   const dense = new DenseIndex();
   for (const c of SAMPLE_CORPUS) dense.add(c);
   const hits = dense.search("multipart upload abort", 3);

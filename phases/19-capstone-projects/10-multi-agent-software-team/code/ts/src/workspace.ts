@@ -1,3 +1,10 @@
+/**
+ * 共享内存工作空间与消息日志，不写入真实仓库。
+ * 指纹按排序后的路径和完整文件内容计算 SHA-256，再取前 12 个十六进制字符。
+ * 英文计划与源码夹具保持原值以保留哈希；指纹只表征内容，不证明修改正确。
+ * 读取方法返回内部对象或数组引用；readonly 是静态类型约束，不是运行时隔离。
+ */
+
 import { createHash } from "node:crypto";
 import type { Message, Role, WorkspaceFile } from "./types.js";
 

@@ -1,9 +1,7 @@
-"""Three output-side classifiers and their redactors.
+"""三个输出侧分类器及其脱敏器。
 
-Each classifier exposes classify(text) -> ClassifierVerdict and
-redact(text) -> str. Severity is one of none, low, medium, high. All are
-rule-based so latency is zero and tests are deterministic.
-"""
+每个分类器暴露 classify(text) -> ClassifierVerdict 与 redact(text) -> str。严重度枚举为
+none、low、medium、high。它们都是固定规则教学实现，不是生产审核模型。"""
 
 from __future__ import annotations
 

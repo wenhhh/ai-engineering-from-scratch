@@ -1,4 +1,4 @@
-"""Tests for lesson 02 model routing economics."""
+"""第 02 课模型路由与经济性测试。"""
 
 import copy
 import pathlib

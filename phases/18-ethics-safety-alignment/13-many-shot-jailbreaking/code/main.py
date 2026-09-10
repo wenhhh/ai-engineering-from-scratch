@@ -1,10 +1,15 @@
-"""Many-shot jailbreaking toy — stdlib Python.
+"""多样本越狱玩具示例，仅使用 Python 标准库。
 
-Target: a filter whose refusal probability decays as a power law in the
-number of compliance pairs present in the context. Reproduces the shape of
-Anil et al. 2024 Figure 2 without training a model.
+用手工设定的幂律函数表示：上下文中顺从回答示例越多，模拟攻击成功率越高。
+再比较一个将有效示例数限制为 16 的防御函数。不训练或调用任何模型。
+原文以 Anil 等（2024）图 2 的趋势为背景；这里只生成相似形状的合成曲线，
+并非复现论文数据或实际越狱试验。
 
-Usage: python3 code/main.py
+运行方式：python3 code/main.py
+
+译注：实现使用 ASR(n) = min(1, 0.02 + 0.03 × n^0.5)，在 n=256 时为 0.50，
+不是原文所述的“约 256 个样本时饱和”。所谓分类器仅对 n 取上限，没有识别
+上下文的过程。结尾引用的 61%→2% 是固定原文数字，未在本例测量或重新核验。
 """
 
 from __future__ import annotations
@@ -17,11 +22,11 @@ random.seed(41)
 
 
 def target_asr(n_shots: int, alpha: float = 0.5, a0: float = 0.02) -> float:
-    """Target's attack-success-rate as a function of shot count.
-    Power-law shape: ASR(n) = min(1, a0 + c * n^alpha).
+    """按示例数计算手工设定的攻击成功率。
+    幂律形式：ASR(n) = min(1, a0 + c × n^alpha)。
 
-    This is the empirical pattern Anil et al. 2024 observe: fails reliably
-    at 5 shots, begins to succeed around 32, saturates around 256.
+    原文将其类比为 Anil 等（2024）观察到的增长趋势，但此函数不是论文
+    数据拟合；其在 5、32、256 个样本处的值应以实际公式为准。
     """
     if n_shots <= 0:
         return 0.0
@@ -30,8 +35,8 @@ def target_asr(n_shots: int, alpha: float = 0.5, a0: float = 0.02) -> float:
 
 
 def defense_adjusted(n_shots: int, alpha: float = 0.5) -> float:
-    """A simple defense: classifier detects the many-shot pattern and caps
-    effective shot count at 16. ASR curve saturates at the 16-shot value."""
+    """简化防御：直接将有效示例数限制为 16，使 ASR 不超过该点的值。
+    这里只模拟分类器防御后的效果，没有实现模式识别分类器。"""
     eff = min(n_shots, 16)
     return target_asr(eff, alpha)
 
@@ -43,7 +48,7 @@ def simulate(n_shots: int, asr_fn, trials: int = 500) -> float:
 
 
 def fit_power_law(shots: list[int], asrs: list[float]) -> tuple[float, float]:
-    """Simple log-log linear regression: log(ASR) = log(c) + alpha * log(n)."""
+    """简单双对数线性回归：log(ASR) = log(c) + alpha × log(n)。"""
     xs = [math.log(s) for s in shots if s > 0]
     ys = [math.log(max(a, 1e-4)) for a in asrs]
     n = len(xs)
@@ -58,31 +63,31 @@ def fit_power_law(shots: list[int], asrs: list[float]) -> tuple[float, float]:
 
 def main() -> None:
     print("=" * 70)
-    print("MANY-SHOT JAILBREAKING TOY (Phase 18, Lesson 13)")
+    print("多样本越狱玩具示例（阶段 18，第 13 课）")
     print("=" * 70)
 
     shots = [1, 2, 4, 8, 16, 32, 64, 128, 256, 512]
 
-    print("\n-- undefended target (power-law ASR curve) --")
+    print("\n-- 无防御目标（手工设定的幂律 ASR 曲线）--")
     undef = []
     for s in shots:
         rate = simulate(s, target_asr)
         undef.append(rate)
-        print(f"  shots={s:4d}   ASR={rate:.3f}")
+        print(f"  示例数={s:4d}   ASR={rate:.3f}")
     alpha, c = fit_power_law(shots, undef)
-    print(f"\n  fitted power law: ASR ~= {c:.3f} * n^{alpha:.3f}")
+    print(f"\n  拟合幂律：ASR ≈ {c:.3f} * n^{alpha:.3f}")
 
-    print("\n-- classifier-defended target (caps effective shots at 16) --")
+    print("\n-- 模拟分类器防御（有效示例数上限为 16）--")
     for s in shots:
         rate = simulate(s, defense_adjusted)
-        print(f"  shots={s:4d}   ASR={rate:.3f}")
+        print(f"  示例数={s:4d}   ASR={rate:.3f}")
 
     print("\n" + "=" * 70)
-    print("TAKEAWAY: ASR grows power-law in shot count. the defense caps the")
-    print("effective number of shots. preserving benign ICL while suppressing")
-    print("harmful ICL requires a classifier that distinguishes the two at the")
-    print("context level -- which is why classifier-based prompt modification")
-    print("(Anthropic 2024) reports 61%->2% reduction without breaking ICL.")
+    print("要点：此模拟按预设幂律增加 ASR，防御函数限制有效示例数。")
+    print("既保留良性的上下文学习（ICL），又抑制有害的上下文学习，")
+    print("需要在上下文层面区分两类内容；本例没有实现这种识别能力。")
+    print("原文引用的分类器式提示词修改方法（Anthropic，2024）")
+    print("报告在保留 ICL 的同时将攻击成功率由 61% 降至 2%；这不是本例的实测结果。")
     print("=" * 70)
 
 

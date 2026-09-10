@@ -1,13 +1,18 @@
 /**
- * Code Migration Agent: dashboard skeleton entry point (TypeScript).
+ * 可选的 HTTP 演示入口；默认仅执行模拟并打印汇总。
+ * 端口和环境变量保留原接口，仓库名、运行时标识与机器状态不翻译。
+ */
+
+/**
+ * 代码迁移智能体：仪表盘示例入口（TypeScript）。
  *
- * Mirrors the dashboard layer from docs/en.md: agent runs in a sandbox; this
- * server renders progress for the operator. Hono routes serve HTML root,
- * /migrations, and /migrations/:id. State machine in migrations.ts; budget
- * + cost in cost.ts; types in types.ts.
+ * 对应 ../../docs/zh.md 的仪表盘层设计；当前实际只模拟状态变化，
+ * 不启动 Python 智能体或沙箱。Hono 提供 HTML 首页、/migrations
+ * 与 /migrations/:id。状态机见 migrations.ts；预算和费用见 cost.ts；
+ * 共享类型见 types.ts。
  *
- * Source: phases/19-capstone-projects/09-code-migration-agent/docs/en.md
- * Recipe specs: https://docs.openrewrite.org and the libcst Python parser.
+ * 固定英文来源：phases/19-capstone-projects/09-code-migration-agent/docs/en.md
+ * 配方参考：https://docs.openrewrite.org 与 libcst Python 解析器。
  */
 
 import { serve } from "@hono/node-server";
@@ -16,16 +21,16 @@ import { defaultSeed, rolledUpStats, tickAll } from "./migrations.js";
 
 function summarise(migrations: ReturnType<typeof defaultSeed>): void {
   const stats = rolledUpStats(migrations);
-  console.log("[dashboard] migrations seeded:", migrations.length);
+  console.log("[仪表盘] 已建立模拟迁移：", migrations.length);
   for (const m of migrations) {
     const passed = m.files.filter((f) => f.status === "passed").length;
     console.log(
-      `[dashboard] ${m.repo} ${m.sourceRuntime}->${m.targetRuntime} ` +
-        `state=${m.state} files=${passed}/${m.files.length} ` +
-        `turns=${m.turns}/${m.maxTurns} cost=$${m.spentUsd.toFixed(2)}`,
+      `[仪表盘] ${m.repo} ${m.sourceRuntime}->${m.targetRuntime} ` +
+        `状态=${m.state} 文件=${passed}/${m.files.length} ` +
+        `轮数=${m.turns}/${m.maxTurns} 费用=$${m.spentUsd.toFixed(2)}`,
     );
   }
-  console.log("[dashboard] roll-up:", stats);
+  console.log("[仪表盘] 汇总：", stats);
 }
 
 export function runDemoTicks(rounds: number): ReturnType<typeof defaultSeed> {
@@ -35,19 +40,19 @@ export function runDemoTicks(rounds: number): ReturnType<typeof defaultSeed> {
 }
 
 function main(): void {
-  console.log("[dashboard] simulating 40 ticks of agent progress...");
+  console.log("[仪表盘] 模拟 40 次智能体进度步进……");
   const migrations = runDemoTicks(40);
   summarise(migrations);
   if (process.env["SERVE"] === "1") {
     const port = Number(process.env["PORT"] ?? 8009);
     const app = buildApp(migrations);
     serve({ fetch: app.fetch, port }, (info) => {
-      console.log(`[dashboard] serving on http://localhost:${info.port}`);
+      console.log(`[仪表盘] 服务地址：http://localhost:${info.port}`);
     });
     setInterval(() => tickAll(migrations), 750).unref();
   } else {
     console.log(
-      "[dashboard] set SERVE=1 to start the HTTP dashboard on PORT (default 8009)",
+      "[仪表盘] 设置 SERVE=1 启动 HTTP 仪表盘；PORT 默认为 8009",
     );
   }
 }

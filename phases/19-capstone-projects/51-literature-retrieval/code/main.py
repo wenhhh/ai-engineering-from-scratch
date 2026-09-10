@@ -1,11 +1,14 @@
-"""Literature retrieval: BM25 over abstracts plus citation graph traversal, merged.
+"""文献检索：合并基于摘要的 BM25 检索与引用图扩展结果。
 
-Conceptual references:
-- ./docs/en.md (this lesson)
-- Phase 19 Track A lessons 20-29 (agent harness primitives)
+概念参考：
+- ./docs/en.md（本课正文）
+- 阶段 19 的 A 路线第 20—29 课（智能体运行框架的基础构件）
 
-Stdlib only. Run: python3 code/main.py
-"""
+仅使用标准库。运行：python3 code/main.py
+
+译注：所有论文均为内存中的虚构语料，没有访问 arXiv 或 Semantic Scholar。
+检索入口直接使用传入语料的索引与图，不调用两个模拟客户端的搜索方法。
+英文标题、摘要和查询影响分词与排名，故保留；中文化不代表支持中文语义检索。"""
 
 from __future__ import annotations
 
@@ -48,7 +51,7 @@ def tokenise(text: str) -> list[str]:
 
 
 class BM25Index:
-    """Okapi BM25 with default k1=1.5, b=0.75. Stdlib only."""
+    """Okapi BM25 索引，默认 k1=1.5、b=0.75；仅使用标准库。"""
 
     def __init__(self, k1: float = 1.5, b: float = 0.75) -> None:
         self.k1 = k1
@@ -108,7 +111,9 @@ class BM25Index:
 
 
 class CitationGraph:
-    """Directed citation graph with forward and backward adjacency lists."""
+    """有向引用图，分别保存参考文献与被引文献的邻接列表。
+
+    扩展时合并两个方向的邻居，因此实际可沿引用边双向遍历。"""
 
     def __init__(self) -> None:
         self._forward: dict[str, list[str]] = {}
@@ -124,7 +129,7 @@ class CitationGraph:
         return out
 
     def expand(self, seeds: list[str], max_hops: int = 2) -> dict[str, int]:
-        """Return a mapping of paper id to shortest hop distance from any seed."""
+        """返回各论文 ID 到任一种子论文的最短跳数映射。"""
         distance: dict[str, int] = {sid: 0 for sid in seeds}
         queue: deque[str] = deque(seeds)
         while queue:
@@ -141,7 +146,7 @@ class CitationGraph:
 
 
 class ArxivMockClient:
-    """Returns title, abstract, year, authors. No reference graph."""
+    """返回标题、摘要、年份与作者，不提供引用图。"""
 
     def __init__(self, corpus: list[Paper]) -> None:
         self._papers = {p.id: p for p in corpus}
@@ -164,7 +169,7 @@ class ArxivMockClient:
 
 
 class SemanticScholarMockClient:
-    """Returns the same papers as arxiv plus references and citations."""
+    """返回与 arXiv 模拟客户端相同的论文，并附参考文献与被引文献。"""
 
     def __init__(self, corpus: list[Paper]) -> None:
         self._papers = {p.id: p for p in corpus}
@@ -255,7 +260,11 @@ class RetrievalResult:
 
 
 class RetrievalClient:
-    """Wraps arxiv and semantic scholar mocks and merges lexical and graph hits."""
+    """接收 arXiv 与 Semantic Scholar 模拟客户端，并合并词项检索和图扩展命中。
+
+    当前 search 实现仅查询本地 BM25 索引和引用图，不调用客户端。
+    时间分数按语料中的最早与最晚年份归一化，不代表相对于今天的新近程度。
+    top_k 限制词项检索种子数，图扩展后返回的总条目数仍可能更多。"""
 
     def __init__(
         self,
@@ -353,17 +362,21 @@ class RetrievalClient:
 
 
 def build_corpus() -> list[Paper]:
-    """Return a hundred paper mock corpus across five topics, with a citation graph.
+    """生成包含引用图的 100 篇虚构论文，分为五个主题。
 
-    Topics: attention sparsity, retrieval augmentation, low rank adapters,
-    dataset distillation, evaluation harnesses. Each topic gets twenty papers
-    with intra topic references and a few cross topic edges.
-    """
+    主题分别是注意力稀疏性、检索增强、低秩适配器、数据集蒸馏与评估框架。
+    每个主题有 20 篇论文，包含主题内引用和少量跨主题引用。
+    标题、作者、年份、摘要中的研究结果均为教学夹具，不是真实文献证据。"""
     topics = [
+        # 注意力稀疏性；以下英文主题与术语参与索引。
         ("attention sparsity", "attention sparsity head pruning routing block"),
+        # 检索增强。
         ("retrieval augmentation", "retrieval augmentation embedding index passage"),
+        # 低秩适配器。
         ("low rank adapters", "low rank adapter parameter fine tuning"),
+        # 数据集蒸馏。
         ("dataset distillation", "dataset distillation synthetic compact training"),
+        # 评估框架。
         ("evaluation harnesses", "evaluation harness benchmark task accuracy"),
     ]
     papers: list[Paper] = []
@@ -404,6 +417,7 @@ def build_client(config: RetrievalConfig | None = None) -> RetrievalClient:
 
 def _demo() -> None:
     client = build_client(RetrievalConfig(top_k_lexical=5, max_hops=2))
+    # 固定英文查询：注意力稀疏性与注意力头剪枝。
     result = client.search("attention sparsity head pruning")
     print(json.dumps({
         "hit_count": result.hit_count,

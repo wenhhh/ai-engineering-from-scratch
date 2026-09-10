@@ -1,3 +1,7 @@
+/**
+ * 角色编排与拒绝规则测试。仅翻译名称与说明，不改断言、测试输入或命令夹具。
+ */
+
 import { strict as assert } from "node:assert";
 import { test } from "node:test";
 import {
@@ -7,22 +11,22 @@ import {
   refuseReason,
 } from "../src/runtime.js";
 
-test("denylist refuses rm", () => {
+test("拒绝列表拒绝 rm", () => {
   const reason = refuseReason({ branch: "x", command: "rm", argv: ["-rf", "/"] });
   assert.match(String(reason), /denylisted/);
 });
 
-test("denylist refuses sudo", () => {
+test("拒绝列表拒绝 sudo", () => {
   const reason = refuseReason({ branch: "x", command: "sudo", argv: ["ls"] });
   assert.match(String(reason), /denylisted/);
 });
 
-test("denylist refuses curl", () => {
+test("拒绝列表拒绝 curl", () => {
   const reason = refuseReason({ branch: "x", command: "curl", argv: [] });
   assert.match(String(reason), /denylisted/);
 });
 
-test("shell metachars are refused", () => {
+test("识别测试给定的 shell 元字符", () => {
   assert.equal(hasShellMetachars("foo;bar"), true);
   assert.equal(hasShellMetachars("foo && bar"), true);
   assert.equal(hasShellMetachars("foo|bar"), true);
@@ -30,7 +34,7 @@ test("shell metachars are refused", () => {
   assert.equal(hasShellMetachars("plain.arg"), false);
 });
 
-test("metachar in argv refuses launch", () => {
+test("argv 含元字符时拒绝启动", () => {
   const reason = refuseReason({
     branch: "x",
     command: "node",
@@ -39,7 +43,7 @@ test("metachar in argv refuses launch", () => {
   assert.match(String(reason), /shell metacharacters/);
 });
 
-test("non-denylisted clean command passes refuseReason gate", () => {
+test("未列入拒绝列表且参数符合规则的命令通过检查", () => {
   const reason = refuseReason({
     branch: "x",
     command: "node",
@@ -48,7 +52,7 @@ test("non-denylisted clean command passes refuseReason gate", () => {
   assert.equal(reason, null);
 });
 
-test("launchWorktree refuses denylisted command without running it", async () => {
+test("launchWorktree 拒绝列出的命令且不执行", async () => {
   const result = await launchWorktree({
     branch: "x",
     command: "rm",
@@ -58,18 +62,18 @@ test("launchWorktree refuses denylisted command without running it", async () =>
   assert.equal(result.stdout, "");
 });
 
-test("denylist is non-empty and contains expected commands", () => {
+test("拒绝列表包含预期命令", () => {
   assert.ok(COMMAND_DENYLIST.has("rm"));
   assert.ok(COMMAND_DENYLIST.has("sudo"));
   assert.ok(COMMAND_DENYLIST.has("dd"));
 });
 
-test("path-qualified denylisted command is refused via basename", () => {
+test("带完整路径的命令按基名命中拒绝列表", () => {
   const reason = refuseReason({ branch: "x", command: "/bin/rm", argv: ["-rf", "/"] });
   assert.match(String(reason), /denylisted/);
 });
 
-test("interpreter -lc invoking denylisted command is refused", () => {
+test("解释器 -lc 脚本调用被列出的命令时拒绝", () => {
   const reason = refuseReason({
     branch: "x",
     command: "bash",

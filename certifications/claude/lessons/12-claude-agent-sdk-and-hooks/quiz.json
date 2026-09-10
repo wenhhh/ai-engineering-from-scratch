@@ -7,7 +7,7 @@
       "question": "以下哪项正确区分了主要的智能体运行框架层次？",
       "options": [
         "Agent SDK 是原始 REST 的类型化名称，而 Tool Runner 只能在 Managed Agents 内使用",
-        "Tool Runner 处理 Messages 工具循环，Agent SDK 增加更完整的运行框架，Managed Agents 增加远程事件驱动服务",
+        "Tool Runner 负责 Messages 工具循环；Agent SDK 扩展运行框架；Managed Agents 提供远程事件服务",
         "Managed Agents 将业务授权和最终状态校验交给配置好的智能体",
         "Tool Runner、Agent SDK 和 Managed Agents 主要在模型质量和名称上不同；三者负责相同的循环、工具和会话边界"
       ],
@@ -55,7 +55,7 @@
       "question": "Claude 根据截图提出点击购买按钮。以下哪个控制顺序最可靠？",
       "options": [
         "坐标已有类型，就先在沙箱中执行范围内点击，购买出现后再让用户确认",
-        "校验新截图和目标，取得与操作绑定的人工审批，在沙箱中执行，再验证新截图",
+        "校验新截图和目标，取得绑定该操作的人工审批，沙箱执行后再验证新截图",
         "改用托管智能体，让内置沙箱自动批准财务操作",
         "只要提供商的提示词注入分类器未要求确认，就信任模型的风险标签"
       ],

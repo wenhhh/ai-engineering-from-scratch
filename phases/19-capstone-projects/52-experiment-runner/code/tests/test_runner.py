@@ -1,4 +1,4 @@
-"""Tests for ExperimentRunner: ok path, timeout, crash, ablation, determinism."""
+"""ExperimentRunner 测试：正常结果、超时、崩溃、消融与确定性。"""
 
 from __future__ import annotations
 

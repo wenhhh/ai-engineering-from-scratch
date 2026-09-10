@@ -35,7 +35,8 @@ jobs:
         if: github.event_name == 'release' || github.event_name == 'workflow_dispatch'
         run: |
           sudo apt-get update -q
-          sudo apt-get install -y -q texlive-xetex texlive-fonts-recommended fonts-dejavu fonts-noto-cjk librsvg2-bin poppler-utils
+          sudo apt-get install -y -q texlive-xetex texlive-latex-extra texlive-pictures texlive-fonts-recommended fonts-dejavu fonts-noto-cjk fonts-noto-core librsvg2-bin poppler-utils
+          kpsewhich twemojis.sty
 
       - name: Validate book rendering
         run: python3 scripts/test_book_rendering.py

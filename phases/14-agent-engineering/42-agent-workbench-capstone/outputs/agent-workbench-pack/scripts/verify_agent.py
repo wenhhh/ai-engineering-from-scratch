@@ -1,5 +1,14 @@
 #!/usr/bin/env python3
-"""Deterministic verification gate. See Phase 14 · 38."""
+"""确定性验证门禁，参见阶段 14 第 38 课。
+
+根据已记录的验收命令、范围报告和规则结果生成判定。机器诊断保持英文：
+acceptance.missing/failed 为验收缺失/失败，feedback.null_exit 为退出码缺失，
+scope.forbidden/off_scope 为禁止修改/越界修改，rule.failed 为规则未通过。
+
+重要限制：此打包版不含覆盖率、严格模式或签名例外；缺少文件时读取空对象/列表。
+如果验收、反馈、范围与规则记录全部缺失，当前实现可能仍返回 passed=true。
+这是保留原行为的教学示例，不是生产环境中默认拒绝缺证据的安全门禁。
+"""
 
 from __future__ import annotations
 
@@ -81,7 +90,7 @@ def main() -> int:
     out.write_text(json.dumps(report, indent=2) + "\n")
     print(json.dumps(report, indent=2))
     if not report["passed"]:
-        print("verification failed", file=sys.stderr)
+        print("验证失败", file=sys.stderr)
         return 1
     return 0
 

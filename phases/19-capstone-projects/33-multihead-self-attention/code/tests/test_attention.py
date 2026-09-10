@@ -1,4 +1,7 @@
-"""Tests for MultiHeadSelfAttention."""
+"""多头自注意力测试。
+
+保持形状、因果性、梯度、数值容差、种子与异常断言原样。
+"""
 
 from __future__ import annotations
 

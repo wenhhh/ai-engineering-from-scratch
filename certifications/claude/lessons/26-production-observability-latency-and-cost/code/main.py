@@ -1,9 +1,4 @@
-"""Production telemetry lab for this lesson's docs/en.md.
-
-Aggregates traces into latency, reliability, cache, error, and economic signals.
-Evaluates cost per successful outcome instead of reporting call price alone.
-Uses only the Python standard library and synthetic, non-sensitive trace data.
-"""
+"""本课 docs/en.md 的生产遥测实验。把 trace 聚合为延迟、可靠性、缓存、错误和经济性信号；固定价格与阈值属于课程快照，不是实时账单或线上监控。"""
 
 from __future__ import annotations
 

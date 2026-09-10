@@ -1,3 +1,8 @@
+/**
+ * 代码库 RAG 的回归测试。
+ * 仅翻译测试名称与本说明；查询夹具、断言、错误诊断和预期数值不变。
+ */
+
 import { test } from "node:test";
 import { strict as assert } from "node:assert";
 import { buildApp } from "../src/server.ts";
@@ -9,7 +14,7 @@ function app() {
   return buildApp(dense, bm25);
 }
 
-test("GET /healthz: returns ok=true with corpus size", async () => {
+test("GET /healthz：返回 ok=true 与语料数量", async () => {
   const res = await app().fetch(new Request("http://x/healthz"));
   assert.equal(res.status, 200);
   const body = (await res.json()) as { ok: boolean; corpus: number };
@@ -17,12 +22,12 @@ test("GET /healthz: returns ok=true with corpus size", async () => {
   assert.ok(body.corpus > 0);
 });
 
-test("GET /query: rejects missing q with 400", async () => {
+test("GET /query：缺少 q 时返回 400", async () => {
   const res = await app().fetch(new Request("http://x/query"));
   assert.equal(res.status, 400);
 });
 
-test("GET /query?q=...: returns citations", async () => {
+test("GET /query?q=...：返回引用", async () => {
   const res = await app().fetch(
     new Request("http://x/query?q=" + encodeURIComponent("rank fusion")),
   );
@@ -31,7 +36,7 @@ test("GET /query?q=...: returns citations", async () => {
   assert.ok(body.citations.length > 0);
 });
 
-test("POST /query: validates topK bound", async () => {
+test("POST /query：校验 topK 上限", async () => {
   const res = await app().fetch(
     new Request("http://x/query", {
       method: "POST",
@@ -42,7 +47,7 @@ test("POST /query: validates topK bound", async () => {
   assert.equal(res.status, 400);
 });
 
-test("POST /query: returns parsed response on valid body", async () => {
+test("POST /query：有效请求体得到可解析的响应", async () => {
   const res = await app().fetch(
     new Request("http://x/query", {
       method: "POST",
@@ -55,14 +60,14 @@ test("POST /query: returns parsed response on valid body", async () => {
   assert.ok(body.citations.length <= 3);
 });
 
-test("GET /query?q=%20: rejects whitespace-only query with 400", async () => {
+test("GET /query?q=%20：纯空白查询返回 400", async () => {
   const res = await app().fetch(
     new Request("http://x/query?q=" + encodeURIComponent("   ")),
   );
   assert.equal(res.status, 400);
 });
 
-test("POST /query: rejects whitespace-only q with 400", async () => {
+test("POST /query：纯空白 q 返回 400", async () => {
   const res = await app().fetch(
     new Request("http://x/query", {
       method: "POST",
@@ -73,7 +78,7 @@ test("POST /query: rejects whitespace-only q with 400", async () => {
   assert.equal(res.status, 400);
 });
 
-test("unknown path: returns 404 json", async () => {
+test("未知路径：返回 404 JSON 响应", async () => {
   const res = await app().fetch(new Request("http://x/missing"));
   assert.equal(res.status, 404);
 });

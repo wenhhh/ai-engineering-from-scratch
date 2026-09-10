@@ -1,10 +1,12 @@
-"""Multi-head self-attention with causal mask, single QKV projection, and
-weight inspection.
+"""多头自注意力：因果掩码、单次 QKV 投影与权重检查。
 
-The demo trains a tiny model (attention + token/positional embeddings + LM head)
-on a copy task and prints the loss curve plus a per-head attention heatmap.
+演示实际训练一个微型模型（词元／位置嵌入 + 自注意力 + 语言模型输出头），
+完成每行重复同一词元的任务，打印损失曲线，并以字符热图展示第 0 个注意力头。
+在课程目录运行：python3 code/main.py
 
-Run: python3 code/main.py
+译注：这是固定种子的合成任务，不是通用复制能力或大型模型训练的评测。
+log(V) 是均匀预测的参考交叉熵，不是代码实测的随机初始化损失。
+返回的注意力权重已经过 dropout；本演示关闭 dropout，因而行和为 1 的检查适用。
 """
 
 from __future__ import annotations
@@ -18,7 +20,7 @@ import torch.nn.functional as F
 
 
 class MultiHeadSelfAttention(nn.Module):
-    """Multi-head self-attention with a single QKV linear and a causal mask."""
+    """使用单个 QKV 线性投影和因果掩码的多头自注意力。"""
 
     def __init__(
         self,
@@ -99,7 +101,7 @@ class MultiHeadSelfAttention(nn.Module):
 
 
 class TokenEmbedding(nn.Module):
-    """Vocab id to vector lookup (compact copy of lesson 32)."""
+    """将词表 ID 映射为向量的查表模块；这是第 32 课的紧凑副本。"""
 
     def __init__(self, vocab_size: int, d_model: int) -> None:
         super().__init__()
@@ -112,7 +114,7 @@ class TokenEmbedding(nn.Module):
 
 
 class SinusoidalPositionalEmbedding(nn.Module):
-    """Parameter-free sin/cos positional table (compact copy of lesson 32)."""
+    """不含可训练参数的正弦／余弦位置表；这是第 32 课的紧凑副本。"""
 
     def __init__(self, max_context_length: int, d_model: int, base: float = 10000.0) -> None:
         super().__init__()
@@ -143,7 +145,7 @@ class SinusoidalPositionalEmbedding(nn.Module):
 
 
 class TinyAttentionLM(nn.Module):
-    """Embedding + attention + LM head. Just enough to train a copy task."""
+    """嵌入 + 自注意力 + 语言模型输出头，足以演示重复词元任务。"""
 
     def __init__(
         self,
@@ -194,10 +196,10 @@ class DemoConfig:
 
 
 def _make_repeat_batch(cfg: DemoConfig, generator: torch.Generator) -> tuple[torch.Tensor, torch.Tensor]:
-    """Repeat task. Pick a random id per row, repeat it across the row.
+    """重复词元任务：每行随机选择一个 ID，再将它复制到整行。
 
-    The model must learn that the next token is the same as the previous one.
-    A single attention head looking one token back is enough to solve it.
+    模型需要学习下一个词元与当前输入词元相同。原文用“向前看一个词元”解释任务；
+    在本例的下一词元标签对齐方式下，注意力可以查看当前位置，不必学习跨位置复制。
     """
     base = torch.randint(
         0, cfg.vocab_size, (cfg.batch_size, 1), generator=generator, dtype=torch.long
@@ -223,7 +225,7 @@ def _train(model: TinyAttentionLM, cfg: DemoConfig) -> list[float]:
             total += loss.item()
         avg = total / cfg.steps_per_epoch
         loss_curve.append(avg)
-        print(f"epoch {epoch + 1}/{cfg.n_epochs}  avg loss: {avg:.4f}")
+        print(f"训练轮次 {epoch + 1}/{cfg.n_epochs}  平均损失：{avg:.4f}")
     return loss_curve
 
 
@@ -245,7 +247,7 @@ def main() -> int:
     cfg = DemoConfig()
     torch.manual_seed(cfg.seed)
 
-    _print_section("Shape contract")
+    _print_section("形状契约")
     attn = MultiHeadSelfAttention(
         d_model=cfg.d_model,
         n_heads=cfg.n_heads,
@@ -253,21 +255,21 @@ def main() -> int:
     )
     x = torch.randn(cfg.batch_size, cfg.seq_len, cfg.d_model)
     out = attn(x)
-    print(f"input  : {tuple(x.shape)}")
-    print(f"output : {tuple(out.shape)}")
+    print(f"输入  ：{tuple(x.shape)}")
+    print(f"输出  ：{tuple(out.shape)}")
     assert out.shape == x.shape
 
-    _print_section("Causal mask check")
+    _print_section("因果掩码检查")
     out_with_weights, weights = attn(x, return_weights=True)
     upper = torch.triu(torch.ones(cfg.seq_len, cfg.seq_len), diagonal=1).bool()
     upper_mass = weights[0, 0][upper].abs().sum().item()
-    print(f"weights shape          : {tuple(weights.shape)}")
-    print(f"sum over future cells  : {upper_mass:.6f}")
+    print(f"注意力权重形状          ：{tuple(weights.shape)}")
+    print(f"未来位置的权重总和      ：{upper_mass:.6f}")
     assert upper_mass < 1e-5, "future positions must have zero weight"
     rows = weights[0, 0].sum(dim=-1)
-    print(f"row sums (head 0, batch 0): min={rows.min().item():.4f}, max={rows.max().item():.4f}")
+    print(f"行和（第 0 个头、第 0 个样本）：最小值={rows.min().item():.4f}，最大值={rows.max().item():.4f}")
 
-    _print_section("Train tiny model on repeat task")
+    _print_section("在重复词元任务上训练微型模型")
     model = TinyAttentionLM(
         vocab_size=cfg.vocab_size,
         d_model=cfg.d_model,
@@ -275,11 +277,11 @@ def main() -> int:
         max_context_length=cfg.seq_len,
     )
     initial_loss = math.log(cfg.vocab_size)
-    print(f"random-init expected loss ~ log(V) = {initial_loss:.4f}")
+    print(f"均匀预测的参考损失 log(V) = {initial_loss:.4f}")
     curve = _train(model, cfg)
     assert curve[-1] < curve[0], "loss must fall over training"
 
-    _print_section("Per-head attention heatmap")
+    _print_section("查看一个注意力头的权重热图")
     model.eval()
     with torch.no_grad():
         sample_gen = torch.Generator()
@@ -288,12 +290,12 @@ def main() -> int:
         sample_ids = base.expand(1, cfg.seq_len).contiguous()
         _, sample_weights = model(sample_ids, return_weights=True)
     head_id = 0
-    print(f"head {head_id}, query rows top-down, key cols left-to-right")
+    print(f"注意力头 {head_id}，查询位置自上而下，键位置自左向右")
     for t in range(cfg.seq_len):
         row = sample_weights[0, head_id, t]
         print(f"  q={t:>2}: |{_heatmap_row(row, width=cfg.seq_len)}|")
 
-    print("\nDemo OK.")
+    print("\n演示通过。")
     return 0
 
 

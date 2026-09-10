@@ -35,18 +35,18 @@
 
 \usepackage{titlesec}
 \titleformat{\chapter}[display]
-  {\normalfont\bfseries\color{ink}}
+  {\normalfont\bfseries\raggedright\color{ink}}
   {\normalsize\bfseries\color{blueprint}第 \thechapter 章}
   {10pt}
   {\huge}
   [\vspace{6pt}{\color{blueprint}\titlerule[1.5pt]}]
 \titleformat{name=\chapter,numberless}[display]
-  {\normalfont\bfseries\color{ink}}
+  {\normalfont\bfseries\raggedright\color{ink}}
   {}
   {0pt}
   {\huge}
   [\vspace{6pt}{\color{blueprint}\titlerule[1.5pt]}]
 \titlespacing*{\chapter}{0pt}{-10pt}{28pt}
-\titleformat{\section}{\normalfont\Large\bfseries\color{ink}}{\thesection}{1em}{}
+\titleformat{\section}{\normalfont\Large\bfseries\raggedright\color{ink}}{\thesection}{1em}{}
 
 \AtBeginDocument{\hypersetup{linkcolor=blueprint, urlcolor=blueprint, citecolor=blueprint}}

@@ -1,9 +1,13 @@
-"""ToM-aware vs zeroth-order agents on a token-collection task, stdlib only.
+"""心智理论（ToM）式规则与零阶规则的代币收集对照，仅使用 Python 标准库。
 
-Three agents must each collect one token from one of three boxes. They
-cannot communicate; they only observe each other's movement. Zeroth-order
-agents ignore others; first-order ToM agents model which boxes each other
-is targeting. Measured over 200 trials.
+三个智能体分别从三个盒子中收集一枚代币。零阶智能体忽略他人偏好；
+一阶 ToM 风格规则依据已观察到的目标，尽量避开别人选择的盒子。
+每组进行 200 次模拟，记录完成数、重复选择次数和轮数。
+
+译注：ToM 组在第一轮之前额外获得了所有其他智能体的初始偏好，属于预先提供的
+协调信息；不能把收益完全归因于心智推理，也不能说双方完全没有通信或共享信息。
+后续使用一个滑动观察窗口而非严格的上一轮快照，冲突按插入顺序选出获胜者。
+文末论文名称和编号来自固定原文，没有通过本例复现其结论。
 """
 from __future__ import annotations
 
@@ -36,10 +40,10 @@ class Agent:
         if not available:
             return -1
         if not self.tom:
-            # zeroth-order: pick uniformly among remaining boxes; no memory of others
+            # 零阶规则：在剩余盒子中均匀随机选择，不使用对他人的观察记忆。
             return rng.choice(available)
-        # first-order ToM: model which boxes others are currently targeting
-        # (inferred from last-turn observations) and avoid them when possible.
+        # 一阶 ToM 风格规则：根据近期观察推测他人的目标盒子，
+        # 在可能时避开它们；这里取滑动窗口，不是严格只取上一轮。
         last_turn_targets = {box for _, box in self.observations[-(len(world.boxes_with_tokens) + 2):]}
         options = [b for b in available if b not in last_turn_targets]
         return rng.choice(options) if options else rng.choice(available)
@@ -49,20 +53,19 @@ class Agent:
 
 
 def run_trial(n_agents: int, n_boxes: int, tom: bool, seed: int, max_turns: int = 10) -> tuple[int, int, int]:
-    """Each turn, agents commit simultaneously. Collisions waste a turn for all
-    but one colliding agent. ToM agents avoid boxes they observed others
-    approach last turn.
+    """每轮先收集所有智能体的目标选择，再统一结算。
+    同盒冲突中只有一位取得代币，其他冲突者浪费该轮。
+    ToM 风格规则尽量避开近期观察到的其他智能体目标。
 
-    Seed nudge: in turn 0, each ToM agent is pre-primed with a 'preference
-    broadcast' simulating a cheap communication channel (glances, or 'I prefer
-    box-0' prior knowledge). Zeroth-order agents ignore this prime."""
+    初始偏好提示：ToM 组在第 0 轮前预先获得其他智能体的偏好，
+    用来模拟廉价通信或先验知识；零阶组没有使用这份额外信息。"""
     rng = random.Random(seed)
     world = World.new(n_boxes)
     agents = [Agent(f"agent-{i}", tom=tom) for i in range(n_agents)]
 
-    # Prime ToM agents with a cheap inference about others' preferences.
-    # Each agent 'prefers' a starting box based on their name. ToM agents see
-    # the others' preferences; zeroth-order agents ignore.
+    # 为 ToM 组预先提供其他智能体的初始偏好。
+    # 每个智能体按其索引偏好一个起始盒子；ToM 组看到
+    # 其他智能体的偏好，零阶组不使用这些信息。
     if tom:
         for i, a in enumerate(agents):
             for j, other in enumerate(agents):
@@ -73,7 +76,7 @@ def run_trial(n_agents: int, n_boxes: int, tom: bool, seed: int, max_turns: int 
     turns = 0
     for t in range(max_turns):
         turns = t + 1
-        # Each uncollected agent commits a target this turn.
+        # 每个尚未收集到代币的智能体提交本轮目标。
         commitments: dict[str, int] = {}
         for a in agents:
             if a.collected:
@@ -83,22 +86,22 @@ def run_trial(n_agents: int, n_boxes: int, tom: bool, seed: int, max_turns: int 
                 continue
             commitments[a.name] = choice
 
-        # All other agents observe this turn's commitments (ToM agents use these).
+        # 其他智能体记录本轮目标选择，ToM 组在后续选择时使用。
         for observer in agents:
             for other, box in commitments.items():
                 if other == observer.name:
                     continue
                 observer.observe(other, box)
 
-        # Count collisions: same box chosen by 2+ agents.
+        # 统计冲突：两个或更多智能体选择同一个盒子。
         choices = list(commitments.values())
         for box in set(choices):
             n = choices.count(box)
             if n >= 2:
                 duplications += n - 1
 
-        # Resolve: for each box, exactly one agent (first in dict iteration, which is insertion order)
-        # collects; the rest waste the turn.
+        # 结算：每个盒子只让字典插入顺序中最先出现的智能体取得代币，
+        # 其余冲突者在这一轮没有收获。
         taken: set[int] = set()
         for name, box in commitments.items():
             if box in taken:
@@ -118,7 +121,7 @@ def run_trial(n_agents: int, n_boxes: int, tom: bool, seed: int, max_turns: int 
 
 
 def bench(tom: bool, trials: int = 200) -> None:
-    label = "first-order ToM" if tom else "zeroth-order"
+    label = "一阶 ToM 风格规则" if tom else "零阶规则"
     tot_completions = 0
     tot_dup = 0
     tot_turns = 0
@@ -130,26 +133,26 @@ def bench(tom: bool, trials: int = 200) -> None:
         tot_turns += turns
         if c == 3:
             full_trials += 1
-    print(f"  {label:16s} full-completion={full_trials}/{trials} "
-          f"  duplications/trial={tot_dup/trials:.2f}"
-          f"  avg_turns={tot_turns/trials:.2f}")
+    print(f"  {label:16s} 全员完成次数={full_trials}/{trials} "
+          f"  每次试验平均重复选择={tot_dup/trials:.2f}"
+          f"  平均轮数={tot_turns/trials:.2f}")
 
 
 def main() -> None:
     print("=" * 72)
-    print("TOKEN-COLLECTION — 3 agents, 3 boxes, 10-turn budget, 200 trials each")
-    print("agents cannot communicate; they observe each other's movements")
+    print("代币收集——3 个智能体、3 个盒子、最多 10 轮，每组 200 次试验")
+    print("智能体观察彼此的目标选择；ToM 组还额外获得初始偏好提示")
     print("=" * 72)
     bench(tom=False)
     bench(tom=True)
-    print("\nTakeaways:")
-    print("  zeroth-order agents collide on a shared box ~1x per trial (0.96 duplications).")
-    print("  first-order ToM agents, given a cheap preference prime, eliminate collisions")
-    print("  and finish in 1 turn instead of ~2.")
-    print("  the delta is the *measurable* coordination effect -- not a prompt-dressing story.")
-    print("  remove the prime (comment out the observe loop) to see how the effect vanishes;")
-    print("  Riedl 2025 (arXiv:2510.05174) shows this is why ToM prompting is load-bearing.")
-    print("  long-horizon degradation is documented in Li et al. 2023 with max_turns=30.")
+    print("\n要点：")
+    print("  原文描述零阶组每次试验约有一次重复选择；精确数值以本次输出为准。")
+    print("  在本例预先提供互补偏好的条件下，ToM 组可避免冲突，")
+    print("  并在一轮内完成；这同时包含初始信息差异的作用。")
+    print("  完成轮数与重复选择可以量化协调效果，但此对照没有单独隔离“推理能力”的贡献。")
+    print("  可另做去除初始偏好提示的消融实验，检验效果如何变化；此文件未自动运行该消融。")
+    print("  原文还引用 Riedl 2025（arXiv:2510.05174）讨论 ToM 提示；本轮未核验论文。")
+    print("  原文引用 Li 等人 2023 年讨论长程退化；本例默认最多 10 轮，并未运行 30 轮复现。")
 
 
 if __name__ == "__main__":

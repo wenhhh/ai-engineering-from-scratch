@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "description": "Multimodal document QA viewer skeleton (TypeScript)",
+  "description": "多模态文档问答查看器示例框架（TypeScript）",
   "scripts": {
     "start": "tsx src/index.ts --demo",
     "serve": "tsx src/index.ts",

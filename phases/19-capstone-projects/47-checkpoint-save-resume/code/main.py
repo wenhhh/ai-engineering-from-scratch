@@ -1,13 +1,20 @@
-"""Checkpoint save and resume from scratch.
+"""从零实现检查点保存与恢复。
 
-Full checkpoint dict: model state, optimizer state, scheduler state,
-loss history, current step, RNG state (python random, numpy, torch CPU,
-torch CUDA if present). Atomic save by writing to a temp file and then
-renaming. Sharded save splits the model state by parameter group so a
-single shard is small enough to load on demand. Resume continues mid
-epoch with deterministic loss within tolerance.
+完整检查点包含：模型、优化器和调度器状态，损失历史、当前步数，
+以及 Python random、NumPy、PyTorch CPU 和可用时的 CUDA 随机数状态。
+先写临时文件再重命名，以原子替换单个目标文件。分片保存将模型状态
+拆成多个文件，恢复时在 epoch 中途继续，并比较后续损失是否在容差内
+一致。运行：python3 code/main.py
 
-Run: python3 code/main.py
+译注：这里按排序后的参数键轮询分片，并非按参数组或层划分，也不保证
+各片字节大小接近；加载时会合并全部分片，不是按需低内存加载。
+单文件替换未调用 fsync，多个分片的保存也不是整体原子事务。
+示例用固定 epoch 种子重建合成批次并跳过已处理部分，不能直接证明
+任意真实数据加载器都能精确恢复。schema、哈希、文件名、状态字段及
+断言消息保持原值；只应加载自己生成且可信的检查点。
+
+命令行保留原接口；--sharded 虽被解析，但 main 实际总会依次执行
+单文件和分片两种演示。结果摘要写入 outputs/resume-demo.json。
 """
 
 from __future__ import annotations
@@ -198,6 +205,7 @@ def load_checkpoint(
     scheduler: torch.optim.lr_scheduler._LRScheduler,
 ) -> TrainState:
     payload = torch.load(path, map_location="cpu", weights_only=False)
+    # 未知的检查点模式；此处仅检查名称是否以 ckpt 开头。
     assert payload["schema"].startswith("ckpt"), f"unknown schema {payload['schema']}"
     model.load_state_dict(payload["model"])
     optimizer.load_state_dict(payload["optimizer"])
@@ -213,13 +221,13 @@ def load_checkpoint(
 
 
 def shard_keys_by_prefix(state_dict: Dict[str, torch.Tensor], num_shards: int) -> Dict[int, List[str]]:
-    """Round-robin allocate parameter keys across shards.
+    """按轮询方式将参数键分配到各分片。
 
-    Production sharding usually goes by parameter group or by layer. The
-    round robin keeps the shards roughly the same size for the demo and
-    keeps the index easy to read.
+    生产系统常按参数组或层划分。本演示先排序键名再轮询分配，
+    使各片的键数量大致相同、索引易读；键数均衡不等于字节数均衡。
     """
     if num_shards < 1:
+        # 分片数必须至少为 1。
         raise ValueError("num_shards must be >= 1")
     keys = sorted(state_dict.keys())
     shards: Dict[int, List[str]] = {i: [] for i in range(num_shards)}
@@ -292,12 +300,14 @@ def load_sharded_checkpoint(
     expected_sha = index["meta_sha256"]
     meta_path = ckpt_dir / "meta.pt"
     actual_sha = file_sha256(meta_path)
+    # 元数据文件的 SHA-256 与索引记录不符。
     assert actual_sha == expected_sha, f"meta sha mismatch: {actual_sha} != {expected_sha}"
     meta = torch.load(meta_path, map_location="cpu", weights_only=False)
     merged: Dict[str, torch.Tensor] = {}
     for shard in meta["shards"]:
         shard_path = ckpt_dir / shard["path"]
         actual = file_sha256(shard_path)
+        # 分片文件的 SHA-256 与元数据记录不符。
         assert actual == shard["sha256"], f"shard sha mismatch: {shard['path']}"
         body = torch.load(shard_path, map_location="cpu", weights_only=False)
         assert body["schema"] == SHARD_SCHEMA
@@ -452,7 +462,7 @@ def main() -> int:
     args = parse_args()
     with tempfile.TemporaryDirectory(prefix="ckpt-demo-") as scratch:
         scratch_dir = Path(scratch)
-        print("running resume demo (single file checkpoint)")
+        print("运行恢复演示（单文件检查点）")
         single = run_resume_demo(
             total_steps=args.total_steps,
             interrupt_at=args.interrupt_at,
@@ -461,9 +471,10 @@ def main() -> int:
             seed=args.seed,
         )
         print(json.dumps({k: v for k, v in single.items() if k not in ("full_losses", "resumed_losses")}, indent=2))
+        # 从单文件检查点恢复后，损失偏差超出阈值。
         assert single["max_loss_diff_after_resume"] < 1e-4, "loss drifted after single-file resume"
 
-        print("running resume demo (sharded checkpoint)")
+        print("运行恢复演示（分片检查点）")
         sharded = run_resume_demo(
             total_steps=args.total_steps,
             interrupt_at=args.interrupt_at,
@@ -473,6 +484,7 @@ def main() -> int:
             seed=args.seed,
         )
         print(json.dumps({k: v for k, v in sharded.items() if k not in ("full_losses", "resumed_losses")}, indent=2))
+        # 从分片检查点恢复后，损失偏差超出阈值。
         assert sharded["max_loss_diff_after_resume"] < 1e-4, "loss drifted after sharded resume"
 
     summary = {
@@ -490,7 +502,7 @@ def main() -> int:
         },
     }
     atomic_write_json(summary, OUT_DIR / "resume-demo.json")
-    print(f"wrote {OUT_DIR / 'resume-demo.json'}")
+    print(f"已写入 {OUT_DIR / 'resume-demo.json'}")
     return 0
 
 

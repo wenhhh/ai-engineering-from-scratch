@@ -1,4 +1,7 @@
-"""Tests for the verification gate chain and observation ledger."""
+"""验证门禁链和观测账本的回归测试。
+
+预算数值、观测文本、正则模式和断言保持原样。
+"""
 
 from __future__ import annotations
 

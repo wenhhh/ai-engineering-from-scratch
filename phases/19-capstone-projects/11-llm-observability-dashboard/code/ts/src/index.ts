@@ -1,14 +1,19 @@
 /**
- * LLM Observability Dashboard: capstone skeleton entry point (TypeScript).
+ * 生成合成轨迹并启动可选的本地仪表盘。
+ * 模型名和价格是固定教学快照，不代表本轮核验的最新支持范围或实际报价。
+ */
+
+/**
+ * 大语言模型可观测性仪表盘：综合项目示例入口（TypeScript）。
  *
- * Implements the ingest plane from docs/en.md: a Hono server accepts OTel
- * GenAI-shaped spans on /trace, holds them in a 10k ring buffer, and renders
- * /dashboard plus /dashboard.json with p50/p95/p99 latency and cost per model.
- * Stands in for a real Langfuse/Phoenix backend, with the same span schema
- * so a real OTLP exporter could be pointed at it.
+ * 实现 ../../docs/zh.md 中接收层的简化示例：Hono 在 /trace 接收
+ * 带 GenAI 字段的平面 JSON span，存入容量 10000 的环形缓冲区，
+ * 并通过 /dashboard 与 /dashboard.json 展示模型延迟分位数和费用。
+ * 这不是完整 Langfuse/Phoenix 后端，也不解析标准 OTLP 导出信封；
+ * 真实导出器接入前需要协议适配，不能直接认为兼容。
  *
- * Source: phases/19-capstone-projects/11-llm-observability-dashboard/docs/en.md
- * Schema: OpenTelemetry GenAI semantic conventions
+ * 固定英文来源：phases/19-capstone-projects/11-llm-observability-dashboard/docs/en.md
+ * 字段参考：OpenTelemetry GenAI 语义约定
  *   https://opentelemetry.io/docs/specs/semconv/gen-ai/
  */
 
@@ -26,6 +31,7 @@ type SyntheticConfig = {
 
 export function generateSyntheticSpans(cfg: SyntheticConfig): GenAISpan[] {
   if (cfg.models.length === 0) {
+    // 错误契约：模型列表不能为空；英文错误消息保留。
     throw new Error("generateSyntheticSpans: cfg.models must not be empty");
   }
   const now = Date.now() * 1e6;
@@ -64,10 +70,10 @@ export function generateSyntheticSpans(cfg: SyntheticConfig): GenAISpan[] {
 }
 
 function reportRollups(rollups: ModelRollup[]): void {
-  console.log("[obs] model roll-ups:");
+  console.log("[可观测性] 按模型汇总：");
   console.log(
     "  " +
-      ["model", "n", "err", "p50", "p95", "p99", "cost($)"]
+      ["模型", "数量", "错误数", "p50", "p95", "p99", "费用($)"]
         .map((s) => s.padEnd(20))
         .join(""),
   );
@@ -90,7 +96,7 @@ function reportRollups(rollups: ModelRollup[]): void {
 }
 
 function main(): void {
-  console.log("[obs] generating 1200 synthetic OTel-GenAI spans...");
+  console.log("[可观测性] 生成 1200 个带 GenAI 字段的合成 span……");
   const store = new ObservabilityStore();
   const synthetic = generateSyntheticSpans({
     spans: 1200,
@@ -105,16 +111,16 @@ function main(): void {
   });
   store.ingest(synthetic);
   reportRollups(rollUpByModel(store.snapshot()));
-  console.log("[obs] counters:", store.counters());
+  console.log("[可观测性] 计数器：", store.counters());
   if (process.env["SERVE"] === "1") {
     const port = Number(process.env["PORT"] ?? 8011);
     const app = buildApp(store);
     serve({ fetch: app.fetch, port }, (info) => {
-      console.log(`[obs] ingest + dashboard on http://localhost:${info.port}`);
+      console.log(`[可观测性] 接收接口与仪表盘：http://localhost:${info.port}`);
     });
   } else {
     console.log(
-      "[obs] set SERVE=1 to start the HTTP server on PORT (default 8011)",
+      "[可观测性] 设置 SERVE=1 启动 HTTP 服务；PORT 默认为 8011",
     );
   }
 }

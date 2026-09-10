@@ -1,11 +1,15 @@
-"""JSON-RPC 2.0 over newline-delimited stdio.
+"""基于标准输入输出的 JSON-RPC 2.0 传输：每行一条 JSON 消息。
 
-Conceptual references:
-- ./docs/en.md (this lesson)
-- JSON-RPC 2.0 specification (https://www.jsonrpc.org/specification)
-- RFC 8259 (JSON)
+概念参考：
+- ../docs/en.md（本课中文说明，沿用原文件名；英文原文在包内 english-source/ 的对应路径）
+- JSON-RPC 2.0 规范（https://www.jsonrpc.org/specification）
+- RFC 8259（JSON）
 
-Stdlib only. Run: python3 code/main.py
+仅使用标准库。在课程目录运行：python3 code/main.py
+
+译注：默认演示使用内存字节流，不会启动子进程或持续监听真实标准输入。
+请求、响应、通知、批次和错误消息的机器载荷保持原样。没有认证、消息大小限制
+或通用故障隔离；例如无效 UTF-8 的解码异常不在当前 JSON 解析异常处理范围内。
 """
 
 from __future__ import annotations
@@ -68,16 +72,18 @@ def _is_valid_envelope(msg: Any) -> bool:
 
 
 def parse_request(raw: str) -> tuple[Request | None, dict | None]:
-    """Parse one JSON line. Returns (Request, None) on success or (None, error_dict).
+    """解析一行 JSON。成功时返回 (Request, None)，失败时返回 (None, error_dict)。
 
-    error_dict is a JSON-RPC error response ready to write out.
+    error_dict 是可直接写出的 JSON-RPC 错误响应。
     """
     try:
         msg = json.loads(raw)
     except json.JSONDecodeError as exc:
+        # 协议错误：JSON 解析失败。
         return None, _err_envelope(None, ERR_PARSE, f"parse error: {exc}")
     if not _is_valid_envelope(msg):
         rid = msg.get("id") if isinstance(msg, dict) else None
+        # 协议错误：请求封装无效。
         return None, _err_envelope(rid, ERR_INVALID_REQUEST, "invalid request envelope")
     is_notif = "id" not in msg
     return Request(
@@ -107,7 +113,7 @@ def _notification_envelope(method: str, params: Any | None) -> dict:
 
 
 class StdioTransport:
-    """Newline-delimited JSON-RPC 2.0 over a pair of byte streams."""
+    """通过一对字节流传输按换行符分隔的 JSON-RPC 2.0 消息。"""
 
     def __init__(self, stdin: BinaryIO, stdout: BinaryIO) -> None:
         self._in: BinaryIO = stdin
@@ -138,7 +144,7 @@ Handler = Callable[[str, Any], Any]
 
 
 def _handle_one(handler: Handler, transport: StdioTransport, req: Request) -> dict | None:
-    """Dispatch a single Request. Returns the response envelope (or None for notification)."""
+    """分发单个 Request，返回响应封装；通知不需要响应，返回 None。"""
     try:
         result = handler(req.method, req.params)
     except MethodNotFound as exc:
@@ -149,6 +155,7 @@ def _handle_one(handler: Handler, transport: StdioTransport, req: Request) -> di
         return None if req.is_notification else _err_envelope(req.id, exc.code, exc.message, exc.data)
     except Exception as exc:
         return None if req.is_notification else _err_envelope(
+            # 协议错误：内部错误；data 中附带异常类型和详情。
             req.id, ERR_INTERNAL, "internal error",
             {"exception": type(exc).__name__, "detail": str(exc)},
         )
@@ -162,6 +169,7 @@ def _process_batch(handler: Handler, transport: StdioTransport, items: list) -> 
     for raw in items:
         if not isinstance(raw, dict) or not _is_valid_envelope(raw):
             rid = raw.get("id") if isinstance(raw, dict) else None
+            # 协议错误：请求封装无效。
             out.append(_err_envelope(rid, ERR_INVALID_REQUEST, "invalid request envelope"))
             continue
         is_notif = "id" not in raw
@@ -184,7 +192,7 @@ def _write_raw(transport: StdioTransport, obj: Any) -> None:
 
 
 def serve(handler: Handler, transport: StdioTransport) -> None:
-    """Read requests from transport until EOF. Dispatch each through handler."""
+    """持续从传输层读取请求，直到文件结束；将每个请求交给 handler 处理。"""
     while True:
         line = transport.read_line()
         if line is None:
@@ -195,10 +203,12 @@ def serve(handler: Handler, transport: StdioTransport) -> None:
         try:
             parsed = json.loads(text)
         except json.JSONDecodeError as exc:
+            # 协议错误：JSON 解析失败。
             transport.write_error(None, ERR_PARSE, f"parse error: {exc}")
             continue
         if isinstance(parsed, list):
             if not parsed:
+                # 协议错误：批次不能为空。
                 transport.write_error(None, ERR_INVALID_REQUEST, "empty batch")
                 continue
             batch_out = _process_batch(handler, transport, parsed)
@@ -215,16 +225,18 @@ def serve(handler: Handler, transport: StdioTransport) -> None:
 
 
 def _demo() -> None:
-    """Self-terminating demo using io.BytesIO. No process spawn."""
+    """使用 io.BytesIO 的演示；读取完内存输入后自行结束，不创建子进程。"""
 
     def handler(method: str, params: Any) -> Any:
         if method == "math.add":
             if not isinstance(params, dict) or "a" not in params or "b" not in params:
+                # 参数错误：必须提供 a 和 b。
                 raise InvalidParams("a and b required")
             return params["a"] + params["b"]
         if method == "echo":
             return params
         if method == "boom":
+            # 演示故意抛出的异常，用于测试内部错误响应。
             raise RuntimeError("intentional")
         raise MethodNotFound(f"method {method!r}")
 

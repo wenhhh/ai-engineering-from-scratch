@@ -1,4 +1,8 @@
-"""Unit tests for DDP from scratch. Run with: python3 -m unittest discover tests"""
+"""从零实现 DDP 的单元测试。
+
+运行：python3 -m unittest discover tests。只翻译说明；进程、数据、损失、
+参数比较和断言保持原样。
+"""
 
 from __future__ import annotations
 

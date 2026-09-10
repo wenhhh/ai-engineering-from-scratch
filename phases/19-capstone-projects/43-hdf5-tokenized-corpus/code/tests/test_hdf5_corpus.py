@@ -1,6 +1,8 @@
-"""Unit tests for the HDF5 tokenized corpus pipeline.
+"""HDF5 分词语料流水线的单元测试。
 
-Run with: python3 -m unittest discover code/tests -v
+运行：python3 -m unittest discover code/tests -v
+英文语料、文件模式、字节词元和断言保持原值；只翻译说明。
+MmapStoreTests 是原有测试类名，不表示实现调用了真正的 mmap。
 """
 
 from __future__ import annotations
@@ -78,7 +80,7 @@ class ShardWriterTests(unittest.TestCase):
         path = self.tmp / "aligned.h5"
         writer = HDF5ShardWriter(path, chunk_size=4)
         with writer:
-            writer.add_document(list(range(1, 17)))  # 16 tokens
+            writer.add_document(list(range(1, 17)))  # 16 个词元
         with h5py.File(path, "r") as fh:
             dataset = fh["tokens"]
             self.assertEqual(dataset.shape, (16,))

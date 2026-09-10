@@ -1,4 +1,4 @@
-"""Tests for lesson 14 evaluation harness."""
+"""第 14 课评测 harness 测试。"""
 
 import copy
 import json

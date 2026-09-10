@@ -1,4 +1,4 @@
-"""Unit tests for the constitutional rules engine."""
+"""宪法式规则引擎的单元测试。"""
 
 from __future__ import annotations
 

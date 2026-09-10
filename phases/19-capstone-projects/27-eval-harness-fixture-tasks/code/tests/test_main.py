@@ -1,4 +1,7 @@
-"""Tests for the eval harness, verifiers, and pass@k math."""
+"""评测框架、验证器与 pass@k 计算的测试。
+
+只翻译注释与说明；采样参数、夹具、预期值和断言保持原样。
+"""
 
 from __future__ import annotations
 
@@ -32,7 +35,7 @@ TASKS_DIR = os.path.join(os.path.dirname(HERE), "tasks")
 
 
 # ---------------------------------------------------------------------------
-# Math
+# 数学计算
 # ---------------------------------------------------------------------------
 
 
@@ -44,14 +47,14 @@ class PassAtKMathTests(unittest.TestCase):
         self.assertEqual(pass_at_k(1.0, 5), 1.0)
 
     def test_partial_pass_rate(self) -> None:
-        # p=0.5, k=2 -> 0.75
+        # p=0.5、k=2 时，结果为 0.75。
         self.assertAlmostEqual(pass_at_k(0.5, 2), 0.75)
 
     def test_k_zero(self) -> None:
         self.assertEqual(pass_at_k(0.5, 0), 0.0)
 
     def test_clamps_out_of_range(self) -> None:
-        # Caller bug: should still return a number in [0,1].
+        # 即使调用方提供越界概率，也应返回 [0,1] 内的数值。
         self.assertGreaterEqual(pass_at_k(-1.0, 3), 0.0)
         self.assertLessEqual(pass_at_k(2.0, 3), 1.0)
 
@@ -59,13 +62,13 @@ class PassAtKMathTests(unittest.TestCase):
         self.assertEqual(p95([]), 0.0)
 
     def test_p95_nearest_rank(self) -> None:
-        # 20 values: nearest rank 95th is index round(0.95*20)-1 = 18.
+        # 20 个数值：本实现的第 95 百分位索引为 round(0.95*20)-1 = 18。
         values = list(range(1, 21))
         self.assertEqual(p95(values), 19.0)
 
 
 # ---------------------------------------------------------------------------
-# Verifier unit tests
+# 验证器单元测试
 # ---------------------------------------------------------------------------
 
 
@@ -165,7 +168,7 @@ class ShellExitZeroTests(unittest.TestCase):
 
 
 # ---------------------------------------------------------------------------
-# Fixture loading
+# 夹具加载
 # ---------------------------------------------------------------------------
 
 
@@ -184,7 +187,7 @@ class FixtureLoadingTests(unittest.TestCase):
 
 
 # ---------------------------------------------------------------------------
-# Harness end-to-end
+# 评测框架端到端测试
 # ---------------------------------------------------------------------------
 
 

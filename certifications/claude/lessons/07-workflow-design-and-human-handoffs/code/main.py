@@ -1,8 +1,7 @@
-"""Companion code for:
-certifications/claude/lessons/07-workflow-design-and-human-handoffs/docs/en.md
-It validates step ownership, review boundaries, checkpoints, and fallback.
-The local runner returns the next decision from a filled handoff packet.
-"""
+"""第 07 课工作流设计与人工交接配套代码。
+
+对应 docs/en.md：校验步骤所有权、可恢复状态、人工决策点与成功回执。
+它只验证资料包结构，不执行真实业务工作流或人工审批。"""
 
 from __future__ import annotations
 

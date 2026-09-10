@@ -1,13 +1,18 @@
-"""Chameleon-style early-fusion: toy VQ quantizer + shared-vocab autoregressive decoder.
+"""Chameleon 风格的早期融合（early fusion）：简化 VQ 量化器与共享词表自回归解码器。
 
-End-to-end pipeline:
-  1. VQ-VAE-ish quantizer: 8x8 grayscale patch -> integer codebook index, K=16.
-  2. Shared vocab: text ids 0..31, image ids 32..47, separators 48 (<image>), 49 (</image>).
-  3. Bigram decoder trained on synthetic (text + <image> codes </image>) pairs.
-  4. Sampling loop that emits mixed-modality output.
+端到端流程：
+  1. 类 VQ-VAE 量化器：8×8 灰度图块 -> 整数码本索引，K=16。
+  2. 共享词表：文本 ID 为 0..31，图像 ID 为 32..47，分隔符为
+     48（<image>）和 49（</image>）。
+  3. 在合成的（文本 + <image> 码字 </image>）配对上训练二元模型解码器。
+  4. 通过采样循环输出混合模态内容。
 
-Stdlib only. The transformer is a bigram count table — the point is to see the
-shared-vocabulary loop in miniature, not to get image quality.
+仅使用标准库。这里用二元计数表代替 Transformer，目的是以微型实例
+呈现共享词表中的生成循环，而不是追求图像质量。
+
+译注：red（红）、blue（蓝）、green（绿）、gray（灰）是样本类别键，
+参与条件判断和查表，因此保留原值。w 前缀表示文本词元，i 前缀表示
+图像码字；<image> 与 </image> 是模态分隔符，保持原样。
 """
 
 from __future__ import annotations
@@ -30,7 +35,7 @@ CODEBOOK = [[(i * 7 + 3 * j) % 8 for j in range(4)] for i in range(VOCAB_IMG)]
 
 
 def quantize_patch(patch: list[int]) -> int:
-    """Nearest-codebook lookup by L2 distance."""
+    """根据 L2 距离查找最近的码本条目。"""
     best = 0
     best_d = float("inf")
     for k, code in enumerate(CODEBOOK):
@@ -42,7 +47,8 @@ def quantize_patch(patch: list[int]) -> int:
 
 
 def image_to_tokens(img: list[list[int]]) -> list[int]:
-    """8x8 grayscale -> 4 patches of 4 floats (downsampled). Return token IDs."""
+    """8×8 灰度图 -> 4 个图块，每块包含 4 个经下采样的浮点数；返回词元 ID。
+    译注：“浮点数”沿用原注释；当前代码使用整除，实际得到整数。"""
     patches = []
     for pr in range(0, 8, 4):
         for pc in range(0, 8, 4):
@@ -59,7 +65,7 @@ def image_to_tokens(img: list[list[int]]) -> list[int]:
 
 
 def synthesize_caption(kind: str) -> list[int]:
-    """Pick a short synthetic text token sequence."""
+    """选择一段简短的合成文本词元序列。"""
     if kind == "red":
         return [1, 5, 3, 7]
     if kind == "blue":
@@ -134,42 +140,42 @@ def render(tokens: list[int]) -> str:
 
 def main() -> None:
     print("=" * 60)
-    print("CHAMELEON EARLY-FUSION TOY (Phase 12, Lesson 11)")
+    print("Chameleon 早期融合简化示例（阶段 12，第 11 课）")
     print("=" * 60)
 
-    print("\n1. VQ tokenizer — 8x8 grayscale -> 4 patches -> 4 image tokens")
+    print("\n1. VQ 分词器——8×8 灰度图 -> 4 个图块 -> 4 个图像词元")
     print("-" * 60)
     for kind in ["red", "blue", "green", "gray"]:
         img = synth_image(kind)
         codes = image_to_tokens(img)
-        print(f"  {kind:<6} -> codes {codes}")
+        print(f"  {kind:<6} -> 码字 {codes}")
 
-    print("\n2. Shared vocabulary layout")
+    print("\n2. 共享词表布局")
     print("-" * 60)
-    print(f"  text tokens   : 0..{VOCAB_TEXT - 1}")
-    print(f"  image tokens  : {IMG_OFFSET}..{IMG_OFFSET + VOCAB_IMG - 1}")
+    print(f"  文本词元范围：0..{VOCAB_TEXT - 1}")
+    print(f"  图像词元范围：{IMG_OFFSET}..{IMG_OFFSET + VOCAB_IMG - 1}")
     print(f"  <image>       : {SEP_OPEN}")
     print(f"  </image>      : {SEP_CLOSE}")
-    print(f"  vocab total   : {VOCAB_SIZE}")
+    print(f"  词表总大小  ：{VOCAB_SIZE}")
 
-    print("\n3. Dataset (40 sequences of interleaved text + image tokens)")
+    print("\n3. 数据集（40 条文本与图像词元交错的序列）")
     print("-" * 60)
     corpus = make_dataset(40)
     for seq in corpus[:4]:
         print("  " + render(seq))
 
-    print("\n4. Train bigram, sample mixed-modality output")
+    print("\n4. 训练二元模型，采样混合模态输出")
     print("-" * 60)
     bigram = train_bigram(corpus)
     for _ in range(3):
         out = generate(bigram, [1, 5], max_len=30)
         print("  " + render(out))
 
-    print("\nTAKEAWAY")
+    print("\n要点")
     print("-" * 60)
-    print("  one model, one vocab, one loss -> mixed-modality output for free")
-    print("  tokenizer quality caps image fidelity (lesson 12.12 on Emu3)")
-    print("  at scale you need QK-Norm + careful dropout for stable training")
+    print("  一个模型、一个词表、一种损失 -> 自然得到混合模态输出")
+    print("  分词器质量决定图像保真度的上限（见 Emu3 的第 12.12 课）")
+    print("  扩大规模时，需要 QK-Norm 和精心设置的 dropout 来稳定训练")
 
 
 if __name__ == "__main__":

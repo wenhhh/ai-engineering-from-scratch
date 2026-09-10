@@ -1,8 +1,11 @@
 {
-  "precedence": ["project", "user"],
+  "precedence": [
+    "project",
+    "user"
+  ],
   "maxEntries": 40,
   "maxDescriptionChars": 240,
   "maxCatalogChars": 8000,
   "equalPrecedenceCollision": "error",
-  "note": "This is an example host policy, not a portable Agent Skills rule."
+  "note": "这是宿主策略示例，不是可移植的 Agent Skills 通用规则。"
 }

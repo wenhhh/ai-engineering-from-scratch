@@ -1,13 +1,15 @@
-"""Speculative decoding server — draft/verify scheduler scaffold.
+"""推测解码服务器：草稿生成／验证调度器骨架。
 
-The hard architectural primitive is the draft/verify scheduler: a draft
-model proposes k candidate tokens; the target model verifies them in one
-batched pass; any accepted prefix is committed and the rejected suffix is
-resampled from the target. This scaffold implements the scheduler with
-synthetic token probabilities so the accept/reject logic and the throughput
-math are observable end to end.
+草稿模型提出 k 个候选词元，目标模型验证候选前缀，调度器提交接受的词元，
+再从目标分布采样下一个词元。本例使用合成概率，便于观察接受／拒绝流程与调用计数。
 
-Run:  python main.py
+运行：python main.py
+
+译注：这不是保持目标采样分布不变的完整推测解码算法。接受规则只是目标概率
+不低于该位置最大概率的一半，没有草稿／目标概率比与拒绝后的残差分布校正。
+草稿直接读取目标分布；所谓批量验证仅计作一次调用，没有真实模型或 GPU 批处理。
+上下文只按位置递增，不由已生成的词元决定；baseline 也是采样而非贪心解码。
+speedup 是目标调用次数之比，未计草稿成本、批量验证时间或实际吞吐。
 """
 
 from __future__ import annotations
@@ -17,7 +19,7 @@ from dataclasses import dataclass, field
 
 
 # ---------------------------------------------------------------------------
-# synthetic models  --  probability distributions over a tiny vocabulary
+# 合成模型：小词表上的概率分布
 # ---------------------------------------------------------------------------
 
 VOCAB = list("abcdefghij")
@@ -41,7 +43,7 @@ def sample(dist: list[float], rng: random.Random) -> int:
 
 
 # ---------------------------------------------------------------------------
-# target  --  the expensive model we are trying to save calls to
+# 目标模型：在模拟中被视为开销较大的模型，希望减少其调用次数
 # ---------------------------------------------------------------------------
 
 @dataclass
@@ -54,20 +56,20 @@ class TargetModel:
 
     def verify(self, draft_tokens: list[int], ctx_seed: int,
                rng: random.Random) -> tuple[list[int], int]:
-        """Return (accepted_tokens, resampled_next). In one target call we can
-        verify draft_tokens in a batched pass: the target produces a prob per
-        position; we accept up to the first rejection."""
+        """返回 (accepted_tokens, resampled_next)，即接受的前缀与新采样词元。
+        将整批验证计作一次目标调用：逐位置查看目标概率，遇到第一次拒绝即停止。
+        本例只模拟调用计数，不执行真实批量推理。"""
         self.calls += 1
         self.tokens_verified += len(draft_tokens) + 1
         accepted: list[int] = []
         for pos, tok in enumerate(draft_tokens):
             dist = self.distribution(ctx_seed + pos)
-            # simple accept criterion: target prob on this token >= 0.5 * max prob
+            # 简化接受条件：此词元的目标概率 >= 0.5 × 该位置的最大概率
             if dist[tok] >= 0.5 * max(dist):
                 accepted.append(tok)
             else:
                 break
-        # resample a next token from the target at the position after the accept
+        # 在接受前缀后的下一个位置，从目标分布重新采样一个词元
         ctx = ctx_seed + len(accepted)
         dist = self.distribution(ctx)
         next_tok = sample(dist, rng)
@@ -75,13 +77,13 @@ class TargetModel:
 
 
 # ---------------------------------------------------------------------------
-# draft  --  a cheaper model that is mostly aligned with target
+# 草稿模型：模拟较低成本、与目标偏好较一致的模型
 # ---------------------------------------------------------------------------
 
 @dataclass
 class DraftModel:
     calls: int = 0
-    alignment: float = 0.80     # probability that draft picks what target would
+    alignment: float = 0.80     # 草稿选择目标分布最大概率词元的概率
 
     def propose(self, ctx_seed: int, k: int, rng: random.Random,
                 target: TargetModel) -> list[int]:
@@ -89,7 +91,7 @@ class DraftModel:
         draft_tokens: list[int] = []
         for pos in range(k):
             dist = target.distribution(ctx_seed + pos)
-            # with prob alignment, emit target's best; otherwise sample a neighbour
+            # 以 alignment 的概率选择目标最优词元，否则从完整目标分布采样
             if rng.random() < self.alignment:
                 draft_tokens.append(max(range(len(dist)), key=lambda i: dist[i]))
             else:
@@ -98,7 +100,7 @@ class DraftModel:
 
 
 # ---------------------------------------------------------------------------
-# decode scheduler  --  speculative loop + baseline greedy for comparison
+# 解码调度器：推测循环与逐词元采样基线（原例并非贪心解码）
 # ---------------------------------------------------------------------------
 
 @dataclass
@@ -133,7 +135,7 @@ def speculative_decode(n_tokens: int, k: int, rng: random.Random,
             if m.generated >= n_tokens:
                 break
         if m.generated < n_tokens:
-            m.generated += 1     # resampled next_tok
+            m.generated += 1     # 为重新采样的 next_tok 计数
             ctx_seed += 1
     return m
 
@@ -153,18 +155,18 @@ def baseline_decode(n_tokens: int, rng: random.Random,
 
 
 # ---------------------------------------------------------------------------
-# sweep  --  compare speedup across k and draft alignment
+# 参数扫描：比较不同 k 与草稿一致性下的目标调用次数比
 # ---------------------------------------------------------------------------
 
 def main() -> None:
     n_tokens = 500
-    print(f"=== decode {n_tokens} tokens, compare baseline vs speculative ===")
+    print(f"=== 生成 {n_tokens} 个词元：比较逐词元基线与推测解码 ===")
 
     target = TargetModel()
     rng = random.Random(7)
     base = baseline_decode(n_tokens, rng, target)
-    print(f"baseline: {base.target_calls} target calls, "
-          f"{base.tokens_per_target_call():.2f} tok/call")
+    print(f"基线：{base.target_calls} 次目标调用，"
+          f"{base.tokens_per_target_call():.2f} 个词元／目标调用")
 
     for alignment in (0.60, 0.75, 0.90):
         for k in (2, 4, 6):
@@ -173,11 +175,11 @@ def main() -> None:
             rng = random.Random(7)
             m = speculative_decode(n_tokens, k, rng, target, draft)
             speedup = base.target_calls / max(1, m.target_calls)
-            print(f"  align={alignment:.2f} k={k}  "
-                  f"target_calls={m.target_calls:3d}  "
-                  f"acceptance={m.acceptance_rate(k):.2f}  "
-                  f"tok/call={m.tokens_per_target_call():.2f}  "
-                  f"speedup={speedup:.2f}x")
+            print(f"  一致性={alignment:.2f} k={k}  "
+                  f"目标调用次数={m.target_calls:3d}  "
+                  f"接受率={m.acceptance_rate(k):.2f}  "
+                  f"词元／目标调用={m.tokens_per_target_call():.2f}  "
+                  f"目标调用次数比={speedup:.2f}x")
 
 
 if __name__ == "__main__":

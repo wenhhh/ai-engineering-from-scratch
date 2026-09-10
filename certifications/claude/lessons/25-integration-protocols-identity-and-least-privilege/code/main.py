@@ -1,9 +1,4 @@
-"""Integration and least-privilege lab for this lesson's docs/en.md.
-
-Models protocol selection, capability discovery, scope checks, and approvals.
-Authorization is evaluated at execution time instead of delegated to a prompt.
-Uses only the Python standard library so the control boundary is inspectable.
-"""
+"""本课 docs/en.md 的集成与最小权限实验。建模协议选择、能力发现、scope 检查和身份边界；不连接真实身份提供商或远端协议端点。"""
 
 from __future__ import annotations
 

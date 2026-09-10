@@ -36,7 +36,7 @@ def matmul(A, B):
 
 
 def jacobi_sqrt(M, iters=30):
-    """Matrix square root by Denman-Beavers iteration (stable for PSD M)."""
+    """使用 Denman–Beavers 迭代计算矩阵平方根（对半正定矩阵 M 稳定）。"""
     n = len(M)
     Y = [row[:] for row in M]
     Z = [[1.0 if i == j else 0.0 for j in range(n)] for i in range(n)]
@@ -103,43 +103,43 @@ def main():
     rng = random.Random(29)
     d = 4
 
-    print("=== FID bias at small N ===")
+    print("=== 样本数 N 较小时的 FID 偏差 ===")
     for n in [50, 200, 1000]:
         real = make_features(0.0, n, d, rng)
-        gen = make_features(0.0, n, d, rng)  # same distribution
+        gen = make_features(0.0, n, d, rng)  # 来自相同分布
         score = fid(real, gen)
-        print(f"  N={n:5d}: FID (identical distributions) = {score:.4f}  (lower = more similar)")
+        print(f"  N={n:5d}: FID（相同分布） = {score:.4f}  （越低表示越相似）")
 
-    print("  -> FID should be 0 for identical distributions but is biased up at small N")
+    print("  -> 相同分布的 FID 理应为 0，但 N 较小时估计值会偏高")
     print()
 
-    print("=== FID separates different distributions ===")
+    print("=== FID 能区分不同分布 ===")
     real = make_features(0.0, 500, d, rng)
     for shift in [0.0, 0.2, 0.5, 1.0]:
         gen = make_features(shift, 500, d, rng)
         score = fid(real, gen)
-        print(f"  shift={shift:.1f}: FID = {score:.3f}")
+        print(f"  偏移量={shift:.1f}: FID = {score:.3f}")
 
     print()
-    print("=== CLIP-like cosine similarity ===")
+    print("=== 类 CLIP 的余弦相似度（cosine similarity） ===")
     prompt = [1.0, 0.5, -0.2, 0.3]
     for image_center in [1.0, 0.5, 0.0, -0.5]:
         image = [image_center + rng.gauss(0, 0.1) for _ in range(d)]
         score = clip_like(image, prompt)
-        print(f"  image center {image_center:+.1f}: CLIP-like score = {score:+.3f}")
+        print(f"  图像中心 {image_center:+.1f}: 类 CLIP 分数 = {score:+.3f}")
 
     print()
-    print("=== Elo from synthetic A/B preferences ===")
+    print("=== 根据合成 A/B 偏好计算 Elo 评分 ===")
     r_a, r_b = 1000, 1000
     for i in range(200):
-        # Suppose model A wins 70% of the time
+        # 假设模型 A 在 70% 的比较中胜出
         winner = "a" if rng.random() < 0.7 else "b"
         r_a, r_b = elo_update(r_a, r_b, winner)
-    print(f"  after 200 pairs (A wins 70%): r_A = {r_a:.0f}, r_B = {r_b:.0f}")
+    print(f"  比较 200 对样本后（A 胜率 70%）：r_A = {r_a:.0f}, r_B = {r_b:.0f}")
 
     print()
-    print("takeaway: FID is a distance; CLIP is an adherence score; Elo aggregates preferences.")
-    print("          production evaluation uses all three plus qualitative failure audits.")
+    print("要点：FID 衡量距离；CLIP 分数衡量与提示的匹配程度；Elo 汇总偏好。")
+    print("      生产环境的评估会综合这三者，并辅以定性的失败案例审查。")
 
 
 if __name__ == "__main__":

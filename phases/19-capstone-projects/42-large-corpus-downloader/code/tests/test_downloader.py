@@ -1,6 +1,8 @@
-"""Unit tests for the streaming corpus downloader.
+"""流式语料下载器的单元测试。
 
-Run with: python3 -m unittest discover code/tests -v
+运行：python3 -m unittest discover code/tests -v
+英文文本是 MinHash、续传与去重测试的固定输入；保留断言和夹具不变。
+测试主要使用本地 file URL，不能当作真实远端 Range 续传的完整验收。
 """
 
 from __future__ import annotations

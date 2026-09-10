@@ -1,4 +1,4 @@
-"""Tests for lesson 09 schema validation and repair."""
+"""第 09 课 schema 校验与修复测试。"""
 
 import json
 import pathlib

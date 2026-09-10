@@ -1,4 +1,4 @@
-"""Tests for lesson 05 claim validation."""
+"""第 05 课 claim 验证测试。"""
 
 import copy
 import pathlib

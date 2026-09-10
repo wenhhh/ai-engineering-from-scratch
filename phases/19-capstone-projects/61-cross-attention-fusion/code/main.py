@@ -1,17 +1,19 @@
-"""Cross-attention fusion for a vision-language decoder.
+"""通过交叉注意力融合视觉信息的文本解码器。
 
-The decoder block runs:
-  1. causal self-attention over text tokens
-  2. cross-attention with queries from text and keys/values from image memory
-  3. feed-forward MLP
+每个解码块依次执行：
+  1. 文本词元上的因果自注意力；
+  2. 查询来自文本、键和值来自图像记忆的交叉注意力；
+  3. 前馈 MLP。
 
-Mask discipline:
-  - self-attention uses a (Nt, Nt) lower-triangular causal mask
-  - cross-attention uses no mask; the whole image is visible to every text
-    position
+掩码约定：
+  - 自注意力使用 (Nt,Nt) 下三角因果掩码；
+  - 交叉注意力不加掩码，每个文本位置可看到全部图像记忆。
 
-Run with: python3 main.py
-"""
+运行：python3 main.py
+
+译注：CrossAttention 可以接收预先计算的图像键值，但顶层解码器每次 forward
+都会重新构建该缓存，没有把它跨生成步持久复用，也没有文本自注意力 KV 缓存。
+本课用合成记忆检查计算路径，不调用真实视觉编码器或验证视觉问答能力。"""
 
 from __future__ import annotations
 
@@ -38,15 +40,15 @@ class DecoderConfig:
     @property
     def head_dim(self) -> int:
         if self.hidden % self.heads != 0:
+            # 隐藏维度必须可被头数整除。
             raise ValueError(f"hidden {self.hidden} not divisible by heads {self.heads}")
         return self.hidden // self.heads
 
 
 def causal_mask(length: int) -> torch.Tensor:
-    """Lower-triangular boolean mask of shape (length, length).
+    """形状为 (length,length) 的下三角布尔掩码。
 
-    Cell [i, j] is True if token i may attend to token j (j <= i).
-    """
+    单元 [i,j] 为 True 表示位置 i 可以关注位置 j，即 j<=i。"""
     return torch.tril(torch.ones(length, length, dtype=torch.bool))
 
 
@@ -69,6 +71,7 @@ class CausalSelfAttention(nn.Module):
         if mask is not None:
             if mask.shape != (n, n):
                 raise ValueError(
+                    # 因果掩码形状应为 (n,n)。
                     f"causal mask shape {tuple(mask.shape)} does not match (n, n) = ({n}, {n})"
                 )
             scores = scores.masked_fill(~mask.unsqueeze(0).unsqueeze(0), float("-inf"))
@@ -78,12 +81,11 @@ class CausalSelfAttention(nn.Module):
 
 
 class CrossAttention(nn.Module):
-    """Multi-head cross-attention.
+    """多头交叉注意力。
 
-    Query comes from text tokens; key and value come from image memory.
-    Supports a kv_cache argument so the projection of image memory can be
-    computed once and reused across decode steps.
-    """
+    查询来自文本词元，键和值来自图像记忆。kv_cache 参数允许调用方
+    复用已计算的图像键值；这里只校验缓存形状，不校验它是否属于当前图像。
+    顶层解码器的 use_cache 路径仍会在每次 forward 内重新投影记忆。"""
 
     def __init__(self, cfg: DecoderConfig) -> None:
         super().__init__()
@@ -96,6 +98,7 @@ class CrossAttention(nn.Module):
 
     def project_memory(self, memory: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
         if memory.dim() != 3:
+            # 图像记忆应为 (B,Nv,vision_dim)。
             raise ValueError(f"expected (B, Nv, vision_dim), got {tuple(memory.shape)}")
         b, nv, _ = memory.shape
         h, hd = self.cfg.heads, self.cfg.head_dim
@@ -106,9 +109,11 @@ class CrossAttention(nn.Module):
                 kv_cache: tuple[torch.Tensor, torch.Tensor] | None = None
                 ) -> torch.Tensor:
         if x.dim() != 3:
+            # 文本隐藏状态应为 (B,Nt,hidden)。
             raise ValueError(f"expected (B, Nt, hidden), got {tuple(x.shape)}")
         if memory.shape[0] != x.shape[0]:
             raise ValueError(
+                # 文本与图像记忆的批量大小不符。
                 f"batch mismatch: text {x.shape[0]} vs memory {memory.shape[0]}"
             )
         b, nt, d = x.shape
@@ -122,6 +127,7 @@ class CrossAttention(nn.Module):
             expected = (b, h, memory.shape[1], hd)
             if k.shape != expected or v.shape != expected:
                 raise ValueError(
+                    # 缓存键和值应具有指定的批量、头数、视觉长度与每头维度。
                     f"kv_cache must be (B,H,Nv,hd)={expected}, got "
                     f"k={tuple(k.shape)} v={tuple(v.shape)}"
                 )
@@ -183,9 +189,11 @@ class VisionLanguageDecoder(nn.Module):
     def forward(self, text_ids: torch.Tensor, memory: torch.Tensor,
                 use_cache: bool = False) -> torch.Tensor:
         if text_ids.dim() != 2:
+            # 文本词元 ID 应为 (B,Nt)。
             raise ValueError(f"expected (B, Nt) ids, got {tuple(text_ids.shape)}")
         b, nt = text_ids.shape
         if nt > self.cfg.max_text_len:
+            # 文本长度超过位置表上限。
             raise ValueError(f"text length {nt} exceeds max {self.cfg.max_text_len}")
 
         positions = torch.arange(nt, device=text_ids.device)
@@ -214,56 +222,56 @@ def synth_text(batch: int, length: int, vocab: int, seed: int) -> torch.Tensor:
 
 def main() -> None:
     print("=" * 60)
-    print("CROSS-ATTENTION FUSION DECODER")
+    print("交叉注意力融合解码器")
     print("=" * 60)
 
     cfg = DecoderConfig()
-    print(f"  hidden          : {cfg.hidden}")
-    print(f"  heads           : {cfg.heads} (head dim {cfg.head_dim})")
-    print(f"  depth           : {cfg.depth}")
-    print(f"  text vocab      : {cfg.text_vocab}")
-    print(f"  max text length : {cfg.max_text_len}")
-    print(f"  vision tokens   : {cfg.vision_tokens}")
-    print(f"  vision dim      : {cfg.vision_dim}")
+    print(f"  隐藏维度 : {cfg.hidden}")
+    print(f"  注意力头数 : {cfg.heads} (每头维度 {cfg.head_dim})")
+    print(f"  层数 : {cfg.depth}")
+    print(f"  文本词表大小 : {cfg.text_vocab}")
+    print(f"  文本最大长度 : {cfg.max_text_len}")
+    print(f"  视觉词元数 : {cfg.vision_tokens}")
+    print(f"  视觉维度 : {cfg.vision_dim}")
 
     torch.manual_seed(0)
     decoder = VisionLanguageDecoder(cfg).eval()
     n_params = sum(p.numel() for p in decoder.parameters())
-    print(f"\ndecoder params  : {n_params:,}")
+    print(f"\n解码器参数量 : {n_params:,}")
 
     text_ids = synth_text(batch=2, length=10, vocab=cfg.text_vocab, seed=0)
     memory = synth_memory(batch=2, n_tokens=cfg.vision_tokens, dim=cfg.vision_dim, seed=1)
-    print(f"\ntext_ids shape  : {tuple(text_ids.shape)}")
-    print(f"memory shape    : {tuple(memory.shape)}")
+    print(f"\ntext_ids 形状 : {tuple(text_ids.shape)}")
+    print(f"图像记忆形状 : {tuple(memory.shape)}")
 
     mask = causal_mask(10)
-    print(f"\ncausal mask shape : {tuple(mask.shape)}")
-    print("causal mask top-left 5x5:")
+    print(f"\n因果掩码形状 : {tuple(mask.shape)}")
+    print("因果掩码左上角 5×5：")
     for row in mask[:5, :5].int().tolist():
         print("  " + " ".join(str(v) for v in row))
 
     with torch.no_grad():
         logits = decoder(text_ids, memory, use_cache=False)
         logits_cached = decoder(text_ids, memory, use_cache=True)
-    print(f"\nlogits shape    : {tuple(logits.shape)}")
-    print(f"logits cached   : {tuple(logits_cached.shape)}")
+    print(f"\n未缓存路径的 logits 形状 : {tuple(logits.shape)}")
+    print(f"缓存路径的 logits 形状 : {tuple(logits_cached.shape)}")
     drift = (logits - logits_cached).abs().max().item()
-    print(f"max drift cache vs uncached : {drift:.6e}")
+    print(f"缓存与未缓存路径的最大差异 : {drift:.6e}")
     if drift < 1e-4:
-        print("  ok: KV cache path matches uncached")
+        print("  通过：KV 缓存路径与未缓存路径一致")
     else:
-        print("  FAIL: cache drift exceeds tolerance")
+        print("  失败：缓存路径差异超过容差")
 
-    print("\ncross-attention output norm per text position (head 0, sample 0):")
+    print("\n第 0 个样本各文本位置的交叉注意力输出范数（所有头合并并投影后）：")
     block = decoder.blocks[0]
     ln_x = block.ln2(decoder.tok_emb(text_ids) + decoder.pos_emb(torch.arange(10)))
     with torch.no_grad():
         cross_out = block.cross_attn(ln_x, memory)
     norms = cross_out[0].norm(dim=-1).tolist()
     for i, val in enumerate(norms):
-        print(f"  pos {i:2d}  norm {val:.3f}")
+        print(f"  位置 {i:2d}  范数 {val:.3f}")
 
-    print("\ndone.")
+    print("\n完成。")
 
 
 if __name__ == "__main__":

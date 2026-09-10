@@ -1,3 +1,11 @@
+/**
+ * 迁移任务共享类型。
+ * 文件状态依次为 queued（排队）、rewriting（改写）、building（构建），
+ * 终态为 passed（通过）或 failed（失败）。这些机器枚举不翻译。
+ * linesAdded/linesRemoved 是模拟改动行数，testsTouched 是模拟涉及的测试数，
+ * 不是实际代码变更或执行测试的证据；startedAt 为毫秒时间戳。
+ */
+
 export type FileStatus =
   | "queued"
   | "rewriting"

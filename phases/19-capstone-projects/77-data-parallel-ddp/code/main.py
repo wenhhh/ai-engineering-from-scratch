@@ -1,17 +1,17 @@
-"""DistributedDataParallel from scratch on the gloo backend.
+"""在 Gloo 后端上从零实现 DistributedDataParallel。
 
-Wraps an nn.Module so that:
-  * at construct time every rank's parameters are broadcast from rank 0 and so
-    every rank starts with identical weights,
-  * after backward each parameter's gradient is allreduced (sum) and divided
-    by world_size, producing the mean gradient every rank steps on.
+对 nn.Module 做薄包装：构造时由 rank 0 广播全部参数，使各 rank 从相同
+权重开始；反向传播后，对每个参数梯度执行 allreduce 求和并除以
+world_size，使各 rank 用同一平均梯度更新。
 
-The demo trains a 3-layer MLP for 20 steps on synthetic data across 4 ranks
-and compares the resulting per-step loss against a single-process reference
-that walks the same batches in rank order. The two paths produce identical
-loss curves to float epsilon, which is the load-bearing correctness test.
+演示在 4 个 rank 上用合成数据训练三层 MLP 20 步，并与单进程参考路径
+比较。参考路径每一步按 rank 顺序遍历相同微批，从而检查损失轨迹的一致性。
 
-Run: python3 code/main.py
+运行：python3 code/main.py
+
+译注：这是显式调用 sync_grads 的课程实现，不包含生产 DDP 的梯度桶、
+反向钩子、通信重叠和容错；所谓 float epsilon 一致性只针对固定模型、
+数据顺序与 CPU/Gloo 环境。不能据此外推多 GPU 性能或通用数值等价。
 """
 
 from __future__ import annotations
@@ -40,7 +40,7 @@ def _loopback_iface() -> str:
 
 
 class MiniMLP(nn.Module):
-    """Small enough to converge in seconds, big enough to expose DDP wiring."""
+    """规模足够小，可在数秒内运行，同时仍能展示 DDP 接线。"""
 
     def __init__(self, in_dim: int = IN_DIM, hid_dim: int = HID_DIM, out_dim: int = OUT_DIM):
         super().__init__()
@@ -57,11 +57,10 @@ class MiniMLP(nn.Module):
 
 
 class DistributedDataParallel:
-    """Broadcast params at init, allreduce-and-mean grads after backward.
+    """构造时广播参数，反向传播后 allreduce 并取梯度均值。
 
-    Not a full nn.Module wrapper; the API exposes the two methods the training
-    loop needs (sync_init, sync_grads). The wrap is intentionally thin so the
-    cost of each operation is visible in the loop.
+    这不是完整的 nn.Module 包装器；API 只暴露训练循环需要的 sync_init
+    和 sync_grads。包装保持刻意简化，使每次通信成本在循环中可见。
     """
 
     def __init__(self, module: nn.Module, world_size: int):
@@ -88,7 +87,7 @@ class DistributedDataParallel:
 
 
 def make_dataset(seed: int, n_total: int) -> tuple:
-    """Synthetic regression dataset shared by every rank's reference loop."""
+    """生成所有 rank 与单进程参考路径共享的合成回归数据集。"""
     g = torch.Generator().manual_seed(seed)
     x = torch.randn(n_total, IN_DIM, generator=g)
     w = torch.randn(IN_DIM, OUT_DIM, generator=g)
@@ -134,7 +133,7 @@ def _ddp_worker(rank: int, world_size: int, init_file: str, iface: str,
 
 def run_ddp(world_size: int = WORLD_SIZE, steps: int = STEPS,
             batch: int = BATCH, lr: float = 0.05) -> tuple:
-    """Spawn world_size ranks, return per-rank loss history and param norm."""
+    """启动 world_size 个 rank，返回各 rank 的损失历史和参数范数。"""
     ctx = mp.get_context("spawn")
     out_queue = ctx.Queue()
     init_dir = tempfile.mkdtemp(prefix="aie_ddp_")
@@ -172,11 +171,10 @@ def run_ddp(world_size: int = WORLD_SIZE, steps: int = STEPS,
 
 def reference_single_process(world_size: int = WORLD_SIZE, steps: int = STEPS,
                              batch: int = BATCH, lr: float = 0.05) -> tuple:
-    """Train the same model on the same per-step concatenated batch sequentially.
+    """在单进程中按每步拼接后的相同批次训练同一模型。
 
-    A 'no-DDP' rank that walks every rank's micro-batch in rank order each step
-    produces the same gradient as DDP's allreduce-mean, so the two paths must
-    yield byte-equal per-step losses to float epsilon.
+    一个“不使用 DDP”的参考路径每一步按 rank 顺序处理全部微批；在本例
+    的等权平均约定下，它应与 DDP allreduce-mean 产生相同更新。
     """
     torch.manual_seed(SEED)
     model = MiniMLP()
@@ -203,10 +201,10 @@ def reference_single_process(world_size: int = WORLD_SIZE, steps: int = STEPS,
 
 
 def main() -> int:
-    print(f"world_size={WORLD_SIZE}, steps={STEPS}, batch={BATCH}, model=MiniMLP")
-    print("running DDP across ranks...")
+    print(f"进程数={WORLD_SIZE}，步数={STEPS}，批大小={BATCH}, model=MiniMLP")
+    print("正在跨 rank 运行 DDP……")
     ddp_results = run_ddp()
-    print("running single-process reference...")
+    print("正在运行单进程参考……")
     ref_losses, ref_norm = reference_single_process()
     print(f"\n{'step':<6}{'ref_loss':<14}{'ddp_rank0':<14}{'ddp_rank3':<14}{'rank_drift':<14}")
     rank0_losses, rank0_norm = ddp_results[0]
@@ -214,7 +212,7 @@ def main() -> int:
     for s in range(STEPS):
         drift = abs(rank0_losses[s] - rank3_losses[s])
         print(f"{s:<6}{ref_losses[s]:<14.6f}{rank0_losses[s]:<14.6f}{rank3_losses[s]:<14.6f}{drift:<14.2e}")
-    print(f"\nfinal param norm: ref={ref_norm:.6f}, ddp_rank0={rank0_norm:.6f}")
+    print(f"\n最终参数范数：参考={ref_norm:.6f}，ddp_rank0={rank0_norm:.6f}")
     return 0
 
 

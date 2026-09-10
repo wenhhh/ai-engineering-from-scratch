@@ -1,13 +1,17 @@
-"""RAG eval: precision, recall, MRR, nDCG, faithfulness, answer relevance.
+"""RAG 评测：precision、recall、MRR、nDCG、faithfulness 与答案相关性。
 
-Pure-Python. Mock LLM-as-judge so the eval runs offline.
+纯 Python 实现，并用模拟的 LLM-as-judge 规则使评测能够离线运行。
 
-References:
+参考：
 - ./docs/en.md
-- Phase 19 lessons 64-67 (components measured by these metrics)
-- Phase 19 lesson 69 (end-to-end system this eval grades)
+- 阶段 19 第 64—67 课（由这些指标评估的组件）
+- 阶段 19 第 69 课（由本评测套件打分的端到端系统）
 
-Run: python3 code/main.py
+运行：python3 code/main.py
+
+译注：faithfulness 和 answer relevance 并非真实模型裁判，而是英文
+内容词重合规则；它只适合固定夹具，不能当作语义正确性或事实一致性的
+通用度量。指标名称和英文 qrels 参与测试与计算，保持原值。
 """
 
 from __future__ import annotations
@@ -20,7 +24,7 @@ from typing import Callable
 
 
 # ---------------------------------------------------------------------------
-# qrels record
+# qrels 记录
 # ---------------------------------------------------------------------------
 
 @dataclass
@@ -33,7 +37,7 @@ class Qrel:
 
 
 # ---------------------------------------------------------------------------
-# retrieval metrics
+# 检索指标
 # ---------------------------------------------------------------------------
 
 def precision_at_k(retrieved: list[str], gold: set[str], k: int) -> float:
@@ -92,7 +96,7 @@ def ndcg_at_k(retrieved: list[str], graded: dict[str, int], k: int) -> float:
 
 
 # ---------------------------------------------------------------------------
-# answer-grade metrics
+# 答案质量指标
 # ---------------------------------------------------------------------------
 
 _SENTENCE_BOUNDARY = re.compile(r"(?<=[.!?])\s+")
@@ -118,13 +122,15 @@ def _content_tokens(text: str) -> set[str]:
 
 @dataclass
 class MockJudge:
-    """Deterministic stand-in for LLM-as-judge.
+    """LLM-as-judge 的确定性替代实现。
 
-    Supports two queries:
-    - supported(claim, context): True if the claim's content tokens overlap context
-      by at least `overlap_threshold` fraction.
-    - relevant(question, answer): True if the answer's content tokens overlap the
-      question by at least `overlap_threshold` fraction.
+    支持两类判断：
+    - supported(claim, context)：claim 的内容词与 context 的重合比例
+      至少达到 overlap_threshold 时返回 True。
+    - relevant(question, answer)：answer 的内容词与 question 的重合比例
+      至少达到 overlap_threshold 时返回 True。
+
+    这只是词项重合启发式，不执行语义蕴含或真实模型裁判。
     """
     overlap_threshold: float = 0.4
 
@@ -160,7 +166,7 @@ def answer_relevance(question: str, answer: str, judge: MockJudge) -> float:
 
 
 # ---------------------------------------------------------------------------
-# fixture corpus + qrels + three pipeline variants
+# 固定夹具语料 + qrels + 三种流水线
 # ---------------------------------------------------------------------------
 
 @dataclass
@@ -244,7 +250,7 @@ QRELS = [
 ]
 
 
-# pipeline shape - retrieve top-k doc_ids + write an answer.
+# 流水线形态：检索 top-k 文档 ID，再生成答案。
 PipelineFn = Callable[[str, int], tuple[list[str], str]]
 
 
@@ -270,10 +276,10 @@ def _baseline_tokens(text: str) -> list[str]:
 
 
 def baseline_pipeline(query: str, k: int) -> tuple[list[str], str]:
-    """Bag-of-words term overlap on content tokens only.
+    """只对内容词执行词袋重合的基线流水线。
 
-    Loses on every query whose phrasing diverges from the corpus's vocabulary,
-    e.g. query says "dropped" but the corpus says "aborted".
+    当查询措辞偏离语料词汇时会丢失相关文档，例如查询使用 dropped，
+    而语料使用 aborted。
     """
     q_tokens = _baseline_tokens(query)
     scored = []
@@ -301,7 +307,7 @@ _SYN = {
 
 
 def hybrid_pipeline(query: str, k: int) -> tuple[list[str], str]:
-    """Lexical baseline plus a synonym pass; stand-in for the lesson 65 retriever."""
+    """词法基线再加一轮同义词扩展；用来替代第 65 课的混合检索器。"""
     q_tokens = _baseline_tokens(query)
     expanded = list(q_tokens)
     for t in list(q_tokens):
@@ -311,7 +317,7 @@ def hybrid_pipeline(query: str, k: int) -> tuple[list[str], str]:
     for d in CORPUS:
         d_counter = Counter(_baseline_tokens(d.text()))
         score = sum(min(expanded_counter[t], d_counter[t]) for t in set(expanded_counter) | set(d_counter))
-        # Hybrid also adds a small bonus for documents whose title contains a content word.
+        # 混合版本还会给标题包含查询内容词的文档少量加分。
         title_tokens = set(_baseline_tokens(d.title))
         score += 2 * len(set(expanded) & title_tokens)
         scored.append((d, score))
@@ -322,7 +328,7 @@ def hybrid_pipeline(query: str, k: int) -> tuple[list[str], str]:
 
 
 def hybrid_plus_rerank_pipeline(query: str, k: int) -> tuple[list[str], str]:
-    """Hybrid + reranker that boosts docs whose title contains query-content tokens."""
+    """混合检索再加重排：查询内容词命中文档标题时提高该文档分数。"""
     ids, _ = hybrid_pipeline(query, k * 2)
     by_id = {d.doc_id: d for d in CORPUS}
     q_tokens = set(_baseline_tokens(query))
@@ -333,7 +339,7 @@ def hybrid_plus_rerank_pipeline(query: str, k: int) -> tuple[list[str], str]:
 
     def title_boost(doc_id: str) -> int:
         title_tokens = set(_baseline_tokens(by_id[doc_id].title))
-        # cross-encoder stand-in: heavy boost when query content matches title content
+        # 交叉编码器替代规则：查询内容词命中标题时大幅加分。
         expanded = set(q_tokens)
         for t in q_tokens:
             expanded.update(_SYN.get(t, []))
@@ -348,7 +354,7 @@ def hybrid_plus_rerank_pipeline(query: str, k: int) -> tuple[list[str], str]:
 
 
 # ---------------------------------------------------------------------------
-# evaluator
+# 评估器
 # ---------------------------------------------------------------------------
 
 def evaluate_pipeline(
@@ -396,7 +402,7 @@ def evaluate_pipeline(
 
 
 # ---------------------------------------------------------------------------
-# demo
+# 演示
 # ---------------------------------------------------------------------------
 
 def _fmt(v: float) -> str:

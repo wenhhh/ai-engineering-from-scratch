@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "description": "DevOps troubleshooting agent Slack integration skeleton (TypeScript)",
+  "description": "运维故障排查智能体的 Slack 集成示例框架（TypeScript）",
   "scripts": {
     "start": "tsx src/index.ts --demo",
     "serve": "tsx src/index.ts",

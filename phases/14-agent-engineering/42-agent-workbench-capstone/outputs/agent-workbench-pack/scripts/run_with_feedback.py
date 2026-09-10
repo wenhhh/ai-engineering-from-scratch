@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
-"""Structured shell-command runner. See Phase 14 · 37."""
+"""结构化命令运行器，参见阶段 14 第 37 课。
+
+记录命令、标准输出与标准错误片段、退出码、耗时及智能体备注。
+此打包版没有第 37 课完整示例中的脱敏、日志轮转或父子命令链，不应直接用于含秘密的输出。
+command/note/timeout 为命令行参数；JSON 字段和 timeout after 等诊断保持原样。
+"""
 
 from __future__ import annotations
 

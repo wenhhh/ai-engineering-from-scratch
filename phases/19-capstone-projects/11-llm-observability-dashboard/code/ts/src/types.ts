@@ -1,3 +1,9 @@
+/**
+ * GenAI span、逐模型汇总与接收计数器的共享类型。
+ * 协议属性名保留英文；start/end_time_unix_nano 为纳秒时间戳，延迟汇总以毫秒计。
+ * accepted/rejected 为累计接收／拒绝数量，held 为当前保留数量；类型声明不是完整运行时校验。
+ */
+
 export type GenAIOperation = "chat" | "text_completion" | "embeddings";
 
 export type GenAISpan = {

@@ -1,8 +1,20 @@
-"""Multimodal RAG toy — three retrievers + score fusion + grounded generator.
+"""多模态 RAG 简化示例：三个检索器、分数融合与基于证据的生成器。
 
-Stdlib. A synthetic restaurant corpus with text reviews, image-feature tags,
-and audio-ambiance scores. Runs three retrievers, fuses scores, emits a stub
-answer with citations. Demonstrates agentic reformulation on low-confidence.
+仅使用标准库。构造包含文字评论、图像特征标签和环境音评分的餐厅语料，
+运行三个检索器，融合分数，并输出带引用标记的模拟答案。
+同时演示在置信度较低时由智能体改写查询的过程。
+
+译注：本例按英文空格分词并匹配关键词，评论、查询和图像标签保留原值，
+不能只翻译其中一侧。五条评论依次表示：
+  r1：纯素早午餐很棒，早晨安静，窗户很多。
+  r2：全天供应纯素早午餐，音乐嘈杂，工业风格。
+  r3：供应纯素午餐，灯光昏暗。
+  r4：供应纯素早午餐，空间通透，阳光充足。
+  r5：牛排餐厅，环境喧闹。
+查询的含义是“找一家安静、供应纯素早午餐且有自然采光的餐厅”；追加词组
+bright windows low noise 表示“明亮、窗户、低噪声”。natural_light、
+minimal、industrial、warm_lighting、airy、dark 分别表示自然采光、极简、
+工业风、暖色照明、通透、昏暗。餐厅 ID、名称及分贝数也保持原样。
 """
 
 from __future__ import annotations
@@ -34,7 +46,7 @@ CORPUS = [
 
 
 def text_retrieve(query: str) -> dict[str, float]:
-    """Crude keyword matching for the query against review text."""
+    """在查询与评论文本之间进行粗略的关键词匹配。"""
     keywords = [w.lower() for w in query.split() if len(w) > 2]
     scores = {}
     for r in CORPUS:
@@ -87,12 +99,12 @@ def top_k(scored: dict[str, float], k: int = 3) -> list[tuple[str, float]]:
 
 
 def grounded_generate(query: str, ranked: list[tuple[str, float]]) -> str:
-    lines = [f"Answer for: '{query}'"]
+    lines = [f"针对以下查询的回答：'{query}'"]
     for i, (rid, score) in enumerate(ranked, 1):
         r = next(x for x in CORPUS if x.id == rid)
         lines.append(
-            f"  {i}. {r.name} (score {score:.2f})"
-            f" [review {rid}] [img tags {r.image_tags}] [ambient {r.ambient_db}dB]")
+            f"  {i}. {r.name}（分数 {score:.2f}）"
+            f" [评论 {rid}] [图像标签 {r.image_tags}] [环境音 {r.ambient_db}dB]")
     return "\n".join(lines)
 
 
@@ -104,25 +116,25 @@ def agentic_loop(query: str, confidence_floor: float = 0.8) -> str:
     top = top_k(fused, k=3)
     confidence = top[0][1] if top else 0
 
-    trace = [f"round 1: top={top[0]}  confidence={confidence:.2f}"]
+    trace = [f"第 1 轮：最佳结果={top[0]}  置信度={confidence:.2f}"]
     if confidence < confidence_floor:
-        trace.append("  confidence low; reformulating query")
+        trace.append("  置信度较低，正在改写查询")
         query2 = query + " bright windows low noise"
         i2 = image_retrieve(query2)
         a2 = audio_retrieve(query2)
         fused = fuse([t, i2, a2], [0.3, 0.5, 0.2])
         top = top_k(fused, k=3)
-        trace.append(f"round 2: top={top[0]}  confidence={top[0][1]:.2f}")
+        trace.append(f"第 2 轮：最佳结果={top[0]}  置信度={top[0][1]:.2f}")
     return "\n".join(trace) + "\n\n" + grounded_generate(query, top)
 
 
 def surveys_table() -> None:
-    print("\n2025 MULTIMODAL RAG SURVEYS")
+    print("\n2025 年多模态 RAG 综述")
     print("-" * 60)
     rows = [
-        ("Abootorabi et al.", "Feb 2025", "comprehensive taxonomy"),
-        ("Mei et al.",        "Apr 2025", "sub-task benchmarks + failure modes"),
-        ("Zhao et al.",       "Mar 2025", "vision-focused, strong on ColPali"),
+        ("Abootorabi 等", "2025年2月", "全面的分类体系"),
+        ("Mei 等",        "2025年4月", "子任务基准与失败模式"),
+        ("Zhao 等",       "2025年3月", "侧重视觉，对 ColPali 讨论较深入"),
     ]
     for name, date, note in rows:
         print(f"  {name:<22}{date:<10}{note}")
@@ -130,23 +142,23 @@ def surveys_table() -> None:
 
 def main() -> None:
     print("=" * 60)
-    print("MULTIMODAL RAG (Phase 12, Lesson 24)")
+    print("多模态 RAG（阶段 12，第 24 课）")
     print("=" * 60)
 
     query = "find me a quiet vegan brunch with natural light"
-    print(f"\nQUERY: {query}")
+    print(f"\n查询：{query}")
     print("-" * 60)
     result = agentic_loop(query, confidence_floor=0.7)
     print(result)
 
     surveys_table()
 
-    print("\nFUSION STRATEGIES")
+    print("\n融合策略")
     print("-" * 60)
-    print("  score fusion : weighted sum, simple, fast")
-    print("  MoE fusion   : gating routes to experts, learnable, trains")
-    print("  attention    : small network weights retrieved items")
-    print("  default: score fusion + slight bias toward dominant modality")
+    print("  分数融合：加权求和，简单、快速")
+    print("  MoE 融合：门控路由到专家，可学习，需要训练")
+    print("  注意力  ：用小型网络为检索结果分配权重")
+    print("  默认方案：分数融合，并略微偏向主导模态")
 
 
 if __name__ == "__main__":

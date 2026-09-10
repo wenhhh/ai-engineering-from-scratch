@@ -1,4 +1,4 @@
-"""Tests for lesson 12 agent harness policy."""
+"""第 12 课 agent harness 策略测试。"""
 
 import copy
 import pathlib

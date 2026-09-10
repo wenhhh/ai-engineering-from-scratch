@@ -1,7 +1,15 @@
-// GitHub Issue-to-PR Agent: TypeScript webhook receiver.
-// Python side ships the agent loop; YAML side ships the Actions workflow.
-// This project verifies HMAC, routes on event type, dispatches a stub agent.
-// Refs: docs/en.md (this lesson),
+/**
+ * 命令行演示与 HTTP 适配器。
+ * 演示夹具参与 HMAC 摘要，保留原英文：Speak like a human.＝像人一样表达；
+ * Add /healthz endpoint＝增加健康检查端点；evil＝恶意示例；skip me＝跳过此项。
+ * 请求体过大错误中的 exceeds 用于选择 HTTP 413，必须保留；演示密钥不可用于真实服务。
+ * HTTP 模式会监听端口，但不连接 GitHub，也不实际创建 PR。
+ */
+
+// GitHub 问题到 PR 智能体：TypeScript Webhook 接收器。
+// Python 另行演示调度状态机；当前目录没有可直接部署的 Actions 工作流。
+// 本项目验证 HMAC、按事件路由，并调用只记录日志的智能体桩。
+// 课程参考：../../docs/zh.md；以下链接来自固定原文。
 //   GitHub webhook signature: https://docs.github.com/en/webhooks/using-webhooks/validating-webhook-deliveries
 //   GitHub App docs: https://docs.github.com/en/apps
 
@@ -23,9 +31,9 @@ function demoDelivery(
   const raw = Buffer.from(JSON.stringify(payload), "utf8");
   const sig = expectedSig(raw, signingSecret);
   const ok = verifySignature(raw, sig, receiverSecret);
-  process.stdout.write(`\n>>> delivery event=${event} sig_valid=${ok}\n`);
+  process.stdout.write(`\n>>> 投递事件=${event} 签名有效=${ok}\n`);
   if (!ok) {
-    process.stdout.write("<<< 401 invalid signature\n");
+    process.stdout.write("<<< 401 签名无效\n");
     return;
   }
   const result = route(audit, event, payload);
@@ -37,7 +45,7 @@ function runDemo(): void {
   const secret = DEMO_SECRET;
 
   process.stdout.write("=".repeat(72) + "\n");
-  process.stdout.write("PHASE 19 LESSON 16 - GitHub webhook receiver (TypeScript)\n");
+  process.stdout.write("阶段 19 第 16 课：GitHub Webhook 接收器（TypeScript）\n");
   process.stdout.write("=".repeat(72) + "\n");
 
   demoDelivery(audit, "ping", { zen: "Speak like a human.", hook_id: 12345 }, secret, secret);
@@ -82,7 +90,7 @@ function runDemo(): void {
     secret,
   );
 
-  process.stdout.write(`\naudit entries recorded: ${audit.count()}\n`);
+  process.stdout.write(`\n已记录审计条目：${audit.count()}\n`);
 }
 
 const MAX_BODY_SIZE = 1024 * 1024;
@@ -136,7 +144,7 @@ function runServer(port: number, secret: string): void {
     });
   });
   server.listen(port, () => {
-    process.stdout.write(`webhook receiver on http://localhost:${port}/webhook\n`);
+    process.stdout.write(`Webhook 接收器地址：http://localhost:${port}/webhook\n`);
   });
 }
 
@@ -147,12 +155,12 @@ function parsePort(argv: string[], defaultPort: number): number {
   if (portFlag < 0) return defaultPort;
   const raw = argv[portFlag + 1];
   if (raw === undefined) {
-    process.stderr.write("--port requires a value\n");
+    process.stderr.write("--port 需要提供值\n");
     process.exit(2);
   }
   const n = Number(raw);
   if (!Number.isInteger(n) || n < 1 || n > 65535) {
-    process.stderr.write(`invalid --port ${raw}: must be integer in 1..65535\n`);
+    process.stderr.write(`--port 值 ${raw} 无效：必须是 1..65535 范围的整数\n`);
     process.exit(2);
   }
   return n;
@@ -164,7 +172,7 @@ function main(): void {
     const secret = process.env.GH_WEBHOOK_SECRET;
     if (!secret) {
       process.stderr.write(
-        "GH_WEBHOOK_SECRET must be set in the environment to run --serve\n",
+        "运行 --serve 前，必须设置环境变量 GH_WEBHOOK_SECRET\n",
       );
       process.exit(1);
     }

@@ -1,14 +1,15 @@
-"""Token and positional embeddings.
+"""词元嵌入与位置嵌入。
 
-Builds three modules:
+构造三个模块：
+- TokenEmbedding：vocab_size × d_model 的词元查表。
+- LearnedPositionalEmbedding：max_context_length × d_model 的可学习位置查表。
+- SinusoidalPositionalEmbedding：不含可训练参数的正弦／余弦位置表。
 
-- TokenEmbedding: vocab_size x d_model lookup
-- LearnedPositionalEmbedding: max_context_length x d_model lookup
-- SinusoidalPositionalEmbedding: parameter-free sin/cos table
+通过 EmbeddingComposer 相加，构成 Transformer 的输入。
+在课程目录运行：python3 code/main.py
 
-Composes them via EmbeddingComposer for the transformer input.
-
-Run: python3 code/main.py
+译注：演示没有训练可学习位置嵌入。正弦位置表也受预先建立的最大长度限制；
+本例没有测试超出该长度的真正外推。前几个偏移的余弦相似度趋势不是全局单调性的证明。
 """
 
 from __future__ import annotations
@@ -24,13 +25,13 @@ DEFAULT_INIT_STD = 0.02
 
 
 def _init_normal(weight: torch.Tensor, std: float = DEFAULT_INIT_STD) -> None:
-    """Init a parameter tensor in place from a small Gaussian."""
+    """使用标准差较小的高斯分布，就地初始化参数张量。"""
     with torch.no_grad():
         weight.normal_(mean=0.0, std=std)
 
 
 class TokenEmbedding(nn.Module):
-    """Vocabulary-id to vector lookup."""
+    """将词表 ID 映射为向量的查表模块。"""
 
     def __init__(self, vocab_size: int, d_model: int, init_std: float = DEFAULT_INIT_STD) -> None:
         super().__init__()
@@ -52,7 +53,7 @@ class TokenEmbedding(nn.Module):
 
 
 class LearnedPositionalEmbedding(nn.Module):
-    """Position-id to vector lookup with learned parameters."""
+    """通过可学习参数将位置 ID 映射为向量。"""
 
     def __init__(
         self,
@@ -82,10 +83,11 @@ class LearnedPositionalEmbedding(nn.Module):
 
 
 class SinusoidalPositionalEmbedding(nn.Module):
-    """Parameter-free position-to-vector mapping.
+    """不含可训练参数的位置到向量映射。
 
     pe[p, 2k]     = sin(p / 10000^(2k/d_model))
     pe[p, 2k+1]   = cos(p / 10000^(2k/d_model))
+    公式对应默认 base=10000；实际实现允许传入其他 base。
     """
 
     def __init__(self, max_context_length: int, d_model: int, base: float = 10000.0) -> None:
@@ -124,9 +126,9 @@ class SinusoidalPositionalEmbedding(nn.Module):
 
 
 class EmbeddingComposer(nn.Module):
-    """Sums a token embedding with a positional embedding.
+    """将词元嵌入与位置嵌入相加。
 
-    The positional embedding may be learned or sinusoidal.
+    位置嵌入可以使用可学习查表或正弦／余弦表。
     """
 
     def __init__(
@@ -167,9 +169,9 @@ def count_parameters(module: nn.Module) -> int:
 
 
 def neighbour_cosine_curve(table: torch.Tensor, max_offset: int = 8) -> list[float]:
-    """Average cosine similarity between row p and row p+k for k in 1..max_offset.
+    """对 k=1..max_offset，计算第 p 行与第 p+k 行的平均余弦相似度。
 
-    Returns a list of length max_offset.
+    返回长度为 max_offset 的列表。
     """
     if table.dim() != 2:
         raise ValueError("table must be (L, D)")
@@ -219,54 +221,54 @@ def main() -> int:
 
     ids = torch.randint(0, cfg.vocab_size, (cfg.batch_size, cfg.seq_len), dtype=torch.long)
 
-    _print_section("Shapes")
+    _print_section("张量形状")
     out_learned = learned_composer(ids)
     out_sinusoidal = sinusoidal_composer(ids)
-    print(f"token_emb output  : {tuple(token_emb(ids).shape)}")
-    print(f"learned composer  : {tuple(out_learned.shape)}")
-    print(f"sinusoidal cmp.   : {tuple(out_sinusoidal.shape)}")
+    print(f"词元嵌入输出      ：{tuple(token_emb(ids).shape)}")
+    print(f"可学习位置组合    ：{tuple(out_learned.shape)}")
+    print(f"正弦位置组合      ：{tuple(out_sinusoidal.shape)}")
     assert out_learned.shape == (cfg.batch_size, cfg.seq_len, cfg.d_model)
     assert out_sinusoidal.shape == (cfg.batch_size, cfg.seq_len, cfg.d_model)
 
-    _print_section("Parameter counts")
+    _print_section("参数数量")
     token_params = count_parameters(token_emb)
     learned_params = count_parameters(learned_pos)
     sinusoidal_params = count_parameters(sinusoidal_pos)
-    print(f"token embedding         : {token_params:>7}")
-    print(f"learned positional      : {learned_params:>7}")
-    print(f"sinusoidal positional   : {sinusoidal_params:>7}  (parameter-free)")
+    print(f"词元嵌入参数          ：{token_params:>7}")
+    print(f"可学习位置嵌入参数    ：{learned_params:>7}")
+    print(f"正弦位置嵌入参数      ：{sinusoidal_params:>7}（无可训练参数）")
     assert sinusoidal_params == 0
 
-    _print_section("Neighbour cosine similarity")
+    _print_section("相邻位置的余弦相似度")
     learned_curve = neighbour_cosine_curve(learned_pos.embedding.weight, max_offset=6)
     sinusoidal_curve = neighbour_cosine_curve(sinusoidal_pos.pe, max_offset=6)
-    print("offset k | learned cos | sinusoidal cos")
+    print("偏移 k | 可学习位置余弦 | 正弦位置余弦")
     for k, (a, b) in enumerate(zip(learned_curve, sinusoidal_curve), start=1):
         print(f"   {k:>4}  |   {a:>+7.4f}  |   {b:>+7.4f}")
 
-    _print_section("Sinusoidal property: smooth decay")
+    _print_section("正弦位置表：检查前几个偏移的相似度变化")
     monotone_count = sum(
         sinusoidal_curve[i] >= sinusoidal_curve[i + 1] - 1e-3
         for i in range(len(sinusoidal_curve) - 1)
     )
     print(
-        f"sinusoidal curve monotone steps: {monotone_count}/{len(sinusoidal_curve) - 1}"
+        f"正弦曲线中满足局部不增条件的步数：{monotone_count}/{len(sinusoidal_curve) - 1}"
     )
 
-    _print_section("Length extrapolation")
+    _print_section("长度范围检查")
     short = cfg.max_context_length // 2
     long = cfg.max_context_length
-    print(f"sinusoidal at len {short:>3} : ok")
+    print(f"正弦位置表，长度 {short:>3}：可用")
     _ = sinusoidal_pos(short)
-    print(f"sinusoidal at len {long:>3} : ok")
+    print(f"正弦位置表，长度 {long:>3}：可用")
     _ = sinusoidal_pos(long)
-    print("learned bounded by max_context_length: must error past max")
+    print("可学习位置表受 max_context_length 限制：超过上限必须报错")
     try:
         _ = learned_pos(long + 1)
     except ValueError as e:
-        print(f"  caught: {e}")
+        print(f"  已捕获：{e}")
 
-    print("\nDemo OK.")
+    print("\n演示通过。")
     return 0
 
 

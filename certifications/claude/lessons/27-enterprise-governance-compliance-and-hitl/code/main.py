@@ -1,4 +1,4 @@
-"""Companion validator for this lesson's docs/en.md governance packet."""
+"""本课 docs/en.md 治理资料包的配套验证器。检查企业治理、合规证据与 HITL 边界；不构成法律意见或合规认证。"""
 
 from __future__ import annotations
 

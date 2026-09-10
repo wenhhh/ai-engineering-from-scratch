@@ -1,12 +1,16 @@
-"""Three group-fairness criteria on a toy classifier — stdlib Python.
+"""玩具分类器上的三种群体公平性准则，仅使用 Python 标准库。
 
-Binary classification: sensitive attribute A in {0, 1} with unequal base rates.
-A simple logistic classifier is trained; we report:
-  demographic parity, equalized odds, conditional use accuracy equality.
-Then apply a re-weighting targeted at demographic parity and observe the
-cost on the other two.
+二分类数据含敏感属性 A∈{0,1}，两组的正类基率不同。训练逻辑回归分类器后，
+分别报告人口统计均等（demographic parity）、均等化赔率（equalized odds）
+和条件使用准确率均等（conditional use accuracy equality）所需的组间指标。
+再对训练样本重加权，以人口统计均等为目标，观察其他指标如何变化。
 
-Usage: python3 code/main.py
+运行方式：python3 code/main.py
+
+译注：这里只计算各组预测正例率、TPR/FPR、PPV/NPV，没有实现个体公平性或
+反事实公平性。权重 2.0、0.5 是人工设定，不保证达到某一公平约束；单次
+模拟也不能证明关于公平性准则兼容性的定理。原文结尾的概括应结合其适用
+条件理解，不能将“基率相等”视为任意分类器自动公平的保证。
 """
 
 from __future__ import annotations
@@ -19,10 +23,10 @@ random.seed(53)
 
 
 def gen(n: int) -> list[tuple[list[float], int, int]]:
-    """Returns list of (features, label, sensitive_attribute).
+    """返回（特征，标签，敏感属性）组成的列表。
 
-    Base rate differs by group: A=0 has P(y=1)=0.3; A=1 has P(y=1)=0.6.
-    Features correlate with y with some noise."""
+    组间正类基率不同：A=0 时 P(y=1)=0.3；A=1 时 P(y=1)=0.6。
+    特征包含与标签或敏感属性相关的信号及噪声，敏感属性本身也进入模型。"""
     data = []
     for _ in range(n):
         a = random.choice([0, 1])
@@ -91,16 +95,16 @@ def report(name: str, preds):
     eo = equalized_odds(preds)
     cu = conditional_use(preds)
     print(f"\n{name}")
-    print(f"  demographic parity    : group0={dp[0]:.3f}  group1={dp[1]:.3f}  gap={dp[1]-dp[0]:+.3f}")
-    print(f"  equalized odds (TPR)  : group0={eo[0][0]:.3f}  group1={eo[1][0]:.3f}")
-    print(f"  equalized odds (FPR)  : group0={eo[0][1]:.3f}  group1={eo[1][1]:.3f}")
-    print(f"  conditional use (PPV) : group0={cu[0][0]:.3f}  group1={cu[1][0]:.3f}")
-    print(f"  conditional use (NPV) : group0={cu[0][1]:.3f}  group1={cu[1][1]:.3f}")
+    print(f"  人口统计均等：组 0 正例预测率={dp[0]:.3f}  组 1={dp[1]:.3f}  差值={dp[1]-dp[0]:+.3f}")
+    print(f"  均等化赔率（真正例率 TPR）：组 0={eo[0][0]:.3f}  组 1={eo[1][0]:.3f}")
+    print(f"  均等化赔率（假正例率 FPR）：组 0={eo[0][1]:.3f}  组 1={eo[1][1]:.3f}")
+    print(f"  条件使用准确率（阳性预测值 PPV）：组 0={cu[0][0]:.3f}  组 1={cu[1][0]:.3f}")
+    print(f"  条件使用准确率（阴性预测值 NPV）：组 0={cu[0][1]:.3f}  组 1={cu[1][1]:.3f}")
 
 
 def main() -> None:
     print("=" * 70)
-    print("THREE GROUP-FAIRNESS CRITERIA (Phase 18, Lesson 21)")
+    print("三种群体公平性准则（阶段 18，第 21 课）")
     print("=" * 70)
 
     train_data = gen(1000)
@@ -108,9 +112,9 @@ def main() -> None:
 
     baseline = train(train_data)
     preds = predict(baseline, test_data)
-    report("baseline classifier", preds)
+    report("基线分类器", preds)
 
-    # Reweight toward demographic parity: upweight group0 y=1 and downweight group1 y=1.
+    # 朝人口统计均等方向重加权：提高组 0 正类样本权重，降低组 1 正类样本权重。
     weights = []
     for x, y, a in train_data:
         if a == 0 and y == 1:
@@ -121,15 +125,15 @@ def main() -> None:
             weights.append(1.0)
     dp_reweighted = train(train_data, sample_weights=weights)
     preds2 = predict(dp_reweighted, test_data)
-    report("DP-reweighted classifier", preds2)
+    report("按人口统计均等目标重加权的分类器（此处 DP 不是差分隐私）", preds2)
 
     print("\n" + "=" * 70)
-    print("TAKEAWAY: equal base rates are the condition for the three criteria")
-    print("to coincide. with unequal base rates, DP-targeted reweighting")
-    print("reduces the DP gap at the cost of equalized odds and conditional")
-    print("use accuracy. this is Chouldechova / KMR 2017 in miniature. the")
-    print("choice of criterion is a policy decision; no statistical method")
-    print("can satisfy all three under unequal base rates.")
+    print("原文要点：群体基率会影响不同公平性准则之间的兼容性。")
+    print("在基率不同的场景中，面向人口统计均等的重加权可能改变")
+    print("均等化赔率和条件使用准确率，不能只看一个差距指标。")
+    print("原文将此联系到 Chouldechova / KMR（2017）；本例只是数值示意，")
+    print("不是无条件不可能性定理的证明。准则选择需要结合政策目标与场景；")
+    print("单一统计方法不能替代对取舍和适用条件的判断。")
     print("=" * 70)
 
 

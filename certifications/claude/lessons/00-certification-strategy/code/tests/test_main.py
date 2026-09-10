@@ -1,4 +1,4 @@
-"""Tests for lesson 00 readiness planning."""
+"""第 00 课学习准备度规划测试。"""
 
 import copy
 import json

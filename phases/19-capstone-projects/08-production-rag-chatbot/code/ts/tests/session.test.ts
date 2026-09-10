@@ -1,9 +1,14 @@
+/**
+ * SSE 聊天示例回归测试：只翻译测试名称与说明。
+ * 原始断言、输入夹具、英文回答契约、事件和消息数量保持原样。
+ */
+
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { SessionStore } from "../src/session.js";
 
 describe("SessionStore", () => {
-  it("creates a fresh session on first lookup", () => {
+  it("首次查找时创建新会话", () => {
     const store = new SessionStore();
     const s = store.getOrCreate("s-1", "analyst", "GDPR");
     assert.equal(s.id, "s-1");
@@ -13,7 +18,7 @@ describe("SessionStore", () => {
     assert.equal(store.size(), 1);
   });
 
-  it("returns the same session on subsequent lookups", () => {
+  it("再次查找时返回同一个会话对象", () => {
     const store = new SessionStore();
     const a = store.getOrCreate("s-2", "analyst", "GDPR");
     a.turns.push({ role: "user", content: "hi", ts: 1 });
@@ -22,7 +27,7 @@ describe("SessionStore", () => {
     assert.equal(b.turns.length, 1);
   });
 
-  it("appendTurn extends the turn list", () => {
+  it("appendTurn 向消息列表追加消息", () => {
     const store = new SessionStore();
     store.getOrCreate("s-3", "analyst", "GDPR");
     store.appendTurn("s-3", { role: "user", content: "q", ts: 1 });
@@ -34,7 +39,7 @@ describe("SessionStore", () => {
     assert.equal(s.turns[1]?.role, "assistant");
   });
 
-  it("list returns every session", () => {
+  it("list 返回全部会话", () => {
     const store = new SessionStore();
     store.getOrCreate("a", "r", "j");
     store.getOrCreate("b", "r", "j");
@@ -42,7 +47,7 @@ describe("SessionStore", () => {
     assert.deepEqual(ids, ["a", "b"]);
   });
 
-  it("appendTurn on unknown id is a no-op", () => {
+  it("向不存在的会话追加消息时不执行操作", () => {
     const store = new SessionStore();
     store.appendTurn("missing", { role: "user", content: "x", ts: 1 });
     assert.equal(store.size(), 0);

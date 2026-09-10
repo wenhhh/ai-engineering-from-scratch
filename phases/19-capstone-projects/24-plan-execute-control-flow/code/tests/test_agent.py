@@ -1,4 +1,7 @@
-"""Tests for PlanExecuteAgent: linear, replan, replan exhaustion, step budget, diffs."""
+"""PlanExecuteAgent 测试：顺序执行、重新规划、重规划预算耗尽、步数预算与计划差异。
+
+断言、失败注入和执行器夹具保持原样。
+"""
 
 from __future__ import annotations
 

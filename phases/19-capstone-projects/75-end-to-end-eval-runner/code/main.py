@@ -1,10 +1,15 @@
-"""End-to-end eval runner: tasks -> adapter -> metric -> calibration -> leaderboard.
+"""端到端评测运行器：任务 -> 适配器 -> 指标 -> 校准 -> 排行榜。
 
-Conceptual references:
-- ./docs/en.md (this lesson)
-- lesson 70 (task spec), 71 (metrics), 72 (code exec), 73 (calibration), 74 (leaderboard)
+概念参考：
+- ./docs/en.md（本课）
+- 第 70 课（task spec）、第 71 课（metrics）、第 72 课（code exec）、
+  第 73 课（calibration）、第 74 课（leaderboard）
 
-Stdlib + numpy. Run: python3 code/main.py
+使用标准库 + NumPy。运行：python3 code/main.py
+
+译注：模型适配器和任务均为固定教学夹具，运行结果只证明本地编排路径
+满足这些断言，不代表真实模型、真实代码沙箱或外部 leaderboard 已通过。
+任务、指标、模型键和阈值保持原值。
 """
 
 from __future__ import annotations
@@ -360,23 +365,23 @@ def demo() -> int:
 
     print(render_markdown_block(report))
     print()
-    print(f"summary: {json.dumps(report.summary, indent=2)}")
+    print(f"汇总：{json.dumps(report.summary, indent=2)}")
     print()
-    print("pairwise differences (paired bootstrap):")
+    print("成对差异（paired bootstrap）：")
     for d in report.pairwise:
         sig = "yes" if d["significant"] else "no"
-        print(f"  {d['model_a']} vs {d['model_b']}: diff={d['diff_mean']:+.3f}  ci=[{d['ci_lo']:+.3f},{d['ci_hi']:+.3f}]  significant={sig}")
+        print(f"  {d['model_a']} 对比 {d['model_b']}: diff={d['diff_mean']:+.3f}  ci=[{d['ci_lo']:+.3f},{d['ci_hi']:+.3f}]  显著={sig}")
 
     if not report.leaderboard:
-        print("ERROR: empty leaderboard")
+        print("错误：排行榜为空")
         return 1
     top = report.leaderboard[0]["model_id"]
     bot = report.leaderboard[-1]["model_id"]
     if top != "rule_based":
-        print(f"ERROR: expected rule_based at top, got {top}")
+        print(f"错误：预期 rule_based 位于榜首，实际为 {top}")
         return 2
     if bot == "rule_based":
-        print(f"ERROR: rule_based should not be at the bottom")
+        print(f"错误：rule_based 不应位于榜尾")
         return 3
     return 0
 

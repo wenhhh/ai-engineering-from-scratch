@@ -1,6 +1,6 @@
 {
   "id": "task_003_error_message_typo",
-  "goal": "The error message 'recieved' should read 'received'. Fix the typo without changing anything else.",
+  "goal": "错误消息中的 'recieved' 应拼写为 'received'。只修正这个拼写错误，不改变其他内容。",
   "verifier": {
     "name": "file_equals",
     "args": { "path": "errors.py" }

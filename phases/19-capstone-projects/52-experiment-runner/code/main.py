@@ -1,11 +1,16 @@
-"""Experiment runner: subprocess sandbox with timeout, memory poller, ablation table.
+"""实验运行器：子进程执行、超时控制、内存轮询与消融结果表。
 
-Conceptual references:
-- ./docs/en.md (this lesson)
-- Phase 19 Track A lessons 20-29 (agent harness primitives)
+概念参考：
+- ./docs/en.md（本课正文）
+- 阶段 19 的 A 路线第 20—29 课（智能体运行框架的基础构件）
 
-Stdlib only. Run: python3 code/main.py
-"""
+运行器仅使用标准库；所附模拟实验另需 NumPy。运行：python3 code/main.py
+
+译注：此处的“沙箱”只是子进程加资源监测，没有网络、文件系统或权限隔离。
+临时目录只存放配置，子进程未以该目录作为工作目录，仍继承父进程环境。
+RSS 是定期采样而非硬内存上限，且不覆盖进程树；只终止直接子进程。
+stdout/stderr 会先完整缓存在父进程，返回字典时才截取尾部，不能防止无限输出耗尽内存。
+仅应运行可信脚本；本课的损失与困惑度为合成数据，不是真实模型训练结果。"""
 
 from __future__ import annotations
 
@@ -79,7 +84,7 @@ class ExperimentResult:
 
 
 def _rss_mb(pid: int) -> float | None:
-    """Best effort RSS read in MB. Returns None on unsupported platforms."""
+    """尽力读取进程 RSS，按 1024² 字节换算；平台不支持时返回 None。"""
     proc_status = f"/proc/{pid}/status"
     if os.path.exists(proc_status):
         try:
@@ -107,7 +112,7 @@ def _rss_mb(pid: int) -> float | None:
 
 
 class _MemoryPoller(threading.Thread):
-    """Polls subprocess RSS in MB; kills the process if it crosses the cap."""
+    """轮询子进程的 RSS；采样值超过上限时终止该进程，并记录已观察到的峰值。"""
 
     def __init__(self, proc: subprocess.Popen, cap_mb: int, interval_s: float = 0.05) -> None:
         super().__init__(daemon=True)
@@ -131,6 +136,7 @@ class _MemoryPoller(threading.Thread):
                 if not _MEMORY_POLLER_UNSUPPORTED_WARNED:
                     _MEMORY_POLLER_UNSUPPORTED_WARNED = True
                     _LOGGER.warning(
+                        # 平台无法通过 /proc 或 ps 提供 RSS 时，内存轮询停止，实际耗时上限仍生效。
                         "memory poller disabled: platform does not expose RSS via /proc or ps; wall clock timeout still applies",
                     )
                 return
@@ -146,11 +152,10 @@ class _MemoryPoller(threading.Thread):
 
 
 def _scan_intermediates(stdout: str, metric_keys: list[str]) -> tuple[dict, list[dict]]:
-    """Walk stdout lines and pull every json line whose keys cover metric_keys.
+    """扫描标准输出，提取包含全部 metric_keys 的 JSON 对象行。
 
-    The last covering line is treated as the final metrics. Earlier lines are
-    returned as intermediates so the evaluator can plot learning curves.
-    """
+    最后一个符合条件的对象视为最终指标；此前的对象作为中间指标返回，
+    供后续绘制学习曲线。这里检查字段是否存在，不验证指标类型或有效性。"""
     intermediates: list[dict] = []
     final: dict = {}
     required = set(metric_keys)
@@ -173,7 +178,7 @@ def _scan_intermediates(stdout: str, metric_keys: list[str]) -> tuple[dict, list
 
 
 class ExperimentRunner:
-    """Spawn a subprocess, enforce timeout and memory cap, return an ExperimentResult."""
+    """启动子进程，监测超时与采样内存，返回 ExperimentResult。"""
 
     def __init__(self, python_path: str | None = None, poll_interval_s: float = 0.05) -> None:
         self._python = python_path or sys.executable

@@ -1,9 +1,7 @@
-"""Streaming mock LLM with three scripted personas.
+"""包含三种脚本化 persona 的流式模拟 LLM。
 
-The model yields chunks of up to four tokens at a time. The 'attacker-lazy'
-persona is supposed to be caught by the during-gen filter because it
-produces an obvious continuation that the input detector might have missed.
-"""
+模型每次最多产生四个词元片段。`attacker-lazy` persona 用于演示生成中途过滤器应当截断
+明显的脚本化风险输出；它不是实际攻击模型，也不代表真实 LLM 的流式概率行为。"""
 
 from __future__ import annotations
 

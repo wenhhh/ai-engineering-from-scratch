@@ -1,13 +1,13 @@
-"""Vision transformer patch tokenizer and geometry calculator — stdlib Python.
+"""视觉 Transformer 图块分词器与几何计算器——仅使用 Python 标准库。
 
-Given a ViT config (patch size, resolution, hidden dim, depth, heads), computes:
-  - grid shape and sequence length after patch tokenization
-  - per-component parameter count (patch embed, pos, blocks, LN)
-  - FLOPs per forward (dominated by attention + MLP)
-  - comparison table across canonical 2026 encoders
+给定 ViT 配置（图块大小、分辨率、隐藏维度、深度、注意力头数），计算：
+  - 图块词元化后的网格形状和序列长度
+  - 各组件的参数量（图块嵌入、位置嵌入、Transformer 块、层归一化）
+  - 每次前向传播的浮点运算量（FLOPs，主要来自注意力和 MLP）
+  - 2026 年典型编码器的对比表
 
-Also walks a toy 8x8 grayscale image through the patch-flatten-project pipeline
-so the primitive is concrete. No numpy, no torch — just ints and lists.
+还会让一幅简化的 8×8 灰度图依次经过切块、展平和投影流程，
+把这些基本操作具体呈现出来。不依赖 NumPy 或 PyTorch，只用整数和列表。
 """
 
 from __future__ import annotations
@@ -39,9 +39,9 @@ ZOO = [
 
 def grid_shape(image_size: int, patch_size: int) -> tuple[int, int]:
     if image_size <= 0 or patch_size <= 0:
-        raise ValueError(f"image_size and patch_size must be positive, got {image_size=} {patch_size=}")
+        raise ValueError(f"image_size 和 patch_size 必须为正数，实际为 {image_size=} {patch_size=}")
     if image_size % patch_size != 0:
-        raise ValueError(f"image_size ({image_size}) must be divisible by patch_size ({patch_size})")
+        raise ValueError(f"image_size ({image_size}) 必须能被 patch_size 整除（patch_size={patch_size}）")
     g = image_size // patch_size
     return (g, g)
 
@@ -104,12 +104,12 @@ def fmt(n: int) -> str:
 
 
 def patch_toy_image() -> None:
-    """Walk an 8x8 grayscale image through patch-tokenize with P=4.
-    Grid is 2x2 → 4 tokens. Each patch is 4x4=16 pixels flat."""
-    print("\nToy image patch tokenization (8x8 grayscale, patch_size=4)")
+    """使用 P=4，对一幅 8×8 灰度图进行图块词元化。
+    网格为 2×2，共生成 4 个词元。每个图块展平后包含 4×4=16 个像素。"""
+    print("\n示例图像的图块词元化（8×8 灰度图，patch_size=4）")
     print("-" * 60)
     img = [[(r * 8 + c) % 256 for c in range(8)] for r in range(8)]
-    print("pixel grid (row 0..7):")
+    print("像素网格（第 0..7 行）：")
     for row in img:
         print("  " + " ".join(f"{v:3d}" for v in row))
 
@@ -123,9 +123,9 @@ def patch_toy_image() -> None:
                     patch.append(img[pr + dr][pc + dc])
             patches.append(patch)
 
-    print(f"\npatches ({len(patches)} total, each length {P*P}):")
+    print(f"\n图块（共 {len(patches)} 个，每个长度为 {P*P}）：")
     for i, p in enumerate(patches):
-        print(f"  patch {i}: {p}")
+        print(f"  图块 {i}: {p}")
 
     fake_W = [[((i + j) % 5) - 2 for j in range(P * P)] for i in range(4)]
     embeddings = []
@@ -136,10 +136,10 @@ def patch_toy_image() -> None:
             emb.append(s)
         embeddings.append(emb)
 
-    print("\nlinear projection (P*P=16 -> hidden=4):")
+    print("\n线性投影（P*P=16 -> hidden=4）：")
     for i, emb in enumerate(embeddings):
-        print(f"  token {i}: {emb}")
-    print("→ 4 tokens of dim 4 ready for the transformer.")
+        print(f"  词元 {i}: {emb}")
+    print("→ 得到 4 个维度为 4 的词元，可以输入 Transformer。")
 
 
 def print_config(cfg: ViTConfig) -> None:
@@ -149,22 +149,22 @@ def print_config(cfg: ViTConfig) -> None:
     fl = flops_per_forward(cfg)
     print(f"\n{cfg.name}")
     print("-" * 60)
-    print(f"  image            : {cfg.image_size}x{cfg.image_size}")
-    print(f"  patch size       : {cfg.patch_size}")
-    print(f"  grid             : {gh}x{gw}")
-    print(f"  seq length       : {seq} (incl {'CLS' if cfg.cls_token else 'no CLS'},"
-          f" {cfg.registers} registers)")
-    print(f"  hidden / depth   : {cfg.hidden} / {cfg.depth}")
-    print(f"  patch embed      : {fmt(params['patch_embed'])}")
-    print(f"  position embed   : {fmt(params['position'])}")
-    print(f"  blocks total     : {fmt(params['blocks'])}")
-    print(f"  ** total params **: {fmt(params['total'])}")
-    print(f"  flops / forward  : {fmt(fl)}")
+    print(f"  图像尺寸           : {cfg.image_size}x{cfg.image_size}")
+    print(f"  图块大小           : {cfg.patch_size}")
+    print(f"  网格形状           : {gh}x{gw}")
+    print(f"  序列长度           : {seq}（CLS 标记：{'CLS' if cfg.cls_token else '无 CLS'}，"
+          f" {cfg.registers} 个寄存器词元）")
+    print(f"  隐藏维度 / 深度    : {cfg.hidden} / {cfg.depth}")
+    print(f"  图块嵌入参数量     : {fmt(params['patch_embed'])}")
+    print(f"  位置嵌入参数量     : {fmt(params['position'])}")
+    print(f"  Transformer 块参数总量: {fmt(params['blocks'])}")
+    print(f"  ** 总参数量 **     : {fmt(params['total'])}")
+    print(f"  每次前向传播 FLOPs : {fmt(fl)}")
 
 
 def main() -> None:
     print("=" * 60)
-    print("VIT PATCH-TOKEN GEOMETRY CALCULATOR (Phase 12, Lesson 01)")
+    print("ViT 图块词元几何计算器（阶段 12，第 01 课）")
     print("=" * 60)
 
     patch_toy_image()
@@ -173,14 +173,14 @@ def main() -> None:
         print_config(cfg)
 
     print("\n" + "=" * 60)
-    print("KEY RATIOS")
+    print("关键比例")
     print("-" * 60)
     vit_b = ZOO[0]
     qwen = ZOO[-1]
-    print(f"  ViT-B/16 @ 224    seq length: {seq_length(vit_b)}")
-    print(f"  Qwen2.5-VL @ 896  seq length: {seq_length(qwen)}")
-    print(f"  ratio: {seq_length(qwen) / seq_length(vit_b):.1f}x more tokens")
-    print("  That is why high-resolution VLMs need token-merging or pooling.")
+    print(f"  ViT-B/16 @ 224    序列长度：{seq_length(vit_b)}")
+    print(f"  Qwen2.5-VL @ 896  序列长度：{seq_length(qwen)}")
+    print(f"  词元数量之比：{seq_length(qwen) / seq_length(vit_b):.1f} 倍")
+    print("  这就是高分辨率视觉语言模型（VLM）需要词元合并或池化的原因。")
 
 
 if __name__ == "__main__":

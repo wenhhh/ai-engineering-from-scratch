@@ -1,4 +1,8 @@
-"""Unit tests for the queue-mesh collectives. Run with: python3 -m unittest discover tests"""
+"""队列网格集合通信原语的单元测试。
+
+运行：python3 -m unittest discover tests
+只翻译说明；Gloo 参考、张量、world size、字节公式与断言保持原样。
+"""
 
 from __future__ import annotations
 

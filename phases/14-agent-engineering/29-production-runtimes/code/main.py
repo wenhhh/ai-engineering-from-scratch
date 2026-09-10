@@ -1,6 +1,10 @@
-"""Four production runtime shapes: request-response, streaming, queue, event.
+"""四种生产运行时结构的教学模型：请求—响应、流式输出、任务队列和事件驱动。
 
-Same agent logic, four different outer shells. Stdlib only.
+同一套智能体逻辑，外接四种不同的运行外壳；另以固定时间表说明定时触发。
+仅使用标准库，没有真实服务、队列系统或定时调度器。
+
+译注：retry 表示重试，DLQ 表示死信队列。输入、状态标签、事件名和智能体输出
+保留英文，以维持重试匹配与输出契约。第五部分只打印计划，不会启动定时任务。
 """
 
 from __future__ import annotations
@@ -85,18 +89,18 @@ class EventBus:
 
 def main() -> None:
     print("=" * 70)
-    print("PRODUCTION RUNTIME SHAPES — Phase 14, Lesson 29")
+    print("生产运行时结构——阶段 14，第 29 课")
     print("=" * 70)
 
-    print("\n1. request-response (synchronous)")
+    print("\n1. 请求—响应（同步）")
     out = request_response("list project files")
-    print(f"  result: {out}")
+    print(f"  结果：{out}")
 
-    print("\n2. streaming (generator)")
+    print("\n2. 流式输出（生成器）")
     for step in streaming("review this PR"):
-        print(f"  chunk: {step}")
+        print(f"  输出片段：{step}")
 
-    print("\n3. queue-based (with retry and DLQ)")
+    print("\n3. 任务队列（重试与死信队列）")
     rt = QueueRuntime()
     rt.enqueue("long job A")
     rt.enqueue("long job B")
@@ -108,9 +112,9 @@ def main() -> None:
     results = rt.worker(fail_policy=fail_b)
     for jid, status in results:
         print(f"  {jid}: {status}")
-    print(f"  queue: {len(rt.queue)}   dlq: {len(rt.dlq)}")
+    print(f"  队列长度：{len(rt.queue)}   死信队列长度：{len(rt.dlq)}")
 
-    print("\n4. event-driven (subscriber pattern)")
+    print("\n4. 事件驱动（订阅者模式）")
     bus = EventBus()
 
     def on_pr_opened(payload: str) -> str:
@@ -127,17 +131,17 @@ def main() -> None:
     for evt, res in bus.publish("memory.consolidate", "session_001"):
         print(f"  {evt} -> {res}")
 
-    print("\n5. scheduled (cron stand-in)")
+    print("\n5. 定时触发（仅模拟 cron 时间表）")
     schedule = [
         ("02:00", "memory.consolidate"),
         ("03:00", "eval.nightly"),
     ]
     for when, event in schedule:
-        print(f"  {when}: would fire {event}")
+        print(f"  {when}：计划触发 {event}")
 
     print()
-    print("same agent logic, four outer shells. pick by task shape.")
-    print("observability (Lesson 23/24) is load-bearing at every shape.")
+    print("同一套智能体逻辑，四种运行外壳；按任务特点选择。")
+    print("无论采用哪种结构，都需要第 23、24 课介绍的可观测性能力。")
 
 
 if __name__ == "__main__":

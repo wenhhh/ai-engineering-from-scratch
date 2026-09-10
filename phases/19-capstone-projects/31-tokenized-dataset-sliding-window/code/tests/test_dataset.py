@@ -1,4 +1,7 @@
-"""Tests for SlidingWindowDataset and make_dataloader."""
+"""SlidingWindowDataset 与 make_dataloader 的测试。
+
+窗口边界、种子、数据形状、原始语料与断言保持原样。
+"""
 
 from __future__ import annotations
 

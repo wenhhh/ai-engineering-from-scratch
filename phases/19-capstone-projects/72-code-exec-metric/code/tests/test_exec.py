@@ -1,4 +1,7 @@
-"""Tests for code extraction, sandbox subprocess execution, and pass-at-k."""
+"""代码提取、受限子进程执行及 pass@k 的单元测试。
+
+仅翻译说明；执行夹具、命令、状态、资源限制和断言保持原样。
+"""
 
 from __future__ import annotations
 

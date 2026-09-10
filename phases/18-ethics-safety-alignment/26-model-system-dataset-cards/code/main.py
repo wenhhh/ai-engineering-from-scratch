@@ -1,14 +1,15 @@
-"""Minimal model-card, datasheet, system-card generator — stdlib Python.
+"""最小模型卡、数据说明书与系统卡生成器，仅使用 Python 标准库。
 
-Generates three canonical documents for a toy deployment:
-  - Model Card (Mitchell et al. 2019)
-  - Datasheet (Gebru et al. 2018)
-  - System Card (Sidhpurwala 2024 / "Blueprints of Trust" 2025)
+为虚构部署输出三份 Markdown 文档，分别参考原文所引：
+  模型卡：Mitchell 等（2019）；
+  数据说明书：Gebru 等（2018）；
+  系统卡：Sidhpurwala（2024）及 Blueprints of Trust（2025）。
 
-Each is a Markdown string printed to stdout. Sections follow the canonical
-templates.
+运行方式：python3 code/main.py
 
-Usage: python3 code/main.py
+译注：函数返回的是静态模板字符串，不训练模型、创建数据集、启动服务器或
+执行安全测试。模板中的准确率、公平性指标、限流及合规项都是示例填写值，
+不与第 21 课实测结果自动关联。文字齐全不等于对应机制已经实现或验证。
 """
 
 from __future__ import annotations
@@ -16,117 +17,123 @@ from __future__ import annotations
 
 def model_card() -> str:
     return """
-# Model Card: ToyClassifier-1.0
+# 模型卡：ToyClassifier-1.0
 
-## Model Details
-- Developer: ai-engineering-from-scratch / Phase 18 / Lesson 26
-- Version: 1.0.0
-- Type: binary logistic classifier (toy)
-- License: MIT
-- Contact: phase-18-lesson-26
+## 模型详情
+- 开发者：ai-engineering-from-scratch / 阶段 18 / 第 26 课
+- 版本：1.0.0
+- 类型：二分类逻辑回归模型（玩具示例）
+- 许可证：MIT
+- 联系标识：phase-18-lesson-26
 
-## Intended Use
-- Primary: pedagogical demonstration
-- Out-of-scope: any production decision
+## 预期用途
+- 主要用途：教学演示
+- 范围之外：任何生产决策
 
-## Factors
-- Sensitive attributes: gender (binary in toy), age bucket
-- Environment: controlled synthetic data
+## 影响因素
+- 敏感属性：性别（本例简化为二元）、年龄分组
+- 环境：受控合成数据
 
-## Metrics
-- Accuracy, demographic parity, equalized odds (see Lesson 21)
+## 指标
+- 准确率、人口统计均等、均等化赔率（参见第 21 课）
 
-## Training Data
-- Synthetic dataset; see accompanying Datasheet
+## 训练数据
+- 合成数据集；参见配套数据说明书
 
-## Quantitative Analysis
-- accuracy: 0.97 overall
-- demographic parity gap: +0.03 (group0 vs group1)
-- equalized odds TPR gap: -0.01
+## 定量分析
+- 整体准确率：0.97
+- 人口统计均等差距：+0.03（组 0 与组 1）
+- 均等化赔率的真正例率差距：-0.01
+- 译注：以上均为模板中的占位数字，本生成器未训练模型或计算这些指标。
 
-## Ethical Considerations
-- Toy classifier; not validated for real-world use.
-- Bias metrics are placeholder; ship a full audit before any deployment.
+## 伦理考量
+- 玩具分类器，尚未验证真实场景适用性。
+- 偏差指标为占位值；任何部署前都应完成真实审计。
 
-## Caveats and Recommendations
-- Retrain on deployment-specific data.
-- Apply Lesson 22 (DP) if training data contains PII.
+## 注意事项与建议
+- 根据部署场景的数据重新训练。
+- 若训练数据包含个人身份信息（PII），参考第 22 课的差分隐私思想；
+  该课的玩具会计公式本身不能提供生产隐私保证。
 """
 
 
 def datasheet() -> str:
     return """
-# Datasheet: ToyBinaryClassification-1.0
+# 数据说明书：ToyBinaryClassification-1.0
 
-## Motivation
-- Created for pedagogical demonstration in Phase 18, Lesson 26
-- Funded by no one; not for production use
+## 动机
+- 为阶段 18 第 26 课的教学演示而设计
+- 无资助方，不用于生产
 
-## Composition
-- 1,500 synthetic examples
-- Features: 2-d continuous, 1 binary sensitive attribute
-- Labels: binary, derived from x[0] + x[1] > 0 rule
+## 构成
+- 1,500 个合成样本
+- 特征：二维连续特征及一个二元敏感属性
+- 标签：按 x[0] + x[1] > 0 规则得到二元标签
 
-## Collection Process
-- Synthetically generated via Python random.gauss with fixed seed
-- No human subjects involved
+## 收集过程
+- 模板设定为使用 Python random.gauss 和固定随机种子合成
+- 不涉及真实人类研究对象
 
-## Labeling
-- Labels programmatically derived; no annotation error
+## 标注
+- 由程序规则生成标签，因此没有人工标注步骤；规则本身仍需审查
 
-## Uses
-- Intended: teaching fairness metrics (Lesson 21) and bias probes (Lesson 20)
-- Not to be used: as a proxy for any production-scale dataset
+## 用途
+- 预期用途：讲解公平性指标（第 21 课）与偏差探针（第 20 课）
+- 禁止用途：作为任何生产级数据集的替代证明
 
-## Distribution
-- Included in Phase 18 / Lesson 26 repository
+## 分发
+- 模板归于阶段 18 / 第 26 课的仓库内容
 
-## Maintenance
-- Static; regenerated on every run from fixed seed
+## 维护
+- 原文设定为固定种子、每次运行重新生成
+- 译注：本文件实际只输出这份说明书，不生成或分发上述数据集。
 """
 
 
 def system_card() -> str:
     return """
-# System Card: ToyClassifier Service
+# 系统卡：ToyClassifier 服务
 
-## Deployment
-- Scope: localhost pedagogical service
-- Stack: ToyClassifier-1.0 behind a single-threaded HTTP server
+## 部署
+- 范围：本地主机上的教学服务
+- 技术栈：ToyClassifier-1.0 置于单线程 HTTP 服务器之后
+- 译注：以上为模板设定，本生成器没有启动任何服务。
 
-## Security Capabilities
-- Prompt-injection: N/A (non-generative)
-- Data-exfiltration detection: basic egress rate limit
-- Rate limiting: 100 req/min per client
+## 安全能力
+- 提示词注入：原文标为不适用（非生成式模型）
+- 数据外泄检测：模板列出基本的出站速率限制
+- 限流：每个客户端每分钟 100 次请求
+- 译注：此处没有实现或验证这些机制；限流也不等同于检测数据外泄。
 
-## Alignment
-- Model reflects the synthetic-label rule only
-- No RLHF; no refusal policy
+## 对齐
+- 模型仅反映合成标签规则
+- 没有 RLHF，也没有拒绝策略
 
-## Incident Response
-- No production SLA; escalation goes nowhere
-- Issue tracker: Phase 18 / Lesson 26
+## 事件响应
+- 没有生产服务等级协议（SLA），未配置升级处理渠道
+- 问题跟踪入口：阶段 18 / 第 26 课
 
-## Regulatory Alignment
-- EU AI Act: N/A (toy; no EU deployment)
-- GPAI Code of Practice: N/A (non-GPAI)
-- Transparency Code: N/A (no AI-generated content output)
+## 监管对应关系
+- 欧盟《人工智能法案》：原文标为不适用（玩具示例，未在欧盟部署）
+- GPAI 实践守则：原文标为不适用（非通用人工智能）
+- 透明度守则：原文标为不适用（没有 AI 生成内容输出）
+- 译注：这些是示例填写内容，不是经核验的法律适用结论。
 """
 
 
 def main() -> None:
     print("=" * 74)
-    print("CARDS GENERATOR (Phase 18, Lesson 26)")
+    print("模型卡、数据说明书与系统卡生成器（阶段 18，第 26 课）")
     print("=" * 74)
     print(model_card())
     print(datasheet())
     print(system_card())
     print("=" * 74)
-    print("TAKEAWAY: three canonical cards cover three scopes. model cards")
-    print("document the model; datasheets document the data; system cards")
-    print("document the deployment. in 2026, EU AI Act GPAI Code of Practice")
-    print("requires model cards as compliance artifacts. verifiable")
-    print("attestations (Laminator 2024) are the next phase.")
+    print("要点：三类文档对应不同范围。模型卡描述模型，")
+    print("数据说明书描述数据，系统卡描述部署中的完整系统。")
+    print("原文将这些文档与 2026 年欧盟《人工智能法案》及 GPAI 实践守则联系起来，")
+    print("但不能据此认定上述模板本身就是法定合规材料或已经满足要求。")
+    print("原文还将可验证声明（Laminator，2024）列为进一步方向；本例没有实现。")
     print("=" * 74)
 
 

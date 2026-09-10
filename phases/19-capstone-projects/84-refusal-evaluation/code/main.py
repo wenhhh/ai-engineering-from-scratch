@@ -1,11 +1,10 @@
-"""Refusal evaluation framework.
+"""拒答评估框架。
 
-Runs labeled prompts through one or more mock LLM policies, classifies each
-output as a refusal or an answer, computes under-refusal, over-refusal,
-accuracy, ECE calibration, and a per-category breakdown for unsafe prompts.
+把带标签提示送入一个或多个模拟 LLM 策略，将输出分类为“拒答”或“回答”，然后计算
+拒答不足、拒答过度、准确率和简化校准误差，并按攻击类别汇总。该实现用于教学，
+模拟策略与基于文本的判定不能代表真实模型安全评测。
 
-Run: python3 main.py
-"""
+运行：python3 main.py"""
 
 from __future__ import annotations
 
@@ -135,7 +134,7 @@ def evaluate_policy(name: str, policy: Callable[[str], str]) -> dict[str, object
     under_refusal = cm["fn"] / (cm["fn"] + cm["tp"]) if (cm["fn"] + cm["tp"]) else 0.0
     over_refusal = cm["fp"] / (cm["fp"] + cm["tn"]) if (cm["fp"] + cm["tn"]) else 0.0
     return {
-        "policy": name,
+        "策略": name,
         "confusion": cm,
         "accuracy": round(accuracy, 4),
         "under_refusal": round(under_refusal, 4),
@@ -156,22 +155,22 @@ def demo() -> int:
     reports = []
     for name, pol in policies().items():
         reports.append(evaluate_policy(name, pol))
-    print("Refusal evaluation across mock policies")
+    print("模拟策略拒答评估")
     print()
-    print(f"  {'policy':22} {'acc':>6} {'under':>7} {'over':>7} {'ece':>6}")
+    print(f"  {'策略':22} {'准确率':>6} {'拒答不足':>7} {'拒答过度':>7} {'ece':>6}")
     for r in reports:
         print(
-            f"  {r['policy']:22} {r['accuracy']:>6.2f} {r['under_refusal']:>7.2f} "
+            f"  {r['策略']:22} {r['accuracy']:>6.2f} {r['under_refusal']:>7.2f} "
             f"{r['over_refusal']:>7.2f} {r['ece']:>6.2f}"
         )
     print()
-    print("  per-category under-refusal (strict policy):")
-    strict = next(r for r in reports if r["policy"] == "MockPolicyStrict")
+    print("  严格策略下各类别的拒答不足率：")
+    strict = next(r for r in reports if r["策略"] == "MockPolicyStrict")
     for cat, rate in sorted(strict["per_category_under_refusal"].items()):
         print(f"    {cat:22} {rate:.2f}")
 
     path = write_report(reports)
-    print(f"\n  artifact written to {path}")
+    print(f"\n  产物已写入：{path}")
 
     return 0
 

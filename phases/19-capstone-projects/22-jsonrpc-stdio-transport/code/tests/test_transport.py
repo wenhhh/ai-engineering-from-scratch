@@ -1,4 +1,7 @@
-"""Tests for JSON-RPC 2.0 stdio transport: error codes, notifications, batches."""
+"""JSON-RPC 2.0 标准输入输出传输测试：错误码、通知与批处理。
+
+保留协议载荷、预期消息和断言。
+"""
 
 from __future__ import annotations
 
@@ -25,7 +28,7 @@ from main import (  # noqa: E402
 
 
 def _drive(requests, handler):
-    """Encode requests as newline-delimited JSON and run the server over them."""
+    """将请求编码为按换行分隔的 JSON，再让服务器处理这些内存输入。"""
     stdin = io.BytesIO()
     for r in requests:
         if isinstance(r, (bytes, bytearray)):

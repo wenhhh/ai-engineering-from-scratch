@@ -1,3 +1,8 @@
+/**
+ * 轮次与费用预算：先累计一次模拟费用，再由调用方检查是否耗尽。
+ * 费用来自随机公式，不是 API 实际账单。turns、cost 是机器原因码，保留英文。
+ */
+
 import type { Migration } from "./types.js";
 
 export const MAX_TURNS = 20;

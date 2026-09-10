@@ -1,4 +1,7 @@
-"""Tests for the OTel GenAI span builder and Prometheus exposition."""
+"""OTel GenAI 追踪跨度构造器与 Prometheus 指标文本的测试。
+
+保留属性键、序列化格式、指标断言与测试夹具。
+"""
 
 from __future__ import annotations
 

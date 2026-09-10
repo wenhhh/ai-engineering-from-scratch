@@ -1,4 +1,7 @@
-"""End-to-end tests for the composed agent + harness."""
+"""组合后的智能体与运行框架的端到端测试。
+
+仅翻译说明；源码夹具、失败预期、修复判断、预算与执行断言保持原样。
+"""
 
 from __future__ import annotations
 
@@ -98,8 +101,8 @@ class SandboxTests(unittest.TestCase):
     def test_sandbox_runs_echo_in_repo(self) -> None:
         repo = prepare_scratch_repo()
         sb = Sandbox(project_root=repo)
-        # Smoke-test that we can spawn a process. Use python -m to avoid
-        # invoking the interpreter directly through its own check.
+        # 冒烟测试：确认可以启动子进程。使用 python -m，
+        # 按本例支持的模块入口执行，避免触发其他解释器调用检查。
         result = sb.run([sys.executable, "-V"])
         self.assertEqual(result.exit_code, 0, msg=result.stderr)
 
@@ -117,7 +120,7 @@ class FixtureRepoTests(unittest.TestCase):
         self.assertTrue(os.path.isfile(src))
         with open(src, "r", encoding="utf-8") as fh:
             text = fh.read()
-        # Off-by-one: range(1, n) instead of range(1, n + 1).
+        # 边界差一错误：使用 range(1, n)，而不是 range(1, n + 1)。
         self.assertIn("range(1, n)", text)
         self.assertNotIn("range(1, n + 1)", text)
 

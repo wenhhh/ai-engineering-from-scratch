@@ -1,12 +1,12 @@
-"""Flamingo gated cross-attention + Perceiver resampler toy — stdlib Python.
+"""Flamingo 门控交叉注意力与 Perceiver 重采样器简化示例——仅使用 Python 标准库。
 
-Demonstrates:
-  - Perceiver resampler: variable-length patch tokens -> fixed-length latents
-  - gated cross-attention: tanh(alpha) * cross + x residual
-  - alpha=0 -> visual contribution is exactly zero (frozen LLM preserved)
-  - interleaved-sequence attention mask for (img1, txt1, img2, txt2)
+演示内容：
+  - Perceiver 重采样器：可变长度的图块词元 -> 固定长度的潜在向量
+  - 门控交叉注意力：tanh(alpha) * cross + x 残差连接
+  - alpha=0 -> 视觉分支的贡献严格为零（保持冻结 LLM 的行为）
+  - 用于 (img1, txt1, img2, txt2) 的交错序列注意力掩码
 
-Pure Python. No numpy, no torch.
+纯 Python 实现，不依赖 NumPy 或 PyTorch。
 """
 
 from __future__ import annotations
@@ -67,7 +67,7 @@ def cross_attention(queries: list[list[float]],
 
 def perceiver_resampler(patches: list[list[float]], num_latents: int,
                         num_blocks: int = 2) -> list[list[float]]:
-    """Variable patches -> fixed K latents via cross-attention."""
+    """通过交叉注意力，将可变数量的图块映射为固定的 K 个潜在向量。"""
     dim = len(patches[0])
     latents = [vec(dim) for _ in range(num_latents)]
     for _ in range(num_blocks):
@@ -79,7 +79,7 @@ def perceiver_resampler(patches: list[list[float]], num_latents: int,
 def gated_cross_attention_step(text_hidden: list[list[float]],
                                visual_tokens: list[list[float]],
                                alpha: float) -> list[list[float]]:
-    """y = tanh(alpha) * cross_attn(text, visual) + text_hidden."""
+    """门控更新公式：y = tanh(alpha) * cross_attn(text, visual) + text_hidden。"""
     cross = cross_attention(text_hidden, visual_tokens, visual_tokens)
     gate = math.tanh(alpha)
     out = [add(t, scale(c, gate)) for t, c in zip(text_hidden, cross)]
@@ -87,10 +87,9 @@ def gated_cross_attention_step(text_hidden: list[list[float]],
 
 
 def interleaved_mask(sequence: list[str]) -> list[list[bool]]:
-    """Build a cross-attn mask where each text token attends only to the most
-    recent preceding image.
-    sequence: labels like ['IMG0', 'txt0a', 'txt0b', 'IMG1', 'txt1a', 'txt1b'].
-    returns a mask over (text tokens) x (image tokens) with True = allowed.
+    """构建交叉注意力掩码，让每个文本词元只关注它之前最近的一幅图像。
+    sequence：形如 ['IMG0', 'txt0a', 'txt0b', 'IMG1', 'txt1a', 'txt1b'] 的标签序列。
+    返回形状为（文本词元数）×（图像词元数）的掩码，True 表示允许关注。
     """
     text_positions = [i for i, s in enumerate(sequence) if not s.startswith("IMG")]
     image_positions = [i for i, s in enumerate(sequence) if s.startswith("IMG")]
@@ -107,17 +106,17 @@ def interleaved_mask(sequence: list[str]) -> list[list[bool]]:
 
 
 def demo_resampler() -> None:
-    print("\nDEMO 1: Perceiver resampler")
+    print("\n演示 1：Perceiver 重采样器（resampler）")
     print("-" * 60)
     for num_patches in (36, 196, 900):
         patches = [vec(16) for _ in range(num_patches)]
         latents = perceiver_resampler(patches, num_latents=8, num_blocks=2)
-        print(f"  {num_patches} patches in -> {len(latents)} latents of dim "
-              f"{len(latents[0])} out  (fixed shape regardless of input)")
+        print(f"  {num_patches} 个输入图块 -> 输出 {len(latents)} 个潜在向量，维度为 "
+              f"{len(latents[0])}（不论输入大小如何，输出形状固定）")
 
 
 def demo_gate() -> None:
-    print("\nDEMO 2: gated cross-attention")
+    print("\n演示 2：门控交叉注意力（gated cross-attention）")
     print("-" * 60)
     text_hidden = [vec(16) for _ in range(5)]
     visual = [vec(16) for _ in range(8)]
@@ -125,14 +124,14 @@ def demo_gate() -> None:
     out_closed = gated_cross_attention_step(text_hidden, visual, alpha=0.0)
     deltas = [max(abs(a - b) for a, b in zip(o, t))
               for o, t in zip(out_closed, text_hidden)]
-    print(f"  alpha=0.0 (tanh=0.0): max delta vs input = {max(deltas):.6f}")
-    print("  -> frozen LLM preserved exactly at init")
+    print(f"  alpha=0.0（tanh=0.0）：相对输入的最大差值 = {max(deltas):.6f}")
+    print("  -> 初始化时，冻结 LLM 的行为保持完全不变")
 
     out_open = gated_cross_attention_step(text_hidden, visual, alpha=2.0)
     deltas = [sum(abs(a - b) for a, b in zip(o, t)) / len(o)
               for o, t in zip(out_open, text_hidden)]
-    print(f"  alpha=2.0 (tanh=0.96): avg delta vs input = {sum(deltas)/len(deltas):.4f}")
-    print("  -> visual contribution mixed in")
+    print(f"  alpha=2.0（tanh=0.96）：相对输入的平均差值 = {sum(deltas)/len(deltas):.4f}")
+    print("  -> 已混入视觉分支的贡献")
 
     for a in (0.0, 0.5, 1.0, 2.0, 5.0):
         g = math.tanh(a)
@@ -140,7 +139,7 @@ def demo_gate() -> None:
 
 
 def demo_interleaved_mask() -> None:
-    print("\nDEMO 3: interleaved attention mask")
+    print("\n演示 3：交错序列注意力掩码")
     print("-" * 60)
     seq = ["IMG0", "t0a", "t0b", "IMG1", "t1a", "t1b", "t1c", "IMG2", "t2a"]
     mask = interleaved_mask(seq)
@@ -150,25 +149,25 @@ def demo_interleaved_mask() -> None:
     header = "         " + "  ".join(f"{x:4s}" for x in image_labels)
     print(header)
     for i, tk in enumerate(text_labels):
-        row = "  ".join(" ok " if mask[i][j] else "  . " for j in range(len(image_labels)))
+        row = "  ".join("允许" if mask[i][j] else "  . " for j in range(len(image_labels)))
         print(f"  {tk:5s}: {row}")
-    print("  each text token only sees the most recent preceding image")
+    print("  每个文本词元只能看到它之前最近的一幅图像")
 
 
 def main() -> None:
     print("=" * 60)
-    print("FLAMINGO GATED CROSS-ATTENTION TOY (Phase 12, Lesson 04)")
+    print("Flamingo 门控交叉注意力简化示例（阶段 12，第 04 课）")
     print("=" * 60)
     demo_resampler()
     demo_gate()
     demo_interleaved_mask()
     print("\n" + "=" * 60)
-    print("TAKEAWAYS")
+    print("要点")
     print("-" * 60)
-    print("  · Perceiver resampler: fixed K latents regardless of input size")
-    print("  · tanh(alpha) gate with alpha=0 -> no-op; LLM preserved at init")
-    print("  · interleaved mask lets text tokens attend to preceding image")
-    print("  · Flamingo inserts gated cross-attn every 4 LLM layers")
+    print("  · Perceiver 重采样器：不论输入大小如何，始终输出 K 个潜在向量")
+    print("  · alpha=0 时，tanh(alpha) 门控不产生额外作用；初始化时保持 LLM 的行为")
+    print("  · 交错序列掩码让文本词元关注此前的图像")
+    print("  · Flamingo 每隔 4 个 LLM 层插入一次门控交叉注意力")
 
 
 if __name__ == "__main__":

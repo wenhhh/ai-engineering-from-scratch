@@ -1,17 +1,21 @@
-"""Streaming tokenization into resizable, sharded HDF5 datasets with mmap reads.
+"""将流式分词结果写入可扩展、按分片存储的 HDF5 数据集。
 
-Implements:
-- A byte-level deterministic Tokenizer.
-- An HDF5ShardWriter that buffers tokens to chunk size and resizes the dataset
-  in fixed-size strides, recording token_count and sha256 as dataset attributes.
-- A ShardedTokenizationPipeline that emits one HDF5 per source shard and writes
-  a shards.json index.
-- An MmapTokenStore that opens shard files in swmr mode for read access.
-- A SlidingWindowDataloader that yields fixed-length (input, target) pairs.
+实现内容：
+- 确定性的字节级 Tokenizer。
+- HDF5ShardWriter：以块为单位缓冲词元，分块扩展数据集，并记录
+  token_count 和 sha256 属性；最后一块可以不足标准块大小。
+- ShardedTokenizationPipeline：每个源分片对应一个 HDF5 文件，
+  并写出 shards.json 索引。
+- MmapTokenStore：以 SWMR 模式打开分片，提供读取接口。
+- SlidingWindowDataloader：生成固定长度的 (input, target) 对。
 
-The demo at the bottom builds an in-memory corpus, tokenizes into shards, opens
-them via memory map, runs the dataloader for a few batches, and prints the
-per-batch shape and a checksum. Run: python3 code/main.py
+末尾演示构造内存语料、分词写出分片，再读取若干批次，打印每批形状
+和校验值。运行：python3 code/main.py
+
+译注：原文将读取称为 mmap，但这里实际使用 h5py 数据集切片，再复制到
+NumPy 数组，并未调用 mmap 或 numpy.memmap；不能据此声称零拷贝或
+只有一次复制。英文语料影响字节词元、数量和哈希，因此保持原值。
+错误、数据集名称、字段及文件路径也保留原机器契约。
 """
 
 from __future__ import annotations
@@ -32,6 +36,7 @@ try:
     import h5py
 except ImportError as exc:
     raise SystemExit(
+        # 本课需要 h5py；安装命令：pip install h5py。
         "h5py is required for this lesson. Install with: pip install h5py"
     ) from exc
 
@@ -44,7 +49,7 @@ TOKEN_DTYPE = np.uint16
 
 @dataclass
 class ShardWriteResult:
-    """Per-shard write outcome."""
+    """单个分片的写入结果。"""
 
     shard_id: str
     path: str
@@ -59,7 +64,7 @@ class ShardWriteResult:
 
 @dataclass
 class ShardIndexEntry:
-    """Index row used by readers to locate a shard."""
+    """供读取器定位分片的索引行。"""
 
     shard_id: str
     path: str
@@ -73,14 +78,15 @@ class ShardIndexEntry:
 
 
 class Tokenizer:
-    """Byte-level deterministic tokenizer.
+    """确定性的字节级分词器。
 
-    Vocabulary:
-        0      boundary token (separator injected by the dataloader)
-        1..256 raw byte tokens (offset by one so 0 is reserved)
+    词表：
+        0      边界词元（分隔符）
+        1..256 原始字节词元（整体加一，将 0 留作保留值）
 
-    Real tokenizers use BPE or SentencePiece; this implementation is enough to
-    drive the streaming-write story without pulling a third-party tokenizer.
+    实际项目常用 BPE 或 SentencePiece；本实现不引入第三方分词器，
+    足以演示流式写入。原文称分隔符由 dataloader 注入，实际是在写入
+    流水线中调用 add_boundary；采样器只读取已存储的词元。
     """
 
     BOUNDARY_TOKEN = BOUNDARY_TOKEN_ID
@@ -101,10 +107,10 @@ class Tokenizer:
 
 
 class HDF5ShardWriter:
-    """Stream tokens into a resizable HDF5 dataset with chunk-sized buffering.
+    """以块大小缓冲词元，将它们流式写入可扩展的 HDF5 数据集。
 
-    Open in a `with` block to guarantee the residual buffer is flushed and the
-    closing attributes (token_count, sha256) are written.
+    在 with 块中使用，退出时会尝试刷新剩余缓冲并写入 token_count、
+    sha256 等属性。异常退出也会执行这一清理流程，并非事务提交标记。
     """
 
     def __init__(
@@ -114,6 +120,7 @@ class HDF5ShardWriter:
         dataset_name: str = "tokens",
     ) -> None:
         if chunk_size <= 0:
+            # 块大小必须为正数。
             raise ValueError("chunk_size must be positive")
         self.path = Path(path)
         self.chunk_size = chunk_size
@@ -159,7 +166,7 @@ class HDF5ShardWriter:
                 self._flush_buffer(final=False)
 
     def add_boundary(self) -> None:
-        """Inject the separator token between documents."""
+        """在文档之间插入分隔词元。"""
 
         self._buffer.append(BOUNDARY_TOKEN_ID)
         if len(self._buffer) >= self.chunk_size:
@@ -167,6 +174,7 @@ class HDF5ShardWriter:
 
     def _flush_buffer(self, final: bool) -> None:
         if self._dataset is None:
+            # 写入器尚未打开。
             raise RuntimeError("writer is not open")
         if not self._buffer:
             return
@@ -202,7 +210,7 @@ class HDF5ShardWriter:
 
 
 class ShardedTokenizationPipeline:
-    """Tokenize iterable shard inputs into HDF5 files and write a shards.json."""
+    """将可迭代的分片输入分词写入 HDF5 文件，并生成 shards.json。"""
 
     def __init__(
         self,
@@ -252,16 +260,18 @@ class ShardedTokenizationPipeline:
 
 
 class MmapTokenStore:
-    """Memory-mapped read access to a sharded HDF5 token corpus.
+    """读取分片式 HDF5 词元语料（保留原类名 MmapTokenStore）。
 
-    The store opens each shard file once in SWMR mode. A request for
-    `get_slice(start, stop)` is routed across shards and the result is returned
-    as a flat NumPy uint16 array. Reads land in the page cache; the dataloader
-    pays one copy when it crosses into a training tensor.
+    每个分片以 SWMR 模式打开一次。get_slice(start, stop) 将读取范围
+    分配到各分片，并返回扁平的 NumPy uint16 数组。
+
+    译注：实现是 h5py 切片读取与数组复制，而不是真正的内存映射。
+    操作系统缓存不等于应用层 mmap，也不保证原文所说的单次复制开销。
     """
 
     def __init__(self, shard_entries: list[ShardIndexEntry]) -> None:
         if not shard_entries:
+            # 至少需要一个分片索引条目。
             raise ValueError("at least one shard entry is required")
         self._entries = shard_entries
         self._files: list[h5py.File] = []
@@ -302,8 +312,10 @@ class MmapTokenStore:
 
     def get_slice(self, start: int, stop: int) -> np.ndarray:
         if start < 0 or stop < 0 or stop < start:
+            # 切片范围必须非负，且 stop 不能小于 start。
             raise ValueError(f"bad slice: start={start} stop={stop}")
         if stop > self._total_tokens:
+            # 切片终点不能超过词元总数。
             raise ValueError(f"stop ({stop}) exceeds total tokens ({self._total_tokens})")
         if stop == start:
             return np.empty((0,), dtype=TOKEN_DTYPE)
@@ -325,13 +337,14 @@ class MmapTokenStore:
             cursor += length
         if cursor != stop - start:
             raise RuntimeError(
+                # 实际读取的词元数必须与请求长度一致。
                 f"slice read produced {cursor} tokens, expected {stop - start}"
             )
         return out
 
 
 class SlidingWindowDataloader:
-    """Random sliding-window sampler over a flat token stream."""
+    """在扁平词元流上进行随机滑动窗口采样。"""
 
     def __init__(
         self,
@@ -341,11 +354,14 @@ class SlidingWindowDataloader:
         seed: int = 0,
     ) -> None:
         if window_size <= 1:
+            # 窗口大小必须大于 1。
             raise ValueError("window_size must be greater than 1")
         if batch_size <= 0:
+            # 批大小必须为正数。
             raise ValueError("batch_size must be positive")
         if store.total_tokens <= window_size:
             raise ValueError(
+                # 存储的词元数必须严格大于窗口长度。
                 f"store has only {store.total_tokens} tokens; need more than {window_size}"
             )
         self.store = store
@@ -373,12 +389,15 @@ class SlidingWindowDataloader:
 
 
 class JSONLSource:
-    """Adapter that yields documents from a JSONL file with a configurable key.
+    """从 JSONL 文件指定字段中逐个提取文档的适配器。
 
-    The downloader (Phase 19 · 42) emits JSONL where each line is a JSON object
-    with a `text` field. This adapter pulls the text out and skips lines that
-    are malformed or missing the field. Real pipelines log the dropped lines;
-    this adapter counts them so callers can audit dropout rate.
+    每行应为含有 text 字段（或配置字段）的 JSON 对象。格式错误、
+    缺少字段或字段不是非空字符串的行会被跳过，并计入 dropped_lines，
+    供调用方审计丢弃情况；空行直接跳过，不计入该计数。
+
+    译注：原文声称第 42 课下载器输出这种 JSONL，但其演示实际只生成
+    普通文本行。两课示例不能未经数据格式转换就直接衔接；真实流水线
+    通常还应记录被丢弃的行，而不仅是总数。
     """
 
     def __init__(self, path: Path, text_field: str = "text") -> None:
@@ -412,14 +431,18 @@ def pack_documents(
     documents: Iterable[str],
     max_tokens: int,
 ) -> Iterator[list[int]]:
-    """Pack tokenized documents into fixed-length groups with boundary tokens.
+    """将已分词的文档打包为含边界词元的定长组。
 
-    Yields lists of exactly max_tokens token ids. Long documents are split
-    across groups; short documents share a group separated by BOUNDARY_TOKEN_ID.
-    The final group may be shorter than max_tokens and is yielded as-is.
+    通常每组恰好含 max_tokens 个词元 ID。长文档跨组切分；短文档可
+    共用一组，之间以 BOUNDARY_TOKEN_ID 分隔。最后一组可能不足长度，
+    会原样返回。
+
+    译注：只有当前缓冲非空才插入分隔符，恰好填满一组的文档与下一
+    文档之间不会额外加入边界；本函数也没有被上面的分片流水线调用。
     """
 
     if max_tokens <= 1:
+        # 每组词元数上限必须大于 1。
         raise ValueError("max_tokens must be greater than 1")
     buffer: list[int] = []
     for text in documents:
@@ -441,7 +464,7 @@ def tokenize_jsonl_path(
     chunk_size: int = DEFAULT_CHUNK_SIZE,
     text_field: str = "text",
 ) -> ShardWriteResult:
-    """Convenience wrapper: tokenize one JSONL file into one HDF5 shard."""
+    """便捷封装：将一个 JSONL 文件分词写入一个 HDF5 分片。"""
 
     tokenizer = Tokenizer()
     pipeline = ShardedTokenizationPipeline(tokenizer, output_dir=output_dir, chunk_size=chunk_size)
@@ -450,7 +473,7 @@ def tokenize_jsonl_path(
 
 
 def load_index(index_path: Path) -> list[ShardIndexEntry]:
-    """Read shards.json and return ShardIndexEntry rows."""
+    """读取 shards.json，返回 ShardIndexEntry 列表。"""
 
     data = json.loads(Path(index_path).read_text("utf-8"))
     entries: list[ShardIndexEntry] = []
@@ -469,7 +492,11 @@ def load_index(index_path: Path) -> list[ShardIndexEntry]:
 
 
 def validate_corpus(index_entries: list[ShardIndexEntry]) -> list[str]:
-    """Recompute each shard's sha256 over its on-disk tokens and report mismatches."""
+    """根据磁盘词元重新计算各分片的 SHA-256，报告摘要不匹配项。
+
+    此处一次读取每个分片记录范围内的全部词元，并非流式校验；
+    也未独立核验索引偏移、完整数据集长度等结构条件。
+    """
 
     failures: list[str] = []
     for entry in index_entries:
@@ -484,7 +511,7 @@ def validate_corpus(index_entries: list[ShardIndexEntry]) -> list[str]:
 
 
 def build_demo_corpus() -> dict[str, list[str]]:
-    """Two shards of synthetic documents long enough to exercise mmap reads."""
+    """构造两个足够长的合成文档分片，用于演示跨分片读取。"""
 
     base = [
         "the alignment problem is a story about reward functions and the things they fail to write down",
@@ -502,11 +529,10 @@ def build_demo_corpus() -> dict[str, list[str]]:
 
 
 def run_demo() -> int:
-    """Build a demo corpus, tokenize it, validate it, and run the dataloader.
+    """构建演示语料，分词、校验，然后运行数据加载器。
 
-    Designed to be self-terminating: the pipeline writes into a temporary
-    directory and the dataloader takes a small fixed number of batches so the
-    script exits without external input.
+    流水线写入临时目录，数据加载器只取固定的少量批次，
+    无须外部输入即可自行结束。
     """
 
     with tempfile.TemporaryDirectory() as tmp:
@@ -517,21 +543,21 @@ def run_demo() -> int:
         entries = pipeline.write_corpus(shards)
         for entry in entries:
             print(
-                f"[shard] {entry.shard_id} tokens={entry.token_count} "
-                f"sha256={entry.sha256[:12]} global_start={entry.global_start}"
+                f"[分片] {entry.shard_id} 词元数={entry.token_count} "
+                f"sha256={entry.sha256[:12]} 全局起点={entry.global_start}"
             )
         validation_failures = validate_corpus(entries)
         if validation_failures:
-            print(f"[validate] failed: {validation_failures}")
+            print(f"[校验] 失败：{validation_failures}")
             return 1
-        print(f"[validate] all {len(entries)} shards match recorded sha256")
+        print(f"[校验] 全部 {len(entries)} 个分片与记录的 SHA-256 一致")
         with MmapTokenStore(entries) as store:
             loader = SlidingWindowDataloader(store, window_size=64, batch_size=4, seed=7)
             for batch_index, (inputs, targets) in enumerate(loader.take(10)):
                 checksum = int(hashlib.blake2b(inputs.tobytes(), digest_size=4).hexdigest(), 16)
                 print(
-                    f"[batch] step={batch_index} shape={tuple(inputs.shape)} "
-                    f"checksum={checksum:08x}"
+                    f"[批次] 步数={batch_index} 形状={tuple(inputs.shape)} "
+                    f"校验值={checksum:08x}"
                 )
     return 0
 

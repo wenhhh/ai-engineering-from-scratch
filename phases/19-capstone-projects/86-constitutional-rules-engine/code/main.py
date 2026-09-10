@@ -1,12 +1,10 @@
-"""Constitutional rules engine.
+"""宪法式规则引擎。
 
-Loads a YAML constitution, evaluates rules against a candidate text, and
-produces structured violations with rule name, severity, explanation, and
-matched span. The Fixer applies declarative repairs per rule; diff produces
-a structured change list between draft and revised.
+加载 YAML constitution，对候选文本逐条评估规则，并生成包含规则名、严重度、说明和
+匹配片段的结构化违规结果。Fixer 按规则执行声明式修复，diff 则生成草稿与修订稿之间的
+结构化变化列表。这里是教学规则引擎，不等同于模型级宪法式训练或生产策略执行器。
 
-Run: python3 main.py
-"""
+运行：python3 main.py"""
 
 from __future__ import annotations
 
@@ -254,9 +252,9 @@ def write_report(payload: dict[str, object]) -> Path:
 def demo() -> int:
     engine = Engine()
     fixer = Fixer(engine.rules())
-    print("Constitutional rules engine demo")
+    print("宪法式规则引擎演示")
     print()
-    print(f"  rules loaded: {len(engine.rules())}")
+    print(f"  已加载规则：{len(engine.rules())}")
     print()
     payload: dict[str, object] = {"cases": []}
     for fixture in _DEMO_DRAFTS:
@@ -268,17 +266,17 @@ def demo() -> int:
         post_violations = report2.violations()
         change_list = diff(draft, revised)
         case_name = fixture["case"]
-        print(f"  case: {case_name}")
+        print(f"  案例：{case_name}")
         if violations:
-            print(f"    violations on draft: {len(violations)}  max severity: {report.max_severity()}")
+            print(f"    草稿违规数：{len(violations)}  最高严重度：{report.max_severity()}")
             for v in violations:
                 print(f"      [{v.severity:6}] {v.rule_name}: {v.explanation}")
         else:
-            print("    draft passes all applicable rules")
+            print("    草稿通过所有适用规则")
         if change_list:
-            print(f"    fixer applied {len(change_list)} change(s)")
+            print(f"    修复器应用了 {len(change_list)} 项变更")
         if post_violations:
-            print(f"    revised still has {len(post_violations)} violation(s)")
+            print(f"    修订后仍有 {len(post_violations)} 项违规")
         print()
         payload["cases"].append(
             {
@@ -291,7 +289,7 @@ def demo() -> int:
             }
         )
     path = write_report(payload)
-    print(f"  artifact written to {path}")
+    print(f"  产物已写入：{path}")
     return 0
 
 

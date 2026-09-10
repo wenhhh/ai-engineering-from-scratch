@@ -1,4 +1,4 @@
-"""Tests for the critic loop: monotone improvement, target/plateau/budget verdicts, trace shape."""
+"""审稿循环测试：特定夹具下的分数改善、目标/停滞/预算判定与轨迹结构。"""
 
 from __future__ import annotations
 

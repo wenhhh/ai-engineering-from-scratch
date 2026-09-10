@@ -1,4 +1,4 @@
-"""Companion validator for this lesson's docs/en.md reliability packet."""
+"""本课 docs/en.md 可靠性资料包的配套验证器。检查长上下文、来源追溯与升级条件；不证明真实模型在任意长上下文中的可靠性。"""
 
 from __future__ import annotations
 

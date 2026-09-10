@@ -1,4 +1,4 @@
-"""Failure-first tests for the Architect Foundations scenario validator."""
+"""Architect Foundations 场景验证器的 failure-first 测试。"""
 
 from __future__ import annotations
 

@@ -1,10 +1,13 @@
-"""Compare a prompt-only run against a workbench-guided run on a tiny repo task.
+"""在一个微型仓库任务上，对比“只给提示词”和“由工作台引导”的两次运行。
 
-The agent is a rule-based stub; the point is the surrounding surfaces. Each
-surface is wired in for the second run and we count which surfaces would have
-caught each failure on the first run.
+智能体是基于规则的桩实现，重点在于它周围的约束与反馈机制。
+第二次运行接入这些机制，再检查第一次运行的哪些失败本可被它们发现。
 
-Run: python3 code/main.py
+译注：这里通过布尔值直接模拟“测试已运行”和“验收已通过”，并未真的执行测试，
+所以输出是机制对比示意，不是验证证据。instructions/state/scope/feedback/verification/
+review/handoff 依次表示指令、状态、范围、反馈、验证、审查、交接；机器字段保留英文。
+
+运行：python3 code/main.py
 """
 
 from __future__ import annotations
@@ -48,7 +51,7 @@ class RunResult:
 
 
 def stub_agent(task: RepoTask, surfaces: list[str]) -> RunResult:
-    """Tiny deterministic stand-in for an LLM-backed coding agent."""
+    """用确定性的小型桩实现代替由 LLM 驱动的编码智能体。"""
     result = RunResult(label="prompt-only" if not surfaces else "workbench")
     result.surfaces_present = list(surfaces)
 
@@ -61,25 +64,25 @@ def stub_agent(task: RepoTask, surfaces: list[str]) -> RunResult:
         result.files_touched = [f for f in task.allowed_files]
     else:
         result.files_touched = [*task.allowed_files, "README.md", "scripts/release.sh"]
-        result.notes.append("touched unrelated files because scope was missing")
+        result.notes.append("缺少范围约束，因此修改了无关文件")
 
     if has_feedback:
         result.tests_run = True
-        result.notes.append("captured stdout/stderr/exit code from the test run")
+        result.notes.append("模拟记录测试运行的标准输出、标准错误和退出码")
     else:
-        result.notes.append("never ran the test command, guessed at output")
+        result.notes.append("未运行测试命令，而是猜测输出")
 
     if has_verification:
         result.actually_passing = True
         result.declared_success = True
-        result.notes.append("verification gate proved acceptance criteria met")
+        result.notes.append("模拟验证门禁确认验收条件已满足（本例仅设置布尔值）")
     else:
         result.declared_success = True
         result.actually_passing = False
-        result.notes.append("declared success without running acceptance checks")
+        result.notes.append("未执行验收检查就宣称成功")
 
     if not has_state:
-        result.notes.append("no state file written, next session restarts from zero")
+        result.notes.append("未写入状态文件，下一会话只能从头开始")
 
     return result
 
@@ -100,7 +103,7 @@ def failure_report(result: RunResult) -> dict[str, object]:
 
 def main() -> None:
     task = RepoTask(
-        description="add input validation to /signup and a passing test",
+        description="为 /signup 添加输入校验及可通过的测试",
         allowed_files=["app.py", "test_app.py"],
         forbidden_files=["README.md", "scripts/release.sh"],
         acceptance=["test_app.py::test_signup_rejects_short_password passes"],
@@ -109,17 +112,17 @@ def main() -> None:
     prompt_only = stub_agent(task, surfaces=[])
     workbench = stub_agent(task, surfaces=WORKBENCH_SURFACES)
 
-    print("=== prompt only ===")
+    print("=== 仅使用提示词 ===")
     for k, v in failure_report(prompt_only).items():
         print(f"  {k}: {v}")
     print()
-    print("=== workbench ===")
+    print("=== 使用工作台 ===")
     for k, v in failure_report(workbench).items():
         print(f"  {k}: {v}")
 
     out = Path(__file__).parent.parent / "outputs" / "failure_modes.json"
-    out.write_text(json.dumps(failure_report(prompt_only), indent=2) + "\n")
-    print(f"\nwrote {out.relative_to(out.parent.parent.parent.parent.parent)}")
+    out.write_text(json.dumps(failure_report(prompt_only), indent=2, ensure_ascii=False) + "\n")
+    print(f"\n已写入 {out.relative_to(out.parent.parent.parent.parent.parent)}")
 
 
 if __name__ == "__main__":

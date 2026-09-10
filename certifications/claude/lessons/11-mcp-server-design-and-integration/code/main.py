@@ -68,7 +68,7 @@ class Capability:
 
 
 class RequestStateSigner:
-    """Produces an opaque, integrity-protected MRTR requestState value."""
+    """生成不透明且带完整性保护的 MRTR requestState 值。"""
 
     def __init__(self, secret: bytes) -> None:
         if not secret:

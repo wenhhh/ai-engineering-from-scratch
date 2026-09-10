@@ -1,4 +1,7 @@
-"""Unit tests for the end-to-end distributed training composition."""
+"""端到端分布式训练组合的单元测试。
+
+只翻译说明；模型、rank、通信、损失、检查点和断言保持原样。
+"""
 
 from __future__ import annotations
 

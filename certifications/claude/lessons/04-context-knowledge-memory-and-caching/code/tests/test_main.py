@@ -1,4 +1,4 @@
-"""Tests for lesson 04 context lifecycle and caching."""
+"""第 04 课上下文生命周期与缓存测试。"""
 
 import copy
 import pathlib

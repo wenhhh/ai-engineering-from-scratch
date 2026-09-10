@@ -1,8 +1,7 @@
-"""Companion code for:
-certifications/claude/lessons/14-evals-testing-debugging-and-observability/docs/en.md
-It scores output, tool trajectory, final state, latency, and failures.
-The design follows official Anthropic evaluation guidance.
-"""
+"""第 14 课评测、测试、调试与可观测性配套代码。
+
+对应 docs/en.md：对输出、工具轨迹、严重失败、回归、trace 与失败类型覆盖进行评分，并给出发布门禁结果。
+它是固定夹具的本地评测 harness，不代表线上可观测平台或独立质量认证。"""
 
 from __future__ import annotations
 
@@ -99,7 +98,7 @@ def percentile(values: list[float], quantile: float) -> float:
 
 
 def validate_release_gate(gate: dict[str, Any]) -> list[str]:
-    """Validate severe-case, regression, trace, and failure-class coverage."""
+    """校验严重用例、回归、trace 和失败类型覆盖。"""
     errors: list[str] = []
     thresholds = gate.get("thresholds")
     required_thresholds = {

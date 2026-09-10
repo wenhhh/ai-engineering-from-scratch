@@ -3,7 +3,7 @@
 # Guide URL: https://everpath-course-content.s3-accelerate.amazonaws.com/instructor%2F6nizmqk8tpzpfjvt6qmmav7rh%2Fpublic%2F1783542847%2FClaude+Certified+Associate+%E2%80%93+Foundations+Exam+Guide.pdf
 # This standard-library exercise validates workflow evidence. It does not call Claude.
 
-"""Deterministic validator for the Associate workflow capstone."""
+"""Associate 工作流综合项目的确定性验证器。对来源、claim、治理和交接资料包进行离线校验，并给出发布建议；通过只表示满足本课规则，不等于真实业务结果已验收。"""
 
 from __future__ import annotations
 
@@ -40,7 +40,7 @@ BLOCKING_CODES = {
 
 
 def finding(code: str, message: str, location: str, severity: str = "error") -> dict[str, str]:
-    """Create one stable validation finding."""
+    """创建一条稳定的验证 finding。"""
     return {
         "code": code,
         "severity": severity,
@@ -50,7 +50,7 @@ def finding(code: str, message: str, location: str, severity: str = "error") -> 
 
 
 def parse_iso_date(value: Any) -> date | None:
-    """Parse YYYY-MM-DD values without guessing other formats."""
+    """只解析 YYYY-MM-DD 日期，不猜测其他格式。"""
     if not isinstance(value, str):
         return None
     try:
@@ -60,7 +60,7 @@ def parse_iso_date(value: Any) -> date | None:
 
 
 def validate_sources(sources: Any, as_of: date) -> tuple[list[dict[str, str]], dict[str, dict[str, Any]]]:
-    """Validate the source registry and return a source lookup."""
+    """校验来源注册表并返回来源查找表。"""
     findings: list[dict[str, str]] = []
     lookup: dict[str, dict[str, Any]] = {}
     if not isinstance(sources, list) or not sources:
@@ -131,7 +131,7 @@ def validate_sources(sources: Any, as_of: date) -> tuple[list[dict[str, str]], d
 
 
 def validate_claims(claims: Any, source_lookup: dict[str, dict[str, Any]]) -> list[dict[str, str]]:
-    """Check claim-source integrity and support strength."""
+    """检查 claim 与来源的完整性及支持强度。"""
     findings: list[dict[str, str]] = []
     if not isinstance(claims, list):
         return [finding("invalid_claims", "Claims must be a list.", "claims")]
@@ -171,7 +171,7 @@ def validate_claims(claims: Any, source_lookup: dict[str, dict[str, Any]]) -> li
 
 
 def validate_governance(governance: Any) -> list[dict[str, str]]:
-    """Check approval, data-class, and human-authority boundaries."""
+    """检查审批、数据类别和人类权限边界。"""
     if not isinstance(governance, dict):
         return [finding("invalid_governance", "Governance must be an object.", "governance")]
 
@@ -209,7 +209,7 @@ def validate_governance(governance: Any) -> list[dict[str, str]]:
 
 
 def validate_handoff(handoff: Any) -> list[dict[str, str]]:
-    """Ensure a reviewer can decide and recover without rediscovery."""
+    """确保 reviewer 无需重新发现上下文即可决策并恢复工作。"""
     required = ("decision", "deadline", "next_owner", "fallback", "source_snapshot")
     if not isinstance(handoff, dict):
         return [finding("missing_handoff_field", "Handoff must be an object.", "handoff")]
@@ -226,7 +226,7 @@ def validate_handoff(handoff: Any) -> list[dict[str, str]]:
 
 
 def evaluate_packet(packet: Any, as_of: date | None = None) -> dict[str, Any]:
-    """Evaluate a complete packet and return a release recommendation."""
+    """评估完整资料包并返回发布建议。"""
     check_date = as_of or date.today()
     if not isinstance(packet, dict):
         return {
@@ -266,7 +266,7 @@ def evaluate_packet(packet: Any, as_of: date | None = None) -> dict[str, Any]:
 
 
 def build_demo_packet() -> dict[str, Any]:
-    """Return a small passing packet for learning and local verification."""
+    """返回用于学习和本地验证的小型通过夹具。"""
     return {
         "workflow": {
             "id": "northstar-weekly-brief",
@@ -325,7 +325,7 @@ def build_demo_packet() -> dict[str, Any]:
 
 
 def load_packet(path: Path | None) -> dict[str, Any]:
-    """Load a user packet or return an isolated copy of the demo."""
+    """加载用户资料包，或返回隔离复制的演示夹具。"""
     if path is None:
         return copy.deepcopy(build_demo_packet())
     with path.open("r", encoding="utf-8") as handle:

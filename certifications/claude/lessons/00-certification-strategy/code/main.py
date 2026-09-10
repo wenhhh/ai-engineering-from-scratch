@@ -1,8 +1,7 @@
-"""Companion code for:
-certifications/claude/lessons/00-certification-strategy/docs/en.md
-It validates a readiness packet and ranks domains by weighted weakness.
-It uses only local JSON and never reconstructs confidential exam content.
-"""
+"""第 00 课认证策略配套代码。
+
+对应 docs/en.md：校验学习准备度资料包，并按证据缺口与优先级对学习领域进行排序。
+这是确定性的本地教学验证器，不代表官方认证评分。"""
 
 from __future__ import annotations
 

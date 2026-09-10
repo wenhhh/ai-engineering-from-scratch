@@ -1,11 +1,10 @@
-"""End-to-end safety gate demo over the lesson 82 taxonomy.
+"""基于第 82 课分类体系的端到端 SafetyGate 演示。
 
-Loads the taxonomy artifact, runs all 50 fixtures plus a small benign list
-through the SafetyGate, prints a per-action / per-category summary, and
-writes outputs/gate_trace.json.
+加载 taxonomy 产物，把全部 50 条攻击夹具和一小组正常提示交给 SafetyGate，随后打印
+动作、类别和生成中止统计并写出 trace。这里的“端到端”指本地教学组件贯通，不代表
+生产模型、真实网关或外部安全服务已经得到验证。
 
-Run: python3 main.py
-"""
+运行：python3 main.py"""
 
 from __future__ import annotations
 
@@ -58,8 +57,8 @@ def demo() -> int:
     terminations = 0
     total_latency = 0.0
 
-    print("End-to-end safety gate demo")
-    print(f"  loaded {len(fixtures)} attack fixtures + {len(BENIGN_PROMPTS)} benign prompts")
+    print("端到端 SafetyGate 演示")
+    print(f"  已加载 {len(fixtures)} 条攻击夹具 + {len(BENIGN_PROMPTS)} 条正常提示")
     print()
 
     for fix in fixtures:
@@ -86,15 +85,15 @@ def demo() -> int:
         traces.append({"corpus": "benign", "fixture_id": None, "category": "benign", **trace_to_dict(trace)})
 
     total_requests = len(fixtures) + len(BENIGN_PROMPTS)
-    print("  final action counts:")
+    print("  最终动作计数：")
     for action in ("block", "redact", "warn", "allow"):
         print(f"    {action:6} {action_counts.get(action, 0)}")
     print()
-    print(f"  during-gen terminations: {terminations}")
-    print(f"  benign blocks: {benign_block_count} / {len(BENIGN_PROMPTS)}")
-    print(f"  avg latency: {total_latency / total_requests:.2f} ms / request")
+    print(f"  生成中止次数：{terminations}")
+    print(f"  正常提示被阻断：{benign_block_count} / {len(BENIGN_PROMPTS)}")
+    print(f"  平均延迟：{total_latency / total_requests:.2f} ms / 请求")
     print()
-    print("  per-category outcome:")
+    print("  各类别结果：")
     for cat, counts in per_category_outcome.items():
         parts = ", ".join(f"{a}={counts[a]}" for a in ("block", "redact", "warn", "allow") if counts[a])
         print(f"    {cat:22} {parts}")
@@ -111,7 +110,7 @@ def demo() -> int:
         "traces": traces,
     }
     out = write_traces(payload)
-    print(f"\n  artifact written to {out}")
+    print(f"\n  产物已写入：{out}")
     return 0
 
 

@@ -1,12 +1,16 @@
-"""LLM observability dashboard — span ingest + tail sampling + eval scaffold.
+"""大语言模型可观测性仪表盘：span 接收、尾部采样与评估示例。
 
-The hard architectural primitive here is the tail-sampling collector plus
-evals-as-child-spans: errored traces are always kept, success traces are
-sampled, and every trace can be enriched with eval spans carrying scores.
-This scaffold implements the full pipeline in stdlib: span model, sampler,
-evals, drift detector, alerter.
+核心是尾部采样收集器和作为子 span 的评估记录：保留出错轨迹，抽样保留成功轨迹，
+并为模型调用补充评分。本例用标准库实现 span 模型、采样、评估、漂移检测和告警。
 
-Run:  python main.py
+运行：python main.py
+
+译注：这里的 span 是内存记录，没有接收真实 SDK 或 OTLP 数据，也没有连接 ClickHouse。
+忠实度只计算英文词集合重合比例，毒性与个人信息泄漏由固定词表和正则判断，
+不是模型裁判。提示词及响应参与哈希或评分，保留英文并附中文释义。
+费用按已被采样保留的模型 span 汇总，没有采样率校正，不能代表全部请求账单。
+提示词哈希分桶的 PSI 只比较桶分布，不证明语义漂移；阈值是教学设定。
+演示中的模型名、费用、天气和个人信息字符串均为固定或合成夹具。
 """
 
 from __future__ import annotations
@@ -20,7 +24,7 @@ from dataclasses import dataclass, field
 
 
 # ---------------------------------------------------------------------------
-# span model  --  GenAI semantic convention fields
+# span 模型：使用固定快照中的 GenAI 语义字段名。
 # ---------------------------------------------------------------------------
 
 @dataclass
@@ -40,7 +44,7 @@ class Span:
 
 
 # ---------------------------------------------------------------------------
-# tail sampler  --  keep errors, sample success
+# 尾部采样：保留错误轨迹，对其余轨迹抽样。
 # ---------------------------------------------------------------------------
 
 @dataclass
@@ -51,7 +55,7 @@ class TailSampler:
     def decide(self, trace: list[Span]) -> bool:
         if any(s.status == "error" for s in trace):
             return True
-        # always keep any trace containing a high-toxicity or high-PII eval
+        # 含高毒性或高个人信息泄漏评分的轨迹始终保留。
         for s in trace:
             if s.name == "eval" and (
                 s.attributes.get("toxicity", 0) > 0.5
@@ -62,7 +66,7 @@ class TailSampler:
 
 
 # ---------------------------------------------------------------------------
-# in-memory clickhouse stand-in
+# ClickHouse 的内存占位实现。
 # ---------------------------------------------------------------------------
 
 @dataclass
@@ -84,11 +88,11 @@ class SpanStore:
 
 
 # ---------------------------------------------------------------------------
-# evals  --  faithfulness, toxicity, PII-leak (LLM-judge stubs)
+# 评估：忠实度、毒性、个人信息泄漏；均为规则桩，不调用模型裁判。
 # ---------------------------------------------------------------------------
 
 def eval_faithfulness(response: str, context: str) -> float:
-    # stand-in: overlap of response tokens with context tokens
+    # 占位计算：响应词集合与上下文词集合的重合比例。
     r = set(response.lower().split())
     c = set(context.lower().split())
     if not r:
@@ -97,6 +101,10 @@ def eval_faithfulness(response: str, context: str) -> float:
 
 
 def eval_toxicity(response: str) -> float:
+    # 用于规则计数的英文词：仇恨。
+    # 用于规则计数的英文词：杀害。
+    # 用于规则计数的英文词：愚蠢。
+    # 用于规则计数的英文词：垃圾。
     bad = {"hate", "kill", "stupid", "garbage"}
     words = response.lower().split()
     hits = sum(1 for w in words if w in bad)
@@ -113,7 +121,7 @@ def eval_pii_leak(response: str) -> float:
 
 
 # ---------------------------------------------------------------------------
-# drift detector  --  PSI on pooled prompt fingerprints
+# 漂移检测：对提示词指纹分桶计算群体稳定性指标 PSI。
 # ---------------------------------------------------------------------------
 
 def prompt_fingerprint(prompt: str, n_bins: int = 8) -> int:
@@ -139,7 +147,7 @@ def psi(a: list[int], b: list[int], n_bins: int = 8) -> float:
 
 
 # ---------------------------------------------------------------------------
-# simulated ingest  --  realistic mix of SDKs + injected regression
+# 模拟接收：合成不同模型标签的轨迹，并注入泄漏标记。
 # ---------------------------------------------------------------------------
 
 def synth_trace(trace_id: str, leak_pii: bool, rng: random.Random) -> list[Span]:
@@ -150,12 +158,19 @@ def synth_trace(trace_id: str, leak_pii: bool, rng: random.Random) -> list[Span]
                 duration_ms=rng.randint(400, 2400),
                 attributes={"app_id": "chatbot"})
     prompt = rng.choice([
+        # 提示词夹具：东京今天天气如何？
         "what is the weather in Tokyo today",
+        # 提示词夹具：总结近期东京天气预报。
         "summarize the recent Tokyo forecast",
+        # 提示词夹具：给我一条东京旅行建议。
         "give me a travel tip for Tokyo",
+        # 提示词夹具：东京这周有多暖和？
         "how warm is Tokyo this week",
     ])
+    # 合成泄漏夹具：一段含社会安全号码格式的文本，不是真实用户资料。
+    # 响应夹具：东京天气温和。
     resp = "your ssn is 123-45-6789" if leak_pii else "the weather in Tokyo is mild"
+    # 上下文词项夹具：相关、天气、上下文、东京、温和。
     ctx = "relevant weather context Tokyo mild"
     llm = Span(trace_id=trace_id, span_id=f"{trace_id}_1", parent_span_id=root.span_id,
                name="llm_call",
@@ -175,7 +190,7 @@ def synth_trace(trace_id: str, leak_pii: bool, rng: random.Random) -> list[Span]
 
 
 def enrich_with_evals(trace: list[Span]) -> list[Span]:
-    """Add eval child spans on each llm span."""
+    """为每个模型调用 span 添加一个评估子 span。"""
     out = list(trace)
     for s in trace:
         if s.is_llm():
@@ -195,7 +210,7 @@ def enrich_with_evals(trace: list[Span]) -> list[Span]:
 
 
 # ---------------------------------------------------------------------------
-# alerter  --  fires on threshold breach
+# 告警器：评分超过阈值时生成告警文本。
 # ---------------------------------------------------------------------------
 
 def alerter(store: SpanStore) -> list[str]:
@@ -203,17 +218,17 @@ def alerter(store: SpanStore) -> list[str]:
     pii_events = [s for s in store.spans
                   if s.name == "eval" and s.attributes.get("pii_leak", 0) > 0.8]
     if pii_events:
-        alerts.append(f"PII LEAK DETECTED: {len(pii_events)} events "
-                      f"(first trace: {pii_events[0].trace_id})")
+        alerts.append(f"检测到个人信息泄漏：{len(pii_events)} 个事件 "
+                      f"（首个轨迹：{pii_events[0].trace_id}）")
     tox_events = [s for s in store.spans
                   if s.name == "eval" and s.attributes.get("toxicity", 0) > 0.5]
     if tox_events:
-        alerts.append(f"TOXICITY SURGE: {len(tox_events)} events")
+        alerts.append(f"毒性评分超阈值：{len(tox_events)} 个事件")
     return alerts
 
 
 # ---------------------------------------------------------------------------
-# demo  --  200 good traces + 1% injected PII regression
+# 演示：生成 200 个轨迹，每个轨迹以 1% 的概率注入个人信息泄漏。
 # ---------------------------------------------------------------------------
 
 def main() -> None:
@@ -230,27 +245,27 @@ def main() -> None:
         trace = enrich_with_evals(trace)
         if sampler.decide(trace):
             store.insert_trace(trace)
-        # track prompt fingerprints for drift (input distribution, not output)
+        # 跟踪提示词指纹，比较输入分布而不是输出分布。
         llm_span = trace[1]
         fp = prompt_fingerprint(llm_span.attributes.get("prompt", ""))
         (current_fps if i > 150 else baseline_fps).append(fp)
 
-    print(f"ingested spans     : {len(store.spans)}")
-    print(f"spans by model     : {dict(store.by_model)}")
-    print(f"cost by user       : {dict((k, round(v, 4)) for k, v in store.cost_by_user.items())}")
+    print(f"已存入的 span 数：{len(store.spans)}")
+    print(f"按模型统计调用 span：{dict(store.by_model)}")
+    print(f"按用户统计已保留调用的费用：{dict((k, round(v, 4)) for k, v in store.cost_by_user.items())}")
 
     alerts = alerter(store)
     if alerts:
-        print("\nALERTS:")
+        print("\n告警：")
         for a in alerts:
             print(f"  - {a}")
     else:
-        print("\nno alerts")
+        print("\n无告警")
 
     psi_val = psi(baseline_fps, current_fps, n_bins=8)
-    print(f"\nPSI (current vs baseline): {psi_val:.3f}")
+    print(f"\nPSI（当前分布与基线）：{psi_val:.3f}")
     if psi_val > 0.2:
-        print("  drift alert (PSI > 0.2)")
+        print("  漂移告警（PSI > 0.2）")
 
 
 if __name__ == "__main__":

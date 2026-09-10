@@ -1,11 +1,15 @@
-"""Code execution metric: extract, sandbox subprocess, pass-at-k.
+"""代码执行评测：提取代码、受限子进程执行与 pass@k。
 
-Conceptual references:
-- ./docs/en.md (this lesson)
-- lesson 70 (task spec format) for code_exec task shape
-- lesson 71 (classical metrics) for the dispatcher pattern
+概念参考：
+- ./docs/en.md（本课）
+- 第 70 课：code_exec 任务结构
+- 第 71 课：指标分发模式
 
-Stdlib + numpy. Run: python3 code/main.py
+使用标准库 + NumPy。运行：python3 code/main.py
+
+译注：所谓 sandbox 只是课程内的子进程资源与环境限制，并不是容器、
+虚拟机或内核级安全隔离；只能运行可信教学夹具。pass@k 的计算也依赖
+本课给定的样本计数假设。代码字符串、命令、状态与错误值保持原样。
 """
 
 from __future__ import annotations
@@ -329,7 +333,7 @@ def demo() -> int:
         status = "OK" if result.exit_code == ex["expected_exit"] and abs(result.score - ex["expected_score"]) < 1e-6 else "WRONG"
         if status == "WRONG":
             failures += 1
-        print(f"  [{status}] {ex['name']:24s} exit={result.exit_code:14s} score={result.score:.2f} detail={result.detail[:60]}")
+        print(f"  [{status}] {ex['name']:24s} 退出码={result.exit_code:14s} 分数={result.score:.2f} 详情={result.detail[:60]}")
 
     samples_per_task = [
         [True, True, False, False, False, False, False, False, False, False],

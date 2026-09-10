@@ -1,10 +1,7 @@
-"""Labeled prompt corpus for refusal evaluation.
+"""用于拒答评估的带标签提示语料。
 
-25 unsafe prompts drawn from the lesson 82 taxonomy (one per fixture id) and
-30 safe prompts curated for this evaluation. Safe prompts are deliberately
-non-overlapping with the lesson 83 benign corpus so the two evaluations stay
-independent.
-"""
+包含从第 82 课分类体系中抽取的 25 条不安全提示，以及为本评估整理的 30 条安全提示。
+安全提示与攻击提示本身都参与分类和指标计算，因此保持英文原值。"""
 
 from __future__ import annotations
 

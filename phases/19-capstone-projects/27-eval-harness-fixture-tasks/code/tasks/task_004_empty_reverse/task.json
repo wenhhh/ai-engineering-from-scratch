@@ -1,6 +1,6 @@
 {
   "id": "task_004_empty_reverse",
-  "goal": "reverse_list takes a list and should return a new list with the elements in reverse order. The buggy version has an empty body and returns None. Implement the function and verify with the bundled assertion.",
+  "goal": "reverse_list 接受一个列表，应返回元素顺序相反的新列表。有缺陷的版本函数体为空，返回 None。实现该函数并验证逆序结果；本任务当前随附的验证器实际通过源码正则进行检查。",
   "verifier": {
     "name": "regex_match",
     "args": {

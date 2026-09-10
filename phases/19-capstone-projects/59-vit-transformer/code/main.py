@@ -1,11 +1,16 @@
-"""Vision Transformer encoder built on the patch front end from lesson 58.
+"""基于第 58 课图像块前端构建的视觉 Transformer 编码器。
 
-Twelve pre-LN blocks, twelve heads, GELU feed-forward with 4x expansion. The
-encoder consumes a 224x224x3 fixture image, returns the contextual token
-sequence, and exposes the CLS pooled vector for downstream heads.
+默认使用 12 个 Pre-LN 块、12 个注意力头，以及按 4 倍维度扩展的 GELU 前馈层。
+编码器接收 224×224×3 的夹具图像，返回上下文化的词元序列，
+并提供 CLS 位置的汇总向量，供下游任务头使用。
 
-Run with: python3 main.py
-"""
+运行：python3 main.py
+
+译注：默认模型随机初始化；形状、注意力归一化和梯度存在不等于学到了视觉语义。
+演示打印梯度范数，没有在该处独立断言其大小；相应测试另行检查。
+原测试对最终 LayerNorm 后的 CLS 求和，在单位缩放、零偏置下该和理论上恒为零；
+本轮两版均得到零梯度并触发原有断言失败。这不等于编码器的所有损失都无法反传。
+注意力基本检查直接调用注意力子层，没有经过正常块中的 ln1，不能当作完整块的注意力轨迹。"""
 
 from __future__ import annotations
 
@@ -32,6 +37,7 @@ def _load_front_end_module():
     src = LESSON_58 / "main.py"
     spec = importlib.util.spec_from_file_location(name, src)
     if spec is None or spec.loader is None:
+        # 无法从给定路径加载第 58 课 main.py。
         raise ImportError(f"could not load lesson 58 main.py at {src}")
     mod = importlib.util.module_from_spec(spec)
     sys.modules[name] = mod
@@ -59,6 +65,7 @@ class ViTConfig:
     @property
     def head_dim(self) -> int:
         if self.hidden % self.heads != 0:
+            # 隐藏维度必须能被注意力头数整除。
             raise ValueError(f"hidden {self.hidden} not divisible by heads {self.heads}")
         return self.hidden // self.heads
 
@@ -83,6 +90,7 @@ class MultiHeadSelfAttention(nn.Module):
 
     def forward(self, x: torch.Tensor, store_attn: bool = False) -> torch.Tensor:
         if x.dim() != 3:
+            # 输入形状必须为 (B,N,D)。
             raise ValueError(f"expected (B, N, D), got {tuple(x.shape)}")
         b, n, d = x.shape
         h = self.cfg.heads
@@ -147,11 +155,10 @@ class ViT(nn.Module):
 
 
 class VisionEncoder(nn.Module):
-    """Full encoder: patch front end + ViT stack.
+    """完整编码器：图像块前端加 ViT 堆叠。
 
-    Returns (tokens, cls) where tokens has shape (B, num_patches + 1, hidden)
-    and cls has shape (B, hidden).
-    """
+    返回 (tokens,cls)。tokens 形状为 (B,num_patches+1,hidden)，
+    cls 形状为 (B,hidden)，取最终序列的第一个位置。"""
 
     def __init__(self, cfg: ViTConfig | None = None) -> None:
         super().__init__()
@@ -172,52 +179,52 @@ def count_params(module: nn.Module) -> int:
 
 def main() -> None:
     print("=" * 60)
-    print("VISION TRANSFORMER ENCODER")
+    print("视觉 Transformer 编码器")
     print("=" * 60)
 
     cfg = ViTConfig()
-    print(f"  image size      : {cfg.image_size}")
-    print(f"  patch size      : {cfg.patch_size}")
-    print(f"  hidden          : {cfg.hidden}")
-    print(f"  depth x heads   : {cfg.depth} x {cfg.heads} (head dim {cfg.head_dim})")
-    print(f"  mlp ratio       : {cfg.mlp_ratio}")
+    print(f"  图像边长 : {cfg.image_size}")
+    print(f"  图像块边长 : {cfg.patch_size}")
+    print(f"  隐藏维度 : {cfg.hidden}")
+    print(f"  层数 × 头数 : {cfg.depth} x {cfg.heads} (每头维度 {cfg.head_dim})")
+    print(f"  MLP 扩展倍数 : {cfg.mlp_ratio}")
 
     torch.manual_seed(0)
     encoder = VisionEncoder(cfg).eval()
-    print(f"\nfront-end params : {count_params(encoder.front):,}")
-    print(f"vit params       : {count_params(encoder.vit):,}")
-    print(f"total params     : {count_params(encoder):,}")
+    print(f"\n前端参数量 : {count_params(encoder.front):,}")
+    print(f"ViT 参数量 : {count_params(encoder.vit):,}")
+    print(f"总参数量 : {count_params(encoder):,}")
 
     img = synthesize_image(seed=0)
-    print(f"\nfixture image    : {tuple(img.shape)}")
+    print(f"\n夹具图像形状 : {tuple(img.shape)}")
 
     with torch.no_grad():
         tokens, cls = encoder(img)
-    print(f"output tokens    : {tuple(tokens.shape)}")
-    print(f"cls shape        : {tuple(cls.shape)}")
-    print(f"cls L2 norm      : {cls.norm().item():.3f}")
+    print(f"输出词元形状 : {tuple(tokens.shape)}")
+    print(f"CLS 形状 : {tuple(cls.shape)}")
+    print(f"CLS 的 L2 范数 : {cls.norm().item():.3f}")
 
-    print("\nlayer-by-layer CLS norm trace:")
+    print("\n逐层 CLS 范数轨迹：")
     with torch.no_grad():
         x = encoder.front(img)
-        print(f"  layer  0 (after front end) : cls norm {x[0, 0].norm().item():.3f}")
+        print(f"  第 0 层（前端之后）：CLS 范数 {x[0, 0].norm().item():.3f}")
         for i, block in enumerate(encoder.vit.blocks, start=1):
             x = block(x)
             if i % 2 == 0 or i == cfg.depth:
-                print(f"  layer {i:2d}                    : cls norm {x[0, 0].norm().item():.3f}")
+                print(f"  层 {i:2d}：CLS 范数 {x[0, 0].norm().item():.3f}")
         x = encoder.vit.norm(x)
-        print(f"  final LN                   : cls norm {x[0, 0].norm().item():.3f}")
+        print(f"  最终层归一化：CLS 范数 {x[0, 0].norm().item():.3f}")
 
-    print("\nattention sanity:")
+    print("\n注意力基本检查：")
     encoder.vit.blocks[0].attn(encoder.front(img), store_attn=True)
     attn = encoder.vit.blocks[0].attn.last_attn
     if attn is not None:
         row_sums = attn[0, 0, 0].sum().item()
-        print(f"  block 0 head 0 CLS row sum (should be 1.0) : {row_sums:.6f}")
+        print(f"  第 0 块、第 0 头的 CLS 行和（应为 1.0）：{row_sums:.6f}")
         spread = attn[0, 0, 0].std().item()
-        print(f"  block 0 head 0 CLS row stddev              : {spread:.4f}")
+        print(f"  第 0 块、第 0 头的 CLS 行标准差：{spread:.4f}")
 
-    print("\ngradient sanity:")
+    print("\n梯度基本检查：")
     img2 = synthesize_image(seed=2)
     enc2 = VisionEncoder(cfg)
     _, c = enc2(img2)
@@ -225,11 +232,11 @@ def main() -> None:
     loss.backward()
     grad_norm = enc2.front.patch.proj.weight.grad.norm().item()
     cls_grad = enc2.front.cls_token.grad.norm().item()
-    print(f"  patch.proj.weight grad norm                : {grad_norm:.3e}")
-    print(f"  front.cls_token grad norm                  : {cls_grad:.3e}")
-    print("  ok: gradients flow from CLS back through the encoder")
+    print(f"  patch.proj.weight 梯度范数：{grad_norm:.3e}")
+    print(f"  front.cls_token 梯度范数：{cls_grad:.3e}")
+    print("  演示完成：以上列出从 CLS 反传到编码器的梯度范数")
 
-    print("\ndone.")
+    print("\n完成。")
 
 
 if __name__ == "__main__":

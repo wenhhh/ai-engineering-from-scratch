@@ -1,7 +1,7 @@
-"""Transfusion toy: two-loss trainer on a 4x4 grayscale + short caption.
+"""Transfusion 简化示例：在 4×4 灰度图与简短图像描述上训练双损失模型。
 
-Stdlib. The transformer is a shared linear map; the point is the two-loss
-plumbing and the block-triangular attention mask.
+仅使用标准库。这里用共享线性映射代替 Transformer，重点是双损失的
+衔接方式与块三角注意力掩码（block-triangular attention mask）。
 """
 
 from __future__ import annotations
@@ -42,7 +42,7 @@ def patch_to_vec(patch: list[float]) -> list[float]:
 
 
 def build_mask(tokens: list) -> list[list[int]]:
-    """Block-triangular mask: causal over text, bidirectional within image."""
+    """块三角掩码：文本部分采用因果注意力，同一图像内部采用双向注意力。"""
     n = len(tokens)
     img_ranges = []
     i = 0
@@ -87,8 +87,8 @@ def cross_entropy_toy(prob: float) -> float:
 
 
 def two_loss_step(pair: Pair, weights: dict) -> dict:
-    """Simulate one training step: compute text loss + image loss.
-    The "transformer" is a stand-in — just returns the input plus weight perturbation."""
+    """模拟一个训练步骤，计算文本损失与图像损失。
+    这里的“Transformer”只是替身，返回输入加上权重扰动的结果。"""
     text_probs = [0.3 + 0.05 * weights["text_scale"]
                   for _ in pair.caption]
     text_loss = sum(cross_entropy_toy(p) for p in text_probs) / len(text_probs)
@@ -118,41 +118,41 @@ def train(pairs: list[Pair], steps: int = 10) -> None:
         weights["text_scale"] += 1
         weights["img_scale"] += 1
         if step % 2 == 0:
-            print(f"  step {step:>2}  text_loss={losses['text_loss']:.3f}"
-                  f"  img_loss={losses['img_loss']:.3f}"
-                  f"  total={losses['total']:.3f}")
+            print(f"  步骤 {step:>2}  文本损失={losses['text_loss']:.3f}"
+                  f"  图像损失={losses['img_loss']:.3f}"
+                  f"  总损失={losses['total']:.3f}")
 
 
 def demo_mask() -> None:
-    print("\nBLOCK-TRIANGULAR MASK for sequence:")
+    print("\n以下序列的块三角掩码：")
     tokens = [10, 11, SEP_OPEN, "p0", "p1", "p2", "p3", SEP_CLOSE, 12, 13]
-    print(f"  tokens: {tokens}")
+    print(f"  词元：{tokens}")
     mask = build_mask(tokens)
-    print("\n  attention (1=attend, .=mask):")
+    print("\n  注意力掩码（1=允许关注，.=屏蔽）：")
     for i, row in enumerate(mask):
         print(f"    {i:>2} | " + " ".join("1" if v else "." for v in row))
 
 
 def main() -> None:
     print("=" * 60)
-    print("TRANSFUSION TOY (Phase 12, Lesson 13)")
+    print("Transfusion 简化示例（阶段 12，第 13 课）")
     print("=" * 60)
 
     demo_mask()
 
     print("\n" + "=" * 60)
-    print("TWO-LOSS TRAINING (NTP on text + flow-matching on images)")
+    print("双损失训练（文本采用下一词元预测 NTP，图像采用流匹配）")
     print("-" * 60)
     pairs = make_dataset(24)
     train(pairs, steps=10)
 
     print("\n" + "=" * 60)
-    print("TRANSFUSION vs MMDiT vs CHAMELEON")
+    print("Transfusion、MMDiT 与 Chameleon 的对比")
     print("-" * 60)
-    print("  Chameleon  : discrete image tokens + NTP only")
-    print("  Transfusion: continuous image patches + NTP (text) + flow (image)")
-    print("  MMDiT (SD3): Transfusion siblings, modality-specific block weights")
-    print("  Show-o     : NTP (text) + masked discrete diffusion (image)")
+    print("  Chameleon  ：离散图像词元，仅使用下一词元预测（NTP）")
+    print("  Transfusion：连续图像图块 + NTP（文本）+ 流匹配（图像）")
+    print("  MMDiT (SD3)：与 Transfusion 思路相近，使用各模态专属的块权重")
+    print("  Show-o     ：NTP（文本）+ 掩码离散扩散（图像）")
 
 
 if __name__ == "__main__":

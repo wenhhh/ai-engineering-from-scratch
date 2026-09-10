@@ -1,4 +1,4 @@
-"""Tests for the lesson 30 integrated Developer Foundations capstone."""
+"""第 30 课 Developer Foundations 综合项目测试。"""
 
 import pathlib
 import sys

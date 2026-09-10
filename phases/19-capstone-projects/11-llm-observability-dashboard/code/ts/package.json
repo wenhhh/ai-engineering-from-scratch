@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "version": "0.1.0",
-  "description": "Multi-file TypeScript skeleton for the LLM observability dashboard capstone.",
+  "description": "大语言模型可观测性仪表盘综合项目的多文件 TypeScript 示例框架。",
   "scripts": {
     "start": "tsx src/index.ts",
     "serve": "SERVE=1 tsx src/index.ts",

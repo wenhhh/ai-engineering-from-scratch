@@ -1,8 +1,12 @@
+/**
+ * span 与汇总测试。仅翻译测试名称和说明，所有断言与数值夹具保持原样。
+ */
+
 import { strict as assert } from "node:assert";
 import { test } from "node:test";
 import { ObservabilityStore, RingBuffer, normaliseSpan } from "../src/spans.js";
 
-test("ring buffer holds items below capacity", () => {
+test("未满的环形缓冲区保留全部条目", () => {
   const rb = new RingBuffer<number>(3);
   rb.push(1);
   rb.push(2);
@@ -11,7 +15,7 @@ test("ring buffer holds items below capacity", () => {
   assert.equal(rb.isFull(), false);
 });
 
-test("ring buffer evicts oldest once full", () => {
+test("环形缓冲区满后淘汰最早条目", () => {
   const rb = new RingBuffer<number>(3);
   rb.push(1);
   rb.push(2);
@@ -21,18 +25,18 @@ test("ring buffer evicts oldest once full", () => {
   assert.equal(rb.isFull(), true);
 });
 
-test("ring buffer keeps eviction order after many writes", () => {
+test("多次写入后仍保持正确淘汰顺序", () => {
   const rb = new RingBuffer<number>(4);
   for (let i = 0; i < 100; i++) rb.push(i);
   assert.deepEqual(rb.snapshot(), [96, 97, 98, 99]);
 });
 
-test("ring buffer rejects non-positive capacity", () => {
+test("环形缓冲区拒绝非正容量", () => {
   assert.throws(() => new RingBuffer<number>(0));
   assert.throws(() => new RingBuffer<number>(-1));
 });
 
-test("normaliseSpan rejects malformed input", () => {
+test("normaliseSpan 拒绝测试给定的不完整输入", () => {
   assert.equal(normaliseSpan(null), null);
   assert.equal(normaliseSpan({}), null);
   assert.equal(
@@ -41,7 +45,7 @@ test("normaliseSpan rejects malformed input", () => {
   );
 });
 
-test("normaliseSpan accepts a complete GenAI shape", () => {
+test("normaliseSpan 接受测试给定的 GenAI 字段结构", () => {
   const span = normaliseSpan({
     trace_id: "t-1",
     span_id: "s-1",
@@ -61,7 +65,7 @@ test("normaliseSpan accepts a complete GenAI shape", () => {
   assert.equal(span?.attributes["gen_ai.request.model"], "gpt-4o-mini");
 });
 
-test("ObservabilityStore tracks accepted, rejected, held", () => {
+test("ObservabilityStore 统计接收、拒绝与保留数量", () => {
   const store = new ObservabilityStore(4);
   store.ingest({
     attributes: {

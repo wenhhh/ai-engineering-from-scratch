@@ -1,5 +1,10 @@
-"""Side-by-side toys: Agno-shaped (stateless FastAPI) vs Mastra-shaped
-(primitive-rich). Stdlib only; meant to show the structural difference.
+"""并排比较两种教学模型：Agno 风格（无状态 FastAPI 请求处理）与 Mastra 风格
+（提供多种基础构件）。只使用标准库，目的是展示结构差异，不调用真实框架。
+
+译注：本例复用同一个 AgnoAgent 对象，并未实现“每次请求新建智能体”或 HTTP 服务；
+会话状态保存在 AgnoSession 中。框架选型文案沿用固定原文快照，不是性能实测结论。
+会话前缀 user/assistant、工具返回值和英文演示输入保留原样。
+error: unknown 表示未知工具；processed ... tools 表示已处理相应数量的工具调用。
 """
 
 from __future__ import annotations
@@ -91,21 +96,21 @@ def _mastra_tool_fn(query: str) -> str:
 
 def main() -> None:
     print("=" * 70)
-    print("AGNO vs MASTRA — Phase 14, Lesson 18")
+    print("AGNO 与 MASTRA 对比——阶段 14，第 18 课")
     print("=" * 70)
 
-    print("\n1. AGNO-shaped (stateless session-scoped FastAPI handler)")
+    print("\n1. AGNO 风格（无状态处理函数，状态由会话管理）")
     session = AgnoSession()
     agent = AgnoAgent(name="agno_a", fn=_agno_agent_fn)
     for i in range(3):
         out = agno_request_handler(session, agent, "s001",
                                    f"query {i}: how do I ship an agent")
-        print(f"  turn {i}: {out}")
-    print(f"  session history length: {len(session.history('s001'))}")
-    print("  pattern: a fresh agent per request; session holds state; "
-          "FastAPI is stateless.")
+        print(f"  轮次 {i}: {out}")
+    print(f"  会话历史长度：{len(session.history('s001'))}")
+    print("  设计思路：每次请求新建智能体，由会话保存状态；"
+          "FastAPI 处理层保持无状态。（本示例实际复用智能体对象。）")
 
-    print("\n2. MASTRA-shaped (Agents + Tools + Workflows)")
+    print("\n2. MASTRA 风格（智能体 + 工具 + 工作流）")
     search_tool = MastraTool(
         name="search",
         input_schema={"type": "object",
@@ -122,20 +127,20 @@ def main() -> None:
         [("search", {"query": "agent engineering 2026"}),
          ("search", {"query": "BFCL V4 benchmarks"})],
     )
-    print(f"  agent output: {output}")
+    print(f"  智能体输出：{output}")
     for tool, result in trace:
-        print(f"    tool {tool}: {result}")
+        print(f"    工具 {tool}: {result}")
 
     workflow = MastraWorkflow(steps=[
         ("normalize", lambda p: p.strip().lower()),
         ("search", lambda p: f"found 3 results for {p}"),
         ("summarize", lambda p: f"summary: {p}"),
     ])
-    print("\n  workflow run")
+    print("\n  运行工作流")
     for name, out in workflow.run("  Agent Engineering 2026  "):
         print(f"    {name}: {out}")
 
-    print("\npick by stack: python+fastapi  Agno; typescript+next/vercel  Mastra.")
+    print("\n按技术栈选择（原文建议）：Python + FastAPI 对应 Agno；TypeScript + Next/Vercel 对应 Mastra。")
 
 
 if __name__ == "__main__":

@@ -1,3 +1,11 @@
+/**
+ * 共享类型定义；所有接口键名与枚举值保持原文。
+ * Status：pending 待处理、in_progress 进行中、done 完成、failed 失败。
+ * TodoItem/ModelTurn：计划事项和模型单轮结果；ToolCall：工具名及参数。
+ * HookEvent/HookPayload：钩子事件和载荷；BudgetSnapshot：预算累计快照。
+ * RunResult.passed 只是框架的计划状态判定，不是业务验收结论。
+ */
+
 export type Status = "pending" | "in_progress" | "done" | "failed";
 
 export type TodoItem = {

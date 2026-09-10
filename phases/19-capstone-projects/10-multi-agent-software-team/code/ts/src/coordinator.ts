@@ -1,3 +1,10 @@
+/**
+ * 轮转协调器：从当前起点扫描角色，将待处理消息交给匹配者。
+ * 每轮保留第一条非空回复；broadcast 不保证广播给所有角色。
+ * 收到 review.approved 就立即返回批准，不实际合并文件或执行验收。
+ * 重复 run 会复用角色、工作空间和内部计数，不是全新会话。
+ */
+
 import { Agent, CoderAgent, PlannerAgent, ReviewerAgent } from "./agent.js";
 import type { Message, Role, RunResult, WorkspaceFile } from "./types.js";
 import { SharedWorkspace } from "./workspace.js";
@@ -14,6 +21,7 @@ export class Coordinator {
       new ReviewerAgent(),
     ];
     if (resolved.length === 0) {
+      // 错误契约：智能体列表不能为空；原英文用于异常匹配。
       throw new Error("Coordinator: agents must not be empty");
     }
     this.agents = resolved;

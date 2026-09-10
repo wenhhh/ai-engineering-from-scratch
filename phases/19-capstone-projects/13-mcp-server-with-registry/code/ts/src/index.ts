@@ -1,3 +1,9 @@
+/**
+ * 固定请求重放与真实 stdio 入口。
+ * 默认演示输出标题与请求／响应；--serve 模式只向 stdout 写协议 JSON，不混入中文日志。
+ * 协议版本、工具名、请求 ID、测试夹具与错误消息保留原值。
+ */
+
 import type { JsonRpcRequest } from "./types.js";
 import { makeContext, makeRequest } from "./protocol.js";
 import { replayFixture, serveStdio } from "./transport.js";
@@ -32,7 +38,7 @@ function runDemo(): void {
   const context = makeContext(TOOL_DESCRIPTORS, makeExecutors(makeIncidents()));
 
   process.stdout.write("=".repeat(72) + "\n");
-  process.stdout.write("PHASE 19 LESSON 13 - stateless MCP server (TypeScript, no SDK)\n");
+  process.stdout.write("阶段 19 第 13 课：无状态 MCP 服务器（TypeScript，不使用 SDK）\n");
   process.stdout.write("=".repeat(72) + "\n");
 
   const messages = demoFixture();

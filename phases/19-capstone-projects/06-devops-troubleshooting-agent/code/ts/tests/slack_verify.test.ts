@@ -1,3 +1,8 @@
+/**
+ * 运维排障示例的回归测试。
+ * 只翻译名称与说明；签名载荷、密钥夹具、断言、错误值和匹配正则不变。
+ */
+
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import {
@@ -9,7 +14,7 @@ import {
 const SECRET = "shh";
 
 describe("verifySlackSignature", () => {
-  it("accepts a freshly signed body", () => {
+  it("接受刚签名的请求体", () => {
     const ts = String(Math.floor(Date.now() / 1000));
     const body = "command=%2Foncall&text=test";
     const sig = signForTesting(SECRET, ts, body);
@@ -23,7 +28,7 @@ describe("verifySlackSignature", () => {
     assert.equal(verdict.ok, true);
   });
 
-  it("rejects a tampered signature", () => {
+  it("拒绝被篡改的签名", () => {
     const ts = String(Math.floor(Date.now() / 1000));
     const body = "command=%2Foncall&text=test";
     const sig = signForTesting(SECRET, ts, body);
@@ -39,7 +44,7 @@ describe("verifySlackSignature", () => {
     if (!verdict.ok) assert.equal(verdict.reason, "mismatch");
   });
 
-  it("rejects a timestamp outside the 5-minute replay window", () => {
+  it("拒绝超出五分钟时间窗口的时间戳", () => {
     const ts = String(Math.floor(Date.now() / 1000));
     const body = "command=%2Foncall&text=test";
     const sig = signForTesting(SECRET, ts, body);
@@ -54,7 +59,7 @@ describe("verifySlackSignature", () => {
     if (!verdict.ok) assert.equal(verdict.reason, "stale");
   });
 
-  it("rejects a non-numeric timestamp", () => {
+  it("拒绝非数值时间戳", () => {
     const verdict = verifySlackSignature({
       signingSecret: SECRET,
       timestamp: "not-a-number",
@@ -66,7 +71,7 @@ describe("verifySlackSignature", () => {
     if (!verdict.ok) assert.equal(verdict.reason, "bad-timestamp");
   });
 
-  it("rejects a mismatched signature length without leaking via early return", () => {
+  it("签名长度不符时拒绝；此测试不测量计时侧信道", () => {
     const ts = String(Math.floor(Date.now() / 1000));
     const verdict = verifySlackSignature({
       signingSecret: SECRET,

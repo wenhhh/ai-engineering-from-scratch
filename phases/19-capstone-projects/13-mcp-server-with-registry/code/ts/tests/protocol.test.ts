@@ -1,3 +1,7 @@
+/**
+ * 固定协议与工具回归测试。只翻译名称和说明，所有断言、夹具、字段和错误匹配不变。
+ */
+
 import { test } from "node:test";
 import { strict as assert } from "node:assert";
 import {
@@ -20,7 +24,7 @@ function freshContext() {
   return makeContext(TOOL_DESCRIPTORS, makeExecutors(makeIncidents()));
 }
 
-test("server/discover returns the current contract and public cache policy", () => {
+test("server/discover 返回本例固定契约与公共缓存策略", () => {
   const resp = dispatch(freshContext(), makeRequest(1, "server/discover"));
   assert.ok(resp);
   assert.equal(resp.id, 1);
@@ -41,7 +45,7 @@ test("server/discover returns the current contract and public cache policy", () 
   assert.equal(result._meta[SERVER_INFO_KEY]?.name, SERVER_NAME);
 });
 
-test("every request requires params._meta", () => {
+test("每个请求都需要 params._meta", () => {
   const resp = dispatch(freshContext(), {
     jsonrpc: "2.0",
     id: 2,
@@ -52,7 +56,7 @@ test("every request requires params._meta", () => {
   assert.equal(resp.error?.code, -32602);
 });
 
-test("every request requires client capabilities", () => {
+test("每个请求都需要客户端能力", () => {
   const resp = dispatch(freshContext(), {
     jsonrpc: "2.0",
     id: 3,
@@ -63,7 +67,7 @@ test("every request requires client capabilities", () => {
   assert.equal(resp.error?.code, -32602);
 });
 
-test("unsupported versions return exact -32022 negotiation data", () => {
+test("不支持的版本返回准确的 -32022 协商数据", () => {
   const resp = dispatch(freshContext(), makeRequest(4, "tools/list", {}, "2027-01-01"));
   assert.ok(resp);
   assert.equal(resp.error?.code, -32022);
@@ -73,7 +77,7 @@ test("unsupported versions return exact -32022 negotiation data", () => {
   });
 });
 
-test("missing and non-string protocol versions return -32602 without negotiation data", () => {
+test("缺少版本或版本不是字符串时返回 -32602 且不含协商数据", () => {
   const metas: Array<Record<string, unknown>> = [
     { [CLIENT_CAPABILITIES_KEY]: {} },
     { [PROTOCOL_VERSION_KEY]: 20260728, [CLIENT_CAPABILITIES_KEY]: {} },
@@ -92,7 +96,7 @@ test("missing and non-string protocol versions return -32602 without negotiation
   }
 });
 
-test("malformed optional clientInfo is rejected", () => {
+test("拒绝格式错误的可选 clientInfo", () => {
   const resp = dispatch(freshContext(), {
     jsonrpc: "2.0",
     id: 5,
@@ -109,7 +113,7 @@ test("malformed optional clientInfo is rejected", () => {
   assert.equal(resp.error?.code, -32602);
 });
 
-test("tools/list is complete, deterministic, and cacheable", () => {
+test("tools/list 返回完整、确定且可缓存的结果", () => {
   const resp = dispatch(freshContext(), makeRequest(6, "tools/list"));
   assert.ok(resp);
   const result = resp.result as {
@@ -132,7 +136,7 @@ test("tools/list is complete, deterministic, and cacheable", () => {
   }
 });
 
-test("tools/call dispatches to incidents_get", () => {
+test("tools/call 分派到 incidents_get", () => {
   const resp = dispatch(
     freshContext(),
     makeRequest(7, "tools/call", {
@@ -154,7 +158,7 @@ test("tools/call dispatches to incidents_get", () => {
   assert.ok(text.includes("INC-101"));
 });
 
-test("tools/call unknown tool returns protocol error -32602", () => {
+test("未知工具调用返回协议错误 -32602", () => {
   const resp = dispatch(
     freshContext(),
     makeRequest(8, "tools/call", { name: "nope", arguments: {} }),
@@ -164,7 +168,7 @@ test("tools/call unknown tool returns protocol error -32602", () => {
   assert.match(resp.error?.message ?? "", /Unknown tool/);
 });
 
-test("tools/call rejects a malformed tool name", () => {
+test("tools/call 拒绝格式错误的工具名", () => {
   const resp = dispatch(
     freshContext(),
     makeRequest(9, "tools/call", { name: "", arguments: {} }),
@@ -173,7 +177,7 @@ test("tools/call rejects a malformed tool name", () => {
   assert.equal(resp.error?.code, -32602);
 });
 
-test("known tools enforce every advertised input schema as complete tool errors", () => {
+test("已知工具按本例声明的 schema 子集返回完整工具错误", () => {
   const cases = [
     { name: "incidents_list", arguments: { severity: "p3" } },
     { name: "incidents_get", arguments: {} },
@@ -199,7 +203,7 @@ test("known tools enforce every advertised input schema as complete tool errors"
   }
 });
 
-test("incidents_ack flips acked state", () => {
+test("incidents_ack 将 acked 状态设为 true", () => {
   const context = freshContext();
   dispatch(
     context,
@@ -220,7 +224,7 @@ test("incidents_ack flips acked state", () => {
   assert.ok(text.includes('"acked":true'));
 });
 
-test("requests never inherit metadata from a prior call", () => {
+test("请求不继承前一次调用的元数据", () => {
   const context = freshContext();
   assert.ok(dispatch(context, makeRequest(12, "tools/list"))?.result);
   const missingMeta = dispatch(context, {
@@ -232,7 +236,7 @@ test("requests never inherit metadata from a prior call", () => {
   assert.equal(missingMeta?.error?.code, -32602);
 });
 
-test("JSON-RPC notifications return no response", () => {
+test("JSON-RPC 通知不返回响应", () => {
   const resp = dispatch(freshContext(), {
     jsonrpc: "2.0",
     method: "notifications/tools/list_changed",
@@ -240,25 +244,25 @@ test("JSON-RPC notifications return no response", () => {
   assert.equal(resp, null);
 });
 
-test("legacy lifecycle methods are not implemented", () => {
+test("本例未实现 initialize 和 shutdown 生命周期方法", () => {
   const initialize = dispatch(freshContext(), makeRequest(14, "initialize"));
   const shutdown = dispatch(freshContext(), makeRequest(15, "shutdown"));
   assert.equal(initialize?.error?.code, -32601);
   assert.equal(shutdown?.error?.code, -32601);
 });
 
-test("unknown modern method returns -32601", () => {
+test("未知方法返回 -32601", () => {
   const resp = dispatch(freshContext(), makeRequest(16, "no/such"));
   assert.ok(resp);
   assert.equal(resp.error?.code, -32601);
 });
 
-test("parseRpc rejects malformed JSON", () => {
+test("parseRpc 拒绝格式错误的 JSON", () => {
   const r = parseRpc("not json");
   assert.equal(r.ok, false);
 });
 
-test("processLine emits -32700 envelope on parse failure", () => {
+test("processLine 在解析失败时输出 -32700 错误信封", () => {
   const lines: string[] = [];
   processLine(freshContext(), "not json", (line) => lines.push(line));
   assert.equal(lines.length, 1);
@@ -266,13 +270,13 @@ test("processLine emits -32700 envelope on parse failure", () => {
   assert.equal(parsed.error?.code, -32700);
 });
 
-test("parseRpc rejects a null MCP request id", () => {
+test("parseRpc 拒绝 id 为 null 的 MCP 请求", () => {
   const result = parseRpc('{"jsonrpc":"2.0","id":null,"method":"tools/list"}');
   assert.equal(result.ok, false);
   if (!result.ok) assert.equal(result.code, -32600);
 });
 
-test("replayFixture roundtrip drives only modern requests", () => {
+test("replayFixture 重放本例的发现、列表与工具调用请求", () => {
   const msgs: JsonRpcRequest[] = [
     makeRequest(17, "server/discover"),
     makeRequest(18, "tools/list"),

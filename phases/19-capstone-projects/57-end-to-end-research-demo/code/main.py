@@ -1,14 +1,19 @@
-"""End-to-end auto-research demo: seed -> scheduler -> critic loop -> paper writer.
+"""端到端自动研究演示：种子假设 → 调度器 → 审稿循环 → 论文写作器。
 
-Conceptual references:
-- ./docs/en.md (this lesson)
-- Phase 19 lesson 54 (paper writer)
-- Phase 19 lesson 55 (critic loop)
-- Phase 19 lesson 56 (iteration scheduler)
-- Phase 19 lessons 50-53 (earlier auto-research stages; the seed/runner stub here stands in for them)
+概念参考：
+- ./docs/en.md（本课正文）
+- 阶段 19 第 54 课（论文写作器）
+- 阶段 19 第 55 课（审稿循环）
+- 阶段 19 第 56 课（迭代调度器）
+- 阶段 19 第 50—53 课（前置研究阶段；这里用固定种子与运行器桩代替）
 
-Stdlib + numpy only. Run: python3 code/main.py
-"""
+依赖标准库与 NumPy。运行：python3 code/main.py
+
+译注：实际串接的是第 54—56 课，未执行假设模型、外部文献检索或真实科研实验。
+奖励来自合成数据，原创性标签由奖励阈值赋予，不是论文原创性证据。
+代码未要求审稿结果达到 target 才写论文；converged 也可能只是 plateau。
+产物是英文 LaTeX 源文件及占位参考文献，未编译成 PDF，未创建所引用的图表。
+与计分规则、LaTeX 模板有关的英文保留并加中文释义。"""
 
 from __future__ import annotations
 
@@ -41,6 +46,7 @@ import importlib.util
 def _load_module(name: str, file_path: str):
     spec = importlib.util.spec_from_file_location(name, file_path)
     if spec is None or spec.loader is None:
+        # 无法从给定路径加载模块；保留错误原值。
         raise ImportError(f"cannot load {name} from {file_path}")
     mod = importlib.util.module_from_spec(spec)
     sys.modules[name] = mod
@@ -84,11 +90,11 @@ make_deterministic_runner = scheduler_mod.make_deterministic_runner
 
 
 class NoTriggerError(Exception):
-    """No branch crossed the paper threshold; demo cannot pick a best result."""
+    """没有分支超过论文触发阈值，演示无法选择最佳结果。"""
 
 
 class BestResultError(Exception):
-    """Picker received an empty trigger list."""
+    """无法选取最佳结果，例如触发列表查找后为空或种子列表为空。"""
 
 
 @dataclass
@@ -112,7 +118,7 @@ class DemoReport:
 
 
 def make_seed_hypotheses() -> list[Hypothesis]:
-    """Three seed hypotheses, one per research branch. Stand-in for lessons 50-53."""
+    """生成三个种子假设，每个研究分支一个，代替第 50—53 课的完整流程。"""
     return [
         Hypothesis(id="h-alpha-1", branch="alpha", payload={"q": "method-x"}),
         Hypothesis(id="h-beta-1", branch="beta", payload={"q": "method-y"}),
@@ -121,15 +127,16 @@ def make_seed_hypotheses() -> list[Hypothesis]:
 
 
 def pick_best_branch(scheduler_report: SchedulerReport) -> tuple[str, float]:
-    """Pick the branch with the highest mean reward among triggered branches.
+    """从已触发论文事件的分支中选取平均奖励最高者。
 
-    Ties break alphabetically by branch id (deterministic).
-    """
+    同分时按分支 ID 的字母顺序选择，以使结果可复现。"""
     if not scheduler_report.paper_triggers:
+        # 没有分支超过论文触发阈值。
         raise NoTriggerError("no branch crossed the paper threshold")
     by_branch = {b.branch: b for b in scheduler_report.branches}
     triggered = [by_branch[name] for name in scheduler_report.paper_triggers if name in by_branch]
     if not triggered:
+        # 触发分支查找后为空。
         raise BestResultError("trigger list empty after lookup")
     triggered.sort(key=lambda b: (-b.mean, b.branch))
     best = triggered[0]
@@ -146,9 +153,12 @@ def _originality_for_reward(reward: float) -> str:
 
 def build_mini_paper(branch: str, reward: float) -> MiniPaper:
     return MiniPaper(
+        # 示例论文标题：给定分支的自动研究结果。
         title=f"Auto-Research Findings on Branch {branch}",
+        # 示例摘要：总结自动研究循环中收益最高的分支。
         abstract=f"We summarise the best yielding branch {branch} from the auto-research loop.",
         sections=[
+            # 计分夹具：初步观察；正文长度参与评分。
             MiniSection(id="intro", title="Introduction", body="initial observations"),
             MiniSection(id="results", title="Results", body=""),
         ],
@@ -157,11 +167,11 @@ def build_mini_paper(branch: str, reward: float) -> MiniPaper:
 
 
 def mini_to_full_paper(mini: MiniPaper, branch: str) -> Paper:
-    """Promote a converged MiniPaper into a full Paper for the writer.
+    """将 MiniPaper 转为写作器使用的完整 Paper，不在这里检查是否达标。
 
-    Adds one figure and one bibliography entry per used citation key. Every
-    section's cite list is preserved; the bibliography is built from the union.
-    """
+    所有章节共用一张结果图的记录；参考文献由所用引用键的并集构造。
+    每个章节的引用列表保留；没有引用时添加占位基线文献。
+    原草稿的图表引用被替换为结果章节引用同一张图的简化布局。"""
     cites: list[str] = []
     for sec in mini.sections:
         for c in sec.cites:
@@ -171,6 +181,8 @@ def mini_to_full_paper(mini: MiniPaper, branch: str) -> Paper:
     bib = [
         BibEntry(
             key=key, entry_type="article",
+            # 占位文献标题：来源加引用键。
+            # 占位作者标签：合成。
             fields={"title": f"Source {key}", "author": "Synthesised", "year": "2026"},
         )
         for key in cites
@@ -178,6 +190,8 @@ def mini_to_full_paper(mini: MiniPaper, branch: str) -> Paper:
     if not bib:
         bib = [BibEntry(
             key=f"{branch}-baseline", entry_type="article",
+            # 占位文献标题：基线。
+            # 占位作者标签：合成。
             fields={"title": "Baseline", "author": "Synthesised", "year": "2026"},
         )]
         for sec in mini.sections:
@@ -188,6 +202,7 @@ def mini_to_full_paper(mini: MiniPaper, branch: str) -> Paper:
     fig = Figure(
         id=f"{branch}-results",
         path=f"figs/{branch}.pdf",
+        # 图注：给定分支的奖励轨迹；实际图文件未生成。
         caption=f"Reward trajectory on branch {branch}",
     )
 
@@ -200,6 +215,7 @@ def mini_to_full_paper(mini: MiniPaper, branch: str) -> Paper:
         ))
     return Paper(
         title=mini.title,
+        # 占位作者：自动研究演示。
         authors=["Auto-Research Demo"],
         abstract=mini.abstract,
         sections=sections,
@@ -211,6 +227,7 @@ def mini_to_full_paper(mini: MiniPaper, branch: str) -> Paper:
 async def _run_demo_async(out_dir: str, seed: int = 11) -> DemoReport:
     seed_list = make_seed_hypotheses()
     if not seed_list:
+        # 种子假设列表为空。
         raise BestResultError("seed list is empty")
 
     runner = make_deterministic_runner(
@@ -239,9 +256,13 @@ async def _run_demo_async(out_dir: str, seed: int = 11) -> DemoReport:
 
     full_paper = mini_to_full_paper(critic_result.paper, branch)
     prose = MockProseGenerator(outlines={
+        # 正文提纲：研究该分支的动机。
         "intro": f"motivation for branch {branch}",
+        # 正文提纲：总结该分支的奖励轨迹。
         "results": f"summary of reward trajectory on branch {branch}",
+        # 正文提纲：方法描述。
         "method": "method description",
+        # 正文提纲：相关工作综述。
         "related-work": "related work survey",
     })
     writer = PaperWriter(prose=prose)

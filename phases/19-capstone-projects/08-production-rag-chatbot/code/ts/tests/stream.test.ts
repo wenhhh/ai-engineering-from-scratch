@@ -1,3 +1,8 @@
+/**
+ * SSE 聊天示例回归测试：只翻译测试名称与说明。
+ * 原始断言、输入夹具、英文回答契约、事件和消息数量保持原样。
+ */
+
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import {
@@ -8,12 +13,12 @@ import {
 } from "../src/stream.js";
 
 describe("encodeSseFrame", () => {
-  it("encodes event + JSON-stringified data with the SSE double-newline terminator", () => {
+  it("编码事件和 JSON 数据，以 SSE 双换行结束", () => {
     const frame = encodeSseFrame("token", { text: "hi" });
     assert.equal(frame, 'event: token\ndata: {"text":"hi"}\n\n');
   });
 
-  it("round-trips through parseSseStream", () => {
+  it("经 parseSseStream 解析后可恢复事件", () => {
     const concat =
       encodeSseFrame("session", { sessionId: "s-1" }) +
       encodeSseFrame("token", { text: "a" }) +
@@ -27,7 +32,7 @@ describe("encodeSseFrame", () => {
 });
 
 describe("retrieve", () => {
-  it("boosts entries that match the jurisdiction tag", () => {
+  it("提高与策略标签相符的条目得分", () => {
     const results = retrieve("erasure", "GDPR", 3);
     assert.ok(results.length > 0);
     const top = results[0];
@@ -35,20 +40,20 @@ describe("retrieve", () => {
     assert.equal(top.docId, "GDPR-Art-17");
   });
 
-  it("returns at most k citations", () => {
+  it("最多返回 k 条引用", () => {
     const results = retrieve("data", "GDPR", 2);
     assert.ok(results.length <= 2);
   });
 });
 
 describe("tokenizeAnswer", () => {
-  it("falls back to a no-match message when there are no citations", () => {
+  it("没有引用时返回无匹配结果的原文消息", () => {
     const tokens = tokenizeAnswer("anything", []);
     const joined = tokens.join("");
     assert.match(joined, /No matching policy found for "anything"\./);
   });
 
-  it("leads with the first citation when present", () => {
+  it("有引用时以第一条引用构造回答开头", () => {
     const tokens = tokenizeAnswer("q", [
       { docId: "GDPR-Art-17", page: 1, snippet: "snippet text", score: 5 },
     ]);
@@ -56,7 +61,7 @@ describe("tokenizeAnswer", () => {
     assert.match(joined, /^Per GDPR-Art-17, snippet text$/);
   });
 
-  it("appends a 'See also' tail when there are more citations", () => {
+  it("有更多引用时添加 See also（另参见）尾句", () => {
     const tokens = tokenizeAnswer("q", [
       { docId: "A", page: 1, snippet: "x", score: 1 },
       { docId: "B", page: 2, snippet: "y", score: 1 },

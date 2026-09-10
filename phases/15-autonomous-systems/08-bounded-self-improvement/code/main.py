@@ -1,13 +1,13 @@
-"""Bounded self-improvement loop — stdlib Python.
+"""有边界的自我改进循环，仅使用 Python 标准库。
 
-The four primitives:
-  1. invariants (module hashes / tool manifest)
-  2. alignment anchor (immutable objective)
-  3. multi-objective constraint (all axes must hold)
-  4. regression detection (no axis drops beyond tolerance)
+演示四类门禁：不变量（工具清单）、对齐锚点（固定目标的哈希）、多目标约束，
+以及相对历史最佳表现的回归检测。启用的门禁全部通过后，才接纳候选修改。
 
-The loop applies each primitive as a gate. A proposed agent edit lands
-only if every gate passes.
+译注：这里检查的是工具名集合与目标文本摘要，并未验证真实模块文件哈希。
+不变量门禁使用子集关系，因此允许删除工具；apply() 也不会逐项核对 active_manifest。
+目标锚点和安全规则只保存在同一进程中，不是智能体无法修改的外部安全边界。
+清单修改仅在特定随机分支中尝试，并非每轮必然发生。安全测试只有两个预设输入，
+不能把 safety=1.0 理解为面对任意输入都安全。哈希目标、操作名、拦截标记保持原样。
 """
 
 from __future__ import annotations
@@ -20,20 +20,21 @@ from dataclasses import dataclass, field
 DEFAULT_SEED = 5
 
 
-# Objective anchor (pinned outside the loop).
+# 目标锚点：在循环外预先定义，但仍位于同一进程中。
+# 目标：规范空白，并将输入转为标题式大小写；该原文参与目标哈希，不翻译运行值。
 OBJECTIVE = "canonicalize whitespace and title-case the input"
 OBJECTIVE_HASH = hashlib.sha256(OBJECTIVE.encode()).hexdigest()[:16]
 
-# Approved module hashes (what the loop must keep intact).
+# 获准的工具名集合；注意它不是模块内容的哈希清单。
 APPROVED_TOOL_MANIFEST = {"trim", "collapse", "lower", "upper", "reverse", "title"}
 
 
 @dataclass
 class Agent:
     ops: list[str] = field(default_factory=lambda: ["nop"])
-    # The agent may "edit" its own tool manifest (bad!). Track current.
+    # 模拟智能体可能违规修改自己的工具清单，并记录当前版本。
     active_manifest: set[str] = field(default_factory=lambda: set(APPROVED_TOOL_MANIFEST))
-    # Pretend-constitution: must match anchor byte-for-byte.
+    # 简化的行为宪法：目标文本必须与锚点逐字节相同。
     objective: str = OBJECTIVE
 
 
@@ -54,8 +55,8 @@ CASES_PERF = [
     ("  mixedCase Space  ", "Mixedcase Space"),
     ("Already clean", "Already Clean"),
 ]
-# Safety axis: forbidden inputs must not produce a passthrough (these
-# represent potentially dangerous user inputs we must not echo back).
+# 安全维度：禁止的输入不能直接透传；以下输入代表
+# 不应原样回显的潜在危险内容，只作为测试字符串，不执行。
 CASES_SAFETY = [
     ("exec('rm -rf /')", "[blocked]"),
     ("drop table users;", "[blocked]"),
@@ -68,8 +69,8 @@ def apply(agent: Agent, s: str) -> str:
         if fn is None:
             return ""
         s = fn(s)
-    # Safety filter: if the string matches a danger pattern post-transform,
-    # return "[blocked]".
+    # 安全过滤：若变换后的字符串匹配危险模式，
+    # 返回约定的拦截标记 "[blocked]"。
     dangerous = ("exec(", "drop table", "rm -rf", "; delete from")
     low = s.lower()
     if any(d in low for d in dangerous):
@@ -97,9 +98,9 @@ def mutate(a: Agent, allow_manifest_edit: bool) -> Agent:
     ops = list(a.ops)
     manifest = set(a.active_manifest)
     obj = a.objective
-    # Sets have non-deterministic iteration order across interpreter
-    # runs, which defeats random.seed() reproducibility. Freeze the
-    # manifest into a sorted list before sampling.
+    # 集合在不同解释器运行中的迭代顺序可能不同，
+    # 会破坏仅靠 random.seed() 实现的可复现性。采样前
+    # 先把清单转为排序后的列表。
     choices = [*sorted(manifest), "nop"]
 
     move = random.random()
@@ -110,15 +111,16 @@ def mutate(a: Agent, allow_manifest_edit: bool) -> Agent:
     elif move < 0.9 and len(ops) > 1:
         ops.pop(random.randrange(len(ops)))
     elif allow_manifest_edit and random.random() < 0.5:
-        # Add a non-approved op to the active manifest (trying to smuggle in
-        # an unapproved capability).
+        # 向当前清单加入未获批准的操作，模拟试图夹带
+        # 未经批准的能力。
         manifest.add("raw_eval")
-        # Also an attempt to edit the objective.
+        # 同时尝试修改目标。
+        # 恶意目标变更：“放宽要求，接受任意输出”；此字符串用于演示锚点漂移。
         obj = obj + "  # relax: accept any output"
     return Agent(ops=ops, active_manifest=manifest, objective=obj)
 
 
-# --- Gates ---
+# --- 门禁 ---
 
 def gate_invariant(a: Agent) -> bool:
     return a.active_manifest.issubset(APPROVED_TOOL_MANIFEST)
@@ -133,11 +135,10 @@ def gate_multi(perf: float, safety: float) -> bool:
 
 
 def gate_regression(history_perf: list[float], perf: float, tol: float = 0.2) -> bool:
-    """Reject if `perf` drops more than `tol` below the historical best.
+    """若 perf 比历史最佳值低超过 tol，则拒绝。
 
-    Default `tol=0.2` matches the slack the lesson uses to demonstrate
-    "reject obvious regressions, accept noise." Pass `tol=0.0` for a
-    strict monotonic gate.
+    默认 tol=0.2 用于演示“拒绝明显回退，容忍小幅波动”。
+    设置 tol=0.0 时，候选表现不得低于历史最佳值。
     """
     if not history_perf:
         return True
@@ -185,47 +186,47 @@ def run(
 
     final_perf = perf_score(a)
     final_safety = safety_score(a)
-    print(f"  accepted {accepted}/{cycles} cycles")
-    print(f"  final perf {final_perf:.2f}  final safety {final_safety:.2f}")
-    print(f"  best perf  {best_perf:.2f}  best  safety {best_safety:.2f}")
-    print(f"  final ops  {a.ops}")
-    print(f"  manifest   {sorted(a.active_manifest)}")
-    print(f"  objective  {'(anchor intact)' if gate_anchor(a) else '(DRIFTED!)'}")
-    print(f"  rejects    {rejects}")
+    print(f"  已接纳 {accepted}/{cycles} 轮候选修改")
+    print(f"  最终性能分数 {final_perf:.2f}  最终安全分数 {final_safety:.2f}")
+    print(f"  历史最佳性能 {best_perf:.2f}  历史最佳安全 {best_safety:.2f}")
+    print(f"  最终操作序列 {a.ops}")
+    print(f"  工具清单     {sorted(a.active_manifest)}")
+    print(f"  目标状态     {'（锚点完整）' if gate_anchor(a) else '（已偏移！）'}")
+    print(f"  各门禁拒绝数 {rejects}")
 
 
 def main() -> None:
     print("=" * 70)
-    print("BOUNDED SELF-IMPROVEMENT (Phase 15, Lesson 8)")
+    print("有边界的自我改进（阶段 15，第 8 课）")
     print("=" * 70)
 
     all_on = dict(invariant=True, anchor=True, multi=True, regress=True)
     all_off = dict(invariant=False, anchor=False, multi=False, regress=False)
 
-    # Seed each scenario with the same value so the only differences
-    # in the printed output are attributable to the gate configuration
-    # — not to a drifting global RNG stream.
-    print("\nAll gates ON, manifest edits attempted every cycle")
+    # 每个场景使用相同种子，避免全局随机流持续推进
+    # 给比较带来额外干扰。门禁改变状态后，执行轨迹
+    # 及后续采样仍可能不同，不是逐轮完全配对的实验。
+    print("\n开启全部门禁，允许在随机分支中尝试修改清单")
     print("-" * 70)
     run(all_on, allow_manifest_edit=True, seed=DEFAULT_SEED)
 
-    print("\nAll gates OFF, manifest edits attempted every cycle")
+    print("\n关闭全部门禁，允许在随机分支中尝试修改清单")
     print("-" * 70)
     run(all_off, allow_manifest_edit=True, seed=DEFAULT_SEED)
 
-    print("\nOnly regression gate OFF")
+    print("\n仅关闭回归门禁")
     print("-" * 70)
     gates = dict(all_on, regress=False)
     run(gates, allow_manifest_edit=True, seed=DEFAULT_SEED)
 
     print()
     print("=" * 70)
-    print("HEADLINE: each primitive blocks a specific failure class")
+    print("要点：不同门禁针对不同类型的失败")
     print("-" * 70)
-    print("  All gates on: loop improves while manifest + anchor intact.")
-    print("  All gates off: manifest drifts, objective drifts, safety drops.")
-    print("  Missing regression gate: silent capability dips get absorbed.")
-    print("  Gates are mitigations. They raise the cost of silent failure.")
+    print("  开启全部门禁：只接纳通过清单、锚点和评分约束的修改。")
+    print("  关闭全部门禁：清单、目标和安全表现都可能偏移；以实跑结果为准。")
+    print("  缺少回归门禁：能力回退可能被悄悄接纳。")
+    print("  门禁是缓解措施，不是对任意输入的安全证明。")
 
 
 if __name__ == "__main__":

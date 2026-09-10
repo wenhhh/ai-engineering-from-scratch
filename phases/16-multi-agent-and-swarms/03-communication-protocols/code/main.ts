@@ -1,3 +1,15 @@
+/**
+ * 阶段 16，第 3 课：智能体通信协议的教学性组合。
+ * 用内存注册表、任务状态事件、审计记录和 Ed25519 签名，演示发现、委派与追踪。
+ * A2A、ACP、ANP 的名称及类型结构沿用固定原文，不表示实现了完整协议或通过兼容性认证。
+ * 没有实际网络请求；React 相关“研究结果”都是原文硬编码夹具，未在本轮核验其事实准确性。
+ * 译注：网关只验证 message.id 的签名，没有将内容、目标、会话或防重放信息绑定到签名。
+ * humanAuthorization 仅有查询函数，委派时没有强制检查。DID 文档里标为 X25519 的条目
+ * 复用了 Ed25519 公钥字节，并未生成真正的 X25519 密钥。这些限制保留原样，不宜用于生产认证。
+ * 审计处理器先运行并复制轨迹，随后任务处理器才填充轨迹，因此本演示可能得到空审计轨迹；
+ * sendMessage 启动异步处理后即返回，打印时的任务状态或产物数量不代表已经等待执行完成。
+ */
+
 import crypto from "node:crypto";
 
 type MessageRole = "user" | "agent";
@@ -65,6 +77,7 @@ type AgentCard = {
   skills: Skill[];
 };
 
+// 智能体注册表：按机器名称索引，可按技能标签或输入媒体类型发现智能体。
 class AgentRegistry {
   private cards: Map<string, AgentCard> = new Map();
 
@@ -147,6 +160,7 @@ type TaskHandler = (
   message: AgentMessage
 ) => AsyncGenerator<TaskEvent>;
 
+// 任务管理器：在内存中维护任务、处理器和事件订阅；没有持久化或真实传输层。
 class TaskManager {
   private tasks: Map<string, Task> = new Map();
   private handlers: Map<string, TaskHandler> = new Map();
@@ -173,6 +187,7 @@ class TaskManager {
       task.status = {
         state: "rejected",
         timestamp: Date.now(),
+        // 拒绝原因：没有对应的处理器；错误消息保留英文契约。
         message: textMessage("agent", `No handler for ${agentName}`),
       };
       return task;
@@ -196,6 +211,7 @@ class TaskManager {
     return this.tasks.get(taskId);
   }
 
+  // 取消只修改状态；处理器正在进行的 await 或副作用不会因此自动被中断。
   cancelTask(taskId: string): boolean {
     const task = this.tasks.get(taskId);
     if (!task || TERMINAL_STATES.includes(task.status.state)) return false;
@@ -284,6 +300,7 @@ type AuditEntry = {
   sessionId?: string;
 };
 
+// 审计运行器：复制输入、输出与轨迹后存入内存日志；状态为 completed 不等于任务已完成。
 class AuditableRunner {
   private log: AuditEntry[] = [];
   private handlers: Map<
@@ -337,6 +354,7 @@ class AuditableRunner {
     } catch (err) {
       entry.status = "failed";
       entry.trajectory.push({
+        // 异常轨迹：记录错误详情，保留英文诊断前缀。
         reasoning: `Error: ${String(err)}`,
         timestamp: Date.now(),
       });
@@ -390,6 +408,7 @@ type AgentIdentity = {
   publicKey: crypto.KeyObject;
 };
 
+// 身份注册表：从已发布文档取认证公钥，并验证指定载荷的签名。
 class IdentityRegistry {
   private documents: Map<string, DIDDocument> = new Map();
 
@@ -434,6 +453,7 @@ class IdentityRegistry {
   }
 }
 
+// 创建本地演示身份；这里只实际生成一对 Ed25519 签名密钥。
 function createIdentity(domain: string, agentName: string): AgentIdentity {
   const did = `did:wba:${domain}:agent:${agentName}`;
   const { publicKey, privateKey } = crypto.generateKeyPairSync("ed25519");
@@ -456,6 +476,7 @@ function createIdentity(domain: string, agentName: string): AgentIdentity {
       },
       {
         id: encKeyId,
+        // 原例缺口：类型名称声明为 X25519，但下面复用了 Ed25519 公钥，不能当作密钥协商实现。
         type: "X25519KeyAgreementKey2019",
         controller: did,
         publicKeyDer,
@@ -482,6 +503,7 @@ function signPayload(identity: AgentIdentity, payload: string): string {
     .toString("hex");
 }
 
+// 网关串联身份验证、智能体发现、审计调用与任务提交，不构成完整授权系统。
 class ProtocolGateway {
   private registry: AgentRegistry;
   private taskManager: TaskManager;
@@ -508,11 +530,13 @@ class ProtocolGateway {
     sessionId?: string
   ): Promise<{ task: Task; audit: AuditEntry } | { error: string }> {
     if (!this.identityRegistry.verify(fromDid, signature, message.id)) {
+      // 错误：身份验证失败。
       return { error: "Identity verification failed" };
     }
 
     const card = this.registry.resolve(targetAgent);
     if (!card) {
+      // 错误：目标智能体未注册。
       return { error: `Agent ${targetAgent} not found in registry` };
     }
 
@@ -535,6 +559,7 @@ class ProtocolGateway {
     const candidates = this.registry.discoverBySkillTag(skillTag);
     if (candidates.length === 0) {
       return Promise.resolve({
+        // 错误：没有匹配指定技能标签的智能体。
         error: `No agents found with skill tag: ${skillTag}`,
       });
     }
@@ -551,7 +576,7 @@ async function protocolDemo() {
   const registry = new AgentRegistry();
   registry.register({
     name: "researcher",
-    description: "Searches and summarizes findings",
+    description: "检索并总结研究发现",
     version: "1.0.0",
     url: "https://researcher.local/a2a/v1",
     capabilities: { streaming: true, pushNotifications: false },
@@ -560,8 +585,8 @@ async function protocolDemo() {
     skills: [
       {
         id: "web-research",
-        name: "Web Research",
-        description: "Searches the web",
+        name: "网络研究",
+        description: "检索网页",
         tags: ["research", "search", "summarization"],
         inputModes: ["text/plain"],
         outputModes: ["application/json"],
@@ -570,7 +595,7 @@ async function protocolDemo() {
   });
   registry.register({
     name: "coder",
-    description: "Writes code from specs",
+    description: "依据规格编写代码",
     version: "1.0.0",
     url: "https://coder.local/a2a/v1",
     capabilities: { streaming: false, pushNotifications: false },
@@ -579,8 +604,8 @@ async function protocolDemo() {
     skills: [
       {
         id: "code-gen",
-        name: "Code Generation",
-        description: "Generates code",
+        name: "代码生成",
+        description: "生成代码",
         tags: ["coding", "generation"],
         inputModes: ["text/plain", "application/json"],
         outputModes: ["text/plain"],
@@ -603,8 +628,9 @@ async function protocolDemo() {
       };
 
       researchTrajectory.push({
-        reasoning: "Searching for React 19 documentation",
+        reasoning: "检索 React 19 文档（预设轨迹）",
         toolName: "web_search",
+        // 模拟工具输入：查询 React 19 编译器功能；这是静态轨迹，不会实际搜索。
         toolInput: { query: "React 19 compiler features" },
         toolOutput: {
           results: ["react.dev/blog/react-19", "github.com/react/react"],
@@ -613,12 +639,12 @@ async function protocolDemo() {
       });
 
       researchTrajectory.push({
-        reasoning: "Extracting key findings from search results",
+        reasoning: "从搜索结果提取要点（预设轨迹）",
         toolName: "doc_analysis",
         toolInput: { url: "react.dev/blog/react-19" },
         toolOutput: {
           summary:
-            "React 19 compiler auto-memoizes, no manual useMemo needed",
+            "原文夹具：React 19 编译器自动记忆化，无需手写 useMemo",
         },
         timestamp: Date.now(),
       });
@@ -634,9 +660,9 @@ async function protocolDemo() {
               kind: "data" as const,
               data: {
                 findings: [
-                  "React 19 compiler auto-memoizes components",
-                  "No more manual useMemo/useCallback needed",
-                  "Compiler runs at build time, not runtime",
+                  "原文夹具：React 19 编译器自动记忆化组件",
+                  "原文夹具：不再需要手写 useMemo/useCallback",
+                  "原文夹具：编译器在构建时运行，而非在运行时执行",
                 ],
                 sources: ["react.dev/blog/react-19"],
               },
@@ -658,7 +684,7 @@ async function protocolDemo() {
 
   auditRunner.registerAgent("researcher", async () => ({
     output: [
-      textMessage("agent", "React 19 compiler auto-memoizes components"),
+      textMessage("agent", "原文夹具：React 19 编译器自动记忆化组件"),
     ],
     trajectory: researchTrajectory,
   }));
@@ -678,27 +704,27 @@ async function protocolDemo() {
     identityRegistry
   );
 
-  console.log("=== Protocol Demo ===\n");
+  console.log("=== 协议协作演示 ===\n");
 
-  console.log("1. Agent Discovery (A2A)");
+  console.log("1. 智能体发现（A2A 风格）");
   const researchAgents = registry.discoverBySkillTag("research");
   console.log(
-    `   Found ${researchAgents.length} agent(s):`,
+    `   找到 ${researchAgents.length} 个智能体：`,
     researchAgents.map((a) => a.name)
   );
 
-  console.log("\n2. Identity Verification (ANP)");
-  const message = textMessage("user", "Research React 19 compiler features");
+  console.log("\n2. 身份验证（ANP 风格）");
+  const message = textMessage("user", "研究 React 19 编译器的功能");
   const signature = signPayload(coderIdentity, message.id);
   const verified = identityRegistry.verify(
     coderIdentity.did,
     signature,
     message.id
   );
-  console.log(`   Coder DID: ${coderIdentity.did}`);
-  console.log(`   Signature verified: ${verified}`);
+  console.log(`   编码者 DID：${coderIdentity.did}`);
+  console.log(`   签名验证通过：${verified}`);
 
-  console.log("\n3. Task Delegation (A2A + ACP + ANP)");
+  console.log("\n3. 任务委派（A2A + ACP + ANP 风格）");
   const result = await gateway.delegateTask(
     coderIdentity.did,
     signature,
@@ -708,37 +734,37 @@ async function protocolDemo() {
   );
 
   if ("error" in result) {
-    console.log(`   Error: ${result.error}`);
+    console.log(`   错误：${result.error}`);
     return;
   }
 
-  console.log(`   Task ID: ${result.task.id}`);
-  console.log(`   Task state: ${result.task.status.state}`);
-  console.log(`   Artifacts: ${result.task.artifacts.length}`);
+  console.log(`   任务 ID：${result.task.id}`);
+  console.log(`   任务状态：${result.task.status.state}`);
+  console.log(`   产物数量：${result.task.artifacts.length}`);
 
-  console.log("\n4. Audit Trail (ACP)");
-  console.log(`   Run ID: ${result.audit.runId}`);
-  console.log(`   Status: ${result.audit.status}`);
-  console.log(`   Trajectory steps: ${result.audit.trajectory.length}`);
+  console.log("\n4. 审计轨迹（ACP 风格）");
+  console.log(`   运行 ID：${result.audit.runId}`);
+  console.log(`   状态：${result.audit.status}`);
+  console.log(`   轨迹步数：${result.audit.trajectory.length}`);
   for (const step of result.audit.trajectory) {
     console.log(`     - ${step.reasoning}`);
     if (step.toolName) {
-      console.log(`       Tool: ${step.toolName}`);
+      console.log(`       工具：${step.toolName}`);
     }
   }
 
-  console.log("\n5. Full Audit Log");
+  console.log("\n5. 完整审计日志");
   const fullLog = auditRunner.getFullAuditLog();
-  console.log(`   Total runs: ${fullLog.length}`);
+  console.log(`   运行总数：${fullLog.length}`);
   for (const entry of fullLog) {
     const duration = entry.completedAt
       ? `${entry.completedAt - entry.startedAt}ms`
-      : "in-progress";
+      : "进行中";
     console.log(`   ${entry.agentName}: ${entry.status} (${duration})`);
   }
 }
 
 protocolDemo().catch((err) => {
-  console.error("Protocol demo failed:", err);
+  console.error("协议演示失败：", err);
   process.exitCode = 1;
 });

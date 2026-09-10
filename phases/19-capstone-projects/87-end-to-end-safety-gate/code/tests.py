@@ -1,4 +1,4 @@
-"""Unit tests for the end-to-end safety gate."""
+"""端到端 SafetyGate 的单元测试。"""
 
 from __future__ import annotations
 

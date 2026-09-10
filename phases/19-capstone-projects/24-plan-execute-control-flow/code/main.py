@@ -1,11 +1,16 @@
-"""Plan-and-execute agent with replan on failure, plan diffs, and dual budgets.
+"""计划并执行智能体：失败后重新规划、计划差异与双重预算。
 
-Conceptual references:
-- ./docs/en.md (this lesson)
-- Phase 14 lesson 01 (agent loop fundamentals)
-- Phase 13 lesson 02 (tool protocols overview)
+概念参考：
+- ../docs/en.md（本课中文说明，沿用原文件名；英文原文在包内 english-source/ 的对应路径）
+- 阶段 14 第 01 课：智能体循环基础
+- 阶段 13 第 02 课：工具协议概览
 
-Stdlib only. Run: python3 code/main.py
+仅使用标准库。在课程目录运行：python3 code/main.py
+
+译注：两项预算分别限制执行步数与重新规划次数，不是费用预算。
+演示使用确定性计划器和内存工具结果，不调用真实模型或后端。
+expected_outcome 只用于计划描述，不会自动校验实际结果；goal_met 表示计划
+执行完毕，并不证明业务目标经过独立验收。状态、事件与错误匹配字符串保持原值。
 """
 
 from __future__ import annotations
@@ -96,7 +101,7 @@ def _diff_plans(old: list[Step], new: list[Step], revision: int) -> PlanDiff:
 
 
 class PlanExecuteAgent:
-    """Sequential plan executor with replan on failure."""
+    """顺序执行计划，在步骤失败后重新规划。"""
 
     def __init__(
         self,
@@ -196,20 +201,23 @@ def _summarize(plan: list[Step]) -> list[dict]:
 
 
 def make_deterministic_planner(fail_step_id: int | None, recovery: str = "route_around") -> Planner:
-    """Planner used in the demo and tests.
+    """演示与测试使用的计划器。
 
-    When ``fail_step_id`` is given, the planner inserts a ``_force_fail`` marker
-    into that step's args on the initial plan. Executors that honor the marker
-    raise on that step, exercising the replan path. The marker is removed on the
-    revised plan so the route-around can succeed.
+    指定 ``fail_step_id`` 后，会在初始计划中对应步骤的参数里加入 ``_force_fail``
+    标记。识别该标记的执行器会在该步抛出异常，以覆盖重新规划路径。
+    修订后的计划移除该标记，使绕行恢复路径可以成功。
     """
 
     def planner(goal: str, history: list[Step], last_error: str | None) -> list[Step]:
         if last_error is None:
             initial = [
+                # 预期结果：已加载用户输入。该字段是描述，不是验证结果。
                 Step(1, "fetch", {"key": "input"}, "loaded user input"),
+                # 预期结果：已计算 v1 格式。
                 Step(2, "transform", {"mode": "v1"}, "computed v1 form"),
+                # 预期结果：已渲染输出。
                 Step(3, "render", {}, "rendered output"),
+                # 预期结果：已提交给后端；演示没有真实后端提交。
                 Step(4, "submit", {}, "submitted to backend"),
             ]
             if fail_step_id is not None:
@@ -219,13 +227,18 @@ def make_deterministic_planner(fail_step_id: int | None, recovery: str = "route_
             return initial
         if recovery == "route_around" and "transform" in last_error:
             return [
+                # 预期结果：已使用回退方案计算。
                 Step(2, "transform", {"mode": "v2"}, "computed via fallback"),
+                # 预期结果：已渲染输出。
                 Step(3, "render", {}, "rendered output"),
+                # 预期结果：已提交给后端；演示没有真实后端提交。
                 Step(4, "submit", {}, "submitted to backend"),
             ]
         if recovery == "give_up":
             return [
+                # 预期结果：已记录失败。
                 Step(98, "log_failure", {"why": last_error or ""}, "logged failure"),
+                # 预期结果：已通知用户。
                 Step(99, "notify_user", {}, "told the user"),
             ]
         return []
@@ -260,6 +273,7 @@ def _demo() -> None:
         executor=executor,
         max_steps=12, max_replans=5,
     )
+    # 固定目标：交付报告。
     res = agent.run("ship the report")
     print(json.dumps({
         "status": res.status,

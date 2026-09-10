@@ -1,4 +1,4 @@
-"""Companion validator for this lesson's docs/en.md orchestration contract."""
+"""本课 docs/en.md 编排契约的配套验证器。检查委派、隔离、角色边界与回收条件；不启动真实多智能体运行时。"""
 
 from __future__ import annotations
 

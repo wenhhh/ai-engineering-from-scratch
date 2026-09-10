@@ -1,9 +1,15 @@
-// Capstone 08 entrypoint: production RAG chatbot SSE chat UI.
-// Source: ../../docs/en.md (citation-anchored response streamed via SSE).
-// References:
-//   Server-Sent Events (WHATWG)  https://html.spec.whatwg.org/multipage/server-sent-events.html
+/**
+ * RAG 聊天示例的本机 HTTP 服务与离线演示入口。
+ * --demo 使用应用内请求读取完整 SSE 文本，不代表浏览器逐片段显示已经验收。
+ * 默认入口启动服务，npm start 带 --demo；冒烟结果为 false 时仅打印，不自动非零退出。
+ */
+
+// 综合项目 08 入口：生产级 RAG 聊天机器人的 SSE 界面示例。
+// 来源：../../docs/en.md，通过 SSE 传输带引用的回答。
+// 固定原文参考：
+//   服务器发送事件（WHATWG）  https://html.spec.whatwg.org/multipage/server-sent-events.html
 //   text/event-stream (MDN)      https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events
-//   EventSource interface (MDN)  https://developer.mozilla.org/en-US/docs/Web/API/EventSource
+//   EventSource 接口（MDN）  https://developer.mozilla.org/en-US/docs/Web/API/EventSource
 
 import { createServer, IncomingMessage, ServerResponse } from "node:http";
 import type { AddressInfo } from "node:net";
@@ -50,14 +56,14 @@ async function writeWebResponse(res: ServerResponse, webRes: Response): Promise<
 async function runDemo(): Promise<void> {
   const { app, sessions } = buildApp();
   console.log("=".repeat(72));
-  console.log("CAPSTONE 08 - PRODUCTION RAG CHAT UI SKELETON (TypeScript)");
+  console.log("综合项目 08：生产级 RAG 聊天界面示例（TypeScript）");
   console.log("=".repeat(72));
 
   const indexResp = await Promise.resolve(app.request("/"));
   console.log(`\nGET /`);
-  console.log(`  status=${indexResp.status} ct=${indexResp.headers.get("content-type") ?? ""}`);
+  console.log(`  状态码=${indexResp.status} 内容类型=${indexResp.headers.get("content-type") ?? ""}`);
 
-  console.log(`\nGET /chat/stream (q=erasure right)`);
+  console.log(`\nGET /chat/stream（查询夹具：erasure right，删除权）`);
   const stream1 = await Promise.resolve(
     app.request(
       "/chat/stream?sessionId=s-1&role=analyst&jurisdiction=GDPR&q=erasure%20right",
@@ -67,13 +73,13 @@ async function runDemo(): Promise<void> {
   const events1 = parseSseStream(stream1Body);
   const tokenCount1 = events1.filter((e) => e.event === "token").length;
   const citation1 = events1.find((e) => e.event === "citations");
-  console.log(`  events=${events1.length} tokens=${tokenCount1}`);
+  console.log(`  事件数=${events1.length} 回答片段数=${tokenCount1}`);
   console.log(
-    `  citations=${JSON.stringify(citation1?.data).slice(0, 140)}`,
+    `  引用=${JSON.stringify(citation1?.data).slice(0, 140)}`,
   );
-  console.log(`  has done=${events1.some((e) => e.event === "done")}`);
+  console.log(`  包含 done 事件=${events1.some((e) => e.event === "done")}`);
 
-  console.log(`\nGET /chat/stream (same session, second turn)`);
+  console.log(`\nGET /chat/stream（同一会话的第二次问答）`);
   const stream2 = await Promise.resolve(
     app.request(
       "/chat/stream?sessionId=s-1&role=analyst&jurisdiction=GDPR&q=access%20confirmation",
@@ -87,11 +93,11 @@ async function runDemo(): Promise<void> {
     sessions: Array<{ id: string; turnCount: number }>;
   };
   const s1 = sessJson.sessions.find((s) => s.id === "s-1");
-  console.log(`  sessions=${sessJson.sessions.length} s-1 turns=${s1?.turnCount ?? 0}`);
+  console.log(`  会话数=${sessJson.sessions.length} s-1 消息数=${s1?.turnCount ?? 0}`);
 
-  console.log(`\nGET /chat/stream missing q`);
+  console.log(`\nGET /chat/stream：缺少 q 参数`);
   const badResp = await Promise.resolve(app.request("/chat/stream"));
-  console.log(`  status=${badResp.status}`);
+  console.log(`  状态码=${badResp.status}`);
 
   const ok =
     indexResp.status === 200 &&
@@ -100,7 +106,7 @@ async function runDemo(): Promise<void> {
     badResp.status === 400 &&
     (s1?.turnCount ?? 0) === 4;
   console.log("\n" + "-".repeat(72));
-  console.log(`smoke ok=${ok} total sessions=${sessions.size()}`);
+  console.log(`冒烟检查通过=${ok} 会话总数=${sessions.size()}`);
 }
 
 function startServer(): void {
@@ -117,7 +123,7 @@ function startServer(): void {
   });
   server.listen(port, "127.0.0.1", () => {
     const addr = server.address() as AddressInfo;
-    console.log(`chat-ui listening on http://127.0.0.1:${addr.port}`);
+    console.log(`聊天界面正在监听 http://127.0.0.1:${addr.port}`);
   });
   process.on("SIGINT", () => server.close(() => process.exit(0)));
   process.on("SIGTERM", () => server.close(() => process.exit(0)));
@@ -132,6 +138,6 @@ async function main(): Promise<void> {
 }
 
 main().catch((err: unknown) => {
-  console.error("startup failed:", err);
+  console.error("启动失败：", err);
   process.exit(1);
 });

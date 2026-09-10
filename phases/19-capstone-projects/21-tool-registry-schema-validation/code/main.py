@@ -1,12 +1,16 @@
-"""Tool registry with JSON Schema 2020-12 subset validation.
+"""工具注册表：支持 JSON Schema 2020-12 的一个校验子集。
 
-Conceptual references:
-- ./docs/en.md (this lesson)
-- IETF draft draft-bhutton-json-schema-2020-12 (subset: type, properties,
-  required, enum, minLength, maxLength, pattern, items)
-- RFC 6901 (JSON Pointer for error paths)
+概念参考：
+- ../docs/en.md（本课中文说明，沿用原文件名；英文原文在包内 english-source/ 的对应路径）
+- IETF 草案 draft-bhutton-json-schema-2020-12：仅实现 type、properties、
+  required、enum、minLength、maxLength、pattern、items 等部分关键词
+- RFC 6901：用 JSON Pointer 表示错误路径
 
-Stdlib only. Run: python3 code/main.py
+仅使用标准库。在课程目录运行：python3 code/main.py
+
+译注：这是标准子集的教学实现，不是完整的 JSON Schema 一致性校验器。
+未声明的对象属性不会被拒绝；timeout_ms、idempotent 只是注册记录中的元数据，
+此模块并不执行工具、实施超时或保证幂等。协议字段、模式、错误消息与夹具保持原值。
 """
 
 from __future__ import annotations
@@ -59,7 +63,7 @@ class ToolRecord:
 
 
 class ToolRegistry:
-    """Name-keyed table of tool records with schema validation."""
+    """以工具名称为键保存工具记录，并提供模式校验。"""
 
     _NAME_RE = re.compile(r"^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)*$")
 
@@ -109,11 +113,12 @@ class ToolRegistry:
 
 
 def validate_schema_shape(schema: dict) -> None:
-    """Reject schemas using keywords outside the supported subset."""
+    """拒绝使用支持子集以外关键词的模式。"""
     if not isinstance(schema, dict):
         raise ValueError("schema must be a dict")
     unknown = set(schema.keys()) - ALLOWED_KEYWORDS
     if unknown:
+        # 错误：模式使用了不支持的关键词。
         raise ValueError(f"unsupported schema keywords: {sorted(unknown)}")
     t = schema.get("type")
     if t is not None and t not in PRIMITIVE_TYPE_MAP:
@@ -173,6 +178,7 @@ def _walk(schema: dict, value: Any, path: str, errs: list[ValidationError]) -> N
         errs.append(ValidationError(
             path=path or "/",
             keyword="type",
+            # 错误模板：预期类型与实际类型不一致。
             message=f"expected {t}, got {type(value).__name__}",
         ))
         return
@@ -224,6 +230,7 @@ def _check_object(schema: dict, value: dict, path: str, errs: list[ValidationErr
             errs.append(ValidationError(
                 path=_path(path, req_name),
                 keyword="required",
+                # 错误：缺少必需属性。
                 message=f"missing required property {req_name!r}",
             ))
     props = schema.get("properties", {})
@@ -248,6 +255,7 @@ def _demo() -> None:
 
     registry.register(
         name="db.get_user",
+        # 工具描述：根据 ID 获取用户记录；保留注册元数据原文。
         description="Fetch a user record by id.",
         schema={
             "type": "object",
@@ -266,6 +274,7 @@ def _demo() -> None:
 
     cases = [
         {"id": 42, "fields": ["id", "name"]},
+        # 故意使用字符串形式的“42”，用于验证整数类型校验失败。
         {"id": "forty-two"},
         {"fields": ["id"]},
         {"id": 1, "fields": ["id", "phone"]},

@@ -1,4 +1,4 @@
-"""Companion validator for this lesson's docs/en.md tool catalog."""
+"""本课 docs/en.md 工具目录的配套验证器。检查工具契约、错误语义与渐进式发现字段；不执行外部工具。"""
 
 from __future__ import annotations
 

@@ -1,11 +1,9 @@
-"""Content classifier router.
+"""内容分类器路由示例。
 
-Wires three output-side classifiers behind a single router that picks the
-maximum severity, runs the corresponding action (block, redact, warn, log),
-and returns a structured Action object the safety gate can consume.
+把三个输出侧分类器接入统一路由器，选择最高严重度，并执行相应的 block、redact、warn
+或 log 动作，同时记录触发的分类器。这里的规则与动作是本地教学夹具，不构成完整内容审核系统。
 
-Run: python3 main.py
-"""
+运行：python3 main.py"""
 
 from __future__ import annotations
 
@@ -84,27 +82,27 @@ class Router:
 
 _DEMO_OUTPUTS: list[dict[str, str]] = [
     {
-        "case": "clean response",
+        "案例": "clean response",
         "output": "Here is a Python function that reverses a linked list using an iterative pointer swap.",
     },
     {
-        "case": "low toxicity",
+        "案例": "low toxicity",
         "output": "You moron, your code is full of bugs.",
     },
     {
-        "case": "medium pii (email)",
+        "案例": "medium pii (email)",
         "output": "You can reach our support team at help@example.com for follow up.",
     },
     {
-        "case": "high pii (luhn-valid card)",
+        "案例": "high pii (luhn-valid card)",
         "output": "Sure, the card on file is 4111 1111 1111 1111 and the address is 1 Pine St.",
     },
     {
-        "case": "instruction leakage",
+        "案例": "instruction leakage",
         "output": "SYSTEM: You are PolicyBot, follow internal policy. As PolicyBot I will now answer.",
     },
     {
-        "case": "negated toxicity",
+        "案例": "negated toxicity",
         "output": "You are not stupid, that was a good question.",
     },
 ]
@@ -120,26 +118,26 @@ def write_report(actions: list[dict[str, object]]) -> Path:
 def demo() -> int:
     router = Router()
     report = []
-    print("Content classifier router demo")
+    print("内容分类器路由演示")
     print()
-    print(f"  {'case':28} {'verb':8} {'severity':9} fired")
+    print(f"  {'案例':28} {'动作':8} {'严重度':9} 触发项")
     for fixture in _DEMO_OUTPUTS:
         action = router.run(fixture["output"])
         fired = ",".join(action.metadata["fired"]) or "-"
-        print(f"  {fixture['case']:28} {action.verb:8} {action.severity:9} {fired}")
+        print(f"  {fixture['案例']:28} {action.verb:8} {action.severity:9} {fired}")
         report.append(
             {
-                "case": fixture["case"],
+                "案例": fixture["案例"],
                 "input": fixture["output"],
-                "verb": action.verb,
-                "severity": action.severity,
+                "动作": action.verb,
+                "严重度": action.severity,
                 "output": action.output,
                 "verdicts": action.verdicts,
                 "metadata": action.metadata,
             }
         )
     path = write_report(report)
-    print(f"\n  artifact written to {path}")
+    print(f"\n  产物已写入：{path}")
     return 0
 
 

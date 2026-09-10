@@ -127,7 +127,7 @@ def main():
     rng = random.Random(31)
     net = init_net(in_dim=5, hidden=24, out_dim=1, rng=rng)
 
-    print("=== training flow matching on two-mode mixture ===")
+    print("=== 在双峰混合分布上训练流匹配（flow matching） ===")
     train(net, steps=6000, lr=0.01, rng=rng)
 
     print()
@@ -135,13 +135,13 @@ def main():
         samples = [sample(net, num_steps, rng) for _ in range(500)]
         m = sum(samples) / len(samples)
         pos = sum(1 for s in samples if s > 0)
-        print(f"=== {num_steps}-step Euler integration ===")
+        print(f"=== {num_steps} 步欧拉积分 ===")
         print(histogram(samples))
-        print(f"mean {m:+.2f}, left mode = {500 - pos}, right mode = {pos}")
+        print(f"均值 {m:+.2f}，左侧峰的样本数 = {500 - pos}，右侧峰的样本数 = {pos}")
         print()
 
-    print("takeaway: straight-line flow matching lets Euler work at 4-8 steps.")
-    print("          DDPM needs 20+ for similar quality in this toy.")
+    print("要点：沿直线路径进行流匹配，可让欧拉法在 4–8 步内完成采样。")
+    print("      在这个简化示例中，DDPM 需要 20 步以上才能达到类似质量。")
 
 
 if __name__ == "__main__":

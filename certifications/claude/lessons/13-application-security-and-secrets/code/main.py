@@ -1,8 +1,7 @@
-"""Companion code for:
-certifications/claude/lessons/13-application-security-and-secrets/docs/en.md
-It separates untrusted model intent from deterministic authorization.
-Controls follow official Anthropic safety guidance and OWASP LLM concepts.
-"""
+"""第 13 课应用安全与 secrets 配套代码。
+
+对应 docs/en.md：把不可信模型意图与受信任代码执行分离，并演示高风险 capability gate、日志脱敏和环境 secret 边界。
+这里的规则是教学防线，不构成完整沙箱、密钥管理或应用安全审计。"""
 
 from __future__ import annotations
 
@@ -35,7 +34,7 @@ class Decision:
 
 
 class PolicyGate:
-    """Evaluate high-risk capabilities before a tool handler sees them."""
+    """在工具 handler 接收请求之前评估高风险 capability。"""
 
     def __init__(self, allowed_roots: list[str], allowed_hosts: list[str]) -> None:
         self.allowed_roots = tuple(os.path.realpath(path) for path in allowed_roots)
@@ -95,12 +94,12 @@ class PolicyGate:
 
 
 def redact(value: str) -> str:
-    """Remove common secret assignments before a string reaches logs."""
+    """在字符串进入日志前移除常见 secret 赋值形式。"""
     return SECRET_VALUE_PATTERN.sub(lambda match: f"{match.group(1)}=[REDACTED]", value)
 
 
 class EnvironmentSecrets:
-    """Return secret values to trusted code without logging or serialization helpers."""
+    """把 secret 值返回给可信代码，同时避免提供日志或序列化辅助接口。"""
 
     def require(self, name: str) -> str:
         if not re.fullmatch(r"[A-Z][A-Z0-9_]+", name):

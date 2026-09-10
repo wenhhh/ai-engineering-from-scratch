@@ -1,4 +1,18 @@
-"""Probe observable container boundaries and print one JSON report."""
+"""探测可观察到的容器边界，并输出一份 JSON 报告。
+
+本程序会实际尝试读写文件和连接网络，只应按本课的容器实验方式运行，
+不能把在普通宿主环境中执行它当作“沙箱验证通过”。
+读取 /input/message.txt 应成功；写入 /app/escape.txt 应失败；
+写入 /tmp/probe.txt 应成功；访问 example.com:443 应失败。
+环境变量 DEMO_VALUE 还必须等于固定标记 bounded（受限）。
+
+固定输入 declared read-only input 的含义是“已声明的只读输入”；
+unexpected 表示“不应发生的写入”，bounded 表示“处于限制内”。
+这些标记、路径和报告字段保持原值，避免改变实验条件。
+报告中的 declaredInput/imageFilesystemWrite/temporaryWrite/networkConnection
+分别对应声明的输入、镜像文件系统写入、临时目录写入和网络连接。
+本次翻译未运行真实容器，不据此声称容器隔离已验收。
+"""
 
 from __future__ import annotations
 

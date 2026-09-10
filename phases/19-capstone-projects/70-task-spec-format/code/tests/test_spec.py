@@ -1,4 +1,7 @@
-"""Tests for task spec validator, post-process, fixture loader."""
+"""任务规范校验器、后处理和夹具加载器的单元测试。
+
+字段、错误值、JSONL 夹具及全部断言保持原样。
+"""
 
 from __future__ import annotations
 

@@ -1,7 +1,11 @@
-"""MIO-style four-modality tokenizer allocation + streaming decode latency calc.
+"""MIO 风格的四模态词表分配与流式解码延迟计算。
 
-Stdlib. Prints the vocab layout and a step-by-step latency trace for a
-spoken-dialogue request where MIO consumes speech, generates speech.
+仅使用标准库。打印词表布局，以及一个语音对话请求的逐步延迟轨迹：
+MIO 接收语音，再生成语音。
+
+译注：路由器中的 kind、payload、path 为程序字段；模态枚举和分词器路径
+标识保留原值。示例输入 Hello（你好）、cat.png、user.wav、loop.mp3
+分别代表文本、图像、语音和音乐；特殊模态标签不翻译。
 """
 
 from __future__ import annotations
@@ -24,11 +28,11 @@ def build_vocab() -> list[VocabSlot]:
     slots = []
     cursor = 0
     plan = [
-        ("text BPE",      32000),
-        ("image SEED",     4096),
-        ("speech L0",      4096),
-        ("speech L1..L7", 4096),
-        ("music",          8192),
+        ("文本 BPE",      32000),
+        ("图像 SEED",     4096),
+        ("语音 L0",      4096),
+        ("语音 L1..L7", 4096),
+        ("音乐",          8192),
         ("<image>",           1),
         ("</image>",          1),
         ("<speech>",          1),
@@ -43,17 +47,17 @@ def build_vocab() -> list[VocabSlot]:
 
 
 def print_vocab(slots: list[VocabSlot]) -> None:
-    print("\nSHARED VOCABULARY LAYOUT")
+    print("\n共享词表布局")
     print("-" * 60)
-    print(f"  {'slot':<18}{'start':>8}{'end':>8}{'size':>8}")
+    print(f"  {'分区':<18}{'起始位置':>8}{'结束位置':>8}{'大小':>8}")
     for s in slots:
         print(f"  {s.name:<18}{s.start:>8}{s.end:>8}{s.size:>8}")
     total = slots[-1].end
-    print(f"  {'TOTAL':<18}{total:>8}{'(vocab size)':>16}")
+    print(f"  {'合计':<18}{total:>8}{'（词表大小）':>16}")
 
 
 def route_inputs(inputs: list[dict]) -> list[dict]:
-    """Classify each input and assign a tokenizer path."""
+    """对每个输入进行分类，并分配相应的分词器处理路径。"""
     routed = []
     for inp in inputs:
         kind = inp["kind"]
@@ -82,61 +86,61 @@ def streaming_decode_latency(
     model_size_b: int = 8,
 ) -> list[LatencyTrace]:
     trace = []
-    trace.append(LatencyTrace("mic audio -> speech tokens",
+    trace.append(LatencyTrace("麦克风音频 -> 语音词元",
                               prompt_audio_seconds * 20))
-    trace.append(LatencyTrace("prefill prompt tokens",
+    trace.append(LatencyTrace("提示词元预填充",
                               80 * (model_size_b / 8.0)))
-    trace.append(LatencyTrace("first output token",
+    trace.append(LatencyTrace("首个输出词元",
                               40 * (model_size_b / 8.0)))
-    trace.append(LatencyTrace("residual-VQ layers 1..7",
+    trace.append(LatencyTrace("残差向量量化（VQ）第 1..7 层",
                               30))
-    trace.append(LatencyTrace("speech decoder (Encodec-like)",
+    trace.append(LatencyTrace("语音解码器（类似 Encodec）",
                               80))
     return trace
 
 
 def print_trace(trace: list[LatencyTrace]) -> None:
-    print("\nSTREAMING DECODE LATENCY (time-to-first-audio-byte)")
+    print("\n流式解码延迟（首个音频字节延迟）")
     print("-" * 60)
     total = 0.0
     for t in trace:
         total += t.ms
-        print(f"  {t.label:<38}  +{t.ms:>5.0f} ms   (cumul {total:>6.0f})")
+        print(f"  {t.label:<38}  +{t.ms:>5.0f} ms   （累计 {total:>6.0f}）")
     print("-" * 60)
-    print(f"  total TTFAB: {total:.0f} ms")
+    print(f"  首个音频字节总延迟（TTFAB）：{total:.0f} ms")
     if total < 500:
-        print(f"  -> conversational feel (GPT-4o-class)")
+        print(f"  -> 对话感较自然（GPT-4o 级别）")
     elif total < 800:
-        print(f"  -> acceptable (first-gen open any-to-any)")
+        print(f"  -> 可以接受（第一代开源任意模态互转模型）")
     else:
-        print(f"  -> sluggish, consider smaller model or parallel decode")
+        print(f"  -> 反应较慢，可考虑更小的模型或并行解码")
 
 
 def demo_chain_of_visual_thought() -> None:
-    print("\nCHAIN-OF-VISUAL-THOUGHT (MIO)")
+    print("\n视觉思维链（MIO）")
     print("-" * 60)
-    prompt = "Is the cat climbing the tree in this photo?"
+    prompt = "这张照片中的猫正在爬树吗？"
     steps = [
-        "user text -> vision tokens",
-        "model sketches intermediate image <image> ... </image>",
-        "model emits text analysis of sketch",
-        "model concludes with yes/no + justification",
+        "用户文本 -> 视觉词元",
+        "模型绘制中间图像 <image> ... </image>",
+        "模型输出对草图的文字分析",
+        "模型给出是/否结论及理由",
     ]
-    print(f"  prompt: {prompt}")
+    print(f"  提示词：{prompt}")
     for i, s in enumerate(steps, 1):
-        print(f"    step {i}: {s}")
-    print("  wins on spatial-reasoning benchmarks; hurts latency.")
+        print(f"    步骤 {i}: {s}")
+    print("  在空间推理基准上表现更好，但会增加延迟。")
 
 
 def main() -> None:
     print("=" * 60)
-    print("MIO ANY-TO-ANY STREAMING (Phase 12, Lesson 16)")
+    print("MIO 任意模态互转与流式输出（阶段 12，第 16 课）")
     print("=" * 60)
 
     vocab = build_vocab()
     print_vocab(vocab)
 
-    print("\nROUTER: four inputs -> four tokenizers")
+    print("\n路由器：四种输入 -> 四种分词器")
     print("-" * 60)
     inputs = [
         {"kind": "text",   "payload": "Hello"},

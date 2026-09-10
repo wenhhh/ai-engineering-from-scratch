@@ -1,4 +1,7 @@
-"""Tests for the byte-level BPE tokenizer."""
+"""字节级 BPE 分词器测试。
+
+语料、特殊词元、往返输入、合并计数和断言保持原样。
+"""
 
 from __future__ import annotations
 

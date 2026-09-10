@@ -1,14 +1,18 @@
-"""Phase 13 Lesson 19 - A2A agent-to-agent protocol.
+"""阶段 13，第 19 课：A2A 智能体间通信协议。
 
-Research agent calls writer agent via A2A:
-  1. Research agent fetches writer's Agent Card
-  2. Submits a Task with text + file + data parts
-  3. Writer transitions working -> input_required -> working -> completed
-  4. Research agent receives an Artifact
+研究智能体通过 A2A 调用写作智能体：
+  1. 研究智能体获取写作智能体的 Agent Card（智能体名片）
+  2. 提交包含文本、文件和数据部分的 Task（任务）
+  3. 写作智能体的状态依次变为 working -> input_required -> working -> completed
+     即“处理中 -> 等待补充输入 -> 处理中 -> 已完成”
+  4. 研究智能体收到 Artifact（产物）
 
-Stdlib only; in-process transport stands in for JSON-RPC over HTTP.
+仅依赖标准库；用进程内传递代替经 HTTP 发送的 JSON-RPC 请求。
+译注：字段名、状态值、技能 ID、MIME 类型和模拟 PDF 字节保持原样。
+任务所需的长度字段实际为 targetLength；原提示中的 target_length 已按代码纠正。
+short 表示简短。演示仅生成固定文本，不会读取或总结真实论文。
 
-Run: python code/main.py
+运行：python code/main.py
 """
 
 from __future__ import annotations
@@ -22,14 +26,14 @@ from dataclasses import dataclass, field
 WRITER_AGENT_CARD = {
     "schemaVersion": "1.0",
     "name": "writer-agent",
-    "description": "Drafts technical summaries and reports from source material.",
+    "description": "根据源材料撰写技术摘要和报告。",
     "url": "https://writer.example.com/a2a",
     "version": "1.0.0",
     "skills": [
         {
             "id": "draft_report",
-            "name": "Draft report",
-            "description": "Given source material and a target length, produce a report.",
+            "name": "撰写报告",
+            "description": "根据提供的源材料和目标长度生成报告。",
             "inputModes": ["text", "file", "data"],
             "outputModes": ["text", "artifact"],
         }
@@ -76,15 +80,15 @@ def writer_tasks_send(skill_id: str, message: Message) -> Task:
     TASK_STORE[task.id] = task
     task.state = "working"
     task.append(message)
-    print(f"    WRITER  : started task {task.id} skill={skill_id}")
-    # needs target_length
+    print(f"    写作智能体：开始任务 {task.id}，技能={skill_id}")
+    # 需要提供 targetLength（目标长度）
     data_parts = [p for p in message.parts if p.kind == "data"]
     if not data_parts or "targetLength" not in data_parts[0].payload:
         task.state = "input_required"
         task.append(Message(role="agent", parts=[
-            Part("text", {"text": "Please specify target_length as a data part."})
+            Part("text", {"text": "请在数据部分中提供 targetLength（目标长度）。"})
         ]))
-        print(f"    WRITER  : paused input_required")
+        print(f"    写作智能体：已暂停，等待补充输入（input_required）")
     else:
         finish(task, data_parts[0].payload["targetLength"])
     return task
@@ -101,54 +105,54 @@ def writer_tasks_reply(task_id: str, message: Message) -> Task:
 
 
 def finish(task: Task, length: str) -> None:
-    text = f"[writer agent] {length} summary of provided source: "\
-           f"topic identified, key points extracted, conclusion drafted."
+    text = f"[写作智能体] {length}的源材料摘要："\
+           f"已识别主题、提取要点并撰写结论。"
     task.artifact = Artifact(
         name="summary",
         mimeType="text/markdown",
         parts=[Part("text", {"text": text})],
     )
     task.state = "completed"
-    print(f"    WRITER  : completed task {task.id}")
+    print(f"    写作智能体：已完成任务 {task.id}")
 
 
 def research_agent_flow() -> None:
     print("=" * 72)
-    print("PHASE 13 LESSON 18 - A2A CALL FROM RESEARCH TO WRITER")
+    print("阶段 13，第 19 课——研究智能体通过 A2A 调用写作智能体")
     print("=" * 72)
 
-    print("\n--- research agent fetches writer Agent Card ---")
-    print(json.dumps({k: WRITER_AGENT_CARD[k] for k in ("name", "url", "skills")}, indent=2))
+    print("\n--- 研究智能体获取写作智能体名片 ---")
+    print(json.dumps({k: WRITER_AGENT_CARD[k] for k in ("name", "url", "skills")}, indent=2, ensure_ascii=False))
 
     skill = WRITER_AGENT_CARD["skills"][0]
     skill_id = skill["id"]
-    print(f"\n  research agent will invoke skill: {skill_id}")
+    print(f"\n  研究智能体将调用技能：{skill_id}")
 
     msg = Message(role="user", parts=[
-        Part("text", {"text": "Summarize the attached paper."}),
+        Part("text", {"text": "请总结所附论文。"}),
         Part("file", {"file": {"name": "paper.pdf", "mimeType": "application/pdf",
                                 "bytes": base64.b64encode(b"fake-pdf").decode()}}),
     ])
     task = writer_tasks_send(skill_id, msg)
-    print(f"  research : task state = {task.state}")
+    print(f"  研究智能体：任务状态 = {task.state}")
 
     if task.state == "input_required":
-        print("\n--- research agent supplies the missing data ---")
+        print("\n--- 研究智能体补齐缺失数据 ---")
         followup = Message(role="user", parts=[
-            Part("data", {"targetLength": "3 paragraphs"}),
+            Part("data", {"targetLength": "3 段"}),
         ])
         task = writer_tasks_reply(task.id, followup)
-        print(f"  research : task state = {task.state}")
+        print(f"  研究智能体：任务状态 = {task.state}")
 
-    print("\n--- research agent reads artifact ---")
+    print("\n--- 研究智能体读取产物 ---")
     if task.artifact:
-        print(f"  name     : {task.artifact.name}")
-        print(f"  mimeType : {task.artifact.mimeType}")
-        print(f"  content  : {task.artifact.parts[0].payload['text']}")
+        print(f"  名称     ：{task.artifact.name}")
+        print(f"  MIME 类型：{task.artifact.mimeType}")
+        print(f"  内容     ：{task.artifact.parts[0].payload['text']}")
 
-    print("\n--- lifecycle observation ---")
-    print(f"  final state : {task.state}")
-    print(f"  messages    : {len(task.messages)}")
+    print("\n--- 观察任务生命周期 ---")
+    print(f"  最终状态：{task.state}")
+    print(f"  消息数量：{len(task.messages)}")
 
 
 if __name__ == "__main__":

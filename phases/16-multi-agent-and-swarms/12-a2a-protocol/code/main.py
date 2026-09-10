@@ -1,11 +1,14 @@
-"""A2A-minimal server and client using http.server.
+"""使用 http.server 编写的 A2A 风格最小客户端与服务端。
 
-Implements the discovery-submit-poll-result flow:
-  - GET /.well-known/agent.json  -> Agent Card
-  - POST /tasks                  -> create task
-  - GET /tasks/{id}              -> state + artifact
+演示发现 -> 提交 -> 轮询 -> 读取结果的流程：
+  GET /.well-known/agent.json：获取智能体描述卡；
+  POST /tasks：创建任务；
+  GET /tasks/{id}：查询状态与产物。
+服务端在本地线程中运行，客户端访问 localhost:8765 并打印轨迹。
 
-Server runs in a background thread; client talks to it and prints the trace.
+译注：端点、字段与 a2a-0.3 标签沿用固定原文；这是自定义简化实现，未做真实
+协议一致性验证。认证设置为 none，不应对外暴露。审阅只匹配 return 和 def
+子串；没有执行源码、鉴权、输入大小限制、持久化或完整错误处理。
 """
 from __future__ import annotations
 
@@ -60,8 +63,10 @@ class TaskStore:
                 code = t["payload"].get("code", "")
                 issues = []
                 if "return" not in code:
+                    # 审阅结果：没有 return 语句；属于返回给客户端的结构化结果，保留英文。
                     issues.append("no return statement")
                 if "def " not in code:
+                    # 审阅结果：没有函数定义。
                     issues.append("no function definition")
                 t["artifact"] = {
                     "type": "structured",
@@ -70,6 +75,7 @@ class TaskStore:
                 t["state"] = "completed"
             else:
                 t["state"] = "failed"
+                # 失败原因：未知技能。
                 t["artifact"] = {"type": "text", "data": f"unknown skill '{t['skill']}'"}
 
     def get(self, tid: str) -> dict | None:
@@ -100,10 +106,12 @@ class A2AHandler(BaseHTTPRequestHandler):
             tid = self.path.split("/tasks/", 1)[1]
             task = STORE.get(tid)
             if task is None:
+                # HTTP 错误：任务不存在。
                 self._send_json(404, {"error": "not found"})
                 return
             self._send_json(200, task)
             return
+        # HTTP 错误：路由不存在。
         self._send_json(404, {"error": "route not found"})
 
     def do_POST(self) -> None:
@@ -113,6 +121,7 @@ class A2AHandler(BaseHTTPRequestHandler):
             tid = STORE.create(body.get("skill", ""), body.get("payload", {}))
             self._send_json(201, {"task_id": tid, "state": "submitted"})
             return
+        # HTTP 错误：路由不存在。
         self._send_json(404, {"error": "route not found"})
 
 
@@ -131,28 +140,28 @@ def http_json(method: str, url: str, body: Any = None) -> dict:
 
 
 def run_client() -> None:
-    print("\n[1] discovery: GET /.well-known/agent.json")
+    print("\n[1] 发现：GET /.well-known/agent.json")
     card = http_json("GET", "http://localhost:8765/.well-known/agent.json")
-    print(f"    name={card['name']}, skills={card['skills']}")
+    print(f"    名称={card['name']}，技能={card['skills']}")
 
-    print("\n[2] submit task: POST /tasks")
+    print("\n[2] 提交任务：POST /tasks")
     submission = {"skill": "review-python", "payload": {"code": "x = 1\nprint(x)\n"}}
     resp = http_json("POST", card["endpoints"]["tasks"], submission)
     tid = resp["task_id"]
-    print(f"    task_id={tid}, state={resp['state']}")
+    print(f"    任务 ID={tid}，状态={resp['state']}")
 
-    print("\n[3] poll until completed")
+    print("\n[3] 轮询，直到进入终态或达到次数上限")
     for i in range(10):
         task = http_json("GET", f"http://localhost:8765/tasks/{tid}")
-        print(f"    attempt {i + 1}: state={task['state']}")
+        print(f"    第 {i + 1} 次：状态={task['state']}")
         if task["state"] in ("completed", "failed"):
-            print(f"    artifact: {task['artifact']}")
+            print(f"    产物：{task['artifact']}")
             break
         time.sleep(0.1)
 
 
 def main() -> None:
-    print("A2A minimal protocol demo")
+    print("A2A 风格的最小协议演示")
     print("-" * 30)
     server = run_server()
     time.sleep(0.1)
@@ -160,8 +169,8 @@ def main() -> None:
         run_client()
     finally:
         server.shutdown()
-    print("\nKey insight: discovery + task lifecycle + typed artifact + auth is the A2A surface.")
-    print("MCP is agent <-> tool (vertical); A2A is agent <-> agent (horizontal). Production uses both.")
+    print("\n要点：观察智能体发现、任务生命周期和带类型的产物；本例没有实现认证。")
+    print("原文以“智能体—工具”和“智能体—智能体”区分协作方向；真实集成仍需核对协议与认证要求。")
 
 
 if __name__ == "__main__":

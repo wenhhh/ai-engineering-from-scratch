@@ -1,4 +1,4 @@
-"""Tests for the deterministic Associate capstone validator."""
+"""确定性 Associate 综合项目验证器测试。"""
 
 from __future__ import annotations
 

@@ -1,4 +1,7 @@
-"""Tests for the cross-encoder reranker and the two-stage pipeline."""
+"""交叉编码器重排器与两阶段流水线的单元测试。
+
+只翻译说明和注释；训练文本、查询、排名、分数与断言保持原样。
+"""
 
 from __future__ import annotations
 
@@ -29,14 +32,14 @@ from main import (  # noqa: E402
 class TestTokenizePair(unittest.TestCase):
     def test_packs_with_separators(self) -> None:
         ids, tids = tokenize_pair("abort upload", "abort the upload", max_len=16)
-        self.assertEqual(ids[0], 2)  # CLS
-        self.assertIn(1, ids)  # SEP appears
+        self.assertEqual(ids[0], 2)  # CLS 位置
+        self.assertIn(1, ids)  # 应包含 SEP
         self.assertEqual(len(ids), 16)
         self.assertEqual(len(tids), 16)
 
     def test_type_ids_split_query_and_doc(self) -> None:
         ids, tids = tokenize_pair("alpha", "beta gamma", max_len=12)
-        # type_ids start as zero (query), flip to 1 (doc) after first SEP
+        # type_ids 起始为 0（查询），首个 SEP 后切换为 1（文档）。
         self.assertEqual(tids[0], 0)
         ones = [t for t in tids if t == 1]
         self.assertGreater(len(ones), 0)
@@ -82,7 +85,7 @@ class TestTrainTiny(unittest.TestCase):
         pos = Candidate("dy", "AbortMultipartOnFail aborts an in-flight S3 multipart upload "
                               "and decrements the per-bucket retry budget.")
         scored = rerank(model, pos_query, [neg, pos], top_k=2)
-        # pos should land at rank 1 after training
+        # 训练后正样本应排到第 1 名。
         self.assertEqual(scored[0][0].doc_id, "dy")
 
 
@@ -131,7 +134,7 @@ class TestPipeline(unittest.TestCase):
         train_tiny(model, TRAIN_TRIPLES, epochs=60)
         result = pipeline("how do we abort a multipart upload",
                           retriever, model, top_n=8, top_k=3)
-        # rerank should keep d1 (the abort doc) somewhere in top-3
+        # 重排后 d1（中止上传文档）应仍位于前三名。
         top_ids = [c.doc_id for c, _ in result["reranked_top_k"]]
         self.assertIn("d1", top_ids)
 

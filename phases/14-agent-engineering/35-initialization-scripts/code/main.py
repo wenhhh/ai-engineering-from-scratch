@@ -1,10 +1,16 @@
-"""Deterministic agent initialization script.
+"""确定性的智能体初始化检查脚本。
 
-Runs probes (runtime, deps, test command, env, state freshness, last-known-good
-diff, timing budget), writes init_report.json, supports prereqs.lock TTL
-short-circuit, and exits non-zero when any block-severity probe fails.
+检查运行时、依赖、测试命令、环境变量、状态新鲜度、相对于最近已知良好版本的差异，
+以及单项检查耗时；写入 init_report.json，支持使用 prereqs.lock 的有效期跳过检查，
+当有检查返回 fail 时以非零退出码结束。
 
-Run: python3 code/main.py
+译注：测试命令检查只确认 python3 可从 PATH 找到，不会运行测试。
+缓存命中时会跳过全部探针；指纹未覆盖状态文件、Git 差异或所有运行环境变化，
+因此“缓存新鲜”不等于这些条件已经重新验证。LKG 为 last-known-good，即最近已知良好版本。
+探针名称、pass/warn/fail 状态及诊断字符串保留英文；missing 表示缺失，
+skipped 表示跳过，state is ... old 表示状态文件距今的时间，files changed 表示变化文件数。
+
+运行：python3 code/main.py
 """
 
 from __future__ import annotations
@@ -106,9 +112,9 @@ def probe_state_freshness() -> Probe:
 
 @_timed
 def probe_lkg_diff() -> Probe:
-    """Refuse to launch when diff against last-known-good exceeds the file budget.
+    """相对于最近已知良好版本的差异超出文件数预算时，拒绝启动。
 
-    Anchors every session against the same baseline so drift cannot compound.
+    每个会话都对照同一基线，避免通过不断移动基线掩盖累计偏移。
     """
     if not LKG_PATH.exists():
         return Probe("lkg_diff", "warn", "no last_known_good.json; pin one after first successful merge")
@@ -146,9 +152,10 @@ def _deps_fingerprint() -> str:
 
 
 def lock_is_fresh() -> bool:
-    """Cache pattern: re-use prior probe pass when nothing material changed.
+    """缓存模式：在指纹未变且有效期未过时复用先前检查结果。
 
-    Same shape as Docker layer caches: idempotent probe + content hash = skip.
+    类似 Docker 层缓存：幂等检查与内容哈希共同决定是否跳过。
+    此处指纹只覆盖代码列出的依赖与配置，不覆盖所有会影响探针结果的状态。
     """
     if not LOCK_PATH.exists():
         return False
@@ -187,8 +194,8 @@ def run_probes() -> list[Probe]:
 
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--no-cache", action="store_true", help="ignore prereqs.lock and run every probe")
-    ap.add_argument("--write-lkg", action="store_true", help="pin current HEAD as last-known-good")
+    ap.add_argument("--no-cache", action="store_true", help="忽略 prereqs.lock，运行全部检查")
+    ap.add_argument("--write-lkg", action="store_true", help="将当前 HEAD 固定为最近已知良好版本")
     args = ap.parse_args(argv)
 
     WORK.mkdir(exist_ok=True)
@@ -197,14 +204,14 @@ def main(argv: list[str] | None = None) -> int:
         try:
             head = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=HERE, text=True, timeout=2.0).strip()
             LKG_PATH.write_text(json.dumps({"commit": head, "written_at": time.time()}, indent=2) + "\n")
-            print(f"pinned LKG -> {head[:7]}")
+            print(f"已固定 LKG -> {head[:7]}")
             return 0
         except (FileNotFoundError, subprocess.CalledProcessError) as exc:
-            print(f"lkg pin failed: {exc}", file=sys.stderr)
+            print(f"固定 LKG 失败：{exc}", file=sys.stderr)
             return 1
 
     if not args.no_cache and lock_is_fresh():
-        print(f"prereqs.lock fresh (TTL {LOCK_TTL_SECONDS}s); skipping probes")
+        print(f"prereqs.lock 仍在有效期内（TTL {LOCK_TTL_SECONDS} 秒）；跳过检查")
         return 0
 
     probes = run_probes()
@@ -220,10 +227,10 @@ def main(argv: list[str] | None = None) -> int:
         print(f"  {p.name:<{width}}  {p.status:>4}  {p.duration_ms:>4}ms  {p.detail}")
 
     if not report["ok"]:
-        print("\ninit failed; refuse to launch agent", file=sys.stderr)
+        print("\n初始化失败；拒绝启动智能体", file=sys.stderr)
         return 1
     write_lock()
-    print("\ninit ok (lock refreshed)")
+    print("\n初始化检查通过（已更新缓存锁文件）")
     return 0
 
 

@@ -1,7 +1,12 @@
-"""Toy web-agent harness with execution-based eval and trajectory efficiency.
+"""简化的网页智能体评测框架：按执行结果评测，并衡量行动轨迹的步数效率。
 
-Models a minimal shopping app; 3 tasks with gold trajectories; a scripted agent
-attempts each task; we record success + steps-over-gold per OSWorld-Human.
+模拟一个最小购物应用，为三个任务指定参考轨迹步数；脚本式智能体逐个尝试任务，
+记录是否成功，以及相对于参考步数的倍率，借此说明 OSWorld-Human 风格的效率分析。
+
+译注：没有真实网页、浏览器或官方基准数据。gold_steps 是手工设定的参考步数，
+trace 中的每条记录都计作一步，包括改选商品的记录；倍率越低表示使用的步骤越少。
+购物数据、动作日志和错误消息保留英文；unknown sku 表示未知商品编号，
+not in cart 表示商品不在购物车中，empty cart 表示购物车为空。
 """
 
 from __future__ import annotations
@@ -88,13 +93,13 @@ def _agent_task_3(app: ShoppingApp) -> list[str]:
 
 def main() -> None:
     print("=" * 70)
-    print("WEBARENA/OSWORLD-STYLE HARNESS — Phase 14, Lesson 20")
+    print("WEBARENA/OSWORLD 风格评测框架——阶段 14，第 20 课")
     print("=" * 70)
 
     tasks = [
         Task(
             tid="buy_headphones",
-            description="buy the headphones",
+            description="购买耳机",
             agent=_agent_task_1,
             gold_steps=3,
             success=lambda app: any(
@@ -103,7 +108,7 @@ def main() -> None:
         ),
         Task(
             tid="buy_bundle",
-            description="buy keyboard + mouse as a bundle",
+            description="同时购买键盘和鼠标",
             agent=_agent_task_2,
             gold_steps=4,
             success=lambda app: any(
@@ -113,7 +118,7 @@ def main() -> None:
         ),
         Task(
             tid="revised_order",
-            description="swap keyboard for mouse mid-order",
+            description="下单过程中将键盘换成鼠标",
             agent=_agent_task_3,
             gold_steps=5,
             success=lambda app: any(
@@ -135,9 +140,9 @@ def main() -> None:
         steps = len(trace)
         efficiency = steps / task.gold_steps
         print(f"\n[{task.tid}] {task.description}")
-        print(f"  success: {ok}")
-        print(f"  steps:   {steps}  (gold {task.gold_steps}, "
-              f"efficiency {efficiency:.2f}x)")
+        print(f"  是否成功：{ok}")
+        print(f"  执行步数：{steps}  （参考步数 {task.gold_steps}，"
+              f"相对步数倍率 {efficiency:.2f} 倍）")
         for line in trace:
             print(f"    - {line}")
         if ok:
@@ -145,12 +150,12 @@ def main() -> None:
         total_steps += steps
         total_gold += task.gold_steps
 
-    print(f"\naggregate")
-    print(f"  success rate:     {total_success}/{len(tasks)}")
-    print(f"  step efficiency:  {total_steps / total_gold:.2f}x over gold")
+    print(f"\n汇总")
+    print(f"  成功率：       {total_success}/{len(tasks)}")
+    print(f"  相对步数倍率： {total_steps / total_gold:.2f} 倍于参考步数")
     print()
-    print("WebArena: execution-based, gym APIs, state check decides success.")
-    print("OSWorld-Human: gold trajectories reveal 1.4-2.7x step inefficiency.")
+    print("WebArena 的设计思路：通过环境接口执行动作，以最终状态检查判定成功。")
+    print("原文关于 OSWorld-Human 的参考结论：智能体步数是参考轨迹的 1.4—2.7 倍；不是本例实测范围。")
 
 
 if __name__ == "__main__":

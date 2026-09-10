@@ -1,3 +1,9 @@
+/**
+ * 课程排序、平滑掌握度与间隔调度测试。
+ * 只翻译名称与说明，断言及夹具完全保留。最后一项允许 pick 为 null，
+ * 不能用它声称已经证明必定选出到期复习；两项名称也按实际断言缩小表述范围。
+ */
+
 import { test } from "node:test";
 import { strict as assert } from "node:assert";
 import { CURRICULUM, buildIndex, pickNextLesson, topoOrder } from "../src/curriculum.js";
@@ -5,7 +11,7 @@ import { MasteryStore } from "../src/mastery.js";
 import { scheduleNextDue, MIN_INTERVAL_MS, MAX_INTERVAL_MS } from "../src/repetition.js";
 import { BASE_INTERVAL_MS, MASTERY_THRESHOLD } from "../src/types.js";
 
-test("topoOrder respects prereqs (parent before child)", () => {
+test("topoOrder 保持先修课程在后续课程之前", () => {
   const order = topoOrder(CURRICULUM);
   const pos = new Map(order.map((id, i) => [id, i]));
   for (const l of CURRICULUM) {
@@ -18,12 +24,12 @@ test("topoOrder respects prereqs (parent before child)", () => {
   }
 });
 
-test("topoOrder produces stable lexicographic tie-break", () => {
+test("topoOrder 的首个课程符合夹具中的字典序预期", () => {
   const order = topoOrder(CURRICULUM);
   assert.equal(order[0], "py-01");
 });
 
-test("pickNextLesson returns first eligible un-mastered lesson", () => {
+test("pickNextLesson 返回首个满足条件且尚未掌握的课程", () => {
   const store = new MasteryStore();
   const index = buildIndex(CURRICULUM);
   const topo = topoOrder(CURRICULUM);
@@ -33,7 +39,7 @@ test("pickNextLesson returns first eligible un-mastered lesson", () => {
   assert.equal(pick.reason, "new_eligible");
 });
 
-test("BKT-ish update: score increases on correct, falls on wrong", () => {
+test("平滑分数更新：答对后上升，答错后不高于此前分数", () => {
   const store = new MasteryStore();
   const score1 = store.record("py-01", true, 1_000).score;
   assert.ok(score1 > 0);
@@ -46,7 +52,7 @@ test("BKT-ish update: score increases on correct, falls on wrong", () => {
   assert.ok(after3.score <= score2, `expected ${after3.score} <= ${score2}`);
 });
 
-test("pickNextLesson advances frontier after mastery", () => {
+test("pickNextLesson 在已掌握当前课程后选择后续课程", () => {
   const store = new MasteryStore();
   const index = buildIndex(CURRICULUM);
   const topo = topoOrder(CURRICULUM);
@@ -61,7 +67,7 @@ test("pickNextLesson advances frontier after mastery", () => {
   assert.notEqual(pick.lesson.id, "py-01");
 });
 
-test("scheduleNextDue doubles interval on correct, halves on wrong", () => {
+test("scheduleNextDue 答对时将间隔翻倍，答错时减半", () => {
   const up = scheduleNextDue(BASE_INTERVAL_MS, true, 0);
   assert.equal(up.interval_ms, BASE_INTERVAL_MS * 2);
   assert.equal(up.next_due_at, BASE_INTERVAL_MS * 2);
@@ -69,14 +75,14 @@ test("scheduleNextDue doubles interval on correct, halves on wrong", () => {
   assert.equal(down.interval_ms, Math.floor(BASE_INTERVAL_MS / 2));
 });
 
-test("scheduleNextDue clamps to MIN/MAX interval", () => {
+test("scheduleNextDue 将间隔限制在最小值与最大值之间", () => {
   const tiny = scheduleNextDue(MIN_INTERVAL_MS, false, 0);
   assert.equal(tiny.interval_ms, MIN_INTERVAL_MS);
   const huge = scheduleNextDue(MAX_INTERVAL_MS, true, 0);
   assert.equal(huge.interval_ms, MAX_INTERVAL_MS);
 });
 
-test("pickNextLesson surfaces overdue review when no eligible new lessons", () => {
+test("无合格新课时，若返回复习项则其原因是 review_overdue", () => {
   const store = new MasteryStore();
   const index = buildIndex(CURRICULUM);
   const topo = topoOrder(CURRICULUM);

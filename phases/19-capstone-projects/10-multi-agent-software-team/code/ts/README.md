@@ -36,5 +36,15 @@ npm test
 
 ## 规格参考（Spec References）
 
-- 来源课程：`phases/19-capstone-projects/10-multi-agent-software-team/docs/en.md`
+- 来源课程：[中文课程](../../docs/zh.md)；固定英文对照：`../../docs/en.md`
 - [MetaGPT](https://github.com/FoundationAgents/MetaGPT)：基于角色的多智能体框架。
+
+## 实现边界与运行注意事项
+
+本例没有调用模型、创建 Git 工作树、合并代码或执行生成的测试。编码者仅写入固定文件、
+追加注释并生成 `assert True` 测试；评审者第二轮直接批准，因此批准不证明退款缺陷已修复。
+计划与源码夹具参与工作空间指纹计算，保留英文，并在源码相邻处提供中文释义。
+
+`launchWorktree` 会执行真实本地子进程，但不隔离目录、环境变量、网络或权限；
+拒绝列表只是有限的字符串检查，不是安全边界。`BRANCH` 不会创建或切换分支。
+只能在临时目录使用本例的固定可信命令，不应接收模型生成的任意命令。

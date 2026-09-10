@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Build a skill catalog from NAME=PATH scopes, highest precedence first."""
+"""按 NAME=PATH 声明的作用域构建技能目录，优先级最高的作用域排在最前。
+不执行技能正文；模型目录的字符预算和路由相关字符串保持原值。"""
 
 from __future__ import annotations
 
@@ -19,6 +20,7 @@ def frontmatter(path: Path) -> dict[str, str] | None:
         for raw_line in handle:
             consumed += len(raw_line.encode("utf-8"))
             if consumed > 8_192:
+                # 读取诊断：文件头元数据超过 8192 字节。
                 raise ValueError(f"frontmatter exceeds 8192 bytes: {path}")
             lines.append(raw_line.rstrip("\r\n"))
             if len(lines) > 1 and lines[-1] == "---":
@@ -34,12 +36,15 @@ def frontmatter(path: Path) -> dict[str, str] | None:
             index += 1
             continue
         if line[:1].isspace() or ":" not in line:
+            # 诊断：顶层行格式错误。
             raise ValueError(f"malformed top-level line {index + 1} in {path}")
         key, value = line.split(":", 1)
         key = key.strip()
         if not re.fullmatch(r"[A-Za-z][A-Za-z0-9-]*", key):
+            # 诊断：文件头元数据字段无效。
             raise ValueError(f"invalid frontmatter field {key!r} in {path}")
         if key in fields:
+            # 诊断：文件头元数据字段重复。
             raise ValueError(f"duplicate frontmatter field {key!r} in {path}")
         value = value.strip()
         if key == "metadata" and not value:
@@ -50,6 +55,7 @@ def frontmatter(path: Path) -> dict[str, str] | None:
                 if nested_line:
                     if ":" not in nested_line:
                         raise ValueError(
+                            # 诊断：metadata 行格式错误。
                             f"malformed metadata line {index + 1} in {path}"
                         )
                     nested_key, nested_value = nested_line.split(":", 1)
@@ -59,6 +65,7 @@ def frontmatter(path: Path) -> dict[str, str] | None:
                         or nested_key in nested
                     ):
                         raise ValueError(
+                            # 诊断：metadata 字段无效或重复。
                             f"invalid metadata field {nested_key!r} in {path}"
                         )
                     nested[nested_key] = nested_value.strip().strip("\"'")
@@ -80,9 +87,11 @@ def frontmatter(path: Path) -> dict[str, str] | None:
 
 def parse_scope(value: str) -> tuple[str, Path]:
     if "=" not in value:
+        # 作用域诊断：必须使用 NAME=PATH 形式声明作用域。
         raise argparse.ArgumentTypeError("scope must use NAME=PATH")
     name, raw_path = value.split("=", 1)
     if not name or not raw_path:
+        # 作用域诊断：作用域名称和路径均不能为空。
         raise argparse.ArgumentTypeError("scope name and path cannot be empty")
     return name, Path(raw_path).resolve()
 
@@ -118,6 +127,7 @@ def build(
             if not directory.is_dir() or directory.is_symlink():
                 continue
             if skill_path.is_symlink():
+                # 诊断：不允许 SKILL.md 是符号链接。
                 errors.append(f"symlinked SKILL.md is not allowed: {skill_path}")
                 continue
             if not skill_path.is_file():
@@ -132,14 +142,17 @@ def build(
             name = fields["name"]
             if len(name) > 64 or not NAME_PATTERN.fullmatch(name):
                 errors.append(
+                    # 诊断：name 不是符合可移植要求的小写连字符命名。
                     f"frontmatter name {name!r} is not valid portable kebab-case"
                 )
                 continue
             if len(fields["description"]) > 1024:
+                # 描述诊断：此 description 超过 1024 个字符。
                 errors.append(f"description exceeds 1024 characters: {skill_path}")
                 continue
             if name != directory.name:
                 errors.append(
+                    # 诊断：文件头中的 name 与目录名不一致。
                     f"frontmatter name {name!r} does not match directory {directory.name!r}"
                 )
                 continue
@@ -199,6 +212,7 @@ def build(
         omitted.insert(0, str(removed["name"]))
         used = model_size()
     if used > max_catalog_chars:
+        # 预算诊断：供模型阅读的目录超过 maxCatalogChars。
         errors.append("model-facing catalog exceeds maxCatalogChars")
 
     report_chars = 0
@@ -217,13 +231,14 @@ def main() -> None:
         nargs="+",
         type=parse_scope,
         metavar="NAME=PATH",
-        help="scope roots in precedence order, highest precedence first",
+        help="按优先级排列的作用域根目录，最高优先级在前",
     )
     parser.add_argument("--max-entries", type=int, default=40)
     parser.add_argument("--max-description-chars", type=int, default=240)
     parser.add_argument("--max-catalog-chars", type=int, default=8000)
     args = parser.parse_args()
     if min(args.max_entries, args.max_description_chars, args.max_catalog_chars) < 1:
+        # 预算诊断：所有目录预算都必须为正。
         parser.error("all catalog budgets must be positive")
     result = build(
         args.scopes,
@@ -231,7 +246,7 @@ def main() -> None:
         args.max_description_chars,
         args.max_catalog_chars,
     )
-    print(json.dumps(result, indent=2, sort_keys=True))
+    print(json.dumps(result, indent=2, sort_keys=True, ensure_ascii=False))
     if not result["valid"]:
         raise SystemExit(2)
 

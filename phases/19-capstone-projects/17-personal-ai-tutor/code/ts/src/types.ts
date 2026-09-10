@@ -1,3 +1,9 @@
+/**
+ * 课程、掌握度、选择结果与调度常量。
+ * new_eligible＝先修满足且尚未掌握；review_overdue＝到期复习。
+ * score 是本 TS 示例的平滑分数，MASTERY_THRESHOLD=0.7 与 Python 的阈值不同。
+ */
+
 export type Lesson = { id: string; title: string; prereqs: string[] };
 
 export type Mastery = {

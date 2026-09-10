@@ -1,4 +1,7 @@
-"""Unit tests for the safetensors loader, name mapper, and shape checks."""
+"""safetensors 加载器、名称映射和形状校验的单元测试。
+
+保留随机张量、参数名、转置规则、错误路径和断言原样；不以随机夹具代表真实模型验收。
+"""
 
 from __future__ import annotations
 

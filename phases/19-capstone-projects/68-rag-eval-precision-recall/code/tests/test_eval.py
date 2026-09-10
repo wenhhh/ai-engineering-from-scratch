@@ -1,4 +1,7 @@
-"""Tests for retrieval metrics, answer-grade metrics, and the eval orchestrator."""
+"""检索指标、答案质量指标和评测编排器的单元测试。
+
+仅翻译模块说明；指标键、英文词项夹具、数值边界和断言保持原样。
+"""
 
 from __future__ import annotations
 

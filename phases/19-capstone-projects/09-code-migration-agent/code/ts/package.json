@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "version": "0.1.0",
-  "description": "Multi-file TypeScript skeleton for the code migration agent dashboard.",
+  "description": "代码迁移智能体仪表盘的多文件 TypeScript 示例框架。",
   "scripts": {
     "start": "tsx src/index.ts",
     "serve": "SERVE=1 tsx src/index.ts",

@@ -1,11 +1,16 @@
-"""Function call dispatcher with timeout, retry, idempotency, concurrency limit.
+"""函数调用分发器：超时、重试、幂等键与并发限制。
 
-Conceptual references:
-- ./docs/en.md (this lesson)
-- JSON-RPC 2.0 specification (error envelope shape)
-- IETF draft draft-bhutton-json-schema-2020-12 (schema subset reused)
+概念参考：
+- ../docs/en.md（本课中文说明，沿用原文件名；英文原文在包内 english-source/ 的对应路径）
+- JSON-RPC 2.0 规范：错误响应的封装形式
+- IETF 草案 draft-bhutton-json-schema-2020-12：复用简化的模式子集
 
-Stdlib only. Run: python3 code/main.py
+仅使用标准库。在课程目录运行：python3 code/main.py
+
+译注：幂等键仅关联内存中的在途调用和短期结果缓存，不绑定工具名称或参数，
+也不是跨进程的恰好一次执行保证。同步处理器直接在事件循环中调用；阻塞的同步
+函数不会因 asyncio.wait_for 而变成可抢占执行。超时重试检查 idempotent 标记，
+TransientError 的重试分支则不检查该标记。错误类别与错误消息保留英文契约。
 """
 
 from __future__ import annotations
@@ -26,11 +31,11 @@ ERR_INTERNAL = -32603
 
 
 class TransientError(Exception):
-    """Raised by a handler to indicate the failure is worth retrying."""
+    """由处理器抛出，表示该失败适合重试。"""
 
 
 class _DispatchedError(Exception):
-    """Internal sentinel that wraps a DispatchError so dedup followers preserve kind."""
+    """封装 DispatchError 的内部标记异常，使等待同一在途调用的请求保留原错误类别。"""
 
     def __init__(self, error: "DispatchError") -> None:
         super().__init__(error.message)
@@ -71,7 +76,7 @@ class _ToolRecord:
 
 
 class MiniRegistry:
-    """A trimmed registry: name, schema, handler, idempotent, timeout."""
+    """精简注册表：保存名称、模式、处理器、幂等标记和超时设置。"""
 
     def __init__(self) -> None:
         self._recs: dict[str, _ToolRecord] = {}
@@ -127,7 +132,7 @@ class _InFlight:
 
 
 class Dispatcher:
-    """Per-call timeout, retry, idempotency, concurrency limit."""
+    """提供单次调用超时、重试、幂等键去重与并发限制。"""
 
     def __init__(
         self,
@@ -139,6 +144,7 @@ class Dispatcher:
         sleep: Callable[[float], Awaitable[None]] | None = None,
     ) -> None:
         if max_attempts <= 0:
+            # 参数错误：最大尝试次数必须大于零。
             raise ValueError("max_attempts must be > 0")
         self.registry = registry
         self.max_attempts = max_attempts
@@ -161,6 +167,7 @@ class Dispatcher:
             rec = self.registry.get(name)
         except KeyError:
             return DispatchError(
+                # 错误类别：未找到工具。
                 kind="not_found", message=f"tool {name!r}", attempts=0,
                 jsonrpc_code=ERR_METHOD_NOT_FOUND,
             )
@@ -168,12 +175,15 @@ class Dispatcher:
         errs = self.registry.validate(name, args)
         if errs:
             return DispatchError(
+                # 模式校验或模式错误的机器标识，保持原值。
                 kind="schema", message="; ".join(errs), attempts=0,
                 jsonrpc_code=ERR_INVALID_PARAMS,
             )
 
         if budget_tool_calls_remaining is not None and budget_tool_calls_remaining <= 0:
             return DispatchError(
+                # 错误类别：工具调用预算耗尽。
+                # 预算错误：剩余工具调用次数为零。
                 kind="budget_exceeded", message="tool_calls remaining is 0", attempts=0,
             )
 
@@ -340,6 +350,7 @@ async def _demo() -> None:
             "ok": isinstance(out_retry, DispatchOk),
         },
         "timeout": {"kind": getattr(out_timeout, "kind", None)},
+        # 模式校验或模式错误的机器标识，保持原值。
         "schema": {"kind": getattr(out_schema, "kind", None)},
         "missing": {"kind": getattr(out_missing, "kind", None)},
         "happy": {"result": getattr(out_ok, "result", None)},

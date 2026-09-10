@@ -1,4 +1,4 @@
-"""Companion validator for this lesson's docs/en.md extraction report."""
+"""本课 docs/en.md 抽取报告的配套验证器。检查可靠抽取、批处理与 reviewer 证据；不调用真实模型或批处理 API。"""
 
 from __future__ import annotations
 

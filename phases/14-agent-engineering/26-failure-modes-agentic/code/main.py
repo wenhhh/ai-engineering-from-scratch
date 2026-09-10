@@ -1,8 +1,15 @@
-"""Stdlib failure-mode tagger for agent traces.
+"""使用标准库为智能体轨迹标注失败模式。
 
-Detects the five industry-recurring modes: hallucinated actions, scope creep,
-cascading errors, context loss, tool misuse. Each detector returns a tag if
-the trace matches; aggregate distribution mirrors Phoenix's trace clustering.
+主要模式包括虚构动作、范围蔓延、错误级联、上下文丢失和工具误用；代码另含
+“虚报成功”检测器，共六个检测器。命中规则后返回标签，再汇总标签分布，
+借此模拟可观测性平台中的轨迹分类视图。
+
+译注：所有检测均为简单规则，不使用真实模型或 Phoenix 聚类。
+hallucinated_action：虚构工具动作；scope_creep：越界修改；cascading_errors：错误级联；
+context_loss：忽略上下文约束；tool_misuse：工具参数误用；success_hallucination：虚报成功。
+原请求、约束、标签和工具参数保留英文，因为检测器依赖关键词匹配。
+例如 context_loss 只提取 do not 后的第一个词；对于 do not modify src/，
+它检查的是 modify，而非 src/ 路径，因此原样例并未可靠检出该越界行为。
 """
 
 from __future__ import annotations
@@ -121,7 +128,7 @@ def tag(trace: Trace) -> list[str]:
 
 def main() -> None:
     print("=" * 70)
-    print("AGENT FAILURE MODES — Phase 14, Lesson 26")
+    print("智能体失败模式——阶段 14，第 26 课")
     print("=" * 70)
 
     traces = [
@@ -188,15 +195,15 @@ def main() -> None:
     for trace in traces:
         labels = tag(trace)
         distribution.update(labels)
-        print(f"  {trace.tid}  user={trace.user_request[:40]!r}")
-        print(f"    labels: {labels if labels else '[clean]'}")
+        print(f"  {trace.tid}  用户请求={trace.user_request[:40]!r}")
+        print(f"    标签：{labels if labels else '[clean]'}")
 
-    print("\naggregate distribution")
+    print("\n标签分布汇总")
     for label, count in distribution.most_common():
         print(f"  {label}: {count}")
     print()
-    print("gate at every step: classifier, argument validation, state probe.")
-    print("cascading is the killer. detect early, stop the loop.")
+    print("每一步都设置门禁：动作分类、参数校验和状态探测。")
+    print("尤其要防止错误级联：尽早发现，并停止循环。")
 
 
 if __name__ == "__main__":

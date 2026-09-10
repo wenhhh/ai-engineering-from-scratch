@@ -1,4 +1,8 @@
-"""Tests for the eval harness: metric scoring, task loading, runner."""
+"""评测框架测试：指标计分、任务加载与运行器。
+
+英文输入、预期结果和断言保持原样。代码执行测试仅覆盖预置的
+可信函数及直接 import 被拒绝的情况，不证明通用沙箱安全。
+"""
 
 from __future__ import annotations
 

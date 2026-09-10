@@ -1,13 +1,18 @@
-"""Auto-research orchestrator: hypothesis queue, parallel slots, UCB scoring, fan-out.
+"""自动研究编排器：假设队列、并发槽位、UCB 选择与后续任务扩展。
 
-Conceptual references:
-- ./docs/en.md (this lesson)
-- Phase 19 lesson 54 (paper writer; receives paper.trigger fan-out)
-- Phase 19 lesson 55 (critic loop; consumes results downstream)
-- Phase 19 lessons 50-53 (earlier auto-research stages)
+概念参考：
+- ./docs/en.md（本课正文）
+- 阶段 19 第 54 课（论文写作器，可对接 paper.trigger 事件）
+- 阶段 19 第 55 课（审稿循环，可作为下游消费者）
+- 阶段 19 第 50—53 课（自动研究流程的前置阶段）
 
-Stdlib + numpy only. Run: python3 code/main.py
-"""
+依赖标准库与 NumPy。运行：python3 code/main.py
+
+译注：默认奖励是合成随机数；paper.trigger 只记录事件，不实际调用写作器。
+max_seconds 不是硬超时：等待任务完成时没有设置超时，结束后还会等待在途任务，
+因此阻塞任务可使总耗时远超预算。实验预算统计已派发次数，包括失败任务。
+剪枝移除排队候选，但不取消在途任务；排空路径也没有完整复用常规结果处理。
+UCB 使用已完成结果，不计在途任务，同分时按队列顺序选择。"""
 
 from __future__ import annotations
 
@@ -112,7 +117,7 @@ def ucb_score(branch_stats: BranchStats, total_runs: int, c: float) -> float:
 
 
 class IterationScheduler:
-    """Drives a hypothesis queue across N parallel asyncio slots with UCB picking."""
+    """用 UCB 选择候选，并在 N 个 asyncio 并发槽位中调度假设任务。"""
 
     def __init__(
         self,
@@ -127,8 +132,10 @@ class IterationScheduler:
         expander: Expander | None = None,
     ) -> None:
         if slots < 1:
+            # 并发槽位数必须至少为 1。
             raise ValueError("slots must be >= 1")
         if max_experiments < 1:
+            # 实验次数预算必须至少为 1。
             raise ValueError("max_experiments must be >= 1")
         self.runner = runner
         self.slots = slots
@@ -300,7 +307,9 @@ def make_deterministic_runner(
     delay_ms: float = 5.0,
     seed: int = 0,
 ) -> Runner:
-    """Build an async experiment runner whose reward is base_reward + N(0, noise)."""
+    """构造异步模拟实验：奖励为基准奖励加 N(0,noise) 噪声，再裁剪到 [0,1]。
+
+    随机数生成器由所有调用共享，固定种子只在调用顺序相同时保证相同采样序列。"""
     rng = np.random.default_rng(seed)
 
     async def run(hyp: Hypothesis) -> Result:
@@ -317,7 +326,9 @@ def make_deterministic_runner(
 
 
 def deterministic_expander(result: Result) -> list[Hypothesis]:
-    """Spawn two follow-up hypotheses on the same branch with a monotonic id."""
+    """在同一分支生成两个后续假设，ID 为父 ID 加 -f1/-f2 后缀。
+
+    不维护全局单调计数器；对相同输入重复调用会生成相同 ID。"""
     return [
         Hypothesis(id=f"{result.hypothesis_id}-f{i}", branch=result.branch,
                    payload={"parent": result.hypothesis_id})

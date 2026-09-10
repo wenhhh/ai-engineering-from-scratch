@@ -1,7 +1,14 @@
-// Capstone 06 entrypoint: DevOps troubleshooting agent Slack integration.
-// Source: ../../docs/en.md (Slack brief + approval buttons, gated MCP behind approval).
-// References:
-//   Slack request signing v0 https://api.slack.com/authentication/verifying-requests-from-slack
+/**
+ * Slack 集成演示与本机 HTTP 服务入口。
+ * 默认密钥是公开测试占位，不能用于生产；演示只在应用内部构造请求，不连接真实 Slack。
+ * 探测只统计状态码，没有失败即非零退出的门禁。篡改演示将签名最后一位固定改为 0，
+ * 当原位已经是 0 时并没有实际篡改；原有独立测试则会确保翻转该位。
+ */
+
+// 综合项目 06 入口：运维故障排查智能体的 Slack 集成示例。
+// 来源：../../docs/en.md，Slack 排障简报、审批按钮与审批后的受控 MCP 设计。
+// 固定原文参考：
+//   Slack v0 请求签名 https://api.slack.com/authentication/verifying-requests-from-slack
 //   Slack Block Kit          https://api.slack.com/reference/block-kit/blocks
 //   HMAC-SHA256 (RFC 2104)   https://datatracker.ietf.org/doc/html/rfc2104
 
@@ -10,6 +17,7 @@ import type { AddressInfo } from "node:net";
 import { buildApp } from "./server.js";
 import { signForTesting, REPLAY_WINDOW_SECONDS } from "./slack_verify.js";
 
+// 仅供教学的默认测试密钥；生产环境必须使用独立密钥，不能信任此占位值。
 const SECRET = process.env.SLACK_SIGNING_SECRET ?? "test-signing-secret-DO-NOT-USE-IN-PROD";
 
 async function nodeRequestToWeb(req: IncomingMessage): Promise<Request> {
@@ -57,11 +65,12 @@ function signedHeaders(body: string, opts: SignedOpts = {}): Record<string, stri
 async function runDemo(): Promise<void> {
   const { app, outboundLog } = buildApp({ signingSecret: SECRET });
   console.log("=".repeat(72));
-  console.log("CAPSTONE 06 - SLACK INTEGRATION SKELETON (TypeScript)");
+  console.log("综合项目 06：Slack 集成示例框架（TypeScript）");
   console.log("=".repeat(72));
 
   const slashBody = new URLSearchParams({
     command: "/oncall",
+    // 告警夹具：payments-api 因内存不足被终止；英文关键词用于路由，保留原样。
     text: "OOMKilled payments-api",
     user_id: "U1",
     response_url: "https://hooks.slack.example/redacted",
@@ -85,7 +94,7 @@ async function runDemo(): Promise<void> {
       req: () => doRequest("/health"),
     },
     {
-      label: "POST /slack/command with valid signature",
+      label: "POST /slack/command：有效签名",
       expect: 200,
       req: () =>
         doRequest("/slack/command", {
@@ -95,7 +104,7 @@ async function runDemo(): Promise<void> {
         }),
     },
     {
-      label: "POST /slack/command with tampered signature",
+      label: "POST /slack/command：篡改签名",
       expect: 401,
       req: () =>
         doRequest("/slack/command", {
@@ -105,7 +114,7 @@ async function runDemo(): Promise<void> {
         }),
     },
     {
-      label: "POST /slack/command with stale timestamp",
+      label: "POST /slack/command：过期时间戳",
       expect: 401,
       req: () =>
         doRequest("/slack/command", {
@@ -115,7 +124,7 @@ async function runDemo(): Promise<void> {
         }),
     },
     {
-      label: "POST /slack/interactivity approve",
+      label: "POST /slack/interactivity：批准操作",
       expect: 200,
       req: () =>
         doRequest("/slack/interactivity", {
@@ -131,14 +140,14 @@ async function runDemo(): Promise<void> {
     const resp = await c.req();
     const body = await resp.text();
     console.log(`\n${c.label}`);
-    console.log(`  status=${resp.status} expect=${c.expect}`);
-    console.log(`  body=${body.slice(0, 120)}`);
+    console.log(`  状态码=${resp.status} 预期=${c.expect}`);
+    console.log(`  响应正文=${body.slice(0, 120)}`);
     if (resp.status === c.expect) ok += 1;
   }
 
   console.log("\n" + "-".repeat(72));
-  console.log(`probes ok=${ok}/${checks.length}`);
-  console.log(`outbound slack calls logged=${outboundLog.length}`);
+  console.log(`状态码符合预期的探测=${ok}/${checks.length}`);
+  console.log(`内存中记录的待发送 Slack 消息数=${outboundLog.length}`);
 }
 
 function startServer(): void {
@@ -155,7 +164,7 @@ function startServer(): void {
   });
   server.listen(port, "127.0.0.1", () => {
     const addr = server.address() as AddressInfo;
-    console.log(`slack-integration listening on http://127.0.0.1:${addr.port}`);
+    console.log(`Slack 集成示例正在监听 http://127.0.0.1:${addr.port}`);
   });
   process.on("SIGINT", () => server.close(() => process.exit(0)));
   process.on("SIGTERM", () => server.close(() => process.exit(0)));
@@ -170,6 +179,6 @@ async function main(): Promise<void> {
 }
 
 main().catch((err: unknown) => {
-  console.error("startup failed:", err);
+  console.error("启动失败：", err);
   process.exit(1);
 });

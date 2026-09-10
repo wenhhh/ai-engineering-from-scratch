@@ -1,15 +1,18 @@
-"""ZeRO stage 1 optimiser state sharding on the gloo backend.
+"""在 Gloo 后端上演示 ZeRO stage 1 优化器状态分片。
 
-Each rank owns 1/N of the fp32 master parameter copy and 1/N of the Adam
-moments. After backward the full fp16 gradient is reduce_scattered so each
-rank receives only its shard's summed gradient. Adam updates the rank's
-shard of the master copy, then the updated fp16 parameter shards are
-allgathered so every rank reconstructs the full model for the next forward.
+每个 rank 只持有 fp32 主参数副本和 Adam 一阶／二阶矩中的 1/N。反向传播
+后，对完整 fp16 梯度执行 reduce_scatter，每个 rank 得到自己的梯度分片；
+Adam 只更新本 rank 的主参数分片，然后 allgather 更新后的 fp16 参数分片，
+让下一次前向传播前所有 rank 重新拥有完整模型参数。
 
-Run: python3 code/main.py
+运行：python3 code/main.py
 
-Compare per-step loss with vanilla DDP (lesson 77) and the per-rank optimiser
-memory drop to confirm the 1/N scaling.
+可与第 77 课的普通 DDP 损失和本课的每 rank 优化器内存估算对照，观察
+状态分片的 1/N 缩放。
+
+译注：完整模型参数和梯度仍在每个 rank 上，因此本例只演示 stage 1
+优化器状态节省，不是 ZeRO-2/3 或 FSDP 的完整参数／梯度分片。内存表是
+按张量 dtype 与元素数计算的理论字节，不是进程 RSS 或 GPU 实测峰值。
 """
 
 from __future__ import annotations
@@ -57,12 +60,12 @@ def flat_param_numel(module: nn.Module) -> int:
 
 
 def gather_flat_params(module: nn.Module) -> torch.Tensor:
-    """Concatenate every parameter into one contiguous fp32 vector."""
+    """把全部参数拼接为一个连续的 fp32 向量。"""
     return torch.cat([p.detach().to(torch.float32).flatten() for p in module.parameters()])
 
 
 def scatter_flat_to_params(module: nn.Module, flat: torch.Tensor) -> None:
-    """Copy a flat fp32 vector back into the module's fp32 parameters."""
+    """把扁平 fp32 向量复制回模块的 fp32 参数。"""
     offset = 0
     for p in module.parameters():
         n = p.numel()
@@ -71,7 +74,7 @@ def scatter_flat_to_params(module: nn.Module, flat: torch.Tensor) -> None:
 
 
 def gather_flat_grads(module: nn.Module) -> torch.Tensor:
-    """Concatenate every parameter's gradient into one contiguous fp32 vector."""
+    """把全部参数梯度拼接为一个连续的 fp32 向量。"""
     parts = []
     for p in module.parameters():
         if p.grad is None:
@@ -82,10 +85,10 @@ def gather_flat_grads(module: nn.Module) -> torch.Tensor:
 
 
 def shard_bounds(total: int, world_size: int, rank: int) -> tuple:
-    """Return (start, end) of the rank's shard in a length-total flat tensor.
+    """返回长度为 total 的扁平张量中，本 rank 分片的 (start, end)。
 
-    Pads the last shard with zeros if total is not divisible by world_size; the
-    pad is invisible after scatter back because the slice respects total.
+    total 不能整除 world_size 时，最后按等长分片所需尺寸补零；写回完整
+    参数时按 total 截断，因此填充值不会进入模型参数。
     """
     pad = (-total) % world_size
     padded = total + pad
@@ -96,12 +99,11 @@ def shard_bounds(total: int, world_size: int, rank: int) -> tuple:
 
 
 class ZeroOptimizer:
-    """Stage-1 sharded Adam.
+    """Stage-1 分片 Adam。
 
-    Holds a 1/N slice of the fp32 master parameters and the (m, v) Adam
-    moments. The full model parameters in module.parameters() stay full
-    so forward and backward see the whole network; the savings come from
-    only this object's shard tensors.
+    仅持有 fp32 主参数及 Adam (m, v) 的 1/N 分片。module.parameters()
+    中的完整模型参数仍然保留，使前向和反向能看到完整网络；节省来自
+    本对象只保存优化器状态分片。
     """
 
     def __init__(self, module: nn.Module, world_size: int, rank: int,
@@ -129,13 +131,13 @@ class ZeroOptimizer:
         self.v_shard = torch.zeros_like(self.master_shard)
 
     def shard_bytes(self) -> int:
-        """Bytes of optimiser state held on this rank only."""
+        """只统计本 rank 所持优化器分片张量的字节数。"""
         return (self.master_shard.numel()
                 + self.m_shard.numel()
                 + self.v_shard.numel()) * 4
 
     def step(self) -> None:
-        """Reduce_scatter grads to per-rank shards, Adam-step, allgather params back."""
+        """对梯度 reduce_scatter，更新本 rank Adam 分片，再 allgather 参数。"""
         flat_grad = gather_flat_grads(self.module)
         pad = (-self.total) % self.world_size
         padded_grad = torch.zeros(self.total + pad, dtype=torch.float32)
@@ -243,9 +245,9 @@ def run_zero(world_size: int = WORLD_SIZE, steps: int = STEPS,
 
 
 def memory_table(p_params: int, world_size: int) -> str:
-    """Per-rank memory in bytes for vanilla DDP and ZeRO stage 1.
+    """估算普通 DDP 与 ZeRO stage 1 的每 rank 字节数。
 
-    Mixed precision: fp16 params + fp16 grads + fp32 master + fp32 m + fp32 v.
+    混合精度假设：fp16 参数 + fp16 梯度 + fp32 主参数 + fp32 m + fp32 v。
     """
     fp16 = 2
     fp32 = 4
@@ -264,18 +266,18 @@ def memory_table(p_params: int, world_size: int) -> str:
 
 
 def main() -> int:
-    print(f"world_size={WORLD_SIZE}, steps={STEPS}, batch={BATCH}, model=MiniMLP")
-    print("running ZeRO-1 across ranks...")
+    print(f"进程数={WORLD_SIZE}，步数={STEPS}，批大小={BATCH}, model=MiniMLP")
+    print("正在跨 rank 运行 ZeRO-1……")
     results = run_zero()
     print(f"\n{'step':<6}{'rank0_loss':<14}{'rank3_loss':<14}")
     r0_losses, r0_norm, r0_bytes = results[0]
     r3_losses, _, r3_bytes = results[WORLD_SIZE - 1]
     for s in range(STEPS):
         print(f"{s:<6}{r0_losses[s]:<14.6f}{r3_losses[s]:<14.6f}")
-    print(f"\nfinal param norm (must agree across ranks):")
+    print(f"\n最终参数范数（各 rank 应一致）：")
     for r in range(WORLD_SIZE):
         _, norm, shard_bytes = results[r]
-        print(f"  rank {r}: norm={norm:.6f}, optim_shard_bytes={shard_bytes}")
+        print(f"  rank {r}：范数={norm:.6f}，优化器分片字节={shard_bytes}")
     total_params = flat_param_numel(MiniMLP())
     print()
     print(memory_table(total_params, WORLD_SIZE))

@@ -1,4 +1,7 @@
-"""Tests for HarnessLoop state machine, hooks, events, budget."""
+"""HarnessLoop 的状态机、钩子、事件与预算回归测试。
+
+只翻译说明；计划夹具、错误匹配、断言与执行逻辑保持原样。
+"""
 
 from __future__ import annotations
 

@@ -1,4 +1,7 @@
-"""Tests for the eval-pipeline lesson."""
+"""评估流水线课程测试。
+
+保持标准化、词项 F1、规则裁判、权重与指标区间的断言原样；通过不等于独立质量评估完成。
+"""
 
 from __future__ import annotations
 
@@ -75,9 +78,9 @@ class TokenF1Tests(unittest.TestCase):
         self.assertEqual(token_f1_score("", "blue"), 0.0)
 
     def test_partial_overlap_is_between_zero_and_one(self) -> None:
-        # pred has 3 tokens, ref has 4 tokens, intersection is 2.
+        # 预测含 3 个词项，参考含 4 个词项，重合 2 个。
         score = token_f1_score("the sky was", "the sky is blue")
-        # precision = 2/3, recall = 2/4 = 0.5, F1 = 2 * 2/3 * 0.5 / (2/3 + 0.5) = 0.571...
+        # 精确率 = 2/3，召回率 = 2/4 = 0.5，F1 = 2*(2/3)*0.5 / (2/3+0.5) = 0.571…
         self.assertAlmostEqual(score, 2 * (2 / 3) * 0.5 / ((2 / 3) + 0.5), places=5)
 
 
@@ -90,8 +93,8 @@ class JudgeTests(unittest.TestCase):
         v = mock_judge(
             "inst", "the sky was very blue today", "the sky was blue today bright"
         )
-        # Construct manually: predict and ref share 4 tokens, pred has 6, ref has 6.
-        # F1 = 2 * 4/6 * 4/6 / (8/6) = 2/3 = 0.667 -> score 3.
+        # 实际两句各有 6 个词项，重合 5 个；原注释误写为 4 个。
+        # 实际 F1 = 5/6，规则返回 4 分；原断言仍保留对 3 或 4 的接受范围。
         self.assertIn(v.score, (3, 4))
 
     def test_zero_overlap_scores_one(self) -> None:
@@ -120,7 +123,7 @@ class AggregateTests(unittest.TestCase):
             EvalResult(name="judge", metric=5.0, n_examples=1),
         ]
         report = aggregate(results)
-        # All normalised metrics are 1.0 in this construction.
+        # 这组输入中，所有归一化指标都为 1.0。
         self.assertAlmostEqual(report.aggregate, 1.0, places=5)
         self.assertAlmostEqual(sum(report.weights.values()), 1.0, places=6)
 
@@ -130,7 +133,7 @@ class AggregateTests(unittest.TestCase):
             EvalResult(name="token_f1", metric=0.5, n_examples=2),
         ]
         report = aggregate(results)
-        # When only two evals are present, their weights re-normalise to sum 1.
+        # 只有两项评估时，将这两项的权重重新归一化到总和为 1。
         self.assertAlmostEqual(sum(report.weights.values()), 1.0, places=6)
         self.assertAlmostEqual(report.aggregate, 0.5, places=5)
 

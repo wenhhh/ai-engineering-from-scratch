@@ -1,8 +1,7 @@
-"""Companion code for:
-certifications/claude/lessons/10-tool-use-and-agentic-loops/docs/en.md
-It models Claude tool_use and tool_result content-block sequencing.
-Behavior follows official Anthropic client-tool and Messages documentation.
-"""
+"""第 10 课工具使用与 agentic loop 配套代码。
+
+对应 docs/en.md：建模 tool_use/tool_result 生命周期，并按工作负载需求选择工作流、手写循环、Tool Runner 或托管 agent。
+所有工具调用均为本地教学夹具，不代表真实 SDK 或外部工具已经运行。"""
 
 from __future__ import annotations
 
@@ -18,7 +17,7 @@ class ToolLoopError(RuntimeError):
 
 @dataclass(frozen=True)
 class RuntimeNeeds:
-    """Facts that decide how much agent-loop infrastructure to adopt."""
+    """用于决定应采用多少 agent-loop 基础设施的事实集合。"""
 
     open_ended: bool
     supported_sdk: bool = True
@@ -29,7 +28,7 @@ class RuntimeNeeds:
 
 
 def choose_runtime(needs: RuntimeNeeds) -> str:
-    """Choose a workflow, hand-written loop, Tool Runner, or managed agent."""
+    """在工作流、手写循环、Tool Runner 与托管 agent 之间选择。"""
     if not needs.open_ended:
         return "deterministic-workflow"
     if needs.needs_managed_sandbox or needs.needs_remote_durable_session:
@@ -43,7 +42,7 @@ def choose_runtime(needs: RuntimeNeeds) -> str:
 
 @dataclass(frozen=True)
 class CapabilityNeeds:
-    """Separate executable capability from optional reusable procedure."""
+    """把可执行 capability 与可选的可复用 procedure 分开描述。"""
 
     reusable_procedure: bool = False
     shared_standard_service: bool = False
@@ -280,7 +279,7 @@ def demo() -> tuple[str, list[dict[str, Any]]]:
 
 
 def decision_lab() -> dict[str, Any]:
-    """Return checked architecture decisions without importing an SDK."""
+    """无需导入 SDK 即可返回经过检查的架构决策。"""
     runtime_cases = [
         ("fixed extraction pipeline", RuntimeNeeds(open_ended=False)),
         (

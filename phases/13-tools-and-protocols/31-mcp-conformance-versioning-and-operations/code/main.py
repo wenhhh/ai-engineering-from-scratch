@@ -1,7 +1,13 @@
-"""Companion code for docs/en.md: test MCP wire contracts and release evidence.
-Protocol contract: https://modelcontextprotocol.io/specification/2026-07-28/basic
-Transport contract: https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/streamable-http
-Run `python3 main.py` for the finite demo or `python3 -m unittest discover -s tests`.
+"""阶段 13，第 31 课配套代码：测试 MCP 线上消息契约与发布证据。
+课程文档：docs/en.md。
+协议契约：https://modelcontextprotocol.io/specification/2026-07-28/basic
+传输契约：https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/streamable-http
+运行有限步骤演示：python3 main.py；运行测试：python3 -m unittest discover -s tests。
+
+这里的“线上消息”指实际传输格式（wire format），演示仍是本地模拟，不会请求线上服务。
+版本分支、请求/响应报文、代理诊断、发布判定与摘要保持原值，中文旁注解释各项契约。
+演示使用明确标注为非秘密的固定教学密钥，不代表获得了生产环境的可信签名或回滚证明。
+规范链接来自固定仓库快照，本次翻译没有另行核验最新在线规范。
 """
 
 from __future__ import annotations
@@ -147,6 +153,7 @@ def normalized_headers(headers: dict[str, str]) -> dict[str, str]:
     for name, value in headers.items():
         key = name.lower()
         if key in normalized and normalized[key] != value:
+            # 头字段诊断：重复的 HTTP 头字段取值互相冲突。
             raise ProtocolViolation(f"conflicting duplicate HTTP header: {name}", -32020)
         normalized[key] = value
     return normalized
@@ -166,41 +173,51 @@ def decode_header_value(value: str) -> str:
     ends = value.endswith("?=")
     if starts or ends:
         if not (starts and ends):
+            # 头字段诊断：MCP 头字段中的 Base64 哨兵标记格式错误。
             raise ProtocolViolation("malformed Base64 MCP header sentinel", -32020)
         encoded = value[len("=?base64?") : -2]
         try:
             return base64.b64decode(encoded, validate=True).decode("utf-8")
         except (ValueError, UnicodeDecodeError) as error:
+            # 头字段诊断：MCP 头字段中的 Base64 值格式错误。
             raise ProtocolViolation("malformed Base64 MCP header value", -32020) from error
     if value != value.strip() or any(
         ord(character) < 0x20 or ord(character) > 0x7E for character in value
     ):
+        # 头字段诊断：不适合原样传输的 MCP 头字段值必须使用 Base64 哨兵标记编码。
         raise ProtocolViolation("unsafe MCP header value must use the Base64 sentinel", -32020)
     return value
 
 
 def validate_request(headers: dict[str, str], body: dict[str, Any], era: str) -> None:
     if body.get("jsonrpc") != "2.0" or not isinstance(body.get("method"), str):
+        # 请求诊断：无效的 JSON-RPC 请求。
         raise ProtocolViolation("invalid JSON-RPC request")
     params = body.get("params", {})
     if not isinstance(params, dict):
+        # 请求诊断：params 必须是对象。
         raise ProtocolViolation("params must be an object", -32602)
     wire_headers = normalized_headers(headers)
     if era == "legacy":
         if body["method"] != "initialize" and wire_headers.get("mcp-protocol-version") == MODERN_VERSION:
+            # 版本诊断：新版本元数据进入了旧版本处理分支。
             raise ProtocolViolation("modern metadata reached the legacy branch", -32020)
         return
     if era != "modern":
+        # 版本诊断：未知的协议代际标识。
         raise ValueError(f"unknown era: {era}")
 
     metadata = params.get("_meta")
     if not isinstance(metadata, dict):
+        # 请求诊断：新版本请求缺少 params._meta。
         raise ProtocolViolation("modern request is missing params._meta", -32602)
     protocol_version = metadata.get(PROTOCOL_VERSION_KEY)
     capabilities = metadata.get(CLIENT_CAPABILITIES_KEY)
     if not isinstance(protocol_version, str):
+        # 请求诊断：新版本请求缺少指定元数据字段。
         raise ProtocolViolation(f"modern request is missing {PROTOCOL_VERSION_KEY}", -32602)
     if not isinstance(capabilities, dict):
+        # 请求诊断：新版本请求缺少指定元数据字段。
         raise ProtocolViolation(f"modern request is missing {CLIENT_CAPABILITIES_KEY}", -32021)
 
     mirrored = {
@@ -216,10 +233,12 @@ def validate_request(headers: dict[str, str], body: dict[str, Any], era: str) ->
             header_value = decode_header_value(header_value)
         if header_value != body_value:
             raise ProtocolViolation(
+                # 一致性诊断：此头字段与 JSON-RPC 请求体不匹配。
                 f"{header} does not match the JSON-RPC body",
                 -32020,
             )
     if protocol_version != MODERN_VERSION:
+        # 版本诊断：不支持所请求的协议版本。
         raise ProtocolViolation(f"unsupported protocol version: {protocol_version}", -32022)
 
 
@@ -236,6 +255,7 @@ def validate_result(
     capabilities: set[str] | None = None,
 ) -> dict[str, Any]:
     if not isinstance(result, dict):
+        # 结果诊断：result 必须是对象。
         raise ProtocolViolation("result must be an object")
     preserved = dict(result)
     result_type = result.get("resultType")
@@ -244,12 +264,15 @@ def validate_result(
             return {"semanticType": "complete", "wire": preserved, "inferred": True}
     elif era == "modern":
         if result_type is None:
+            # 结果诊断：新版本结果缺少 resultType。
             raise ProtocolViolation("modern result is missing resultType")
     else:
+        # 版本诊断：未知的协议代际标识。
         raise ValueError(f"unknown era: {era}")
 
     allowed = allowed_result_types(capabilities or set())
     if result_type not in allowed:
+        # 结果诊断：resultType 未知，或未在能力声明中公布。
         raise ProtocolViolation(f"unknown or unadvertised resultType: {result_type}")
     return {"semanticType": result_type, "wire": preserved, "inferred": False}
 
@@ -258,68 +281,87 @@ def validate_method_result(method: str, result: dict[str, Any]) -> None:
     result_type = result.get("resultType")
     if method == "tools/list":
         if result_type != "complete":
+            # 结果诊断：tools/list 必须返回 complete 类型的结果。
             raise ProtocolViolation("tools/list must return a complete result")
         tools = result.get("tools")
         if not isinstance(tools, list):
+            # 结果诊断：完整的 tools/list 结果必须包含 tools 数组。
             raise ProtocolViolation("complete tools/list result requires a tools array")
         names: set[str] = set()
         for tool in tools:
             if not isinstance(tool, dict):
+                # 描述符诊断：tools/list 中每个描述符必须是对象。
                 raise ProtocolViolation("each tools/list descriptor must be an object")
             name = tool.get("name")
             description = tool.get("description")
             input_schema = tool.get("inputSchema")
             if not isinstance(name, str) or not name:
+                # 描述符诊断：每个工具描述符必须包含非空名称。
                 raise ProtocolViolation("each tool descriptor requires a non-empty name")
             if name in names:
+                # 描述符诊断：tools/list 包含重复工具名。
                 raise ProtocolViolation("tools/list contains a duplicate tool name")
             names.add(name)
             if not isinstance(description, str) or not description:
+                # 描述符诊断：每个工具描述符必须包含非空描述。
                 raise ProtocolViolation("each tool descriptor requires a non-empty description")
             if not isinstance(input_schema, dict) or input_schema.get("type") != "object":
+                # 描述符诊断：每个工具描述符的 inputSchema 根类型必须为 object。
                 raise ProtocolViolation("each tool descriptor requires an object-root inputSchema")
 
     if method == "completion/complete":
         if result_type != "complete":
+            # 补全诊断：completion/complete 必须返回 complete 类型的结果。
             raise ProtocolViolation("completion/complete must return a complete result")
         completion = result.get("completion")
         if not isinstance(completion, dict):
+            # 补全诊断：必须返回 completion 对象。
             raise ProtocolViolation("completion/complete requires a completion object")
         values = completion.get("values")
         if not isinstance(values, list) or any(not isinstance(value, str) for value in values):
+            # 补全诊断：completion.values 必须是字符串数组。
             raise ProtocolViolation("completion.values must be an array of strings")
         if len(values) > 100:
+            # 补全诊断：completion.values 最多包含 100 项。
             raise ProtocolViolation("completion.values must contain at most 100 entries")
         total = completion.get("total")
         if total is not None and (
             isinstance(total, bool) or not isinstance(total, int) or total < len(values)
         ):
+            # 补全诊断：completion.total 必须是整数，且不得小于 values 长度。
             raise ProtocolViolation("completion.total must be an integer at least values length")
         has_more = completion.get("hasMore")
         if has_more is not None and not isinstance(has_more, bool):
+            # 补全诊断：completion.hasMore 必须是布尔值。
             raise ProtocolViolation("completion.hasMore must be a boolean")
 
     if result_type != "task":
         return
     if method != "tools/call":
+        # 任务诊断：task 类型的结果仅可用于 tools/call。
         raise ProtocolViolation("task result is valid only for tools/call")
     required_strings = ("taskId", "status", "createdAt", "lastUpdatedAt")
     for field in required_strings:
         if not isinstance(result.get(field), str) or not result[field]:
+            # 任务诊断：任务结果的指定字段必须非空。
             raise ProtocolViolation(f"task result requires non-empty {field}")
     if result["status"] not in {"working", "input_required", "completed", "cancelled", "failed"}:
+        # 任务诊断：任务结果包含未知状态。
         raise ProtocolViolation("task result has an unknown status")
     if "ttlMs" not in result:
+        # 任务诊断：任务结果必须包含 ttlMs。
         raise ProtocolViolation("task result requires ttlMs")
     ttl_ms = result["ttlMs"]
     if ttl_ms is not None and (
         isinstance(ttl_ms, bool) or not isinstance(ttl_ms, int) or ttl_ms < 0
     ):
+        # 任务诊断：ttlMs 必须为 null 或非负整数。
         raise ProtocolViolation("task result ttlMs must be null or a non-negative integer")
     poll_interval = result.get("pollIntervalMs")
     if poll_interval is not None and (
         isinstance(poll_interval, bool) or not isinstance(poll_interval, int) or poll_interval < 0
     ):
+        # 任务诊断：pollIntervalMs 必须为非负整数。
         raise ProtocolViolation("task result pollIntervalMs must be a non-negative integer")
 
 
@@ -330,6 +372,7 @@ def select_era(
     legacy_evidence: dict[str, Any] | None = None,
 ) -> str:
     if policy not in {"strict", "fallback"}:
+        # 策略诊断：policy 必须为 strict（严格）或 fallback（允许回退）。
         raise ValueError("policy must be strict or fallback")
     kind = observation.get("kind")
     if kind == "discover_success":
@@ -337,23 +380,29 @@ def select_era(
     if kind == "jsonrpc_error" and observation.get("code") in MODERN_ERROR_CODES:
         return "modern"
     if policy == "strict":
+        # 回退诊断：尚未证实支持新版本，且严格策略不允许回退。
         raise ProtocolViolation("modern support was not proven; strict policy forbids fallback")
     if kind not in {"empty", "timeout", "connection_closed", "unrecognized"}:
+        # 回退诊断：探测结果不足以支持安全回退。
         raise ProtocolViolation("probe outcome is not safe evidence for fallback")
     if not legacy_allowed:
+        # 回退诊断：此端点未被列入允许回退旧版本的名单。
         raise ProtocolViolation("legacy fallback is not allowlisted for this endpoint")
     if not isinstance(legacy_evidence, dict):
+        # 回退诊断：新版本探测无定论，并不构成支持旧版本的正面证据。
         raise ProtocolViolation("inconclusive modern probe is not positive legacy evidence")
     if (
         legacy_evidence.get("kind") != "initialize_success"
         or legacy_evidence.get("protocolVersion") != LEGACY_VERSION
     ):
+        # 回退诊断：旧版本探测未能证明支持所配置的旧协议代际。
         raise ProtocolViolation("legacy probe did not prove the configured legacy era")
     return "legacy"
 
 
 def notification_http_outcome(request: dict[str, Any]) -> tuple[int, None]:
     if "id" in request:
+        # 通知诊断：请求带有 id，因此不是通知。
         raise ValueError("request has an id and is not a notification")
     return 202, None
 
@@ -386,17 +435,21 @@ def validate_response(
     capabilities: set[str],
 ) -> None:
     if not isinstance(response, dict) or response.get("jsonrpc") != "2.0":
+        # 响应诊断：JSON-RPC 响应信封无效。
         raise ProtocolViolation("invalid JSON-RPC response envelope")
     request_id = request.get("id")
     response_id = response.get("id")
     if type(response_id) is not type(request_id) or response_id != request_id:
+        # 响应诊断：响应 ID 与请求 ID 不完全一致。
         raise ProtocolViolation("response id does not exactly match request id")
     has_result = "result" in response
     has_error = "error" in response
     if has_result == has_error:
+        # 响应诊断：result 与 error 必须且只能出现其中一个。
         raise ProtocolViolation("response must contain exactly one of result or error")
     if has_result:
         if status != 200:
+            # 响应诊断：成功的 JSON-RPC 结果必须使用 HTTP 200。
             raise ProtocolViolation("successful JSON-RPC result requires HTTP 200")
         validate_result(response["result"], era, capabilities)
         validate_method_result(request["method"], response["result"])
@@ -404,17 +457,21 @@ def validate_response(
 
     error = response["error"]
     if not isinstance(error, dict):
+        # 错误响应诊断：JSON-RPC error 必须是对象。
         raise ProtocolViolation("JSON-RPC error must be an object")
     code = error.get("code")
     if isinstance(code, bool) or not isinstance(code, int) or not isinstance(error.get("message"), str):
+        # 错误响应诊断：code 必须是整数，message 必须是字符串。
         raise ProtocolViolation("JSON-RPC error requires integer code and string message")
     expected_status = {-32020: 400, -32021: 400, -32022: 400, -32601: 404}.get(code)
     if expected_status is not None and status != expected_status:
+        # 错误响应诊断：指定 JSON-RPC 错误必须使用对应的 HTTP 状态码。
         raise ProtocolViolation(f"JSON-RPC error {code} requires HTTP {expected_status}")
 
 
 def validate_protocol_error_evidence(case: Transcript, expected_code: int) -> None:
     if case.response_body is None:
+        # 错误响应诊断：缺少预期的 JSON-RPC 错误响应。
         raise ProtocolViolation("expected JSON-RPC error response is missing")
     validate_response(
         case.request,
@@ -425,6 +482,7 @@ def validate_protocol_error_evidence(case: Transcript, expected_code: int) -> No
     )
     error = case.response_body.get("error")
     if not isinstance(error, dict) or error.get("code") != expected_code:
+        # 错误响应诊断：服务器没有返回指定的 JSON-RPC 错误。
         raise ProtocolViolation(f"server did not return JSON-RPC error {expected_code}")
 
 
@@ -442,8 +500,10 @@ def run_transcript(case: Transcript) -> CaseResult:
         if "id" not in case.request:
             expected_status, expected_body = notification_http_outcome(case.request)
             if (case.response_status, case.response_body) != (expected_status, expected_body):
+                # 通知诊断：通知不应收到响应体。
                 raise ProtocolViolation("notification received a response body")
         elif case.response_body is None:
+            # 响应诊断：JSON-RPC 请求没有收到响应体。
             raise ProtocolViolation("JSON-RPC request has no response body")
         else:
             validate_response(
@@ -454,16 +514,20 @@ def run_transcript(case: Transcript) -> CaseResult:
                 set(case.capabilities),
             )
         if case.expected_error_code is not None:
+            # 用例判定：本应被拒绝的负例却被接受了。
             return CaseResult(case.name, False, "negative case was accepted", digest(evidence))
+        # 用例判定：已按预期接受。
         return CaseResult(case.name, True, "accepted as expected", digest(evidence))
     except ProtocolViolation as error:
         passed = case.expected_error_code == error.code
+        # 用例判定：已拒绝，并返回所列错误。
         detail = f"rejected with {error.code}: {error}"
         if error.code == -32020:
             try:
                 validate_protocol_error_evidence(case, -32020)
             except ProtocolViolation as response_error:
                 passed = False
+                # 用例判定：拒绝请求的判断正确，但返回的响应无效。
                 detail = f"request rejection was correct, but response was invalid: {response_error}"
         return CaseResult(case.name, passed, detail, digest(evidence))
 
@@ -550,6 +614,7 @@ def transcript_suite() -> list[Transcript]:
             {
                 "jsonrpc": "2.0",
                 "id": 2,
+                # 报文夹具：Mcp-Name 头字段不匹配。
                 "error": {"code": -32020, "message": "Mcp-Name header mismatch"},
             },
             expected_error_code=-32020,
@@ -626,6 +691,7 @@ def transcript_suite() -> list[Transcript]:
             {
                 "jsonrpc": "2.0",
                 "id": 9,
+                # 报文夹具：头字段不匹配。原值参与错误响应和证据摘要，保持不变。
                 "error": {"code": -32020, "message": "header mismatch"},
             },
             expected_error_code=-32600,
@@ -641,6 +707,7 @@ def transcript_suite() -> list[Transcript]:
                 "id": 10,
                 "result": {
                     "resultType": "complete",
+                    # 负例夹具描述：缺少模式。用于测试缺失 inputSchema 时的拒绝行为。
                     "tools": [{"name": "unsafe", "description": "Missing schema"}],
                 },
             },
@@ -764,8 +831,10 @@ def inspect_proxy(exchange: dict[str, Any]) -> dict[str, Any]:
         and "error" in origin_body
         and egress.get("status") == 500
     ):
+        # 代理诊断：代理把协议错误统一改成了 HTTP 500。
         issues.append("proxy collapsed a protocol error into HTTP 500")
     if origin.get("body") != egress.get("body"):
+        # 代理诊断：代理改写了源站的 JSON-RPC 响应体。
         issues.append("proxy changed the origin JSON-RPC body")
 
     redacted_exchange = redact(exchange)
@@ -782,10 +851,13 @@ def inspect_proxy(exchange: dict[str, Any]) -> dict[str, Any]:
 def evaluate_health(health: dict[str, Any]) -> tuple[bool, list[str]]:
     reasons: list[str] = []
     if health.get("sampleCount", 0) <= 0:
+        # 健康诊断：观测窗口没有样本。
         reasons.append("health window has no samples")
     if health.get("errorRate", 1.0) > health.get("maxErrorRate", 0.01):
+        # 健康诊断：错误率超过发布阈值。
         reasons.append("error rate exceeds the release threshold")
     if health.get("p95Ms", float("inf")) > health.get("maxP95Ms", 500):
+        # 健康诊断：第 95 百分位延迟超过发布阈值。
         reasons.append("p95 latency exceeds the release threshold")
     return not reasons, reasons
 
@@ -804,35 +876,44 @@ class ReleaseGate:
     ) -> dict[str, Any]:
         reasons: list[str] = []
         if not transcripts:
+            # 证据诊断：一致性报文记录证据为空。
             reasons.append("conformance transcript evidence is empty")
         elif any(not is_sha256_digest(case.evidence_digest) for case in transcripts):
+            # 证据诊断：一致性报文记录的摘要无效。
             reasons.append("conformance transcript evidence has an invalid digest")
+        # 证据诊断：指定报文记录用例未通过。
         reasons.extend(f"transcript failed: {case.name}" for case in transcripts if not case.passed)
         if not sdk_reports:
+            # 证据诊断：SDK 差分比较证据为空。
             reasons.append("SDK differential evidence is empty")
         elif any(
             not is_sha256_digest(report.get("rawDigest"))
             or not is_sha256_digest(report.get("sdkDigest"))
             for report in sdk_reports
         ):
+            # 证据诊断：SDK 差分比较证据的摘要无效。
             reasons.append("SDK differential evidence has an invalid digest")
         reasons.extend(
+            # SDK 诊断：SDK 呈现的结果丢失或改变了实际传输语义。
             "SDK view lost or changed wire semantics"
             for report in sdk_reports
             if report.get("semanticMatch") is not True
         )
         if not proxy_reports:
+            # 证据诊断：代理证据为空。
             reasons.append("proxy evidence is empty")
         elif any(
             not is_sha256_digest(report.get(field))
             for report in proxy_reports
             for field in ("ingressDigest", "originDigest", "egressDigest")
         ):
+            # 证据诊断：代理证据摘要无效。
             reasons.append("proxy evidence has an invalid digest")
         reasons.extend(
             issue for report in proxy_reports for issue in report.get("issues", [])
         )
         reasons.extend(
+            # 证据诊断：代理证据未通过检查。
             "proxy evidence did not pass"
             for report in proxy_reports
             if report.get("passed") is not True and not report.get("issues")
@@ -842,6 +923,7 @@ class ReleaseGate:
 
         rollback_ready = rollback_evidence_ready(rollback, self.trusted_rollback_signers)
         if not rollback_ready:
+            # 回滚诊断：没有已经验证为健康的回滚目标。
             reasons.append("no verified healthy rollback target")
         if not reasons:
             action = "promote"
@@ -893,15 +975,18 @@ def demo() -> None:
     error_body = {
         "jsonrpc": "2.0",
         "id": 7,
+        # 报文夹具：头字段不匹配。原值参与错误响应和证据摘要，保持不变。
         "error": {"code": -32020, "message": "header mismatch"},
     }
     proxy_report = inspect_proxy(
         {
             "ingress": {
+                # 敏感值夹具：演示 Bearer 凭据，不应存入代理日志或持久证据。
                 "headers": {**headers, "Authorization": "Bearer do-not-store"},
                 "body": request,
             },
             "origin": {"status": 400, "body": error_body},
+            # 代理响应夹具：上游失败。用于展示错误地改写原协议错误的情况。
             "egress": {"status": 500, "body": {"message": "upstream failed"}},
         }
     )

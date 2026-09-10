@@ -1,15 +1,19 @@
-"""Query rewriting strategies: HyDE, multi-query, decomposition.
+"""查询改写策略：HyDE、多查询和问题分解。
 
-Implements three rewriters on top of a shared hybrid retriever. Uses a
-deterministic mock LLM so the loop runs offline.
+在共享的混合检索器之上实现三类改写器，并使用确定性的模拟 LLM，
+因此整个循环可离线运行。
 
-References:
+参考：
 - ./docs/en.md
-- Phase 19 lesson 65 (hybrid retriever consumed below)
-- Phase 19 lesson 66 (reranker on the rewriter's output in production)
-- Phase 19 lesson 69 (end-to-end pipeline composing rewriter + retriever + reranker)
+- 阶段 19 第 65 课（下游使用的混合检索器）
+- 阶段 19 第 66 课（生产形态中对改写结果进行重排）
+- 阶段 19 第 69 课（组合改写、检索和重排的端到端流水线）
 
-Run: python3 code/main.py
+运行：python3 code/main.py
+
+译注：MockLLM 依赖固定英文关键词和同义词表，并不调用真实生成模型；
+HyDE 的“假设文档”、多查询改写和分解结果均由确定性规则产生。因此
+本示例只展示控制流和检索接口，不是这些策略在真实 LLM 上的质量测量。
 """
 
 from __future__ import annotations
@@ -22,7 +26,7 @@ from typing import Iterable
 
 
 # ---------------------------------------------------------------------------
-# tokenizer + deterministic embedding (mirrors lesson 65 for compatibility)
+# 分词与确定性伪嵌入（为兼容第 65 课而保持同一形态）
 # ---------------------------------------------------------------------------
 
 _TOKEN = re.compile(r"[a-z0-9]+")
@@ -53,7 +57,7 @@ def cosine(a: list[float], b: list[float]) -> float:
 
 
 # ---------------------------------------------------------------------------
-# retrieval shape - hybrid BM25 + dense, simplified from lesson 65
+# 检索形态：BM25 + 稠密检索的混合版本，由第 65 课简化而来
 # ---------------------------------------------------------------------------
 
 @dataclass
@@ -150,15 +154,15 @@ class HybridRetriever:
 
     def search_vec(self, qv: list[float], qtext: str, k_each: int = 5,
                    k_out: int = 5) -> list[tuple[Doc, float]]:
-        # When given a precomputed dense vector (HyDE case), still run BM25 on the
-        # original query text so the lexical signal does not vanish.
+        # 即使已提供预计算的稠密向量（HyDE 场景），仍对原查询执行 BM25，
+        # 这样词法信号不会消失。
         b = self.bm25.search(qtext, k_each)
         d = self.dense.search_vec(qv, k_each)
         return rrf([b, d])[:k_out]
 
 
 # ---------------------------------------------------------------------------
-# mock LLM - deterministic, offline
+# 模拟 LLM：确定性、离线
 # ---------------------------------------------------------------------------
 
 _SYNONYMS = {
@@ -228,7 +232,7 @@ class MockLLM:
         key = query.lower().strip().rstrip("?").strip()
         if key in HYDE_TABLE:
             return HYDE_TABLE[key]
-        # fallback: synonym-expanded restatement
+        # 回退：使用同义词扩展重述
         toks = tokenize(query)
         expanded = []
         for t in toks:
@@ -240,7 +244,7 @@ class MockLLM:
         key = query.lower().strip().rstrip("?").strip()
         if key in MQ_TABLE:
             return MQ_TABLE[key][:n]
-        # fallback: cyclic synonym swaps
+        # 回退：循环替换同义词
         toks = tokenize(query)
         out: list[str] = []
         for shift in range(n):
@@ -258,7 +262,7 @@ class MockLLM:
         key = query.lower().strip().rstrip("?").strip()
         if key in DECOMP_TABLE:
             return DECOMP_TABLE[key]
-        # fallback: split on " and "
+        # 回退：按英文“ and ”拆分
         if " and " in query.lower():
             parts = re.split(r"\s+and\s+", query, flags=re.IGNORECASE)
             return [p.strip().rstrip("?") for p in parts if p.strip()]
@@ -266,7 +270,7 @@ class MockLLM:
 
 
 # ---------------------------------------------------------------------------
-# rewriter interface
+# 改写器接口
 # ---------------------------------------------------------------------------
 
 @dataclass
@@ -315,7 +319,7 @@ class DecomposeRewriter(Rewriter):
 
 
 # ---------------------------------------------------------------------------
-# retrieve through a rewriter
+# 通过改写器执行检索
 # ---------------------------------------------------------------------------
 
 def retrieve_with_rewriter(
@@ -346,7 +350,7 @@ def rwriter_name(rw: RewriteResult) -> str:
 
 
 # ---------------------------------------------------------------------------
-# fixture corpus + gold answers
+# 固定夹具语料与黄金答案
 # ---------------------------------------------------------------------------
 
 CORPUS = [
@@ -374,10 +378,10 @@ CORPUS = [
 ]
 
 
-# Each query is designed so a specific rewriter strategy excels on it.
-# - HyDE: phrasing mismatch where the hypothetical passage matches the corpus.
-# - MultiQuery: vague phrasing where one of N paraphrases lands on corpus terms.
-# - Decompose: multi-clause question covering two distinct documents.
+# 每个查询都被设计为让某一种改写策略更占优势。
+# - HyDE：原查询措辞与语料不匹配，但假设段落更接近语料。
+# - MultiQuery：原查询较模糊，N 个改写中至少一个更接近语料词项。
+# - Decompose：多子句问题分别覆盖不同文档。
 GOLD = [
     ("what do we do when a transfer breaks halfway", "d1", "multiquery"),
     ("how does the search service merge two retrievers", "d6", "hyde"),
@@ -393,7 +397,7 @@ def build_retriever() -> HybridRetriever:
 
 
 # ---------------------------------------------------------------------------
-# demo
+# 演示
 # ---------------------------------------------------------------------------
 
 def main() -> None:
@@ -415,7 +419,7 @@ def main() -> None:
             ranks = [d.doc_id for d, _ in out["results"]]
             hit = "yes" if ranks and ranks[0] == gold else "no "
             gold_rank = ranks.index(gold) + 1 if gold in ranks else -1
-            marker = "  <- expected winner" if name == expected_winner else ""
+            marker = "  <- 预期优势策略" if name == expected_winner else ""
             print(f"{name:<12} | {q[:58]:<60} |  {hit}   |   {gold_rank}{marker}")
         print()
 

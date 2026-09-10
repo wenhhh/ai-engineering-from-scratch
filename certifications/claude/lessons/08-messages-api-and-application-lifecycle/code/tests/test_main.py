@@ -1,4 +1,4 @@
-"""Tests for the lesson 08 Messages lifecycle simulator."""
+"""第 08 课 Messages 生命周期模拟器测试。"""
 
 import json
 import pathlib

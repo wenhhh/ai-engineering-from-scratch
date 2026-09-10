@@ -1,3 +1,9 @@
+/**
+ * Hono Webhook 接收器：先对原始请求体验签，再解析 JSON 和路由。
+ * invalid signature＝签名无效；invalid JSON＝JSON 无效；POST /webhook only＝仅支持该端点。
+ * 错误响应不翻译，以保持接口契约。共享密钥验签并不替代事件重放去重或仓库授权。
+ */
+
 import { Hono } from "hono";
 import type { AuditLog } from "./agent.js";
 import { route } from "./router.js";

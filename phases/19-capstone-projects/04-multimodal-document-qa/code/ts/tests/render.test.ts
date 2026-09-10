@@ -1,20 +1,25 @@
+/**
+ * 文档查看器回归测试。
+ * 仅翻译名称与说明；断言、匹配正则、夹具标题与输入保持原样。
+ */
+
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { escapeHtml, renderDocument, renderIndex } from "../src/render.js";
 import { getFixture } from "../src/fixtures.js";
 
 describe("escapeHtml", () => {
-  it("escapes the five hostile chars", () => {
+  it("转义五种需要 HTML 转义的字符", () => {
     assert.equal(escapeHtml("<a href=\"x\">'&\"</a>"), "&lt;a href=&quot;x&quot;&gt;&#39;&amp;&quot;&lt;/a&gt;");
   });
 
-  it("returns the input unchanged when there is nothing to escape", () => {
+  it("无需转义时原样返回输入", () => {
     assert.equal(escapeHtml("hello world"), "hello world");
   });
 });
 
 describe("renderIndex", () => {
-  it("lists both fixture documents as links", () => {
+  it("列出两个文档夹具的链接", () => {
     const html = renderIndex();
     assert.match(html, /<a href="\/document\/10k-acme-2025">/);
     assert.match(html, /<a href="\/document\/nature-paper-2026">/);
@@ -23,7 +28,7 @@ describe("renderIndex", () => {
 });
 
 describe("renderDocument", () => {
-  it("inlines a JSON payload for canvas overlay drawing", () => {
+  it("内嵌用于画布覆盖层绘制的 JSON 载荷", () => {
     const doc = getFixture("10k-acme-2025");
     assert.ok(doc);
     const html = renderDocument(doc);
@@ -32,7 +37,7 @@ describe("renderDocument", () => {
     assert.match(html, /<canvas class="overlay"/);
   });
 
-  it("escapes hostile content in title + query", () => {
+  it("对测试样本的标题与问题内容进行转义", () => {
     const html = renderDocument({
       id: "x",
       title: "<script>alert(1)</script>",
@@ -47,7 +52,7 @@ describe("renderDocument", () => {
     assert.match(html, /&lt;script&gt;alert\(1\)&lt;\/script&gt;/);
   });
 
-  it("escapes hostile content in query field", () => {
+  it("对问题字段中的测试脚本标签进行转义", () => {
     const html = renderDocument({
       id: "y",
       title: "ok",

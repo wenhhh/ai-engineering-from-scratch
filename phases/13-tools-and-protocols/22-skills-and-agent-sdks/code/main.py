@@ -1,3 +1,10 @@
+"""阶段 13，第 22 课：技能格式契约与智能体开发构件的选择。
+
+先解析并验证 SKILL.md，再按任务职责选择提示词、技能、工具、钩子或子智能体。
+例中的 JSON 字段和错误码保持原样，受契约约束的英文诊断在相邻注释中给出中文。
+本解析器不是通用 YAML 实现，也不会执行技能正文或调用外部模型。
+"""
+
 from __future__ import annotations
 
 import json
@@ -42,7 +49,7 @@ class SkillReport:
 
 
 class FrontmatterSyntaxError(ValueError):
-    """Raised when the lesson's deliberately small YAML subset is invalid."""
+    """本课刻意只支持一小部分 YAML 语法；输入违反该语法子集时抛出此异常。"""
 
 
 def _decode_scalar(raw: str) -> str:
@@ -53,27 +60,33 @@ def _decode_scalar(raw: str) -> str:
         try:
             decoded = json.loads(value)
         except json.JSONDecodeError as error:
+            # 诊断：带引号的标量无效；后面附 JSON 解析器的具体原因。
             raise FrontmatterSyntaxError(f"invalid quoted scalar: {error.msg}") from error
         if not isinstance(decoded, str):
+            # 诊断：文件头元数据中的标量必须是字符串。
             raise FrontmatterSyntaxError("frontmatter scalars must be strings")
         return decoded
     if value.startswith("'"):
         if len(value) < 2 or not value.endswith("'"):
+            # 诊断：单引号标量缺少结束引号。
             raise FrontmatterSyntaxError("unterminated single-quoted scalar")
         return value[1:-1].replace("''", "'")
     if value[0] in "[{&*!":
+        # 诊断：可移植语法子集不支持此 YAML 结构。
         raise FrontmatterSyntaxError("unsupported YAML construct in portable subset")
     return value
 
 
 def parse_frontmatter(text: str) -> tuple[dict[str, Any], str]:
-    """Parse top-level scalars, block scalars, and a one-level metadata map."""
+    """解析顶层标量、块标量，以及只有一层的 metadata 映射。"""
     lines = text.splitlines()
     if not lines or lines[0] != "---":
+        # 诊断：SKILL.md 必须以内容恰为 --- 的一行开始。
         raise FrontmatterSyntaxError("SKILL.md must begin with an exact --- line")
     try:
         end = lines.index("---", 1)
     except ValueError as error:
+        # 诊断：文件头元数据需要以单独一行 --- 结束。
         raise FrontmatterSyntaxError("frontmatter needs a closing --- line") from error
 
     metadata: dict[str, Any] = {}
@@ -84,12 +97,15 @@ def parse_frontmatter(text: str) -> tuple[dict[str, Any], str]:
             index += 1
             continue
         if line[:1].isspace() or ":" not in line:
+            # 诊断：指定行的顶层语法格式不正确。
             raise FrontmatterSyntaxError(f"malformed top-level line {index + 1}")
         key, raw_value = line.split(":", 1)
         key = key.strip()
         if not re.fullmatch(r"[A-Za-z][A-Za-z0-9-]*", key):
+            # 诊断：字段名无效。
             raise FrontmatterSyntaxError(f"invalid field name {key!r}")
         if key in metadata:
+            # 诊断：字段重复。
             raise FrontmatterSyntaxError(f"duplicate field {key!r}")
 
         value = raw_value.strip()
@@ -109,12 +125,14 @@ def parse_frontmatter(text: str) -> tuple[dict[str, Any], str]:
                 if nested_line:
                     if ":" not in nested_line:
                         raise FrontmatterSyntaxError(
+                            # 诊断：指定行的 metadata 格式不正确。
                             f"malformed metadata line {index + 1}"
                         )
                     nested_key, nested_value = nested_line.split(":", 1)
                     nested_key = nested_key.strip()
                     if nested_key in nested:
                         raise FrontmatterSyntaxError(
+                            # 诊断：metadata 字段重复。
                             f"duplicate metadata field {nested_key!r}"
                         )
                     nested[nested_key] = _decode_scalar(nested_value)
@@ -146,13 +164,16 @@ def validate_skill_text(
     description = description_value if isinstance(description_value, str) else None
 
     if not name:
+        # 诊断：name 必须是非空字符串。
         issues.append(ValidationIssue("name-required", "name must be a non-empty string"))
     elif len(name) > 64:
+        # 诊断：name 最多包含 64 个字符。
         issues.append(ValidationIssue("name-too-long", "name must be at most 64 characters"))
     elif not NAME_PATTERN.fullmatch(name):
         issues.append(
             ValidationIssue(
                 "name-format",
+                # 诊断：name 只能使用小写字母、数字和分隔词语的单个连字符。
                 "name must use lowercase letters, digits, and single hyphens",
             )
         )
@@ -160,17 +181,20 @@ def validate_skill_text(
         issues.append(
             ValidationIssue(
                 "directory-mismatch",
+                # 诊断：name 必须与技能目录名一致。
                 f"name {name!r} must match directory {directory_name!r}",
             )
         )
 
     if not description or not description.strip():
         issues.append(
+            # 诊断：description 必须说明何时应使用该技能。
             ValidationIssue("description-required", "description must explain when to use the skill")
         )
     elif len(description) > 1024:
         issues.append(
             ValidationIssue(
+                # 诊断：description 最多包含 1024 个字符。
                 "description-too-long", "description must be at most 1024 characters"
             )
         )
@@ -181,6 +205,7 @@ def validate_skill_text(
             issues.append(
                 ValidationIssue(
                     "compatibility-empty",
+                    # 诊断：提供 compatibility 时，其值必须是非空字符串。
                     "compatibility must be a non-empty string when provided",
                 )
             )
@@ -188,6 +213,7 @@ def validate_skill_text(
             issues.append(
                 ValidationIssue(
                     "compatibility-too-long",
+                    # 诊断：compatibility 最多包含 500 个字符。
                     "compatibility must be at most 500 characters",
                 )
             )
@@ -201,6 +227,7 @@ def validate_skill_text(
             issues.append(
                 ValidationIssue(
                     "metadata-shape",
+                    # 诊断：metadata 必须把字符串键映射到字符串值。
                     "metadata must map string keys to string values",
                 )
             )
@@ -211,10 +238,12 @@ def validate_skill_text(
             issues.append(
                 ValidationIssue(
                     "allowed-tools-shape",
+                    # 诊断：allowed-tools 必须是非空字符串，工具名用空格分隔。
                     "allowed-tools must be a non-empty space-separated string",
                 )
             )
     if not body:
+        # 诊断：SKILL.md 必须包含指令正文。
         issues.append(ValidationIssue("body-required", "SKILL.md needs instruction content"))
 
     extension_names = sorted(set(fields) - CORE_FIELDS)
@@ -224,6 +253,7 @@ def validate_skill_text(
             issues.append(
                 ValidationIssue(
                     "unsupported-runtime-field",
+                    # 诊断：此字段既不属于可移植契约，也未被当前宿主策略允许。
                     f"{field!r} is not part of the portable contract or this host policy",
                 )
             )
@@ -250,7 +280,12 @@ class TaskShape:
 
 
 def select_primitives(task: TaskShape) -> tuple[str, ...]:
-    """Select composable primitives by responsibility, not by product branding."""
+    """按职责选择可组合的基本构件，而不是按产品品牌选择。
+
+    返回值是契约标签，保留英文：Agent Skill 为智能体技能，MCP tool 为 MCP 工具，
+    hook 为钩子，ordinary code 为普通代码，subagent 为子智能体，prompt 为提示词。
+    AGENTS.md 表示仓库级默认指令。多个职责可以对应多个构件。
+    """
     choices: list[str] = []
     if task.repository_default:
         choices.append("AGENTS.md")
@@ -270,14 +305,14 @@ def select_primitives(task: TaskShape) -> tuple[str, ...]:
 def demo() -> None:
     portable_example = """---
 name: incident-summary
-description: Summarize an incident timeline when the user supplies event notes.
+description: 当用户提供事件记录时，汇总事件时间线。
 metadata:
   owner: reliability
 ---
 
-# Incident summary
+# 事件摘要
 
-Preserve timestamps and separate observations from inferences.
+保留时间戳，并区分观察结果与推断。
 """
     host_extended_example = portable_example.replace(
         "description:", "user-invocable: true\ndescription:", 1
@@ -326,7 +361,7 @@ Preserve timestamps and separate observations from inferences.
             ),
         },
     }
-    print(json.dumps(result, indent=2))
+    print(json.dumps(result, indent=2, ensure_ascii=False))
 
 
 if __name__ == "__main__":

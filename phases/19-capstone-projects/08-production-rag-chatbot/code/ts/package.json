@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "description": "Production RAG chatbot SSE chat UI skeleton (TypeScript)",
+  "description": "生产级 RAG 聊天机器人的 SSE 界面示例框架（TypeScript）",
   "scripts": {
     "start": "tsx src/index.ts --demo",
     "serve": "tsx src/index.ts",

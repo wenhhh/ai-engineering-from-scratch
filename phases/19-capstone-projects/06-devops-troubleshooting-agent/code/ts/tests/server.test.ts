@@ -1,3 +1,8 @@
+/**
+ * 运维排障示例的回归测试。
+ * 只翻译名称与说明；签名载荷、密钥夹具、断言、错误值和匹配正则不变。
+ */
+
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { buildApp } from "../src/server.js";
@@ -22,8 +27,8 @@ function headersFor(body: string, opts: SignedOpts = {}): Record<string, string>
   };
 }
 
-describe("server", () => {
-  it("GET /health returns ok", async () => {
+describe("服务路由", () => {
+  it("GET /health 返回 ok", async () => {
     const { app } = buildApp({ signingSecret: SECRET });
     const res = await app.request("/health");
     assert.equal(res.status, 200);
@@ -31,7 +36,7 @@ describe("server", () => {
     assert.equal(body.ok, true);
   });
 
-  it("POST /slack/command with valid signature returns 200 + logs outbound", async () => {
+  it("POST /slack/command：有效签名返回 200 并记录待发送消息", async () => {
     const { app, outboundLog } = buildApp({ signingSecret: SECRET });
     const body = new URLSearchParams({
       command: "/oncall",
@@ -49,7 +54,7 @@ describe("server", () => {
     assert.equal(outboundLog.length, 1);
   });
 
-  it("POST /slack/command with tampered signature returns 401", async () => {
+  it("POST /slack/command：篡改签名返回 401", async () => {
     const { app } = buildApp({ signingSecret: SECRET });
     const body = "text=hi";
     const res = await app.request("/slack/command", {
@@ -60,7 +65,7 @@ describe("server", () => {
     assert.equal(res.status, 401);
   });
 
-  it("POST /slack/command with stale timestamp returns 401", async () => {
+  it("POST /slack/command：过期时间戳返回 401", async () => {
     const { app } = buildApp({ signingSecret: SECRET });
     const body = "text=hi";
     const res = await app.request("/slack/command", {
@@ -71,7 +76,7 @@ describe("server", () => {
     assert.equal(res.status, 401);
   });
 
-  it("POST /slack/interactivity approve produces an approval reply", async () => {
+  it("POST /slack/interactivity：批准动作生成审批回复", async () => {
     const { app, outboundLog } = buildApp({ signingSecret: SECRET });
     const body = new URLSearchParams({
       payload: JSON.stringify({

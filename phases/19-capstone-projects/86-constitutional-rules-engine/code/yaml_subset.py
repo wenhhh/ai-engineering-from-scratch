@@ -1,19 +1,7 @@
-"""Minimal YAML subset parser sufficient for the constitution file.
+"""足以读取本课 constitution 文件的最小 YAML 子集解析器。
 
-Supports:
-- nested block mappings with two-space indentation
-- block sequences ('- key: value' style)
-- string scalars (plain, single-quoted, double-quoted)
-- integer scalars
-- inline list values on the right of ':' for simple atoms
-- comments after '#' on a line
-
-Does NOT support: anchors, aliases, tags, flow style, multi-doc, multi-line
-folded/literal blocks. The constitution format avoids those by design.
-
-If PyYAML is installed it is preferred via load_yaml; this fallback exists so
-the lesson runs on any standard Python install.
-"""
+支持两空格缩进的块映射、`- key: value` 风格块序列，以及本课配置用到的字符串、
+数值、布尔值和空值。它不是完整 YAML 实现，不能作为通用或不可信 YAML 解析器。"""
 
 from __future__ import annotations
 

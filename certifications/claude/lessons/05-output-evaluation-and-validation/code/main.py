@@ -1,8 +1,7 @@
-"""Companion code for:
-certifications/claude/lessons/05-output-evaluation-and-validation/docs/en.md
-It validates claim provenance, evaluator fit, and release-gate consistency.
-The local packet contains one intentional blocker to exercise revision logic.
-"""
+"""第 05 课输出评估与验证配套代码。
+
+对应 docs/en.md：检查 claim 的来源可追溯性、证据覆盖、评审状态与失败条件。
+通过本地验证只说明资料包满足这套规则，不等于事实本身已经被独立核实。"""
 
 from __future__ import annotations
 

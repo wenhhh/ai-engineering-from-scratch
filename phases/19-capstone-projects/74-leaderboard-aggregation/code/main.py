@@ -1,11 +1,15 @@
-"""Leaderboard aggregation: pivot, mean, win-rate, bootstrap CI, markdown.
+"""排行榜聚合：透视表、均值、胜率、bootstrap 置信区间与 Markdown 输出。
 
-Conceptual references:
-- ./docs/en.md (this lesson)
-- lesson 71 (classical metrics) for per-task score shape
-- lesson 73 (calibration) for the multi-model report pattern
+概念参考：
+- ./docs/en.md（本课）
+- 第 71 课：逐任务分数结构
+- 第 73 课：多模型报告模式
 
-Stdlib + numpy. Run: python3 code/main.py
+使用标准库 + NumPy。运行：python3 code/main.py
+
+译注：成对 bootstrap 针对本课固定任务分数重复抽样；置信区间和显著性
+只反映该采样设计，不等同通用统计结论。模型名、任务名、分数和 Markdown
+字段保持原值。
 """
 
 from __future__ import annotations
@@ -283,10 +287,10 @@ def demo() -> int:
     diffs = pairwise_diffs(runs, b=300, alpha=0.05, seed=11)
     print(render_markdown(rows))
     print()
-    print("Pairwise comparisons (paired bootstrap):")
+    print("成对比较（paired bootstrap）：")
     for d in diffs:
         sig = "yes" if d.significant else "no"
-        print(f"  {d.model_a} vs {d.model_b}: diff={d.diff_mean:+.3f} ci=[{d.ci_lo:+.3f},{d.ci_hi:+.3f}] significant={sig}")
+        print(f"  {d.model_a} 对比 {d.model_b}: diff={d.diff_mean:+.3f} ci=[{d.ci_lo:+.3f},{d.ci_hi:+.3f}] 显著={sig}")
     if not rows:
         return 1
     if rows[0].mean_score < rows[-1].mean_score:

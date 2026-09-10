@@ -1,13 +1,12 @@
-"""Transformer block from scratch: LayerNorm, multi head causal attention, residual, MLP, residual.
+"""从零实现 Transformer 块：层归一化、因果多头注意力、残差、MLP 与残差。
 
-Implements both pre-LN and post-LN configurations behind a single flag. The demo
-builds a six layer stack of each, sends a single forward and backward pass through,
-and prints the gradient norm at the input embedding for each variant. The pre-LN
-stack carries an order of magnitude larger gradient at the embedding than the
-post-LN stack at identical learning rate, which is the mechanism that lets
-modern decoder LLMs train without a warmup schedule.
+通过同一个标志切换 Pre-LN 和 Post-LN。演示分别构造六层堆叠，使用相同参数初始化，
+各执行一次前向和反向传播，再打印输入嵌入的梯度范数。
+在课程目录运行：python3 code/main.py
 
-Run: python3 code/main.py
+译注：原文据此声称 Pre-LN 梯度大一个数量级，并联系到不使用学习率预热的训练。
+实际演示没有优化器或学习率设置，也没有训练循环；损失还是最终层归一化输出的平方和。
+因此这里保留实测比值，但不把它当作普遍的梯度比例或“不需要预热”的证明。
 """
 
 from __future__ import annotations
@@ -22,7 +21,7 @@ import torch.nn.functional as F
 
 @dataclass
 class BlockConfig:
-    """Hyperparameters shared across attention, MLP, and the wrapping block."""
+    """自注意力、MLP 和外层 Transformer 块共享的超参数。"""
 
     d_model: int = 768
     num_heads: int = 12
@@ -35,11 +34,10 @@ class BlockConfig:
 
 
 class LayerNorm(nn.Module):
-    """Layer normalization with learnable scale and shift.
+    """具有可学习缩放和偏移参数的层归一化。
 
-    Normalizes over the last dimension (the embedding axis) for every token
-    independently. Equivalent to nn.LayerNorm(d_model) but spelled out so the
-    eps placement and the parameter shapes are visible.
+    对每个词元独立地沿最后一个维度（嵌入维度）归一化。
+    将与 nn.LayerNorm(d_model) 对应的计算展开，以展示 eps 的位置与参数形状。
     """
 
     def __init__(self, d_model: int, eps: float = 1e-5) -> None:
@@ -55,11 +53,11 @@ class LayerNorm(nn.Module):
 
 
 class MultiHeadAttention(nn.Module):
-    """Multi head causal self attention with a fused QKV projection.
+    """使用融合 QKV 投影的多头因果自注意力。
 
-    Fused QKV: one linear of width 3 * d_model instead of three linears, one
-    kernel launch, one matmul. The causal mask is registered as a buffer so it
-    is allocated once at construction and sliced per forward.
+    用一个输出宽度为 3 * d_model 的线性层代替三个独立投影层。
+    因果掩码注册为缓冲区，构造时分配一次，每次前向传播按实际序列长度截取。
+    原文将其描述为减少内核启动与矩阵乘法调用；本例没有实际测量内核数或性能。
     """
 
     def __init__(self, cfg: BlockConfig) -> None:
@@ -112,7 +110,7 @@ class MultiHeadAttention(nn.Module):
 
 
 class FeedForward(nn.Module):
-    """Position wise MLP. No token mixing happens here; all of that lives in attention."""
+    """逐位置 MLP。这里不混合不同词元的信息；跨词元交互由自注意力完成。"""
 
     def __init__(self, cfg: BlockConfig) -> None:
         super().__init__()
@@ -131,14 +129,13 @@ class FeedForward(nn.Module):
 
 
 class TransformerBlock(nn.Module):
-    """One transformer block. Toggle pre_ln to switch between configurations.
+    """一个 Transformer 块；通过 pre_ln 切换归一化位置。
 
-    Pre-LN: norm inside the residual branch before each sublayer. The residual
-    carries an unnormalized tensor through every block; gradients propagate
-    cleanly to the embedding layer without a warmup schedule.
+    Pre-LN：在残差分支的各子层之前归一化，主残差路径不经过这些归一化操作。
+    Post-LN：在残差相加之后归一化，跨块传播的梯度也经过该归一化操作。
 
-    Post-LN: norm after the residual add. Gradient must pass through the norm
-    on every block; deep stacks need warmup to avoid divergence.
+    原文据此讨论深层训练的稳定性和学习率预热；本例仅比较一次反向传播的梯度，
+    不能据此断言所有 Pre-LN 模型都不需要预热，或所有 Post-LN 模型必然发散。
     """
 
     def __init__(self, cfg: BlockConfig) -> None:
@@ -160,7 +157,7 @@ class TransformerBlock(nn.Module):
 
 
 class BlockStack(nn.Module):
-    """A small stack used by the demo. The lesson 35 GPT uses the same pattern with twelve blocks."""
+    """演示使用的小型块堆叠；第 35 课的 GPT 配置采用相同模式，默认包含十二个块。"""
 
     def __init__(self, cfg: BlockConfig, depth: int) -> None:
         super().__init__()
@@ -177,10 +174,10 @@ class BlockStack(nn.Module):
 
 
 def gradient_norm_at_embedding(stack: BlockStack, tokens: torch.Tensor) -> float:
-    """Send one forward and one backward through the stack, return the embedding gradient norm.
+    """对块堆叠执行一次前向和反向传播，返回嵌入参数的梯度范数。
 
-    The loss is the sum of squares of the final tensor. The magnitude is unitless;
-    what matters is the ratio between pre-LN and post-LN at the same depth.
+    损失取最终张量的平方和。两种配置使用相同深度和初始化；所得比值只描述
+    这一特定损失与输入下的梯度差别，不等于完整训练的收敛或稳定性结论。
     """
     stack.zero_grad(set_to_none=True)
     out = stack(tokens)
@@ -193,7 +190,7 @@ def gradient_norm_at_embedding(stack: BlockStack, tokens: torch.Tensor) -> float
 
 
 def _set_eval_mode(stack: BlockStack) -> None:
-    """Disable dropout so the comparison between pre-LN and post-LN is deterministic."""
+    """关闭 dropout，避免这种随机性影响两种归一化配置的比较。"""
     stack.eval()
 
 
@@ -230,22 +227,22 @@ def demo() -> None:
         pre_out = pre_stack(tokens)
         post_out = post_stack(tokens)
 
-    print("Pre-LN output shape :", tuple(pre_out.shape))
-    print("Post-LN output shape:", tuple(post_out.shape))
+    print("Pre-LN 输出形状 ：", tuple(pre_out.shape))
+    print("Post-LN 输出形状：", tuple(post_out.shape))
     assert pre_out.shape == post_out.shape == (2, 32, 192)
 
     pre_grad = gradient_norm_at_embedding(pre_stack, tokens)
     post_grad = gradient_norm_at_embedding(post_stack, tokens)
 
-    print(f"Pre-LN  embedding grad norm: {pre_grad:.6f}")
-    print(f"Post-LN embedding grad norm: {post_grad:.6f}")
+    print(f"Pre-LN  嵌入梯度范数：{pre_grad:.6f}")
+    print(f"Post-LN 嵌入梯度范数：{post_grad:.6f}")
     if post_grad > 0:
         ratio = pre_grad / post_grad
-        print(f"Pre-LN / Post-LN ratio    : {ratio:.2f}x")
+        print(f"Pre-LN / Post-LN 范数比：{ratio:.2f}x")
 
     n_params = sum(p.numel() for p in pre_stack.parameters())
-    print(f"Stack parameter count     : {n_params:,}")
-    print("Block check passed.")
+    print(f"块堆叠参数总数        ：{n_params:,}")
+    print("Transformer 块检查通过。")
 
 
 if __name__ == "__main__":

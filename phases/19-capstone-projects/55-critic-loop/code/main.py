@@ -1,12 +1,17 @@
-"""Multi-turn critic loop for a paper draft with five fixed scoring dimensions.
+"""针对论文草稿的多轮审稿循环，使用五个固定评分维度。
 
-Conceptual references:
-- ./docs/en.md (this lesson)
-- Phase 19 lesson 54 (paper writer; provides the draft shape)
-- Phase 19 lessons 50-53 (earlier auto-research stages)
+概念参考：
+- ./docs/en.md（本课正文）
+- 阶段 19 第 54 课（论文写作器，提供草稿结构）
+- 阶段 19 第 50—53 课（自动研究流程的前置阶段）
 
-Stdlib only. Run: python3 code/main.py
-"""
+仅使用标准库。运行：python3 code/main.py
+
+译注：评分仅看正文长度、原创性标签、图表/引用数量和英文章节标题。
+修订器通过追加 x 字符、改标签和添加占位引用提高分数，不验证真实研究质量。
+英文正文长度与标题参与计分和规则匹配，故保留原值并加中文释义。
+plateau 只要求近期增量未超过阈值，也可能包括退步；converged 不一定表示达标。
+预算耗尽时返回的分数来自最后一次修订之前；停滞轮的建议计数也不等于实际执行数。"""
 
 from __future__ import annotations
 
@@ -26,7 +31,7 @@ DIMENSIONS: tuple[str, ...] = (
 
 @dataclass
 class MiniSection:
-    """Minimal section shape for the critic loop. Mirrors lesson 54 Section."""
+    """审稿循环使用的最小章节结构，对应第 54 课的 Section。"""
     id: str
     title: str
     body: str = ""
@@ -36,7 +41,7 @@ class MiniSection:
 
 @dataclass
 class MiniPaper:
-    """Minimal paper shape for the critic loop. Mirrors lesson 54 Paper."""
+    """审稿循环使用的最小论文结构，对应第 54 课的 Paper。"""
     title: str
     abstract: str
     sections: list[MiniSection] = field(default_factory=list)
@@ -129,7 +134,7 @@ class LoopResult:
 
 
 class CriticLoop:
-    """Drives critic -> reviser -> convergence-check until a stop condition fires."""
+    """循环执行审稿、停止条件检查与修订，直到触发停止条件。"""
 
     def __init__(
         self,
@@ -141,8 +146,10 @@ class CriticLoop:
         plateau_window: int = 2,
     ) -> None:
         if max_rounds < 1:
+            # 最大轮数必须至少为 1。
             raise ValueError("max_rounds must be >= 1")
         if plateau_window < 1:
+            # 停滞检测窗口必须至少为 1。
             raise ValueError("plateau_window must be >= 1")
         self.critic = critic
         self.reviser = reviser
@@ -212,7 +219,7 @@ class CriticLoop:
 
 
 def deterministic_score(paper: MiniPaper) -> dict[str, float]:
-    """Score a paper deterministically across the five dimensions, 0..10 each."""
+    """按五个维度确定性计分，每项范围为 0—10；这是结构启发式，不是语义质量评分。"""
     body_lens = [len(s.body) for s in paper.sections]
     avg_body = (sum(body_lens) / len(body_lens)) if body_lens else 0.0
     section_titles = {s.title.lower() for s in paper.sections}
@@ -254,7 +261,7 @@ def deterministic_score(paper: MiniPaper) -> dict[str, float]:
 
 
 def deterministic_critic(paper: MiniPaper, round_: int) -> Critique:
-    """Score the paper and emit one suggestion per dimension that is below target."""
+    """为论文评分，并为低于固定目标 8 分的每个维度生成一条建议。"""
     scores = deterministic_score(paper)
     suggestions: list[Suggestion] = []
 
@@ -266,39 +273,46 @@ def deterministic_critic(paper: MiniPaper, round_: int) -> Critique:
         suggestions.append(Suggestion(
             dimension="clarity",
             target_section_id=target,
+            # 动作：扩展正文；字符串同时用于分发，保留原值。
             edit="expand-body",
         ))
     if scores["novelty"] < 8.0:
         suggestions.append(Suggestion(
             dimension="novelty",
             target_section_id=None,
+            # 动作：提高原创性标签；并没有查验新的原创贡献。
             edit="bump-originality",
         ))
     if scores["evidence"] < 8.0:
         suggestions.append(Suggestion(
             dimension="evidence",
             target_section_id=first_section_id(),
+            # 动作：添加图表引用与文献引用占位符。
             edit="add-figure-and-cite",
         ))
     if scores["methodology"] < 8.0:
         suggestions.append(Suggestion(
             dimension="methodology",
             target_section_id=None,
+            # 动作：添加方法章节。
             edit="add-method-section",
         ))
     if scores["related_work"] < 8.0:
         suggestions.append(Suggestion(
             dimension="related_work",
             target_section_id=None,
+            # 动作：添加相关工作章节。
             edit="add-related-work-section",
         ))
 
+    # 诊断标记：所有维度达到固定目标。
+    # 诊断：对应数量的维度尚未达到目标。
     reason = "fully-met" if not suggestions else f"{len(suggestions)} below target"
     return Critique(round=round_, scores=scores, suggestions=suggestions, reason=reason)
 
 
 def deterministic_reviser(paper: MiniPaper, suggestions: list[Suggestion]) -> MiniPaper:
-    """Apply each suggestion's edit deterministically. Returns a mutated paper (same object)."""
+    """确定性执行每条建议的 edit 动作，原地修改论文并返回同一对象。"""
     fig_counter = 0
     cite_counter = 0
     for s in paper.sections:
@@ -306,16 +320,19 @@ def deterministic_reviser(paper: MiniPaper, suggestions: list[Suggestion]) -> Mi
         cite_counter += len(s.cites)
 
     for sug in suggestions:
+        # 动作：扩展正文；字符串同时用于分发，保留原值。
         if sug.edit == "expand-body":
             for sec in paper.sections:
                 if sec.id == sug.target_section_id:
                     sec.body = (sec.body + " " + ("x" * 80)).strip()
                     break
+        # 动作：提高原创性标签；并没有查验新的原创贡献。
         elif sug.edit == "bump-originality":
             if paper.originality_tag == "low":
                 paper.originality_tag = "medium"
             elif paper.originality_tag == "medium":
                 paper.originality_tag = "high"
+        # 动作：添加图表引用与文献引用占位符。
         elif sug.edit == "add-figure-and-cite":
             target_id = sug.target_section_id or (paper.sections[0].id if paper.sections else None)
             for sec in paper.sections:
@@ -325,26 +342,34 @@ def deterministic_reviser(paper: MiniPaper, suggestions: list[Suggestion]) -> Mi
                     sec.figure_refs.append(f"f{fig_counter}")
                     sec.cites.append(f"c{cite_counter}")
                     break
+        # 动作：添加方法章节。
         elif sug.edit == "add-method-section":
             if not any(s.title.lower().startswith("method") for s in paper.sections):
                 paper.sections.append(MiniSection(
+                    # 方法章节；该英文标题参与规则匹配。
                     id="method", title="Method",
+                    # 计分夹具：下面介绍方法。英文长度参与分数，故不替换。
                     body="A description of the method follows. " + ("x" * 200),
                 ))
             else:
                 for sec in paper.sections:
                     if sec.title.lower().startswith("method") and not sec.body:
+                        # 计分夹具：下面介绍方法。英文长度参与分数，故不替换。
                         sec.body = "A description of the method follows. " + ("x" * 200)
                         break
+        # 动作：添加相关工作章节。
         elif sug.edit == "add-related-work-section":
             if not any(s.title.lower() == "related work" for s in paper.sections):
                 paper.sections.append(MiniSection(
+                    # 相关工作章节；该英文标题参与规则匹配。
                     id="related-work", title="Related Work",
+                    # 计分夹具：综述相邻研究。英文长度参与分数，故不替换。
                     body="We survey adjacent work. " + ("x" * 200),
                 ))
             else:
                 for sec in paper.sections:
                     if sec.title.lower() == "related work" and not sec.body:
+                        # 计分夹具：综述相邻研究。英文长度参与分数，故不替换。
                         sec.body = "We survey adjacent work. " + ("x" * 200)
                         break
     return paper
@@ -356,9 +381,11 @@ def make_deterministic_critic_pair() -> tuple[Critic, Reviser]:
 
 def demo() -> dict:
     paper = MiniPaper(
+        # 示例标题：自动研究循环。
         title="Auto-Research Loop",
         abstract="abstract",
         sections=[
+            # 计分夹具：简短引言。
             MiniSection(id="intro", title="Introduction", body="short intro"),
         ],
         originality_tag="low",

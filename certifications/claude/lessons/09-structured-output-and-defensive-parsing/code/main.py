@@ -1,8 +1,7 @@
-"""Companion code for:
-certifications/claude/lessons/09-structured-output-and-defensive-parsing/docs/en.md
-It demonstrates schema-first parsing, validation, and bounded repair.
-Concepts follow official Anthropic structured-output documentation.
-"""
+"""第 09 课结构化输出与防御性解析配套代码。
+
+对应 docs/en.md：演示 schema-first 解析、精确单 JSON 值约束、受限 schema 子集和有界修复重试。
+这是本地解析教学实现，不等于完整 JSON Schema 或 provider 级结构化输出保证。"""
 
 from __future__ import annotations
 
@@ -37,7 +36,7 @@ TRIAGE_SCHEMA: dict[str, Any] = {
 
 
 def parse_and_validate(raw: str, schema: dict[str, Any]) -> Any:
-    """Accept exactly one JSON value, then validate the supported schema subset."""
+    """只接受一个 JSON 值，然后按本课支持的 schema 子集进行校验。"""
     try:
         value = json.loads(raw)
     except json.JSONDecodeError as exc:
@@ -96,7 +95,7 @@ def validate(value: Any, schema: dict[str, Any], path: str = "$") -> list[Valida
 
 
 class BoundedExtractor:
-    """Call a model-like function and request repair only within a fixed budget."""
+    """调用类模型函数，并只在固定预算内请求修复。"""
 
     def __init__(self, generate: Callable[[str], str], schema: dict[str, Any], max_attempts: int = 2) -> None:
         if max_attempts < 1:

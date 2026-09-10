@@ -1,8 +1,12 @@
-"""MARL patterns — CTDE, value decomposition, centralized value — on a tiny grid.
+"""多智能体强化学习（MARL）模式的概念模拟：集中训练与分散执行（CTDE）等。
 
-Two agents, 4x4 grid, one pellet. All four styles share the same environment
-and reward. Scripted policies demonstrate how CTDE variants converge faster
-than the independent baseline even without gradient updates.
+两个智能体在 4×4 网格中收集两个目标物，比较独立选择最近目标与集中分配目标。
+以 MADDPG、QMIX 和 MAPPO 命名的函数都使用预设策略，没有梯度更新、价值网络
+或真实强化学习训练，因此不能据此评价这些算法的训练速度或性能。
+
+译注：原文开头写一个目标物，实际有两个；环境只要求目标全部收集，并不强制
+每个智能体各收集一个。没有额外碰撞惩罚或奖励函数。协调版每一步仍调用集中式
+分配，而且两个智能体都会移动；不是仅在训练时使用中央信息的部署实现。
 """
 from __future__ import annotations
 
@@ -15,9 +19,9 @@ GRID = 4
 
 @dataclass
 class Env:
-    """Cooperative task: TWO pellets, each agent must collect one; step cost
-    applies whether the agent moves or not; collisions (two agents same cell)
-    cost an extra step."""
+    """合作任务：网格中有两个目标物，全部收集后结束。
+    当前实现不记录每个智能体的收集配额，也不对碰撞额外计罚；
+    外层策略仅统计循环步数。"""
     agent0: tuple[int, int]
     agent1: tuple[int, int]
     pellet0: tuple[int, int]
@@ -67,8 +71,8 @@ def move_or_wait(pos: tuple[int, int], target: tuple[int, int], wait: bool) -> t
 
 
 def run_independent(env: Env, max_steps: int = 50) -> int:
-    """Each agent independently targets the nearest pellet; no awareness of
-    the other agent's target. Often both target the same pellet."""
+    """每个智能体独立选择最近的目标物，不考虑另一个智能体的目标，
+    因而可能发生重复奔赴同一目标的情况。"""
     steps = 0
     while not env.done and steps < max_steps:
         p0_target = min(env.pellets_remaining, key=lambda p: manhattan(env.agent0, p))
@@ -81,7 +85,7 @@ def run_independent(env: Env, max_steps: int = 50) -> int:
 
 
 def _assigned_targets(env: Env) -> tuple[tuple[int, int], tuple[int, int]]:
-    """Centralized optimal pellet assignment: minimize total Manhattan."""
+    """集中分配两个目标，选择曼哈顿距离总和更小的配对；只剩一个目标时两者都指向它。"""
     pellets = list(env.pellets_remaining)
     if len(pellets) == 1:
         return pellets[0], pellets[0]
@@ -92,8 +96,8 @@ def _assigned_targets(env: Env) -> tuple[tuple[int, int], tuple[int, int]]:
 
 
 def run_maddpg_style(env: Env, max_steps: int = 50) -> int:
-    """Centralized critic assigns each agent a distinct pellet; each agent's
-    actor moves toward its assigned target. Deploy-time only the actors run."""
+    """用集中式目标分配类比协作策略：每一步重新分配目标，两者都向目标移动。
+    本例没有训练 critic/actor，执行时也仍然访问全局环境。"""
     steps = 0
     while not env.done and steps < max_steps:
         t0, t1 = _assigned_targets(env)
@@ -105,8 +109,8 @@ def run_maddpg_style(env: Env, max_steps: int = 50) -> int:
 
 
 def run_qmix_style(env: Env, max_steps: int = 50) -> int:
-    """Value decomposition: each agent picks the pellet with higher local Q
-    (lower manhattan). Monotone mixing makes this argmax-decomposable."""
+    """以 QMIX 命名的教学占位策略：实际仍使用同一个集中目标分配函数。
+    没有实现局部 Q 函数、单调混合网络或价值分解训练。"""
     steps = 0
     while not env.done and steps < max_steps:
         if len(env.pellets_remaining) >= 2:
@@ -122,9 +126,8 @@ def run_qmix_style(env: Env, max_steps: int = 50) -> int:
 
 
 def run_mappo_style(env: Env, max_steps: int = 50) -> int:
-    """PPO with centralized value function. Behaves like CTDE at deploy; the
-    scripted variant mirrors MADDPG here because they converge to similar
-    policies on this size task."""
+    """以 MAPPO 命名的教学占位策略，直接调用 run_maddpg_style。
+    两者结果相同来自函数复用，不是训练后策略相似的实验结论。"""
     return run_maddpg_style(env, max_steps)
 
 
@@ -135,24 +138,24 @@ def bench(label: str, runner) -> None:
         rng = random.Random(i)
         env = Env.new(rng)
         total += runner(env)
-    print(f"  {label:20s} avg_steps_to_goal = {total / trials:.2f}")
+    print(f"  {label:20s} 平均完成步数 = {total / trials:.2f}")
 
 
 def main() -> None:
     print("=" * 72)
-    print("MARL PATTERNS on a 4x4 grid with 2 agents and 2 pellets (cooperative)")
+    print("MARL 模式概念模拟：4×4 网格、2 个智能体与 2 个目标物（合作任务）")
     print("=" * 72)
-    bench("independent (no coord)", run_independent)
-    bench("MADDPG-style (CTDE)", run_maddpg_style)
-    bench("QMIX-style (mono decomp)", run_qmix_style)
-    bench("MAPPO-style (centralized V)", run_mappo_style)
-    print("\nTakeaways:")
-    print("  independent baseline wastes steps on duplicate effort.")
-    print("  CTDE-family variants coordinate so only the closer agent moves per step.")
-    print("  QMIX and MAPPO reach the same steady-state behavior with different training")
-    print("  stories; at deploy-time the policy they learn is similar.")
-    print("  In LLM-agent systems, this is the 'router decides which sub-agent advances'")
-    print("  pattern. CTDE is a design discipline even when you do not train end-to-end.")
+    bench("独立策略（无协调）", run_independent)
+    bench("MADDPG 风格占位策略", run_maddpg_style)
+    bench("QMIX 风格占位策略", run_qmix_style)
+    bench("MAPPO 风格占位策略", run_mappo_style)
+    print("\n要点：")
+    print("  独立策略可能把步数浪费在重复追逐同一目标上。")
+    print("  本例协调版通过分配目标减少重复，两位智能体仍在每步同时移动。")
+    print("  QMIX、MAPPO 与 MADDPG 风格函数在这里共享目标分配或直接复用实现，")
+    print("  没有不同训练过程，不能从相同结果推断真实算法会学习出相同策略。")
+    print("  对 LLM 智能体系统，可以借鉴“路由器分配协作目标”的结构，")
+    print("  但要区分运行期协调与真正的集中训练、分散执行。")
 
 
 if __name__ == "__main__":

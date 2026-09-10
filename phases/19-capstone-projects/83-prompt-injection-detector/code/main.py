@@ -1,11 +1,10 @@
-"""Prompt injection detector with normalize -> substring -> regex pipeline.
+"""采用“规范化 → 子串 → 正则”流水线的提示注入检测器教学实现。
 
-Reads the taxonomy artifact from lesson 82, runs the layered detector across
-every fixture, runs it across a benign corpus, and writes a per-category
-precision/recall report to outputs/detector_report.json.
+它读取第 82 课的分类体系产物，在全部攻击夹具和一组正常提示上运行分层检测，
+输出按类别统计的精确率、召回率和 F1。这里的规则是固定启发式，不等同于通用的
+语义注入检测或生产级防御。
 
-Run: python3 main.py
-"""
+运行：python3 main.py"""
 
 from __future__ import annotations
 
@@ -233,17 +232,17 @@ def demo() -> int:
     benign = load_benign()
     detector = Detector()
     report = evaluate(detector, fixtures, benign)
-    print("Prompt injection detector evaluation")
-    print(f"  total fixtures:    {report['total_fixtures']}")
-    print(f"  total correct:     {report['total_correct']}")
-    print(f"  accuracy:          {report['accuracy']:.3f}")
-    print(f"  benign pass thru:  {report['benign_pass_through']} / {report['benign_total']}")
+    print("提示注入检测器评估")
+    print(f"  夹具总数：        {report['total_fixtures']}")
+    print(f"  正确分类：        {report['total_correct']}")
+    print(f"  准确率：          {report['accuracy']:.3f}")
+    print(f"  正常提示放行：    {report['benign_pass_through']} / {report['benign_total']}")
     print()
-    print("  per category precision / recall / f1:")
+    print("  各类别精确率 / 召回率 / F1：")
     for cat, m in report["per_category"].items():
-        print(f"    {cat:22} p={m['precision']:.2f} r={m['recall']:.2f} f1={m['f1']:.2f}  (tp={m['tp']} fp={m['fp']} fn={m['fn']})")
+        print(f"    {cat:22} 精确率={m['precision']:.2f} 召回率={m['recall']:.2f} F1={m['f1']:.2f}  （TP={m['tp']} FP={m['fp']} FN={m['fn']})")
     out = write_report(report)
-    print(f"\n  artifact written to {out}")
+    print(f"\n  产物已写入：{out}")
     return 0
 
 

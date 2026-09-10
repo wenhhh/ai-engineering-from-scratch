@@ -1,13 +1,17 @@
 """
-Observability for an agent harness: GenAI spans + Prometheus metrics.
+智能体运行框架的可观测性：GenAI 追踪跨度与 Prometheus 指标。
 
-See: phases/19-capstone-projects/28-observability-otel-traces/docs/en.md
-Concept refs:
-  - OpenTelemetry GenAI semantic conventions (gen_ai.* attribute keys).
-  - Prometheus text exposition format (counters and histograms).
-  - W3C Trace Context (16-byte trace_id, 8-byte span_id).
-The demo at the bottom emits spans to a temp jsonl, prints the
-Prometheus exposition, and exits zero.
+参见：../docs/en.md（本课中文说明，沿用原文件名）；英文原文在包内 english-source/ 的对应路径。
+概念参考：
+  - OpenTelemetry GenAI 语义约定：gen_ai.* 属性键。
+  - Prometheus 文本暴露格式：计数器与直方图。
+  - W3C Trace Context：16 字节 trace_id、8 字节 span_id。
+文件末尾将跨度写入临时 JSONL 文件，打印 Prometheus 指标文本并结束。
+
+译注：这里用标准库实现简化的数据结构与导出格式，不调用真正的 OTel SDK
+或模型服务，也未验证 OTLP 互操作性。属性键、模型名和版本标签对应固定原文
+快照，不保证与最新约定一致；原文“键永不改名”的表述不是本例可以保证的事实。
+指标名称、HELP 文本和事件载荷保留原值，中文说明不进入机器输出。
 """
 
 from __future__ import annotations
@@ -25,11 +29,11 @@ from typing import Any, Iterator
 
 
 # ---------------------------------------------------------------------------
-# OTel semantic-convention keys
+# OTel 语义约定属性键
 # ---------------------------------------------------------------------------
 
-# Standard GenAI attributes (OpenTelemetry GenAI semantic conventions).
-# These keys are stable; only new keys get added, never renamed.
+# 固定原文采用的 GenAI 属性键（参考 OpenTelemetry GenAI 语义约定）。
+# 这里固定保留原键名以兼容夹具；不据此承诺外部规范永不改名。
 GEN_AI_SYSTEM = "gen_ai.system"
 GEN_AI_REQUEST_MODEL = "gen_ai.request.model"
 GEN_AI_REQUEST_MAX_TOKENS = "gen_ai.request.max_tokens"
@@ -43,7 +47,7 @@ GEN_AI_TOOL_NAME = "gen_ai.tool.name"
 GEN_AI_TOOL_CALL_ID = "gen_ai.tool.call.id"
 GEN_AI_TOOL_RESULT_BYTES = "gen_ai.tool.result.bytes"
 
-# Harness-specific attributes (under a non-conflicting prefix).
+# 运行框架专用属性：使用单独的前缀。
 HARNESS_GATE_DECISION = "agent.harness.gate.decision"
 HARNESS_GATE_REASON = "agent.harness.gate.reason"
 
@@ -53,13 +57,13 @@ STATUS_ERROR = "ERROR"
 
 
 # ---------------------------------------------------------------------------
-# Span data shape
+# 追踪跨度数据结构
 # ---------------------------------------------------------------------------
 
 
 @dataclass
 class SpanEvent:
-    """Discrete event recorded inside a span (per OTel)."""
+    """记录在追踪跨度内部的离散事件，形式参考 OTel。"""
 
     name: str
     timestamp_unix_nano: int
@@ -75,7 +79,7 @@ class SpanEvent:
 
 @dataclass
 class GenAISpan:
-    """A single span shaped to OTel GenAI conventions."""
+    """参考 OTel GenAI 约定构造的单个追踪跨度。"""
 
     trace_id: str
     span_id: str
@@ -112,18 +116,18 @@ class GenAISpan:
 
 
 # ---------------------------------------------------------------------------
-# ID generation
+# 生成标识符
 # ---------------------------------------------------------------------------
 
 
 def new_trace_id() -> str:
-    """Random 16-byte hex string. Matches W3C trace context."""
+    """随机生成表示 16 字节的十六进制字符串，长度对应 W3C Trace Context 的 trace ID。"""
 
-    return uuid.uuid4().hex + uuid.uuid4().hex[:0]  # uuid4 hex is already 32 chars
+    return uuid.uuid4().hex + uuid.uuid4().hex[:0]  # uuid4 的十六进制字符串本来就有 32 个字符。
 
 
 def new_span_id() -> str:
-    """Random 8-byte hex string. Matches W3C trace context span id."""
+    """随机生成表示 8 字节的十六进制字符串，长度对应 W3C Trace Context 的 span ID。"""
 
     return uuid.uuid4().hex[:16]
 
@@ -133,13 +137,13 @@ def now_unix_nano() -> int:
 
 
 # ---------------------------------------------------------------------------
-# Exporter
+# 导出器
 # ---------------------------------------------------------------------------
 
 
 @dataclass
 class JSONLExporter:
-    """Append-only exporter: one span per JSON line."""
+    """追加写入的导出器：每行 JSON 表示一个追踪跨度。"""
 
     path: str
     fh: Any = None
@@ -163,7 +167,7 @@ class JSONLExporter:
 
 
 class InMemoryExporter:
-    """Test-friendly exporter that keeps spans in a list."""
+    """便于测试的导出器，将追踪跨度保存在列表中。"""
 
     def __init__(self) -> None:
         self.spans: list[GenAISpan] = []
@@ -176,7 +180,7 @@ class InMemoryExporter:
 
 
 # ---------------------------------------------------------------------------
-# Metrics primitives
+# 指标基础组件
 # ---------------------------------------------------------------------------
 
 
@@ -196,7 +200,7 @@ def _format_labels(labels: dict[str, str]) -> str:
 
 @dataclass
 class Counter:
-    """A simple labelled counter."""
+    """带标签的简易计数器。"""
 
     name: str
     help: str = ""
@@ -212,7 +216,7 @@ class Counter:
 
 @dataclass
 class Histogram:
-    """A histogram with explicit buckets, in line with OTel's default ms set."""
+    """使用显式桶边界的直方图；原例以毫秒为单位，桶设置按本文件固定值保留。"""
 
     name: str
     help: str = ""
@@ -272,7 +276,7 @@ class MetricsRegistry:
 
 
 def prometheus_exposition(registry: MetricsRegistry) -> str:
-    """Render the registry into Prometheus text exposition format."""
+    """将注册表渲染成 Prometheus 文本暴露格式。"""
 
     lines: list[str] = []
     for name in sorted(registry.counters):
@@ -321,13 +325,13 @@ def _format_le(bound: float) -> str:
 
 
 # ---------------------------------------------------------------------------
-# Span builder
+# 追踪跨度构造器
 # ---------------------------------------------------------------------------
 
 
 @dataclass
 class SpanBuilder:
-    """Owns a trace id and emits spans through one or more exporters."""
+    """维护一个 trace ID，通过一个或多个导出器输出追踪跨度。"""
 
     trace_id: str = field(default_factory=new_trace_id)
     exporters: list[Any] = field(default_factory=list)
@@ -375,16 +379,18 @@ class SpanBuilder:
                 tool = span.attributes.get(GEN_AI_TOOL_NAME)
                 if tool is not None:
                     self.metrics.counter(
+                        # 指标帮助：工具调用总数。
                         "tools_called_total", help="Total tool calls"
                     ).inc({"tool": str(tool)})
                     self.metrics.histogram(
                         "tool_latency_ms",
+                        # 指标帮助：工具调用延迟，单位为毫秒。
                         help="Tool call latency in milliseconds",
                     ).observe(span.duration_ms, {"tool": str(tool)})
 
 
 # ---------------------------------------------------------------------------
-# Demo
+# 演示
 # ---------------------------------------------------------------------------
 
 
@@ -397,11 +403,11 @@ def run_demo() -> int:
     in_mem = InMemoryExporter()
     builder = SpanBuilder(exporters=[jsonl, in_mem], metrics=metrics)
 
-    print("OBSERVABILITY DEMO")
+    print("可观测性演示")
     print(f"trace_id={builder.trace_id}")
-    print(f"writing traces to {trace_path}")
+    print(f"将追踪记录写入 {trace_path}")
 
-    # Synthesize an agent turn: a gen_ai.chat span around two tool spans.
+    # 模拟一轮智能体执行：gen_ai.chat 父跨度内包含两个工具跨度。
     with builder.span(
         "gen_ai.chat",
         attributes={
@@ -435,6 +441,7 @@ def run_demo() -> int:
                     timestamp_unix_nano=now_unix_nano(),
                     attributes={
                         HARNESS_GATE_DECISION: "ALLOW",
+                        # 事件说明：已通过门禁链。
                         HARNESS_GATE_REASON: "passed gate chain",
                     },
                 )
@@ -451,7 +458,7 @@ def run_demo() -> int:
             time.sleep(0.003)
             tool2.attributes[GEN_AI_TOOL_RESULT_BYTES] = 256
 
-    # A second turn with an intentionally denied gate to exercise an error span.
+    # 再模拟一次门禁拒绝，用于覆盖错误跨度。
     try:
         with builder.span(
             "gen_ai.tool.execution",
@@ -466,6 +473,7 @@ def run_demo() -> int:
                     timestamp_unix_nano=now_unix_nano(),
                     attributes={
                         HARNESS_GATE_DECISION: "DENY",
+                        # 事件说明：工具不在允许集合中。
                         HARNESS_GATE_REASON: "tool not in allow-set",
                     },
                 )
@@ -475,7 +483,7 @@ def run_demo() -> int:
         pass
 
     print("")
-    print(f"emitted {len(in_mem.spans)} span(s):")
+    print(f"已输出 {len(in_mem.spans)} 个追踪跨度：")
     for span in in_mem.spans:
         attrs_compact = {
             k: v
@@ -488,15 +496,15 @@ def run_demo() -> int:
         )
 
     print("")
-    print("--- prometheus exposition ---")
+    print("--- Prometheus 指标文本 ---")
     print(prometheus_exposition(metrics))
 
     jsonl.close()
 
-    # Sanity: roundtrip the jsonl file.
+    # 基本检查：重新读取并解析刚刚写出的 JSONL 文件。
     with open(trace_path, "r", encoding="utf-8") as fh:
         lines = [json.loads(line) for line in fh if line.strip()]
-    print(f"roundtrip parsed {len(lines)} spans from {trace_path}")
+    print(f"回读并解析了 {len(lines)} 个追踪跨度，来源：{trace_path}")
 
     return 0
 

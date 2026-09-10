@@ -1,9 +1,4 @@
-"""Retrieval incident lab for docs/en.md in this lesson.
-
-Implements chunking, a compact BM25-style index, provenance, and retrieval evals.
-Uses only the Python standard library so every ranking decision stays visible.
-The production comparison is described in the lesson documentation.
-"""
+"""本课 docs/en.md 的检索事故实验。实现分块、紧凑的 BM25 风格索引、来源追溯与检索诊断，用固定本地语料演示问题定位；并非生产向量数据库或完整 RAG 服务。"""
 
 from __future__ import annotations
 

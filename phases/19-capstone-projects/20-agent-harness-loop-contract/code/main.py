@@ -1,11 +1,15 @@
-"""Agent harness loop contract — deterministic state machine, hooks, pull points.
+"""智能体运行框架的循环契约：确定性状态机、钩子与控制权交接点。
 
-Conceptual references:
-- ./docs/en.md (this lesson)
-- Phase 14 lesson 01 (agent loop fundamentals)
-- Phase 13 lesson 02 (tool protocols overview)
+概念参考：
+- ../docs/en.md（本课中文说明，沿用原文件名；英文原文在包内 english-source/ 的对应路径）
+- 阶段 14 第 01 课：智能体循环基础
+- 阶段 13 第 02 课：工具协议概览
 
-Stdlib only. Run: python3 code/main.py
+仅使用标准库。在课程目录运行：python3 code/main.py
+
+译注：PullRequest 在这里表示循环交出控制权时返回的请求，不是 Git 的拉取请求。
+工具由外部调用者执行并经 resume 回填；本例的计划器与工具结果均为固定夹具。
+状态、事件、钩子主题、错误和原因码保留英文，以维持调用接口与测试契约。
 """
 
 from __future__ import annotations
@@ -55,7 +59,7 @@ EVENT_TYPES = (
 
 
 class HookAbort(Exception):
-    """Raised by a hook to cancel the in-flight turn."""
+    """由钩子抛出，用于中止当前轮次。实际捕获位置是 before_tool_call。"""
 
 
 @dataclass
@@ -103,7 +107,7 @@ class Step:
 
 @dataclass
 class PullRequest:
-    """Returned from run()/resume() when the loop yields control."""
+    """循环交出控制权时，由 run()/resume() 返回。"""
     reason: str
     state: State
     payload: dict
@@ -137,20 +141,23 @@ Planner = Callable[[str, list[Step]], list[Step]]
 
 
 def _default_planner(goal: str, history: list[Step]) -> list[Step]:
-    """Deterministic stand-in planner. Returns a fixed three-step plan."""
+    """确定性的占位计划器：返回固定的三步计划。"""
     if history:
         return []
     return [
+        # 步骤说明：理解目标；此文本会进入事件与步骤结果，保留原值。
         Step(id=1, description=f"interpret goal: {goal}", requires_tool=False),
+        # 步骤说明：获取用户记录。
         Step(id=2, description="fetch user record", requires_tool=True,
              tool_name="db.get_user", tool_args={"id": 42}),
+        # 步骤说明：汇总并回复。
         Step(id=3, description="summarize and respond", requires_tool=True,
              tool_name="format.summary", tool_args={"style": "short"}),
     ]
 
 
 class HarnessLoop:
-    """Six-state deterministic loop with hook topics and event stream."""
+    """具有六种状态、钩子主题和事件流的确定性循环。"""
 
     def __init__(
         self,
@@ -321,10 +328,12 @@ def _demo() -> None:
     for topic in HOOK_TOPICS:
         loop.hooks.on(topic, lambda payload, t=topic: fired.append(t))
 
+    # 固定演示目标：发布版本说明；没有真正发布任何内容。
     out = loop.run("ship the release notes")
     assert isinstance(out, PullRequest) and out.reason == "tool_call"
     out = loop.resume({"result": {"id": 42, "name": "ada"}})
     assert isinstance(out, PullRequest) and out.reason == "tool_call"
+    # 外部回填的占位结果：摘要文本。
     final = loop.resume({"result": "summary text"})
     assert isinstance(final, SessionResult)
     assert final.state == State.DONE

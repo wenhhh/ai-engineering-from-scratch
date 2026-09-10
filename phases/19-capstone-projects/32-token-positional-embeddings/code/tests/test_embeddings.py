@@ -1,4 +1,7 @@
-"""Tests for token and positional embeddings."""
+"""词元嵌入与位置嵌入测试。
+
+参数形状、随机种子、数值容差、梯度和异常断言保持原样。
+"""
 
 from __future__ import annotations
 

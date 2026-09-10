@@ -1,11 +1,17 @@
-"""Scope contract checker with violation budgets, severity, and multi-contract merge.
+"""范围契约检查器：支持违规预算、严重程度和多契约合并。
 
-Loads a per-task scope_contract.json and a RunSummary (touched files, commands,
-elapsed minutes), produces a typed Finding list with severity tags, applies a
-violation budget the runtime can survive without halting, and supports merging
-multiple contracts (project-wide + task-specific) into a single effective one.
+使用任务级 scope_contract.json 所对应的契约，以及记录修改文件、运行命令和耗时的
+RunSummary，生成带严重程度的 Finding 列表。通过预算规定运行时可容忍的警告数量，
+并将项目级契约与任务级契约合并为实际生效的契约。
 
-Run: python3 code/main.py
+译注：本例直接在代码中构造契约，没有读取 JSON 文件。allowed_files 的合并是
+“模式字符串集合”的交集，并非计算两个通配符所表示的路径集合的交集。
+approvals_required、rollback_plan 仅携带说明，没有真正执行审批或回滚；验收仅核对命令
+是否出现在记录中，不检查退出码。两份报告使用相同 task_id 归档，后写的报告会覆盖先前报告。
+诊断 code 与 detail 保留英文：forbidden writes 为禁止修改的文件，off-scope 为越界，
+acceptance not run 为未记录验收命令，over_budget 为超预算，egress 为网络出站访问。
+
+运行：python3 code/main.py
 """
 
 from __future__ import annotations
@@ -29,7 +35,7 @@ class ScopeContract:
     rollback_plan: str
     approvals_required: list[str] = field(default_factory=list)
     time_budget_minutes: int | None = None
-    network_egress: list[str] | None = None  # None = no enforcement, [] = deny-all, [...] = allowlist
+    network_egress: list[str] | None = None  # None：不实施限制；[]：全部拒绝；[...]：允许名单
     violation_budget: int = 0
     docs_paths_soft: list[str] = field(default_factory=lambda: ["docs/**", "README.md", "**/*.md"])
 
@@ -45,7 +51,7 @@ class RunSummary:
 @dataclass
 class Finding:
     code: str
-    severity: str  # block | warn | info
+    severity: str  # block：阻断；warn：警告；info：信息
     detail: str
 
 
@@ -69,14 +75,14 @@ def matches_any(path: str, patterns: list[str]) -> bool:
 
 
 def merge_contracts(parent: ScopeContract, child: ScopeContract) -> ScopeContract:
-    """Least-privilege merge: intersect allowed, union forbidden, narrowest budgets.
+    """按最小权限思路合并：允许项取交集，禁止项取并集，预算采用更严格的值。
 
-    allowed_files intersect (both contracts must permit a path),
-    forbidden_files union (either contract can prohibit a path),
-    time_budget_minutes min (most restrictive wins),
-    approvals_required accumulate,
-    network_egress: None means no enforcement, otherwise intersect; an empty
-    list means deny-all and stays deny-all under merge.
+    allowed_files：模式字符串取交集（并非通配符语义上的路径集合求交）。
+    forbidden_files：取并集，任一契约可禁止某路径。
+    time_budget_minutes：取较小值，即采用更严格的限制。
+    approvals_required：累积需要审批的事项。
+    network_egress：None 表示不限制，否则取交集；空列表表示全部拒绝，
+    与其他列表合并后仍保持全部拒绝。
     """
     return ScopeContract(
         task_id=child.task_id,
@@ -175,23 +181,23 @@ def archive(report: ScopeReport) -> Path:
 def main() -> None:
     project_wide = ScopeContract(
         task_id="P-PROJECT",
-        goal="project-wide defaults",
+        goal="项目级默认规则",
         allowed_files=["app.py", "test_app.py", "lib/**/*.py"],
         forbidden_files=["scripts/release.sh", "config/prod.yaml"],
         acceptance_criteria=[],
-        rollback_plan="revert and redeploy",
-        approvals_required=["any new runtime dependency"],
+        rollback_plan="回滚并重新部署",
+        approvals_required=["任何新增运行时依赖"],
         time_budget_minutes=60,
         violation_budget=1,
         network_egress=["api.openai.com", "api.anthropic.com"],
     )
     task = ScopeContract(
         task_id="T-001",
-        goal="add input validation to /signup",
+        goal="为 /signup 添加输入校验",
         allowed_files=["app.py", "test_app.py"],
         forbidden_files=["migrations/**"],
         acceptance_criteria=["pytest -x test_app.py::test_signup_rejects_short_password"],
-        rollback_plan="revert the commit and redeploy the previous build tag",
+        rollback_plan="回滚该提交，并重新部署上一个构建标签对应的版本",
         approvals_required=[],
         time_budget_minutes=30,
         violation_budget=0,
@@ -215,20 +221,20 @@ def main() -> None:
     clean_report = scope_check(effective, clean)
     creep_report = scope_check(effective, creep)
 
-    print("effective contract:", json.dumps(asdict(effective), indent=2))
-    print("\nclean run findings:")
+    print("实际生效的契约：", json.dumps(asdict(effective), indent=2))
+    print("\n合规运行的检查结果：")
     for f in clean_report.findings:
         print(f"  [{f.severity}] {f.code}: {f.detail}")
-    print(f"  passed={clean_report.passed()} over_budget={clean_report.over_budget}")
+    print(f"  是否通过={clean_report.passed()} 是否超出违规预算={clean_report.over_budget}")
 
-    print("\ncreep run findings:")
+    print("\n越界运行的检查结果：")
     for f in creep_report.findings:
         print(f"  [{f.severity}] {f.code}: {f.detail}")
-    print(f"  passed={creep_report.passed()} over_budget={creep_report.over_budget}")
+    print(f"  是否通过={creep_report.passed()} 是否超出违规预算={creep_report.over_budget}")
 
     archive(clean_report)
     archive(creep_report)
-    print(f"\narchived under {(HERE / 'closed').name}/")
+    print(f"\n已归档至 {(HERE / 'closed').name}/")
 
 
 if __name__ == "__main__":

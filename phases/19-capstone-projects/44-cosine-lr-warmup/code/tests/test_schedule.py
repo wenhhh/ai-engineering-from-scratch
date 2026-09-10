@@ -1,6 +1,7 @@
-"""Unit tests for the cosine-with-warmup schedule and AdamW wiring.
+"""余弦预热调度与 AdamW 接入的单元测试。
 
-Run with: python3 -m unittest discover code/tests -v
+运行：python3 -m unittest discover code/tests -v
+只翻译说明；数值边界、CSV 字段和全部断言保持原样。
 """
 
 from __future__ import annotations
@@ -136,7 +137,7 @@ class PlotAndCsvTests(unittest.TestCase):
         schedule = CosineWithWarmup(warmup_steps=2, total_steps=10, lr_max=1.0)
         plot = plot_schedule_ascii(schedule, width=10, height=6)
         lines = plot.splitlines()
-        self.assertEqual(len(lines), 6 + 2)  # rows + axis + last label
+        self.assertEqual(len(lines), 6 + 2)  # 图形行 + 坐标轴 + 最后一行标签
 
     def test_plot_rejects_tiny_dimensions(self) -> None:
         schedule = CosineWithWarmup(warmup_steps=0, total_steps=10, lr_max=1.0)

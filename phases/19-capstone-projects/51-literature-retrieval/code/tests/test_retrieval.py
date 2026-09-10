@@ -1,4 +1,4 @@
-"""Tests for RetrievalClient: lexical hits, graph expansion, merge, dedup, edges."""
+"""RetrievalClient 测试：词项命中、引用图扩展、合并、去重与边界情况。"""
 
 from __future__ import annotations
 

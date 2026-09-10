@@ -1,11 +1,17 @@
 """
-Sandbox runner with denylist, path jail, and timeout.
+带拒绝列表、路径范围检查与超时的子进程运行器。
 
-See: phases/19-capstone-projects/26-sandbox-runner-denylist/docs/en.md
-Concept refs:
-  - POSIX subprocess semantics (wall-clock timeout, return codes).
-  - Symlink-safe path jail via realpath prefix check.
-The demo at the bottom runs a battery of allow/deny calls and exits zero.
+参见：../docs/en.md（本课中文说明，沿用原文件名）；英文原文在包内 english-source/ 的对应路径。
+概念参考：
+  - POSIX 子进程语义：实际经过时间的超时与返回码。
+  - 通过 realpath 和目录前缀检查限制被识别为路径的参数。
+文件末尾的演示尝试多组放行／拒绝调用并返回零。
+
+译注：本例确实启动本地子进程，但并非可执行不可信代码的安全隔离沙箱。
+拒绝列表、启发式参数检查和工作目录不能约束进程内部的全部读写、网络、派生进程
+或文件竞争。max_output_bytes 在 capture_output 收集完输出后才截断，不能限制峰值
+内存。yes 演示会在超时前持续生成输出；应只在受控环境运行。sandbox_ok 为固定展示
+字段，不是独立安全验收。命令、路径、字节标记与错误契约保留原值。
 """
 
 from __future__ import annotations
@@ -89,13 +95,13 @@ TRUNCATION_MARKER: bytes = b"\n[sandbox: output truncated]\n"
 
 
 # ---------------------------------------------------------------------------
-# Result and configuration
+# 结果与配置
 # ---------------------------------------------------------------------------
 
 
 @dataclass
 class SandboxResult:
-    """Structured outcome of a sandbox.run call."""
+    """一次 sandbox.run 调用的结构化结果。"""
 
     argv: list[str]
     exit_code: int
@@ -127,7 +133,7 @@ class SandboxResult:
 
 @dataclass
 class SandboxConfig:
-    """All knobs the sandbox accepts."""
+    """运行器接受的全部配置项。"""
 
     project_root: str
     max_output_bytes: int = DEFAULT_MAX_OUTPUT_BYTES
@@ -139,13 +145,13 @@ class SandboxConfig:
     env_allowlist: tuple[str, ...] = ("PATH", "HOME", "LANG", "LC_ALL", "TERM")
 
     def __post_init__(self) -> None:
-        # Resolve once and cache. The sandbox compares argument realpaths
-        # against this value, so any later symlink resolution is consistent.
+        # 初始化时解析真实路径并缓存；之后将参数的真实路径
+        # 与此根目录比较。该做法不消除检查与使用之间的文件竞争。
         self.project_root = os.path.realpath(self.project_root)
 
 
 # ---------------------------------------------------------------------------
-# Refusal helpers
+# 拒绝条件检查辅助函数
 # ---------------------------------------------------------------------------
 
 
@@ -155,6 +161,7 @@ def _basename(executable: str) -> str:
 
 def _check_executable_denylist(argv: Sequence[str], cfg: SandboxConfig) -> str | None:
     if not argv:
+        # 拒绝原因：参数列表为空。
         return "empty argv"
     name = _basename(argv[0])
     if not name:
@@ -175,6 +182,7 @@ def _check_argv_interpreter(argv: Sequence[str], cfg: SandboxConfig) -> str | No
             if pat.match(arg):
                 return (
                     f"interpreter {name!r} invoked with refused flag {arg!r}; "
+                    # 拒绝说明：使用脚本文件而不是 -c/-e；这不是对脚本内容安全性的保证。
                     "use a script file instead of -c/-e"
                 )
     return None
@@ -188,6 +196,7 @@ def _check_shell_metachars(argv: Sequence[str], shell: bool) -> str | None:
             if meta in arg:
                 return (
                     f"argv contains shell metachar {meta!r} in {arg!r}; "
+                    # 拒绝说明：显式设置 shell=True 才允许 shell 元字符；启用后并不会获得额外隔离。
                     "set shell=True to opt in"
                 )
     return None
@@ -197,12 +206,11 @@ _PATH_HINT = re.compile(r"[/\\]|^\.{1,2}$")
 
 
 def _looks_like_path(arg: str) -> bool:
-    """Conservative path-like detector.
+    """启发式检测参数是否看起来像路径。
 
-    Returns True for arguments that look like file paths: contain a slash,
-    are exactly . or .., or end in a common path-y suffix. The sandbox does
-    not need to be exhaustive: any false negative just means the path is not
-    jail-checked, which is fine for non-path arguments.
+    实际只检查斜杠、反斜杠以及恰好为 . 或 .. 的参数；代码没有实现
+    原说明提到的常见文件后缀识别。漏识别的参数不会接受路径范围检查，
+    因而不能将该检测视为完整的文件访问隔离边界。
     """
 
     if not arg:
@@ -219,7 +227,7 @@ def _check_path_jail(argv: Sequence[str], cfg: SandboxConfig) -> str | None:
             continue
         if arg.startswith("-"):
             continue
-        # Resolve against root if arg is relative; let absolute paths stay absolute.
+        # 相对路径基于项目根目录解析；绝对路径保持为绝对路径。
         candidate = arg
         if not os.path.isabs(candidate):
             candidate = os.path.join(root, candidate)
@@ -233,7 +241,7 @@ def _check_path_jail(argv: Sequence[str], cfg: SandboxConfig) -> str | None:
 
 
 # ---------------------------------------------------------------------------
-# Output truncation
+# 输出截断
 # ---------------------------------------------------------------------------
 
 
@@ -245,13 +253,13 @@ def truncate_stream(buf: bytes, max_bytes: int) -> tuple[bytes, bool]:
 
 
 # ---------------------------------------------------------------------------
-# The sandbox
+# 运行器实现
 # ---------------------------------------------------------------------------
 
 
 @dataclass
 class Sandbox:
-    """A subprocess runner that refuses dangerous calls and jails paths."""
+    """按配置拒绝部分调用并检查部分路径参数的子进程运行器，不是完整安全沙箱。"""
 
     config: SandboxConfig
 
@@ -371,7 +379,7 @@ class Sandbox:
 
 
 # ---------------------------------------------------------------------------
-# Helpers for the demo (cross-platform tool selection)
+# 演示辅助函数：跨平台选择可执行工具
 # ---------------------------------------------------------------------------
 
 
@@ -392,12 +400,12 @@ def _which(name: str) -> str | None:
 
 
 # ---------------------------------------------------------------------------
-# Demo
+# 演示
 # ---------------------------------------------------------------------------
 
 
 def _seed_project_root() -> str:
-    """Create a temp project root with a single tracked file."""
+    """创建临时项目根目录和演示文件；没有初始化 Git 或建立受版本控制的文件。"""
 
     root = tempfile.mkdtemp(prefix="sandbox-demo-")
     with open(os.path.join(root, "hello.txt"), "w", encoding="utf-8") as fh:
@@ -411,21 +419,24 @@ def _seed_project_root() -> str:
 
 def _print_outcome(label: str, result: SandboxResult) -> None:
     badge = (
+        # 展示状态：成功。
         "OK"
         if result.ok
+        # 展示状态：已拒绝。
         else "DENIED"
         if result.denied
+        # 展示状态：超时。
         else "TIMEOUT"
         if result.timed_out
         else f"EXIT {result.exit_code}"
     )
     print(f"  - {label:38s} -> {badge}")
     if result.denied or result.timed_out:
-        print(f"      reason: {result.reason}")
+        print(f"      原因：{result.reason}")
 
 
 def run_demo() -> int:
-    """Self-terminating demo. Returns 0 on success."""
+    """自行结束的演示，执行完毕后返回零；返回值不独立验证所有安全属性。"""
 
     root = _seed_project_root()
     config = SandboxConfig(
@@ -441,11 +452,11 @@ def run_demo() -> int:
     sleep = find_executable(("sleep",))
     ls = find_executable(("ls",))
 
-    print("SANDBOX DEMO")
+    print("受限子进程运行器演示")
     print(f"project_root={root}")
     print("")
 
-    print("legal calls:")
+    print("允许的调用：")
     if ls:
         _print_outcome("ls .", sandbox.run([ls, "."]))
     _print_outcome("echo hello", sandbox.run([echo, "hello", "from", "sandbox"]))
@@ -454,13 +465,13 @@ def run_demo() -> int:
         _print_outcome("cat src/main.py", sandbox.run([cat, "src/main.py"]))
 
     print("")
-    print("denied by name:")
+    print("根据程序名称拒绝：")
     _print_outcome("rm -rf .", sandbox.run(["rm", "-rf", "."]))
     _print_outcome("sudo apt update", sandbox.run(["sudo", "apt", "update"]))
     _print_outcome("curl http://x", sandbox.run(["curl", "http://example.com"]))
 
     print("")
-    print("denied by argv interpreter:")
+    print("根据解释器参数拒绝：")
     _print_outcome(
         "python3 -c '...'",
         sandbox.run(["python3", "-c", "print('hi')"]),
@@ -471,28 +482,28 @@ def run_demo() -> int:
     )
 
     print("")
-    print("denied by shell metachar:")
+    print("根据 shell 元字符拒绝：")
     _print_outcome(
         "echo a ; rm -rf",
         sandbox.run([echo, "a", ";", "rm", "-rf"]),
     )
 
     print("")
-    print("denied by path jail:")
+    print("根据路径范围检查拒绝：")
     if cat:
         _print_outcome("cat ../../etc/passwd", sandbox.run([cat, "../../etc/passwd"]))
         _print_outcome("cat /etc/passwd", sandbox.run([cat, "/etc/passwd"]))
 
     print("")
-    print("timeout / truncation:")
+    print("超时／输出截断：")
     if sleep:
-        _print_outcome("sleep 5 (cap 2)", sandbox.run([sleep, "5"]))
+        _print_outcome("sleep 5（上限 2 秒）", sandbox.run([sleep, "5"]))
     if yes:
         big = sandbox.run([yes, "y"])
-        _print_outcome("yes y (truncated)", big)
+        _print_outcome("yes y（输出被截断）", big)
     if echo:
         loud = sandbox.run([echo, "x" * 4096])
-        _print_outcome("echo big (truncated)", loud)
+        _print_outcome("echo 大段文本（输出被截断）", loud)
 
     print("")
     print(

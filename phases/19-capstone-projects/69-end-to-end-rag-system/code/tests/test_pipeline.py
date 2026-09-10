@@ -1,4 +1,7 @@
-"""Tests for the end-to-end RAG pipeline and the eval threshold gate."""
+"""端到端 RAG 流水线与评测阈值门禁的单元测试。
+
+只翻译说明；查询、策略键、文档 ID、指标阈值和全部断言保持原样。
+"""
 
 from __future__ import annotations
 

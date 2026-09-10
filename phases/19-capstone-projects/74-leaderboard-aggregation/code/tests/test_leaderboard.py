@@ -1,4 +1,7 @@
-"""Tests for leaderboard aggregation, bootstrap CI, win-rate, markdown rendering."""
+"""排行榜聚合、bootstrap 置信区间、胜率和 Markdown 渲染的单元测试。
+
+只翻译说明；模型／任务名、随机种子、数值结果和断言保持原样。
+"""
 
 from __future__ import annotations
 

@@ -1,8 +1,12 @@
-"""Negotiation: Contract Net + OG-Narrator demo, stdlib only.
+"""协商：合同网与 OG-Narrator 风格演示，仅使用 Python 标准库。
 
-Compares naive all-LLM bargaining against OG-Narrator (deterministic offer
-generator + LLM narration). Measures deal rate over 1000 trials. Includes
-a small Contract Net task-market demo at the end.
+用随机报价模拟朴素 LLM 议价，与确定性报价生成器进行比较，分别统计
+1000 次试验的成交率；最后演示一个包含三个竞标者的小型合同网任务市场。
+
+译注：本例没有 LLM 叙述生成，只实现报价算术与成交判断。买卖双方底价是
+模拟器已知数据，不代表真实谈判中可直接获知对方底线。两种策略消耗随机数的
+次数不同，即使初始种子相同，后续抽取的底价序列也不一定逐次配对一致。
+论文名称、编号和结尾百分比沿用固定原文引述，未在本轮重新核验或复现实验。
 """
 from __future__ import annotations
 
@@ -21,9 +25,8 @@ class BargainState:
 
 
 def naive_llm_bargain(state: BargainState, rng: random.Random) -> int:
-    """Simulate naive LLM bargaining: picks a price with high variance and
-    frequently outside the ZOPA (mimics strategic errors documented in
-    arXiv:2402.15813)."""
+    """模拟朴素 LLM 议价：抽取波动较大、可能超出可达成协议区间（ZOPA）的报价。
+    原文将其类比 arXiv:2402.15813 中的策略错误；本例并不调用模型。"""
     r = rng.random()
     if state.seller_offer is None:
         candidate = rng.randint(state.buyer_max - 60, state.buyer_max + 30)
@@ -38,7 +41,7 @@ def naive_llm_bargain(state: BargainState, rng: random.Random) -> int:
 
 def og_narrator_bargain(state: BargainState, rng: random.Random,
                         concession: float = 0.35) -> int:
-    """OG-Narrator deterministic offer: zeuthen-style concession toward midpoint."""
+    """OG-Narrator 风格确定性报价：按固定让步比例向对方报价移动，并约束买方上限。"""
     if state.seller_offer is None and state.buyer_offer is None:
         return state.buyer_max - max(1, int((state.buyer_max - state.seller_min) * 0.2))
     if state.seller_offer is None:
@@ -52,7 +55,7 @@ def og_narrator_bargain(state: BargainState, rng: random.Random,
 
 def seller_response(state: BargainState, rng: random.Random,
                     concession: float = 0.3) -> int:
-    """Seller uses OG-Narrator-style offer too (for both buyers)."""
+    """面对两类买方时，卖方都使用同一个确定性让步报价函数。"""
     if state.buyer_offer is None and state.seller_offer is None:
         return state.seller_min + max(1, int((state.buyer_max - state.seller_min) * 0.4))
     if state.buyer_offer is None:
@@ -71,13 +74,13 @@ def simulate_bargain(buyer_fn, rng: random.Random, buyer_max: int = 100,
     while state.rounds < state.max_rounds:
         state.buyer_offer = buyer_fn(state, rng)
         if state.seller_offer is not None and state.buyer_offer >= state.seller_offer:
-            # trade clears at seller's standing ask; feasible iff within both reservations
+            # 按卖方当前要价成交；只有价格落在双方可接受区间内才判定为有效。
             if state.seller_offer >= state.seller_min and state.seller_offer <= state.buyer_max:
                 deal = True
             break
         state.seller_offer = seller_response(state, rng)
         if state.buyer_offer is not None and state.seller_offer <= state.buyer_offer:
-            # trade clears at buyer's standing bid; feasible iff within both reservations
+            # 按买方当前出价成交；只有价格落在双方可接受区间内才判定为有效。
             if state.buyer_offer <= state.buyer_max and state.buyer_offer >= state.seller_min:
                 deal = True
             break
@@ -93,7 +96,7 @@ def bench_deal_rate(buyer_fn, label: str, trials: int = 1000) -> None:
         buyer_max = rng.randint(max(seller_min + 5, 75), 115)
         if simulate_bargain(buyer_fn, rng, buyer_max=buyer_max, seller_min=seller_min):
             deals += 1
-    print(f"  {label:20s} deal rate: {deals / trials:.2%}  ({deals}/{trials})")
+    print(f"  {label:20s} 成交率：{deals / trials:.2%}  ({deals}/{trials})")
 
 
 @dataclass
@@ -119,33 +122,33 @@ class ContractNetManager:
 
     def broadcast_cfp(self, task: ContractNetTask) -> None:
         self.proposals[task.task_id] = []
-        print(f"  manager CFP -> {task.description} (deadline {task.deadline_minutes}m, budget {task.budget})")
+        print(f"  管理者征集提案（CFP）-> {task.description}（截止时间 {task.deadline_minutes} 分钟，预算 {task.budget})")
 
     def receive_proposal(self, task_id: str, bid: Bid) -> None:
         self.proposals[task_id].append(bid)
-        print(f"    propose from {bid.bidder}: price={bid.price} eta={bid.eta_minutes}m conf={bid.confidence:.2f}")
+        print(f"    提案来自 {bid.bidder}：价格={bid.price} 预计耗时={bid.eta_minutes} 分钟，置信度={bid.confidence:.2f}")
 
     def award(self, task: ContractNetTask) -> Bid | None:
         props = self.proposals.get(task.task_id, [])
         feasible = [b for b in props if b.price <= task.budget and b.eta_minutes <= task.deadline_minutes]
         if not feasible:
-            print("    no feasible bid; awarding rejected")
+            print("    没有满足条件的报价，不授予任务")
             return None
         winner = max(feasible, key=lambda b: b.confidence / max(b.price, 1))
-        print(f"  manager accept-proposal -> {winner.bidder} (score = conf/price)")
+        print(f"  管理者接受提案（accept-proposal）-> {winner.bidder}（评分 = 置信度 / 价格）")
         for b in props:
             if b is not winner:
-                print(f"  manager reject-proposal -> {b.bidder}")
+                print(f"  管理者拒绝提案（reject-proposal）-> {b.bidder}")
         return winner
 
 
 def demo_contract_net() -> None:
     print("\n" + "=" * 72)
-    print("CONTRACT NET TASK MARKET — manager + 3 bidders")
+    print("合同网任务市场——一个管理者与三个竞标者")
     print("=" * 72)
     task = ContractNetTask(
         task_id="t-1",
-        description="compress 10GB log bundle",
+        description="压缩 10 GB 日志包",
         deadline_minutes=30,
         budget=10,
     )
@@ -159,21 +162,21 @@ def demo_contract_net() -> None:
 
 def main() -> None:
     print("=" * 72)
-    print("DEAL RATE — naive LLM bargaining vs OG-Narrator")
-    print("reservation prices sampled per trial: seller_min in [50,80], buyer_max in [75,115]")
+    print("成交率——朴素议价模拟与 OG-Narrator 风格报价")
+    print("每次试验抽样：卖方底价在 [50,80]；买方上限不低于卖方底价 + 5，且位于 [75,115]")
     print("=" * 72)
-    bench_deal_rate(naive_llm_bargain, "naive LLM")
+    bench_deal_rate(naive_llm_bargain, "朴素 LLM（模拟）")
     bench_deal_rate(og_narrator_bargain, "OG-Narrator")
     demo_contract_net()
 
-    print("\nTakeaways:")
-    print("  naive LLM-only bargaining has inflated variance -- swings outside the ZOPA.")
-    print("  OG-Narrator (deterministic offer + LLM narration) converges on every trial")
-    print("  because prices are arithmetic, not generative.")
-    print("  The original paper (arXiv:2402.15813) reports 26.67% -> 88.88% on the tighter")
-    print("  real-LLM benchmark. Our simulation shrinks the gap because the opposing seller")
-    print("  is already using deterministic offers -- the structural pattern is the same.")
-    print("  Contract Net scales: broadcast + collect + award; no synchronous chat needed.")
+    print("\n要点：")
+    print("  本例的朴素议价函数被设为高方差，可能给出可达成协议区间之外的报价。")
+    print("  原文将确定性报价与模型叙述分工称为 OG-Narrator；本例只实现报价部分，")
+    print("  使用算术规则而非生成式模型出价；成交情况应以本次统计为准。")
+    print("  原文引述论文 arXiv:2402.15813：真实 LLM 基准中的成交率从 26.67% 提升到 88.88%。")
+    print("  这些论文数字不是本模拟的实测值，也未在本轮重新核验。这里的对手卖方")
+    print("  同样使用确定性报价，因此不能直接拿模拟差距与论文结果进行归因比较。")
+    print("  合同网以征集、收集提案和授予任务组织协作；本例不需要同步群聊。")
 
 
 if __name__ == "__main__":

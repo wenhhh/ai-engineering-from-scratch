@@ -1,15 +1,19 @@
-"""
-Classifier fine-tuning by head swap.
+"""替换输出头，进行分类器微调。
 
-See: phases/19-capstone-projects/38-classifier-finetuning/docs/en.md
+参见：phases/19-capstone-projects/38-classifier-finetuning/docs/en.md
 
-Compares two strategies on a synthetic spam/ham fixture:
-  - Head-only: body frozen, only the linear classification head trains.
-  - Full FT:   body and head both train.
+在合成的垃圾／正常短信夹具上比较两种策略：
+- 仅训练分类头：冻结主干，只训练线性分类头。
+- 全参数微调：主干与分类头都参与训练。
 
-The demo at the bottom pretrains a tiny transformer body briefly, then
-fine-tunes under both regimes and prints precision, recall, F1, and the
-confusion matrix for each. Exits 0 on success.
+演示先短暂训练微型 Transformer 主干，再分别微调并输出精确率、召回率、F1 和混淆矩阵。
+达到本例设定的 F1 门槛时退出码为 0。
+
+译注：预训练步骤虽然使用下一词元标签，主干却只有填充掩码，没有因果掩码，
+能够看到后续词元，不能当作严格自回归语言模型预训练。两种策略复制相同主干，
+但分类头初始化及学习率不相同；比较并非只改变“是否冻结”的单变量实验。
+数据来自固定模板并按样本划分，未保证训练／测试模板互斥。F1 > 0.5 是示例门槛，
+并不是所有类别分布或随机预测策略下统一的基线。英文语料参与字节编码，保留原值。
 """
 
 from __future__ import annotations
@@ -28,18 +32,18 @@ from torch.utils.data import DataLoader, Dataset
 
 
 # ---------------------------------------------------------------------------
-# Tokeniser
+# 分词器
 # ---------------------------------------------------------------------------
 
 
 class ByteTokenizer:
-    """Maps printable bytes to ids 0..255. Reserves PAD as id 256."""
+    """将 UTF-8 字节映射为 0..255 的 ID，另以 256 作为 PAD；不局限于可打印字节。"""
 
     PAD_ID = 256
-    VOCAB = 260  # leave headroom for future specials
+    VOCAB = 260  # 为以后增加特殊词元预留空间
 
     def encode(self, text: str, max_len: int) -> Tuple[List[int], List[int]]:
-        """Return (ids, attention_mask). Pads to max_len."""
+        """返回 (ids, attention_mask)，截断或填充到 max_len。"""
         raw = list(text.encode("utf-8", errors="ignore"))[:max_len]
         attn = [1] * len(raw)
         while len(raw) < max_len:
@@ -52,7 +56,7 @@ class ByteTokenizer:
 
 
 # ---------------------------------------------------------------------------
-# Tiny transformer body
+# 微型 Transformer 主干
 # ---------------------------------------------------------------------------
 
 
@@ -71,11 +75,11 @@ class MultiHeadAttention(nn.Module):
         qkv = self.qkv(x).view(B, T, 3, self.heads, self.head_dim).permute(2, 0, 3, 1, 4)
         q, k, v = qkv[0], qkv[1], qkv[2]
         att = (q @ k.transpose(-2, -1)) / math.sqrt(self.head_dim)
-        # mask: B x T, 1 for real, 0 for pad. broadcast to B x 1 x 1 x T.
+        # mask 形状为 B×T：实际词元为 1，填充为 0；广播到 B×1×1×T。
         m = mask.view(B, 1, 1, T).to(att.dtype)
         att = att.masked_fill(m == 0, float("-inf"))
         weights = F.softmax(att, dim=-1)
-        # Replace nan rows (all-pad keys, never happens for valid input) with zeros.
+        # 将全为填充键等情况产生的 NaN 行替换为零。
         weights = torch.nan_to_num(weights, nan=0.0)
         ctx = (weights @ v).transpose(1, 2).contiguous().view(B, T, D)
         return self.out(ctx)
@@ -106,7 +110,7 @@ class Block(nn.Module):
 
 
 class LMBody(nn.Module):
-    """Embedding + position + N transformer blocks. Returns hidden states."""
+    """词元嵌入 + 位置嵌入 + N 个 Transformer 块，返回隐藏状态；本主干不使用因果掩码。"""
 
     def __init__(self, vocab: int, hidden: int, heads: int, depth: int, max_len: int):
         super().__init__()
@@ -126,12 +130,12 @@ class LMBody(nn.Module):
 
 
 # ---------------------------------------------------------------------------
-# Pooling and classifier head
+# 池化与分类头
 # ---------------------------------------------------------------------------
 
 
 def mean_pool(hidden: torch.Tensor, mask: torch.Tensor) -> torch.Tensor:
-    """Mask-weighted mean across the sequence dimension."""
+    """沿序列维度求掩码加权平均值。"""
     m = mask.unsqueeze(-1).to(hidden.dtype)
     summed = (hidden * m).sum(dim=1)
     counts = m.sum(dim=1).clamp(min=1.0)
@@ -152,7 +156,7 @@ class Classifier(nn.Module):
 
 
 class LMHead(nn.Module):
-    """Token-prediction head, used during the brief pretraining pass."""
+    """词元预测输出头，用于短暂的预训练演示。"""
 
     def __init__(self, body: LMBody, vocab: int):
         super().__init__()
@@ -166,12 +170,12 @@ class LMHead(nn.Module):
 
 
 # ---------------------------------------------------------------------------
-# Freeze toggles
+# 冻结与解冻
 # ---------------------------------------------------------------------------
 
 
 def freeze_body(model: Classifier) -> int:
-    """Set requires_grad=False on every body parameter. Returns count frozen."""
+    """将主干参数的 requires_grad 设为 False，返回冻结的参数张量个数，不是标量参数总量。"""
     n = 0
     for p in model.body.parameters():
         p.requires_grad = False
@@ -192,7 +196,7 @@ def trainable_params(model: nn.Module) -> int:
 
 
 # ---------------------------------------------------------------------------
-# Synthetic spam/ham fixture
+# 合成垃圾／正常短信夹具；下列英文模板保留为训练输入
 # ---------------------------------------------------------------------------
 
 
@@ -253,7 +257,7 @@ def make_dataset(n_per_class: int = 400, seed: int = 0) -> Tuple[List[str], List
         labels.append(1)
         texts.append(fill(rng.choice(HAM_TEMPLATES), rng))
         labels.append(0)
-    # Shuffle deterministically.
+    # 使用既定随机数生成器打乱顺序。
     order = list(range(len(texts)))
     rng.shuffle(order)
     return [texts[i] for i in order], [labels[i] for i in order]
@@ -285,7 +289,7 @@ def stratified_split(
 
 
 # ---------------------------------------------------------------------------
-# Datasets
+# 数据集
 # ---------------------------------------------------------------------------
 
 
@@ -309,7 +313,7 @@ class ClassificationDataset(Dataset):
 
 
 class LMDataset(Dataset):
-    """Causal LM dataset over the spam/ham strings. Used for the warm-up pretraining."""
+    """基于垃圾／正常短信的词元数据集，用于预训练演示；数据集本身不会保证主干注意力的因果性。"""
 
     def __init__(self, texts: Sequence[str], tok: ByteTokenizer, max_len: int):
         self.texts = list(texts)
@@ -328,7 +332,7 @@ class LMDataset(Dataset):
 
 
 # ---------------------------------------------------------------------------
-# Training loops
+# 训练循环
 # ---------------------------------------------------------------------------
 
 
@@ -342,7 +346,7 @@ def pretrain_quick(
     lr: float = 3e-3,
     seed: int = 0,
 ) -> List[float]:
-    """A short LM pretraining pass to give the body non-trivial weights."""
+    """短暂训练词元预测任务，让主干权重经历更新；注意该主干能读取后续词元。"""
     torch.manual_seed(seed)
     head = LMHead(body, vocab=tok.VOCAB)
     ds = LMDataset(texts, tok, max_len)
@@ -355,7 +359,7 @@ def pretrain_quick(
         n_batches = 0
         for ids, mask in dl:
             logits = head(ids, mask)
-            # Shift one for next-token prediction.
+            # 错开一个位置，构造下一词元预测标签。
             target = ids[:, 1:].contiguous()
             tgt_mask = mask[:, 1:].contiguous()
             logits = logits[:, :-1, :].contiguous()
@@ -413,7 +417,7 @@ def train_classifier(
 
 
 # ---------------------------------------------------------------------------
-# Evaluation
+# 评估
 # ---------------------------------------------------------------------------
 
 
@@ -429,9 +433,9 @@ class Metrics:
 
     def confusion(self) -> str:
         return (
-            "                pred ham   pred spam\n"
-            f"  actual ham    {self.tn:>8d}   {self.fp:>8d}\n"
-            f"  actual spam   {self.fn:>8d}   {self.tp:>8d}"
+            "                预测正常   预测垃圾\n"
+            f"  实际正常      {self.tn:>8d}   {self.fp:>8d}\n"
+            f"  实际垃圾      {self.fn:>8d}   {self.tp:>8d}"
         )
 
 
@@ -463,7 +467,7 @@ def evaluate(model: Classifier, loader: DataLoader, positive: int = 1) -> Metric
 
 
 # ---------------------------------------------------------------------------
-# Configuration and demo
+# 配置与演示
 # ---------------------------------------------------------------------------
 
 
@@ -505,7 +509,7 @@ class DemoReport:
     full_ft_trainable: int
 
     def passed(self) -> bool:
-        # Both regimes should beat random (F1 > 0.5) on this fixture.
+        # 检查两种策略是否都超过此夹具设定的 F1 > 0.5 门槛；不是通用随机基线。
         return self.head_only.f1 > 0.5 and self.full_ft.f1 > 0.5
 
 
@@ -523,10 +527,10 @@ def run_demo(cfg: Config | None = None) -> int:
     train_dl = DataLoader(train_ds, batch_size=cfg.batch_size, shuffle=True)
     test_dl = DataLoader(test_ds, batch_size=cfg.batch_size, shuffle=False)
 
-    print("CLASSIFIER FINE-TUNING DEMO")
-    print(f"train={len(train_ds)} test={len(test_ds)} max_len={cfg.max_len}")
+    print("分类器微调演示")
+    print(f"训练样本数={len(train_ds)} 测试样本数={len(test_ds)} 最大长度={cfg.max_len}")
     print("")
-    print("[1/3] pretraining body briefly on the corpus text...")
+    print("[1/3] 使用语料短暂训练主干……")
     body_for_pretrain = LMBody(
         vocab=cfg.vocab,
         hidden=cfg.hidden,
@@ -543,14 +547,14 @@ def run_demo(cfg: Config | None = None) -> int:
         batch_size=cfg.batch_size,
         seed=cfg.seed,
     )
-    print(f"      pretrain final loss = {pre_losses[-1]:.4f}")
+    print(f"      预训练末轮损失 = {pre_losses[-1]:.4f}")
 
-    # Two classifiers share the same pretrained body weights (copied to keep regimes independent).
+    # 两个分类器复制相同的预训练主干权重，避免后续训练互相修改；分类头另行初始化。
     head_only_model = Classifier(_clone_body(body_for_pretrain), num_classes=2)
     full_ft_model = Classifier(_clone_body(body_for_pretrain), num_classes=2)
 
     print("")
-    print("[2/3] training head-only (body frozen)...")
+    print("[2/3] 仅训练分类头，主干冻结……")
     freeze_body(head_only_model)
     head_report = train_classifier(
         head_only_model,
@@ -560,13 +564,13 @@ def run_demo(cfg: Config | None = None) -> int:
         seed=cfg.seed,
     )
     head_metrics = evaluate(head_only_model, test_dl)
-    print(f"      trainable params = {head_report.trainable}")
-    print(f"      final train loss = {head_report.final_loss:.4f}")
-    print(f"      P={head_metrics.precision:.3f} R={head_metrics.recall:.3f} F1={head_metrics.f1:.3f}")
+    print(f"      可训练参数量 = {head_report.trainable}")
+    print(f"      最终训练损失 = {head_report.final_loss:.4f}")
+    print(f"      精确率 P={head_metrics.precision:.3f} 召回率 R={head_metrics.recall:.3f} F1={head_metrics.f1:.3f}")
     print(head_metrics.confusion())
 
     print("")
-    print("[3/3] training full fine-tuning (body unfrozen)...")
+    print("[3/3] 全参数微调，主干解冻……")
     unfreeze_body(full_ft_model)
     full_report = train_classifier(
         full_ft_model,
@@ -576,9 +580,9 @@ def run_demo(cfg: Config | None = None) -> int:
         seed=cfg.seed,
     )
     full_metrics = evaluate(full_ft_model, test_dl)
-    print(f"      trainable params = {full_report.trainable}")
-    print(f"      final train loss = {full_report.final_loss:.4f}")
-    print(f"      P={full_metrics.precision:.3f} R={full_metrics.recall:.3f} F1={full_metrics.f1:.3f}")
+    print(f"      可训练参数量 = {full_report.trainable}")
+    print(f"      最终训练损失 = {full_report.final_loss:.4f}")
+    print(f"      精确率 P={full_metrics.precision:.3f} 召回率 R={full_metrics.recall:.3f} F1={full_metrics.f1:.3f}")
     print(full_metrics.confusion())
 
     report = DemoReport(
@@ -591,17 +595,18 @@ def run_demo(cfg: Config | None = None) -> int:
     )
 
     print("")
-    print("SUMMARY")
-    print(f"  head-only:  trainable={report.head_only_trainable:>6d} F1={report.head_only.f1:.3f}")
-    print(f"  full-FT:    trainable={report.full_ft_trainable:>6d} F1={report.full_ft.f1:.3f}")
+    print("汇总")
+    print(f"  仅训练分类头：可训练参数={report.head_only_trainable:>6d} F1={report.head_only.f1:.3f}")
+    print(f"  全参数微调：  可训练参数={report.full_ft_trainable:>6d} F1={report.full_ft.f1:.3f}")
     if not report.passed():
+        # 错误契约保留原文；准确含义是至少一种策略未超过示例的 F1=0.5 门槛。
         print("ERROR: at least one regime did not beat random F1=0.5", file=sys.stderr)
         return 1
     return 0
 
 
 def _clone_body(body: LMBody) -> LMBody:
-    """Deep-copy a body so two regimes start from the same pretrained weights."""
+    """复制主干，使两种微调策略从相同的主干权重开始；不保证新建分类头初始化相同。"""
     clone = LMBody(
         vocab=body.tok.num_embeddings,
         hidden=body.ln_f.normalized_shape[0],

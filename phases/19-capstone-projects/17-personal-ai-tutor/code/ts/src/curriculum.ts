@@ -1,16 +1,23 @@
+/**
+ * 课程夹具、Kahn 拓扑排序与下一课选择器。
+ * 课程标题可中文化；ID、先修引用、原因枚举保持原值。先选未掌握且先修达标的课程，
+ * 仅在没有此类候选时考虑到期复习，且复习条件要求 score < 0.95。
+ * 因此 null 不一定表示所有课程永久学完。未知先修项与环检测错误保留英文契约。
+ */
+
 import type { Lesson, Mastery, Pick } from "./types.js";
 import { MASTERY_THRESHOLD } from "./types.js";
 
 export const CURRICULUM: Lesson[] = [
-  { id: "py-01", title: "variables and types", prereqs: [] },
-  { id: "py-02", title: "arithmetic operators", prereqs: ["py-01"] },
-  { id: "py-03", title: "strings", prereqs: ["py-01"] },
-  { id: "py-04", title: "if / else", prereqs: ["py-02"] },
-  { id: "py-05", title: "for loops", prereqs: ["py-04"] },
-  { id: "py-06", title: "lists", prereqs: ["py-03", "py-05"] },
-  { id: "py-07", title: "dicts", prereqs: ["py-06"] },
-  { id: "py-08", title: "functions", prereqs: ["py-04"] },
-  { id: "py-09", title: "list comprehensions", prereqs: ["py-06", "py-08"] },
+  { id: "py-01", title: "变量与类型", prereqs: [] },
+  { id: "py-02", title: "算术运算符", prereqs: ["py-01"] },
+  { id: "py-03", title: "字符串", prereqs: ["py-01"] },
+  { id: "py-04", title: "if / else 条件分支", prereqs: ["py-02"] },
+  { id: "py-05", title: "for 循环", prereqs: ["py-04"] },
+  { id: "py-06", title: "列表", prereqs: ["py-03", "py-05"] },
+  { id: "py-07", title: "字典", prereqs: ["py-06"] },
+  { id: "py-08", title: "函数", prereqs: ["py-04"] },
+  { id: "py-09", title: "列表推导式", prereqs: ["py-06", "py-08"] },
 ];
 
 export function buildIndex(items: Lesson[]): Record<string, Lesson> {
@@ -22,6 +29,7 @@ export function topoOrder(items: Lesson[]): string[] {
   for (const l of items) {
     for (const p of l.prereqs) {
       if (!known.has(p)) {
+        // 错误含义：课程引用了未知先修课程。
         throw new Error(`lesson ${l.id} references unknown prereq ${p}`);
       }
     }
@@ -56,6 +64,7 @@ export function topoOrder(items: Lesson[]): string[] {
     const stuck = Object.keys(indeg)
       .filter((id) => (indeg[id] ?? 0) > 0)
       .sort();
+    // 错误含义：课程先修关系含环，无法生成完整拓扑顺序。
     throw new Error(`cycle detected in curriculum: ${stuck.join(", ")}`);
   }
   return order;

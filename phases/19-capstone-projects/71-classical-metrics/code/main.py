@@ -1,10 +1,14 @@
-"""Classical metrics: exact_match, F1, BLEU-4, ROUGE-L, accuracy.
+"""经典评测指标：exact_match、F1、BLEU-4、ROUGE-L 与 accuracy。
 
-Conceptual references:
-- ./docs/en.md (this lesson)
-- lesson 70 (task spec format) for the metric_name field
+概念参考：
+- ./docs/en.md（本课）
+- 第 70 课（task spec format）中的 metric_name 字段
 
-Stdlib + numpy. Run: python3 code/main.py
+使用标准库 + NumPy。运行：python3 code/main.py
+
+译注：本课实现的是便于教学和测试的本地版本，分词、平滑和聚合细节
+不应自动视作任意外部评测库的完全一致实现。指标键、英文样例和数值
+计算输入保持原值。
 """
 
 from __future__ import annotations
@@ -212,29 +216,29 @@ def _reference_examples() -> list[dict]:
 
 
 def demo() -> int:
-    print("metric demos (using example vectors):")
+    print("指标演示（使用示例向量）：")
     failures = 0
     for ex in _reference_examples():
         actual = score(ex["metric"], ex["pred"], ex["targets"])
         if "expected" in ex:
             ok = abs(actual - ex["expected"]) < 1e-9
-            print(f"  {ex['metric']:10s} pred={ex['pred']!r:30s} -> {actual:.4f} expected={ex['expected']}")
+            print(f"  {ex['metric']:10s} 预测={ex['pred']!r:30s} -> {actual:.4f} 期望={ex['expected']}")
             if not ok:
                 failures += 1
         elif "expected_approx" in ex:
             ok = abs(actual - ex["expected_approx"]) < 0.05
-            print(f"  {ex['metric']:10s} pred={ex['pred']!r:30s} -> {actual:.4f} approx={ex['expected_approx']}")
+            print(f"  {ex['metric']:10s} 预测={ex['pred']!r:30s} -> {actual:.4f} 近似={ex['expected_approx']}")
             if not ok:
                 failures += 1
         elif "expected_lt" in ex:
             ok = actual < ex["expected_lt"]
-            print(f"  {ex['metric']:10s} pred={ex['pred']!r:30s} -> {actual:.4f} < {ex['expected_lt']}")
+            print(f"  {ex['metric']:10s} 预测={ex['pred']!r:30s} -> {actual:.4f} < {ex['expected_lt']}")
             if not ok:
                 failures += 1
     preds = ["the cat sat on the mat", "the runner won the race"]
     refs = ["the cat sat on the mat", "the runner crossed the finish line first"]
     corpus = corpus_bleu(preds, refs)
-    print(f"  corpus_bleu over 2 examples -> {corpus:.4f}")
+    print(f"  两个样例的 corpus_bleu -> {corpus:.4f}")
     return 0 if failures == 0 else 1
 
 

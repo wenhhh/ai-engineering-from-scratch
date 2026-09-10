@@ -1,7 +1,13 @@
-"""Stdlib span emitter matching OpenTelemetry GenAI semantic conventions.
+"""使用标准库模拟 OpenTelemetry GenAI 语义约定中的 span（追踪片段）。
 
-Emits invoke_agent INTERNAL spans, per-tool spans, chat spans for LLM calls.
-Content capture is opt-in: prompts go to an external store, spans carry IDs.
+结构包含 invoke_agent 的 INTERNAL span、逐工具调用 span，以及 LLM 调用的 chat span。
+提示与回复可放入独立的内容存储，span 属性只携带引用 ID；也可选择内联保存内容。
+
+译注：不使用真实 OpenTelemetry SDK 或导出器。capture_inline=False 只关闭内联记录，
+并未关闭内容采集；本例仍把完整文本写入内存中的 ExternalContentStore。
+默认三轮提示都不含 search 或 result，因此实际只创建 create_agent、invoke_agent
+和三个 chat span，不会触发工具 span。英文提示、模型名、属性名与工具返回值保留原样。
+环境变量名称及原文对实验性约定的描述沿用固定快照，本例本身不读取该变量。
 """
 
 from __future__ import annotations
@@ -85,7 +91,7 @@ def _search_tool(query: str) -> str:
 
 def main() -> None:
     print("=" * 70)
-    print("OTEL GENAI SEMANTIC CONVENTIONS — Phase 14, Lesson 23")
+    print("OTEL GENAI 语义约定——阶段 14，第 23 课")
     print("=" * 70)
 
     tracer = Tracer(capture_inline=False)
@@ -157,17 +163,17 @@ def main() -> None:
         for child in span.children:
             render(child, indent + 1)
 
-    print("\nspan tree (GenAI-shaped)")
+    print("\nspan 树（GenAI 风格）")
     render(tracer.root)
 
-    print("\nexternal content store (opt-in references, not inline)")
+    print("\n独立内容存储（以引用 ID 关联，不内联到 span）")
     for cid, content in tracer.content_store.items():
         print(f"  {cid}: {content[:60]}")
 
     print()
-    print("content NOT captured inline by default. store externally; span")
-    print("attributes carry reference IDs. set OTEL_SEMCONV_STABILITY_OPT_IN")
-    print("=gen_ai_latest_experimental to pin experimental attribute names.")
+    print("默认不在 span 中内联记录内容，而是写入独立存储；")
+    print("span 属性只携带引用 ID。原文建议将 OTEL_SEMCONV_STABILITY_OPT_IN")
+    print("设为 gen_ai_latest_experimental 来选择实验性属性约定；此示例不读取该设置。")
 
 
 if __name__ == "__main__":

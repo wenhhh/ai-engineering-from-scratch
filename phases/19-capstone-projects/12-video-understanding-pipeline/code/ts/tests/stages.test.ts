@@ -1,3 +1,7 @@
+/**
+ * 作业状态转换测试。只翻译名称和说明，不改时钟、数值、夹具或断言。
+ */
+
 import { test } from "node:test";
 import { strict as assert } from "node:assert";
 import { JobStore, seedFixture } from "../src/jobs.js";
@@ -10,7 +14,7 @@ function freshJob(createdAt: number): Job {
   return store.create("t-1", "vid", "q", createdAt);
 }
 
-test("pending right after creation", () => {
+test("刚创建时处于待处理状态", () => {
   const created = 1_000_000_000_000;
   const job = freshJob(created);
   advanceJob(job, created);
@@ -18,7 +22,7 @@ test("pending right after creation", () => {
   assert.ok(job.stages.every((s) => s.status === "pending"));
 });
 
-test("running while first stage in progress", () => {
+test("第一阶段进行中时整体状态为进行中", () => {
   const created = 1_000_000_000_000;
   const job = freshJob(created);
   advanceJob(job, created + 600);
@@ -28,7 +32,7 @@ test("running while first stage in progress", () => {
   assert.equal(overallStatus(job), "running");
 });
 
-test("done once total elapsed exceeds sum of durations", () => {
+test("经过时间超过总预设耗时后全部阶段完成", () => {
   const created = 1_000_000_000_000;
   const job = freshJob(created);
   const total = STAGES.reduce((acc, s) => acc + STAGE_DURATIONS_MS[s], 0);
@@ -37,7 +41,7 @@ test("done once total elapsed exceeds sum of durations", () => {
   assert.ok(job.stages.every((s) => s.status === "done"));
 });
 
-test("seedFixture populates store with three jobs", () => {
+test("seedFixture 建立三个示例作业", () => {
   const store = new JobStore();
   seedFixture(store);
   assert.equal(store.list().length, 3);
@@ -46,7 +50,7 @@ test("seedFixture populates store with three jobs", () => {
   assert.equal(detail.id, "job-001");
 });
 
-test("detail returns null for unknown id", () => {
+test("未知作业 ID 的 detail 返回 null", () => {
   const store = new JobStore();
   seedFixture(store);
   assert.equal(store.detail("missing"), null);

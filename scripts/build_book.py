@@ -15,10 +15,13 @@ import argparse
 import functools
 import hashlib
 import json
+import os
 import re
 import shutil
 import subprocess
 import sys
+from datetime import date
+from urllib.parse import urlsplit, unquote, quote
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -94,7 +97,120 @@ def fence_end(src, i):
 
 
 BOOK_LANG = "zh"  # 本分支保留 en.md 路径，但权威源文档已是中文。
+SNAPSHOT_DATE = None  # 无 .git 的归档可显式声明中文快照日期，不虚构提交时间。
 
+
+def snapshot_date_arg(value):
+    """接受严格的 YYYY-MM-DD 日期；不使用当前时钟悄悄填充来源信息。"""
+    try:
+        parsed = date.fromisoformat(value)
+    except ValueError as exc:
+        raise argparse.ArgumentTypeError("快照日期必须为有效的 YYYY-MM-DD") from exc
+    if parsed.isoformat() != value:
+        raise argparse.ArgumentTypeError("快照日期必须为有效的 YYYY-MM-DD")
+    return value
+
+
+def localize_lesson_metadata(line):
+    """只转换书中的展示标签，不修改课程源文件或代码块中的机器字段。"""
+    if BOOK_LANG not in ("zh", "zh-CN"):
+        return line
+    match = re.match(r"^\*\*(Type|Languages|Prerequisites|Time):\*\*\s*(.*)$", line)
+    if not match:
+        return line
+    key, value = match.groups()
+    labels = {"Type": "课程类型", "Languages": "使用语言", "Prerequisites": "先修要求", "Time": "预计用时"}
+    if key == "Type":
+        kinds = {"build": "动手实践", "learn": "概念学习", "use": "应用练习", "capstone": "综合项目", "lab": "实验"}
+        value = re.sub(r"\b(Build|Learn|Use|Capstone|lab)\b", lambda m: kinds[m.group().lower()], value, flags=re.I)
+    return f"**{labels[key]}：** {value}  "
+
+
+
+
+INLINE_CODE = re.compile(r"(`+)(?:(?!\1).)*?\1")
+DOCUMENT_LINK = re.compile(r'(?<!!)\[([^\]\n]*)\]\(([^)\s]+)(\s+"[^"\n]*")?\)')
+SVG_IMAGE = re.compile(r'(!\[[^\]\n]*\]\()([^\s)]+\.svg)(\))')
+
+
+def rewrite_document_links(line, lesson_dir):
+    """把已存在的仓库相对链接改成上游链接；不改代码、图片、外链或片段锚点。"""
+    protected = []
+    def hold(match):
+        protected.append(match.group())
+        return f"\x00BOOK_CODE_{len(protected)-1}\x00"
+    held = INLINE_CODE.sub(hold, line)
+    def rewrite(match):
+        label, destination, title = match.groups()
+        parsed = urlsplit(destination)
+        if parsed.scheme or parsed.netloc or not parsed.path:
+            return match.group()
+        target = (lesson_dir / "docs" / unquote(parsed.path)).resolve()
+        try:
+            relative = target.relative_to(ROOT.resolve())
+        except ValueError:
+            return match.group()
+        if not target.exists():
+            return match.group()
+        kind = "tree" if target.is_dir() else "blob"
+        url = f"{REPO}/{kind}/main/{quote(relative.as_posix(), safe='/')}"
+        if parsed.query:
+            url += "?" + parsed.query
+        if parsed.fragment:
+            url += "#" + parsed.fragment
+        return f"[{label}]({url}{title or ''})"
+    result = DOCUMENT_LINK.sub(rewrite, held)
+    for index, text in enumerate(protected):
+        result = result.replace(f"\x00BOOK_CODE_{index}\x00", text)
+    return result
+
+
+def prepare_pdf_markdown(md):
+    """缺少 rsvg-convert 时，使用实际 Inkscape 导出矢量 PDF；EPUB 仍保留原 SVG。"""
+    if not md.is_file():
+        return md  # 让 pandoc 对缺失输入给出原有错误，便于调用方诊断。
+    text = md.read_text(encoding="utf-8")
+    if shutil.which("rsvg-convert") or not SVG_IMAGE.search(text):
+        return md
+    inkscape = shutil.which("inkscape")
+    if not inkscape:
+        raise RuntimeError("PDF 含 SVG 图片：请安装 rsvg-convert（librsvg2-bin）或 Inkscape 后重试。")
+    cache = BUILD / "pdf-images"
+    cache.mkdir(parents=True, exist_ok=True)
+    version = subprocess.run([inkscape, "--version"], capture_output=True, text=True, check=True, timeout=30).stdout
+    font_key = "\n".join(sorted(font_families()))
+    def replace(match):
+        source = (ROOT / unquote(match.group(2))).resolve()
+        if not source.is_relative_to(ROOT.resolve()) or not source.is_file():
+            raise RuntimeError(f"PDF 的 SVG 图片不存在或越出工程目录：{match.group(2)}")
+        digest = hashlib.sha256(source.read_bytes() + version.encode() + font_key.encode()).hexdigest()
+        pdf = cache / f"{digest}.pdf"
+        if not pdf.is_file():
+            temporary = cache / f"{digest}.{os.getpid()}.tmp.pdf"
+            try:
+                result = subprocess.run(
+                    [inkscape, str(source), "--export-type=pdf", f"--export-filename={temporary}"],
+                    capture_output=True, text=True, check=True, timeout=90,
+                )
+                if not temporary.is_file() or not temporary.read_bytes().startswith(b"%PDF-"):
+                    raise RuntimeError(f"Inkscape 未生成有效 PDF：{source}")
+                temporary.replace(pdf)
+                if result.stderr.strip():
+                    print(f"Inkscape 提示（{source.name}）：{result.stderr.strip()}", file=sys.stderr)
+            finally:
+                temporary.unlink(missing_ok=True)
+        return match.group(1) + str(pdf.relative_to(ROOT)) + match.group(3)
+    lines = []
+    in_code = False
+    for line in text.splitlines(keepends=True):
+        if FENCE.match(line):
+            in_code = not in_code
+            lines.append(line)
+        else:
+            lines.append(line if in_code else SVG_IMAGE.sub(replace, line))
+    pdf_md = BUILD / f"{md.stem}-pdf.md"
+    pdf_md.write_text("".join(lines), encoding="utf-8")
+    return pdf_md
 
 def _lesson_source(phase, lesson):
     en = ROOT / "phases" / phase / lesson / "docs" / "en.md"
@@ -168,7 +284,7 @@ def transform_lesson(phase, lesson_dir):
             i += 1
             continue
 
-        out.append(ASSET_IMG.sub(f"](phases/{phase}/{lesson}/assets/", line))
+        out.append(localize_lesson_metadata(rewrite_document_links(ASSET_IMG.sub(f"](phases/{phase}/{lesson}/assets/", line), lesson_dir)))
         i += 1
 
     if not balanced:
@@ -224,6 +340,8 @@ def render_mermaid(block):
 
 @functools.lru_cache(maxsize=None)
 def git_date():
+    if SNAPSHOT_DATE is not None:
+        return SNAPSHOT_DATE
     return subprocess.run(
         ["git", "log", "-1", "--format=%cs"], capture_output=True, text=True, cwd=ROOT
     ).stdout.strip()
@@ -231,10 +349,8 @@ def git_date():
 
 @functools.lru_cache(maxsize=None)
 def git_edition():
-    return subprocess.run(
-        ["git", "log", "-1", "--format=%cd", "--date=format:%Y.%m"],
-        capture_output=True, text=True, cwd=ROOT,
-    ).stdout.strip() or "0000.00"
+    value = git_date()
+    return value[:7].replace("-", ".") if value else "日期未标注"
 
 
 @functools.lru_cache(maxsize=None)
@@ -259,11 +375,14 @@ def series_map(vol):
 
 
 def how_to_use(vol):
+    snapshot = git_date() or "未标注（归档不含 Git 元数据，也未指定快照日期）"
     return f"""# 关于本卷 {{.unnumbered}}
 
 本书是《{CONFIG['series']}》第 {vol['number']} 卷。这套六卷图书整理自同名开放课程，各卷可以独立阅读。交叉引用使用课程阶段编号，对应关系如下：
 
 {series_map(vol)}
+
+**中文版快照：{snapshot}。** 日期表示本次采用的中文版本，不表示原文中的模型、价格、论文或政策已经在该日重新核验。书内外链指向上游网站和仓库，可能显示英文或不同版本；配套中文源码请使用随本书交付的 `project/` 目录。
 
 本卷内容来自课程阶段 {', '.join(p.split('-')[0] for p in vol['phases'])}。先修要求引用的是阶段编号，而不是卷号；请根据上表查找对应分卷。
 
@@ -271,7 +390,7 @@ def how_to_use(vol):
 
 本卷是整套学习流程的一部分，建议完成以下完整步骤：
 
-1. **在书中阅读章节。** 本书完整保留正文、推导过程和代码讲解。
+1. **在书中阅读章节。** 本书收录课程正文、推导与代码讲解；交互图表和交付任务以在线入口补充，不是在线课程的完全离线镜像。
 2. **运行仓库中的代码。** 每章的 `code/` 目录都包含可运行实现。运行它、修改它，并观察哪些改动会出错：<{REPO}>
 3. **使用纸面无法提供的网页功能。** 观看和操作动态图表，完成每章自动评分的测验：<{SITE}>
 
@@ -281,7 +400,9 @@ def how_to_use(vol):
 
 本课程既供人阅读，也便于智能体（Agent）使用。所有课程的机器可读索引位于 <{SITE}/llms.txt>。借助 AI 助手学习时，可以使用以下提示词：
 
-> 我正在学习《{CONFIG["series"]}》第 {vol["number"]} 卷《{vol["title"]}》。请获取 {SITE}/llms.txt，找到我指定的课程，并担任我的导师：围绕关键术语（Key Terms）提问，审阅我的练习（Exercises）解答，并带我逐步理解仓库中的代码。
+> 我正在学习《{CONFIG["series"]}》第 {vol["number"]} 卷《{vol["title"]}》。请获取 <{SITE}/llms.txt>，找到我指定的课程，并担任我的导师：围绕关键术语（Key Terms）提问，审阅我的练习（Exercises）解答，并带我逐步理解仓库中的代码。
+
+**图形署名。** PDF 中出现的彩色表情图形来自 [Twemoji（Twitter 及贡献者）](https://github.com/twitter/twemoji)，按 [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) 使用，经本地 `twemojis` 包缩放嵌入，图形本身未改绘；原始 Unicode 字符仍保留在 EPUB 和源码中。
 """
 
 
@@ -317,6 +438,39 @@ def metadata(vol):
         encoding="utf-8",
     )
     return meta
+
+
+
+def prepare_unicode_header(md):
+    """按实际字符启用字体/图形回退，不改动源码或 EPUB 中的 Unicode。"""
+    if not md.is_file():
+        return None
+    text = md.read_text(encoding="utf-8")
+    emojis = [c for c in "🔥🌍🤖💪" if c in text]
+    devanagari = any("\u0900" <= c <= "\u097f" for c in text)
+    if not emojis and not devanagari:
+        return None
+    lines = [r"\usepackage{accsupp}"]
+    if devanagari:
+        font = pick_font(["Noto Sans Devanagari", "Noto Serif Devanagari"])
+        if not font:
+            raise RuntimeError("PDF 含天城文示例；请安装 Noto Sans Devanagari 后重试。")
+        lines += [
+            rf"\newfontfamily\bookhindifont[Script=Devanagari]{{{font}}}",
+            r"\newcommand{\bookdevanagari}[2]{\BeginAccSupp{method=hex,unicode,space,ActualText=#1}\mbox{\bookhindifont #2}\EndAccSupp{}}",
+        ]
+    if emojis:
+        # twemojis 使用矢量图，不需要也不附带 Noto Color Emoji 字体文件。
+        lines += [r"\usepackage{twemojis}", r"\usepackage{newunicodechar}"]
+        for char in emojis:
+            actual = char.encode("utf-16-be").hex().upper()
+            lines.append(r"\newunicodechar{" + char + r"}{\BeginAccSupp{method=hex,unicode,space,ActualText=" + actual + r"}\texttwemoji{" + format(ord(char), "x") + r"}\EndAccSupp{}}")
+        codes = "".join(r'\catcode"' + format(ord(c), "X") + r"=13\relax" for c in emojis)
+        lines += [r"\fvset{codes*={" + codes + "}}", r"\fvinlineset{codes*={" + codes + "}}"]
+    BUILD.mkdir(parents=True, exist_ok=True)
+    header = BUILD / (md.stem + "-unicode.tex")
+    header.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    return header
 
 
 def render(vol, md, chapters, pdf=False):
@@ -357,8 +511,9 @@ def render(vol, md, chapters, pdf=False):
             encoding="utf-8",
         )
         pdf_out = DIST / f"aiefs-vol{vol['number']}-{vol['slug']}{suffix}.pdf"
+        pdf_md = prepare_pdf_markdown(md)
         cmd_pdf = [
-            "pandoc", str(md),
+            "pandoc", str(pdf_md),
             "-o", str(pdf_out),
             "--from", "markdown+fenced_divs+autolink_bare_uris",
             "--lua-filter", str(ROOT / "book" / "literal-tokens.lua"),
@@ -385,7 +540,7 @@ def render(vol, md, chapters, pdf=False):
             cmd_pdf += ["-V", f"mainfont={serif}"]
         if mono:
             cmd_pdf += ["-V", f"monofont={mono}"]
-        # 中日韩文字（CJK）需要对应字体；其他语言的拉丁、西里尔、希腊及天城文字由 DejaVu 覆盖。
+        # 中日韩文字（CJK）需要对应字体；拉丁、西里尔、希腊文字使用主字体；天城文字另用按需字体回退。
         cjk_candidates = {
             "zh": ["Noto Serif CJK SC", "Source Han Serif SC", "Noto Sans CJK SC", "Songti SC", "PingFang SC"],
             "zh-TW": ["Noto Sans CJK TC", "Noto Serif CJK TC", "Source Han Serif TC"],
@@ -397,6 +552,9 @@ def render(vol, md, chapters, pdf=False):
             if not cjk:
                 raise RuntimeError(f"无法生成 {BOOK_LANG} PDF：未找到对应的中日韩（CJK）字体；请安装 Noto CJK 字体后重试。")
             cmd_pdf += ["-V", f"CJKmainfont={cjk}", "-V", f"CJKmonofont={cjk}"]
+        unicode_header = prepare_unicode_header(pdf_md)
+        if unicode_header:
+            cmd_pdf += ["--include-in-header", str(unicode_header)]
         subprocess.run(cmd_pdf, check=True, cwd=ROOT)
         results.append(pdf_out)
     return results
@@ -415,15 +573,19 @@ def check_phases():
 
 
 def main():
-    global BOOK_LANG
+    global BOOK_LANG, SNAPSHOT_DATE
     ap = argparse.ArgumentParser()
     ap.add_argument("--volume", help="根据分卷短标识（Slug）构建单卷")
     ap.add_argument("--pdf", action="store_true", help="同时通过 xelatex 生成 PDF")
+    ap.add_argument("--snapshot-date", type=snapshot_date_arg, help="无 Git 归档使用的中文快照日期，格式 YYYY-MM-DD；不是上游内容的事实更新日期")
     ap.add_argument("--assemble-only", action="store_true", help="仅组装，不调用 pandoc")
     ap.add_argument("--lang", default="zh",
                     help="默认构建本分支中文版本；其他语言从 i18n/<lang>/ 读取，缺失时使用本分支源文件")
     args = ap.parse_args()
     BOOK_LANG = "zh" if args.lang == "zh-CN" else args.lang
+    SNAPSHOT_DATE = args.snapshot_date
+    git_date.cache_clear()
+    git_edition.cache_clear()
 
     check_phases()
 

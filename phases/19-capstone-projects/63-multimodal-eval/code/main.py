@@ -1,16 +1,18 @@
-"""Multimodal evaluation: retrieval, VQA, and captioning.
+"""多模态评估：图文检索、视觉问答与图像描述生成。
 
-Three metric surfaces:
-  - Recall@K from a cosine similarity matrix between image and caption vectors
-  - VQA exact match between predicted and reference answer ids
-  - BLEU-4 with multi-reference smoothing
+三个度量方面：
+  - 图像与描述向量余弦相似度矩阵上的 Recall@K；
+  - 预测与参考答案 ID 的视觉问答完全匹配率；
+  - 采用多参考文本及本地平滑规则的 BLEU-4。
 
-The demo evaluates an untrained model, trains it for 50 steps on a synthetic
-mock corpus, and re-evaluates to show the metrics move above their random
-baselines.
+演示先评估随机初始化模型，在合成语料上训练 50 步，再比较指标变化。
+指标不保证全部提高，程序也不要求它们超过某个随机基线才成功退出。
 
-Run with: python3 main.py
-"""
+运行：python3 main.py
+
+译注：评估使用不同的图像噪声种子，但第 62 课的描述词元由样本索引确定，
+评估集前 50 条的词元序列与训练集相同索引重复，不能称为独立留出的完整图文样本。
+问句是随机词元，答案取描述首词元；这些指标不代表真实 VQA 或图像理解能力。"""
 
 from __future__ import annotations
 
@@ -33,6 +35,7 @@ def _load_module(name: str, path: Path):
         return sys.modules[name]
     spec = importlib.util.spec_from_file_location(name, path)
     if spec is None or spec.loader is None:
+        # 无法加载给定模块。
         raise ImportError(f"could not load {path}")
     mod = importlib.util.module_from_spec(spec)
     sys.modules[name] = mod
@@ -75,14 +78,16 @@ class EvalSuite:
 
 
 def recall_at_k(sim: torch.Tensor, k: int) -> tuple[float, float]:
-    """Return (i2t, t2i) recall@k.
+    """返回图到文与文到图的 Recall@K。
 
-    sim is (N, N) where row i is the similarity of image i to every caption.
-    """
+    sim 为 (N,N) 矩阵，行 i 给出图像 i 与每条描述的相似度。
+    以对角位置为唯一正确配对，不处理每图多条正确描述的标注关系。"""
     if sim.dim() != 2 or sim.shape[0] != sim.shape[1]:
+        # 相似度矩阵必须为 (N,N) 方阵。
         raise ValueError(f"sim must be square (N, N), got {tuple(sim.shape)}")
     n = sim.shape[0]
     if k < 1 or k > n:
+        # k 必须在 1 到样本数 N 之间。
         raise ValueError(f"k {k} not in [1, N={n}]")
 
     targets = torch.arange(n, device=sim.device)
@@ -99,6 +104,7 @@ def recall_at_k(sim: torch.Tensor, k: int) -> tuple[float, float]:
 
 def vqa_exact_match(predictions: list[int], references: list[int]) -> float:
     if len(predictions) != len(references):
+        # 预测与参考答案数量不同。
         raise ValueError(f"length mismatch: pred {len(predictions)} vs ref {len(references)}")
     if not predictions:
         return 0.0
@@ -121,12 +127,14 @@ def _count(ngrams: list[tuple[int, ...]]) -> dict[tuple[int, ...], int]:
 
 def bleu4(generated: list[int], references: list[list[int]],
           smoothing: bool = True) -> float:
-    """BLEU-4 against multiple reference captions.
+    """相对于多条参考描述计算 BLEU-4。
 
-    Uses Chen and Cherry "method 1" smoothing when any n-gram precision is 0
-    and `smoothing` is True.
-    """
+    零匹配且启用平滑时，实际代码令 clipped=1、total=total+1。
+    原文称其为 Chen 与 Cherry 的“method 1”，这里按实际公式说明，
+    不宣称已核验该命名的等价性。缺少某阶 n-gram 时直接返回 0，
+    因而生成序列不足四个词元时不会得到完整的平滑 BLEU-4 分数。"""
     if not references:
+        # BLEU-4 至少需要一条参考描述。
         raise ValueError("bleu4 requires at least one reference")
     if not generated:
         return 0.0
@@ -172,7 +180,7 @@ def bleu4(generated: list[int], references: list[list[int]],
 
 def build_eval_suite(seed: int, n_samples: int, vocab_size: int, max_len: int
                      ) -> EvalSuite:
-    """Build a deterministic eval suite with three surfaces."""
+    """为图文检索、视觉问答与图像描述生成构造确定性评估夹具。"""
     rng = np.random.default_rng(seed)
     retrieval: list[RetrievalPair] = []
     vqa: list[VQATriple] = []
@@ -275,7 +283,7 @@ def _print_metrics(label: str, metrics: dict) -> None:
 
 def main() -> None:
     print("=" * 60)
-    print("MULTIMODAL EVALUATION")
+    print("多模态评估")
     print("=" * 60)
 
     cfg = PretrainConfig(
@@ -290,24 +298,24 @@ def main() -> None:
         lr=5e-4,
         seed=0,
     )
-    print(f"  text vocab : {cfg.text_vocab}")
-    print(f"  embed dim  : {cfg.embed_dim}")
-    print(f"  steps      : {cfg.steps}")
+    print(f"  文本词表大小 : {cfg.text_vocab}")
+    print(f"  嵌入维度 : {cfg.embed_dim}")
+    print(f"  训练步数 : {cfg.steps}")
 
     torch.manual_seed(cfg.seed)
     model = MultimodalModel(cfg).train()
 
-    print("\nbuilding eval suite (50 samples, held-out seed)...")
+    print("\n构建评估夹具（50 个样本，图像噪声使用不同种子）……")
     suite = build_eval_suite(seed=cfg.seed + 7777, n_samples=50,
                              vocab_size=cfg.text_vocab, max_len=cfg.max_text_len)
-    print(f"  retrieval pairs : {len(suite.retrieval)}")
-    print(f"  vqa triples     : {len(suite.vqa)}")
-    print(f"  caption samples : {len(suite.caps)}")
+    print(f"  检索样本对数 : {len(suite.retrieval)}")
+    print(f"  视觉问答三元组数 : {len(suite.vqa)}")
+    print(f"  描述样本数 : {len(suite.caps)}")
 
     before = evaluate(model, suite)
-    _print_metrics("metrics BEFORE training (50-step random init):", before)
+    _print_metrics("训练前指标（尚未训练的随机初始化模型）：", before)
 
-    print("\ntraining for 50 steps on the mock corpus...")
+    print("\n在合成语料上训练 50 步……")
     model.train()
     opt = torch.optim.Adam(model.parameters(), lr=cfg.lr)
     corpus = make_mock_corpus(cfg.seed + 1, cfg.n_pairs, cfg.text_vocab, cfg.max_text_len)
@@ -321,18 +329,18 @@ def main() -> None:
         total.backward()
         opt.step()
         if step % 10 == 0 or step == cfg.steps - 1:
-            print(f"  step {step:3d}  total {total.item():.4f}")
+            print(f"  步 {step:3d}  总损失 {total.item():.4f}")
 
     after = evaluate(model, suite)
-    _print_metrics("metrics AFTER training:", after)
+    _print_metrics("训练后指标：", after)
 
-    print("\nmetric deltas (after - before):")
+    print("\n指标变化量（训练后 − 训练前）：")
     for k in before:
         d = after[k] - before[k]
         marker = "+" if d >= 0 else "-"
         print(f"  {k:12s} : {after[k]:.4f}  ({marker}{abs(d):.4f})")
 
-    print("\ndone.")
+    print("\n完成。")
 
 
 if __name__ == "__main__":

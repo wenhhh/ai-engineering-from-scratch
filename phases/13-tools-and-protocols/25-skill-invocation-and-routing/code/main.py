@@ -1,3 +1,12 @@
+"""阶段 13，第 25 课：技能调用策略与显式、隐式路由。
+
+执行者枚举 human/model/agent/application/skill/harness 分别表示用户、模型、
+智能体、应用、技能和运行控制环境。显式通道按名称选择，隐式通道先检查
+准入策略，再用英文词项集合的 Jaccard 相似度评分。
+因此技能名称、描述、查询词和测试匹配的 reason 原文保持不变；
+中文翻译写在各个字符串旁，不改变匹配结果、权限判断或调用深度。
+"""
+
 from __future__ import annotations
 
 import json
@@ -57,6 +66,7 @@ class InvocationPolicy:
             "allow_skill",
         ):
             if type(getattr(self, field_name)) is not bool:
+                # 配置诊断：此字段必须是布尔值。
                 raise TypeError(f"{field_name} must be a boolean")
         if (
             isinstance(self.model_threshold, bool)
@@ -64,6 +74,7 @@ class InvocationPolicy:
             or not math.isfinite(self.model_threshold)
             or not 0.0 <= self.model_threshold <= 1.0
         ):
+            # 配置诊断：model_threshold 必须是 0 到 1 之间的有限数值。
             raise ValueError("model_threshold must be a finite number from 0 to 1")
         for field_name in (
             "harness_allowlist",
@@ -74,8 +85,10 @@ class InvocationPolicy:
             if not isinstance(value, tuple) or not all(
                 isinstance(item, str) and item for item in value
             ):
+                # 配置诊断：此字段必须是由非空名称组成的元组。
                 raise TypeError(f"{field_name} must be a tuple of non-empty names")
         if type(self.max_skill_depth) is not int or self.max_skill_depth < 1:
+            # 配置诊断：max_skill_depth 必须是正整数。
             raise ValueError("max_skill_depth must be a positive integer")
 
 
@@ -118,7 +131,7 @@ def relevance_score(query: str, skill: SkillMetadata) -> float:
 
 
 class CorePolicyAdapter:
-    """Apply only caller-supplied host policy; ignore extension fields."""
+    """只应用调用方提供的宿主策略，忽略运行时扩展字段。"""
 
     def __init__(self, policy: InvocationPolicy):
         self.policy = policy
@@ -130,35 +143,47 @@ class CorePolicyAdapter:
         request: InvocationRequest | None = None,
     ) -> tuple[bool, str]:
         if actor is Actor.HUMAN:
+            # 理由：用户激活策略。
             return self.policy.allow_human, "human activation policy"
         if actor is Actor.MODEL:
+            # 理由：模型激活策略。
             return self.policy.allow_model, "model activation policy"
         if actor is Actor.AGENT:
+            # 理由：智能体激活策略。
             return self.policy.allow_agent, "agent activation policy"
         if actor is Actor.APPLICATION:
             allowed = (
                 self.policy.allow_application
                 and skill.name in self.policy.application_allowlist
             )
+            # 理由：应用激活策略及目标技能允许名单。
             return allowed, "application activation policy and target allowlist"
         if actor is Actor.SKILL:
             if not self.policy.allow_skill:
+                # 理由：技能组合策略。
                 return False, "skill composition policy"
             if request is None or not request.caller_name:
+                # 理由：组合调用技能时必须提供调用方身份。
                 return False, "skill composition requires a caller identity"
             if request.caller_name == skill.name:
+                # 理由：技能直接调用自身，形成自环。
                 return False, "direct skill self-cycle"
             if request.caller_name not in self.policy.skill_caller_allowlist:
+                # 理由：技能调用方允许名单。
                 return False, "skill caller allowlist"
             if request.depth < 1 or request.depth > self.policy.max_skill_depth:
+                # 理由：技能组合的调用深度限制。
                 return False, "skill composition depth limit"
+            # 理由：技能调用方允许名单与深度策略。
             return True, "skill caller allowlist and depth policy"
         if actor is Actor.HARNESS:
             allowed = (
                 self.policy.allow_programmatic
                 and skill.name in self.policy.harness_allowlist
             )
+            # 理由：程序激活策略与允许名单。
             return allowed, "programmatic activation policy and allowlist"
+        # 理由：未知的执行者没有相应的激活策略。
         return False, f"unknown actor {_actor_label(actor)!r} has no activation policy"
 
 
@@ -171,7 +196,7 @@ def _extension_true(value: object) -> bool:
 
 
 class ExtensionPolicyAdapter(CorePolicyAdapter):
-    """Example adapter for one host's invocation metadata conventions."""
+    """适配某一宿主调用元数据约定的示例适配器。"""
 
     def allows(
         self,
@@ -184,10 +209,12 @@ class ExtensionPolicyAdapter(CorePolicyAdapter):
             return allowed, reason
         fields = skill.runtime_extensions
         if actor is Actor.HUMAN and _extension_false(fields.get("user-invocable")):
+            # 理由：宿主扩展 user-invocable=false，禁止用户直接激活。
             return False, "host extension user-invocable=false"
         if actor in {Actor.MODEL, Actor.AGENT} and _extension_true(
             fields.get("disable-model-invocation")
         ):
+            # 理由：宿主扩展 disable-model-invocation=true，禁止模型或智能体激活。
             return False, "host extension disable-model-invocation=true"
         return True, reason
 
@@ -198,10 +225,10 @@ def build_invocation_matrix(
     active = None if policy is None else (policy.allow_human, policy.allow_model)
     rows = []
     for human, model, meaning in (
-        (False, False, "programmatic-only or unavailable"),
-        (True, False, "explicit human activation only"),
-        (False, True, "implicit model activation only"),
-        (True, True, "human and model activation"),
+        (False, False, "仅允许程序调用，或不可用"),
+        (True, False, "仅允许用户显式激活"),
+        (False, True, "仅允许模型隐式激活"),
+        (True, True, "允许用户和模型激活"),
     ):
         rows.append(
             {
@@ -227,6 +254,7 @@ def route_request(
             None,
             "unsupported-actor",
             0.0,
+            # 理由：未知的执行者没有相应的激活策略。
             f"unknown actor {actor!r} has no activation policy",
         )
     candidates = sorted(skills, key=lambda item: item.name)
@@ -240,6 +268,7 @@ def route_request(
         mode = explicit_modes[request.actor]
         if not request.explicit_name:
             return InvocationDecision(
+                # 理由：必须提供精确的技能名称。
                 False, request.actor, None, mode, 0.0, "an exact skill name is required"
             )
         selected = next(
@@ -247,6 +276,7 @@ def route_request(
         )
         if selected is None:
             return InvocationDecision(
+                # 理由：已发现的目录中没有指定技能。
                 False, request.actor, None, mode, 0.0, "named skill was not discovered"
             )
         allowed, reason = adapter.allows(selected, request.actor, request)
@@ -256,6 +286,7 @@ def route_request(
             selected.name,
             mode,
             1.0,
+            # 输出说明：受到后面的策略或规则阻止。
             reason if allowed else f"blocked by {reason}",
         )
 
@@ -267,9 +298,11 @@ def route_request(
             None,
             mode,
             0.0,
+            # 理由：模型或智能体的隐式路由依靠任务相关性，而不是精确名称通道。
             "implicit model or agent routing uses task relevance rather than an exact-name channel",
         )
     if not candidates:
+        # 理由：技能目录为空。
         return InvocationDecision(False, request.actor, None, mode, 0.0, "catalog is empty")
 
     eligible = []
@@ -281,6 +314,7 @@ def route_request(
         else:
             blocked_reasons.append(reason)
     if not eligible:
+        # 理由：已发现的技能中，没有任何一个符合隐式路由的准入条件。
         reason = "no discovered skill is eligible for implicit routing"
         if blocked_reasons:
             reason = f"{reason}: {'; '.join(sorted(set(blocked_reasons)))}"
@@ -300,6 +334,7 @@ def route_request(
             selected.name,
             mode,
             round(score, 4),
+            # 理由：最佳匹配分数仍未达到宿主设定的阈值。
             "best match did not meet the host threshold",
         )
     return InvocationDecision(
@@ -316,15 +351,18 @@ def demo() -> None:
     skills = (
         SkillMetadata(
             "incident-triage",
+            # 匹配用技能描述：梳理事件时间线，区分证据与假设。
             "Triage an incident timeline and separate evidence from hypotheses.",
         ),
         SkillMetadata(
             "release-notes",
+            # 匹配用技能描述：根据已合并拉取请求的摘要撰写发布说明。
             "Draft release notes from merged pull request summaries.",
             {"user-invocable": True, "disable-model-invocation": True},
         ),
         SkillMetadata(
             "release-readiness",
+            # 匹配用技能描述：审查已合并拉取请求的摘要，报告发布就绪情况。
             "Review merged pull request summaries and report release readiness.",
         ),
     )
@@ -340,13 +378,18 @@ def demo() -> None:
     extensions = ExtensionPolicyAdapter(policy)
     requests = (
         InvocationRequest(Actor.HUMAN, "", explicit_name="release-notes"),
+        # 匹配用请求：梳理这次事件的时间线和证据。
         InvocationRequest(Actor.MODEL, "triage this incident timeline evidence"),
+        # 示例请求：夜间例行评估。
         InvocationRequest(Actor.HARNESS, "nightly evaluation", explicit_name="incident-triage"),
+        # 匹配用请求：根据已合并拉取请求撰写发布说明。
         InvocationRequest(Actor.MODEL, "draft release notes from merged pull requests"),
+        # 匹配用请求：梳理这次事件的时间线和证据。
         InvocationRequest(Actor.AGENT, "triage this incident timeline evidence"),
         InvocationRequest(Actor.APPLICATION, "", explicit_name="release-notes"),
         InvocationRequest(
             Actor.SKILL,
+            # 示例请求：审查事件相关依赖。
             "review incident dependency",
             explicit_name="incident-triage",
             caller_name="release-readiness",
@@ -360,7 +403,7 @@ def demo() -> None:
             route_request(skills, request, extensions).to_dict() for request in requests
         ],
     }
-    print(json.dumps(result, indent=2, sort_keys=True))
+    print(json.dumps(result, indent=2, sort_keys=True, ensure_ascii=False))
 
 
 if __name__ == "__main__":

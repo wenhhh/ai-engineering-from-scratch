@@ -1,4 +1,7 @@
-"""Tests for exact_match, F1, BLEU-4, ROUGE-L, accuracy, and dispatch."""
+"""exact_match、F1、BLEU-4、ROUGE-L、accuracy 及指标分发的单元测试。
+
+仅翻译说明；指标键、文本夹具、阈值与断言保持原样。
+"""
 
 from __future__ import annotations
 

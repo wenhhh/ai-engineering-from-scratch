@@ -1,4 +1,7 @@
-"""Tests for perplexity, ECE, Brier, reliability diagram, and CalibrationReport."""
+"""困惑度、ECE、Brier、可靠性统计与 CalibrationReport 的单元测试。
+
+仅翻译说明；概率、标签、桶边界、字段和断言保持原样。
+"""
 
 from __future__ import annotations
 

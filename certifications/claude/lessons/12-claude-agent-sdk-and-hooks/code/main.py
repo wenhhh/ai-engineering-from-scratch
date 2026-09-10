@@ -1,8 +1,7 @@
-"""Companion code for:
-certifications/claude/lessons/12-claude-agent-sdk-and-hooks/docs/en.md
-It validates tools, hooks, sandbox, budgets, subagent isolation, and resume state.
-No Agent SDK installation or provider credential is required for the policy lab.
-"""
+"""第 12 课 Claude Agent SDK 与 hooks 配套代码。
+
+对应 docs/en.md：校验工具、hook、沙箱、预算、持久事件与 computer-use harness 边界。
+实现使用确定性本地事件与策略对象，不连接真实托管 agent 或桌面环境。"""
 
 from __future__ import annotations
 
@@ -18,7 +17,7 @@ REQUIRED_APPROVAL_RISKS = {"external-side-effect", "affirmative-consent", "finan
 
 
 class EventStreamError(ValueError):
-    """Raised when a managed-agent event fixture violates the state contract."""
+    """托管 agent 事件夹具违反状态契约时抛出的异常。"""
 
 
 @dataclass(frozen=True)
@@ -44,7 +43,7 @@ class EventSummary:
 
 
 def consume_managed_events(events: Iterable[dict[str, Any]]) -> EventSummary:
-    """Consume persisted events and optional stream previews without network access."""
+    """在不访问网络的情况下消费持久事件与可选流预览。"""
     status = "unknown"
     stop_reason: str | None = None
     messages: list[str] = []
@@ -228,7 +227,7 @@ def evaluate_action(policy: dict[str, Any], tool_name: str, approved: bool) -> d
 
 
 class ComputerUseGuard:
-    """Validate model-proposed UI actions against trusted harness state."""
+    """根据可信 harness 状态校验模型提出的 UI 动作。"""
 
     def __init__(self, policy: dict[str, Any]) -> None:
         errors = validate_policy(policy)

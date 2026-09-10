@@ -1,8 +1,7 @@
-"""Companion code for:
-certifications/claude/lessons/01-claude-product-and-model-landscape/docs/en.md
-It validates surface, model, and deployment decisions plus their dated evidence.
-All measurements come from a local filled scenario rather than provider calls.
-"""
+"""第 01 课 Claude 产品与模型版图配套代码。
+
+对应 docs/en.md：校验使用界面、模型与访问方式之间的适配关系，并对固定课程快照中的选择进行总结。
+模型名与产品字段保持原样；本翻译不表示已重新核验其当前状态。"""
 
 from __future__ import annotations
 

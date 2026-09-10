@@ -1,4 +1,4 @@
-"""Tests for lesson 10 client tool loop."""
+"""第 10 课客户端工具循环测试。"""
 
 import json
 import pathlib

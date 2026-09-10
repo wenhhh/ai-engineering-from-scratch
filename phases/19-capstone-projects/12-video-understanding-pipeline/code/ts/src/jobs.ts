@@ -1,3 +1,10 @@
+/**
+ * 内存作业存储与展示夹具。
+ * 这里的问题只作展示，没有检索或哈希消费者，因此可中文化；Python 中参与排名的查询仍保留英文。
+ * 读取和列举作业时会按时间推进状态，而非由真实后台工作进程报告结果。
+ * 相同 ID 的 create 会覆盖原记录；get 返回内部对象，不是隔离副本。
+ */
+
 import type { Job, StageState } from "./types.js";
 import { STAGES } from "./types.js";
 import { advanceJob, overallStatus } from "./stages.js";
@@ -79,13 +86,13 @@ export function seedFixture(store: JobStore): void {
   const j1 = store.create(
     "job-001",
     "vid_001",
-    "how many cars pass through the intersection",
+    "有多少辆车经过路口？",
     Date.now() - 8000,
   );
   advanceJob(j1);
 
-  const j2 = store.create("job-002", "vid_001", "plating of the dish", Date.now() - 3500);
+  const j2 = store.create("job-002", "vid_001", "菜肴装盘", Date.now() - 3500);
   advanceJob(j2);
 
-  store.create("job-003", "vid_002", "ocean at sunset");
+  store.create("job-003", "vid_002", "日落时的大海");
 }

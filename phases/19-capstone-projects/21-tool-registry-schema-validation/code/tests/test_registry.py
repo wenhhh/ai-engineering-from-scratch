@@ -1,4 +1,7 @@
-"""Tests for ToolRegistry and JSON Schema subset validator."""
+"""ToolRegistry 与 JSON Schema 子集校验器的回归测试。
+
+断言、类型边界、模式与错误路径夹具均保持原样。
+"""
 
 from __future__ import annotations
 

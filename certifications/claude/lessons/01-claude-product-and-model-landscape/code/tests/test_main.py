@@ -1,4 +1,4 @@
-"""Tests for lesson 01 product and model fit."""
+"""第 01 课产品与模型适配测试。"""
 
 import copy
 import pathlib

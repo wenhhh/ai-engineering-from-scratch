@@ -1,4 +1,4 @@
-"""Tests for lesson 03 prompt contracts."""
+"""第 03 课提示契约测试。"""
 
 import copy
 import pathlib

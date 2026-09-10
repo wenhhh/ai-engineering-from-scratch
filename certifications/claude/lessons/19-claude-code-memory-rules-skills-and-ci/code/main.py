@@ -1,4 +1,4 @@
-"""Companion validator for this lesson's docs/en.md configuration audit."""
+"""本课 docs/en.md 配置审计的配套验证器。检查 memory、rules、skills 与 CI 配置边界；只验证课程资料包，不修改真实仓库或 CI。"""
 
 from __future__ import annotations
 

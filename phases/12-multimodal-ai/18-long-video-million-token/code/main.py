@@ -1,7 +1,12 @@
-"""Long-video token budget + needle-in-a-haystack simulator + agentic retrieval.
+"""长视频词元预算、大海捞针模拟器与智能体式检索。
 
-Stdlib. Prints budget tables for long videos, runs a synthetic NIH recall test,
-simulates a VideoAgent-style retrieval loop.
+仅使用标准库。打印长视频预算表，运行合成的大海捞针（NIH）召回测试，
+并模拟 VideoAgent 风格的检索循环。
+
+译注：检索问题 at what point does the cat jump（猫在什么时候跳跃）
+通过末尾单词提取关键词 jump，故保留原值；unique sticker（独特贴纸）
+是模拟目标标记，字典字段和角色标识也保持不变。
+模型召回曲线和开销比较是本示例预设的模拟数据，不是本次翻译实测的模型指标。
 """
 
 from __future__ import annotations
@@ -17,17 +22,17 @@ def tokens(duration_s: float, fps: float, per_frame: int) -> int:
 
 
 def budget_table() -> None:
-    print("\nLONG-VIDEO TOKEN BUDGETS")
+    print("\n长视频词元预算")
     print("-" * 60)
-    print(f"{'duration':<14}{'FPS':>5}{'per_frame':>12}{'tokens':>12}{'fits in':>14}")
+    print(f"{'时长':<14}{'FPS':>5}{'每帧词元数':>12}{'词元数':>12}{'可容纳的窗口或方案':>14}")
     cases = [
         (60, 1, 81,     "32k+"),
         (300, 1, 81,    "32k"),
         (300, 2, 81,    "128k"),
         (1800, 1, 81,   "256k"),
         (3600, 1, 81,   "1M / LongVILA"),
-        (7200, 1, 81,   "Gemini 2.5 only"),
-        (7200, 1, 32,   "agentic retrieval"),
+        (7200, 1, 81,   "仅 Gemini 2.5"),
+        (7200, 1, 32,   "智能体式检索"),
     ]
     for dur, fps, pf, fits in cases:
         t = tokens(dur, fps, pf)
@@ -55,60 +60,60 @@ def nih_trial(duration_s: float, model_recall_curve: list[tuple[float, float]]) 
 
 
 def nih_simulation() -> None:
-    print("\nNEEDLE-IN-A-HAYSTACK SIMULATION (single trial per model)")
+    print("\n大海捞针模拟（每个模型仅试验一次）")
     print("-" * 60)
     models = [
-        ("Qwen2.5-VL-72B @ 15min",   900,  [(0.1, 0.98), (0.5, 0.90), (1.0, 0.85)]),
-        ("Qwen2.5-VL-72B @ 30min",   1800, [(0.1, 0.95), (0.5, 0.85), (1.0, 0.75)]),
-        ("Gemini 2.5 Pro @ 90min",   5400, [(0.1, 0.99), (0.5, 0.99), (1.0, 0.99)]),
-        ("VideoAgent (retrieval) 2h", 7200, [(0.1, 0.92), (0.5, 0.92), (1.0, 0.92)]),
+        ("Qwen2.5-VL-72B @ 15 分钟",   900,  [(0.1, 0.98), (0.5, 0.90), (1.0, 0.85)]),
+        ("Qwen2.5-VL-72B @ 30 分钟",   1800, [(0.1, 0.95), (0.5, 0.85), (1.0, 0.75)]),
+        ("Gemini 2.5 Pro @ 90 分钟",   5400, [(0.1, 0.99), (0.5, 0.99), (1.0, 0.99)]),
+        ("VideoAgent（检索）2 小时", 7200, [(0.1, 0.92), (0.5, 0.92), (1.0, 0.92)]),
     ]
     for name, dur, curve in models:
         r = nih_trial(dur, curve)
-        print(f"  {name:<32}  needle@{r['needle_time']:>6.1f}s  "
-              f"p(recall)={r['recall_prob']:.2f}")
+        print(f"  {name:<32}  目标位置@{r['needle_time']:>6.1f}s  "
+              f"召回概率={r['recall_prob']:.2f}")
 
 
 def agentic_retrieval_sim(question: str, video_duration: float) -> dict:
-    """Simulate VideoAgent: LLM asks for clip, tool returns timestamps, VLM reads."""
+    """模拟 VideoAgent：LLM 请求片段，工具返回时间戳，VLM 读取片段。"""
     trace = []
-    trace.append(("LLM  ", f"reading question: '{question}'"))
+    trace.append(("LLM  ", f"读取问题：'{question}'"))
     query = question.split()[-1].lower()
-    trace.append(("LLM  ", f"calling tool: find_clips(keyword='{query}')"))
+    trace.append(("LLM  ", f"调用工具：find_clips(keyword='{query}')"))
     hits = sorted([random.uniform(0, video_duration) for _ in range(3)])
-    trace.append(("TOOL ", f"returned 3 clips: {[round(h,1) for h in hits]}"))
-    trace.append(("VLM  ", f"encoding 3 x 30s clips (~7290 tokens total)"))
-    trace.append(("LLM  ", "composing answer from clip descriptions"))
+    trace.append(("TOOL ", f"返回 3 个片段：{[round(h,1) for h in hits]}"))
+    trace.append(("VLM  ", f"编码 3 个 30 秒片段（共约 7290 个词元）"))
+    trace.append(("LLM  ", "根据片段描述组织答案"))
     tokens_used = 3 * 30 * 81 + 200
     return {"steps": trace, "tokens": tokens_used}
 
 
 def agentic_demo() -> None:
-    print("\nVIDEOAGENT-STYLE RETRIEVAL (2-hour video)")
+    print("\nVideoAgent 风格的检索（2 小时视频）")
     print("-" * 60)
     r = agentic_retrieval_sim("at what point does the cat jump", 7200)
     for role, msg in r["steps"]:
         print(f"  [{role}] {msg}")
-    print(f"\n  total tokens used: ~{r['tokens']:,}")
-    print(f"  vs brute context 2h @ 1 FPS: ~583,000 tokens")
-    print(f"  -> 99% cheaper inference for single-event queries")
+    print(f"\n  总词元用量：约 {r['tokens']:,}")
+    print(f"  对比直接塞入上下文的方式：2 小时视频、帧率 1 FPS，约需 583,000 个词元")
+    print(f"  -> 对于单事件查询，推理成本降低约 99%")
 
 
 def main() -> None:
     print("=" * 60)
-    print("LONG-VIDEO UNDERSTANDING (Phase 12, Lesson 18)")
+    print("长视频理解（阶段 12，第 18 课）")
     print("=" * 60)
 
     budget_table()
     nih_simulation()
     agentic_demo()
 
-    print("\nSTRATEGY PICKER")
+    print("\n策略选择")
     print("-" * 60)
-    print("  <15 min            : brute context (Qwen2.5-VL-72B)")
-    print("  15-60 min          : LongVILA / Video-XL / Gemini 2.5")
-    print("  >1h general QA     : Gemini 2.5 Pro (closed frontier)")
-    print("  >1h specific query : VideoAgent (agentic retrieval)")
+    print("  <15 分钟          ：直接塞入上下文（Qwen2.5-VL-72B）")
+    print("  15-60 分钟        ：LongVILA / Video-XL / Gemini 2.5")
+    print("  >1 小时，通用问答 ：Gemini 2.5 Pro（闭源前沿模型）")
+    print("  >1 小时，具体查询 ：VideoAgent（智能体式检索）")
 
 
 if __name__ == "__main__":

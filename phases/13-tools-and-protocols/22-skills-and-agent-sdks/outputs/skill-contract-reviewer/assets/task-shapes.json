@@ -1,26 +1,39 @@
 [
   {
-    "task": "Rewrite this paragraph once",
-    "primitives": ["prompt"]
+    "task": "仅改写一次这段文字",
+    "primitives": [
+      "prompt"
+    ]
   },
   {
-    "task": "Apply the same release checklist across repositories",
-    "primitives": ["Agent Skill"]
+    "task": "在多个仓库中采用同一份发布检查清单",
+    "primitives": [
+      "Agent Skill"
+    ]
   },
   {
-    "task": "Use the release checklist and query a deployment API",
-    "primitives": ["Agent Skill", "MCP tool"]
+    "task": "采用发布检查清单，并查询部署 API",
+    "primitives": [
+      "Agent Skill",
+      "MCP tool"
+    ]
   },
   {
-    "task": "Enforce formatting after every generated file",
-    "primitives": ["hook"]
+    "task": "每次生成文件后强制执行格式化",
+    "primitives": [
+      "hook"
+    ]
   },
   {
-    "task": "Normalize a known JSON schema deterministically",
-    "primitives": ["ordinary code"]
+    "task": "以确定性方式规范化已知的 JSON 模式",
+    "primitives": [
+      "ordinary code"
+    ]
   },
   {
-    "task": "Research an independent question in an isolated context",
-    "primitives": ["subagent"]
+    "task": "在隔离上下文中研究一个独立问题",
+    "primitives": [
+      "subagent"
+    ]
   }
 ]

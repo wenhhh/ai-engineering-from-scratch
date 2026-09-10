@@ -1,18 +1,21 @@
-"""Language model evaluation harness from scratch.
+"""从零实现语言模型评测框架。
 
-Task spec is a JSONL line per example with `prompt`, `targets`, and
-`metric`. Five metrics ship: exact match for arithmetic, rouge-l F1 for
-summary, executable check for code, accuracy for multiple choice, and
-substring contains for generation. The runner batches examples by task,
-runs them against a swappable model adapter, and emits a leaderboard
-JSON with per-task and overall scores.
+任务规范用 JSONL 的每一行描述一个样例，包含 prompt、targets 和
+metric。提供五类指标：算术完全匹配、摘要 ROUGE-L F1、代码执行检查、
+选择题准确率，以及生成文本的子串包含判断。运行器按任务分批请求
+可替换的模型适配器，输出含逐任务分数和总分的排行榜 JSON。
 
-The model adapter is the seam. The default adapter is a deterministic
-toy that pattern-matches the prompt; it has just enough behavior to make
-the harness's scoring code exercise every metric. Swap the adapter for
-an HTTP client, a local inference call, or a mock in tests.
+模型适配器是替换真实推理实现的接入点。默认适配器是按提示词模式
+匹配的确定性玩具实现，仅为各评分路径提供固定输出；可在实际接入时
+换成 HTTP 客户端、本地推理调用，或在测试中使用桩对象。
 
-Run: python3 code/main.py
+运行：python3 code/main.py
+
+译注：这是独立的教学实现，并未调用外部 lm-evaluation-harness。
+提示词前缀、语料、答案、任务名和错误字符串参与匹配与计分，保留英文。
+ROUGE 分词只识别英文字母和数字，不能因界面汉化就视为支持中文评测。
+总分是任务分数的等权平均；correct 字段是分数和取整，对 ROUGE 等
+连续指标不等于完全答对的样例数。默认夹具只执行预置可信的简短代码。
 """
 
 from __future__ import annotations
@@ -75,11 +78,11 @@ class ModelAdapter(Protocol):
 
 
 class ToyAdapter:
-    """Deterministic adapter that pattern-matches each task.
+    """对各任务进行模式匹配的确定性适配器。
 
-    The point is not to score well; the point is to give the harness a
-    fixed set of outputs to score against. Replace with a real client
-    when you ship the harness against a model.
+    目的不是取得高分，而是给评测框架一组固定输出以检验评分逻辑。
+    对真实模型执行评测时，应替换为真正的客户端；占位高分不是模型
+    能力证明。
     """
 
     name = "toy.v1"
@@ -131,7 +134,11 @@ _ARITH_OPS = {
 
 
 def safe_arith_eval(expr: str) -> float:
-    """Evaluate a small arithmetic expression without exposing eval."""
+    """通过受限 AST 节点计算小型算术表达式，不调用 Python eval。
+
+    译注：没有单独限制幂运算规模、表达式深度或执行时间；
+    节点允许列表不等于面向任意不可信输入的资源隔离。
+    """
     tree = ast.parse(expr, mode="eval")
     return _safe_eval(tree.body)
 
@@ -143,6 +150,7 @@ def _safe_eval(node: ast.AST) -> float:
         return _ARITH_OPS[type(node.op)](_safe_eval(node.left), _safe_eval(node.right))
     if isinstance(node, ast.UnaryOp) and type(node.op) in _ARITH_OPS:
         return _ARITH_OPS[type(node.op)](_safe_eval(node.operand))
+    # 表达式含不受支持的 AST 节点。
     raise ValueError(f"unsafe node: {ast.dump(node)}")
 
 
@@ -207,13 +215,15 @@ def metric_rouge_l(prediction: str, targets: List[str]) -> float:
 
 
 def metric_code_exec(prediction: str, targets: List[str], extras: Dict[str, object]) -> float:
-    """Execute the prediction in a small namespace and compare against
-    expected outputs.
+    """在精简命名空间中执行预测代码，并与预期输出比较。
 
-    Targets is a list of stringified expected results; extras carries a
-    list of (input, output) pairs the function is checked against. The
-    code runs in a stripped builtins namespace so it cannot reach the
-    filesystem or network.
+    extras 中的 io_pairs 提供 (输入, 输出) 对；targets 参数虽然
+    保留在接口中，实际没有参与本函数评分。最终分数为匹配对数除以
+    原始 pairs 的长度，格式不正确的条目也留在分母中。
+
+    原文声称裁剪 builtins 后代码无法访问文件或网络；这不是可靠的
+    沙箱保证。代码直接在当前进程 exec，没有超时或内存上限，只应
+    运行可信教学夹具，不能据此执行任意模型生成代码。
     """
     pairs = extras.get("io_pairs") or []
     if not isinstance(pairs, list) or not pairs:
@@ -262,6 +272,7 @@ def load_task_jsonl(path: Path) -> List[Example]:
             try:
                 obj = json.loads(raw)
             except json.JSONDecodeError as exc:
+                # 任务文件中的 JSON 无法解析，后面保留路径与行号。
                 raise ValueError(f"bad json at {path}:{line_num}: {exc}") from exc
             examples.append(Example(
                 id=str(obj.get("id", f"ex-{line_num}")),
@@ -294,10 +305,12 @@ def run_task(
     batch_size: int = 8,
 ) -> TaskResult:
     if batch_size <= 0:
+        # 批大小必须大于 0。
         raise ValueError(f"batch_size must be > 0, got {batch_size}")
     if not examples:
         return TaskResult(task=task_name, metric="none", score=0.0, correct=0, total=0)
     metric = examples[0].metric
+    # 同一任务中的样例必须使用相同指标。
     assert all(ex.metric == metric for ex in examples), f"task {task_name} mixes metrics"
     metric_fn = METRIC_FNS[metric]
     per_example: List[Dict[str, object]] = []
@@ -310,6 +323,7 @@ def run_task(
         outputs = adapter.generate(prompts)
         if len(outputs) != len(chunk):
             raise ValueError(
+                # 适配器返回结果数量必须与请求提示词数量一致。
                 f"adapter returned {len(outputs)} outputs for {len(chunk)} prompts in task {task_name}"
             )
         for ex, out in zip(chunk, outputs, strict=True):
@@ -483,10 +497,10 @@ def parse_args() -> argparse.Namespace:
 def main() -> int:
     args = parse_args()
     if args.seed_fixtures or not args.task_dir.exists() or not list(args.task_dir.glob("*.jsonl")):
-        print(f"seeding fixture tasks into {args.task_dir}")
+        print(f"向以下目录写入任务夹具：{args.task_dir}")
         seed_fixture_tasks(args.task_dir)
     tasks = load_all_tasks(args.task_dir)
-    print(f"loaded {len(tasks)} tasks: {sorted(tasks)}")
+    print(f"已加载 {len(tasks)} 个任务：{sorted(tasks)}")
     adapter = ToyAdapter()
     board = run_leaderboard(tasks, adapter, batch_size=args.batch_size)
     write_leaderboard(
@@ -495,10 +509,10 @@ def main() -> int:
         adapter_name=adapter.name,
         include_per_example=args.include_per_example,
     )
-    print(f"overall_score = {board.overall_score:.3f}")
+    print(f"总分 = {board.overall_score:.3f}")
     for r in board.tasks:
-        print(f"  {r.task:>16}  metric={r.metric:>18}  score={r.score:0.3f}  ({r.correct}/{r.total})  latency_ms={r.latency_ms:.1f}")
-    print(f"wrote {args.out}")
+        print(f"  {r.task:>16}  指标={r.metric:>18}  得分={r.score:0.3f}  ({r.correct}/{r.total})  耗时毫秒={r.latency_ms:.1f}")
+    print(f"已写入 {args.out}")
     return 0
 
 

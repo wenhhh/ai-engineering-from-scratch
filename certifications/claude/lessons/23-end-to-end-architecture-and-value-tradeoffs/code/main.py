@@ -1,4 +1,4 @@
-"""Companion validator for this lesson's docs/en.md architecture decision."""
+"""本课 docs/en.md 架构决策的配套验证器。检查端到端边界、价值、成本与取舍证据；不执行部署或真实容量测试。"""
 
 from __future__ import annotations
 

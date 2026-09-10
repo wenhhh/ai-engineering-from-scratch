@@ -1,4 +1,4 @@
-"""Tests for lesson 13 deterministic security policy."""
+"""第 13 课确定性安全策略测试。"""
 
 import json
 import os

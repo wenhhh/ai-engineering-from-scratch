@@ -1,3 +1,14 @@
+"""阶段 13，第 27 课：技能评估、打包与可移植性发布门禁。
+
+串联格式检查、触发精确率与召回率、重复运行、产物契约、脚本和安全证据、
+文件清单、干净安装以及宿主能力检查。证据通过不等于可投入生产：
+fixture_passed 表示教学夹具通过，production_ready 还要求来源与可信外部证明成立。
+本课演示不应凭本地自报的证据宣称已经获得真实发布认证。
+
+用于路由、标题匹配、摘要计算、来源证明和测试断言的英文字符串全部保留。
+其中文含义见相邻注释；本轮不生成虚假的外部证明，也不把预期失败改成通过。
+"""
+
 from __future__ import annotations
 
 import hashlib
@@ -72,6 +83,7 @@ class LintReport:
 def _frontmatter_and_body(path: Path) -> tuple[dict[str, str], str]:
     lines = path.read_text(encoding="utf-8").splitlines()
     if not lines or lines[0] != "---" or "---" not in lines[1:]:
+        # 诊断：SKILL.md 的文件头元数据必须使用精确的分隔符。
         raise ValueError("SKILL.md needs exact frontmatter delimiters")
     end = lines.index("---", 1)
     fields: dict[str, str] = {}
@@ -82,12 +94,15 @@ def _frontmatter_and_body(path: Path) -> tuple[dict[str, str], str]:
             index += 1
             continue
         if line[:1].isspace() or ":" not in line:
+            # 诊断：顶层行格式错误。
             raise ValueError(f"malformed top-level line {index + 1}")
         key, value = line.split(":", 1)
         key = key.strip()
         if not re.fullmatch(r"[A-Za-z][A-Za-z0-9-]*", key):
+            # 诊断：文件头元数据字段无效。
             raise ValueError(f"invalid frontmatter field {key!r}")
         if key in fields:
+            # 诊断：文件头元数据字段重复。
             raise ValueError(f"duplicate frontmatter field {key!r}")
         value = value.strip()
         if key == "metadata" and not value:
@@ -97,6 +112,7 @@ def _frontmatter_and_body(path: Path) -> tuple[dict[str, str], str]:
                 nested_line = lines[index].strip()
                 if nested_line:
                     if ":" not in nested_line:
+                        # 诊断：metadata 行格式错误。
                         raise ValueError(f"malformed metadata line {index + 1}")
                     nested_key, nested_value = nested_line.split(":", 1)
                     nested_key = nested_key.strip()
@@ -104,6 +120,7 @@ def _frontmatter_and_body(path: Path) -> tuple[dict[str, str], str]:
                         not re.fullmatch(r"[A-Za-z][A-Za-z0-9-]*", nested_key)
                         or nested_key in nested
                     ):
+                        # 诊断：metadata 字段无效或重复。
                         raise ValueError(f"invalid metadata field {nested_key!r}")
                     nested[nested_key] = nested_value.strip().strip("\"'")
                 index += 1
@@ -138,7 +155,9 @@ def _bundle_paths(body: str) -> tuple[str, ...]:
 def _section_has_content(body: str, title: str) -> bool:
     lines = body.splitlines()
     translated_title = {
+        # 契约标题：输出契约。英文标题是章节匹配依据，保持原样。
         "Output contract": "\u8f93\u51fa\u5951\u7ea6",
+        # 契约标题：失败时的行为。英文标题是章节匹配依据，保持原样。
         "Failure behavior": "\u5931\u8d25\u884c\u4e3a",
     }.get(title)
     title_pattern = re.escape(title)
@@ -167,8 +186,10 @@ def lint_package(
     issues: list[LintIssue] = []
     skill_path = root / "SKILL.md"
     if not root.is_dir() or root.is_symlink():
+        # 诊断：技能包根路径必须是普通目录。
         return LintReport(False, (), (LintIssue("bundle-directory", "regular bundle directory required"),))
     if not skill_path.is_file() or skill_path.is_symlink():
+        # 诊断：必须存在普通文件 SKILL.md。
         return LintReport(False, (), (LintIssue("skill-file", "regular SKILL.md required"),))
     try:
         fields, body = _frontmatter_and_body(skill_path)
@@ -178,33 +199,43 @@ def lint_package(
     name = fields.get("name", "")
     description = fields.get("description", "")
     if not name or len(name) > 64 or not NAME_PATTERN.fullmatch(name):
+        # 诊断：name 必须使用小写连字符命名，且最多 64 个字符。
         issues.append(LintIssue("name-format", "name must be kebab-case and at most 64 characters"))
     if name != root.name:
+        # 诊断：文件头中的 name 必须与技能包目录名一致。
         issues.append(LintIssue("name-directory", "frontmatter name must match bundle directory"))
     if not description:
+        # 诊断：必须提供 description。
         issues.append(LintIssue("description", "description is required"))
     elif len(description) > 1024:
+        # 诊断：description 最多包含 1024 个字符。
         issues.append(LintIssue("description-length", "description must be at most 1024 characters"))
     if not body:
+        # 诊断：必须提供指令正文。
         issues.append(LintIssue("body", "instruction body is required"))
     elif len(body) > MAX_SKILL_BODY_CHARS:
         issues.append(
             LintIssue(
                 "body-size",
+                # 诊断：指令正文超过指定字符数上限。
                 f"instruction body exceeds {MAX_SKILL_BODY_CHARS} characters",
             )
         )
+    # 契约标题：输出契约。英文标题是章节匹配依据，保持原样。
     if not _section_has_content(body, "Output contract"):
         issues.append(
             LintIssue(
                 "output-contract",
+                # 诊断：必须包含非空的二级“输出契约”章节。
                 "a non-empty ## Output contract section is required",
             )
         )
+    # 契约标题：失败时的行为。英文标题是章节匹配依据，保持原样。
     if not _section_has_content(body, "Failure behavior"):
         issues.append(
             LintIssue(
                 "failure-behavior",
+                # 诊断：必须包含非空的二级“失败行为”章节。
                 "a non-empty ## Failure behavior section is required",
             )
         )
@@ -215,6 +246,7 @@ def lint_package(
             issues.append(
                 LintIssue(
                     "runtime-extension",
+                    # 诊断：此运行时字段未得到明确允许。
                     f"runtime field {field!r} is not explicitly allowed",
                 )
             )
@@ -222,6 +254,7 @@ def lint_package(
     references = _bundle_paths(body)
     for reference in references:
         if "\\" in reference:
+            # 诊断：直接引用路径无效。
             issues.append(LintIssue("reference-shape", f"invalid direct reference {reference!r}"))
             continue
         relative = PurePosixPath(reference)
@@ -231,16 +264,19 @@ def lint_package(
             or len(relative.parts) != 2
             or relative.parts[0] not in {"references", "scripts", "assets", "evals"}
         ):
+            # 诊断：直接引用路径无效。
             issues.append(LintIssue("reference-shape", f"invalid direct reference {reference!r}"))
             continue
         parent = root / relative.parts[0]
         target = parent / relative.parts[1]
         if parent.is_symlink() or not target.is_file() or target.is_symlink():
+            # 诊断：缺少所引用的普通文件。
             issues.append(LintIssue("reference-missing", f"missing regular file {reference!r}"))
 
     packaged_files: set[str] = set()
     for path in root.rglob("*"):
         if path.is_symlink():
+            # 诊断：符号链接不符合可移植要求。
             issues.append(LintIssue("symlink", f"symlink is not portable: {path.relative_to(root)}"))
         elif path == skill_path:
             continue
@@ -248,6 +284,7 @@ def lint_package(
             relative = path.relative_to(root).as_posix()
             packaged_files.add(relative)
             if len(path.relative_to(root).parts) != 2:
+                # 诊断：配套文件不在允许的一层子目录内。
                 issues.append(LintIssue("package-depth", f"file is not one level deep: {relative}"))
                 continue
             directory = path.relative_to(root).parts[0]
@@ -256,6 +293,7 @@ def lint_package(
                 issues.append(
                     LintIssue(
                         "file-type",
+                        # 诊断：此目录不支持所列文件类型。
                         f"unsupported {directory} file type: {relative}",
                     )
                 )
@@ -263,6 +301,7 @@ def lint_package(
                 issues.append(
                     LintIssue(
                         "file-size",
+                        # 诊断：配套文件超过指定字节数上限。
                         f"companion file exceeds {MAX_COMPANION_FILE_BYTES} bytes: {relative}",
                     )
                 )
@@ -270,6 +309,7 @@ def lint_package(
                 issues.append(
                     LintIssue(
                         "secret-material",
+                        # 诊断：所列文件中发现可能的秘密信息。
                         f"possible secret material in {relative}",
                     )
                 )
@@ -277,12 +317,15 @@ def lint_package(
             issues.append(
                 LintIssue(
                     "special-file",
+                    # 诊断：特殊文件不符合可移植要求。
                     f"special file is not portable: {path.relative_to(root)}",
                 )
             )
     if _contains_obvious_secret(skill_path.read_bytes()):
+        # 诊断：SKILL.md 中发现可能的秘密信息。
         issues.append(LintIssue("secret-material", "possible secret material in SKILL.md"))
     for orphan in sorted(packaged_files - set(references)):
+        # 诊断：SKILL.md 没有直接引用所列配套文件。
         issues.append(LintIssue("orphan-file", f"SKILL.md does not directly reference {orphan!r}"))
     return LintReport(not issues, references, tuple(issues))
 
@@ -314,6 +357,7 @@ def _validate_trigger_cases(cases: Sequence[TriggerCase]) -> None:
             or case.case_id != case.case_id.strip()
             or case.case_id in seen
         ):
+            # 诊断：触发用例 ID 必须唯一且非空。
             raise ValueError("trigger case ids must be unique and non-empty")
         if (
             not isinstance(case.prompt, str)
@@ -321,6 +365,7 @@ def _validate_trigger_cases(cases: Sequence[TriggerCase]) -> None:
             or case.prompt != case.prompt.strip()
         ):
             raise ValueError(
+                # 诊断：触发提示词必须非空，且首尾不能有空白。
                 "trigger prompts must be non-empty and have no surrounding whitespace"
             )
         seen.add(case.case_id)
@@ -330,6 +375,7 @@ def classification_metrics(
     expected: Sequence[bool], predicted: Sequence[bool]
 ) -> dict[str, float | int]:
     if len(expected) != len(predicted):
+        # 诊断：预期值与预测值的数量必须一致。
         raise ValueError("expected and predicted lengths must match")
     tp = sum(want and got for want, got in zip(expected, predicted))
     fp = sum(not want and got for want, got in zip(expected, predicted))
@@ -365,6 +411,7 @@ def trigger_report_from_observations(
         or any(type(value) is not bool for value in observations[case.case_id])
         for case in cases
     ):
+        # 诊断：每个触发用例至少需要一次布尔观测结果。
         raise ValueError("every trigger case needs at least one boolean observation")
     expected = [
         case.expected
@@ -401,6 +448,7 @@ def repeated_run_observations(
     runs: int,
 ) -> dict[str, tuple[bool, ...]]:
     if runs < 1:
+        # 诊断：运行次数必须大于零。
         raise ValueError("runs must be positive")
     _validate_trigger_cases(cases)
     return {
@@ -418,6 +466,7 @@ def rates_from_observations(
         or any(type(value) is not bool for value in observations[case.case_id])
         for case in cases
     ):
+        # 诊断：每个触发用例至少需要一次布尔观测结果。
         raise ValueError("every trigger case needs at least one boolean observation")
     return {
         case.case_id: round(
@@ -493,6 +542,7 @@ def evaluate_evidence_checks(
     cases: Sequence[EvidenceCheck], layer: str
 ) -> dict[str, object]:
     if not cases:
+        # 诊断：此类证据至少需要一项明确的检查。
         raise ValueError(f"{layer} requires at least one explicit check")
     seen: set[str] = set()
     normalized: list[dict[str, object]] = []
@@ -504,11 +554,14 @@ def evaluate_evidence_checks(
             or case.check_id in seen
         ):
             raise ValueError(
+                # 诊断：检查 ID 必须是唯一的非空字符串，且首尾不能有空白。
                 f"{layer} check ids must be unique non-empty strings without surrounding whitespace"
             )
         if type(case.passed) is not bool:
+            # 诊断：此项检查必须提供布尔判定。
             raise ValueError(f"{layer} check {case.check_id!r} needs a boolean verdict")
         if not isinstance(case.evidence, str) or not case.evidence.strip():
+            # 诊断：此项检查必须提供证据。
             raise ValueError(f"{layer} check {case.check_id!r} needs evidence")
         seen.add(case.check_id)
         normalized.append(asdict(case))
@@ -517,22 +570,27 @@ def evaluate_evidence_checks(
 
 def build_manifest(root: Path) -> dict[str, str]:
     if not root.is_dir() or root.is_symlink():
+        # 诊断：清单根路径必须是普通目录。
         raise ValueError("manifest root must be a regular directory")
     manifest: dict[str, str] = {}
     for path in sorted(root.rglob("*"), key=lambda item: item.as_posix()):
         relative = path.relative_to(root).as_posix()
         if path.is_symlink():
+            # 诊断：清单对应的文件树包含符号链接。
             raise ValueError(f"manifest tree contains a symlink: {relative}")
         if relative == RESERVED_MANIFEST_PATH:
             if not path.is_file():
+                # 诊断：清单保留路径必须对应普通文件。
                 raise ValueError("reserved manifest path must be a regular file")
             continue
         if path.is_file():
             digest = hashlib.sha256(path.read_bytes()).hexdigest()
             manifest[relative] = f"sha256:{digest}"
         elif not path.is_dir():
+            # 诊断：清单对应的文件树包含特殊文件。
             raise ValueError(f"manifest tree contains a special file: {relative}")
     if not manifest:
+        # 诊断：清单不能描述空目录。
         raise ValueError("manifest cannot describe an empty directory")
     return manifest
 
@@ -542,6 +600,7 @@ def verify_manifest(root: Path, expected: Mapping[str, str]) -> dict[str, object
     normalized: dict[str, str] = {}
     for raw_path, digest in expected.items():
         if not isinstance(raw_path, str) or not isinstance(digest, str):
+            # 诊断：清单中的路径与摘要必须是字符串。
             issues.append("manifest paths and digests must be strings")
             continue
         relative = PurePosixPath(raw_path)
@@ -551,14 +610,17 @@ def verify_manifest(root: Path, expected: Mapping[str, str]) -> dict[str, object
             or any(part in {"", ".", ".."} for part in relative.parts)
             or raw_path != relative.as_posix()
         ):
+            # 诊断：清单路径无效。
             issues.append(f"invalid manifest path: {raw_path!r}")
             continue
         if relative.as_posix() == RESERVED_MANIFEST_PATH:
             issues.append(
+                # 诊断：清单不得把自己的保留路径列入待校验文件。
                 f"reserved manifest path must not be listed: {raw_path!r}"
             )
             continue
         if not SHA256_PATTERN.fullmatch(digest):
+            # 诊断：清单摘要格式无效。
             issues.append(f"invalid manifest digest: {raw_path!r}")
             continue
         normalized[relative.as_posix()] = digest
@@ -612,6 +674,7 @@ def portability_matrix(
             or host.name != host.name.strip()
             or host.name in seen_hosts
         ):
+            # 诊断：宿主名称必须唯一且非空。
             raise ValueError("host names must be unique and non-empty")
         seen_hosts.add(host.name)
         missing: list[str] = []
@@ -648,8 +711,10 @@ class ReleaseThresholds:
                 or not math.isfinite(value)
                 or not 0.0 <= value <= 1.0
             ):
+                # 诊断：此阈值必须是 0 到 1 之间的有限数值。
                 raise ValueError(f"{field_name} must be a finite number from 0 to 1")
         if type(self.min_native_hosts) is not int or self.min_native_hosts < 1:
+            # 诊断：min_native_hosts 必须是正整数。
             raise ValueError("min_native_hosts must be a positive integer")
 
 
@@ -764,6 +829,7 @@ def local_evidence_root(
 
 def build_external_attestation(evidence_root: str) -> bytes:
     if not SHA256_PATTERN.fullmatch(evidence_root):
+        # 诊断：证据根必须是 SHA-256 摘要。
         raise ValueError("evidence root must be a SHA-256 digest")
     return json.dumps(
         {
@@ -783,38 +849,47 @@ def verify_external_attestation(
 ) -> dict[str, object]:
     issues: list[str] = []
     if attestation_payload is None:
+        # 信任诊断：未提供可信的外部证明材料。
         issues.append("trusted external attestation was not supplied")
     if trusted_attestation_digest is None:
+        # 信任诊断：未通过带外可信通道提供证明材料的 SHA-256 摘要。
         issues.append("trusted attestation SHA-256 was not supplied out of band")
     if issues:
         return {"valid": False, "issues": issues, "attestation_digest": None}
     if not isinstance(attestation_payload, bytes):
         return {
             "valid": False,
+            # 信任诊断：外部证明材料的载荷必须是字节数据。
             "issues": ["external attestation payload must be bytes"],
             "attestation_digest": None,
         }
     assert trusted_attestation_digest is not None
     actual_digest = bytes_digest(attestation_payload)
     if not SHA256_PATTERN.fullmatch(trusted_attestation_digest):
+        # 信任诊断：可信证明材料的 SHA-256 摘要格式无效。
         issues.append("trusted attestation SHA-256 has an invalid format")
     elif actual_digest != trusted_attestation_digest:
+        # 信任诊断：外部证明材料与可信 SHA-256 摘要不匹配。
         issues.append("external attestation does not match the trusted SHA-256")
     try:
         decoded = json.loads(attestation_payload.decode("utf-8"))
     except (UnicodeDecodeError, json.JSONDecodeError):
+        # 信任诊断：外部证明材料必须是 UTF-8 编码的 JSON 对象。
         issues.append("external attestation must be a UTF-8 JSON object")
         decoded = None
     if decoded is not None:
         if not isinstance(decoded, dict):
+            # 信任诊断：外部证明材料的根节点必须是对象。
             issues.append("external attestation root must be an object")
         else:
             if (
                 type(decoded.get("attestationVersion")) is not int
                 or decoded.get("attestationVersion") != ATTESTATION_VERSION
             ):
+                # 信任诊断：attestationVersion 必须是当前支持的整数值 1。
                 issues.append("attestationVersion must be the supported integer value 1")
             if decoded.get("evidenceRoot") != evidence_root:
+                # 信任诊断：外部证明材料中的 evidenceRoot 不匹配。
                 issues.append("external attestation evidenceRoot does not match")
     return {
         "valid": not issues,
@@ -838,18 +913,22 @@ def evaluate_provenance(
         "deterministic-fixture",
         "captured-observations",
     }:
+        # 来源诊断：不支持此触发观测来源模式。
         raise ValueError("unsupported trigger provenance mode")
     if provenance.artifact_mode not in {"fixture", "captured-artifacts"}:
+        # 来源诊断：不支持此产物来源模式。
         raise ValueError("unsupported artifact provenance mode")
     if provenance.evidence_mode not in {
         "deterministic-fixture",
         "captured-results",
     }:
+        # 来源诊断：不支持此证据来源模式。
         raise ValueError("unsupported evidence provenance mode")
     if provenance.host_mode not in {
         "deterministic-fixture",
         "captured-capabilities",
     }:
+        # 来源诊断：不支持此宿主能力来源模式。
         raise ValueError("unsupported host provenance mode")
 
     issues: list[str] = []
@@ -857,8 +936,10 @@ def evaluate_provenance(
     if provenance.trigger_mode == "captured-observations":
         trigger_issue_count = len(issues)
         if not provenance.trigger_source.strip():
+            # 来源诊断：实际采集的触发观测必须注明非空来源。
             issues.append("captured trigger observations need a non-empty source")
         if provenance.trigger_digest != trigger_results_digest(cases, observations):
+            # 来源诊断：触发观测摘要不匹配。
             issues.append("trigger observation digest does not match")
         trigger_integrity = len(issues) == trigger_issue_count
 
@@ -866,10 +947,13 @@ def evaluate_provenance(
     artifact_integrity = False
     if provenance.artifact_mode == "captured-artifacts":
         if not provenance.artifact_source.strip():
+            # 来源诊断：实际采集的产物必须注明非空来源。
             issues.append("captured artifacts need a non-empty source")
         if provenance.baseline_digest != artifact_digest(baseline_artifact):
+            # 来源诊断：基线产物摘要不匹配。
             issues.append("artifact baseline digest does not match")
         if provenance.with_skill_digest != artifact_digest(with_skill_artifact):
+            # 来源诊断：启用技能后的产物摘要不匹配。
             issues.append("with-skill artifact digest does not match")
         artifact_integrity = len(issues) == artifact_issue_count
 
@@ -877,16 +961,20 @@ def evaluate_provenance(
     evidence_integrity = False
     if provenance.evidence_mode == "captured-results":
         if not provenance.evidence_source.strip():
+            # 来源诊断：实际采集的证据必须注明非空来源。
             issues.append("captured evidence needs a non-empty source")
         if provenance.checks_digest != evidence_digest(script_checks, safety_checks):
+            # 来源诊断：证据检查项摘要不匹配。
             issues.append("evidence checks digest does not match")
         evidence_integrity = len(issues) == evidence_issue_count
     host_issue_count = len(issues)
     host_integrity = False
     if provenance.host_mode == "captured-capabilities":
         if not provenance.host_source.strip():
+            # 来源诊断：实际采集的宿主能力必须注明非空来源。
             issues.append("captured host capabilities need a non-empty source")
         if provenance.host_digest != host_matrix_digest(requirements, hosts):
+            # 来源诊断：宿主能力矩阵摘要不匹配。
             issues.append("host capability matrix digest does not match")
         host_integrity = len(issues) == host_issue_count
     return {
@@ -925,6 +1013,7 @@ def run_release_gate(
     if not cases or not any(case.expected for case in cases) or not any(
         not case.expected for case in cases
     ):
+        # 发布诊断：必须同时提供正例，以及相近但不应触发的负例。
         raise ValueError("release gate requires positive and near-miss negative trigger cases")
     lint = lint_package(package_root, requirements.runtime_extensions)
     observations = repeated_run_observations(cases, router, runs)
@@ -933,8 +1022,10 @@ def run_release_gate(
     artifacts = compare_artifacts(baseline_artifact, with_skill_artifact, artifact_contract)
     host_list = tuple(hosts)
     if not host_list:
+        # 发布诊断：至少需要一条宿主能力记录。
         raise ValueError("release gate requires at least one host capability record")
     portability = portability_matrix(requirements, host_list)
+    # 检查分类：脚本正确性。
     scripts = evaluate_evidence_checks(script_checks, "script correctness")
     safety = evaluate_evidence_checks(safety_checks, "safety")
     source_manifest = verify_manifest(package_root, manifest)
@@ -956,6 +1047,7 @@ def run_release_gate(
             "passed": False,
             "issues": [
                 *installed_manifest["issues"],
+                # 发布诊断：安装后的文件树必须与源技能包位于不同位置。
                 "installed tree must be distinct from the source bundle",
             ],
         }
@@ -1044,11 +1136,17 @@ def run_release_gate(
 def demo() -> None:
     package_root = Path(__file__).resolve().parents[1] / "outputs" / "skill-release-gate"
     cases = (
+        # 触发正例：发布前评估这个技能包。
         TriggerCase("positive-package", "evaluate this skill package before release", True),
+        # 触发正例：测量技能触发的精确率与召回率。
         TriggerCase("positive-trigger", "measure skill trigger precision and recall", True),
+        # 触发正例：检查技能包在不同宿主间的可移植性。
         TriggerCase("positive-portability", "check bundle portability across hosts", True),
+        # 近似负例：发布版本说明；不应触发技能包评估。
         TriggerCase("near-release-notes", "publish release notes", False),
+        # 近似负例：评估模型回复质量；不应触发技能包评估。
         TriggerCase("near-model-eval", "evaluate model response quality", False),
+        # 近似负例：安装软件包依赖；不应触发技能包评估。
         TriggerCase("near-dependency", "install package dependencies", False),
     )
     router = KeywordRouter(
@@ -1058,9 +1156,13 @@ def demo() -> None:
     contract = ArtifactContract(
         required_headings=("Decision", "Evidence"),
         required_terms=("precision", "recall"),
+        # 禁止出现的承诺：“保证可移植”。此原文是匹配依据。
         forbidden_terms=("guaranteed portable",),
     )
+    # 基线产物夹具：“这个版本看起来没问题。”
     baseline = "Release looks fine."
+    # 启用技能后的产物夹具：决策为通过；证据为精确率 1.0、召回率 1.0。
+    # 英文标题与词项用于契约匹配和摘要计算，不能只翻译文本而不调整实验设计。
     with_skill = "# Decision\n\nPass.\n\n# Evidence\n\nPrecision: 1.0. Recall: 1.0."
     hosts = (
         HostCapabilities("native-host", True, True, True),
@@ -1068,12 +1170,17 @@ def demo() -> None:
         HostCapabilities("prompt-only-host", False, False, False),
     )
     scripts = (
+        # 脚本证据夹具：确定性脚本夹具已通过。
         EvidenceCheck("unit-fixtures", True, "Deterministic script fixtures passed."),
+        # 脚本证据夹具：重复运行夹具得到相同输出。
         EvidenceCheck("repeat-run", True, "A repeated fixture run produced the same output."),
     )
     safety = (
+        # 安全证据夹具：路径穿越引用已被拒绝。
         EvidenceCheck("path-traversal", True, "Traversal reference was rejected."),
+        # 安全证据夹具：没有授予网络访问权限。
         EvidenceCheck("undeclared-network", True, "No network authority was granted."),
+        # 安全证据夹具：没有尝试写入外部位置。
         EvidenceCheck("external-write", True, "No external write was attempted."),
     )
     manifest = build_manifest(package_root)

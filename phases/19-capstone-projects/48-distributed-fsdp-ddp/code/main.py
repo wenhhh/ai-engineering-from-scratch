@@ -1,21 +1,22 @@
-"""Distributed data parallel from scratch on the gloo backend.
+"""在 Gloo 后端上从零实现分布式数据并行。
 
-CUDA is not assumed. The demo simulates a multi-rank cluster by spawning
-several worker processes with torch.multiprocessing and connecting them
-through the gloo CPU backend. The same collective ops (all_reduce,
-broadcast) you would use on a multi-GPU machine show up here; only the
-device tag changes.
+不要求 CUDA。演示使用 torch.multiprocessing 启动多个工作进程，
+通过 Gloo CPU 后端连接，在本机执行真实的 all_reduce、broadcast
+等集合通信，以说明多 rank 协作。
 
-Three drills:
+三项练习：
+1. 比较 N 个 rank 手工 all_reduce 后的平均梯度与单进程对拼接输入
+   计算的梯度。
+2. 用自制 DDP 包装器在构造时广播参数，反向传播后显式同步梯度。
+3. 通过切分和收集参数张量，示意 FSDP 的分片往返过程。
 
-1. Show that a manual all_reduce of gradients across N ranks matches the
-   gradient a single process would compute on the concatenated input.
-2. Wrap a model in a from-scratch DDP wrapper that broadcasts parameters
-   at construction and averages gradients in a post-backward hook.
-3. Sketch FSDP parameter sharding by partitioning the parameter tensors
-   across ranks and gathering them for the forward pass.
+运行：python3 code/main.py
 
-Run: python3 code/main.py
+译注：原文第 2 项称使用反向钩子，实际由训练器显式调用 sync_grads。
+第 3 项保留完整模型及多个副本，没有把前向计算接入真实分片生命周期，
+不能证明每个 rank 的模型内存降为 1/world_size。这里只验证本地 CPU
+进程间行为，不是多机、多 GPU、通信重叠或生产 FSDP 的完整验证。
+设备名称、JSON 字段、参数和错误消息保持原值。
 """
 
 from __future__ import annotations
@@ -80,7 +81,7 @@ def broadcast_module(module: nn.Module, src: int = 0) -> None:
 
 
 def all_reduce_grads_(module: nn.Module, world_size: int) -> float:
-    """Sum gradients across ranks, divide by world size, return l2 norm."""
+    """跨 rank 累加梯度，再除以 world_size，返回所得梯度的 L2 范数。"""
     total_sq = 0.0
     for p in module.parameters():
         if p.grad is None:
@@ -101,16 +102,13 @@ def shard_for_rank(x: torch.Tensor, rank: int, world_size: int) -> torch.Tensor:
 
 
 class MinimalDDP(nn.Module):
-    """Toy DistributedDataParallel.
+    """教学用的 DistributedDataParallel 包装器。
 
-    On construction, broadcast every parameter from rank zero so all ranks
-    start from the same weights. On forward, run the wrapped module. After
-    backward, the trainer calls `sync_grads()` to all-reduce gradients.
+    构造时从 rank 0 广播参数，使各 rank 从相同权重开始；前向调用
+    被包装模块。反向传播后，由训练器调用 sync_grads() 归约梯度。
 
-    A production DDP uses a post-backward gradient hook to overlap
-    communication with the backward pass and buckets parameters into
-    fixed-size chunks for efficient collective use. The shape of the
-    contract is the same; the bookkeeping above gets fancy.
+    生产 DDP 通常借助梯度钩子和分桶，将通信与反向传播重叠。
+    本例只说明广播、计算和同步的基本契约，没有实现这些优化机制。
     """
 
     def __init__(self, module: nn.Module, world_size: int):
@@ -139,19 +137,18 @@ def _grad_norm(module: nn.Module) -> float:
 
 
 def fsdp_round_trip_sketch(module: nn.Module, world_size: int, rank: int) -> bool:
-    """Sketch parameter sharding and gathering for the forward pass.
+    """示意参数切分与 all_gather 重建。
 
-    Each rank keeps a 1/world_size slice of every parameter. Before a
-    forward pass the full tensor is reconstructed with all_gather. After
-    the use, the full copy is dropped and only the slice remains. This
-    keeps the per-rank memory at 1/world_size of the model.
+    每个 rank 取每个参数的一段，再通过 all_gather 重建完整张量。
+    原文用这一过程解释“前向前收集、使用后释放完整副本”的 FSDP
+    思路；当前函数仅做往返相等检查，原模型和完整克隆都仍在内存中，
+    因此没有实现所声称的 1/world_size 内存占用。
 
-    Gloo's all_gather requires equal output sizes per rank, so the flat
-    tensor is right-padded to a multiple of world_size before sharding
-    and the padding is dropped after the gather.
+    此处 all_gather 的输出采用相同长度，所以展平张量先在右侧
+    补零到 world_size 的倍数，收集后再删除填充。
 
-    Returns True if the gathered tensor matches the original on every
-    rank.
+    本 rank 重建的所有参数都与原张量接近时返回 True；调用方随后
+    汇总各 rank 的结果。本函数本身不归约这个布尔值。
     """
     ok = True
     for p in module.parameters():
@@ -183,8 +180,10 @@ def manual_all_reduce_matches_single_process(
     out_dim: int,
     batch_size: int,
 ) -> tuple[float, float]:
-    """Each rank computes a gradient on its slice; all-reduce-mean recovers the
-    full-batch gradient up to numerical noise."""
+    """各 rank 在自己的等大数据切片上计算梯度；取 all-reduce 均值后，
+    应在数值误差范围内复现完整批次梯度。本函数在 rank 0 计算
+    逐元素差异，其余 rank 返回占位差异值。
+    """
     torch.manual_seed(0)
     full_x = torch.randn(batch_size * world_size, in_dim)
     full_y = torch.randint(low=0, high=out_dim, size=(batch_size * world_size,))
@@ -347,11 +346,14 @@ def run_distributed_demo(
         for p in procs:
             if p.is_alive():
                 p.terminate()
+        # 工作进程未在时限内完成。
         raise RuntimeError("ranks did not finish in time")
     if collected < world_size:
+        # 收到的 rank 结果数量不足。
         raise RuntimeError(f"only got {collected}/{world_size} results: {results}")
     for rank, payload in results.items():
         if "error" in payload:
+            # 某个 rank 报告失败；保留原错误格式。
             raise RuntimeError(f"rank {rank} failed: {payload['error']}")
     param_sums = {r: results[r]["post_param_sum"] for r in results}
     spread = max(param_sums.values()) - min(param_sums.values())
@@ -388,12 +390,12 @@ def parse_args() -> argparse.Namespace:
 def main() -> int:
     args = parse_args()
     if not dist.is_available():
-        print("torch.distributed not available; skipping the demo")
+        print("torch.distributed 不可用，跳过演示。")
         return 0
     if args.backend == "gloo" and not dist.is_gloo_available():
-        print("gloo backend not compiled; cannot run on CPU. install a build with gloo support.")
+        print("当前构建未编译 Gloo 后端，无法执行本 CPU 演示；需要支持 Gloo 的构建。")
         return 1
-    print(f"running distributed demo: backend={args.backend}, world_size={args.world_size}")
+    print(f"运行分布式演示：后端={args.backend}，进程总数={args.world_size}")
     result = run_distributed_demo(
         world_size=args.world_size,
         backend=args.backend,
@@ -402,12 +404,15 @@ def main() -> int:
         seed=args.seed,
     )
     print(json.dumps(result, indent=2))
+    # 各 rank 的参数和差异超过阈值；这不是逐参数完整等值检查。
     assert result["param_sum_spread"] < 1e-3, "parameters diverged across ranks"
+    # FSDP 分片示意的往返检查失败。
     assert result["fsdp_round_trip_all_ranks_ok"], "FSDP sketch round trip failed"
+    # 手工 all-reduce 后的梯度与单进程参考差异过大。
     assert result["manual_all_reduce_max_diff_vs_single_process"] < 1e-4, "manual all-reduce mismatched single-process gradient"
     if not args.no_write:
         write_demo(result, DEMO_PATH)
-        print(f"wrote {DEMO_PATH}")
+        print(f"已写入 {DEMO_PATH}")
     return 0
 
 

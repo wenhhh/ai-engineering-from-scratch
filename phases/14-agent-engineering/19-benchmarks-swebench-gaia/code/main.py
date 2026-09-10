@@ -1,8 +1,14 @@
-"""Toy SWE-bench-style harness plus a GAIA-style difficulty classifier.
+"""SWE-bench 风格的简化评测框架，以及 GAIA 风格的难度分类器。
 
-SWE-bench: bug-fix tasks with FAIL_TO_PASS and PASS_TO_PASS gates.
-GAIA: simple-for-humans, hard-for-AI questions scored by decomposition depth.
-Both are synthetic; the point is to make the evaluator rules concrete.
+SWE-bench 示例：用 FAIL_TO_PASS（原先失败、修复后通过）和 PASS_TO_PASS
+（原先通过、修复后仍通过）两类测试为缺陷修复任务设置门禁。
+GAIA 示例：模拟人类觉得简单、AI 却不易完成的问题，按分解步骤等特征估计难度。
+两部分均为合成教学示例，目的是把评测规则具体化，并非官方基准实现。
+
+译注：gaia_level 只统计英文连接词、模态词和工具词，不是 GAIA 官方难度判定器。
+原问题和匹配词必须保持英文，避免改变分类结果。三个问题依次询问法国首都、
+检索 ReAct 文章并提取第一作者、查找论文关联仓库并计算 bug 问题占比。
+状态键、测试标签与数值不改；下方只翻译任务描述和展示说明。
 """
 
 from __future__ import annotations
@@ -70,13 +76,13 @@ def gaia_level(question: str) -> int:
 
 def swe_demo() -> None:
     print("-" * 70)
-    print("SWE-bench-style harness (FAIL_TO_PASS + PASS_TO_PASS)")
+    print("SWE-bench 风格评测框架（FAIL_TO_PASS + PASS_TO_PASS）")
     print("-" * 70)
 
     tasks = [
         Task(
             tid="t001",
-            description="fix off-by-one in counter",
+            description="修复计数器的差一错误",
             state_before={"counter": 0, "multiplier": 2},
             patch=lambda s: {**s, "counter": s["counter"] + 1},
             fail_to_pass=[("counter > 0", lambda s: s["counter"] > 0)],
@@ -84,7 +90,7 @@ def swe_demo() -> None:
         ),
         Task(
             tid="t002",
-            description="fix multiplier regression",
+            description="修复乘数的回归问题",
             state_before={"counter": 1, "multiplier": 0},
             patch=lambda s: {**s, "multiplier": 2},
             fail_to_pass=[("multiplier > 0", lambda s: s["multiplier"] > 0)],
@@ -92,7 +98,7 @@ def swe_demo() -> None:
         ),
         Task(
             tid="t003",
-            description="agent overreaches and breaks a passing test",
+            description="智能体越界修改，破坏原本通过的测试",
             state_before={"counter": 1, "multiplier": 2, "flag": True},
             patch=lambda s: {**s, "counter": 2, "flag": False},
             fail_to_pass=[("counter > 1", lambda s: s["counter"] > 1)],
@@ -105,17 +111,17 @@ def swe_demo() -> None:
     for task in tasks:
         result = run_task(task)
         print(f"  {result.tid}: {task.description}")
-        print(f"    FAIL_TO_PASS: {result.ftp_passed}/{result.ftp_total}")
-        print(f"    PASS_TO_PASS: {result.ptp_passed}/{result.ptp_total}")
-        print(f"    resolved:     {result.resolved}")
+        print(f"    FAIL_TO_PASS（修复测试）：{result.ftp_passed}/{result.ftp_total}")
+        print(f"    PASS_TO_PASS（回归测试）：{result.ptp_passed}/{result.ptp_total}")
+        print(f"    是否解决：   {result.resolved}")
         if result.resolved:
             resolved_count += 1
-    print(f"\nresolution rate: {resolved_count}/{len(tasks)}")
+    print(f"\n解决率：{resolved_count}/{len(tasks)}")
 
 
 def gaia_demo() -> None:
     print("\n" + "-" * 70)
-    print("GAIA-style difficulty classifier")
+    print("GAIA 风格的教学难度分类器")
     print("-" * 70)
     questions = [
         "What is the capital of France?",
@@ -126,19 +132,19 @@ def gaia_demo() -> None:
     ]
     for q in questions:
         level = gaia_level(q)
-        print(f"  [Level {level}] {q[:70]}")
+        print(f"  [难度等级 {level}] {q[:70]}")
 
 
 def main() -> None:
     print("=" * 70)
-    print("BENCHMARKS: SWE-bench, GAIA — Phase 14, Lesson 19")
+    print("基准评测：SWE-bench、GAIA——阶段 14，第 19 课")
     print("=" * 70)
     swe_demo()
     gaia_demo()
     print()
-    print("SWE-bench: patch-based, unit-test-gated. Verified removes ambiguity.")
-    print("GAIA: depth + modalities + tools -> difficulty level.")
-    print("report both your benchmark score AND the Verified/+-audited score.")
+    print("SWE-bench：提交补丁，以单元测试作为门禁；原文强调 Verified 版本用于减少歧义。")
+    print("本教学分类器：分解深度 + 模态 + 工具需求 -> 难度等级。")
+    print("报告基准分数时，也应注明使用的 Verified 或经过审计的版本（原文写作 Verified/+-audited）。")
 
 
 if __name__ == "__main__":

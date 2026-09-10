@@ -1,12 +1,16 @@
-"""Lay down the three-file minimal agent workbench and run a single turn.
+"""创建只包含三个核心文件的最小智能体工作台，并执行一个回合。
 
-Files written:
-  workdir/AGENTS.md         short router into state + board + deeper docs
-  workdir/agent_state.json  active task, touched files, blockers, next action
-  workdir/task_board.json   queue of tasks with status + acceptance
+写入文件：
+  workdir/AGENTS.md         简短入口，指向状态、任务看板及按需加载的详细文档
+  workdir/agent_state.json  当前任务、已修改文件、阻塞项和下一步动作
+  workdir/task_board.json   带状态及验收条件的任务队列
 
-Run: python3 code/main.py
-Re-run to see the second turn pick up where the first stopped.
+运行：python3 code/main.py
+再次运行，可以看到后一个回合从前一个回合停止的位置继续。
+
+译注：本例只更新状态和文件名列表，并未实际修改 app.py、执行 pytest 或校验验收命令。
+因此，标记 done 只是状态流转演示，不能作为真实任务已经完成的证据。
+状态枚举、路径、命令和 JSON 字段保留英文；目标、下一步说明及生成的入口文档中文化。
 """
 
 from __future__ import annotations
@@ -20,17 +24,18 @@ ROOT = Path(__file__).parent / "workdir"
 
 AGENTS_MD = """# AGENTS.md
 
-This repo runs with a workbench. Read these before acting:
+本仓库使用智能体工作台。执行动作前，请阅读：
 
-1. `agent_state.json` — where the last session stopped.
-2. `task_board.json` — what is in flight, what is next.
-3. `docs/agent-rules.md` — startup, scope, definition of done (load on demand).
+1. `agent_state.json`：上一会话停止的位置。
+2. `task_board.json`：正在处理的任务，以及下一项任务。
+3. `docs/agent-rules.md`：启动规则、范围约束和完成标准，按需加载。
 
-Definition of done: the task referenced by `agent_state.active_task_id` has
-`status == "done"` on `task_board.json` and the verification command listed in
-its `acceptance` has exited 0.
+完成标准：`agent_state.active_task_id` 指向的任务在 `task_board.json` 中满足
+`status == \"done\"`，且其 `acceptance` 中列出的验证命令以退出码 0 结束。
 
-Verification command: `python3 -m pytest -x`
+验证命令：`python3 -m pytest -x`
+
+教学提示：本例的回合函数只演示状态迁移，不会自动执行上述验证命令。
 """.lstrip()
 
 
@@ -61,15 +66,15 @@ def write_initial(state_path: Path, board_path: Path, agents_path: Path) -> None
         board = [
             Task(
                 id="T-001",
-                goal="add input validation to /signup",
+                goal="为 /signup 添加输入校验",
                 owner="builder",
                 acceptance=["pytest test_app.py::test_signup_rejects_short_password"],
             ),
             Task(
                 id="T-002",
-                goal="document the new /signup contract",
+                goal="记录新的 /signup 接口约定",
                 owner="builder",
-                acceptance=["docs/api.md mentions /signup constraints"],
+                acceptance=["docs/api.md 说明 /signup 的约束条件"],
             ),
         ]
         board_path.write_text(json.dumps([asdict(t) for t in board], indent=2) + "\n")
@@ -96,32 +101,32 @@ def run_one_turn(state: AgentState, board: list[Task]) -> tuple[AgentState, list
     if state.active_task_id is None:
         nxt = next((t for t in board if t.status == "todo"), None)
         if nxt is None:
-            state.next_action = "no work on the board, idle"
+            state.next_action = "看板中没有待处理任务，保持空闲"
             return state, board
         nxt.status = "in_progress"
         state.active_task_id = nxt.id
-        state.next_action = f"start work on {nxt.id}: {nxt.goal}"
+        state.next_action = f"开始处理 {nxt.id}: {nxt.goal}"
         return state, board
 
     active = next((t for t in board if t.id == state.active_task_id), None)
     if active is None:
         state.active_task_id = None
-        state.next_action = f"active task missing from board; resetting and picking new work"
+        state.next_action = f"当前任务已不在看板中；清空当前任务，重新选择"
         return state, board
     if "app.py" not in state.touched_files:
         state.touched_files.append("app.py")
-        state.next_action = f"add test for {active.id} acceptance"
+        state.next_action = f"为任务 {active.id} 添加验收测试"
         return state, board
 
     if "test_app.py" not in state.touched_files:
         state.touched_files.append("test_app.py")
-        state.next_action = f"run verification command for {active.id}"
+        state.next_action = f"运行任务的验证命令：{active.id}"
         return state, board
 
     active.status = "done"
     state.active_task_id = None
     state.touched_files = []
-    state.next_action = "pick next task from board"
+    state.next_action = "从看板选择下一项任务"
     return state, board
 
 
@@ -135,20 +140,20 @@ def main() -> None:
     state = load_state(state_path)
     board = load_board(board_path)
 
-    print("before turn:")
-    print(f"  active task : {state.active_task_id}")
-    print(f"  next action : {state.next_action!r}")
-    print(f"  todo on board: {[t.id for t in board if t.status == 'todo']}")
+    print("本回合开始前：")
+    print(f"  当前任务：{state.active_task_id}")
+    print(f"  下一步：{state.next_action!r}")
+    print(f"  看板待办：{[t.id for t in board if t.status == 'todo']}")
 
     state, board = run_one_turn(state, board)
     save_state(state_path, state)
     save_board(board_path, board)
 
-    print("\nafter turn:")
-    print(f"  active task : {state.active_task_id}")
-    print(f"  touched     : {state.touched_files}")
-    print(f"  next action : {state.next_action!r}")
-    print(f"  board status: {[(t.id, t.status) for t in board]}")
+    print("\n本回合结束后：")
+    print(f"  当前任务：{state.active_task_id}")
+    print(f"  已记录修改的文件：{state.touched_files}")
+    print(f"  下一步：{state.next_action!r}")
+    print(f"  看板状态：{[(t.id, t.status) for t in board]}")
 
 
 if __name__ == "__main__":

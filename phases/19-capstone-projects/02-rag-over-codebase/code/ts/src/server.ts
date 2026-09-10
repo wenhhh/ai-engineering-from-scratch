@@ -1,9 +1,16 @@
+/**
+ * 基于 Hono 的本地查询 API。
+ * GET 查询检查非空字符串；POST 另用 Zod 校验 q 与可选的 topK。
+ * 英文错误值属于响应契约，保留原样；此教学服务没有鉴权、限流或持久化索引。
+ */
+
 import { Hono } from "hono";
 import { z } from "zod";
 import type { BM25Index, DenseIndex } from "./index_store.ts";
 import { runQuery } from "./retrieval.ts";
 import { SAMPLE_CORPUS } from "./corpus.ts";
 
+// 请求体规则：q 不能为空或只含空白；topK 必须是 1—50 的整数。
 export const QueryBody = z.object({
   q: z
     .string()
@@ -26,6 +33,7 @@ export function buildApp(dense: DenseIndex, bm25: BM25Index): Hono {
     return c.json(runQuery(q, dense, bm25));
   });
 
+  // JSON 解析失败或请求体不合规则返回 400；成功则返回检索结果。
   app.post("/query", async (c) => {
     let raw: unknown;
     try {
@@ -41,6 +49,7 @@ export function buildApp(dense: DenseIndex, bm25: BM25Index): Hono {
     return c.json(runQuery(q, dense, bm25, topK));
   });
 
+  // 未匹配的路径返回 404 和原英文 not found 错误。
   app.notFound((c) => c.json({ error: "not found", path: c.req.path }, 404));
 
   return app;

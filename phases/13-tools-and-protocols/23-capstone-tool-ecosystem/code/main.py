@@ -1,17 +1,19 @@
-"""Phase 13 Capstone - stateless in-process research-and-report simulation.
+"""阶段 13 综合实践：无状态、进程内的研究与报告模拟。
 
-Several Phase 13 boundaries in one readable demo:
-  - gateway-shaped static token lookup and RBAC
-  - per-request protocol metadata and mandatory server discovery
-  - local tool functions returning task-extension and ui-shaped data
-  - A2A-shaped writer delegation represented by a nested span
-  - in-memory trace dictionaries sharing one trace id
-  - pinned-hash manifest guarding description mutations
+在一个便于阅读的演示中整合本阶段的多种系统边界：
+  - 模拟网关的静态令牌查找与基于角色的访问控制（RBAC）
+  - 每个请求携带协议元数据，并要求先进行服务器发现
+  - 本地工具函数返回符合任务扩展和 UI 结构的数据
+  - 用嵌套 span 表示类似 A2A 的写作任务委派
+  - 内存中的链路字典共享同一个 trace ID
+  - 用固定哈希清单检测工具描述是否被修改
 
-This file does not implement an MCP or A2A transport, OAuth exchange, MCP App
-bridge, telemetry exporter, or execution sandbox. Stdlib only.
+本文件没有实现 MCP 或 A2A 传输、OAuth 交互、MCP App 桥接、遥测导出器，
+也没有执行沙箱。仅依赖标准库。论文和模型调用都是本地示例数据，
+没有实时检索 arXiv，也没有验证“引用最多”等用户查询条件。
+参与检索或哈希的原文在相邻注释中解释，不能只翻译匹配的一侧。
 
-Run: python code/main.py
+运行：python code/main.py
 """
 
 from __future__ import annotations
@@ -61,18 +63,22 @@ def protocol_error(code: int, message: str, data: dict | None = None) -> dict:
 
 def validate_request_meta(meta: dict, *, require_tasks: bool = False) -> dict | None:
     if not isinstance(meta, dict):
+        # 协议诊断：params._meta 必须是对象。
         return protocol_error(-32602, "params._meta must be an object")
     requested = meta.get("io.modelcontextprotocol/protocolVersion")
     if not isinstance(requested, str):
+        # 协议诊断：protocolVersion 必须是字符串。
         return protocol_error(-32602, "protocolVersion must be a string")
     if requested != PROTOCOL_VERSION:
         return protocol_error(
             -32022,
+            # 协议诊断：不支持此协议版本。
             "Unsupported protocol version",
             {"supported": [PROTOCOL_VERSION], "requested": requested},
         )
     capabilities = meta.get("io.modelcontextprotocol/clientCapabilities")
     if not isinstance(capabilities, dict):
+        # 协议诊断：clientCapabilities 必须是对象。
         return protocol_error(-32602, "clientCapabilities must be an object")
     extensions = capabilities.get("extensions", {})
     if require_tasks and (
@@ -80,6 +86,7 @@ def validate_request_meta(meta: dict, *, require_tasks: bool = False) -> dict | 
     ):
         return protocol_error(
             -32021,
+            # 协议诊断：缺少必需的客户端能力。
             "Missing required client capability",
             {
                 "requiredCapabilities": {
@@ -123,13 +130,18 @@ def finish(sp: dict) -> None:
 
 
 TOOLS = [
+    # 参与哈希的工具描述：用户按关键词搜索 arXiv 时使用。
     {"name": "arxiv_search", "description": "Use when the user searches arXiv by keyword."},
+    # 参与哈希的工具描述：用户需要完整报告时使用。
     {"name": "generate_report", "description": "Use when the user wants a full report."},
 ]
 
 PAPERS = [
+    # 检索夹具标题：针对 MCP 部署的工具投毒攻击。
     {"arxiv_id": "2603.22489", "title": "Tool poisoning attacks on MCP deployments"},
+    # 检索夹具标题：智能体间协作基准。
     {"arxiv_id": "2604.01055", "title": "Agent-to-agent coordination benchmarks"},
+    # 检索夹具标题：通过 Tasks 执行长时间工具调用。
     {"arxiv_id": "2603.30016", "title": "Long-running tool calls via Tasks"},
 ]
 
@@ -156,9 +168,9 @@ def research_generate_report(args: dict, trace_id: str, parent: str) -> dict:
     finish(sp)
     html = (
         "<!doctype html><html><body>"
-        "<h1>Agent-protocol arXiv report</h1><ul>"
+        "<h1>智能体协议 arXiv 报告</h1><ul>"
         + "".join(f"<li>{p['arxiv_id']}: {p['title']}</li>" for p in PAPERS)
-        + "</ul><script>/* A real MCP App bridge is intentionally absent. */</script></body></html>"
+        + "</ul><script>/* 本例刻意不提供真实的 MCP App 桥接。 */</script></body></html>"
     )
     now = datetime.now(timezone.utc).isoformat()
     TASKS[task_id] = {
@@ -171,7 +183,7 @@ def research_generate_report(args: dict, trace_id: str, parent: str) -> dict:
         "pollIntervalMs": 1_000,
         "result": complete_result(
             content=[
-                {"type": "text", "text": "Report generated: 3 papers summarized."},
+                {"type": "text", "text": "报告已生成：已汇总 3 篇论文。"},
                 {"type": "ui_resource", "uri": "ui://report/current"},
             ],
             ui={
@@ -200,9 +212,11 @@ def tasks_get(task_id: str, meta: dict) -> dict:
     if invalid:
         return invalid
     if not isinstance(task_id, str):
+        # 协议诊断：未知的 taskId；该原文也用于测试的精确断言。
         return protocol_error(-32602, "Unknown taskId")
     task = TASKS.get(task_id)
     if task is None:
+        # 协议诊断：未知的 taskId；该原文也用于测试的精确断言。
         return protocol_error(-32602, "Unknown taskId")
     return deepcopy(task)
 
@@ -284,49 +298,51 @@ def orchestrator(token: str, user_query: str) -> dict:
 
 def demo() -> None:
     print("=" * 72)
-    print("PHASE 13 CAPSTONE - RESEARCH AND REPORT ECOSYSTEM")
+    print("阶段 13 综合实践——研究与报告工具生态")
     print("=" * 72)
 
-    print("\n--- stateless server discovery ---")
+    print("\n--- 无状态服务器发现 ---")
     discovery = server_discover(request_meta())
-    print(f"  protocol       : {discovery['supportedVersions'][0]}")
-    print(f"  task extension : {TASK_EXTENSION in discovery['capabilities']['extensions']}")
+    print(f"  协议版本：{discovery['supportedVersions'][0]}")
+    print(f"  任务扩展：{TASK_EXTENSION in discovery['capabilities']['extensions']}")
 
-    print("\n--- orchestrator run as alice (read+write) ---")
+    print("\n--- 以 alice 身份运行编排器（读写权限）---")
+    # 示例请求：总结 2026 年引用最多的三篇 arXiv 论文；本地模拟并未实现引用量排序。
     out = orchestrator("tok_alice", "summarize the three most-cited 2026 arXiv papers")
-    print(f"  trace id      : {out['trace_id']}")
-    print(f"  search result : {out['search']['content'][0]['text']}")
-    print(f"  report handle : {out['report']['taskId']} ({out['report']['status']})")
-    print(f"  task status   : {out['task']['status']} via tasks/get")
-    print(f"  ui bytes      : {len(out['task']['result']['html'])}")
+    print(f"  链路 ID    ：{out['trace_id']}")
+    print(f"  检索结果   ：{out['search']['content'][0]['text']}")
+    print(f"  报告任务句柄：{out['report']['taskId']} ({out['report']['status']})")
+    print(f"  任务状态   ：{out['task']['status']}（通过 tasks/get 获取）")
+    print(f"  UI 字符数  ：{len(out['task']['result']['html'])}")
 
-    print("\n--- orchestrator run as bob (read only) ---")
+    print("\n--- 以 bob 身份运行编排器（只读权限）---")
+    # 示例请求：生成一份报告。
     out = orchestrator("tok_bob", "generate a report")
     print(f"  generate_report -> {out['report']}")
 
-    print("\n--- audit log ---")
+    print("\n--- 审计日志 ---")
     for row in AUDIT:
         print(f"  {row}")
 
-    print("\n--- OTel GenAI spans ---")
+    print("\n--- OTel GenAI 链路片段 ---")
     for sp in SPANS:
         dur_ms = round((sp['end'] - sp['start']) / 1_000_000, 2) if sp['end'] else 0
         parent = sp['parentSpanId'][:6] if sp['parentSpanId'] else "ROOT"
         print(f"  [{sp['traceId'][:6]}] {sp['name']:20s} {sp['kind']:8s} "
-              f"parent={parent}  dur={dur_ms}ms")
+              f"父 span={parent}  耗时={dur_ms}ms")
 
-    print("\n--- primitive coverage ---")
+    print("\n--- 覆盖的基本构件 ---")
     covered = [
-        "tool interface and direct function dispatch",
-        "server/discover and per-request stateless metadata",
-        "structured content dictionaries",
-        "task-extension handle and tasks/get polling",
-        "ui://-shaped resource reference",
-        "description mutation detection with pinned hashes",
-        "static-token scope and gateway policy simulation",
-        "A2A-shaped opaque delegation boundary",
-        "in-memory trace identifiers and parent span identifiers",
-        "orchestrator routing between local operations",
+        "工具接口与直接函数分派",
+        "server/discover 与逐请求无状态元数据",
+        "结构化内容字典",
+        "任务扩展句柄与 tasks/get 轮询",
+        "采用 ui:// 形式的资源引用",
+        "用固定哈希检测描述变更",
+        "静态令牌权限范围与网关策略模拟",
+        "类似 A2A 的不透明任务委派边界",
+        "内存中的链路标识符与父 span 标识符",
+        "编排器在本地操作之间进行路由",
     ]
     for c in covered:
         print(f"  + {c}")

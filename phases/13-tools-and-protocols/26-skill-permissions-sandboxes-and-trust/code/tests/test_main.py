@@ -1,4 +1,8 @@
-"""Deterministic tests for Lesson 26's non-executing sandbox reviewer."""
+"""第 26 课非执行式沙箱策略审查器的确定性测试。
+
+测试中的英文样本文本、字段名、错误片段、路径及预期值有意保持原样，
+用于检验解析、匹配或安全边界；本轮只翻译测试说明，不修改断言或预期结果。
+"""
 
 from __future__ import annotations
 

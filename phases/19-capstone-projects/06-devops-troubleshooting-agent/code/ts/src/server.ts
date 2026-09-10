@@ -1,3 +1,9 @@
+/**
+ * Slack 斜杠命令与按钮交互的 Hono 路由。
+ * 先验签，再解析请求体；响应和待发送消息写入内存日志，没有向 Slack 发起请求。
+ * 英文错误、签名头、动作 ID 和响应字段保留原值；没有审批者权限检查、审批记录去重或真实修复。
+ */
+
 import { Hono } from "hono";
 import { z } from "zod";
 import { verifySlackSignature } from "./slack_verify.js";
@@ -29,6 +35,7 @@ export function buildApp(options: AppOptions = {}): {
 } {
   const signingSecret = options.signingSecret || process.env.SLACK_SIGNING_SECRET;
   if (!signingSecret) {
+    // 没有签名密钥时拒绝创建应用；入口的默认测试密钥仅用于本地教学。
     throw new Error("SLACK_SIGNING_SECRET is required");
   }
   const outboundLog: OutboundCall[] = options.outboundLog ?? [];
@@ -61,7 +68,7 @@ export function buildApp(options: AppOptions = {}): {
     }
     return c.json({
       response_type: "ephemeral",
-      text: `Triaging incident, will follow up in <${responseUrl || "channel"}>.`,
+      text: `正在排查事件，后续结果记录到 <${responseUrl || "channel"}>（本例仅保存在内存）。`,
     });
   });
 
@@ -85,9 +92,11 @@ export function buildApp(options: AppOptions = {}): {
     try {
       parsed = InteractivitySchema.parse(JSON.parse(payloadStr));
     } catch {
+      // 交互载荷不合规则时返回 400，错误值保持英文。
       return c.json({ error: "bad interactivity payload" }, 400);
     }
     const action = parsed.actions?.[0] ?? {};
+    // 只读取首个动作，缺失时标为 unknown；下游会将未知动作按忽略处理。
     const actionId = action.action_id ?? "unknown";
     const incidentId = action.value ?? "unknown";
     const reply = actionReply(actionId, incidentId);

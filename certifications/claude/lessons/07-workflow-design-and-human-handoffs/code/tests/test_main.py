@@ -1,4 +1,4 @@
-"""Tests for lesson 07 workflow handoffs."""
+"""第 07 课工作流交接测试。"""
 
 import copy
 import pathlib

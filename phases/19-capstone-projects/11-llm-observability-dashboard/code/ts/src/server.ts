@@ -1,3 +1,10 @@
+/**
+ * 平面 JSON span 接收接口与中文仪表盘。
+ * 保留路由、响应字段、HTTP 状态和错误契约；模型名称经过原有 HTML 转义。
+ * 接收结果中的 accepted 状态不保证数组内每个 span 都有效，应检查计数器。
+ * 没有认证、持久化、尾部采样或模型评估，不等同于 Python 示例中的全部功能。
+ */
+
 import { Hono } from "hono";
 import { rollUpByModel } from "./rollup.js";
 import type { ObservabilityStore } from "./spans.js";
@@ -55,28 +62,32 @@ export function renderDashboardHtml(store: ObservabilityStore): string {
     .join("\n");
   return [
     "<!doctype html>",
-    "<html><head><title>LLM observability dashboard</title>",
+    "<html><head><meta name='viewport' content='width=device-width, initial-scale=1'><title>大语言模型可观测性仪表盘</title>",
     "<style>",
-    "body{font-family:system-ui,sans-serif;margin:2rem;max-width:1100px;}",
-    "table{border-collapse:collapse;width:100%;}",
+    "*,*::before,*::after{box-sizing:border-box;}",
+    "body{font-family:system-ui,sans-serif;margin:0 auto;padding:2rem;max-width:1100px;width:100%;}",
+    ".table-wrap{max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;}",
+    "table{border-collapse:collapse;width:100%;min-width:760px;}",
     "th,td{padding:.4rem .8rem;border-bottom:1px solid #ddd;text-align:left;font-variant-numeric:tabular-nums;}",
     "th{background:#f3f3f3;}",
-    ".stats{display:flex;gap:1.5rem;margin-bottom:1rem;}",
-    ".stat{background:#fafafa;border:1px solid #ddd;padding:.6rem 1rem;border-radius:6px;}",
+    ".stats{display:flex;flex-wrap:wrap;gap:1rem;margin-bottom:1rem;}",
+    ".stat{background:#fafafa;border:1px solid #ddd;padding:.6rem 1rem;border-radius:6px;flex:1 1 10rem;}",
+    "small{overflow-wrap:anywhere;}",
+    "@media(max-width:600px){body{padding:1rem}.stats{gap:.6rem}.stat{padding:.5rem .7rem}h1{font-size:1.5rem}}",
     "</style></head><body>",
-    "<h1>LLM observability dashboard</h1>",
+    "<h1>大语言模型可观测性仪表盘</h1>",
     "<div class='stats'>",
-    `<div class='stat'><b>${counters.accepted}</b> spans accepted</div>`,
-    `<div class='stat'>${counters.held} in ring buffer</div>`,
-    `<div class='stat'>${counters.rejected} rejected</div>`,
+    `<div class='stat'><b>${counters.accepted}</b> 个 span 已接收</div>`,
+    `<div class='stat'>${counters.held} 个保留在环形缓冲区</div>`,
+    `<div class='stat'>${counters.rejected} 个被拒绝</div>`,
     "</div>",
-    "<table><thead><tr>",
-    "<th>model</th><th>spans</th><th>errors</th><th>input tok</th><th>output tok</th>",
-    "<th>cost</th><th>p50 ms</th><th>p95 ms</th><th>p99 ms</th>",
+    "<div class='table-wrap'><table><thead><tr>",
+    "<th>模型</th><th>span 数</th><th>错误数</th><th>输入词元</th><th>输出词元</th>",
+    "<th>费用</th><th>p50 毫秒</th><th>p95 毫秒</th><th>p99 毫秒</th>",
     "</tr></thead><tbody>",
     rows,
-    "</tbody></table>",
-    "<p><small>POST OTel-GenAI spans to /trace. JSON roll-up at /dashboard.json.</small></p>",
+    "</tbody></table></div>",
+    "<p><small>向 /trace POST 带 GenAI 字段的平面 JSON span；汇总 JSON 见 /dashboard.json。此接口不是标准 OTLP 接收器。</small></p>",
     "</body></html>",
   ].join("\n");
 }

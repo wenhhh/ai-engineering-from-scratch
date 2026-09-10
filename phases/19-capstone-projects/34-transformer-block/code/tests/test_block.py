@@ -1,4 +1,7 @@
-"""Unit tests for the transformer block components."""
+"""Transformer 块各组件的单元测试。
+
+保持参数、输入、数值容差、梯度与所有断言原样。
+"""
 
 from __future__ import annotations
 

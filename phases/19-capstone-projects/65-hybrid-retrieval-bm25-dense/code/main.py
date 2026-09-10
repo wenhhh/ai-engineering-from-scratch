@@ -1,15 +1,19 @@
-"""Hybrid retrieval: BM25 + dense + reciprocal rank fusion.
+"""混合检索：BM25 + 稠密检索 + 倒数排名融合（RRF）。
 
-Pure-Python implementation. BM25 from the Robertson/Sparck Jones paper.
-RRF from the 2009 Cormack/Clarke/Buettcher SIGIR paper.
+纯 Python 教学实现。BM25 参考 Robertson／Sparck Jones 的经典公式，
+RRF 参考 Cormack／Clarke／Buettcher 2009 年 SIGIR 工作。
 
-References:
+参考：
 - ./docs/en.md
-- Phase 19 lesson 64 (chunkers feeding this retriever)
-- Phase 19 lesson 66 (reranker consuming the fused top-k)
-- Phase 19 lesson 68 (eval harness over this retriever)
+- 阶段 19 第 64 课（为本检索器提供分块）
+- 阶段 19 第 66 课（对融合后的 top-k 进行重排）
+- 阶段 19 第 68 课（评估本检索器）
 
-Run: python3 code/main.py
+运行：python3 code/main.py
+
+译注：稠密部分仍是确定性的哈希式伪嵌入，不是训练所得向量模型；RRF
+融合的是排名而非统一标定后的相关性分数。夹具语料、查询、文档标题和
+检索器键名参与计分或测试，保持英文原值。
 """
 
 from __future__ import annotations
@@ -32,7 +36,7 @@ class Doc:
 
 
 # ---------------------------------------------------------------------------
-# tokenizer
+# 分词器
 # ---------------------------------------------------------------------------
 
 _TOKEN = re.compile(r"[a-z0-9]+")
@@ -43,7 +47,7 @@ def tokenize(text: str) -> list[str]:
 
 
 # ---------------------------------------------------------------------------
-# BM25 from scratch
+# 从零实现 BM25
 # ---------------------------------------------------------------------------
 
 @dataclass
@@ -97,7 +101,7 @@ class BM25Index:
 
 
 # ---------------------------------------------------------------------------
-# deterministic mock embedding + dense retriever
+# 确定性伪嵌入 + 稠密检索器
 # ---------------------------------------------------------------------------
 
 def mock_embed(text: str, dim: int = 96) -> list[float]:
@@ -109,7 +113,7 @@ def mock_embed(text: str, dim: int = 96) -> list[float]:
             h &= 0xFFFFFFFF
         vec[h % dim] += 1.0
         vec[(h >> 7) % dim] += 0.5
-        # add bigram-style mixing to spread synonyms differently from BM25.
+        # 加入类似二元组的混合，让词项在向量空间中的扩散方式与 BM25 不同。
         for i in range(len(tok) - 1):
             bg = (ord(tok[i]) * 31 + ord(tok[i + 1])) & 0xFFFFFFFF
             vec[bg % dim] += 0.25
@@ -137,7 +141,7 @@ class DenseIndex:
 
 
 # ---------------------------------------------------------------------------
-# Reciprocal Rank Fusion
+# 倒数排名融合（RRF）
 # ---------------------------------------------------------------------------
 
 def rrf(
@@ -160,7 +164,7 @@ def rrf(
 
 
 # ---------------------------------------------------------------------------
-# Hybrid retriever
+# 混合检索器
 # ---------------------------------------------------------------------------
 
 @dataclass
@@ -191,7 +195,7 @@ class HybridRetriever:
 
 
 # ---------------------------------------------------------------------------
-# fixture corpus and demo queries
+# 固定夹具语料与演示查询
 # ---------------------------------------------------------------------------
 
 CORPUS = [
@@ -243,7 +247,7 @@ def main() -> None:
     ]
 
     for q, note in queries:
-        print(f"\nquery: {q}\nnote:  {note}")
+        print(f"\n查询：{q}\n说明：{note}")
         result = retriever.search(q, k_each=5, k_out=5)
         print_ranking("bm25 ", result["bm25"])
         print_ranking("dense", result["dense"])

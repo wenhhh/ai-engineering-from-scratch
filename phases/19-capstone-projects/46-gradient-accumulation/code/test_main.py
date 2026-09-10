@@ -1,4 +1,4 @@
-"""Tests for gradient accumulation core paths."""
+"""梯度累积核心路径测试；数值、夹具、字段和断言保持原样。"""
 
 from __future__ import annotations
 

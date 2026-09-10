@@ -1,4 +1,4 @@
-"""Companion validator for this lesson's docs/en.md team review artifact."""
+"""本课 docs/en.md 团队评审产物的配套验证器。校验团队协作、评审与交付约束；不执行真实 Claude Code 会话或代码合并。"""
 
 from __future__ import annotations
 

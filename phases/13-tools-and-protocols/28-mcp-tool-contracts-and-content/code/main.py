@@ -1,8 +1,9 @@
-"""Phase 13 Lesson 28: MCP tool contracts and content.
-Lesson: ../docs/en.md
-Specification: https://modelcontextprotocol.io/specification/2026-07-28/server/tools
-Utilities: completion and pagination in the MCP 2026-07-28 specification.
-This example uses only Python's standard library.
+"""阶段 13，第 28 课：MCP 工具契约与内容。
+课程文档：../docs/en.md
+规范：https://modelcontextprotocol.io/specification/2026-07-28/server/tools
+配套机制：固定版本 MCP 2026-07-28 规范中的补全与分页。
+本示例仅使用 Python 标准库；译文按仓库固定快照说明，并未另行核验最新规范。
+协议字段、错误消息和示例描述保留英文值，旁注给出中文解释，以免改变契约校验。
 """
 
 from __future__ import annotations
@@ -36,7 +37,7 @@ SENSITIVE_NAMES = {
 
 
 class ContractViolation(ValueError):
-    """Raised when a descriptor or result violates the enforced contract."""
+    """当工具描述符或结果违反本示例强制执行的契约时抛出。"""
 
 
 @dataclass
@@ -65,17 +66,21 @@ def complete(**fields: Any) -> dict[str, Any]:
 def validate_request_meta(params: dict[str, Any]) -> None:
     meta = params.get("_meta")
     if not isinstance(meta, dict):
+        # 协议诊断：请求缺少 _meta。
         raise McpError(-32602, "missing request _meta")
     version = meta.get(PROTOCOL_META)
     if not isinstance(version, str):
+        # 协议诊断：缺少协议版本。
         raise McpError(-32602, "missing protocol version")
     if version != PROTOCOL_VERSION:
         raise McpError(
             -32022,
+            # 协议诊断：不支持所请求的协议版本。
             "unsupported protocol version",
             {"supported": [PROTOCOL_VERSION], "requested": version},
         )
     if not isinstance(meta.get(CAPABILITIES_META), dict):
+        # 协议诊断：缺少客户端能力声明。
         raise McpError(-32602, "missing client capabilities")
 
 
@@ -94,34 +99,41 @@ def _matches_type(value: Any, expected: str) -> bool:
         return isinstance(value, list)
     if expected == "object":
         return isinstance(value, dict)
+    # 校验诊断：校验边界不支持此模式类型。
     raise ContractViolation(f"unsupported schema type at validation boundary: {expected}")
 
 
 def validate_json_schema(value: Any, schema: dict[str, Any], path: str = "$") -> None:
-    """Validate the small JSON Schema 2020-12 subset used by this lesson."""
+    """校验本课使用的 JSON Schema 2020-12 小型子集，不是通用的完整规范校验器。"""
 
     if not isinstance(schema, dict):
+        # 校验诊断：此路径的模式必须是对象。
         raise ContractViolation(f"{path}: schema must be an object")
     if "enum" in schema and value not in schema["enum"]:
+        # 校验诊断：此路径的值不在 enum 枚举中。
         raise ContractViolation(f"{path}: value is not in enum")
 
     expected = schema.get("type")
     if expected is not None:
         if not isinstance(expected, str) or not _matches_type(value, expected):
+            # 校验诊断：此路径的值应符合指定类型。
             raise ContractViolation(f"{path}: expected {expected}")
 
     if isinstance(value, dict):
         properties = schema.get("properties", {})
         required = schema.get("required", [])
         if not isinstance(properties, dict) or not isinstance(required, list):
+            # 校验诊断：此路径的对象模式格式错误。
             raise ContractViolation(f"{path}: malformed object schema")
         for name in required:
             if name not in value:
+                # 校验诊断：缺少此路径所指的必填属性。
                 raise ContractViolation(f"{path}.{name}: required property missing")
         for name, item in value.items():
             if name in properties:
                 validate_json_schema(item, properties[name], f"{path}.{name}")
             elif schema.get("additionalProperties") is False:
+                # 校验诊断：拒绝此路径所指的额外属性。
                 raise ContractViolation(f"{path}.{name}: additional property rejected")
 
     if isinstance(value, list) and "items" in schema:
@@ -131,6 +143,7 @@ def validate_json_schema(value: Any, schema: dict[str, Any], path: str = "$") ->
     if isinstance(value, str):
         minimum = schema.get("minLength")
         if isinstance(minimum, int) and len(value) < minimum:
+            # 校验诊断：此路径的字符串短于 minLength。
             raise ContractViolation(f"{path}: string is shorter than minLength")
 
 
@@ -138,7 +151,7 @@ def iter_header_annotation_nodes(
     node: Any,
     path: tuple[str | int, ...] = (),
 ) -> list[tuple[tuple[str | int, ...], dict[str, Any]]]:
-    """Find x-mcp-header anywhere, including combinators and definitions."""
+    """查找任意位置的 x-mcp-header，包括组合器和定义内部。"""
 
     found: list[tuple[tuple[str | int, ...], dict[str, Any]]] = []
     if isinstance(node, dict):
@@ -155,10 +168,11 @@ def iter_header_annotation_nodes(
 
 
 def validate_header_annotations(tool: dict[str, Any]) -> list[tuple[tuple[str, ...], str]]:
-    """Validate x-mcp-header plus a deployment policy for sensitive fields."""
+    """校验 x-mcp-header，并落实部署方对敏感字段的限制策略。"""
 
     input_schema = tool.get("inputSchema")
     if not isinstance(input_schema, dict):
+        # 契约诊断：inputSchema 必须是对象。
         raise ContractViolation("inputSchema must be an object")
     headers: list[tuple[tuple[str, ...], str]] = []
     seen: set[str] = set()
@@ -169,19 +183,24 @@ def validate_header_annotations(tool: dict[str, Any]) -> list[tuple[tuple[str, .
             or not isinstance(schema_path[1], str)
         ):
             raise ContractViolation(
+                # 契约诊断：x-mcp-header 只能出现在 inputSchema 的直接属性上。
                 "x-mcp-header is allowed only on a direct inputSchema property"
             )
         property_name = schema_path[1]
         header_name = property_schema["x-mcp-header"]
         if not isinstance(header_name, str) or not HEADER_TOKEN.fullmatch(header_name):
+            # 契约诊断：x-mcp-header 必须是合法的 HTTP 头字段名词法单元。
             raise ContractViolation("x-mcp-header must be a valid HTTP field-name token")
         lowered = header_name.lower()
         if lowered in seen:
+            # 契约诊断：x-mcp-header 名称必须在忽略大小写时仍然唯一。
             raise ContractViolation("x-mcp-header names must be unique ignoring case")
         seen.add(lowered)
         if property_schema.get("type") not in {"string", "integer", "boolean"}:
+            # 契约诊断：x-mcp-header 只支持 string、integer 或 boolean 类型。
             raise ContractViolation("x-mcp-header requires string, integer, or boolean")
         if property_name.lower() in SENSITIVE_NAMES or lowered in SENSITIVE_NAMES:
+            # 安全诊断：敏感参数不得映射到 HTTP 头字段。
             raise ContractViolation("sensitive arguments must not be mirrored to headers")
         headers.append(((property_name,), header_name))
     return headers
@@ -189,56 +208,71 @@ def validate_header_annotations(tool: dict[str, Any]) -> list[tuple[tuple[str, .
 
 def validate_tool_descriptor(tool: dict[str, Any]) -> None:
     if not isinstance(tool.get("name"), str) or not tool["name"]:
+        # 契约诊断：工具名称必须是非空字符串。
         raise ContractViolation("tool name must be a non-empty string")
     input_schema = tool.get("inputSchema")
     if not isinstance(input_schema, dict) or input_schema.get("type") != "object":
+        # 契约诊断：inputSchema 的根类型必须为 object。
         raise ContractViolation("inputSchema must be an object schema")
     output_schema = tool.get("outputSchema")
     if output_schema is not None and not isinstance(output_schema, dict):
+        # 契约诊断：outputSchema 必须是 JSON Schema 对象。
         raise ContractViolation("outputSchema must be a JSON Schema object")
     if output_schema is not None and iter_header_annotation_nodes(output_schema):
+        # 契约诊断：outputSchema 不允许出现 x-mcp-header。
         raise ContractViolation("x-mcp-header is not allowed in outputSchema")
     validate_header_annotations(tool)
 
 
 def _validate_base64(value: Any, field: str) -> None:
     if not isinstance(value, str):
+        # 内容诊断：此字段必须是 Base64 字符串。
         raise ContractViolation(f"{field} must be a base64 string")
     try:
         base64.b64decode(value, validate=True)
     except (ValueError, base64.binascii.Error) as exc:
+        # 内容诊断：此字段不是有效的 Base64 编码。
         raise ContractViolation(f"{field} is not valid base64") from exc
 
 
 def validate_content_block(block: dict[str, Any]) -> None:
     if not isinstance(block, dict):
+        # 内容诊断：内容块必须是对象。
         raise ContractViolation("content block must be an object")
     block_type = block.get("type")
     if block_type == "text":
         if not isinstance(block.get("text"), str):
+            # 内容诊断：文本内容块必须包含 text 字段。
             raise ContractViolation("text content requires text")
     elif block_type in {"image", "audio"}:
         _validate_base64(block.get("data"), f"{block_type}.data")
         if not isinstance(block.get("mimeType"), str):
+            # 内容诊断：此类内容块必须包含 mimeType 字段。
             raise ContractViolation(f"{block_type} content requires mimeType")
     elif block_type == "resource_link":
         if not all(isinstance(block.get(field), str) for field in ("uri", "name")):
+            # 内容诊断：resource_link 必须包含 uri 和 name 字段。
             raise ContractViolation("resource_link requires uri and name")
     elif block_type == "resource":
         resource = block.get("resource")
         if not isinstance(resource, dict) or not isinstance(resource.get("uri"), str):
+            # 内容诊断：嵌入资源必须包含 uri。
             raise ContractViolation("embedded resource requires a uri")
         if "text" not in resource and "blob" not in resource:
+            # 内容诊断：嵌入资源必须包含 text 或 blob。
             raise ContractViolation("embedded resource requires text or blob")
     else:
+        # 内容诊断：未知的内容块类型。
         raise ContractViolation(f"unknown content block type: {block_type}")
 
 
 def validate_tool_result(tool: dict[str, Any], result: dict[str, Any]) -> None:
     if result.get("resultType") != "complete":
+        # 结果诊断：工具结果的 resultType 必须为 complete。
         raise ContractViolation("tool result must be complete")
     content = result.get("content")
     if not isinstance(content, list) or not content:
+        # 结果诊断：工具结果至少需要一个内容块。
         raise ContractViolation("tool result must contain at least one content block")
     for block in content:
         validate_content_block(block)
@@ -246,9 +280,11 @@ def validate_tool_result(tool: dict[str, Any], result: dict[str, Any]) -> None:
     output_schema = tool.get("outputSchema")
     if output_schema is not None:
         if "structuredContent" not in result:
+            # 结果诊断：声明 outputSchema 时必须返回 structuredContent。
             raise ContractViolation("outputSchema requires structuredContent")
         validate_json_schema(result["structuredContent"], output_schema)
         if not any(block.get("type") == "text" for block in content):
+            # 结果诊断：结构化结果必须附带供兼容使用的文本。
             raise ContractViolation("structured results require compatibility text")
 
 
@@ -269,12 +305,14 @@ def _descriptor(
 TOOLS = [
     _descriptor(
         "tag_catalog",
+        # 工具描述：返回标签数组，说明 structuredContent 不限于对象。
         "Return an array of tags to prove structuredContent is not object-only.",
         {"type": "object", "additionalProperties": False},
         {"type": "array", "items": {"type": "string"}},
     ),
     _descriptor(
         "evidence_bundle",
+        # 工具描述：返回文本、媒体、资源链接和嵌入资源。
         "Return text, media, a resource link, and an embedded resource.",
         {"type": "object", "additionalProperties": False},
         {
@@ -289,6 +327,7 @@ TOOLS = [
     ),
     _descriptor(
         "route_report",
+        # 工具描述：根据非敏感的区域参数为报告选择路由。
         "Route a report by a non-sensitive region argument.",
         {
             "type": "object",
@@ -311,6 +350,7 @@ TOOLS = [
     ),
     _descriptor(
         "blocked_secret_route",
+        # 工具描述：故意设置的不安全描述符，用于演示客户端拒绝。
         "Deliberately unsafe descriptor used to exercise client rejection.",
         {
             "type": "object",
@@ -350,6 +390,7 @@ class ContractServer:
             page = ordered[2:]
             next_cursor = None
         else:
+            # 分页诊断：游标无效。
             raise McpError(-32602, "invalid cursor")
         fields: dict[str, Any] = {
             "tools": page,
@@ -365,9 +406,11 @@ class ContractServer:
         name = params.get("name")
         tool = next((item for item in TOOLS if item["name"] == name), None)
         if tool is None:
+            # 调用诊断：未知工具。
             raise McpError(-32602, "unknown tool")
         arguments = params.get("arguments", {})
         if not isinstance(arguments, dict):
+            # 调用诊断：arguments 必须是对象。
             raise McpError(-32602, "arguments must be an object")
         try:
             validate_json_schema(arguments, tool["inputSchema"])
@@ -402,6 +445,7 @@ class ContractServer:
                         "resource": {
                             "uri": "evidence://contract-report/summary",
                             "mimeType": "text/plain",
+                            # 工具返回文本：所有契约检查均已通过。此字符串是演示载荷，不代表全项目验收。
                             "text": "All contract checks passed.",
                         },
                     },
@@ -412,6 +456,7 @@ class ContractServer:
         if name == "route_report":
             if arguments["report"] == "unavailable":
                 return complete(
+                    # 工具返回文本：报告来源不可用。
                     content=[{"type": "text", "text": "Report source is unavailable."}],
                     structuredContent={
                         "region": arguments["region"],
@@ -441,16 +486,20 @@ class ContractServer:
         validate_request_meta(params)
         self.completion_calls[principal] = self.completion_calls.get(principal, 0) + 1
         if self.completion_calls[principal] > 3:
+            # 补全诊断：已超过补全请求的速率限制。
             raise McpError(-32029, "completion rate limit exceeded")
 
         reference = params.get("ref")
         argument = params.get("argument")
         if reference != {"type": "ref/prompt", "name": "deployment_review"}:
+            # 补全诊断：未知的补全引用。
             raise McpError(-32602, "unknown completion reference")
         if not isinstance(argument, dict) or argument.get("name") != "environment":
+            # 补全诊断：未知的补全参数。
             raise McpError(-32602, "unknown completion argument")
         prefix = argument.get("value")
         if not isinstance(prefix, str):
+            # 补全诊断：补全值必须是字符串。
             raise McpError(-32602, "completion value must be a string")
 
         allowed = {
@@ -473,6 +522,7 @@ class ContractServer:
         try:
             params = request.get("params", {})
             if not isinstance(params, dict):
+                # 协议诊断：params 必须是对象。
                 raise McpError(-32602, "params must be an object")
             method = request.get("method")
             if method == "server/discover":
@@ -484,6 +534,7 @@ class ContractServer:
             elif method == "completion/complete":
                 result = self.completion_complete(params, principal=principal)
             else:
+                # 协议诊断：未找到此方法。
                 raise McpError(-32601, "method not found")
             if is_notification:
                 return None
@@ -525,8 +576,10 @@ def _parameter_text(value: Any, expected_type: str) -> str:
         return "true" if value else "false"
     if expected_type == "integer" and isinstance(value, int) and not isinstance(value, bool):
         if not JS_SAFE_INTEGER_MIN <= value <= JS_SAFE_INTEGER_MAX:
+            # 头字段诊断：映射的整数超出 JavaScript 安全整数范围。
             raise ContractViolation("mirrored integer is outside the JavaScript safe range")
         return str(value)
+    # 头字段诊断：映射值与所声明的类型不符。
     raise ContractViolation(f"mirrored value does not match declared {expected_type} type")
 
 
@@ -535,7 +588,7 @@ def _is_plain_visible_ascii(value: str) -> bool:
 
 
 def encode_parameter_header_value(value: str) -> str:
-    """Apply MCP's exact sentinel encoding when plain transport is ambiguous."""
+    """当原样传输存在歧义时，按本课的 MCP 契约使用精确的哨兵标记编码。"""
 
     sentinel_looking = value.startswith(BASE64_SENTINEL_PREFIX)
     if _is_plain_visible_ascii(value) and not sentinel_looking:
@@ -545,23 +598,28 @@ def encode_parameter_header_value(value: str) -> str:
 
 
 def decode_parameter_header_value(value: str) -> str:
-    """Decode a canonical MCP parameter-header value at the HTTP boundary."""
+    """在 HTTP 边界解码使用规范形式的 MCP 参数头字段值。"""
 
     if not isinstance(value, str):
+        # 头字段诊断：参数头字段值必须是字符串。
         raise ContractViolation("parameter header value must be a string")
     if value.startswith(BASE64_SENTINEL_PREFIX):
         if not value.endswith(BASE64_SENTINEL_SUFFIX):
+            # 头字段诊断：Base64 哨兵标记格式错误。
             raise ContractViolation("parameter header uses a malformed base64 sentinel")
         payload = value[len(BASE64_SENTINEL_PREFIX) : -len(BASE64_SENTINEL_SUFFIX)]
         try:
             raw = base64.b64decode(payload, validate=True)
             decoded = raw.decode("utf-8")
         except (ValueError, UnicodeDecodeError, base64.binascii.Error) as exc:
+            # 头字段诊断：Base64 内容或解码后的 UTF-8 无效。
             raise ContractViolation("parameter header uses invalid base64 UTF-8") from exc
         if base64.b64encode(raw).decode("ascii") != payload:
+            # 头字段诊断：Base64 编码不是规范形式。
             raise ContractViolation("parameter header base64 is not canonical")
         return decoded
     if not _is_plain_visible_ascii(value):
+        # 头字段诊断：未编码的参数头字段必须使用可见 ASCII 字符。
         raise ContractViolation("plain parameter header is not visible ASCII")
     return value
 
@@ -601,7 +659,7 @@ def validate_parameter_headers(
     headers: dict[str, str],
     audit_log: list[dict[str, Any]],
 ) -> None:
-    """Compare recognized parameter headers with body arguments exactly."""
+    """将已识别的参数头字段与请求体参数逐项精确比较。"""
 
     normalized: dict[str, list[tuple[str, str]]] = {}
     for supplied_name, supplied_value in headers.items():
@@ -617,15 +675,19 @@ def validate_parameter_headers(
         body_value = _read_path(arguments, path)
         if body_value is MISSING:
             if supplied:
+                # 一致性诊断：已识别的参数头字段在请求体中没有对应参数。
                 raise ContractViolation("recognized parameter header has no body argument")
             continue
         if not supplied:
+            # 一致性诊断：缺少已声明的参数头字段。
             raise ContractViolation("recognized parameter header is missing")
         if len(supplied) != 1:
+            # 一致性诊断：已识别的参数头字段重复。
             raise ContractViolation("recognized parameter header is duplicated")
         decoded = decode_parameter_header_value(supplied[0][1])
         expected = _parameter_text(body_value, properties[path[0]]["type"])
         if decoded != expected:
+            # 一致性诊断：已识别的参数头字段与请求体不匹配。
             raise ContractViolation("recognized parameter header does not match the body")
         checked_names.append(expected_name)
 
@@ -645,7 +707,7 @@ def streamable_http_tool_call(
     *,
     principal: str = "analyst",
 ) -> tuple[int, dict[str, Any] | None]:
-    """Model the Streamable HTTP parity gate before JSON-RPC dispatch."""
+    """模拟 JSON-RPC 分派前的 Streamable HTTP 头字段与请求体一致性检查。"""
 
     if request.get("method") == "tools/call":
         params = request.get("params")
@@ -661,6 +723,7 @@ def streamable_http_tool_call(
                         "id": request.get("id"),
                         "error": {
                             "code": -32020,
+                            # 一致性诊断：参数头字段与请求体不匹配。
                             "message": "parameter headers do not match request body",
                             "data": {"reason": str(exc)},
                         },
@@ -677,6 +740,7 @@ class ContractClient:
         max_list_pages: int = MAX_TOOL_LIST_PAGES,
     ) -> None:
         if type(max_list_pages) is not int or max_list_pages <= 0:
+            # 分页诊断：tools/list 的页数上限必须是正整数。
             raise ContractViolation("tools/list page limit must be a positive integer")
         self.server = server
         self.principal = principal
@@ -696,6 +760,7 @@ class ContractClient:
             self.cursor_trace.append(cursor)
             response = self.server.dispatch(make_request(request_id, "tools/list", params))
             if response is None or "error" in response:
+                # 分页诊断：tools/list 请求失败。
                 raise ContractViolation("tools/list failed")
             result = response["result"]
             for tool in result["tools"]:
@@ -709,13 +774,16 @@ class ContractClient:
             if next_cursor is None:
                 return self.tools
             if not isinstance(next_cursor, str):
+                # 分页诊断：tools/list 的 nextCursor 必须是字符串或 null。
                 raise ContractViolation("tools/list nextCursor must be a string or null")
             if next_cursor in seen_cursors:
+                # 分页诊断：tools/list 返回了重复或成环的 nextCursor。
                 raise ContractViolation("tools/list returned a repeated or cyclic nextCursor")
             seen_cursors.add(next_cursor)
             cursor = next_cursor
             request_id += 1
         raise ContractViolation(
+            # 分页诊断：tools/list 超过指定页数上限。
             f"tools/list exceeded the page limit of {self.max_list_pages}"
         )
 
@@ -724,12 +792,14 @@ class ContractClient:
             self.discover_tools()
         tool = self.tools.get(name)
         if tool is None:
+            # 调用诊断：工具尚未获得准入。
             raise ContractViolation(f"tool is not admitted: {name}")
         response = self.server.dispatch(
             make_request(20, "tools/call", {"name": name, "arguments": arguments}),
             principal=self.principal,
         )
         if response is None or "error" in response:
+            # 调用诊断：tools/call 返回协议错误。
             raise ContractViolation("tools/call returned a protocol error")
         validate_tool_result(tool, response["result"])
         return response["result"]
@@ -747,6 +817,7 @@ class ContractClient:
             principal=self.principal,
         )
         if response is None or "error" in response:
+            # 补全诊断：补全请求失败。
             raise ContractViolation("completion request failed")
         return response["result"]["completion"]["values"]
 
@@ -778,16 +849,16 @@ def main() -> None:
         audit_log,
     )
 
-    print("visible tools:", ", ".join(sorted(tools)))
-    print("rejected tools:", ", ".join(item["tool"] for item in client.rejections))
-    print("cursor trace:", ["<first>" if item is None else repr(item) for item in client.cursor_trace])
-    print("array structuredContent:", tags["structuredContent"])
-    print("content block types:", [block["type"] for block in bundle["content"]])
-    print("mirrored header names:", sorted(headers))
-    print("encoded parameter value:", headers["Mcp-Param-Region"].startswith(BASE64_SENTINEL_PREFIX))
-    print("HTTP parity status:", http_status)
-    print("audit event:", audit_log[0])
-    print("analyst completions:", client.complete_environment(""))
+    print("可见工具：", ", ".join(sorted(tools)))
+    print("被拒绝的工具：", ", ".join(item["tool"] for item in client.rejections))
+    print("游标轨迹：", ["<first>" if item is None else repr(item) for item in client.cursor_trace])
+    print("数组形式的 structuredContent：", tags["structuredContent"])
+    print("内容块类型：", [block["type"] for block in bundle["content"]])
+    print("参数映射生成的头字段名：", sorted(headers))
+    print("参数值是否经过哨兵编码：", headers["Mcp-Param-Region"].startswith(BASE64_SENTINEL_PREFIX))
+    print("HTTP 一致性检查状态码：", http_status)
+    print("审计事件：", audit_log[0])
+    print("分析人员可用的补全结果：", client.complete_environment(""))
 
 
 if __name__ == "__main__":

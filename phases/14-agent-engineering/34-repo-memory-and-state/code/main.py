@@ -1,11 +1,15 @@
-"""Schema-first agent state with atomic writes.
+"""模式优先的智能体状态管理，使用原子文件替换保存状态。
 
-Writes JSON Schema files for `agent_state.json` and `task_board.json`,
-implements a tiny stdlib validator that handles the subset we need
-(required, type, enum, pattern, items), and a StateManager with
-temp-and-rename writes so a partial failure cannot corrupt the file.
+为 agent_state.json 和 task_board.json 写出 JSON Schema，并实现只覆盖本例所需
+子集的标准库校验器：required、type、enum、pattern、items，以及额外字段检查。
+StateManager 先写临时文件，再重命名替换，降低写入中断破坏状态文件的风险。
 
-Run: python3 code/main.py
+译注：这不是完整 JSON Schema 实现，也不包含多写者并发控制或事务日志。
+模式键、枚举值、正则和异常消息保留英文；expected 表示期望类型，
+missing required field 表示缺少必填字段，unexpected fields 表示出现未定义字段，
+does not match 表示未匹配指定正则。状态中的任务说明和下一步动作中文化。
+
+运行：python3 code/main.py
 """
 
 from __future__ import annotations
@@ -144,12 +148,12 @@ def main() -> None:
         "touched_files": [],
         "assumptions": [],
         "blockers": [],
-        "next_action": "pick next task",
+        "next_action": "选择下一项任务",
     }
     initial_board = [
         {
             "id": "T-001",
-            "goal": "validate /signup payloads",
+            "goal": "校验 /signup 请求载荷",
             "owner": "builder",
             "acceptance": ["pytest -x test_app.py::test_signup_rejects_short_password"],
             "status": "todo",
@@ -161,18 +165,18 @@ def main() -> None:
     state = mgr.load()
     board = board_mgr.load()
     state["active_task_id"] = board[0]["id"]
-    state["next_action"] = "read existing /signup handler"
+    state["next_action"] = "阅读现有 /signup 处理函数"
     mgr.commit(state)
 
-    print("state:", json.dumps(mgr.load(), indent=2))
-    print("board:", json.dumps(board_mgr.load(), indent=2))
+    print("状态：", json.dumps(mgr.load(), indent=2, ensure_ascii=False))
+    print("任务看板：", json.dumps(board_mgr.load(), indent=2, ensure_ascii=False))
 
     bad = dict(state)
     bad["active_task_id"] = "T-bogus"
     try:
         mgr.commit(bad)
     except SchemaError as exc:
-        print("rejected bad write:", exc)
+        print("已拒绝无效写入：", exc)
 
 
 if __name__ == "__main__":

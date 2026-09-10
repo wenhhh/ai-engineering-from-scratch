@@ -1,4 +1,8 @@
-"""Unit tests for ZeRO-1 sharding. Run: python3 -m unittest discover tests"""
+"""ZeRO-1 分片实现的单元测试。
+
+运行：python3 -m unittest discover tests。只翻译说明和注释；张量存储、
+分片边界、内存公式、数值比较与断言保持原样。
+"""
 
 from __future__ import annotations
 
@@ -39,7 +43,7 @@ class TestZero(unittest.TestCase):
     def test_flatten_roundtrip_preserves_params(self):
         m = MiniMLP()
         flat = gather_flat_params(m)
-        flat += 0  # ensure independent storage
+        flat += 0  # 确保底层存储彼此独立。
         before = [p.clone() for p in m.parameters()]
         scatter_flat_to_params(m, flat)
         for a, b in zip(before, m.parameters()):

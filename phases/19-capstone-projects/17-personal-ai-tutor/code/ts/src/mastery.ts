@@ -1,3 +1,9 @@
+/**
+ * 进程内掌握度存储。
+ * score 是此前分数与累计答对比例的加权平滑，不是 Python 示例的贝叶斯知识追踪公式。
+ * all/get/peek 返回内部对象引用，没有学习者隔离、持久化或不可变快照。
+ */
+
 import type { Mastery } from "./types.js";
 import { BASE_INTERVAL_MS } from "./types.js";
 import { scheduleNextDue } from "./repetition.js";

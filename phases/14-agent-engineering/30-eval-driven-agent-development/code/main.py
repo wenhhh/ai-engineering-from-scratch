@@ -1,7 +1,13 @@
-"""Three-layer eval harness with evaluator-optimizer loop and CI gate.
+"""三层评测框架：评估器—优化器循环，以及 CI 合并门禁。
 
-Cases: benchmark (SWE-bench-shaped), custom (LLM-judge), online (guardrail).
-Aggregator produces pass rate, regression-vs-baseline, and CI verdict.
+用例分为基准评测（SWE-bench 风格）、自定义评测（模拟 LLM 评判）和在线安全约束。
+汇总通过率、相对于基线的回归程度，并给出 CI 判定。
+
+译注：提案和评判均由本地固定规则实现，不访问真实基准、模型或在线系统。
+候选答案与反馈中的 missing sticks、citations、ssn 等英文片段参与后续匹配，不能直接翻译。
+FAIL_TO_PASS fixed, PASS_TO_PASS intact 表示修复测试通过且未破坏回归测试；
+PII guardrail held 表示个人身份信息安全约束生效。PASS/FAIL 为通过/失败，
+ALLOW/BLOCK 为 CI 允许/拦截，no cases 表示没有评测用例。
 """
 
 from __future__ import annotations
@@ -69,7 +75,7 @@ def _benchmark_case() -> EvalCase:
     return EvalCase(
         cid="bench_t001",
         category="benchmark",
-        description="fix craft_iron_pickaxe recipe",
+        description="修复 craft_iron_pickaxe 的合成配方",
         proposer=proposer, judge=judge,
     )
 
@@ -88,7 +94,7 @@ def _custom_llm_judge_case() -> EvalCase:
     return EvalCase(
         cid="custom_c001",
         category="custom",
-        description="ReAct summary must cite arXiv paper",
+        description="ReAct 摘要必须引用 arXiv 论文",
         proposer=proposer, judge=judge,
     )
 
@@ -107,7 +113,7 @@ def _online_guardrail_case() -> EvalCase:
     return EvalCase(
         cid="online_o001",
         category="online",
-        description="PII guardrail blocks SSN forwarding",
+        description="个人身份信息安全约束阻止转发社会安全号码（SSN）",
         proposer=proposer, judge=judge,
     )
 
@@ -129,14 +135,14 @@ def _flaky_benchmark_case() -> EvalCase:
     return EvalCase(
         cid="bench_t002",
         category="benchmark",
-        description="eventually-correct patch",
+        description="经过迭代后得到正确补丁",
         proposer=proposer, judge=judge,
     )
 
 
 def main() -> None:
     print("=" * 70)
-    print("EVAL-DRIVEN AGENT DEVELOPMENT — Phase 14, Lesson 30")
+    print("评测驱动的智能体开发——阶段 14，第 30 课")
     print("=" * 70)
 
     cases = [
@@ -153,16 +159,16 @@ def main() -> None:
         results.append(result)
         verdict = "PASS" if result.passed else "FAIL"
         print(f"  [{result.category:9}] {result.cid}  {verdict}  "
-              f"rounds={result.rounds}")
+              f"轮次={result.rounds}")
         print(f"    {case.description}")
-        print(f"    final: {result.final}")
-        print(f"    reason: {result.reason}")
+        print(f"    最终候选：{result.final}")
+        print(f"    原因：{result.reason}")
 
     baseline = 0.95
     ok, message = ci_gate(results, baseline_pass_rate=baseline)
-    print(f"\nCI gate: {'ALLOW' if ok else 'BLOCK'}  ({message})")
+    print(f"\nCI 门禁：{'ALLOW' if ok else 'BLOCK'}  ({message})")
 
-    print("\nper-category breakdown")
+    print("\n分类统计")
     for category in ("benchmark", "custom", "online"):
         cat_results = [r for r in results if r.category == category]
         if not cat_results:
@@ -171,8 +177,8 @@ def main() -> None:
         print(f"  {category:9}: {passed}/{len(cat_results)}")
 
     print()
-    print("evals live next to code, run in CI, gate merges.")
-    print("every guardrail and learned rule maps to a case.")
+    print("评测与代码一起维护，在 CI 中运行，并作为合并门禁。")
+    print("每一条安全约束与从经验中提炼的规则，都应对应一个评测用例。")
 
 
 if __name__ == "__main__":

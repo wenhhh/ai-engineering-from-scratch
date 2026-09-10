@@ -1,8 +1,7 @@
-"""Companion code for:
-certifications/claude/lessons/06-governance-safety-and-responsible-use/docs/en.md
-It scores governance controls and computes a deterministic review threshold.
-Confidence never overrides consequence, authority, or reversibility in the runner.
-"""
+"""第 06 课治理、安全与负责任使用配套代码。
+
+对应 docs/en.md：对治理控制、数据边界、人类审批和风险处理进行确定性评分。
+这些控制是课程练习中的结构化要求，不构成法律、合规或生产安全认证。"""
 
 from __future__ import annotations
 

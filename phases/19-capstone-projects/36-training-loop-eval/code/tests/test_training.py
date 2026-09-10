@@ -1,4 +1,7 @@
-"""Unit tests for the training loop, evaluation, schedule, and decay split."""
+"""训练循环、评估、学习率调度和权重衰减分组的单元测试。
+
+保留训练数据、种子、损失阈值、日志字段与所有断言原样。
+"""
 
 from __future__ import annotations
 

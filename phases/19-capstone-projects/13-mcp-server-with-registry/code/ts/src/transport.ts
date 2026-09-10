@@ -1,3 +1,9 @@
+/**
+ * 逐行 JSON-RPC 传输与夹具重放。
+ * 空行被忽略；通知不回复。Invalid Request 表示请求信封无效，Parse error 表示 JSON 解析失败。
+ * stdio 模式只输出协议行，不夹杂翻译说明；没有实现网络传输、认证或单行长度限制。
+ */
+
 import { createInterface } from "node:readline";
 import type { JsonRpcRequest, JsonRpcResponse } from "./types.js";
 import { dispatch, parseRpc, type ServerContext } from "./protocol.js";

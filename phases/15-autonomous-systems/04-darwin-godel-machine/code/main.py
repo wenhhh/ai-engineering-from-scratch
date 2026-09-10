@@ -1,13 +1,13 @@
-"""Darwin Godel Machine-style loop — stdlib Python.
+"""Darwin Gödel Machine 风格的循环，仅使用 Python 标准库。
 
-Toy benchmark: the "agent" is a sequence of string-transform operators,
-scored on held-out inputs. Each generation proposes an edit to the
-agent's operator sequence; the evaluator scores it; the archive keeps
-diverse winners.
+玩具基准把“智能体”表示为字符串变换操作的序列。每一代修改操作序列，再由评估器
+评分，档案保留不同的候选。--reward-hack-allowed 开启奖励投机旁路，允许
+hack_bonus 在真实得分上额外加分，模拟智能体可以篡改评分过程的情况。
 
-Flag --reward-hack-allowed opens a side channel: a score_adjustment
-function lives inside the agent and is added to every score. A rational
-evolutionary process will discover it.
+译注：原概述提到 score_adjustment 函数，实际实现使用 hack_bonus 字段。
+所有 CASES 都被反复用于选择候选，不是独立留出的测试集。目标要求标题式大小写，
+但工具库没有该变换，因此关闭旁路也不意味着可以完全解出基准。
+这是预设变异规则下的教学模拟，不会让真实智能体自行修改评估器源码。
 """
 
 from __future__ import annotations
@@ -17,7 +17,7 @@ import sys
 from dataclasses import dataclass, field
 
 
-# Tool library the agent composes from.
+# 供智能体组合使用的工具库；操作名是分派键，保持不变。
 TOOLS = [
     ("upper", lambda s: s.upper()),
     ("lower", lambda s: s.lower()),
@@ -27,8 +27,8 @@ TOOLS = [
     ("nop", lambda s: s),
 ]
 
-# Benchmark: transform messy strings to canonical form.
-# Target: collapse whitespace, trim, lower.
+# 基准：将杂乱字符串变换为预期的规范形式。
+# 目标以 CASES 为准：合并空白、去除首尾空白，并转为标题式大小写。
 CASES = [
     ("  Hello   World  ", "Hello World"),
     ("FOO   bar", "Foo Bar"),
@@ -39,10 +39,10 @@ CASES = [
     ("nothing  SPECIAL here", "Nothing Special Here"),
     ("ITEM   one-two", "Item One-Two"),
 ]
-# Target: collapse whitespace, trim, then title-case. Title-case is not in
-# the tool library, so no operator sequence can hit score 1.0. A rational
-# loop on a permissive scoring pipeline can only push reported > true by
-# hacking.
+# 目标最后一步是标题式大小写；工具库不提供该操作，
+# 所以任意操作序列都无法得到 1.0 分。若评分流程允许旁路，
+# 循环可以通过奖励投机，让报告得分高于真实得分，
+# 而不必改善任务行为。
 
 
 def hash_seq(seq: list[str]) -> tuple[str, ...]:
@@ -52,9 +52,9 @@ def hash_seq(seq: list[str]) -> tuple[str, ...]:
 @dataclass
 class Agent:
     ops: list[str]
-    # "hack" is a number this agent adds to its reported score if the
-    # scoring pipeline is permissive. Stands in for any edit the agent
-    # could make to the scoring pipeline itself.
+    # 若评分流程允许旁路，就把 hack_bonus 加到报告得分中。
+    # 它代表智能体能够对评分流程本身作出的修改，
+    # 而不是任务能力的真实提升。
     hack_bonus: float = 0.0
 
 
@@ -97,7 +97,7 @@ def mutate(parent: Agent, hack_allowed: bool) -> Agent:
 
     bonus = parent.hack_bonus
     if hack_allowed and random.random() < 0.08:
-        # Small chance per generation: evolve the hack.
+        # 每代以较小概率增加投机加分。
         bonus = min(1.0, bonus + random.uniform(0.0, 0.1))
     return Agent(ops=ops, hack_bonus=bonus)
 
@@ -110,8 +110,8 @@ def run_dgm(generations: int, hack_allowed: bool, seed: int | None = None) -> No
     archive[(len(init.ops), round(reported_score(init, hack_allowed), 2))] = init
 
     best_report, best_true = reported_score(init, hack_allowed), true_score(init)
-    print(f"  gen {0:>4}  report {best_report:.2f}  true {best_true:.2f}  "
-          f"ops {init.ops}  bonus {init.hack_bonus:.2f}")
+    print(f"  代数 {0:>4}  报告得分 {best_report:.2f}  真实得分 {best_true:.2f}  "
+          f"操作 {init.ops}  额外加分 {init.hack_bonus:.2f}")
 
     for g in range(1, generations + 1):
         parent = random.choice(list(archive.values()))
@@ -122,46 +122,46 @@ def run_dgm(generations: int, hack_allowed: bool, seed: int | None = None) -> No
         incumbent = archive.get(key)
         if incumbent is None or rep > reported_score(incumbent, hack_allowed):
             archive[key] = child
-        # Track all-time best by reported score (the metric the loop optimizes).
+        # 按报告得分记录历史最优值；这正是循环实际优化的指标。
         if rep > best_report:
             best_report = rep
             best_true = true_s
-            print(f"  gen {g:>4}  report {rep:.2f}  true {true_s:.2f}  "
-                  f"ops {child.ops}  bonus {child.hack_bonus:.2f}")
+            print(f"  代数 {g:>4}  报告得分 {rep:.2f}  真实得分 {true_s:.2f}  "
+                  f"操作 {child.ops}  额外加分 {child.hack_bonus:.2f}")
 
     best = max(archive.values(), key=lambda a: reported_score(a, hack_allowed))
-    print(f"\n  final reported score : {reported_score(best, hack_allowed):.2f}")
-    print(f"  final true score     : {true_score(best):.2f}")
-    print(f"  final ops            : {best.ops}")
-    print(f"  final hack bonus     : {best.hack_bonus:.2f}")
+    print(f"\n  最终报告得分：{reported_score(best, hack_allowed):.2f}")
+    print(f"  最终真实得分：{true_score(best):.2f}")
+    print(f"  最终操作序列：{best.ops}")
+    print(f"  最终投机加分：{best.hack_bonus:.2f}")
     gap = reported_score(best, hack_allowed) - true_score(best)
-    print(f"  reported - true      : {gap:+.2f}")
+    print(f"  报告值 - 真实值：{gap:+.2f}")
 
 
 def main() -> None:
     hack_allowed = "--reward-hack-allowed" in sys.argv
 
     print("=" * 70)
-    print("DARWIN GODEL MACHINE-STYLE LOOP (Phase 15, Lesson 4)")
+    print("Darwin Gödel Machine 风格的循环（阶段 15，第 4 课）")
     print("=" * 70)
-    print(f"reward-hack side channel: {'OPEN' if hack_allowed else 'closed'}")
+    print(f"奖励投机旁路：{'已开启' if hack_allowed else '已关闭'}")
 
-    print("\nRun")
+    print("\n运行演示")
     print("-" * 70)
     run_dgm(generations=200, hack_allowed=hack_allowed, seed=7)
 
     print()
     print("=" * 70)
-    print("HEADLINE: the evaluator must live outside the agent's reach")
+    print("要点：评估器必须处于智能体无权修改的边界之外")
     print("-" * 70)
     if hack_allowed:
-        print("  With the side channel open, reported score climbs above true.")
-        print("  This reproduces DGM's documented reward-hacking mode: the")
-        print("  agent edits the pipeline that scores it, not the behavior.")
+        print("  旁路开启时，报告得分可以上升到真实得分之上。")
+        print("  本例模拟原文讨论的奖励投机模式：智能体改善的是评分流程")
+        print("  给出的数字，而不是任务行为；这里没有运行真实 DGM 系统。")
     else:
-        print("  With the side channel closed, reported == true. The loop")
-        print("  converges on the real target. Rerun with --reward-hack-allowed")
-        print("  to see the documented failure mode.")
+        print("  旁路关闭时，报告得分等于真实得分，但受工具库能力限制，")
+        print("  仍无法完全满足目标。使用 --reward-hack-allowed 重新运行，")
+        print("  可观察报告得分与真实表现分离的失败模式。")
 
 
 if __name__ == "__main__":

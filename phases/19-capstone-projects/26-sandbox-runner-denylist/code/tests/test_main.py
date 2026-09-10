@@ -1,4 +1,7 @@
-"""Tests for the sandbox runner."""
+"""受限子进程运行器的回归测试。
+
+保留命令、拒绝原因匹配、路径夹具、超时阈值和断言；这些测试不等于安全隔离认证。
+"""
 
 from __future__ import annotations
 

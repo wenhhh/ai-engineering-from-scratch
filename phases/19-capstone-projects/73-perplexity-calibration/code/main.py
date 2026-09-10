@@ -1,11 +1,15 @@
-"""Perplexity and calibration: ECE, Brier, reliability diagram.
+"""困惑度与校准：ECE、Brier 分数和可靠性图。
 
-Conceptual references:
-- ./docs/en.md (this lesson)
-- lesson 70 (task spec format)
-- lesson 71 (classical metrics) for the scalar dispatch pattern
+概念参考：
+- ./docs/en.md（本课）
+- 第 70 课：任务规范格式
+- 第 71 课：标量指标分发模式
 
-Stdlib + numpy. Run: python3 code/main.py
+使用标准库 + NumPy。运行：python3 code/main.py
+
+译注：ECE 强依赖分箱方式，可靠性图这里只输出结构化桶统计而非图形界面；
+困惑度也基于调用者提供的 NLL。示例数值不能外推为真实模型校准质量。
+指标键、概率和标签输入保持原值。
 """
 
 from __future__ import annotations
@@ -248,7 +252,7 @@ def demo() -> int:
 
     nlls, counts = synthetic_token_nll(seed=7)
     pp = PerplexityResult.from_token_nll(nlls, counts)
-    print(f"perplexity     value={pp.perplexity:.3f}  avg_nll={pp.avg_neg_log_likelihood:.3f}  tokens={pp.total_tokens}")
+    print(f"困惑度          value={pp.perplexity:.3f}  avg_nll={pp.avg_neg_log_likelihood:.3f}  tokens={pp.total_tokens}")
     if not (3.0 < pp.perplexity < 25.0):
         failures += 1
 
@@ -257,7 +261,7 @@ def demo() -> int:
         np.array([0, 0, 1, 1]),
         bins=10,
     )
-    print(f"reliability    populated_bins={(bin_count > 0).sum()}")
+    print(f"可靠性统计      populated_bins={(bin_count > 0).sum()}")
     return 0 if failures == 0 else 1
 
 

@@ -1,4 +1,4 @@
-"""Companion validator for this lesson's docs/en.md delivery packet."""
+"""本课 docs/en.md 交付资料包的配套验证器。检查 stakeholder 沟通、ADR 与生命周期责任；不实际发送通知或执行变更流程。"""
 
 from __future__ import annotations
 

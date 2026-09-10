@@ -1,6 +1,8 @@
-"""Unit tests for gradient clipping and mixed-precision training.
+"""梯度裁剪与混合精度训练的单元测试。
 
-Run with: python3 -m unittest discover code/tests -v
+运行：python3 -m unittest discover code/tests -v
+使用 CPU 测试原有路径；不以此代替 CUDA 动态缩放验证。
+断言、异常与跳过原因枚举保持原值。
 """
 
 from __future__ import annotations
@@ -61,7 +63,7 @@ class ClipTests(unittest.TestCase):
         self.assertAlmostEqual(float(param.grad[0]), 0.3, places=6)
 
     def test_clip_scales_gradients_above_max_norm(self) -> None:
-        param = _make_param_with_grad([6.0, 8.0])  # norm = 10
+        param = _make_param_with_grad([6.0, 8.0])  # 范数为 10
         pre, post = clip_global_l2_norm([param], max_norm=1.0)
         self.assertAlmostEqual(pre, 10.0, places=6)
         self.assertAlmostEqual(post, 1.0, places=6)

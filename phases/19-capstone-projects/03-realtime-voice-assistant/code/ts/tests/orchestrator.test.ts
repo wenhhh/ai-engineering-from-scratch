@@ -1,9 +1,14 @@
+/**
+ * 实时语音示例的回归测试。
+ * 只翻译名称与注释；话语夹具、事件关键词、测试回调和断言保持不变。
+ */
+
 import { test } from "node:test";
 import { strict as assert } from "node:assert";
 import { runSession, summarize, turnLatencyMs } from "../src/orchestrator.ts";
 import { synthCall } from "../src/vad.ts";
 
-test("runSession: clean call reaches first-audio-out with tool result", () => {
+test("runSession：无插话会话得到工具结果并到达首次音频输出", () => {
   const m = runSession(synthCall("what is the weather in tokyo tomorrow"), {
     useTool: true,
     bargeInAtMs: null,
@@ -15,7 +20,7 @@ test("runSession: clean call reaches first-audio-out with tool result", () => {
   assert.ok(m.events.some((e) => e.includes("tool result")));
 });
 
-test("runSession: barge-in increments bargeIns and re-arms ASR", () => {
+test("runSession：插话增加 bargeIns 并重新准备 ASR", () => {
   const frames = synthCall("tell me a long story about");
   for (let i = 0; i < 8; i++) {
     const idx = frames.length - 20 + i;
@@ -30,7 +35,7 @@ test("runSession: barge-in increments bargeIns and re-arms ASR", () => {
   assert.ok(m.bargeIns >= 1);
 });
 
-test("turnLatencyMs: -1 if first-audio-out never fired", () => {
+test("turnLatencyMs：尚无首次音频输出时返回 -1", () => {
   const m = {
     events: [],
     turnCompleteMs: 0,
@@ -41,7 +46,7 @@ test("turnLatencyMs: -1 if first-audio-out never fired", () => {
   assert.equal(turnLatencyMs(m), -1);
 });
 
-test("turnLatencyMs: positive delta when both timestamps present", () => {
+test("turnLatencyMs：两个时间戳齐备时计算正向差值", () => {
   const m = {
     events: [],
     turnCompleteMs: 1000,
@@ -52,7 +57,7 @@ test("turnLatencyMs: positive delta when both timestamps present", () => {
   assert.equal(turnLatencyMs(m), 380);
 });
 
-test("summarize: produces a SessionSummary with computed turnLatencyMs", () => {
+test("summarize：生成包含轮次延迟的统计摘要", () => {
   const m = runSession(synthCall("hello"), { useTool: false, bargeInAtMs: null });
   const s = summarize(m);
   assert.equal(typeof s.turnLatencyMs, "number");

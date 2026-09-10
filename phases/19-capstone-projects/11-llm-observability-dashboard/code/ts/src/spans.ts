@@ -1,3 +1,11 @@
+/**
+ * span 归一化、环形缓冲区和接收计数器。
+ * 无效的 trace/span ID 被随机替换；这会丢失原 ID 的关联，不等于恢复真实追踪关系。
+ * 词元字段允许可转换为非负整数的值；接口不会验证全部 GenAI 属性或 OTLP 信封。
+ * 缓冲区满后覆盖最早的条目，累计 accepted 不随淘汰下降；快照中的对象不是深复制。
+ * 纳秒时间戳使用 JavaScript number，可能存在大整数精度限制。
+ */
+
 import { randomBytes } from "node:crypto";
 import type { Counters, GenAISpan } from "./types.js";
 
@@ -41,6 +49,7 @@ export class RingBuffer<T> {
   private filled = false;
 
   constructor(capacity: number) {
+    // 错误契约：容量必须大于零；实际还需要数组长度合法，本处未额外验证整数。
     if (capacity <= 0) throw new Error("capacity must be > 0");
     this.capacity = capacity;
     this.slots = new Array<T | undefined>(capacity);

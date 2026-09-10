@@ -1,4 +1,7 @@
-"""Tests for HyDE, multi-query, decomposition rewriters and the retrieve loop."""
+"""HyDE、多查询、分解式改写以及检索循环的单元测试。
+
+仅翻译说明和注释；查询、策略名、排名结果和断言保持原样。
+"""
 
 from __future__ import annotations
 
@@ -40,7 +43,7 @@ class TestMockLLM(unittest.TestCase):
     def test_paraphrase_returns_n(self) -> None:
         out = self.llm.paraphrase("how is access control handled across user types", n=3)
         self.assertEqual(len(out), 3)
-        # rewrites must not be exact duplicates of the input
+        # 改写结果不能与原输入完全重复。
         self.assertNotIn("how is access control handled across user types", out)
 
     def test_decompose_atomic_returns_self(self) -> None:
@@ -94,7 +97,7 @@ class TestRetrieveLoop(unittest.TestCase):
         hyde = retrieve_with_rewriter(q, HyDERewriter(), self.retriever, k_each=8, k_out=8)
         base_ids = [d.doc_id for d, _ in baseline["results"]]
         hyde_ids = [d.doc_id for d, _ in hyde["results"]]
-        # Confirm rewriting actually changed the ranking somewhere
+        # 确认改写至少在某处实际改变了排名。
         self.assertNotEqual(base_ids, hyde_ids)
 
     def test_gold_promotion_for_designated_strategies(self) -> None:
@@ -109,7 +112,7 @@ class TestRetrieveLoop(unittest.TestCase):
                 ids = [d.doc_id for d, _ in out["results"]]
                 rank = ids.index(gold) + 1 if gold in ids else 99
                 best = min(best, rank)
-            # At least one rewriter must do at least as well as baseline on gold rank.
+            # 至少一种改写器在黄金文档排名上不能比基线更差。
             self.assertLessEqual(best, base_rank, f"no rewriter helped on query: {q}")
 
 

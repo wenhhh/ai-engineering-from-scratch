@@ -1,10 +1,15 @@
-"""DP-SGD toy on binary logistic regression — stdlib Python.
+"""二分类逻辑回归上的 DP-SGD 玩具示例，仅使用 Python 标准库。
 
-Sweeps noise multiplier sigma, reports accuracy vs (epsilon, delta) budget.
-Illustrates the privacy-utility tradeoff without a real privacy accountant;
-the displayed epsilon is a Gaussian-mechanism analytical proxy.
+扫描噪声乘数 sigma，打印分类准确率与 (epsilon, delta) 隐私预算的示意值。
+用于观察加噪与模型效用的关系；没有实现真实隐私会计器，显示的 epsilon
+只是一个随噪声和步数变化的高斯机制代理公式，不能作为正式隐私保证。
 
-Usage: python3 code/main.py
+运行方式：python3 code/main.py
+
+译注：每个样本都更新一次；权重梯度与偏置梯度分别裁剪，并未对完整梯度
+联合裁剪。程序用 max(sigma,0.01) 避免公式除零，因此 sigma=0 时打印的
+有限 epsilon 也不意味着具备隐私保护。固定随机种子和本例的简化会计均
+只适合教学，不能据此宣称真实部署满足指定差分隐私预算。
 """
 
 from __future__ import annotations
@@ -48,7 +53,7 @@ def dp_sgd(data, epochs: int, lr: float, sigma: float, C: float) -> list[float]:
             grad_b = err
             grad_w = clip(grad_w, C)
             grad_b = max(-C, min(C, grad_b))
-            # add noise proportional to sigma * C.
+            # 添加标准差为 sigma × C 的高斯噪声。
             noise_w = [random.gauss(0.0, sigma * C) for _ in range(2)]
             noise_b = random.gauss(0.0, sigma * C)
             w = [wi - lr * (gi + ni) for wi, gi, ni in zip(w, grad_w, noise_w)]
@@ -67,15 +72,15 @@ def accuracy(model, data) -> float:
 
 
 def analytical_epsilon(sigma: float, steps: int, delta: float = 1e-5) -> float:
-    """Rough Gaussian-mechanism composition proxy.
-    Each step contributes roughly 1/(2*sigma^2); composition bounds epsilon
-    by sum. Real accountants (RDP, Moments) give tighter bounds."""
+    """粗略的高斯机制代理公式，实际返回 sqrt(2 log(1.25/delta)) × sqrt(steps) / sigma。
+    原文以每步约 1/(2*sigma^2) 的组合贡献作解释，但本实现没有完整组合证明。
+    真实预算需要按机制、采样和训练流程采用适当的 RDP 或矩会计方法。"""
     return math.sqrt(2 * math.log(1.25 / delta)) * math.sqrt(steps) / sigma
 
 
 def main() -> None:
     print("=" * 70)
-    print("DP-SGD TOY (Phase 18, Lesson 22)")
+    print("DP-SGD 玩具示例（阶段 18，第 22 课）")
     print("=" * 70)
 
     train_data = gen(500)
@@ -88,14 +93,14 @@ def main() -> None:
         model = dp_sgd(train_data, epochs=epochs, lr=0.05, sigma=sigma, C=C)
         acc = accuracy(model, test_data)
         eps = analytical_epsilon(max(sigma, 0.01), steps=epochs * len(train_data), delta=delta)
-        print(f"  sigma={sigma:4.1f}  approx-epsilon={eps:7.2f}  test-accuracy={acc:.3f}")
+        print(f"  sigma={sigma:4.1f}  epsilon 示意值={eps:7.2f}  测试准确率={acc:.3f}")
 
     print("\n" + "=" * 70)
-    print("TAKEAWAY: sigma=0 is standard SGD with no privacy (infinite epsilon).")
-    print("increasing sigma adds noise, shrinks epsilon, and costs accuracy.")
-    print("real deployments target epsilon in [1, 10] via accountants like")
-    print("Moments Accountant. Nasr et al. 2025 shows extraction-based threats")
-    print("persist under moderate epsilon -- DP is necessary but not sufficient.")
+    print("要点：sigma=0 时没有噪声隐私保护；本实现仍有梯度裁剪，并非未经修改的 SGD。")
+    print("增加 sigma 会提高噪声、降低代理 epsilon，并可能牺牲准确率；单次结果可有波动。")
+    print("原文以 epsilon 在 [1,10] 的部署目标和矩会计器作说明，")
+    print("并引用 Nasr 等（2025）讨论中等 epsilon 下仍可能存在的提取威胁。")
+    print("这些不是本例的验证结果；不能把一个有限 epsilon 数字当作完整安全证明。")
     print("=" * 70)
 
 

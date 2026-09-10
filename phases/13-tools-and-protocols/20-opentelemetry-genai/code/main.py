@@ -1,14 +1,20 @@
-"""Phase 13 Lesson 20 - OTel GenAI span emitter, stdlib only.
+"""阶段 13，第 20 课：仅用标准库生成 OTel GenAI 链路片段（span）。
 
-Emits spans in an OTLP-JSON-like format to stdout for an agent that:
-  - invokes an LLM chat (gen_ai.operation.name = "chat")
-  - dispatches two tools (gen_ai.operation.name = "execute_tool")
-  - makes one MCP client call (CLIENT span with traceparent propagation)
+为一个智能体向标准输出写出类似 OTLP-JSON 格式的 span。原文概述的操作包括：
+  - 调用大语言模型聊天（gen_ai.operation.name = \"chat\"）
+  - 分派两个工具（gen_ai.operation.name = \"execute_tool\"）
+  - 发起一次 MCP 客户端调用（CLIENT span，并传播 traceparent）
 
-Content capture (gen_ai.content.prompt / completion) is off by default;
-enable by setting OTEL_CAPTURE_CONTENT=1 before running.
+译注：实际 agent_loop 会调用两次模拟 LLM，并对三个城市分别执行工具和 MCP
+调用；加上根 span，共生成 9 个 span。上面的数量沿用原文概述，不应作为断言。
+这些调用均为本地模拟，没有连接模型或天气服务。
 
-Run: python code/main.py
+默认不采集内容（gen_ai.content.prompt / completion）；运行前设置
+OTEL_CAPTURE_CONTENT=1 可开启。遥测属性、span 名称和枚举保持原样。
+用于按字符长度估算词元数的英文提示词也保持原样，分别表示“用户想查询三个
+城市的天气”和“汇总三个天气结果”；sample completion 表示“示例补全文本”。
+
+运行：python code/main.py
 """
 
 from __future__ import annotations
@@ -32,7 +38,7 @@ def _hex(n_bytes: int) -> str:
 @dataclass
 class Span:
     name: str
-    kind: str  # INTERNAL / CLIENT / SERVER
+    kind: str  # INTERNAL / CLIENT / SERVER：内部操作 / 客户端调用 / 服务端处理
     trace_id: str
     span_id: str
     parent_span_id: str | None = None
@@ -95,7 +101,7 @@ def fake_tool_execute(span: Span, tool: str, args: dict) -> dict:
         "gen_ai.tool.name": tool,
         "gen_ai.tool.call.id": f"call_{uuid.uuid4().hex[:8]}",
     })
-    return {"content": [{"type": "text", "text": f"{tool} ran with {args}"}]}
+    return {"content": [{"type": "text", "text": f"{tool} 执行完毕，参数为 {args}"}]}
 
 
 def fake_mcp_call(parent: Span, tool: str) -> dict:
@@ -149,14 +155,14 @@ def agent_loop() -> None:
 
 def main() -> None:
     print("=" * 72)
-    print("PHASE 13 LESSON 19 - OTEL GENAI SPAN EMITTER")
-    print(f"  content capture : {'ON' if CAPTURE_CONTENT else 'off (set OTEL_CAPTURE_CONTENT=1)'}")
+    print("阶段 13，第 20 课——OTel GenAI 链路片段生成器")
+    print(f"  内容采集：{'已开启' if CAPTURE_CONTENT else '已关闭（设置 OTEL_CAPTURE_CONTENT=1 可开启）'}")
     print("=" * 72)
 
     agent_loop()
 
-    print(f"\nemitted {len(SPANS)} spans across 1 trace")
-    print(f"\nOTLP-JSON-shaped spans:\n")
+    print(f"\n已生成 {len(SPANS)} 个 span，属于同一条 trace")
+    print(f"\n类似 OTLP-JSON 格式的 span：\n")
     for span in SPANS:
         summary = {
             "name": span.name,
@@ -170,7 +176,7 @@ def main() -> None:
         }
         print(json.dumps(summary))
 
-    print("\ntry: OTEL_CAPTURE_CONTENT=1 python code/main.py")
+    print("\n试一试：OTEL_CAPTURE_CONTENT=1 python code/main.py")
 
 
 if __name__ == "__main__":

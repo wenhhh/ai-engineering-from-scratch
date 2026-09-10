@@ -1,7 +1,8 @@
-"""Tests for the from-scratch DDP wrapper and FSDP sharding sketch.
+"""自制 DDP 包装器及 FSDP 分片示意的测试。
 
-The collective tests spawn worker processes through torch.multiprocessing
-on the gloo backend; this works on CPU and does not require CUDA.
+集合通信测试通过 torch.multiprocessing 在 Gloo 后端启动工作进程，
+可在 CPU 上运行，不需要 CUDA；后端不可用时按原测试规则跳过。
+仅翻译说明，进程数量、数值阈值、跳过消息和断言保持原样。
 """
 
 from __future__ import annotations

@@ -1,8 +1,7 @@
-"""Companion code for:
-certifications/claude/lessons/03-prompting-and-task-decomposition/docs/en.md
-It validates a prompt contract, stage gates, and adversarial case coverage.
-The runner evaluates structure and evidence boundaries without a provider call.
-"""
+"""第 03 课提示设计与任务拆解配套代码。
+
+对应 docs/en.md：校验提示契约、任务边界、子任务顺序和成功条件。验证器检查结构与约束，
+不调用真实模型，也不证明提示在任意任务上都有效。"""
 
 from __future__ import annotations
 

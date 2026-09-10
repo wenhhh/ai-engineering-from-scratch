@@ -1,4 +1,7 @@
-"""Unit tests for the Vision Transformer encoder."""
+"""视觉 Transformer 编码器单元测试。
+
+译注：test_gradient_reaches_patch_projection 使用最终 LayerNorm 后的 CLS 求和作损失。
+本轮环境中两版梯度均为零，原断言失败；保留该用例，不修改损失或断言制造通过。"""
 
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-"""Companion validator for this lesson's docs/en.md recovery packet."""
+"""本课 docs/en.md 恢复资料包的配套验证器。检查 session、subagent、上下文和恢复边界；不连接真实 Agent SDK 服务。"""
 
 from __future__ import annotations
 

@@ -1,11 +1,14 @@
-"""Hypothesis generator: temperature ramped sampling, novelty filter, ranked queue.
+"""假设生成器：逐步升高采样温度、过滤相似假设，并生成按分数排序的候选队列。
 
-Conceptual references:
-- ./docs/en.md (this lesson)
-- Phase 19 Track A lessons 20-29 (agent harness primitives)
+概念参考：
+- ./docs/en.md（本课正文）
+- 阶段 19 的 A 路线第 20—29 课（智能体运行框架的基础构件）
 
-Stdlib only. Run: python3 code/main.py
-"""
+仅使用标准库。运行：python3 code/main.py
+
+译注：这是按提示词签名与温度档位查表的本地采样器，不调用真实语言模型。
+英文提示词及 XML 假设文本参与哈希、分词和新颖性评分，因此保留原值。
+候选中的数值是待检验假设，不是已完成实验的结论。"""
 
 from __future__ import annotations
 
@@ -56,7 +59,7 @@ class Hypothesis:
 
 
 class ParserError(ValueError):
-    """Raised when a sampler response does not match the hypothesis tag schema."""
+    """采样器响应不符合假设标签格式时抛出。"""
 
 
 def _tokenise(text: str) -> list[str]:
@@ -64,7 +67,7 @@ def _tokenise(text: str) -> list[str]:
 
 
 def hashed_embed(text: str, dim: int = HASH_DIM) -> list[float]:
-    """Hashed bag of tokens embedding, L2 normalised. Deterministic stdlib only."""
+    """将词项哈希成词袋向量，再作 L2 归一化；仅用标准库，结果可复现。"""
     vec = [0.0] * dim
     for tok in _tokenise(text):
         h = hashlib.md5(tok.encode("utf-8")).digest()
@@ -86,16 +89,20 @@ def cosine_distance(a: list[float], b: list[float]) -> float:
 def parse_response(raw: str) -> dict:
     match = TAG_RE.search(raw)
     if match is None:
+        # 未找到 hypothesis 假设块；保留异常原值供调用方匹配。
         raise ParserError("no hypothesis block found")
     text = match.group("text").strip()
     if not text:
+        # 假设正文为空。
         raise ParserError("empty text")
     metric = match.group("metric").strip()
     if not metric:
+        # 度量指标为空。
         raise ParserError("empty metric")
     raw_vars = match.group("variables").strip()
     variables = [v.strip() for v in raw_vars.split(",") if v.strip()]
     if not variables:
+        # 变量列表为空。
         raise ParserError("empty variables")
     baseline = match.group("baseline")
     baseline_ref = baseline.strip() if baseline and baseline.strip() else None
@@ -108,7 +115,7 @@ def parse_response(raw: str) -> dict:
 
 
 def temperature_bucket(temperature: float) -> int:
-    """Map a continuous temperature to a discrete bucket index."""
+    """将连续温度映射为离散档位索引。"""
     if temperature < 0.35:
         return 0
     if temperature < 0.65:
@@ -119,12 +126,10 @@ def temperature_bucket(temperature: float) -> int:
 
 
 class MockLLM:
-    """Scripted sampler keyed on (prompt_signature, temperature_bucket).
+    """以（提示词签名、温度档位）为键的脚本化采样器。
 
-    The seed is folded into the response so identical prompts and buckets with
-    different seeds yield distinct drafts. Unknown keys return an unparseable
-    fallback so the parser-failure path is reachable from tests.
-    """
+    随机种子通过取模选择响应库中的条目；不同种子不保证选出不同草稿，
+    特别是响应库只有一项时。未知键返回不可解析的占位文本，供测试解析失败路径。"""
 
     def __init__(self, scripts: dict[tuple[str, int], list[str]]) -> None:
         self._scripts = dict(scripts)
@@ -183,7 +188,11 @@ class GenerationLog:
 
 
 class HypothesisGenerator:
-    """Drives the mock LLM over a temperature schedule and ranks the survivors."""
+    """沿温度调度调用模拟模型，并对保留的候选排序。
+
+    新颖性只相对于本次已接受的假设计算，不是与完整文献库比较。
+    具体性由变量数量近似，可检验性由指标和基线字段是否存在近似；
+    分数高不等于假设已获证据支持。"""
 
     def __init__(
         self,
@@ -256,12 +265,14 @@ class HypothesisGenerator:
 
 
 def build_demo_scripts() -> dict[tuple[str, int], list[str]]:
-    """Scripted responses for the demo seed prompt across temperature buckets."""
+    """为演示提示词的各温度档位构建固定响应库。"""
+    # 固定英文提示词：研究小型 Transformer 的注意力稀疏性；字节参与签名。
     seed_prompt = "Investigate attention sparsity in small transformers"
     sig = MockLLM.prompt_signature(seed_prompt)
     return {
         (sig, 0): [
             "<hypothesis>"
+            # 假设：对 1200 万参数模型，注意力头数从 8 减到 4，验证损失增幅不足 2%。
             "<text>Lowering attention head count from 8 to 4 raises validation loss by less than 2 percent on a 12M parameter model.</text>"
             "<variables>head_count, validation_loss</variables>"
             "<metric>validation_loss</metric>"
@@ -270,6 +281,7 @@ def build_demo_scripts() -> dict[tuple[str, int], list[str]]:
         ],
         (sig, 1): [
             "<hypothesis>"
+            # 假设：在 1200 万参数规模下，k=16 的 Top-k 稀疏注意力与稠密注意力的困惑度相当。
             "<text>Top-k sparse attention with k equal to 16 matches dense attention on perplexity at 12M parameters.</text>"
             "<variables>k, perplexity, parameter_count</variables>"
             "<metric>perplexity</metric>"
@@ -278,6 +290,7 @@ def build_demo_scripts() -> dict[tuple[str, int], list[str]]:
         ],
         (sig, 2): [
             "<hypothesis>"
+            # 假设：通过学习到的门控路由注意力，可将浮点运算量降低 30%，且不损害下游准确率。
             "<text>Routing attention through a learned gate reduces flops by 30 percent without harming downstream accuracy.</text>"
             "<variables>gate_temperature, flops, accuracy</variables>"
             "<metric>downstream_accuracy</metric>"
@@ -286,6 +299,7 @@ def build_demo_scripts() -> dict[tuple[str, int], list[str]]:
         ],
         (sig, 3): [
             "<hypothesis>"
+            # 假设：块大小为 32 的块稀疏注意力可使消费级 GPU 的实际训练耗时降低 18%。
             "<text>Block sparse attention with block size 32 lowers wall clock training time by 18 percent on consumer GPUs.</text>"
             "<variables>block_size, training_seconds, hardware</variables>"
             "<metric>training_seconds</metric>"
@@ -299,6 +313,7 @@ def _demo() -> None:
     llm = MockLLM(build_demo_scripts())
     config = GeneratorConfig(n_passes=4, t_min=0.2, t_max=1.1)
     generator = HypothesisGenerator(llm, config)
+    # 固定英文提示词：研究小型 Transformer 的注意力稀疏性；字节参与签名。
     queue, logs = generator.run("Investigate attention sparsity in small transformers")
     print(json.dumps({
         "queue_size": len(queue),

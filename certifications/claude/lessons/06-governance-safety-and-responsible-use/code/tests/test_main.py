@@ -1,4 +1,4 @@
-"""Tests for lesson 06 governance controls."""
+"""第 06 课治理控制测试。"""
 
 import copy
 import pathlib

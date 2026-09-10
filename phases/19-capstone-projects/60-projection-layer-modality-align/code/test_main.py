@@ -1,4 +1,4 @@
-"""Unit tests for the modality-alignment projection layer."""
+"""模态对齐投影层单元测试。训练用例使用测试内的小型循环，并非直接覆盖默认 train 的全部配置。"""
 
 from __future__ import annotations
 

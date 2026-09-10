@@ -1,4 +1,4 @@
-"""Companion validator for this lesson's docs/en.md discovery brief."""
+"""本课 docs/en.md 业务发现简报的配套验证器。检查需求、约束、成功标准与 SLA 字段；不代表真实合同或服务承诺。"""
 
 from __future__ import annotations
 

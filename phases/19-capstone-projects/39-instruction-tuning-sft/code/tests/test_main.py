@@ -1,4 +1,7 @@
-"""Tests for the SFT lesson."""
+"""指令监督微调（SFT）课程测试。
+
+训练数据、掩蔽规则、生成长度、数值容差和断言保持原样；全掩蔽损失允许 NaN 的旧行为仍保留。
+"""
 
 from __future__ import annotations
 
@@ -37,7 +40,7 @@ class TokenizerTests(unittest.TestCase):
         ids, resp_start = tok.encode_pair("hi", "bye", max_len=32)
         self.assertEqual(ids[0], InstructionTokenizer.INST_ID)
         self.assertEqual(ids[resp_start - 1], InstructionTokenizer.RESP_ID)
-        # Response bytes start at resp_start.
+        # 回答字节从 resp_start 位置开始。
         self.assertEqual(bytes(ids[resp_start : resp_start + 3]), b"bye")
 
     def test_truncates_to_max_len(self) -> None:
@@ -57,13 +60,13 @@ class CollateTests(unittest.TestCase):
         ids1, rs1 = tok.encode_pair("ab", "cd", max_len=32)
         ids2, rs2 = tok.encode_pair("a", "bcdefg", max_len=32)
         input_ids, labels, _attn_mask = sft_collate([(ids1, rs1), (ids2, rs2)])
-        # Padded to same length.
+        # 填充到相同长度。
         self.assertEqual(input_ids.shape, labels.shape)
         self.assertEqual(input_ids.shape[0], 2)
-        # Instruction region of row 0 must be -100 in labels.
+        # 第 0 行的指令区域在 labels 中必须为 -100。
         for i in range(rs1):
             self.assertEqual(int(labels[0, i].item()), InstructionTokenizer.IGNORE_INDEX)
-        # Response region of row 0 keeps token ids (=== input_ids on those positions).
+        # 第 0 行的回答区域保留词元 ID，与 input_ids 对应位置一致。
         for i in range(rs1, len(ids1)):
             self.assertEqual(int(labels[0, i].item()), ids1[i])
 
@@ -73,10 +76,10 @@ class CollateTests(unittest.TestCase):
         ids2, rs2 = tok.encode_pair("a", "bcdefghij", max_len=32)
         input_ids, labels, attn_mask = sft_collate([(ids1, rs1), (ids2, rs2)])
         max_t = input_ids.size(1)
-        # Last positions of the shorter row are pad and must be -100 in labels.
+        # 较短行尾部为填充位置，labels 中必须为 -100。
         for i in range(len(ids1), max_t):
             self.assertEqual(int(labels[0, i].item()), InstructionTokenizer.IGNORE_INDEX)
-        # Pad positions are 0 in attn_mask, real positions are 1.
+        # attn_mask 中填充位置为 0，实际词元位置为 1。
         self.assertEqual(int(attn_mask[0, 0].item()), 1)
         self.assertEqual(int(attn_mask[0, -1].item()), 0)
 
@@ -95,7 +98,7 @@ class DatasetTests(unittest.TestCase):
         pairs, cats = make_dataset(seed=0)
         tr, _tr_c, te, te_c = split_dataset(pairs, cats, test_frac=0.2, seed=0)
         self.assertEqual(len(tr) + len(te), 200)
-        # Every category appears in the test split.
+        # 测试划分中应出现每个类别。
         self.assertEqual(set(te_c), set(cats))
 
 
@@ -106,9 +109,9 @@ class LossTests(unittest.TestCase):
         logits = torch.randn(1, 4, V, requires_grad=True)
         labels = torch.tensor([[InstructionTokenizer.IGNORE_INDEX] * 4])
         loss = shifted_loss(logits, labels)
-        # All targets masked: cross-entropy with no valid targets returns nan,
-        # which is the standard PyTorch behaviour. The contract here is that
-        # the function does not raise.
+        # 所有目标都被掩蔽时，没有有效目标的交叉熵可能返回 NaN。
+        # 本测试保留对 NaN 或零的接受条件；这里检查的契约仅为
+        # 函数不会抛出异常，而不是有效损失或梯度的保证。
         self.assertTrue(torch.isnan(loss) or loss.item() == 0.0)
 
     def test_loss_decreases_when_target_distribution_is_learnable(self) -> None:
@@ -117,10 +120,10 @@ class LossTests(unittest.TestCase):
         logits = torch.zeros(1, 4, V, requires_grad=True)
         labels = torch.tensor([[InstructionTokenizer.IGNORE_INDEX, 3, 5, 7]])
         l0 = shifted_loss(logits, labels)
-        # The target positions in the shifted formulation are labels[:, 1:] = [3, 5, 7].
-        # Hand-craft logits that peak at those tokens and check loss drops.
+        # 移位后的目标为 labels[:, 1:] = [3, 5, 7]。
+        # 手工构造在这些词元上取得峰值的 logits，检查损失是否下降。
         logits2 = torch.zeros(1, 4, V)
-        # logits at position i predict labels[i+1]; positions used for the loss are 0,1,2.
+        # 第 i 个位置的 logits 预测 labels[i+1]；这里参与损失的预测位置为 0、1、2。
         logits2[0, 0, 3] = 10.0
         logits2[0, 1, 5] = 10.0
         logits2[0, 2, 7] = 10.0
@@ -144,7 +147,8 @@ class GenerateTests(unittest.TestCase):
         model = build_model(cfg)
         out = generate(model, tok, "Hi.", max_len=cfg.max_len, max_new_tokens=4)
         self.assertIsInstance(out, str)
-        # At most max_new_tokens bytes (the function may stop earlier).
+        # 此测试要求输出 UTF-8 字节数不超过 max_new_tokens；函数可能提前停止。
+        # 本轮原版与译版在此都得到 6 字节，而上限为 4；原因是非法 UTF-8 经替换字符扩张。保留原断言作为既有失败，不修改生成逻辑或放宽预期。
         self.assertLessEqual(len(out.encode("utf-8")), 4)
 
     def test_temperature_zero_is_deterministic(self) -> None:

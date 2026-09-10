@@ -1,9 +1,4 @@
-"""Architecture readiness gate for this capstone's docs/en.md.
-
-Validates requirements, decisions, controls, evaluations, owners, and rollback.
-Hard controls must be verified; a high average score cannot hide their failure.
-Uses only the Python standard library and an inspectable architecture packet.
-"""
+"""本综合项目 docs/en.md 的架构 readiness gate。校验需求、决策、控制、评测、owner 与实施证据之间的闭环；通过仅代表资料包满足本课规则，不代表生产系统已验收。"""
 
 from __future__ import annotations
 

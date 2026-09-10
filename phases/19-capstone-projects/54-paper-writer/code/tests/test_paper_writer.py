@@ -1,4 +1,4 @@
-"""Tests for the paper writer: skeleton render, figure injection, validation gates, manifest contract."""
+"""论文写作器测试：骨架字符串、图表插入、校验门禁与清单契约。测试不运行 LaTeX 编译。"""
 
 from __future__ import annotations
 
