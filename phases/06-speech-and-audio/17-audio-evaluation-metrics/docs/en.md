@@ -106,7 +106,7 @@
 | Open ASR 排行榜（HF） | 英语、多语言、长音频 | `huggingface.co/spaces/hf-audio/open_asr_leaderboard` |
 | TTS Arena（HF） | 英语 TTS | `huggingface.co/spaces/TTS-AGI/TTS-Arena` |
 | Artificial Analysis Speech | TTS 与 STT，成对投票计算 ELO | `artificialanalysis.ai/speech` |
-| MMAU-Pro | 大型音频语言模型推理 | `mmaubenchmark.github.io` |
+| MMAU-Pro | 大型音频语言模型推理 | `sonalkum.github.io/mmau-pro` |
 | SpeakerBench / VoxSRC | 说话人识别 | `voxsrc.github.io` |
 | MMAU 音乐子集 | 音乐音频语言模型 | MMAU 内部 |
 | HEAR 基准 | 自监督音频 | `hearbenchmark.com` |
@@ -224,5 +224,5 @@ def eer(same_scores, diff_scores):
 - [弗雷歇音频距离论文，Kilgour 等（2019）](https://arxiv.org/abs/1812.08466)：音乐生成标准。
 - [Open ASR 排行榜](https://huggingface.co/spaces/hf-audio/open_asr_leaderboard)：2026 年动态排名。
 - [TTS Arena 排行榜](https://huggingface.co/spaces/TTS-AGI/TTS-Arena)：人工投票 TTS 排名。
-- [MMAU-Pro 基准](https://mmaubenchmark.github.io/)：大型音频语言模型推理排行榜。
+- [MMAU-Pro 基准](https://sonalkum.github.io/mmau-pro/)：大型音频语言模型推理排行榜。
 - [HEAR 基准](https://hearbenchmark.com/)：音频自监督学习基准。
