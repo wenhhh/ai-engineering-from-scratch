@@ -61,7 +61,7 @@ print(dataset["train"][0])
 有些数据集太大，磁盘也装不下。流式读取逐行加载数据，无需下载整个数据集。
 
 ```python
-dataset = load_dataset("wikimedia/wikipedia", "20220301.en", split="train", streaming=True)
+dataset = load_dataset("wikimedia/wikipedia", "20231101.en", split="train", streaming=True)
 
 for i, example in enumerate(dataset):
     print(example["title"])
