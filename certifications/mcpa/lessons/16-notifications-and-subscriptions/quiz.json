@@ -1,0 +1,78 @@
+{
+  "lesson": "16-notifications-and-subscriptions",
+  "title": "订阅流：通知、进度与取消（The Subscription Stream: Notifications, Progress, and Cancellation）",
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "服务器的工具列表刚发生变化。为什么不能仅用普通请求的回复持续报告这种变更？",
+      "options": [
+        "必须先通过新的发现调用重新协商工具能力",
+        "客户端再次轮询工具列表之后变更才会可见",
+        "普通回复会结束对应请求，无法留下持续通知通道",
+        "JSON-RPC 完全不允许服务器发送任何主动消息"
+      ],
+      "correct": 2,
+      "explanation": "JSON-RPC 回复对应并结束一次请求。当没有普通请求进行时，持续变更无法依附在某次普通回复上，需要通过专门打开的订阅流发送通知。"
+    },
+    {
+      "stage": "check",
+      "question": "客户端用新请求 id 打开 subscriptions/listen 流。流中的第一条消息必须是什么？",
+      "options": [
+        "resources/subscribe，用于确认资源监视已注册成功",
+        "空的 tools/list 结果，仅确认新的流已经打开",
+        "notifications/resources/updated，报告服务器最先发现的更新",
+        "notifications/subscriptions/acknowledged，以 listen 请求 id 作为 subscriptionId"
+      ],
+      "correct": 3,
+      "explanation": "服务器必须先发送订阅确认，在 _meta 中以 listen 请求自身的 id 作为订阅 id。此确认先于该流中的任何后续通知，客户端据此建立分流关系。"
+    },
+    {
+      "stage": "check",
+      "question": "tools/call 请求包含 progressToken，服务器运行期间报告进度。这些通知出现在哪个通道？",
+      "options": [
+        "只在该请求自己的响应通道中，不进入监听流",
+        "单独的日志通道，由 logLevel 设置决定是否开放",
+        "发往最近一次为该客户端确认订阅的任意流",
+        "发往 subscriptions/listen 流，并携带相同订阅 id"
+      ],
+      "correct": 0,
+      "explanation": "进度通知只属于携带 progressToken 的请求，通过那个请求的响应通道交付。它们不携带订阅 id，也不能发送到 subscriptions/listen 监听流。"
+    },
+    {
+      "stage": "check",
+      "question": "stdio 客户端决定取消仍在运行的 tools/call。应该怎样操作？",
+      "options": [
+        "关闭子进程 stdin，让服务器把关闭管道当作取消",
+        "发送 notifications/cancelled，明确指定目标请求 id",
+        "用相同 id 发送新的 tools/call，并把 arguments 置空",
+        "继续等待，因为 stdio 请求一旦启动便无法取消"
+      ],
+      "correct": 1,
+      "explanation": "stdio 没有独立的每请求响应流可关闭。客户端通过 notifications/cancelled 的 requestId 指定不再需要的请求；该消息是通知，不期待新的 JSON-RPC 回复。"
+    },
+    {
+      "stage": "post",
+      "question": "服务器准备正常关闭服务并结束订阅，而非连接突然中断。关闭流之前应该发送什么？",
+      "options": [
+        "服务器自己的新 subscriptions/listen 请求，反向发给客户端",
+        "notifications/cancelled，并在其中列出订阅监视的全部资源",
+        "回答原 listen 请求的 complete 结果，同时携带订阅 id",
+        "不发送任何消息，因为通知流完全没有结束响应机制"
+      ],
+      "correct": 2,
+      "explanation": "服务器主动正常结束订阅时，应回答原始 listen 请求，返回携带订阅 id 的 complete 结果。客户端据此区分有序结束与没有结束消息的传输中断。"
+    },
+    {
+      "stage": "post",
+      "question": "stdio 服务器崩溃后重启。客户端怎样继续接收原先订阅的通知？",
+      "options": [
+        "发送 Last-Event-ID 请求头，让流从此前位置恢复",
+        "重新连接并等待，新进程会自动恢复全部旧订阅",
+        "无须操作，因为订阅状态已自动保存在磁盘上",
+        "使用新 id 重发 subscriptions/listen，重建所需订阅"
+      ],
+      "correct": 3,
+      "explanation": "重启后的服务器进程不持有崩溃前的订阅状态。客户端须重新发送 subscriptions/listen，逐一重建仍需要的流，不能依靠隐式会话或自动恢复。"
+    }
+  ]
+}
