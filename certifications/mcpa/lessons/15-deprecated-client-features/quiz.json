@@ -1,0 +1,78 @@
+{
+  "lesson": "15-deprecated-client-features",
+  "title": "已弃用但仍可用：Roots、Sampling 与 Logging（Deprecated, Not Removed: Roots, Sampling, and Logging）",
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "依据 MCP 功能生命周期，2026-07-28 将 roots、sampling 和 logging 标记为 Deprecated，意味着什么？",
+      "options": [
+        "只修改名称，其他行为仍与此前完全相同",
+        "当前仍完整可用，将来经过等待期才可能移除",
+        "转为可选扩展，不再属于核心功能的范围",
+        "此版本发布时已经从结构定义中彻底删除"
+      ],
+      "correct": 1,
+      "explanation": "Deprecated 表示功能仍完整保留在规范中并正常工作，已有迁移路径；从标记弃用的版本发布起，至少经过十二个月，才具备被移除的资格。"
+    },
+    {
+      "stage": "check",
+      "question": "服务器在处理 tools/call 时，需要客户端代为进行语言模型生成。2026-07-28 允许它怎样提出请求？",
+      "options": [
+        "等待客户端主动轮询某个后台任务来获取要求",
+        "在调用未结束时直接向客户端推送 createMessage",
+        "返回 input_required，在其中加入 createMessage 输入请求",
+        "另开第二条连接并直接向某个模型服务发送查询"
+      ],
+      "correct": 2,
+      "explanation": "Sampling 仍作为已弃用的客户端功能存在。服务器通过 MRTR 提出要求，在 input_required 结果的 inputRequests 映射中加入 sampling/createMessage 条目，由客户端回答后重试。"
+    },
+    {
+      "stage": "check",
+      "question": "客户端在当前请求中既未声明 roots，也未声明 sampling。需要这两项能力的服务器必须怎样处理？",
+      "options": [
+        "仍发送输入请求，因为默认设置覆盖所有客户端",
+        "改用已经移除的 initialize 握手重新进行协商",
+        "假定客户端本来打算声明这两项能力并继续",
+        "省略这些未声明的输入请求，或直接拒绝调用"
+      ],
+      "correct": 3,
+      "explanation": "服务器不能依赖调用方未在当前请求中声明的能力。它只能不发出这些输入请求，或拒绝调用；不能自行补全声明，也不能静默发送客户端未承诺支持的请求。"
+    },
+    {
+      "stage": "check",
+      "question": "在 2026-07-28 中，服务器何时可以为某个请求发送 notifications/message？",
+      "options": [
+        "仅当当前请求自己的元数据中携带了 logLevel",
+        "只要服务器曾声明 logging 能力便可随时发送",
+        "必须先由客户端调用已移除的 logging/setLevel",
+        "开始记录日志后，在共享的 subscriptions/listen 流发送"
+      ],
+      "correct": 0,
+      "explanation": "日志按请求启用。只有当前请求的 _meta 携带 io.modelcontextprotocol/logLevel，服务器才可在该请求自己的响应流上发送 notifications/message；缺少该键时必须保持静默。"
+    },
+    {
+      "stage": "post",
+      "question": "以下哪项在 2026-07-28 中已经移除，而不只是弃用？",
+      "options": [
+        "作为 MRTR 输入请求发送的 roots/list 方法",
+        "旧会话范围的日志级别设置方法 logging/setLevel",
+        "每请求 logLevel 配合 notifications/message 通知",
+        "作为 MRTR 输入请求发送的 sampling/createMessage"
+      ],
+      "correct": 1,
+      "explanation": "Roots 和 sampling 仍通过 MRTR 输入请求使用，每请求 logLevel 也仍可启用 notifications/message。logging/setLevel 则依赖连接级会话，而无状态核心已经将这种会话机制移除。"
+    },
+    {
+      "stage": "post",
+      "question": "Roots 在 2026-07-28 发布的规范版本中被标记为 Deprecated。它最早什么时候可能被移除？",
+      "options": [
+        "紧接该版本发布的下一个版本即可立即移除",
+        "永远不能移除，政策要求弃用功能永久保留",
+        "在 2027-07-28 当天或之后发布的首个规范版本",
+        "无论是否有规范发布，都恰好在 2027-07-28 移除"
+      ],
+      "correct": 2,
+      "explanation": "最短弃用等待期从相应版本发布起计算十二个月。因此最早只能在 2027-07-28 当天或之后发布为 Current 的首个规范版本中移除，并非到该日自动消失。"
+    }
+  ]
+}
