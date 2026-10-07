@@ -1,0 +1,78 @@
+{
+  "lesson": "13-prompts-and-completion",
+  "title": "提示词模板与参数补全（Prompt Templates and Argument Completion）",
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "在 MCP 2026-07-28 中，谁决定何时调用某个提示词模板？",
+      "options": [
+        "用户显式选择，因为提示词设计为由用户控制",
+        "模型在对话需要更多上下文时自动选择并调用",
+        "服务器按照固定时间间隔自动计划并运行模板",
+        "宿主不询问用户或模型，直接自行渲染该模板"
+      ],
+      "correct": 0,
+      "explanation": "提示词由用户控制。服务器负责编写内容，但用户决定何时选择运行，通常通过菜单或斜杠命令完成；编写者与决定调用时机的角色不同。"
+    },
+    {
+      "stage": "check",
+      "question": "客户端对需要一个必填参数的提示词调用 prompts/get，却完全不提供参数。服务器应返回什么？",
+      "options": [
+        "返回 JSON-RPC 错误 -32601，因为提示词本身不存在",
+        "返回 JSON-RPC 错误 -32602，因为必需参数缺失",
+        "返回 input_required，直接要求模型补上这个值",
+        "返回正常结果，只是将整个 messages 数组留空"
+      ],
+      "correct": 1,
+      "explanation": "缺少必需提示词参数属于 -32602 Invalid params。-32601 用于服务器根本不支持的 JSON-RPC 方法，不能用来表示 prompts/get 参数不完整。"
+    },
+    {
+      "stage": "check",
+      "question": "completion/complete 为某参数匹配到 137 个值。结果 values 最多包含多少项，还应报告什么？",
+      "options": [
+        "返回零项，因为补全拒绝所有超过 100 个匹配的请求",
+        "返回全部 137 项，附带 total，并将 hasMore 设为 false",
+        "最多返回 100 项，并以 hasMore true 表示还有更多匹配",
+        "默认恰好返回 10 项，再用分页 cursor 继续读取后续值"
+      ],
+      "correct": 2,
+      "explanation": "补全结果最多包含 100 个排序候选。实际匹配超过上限时，hasMore 应为 true，让客户端知道结果被截断，不能将当前数组误当作全部匹配。"
+    },
+    {
+      "stage": "check",
+      "question": "客户端正在补全提示词的第二个参数，已经确定第一个参数。怎样帮助服务器缩小建议范围？",
+      "options": [
+        "把第一个参数重复写入当前待补全参数的 value 字段",
+        "先发一次 tools/call，让服务器记住之前已经给出的答案",
+        "打开 subscriptions/listen，将先前答案发布到订阅流上",
+        "在本次补全请求的 context.arguments 中携带已有答案"
+      ],
+      "correct": 3,
+      "explanation": "completion/complete 接受 context.arguments，将已确定的参数名映射到值。服务器据此缩小正在输入参数的候选，不需要通过连接记忆或额外工具调用传递。"
+    },
+    {
+      "stage": "post",
+      "question": "提示词消息需要引用大文件，但不把文件字节直接嵌入消息。哪种内容类型适合？",
+      "options": [
+        "使用 resource_link，携带文件 uri、name 和 MIME 类型",
+        "使用 audio，因为资源引用只允许出现在声音内容中",
+        "使用 text，将整个文件复制成一个很长的内联文本块",
+        "使用 image，因为资源引用只允许出现在图片内容中"
+      ],
+      "correct": 0,
+      "explanation": "resource_link 让提示词消息通过 uri、name 和 MIME 类型指向资源，无须嵌入全部内容。这适合引用较大参考文件，和直接复制文本或图像音频内容不同。"
+    },
+    {
+      "stage": "post",
+      "question": "客户端调用 prompts/list，携带服务器从未签发的 cursor。服务器应如何处理？",
+      "options": [
+        "静默忽略无效 cursor，再次返回最开始的第一页",
+        "拒绝请求，返回 JSON-RPC 错误 -32602 Invalid params",
+        "将 cursor 当作有效值，只返回一个空 prompts 数组",
+        "建立全新的连接，再将整个提示词目录重新发送"
+      ],
+      "correct": 1,
+      "explanation": "游标是不透明的服务器签发值。无法识别的游标属于无效参数，应返回 -32602，不能静默回到第一页或假装已经没有后续内容。"
+    }
+  ]
+}
