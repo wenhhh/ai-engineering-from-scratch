@@ -1,0 +1,118 @@
+{
+  "id": "distributed-eval-farm",
+  "title": "分布式评估集群协调器（Distributed Eval Farm Coordinator）",
+  "level": 5,
+  "levelName": "Frontier",
+  "tagline": "划分用例、租赁分片，并汇总有并发上限的工作进程。",
+  "summary": "构建持久化的同主机评估协调器，将已记录预测分片，租给真实工作进程，用版本令牌拒绝过期完成请求，并保存与数据集绑定的凭据。",
+  "usefulFor": [
+    "以准确的数据集标识恢复中断的批量评估",
+    "检查分片持有者、进程凭据与过期工作进程的拒绝结果"
+  ],
+  "youWillBuild": "构建持久化的同主机评估协调器，将已记录预测分片，租给真实工作进程，用版本令牌拒绝过期完成请求，并保存与数据集绑定的凭据。",
+  "hours": 8,
+  "languages": [
+    "Go"
+  ],
+  "status": "ready",
+  "source": "core",
+  "author": {
+    "name": "AI Engineering from Scratch",
+    "github": "rohitg00"
+  },
+  "skills": [
+    "按稳定用例标识分片",
+    "用版本令牌保护每个分片租约",
+    "接收幂等的完成凭据",
+    "运行有并发上限的本地工作池"
+  ],
+  "prerequisites": [
+    "Linux 或 macOS 上的 Go 1.22 及以上版本",
+    "用于评分器的 Python 3.10 及以上版本",
+    "Go 结构体、指针、错误和 JSON 文件",
+    "Goroutine、channel 和上下文取消"
+  ],
+  "inspiredBy": [],
+  "demo": {
+    "command": [
+      "go",
+      "run",
+      ".",
+      "demo"
+    ],
+    "cwd": "solution"
+  },
+  "stages": [
+    {
+      "id": "01-partition-stable-case-identities",
+      "title": "按稳定用例标识分片",
+      "summary": "使用 FNV-1a，将每个非空、唯一的用例 ID 分配到一个分片，分片总数须为正数。",
+      "hours": 2,
+      "language": "go",
+      "difficulty": "starter",
+      "concepts": [
+        "稳定 ID",
+        "对字节计算哈希",
+        "对分片数取模",
+        "唯一分区"
+      ]
+    },
+    {
+      "id": "02-fence-each-shard-lease",
+      "title": "用版本令牌保护每个分片租约",
+      "summary": "协调器维护租约记录。",
+      "hours": 2,
+      "language": "go",
+      "difficulty": "core",
+      "concepts": [
+        "未完成分片",
+        "到期检查",
+        "新持有者",
+        "递增版本"
+      ]
+    },
+    {
+      "id": "03-accept-idempotent-completion-receipts",
+      "title": "接收幂等的完成凭据",
+      "summary": "完成请求携带分片持有者、租约版本和非空结果。",
+      "hours": 2,
+      "language": "go",
+      "difficulty": "core",
+      "concepts": [
+        "持有者与版本",
+        "租约边界",
+        "结果标识",
+        "幂等凭据"
+      ]
+    },
+    {
+      "id": "04-run-a-bounded-local-worker-pool",
+      "title": "运行有并发上限的本地工作池",
+      "summary": "将有并发上限的工作池与持久化租约、真实工作进程组合，保留已评分用例的覆盖情况并拒绝过期凭据。",
+      "hours": 2,
+      "language": "go",
+      "difficulty": "core",
+      "concepts": [
+        "有界 goroutine",
+        "唯一派发",
+        "协作式取消",
+        "稳定结果"
+      ],
+      "timeout": 120
+    }
+  ],
+  "demos": [
+    {
+      "gif": "media/run.gif",
+      "poster": "media/run.png",
+      "title": "上游原始录屏：初始化与评分",
+      "caption": "保留上游原始录屏、日期与日志。其中参考实现通过不计为学习者完成。"
+    },
+    {
+      "gif": "media/output.gif",
+      "poster": "media/output.png",
+      "title": "上游原始录屏：检查输出",
+      "caption": "保留上游原始录屏、日期与日志。演示来自上游本地样本，本轮未重录；实际范围以 README 与本批验证记录为准。"
+    }
+  ]
+}
