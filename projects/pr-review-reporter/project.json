@@ -1,0 +1,138 @@
+{
+  "id": "pr-review-reporter",
+  "title": "PR 评审报告器（PR Review Reporter）",
+  "level": 2,
+  "levelName": "Builder",
+  "tagline": "保留 Git 行级证据的本地补丁评审工具，可通过 SARIF 接入持续集成。",
+  "summary": "保留 Git 行级证据的本地补丁评审工具，可通过 SARIF 接入持续集成。 使用 --diff - 从标准输入读取；使用 --repo /path --base REF --head REF 只读获取 Git diff；或使用 --candidates recorded-findings.json，将其他评审者的问题记录与所提供的补丁对照校验。",
+  "hours": 8,
+  "languages": [
+    "Python",
+    "TypeScript"
+  ],
+  "status": "ready",
+  "source": "core",
+  "author": {
+    "name": "AI Engineering from Scratch",
+    "github": "rohitg00"
+  },
+  "skills": [
+    "恢复新文件行号",
+    "生成范围明确的评审候选问题",
+    "校验并合并问题",
+    "发布经过转义的本地报告"
+  ],
+  "prerequisites": [
+    "需要 Node 22.18+ 和 Python 3，仅 --repo 模式需要 Git",
+    "掌握统一 diff 的计数器、JSON、逐字源码引文和 HTML 转义。"
+  ],
+  "youWillBuild": "保留 Git 行级证据的本地补丁评审工具，可通过 SARIF 接入持续集成。",
+  "usefulFor": [
+    "使用 --diff - 从标准输入读取；使用 --repo /path --base REF --head REF 只读获取 Git diff；或使用 --candidates recorded-findings.json，将其他评审者的问题记录与所提供的补丁对照校验。"
+  ],
+  "demo": {
+    "cwd": "solution",
+    "command": [
+      "node",
+      "cli.ts",
+      "--diff",
+      "samples/change.diff",
+      "--output",
+      "review.json",
+      "--html",
+      "review.html",
+      "--sarif",
+      "review.sarif"
+    ]
+  },
+  "stages": [
+    {
+      "id": "01-diff-lines",
+      "title": "恢复新文件行号",
+      "summary": "从差异块头解析旧文件与新文件的行计数。上下文行同时推进两个计数器；删除行只推进旧文件计数器；新增行推进新文件计数器，并产生可审阅的位置。拒绝截断的差异块和向父目录穿越的路径。解析器仅处理文本统一 diff；二进制补丁与合并提交的 combined diff 不在契约内。通过 execFileSync 和标准输入将 Python 接入 TypeScript，不要拼接 shell 命令。",
+      "hours": 2,
+      "language": "typescript",
+      "languageWhy": "Python 处理流式文本语法，TypeScript 通过带类型的 JSON 边界接收结果。",
+      "concepts": [
+        "parseDiff"
+      ],
+      "difficulty": "starter",
+      "requires": [
+        "node",
+        "python3"
+      ],
+      "timeout": 90,
+      "figure": "pj-pr-review-reporter-1"
+    },
+    {
+      "id": "02-inspect",
+      "title": "生成范围明确的评审候选问题",
+      "summary": "为动态 eval、shell exec、禁用 TLS 校验和空 catch 处理器构建明确的静态检测规则，只检查新增行。这些模式产生评审候选问题，不能证明存在可利用行为。保持规则 ID 稳定，便于后续模型评审者提出相同疑点时去重。",
+      "hours": 2,
+      "language": "typescript",
+      "languageWhy": "带类型的问题记录必须具有源码引文、位置和规则 ID，才能进入报告流程。",
+      "concepts": [
+        "inspect"
+      ],
+      "difficulty": "core",
+      "requires": [
+        "node",
+        "python3"
+      ],
+      "timeout": 90,
+      "figure": "pj-pr-review-reporter-2"
+    },
+    {
+      "id": "03-anchors",
+      "title": "校验并合并问题",
+      "summary": "每个候选问题都必须对应确实存在的新增行位置，并提供非空、逐字匹配的源码子串。拒绝虚构文件、已删除行的位置、空引文和无效严重程度。按文件、行号和规则合并问题；评审者意见不同时保留更高严重程度。引文校验只能确认位置有证据支持，安全判断是否成立仍需审阅。",
+      "hours": 2,
+      "language": "typescript",
+      "languageWhy": "带类型的校验结果阻止被拒绝的模型建议进入渲染器。",
+      "concepts": [
+        "verify",
+        "merge"
+      ],
+      "difficulty": "core",
+      "requires": [
+        "node",
+        "python3"
+      ],
+      "timeout": 90,
+      "figure": "pj-pr-review-reporter-3"
+    },
+    {
+      "id": "04-report",
+      "title": "发布经过转义的本地报告",
+      "summary": "渲染自包含报告，包含源码位置、证据引文、严重程度和消息。对源码文本与说明文字同样仔细转义，因为 diff 中可能包含可执行 HTML。工具不负责向外发布。命令行程序在本地写入 review.html，并打印机器可读摘要供自动化使用。",
+      "hours": 2,
+      "language": "typescript",
+      "languageWhy": "TypeScript 将已校验数据组合为 HTML，并转义每个不可信字符串。",
+      "concepts": [
+        "escapeHTML",
+        "render"
+      ],
+      "difficulty": "core",
+      "requires": [
+        "node",
+        "python3"
+      ],
+      "timeout": 90,
+      "figure": "pj-pr-review-reporter-4"
+    }
+  ],
+  "demos": [
+    {
+      "gif": "media/run.gif",
+      "poster": "media/run.png",
+      "title": "初始化与评分（上游原始录屏）",
+      "caption": "上游原始录屏：先记录起始代码失败，再记录参考实现全部阶段通过。参考实现通过不授予学习者证书。"
+    },
+    {
+      "gif": "media/output.gif",
+      "poster": "media/output.png",
+      "title": "检查输出（上游原始录屏）",
+      "caption": "上游原始录屏中的本地确定性演示实际输出。测试夹具及在线适配器限制见 README。"
+    }
+  ]
+}
