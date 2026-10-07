@@ -280,7 +280,8 @@
 | 34 | [梯度检查点与激活重计算（Gradient Checkpointing and Activation Recomputation）](phases/10-llms-from-scratch/34-gradient-checkpointing) | ✅ | ~70 分钟 |
 
 <a id="phase-11-llm-engineering---17-hours"></a>
-## Phase 11: 大语言模型工程（LLM Engineering） — ✅ (~17 小时)
+<a id="phase-11-llm-engineering---19-hours"></a>
+## Phase 11: 大语言模型工程（LLM Engineering） — ✅ (~19 小时)
 
 | # | 课程（Lesson） | 状态（Status） | 预计用时（Est.） |
 |---|--------|--------|------|
@@ -299,6 +300,8 @@
 | 13 | [构建生产级大语言模型应用（Building a Production LLM Application）](phases/11-llm-engineering/13-production-app) | ✅ | ~120 分钟 |
 | 14 | [模型上下文协议（Model Context Protocol (MCP)）](phases/11-llm-engineering/14-model-context-protocol) | ✅ | ~75 分钟 |
 | 15 | [提示词缓存与上下文缓存（Prompt Caching & Context Caching）](phases/11-llm-engineering/15-prompt-caching) | ✅ | ~60 分钟 |
+| 16 | [智能体状态机：图、节点与检查点（Agent State Machines）](phases/11-llm-engineering/16-langgraph-state-machines) | ✅ | ~75 分钟 |
+| 17 | [智能体框架的取舍（Agent Framework Tradeoffs）](phases/11-llm-engineering/17-agent-framework-tradeoffs) | ✅ | ~45 分钟 |
 
 <a id="phase-12-multimodal-ai---65-hours"></a>
 ## Phase 12: 多模态 AI（Multimodal AI） — ✅ (~65 小时)
@@ -650,6 +653,6 @@
 
 ---
 
-**总计：20 个阶段、523 课 | 523 课已完成 | 预计约 1,079 小时**
+**总计：20 个阶段、523 课 | 523 课已完成 | 预计约 1,081 小时**
 
 想参与贡献？选择任意标有 ⬚ 的课程，提交拉取请求（Pull Request，PR）。参阅[贡献指南](CONTRIBUTING.md)。

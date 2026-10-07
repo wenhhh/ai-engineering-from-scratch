@@ -18,7 +18,6 @@
   <a href="i18n/ar/README.md">阿拉伯语（العربية）</a> ·
   <a href="i18n/ru/README.md">俄语（Русский）</a> ·
   <a href="i18n/tr/README.md">土耳其语（Türkçe）</a>
-  <br><sub>上游将已翻译的首页提交到仓库，以英文为权威版本；其课程页面的机器翻译位于 <code>translations</code> 分支。参阅<a href="docs/i18n.md">国际化说明（docs/i18n.md）</a>。这套上游流程不用于本独立中文分支。</sub>
 </p>
 
 <p align="center">
@@ -27,10 +26,28 @@
   <a href="#contents"><img src="https://img.shields.io/badge/phases-20-3553ff?style=flat-square&labelColor=fafaf5" alt="20 个阶段"></a>
   <a href="https://github.com/rohitg00/ai-engineering-from-scratch/stargazers"><img src="https://img.shields.io/github/stars/rohitg00/ai-engineering-from-scratch?style=flat-square&labelColor=fafaf5&color=3553ff" alt="GitHub 星标数（Stars）"></a>
   <a href="https://aiengineeringfromscratch.com"><img src="https://img.shields.io/badge/web-aiengineeringfromscratch.com-3553ff?style=flat-square&labelColor=fafaf5" alt="网站"></a>
+  <p align="center">
+ <a href="https://www.star-history.com/rohitg00/ai-engineering-from-scratch">
+  <picture><source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/badge?repo=rohitg00/ai-engineering-from-scratch&type=rank&theme=dark" /><source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/badge?repo=rohitg00/ai-engineering-from-scratch&type=rank" /><img alt="星标历史排名" src="https://api.star-history.com/badge?repo=rohitg00/ai-engineering-from-scratch&type=rank" /></picture> <picture><source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/badge?repo=rohitg00/ai-engineering-from-scratch&type=trending&theme=dark" /><source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/badge?repo=rohitg00/ai-engineering-from-scratch&type=trending" /><img alt="GitHub 当日热门仓库" src="https://api.star-history.com/badge?repo=rohitg00/ai-engineering-from-scratch&type=trending" /></picture>
+ </a>
+</p>
 </p>
 
-<a id="from-the-creator-of-agent-memory---1-persistent-memory---which-naturally-works-with-any-agents-or-chat-assistants"></a>
-## 本课程由 [Agent Memory：排名 #1 的持久记忆（Persistent Memory）⭐](https://github.com/rohitg00/agentmemory) <a href="https://github.com/rohitg00/agentmemory/stargazers"><img src="https://img.shields.io/github/stars/rohitg00/agentmemory?style=flat-square&labelColor=fafaf5&color=3553ff" alt="GitHub 星标数（Stars）"></a>的作者打造；Agent Memory 可直接配合任何智能体（Agent）或聊天助手使用。
+<a id="sponsors"></a>
+### 赞助方（Sponsors）
+
+<a href="https://serpapi.com/ai-engineering-from-scratch">
+  <img align="left" src="assets/sponsors/serpapi-banner.png" alt="SerpApi：为 AI 应用提供网页搜索应用程序编程接口（Web Search API）。支持 Markdown 和 JSON 格式，可用于各种集成。" width="600">
+</a>
+
+<p><br><b>感谢各位赞助方。</b></p>
+<p>你们的支持让每一课都能保持免费和开源。</p>
+<p>
+  <a href="#supporters">查看所有支持者</a><br>
+  <a href="SPONSORS.md">成为赞助方</a>
+  <br clear="all">
+</p>
+
 
 ```text
 ░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒
@@ -62,25 +79,11 @@
 | 我想使用模型上下文协议（Model Context Protocol，MCP）构建系统 | [模型上下文协议（MCP）学习路线](phases/13-tools-and-protocols/README.md#model-context-protocol-mcp-path) | [模型上下文协议（MCP）学习路径](https://aiengineeringfromscratch.com/lesson?path=phases/13-tools-and-protocols/06-mcp-fundamentals&learningPath=model-context-protocol) |
 | 我想编写并交付智能体技能（Agent Skills） | [智能体技能（Agent Skills）专项路线](phases/13-tools-and-protocols/README.md#agent-skills-fast-path) | [智能体技能（Agent Skills）学习路径](https://aiengineeringfromscratch.com/lesson?path=phases/13-tools-and-protocols/22-skills-and-agent-sdks&learningPath=agent-skills) |
 | 我想准备 Claude 认证考试 | [认证入门指南](certifications/claude/GETTING_STARTED.md) | [认证学院](https://aiengineeringfromscratch.com/certifications.html) |
+| 我想准备 MCP Associate（MCPA）考试 | [MCPA 入门指南](certifications/mcpa/GETTING_STARTED.md) | [MCPA 学习路线](https://aiengineeringfromscratch.com/certification?id=mcpa-f) |
 
 不确定自己的起点？使用 [`start-learning` 水平评估导师](skills/start-learning/SKILL.md)，或阅读[网站先修知识指南](https://aiengineeringfromscratch.com/prereqs.html)。
 
 在 [AI 工程学习路径（AI Engineering Learning Paths）](https://aiengineeringfromscratch.com/learning-paths.html)中比较四大核心领域和六条职业路线。
-
-<a id="sponsors"></a>
-### 赞助方（Sponsors）
-
-<a href="https://serpapi.com/ai-engineering-from-scratch">
-  <img align="left" src="assets/sponsors/serpapi-banner.png" alt="SerpApi：为 AI 应用提供网页搜索应用程序编程接口（Web Search API）。支持 Markdown 和 JSON 格式，可用于各种集成。" width="600">
-</a>
-
-<p><br><b>感谢各位赞助方。</b></p>
-<p>你们的支持让每一课都能保持免费和开源。</p>
-<p>
-  <a href="#supporters">查看所有支持者</a><br>
-  <a href="SPONSORS.md">成为赞助方</a>
-  <br clear="all">
-</p>
 
 <a id="use-every-lesson-the-same-way"></a>
 ### 用同一套方法学习每一课（Use every lesson the same way）
@@ -253,6 +256,15 @@ python3 phases/01-math-foundations/01-linear-algebra-intuition/code/vectors.py
 
 学院提供基于公开考试目标编写的独立学习材料，与 Anthropic 无隶属关系，不复现真实考试题目，也不能保证通过考试。
 
+<a id="prepare-for-the-mcp-associate-mcpa-certification"></a>
+### 准备 MCP Associate（MCPA）认证
+
+[MCPA 认证课程](certifications/mcpa/README.md)是一套免费、开源的备考项目，面向 Agentic AI Foundation 提供、通过 Linux Foundation Training 交付的 Model Context Protocol Associate 考试。34 节课围绕五个考试领域讲解 2026-07-28 版无状态协议：使用逐请求 `_meta` 与 `server/discover` 替代旧握手流程，并覆盖多轮往返请求、订阅、缓存、tasks 与 MCP Apps 扩展、OAuth 授权，以及注册表和 SDK 分级。每课都交付可运行的标准库实验，实验记录会检查是否符合当前线上报文结构；学习路线还包含诊断测评、综合实践和三套原创完整模拟考试，题目分布遵循已公布的考试大纲权重。
+
+可配合 Claude Code、Codex、ChatGPT、Cursor 或其他智能体使用 [AI 原生 GitHub 入门指南](certifications/mcpa/GETTING_STARTED.md)。在 Codex 中运行 `mcpa-certification`，在 Claude Code 中运行 `/mcpa-certification`，或要求其他宿主使用 `mcpa-certification`。导师会在 `MCPA-CERTIFICATION.md` 中保存持久学习路线，逐步授课、运行真实实验，并根据交付物提供反馈。同一课程也可从 [MCPA 学习路线页面](https://aiengineeringfromscratch.com/certification?id=mcpa-f)访问。
+
+本课程根据公开考试目标编写，属于独立学习材料，与 Agentic AI Foundation 和 Linux Foundation 无隶属关系，不复现真实考试题，也不保证通过考试。
+
 <a id="the-learning-skills"></a>
 ### 学习技能（The learning skills）
 
@@ -264,6 +276,7 @@ python3 phases/01-math-foundations/01-linear-algebra-intuition/code/vectors.py
 | [`learn-mcp`](skills/learn-mcp/SKILL.md) | 模型上下文协议（MCP）专项导师：创建 `MCP-LEARNING.md`，遵循 17 课清单，并记录线上协议交互、安全性、可靠性和一致性证据。 |
 | [`learn-agent-skills`](skills/learn-agent-skills/SKILL.md) | 智能体技能（Agent Skills）专项导师：创建 `AGENT-SKILLS-LEARNING.md`，讲授第 22、24、25、26、27 课，并记录真实宿主上的证据。 |
 | [`claude-certification`](skills/claude-certification/SKILL.md) | 认证导师：选择 CCAO-F、CCDV-F、CCAR-F 或 CCAR-P；逐课授课、运行实验、审阅交付物、组织诊断测评和模拟考试，并保存进度。 |
+| [`mcpa-certification`](skills/mcpa-certification/SKILL.md) | MCPA 导师：按照 2026-07-28 协议的 34 课 `mcpa-f` 路线逐课授课，运行实验与报文检查器，组织诊断测评和三套模拟考试，并保存进度。 |
 | [`find-your-level`](skills/find-your-level/SKILL.md) | 十道题的水平评估测验：根据你的知识确定起始阶段，并生成带有预计用时的个性化路径。 |
 | [`check-understanding <phase>`](skills/check-understanding/SKILL.md) | 每阶段八道题的测验，提供反馈并指出需要复习的具体课程。使用上文调用表中的 Codex、Claude Code 或自然语言形式。 |
 
@@ -300,10 +313,10 @@ python3 phases/01-math-foundations/01-linear-algebra-intuition/code/vectors.py
 
 <table>
 <tr>
-<th align="left" width="25%"><img src="site/assets/figures/001-a-prompts.svg" width="96" height="96" alt="FIG_001.A 提示词（Prompts）"/><br/><sub>FIG_001 · A</sub><br/><b>提示词（PROMPTS）</b></th>
-<th align="left" width="25%"><img src="site/assets/figures/001-b-skills.svg" width="96" height="96" alt="FIG_001.B 技能（Skills）"/><br/><sub>FIG_001 · B</sub><br/><b>技能（SKILLS）</b></th>
-<th align="left" width="25%"><img src="site/assets/figures/001-c-agents.svg" width="96" height="96" alt="FIG_001.C 智能体（Agents）"/><br/><sub>FIG_001 · C</sub><br/><b>智能体（AGENTS）</b></th>
-<th align="left" width="25%"><img src="site/assets/figures/001-d-mcp-servers.svg" width="96" height="96" alt="FIG_001.D MCP 服务器（MCP Servers）"/><br/><sub>FIG_001 · D</sub><br/><b>MCP 服务器（MCP SERVERS）</b></th>
+<th align="left" width="25%"><img src="site/assets/figures/001-a-prompts.svg" width="120" height="120" alt="FIG_001.A 提示词（Prompts）"/><br/><sub>FIG_001 · A</sub><br/><b>提示词（PROMPTS）</b></th>
+<th align="left" width="25%"><img src="site/assets/figures/001-b-skills.svg" width="120" height="120" alt="FIG_001.B 技能（Skills）"/><br/><sub>FIG_001 · B</sub><br/><b>技能（SKILLS）</b></th>
+<th align="left" width="25%"><img src="site/assets/figures/001-c-agents.svg" width="120" height="120" alt="FIG_001.C 智能体（Agents）"/><br/><sub>FIG_001 · C</sub><br/><b>智能体（AGENTS）</b></th>
+<th align="left" width="25%"><img src="site/assets/figures/001-d-mcp-servers.svg" width="120" height="120" alt="FIG_001.D MCP 服务器（MCP Servers）"/><br/><sub>FIG_001 · D</sub><br/><b>MCP 服务器（MCP SERVERS）</b></th>
 </tr>
 <tr>
 <td valign="top">粘贴到任意 AI 助手中，为某个具体任务获得专家级帮助。</td>
@@ -1115,7 +1128,7 @@ outputs/
 
 两组技能，两种安装程序：
 
-**学习技能（Learning Skills）**（`start-learning`、`learn`、`course-guide`、`learn-mcp`、`learn-agent-skills`、`claude-certification`、`find-your-level` 和 `check-understanding`）位于 [`skills/`](skills/)，用一条命令即可安装到受支持且具备技能能力的宿主中。安装需要 Node.js 和 `npx`，但不需要克隆仓库，也不需要 Python：
+**学习技能（Learning Skills）**（`start-learning`、`learn`、`course-guide`、`learn-mcp`、`learn-agent-skills`、`claude-certification`、`mcpa-certification`、`find-your-level` 和 `check-understanding`）位于 [`skills/`](skills/)，用一条命令即可安装到受支持且具备技能能力的宿主中。安装需要 Node.js 和 `npx`，但不需要克隆仓库，也不需要 Python：
 
 ```bash
 npx skills add rohitg00/ai-engineering-from-scratch
@@ -1304,3 +1317,10 @@ python3 scripts/audit_lessons.py --json    # CI-friendly output
   <a href="https://aiengineeringfromscratch.com">课程网站</a> &nbsp;·&nbsp;
   <a href="https://github.com/rohitg00/ai-engineering-from-scratch/issues/new/choose">报告问题 / 提出建议</a>
 </sub>
+
+
+## 中文增量翻译结项（2026-10-07）
+
+本次范围固定为上游 `c02ca08d`，涵盖新增的 34 节 MCPA 课程、4 套评估共 210 题、48 个实践项目、共享界面和共用读者文档。结项范围、保留英文的分类及验证结果见[结项报告](docs/UPSTREAM_SYNC_2026-10-07_CLOSEOUT.md)和 [TRANSLATION.md](TRANSLATION.md)。本次不包含该固定版本之后的上游提交。
+
+代理执行规则、协议与代码标识、测试样本、历史录屏和其他语言内容按用途保留，不作为中文正文缺口。真实浏览器视觉、可选运行环境、媒体重录、上游缺陷、书籍重建和发布分别跟踪，不把翻译完成当作这些事项已通过。最初的[同步报告](docs/UPSTREAM_SYNC_2026-10-05.md)仅保留为历史记录。

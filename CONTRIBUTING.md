@@ -140,7 +140,7 @@ tags: [agents, loops]
 1. 创建派生仓库（Fork）
 2. 创建功能分支（`git checkout -b add-lesson-phase3-gradient-descent`）
 3. 完成修改
-4. 确认所有代码都能运行
+4. 确认所有代码都能运行。运行 `python3 scripts/run_lesson_tests.py` 执行各课自带测试；依赖尚未安装的科学计算包的课程会跳过，其余课程正常运行。
 5. 提交拉取请求，并写清楚改动内容
 
 ## 行为准则（Code of Conduct）

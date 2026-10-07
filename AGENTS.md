@@ -106,6 +106,8 @@ scripts/                      # 自动化
 
 必须恰好 6 题：1 道课前题（pre）、3 道检查题（check）和 2 道课后题（post）。`correct` 从 0 开始索引。站点渲染器只识别这一结构；旧版 `q/choices/answer` 模式会静默失败。
 
+干扰选项的长度应与正确选项相近。正确答案明显最长时，读者可能无需掌握知识就猜中答案。`scripts/check_quiz_bias.py --check` 对此设门禁，`scripts/debias_quizzes.py` 用于分散正确选项的位置。
+
 ### Claude 认证课程契约（Claude certification contract）
 
 `certifications/claude/lessons/` 下的认证课程遵循与阶段课程相同的文档、测验、图表、依赖及每课独立提交规则。每节认证课程都需要可运行的主文件和至少五个确定性测试（Deterministic test）。学习路线引用稳定的课程路径，使同一节课能够服务多种认证而不重复内容。概念课程也必须包含实践：使用场景运行器、策略评分器、交付物校验器、审批模拟器、威胁模型检查器或证据评分器，而不是生硬拼凑服务商 API 代码。路线也可引用已有 `phases/` 课程作为选修深入内容。
