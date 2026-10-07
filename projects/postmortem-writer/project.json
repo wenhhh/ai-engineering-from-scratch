@@ -1,0 +1,122 @@
+{
+  "id": "postmortem-writer",
+  "title": "事故复盘编写器（Incident Postmortem Writer）",
+  "level": 2,
+  "levelName": "Builder",
+  "tagline": "将事故事件整理为时间线，并为论断保留证据支持。",
+  "summary": "将 JSONL 事故日志和审阅决策转换为 HTML 证据工作台，校验逐字引文，保留负责人明确的行动项，并生成绑定来源的审批凭据。",
+  "usefulFor": [
+    "将 JSONL 事故日志和审阅决策转换为 HTML 证据工作台，校验逐字引文，保留负责人明确的行动项，并生成绑定来源的审批凭据。",
+    "将可移植 JSON 凭据接入自己的审阅或发布流程。"
+  ],
+  "youWillBuild": "将 JSONL 事故日志和审阅决策转换为 HTML 证据工作台，校验逐字引文，保留负责人明确的行动项，并生成绑定来源的审批凭据。",
+  "hours": 8,
+  "languages": [
+    "Go"
+  ],
+  "status": "ready",
+  "source": "core",
+  "author": {
+    "name": "AI Engineering from Scratch",
+    "github": "rohitg00"
+  },
+  "skills": [
+    "解析事故事件台账",
+    "构建稳定且有界的时间线",
+    "为每项论断要求证据",
+    "发布确定性的事故材料包"
+  ],
+  "prerequisites": [
+    {
+      "title": "开发环境",
+      "path": "phases/00-setup-and-tooling/01-dev-environment"
+    },
+    {
+      "title": "数据管理",
+      "path": "phases/00-setup-and-tooling/09-data-management"
+    }
+  ],
+  "inspiredBy": [],
+  "demo": {
+    "command": [
+      "go",
+      "run",
+      "."
+    ],
+    "cwd": "solution"
+  },
+  "stages": [
+    {
+      "id": "01-parse-an-incident-event-ledger",
+      "title": "解析事故事件台账",
+      "summary": "每个事件使用一条制表符分隔记录，包含稳定 ID、非负秒数、事件类型和消息。",
+      "hours": 2,
+      "language": "go",
+      "difficulty": "starter",
+      "concepts": [
+        "拆分记录",
+        "解析时间",
+        "唯一标识",
+        "已校验台账"
+      ]
+    },
+    {
+      "id": "02-build-a-stable-bounded-timeline",
+      "title": "构建稳定且有界的时间线",
+      "summary": "对副本先按经过秒数、再按 ID 排序，使同时间戳事件的顺序确定。",
+      "hours": 2,
+      "language": "go",
+      "difficulty": "core",
+      "concepts": [
+        "复制台账",
+        "时间上界检查",
+        "按时间排序",
+        "同时间戳按 ID 排序"
+      ]
+    },
+    {
+      "id": "03-require-evidence-for-each-claim",
+      "title": "为每项论断要求证据",
+      "summary": "论断需要非空白文本，以及至少一个已知且不重复的事件 ID。",
+      "hours": 2,
+      "language": "go",
+      "difficulty": "core",
+      "concepts": [
+        "论断文本",
+        "证据列表",
+        "已知 ID",
+        "来源校验"
+      ]
+    },
+    {
+      "id": "04-publish-a-deterministic-incident-packet",
+      "title": "发布确定性的事故材料包",
+      "summary": "渲染已校验的时间线和论断，并保留消息引文及明确引用。",
+      "hours": 2,
+      "language": "go",
+      "difficulty": "core",
+      "concepts": [
+        "校验论断",
+        "限制输出",
+        "排列证据",
+        "发布材料包"
+      ]
+    }
+  ],
+  "demos": [
+    {
+      "gif": "media/run.gif",
+      "poster": "media/run.png",
+      "title": "初始化与评分（上游原始录屏）",
+      "caption": "上游原始录屏：先记录起始代码失败，再记录参考实现全部阶段通过。参考实现通过不授予学习者证书。"
+    },
+    {
+      "gif": "media/output.gif",
+      "poster": "media/output.png",
+      "title": "检查输出（上游原始录屏）",
+      "caption": "上游原始录屏中的本地确定性演示实际输出。测试夹具及在线适配器限制见 README。"
+    }
+  ],
+  "figures": true,
+  "overviewFigure": "pj-postmortem-writer-1"
+}
