@@ -1,0 +1,10 @@
+// 词元计量教学实现：整数单位、费用字段和错误保持原值；费率来自调用方夹具。
+use super::*;
+pub fn reserve(spent: &mut u64, quote: u64, limit: u64) -> Result<u64, Error> {
+    let next = spent.checked_add(quote).ok_or(Error::Limit)?;
+    if next > limit {
+        return Err(Error::Limit);
+    }
+    *spent = next;
+    Ok(limit - next)
+}

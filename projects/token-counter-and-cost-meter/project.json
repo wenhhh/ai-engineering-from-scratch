@@ -1,0 +1,119 @@
+{
+  "id": "token-counter-and-cost-meter",
+  "title": "词元计数与成本计量器（Token Counter and Cost Meter）",
+  "level": 1,
+  "levelName": "Starter",
+  "tagline": "用整数运算核算用量和预算。",
+  "summary": "构建明确的近似分词估算、精确的已记录用量核算、费率计算与预算准入。估算须显式标记，绝不冒充服务商分词器计数。价格来自夹具输入，不宣称代表当前服务商定价。",
+  "usefulFor": [
+    "核对用量，解释实际计费为何不同于事前估算。",
+    "费率是以每词元整数纳美元表示的明确夹具输入，不是当前服务商价格。"
+  ],
+  "youWillBuild": "核对用量，解释实际计费为何不同于事前估算。",
+  "hours": 8,
+  "languages": [
+    "Rust"
+  ],
+  "status": "ready",
+  "source": "core",
+  "author": {
+    "name": "AI Engineering from Scratch",
+    "github": "rohitg00"
+  },
+  "skills": [
+    "在已说明的范围内估算文本",
+    "校验已记录的用量",
+    "用带溢出检查的整数计价",
+    "根据账本决定是否接纳任务"
+  ],
+  "prerequisites": [
+    {
+      "title": "分词器",
+      "path": "phases/10-llms-from-scratch/01-tokenizers"
+    },
+    {
+      "title": "验证门禁",
+      "path": "phases/14-agent-engineering/38-verification-gates"
+    }
+  ],
+  "inspiredBy": [],
+  "demo": {
+    "command": [
+      "python3",
+      "demo.py"
+    ],
+    "cwd": "solution"
+  },
+  "stages": [
+    {
+      "id": "01-estimate-text-with-a-documented-bound",
+      "title": "在已说明的范围内估算文本",
+      "summary": "统计 Unicode 标量值，使用可配置的每词元字符比率并向上取整。",
+      "hours": 2,
+      "language": "rust",
+      "difficulty": "starter",
+      "concepts": [
+        "统计标量值",
+        "读取比率",
+        "向上取整除法",
+        "标记估算"
+      ]
+    },
+    {
+      "id": "02-validate-recorded-usage",
+      "title": "校验已记录的用量",
+      "summary": "缓存输入是全部输入的子集，不能作为额外词元类别重复相加。",
+      "hours": 2,
+      "language": "rust",
+      "difficulty": "core",
+      "concepts": [
+        "解析计数器",
+        "检查无符号值",
+        "缓存子集",
+        "用量记录"
+      ]
+    },
+    {
+      "id": "03-price-with-checked-integers",
+      "title": "用带溢出检查的整数计价",
+      "summary": "夹具费率表使用每词元纳美元。",
+      "hours": 2,
+      "language": "rust",
+      "difficulty": "core",
+      "concepts": [
+        "未缓存费用",
+        "缓存费用",
+        "输出费用",
+        "带溢出检查的求和"
+      ]
+    },
+    {
+      "id": "04-admit-work-against-a-ledger",
+      "title": "根据账本决定是否接纳任务",
+      "summary": "只有已花费金额加报价不超过配置上限时，才预留报价金额。",
+      "hours": 2,
+      "language": "rust",
+      "difficulty": "core",
+      "concepts": [
+        "读取账本",
+        "带溢出检查的加法",
+        "比较上限",
+        "提交预留"
+      ]
+    }
+  ],
+  "demos": [
+    {
+      "gif": "media/run.gif",
+      "poster": "media/run.png",
+      "title": "初始化与评分（上游原始录屏）",
+      "caption": "上游原始录屏：先记录起始代码失败，再记录参考实现全部阶段通过。参考实现通过不授予学习者证书。"
+    },
+    {
+      "gif": "media/output.gif",
+      "poster": "media/output.png",
+      "title": "检查输出（上游原始录屏）",
+      "caption": "上游原始录屏中的本地确定性演示实际输出。夹具和在线适配器限制见 README。"
+    }
+  ]
+}
