@@ -151,7 +151,7 @@ learner: "6"
 
 - [Khanmigo（Khan Academy）](https://www.khanmigo.ai)：消费级 K-12 导师参考
 - [Duolingo Max](https://blog.duolingo.com/duolingo-max/)：语言学习导师参考
-- [Google LearnLM / Gemini for Education](https://blog.google/technology/google-deepmind/learnlm)：托管参考模型
+- [Google LearnLM / Gemini for Education](https://blog.google/products-and-platforms/products/education/google-learnlm-gemini-generative-ai/)：托管参考模型
 - [Quizlet Q-Chat](https://quizlet.com)：另一参考
 - [Synthesis Tutor](https://www.synthesis.com)：初创公司参考
 - [FSRS 算法](https://github.com/open-spaced-repetition/fsrs4anki)：间隔重复调度器
