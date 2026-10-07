@@ -1,0 +1,118 @@
+{
+  "id": "durable-agent-jobs",
+  "title": "持久化智能体任务（Durable Agent Jobs）",
+  "level": 4,
+  "levelName": "Systems",
+  "tagline": "持久化任务状态，拒绝旧版本工作进程的完成提交。",
+  "summary": "构建持久化本地报告队列，包含版本化租约、不可变输入、幂等输出凭据，以及可复现的工作进程崩溃恢复。",
+  "usefulFor": [
+    "工作进程崩溃后恢复本地报告任务",
+    "观察并测试写出执行结果与持久化完成状态之间的间隙"
+  ],
+  "youWillBuild": "构建持久化本地报告队列，包含版本化租约、不可变输入、幂等输出凭据，以及可复现的工作进程崩溃恢复。",
+  "hours": 8,
+  "languages": [
+    "Go"
+  ],
+  "status": "ready",
+  "source": "core",
+  "author": {
+    "name": "AI Engineering from Scratch",
+    "github": "rohitg00"
+  },
+  "skills": [
+    "创建具有稳定标识的任务",
+    "使用租约和版本领取任务",
+    "完成任务或回收过期工作",
+    "写入与恢复原子快照"
+  ],
+  "prerequisites": [
+    "Linux 或 macOS 上的 Go 1.22 或更新版本",
+    "供评分器使用的 Python 3.10 或更新版本",
+    "Go 结构体、指针、错误和 JSON 文件",
+    "基本进程生命周期与文件系统操作"
+  ],
+  "inspiredBy": [],
+  "demo": {
+    "command": [
+      "go",
+      "run",
+      ".",
+      "demo"
+    ],
+    "cwd": "solution"
+  },
+  "stages": [
+    {
+      "id": "01-create-jobs-with-stable-identity",
+      "title": "创建具有稳定标识的任务",
+      "summary": "接受符合长度限制的标识符，令每个任务从 queued 状态、版本零开始。",
+      "hours": 2,
+      "language": "go",
+      "difficulty": "starter",
+      "concepts": [
+        "校验 ID",
+        "初始状态",
+        "零版本",
+        "不执行副作用"
+      ]
+    },
+    {
+      "id": "02-claim-with-a-lease-and-version",
+      "title": "使用租约和版本领取任务",
+      "summary": "只有 queued 状态的任务能够领取。",
+      "hours": 2,
+      "language": "go",
+      "difficulty": "core",
+      "concepts": [
+        "预期版本",
+        "尝试上限",
+        "租约计算",
+        "原子状态修改"
+      ]
+    },
+    {
+      "id": "03-finish-or-reclaim-expired-work",
+      "title": "完成任务或回收过期工作",
+      "summary": "只有当前 running 版本在租约到期前提交完成才会成功。",
+      "hours": 2,
+      "language": "go",
+      "difficulty": "core",
+      "concepts": [
+        "租约边界",
+        "过期后重新入队",
+        "递增版本",
+        "拒绝旧工作进程提交"
+      ]
+    },
+    {
+      "id": "04-write-and-recover-atomic-snapshots",
+      "title": "写入与恢复原子快照",
+      "summary": "将已校验快照、加锁入队、持久化领取和支持崩溃恢复的本地凭据复用组合起来。",
+      "hours": 2,
+      "language": "go",
+      "difficulty": "core",
+      "concepts": [
+        "校验快照",
+        "写入临时文件",
+        "同步并重命名",
+        "恢复记录"
+      ],
+      "timeout": 120
+    }
+  ],
+  "demos": [
+    {
+      "gif": "media/run.gif",
+      "poster": "media/run.png",
+      "title": "初始化与评分（上游原始录屏）",
+      "caption": "保留上游录制的起始代码失败和参考解答评分输出；参考通过不授予学习者证书。本批未重录中文视频。"
+    },
+    {
+      "gif": "media/output.gif",
+      "poster": "media/output.png",
+      "title": "查看交付物输出（上游原始录屏）",
+      "caption": "保留上游输入、计算输出及本地交付物的原始记录；适用范围见 README，本批未将旧日志改写成新运行证据。"
+    }
+  ]
+}
