@@ -13,7 +13,7 @@
       "explanation": "虚拟环境按项目隔离包版本。不使用虚拟环境时，为一个项目升级 PyTorch，可能会破坏另一个依赖旧版本的项目。"
     },
     {
-      "stage": "pre",
+      "stage": "check",
       "question": "CUDA 为 AI 工作负载（Workload）提供什么能力？",
       "options": [
         "在 NVIDIA GPU 上进行矩阵运算的并行计算能力",
@@ -25,19 +25,19 @@
       "explanation": "CUDA 是 NVIDIA 的并行计算平台，可以让数千个 GPU 核心同时执行矩阵运算。PyTorch 和 TensorFlow 在底层使用它。"
     },
     {
-      "stage": "post",
-      "question": "在四层环境技术栈中，必须先安装哪一层？",
+      "stage": "check",
+      "question": "开始 Python 课程时还不需要 TypeScript；Node.js 和 pnpm 应何时安装？",
       "options": [
-        "语言运行时（Language Runtime，如 Python、Node.js）",
-        "系统基础（操作系统、shell、GPU 驱动）",
-        "包管理器（Package Manager，如 pip、npm、cargo）",
-        "AI/机器学习库（PyTorch、JAX）"
+        "现在安装，因为 Python 虚拟环境会依赖它们",
+        "到 TypeScript 课程开始时再安装 Node.js 与 pnpm",
+        "通过 pip 安装它们，之后用于运行 Python",
+        "无需安装，pnpm 会由操作系统自动提供"
       ],
       "correct": 1,
-      "explanation": "安装应自底向上进行：先配置系统基础（操作系统、驱动），再安装包管理器、语言运行时，最后安装 AI 库。每一层都依赖下面的一层。"
+      "explanation": "课程按路线使用不同工具链。先准备当前路线所需环境，等进入 TypeScript 课程时再安装 Node.js 和 pnpm，不必一开始配置所有语言。"
     },
     {
-      "stage": "post",
+      "stage": "check",
       "question": "uv 在 Python AI 项目中有什么用途？",
       "options": [
         "GPU 监控工具",
@@ -59,6 +59,18 @@
       ],
       "correct": 1,
       "explanation": "如果 PyTorch 能访问 CUDA GPU，torch.cuda.is_available() 会返回 True。在 Apple Silicon 上，使用 torch.backends.mps.is_available() 检查 Metal Performance Shaders（MPS）是否可用。"
+    },
+    {
+      "stage": "post",
+      "question": "初学者路线预检有一项必需检查未通过时，脚本会提供什么帮助？",
+      "options": [
+        "只报告失败项，不显示路径、错误或修复办法",
+        "自动安装缺失依赖，然后重跑整条路线",
+        "忽略失败检查，仍打印第一课的运行命令",
+        "显示检测到的路径或导入错误，并附修复命令"
+      ],
+      "correct": 3,
+      "explanation": "路线预检会显示失败检查的路径或导入错误，并给出具体修复命令；必需项通过后，才会打印第一节可运行课程的命令。"
     }
   ]
 }
