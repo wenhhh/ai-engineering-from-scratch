@@ -577,5 +577,5 @@ print(f"Ridge weights (sklearn): {ridge_sk.coef_}")
 
 - [MIT 18.06：线性代数（Linear Algebra）](https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/)（Gilbert Strang）：讲解线性方程组与矩阵分解的权威课程
 - [数值线性代数（Numerical Linear Algebra）](https://people.maths.ox.ac.uk/trefethen/text.html)（Trefethen & Bau）：理解数值稳定性、条件性与算法失效原因的标准参考书
-- [矩阵计算（Matrix Computations）](https://www.cs.cornell.edu/cv/GolubVanLoan4/golubandvanloan.htm)（Golub & Van Loan）：涵盖各类矩阵算法的百科全书式参考书
+- [矩阵计算（Matrix Computations）](https://www.press.jhu.edu/books/title/10678/matrix-computations)（Golub & Van Loan）：涵盖各类矩阵算法的百科全书式参考书
 - [3Blue1Brown：逆矩阵（Inverse Matrices）](https://www.3blue1brown.com/lessons/inverse-matrices)：直观展示求解 Ax = b 的几何意义
