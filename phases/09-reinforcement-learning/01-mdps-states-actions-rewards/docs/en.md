@@ -189,4 +189,4 @@ tags: [rl, mdp, modeling]
 - [Bellman（1957）：《动态规划》](https://press.princeton.edu/books/paperback/9780691146683/dynamic-programming)：贝尔曼方程的源头。
 - [OpenAI Spinning Up：第 1 部分，关键概念](https://spinningup.openai.com/en/latest/spinningup/rl_intro.html)：从深度强化学习角度介绍 MDP 的简明入门资料。
 - [Puterman（2005）：《马尔可夫决策过程》](https://onlinelibrary.wiley.com/doi/book/10.1002/9780470316887)：运筹学领域关于 MDP 及精确求解方法的参考书。
-- [Littman（1996）：《序贯决策算法》（博士论文）](https://www.cs.rutgers.edu/~mlittman/papers/thesis-main.pdf)：清晰推导 MDP 如何作为动态规划的一种特例。
+- [Littman（1996）：《序贯决策算法》（博士论文）](https://cs.brown.edu/media/filer_public/d1/a6/d1a6f66a-289a-4b81-9596-417114843489/littman.pdf)：清晰推导 MDP 如何作为动态规划的一种特例。
