@@ -349,7 +349,7 @@ class GradientBoostingScratch:
 ## 延伸阅读（Further Reading）
 
 - [Schapire 与 Freund：提升方法：基础与算法（Boosting: Foundations and Algorithms）](https://mitpress.mit.edu/9780262526036/)：AdaBoost 创始人编写的书
-- [Friedman：贪心函数逼近：梯度提升机（Greedy Function Approximation: A Gradient Boosting Machine，2001）](https://statweb.stanford.edu/~jhf/ftp/trebst.pdf)：梯度提升的原始论文
+- [Friedman：贪心函数逼近：梯度提升机（Greedy Function Approximation: A Gradient Boosting Machine，2001）](https://doi.org/10.1214/aos/1013203451)：梯度提升的原始论文
 - [Chen 与 Guestrin：XGBoost（2016）](https://arxiv.org/abs/1603.02754)：XGBoost 论文
 - [Wolpert：堆叠泛化（Stacked Generalization，1992）](https://www.sciencedirect.com/science/article/abs/pii/S0893608005800231)：堆叠的原始论文
 - [scikit-learn 集成方法（Ensemble Methods）](https://scikit-learn.org/stable/modules/ensemble.html)：实践参考
