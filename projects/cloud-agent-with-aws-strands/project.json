@@ -1,0 +1,155 @@
+{
+  "id": "cloud-agent-with-aws-strands",
+  "title": "AWS Strands 云端智能体（Cloud Agent With AWS Strands）",
+  "level": 4,
+  "levelName": "Systems",
+  "tagline": "在明确允许范围内读取云端事故信息，并记录每次缓存命中和重试的执行情况。",
+  "summary": "在明确允许范围内读取云端事故信息，并记录每次缓存命中和重试的执行情况。 导入 run(payload, provider)。provider 只接收经过校验的操作和允许范围内的资源。可选 Strands 模型负责提出计划，不能绕过确定性校验器。",
+  "hours": 8,
+  "languages": [
+    "Python"
+  ],
+  "status": "ready",
+  "source": "core",
+  "author": {
+    "name": "AI Engineering from Scratch",
+    "github": "rohitg00"
+  },
+  "youWillBuild": "在明确允许范围内读取云端事故信息，并记录每次缓存命中和重试的执行情况。",
+  "usefulFor": [
+    "导入 run(payload, provider)。provider 只接收经过校验的操作和允许范围内的资源。可选 Strands 模型负责提出计划，不能绕过确定性校验器。"
+  ],
+  "skills": [
+    "校验允许范围内的云端检查计划",
+    "在步骤和响应额度内执行读取",
+    "重试暂时失败的读取并复用已完成请求",
+    "用本地模型驱动真实 Strands 循环"
+  ],
+  "prerequisites": [
+    "Python 3.10+",
+    "熟悉 JSON、集合、异常、回调和环境配置。可选 SDK 对照使用 requirements-framework.txt。"
+  ],
+  "figures": true,
+  "overviewFigure": "pj-cloud-agent-with-aws-strands-1",
+  "languageWhy": {
+    "Python": "使用标准库数据结构、显式算法和确定性本地测试。"
+  },
+  "demo": {
+    "cwd": "solution",
+    "command": [
+      "python3",
+      "cli.py",
+      "samples/input.json",
+      "--output",
+      "incident.json"
+    ]
+  },
+  "stages": [
+    {
+      "id": "01-plan",
+      "title": "校验允许范围内的云端检查计划",
+      "summary": "删除操作或范围外资源会在任何 provider 调用之前被拒绝。",
+      "language": "python",
+      "languageWhy": "通过 Python 标准库的集合、字节和文件操作直接展示本阶段机制。",
+      "hours": 2,
+      "difficulty": "starter",
+      "figure": "pj-cloud-agent-with-aws-strands-1",
+      "concepts": [
+        "validate",
+        "a",
+        "scoped",
+        "cloud"
+      ]
+    },
+    {
+      "id": "02-executor",
+      "title": "在步骤和响应额度内执行读取",
+      "summary": "步骤额度为零时，不调用 provider，返回 budget_exhausted。",
+      "language": "python",
+      "languageWhy": "通过 Python 标准库的集合、字节和文件操作直接展示本阶段机制。",
+      "hours": 2,
+      "difficulty": "core",
+      "figure": "pj-cloud-agent-with-aws-strands-2",
+      "concepts": [
+        "execute",
+        "reads",
+        "within",
+        "step"
+      ]
+    },
+    {
+      "id": "03-retry",
+      "title": "重试暂时失败的读取并复用已完成请求",
+      "summary": "暂时超时触发重试，权限失败则在一次调用后直接向上传播。",
+      "language": "python",
+      "languageWhy": "通过 Python 标准库的集合、字节和文件操作直接展示本阶段机制。",
+      "hours": 2,
+      "difficulty": "core",
+      "figure": "pj-cloud-agent-with-aws-strands-3",
+      "concepts": [
+        "retry",
+        "transient",
+        "reads",
+        "and"
+      ]
+    },
+    {
+      "id": "04-strands-adapter",
+      "title": "用本地模型驱动真实 Strands 循环",
+      "summary": "框架通过一次模型调用输出预录的 JSON 计划，再交给独立校验器检查。",
+      "language": "python",
+      "languageWhy": "通过 Python 标准库的集合、字节和文件操作直接展示本阶段机制。",
+      "hours": 2,
+      "difficulty": "stretch",
+      "figure": "pj-cloud-agent-with-aws-strands-4",
+      "concepts": [
+        "drive",
+        "the",
+        "actual",
+        "strands"
+      ],
+      "runners": [
+        {
+          "language": "python"
+        },
+        {
+          "language": "python",
+          "optional": true,
+          "requires": [
+            "python:strands"
+          ],
+          "argv": [
+            "{python}",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "{stage}/tests-framework",
+            "-p",
+            "test_framework.py"
+          ]
+        }
+      ]
+    }
+  ],
+  "demos": [
+    {
+      "gif": "media/run.gif",
+      "poster": "media/run.png",
+      "title": "初始化与评分（上游原始录屏）",
+      "caption": "保留上游记录：新起始代码失败，随后参考解答各阶段通过。参考解答通过不授予学习者证书；录屏未在本轮重录。"
+    },
+    {
+      "gif": "media/output.gif",
+      "poster": "media/output.png",
+      "title": "检查输出（上游原始录屏）",
+      "caption": "保留上游本地演示的真实输出与原始日期。样本及云端适配器边界见 README；未将旧记录改写为本轮运行证据。"
+    },
+    {
+      "gif": "media/framework.gif",
+      "poster": "media/framework.png",
+      "title": "真实 SDK 验证（上游原始录屏）",
+      "caption": "上游安装依赖后运行的真实 SDK 测试记录，使用确定性本地模型，不调用云服务或模型提供方。本轮保留原始记录，未重新执行 SDK 测试。"
+    }
+  ]
+}
