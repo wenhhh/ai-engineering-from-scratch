@@ -185,7 +185,7 @@ tags: [nlp, entity-linking, knowledge-graph]
 
 ## 延伸阅读（Further Reading）
 
-- [Milne、Witten（2008）：学习与 Wikipedia 链接（Learning to Link with Wikipedia）](https://www.cs.waikato.ac.nz/~ihw/papers/08-DM-IHW-LearningToLinkWithWikipedia.pdf)：基础的先验 + 上下文方法。
+- [Milne、Witten（2008）：学习与 Wikipedia 链接（Learning to Link with Wikipedia）](https://researchcommons.waikato.ac.nz/entities/publication/b9a0b520-abc5-47c5-a86a-da6c579893ab)：基础的先验 + 上下文方法。
 - [Wu 等（2020）：通过稠密实体检索进行零样本实体链接（Zero-shot Entity Linking with Dense Entity Retrieval，BLINK）](https://arxiv.org/abs/1911.03814)：基于嵌入的主力方法。
 - [De Cao 等（2021）：自回归实体检索（Autoregressive Entity Retrieval，GENRE）](https://arxiv.org/abs/2010.00904)：采用约束解码的生成式实体链接。
 - [Hoffart 等（2011）：文本命名实体的稳健消歧（Robust Disambiguation of Named Entities in Text，AIDA）](https://www.aclweb.org/anthology/D11-1072.pdf)：基准论文。
