@@ -1,0 +1,78 @@
+{
+  "lesson": "01-reading-the-specification",
+  "title": "阅读 MCP 规范（Reading the MCP Specification）",
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "按照规范概览，每个 MCP 实现 MUST 支持哪三个部分？",
+      "options": [
+        "服务器功能、客户端功能和实用功能",
+        "资源、提示词、工具及信息征询功能",
+        "基础协议、版本管理和消息模式",
+        "授权、扩展和补全实用功能"
+      ],
+      "correct": 2,
+      "explanation": "所有实现 MUST 支持基础协议、版本管理和消息模式；服务器功能、客户端功能、授权与实用功能 MAY 按应用需要实现。"
+    },
+    {
+      "stage": "check",
+      "question": "句子用小写写道“a client must not batch requests”。按 BCP 14，它具有何种规范性强度？",
+      "options": [
+        "与大写 MUST NOT 具有相同禁止强度",
+        "使整段文字成为无效的规范页面",
+        "属于等同于 SHOULD NOT 的柔性建议",
+        "不具有规范性强度，只有全大写关键字有效"
+      ],
+      "correct": 3,
+      "explanation": "BCP 14 关键字只有全大写时才具有规定的含义；相同词汇的小写形式属于普通说明，没有规范性约束。"
+    },
+    {
+      "stage": "check",
+      "question": "哪项正确描述规范仓库中 schema.ts 与 schema.json 的关系？",
+      "options": [
+        "schema.ts 为权威来源，schema.json 由它生成",
+        "schema.json 对 SDK 具有权威，schema.ts 只是草稿",
+        "先手写 schema.json，再由它生成 schema.ts",
+        "两个文件独立维护，可以相互不一致"
+      ],
+      "correct": 0,
+      "explanation": "规范将 schema.ts 作为每种协议消息和结构的权威来源；schema.json 从它自动生成，供工具使用。"
+    },
+    {
+      "stage": "check",
+      "question": "某功能在 2026-07-28 发布的修订版中标记为 Deprecated，窗口为十二个月。该窗口从何时计算？",
+      "options": [
+        "核心维护者在评审中批准 SEP 的日期",
+        "将功能标记为 Deprecated 的修订版发布日期",
+        "相关弃用 SEP 自身达到 Final 的日期",
+        "相关弃用 SEP 首次以拉取请求提交的日期"
+      ],
+      "correct": 1,
+      "explanation": "SEP-2596 从首次标记功能为 Deprecated 的修订版发布日期计算窗口，不从其 SEP 达到 Final 的日期计算。"
+    },
+    {
+      "stage": "post",
+      "question": "有人说 Roots、Sampling 和 Logging 在 2026-07-28 中已被移除。规范对其状态如何规定？",
+      "options": [
+        "仍为 Active，本次修订未改变状态",
+        "已彻底 Removed，实现 MUST NOT 提供它们",
+        "属于 Deprecated，仍有完整定义并可使用",
+        "改为实验性功能，只有 Tier 3 SDK 必须支持"
+      ],
+      "correct": 2,
+      "explanation": "SEP-2577 在 2026-07-28 弃用了 Roots、Sampling 和 Logging；它们仍有完整定义并能工作，最早到 2027-07-28 当天或之后发布的首个版本才有移除资格。"
+    },
+    {
+      "stage": "post",
+      "question": "变更日志将某项重大协议变更归因于一个 SEP 编号。在转述该主张前应做什么？",
+      "options": [
+        "默认认为变更仍在评审，直到下一版本发布",
+        "只读 schema.json 差异，因为 SEP 很少涉及模式",
+        "相信一行变更摘要，因为 SEP 一经接受就关闭",
+        "打开 SEP 文件，核查正文、理由与最终状态"
+      ],
+      "correct": 3,
+      "explanation": "变更日志指向产生变更的 SEP；阅读提案本身可确认精确规范文本、设计理由和是否真正达到 Final。"
+    }
+  ]
+}
