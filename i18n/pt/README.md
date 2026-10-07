@@ -17,7 +17,6 @@
   <a href="../../i18n/ar/README.md">العربية</a> ·
   <a href="../../i18n/ru/README.md">Русский</a> ·
   <a href="../../i18n/tr/README.md">Türkçe</a>
-  <br><sub>Translated landing pages, committed to the repo. English is canonical; lesson pages are machine-translated on the <code>translations</code> branch. See <a href="../../docs/i18n.md">docs/i18n.md</a>.</sub>
 </p>
 
 <p align="center">
@@ -26,9 +25,26 @@
   <a href="#contents"><img src="https://img.shields.io/badge/phases-20-3553ff?style=flat-square&labelColor=fafaf5" alt="20 phases"></a>
   <a href="https://github.com/rohitg00/ai-engineering-from-scratch/stargazers"><img src="https://img.shields.io/github/stars/rohitg00/ai-engineering-from-scratch?style=flat-square&labelColor=fafaf5&color=3553ff" alt="GitHub stars"></a>
   <a href="https://aiengineeringfromscratch.com"><img src="https://img.shields.io/badge/web-aiengineeringfromscratch.com-3553ff?style=flat-square&labelColor=fafaf5" alt="Website"></a>
+  <p align="center">
+ <a href="https://www.star-history.com/rohitg00/ai-engineering-from-scratch">
+  <picture><source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/badge?repo=rohitg00/ai-engineering-from-scratch&type=rank&theme=dark" /><source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/badge?repo=rohitg00/ai-engineering-from-scratch&type=rank" /><img alt="Star History Rank" src="https://api.star-history.com/badge?repo=rohitg00/ai-engineering-from-scratch&type=rank" /></picture> <picture><source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/badge?repo=rohitg00/ai-engineering-from-scratch&type=trending&theme=dark" /><source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/badge?repo=rohitg00/ai-engineering-from-scratch&type=trending" /><img alt="GitHub Trending Repository of the Day" src="https://api.star-history.com/badge?repo=rohitg00/ai-engineering-from-scratch&type=trending" /></picture>
+ </a>
+</p>
 </p>
 
-## From the creator of [Agent Memory - #1 Persistent memory ⭐](https://github.com/rohitg00/agentmemory) <a href="https://github.com/rohitg00/agentmemory/stargazers"><img src="https://img.shields.io/github/stars/rohitg00/agentmemory?style=flat-square&labelColor=fafaf5&color=3553ff" alt="GitHub stars"></a> which naturally works with any agents or chat assistants.
+### Patrocinadores
+
+<a href="https://serpapi.com/ai-engineering-from-scratch">
+  <img align="left" src="../../assets/sponsors/serpapi-banner.png" alt="SerpApi. API de busca na Web para seus aplicativos de IA. Disponível em Markdown e JSON para qualquer integração." width="600">
+</a>
+
+<p><br><b>Agradecemos aos nossos patrocinadores.</b></p>
+<p>Seu apoio mantém todas as lições gratuitas e de código aberto.</p>
+<p>
+  <a href="#supporters">Ver todos os apoiadores</a><br>
+  <a href="../../SPONSORS.md">Become a sponsor</a>
+  <br clear="all">
+</p>
 
 ```text
 ░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒
@@ -59,24 +75,11 @@ Você não precisa percorrer 523 lições antes de começar. Escolha um objetivo
 | Quero desenvolver com o Model Context Protocol (MCP) | [Rota do Model Context Protocol (MCP)](../../phases/13-tools-and-protocols/README.md#model-context-protocol-mcp-path) | [Trilha do Model Context Protocol (MCP)](https://aiengineeringfromscratch.com/lesson?path=phases/13-tools-and-protocols/06-mcp-fundamentals&learningPath=model-context-protocol) |
 | Quero escrever e publicar Agent Skills | [Rota focada de Agent Skills](../../phases/13-tools-and-protocols/README.md#agent-skills-fast-path) | [Trilha de Agent Skills](https://aiengineeringfromscratch.com/lesson?path=phases/13-tools-and-protocols/22-skills-and-agent-sdks&learningPath=agent-skills) |
 | Quero me preparar para uma certificação Claude | [Introdução à certificação](../../certifications/claude/GETTING_STARTED.md) | [Academia de certificação](https://aiengineeringfromscratch.com/certifications.html) |
+| Quero me preparar para a certificação MCP Associate (MCPA) | [Introdução ao MCPA](../../certifications/mcpa/GETTING_STARTED.md) | [Trilha MCPA](https://aiengineeringfromscratch.com/certification?id=mcpa-f) |
 
 Não sabe onde se encaixa? Use o [tutor de nivelamento `start-learning`](../../skills/start-learning/SKILL.md) ou o [guia de pré-requisitos do site](https://aiengineeringfromscratch.com/prereqs.html).
 
 Compare quatro domínios centrais e seis rotas de carreira nas [Trilhas de aprendizagem em Engenharia de IA](https://aiengineeringfromscratch.com/learning-paths.html).
-
-### Patrocinadores
-
-<a href="https://serpapi.com/ai-engineering-from-scratch">
-  <img align="left" src="../../assets/sponsors/serpapi-banner.png" alt="SerpApi. API de busca na Web para seus aplicativos de IA. Disponível em Markdown e JSON para qualquer integração." width="600">
-</a>
-
-<p><br><b>Agradecemos aos nossos patrocinadores.</b></p>
-<p>Seu apoio mantém todas as lições gratuitas e de código aberto.</p>
-<p>
-  <a href="#supporters">Ver todos os apoiadores</a><br>
-  <a href="../../SPONSORS.md">Become a sponsor</a>
-  <br clear="all">
-</p>
 
 ### Use todas as lições da mesma maneira
 
@@ -299,6 +302,29 @@ The academy is independent study material based on public exam objectives. It is
 affiliated with Anthropic, does not reproduce live exam questions, and cannot guarantee
 a passing score.
 
+### Prepare for the MCP Associate (MCPA) certification
+
+The [MCPA Certification Curriculum](../../certifications/mcpa/README.md) is a free,
+open-source preparation program for the Model Context Protocol Associate exam from the
+Agentic AI Foundation, delivered through Linux Foundation Training. Its 34 lessons teach
+the stateless 2026-07-28 protocol across the five exam domains: per-request `_meta` and
+`server/discover` in place of the old handshake, multi round-trip requests, subscriptions,
+caching, the tasks and MCP Apps extensions, OAuth authorization, and the registry and SDK
+tiers. Every lesson ships a runnable standard-library lab whose transcript is checked for
+the current wire shape, and the track adds a diagnostic, a capstone, and three full-length
+original practice exams whose question mix follows the published blueprint weights.
+
+Use the [AI-native GitHub onboarding guide](../../certifications/mcpa/GETTING_STARTED.md) with
+Claude Code, Codex, ChatGPT, Cursor, or another agent. Run `mcpa-certification` in Codex,
+`/mcpa-certification` in Claude Code, or ask another host to use `mcpa-certification`. It
+creates a persistent route in `MCPA-CERTIFICATION.md`, teaches one step at a time, runs
+the real labs, and gives artifact-based feedback. The same curriculum is available on the
+[MCPA track page](https://aiengineeringfromscratch.com/certification?id=mcpa-f).
+
+This curriculum is independent study material based on public exam objectives. It is not
+affiliated with the Agentic AI Foundation or the Linux Foundation, does not reproduce
+live exam questions, and cannot guarantee a passing score.
+
 ### The learning skills
 
 | Skill | What it does |
@@ -309,6 +335,7 @@ a passing score.
 | [`learn-mcp`](../../skills/learn-mcp/SKILL.md) | Focused Model Context Protocol (MCP) tutor. Creates `MCP-LEARNING.md`, follows the 17-lesson manifest, and records wire, security, reliability, and conformance evidence. |
 | [`learn-agent-skills`](../../skills/learn-agent-skills/SKILL.md) | Focused Agent Skills tutor. Creates `AGENT-SKILLS-LEARNING.md`, teaches lessons 22, 24, 25, 26, and 27, and records real-host evidence. |
 | [`claude-certification`](../../skills/claude-certification/SKILL.md) | Certification tutor. Chooses CCAO-F, CCDV-F, CCAR-F, or CCAR-P; teaches each lesson; runs labs; reviews artifacts; administers diagnostics and mocks; saves progress. |
+| [`mcpa-certification`](../../skills/mcpa-certification/SKILL.md) | MCPA tutor. Follows the 34-lesson `mcpa-f` route on the 2026-07-28 protocol; teaches each lesson; runs labs and the wire checker; administers the diagnostic and three mocks; saves progress. |
 | [`find-your-level`](../../skills/find-your-level/SKILL.md) | Ten-question placement quiz. Maps your knowledge to a starting phase and produces a personalized path with hour estimates. |
 | [`check-understanding <phase>`](../../skills/check-understanding/SKILL.md) | Per-phase quiz, eight questions, with feedback and specific lessons to review. Use the Codex, Claude Code, or natural-language form in the invocation table above. |
 
@@ -346,10 +373,10 @@ Other curricula end with *"congratulations, you learned X."* Each lesson here en
 
 <table>
 <tr>
-<th align="left" width="25%"><img src="../../site/assets/figures/001-a-prompts.svg" width="96" height="96" alt="FIG_001.A prompts"/><br/><sub>FIG_001 · A</sub><br/><b>PROMPTS</b></th>
-<th align="left" width="25%"><img src="../../site/assets/figures/001-b-skills.svg" width="96" height="96" alt="FIG_001.B skills"/><br/><sub>FIG_001 · B</sub><br/><b>SKILLS</b></th>
-<th align="left" width="25%"><img src="../../site/assets/figures/001-c-agents.svg" width="96" height="96" alt="FIG_001.C agents"/><br/><sub>FIG_001 · C</sub><br/><b>AGENTS</b></th>
-<th align="left" width="25%"><img src="../../site/assets/figures/001-d-mcp-servers.svg" width="96" height="96" alt="FIG_001.D MCP servers"/><br/><sub>FIG_001 · D</sub><br/><b>MCP SERVERS</b></th>
+<th align="left" width="25%"><img src="../../site/assets/figures/001-a-prompts.svg" width="120" height="120" alt="FIG_001.A prompts"/><br/><sub>FIG_001 · A</sub><br/><b>PROMPTS</b></th>
+<th align="left" width="25%"><img src="../../site/assets/figures/001-b-skills.svg" width="120" height="120" alt="FIG_001.B skills"/><br/><sub>FIG_001 · B</sub><br/><b>SKILLS</b></th>
+<th align="left" width="25%"><img src="../../site/assets/figures/001-c-agents.svg" width="120" height="120" alt="FIG_001.C agents"/><br/><sub>FIG_001 · C</sub><br/><b>AGENTS</b></th>
+<th align="left" width="25%"><img src="../../site/assets/figures/001-d-mcp-servers.svg" width="120" height="120" alt="FIG_001.D MCP servers"/><br/><sub>FIG_001 · D</sub><br/><b>MCP SERVERS</b></th>
 </tr>
 <tr>
 <td valign="top">Paste into any AI assistant for expert-level help on a narrow task.</td>
@@ -1173,10 +1200,10 @@ reads a SKILL.md / AGENTS.md directory. Real tools, not homework.
 Two skill sets, two installers:
 
 **The learning skills** (`start-learning`, `learn`, `course-guide`,
-`learn-mcp`, `learn-agent-skills`, `claude-certification`, `find-your-level`, and
-`check-understanding`) live under [`skills/`](../../skills/) and install into a
-supported skill-capable host with one command. Installation needs Node.js and
-`npx`, but not a repository clone or Python:
+`learn-mcp`, `learn-agent-skills`, `claude-certification`, `mcpa-certification`,
+`find-your-level`, and `check-understanding`) live under [`skills/`](../../skills/) and
+install into a supported skill-capable host with one command. Installation needs
+Node.js and `npx`, but not a repository clone or Python:
 
 ```bash
 npx skills add rohitg00/ai-engineering-from-scratch
