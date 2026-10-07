@@ -1,0 +1,78 @@
+{
+  "lesson": "17-tool-invocation-lifecycle",
+  "title": "工具调用生命周期（The Tool Invocation Lifecycle）",
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "工具调用中，哪两个检查点完全在宿主内部进行，不产生自己的 JSON-RPC 消息？",
+      "options": [
+        "发现与列举，因为存在缓存就总会跳过它们",
+        "选择与确认，因为两者都只发生在宿主内部",
+        "调用与结果，因为它们被合并成一次网络往返",
+        "校验与执行，因为两者都只在服务器端进行"
+      ],
+      "correct": 1,
+      "explanation": "选择是模型决定使用哪个工具，确认是宿主自己的批准步骤。它们都不是协议方法，不直接作为请求或响应出现；本题关注宿主内部的决策检查点。"
+    },
+    {
+      "stage": "check",
+      "question": "tools/call 指定了服务器从未注册的工具。2026-07-28 中哪个响应正确？",
+      "options": [
+        "返回 input_required，让客户端再提供一个不同工具名",
+        "返回 complete 且 isError 为 true，让模型换名称重试",
+        "返回 JSON-RPC 错误 -32602，因为指定工具没有注册",
+        "返回 JSON-RPC 错误 -32601，因为方法本身无法识别"
+      ],
+      "correct": 2,
+      "explanation": "服务器已经识别 tools/call 方法，问题只是其中的工具名称无效，因此使用 Invalid params（-32602）。-32601 保留给服务器根本不实现的 JSON-RPC 方法。"
+    },
+    {
+      "stage": "check",
+      "question": "【上游答案键存在勘误，见解析】调用 publish_release 时缺少必需参数。失败发生在哪个阶段，通过什么通道报告？",
+      "options": [
+        "在 execute 阶段，返回 JSON-RPC 错误 -32603",
+        "在 execute 阶段，返回 complete 且 isError 为 true",
+        "在 confirm 阶段，因为宿主本应在发送前发现问题",
+        "在 validate 阶段，返回 JSON-RPC 错误 -32602"
+      ],
+      "correct": 3,
+      "explanation": "Validate 只确认工具是否存在；Execute 才检查工具参数的结构定义，因此缺少或无效参数应返回可供修正的 isError 结果。译注：上游 correct=3 指向第四项，与正文、本段原始解析和 test_validation_failure_lands_as_is_error_at_execute_stage 一致性测试相反。按课程内容应选择第二项；本分支暂保留上游答案索引并登记待勘误，当前自动判分不应作为本题正误依据。"
+    },
+    {
+      "stage": "check",
+      "question": "客户端等待 get_build_status 超时。用于结束这次调用的响应具有哪个 resultType？",
+      "options": [
+        "没有这种超时专用结果，调用方直接停止等待",
+        "使用 \"timed_out\"，服务器为此定义了专门取值",
+        "使用 \"complete\"，同时设置 isError 并说明超时",
+        "使用 \"cancelled\"，因为客户端已放弃并取消请求"
+      ],
+      "correct": 0,
+      "explanation": "超时和取消都不属于 resultType。客户端只是停止等待并放弃该请求，不会因此产生一个新的结果类型；之后到达的响应也应按已放弃请求处理。"
+    },
+    {
+      "stage": "post",
+      "question": "get_build_status 正在查询中，任何响应到达前流就断开了。客户端下一步应怎样处理？",
+      "options": [
+        "创建全新构建，因为原有句柄已经永久失效",
+        "对同一句柄用新 id 重新查询，参考其 idempotentHint",
+        "沿用原 JSON-RPC id，因为服务器仍在处理旧请求",
+        "无限等待，因为连接恢复后原流必然自动续传"
+      ],
+      "correct": 1,
+      "explanation": "传输不支持恢复原流，因此需以新 id 重新发起。示例的 get_build_status 标记 idempotentHint true，对同一句柄重新查询在此场景中合理；注解仍只是提示，不能普遍保证任意操作都可安全重复。"
+    },
+    {
+      "stage": "post",
+      "question": "publish_release 返回 input_required，客户端收集变更单后重试。新请求必须包含什么？",
+      "options": [
+        "原 JSON-RPC id，以及由客户端新生成的 requestState",
+        "仅新的 JSON-RPC id，完全不向服务器传回 requestState",
+        "新的 JSON-RPC id、匹配的 inputResponses 和原样 requestState",
+        "与第一次相同的 JSON-RPC id，以便服务器关联两次调用"
+      ],
+      "correct": 2,
+      "explanation": "重试属于独立请求，必须有新的 id；inputResponses 的键与 inputRequests 匹配，requestState 则逐字节回传服务器提供的值，不能自行生成或拿其他调用的状态替代。"
+    }
+  ]
+}
