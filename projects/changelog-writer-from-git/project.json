@@ -1,0 +1,122 @@
+{
+  "id": "changelog-writer-from-git",
+  "title": "Git 更新日志生成器（Changelog Writer From Git）",
+  "level": 2,
+  "levelName": "Builder",
+  "tagline": "将约定式提交记录整理为顺序稳定的发布说明。",
+  "summary": "读取真实 Git 版本范围，保留迁移说明尾注和回退引用，再导出可复现的 Markdown 与来源记录。",
+  "usefulFor": [
+    "读取真实 Git 版本范围，保留迁移说明尾注和回退引用，再导出可复现的 Markdown 与来源记录。",
+    "将可移植的 JSON 来源记录接入自己的审阅或发布流程。"
+  ],
+  "youWillBuild": "读取真实 Git 版本范围，保留迁移说明尾注和回退引用，再导出可复现的 Markdown 与来源记录。",
+  "hours": 8,
+  "languages": [
+    "Go"
+  ],
+  "status": "ready",
+  "source": "core",
+  "author": {
+    "name": "AI Engineering from Scratch",
+    "github": "rohitg00"
+  },
+  "skills": [
+    "读取固定的 Git 导出",
+    "分类约定式提交主题",
+    "按稳定顺序分组提交",
+    "生成有上限的发布说明"
+  ],
+  "prerequisites": [
+    {
+      "title": "开发环境",
+      "path": "phases/00-setup-and-tooling/01-dev-environment"
+    },
+    {
+      "title": "数据管理",
+      "path": "phases/00-setup-and-tooling/09-data-management"
+    }
+  ],
+  "inspiredBy": [],
+  "demo": {
+    "command": [
+      "go",
+      "run",
+      "."
+    ],
+    "cwd": "solution"
+  },
+  "stages": [
+    {
+      "id": "01-read-an-immutable-git-export",
+      "title": "读取固定的 Git 导出",
+      "summary": "逐行读取由制表符分隔的哈希和主题，拒绝重复哈希、格式错误的十六进制 ID 和空主题。",
+      "hours": 2,
+      "language": "go",
+      "difficulty": "starter",
+      "concepts": [
+        "读取快照",
+        "校验哈希",
+        "检查提交唯一性",
+        "保留主题"
+      ]
+    },
+    {
+      "id": "02-classify-conventional-subjects",
+      "title": "分类约定式提交主题",
+      "summary": "以第一个冒号加空格为边界，解析类型、可选范围和可选破坏性变更标记。",
+      "hours": 2,
+      "language": "go",
+      "difficulty": "core",
+      "concepts": [
+        "匹配主题语法",
+        "可选范围",
+        "破坏性变更标记",
+        "保留描述"
+      ]
+    },
+    {
+      "id": "03-group-commits-with-stable-ordering",
+      "title": "按稳定顺序分组提交",
+      "summary": "破坏性变更优先进入独立章节，其余提交再按功能或修复分组。",
+      "hours": 2,
+      "language": "go",
+      "difficulty": "core",
+      "concepts": [
+        "分类",
+        "破坏性变更优先",
+        "分组映射",
+        "稳定哈希顺序"
+      ]
+    },
+    {
+      "id": "04-render-bounded-release-notes",
+      "title": "生成有上限的发布说明",
+      "summary": "校验发布标签，限制最大提交数量，并按固定顺序输出章节。",
+      "hours": 2,
+      "language": "go",
+      "difficulty": "core",
+      "concepts": [
+        "发布标签",
+        "提交数量上限",
+        "转义内容",
+        "固定章节顺序"
+      ]
+    }
+  ],
+  "demos": [
+    {
+      "gif": "media/run.gif",
+      "poster": "media/run.png",
+      "title": "初始化与评分（上游原始录屏）",
+      "caption": "保留上游记录：新起始代码失败，随后参考解答各阶段通过。参考解答通过不授予学习者证书；录屏未在本轮重录。"
+    },
+    {
+      "gif": "media/output.gif",
+      "poster": "media/output.png",
+      "title": "检查输出（上游原始录屏）",
+      "caption": "保留上游本地演示的真实输出与原始日期。样本及云端适配器边界见 README；未将旧记录改写为本轮运行证据。"
+    }
+  ],
+  "figures": true,
+  "overviewFigure": "pj-changelog-writer-from-git-1"
+}
