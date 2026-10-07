@@ -1,0 +1,78 @@
+{
+  "lesson": "10-model-interaction-flow",
+  "title": "模型交互流程（The Model Interaction Flow）",
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "宿主尚未发送 tools/call 时，模型究竟能看到工具的哪些信息？",
+      "options": [
+        "工具完整的服务器实现、源代码和已保存的秘密信息",
+        "工具最初发布时所使用的完整注册表 server.json 条目",
+        "工具名称、描述、输入结构定义，以及服务器提供的注解",
+        "服务器在先前握手中分配并被客户端缓存的会话标识"
+      ],
+      "correct": 2,
+      "explanation": "模型看到 tools/list 中的定义字段：name、description、inputSchema 和存在时的 annotations，不看到服务器实现或注册表条目；2026-07-28 也没有可依赖的握手会话。"
+    },
+    {
+      "stage": "check",
+      "question": "拟定的 close_ticket 调用针对一个完全没有 annotations 的工具。客户端发送前，宿主应怎样处理？",
+      "options": [
+        "先等待 list_changed 通知，再决定是否需要用户确认",
+        "立即发送，因为没有 annotations 就意味着工具安全",
+        "直接拒绝，因为工具没有 annotations 就属于无效定义",
+        "依据默认值按破坏性工具处理，先取得用户的明确确认"
+      ],
+      "correct": 3,
+      "explanation": "readOnlyHint 默认为 false，destructiveHint 默认为 true，因此没有 annotations 的工具也会按破坏性处理。宿主应先向用户展示并确认，获准后再发送调用。"
+    },
+    {
+      "stage": "check",
+      "question": "tools/call 因缺少必需参数返回 isError true。模型接下来应该怎样做？",
+      "options": [
+        "读取 content 中的解释，修正参数后使用新的 id 重试",
+        "原样重发调用，因为大多数短暂失败都会自动恢复",
+        "等待服务器再次发来 input_required，然后才重试",
+        "停止整个对话，因为 isError true 总表示调用无法重试"
+      ],
+      "correct": 0,
+      "explanation": "工具执行错误是带有 isError true 和可操作说明的正常结果。模型可以根据解释修正参数，以新 id 再调用；这与携带 inputResponses 的 MRTR 机制不同。"
+    },
+    {
+      "stage": "check",
+      "question": "open_ticket 返回 resultType input_required。客户端重试与原请求相比必须有什么不同？",
+      "options": [
+        "完全省略 requestState，因为服务器已经保存了相关上下文",
+        "使用新的 JSON-RPC id，并准确原样回传 requestState",
+        "复用原 JSON-RPC id，以便服务器关联前后两次调用",
+        "改在新打开的 subscriptions/listen 流上发送重试请求"
+      ],
+      "correct": 1,
+      "explanation": "MRTR 重试是独立请求，必须使用新的 JSON-RPC id。服务器提供 requestState 时，客户端应逐字节回传，不能复用原 id，也不能自行构造不同的状态值。"
+    },
+    {
+      "stage": "post",
+      "question": "模型选择了服务器未提供的工具，收到 -32602 JSON-RPC 错误。循环下一步应怎样处理？",
+      "options": [
+        "转换成 isError true 的工具结果，再修正后继续重试",
+        "打开 input_required 往返，询问用户应该使用哪个工具",
+        "继续处理其他事项，不重发未经改变的相同工具调用",
+        "保持相同参数，再次发送完全一样的 tools/call 请求"
+      ],
+      "correct": 2,
+      "explanation": "未知工具这样的协议错误，无法靠原样重发自行解决。循环不应重复发送同一请求；工具执行错误则可以根据说明修正参数，再以新 id 重试，两者处理不同。"
+    },
+    {
+      "stage": "post",
+      "question": "宿主维持长对话时，tools/list 每轮保持确定性顺序为什么重要？",
+      "options": [
+        "这样宿主就能在后续请求中省略必需协议元数据",
+        "这是客户端获准打开 subscriptions/listen 的前提",
+        "这样服务器就可以跳过后续每次调用的参数校验",
+        "稳定缓存前缀，避免破坏模型服务商的提示词缓存"
+      ],
+      "correct": 3,
+      "explanation": "模型服务商通常缓存包含工具数组的提示词前缀。稳定顺序让宿主跨轮次复用上下文，避免仅因重排工具定义使服务商缓存失效并再次支付相关成本。"
+    }
+  ]
+}
