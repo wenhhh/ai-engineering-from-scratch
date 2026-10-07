@@ -203,6 +203,5 @@ tags: [rl, dqn, deep-rl]
 - [Hasselt、Guez、Silver（2016）：采用双 Q 学习的深度强化学习](https://arxiv.org/abs/1509.06461)：DDQN。
 - [Wang 等（2016）：对偶网络架构](https://arxiv.org/abs/1511.06581)：对偶 DQN。
 - [Hessel 等（2018）：Rainbow，组合深度强化学习改进](https://arxiv.org/abs/1710.02298)：叠加各种技巧的论文。
-- [OpenAI Spinning Up：DQN](https://spinningup.openai.com/en/latest/algorithms/dqn.html)：清晰的现代讲解。
 - [Sutton 与 Barto（2018）：第 9 章，带函数逼近的同策略预测](http://incompleteideas.net/book/RLbook2020.pdf)：教材对“致命三要素”（函数逼近 + 自举 + 离策略）的论述；DQN 的目标网络与回放缓冲区正是为控制它而设计。
 - [CleanRL 的 DQN 实现](https://docs.cleanrl.dev/rl-algorithms/dqn/)：消融研究使用的单文件 DQN 参考实现，适合与本课从零实现的版本对照阅读。
