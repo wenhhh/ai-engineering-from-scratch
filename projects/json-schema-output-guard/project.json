@@ -1,0 +1,157 @@
+{
+  "id": "json-schema-output-guard",
+  "title": "JSON 结构输出守卫（JSON Schema Output Guard）",
+  "level": 1,
+  "levelName": "Starter",
+  "tagline": "为模型输出契约提供结构定义预检，以及有限修复过程的凭据。",
+  "summary": "为模型输出契约提供结构定义预检，以及有限修复过程的凭据。 在应用边界调用 guard(raw,schema)，或调用 repair(generate,schema,maxAttempts)；其中 generate 接收结构化的 Issue[] 反馈，以及从 1 开始的尝试编号。",
+  "hours": 8,
+  "languages": [
+    "TypeScript"
+  ],
+  "status": "ready",
+  "source": "core",
+  "author": {
+    "name": "AI Engineering from Scratch",
+    "github": "rohitg00"
+  },
+  "skills": [
+    "解析不可信输入边界",
+    "递归遍历结构定义",
+    "拒绝含糊或不支持的契约",
+    "在有限预算内修复输出"
+  ],
+  "prerequisites": [
+    "评分器需要 Node 22.18+ 和 Python 3",
+    "掌握 TypeScript 联合类型、递归函数、JSON 和异步回调。"
+  ],
+  "youWillBuild": "为模型输出契约提供结构定义预检，以及有限修复过程的凭据。",
+  "usefulFor": [
+    "在应用边界调用 guard(raw,schema)，或调用 repair(generate,schema,maxAttempts)；其中 generate 接收结构化的 Issue[] 反馈，以及从 1 开始的尝试编号。"
+  ],
+  "demo": {
+    "cwd": "solution",
+    "command": [
+      "node",
+      "cli.ts",
+      "--schema",
+      "samples/schema.json",
+      "--attempts",
+      "samples/attempts.json",
+      "--output",
+      "guard.json",
+      "--html",
+      "guard.html"
+    ]
+  },
+  "stages": [
+    {
+      "id": "01-parse-json",
+      "title": "解析不可信输入边界",
+      "summary": "模型响应以字节字符串形式到达。将整个字符串作为 JSON 解析，拒绝 Markdown 包装和尾随文本，并在解析前限制 UTF-8 字节数。除对象外，也接受 JSON 基本值：基本值是否适用由结构定义决定。不要不断删除文本直到碰巧解析成功，否则会掩盖实际输出契约。",
+      "hours": 2,
+      "language": "typescript",
+      "languageWhy": "TypeScript 将未知数据与带类型的应用值分开。",
+      "concepts": [
+        "parseJSON"
+      ],
+      "difficulty": "starter",
+      "runner": [
+        "node",
+        "--experimental-strip-types",
+        "--test",
+        "{tests}/stage.test.ts"
+      ],
+      "requires": [
+        "node"
+      ],
+      "timeout": 90,
+      "figure": "pj-json-schema-output-guard-1"
+    },
+    {
+      "id": "02-validate-types",
+      "title": "递归遍历结构定义",
+      "summary": "实现对象、数组及基本值校验。使用自有属性语义检查必填属性；继承的属性不满足契约。将 integer 视为 number 的更严格子类型，拒绝非有限数值，并为每次失败保留路径。将递归下降深度限制为 32，防止结构定义和值无限消耗调用栈。",
+      "hours": 2,
+      "language": "typescript",
+      "languageWhy": "用递归联合类型描述结构定义子集，无需导入校验器。",
+      "concepts": [
+        "validate"
+      ],
+      "difficulty": "core",
+      "runner": [
+        "node",
+        "--experimental-strip-types",
+        "--test",
+        "{tests}/stage.test.ts"
+      ],
+      "requires": [
+        "node"
+      ],
+      "timeout": 90,
+      "figure": "pj-json-schema-output-guard-2"
+    },
+    {
+      "id": "03-constraints",
+      "title": "拒绝含糊或不支持的契约",
+      "summary": "增加数值上下界、枚举成员、Unicode 字符串最小长度、数组长度边界和禁止额外属性的对象校验。转义属性路径中的斜杠与波浪号。出现教学子集以外的关键字时，报告配置错误，不能静默视为成功。本实现不宣称完全符合 JSON Schema：引用、格式及组合关键字仍需额外实现。",
+      "hours": 2,
+      "language": "typescript",
+      "languageWhy": "带类型的问题对象使命令行程序与重试循环采用一致的错误报告。",
+      "concepts": [
+        "validate",
+        "guard"
+      ],
+      "difficulty": "core",
+      "runner": [
+        "node",
+        "--experimental-strip-types",
+        "--test",
+        "{tests}/stage.test.ts"
+      ],
+      "requires": [
+        "node"
+      ],
+      "timeout": 90,
+      "figure": "pj-json-schema-output-guard-3"
+    },
+    {
+      "id": "04-bounded-repair",
+      "title": "在有限预算内修复输出",
+      "summary": "只将结构化校验反馈传给生成回调。解释输出前，先计入本次调用。接受输出后立即停止；最后一次尝试仍被拒绝时，返回明确的 exhausted 状态。服务商故障向上传播，不伪装成结构校验失败。轨迹记录每次尝试，避免第三次成功掩盖之前两次契约违规。",
+      "hours": 2,
+      "language": "typescript",
+      "languageWhy": "异步函数类型支持确定性的模拟生成，后续也可接入服务商适配器。",
+      "concepts": [
+        "repair"
+      ],
+      "difficulty": "core",
+      "runner": [
+        "node",
+        "--experimental-strip-types",
+        "--test",
+        "{tests}/stage.test.ts",
+        "{tests}/integration.test.ts"
+      ],
+      "requires": [
+        "node"
+      ],
+      "timeout": 90,
+      "figure": "pj-json-schema-output-guard-4"
+    }
+  ],
+  "demos": [
+    {
+      "gif": "media/run.gif",
+      "poster": "media/run.png",
+      "title": "初始化与评分（上游原始录屏）",
+      "caption": "上游原始录屏：先记录起始代码失败，再记录参考实现全部阶段通过。参考实现通过不授予学习者证书。"
+    },
+    {
+      "gif": "media/output.gif",
+      "poster": "media/output.png",
+      "title": "检查输出（上游原始录屏）",
+      "caption": "上游原始录屏中的本地确定性演示实际输出。测试夹具及在线适配器限制见 README。"
+    }
+  ]
+}
