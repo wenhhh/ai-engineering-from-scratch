@@ -339,4 +339,4 @@ python3 -m unittest discover tests -v
 - [MCP 2026-07-28 资源（Resources）](https://modelcontextprotocol.io/specification/2026-07-28/server/resources)
 - [MCP 2026-07-28 提示词（Prompts）](https://modelcontextprotocol.io/specification/2026-07-28/server/prompts)
 - [MCP 2026-07-28 订阅（Subscriptions）](https://modelcontextprotocol.io/specification/2026-07-28/basic/patterns/subscriptions)
-- [MCP 2026-07-28 缓存（Caching）](https://modelcontextprotocol.io/specification/2026-07-28/basic/utilities/caching)
+- [MCP 2026-07-28 缓存（Caching）](https://modelcontextprotocol.io/specification/2026-07-28/server/utilities/caching)
