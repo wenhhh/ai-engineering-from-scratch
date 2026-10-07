@@ -400,4 +400,4 @@ model = smp.Unet(
 - [U-Net：用于生物医学图像分割的卷积网络（Ronneberger 等，2015）](https://arxiv.org/abs/1505.04597)：原始论文，常被引用的那张图在第 2 页
 - [全卷积网络（Long 等，2015）](https://arxiv.org/abs/1411.4038)：首次将分割变为端到端卷积问题的论文
 - [segmentation_models_pytorch 分割模型库](https://github.com/qubvel/segmentation_models.pytorch)：生产分割参考，包含各种标准架构与标准损失
-- [训练最佳水平分割模型的经验（Kaggle 竞赛）](https://www.kaggle.com/code/iafoss/carvana-unet-pytorch)：讲解测试时增强（TTA）、伪标签和类别权重为何对真实数据重要
+- [iafoss：使用测试时增强的 Unet34 提交（Unet34 submission with TTA，Kaggle notebook）](https://www.kaggle.com/code/iafoss/unet34-submission-tta-0-699-new-public-lb) — 在真实图像分割竞赛中为 U-Net 使用测试时增强（Test-Time Augmentation，TTA）。
