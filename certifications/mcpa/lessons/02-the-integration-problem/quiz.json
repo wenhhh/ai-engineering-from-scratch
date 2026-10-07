@@ -1,0 +1,78 @@
+{
+  "lesson": "02-the-integration-problem",
+  "title": "MCP 解决的集成问题（The Integration Problem MCP Solves）",
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "四个 AI 应用都需要访问六个外部系统。采用一套共享协议后，需要多少份实现？",
+      "options": [
+        "六份，因为只有外部系统需要实现协议",
+        "四份，因为只有 AI 应用需要实现协议",
+        "十份，每个应用和每个系统各实现一次",
+        "二十四份，每一对仍需独立的定制胶水代码"
+      ],
+      "correct": 2,
+      "explanation": "共享协议将 N 乘 M 对连接降为 N 加 M 份实现：四个客户端加六个服务器，共十份。"
+    },
+    {
+      "stage": "check",
+      "question": "在 2026-07-28 中，服务器如何知道某个请求采用哪个协议版本？",
+      "options": [
+        "从服务器最近一次 tools/list 响应中的版本得知",
+        "从此前建立连接时的 initialize 握手中得知",
+        "从服务器首次请求时分配的会话标识中得知",
+        "从请求 _meta 的 io.modelcontextprotocol/protocolVersion 得知"
+      ],
+      "correct": 3,
+      "explanation": "协议采用无状态设计，每个请求在 params._meta 中携带自己的协议版本和客户端能力，无须握手或会话。"
+    },
+    {
+      "stage": "check",
+      "question": "客户端发送 tools/call，指定服务器未提供的工具。符合规范的服务器返回什么？",
+      "options": [
+        "JSON-RPC 错误 -32602，表示参数无效",
+        "input_required 结果，请用户选择其他工具",
+        "JSON-RPC 错误 -32601，表示方法未知",
+        "isError 为 true、content 为空的普通结果"
+      ],
+      "correct": 0,
+      "explanation": "未知工具属于 -32602 Invalid params 协议错误；-32601 专门表示未知 JSON-RPC 方法。"
+    },
+    {
+      "stage": "check",
+      "question": "哪项正确说明服务器三类原语的控制方？",
+      "options": [
+        "三类原语全部由服务器运营方预先选择",
+        "模型调用工具，应用选择资源，用户选择提示词",
+        "工具由用户控制，资源由模型控制，提示词由应用驱动",
+        "三类原语全部由模型运行时选择，无须宿主参与"
+      ],
+      "correct": 1,
+      "explanation": "模型决定何时调用工具，宿主应用决定哪些资源进入上下文，用户主动选择提示词。"
+    },
+    {
+      "stage": "post",
+      "question": "调用 get_forecast 时遗漏必需的 city 参数。哪种响应最有助于模型恢复？",
+      "options": [
+        "返回空的成功结果，让对话继续进行",
+        "返回 JSON-RPC -32603，报告服务器内部故障",
+        "返回 isError 为 true 的结果，说明必须提供 city",
+        "返回由宿主对模型隐藏的 JSON-RPC -32602"
+      ],
+      "correct": 2,
+      "explanation": "输入问题属于工具执行错误；带 isError true 的普通结果让模型读到说明，并补上城市后重试。"
+    },
+    {
+      "stage": "post",
+      "question": "MCP 有意将哪一项留给宿主应用决定，而不进行标准化？",
+      "options": [
+        "服务器如何向连接的客户端描述可用工具",
+        "客户端如何调用工具并读取返回结果",
+        "结果与错误在线上报文中的结构",
+        "宿主选用的模型及提示词构建方式"
+      ],
+      "correct": 3,
+      "explanation": "MCP 标准化应用与系统之间的通信；模型选择和提示词构建仍由宿主决定。"
+    }
+  ]
+}
