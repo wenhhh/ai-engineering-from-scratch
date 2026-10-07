@@ -4,7 +4,7 @@
 // 无需引入 tiktoken。实际组装器可在此接入分词器（tokenizer）。
 // 参考文献： https://arxiv.org/abs/2307.03172  (Lost in the Middle — Liu et al.)
 //       https://www.anthropic.com/news/contextual-retrieval
-//       https://platform.openai.com/docs/guides/context-window
+//       https://platform.openai.com/docs/guides/conversation-state
 
 import process from "node:process";
 
