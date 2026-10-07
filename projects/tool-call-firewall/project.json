@@ -1,0 +1,119 @@
+{
+  "id": "tool-call-firewall",
+  "title": "工具调用防火墙（Tool Call Firewall）",
+  "level": 4,
+  "levelName": "Systems",
+  "tagline": "结构化工具请求产生副作用之前，先执行授权。",
+  "summary": "构建默认拒绝的策略评估器，包含有界参数、角色权限、一次性审批和结构化审计日志。交付物是库级门禁，应用必须将其放在每次真实工具执行之前。",
+  "usefulFor": [
+    "用审批凭据明确记录获准执行及实际执行的操作。",
+    "原生命令行程序要求调用应用提供可信角色。"
+  ],
+  "youWillBuild": "用审批凭据明确记录获准执行及实际执行的操作。",
+  "hours": 8,
+  "languages": [
+    "Rust"
+  ],
+  "status": "ready",
+  "source": "core",
+  "author": {
+    "name": "AI Engineering from Scratch",
+    "github": "rohitg00"
+  },
+  "skills": [
+    "校验无歧义的调用封套",
+    "评估角色与路径策略",
+    "一次性消费绑定请求的审批",
+    "记录有界审计证据"
+  ],
+  "prerequisites": [
+    {
+      "title": "工具结构定义设计",
+      "path": "phases/13-tools-and-protocols/05-tool-schema-design"
+    },
+    {
+      "title": "安全与密钥审计",
+      "path": "phases/17-infrastructure-and-production/25-security-secrets-audit"
+    }
+  ],
+  "inspiredBy": [],
+  "demo": {
+    "command": [
+      "python3",
+      "demo.py"
+    ],
+    "cwd": "solution"
+  },
+  "stages": [
+    {
+      "id": "01-validate-an-unambiguous-call-envelope",
+      "title": "校验无歧义的调用封套",
+      "summary": "本地练习使用竖线分隔符解析有界四字段封套。",
+      "hours": 2,
+      "language": "rust",
+      "difficulty": "starter",
+      "concepts": [
+        "字节预算",
+        "封套字段",
+        "控制字符门禁",
+        "调用身份"
+      ]
+    },
+    {
+      "id": "02-evaluate-role-and-path-policy",
+      "title": "评估角色与路径策略",
+      "summary": "只存在 reader 和 editor 两种角色。",
+      "hours": 2,
+      "language": "rust",
+      "difficulty": "core",
+      "concepts": [
+        "已知角色",
+        "路径组件",
+        "工具权限",
+        "决策"
+      ]
+    },
+    {
+      "id": "03-consume-a-request-bound-approval-once",
+      "title": "一次性消费绑定请求的审批",
+      "summary": "审批绑定可信应用提供的完整调用身份，只在决策要求审批时消费。",
+      "hours": 2,
+      "language": "rust",
+      "difficulty": "core",
+      "concepts": [
+        "决策门禁",
+        "匹配身份",
+        "检查未使用",
+        "仅消费一次"
+      ]
+    },
+    {
+      "id": "04-record-bounded-audit-evidence",
+      "title": "记录有界审计证据",
+      "summary": "策略决策后生成稳定的制表符分隔审计行。",
+      "hours": 2,
+      "language": "rust",
+      "difficulty": "core",
+      "concepts": [
+        "唯一调用",
+        "容量检查",
+        "省略参数",
+        "记录决策"
+      ]
+    }
+  ],
+  "demos": [
+    {
+      "gif": "media/run.gif",
+      "poster": "media/run.png",
+      "title": "初始化与评分（上游原始录屏）",
+      "caption": "上游原始录屏：先记录起始代码失败，再记录参考实现全部阶段通过。参考实现通过不授予学习者证书。"
+    },
+    {
+      "gif": "media/output.gif",
+      "poster": "media/output.png",
+      "title": "检查输出（上游原始录屏）",
+      "caption": "上游原始录屏中的本地确定性演示实际输出。夹具和在线适配器限制见 README。"
+    }
+  ]
+}
