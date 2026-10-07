@@ -57,8 +57,8 @@
   <text x="480" y="342" text-anchor="middle" class="step">V1 调度器（2026）</text>
   <text x="480" y="360" text-anchor="middle" class="small">调度器按迭代运行</text>
   <text x="480" y="376" text-anchor="middle" class="small">而非按请求运行</text>
-  <text x="480" y="394" text-anchor="middle" class="small">N-gram 推测解码</text>
-  <text x="480" y="408" text-anchor="middle" class="small">兼容分块预填充</text>
+  <text x="480" y="394" text-anchor="middle" class="small">逐对核查功能组合</text>
+  <text x="480" y="408" text-anchor="middle" class="small">以该版本兼容性矩阵为准</text>
   <text x="480" y="430" text-anchor="middle" class="caption">128 并发下为朴素方案的 3-4 倍</text>
 
   <rect x="640" y="50" width="280" height="490" class="box"/>
@@ -72,14 +72,14 @@
   <text x="780" y="200" text-anchor="middle" class="small">不分块：约 50 ms</text>
   <text x="780" y="216" text-anchor="middle" class="small">分块：约 15 ms</text>
   <rect x="660" y="240" width="240" height="70" class="dsk"/>
-  <text x="780" y="262" text-anchor="middle" class="step">vLLM v0.18.0 的陷阱</text>
-  <text x="780" y="280" text-anchor="middle" class="small">--enable-chunked-prefill</text>
-  <text x="780" y="296" text-anchor="middle" class="small">不兼容草稿模型推测解码</text>
+  <text x="780" y="262" text-anchor="middle" class="step">vLLM v0.18.0 功能矩阵</text>
+  <text x="780" y="280" text-anchor="middle" class="small">推测解码 + 分块预填充</text>
+  <text x="780" y="296" text-anchor="middle" class="small">标记为兼容</text>
   <rect x="660" y="320" width="240" height="90" class="old"/>
-  <text x="780" y="342" text-anchor="middle" class="step">例外</text>
-  <text x="780" y="360" text-anchor="middle" class="small">N-gram GPU 推测解码</text>
-  <text x="780" y="376" text-anchor="middle" class="small">在 V1 调度器中可搭配</text>
-  <text x="780" y="394" text-anchor="middle" class="small">分块预填充（Chunked prefill）</text>
+  <text x="780" y="342" text-anchor="middle" class="step">推测解码已知限制</text>
+  <text x="780" y="360" text-anchor="middle" class="small">流水线并行：</text>
+  <text x="780" y="376" text-anchor="middle" class="small">vLLM &lt;= 0.15.0</text>
+  <text x="780" y="394" text-anchor="middle" class="small">草稿模型：vLLM &lt;= 0.10.0</text>
   <text x="780" y="430" text-anchor="middle" class="caption">修改开关前先读发行说明</text>
 
   <rect x="40" y="470" width="880" height="70" class="box"/>

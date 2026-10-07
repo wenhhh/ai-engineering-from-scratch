@@ -52,14 +52,14 @@
     },
     {
       "stage": "post",
-      "question": "vLLM v0.18.0 中，哪种推测解码变体仍兼容 --enable-chunked-prefill？",
+      "question": "vLLM v0.18.0 的功能兼容性矩阵如何说明推测解码与 --enable-chunked-prefill 的组合？",
       "options": [
-        "没有任何推测解码兼容",
-        "V1 调度器中的 N-gram GPU 推测解码",
-        "草稿模型推测解码",
-        "只有 EAGLE-1"
+        "矩阵将该组合标记为兼容",
+        "任何配置下都不能组合使用",
+        "只有 EAGLE-1 草稿头支持分块预填充",
+        "只有草稿模型推测解码支持分块预填充"
       ],
-      "correct": 1,
+      "correct": 0,
       "explanation": ""
     },
     {
