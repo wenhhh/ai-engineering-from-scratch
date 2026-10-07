@@ -133,7 +133,7 @@ python3 code/main.py
 
 - [JSON 结构定义（JSON Schema）规范](https://json-schema.org/specification.html)
 - [LangGraph 检查点存储器（Checkpointers）](https://langchain-ai.github.io/langgraph/concepts/persistence/)
-- [Letta 记忆块（Memory blocks）](https://docs.letta.com/concepts/memory)
+- [Letta 记忆块（Memory blocks）](https://docs.letta.com/v1-sdk/memory/memory-blocks)
 - [Fast.io《AI 智能体状态检查点实践指南》（AI Agent State Checkpointing: A Practical Guide）](https://fast.io/resources/ai-agent-state-checkpointing/)：优先定义结构、具备幂等性的检查点
 - [Fast.io《AI 智能体工作流状态持久化：2026 最佳实践》（AI Agent Workflow State Persistence: Best Practices 2026）](https://fast.io/resources/ai-agent-workflow-state-persistence/)：并发控制、TTL、事件溯源
 - [Hive 问题 #6263：非原子 state.json 写入被静默忽略](https://github.com/aden-hive/hive/issues/6263)：真实项目中的失效模式
