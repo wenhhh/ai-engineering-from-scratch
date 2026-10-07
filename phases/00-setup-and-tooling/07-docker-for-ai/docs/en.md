@@ -155,7 +155,7 @@ python:3.12-slim
 下面是 `code/Dockerfile` 中的 Dockerfile，逐项阅读：
 
 ```dockerfile
-FROM nvidia/cuda:12.4.1-devel-ubuntu22.04
+FROM --platform=linux/amd64 nvidia/cuda:12.4.1-devel-ubuntu22.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV PYTHONUNBUFFERED=1
@@ -215,6 +215,8 @@ docker build -t ai-dev -f phases/00-setup-and-tooling/07-docker-for-ai/code/Dock
 ```
 
 首次构建需要一些时间，因为要下载 CUDA 基础镜像和 PyTorch。后续构建会使用缓存层（Cached Layer）。
+
+**macOS / Apple Silicon（M1/M2/M3/M4）：** `FROM` 行中的 `--platform=linux/amd64` 让这个镜像能够在 Mac 上构建。CUDA 基础镜像也提供 arm64 版本，Docker Desktop 在 Apple Silicon 上会自动选择它；但 PyTorch 的 `cu124` wheel 仅面向 x86_64，因此 `pip install torch==2.6.0+cu124` 所在层会报错 `No matching distribution found for torch==2.6.0+cu124`。固定平台后，会拉取 x86_64 镜像并通过仿真运行：构建速度较慢，容器也无法使用 GPU（Mac 本身就不支持 CUDA）。在 Mac 上执行下文的 `docker run` 命令时，请删除 `--gpus all`。需要在 Apple Silicon 上使用 GPU 时，应按第 01 课使用 MPS 版本在宿主机原生运行课程；这个镜像则留给配备 NVIDIA GPU 的 x86_64 Linux 主机。
 
 运行：
 
