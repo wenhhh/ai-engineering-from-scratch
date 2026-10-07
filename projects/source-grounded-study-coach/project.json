@@ -1,0 +1,122 @@
+{
+  "id": "source-grounded-study-coach",
+  "title": "基于来源证据的学习教练（Source-Grounded Study Coach）",
+  "level": 2,
+  "levelName": "Builder",
+  "tagline": "构建有来源证据支持的练习题，并展示复习计划。",
+  "summary": "构建有来源证据支持的练习题，并展示复习计划。",
+  "youWillBuild": "独立的答案揭示练习页面，以及包含到期卡片和可复算计划状态的 progress.json。",
+  "usefulFor": [
+    "JSON 题卡集，包含来源段落、人工编写的问题、可接受答案和证据偏移量，以及带日期的答题事件。"
+  ],
+  "hours": 8,
+  "languages": [
+    "TypeScript"
+  ],
+  "languageWhy": {
+    "TypeScript": "TypeScript 使用同一组明确的数据类型，完成题卡校验、事件处理和可移植的 HTML 练习展示。"
+  },
+  "status": "ready",
+  "source": "core",
+  "author": {
+    "name": "AI Engineering from Scratch",
+    "github": "rohitg00"
+  },
+  "skills": [
+    "为每个答案标明来源位置",
+    "返回附带来源的反馈",
+    "回放答题事件，生成可见复习计划",
+    "将阅读内容变成实用练习页面"
+  ],
+  "prerequisites": [
+    "能够编写 TypeScript 函数、数组和对象类型。",
+    "能够从本地文件读取 JSON，并处理抛出的错误。",
+    "理解答案字符串匹配不等于语义理解。"
+  ],
+  "figures": true,
+  "overviewFigure": "pj-source-grounded-study-coach-1",
+  "demo": {
+    "command": [
+      "node",
+      "--experimental-strip-types",
+      "demo.ts"
+    ],
+    "cwd": "solution"
+  },
+  "stages": [
+    {
+      "id": "01-ground-the-deck",
+      "title": "为每个答案标明来源位置",
+      "summary": "根据不可变来源段落校验人工题卡。",
+      "hours": 2,
+      "difficulty": "starter",
+      "language": "typescript",
+      "languageWhy": "TypeScript 使用同一组明确的数据类型，完成题卡校验、事件处理和可移植的 HTML 练习展示。",
+      "concepts": [
+        "证据偏移量",
+        "唯一标识",
+        "输入校验"
+      ],
+      "figure": "pj-source-grounded-study-coach-1"
+    },
+    {
+      "id": "02-grade-with-evidence",
+      "title": "返回附带来源的反馈",
+      "summary": "评判受限短答案，并揭示支持段落。",
+      "hours": 2,
+      "difficulty": "core",
+      "language": "typescript",
+      "languageWhy": "TypeScript 使用同一组明确的数据类型，完成题卡校验、事件处理和可移植的 HTML 练习展示。",
+      "concepts": [
+        "规范化",
+        "可接受答案变体",
+        "附带来源的反馈"
+      ],
+      "figure": "pj-source-grounded-study-coach-2"
+    },
+    {
+      "id": "03-schedule-review",
+      "title": "回放答题事件，生成可见复习计划",
+      "summary": "根据稳定且带日期的答题事件计算到期日。",
+      "hours": 2,
+      "difficulty": "core",
+      "language": "typescript",
+      "languageWhy": "TypeScript 使用同一组明确的数据类型，完成题卡校验、事件处理和可移植的 HTML 练习展示。",
+      "concepts": [
+        "事件回放",
+        "幂等性",
+        "日期运算"
+      ],
+      "figure": "pj-source-grounded-study-coach-3"
+    },
+    {
+      "id": "04-export-practice",
+      "title": "将阅读内容变成实用练习页面",
+      "summary": "导出可移植的答案揭示与复习页面，保留可复算进度。",
+      "hours": 2,
+      "difficulty": "stretch",
+      "language": "typescript",
+      "languageWhy": "TypeScript 使用同一组明确的数据类型，完成题卡校验、事件处理和可移植的 HTML 练习展示。",
+      "concepts": [
+        "HTML 渲染",
+        "进度导出",
+        "服务商边界"
+      ],
+      "figure": "pj-source-grounded-study-coach-4"
+    }
+  ],
+  "demos": [
+    {
+      "gif": "media/run.gif",
+      "poster": "media/run.png",
+      "title": "构建与评分（上游原始录屏）",
+      "caption": "上游原始录屏：全新起始代码失败，完整原始参考实现通过全部四个阶段。"
+    },
+    {
+      "gif": "media/output.gif",
+      "poster": "media/output.png",
+      "title": "检查应用输出（上游原始录屏）",
+      "caption": "上游原始录屏中的原创离线夹具实际输出。服务商与证据边界见 README。"
+    }
+  ]
+}
