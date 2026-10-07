@@ -469,6 +469,6 @@ A/B 测试是贝叶斯推断的另一种表现形式。
 ## 延伸阅读（Further Reading）
 
 - [3Blue1Brown：贝叶斯定理](https://www.youtube.com/watch?v=HZGCoVF3YvM) - 用医学检测示例做可视化解释
-- [Stanford CS229：生成式学习算法](https://cs229.stanford.edu/notes2022fall/cs229-notes2.pdf) - 朴素贝叶斯及其与判别模型的联系
+- [Stanford CS229：生成式学习算法](https://cs229.stanford.edu/main_notes.pdf) - 朴素贝叶斯及其与判别模型的联系
 - [Think Bayes（贝叶斯思维）](https://greenteapress.com/wp/think-bayes/) - 附 Python 代码的免费贝叶斯统计书籍
 - [scikit-learn 朴素贝叶斯](https://scikit-learn.org/stable/modules/naive_bayes.html) - 生产实现及各变体的适用场景
