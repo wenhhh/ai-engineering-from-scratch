@@ -125,4 +125,4 @@ roofline
 - [SGLang 文档](https://sgl-project.github.io/)：RadixAttention 与调度细节。
 - [SGLang 论文：高效编程大语言模型（arXiv:2312.07104）](https://arxiv.org/abs/2312.07104)：设计参考。
 - [LMSYS 博客：带 RadixAttention 的 SGLang](https://www.lmsys.org/blog/2024-01-17-sglang/)：基准数值与调度依据。
-- [vLLM：前缀缓存](https://docs.vllm.ai/en/latest/features/prefix_caching.html)：vLLM 自身类似基数树的实现，供比较。
+- [vLLM：前缀缓存](https://docs.vllm.ai/en/latest/features/automatic_prefix_caching/)：vLLM 自身类似基数树的实现，供比较。
