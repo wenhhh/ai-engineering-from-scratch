@@ -251,7 +251,7 @@ class TranslateWorkflowContractTest(unittest.TestCase):
                 "fi\n",
                 encoding="utf-8",
             )
-            hook.chmod(hook.stat().st_mode | stat.S_IXUSR)
+            hook.chmod(hook.stat().st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
 
             run(
                 "bash",
@@ -291,7 +291,7 @@ class TranslateWorkflowContractTest(unittest.TestCase):
             source, remote, runner_temp = create_publisher_fixture(root)
             hook = source / ".git/hooks/pre-commit"
             hook.write_text("#!/bin/sh\nexit 1\n", encoding="utf-8")
-            hook.chmod(hook.stat().st_mode | stat.S_IXUSR)
+            hook.chmod(hook.stat().st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
 
             result = run(
                 "bash",

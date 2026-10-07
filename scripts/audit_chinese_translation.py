@@ -17,7 +17,19 @@ FENCES = re.compile(r"^[ \t]*(`{3,}|~{3,})([^\n]*)\n(.*?)^[ \t]*\1[ \t]*$", re.M
 LINKS = re.compile(r"\]\(([^\s)]+)(?:\s+[^)]*)?\)")
 INLINE_CODE = re.compile(r"(?<!`)(`+)(?!`)([\s\S]*?)(?<!`)\1(?!`)")
 DISPLAY_MATH = re.compile(r"\$\$.*?\$\$", re.S)
-INLINE_MATH = re.compile(r"(?<![\\$])\$(?![\s$])[^$\n]*[^\s\\$]\$(?![$\d])")
+# JSON Schema keywords contain literal dollar signs. A dollar beginning one
+# cannot close a math span (for example "$ref ... #/$defs/Sku"). Keep real
+# expressions such as "$ref$" and "$ref + 1$" subject to the math comparison.
+SCHEMA_KEYWORD_NAMES = (
+    "schema|id|ref|defs|anchor|dynamicRef|dynamicAnchor|vocabulary|comment|"
+    "recursiveRef|recursiveAnchor"
+)
+SCHEMA_KEYWORDS = re.compile(
+    rf"(?<![\\$])\$(?:{SCHEMA_KEYWORD_NAMES})(?![A-Za-z0-9_$])"
+)
+INLINE_MATH = re.compile(
+    rf"(?<![\\$])\$(?![\s$])[^$\n]*[^\s\\$]\$(?![$\d]|(?:{SCHEMA_KEYWORD_NAMES})(?![A-Za-z0-9_]))"
+)
 QUIZ_TEXT_KEYS = {"title", "question", "prompt", "options", "explanation"}
 PATH_TEXT_KEYS = {
     "title", "summary", "description", "codex", "portableFallback", "conceptualFallback",
@@ -107,9 +119,15 @@ def markdown_issues(source, target):
     type_field = r"^\*\*Type:\*\*[ \t]*(.*)$"
     if re.findall(type_field, before, re.M) != re.findall(type_field, after, re.M):
         issues.append("lesson_type_metadata_changed")
-    for label, pattern in (("link_targets", LINKS), ("inline_code", INLINE_CODE),
-                           ("inline_math", INLINE_MATH)):
+    for label, pattern in (("link_targets", LINKS), ("inline_code", INLINE_CODE)):
         if Counter(pattern.findall(before)) != Counter(pattern.findall(after)):
+            issues.append(label + "_changed")
+    # Inline code is protected above, so its dollar signs are not math delimiters.
+    math_before = INLINE_CODE.sub("", before)
+    math_after = INLINE_CODE.sub("", after)
+    for label, pattern in (("inline_math", INLINE_MATH),
+                           ("json_schema_keywords", SCHEMA_KEYWORDS)):
+        if Counter(pattern.findall(math_before)) != Counter(pattern.findall(math_after)):
             issues.append(label + "_changed")
     if Counter(DISPLAY_MATH.findall(source)) != Counter(DISPLAY_MATH.findall(target)):
         issues.append("display_math_changed")
@@ -190,7 +208,17 @@ def track_objective_issues(source, target):
     return issues
 
 
+# Association-aware translation is supported only for known certification layouts.
+ASSESSMENT_PATH = re.compile(
+    r"certifications/(claude|mcpa)/assessments/([a-z0-9][a-z0-9-]*)/([a-z0-9][a-z0-9-]*)\.json"
+)
+TRACK_PATH = re.compile(r"certifications/(claude|mcpa)/tracks/[a-z0-9][a-z0-9-]*\.json")
+
+
 def assessment_issues(path, source, target, base):
+    match = ASSESSMENT_PATH.fullmatch(path)
+    if match is None:
+        return ["assessment_path_invalid"]
     before, after = json.loads(source), json.loads(target)
     if not isinstance(after, dict) or not isinstance(after.get("questions"), list):
         return quiz_issues(source, target)
@@ -200,7 +228,7 @@ def assessment_issues(path, source, target, base):
             right["objective"] = left["objective"]
     issues = quiz_issues(source, json.dumps(after))
     after = json.loads(target)
-    track_path = f"certifications/claude/tracks/{Path(path).parent.name}.json"
+    track_path = f"certifications/{match.group(1)}/tracks/{match.group(2)}.json"
     try:
         old_track = json.loads(git("show", f"{base}:{track_path}", text=True))
         track = json.loads((ROOT / track_path).read_text(encoding="utf-8"))
@@ -211,9 +239,14 @@ def assessment_issues(path, source, target, base):
         isinstance(domain, dict) and isinstance(domain.get("objectives"), list) for domain in track["domains"]
     ):
         return issues + ["assessment_track_invalid"]
-    if before.get("track") != old_track.get("id") or after.get("track") != track.get("id") or not any(
-        declaration.get("path") == path for declaration in old_track.get("assessments", [])
-    ):
+    def declared(manifest):
+        declarations = manifest.get("assessments", [])
+        return isinstance(declarations, list) and sum(
+            isinstance(declaration, dict) and declaration.get("path") == path
+            for declaration in declarations
+        ) == 1
+    if (before.get("track") != old_track.get("id") or after.get("track") != track.get("id")
+            or not declared(old_track) or not declared(track)):
         issues.append("assessment_track_association_changed")
     for index, (left, right) in enumerate(zip(before.get("questions", []), after.get("questions", []))):
         if not isinstance(left, dict) or not isinstance(right, dict):
@@ -263,9 +296,9 @@ def audit_file(path, source, target, base=BASE):
     else:
         try:
             json.loads(target)
-            if path.startswith("certifications/claude/assessments/"):
+            if path.startswith(("certifications/claude/assessments/", "certifications/mcpa/assessments/")):
                 record["issues"] = assessment_issues(path, source, target, base)
-            elif path.startswith("certifications/claude/tracks/"):
+            elif TRACK_PATH.fullmatch(path):
                 record["issues"] = track_objective_issues(json.loads(source), json.loads(target))
             elif path.endswith("/quiz.json") or "/assessments/" in path:
                 record["issues"] = quiz_issues(source, target)
