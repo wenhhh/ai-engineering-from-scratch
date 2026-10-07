@@ -182,7 +182,7 @@ python3 code/main.py
 - Buckley、Voorhees：《评估指标稳定性的评估（Evaluating Evaluation Measure Stability）》，SIGIR 2000：排序指标经典论文
 - Jarvelin、Kekalainen：《基于累计增益的信息检索技术评估（Cumulated Gain-based Evaluation of IR Techniques）》：nDCG 论文
 - [Ragas：RAG 流水线自动评估（Automated Evaluation of RAG Pipelines）](https://docs.ragas.io)
-- [Anthropic：评估 RAG（Evaluating RAG）](https://www.anthropic.com/news/evaluating-rag)
+- [Anthropic：上下文检索介绍（Introducing Contextual Retrieval）](https://www.anthropic.com/engineering/contextual-retrieval) - 使用 1 减去 recall@20 为检索评分。
 - 阶段 11 第 10 课：评估框架基础
 - 阶段 19 第 64–67 课：本课评估的组件
 - 阶段 19 第 69 课：本评估评分的端到端流水线
