@@ -1,0 +1,123 @@
+{
+  "id": "agent-budget-planner",
+  "title": "智能体预算规划器（Agent Budget Planner）",
+  "level": 3,
+  "levelName": "Engineer",
+  "tagline": "构建一个依据实际用量凭据进行结算的预算控制器，让尚未确认的支出始终可见。",
+  "summary": "构建一个依据实际用量凭据进行结算的预算控制器，让尚未确认的支出始终可见。 导入 execute_jobs，并提供 invoke(job) -> (value, actual_cost) 回调。只有费率和用量凭据都已换算为相应单位时，才能使用 unit=nano_dollars。execute_jobs 位于配套 cli.py 中；它调用你的预算预留与结算实现。",
+  "youWillBuild": "构建一个依据实际用量凭据进行结算的预算控制器，让尚未确认的支出始终可见。",
+  "usefulFor": [
+    "导入 execute_jobs，并提供 invoke(job) -> (value, actual_cost) 回调。只有费率和用量凭据都已换算为相应单位时，才能使用 unit=nano_dollars。execute_jobs 位于配套 cli.py 中；它调用你的预算预留与结算实现。"
+  ],
+  "hours": 8,
+  "languages": [
+    "Python"
+  ],
+  "languageWhy": {
+    "Python": "使用标准库呈现解析、评分和故障处理，让机制保持可见，避免被框架隐藏。"
+  },
+  "status": "ready",
+  "source": "core",
+  "author": {
+    "name": "AI Engineering from Scratch",
+    "github": "rohitg00"
+  },
+  "skills": [
+    "用整数微额度估算请求",
+    "派发前预留额度",
+    "结算实际用量并释放剩余额度",
+    "在费用与时间限制内调度"
+  ],
+  "prerequisites": [
+    "Python 3.10+",
+    "函数、字典、异常、整数运算与回调函数基础。"
+  ],
+  "figures": true,
+  "overviewFigure": "pj-agent-budget-planner-1",
+  "demo": {
+    "cwd": "solution",
+    "command": [
+      "python3",
+      "cli.py",
+      "samples/input.json",
+      "--mode",
+      "execute",
+      "--output",
+      "budget.json"
+    ]
+  },
+  "stages": [
+    {
+      "id": "01-estimate-cost",
+      "title": "用整数微额度估算请求",
+      "summary": "校验词元数量与费率都是非负整数，再计算最坏情况下的费用。",
+      "hours": 2,
+      "difficulty": "starter",
+      "language": "python",
+      "languageWhy": "使用明确的数据结构与确定性的标准库操作。",
+      "concepts": [
+        "整数记账",
+        "费用估算"
+      ],
+      "figure": "pj-agent-budget-planner-1"
+    },
+    {
+      "id": "02-reserve-capacity",
+      "title": "派发前预留额度",
+      "summary": "返回新账本，为唯一的请求标识预留额度。",
+      "hours": 2,
+      "difficulty": "core",
+      "language": "python",
+      "languageWhy": "使用明确的数据结构与确定性的标准库操作。",
+      "concepts": [
+        "额度预留",
+        "准入控制"
+      ],
+      "figure": "pj-agent-budget-planner-2"
+    },
+    {
+      "id": "03-settle-and-release",
+      "title": "结算实际用量并释放剩余额度",
+      "summary": "每个请求只结算一次，实际费用不得超过其预留额度。",
+      "hours": 2,
+      "difficulty": "core",
+      "language": "python",
+      "languageWhy": "使用明确的数据结构与确定性的标准库操作。",
+      "concepts": [
+        "结算",
+        "幂等性",
+        "不可变状态"
+      ],
+      "figure": "pj-agent-budget-planner-3"
+    },
+    {
+      "id": "04-schedule-under-deadlines",
+      "title": "在费用与时间限制内调度",
+      "summary": "依据已知任务估算值，在整数费用与毫秒时间限制内调度。",
+      "hours": 2,
+      "difficulty": "stretch",
+      "language": "python",
+      "languageWhy": "使用明确的数据结构与确定性的标准库操作。",
+      "concepts": [
+        "截止时间",
+        "事件记录",
+        "受限执行"
+      ],
+      "figure": "pj-agent-budget-planner-4"
+    }
+  ],
+  "demos": [
+    {
+      "gif": "media/run.gif",
+      "poster": "media/run.png",
+      "title": "初始化与评分（上游原始录屏）",
+      "caption": "保留上游录制的起始代码失败及随后参考解答全部阶段通过的原始过程。参考解答通过不代表学习者完成项目，也不能据此领取学习者证书。"
+    },
+    {
+      "gif": "media/output.gif",
+      "poster": "media/output.png",
+      "title": "检查输出（上游原始录屏）",
+      "caption": "保留上游本地演示命令的原始输出录屏及其英文记录。样本和适配器的能力边界见 README；录屏不是本轮重新运行的证据。"
+    }
+  ]
+}
