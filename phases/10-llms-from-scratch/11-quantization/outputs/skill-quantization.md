@@ -52,7 +52,7 @@ tags: [quantization, inference, deployment, optimization, fp8, int4, int8, gptq,
 - **适用时机：**GPU 推理，需要兼容 Hugging Face 的模型
 - **校准数据（Calibration Data）：**128 个样本，每个 2048 个词元
 - **时间：**在 A100 上处理 70B 需要 30-60 分钟
-- **工具：**`auto-gptq`、`exllama`、`exllamav2`
+- **工具：** `gptqmodel`、`exllama`、`exllamav2`
 - **优势：**经过充分测试，Hugging Face 上有大量模型
 - **不足：**量化速度比 AWQ 慢，在部分模型上质量略低于 AWQ
 
@@ -60,7 +60,7 @@ tags: [quantization, inference, deployment, optimization, fp8, int4, int8, gptq,
 - **适用时机：**GPU 推理，追求单位位宽下的最佳质量
 - **校准数据：**128 个样本
 - **时间：**在 A100 上处理 70B 需要 15-30 分钟
-- **工具：**`autoawq`、`vLLM`（原生支持）
+- **工具：** `llmcompressor`、`vLLM`（原生支持）
 - **优势：**最佳 INT4 质量、量化快、集成 vLLM
 - **不足：**模型资源少于 GPTQ
 
@@ -124,7 +124,7 @@ Llama 3 70B 采用 INT4、32K 上下文的示例：
 
 ### 配方 1：vLLM 与 AWQ，GPU 服务器（Recipe 1: vLLM with AWQ (GPU server)）
 ```
-pip install vllm autoawq
+pip install vllm
 vllm serve model-awq --quantization awq --dtype half --max-model-len 8192
 ```
 
