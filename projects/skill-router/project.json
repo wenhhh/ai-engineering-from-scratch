@@ -1,0 +1,132 @@
+{
+  "id": "skill-router",
+  "title": "技能路由器（Skill Router）",
+  "level": 2,
+  "levelName": "Builder",
+  "tagline": "结合可解释的关键词评分、路径规则、权限门禁和依赖顺序，将请求路由至技能。",
+  "summary": "结合可解释的关键词评分、路径规则、权限门禁和依赖顺序，将请求路由至技能。",
+  "hours": 8,
+  "languages": [
+    "TypeScript"
+  ],
+  "status": "ready",
+  "source": "core",
+  "author": {
+    "name": "AI Engineering from Scratch",
+    "github": "rohitg00"
+  },
+  "skills": [
+    "解析带类型的技能目录",
+    "为关键词与仓库路径评分",
+    "执行前解析依赖关系",
+    "遇到歧义或阻断时放弃路由"
+  ],
+  "prerequisites": [
+    {
+      "title": "工具结构定义设计",
+      "path": "phases/13-tools-and-protocols/05-tool-schema-design"
+    },
+    {
+      "title": "验证门禁",
+      "path": "phases/14-agent-engineering/38-verification-gates"
+    }
+  ],
+  "youWillBuild": "一个路由调试器，用于解释为何选中了错误技能，以及如何修正规则。",
+  "usefulFor": [
+    "一个路由调试器，用于解释为何选中了错误技能，以及如何修正规则。",
+    "SKILL.md 提供标准名称和描述；routing.json 是本项目明确说明的本地扩展。"
+  ],
+  "demo": {
+    "command": [
+      "node",
+      "demo.ts"
+    ],
+    "cwd": "solution"
+  },
+  "stages": [
+    {
+      "id": "01-catalog",
+      "title": "解析带类型的技能目录",
+      "summary": "技能清单声明 ID、描述、关键词、路径模式、优先级、依赖与权限。应在运行时校验数组和数值，不能仅信任对 JSON 的类型断言。分词会规范化标点和大小写，并去除重复词，因此重复提示词不会抬高分数。",
+      "hours": 2,
+      "language": "typescript",
+      "languageWhy": "TypeScript 让权限与依赖声明在路由前就清晰可见。",
+      "concepts": [
+        "parseSkill",
+        "tokens"
+      ],
+      "difficulty": "starter",
+      "requires": [
+        "node"
+      ],
+      "timeout": 90,
+      "figure": "pj-skill-router-1"
+    },
+    {
+      "id": "02-score",
+      "title": "为关键词与仓库路径评分",
+      "summary": "每个匹配关键词计两分，每条匹配文件路径计三分，同时返回计分原因。单星号匹配一个路径段，双星号可跨段；转义正则标点，拒绝绝对路径和父目录穿越。同分时按优先级、再按 ID 排序，使排名可复现。",
+      "hours": 2,
+      "language": "typescript",
+      "languageWhy": "小型纯评分函数便于在终端检查，也能在网页界面复用。",
+      "concepts": [
+        "matchPath",
+        "rank"
+      ],
+      "difficulty": "core",
+      "requires": [
+        "node"
+      ],
+      "timeout": 90,
+      "figure": "pj-skill-router-2"
+    },
+    {
+      "id": "03-dependencies",
+      "title": "执行前解析依赖关系",
+      "summary": "使用深度优先遍历，并分别维护 active 集合与 visited 集合。active 用于检测环，visited 用于避免菱形依赖中的重复执行。对依赖项和选中技能都检查权限要求。先输出依赖项，再输出使用它的技能；遇到未知依赖 ID 时拒绝计划，不要静默跳过。",
+      "hours": 2,
+      "language": "typescript",
+      "languageWhy": "有向图可以直接用带类型的数组和集合表示。",
+      "concepts": [
+        "plan"
+      ],
+      "difficulty": "core",
+      "requires": [
+        "node"
+      ],
+      "timeout": 90,
+      "figure": "pj-skill-router-3"
+    },
+    {
+      "id": "04-route",
+      "title": "遇到歧义或阻断时放弃路由",
+      "summary": "将排名与依赖规划结合，同时保留四种不同结果：ready、no-match、ambiguous 和 blocked。分数差小于门槛时，应判为有歧义，即使同分排序规则已经产生第一名。排名第一的技能仍可能因权限而被阻断。无论结果如何，都返回带解释的排名，便于调用方展示决策。",
+      "hours": 2,
+      "language": "typescript",
+      "languageWhy": "明确区分状态值，防止不确定的路由被当作执行请求。",
+      "concepts": [
+        "route"
+      ],
+      "difficulty": "core",
+      "requires": [
+        "node"
+      ],
+      "timeout": 90,
+      "figure": "pj-skill-router-4"
+    }
+  ],
+  "demos": [
+    {
+      "gif": "media/run.gif",
+      "poster": "media/run.png",
+      "title": "初始化与评分（上游原始录屏）",
+      "caption": "上游原始录屏：先记录起始代码失败，再记录参考实现全部阶段通过。参考实现通过不授予学习者证书。"
+    },
+    {
+      "gif": "media/output.gif",
+      "poster": "media/output.png",
+      "title": "检查输出（上游原始录屏）",
+      "caption": "上游原始录屏中的本地确定性演示实际输出。夹具与在线适配器的限制见 README。"
+    }
+  ]
+}
