@@ -1,0 +1,4071 @@
+{
+  "upstream": "c02ca08d8a49ce24c3c1c1cf8e3b422f2c7393ca",
+  "projects": [
+    "local-model-eval-harness",
+    "mcp-at-scale",
+    "meeting-notes-to-actions",
+    "memory-server"
+  ],
+  "files": {
+    "projects/local-model-eval-harness/.gitignore": {
+      "sourceSha256": "d1e7b664d3931a3816894935bb9339fac54934eee22fe669898b0aaa2ceb5e32",
+      "localizedSha256": "d1e7b664d3931a3816894935bb9339fac54934eee22fe669898b0aaa2ceb5e32",
+      "kind": "preserved-contract"
+    },
+    "projects/local-model-eval-harness/API.md": {
+      "sourceSha256": "91fef3508f094285ff726ab3a0f9cb0cc37da7c72f9aef55979f4a619a84a09b",
+      "localizedSha256": "608efc415432150f0903691991b16da8330123d9cf224daf946f0734071c1e06",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "python",
+            "def validate(records)\ndef correct(record, labels)\ndef accuracy(records, labels)\ndef calibration(records, labels, bins=5)\ndef percentile(values, p)\ndef scorecard(records, labels, source)\n"
+          ]
+        ],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [
+          "#",
+          "###"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/local-model-eval-harness/README.md": {
+      "sourceSha256": "697f57d54d79e4c602eedaa202898cb7cd8f069f501eb9342182eb9d44ff812e",
+      "localizedSha256": "53e74562cd975e9417cae6ee2ea304c992d22ee5bd05b7a69b8dc00bc554be1c",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "bash",
+            "python3 scripts/project_test.py local-model-eval-harness --init learning-artifacts/local-model-eval-harness\npython3 scripts/project_test.py local-model-eval-harness --stage 1 --path learning-artifacts/local-model-eval-harness --strict\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py local-model-eval-harness --all --path learning-artifacts/local-model-eval-harness --strict\ncd learning-artifacts/local-model-eval-harness\npython3 cli.py samples/input.json --output scorecard.json --html reliability.html\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py local-model-eval-harness --all --solution --strict\ncd projects/local-model-eval-harness/solution\npython3 cli.py samples/input.json --output scorecard.json --html reliability.html\n"
+          ],
+          [
+            "bash",
+            "python3 record.py samples/cases.json --endpoint http://127.0.0.1:11434/v1/chat/completions --model YOUR_INSTALLED_MODEL --revision YOUR_MODEL_REVISION --hardware YOUR_HARDWARE --output measured.json\npython3 cli.py measured.json --baseline samples/input.json --output compared.json\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "--dataset-audit /path/split-audit.json"
+          ],
+          [
+            "`",
+            "--predictions predictions.jsonl --labels labels.jsonl --manifest manifest.json"
+          ]
+        ],
+        "links": [
+          "API.md",
+          "https://docs.python.org/3/library/statistics.html",
+          "stages/01-validate-predictions/docs/en.md",
+          "stages/02-measure-accuracy/docs/en.md",
+          "stages/03-measure-calibration/docs/en.md",
+          "stages/04-publish-scorecard/docs/en.md"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 4
+      }
+    },
+    "projects/local-model-eval-harness/media/output.gif": {
+      "sourceSha256": "ac48ad7e03b14b1807fbc19e47019ef62c6d7fb4e6fe68c1f9a6e00717a2a9af",
+      "localizedSha256": "ac48ad7e03b14b1807fbc19e47019ef62c6d7fb4e6fe68c1f9a6e00717a2a9af",
+      "kind": "original-recording"
+    },
+    "projects/local-model-eval-harness/media/output.json": {
+      "sourceSha256": "2eb8ace05617eb2e7ef76320ac6c4874a03c62e92011df758812866396d487f4",
+      "localizedSha256": "2eb8ace05617eb2e7ef76320ac6c4874a03c62e92011df758812866396d487f4",
+      "kind": "original-recording"
+    },
+    "projects/local-model-eval-harness/media/output.png": {
+      "sourceSha256": "ff6f8e3470ebba2a8f06af721233474c17d559f26122831fa26852e5970f14b2",
+      "localizedSha256": "ff6f8e3470ebba2a8f06af721233474c17d559f26122831fa26852e5970f14b2",
+      "kind": "original-recording"
+    },
+    "projects/local-model-eval-harness/media/run.gif": {
+      "sourceSha256": "ff85a40f77cae769c4f16fd2ef070afb0040398cd76dc40d2421d1cfddfdbe4f",
+      "localizedSha256": "ff85a40f77cae769c4f16fd2ef070afb0040398cd76dc40d2421d1cfddfdbe4f",
+      "kind": "original-recording"
+    },
+    "projects/local-model-eval-harness/media/run.json": {
+      "sourceSha256": "9902fee1ff01eb9475764dde41a6dc3d51a9809511538eeb4d1536d1608c266c",
+      "localizedSha256": "9902fee1ff01eb9475764dde41a6dc3d51a9809511538eeb4d1536d1608c266c",
+      "kind": "original-recording"
+    },
+    "projects/local-model-eval-harness/media/run.png": {
+      "sourceSha256": "1a5b27073aa1d386cdcc5e6696c4a82a772d083599646c34363ab762d9ce55e4",
+      "localizedSha256": "1a5b27073aa1d386cdcc5e6696c4a82a772d083599646c34363ab762d9ce55e4",
+      "kind": "original-recording"
+    },
+    "projects/local-model-eval-harness/project.json": {
+      "sourceSha256": "2bc80968f775de3da96dd3c583cb15ea8ff6fe67c44f73193d47ad010159c034",
+      "localizedSha256": "4922fd5ec2e0082a3c0316643f0f7c95a4bb1cf7c737cab208628948057d8da3",
+      "kind": "manifest",
+      "contract": {
+        "id": "local-model-eval-harness",
+        "title": "<translated-text>",
+        "level": 2,
+        "levelName": "Builder",
+        "tagline": "<translated-text>",
+        "summary": "<translated-text>",
+        "youWillBuild": "<translated-text>",
+        "usefulFor": [
+          "<translated-text>"
+        ],
+        "hours": 8,
+        "languages": [
+          "Python"
+        ],
+        "languageWhy": {
+          "Python": "<translated-text>"
+        },
+        "status": "ready",
+        "source": "core",
+        "author": {
+          "name": "AI Engineering from Scratch",
+          "github": "rohitg00"
+        },
+        "skills": [
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "prerequisites": [
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "figures": true,
+        "overviewFigure": "pj-local-model-eval-harness-1",
+        "demo": {
+          "cwd": "solution",
+          "command": [
+            "python3",
+            "cli.py",
+            "samples/input.json",
+            "--output",
+            "scorecard.json",
+            "--html",
+            "reliability.html"
+          ]
+        },
+        "stages": [
+          {
+            "id": "01-validate-predictions",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "difficulty": "starter",
+            "language": "python",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>"
+            ],
+            "figure": "pj-local-model-eval-harness-1"
+          },
+          {
+            "id": "02-measure-accuracy",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "difficulty": "core",
+            "language": "python",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ],
+            "figure": "pj-local-model-eval-harness-2"
+          },
+          {
+            "id": "03-measure-calibration",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "difficulty": "core",
+            "language": "python",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ],
+            "figure": "pj-local-model-eval-harness-3"
+          },
+          {
+            "id": "04-publish-scorecard",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "difficulty": "stretch",
+            "language": "python",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>"
+            ],
+            "figure": "pj-local-model-eval-harness-4"
+          }
+        ],
+        "demos": [
+          {
+            "gif": "media/run.gif",
+            "poster": "media/run.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          },
+          {
+            "gif": "media/output.gif",
+            "poster": "media/output.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          }
+        ]
+      }
+    },
+    "projects/local-model-eval-harness/solution/cli.py": {
+      "sourceSha256": "bbca3d966bc5d76ee005fed606bc068de968e938ff5dbd1dec1a652c6992fac3",
+      "localizedSha256": "40d3e9afde6443bcf529b08ce2e878e573f58e3c08995e4e947d016325aa721a",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "\"\"\"Score a reproducible recording and optionally compare it with a prior run.\"\"\"",
+          "\"\"\"为可复现响应记录评分，并可与先前运行比较。\"\"\""
+        ],
+        [
+          "<title>Local evaluation</title><h1>Evaluation evidence</h1><table><tr><th>Bin</th><th>Count</th><th>Confidence</th><th>Accuracy</th></tr>",
+          "<title>本地模型评估</title><h1>评估证据</h1><table><tr><th>分箱</th><th>样本数</th><th>置信度（Confidence）</th><th>准确率</th></tr>"
+        ]
+      ]
+    },
+    "projects/local-model-eval-harness/solution/demo.py": {
+      "sourceSha256": "63f058b6820283d5d95c0d80ff3500d6d71dd33a10c44a77931e26decc915555",
+      "localizedSha256": "34c01cb34f234411b387f87629de25591fe43dcb47aa87f737357e4f5aaab221",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "import json\n",
+          "# 合成离线响应夹具，仅用于演示指标，不代表实际模型或硬件基准。\nimport json\n"
+        ]
+      ]
+    },
+    "projects/local-model-eval-harness/solution/main.py": {
+      "sourceSha256": "52dafa2020c302d8650ca0d8aa09877ca8dd05c1b4cff9f2bc4f0ad1e8f5342f",
+      "localizedSha256": "cb61dc18e603bb1bb94d470cf63023f2d794e8d614fa2d1966a7d94e0e6df5fc",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "import math\n",
+          "# 评估已记录预测；准确率以完整标签集为分母，ECE 按实际预测的分箱样本数加权。\n# 字段、错误消息、标签和数值逻辑保持原契约。\nimport math\n"
+        ]
+      ]
+    },
+    "projects/local-model-eval-harness/solution/record.py": {
+      "sourceSha256": "c26d1ee3edc65b25776740a55d61f5416f477df35b253034a12639b028d10c60",
+      "localizedSha256": "4127877ca7474aee0bb419df3fd2d993076e9aeecca9251226a8e4967e282990",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "\"\"\"Record actual latency and structured answers from a local OpenAI-compatible server.\"\"\"",
+          "\"\"\"从本地 OpenAI 兼容服务器记录实际延迟和结构化答案。\n只发送提示词；标签留在本地。模型提示及置信度来源字段保留原值。\"\"\""
+        ]
+      ]
+    },
+    "projects/local-model-eval-harness/solution/samples/cases.json": {
+      "sourceSha256": "da16845312e04e0e3913380c49f0e811b9bee0e38cc62718e3ec6967155aedf5",
+      "localizedSha256": "da16845312e04e0e3913380c49f0e811b9bee0e38cc62718e3ec6967155aedf5",
+      "kind": "preserved-contract"
+    },
+    "projects/local-model-eval-harness/solution/samples/input.json": {
+      "sourceSha256": "f926ba6767244e9e163224e0487dd7a57802445747010e7d141e5e43204586ae",
+      "localizedSha256": "f926ba6767244e9e163224e0487dd7a57802445747010e7d141e5e43204586ae",
+      "kind": "preserved-contract"
+    },
+    "projects/local-model-eval-harness/stages/01-validate-predictions/docs/en.md": {
+      "sourceSha256": "7a27bef6a33f8613d1006ffe9f6929200a0812849dea1d1d6fbf119ef3f384d5",
+      "localizedSha256": "604c50d0fa6df60544afe2ec75deba62ed109063c7b4b6c511af80074bb9c94a",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-local-model-eval-harness-1\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py local-model-eval-harness --stage 1 --path learning-artifacts/local-model-eval-harness --strict\n"
+          ],
+          [
+            "bash",
+            "cd learning-artifacts/local-model-eval-harness\npython3 cli.py samples/input.json --output scorecard.json --html reliability.html\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "python3 scripts/project_test.py local-model-eval-harness --init learning-artifacts/local-model-eval-harness"
+          ],
+          [
+            "`",
+            "validate"
+          ]
+        ],
+        "links": [
+          "../../../API.md",
+          "../../../README.md",
+          "https://docs.python.org/3/library/statistics.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/local-model-eval-harness/stages/01-validate-predictions/starter/cli.py": {
+      "sourceSha256": "bbca3d966bc5d76ee005fed606bc068de968e938ff5dbd1dec1a652c6992fac3",
+      "localizedSha256": "40d3e9afde6443bcf529b08ce2e878e573f58e3c08995e4e947d016325aa721a",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "\"\"\"Score a reproducible recording and optionally compare it with a prior run.\"\"\"",
+          "\"\"\"为可复现响应记录评分，并可与先前运行比较。\"\"\""
+        ],
+        [
+          "<title>Local evaluation</title><h1>Evaluation evidence</h1><table><tr><th>Bin</th><th>Count</th><th>Confidence</th><th>Accuracy</th></tr>",
+          "<title>本地模型评估</title><h1>评估证据</h1><table><tr><th>分箱</th><th>样本数</th><th>置信度（Confidence）</th><th>准确率</th></tr>"
+        ]
+      ]
+    },
+    "projects/local-model-eval-harness/stages/01-validate-predictions/starter/main.py": {
+      "sourceSha256": "9b14eaf7f7a429119b002a711f0c2a78cd7bb863972fb943273eefa25142c448",
+      "localizedSha256": "edb6ee97542e745e898baab1a6ff7da3afd03028d95f1b7ecb57abffd850053e",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "\"\"\"Fill in the stage interfaces in your own workspace.\"\"\"",
+          "\"\"\"在自己的工作区补全各阶段接口；保留函数名及未实现错误。\"\"\""
+        ]
+      ]
+    },
+    "projects/local-model-eval-harness/stages/01-validate-predictions/starter/record.py": {
+      "sourceSha256": "c26d1ee3edc65b25776740a55d61f5416f477df35b253034a12639b028d10c60",
+      "localizedSha256": "4127877ca7474aee0bb419df3fd2d993076e9aeecca9251226a8e4967e282990",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "\"\"\"Record actual latency and structured answers from a local OpenAI-compatible server.\"\"\"",
+          "\"\"\"从本地 OpenAI 兼容服务器记录实际延迟和结构化答案。\n只发送提示词；标签留在本地。模型提示及置信度来源字段保留原值。\"\"\""
+        ]
+      ]
+    },
+    "projects/local-model-eval-harness/stages/01-validate-predictions/starter/samples/cases.json": {
+      "sourceSha256": "da16845312e04e0e3913380c49f0e811b9bee0e38cc62718e3ec6967155aedf5",
+      "localizedSha256": "da16845312e04e0e3913380c49f0e811b9bee0e38cc62718e3ec6967155aedf5",
+      "kind": "preserved-contract"
+    },
+    "projects/local-model-eval-harness/stages/01-validate-predictions/starter/samples/input.json": {
+      "sourceSha256": "f926ba6767244e9e163224e0487dd7a57802445747010e7d141e5e43204586ae",
+      "localizedSha256": "f926ba6767244e9e163224e0487dd7a57802445747010e7d141e5e43204586ae",
+      "kind": "preserved-contract"
+    },
+    "projects/local-model-eval-harness/stages/01-validate-predictions/tests/test_stage_01.py": {
+      "sourceSha256": "7556da5c932968142c6818ff5547a8513aaff470f103dd48589ea663c6be0661",
+      "localizedSha256": "7556da5c932968142c6818ff5547a8513aaff470f103dd48589ea663c6be0661",
+      "kind": "preserved-contract"
+    },
+    "projects/local-model-eval-harness/stages/02-measure-accuracy/docs/en.md": {
+      "sourceSha256": "42182a293ea30dcb1fd13c0c7b8d9421d4c447fb91d13f49ecc26588b229d0ff",
+      "localizedSha256": "b7313313e00bfe773e4423855241a92296944384a8ef7f5dd69a4928a33371f4",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-local-model-eval-harness-2\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py local-model-eval-harness --stage 2 --path learning-artifacts/local-model-eval-harness --strict\n"
+          ],
+          [
+            "bash",
+            "cd learning-artifacts/local-model-eval-harness\npython3 cli.py samples/input.json --output scorecard.json --html reliability.html\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "accuracy"
+          ],
+          [
+            "`",
+            "python3 scripts/project_test.py local-model-eval-harness --init learning-artifacts/local-model-eval-harness"
+          ]
+        ],
+        "links": [
+          "../../../API.md",
+          "../../../README.md",
+          "https://docs.python.org/3/library/statistics.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/local-model-eval-harness/stages/02-measure-accuracy/starter/STAGE.md": {
+      "sourceSha256": "de87d556ff420651ca3f56779d9ccc5ad04b3d08f79de33927207ae35b0562c4",
+      "localizedSha256": "32d7472579f64db2c83d693631cf101f7b4d06c0422a8bb6a98a69d3d67496cd",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/local-model-eval-harness/stages/02-measure-accuracy/tests/test_stage_02.py": {
+      "sourceSha256": "2fb3d685fe1398d306242cca44748d43dc81294b028d25d4e28ac9eca245d5a9",
+      "localizedSha256": "2fb3d685fe1398d306242cca44748d43dc81294b028d25d4e28ac9eca245d5a9",
+      "kind": "preserved-contract"
+    },
+    "projects/local-model-eval-harness/stages/03-measure-calibration/docs/en.md": {
+      "sourceSha256": "52b5ed0d54170c830c9c863beb97c6de857b07f1a49f2093f0eaec99f5a19ae2",
+      "localizedSha256": "969451dbd629d25e0b5e0b4535480c5baedc2949b62b10258de7dc82de4433a2",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-local-model-eval-harness-3\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py local-model-eval-harness --stage 3 --path learning-artifacts/local-model-eval-harness --strict\n"
+          ],
+          [
+            "bash",
+            "cd learning-artifacts/local-model-eval-harness\npython3 cli.py samples/input.json --output scorecard.json --html reliability.html\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "calibration"
+          ],
+          [
+            "`",
+            "python3 scripts/project_test.py local-model-eval-harness --init learning-artifacts/local-model-eval-harness"
+          ]
+        ],
+        "links": [
+          "../../../API.md",
+          "../../../README.md",
+          "https://docs.python.org/3/library/statistics.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/local-model-eval-harness/stages/03-measure-calibration/starter/STAGE.md": {
+      "sourceSha256": "de87d556ff420651ca3f56779d9ccc5ad04b3d08f79de33927207ae35b0562c4",
+      "localizedSha256": "32d7472579f64db2c83d693631cf101f7b4d06c0422a8bb6a98a69d3d67496cd",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/local-model-eval-harness/stages/03-measure-calibration/tests/test_stage_03.py": {
+      "sourceSha256": "4461c00cc94255d3b63944c0af1a26c715be276f848c8768c49346636275f7ce",
+      "localizedSha256": "4461c00cc94255d3b63944c0af1a26c715be276f848c8768c49346636275f7ce",
+      "kind": "preserved-contract"
+    },
+    "projects/local-model-eval-harness/stages/04-publish-scorecard/docs/en.md": {
+      "sourceSha256": "c8fc3b6a7505ce58568b46561a5e34618f7f487b374567c1416210b5171e83dc",
+      "localizedSha256": "d58cd81187e9e5e5dbc669a24ed99ca0311f48976d51be3a9448bae5e5986745",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-local-model-eval-harness-4\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py local-model-eval-harness --stage 4 --path learning-artifacts/local-model-eval-harness --strict\n"
+          ],
+          [
+            "bash",
+            "cd learning-artifacts/local-model-eval-harness\npython3 cli.py samples/input.json --output scorecard.json --html reliability.html\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "python3 scripts/project_test.py local-model-eval-harness --init learning-artifacts/local-model-eval-harness"
+          ],
+          [
+            "`",
+            "scorecard"
+          ]
+        ],
+        "links": [
+          "../../../API.md",
+          "../../../README.md",
+          "https://docs.python.org/3/library/statistics.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/local-model-eval-harness/stages/04-publish-scorecard/starter/STAGE.md": {
+      "sourceSha256": "de87d556ff420651ca3f56779d9ccc5ad04b3d08f79de33927207ae35b0562c4",
+      "localizedSha256": "32d7472579f64db2c83d693631cf101f7b4d06c0422a8bb6a98a69d3d67496cd",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/local-model-eval-harness/stages/04-publish-scorecard/tests/test_integration.py": {
+      "sourceSha256": "520c2c170013f9ef3b96950fce6d8bb9c6722857d0b60432414b1d9dc6f27ac0",
+      "localizedSha256": "520c2c170013f9ef3b96950fce6d8bb9c6722857d0b60432414b1d9dc6f27ac0",
+      "kind": "preserved-contract"
+    },
+    "projects/local-model-eval-harness/stages/04-publish-scorecard/tests/test_stage_04.py": {
+      "sourceSha256": "837901099796ba75c5a851789bdc73eb539fc07e7e17a2975286d173c3fc5a7a",
+      "localizedSha256": "837901099796ba75c5a851789bdc73eb539fc07e7e17a2975286d173c3fc5a7a",
+      "kind": "preserved-contract"
+    },
+    "projects/mcp-at-scale/.gitignore": {
+      "sourceSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "localizedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "kind": "preserved-contract"
+    },
+    "projects/mcp-at-scale/API.md": {
+      "sourceSha256": "7f3dfdde49a5bc187dc58c086304352b279959c6c6f9e5e603cb60954287e9aa",
+      "localizedSha256": "fcbe20ecc5dbfaea268fea942d6cc25a3dc234ca6790d33d93c816dea9ea99d9",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "python",
+            "def audit_catalog(inventory=None)\n"
+          ],
+          [
+            "python",
+            "def discover(tools, query, max_chars=1500, k=5)\n"
+          ],
+          [
+            "python",
+            "def handle(request, state, inventory)\ndef serve(lines, output, inventory, tools=None)\n"
+          ],
+          [
+            "python",
+            "def catalog()\ndef execute(tool, arguments, inventory)\n"
+          ],
+          [
+            "typescript",
+            "export function exchange(server: string, requests: Request[], timeout = 3000): Promise<Response[]>\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "python3 cli.py /absolute/inventory.json --serve"
+          ]
+        ],
+        "links": [],
+        "math": [],
+        "headings": [
+          "#",
+          "###",
+          "###",
+          "###",
+          "###",
+          "###"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/mcp-at-scale/README.md": {
+      "sourceSha256": "71cccfafb1bad6d05ed627429df44ce86453bf148734edd2bf58ab5c58ff7105",
+      "localizedSha256": "7d8495c8f4379613a6d8a0df4e1c710b975a7c85cc3a774290f3b7b7ef8efa87",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "bash",
+            "python3 scripts/project_test.py mcp-at-scale --init learning-artifacts/mcp-at-scale\npython3 scripts/project_test.py mcp-at-scale --stage 1 --path learning-artifacts/mcp-at-scale --strict\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py mcp-at-scale --all --path learning-artifacts/mcp-at-scale --strict\ncd learning-artifacts/mcp-at-scale\npython3 cli.py samples/inventory.json --query \"pods count\" --max-chars 500\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py mcp-at-scale --all --solution --strict\ncd projects/mcp-at-scale/solution\npython3 cli.py samples/inventory.json --query \"pods count\" --max-chars 500\n"
+          ],
+          [
+            "bash",
+            "python3 -m venv .venv-mcp\n.venv-mcp/bin/python -m pip install -r projects/mcp-at-scale/requirements-framework.txt\n.venv-mcp/bin/python scripts/project_test.py mcp-at-scale --all --solution --optional --strict\n"
+          ],
+          [
+            "bash",
+            "python3 cli.py samples/api-recordings.json --openapi samples/api.json --query \"incident\" --max-chars 800\npython3 cli.py samples/api-recordings.json --openapi samples/api.json --serve\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "--base-url http://127.0.0.1:PORT"
+          ],
+          [
+            "`",
+            "--path learning-artifacts/mcp-at-scale"
+          ],
+          [
+            "`",
+            "mcp==2.1.1"
+          ],
+          [
+            "`",
+            "python3 cli.py /absolute/inventory.json --serve"
+          ],
+          [
+            "`",
+            "rest_adapter.py"
+          ]
+        ],
+        "links": [
+          "API.md",
+          "https://modelcontextprotocol.io/specification/2025-06-18/server/tools",
+          "https://www.jsonrpc.org/specification",
+          "stages/01-registry/docs/en.md",
+          "stages/02-discovery/docs/en.md",
+          "stages/03-protocol/docs/en.md",
+          "stages/04-audit/docs/en.md",
+          "stages/05-typed-client/docs/en.md"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 7
+      }
+    },
+    "projects/mcp-at-scale/media/output.gif": {
+      "sourceSha256": "af789e4f41dcdb0bcc766b14cd3dad99b69571e67b8b386e31b43c6b71c15f6e",
+      "localizedSha256": "af789e4f41dcdb0bcc766b14cd3dad99b69571e67b8b386e31b43c6b71c15f6e",
+      "kind": "original-recording"
+    },
+    "projects/mcp-at-scale/media/output.json": {
+      "sourceSha256": "a9b63477cc21272defb9743d93db2025343c26a0389f7f773657b0bd9e9fde01",
+      "localizedSha256": "a9b63477cc21272defb9743d93db2025343c26a0389f7f773657b0bd9e9fde01",
+      "kind": "original-recording"
+    },
+    "projects/mcp-at-scale/media/output.png": {
+      "sourceSha256": "d8f05e2abe628d3f427961330b6c05b0afabf068e6baa5293da598dd3630e698",
+      "localizedSha256": "d8f05e2abe628d3f427961330b6c05b0afabf068e6baa5293da598dd3630e698",
+      "kind": "original-recording"
+    },
+    "projects/mcp-at-scale/media/run.gif": {
+      "sourceSha256": "e4e6ba4c785c2a61a2b1928179c8f48f4ac739a1667dba164a73f2c2c841ff76",
+      "localizedSha256": "e4e6ba4c785c2a61a2b1928179c8f48f4ac739a1667dba164a73f2c2c841ff76",
+      "kind": "original-recording"
+    },
+    "projects/mcp-at-scale/media/run.json": {
+      "sourceSha256": "475233b8d551c82103171f025a00128bbe422a16baff5f1443a9443423c52edb",
+      "localizedSha256": "475233b8d551c82103171f025a00128bbe422a16baff5f1443a9443423c52edb",
+      "kind": "original-recording"
+    },
+    "projects/mcp-at-scale/media/run.png": {
+      "sourceSha256": "778e7a6653004683ae7f3a21103a14a402a2615f83cf94bdbac364d8ecea7b09",
+      "localizedSha256": "778e7a6653004683ae7f3a21103a14a402a2615f83cf94bdbac364d8ecea7b09",
+      "kind": "original-recording"
+    },
+    "projects/mcp-at-scale/project.json": {
+      "sourceSha256": "d1fb6faecc232f048555e6242089d0fdf44d735aaafe3a013e9300724b8a7138",
+      "localizedSha256": "640a9d37a4f9132c2f7a764a50f295b39a39c730ba047ed7239fc312dc7a0004",
+      "kind": "manifest",
+      "contract": {
+        "id": "mcp-at-scale",
+        "title": "<translated-text>",
+        "level": 4,
+        "levelName": "Systems",
+        "tagline": "<translated-text>",
+        "summary": "<translated-text>",
+        "hours": 10,
+        "languages": [
+          "Python",
+          "TypeScript"
+        ],
+        "status": "ready",
+        "source": "core",
+        "author": {
+          "name": "AI Engineering from Scratch",
+          "github": "rohitg00"
+        },
+        "youWillBuild": "<translated-text>",
+        "usefulFor": [
+          "<translated-text>"
+        ],
+        "skills": [
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "prerequisites": [
+          "<translated-text>"
+        ],
+        "figures": true,
+        "overviewFigure": "pj-mcp-at-scale-1",
+        "languageWhy": {
+          "Python": "<translated-text>",
+          "TypeScript": "<translated-text>"
+        },
+        "demo": {
+          "cwd": "solution",
+          "command": [
+            "python3",
+            "cli.py",
+            "samples/inventory.json",
+            "--query",
+            "pods count",
+            "--max-chars",
+            "500"
+          ]
+        },
+        "stages": [
+          {
+            "id": "01-registry",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "language": "python",
+            "languageWhy": "<translated-text>",
+            "hours": 2,
+            "difficulty": "starter",
+            "figure": "pj-mcp-at-scale-1",
+            "concepts": [
+              "build",
+              "a",
+              "catalog",
+              "of"
+            ]
+          },
+          {
+            "id": "02-discovery",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "language": "python",
+            "languageWhy": "<translated-text>",
+            "hours": 2,
+            "difficulty": "core",
+            "figure": "pj-mcp-at-scale-2",
+            "concepts": [
+              "select",
+              "tools",
+              "under",
+              "an"
+            ]
+          },
+          {
+            "id": "03-protocol",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "language": "python",
+            "languageWhy": "<translated-text>",
+            "hours": 2,
+            "difficulty": "core",
+            "figure": "pj-mcp-at-scale-3",
+            "concepts": [
+              "implement",
+              "initialized",
+              "json-rpc",
+              "over"
+            ]
+          },
+          {
+            "id": "04-audit",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "language": "python",
+            "languageWhy": "<translated-text>",
+            "hours": 2,
+            "difficulty": "stretch",
+            "figure": "pj-mcp-at-scale-4",
+            "concepts": [
+              "audit",
+              "catalog",
+              "coverage",
+              "through"
+            ]
+          },
+          {
+            "id": "05-typed-client",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "language": "typescript",
+            "languageWhy": "<translated-text>",
+            "hours": 2,
+            "difficulty": "stretch",
+            "figure": "pj-mcp-at-scale-5",
+            "concepts": [
+              "stdio",
+              "correlation",
+              "timeouts"
+            ],
+            "runners": [
+              {
+                "language": "typescript"
+              },
+              {
+                "language": "python"
+              },
+              {
+                "language": "python",
+                "optional": true,
+                "requires": [
+                  "python:mcp"
+                ],
+                "argv": [
+                  "{python}",
+                  "-m",
+                  "unittest",
+                  "discover",
+                  "-s",
+                  "{stage}/tests-framework",
+                  "-p",
+                  "test_standard_client.py"
+                ]
+              }
+            ]
+          }
+        ],
+        "demos": [
+          {
+            "gif": "media/run.gif",
+            "poster": "media/run.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          },
+          {
+            "gif": "media/output.gif",
+            "poster": "media/output.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          }
+        ]
+      }
+    },
+    "projects/mcp-at-scale/requirements-framework.txt": {
+      "sourceSha256": "4d7a795fe23ab59399281f49871d43043c4fa6b6ab4c93c647795c982ed736d5",
+      "localizedSha256": "4d7a795fe23ab59399281f49871d43043c4fa6b6ab4c93c647795c982ed736d5",
+      "kind": "preserved-contract"
+    },
+    "projects/mcp-at-scale/solution/audit.py": {
+      "sourceSha256": "402b91eb5011e3ace9c884db23f8ac5e023c57b52db5b20f85df5f2e3682c419",
+      "localizedSha256": "8bb199daffea3d2b12a9d0b8664eddbe8c7748f7acc01d8b43057a3a56009f57",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "\"\"\"Audit catalog coverage through protocol pages.\n\nLesson: projects/mcp-at-scale/stages/04-audit/docs/en.md\nThe implementation is original and uses explicit local data contracts.\nRun its tests through scripts/project_test.py.\n\"\"\"",
+          "\"\"\"通过协议分页审计目录覆盖情况。\n\n课程：projects/mcp-at-scale/stages/04-audit/docs/en.md\n原创实现，使用明确的本地数据契约。\n通过 scripts/project_test.py 运行测试。\n工具描述、协议值与错误消息参与检索、预算及互操作，保留原值。\"\"\""
+        ]
+      ]
+    },
+    "projects/mcp-at-scale/solution/cli.py": {
+      "sourceSha256": "2cd420b980f71cf576c80a70676ce724c63b4a36ab630d1b5d6365689b949b88",
+      "localizedSha256": "8013e0aa84187cc9c31e623340d158d53a4123b34f66ac3a76270157ee7ed041",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "\"\"\"Serve a scoped MCP inventory or print a context-budgeted tool selection.\"\"\"",
+          "\"\"\"提供限定范围的 MCP 清单服务，或打印满足上下文预算的工具选择。\"\"\""
+        ],
+        [
+          "\"opt-in loopback HTTP origin; omitted means recordings only\"",
+          "\"显式启用回环 HTTP 源站；省略时只使用响应记录\""
+        ]
+      ]
+    },
+    "projects/mcp-at-scale/solution/client.ts": {
+      "sourceSha256": "29179925ea07093df11f4863a7975983cd4124fa5b7bf92fe306d3a99a5a6f11",
+      "localizedSha256": "8d04822e56775eeb292a38f1917c24eeea7825d243dc82427ecf44a9f2333db1",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "// Typed stdio client for the local MCP fixture server.\n// Lesson: projects/mcp-at-scale/stages/05-typed-client/docs/en.md\n// Each request has a correlated response; notifications do not.\n// Child process output and time are bounded independently of the server.\n",
+          "// 本地 MCP 夹具服务器的带类型 stdio 客户端。\n// 课程：projects/mcp-at-scale/stages/05-typed-client/docs/en.md\n// 请求有对应响应；通知没有响应。\n// 客户端独立限制子进程输出量与运行时间。\n"
+        ]
+      ]
+    },
+    "projects/mcp-at-scale/solution/demo.py": {
+      "sourceSha256": "4469e42ed8d325a67da6ce1a7089804258b087053128f7e5eb0ea8f3e16f9afb",
+      "localizedSha256": "bd6f2709a4357f1401948846d3d7a97ceec136001e2bf123b43d550293242da2",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "import json\n",
+          "# 教学协议夹具：保留请求 id、旧版协议枚举及机器错误，避免将展示翻译混入通信。\nimport json\n"
+        ]
+      ]
+    },
+    "projects/mcp-at-scale/solution/discovery.py": {
+      "sourceSha256": "35269e1f99046890e5c57c0023799c602ea528b9f3e9490d75ceff3c4f08bed9",
+      "localizedSha256": "d29b2a8d8ccffa87fc2dba11bf5c32b4a25710ebcc32e294f094727c755fc77c",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "\"\"\"Select tools under an explicit context budget.\n\nLesson: projects/mcp-at-scale/stages/02-discovery/docs/en.md\nThe implementation is original and uses explicit local data contracts.\nRun its tests through scripts/project_test.py.\n\"\"\"",
+          "\"\"\"在明确上下文预算内选择工具。\n\n课程：projects/mcp-at-scale/stages/02-discovery/docs/en.md\n原创实现，使用明确的本地数据契约。\n通过 scripts/project_test.py 运行测试。\n工具描述、协议值与错误消息参与检索、预算及互操作，保留原值。\"\"\""
+        ]
+      ]
+    },
+    "projects/mcp-at-scale/solution/protocol.py": {
+      "sourceSha256": "2bd21aeb7705b9d6a98f0123a94030aacfb4d289088897546c460770531628c2",
+      "localizedSha256": "8bcb9d428f96febba002e0dff7c05ede4463c8efc451025b85d6c54854801646",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "\"\"\"Implement initialized JSON-RPC over stdio.\n\nLesson: projects/mcp-at-scale/stages/03-protocol/docs/en.md\nThe implementation is original and uses explicit local data contracts.\nRun its tests through scripts/project_test.py.\n\"\"\"",
+          "\"\"\"通过 stdio 实现带初始化的 JSON-RPC。\n\n课程：projects/mcp-at-scale/stages/03-protocol/docs/en.md\n原创实现，使用明确的本地数据契约。\n通过 scripts/project_test.py 运行测试。\n工具描述、协议值与错误消息参与检索、预算及互操作，保留原值。\"\"\""
+        ]
+      ]
+    },
+    "projects/mcp-at-scale/solution/registry.py": {
+      "sourceSha256": "591049e42c55a8fd0e7f2f0da08bc6d0f61254dd63230b017c1b325f20f2caf8",
+      "localizedSha256": "407e7d2c135852a42b05495ed3c99dac506c82ff7629423997a5207eb0b0673f",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "\"\"\"Build a catalog of 250 read-only tools.\n\nLesson: projects/mcp-at-scale/stages/01-registry/docs/en.md\nThe implementation is original and uses explicit local data contracts.\nRun its tests through scripts/project_test.py.\n\"\"\"",
+          "\"\"\"构建包含 250 个只读工具的目录。\n\n课程：projects/mcp-at-scale/stages/01-registry/docs/en.md\n原创实现，使用明确的本地数据契约。\n通过 scripts/project_test.py 运行测试。\n工具描述、协议值与错误消息参与检索、预算及互操作，保留原值。\"\"\""
+        ]
+      ]
+    },
+    "projects/mcp-at-scale/solution/rest_adapter.py": {
+      "sourceSha256": "891550f0b5602f187e9e4edfd1f4db454520472fbc0a41506396bd3a4393e9f5",
+      "localizedSha256": "56ca5896426e41c678e5ee0a3d5114300e72e72060993739097bf4a2da299f25",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "\"\"\"Import a narrow OpenAPI GET surface; preserve schema provenance and explicit recordings.\"\"\"",
+          "\"\"\"导入有限的 OpenAPI GET 接口，保留结构定义来源与明确的响应记录。\n导入描述及规范指纹参与检索和证据比较，保持原值。\"\"\""
+        ]
+      ]
+    },
+    "projects/mcp-at-scale/solution/samples/api-recordings.json": {
+      "sourceSha256": "e6185087b92cdd09d32df1f382b09077f235bd798e24ae7806e60bfc98e0b1e2",
+      "localizedSha256": "e6185087b92cdd09d32df1f382b09077f235bd798e24ae7806e60bfc98e0b1e2",
+      "kind": "preserved-contract"
+    },
+    "projects/mcp-at-scale/solution/samples/api.json": {
+      "sourceSha256": "06b7b74fd51c5b89f385ae5273c4178a17db6e15faa852fd79a919d4be534e03",
+      "localizedSha256": "06b7b74fd51c5b89f385ae5273c4178a17db6e15faa852fd79a919d4be534e03",
+      "kind": "preserved-contract"
+    },
+    "projects/mcp-at-scale/solution/samples/inventory.json": {
+      "sourceSha256": "a82ad215a3d9ef5e3e940c6cf39836cee67b93ab0f2633c25c929d2193917a14",
+      "localizedSha256": "a82ad215a3d9ef5e3e940c6cf39836cee67b93ab0f2633c25c929d2193917a14",
+      "kind": "preserved-contract"
+    },
+    "projects/mcp-at-scale/stages/01-registry/docs/en.md": {
+      "sourceSha256": "64cb6ab64a371c525cbc8de00c3abb4bc3878a9146c0d0fb28fec40aacce48e3",
+      "localizedSha256": "6d250cd3c840f75fc4af387e090b625830b3daed4c57a8375cd4523c789a5a31",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-mcp-at-scale-1\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py mcp-at-scale --stage 1 --path learning-artifacts/mcp-at-scale --strict\n"
+          ],
+          [
+            "bash",
+            "cd learning-artifacts/mcp-at-scale\npython3 cli.py samples/inventory.json --query \"pods count\" --max-chars 500\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "catalog"
+          ],
+          [
+            "`",
+            "execute"
+          ],
+          [
+            "`",
+            "python3 scripts/project_test.py mcp-at-scale --init learning-artifacts/mcp-at-scale"
+          ],
+          [
+            "`",
+            "registry.py"
+          ]
+        ],
+        "links": [
+          "../../../API.md",
+          "../../../README.md",
+          "https://modelcontextprotocol.io/specification/2025-06-18/server/tools",
+          "https://www.jsonrpc.org/specification"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/mcp-at-scale/stages/01-registry/starter/cli.py": {
+      "sourceSha256": "2cd420b980f71cf576c80a70676ce724c63b4a36ab630d1b5d6365689b949b88",
+      "localizedSha256": "8013e0aa84187cc9c31e623340d158d53a4123b34f66ac3a76270157ee7ed041",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "\"\"\"Serve a scoped MCP inventory or print a context-budgeted tool selection.\"\"\"",
+          "\"\"\"提供限定范围的 MCP 清单服务，或打印满足上下文预算的工具选择。\"\"\""
+        ],
+        [
+          "\"opt-in loopback HTTP origin; omitted means recordings only\"",
+          "\"显式启用回环 HTTP 源站；省略时只使用响应记录\""
+        ]
+      ]
+    },
+    "projects/mcp-at-scale/stages/01-registry/starter/registry.py": {
+      "sourceSha256": "db1eb6620f80c1c8253335a9841bc719b687849b8feb3bd03adae82929d17d6b",
+      "localizedSha256": "4a5a1da5fc58fd29dab79b1b87640c71bd70175aa70772353e1a7a7916d25e1e",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "\"\"\"Build a catalog of 250 read-only tools.\n\nLesson: projects/mcp-at-scale/stages/01-registry/docs/en.md\nThe implementation is original and uses explicit local data contracts.\nRun its tests through scripts/project_test.py.\n\"\"\"",
+          "\"\"\"构建包含 250 个只读工具的目录。\n\n课程：projects/mcp-at-scale/stages/01-registry/docs/en.md\n原创实现，使用明确的本地数据契约。\n通过 scripts/project_test.py 运行测试。\n工具描述、协议值与错误消息参与检索、预算及互操作，保留原值。\"\"\""
+        ]
+      ]
+    },
+    "projects/mcp-at-scale/stages/01-registry/starter/rest_adapter.py": {
+      "sourceSha256": "891550f0b5602f187e9e4edfd1f4db454520472fbc0a41506396bd3a4393e9f5",
+      "localizedSha256": "56ca5896426e41c678e5ee0a3d5114300e72e72060993739097bf4a2da299f25",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "\"\"\"Import a narrow OpenAPI GET surface; preserve schema provenance and explicit recordings.\"\"\"",
+          "\"\"\"导入有限的 OpenAPI GET 接口，保留结构定义来源与明确的响应记录。\n导入描述及规范指纹参与检索和证据比较，保持原值。\"\"\""
+        ]
+      ]
+    },
+    "projects/mcp-at-scale/stages/01-registry/starter/samples/api-recordings.json": {
+      "sourceSha256": "e6185087b92cdd09d32df1f382b09077f235bd798e24ae7806e60bfc98e0b1e2",
+      "localizedSha256": "e6185087b92cdd09d32df1f382b09077f235bd798e24ae7806e60bfc98e0b1e2",
+      "kind": "preserved-contract"
+    },
+    "projects/mcp-at-scale/stages/01-registry/starter/samples/api.json": {
+      "sourceSha256": "06b7b74fd51c5b89f385ae5273c4178a17db6e15faa852fd79a919d4be534e03",
+      "localizedSha256": "06b7b74fd51c5b89f385ae5273c4178a17db6e15faa852fd79a919d4be534e03",
+      "kind": "preserved-contract"
+    },
+    "projects/mcp-at-scale/stages/01-registry/starter/samples/inventory.json": {
+      "sourceSha256": "a82ad215a3d9ef5e3e940c6cf39836cee67b93ab0f2633c25c929d2193917a14",
+      "localizedSha256": "a82ad215a3d9ef5e3e940c6cf39836cee67b93ab0f2633c25c929d2193917a14",
+      "kind": "preserved-contract"
+    },
+    "projects/mcp-at-scale/stages/01-registry/tests/test_registry.py": {
+      "sourceSha256": "f72eb2f18f787dbefae8a7036d963abd957ea7225444392edd9e0aec972df400",
+      "localizedSha256": "f72eb2f18f787dbefae8a7036d963abd957ea7225444392edd9e0aec972df400",
+      "kind": "preserved-contract"
+    },
+    "projects/mcp-at-scale/stages/02-discovery/docs/en.md": {
+      "sourceSha256": "8b0362abe720322fd1d66c4d7785a4fef3ff13c32c8c026e7471147090f35dbe",
+      "localizedSha256": "7b3b0a5e3880db2bcbb524481170fae5657f5b15e48b9c401d6ea4d9ff51e680",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-mcp-at-scale-2\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py mcp-at-scale --stage 2 --path learning-artifacts/mcp-at-scale --strict\n"
+          ],
+          [
+            "bash",
+            "cd learning-artifacts/mcp-at-scale\npython3 cli.py samples/inventory.json --query \"pods count\" --max-chars 500\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "discover"
+          ],
+          [
+            "`",
+            "discovery.py"
+          ],
+          [
+            "`",
+            "python3 scripts/project_test.py mcp-at-scale --init learning-artifacts/mcp-at-scale"
+          ]
+        ],
+        "links": [
+          "../../../API.md",
+          "../../../README.md",
+          "https://modelcontextprotocol.io/specification/2025-06-18/server/tools",
+          "https://www.jsonrpc.org/specification"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/mcp-at-scale/stages/02-discovery/starter/discovery.py": {
+      "sourceSha256": "efcfd3f496060dfa8c8d50513cb8101fda15febf5d91ecf8faa81cfbbf603a90",
+      "localizedSha256": "1b656a110e242ef5dae7e898e275e5cf4c7217bfdba107d50bdaebcdaa0d7bde",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "\"\"\"Select tools under an explicit context budget.\n\nLesson: projects/mcp-at-scale/stages/02-discovery/docs/en.md\nThe implementation is original and uses explicit local data contracts.\nRun its tests through scripts/project_test.py.\n\"\"\"",
+          "\"\"\"在明确上下文预算内选择工具。\n\n课程：projects/mcp-at-scale/stages/02-discovery/docs/en.md\n原创实现，使用明确的本地数据契约。\n通过 scripts/project_test.py 运行测试。\n工具描述、协议值与错误消息参与检索、预算及互操作，保留原值。\"\"\""
+        ]
+      ]
+    },
+    "projects/mcp-at-scale/stages/02-discovery/tests/test_discovery.py": {
+      "sourceSha256": "02b82ddcac014a4ccdf2b8abfec75c9d5fd291c722c0648d5fbba4fdc71f401e",
+      "localizedSha256": "02b82ddcac014a4ccdf2b8abfec75c9d5fd291c722c0648d5fbba4fdc71f401e",
+      "kind": "preserved-contract"
+    },
+    "projects/mcp-at-scale/stages/03-protocol/docs/en.md": {
+      "sourceSha256": "f38dd3e0f4f2a53e7f936e9ae2570f1bf895642edf8663bd3783789e09b2378c",
+      "localizedSha256": "a3ba0ea204481e77164aaa7410103711be0f05160a88ce4cfa4551cd2d991b4a",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-mcp-at-scale-3\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py mcp-at-scale --stage 3 --path learning-artifacts/mcp-at-scale --strict\n"
+          ],
+          [
+            "bash",
+            "cd learning-artifacts/mcp-at-scale\npython3 cli.py samples/inventory.json --query \"pods count\" --max-chars 500\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "handle"
+          ],
+          [
+            "`",
+            "protocol.py"
+          ],
+          [
+            "`",
+            "python3 scripts/project_test.py mcp-at-scale --init learning-artifacts/mcp-at-scale"
+          ],
+          [
+            "`",
+            "serve"
+          ]
+        ],
+        "links": [
+          "../../../API.md",
+          "../../../README.md",
+          "https://modelcontextprotocol.io/specification/2025-06-18/server/tools",
+          "https://www.jsonrpc.org/specification"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/mcp-at-scale/stages/03-protocol/starter/protocol.py": {
+      "sourceSha256": "ad643b43fbc1ff01bfe30ecc404a25c61d0f50a64decf64264ab45504f7f9821",
+      "localizedSha256": "e8c7b766bf3ed67491b3f2f2a8210b831425ffb26ae105c4a23603f817f7479f",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "\"\"\"Implement initialized JSON-RPC over stdio.\n\nLesson: projects/mcp-at-scale/stages/03-protocol/docs/en.md\nThe implementation is original and uses explicit local data contracts.\nRun its tests through scripts/project_test.py.\n\"\"\"",
+          "\"\"\"通过 stdio 实现带初始化的 JSON-RPC。\n\n课程：projects/mcp-at-scale/stages/03-protocol/docs/en.md\n原创实现，使用明确的本地数据契约。\n通过 scripts/project_test.py 运行测试。\n工具描述、协议值与错误消息参与检索、预算及互操作，保留原值。\"\"\""
+        ]
+      ]
+    },
+    "projects/mcp-at-scale/stages/03-protocol/tests/test_protocol.py": {
+      "sourceSha256": "e189d390ce23df0b3cda465b5dc0bcb44a61d5e47227dc20877604fc0695bc50",
+      "localizedSha256": "e189d390ce23df0b3cda465b5dc0bcb44a61d5e47227dc20877604fc0695bc50",
+      "kind": "preserved-contract"
+    },
+    "projects/mcp-at-scale/stages/04-audit/docs/en.md": {
+      "sourceSha256": "134cdc2e33fa0ff1740a07159580adc745a563dab61b52d4c38eb48dc8806ef8",
+      "localizedSha256": "0f8132353b56f6e3aefcf412db5c40b53fa935e244986b08550b3b6b327b197b",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-mcp-at-scale-4\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py mcp-at-scale --stage 4 --path learning-artifacts/mcp-at-scale --strict\n"
+          ],
+          [
+            "bash",
+            "cd learning-artifacts/mcp-at-scale\npython3 cli.py samples/inventory.json --query \"pods count\" --max-chars 500\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "audit.py"
+          ],
+          [
+            "`",
+            "audit_catalog"
+          ],
+          [
+            "`",
+            "python3 scripts/project_test.py mcp-at-scale --init learning-artifacts/mcp-at-scale"
+          ]
+        ],
+        "links": [
+          "../../../API.md",
+          "../../../README.md",
+          "https://modelcontextprotocol.io/specification/2025-06-18/server/tools",
+          "https://www.jsonrpc.org/specification"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/mcp-at-scale/stages/04-audit/starter/audit.py": {
+      "sourceSha256": "8f6c2e877ac387a85b91ea554ba5adb997ab391b0297db7f431bee247588104f",
+      "localizedSha256": "56500771db5e5d14b8d9afdee0289b3bb7b2068f7ef11fab20ce688b6974ca1d",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "\"\"\"Audit catalog coverage through protocol pages.\n\nLesson: projects/mcp-at-scale/stages/04-audit/docs/en.md\nThe implementation is original and uses explicit local data contracts.\nRun its tests through scripts/project_test.py.\n\"\"\"",
+          "\"\"\"通过协议分页审计目录覆盖情况。\n\n课程：projects/mcp-at-scale/stages/04-audit/docs/en.md\n原创实现，使用明确的本地数据契约。\n通过 scripts/project_test.py 运行测试。\n工具描述、协议值与错误消息参与检索、预算及互操作，保留原值。\"\"\""
+        ]
+      ]
+    },
+    "projects/mcp-at-scale/stages/04-audit/tests/test_audit.py": {
+      "sourceSha256": "ca7ac4557e6fac185b16892173464a88c610cd3f1d8644a0c64699ade1cdd369",
+      "localizedSha256": "ca7ac4557e6fac185b16892173464a88c610cd3f1d8644a0c64699ade1cdd369",
+      "kind": "preserved-contract"
+    },
+    "projects/mcp-at-scale/stages/05-typed-client/docs/en.md": {
+      "sourceSha256": "5ac6d667b12466e29fb54551136a43821530bef53b7b28c4fae2760d6ec8c60f",
+      "localizedSha256": "9811eafffbb8dbf6687bb59d6a94bddc5c18741ef14fca357649f21a05e5f3d1",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-mcp-at-scale-5\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py mcp-at-scale --stage 5 --path learning-artifacts/mcp-at-scale --strict\n"
+          ],
+          [
+            "bash",
+            "cd learning-artifacts/mcp-at-scale\npython3 cli.py samples/inventory.json --query \"pods count\" --max-chars 500\n"
+          ],
+          [
+            "bash",
+            "python3 -m venv .venv-mcp\n.venv-mcp/bin/python -m pip install -r projects/mcp-at-scale/requirements-framework.txt\n.venv-mcp/bin/python scripts/project_test.py mcp-at-scale --all --solution --optional --strict\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "--path learning-artifacts/mcp-at-scale"
+          ],
+          [
+            "`",
+            "mcp==2.1.1"
+          ],
+          [
+            "`",
+            "python3 scripts/project_test.py mcp-at-scale --init learning-artifacts/mcp-at-scale"
+          ]
+        ],
+        "links": [
+          "../../../API.md",
+          "../../../README.md",
+          "https://modelcontextprotocol.io/specification/2025-06-18/basic/transports"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/mcp-at-scale/stages/05-typed-client/starter/client.ts": {
+      "sourceSha256": "f2d3ecbb7f4ff161fbf062f8f145dcea9e812da056ff141e524049a8c11799e5",
+      "localizedSha256": "31614e151df847351f861f568b0214959e04d9304ce4b181b6da6964c4a00751",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "export interface Request { jsonrpc:'2.0'; id?:number; method:string; params?:Record<string,unknown> }\n",
+          "// 教学协议夹具：保留请求 id、旧版协议枚举及机器错误，避免将展示翻译混入通信。\nexport interface Request { jsonrpc:'2.0'; id?:number; method:string; params?:Record<string,unknown> }\n"
+        ]
+      ]
+    },
+    "projects/mcp-at-scale/stages/05-typed-client/tests-framework/test_standard_client.py": {
+      "sourceSha256": "3da6c8de9c3ab58c6f8d11de19ddb5eba6e1cdeac15a4a943edf30062c7d261b",
+      "localizedSha256": "3da6c8de9c3ab58c6f8d11de19ddb5eba6e1cdeac15a4a943edf30062c7d261b",
+      "kind": "preserved-contract"
+    },
+    "projects/mcp-at-scale/stages/05-typed-client/tests/client.test.ts": {
+      "sourceSha256": "94d6c3f8fb17c27d54731bfe3671369fee0520b02836d354eec54b016663ed2f",
+      "localizedSha256": "94d6c3f8fb17c27d54731bfe3671369fee0520b02836d354eec54b016663ed2f",
+      "kind": "preserved-contract"
+    },
+    "projects/mcp-at-scale/stages/05-typed-client/tests/test_integration.py": {
+      "sourceSha256": "06fea6e41d9d635c199f4839e78d71b4f28f9cd8a9b29d8b1ab81150d85f4106",
+      "localizedSha256": "06fea6e41d9d635c199f4839e78d71b4f28f9cd8a9b29d8b1ab81150d85f4106",
+      "kind": "preserved-contract"
+    },
+    "projects/meeting-notes-to-actions/.gitignore": {
+      "sourceSha256": "b0564f33e90257ad24cff5b8be6ab410b8fceded1c75fbe94a2ee7a299674097",
+      "localizedSha256": "b0564f33e90257ad24cff5b8be6ab410b8fceded1c75fbe94a2ee7a299674097",
+      "kind": "preserved-contract"
+    },
+    "projects/meeting-notes-to-actions/API.md": {
+      "sourceSha256": "b6a0b4ad3ed7b7b6e6e42dc58aa3f6aebcfb5a1533205969199744d84ff413ce",
+      "localizedSha256": "62ff3ed5676506196f5fbc07927387d043a40a063ae97278ddb04231eb0f41d0",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "python",
+            "def parse_notes(text)\ndef validate_action(action)\ndef deduplicate(actions)\ndef publish(actions, today)\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "approved"
+          ],
+          [
+            "`",
+            "pending"
+          ],
+          [
+            "`",
+            "rejected"
+          ]
+        ],
+        "links": [],
+        "math": [],
+        "headings": [
+          "#",
+          "###"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/meeting-notes-to-actions/README.md": {
+      "sourceSha256": "372290ea550d9cbe94fa89a06d75fc241c4518a6884504288e2b0eefa4b7bf4c",
+      "localizedSha256": "bb3db58c033f87c3afcacf45fdd4371995236cc117305c2dee17ba5cf0c3e524",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "bash",
+            "python3 scripts/project_test.py meeting-notes-to-actions --init learning-artifacts/meeting-notes-to-actions\npython3 scripts/project_test.py meeting-notes-to-actions --stage 1 --path learning-artifacts/meeting-notes-to-actions --strict\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py meeting-notes-to-actions --all --path learning-artifacts/meeting-notes-to-actions --strict\ncd learning-artifacts/meeting-notes-to-actions\npython3 cli.py samples/notes.txt --today 2026-09-29 --output actions.json --html actions.html --csv approved.csv\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py meeting-notes-to-actions --all --solution --strict\ncd projects/meeting-notes-to-actions/solution\npython3 cli.py samples/notes.txt --today 2026-09-29 --output actions.json --html actions.html --csv approved.csv\n"
+          ]
+        ],
+        "inlineCode": [],
+        "links": [
+          "API.md",
+          "https://docs.python.org/3/library/datetime.html",
+          "stages/01-parse-lines/docs/en.md",
+          "stages/02-validate-commitments/docs/en.md",
+          "stages/03-deduplicate-actions/docs/en.md",
+          "stages/04-publish-checklist/docs/en.md"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 4
+      }
+    },
+    "projects/meeting-notes-to-actions/media/output.gif": {
+      "sourceSha256": "0bc06222bf1b28a25dbf4d2a7ebd9dae1ec87d906f9bcf0270f76b8160991d03",
+      "localizedSha256": "0bc06222bf1b28a25dbf4d2a7ebd9dae1ec87d906f9bcf0270f76b8160991d03",
+      "kind": "original-recording"
+    },
+    "projects/meeting-notes-to-actions/media/output.json": {
+      "sourceSha256": "94c5c2467e78b5a7948fc78d548c8e869888d5f2853996afa7f3d83f24dfe75d",
+      "localizedSha256": "94c5c2467e78b5a7948fc78d548c8e869888d5f2853996afa7f3d83f24dfe75d",
+      "kind": "original-recording"
+    },
+    "projects/meeting-notes-to-actions/media/output.png": {
+      "sourceSha256": "ef2f809ee04ad7b5f1dc1bc039c2572b09d3741dc12b4b04980a1ce82c9d1012",
+      "localizedSha256": "ef2f809ee04ad7b5f1dc1bc039c2572b09d3741dc12b4b04980a1ce82c9d1012",
+      "kind": "original-recording"
+    },
+    "projects/meeting-notes-to-actions/media/run.gif": {
+      "sourceSha256": "3936af028bcd71db9fd595ae794f693484540d439037eca07c2f3ead13b4a0a4",
+      "localizedSha256": "3936af028bcd71db9fd595ae794f693484540d439037eca07c2f3ead13b4a0a4",
+      "kind": "original-recording"
+    },
+    "projects/meeting-notes-to-actions/media/run.json": {
+      "sourceSha256": "06918fc8c07af26bba4328018ff916a02ab900ffb1d19db690a1fcb8b170690b",
+      "localizedSha256": "06918fc8c07af26bba4328018ff916a02ab900ffb1d19db690a1fcb8b170690b",
+      "kind": "original-recording"
+    },
+    "projects/meeting-notes-to-actions/media/run.png": {
+      "sourceSha256": "da0a2733da3977033651be6e90a8a93fa08edc1a61c52a939b93ce779e709346",
+      "localizedSha256": "da0a2733da3977033651be6e90a8a93fa08edc1a61c52a939b93ce779e709346",
+      "kind": "original-recording"
+    },
+    "projects/meeting-notes-to-actions/project.json": {
+      "sourceSha256": "fb3e9d13cbe43931b691f7d400680fd8c2cdb3c5d39e288e1ed9b329a3cdaf5e",
+      "localizedSha256": "06f6dde377a0db6a324f4429997bd9d856bc9f3d33ee60bb8e9f6136f2e808be",
+      "kind": "manifest",
+      "contract": {
+        "id": "meeting-notes-to-actions",
+        "title": "<translated-text>",
+        "level": 2,
+        "levelName": "Builder",
+        "tagline": "<translated-text>",
+        "summary": "<translated-text>",
+        "youWillBuild": "<translated-text>",
+        "usefulFor": [
+          "<translated-text>"
+        ],
+        "hours": 8,
+        "languages": [
+          "Python"
+        ],
+        "languageWhy": {
+          "Python": "<translated-text>"
+        },
+        "status": "ready",
+        "source": "core",
+        "author": {
+          "name": "AI Engineering from Scratch",
+          "github": "rohitg00"
+        },
+        "skills": [
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "prerequisites": [
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "figures": true,
+        "overviewFigure": "pj-meeting-notes-to-actions-1",
+        "demo": {
+          "cwd": "solution",
+          "command": [
+            "python3",
+            "cli.py",
+            "samples/notes.txt",
+            "--today",
+            "2026-09-29",
+            "--output",
+            "actions.json",
+            "--html",
+            "actions.html",
+            "--csv",
+            "approved.csv"
+          ]
+        },
+        "stages": [
+          {
+            "id": "01-parse-lines",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "difficulty": "starter",
+            "language": "python",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>"
+            ],
+            "figure": "pj-meeting-notes-to-actions-1"
+          },
+          {
+            "id": "02-validate-commitments",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "difficulty": "core",
+            "language": "python",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>"
+            ],
+            "figure": "pj-meeting-notes-to-actions-2"
+          },
+          {
+            "id": "03-deduplicate-actions",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "difficulty": "core",
+            "language": "python",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>"
+            ],
+            "figure": "pj-meeting-notes-to-actions-3"
+          },
+          {
+            "id": "04-publish-checklist",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "difficulty": "stretch",
+            "language": "python",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ],
+            "figure": "pj-meeting-notes-to-actions-4"
+          }
+        ],
+        "demos": [
+          {
+            "gif": "media/run.gif",
+            "poster": "media/run.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          },
+          {
+            "gif": "media/output.gif",
+            "poster": "media/output.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          }
+        ]
+      }
+    },
+    "projects/meeting-notes-to-actions/solution/.gitignore": {
+      "sourceSha256": "6858d8108c069a140101f5277ec07249371dcba2e72547a2887e4a94fab76b4a",
+      "localizedSha256": "6858d8108c069a140101f5277ec07249371dcba2e72547a2887e4a94fab76b4a",
+      "kind": "preserved-contract"
+    },
+    "projects/meeting-notes-to-actions/solution/cli.py": {
+      "sourceSha256": "d93e99545b3d61791b45a10eb35dad64e9731aa53bbb49508f3d67bca8c4277b",
+      "localizedSha256": "8605c60d5976d464e129bdcd3ed262d9cf28bfb54b48e17f8b21d8544ea90825",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "\"\"\"Create a source-linked commitment inbox; export only explicitly approved actions.\"\"\"",
+          "\"\"\"创建关联来源的承诺收件箱；只导出明确批准的行动项。\"\"\""
+        ],
+        [
+          "\">source</a><code>",
+          "\">来源</a><code>"
+        ],
+        [
+          "<title>Commitment inbox</title><h1>Review commitments</h1><p>Approve by adding the displayed id to a decisions JSON file. Unknown commitments cannot be approved.</p><button id=\"download\">Download review decisions</button>",
+          "<title>承诺收件箱</title><h1>审阅承诺</h1><p>将显示的 id 加入决策 JSON 文件以批准行动项。信息不完整的承诺不能批准。pending 表示待审阅，approved 表示已批准，rejected 表示已拒绝。</p><button id=\"download\">下载审阅决策</button>"
+        ],
+        [
+          "</ul><h2>Original notes</h2><pre>",
+          "</ul><h2>原始会议记录</h2><pre>"
+        ]
+      ]
+    },
+    "projects/meeting-notes-to-actions/solution/demo.py": {
+      "sourceSha256": "a1971a837a1f903c976b8fd58ba737e9edddfc1a701a4b8846ebb68eee4f1346",
+      "localizedSha256": "6c3479068927f3e7732f64d54b5c2641bb02fbfcf73a0973b397a53cc53bbc34",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "import json\n",
+          "# 使用原创会议文本演示提取；输入语法与输出状态保留原值，不创建外部任务。\nimport json\n"
+        ]
+      ]
+    },
+    "projects/meeting-notes-to-actions/solution/main.py": {
+      "sourceSha256": "2d45422a44fc0542bb3abb375c816896922ae7ae52b8ad6c03acc311a2d352e3",
+      "localizedSha256": "791db28b88fbb237e45337affa32b8d6b951066b2c2f2412776007f8431b5bef",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "from datetime import date\n",
+          "# 从明确的 ACTION 行提取承诺、校验与去重；状态枚举及来源字段保持原值。\nfrom datetime import date\n"
+        ],
+        [
+          "<title>Action review</title><h1>Meeting actions</h1>",
+          "<title>行动项审阅</title><h1>会议行动项</h1><p>ready：信息完整；review：需要审阅；overdue：逾期。lines 表示原始行号，needs_owner／needs_date 表示缺少负责人／日期。</p>"
+        ]
+      ]
+    },
+    "projects/meeting-notes-to-actions/solution/samples/notes.txt": {
+      "sourceSha256": "9f3cdd8b3e5a7b814a678db1a9b5ec3619a16a921279918e0ee77ca1344f07a4",
+      "localizedSha256": "9f3cdd8b3e5a7b814a678db1a9b5ec3619a16a921279918e0ee77ca1344f07a4",
+      "kind": "preserved-contract"
+    },
+    "projects/meeting-notes-to-actions/stages/01-parse-lines/docs/en.md": {
+      "sourceSha256": "c6d663904b53bede878b08026f41e80073f6d5d84dd18968b159f8a506e3a6f1",
+      "localizedSha256": "438ab73a7a11a7d3ff02deb55ddacf8c994d77bac2149db85513e50283d4e91d",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-meeting-notes-to-actions-1\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py meeting-notes-to-actions --stage 1 --path learning-artifacts/meeting-notes-to-actions --strict\n"
+          ],
+          [
+            "bash",
+            "cd learning-artifacts/meeting-notes-to-actions\npython3 cli.py samples/notes.txt --today 2026-09-29 --output actions.json --html actions.html --csv approved.csv\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "parse_notes"
+          ],
+          [
+            "`",
+            "python3 scripts/project_test.py meeting-notes-to-actions --init learning-artifacts/meeting-notes-to-actions"
+          ]
+        ],
+        "links": [
+          "../../../API.md",
+          "../../../README.md",
+          "https://docs.python.org/3/library/datetime.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/meeting-notes-to-actions/stages/01-parse-lines/starter/cli.py": {
+      "sourceSha256": "d93e99545b3d61791b45a10eb35dad64e9731aa53bbb49508f3d67bca8c4277b",
+      "localizedSha256": "8605c60d5976d464e129bdcd3ed262d9cf28bfb54b48e17f8b21d8544ea90825",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "\"\"\"Create a source-linked commitment inbox; export only explicitly approved actions.\"\"\"",
+          "\"\"\"创建关联来源的承诺收件箱；只导出明确批准的行动项。\"\"\""
+        ],
+        [
+          "\">source</a><code>",
+          "\">来源</a><code>"
+        ],
+        [
+          "<title>Commitment inbox</title><h1>Review commitments</h1><p>Approve by adding the displayed id to a decisions JSON file. Unknown commitments cannot be approved.</p><button id=\"download\">Download review decisions</button>",
+          "<title>承诺收件箱</title><h1>审阅承诺</h1><p>将显示的 id 加入决策 JSON 文件以批准行动项。信息不完整的承诺不能批准。pending 表示待审阅，approved 表示已批准，rejected 表示已拒绝。</p><button id=\"download\">下载审阅决策</button>"
+        ],
+        [
+          "</ul><h2>Original notes</h2><pre>",
+          "</ul><h2>原始会议记录</h2><pre>"
+        ]
+      ]
+    },
+    "projects/meeting-notes-to-actions/stages/01-parse-lines/starter/main.py": {
+      "sourceSha256": "2178d59649242ccd2e5e4ada2c553a6afd129f78f4768a04cc982e65f674aa8c",
+      "localizedSha256": "c798e9bc7cc949771c15f2a3e30e677fe3e3be0140b949fa39c96efbeb35ee57",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "\"\"\"Fill in the stage interfaces in your own workspace.\"\"\"",
+          "\"\"\"在自己的工作区补全各阶段接口；保留函数名及未实现错误。\"\"\""
+        ]
+      ]
+    },
+    "projects/meeting-notes-to-actions/stages/01-parse-lines/starter/samples/notes.txt": {
+      "sourceSha256": "9f3cdd8b3e5a7b814a678db1a9b5ec3619a16a921279918e0ee77ca1344f07a4",
+      "localizedSha256": "9f3cdd8b3e5a7b814a678db1a9b5ec3619a16a921279918e0ee77ca1344f07a4",
+      "kind": "preserved-contract"
+    },
+    "projects/meeting-notes-to-actions/stages/01-parse-lines/tests/test_stage_01.py": {
+      "sourceSha256": "e0e6ba0acecd4755f8785e553592246ebd92b76a022278039cd25101c97f98e3",
+      "localizedSha256": "e0e6ba0acecd4755f8785e553592246ebd92b76a022278039cd25101c97f98e3",
+      "kind": "preserved-contract"
+    },
+    "projects/meeting-notes-to-actions/stages/02-validate-commitments/docs/en.md": {
+      "sourceSha256": "7a2d872e322a61f4709fe59b4c6d2a524bb8ef9a5f34ef3dd5b1fd66b4f2e7be",
+      "localizedSha256": "c0b356dc4a9da41ad6dd46a0037f1d0573da92c1417df6eeae245d5c9016b74f",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-meeting-notes-to-actions-2\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py meeting-notes-to-actions --stage 2 --path learning-artifacts/meeting-notes-to-actions --strict\n"
+          ],
+          [
+            "bash",
+            "cd learning-artifacts/meeting-notes-to-actions\npython3 cli.py samples/notes.txt --today 2026-09-29 --output actions.json --html actions.html --csv approved.csv\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "python3 scripts/project_test.py meeting-notes-to-actions --init learning-artifacts/meeting-notes-to-actions"
+          ],
+          [
+            "`",
+            "validate_action"
+          ]
+        ],
+        "links": [
+          "../../../API.md",
+          "../../../README.md",
+          "https://docs.python.org/3/library/datetime.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/meeting-notes-to-actions/stages/02-validate-commitments/starter/STAGE.md": {
+      "sourceSha256": "de87d556ff420651ca3f56779d9ccc5ad04b3d08f79de33927207ae35b0562c4",
+      "localizedSha256": "32d7472579f64db2c83d693631cf101f7b4d06c0422a8bb6a98a69d3d67496cd",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/meeting-notes-to-actions/stages/02-validate-commitments/tests/test_stage_02.py": {
+      "sourceSha256": "30bd02f6a117538098b7fd2cf69d8f36ddc244abb78989de7871d6d3d14e96c8",
+      "localizedSha256": "30bd02f6a117538098b7fd2cf69d8f36ddc244abb78989de7871d6d3d14e96c8",
+      "kind": "preserved-contract"
+    },
+    "projects/meeting-notes-to-actions/stages/03-deduplicate-actions/docs/en.md": {
+      "sourceSha256": "5c513ed19a372990b3aa6dd90950faab4d937af20fee78837eb4292799ed776f",
+      "localizedSha256": "55aedd2e3d3e1fe7fabebdaffa2732a263c60cc65b951c49ae73d834a9ed57b7",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-meeting-notes-to-actions-3\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py meeting-notes-to-actions --stage 3 --path learning-artifacts/meeting-notes-to-actions --strict\n"
+          ],
+          [
+            "bash",
+            "cd learning-artifacts/meeting-notes-to-actions\npython3 cli.py samples/notes.txt --today 2026-09-29 --output actions.json --html actions.html --csv approved.csv\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "deduplicate"
+          ],
+          [
+            "`",
+            "python3 scripts/project_test.py meeting-notes-to-actions --init learning-artifacts/meeting-notes-to-actions"
+          ]
+        ],
+        "links": [
+          "../../../API.md",
+          "../../../README.md",
+          "https://docs.python.org/3/library/datetime.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/meeting-notes-to-actions/stages/03-deduplicate-actions/starter/STAGE.md": {
+      "sourceSha256": "de87d556ff420651ca3f56779d9ccc5ad04b3d08f79de33927207ae35b0562c4",
+      "localizedSha256": "32d7472579f64db2c83d693631cf101f7b4d06c0422a8bb6a98a69d3d67496cd",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/meeting-notes-to-actions/stages/03-deduplicate-actions/tests/test_stage_03.py": {
+      "sourceSha256": "53c0df0f8e2bdbbb1e3bd32da370f4750d3295803e821160f8d0f0a962c52a70",
+      "localizedSha256": "53c0df0f8e2bdbbb1e3bd32da370f4750d3295803e821160f8d0f0a962c52a70",
+      "kind": "preserved-contract"
+    },
+    "projects/meeting-notes-to-actions/stages/04-publish-checklist/docs/en.md": {
+      "sourceSha256": "fe7d7e8030474f6036ade564cec01551803eac2cab1437d66981f24c4940a53e",
+      "localizedSha256": "df4e7776ee84cd811011b007c7795cd0fe55c28e3c04fdf7ff6941fb40b28905",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-meeting-notes-to-actions-4\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py meeting-notes-to-actions --stage 4 --path learning-artifacts/meeting-notes-to-actions --strict\n"
+          ],
+          [
+            "bash",
+            "cd learning-artifacts/meeting-notes-to-actions\npython3 cli.py samples/notes.txt --today 2026-09-29 --output actions.json --html actions.html --csv approved.csv\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "publish"
+          ],
+          [
+            "`",
+            "python3 scripts/project_test.py meeting-notes-to-actions --init learning-artifacts/meeting-notes-to-actions"
+          ]
+        ],
+        "links": [
+          "../../../API.md",
+          "../../../README.md",
+          "https://docs.python.org/3/library/datetime.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/meeting-notes-to-actions/stages/04-publish-checklist/starter/STAGE.md": {
+      "sourceSha256": "de87d556ff420651ca3f56779d9ccc5ad04b3d08f79de33927207ae35b0562c4",
+      "localizedSha256": "32d7472579f64db2c83d693631cf101f7b4d06c0422a8bb6a98a69d3d67496cd",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/meeting-notes-to-actions/stages/04-publish-checklist/tests/test_decisions.py": {
+      "sourceSha256": "eff2a16614ee1b0f5c2e1ab5a03b873da46c6d5d401219227723086b47e12b24",
+      "localizedSha256": "eff2a16614ee1b0f5c2e1ab5a03b873da46c6d5d401219227723086b47e12b24",
+      "kind": "preserved-contract"
+    },
+    "projects/meeting-notes-to-actions/stages/04-publish-checklist/tests/test_integration.py": {
+      "sourceSha256": "b97ae0a5af35882fdffe11a7133910d7125b67c8bed66c7d8398fe5df0740fe1",
+      "localizedSha256": "b97ae0a5af35882fdffe11a7133910d7125b67c8bed66c7d8398fe5df0740fe1",
+      "kind": "preserved-contract"
+    },
+    "projects/meeting-notes-to-actions/stages/04-publish-checklist/tests/test_stage_04.py": {
+      "sourceSha256": "fe5f2eb230aeb82e2a880ef8331bcadd09471484770f28e3335db63792aa7af6",
+      "localizedSha256": "fe5f2eb230aeb82e2a880ef8331bcadd09471484770f28e3335db63792aa7af6",
+      "kind": "preserved-contract"
+    },
+    "projects/memory-server/.gitignore": {
+      "sourceSha256": "1547043ddb9eae8e450743e93f8ba068f3491fc28c099ca69288ed48f83ef555",
+      "localizedSha256": "1547043ddb9eae8e450743e93f8ba068f3491fc28c099ca69288ed48f83ef555",
+      "kind": "preserved-contract"
+    },
+    "projects/memory-server/API.md": {
+      "sourceSha256": "cd981a3ebb0079fb58bb74b9996776aa78293d6d35a56ce7239c7a3415583368",
+      "localizedSha256": "f6359dcb8570717be324fabdac26d4b8fd840b7d6bce228898399f298de59773",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "typescript",
+            "export function validateMemory(raw: unknown): Omit<Memory, \"revision\">\nexport function embed(text: string, dimensions = 32): number[]\nexport function cosineScores(query: number[], vectors: number[][]): number[]\nexport function createMemoryServer(store: MemoryStore, token: string)\n"
+          ]
+        ],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [
+          "#",
+          "###"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/memory-server/README.md": {
+      "sourceSha256": "db2e3ee788404058b920c0a390d3077e9972e4e74aa70143a4649fabf72cf34d",
+      "localizedSha256": "22b5a6fdd0b64005f636b3037dfdfd3bfe158895fbc3f677ab92b4ee38634b7c",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "bash",
+            "python3 scripts/project_test.py memory-server --init learning-artifacts/memory-server\npython3 scripts/project_test.py memory-server --stage 1 --path learning-artifacts/memory-server --strict\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py memory-server --all --path learning-artifacts/memory-server --strict\ncd learning-artifacts/memory-server\nnode cli.ts --data-dir memory-data --put samples/memory.json\nnode cli.ts --data-dir memory-data --query \"cache policy\"\nnode cli.ts --data-dir memory-data --history cache-policy\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py memory-server --all --solution --strict\ncd projects/memory-server/solution\nnode cli.ts --data-dir memory-data --put samples/memory.json\nnode cli.ts --data-dir memory-data --query \"cache policy\"\nnode cli.ts --data-dir memory-data --history cache-policy\n"
+          ],
+          [
+            "bash",
+            "node cli.ts --data-dir memory-data --serve --port 8788\n"
+          ],
+          [
+            "bash",
+            "python3 -m venv .venv-mcp\n.venv-mcp/bin/python -m pip install -r projects/memory-server/requirements-framework.txt\n.venv-mcp/bin/python scripts/project_test.py memory-server --all --solution --optional --strict\n"
+          ],
+          [
+            "bash",
+            "node cli.ts --data-dir memory-data --put samples/memory-updated.json --revision 1\nnode cli.ts --data-dir memory-data --history cache-policy --html history.html\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "--path learning-artifacts/memory-server"
+          ],
+          [
+            "`",
+            "--revision 1"
+          ],
+          [
+            "`",
+            "mcp==2.1.1"
+          ]
+        ],
+        "links": [
+          "API.md",
+          "https://doc.rust-lang.org/std/",
+          "https://modelcontextprotocol.io/specification/2025-11-25/server/tools",
+          "https://nodejs.org/api/http.html",
+          "stages/01-record-contract/docs/en.md",
+          "stages/02-durable-log/docs/en.md",
+          "stages/03-hybrid-search/docs/en.md",
+          "stages/04-transports/docs/en.md"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 4
+      }
+    },
+    "projects/memory-server/media/output.gif": {
+      "sourceSha256": "796a735453f3656cb0e6dd2cd563409e517874b8250729a362cd1e6a8a26a104",
+      "localizedSha256": "796a735453f3656cb0e6dd2cd563409e517874b8250729a362cd1e6a8a26a104",
+      "kind": "original-recording"
+    },
+    "projects/memory-server/media/output.json": {
+      "sourceSha256": "236cfe8d49138a52b7891adc7fe1214b219de224b61434c95292e64aacb8db57",
+      "localizedSha256": "236cfe8d49138a52b7891adc7fe1214b219de224b61434c95292e64aacb8db57",
+      "kind": "original-recording"
+    },
+    "projects/memory-server/media/output.png": {
+      "sourceSha256": "b443993975da3e9fb931fd11878f7b303bc72af3b7bcf39a0028f541bb7c0ee8",
+      "localizedSha256": "b443993975da3e9fb931fd11878f7b303bc72af3b7bcf39a0028f541bb7c0ee8",
+      "kind": "original-recording"
+    },
+    "projects/memory-server/media/run.gif": {
+      "sourceSha256": "cbee13e4ec08a4f8e1888266017673acab57723d1bff56e7c828494cd65e0eb1",
+      "localizedSha256": "cbee13e4ec08a4f8e1888266017673acab57723d1bff56e7c828494cd65e0eb1",
+      "kind": "original-recording"
+    },
+    "projects/memory-server/media/run.json": {
+      "sourceSha256": "d0a2d82587ac9e18121b98ea20bccca787f7077f37387b5c4809380fe324af41",
+      "localizedSha256": "d0a2d82587ac9e18121b98ea20bccca787f7077f37387b5c4809380fe324af41",
+      "kind": "original-recording"
+    },
+    "projects/memory-server/media/run.png": {
+      "sourceSha256": "ff2bf8904389cc339ee22deb81dac0b3b56b637080c31555c123f9223b29d2b9",
+      "localizedSha256": "ff2bf8904389cc339ee22deb81dac0b3b56b637080c31555c123f9223b29d2b9",
+      "kind": "original-recording"
+    },
+    "projects/memory-server/project.json": {
+      "sourceSha256": "42ac9eb0a85ad4182b27712019a0beaab759246f1f9f5bc1f1e087509b49477b",
+      "localizedSha256": "0aa9cab3285f1237d5be64465484631ba66038c6bdfd2b5870da4620b1d8ae9e",
+      "kind": "manifest",
+      "contract": {
+        "id": "memory-server",
+        "title": "<translated-text>",
+        "level": 3,
+        "levelName": "Engineer",
+        "tagline": "<translated-text>",
+        "summary": "<translated-text>",
+        "hours": 8,
+        "languages": [
+          "TypeScript",
+          "Rust"
+        ],
+        "status": "ready",
+        "source": "core",
+        "author": {
+          "name": "AI Engineering from Scratch",
+          "github": "rohitg00"
+        },
+        "skills": [
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "prerequisites": [
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "youWillBuild": "<translated-text>",
+        "usefulFor": [
+          "<translated-text>"
+        ],
+        "demo": {
+          "command": [
+            "node",
+            "demo-persistent.ts"
+          ],
+          "cwd": "solution"
+        },
+        "stages": [
+          {
+            "id": "01-record-contract",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "typescript",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "validateMemory",
+              "embed"
+            ],
+            "difficulty": "starter",
+            "runner": [
+              "node",
+              "--experimental-strip-types",
+              "--test",
+              "{tests}/stage.test.ts"
+            ],
+            "requires": [
+              "node",
+              "rustc"
+            ],
+            "timeout": 90,
+            "figure": "pj-memory-server-1"
+          },
+          {
+            "id": "02-durable-log",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "typescript",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "MemoryStore.put",
+              "MemoryStore.list"
+            ],
+            "difficulty": "core",
+            "runner": [
+              "node",
+              "--experimental-strip-types",
+              "--test",
+              "{tests}/stage.test.ts"
+            ],
+            "requires": [
+              "node",
+              "rustc"
+            ],
+            "timeout": 90,
+            "figure": "pj-memory-server-2"
+          },
+          {
+            "id": "03-hybrid-search",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "typescript",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "cosineScores",
+              "MemoryStore.search"
+            ],
+            "difficulty": "core",
+            "runner": [
+              "node",
+              "--experimental-strip-types",
+              "--test",
+              "{tests}/stage.test.ts"
+            ],
+            "requires": [
+              "node",
+              "rustc"
+            ],
+            "timeout": 90,
+            "figure": "pj-memory-server-3"
+          },
+          {
+            "id": "04-transports",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "typescript",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "createMemoryServer"
+            ],
+            "difficulty": "core",
+            "requires": [
+              "node",
+              "rustc"
+            ],
+            "timeout": 90,
+            "figure": "pj-memory-server-4",
+            "runners": [
+              {
+                "language": "typescript",
+                "argv": [
+                  "node",
+                  "--experimental-strip-types",
+                  "--test",
+                  "{tests}/stage.test.ts",
+                  "{tests}/integration.test.ts"
+                ]
+              },
+              {
+                "language": "python",
+                "optional": true,
+                "requires": [
+                  "python:mcp"
+                ],
+                "argv": [
+                  "{python}",
+                  "-m",
+                  "unittest",
+                  "discover",
+                  "-s",
+                  "{stage}/tests-framework",
+                  "-p",
+                  "test_standard_client.py"
+                ]
+              }
+            ]
+          }
+        ],
+        "demos": [
+          {
+            "gif": "media/run.gif",
+            "poster": "media/run.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          },
+          {
+            "gif": "media/output.gif",
+            "poster": "media/output.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          }
+        ]
+      }
+    },
+    "projects/memory-server/requirements-framework.txt": {
+      "sourceSha256": "4d7a795fe23ab59399281f49871d43043c4fa6b6ab4c93c647795c982ed736d5",
+      "localizedSha256": "4d7a795fe23ab59399281f49871d43043c4fa6b6ab4c93c647795c982ed736d5",
+      "kind": "preserved-contract"
+    },
+    "projects/memory-server/solution/cli.ts": {
+      "sourceSha256": "8da34b8155fb600b4cce5a08688dd05136f3d0221b60cbed928b5d029d545c93",
+      "localizedSha256": "2d9928bc0a499cbc26a0f76a9baef15642b306e8f563d1992f8f2f6ebf58d486",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "import { MemoryStore, createMemoryServer } from \"./main.ts\";\n",
+          "// 使用持久化目录读写与查询记忆；令牌只从环境读取，不打印或写入文件。\nimport { MemoryStore, createMemoryServer } from \"./main.ts\";\n"
+        ],
+        [
+          "<title>Memory revisions</title><h1>Source and revision comparison</h1><table><tr><th>Revision</th><th>Source</th><th>Text</th></tr>",
+          "<title>记忆修订历史</title><h1>来源与修订版比较</h1><table><tr><th>修订版</th><th>来源</th><th>文本</th></tr>"
+        ]
+      ]
+    },
+    "projects/memory-server/solution/demo-persistent.ts": {
+      "sourceSha256": "90f79e0ccec6498bca0affe834a25efd93d0fc9ce71f34e5d884ac663f8884cd",
+      "localizedSha256": "88e3f39411fb6631419c889d90e4181cfdafe4ea37764738d053dde955a6f593",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "import { execFileSync } from \"node:child_process\";\n",
+          "// 以不同子进程验证日志重启恢复；仅操作本演示创建的临时目录，退出后清理。\nimport { execFileSync } from \"node:child_process\";\n"
+        ]
+      ]
+    },
+    "projects/memory-server/solution/main.ts": {
+      "sourceSha256": "23ca1d570924072f9031c398894e4bc5ca0d0c49ebb5cb7b4a96d7fe5de8db84",
+      "localizedSha256": "e1d68c5358ac561990ee9457e5926128e38e459d1e8c981e8c6894bafba40576",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "/*\n * Persistent Memory Server reference implementation.\n * Follow stages in projects/memory-server/stages/.\n * The demo is deterministic and requires no provider credentials.\n * Protocol references are listed in the project README.\n */",
+          "/*\n * 持久化记忆服务器参考实现。\n * 按 projects/memory-server/stages/ 中的阶段学习。\n * 演示无需外部服务商凭据；协议参考见项目 README。\n * 词汇分词仅匹配 a-z 与数字；纯中文查询不会产生非零检索分数。\n * 共享令牌不提供分命名空间授权；JSONL 只支持单写入进程。\n * 协议描述、样本、错误和数值保留原契约。\n */"
+        ]
+      ]
+    },
+    "projects/memory-server/solution/package.json": {
+      "sourceSha256": "a90fc33418afa2b9cbf4768524b021135b965ecdf993457505bfae3ac44a8428",
+      "localizedSha256": "a90fc33418afa2b9cbf4768524b021135b965ecdf993457505bfae3ac44a8428",
+      "kind": "preserved-contract"
+    },
+    "projects/memory-server/solution/samples/memory-updated.json": {
+      "sourceSha256": "fa9faa4407904becd1d60475312fb8ab04dbb6cb2819f6fb70f1e4887f4a70b1",
+      "localizedSha256": "fa9faa4407904becd1d60475312fb8ab04dbb6cb2819f6fb70f1e4887f4a70b1",
+      "kind": "preserved-contract"
+    },
+    "projects/memory-server/solution/samples/memory.json": {
+      "sourceSha256": "72252d723f63d330f9ee2acd5a6e551ae2a2ec41786823c5f19e81920eedea33",
+      "localizedSha256": "72252d723f63d330f9ee2acd5a6e551ae2a2ec41786823c5f19e81920eedea33",
+      "kind": "preserved-contract"
+    },
+    "projects/memory-server/solution/score.rs": {
+      "sourceSha256": "84526866f0ca3b70f99eece38edfbfbbb5c26932c42d5d9d4205af9d3fec0078",
+      "localizedSha256": "73d0b7924e7cbecc4abd180e5099f7e850652ba691540a3df5c0dc8cb400e131",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "// Memory Server cosine scoring kernel.\n// Read the vector contract in ../stages/03-hybrid-search/docs/en.md.\n// The process receives finite comma-separated vectors over stdin.\n// Rust stdlib only; compiled with rustc --edition 2021.\n",
+          "// 记忆服务器的余弦评分内核。\n// 向量契约见 ../stages/03-hybrid-search/docs/en.md。\n// 进程经 stdin 接收有限数值组成、以逗号分隔的向量。\n// 仅用 Rust 标准库，使用 rustc --edition 2021 编译。\n"
+        ]
+      ]
+    },
+    "projects/memory-server/stages/01-record-contract/docs/en.md": {
+      "sourceSha256": "68ce2cdca880d491238e7406619235eaca7dd224edf71a4d3fb7265b0769b3eb",
+      "localizedSha256": "88bcdc178be4489ff397cae6683913a569a47db5af48c50fd3460b137f154ec9",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-memory-server-1\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py memory-server --stage 1 --path learning-artifacts/memory-server --strict\n"
+          ],
+          [
+            "bash",
+            "cd learning-artifacts/memory-server\nnode cli.ts --data-dir memory-data --put samples/memory.json\nnode cli.ts --data-dir memory-data --query \"cache policy\"\nnode cli.ts --data-dir memory-data --history cache-policy\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "main.ts"
+          ],
+          [
+            "`",
+            "python3 scripts/project_test.py memory-server --init learning-artifacts/memory-server"
+          ],
+          [
+            "`",
+            "validateMemory, embed"
+          ],
+          [
+            "`",
+            "validateMemory, embed"
+          ]
+        ],
+        "links": [
+          "../../../API.md",
+          "../../../README.md",
+          "https://doc.rust-lang.org/std/",
+          "https://modelcontextprotocol.io/specification/2025-11-25/server/tools",
+          "https://nodejs.org/api/http.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/memory-server/stages/01-record-contract/starter/cli.ts": {
+      "sourceSha256": "8da34b8155fb600b4cce5a08688dd05136f3d0221b60cbed928b5d029d545c93",
+      "localizedSha256": "2d9928bc0a499cbc26a0f76a9baef15642b306e8f563d1992f8f2f6ebf58d486",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "import { MemoryStore, createMemoryServer } from \"./main.ts\";\n",
+          "// 使用持久化目录读写与查询记忆；令牌只从环境读取，不打印或写入文件。\nimport { MemoryStore, createMemoryServer } from \"./main.ts\";\n"
+        ],
+        [
+          "<title>Memory revisions</title><h1>Source and revision comparison</h1><table><tr><th>Revision</th><th>Source</th><th>Text</th></tr>",
+          "<title>记忆修订历史</title><h1>来源与修订版比较</h1><table><tr><th>修订版</th><th>来源</th><th>文本</th></tr>"
+        ]
+      ]
+    },
+    "projects/memory-server/stages/01-record-contract/starter/demo-persistent.ts": {
+      "sourceSha256": "90f79e0ccec6498bca0affe834a25efd93d0fc9ce71f34e5d884ac663f8884cd",
+      "localizedSha256": "88e3f39411fb6631419c889d90e4181cfdafe4ea37764738d053dde955a6f593",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "import { execFileSync } from \"node:child_process\";\n",
+          "// 以不同子进程验证日志重启恢复；仅操作本演示创建的临时目录，退出后清理。\nimport { execFileSync } from \"node:child_process\";\n"
+        ]
+      ]
+    },
+    "projects/memory-server/stages/01-record-contract/starter/main.ts": {
+      "sourceSha256": "40c3725f8cf7773a4dd8eca79139a481a1a72e6b82e7cd377e4207e1602419da",
+      "localizedSha256": "e16438c80f74843fbdac387a5a43855ccc98d024dfb38e420d1a898a2eba6863",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "export type Memory = {\n",
+          "// 在学习者工作区按阶段补全接口；保留公开名称、类型及未实现错误。\nexport type Memory = {\n"
+        ]
+      ]
+    },
+    "projects/memory-server/stages/01-record-contract/starter/package.json": {
+      "sourceSha256": "a90fc33418afa2b9cbf4768524b021135b965ecdf993457505bfae3ac44a8428",
+      "localizedSha256": "a90fc33418afa2b9cbf4768524b021135b965ecdf993457505bfae3ac44a8428",
+      "kind": "preserved-contract"
+    },
+    "projects/memory-server/stages/01-record-contract/starter/samples/memory-updated.json": {
+      "sourceSha256": "fa9faa4407904becd1d60475312fb8ab04dbb6cb2819f6fb70f1e4887f4a70b1",
+      "localizedSha256": "fa9faa4407904becd1d60475312fb8ab04dbb6cb2819f6fb70f1e4887f4a70b1",
+      "kind": "preserved-contract"
+    },
+    "projects/memory-server/stages/01-record-contract/starter/samples/memory.json": {
+      "sourceSha256": "72252d723f63d330f9ee2acd5a6e551ae2a2ec41786823c5f19e81920eedea33",
+      "localizedSha256": "72252d723f63d330f9ee2acd5a6e551ae2a2ec41786823c5f19e81920eedea33",
+      "kind": "preserved-contract"
+    },
+    "projects/memory-server/stages/01-record-contract/starter/score.rs": {
+      "sourceSha256": "15ba6249b3dc1bc569253be27c06e2f3c7822e6aa8cf03017b25c7e9845af521",
+      "localizedSha256": "73daae13ec62f4f12f248a14de1842172825ab2f3155dc76457c13c14c92af42",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "fn main() { panic!(\"Not implemented: cosine scoring\"); }\n",
+          "// 在学习者工作区按阶段补全接口；保留公开名称、类型及未实现错误。\nfn main() { panic!(\"Not implemented: cosine scoring\"); }\n"
+        ]
+      ]
+    },
+    "projects/memory-server/stages/01-record-contract/starter/stage-1.md": {
+      "sourceSha256": "31108aad50139506cc16cbf458150b1bde926fc3bd1d35c2509642ecb33234d2",
+      "localizedSha256": "041f41b05753e40585d51b39994fbb4b55c4942d67e29c9a6fd5400eabb3d085",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/memory-server/stages/01-record-contract/tests/stage.test.ts": {
+      "sourceSha256": "5de43d9d7321069bb1870615c298022c539b0a44743666b7e50aae09edbe4492",
+      "localizedSha256": "5de43d9d7321069bb1870615c298022c539b0a44743666b7e50aae09edbe4492",
+      "kind": "preserved-contract"
+    },
+    "projects/memory-server/stages/02-durable-log/docs/en.md": {
+      "sourceSha256": "c67fe3f6cb106f81778c21c6e77d93bc73ca7e976cb97eb0e58d071efcad3a0d",
+      "localizedSha256": "ffa00741aaf99f82813c1d6868f6a5157d0e6baed8114c701b7c6b370ff5b9a0",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-memory-server-2\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py memory-server --stage 2 --path learning-artifacts/memory-server --strict\n"
+          ],
+          [
+            "bash",
+            "cd learning-artifacts/memory-server\nnode cli.ts --data-dir memory-data --put samples/memory.json\nnode cli.ts --data-dir memory-data --query \"cache policy\"\nnode cli.ts --data-dir memory-data --history cache-policy\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "MemoryStore.put, MemoryStore.list"
+          ],
+          [
+            "`",
+            "MemoryStore.put, MemoryStore.list"
+          ],
+          [
+            "`",
+            "main.ts"
+          ],
+          [
+            "`",
+            "python3 scripts/project_test.py memory-server --init learning-artifacts/memory-server"
+          ]
+        ],
+        "links": [
+          "../../../API.md",
+          "../../../README.md",
+          "https://doc.rust-lang.org/std/",
+          "https://modelcontextprotocol.io/specification/2025-11-25/server/tools",
+          "https://nodejs.org/api/http.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/memory-server/stages/02-durable-log/starter/stage-2.md": {
+      "sourceSha256": "99d10eae837e2349e16bee4af76b07605a87a4b13f950fdf96eab30c24872dc2",
+      "localizedSha256": "46b8740786335443b7572c5fc1ec3c899a0586b95f0a23f8d48270a8670302f8",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/memory-server/stages/02-durable-log/tests/stage.test.ts": {
+      "sourceSha256": "75ddcd5e2dfcd5a1347e0f6f8c8400156d86c22a81c78060c9902e71e6e98c1b",
+      "localizedSha256": "75ddcd5e2dfcd5a1347e0f6f8c8400156d86c22a81c78060c9902e71e6e98c1b",
+      "kind": "preserved-contract"
+    },
+    "projects/memory-server/stages/03-hybrid-search/docs/en.md": {
+      "sourceSha256": "6beda2ed3ceec54ce92aa6b520e7538f450bfc62c062fc4a1dd5b9b5fbe4fb21",
+      "localizedSha256": "bcc7c6985a56c35da8dba318d63a806854aaa1c245bd6a6f1f4e2b1208ff2ccd",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-memory-server-3\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py memory-server --stage 3 --path learning-artifacts/memory-server --strict\n"
+          ],
+          [
+            "bash",
+            "cd learning-artifacts/memory-server\nnode cli.ts --data-dir memory-data --put samples/memory.json\nnode cli.ts --data-dir memory-data --query \"cache policy\"\nnode cli.ts --data-dir memory-data --history cache-policy\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "cosineScores, MemoryStore.search"
+          ],
+          [
+            "`",
+            "cosineScores, MemoryStore.search"
+          ],
+          [
+            "`",
+            "main.ts"
+          ],
+          [
+            "`",
+            "python3 scripts/project_test.py memory-server --init learning-artifacts/memory-server"
+          ]
+        ],
+        "links": [
+          "../../../API.md",
+          "../../../README.md",
+          "https://doc.rust-lang.org/std/",
+          "https://modelcontextprotocol.io/specification/2025-11-25/server/tools",
+          "https://nodejs.org/api/http.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/memory-server/stages/03-hybrid-search/starter/stage-3.md": {
+      "sourceSha256": "a2785994c18af5f7fe46bb4ea41e9b9cdc8682f994e4a0fbc600a911078864ce",
+      "localizedSha256": "4d2c57f7549afc82be2c578d8c2b2606bb4e6af140dfe7f6b1383ea2bc5680e3",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/memory-server/stages/03-hybrid-search/tests/stage.test.ts": {
+      "sourceSha256": "2901ecc21e9ae12b25ecfeaedffbc50ba884bc7e0f24de8a4bb6d0456ff756cc",
+      "localizedSha256": "2901ecc21e9ae12b25ecfeaedffbc50ba884bc7e0f24de8a4bb6d0456ff756cc",
+      "kind": "preserved-contract"
+    },
+    "projects/memory-server/stages/04-transports/docs/en.md": {
+      "sourceSha256": "2f199d51a1cdfbed8356f3a14b0f8c48d539c8f8025b53f263cebf22d1f7e80e",
+      "localizedSha256": "af983f195dca598a1298adb68affc1b97c2df70c9805df0a8dd5017b60e1a678",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-memory-server-4\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py memory-server --stage 4 --path learning-artifacts/memory-server --strict\n"
+          ],
+          [
+            "bash",
+            "cd learning-artifacts/memory-server\nnode cli.ts --data-dir memory-data --put samples/memory.json\nnode cli.ts --data-dir memory-data --query \"cache policy\"\nnode cli.ts --data-dir memory-data --history cache-policy\n"
+          ],
+          [
+            "bash",
+            "python3 -m venv .venv-mcp\n.venv-mcp/bin/python -m pip install -r projects/memory-server/requirements-framework.txt\n.venv-mcp/bin/python scripts/project_test.py memory-server --all --solution --optional --strict\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "--path learning-artifacts/memory-server"
+          ],
+          [
+            "`",
+            "createMemoryServer"
+          ],
+          [
+            "`",
+            "createMemoryServer"
+          ],
+          [
+            "`",
+            "main.ts"
+          ],
+          [
+            "`",
+            "mcp==2.1.1"
+          ],
+          [
+            "`",
+            "python3 scripts/project_test.py memory-server --init learning-artifacts/memory-server"
+          ]
+        ],
+        "links": [
+          "../../../API.md",
+          "../../../README.md",
+          "https://doc.rust-lang.org/std/",
+          "https://modelcontextprotocol.io/specification/2025-11-25/server/tools",
+          "https://nodejs.org/api/http.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/memory-server/stages/04-transports/starter/stage-4.md": {
+      "sourceSha256": "e3d542a871c6158587eb545f56f7788ea723c05e213bb78a4b202509be93bab4",
+      "localizedSha256": "cc5a6017fe5cecb159bcb8e6eccaf907ae96f839eea72e83d7f010aeeb3628e2",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/memory-server/stages/04-transports/tests-framework/test_standard_client.py": {
+      "sourceSha256": "9c536681ddf1bd94e2682172caf53ea63e6594503373d6d3cad939f2b61cddf2",
+      "localizedSha256": "9c536681ddf1bd94e2682172caf53ea63e6594503373d6d3cad939f2b61cddf2",
+      "kind": "preserved-contract"
+    },
+    "projects/memory-server/stages/04-transports/tests/integration.test.ts": {
+      "sourceSha256": "140e075ac7aff2e8a31ac18991364203493cf46ce6b3344371d4cf81c7ae8ad6",
+      "localizedSha256": "140e075ac7aff2e8a31ac18991364203493cf46ce6b3344371d4cf81c7ae8ad6",
+      "kind": "preserved-contract"
+    },
+    "projects/memory-server/stages/04-transports/tests/stage.test.ts": {
+      "sourceSha256": "90788ba04b75fcc70a4be3ff469abfb9f8217dbf69778ac06c24e5348bfd46dc",
+      "localizedSha256": "90788ba04b75fcc70a4be3ff469abfb9f8217dbf69778ac06c24e5348bfd46dc",
+      "kind": "preserved-contract"
+    },
+    "projects/memory-server/starter/cli.ts": {
+      "sourceSha256": "8da34b8155fb600b4cce5a08688dd05136f3d0221b60cbed928b5d029d545c93",
+      "localizedSha256": "2d9928bc0a499cbc26a0f76a9baef15642b306e8f563d1992f8f2f6ebf58d486",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "import { MemoryStore, createMemoryServer } from \"./main.ts\";\n",
+          "// 使用持久化目录读写与查询记忆；令牌只从环境读取，不打印或写入文件。\nimport { MemoryStore, createMemoryServer } from \"./main.ts\";\n"
+        ],
+        [
+          "<title>Memory revisions</title><h1>Source and revision comparison</h1><table><tr><th>Revision</th><th>Source</th><th>Text</th></tr>",
+          "<title>记忆修订历史</title><h1>来源与修订版比较</h1><table><tr><th>修订版</th><th>来源</th><th>文本</th></tr>"
+        ]
+      ]
+    },
+    "projects/memory-server/starter/demo-persistent.ts": {
+      "sourceSha256": "90f79e0ccec6498bca0affe834a25efd93d0fc9ce71f34e5d884ac663f8884cd",
+      "localizedSha256": "88e3f39411fb6631419c889d90e4181cfdafe4ea37764738d053dde955a6f593",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "import { execFileSync } from \"node:child_process\";\n",
+          "// 以不同子进程验证日志重启恢复；仅操作本演示创建的临时目录，退出后清理。\nimport { execFileSync } from \"node:child_process\";\n"
+        ]
+      ]
+    },
+    "projects/memory-server/starter/main.ts": {
+      "sourceSha256": "40c3725f8cf7773a4dd8eca79139a481a1a72e6b82e7cd377e4207e1602419da",
+      "localizedSha256": "e16438c80f74843fbdac387a5a43855ccc98d024dfb38e420d1a898a2eba6863",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "export type Memory = {\n",
+          "// 在学习者工作区按阶段补全接口；保留公开名称、类型及未实现错误。\nexport type Memory = {\n"
+        ]
+      ]
+    },
+    "projects/memory-server/starter/package.json": {
+      "sourceSha256": "a90fc33418afa2b9cbf4768524b021135b965ecdf993457505bfae3ac44a8428",
+      "localizedSha256": "a90fc33418afa2b9cbf4768524b021135b965ecdf993457505bfae3ac44a8428",
+      "kind": "preserved-contract"
+    },
+    "projects/memory-server/starter/samples/memory-updated.json": {
+      "sourceSha256": "fa9faa4407904becd1d60475312fb8ab04dbb6cb2819f6fb70f1e4887f4a70b1",
+      "localizedSha256": "fa9faa4407904becd1d60475312fb8ab04dbb6cb2819f6fb70f1e4887f4a70b1",
+      "kind": "preserved-contract"
+    },
+    "projects/memory-server/starter/samples/memory.json": {
+      "sourceSha256": "72252d723f63d330f9ee2acd5a6e551ae2a2ec41786823c5f19e81920eedea33",
+      "localizedSha256": "72252d723f63d330f9ee2acd5a6e551ae2a2ec41786823c5f19e81920eedea33",
+      "kind": "preserved-contract"
+    },
+    "projects/memory-server/starter/score.rs": {
+      "sourceSha256": "15ba6249b3dc1bc569253be27c06e2f3c7822e6aa8cf03017b25c7e9845af521",
+      "localizedSha256": "73daae13ec62f4f12f248a14de1842172825ab2f3155dc76457c13c14c92af42",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "fn main() { panic!(\"Not implemented: cosine scoring\"); }\n",
+          "// 在学习者工作区按阶段补全接口；保留公开名称、类型及未实现错误。\nfn main() { panic!(\"Not implemented: cosine scoring\"); }\n"
+        ]
+      ]
+    }
+  },
+  "figures": [
+    {
+      "path": "site/figures/projects/local-model-eval-harness.js",
+      "sourceSha256": "ea105b8a000a73d656f8f579eaa0b412824457c59e3525851b15614ad4ea1f20",
+      "localizedSha256": "15eb3f051ce2d42611f189c0dfa6bfd7a5bfcf16b10dadd992d823416f69bbd9",
+      "edits": [
+        {
+          "offset": 91,
+          "before": "\"Labeled cases\"",
+          "after": "\"带标签用例数\"",
+          "afterOffset": 91
+        },
+        {
+          "offset": 239,
+          "before": "\"Recorded predictions\"",
+          "after": "\"已记录预测数\"",
+          "afterOffset": 232
+        },
+        {
+          "offset": 389,
+          "before": "\"Correct predictions\"",
+          "after": "\"正确预测数\"",
+          "afterOffset": 368
+        },
+        {
+          "offset": 517,
+          "before": "\"confidence\"",
+          "after": "\"置信度\"",
+          "afterOffset": 482
+        },
+        {
+          "offset": 544,
+          "before": "\"Shared reported confidence\"",
+          "after": "\"共同报告的置信度\"",
+          "afterOffset": 502
+        },
+        {
+          "offset": 709,
+          "before": "\"Latency milliseconds\"",
+          "after": "\"延迟（毫秒）\"",
+          "afterOffset": 649
+        },
+        {
+          "offset": 931,
+          "before": "\"Reject impossible prediction counts\"",
+          "after": "\"拒绝不可能成立的预测计数\"",
+          "afterOffset": 857
+        },
+        {
+          "offset": 1200,
+          "before": "\"Reject invalid latency\"",
+          "after": "\"拒绝无效延迟\"",
+          "afterOffset": 1103
+        },
+        {
+          "offset": 1440,
+          "before": "\"Missing predictions stay in the accuracy denominator. Confidence is self-report.\"",
+          "after": "\"缺失预测仍计入准确率分母。置信度由模型自行报告。\"",
+          "afterOffset": 1327
+        },
+        {
+          "offset": 1558,
+          "before": "\"Accuracy\"",
+          "after": "\"准确率\"",
+          "afterOffset": 1389
+        },
+        {
+          "offset": 1617,
+          "before": "\"Coverage\"",
+          "after": "\"覆盖率\"",
+          "afterOffset": 1443
+        },
+        {
+          "offset": 1676,
+          "before": "\"One-bin ECE\"",
+          "after": "\"单分箱 ECE\"",
+          "afterOffset": 1497
+        },
+        {
+          "offset": 1743,
+          "before": "\"Nearest-rank p95 ms\"",
+          "after": "\"最近秩法 p95（毫秒）\"",
+          "afterOffset": 1560
+        },
+        {
+          "offset": 1881,
+          "before": "\"Correct\"",
+          "after": "\"正确\"",
+          "afterOffset": 1691
+        },
+        {
+          "offset": 1940,
+          "before": "\"Incorrect\"",
+          "after": "\"错误\"",
+          "afterOffset": 1745
+        },
+        {
+          "offset": 2014,
+          "before": "\"Unanswered\"",
+          "after": "\"未回答\"",
+          "afterOffset": 1812
+        },
+        {
+          "offset": 2211,
+          "before": "\"Validate prediction records\"",
+          "after": "\"校验预测记录\"",
+          "afterOffset": 2002
+        },
+        {
+          "offset": 2290,
+          "before": "\"Record\"",
+          "after": "\"记录\"",
+          "afterOffset": 2060
+        },
+        {
+          "offset": 2320,
+          "before": "\"Keep answer, confidence, and latency together.\"",
+          "after": "\"同时保留答案、置信度与延迟。\"",
+          "afterOffset": 2086
+        },
+        {
+          "offset": 2402,
+          "before": "\"Validate\"",
+          "after": "\"校验\"",
+          "afterOffset": 2136
+        },
+        {
+          "offset": 2422,
+          "before": "\"Reject nonfinite or invalid fields.\"",
+          "after": "\"拒绝非有限数值或无效字段。\"",
+          "afterOffset": 2150
+        },
+        {
+          "offset": 2482,
+          "before": "\"Align\"",
+          "after": "\"对齐\"",
+          "afterOffset": 2188
+        },
+        {
+          "offset": 2499,
+          "before": "\"Use stable ids to join labels.\"",
+          "after": "\"使用稳定 id 关联标签。\"",
+          "afterOffset": 2202
+        },
+        {
+          "offset": 2573,
+          "before": "\"Validate unique ids, string answers, confidence in [0,1], and nonnegative latency_ms..\"",
+          "after": "\"校验 id 唯一、答案为字符串、confidence 位于 [0,1]，且 latency_ms 非负。\"",
+          "afterOffset": 2259
+        },
+        {
+          "offset": 2841,
+          "before": "\"Measure normalized exact-answer accuracy\"",
+          "after": "\"测量规范化精确答案准确率\"",
+          "afterOffset": 2493
+        },
+        {
+          "offset": 2921,
+          "before": "\"Join\"",
+          "after": "\"关联\"",
+          "afterOffset": 2545
+        },
+        {
+          "offset": 2937,
+          "before": "\"Match predictions to label ids.\"",
+          "after": "\"将预测与标签 id 匹配。\"",
+          "afterOffset": 2559
+        },
+        {
+          "offset": 2993,
+          "before": "\"Compare\"",
+          "after": "\"比较\"",
+          "afterOffset": 2597
+        },
+        {
+          "offset": 3012,
+          "before": "\"Normalize case and whitespace only.\"",
+          "after": "\"只规范化大小写和空白。\"",
+          "afterOffset": 2611
+        },
+        {
+          "offset": 3084,
+          "before": "\"Denominator\"",
+          "after": "\"分母\"",
+          "afterOffset": 2659
+        },
+        {
+          "offset": 3119,
+          "before": "\"Include unanswered labels as misses.\"",
+          "after": "\"将未回答的标签计为错误。\"",
+          "afterOffset": 2685
+        },
+        {
+          "offset": 3210,
+          "before": "\"Return correct, total, accuracy, and coverage against a complete label mapping..\"",
+          "after": "\"针对完整标签映射返回 correct、total、accuracy 和 coverage。\"",
+          "afterOffset": 2752
+        },
+        {
+          "offset": 3472,
+          "before": "\"Measure confidence calibration\"",
+          "after": "\"测量置信度校准\"",
+          "afterOffset": 2979
+        },
+        {
+          "offset": 3554,
+          "before": "\"Bin\"",
+          "after": "\"分箱\"",
+          "afterOffset": 3038
+        },
+        {
+          "offset": 3581,
+          "before": "\"Group confidence values in fixed-width bins.\"",
+          "after": "\"将置信度分到等宽区间。\"",
+          "afterOffset": 3064
+        },
+        {
+          "offset": 3673,
+          "before": "\"Compare\"",
+          "after": "\"比较\"",
+          "afterOffset": 3123
+        },
+        {
+          "offset": 3704,
+          "before": "\"Mean confidence versus observed correctness.\"",
+          "after": "\"比较平均置信度与观察到的正确率。\"",
+          "afterOffset": 3149
+        },
+        {
+          "offset": 3784,
+          "before": "\"Weight\"",
+          "after": "\"加权\"",
+          "afterOffset": 3201
+        },
+        {
+          "offset": 3802,
+          "before": "\"Average gaps by sample count.\"",
+          "after": "\"按样本数量对差值求加权平均。\"",
+          "afterOffset": 3215
+        },
+        {
+          "offset": 3875,
+          "before": "\"Compute fixed-width bin ECE weighted by bin count, retaining per-bin evidence..\"",
+          "after": "\"计算按各等宽分箱样本数加权的 ECE，并保留每箱证据。\"",
+          "afterOffset": 3273
+        },
+        {
+          "offset": 4136,
+          "before": "\"Publish accuracy and latency together\"",
+          "after": "\"同时发布准确率与延迟\"",
+          "afterOffset": 3482
+        },
+        {
+          "offset": 4225,
+          "before": "\"Quality\"",
+          "after": "\"质量\"",
+          "afterOffset": 3544
+        },
+        {
+          "offset": 4256,
+          "before": "\"Compute accuracy and confidence calibration.\"",
+          "after": "\"计算准确率与置信度校准。\"",
+          "afterOffset": 3570
+        },
+        {
+          "offset": 4348,
+          "before": "\"Latency\"",
+          "after": "\"延迟\"",
+          "afterOffset": 3630
+        },
+        {
+          "offset": 4379,
+          "before": "\"Sort finite measurements for nearest ranks.\"",
+          "after": "\"对有限测量值排序，求最近秩。\"",
+          "afterOffset": 3656
+        },
+        {
+          "offset": 4458,
+          "before": "\"Report\"",
+          "after": "\"报告\"",
+          "afterOffset": 3706
+        },
+        {
+          "offset": 4476,
+          "before": "\"Keep provenance beside the scorecard.\"",
+          "after": "\"在评分卡旁保留来源。\"",
+          "afterOffset": 3720
+        },
+        {
+          "offset": 4557,
+          "before": "\"Combine metrics with nearest-rank latency percentiles and a measurement-source label..\"",
+          "after": "\"整合指标、最近秩法延迟百分位数及测量来源标签。\"",
+          "afterOffset": 3774
+        }
+      ]
+    },
+    {
+      "path": "site/figures/projects/mcp-at-scale.js",
+      "sourceSha256": "4a07e11f50220b0cb4f25bb224ee5b6f1c166954417dc1ed88cdbe985569556c",
+      "localizedSha256": "2cc8ef1775b365cb65f2ee1fc44502262cf5742f540c90fe418ec9c0db7f88ef",
+      "edits": [
+        {
+          "offset": 79,
+          "before": "\"Tool query\"",
+          "after": "\"工具查询\"",
+          "afterOffset": 79
+        },
+        {
+          "offset": 170,
+          "before": "\"Serialized tools array budget\"",
+          "after": "\"序列化工具数组预算\"",
+          "afterOffset": 164
+        },
+        {
+          "offset": 337,
+          "before": "\"Resource families\"",
+          "after": "\"资源类别数\"",
+          "afterOffset": 311
+        },
+        {
+          "offset": 491,
+          "before": "\"Client initialized\"",
+          "after": "\"客户端已初始化\"",
+          "afterOffset": 453
+        },
+        {
+          "offset": 1858,
+          "before": "\"Metadata selected before tool invocation\"",
+          "after": "\"调用工具前先选择元数据\"",
+          "afterOffset": 1809
+        },
+        {
+          "offset": 1911,
+          "before": "\"Protocol error -32002: initialize before tools\"",
+          "after": "\"协议错误 -32002：使用工具前须初始化\"",
+          "afterOffset": 1833
+        },
+        {
+          "offset": 1995,
+          "before": "\"Generated registry tools\"",
+          "after": "\"估算注册表工具数\"",
+          "afterOffset": 1892
+        },
+        {
+          "offset": 2065,
+          "before": "\"32-tool pages\"",
+          "after": "\"每页 32 工具的页数\"",
+          "afterOffset": 1946
+        },
+        {
+          "offset": 2142,
+          "before": "\"Selected schema characters\"",
+          "after": "\"所选结构定义字符数\"",
+          "afterOffset": 2021
+        },
+        {
+          "offset": 2227,
+          "before": "\"Used character budget\"",
+          "after": "\"已用字符预算\"",
+          "afterOffset": 2089
+        },
+        {
+          "offset": 2312,
+          "before": "\"selected tool\"",
+          "after": "\"选中的工具\"",
+          "afterOffset": 2159
+        },
+        {
+          "offset": 2329,
+          "before": "\"schema characters\"",
+          "after": "\"结构定义字符数\"",
+          "afterOffset": 2168
+        },
+        {
+          "offset": 2537,
+          "before": "\"Build a catalog of 250 read-only tools\"",
+          "after": "\"构建包含 250 个只读工具的目录\"",
+          "afterOffset": 2366
+        },
+        {
+          "offset": 2627,
+          "before": "\"Input\"",
+          "after": "\"输入\"",
+          "afterOffset": 2435
+        },
+        {
+          "offset": 2670,
+          "before": "\"Create five narrowly scoped read operations for each of 50 resource kinds.\"",
+          "after": "\"为 50 类资源分别创建五种范围明确的读取操作。\"",
+          "afterOffset": 2475
+        },
+        {
+          "offset": 2792,
+          "before": "\"Transform\"",
+          "after": "\"转换\"",
+          "afterOffset": 2547
+        },
+        {
+          "offset": 2839,
+          "before": "\"Create five narrowly scoped read operations for each of 50 resource kinds. The names and schemas are stable; execution reads an injected inventory rather than contacting a cluster. A tool schema defines the exact accepted keys and values, so an unknown argument never reaches a handler by accident.\"",
+          "after": "\"为 50 类资源分别创建五种范围明确的读取操作。名称和结构定义保持稳定；执行时读取注入的清单，不连接集群。工具结构定义精确规定可接受的键和值，避免未知参数意外进入处理器。\"",
+          "afterOffset": 2587
+        },
+        {
+          "offset": 3185,
+          "before": "\"Verify\"",
+          "after": "\"验证\"",
+          "afterOffset": 2720
+        },
+        {
+          "offset": 3215,
+          "before": "\"The generated catalog contains exactly 250 unique tools.\"",
+          "after": "\"生成的目录恰好包含 250 个唯一工具。 图表限制：控件最多可设为 50 类，但简化计算器实际只生成前六类资源的候选工具；工具数和页数按控件值估算，不能作为实际目录覆盖证据。字符预算针对本图的简化结构定义，完整 Python 目录的描述与必填约束不同。\"",
+          "afterOffset": 2746
+        },
+        {
+          "offset": 3316,
+          "before": "\"The generated catalog contains exactly 250 unique tools.\"",
+          "after": "\"生成的目录恰好包含 250 个唯一工具。 图表限制：控件最多可设为 50 类，但简化计算器实际只生成前六类资源的候选工具；工具数和页数按控件值估算，不能作为实际目录覆盖证据。字符预算针对本图的简化结构定义，完整 Python 目录的描述与必填约束不同。\"",
+          "afterOffset": 2917
+        },
+        {
+          "offset": 3542,
+          "before": "\"Select tools under an explicit context budget\"",
+          "after": "\"在明确上下文预算内选择工具\"",
+          "afterOffset": 3213
+        },
+        {
+          "offset": 3639,
+          "before": "\"Input\"",
+          "after": "\"输入\"",
+          "afterOffset": 3278
+        },
+        {
+          "offset": 3668,
+          "before": "\"Rank metadata before sending tools into a context window.\"",
+          "after": "\"把工具送入上下文窗口前，先对元数据排序。\"",
+          "afterOffset": 3304
+        },
+        {
+          "offset": 3773,
+          "before": "\"Transform\"",
+          "after": "\"转换\"",
+          "afterOffset": 3372
+        },
+        {
+          "offset": 3820,
+          "before": "\"Rank metadata before sending tools into a context window. Count the actual compact JSON characters of each selected schema and stop at the explicit budget. This is a character budget, not a model-token estimate; keep the units honest. Stable name ties make discovery reproducible.\"",
+          "after": "\"把工具送入上下文窗口前，先对元数据排序。统计选中结构定义实际紧凑 JSON 的字符数，并在达到明确预算时停止。这是字符预算，不是模型词元估算；务必准确说明单位。分数相同时按名称稳定排序，使发现过程可复现。\"",
+          "afterOffset": 3412
+        },
+        {
+          "offset": 4148,
+          "before": "\"Verify\"",
+          "after": "\"验证\"",
+          "afterOffset": 3562
+        },
+        {
+          "offset": 4192,
+          "before": "\"The query pods count selects pods_count first and never exceeds the serialized budget.\"",
+          "after": "\"查询 pods count 首先选中 pods_count，且不超过序列化预算。 图表限制：控件最多可设为 50 类，但简化计算器实际只生成前六类资源的候选工具；工具数和页数按控件值估算，不能作为实际目录覆盖证据。字符预算针对本图的简化结构定义，完整 Python 目录的描述与必填约束不同。\"",
+          "afterOffset": 3602
+        },
+        {
+          "offset": 4333,
+          "before": "\"The query pods count selects pods_count first and never exceeds the serialized budget.\"",
+          "after": "\"查询 pods count 首先选中 pods_count，且不超过序列化预算。 图表限制：控件最多可设为 50 类，但简化计算器实际只生成前六类资源的候选工具；工具数和页数按控件值估算，不能作为实际目录覆盖证据。字符预算针对本图的简化结构定义，完整 Python 目录的描述与必填约束不同。\"",
+          "afterOffset": 3803
+        },
+        {
+          "offset": 4589,
+          "before": "\"Implement initialized JSON-RPC over stdio\"",
+          "after": "\"通过 stdio 实现带初始化的 JSON-RPC\"",
+          "afterOffset": 4119
+        },
+        {
+          "offset": 4682,
+          "before": "\"Input\"",
+          "after": "\"输入\"",
+          "afterOffset": 4196
+        },
+        {
+          "offset": 4725,
+          "before": "\"The protocol has a lifecycle: negotiate a version, receive the initialized notification, then list or call tools.\"",
+          "after": "\"协议具有生命周期：先协商版本、接收 initialized 通知，再列出或调用工具。\"",
+          "afterOffset": 4236
+        },
+        {
+          "offset": 4886,
+          "before": "\"Transform\"",
+          "after": "\"转换\"",
+          "afterOffset": 4326
+        },
+        {
+          "offset": 4933,
+          "before": "\"The protocol has a lifecycle: negotiate a version, receive the initialized notification, then list or call tools. Notifications have no response. Separate transport errors from tool execution errors, preserve the request id, and paginate the catalog instead of returning all 250 schemas at once.\"",
+          "after": "\"协议具有生命周期：先协商版本、接收 initialized 通知，再列出或调用工具。通知不接收响应。区分传输错误与工具执行错误，保留请求 id，并对目录分页，避免一次返回全部 250 个结构定义。\"",
+          "afterOffset": 4366
+        },
+        {
+          "offset": 5276,
+          "before": "\"Verify\"",
+          "after": "\"验证\"",
+          "afterOffset": 4512
+        },
+        {
+          "offset": 5320,
+          "before": "\"A call before initialization returns -32002; an initialized tools/list returns 32 tools and a cursor.\"",
+          "after": "\"初始化前调用返回 -32002；初始化后的 tools/list 返回 32 个工具及游标。 图表限制：控件最多可设为 50 类，但简化计算器实际只生成前六类资源的候选工具；工具数和页数按控件值估算，不能作为实际目录覆盖证据。字符预算针对本图的简化结构定义，完整 Python 目录的描述与必填约束不同。\"",
+          "afterOffset": 4552
+        },
+        {
+          "offset": 5476,
+          "before": "\"A call before initialization returns -32002; an initialized tools/list returns 32 tools and a cursor.\"",
+          "after": "\"初始化前调用返回 -32002；初始化后的 tools/list 返回 32 个工具及游标。 图表限制：控件最多可设为 50 类，但简化计算器实际只生成前六类资源的候选工具；工具数和页数按控件值估算，不能作为实际目录覆盖证据。字符预算针对本图的简化结构定义，完整 Python 目录的描述与必填约束不同。\"",
+          "afterOffset": 4759
+        },
+        {
+          "offset": 5747,
+          "before": "\"Audit catalog coverage through protocol pages\"",
+          "after": "\"通过协议分页审计目录覆盖情况\"",
+          "afterOffset": 5081
+        },
+        {
+          "offset": 5844,
+          "before": "\"Input\"",
+          "after": "\"输入\"",
+          "afterOffset": 5147
+        },
+        {
+          "offset": 5873,
+          "before": "\"Treat pagination as a client-visible contract.\"",
+          "after": "\"将分页视为客户端可见契约。\"",
+          "afterOffset": 5173
+        },
+        {
+          "offset": 5967,
+          "before": "\"Transform\"",
+          "after": "\"转换\"",
+          "afterOffset": 5234
+        },
+        {
+          "offset": 6014,
+          "before": "\"Treat pagination as a client-visible contract. Traverse every page through the handler and track duplicate names across page boundaries. A finite page guard catches accidental cursor loops. This audit validates the protocol inventory, while the final typed client will exercise the separate operating-system process boundary.\"",
+          "after": "\"将分页视为客户端可见契约。通过处理器遍历每一页，并跨页跟踪重复名称。有限页数保护可以发现意外的游标循环。此审计验证协议清单；最后的带类型客户端还会实际跨越独立操作系统进程边界。\"",
+          "afterOffset": 5274
+        },
+        {
+          "offset": 6387,
+          "before": "\"Verify\"",
+          "after": "\"验证\"",
+          "afterOffset": 5410
+        },
+        {
+          "offset": 6431,
+          "before": "\"An exhaustive traversal returns 250 unique names across 8 pages.\"",
+          "after": "\"完整遍历八页，返回 250 个唯一名称。 图表限制：控件最多可设为 50 类，但简化计算器实际只生成前六类资源的候选工具；工具数和页数按控件值估算，不能作为实际目录覆盖证据。字符预算针对本图的简化结构定义，完整 Python 目录的描述与必填约束不同。\"",
+          "afterOffset": 5450
+        },
+        {
+          "offset": 6550,
+          "before": "\"An exhaustive traversal returns 250 unique names across 8 pages.\"",
+          "after": "\"完整遍历八页，返回 250 个唯一名称。 图表限制：控件最多可设为 50 类，但简化计算器实际只生成前六类资源的候选工具；工具数和页数按控件值估算，不能作为实际目录覆盖证据。字符预算针对本图的简化结构定义，完整 Python 目录的描述与必填约束不同。\"",
+          "afterOffset": 5631
+        },
+        {
+          "offset": 6784,
+          "before": "\"Typed stdio boundary\"",
+          "after": "\"带类型的 stdio 边界\"",
+          "afterOffset": 5927
+        },
+        {
+          "offset": 6856,
+          "before": "\"Encode\"",
+          "after": "\"编码\"",
+          "afterOffset": 5992
+        },
+        {
+          "offset": 6886,
+          "before": "\"Write newline-delimited requests with unique ids.\"",
+          "after": "\"写入换行分隔、具有唯一 id 的请求。\"",
+          "afterOffset": 6018
+        },
+        {
+          "offset": 6983,
+          "before": "\"Process\"",
+          "after": "\"进程\"",
+          "afterOffset": 6085
+        },
+        {
+          "offset": 7028,
+          "before": "\"Python handles initialization and tool calls in a separate process.\"",
+          "after": "\"Python 在独立进程中处理初始化和工具调用。\"",
+          "afterOffset": 6125
+        },
+        {
+          "offset": 7143,
+          "before": "\"Correlate\"",
+          "after": "\"关联\"",
+          "afterOffset": 6197
+        },
+        {
+          "offset": 7190,
+          "before": "\"Parse and validate ids, notifications, timeout and output budgets.\"",
+          "after": "\"解析并校验 id、通知、超时和输出预算。\"",
+          "afterOffset": 6237
+        },
+        {
+          "offset": 7301,
+          "before": "\"The Node tests exercise the actual built process boundary.\"",
+          "after": "\"Node 测试会实际跨越已构建的进程边界。 图表限制：控件最多可设为 50 类，但简化计算器实际只生成前六类资源的候选工具；工具数和页数按控件值估算，不能作为实际目录覆盖证据。字符预算针对本图的简化结构定义，完整 Python 目录的描述与必填约束不同。\"",
+          "afterOffset": 6302
+        }
+      ]
+    },
+    {
+      "path": "site/figures/projects/meeting-notes-to-actions.js",
+      "sourceSha256": "cc5c6a3228cd6d32be04fbb49a2c42800a6faa04d4e8ce0b189b25110192342f",
+      "localizedSha256": "22799551bc15379299d59d987ae96db4c493f57ee72bcaabf3ef3d6c2c5133a8",
+      "edits": [
+        {
+          "offset": 79,
+          "before": "\"Owner\"",
+          "after": "\"负责人\"",
+          "afterOffset": 79
+        },
+        {
+          "offset": 144,
+          "before": "\"Due date\"",
+          "after": "\"截止日期\"",
+          "afterOffset": 142
+        },
+        {
+          "offset": 220,
+          "before": "\"Review date\"",
+          "after": "\"审阅日期\"",
+          "afterOffset": 214
+        },
+        {
+          "offset": 310,
+          "before": "\"Task\"",
+          "after": "\"任务\"",
+          "afterOffset": 297
+        },
+        {
+          "offset": 430,
+          "before": "\"Reviewer explicitly approved\"",
+          "after": "\"审阅者已明确批准\"",
+          "afterOffset": 415
+        },
+        {
+          "offset": 553,
+          "before": "\"Repeated source mentions\"",
+          "after": "\"来源重复提及次数\"",
+          "afterOffset": 518
+        },
+        {
+          "offset": 1148,
+          "before": "\"Reject impossible calendar date\"",
+          "after": "\"拒绝不存在的日历日期\"",
+          "afterOffset": 1097
+        },
+        {
+          "offset": 1212,
+          "before": "\"Keep commitment pending with missing-field flags\"",
+          "after": "\"保留字段缺失标记，让承诺继续待审阅\"",
+          "afterOffset": 1140
+        },
+        {
+          "offset": 1298,
+          "before": "\"One approved commitment can enter CSV\"",
+          "after": "\"一项已批准的承诺可以进入 CSV\"",
+          "afterOffset": 1195
+        },
+        {
+          "offset": 1352,
+          "before": "\"Ready for review; approval is still required\"",
+          "after": "\"已准备好接受审阅；仍需批准\"",
+          "afterOffset": 1228
+        },
+        {
+          "offset": 1434,
+          "before": "\"Source citations preserved\"",
+          "after": "\"保留的来源引文数\"",
+          "afterOffset": 1279
+        },
+        {
+          "offset": 1510,
+          "before": "\"Overdue\"",
+          "after": "\"已逾期\"",
+          "afterOffset": 1337
+        },
+        {
+          "offset": 1642,
+          "before": "\"Mentions\"",
+          "after": "\"提及次数\"",
+          "afterOffset": 1465
+        },
+        {
+          "offset": 1698,
+          "before": "\"Deduplicated commitments\"",
+          "after": "\"去重后的承诺数\"",
+          "afterOffset": 1517
+        },
+        {
+          "offset": 1763,
+          "before": "\"Exported approved rows\"",
+          "after": "\"已导出的批准行数\"",
+          "afterOffset": 1565
+        },
+        {
+          "offset": 1962,
+          "before": "\"Parse explicit action records with line provenance\"",
+          "after": "\"解析明确行动记录并保留来源行\"",
+          "afterOffset": 1750
+        },
+        {
+          "offset": 2052,
+          "before": "\"Lines\"",
+          "after": "\"行\"",
+          "afterOffset": 1804
+        },
+        {
+          "offset": 2069,
+          "before": "\"Enumerate original note lines.\"",
+          "after": "\"枚举原始记录行。\"",
+          "afterOffset": 1817
+        },
+        {
+          "offset": 2124,
+          "before": "\"Marker\"",
+          "after": "\"标记\"",
+          "afterOffset": 1850
+        },
+        {
+          "offset": 2142,
+          "before": "\"Accept only explicit ACTION records.\"",
+          "after": "\"只接受明确的 ACTION 记录。\"",
+          "afterOffset": 1864
+        },
+        {
+          "offset": 2215,
+          "before": "\"Provenance\"",
+          "after": "\"来源\"",
+          "afterOffset": 1918
+        },
+        {
+          "offset": 2249,
+          "before": "\"Retain the raw line and its number.\"",
+          "after": "\"保留原始行及行号。\"",
+          "afterOffset": 1944
+        },
+        {
+          "offset": 2339,
+          "before": "\"Parse ACTION lines, keep source line numbers, and reject malformed marked lines..\"",
+          "after": "\"解析 ACTION 行，保留来源行号，并拒绝格式错误的标记行。\"",
+          "afterOffset": 2008
+        },
+        {
+          "offset": 2602,
+          "before": "\"Validate owners and calendar dates\"",
+          "after": "\"校验负责人和日历日期\"",
+          "afterOffset": 2221
+        },
+        {
+          "offset": 2688,
+          "before": "\"Fields\"",
+          "after": "\"字段\"",
+          "afterOffset": 2283
+        },
+        {
+          "offset": 2718,
+          "before": "\"Check task text and explicit unknown markers.\"",
+          "after": "\"检查任务文本和明确的未知标记。\"",
+          "afterOffset": 2309
+        },
+        {
+          "offset": 2799,
+          "before": "\"Calendar\"",
+          "after": "\"日历\"",
+          "afterOffset": 2360
+        },
+        {
+          "offset": 2819,
+          "before": "\"Parse the real ISO date.\"",
+          "after": "\"解析有效的 ISO 日期。\"",
+          "afterOffset": 2374
+        },
+        {
+          "offset": 2868,
+          "before": "\"Flags\"",
+          "after": "\"标记\"",
+          "afterOffset": 2412
+        },
+        {
+          "offset": 2885,
+          "before": "\"Keep missing commitments visible.\"",
+          "after": "\"让承诺字段缺失的情况保持可见。\"",
+          "afterOffset": 2426
+        },
+        {
+          "offset": 2952,
+          "before": "\"Validate owner, task, and ISO date.\"",
+          "after": "\"校验负责人、任务和 ISO 日期。\"",
+          "afterOffset": 2475
+        },
+        {
+          "offset": 3169,
+          "before": "\"Deduplicate exact commitments without losing citations\"",
+          "after": "\"精确去重承诺并保留引文\"",
+          "afterOffset": 2674
+        },
+        {
+          "offset": 3263,
+          "before": "\"Key\"",
+          "after": "\"键\"",
+          "afterOffset": 2725
+        },
+        {
+          "offset": 3278,
+          "before": "\"Normalize the three commitment fields.\"",
+          "after": "\"规范化承诺的三个字段。\"",
+          "afterOffset": 2738
+        },
+        {
+          "offset": 3341,
+          "before": "\"Group\"",
+          "after": "\"分组\"",
+          "afterOffset": 2774
+        },
+        {
+          "offset": 3358,
+          "before": "\"Merge only exact keys.\"",
+          "after": "\"只合并精确匹配的键。\"",
+          "afterOffset": 2788
+        },
+        {
+          "offset": 3405,
+          "before": "\"Citations\"",
+          "after": "\"引文\"",
+          "afterOffset": 2823
+        },
+        {
+          "offset": 3426,
+          "before": "\"Retain every original line.\"",
+          "after": "\"保留每个原始行号。\"",
+          "afterOffset": 2837
+        },
+        {
+          "offset": 3497,
+          "before": "\"Merge exact normalized duplicates and sort provenance line numbers.\"",
+          "after": "\"合并规范化后完全相同的重复项，并排序来源行号。\"",
+          "afterOffset": 2890
+        },
+        {
+          "offset": 3746,
+          "before": "\"Publish an escaped HTML checklist and summary\"",
+          "after": "\"发布经过转义的 HTML 清单与摘要\"",
+          "afterOffset": 3095
+        },
+        {
+          "offset": 3831,
+          "before": "\"Classify\"",
+          "after": "\"分类\"",
+          "afterOffset": 3153
+        },
+        {
+          "offset": 3851,
+          "before": "\"Compute review and overdue flags.\"",
+          "after": "\"计算待审阅和逾期标记。\"",
+          "afterOffset": 3167
+        },
+        {
+          "offset": 3909,
+          "before": "\"Escape\"",
+          "after": "\"转义\"",
+          "afterOffset": 3203
+        },
+        {
+          "offset": 3927,
+          "before": "\"Treat imported text as data.\"",
+          "after": "\"将导入文本当作数据。\"",
+          "afterOffset": 3217
+        },
+        {
+          "offset": 3980,
+          "before": "\"Publish\"",
+          "after": "\"发布\"",
+          "afterOffset": 3252
+        },
+        {
+          "offset": 3999,
+          "before": "\"Write a portable HTML checklist.\"",
+          "after": "\"写出可移植的 HTML 清单。\"",
+          "afterOffset": 3266
+        },
+        {
+          "offset": 4075,
+          "before": "\"Return HTML and counts for ready, review, and overdue actions.\"",
+          "after": "\"返回 HTML，以及 ready、review 和 overdue 行动项的计数。\"",
+          "afterOffset": 3325
+        }
+      ]
+    },
+    {
+      "path": "site/figures/projects/memory-server.js",
+      "sourceSha256": "900d4ab3a2f0461339c7258c50629a9fafa43453180e835dc1fc3fd378f3db45",
+      "localizedSha256": "662c40bccac965a2845dfa62828d7be1af47e140ead0373ef6bfee43a96c1367",
+      "edits": [
+        {
+          "offset": 79,
+          "before": "\"Query\"",
+          "after": "\"查询\"",
+          "afterOffset": 79
+        },
+        {
+          "offset": 165,
+          "before": "\"Memory text\"",
+          "after": "\"记忆文本\"",
+          "afterOffset": 162
+        },
+        {
+          "offset": 294,
+          "before": "\"Stored revision\"",
+          "after": "\"已存修订版\"",
+          "afterOffset": 284
+        },
+        {
+          "offset": 442,
+          "before": "\"Caller expected revision\"",
+          "after": "\"调用方预期修订版\"",
+          "afterOffset": 422
+        },
+        {
+          "offset": 600,
+          "before": "\"Namespace differs\"",
+          "after": "\"命名空间不同\"",
+          "afterOffset": 564
+        },
+        {
+          "offset": 1631,
+          "before": "\"Write may append revision \"",
+          "after": "\"写入可追加修订版 \"",
+          "afterOffset": 1584
+        },
+        {
+          "offset": 1691,
+          "before": "\"Reject stale write before append\"",
+          "after": "\"追加前拒绝过期写入\"",
+          "afterOffset": 1627
+        },
+        {
+          "offset": 1761,
+          "before": "\"Lexical coverage\"",
+          "after": "\"词汇覆盖率\"",
+          "afterOffset": 1674
+        },
+        {
+          "offset": 1823,
+          "before": "\"Cosine of feature hashes\"",
+          "after": "\"特征哈希的余弦相似度\"",
+          "afterOffset": 1725
+        },
+        {
+          "offset": 1893,
+          "before": "\"Returned score\"",
+          "after": "\"返回分数\"",
+          "afterOffset": 1781
+        },
+        {
+          "offset": 1988,
+          "before": "\"Lexical contribution\"",
+          "after": "\"词汇部分贡献\"",
+          "afterOffset": 1866
+        },
+        {
+          "offset": 2114,
+          "before": "\"Cosine contribution\"",
+          "after": "\"余弦部分贡献\"",
+          "afterOffset": 1978
+        },
+        {
+          "offset": 2339,
+          "before": "\"Keep text, namespace and provenance together\"",
+          "after": "\"同时保留文本、命名空间与来源\"",
+          "afterOffset": 2190
+        },
+        {
+          "offset": 2423,
+          "before": "\"Input contract\"",
+          "after": "\"输入契约\"",
+          "afterOffset": 2244
+        },
+        {
+          "offset": 2507,
+          "before": "\"Keep text, namespace and provenance together\"",
+          "after": "\"同时保留文本、命名空间与来源\"",
+          "afterOffset": 2318
+        },
+        {
+          "offset": 2589,
+          "before": "\"Every memory needs a bounded id, namespace, text and source locator. Never return a detached string without its provenance. The small feature-hashing embedding maps normalized terms into a fixed vector; it is a deterministic lexical projection, not a pretrained semantic model. Hash collisions are expected and explain why lexical evidence remains part of retrieval.\"",
+          "after": "\"每条记忆都需要有长度边界的 id、命名空间、文本和来源定位信息。不要返回与来源脱离的孤立字符串。小型特征哈希嵌入将规范化词项映射到固定向量，是确定性的词汇投影，不是预训练语义模型。哈希碰撞在预期之中，因此检索仍需保留词汇证据。\"",
+          "afterOffset": 2370
+        },
+        {
+          "offset": 3003,
+          "before": "\"Observe the result\"",
+          "after": "\"观察结果\"",
+          "afterOffset": 2531
+        },
+        {
+          "offset": 3059,
+          "before": "\"The vector has 32 buckets, while each record retains a readable source locator.\"",
+          "after": "\"向量包含 32 个桶，每条记录同时保留可阅读的来源定位信息。\"",
+          "afterOffset": 2573
+        },
+        {
+          "offset": 3183,
+          "before": "\"Advance to inspect the boundary before the next effect.\"",
+          "after": "\"继续前进，在下一次副作用发生前检查边界。 图表与实现均只按英文字符和数字分词，纯中文查询没有非零检索分数。本图不执行 Rust 编译、文件持久化或 HTTP；实际行为由对应阶段测试验证。\"",
+          "afterOffset": 2648
+        },
+        {
+          "offset": 3409,
+          "before": "\"Serialize revisioned writes\"",
+          "after": "\"串行执行带修订版的写入\"",
+          "afterOffset": 2912
+        },
+        {
+          "offset": 3488,
+          "before": "\"Input contract\"",
+          "after": "\"输入契约\"",
+          "afterOffset": 2975
+        },
+        {
+          "offset": 3607,
+          "before": "\"Serialize revisioned writes\"",
+          "after": "\"串行执行带修订版的写入\"",
+          "afterOffset": 3084
+        },
+        {
+          "offset": 3672,
+          "before": "\"Load a versioned event log and reconstruct the latest record for each namespace/id pair. An update must name its expected revision. Serialize writes so two callers racing from revision zero cannot both succeed. Append before mutating the in-memory map. This is a single-process store: append completion is not a power-loss durability guarantee, and multiple server processes require an external lock or database.\"",
+          "after": "\"加载带版本的事件日志，为每个 namespace/id 组合重建最新记录。更新必须声明预期修订版。将写入串行化，防止两个调用方同时从修订版零开始竞争，却都成功。先追加日志，再修改内存映射。这是单进程存储：追加完成不保证断电持久性；多个服务器进程需要外部锁或数据库。\"",
+          "afterOffset": 3133
+        },
+        {
+          "offset": 4132,
+          "before": "\"Observe the result\"",
+          "after": "\"观察结果\"",
+          "afterOffset": 3313
+        },
+        {
+          "offset": 4188,
+          "before": "\"Two concurrent creates return one success and one revision conflict; reopening recovers the successful record.\"",
+          "after": "\"两个并发创建返回一次成功和一次修订冲突；重新打开存储可恢复成功记录。\"",
+          "afterOffset": 3355
+        },
+        {
+          "offset": 4343,
+          "before": "\"Advance to inspect the boundary before the next effect.\"",
+          "after": "\"继续前进，在下一次副作用发生前检查边界。 图表与实现均只按英文字符和数字分词，纯中文查询没有非零检索分数。本图不执行 Rust 编译、文件持久化或 HTTP；实际行为由对应阶段测试验证。\"",
+          "afterOffset": 3434
+        },
+        {
+          "offset": 4569,
+          "before": "\"Score vectors in a real Rust process\"",
+          "after": "\"在实际 Rust 进程中计算向量分数\"",
+          "afterOffset": 3698
+        },
+        {
+          "offset": 4657,
+          "before": "\"Input contract\"",
+          "after": "\"输入契约\"",
+          "afterOffset": 3768
+        },
+        {
+          "offset": 4775,
+          "before": "\"Score vectors in a real Rust process\"",
+          "after": "\"在实际 Rust 进程中计算向量分数\"",
+          "afterOffset": 3876
+        },
+        {
+          "offset": 4849,
+          "before": "\"Compile score.rs with the standard Rust toolchain and send query and document vectors over stdin. Compute cosine similarity, returning zero for a zero-norm vector. Combine 60 percent lexical query coverage with 40 percent cosine score and use ids to break ties. Test dimensions and finite values before crossing the process boundary. The Rust binary is compiled into a private temporary directory.\"",
+          "after": "\"使用标准 Rust 工具链编译 score.rs，经 stdin 传送查询和文档向量。计算余弦相似度，零范数向量返回零。将 60% 的词汇查询覆盖率与 40% 的余弦分数组合，分数相同时用 id 决定顺序。跨越进程边界前检查维度及有限数值。Rust 二进制编译到私有临时目录。\"",
+          "afterOffset": 3932
+        },
+        {
+          "offset": 5294,
+          "before": "\"Observe the result\"",
+          "after": "\"观察结果\"",
+          "afterOffset": 4118
+        },
+        {
+          "offset": 5350,
+          "before": "\"The Rust kernel scores identical vectors as 1.0 and search returns the matching memory with its source intact.\"",
+          "after": "\"Rust 内核对相同向量给出 1.0；搜索返回匹配记忆，并完整保留来源。\"",
+          "afterOffset": 4160
+        },
+        {
+          "offset": 5505,
+          "before": "\"Advance to inspect the boundary before the next effect.\"",
+          "after": "\"继续前进，在下一次副作用发生前检查边界。 图表与实现均只按英文字符和数字分词，纯中文查询没有非零检索分数。本图不执行 Rust 编译、文件持久化或 HTTP；实际行为由对应阶段测试验证。\"",
+          "afterOffset": 4241
+        },
+        {
+          "offset": 5731,
+          "before": "\"Expose REST and MCP tools\"",
+          "after": "\"提供 REST 与 MCP 工具\"",
+          "afterOffset": 4505
+        },
+        {
+          "offset": 5796,
+          "before": "\"Input contract\"",
+          "after": "\"输入契约\"",
+          "afterOffset": 4561
+        },
+        {
+          "offset": 5877,
+          "before": "\"Expose REST and MCP tools\"",
+          "after": "\"提供 REST 与 MCP 工具\"",
+          "afterOffset": 4632
+        },
+        {
+          "offset": 5940,
+          "before": "\"Bind a local server, require a bearer token, bound request bodies, and implement health, REST writes/search and the MCP initialization/tools subset over JSON-RPC POST. Tool execution failures use isError inside a successful JSON-RPC response; unknown protocol methods use a JSON-RPC error. This is a teaching subset without sessions, streaming or production authentication. Test actual HTTP bytes so serialization cannot drop source or revision.\"",
+          "after": "\"绑定本地服务器，要求持有者令牌，限制请求体，并通过 JSON-RPC POST 实现健康检查、REST 写入／搜索，以及 MCP 初始化／工具子集。工具执行失败在成功的 JSON-RPC 响应中使用 isError；未知协议方法使用 JSON-RPC 错误。这是教学子集，不提供会话、流式传输或生产级认证。通过实际 HTTP 字节测试，防止序列化丢失来源或修订版。\"",
+          "afterOffset": 4686
+        },
+        {
+          "offset": 6433,
+          "before": "\"Observe the result\"",
+          "after": "\"观察结果\"",
+          "afterOffset": 4916
+        },
+        {
+          "offset": 6489,
+          "before": "\"The demo performs an actual REST write and MCP search over loopback, then prints source, revision and score.\"",
+          "after": "\"演示通过回环地址执行实际 REST 写入和 MCP 搜索，再打印来源、修订版与分数。\"",
+          "afterOffset": 4958
+        },
+        {
+          "offset": 6642,
+          "before": "\"Advance to inspect the boundary before the next effect.\"",
+          "after": "\"继续前进，在下一次副作用发生前检查边界。 图表与实现均只按英文字符和数字分词，纯中文查询没有非零检索分数。本图不执行 Rust 编译、文件持久化或 HTTP；实际行为由对应阶段测试验证。\"",
+          "afterOffset": 5045
+        }
+      ]
+    }
+  ],
+  "figureLimitations": {
+    "mcp-at-scale": "图表限制：控件最多可设为 50 类，但简化计算器实际只生成前六类资源的候选工具；工具数和页数按控件值估算，不能作为实际目录覆盖证据。字符预算针对本图的简化结构定义，完整 Python 目录的描述与必填约束不同。",
+    "memory-server": "图表与实现均只按英文字符和数字分词，纯中文查询没有非零检索分数。本图不执行 Rust 编译、文件持久化或 HTTP；实际行为由对应阶段测试验证。"
+  },
+  "preservedMachineNotes": {
+    "local-model-eval-harness": "译注：标签、模型提示、置信度来源、错误和 JSON 指标字段保留原值，以维持评分与集成契约；报告固定表头和帮助已译。随附响应不代表真实本地模型性能。",
+    "mcp-at-scale": "译注：工具名称与描述参与英文词汇检索及精确序列化字符计数，因此保留原值；文档、代码说明与控件文案已译。元数据中上游生成的分词标签也保留。本项目保持明确声明的旧版工具契约，不因汉化升级协议。",
+    "meeting-notes-to-actions": "译注：ACTION 标记、英文建议提取语法、决策枚举和已选 option 文本参与解析或审批文件生成，保留原值；页面提供中文说明。批准记录不验证审批人身份，CSV 是本地导出，不会发布真实任务。",
+    "memory-server": "译注：分词与特征哈希仅处理英文字符和数字；可以保存中文文本，但纯中文查询不会产生非零词汇或向量分数。命名空间只是检索分组，共享令牌没有逐命名空间权限控制。来源定位信息未与外部文件核验。协议值和错误保留原值。"
+  }
+}

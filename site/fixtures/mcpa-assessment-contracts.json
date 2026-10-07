@@ -1,0 +1,3513 @@
+{
+  "upstream": "c02ca08d8a49ce24c3c1c1cf8e3b422f2c7393ca",
+  "trackBaseline": "a1c196c4efb9cf84777768353c1497eb17f10de7",
+  "objectives": [
+    "Explain the purpose and scope of MCP and the integration problem it standardizes between AI applications and external systems",
+    "Describe the core MCP concepts of hosts, clients, servers, primitives, and the stateless JSON-RPC request model",
+    "Reason about interoperability, protocol versioning, and the value of one open protocol over per-system custom integrations",
+    "Read the MCP specification, its revision history, and its feature lifecycle to tell current, deprecated, and removed behavior apart",
+    "Read the schemas and structured data that define MCP messages, tool definitions, capabilities, and server manifests",
+    "Distinguish the responsibilities of MCP hosts, clients, and servers and how discovery and capability negotiation connect them",
+    "Trace the model interaction flow from a user request through the host, model, client, and server and back into model context",
+    "Apply the request, notification, subscription, and multi round-trip interaction patterns and handle each result type",
+    "Handle protocol errors and tool execution errors, including version, capability, header, and validation failures",
+    "Walk the tool invocation lifecycle from discovery and selection through call, user input, progress, cancellation, and result",
+    "Identify the protocol primitives and utilities, including tools, resources, prompts, completion, caching, pagination, transports, and deprecated client features",
+    "Locate the trust boundaries between host, client, server, model, and the tools and content a server exposes",
+    "Apply OAuth-based authorization, client registration, scopes, and user consent so a user approves what a server may see and do",
+    "Choose risk and safety controls against tool poisoning, injection, token misuse, and over-broad access",
+    "Design auditability and observability so protocol activity can be traced, attributed, and reviewed",
+    "Map the roles, responsibilities, governance, and adoption patterns of teams building and deploying MCP",
+    "Select operational use cases and the primitives or extensions that fit each one",
+    "Reason about ecosystem portability across clients, servers, SDKs, extensions, gateways, and registries"
+  ],
+  "trackProtectedSha256": "571b17076c94d0e3370d59bcc66b9bb5cb2dc37b6041b5aaa093761e51359585",
+  "banks": {
+    "certifications/mcpa/assessments/mcpa-f/diagnostic.json": {
+      "sourceSha256": "3402c24ff677b44d82d6c6f2824cac50d7927e592beb6eacdef3ad17369112b5",
+      "protectedSha256": "edc461e64aa60732fc0f544645f37f688cf085d7c4cb53bd2a0b01c056010071",
+      "questions": [
+        {
+          "id": "mcpa-f-diag-001",
+          "domain": "mcp-fundamentals",
+          "type": "single",
+          "correct": [
+            1
+          ]
+        },
+        {
+          "id": "mcpa-f-diag-002",
+          "domain": "mcp-fundamentals",
+          "type": "single",
+          "correct": [
+            2
+          ]
+        },
+        {
+          "id": "mcpa-f-diag-003",
+          "domain": "mcp-fundamentals",
+          "type": "single",
+          "correct": [
+            3
+          ]
+        },
+        {
+          "id": "mcpa-f-diag-004",
+          "domain": "mcp-fundamentals",
+          "type": "single",
+          "correct": [
+            0
+          ]
+        },
+        {
+          "id": "mcpa-f-diag-005",
+          "domain": "mcp-fundamentals",
+          "type": "multiple",
+          "correct": [
+            1,
+            3
+          ]
+        },
+        {
+          "id": "mcpa-f-diag-006",
+          "domain": "architecture-and-components",
+          "type": "single",
+          "correct": [
+            1
+          ]
+        },
+        {
+          "id": "mcpa-f-diag-007",
+          "domain": "architecture-and-components",
+          "type": "single",
+          "correct": [
+            2
+          ]
+        },
+        {
+          "id": "mcpa-f-diag-008",
+          "domain": "architecture-and-components",
+          "type": "multiple",
+          "correct": [
+            0,
+            3
+          ]
+        },
+        {
+          "id": "mcpa-f-diag-009",
+          "domain": "architecture-and-components",
+          "type": "single",
+          "correct": [
+            3
+          ]
+        },
+        {
+          "id": "mcpa-f-diag-010",
+          "domain": "interactions-and-execution",
+          "type": "single",
+          "correct": [
+            0
+          ]
+        },
+        {
+          "id": "mcpa-f-diag-011",
+          "domain": "interactions-and-execution",
+          "type": "single",
+          "correct": [
+            1
+          ]
+        },
+        {
+          "id": "mcpa-f-diag-012",
+          "domain": "interactions-and-execution",
+          "type": "multiple",
+          "correct": [
+            1,
+            2
+          ]
+        },
+        {
+          "id": "mcpa-f-diag-013",
+          "domain": "interactions-and-execution",
+          "type": "single",
+          "correct": [
+            2
+          ]
+        },
+        {
+          "id": "mcpa-f-diag-014",
+          "domain": "interactions-and-execution",
+          "type": "single",
+          "correct": [
+            3
+          ]
+        },
+        {
+          "id": "mcpa-f-diag-015",
+          "domain": "interactions-and-execution",
+          "type": "single",
+          "correct": [
+            0
+          ]
+        },
+        {
+          "id": "mcpa-f-diag-016",
+          "domain": "interactions-and-execution",
+          "type": "multiple",
+          "correct": [
+            0,
+            1
+          ]
+        },
+        {
+          "id": "mcpa-f-diag-017",
+          "domain": "interactions-and-execution",
+          "type": "single",
+          "correct": [
+            1
+          ]
+        },
+        {
+          "id": "mcpa-f-diag-018",
+          "domain": "security-and-governance",
+          "type": "single",
+          "correct": [
+            2
+          ]
+        },
+        {
+          "id": "mcpa-f-diag-019",
+          "domain": "security-and-governance",
+          "type": "single",
+          "correct": [
+            3
+          ]
+        },
+        {
+          "id": "mcpa-f-diag-020",
+          "domain": "security-and-governance",
+          "type": "single",
+          "correct": [
+            0
+          ]
+        },
+        {
+          "id": "mcpa-f-diag-021",
+          "domain": "security-and-governance",
+          "type": "single",
+          "correct": [
+            1
+          ]
+        },
+        {
+          "id": "mcpa-f-diag-022",
+          "domain": "security-and-governance",
+          "type": "multiple",
+          "correct": [
+            2,
+            3
+          ]
+        },
+        {
+          "id": "mcpa-f-diag-023",
+          "domain": "security-and-governance",
+          "type": "single",
+          "correct": [
+            2
+          ]
+        },
+        {
+          "id": "mcpa-f-diag-024",
+          "domain": "security-and-governance",
+          "type": "single",
+          "correct": [
+            3
+          ]
+        },
+        {
+          "id": "mcpa-f-diag-025",
+          "domain": "use-cases-and-ecosystem",
+          "type": "single",
+          "correct": [
+            0
+          ]
+        },
+        {
+          "id": "mcpa-f-diag-026",
+          "domain": "use-cases-and-ecosystem",
+          "type": "single",
+          "correct": [
+            1
+          ]
+        },
+        {
+          "id": "mcpa-f-diag-027",
+          "domain": "use-cases-and-ecosystem",
+          "type": "multiple",
+          "correct": [
+            0,
+            2,
+            3
+          ]
+        },
+        {
+          "id": "mcpa-f-diag-028",
+          "domain": "use-cases-and-ecosystem",
+          "type": "single",
+          "correct": [
+            2
+          ]
+        },
+        {
+          "id": "mcpa-f-diag-029",
+          "domain": "use-cases-and-ecosystem",
+          "type": "single",
+          "correct": [
+            3
+          ]
+        },
+        {
+          "id": "mcpa-f-diag-030",
+          "domain": "use-cases-and-ecosystem",
+          "type": "single",
+          "correct": [
+            0
+          ]
+        }
+      ],
+      "literalHashes": [
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ]
+      ]
+    },
+    "certifications/mcpa/assessments/mcpa-f/mock-01.json": {
+      "sourceSha256": "65c7f974bb8f3b37e3f3c139e73a8ba45a32fc4a0f758ffb491c4c742ab824f1",
+      "protectedSha256": "e0c53e22ffeb6d29d6861aee279461a88fc74ae8fc3c36ead7b2b79bb8d1abd1",
+      "questions": [
+        {
+          "id": "mcpa-f-m1-001",
+          "domain": "mcp-fundamentals",
+          "type": "single",
+          "correct": [
+            0
+          ]
+        },
+        {
+          "id": "mcpa-f-m1-002",
+          "domain": "mcp-fundamentals",
+          "type": "single",
+          "correct": [
+            1
+          ]
+        },
+        {
+          "id": "mcpa-f-m1-003",
+          "domain": "mcp-fundamentals",
+          "type": "single",
+          "correct": [
+            2
+          ]
+        },
+        {
+          "id": "mcpa-f-m1-004",
+          "domain": "mcp-fundamentals",
+          "type": "single",
+          "correct": [
+            3
+          ]
+        },
+        {
+          "id": "mcpa-f-m1-005",
+          "domain": "mcp-fundamentals",
+          "type": "single",
+          "correct": [
+            0
+          ]
+        },
+        {
+          "id": "mcpa-f-m1-006",
+          "domain": "mcp-fundamentals",
+          "type": "single",
+          "correct": [
+            1
+          ]
+        },
+        {
+          "id": "mcpa-f-m1-007",
+          "domain": "mcp-fundamentals",
+          "type": "single",
+          "correct": [
+            2
+          ]
+        },
+        {
+          "id": "mcpa-f-m1-008",
+          "domain": "mcp-fundamentals",
+          "type": "multiple",
+          "correct": [
+            2,
+            3
+          ]
+        },
+        {
+          "id": "mcpa-f-m1-009",
+          "domain": "mcp-fundamentals",
+          "type": "single",
+          "correct": [
+            3
+          ]
+        },
+        {
+          "id": "mcpa-f-m1-010",
+          "domain": "mcp-fundamentals",
+          "type": "multiple",
+          "correct": [
+            0,
+            2
+          ]
+        },
+        {
+          "id": "mcpa-f-m1-011",
+          "domain": "architecture-and-components",
+          "type": "single",
+          "correct": [
+            0
+          ]
+        },
+        {
+          "id": "mcpa-f-m1-012",
+          "domain": "architecture-and-components",
+          "type": "single",
+          "correct": [
+            1
+          ]
+        },
+        {
+          "id": "mcpa-f-m1-013",
+          "domain": "architecture-and-components",
+          "type": "single",
+          "correct": [
+            2
+          ]
+        },
+        {
+          "id": "mcpa-f-m1-014",
+          "domain": "architecture-and-components",
+          "type": "single",
+          "correct": [
+            3
+          ]
+        },
+        {
+          "id": "mcpa-f-m1-015",
+          "domain": "architecture-and-components",
+          "type": "single",
+          "correct": [
+            0
+          ]
+        },
+        {
+          "id": "mcpa-f-m1-016",
+          "domain": "architecture-and-components",
+          "type": "multiple",
+          "correct": [
+            1,
+            3
+          ]
+        },
+        {
+          "id": "mcpa-f-m1-017",
+          "domain": "architecture-and-components",
+          "type": "single",
+          "correct": [
+            1
+          ]
+        },
+        {
+          "id": "mcpa-f-m1-018",
+          "domain": "architecture-and-components",
+          "type": "single",
+          "correct": [
+            2
+          ]
+        },
+        {
+          "id": "mcpa-f-m1-019",
+          "domain": "interactions-and-execution",
+          "type": "single",
+          "correct": [
+            3
+          ]
+        },
+        {
+          "id": "mcpa-f-m1-020",
+          "domain": "interactions-and-execution",
+          "type": "single",
+          "correct": [
+            0
+          ]
+        },
+        {
+          "id": "mcpa-f-m1-021",
+          "domain": "interactions-and-execution",
+          "type": "single",
+          "correct": [
+            1
+          ]
+        },
+        {
+          "id": "mcpa-f-m1-022",
+          "domain": "interactions-and-execution",
+          "type": "single",
+          "correct": [
+            2
+          ]
+        },
+        {
+          "id": "mcpa-f-m1-023",
+          "domain": "interactions-and-execution",
+          "type": "single",
+          "correct": [
+            3
+          ]
+        },
+        {
+          "id": "mcpa-f-m1-024",
+          "domain": "interactions-and-execution",
+          "type": "single",
+          "correct": [
+            0
+          ]
+        },
+        {
+          "id": "mcpa-f-m1-025",
+          "domain": "interactions-and-execution",
+          "type": "single",
+          "correct": [
+            1
+          ]
+        },
+        {
+          "id": "mcpa-f-m1-026",
+          "domain": "interactions-and-execution",
+          "type": "single",
+          "correct": [
+            2
+          ]
+        },
+        {
+          "id": "mcpa-f-m1-027",
+          "domain": "interactions-and-execution",
+          "type": "single",
+          "correct": [
+            3
+          ]
+        },
+        {
+          "id": "mcpa-f-m1-028",
+          "domain": "interactions-and-execution",
+          "type": "multiple",
+          "correct": [
+            0,
+            3
+          ]
+        },
+        {
+          "id": "mcpa-f-m1-029",
+          "domain": "interactions-and-execution",
+          "type": "single",
+          "correct": [
+            0
+          ]
+        },
+        {
+          "id": "mcpa-f-m1-030",
+          "domain": "interactions-and-execution",
+          "type": "single",
+          "correct": [
+            1
+          ]
+        },
+        {
+          "id": "mcpa-f-m1-031",
+          "domain": "interactions-and-execution",
+          "type": "single",
+          "correct": [
+            2
+          ]
+        },
+        {
+          "id": "mcpa-f-m1-032",
+          "domain": "interactions-and-execution",
+          "type": "single",
+          "correct": [
+            3
+          ]
+        },
+        {
+          "id": "mcpa-f-m1-033",
+          "domain": "interactions-and-execution",
+          "type": "multiple",
+          "correct": [
+            1,
+            2
+          ]
+        },
+        {
+          "id": "mcpa-f-m1-034",
+          "domain": "interactions-and-execution",
+          "type": "multiple",
+          "correct": [
+            0,
+            1
+          ]
+        },
+        {
+          "id": "mcpa-f-m1-035",
+          "domain": "security-and-governance",
+          "type": "single",
+          "correct": [
+            0
+          ]
+        },
+        {
+          "id": "mcpa-f-m1-036",
+          "domain": "security-and-governance",
+          "type": "single",
+          "correct": [
+            1
+          ]
+        },
+        {
+          "id": "mcpa-f-m1-037",
+          "domain": "security-and-governance",
+          "type": "single",
+          "correct": [
+            2
+          ]
+        },
+        {
+          "id": "mcpa-f-m1-038",
+          "domain": "security-and-governance",
+          "type": "single",
+          "correct": [
+            3
+          ]
+        },
+        {
+          "id": "mcpa-f-m1-039",
+          "domain": "security-and-governance",
+          "type": "single",
+          "correct": [
+            0
+          ]
+        },
+        {
+          "id": "mcpa-f-m1-040",
+          "domain": "security-and-governance",
+          "type": "single",
+          "correct": [
+            1
+          ]
+        },
+        {
+          "id": "mcpa-f-m1-041",
+          "domain": "security-and-governance",
+          "type": "single",
+          "correct": [
+            2
+          ]
+        },
+        {
+          "id": "mcpa-f-m1-042",
+          "domain": "security-and-governance",
+          "type": "single",
+          "correct": [
+            3
+          ]
+        },
+        {
+          "id": "mcpa-f-m1-043",
+          "domain": "security-and-governance",
+          "type": "single",
+          "correct": [
+            0
+          ]
+        },
+        {
+          "id": "mcpa-f-m1-044",
+          "domain": "security-and-governance",
+          "type": "single",
+          "correct": [
+            1
+          ]
+        },
+        {
+          "id": "mcpa-f-m1-045",
+          "domain": "security-and-governance",
+          "type": "single",
+          "correct": [
+            2
+          ]
+        },
+        {
+          "id": "mcpa-f-m1-046",
+          "domain": "security-and-governance",
+          "type": "single",
+          "correct": [
+            3
+          ]
+        },
+        {
+          "id": "mcpa-f-m1-047",
+          "domain": "security-and-governance",
+          "type": "multiple",
+          "correct": [
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "id": "mcpa-f-m1-048",
+          "domain": "security-and-governance",
+          "type": "multiple",
+          "correct": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "id": "mcpa-f-m1-049",
+          "domain": "use-cases-and-ecosystem",
+          "type": "single",
+          "correct": [
+            0
+          ]
+        },
+        {
+          "id": "mcpa-f-m1-050",
+          "domain": "use-cases-and-ecosystem",
+          "type": "single",
+          "correct": [
+            1
+          ]
+        },
+        {
+          "id": "mcpa-f-m1-051",
+          "domain": "use-cases-and-ecosystem",
+          "type": "single",
+          "correct": [
+            2
+          ]
+        },
+        {
+          "id": "mcpa-f-m1-052",
+          "domain": "use-cases-and-ecosystem",
+          "type": "single",
+          "correct": [
+            3
+          ]
+        },
+        {
+          "id": "mcpa-f-m1-053",
+          "domain": "use-cases-and-ecosystem",
+          "type": "single",
+          "correct": [
+            0
+          ]
+        },
+        {
+          "id": "mcpa-f-m1-054",
+          "domain": "use-cases-and-ecosystem",
+          "type": "single",
+          "correct": [
+            1
+          ]
+        },
+        {
+          "id": "mcpa-f-m1-055",
+          "domain": "use-cases-and-ecosystem",
+          "type": "single",
+          "correct": [
+            2
+          ]
+        },
+        {
+          "id": "mcpa-f-m1-056",
+          "domain": "use-cases-and-ecosystem",
+          "type": "single",
+          "correct": [
+            3
+          ]
+        },
+        {
+          "id": "mcpa-f-m1-057",
+          "domain": "use-cases-and-ecosystem",
+          "type": "single",
+          "correct": [
+            0
+          ]
+        },
+        {
+          "id": "mcpa-f-m1-058",
+          "domain": "use-cases-and-ecosystem",
+          "type": "single",
+          "correct": [
+            1
+          ]
+        },
+        {
+          "id": "mcpa-f-m1-059",
+          "domain": "use-cases-and-ecosystem",
+          "type": "multiple",
+          "correct": [
+            0,
+            1,
+            3
+          ]
+        },
+        {
+          "id": "mcpa-f-m1-060",
+          "domain": "use-cases-and-ecosystem",
+          "type": "multiple",
+          "correct": [
+            0,
+            2,
+            3
+          ]
+        }
+      ],
+      "literalHashes": [
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ]
+      ]
+    },
+    "certifications/mcpa/assessments/mcpa-f/mock-02.json": {
+      "sourceSha256": "76f3b97d3154dcdff59e7d6acb1c6dd7d55af93d7a6e8d18771911b3070bdddc",
+      "protectedSha256": "33524e59974094890668fec16b9e8a987ada7db02fe1f7671111516897090b01",
+      "questions": [
+        {
+          "id": "mcpa-f-m2-001",
+          "domain": "mcp-fundamentals",
+          "type": "single",
+          "correct": [
+            1
+          ]
+        },
+        {
+          "id": "mcpa-f-m2-002",
+          "domain": "mcp-fundamentals",
+          "type": "single",
+          "correct": [
+            2
+          ]
+        },
+        {
+          "id": "mcpa-f-m2-003",
+          "domain": "mcp-fundamentals",
+          "type": "single",
+          "correct": [
+            3
+          ]
+        },
+        {
+          "id": "mcpa-f-m2-004",
+          "domain": "mcp-fundamentals",
+          "type": "single",
+          "correct": [
+            0
+          ]
+        },
+        {
+          "id": "mcpa-f-m2-005",
+          "domain": "mcp-fundamentals",
+          "type": "single",
+          "correct": [
+            1
+          ]
+        },
+        {
+          "id": "mcpa-f-m2-006",
+          "domain": "mcp-fundamentals",
+          "type": "single",
+          "correct": [
+            2
+          ]
+        },
+        {
+          "id": "mcpa-f-m2-007",
+          "domain": "mcp-fundamentals",
+          "type": "single",
+          "correct": [
+            3
+          ]
+        },
+        {
+          "id": "mcpa-f-m2-008",
+          "domain": "mcp-fundamentals",
+          "type": "single",
+          "correct": [
+            0
+          ]
+        },
+        {
+          "id": "mcpa-f-m2-009",
+          "domain": "mcp-fundamentals",
+          "type": "multiple",
+          "correct": [
+            0,
+            1
+          ]
+        },
+        {
+          "id": "mcpa-f-m2-010",
+          "domain": "mcp-fundamentals",
+          "type": "single",
+          "correct": [
+            1
+          ]
+        },
+        {
+          "id": "mcpa-f-m2-011",
+          "domain": "architecture-and-components",
+          "type": "single",
+          "correct": [
+            2
+          ]
+        },
+        {
+          "id": "mcpa-f-m2-012",
+          "domain": "architecture-and-components",
+          "type": "single",
+          "correct": [
+            3
+          ]
+        },
+        {
+          "id": "mcpa-f-m2-013",
+          "domain": "architecture-and-components",
+          "type": "single",
+          "correct": [
+            0
+          ]
+        },
+        {
+          "id": "mcpa-f-m2-014",
+          "domain": "architecture-and-components",
+          "type": "single",
+          "correct": [
+            1
+          ]
+        },
+        {
+          "id": "mcpa-f-m2-015",
+          "domain": "architecture-and-components",
+          "type": "multiple",
+          "correct": [
+            2,
+            3
+          ]
+        },
+        {
+          "id": "mcpa-f-m2-016",
+          "domain": "architecture-and-components",
+          "type": "multiple",
+          "correct": [
+            0,
+            2
+          ]
+        },
+        {
+          "id": "mcpa-f-m2-017",
+          "domain": "architecture-and-components",
+          "type": "single",
+          "correct": [
+            2
+          ]
+        },
+        {
+          "id": "mcpa-f-m2-018",
+          "domain": "architecture-and-components",
+          "type": "single",
+          "correct": [
+            3
+          ]
+        },
+        {
+          "id": "mcpa-f-m2-019",
+          "domain": "interactions-and-execution",
+          "type": "single",
+          "correct": [
+            0
+          ]
+        },
+        {
+          "id": "mcpa-f-m2-020",
+          "domain": "interactions-and-execution",
+          "type": "single",
+          "correct": [
+            1
+          ]
+        },
+        {
+          "id": "mcpa-f-m2-021",
+          "domain": "interactions-and-execution",
+          "type": "single",
+          "correct": [
+            2
+          ]
+        },
+        {
+          "id": "mcpa-f-m2-022",
+          "domain": "interactions-and-execution",
+          "type": "multiple",
+          "correct": [
+            1,
+            3
+          ]
+        },
+        {
+          "id": "mcpa-f-m2-023",
+          "domain": "interactions-and-execution",
+          "type": "single",
+          "correct": [
+            3
+          ]
+        },
+        {
+          "id": "mcpa-f-m2-024",
+          "domain": "interactions-and-execution",
+          "type": "single",
+          "correct": [
+            0
+          ]
+        },
+        {
+          "id": "mcpa-f-m2-025",
+          "domain": "interactions-and-execution",
+          "type": "multiple",
+          "correct": [
+            0,
+            3
+          ]
+        },
+        {
+          "id": "mcpa-f-m2-026",
+          "domain": "interactions-and-execution",
+          "type": "single",
+          "correct": [
+            1
+          ]
+        },
+        {
+          "id": "mcpa-f-m2-027",
+          "domain": "interactions-and-execution",
+          "type": "single",
+          "correct": [
+            2
+          ]
+        },
+        {
+          "id": "mcpa-f-m2-028",
+          "domain": "interactions-and-execution",
+          "type": "single",
+          "correct": [
+            3
+          ]
+        },
+        {
+          "id": "mcpa-f-m2-029",
+          "domain": "interactions-and-execution",
+          "type": "single",
+          "correct": [
+            0
+          ]
+        },
+        {
+          "id": "mcpa-f-m2-030",
+          "domain": "interactions-and-execution",
+          "type": "single",
+          "correct": [
+            1
+          ]
+        },
+        {
+          "id": "mcpa-f-m2-031",
+          "domain": "interactions-and-execution",
+          "type": "single",
+          "correct": [
+            2
+          ]
+        },
+        {
+          "id": "mcpa-f-m2-032",
+          "domain": "interactions-and-execution",
+          "type": "single",
+          "correct": [
+            3
+          ]
+        },
+        {
+          "id": "mcpa-f-m2-033",
+          "domain": "interactions-and-execution",
+          "type": "single",
+          "correct": [
+            0
+          ]
+        },
+        {
+          "id": "mcpa-f-m2-034",
+          "domain": "interactions-and-execution",
+          "type": "single",
+          "correct": [
+            1
+          ]
+        },
+        {
+          "id": "mcpa-f-m2-035",
+          "domain": "security-and-governance",
+          "type": "single",
+          "correct": [
+            2
+          ]
+        },
+        {
+          "id": "mcpa-f-m2-036",
+          "domain": "security-and-governance",
+          "type": "single",
+          "correct": [
+            3
+          ]
+        },
+        {
+          "id": "mcpa-f-m2-037",
+          "domain": "security-and-governance",
+          "type": "single",
+          "correct": [
+            0
+          ]
+        },
+        {
+          "id": "mcpa-f-m2-038",
+          "domain": "security-and-governance",
+          "type": "single",
+          "correct": [
+            1
+          ]
+        },
+        {
+          "id": "mcpa-f-m2-039",
+          "domain": "security-and-governance",
+          "type": "single",
+          "correct": [
+            2
+          ]
+        },
+        {
+          "id": "mcpa-f-m2-040",
+          "domain": "security-and-governance",
+          "type": "single",
+          "correct": [
+            3
+          ]
+        },
+        {
+          "id": "mcpa-f-m2-041",
+          "domain": "security-and-governance",
+          "type": "multiple",
+          "correct": [
+            1,
+            2
+          ]
+        },
+        {
+          "id": "mcpa-f-m2-042",
+          "domain": "security-and-governance",
+          "type": "multiple",
+          "correct": [
+            0,
+            1
+          ]
+        },
+        {
+          "id": "mcpa-f-m2-043",
+          "domain": "security-and-governance",
+          "type": "single",
+          "correct": [
+            0
+          ]
+        },
+        {
+          "id": "mcpa-f-m2-044",
+          "domain": "security-and-governance",
+          "type": "single",
+          "correct": [
+            1
+          ]
+        },
+        {
+          "id": "mcpa-f-m2-045",
+          "domain": "security-and-governance",
+          "type": "single",
+          "correct": [
+            2
+          ]
+        },
+        {
+          "id": "mcpa-f-m2-046",
+          "domain": "security-and-governance",
+          "type": "multiple",
+          "correct": [
+            2,
+            3
+          ]
+        },
+        {
+          "id": "mcpa-f-m2-047",
+          "domain": "security-and-governance",
+          "type": "single",
+          "correct": [
+            3
+          ]
+        },
+        {
+          "id": "mcpa-f-m2-048",
+          "domain": "security-and-governance",
+          "type": "single",
+          "correct": [
+            0
+          ]
+        },
+        {
+          "id": "mcpa-f-m2-049",
+          "domain": "use-cases-and-ecosystem",
+          "type": "single",
+          "correct": [
+            1
+          ]
+        },
+        {
+          "id": "mcpa-f-m2-050",
+          "domain": "use-cases-and-ecosystem",
+          "type": "single",
+          "correct": [
+            2
+          ]
+        },
+        {
+          "id": "mcpa-f-m2-051",
+          "domain": "use-cases-and-ecosystem",
+          "type": "multiple",
+          "correct": [
+            0,
+            2
+          ]
+        },
+        {
+          "id": "mcpa-f-m2-052",
+          "domain": "use-cases-and-ecosystem",
+          "type": "single",
+          "correct": [
+            3
+          ]
+        },
+        {
+          "id": "mcpa-f-m2-053",
+          "domain": "use-cases-and-ecosystem",
+          "type": "single",
+          "correct": [
+            0
+          ]
+        },
+        {
+          "id": "mcpa-f-m2-054",
+          "domain": "use-cases-and-ecosystem",
+          "type": "multiple",
+          "correct": [
+            1,
+            3
+          ]
+        },
+        {
+          "id": "mcpa-f-m2-055",
+          "domain": "use-cases-and-ecosystem",
+          "type": "single",
+          "correct": [
+            1
+          ]
+        },
+        {
+          "id": "mcpa-f-m2-056",
+          "domain": "use-cases-and-ecosystem",
+          "type": "single",
+          "correct": [
+            2
+          ]
+        },
+        {
+          "id": "mcpa-f-m2-057",
+          "domain": "use-cases-and-ecosystem",
+          "type": "single",
+          "correct": [
+            3
+          ]
+        },
+        {
+          "id": "mcpa-f-m2-058",
+          "domain": "use-cases-and-ecosystem",
+          "type": "single",
+          "correct": [
+            0
+          ]
+        },
+        {
+          "id": "mcpa-f-m2-059",
+          "domain": "use-cases-and-ecosystem",
+          "type": "single",
+          "correct": [
+            1
+          ]
+        },
+        {
+          "id": "mcpa-f-m2-060",
+          "domain": "use-cases-and-ecosystem",
+          "type": "single",
+          "correct": [
+            2
+          ]
+        }
+      ],
+      "literalHashes": [
+        [
+          [
+            "fbab7b487d1422961ac5eb977fa4402c41a57f91420304ff010af3c7e2215dbf"
+          ],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [
+            "eba18d091d2a75bdbacd34509f1e3d26d6417da74173f1dd88487615837630fb"
+          ],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [
+            "4baf8b05c72d1def1d86fc2d0a5a4bff8d6be60ab19db6193ad69daca6187ca8"
+          ],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [
+            "a295a354ed8f8f23b8a5884ed1557bf430abd362aba140213fa9fc0db7eeebd0"
+          ],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [
+            "ecd58ab7e1de87ffd310bd1e6fbe616097a648b0f0fe542f9389a163b2d5865f"
+          ],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [
+            "27cf6577c5dd0a8b40223169ed384682361c2cefe5b268a1865b76fd9e38e864"
+          ],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [
+            "8e4c05c77b3664c90e7eb94952f7744e19e563926c3a2d575325168fea53d2c8"
+          ],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [
+            "4807dd7eb045325336d33959237f7c21e2f432591023ac1fe5cc0f7d96856cb3"
+          ],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [
+            "3362b248d31059527c8b0d7b9266cf48a61d4903a7ef9adb52750512fd503452"
+          ],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [
+            "c265bca5e3140a88c5359f18cd1b7d9f5f7b243f88ed96e22942ebf35bf29390"
+          ],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [
+            "d326e09b8f3ee6c7ccf663bf3063b40b7254f3cb0f3433474b6b3015a5b64499"
+          ],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [
+            "3a5f045e3593aee663f79c66c97e4d851c07f3aa725b05566831429fbb64cc58"
+          ],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [
+            "a27d2a0092b4f20857676170516dcf7489f0c34b886824be44058415118aef71"
+          ],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [
+            "b0892c69eca31567ef242d3c1e2e26db250387d047f1fe695c92d90f5ba8da3c"
+          ],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [
+            "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+          ],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [
+            "7f6b4920187a736dbc0bfc65af89efc8ef3bbceadd88f866dc233d9b7f67007c",
+            "4c1c7dcebf66b2c8f3a593fd21d970ece888543fb79ec752af0519c37e233afb"
+          ],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [
+            "427528e8160badde96f124c3697338400690938b5da71bb33465c65b08fcd80c"
+          ],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [
+            "34c3053309ca02524887326cba4a25ec917404da036ea3eee14e19da4cd3bfea"
+          ],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [
+            "c20bf802da565c943b87d05265a590246f4302e1ff23b88663d0dd7c4e4c8915"
+          ],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [
+            "8acbe91d23769c0961dbe27a2ce2dd356de10914378d6d5ff56516e35f4eeffb"
+          ],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [
+            "b02214c4500fc2fd2b8292b279949a6f0544a76f028e3c7ac2b171afcf181251"
+          ],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [
+            "8c4eaa063114af77fca19d44e7200d4769b2c3d09a07a368fe7d00f84e1ff3b8"
+          ],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [
+            "aacd2f80be59467532b30bc204a5a1c342fc5a9bb7760114d9f6ae12522cc3bf"
+          ],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [
+            "1b2ead19b241f426e26aa1432a0e0670615374f30cae372d10ec02523838fa8d"
+          ],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ]
+      ]
+    },
+    "certifications/mcpa/assessments/mcpa-f/mock-03.json": {
+      "sourceSha256": "f34b31dc1e59af9e48f56d7da23fe65d09099a67895b2f75f0cbcbeb218cb295",
+      "protectedSha256": "becce306884ccd0f2f5e7e8616748f55ffe3120b7135673155d6b2877c3c3f31",
+      "questions": [
+        {
+          "id": "mcpa-f-m3-001",
+          "domain": "mcp-fundamentals",
+          "type": "single",
+          "correct": [
+            0
+          ]
+        },
+        {
+          "id": "mcpa-f-m3-002",
+          "domain": "mcp-fundamentals",
+          "type": "single",
+          "correct": [
+            1
+          ]
+        },
+        {
+          "id": "mcpa-f-m3-003",
+          "domain": "mcp-fundamentals",
+          "type": "single",
+          "correct": [
+            2
+          ]
+        },
+        {
+          "id": "mcpa-f-m3-004",
+          "domain": "mcp-fundamentals",
+          "type": "single",
+          "correct": [
+            3
+          ]
+        },
+        {
+          "id": "mcpa-f-m3-005",
+          "domain": "mcp-fundamentals",
+          "type": "multiple",
+          "correct": [
+            2,
+            3
+          ]
+        },
+        {
+          "id": "mcpa-f-m3-006",
+          "domain": "mcp-fundamentals",
+          "type": "single",
+          "correct": [
+            0
+          ]
+        },
+        {
+          "id": "mcpa-f-m3-007",
+          "domain": "mcp-fundamentals",
+          "type": "single",
+          "correct": [
+            1
+          ]
+        },
+        {
+          "id": "mcpa-f-m3-008",
+          "domain": "mcp-fundamentals",
+          "type": "single",
+          "correct": [
+            2
+          ]
+        },
+        {
+          "id": "mcpa-f-m3-009",
+          "domain": "mcp-fundamentals",
+          "type": "multiple",
+          "correct": [
+            0,
+            2,
+            3
+          ]
+        },
+        {
+          "id": "mcpa-f-m3-010",
+          "domain": "mcp-fundamentals",
+          "type": "single",
+          "correct": [
+            3
+          ]
+        },
+        {
+          "id": "mcpa-f-m3-011",
+          "domain": "architecture-and-components",
+          "type": "single",
+          "correct": [
+            0
+          ]
+        },
+        {
+          "id": "mcpa-f-m3-012",
+          "domain": "architecture-and-components",
+          "type": "single",
+          "correct": [
+            1
+          ]
+        },
+        {
+          "id": "mcpa-f-m3-013",
+          "domain": "architecture-and-components",
+          "type": "single",
+          "correct": [
+            2
+          ]
+        },
+        {
+          "id": "mcpa-f-m3-014",
+          "domain": "architecture-and-components",
+          "type": "single",
+          "correct": [
+            3
+          ]
+        },
+        {
+          "id": "mcpa-f-m3-015",
+          "domain": "architecture-and-components",
+          "type": "multiple",
+          "correct": [
+            0,
+            2
+          ]
+        },
+        {
+          "id": "mcpa-f-m3-016",
+          "domain": "architecture-and-components",
+          "type": "single",
+          "correct": [
+            0
+          ]
+        },
+        {
+          "id": "mcpa-f-m3-017",
+          "domain": "architecture-and-components",
+          "type": "single",
+          "correct": [
+            1
+          ]
+        },
+        {
+          "id": "mcpa-f-m3-018",
+          "domain": "architecture-and-components",
+          "type": "single",
+          "correct": [
+            2
+          ]
+        },
+        {
+          "id": "mcpa-f-m3-019",
+          "domain": "interactions-and-execution",
+          "type": "single",
+          "correct": [
+            3
+          ]
+        },
+        {
+          "id": "mcpa-f-m3-020",
+          "domain": "interactions-and-execution",
+          "type": "single",
+          "correct": [
+            0
+          ]
+        },
+        {
+          "id": "mcpa-f-m3-021",
+          "domain": "interactions-and-execution",
+          "type": "single",
+          "correct": [
+            1
+          ]
+        },
+        {
+          "id": "mcpa-f-m3-022",
+          "domain": "interactions-and-execution",
+          "type": "single",
+          "correct": [
+            2
+          ]
+        },
+        {
+          "id": "mcpa-f-m3-023",
+          "domain": "interactions-and-execution",
+          "type": "single",
+          "correct": [
+            3
+          ]
+        },
+        {
+          "id": "mcpa-f-m3-024",
+          "domain": "interactions-and-execution",
+          "type": "single",
+          "correct": [
+            0
+          ]
+        },
+        {
+          "id": "mcpa-f-m3-025",
+          "domain": "interactions-and-execution",
+          "type": "single",
+          "correct": [
+            1
+          ]
+        },
+        {
+          "id": "mcpa-f-m3-026",
+          "domain": "interactions-and-execution",
+          "type": "multiple",
+          "correct": [
+            1,
+            3
+          ]
+        },
+        {
+          "id": "mcpa-f-m3-027",
+          "domain": "interactions-and-execution",
+          "type": "single",
+          "correct": [
+            2
+          ]
+        },
+        {
+          "id": "mcpa-f-m3-028",
+          "domain": "interactions-and-execution",
+          "type": "single",
+          "correct": [
+            3
+          ]
+        },
+        {
+          "id": "mcpa-f-m3-029",
+          "domain": "interactions-and-execution",
+          "type": "single",
+          "correct": [
+            0
+          ]
+        },
+        {
+          "id": "mcpa-f-m3-030",
+          "domain": "interactions-and-execution",
+          "type": "multiple",
+          "correct": [
+            0,
+            3
+          ]
+        },
+        {
+          "id": "mcpa-f-m3-031",
+          "domain": "interactions-and-execution",
+          "type": "multiple",
+          "correct": [
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "id": "mcpa-f-m3-032",
+          "domain": "interactions-and-execution",
+          "type": "single",
+          "correct": [
+            1
+          ]
+        },
+        {
+          "id": "mcpa-f-m3-033",
+          "domain": "interactions-and-execution",
+          "type": "single",
+          "correct": [
+            2
+          ]
+        },
+        {
+          "id": "mcpa-f-m3-034",
+          "domain": "interactions-and-execution",
+          "type": "single",
+          "correct": [
+            3
+          ]
+        },
+        {
+          "id": "mcpa-f-m3-035",
+          "domain": "security-and-governance",
+          "type": "single",
+          "correct": [
+            0
+          ]
+        },
+        {
+          "id": "mcpa-f-m3-036",
+          "domain": "security-and-governance",
+          "type": "single",
+          "correct": [
+            1
+          ]
+        },
+        {
+          "id": "mcpa-f-m3-037",
+          "domain": "security-and-governance",
+          "type": "single",
+          "correct": [
+            2
+          ]
+        },
+        {
+          "id": "mcpa-f-m3-038",
+          "domain": "security-and-governance",
+          "type": "single",
+          "correct": [
+            3
+          ]
+        },
+        {
+          "id": "mcpa-f-m3-039",
+          "domain": "security-and-governance",
+          "type": "single",
+          "correct": [
+            0
+          ]
+        },
+        {
+          "id": "mcpa-f-m3-040",
+          "domain": "security-and-governance",
+          "type": "single",
+          "correct": [
+            1
+          ]
+        },
+        {
+          "id": "mcpa-f-m3-041",
+          "domain": "security-and-governance",
+          "type": "multiple",
+          "correct": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "id": "mcpa-f-m3-042",
+          "domain": "security-and-governance",
+          "type": "single",
+          "correct": [
+            2
+          ]
+        },
+        {
+          "id": "mcpa-f-m3-043",
+          "domain": "security-and-governance",
+          "type": "multiple",
+          "correct": [
+            1,
+            2
+          ]
+        },
+        {
+          "id": "mcpa-f-m3-044",
+          "domain": "security-and-governance",
+          "type": "single",
+          "correct": [
+            3
+          ]
+        },
+        {
+          "id": "mcpa-f-m3-045",
+          "domain": "security-and-governance",
+          "type": "single",
+          "correct": [
+            0
+          ]
+        },
+        {
+          "id": "mcpa-f-m3-046",
+          "domain": "security-and-governance",
+          "type": "multiple",
+          "correct": [
+            0,
+            1
+          ]
+        },
+        {
+          "id": "mcpa-f-m3-047",
+          "domain": "security-and-governance",
+          "type": "single",
+          "correct": [
+            1
+          ]
+        },
+        {
+          "id": "mcpa-f-m3-048",
+          "domain": "security-and-governance",
+          "type": "single",
+          "correct": [
+            2
+          ]
+        },
+        {
+          "id": "mcpa-f-m3-049",
+          "domain": "use-cases-and-ecosystem",
+          "type": "single",
+          "correct": [
+            3
+          ]
+        },
+        {
+          "id": "mcpa-f-m3-050",
+          "domain": "use-cases-and-ecosystem",
+          "type": "single",
+          "correct": [
+            0
+          ]
+        },
+        {
+          "id": "mcpa-f-m3-051",
+          "domain": "use-cases-and-ecosystem",
+          "type": "single",
+          "correct": [
+            1
+          ]
+        },
+        {
+          "id": "mcpa-f-m3-052",
+          "domain": "use-cases-and-ecosystem",
+          "type": "single",
+          "correct": [
+            2
+          ]
+        },
+        {
+          "id": "mcpa-f-m3-053",
+          "domain": "use-cases-and-ecosystem",
+          "type": "single",
+          "correct": [
+            3
+          ]
+        },
+        {
+          "id": "mcpa-f-m3-054",
+          "domain": "use-cases-and-ecosystem",
+          "type": "single",
+          "correct": [
+            0
+          ]
+        },
+        {
+          "id": "mcpa-f-m3-055",
+          "domain": "use-cases-and-ecosystem",
+          "type": "multiple",
+          "correct": [
+            0,
+            1,
+            3
+          ]
+        },
+        {
+          "id": "mcpa-f-m3-056",
+          "domain": "use-cases-and-ecosystem",
+          "type": "single",
+          "correct": [
+            1
+          ]
+        },
+        {
+          "id": "mcpa-f-m3-057",
+          "domain": "use-cases-and-ecosystem",
+          "type": "single",
+          "correct": [
+            2
+          ]
+        },
+        {
+          "id": "mcpa-f-m3-058",
+          "domain": "use-cases-and-ecosystem",
+          "type": "single",
+          "correct": [
+            3
+          ]
+        },
+        {
+          "id": "mcpa-f-m3-059",
+          "domain": "use-cases-and-ecosystem",
+          "type": "single",
+          "correct": [
+            0
+          ]
+        },
+        {
+          "id": "mcpa-f-m3-060",
+          "domain": "use-cases-and-ecosystem",
+          "type": "single",
+          "correct": [
+            1
+          ]
+        }
+      ],
+      "literalHashes": [
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ]
+      ]
+    }
+  }
+}

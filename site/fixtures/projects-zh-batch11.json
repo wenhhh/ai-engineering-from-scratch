@@ -1,0 +1,2137 @@
+{
+  "upstream": "c02ca08d8a49ce24c3c1c1cf8e3b422f2c7393ca",
+  "projects": [
+    "changelog-writer-from-git",
+    "cloud-agent-with-aws-strands"
+  ],
+  "files": {
+    "projects/changelog-writer-from-git/README.md": {
+      "sourceSha256": "0f3f5d5523baf72938bf632c6de330ce4976d7c8e2a51aca18466edf5b3b2982",
+      "localizedSha256": "266349d80a2712b2cfb1a8f9f6a1ed27bb1e9002ff717a10a1201d465cb04239",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "bash",
+            "python3 scripts/project_test.py changelog-writer-from-git --init /tmp/changelog-writer-from-git-work\npython3 scripts/project_test.py changelog-writer-from-git --stage 1 --path /tmp/changelog-writer-from-git-work\npython3 scripts/project_test.py changelog-writer-from-git --all --solution --strict\n"
+          ],
+          [
+            "bash",
+            "cd projects/changelog-writer-from-git/solution\ngo run .\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py changelog-writer-from-git --all --path /tmp/changelog-writer-from-git-work --strict --report /tmp/changelog-writer-from-git-result.json\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "--input FILE"
+          ],
+          [
+            "`",
+            "--output release.md --receipt release.json"
+          ],
+          [
+            "`",
+            "--repo PATH --from REV --to REV"
+          ],
+          [
+            "`",
+            "git log --format=%H%x00%s%x00%b%x00 FROM..TO"
+          ]
+        ],
+        "links": [
+          "../../phases/00-setup-and-tooling/01-dev-environment/docs/en.md",
+          "../../phases/00-setup-and-tooling/09-data-management/docs/en.md",
+          "https://git-scm.com/docs/pretty-formats",
+          "stages/01-read-an-immutable-git-export/docs/en.md",
+          "stages/02-classify-conventional-subjects/docs/en.md",
+          "stages/03-group-commits-with-stable-ordering/docs/en.md",
+          "stages/04-render-bounded-release-notes/docs/en.md"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 4
+      }
+    },
+    "projects/changelog-writer-from-git/media/output.gif": {
+      "sourceSha256": "d9294e8c069e1ad704ecf80f8c248918cfffc10c0c58ceda97f2c29cef40c855",
+      "localizedSha256": "d9294e8c069e1ad704ecf80f8c248918cfffc10c0c58ceda97f2c29cef40c855",
+      "kind": "original-recording"
+    },
+    "projects/changelog-writer-from-git/media/output.json": {
+      "sourceSha256": "7bcfbf740dc6662afb934953c46d01690f0cbf942f950463c341288267b20330",
+      "localizedSha256": "7bcfbf740dc6662afb934953c46d01690f0cbf942f950463c341288267b20330",
+      "kind": "original-recording"
+    },
+    "projects/changelog-writer-from-git/media/output.png": {
+      "sourceSha256": "7def1f76a3bb1a206d981089082049b577e8f6e731ea1099436b515c70229a80",
+      "localizedSha256": "7def1f76a3bb1a206d981089082049b577e8f6e731ea1099436b515c70229a80",
+      "kind": "original-recording"
+    },
+    "projects/changelog-writer-from-git/media/run.gif": {
+      "sourceSha256": "315b71da6053d7cf2b588138b1e1e41a128e2c4376b04feea2cb4fbb9fe6f846",
+      "localizedSha256": "315b71da6053d7cf2b588138b1e1e41a128e2c4376b04feea2cb4fbb9fe6f846",
+      "kind": "original-recording"
+    },
+    "projects/changelog-writer-from-git/media/run.json": {
+      "sourceSha256": "863c9f161dfae0b3193fa8b7fc5a7b207962c0d3c0d58a81a6d4a01a843f74f0",
+      "localizedSha256": "863c9f161dfae0b3193fa8b7fc5a7b207962c0d3c0d58a81a6d4a01a843f74f0",
+      "kind": "original-recording"
+    },
+    "projects/changelog-writer-from-git/media/run.png": {
+      "sourceSha256": "04327df32227e5e8e63f916cdceb5820a6d16c03a60fe20bccb818a1cd0b2fde",
+      "localizedSha256": "04327df32227e5e8e63f916cdceb5820a6d16c03a60fe20bccb818a1cd0b2fde",
+      "kind": "original-recording"
+    },
+    "projects/changelog-writer-from-git/project.json": {
+      "sourceSha256": "4366722c3e489ee49d564dc7dc9f385a726dbf718e8bf3e5f138879c362503bd",
+      "localizedSha256": "1f8cdd1e15fa46b5decbe673e4557cd1ba09f836b641b778c79a1fd094c205b2",
+      "kind": "manifest",
+      "contract": {
+        "id": "changelog-writer-from-git",
+        "title": "<translated-text>",
+        "level": 2,
+        "levelName": "Builder",
+        "tagline": "<translated-text>",
+        "summary": "<translated-text>",
+        "usefulFor": [
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "youWillBuild": "<translated-text>",
+        "hours": 8,
+        "languages": [
+          "Go"
+        ],
+        "status": "ready",
+        "source": "core",
+        "author": {
+          "name": "AI Engineering from Scratch",
+          "github": "rohitg00"
+        },
+        "skills": [
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "prerequisites": [
+          {
+            "title": "<translated-text>",
+            "path": "phases/00-setup-and-tooling/01-dev-environment"
+          },
+          {
+            "title": "<translated-text>",
+            "path": "phases/00-setup-and-tooling/09-data-management"
+          }
+        ],
+        "inspiredBy": [],
+        "demo": {
+          "command": [
+            "go",
+            "run",
+            "."
+          ],
+          "cwd": "solution"
+        },
+        "stages": [
+          {
+            "id": "01-read-an-immutable-git-export",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "go",
+            "difficulty": "starter",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ]
+          },
+          {
+            "id": "02-classify-conventional-subjects",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "go",
+            "difficulty": "core",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ]
+          },
+          {
+            "id": "03-group-commits-with-stable-ordering",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "go",
+            "difficulty": "core",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ]
+          },
+          {
+            "id": "04-render-bounded-release-notes",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "go",
+            "difficulty": "core",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ]
+          }
+        ],
+        "demos": [
+          {
+            "gif": "media/run.gif",
+            "poster": "media/run.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          },
+          {
+            "gif": "media/output.gif",
+            "poster": "media/output.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          }
+        ],
+        "figures": true,
+        "overviewFigure": "pj-changelog-writer-from-git-1"
+      }
+    },
+    "projects/changelog-writer-from-git/solution/go.mod": {
+      "sourceSha256": "03fb4d0d69058f3086a917c8e4b76f6b6a4c9b2fd12146bc147b4f0c56ccd28e",
+      "localizedSha256": "03fb4d0d69058f3086a917c8e4b76f6b6a4c9b2fd12146bc147b4f0c56ccd28e",
+      "kind": "preserved-contract"
+    },
+    "projects/changelog-writer-from-git/solution/integration.go": {
+      "sourceSha256": "343681356f861922677b60095089f2129642938d40d9e9acc1fb3388f1816092",
+      "localizedSha256": "63b710fedc05a4c9b0837a452fad0f0c51b394b6afe7c8532acc08ff5c38adf4",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "\"\\n## Migration and revert review\\n\"",
+          "\"\\n## 迁移与回退审阅（Migration and revert review）\\n\""
+        ],
+        [
+          "\"- %s reverts %s. Both records remain visible; review the final behavior.\\n\"",
+          "\"- %s 回退了 %s。两条记录均保留，请检查最终行为。\\n\""
+        ],
+        [
+          "\"No migration footer or explicit revert reference was supplied. Review breaking subjects manually.\\n\"",
+          "\"未提供迁移尾注或显式回退引用。请手动审阅破坏性变更主题。\\n\""
+        ],
+        [
+          "\"\\nSource range: %s..%s\\nExport SHA-256: %s\\n\"",
+          "\"\\n来源范围（Source range）: %s..%s\\n导出 SHA-256（Export SHA-256）: %s\\n\""
+        ]
+      ]
+    },
+    "projects/changelog-writer-from-git/solution/main.go": {
+      "sourceSha256": "d17070c324617562b2e6bb595856fcb33d990fbeb2b3f1b55d59b0654cc6265c",
+      "localizedSha256": "b4bef2e6b4c4d4b3a8c6ab345155f70df2b77f8d9a3848a1ee247e3504461e7e",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "\"read-only repository path\"",
+          "\"只读仓库路径\""
+        ],
+        [
+          "\"exclusive starting revision\"",
+          "\"不包含在范围内的起始版本\""
+        ],
+        [
+          "\"inclusive ending revision\"",
+          "\"包含在范围内的结束版本\""
+        ],
+        [
+          "\"NUL-delimited Git export\"",
+          "\"以 NUL 分隔的 Git 导出\""
+        ],
+        [
+          "\"release label\"",
+          "\"发布标签\""
+        ],
+        [
+          "\"Markdown output path; stdout if omitted\"",
+          "\"Markdown 输出路径；省略时写入标准输出\""
+        ],
+        [
+          "\"JSON source receipt path\"",
+          "\"JSON 来源记录路径\""
+        ]
+      ]
+    },
+    "projects/changelog-writer-from-git/solution/stage1.go": {
+      "sourceSha256": "726650403e78e33c1fbe96abaf9d37ef80d96f1574acb74a1ec28b43fadf6025",
+      "localizedSha256": "726650403e78e33c1fbe96abaf9d37ef80d96f1574acb74a1ec28b43fadf6025",
+      "kind": "preserved-contract"
+    },
+    "projects/changelog-writer-from-git/solution/stage2.go": {
+      "sourceSha256": "44bc3f77d00fa04fe7353de8e35ea4ec693f3311da6b0100c61baead078b59b7",
+      "localizedSha256": "44bc3f77d00fa04fe7353de8e35ea4ec693f3311da6b0100c61baead078b59b7",
+      "kind": "preserved-contract"
+    },
+    "projects/changelog-writer-from-git/solution/stage3.go": {
+      "sourceSha256": "277b99feeb1be50a482f2e794c72d87b2f6ebb346ee6869d4ae548604b24bc3b",
+      "localizedSha256": "277b99feeb1be50a482f2e794c72d87b2f6ebb346ee6869d4ae548604b24bc3b",
+      "kind": "preserved-contract"
+    },
+    "projects/changelog-writer-from-git/solution/stage4.go": {
+      "sourceSha256": "acd14cdd1277c9f4df8f84ec2e0290c3a707ad0a839bd52a0da74b46fa5edcdb",
+      "localizedSha256": "acd14cdd1277c9f4df8f84ec2e0290c3a707ad0a839bd52a0da74b46fa5edcdb",
+      "kind": "preserved-contract"
+    },
+    "projects/changelog-writer-from-git/solution/types.go": {
+      "sourceSha256": "aa8a3652589fc2596d1082a0528dd60abed43c9441748de3faac56a7e2548952",
+      "localizedSha256": "aa8a3652589fc2596d1082a0528dd60abed43c9441748de3faac56a7e2548952",
+      "kind": "preserved-contract"
+    },
+    "projects/changelog-writer-from-git/stages/01-read-an-immutable-git-export/docs/en.md": {
+      "sourceSha256": "ea34bdba5dedf5be449da1954f8129bf34380f206953e80db78eee77e21abf03",
+      "localizedSha256": "910e66a335583aaeae42823c9a299d4f1fa5ef293173e678d494ebd7537b1d27",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-changelog-writer-from-git-1\n"
+          ],
+          [
+            "go",
+            "func ParseLog(text string)([]Commit,error)\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py changelog-writer-from-git --stage 1 --path /tmp/changelog-writer-from-git-work\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "--input FILE"
+          ],
+          [
+            "`",
+            "--output release.md --receipt release.json"
+          ],
+          [
+            "`",
+            "--repo PATH --from REV --to REV"
+          ],
+          [
+            "`",
+            "abc1234\\tfeat: cache"
+          ],
+          [
+            "`",
+            "abc1234\\tfix: cache"
+          ],
+          [
+            "`",
+            "git log --format=%H%x00%s%x00%b%x00 FROM..TO"
+          ]
+        ],
+        "links": [
+          "https://git-scm.com/docs/pretty-formats"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/changelog-writer-from-git/stages/01-read-an-immutable-git-export/starter/go.mod": {
+      "sourceSha256": "03fb4d0d69058f3086a917c8e4b76f6b6a4c9b2fd12146bc147b4f0c56ccd28e",
+      "localizedSha256": "03fb4d0d69058f3086a917c8e4b76f6b6a4c9b2fd12146bc147b4f0c56ccd28e",
+      "kind": "preserved-contract"
+    },
+    "projects/changelog-writer-from-git/stages/01-read-an-immutable-git-export/starter/integration.go": {
+      "sourceSha256": "343681356f861922677b60095089f2129642938d40d9e9acc1fb3388f1816092",
+      "localizedSha256": "63b710fedc05a4c9b0837a452fad0f0c51b394b6afe7c8532acc08ff5c38adf4",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "\"\\n## Migration and revert review\\n\"",
+          "\"\\n## 迁移与回退审阅（Migration and revert review）\\n\""
+        ],
+        [
+          "\"- %s reverts %s. Both records remain visible; review the final behavior.\\n\"",
+          "\"- %s 回退了 %s。两条记录均保留，请检查最终行为。\\n\""
+        ],
+        [
+          "\"No migration footer or explicit revert reference was supplied. Review breaking subjects manually.\\n\"",
+          "\"未提供迁移尾注或显式回退引用。请手动审阅破坏性变更主题。\\n\""
+        ],
+        [
+          "\"\\nSource range: %s..%s\\nExport SHA-256: %s\\n\"",
+          "\"\\n来源范围（Source range）: %s..%s\\n导出 SHA-256（Export SHA-256）: %s\\n\""
+        ]
+      ]
+    },
+    "projects/changelog-writer-from-git/stages/01-read-an-immutable-git-export/starter/main.go": {
+      "sourceSha256": "d17070c324617562b2e6bb595856fcb33d990fbeb2b3f1b55d59b0654cc6265c",
+      "localizedSha256": "b4bef2e6b4c4d4b3a8c6ab345155f70df2b77f8d9a3848a1ee247e3504461e7e",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "\"read-only repository path\"",
+          "\"只读仓库路径\""
+        ],
+        [
+          "\"exclusive starting revision\"",
+          "\"不包含在范围内的起始版本\""
+        ],
+        [
+          "\"inclusive ending revision\"",
+          "\"包含在范围内的结束版本\""
+        ],
+        [
+          "\"NUL-delimited Git export\"",
+          "\"以 NUL 分隔的 Git 导出\""
+        ],
+        [
+          "\"release label\"",
+          "\"发布标签\""
+        ],
+        [
+          "\"Markdown output path; stdout if omitted\"",
+          "\"Markdown 输出路径；省略时写入标准输出\""
+        ],
+        [
+          "\"JSON source receipt path\"",
+          "\"JSON 来源记录路径\""
+        ]
+      ]
+    },
+    "projects/changelog-writer-from-git/stages/01-read-an-immutable-git-export/starter/stage1.go": {
+      "sourceSha256": "0b1f26e6642cb99a3228ccdaf569f5ca123445bd4072ce9f00634200647e6eef",
+      "localizedSha256": "0b1f26e6642cb99a3228ccdaf569f5ca123445bd4072ce9f00634200647e6eef",
+      "kind": "preserved-contract"
+    },
+    "projects/changelog-writer-from-git/stages/01-read-an-immutable-git-export/starter/types.go": {
+      "sourceSha256": "aa8a3652589fc2596d1082a0528dd60abed43c9441748de3faac56a7e2548952",
+      "localizedSha256": "aa8a3652589fc2596d1082a0528dd60abed43c9441748de3faac56a7e2548952",
+      "kind": "preserved-contract"
+    },
+    "projects/changelog-writer-from-git/stages/01-read-an-immutable-git-export/tests/stage_test.go": {
+      "sourceSha256": "0113df08590a55a3ae31290e70e3f4d7da05d754e2b5939e751554353cd8b0e2",
+      "localizedSha256": "0113df08590a55a3ae31290e70e3f4d7da05d754e2b5939e751554353cd8b0e2",
+      "kind": "preserved-contract"
+    },
+    "projects/changelog-writer-from-git/stages/02-classify-conventional-subjects/docs/en.md": {
+      "sourceSha256": "59dbed145220f9fea4d929f2bab3d9a756b385d3dd418637bdfc7f48df36270e",
+      "localizedSha256": "c250316181e0106488c3d93d7b12d64604d28640bbe0bdc33c7b3c499bcc7f87",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-changelog-writer-from-git-2\n"
+          ],
+          [
+            "go",
+            "func Classify(c Commit)(Commit,error)\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py changelog-writer-from-git --stage 2 --path /tmp/changelog-writer-from-git-work\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "--input FILE"
+          ],
+          [
+            "`",
+            "--output release.md --receipt release.json"
+          ],
+          [
+            "`",
+            "--repo PATH --from REV --to REV"
+          ],
+          [
+            "`",
+            "BREAKING CHANGE: Rename config."
+          ],
+          [
+            "`",
+            "fix(api)!: rename timeout"
+          ],
+          [
+            "`",
+            "git log --format=%H%x00%s%x00%b%x00 FROM..TO"
+          ]
+        ],
+        "links": [
+          "https://git-scm.com/docs/pretty-formats"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/changelog-writer-from-git/stages/02-classify-conventional-subjects/starter/stage2.go": {
+      "sourceSha256": "a2c9d42eb460e655168a9921eaf4a84524983b5b264a0d758b9d6239272214a6",
+      "localizedSha256": "a2c9d42eb460e655168a9921eaf4a84524983b5b264a0d758b9d6239272214a6",
+      "kind": "preserved-contract"
+    },
+    "projects/changelog-writer-from-git/stages/02-classify-conventional-subjects/tests/stage_test.go": {
+      "sourceSha256": "b9d81dfc1bfea82c683a43c54987cd39b6a2423e006422f991fdcff4dd8aa204",
+      "localizedSha256": "b9d81dfc1bfea82c683a43c54987cd39b6a2423e006422f991fdcff4dd8aa204",
+      "kind": "preserved-contract"
+    },
+    "projects/changelog-writer-from-git/stages/03-group-commits-with-stable-ordering/docs/en.md": {
+      "sourceSha256": "0b72699ffcb8906bdcc70569ea5f51b0d82d11fd2837f05b11a6e9b162c88b6f",
+      "localizedSha256": "816770ea2495d4f9624b87dd26a0041d0696bd4d592458ab28d33a4274e5eb09",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-changelog-writer-from-git-3\n"
+          ],
+          [
+            "go",
+            "func Group(commits []Commit)(map[string][]Commit,error)\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py changelog-writer-from-git --stage 3 --path /tmp/changelog-writer-from-git-work\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "--input FILE"
+          ],
+          [
+            "`",
+            "--output release.md --receipt release.json"
+          ],
+          [
+            "`",
+            "--repo PATH --from REV --to REV"
+          ],
+          [
+            "`",
+            "feat!: new wire format"
+          ],
+          [
+            "`",
+            "git log --format=%H%x00%s%x00%b%x00 FROM..TO"
+          ]
+        ],
+        "links": [
+          "https://git-scm.com/docs/pretty-formats"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/changelog-writer-from-git/stages/03-group-commits-with-stable-ordering/starter/stage3.go": {
+      "sourceSha256": "3b9427369bd51333ec247d194b6c667857853839b0a237fa861723d6c5be30b0",
+      "localizedSha256": "3b9427369bd51333ec247d194b6c667857853839b0a237fa861723d6c5be30b0",
+      "kind": "preserved-contract"
+    },
+    "projects/changelog-writer-from-git/stages/03-group-commits-with-stable-ordering/tests/stage_test.go": {
+      "sourceSha256": "6d90b58279e2429a5d329df253a148a0cb9087a7321c7a13aeb9ff736f9c3a8a",
+      "localizedSha256": "6d90b58279e2429a5d329df253a148a0cb9087a7321c7a13aeb9ff736f9c3a8a",
+      "kind": "preserved-contract"
+    },
+    "projects/changelog-writer-from-git/stages/04-render-bounded-release-notes/docs/en.md": {
+      "sourceSha256": "dae08d7f3e8c4d7f72ed4e255400da20765d6babb540204d435ecb33291c7258",
+      "localizedSha256": "f8cf6a0a4360f1131a748f42459c6c12029b1fce6e37f714743dc1f284ce45e8",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-changelog-writer-from-git-4\n"
+          ],
+          [
+            "go",
+            "func Release(label string,commits []Commit,max int)(string,error)\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py changelog-writer-from-git --stage 4 --path /tmp/changelog-writer-from-git-work\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "--input FILE"
+          ],
+          [
+            "`",
+            "--output release.md --receipt release.json"
+          ],
+          [
+            "`",
+            "--repo PATH --from REV --to REV"
+          ],
+          [
+            "`",
+            "[x](bad)"
+          ],
+          [
+            "`",
+            "git log --format=%H%x00%s%x00%b%x00 FROM..TO"
+          ],
+          [
+            "`",
+            "go run . --repo /path/to/repo --from v1.0 --to HEAD --label v1.1 --output release.md --receipt release.json"
+          ]
+        ],
+        "links": [
+          "bad",
+          "https://git-scm.com/docs/pretty-formats"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/changelog-writer-from-git/stages/04-render-bounded-release-notes/starter/stage4.go": {
+      "sourceSha256": "0571784c68893f7b1f85bc6e67c65d088aee130d810be05e2a64c4e50171f6fa",
+      "localizedSha256": "0571784c68893f7b1f85bc6e67c65d088aee130d810be05e2a64c4e50171f6fa",
+      "kind": "preserved-contract"
+    },
+    "projects/changelog-writer-from-git/stages/04-render-bounded-release-notes/tests/integration_test.go": {
+      "sourceSha256": "51ba8e5acdb4fae5fa9cae4c007f409451cb8133db09613baa2848170a5a7268",
+      "localizedSha256": "51ba8e5acdb4fae5fa9cae4c007f409451cb8133db09613baa2848170a5a7268",
+      "kind": "preserved-contract"
+    },
+    "projects/changelog-writer-from-git/stages/04-render-bounded-release-notes/tests/stage_test.go": {
+      "sourceSha256": "238d3fb6cb9f3e34aceccec113860118c9bc67104b96465a657cdd59f1619d4d",
+      "localizedSha256": "238d3fb6cb9f3e34aceccec113860118c9bc67104b96465a657cdd59f1619d4d",
+      "kind": "preserved-contract"
+    },
+    "projects/cloud-agent-with-aws-strands/.gitignore": {
+      "sourceSha256": "562a3c14a4e25c275a35d0dbb74d0c87197a2b17690017c71e16c4c5b2777e04",
+      "localizedSha256": "562a3c14a4e25c275a35d0dbb74d0c87197a2b17690017c71e16c4c5b2777e04",
+      "kind": "preserved-contract"
+    },
+    "projects/cloud-agent-with-aws-strands/API.md": {
+      "sourceSha256": "19280cfc73cb2d2344b3d172c7eb7f24769f16d1285b26539803ea3617a4ca5c",
+      "localizedSha256": "5a2222a25c1093e4471bf2be5c936b4617c5335c59237c25bf01dc43b1132fe1",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "python",
+            "def execute(plan, provider, max_steps=5, max_chars=4000)\n"
+          ],
+          [
+            "python",
+            "def validate_plan(raw, scope)\n"
+          ],
+          [
+            "python",
+            "def request_key(operation, resource)\ndef cached_read(operation, resource, provider, cache, retries=2)\n"
+          ],
+          [
+            "python",
+            "def parse_model_plan(text, scope)\ndef run_strands(prompt, reply)\ndef bedrock_agent(model_id, region)\n"
+          ]
+        ],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [
+          "#",
+          "###",
+          "###",
+          "###",
+          "###"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/cloud-agent-with-aws-strands/README.md": {
+      "sourceSha256": "2e9ccc4d38caa45d7c2bf7cc948d41170939f0f16953d43131f13e4a54e16b7c",
+      "localizedSha256": "f9eb35de5afda187e8c5dbd3ea8b67a9b34186bec8fa956a4134093ee4f0c827",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "bash",
+            "python3 scripts/project_test.py cloud-agent-with-aws-strands --init learning-artifacts/cloud-agent-with-aws-strands\npython3 scripts/project_test.py cloud-agent-with-aws-strands --stage 1 --path learning-artifacts/cloud-agent-with-aws-strands --strict\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py cloud-agent-with-aws-strands --all --path learning-artifacts/cloud-agent-with-aws-strands --strict\ncd learning-artifacts/cloud-agent-with-aws-strands\npython3 cli.py samples/input.json --output incident.json\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py cloud-agent-with-aws-strands --all --solution --strict\ncd projects/cloud-agent-with-aws-strands/solution\npython3 cli.py samples/input.json --output incident.json\n"
+          ],
+          [
+            "bash",
+            "python3 -m venv .venv\n.venv/bin/python -m pip install -r projects/cloud-agent-with-aws-strands/requirements-framework.txt\n.venv/bin/python scripts/project_test.py cloud-agent-with-aws-strands --solution --optional --strict\n.venv/bin/python projects/cloud-agent-with-aws-strands/solution/framework_demo.py\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "--optional"
+          ],
+          [
+            "`",
+            "--optional --strict"
+          ],
+          [
+            "`",
+            "strands-agents==1.57.1"
+          ]
+        ],
+        "links": [
+          "API.md",
+          "https://strandsagents.com/docs/user-guide/concepts/model-providers/custom_model_provider/",
+          "stages/01-plan/docs/en.md",
+          "stages/02-executor/docs/en.md",
+          "stages/03-retry/docs/en.md",
+          "stages/04-strands-adapter/docs/en.md"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 4
+      }
+    },
+    "projects/cloud-agent-with-aws-strands/media/framework.gif": {
+      "sourceSha256": "deee99bfa16dce79c5c2a6e1ee6742cf329c7bb0f88b55b509a1ddd0cd23ecc2",
+      "localizedSha256": "deee99bfa16dce79c5c2a6e1ee6742cf329c7bb0f88b55b509a1ddd0cd23ecc2",
+      "kind": "original-recording"
+    },
+    "projects/cloud-agent-with-aws-strands/media/framework.json": {
+      "sourceSha256": "e23d07fafa0c45b1f8ce94e552f3aefe8699990cff80a37144a0356c168bf947",
+      "localizedSha256": "e23d07fafa0c45b1f8ce94e552f3aefe8699990cff80a37144a0356c168bf947",
+      "kind": "original-recording"
+    },
+    "projects/cloud-agent-with-aws-strands/media/framework.png": {
+      "sourceSha256": "1de9dcdaeacaf338a4ecf06e8cc59c1481f50dc9b81733f6d2809decb98a1d2c",
+      "localizedSha256": "1de9dcdaeacaf338a4ecf06e8cc59c1481f50dc9b81733f6d2809decb98a1d2c",
+      "kind": "original-recording"
+    },
+    "projects/cloud-agent-with-aws-strands/media/output.gif": {
+      "sourceSha256": "916bd8edb6f7a1411800b98d208a05799fcbac7f8940f7f42d06181a899e0eb1",
+      "localizedSha256": "916bd8edb6f7a1411800b98d208a05799fcbac7f8940f7f42d06181a899e0eb1",
+      "kind": "original-recording"
+    },
+    "projects/cloud-agent-with-aws-strands/media/output.json": {
+      "sourceSha256": "1eb0307fcf46cc1c49c0cf41cf4825b574e9b8eb7809c7549aad96e792a93d0c",
+      "localizedSha256": "1eb0307fcf46cc1c49c0cf41cf4825b574e9b8eb7809c7549aad96e792a93d0c",
+      "kind": "original-recording"
+    },
+    "projects/cloud-agent-with-aws-strands/media/output.png": {
+      "sourceSha256": "41f7b933c207adb1269d51e87a765b4901f43ff2885d292d20bb77c916fef11b",
+      "localizedSha256": "41f7b933c207adb1269d51e87a765b4901f43ff2885d292d20bb77c916fef11b",
+      "kind": "original-recording"
+    },
+    "projects/cloud-agent-with-aws-strands/media/run.gif": {
+      "sourceSha256": "dd1af053edfd5b9367416ae64c5168b6380da32780ccb3817fe90b962207e17d",
+      "localizedSha256": "dd1af053edfd5b9367416ae64c5168b6380da32780ccb3817fe90b962207e17d",
+      "kind": "original-recording"
+    },
+    "projects/cloud-agent-with-aws-strands/media/run.json": {
+      "sourceSha256": "f434be55007c5a1e75cb7230b0956ed1df5e2f9e8c1d4bbb1d0ca4c12a9aef73",
+      "localizedSha256": "f434be55007c5a1e75cb7230b0956ed1df5e2f9e8c1d4bbb1d0ca4c12a9aef73",
+      "kind": "original-recording"
+    },
+    "projects/cloud-agent-with-aws-strands/media/run.png": {
+      "sourceSha256": "cedd3b1064f1d28c1625c7542fb6928e44fed1446a95da560271cbe82417673d",
+      "localizedSha256": "cedd3b1064f1d28c1625c7542fb6928e44fed1446a95da560271cbe82417673d",
+      "kind": "original-recording"
+    },
+    "projects/cloud-agent-with-aws-strands/project.json": {
+      "sourceSha256": "c8567bff2e1cc675022ad25e52d9be9647f3536ac21181f2314dca925794e247",
+      "localizedSha256": "572687924f2ba48be625e1317a07c674f4ab60e43212bd4901b2d7c09fba817d",
+      "kind": "manifest",
+      "contract": {
+        "id": "cloud-agent-with-aws-strands",
+        "title": "<translated-text>",
+        "level": 4,
+        "levelName": "Systems",
+        "tagline": "<translated-text>",
+        "summary": "<translated-text>",
+        "hours": 8,
+        "languages": [
+          "Python"
+        ],
+        "status": "ready",
+        "source": "core",
+        "author": {
+          "name": "AI Engineering from Scratch",
+          "github": "rohitg00"
+        },
+        "youWillBuild": "<translated-text>",
+        "usefulFor": [
+          "<translated-text>"
+        ],
+        "skills": [
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "prerequisites": [
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "figures": true,
+        "overviewFigure": "pj-cloud-agent-with-aws-strands-1",
+        "languageWhy": {
+          "Python": "<translated-text>"
+        },
+        "demo": {
+          "cwd": "solution",
+          "command": [
+            "python3",
+            "cli.py",
+            "samples/input.json",
+            "--output",
+            "incident.json"
+          ]
+        },
+        "stages": [
+          {
+            "id": "01-plan",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "language": "python",
+            "languageWhy": "<translated-text>",
+            "hours": 2,
+            "difficulty": "starter",
+            "figure": "pj-cloud-agent-with-aws-strands-1",
+            "concepts": [
+              "validate",
+              "a",
+              "scoped",
+              "cloud"
+            ]
+          },
+          {
+            "id": "02-executor",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "language": "python",
+            "languageWhy": "<translated-text>",
+            "hours": 2,
+            "difficulty": "core",
+            "figure": "pj-cloud-agent-with-aws-strands-2",
+            "concepts": [
+              "execute",
+              "reads",
+              "within",
+              "step"
+            ]
+          },
+          {
+            "id": "03-retry",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "language": "python",
+            "languageWhy": "<translated-text>",
+            "hours": 2,
+            "difficulty": "core",
+            "figure": "pj-cloud-agent-with-aws-strands-3",
+            "concepts": [
+              "retry",
+              "transient",
+              "reads",
+              "and"
+            ]
+          },
+          {
+            "id": "04-strands-adapter",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "language": "python",
+            "languageWhy": "<translated-text>",
+            "hours": 2,
+            "difficulty": "stretch",
+            "figure": "pj-cloud-agent-with-aws-strands-4",
+            "concepts": [
+              "drive",
+              "the",
+              "actual",
+              "strands"
+            ],
+            "runners": [
+              {
+                "language": "python"
+              },
+              {
+                "language": "python",
+                "optional": true,
+                "requires": [
+                  "python:strands"
+                ],
+                "argv": [
+                  "{python}",
+                  "-m",
+                  "unittest",
+                  "discover",
+                  "-s",
+                  "{stage}/tests-framework",
+                  "-p",
+                  "test_framework.py"
+                ]
+              }
+            ]
+          }
+        ],
+        "demos": [
+          {
+            "gif": "media/run.gif",
+            "poster": "media/run.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          },
+          {
+            "gif": "media/output.gif",
+            "poster": "media/output.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          },
+          {
+            "gif": "media/framework.gif",
+            "poster": "media/framework.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          }
+        ]
+      }
+    },
+    "projects/cloud-agent-with-aws-strands/requirements-framework.txt": {
+      "sourceSha256": "ee85f7a0335922320621863488d8d0ec6c61316051f371ed8108e8b197f2e67a",
+      "localizedSha256": "ee85f7a0335922320621863488d8d0ec6c61316051f371ed8108e8b197f2e67a",
+      "kind": "preserved-contract"
+    },
+    "projects/cloud-agent-with-aws-strands/solution/cli.py": {
+      "sourceSha256": "3b762c1f5b40b80f789c227d9400d24b9766e5adbc5a45bb65c46738ad5f2865",
+      "localizedSha256": "dd308bfcb2dc36c875f6a1ca60048bd2c0373cc8fbec62cb91c7fbb8d822fa71",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "Execute a validated read-only plan against local recordings or explicit AWS CLI reads.",
+          "通过本地记录或显式 AWS CLI 读取，执行已校验的只读计划。"
+        ]
+      ]
+    },
+    "projects/cloud-agent-with-aws-strands/solution/demo.py": {
+      "sourceSha256": "2bf76af8257ac74c46c7a14c2aa380142c116b4f5356cfbb3d370c2f0b93c6de",
+      "localizedSha256": "2bf76af8257ac74c46c7a14c2aa380142c116b4f5356cfbb3d370c2f0b93c6de",
+      "kind": "preserved-contract"
+    },
+    "projects/cloud-agent-with-aws-strands/solution/executor.py": {
+      "sourceSha256": "e4993bad5015c3856a67833ca3f780c6faff8a8ad2d86f6ef8862aa2824be60a",
+      "localizedSha256": "2373797d4c9fcfd27c7fb79948bcf31c5cd34ea2fde3602d5221882b7889d538",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "Execute reads within step and response budgets.\n\nLesson: projects/cloud-agent-with-aws-strands/stages/02-executor/docs/en.md\nThe implementation is original and uses explicit local data contracts.\nRun its tests through scripts/project_test.py.\n",
+          "在步骤和响应额度内执行读取。\n\n课程：projects/cloud-agent-with-aws-strands/stages/02-executor/docs/en.md\n本实现为原创，使用明确的本地数据契约。\n通过 scripts/project_test.py 运行测试。\n译注：输出额度在 provider 返回后检查，不是网络接收量或内存硬上限。\n"
+        ]
+      ]
+    },
+    "projects/cloud-agent-with-aws-strands/solution/framework_demo.py": {
+      "sourceSha256": "843a1bd40da2cd481acc8909a70ab538562e297c8ceb5f4d43258b2430f1f391",
+      "localizedSha256": "94e96d667d13197326e6c0b4e1a863924c191581384813f2a4f3e25963b8c09a",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "Real Strands Agent with an injected offline streaming Model; no cloud call",
+          "真实 Strands Agent 配合注入的离线流式 Model；不调用云服务"
+        ]
+      ]
+    },
+    "projects/cloud-agent-with-aws-strands/solution/plan.py": {
+      "sourceSha256": "f2e0874e2b0cc6d4301a9f386b434007d0caf961bfdf5c0c32d60718315c0217",
+      "localizedSha256": "5dbd5936972ccdebf6b32d00cdd5ee327f71fcb178d0990fc50baf6091adca79",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "Validate a scoped cloud inspection plan.\n\nLesson: projects/cloud-agent-with-aws-strands/stages/01-plan/docs/en.md\nThe implementation is original and uses explicit local data contracts.\nRun its tests through scripts/project_test.py.\n",
+          "校验允许范围内的云端检查计划。\n\n课程：projects/cloud-agent-with-aws-strands/stages/01-plan/docs/en.md\n本实现为原创，使用明确的本地数据契约。\n通过 scripts/project_test.py 运行测试。\n"
+        ]
+      ]
+    },
+    "projects/cloud-agent-with-aws-strands/solution/retry.py": {
+      "sourceSha256": "9d75dff0b7511a8d10f088ffff1d62291a73ceb77b7a688e1e871cdb3f82863a",
+      "localizedSha256": "ec7dbb0d526b5a5912799964267bb76c1b889dfdd0cfc52f491d6dd631df855f",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "Retry transient reads and reuse completed requests.\n\nLesson: projects/cloud-agent-with-aws-strands/stages/03-retry/docs/en.md\nThe implementation is original and uses explicit local data contracts.\nRun its tests through scripts/project_test.py.\n",
+          "重试暂时失败的读取并复用已完成请求。\n\n课程：projects/cloud-agent-with-aws-strands/stages/03-retry/docs/en.md\n本实现为原创，使用明确的本地数据契约。\n通过 scripts/project_test.py 运行测试。\n"
+        ]
+      ]
+    },
+    "projects/cloud-agent-with-aws-strands/solution/samples/input.json": {
+      "sourceSha256": "426713e4eb75738510c67374c5b369b5593c039a831951032e86a607c368ea1d",
+      "localizedSha256": "426713e4eb75738510c67374c5b369b5593c039a831951032e86a607c368ea1d",
+      "kind": "preserved-contract"
+    },
+    "projects/cloud-agent-with-aws-strands/solution/strands_adapter.py": {
+      "sourceSha256": "94c4154b603e4aac37bf89ebf7b4afadc1615932c62e9156d19859a06ee3d61a",
+      "localizedSha256": "54920329d28a4679520f823ae83ace0bb348683004d28f3742149d7b453e1a68",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "Drive the actual Strands loop with a local model.\n\nLesson: projects/cloud-agent-with-aws-strands/stages/04-strands-adapter/docs/en.md\nThe implementation is original and uses explicit local data contracts.\nRun its tests through scripts/project_test.py.\n",
+          "用本地模型驱动真实 Strands 循环。\n\n课程：projects/cloud-agent-with-aws-strands/stages/04-strands-adapter/docs/en.md\n本实现为原创，使用明确的本地数据契约。\n通过 scripts/project_test.py 运行测试。\n译注：真实 SDK 本地模型测试与真实 AWS/Bedrock 调用分别验证，默认测试不覆盖后者。\n"
+        ]
+      ]
+    },
+    "projects/cloud-agent-with-aws-strands/stages/01-plan/docs/en.md": {
+      "sourceSha256": "884df4fa76cd284dfc4090e27304871107fa5426f186f969bc5f5076e48d844c",
+      "localizedSha256": "9b525b0955993b8c7ac044d41e222bb0758a9d038473744799a703b0ba4c321e",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-cloud-agent-with-aws-strands-1\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py cloud-agent-with-aws-strands --stage 1 --path learning-artifacts/cloud-agent-with-aws-strands --strict\n"
+          ],
+          [
+            "bash",
+            "cd learning-artifacts/cloud-agent-with-aws-strands\npython3 cli.py samples/input.json --output incident.json\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "plan.py"
+          ],
+          [
+            "`",
+            "python3 scripts/project_test.py cloud-agent-with-aws-strands --init learning-artifacts/cloud-agent-with-aws-strands"
+          ],
+          [
+            "`",
+            "validate_plan"
+          ]
+        ],
+        "links": [
+          "../../../API.md",
+          "../../../README.md",
+          "https://strandsagents.com/docs/user-guide/concepts/model-providers/custom_model_provider/"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/cloud-agent-with-aws-strands/stages/01-plan/starter/cli.py": {
+      "sourceSha256": "3b762c1f5b40b80f789c227d9400d24b9766e5adbc5a45bb65c46738ad5f2865",
+      "localizedSha256": "dd308bfcb2dc36c875f6a1ca60048bd2c0373cc8fbec62cb91c7fbb8d822fa71",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "Execute a validated read-only plan against local recordings or explicit AWS CLI reads.",
+          "通过本地记录或显式 AWS CLI 读取，执行已校验的只读计划。"
+        ]
+      ]
+    },
+    "projects/cloud-agent-with-aws-strands/stages/01-plan/starter/plan.py": {
+      "sourceSha256": "d7dd3d48414361d5dc5ea9951114490ace5eabc1ebfbb87d4d3f56e4204e1488",
+      "localizedSha256": "dd47e1fd2dc440a0967cb0793f36a41b582df9435b48cdd4a1957318dee0621e",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "Validate a scoped cloud inspection plan.\n\nLesson: projects/cloud-agent-with-aws-strands/stages/01-plan/docs/en.md\nThe implementation is original and uses explicit local data contracts.\nRun its tests through scripts/project_test.py.\n",
+          "校验允许范围内的云端检查计划。\n\n课程：projects/cloud-agent-with-aws-strands/stages/01-plan/docs/en.md\n本实现为原创，使用明确的本地数据契约。\n通过 scripts/project_test.py 运行测试。\n"
+        ]
+      ]
+    },
+    "projects/cloud-agent-with-aws-strands/stages/01-plan/starter/samples/input.json": {
+      "sourceSha256": "426713e4eb75738510c67374c5b369b5593c039a831951032e86a607c368ea1d",
+      "localizedSha256": "426713e4eb75738510c67374c5b369b5593c039a831951032e86a607c368ea1d",
+      "kind": "preserved-contract"
+    },
+    "projects/cloud-agent-with-aws-strands/stages/01-plan/tests/test_plan.py": {
+      "sourceSha256": "f2e8ff5c62c6dc354dd1802c2c836829495194e0a59dda383db719617b009579",
+      "localizedSha256": "f2e8ff5c62c6dc354dd1802c2c836829495194e0a59dda383db719617b009579",
+      "kind": "preserved-contract"
+    },
+    "projects/cloud-agent-with-aws-strands/stages/02-executor/docs/en.md": {
+      "sourceSha256": "24d67b89c15c65fddf4f7c1657b9e422aef0c6533c9ad4cc43e331ef314d9a5d",
+      "localizedSha256": "2f90922e3b21630b048b02dd25063c8e3dc0649b5413bac98216ac109cbef5b2",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-cloud-agent-with-aws-strands-2\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py cloud-agent-with-aws-strands --stage 2 --path learning-artifacts/cloud-agent-with-aws-strands --strict\n"
+          ],
+          [
+            "bash",
+            "cd learning-artifacts/cloud-agent-with-aws-strands\npython3 cli.py samples/input.json --output incident.json\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "execute"
+          ],
+          [
+            "`",
+            "executor.py"
+          ],
+          [
+            "`",
+            "python3 scripts/project_test.py cloud-agent-with-aws-strands --init learning-artifacts/cloud-agent-with-aws-strands"
+          ]
+        ],
+        "links": [
+          "../../../API.md",
+          "../../../README.md",
+          "https://strandsagents.com/docs/user-guide/concepts/model-providers/custom_model_provider/"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/cloud-agent-with-aws-strands/stages/02-executor/starter/executor.py": {
+      "sourceSha256": "958dad64f937e64573cc97586d8b20b77c61d9e5d20eb84b08850093cbc8e1c3",
+      "localizedSha256": "816f5eb9ca0691dbbc7902cf5b93c4c81ad6f4a905caee8c741ceea11e13e201",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "Execute reads within step and response budgets.\n\nLesson: projects/cloud-agent-with-aws-strands/stages/02-executor/docs/en.md\nThe implementation is original and uses explicit local data contracts.\nRun its tests through scripts/project_test.py.\n",
+          "在步骤和响应额度内执行读取。\n\n课程：projects/cloud-agent-with-aws-strands/stages/02-executor/docs/en.md\n本实现为原创，使用明确的本地数据契约。\n通过 scripts/project_test.py 运行测试。\n译注：输出额度在 provider 返回后检查，不是网络接收量或内存硬上限。\n"
+        ]
+      ]
+    },
+    "projects/cloud-agent-with-aws-strands/stages/02-executor/tests/test_executor.py": {
+      "sourceSha256": "eb9ed06522b2abb609e0340e667eb36bdcd98ee9c796544c0e72503c44660aab",
+      "localizedSha256": "eb9ed06522b2abb609e0340e667eb36bdcd98ee9c796544c0e72503c44660aab",
+      "kind": "preserved-contract"
+    },
+    "projects/cloud-agent-with-aws-strands/stages/03-retry/docs/en.md": {
+      "sourceSha256": "f2c497339ccc2d4fe54cf431ace6adff9e65c9e149e024d24412af7f91262a18",
+      "localizedSha256": "85fb7f0eea436f32820919acab80da9dd2e58610a60106ed9be79209703aff60",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-cloud-agent-with-aws-strands-3\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py cloud-agent-with-aws-strands --stage 3 --path learning-artifacts/cloud-agent-with-aws-strands --strict\n"
+          ],
+          [
+            "bash",
+            "cd learning-artifacts/cloud-agent-with-aws-strands\npython3 cli.py samples/input.json --output incident.json\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "cached_read"
+          ],
+          [
+            "`",
+            "python3 scripts/project_test.py cloud-agent-with-aws-strands --init learning-artifacts/cloud-agent-with-aws-strands"
+          ],
+          [
+            "`",
+            "request_key"
+          ],
+          [
+            "`",
+            "retry.py"
+          ]
+        ],
+        "links": [
+          "../../../API.md",
+          "../../../README.md",
+          "https://strandsagents.com/docs/user-guide/concepts/model-providers/custom_model_provider/"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/cloud-agent-with-aws-strands/stages/03-retry/starter/retry.py": {
+      "sourceSha256": "f5dff4b980c57d478d19b5c2c7829da7f4f2d52c02a3f147310129dce125b26d",
+      "localizedSha256": "10dfb117a88b079aab9823e45159115878008c0ffeeb05d4761b8fac153da713",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "Retry transient reads and reuse completed requests.\n\nLesson: projects/cloud-agent-with-aws-strands/stages/03-retry/docs/en.md\nThe implementation is original and uses explicit local data contracts.\nRun its tests through scripts/project_test.py.\n",
+          "重试暂时失败的读取并复用已完成请求。\n\n课程：projects/cloud-agent-with-aws-strands/stages/03-retry/docs/en.md\n本实现为原创，使用明确的本地数据契约。\n通过 scripts/project_test.py 运行测试。\n"
+        ]
+      ]
+    },
+    "projects/cloud-agent-with-aws-strands/stages/03-retry/tests/test_retry.py": {
+      "sourceSha256": "f17670a41575e4916f93305f2f329ddd008136fe8c2c9ba1fb69654bbb55007d",
+      "localizedSha256": "f17670a41575e4916f93305f2f329ddd008136fe8c2c9ba1fb69654bbb55007d",
+      "kind": "preserved-contract"
+    },
+    "projects/cloud-agent-with-aws-strands/stages/04-strands-adapter/docs/en.md": {
+      "sourceSha256": "bedb2013559a77a34d60bb108369935c87e8389cdcec7eccd43c0c45df5e3e3c",
+      "localizedSha256": "625a2479b1922e071d93ad013affa466d2a2c55fc25e27045df8fe73722e8796",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-cloud-agent-with-aws-strands-4\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py cloud-agent-with-aws-strands --stage 4 --path learning-artifacts/cloud-agent-with-aws-strands --strict\n"
+          ],
+          [
+            "bash",
+            "cd learning-artifacts/cloud-agent-with-aws-strands\npython3 cli.py samples/input.json --output incident.json\n"
+          ],
+          [
+            "bash",
+            "python3 -m venv .venv\n.venv/bin/python -m pip install -r projects/cloud-agent-with-aws-strands/requirements-framework.txt\n.venv/bin/python scripts/project_test.py cloud-agent-with-aws-strands --solution --optional --strict\n.venv/bin/python projects/cloud-agent-with-aws-strands/solution/framework_demo.py\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "--path my-cloud-agent-with-aws-strands"
+          ],
+          [
+            "`",
+            "--solution"
+          ],
+          [
+            "`",
+            "bedrock_agent"
+          ],
+          [
+            "`",
+            "parse_model_plan"
+          ],
+          [
+            "`",
+            "python3 scripts/project_test.py cloud-agent-with-aws-strands --init learning-artifacts/cloud-agent-with-aws-strands"
+          ],
+          [
+            "`",
+            "run_strands"
+          ],
+          [
+            "`",
+            "strands-agents==1.57.1"
+          ],
+          [
+            "`",
+            "strands_adapter.py"
+          ]
+        ],
+        "links": [
+          "../../../API.md",
+          "../../../README.md",
+          "https://strandsagents.com/docs/user-guide/concepts/model-providers/custom_model_provider/"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/cloud-agent-with-aws-strands/stages/04-strands-adapter/starter/strands_adapter.py": {
+      "sourceSha256": "737eee5b1cb28fe228348f3860a83b8a1eb0f341a635b06011cdd707f2b66550",
+      "localizedSha256": "de3776044f69894d67f43f02ff9483eb66bd59ff592c0c2464377a921ad50cd6",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "Drive the actual Strands loop with a local model.\n\nLesson: projects/cloud-agent-with-aws-strands/stages/04-strands-adapter/docs/en.md\nThe implementation is original and uses explicit local data contracts.\nRun its tests through scripts/project_test.py.\n",
+          "用本地模型驱动真实 Strands 循环。\n\n课程：projects/cloud-agent-with-aws-strands/stages/04-strands-adapter/docs/en.md\n本实现为原创，使用明确的本地数据契约。\n通过 scripts/project_test.py 运行测试。\n译注：真实 SDK 本地模型测试与真实 AWS/Bedrock 调用分别验证，默认测试不覆盖后者。\n"
+        ]
+      ]
+    },
+    "projects/cloud-agent-with-aws-strands/stages/04-strands-adapter/tests-framework/test_framework.py": {
+      "sourceSha256": "8f6c1196e4daf76f9022027c4a5a7ede2fd708db94986ea70f9f2d911fcad58d",
+      "localizedSha256": "8f6c1196e4daf76f9022027c4a5a7ede2fd708db94986ea70f9f2d911fcad58d",
+      "kind": "preserved-contract"
+    },
+    "projects/cloud-agent-with-aws-strands/stages/04-strands-adapter/tests/test_aws_windows.py": {
+      "sourceSha256": "f84151dcc1dd755e4efb23277e124f7428b7b7003725a62048100cb81d184e65",
+      "localizedSha256": "f84151dcc1dd755e4efb23277e124f7428b7b7003725a62048100cb81d184e65",
+      "kind": "preserved-contract"
+    },
+    "projects/cloud-agent-with-aws-strands/stages/04-strands-adapter/tests/test_integration.py": {
+      "sourceSha256": "a8921be70c80d9957feef5121e08801505dc27768729e08e163e01fb59f690b5",
+      "localizedSha256": "a8921be70c80d9957feef5121e08801505dc27768729e08e163e01fb59f690b5",
+      "kind": "preserved-contract"
+    },
+    "projects/cloud-agent-with-aws-strands/stages/04-strands-adapter/tests/test_strands_adapter.py": {
+      "sourceSha256": "3363261dace6c2e5d9f6fce46bf1c4ab97f74cbadfc7b2312c3fd735ef28c578",
+      "localizedSha256": "3363261dace6c2e5d9f6fce46bf1c4ab97f74cbadfc7b2312c3fd735ef28c578",
+      "kind": "preserved-contract"
+    }
+  },
+  "figures": [
+    {
+      "path": "site/figures/projects/changelog-writer-from-git.js",
+      "sourceSha256": "ee0064e764263e20a4439d8783575bdf23eaf17847e57fe76c18a9404cba95c1",
+      "localizedSha256": "d6df86630b668de8ef1d462e4b3900c98f3a02ad77c43cf77205d57bebea2a14",
+      "edits": [
+        {
+          "offset": 79,
+          "before": "\"Read an immutable Git export\"",
+          "after": "\"读取固定的 Git 导出\"",
+          "afterOffset": 79
+        },
+        {
+          "offset": 131,
+          "before": "\"Read snapshot\"",
+          "after": "\"读取快照\"",
+          "afterOffset": 115
+        },
+        {
+          "offset": 158,
+          "before": "\"Consume one hash and subject per tab-separated line, rejecting duplicate hashes, malformed hexadecimal IDs and empty subjects.\"",
+          "after": "\"逐行读取由制表符分隔的哈希和主题，拒绝重复哈希、格式错误的十六进制 ID 和空主题。\"",
+          "afterOffset": 133
+        },
+        {
+          "offset": 299,
+          "before": "\"Validate hash\"",
+          "after": "\"校验哈希\"",
+          "afterOffset": 190
+        },
+        {
+          "offset": 326,
+          "before": "\"Consume one hash and subject per tab-separated line, rejecting duplicate hashes, malformed hexadecimal IDs and empty subjects.\"",
+          "after": "\"逐行读取由制表符分隔的哈希和主题，拒绝重复哈希、格式错误的十六进制 ID 和空主题。\"",
+          "afterOffset": 208
+        },
+        {
+          "offset": 467,
+          "before": "\"Unique commit\"",
+          "after": "\"检查提交唯一性\"",
+          "afterOffset": 265
+        },
+        {
+          "offset": 494,
+          "before": "\"Consume one hash and subject per tab-separated line, rejecting duplicate hashes, malformed hexadecimal IDs and empty subjects.\"",
+          "after": "\"逐行读取由制表符分隔的哈希和主题，拒绝重复哈希、格式错误的十六进制 ID 和空主题。\"",
+          "afterOffset": 286
+        },
+        {
+          "offset": 635,
+          "before": "\"Preserve subject\"",
+          "after": "\"保留主题\"",
+          "afterOffset": 343
+        },
+        {
+          "offset": 665,
+          "before": "\"Consume one hash and subject per tab-separated line, rejecting duplicate hashes, malformed hexadecimal IDs and empty subjects.\"",
+          "after": "\"逐行读取由制表符分隔的哈希和主题，拒绝重复哈希、格式错误的十六进制 ID 和空主题。\"",
+          "afterOffset": 361
+        },
+        {
+          "offset": 808,
+          "before": "\"Change the inputs and explain the computed result before running the stage tests.\"",
+          "after": "\"修改输入，解释计算结果，再运行阶段测试。\"",
+          "afterOffset": 420
+        },
+        {
+          "offset": 929,
+          "before": "'Commit hashes, comma separated'",
+          "after": "'提交哈希，以逗号分隔'",
+          "afterOffset": 480
+        },
+        {
+          "offset": 1177,
+          "before": "'All identities pass the bounded export profile.'",
+          "after": "'所有提交标识均通过限定导出格式的检查。'",
+          "afterOffset": 708
+        },
+        {
+          "offset": 1227,
+          "before": "'Reject malformed or duplicate commit identities.'",
+          "after": "'拒绝格式错误或重复的提交标识。'",
+          "afterOffset": 730
+        },
+        {
+          "offset": 1294,
+          "before": "'Records'",
+          "after": "'记录数'",
+          "afterOffset": 764
+        },
+        {
+          "offset": 1329,
+          "before": "'Distinct'",
+          "after": "'不同标识数'",
+          "afterOffset": 795
+        },
+        {
+          "offset": 1364,
+          "before": "'Decision'",
+          "after": "'判断'",
+          "afterOffset": 827
+        },
+        {
+          "offset": 1494,
+          "before": "\"Classify conventional subjects\"",
+          "after": "\"分类约定式提交主题\"",
+          "afterOffset": 951
+        },
+        {
+          "offset": 1548,
+          "before": "\"First grammar\"",
+          "after": "\"匹配主题语法\"",
+          "afterOffset": 984
+        },
+        {
+          "offset": 1575,
+          "before": "\"Parse type, optional scope and optional breaking marker from the first colon-space boundary.\"",
+          "after": "\"以第一个冒号加空格为边界，解析类型、可选范围和可选破坏性变更标记。\"",
+          "afterOffset": 1004
+        },
+        {
+          "offset": 1682,
+          "before": "\"Optional scope\"",
+          "after": "\"可选范围\"",
+          "afterOffset": 1052
+        },
+        {
+          "offset": 1710,
+          "before": "\"Parse type, optional scope and optional breaking marker from the first colon-space boundary.\"",
+          "after": "\"以第一个冒号加空格为边界，解析类型、可选范围和可选破坏性变更标记。\"",
+          "afterOffset": 1070
+        },
+        {
+          "offset": 1817,
+          "before": "\"Breaking marker\"",
+          "after": "\"破坏性变更标记\"",
+          "afterOffset": 1118
+        },
+        {
+          "offset": 1846,
+          "before": "\"Parse type, optional scope and optional breaking marker from the first colon-space boundary.\"",
+          "after": "\"以第一个冒号加空格为边界，解析类型、可选范围和可选破坏性变更标记。\"",
+          "afterOffset": 1139
+        },
+        {
+          "offset": 1953,
+          "before": "\"Retained description\"",
+          "after": "\"保留描述\"",
+          "afterOffset": 1187
+        },
+        {
+          "offset": 1987,
+          "before": "\"Parse type, optional scope and optional breaking marker from the first colon-space boundary.\"",
+          "after": "\"以第一个冒号加空格为边界，解析类型、可选范围和可选破坏性变更标记。\"",
+          "afterOffset": 1205
+        },
+        {
+          "offset": 2096,
+          "before": "\"Change the inputs and explain the computed result before running the stage tests.\"",
+          "after": "\"修改输入，解释计算结果，再运行阶段测试。\"",
+          "afterOffset": 1255
+        },
+        {
+          "offset": 2218,
+          "before": "'Commit subject'",
+          "after": "'提交主题'",
+          "afterOffset": 1316
+        },
+        {
+          "offset": 2301,
+          "before": "'Body contains a migration footer'",
+          "after": "'正文包含迁移尾注'",
+          "afterOffset": 1389
+        },
+        {
+          "offset": 2508,
+          "before": "'Preserve the migration risk even without an exclamation mark in the subject.'",
+          "after": "'即使主题没有感叹号，也保留已有迁移风险。'",
+          "afterOffset": 1572
+        },
+        {
+          "offset": 2587,
+          "before": "'Keep the subject and classification available for review.'",
+          "after": "'保留提交主题和分类结果，供后续审阅。'",
+          "afterOffset": 1595
+        },
+        {
+          "offset": 2656,
+          "before": "'Field'",
+          "after": "'字段'",
+          "afterOffset": 1625
+        },
+        {
+          "offset": 2664,
+          "before": "'Value'",
+          "after": "'值'",
+          "afterOffset": 1630
+        },
+        {
+          "offset": 2680,
+          "before": "'Type'",
+          "after": "'类型'",
+          "afterOffset": 1642
+        },
+        {
+          "offset": 2704,
+          "before": "'Scope'",
+          "after": "'范围'",
+          "afterOffset": 1664
+        },
+        {
+          "offset": 2736,
+          "before": "'Breaking'",
+          "after": "'破坏性变更'",
+          "afterOffset": 1693
+        },
+        {
+          "offset": 2769,
+          "before": "'Description'",
+          "after": "'描述'",
+          "afterOffset": 1723
+        },
+        {
+          "offset": 2889,
+          "before": "\"Group commits with stable ordering\"",
+          "after": "\"按稳定顺序分组提交\"",
+          "afterOffset": 1834
+        },
+        {
+          "offset": 2947,
+          "before": "\"Classify\"",
+          "after": "\"分类\"",
+          "afterOffset": 1867
+        },
+        {
+          "offset": 2969,
+          "before": "\"Map breaking changes to their own section before feature and fix groups.\"",
+          "after": "\"破坏性变更优先进入独立章节，其余提交再按功能或修复分组。\"",
+          "afterOffset": 1883
+        },
+        {
+          "offset": 3056,
+          "before": "\"Breaking precedence\"",
+          "after": "\"破坏性变更优先\"",
+          "afterOffset": 1926
+        },
+        {
+          "offset": 3089,
+          "before": "\"Map breaking changes to their own section before feature and fix groups.\"",
+          "after": "\"破坏性变更优先进入独立章节，其余提交再按功能或修复分组。\"",
+          "afterOffset": 1947
+        },
+        {
+          "offset": 3176,
+          "before": "\"Group map\"",
+          "after": "\"分组映射\"",
+          "afterOffset": 1990
+        },
+        {
+          "offset": 3199,
+          "before": "\"Map breaking changes to their own section before feature and fix groups.\"",
+          "after": "\"破坏性变更优先进入独立章节，其余提交再按功能或修复分组。\"",
+          "afterOffset": 2008
+        },
+        {
+          "offset": 3286,
+          "before": "\"Stable hash order\"",
+          "after": "\"稳定哈希顺序\"",
+          "afterOffset": 2051
+        },
+        {
+          "offset": 3317,
+          "before": "\"Map breaking changes to their own section before feature and fix groups.\"",
+          "after": "\"破坏性变更优先进入独立章节，其余提交再按功能或修复分组。\"",
+          "afterOffset": 2071
+        },
+        {
+          "offset": 3406,
+          "before": "\"Change the inputs and explain the computed result before running the stage tests.\"",
+          "after": "\"修改输入，解释计算结果，再运行阶段测试。\"",
+          "afterOffset": 2116
+        },
+        {
+          "offset": 3529,
+          "before": "'Feature commits'",
+          "after": "'功能提交数'",
+          "afterOffset": 2178
+        },
+        {
+          "offset": 3611,
+          "before": "'Features with breaking behavior'",
+          "after": "'含破坏性变更的功能提交数'",
+          "afterOffset": 2250
+        },
+        {
+          "offset": 3764,
+          "before": "'Breaking precedence places each commit in exactly one section.'",
+          "after": "'破坏性变更优先，使每个提交只进入一个章节。'",
+          "afterOffset": 2384
+        },
+        {
+          "offset": 3842,
+          "before": "'Breaking changes'",
+          "after": "'破坏性变更（Breaking changes）'",
+          "afterOffset": 2421
+        },
+        {
+          "offset": 3884,
+          "before": "'Features'",
+          "after": "'新增功能（Features）'",
+          "afterOffset": 2470
+        },
+        {
+          "offset": 3939,
+          "before": "'Total entries'",
+          "after": "'总条目数'",
+          "afterOffset": 2531
+        },
+        {
+          "offset": 3980,
+          "before": "'Double counted'",
+          "after": "'重复计数'",
+          "afterOffset": 2563
+        },
+        {
+          "offset": 4094,
+          "before": "\"Render bounded release notes\"",
+          "after": "\"生成有上限的发布说明\"",
+          "afterOffset": 2667
+        },
+        {
+          "offset": 4146,
+          "before": "\"Release label\"",
+          "after": "\"发布标签\"",
+          "afterOffset": 2701
+        },
+        {
+          "offset": 4173,
+          "before": "\"Validate a release label, enforce a maximum commit count and emit sections in a fixed order.\"",
+          "after": "\"校验发布标签，限制最大提交数量，并按固定顺序输出章节。\"",
+          "afterOffset": 2719
+        },
+        {
+          "offset": 4280,
+          "before": "\"Commit budget\"",
+          "after": "\"提交数量上限\"",
+          "afterOffset": 2761
+        },
+        {
+          "offset": 4307,
+          "before": "\"Validate a release label, enforce a maximum commit count and emit sections in a fixed order.\"",
+          "after": "\"校验发布标签，限制最大提交数量，并按固定顺序输出章节。\"",
+          "afterOffset": 2781
+        },
+        {
+          "offset": 4414,
+          "before": "\"Escape content\"",
+          "after": "\"转义内容\"",
+          "afterOffset": 2823
+        },
+        {
+          "offset": 4442,
+          "before": "\"Validate a release label, enforce a maximum commit count and emit sections in a fixed order.\"",
+          "after": "\"校验发布标签，限制最大提交数量，并按固定顺序输出章节。\"",
+          "afterOffset": 2841
+        },
+        {
+          "offset": 4549,
+          "before": "\"Fixed section order\"",
+          "after": "\"固定章节顺序\"",
+          "afterOffset": 2883
+        },
+        {
+          "offset": 4582,
+          "before": "\"Validate a release label, enforce a maximum commit count and emit sections in a fixed order.\"",
+          "after": "\"校验发布标签，限制最大提交数量，并按固定顺序输出章节。\"",
+          "afterOffset": 2903
+        },
+        {
+          "offset": 4691,
+          "before": "\"Change the inputs and explain the computed result before running the stage tests.\"",
+          "after": "\"修改输入，解释计算结果，再运行阶段测试。\"",
+          "afterOffset": 2947
+        },
+        {
+          "offset": 4813,
+          "before": "'Commits in range'",
+          "after": "'范围内提交数'",
+          "afterOffset": 3008
+        },
+        {
+          "offset": 4895,
+          "before": "'Commit budget'",
+          "after": "'提交数量上限'",
+          "afterOffset": 3080
+        },
+        {
+          "offset": 4973,
+          "before": "'Release label'",
+          "after": "'发布标签'",
+          "afterOffset": 3151
+        },
+        {
+          "offset": 5141,
+          "before": "'Reject the release label.'",
+          "after": "'拒绝无效发布标签。'",
+          "afterOffset": 3310
+        },
+        {
+          "offset": 5175,
+          "before": "'Reject the oversized range before rendering.'",
+          "after": "'渲染前拒绝超出数量上限的提交范围。'",
+          "afterOffset": 3328
+        },
+        {
+          "offset": 5222,
+          "before": "'Render the full range with its immutable source receipt.'",
+          "after": "'渲染完整提交范围，并保留固定来源记录。'",
+          "afterOffset": 3348
+        },
+        {
+          "offset": 5297,
+          "before": "'Label'",
+          "after": "'标签'",
+          "afterOffset": 3386
+        },
+        {
+          "offset": 5343,
+          "before": "'Budget'",
+          "after": "'数量上限'",
+          "afterOffset": 3429
+        },
+        {
+          "offset": 5396,
+          "before": "'Input commits'",
+          "after": "'输入提交数'",
+          "afterOffset": 3480
+        },
+        {
+          "offset": 5436,
+          "before": "'Budget'",
+          "after": "'数量上限'",
+          "afterOffset": 3512
+        }
+      ]
+    },
+    {
+      "path": "site/figures/projects/cloud-agent-with-aws-strands.js",
+      "sourceSha256": "db52faf9c01cab305a9388f628bf0189b4d1480f039baf7ae657131085ca22b6",
+      "localizedSha256": "a6378809cce623e6ba9969897c23b8cb1caa5b03ba760231a5d3c61f1a1e6297",
+      "edits": [
+        {
+          "offset": 91,
+          "before": "\"Requested repeated read actions\"",
+          "after": "\"请求的重复读取次数\"",
+          "afterOffset": 91
+        },
+        {
+          "offset": 253,
+          "before": "\"Step budget\"",
+          "after": "\"步骤额度\"",
+          "afterOffset": 231
+        },
+        {
+          "offset": 395,
+          "before": "\"Serialized result characters\"",
+          "after": "\"结果序列化后的字符数\"",
+          "afterOffset": 366
+        },
+        {
+          "offset": 557,
+          "before": "\"Context character budget\"",
+          "after": "\"上下文字符额度\"",
+          "afterOffset": 510
+        },
+        {
+          "offset": 719,
+          "before": "\"Timeouts before success\"",
+          "after": "\"成功前的超时次数\"",
+          "afterOffset": 655
+        },
+        {
+          "offset": 874,
+          "before": "\"Retry allowance\"",
+          "after": "\"允许重试次数\"",
+          "afterOffset": 795
+        },
+        {
+          "offset": 1019,
+          "before": "\"Resource outside scope\"",
+          "after": "\"资源超出允许范围\"",
+          "afterOffset": 931
+        },
+        {
+          "offset": 1411,
+          "before": "\"Reject plan before provider\"",
+          "after": "\"调用 provider 前拒绝计划\"",
+          "afterOffset": 1309
+        },
+        {
+          "offset": 1472,
+          "before": "\"Timeout retries exhausted\"",
+          "after": "\"超时重试次数已耗尽\"",
+          "afterOffset": 1360
+        },
+        {
+          "offset": 1545,
+          "before": "\"Partial retained results: budget exhausted\"",
+          "after": "\"保留部分结果：额度已耗尽\"",
+          "afterOffset": 1417
+        },
+        {
+          "offset": 1604,
+          "before": "\"Completed with request-local cache\"",
+          "after": "\"已完成，使用请求内缓存\"",
+          "afterOffset": 1446
+        },
+        {
+          "offset": 1676,
+          "before": "\"Provider calls\"",
+          "after": "\"provider 调用次数\"",
+          "afterOffset": 1495
+        },
+        {
+          "offset": 1727,
+          "before": "\"Cache hits\"",
+          "after": "\"缓存命中次数\"",
+          "afterOffset": 1545
+        },
+        {
+          "offset": 1841,
+          "before": "\"Retained results\"",
+          "after": "\"保留结果数\"",
+          "afterOffset": 1655
+        },
+        {
+          "offset": 1976,
+          "before": "\"Retained characters\"",
+          "after": "\"保留字符数\"",
+          "afterOffset": 1779
+        },
+        {
+          "offset": 2245,
+          "before": "\"Validate a scoped cloud inspection plan\"",
+          "after": "\"校验允许范围内的云端检查计划\"",
+          "afterOffset": 2034
+        },
+        {
+          "offset": 2336,
+          "before": "\"Input\"",
+          "after": "\"输入\"",
+          "afterOffset": 2100
+        },
+        {
+          "offset": 2379,
+          "before": "\"The model proposes intent; a deterministic validator grants authority.\"",
+          "after": "\"模型提出意图，确定性校验器依据调用方范围决定能否放行。\"",
+          "afterOffset": 2140
+        },
+        {
+          "offset": 2497,
+          "before": "\"Transform\"",
+          "after": "\"处理\"",
+          "afterOffset": 2215
+        },
+        {
+          "offset": 2544,
+          "before": "\"The model proposes intent; a deterministic validator grants authority. Accept only explicitly named read operations and resource ids from the caller scope. Reject unknown keys and oversized plans so additional model-generated instructions cannot silently become executable parameters.\"",
+          "after": "\"模型提出意图，确定性校验器依据调用方范围决定能否放行。只接受明确列出的读取操作及范围内的资源 ID。拒绝未知键和过大的计划，防止模型附加的指令悄悄变成执行参数。\"",
+          "afterOffset": 2255
+        },
+        {
+          "offset": 2876,
+          "before": "\"Verify\"",
+          "after": "\"验证\"",
+          "afterOffset": 2383
+        },
+        {
+          "offset": 2920,
+          "before": "\"A delete operation or an out-of-scope resource fails before any provider call.\"",
+          "after": "\"删除操作或范围外资源会在任何 provider 调用之前被拒绝。\"",
+          "afterOffset": 2423
+        },
+        {
+          "offset": 3053,
+          "before": "\"A delete operation or an out-of-scope resource fails before any provider call.\"",
+          "after": "\"删除操作或范围外资源会在任何 provider 调用之前被拒绝。 译注：原图在资源超出范围时仍可能显示缓存命中；这是保留的上游简化模型问题，不代表实际发生了调用或复用。\"",
+          "afterOffset": 2510
+        },
+        {
+          "offset": 3317,
+          "before": "\"Execute reads within step and response budgets\"",
+          "after": "\"在步骤和响应额度内执行读取\"",
+          "afterOffset": 2780
+        },
+        {
+          "offset": 3415,
+          "before": "\"Input\"",
+          "after": "\"输入\"",
+          "afterOffset": 2845
+        },
+        {
+          "offset": 3458,
+          "before": "\"Charge steps before starting an operation and charge serialized output before retaining it.\"",
+          "after": "\"操作开始前检查步骤额度，保留结果前计算序列化输出占用。\"",
+          "afterOffset": 2885
+        },
+        {
+          "offset": 3597,
+          "before": "\"Transform\"",
+          "after": "\"处理\"",
+          "afterOffset": 2960
+        },
+        {
+          "offset": 3644,
+          "before": "\"Charge steps before starting an operation and charge serialized output before retaining it. Output limits cannot undo the cost of a call, but they prevent a large result from flooding later context. Keep partial results and an explicit terminal state so a budget stop remains diagnosable.\"",
+          "after": "\"操作开始前检查步骤额度，保留结果前计算序列化输出的占用。输出限制无法撤销调用成本，但能防止大结果挤满后续上下文。保留部分结果和明确终态，便于诊断因额度而停止的情况。\"",
+          "afterOffset": 3000
+        },
+        {
+          "offset": 3980,
+          "before": "\"Verify\"",
+          "after": "\"验证\"",
+          "afterOffset": 3130
+        },
+        {
+          "offset": 4024,
+          "before": "\"A zero-step budget performs no provider calls and returns budget_exhausted.\"",
+          "after": "\"步骤额度为零时，不调用 provider，返回 budget_exhausted。\"",
+          "afterOffset": 3170
+        },
+        {
+          "offset": 4154,
+          "before": "\"A zero-step budget performs no provider calls and returns budget_exhausted.\"",
+          "after": "\"步骤额度为零时，不调用 provider，返回 budget_exhausted。 译注：原图在资源超出范围时仍可能显示缓存命中；这是保留的上游简化模型问题，不代表实际发生了调用或复用。\"",
+          "afterOffset": 3266
+        },
+        {
+          "offset": 4415,
+          "before": "\"Retry transient reads and reuse completed requests\"",
+          "after": "\"重试暂时失败的读取并复用已完成请求\"",
+          "afterOffset": 3545
+        },
+        {
+          "offset": 4517,
+          "before": "\"Input\"",
+          "after": "\"输入\"",
+          "afterOffset": 3614
+        },
+        {
+          "offset": 4560,
+          "before": "\"Retry only transient timeout failures and cache successful reads by a canonical action identity.\"",
+          "after": "\"只重试暂时超时，并按规范化动作标识缓存成功读取。\"",
+          "afterOffset": 3654
+        },
+        {
+          "offset": 4704,
+          "before": "\"Transform\"",
+          "after": "\"处理\"",
+          "afterOffset": 3726
+        },
+        {
+          "offset": 4751,
+          "before": "\"Retry only transient timeout failures and cache successful reads by a canonical action identity. A permission failure is not transient and must escape immediately. This cache is request-local: real cloud state changes, so a long-lived cache needs an explicit TTL or version instead of silently reusing old data.\"",
+          "after": "\"仅重试暂时性的超时失败，并按规范化动作标识缓存成功读取。权限失败应立即向上传播，不能按暂时故障反复重试。这里的缓存仅在单次请求内有效；真实云状态会变化，长期缓存需要明确的 TTL 或版本，不能静默复用旧数据。\"",
+          "afterOffset": 3766
+        },
+        {
+          "offset": 5110,
+          "before": "\"Verify\"",
+          "after": "\"验证\"",
+          "afterOffset": 3918
+        },
+        {
+          "offset": 5154,
+          "before": "\"A transient timeout retries, while a permission failure is propagated after one call.\"",
+          "after": "\"暂时超时触发重试，权限失败则在一次调用后直接向上传播。\"",
+          "afterOffset": 3958
+        },
+        {
+          "offset": 5294,
+          "before": "\"A transient timeout retries, while a permission failure is propagated after one call.\"",
+          "after": "\"暂时超时触发重试，权限失败则在一次调用后直接向上传播。 译注：原图在资源超出范围时仍可能显示缓存命中；这是保留的上游简化模型问题，不代表实际发生了调用或复用。\"",
+          "afterOffset": 4040
+        },
+        {
+          "offset": 5565,
+          "before": "\"Drive the actual Strands loop with a local model\"",
+          "after": "\"用本地模型驱动真实 Strands 循环\"",
+          "afterOffset": 4305
+        },
+        {
+          "offset": 5665,
+          "before": "\"Input\"",
+          "after": "\"输入\"",
+          "afterOffset": 4377
+        },
+        {
+          "offset": 5708,
+          "before": "\"The real Strands Agent consumes streaming events from an injected Model subclass.\"",
+          "after": "\"真实 Strands Agent 消费注入的 Model 子类产生的流式事件。\"",
+          "afterOffset": 4417
+        },
+        {
+          "offset": 5837,
+          "before": "\"Transform\"",
+          "after": "\"处理\"",
+          "afterOffset": 4504
+        },
+        {
+          "offset": 5884,
+          "before": "\"The real Strands Agent consumes streaming events from an injected Model subclass. This exercises the framework loop without credentials or cloud calls. The model still only proposes a plan; parse and scope-check its result with the earlier validator. A separate Bedrock constructor is explicit and is not invoked by offline demos or tests.\"",
+          "after": "\"真实 Strands Agent 消费注入的 Model 子类产生的流式事件，以便在不使用凭据、不调用云服务的情况下检验框架循环。模型仍只提出计划，其结果需要交给前面的校验器解析并检查范围。独立的 Bedrock 构造函数必须显式调用，离线演示和测试不会调用它。\"",
+          "afterOffset": 4544
+        },
+        {
+          "offset": 6271,
+          "before": "\"Verify\"",
+          "after": "\"验证\"",
+          "afterOffset": 4723
+        },
+        {
+          "offset": 6315,
+          "before": "\"The framework produces one recorded JSON plan in one model call, then the independent validator checks it.\"",
+          "after": "\"框架通过一次模型调用输出预录的 JSON 计划，再交给独立校验器检查。\"",
+          "afterOffset": 4763
+        },
+        {
+          "offset": 6476,
+          "before": "\"The framework produces one recorded JSON plan in one model call, then the independent validator checks it.\"",
+          "after": "\"框架通过一次模型调用输出预录的 JSON 计划，再交给独立校验器检查。 译注：原图在资源超出范围时仍可能显示缓存命中；这是保留的上游简化模型问题，不代表实际发生了调用或复用。\"",
+          "afterOffset": 4853
+        }
+      ]
+    }
+  ]
+}

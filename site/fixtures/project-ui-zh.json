@@ -1,0 +1,2008 @@
+{
+  "schemaVersion": 1,
+  "baseCommit": "b9a67a78dcae6c291fa02cccb273945ed00c99de",
+  "locale": "zh-CN",
+  "files": [
+    {
+      "path": "site/projects.js",
+      "sourceSha256": "7a598204295a97bd8a501004d4c2543b2828829d295bd35e40b189f51cf276cc",
+      "localizedSha256": "22191194ea557496a1e650bd95513606755d4d81b9abb80d31d9c50cade571af",
+      "edits": [
+        {
+          "before": "  var DATA = window.AIFS_PROJECTS",
+          "after": "  var ui = window.AIFSProjectUI ? window.AIFSProjectUI.text : function (value) { return value; };\n  var DATA = window.AIFS_PROJECTS",
+          "kind": "lookup-bootstrap",
+          "afterOffsets": [
+            341
+          ]
+        },
+        {
+          "before": "  function bindCopy(scope) {\n",
+          "after": "  function bindCopy(scope) {\n    var ui = typeof window !== 'undefined' && window.AIFSProjectUI ? window.AIFSProjectUI.text : function (value) { return value; };\n",
+          "kind": "standalone-copy-fallback",
+          "afterOffsets": [
+            4691
+          ]
+        },
+        {
+          "before": "esc(level.name)",
+          "after": "esc(ui(level.name))",
+          "kind": "display-enum",
+          "afterOffsets": [
+            17912
+          ]
+        },
+        {
+          "before": "esc(level.summary)",
+          "after": "esc(ui(level.summary))",
+          "kind": "display-summary",
+          "afterOffsets": [
+            17947
+          ]
+        },
+        {
+          "before": "esc(level.name.toUpperCase())",
+          "after": "esc(ui(level.name).toUpperCase())",
+          "kind": "display-enum",
+          "afterOffsets": [
+            20817
+          ]
+        },
+        {
+          "before": "esc(stage.difficulty || '')",
+          "after": "esc(ui(stage.difficulty || ''))",
+          "kind": "display-enum",
+          "afterOffsets": [
+            25435
+          ]
+        },
+        {
+          "before": "esc((stage.difficulty || '').toUpperCase())",
+          "after": "esc(ui(stage.difficulty || '').toUpperCase())",
+          "kind": "display-enum",
+          "afterOffsets": [
+            26423
+          ]
+        },
+        {
+          "before": "var handle = item.author && item.author.github ? '@' + item.author.github : 'community';",
+          "after": "var handle = item.author && item.author.github ? '@' + item.author.github : ui('Community');",
+          "kind": "display-fallback",
+          "afterOffsets": [
+            12291
+          ]
+        },
+        {
+          "before": " + stage.hours + 'h' : ''",
+          "after": " + stage.hours + ui(' hours') : ''",
+          "kind": "display-unit",
+          "afterOffsets": [
+            25494
+          ]
+        },
+        {
+          "before": "    var why = project.languageWhy || {};",
+          "after": "    var why = Object.assign({}, project.languageWhy || {});",
+          "kind": "avoid-metadata-mutation",
+          "afterOffsets": [
+            20103
+          ]
+        },
+        {
+          "before": "    var prereqs = (project.prerequisites || []).map(function (p) {\n      return '<li><a href=\"lesson.html?path=' + esc(p.path) + '\">' + esc(p.title) + '</a></li>';\n    }).join('');",
+          "after": "    var prereqs = (project.prerequisites || []).map(function (p) {\n      if (typeof p === 'string') return '<li>' + esc(p) + '</li>';\n      if (!p || typeof p.path !== 'string' || typeof p.title !== 'string') return '';\n      return '<li><a href=\"lesson.html?path=' + esc(p.path) + '\">' + esc(p.title) + '</a></li>';\n    }).join('');",
+          "kind": "prerequisite-string-support",
+          "afterOffsets": [
+            19922
+          ]
+        },
+        {
+          "before": "    var para = [];",
+          "after": "    var para = [];\n    var headingIds = Object.create(null);\n    function headingId(value) {\n      var base = value.toLowerCase().replace(/[^a-z0-9\\u3400-\\u9fff]+/g, '-').replace(/^-|-$/g, '') || 'section';\n      var id = base;\n      var suffix = 2;\n      while (headingIds[id]) id = base + '-' + suffix++;\n      headingIds[id] = true;\n      return id;\n    }",
+          "kind": "unicode-heading-anchors",
+          "afterOffsets": [
+            9246
+          ]
+        },
+        {
+          "before": "var slug = heading[2].toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');",
+          "after": "var slug = headingId(heading[2]);",
+          "kind": "unicode-heading-anchors",
+          "afterOffsets": [
+            10834
+          ]
+        },
+        {
+          "before": "  enhanceCommands();",
+          "after": "  var translationNotice = document.getElementById('pjTranslationNotice');\n  if (translationNotice && window.AIFSProjectUI) {\n    translationNotice.textContent = window.AIFSProjectUI.notice(window.__AIFS_TRANSLATION, DATA.projects.map(function (p) { return p.id; }));\n  }\n\n  enhanceCommands();",
+          "kind": "live-translation-status",
+          "afterOffsets": [
+            31170
+          ]
+        },
+        {
+          "before": "'Copy command'",
+          "after": "ui('Copy command')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            3495
+          ]
+        },
+        {
+          "before": "'\">Copy</button>'",
+          "after": "ui('\">Copy</button>')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            3517
+          ]
+        },
+        {
+          "before": "'Terminal'",
+          "after": "ui('Terminal')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            3725
+          ]
+        },
+        {
+          "before": "'Copied'",
+          "after": "ui('Copied')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            5913
+          ]
+        },
+        {
+          "before": "'Copy'",
+          "after": "ui('Copy')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            5928,
+            6191
+          ]
+        },
+        {
+          "before": "'Command copied.'",
+          "after": "ui('Command copied.')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            6030
+          ]
+        },
+        {
+          "before": "'Copy unavailable. Select the command and copy it manually.'",
+          "after": "ui('Copy unavailable. Select the command and copy it manually.')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            6054
+          ]
+        },
+        {
+          "before": "'Level '",
+          "after": "ui('Level ')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            2701
+          ]
+        },
+        {
+          "before": "'<span class=\"pj-badge core\">core</span>'",
+          "after": "ui('<span class=\"pj-badge core\">core</span>')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            12800
+          ]
+        },
+        {
+          "before": "' stages · ~'",
+          "after": "ui(' stages · ~')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            13278
+          ]
+        },
+        {
+          "before": "'h</span></div>'",
+          "after": "ui('h</span></div>')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            13320
+          ]
+        },
+        {
+          "before": "' of '",
+          "after": "ui(' of ')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            13655
+          ]
+        },
+        {
+          "before": "' done'",
+          "after": "ui(' done')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            8875,
+            13680
+          ]
+        },
+        {
+          "before": "'Start'",
+          "after": "ui('Start')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            13694
+          ]
+        },
+        {
+          "before": "'<div class=\"pj-card-top\"><span class=\"pj-badge planned\">planned</span>'",
+          "after": "ui('<div class=\"pj-card-top\"><span class=\"pj-badge planned\">planned</span>')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            13820
+          ]
+        },
+        {
+          "before": "'<span class=\"pj-badge ours\">rebuild of our repo</span>'",
+          "after": "ui('<span class=\"pj-badge ours\">rebuild of our repo</span>')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            13912
+          ]
+        },
+        {
+          "before": "'Project demo'",
+          "after": "ui('Project demo')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            15097,
+            15369
+          ]
+        },
+        {
+          "before": "'Demo'",
+          "after": "ui('Demo')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            15725
+          ]
+        },
+        {
+          "before": "'\">Play recording</button>'",
+          "after": "ui('\">Play recording</button>')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            15537
+          ]
+        },
+        {
+          "before": "'Play recording'",
+          "after": "ui('Play recording')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            31214
+          ]
+        },
+        {
+          "before": "'Stop recording'",
+          "after": "ui('Stop recording')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            31237
+          ]
+        },
+        {
+          "before": "'ready to build'",
+          "after": "ui('ready to build')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            16451
+          ]
+        },
+        {
+          "before": "'on the roadmap'",
+          "after": "ui('on the roadmap')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            16502
+          ]
+        },
+        {
+          "before": "'levels'",
+          "after": "ui('levels')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            16552
+          ]
+        },
+        {
+          "before": "'from the community'",
+          "after": "ui('from the community')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            16585
+          ]
+        },
+        {
+          "before": "'All'",
+          "after": "ui('All')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            16905
+          ]
+        },
+        {
+          "before": "'Core'",
+          "after": "ui('Core')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            16926
+          ]
+        },
+        {
+          "before": "'Community'",
+          "after": "ui('Community')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            12697,
+            16957
+          ]
+        },
+        {
+          "before": "'<div class=\"pj-empty\">No community projects at this level yet. <a href=\"#submit\">Be the first.</a></div>'",
+          "after": "ui('<div class=\"pj-empty\">No community projects at this level yet. <a href=\"#submit\">Be the first.</a></div>')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            17955
+          ]
+        },
+        {
+          "before": "'<div class=\"pj-empty\">Nothing here yet.</div>'",
+          "after": "ui('<div class=\"pj-empty\">Nothing here yet.</div>')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            18080
+          ]
+        },
+        {
+          "before": "'<section class=\"pj-level\" aria-label=\"Level '",
+          "after": "ui('<section class=\"pj-level\" aria-label=\"Level ')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            18158
+          ]
+        },
+        {
+          "before": "'<div class=\"pj-eyebrow\">PROJECT NOT FOUND</div><h1>Pick a project from the ladder.</h1><p><a class=\"pj-action\" href=\"projects.html\">All projects</a></p>'",
+          "after": "ui('<div class=\"pj-eyebrow\">PROJECT NOT FOUND</div><h1>Pick a project from the ladder.</h1><p><a class=\"pj-action\" href=\"projects.html\">All projects</a></p>')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            19870
+          ]
+        },
+        {
+          "before": "' - Projects - AI Engineering from Scratch'",
+          "after": "ui(' - Projects - AI Engineering from Scratch')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            20189
+          ]
+        },
+        {
+          "before": "'<div class=\"pj-eyebrow\">LEVEL '",
+          "after": "ui('<div class=\"pj-eyebrow\">LEVEL ')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            21361
+          ]
+        },
+        {
+          "before": "' stages</span><span>~'",
+          "after": "ui(' stages</span><span>~')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            21676
+          ]
+        },
+        {
+          "before": "' hours</span><span>'",
+          "after": "ui(' hours</span><span>')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            21728
+          ]
+        },
+        {
+          "before": "'<div class=\"pj-side-block\"><div class=\"pj-eyebrow\">YOU END UP WITH</div><p>'",
+          "after": "ui('<div class=\"pj-side-block\"><div class=\"pj-eyebrow\">YOU END UP WITH</div><p>')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            21993
+          ]
+        },
+        {
+          "before": "'<div class=\"pj-side-block\"><div class=\"pj-eyebrow\">USEFUL FOR</div><ul>'",
+          "after": "ui('<div class=\"pj-side-block\"><div class=\"pj-eyebrow\">USEFUL FOR</div><ul>')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            22144
+          ]
+        },
+        {
+          "before": "'<div class=\"pj-side-block\"><div class=\"pj-eyebrow\">LEARN FIRST</div><ul>'",
+          "after": "ui('<div class=\"pj-side-block\"><div class=\"pj-eyebrow\">LEARN FIRST</div><ul>')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            22274
+          ]
+        },
+        {
+          "before": "'<div class=\"pj-side-block\"><div class=\"pj-eyebrow\">WHY THESE LANGUAGES</div><ul class=\"pj-why\">'",
+          "after": "ui('<div class=\"pj-side-block\"><div class=\"pj-eyebrow\">WHY THESE LANGUAGES</div><ul class=\"pj-why\">')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            22406
+          ]
+        },
+        {
+          "before": "'<details class=\"pj-context\"><summary>Project overview and recordings</summary><div class=\"pj-context-body\">'",
+          "after": "ui('<details class=\"pj-context\"><summary>Project overview and recordings</summary><div class=\"pj-context-body\">')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            22875
+          ]
+        },
+        {
+          "before": "'<div class=\"pj-overview-fig\"><div class=\"pj-eyebrow\">PROJECT OVERVIEW</div><p class=\"pj-small\">This example introduces the project. The selected lesson has its own mechanism.</p><div class=\"lesson-figure\" data-figure=\"'",
+          "after": "ui('<div class=\"pj-overview-fig\"><div class=\"pj-eyebrow\">PROJECT OVERVIEW</div><p class=\"pj-small\">This example introduces the project. The selected lesson has its own mechanism.</p><div class=\"lesson-figure\" data-figure=\"')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            23025
+          ]
+        },
+        {
+          "before": "'<div class=\"pj-demos\"><div class=\"pj-eyebrow\">PROJECT RECORDINGS</div><div class=\"pj-demo-grid\">'",
+          "after": "ui('<div class=\"pj-demos\"><div class=\"pj-eyebrow\">PROJECT RECORDINGS</div><div class=\"pj-demo-grid\">')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            23324
+          ]
+        },
+        {
+          "before": "'<div class=\"pj-eyebrow\">LEARN WITH THE TUTOR</div><p>In Claude Code, run:</p>'",
+          "after": "ui('<div class=\"pj-eyebrow\">LEARN WITH THE TUTOR</div><p>In Claude Code, run:</p>')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            23853
+          ]
+        },
+        {
+          "before": "'<p class=\"pj-small\">In Codex or another compatible agent, ask it to use the build-project skill for this project. One stage per session: predict, build, test, reflect.</p>'",
+          "after": "ui('<p class=\"pj-small\">In Codex or another compatible agent, ask it to use the build-project skill for this project. One stage per session: predict, build, test, reflect.</p>')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            23998
+          ]
+        },
+        {
+          "before": "'<div class=\"pj-progress-head\"><span>Your progress</span><strong>'",
+          "after": "ui('<div class=\"pj-progress-head\"><span>Your progress</span><strong>')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            25009
+          ]
+        },
+        {
+          "before": "'<p class=\"pj-small\">Self-reported progress, saved in this browser. Import grader evidence below for a certificate.</p>'",
+          "after": "ui('<p class=\"pj-small\">Self-reported progress, saved in this browser. Import grader evidence below for a certificate.</p>')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            25313
+          ]
+        },
+        {
+          "before": "' · ~'",
+          "after": "ui(' · ~')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            26143
+          ]
+        },
+        {
+          "before": "'<header class=\"pj-stage-head\"><div class=\"pj-eyebrow\">STAGE '",
+          "after": "ui('<header class=\"pj-stage-head\"><div class=\"pj-eyebrow\">STAGE ')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            26974
+          ]
+        },
+        {
+          "before": "' OF '",
+          "after": "ui(' OF ')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            27058
+          ]
+        },
+        {
+          "before": "'<div class=\"pj-run-card\"><div><div class=\"pj-eyebrow\">RUN THIS STAGE</div>'",
+          "after": "ui('<div class=\"pj-run-card\"><div><div class=\"pj-eyebrow\">RUN THIS STAGE</div>')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            27547
+          ]
+        },
+        {
+          "before": "'<div class=\"pj-doc\" id=\"pjDoc\"><p class=\"pj-loading\">Loading the lesson…</p></div>'",
+          "after": "ui('<div class=\"pj-doc\" id=\"pjDoc\"><p class=\"pj-loading\">Loading the lesson…</p></div>')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            27820
+          ]
+        },
+        {
+          "before": "'<details class=\"pj-context pj-stage-recording\"><summary>Watch the stage '",
+          "after": "ui('<details class=\"pj-context pj-stage-recording\"><summary>Watch the stage ')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            27933
+          ]
+        },
+        {
+          "before": "' recording</summary>'",
+          "after": "ui(' recording</summary>')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            28029
+          ]
+        },
+        {
+          "before": "'Mark as not done'",
+          "after": "ui('Mark as not done')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            28303
+          ]
+        },
+        {
+          "before": "'Mark stage complete'",
+          "after": "ui('Mark stage complete')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            28328
+          ]
+        },
+        {
+          "before": "'\" target=\"_blank\" rel=\"noopener\">View this lesson on GitHub</a>'",
+          "after": "ui('\" target=\"_blank\" rel=\"noopener\">View this lesson on GitHub</a>')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            28876
+          ]
+        },
+        {
+          "before": "'<p>Could not load this lesson. <a href=\"'",
+          "after": "ui('<p>Could not load this lesson. <a href=\"')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            29734
+          ]
+        },
+        {
+          "before": "'\" target=\"_blank\" rel=\"noopener\">Read it on GitHub</a>.</p>'",
+          "after": "ui('\" target=\"_blank\" rel=\"noopener\">Read it on GitHub</a>.</p>')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            29813
+          ]
+        },
+        {
+          "before": "esc(item.title)",
+          "after": "esc(ui(item.title))",
+          "afterOffsets": [
+            14011
+          ],
+          "kind": "planned-display-only"
+        },
+        {
+          "before": "esc(item.tagline || '')",
+          "after": "esc(ui(item.tagline || ''))",
+          "afterOffsets": [
+            14046
+          ],
+          "kind": "planned-display-only"
+        },
+        {
+          "before": "ui(ui('Community'))",
+          "after": "ui('Community')",
+          "afterOffsets": [
+            12694
+          ],
+          "kind": "lookup-simplification"
+        },
+        {
+          "before": "    if (certificateHost && window.AIFSProjectCertificates) window.AIFSProjectCertificates.mount(certificateHost, project);",
+          "after": "    if (certificateHost && window.AIFSProjectCertificates) {\n      window.AIFSProjectCertificates.mount(certificateHost, project);\n      enhanceCommands();\n    }",
+          "kind": "enhance-dynamically-mounted-command",
+          "afterOffsets": [
+            24250
+          ]
+        }
+      ]
+    },
+    {
+      "path": "site/figures/projects/runtime.js",
+      "sourceSha256": "233d9784654b37028abe604652b36f81d32722bb51221b6c8b92a05318c4470a",
+      "localizedSha256": "dcf63cf0bb7db0af2cd050b2167e3ba4d2a3395e35788b5c6b25fcc6c8ee3ff1",
+      "edits": [
+        {
+          "before": "  var serial = 0;",
+          "after": "  var ui = window.AIFSProjectUI ? window.AIFSProjectUI.text : function (value) { return value; };\n  var serial = 0;",
+          "kind": "standalone-runtime-fallback",
+          "afterOffsets": [
+            31
+          ]
+        },
+        {
+          "before": "'Example inputs'",
+          "after": "ui('Example inputs')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            1036
+          ]
+        },
+        {
+          "before": "'Computed comparisons'",
+          "after": "ui('Computed comparisons')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            1352
+          ]
+        },
+        {
+          "before": "'Connections between records'",
+          "after": "ui('Connections between records')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            1744
+          ]
+        },
+        {
+          "before": "'Inspect the receipt'",
+          "after": "ui('Inspect the receipt')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            1970
+          ]
+        },
+        {
+          "before": "'Computation steps'",
+          "after": "ui('Computation steps')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            2211
+          ]
+        },
+        {
+          "before": "'Previous'",
+          "after": "ui('Previous')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            2313
+          ]
+        },
+        {
+          "before": "'Next step'",
+          "after": "ui('Next step')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            2401
+          ]
+        },
+        {
+          "before": "'Play steps'",
+          "after": "ui('Play steps')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            2515,
+            4137
+          ]
+        },
+        {
+          "before": "'Pause'",
+          "after": "ui('Pause')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            4059
+          ]
+        },
+        {
+          "before": "'Replay steps'",
+          "after": "ui('Replay steps')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            4124
+          ]
+        },
+        {
+          "before": "'Reduced motion is on. Use the step buttons to explore each state.'",
+          "after": "ui('Reduced motion is on. Use the step buttons to explore each state.')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            2645
+          ]
+        },
+        {
+          "before": "'Reset inputs'",
+          "after": "ui('Reset inputs')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            3104
+          ]
+        },
+        {
+          "before": "'Interactive mechanism'",
+          "after": "ui('Interactive mechanism')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            3201
+          ]
+        },
+        {
+          "before": "'Change an input and inspect what the calculation produces.'",
+          "after": "ui('Change an input and inspect what the calculation produces.')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            3301
+          ]
+        },
+        {
+          "before": "'Step '",
+          "after": "ui('Step ')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            4323,
+            12132
+          ]
+        },
+        {
+          "before": "' of '",
+          "after": "ui(' of ')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            4351
+          ]
+        },
+        {
+          "before": "' needs a number.'",
+          "after": "ui(' needs a number.')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            12560
+          ]
+        },
+        {
+          "before": "' needs a finite number.'",
+          "after": "ui(' needs a finite number.')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            12687
+          ]
+        },
+        {
+          "before": "' is outside the declared range.'",
+          "after": "ui(' is outside the declared range.')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            12857
+          ]
+        },
+        {
+          "before": "'Each computation step needs a label and explanation.'",
+          "after": "ui('Each computation step needs a label and explanation.')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            13104
+          ]
+        },
+        {
+          "before": "'Each lane needs a unique identity.'",
+          "after": "ui('Each lane needs a unique identity.')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            13351
+          ]
+        },
+        {
+          "before": "'Each record needs a unique identity.'",
+          "after": "ui('Each record needs a unique identity.')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            13555
+          ]
+        },
+        {
+          "before": "'A connection must identify two records in this step.'",
+          "after": "ui('A connection must identify two records in this step.')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            13800
+          ]
+        },
+        {
+          "before": "'Computing the state…'",
+          "after": "ui('Computing the state…')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            14153
+          ]
+        },
+        {
+          "before": "'Check the input: '",
+          "after": "ui('Check the input: ')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            14548
+          ]
+        },
+        {
+          "before": "'Inspect the result and explain which input caused it.'",
+          "after": "ui('Inspect the result and explain which input caused it.')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            20933
+          ]
+        },
+        {
+          "before": "'Method at a glance'",
+          "after": "ui('Method at a glance')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            21136
+          ]
+        }
+      ]
+    },
+    {
+      "path": "site/project-certificates.js",
+      "sourceSha256": "bbb197c3116015a5d3875a1cfd2a1e6d7daccee2a1908395d459fc76521cf8ff",
+      "localizedSha256": "2bf86863fc1e435407d9528524bfa85b944211871e347e302689dfcb06665850",
+      "edits": [
+        {
+          "before": "  function validate(report, project) {",
+          "after": "  var ui = scope.AIFSProjectUI ? scope.AIFSProjectUI.text : function (value) { return value; };\n  function validate(report, project) {",
+          "kind": "standalone-certificate-fallback",
+          "afterOffsets": [
+            36
+          ]
+        },
+        {
+          "before": "status.textContent = error.message;",
+          "after": "status.textContent = ui(error.message);",
+          "kind": "display-errors-only",
+          "afterOffsets": [
+            4645
+          ]
+        },
+        {
+          "before": "'<!doctype html><html lang=\"en\"><meta charset=\"utf-8\"><title>Project completion</title><style>body{font-family:Georgia,serif;color:#172436;background:#f7f6ef;max-width:900px;margin:70px auto;padding:50px;border:3px solid #3553ff}h1{font-size:44px}h2{font-size:32px}p{line-height:1.7}small{display:block;margin-top:60px}code{overflow-wrap:anywhere}@media print{body{margin:0}}</style><p>AI ENGINEERING FROM SCRATCH</p><h1>Project completion certificate</h1><p>Presented to</p><h2>'",
+          "after": "ui('<!doctype html><html lang=\"en\"><meta charset=\"utf-8\"><title>Project completion</title><style>body{font-family:Georgia,serif;color:#172436;background:#f7f6ef;max-width:900px;margin:70px auto;padding:50px;border:3px solid #3553ff}h1{font-size:44px}h2{font-size:32px}p{line-height:1.7}small{display:block;margin-top:60px}code{overflow-wrap:anywhere}@media print{body{margin:0}}</style><p>AI ENGINEERING FROM SCRATCH</p><h1>Project completion certificate</h1><p>Presented to</p><h2>')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            1871
+          ]
+        },
+        {
+          "before": "'</h2><p>For completing <strong>'",
+          "after": "ui('</h2><p>For completing <strong>')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            2394
+          ]
+        },
+        {
+          "before": "'</strong>.</p><p>'",
+          "after": "ui('</strong>.</p><p>')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            2458
+          ]
+        },
+        {
+          "before": "' stages · '",
+          "after": "ui(' stages · ')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            2508
+          ]
+        },
+        {
+          "before": "' passing tests · '",
+          "after": "ui(' passing tests · ')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            2535
+          ]
+        },
+        {
+          "before": "'</p><p>Languages: '",
+          "after": "ui('</p><p>Languages: ')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            2603
+          ]
+        },
+        {
+          "before": "'</p><small>Independent community course. Based on a learner-provided local grader report; not a proctored, independently verified, or vendor credential.</small><p>Curriculum fingerprint: <code>'",
+          "after": "ui('</p><small>Independent community course. Based on a learner-provided local grader report; not a proctored, independently verified, or vendor credential.</small><p>Curriculum fingerprint: <code>')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            2669
+          ]
+        },
+        {
+          "before": "'<div class=\"pj-eyebrow\">PROJECT CERTIFICATE</div><h3>Keep evidence of your work.</h3><p>Pass every stage in your workspace, then import the grader report to download a completion certificate.</p><pre class=\"pj-cmd\"><code>python3 scripts/project_test.py '",
+          "after": "ui('<div class=\"pj-eyebrow\">PROJECT CERTIFICATE</div><h3>Keep evidence of your work.</h3><p>Pass every stage in your workspace, then import the grader report to download a completion certificate.</p><pre class=\"pj-cmd\"><code>python3 scripts/project_test.py ')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            2982
+          ]
+        },
+        {
+          "before": "' --report completion.json</code></pre><div class=\"pj-certificate-fields\"><label>Your name<input id=\"pjCertificateName\" maxlength=\"100\" autocomplete=\"name\"></label><label>Grader report<input id=\"pjCertificateFile\" type=\"file\" accept=\"application/json,.json\"></label><button type=\"button\" class=\"pj-action\" id=\"pjCertificateDownload\" disabled>Download certificate</button></div><p id=\"pjCertificateStatus\" role=\"status\">Certificates use local evidence. They are not proctored or vendor credentials.</p>'",
+          "after": "ui(' --report completion.json</code></pre><div class=\"pj-certificate-fields\"><label>Your name<input id=\"pjCertificateName\" maxlength=\"100\" autocomplete=\"name\"></label><label>Grader report<input id=\"pjCertificateFile\" type=\"file\" accept=\"application/json,.json\"></label><button type=\"button\" class=\"pj-action\" id=\"pjCertificateDownload\" disabled>Download certificate</button></div><p id=\"pjCertificateStatus\" role=\"status\">Certificates use local evidence. They are not proctored or vendor credentials.</p>')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            3317
+          ]
+        },
+        {
+          "before": "'All stages passed in the imported learner report. Enter your name to download.'",
+          "after": "ui('All stages passed in the imported learner report. Enter your name to download.')",
+          "kind": "display-lookup",
+          "afterOffsets": [
+            4575
+          ]
+        },
+        {
+          "before": "status.textContent = ui(error.message);",
+          "after": "status.textContent = ui('Unable to read report: ') + ui(error.message);",
+          "kind": "display-error-prefix",
+          "afterOffsets": [
+            4685
+          ]
+        }
+      ]
+    },
+    {
+      "path": "site/projects.html",
+      "sourceSha256": "f786c1655feefa5bff38ad737465b9cd60f21c2417d75a6e4897bb8dcc7fc6ef",
+      "localizedSha256": "467ce9ad11c4fa87f5c0b8e2703d395fc202ce6f56ed04d666455a3a250f53f6",
+      "edits": [
+        {
+          "before": "lang=\"en\" data-theme=\"light\"",
+          "after": "lang=\"zh-CN\" data-theme=\"light\"",
+          "afterOffsets": [
+            22
+          ],
+          "kind": "display"
+        },
+        {
+          "before": "<title>Projects - AI Engineering from Scratch</title>",
+          "after": "<title>实践项目 - AI Engineering from Scratch</title>",
+          "afterOffsets": [
+            162
+          ],
+          "kind": "display"
+        },
+        {
+          "before": "Build real AI projects from simple to advanced. Every project ships a useful artifact, stage-by-stage tests, and a tutor. Open to community submissions.",
+          "after": "从入门到进阶构建 AI 项目。每个项目交付可用成果，并提供阶段测试与导师指导。欢迎社区投稿。",
+          "afterOffsets": [
+            248
+          ],
+          "kind": "display"
+        },
+        {
+          "before": "Projects · AI Engineering from Scratch",
+          "after": "实践项目 · AI Engineering from Scratch",
+          "afterOffsets": [
+            417
+          ],
+          "kind": "display"
+        },
+        {
+          "before": "Build real AI projects from simple to advanced, graded stage by stage.",
+          "after": "从入门到进阶构建 AI 项目，逐阶段验证。",
+          "afterOffsets": [
+            497
+          ],
+          "kind": "display"
+        },
+        {
+          "before": ">Skip to content<",
+          "after": ">跳到正文<",
+          "afterOffsets": [
+            1142
+          ],
+          "kind": "display"
+        },
+        {
+          "before": ">Contents<",
+          "after": ">课程内容<",
+          "afterOffsets": [
+            1395
+          ],
+          "kind": "display"
+        },
+        {
+          "before": ">Catalog<",
+          "after": ">课程目录<",
+          "afterOffsets": [
+            1435
+          ],
+          "kind": "display"
+        },
+        {
+          "before": ">Projects<",
+          "after": ">实践项目<",
+          "afterOffsets": [
+            1476
+          ],
+          "kind": "display"
+        },
+        {
+          "before": ">Roadmap<",
+          "after": ">学习路线<",
+          "afterOffsets": [
+            1516
+          ],
+          "kind": "display"
+        },
+        {
+          "before": ">Glossary<",
+          "after": ">术语表<",
+          "afterOffsets": [
+            1557
+          ],
+          "kind": "display"
+        },
+        {
+          "before": ">About<",
+          "after": ">关于<",
+          "afterOffsets": [
+            1594
+          ],
+          "kind": "display"
+        },
+        {
+          "before": "aria-label=\"Search\"",
+          "after": "aria-label=\"搜索\"",
+          "afterOffsets": [
+            1886
+          ],
+          "kind": "display"
+        },
+        {
+          "before": "aria-label=\"Toggle theme\"",
+          "after": "aria-label=\"切换主题\"",
+          "afterOffsets": [
+            1997
+          ],
+          "kind": "display"
+        },
+        {
+          "before": "<aside class=\"translation-notice\" lang=\"zh-CN\" role=\"note\">汉化进度：本次新增的 48 个实践项目已同步，项目正文、阶段说明及相关材料仍待增量汉化。详细范围记录在仓库的 i18n/zh-upstream-sync.json。</aside>",
+          "after": "<aside class=\"translation-notice\" id=\"pjTranslationNotice\" lang=\"zh-CN\" role=\"note\">正在读取汉化清单。项目主体内容、运行验证和视觉验收分别记录在 i18n/zh-upstream-sync.json。</aside>",
+          "afterOffsets": [
+            2146
+          ],
+          "kind": "display"
+        },
+        {
+          "before": ">PROJECTS · SIMPLE TO ADVANCED<",
+          "after": ">实践项目 · 从入门到进阶<",
+          "afterOffsets": [
+            2396
+          ],
+          "kind": "display"
+        },
+        {
+          "before": "Build things people actually use.",
+          "after": "构建真正有用的项目。",
+          "afterOffsets": [
+            2440
+          ],
+          "kind": "display"
+        },
+        {
+          "before": "Each project turns course lessons into a working artifact: a report generator, a memory server, a task queue, an agent. You build it stage by stage, a grader checks every stage, and a tutor walks you through it.",
+          "after": "将课程知识变成可运行的交付物：报告生成器、记忆服务器、任务队列或智能体。你逐阶段构建，评分器检查各阶段，导师提供学习指导。",
+          "afterOffsets": [
+            2481
+          ],
+          "kind": "display"
+        },
+        {
+          "before": ">Start the first project<",
+          "after": ">从第一个项目开始<",
+          "afterOffsets": [
+            2691
+          ],
+          "kind": "display"
+        },
+        {
+          "before": ">Submit your project<",
+          "after": ">提交你的项目<",
+          "afterOffsets": [
+            2758
+          ],
+          "kind": "display"
+        },
+        {
+          "before": ">HOW IT WORKS<",
+          "after": ">使用方法<",
+          "afterOffsets": [
+            2938
+          ],
+          "kind": "display"
+        },
+        {
+          "before": ">Three commands, one project<",
+          "after": ">三个命令，开始一个项目<",
+          "afterOffsets": [
+            2966
+          ],
+          "kind": "display"
+        },
+        {
+          "before": "Choose Python, Rust, TypeScript, or Go for the job. Core tests run offline; optional framework labs list their dependencies.",
+          "after": "根据任务选择 Python、Rust、TypeScript 或 Go。核心测试可离线运行；可选框架实验会列明依赖。",
+          "afterOffsets": [
+            2992
+          ],
+          "kind": "display"
+        },
+        {
+          "before": ">Create your workspace<",
+          "after": ">创建工作区<",
+          "afterOffsets": [
+            3192
+          ],
+          "kind": "display"
+        },
+        {
+          "before": "Copy the starter files. Each stub gives you the exact signature to implement.",
+          "after": "复制起始文件。每个占位函数都给出需要实现的精确签名。",
+          "afterOffsets": [
+            3223
+          ],
+          "kind": "display"
+        },
+        {
+          "before": "data-copy-label=\"Copy starter command\"",
+          "after": "data-copy-label=\"复制初始化命令\"",
+          "afterOffsets": [
+            3284
+          ],
+          "kind": "display"
+        },
+        {
+          "before": ">Run the grader<",
+          "after": ">运行评分器<",
+          "afterOffsets": [
+            3524
+          ],
+          "kind": "display"
+        },
+        {
+          "before": "Build one stage at a time. The grader checks your work and every earlier stage.",
+          "after": "每次构建一个阶段。评分器检查当前实现及全部前置阶段。",
+          "afterOffsets": [
+            3555
+          ],
+          "kind": "display"
+        },
+        {
+          "before": "data-copy-label=\"Copy grader command\"",
+          "after": "data-copy-label=\"复制评分命令\"",
+          "afterOffsets": [
+            3616
+          ],
+          "kind": "display"
+        },
+        {
+          "before": ">Learn with the tutor<",
+          "after": ">跟随导师学习<",
+          "afterOffsets": [
+            3865
+          ],
+          "kind": "display"
+        },
+        {
+          "before": "Want guidance? In Claude Code, work through each stage with hints and feedback.",
+          "after": "在 Claude Code 中按阶段学习，获取提示和反馈。",
+          "afterOffsets": [
+            3897
+          ],
+          "kind": "display"
+        },
+        {
+          "before": "data-copy-label=\"Copy tutor command\"",
+          "after": "data-copy-label=\"复制导师命令\"",
+          "afterOffsets": [
+            3994
+          ],
+          "kind": "display"
+        },
+        {
+          "before": ">THE LADDER<",
+          "after": ">分级项目目录<",
+          "afterOffsets": [
+            4271
+          ],
+          "kind": "display"
+        },
+        {
+          "before": ">Pick your level<",
+          "after": ">选择你的级别<",
+          "afterOffsets": [
+            4304
+          ],
+          "kind": "display"
+        },
+        {
+          "before": "Five levels. Each adds one new kind of engineering. New projects join a level as they are written or submitted.",
+          "after": "共五个级别，每级增加一类工程能力。新编写或提交的项目会加入对应级别。",
+          "afterOffsets": [
+            4325
+          ],
+          "kind": "display"
+        },
+        {
+          "before": "aria-label=\"Filter projects\"",
+          "after": "aria-label=\"筛选项目\"",
+          "afterOffsets": [
+            4415
+          ],
+          "kind": "display"
+        },
+        {
+          "before": "checked> Show planned",
+          "after": "checked> 显示规划项目",
+          "afterOffsets": [
+            4573
+          ],
+          "kind": "display"
+        },
+        {
+          "before": ">COMMUNITY<",
+          "after": ">社区贡献<",
+          "afterOffsets": [
+            4860
+          ],
+          "kind": "display"
+        },
+        {
+          "before": "Built something useful? Add it to the ladder.",
+          "after": "把你的实用项目加入目录。",
+          "afterOffsets": [
+            4903
+          ],
+          "kind": "display"
+        },
+        {
+          "before": "Community projects use the same layout as core ones: a <code>project.json</code>, stages with a lesson, a starter, and tests, plus a reference solution. They appear here with your GitHub handle.",
+          "after": "社区项目与核心项目采用相同结构：<code>project.json</code>、包含课程正文、起始代码和测试的各阶段，以及参考实现。项目会展示你的 GitHub 用户名。",
+          "afterOffsets": [
+            4934
+          ],
+          "kind": "display"
+        },
+        {
+          "before": "Produces a real artifact, not a chat demo",
+          "after": "交付可用成果，不只演示聊天",
+          "afterOffsets": [
+            5078
+          ],
+          "kind": "display"
+        },
+        {
+          "before": "Every stage has tests that pass offline, with no API key",
+          "after": "每个阶段都有可离线通过的测试，无需 API 密钥",
+          "afterOffsets": [
+            5113
+          ],
+          "kind": "display"
+        },
+        {
+          "before": "Independent evaluation fixtures and clear limits on what the score proves",
+          "after": "提供独立评估夹具，并说明分数能够证明什么",
+          "afterOffsets": [
+            5159
+          ],
+          "kind": "display"
+        },
+        {
+          "before": "Original implementations with links to official specs and research",
+          "after": "提供原创实现，并链接官方规范与研究资料",
+          "afterOffsets": [
+            5201
+          ],
+          "kind": "display"
+        },
+        {
+          "before": "After copying, set <code>id</code> in <code>projects/my-project/project.json</code> to <code>my-project</code> before running the grader.",
+          "after": "复制后，先将 <code>projects/my-project/project.json</code> 中的 <code>id</code> 设为 <code>my-project</code>，再运行评分器。",
+          "afterOffsets": [
+            5307
+          ],
+          "kind": "display"
+        },
+        {
+          "before": ">Read the submission guide<",
+          "after": ">阅读投稿指南<",
+          "afterOffsets": [
+            5761
+          ],
+          "kind": "display"
+        },
+        {
+          "before": "AI Engineering from Scratch · open source · free forever.",
+          "after": "AI Engineering from Scratch · 开源 · 永久免费。",
+          "afterOffsets": [
+            5896
+          ],
+          "kind": "display"
+        },
+        {
+          "before": ">Home<",
+          "after": ">首页<",
+          "afterOffsets": [
+            5986
+          ],
+          "kind": "display"
+        },
+        {
+          "before": ">Course catalog<",
+          "after": ">课程目录<",
+          "afterOffsets": [
+            6015
+          ],
+          "kind": "display"
+        },
+        {
+          "before": ">Sponsor us<",
+          "after": ">赞助我们<",
+          "afterOffsets": [
+            6154
+          ],
+          "kind": "display"
+        },
+        {
+          "before": "projects.js?v=20260929c",
+          "after": "projects.js?v=20261007zh22",
+          "afterOffsets": [
+            6470
+          ],
+          "kind": "cache-version"
+        },
+        {
+          "before": "  <script src=\"content-source.js?v=20260821a\"></script>",
+          "after": "  <script src=\"build-meta.js\"></script>\n  <script src=\"project-ui.js?v=20261007zh22\"></script>\n  <script src=\"content-source.js?v=20260821a\"></script>",
+          "afterOffsets": [
+            6287
+          ],
+          "kind": "metadata-and-ui-load"
+        }
+      ]
+    },
+    {
+      "path": "site/project.html",
+      "sourceSha256": "77fc7596429238013504f53293253aff6f844bb6f217eceaf7d7630199e38ac9",
+      "localizedSha256": "60fae74168d1c4881999242640b1ccf994b7bab0e5779fa98c0d3602ba50ead5",
+      "edits": [
+        {
+          "before": "lang=\"en\" data-theme=\"light\"",
+          "after": "lang=\"zh-CN\" data-theme=\"light\"",
+          "afterOffsets": [
+            22
+          ],
+          "kind": "display"
+        },
+        {
+          "before": "<title>Project - AI Engineering from Scratch</title>",
+          "after": "<title>项目 - AI Engineering from Scratch</title>",
+          "afterOffsets": [
+            162
+          ],
+          "kind": "display"
+        },
+        {
+          "before": "A real AI project built stage by stage, with tests for every stage and a tutor.",
+          "after": "逐阶段构建 AI 项目，每个阶段都有测试与导师指导。",
+          "afterOffsets": [
+            246
+          ],
+          "kind": "display"
+        },
+        {
+          "before": ">Skip to content<",
+          "after": ">跳到正文<",
+          "afterOffsets": [
+            803
+          ],
+          "kind": "display"
+        },
+        {
+          "before": ">Contents<",
+          "after": ">课程内容<",
+          "afterOffsets": [
+            1056
+          ],
+          "kind": "display"
+        },
+        {
+          "before": ">Catalog<",
+          "after": ">课程目录<",
+          "afterOffsets": [
+            1096
+          ],
+          "kind": "display"
+        },
+        {
+          "before": ">Projects<",
+          "after": ">实践项目<",
+          "afterOffsets": [
+            1137,
+            2048
+          ],
+          "kind": "display"
+        },
+        {
+          "before": ">Roadmap<",
+          "after": ">学习路线<",
+          "afterOffsets": [
+            1177
+          ],
+          "kind": "display"
+        },
+        {
+          "before": ">Glossary<",
+          "after": ">术语表<",
+          "afterOffsets": [
+            1218
+          ],
+          "kind": "display"
+        },
+        {
+          "before": ">About<",
+          "after": ">关于<",
+          "afterOffsets": [
+            1255
+          ],
+          "kind": "display"
+        },
+        {
+          "before": "aria-label=\"Search\"",
+          "after": "aria-label=\"搜索\"",
+          "afterOffsets": [
+            1547
+          ],
+          "kind": "display"
+        },
+        {
+          "before": "aria-label=\"Toggle theme\"",
+          "after": "aria-label=\"切换主题\"",
+          "afterOffsets": [
+            1658
+          ],
+          "kind": "display"
+        },
+        {
+          "before": "<aside class=\"translation-notice\" lang=\"zh-CN\" role=\"note\">汉化进度：本次新增的 48 个实践项目已同步，项目正文、阶段说明及相关材料仍待增量汉化。详细范围记录在仓库的 i18n/zh-upstream-sync.json。</aside>",
+          "after": "<aside class=\"translation-notice\" id=\"pjTranslationNotice\" lang=\"zh-CN\" role=\"note\">正在读取汉化清单。项目主体内容、运行验证和视觉验收分别记录在 i18n/zh-upstream-sync.json。</aside>",
+          "afterOffsets": [
+            1807
+          ],
+          "kind": "display"
+        },
+        {
+          "before": "AI Engineering from Scratch · open source · free forever.",
+          "after": "AI Engineering from Scratch · 开源 · 永久免费。",
+          "afterOffsets": [
+            2909
+          ],
+          "kind": "display"
+        },
+        {
+          "before": ">Course catalog<",
+          "after": ">课程目录<",
+          "afterOffsets": [
+            3041
+          ],
+          "kind": "display"
+        },
+        {
+          "before": ">Sponsor us<",
+          "after": ">赞助我们<",
+          "afterOffsets": [
+            3180
+          ],
+          "kind": "display"
+        },
+        {
+          "before": ">All projects<",
+          "after": ">全部项目<",
+          "afterOffsets": [
+            3002
+          ],
+          "kind": "display"
+        },
+        {
+          "before": "<span id=\"pjCrumb\">Project</span>",
+          "after": "<span id=\"pjCrumb\">项目</span>",
+          "afterOffsets": [
+            2049
+          ],
+          "kind": "display"
+        },
+        {
+          "before": ">Loading project…<",
+          "after": ">正在加载项目……<",
+          "afterOffsets": [
+            2174
+          ],
+          "kind": "display"
+        },
+        {
+          "before": "aria-label=\"Stages\"",
+          "after": "aria-label=\"阶段\"",
+          "afterOffsets": [
+            2385
+          ],
+          "kind": "display"
+        },
+        {
+          "before": "aria-label=\"Project completion certificate\"",
+          "after": "aria-label=\"项目完成证明\"",
+          "afterOffsets": [
+            2757
+          ],
+          "kind": "display"
+        },
+        {
+          "before": "projects.js?v=20260929c",
+          "after": "projects.js?v=20261007zh22",
+          "afterOffsets": [
+            3674
+          ],
+          "kind": "cache-version"
+        },
+        {
+          "before": "project-certificates.js?v=20260928b",
+          "after": "project-certificates.js?v=20261007zh22",
+          "afterOffsets": [
+            3500
+          ],
+          "kind": "cache-version"
+        },
+        {
+          "before": "figures/projects/runtime.js?v=20260929c",
+          "after": "figures/projects/runtime.js?v=20261007zh22",
+          "afterOffsets": [
+            3434
+          ],
+          "kind": "cache-version"
+        },
+        {
+          "before": "  <script src=\"build-meta.js\"></script>",
+          "after": "  <script src=\"build-meta.js\"></script>\n  <script src=\"project-ui.js?v=20261007zh22\"></script>",
+          "afterOffsets": [
+            3264
+          ],
+          "kind": "ui-before-renderers"
+        }
+      ]
+    }
+  ],
+  "newSource": {
+    "path": "site/project-ui.js",
+    "sha256": "c9b924dcaf8c2e2f2db878323e125576080159be08f4256121432dcd433fa5cd"
+  },
+  "unchangedLegacyTests": {
+    "site/test_project_copy.js": "d0e61009300c09b326e7d7fc206de3b4f8b6b7402cb50d3fd1de38c8c6a41128",
+    "site/test_project_certificates.js": "59644c9e06e7261ecb059abe595d2083e0630e1b2b7b23d34efdd83fe0d39ea1",
+    "site/test_project_figure_runtime.js": "868ba6a50c7deec7febaabceeabae881a9a62683ded19e84b3dda3b7b5b9e5c5"
+  },
+  "scope": [
+    "catalog",
+    "project-reader",
+    "copy-feedback",
+    "grade-report-view",
+    "figure-runtime-display"
+  ],
+  "behaviorChanges": [
+    "render textual prerequisites without an undefined lesson URL",
+    "create unique nonempty Chinese heading anchors",
+    "do not mutate source metadata when merging language explanations",
+    "derive translation notice from current build metadata and actual catalog ids",
+    "enhance the asynchronously mounted grader-report command without changing its contents"
+  ],
+  "limits": [
+    "lightweight DOM only, not browser layout or pixel review",
+    "certificate fixtures are synthetic, not real learner evidence",
+    "grading validator remains byte-identical and returns original API errors",
+    "no project algorithms, media, tests or manifests changed"
+  ],
+  "plannedLabels": [
+    {
+      "id": "bookmark-path-organizer",
+      "title": "Bookmark Path Organizer",
+      "localizedTitle": "书签阅读路径整理器",
+      "tagline": "Make a useful reading path from saved links.",
+      "localizedTagline": "将收藏链接整理成实用的阅读路径。"
+    },
+    {
+      "id": "csv-repair-workbench",
+      "title": "CSV Repair Workbench",
+      "localizedTitle": "CSV 修复工作台",
+      "tagline": "Fix messy tables without losing the original cells.",
+      "localizedTagline": "修复杂乱表格，同时保留原始单元格。"
+    },
+    {
+      "id": "download-folder-sort-desk",
+      "title": "Download Folder Sort Desk",
+      "localizedTitle": "下载目录整理台",
+      "tagline": "Turn a crowded folder into a reviewable filing plan.",
+      "localizedTagline": "将拥挤的目录整理成可审阅的归档计划。"
+    },
+    {
+      "id": "glossary-hovercard-publisher",
+      "title": "Glossary Hovercard Publisher",
+      "localizedTitle": "术语悬浮卡片发布器",
+      "tagline": "Explain unfamiliar terms inside the page people are reading.",
+      "localizedTagline": "在读者当前页面中解释陌生术语。"
+    },
+    {
+      "id": "photo-burst-contact-sheet",
+      "title": "Photo Burst Contact Sheet",
+      "localizedTitle": "连拍照片对照表",
+      "tagline": "Compare similar photos before choosing what to keep.",
+      "localizedTagline": "先对比相似照片，再决定保留哪些。"
+    },
+    {
+      "id": "vocabulary-autocomplete-pad",
+      "title": "Vocabulary Autocomplete Pad",
+      "localizedTitle": "词汇自动补全编辑器",
+      "tagline": "Build suggestions that explain which words they learned from.",
+      "localizedTagline": "生成建议，并说明建议来自哪些已学习的词语。"
+    },
+    {
+      "id": "api-tutorial-runner",
+      "title": "API Tutorial Runner",
+      "localizedTitle": "API 教程运行器",
+      "tagline": "Check that an API tutorial still works from its first request to its final result.",
+      "localizedTagline": "从第一个请求到最终结果，检查 API 教程是否仍能运行。"
+    },
+    {
+      "id": "catalog-record-linker",
+      "title": "Catalog Record Linker",
+      "localizedTitle": "目录记录关联器",
+      "tagline": "Reconcile two catalogs without silently merging different things.",
+      "localizedTagline": "核对两份目录，避免把不同对象静默合并。"
+    },
+    {
+      "id": "chart-storyboard-builder",
+      "title": "Chart Storyboard Builder",
+      "localizedTitle": "图表分镜构建器",
+      "tagline": "Turn a table into a visual explanation people can inspect.",
+      "localizedTagline": "将表格转成可检查的可视化说明。"
+    },
+    {
+      "id": "configuration-drift-explainer",
+      "title": "Configuration Drift Explainer",
+      "localizedTitle": "配置差异解释器",
+      "tagline": "Explain why two environments resolve the same setting differently.",
+      "localizedTagline": "解释两个环境为何将同一设置解析为不同结果。"
+    },
+    {
+      "id": "dependency-upgrade-impact-map",
+      "title": "Dependency Upgrade Impact Map",
+      "localizedTitle": "依赖升级影响图",
+      "tagline": "Show which call sites need attention when a dependency contract changes.",
+      "localizedTagline": "依赖契约变化时，指出需要检查的调用位置。"
+    },
+    {
+      "id": "diagram-reading-companion",
+      "title": "Diagram Reading Companion",
+      "localizedTitle": "图解阅读助手",
+      "tagline": "Give a diagram an inspectable reading order and explanation.",
+      "localizedTagline": "为图解提供可检查的阅读顺序和说明。"
+    },
+    {
+      "id": "field-notes-map-builder",
+      "title": "Field Notes Map Builder",
+      "localizedTitle": "实地笔记地图构建器",
+      "tagline": "Turn location-tagged observations into a map another tool can use.",
+      "localizedTagline": "将带位置标记的观察记录转成其他工具可用的地图。"
+    },
+    {
+      "id": "gesture-shortcut-pad",
+      "title": "Gesture Shortcut Pad",
+      "localizedTitle": "手势快捷操作面板",
+      "tagline": "Teach a small app your own drawn shortcuts.",
+      "localizedTagline": "让小型应用学习你自定义的绘制手势。"
+    },
+    {
+      "id": "infrastructure-plan-explainer",
+      "title": "Infrastructure Plan Explainer",
+      "localizedTitle": "基础设施计划解释器",
+      "tagline": "Explain replacements, unknown values and dependencies before an infrastructure change.",
+      "localizedTagline": "在基础设施变更前，解释替换操作、未知值和依赖关系。"
+    },
+    {
+      "id": "log-volume-reduction-lab",
+      "title": "Log Volume Reduction Lab",
+      "localizedTitle": "日志减量实验室",
+      "tagline": "Shrink a noisy log stream while keeping evidence of rare failures.",
+      "localizedTagline": "减少日志噪声，同时保留罕见故障的证据。"
+    },
+    {
+      "id": "plain-language-rewrite-desk",
+      "title": "Plain Language Rewrite Desk",
+      "localizedTitle": "通俗表达改写台",
+      "tagline": "Make an explanation easier to read while checking what changed.",
+      "localizedTagline": "让说明更易读，同时检查改写改变了什么。"
+    },
+    {
+      "id": "service-ownership-navigator",
+      "title": "Service Ownership Navigator",
+      "localizedTitle": "服务责任人导航器",
+      "tagline": "Find a service's owner and runbook with evidence for every answer.",
+      "localizedTagline": "查找服务责任人和操作手册，并为每项答案保留证据。"
+    },
+    {
+      "id": "subtitle-localization-desk",
+      "title": "Subtitle Localization Desk",
+      "localizedTitle": "字幕本地化工作台",
+      "tagline": "Translate captions while keeping the timing and terminology visible.",
+      "localizedTagline": "翻译字幕，同时保留可检查的时间和术语。"
+    },
+    {
+      "id": "ui-string-localization-workbench",
+      "title": "UI String Localization Workbench",
+      "localizedTitle": "界面字符串本地化工作台",
+      "tagline": "Review translated interface text without breaking its placeholders.",
+      "localizedTagline": "审阅界面译文，避免破坏占位符。"
+    },
+    {
+      "id": "workshop-materials-planner",
+      "title": "Workshop Materials Planner",
+      "localizedTitle": "活动材料规划器",
+      "tagline": "Scale a workshop plan and show exactly which supplies are missing.",
+      "localizedTagline": "按规模调整活动计划，并列明缺少的物资。"
+    },
+    {
+      "id": "ci-failure-reproducer",
+      "title": "CI Failure Reproducer",
+      "localizedTitle": "CI 故障复现器",
+      "tagline": "Turn a failed build log into a small, reviewable reproduction recipe.",
+      "localizedTagline": "将构建失败日志转成简明、可审阅的复现步骤。"
+    },
+    {
+      "id": "community-learning-path-finder",
+      "title": "Community Learning Path Finder",
+      "localizedTitle": "社区学习路径查找器",
+      "tagline": "Build a learning path that explains its prerequisites and tradeoffs.",
+      "localizedTagline": "构建学习路径，并解释先修要求和取舍。"
+    },
+    {
+      "id": "database-migration-rehearsal",
+      "title": "Database Migration Rehearsal",
+      "localizedTitle": "数据库迁移演练器",
+      "tagline": "Rehearse a proposed migration on a copy and show exactly what changes.",
+      "localizedTagline": "在副本上演练拟议迁移，并展示精确变化。"
+    },
+    {
+      "id": "decision-tradeoff-explorer",
+      "title": "Decision Tradeoff Explorer",
+      "localizedTitle": "决策取舍分析器",
+      "tagline": "Show when a different priority changes the preferred option.",
+      "localizedTagline": "展示优先级变化何时会改变首选方案。"
+    },
+    {
+      "id": "kubernetes-event-storyboard",
+      "title": "Kubernetes Event Storyboard",
+      "localizedTitle": "Kubernetes 事件分镜",
+      "tagline": "Turn workload events into a timeline with the exact objects behind each clue.",
+      "localizedTagline": "将工作负载事件整理成时间线，并关联每条线索背后的对象。"
+    },
+    {
+      "id": "label-adjudication-desk",
+      "title": "Label Adjudication Desk",
+      "localizedTitle": "标注裁决工作台",
+      "tagline": "Turn annotator disagreements into a traceable evaluation dataset.",
+      "localizedTagline": "将标注分歧整理为可追踪的评估数据集。"
+    },
+    {
+      "id": "lost-item-match-desk",
+      "title": "Lost Item Match Desk",
+      "localizedTitle": "失物匹配工作台",
+      "tagline": "Compare likely item matches without pretending a score proves ownership.",
+      "localizedTagline": "比较可能匹配的物品，不把分数当作所有权证明。"
+    },
+    {
+      "id": "presentation-rehearsal-coach",
+      "title": "Presentation Rehearsal Coach",
+      "localizedTitle": "演示排练教练",
+      "tagline": "See which slide ideas your rehearsal actually covered.",
+      "localizedTagline": "检查排练实际覆盖了哪些幻灯片要点。"
+    },
+    {
+      "id": "retry-storm-lab",
+      "title": "Retry Storm Lab",
+      "localizedTitle": "重试风暴实验室",
+      "tagline": "Watch many reasonable retries combine into an overloaded service.",
+      "localizedTagline": "观察多个单独合理的重试如何共同造成服务过载。"
+    },
+    {
+      "id": "semantic-cache-correctness-lab",
+      "title": "Semantic Cache Correctness Lab",
+      "localizedTitle": "语义缓存正确性实验室",
+      "tagline": "Measure when a similar question can reuse an answer and when it must miss.",
+      "localizedTagline": "测量相似问题何时能复用答案、何时必须重新处理。"
+    },
+    {
+      "id": "streaming-answer-recovery",
+      "title": "Streaming Answer Recovery",
+      "localizedTitle": "流式回答恢复器",
+      "tagline": "Reconnect a streamed answer without duplicating text or hiding an incomplete result.",
+      "localizedTagline": "恢复中断的流式回答，避免重复文本或隐藏未完成结果。"
+    },
+    {
+      "id": "tool-contract-migration-checker",
+      "title": "Tool Contract Migration Checker",
+      "localizedTitle": "工具契约迁移检查器",
+      "tagline": "Find the saved tool calls that a proposed schema change would break.",
+      "localizedTagline": "找出拟议模式变更会破坏的已保存工具调用。"
+    },
+    {
+      "id": "video-highlight-storyboard",
+      "title": "Video Highlight Storyboard",
+      "localizedTitle": "视频精彩片段分镜",
+      "tagline": "Review a clip sequence before spending time editing video.",
+      "localizedTagline": "先审阅片段顺序，再投入视频剪辑。"
+    },
+    {
+      "id": "a2a-task-handoff-workbench",
+      "title": "A2A Task Handoff Workbench",
+      "localizedTitle": "A2A 任务交接工作台",
+      "tagline": "Trace a task as two independently running agents exchange work and artifacts.",
+      "localizedTagline": "追踪两个独立运行的智能体如何交换任务和交付物。"
+    },
+    {
+      "id": "abstention-calibration-workbench",
+      "title": "Abstention Calibration Workbench",
+      "localizedTitle": "拒答校准工作台",
+      "tagline": "Choose when an assistant should defer using a measured error-versus-coverage tradeoff.",
+      "localizedTagline": "通过实测错误率与覆盖率的取舍，确定助手何时应暂缓回答。"
+    },
+    {
+      "id": "artifact-provenance-gate",
+      "title": "Artifact Provenance Gate",
+      "localizedTitle": "交付物来源校验关卡",
+      "tagline": "Explain whether an artifact matches its signed build record and your trust policy.",
+      "localizedTagline": "检查交付物是否匹配签名构建记录和你的信任策略。"
+    },
+    {
+      "id": "context-compaction-verifier",
+      "title": "Context Compaction Verifier",
+      "localizedTitle": "上下文压缩验证器",
+      "tagline": "Check which task constraints survive when an agent compresses its working context.",
+      "localizedTagline": "检查智能体压缩工作上下文后，哪些任务约束仍被保留。"
+    },
+    {
+      "id": "hedged-request-lab",
+      "title": "Hedged Request Lab",
+      "localizedTitle": "冗余请求实验室",
+      "tagline": "Measure the extra work required to escape a slow read request.",
+      "localizedTagline": "测量为避开缓慢读取请求而增加的工作量。"
+    },
+    {
+      "id": "local-inference-capacity-planner",
+      "title": "Local Inference Capacity Planner",
+      "localizedTitle": "本地推理容量规划器",
+      "tagline": "Measure how concurrency changes queueing, latency and successful local requests.",
+      "localizedTagline": "测量并发如何影响排队、延迟和本地请求成功数量。"
+    },
+    {
+      "id": "mcp-protocol-compatibility-doctor",
+      "title": "MCP Compatibility Doctor",
+      "localizedTitle": "MCP 兼容性诊断器",
+      "tagline": "Find the first protocol disagreement between an MCP client and server.",
+      "localizedTagline": "找出 MCP 客户端和服务器之间的第一个协议分歧。"
+    },
+    {
+      "id": "metamorphic-evaluation-workbench",
+      "title": "Metamorphic Evaluation Workbench",
+      "localizedTitle": "蜕变评估工作台",
+      "tagline": "Test relationships between answers when a single golden answer is not enough.",
+      "localizedTagline": "单个标准答案不足时，测试不同答案之间应满足的关系。"
+    },
+    {
+      "id": "oauth-resource-boundary-lab",
+      "title": "OAuth Resource Boundary Lab",
+      "localizedTitle": "OAuth 资源边界实验室",
+      "tagline": "Show why a valid token can still be wrong for the requested resource.",
+      "localizedTagline": "说明有效令牌为何仍可能不适用于请求的资源。"
+    },
+    {
+      "id": "outbound-request-policy-proxy",
+      "title": "Outbound Request Policy Proxy",
+      "localizedTitle": "出站请求策略代理",
+      "tagline": "Explain every destination decision before an agent's HTTP request leaves the process.",
+      "localizedTagline": "在智能体 HTTP 请求离开进程前，解释每项目标地址决策。"
+    },
+    {
+      "id": "release-canary-decision-lab",
+      "title": "Release Canary Decision Lab",
+      "localizedTitle": "灰度发布决策实验室",
+      "tagline": "Make a candidate release earn more traffic through visible evidence and stopping rules.",
+      "localizedTagline": "依据可见证据和停止规则，决定是否给候选版本更多流量。"
+    },
+    {
+      "id": "secret-injection-sidecar",
+      "title": "Secret Injection Sidecar",
+      "localizedTitle": "密钥注入辅助进程",
+      "tagline": "Let an agent request an authenticated operation using an opaque credential handle.",
+      "localizedTagline": "让智能体通过不透明凭据句柄请求需要认证的操作。"
+    },
+    {
+      "id": "signed-webhook-inbox",
+      "title": "Signed Webhook Inbox",
+      "localizedTitle": "签名 Webhook 收件箱",
+      "tagline": "Accept a delivery once and retain the evidence needed to replay it safely.",
+      "localizedTagline": "仅接收一次投递，并保留安全重放所需的证据。"
+    },
+    {
+      "id": "tenant-fairness-scheduler",
+      "title": "Tenant Fairness Scheduler",
+      "localizedTitle": "租户公平调度器",
+      "tagline": "Keep one busy tenant from consuming the entire agent execution queue.",
+      "localizedTagline": "避免一个繁忙租户耗尽整个智能体执行队列。"
+    },
+    {
+      "id": "agent-resource-deadlock-lab",
+      "title": "Agent Resource Deadlock Lab",
+      "localizedTitle": "智能体资源死锁实验室",
+      "tagline": "Replay the exact resource-acquisition order that leaves cooperating agents stuck.",
+      "localizedTagline": "重放导致协作智能体卡住的精确资源获取顺序。"
+    },
+    {
+      "id": "judge-bias-calibration-lab",
+      "title": "Judge Bias Calibration Lab",
+      "localizedTitle": "评审器偏差校准实验室",
+      "tagline": "Find when a judge prefers answer position or length over the evidence in its rubric.",
+      "localizedTagline": "找出评审器何时偏好答案位置或长度，而忽略评分标准中的证据。"
+    },
+    {
+      "id": "trajectory-counterexample-minimizer",
+      "title": "Trajectory Counterexample Minimizer",
+      "localizedTitle": "轨迹反例精简器",
+      "tagline": "Reduce a long agent run to the smallest event sequence that still breaks a rule.",
+      "localizedTagline": "将长智能体运行缩减为仍会违反规则的最短事件序列。"
+    },
+    {
+      "id": "transactional-workspace-patch-broker",
+      "title": "Transactional Workspace Patch Broker",
+      "localizedTitle": "事务式工作区补丁协调器",
+      "tagline": "Publish a coordinated set of agent edits only when its input revision still matches.",
+      "localizedTagline": "仅在输入版本仍匹配时，发布一组相互协调的智能体修改。"
+    }
+  ],
+  "unchangedRoadmap": {
+    "path": "projects/roadmap.json",
+    "sha256": "09918b5c5d39dfe8d81e32fe8cff71d37798ddfbe27f1e5a3b0da6a81152040e"
+  }
+}

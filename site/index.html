@@ -1154,6 +1154,8 @@
     }
 
     .certification-badge-stage {
+      display: grid;
+      gap: 12px;
       width: 124px;
       margin: 0;
     }
@@ -1164,6 +1166,9 @@
       height: auto;
       aspect-ratio: 1;
       object-fit: contain;
+    }
+
+    .certification-badge-stage .certification-badge-claude {
       clip-path: polygon(31% 0, 67% 0, 86% 6%, 97% 20%, 100% 36%, 99% 71%, 88% 84%, 61% 99%, 25% 97%, 6% 82%, 0 66%, 0 36%, 5% 20%);
     }
 
@@ -2411,10 +2416,10 @@
         </article>
         <article class="course-route">
           <div class="course-route-name"><span>以证据开展实践</span><strong>认证备考</strong></div>
-          <p>选择认证路线，完成实践实验，保留学习者自有交付物，并使用原创评估。</p>
+          <p>选择 Claude 或 MCPA 认证路线，完成实践实验，保留学习者自有交付物，并使用原创评估。</p>
           <div class="course-route-actions">
             <a class="course-route-link" href="certifications.html">探索路径</a>
-            <a class="course-route-link" href="https://github.com/rohitg00/ai-engineering-from-scratch/blob/main/certifications/claude/GETTING_STARTED.md" target="_blank" rel="noopener">GitHub 导师</a>
+            <a class="course-route-link" href="https://github.com/rohitg00/ai-engineering-from-scratch/blob/main/certifications/README.md" target="_blank" rel="noopener">GitHub 导师</a>
           </div>
         </article>
       </div>
@@ -2485,27 +2490,31 @@
     <section class="certification-spotlight container" id="certifications" aria-labelledby="certification-spotlight-title">
       <div class="certification-spotlight-grid reveal">
         <figure class="certification-badge-stage" aria-hidden="true">
-          <img
+          <img class="certification-badge-claude"
             src="https://images.credly.com/images/f101c6ac-8a2d-4220-b381-70e3e6c364e3/blob"
             width="601" height="601" loading="lazy" decoding="async" referrerpolicy="no-referrer"
+            alt="">
+          <img class="certification-badge-mcpa"
+            src="https://training.linuxfoundation.org/wp-content/uploads/2026/06/MCPA_Badge-1.png"
+            width="300" height="300" loading="lazy" decoding="async" referrerpolicy="no-referrer"
             alt="">
         </figure>
 
         <div class="certification-copy">
           <span class="certification-eyebrow">独立认证备考</span>
           <h2 id="certification-spotlight-title">通过构建真实系统备考</h2>
-          <p class="certification-intro">四条 Claude 认证路径沿用课程教学方式：逐步学习，配合交互实验、实践交付物，以及基于 GitHub 仓库工作的 AI 导师。</p>
+          <p class="certification-intro">Claude 与 Model Context Protocol Associate（MCPA）认证路线沿用课程的逐步教学方式，配合交互实验、实践交付物，以及基于 GitHub 仓库工作的 AI 导师。</p>
           <div class="certification-proof" aria-label="认证课程覆盖范围">
-            <span><strong>4</strong> 条路径</span>
-            <span><strong>33</strong> 节认证课程</span>
-            <span><strong>295</strong> 道原创练习题</span>
+            <span><strong data-cert-stat="tracks">5</strong> 条路径</span>
+            <span><strong data-cert-stat="lessons">67</strong> 节认证课程</span>
+            <span><strong data-cert-stat="questions">505</strong> 道原创练习题</span>
           </div>
-          <p class="certification-disclaimer">与 Anthropic 无隶属关系，未获其认可、赞助或授权。本课程不颁发认证，也不保证通过考试。</p>
+          <p class="certification-disclaimer">与 Anthropic、Agentic AI Foundation 和 Linux Foundation 无隶属关系，未获其背书、赞助或授权。本课程不颁发认证，也不保证通过考试。</p>
         </div>
 
         <div class="certification-actions">
           <a class="masthead-btn masthead-btn--primary" href="certifications.html">探索认证</a>
-          <a class="certification-github-link" href="https://github.com/rohitg00/ai-engineering-from-scratch/blob/main/certifications/claude/GETTING_STARTED.md" target="_blank" rel="noopener" aria-label="使用 GitHub 认证导师（在新标签页打开）">跟随 GitHub 导师学习</a>
+          <a class="certification-github-link" href="https://github.com/rohitg00/ai-engineering-from-scratch/blob/main/certifications/README.md" target="_blank" rel="noopener" aria-label="使用 GitHub 认证导师（在新标签页打开）">跟随 GitHub 导师学习</a>
         </div>
       </div>
     </section>
@@ -2571,6 +2580,7 @@
         <a href="catalog.html">课程目录</a>
         <a href="glossary.html">术语表</a>
         <a href="https://github.com/rohitg00/ai-engineering-from-scratch/issues/new/choose" target="_blank" rel="noopener">报告问题</a>
+        <a href="sponsors.html">赞助我们</a>
       </div>
     </div>
   </footer>
@@ -2646,12 +2656,12 @@
   </script>
 
   <script src="langs.js?v=20260802a"></script>
-  <script src="lang-picker.js?v=20260808d" defer></script>
+  <script src="lang-picker.js?v=20260925a" defer></script>
   <script src="data.js?v=20260821c"></script>
   <script src="progress.js?v=20260822a"></script>
-  <script src="header.js?v=20260829b" defer></script>
+  <script src="header.js?v=20260927a" defer></script>
   <script src="cmdpalette.js?v=20260821a" defer></script>
-  <script src="app.js?v=20260822a"></script>
+  <script src="app.js?v=20260927a"></script>
   <script defer src="https://va.vercel-scripts.com/v1/script.js"></script>
 </body>
 </html>

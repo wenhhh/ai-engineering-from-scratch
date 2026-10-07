@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>实践项目 - AI Engineering from Scratch</title>
+  <meta name="description" content="从入门到进阶构建 AI 项目。每个项目交付可用成果，并提供阶段测试与导师指导。欢迎社区投稿。">
+  <link rel="canonical" href="https://aiengineeringfromscratch.com/projects.html">
+  <meta property="og:title" content="实践项目 · AI Engineering from Scratch">
+  <meta property="og:description" content="从入门到进阶构建 AI 项目，逐阶段验证。">
+  <meta property="og:image" content="https://aiengineeringfromscratch.com/og-image.png?v=4">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=VT323&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=20260824a">
+  <link rel="stylesheet" href="projects.css?v=20260929c">
+</head>
+<body data-projects-page="catalog">
+  <a href="#main" class="skip-link">跳到正文</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="index.html" class="logo"><span class="logo-icon" aria-hidden="true"></span> AI / FROM SCRATCH</a>
+      <nav class="header-nav">
+        <a href="index.html#contents">课程内容</a>
+        <a href="catalog.html">课程目录</a>
+        <a href="projects.html">实践项目</a>
+        <a href="prereqs.html">学习路线</a>
+        <a href="glossary.html">术语表</a>
+        <a href="about.html">关于</a>
+        <a href="https://github.com/rohitg00/ai-engineering-from-scratch" target="_blank" rel="noopener" class="header-github"><span>GitHub</span><span class="star-count" data-loading="true">…</span></a>
+      </nav>
+      <button class="search-toggle" type="button" data-cmd-palette aria-label="搜索"><span aria-hidden="true">⌕</span></button>
+      <button class="theme-toggle" id="themeToggle" aria-label="切换主题" type="button"><span class="theme-icon" id="themeIcon">N</span></button>
+    </div>
+  </header>
+
+  <main id="main" class="pj-page">
+<aside class="translation-notice" id="pjTranslationNotice" lang="zh-CN" role="note">正在读取汉化清单。项目主体内容、运行验证和视觉验收分别记录在 i18n/zh-upstream-sync.json。</aside>
+
+    <section class="pj-container pj-hero" aria-labelledby="pjTitle">
+      <div class="pj-eyebrow">实践项目 · 从入门到进阶</div>
+      <h1 id="pjTitle">构建真正有用的项目。</h1>
+      <p class="pj-lede">将课程知识变成可运行的交付物：报告生成器、记忆服务器、任务队列或智能体。你逐阶段构建，评分器检查各阶段，导师提供学习指导。</p>
+      <div class="pj-hero-stats" id="pjStats"></div>
+      <div class="pj-actions">
+        <a class="pj-action" id="pjStartLink" href="#ladder">从第一个项目开始</a>
+        <a class="pj-action secondary" href="#submit">提交你的项目</a>
+      </div>
+    </section>
+
+    <section class="pj-container pj-section" aria-labelledby="howTitle">
+      <div class="pj-section-heading"><div><div class="pj-eyebrow">使用方法</div><h2 id="howTitle">三个命令，开始一个项目</h2></div><p>根据任务选择 Python、Rust、TypeScript 或 Go。核心测试可离线运行；可选框架实验会列明依赖。</p></div>
+      <ol class="pj-steps">
+        <li>
+          <div class="pj-step-head"><span class="pj-step-n" aria-hidden="true">01</span><h3>创建工作区</h3></div>
+          <p>复制起始文件。每个占位函数都给出需要实现的精确签名。</p>
+          <pre class="pj-cmd" data-copy-label="复制初始化命令"><code>python3 scripts/project_test.py research-report-agent --init my-report-agent</code></pre>
+        </li>
+        <li>
+          <div class="pj-step-head"><span class="pj-step-n" aria-hidden="true">02</span><h3>运行评分器</h3></div>
+          <p>每次构建一个阶段。评分器检查当前实现及全部前置阶段。</p>
+          <pre class="pj-cmd" data-copy-label="复制评分命令"><code>python3 scripts/project_test.py research-report-agent --stage 1 --path my-report-agent</code></pre>
+        </li>
+        <li>
+          <div class="pj-step-head"><span class="pj-step-n" aria-hidden="true">03</span><h3>跟随导师学习</h3></div>
+          <p>在 Claude Code 中按阶段学习，获取提示和反馈。</p>
+          <pre class="pj-cmd" data-command-label="Claude Code" data-copy-label="复制导师命令"><code>/build-project research-report-agent</code></pre>
+        </li>
+      </ol>
+    </section>
+
+    <section class="pj-container pj-section" id="ladder" aria-labelledby="ladderTitle">
+      <div class="pj-section-heading"><div><div class="pj-eyebrow">分级项目目录</div><h2 id="ladderTitle">选择你的级别</h2></div><p>共五个级别，每级增加一类工程能力。新编写或提交的项目会加入对应级别。</p></div>
+      <div class="pj-filters" role="toolbar" aria-label="筛选项目">
+        <div class="pj-filter-group" id="pjSourceFilter"></div>
+        <label class="pj-toggle"><input type="checkbox" id="pjShowPlanned" checked> 显示规划项目</label>
+      </div>
+      <div class="pj-ladder" id="pjLadder" aria-live="polite"></div>
+    </section>
+
+    <section class="pj-container pj-section" id="submit" aria-labelledby="submitTitle">
+      <div class="pj-submit">
+        <div>
+          <div class="pj-eyebrow">社区贡献</div>
+          <h2 id="submitTitle">把你的实用项目加入目录。</h2>
+          <p>社区项目与核心项目采用相同结构：<code>project.json</code>、包含课程正文、起始代码和测试的各阶段，以及参考实现。项目会展示你的 GitHub 用户名。</p>
+          <ul class="pj-checklist">
+            <li>交付可用成果，不只演示聊天</li>
+            <li>每个阶段都有可离线通过的测试，无需 API 密钥</li>
+            <li>提供独立评估夹具，并说明分数能够证明什么</li>
+            <li>提供原创实现，并链接官方规范与研究资料</li>
+          </ul>
+        </div>
+        <div class="pj-submit-card">
+          <p>复制后，先将 <code>projects/my-project/project.json</code> 中的 <code>id</code> 设为 <code>my-project</code>，再运行评分器。</p>
+          <pre class="pj-cmd"><code>cp -r projects/_template projects/my-project
+python3 scripts/project_test.py my-project \
+  --all --solution --strict</code></pre>
+          <a class="pj-action" id="pjSubmitGuide" href="https://github.com/rohitg00/ai-engineering-from-scratch/blob/main/projects/SUBMITTING.md" target="_blank" rel="noopener">阅读投稿指南</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer"><div class="container footer-inner"><p>AI Engineering from Scratch · 开源 · 永久免费。</p><div class="footer-links"><a href="index.html">首页</a><a href="catalog.html">课程目录</a><a href="https://github.com/rohitg00/ai-engineering-from-scratch" target="_blank" rel="noopener">GitHub</a><a href="sponsors.html">赞助我们</a></div></div></footer>
+
+  <script src="data.js?v=20260821c"></script>
+  <script src="projects-data.js?v=20260929b"></script>
+  <script src="build-meta.js"></script>
+  <script src="project-ui.js?v=20261007zh22"></script>
+  <script src="content-source.js?v=20260821a"></script>
+  <script src="header.js?v=20260927a" defer></script>
+  <script src="cmdpalette.js?v=20260821a" defer></script>
+  <script src="projects.js?v=20261007zh22" defer></script>
+</body>
+</html>

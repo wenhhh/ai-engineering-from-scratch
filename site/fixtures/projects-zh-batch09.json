@@ -1,0 +1,2732 @@
+{
+  "upstream": "c02ca08d8a49ce24c3c1c1cf8e3b422f2c7393ca",
+  "projects": [
+    "agent-budget-planner",
+    "agent-trace-debugger"
+  ],
+  "files": {
+    "projects/agent-budget-planner/.gitignore": {
+      "sourceSha256": "b881abad27176241c77bcbba575ea48f85de2179164cae9005c484976ff80185",
+      "localizedSha256": "b881abad27176241c77bcbba575ea48f85de2179164cae9005c484976ff80185",
+      "kind": "preserved-contract"
+    },
+    "projects/agent-budget-planner/API.md": {
+      "sourceSha256": "49a9130120abd7496851e693151661172ce440200bf85b4f71e7f2137cd2905a",
+      "localizedSha256": "06260dc52e479bbafdd30e6cc06acbe0217855bda9a8d53b9d9a7f3bd57aa6f6",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "python",
+            "def nonnegative(value)\ndef estimate(input_tokens, output_limit, input_rate, output_rate)\ndef ledger(limit)\ndef reserve(state, request_id, amount)\ndef settle(state, request_id, actual)\ndef schedule(jobs, limit, deadline_ms)\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "budget exceeded"
+          ],
+          [
+            "`",
+            "completed"
+          ],
+          [
+            "`",
+            "deadline"
+          ],
+          [
+            "`",
+            "events[].status"
+          ],
+          [
+            "`",
+            "execute_jobs"
+          ],
+          [
+            "`",
+            "needs_reconciliation"
+          ],
+          [
+            "`",
+            "reason"
+          ],
+          [
+            "`",
+            "rejected"
+          ],
+          [
+            "`",
+            "schedule"
+          ]
+        ],
+        "links": [],
+        "math": [],
+        "headings": [
+          "#",
+          "###"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/agent-budget-planner/README.md": {
+      "sourceSha256": "a9517aba38b73f8ea6aa36b58e314835ef11b4bcd02cf0716955874116a8e9e4",
+      "localizedSha256": "9774ce13410c113c7c9a7674559df8bbbd449ad88e44fc6d3bd2da78ee0d1338",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "bash",
+            "python3 scripts/project_test.py agent-budget-planner --init learning-artifacts/agent-budget-planner\npython3 scripts/project_test.py agent-budget-planner --stage 1 --path learning-artifacts/agent-budget-planner --strict\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py agent-budget-planner --all --path learning-artifacts/agent-budget-planner --strict\ncd learning-artifacts/agent-budget-planner\npython3 cli.py samples/input.json --mode execute --output budget.json\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py agent-budget-planner --all --solution --strict\ncd projects/agent-budget-planner/solution\npython3 cli.py samples/input.json --mode execute --output budget.json\n"
+          ]
+        ],
+        "inlineCode": [],
+        "links": [
+          "API.md",
+          "https://docs.python.org/3/library/decimal.html",
+          "stages/01-estimate-cost/docs/en.md",
+          "stages/02-reserve-capacity/docs/en.md",
+          "stages/03-settle-and-release/docs/en.md",
+          "stages/04-schedule-under-deadlines/docs/en.md"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 4
+      }
+    },
+    "projects/agent-budget-planner/media/output.gif": {
+      "sourceSha256": "2818967f23d5a8955014ef885dd5907a42e990f25e76a00b635e31d702b5e02f",
+      "localizedSha256": "2818967f23d5a8955014ef885dd5907a42e990f25e76a00b635e31d702b5e02f",
+      "kind": "original-recording"
+    },
+    "projects/agent-budget-planner/media/output.json": {
+      "sourceSha256": "b7a6466a5c88576cd7b81c6bcd5bca2b247bd427bc397393f019f0b71f972a46",
+      "localizedSha256": "b7a6466a5c88576cd7b81c6bcd5bca2b247bd427bc397393f019f0b71f972a46",
+      "kind": "original-recording"
+    },
+    "projects/agent-budget-planner/media/output.png": {
+      "sourceSha256": "41931c1bf6db0a9507728cabe592a9ed410be87496f7810405c6bd8672a61a47",
+      "localizedSha256": "41931c1bf6db0a9507728cabe592a9ed410be87496f7810405c6bd8672a61a47",
+      "kind": "original-recording"
+    },
+    "projects/agent-budget-planner/media/run.gif": {
+      "sourceSha256": "9368751c5a1ab0aae2dfe2d1fe3e2654512a23e5a982914cb6a4440bcfca29af",
+      "localizedSha256": "9368751c5a1ab0aae2dfe2d1fe3e2654512a23e5a982914cb6a4440bcfca29af",
+      "kind": "original-recording"
+    },
+    "projects/agent-budget-planner/media/run.json": {
+      "sourceSha256": "5ea30363fba01f4235e1021415e716141bac9fb807ff5a3c6d97bb5416c176d9",
+      "localizedSha256": "5ea30363fba01f4235e1021415e716141bac9fb807ff5a3c6d97bb5416c176d9",
+      "kind": "original-recording"
+    },
+    "projects/agent-budget-planner/media/run.png": {
+      "sourceSha256": "3f6b549ec575968bd10c7198c5d124d9812e5f08c63132b3e5b43ca291fc73fe",
+      "localizedSha256": "3f6b549ec575968bd10c7198c5d124d9812e5f08c63132b3e5b43ca291fc73fe",
+      "kind": "original-recording"
+    },
+    "projects/agent-budget-planner/project.json": {
+      "sourceSha256": "42eddaa16fb5ed72898a248062b680c06d20e27b71b8566fa8e9573513c1a85d",
+      "localizedSha256": "49d13ff58a0bcacee2cfde140bf1c5993285d2f36f202e5dad6b04a8aab85d28",
+      "kind": "manifest",
+      "contract": {
+        "id": "agent-budget-planner",
+        "title": "<translated-text>",
+        "level": 3,
+        "levelName": "Engineer",
+        "tagline": "<translated-text>",
+        "summary": "<translated-text>",
+        "youWillBuild": "<translated-text>",
+        "usefulFor": [
+          "<translated-text>"
+        ],
+        "hours": 8,
+        "languages": [
+          "Python"
+        ],
+        "languageWhy": {
+          "Python": "<translated-text>"
+        },
+        "status": "ready",
+        "source": "core",
+        "author": {
+          "name": "AI Engineering from Scratch",
+          "github": "rohitg00"
+        },
+        "skills": [
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "prerequisites": [
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "figures": true,
+        "overviewFigure": "pj-agent-budget-planner-1",
+        "demo": {
+          "cwd": "solution",
+          "command": [
+            "python3",
+            "cli.py",
+            "samples/input.json",
+            "--mode",
+            "execute",
+            "--output",
+            "budget.json"
+          ]
+        },
+        "stages": [
+          {
+            "id": "01-estimate-cost",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "difficulty": "starter",
+            "language": "python",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>"
+            ],
+            "figure": "pj-agent-budget-planner-1"
+          },
+          {
+            "id": "02-reserve-capacity",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "difficulty": "core",
+            "language": "python",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>"
+            ],
+            "figure": "pj-agent-budget-planner-2"
+          },
+          {
+            "id": "03-settle-and-release",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "difficulty": "core",
+            "language": "python",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ],
+            "figure": "pj-agent-budget-planner-3"
+          },
+          {
+            "id": "04-schedule-under-deadlines",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "difficulty": "stretch",
+            "language": "python",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ],
+            "figure": "pj-agent-budget-planner-4"
+          }
+        ],
+        "demos": [
+          {
+            "gif": "media/run.gif",
+            "poster": "media/run.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          },
+          {
+            "gif": "media/output.gif",
+            "poster": "media/output.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          }
+        ]
+      }
+    },
+    "projects/agent-budget-planner/solution/cli.py": {
+      "sourceSha256": "1d09bb905e6ec3a51872253d59298078b22405184a35d19e1f6884f4daace38b",
+      "localizedSha256": "0b65d0f5dcef93f9c9b456481d7140b3e260c714a8a2fd5359a3c95967837ce3",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "\"\"\"Read jobs, reserve before execution, and retain a machine-readable receipt.\"\"\"",
+          "\"\"\"读取任务，在执行前预留额度，并保留机器可读的用量凭据。\"\"\""
+        ],
+        [
+          "# An unknown receipt retains the reservation until reconciliation.",
+          "# 凭据未知时保留预留额度，等待核对；不能把异常当作零费用。"
+        ]
+      ]
+    },
+    "projects/agent-budget-planner/solution/demo.py": {
+      "sourceSha256": "02e056b761cdcafdd616a32fffabe07949a7c02851b2f2bdbef60fcd231048df",
+      "localizedSha256": "02e056b761cdcafdd616a32fffabe07949a7c02851b2f2bdbef60fcd231048df",
+      "kind": "preserved-contract"
+    },
+    "projects/agent-budget-planner/solution/main.py": {
+      "sourceSha256": "2b7add7a138c7168e337f6b5f3cb338755e1e3d32e53ef4a160c8014e267540d",
+      "localizedSha256": "2b7add7a138c7168e337f6b5f3cb338755e1e3d32e53ef4a160c8014e267540d",
+      "kind": "preserved-contract"
+    },
+    "projects/agent-budget-planner/solution/samples/input.json": {
+      "sourceSha256": "bf3ffaab228fcd562976e0cb8b9d4a60f83b32f1771864b7b379b438e601ba99",
+      "localizedSha256": "bf3ffaab228fcd562976e0cb8b9d4a60f83b32f1771864b7b379b438e601ba99",
+      "kind": "preserved-contract"
+    },
+    "projects/agent-budget-planner/stages/01-estimate-cost/docs/en.md": {
+      "sourceSha256": "584350315edfc55c3245f52d3dca73f351eef89a50276c19051ac71776d85448",
+      "localizedSha256": "351be05f4f9b75f122178eb1b121d472134ec5c21b153c95649c6535a90d6b3d",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-agent-budget-planner-1\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py agent-budget-planner --stage 1 --path learning-artifacts/agent-budget-planner --strict\n"
+          ],
+          [
+            "bash",
+            "cd learning-artifacts/agent-budget-planner\npython3 cli.py samples/input.json --mode execute --output budget.json\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "estimate"
+          ],
+          [
+            "`",
+            "python3 scripts/project_test.py agent-budget-planner --init learning-artifacts/agent-budget-planner"
+          ]
+        ],
+        "links": [
+          "../../../API.md",
+          "../../../README.md",
+          "https://docs.python.org/3/library/decimal.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/agent-budget-planner/stages/01-estimate-cost/starter/cli.py": {
+      "sourceSha256": "1d09bb905e6ec3a51872253d59298078b22405184a35d19e1f6884f4daace38b",
+      "localizedSha256": "0b65d0f5dcef93f9c9b456481d7140b3e260c714a8a2fd5359a3c95967837ce3",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "\"\"\"Read jobs, reserve before execution, and retain a machine-readable receipt.\"\"\"",
+          "\"\"\"读取任务，在执行前预留额度，并保留机器可读的用量凭据。\"\"\""
+        ],
+        [
+          "# An unknown receipt retains the reservation until reconciliation.",
+          "# 凭据未知时保留预留额度，等待核对；不能把异常当作零费用。"
+        ]
+      ]
+    },
+    "projects/agent-budget-planner/stages/01-estimate-cost/starter/main.py": {
+      "sourceSha256": "b7816be50536e10d6d4c55d8f3724295daa46b7baea5f0a0e1514f4cfb681111",
+      "localizedSha256": "d16d249678c926826f387bc2cb2dab3e22b4a3de1c6978f2371744f6eebaa70d",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "\"\"\"Fill in the stage interfaces in your own workspace.\"\"\"",
+          "\"\"\"在自己的工作区中完成各阶段接口；起始实现预期测试失败。\"\"\""
+        ]
+      ]
+    },
+    "projects/agent-budget-planner/stages/01-estimate-cost/starter/samples/input.json": {
+      "sourceSha256": "bf3ffaab228fcd562976e0cb8b9d4a60f83b32f1771864b7b379b438e601ba99",
+      "localizedSha256": "bf3ffaab228fcd562976e0cb8b9d4a60f83b32f1771864b7b379b438e601ba99",
+      "kind": "preserved-contract"
+    },
+    "projects/agent-budget-planner/stages/01-estimate-cost/tests/test_stage_01.py": {
+      "sourceSha256": "89f2c7c262608c6648c2730233068345c6369c5f8fff49b696b4659fc1ff5619",
+      "localizedSha256": "89f2c7c262608c6648c2730233068345c6369c5f8fff49b696b4659fc1ff5619",
+      "kind": "preserved-contract"
+    },
+    "projects/agent-budget-planner/stages/02-reserve-capacity/docs/en.md": {
+      "sourceSha256": "50d4ca52e5961556cc2d97c18cf83598f548f6ccc35a3f15264e635e18bbfd42",
+      "localizedSha256": "d0434057289dcdf951daf47b86f3b4f0246028ddae53146a73205ded362fc2c2",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-agent-budget-planner-2\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py agent-budget-planner --stage 2 --path learning-artifacts/agent-budget-planner --strict\n"
+          ],
+          [
+            "bash",
+            "cd learning-artifacts/agent-budget-planner\npython3 cli.py samples/input.json --mode execute --output budget.json\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "python3 scripts/project_test.py agent-budget-planner --init learning-artifacts/agent-budget-planner"
+          ],
+          [
+            "`",
+            "reserve"
+          ]
+        ],
+        "links": [
+          "../../../API.md",
+          "../../../README.md",
+          "https://docs.python.org/3/library/decimal.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/agent-budget-planner/stages/02-reserve-capacity/starter/STAGE.md": {
+      "sourceSha256": "de87d556ff420651ca3f56779d9ccc5ad04b3d08f79de33927207ae35b0562c4",
+      "localizedSha256": "cc45f43580f80796c85a27d3057e0e07eb48fbf3bea2b1f82383143ce9238ee7",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/agent-budget-planner/stages/02-reserve-capacity/tests/test_stage_02.py": {
+      "sourceSha256": "09a565e20e1575c7f2ab0460e3b52c06714cbaa39e2979e22df98cf4edb2c075",
+      "localizedSha256": "09a565e20e1575c7f2ab0460e3b52c06714cbaa39e2979e22df98cf4edb2c075",
+      "kind": "preserved-contract"
+    },
+    "projects/agent-budget-planner/stages/03-settle-and-release/docs/en.md": {
+      "sourceSha256": "45f133896310f4c3cca7a2b39746333085d27a43d82a44219c7e25da851229e7",
+      "localizedSha256": "e97ffb575ddfa3c7aa66d828a727aaddb02393acbf1e26a2510eba6dc020f899",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-agent-budget-planner-3\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py agent-budget-planner --stage 3 --path learning-artifacts/agent-budget-planner --strict\n"
+          ],
+          [
+            "bash",
+            "cd learning-artifacts/agent-budget-planner\npython3 cli.py samples/input.json --mode execute --output budget.json\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "python3 scripts/project_test.py agent-budget-planner --init learning-artifacts/agent-budget-planner"
+          ],
+          [
+            "`",
+            "settle"
+          ]
+        ],
+        "links": [
+          "../../../API.md",
+          "../../../README.md",
+          "https://docs.python.org/3/library/decimal.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/agent-budget-planner/stages/03-settle-and-release/starter/STAGE.md": {
+      "sourceSha256": "de87d556ff420651ca3f56779d9ccc5ad04b3d08f79de33927207ae35b0562c4",
+      "localizedSha256": "cc45f43580f80796c85a27d3057e0e07eb48fbf3bea2b1f82383143ce9238ee7",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/agent-budget-planner/stages/03-settle-and-release/tests/test_stage_03.py": {
+      "sourceSha256": "4e52867a8bbb327982bb04f97a207a6e56e76ef9ca153be3d03b50f637ff7b8c",
+      "localizedSha256": "4e52867a8bbb327982bb04f97a207a6e56e76ef9ca153be3d03b50f637ff7b8c",
+      "kind": "preserved-contract"
+    },
+    "projects/agent-budget-planner/stages/04-schedule-under-deadlines/docs/en.md": {
+      "sourceSha256": "89c558af907d4921704e8689c3cd65675885a1a106108a70a4b63bbc8da19571",
+      "localizedSha256": "b75a3cd84d312c0d70fc5c311f2b08050cf22e017ae03c00b33719a9c3e33b1b",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-agent-budget-planner-4\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py agent-budget-planner --stage 4 --path learning-artifacts/agent-budget-planner --strict\n"
+          ],
+          [
+            "bash",
+            "cd learning-artifacts/agent-budget-planner\npython3 cli.py samples/input.json --mode execute --output budget.json\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "completed"
+          ],
+          [
+            "`",
+            "events[].status"
+          ],
+          [
+            "`",
+            "needs_reconciliation"
+          ],
+          [
+            "`",
+            "python3 scripts/project_test.py agent-budget-planner --init learning-artifacts/agent-budget-planner"
+          ],
+          [
+            "`",
+            "rejected"
+          ],
+          [
+            "`",
+            "schedule"
+          ]
+        ],
+        "links": [
+          "../../../API.md",
+          "../../../README.md",
+          "https://docs.python.org/3/library/decimal.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/agent-budget-planner/stages/04-schedule-under-deadlines/starter/STAGE.md": {
+      "sourceSha256": "de87d556ff420651ca3f56779d9ccc5ad04b3d08f79de33927207ae35b0562c4",
+      "localizedSha256": "cc45f43580f80796c85a27d3057e0e07eb48fbf3bea2b1f82383143ce9238ee7",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/agent-budget-planner/stages/04-schedule-under-deadlines/tests/test_event_status.py": {
+      "sourceSha256": "f6cb46a2fa4312bfce1cacdc43c523f7ad4a5aac19a1c9b8e39435c4cd7dc30d",
+      "localizedSha256": "f6cb46a2fa4312bfce1cacdc43c523f7ad4a5aac19a1c9b8e39435c4cd7dc30d",
+      "kind": "preserved-contract"
+    },
+    "projects/agent-budget-planner/stages/04-schedule-under-deadlines/tests/test_integration.py": {
+      "sourceSha256": "5eb1b2d813ce81f637cd8883c67cecfae661e5df7a8fbd5c04febddbf645b9e4",
+      "localizedSha256": "5eb1b2d813ce81f637cd8883c67cecfae661e5df7a8fbd5c04febddbf645b9e4",
+      "kind": "preserved-contract"
+    },
+    "projects/agent-budget-planner/stages/04-schedule-under-deadlines/tests/test_stage_04.py": {
+      "sourceSha256": "fe68a328d568441b0824157f071fb2b686537bbf57879f2c3c877170dbc07054",
+      "localizedSha256": "fe68a328d568441b0824157f071fb2b686537bbf57879f2c3c877170dbc07054",
+      "kind": "preserved-contract"
+    },
+    "projects/agent-trace-debugger/.gitignore": {
+      "sourceSha256": "08055db8b3a6c027e09eff89878ecb56a172bd47973274df04f5d85aa491f112",
+      "localizedSha256": "08055db8b3a6c027e09eff89878ecb56a172bd47973274df04f5d85aa491f112",
+      "kind": "preserved-contract"
+    },
+    "projects/agent-trace-debugger/API.md": {
+      "sourceSha256": "bbc19939299886ece7a558eac5f5824a0c35c688e8d047e2499b9ed8793a4b58",
+      "localizedSha256": "1e67285dc604b0accf4b32673a10d9fef55567f81f933639a5de8b28c9b50992",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "typescript",
+            "export function parseTrace(raw: string): Span[]\nexport function validateTree(spans: Span[]): Map<string, Span>\nexport function unionDuration(intervals: [number, number][]): number\nexport function analyze(spans: Span[])\nexport function render(spans: Span[]): string\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "--format otlp"
+          ],
+          [
+            "`",
+            "resourceSpans[].scopeSpans[].spans"
+          ]
+        ],
+        "links": [],
+        "math": [],
+        "headings": [
+          "#",
+          "###"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/agent-trace-debugger/README.md": {
+      "sourceSha256": "b3eddada3f750bc35c9cb9493dd526853ded3a45f075dea19a9abb6e58934613",
+      "localizedSha256": "dc063b96745e26eea0270c6d009785867e1c662dffd2c9bdf4826aa381d1603e",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "bash",
+            "python3 scripts/project_test.py agent-trace-debugger --init learning-artifacts/agent-trace-debugger\npython3 scripts/project_test.py agent-trace-debugger --stage 1 --path learning-artifacts/agent-trace-debugger --strict\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py agent-trace-debugger --all --path learning-artifacts/agent-trace-debugger --strict\ncd learning-artifacts/agent-trace-debugger\nnode cli.ts --input samples/trace.jsonl --baseline samples/before.jsonl --output trace.html --json trace.json\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py agent-trace-debugger --all --solution --strict\ncd projects/agent-trace-debugger/solution\nnode cli.ts --input samples/trace.jsonl --baseline samples/before.jsonl --output trace.html --json trace.json\n"
+          ],
+          [
+            "bash",
+            "node cli.ts --format otlp --input samples/otlp.json --output otlp-trace.html --json otlp-trace.json\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "otlp.ts"
+          ]
+        ],
+        "links": [
+          "API.md",
+          "https://nodejs.org/api/test.html",
+          "https://opentelemetry.io/docs/concepts/signals/traces/",
+          "stages/01-parse/docs/en.md",
+          "stages/02-tree/docs/en.md",
+          "stages/03-timing/docs/en.md",
+          "stages/04-timeline/docs/en.md"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 4
+      }
+    },
+    "projects/agent-trace-debugger/media/output.gif": {
+      "sourceSha256": "dfb293ad13c41d4bd64c105036fcab37a0ed5c0799c7b5cc7047c5a265ba6b7c",
+      "localizedSha256": "dfb293ad13c41d4bd64c105036fcab37a0ed5c0799c7b5cc7047c5a265ba6b7c",
+      "kind": "original-recording"
+    },
+    "projects/agent-trace-debugger/media/output.json": {
+      "sourceSha256": "2d79d19ee7c9731009f1b56fe741be601dc0b7e2f494e2abadfa6d70dd1f15d4",
+      "localizedSha256": "2d79d19ee7c9731009f1b56fe741be601dc0b7e2f494e2abadfa6d70dd1f15d4",
+      "kind": "original-recording"
+    },
+    "projects/agent-trace-debugger/media/output.png": {
+      "sourceSha256": "fdf32fe420d7dfdbed50c9fe302433634bfc4e1a6d6d9634f43ad810f973a3b6",
+      "localizedSha256": "fdf32fe420d7dfdbed50c9fe302433634bfc4e1a6d6d9634f43ad810f973a3b6",
+      "kind": "original-recording"
+    },
+    "projects/agent-trace-debugger/media/run.gif": {
+      "sourceSha256": "3cb32b34d2d3ad18f3a0f294f11b056e9d1d336630844b1afcbaef3a611be4a1",
+      "localizedSha256": "3cb32b34d2d3ad18f3a0f294f11b056e9d1d336630844b1afcbaef3a611be4a1",
+      "kind": "original-recording"
+    },
+    "projects/agent-trace-debugger/media/run.json": {
+      "sourceSha256": "b039badf454d7840bfc42361569175d5bb42090bff35a4c2ccdddd039a25b573",
+      "localizedSha256": "b039badf454d7840bfc42361569175d5bb42090bff35a4c2ccdddd039a25b573",
+      "kind": "original-recording"
+    },
+    "projects/agent-trace-debugger/media/run.png": {
+      "sourceSha256": "a0b203cd00bc64602a9d852bcbbcbed232d4f3786603687f83c8f695b13f053c",
+      "localizedSha256": "a0b203cd00bc64602a9d852bcbbcbed232d4f3786603687f83c8f695b13f053c",
+      "kind": "original-recording"
+    },
+    "projects/agent-trace-debugger/project.json": {
+      "sourceSha256": "277a00541103ffa8f21683042c19a223345e0cb3de240c2dcc1bad6e12b031b7",
+      "localizedSha256": "de8ded58dc1ea1ccb64ac114688206c0a4d2f2756bd1ae24458b7a73a448c298",
+      "kind": "manifest",
+      "contract": {
+        "id": "agent-trace-debugger",
+        "title": "<translated-text>",
+        "level": 3,
+        "levelName": "Engineer",
+        "tagline": "<translated-text>",
+        "summary": "<translated-text>",
+        "hours": 8,
+        "languages": [
+          "TypeScript"
+        ],
+        "status": "ready",
+        "source": "core",
+        "author": {
+          "name": "AI Engineering from Scratch",
+          "github": "rohitg00"
+        },
+        "skills": [
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "prerequisites": [
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "youWillBuild": "<translated-text>",
+        "usefulFor": [
+          "<translated-text>"
+        ],
+        "demo": {
+          "cwd": "solution",
+          "command": [
+            "node",
+            "cli.ts",
+            "--input",
+            "samples/trace.jsonl",
+            "--baseline",
+            "samples/before.jsonl",
+            "--output",
+            "trace.html",
+            "--json",
+            "trace.json"
+          ]
+        },
+        "stages": [
+          {
+            "id": "01-parse",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "typescript",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "parseTrace"
+            ],
+            "difficulty": "starter",
+            "runner": [
+              "node",
+              "--experimental-strip-types",
+              "--test",
+              "{tests}/stage.test.ts"
+            ],
+            "requires": [
+              "node"
+            ],
+            "timeout": 90,
+            "figure": "pj-agent-trace-debugger-1"
+          },
+          {
+            "id": "02-tree",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "typescript",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "validateTree"
+            ],
+            "difficulty": "core",
+            "runner": [
+              "node",
+              "--experimental-strip-types",
+              "--test",
+              "{tests}/stage.test.ts"
+            ],
+            "requires": [
+              "node"
+            ],
+            "timeout": 90,
+            "figure": "pj-agent-trace-debugger-2"
+          },
+          {
+            "id": "03-timing",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "typescript",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "unionDuration",
+              "analyze"
+            ],
+            "difficulty": "core",
+            "runner": [
+              "node",
+              "--experimental-strip-types",
+              "--test",
+              "{tests}/stage.test.ts"
+            ],
+            "requires": [
+              "node"
+            ],
+            "timeout": 90,
+            "figure": "pj-agent-trace-debugger-3"
+          },
+          {
+            "id": "04-timeline",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "typescript",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "render"
+            ],
+            "difficulty": "core",
+            "runner": [
+              "node",
+              "--experimental-strip-types",
+              "--test",
+              "{tests}/stage.test.ts",
+              "{tests}/integration.test.ts"
+            ],
+            "requires": [
+              "node"
+            ],
+            "timeout": 90,
+            "figure": "pj-agent-trace-debugger-4"
+          }
+        ],
+        "demos": [
+          {
+            "gif": "media/run.gif",
+            "poster": "media/run.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          },
+          {
+            "gif": "media/output.gif",
+            "poster": "media/output.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          }
+        ]
+      }
+    },
+    "projects/agent-trace-debugger/solution/.gitignore": {
+      "sourceSha256": "04b27f9fafba7caa46b785c7f32a962a5d7112523da0342d62082f36ebbc0fe8",
+      "localizedSha256": "04b27f9fafba7caa46b785c7f32a962a5d7112523da0342d62082f36ebbc0fe8",
+      "kind": "preserved-contract"
+    },
+    "projects/agent-trace-debugger/solution/cli.ts": {
+      "sourceSha256": "dbbb9c8bd881837fefc2d03d6a2e14fdd0cdcd287e24a99eaf2f158cfa879cc4",
+      "localizedSha256": "dbbb9c8bd881837fefc2d03d6a2e14fdd0cdcd287e24a99eaf2f158cfa879cc4",
+      "kind": "preserved-contract"
+    },
+    "projects/agent-trace-debugger/solution/main.ts": {
+      "sourceSha256": "f9dba690ef22911263228bed49e728f241d62c0bdec4ff4c92ce978fa6572d99",
+      "localizedSha256": "d2fa6a7246c844fbd7b768dee55ab1aaf7b2ab465aebc2402d1e1d74670318eb",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          " * Agent Trace Debugger reference implementation.\n * Follow stages in projects/agent-trace-debugger/stages/.\n * The demo is deterministic and requires no provider credentials.\n * Protocol references are listed in the project README.",
+          " * 智能体追踪调试器参考实现。\n * 按 projects/agent-trace-debugger/stages/ 中的阶段逐步学习。\n * 演示使用确定性样本，无须服务商凭据。\n * 协议来源见项目 README；参考解答通过不代表学习者完成。"
+        ],
+        [
+          "<title>Agent trace</title>",
+          "<title>Agent trace · 智能体追踪</title>"
+        ],
+        [
+          "<h1>Agent trace</h1>",
+          "<h1>智能体追踪（Agent trace）</h1>"
+        ],
+        [
+          " ms wall time | ",
+          " ms wall time（总历时） | "
+        ],
+        [
+          " tokens | ",
+          " tokens（词元） | "
+        ],
+        [
+          " errors</p>",
+          " errors（错误）</p>"
+        ],
+        [
+          " ms own / ",
+          " ms own（自身耗时） / "
+        ],
+        [
+          " ms total</small>",
+          " ms total（总耗时）</small>"
+        ]
+      ]
+    },
+    "projects/agent-trace-debugger/solution/otlp.ts": {
+      "sourceSha256": "39f9c73b3e4b40eaa5fbf16eae44f24b9860455c49f6020b5f37ef83468807dd",
+      "localizedSha256": "39f9c73b3e4b40eaa5fbf16eae44f24b9860455c49f6020b5f37ef83468807dd",
+      "kind": "preserved-contract"
+    },
+    "projects/agent-trace-debugger/solution/package.json": {
+      "sourceSha256": "a90fc33418afa2b9cbf4768524b021135b965ecdf993457505bfae3ac44a8428",
+      "localizedSha256": "a90fc33418afa2b9cbf4768524b021135b965ecdf993457505bfae3ac44a8428",
+      "kind": "preserved-contract"
+    },
+    "projects/agent-trace-debugger/solution/samples/before.jsonl": {
+      "sourceSha256": "de5ecb9a2bec418c8bc31c133ed53492bd8dde86201aeb806c82ef2ef1442131",
+      "localizedSha256": "de5ecb9a2bec418c8bc31c133ed53492bd8dde86201aeb806c82ef2ef1442131",
+      "kind": "preserved-contract"
+    },
+    "projects/agent-trace-debugger/solution/samples/otlp.json": {
+      "sourceSha256": "c44836badffe2b5a26c1765506df2daa5e7ea6f1855c5451f32255ac0f0f0eb5",
+      "localizedSha256": "c44836badffe2b5a26c1765506df2daa5e7ea6f1855c5451f32255ac0f0f0eb5",
+      "kind": "preserved-contract"
+    },
+    "projects/agent-trace-debugger/solution/samples/trace.jsonl": {
+      "sourceSha256": "a0ad4a09006638cb6b0bd72902a1af5f08b026cf936a44dca1dadc972b72b207",
+      "localizedSha256": "a0ad4a09006638cb6b0bd72902a1af5f08b026cf936a44dca1dadc972b72b207",
+      "kind": "preserved-contract"
+    },
+    "projects/agent-trace-debugger/stages/01-parse/docs/en.md": {
+      "sourceSha256": "f927197c8392eb69d5a3a6f4d3668a9e7059916e70913acf7ee038f7d9cd1ec1",
+      "localizedSha256": "c8fc71991a47d25be39889767894d791ffc2644d6a52068e19a475aa72e99939",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-agent-trace-debugger-1\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py agent-trace-debugger --stage 1 --path learning-artifacts/agent-trace-debugger --strict\n"
+          ],
+          [
+            "bash",
+            "cd learning-artifacts/agent-trace-debugger\nnode cli.ts --input samples/trace.jsonl --baseline samples/before.jsonl --output trace.html --json trace.json\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "main.ts"
+          ],
+          [
+            "`",
+            "parseTrace"
+          ],
+          [
+            "`",
+            "parseTrace"
+          ],
+          [
+            "`",
+            "python3 scripts/project_test.py agent-trace-debugger --init learning-artifacts/agent-trace-debugger"
+          ]
+        ],
+        "links": [
+          "../../../API.md",
+          "../../../README.md",
+          "https://nodejs.org/api/test.html",
+          "https://opentelemetry.io/docs/concepts/signals/traces/"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/agent-trace-debugger/stages/01-parse/starter/cli.ts": {
+      "sourceSha256": "dbbb9c8bd881837fefc2d03d6a2e14fdd0cdcd287e24a99eaf2f158cfa879cc4",
+      "localizedSha256": "dbbb9c8bd881837fefc2d03d6a2e14fdd0cdcd287e24a99eaf2f158cfa879cc4",
+      "kind": "preserved-contract"
+    },
+    "projects/agent-trace-debugger/stages/01-parse/starter/main.ts": {
+      "sourceSha256": "aa356b33f21ae85c21c2d339211d788c4e45e7247de9ec24283bea7f513014ce",
+      "localizedSha256": "aa356b33f21ae85c21c2d339211d788c4e45e7247de9ec24283bea7f513014ce",
+      "kind": "preserved-contract"
+    },
+    "projects/agent-trace-debugger/stages/01-parse/starter/otlp.ts": {
+      "sourceSha256": "39f9c73b3e4b40eaa5fbf16eae44f24b9860455c49f6020b5f37ef83468807dd",
+      "localizedSha256": "39f9c73b3e4b40eaa5fbf16eae44f24b9860455c49f6020b5f37ef83468807dd",
+      "kind": "preserved-contract"
+    },
+    "projects/agent-trace-debugger/stages/01-parse/starter/package.json": {
+      "sourceSha256": "a90fc33418afa2b9cbf4768524b021135b965ecdf993457505bfae3ac44a8428",
+      "localizedSha256": "a90fc33418afa2b9cbf4768524b021135b965ecdf993457505bfae3ac44a8428",
+      "kind": "preserved-contract"
+    },
+    "projects/agent-trace-debugger/stages/01-parse/starter/samples/before.jsonl": {
+      "sourceSha256": "de5ecb9a2bec418c8bc31c133ed53492bd8dde86201aeb806c82ef2ef1442131",
+      "localizedSha256": "de5ecb9a2bec418c8bc31c133ed53492bd8dde86201aeb806c82ef2ef1442131",
+      "kind": "preserved-contract"
+    },
+    "projects/agent-trace-debugger/stages/01-parse/starter/samples/otlp.json": {
+      "sourceSha256": "c44836badffe2b5a26c1765506df2daa5e7ea6f1855c5451f32255ac0f0f0eb5",
+      "localizedSha256": "c44836badffe2b5a26c1765506df2daa5e7ea6f1855c5451f32255ac0f0f0eb5",
+      "kind": "preserved-contract"
+    },
+    "projects/agent-trace-debugger/stages/01-parse/starter/samples/trace.jsonl": {
+      "sourceSha256": "a0ad4a09006638cb6b0bd72902a1af5f08b026cf936a44dca1dadc972b72b207",
+      "localizedSha256": "a0ad4a09006638cb6b0bd72902a1af5f08b026cf936a44dca1dadc972b72b207",
+      "kind": "preserved-contract"
+    },
+    "projects/agent-trace-debugger/stages/01-parse/starter/stage-1.md": {
+      "sourceSha256": "69047b8063d0ce26f29521fbb5ae79d10bee1397339975f8478a11276db34bf7",
+      "localizedSha256": "435ed65b0885c0347b34d67ee2a343a8e08bfc6b9897be0d7e008b775e1b6ba3",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/agent-trace-debugger/stages/01-parse/tests/stage.test.ts": {
+      "sourceSha256": "0c980c08df3ad9bf01ccbfa6a22cd4a1ccec2127b1cc4defab3f9a8e315c0580",
+      "localizedSha256": "0c980c08df3ad9bf01ccbfa6a22cd4a1ccec2127b1cc4defab3f9a8e315c0580",
+      "kind": "preserved-contract"
+    },
+    "projects/agent-trace-debugger/stages/02-tree/docs/en.md": {
+      "sourceSha256": "efd004017ce0efcd11fdee38231aefc19011f74d4f5fa9b411408095dbe3ed55",
+      "localizedSha256": "f188eb5e4ebe4e104a69673f84060e02c54f49a14222ea8325662372e57c8dc7",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-agent-trace-debugger-2\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py agent-trace-debugger --stage 2 --path learning-artifacts/agent-trace-debugger --strict\n"
+          ],
+          [
+            "bash",
+            "cd learning-artifacts/agent-trace-debugger\nnode cli.ts --input samples/trace.jsonl --baseline samples/before.jsonl --output trace.html --json trace.json\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "main.ts"
+          ],
+          [
+            "`",
+            "python3 scripts/project_test.py agent-trace-debugger --init learning-artifacts/agent-trace-debugger"
+          ],
+          [
+            "`",
+            "validateTree"
+          ],
+          [
+            "`",
+            "validateTree"
+          ]
+        ],
+        "links": [
+          "../../../API.md",
+          "../../../README.md",
+          "https://nodejs.org/api/test.html",
+          "https://opentelemetry.io/docs/concepts/signals/traces/"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/agent-trace-debugger/stages/02-tree/starter/stage-2.md": {
+      "sourceSha256": "45b59f2f0f4dfc897c7645b5f2acb0bc96d4346abe38ea93d8cfd4dd0732abf1",
+      "localizedSha256": "12c930e028151b2dbbec5106f7562a5f51dc735da5a19f4534313420f1064429",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/agent-trace-debugger/stages/02-tree/tests/stage.test.ts": {
+      "sourceSha256": "76952c252fbd6467d07896d42dd966aa43050d6538669d3696db58118f268d53",
+      "localizedSha256": "76952c252fbd6467d07896d42dd966aa43050d6538669d3696db58118f268d53",
+      "kind": "preserved-contract"
+    },
+    "projects/agent-trace-debugger/stages/03-timing/docs/en.md": {
+      "sourceSha256": "6cd68ff13e3b3170550836a2d267e519930839fb6e4107dd989ffb4d64f9a94a",
+      "localizedSha256": "cedc56cf0dff9938ec2d9cbd983ae523127591f565b1adb53c4cee2343229bdc",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-agent-trace-debugger-3\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py agent-trace-debugger --stage 3 --path learning-artifacts/agent-trace-debugger --strict\n"
+          ],
+          [
+            "bash",
+            "cd learning-artifacts/agent-trace-debugger\nnode cli.ts --input samples/trace.jsonl --baseline samples/before.jsonl --output trace.html --json trace.json\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "main.ts"
+          ],
+          [
+            "`",
+            "python3 scripts/project_test.py agent-trace-debugger --init learning-artifacts/agent-trace-debugger"
+          ],
+          [
+            "`",
+            "unionDuration, analyze"
+          ],
+          [
+            "`",
+            "unionDuration, analyze"
+          ]
+        ],
+        "links": [
+          "../../../API.md",
+          "../../../README.md",
+          "https://nodejs.org/api/test.html",
+          "https://opentelemetry.io/docs/concepts/signals/traces/"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/agent-trace-debugger/stages/03-timing/starter/stage-3.md": {
+      "sourceSha256": "235425d032343f0bc36e7b8a82ea245f42eb8debdd12ac093a5f299d719448ab",
+      "localizedSha256": "72786b286737e399251ff081e7957aa8bb3a821ef8f0f1da7a7728bf51b74a2a",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/agent-trace-debugger/stages/03-timing/tests/stage.test.ts": {
+      "sourceSha256": "1b22ca43bfefe2b5951304fdff05990e419a1530de2327984ce06d49b70d126d",
+      "localizedSha256": "1b22ca43bfefe2b5951304fdff05990e419a1530de2327984ce06d49b70d126d",
+      "kind": "preserved-contract"
+    },
+    "projects/agent-trace-debugger/stages/04-timeline/docs/en.md": {
+      "sourceSha256": "5b8e545a83d941d912bd6aeb9b9995fb0ea79a102b8e28e1d296f69fc47ca4af",
+      "localizedSha256": "d80dc4674daff835089ff73386405f4fbcaacaf5042eefc73469f0e51409579d",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-agent-trace-debugger-4\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py agent-trace-debugger --stage 4 --path learning-artifacts/agent-trace-debugger --strict\n"
+          ],
+          [
+            "bash",
+            "cd learning-artifacts/agent-trace-debugger\nnode cli.ts --input samples/trace.jsonl --baseline samples/before.jsonl --output trace.html --json trace.json\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "main.ts"
+          ],
+          [
+            "`",
+            "python3 scripts/project_test.py agent-trace-debugger --init learning-artifacts/agent-trace-debugger"
+          ],
+          [
+            "`",
+            "render"
+          ],
+          [
+            "`",
+            "render"
+          ]
+        ],
+        "links": [
+          "../../../API.md",
+          "../../../README.md",
+          "https://nodejs.org/api/test.html",
+          "https://opentelemetry.io/docs/concepts/signals/traces/"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/agent-trace-debugger/stages/04-timeline/starter/stage-4.md": {
+      "sourceSha256": "bebf6f62da5e439ae76603d560ab96040040ff326f7fdcdc200cecd1cb2c2fc9",
+      "localizedSha256": "d2ca3de6ff0001fd76dd8da274466a8af61b41c891d072471102e614c47d1cb7",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/agent-trace-debugger/stages/04-timeline/tests/integration.test.ts": {
+      "sourceSha256": "e98cac9b18287b589f0012ea2efcf50fcbbebb1109aea10f165a46545aefe0a9",
+      "localizedSha256": "e98cac9b18287b589f0012ea2efcf50fcbbebb1109aea10f165a46545aefe0a9",
+      "kind": "preserved-contract"
+    },
+    "projects/agent-trace-debugger/stages/04-timeline/tests/stage.test.ts": {
+      "sourceSha256": "c5bc50ff4ff0ca1e3df30773971d53cfdb613971aaf5540ab281aa186ad647eb",
+      "localizedSha256": "c5bc50ff4ff0ca1e3df30773971d53cfdb613971aaf5540ab281aa186ad647eb",
+      "kind": "preserved-contract"
+    },
+    "projects/agent-trace-debugger/starter/cli.ts": {
+      "sourceSha256": "dbbb9c8bd881837fefc2d03d6a2e14fdd0cdcd287e24a99eaf2f158cfa879cc4",
+      "localizedSha256": "dbbb9c8bd881837fefc2d03d6a2e14fdd0cdcd287e24a99eaf2f158cfa879cc4",
+      "kind": "preserved-contract"
+    },
+    "projects/agent-trace-debugger/starter/main.ts": {
+      "sourceSha256": "aa356b33f21ae85c21c2d339211d788c4e45e7247de9ec24283bea7f513014ce",
+      "localizedSha256": "aa356b33f21ae85c21c2d339211d788c4e45e7247de9ec24283bea7f513014ce",
+      "kind": "preserved-contract"
+    },
+    "projects/agent-trace-debugger/starter/otlp.ts": {
+      "sourceSha256": "39f9c73b3e4b40eaa5fbf16eae44f24b9860455c49f6020b5f37ef83468807dd",
+      "localizedSha256": "39f9c73b3e4b40eaa5fbf16eae44f24b9860455c49f6020b5f37ef83468807dd",
+      "kind": "preserved-contract"
+    },
+    "projects/agent-trace-debugger/starter/package.json": {
+      "sourceSha256": "a90fc33418afa2b9cbf4768524b021135b965ecdf993457505bfae3ac44a8428",
+      "localizedSha256": "a90fc33418afa2b9cbf4768524b021135b965ecdf993457505bfae3ac44a8428",
+      "kind": "preserved-contract"
+    },
+    "projects/agent-trace-debugger/starter/samples/before.jsonl": {
+      "sourceSha256": "de5ecb9a2bec418c8bc31c133ed53492bd8dde86201aeb806c82ef2ef1442131",
+      "localizedSha256": "de5ecb9a2bec418c8bc31c133ed53492bd8dde86201aeb806c82ef2ef1442131",
+      "kind": "preserved-contract"
+    },
+    "projects/agent-trace-debugger/starter/samples/otlp.json": {
+      "sourceSha256": "c44836badffe2b5a26c1765506df2daa5e7ea6f1855c5451f32255ac0f0f0eb5",
+      "localizedSha256": "c44836badffe2b5a26c1765506df2daa5e7ea6f1855c5451f32255ac0f0f0eb5",
+      "kind": "preserved-contract"
+    },
+    "projects/agent-trace-debugger/starter/samples/trace.jsonl": {
+      "sourceSha256": "a0ad4a09006638cb6b0bd72902a1af5f08b026cf936a44dca1dadc972b72b207",
+      "localizedSha256": "a0ad4a09006638cb6b0bd72902a1af5f08b026cf936a44dca1dadc972b72b207",
+      "kind": "preserved-contract"
+    }
+  },
+  "figures": [
+    {
+      "path": "site/figures/projects/agent-budget-planner.js",
+      "sourceSha256": "32726e3dd4fab89b903ed63af711f990d339c8c618329afeeb7fb931e838c18b",
+      "localizedSha256": "f03792fa12085b3e4127b2d57dd5d84f601f0cc04d2be12c2f52a6ac472cee2e",
+      "edits": [
+        {
+          "offset": 275,
+          "before": "' needs a nonnegative safe integer.'",
+          "after": "' 必须是非负安全整数（needs a nonnegative safe integer）。'",
+          "afterOffset": 275
+        },
+        {
+          "offset": 843,
+          "before": "'Spent'",
+          "after": "'已支出'",
+          "afterOffset": 854
+        },
+        {
+          "offset": 911,
+          "before": "'Held'",
+          "after": "'已预留'",
+          "afterOffset": 920
+        },
+        {
+          "offset": 978,
+          "before": "'Available'",
+          "after": "'可用额度（Available）'",
+          "afterOffset": 986
+        },
+        {
+          "offset": 1136,
+          "before": "'Limit'",
+          "after": "'上限'",
+          "afterOffset": 1150
+        },
+        {
+          "offset": 1170,
+          "before": "'Earlier spending'",
+          "after": "'既有支出'",
+          "afterOffset": 1181
+        },
+        {
+          "offset": 1229,
+          "before": "'Existing hold A'",
+          "after": "'现有预留 A'",
+          "afterOffset": 1228
+        },
+        {
+          "offset": 1309,
+          "before": "'Committed capacity'",
+          "after": "'已占用额度'",
+          "afterOffset": 1299
+        },
+        {
+          "offset": 1378,
+          "before": "'Earlier spending and existing holds must fit the limit.'",
+          "after": "'既有支出与预留总额必须符合上限（must fit the limit）。'",
+          "afterOffset": 1355
+        },
+        {
+          "offset": 1539,
+          "before": "'Spent'",
+          "after": "'已支出'",
+          "afterOffset": 1497
+        },
+        {
+          "offset": 1569,
+          "before": "'Earlier usage'",
+          "after": "'既有用量'",
+          "afterOffset": 1525
+        },
+        {
+          "offset": 1627,
+          "before": "'Held'",
+          "after": "'已预留'",
+          "afterOffset": 1574
+        },
+        {
+          "offset": 1704,
+          "before": "'Request '",
+          "after": "'请求 '",
+          "afterOffset": 1650
+        },
+        {
+          "offset": 1770,
+          "before": "'Available'",
+          "after": "'可用额度（Available）'",
+          "afterOffset": 1711
+        },
+        {
+          "offset": 1806,
+          "before": "'Unassigned capacity'",
+          "after": "'未分配额度'",
+          "afterOffset": 1753
+        },
+        {
+          "offset": 1878,
+          "before": "'Request'",
+          "after": "'请求'",
+          "afterOffset": 1811
+        },
+        {
+          "offset": 2212,
+          "before": "'Estimate a request in integer teaching units'",
+          "after": "'用整数教学单位估算请求'",
+          "afterOffset": 2140
+        },
+        {
+          "offset": 2273,
+          "before": "'An estimate combines prompt cost and the output ceiling. The rates here are arbitrary teaching units.'",
+          "after": "'估算由提示词成本和输出上限成本组成。这里的费率采用人为设定的教学单位。'",
+          "afterOffset": 2168
+        },
+        {
+          "offset": 2405,
+          "before": "'If the output ceiling is zero, which part of the request still costs something?'",
+          "after": "'输出上限为零时，请求的哪一部分仍然产生费用？'",
+          "afterOffset": 2234
+        },
+        {
+          "offset": 2527,
+          "before": "'Input tokens'",
+          "after": "'输入词元数'",
+          "afterOffset": 2299
+        },
+        {
+          "offset": 2571,
+          "before": "'Output ceiling (tokens)'",
+          "after": "'输出上限（词元数）'",
+          "afterOffset": 2336
+        },
+        {
+          "offset": 2623,
+          "before": "'Input rate (teaching units/token)'",
+          "after": "'输入费率（教学单位／词元）'",
+          "afterOffset": 2374
+        },
+        {
+          "offset": 2685,
+          "before": "'Output rate (teaching units/token)'",
+          "after": "'输出费率（教学单位／词元）'",
+          "afterOffset": 2416
+        },
+        {
+          "offset": 2755,
+          "before": "'Default request'",
+          "after": "'默认请求'",
+          "afterOffset": 2465
+        },
+        {
+          "offset": 2797,
+          "before": "'No output tokens'",
+          "after": "'不输出词元'",
+          "afterOffset": 2496
+        },
+        {
+          "offset": 2856,
+          "before": "'Larger output ceiling'",
+          "after": "'提高输出上限'",
+          "afterOffset": 2544
+        },
+        {
+          "offset": 2986,
+          "before": "'Input tokens'",
+          "after": "'输入词元数'",
+          "afterOffset": 2659
+        },
+        {
+          "offset": 3040,
+          "before": "'Output ceiling'",
+          "after": "'输出上限'",
+          "afterOffset": 2706
+        },
+        {
+          "offset": 3106,
+          "before": "'Input rate'",
+          "after": "'输入费率'",
+          "afterOffset": 2762
+        },
+        {
+          "offset": 3156,
+          "before": "'Output rate'",
+          "after": "'输出费率'",
+          "afterOffset": 2806
+        },
+        {
+          "offset": 3231,
+          "before": "'Input product'",
+          "after": "'输入乘积（Input product）'",
+          "afterOffset": 2874
+        },
+        {
+          "offset": 3296,
+          "before": "'Output product'",
+          "after": "'输出乘积（Output product）'",
+          "afterOffset": 2945
+        },
+        {
+          "offset": 3369,
+          "before": "'Total estimate'",
+          "after": "'估算总额'",
+          "afterOffset": 3024
+        },
+        {
+          "offset": 3429,
+          "before": "'Input tokens'",
+          "after": "'输入词元数'",
+          "afterOffset": 3074
+        },
+        {
+          "offset": 3488,
+          "before": "'Input rate'",
+          "after": "'输入费率'",
+          "afterOffset": 3126
+        },
+        {
+          "offset": 3546,
+          "before": "'Output ceiling'",
+          "after": "'输出上限'",
+          "afterOffset": 3178
+        },
+        {
+          "offset": 3608,
+          "before": "'Output rate'",
+          "after": "'输出费率'",
+          "afterOffset": 3230
+        },
+        {
+          "offset": 3699,
+          "before": "'Prompt cost'",
+          "after": "'提示词成本'",
+          "afterOffset": 3314
+        },
+        {
+          "offset": 3789,
+          "before": "'Output ceiling cost'",
+          "after": "'输出上限成本'",
+          "afterOffset": 3398
+        },
+        {
+          "offset": 3884,
+          "before": "'Validate operands'",
+          "after": "'校验操作数'",
+          "afterOffset": 3480
+        },
+        {
+          "offset": 3918,
+          "before": "'All four operands must be nonnegative integers. The ceiling is a token bound, not a receipt.'",
+          "after": "'四个操作数都必须是非负整数。输出上限约束允许生成的词元数，实际用量凭据仍需随后取得。'",
+          "afterOffset": 3502
+        },
+        {
+          "offset": 4023,
+          "before": "'Two token counts and two integer rates'",
+          "after": "'两项词元数量与两项整数费率'",
+          "afterOffset": 3557
+        },
+        {
+          "offset": 4090,
+          "before": "'Operands'",
+          "after": "'操作数'",
+          "afterOffset": 3599
+        },
+        {
+          "offset": 4130,
+          "before": "'Products'",
+          "after": "'乘积'",
+          "afterOffset": 3634
+        },
+        {
+          "offset": 4157,
+          "before": "'input tokens × input rate + output ceiling × output rate'",
+          "after": "'输入词元数 × 输入费率 + 输出上限 × 输出费率'",
+          "afterOffset": 3655
+        },
+        {
+          "offset": 4238,
+          "before": "'Price the prompt'",
+          "after": "'计算提示词费用'",
+          "afterOffset": 3706
+        },
+        {
+          "offset": 4271,
+          "before": "'Input tokens are charged even when the output ceiling is zero.'",
+          "after": "'即使输出上限为零，输入词元仍然计费。'",
+          "afterOffset": 3730
+        },
+        {
+          "offset": 4346,
+          "before": "'Prompt cost computed'",
+          "after": "'提示词费用已计算'",
+          "afterOffset": 3761
+        },
+        {
+          "offset": 4395,
+          "before": "'Operands'",
+          "after": "'操作数'",
+          "afterOffset": 3798
+        },
+        {
+          "offset": 4435,
+          "before": "'Products'",
+          "after": "'乘积'",
+          "afterOffset": 3833
+        },
+        {
+          "offset": 4513,
+          "before": "'Multiply by input rate'",
+          "after": "'乘以输入费率'",
+          "afterOffset": 3905
+        },
+        {
+          "offset": 4626,
+          "before": "'Prompt cost'",
+          "after": "'提示词成本'",
+          "afterOffset": 4002
+        },
+        {
+          "offset": 4696,
+          "before": "'Price the output ceiling'",
+          "after": "'计算输出上限费用'",
+          "afterOffset": 4066
+        },
+        {
+          "offset": 4737,
+          "before": "'Multiply the maximum permitted output tokens by the output rate. No actual usage has been observed yet.'",
+          "after": "'将允许的最大输出词元数乘以输出费率。此时尚未取得实际用量。'",
+          "afterOffset": 4091
+        },
+        {
+          "offset": 4853,
+          "before": "'Both cost components computed'",
+          "after": "'两项费用均已计算'",
+          "afterOffset": 4133
+        },
+        {
+          "offset": 4911,
+          "before": "'Operands'",
+          "after": "'操作数'",
+          "afterOffset": 4170
+        },
+        {
+          "offset": 4951,
+          "before": "'Products'",
+          "after": "'乘积'",
+          "afterOffset": 4205
+        },
+        {
+          "offset": 5042,
+          "before": "'Multiply by output rate'",
+          "after": "'乘以输出费率'",
+          "afterOffset": 4290
+        },
+        {
+          "offset": 5158,
+          "before": "'Prompt cost'",
+          "after": "'提示词成本'",
+          "afterOffset": 4389
+        },
+        {
+          "offset": 5202,
+          "before": "'Output ceiling cost'",
+          "after": "'输出上限成本'",
+          "afterOffset": 4427
+        },
+        {
+          "offset": 5268,
+          "before": "'Add the estimate'",
+          "after": "'合计估算费用'",
+          "afterOffset": 4480
+        },
+        {
+          "offset": 5301,
+          "before": "`The request needs a ceiling of ${total} ${unit}. Settlement will later use an actual receipt.`",
+          "after": "`请求需要预留 ${total} ${unit} 的上限额度，随后按实际凭据结算。`",
+          "afterOffset": 4503
+        },
+        {
+          "offset": 5407,
+          "before": "'Estimated ceiling: '",
+          "after": "'估算上限：'",
+          "afterOffset": 4556
+        },
+        {
+          "offset": 5476,
+          "before": "'Cost components'",
+          "after": "'费用组成'",
+          "afterOffset": 4611
+        },
+        {
+          "offset": 5538,
+          "before": "'Estimate'",
+          "after": "'估算'",
+          "afterOffset": 4662
+        },
+        {
+          "offset": 5565,
+          "before": "'Request ceiling'",
+          "after": "'请求费用上限'",
+          "afterOffset": 4683
+        },
+        {
+          "offset": 5659,
+          "before": "'Add prompt cost'",
+          "after": "'加上提示词费用'",
+          "afterOffset": 4768
+        },
+        {
+          "offset": 5723,
+          "before": "'Add output ceiling cost'",
+          "after": "'加上输出上限费用'",
+          "afterOffset": 4824
+        },
+        {
+          "offset": 5832,
+          "before": "'Estimated ceiling'",
+          "after": "'估算上限'",
+          "afterOffset": 4918
+        },
+        {
+          "offset": 6109,
+          "before": "'Reserve capacity before dispatch'",
+          "after": "'派发前预留额度'",
+          "afterOffset": 5182
+        },
+        {
+          "offset": 6158,
+          "before": "'Admission counts spending and existing holds. A rejected reservation preserves the original ledger.'",
+          "after": "'准入时同时计入支出与现有预留。预留被拒绝时，原账本保持不变。'",
+          "afterOffset": 5206
+        },
+        {
+          "offset": 6288,
+          "before": "'After counting spending and existing holds, does the requested reservation fit the remaining capacity?'",
+          "after": "'计入支出与现有预留后，本次申请是否能装入剩余额度？'",
+          "afterOffset": 5267
+        },
+        {
+          "offset": 6427,
+          "before": "'Limit (teaching units)'",
+          "after": "'额度上限（教学单位）'",
+          "afterOffset": 5329
+        },
+        {
+          "offset": 6475,
+          "before": "'Earlier spending'",
+          "after": "'既有支出'",
+          "afterOffset": 5365
+        },
+        {
+          "offset": 6523,
+          "before": "'Existing hold A'",
+          "after": "'现有预留 A'",
+          "afterOffset": 5401
+        },
+        {
+          "offset": 6574,
+          "before": "'New request ID'",
+          "after": "'新请求 ID'",
+          "afterOffset": 5443
+        },
+        {
+          "offset": 6637,
+          "before": "'Requested reservation'",
+          "after": "'申请预留额'",
+          "afterOffset": 5498
+        },
+        {
+          "offset": 6695,
+          "before": "'Insufficient capacity'",
+          "after": "'额度不足'",
+          "afterOffset": 5540
+        },
+        {
+          "offset": 6743,
+          "before": "'Fill remaining capacity'",
+          "after": "'恰好用完剩余额度'",
+          "afterOffset": 5571
+        },
+        {
+          "offset": 6805,
+          "before": "'Duplicate request ID'",
+          "after": "'重复请求 ID'",
+          "afterOffset": 5618
+        },
+        {
+          "offset": 6879,
+          "before": "'Zero reservation'",
+          "after": "'零额度预留'",
+          "afterOffset": 5679
+        },
+        {
+          "offset": 7044,
+          "before": "'Reservation'",
+          "after": "'预留额度'",
+          "afterOffset": 5833
+        },
+        {
+          "offset": 7268,
+          "before": "'Request '",
+          "after": "'请求 '",
+          "afterOffset": 6050
+        },
+        {
+          "offset": 7288,
+          "before": "'(empty)'",
+          "after": "'（空）'",
+          "afterOffset": 6065
+        },
+        {
+          "offset": 7308,
+          "before": "'requested '",
+          "after": "'申请 '",
+          "afterOffset": 6081
+        },
+        {
+          "offset": 7376,
+          "before": "'Read the ledger'",
+          "after": "'读取账本'",
+          "afterOffset": 6142
+        },
+        {
+          "offset": 7395,
+          "before": "`${before.limit} − ${before.spent} − ${held(before)} = ${available(before)} ${unit} available. Existing hold A remains committed.`",
+          "after": "`${before.limit} − ${before.spent} − ${held(before)} = ${available(before)} ${unit} 可用。现有预留 A 仍占用额度。`",
+          "afterOffset": 6150
+        },
+        {
+          "offset": 7671,
+          "before": "'Check request identity'",
+          "after": "'检查请求标识'",
+          "afterOffset": 6397
+        },
+        {
+          "offset": 7707,
+          "before": "`ID ${id} is neither held nor closed. Check capacity next.`",
+          "after": "`ID ${id} 尚未预留，也未关闭；接下来检查额度。`",
+          "afterOffset": 6417
+        },
+        {
+          "offset": 7769,
+          "before": "'A reservation needs a new nonempty ID. Identity fails before capacity is checked.'",
+          "after": "'预留需要全新且非空的 ID。标识检查失败时，不继续检查额度。'",
+          "afterOffset": 6449
+        },
+        {
+          "offset": 8105,
+          "before": "'Reject without mutation'",
+          "after": "'拒绝并保持原状态'",
+          "afterOffset": 6734
+        },
+        {
+          "offset": 8163,
+          "before": "`${amount} requested exceeds ${available(before)} available. No capacity moves and A keeps its hold.`",
+          "after": "`申请 ${amount}，超过可用的 ${available(before)}。额度不发生转移，A 的预留保持不变。`",
+          "afterOffset": 6777
+        },
+        {
+          "offset": 8267,
+          "before": "'No reservation is created. Spending, hold A and available capacity keep their original values.'",
+          "after": "'不创建预留；支出、预留 A 和可用额度均保持原值。'",
+          "afterOffset": 6840
+        },
+        {
+          "offset": 8577,
+          "before": "'Capacity fits'",
+          "after": "'额度足够'",
+          "afterOffset": 7081
+        },
+        {
+          "offset": 8594,
+          "before": "`${amount} ≤ ${available(before)}. Admission and reservation can now form one transition.`",
+          "after": "`${amount} ≤ ${available(before)}。准入判断与额度预留现在可以组成一次状态转换。`",
+          "afterOffset": 7089
+        },
+        {
+          "offset": 9099,
+          "before": "'Request '",
+          "after": "'请求 '",
+          "afterOffset": 7561
+        },
+        {
+          "offset": 9124,
+          "before": "'reserved '",
+          "after": "'已预留 '",
+          "afterOffset": 7581
+        },
+        {
+          "offset": 9196,
+          "before": "'Reservation recorded'",
+          "after": "'预留已记录'",
+          "afterOffset": 7648
+        },
+        {
+          "offset": 9220,
+          "before": "`${amount} ${unit} move from available capacity to hold ${id}. The original ledger is unchanged; the returned ledger contains both holds.`",
+          "after": "`${amount} ${unit} 从可用额度转入预留 ${id}。原账本不变，返回的新账本包含两笔预留。`",
+          "afterOffset": 7657
+        },
+        {
+          "offset": 9461,
+          "before": "' reserved'",
+          "after": "' 已预留'",
+          "afterOffset": 7815
+        },
+        {
+          "offset": 9699,
+          "before": "'Settle actual usage and release unused capacity'",
+          "after": "'结算实际用量并释放剩余额度'",
+          "afterOffset": 8048
+        },
+        {
+          "offset": 9763,
+          "before": "'A missing or over-ceiling receipt keeps its hold for reconciliation. A valid zero receipt releases the hold.'",
+          "after": "'凭据缺失或超出预留上限时，保留额度等待核对。确认有效的零费用凭据可以释放预留。'",
+          "afterOffset": 8078
+        },
+        {
+          "offset": 9902,
+          "before": "'When a valid receipt arrives, where do actual usage and the unused part of the reservation go?'",
+          "after": "'有效凭据到达后，实际费用与预留中未使用的部分分别转入哪里？'",
+          "afterOffset": 8148
+        },
+        {
+          "offset": 10033,
+          "before": "'Limit (teaching units)'",
+          "after": "'额度上限（教学单位）'",
+          "afterOffset": 8214
+        },
+        {
+          "offset": 10081,
+          "before": "'Earlier spending'",
+          "after": "'既有支出'",
+          "afterOffset": 8250
+        },
+        {
+          "offset": 10121,
+          "before": "'Existing hold A'",
+          "after": "'现有预留 A'",
+          "afterOffset": 8278
+        },
+        {
+          "offset": 10162,
+          "before": "'Actual receipt (teaching units)'",
+          "after": "'实际凭据金额（教学单位）'",
+          "afterOffset": 8310
+        },
+        {
+          "offset": 10227,
+          "before": "'Receipt missing'",
+          "after": "'凭据缺失'",
+          "afterOffset": 8356
+        },
+        {
+          "offset": 10307,
+          "before": "'Deliver the receipt twice'",
+          "after": "'重复提交同一凭据'",
+          "afterOffset": 8425
+        },
+        {
+          "offset": 10398,
+          "before": "'Settle 20, release 50'",
+          "after": "'结算 20，释放 50'",
+          "afterOffset": 8499
+        },
+        {
+          "offset": 10446,
+          "before": "'Confirmed zero receipt'",
+          "after": "'确认零费用凭据'",
+          "afterOffset": 8537
+        },
+        {
+          "offset": 10506,
+          "before": "'Missing receipt'",
+          "after": "'缺少凭据'",
+          "afterOffset": 8582
+        },
+        {
+          "offset": 10563,
+          "before": "'Above the ceiling'",
+          "after": "'超出上限'",
+          "afterOffset": 8628
+        },
+        {
+          "offset": 10619,
+          "before": "'Duplicate receipt'",
+          "after": "'重复凭据'",
+          "afterOffset": 8671
+        },
+        {
+          "offset": 10802,
+          "before": "'Actual receipt'",
+          "after": "'实际凭据'",
+          "afterOffset": 8841
+        },
+        {
+          "offset": 10857,
+          "before": "'Locate reservation A'",
+          "after": "'定位预留 A'",
+          "afterOffset": 8886
+        },
+        {
+          "offset": 10881,
+          "before": "`A holds ${v.hold} ${unit}. Its final cost is not yet settled; ${available(before)} remain available.`",
+          "after": "`A 预留 ${v.hold} ${unit}，最终费用尚未结算；仍有 ${available(before)} 可用。`",
+          "afterOffset": 8896
+        },
+        {
+          "offset": 11169,
+          "before": "'Keep A held'",
+          "after": "'保留 A 的预留'",
+          "afterOffset": 9143
+        },
+        {
+          "offset": 11196,
+          "before": "'No receipt means the work may have completed. Releasing A would hide an unknown cost; keep its entire hold for reconciliation.'",
+          "after": "'没有凭据时，工作可能已经执行。释放 A 会隐藏未知费用，应完整保留其预留并等待核对。'",
+          "afterOffset": 9167
+        },
+        {
+          "offset": 11327,
+          "before": "`${actual} exceeds A's ${v.hold}-unit ceiling. Reject the receipt and keep the ledger unchanged for reconciliation.`",
+          "after": "`${actual} 超过 A 的 ${v.hold} 单位上限。拒绝该凭据，账本保持不变并等待核对。`",
+          "afterOffset": 9214
+        },
+        {
+          "offset": 11468,
+          "before": "'Needs reconciliation; hold A retained'",
+          "after": "'需要核对；A 的预留已保留'",
+          "afterOffset": 9291
+        },
+        {
+          "offset": 11663,
+          "before": "'Validate the receipt'",
+          "after": "'校验凭据'",
+          "afterOffset": 9462
+        },
+        {
+          "offset": 11687,
+          "before": "`${actual} is a nonnegative integer no greater than the ${v.hold}-unit hold. A is still open.`",
+          "after": "`${actual} 为非负整数，且不超过 ${v.hold} 单位的预留；A 尚未关闭。`",
+          "afterOffset": 9470
+        },
+        {
+          "offset": 12063,
+          "before": "'A: actual portion'",
+          "after": "'A：实际使用部分'",
+          "afterOffset": 9798
+        },
+        {
+          "offset": 12092,
+          "before": "'still held; not yet spent'",
+          "after": "'仍为预留，尚未计入支出'",
+          "afterOffset": 9818
+        },
+        {
+          "offset": 12149,
+          "before": "'A: unused portion'",
+          "after": "'A：未使用部分'",
+          "afterOffset": 9861
+        },
+        {
+          "offset": 12178,
+          "before": "'still held; not yet available'",
+          "after": "'仍为预留，尚未恢复可用'",
+          "afterOffset": 9880
+        },
+        {
+          "offset": 12255,
+          "before": "'Partition the hold'",
+          "after": "'拆分预留额度'",
+          "afterOffset": 9939
+        },
+        {
+          "offset": 12277,
+          "before": "`${v.hold} = ${actual} actual + ${unused} unused. These two portions still belong to the hold until settlement commits.`",
+          "after": "`${v.hold} = ${actual} 实际费用 + ${unused} 未使用额度。结算提交前，两部分仍属于预留。`",
+          "afterOffset": 9949
+        },
+        {
+          "offset": 12766,
+          "before": "'A: settled usage'",
+          "after": "'A：已结算用量'",
+          "afterOffset": 10380
+        },
+        {
+          "offset": 12894,
+          "before": "'A: released capacity'",
+          "after": "'A：已释放额度'",
+          "afterOffset": 10499
+        },
+        {
+          "offset": 13089,
+          "before": "'Commit settlement once'",
+          "after": "'仅提交一次结算'",
+          "afterOffset": 10681
+        },
+        {
+          "offset": 13115,
+          "before": "`${actual} move into spending and ${unused} return to available capacity. A closes; available capacity is now ${available(after)}.`",
+          "after": "`${actual} 转入支出，${unused} 恢复为可用额度。A 关闭，当前可用额度为 ${available(after)}。`",
+          "afterOffset": 10692
+        },
+        {
+          "offset": 13296,
+          "before": "'Actual usage'",
+          "after": "'实际用量'",
+          "afterOffset": 10810
+        },
+        {
+          "offset": 13351,
+          "before": "'Released'",
+          "after": "'已释放'",
+          "afterOffset": 10857
+        },
+        {
+          "offset": 13468,
+          "before": "'Reject the second receipt'",
+          "after": "'拒绝第二次凭据'",
+          "afterOffset": 10969
+        },
+        {
+          "offset": 13497,
+          "before": "'A is closed and no longer has a hold. A second receipt cannot charge the same work again; the settled ledger stays unchanged.'",
+          "after": "'A 已关闭，不再存在预留。第二次凭据不能对同一工作重复收费；已结算账本保持不变。'",
+          "afterOffset": 10980
+        },
+        {
+          "offset": 13939,
+          "before": "'Replay ordered jobs under budget and deadline limits'",
+          "after": "'在预算和截止时间内回放有序任务'",
+          "afterOffset": 11337
+        },
+        {
+          "offset": 14008,
+          "before": "'Deterministic admission replay uses known costs and durations. It does not interrupt a synchronous live callback.'",
+          "after": "'确定性准入回放采用已知费用与时长，不能中断正在执行的同步回调。'",
+          "afterOffset": 11369
+        },
+        {
+          "offset": 14152,
+          "before": "'Which jobs does each gate admit or reject? How do those decisions change spending and elapsed time?'",
+          "after": "'各项检查允许或拒绝了哪些任务？这些决定如何影响支出和耗时？'",
+          "afterOffset": 11431
+        },
+        {
+          "offset": 14297,
+          "before": "'Budget limit (teaching units)'",
+          "after": "'预算上限（教学单位）'",
+          "afterOffset": 11506
+        },
+        {
+          "offset": 14355,
+          "before": "'Deadline (ms)'",
+          "after": "'截止时间（ms）'",
+          "afterOffset": 11545
+        },
+        {
+          "offset": 14402,
+          "before": "'A cost (teaching units)'",
+          "after": "'A 费用（教学单位）'",
+          "afterOffset": 11587
+        },
+        {
+          "offset": 14454,
+          "before": "'A duration (ms)'",
+          "after": "'A 时长（ms）'",
+          "afterOffset": 11626
+        },
+        {
+          "offset": 14502,
+          "before": "'B cost (teaching units)'",
+          "after": "'B 费用（教学单位）'",
+          "afterOffset": 11667
+        },
+        {
+          "offset": 14554,
+          "before": "'B duration (ms)'",
+          "after": "'B 时长（ms）'",
+          "afterOffset": 11706
+        },
+        {
+          "offset": 14602,
+          "before": "'C cost (teaching units)'",
+          "after": "'C 费用（教学单位）'",
+          "afterOffset": 11747
+        },
+        {
+          "offset": 14654,
+          "before": "'C duration (ms)'",
+          "after": "'C 时长（ms）'",
+          "afterOffset": 11786
+        },
+        {
+          "offset": 14702,
+          "before": "'D cost (teaching units)'",
+          "after": "'D 费用（教学单位）'",
+          "afterOffset": 11827
+        },
+        {
+          "offset": 14754,
+          "before": "'D duration (ms)'",
+          "after": "'D 时长（ms）'",
+          "afterOffset": 11866
+        },
+        {
+          "offset": 14809,
+          "before": "'Job order'",
+          "after": "'任务顺序'",
+          "afterOffset": 11914
+        },
+        {
+          "offset": 15022,
+          "before": "'Two different rejections'",
+          "after": "'两种不同的拒绝原因'",
+          "afterOffset": 12122
+        },
+        {
+          "offset": 15073,
+          "before": "'Exactly at the deadline'",
+          "after": "'恰好到达截止时间'",
+          "afterOffset": 12158
+        },
+        {
+          "offset": 15137,
+          "before": "'All jobs fit'",
+          "after": "'全部任务均可运行'",
+          "afterOffset": 12207
+        },
+        {
+          "offset": 15203,
+          "before": "'Reverse the order'",
+          "after": "'反转顺序'",
+          "afterOffset": 12269
+        },
+        {
+          "offset": 15262,
+          "before": "'Deadline before budget'",
+          "after": "'先检查截止时间再检查预算'",
+          "afterOffset": 12315
+        },
+        {
+          "offset": 15388,
+          "before": "'Budget limit'",
+          "after": "'预算上限'",
+          "afterOffset": 12431
+        },
+        {
+          "offset": 15436,
+          "before": "'Deadline'",
+          "after": "'截止时间'",
+          "afterOffset": 12471
+        },
+        {
+          "offset": 15522,
+          "before": "'Choose a listed job order.'",
+          "after": "'请选择列表中的任务顺序。'",
+          "afterOffset": 12553
+        },
+        {
+          "offset": 15639,
+          "before": "' cost'",
+          "after": "' 费用'",
+          "afterOffset": 12656
+        },
+        {
+          "offset": 15695,
+          "before": "' duration'",
+          "after": "' 时长'",
+          "afterOffset": 12710
+        },
+        {
+          "offset": 16076,
+          "before": "'Ordered queue'",
+          "after": "'有序队列'",
+          "afterOffset": 13085
+        },
+        {
+          "offset": 16103,
+          "before": "'Deadline gate'",
+          "after": "'截止时间检查'",
+          "afterOffset": 13103
+        },
+        {
+          "offset": 16128,
+          "before": "'Budget gate'",
+          "after": "'预算检查'",
+          "afterOffset": 13121
+        },
+        {
+          "offset": 16154,
+          "before": "'Completed'",
+          "after": "'已完成'",
+          "afterOffset": 13140
+        },
+        {
+          "offset": 16177,
+          "before": "'Rejected'",
+          "after": "'已拒绝'",
+          "afterOffset": 13157
+        },
+        {
+          "offset": 16273,
+          "before": "'Job '",
+          "after": "'任务 '",
+          "afterOffset": 13248
+        },
+        {
+          "offset": 16290,
+          "before": "`${job.cost} units / ${job.duration_ms} ms`",
+          "after": "`${job.cost} 单位 / ${job.duration_ms} ms`",
+          "afterOffset": 13264
+        },
+        {
+          "offset": 16352,
+          "before": "'waiting'",
+          "after": "'等待中'",
+          "afterOffset": 13323
+        },
+        {
+          "offset": 16517,
+          "before": "`${state.spent} ${unit} spent; ${elapsed} ms elapsed`",
+          "after": "`已支出 ${state.spent} ${unit}；已用时 ${elapsed} ms`",
+          "afterOffset": 13484
+        },
+        {
+          "offset": 16620,
+          "before": "'Elapsed time'",
+          "after": "'已用时间'",
+          "afterOffset": 13580
+        },
+        {
+          "offset": 16789,
+          "before": "'Read the ordered queue'",
+          "after": "'读取有序队列'",
+          "afterOffset": 13741
+        },
+        {
+          "offset": 16815,
+          "before": "'Each job first faces the deadline gate, then the budget gate. Only completion advances time and spending.'",
+          "after": "'每个任务先检查截止时间，再检查预算。只有完成任务才会增加耗时与支出。'",
+          "afterOffset": 13751
+        },
+        {
+          "offset": 17022,
+          "before": "'Predicted completion'",
+          "after": "'预计完成时刻'",
+          "afterOffset": 13887
+        },
+        {
+          "offset": 17196,
+          "before": "': check deadline'",
+          "after": "'：检查截止时间'",
+          "afterOffset": 14047
+        },
+        {
+          "offset": 17216,
+          "before": "`Predicted completion is ${predicted} ms against a ${deadline} ms deadline. Equality is allowed.`",
+          "after": "`预计在 ${predicted} ms 完成，截止时间为 ${deadline} ms；允许恰好相等。`",
+          "afterOffset": 14058
+        },
+        {
+          "offset": 17590,
+          "before": "': reject for deadline'",
+          "after": "'：因截止时间拒绝'",
+          "afterOffset": 14388
+        },
+        {
+          "offset": 17615,
+          "before": "`${predicted} > ${deadline}. Skip the budget gate. This rejection does not spend or advance time.`",
+          "after": "`${predicted} > ${deadline}。跳过预算检查；本次拒绝不增加支出或耗时。`",
+          "afterOffset": 14400
+        },
+        {
+          "offset": 17806,
+          "before": "`${job.cost} requested / ${available(state)} available`",
+          "after": "`申请 ${job.cost} / 可用 ${available(state)}`",
+          "afterOffset": 14542
+        },
+        {
+          "offset": 17891,
+          "before": "': check budget'",
+          "after": "'：检查预算'",
+          "afterOffset": 14613
+        },
+        {
+          "offset": 17909,
+          "before": "`The deadline passes. Compare cost ${job.cost} with available capacity ${available(state)}.`",
+          "after": "`截止时间检查通过。比较费用 ${job.cost} 与可用额度 ${available(state)}。`",
+          "afterOffset": 14622
+        },
+        {
+          "offset": 18284,
+          "before": "': reject for budget'",
+          "after": "'：因预算拒绝'",
+          "afterOffset": 14959
+        },
+        {
+          "offset": 18307,
+          "before": "`${job.cost} exceeds available capacity. Spending and elapsed time remain unchanged.`",
+          "after": "`${job.cost} 超过可用额度，支出和耗时保持不变。`",
+          "afterOffset": 14969
+        },
+        {
+          "offset": 18518,
+          "before": "`${job.cost} held before completion`",
+          "after": "`完成前已预留 ${job.cost}`",
+          "afterOffset": 15126
+        },
+        {
+          "offset": 18584,
+          "before": "': reserve capacity'",
+          "after": "'：预留额度'",
+          "afterOffset": 15176
+        },
+        {
+          "offset": 18606,
+          "before": "`${job.cost} ${unit} move from available to held. Completion has not advanced time yet.`",
+          "after": "`${job.cost} ${unit} 从可用转入预留；任务尚未完成，耗时还没有增加。`",
+          "afterOffset": 15185
+        },
+        {
+          "offset": 18896,
+          "before": "`completed at ${elapsed} ms`",
+          "after": "`于 ${elapsed} ms 完成`",
+          "afterOffset": 15432
+        },
+        {
+          "offset": 19051,
+          "before": "': complete'",
+          "after": "'：完成'",
+          "afterOffset": 15579
+        },
+        {
+          "offset": 19065,
+          "before": "`Settle the known ${job.cost}-unit cost and advance time by ${job.duration_ms} ms. No unresolved hold remains.`",
+          "after": "`结算已知的 ${job.cost} 单位费用，并增加 ${job.duration_ms} ms 耗时；不再保留未结算额度。`",
+          "afterOffset": 15586
+        }
+      ]
+    },
+    {
+      "path": "site/figures/projects/agent-trace-debugger.js",
+      "sourceSha256": "9baf8eae55d6db206d875a5034520a7197fe0fd7da84ffe6af76b97e778bc063",
+      "localizedSha256": "c1a094333a590c32ee2e26f58868f97ac08546657c7337840d6da2d0e14c893a",
+      "edits": [
+        {
+          "offset": 87,
+          "before": "\"Child A end (start 10)\"",
+          "after": "\"子跨度 A 终点（起点 10）\"",
+          "afterOffset": 87
+        },
+        {
+          "offset": 243,
+          "before": "\"Child B start\"",
+          "after": "\"子跨度 B 起点\"",
+          "afterOffset": 236
+        },
+        {
+          "offset": 387,
+          "before": "\"Child B end\"",
+          "after": "\"子跨度 B 终点\"",
+          "afterOffset": 375
+        },
+        {
+          "offset": 532,
+          "before": "\"Failed span tokens\"",
+          "after": "\"失败跨度词元数\"",
+          "afterOffset": 517
+        },
+        {
+          "offset": 754,
+          "before": "\"Reject negative child duration\"",
+          "after": "\"拒绝负时长子跨度\"",
+          "afterOffset": 728
+        },
+        {
+          "offset": 1024,
+          "before": "\"Subtract child interval union from the 100 ms parent. Overlap is not charged twice.\"",
+          "after": "\"从父跨度的 100 ms 中减去子区间并集，重叠部分不重复计算。\"",
+          "afterOffset": 976
+        },
+        {
+          "offset": 1145,
+          "before": "\"Naive summed children ms\"",
+          "after": "\"子跨度简单求和（ms）\"",
+          "afterOffset": 1046
+        },
+        {
+          "offset": 1204,
+          "before": "\"Overlap ms\"",
+          "after": "\"重叠时长（ms）\"",
+          "afterOffset": 1092
+        },
+        {
+          "offset": 1253,
+          "before": "\"Tokens in failed span\"",
+          "after": "\"失败跨度中的词元数\"",
+          "afterOffset": 1139
+        },
+        {
+          "offset": 1337,
+          "before": "\"Child union ms\"",
+          "after": "\"子区间并集（ms）\"",
+          "afterOffset": 1211
+        },
+        {
+          "offset": 1398,
+          "before": "\"Parent exclusive ms\"",
+          "after": "\"父跨度自身耗时（ms）\"",
+          "afterOffset": 1267
+        },
+        {
+          "offset": 1734,
+          "before": "\"Read a JSONL trace\"",
+          "after": "\"读取 JSONL 追踪记录\"",
+          "afterOffset": 1595
+        },
+        {
+          "offset": 1792,
+          "before": "\"Input contract\"",
+          "after": "\"输入契约\"",
+          "afterOffset": 1648
+        },
+        {
+          "offset": 1865,
+          "before": "\"Read a JSONL trace\"",
+          "after": "\"读取 JSONL 追踪记录\"",
+          "afterOffset": 1711
+        },
+        {
+          "offset": 1921,
+          "before": "\"Parse one JSON object per nonempty line. Require stable ids, names, finite start and end times, nonnegative token counts and an explicit ok or error state. A malformed line stops processing with its line number. Silently dropping bad spans would distort timing and cost conclusions. Times are relative milliseconds, not wall-clock timestamps.\"",
+          "after": "\"逐个非空行解析 JSON 对象。要求稳定的 ID、名称、有限的起止时间、非负词元数，以及明确的 ok 或 error 状态。遇到格式错误的行，应停止处理并报告行号；静默丢弃坏跨度会扭曲耗时和费用结论。时间采用相对毫秒，不采用绝对时钟时间戳。\"",
+          "afterOffset": 1762
+        },
+        {
+          "offset": 2311,
+          "before": "\"Observe the result\"",
+          "after": "\"观察结果\"",
+          "afterOffset": 1930
+        },
+        {
+          "offset": 2367,
+          "before": "\"Valid JSONL becomes typed spans; a negative duration fails before analysis.\"",
+          "after": "\"合法 JSONL 转为有类型的跨度；负时长会在分析前被拒绝。\"",
+          "afterOffset": 1972
+        },
+        {
+          "offset": 2487,
+          "before": "\"Advance to inspect the boundary before the next effect.\"",
+          "after": "\"继续查看下一步行为之前的约束边界。\"",
+          "afterOffset": 2047
+        },
+        {
+          "offset": 2720,
+          "before": "\"Validate parent relationships\"",
+          "after": "\"校验父子关系\"",
+          "afterOffset": 2242
+        },
+        {
+          "offset": 2789,
+          "before": "\"Input contract\"",
+          "after": "\"输入契约\"",
+          "afterOffset": 2288
+        },
+        {
+          "offset": 2864,
+          "before": "\"Validate parent relationships\"",
+          "after": "\"校验父子关系\"",
+          "afterOffset": 2353
+        },
+        {
+          "offset": 2931,
+          "before": "\"A child span must reference an existing parent and fit inside the parent interval. Check every ancestor chain for cycles and reject duplicate ids. Multiple roots are allowed because a trace can contain overlapping independent runs. Validation happens before aggregation so corrupted graphs cannot produce convincing charts.\"",
+          "after": "\"子跨度必须引用存在的父跨度，且时间区间完全位于父区间之内。检查每条祖先链中的环，并拒绝重复 ID。追踪可包含重叠的独立运行，因此允许多个根。先校验再聚合，避免损坏的关系图生成看似可信的图表。\"",
+          "afterOffset": 2397
+        },
+        {
+          "offset": 3302,
+          "before": "\"Observe the result\"",
+          "after": "\"观察结果\"",
+          "afterOffset": 2540
+        },
+        {
+          "offset": 3358,
+          "before": "\"The graph rejects a plausible-looking child that ends after its parent.\"",
+          "after": "\"看似合理但晚于父跨度结束的子跨度，会被关系图校验拒绝。\"",
+          "afterOffset": 2582
+        },
+        {
+          "offset": 3474,
+          "before": "\"Advance to inspect the boundary before the next effect.\"",
+          "after": "\"继续查看下一步行为之前的约束边界。\"",
+          "afterOffset": 2654
+        },
+        {
+          "offset": 3707,
+          "before": "\"Separate work time from waiting time\"",
+          "after": "\"区分自身耗时与等待时间\"",
+          "afterOffset": 2849
+        },
+        {
+          "offset": 3783,
+          "before": "\"Input contract\"",
+          "after": "\"输入契约\"",
+          "afterOffset": 2900
+        },
+        {
+          "offset": 3868,
+          "before": "\"Separate work time from waiting time\"",
+          "after": "\"区分自身耗时与等待时间\"",
+          "afterOffset": 2975
+        },
+        {
+          "offset": 3942,
+          "before": "\"Inclusive duration is end minus start. Exclusive duration subtracts the union of immediate child intervals, not their sum, because parallel children overlap. Root interval union provides wall time across runs. Tokens are local per span and summed once. The slowest result names the span with greatest exclusive duration, avoiding a root that is mostly waiting on children.\"",
+          "after": "\"包含子调用的总耗时为 end 减 start。自身耗时应减去直接子跨度区间的并集长度；并行子跨度可能重叠，因此不能减去它们的时长之和。根区间的并集给出跨多次运行的总历时。词元按跨度自身用量只累计一次。slowest 指向自身耗时最大的跨度，避免将主要在等待子调用的根误判为最慢工作。\"",
+          "afterOffset": 3024
+        },
+        {
+          "offset": 4362,
+          "before": "\"Observe the result\"",
+          "after": "\"观察结果\"",
+          "afterOffset": 3213
+        },
+        {
+          "offset": 4418,
+          "before": "\"Overlapping child spans count once, and the model call becomes the largest owner of elapsed work.\"",
+          "after": "\"重叠子区间只计算一次，模型调用成为自身耗时最大的工作。\"",
+          "afterOffset": 3255
+        },
+        {
+          "offset": 4560,
+          "before": "\"Advance to inspect the boundary before the next effect.\"",
+          "after": "\"继续查看下一步行为之前的约束边界。\"",
+          "afterOffset": 3327
+        },
+        {
+          "offset": 4793,
+          "before": "\"Render an inspectable timeline\"",
+          "after": "\"渲染可检查的时间线\"",
+          "afterOffset": 3522
+        },
+        {
+          "offset": 4863,
+          "before": "\"Input contract\"",
+          "after": "\"输入契约\"",
+          "afterOffset": 3571
+        },
+        {
+          "offset": 4932,
+          "before": "\"Render an inspectable timeline\"",
+          "after": "\"渲染可检查的时间线\"",
+          "afterOffset": 3630
+        },
+        {
+          "offset": 5000,
+          "before": "\"Generate a standalone HTML timeline with one row per span, scaled bars and error coloring. Escape span names before inserting them into markup. Include own time, total time, wall time, tokens and error count. Empty traces still produce a readable artifact. The output is a local static report and does not load third-party scripts.\"",
+          "after": "\"生成独立 HTML 时间线，每个跨度占一行，用按比例缩放的条形和错误颜色展示。跨度名称插入 HTML 前必须转义。报告包含自身耗时、总耗时、总历时、词元数和错误数。空追踪也应生成可读成果。输出为本地静态报告，不加载第三方脚本。\"",
+          "afterOffset": 3677
+        },
+        {
+          "offset": 5379,
+          "before": "\"Observe the result\"",
+          "after": "\"观察结果\"",
+          "afterOffset": 3838
+        },
+        {
+          "offset": 5435,
+          "before": "\"Open trace.html to see the failing model span in red and compare own time with inclusive time.\"",
+          "after": "\"打开 trace.html，查看标红的失败模型跨度，并比较自身耗时与包含子调用的总耗时。\"",
+          "afterOffset": 3880
+        },
+        {
+          "offset": 5574,
+          "before": "\"Advance to inspect the boundary before the next effect.\"",
+          "after": "\"继续查看下一步行为之前的约束边界。\"",
+          "afterOffset": 3969
+        }
+      ]
+    }
+  ]
+}

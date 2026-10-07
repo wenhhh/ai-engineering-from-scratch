@@ -1,0 +1,4299 @@
+{
+  "upstream": "c02ca08d8a49ce24c3c1c1cf8e3b422f2c7393ca",
+  "projects": [
+    "harness-bench",
+    "inbox-triage-desk",
+    "json-schema-output-guard",
+    "llm-gateway-with-fallbacks"
+  ],
+  "files": {
+    "projects/harness-bench/README.md": {
+      "sourceSha256": "fd61eebee3eba00da96bc6cca6a314e510ce007f4504c18a3cd47ace7af9c9cc",
+      "localizedSha256": "e0fd8111501663f0068acb481001bc597c404f3dd616236cd9248e67d77768a7",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "bash",
+            "python3 scripts/project_test.py harness-bench --init /tmp/harness-bench-work\npython3 scripts/project_test.py harness-bench --stage 1 --path /tmp/harness-bench-work --strict\npython3 scripts/project_test.py harness-bench --all --solution --strict\n"
+          ],
+          [
+            "bash",
+            "cd projects/harness-bench/solution\ngo run . --cases fixtures/orchard-cases.json --recording fixtures/orchard-recording.json --budget 4 --out /tmp/orchard-runs.json\n"
+          ],
+          [
+            "bash",
+            "go run . --cases fixtures/orchard-cases.json --endpoint http://127.0.0.1:11434/v1/chat/completions --model YOUR_LOCAL_MODEL --budget 4 --timeout 30s --out /tmp/live-runs.json\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py harness-bench --all --path /tmp/harness-bench-work --strict --report /tmp/harness-bench-result.json\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "--key-env YOUR_PROVIDER_KEY_VARIABLE"
+          ],
+          [
+            "`",
+            "--max-tokens"
+          ],
+          [
+            "`",
+            "--temperature"
+          ],
+          [
+            "`",
+            "Attempted"
+          ],
+          [
+            "`",
+            "Calls"
+          ],
+          [
+            "`",
+            "Cases"
+          ],
+          [
+            "`",
+            "Correct"
+          ],
+          [
+            "`",
+            "Errors"
+          ],
+          [
+            "`",
+            "Evaluate"
+          ],
+          [
+            "`",
+            "EvaluatePolicy"
+          ],
+          [
+            "`",
+            "EvaluatePolicy"
+          ],
+          [
+            "`",
+            "Evidence"
+          ],
+          [
+            "`",
+            "Expected"
+          ],
+          [
+            "`",
+            "ID"
+          ],
+          [
+            "`",
+            "Leaderboard"
+          ],
+          [
+            "`",
+            "Prompt"
+          ],
+          [
+            "`",
+            "Total"
+          ],
+          [
+            "`",
+            "\\n\\nEvidence:\\n"
+          ],
+          [
+            "`",
+            "authored_fixture"
+          ],
+          [
+            "`",
+            "kind"
+          ],
+          [
+            "`",
+            "model"
+          ],
+          [
+            "`",
+            "recorded_provider"
+          ],
+          [
+            "`",
+            "responses"
+          ],
+          [
+            "`",
+            "settings"
+          ],
+          [
+            "`",
+            "{answer, error?}"
+          ]
+        ],
+        "links": [
+          "https://pkg.go.dev/context",
+          "https://pkg.go.dev/encoding/json",
+          "https://pkg.go.dev/net/http",
+          "stages/01-load-unseen-benchmark-cases/docs/en.md",
+          "stages/02-define-exactly-what-a-correct-answer-means/docs/en.md",
+          "stages/03-run-a-harness-under-a-call-budget/docs/en.md",
+          "stages/04-compare-runs-on-equal-denominators/docs/en.md"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 4
+      }
+    },
+    "projects/harness-bench/media/output.gif": {
+      "sourceSha256": "d820dcf6bc92372996e609007115210ff9790dbe57a1a14de6a1b00f19706f9e",
+      "localizedSha256": "d820dcf6bc92372996e609007115210ff9790dbe57a1a14de6a1b00f19706f9e",
+      "kind": "original-recording"
+    },
+    "projects/harness-bench/media/output.json": {
+      "sourceSha256": "0a2852a27d7eede75933f927b193b1c78b7294efa9c325908282fa6e780dc6fc",
+      "localizedSha256": "0a2852a27d7eede75933f927b193b1c78b7294efa9c325908282fa6e780dc6fc",
+      "kind": "original-recording"
+    },
+    "projects/harness-bench/media/output.png": {
+      "sourceSha256": "449fa582d4f472f6b958b8f0fa6f1a838c58ed917644920fcb9f110f1b0037b2",
+      "localizedSha256": "449fa582d4f472f6b958b8f0fa6f1a838c58ed917644920fcb9f110f1b0037b2",
+      "kind": "original-recording"
+    },
+    "projects/harness-bench/media/run.gif": {
+      "sourceSha256": "f823b3dcab641be68cae39b7961a4f30b316313772ce998ea5250925931985b5",
+      "localizedSha256": "f823b3dcab641be68cae39b7961a4f30b316313772ce998ea5250925931985b5",
+      "kind": "original-recording"
+    },
+    "projects/harness-bench/media/run.json": {
+      "sourceSha256": "5572ad75d5c8303e3bca613e2659c4e090f0ef5ef06a5638d04b1fff9a63190a",
+      "localizedSha256": "5572ad75d5c8303e3bca613e2659c4e090f0ef5ef06a5638d04b1fff9a63190a",
+      "kind": "original-recording"
+    },
+    "projects/harness-bench/media/run.png": {
+      "sourceSha256": "7353b3b15b005697361f4d3407daddf73b5db5d9d785a00de89757a8e0ca2a70",
+      "localizedSha256": "7353b3b15b005697361f4d3407daddf73b5db5d9d785a00de89757a8e0ca2a70",
+      "kind": "original-recording"
+    },
+    "projects/harness-bench/project.json": {
+      "sourceSha256": "a04dc5fef34a3a6930781f82d6a184be03020e2f118da0f6c8f173937d868661",
+      "localizedSha256": "71a8a73581388080e0b7ad967dd2d71bc7e5c2cabab36519722d97697d39ecca",
+      "kind": "manifest",
+      "contract": {
+        "id": "harness-bench",
+        "title": "<translated-text>",
+        "level": 3,
+        "levelName": "Engineer",
+        "tagline": "<translated-text>",
+        "summary": "<translated-text>",
+        "usefulFor": [
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "youWillBuild": "<translated-text>",
+        "hours": 8,
+        "languages": [
+          "Go"
+        ],
+        "status": "ready",
+        "source": "core",
+        "author": {
+          "name": "AI Engineering from Scratch",
+          "github": "rohitg00"
+        },
+        "skills": [
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "prerequisites": [
+          {
+            "title": "<translated-text>",
+            "path": "phases/02-ml-fundamentals/09-model-evaluation"
+          },
+          {
+            "title": "<translated-text>",
+            "path": "phases/11-llm-engineering/03-structured-outputs"
+          }
+        ],
+        "inspiredBy": [],
+        "demo": {
+          "command": [
+            "go",
+            "run",
+            "."
+          ],
+          "cwd": "solution"
+        },
+        "stages": [
+          {
+            "id": "01-load-unseen-benchmark-cases",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "go",
+            "difficulty": "starter",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ]
+          },
+          {
+            "id": "02-define-exactly-what-a-correct-answer-means",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "go",
+            "difficulty": "core",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ]
+          },
+          {
+            "id": "03-run-a-harness-under-a-call-budget",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "go",
+            "difficulty": "core",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ]
+          },
+          {
+            "id": "04-compare-runs-on-equal-denominators",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "go",
+            "difficulty": "core",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ]
+          }
+        ],
+        "demos": [
+          {
+            "gif": "media/run.gif",
+            "poster": "media/run.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          },
+          {
+            "gif": "media/output.gif",
+            "poster": "media/output.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          }
+        ]
+      }
+    },
+    "projects/harness-bench/solution/adapters.go": {
+      "sourceSha256": "3d02a578efdc1ede7b85beeda78c43fad66727e5290f2795958795e8e57be04a",
+      "localizedSha256": "3d02a578efdc1ede7b85beeda78c43fad66727e5290f2795958795e8e57be04a",
+      "kind": "preserved-contract"
+    },
+    "projects/harness-bench/solution/fixtures/orchard-cases.json": {
+      "sourceSha256": "cbb6a7406e38f16b5348cb06fbad4aeab2eb987350ce516d3e34cd78750a3c66",
+      "localizedSha256": "cbb6a7406e38f16b5348cb06fbad4aeab2eb987350ce516d3e34cd78750a3c66",
+      "kind": "preserved-contract"
+    },
+    "projects/harness-bench/solution/fixtures/orchard-recording.json": {
+      "sourceSha256": "b237c2dd192eb0fce8f943ebb2021c21e1595ced39040ac80a3214e5cd663c07",
+      "localizedSha256": "b237c2dd192eb0fce8f943ebb2021c21e1595ced39040ac80a3214e5cd663c07",
+      "kind": "preserved-contract"
+    },
+    "projects/harness-bench/solution/go.mod": {
+      "sourceSha256": "7ad212a51f265024759059dca8fed27e77637167d3448dc5077724bd8ef32301",
+      "localizedSha256": "7ad212a51f265024759059dca8fed27e77637167d3448dc5077724bd8ef32301",
+      "kind": "preserved-contract"
+    },
+    "projects/harness-bench/solution/main.go": {
+      "sourceSha256": "4e60da979d8c56e4603f9bc4ed9911d76b9f7fefa1caca6eaea4783d59f7509a",
+      "localizedSha256": "73bbbe71e73fa8b828dc8c11285479321a0ef44af696bb2ff267c3bdb97c5836",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "\"case JSON array\"",
+          "\"用例 JSON 数组\""
+        ],
+        [
+          "\"bounded response recording\"",
+          "\"有限响应记录\""
+        ],
+        [
+          "\"optional chat-completions HTTP endpoint; disables recordings\"",
+          "\"可选 chat-completions HTTP 端点；启用后停用响应记录\""
+        ],
+        [
+          "\"HTTP model identifier\"",
+          "\"HTTP 模型标识\""
+        ],
+        [
+          "\"environment variable holding the provider key\"",
+          "\"保存服务商密钥的环境变量名\""
+        ],
+        [
+          "\"HTTP sampling temperature\"",
+          "\"HTTP 采样温度\""
+        ],
+        [
+          "\"HTTP output token ceiling\"",
+          "\"HTTP 输出词元上限\""
+        ],
+        [
+          "\"model calls available to each policy\"",
+          "\"每种策略可用的模型调用次数\""
+        ],
+        [
+          "\"total deadline per policy\"",
+          "\"每种策略的总期限\""
+        ],
+        [
+          "\"write JSON receipt and per-call traces\"",
+          "\"写入 JSON 凭据和每次调用的轨迹\""
+        ]
+      ]
+    },
+    "projects/harness-bench/solution/stage1.go": {
+      "sourceSha256": "95b28dc4138a6e9c24a96eb0fc77236b94a273a3404d3042fe3eb0ad6da294bf",
+      "localizedSha256": "95b28dc4138a6e9c24a96eb0fc77236b94a273a3404d3042fe3eb0ad6da294bf",
+      "kind": "preserved-contract"
+    },
+    "projects/harness-bench/solution/stage2.go": {
+      "sourceSha256": "caacd50bd150fffc6fb022c9e6848de620c1fd57e2c952d7ced5568e4d30487e",
+      "localizedSha256": "caacd50bd150fffc6fb022c9e6848de620c1fd57e2c952d7ced5568e4d30487e",
+      "kind": "preserved-contract"
+    },
+    "projects/harness-bench/solution/stage3.go": {
+      "sourceSha256": "48b31cf658ad2efd4716b2b3524710fdb33240d4b9bbbec60f9635a7fe9a96dd",
+      "localizedSha256": "48b31cf658ad2efd4716b2b3524710fdb33240d4b9bbbec60f9635a7fe9a96dd",
+      "kind": "preserved-contract"
+    },
+    "projects/harness-bench/solution/stage4.go": {
+      "sourceSha256": "cfb017ed64a8395fe332464d7a67c3a2f331adc8071b600540d6b48784a82ce1",
+      "localizedSha256": "cfb017ed64a8395fe332464d7a67c3a2f331adc8071b600540d6b48784a82ce1",
+      "kind": "preserved-contract"
+    },
+    "projects/harness-bench/solution/types.go": {
+      "sourceSha256": "6ddcc35d00e61c7d85b2764e7a577b828d696fe4db8899507e0e6ed17f595b63",
+      "localizedSha256": "6ddcc35d00e61c7d85b2764e7a577b828d696fe4db8899507e0e6ed17f595b63",
+      "kind": "preserved-contract"
+    },
+    "projects/harness-bench/stages/01-load-unseen-benchmark-cases/docs/en.md": {
+      "sourceSha256": "d40a180fe356aa3f8a41088923bf46b160bef54bf45a8071284c737ec4d375f0",
+      "localizedSha256": "74523c3243b6a78fa05df17646f6c699402f9914ac23cc60f9bff4be30466db1",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-harness-bench-1\n"
+          ],
+          [
+            "go",
+            "func Cases(data []byte, max int) ([]Case, error)\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py harness-bench --init /tmp/harness-bench-work\npython3 scripts/project_test.py harness-bench --stage 1 --path /tmp/harness-bench-work --strict\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "15 minutes"
+          ],
+          [
+            "`",
+            "Cases(data, max)"
+          ],
+          [
+            "`",
+            "Case{ID, Prompt, Expected, Evidence}"
+          ],
+          [
+            "`",
+            "ErrConflict"
+          ],
+          [
+            "`",
+            "Evidence"
+          ],
+          [
+            "`",
+            "Expected"
+          ],
+          [
+            "`",
+            "fixtures/orchard-cases.json"
+          ],
+          [
+            "`",
+            "io.EOF"
+          ],
+          [
+            "`",
+            "json.Decoder.DisallowUnknownFields"
+          ],
+          [
+            "`",
+            "max"
+          ],
+          [
+            "`",
+            "max=0"
+          ],
+          [
+            "`",
+            "orchard-ttl"
+          ],
+          [
+            "`",
+            "orchard-ttl"
+          ],
+          [
+            "`",
+            "stage1.go"
+          ]
+        ],
+        "links": [
+          "../../../../../phases/02-ml-fundamentals/09-model-evaluation/docs/en.md",
+          "https://pkg.go.dev/encoding/json"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/harness-bench/stages/01-load-unseen-benchmark-cases/starter/adapters.go": {
+      "sourceSha256": "3d02a578efdc1ede7b85beeda78c43fad66727e5290f2795958795e8e57be04a",
+      "localizedSha256": "3d02a578efdc1ede7b85beeda78c43fad66727e5290f2795958795e8e57be04a",
+      "kind": "preserved-contract"
+    },
+    "projects/harness-bench/stages/01-load-unseen-benchmark-cases/starter/fixtures/orchard-cases.json": {
+      "sourceSha256": "cbb6a7406e38f16b5348cb06fbad4aeab2eb987350ce516d3e34cd78750a3c66",
+      "localizedSha256": "cbb6a7406e38f16b5348cb06fbad4aeab2eb987350ce516d3e34cd78750a3c66",
+      "kind": "preserved-contract"
+    },
+    "projects/harness-bench/stages/01-load-unseen-benchmark-cases/starter/fixtures/orchard-recording.json": {
+      "sourceSha256": "b237c2dd192eb0fce8f943ebb2021c21e1595ced39040ac80a3214e5cd663c07",
+      "localizedSha256": "b237c2dd192eb0fce8f943ebb2021c21e1595ced39040ac80a3214e5cd663c07",
+      "kind": "preserved-contract"
+    },
+    "projects/harness-bench/stages/01-load-unseen-benchmark-cases/starter/go.mod": {
+      "sourceSha256": "7ad212a51f265024759059dca8fed27e77637167d3448dc5077724bd8ef32301",
+      "localizedSha256": "7ad212a51f265024759059dca8fed27e77637167d3448dc5077724bd8ef32301",
+      "kind": "preserved-contract"
+    },
+    "projects/harness-bench/stages/01-load-unseen-benchmark-cases/starter/main.go": {
+      "sourceSha256": "4e60da979d8c56e4603f9bc4ed9911d76b9f7fefa1caca6eaea4783d59f7509a",
+      "localizedSha256": "73bbbe71e73fa8b828dc8c11285479321a0ef44af696bb2ff267c3bdb97c5836",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "\"case JSON array\"",
+          "\"用例 JSON 数组\""
+        ],
+        [
+          "\"bounded response recording\"",
+          "\"有限响应记录\""
+        ],
+        [
+          "\"optional chat-completions HTTP endpoint; disables recordings\"",
+          "\"可选 chat-completions HTTP 端点；启用后停用响应记录\""
+        ],
+        [
+          "\"HTTP model identifier\"",
+          "\"HTTP 模型标识\""
+        ],
+        [
+          "\"environment variable holding the provider key\"",
+          "\"保存服务商密钥的环境变量名\""
+        ],
+        [
+          "\"HTTP sampling temperature\"",
+          "\"HTTP 采样温度\""
+        ],
+        [
+          "\"HTTP output token ceiling\"",
+          "\"HTTP 输出词元上限\""
+        ],
+        [
+          "\"model calls available to each policy\"",
+          "\"每种策略可用的模型调用次数\""
+        ],
+        [
+          "\"total deadline per policy\"",
+          "\"每种策略的总期限\""
+        ],
+        [
+          "\"write JSON receipt and per-call traces\"",
+          "\"写入 JSON 凭据和每次调用的轨迹\""
+        ]
+      ]
+    },
+    "projects/harness-bench/stages/01-load-unseen-benchmark-cases/starter/stage1.go": {
+      "sourceSha256": "ff0959d614bfee118ef0f951898522e076e5cf0c81c467945a40031f82819bd7",
+      "localizedSha256": "ff0959d614bfee118ef0f951898522e076e5cf0c81c467945a40031f82819bd7",
+      "kind": "preserved-contract"
+    },
+    "projects/harness-bench/stages/01-load-unseen-benchmark-cases/starter/types.go": {
+      "sourceSha256": "6ddcc35d00e61c7d85b2764e7a577b828d696fe4db8899507e0e6ed17f595b63",
+      "localizedSha256": "6ddcc35d00e61c7d85b2764e7a577b828d696fe4db8899507e0e6ed17f595b63",
+      "kind": "preserved-contract"
+    },
+    "projects/harness-bench/stages/01-load-unseen-benchmark-cases/tests/stage_test.go": {
+      "sourceSha256": "3a3529327dca5739ee2c240a7991208524e7f274c5027442f7105604ef661fa8",
+      "localizedSha256": "3a3529327dca5739ee2c240a7991208524e7f274c5027442f7105604ef661fa8",
+      "kind": "preserved-contract"
+    },
+    "projects/harness-bench/stages/02-define-exactly-what-a-correct-answer-means/docs/en.md": {
+      "sourceSha256": "d09f80e719697201123d7f0812aac6fce6b2ca4706b5363af8c9957a8ca0508e",
+      "localizedSha256": "c8d533a3efaa25878d55245d91ae07bb2e1a6b5afe60c4df0d0b6bd26f3df752",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-harness-bench-2\n"
+          ],
+          [
+            "go",
+            "func Correct(actual, expected string) bool\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py harness-bench --init /tmp/harness-bench-work\npython3 scripts/project_test.py harness-bench --stage 2 --path /tmp/harness-bench-work --strict\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "10 ms"
+          ],
+          [
+            "`",
+            "100 ms"
+          ],
+          [
+            "`",
+            "15 MINUTES"
+          ],
+          [
+            "`",
+            "15 min"
+          ],
+          [
+            "`",
+            "15 minutes"
+          ],
+          [
+            "`",
+            "15 minutes"
+          ],
+          [
+            "`",
+            "15 minutes"
+          ],
+          [
+            "`",
+            "Correct(actual, expected)"
+          ],
+          [
+            "`",
+            "[\"15\", \"MINUTES\"]"
+          ],
+          [
+            "`",
+            "actual = \" 15   MINUTES\\n\""
+          ],
+          [
+            "`",
+            "ready"
+          ],
+          [
+            "`",
+            "ready!"
+          ],
+          [
+            "`",
+            "stage2.go"
+          ],
+          [
+            "`",
+            "strings.Fields"
+          ],
+          [
+            "`",
+            "strings.ToLower"
+          ]
+        ],
+        "links": [
+          "../../../../report-judge/README.md",
+          "https://pkg.go.dev/encoding/json"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/harness-bench/stages/02-define-exactly-what-a-correct-answer-means/starter/stage2.go": {
+      "sourceSha256": "8e1c4cd0e17a42264034451e00e8bcd644bb426fc04dabd03e81470685c47e69",
+      "localizedSha256": "8e1c4cd0e17a42264034451e00e8bcd644bb426fc04dabd03e81470685c47e69",
+      "kind": "preserved-contract"
+    },
+    "projects/harness-bench/stages/02-define-exactly-what-a-correct-answer-means/tests/stage_test.go": {
+      "sourceSha256": "00d9c151908125bf257b994a6dbdf34ac7e9108eeeec672b7593fa0b4834ae72",
+      "localizedSha256": "00d9c151908125bf257b994a6dbdf34ac7e9108eeeec672b7593fa0b4834ae72",
+      "kind": "preserved-contract"
+    },
+    "projects/harness-bench/stages/03-run-a-harness-under-a-call-budget/docs/en.md": {
+      "sourceSha256": "98e22a57b2aa8bcbe6299dc045cbe3fd6163578a00079b7203b5cb5edbea3078",
+      "localizedSha256": "074c9b2781fda3b4f8ddb96482d090107770b945a1039177de3ecd7bb2006476",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-harness-bench-3\n"
+          ],
+          [
+            "go",
+            "func PolicyPrompt(c Case, policy string) string\nfunc EvaluatePolicy(ctx context.Context, name, policy string, cases []Case, model ContextModel, budget int, modelReceipt string) (Result, error)\nfunc Evaluate(name string, cases []Case, model Model, budget int) (Result, error)\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py harness-bench --init /tmp/harness-bench-work\npython3 scripts/project_test.py harness-bench --stage 3 --path /tmp/harness-bench-work --strict\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "60 minutes"
+          ],
+          [
+            "`",
+            "Attempted"
+          ],
+          [
+            "`",
+            "Calls"
+          ],
+          [
+            "`",
+            "Calls=1, Attempted=1, Errors=1"
+          ],
+          [
+            "`",
+            "Calls=2, Attempted=1, Errors=0, Correct=1"
+          ],
+          [
+            "`",
+            "ContextModel"
+          ],
+          [
+            "`",
+            "Errors"
+          ],
+          [
+            "`",
+            "Evaluate"
+          ],
+          [
+            "`",
+            "EvaluatePolicy"
+          ],
+          [
+            "`",
+            "Expected"
+          ],
+          [
+            "`",
+            "PolicyPrompt"
+          ],
+          [
+            "`",
+            "Total"
+          ],
+          [
+            "`",
+            "Trace"
+          ],
+          [
+            "`",
+            "baseline"
+          ],
+          [
+            "`",
+            "budget-exhausted"
+          ],
+          [
+            "`",
+            "evidence"
+          ],
+          [
+            "`",
+            "go run . --budget 2 --out /tmp/orchard-budget.json"
+          ],
+          [
+            "`",
+            "ready"
+          ],
+          [
+            "`",
+            "retry-errors"
+          ],
+          [
+            "`",
+            "stage3.go"
+          ]
+        ],
+        "links": [
+          "https://pkg.go.dev/encoding/json"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/harness-bench/stages/03-run-a-harness-under-a-call-budget/starter/stage3.go": {
+      "sourceSha256": "a5b640e279dad4863da4d141820dceb11b9da0402e5b7079641ed22ee53f04c8",
+      "localizedSha256": "a5b640e279dad4863da4d141820dceb11b9da0402e5b7079641ed22ee53f04c8",
+      "kind": "preserved-contract"
+    },
+    "projects/harness-bench/stages/03-run-a-harness-under-a-call-budget/tests/policy_test.go": {
+      "sourceSha256": "65abfa21cf04ffb2661403e3539489b7463b20507241a42b8ae6abf07d472a84",
+      "localizedSha256": "65abfa21cf04ffb2661403e3539489b7463b20507241a42b8ae6abf07d472a84",
+      "kind": "preserved-contract"
+    },
+    "projects/harness-bench/stages/03-run-a-harness-under-a-call-budget/tests/stage_test.go": {
+      "sourceSha256": "c08b42f4cf73e3b7d848b2d115b87a43523fa9e291fe008f4c40133b21e8dacc",
+      "localizedSha256": "c08b42f4cf73e3b7d848b2d115b87a43523fa9e291fe008f4c40133b21e8dacc",
+      "kind": "preserved-contract"
+    },
+    "projects/harness-bench/stages/04-compare-runs-on-equal-denominators/docs/en.md": {
+      "sourceSha256": "fd327fb71ff94f92b774a8ed3333107d80c1b1727c3215c6e9750a32e4ac83ce",
+      "localizedSha256": "0fd979e94d60135381ba9f10e5eaf25afe075e042a312f4d4adf9df64c2ee83e",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-harness-bench-4\n"
+          ],
+          [
+            "go",
+            "func Leaderboard(results []Result) (string, error)\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py harness-bench --init /tmp/harness-bench-work\npython3 scripts/project_test.py harness-bench --stage 4 --path /tmp/harness-bench-work --strict\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "--key-env"
+          ],
+          [
+            "`",
+            "--max-tokens"
+          ],
+          [
+            "`",
+            "--model"
+          ],
+          [
+            "`",
+            "--temperature"
+          ],
+          [
+            "`",
+            "1/3"
+          ],
+          [
+            "`",
+            "2/3"
+          ],
+          [
+            "`",
+            "3"
+          ],
+          [
+            "`",
+            "3/3"
+          ],
+          [
+            "`",
+            "Attempted <= Calls <= CallBudget"
+          ],
+          [
+            "`",
+            "Correct + Errors <= Attempted <= Total"
+          ],
+          [
+            "`",
+            "ErrConflict"
+          ],
+          [
+            "`",
+            "EvaluatePolicy"
+          ],
+          [
+            "`",
+            "Fingerprint"
+          ],
+          [
+            "`",
+            "Leaderboard"
+          ],
+          [
+            "`",
+            "go run . --cases fixtures/orchard-cases.json --recording fixtures/orchard-recording.json --out /tmp/orchard-runs.json"
+          ],
+          [
+            "`",
+            "max_tokens"
+          ],
+          [
+            "`",
+            "stage4.go"
+          ]
+        ],
+        "links": [
+          "../../../../prompt-regression-tester/README.md",
+          "https://pkg.go.dev/encoding/json"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/harness-bench/stages/04-compare-runs-on-equal-denominators/starter/stage4.go": {
+      "sourceSha256": "fc9714517d4cde2052b4a8fa09d6b1e849c587c00b26079218b43e94dbe7be9c",
+      "localizedSha256": "fc9714517d4cde2052b4a8fa09d6b1e849c587c00b26079218b43e94dbe7be9c",
+      "kind": "preserved-contract"
+    },
+    "projects/harness-bench/stages/04-compare-runs-on-equal-denominators/tests/receipts_test.go": {
+      "sourceSha256": "f733b292fd4ba475c53188c4851ff6565486e0b977dc5186993aff70a8debf72",
+      "localizedSha256": "f733b292fd4ba475c53188c4851ff6565486e0b977dc5186993aff70a8debf72",
+      "kind": "preserved-contract"
+    },
+    "projects/harness-bench/stages/04-compare-runs-on-equal-denominators/tests/stage_test.go": {
+      "sourceSha256": "328b35adbb75fff6c42c68bb9f2a041f72521b4ba321a5f42317dbff98357e29",
+      "localizedSha256": "328b35adbb75fff6c42c68bb9f2a041f72521b4ba321a5f42317dbff98357e29",
+      "kind": "preserved-contract"
+    },
+    "projects/inbox-triage-desk/README.md": {
+      "sourceSha256": "d37fc8f69584a663d2d2ad44f4bae2c9bc5f7966eb99c7851f521498a0622ac7",
+      "localizedSha256": "282dcbf477c0c35a04e372fb2d7eef6b418969c65730e543a76ee4008b06665b",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "bash",
+            "python3 scripts/project_test.py inbox-triage-desk --init my-inbox-triage-desk\npython3 scripts/project_test.py inbox-triage-desk --stage 1 --path my-inbox-triage-desk\npython3 scripts/project_test.py inbox-triage-desk --all --solution --strict\n"
+          ],
+          [
+            "bash",
+            "cd projects/inbox-triage-desk/solution\npython3 main.py --input ./fixtures --out ./inbox-output\n"
+          ],
+          [
+            "bash",
+            "python3 demo.py\n"
+          ]
+        ],
+        "inlineCode": [],
+        "links": [
+          "https://docs.python.org/3/library/email.parser.html",
+          "stages/01-parse-messages/docs/en.md",
+          "stages/02-group-and-triage/docs/en.md",
+          "stages/03-draft-for-review/docs/en.md",
+          "stages/04-export-the-desk/docs/en.md"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 7
+      }
+    },
+    "projects/inbox-triage-desk/media/output.gif": {
+      "sourceSha256": "77cbf06372824afb387f74c1f49a5cfcd67a593235cd1ed93b2fd0e44b5fc7b0",
+      "localizedSha256": "77cbf06372824afb387f74c1f49a5cfcd67a593235cd1ed93b2fd0e44b5fc7b0",
+      "kind": "original-recording"
+    },
+    "projects/inbox-triage-desk/media/output.json": {
+      "sourceSha256": "4854663b3cee43bffecf13b5bf71e88aa115ffb2b6d70804a751022eb41600b8",
+      "localizedSha256": "4854663b3cee43bffecf13b5bf71e88aa115ffb2b6d70804a751022eb41600b8",
+      "kind": "original-recording"
+    },
+    "projects/inbox-triage-desk/media/output.png": {
+      "sourceSha256": "40962ce0fc74c12ce452699a52087172b7f021d2ace18f7c64d20914a315da0a",
+      "localizedSha256": "40962ce0fc74c12ce452699a52087172b7f021d2ace18f7c64d20914a315da0a",
+      "kind": "original-recording"
+    },
+    "projects/inbox-triage-desk/media/run.gif": {
+      "sourceSha256": "289b62e1fdfc2bb538149621a42e7328ec84afdd2a8da1551dd6ddba75e7d116",
+      "localizedSha256": "289b62e1fdfc2bb538149621a42e7328ec84afdd2a8da1551dd6ddba75e7d116",
+      "kind": "original-recording"
+    },
+    "projects/inbox-triage-desk/media/run.json": {
+      "sourceSha256": "f108b383fa4186120f3ceefc66a7273e6f68b6a7ba2ca184b234c67fe9bb7887",
+      "localizedSha256": "f108b383fa4186120f3ceefc66a7273e6f68b6a7ba2ca184b234c67fe9bb7887",
+      "kind": "original-recording"
+    },
+    "projects/inbox-triage-desk/media/run.png": {
+      "sourceSha256": "a86a521343389a000e65cfcb6fa281aeda0f83e829a8d828462104f9bb3feb58",
+      "localizedSha256": "a86a521343389a000e65cfcb6fa281aeda0f83e829a8d828462104f9bb3feb58",
+      "kind": "original-recording"
+    },
+    "projects/inbox-triage-desk/project.json": {
+      "sourceSha256": "1edaf0be04e0b8cc62c6061415d183cc0b95b155c6dfd32adcbddd26490b5043",
+      "localizedSha256": "6051318c84b3a7f402f8976cb3f936ec1c9bddf72eb51764d5924ee938480158",
+      "kind": "manifest",
+      "contract": {
+        "id": "inbox-triage-desk",
+        "title": "<translated-text>",
+        "level": 2,
+        "levelName": "Builder",
+        "tagline": "<translated-text>",
+        "summary": "<translated-text>",
+        "youWillBuild": "<translated-text>",
+        "usefulFor": [
+          "<translated-text>"
+        ],
+        "hours": 8,
+        "languages": [
+          "Python"
+        ],
+        "languageWhy": {
+          "Python": "<translated-text>"
+        },
+        "status": "ready",
+        "source": "core",
+        "author": {
+          "name": "AI Engineering from Scratch",
+          "github": "rohitg00"
+        },
+        "skills": [
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "prerequisites": [
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "figures": true,
+        "overviewFigure": "pj-inbox-triage-desk-1",
+        "demo": {
+          "command": [
+            "python3",
+            "demo.py"
+          ],
+          "cwd": "solution"
+        },
+        "stages": [
+          {
+            "id": "01-parse-messages",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "difficulty": "starter",
+            "language": "python",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ],
+            "figure": "pj-inbox-triage-desk-1"
+          },
+          {
+            "id": "02-group-and-triage",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "difficulty": "core",
+            "language": "python",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ],
+            "figure": "pj-inbox-triage-desk-2"
+          },
+          {
+            "id": "03-draft-for-review",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "difficulty": "core",
+            "language": "python",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ],
+            "figure": "pj-inbox-triage-desk-3"
+          },
+          {
+            "id": "04-export-the-desk",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "difficulty": "stretch",
+            "language": "python",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ],
+            "figure": "pj-inbox-triage-desk-4"
+          }
+        ],
+        "demos": [
+          {
+            "gif": "media/run.gif",
+            "poster": "media/run.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          },
+          {
+            "gif": "media/output.gif",
+            "poster": "media/output.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          }
+        ]
+      }
+    },
+    "projects/inbox-triage-desk/solution/demo.py": {
+      "sourceSha256": "e736891e43479f7f867971d272298c2e38de872f8865011e19722cb74cf7b4eb",
+      "localizedSha256": "27b88389d079bfce6a6c07450eb480ea552d47bda69bb39b5d9798dc2c2fad5e",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "\"Three authored emails become a review queue:\"",
+          "\"三封原创示例邮件组成审阅队列：\""
+        ],
+        [
+          "\"  Evidence:\"",
+          "\"  证据：\""
+        ],
+        [
+          "\"No phrase matched; inspect manually\"",
+          "\"没有匹配的短语；请人工检查\""
+        ],
+        [
+          "\"Threads:\"",
+          "\"线程数：\""
+        ],
+        [
+          "\"| Unsent drafts:\"",
+          "\"| 未发送草稿数：\""
+        ],
+        [
+          "\"| Messages sent: 0\"",
+          "\"| 已发送邮件数：0\""
+        ],
+        [
+          "\"Run python3 main.py --input ./fixtures --out ./inbox-output to keep the HTML, JSON and drafts.\"",
+          "\"运行 python3 main.py --input ./fixtures --out ./inbox-output，保存 HTML、JSON 和草稿。\""
+        ]
+      ]
+    },
+    "projects/inbox-triage-desk/solution/fixtures/reply.eml": {
+      "sourceSha256": "4ca9c967e4ec5f910ac075bb54259dce4adaee12fda9b6982644917442ec21db",
+      "localizedSha256": "4ca9c967e4ec5f910ac075bb54259dce4adaee12fda9b6982644917442ec21db",
+      "kind": "preserved-contract"
+    },
+    "projects/inbox-triage-desk/solution/fixtures/request.eml": {
+      "sourceSha256": "460b109107920f917bacec2669c2b4e78a5276ffd04f77fd81751e5e26b44379",
+      "localizedSha256": "460b109107920f917bacec2669c2b4e78a5276ffd04f77fd81751e5e26b44379",
+      "kind": "preserved-contract"
+    },
+    "projects/inbox-triage-desk/solution/fixtures/unclear.eml": {
+      "sourceSha256": "7e368e2a63acf32de3c224927c472d612a002fd0c17657c50ca06e846ad472e0",
+      "localizedSha256": "7e368e2a63acf32de3c224927c472d612a002fd0c17657c50ca06e846ad472e0",
+      "kind": "preserved-contract"
+    },
+    "projects/inbox-triage-desk/solution/main.py": {
+      "sourceSha256": "c11770893667b40dfe3c604d4d9d55d389cad0a4e495bd19ddcff0af7eb7429e",
+      "localizedSha256": "776ec13df6e659d64b090cb6a1e14f4d747c46c99c43f7568c9d0ef78b03b595",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "MAX_MESSAGE_BYTES = 1_000_000",
+          "# 异常、类别、方法和理由字段构成机器契约；英文规则短语与模型提示保留原值。\nMAX_MESSAGE_BYTES = 1_000_000"
+        ],
+        [
+          "    text = text.replace(\"\\r\\n\", \"\\n\").replace(\"\\r\", \"\\n\").strip()",
+          "    # 后续引文区间以规范化换行且去除两端空白后的正文为准。\n    text = text.replace(\"\\r\\n\", \"\\n\").replace(\"\\r\", \"\\n\").strip()"
+        ],
+        [
+          "    body = (\n        \"Draft for review",
+          "    # 草稿正文及 .eml 序列化模板保持原契约，所有回复都需要人工填写和检查。\n    body = (\n        \"Draft for review"
+        ],
+        [
+          "<p>Evidence: {esc",
+          "<p>证据：{esc"
+        ],
+        [
+          "or \"No phrase matched\")}</p>",
+          "or \"没有匹配的短语\")}</p>"
+        ],
+        [
+          "download>Download unsent draft</a>",
+          "download>下载未发送草稿</a>"
+        ],
+        [
+          "<html lang=\"en\">",
+          "<html lang=\"zh-CN\">"
+        ],
+        [
+          "<title>Inbox triage desk</title>",
+          "<title>邮件分流审阅台</title>"
+        ],
+        [
+          "<h1>Inbox triage desk</h1>",
+          "<h1>邮件分流审阅台</h1>"
+        ],
+        [
+          "Local phrase rules. Review every classification and draft. Nothing has been sent.",
+          "采用本地短语规则。请检查每项分类和草稿。尚未发送任何邮件。类别 action 表示行动请求，uncertain 表示待确认，information 表示信息类；机器类别与理由保留原值。"
+        ],
+        [
+          "\"Build a local, reviewable desk from exported .eml files. Never sends mail.\"",
+          "\"从导出的 .eml 文件生成可审阅的本地工作台。绝不发送邮件。\""
+        ]
+      ]
+    },
+    "projects/inbox-triage-desk/stages/01-parse-messages/docs/en.md": {
+      "sourceSha256": "5e619e8cd030843c1dde701b86e8e036759cc95fede24daed1c09115dc262d95",
+      "localizedSha256": "1ce26e984af057181bd973b49777130097503df5f923e502e4eec8aaa9dd2af4",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-inbox-triage-desk-1\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py inbox-triage-desk --init my-inbox-triage-desk\npython3 scripts/project_test.py inbox-triage-desk --stage 1 --path my-inbox-triage-desk\n"
+          ],
+          [
+            "bash",
+            "cd my-inbox-triage-desk\npython3 main.py --input ./fixtures --out ./inbox-output\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "parse_message(raw: bytes) -> dict"
+          ]
+        ],
+        "links": [
+          "https://docs.python.org/3/library/email.parser.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 1
+      }
+    },
+    "projects/inbox-triage-desk/stages/01-parse-messages/starter/STAGE.md": {
+      "sourceSha256": "e1dda082b381d5b601db3e7e8f0db25f6cc90a778170c23ca9288920dce94b06",
+      "localizedSha256": "dce56a8ece7a86dd56f5d8a21f55f3385ce554c8ddf2034dc371899d7145fff9",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [
+          "#"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/inbox-triage-desk/stages/01-parse-messages/starter/fixtures/reply.eml": {
+      "sourceSha256": "4ca9c967e4ec5f910ac075bb54259dce4adaee12fda9b6982644917442ec21db",
+      "localizedSha256": "4ca9c967e4ec5f910ac075bb54259dce4adaee12fda9b6982644917442ec21db",
+      "kind": "preserved-contract"
+    },
+    "projects/inbox-triage-desk/stages/01-parse-messages/starter/fixtures/request.eml": {
+      "sourceSha256": "460b109107920f917bacec2669c2b4e78a5276ffd04f77fd81751e5e26b44379",
+      "localizedSha256": "460b109107920f917bacec2669c2b4e78a5276ffd04f77fd81751e5e26b44379",
+      "kind": "preserved-contract"
+    },
+    "projects/inbox-triage-desk/stages/01-parse-messages/starter/fixtures/unclear.eml": {
+      "sourceSha256": "7e368e2a63acf32de3c224927c472d612a002fd0c17657c50ca06e846ad472e0",
+      "localizedSha256": "7e368e2a63acf32de3c224927c472d612a002fd0c17657c50ca06e846ad472e0",
+      "kind": "preserved-contract"
+    },
+    "projects/inbox-triage-desk/stages/01-parse-messages/starter/main.py": {
+      "sourceSha256": "f4a4553f222ae39f693feb7b0115b022b108fbb1a30f320a733279367fcb28b5",
+      "localizedSha256": "bfa7f28fb86f273dbcc3e321442f80f3bc01cd7d4f684610df60d18097c44db4",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "from pathlib import Path",
+          "# 在学习者工作区按阶段补全函数；英文未实现错误参与评分诊断，保留原值。\nfrom pathlib import Path"
+        ]
+      ]
+    },
+    "projects/inbox-triage-desk/stages/01-parse-messages/tests/test_stage.py": {
+      "sourceSha256": "20efd0f2542a0117d8927592a43b394c04f53748375b854ff9bd3eadcfe3a3ca",
+      "localizedSha256": "20efd0f2542a0117d8927592a43b394c04f53748375b854ff9bd3eadcfe3a3ca",
+      "kind": "preserved-contract"
+    },
+    "projects/inbox-triage-desk/stages/02-group-and-triage/docs/en.md": {
+      "sourceSha256": "597433529d8aec74dffeb330e6367d2cdcec27460c0b288839e120711ef17137",
+      "localizedSha256": "aa7e1a4ff1cff4b6a14af25c9726bc6d2eb2e05ceda5c77f270bb3e2b4e2a02c",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-inbox-triage-desk-2\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py inbox-triage-desk --init my-inbox-triage-desk\npython3 scripts/project_test.py inbox-triage-desk --stage 2 --path my-inbox-triage-desk\n"
+          ],
+          [
+            "bash",
+            "cd my-inbox-triage-desk\npython3 main.py --input ./fixtures --out ./inbox-output\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "group_threads(messages: list[dict]) -> list[dict]"
+          ],
+          [
+            "`",
+            "triage(message: dict, rules: dict | None = None) -> dict"
+          ]
+        ],
+        "links": [
+          "https://docs.python.org/3/library/email.parser.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 2
+      }
+    },
+    "projects/inbox-triage-desk/stages/02-group-and-triage/starter/STAGE-2.md": {
+      "sourceSha256": "2e128108585afb1f3f3d84a70fff875cd81c09ebddb5411d941b8ed550fe4cea",
+      "localizedSha256": "c43967a1c3341379c6a6f725a4663287a386787fa18cf0e9cf15140ef4ec32ff",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [
+          "#"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/inbox-triage-desk/stages/02-group-and-triage/tests/test_stage.py": {
+      "sourceSha256": "d8ead319a6ccba1e6adf3841974917973c2938de4465b7211f39d2722f4b798f",
+      "localizedSha256": "d8ead319a6ccba1e6adf3841974917973c2938de4465b7211f39d2722f4b798f",
+      "kind": "preserved-contract"
+    },
+    "projects/inbox-triage-desk/stages/03-draft-for-review/docs/en.md": {
+      "sourceSha256": "daf5cc058a826bfe3b2224669c7a90be1b5c5e35cc37052815783c6120749334",
+      "localizedSha256": "6b894ed495b2bf41a3dca5b0c6f3ea4d4aa507c776a1b1ef47f8189c238e0522",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-inbox-triage-desk-3\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py inbox-triage-desk --init my-inbox-triage-desk\npython3 scripts/project_test.py inbox-triage-desk --stage 3 --path my-inbox-triage-desk\n"
+          ],
+          [
+            "bash",
+            "cd my-inbox-triage-desk\npython3 main.py --input ./fixtures --out ./inbox-output\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "build_draft(message: dict, decision: dict) -> dict"
+          ],
+          [
+            "`",
+            "provider_proposal(message, endpoint, model, api_key=\"\") -> dict"
+          ]
+        ],
+        "links": [
+          "https://docs.python.org/3/library/email.parser.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 2
+      }
+    },
+    "projects/inbox-triage-desk/stages/03-draft-for-review/starter/STAGE-3.md": {
+      "sourceSha256": "04ddceaa3c3ca0db032502e2678558dd773f93c4b481465d8cb00a535369ae60",
+      "localizedSha256": "fb3131b35c66843645e80933dedf227af5937a6dfb5d08737752a53a24ce2571",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [
+          "#"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/inbox-triage-desk/stages/03-draft-for-review/tests/test_endpoint.py": {
+      "sourceSha256": "5590a5c076aebdb68f2a7fc5d6f9ee375f6909945f1d7b9d8f750f2f17342977",
+      "localizedSha256": "5590a5c076aebdb68f2a7fc5d6f9ee375f6909945f1d7b9d8f750f2f17342977",
+      "kind": "preserved-contract"
+    },
+    "projects/inbox-triage-desk/stages/03-draft-for-review/tests/test_stage.py": {
+      "sourceSha256": "b9cea8dcafc6faaa6f5c9993e748aa57c9841d5ddb394bf9d14da7935bc2adf7",
+      "localizedSha256": "b9cea8dcafc6faaa6f5c9993e748aa57c9841d5ddb394bf9d14da7935bc2adf7",
+      "kind": "preserved-contract"
+    },
+    "projects/inbox-triage-desk/stages/04-export-the-desk/docs/en.md": {
+      "sourceSha256": "945037c32d44056bf394bd89105a1da335de85534d7e604dcb1fa598db6eaf90",
+      "localizedSha256": "ebb06c8ab004006f33c832bdfc9c9efc86beff90f068b8e65cc14f07a4d937c6",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-inbox-triage-desk-4\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py inbox-triage-desk --init my-inbox-triage-desk\npython3 scripts/project_test.py inbox-triage-desk --stage 4 --path my-inbox-triage-desk\n"
+          ],
+          [
+            "bash",
+            "cd my-inbox-triage-desk\npython3 main.py --input ./fixtures --out ./inbox-output\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "export_desk(messages, out: Path, rules=None) -> dict"
+          ]
+        ],
+        "links": [
+          "https://docs.python.org/3/library/email.parser.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 1
+      }
+    },
+    "projects/inbox-triage-desk/stages/04-export-the-desk/starter/STAGE-4.md": {
+      "sourceSha256": "704d3d3da7b23ebbefa86021791759b85e0e39bf634d16c6fece1e277729f61b",
+      "localizedSha256": "c9c268b8a81fa626392320417641e767628950f70ff36074b158fe1ad5e8d113",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [
+          "#"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/inbox-triage-desk/stages/04-export-the-desk/tests/test_stage.py": {
+      "sourceSha256": "c2e0d31ea8cca4af1bbdbf815439ff51ee0b65c46017a8fc9116a8200fe5e36e",
+      "localizedSha256": "c2e0d31ea8cca4af1bbdbf815439ff51ee0b65c46017a8fc9116a8200fe5e36e",
+      "kind": "preserved-contract"
+    },
+    "projects/json-schema-output-guard/.gitignore": {
+      "sourceSha256": "d3c399da257662c443e2d2877fa2cffa9da1abf7c46e1579a353a9d54fae74a7",
+      "localizedSha256": "d3c399da257662c443e2d2877fa2cffa9da1abf7c46e1579a353a9d54fae74a7",
+      "kind": "preserved-contract"
+    },
+    "projects/json-schema-output-guard/API.md": {
+      "sourceSha256": "9cfcfeb4df6491a6050bc5667c9309c450f4a0390db741be481320103109b6a9",
+      "localizedSha256": "d8d349b5da2d7e03e5e235d199d2308a9ae715d24fe31b3e32b28ef75aac14f3",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "typescript",
+            "export function checkSchema(schema: Schema, depth = 0): void\nexport function parseJSON(raw: string): unknown\nexport function validate( value: unknown, schema: Schema, pointer = \"$\", depth = 0, ): Issue[]\nexport function guard( raw: string, schema: Schema, ):\nexport async function repair( generate: (feedback: Issue[], attempt: number) => Promise<string>, schema: Schema, maxAttempts = 3, )\n"
+          ]
+        ],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [
+          "#",
+          "###"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/json-schema-output-guard/README.md": {
+      "sourceSha256": "ace36b17c441da0057d0204ff0982148692355d0dcdd6741ee870f453b81a51c",
+      "localizedSha256": "48d76d413e6ab2313617f38ff86d7853d4012addc010c2376c5884ed8fe6964a",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "bash",
+            "python3 scripts/project_test.py json-schema-output-guard --init learning-artifacts/json-schema-output-guard\npython3 scripts/project_test.py json-schema-output-guard --stage 1 --path learning-artifacts/json-schema-output-guard --strict\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py json-schema-output-guard --all --path learning-artifacts/json-schema-output-guard --strict\ncd learning-artifacts/json-schema-output-guard\nnode cli.ts --schema samples/schema.json --attempts samples/attempts.json --output guard.json --html guard.html\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py json-schema-output-guard --all --solution --strict\ncd projects/json-schema-output-guard/solution\nnode cli.ts --schema samples/schema.json --attempts samples/attempts.json --output guard.json --html guard.html\n"
+          ]
+        ],
+        "inlineCode": [],
+        "links": [
+          "API.md",
+          "https://json-schema.org/draft/2020-12/json-schema-validation",
+          "https://nodejs.org/api/typescript.html",
+          "stages/01-parse-json/docs/en.md",
+          "stages/02-validate-types/docs/en.md",
+          "stages/03-constraints/docs/en.md",
+          "stages/04-bounded-repair/docs/en.md"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 4
+      }
+    },
+    "projects/json-schema-output-guard/media/output.gif": {
+      "sourceSha256": "a47df9a21311ff5652a01c8ac518f6e98c3a3499f6890a5e3d38be5810b7d3ee",
+      "localizedSha256": "a47df9a21311ff5652a01c8ac518f6e98c3a3499f6890a5e3d38be5810b7d3ee",
+      "kind": "original-recording"
+    },
+    "projects/json-schema-output-guard/media/output.json": {
+      "sourceSha256": "f80d391d95cb7e1c45fb93f3928452061cab7bd45e3b8b61df5a375b36f5ed71",
+      "localizedSha256": "f80d391d95cb7e1c45fb93f3928452061cab7bd45e3b8b61df5a375b36f5ed71",
+      "kind": "original-recording"
+    },
+    "projects/json-schema-output-guard/media/output.png": {
+      "sourceSha256": "c6c74c5449802d21065e5c823cb887375ea11135c855cbf27ec395bce3f4cdad",
+      "localizedSha256": "c6c74c5449802d21065e5c823cb887375ea11135c855cbf27ec395bce3f4cdad",
+      "kind": "original-recording"
+    },
+    "projects/json-schema-output-guard/media/run.gif": {
+      "sourceSha256": "990a1fb7273e40f50ea5d3a7b1b1fc55c01bd475a42b7a6da17386a3bb95106a",
+      "localizedSha256": "990a1fb7273e40f50ea5d3a7b1b1fc55c01bd475a42b7a6da17386a3bb95106a",
+      "kind": "original-recording"
+    },
+    "projects/json-schema-output-guard/media/run.json": {
+      "sourceSha256": "b49d09577a421c3cd4a99afd4c561149137841d6a6549d7d503068387dfd80b1",
+      "localizedSha256": "b49d09577a421c3cd4a99afd4c561149137841d6a6549d7d503068387dfd80b1",
+      "kind": "original-recording"
+    },
+    "projects/json-schema-output-guard/media/run.png": {
+      "sourceSha256": "f75e534814e5a1f8d3db617270417c8531dcc18305788351f5cc4d4a1a2b552a",
+      "localizedSha256": "f75e534814e5a1f8d3db617270417c8531dcc18305788351f5cc4d4a1a2b552a",
+      "kind": "original-recording"
+    },
+    "projects/json-schema-output-guard/project.json": {
+      "sourceSha256": "5a11613b2e73b3a754046a64c55e1fb4264a3a153a7fd3b26895750fdc4237f6",
+      "localizedSha256": "3556f569d7f833c831f3c052a0a1af9e5c353c91e407cbc4b4643d1728c16312",
+      "kind": "manifest",
+      "contract": {
+        "id": "json-schema-output-guard",
+        "title": "<translated-text>",
+        "level": 1,
+        "levelName": "Starter",
+        "tagline": "<translated-text>",
+        "summary": "<translated-text>",
+        "hours": 8,
+        "languages": [
+          "TypeScript"
+        ],
+        "status": "ready",
+        "source": "core",
+        "author": {
+          "name": "AI Engineering from Scratch",
+          "github": "rohitg00"
+        },
+        "skills": [
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "prerequisites": [
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "youWillBuild": "<translated-text>",
+        "usefulFor": [
+          "<translated-text>"
+        ],
+        "demo": {
+          "cwd": "solution",
+          "command": [
+            "node",
+            "cli.ts",
+            "--schema",
+            "samples/schema.json",
+            "--attempts",
+            "samples/attempts.json",
+            "--output",
+            "guard.json",
+            "--html",
+            "guard.html"
+          ]
+        },
+        "stages": [
+          {
+            "id": "01-parse-json",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "typescript",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "parseJSON"
+            ],
+            "difficulty": "starter",
+            "runner": [
+              "node",
+              "--experimental-strip-types",
+              "--test",
+              "{tests}/stage.test.ts"
+            ],
+            "requires": [
+              "node"
+            ],
+            "timeout": 90,
+            "figure": "pj-json-schema-output-guard-1"
+          },
+          {
+            "id": "02-validate-types",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "typescript",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "validate"
+            ],
+            "difficulty": "core",
+            "runner": [
+              "node",
+              "--experimental-strip-types",
+              "--test",
+              "{tests}/stage.test.ts"
+            ],
+            "requires": [
+              "node"
+            ],
+            "timeout": 90,
+            "figure": "pj-json-schema-output-guard-2"
+          },
+          {
+            "id": "03-constraints",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "typescript",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "validate",
+              "guard"
+            ],
+            "difficulty": "core",
+            "runner": [
+              "node",
+              "--experimental-strip-types",
+              "--test",
+              "{tests}/stage.test.ts"
+            ],
+            "requires": [
+              "node"
+            ],
+            "timeout": 90,
+            "figure": "pj-json-schema-output-guard-3"
+          },
+          {
+            "id": "04-bounded-repair",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "typescript",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "repair"
+            ],
+            "difficulty": "core",
+            "runner": [
+              "node",
+              "--experimental-strip-types",
+              "--test",
+              "{tests}/stage.test.ts",
+              "{tests}/integration.test.ts"
+            ],
+            "requires": [
+              "node"
+            ],
+            "timeout": 90,
+            "figure": "pj-json-schema-output-guard-4"
+          }
+        ],
+        "demos": [
+          {
+            "gif": "media/run.gif",
+            "poster": "media/run.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          },
+          {
+            "gif": "media/output.gif",
+            "poster": "media/output.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          }
+        ]
+      }
+    },
+    "projects/json-schema-output-guard/solution/cli.ts": {
+      "sourceSha256": "6267a18aa6feec46293a0d94179885c2231fa2ad8d606fc96e76685f120da3b5",
+      "localizedSha256": "506aa26c36e41da0a45af7694b4192fd923dde5732d24a7a55db37a5e47f9703",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "\"Usage: node cli.ts --schema samples/schema.json --input response.json OR --attempts samples/attempts.json\"",
+          "\"用法：node cli.ts --schema samples/schema.json --input response.json 或 --attempts samples/attempts.json\""
+        ],
+        [
+          "<title>Output guard</title><h1>Structured output evidence</h1>",
+          "<title>输出守卫</title><h1>结构化输出证据</h1>"
+        ],
+        [
+          "const text = JSON.stringify(report, null, 2);",
+          "// 报告字段与问题消息用于程序集成和修复反馈，保留原值。\nconst text = JSON.stringify(report, null, 2);"
+        ]
+      ]
+    },
+    "projects/json-schema-output-guard/solution/main.ts": {
+      "sourceSha256": "f433828e07bf7cf153d8e4d13651d00b64550744929a251a9a7bf978ce9690a6",
+      "localizedSha256": "d39830f6bba54bb817bcc22133c2c332691fb17063dcd3bfa44b75bff8fcba5f",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "/*\n * JSON Schema Output Guard reference implementation.\n * Follow stages in projects/json-schema-output-guard/stages/.\n * The demo is deterministic and requires no provider credentials.\n * Protocol references are listed in the project README.\n */",
+          "/*\n * JSON 结构输出守卫的参考实现。\n * 按 projects/json-schema-output-guard/stages/ 中的阶段学习。\n * 演示具有确定性，无需服务商凭据。\n * 协议参考资料列在项目 README 中。\n * Issue.message、异常和示例响应参与反馈及测试，保留原值。\n */"
+        ]
+      ]
+    },
+    "projects/json-schema-output-guard/solution/package.json": {
+      "sourceSha256": "a90fc33418afa2b9cbf4768524b021135b965ecdf993457505bfae3ac44a8428",
+      "localizedSha256": "a90fc33418afa2b9cbf4768524b021135b965ecdf993457505bfae3ac44a8428",
+      "kind": "preserved-contract"
+    },
+    "projects/json-schema-output-guard/solution/samples/attempts.json": {
+      "sourceSha256": "226a7d93b0d88be93f43496fc8ee6ce2c50fc658b953679b4a3d4289ea4ab024",
+      "localizedSha256": "226a7d93b0d88be93f43496fc8ee6ce2c50fc658b953679b4a3d4289ea4ab024",
+      "kind": "preserved-contract"
+    },
+    "projects/json-schema-output-guard/solution/samples/schema.json": {
+      "sourceSha256": "aab462381650914c61a5a5ac668a448eee0f1d9dc9dea51d313f3895fdb01db5",
+      "localizedSha256": "aab462381650914c61a5a5ac668a448eee0f1d9dc9dea51d313f3895fdb01db5",
+      "kind": "preserved-contract"
+    },
+    "projects/json-schema-output-guard/stages/01-parse-json/docs/en.md": {
+      "sourceSha256": "6a75c4cc4d30245e97874a7e37fdaa34fd0837b9e854463e781b4d2661be6122",
+      "localizedSha256": "4955189ecfe45121bd3de0673fb62f981db0db56bfe90448525ffab64a96c0c3",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-json-schema-output-guard-1\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py json-schema-output-guard --stage 1 --path learning-artifacts/json-schema-output-guard --strict\n"
+          ],
+          [
+            "bash",
+            "cd learning-artifacts/json-schema-output-guard\nnode cli.ts --schema samples/schema.json --attempts samples/attempts.json --output guard.json --html guard.html\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "main.ts"
+          ],
+          [
+            "`",
+            "parseJSON"
+          ],
+          [
+            "`",
+            "parseJSON"
+          ],
+          [
+            "`",
+            "python3 scripts/project_test.py json-schema-output-guard --init learning-artifacts/json-schema-output-guard"
+          ],
+          [
+            "`",
+            "{\"answer\":\"yes\"}"
+          ]
+        ],
+        "links": [
+          "../../../API.md",
+          "../../../README.md",
+          "https://json-schema.org/draft/2020-12/json-schema-validation",
+          "https://nodejs.org/api/typescript.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/json-schema-output-guard/stages/01-parse-json/starter/cli.ts": {
+      "sourceSha256": "6267a18aa6feec46293a0d94179885c2231fa2ad8d606fc96e76685f120da3b5",
+      "localizedSha256": "506aa26c36e41da0a45af7694b4192fd923dde5732d24a7a55db37a5e47f9703",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "\"Usage: node cli.ts --schema samples/schema.json --input response.json OR --attempts samples/attempts.json\"",
+          "\"用法：node cli.ts --schema samples/schema.json --input response.json 或 --attempts samples/attempts.json\""
+        ],
+        [
+          "<title>Output guard</title><h1>Structured output evidence</h1>",
+          "<title>输出守卫</title><h1>结构化输出证据</h1>"
+        ],
+        [
+          "const text = JSON.stringify(report, null, 2);",
+          "// 报告字段与问题消息用于程序集成和修复反馈，保留原值。\nconst text = JSON.stringify(report, null, 2);"
+        ]
+      ]
+    },
+    "projects/json-schema-output-guard/stages/01-parse-json/starter/main.ts": {
+      "sourceSha256": "2cdbaa033eaee71123e1c22ecf9381cc0b7e31a70f473196698d1b494f9826c5",
+      "localizedSha256": "6e822811cad0f09aca69ebc936d976e2cf150d8645afc5b2ef13c6b473da79da",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "export type Schema = {",
+          "// 起始接口：在对应阶段补全实现，保留公开名称及未实现错误值。\nexport type Schema = {"
+        ]
+      ]
+    },
+    "projects/json-schema-output-guard/stages/01-parse-json/starter/package.json": {
+      "sourceSha256": "a90fc33418afa2b9cbf4768524b021135b965ecdf993457505bfae3ac44a8428",
+      "localizedSha256": "a90fc33418afa2b9cbf4768524b021135b965ecdf993457505bfae3ac44a8428",
+      "kind": "preserved-contract"
+    },
+    "projects/json-schema-output-guard/stages/01-parse-json/starter/samples/attempts.json": {
+      "sourceSha256": "226a7d93b0d88be93f43496fc8ee6ce2c50fc658b953679b4a3d4289ea4ab024",
+      "localizedSha256": "226a7d93b0d88be93f43496fc8ee6ce2c50fc658b953679b4a3d4289ea4ab024",
+      "kind": "preserved-contract"
+    },
+    "projects/json-schema-output-guard/stages/01-parse-json/starter/samples/schema.json": {
+      "sourceSha256": "aab462381650914c61a5a5ac668a448eee0f1d9dc9dea51d313f3895fdb01db5",
+      "localizedSha256": "aab462381650914c61a5a5ac668a448eee0f1d9dc9dea51d313f3895fdb01db5",
+      "kind": "preserved-contract"
+    },
+    "projects/json-schema-output-guard/stages/01-parse-json/starter/stage-1.md": {
+      "sourceSha256": "69dc7e6983c47a8710c17582969c1ff7521233c69e33ab4299283868ea390264",
+      "localizedSha256": "7d814f36e15bbc5d8e57c31520590bcce6bbc5178e449b6e28ccfc810a56534b",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/json-schema-output-guard/stages/01-parse-json/tests/stage.test.ts": {
+      "sourceSha256": "dde6daf5e46977bc23fac5ff8e1720b33295508a797104508861d5f83eeba872",
+      "localizedSha256": "dde6daf5e46977bc23fac5ff8e1720b33295508a797104508861d5f83eeba872",
+      "kind": "preserved-contract"
+    },
+    "projects/json-schema-output-guard/stages/02-validate-types/docs/en.md": {
+      "sourceSha256": "23ae2c62a255015315e82d08b33fb4532b0d30ff63563ce2712205e8a2f0f871",
+      "localizedSha256": "5cd7ecd5647737ce5b4a37a1a7bf15bb7293d10a37a4037c26451c17f604037b",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-json-schema-output-guard-2\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py json-schema-output-guard --stage 2 --path learning-artifacts/json-schema-output-guard --strict\n"
+          ],
+          [
+            "bash",
+            "cd learning-artifacts/json-schema-output-guard\nnode cli.ts --schema samples/schema.json --attempts samples/attempts.json --output guard.json --html guard.html\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "main.ts"
+          ],
+          [
+            "`",
+            "python3 scripts/project_test.py json-schema-output-guard --init learning-artifacts/json-schema-output-guard"
+          ],
+          [
+            "`",
+            "validate"
+          ],
+          [
+            "`",
+            "validate"
+          ]
+        ],
+        "links": [
+          "../../../API.md",
+          "../../../README.md",
+          "https://json-schema.org/draft/2020-12/json-schema-validation",
+          "https://nodejs.org/api/typescript.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/json-schema-output-guard/stages/02-validate-types/starter/stage-2.md": {
+      "sourceSha256": "7d96305e0d2f978a1559b35545ec153d6f1e22c390a808e7b3cd2540f0de2c80",
+      "localizedSha256": "9b5858ae3967bcc4169672806cb99e61dfe170429a35bdd45009ebf8b0340622",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/json-schema-output-guard/stages/02-validate-types/tests/stage.test.ts": {
+      "sourceSha256": "955f61cded6358fbd9cabc74795bdffbf66aff2a4b0653cb9d1355e519d5889f",
+      "localizedSha256": "955f61cded6358fbd9cabc74795bdffbf66aff2a4b0653cb9d1355e519d5889f",
+      "kind": "preserved-contract"
+    },
+    "projects/json-schema-output-guard/stages/03-constraints/docs/en.md": {
+      "sourceSha256": "3faaa8e0d066b836ce7f11433f9039d0daa2d25b06447efb37aea39b189ef922",
+      "localizedSha256": "44987a89ec7a3eb5dc42c800c6f9b8cb2a09308e6915339810dabaecc1ffcd79",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-json-schema-output-guard-3\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py json-schema-output-guard --stage 3 --path learning-artifacts/json-schema-output-guard --strict\n"
+          ],
+          [
+            "bash",
+            "cd learning-artifacts/json-schema-output-guard\nnode cli.ts --schema samples/schema.json --attempts samples/attempts.json --output guard.json --html guard.html\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "main.ts"
+          ],
+          [
+            "`",
+            "python3 scripts/project_test.py json-schema-output-guard --init learning-artifacts/json-schema-output-guard"
+          ],
+          [
+            "`",
+            "validate, guard"
+          ],
+          [
+            "`",
+            "validate, guard"
+          ]
+        ],
+        "links": [
+          "../../../API.md",
+          "../../../README.md",
+          "https://json-schema.org/draft/2020-12/json-schema-validation",
+          "https://nodejs.org/api/typescript.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/json-schema-output-guard/stages/03-constraints/starter/stage-3.md": {
+      "sourceSha256": "89b71d70a278f5152c3299712269cbbcc83ec668e679561187816649723b782c",
+      "localizedSha256": "8689c13c997c1acafa145781183d245fc727352e4d22d361eac07cc1a0804a45",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/json-schema-output-guard/stages/03-constraints/tests/stage.test.ts": {
+      "sourceSha256": "5f07ca1855016b4145d43865888a37c8618dfead3d15ed38b980631e94b760e7",
+      "localizedSha256": "5f07ca1855016b4145d43865888a37c8618dfead3d15ed38b980631e94b760e7",
+      "kind": "preserved-contract"
+    },
+    "projects/json-schema-output-guard/stages/04-bounded-repair/docs/en.md": {
+      "sourceSha256": "78e3d145babbb3dd9db498c0aae2f15d8bf3bb0b67772ab4542159f1c89ee652",
+      "localizedSha256": "4fb63d8f63b0fdcaada2347148f4ff45e589381610f997a0904ba6cd890b4816",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-json-schema-output-guard-4\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py json-schema-output-guard --stage 4 --path learning-artifacts/json-schema-output-guard --strict\n"
+          ],
+          [
+            "bash",
+            "cd learning-artifacts/json-schema-output-guard\nnode cli.ts --schema samples/schema.json --attempts samples/attempts.json --output guard.json --html guard.html\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "main.ts"
+          ],
+          [
+            "`",
+            "python3 scripts/project_test.py json-schema-output-guard --init learning-artifacts/json-schema-output-guard"
+          ],
+          [
+            "`",
+            "repair"
+          ],
+          [
+            "`",
+            "repair"
+          ]
+        ],
+        "links": [
+          "../../../API.md",
+          "../../../README.md",
+          "https://json-schema.org/draft/2020-12/json-schema-validation",
+          "https://nodejs.org/api/typescript.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/json-schema-output-guard/stages/04-bounded-repair/starter/stage-4.md": {
+      "sourceSha256": "219eb45bfff47cacaf172268a2bd33aa3339801df7043073ff59f659e68bb155",
+      "localizedSha256": "a8433d3de8bc18373a6a85e58e84f4afb07c6c7c54b64fde48144d7cf41cc9d2",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/json-schema-output-guard/stages/04-bounded-repair/tests/integration.test.ts": {
+      "sourceSha256": "f0114d33844ef07dd63cf43c0237f3d244851b6c7cc420ee71512d3191a47872",
+      "localizedSha256": "f0114d33844ef07dd63cf43c0237f3d244851b6c7cc420ee71512d3191a47872",
+      "kind": "preserved-contract"
+    },
+    "projects/json-schema-output-guard/stages/04-bounded-repair/tests/stage.test.ts": {
+      "sourceSha256": "4fe3827566d5e6c06db9862f7eb84313314d6034354c09c6c040bf83c0c8614b",
+      "localizedSha256": "4fe3827566d5e6c06db9862f7eb84313314d6034354c09c6c040bf83c0c8614b",
+      "kind": "preserved-contract"
+    },
+    "projects/json-schema-output-guard/starter/cli.ts": {
+      "sourceSha256": "6267a18aa6feec46293a0d94179885c2231fa2ad8d606fc96e76685f120da3b5",
+      "localizedSha256": "506aa26c36e41da0a45af7694b4192fd923dde5732d24a7a55db37a5e47f9703",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "\"Usage: node cli.ts --schema samples/schema.json --input response.json OR --attempts samples/attempts.json\"",
+          "\"用法：node cli.ts --schema samples/schema.json --input response.json 或 --attempts samples/attempts.json\""
+        ],
+        [
+          "<title>Output guard</title><h1>Structured output evidence</h1>",
+          "<title>输出守卫</title><h1>结构化输出证据</h1>"
+        ],
+        [
+          "const text = JSON.stringify(report, null, 2);",
+          "// 报告字段与问题消息用于程序集成和修复反馈，保留原值。\nconst text = JSON.stringify(report, null, 2);"
+        ]
+      ]
+    },
+    "projects/json-schema-output-guard/starter/main.ts": {
+      "sourceSha256": "2cdbaa033eaee71123e1c22ecf9381cc0b7e31a70f473196698d1b494f9826c5",
+      "localizedSha256": "6e822811cad0f09aca69ebc936d976e2cf150d8645afc5b2ef13c6b473da79da",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "export type Schema = {",
+          "// 起始接口：在对应阶段补全实现，保留公开名称及未实现错误值。\nexport type Schema = {"
+        ]
+      ]
+    },
+    "projects/json-schema-output-guard/starter/package.json": {
+      "sourceSha256": "a90fc33418afa2b9cbf4768524b021135b965ecdf993457505bfae3ac44a8428",
+      "localizedSha256": "a90fc33418afa2b9cbf4768524b021135b965ecdf993457505bfae3ac44a8428",
+      "kind": "preserved-contract"
+    },
+    "projects/json-schema-output-guard/starter/samples/attempts.json": {
+      "sourceSha256": "226a7d93b0d88be93f43496fc8ee6ce2c50fc658b953679b4a3d4289ea4ab024",
+      "localizedSha256": "226a7d93b0d88be93f43496fc8ee6ce2c50fc658b953679b4a3d4289ea4ab024",
+      "kind": "preserved-contract"
+    },
+    "projects/json-schema-output-guard/starter/samples/schema.json": {
+      "sourceSha256": "aab462381650914c61a5a5ac668a448eee0f1d9dc9dea51d313f3895fdb01db5",
+      "localizedSha256": "aab462381650914c61a5a5ac668a448eee0f1d9dc9dea51d313f3895fdb01db5",
+      "kind": "preserved-contract"
+    },
+    "projects/llm-gateway-with-fallbacks/README.md": {
+      "sourceSha256": "542bca5561cbc6907fd93023ba880a168ed79f56f45bcd46b392a7cc77de9268",
+      "localizedSha256": "b48af36118c8c885f583a2a8a1a45daadc81c0fa72d99e23d00eaaaaf08df5d8",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "bash",
+            "python3 scripts/project_test.py llm-gateway-with-fallbacks --init /tmp/llm-gateway-with-fallbacks-work\npython3 scripts/project_test.py llm-gateway-with-fallbacks --stage 1 --path /tmp/llm-gateway-with-fallbacks-work --strict\npython3 scripts/project_test.py llm-gateway-with-fallbacks --all --solution --strict\n"
+          ],
+          [
+            "bash",
+            "cd projects/llm-gateway-with-fallbacks/solution\ngo run .\n"
+          ],
+          [
+            "bash",
+            "go run . --config /tmp/providers.json --request fixtures/request.json\ngo run . --config /tmp/providers.json --listen 127.0.0.1:8088\n"
+          ],
+          [
+            "bash",
+            "curl --fail-with-body http://127.0.0.1:8088/v1/chat/completions -H 'Content-Type: application/json' --data-binary @fixtures/request.json\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py llm-gateway-with-fallbacks --all --path /tmp/llm-gateway-with-fallbacks-work --strict --report /tmp/llm-gateway-with-fallbacks-result.json\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "/tmp/providers.json"
+          ],
+          [
+            "`",
+            "ATTEMPTS 2"
+          ],
+          [
+            "`",
+            "Attempt"
+          ],
+          [
+            "`",
+            "Attempt"
+          ],
+          [
+            "`",
+            "ClassifyStatus"
+          ],
+          [
+            "`",
+            "Endpoints"
+          ],
+          [
+            "`",
+            "GatewayHandler"
+          ],
+          [
+            "`",
+            "HTTP 200"
+          ],
+          [
+            "`",
+            "PROVIDER backup"
+          ],
+          [
+            "`",
+            "Retry-After"
+          ],
+          [
+            "`",
+            "Route"
+          ],
+          [
+            "`",
+            "Route"
+          ],
+          [
+            "`",
+            "RouteConfigured"
+          ],
+          [
+            "`",
+            "X-Gateway-Attempts"
+          ],
+          [
+            "`",
+            "X-Gateway-Provider"
+          ],
+          [
+            "`",
+            "fixtures/providers.example.json"
+          ],
+          [
+            "`",
+            "http://127.0.0.1:8088/v1"
+          ],
+          [
+            "`",
+            "key_env"
+          ],
+          [
+            "`",
+            "key_env"
+          ],
+          [
+            "`",
+            "max_attempts"
+          ],
+          [
+            "`",
+            "max_response_bytes"
+          ],
+          [
+            "`",
+            "model"
+          ],
+          [
+            "`",
+            "name"
+          ],
+          [
+            "`",
+            "timeout_ms"
+          ],
+          [
+            "`",
+            "url"
+          ]
+        ],
+        "links": [
+          "https://pkg.go.dev/context",
+          "https://pkg.go.dev/encoding/json",
+          "https://pkg.go.dev/net/http",
+          "stages/01-validate-provider-endpoints/docs/en.md",
+          "stages/02-classify-failures-without-retrying-everything/docs/en.md",
+          "stages/03-send-one-bounded-http-request/docs/en.md",
+          "stages/04-route-with-a-total-attempt-budget/docs/en.md"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 4
+      }
+    },
+    "projects/llm-gateway-with-fallbacks/media/output.gif": {
+      "sourceSha256": "2a08c3316b526ce52ba3fae604591241642479b7b8b3c16091f5b1384d7fa1a2",
+      "localizedSha256": "2a08c3316b526ce52ba3fae604591241642479b7b8b3c16091f5b1384d7fa1a2",
+      "kind": "original-recording"
+    },
+    "projects/llm-gateway-with-fallbacks/media/output.json": {
+      "sourceSha256": "0ad715b576a8f14ed24d45427dee01ea6bbca704b850cf458f63f4e31955dea7",
+      "localizedSha256": "0ad715b576a8f14ed24d45427dee01ea6bbca704b850cf458f63f4e31955dea7",
+      "kind": "original-recording"
+    },
+    "projects/llm-gateway-with-fallbacks/media/output.png": {
+      "sourceSha256": "3f06f487c73154cefea618ed0438e6f78a96b5819148934c11a1908f2151937e",
+      "localizedSha256": "3f06f487c73154cefea618ed0438e6f78a96b5819148934c11a1908f2151937e",
+      "kind": "original-recording"
+    },
+    "projects/llm-gateway-with-fallbacks/media/run.gif": {
+      "sourceSha256": "3eb49b8f42175ffd8ccd883c6ed8b661e75cce2ccd0e3c49a146ac77ca2be12f",
+      "localizedSha256": "3eb49b8f42175ffd8ccd883c6ed8b661e75cce2ccd0e3c49a146ac77ca2be12f",
+      "kind": "original-recording"
+    },
+    "projects/llm-gateway-with-fallbacks/media/run.json": {
+      "sourceSha256": "3572dc7f4e9e435f36740a1fdb6fc0e1c368bc5da686e9771fa5c43d0b0b5743",
+      "localizedSha256": "3572dc7f4e9e435f36740a1fdb6fc0e1c368bc5da686e9771fa5c43d0b0b5743",
+      "kind": "original-recording"
+    },
+    "projects/llm-gateway-with-fallbacks/media/run.png": {
+      "sourceSha256": "11ac6f3a2945173b2ea66f1f257b0a0ed5c9359130181fe6cd21462d3bbc5f22",
+      "localizedSha256": "11ac6f3a2945173b2ea66f1f257b0a0ed5c9359130181fe6cd21462d3bbc5f22",
+      "kind": "original-recording"
+    },
+    "projects/llm-gateway-with-fallbacks/project.json": {
+      "sourceSha256": "8854e59be94f53e78d93648d19ff0e04a24b897ff92bd36a22000a04d97b5030",
+      "localizedSha256": "d47d4c9876b6fe1b2fceb5127f330a21032c0c8892c1438bee845f09ce20d457",
+      "kind": "manifest",
+      "contract": {
+        "id": "llm-gateway-with-fallbacks",
+        "title": "<translated-text>",
+        "level": 3,
+        "levelName": "Engineer",
+        "tagline": "<translated-text>",
+        "summary": "<translated-text>",
+        "usefulFor": [
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "youWillBuild": "<translated-text>",
+        "hours": 8,
+        "languages": [
+          "Go"
+        ],
+        "status": "ready",
+        "source": "core",
+        "author": {
+          "name": "AI Engineering from Scratch",
+          "github": "rohitg00"
+        },
+        "skills": [
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "prerequisites": [
+          {
+            "title": "<translated-text>",
+            "path": "phases/11-llm-engineering/03-structured-outputs"
+          }
+        ],
+        "inspiredBy": [],
+        "demo": {
+          "command": [
+            "go",
+            "run",
+            "."
+          ],
+          "cwd": "solution"
+        },
+        "stages": [
+          {
+            "id": "01-validate-provider-endpoints",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "go",
+            "difficulty": "starter",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ]
+          },
+          {
+            "id": "02-classify-failures-without-retrying-everything",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "go",
+            "difficulty": "core",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ]
+          },
+          {
+            "id": "03-send-one-bounded-http-request",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "go",
+            "difficulty": "core",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ]
+          },
+          {
+            "id": "04-route-with-a-total-attempt-budget",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "go",
+            "difficulty": "core",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ]
+          }
+        ],
+        "demos": [
+          {
+            "gif": "media/run.gif",
+            "poster": "media/run.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          },
+          {
+            "gif": "media/output.gif",
+            "poster": "media/output.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          }
+        ]
+      }
+    },
+    "projects/llm-gateway-with-fallbacks/solution/config.go": {
+      "sourceSha256": "8166af06d339913fe12ca16c06d6339591406d293342c1236d1412c8ab509644",
+      "localizedSha256": "8166af06d339913fe12ca16c06d6339591406d293342c1236d1412c8ab509644",
+      "kind": "preserved-contract"
+    },
+    "projects/llm-gateway-with-fallbacks/solution/fixtures/providers.example.json": {
+      "sourceSha256": "5d674d3e18f8c8290177fa44d48ad1fa3c5c42631259435e0ab621a0ba2c9806",
+      "localizedSha256": "5d674d3e18f8c8290177fa44d48ad1fa3c5c42631259435e0ab621a0ba2c9806",
+      "kind": "preserved-contract"
+    },
+    "projects/llm-gateway-with-fallbacks/solution/fixtures/request.json": {
+      "sourceSha256": "831ace37719f9897dce9e305eeb0bd0bbd18746186c9d6cefaccbadd03c1f609",
+      "localizedSha256": "831ace37719f9897dce9e305eeb0bd0bbd18746186c9d6cefaccbadd03c1f609",
+      "kind": "preserved-contract"
+    },
+    "projects/llm-gateway-with-fallbacks/solution/go.mod": {
+      "sourceSha256": "9e8f7b57fea2fb27ef64fdfbf02c0e7855ac17efece2b7181ded248c9397a34a",
+      "localizedSha256": "9e8f7b57fea2fb27ef64fdfbf02c0e7855ac17efece2b7181ded248c9397a34a",
+      "kind": "preserved-contract"
+    },
+    "projects/llm-gateway-with-fallbacks/solution/main.go": {
+      "sourceSha256": "5331709d26ef0455fb2b30ac3b55c4df9e64b49d6aab9e73ceba2f684c0a109b",
+      "localizedSha256": "7ded6e6900d9013f14553594cecca54af62a6c4fdffc612058b3f143faae92b2",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "\"provider JSON configuration\"",
+          "\"服务商 JSON 配置\""
+        ],
+        [
+          "\"non-streaming JSON request file\"",
+          "\"非流式 JSON 请求文件\""
+        ],
+        [
+          "\"loopback bind address, for example 127.0.0.1:8088\"",
+          "\"回环绑定地址，例如 127.0.0.1:8088\""
+        ]
+      ]
+    },
+    "projects/llm-gateway-with-fallbacks/solution/stage1.go": {
+      "sourceSha256": "ec38ed34b7fac013a50646803fce826125f0ce7cbf40796cbcddaa9e350828b7",
+      "localizedSha256": "ec38ed34b7fac013a50646803fce826125f0ce7cbf40796cbcddaa9e350828b7",
+      "kind": "preserved-contract"
+    },
+    "projects/llm-gateway-with-fallbacks/solution/stage2.go": {
+      "sourceSha256": "02223fa92960eb91d0d14ca1212fe711b45e8dc15e4ced7a5579e16266f33edf",
+      "localizedSha256": "02223fa92960eb91d0d14ca1212fe711b45e8dc15e4ced7a5579e16266f33edf",
+      "kind": "preserved-contract"
+    },
+    "projects/llm-gateway-with-fallbacks/solution/stage3.go": {
+      "sourceSha256": "5f5cda46fd749dae57e87dd0aca64354fad6a53990b4f1201122f86916d89332",
+      "localizedSha256": "5f5cda46fd749dae57e87dd0aca64354fad6a53990b4f1201122f86916d89332",
+      "kind": "preserved-contract"
+    },
+    "projects/llm-gateway-with-fallbacks/solution/stage4.go": {
+      "sourceSha256": "eb7ec68ef97e58c161349ee2c8575bf733d3b91be14f075cbaa2ac3515ae018d",
+      "localizedSha256": "eb7ec68ef97e58c161349ee2c8575bf733d3b91be14f075cbaa2ac3515ae018d",
+      "kind": "preserved-contract"
+    },
+    "projects/llm-gateway-with-fallbacks/solution/types.go": {
+      "sourceSha256": "6c0f6d035ab088d9f22136b6325d1ee373a2b1f2fb5b3e70ffd843b6346b53f1",
+      "localizedSha256": "6c0f6d035ab088d9f22136b6325d1ee373a2b1f2fb5b3e70ffd843b6346b53f1",
+      "kind": "preserved-contract"
+    },
+    "projects/llm-gateway-with-fallbacks/stages/01-validate-provider-endpoints/docs/en.md": {
+      "sourceSha256": "51168e97f4aaa402ba43f2c15b3a01d58f219265a857d3855e1f1964a0e5e17b",
+      "localizedSha256": "5706ab64ef9292b349200e5d625a64eef36f4763b42c31c31b38b89075ceed80",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-llm-gateway-with-fallbacks-1\n"
+          ],
+          [
+            "go",
+            "func Endpoints(values []string) ([]string, error)\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py llm-gateway-with-fallbacks --init /tmp/llm-gateway-with-fallbacks-work\npython3 scripts/project_test.py llm-gateway-with-fallbacks --stage 1 --path /tmp/llm-gateway-with-fallbacks-work --strict\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "127.0.0.1"
+          ],
+          [
+            "`",
+            "::1"
+          ],
+          [
+            "`",
+            "Endpoints(values)"
+          ],
+          [
+            "`",
+            "Hostname"
+          ],
+          [
+            "`",
+            "http://127.0.0.1:11434/v1/chat/completions"
+          ],
+          [
+            "`",
+            "https://a.example?api_key=..."
+          ],
+          [
+            "`",
+            "https://primary.example/v1/chat/completions"
+          ],
+          [
+            "`",
+            "local-model.example"
+          ],
+          [
+            "`",
+            "localhost"
+          ],
+          [
+            "`",
+            "net/url"
+          ],
+          [
+            "`",
+            "stage1.go"
+          ],
+          [
+            "`",
+            "user:password@host"
+          ]
+        ],
+        "links": [
+          "../../../../../phases/11-llm-engineering/03-structured-outputs/docs/en.md",
+          "https://pkg.go.dev/context"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/llm-gateway-with-fallbacks/stages/01-validate-provider-endpoints/starter/config.go": {
+      "sourceSha256": "8166af06d339913fe12ca16c06d6339591406d293342c1236d1412c8ab509644",
+      "localizedSha256": "8166af06d339913fe12ca16c06d6339591406d293342c1236d1412c8ab509644",
+      "kind": "preserved-contract"
+    },
+    "projects/llm-gateway-with-fallbacks/stages/01-validate-provider-endpoints/starter/fixtures/providers.example.json": {
+      "sourceSha256": "5d674d3e18f8c8290177fa44d48ad1fa3c5c42631259435e0ab621a0ba2c9806",
+      "localizedSha256": "5d674d3e18f8c8290177fa44d48ad1fa3c5c42631259435e0ab621a0ba2c9806",
+      "kind": "preserved-contract"
+    },
+    "projects/llm-gateway-with-fallbacks/stages/01-validate-provider-endpoints/starter/fixtures/request.json": {
+      "sourceSha256": "831ace37719f9897dce9e305eeb0bd0bbd18746186c9d6cefaccbadd03c1f609",
+      "localizedSha256": "831ace37719f9897dce9e305eeb0bd0bbd18746186c9d6cefaccbadd03c1f609",
+      "kind": "preserved-contract"
+    },
+    "projects/llm-gateway-with-fallbacks/stages/01-validate-provider-endpoints/starter/go.mod": {
+      "sourceSha256": "9e8f7b57fea2fb27ef64fdfbf02c0e7855ac17efece2b7181ded248c9397a34a",
+      "localizedSha256": "9e8f7b57fea2fb27ef64fdfbf02c0e7855ac17efece2b7181ded248c9397a34a",
+      "kind": "preserved-contract"
+    },
+    "projects/llm-gateway-with-fallbacks/stages/01-validate-provider-endpoints/starter/main.go": {
+      "sourceSha256": "5331709d26ef0455fb2b30ac3b55c4df9e64b49d6aab9e73ceba2f684c0a109b",
+      "localizedSha256": "7ded6e6900d9013f14553594cecca54af62a6c4fdffc612058b3f143faae92b2",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "\"provider JSON configuration\"",
+          "\"服务商 JSON 配置\""
+        ],
+        [
+          "\"non-streaming JSON request file\"",
+          "\"非流式 JSON 请求文件\""
+        ],
+        [
+          "\"loopback bind address, for example 127.0.0.1:8088\"",
+          "\"回环绑定地址，例如 127.0.0.1:8088\""
+        ]
+      ]
+    },
+    "projects/llm-gateway-with-fallbacks/stages/01-validate-provider-endpoints/starter/stage1.go": {
+      "sourceSha256": "4f74afe21afc4efc015bee2cf803b6c7b52c43ef5afe3f90c67258851509c158",
+      "localizedSha256": "4f74afe21afc4efc015bee2cf803b6c7b52c43ef5afe3f90c67258851509c158",
+      "kind": "preserved-contract"
+    },
+    "projects/llm-gateway-with-fallbacks/stages/01-validate-provider-endpoints/starter/types.go": {
+      "sourceSha256": "6c0f6d035ab088d9f22136b6325d1ee373a2b1f2fb5b3e70ffd843b6346b53f1",
+      "localizedSha256": "6c0f6d035ab088d9f22136b6325d1ee373a2b1f2fb5b3e70ffd843b6346b53f1",
+      "kind": "preserved-contract"
+    },
+    "projects/llm-gateway-with-fallbacks/stages/01-validate-provider-endpoints/tests/stage_test.go": {
+      "sourceSha256": "3978487c4b929f0b3714735b526942487617e73ef11ae7937e754d5c7234e949",
+      "localizedSha256": "3978487c4b929f0b3714735b526942487617e73ef11ae7937e754d5c7234e949",
+      "kind": "preserved-contract"
+    },
+    "projects/llm-gateway-with-fallbacks/stages/02-classify-failures-without-retrying-everything/docs/en.md": {
+      "sourceSha256": "a2858cd233f15d58b139e7d93c8b66872a9be1c8afd949c687fac034a731324c",
+      "localizedSha256": "ed1ebc435534cd0234f80382fda3d8c265a5ee1675996084b6b4d9a2b264edd7",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-llm-gateway-with-fallbacks-2\n"
+          ],
+          [
+            "go",
+            "func ClassifyStatus(status int) (string, error)\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py llm-gateway-with-fallbacks --init /tmp/llm-gateway-with-fallbacks-work\npython3 scripts/project_test.py llm-gateway-with-fallbacks --stage 2 --path /tmp/llm-gateway-with-fallbacks-work --strict\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "ClassifyStatus(status)"
+          ],
+          [
+            "`",
+            "Retry-After"
+          ],
+          [
+            "`",
+            "[401, 200]"
+          ],
+          [
+            "`",
+            "[503, 200]"
+          ],
+          [
+            "`",
+            "retry"
+          ],
+          [
+            "`",
+            "stage2.go"
+          ],
+          [
+            "`",
+            "status >= 400"
+          ],
+          [
+            "`",
+            "success"
+          ],
+          [
+            "`",
+            "terminal"
+          ]
+        ],
+        "links": [
+          "https://pkg.go.dev/context"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/llm-gateway-with-fallbacks/stages/02-classify-failures-without-retrying-everything/starter/stage2.go": {
+      "sourceSha256": "09ef2d47253cf1b72cce359edf51587b89c2bc2c712c5f8f28653362c18d16b6",
+      "localizedSha256": "09ef2d47253cf1b72cce359edf51587b89c2bc2c712c5f8f28653362c18d16b6",
+      "kind": "preserved-contract"
+    },
+    "projects/llm-gateway-with-fallbacks/stages/02-classify-failures-without-retrying-everything/tests/stage_test.go": {
+      "sourceSha256": "1bedb4470925f2a7802181f7f6c490800dfb7fcaa8ec29a6524997b5e36e994c",
+      "localizedSha256": "1bedb4470925f2a7802181f7f6c490800dfb7fcaa8ec29a6524997b5e36e994c",
+      "kind": "preserved-contract"
+    },
+    "projects/llm-gateway-with-fallbacks/stages/03-send-one-bounded-http-request/docs/en.md": {
+      "sourceSha256": "fb8d15824f538034bac82aac266763b71cb663be751bc7128e9c8a2ace935582",
+      "localizedSha256": "113244a591890f6828ada55670be825bf549ba4c9425abd2752a8c4e4841523e",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-llm-gateway-with-fallbacks-3\n"
+          ],
+          [
+            "go",
+            "func Attempt(ctx context.Context, client *http.Client, endpoint, payload string, maxBytes int64) (Reply, error)\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py llm-gateway-with-fallbacks --init /tmp/llm-gateway-with-fallbacks-work\npython3 scripts/project_test.py llm-gateway-with-fallbacks --stage 3 --path /tmp/llm-gateway-with-fallbacks-work --strict\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "0123456789"
+          ],
+          [
+            "`",
+            "Attempt(ctx, client, endpoint, payload, maxBytes)"
+          ],
+          [
+            "`",
+            "CheckRedirect"
+          ],
+          [
+            "`",
+            "ErrLimit"
+          ],
+          [
+            "`",
+            "Location"
+          ],
+          [
+            "`",
+            "RoundTripper"
+          ],
+          [
+            "`",
+            "context.Background()"
+          ],
+          [
+            "`",
+            "go run ."
+          ],
+          [
+            "`",
+            "io.LimitReader(body, maxBytes+1)"
+          ],
+          [
+            "`",
+            "io.Reader"
+          ],
+          [
+            "`",
+            "stage3.go"
+          ]
+        ],
+        "links": [
+          "https://pkg.go.dev/context"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/llm-gateway-with-fallbacks/stages/03-send-one-bounded-http-request/starter/stage3.go": {
+      "sourceSha256": "ef1f6494307ae31a04f1d37f743cd8a6433837cf9eb1032baa41d66e6740ca9b",
+      "localizedSha256": "ef1f6494307ae31a04f1d37f743cd8a6433837cf9eb1032baa41d66e6740ca9b",
+      "kind": "preserved-contract"
+    },
+    "projects/llm-gateway-with-fallbacks/stages/03-send-one-bounded-http-request/tests/stage_test.go": {
+      "sourceSha256": "64e0964081f35c756b6e136bd845c7f9e9fce11ee1264034bab8cb5136ab9cb2",
+      "localizedSha256": "64e0964081f35c756b6e136bd845c7f9e9fce11ee1264034bab8cb5136ab9cb2",
+      "kind": "preserved-contract"
+    },
+    "projects/llm-gateway-with-fallbacks/stages/04-route-with-a-total-attempt-budget/docs/en.md": {
+      "sourceSha256": "8645a172bbcd740a53b638d404d60a874923bf4cb7e4312e5edb8e61360c5812",
+      "localizedSha256": "777d9a482ffd01f2177af4d648337463bbbc843a0c5ff0aef8fc64f74e169339",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-llm-gateway-with-fallbacks-4\n"
+          ],
+          [
+            "go",
+            "func Route(ctx context.Context, client *http.Client, providers []string, payload string, maxAttempts int, maxBytes int64) (Outcome, error)\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py llm-gateway-with-fallbacks --init /tmp/llm-gateway-with-fallbacks-work\npython3 scripts/project_test.py llm-gateway-with-fallbacks --stage 4 --path /tmp/llm-gateway-with-fallbacks-work --strict\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "--listen 127.0.0.1:8088"
+          ],
+          [
+            "`",
+            "Attempt"
+          ],
+          [
+            "`",
+            "GatewayHandler"
+          ],
+          [
+            "`",
+            "Route"
+          ],
+          [
+            "`",
+            "RouteConfigured"
+          ],
+          [
+            "`",
+            "State=cancelled"
+          ],
+          [
+            "`",
+            "X-Gateway-Attempts: 2"
+          ],
+          [
+            "`",
+            "X-Gateway-Provider: backup"
+          ],
+          [
+            "`",
+            "ctx.Err()"
+          ],
+          [
+            "`",
+            "fixtures/providers.example.json"
+          ],
+          [
+            "`",
+            "go run ."
+          ],
+          [
+            "`",
+            "go run . --config /tmp/providers.json --request fixtures/request.json"
+          ],
+          [
+            "`",
+            "key_env"
+          ],
+          [
+            "`",
+            "model"
+          ],
+          [
+            "`",
+            "stage4.go"
+          ]
+        ],
+        "links": [
+          "../../../../token-counter-and-cost-meter/README.md",
+          "https://pkg.go.dev/context"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/llm-gateway-with-fallbacks/stages/04-route-with-a-total-attempt-budget/starter/stage4.go": {
+      "sourceSha256": "4f588bda61c1f4f0292aa621ec72cd97d342d33aaf8f00b54a1a97b5b1d6c213",
+      "localizedSha256": "4f588bda61c1f4f0292aa621ec72cd97d342d33aaf8f00b54a1a97b5b1d6c213",
+      "kind": "preserved-contract"
+    },
+    "projects/llm-gateway-with-fallbacks/stages/04-route-with-a-total-attempt-budget/tests/replay_test.go": {
+      "sourceSha256": "07471a17fbdecde6c0de4c57baee31f4ec1589c20128da97ffecffb1d4972606",
+      "localizedSha256": "07471a17fbdecde6c0de4c57baee31f4ec1589c20128da97ffecffb1d4972606",
+      "kind": "preserved-contract"
+    },
+    "projects/llm-gateway-with-fallbacks/stages/04-route-with-a-total-attempt-budget/tests/stage_test.go": {
+      "sourceSha256": "06af0b250f702e6b0070c1d784a693b31c8672223fd6e0e2ea8005a30f673ceb",
+      "localizedSha256": "06af0b250f702e6b0070c1d784a693b31c8672223fd6e0e2ea8005a30f673ceb",
+      "kind": "preserved-contract"
+    },
+    "projects/llm-gateway-with-fallbacks/stages/04-route-with-a-total-attempt-budget/tests/wire_test.go": {
+      "sourceSha256": "b4b424b876684ec24f6ad524e994883faa96dffed4484cf4f5ba91b8afdad30f",
+      "localizedSha256": "b4b424b876684ec24f6ad524e994883faa96dffed4484cf4f5ba91b8afdad30f",
+      "kind": "preserved-contract"
+    }
+  },
+  "figures": [
+    {
+      "path": "site/figures/projects/harness-bench.js",
+      "sourceSha256": "de0f606622e7d10109a1f439e4c8e733644488fce20628c6c63b6c202f2fab74",
+      "localizedSha256": "1c919e333c900a394be61af112f8c47c1cdb7092f5104038f094d6f0f169302c",
+      "edits": [
+        {
+          "offset": 344,
+          "before": "\"Read the inputs\"",
+          "after": "\"读取输入\"",
+          "afterOffset": 344
+        },
+        {
+          "offset": 400,
+          "before": "\"Compute the result\"",
+          "after": "\"计算结果\"",
+          "afterOffset": 389
+        },
+        {
+          "offset": 452,
+          "before": "\"Change a control and inspect the recomputed intermediate state.\"",
+          "after": "\"改变控件，检查重新计算的中间状态。\"",
+          "afterOffset": 427
+        },
+        {
+          "offset": 666,
+          "before": "\"Validate the benchmark cases\"",
+          "after": "\"校验基准用例\"",
+          "afterOffset": 595
+        },
+        {
+          "offset": 704,
+          "before": "\"Parse editable case JSON before running any policy.\"",
+          "after": "\"运行任何策略前，先解析可编辑的用例 JSON。\"",
+          "afterOffset": 611
+        },
+        {
+          "offset": 837,
+          "before": "\"Case JSON\"",
+          "after": "\"用例 JSON\"",
+          "afterOffset": 716
+        },
+        {
+          "offset": 1031,
+          "before": "\"Maximum cases\"",
+          "after": "\"最大用例数\"",
+          "afterOffset": 908
+        },
+        {
+          "offset": 1490,
+          "before": "\"Evidence\"",
+          "after": "\"证据\"",
+          "afterOffset": 1359
+        },
+        {
+          "offset": 2376,
+          "before": "\"Rejected: case budget exceeded\"",
+          "after": "\"已拒绝：超过用例预算\"",
+          "afterOffset": 2239
+        },
+        {
+          "offset": 2451,
+          "before": "\"Rejected: repair invalid records\"",
+          "after": "\"已拒绝：请修正无效记录\"",
+          "afterOffset": 2294
+        },
+        {
+          "offset": 2504,
+          "before": "\"Typed case set accepted\"",
+          "after": "\"已接受带类型的用例集合\"",
+          "afterOffset": 2326
+        },
+        {
+          "offset": 2577,
+          "before": "\"Cases\"",
+          "after": "\"用例数\"",
+          "afterOffset": 2387
+        },
+        {
+          "offset": 2632,
+          "before": "\"Invalid records\"",
+          "after": "\"无效记录数\"",
+          "afterOffset": 2440
+        },
+        {
+          "offset": 2743,
+          "before": "\"Cases / limit\"",
+          "after": "\"用例数 / 上限\"",
+          "afterOffset": 2541
+        },
+        {
+          "offset": 2908,
+          "before": "\"Case\"",
+          "after": "\"用例\"",
+          "afterOffset": 2701
+        },
+        {
+          "offset": 2916,
+          "before": "\"Validation\"",
+          "after": "\"校验结果\"",
+          "afterOffset": 2707
+        },
+        {
+          "offset": 3076,
+          "before": "\"Inspect exact-match normalization\"",
+          "after": "\"检查精确匹配的规范化过程\"",
+          "afterOffset": 2861
+        },
+        {
+          "offset": 3119,
+          "before": "\"Case and whitespace can change; numbers and punctuation stay meaningful.\"",
+          "after": "\"允许大小写和空白变化；数字与标点仍然影响结果。\"",
+          "afterOffset": 2883
+        },
+        {
+          "offset": 3249,
+          "before": "\"Model answer\"",
+          "after": "\"模型答案\"",
+          "afterOffset": 2964
+        },
+        {
+          "offset": 3312,
+          "before": "\"Expected answer\"",
+          "after": "\"预期答案\"",
+          "afterOffset": 3019
+        },
+        {
+          "offset": 3697,
+          "before": "\"Exact answer contract satisfied\"",
+          "after": "\"满足精确答案契约\"",
+          "afterOffset": 3393
+        },
+        {
+          "offset": 3747,
+          "before": "\"Answer contract failed\"",
+          "after": "\"未满足答案契约\"",
+          "afterOffset": 3420
+        },
+        {
+          "offset": 3804,
+          "before": "\"Score\"",
+          "after": "\"分数\"",
+          "afterOffset": 3462
+        },
+        {
+          "offset": 3868,
+          "before": "\"Correct\"",
+          "after": "\"正确数\"",
+          "afterOffset": 3523
+        },
+        {
+          "offset": 3936,
+          "before": "\"Field\"",
+          "after": "\"字段\"",
+          "afterOffset": 3587
+        },
+        {
+          "offset": 3945,
+          "before": "\"Normalized value\"",
+          "after": "\"规范化后的值\"",
+          "afterOffset": 3593
+        },
+        {
+          "offset": 4200,
+          "before": "\"Run a bounded policy\"",
+          "after": "\"运行有界策略\"",
+          "afterOffset": 3838
+        },
+        {
+          "offset": 4230,
+          "before": "\"An authored three-case model illustrates actual call accounting. This figure makes no network calls.\"",
+          "after": "\"通过三个原创用例的模型演示调用计数。本图不会发起网络请求。baseline 为基线，retry-errors 为错误重试，evidence 为证据补充。\"",
+          "afterOffset": 3854
+        },
+        {
+          "offset": 4420,
+          "before": "\"Policy\"",
+          "after": "\"策略\"",
+          "afterOffset": 4020
+        },
+        {
+          "offset": 4678,
+          "before": "\"Call budget\"",
+          "after": "\"调用预算\"",
+          "afterOffset": 4274
+        },
+        {
+          "offset": 4725,
+          "before": "\"Answer without expiry evidence\"",
+          "after": "\"未提供有效期证据时的答案\"",
+          "afterOffset": 4314
+        },
+        {
+          "offset": 6198,
+          "before": "`${state}: ${correct}/3 correct using ${calls} calls`",
+          "after": "`${state}：正确 ${correct}/3，使用 ${calls} 次调用`",
+          "afterOffset": 5769
+        },
+        {
+          "offset": 6299,
+          "before": "\"Attempted cases\"",
+          "after": "\"已尝试用例数\"",
+          "afterOffset": 5859
+        },
+        {
+          "offset": 6361,
+          "before": "\"Final errors\"",
+          "after": "\"最终错误数\"",
+          "afterOffset": 5912
+        },
+        {
+          "offset": 6452,
+          "before": "\"Correct / all cases\"",
+          "after": "\"正确数 / 全部用例\"",
+          "afterOffset": 5996
+        },
+        {
+          "offset": 6540,
+          "before": "\"Calls / budget\"",
+          "after": "\"调用数 / 预算\"",
+          "afterOffset": 6075
+        },
+        {
+          "offset": 6686,
+          "before": "\"Case\"",
+          "after": "\"用例\"",
+          "afterOffset": 6215
+        },
+        {
+          "offset": 6694,
+          "before": "\"Attempt\"",
+          "after": "\"尝试\"",
+          "afterOffset": 6221
+        },
+        {
+          "offset": 6705,
+          "before": "\"Observed response\"",
+          "after": "\"观察到的响应\"",
+          "afterOffset": 6227
+        },
+        {
+          "offset": 6872,
+          "before": "\"Check comparison receipts\"",
+          "after": "\"检查比较凭据\"",
+          "afterOffset": 6383
+        },
+        {
+          "offset": 6907,
+          "before": "\"Equal totals are insufficient: compare the complete dataset and model configuration before ranking.\"",
+          "after": "\"总数相等仍不够：排名前先比较完整数据集和模型配置。\"",
+          "afterOffset": 6399
+        },
+        {
+          "offset": 7066,
+          "before": "\"Dataset receipt A\"",
+          "after": "\"数据集凭据 A\"",
+          "afterOffset": 6484
+        },
+        {
+          "offset": 7138,
+          "before": "\"Dataset receipt B\"",
+          "after": "\"数据集凭据 B\"",
+          "afterOffset": 6546
+        },
+        {
+          "offset": 7233,
+          "before": "\"Model config A\"",
+          "after": "\"模型配置 A\"",
+          "afterOffset": 6631
+        },
+        {
+          "offset": 7365,
+          "before": "\"Model config B\"",
+          "after": "\"模型配置 B\"",
+          "afterOffset": 6755
+        },
+        {
+          "offset": 7474,
+          "before": "\"Correct A out of 3\"",
+          "after": "\"A 的正确数（共 3 个）\"",
+          "afterOffset": 6856
+        },
+        {
+          "offset": 7531,
+          "before": "\"Correct B out of 3\"",
+          "after": "\"B 的正确数（共 3 个）\"",
+          "afterOffset": 6908
+        },
+        {
+          "offset": 8470,
+          "before": "`Comparable under the same fixed four-call budget. Leader: ${rows[0][0]}`",
+          "after": "`在相同的固定四次调用预算下可比较。领先项：${rows[0][0]}`",
+          "afterOffset": 7842
+        },
+        {
+          "offset": 8560,
+          "before": "\"Reject comparison: receipt mismatch\"",
+          "after": "\"拒绝比较：凭据不匹配\"",
+          "afterOffset": 7895
+        },
+        {
+          "offset": 8645,
+          "before": "\"Dataset match\"",
+          "after": "\"数据集匹配\"",
+          "afterOffset": 7955
+        },
+        {
+          "offset": 8707,
+          "before": "\"Model match\"",
+          "after": "\"模型匹配\"",
+          "afterOffset": 8009
+        },
+        {
+          "offset": 8800,
+          "before": "\"A correct\"",
+          "after": "\"A 正确数\"",
+          "afterOffset": 8095
+        },
+        {
+          "offset": 8865,
+          "before": "\"B correct\"",
+          "after": "\"B 正确数\"",
+          "afterOffset": 8156
+        },
+        {
+          "offset": 8944,
+          "before": "\"Run\"",
+          "after": "\"运行\"",
+          "afterOffset": 8231
+        },
+        {
+          "offset": 8951,
+          "before": "\"Correct\"",
+          "after": "\"正确数\"",
+          "afterOffset": 8237
+        },
+        {
+          "offset": 8962,
+          "before": "\"Total\"",
+          "after": "\"总数\"",
+          "afterOffset": 8244
+        }
+      ]
+    },
+    {
+      "path": "site/figures/projects/inbox-triage-desk.js",
+      "sourceSha256": "6f92fde975dba26b52308448ba7db06783da1824cecb38880fb056fe68963f1e",
+      "localizedSha256": "3f7a4ca03e859014dc64e56318a7b4bfccad1aeca9127bb3767a1c6121c1f2c3",
+      "edits": [
+        {
+          "offset": 62,
+          "before": "\"Input\"",
+          "after": "\"输入\"",
+          "afterOffset": 62
+        },
+        {
+          "offset": 79,
+          "before": "\"Inspect original message data.\"",
+          "after": "\"检查原始邮件数据。\"",
+          "afterOffset": 76
+        },
+        {
+          "offset": 128,
+          "before": "\"Rule\"",
+          "after": "\"规则\"",
+          "afterOffset": 104
+        },
+        {
+          "offset": 144,
+          "before": "\"Apply an explicit contract.\"",
+          "after": "\"应用明确契约。\"",
+          "afterOffset": 118
+        },
+        {
+          "offset": 190,
+          "before": "\"Evidence\"",
+          "after": "\"证据\"",
+          "afterOffset": 144
+        },
+        {
+          "offset": 210,
+          "before": "\"Keep the result inspectable.\"",
+          "after": "\"让结果可以检查。\"",
+          "afterOffset": 158
+        },
+        {
+          "offset": 325,
+          "before": "\"What survives email parsing?\"",
+          "after": "\"邮件解析后保留哪些信息？\"",
+          "afterOffset": 253
+        },
+        {
+          "offset": 387,
+          "before": "\"Edit the plain-text message fields. MIME decoding is implemented in Python; this lab inspects the resulting record.\"",
+          "after": "\"编辑纯文本邮件字段。MIME 解码在 Python 中实现；本实验检查解析后的记录。\"",
+          "afterOffset": 299
+        },
+        {
+          "offset": 587,
+          "before": "\"Sender address\"",
+          "after": "\"发件地址\"",
+          "afterOffset": 426
+        },
+        {
+          "offset": 731,
+          "before": "\"Plain-text body\"",
+          "after": "\"纯文本正文\"",
+          "afterOffset": 560
+        },
+        {
+          "offset": 890,
+          "before": "\"Message has an ID\"",
+          "after": "\"邮件具有 ID\"",
+          "afterOffset": 709
+        },
+        {
+          "offset": 1117,
+          "before": "\"Preserve the body beside its message identity.\"",
+          "after": "\"保留正文及对应邮件标识。\"",
+          "afterOffset": 926
+        },
+        {
+          "offset": 1180,
+          "before": "\"Reject the record before classifying it.\"",
+          "after": "\"在分类前拒绝该记录。\"",
+          "afterOffset": 955
+        },
+        {
+          "offset": 1280,
+          "before": "\"Body bytes\"",
+          "after": "\"正文字节数\"",
+          "afterOffset": 1025
+        },
+        {
+          "offset": 1406,
+          "before": "\"Identity\"",
+          "after": "\"标识\"",
+          "afterOffset": 1146
+        },
+        {
+          "offset": 1465,
+          "before": "\"Provided Message-ID\"",
+          "after": "\"邮件提供的 Message-ID\"",
+          "afterOffset": 1199
+        },
+        {
+          "offset": 1505,
+          "before": "\"Digest fallback required\"",
+          "after": "\"需要摘要后备标识\"",
+          "afterOffset": 1236
+        },
+        {
+          "offset": 1748,
+          "before": "\"Field\"",
+          "after": "\"字段\"",
+          "afterOffset": 1463
+        },
+        {
+          "offset": 1757,
+          "before": "\"Parsed value\"",
+          "after": "\"解析后的值\"",
+          "afterOffset": 1469
+        },
+        {
+          "offset": 1883,
+          "before": "\"A rule match is evidence, not certainty\"",
+          "after": "\"规则命中提供证据，但不能确定结论\"",
+          "afterOffset": 1588
+        },
+        {
+          "offset": 1956,
+          "before": "\"Conflicting categories become uncertain. Change the message and inspect the exact phrases.\"",
+          "after": "\"类别冲突时归为 uncertain（待确认）。修改邮件，检查精确匹配短语。 图表限制：此 JavaScript 短语实验使用 ASCII 单词边界及 UTF-16 偏移量；Python 实现使用 Unicode 单词边界和字符偏移量。中文邻接或 emoji 前缀可能导致匹配或位置不同。\"",
+          "afterOffset": 1638
+        },
+        {
+          "offset": 2129,
+          "before": "\"Message body\"",
+          "after": "\"邮件正文\"",
+          "afterOffset": 1864
+        },
+        {
+          "offset": 3010,
+          "before": "\" queue; every classification still needs review.\"",
+          "after": "\" 队列；每项分类仍需审阅。\"",
+          "afterOffset": 2737
+        },
+        {
+          "offset": 3104,
+          "before": "\"Matched categories\"",
+          "after": "\"命中类别数\"",
+          "afterOffset": 2796
+        },
+        {
+          "offset": 3187,
+          "before": "\"Priority\"",
+          "after": "\"优先级\"",
+          "afterOffset": 2866
+        },
+        {
+          "offset": 3355,
+          "before": "\"No phrase matched\"",
+          "after": "\"没有匹配的短语\"",
+          "afterOffset": 3029
+        },
+        {
+          "offset": 3402,
+          "before": "\"Category\"",
+          "after": "\"类别\"",
+          "afterOffset": 3066
+        },
+        {
+          "offset": 3414,
+          "before": "\"Source quote\"",
+          "after": "\"来源引文\"",
+          "afterOffset": 3072
+        },
+        {
+          "offset": 3430,
+          "before": "\"Start offset\"",
+          "after": "\"起点偏移量\"",
+          "afterOffset": 3080
+        },
+        {
+          "offset": 3556,
+          "before": "\"Validate the quote before drafting\"",
+          "after": "\"拟稿前校验引文\"",
+          "afterOffset": 3199
+        },
+        {
+          "offset": 3624,
+          "before": "\"A draft leaves the commitment for a person to write. An invented quote stops the proposal.\"",
+          "after": "\"具体承诺留给人工填写。虚构引文会使建议被拒绝。\"",
+          "afterOffset": 3240
+        },
+        {
+          "offset": 3799,
+          "before": "\"Source body\"",
+          "after": "\"来源正文\"",
+          "afterOffset": 3348
+        },
+        {
+          "offset": 3953,
+          "before": "\"Proposed evidence quote\"",
+          "after": "\"候选证据引文\"",
+          "afterOffset": 3495
+        },
+        {
+          "offset": 4111,
+          "before": "\"Decision has matching message ID\"",
+          "after": "\"决策的邮件 ID 匹配\"",
+          "afterOffset": 3636
+        },
+        {
+          "offset": 4413,
+          "before": "\"Build an unsent draft with an editable response placeholder.\"",
+          "after": "\"生成未发送草稿，并保留可编辑的回复占位位置。\"",
+          "afterOffset": 3917
+        },
+        {
+          "offset": 4490,
+          "before": "\"Reject the decision; identity and exact evidence must both match.\"",
+          "after": "\"拒绝该决策：标识和逐字证据必须同时匹配。\"",
+          "afterOffset": 3956
+        },
+        {
+          "offset": 4601,
+          "before": "\"Quote found\"",
+          "after": "\"找到引文\"",
+          "afterOffset": 4022
+        },
+        {
+          "offset": 4668,
+          "before": "\"Messages sent\"",
+          "after": "\"已发送邮件数\"",
+          "afterOffset": 4082
+        },
+        {
+          "offset": 4741,
+          "before": "\"Source\"",
+          "after": "\"来源\"",
+          "afterOffset": 4148
+        },
+        {
+          "offset": 4775,
+          "before": "\"Draft response\"",
+          "after": "\"草稿回复\"",
+          "afterOffset": 4178
+        },
+        {
+          "offset": 4793,
+          "before": "\"[Write and check your response here.]\"",
+          "after": "\"[请在此填写并检查回复。]\"",
+          "afterOffset": 4186
+        },
+        {
+          "offset": 4868,
+          "before": "\"Record\"",
+          "after": "\"记录\"",
+          "afterOffset": 4237
+        },
+        {
+          "offset": 4878,
+          "before": "\"Text\"",
+          "after": "\"文本\"",
+          "afterOffset": 4243
+        },
+        {
+          "offset": 4996,
+          "before": "\"Build the review queue\"",
+          "after": "\"构建审阅队列\"",
+          "afterOffset": 4359
+        },
+        {
+          "offset": 5052,
+          "before": "\"Counts change the queue and draft total. Categories remain separate from thread identity.\"",
+          "after": "\"数量变化会改变队列与草稿总数。类别始终与线程标识分开。\"",
+          "afterOffset": 4399
+        },
+        {
+          "offset": 5226,
+          "before": "\"Action messages\"",
+          "after": "\"行动请求邮件数\"",
+          "afterOffset": 4511
+        },
+        {
+          "offset": 5393,
+          "before": "\"Uncertain messages\"",
+          "after": "\"待确认邮件数\"",
+          "afterOffset": 4670
+        },
+        {
+          "offset": 5565,
+          "before": "\"Information messages\"",
+          "after": "\"信息类邮件数\"",
+          "afterOffset": 4830
+        },
+        {
+          "offset": 5962,
+          "before": "`Export ${count} review entries and ${count} unsent drafts.`",
+          "after": "`导出 ${count} 条审阅记录和 ${count} 份未发送草稿。`",
+          "afterOffset": 5213
+        },
+        {
+          "offset": 6066,
+          "before": "\"Draft files\"",
+          "after": "\"草稿文件数\"",
+          "afterOffset": 5294
+        },
+        {
+          "offset": 6118,
+          "before": "\"Messages sent\"",
+          "after": "\"已发送邮件数\"",
+          "afterOffset": 5340
+        },
+        {
+          "offset": 6325,
+          "before": "\"Priority\"",
+          "after": "\"优先级\"",
+          "afterOffset": 5540
+        },
+        {
+          "offset": 6337,
+          "before": "\"Category\"",
+          "after": "\"类别\"",
+          "afterOffset": 5547
+        },
+        {
+          "offset": 6349,
+          "before": "\"Messages\"",
+          "after": "\"邮件数\"",
+          "afterOffset": 5553
+        }
+      ]
+    },
+    {
+      "path": "site/figures/projects/json-schema-output-guard.js",
+      "sourceSha256": "af48a7f0b48a62d7982a9fd7b8c796fcf49301c9d24a5aae3ec495e0bd3dabf2",
+      "localizedSha256": "ba17cb2012a2e9f27be47a25434cd7a9866c01bb0e68c3ef55c0bc9180626ba1",
+      "edits": [
+        {
+          "offset": 89,
+          "before": "\"Raw model response\"",
+          "after": "\"模型原始响应\"",
+          "afterOffset": 89
+        },
+        {
+          "offset": 231,
+          "before": "\"Maximum confidence\"",
+          "after": "\"置信度上限\"",
+          "afterOffset": 219
+        },
+        {
+          "offset": 384,
+          "before": "\"Attempt budget\"",
+          "after": "\"尝试预算\"",
+          "afterOffset": 359
+        },
+        {
+          "offset": 530,
+          "before": "\"Unused optional schema contains unsupported $ref\"",
+          "after": "\"未使用的可选结构定义包含不支持的 $ref\"",
+          "afterOffset": 495
+        },
+        {
+          "offset": 788,
+          "before": "\"Parse failure: \"",
+          "after": "\"解析失败：\"",
+          "afterOffset": 726
+        },
+        {
+          "offset": 869,
+          "before": "\"UTF-8 bytes\"",
+          "after": "\"UTF-8 字节数\"",
+          "afterOffset": 797
+        },
+        {
+          "offset": 1061,
+          "before": "\"Configuration error: reject $ref even when optional value is absent\"",
+          "after": "\"配置错误：即使没有提供可选值，也拒绝 $ref\"",
+          "afterOffset": 987
+        },
+        {
+          "offset": 1284,
+          "before": "\"$/ expected object\"",
+          "after": "\"$/ 应为对象\"",
+          "afterOffset": 1166
+        },
+        {
+          "offset": 1402,
+          "before": "\"$/answer nonempty string required\"",
+          "after": "\"$/answer 必须是非空字符串\"",
+          "afterOffset": 1273
+        },
+        {
+          "offset": 1590,
+          "before": "\"$/confidence outside allowed range\"",
+          "after": "\"$/confidence 超出允许范围\"",
+          "afterOffset": 1445
+        },
+        {
+          "offset": 1759,
+          "before": "\" unknown property\"",
+          "after": "\" 未知属性\"",
+          "afterOffset": 1599
+        },
+        {
+          "offset": 1839,
+          "before": "\"Rejected; feed these issues to the next bounded attempt\"",
+          "after": "\"已拒绝；将这些问题传给下一次预算内尝试\"",
+          "afterOffset": 1667
+        },
+        {
+          "offset": 1907,
+          "before": "\"Accepted structured output\"",
+          "after": "\"已接受结构化输出\"",
+          "afterOffset": 1699
+        },
+        {
+          "offset": 1971,
+          "before": "\"Issue count\"",
+          "after": "\"问题数量\"",
+          "afterOffset": 1745
+        },
+        {
+          "offset": 2037,
+          "before": "\"Retry calls remaining after this response\"",
+          "after": "\"本次响应后剩余的重试次数\"",
+          "afterOffset": 1804
+        },
+        {
+          "offset": 2196,
+          "before": "\"Confidence\"",
+          "after": "\"置信度\"",
+          "afterOffset": 1934
+        },
+        {
+          "offset": 2392,
+          "before": "\"issue path and reason\"",
+          "after": "\"问题路径与理由\"",
+          "afterOffset": 2123
+        },
+        {
+          "offset": 2583,
+          "before": "\"Parse the untrusted boundary\"",
+          "after": "\"解析不可信输入边界\"",
+          "afterOffset": 2300
+        },
+        {
+          "offset": 2651,
+          "before": "\"Input contract\"",
+          "after": "\"输入契约\"",
+          "afterOffset": 2349
+        },
+        {
+          "offset": 2723,
+          "before": "\"Parse the untrusted boundary\"",
+          "after": "\"解析不可信输入边界\"",
+          "afterOffset": 2411
+        },
+        {
+          "offset": 2789,
+          "before": "\"A model response is a byte string. Parse the entire string as JSON, reject markdown wrappers and trailing text, and cap its UTF-8 byte size before parsing. Accept JSON primitives as well as objects: the schema, not the parser, determines whether a primitive is useful. Do not remove text until it happens to parse because that hides the actual output contract.\"",
+          "after": "\"模型响应以字节字符串形式到达。将整个字符串作为 JSON 解析，拒绝 Markdown 包装和尾随文本，并在解析前限制 UTF-8 字节数。除对象外，也接受 JSON 基本值：基本值是否适用由结构定义决定。不要不断删除文本直到碰巧解析成功，否则会掩盖实际输出契约。\"",
+          "afterOffset": 2458
+        },
+        {
+          "offset": 3197,
+          "before": "\"Observe the result\"",
+          "after": "\"观察结果\"",
+          "afterOffset": 2638
+        },
+        {
+          "offset": 3253,
+          "before": "\"The parser returns a value for valid JSON and throws for trailing instructions or an oversized response.\"",
+          "after": "\"解析器对有效 JSON 返回值，对尾随指令或超大响应抛出异常。\"",
+          "afterOffset": 2680
+        },
+        {
+          "offset": 3402,
+          "before": "\"Advance to inspect the boundary before the next effect.\"",
+          "after": "\"继续前进，在下一次副作用发生前检查边界。 图表限制：此共享计算器仅演示固定对象的简化校验，未执行完整递归、字节上限或实际修复循环，且先解析数据再检查可选关键字。完整 TypeScript 实现在读取模型输出前预检结构定义；实现行为以源码测试为准。\"",
+          "afterOffset": 2756
+        },
+        {
+          "offset": 3639,
+          "before": "\"Walk a schema recursively\"",
+          "after": "\"递归遍历结构定义\"",
+          "afterOffset": 3061
+        },
+        {
+          "offset": 3704,
+          "before": "\"Input contract\"",
+          "after": "\"输入契约\"",
+          "afterOffset": 3109
+        },
+        {
+          "offset": 3775,
+          "before": "\"Walk a schema recursively\"",
+          "after": "\"递归遍历结构定义\"",
+          "afterOffset": 3170
+        },
+        {
+          "offset": 3838,
+          "before": "\"Implement object, array and primitive validation. Required properties are checked with own-property semantics. An inherited property does not satisfy the contract. Treat integer as a refinement of number, reject non-finite numbers, and preserve a path for every failure. Bound recursive descent at depth 32 so a schema and value cannot consume the stack indefinitely.\"",
+          "after": "\"实现对象、数组及基本值校验。使用自有属性语义检查必填属性；继承的属性不满足契约。将 integer 视为 number 的更严格子类型，拒绝非有限数值，并为每次失败保留路径。将递归下降深度限制为 32，防止结构定义和值无限消耗调用栈。\"",
+          "afterOffset": 3216
+        },
+        {
+          "offset": 4253,
+          "before": "\"Observe the result\"",
+          "after": "\"观察结果\"",
+          "afterOffset": 3381
+        },
+        {
+          "offset": 4309,
+          "before": "\"A nested wrong type produces a path such as `$/a/0`; the caller can ask for a targeted correction.\"",
+          "after": "\"嵌套类型错误会产生类似 `$/a/0` 的路径，调用方可据此要求定向修正。\"",
+          "afterOffset": 3423
+        },
+        {
+          "offset": 4452,
+          "before": "\"Advance to inspect the boundary before the next effect.\"",
+          "after": "\"继续前进，在下一次副作用发生前检查边界。 图表限制：此共享计算器仅演示固定对象的简化校验，未执行完整递归、字节上限或实际修复循环，且先解析数据再检查可选关键字。完整 TypeScript 实现在读取模型输出前预检结构定义；实现行为以源码测试为准。\"",
+          "afterOffset": 3505
+        },
+        {
+          "offset": 4689,
+          "before": "\"Reject ambiguous and unsupported contracts\"",
+          "after": "\"拒绝含糊或不支持的契约\"",
+          "afterOffset": 3810
+        },
+        {
+          "offset": 4771,
+          "before": "\"Input contract\"",
+          "after": "\"输入契约\"",
+          "afterOffset": 3861
+        },
+        {
+          "offset": 4849,
+          "before": "\"Reject ambiguous and unsupported contracts\"",
+          "after": "\"拒绝含糊或不支持的契约\"",
+          "afterOffset": 3929
+        },
+        {
+          "offset": 4929,
+          "before": "\"Add numeric bounds, enum membership, minimum Unicode string length, array bounds, and closed objects. Escape slash and tilde inside property paths. A keyword outside this educational subset is a configuration error, not silent success. This implementation intentionally does not claim complete JSON Schema conformance: references, formats and combinators require additional work.\"",
+          "after": "\"增加数值上下界、枚举成员、Unicode 字符串最小长度、数组长度边界和禁止额外属性的对象校验。转义属性路径中的斜杠与波浪号。出现教学子集以外的关键字时，报告配置错误，不能静默视为成功。本实现不宣称完全符合 JSON Schema：引用、格式及组合关键字仍需额外实现。\"",
+          "afterOffset": 3978
+        },
+        {
+          "offset": 5356,
+          "before": "\"Observe the result\"",
+          "after": "\"观察结果\"",
+          "afterOffset": 4160
+        },
+        {
+          "offset": 5412,
+          "before": "\"The guard returns structured issues for invalid output while unsupported schema features throw a configuration error.\"",
+          "after": "\"守卫对无效输出返回结构化问题；不支持的结构定义特性会抛出配置错误。\"",
+          "afterOffset": 4202
+        },
+        {
+          "offset": 5574,
+          "before": "\"Advance to inspect the boundary before the next effect.\"",
+          "after": "\"继续前进，在下一次副作用发生前检查边界。 图表限制：此共享计算器仅演示固定对象的简化校验，未执行完整递归、字节上限或实际修复循环，且先解析数据再检查可选关键字。完整 TypeScript 实现在读取模型输出前预检结构定义；实现行为以源码测试为准。\"",
+          "afterOffset": 4280
+        },
+        {
+          "offset": 5811,
+          "before": "\"Repair with a finite budget\"",
+          "after": "\"在有限预算内修复输出\"",
+          "afterOffset": 4585
+        },
+        {
+          "offset": 5878,
+          "before": "\"Input contract\"",
+          "after": "\"输入契约\"",
+          "afterOffset": 4635
+        },
+        {
+          "offset": 5947,
+          "before": "\"Repair with a finite budget\"",
+          "after": "\"在有限预算内修复输出\"",
+          "afterOffset": 4694
+        },
+        {
+          "offset": 6012,
+          "before": "\"Feed only structured validation feedback into a generation callback. Count each call before interpreting its output. Stop immediately after acceptance and return an explicit exhausted state after the final rejected attempt. Provider failures propagate instead of being disguised as schema failures. The trace records each attempt so a successful third response does not conceal two earlier contract violations.\"",
+          "after": "\"只将结构化校验反馈传给生成回调。解释输出前，先计入本次调用。接受输出后立即停止；最后一次尝试仍被拒绝时，返回明确的 exhausted 状态。服务商故障向上传播，不伪装成结构校验失败。轨迹记录每次尝试，避免第三次成功掩盖之前两次契约违规。\"",
+          "afterOffset": 4742
+        },
+        {
+          "offset": 6470,
+          "before": "\"Observe the result\"",
+          "after": "\"观察结果\"",
+          "afterOffset": 4909
+        },
+        {
+          "offset": 6526,
+          "before": "\"The demo rejects confidence 1.5, passes an above-maximum issue to the next attempt, then accepts confidence 0.9.\"",
+          "after": "\"演示拒绝置信度 1.5，将超出上限的问题传给下一次尝试，再接受置信度 0.9。\"",
+          "afterOffset": 4951
+        },
+        {
+          "offset": 6683,
+          "before": "\"Advance to inspect the boundary before the next effect.\"",
+          "after": "\"继续前进，在下一次副作用发生前检查边界。 图表限制：此共享计算器仅演示固定对象的简化校验，未执行完整递归、字节上限或实际修复循环，且先解析数据再检查可选关键字。完整 TypeScript 实现在读取模型输出前预检结构定义；实现行为以源码测试为准。\"",
+          "afterOffset": 5035
+        }
+      ]
+    },
+    {
+      "path": "site/figures/projects/llm-gateway-with-fallbacks.js",
+      "sourceSha256": "3d43010a76315649e8c605157cca7e9153afdd53e4172bc4804171c80684119a",
+      "localizedSha256": "0b48ab58c71c56e84f631a1bd05eb60db587a79ece784f015c0b54cc04f03a65",
+      "edits": [
+        {
+          "offset": 612,
+          "before": "\"Inspect the boundary\"",
+          "after": "\"检查边界\"",
+          "afterOffset": 612
+        },
+        {
+          "offset": 673,
+          "before": "\"Change the input\"",
+          "after": "\"改变输入\"",
+          "afterOffset": 657
+        },
+        {
+          "offset": 711,
+          "before": "\"The result below is computed from the current controls.\"",
+          "after": "\"下方结果根据当前控件值计算。\"",
+          "afterOffset": 683
+        },
+        {
+          "offset": 930,
+          "before": "\"Validate provider order\"",
+          "after": "\"校验服务商顺序\"",
+          "afterOffset": 861
+        },
+        {
+          "offset": 963,
+          "before": "\"Only configured endpoints are eligible; duplicate URLs do not create extra attempts.\"",
+          "after": "\"只允许已配置端点；重复 URL 不会带来额外尝试。\"",
+          "afterOffset": 878
+        },
+        {
+          "offset": 1127,
+          "before": "\"Comma-separated provider URLs\"",
+          "after": "\"服务商 URL（逗号分隔）\"",
+          "afterOffset": 983
+        },
+        {
+          "offset": 2315,
+          "before": "\"Reject the provider list before any request\"",
+          "after": "\"发送请求前拒绝服务商列表\"",
+          "afterOffset": 2155
+        },
+        {
+          "offset": 2377,
+          "before": "`${accepted} distinct providers in input order`",
+          "after": "`按输入顺序保留 ${accepted} 个不同服务商`",
+          "afterOffset": 2186
+        },
+        {
+          "offset": 2457,
+          "before": "\"Eligible\"",
+          "after": "\"可用数量\"",
+          "afterOffset": 2247
+        },
+        {
+          "offset": 2546,
+          "before": "\"Accepted entries\"",
+          "after": "\"已接受条目\"",
+          "afterOffset": 2332
+        },
+        {
+          "offset": 2640,
+          "before": "\"Endpoint\"",
+          "after": "\"端点\"",
+          "afterOffset": 2415
+        },
+        {
+          "offset": 2652,
+          "before": "\"Decision\"",
+          "after": "\"决策\"",
+          "afterOffset": 2421
+        },
+        {
+          "offset": 2823,
+          "before": "\"Classify an observed status\"",
+          "after": "\"对观察到的状态分类\"",
+          "afterOffset": 2586
+        },
+        {
+          "offset": 2860,
+          "before": "\"429 and server errors allow fallback; other errors stop this route.\"",
+          "after": "\"429 和服务器错误允许故障切换；其他错误停止当前路由。\"",
+          "afterOffset": 2605
+        },
+        {
+          "offset": 2975,
+          "before": "\"HTTP status\"",
+          "after": "\"HTTP 状态\"",
+          "afterOffset": 2681
+        },
+        {
+          "offset": 3167,
+          "before": "\"Can fall back\"",
+          "after": "\"允许故障切换\"",
+          "afterOffset": 2869
+        },
+        {
+          "offset": 3537,
+          "before": "\"Bound response reading\"",
+          "after": "\"限制响应读取\"",
+          "afterOffset": 3232
+        },
+        {
+          "offset": 3569,
+          "before": "\"Byte limits and deadlines are independent. The timing here is a model, not a network measurement.\"",
+          "after": "\"字节限制与期限分别约束。本图时间来自模拟，不代表网络测量。\"",
+          "afterOffset": 3248
+        },
+        {
+          "offset": 3721,
+          "before": "\"Response body\"",
+          "after": "\"响应正文\"",
+          "afterOffset": 3332
+        },
+        {
+          "offset": 3787,
+          "before": "\"Response byte limit\"",
+          "after": "\"响应字节上限\"",
+          "afterOffset": 3389
+        },
+        {
+          "offset": 3849,
+          "before": "\"Modeled response time (ms)\"",
+          "after": "\"模拟响应耗时（毫秒）\"",
+          "afterOffset": 3438
+        },
+        {
+          "offset": 3921,
+          "before": "\"Remaining deadline (ms)\"",
+          "after": "\"剩余期限（毫秒）\"",
+          "afterOffset": 3494
+        },
+        {
+          "offset": 4138,
+          "before": "\"Response accepted\"",
+          "after": "\"响应已接受\"",
+          "afterOffset": 3696
+        },
+        {
+          "offset": 4217,
+          "before": "\"Cancelled before the response completes\"",
+          "after": "\"在响应完成前取消\"",
+          "afterOffset": 3763
+        },
+        {
+          "offset": 4318,
+          "before": "\"Response rejected: byte limit exceeded\"",
+          "after": "\"响应已拒绝：超过字节上限\"",
+          "afterOffset": 3833
+        },
+        {
+          "offset": 4446,
+          "before": "\"UTF-8 bytes\"",
+          "after": "\"UTF-8 字节数\"",
+          "afterOffset": 3935
+        },
+        {
+          "offset": 4500,
+          "before": "\"Bounded bytes read if complete\"",
+          "after": "\"完成时最多读取的字节数\"",
+          "afterOffset": 3987
+        },
+        {
+          "offset": 4623,
+          "before": "\"Response bytes\"",
+          "after": "\"响应字节数\"",
+          "afterOffset": 4091
+        },
+        {
+          "offset": 4774,
+          "before": "\"Time consumed\"",
+          "after": "\"已用时间\"",
+          "afterOffset": 4233
+        },
+        {
+          "offset": 4932,
+          "before": "\"Limit\"",
+          "after": "\"限制\"",
+          "afterOffset": 4382
+        },
+        {
+          "offset": 4941,
+          "before": "\"Value\"",
+          "after": "\"值\"",
+          "afterOffset": 4388
+        },
+        {
+          "offset": 4986,
+          "before": "\"Body read ceiling\"",
+          "after": "\"正文读取上限\"",
+          "afterOffset": 4429
+        },
+        {
+          "offset": 5036,
+          "before": "\"Remaining time\"",
+          "after": "\"剩余时间\"",
+          "afterOffset": 4468
+        },
+        {
+          "offset": 5245,
+          "before": "\"Share one deadline across fallbacks\"",
+          "after": "\"所有故障切换共享同一期限\"",
+          "afterOffset": 4667
+        },
+        {
+          "offset": 5290,
+          "before": "\"Simulate ordered observed responses; each attempt spends the same overall time budget.\"",
+          "after": "\"模拟按顺序观察到的响应；每次尝试都消耗同一个总时间预算。\"",
+          "afterOffset": 4689
+        },
+        {
+          "offset": 5461,
+          "before": "\"Provider observations JSON\"",
+          "after": "\"服务商观察记录 JSON\"",
+          "afterOffset": 4802
+        },
+        {
+          "offset": 5618,
+          "before": "\"Maximum attempts\"",
+          "after": "\"最大尝试次数\"",
+          "afterOffset": 4945
+        },
+        {
+          "offset": 5677,
+          "before": "\"Total deadline (ms)\"",
+          "after": "\"总期限（毫秒）\"",
+          "afterOffset": 4994
+        },
+        {
+          "offset": 5739,
+          "before": "\"Maximum response bytes\"",
+          "after": "\"最大响应字节数\"",
+          "afterOffset": 5044
+        },
+        {
+          "offset": 7258,
+          "before": "`${state} after ${attempts} attempts and ${elapsed} ms`",
+          "after": "`${state}：经过 ${attempts} 次尝试，耗时 ${elapsed} 毫秒`",
+          "afterOffset": 6548
+        },
+        {
+          "offset": 7346,
+          "before": "\"Time remaining\"",
+          "after": "\"剩余时间\"",
+          "afterOffset": 6627
+        },
+        {
+          "offset": 7439,
+          "before": "\"Spent milliseconds\"",
+          "after": "\"已用毫秒数\"",
+          "afterOffset": 6710
+        },
+        {
+          "offset": 7519,
+          "before": "\"Attempts\"",
+          "after": "\"尝试次数\"",
+          "afterOffset": 6777
+        },
+        {
+          "offset": 7604,
+          "before": "\"Attempt\"",
+          "after": "\"尝试\"",
+          "afterOffset": 6858
+        },
+        {
+          "offset": 7615,
+          "before": "\"Outcome\"",
+          "after": "\"结果\"",
+          "afterOffset": 6864
+        },
+        {
+          "offset": 7626,
+          "before": "\"Elapsed ms\"",
+          "after": "\"已用毫秒\"",
+          "afterOffset": 6870
+        },
+        {
+          "offset": 7640,
+          "before": "\"Remaining ms\"",
+          "after": "\"剩余毫秒\"",
+          "afterOffset": 6878
+        }
+      ]
+    }
+  ],
+  "figureLimitations": {
+    "inbox-triage-desk": "图表限制：此 JavaScript 短语实验使用 ASCII 单词边界及 UTF-16 偏移量；Python 实现使用 Unicode 单词边界和字符偏移量。中文邻接或 emoji 前缀可能导致匹配或位置不同。",
+    "json-schema-output-guard": "图表限制：此共享计算器仅演示固定对象的简化校验，未执行完整递归、字节上限或实际修复循环，且先解析数据再检查可选关键字。完整 TypeScript 实现在读取模型输出前预检结构定义；实现行为以源码测试为准。"
+  },
+  "preservedMachineNotes": {
+    "inbox-triage-desk": "译注：邮件类别、理由、模型提示、示例短语以及 .eml 草稿序列化模板保留英文原值，以维持规则匹配、线格式和集成契约；网页固定文案与帮助已译。草稿占位提示要求人工填写并检查回复。引文偏移量对应解析后统一换行并去掉两端空白的正文，不对应原始 MIME 字节。",
+    "json-schema-output-guard": "译注：问题消息、异常、状态和响应样本参与结构化反馈与测试，保留原值。API 页的代码块沿用上游签名摘录，其中 guard 的返回类型展示不完整；完整类型以随附源文件为准。",
+    "harness-bench": "译注：提示词、响应记录、状态和命令行报告字段参与评分或程序集成，保留原值；命令行参数帮助已译。",
+    "llm-gateway-with-fallbacks": "译注：HTTP 字段、状态、失败类别、示例请求与响应，以及命令行通信记录保留原值；参数帮助已译。回环 HTTP 验证不需要连接真实服务商。"
+  }
+}

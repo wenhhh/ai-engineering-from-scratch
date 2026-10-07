@@ -1,0 +1,4033 @@
+{
+  "upstream": "c02ca08d8a49ce24c3c1c1cf8e3b422f2c7393ca",
+  "projects": [
+    "multi-agent-code-review-panel",
+    "postmortem-writer",
+    "pr-review-reporter",
+    "prompt-regression-tester"
+  ],
+  "files": {
+    "projects/multi-agent-code-review-panel/.gitignore": {
+      "sourceSha256": "a1ddd58a2a3555335cde618ed5643b5aa0872b1c64314a2f52580044f875e231",
+      "localizedSha256": "a1ddd58a2a3555335cde618ed5643b5aa0872b1c64314a2f52580044f875e231",
+      "kind": "preserved-contract"
+    },
+    "projects/multi-agent-code-review-panel/API.md": {
+      "sourceSha256": "43378766d9e69f9b0e5c35d467729d24a165f620d72bfedaaf0b72fa0a8fc5c4",
+      "localizedSha256": "8d272f6be4f28646b7556f4172675663b0adfa1039d86c76bd46776b5af549da",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "typescript",
+            "export function validateFinding( raw: unknown, files: Record<string, string[]>, ): Finding | null\nexport function aggregate( reviews: Review[], files: Record<string, string[]>, quorum = 2, )\nexport async function runPanel( reviewers: Reviewer[], budget: number, timeoutMs = 1000, )\nexport function evaluate(predicted: string[], expected: string[])\n"
+          ]
+        ],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [
+          "#",
+          "###"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/multi-agent-code-review-panel/README.md": {
+      "sourceSha256": "2c3496006b29b27f9bb0fed6beb5ecabca24371dcde592df3fe9f941d80c13e9",
+      "localizedSha256": "a853b269836e28894ba6354a160faa874031a15285da389fc8566721f69337e1",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "bash",
+            "python3 scripts/project_test.py multi-agent-code-review-panel --init learning-artifacts/multi-agent-code-review-panel\npython3 scripts/project_test.py multi-agent-code-review-panel --stage 1 --path learning-artifacts/multi-agent-code-review-panel --strict\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py multi-agent-code-review-panel --all --path learning-artifacts/multi-agent-code-review-panel --strict\ncd learning-artifacts/multi-agent-code-review-panel\nnode cli.ts --input samples/review.json --output panel.json --html panel.html\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py multi-agent-code-review-panel --all --solution --strict\ncd projects/multi-agent-code-review-panel/solution\nnode cli.ts --input samples/review.json --output panel.json --html panel.html\n"
+          ],
+          [
+            "bash",
+            "node cli.ts --input samples/pr-snapshot.json --pr-report /path/review.json --output composed-panel.json\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "--pr-report /path/review.json"
+          ]
+        ],
+        "links": [
+          "API.md",
+          "https://nodejs.org/api/globals.html#class-abortcontroller",
+          "https://nodejs.org/api/test.html",
+          "stages/01-evidence/docs/en.md",
+          "stages/02-agreement/docs/en.md",
+          "stages/03-budgets/docs/en.md",
+          "stages/04-evaluate/docs/en.md"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 4
+      }
+    },
+    "projects/multi-agent-code-review-panel/media/output.gif": {
+      "sourceSha256": "e64e2db2867594de21980ce71872686d892606f3e529e72cb16fff7be5619afa",
+      "localizedSha256": "e64e2db2867594de21980ce71872686d892606f3e529e72cb16fff7be5619afa",
+      "kind": "original-recording"
+    },
+    "projects/multi-agent-code-review-panel/media/output.json": {
+      "sourceSha256": "32b944938a4868c4b50b601f71e0fa52a79d35b8880574024e9cd1403e9316b6",
+      "localizedSha256": "32b944938a4868c4b50b601f71e0fa52a79d35b8880574024e9cd1403e9316b6",
+      "kind": "original-recording"
+    },
+    "projects/multi-agent-code-review-panel/media/output.png": {
+      "sourceSha256": "598f05c470bad6cb04bfbcbdf053d55649821f86211eeace73a0a20e3ff3fe8e",
+      "localizedSha256": "598f05c470bad6cb04bfbcbdf053d55649821f86211eeace73a0a20e3ff3fe8e",
+      "kind": "original-recording"
+    },
+    "projects/multi-agent-code-review-panel/media/run.gif": {
+      "sourceSha256": "106ec050100836594678884de44e51b5fe012921ee260b7971eae86b71f2c8c1",
+      "localizedSha256": "106ec050100836594678884de44e51b5fe012921ee260b7971eae86b71f2c8c1",
+      "kind": "original-recording"
+    },
+    "projects/multi-agent-code-review-panel/media/run.json": {
+      "sourceSha256": "92ebd03a35d735ca6557efd878db5ed844f730356b930d132dc9088d362b83ac",
+      "localizedSha256": "92ebd03a35d735ca6557efd878db5ed844f730356b930d132dc9088d362b83ac",
+      "kind": "original-recording"
+    },
+    "projects/multi-agent-code-review-panel/media/run.png": {
+      "sourceSha256": "42af791e4a44cf3beda4f039639b474c03c636b9760c74c6a48c0345a71ed13a",
+      "localizedSha256": "42af791e4a44cf3beda4f039639b474c03c636b9760c74c6a48c0345a71ed13a",
+      "kind": "original-recording"
+    },
+    "projects/multi-agent-code-review-panel/project.json": {
+      "sourceSha256": "31874b1209c7241be317a858b48f9b957cd4a8dfcd0e289f3ed090e7495257e1",
+      "localizedSha256": "ef5e0bd3ca4a8125bcecc6e0a7c2e10b603166a8205060b61645754075837119",
+      "kind": "manifest",
+      "contract": {
+        "id": "multi-agent-code-review-panel",
+        "title": "<translated-text>",
+        "level": 3,
+        "levelName": "Engineer",
+        "tagline": "<translated-text>",
+        "summary": "<translated-text>",
+        "hours": 8,
+        "languages": [
+          "TypeScript"
+        ],
+        "status": "ready",
+        "source": "core",
+        "author": {
+          "name": "AI Engineering from Scratch",
+          "github": "rohitg00"
+        },
+        "skills": [
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "prerequisites": [
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "youWillBuild": "<translated-text>",
+        "usefulFor": [
+          "<translated-text>"
+        ],
+        "demo": {
+          "cwd": "solution",
+          "command": [
+            "node",
+            "cli.ts",
+            "--input",
+            "samples/review.json",
+            "--output",
+            "panel.json",
+            "--html",
+            "panel.html"
+          ]
+        },
+        "stages": [
+          {
+            "id": "01-evidence",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "typescript",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "validateFinding"
+            ],
+            "difficulty": "starter",
+            "runner": [
+              "node",
+              "--experimental-strip-types",
+              "--test",
+              "{tests}/stage.test.ts"
+            ],
+            "requires": [
+              "node"
+            ],
+            "timeout": 90,
+            "figure": "pj-multi-agent-code-review-panel-1"
+          },
+          {
+            "id": "02-agreement",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "typescript",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "aggregate"
+            ],
+            "difficulty": "core",
+            "runner": [
+              "node",
+              "--experimental-strip-types",
+              "--test",
+              "{tests}/stage.test.ts"
+            ],
+            "requires": [
+              "node"
+            ],
+            "timeout": 90,
+            "figure": "pj-multi-agent-code-review-panel-2"
+          },
+          {
+            "id": "03-budgets",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "typescript",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "runPanel"
+            ],
+            "difficulty": "core",
+            "runner": [
+              "node",
+              "--experimental-strip-types",
+              "--test",
+              "{tests}/stage.test.ts"
+            ],
+            "requires": [
+              "node"
+            ],
+            "timeout": 90,
+            "figure": "pj-multi-agent-code-review-panel-3"
+          },
+          {
+            "id": "04-evaluate",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "typescript",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "evaluate"
+            ],
+            "difficulty": "core",
+            "runner": [
+              "node",
+              "--experimental-strip-types",
+              "--test",
+              "{tests}/stage.test.ts",
+              "{tests}/integration.test.ts"
+            ],
+            "requires": [
+              "node"
+            ],
+            "timeout": 90,
+            "figure": "pj-multi-agent-code-review-panel-4"
+          }
+        ],
+        "demos": [
+          {
+            "gif": "media/run.gif",
+            "poster": "media/run.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          },
+          {
+            "gif": "media/output.gif",
+            "poster": "media/output.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          }
+        ]
+      }
+    },
+    "projects/multi-agent-code-review-panel/solution/cli.ts": {
+      "sourceSha256": "921aece033885b83dfb4348a21dac673a6cc60db3f85462102d97236b6081887",
+      "localizedSha256": "b0262318a570ea74bf10162de065ec2f657faadf6619ce3175732e8072afd5a5",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "import { runPanel,",
+          "// 只生成本地报告；规则记录与源码指纹不随界面翻译改变。\nimport { runPanel,"
+        ],
+        [
+          "<title>Review disagreement</title><h1>Single review versus quorum</h1>",
+          "<title>评审分歧</title><h1>单次评审与最低支持人数门槛对比</h1><p>consensus 表示达到支持人数门槛，needs-review 表示待审阅。静态评审者并非独立模型；下方保留机器字段和证据原文。</p>"
+        ]
+      ]
+    },
+    "projects/multi-agent-code-review-panel/solution/main.ts": {
+      "sourceSha256": "27d77560fe77fd04251baf1038df26b6f2f1cb6ce80838ceaad96db3049b5a96",
+      "localizedSha256": "a052cfdfa40cfac9a70a32dcff094b78466bb0ff856a18662e1746be6ad0aaec",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "/*\n * Multi-Agent Code Review Panel reference implementation.\n * Follow stages in projects/multi-agent-code-review-panel/stages/.\n * The demo is deterministic and requires no provider credentials.\n * Protocol references are listed in the project README.\n */",
+          "/*\n * 多智能体代码评审组的参考实现。\n * 按 projects/multi-agent-code-review-panel/stages/ 中的阶段学习。\n * 演示具有确定性，不需要服务商凭据。\n * 协议参考资料列于项目 README。\n * 规则、错误、严重程度、样本及机器输出保持原契约。\n */"
+        ]
+      ]
+    },
+    "projects/multi-agent-code-review-panel/solution/package.json": {
+      "sourceSha256": "a90fc33418afa2b9cbf4768524b021135b965ecdf993457505bfae3ac44a8428",
+      "localizedSha256": "a90fc33418afa2b9cbf4768524b021135b965ecdf993457505bfae3ac44a8428",
+      "kind": "preserved-contract"
+    },
+    "projects/multi-agent-code-review-panel/solution/samples/pr-snapshot.json": {
+      "sourceSha256": "8b11ece7791751e848d8a24bbf88ec989e93e42fee2873ccdb5f406a5b54df9d",
+      "localizedSha256": "8b11ece7791751e848d8a24bbf88ec989e93e42fee2873ccdb5f406a5b54df9d",
+      "kind": "preserved-contract"
+    },
+    "projects/multi-agent-code-review-panel/solution/samples/review.json": {
+      "sourceSha256": "b1b9f5cded6aa251608a677e38d90cb0c4acc61889d3975074f5987d482e4c1a",
+      "localizedSha256": "b1b9f5cded6aa251608a677e38d90cb0c4acc61889d3975074f5987d482e4c1a",
+      "kind": "preserved-contract"
+    },
+    "projects/multi-agent-code-review-panel/stages/01-evidence/docs/en.md": {
+      "sourceSha256": "22484c1117d4989871ec4664c6bcb587d4dc9cf59ffff6666998a921db62042c",
+      "localizedSha256": "9bed4e10d95313221199eea5bfc6079c0a43653affa793fdffcdd1feeecd422f",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-multi-agent-code-review-panel-1\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py multi-agent-code-review-panel --stage 1 --path learning-artifacts/multi-agent-code-review-panel --strict\n"
+          ],
+          [
+            "bash",
+            "cd learning-artifacts/multi-agent-code-review-panel\nnode cli.ts --input samples/review.json --output panel.json --html panel.html\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "main.ts"
+          ],
+          [
+            "`",
+            "python3 scripts/project_test.py multi-agent-code-review-panel --init learning-artifacts/multi-agent-code-review-panel"
+          ],
+          [
+            "`",
+            "validateFinding"
+          ],
+          [
+            "`",
+            "validateFinding"
+          ]
+        ],
+        "links": [
+          "../../../API.md",
+          "../../../README.md",
+          "https://nodejs.org/api/globals.html#class-abortcontroller",
+          "https://nodejs.org/api/test.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/multi-agent-code-review-panel/stages/01-evidence/starter/cli.ts": {
+      "sourceSha256": "921aece033885b83dfb4348a21dac673a6cc60db3f85462102d97236b6081887",
+      "localizedSha256": "b0262318a570ea74bf10162de065ec2f657faadf6619ce3175732e8072afd5a5",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "import { runPanel,",
+          "// 只生成本地报告；规则记录与源码指纹不随界面翻译改变。\nimport { runPanel,"
+        ],
+        [
+          "<title>Review disagreement</title><h1>Single review versus quorum</h1>",
+          "<title>评审分歧</title><h1>单次评审与最低支持人数门槛对比</h1><p>consensus 表示达到支持人数门槛，needs-review 表示待审阅。静态评审者并非独立模型；下方保留机器字段和证据原文。</p>"
+        ]
+      ]
+    },
+    "projects/multi-agent-code-review-panel/stages/01-evidence/starter/main.ts": {
+      "sourceSha256": "7a6bb689b582f323618e1002572275d88fc8f82a272ffcfb71bd63799f0f8f19",
+      "localizedSha256": "60ba3761a3e18dfb187a779b4ab5912ce472f66193b60c02358b3c4675b0333c",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "export type Finding = {",
+          "// 在自己的工作区实现阶段接口；未实现错误和公开标识保持原值。\nexport type Finding = {"
+        ]
+      ]
+    },
+    "projects/multi-agent-code-review-panel/stages/01-evidence/starter/package.json": {
+      "sourceSha256": "a90fc33418afa2b9cbf4768524b021135b965ecdf993457505bfae3ac44a8428",
+      "localizedSha256": "a90fc33418afa2b9cbf4768524b021135b965ecdf993457505bfae3ac44a8428",
+      "kind": "preserved-contract"
+    },
+    "projects/multi-agent-code-review-panel/stages/01-evidence/starter/samples/pr-snapshot.json": {
+      "sourceSha256": "8b11ece7791751e848d8a24bbf88ec989e93e42fee2873ccdb5f406a5b54df9d",
+      "localizedSha256": "8b11ece7791751e848d8a24bbf88ec989e93e42fee2873ccdb5f406a5b54df9d",
+      "kind": "preserved-contract"
+    },
+    "projects/multi-agent-code-review-panel/stages/01-evidence/starter/samples/review.json": {
+      "sourceSha256": "b1b9f5cded6aa251608a677e38d90cb0c4acc61889d3975074f5987d482e4c1a",
+      "localizedSha256": "b1b9f5cded6aa251608a677e38d90cb0c4acc61889d3975074f5987d482e4c1a",
+      "kind": "preserved-contract"
+    },
+    "projects/multi-agent-code-review-panel/stages/01-evidence/starter/stage-1.md": {
+      "sourceSha256": "e911ef02f9c3a7fa8d325046bb14d5c018590f4076047f025b6e64d112c58617",
+      "localizedSha256": "0a0b5470d6a840695f003f68d421d5d2f7f3f4a734d80491c9bf75de2f3cde2b",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/multi-agent-code-review-panel/stages/01-evidence/tests/stage.test.ts": {
+      "sourceSha256": "6bcca6ab2c4762182c0d87c8b565af1c1f9ec789613a7d9fbf5e005b3e877c40",
+      "localizedSha256": "6bcca6ab2c4762182c0d87c8b565af1c1f9ec789613a7d9fbf5e005b3e877c40",
+      "kind": "preserved-contract"
+    },
+    "projects/multi-agent-code-review-panel/stages/02-agreement/docs/en.md": {
+      "sourceSha256": "29b90b4e0166f0a35dfafae912b073c355f845149f3e70273ca3ac0bd4ce95ea",
+      "localizedSha256": "fbbefe19087cfdaed18237493bebaef2d47c4edf0e2a860ed2a9ce73e3e2573c",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-multi-agent-code-review-panel-2\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py multi-agent-code-review-panel --stage 2 --path learning-artifacts/multi-agent-code-review-panel --strict\n"
+          ],
+          [
+            "bash",
+            "cd learning-artifacts/multi-agent-code-review-panel\nnode cli.ts --input samples/review.json --output panel.json --html panel.html\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "aggregate"
+          ],
+          [
+            "`",
+            "aggregate"
+          ],
+          [
+            "`",
+            "main.ts"
+          ],
+          [
+            "`",
+            "python3 scripts/project_test.py multi-agent-code-review-panel --init learning-artifacts/multi-agent-code-review-panel"
+          ]
+        ],
+        "links": [
+          "../../../API.md",
+          "../../../README.md",
+          "https://nodejs.org/api/globals.html#class-abortcontroller",
+          "https://nodejs.org/api/test.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/multi-agent-code-review-panel/stages/02-agreement/starter/stage-2.md": {
+      "sourceSha256": "fc37d585bea1027671973c43aaea9644fbfd80f639ec0a0d66f6290ef31c218e",
+      "localizedSha256": "70f4f67a21c485b01412899b28bb5ad35876df95940bd5198f758fd8e05d6275",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/multi-agent-code-review-panel/stages/02-agreement/tests/stage.test.ts": {
+      "sourceSha256": "8985bdeb72d6de277bc78c28396cb139df20f0529013fdcc3f71eec75ca46994",
+      "localizedSha256": "8985bdeb72d6de277bc78c28396cb139df20f0529013fdcc3f71eec75ca46994",
+      "kind": "preserved-contract"
+    },
+    "projects/multi-agent-code-review-panel/stages/03-budgets/docs/en.md": {
+      "sourceSha256": "e4f52698a675bad17dc81ae1c4a28a86975e3041735da872bd330c558d4e8da4",
+      "localizedSha256": "e4a31a5c88b973c6217eb3310fdeb1c9406d1bb4aeeebd7e2e999b257bc8223c",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-multi-agent-code-review-panel-3\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py multi-agent-code-review-panel --stage 3 --path learning-artifacts/multi-agent-code-review-panel --strict\n"
+          ],
+          [
+            "bash",
+            "cd learning-artifacts/multi-agent-code-review-panel\nnode cli.ts --input samples/review.json --output panel.json --html panel.html\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "main.ts"
+          ],
+          [
+            "`",
+            "python3 scripts/project_test.py multi-agent-code-review-panel --init learning-artifacts/multi-agent-code-review-panel"
+          ],
+          [
+            "`",
+            "runPanel"
+          ],
+          [
+            "`",
+            "runPanel"
+          ]
+        ],
+        "links": [
+          "../../../API.md",
+          "../../../README.md",
+          "https://nodejs.org/api/globals.html#class-abortcontroller",
+          "https://nodejs.org/api/test.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/multi-agent-code-review-panel/stages/03-budgets/starter/stage-3.md": {
+      "sourceSha256": "3801ecbfc9519bd65983722f4c8b289a8c2836c98cd1d79d51fffebcbed73503",
+      "localizedSha256": "62756bba6aadc67dc089605f5a0c5e976e086c9baff768df534f98453922a66f",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/multi-agent-code-review-panel/stages/03-budgets/tests/stage.test.ts": {
+      "sourceSha256": "4a12b91d37a19aa64f1a2226b2684d1852162aa1b33dd75342bc9763bb34a35d",
+      "localizedSha256": "4a12b91d37a19aa64f1a2226b2684d1852162aa1b33dd75342bc9763bb34a35d",
+      "kind": "preserved-contract"
+    },
+    "projects/multi-agent-code-review-panel/stages/04-evaluate/docs/en.md": {
+      "sourceSha256": "14ff8190a8896d92b60b5a0491e8ec174ec5e73484f68ac64551b19698038afd",
+      "localizedSha256": "33b61f2fd48a1aaa7ce1f56cb0ccb94736fe89d256a304e7c08c5af70dbd56a3",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-multi-agent-code-review-panel-4\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py multi-agent-code-review-panel --stage 4 --path learning-artifacts/multi-agent-code-review-panel --strict\n"
+          ],
+          [
+            "bash",
+            "cd learning-artifacts/multi-agent-code-review-panel\nnode cli.ts --input samples/review.json --output panel.json --html panel.html\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "evaluate"
+          ],
+          [
+            "`",
+            "evaluate"
+          ],
+          [
+            "`",
+            "main.ts"
+          ],
+          [
+            "`",
+            "python3 scripts/project_test.py multi-agent-code-review-panel --init learning-artifacts/multi-agent-code-review-panel"
+          ]
+        ],
+        "links": [
+          "../../../API.md",
+          "../../../README.md",
+          "https://nodejs.org/api/globals.html#class-abortcontroller",
+          "https://nodejs.org/api/test.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/multi-agent-code-review-panel/stages/04-evaluate/starter/stage-4.md": {
+      "sourceSha256": "f912bcd8f43534c92fe6f462d5d69f20dc88be6ff366f9635d1e385fb1a09c57",
+      "localizedSha256": "1be863ccaaa2d087b417803e6c7620c71dca2cd8e20751c0acf07be729a28ce9",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/multi-agent-code-review-panel/stages/04-evaluate/tests/integration.test.ts": {
+      "sourceSha256": "fbbfa04c8c29bf6589b374e58d646ebefd1e07b4d8f64029781707a2fd6726dc",
+      "localizedSha256": "fbbfa04c8c29bf6589b374e58d646ebefd1e07b4d8f64029781707a2fd6726dc",
+      "kind": "preserved-contract"
+    },
+    "projects/multi-agent-code-review-panel/stages/04-evaluate/tests/stage.test.ts": {
+      "sourceSha256": "c320e581e8bc80ef4cd4b1f5a7e8583dbf963e286ae0b62f9ff728422b2a0d76",
+      "localizedSha256": "c320e581e8bc80ef4cd4b1f5a7e8583dbf963e286ae0b62f9ff728422b2a0d76",
+      "kind": "preserved-contract"
+    },
+    "projects/multi-agent-code-review-panel/starter/cli.ts": {
+      "sourceSha256": "921aece033885b83dfb4348a21dac673a6cc60db3f85462102d97236b6081887",
+      "localizedSha256": "b0262318a570ea74bf10162de065ec2f657faadf6619ce3175732e8072afd5a5",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "import { runPanel,",
+          "// 只生成本地报告；规则记录与源码指纹不随界面翻译改变。\nimport { runPanel,"
+        ],
+        [
+          "<title>Review disagreement</title><h1>Single review versus quorum</h1>",
+          "<title>评审分歧</title><h1>单次评审与最低支持人数门槛对比</h1><p>consensus 表示达到支持人数门槛，needs-review 表示待审阅。静态评审者并非独立模型；下方保留机器字段和证据原文。</p>"
+        ]
+      ]
+    },
+    "projects/multi-agent-code-review-panel/starter/main.ts": {
+      "sourceSha256": "7a6bb689b582f323618e1002572275d88fc8f82a272ffcfb71bd63799f0f8f19",
+      "localizedSha256": "60ba3761a3e18dfb187a779b4ab5912ce472f66193b60c02358b3c4675b0333c",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "export type Finding = {",
+          "// 在自己的工作区实现阶段接口；未实现错误和公开标识保持原值。\nexport type Finding = {"
+        ]
+      ]
+    },
+    "projects/multi-agent-code-review-panel/starter/package.json": {
+      "sourceSha256": "a90fc33418afa2b9cbf4768524b021135b965ecdf993457505bfae3ac44a8428",
+      "localizedSha256": "a90fc33418afa2b9cbf4768524b021135b965ecdf993457505bfae3ac44a8428",
+      "kind": "preserved-contract"
+    },
+    "projects/multi-agent-code-review-panel/starter/samples/pr-snapshot.json": {
+      "sourceSha256": "8b11ece7791751e848d8a24bbf88ec989e93e42fee2873ccdb5f406a5b54df9d",
+      "localizedSha256": "8b11ece7791751e848d8a24bbf88ec989e93e42fee2873ccdb5f406a5b54df9d",
+      "kind": "preserved-contract"
+    },
+    "projects/multi-agent-code-review-panel/starter/samples/review.json": {
+      "sourceSha256": "b1b9f5cded6aa251608a677e38d90cb0c4acc61889d3975074f5987d482e4c1a",
+      "localizedSha256": "b1b9f5cded6aa251608a677e38d90cb0c4acc61889d3975074f5987d482e4c1a",
+      "kind": "preserved-contract"
+    },
+    "projects/postmortem-writer/README.md": {
+      "sourceSha256": "0c56ded49d1d8a7b3f6a2e80845391205b7c8b556dfe10cd57fca425fb677eca",
+      "localizedSha256": "df54ac6098b97d52aa4c1ba62046d8f0ea38b6b0881cb096ff2ef5861a3d61be",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "bash",
+            "python3 scripts/project_test.py postmortem-writer --init /tmp/postmortem-writer-work\npython3 scripts/project_test.py postmortem-writer --stage 1 --path /tmp/postmortem-writer-work\npython3 scripts/project_test.py postmortem-writer --all --solution --strict\n"
+          ],
+          [
+            "bash",
+            "cd projects/postmortem-writer/solution\ngo run .\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py postmortem-writer --all --path /tmp/postmortem-writer-work --strict --report /tmp/postmortem-writer-result.json\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "--events ../examples/events.jsonl --review ../examples/review.json --out /tmp/incident-packet"
+          ],
+          [
+            "`",
+            "--events FILE --review FILE --out DIRECTORY"
+          ]
+        ],
+        "links": [
+          "../../phases/00-setup-and-tooling/01-dev-environment/docs/en.md",
+          "../../phases/00-setup-and-tooling/09-data-management/docs/en.md",
+          "https://sre.google/workbook/postmortem-culture/",
+          "stages/01-parse-an-incident-event-ledger/docs/en.md",
+          "stages/02-build-a-stable-bounded-timeline/docs/en.md",
+          "stages/03-require-evidence-for-each-claim/docs/en.md",
+          "stages/04-publish-a-deterministic-incident-packet/docs/en.md"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 4
+      }
+    },
+    "projects/postmortem-writer/examples/events.jsonl": {
+      "sourceSha256": "e18df1af586d9bf8e62e0ec2bced156bb25eb3ae702881d50c5ab240a78bdd54",
+      "localizedSha256": "e18df1af586d9bf8e62e0ec2bced156bb25eb3ae702881d50c5ab240a78bdd54",
+      "kind": "preserved-contract"
+    },
+    "projects/postmortem-writer/examples/review.json": {
+      "sourceSha256": "1fd897d8f9f6092b098f77be1fec4289264cc67ca8e1a463b9a817dd2800b503",
+      "localizedSha256": "1fd897d8f9f6092b098f77be1fec4289264cc67ca8e1a463b9a817dd2800b503",
+      "kind": "preserved-contract"
+    },
+    "projects/postmortem-writer/media/output.gif": {
+      "sourceSha256": "ec9f626deca03ba1cd9638a74b3bec6515252194720480389aeb5b46a87cdce8",
+      "localizedSha256": "ec9f626deca03ba1cd9638a74b3bec6515252194720480389aeb5b46a87cdce8",
+      "kind": "original-recording"
+    },
+    "projects/postmortem-writer/media/output.json": {
+      "sourceSha256": "24aef5b0178f205f296d9304e5928aab43fdd3fbe3f5c68c770ac0dfcfb92320",
+      "localizedSha256": "24aef5b0178f205f296d9304e5928aab43fdd3fbe3f5c68c770ac0dfcfb92320",
+      "kind": "original-recording"
+    },
+    "projects/postmortem-writer/media/output.png": {
+      "sourceSha256": "3b8c609ee1b3d5890e63a8e0fea6f11f3baedb8c1d7ee37b9a4d619c6a4780da",
+      "localizedSha256": "3b8c609ee1b3d5890e63a8e0fea6f11f3baedb8c1d7ee37b9a4d619c6a4780da",
+      "kind": "original-recording"
+    },
+    "projects/postmortem-writer/media/run.gif": {
+      "sourceSha256": "ea86602f0805f58cc567996bf92ddb07025680b602ac2998e54a03d559f3b1ea",
+      "localizedSha256": "ea86602f0805f58cc567996bf92ddb07025680b602ac2998e54a03d559f3b1ea",
+      "kind": "original-recording"
+    },
+    "projects/postmortem-writer/media/run.json": {
+      "sourceSha256": "fa3f72944eb8c6af9a01dacb1a5960b44db5040ec08dfb332f8dbaa51ae8cdda",
+      "localizedSha256": "fa3f72944eb8c6af9a01dacb1a5960b44db5040ec08dfb332f8dbaa51ae8cdda",
+      "kind": "original-recording"
+    },
+    "projects/postmortem-writer/media/run.png": {
+      "sourceSha256": "4907595b93a758e86f35ab10d22f090056e6f51c449c01b75d2899658150427d",
+      "localizedSha256": "4907595b93a758e86f35ab10d22f090056e6f51c449c01b75d2899658150427d",
+      "kind": "original-recording"
+    },
+    "projects/postmortem-writer/project.json": {
+      "sourceSha256": "bb00bd363ae862b83c864e5868eac3569447865b4d490b1dfc1385fc4f64ddc9",
+      "localizedSha256": "f465cdd94f9ca75c9395cc30839d31148e7a6cc922958af258d8de0f7b8c769f",
+      "kind": "manifest",
+      "contract": {
+        "id": "postmortem-writer",
+        "title": "<translated-text>",
+        "level": 2,
+        "levelName": "Builder",
+        "tagline": "<translated-text>",
+        "summary": "<translated-text>",
+        "usefulFor": [
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "youWillBuild": "<translated-text>",
+        "hours": 8,
+        "languages": [
+          "Go"
+        ],
+        "status": "ready",
+        "source": "core",
+        "author": {
+          "name": "AI Engineering from Scratch",
+          "github": "rohitg00"
+        },
+        "skills": [
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "prerequisites": [
+          {
+            "title": "<translated-text>",
+            "path": "phases/00-setup-and-tooling/01-dev-environment"
+          },
+          {
+            "title": "<translated-text>",
+            "path": "phases/00-setup-and-tooling/09-data-management"
+          }
+        ],
+        "inspiredBy": [],
+        "demo": {
+          "command": [
+            "go",
+            "run",
+            "."
+          ],
+          "cwd": "solution"
+        },
+        "stages": [
+          {
+            "id": "01-parse-an-incident-event-ledger",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "go",
+            "difficulty": "starter",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ]
+          },
+          {
+            "id": "02-build-a-stable-bounded-timeline",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "go",
+            "difficulty": "core",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ]
+          },
+          {
+            "id": "03-require-evidence-for-each-claim",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "go",
+            "difficulty": "core",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ]
+          },
+          {
+            "id": "04-publish-a-deterministic-incident-packet",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "go",
+            "difficulty": "core",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ]
+          }
+        ],
+        "demos": [
+          {
+            "gif": "media/run.gif",
+            "poster": "media/run.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          },
+          {
+            "gif": "media/output.gif",
+            "poster": "media/output.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          }
+        ],
+        "figures": true,
+        "overviewFigure": "pj-postmortem-writer-1"
+      }
+    },
+    "projects/postmortem-writer/solution/go.mod": {
+      "sourceSha256": "486b2d0a91c11d839e2e1cabdc37288e92b3488a01076f562dd61f1accf8281d",
+      "localizedSha256": "486b2d0a91c11d839e2e1cabdc37288e92b3488a01076f562dd61f1accf8281d",
+      "kind": "preserved-contract"
+    },
+    "projects/postmortem-writer/solution/integration.go": {
+      "sourceSha256": "2a0b35071294bc2c230424e74f8f20b75fa0fd50f1ae5eca4b4026c75d0a4c1d",
+      "localizedSha256": "23b6c812cdd8da33c2c3025b60c0c1283cd1f548539d25d3550df7158d7bc34f",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "package main",
+          "// 导入显式日志并校验来源、引文和审批状态；审批标签不等同于身份认证。\n// JSON 字段、文本凭据和 Go 模板控制指令保留原值，仅翻译页面固定文案。\npackage main"
+        ],
+        [
+          "lang=\"en\"",
+          "lang=\"zh-CN\""
+        ],
+        [
+          "<title>Incident evidence desk</title>",
+          "<title>事故证据工作台</title>"
+        ],
+        [
+          "<p>INCIDENT EVIDENCE DESK</p>",
+          "<p>事故证据工作台</p>"
+        ],
+        [
+          "Review what the record supports.",
+          "审阅记录能够支持的结论。"
+        ],
+        [
+          " claims awaiting review. Source references and exact quotations are checked. Causal interpretation and reviewer identity are not authenticated.",
+          " 项论断待审阅。来源引用和逐字引文已校验；因果解释与审阅者身份未经认证。"
+        ],
+        [
+          ">Reported impact<",
+          ">所报告的影响<"
+        ],
+        [
+          ">Timeline<",
+          ">时间线<"
+        ],
+        [
+          " seconds · ",
+          " 秒 · "
+        ],
+        [
+          "input line {{.Line}}",
+          "input line {{.Line}}（输入行号）"
+        ],
+        [
+          ">Claims and review decisions<",
+          ">论断与审阅决策<"
+        ],
+        [
+          " · reviewer: ",
+          " · 审阅者："
+        ],
+        [
+          ">Follow-up work<",
+          ">后续工作<"
+        ],
+        [
+          " · owner: ",
+          " · 负责人："
+        ],
+        [
+          "{{else}}unassigned{{end}}",
+          "{{else}}未分配{{end}}"
+        ],
+        [
+          ">Source receipt<",
+          ">来源凭据<"
+        ],
+        [
+          "Changing the source invalidates approvals tied to this hash.",
+          "来源发生变化后，绑定此哈希的批准将失效。"
+        ]
+      ]
+    },
+    "projects/postmortem-writer/solution/main.go": {
+      "sourceSha256": "97b6feb6d6fe29f460399d6367ee3208a50160819df9e4942023ad53d608190f",
+      "localizedSha256": "92596e963dae816a017c3dc926661b66cd0d7e392ecbe936d5f9a0e39637b9e6",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "package main",
+          "// 事故复盘命令行入口；调用相同阶段函数，原始事件、凭据文本及错误保持原值。\npackage main"
+        ],
+        [
+          "\"JSONL event file\"",
+          "\"JSONL 事件文件\""
+        ],
+        [
+          "\"impact, claims and actions JSON\"",
+          "\"影响、论断和行动项 JSON\""
+        ],
+        [
+          "\"directory for HTML, JSON and text packet\"",
+          "\"保存 HTML、JSON 和文本材料包的目录\""
+        ]
+      ]
+    },
+    "projects/postmortem-writer/solution/stage1.go": {
+      "sourceSha256": "905d1faeeb1d8cd8c8597c7ca76553dcb19b491c8c922e6678197d25e7752cfc",
+      "localizedSha256": "84925fba37748f495e0ca65b2e02083f8509c620323a19eb3a5c1ece4413b6c2",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "package main",
+          "// 第 1 阶段：解析有稳定 ID 的事件台账，拒绝格式错误和重复 ID。\npackage main"
+        ]
+      ]
+    },
+    "projects/postmortem-writer/solution/stage2.go": {
+      "sourceSha256": "c180d70e99944de6f1e178d7091d72a5903015014c1600c4aadd79fc110f2ead",
+      "localizedSha256": "f37aa8e41d04da338d1986afe33d059b7231075ae36310e9204e83b1593e6f9c",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "package main",
+          "// 第 2 阶段：对副本按秒数与 ID 排序，超过时间上界时失败。\npackage main"
+        ]
+      ]
+    },
+    "projects/postmortem-writer/solution/stage3.go": {
+      "sourceSha256": "534820d4bc6879719c96ec924a06d5b958cdb074fe48866d5b75c852b03cbd19",
+      "localizedSha256": "9d63e918e9bb68164b89e18468a9ef5a372bf432ffeb06e8a91b132461ff1e2e",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "package main",
+          "// 第 3 阶段：校验事件引用存在且不重复；引用不能证明因果关系。\npackage main"
+        ]
+      ]
+    },
+    "projects/postmortem-writer/solution/stage4.go": {
+      "sourceSha256": "2821b06dcdb0cc4b746de01ad92a623f57e1bec607adb9f14330597048fa2d4f",
+      "localizedSha256": "f5b72532559a7f6585a83a90129b68bbf261b896250adbf3d18a448d5377a7c1",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "package main",
+          "// 第 4 阶段：先校验全部论断，再生成有序材料包；文本凭据保持原契约。\npackage main"
+        ]
+      ]
+    },
+    "projects/postmortem-writer/solution/types.go": {
+      "sourceSha256": "b549127ad11cebe78b8cdcc1347152ff37fccdf19751274eddb5f5163902b040",
+      "localizedSha256": "b549127ad11cebe78b8cdcc1347152ff37fccdf19751274eddb5f5163902b040",
+      "kind": "preserved-contract"
+    },
+    "projects/postmortem-writer/stages/01-parse-an-incident-event-ledger/docs/en.md": {
+      "sourceSha256": "0467f2c73596b97036112f994d6b355b2ab858ba73ae2ab1ef7d085471fa324f",
+      "localizedSha256": "04cb897c46daf4a1a409955e76effdf956510b62f2dde8a81a60d4ff3a040053",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-postmortem-writer-1\n"
+          ],
+          [
+            "go",
+            "func Parse(text string)([]Event,error)\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py postmortem-writer --stage 1 --path /tmp/postmortem-writer-work\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "--events ../examples/events.jsonl --review ../examples/review.json --out /tmp/incident-packet"
+          ],
+          [
+            "`",
+            "--events FILE --review FILE --out DIRECTORY"
+          ]
+        ],
+        "links": [
+          "https://sre.google/workbook/postmortem-culture/"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/postmortem-writer/stages/01-parse-an-incident-event-ledger/starter/go.mod": {
+      "sourceSha256": "486b2d0a91c11d839e2e1cabdc37288e92b3488a01076f562dd61f1accf8281d",
+      "localizedSha256": "486b2d0a91c11d839e2e1cabdc37288e92b3488a01076f562dd61f1accf8281d",
+      "kind": "preserved-contract"
+    },
+    "projects/postmortem-writer/stages/01-parse-an-incident-event-ledger/starter/integration.go": {
+      "sourceSha256": "2a0b35071294bc2c230424e74f8f20b75fa0fd50f1ae5eca4b4026c75d0a4c1d",
+      "localizedSha256": "23b6c812cdd8da33c2c3025b60c0c1283cd1f548539d25d3550df7158d7bc34f",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "package main",
+          "// 导入显式日志并校验来源、引文和审批状态；审批标签不等同于身份认证。\n// JSON 字段、文本凭据和 Go 模板控制指令保留原值，仅翻译页面固定文案。\npackage main"
+        ],
+        [
+          "lang=\"en\"",
+          "lang=\"zh-CN\""
+        ],
+        [
+          "<title>Incident evidence desk</title>",
+          "<title>事故证据工作台</title>"
+        ],
+        [
+          "<p>INCIDENT EVIDENCE DESK</p>",
+          "<p>事故证据工作台</p>"
+        ],
+        [
+          "Review what the record supports.",
+          "审阅记录能够支持的结论。"
+        ],
+        [
+          " claims awaiting review. Source references and exact quotations are checked. Causal interpretation and reviewer identity are not authenticated.",
+          " 项论断待审阅。来源引用和逐字引文已校验；因果解释与审阅者身份未经认证。"
+        ],
+        [
+          ">Reported impact<",
+          ">所报告的影响<"
+        ],
+        [
+          ">Timeline<",
+          ">时间线<"
+        ],
+        [
+          " seconds · ",
+          " 秒 · "
+        ],
+        [
+          "input line {{.Line}}",
+          "input line {{.Line}}（输入行号）"
+        ],
+        [
+          ">Claims and review decisions<",
+          ">论断与审阅决策<"
+        ],
+        [
+          " · reviewer: ",
+          " · 审阅者："
+        ],
+        [
+          ">Follow-up work<",
+          ">后续工作<"
+        ],
+        [
+          " · owner: ",
+          " · 负责人："
+        ],
+        [
+          "{{else}}unassigned{{end}}",
+          "{{else}}未分配{{end}}"
+        ],
+        [
+          ">Source receipt<",
+          ">来源凭据<"
+        ],
+        [
+          "Changing the source invalidates approvals tied to this hash.",
+          "来源发生变化后，绑定此哈希的批准将失效。"
+        ]
+      ]
+    },
+    "projects/postmortem-writer/stages/01-parse-an-incident-event-ledger/starter/main.go": {
+      "sourceSha256": "97b6feb6d6fe29f460399d6367ee3208a50160819df9e4942023ad53d608190f",
+      "localizedSha256": "92596e963dae816a017c3dc926661b66cd0d7e392ecbe936d5f9a0e39637b9e6",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "package main",
+          "// 事故复盘命令行入口；调用相同阶段函数，原始事件、凭据文本及错误保持原值。\npackage main"
+        ],
+        [
+          "\"JSONL event file\"",
+          "\"JSONL 事件文件\""
+        ],
+        [
+          "\"impact, claims and actions JSON\"",
+          "\"影响、论断和行动项 JSON\""
+        ],
+        [
+          "\"directory for HTML, JSON and text packet\"",
+          "\"保存 HTML、JSON 和文本材料包的目录\""
+        ]
+      ]
+    },
+    "projects/postmortem-writer/stages/01-parse-an-incident-event-ledger/starter/stage1.go": {
+      "sourceSha256": "1a357a4735b17c3e694a4adf5da49abf3d8c0e7be302032be0905a8e0f119c9f",
+      "localizedSha256": "b5cde93942a0b0ffdd7ae08869541541768c945160df4894bc0802cb65be7838",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "package main",
+          "// 第 1 阶段：解析有稳定 ID 的事件台账，拒绝格式错误和重复 ID。\npackage main"
+        ]
+      ]
+    },
+    "projects/postmortem-writer/stages/01-parse-an-incident-event-ledger/starter/types.go": {
+      "sourceSha256": "b549127ad11cebe78b8cdcc1347152ff37fccdf19751274eddb5f5163902b040",
+      "localizedSha256": "b549127ad11cebe78b8cdcc1347152ff37fccdf19751274eddb5f5163902b040",
+      "kind": "preserved-contract"
+    },
+    "projects/postmortem-writer/stages/01-parse-an-incident-event-ledger/tests/stage_test.go": {
+      "sourceSha256": "2ce1622ca10e5504f75d6450a93626f81b530c20fdc397f08604ef6f6273eda6",
+      "localizedSha256": "2ce1622ca10e5504f75d6450a93626f81b530c20fdc397f08604ef6f6273eda6",
+      "kind": "preserved-contract"
+    },
+    "projects/postmortem-writer/stages/02-build-a-stable-bounded-timeline/docs/en.md": {
+      "sourceSha256": "749d531234577dd45b3815c94d40b52cd20c726840612ae926eb235511ac8ac3",
+      "localizedSha256": "9dd21210636f465072e32dd7d39ac97e3cc10e800b6ec17ac3b2bd26204e9932",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-postmortem-writer-2\n"
+          ],
+          [
+            "go",
+            "func Timeline(events []Event,horizon int)([]Event,error)\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py postmortem-writer --stage 2 --path /tmp/postmortem-writer-work\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "--events ../examples/events.jsonl --review ../examples/review.json --out /tmp/incident-packet"
+          ],
+          [
+            "`",
+            "--events FILE --review FILE --out DIRECTORY"
+          ]
+        ],
+        "links": [
+          "https://sre.google/workbook/postmortem-culture/"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/postmortem-writer/stages/02-build-a-stable-bounded-timeline/starter/stage2.go": {
+      "sourceSha256": "abee9cc37153fa0250407d75f4cfb213a7ee916f055a693a3024e35a5c12fed5",
+      "localizedSha256": "e1f32b779e8cfb5aff8520d0c60e6bc6a0b256dd615ac9c4b67c86a21e9a265b",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "package main",
+          "// 第 2 阶段：对副本按秒数与 ID 排序，超过时间上界时失败。\npackage main"
+        ]
+      ]
+    },
+    "projects/postmortem-writer/stages/02-build-a-stable-bounded-timeline/tests/stage_test.go": {
+      "sourceSha256": "490ee40ea1899dab0f8c21ca25e0330cc57d7ce871f2987665f6ce79aef2b3c0",
+      "localizedSha256": "490ee40ea1899dab0f8c21ca25e0330cc57d7ce871f2987665f6ce79aef2b3c0",
+      "kind": "preserved-contract"
+    },
+    "projects/postmortem-writer/stages/03-require-evidence-for-each-claim/docs/en.md": {
+      "sourceSha256": "47dc6dcf5e985558033f70ea39541789fd96514fb9ab2f34a68fd6e412a6c718",
+      "localizedSha256": "de72a1314ad3ad3d144c1e2575c3ee640626626978ceae6399287e64bb79520e",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-postmortem-writer-3\n"
+          ],
+          [
+            "go",
+            "func Verify(claim Claim,events []Event)error\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py postmortem-writer --stage 3 --path /tmp/postmortem-writer-work\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "--events ../examples/events.jsonl --review ../examples/review.json --out /tmp/incident-packet"
+          ],
+          [
+            "`",
+            "--events FILE --review FILE --out DIRECTORY"
+          ]
+        ],
+        "links": [
+          "https://sre.google/workbook/postmortem-culture/"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/postmortem-writer/stages/03-require-evidence-for-each-claim/starter/stage3.go": {
+      "sourceSha256": "ae25a932d8c01dde85e82d2a4d0bc9761e23a9a3335ff4353aa4739fc0cdd6c3",
+      "localizedSha256": "0021aba644cf8793802e356e237039fa5bbeda17a11dbf9ff0ab4a2a3e02c14b",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "package main",
+          "// 第 3 阶段：校验事件引用存在且不重复；引用不能证明因果关系。\npackage main"
+        ]
+      ]
+    },
+    "projects/postmortem-writer/stages/03-require-evidence-for-each-claim/tests/stage_test.go": {
+      "sourceSha256": "82c247e9852cd0c371c4536ecf7b16e1c55f63cd400bdc6f2e822a913892e776",
+      "localizedSha256": "82c247e9852cd0c371c4536ecf7b16e1c55f63cd400bdc6f2e822a913892e776",
+      "kind": "preserved-contract"
+    },
+    "projects/postmortem-writer/stages/04-publish-a-deterministic-incident-packet/docs/en.md": {
+      "sourceSha256": "0af34ecf36074b7f767d1b11c7566439200dae1189d039d5024da0b8705ebdf4",
+      "localizedSha256": "68bc70e4d81e84c9a19e55db23d67883874e7c584fcbd14aef6f43e483966fdf",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-postmortem-writer-4\n"
+          ],
+          [
+            "go",
+            "func Report(events []Event,claims []Claim,maxClaims int)(string,error)\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py postmortem-writer --stage 4 --path /tmp/postmortem-writer-work\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "--events ../examples/events.jsonl --review ../examples/review.json --out /tmp/incident-packet"
+          ],
+          [
+            "`",
+            "--events FILE --review FILE --out DIRECTORY"
+          ],
+          [
+            "`",
+            "go run . --events ../examples/events.jsonl --review ../examples/review.json --out /tmp/incident-packet"
+          ]
+        ],
+        "links": [
+          "https://sre.google/workbook/postmortem-culture/"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/postmortem-writer/stages/04-publish-a-deterministic-incident-packet/starter/stage4.go": {
+      "sourceSha256": "ce9746f4c068cad3d80258743f6294b1db1e60f465ba85c100b15aedfc8a5bf6",
+      "localizedSha256": "49e79bbfd3ecb1b1583b9ef08e36cdefcafe02fa89c11d82ef7425dff70ce8a2",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "package main",
+          "// 第 4 阶段：先校验全部论断，再生成有序材料包；文本凭据保持原契约。\npackage main"
+        ]
+      ]
+    },
+    "projects/postmortem-writer/stages/04-publish-a-deterministic-incident-packet/tests/integration_test.go": {
+      "sourceSha256": "f484e6fee9f88fde936e24becc20cc183a8bc8fb1c986bdd5e394c8953dabe5f",
+      "localizedSha256": "f484e6fee9f88fde936e24becc20cc183a8bc8fb1c986bdd5e394c8953dabe5f",
+      "kind": "preserved-contract"
+    },
+    "projects/postmortem-writer/stages/04-publish-a-deterministic-incident-packet/tests/stage_test.go": {
+      "sourceSha256": "e00ba069a72446b58e926acd17a10315a37278c267044718953d9e208364ec70",
+      "localizedSha256": "e00ba069a72446b58e926acd17a10315a37278c267044718953d9e208364ec70",
+      "kind": "preserved-contract"
+    },
+    "projects/pr-review-reporter/.gitignore": {
+      "sourceSha256": "736afb76f19bb5ba587b9fac66a32b555c3923f58f28e88e6aad62f097647fa7",
+      "localizedSha256": "736afb76f19bb5ba587b9fac66a32b555c3923f58f28e88e6aad62f097647fa7",
+      "kind": "preserved-contract"
+    },
+    "projects/pr-review-reporter/API.md": {
+      "sourceSha256": "0f1124d18806b660f18b6b4c8137ececb0c3ca4729fc6a9f546186ff033a0d49",
+      "localizedSha256": "883df55515db2e05314a357d44c8cf5d1afa7c1921bdd905b9d7db1ce45c75af",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "python",
+            "def decode_path(raw)\ndef parse(raw)\n"
+          ],
+          [
+            "typescript",
+            "export function parseDiff(raw: string): AddedLine[]\nexport function inspect(lines: AddedLine[]): Finding[]\nexport function verify(findings: unknown[], lines: AddedLine[]): { accepted: Finding[]; rejected: unknown[] }\nexport function merge(findings: Finding[]): Finding[]\nexport function escapeHTML(value: string): string\nexport function render(findings: Finding[], rejected = 0): string\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "file"
+          ],
+          [
+            "`",
+            "message"
+          ],
+          [
+            "`",
+            "quote"
+          ],
+          [
+            "`",
+            "rejected"
+          ],
+          [
+            "`",
+            "rule"
+          ]
+        ],
+        "links": [],
+        "math": [],
+        "headings": [
+          "#",
+          "###",
+          "###"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/pr-review-reporter/README.md": {
+      "sourceSha256": "82baed27e74aa4db7ec5e4c6c865c6923676d556300f7a70fd1086993ab0b21d",
+      "localizedSha256": "5307db505cfd3abfa8ec49fd66ac23fa24b47a43e3379cb749fa3065b78e9710",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "bash",
+            "python3 scripts/project_test.py pr-review-reporter --init learning-artifacts/pr-review-reporter\npython3 scripts/project_test.py pr-review-reporter --stage 1 --path learning-artifacts/pr-review-reporter --strict\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py pr-review-reporter --all --path learning-artifacts/pr-review-reporter --strict\ncd learning-artifacts/pr-review-reporter\nnode cli.ts --diff samples/change.diff --output review.json --html review.html --sarif review.sarif\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py pr-review-reporter --all --solution --strict\ncd projects/pr-review-reporter/solution\nnode cli.ts --diff samples/change.diff --output review.json --html review.html --sarif review.sarif\n"
+          ]
+        ],
+        "inlineCode": [],
+        "links": [
+          "API.md",
+          "https://docs.python.org/3/library/json.html",
+          "https://git-scm.com/docs/diff-format",
+          "stages/01-diff-lines/docs/en.md",
+          "stages/02-inspect/docs/en.md",
+          "stages/03-anchors/docs/en.md",
+          "stages/04-report/docs/en.md"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 4
+      }
+    },
+    "projects/pr-review-reporter/media/output.gif": {
+      "sourceSha256": "d423435b19a964fd6232a4b9f1507c90b5740d35b23e9c7394747bdd7cd483fa",
+      "localizedSha256": "d423435b19a964fd6232a4b9f1507c90b5740d35b23e9c7394747bdd7cd483fa",
+      "kind": "original-recording"
+    },
+    "projects/pr-review-reporter/media/output.json": {
+      "sourceSha256": "1c9c386cd2a69e3bffeff32baabfadb31074ebefc628243a76c0370b690e9ede",
+      "localizedSha256": "1c9c386cd2a69e3bffeff32baabfadb31074ebefc628243a76c0370b690e9ede",
+      "kind": "original-recording"
+    },
+    "projects/pr-review-reporter/media/output.png": {
+      "sourceSha256": "288fcd492f97acfb499d9e142fbc6c4e8579e1d3ca491356d808d894853e6ac8",
+      "localizedSha256": "288fcd492f97acfb499d9e142fbc6c4e8579e1d3ca491356d808d894853e6ac8",
+      "kind": "original-recording"
+    },
+    "projects/pr-review-reporter/media/run.gif": {
+      "sourceSha256": "adc3eb06e57572e9985d594e3a32b69853dd780fdf1723e613c83179329b8771",
+      "localizedSha256": "adc3eb06e57572e9985d594e3a32b69853dd780fdf1723e613c83179329b8771",
+      "kind": "original-recording"
+    },
+    "projects/pr-review-reporter/media/run.json": {
+      "sourceSha256": "6c216b5e15711699188159feae582bf0c27dd648e05a6d0d0e27c8a6b3535635",
+      "localizedSha256": "6c216b5e15711699188159feae582bf0c27dd648e05a6d0d0e27c8a6b3535635",
+      "kind": "original-recording"
+    },
+    "projects/pr-review-reporter/media/run.png": {
+      "sourceSha256": "0030faacf19c54c7e18634dbff7ad323cef95e3a54b5993f82a983a76163ebd5",
+      "localizedSha256": "0030faacf19c54c7e18634dbff7ad323cef95e3a54b5993f82a983a76163ebd5",
+      "kind": "original-recording"
+    },
+    "projects/pr-review-reporter/project.json": {
+      "sourceSha256": "e7e470954ea3ab9517370a63034b98ac82efec0d1e1619ae98ea1ec3e04acd9b",
+      "localizedSha256": "f7eef713a3d070367b317ef3f50eb928582afdf3037be2347e7673059f6939df",
+      "kind": "manifest",
+      "contract": {
+        "id": "pr-review-reporter",
+        "title": "<translated-text>",
+        "level": 2,
+        "levelName": "Builder",
+        "tagline": "<translated-text>",
+        "summary": "<translated-text>",
+        "hours": 8,
+        "languages": [
+          "Python",
+          "TypeScript"
+        ],
+        "status": "ready",
+        "source": "core",
+        "author": {
+          "name": "AI Engineering from Scratch",
+          "github": "rohitg00"
+        },
+        "skills": [
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "prerequisites": [
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "youWillBuild": "<translated-text>",
+        "usefulFor": [
+          "<translated-text>"
+        ],
+        "demo": {
+          "cwd": "solution",
+          "command": [
+            "node",
+            "cli.ts",
+            "--diff",
+            "samples/change.diff",
+            "--output",
+            "review.json",
+            "--html",
+            "review.html",
+            "--sarif",
+            "review.sarif"
+          ]
+        },
+        "stages": [
+          {
+            "id": "01-diff-lines",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "typescript",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "parseDiff"
+            ],
+            "difficulty": "starter",
+            "requires": [
+              "node",
+              "python3"
+            ],
+            "timeout": 90,
+            "figure": "pj-pr-review-reporter-1"
+          },
+          {
+            "id": "02-inspect",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "typescript",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "inspect"
+            ],
+            "difficulty": "core",
+            "requires": [
+              "node",
+              "python3"
+            ],
+            "timeout": 90,
+            "figure": "pj-pr-review-reporter-2"
+          },
+          {
+            "id": "03-anchors",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "typescript",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "verify",
+              "merge"
+            ],
+            "difficulty": "core",
+            "requires": [
+              "node",
+              "python3"
+            ],
+            "timeout": 90,
+            "figure": "pj-pr-review-reporter-3"
+          },
+          {
+            "id": "04-report",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "typescript",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "escapeHTML",
+              "render"
+            ],
+            "difficulty": "core",
+            "requires": [
+              "node",
+              "python3"
+            ],
+            "timeout": 90,
+            "figure": "pj-pr-review-reporter-4"
+          }
+        ],
+        "demos": [
+          {
+            "gif": "media/run.gif",
+            "poster": "media/run.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          },
+          {
+            "gif": "media/output.gif",
+            "poster": "media/output.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          }
+        ]
+      }
+    },
+    "projects/pr-review-reporter/solution/.gitignore": {
+      "sourceSha256": "e1eb0e3240d3de884f872d9f094db61699618b1fff7020dcc375b0eeff3d8d0c",
+      "localizedSha256": "e1eb0e3240d3de884f872d9f094db61699618b1fff7020dcc375b0eeff3d8d0c",
+      "kind": "preserved-contract"
+    },
+    "projects/pr-review-reporter/solution/cli.ts": {
+      "sourceSha256": "d81da7b2375074416ff54957646b099d8a49deea95e4b6815435ee3cbd8951ff",
+      "localizedSha256": "49c9bd842c31dd0a1f55546b41abe17604f28270c722717721275072d5d5074b",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "import { parseDiff,",
+          "// Git 模式只读；保留 JSON／SARIF 字段与原始检测消息，不发布远程评论。\nimport { parseDiff,"
+        ]
+      ]
+    },
+    "projects/pr-review-reporter/solution/diff_parser.py": {
+      "sourceSha256": "5db3bb45f6c8a9aad9136fadeb9218f1496e049046e8a9aa9f43c42461fd20f4",
+      "localizedSha256": "edebdf5b4ba3d2291d152f6c0483aa4df48a1c2df9f171f2bda95af871fe330e",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "\"\"\"Parse ordinary textual Git unified diffs; retain physical new-file line numbers.\"\"\"",
+          "\"\"\"解析普通文本 Git 统一 diff，保留新文件的物理行号。\n二进制和 combined diff 不在教学契约内；错误字符串保留原值。\"\"\""
+        ]
+      ]
+    },
+    "projects/pr-review-reporter/solution/main.ts": {
+      "sourceSha256": "f98d5c9d8c03a48f40e9aa68184879b8232295271766c1511f78bbe594e7646d",
+      "localizedSha256": "a919601230a11a94b5510cb91bc2c6e9f3dc79f31f4c7f3b5b5639b4f5d6260f",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "/*\n * PR Review Reporter reference implementation.\n * Follow stages in projects/pr-review-reporter/stages/.\n * The demo is deterministic and requires no provider credentials.\n * Protocol references are listed in the project README.\n */",
+          "/*\n * PR 评审报告器的参考实现。\n * 按 projects/pr-review-reporter/stages/ 中的阶段学习。\n * 演示具有确定性，不需要服务商凭据。\n * 协议参考资料列于项目 README。\n * 规则、错误、严重程度、样本及机器输出保持原契约。\n */"
+        ],
+        [
+          "<title>PR Review</title><h1>Anchored review</h1>",
+          "<title>PR 评审</title><h1>具有源码定位的评审</h1>"
+        ],
+        [
+          "\" rejected</p><ol>\"",
+          "\" rejected</p><p>计数中的 findings 表示候选问题，rejected 表示已拒绝条目。检测结果仅供审阅。high、medium、low 表示高、中、低严重程度；规则消息与源码引文保留原值。</p><ol>\""
+        ]
+      ]
+    },
+    "projects/pr-review-reporter/solution/package.json": {
+      "sourceSha256": "a90fc33418afa2b9cbf4768524b021135b965ecdf993457505bfae3ac44a8428",
+      "localizedSha256": "a90fc33418afa2b9cbf4768524b021135b965ecdf993457505bfae3ac44a8428",
+      "kind": "preserved-contract"
+    },
+    "projects/pr-review-reporter/solution/samples/change.diff": {
+      "sourceSha256": "adbbb6a617939dc7448de34db7e3be098205cd7b32876e9385d8f702b447af7c",
+      "localizedSha256": "adbbb6a617939dc7448de34db7e3be098205cd7b32876e9385d8f702b447af7c",
+      "kind": "preserved-contract"
+    },
+    "projects/pr-review-reporter/stages/01-diff-lines/docs/en.md": {
+      "sourceSha256": "48e1ceb7b7dcfeb2d2f1180844c41d6849b645adad00bd12446d74663d47af9f",
+      "localizedSha256": "5d28b7bb8fb261c895118c2e0d60962d2ba06d12a5bb0346ec76655084b10d14",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-pr-review-reporter-1\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py pr-review-reporter --stage 1 --path learning-artifacts/pr-review-reporter --strict\n"
+          ],
+          [
+            "bash",
+            "cd learning-artifacts/pr-review-reporter\nnode cli.ts --diff samples/change.diff --output review.json --html review.html --sarif review.sarif\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "main.ts"
+          ],
+          [
+            "`",
+            "parseDiff"
+          ],
+          [
+            "`",
+            "parseDiff"
+          ],
+          [
+            "`",
+            "python3 scripts/project_test.py pr-review-reporter --init learning-artifacts/pr-review-reporter"
+          ]
+        ],
+        "links": [
+          "../../../API.md",
+          "../../../README.md",
+          "https://docs.python.org/3/library/json.html",
+          "https://git-scm.com/docs/diff-format"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/pr-review-reporter/stages/01-diff-lines/starter/cli.ts": {
+      "sourceSha256": "d81da7b2375074416ff54957646b099d8a49deea95e4b6815435ee3cbd8951ff",
+      "localizedSha256": "49c9bd842c31dd0a1f55546b41abe17604f28270c722717721275072d5d5074b",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "import { parseDiff,",
+          "// Git 模式只读；保留 JSON／SARIF 字段与原始检测消息，不发布远程评论。\nimport { parseDiff,"
+        ]
+      ]
+    },
+    "projects/pr-review-reporter/stages/01-diff-lines/starter/diff_parser.py": {
+      "sourceSha256": "1b04b886fcb9830f4437ffbd147a091dfcccaa0bcc34786dc4b669864c79b126",
+      "localizedSha256": "75a650a7be981d5933e474f87e190e5364e90850e78c80472e7b95a6223012d3",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "raise NotImplementedError(\"Implement unified diff parsing in this learner file\")",
+          "# 起始解析器：在对应阶段补全函数；保留未实现错误。\nraise NotImplementedError(\"Implement unified diff parsing in this learner file\")"
+        ]
+      ]
+    },
+    "projects/pr-review-reporter/stages/01-diff-lines/starter/main.ts": {
+      "sourceSha256": "52304892735070927f27bb0ea23a4938d24eb943e1d7e90ce03791da6b098773",
+      "localizedSha256": "22e8b1ea2a5e1249d4c5e26f6d0eee27cee96ca12ace09f9e10ec13165e93033",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "export type AddedLine = { file: string; line: number; text: string };",
+          "// 在自己的工作区实现阶段接口；未实现错误和公开标识保持原值。\nexport type AddedLine = { file: string; line: number; text: string };"
+        ]
+      ]
+    },
+    "projects/pr-review-reporter/stages/01-diff-lines/starter/package.json": {
+      "sourceSha256": "a90fc33418afa2b9cbf4768524b021135b965ecdf993457505bfae3ac44a8428",
+      "localizedSha256": "a90fc33418afa2b9cbf4768524b021135b965ecdf993457505bfae3ac44a8428",
+      "kind": "preserved-contract"
+    },
+    "projects/pr-review-reporter/stages/01-diff-lines/starter/samples/change.diff": {
+      "sourceSha256": "adbbb6a617939dc7448de34db7e3be098205cd7b32876e9385d8f702b447af7c",
+      "localizedSha256": "adbbb6a617939dc7448de34db7e3be098205cd7b32876e9385d8f702b447af7c",
+      "kind": "preserved-contract"
+    },
+    "projects/pr-review-reporter/stages/01-diff-lines/starter/stage-1.md": {
+      "sourceSha256": "03e2b39c6c19030421fea8cdcd43d8e0017a8dd78a57e4b1b953b2640a2cc113",
+      "localizedSha256": "54d8deee7145d7530e206e6eeaabb753be78bda2d9f1135c0ca0f82e0eb10472",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/pr-review-reporter/stages/01-diff-lines/tests/stage.test.ts": {
+      "sourceSha256": "ff3a9d93ee333484d95a30ef205d93dc2d172eb682ab318886e758cd02abbd83",
+      "localizedSha256": "ff3a9d93ee333484d95a30ef205d93dc2d172eb682ab318886e758cd02abbd83",
+      "kind": "preserved-contract"
+    },
+    "projects/pr-review-reporter/stages/02-inspect/docs/en.md": {
+      "sourceSha256": "5d8ed0b8fef2d36bbd7f8da8549235cc0ac98b94445354469fa9d8dce44a340d",
+      "localizedSha256": "a1c50a45e68666ecfb899bf15c85a1b01b23021a1d6fa6a44bb08f6cf3f79d41",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-pr-review-reporter-2\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py pr-review-reporter --stage 2 --path learning-artifacts/pr-review-reporter --strict\n"
+          ],
+          [
+            "bash",
+            "cd learning-artifacts/pr-review-reporter\nnode cli.ts --diff samples/change.diff --output review.json --html review.html --sarif review.sarif\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "inspect"
+          ],
+          [
+            "`",
+            "inspect"
+          ],
+          [
+            "`",
+            "main.ts"
+          ],
+          [
+            "`",
+            "python3 scripts/project_test.py pr-review-reporter --init learning-artifacts/pr-review-reporter"
+          ]
+        ],
+        "links": [
+          "../../../API.md",
+          "../../../README.md",
+          "https://docs.python.org/3/library/json.html",
+          "https://git-scm.com/docs/diff-format"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/pr-review-reporter/stages/02-inspect/starter/stage-2.md": {
+      "sourceSha256": "78fda68c4fbf18df441a5cf33cf725649c59433f13d4d99b5a0a6b5b7a21b983",
+      "localizedSha256": "925bb4b15f05834a218d611b01e318f3ab90c5e8a20856d442d918500d9b9f32",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/pr-review-reporter/stages/02-inspect/tests/stage.test.ts": {
+      "sourceSha256": "0c9f8e08586577902f05002a0f6817189ea9a6476019cf2f3fab271eab442893",
+      "localizedSha256": "0c9f8e08586577902f05002a0f6817189ea9a6476019cf2f3fab271eab442893",
+      "kind": "preserved-contract"
+    },
+    "projects/pr-review-reporter/stages/03-anchors/docs/en.md": {
+      "sourceSha256": "4849d530008ba3cce837e4e6a752d3ac3507aecfe2230c9a6fefc3f374012087",
+      "localizedSha256": "ea661714fc836dcd2a99cb5f20da8d8cfca996587c551ea16f307dfdb60e2612",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-pr-review-reporter-3\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py pr-review-reporter --stage 3 --path learning-artifacts/pr-review-reporter --strict\n"
+          ],
+          [
+            "bash",
+            "cd learning-artifacts/pr-review-reporter\nnode cli.ts --diff samples/change.diff --output review.json --html review.html --sarif review.sarif\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "main.ts"
+          ],
+          [
+            "`",
+            "python3 scripts/project_test.py pr-review-reporter --init learning-artifacts/pr-review-reporter"
+          ],
+          [
+            "`",
+            "rejected"
+          ],
+          [
+            "`",
+            "verify, merge"
+          ],
+          [
+            "`",
+            "verify, merge"
+          ]
+        ],
+        "links": [
+          "../../../API.md",
+          "../../../README.md",
+          "https://docs.python.org/3/library/json.html",
+          "https://git-scm.com/docs/diff-format"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/pr-review-reporter/stages/03-anchors/starter/stage-3.md": {
+      "sourceSha256": "07c06d1cf6cb91aee2fea18e16564b434f3788c7e3d1a56979f27b0ca326e580",
+      "localizedSha256": "c7a5586d09a99602851446d1047e8e679d27aff701ed67fcf6e9df2b846a9a35",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/pr-review-reporter/stages/03-anchors/tests/candidate-shapes.test.ts": {
+      "sourceSha256": "20a88529781229ee327a007671ccdbe485ed77806556193587c0c72263ab9703",
+      "localizedSha256": "20a88529781229ee327a007671ccdbe485ed77806556193587c0c72263ab9703",
+      "kind": "preserved-contract"
+    },
+    "projects/pr-review-reporter/stages/03-anchors/tests/stage.test.ts": {
+      "sourceSha256": "93f2fd5e806b8de0845611b019abe8773d7dfe0a5df3333ba88b7727b04033b1",
+      "localizedSha256": "93f2fd5e806b8de0845611b019abe8773d7dfe0a5df3333ba88b7727b04033b1",
+      "kind": "preserved-contract"
+    },
+    "projects/pr-review-reporter/stages/04-report/docs/en.md": {
+      "sourceSha256": "261099e36b0fcb160f19bfd877d83e7785a6076b1862c704fd58fa363a97a51e",
+      "localizedSha256": "e1fae4e3bc6422a9e1c315c14be0299a8cff961e442fc3ffef6da4ffb1b315d3",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-pr-review-reporter-4\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py pr-review-reporter --stage 4 --path learning-artifacts/pr-review-reporter --strict\n"
+          ],
+          [
+            "bash",
+            "cd learning-artifacts/pr-review-reporter\nnode cli.ts --diff samples/change.diff --output review.json --html review.html --sarif review.sarif\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "escapeHTML, render"
+          ],
+          [
+            "`",
+            "escapeHTML, render"
+          ],
+          [
+            "`",
+            "main.ts"
+          ],
+          [
+            "`",
+            "python3 scripts/project_test.py pr-review-reporter --init learning-artifacts/pr-review-reporter"
+          ]
+        ],
+        "links": [
+          "../../../API.md",
+          "../../../README.md",
+          "https://docs.python.org/3/library/json.html",
+          "https://git-scm.com/docs/diff-format"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/pr-review-reporter/stages/04-report/starter/stage-4.md": {
+      "sourceSha256": "6039f293125e27005fd6d741111a191a1714ab6745d569f0cdc1066a99ecd236",
+      "localizedSha256": "a0295774255eaff9c74f1de44ff05a450a5baa70cde8c762335707f11270883d",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/pr-review-reporter/stages/04-report/tests/candidate-cli.test.ts": {
+      "sourceSha256": "0d7a5629ba12b468b948ae4ebbe2d030fa44f9eba65773cddb7d6fd4d619b4a9",
+      "localizedSha256": "0d7a5629ba12b468b948ae4ebbe2d030fa44f9eba65773cddb7d6fd4d619b4a9",
+      "kind": "preserved-contract"
+    },
+    "projects/pr-review-reporter/stages/04-report/tests/integration.test.ts": {
+      "sourceSha256": "25e61dc3a3c35991066f189d10ebfec915271c1e2f114a603bb1c08758301eb5",
+      "localizedSha256": "25e61dc3a3c35991066f189d10ebfec915271c1e2f114a603bb1c08758301eb5",
+      "kind": "preserved-contract"
+    },
+    "projects/pr-review-reporter/stages/04-report/tests/stage.test.ts": {
+      "sourceSha256": "84c0b72b8784d3286fd5e766180a9534fbcd146db24dcc817d59420c85d6a795",
+      "localizedSha256": "84c0b72b8784d3286fd5e766180a9534fbcd146db24dcc817d59420c85d6a795",
+      "kind": "preserved-contract"
+    },
+    "projects/pr-review-reporter/starter/cli.ts": {
+      "sourceSha256": "d81da7b2375074416ff54957646b099d8a49deea95e4b6815435ee3cbd8951ff",
+      "localizedSha256": "49c9bd842c31dd0a1f55546b41abe17604f28270c722717721275072d5d5074b",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "import { parseDiff,",
+          "// Git 模式只读；保留 JSON／SARIF 字段与原始检测消息，不发布远程评论。\nimport { parseDiff,"
+        ]
+      ]
+    },
+    "projects/pr-review-reporter/starter/diff_parser.py": {
+      "sourceSha256": "1b04b886fcb9830f4437ffbd147a091dfcccaa0bcc34786dc4b669864c79b126",
+      "localizedSha256": "75a650a7be981d5933e474f87e190e5364e90850e78c80472e7b95a6223012d3",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "raise NotImplementedError(\"Implement unified diff parsing in this learner file\")",
+          "# 起始解析器：在对应阶段补全函数；保留未实现错误。\nraise NotImplementedError(\"Implement unified diff parsing in this learner file\")"
+        ]
+      ]
+    },
+    "projects/pr-review-reporter/starter/main.ts": {
+      "sourceSha256": "52304892735070927f27bb0ea23a4938d24eb943e1d7e90ce03791da6b098773",
+      "localizedSha256": "22e8b1ea2a5e1249d4c5e26f6d0eee27cee96ca12ace09f9e10ec13165e93033",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "export type AddedLine = { file: string; line: number; text: string };",
+          "// 在自己的工作区实现阶段接口；未实现错误和公开标识保持原值。\nexport type AddedLine = { file: string; line: number; text: string };"
+        ]
+      ]
+    },
+    "projects/pr-review-reporter/starter/package.json": {
+      "sourceSha256": "a90fc33418afa2b9cbf4768524b021135b965ecdf993457505bfae3ac44a8428",
+      "localizedSha256": "a90fc33418afa2b9cbf4768524b021135b965ecdf993457505bfae3ac44a8428",
+      "kind": "preserved-contract"
+    },
+    "projects/pr-review-reporter/starter/samples/change.diff": {
+      "sourceSha256": "adbbb6a617939dc7448de34db7e3be098205cd7b32876e9385d8f702b447af7c",
+      "localizedSha256": "adbbb6a617939dc7448de34db7e3be098205cd7b32876e9385d8f702b447af7c",
+      "kind": "preserved-contract"
+    },
+    "projects/prompt-regression-tester/README.md": {
+      "sourceSha256": "026917b90de9d6a0fd3b3741df8c3bcd497fe4552e49bbfa80362c2180959afb",
+      "localizedSha256": "c54cbcf7a484f7f29ce37e90b092c276dc31b8be73e171aa841bc5c22c24c052",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "bash",
+            "python3 scripts/project_test.py prompt-regression-tester --init learning-artifacts/prompt-regression-tester\npython3 scripts/project_test.py prompt-regression-tester --stage 1 --path learning-artifacts/prompt-regression-tester\n"
+          ],
+          [
+            "bash",
+            "python3 learning-artifacts/prompt-regression-tester/cli.py projects/prompt-regression-tester/examples/cases.json projects/prompt-regression-tester/examples/baseline.json projects/prompt-regression-tester/examples/candidate.json --out prompt-diff.json --markdown prompt-diff.md\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py prompt-regression-tester --all --solution --strict\npython3 scripts/project_test.py prompt-regression-tester --all --path learning-artifacts/prompt-regression-tester --strict\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "authored_fixture"
+          ],
+          [
+            "`",
+            "case_sha256"
+          ],
+          [
+            "`",
+            "format-json"
+          ],
+          [
+            "`",
+            "learning-artifacts/prompt-regression-tester"
+          ],
+          [
+            "`",
+            "projects/prompt-regression-tester/solution"
+          ],
+          [
+            "`",
+            "prompt_template"
+          ],
+          [
+            "`",
+            "schema_version: 1"
+          ],
+          [
+            "`",
+            "source-link"
+          ],
+          [
+            "`",
+            "template_sha256"
+          ]
+        ],
+        "links": [
+          "../../phases/02-ml-fundamentals/09-model-evaluation/docs/en.md",
+          "../../phases/11-llm-engineering/03-structured-outputs/docs/en.md",
+          "https://docs.python.org/3/library/difflib.html",
+          "https://docs.python.org/3/tutorial/datastructures.html",
+          "stages/01-validate-cases/docs/en.md",
+          "stages/02-score-recordings/docs/en.md",
+          "stages/03-pair-revisions/docs/en.md",
+          "stages/04-gate-releases/docs/en.md"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 5
+      }
+    },
+    "projects/prompt-regression-tester/examples/baseline.json": {
+      "sourceSha256": "f941628b81e3fb632bdd06a536f8c52f18bf5930c8188459b55a1959380d2112",
+      "localizedSha256": "f941628b81e3fb632bdd06a536f8c52f18bf5930c8188459b55a1959380d2112",
+      "kind": "preserved-contract"
+    },
+    "projects/prompt-regression-tester/examples/candidate.json": {
+      "sourceSha256": "563f54321288421a3733193fb8a3bfac7f6b55133fc57fa5717bc347546b190f",
+      "localizedSha256": "563f54321288421a3733193fb8a3bfac7f6b55133fc57fa5717bc347546b190f",
+      "kind": "preserved-contract"
+    },
+    "projects/prompt-regression-tester/examples/cases.json": {
+      "sourceSha256": "00cd06fcdc9b81ec4d61f8854c31253984ebaf2effe6cf5ec63b042c4458eb87",
+      "localizedSha256": "00cd06fcdc9b81ec4d61f8854c31253984ebaf2effe6cf5ec63b042c4458eb87",
+      "kind": "preserved-contract"
+    },
+    "projects/prompt-regression-tester/examples/regressed.json": {
+      "sourceSha256": "e148c41b68a52793fe962798d91f834cc1633884612bee467e3566bde144386d",
+      "localizedSha256": "e148c41b68a52793fe962798d91f834cc1633884612bee467e3566bde144386d",
+      "kind": "preserved-contract"
+    },
+    "projects/prompt-regression-tester/media/output.gif": {
+      "sourceSha256": "5efb35dc2db708cf19db3a501eb38a728b45a43daa9a67edf8125ebab8fa812c",
+      "localizedSha256": "5efb35dc2db708cf19db3a501eb38a728b45a43daa9a67edf8125ebab8fa812c",
+      "kind": "original-recording"
+    },
+    "projects/prompt-regression-tester/media/output.json": {
+      "sourceSha256": "b8914fdf35238357d30d43edd22a23fe14f244f62409f85ff3d8ed3704ca2010",
+      "localizedSha256": "b8914fdf35238357d30d43edd22a23fe14f244f62409f85ff3d8ed3704ca2010",
+      "kind": "original-recording"
+    },
+    "projects/prompt-regression-tester/media/output.png": {
+      "sourceSha256": "d94b1f7f296f5bb7336556c21b7df11ec3786e269367758c9d0eae79b869844f",
+      "localizedSha256": "d94b1f7f296f5bb7336556c21b7df11ec3786e269367758c9d0eae79b869844f",
+      "kind": "original-recording"
+    },
+    "projects/prompt-regression-tester/media/run.gif": {
+      "sourceSha256": "9ed8cbd85060f598da5e605a09d9adee2821961b64474141a1dcc4c15e2be5cb",
+      "localizedSha256": "9ed8cbd85060f598da5e605a09d9adee2821961b64474141a1dcc4c15e2be5cb",
+      "kind": "original-recording"
+    },
+    "projects/prompt-regression-tester/media/run.json": {
+      "sourceSha256": "db918ec40d13d47b6cfa19dfcb0b8e7224e4499f2ccfefc63d7bc3602c226739",
+      "localizedSha256": "db918ec40d13d47b6cfa19dfcb0b8e7224e4499f2ccfefc63d7bc3602c226739",
+      "kind": "original-recording"
+    },
+    "projects/prompt-regression-tester/media/run.png": {
+      "sourceSha256": "74a47966aee79a1862f3f78f9248169b86950dd665c377a1263ff1686554ebc2",
+      "localizedSha256": "74a47966aee79a1862f3f78f9248169b86950dd665c377a1263ff1686554ebc2",
+      "kind": "original-recording"
+    },
+    "projects/prompt-regression-tester/project.json": {
+      "sourceSha256": "07cbf1dc8f32a9c895cabe7c1ea45d2629ba3fb709a9c3da9174626b93f065c1",
+      "localizedSha256": "9c3245ca1d5cdc6f59598fab652c63046c5f8bf18305d061c0e9824c7dcca354",
+      "kind": "manifest",
+      "contract": {
+        "id": "prompt-regression-tester",
+        "title": "<translated-text>",
+        "level": 1,
+        "levelName": "Starter",
+        "tagline": "<translated-text>",
+        "summary": "<translated-text>",
+        "youWillBuild": "<translated-text>",
+        "usefulFor": [
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "hours": 8,
+        "languages": [
+          "Python"
+        ],
+        "languageWhy": {
+          "Python": "<translated-text>"
+        },
+        "status": "ready",
+        "source": "core",
+        "author": {
+          "name": "AI Engineering from Scratch",
+          "github": "rohitg00"
+        },
+        "skills": [
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "prerequisites": [
+          {
+            "title": "<translated-text>",
+            "path": "phases/11-llm-engineering/03-structured-outputs"
+          },
+          {
+            "title": "<translated-text>",
+            "path": "phases/02-ml-fundamentals/09-model-evaluation"
+          }
+        ],
+        "figures": true,
+        "overviewFigure": "pj-prompt-regression-tester-1",
+        "demo": {
+          "command": [
+            "python3",
+            "demo.py"
+          ],
+          "cwd": "solution"
+        },
+        "stages": [
+          {
+            "id": "01-validate-cases",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "difficulty": "starter",
+            "language": "python",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>"
+            ],
+            "figure": "pj-prompt-regression-tester-1"
+          },
+          {
+            "id": "02-score-recordings",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "difficulty": "core",
+            "language": "python",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ],
+            "figure": "pj-prompt-regression-tester-2"
+          },
+          {
+            "id": "03-pair-revisions",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "difficulty": "core",
+            "language": "python",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>"
+            ],
+            "figure": "pj-prompt-regression-tester-3"
+          },
+          {
+            "id": "04-gate-releases",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "difficulty": "stretch",
+            "language": "python",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ],
+            "figure": "pj-prompt-regression-tester-4"
+          }
+        ],
+        "demos": [
+          {
+            "gif": "media/run.gif",
+            "poster": "media/run.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          },
+          {
+            "gif": "media/output.gif",
+            "poster": "media/output.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          }
+        ]
+      }
+    },
+    "projects/prompt-regression-tester/solution/cli.py": {
+      "sourceSha256": "d0b283f7603e714073a7cf184409d7118d9dc6b0eb4268302b287dad097fd691",
+      "localizedSha256": "44b01c007b71c47f405cbe7fe77f7abe4ba4451c2d5ec67bf4e87f3f97a5c6fc",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "\"\"\"Compare provenance-bound recorded prompt runs and return a CI exit status.\"\"\"",
+          "\"\"\"比较绑定来源的提示词运行记录，并返回持续集成退出状态。\"\"\""
+        ],
+        [
+          "\"# Prompt revision comparison\"",
+          "\"# 提示词修订版对比\""
+        ],
+        [
+          "\"| Case | Change |\"",
+          "\"| 用例 | 变化 |\""
+        ]
+      ]
+    },
+    "projects/prompt-regression-tester/solution/demo.py": {
+      "sourceSha256": "aef51c9e159889277236a2f34fcf3494a4e4a66e57bd09ee65fdc38bc4ed6545",
+      "localizedSha256": "4c1d1c1f70d42846224650e6570303124b917cbb8170f0693ea395bab9355d23",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "from pathlib import Path",
+          "# 比较原创 candidate 和 regressed 记录；不调用模型，不改写样本。\nfrom pathlib import Path"
+        ]
+      ]
+    },
+    "projects/prompt-regression-tester/solution/main.py": {
+      "sourceSha256": "a07d834c63723e71b3c14acb8a5398d06ef0bd2bdd998ace1db8a079c4d879d1",
+      "localizedSha256": "a84bcaeee4adee08ca526ed6fb239df3b152da21fab167793b0d7feb7feae8e7",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "import json",
+          "# 回放与配对评分仅检验显式契约；机器状态、断言文本与错误保持原值。\nimport json"
+        ]
+      ]
+    },
+    "projects/prompt-regression-tester/stages/01-validate-cases/docs/en.md": {
+      "sourceSha256": "6ab969bcb9702183b7be956b580f7008de7968f8d93d6ec271a689f60a9c1894",
+      "localizedSha256": "1f75af6c44c3f226822d7a2bc8798349b21ba3a1eda93d856baa08212070e340",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-prompt-regression-tester-1\n"
+          ],
+          [
+            "text",
+            "case ids: [format-json, source-link]\nchecks: json; contains(\"source:\")\nrepeat format-json -> reject before replay\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py prompt-regression-tester --init learning-artifacts/prompt-regression-tester\npython3 scripts/project_test.py prompt-regression-tester --stage 1 --path learning-artifacts/prompt-regression-tester\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "format-json"
+          ],
+          [
+            "`",
+            "source-link"
+          ]
+        ],
+        "links": [
+          "../../../../../phases/11-llm-engineering/03-structured-outputs/docs/en.md",
+          "https://docs.python.org/3/library/difflib.html",
+          "https://docs.python.org/3/tutorial/datastructures.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/prompt-regression-tester/stages/01-validate-cases/starter/cli.py": {
+      "sourceSha256": "d0b283f7603e714073a7cf184409d7118d9dc6b0eb4268302b287dad097fd691",
+      "localizedSha256": "44b01c007b71c47f405cbe7fe77f7abe4ba4451c2d5ec67bf4e87f3f97a5c6fc",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "\"\"\"Compare provenance-bound recorded prompt runs and return a CI exit status.\"\"\"",
+          "\"\"\"比较绑定来源的提示词运行记录，并返回持续集成退出状态。\"\"\""
+        ],
+        [
+          "\"# Prompt revision comparison\"",
+          "\"# 提示词修订版对比\""
+        ],
+        [
+          "\"| Case | Change |\"",
+          "\"| 用例 | 变化 |\""
+        ]
+      ]
+    },
+    "projects/prompt-regression-tester/stages/01-validate-cases/starter/main.py": {
+      "sourceSha256": "c39cd31f7364446be390214d4aabaa38e70b06da385cc8f4ecd5786ceb6ba6ca",
+      "localizedSha256": "f8e228c54c87d44836cc619e1fa6c9d5db50b679a1fed1e6e03c9171db5b7545",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "\"\"\"Fill in the stage interfaces in your own workspace.\"\"\"",
+          "# 在自己的工作区逐阶段实现评分接口；保留公开名称与未实现错误。\n\"\"\"Fill in the stage interfaces in your own workspace.\"\"\""
+        ]
+      ]
+    },
+    "projects/prompt-regression-tester/stages/01-validate-cases/tests/test_stage_01.py": {
+      "sourceSha256": "6c9be6437fd9a7fd657d794a69ba76b057791e09b8e2e30c910c4e709605ea37",
+      "localizedSha256": "6c9be6437fd9a7fd657d794a69ba76b057791e09b8e2e30c910c4e709605ea37",
+      "kind": "preserved-contract"
+    },
+    "projects/prompt-regression-tester/stages/02-score-recordings/docs/en.md": {
+      "sourceSha256": "249713da54ddc5280da53235dcb65e2a0e9ef6e65fcccf4a136abeb51e2efa7d",
+      "localizedSha256": "a009bb392065213260c18206a9667f8dff5fe5bf684afd6d965d2283dc938de8",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-prompt-regression-tester-2\n"
+          ],
+          [
+            "text",
+            "response: {\"answer\":\"ready\"}\njson -> true\ncontains(\"source:\") -> false\ncase passed -> false\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py prompt-regression-tester --stage 2 --path learning-artifacts/prompt-regression-tester\n"
+          ]
+        ],
+        "inlineCode": [],
+        "links": [
+          "../../../../../phases/11-llm-engineering/03-structured-outputs/docs/en.md",
+          "../../01-validate-cases/docs/en.md",
+          "https://docs.python.org/3/library/difflib.html",
+          "https://docs.python.org/3/tutorial/datastructures.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/prompt-regression-tester/stages/02-score-recordings/starter/STAGE.md": {
+      "sourceSha256": "de87d556ff420651ca3f56779d9ccc5ad04b3d08f79de33927207ae35b0562c4",
+      "localizedSha256": "32d7472579f64db2c83d693631cf101f7b4d06c0422a8bb6a98a69d3d67496cd",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/prompt-regression-tester/stages/02-score-recordings/tests/test_stage_02.py": {
+      "sourceSha256": "1bbca31750e17e98d31b4b5cd5cf61e71adce37da694f02a6581ecbe333e5dbe",
+      "localizedSha256": "1bbca31750e17e98d31b4b5cd5cf61e71adce37da694f02a6581ecbe333e5dbe",
+      "kind": "preserved-contract"
+    },
+    "projects/prompt-regression-tester/stages/03-pair-revisions/docs/en.md": {
+      "sourceSha256": "46c579eeffc2d68530b830744f398eabb20c0f3db954303c63c6cdd8b9dc77da",
+      "localizedSha256": "8fb388e1ce1b4f9c8623de71afa1cdca86217cccebaac9decf5f3933cbdd1a9a",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-prompt-regression-tester-3\n"
+          ],
+          [
+            "text",
+            "format-json: pass -> fail = regressed\nsource-link: fail -> pass = improved\naggregate pass rate: unchanged\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py prompt-regression-tester --stage 3 --path learning-artifacts/prompt-regression-tester\n"
+          ]
+        ],
+        "inlineCode": [],
+        "links": [
+          "../../../../../phases/11-llm-engineering/03-structured-outputs/docs/en.md",
+          "../../02-score-recordings/docs/en.md",
+          "https://docs.python.org/3/library/difflib.html",
+          "https://docs.python.org/3/tutorial/datastructures.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/prompt-regression-tester/stages/03-pair-revisions/starter/STAGE.md": {
+      "sourceSha256": "de87d556ff420651ca3f56779d9ccc5ad04b3d08f79de33927207ae35b0562c4",
+      "localizedSha256": "32d7472579f64db2c83d693631cf101f7b4d06c0422a8bb6a98a69d3d67496cd",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/prompt-regression-tester/stages/03-pair-revisions/tests/test_stage_03.py": {
+      "sourceSha256": "76d7ca14c3829a0ee05734100e8079dd68dabcc0b4d38b6dc25abf0a0fef9d5f",
+      "localizedSha256": "76d7ca14c3829a0ee05734100e8079dd68dabcc0b4d38b6dc25abf0a0fef9d5f",
+      "kind": "preserved-contract"
+    },
+    "projects/prompt-regression-tester/stages/04-gate-releases/docs/en.md": {
+      "sourceSha256": "e9cd5d2bd4eaac2c3c669bf2a32a86d5a8ca2ba477e698d53c362088a9da288b",
+      "localizedSha256": "f0f1f3c7cf8af3dac770c84ae94445f325c5f97f3d7a53c6601ea16614c4e756",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-prompt-regression-tester-4\n"
+          ],
+          [
+            "text",
+            "cases=3; candidate passes=2; regressions=1\nminimum pass fraction=1; regression budget=0\ndecision=block; CLI exit=1\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py prompt-regression-tester --stage 4 --path learning-artifacts/prompt-regression-tester\n"
+          ],
+          [
+            "bash",
+            "python3 learning-artifacts/prompt-regression-tester/cli.py projects/prompt-regression-tester/examples/cases.json projects/prompt-regression-tester/examples/baseline.json projects/prompt-regression-tester/examples/candidate.json --out prompt-diff.json --markdown prompt-diff.md\n"
+          ]
+        ],
+        "inlineCode": [],
+        "links": [
+          "../../../../../phases/11-llm-engineering/03-structured-outputs/docs/en.md",
+          "../../03-pair-revisions/docs/en.md",
+          "https://docs.python.org/3/library/difflib.html",
+          "https://docs.python.org/3/tutorial/datastructures.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/prompt-regression-tester/stages/04-gate-releases/starter/STAGE.md": {
+      "sourceSha256": "de87d556ff420651ca3f56779d9ccc5ad04b3d08f79de33927207ae35b0562c4",
+      "localizedSha256": "32d7472579f64db2c83d693631cf101f7b4d06c0422a8bb6a98a69d3d67496cd",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/prompt-regression-tester/stages/04-gate-releases/tests/test_recording_contract.py": {
+      "sourceSha256": "5a03f0ff8b1feaf6c00e3258c9dd15b0e8ce529e95409c04136690321cac6f0f",
+      "localizedSha256": "5a03f0ff8b1feaf6c00e3258c9dd15b0e8ce529e95409c04136690321cac6f0f",
+      "kind": "preserved-contract"
+    },
+    "projects/prompt-regression-tester/stages/04-gate-releases/tests/test_stage_04.py": {
+      "sourceSha256": "0f0406b253d0a11448abbff802c46d67269976dec87c3d45e1e663a931c11c91",
+      "localizedSha256": "0f0406b253d0a11448abbff802c46d67269976dec87c3d45e1e663a931c11c91",
+      "kind": "preserved-contract"
+    }
+  },
+  "figures": [
+    {
+      "path": "site/figures/projects/multi-agent-code-review-panel.js",
+      "sourceSha256": "43a8edad5d3c49276993692854e6bc6a8d196cccd858723c9959ea4d32c2de82",
+      "localizedSha256": "ec4162e7d83dc1673cd97d4a386a46a08b4d78884668ca8c555cc039dbfa67d5",
+      "edits": [
+        {
+          "offset": 91,
+          "before": "\"Distinct supporters\"",
+          "after": "\"不同支持者人数\"",
+          "afterOffset": 91
+        },
+        {
+          "offset": 241,
+          "before": "\"Required quorum\"",
+          "after": "\"最低支持人数\"",
+          "afterOffset": 229
+        },
+        {
+          "offset": 387,
+          "before": "\"Reviewer budget\"",
+          "after": "\"评审预算\"",
+          "afterOffset": 366
+        },
+        {
+          "offset": 536,
+          "before": "\"Unique predictions\"",
+          "after": "\"去重后的预测问题数\"",
+          "afterOffset": 504
+        },
+        {
+          "offset": 688,
+          "before": "\"Expected findings\"",
+          "after": "\"预期问题数\"",
+          "afterOffset": 647
+        },
+        {
+          "offset": 835,
+          "before": "\"True positives\"",
+          "after": "\"真阳性数量\"",
+          "afterOffset": 782
+        },
+        {
+          "offset": 1076,
+          "before": "\"Reject impossible ground-truth intersection\"",
+          "after": "\"拒绝不可能的预期集合交集\"",
+          "afterOffset": 1014
+        },
+        {
+          "offset": 1382,
+          "before": "\"Consensus reached; correctness still requires ground truth\"",
+          "after": "\"已形成共识；正确与否仍需真实标签验证\"",
+          "afterOffset": 1289
+        },
+        {
+          "offset": 1455,
+          "before": "\"Needs review: insufficient independent support\"",
+          "after": "\"需要审阅：独立支持人数不足\"",
+          "afterOffset": 1322
+        },
+        {
+          "offset": 1539,
+          "before": "\"Admitted supporters\"",
+          "after": "\"获准运行的支持者\"",
+          "afterOffset": 1373
+        },
+        {
+          "offset": 1597,
+          "before": "\"Precision\"",
+          "after": "\"精确率\"",
+          "afterOffset": 1420
+        },
+        {
+          "offset": 1658,
+          "before": "\"Recall\"",
+          "after": "\"召回率\"",
+          "afterOffset": 1475
+        },
+        {
+          "offset": 1736,
+          "before": "\"True positives\"",
+          "after": "\"真阳性数量\"",
+          "afterOffset": 1550
+        },
+        {
+          "offset": 1797,
+          "before": "\"False positives\"",
+          "after": "\"假阳性数量\"",
+          "afterOffset": 1602
+        },
+        {
+          "offset": 1873,
+          "before": "\"Missed findings\"",
+          "after": "\"漏检问题数\"",
+          "afterOffset": 1668
+        },
+        {
+          "offset": 2074,
+          "before": "\"Validate reviewer evidence\"",
+          "after": "\"校验评审证据\"",
+          "afterOffset": 1859
+        },
+        {
+          "offset": 2140,
+          "before": "\"Input contract\"",
+          "after": "\"输入契约\"",
+          "afterOffset": 1905
+        },
+        {
+          "offset": 2218,
+          "before": "\"Validate reviewer evidence\"",
+          "after": "\"校验评审证据\"",
+          "afterOffset": 1973
+        },
+        {
+          "offset": 2282,
+          "before": "\"Require a file present in the supplied snapshot, a positive one-based line, an exact nonempty quote, a stable rule id and a severity from one through three. Evidence validation is shared across all reviewers. It protects the aggregation boundary against fabricated locations, but agreement and quoted text still do not prove a finding is correct.\"",
+          "after": "\"要求文件存在于所提供的快照中，行号为从 1 开始的正整数，引文逐字匹配且非空，规则 ID 稳定，严重程度为 1 至 3。所有评审者共用证据校验，阻止虚构位置进入聚合流程；即使多方同意且文本有出处，也不足以证明问题判断正确。\"",
+          "afterOffset": 2017
+        },
+        {
+          "offset": 2676,
+          "before": "\"Observe the result\"",
+          "after": "\"观察结果\"",
+          "afterOffset": 2176
+        },
+        {
+          "offset": 2732,
+          "before": "\"A supported quote enters the panel. A plausible finding on a nonexistent line is rejected.\"",
+          "after": "\"有来源支持的引文进入评审组；即使问题看似合理，引用不存在的行也会被拒绝。\"",
+          "afterOffset": 2218
+        },
+        {
+          "offset": 2867,
+          "before": "\"Advance to inspect the boundary before the next effect.\"",
+          "after": "\"继续前进，在下一次副作用发生前检查边界。 图表范围：仅按每位评审者成本为 1 简化计算支持人数和指标；不执行源码引文校验、不同成本调度或超时取消。零成本评审者等实际行为以 runPanel 测试为准。\"",
+          "afterOffset": 2299
+        },
+        {
+          "offset": 3109,
+          "before": "\"Aggregate independent support\"",
+          "after": "\"汇总独立评审者的支持\"",
+          "afterOffset": 2586
+        },
+        {
+          "offset": 3178,
+          "before": "\"Input contract\"",
+          "after": "\"输入契约\"",
+          "afterOffset": 2636
+        },
+        {
+          "offset": 3250,
+          "before": "\"Aggregate independent support\"",
+          "after": "\"汇总独立评审者的支持\"",
+          "afterOffset": 2698
+        },
+        {
+          "offset": 3317,
+          "before": "\"Group valid findings by file, line and rule. Count one vote per reviewer per group, reject duplicate reviewer identities, and retain every severity vote. A quorum produces consensus; a singleton remains visible as needs-review. A disagreement flag survives consensus so the user can inspect conflicting severity judgments.\"",
+          "after": "\"按文件、行号和规则对有效问题分组。每位评审者在每组只计一票，拒绝重复的评审者标识，并保留所有严重程度投票。达到最低支持人数后形成共识；只有一位评审者支持的问题仍以 needs-review 显示。形成共识后也保留分歧标记，便于用户检查严重程度判断的冲突。\"",
+          "afterOffset": 2746
+        },
+        {
+          "offset": 3687,
+          "before": "\"Observe the result\"",
+          "after": "\"观察结果\"",
+          "afterOffset": 2921
+        },
+        {
+          "offset": 3743,
+          "before": "\"One reviewer repeating a finding stays at one vote; two reviewers with different severity values show consensus and disagreement.\"",
+          "after": "\"同一评审者重复报告仍只计一票；两位评审者给出不同严重程度时，同时显示共识与分歧。\"",
+          "afterOffset": 2963
+        },
+        {
+          "offset": 3917,
+          "before": "\"Advance to inspect the boundary before the next effect.\"",
+          "after": "\"继续前进，在下一次副作用发生前检查边界。 图表范围：仅按每位评审者成本为 1 简化计算支持人数和指标；不执行源码引文校验、不同成本调度或超时取消。零成本评审者等实际行为以 runPanel 测试为准。\"",
+          "afterOffset": 3048
+        },
+        {
+          "offset": 4159,
+          "before": "\"Reserve costs and enforce deadlines\"",
+          "after": "\"预留成本并执行期限约束\"",
+          "afterOffset": 3335
+        },
+        {
+          "offset": 4234,
+          "before": "\"Input contract\"",
+          "after": "\"输入契约\"",
+          "afterOffset": 3386
+        },
+        {
+          "offset": 4305,
+          "before": "\"Reserve costs and enforce deadlines\"",
+          "after": "\"预留成本并执行期限约束\"",
+          "afterOffset": 3447
+        },
+        {
+          "offset": 4378,
+          "before": "\"Reserve each reviewer cost before launching it. Skip work that cannot fit the remaining budget and record the decision. Race each reviewer against a deadline and abort its signal when time expires. Failures remain in the trace while completed reviews can still be aggregated. Adapters must honor AbortSignal to stop external work; the runner cannot force a remote service to cancel.\"",
+          "after": "\"启动每位评审者之前先预留其成本。剩余预算不足时跳过该工作并记录决策。为每位评审者设置期限，超时后中止其信号。失败记录保留在轨迹中，已完成的评审仍可聚合。适配器必须遵守 AbortSignal 才能停止外部工作；运行器无法强制远程服务取消。\"",
+          "afterOffset": 3496
+        },
+        {
+          "offset": 4808,
+          "before": "\"Observe the result\"",
+          "after": "\"观察结果\"",
+          "afterOffset": 3663
+        },
+        {
+          "offset": 4864,
+          "before": "\"The demo launches two reviewers, skips the third under budget, and preserves the severity disagreement.\"",
+          "after": "\"演示启动两位评审者，因预算跳过第三位，并保留严重程度分歧。\"",
+          "afterOffset": 3705
+        },
+        {
+          "offset": 5012,
+          "before": "\"Advance to inspect the boundary before the next effect.\"",
+          "after": "\"继续前进，在下一次副作用发生前检查边界。 图表范围：仅按每位评审者成本为 1 简化计算支持人数和指标；不执行源码引文校验、不同成本调度或超时取消。零成本评审者等实际行为以 runPanel 测试为准。\"",
+          "afterOffset": 3779
+        },
+        {
+          "offset": 5254,
+          "before": "\"Measure panel precision and recall\"",
+          "after": "\"测量评审组的精确率与召回率\"",
+          "afterOffset": 4066
+        },
+        {
+          "offset": 5328,
+          "before": "\"Input contract\"",
+          "after": "\"输入契约\"",
+          "afterOffset": 4119
+        },
+        {
+          "offset": 5399,
+          "before": "\"Measure panel precision and recall\"",
+          "after": "\"测量评审组的精确率与召回率\"",
+          "afterOffset": 4180
+        },
+        {
+          "offset": 5471,
+          "before": "\"Evaluate unique finding ids against an expected set. Precision measures how many predicted findings are expected; recall measures how much of the expected set was found. Deduplicate both sets so repeated reviewers cannot inflate the metric. Zero predictions produce precision zero rather than a misleading perfect score. Try held-out inputs before adjusting quorum.\"",
+          "after": "\"将唯一的问题 ID 与预期集合对照。精确率衡量预测问题中有多少属于预期；召回率衡量预期集合中有多少被发现。两个集合都要去重，避免重复评审者抬高指标。没有预测时精确率记为零，避免出现误导性的满分。调整最低支持人数前，先尝试留出输入。\"",
+          "afterOffset": 4231
+        },
+        {
+          "offset": 5884,
+          "before": "\"Observe the result\"",
+          "after": "\"观察结果\"",
+          "afterOffset": 4394
+        },
+        {
+          "offset": 5940,
+          "before": "\"False positives reduce precision while missed expected findings reduce recall; quorum is a tradeoff to measure.\"",
+          "after": "\"假阳性降低精确率，漏检降低召回率；最低支持人数门槛的取舍需要测量。\"",
+          "afterOffset": 4436
+        },
+        {
+          "offset": 6096,
+          "before": "\"Advance to inspect the boundary before the next effect.\"",
+          "after": "\"继续前进，在下一次副作用发生前检查边界。 图表范围：仅按每位评审者成本为 1 简化计算支持人数和指标；不执行源码引文校验、不同成本调度或超时取消。零成本评审者等实际行为以 runPanel 测试为准。\"",
+          "afterOffset": 4514
+        }
+      ]
+    },
+    {
+      "path": "site/figures/projects/postmortem-writer.js",
+      "sourceSha256": "b7a873433d62d71b8e74760fe3e67a6b50b8eb197acee58db3d123d23bf8ec54",
+      "localizedSha256": "a3a810c558103ae8b4bbed91e8ade0f0e501f894d10af44b4a9c0ba584c6b86f",
+      "edits": [
+        {
+          "offset": 71,
+          "before": "\"Parse an incident event ledger\"",
+          "after": "\"解析事故事件台账\"",
+          "afterOffset": 71
+        },
+        {
+          "offset": 125,
+          "before": "\"Split record\"",
+          "after": "\"拆分记录\"",
+          "afterOffset": 103
+        },
+        {
+          "offset": 151,
+          "before": "\"Use one tab-separated record per event: stable ID, nonnegative second, event kind and message.\"",
+          "after": "\"每个事件使用一条制表符分隔记录，包含稳定 ID、非负秒数、事件类型和消息。\"",
+          "afterOffset": 121
+        },
+        {
+          "offset": 260,
+          "before": "\"Parse time\"",
+          "after": "\"解析时间\"",
+          "afterOffset": 173
+        },
+        {
+          "offset": 284,
+          "before": "\"Use one tab-separated record per event: stable ID, nonnegative second, event kind and message.\"",
+          "after": "\"每个事件使用一条制表符分隔记录，包含稳定 ID、非负秒数、事件类型和消息。\"",
+          "afterOffset": 191
+        },
+        {
+          "offset": 393,
+          "before": "\"Unique identity\"",
+          "after": "\"唯一标识\"",
+          "afterOffset": 243
+        },
+        {
+          "offset": 422,
+          "before": "\"Use one tab-separated record per event: stable ID, nonnegative second, event kind and message.\"",
+          "after": "\"每个事件使用一条制表符分隔记录，包含稳定 ID、非负秒数、事件类型和消息。\"",
+          "afterOffset": 261
+        },
+        {
+          "offset": 531,
+          "before": "\"Validated ledger\"",
+          "after": "\"已校验台账\"",
+          "afterOffset": 313
+        },
+        {
+          "offset": 561,
+          "before": "\"Use one tab-separated record per event: stable ID, nonnegative second, event kind and message.\"",
+          "after": "\"每个事件使用一条制表符分隔记录，包含稳定 ID、非负秒数、事件类型和消息。\"",
+          "afterOffset": 332
+        },
+        {
+          "offset": 672,
+          "before": "\"Change the inputs and explain the computed result before running the stage tests.\"",
+          "after": "\"修改输入并解释计算结果，然后再运行阶段测试。 图表范围：这里只演示事件时间、引用和审批状态；不实际导入 JSONL、计算来源哈希或校验所有整数与文件写入边界。完整来源及批准检查由 Go 实现执行。\"",
+          "afterOffset": 386
+        },
+        {
+          "offset": 793,
+          "before": "'Elapsed second'",
+          "after": "'经过秒数'",
+          "afterOffset": 524
+        },
+        {
+          "offset": 879,
+          "before": "'Event ID already exists'",
+          "after": "'事件 ID 已存在'",
+          "afterOffset": 600
+        },
+        {
+          "offset": 1014,
+          "before": "'Conflict: never overwrite an earlier event.'",
+          "after": "'发生冲突：绝不覆盖已有事件。'",
+          "afterOffset": 721
+        },
+        {
+          "offset": 1071,
+          "before": "'Invalid time: the incident clock cannot be negative.'",
+          "after": "'时间无效：事故时钟不能为负数。'",
+          "afterOffset": 749
+        },
+        {
+          "offset": 1126,
+          "before": "'Append one validated record and retain its physical line.'",
+          "after": "'追加一条已校验记录，并保留物理行号。'",
+          "afterOffset": 767
+        },
+        {
+          "offset": 1202,
+          "before": "'Decision'",
+          "after": "'决策'",
+          "afterOffset": 804
+        },
+        {
+          "offset": 1251,
+          "before": "'Elapsed'",
+          "after": "'已用时间'",
+          "afterOffset": 847
+        },
+        {
+          "offset": 1276,
+          "before": "' seconds'",
+          "after": "' 秒'",
+          "afterOffset": 869
+        },
+        {
+          "offset": 1368,
+          "before": "\"Build a stable bounded timeline\"",
+          "after": "\"构建稳定且有界的时间线\"",
+          "afterOffset": 955
+        },
+        {
+          "offset": 1423,
+          "before": "\"Copy ledger\"",
+          "after": "\"复制台账\"",
+          "afterOffset": 990
+        },
+        {
+          "offset": 1448,
+          "before": "\"Sort a copy by elapsed seconds and then ID to make tied timestamps deterministic.\"",
+          "after": "\"对副本先按经过秒数、再按 ID 排序，使同时间戳事件的顺序确定。\"",
+          "afterOffset": 1008
+        },
+        {
+          "offset": 1544,
+          "before": "\"Horizon gate\"",
+          "after": "\"时间上界检查\"",
+          "afterOffset": 1055
+        },
+        {
+          "offset": 1570,
+          "before": "\"Sort a copy by elapsed seconds and then ID to make tied timestamps deterministic.\"",
+          "after": "\"对副本先按经过秒数、再按 ID 排序，使同时间戳事件的顺序确定。\"",
+          "afterOffset": 1075
+        },
+        {
+          "offset": 1666,
+          "before": "\"Time sort\"",
+          "after": "\"按时间排序\"",
+          "afterOffset": 1122
+        },
+        {
+          "offset": 1689,
+          "before": "\"Sort a copy by elapsed seconds and then ID to make tied timestamps deterministic.\"",
+          "after": "\"对副本先按经过秒数、再按 ID 排序，使同时间戳事件的顺序确定。\"",
+          "afterOffset": 1141
+        },
+        {
+          "offset": 1785,
+          "before": "\"ID tie break\"",
+          "after": "\"同时间戳按 ID 排序\"",
+          "afterOffset": 1188
+        },
+        {
+          "offset": 1811,
+          "before": "\"Sort a copy by elapsed seconds and then ID to make tied timestamps deterministic.\"",
+          "after": "\"对副本先按经过秒数、再按 ID 排序，使同时间戳事件的顺序确定。\"",
+          "afterOffset": 1213
+        },
+        {
+          "offset": 1909,
+          "before": "\"Change the inputs and explain the computed result before running the stage tests.\"",
+          "after": "\"修改输入并解释计算结果，然后再运行阶段测试。 图表范围：这里只演示事件时间、引用和审批状态；不实际导入 JSONL、计算来源哈希或校验所有整数与文件写入边界。完整来源及批准检查由 Go 实现执行。\"",
+          "afterOffset": 1262
+        },
+        {
+          "offset": 2025,
+          "before": "'Event b time'",
+          "after": "'事件 b 的时间'",
+          "afterOffset": 1395
+        },
+        {
+          "offset": 2104,
+          "before": "'Incident horizon'",
+          "after": "'事故时间上界'",
+          "afterOffset": 1470
+        },
+        {
+          "offset": 2328,
+          "before": "'Sort by time, then stable ID. Arrival order remains unchanged.'",
+          "after": "'按时间、再按稳定 ID 排序，原始到达顺序保持不变。'",
+          "afterOffset": 1684
+        },
+        {
+          "offset": 2393,
+          "before": "'Reject the complete timeline; do not silently drop late events.'",
+          "after": "'拒绝整条时间线，不要静默删除较晚事件。'",
+          "afterOffset": 1713
+        },
+        {
+          "offset": 2473,
+          "before": "'Seconds'",
+          "after": "'秒数'",
+          "afterOffset": 1749
+        },
+        {
+          "offset": 2505,
+          "before": "'Horizon'",
+          "after": "'时间上界'",
+          "afterOffset": 1776
+        },
+        {
+          "offset": 2539,
+          "before": "'Decision'",
+          "after": "'决策'",
+          "afterOffset": 1807
+        },
+        {
+          "offset": 2661,
+          "before": "\"Require evidence for each claim\"",
+          "after": "\"为每项论断要求证据\"",
+          "afterOffset": 1923
+        },
+        {
+          "offset": 2716,
+          "before": "\"Claim text\"",
+          "after": "\"论断文本\"",
+          "afterOffset": 1956
+        },
+        {
+          "offset": 2740,
+          "before": "\"A claim needs nonblank text and at least one distinct known event ID.\"",
+          "after": "\"论断需要非空白文本，以及至少一个已知且不重复的事件 ID。\"",
+          "afterOffset": 1974
+        },
+        {
+          "offset": 2824,
+          "before": "\"Evidence list\"",
+          "after": "\"证据列表\"",
+          "afterOffset": 2018
+        },
+        {
+          "offset": 2851,
+          "before": "\"A claim needs nonblank text and at least one distinct known event ID.\"",
+          "after": "\"论断需要非空白文本，以及至少一个已知且不重复的事件 ID。\"",
+          "afterOffset": 2036
+        },
+        {
+          "offset": 2935,
+          "before": "\"Known IDs\"",
+          "after": "\"已知 ID\"",
+          "afterOffset": 2080
+        },
+        {
+          "offset": 2958,
+          "before": "\"A claim needs nonblank text and at least one distinct known event ID.\"",
+          "after": "\"论断需要非空白文本，以及至少一个已知且不重复的事件 ID。\"",
+          "afterOffset": 2099
+        },
+        {
+          "offset": 3042,
+          "before": "\"Provenance gate\"",
+          "after": "\"来源校验\"",
+          "afterOffset": 2143
+        },
+        {
+          "offset": 3071,
+          "before": "\"A claim needs nonblank text and at least one distinct known event ID.\"",
+          "after": "\"论断需要非空白文本，以及至少一个已知且不重复的事件 ID。\"",
+          "afterOffset": 2161
+        },
+        {
+          "offset": 3157,
+          "before": "\"Change the inputs and explain the computed result before running the stage tests.\"",
+          "after": "\"修改输入并解释计算结果，然后再运行阶段测试。 图表范围：这里只演示事件时间、引用和审批状态；不实际导入 JSONL、计算来源哈希或校验所有整数与文件写入边界。完整来源及批准检查由 Go 实现执行。\"",
+          "afterOffset": 2207
+        },
+        {
+          "offset": 3276,
+          "before": "'Claim evidence IDs'",
+          "after": "'论断的证据 ID'",
+          "afterOffset": 2343
+        },
+        {
+          "offset": 3343,
+          "before": "'Quote from e2'",
+          "after": "'来自 e2 的引文'",
+          "afterOffset": 2400
+        },
+        {
+          "offset": 3654,
+          "before": "'Source references and quote exist. A reviewer still judges the claim.'",
+          "after": "'来源引用和引文确实存在；论断仍需审阅者判断。'",
+          "afterOffset": 2707
+        },
+        {
+          "offset": 3726,
+          "before": "'Reject dangling, repeated references or unsupported quotation.'",
+          "after": "'拒绝悬空引用、重复引用或没有来源支持的引文。'",
+          "afterOffset": 2732
+        },
+        {
+          "offset": 3807,
+          "before": "'References'",
+          "after": "'引用'",
+          "afterOffset": 2773
+        },
+        {
+          "offset": 3858,
+          "before": "'Exact quote'",
+          "after": "'逐字引文'",
+          "afterOffset": 2816
+        },
+        {
+          "offset": 3918,
+          "before": "'Source exists'",
+          "after": "'来源存在'",
+          "afterOffset": 2869
+        },
+        {
+          "offset": 4078,
+          "before": "\"Publish a deterministic incident packet\"",
+          "after": "\"发布确定性的事故材料包\"",
+          "afterOffset": 3020
+        },
+        {
+          "offset": 4141,
+          "before": "\"Validate claims\"",
+          "after": "\"校验论断\"",
+          "afterOffset": 3055
+        },
+        {
+          "offset": 4170,
+          "before": "\"Render the validated timeline and claims with quoted message text and explicit references.\"",
+          "after": "\"渲染已校验的时间线和论断，并保留消息引文及明确引用。\"",
+          "afterOffset": 3073
+        },
+        {
+          "offset": 4275,
+          "before": "\"Bound output\"",
+          "after": "\"限制输出\"",
+          "afterOffset": 3114
+        },
+        {
+          "offset": 4301,
+          "before": "\"Render the validated timeline and claims with quoted message text and explicit references.\"",
+          "after": "\"渲染已校验的时间线和论断，并保留消息引文及明确引用。\"",
+          "afterOffset": 3132
+        },
+        {
+          "offset": 4406,
+          "before": "\"Order evidence\"",
+          "after": "\"排列证据\"",
+          "afterOffset": 3173
+        },
+        {
+          "offset": 4434,
+          "before": "\"Render the validated timeline and claims with quoted message text and explicit references.\"",
+          "after": "\"渲染已校验的时间线和论断，并保留消息引文及明确引用。\"",
+          "afterOffset": 3191
+        },
+        {
+          "offset": 4539,
+          "before": "\"Publish packet\"",
+          "after": "\"发布材料包\"",
+          "afterOffset": 3232
+        },
+        {
+          "offset": 4567,
+          "before": "\"Render the validated timeline and claims with quoted message text and explicit references.\"",
+          "after": "\"渲染已校验的时间线和论断，并保留消息引文及明确引用。\"",
+          "afterOffset": 3251
+        },
+        {
+          "offset": 4674,
+          "before": "\"Change the inputs and explain the computed result before running the stage tests.\"",
+          "after": "\"修改输入并解释计算结果，然后再运行阶段测试。 图表范围：这里只演示事件时间、引用和审批状态；不实际导入 JSONL、计算来源哈希或校验所有整数与文件写入边界。完整来源及批准检查由 Go 实现执行。\"",
+          "afterOffset": 3294
+        },
+        {
+          "offset": 4797,
+          "before": "'Reviewer approved the claim'",
+          "after": "'审阅者已批准论断'",
+          "afterOffset": 3434
+        },
+        {
+          "offset": 4877,
+          "before": "'Source changed since review'",
+          "after": "'审阅后来源发生变化'",
+          "afterOffset": 3495
+        },
+        {
+          "offset": 5069,
+          "before": "'Rebuild stops: an old decision cannot approve new evidence.'",
+          "after": "'停止重新构建：旧决策不能批准新证据。'",
+          "afterOffset": 3669
+        },
+        {
+          "offset": 5150,
+          "before": "'The decision matches this source version; identity remains self-reported.'",
+          "after": "'决策与当前来源版本匹配；身份仍由调用方自行报告。'",
+          "afterOffset": 3709
+        },
+        {
+          "offset": 5226,
+          "before": "'Keep the unfinished review visible in the packet.'",
+          "after": "'让尚未完成的审阅继续显示在材料包中。'",
+          "afterOffset": 3736
+        },
+        {
+          "offset": 5294,
+          "before": "'Decision'",
+          "after": "'决策'",
+          "afterOffset": 3773
+        },
+        {
+          "offset": 5325,
+          "before": "'Export'",
+          "after": "'导出'",
+          "afterOffset": 3798
+        }
+      ]
+    },
+    {
+      "path": "site/figures/projects/pr-review-reporter.js",
+      "sourceSha256": "f9c2da0b59e17d7bfb0684dbce28935160cdfbc79bf01ad982d88d42a03e51f5",
+      "localizedSha256": "d5bf67a09f3ddd0e42d3442d9461a7c4ddfacd541d2e170282a7d91db3cb5bfe",
+      "edits": [
+        {
+          "offset": 91,
+          "before": "\"New hunk start line\"",
+          "after": "\"新文件差异块起始行\"",
+          "afterOffset": 91
+        },
+        {
+          "offset": 245,
+          "before": "\"Context rows before addition\"",
+          "after": "\"新增行之前的上下文行数\"",
+          "afterOffset": 235
+        },
+        {
+          "offset": 405,
+          "before": "\"Deleted rows before addition\"",
+          "after": "\"新增行之前的删除行数\"",
+          "afterOffset": 378
+        },
+        {
+          "offset": 562,
+          "before": "\"Added source line\"",
+          "after": "\"新增源码行\"",
+          "afterOffset": 517
+        },
+        {
+          "offset": 678,
+          "before": "\"Reviewer quote\"",
+          "after": "\"评审者引文\"",
+          "afterOffset": 621
+        },
+        {
+          "offset": 792,
+          "before": "\"Line is a comment\"",
+          "after": "\"该行是注释\"",
+          "afterOffset": 726
+        },
+        {
+          "offset": 1170,
+          "before": "\"Reject fabricated quote\"",
+          "after": "\"拒绝伪造引文\"",
+          "afterOffset": 1092
+        },
+        {
+          "offset": 1227,
+          "before": "\"Anchored lexical candidate for human review\"",
+          "after": "\"已有定位的词法候选，供人工审阅\"",
+          "afterOffset": 1132
+        },
+        {
+          "offset": 1285,
+          "before": "\"No dynamic-eval candidate from this line\"",
+          "after": "\"本行没有 dynamic-eval 候选问题\"",
+          "afterOffset": 1162
+        },
+        {
+          "offset": 1363,
+          "before": "\"New-file addition line\"",
+          "after": "\"新文件新增行号\"",
+          "afterOffset": 1222
+        },
+        {
+          "offset": 1436,
+          "before": "\"Deletions affecting new line\"",
+          "after": "\"影响新行号的删除行数\"",
+          "afterOffset": 1280
+        },
+        {
+          "offset": 1497,
+          "before": "\"Quote supported\"",
+          "after": "\"引文有来源支持\"",
+          "afterOffset": 1323
+        },
+        {
+          "offset": 1575,
+          "before": "\"Old rows consumed\"",
+          "after": "\"已消费的旧文件行数\"",
+          "afterOffset": 1393
+        },
+        {
+          "offset": 1664,
+          "before": "\"New rows consumed before addition\"",
+          "after": "\"新增之前已消费的新文件行数\"",
+          "afterOffset": 1474
+        },
+        {
+          "offset": 1784,
+          "before": "\"field\"",
+          "after": "\"字段\"",
+          "afterOffset": 1574
+        },
+        {
+          "offset": 1793,
+          "before": "\"value\"",
+          "after": "\"值\"",
+          "afterOffset": 1580
+        },
+        {
+          "offset": 1826,
+          "before": "\"location\"",
+          "after": "\"位置\"",
+          "afterOffset": 1609
+        },
+        {
+          "offset": 1887,
+          "before": "\"source\"",
+          "after": "\"源码\"",
+          "afterOffset": 1664
+        },
+        {
+          "offset": 1915,
+          "before": "\"quote\"",
+          "after": "\"引文\"",
+          "afterOffset": 1688
+        },
+        {
+          "offset": 2066,
+          "before": "\"Recover new-file line numbers\"",
+          "after": "\"恢复新文件行号\"",
+          "afterOffset": 1836
+        },
+        {
+          "offset": 2135,
+          "before": "\"Input contract\"",
+          "after": "\"输入契约\"",
+          "afterOffset": 1883
+        },
+        {
+          "offset": 2207,
+          "before": "\"Recover new-file line numbers\"",
+          "after": "\"恢复新文件行号\"",
+          "afterOffset": 1945
+        },
+        {
+          "offset": 2274,
+          "before": "\"Parse hunk headers into old and new counters. Context consumes both counters, deletions consume only the old counter, and additions consume the new counter while producing a reviewable location. Reject truncated hunks and parent-traversing paths. The parser is deliberately for text unified diffs; binary patches and combined merge diffs are outside the contract. Wire Python into TypeScript using execFileSync and stdin, never an interpolated shell command.\"",
+          "after": "\"从差异块头解析旧文件与新文件的行计数。上下文行同时推进两个计数器；删除行只推进旧文件计数器；新增行推进新文件计数器，并产生可审阅的位置。拒绝截断的差异块和向父目录穿越的路径。解析器仅处理文本统一 diff；二进制补丁与合并提交的 combined diff 不在契约内。通过 execFileSync 和标准输入将 Python 接入 TypeScript，不要拼接 shell 命令。\"",
+          "afterOffset": 1990
+        },
+        {
+          "offset": 2780,
+          "before": "\"Observe the result\"",
+          "after": "\"观察结果\"",
+          "afterOffset": 2231
+        },
+        {
+          "offset": 2836,
+          "before": "\"A replacement stays on the new file line even when the old side removes several lines.\"",
+          "after": "\"即使旧文件侧删除多行，替换内容仍定位到新文件行号。\"",
+          "afterOffset": 2273
+        },
+        {
+          "offset": 2967,
+          "before": "\"Advance to inspect the boundary before the next effect.\"",
+          "after": "\"继续前进，在下一次副作用发生前检查边界。 图表范围：此处只演示单条新增行的行号与 dynamic-eval 检查；完整 diff 解析、其余检测规则、候选对象校验和 SARIF 导出由实际程序执行。\"",
+          "afterOffset": 2343
+        },
+        {
+          "offset": 3198,
+          "before": "\"Generate narrow review candidates\"",
+          "after": "\"生成范围明确的评审候选问题\"",
+          "afterOffset": 2618
+        },
+        {
+          "offset": 3271,
+          "before": "\"Input contract\"",
+          "after": "\"输入契约\"",
+          "afterOffset": 2671
+        },
+        {
+          "offset": 3341,
+          "before": "\"Generate narrow review candidates\"",
+          "after": "\"生成范围明确的评审候选问题\"",
+          "afterOffset": 2731
+        },
+        {
+          "offset": 3412,
+          "before": "\"Build explicit static detectors for dynamic eval, shell exec, disabled TLS validation and empty catch handlers. Inspect only added lines. These patterns produce review candidates rather than proof of exploitable behavior. Keeping rule ids stable makes deduplication possible when a later model reviewer reports the same concern.\"",
+          "after": "\"为动态 eval、shell exec、禁用 TLS 校验和空 catch 处理器构建明确的静态检测规则，只检查新增行。这些模式产生评审候选问题，不能证明存在可利用行为。保持规则 ID 稳定，便于后续模型评审者提出相同疑点时去重。\"",
+          "afterOffset": 2782
+        },
+        {
+          "offset": 3788,
+          "before": "\"Observe the result\"",
+          "after": "\"观察结果\"",
+          "afterOffset": 2945
+        },
+        {
+          "offset": 3844,
+          "before": "\"The fixture emits a high-severity eval candidate with an exact quote and new-file line 2.\"",
+          "after": "\"夹具产生高严重程度的 eval 候选问题，保留逐字引文及新文件第 2 行定位。\"",
+          "afterOffset": 2987
+        },
+        {
+          "offset": 3978,
+          "before": "\"Advance to inspect the boundary before the next effect.\"",
+          "after": "\"继续前进，在下一次副作用发生前检查边界。 图表范围：此处只演示单条新增行的行号与 dynamic-eval 检查；完整 diff 解析、其余检测规则、候选对象校验和 SARIF 导出由实际程序执行。\"",
+          "afterOffset": 3071
+        },
+        {
+          "offset": 4209,
+          "before": "\"Verify and merge findings\"",
+          "after": "\"校验并合并问题\"",
+          "afterOffset": 3346
+        },
+        {
+          "offset": 4274,
+          "before": "\"Input contract\"",
+          "after": "\"输入契约\"",
+          "afterOffset": 3393
+        },
+        {
+          "offset": 4350,
+          "before": "\"Verify and merge findings\"",
+          "after": "\"校验并合并问题\"",
+          "afterOffset": 3459
+        },
+        {
+          "offset": 4413,
+          "before": "\"Require an existing added-line location and a nonempty exact source substring for every candidate. Reject fabricated files, deleted-line locations, empty quotes and invalid severity values. Merge findings by file, line and rule; keep the stronger severity when reviewers disagree. The quote gate establishes location support, not the truth of a security claim, which still needs review.\"",
+          "after": "\"每个候选问题都必须对应确实存在的新增行位置，并提供非空、逐字匹配的源码子串。拒绝虚构文件、已删除行的位置、空引文和无效严重程度。按文件、行号和规则合并问题；评审者意见不同时保留更高严重程度。引文校验只能确认位置有证据支持，安全判断是否成立仍需审阅。\"",
+          "afterOffset": 3504
+        },
+        {
+          "offset": 4847,
+          "before": "\"Observe the result\"",
+          "after": "\"观察结果\"",
+          "afterOffset": 3676
+        },
+        {
+          "offset": 4903,
+          "before": "\"Unsupported candidates stay in a rejected collection; duplicate supported candidates collapse into one finding.\"",
+          "after": "\"无来源支持的候选保留在拒绝集合中，有来源支持的重复候选合并成一个问题。\"",
+          "afterOffset": 3718
+        },
+        {
+          "offset": 5059,
+          "before": "\"Advance to inspect the boundary before the next effect.\"",
+          "after": "\"继续前进，在下一次副作用发生前检查边界。 图表范围：此处只演示单条新增行的行号与 dynamic-eval 检查；完整 diff 解析、其余检测规则、候选对象校验和 SARIF 导出由实际程序执行。\"",
+          "afterOffset": 3798
+        },
+        {
+          "offset": 5290,
+          "before": "\"Publish a local escaped report\"",
+          "after": "\"发布经过转义的本地报告\"",
+          "afterOffset": 4073
+        },
+        {
+          "offset": 5360,
+          "before": "\"Input contract\"",
+          "after": "\"输入契约\"",
+          "afterOffset": 4124
+        },
+        {
+          "offset": 5441,
+          "before": "\"Publish a local escaped report\"",
+          "after": "\"发布经过转义的本地报告\"",
+          "afterOffset": 4195
+        },
+        {
+          "offset": 5509,
+          "before": "\"Render a self-contained report with source locations, quoted evidence, severity and message. Escape source text as carefully as prose: a diff can contain executable HTML. Keep external publication outside the tool. The CLI writes review.html locally and prints a machine-readable summary for automation.\"",
+          "after": "\"渲染自包含报告，包含源码位置、证据引文、严重程度和消息。对源码文本与说明文字同样仔细转义，因为 diff 中可能包含可执行 HTML。工具不负责向外发布。命令行程序在本地写入 review.html，并打印机器可读摘要供自动化使用。\"",
+          "afterOffset": 4244
+        },
+        {
+          "offset": 5860,
+          "before": "\"Observe the result\"",
+          "after": "\"观察结果\"",
+          "afterOffset": 4408
+        },
+        {
+          "offset": 5916,
+          "before": "\"Open review.html to inspect the anchored finding. The source quote renders as text even when it contains HTML.\"",
+          "after": "\"打开 review.html 检查已定位的问题。源码引文即使包含 HTML，也会按文本显示。\"",
+          "afterOffset": 4450
+        },
+        {
+          "offset": 6071,
+          "before": "\"Advance to inspect the boundary before the next effect.\"",
+          "after": "\"继续前进，在下一次副作用发生前检查边界。 图表范围：此处只演示单条新增行的行号与 dynamic-eval 检查；完整 diff 解析、其余检测规则、候选对象校验和 SARIF 导出由实际程序执行。\"",
+          "afterOffset": 4541
+        }
+      ]
+    },
+    {
+      "path": "site/figures/projects/prompt-regression-tester.js",
+      "sourceSha256": "b7fee2d16b6821ce172f5e4cbaa8d72c16f2f45a4eb968912559b5afd51d0c95",
+      "localizedSha256": "f31ea5a67c59fec5ab15d4bc97be96783f14a5f988ae2f1e3fe5547cfdeced63",
+      "edits": [
+        {
+          "offset": 1087,
+          "before": "\"Baseline response\"",
+          "after": "\"基线响应\"",
+          "afterOffset": 1087
+        },
+        {
+          "offset": 1166,
+          "before": "\"Candidate response\"",
+          "after": "\"候选响应\"",
+          "afterOffset": 1153
+        },
+        {
+          "offset": 1239,
+          "before": "\"Required substring\"",
+          "after": "\"必需子串\"",
+          "afterOffset": 1212
+        },
+        {
+          "offset": 1297,
+          "before": "\"Minimum pass fraction\"",
+          "after": "\"最低通过比例\"",
+          "afterOffset": 1256
+        },
+        {
+          "offset": 1360,
+          "before": "\"Allowed regressions\"",
+          "after": "\"允许的回归数量\"",
+          "afterOffset": 1304
+        },
+        {
+          "offset": 1949,
+          "before": "\"Ship\"",
+          "after": "\"放行\"",
+          "afterOffset": 1881
+        },
+        {
+          "offset": 1958,
+          "before": "\"Block\"",
+          "after": "\"阻止\"",
+          "afterOffset": 1888
+        },
+        {
+          "offset": 1983,
+          "before": "\": paired checks control the decision.\"",
+          "after": "\"：由配对检查控制决策。\"",
+          "afterOffset": 1910
+        },
+        {
+          "offset": 2037,
+          "before": "\"Compare JSON syntax and source attribution independently.\"",
+          "after": "\"分别比较 JSON 语法与来源标注。\"",
+          "afterOffset": 1938
+        },
+        {
+          "offset": 2134,
+          "before": "\"Candidate checks\"",
+          "after": "\"候选通过的检查数\"",
+          "afterOffset": 1996
+        },
+        {
+          "offset": 2187,
+          "before": "\"Regressions\"",
+          "after": "\"回归数量\"",
+          "afterOffset": 2041
+        },
+        {
+          "offset": 2233,
+          "before": "\"Decision\"",
+          "after": "\"决策\"",
+          "afterOffset": 2080
+        },
+        {
+          "offset": 2312,
+          "before": "\"Baseline checks\"",
+          "after": "\"基线通过的检查数\"",
+          "afterOffset": 2153
+        },
+        {
+          "offset": 2375,
+          "before": "\"Candidate checks\"",
+          "after": "\"候选通过的检查数\"",
+          "afterOffset": 2209
+        },
+        {
+          "offset": 2436,
+          "before": "\"Promise\"",
+          "after": "\"承诺行为\"",
+          "afterOffset": 2262
+        },
+        {
+          "offset": 2447,
+          "before": "\"Baseline\"",
+          "after": "\"基线\"",
+          "afterOffset": 2270
+        },
+        {
+          "offset": 2459,
+          "before": "\"Candidate\"",
+          "after": "\"候选\"",
+          "afterOffset": 2276
+        },
+        {
+          "offset": 2472,
+          "before": "\"Change\"",
+          "after": "\"变化\"",
+          "afterOffset": 2282
+        },
+        {
+          "offset": 2498,
+          "before": "\"JSON syntax\"",
+          "after": "\"JSON 语法\"",
+          "afterOffset": 2304
+        },
+        {
+          "offset": 2513,
+          "before": "\"Source locator\"",
+          "after": "\"来源定位\"",
+          "afterOffset": 2315
+        },
+        {
+          "offset": 2813,
+          "before": "\"Validate cases before scoring\"",
+          "after": "\"评分前校验用例\"",
+          "afterOffset": 2605
+        },
+        {
+          "offset": 2894,
+          "before": "\"Cases\"",
+          "after": "\"用例\"",
+          "afterOffset": 2664
+        },
+        {
+          "offset": 2937,
+          "before": "\"Orchard must return JSON and preserve a source locator. Keep `format-json` and `source-link` as different case ids: they are separate promises to the caller. The cassette hashes the entire case list, including prompts and checks, before comparing runs.\"",
+          "after": "\"Orchard 必须返回 JSON 并保留来源定位信息。将 `format-json` 和 `source-link` 保持为不同的用例 ID，因为它们分别对应向调用方承诺的两项行为。比较运行结果前，响应记录先对包括提示词与检查项在内的完整用例列表计算哈希。\"",
+          "afterOffset": 2704
+        },
+        {
+          "offset": 3237,
+          "before": "\"Validate\"",
+          "after": "\"校验\"",
+          "afterOffset": 2881
+        },
+        {
+          "offset": 3446,
+          "before": "\"Freeze\"",
+          "after": "\"固定\"",
+          "afterOffset": 3084
+        },
+        {
+          "offset": 3490,
+          "before": "\"Build a set of ids while validating. Validate each check kind before looking up a recorded response.\"",
+          "after": "\"在校验时构建 ID 集合。查找已记录响应前，先校验每项检查的类型。\"",
+          "afterOffset": 3124
+        },
+        {
+          "offset": 3645,
+          "before": "\"Change only the prompt wording. Why must the previous case hash stop matching?\"",
+          "after": "\"只改变提示词措辞。为什么之前的用例哈希必须不再匹配？ 图表范围：固定比较 JSON 与来源子串两项检查，不执行完整用例列表、响应记录哈希及模型配置校验，也不代替实际门禁的阈值和空集检查。\"",
+          "afterOffset": 3212
+        },
+        {
+          "offset": 3893,
+          "before": "\"Score recorded outputs without a model\"",
+          "after": "\"无需模型即可为记录输出评分\"",
+          "afterOffset": 3475
+        },
+        {
+          "offset": 3983,
+          "before": "\"Replay\"",
+          "after": "\"回放\"",
+          "afterOffset": 3540
+        },
+        {
+          "offset": 4027,
+          "before": "\"A valid JSON response can still omit its source. Score every assertion and retain the individual results so a maintainer can see which promise failed.\"",
+          "after": "\"有效 JSON 响应仍可能遗漏来源。逐项为断言评分并保留各项结果，让维护者知道哪项承诺未被满足。\"",
+          "afterOffset": 3580
+        },
+        {
+          "offset": 4225,
+          "before": "\"Assertions\"",
+          "after": "\"断言\"",
+          "afterOffset": 3676
+        },
+        {
+          "offset": 4415,
+          "before": "\"Evidence\"",
+          "after": "\"证据\"",
+          "afterOffset": 3858
+        },
+        {
+          "offset": 4461,
+          "before": "\"Evaluate the list of checks first, then apply all(). A missing response must not become an empty passing checklist.\"",
+          "after": "\"先计算检查列表，再应用 all()。缺失响应不能变成默认通过的空检查列表。\"",
+          "afterOffset": 3898
+        },
+        {
+          "offset": 4631,
+          "before": "\"Would lowercasing the response before an excludes check change the contract for API_KEY?\"",
+          "after": "\"执行 excludes 检查前先把响应转成小写，会改变针对 API_KEY 的契约吗？ 图表范围：固定比较 JSON 与来源子串两项检查，不执行完整用例列表、响应记录哈希及模型配置校验，也不代替实际门禁的阈值和空集检查。\"",
+          "afterOffset": 3990
+        },
+        {
+          "offset": 4889,
+          "before": "\"Compare the same cases across revisions\"",
+          "after": "\"跨修订版比较相同用例\"",
+          "afterOffset": 4270
+        },
+        {
+          "offset": 4980,
+          "before": "\"Baseline\"",
+          "after": "\"基线\"",
+          "afterOffset": 4332
+        },
+        {
+          "offset": 5026,
+          "before": "\"The candidate fixes source attribution but replaces machine-readable JSON with friendly prose. Pair case ids before calculating the average: one improvement does not repair another broken interface.\"",
+          "after": "\"候选版本修复了来源标注，却用友好的自然语言替代机器可读的 JSON。计算平均值前先配对用例 ID：一项改善无法修复另一个损坏的接口。\"",
+          "afterOffset": 4372
+        },
+        {
+          "offset": 5272,
+          "before": "\"Candidate\"",
+          "after": "\"候选\"",
+          "afterOffset": 4486
+        },
+        {
+          "offset": 5474,
+          "before": "\"Pair\"",
+          "after": "\"配对\"",
+          "afterOffset": 4681
+        },
+        {
+          "offset": 5516,
+          "before": "\"Keep model, settings and case hash alongside the responses. The CLI rejects changed model/settings unless you explicitly allow that experiment.\"",
+          "after": "\"在响应旁保留模型、设置和用例哈希。模型或设置改变时，命令行程序会拒绝比较，除非你明确允许这种实验。\"",
+          "afterOffset": 4721
+        },
+        {
+          "offset": 5714,
+          "before": "\"How would you explain a flat pass rate to the owner of the JSON consumer?\"",
+          "after": "\"面对通过率不变的结果，应如何向依赖 JSON 输出的程序负责人解释？ 图表范围：固定比较 JSON 与来源子串两项检查，不执行完整用例列表、响应记录哈希及模型配置校验，也不代替实际门禁的阈值和空集检查。\"",
+          "afterOffset": 4825
+        },
+        {
+          "offset": 5957,
+          "before": "\"Gate releases on explicit tolerances\"",
+          "after": "\"根据明确容限设置发布门禁\"",
+          "afterOffset": 5096
+        },
+        {
+          "offset": 6045,
+          "before": "\"Thresholds\"",
+          "after": "\"阈值\"",
+          "afterOffset": 5160
+        },
+        {
+          "offset": 6093,
+          "before": "\"Your release gate is an executable policy. With three cases and one regression, a candidate is blocked even if its other responses improve. Save the JSON and Markdown diff as CI artifacts.\"",
+          "after": "\"发布门禁是可执行策略。三个用例中有一项回归时，即使其他响应有所改善，候选版本也会被阻止。将 JSON 和 Markdown 差异报告保存为持续集成产物。\"",
+          "afterOffset": 5200
+        },
+        {
+          "offset": 6329,
+          "before": "\"Evidence\"",
+          "after": "\"证据\"",
+          "afterOffset": 5324
+        },
+        {
+          "offset": 6539,
+          "before": "\"Decision\"",
+          "after": "\"决策\"",
+          "afterOffset": 5528
+        },
+        {
+          "offset": 6585,
+          "before": "\"Check that thresholds are finite and the suite is nonempty before comparing numbers. Exit status must agree with the reported decision.\"",
+          "after": "\"比较数值前，检查阈值是否有限、测试集是否非空。退出状态必须与报告决策一致。\"",
+          "afterOffset": 5568
+        },
+        {
+          "offset": 6775,
+          "before": "\"Which assertion would you add after a real support incident, and how would you keep its recording provenance?\"",
+          "after": "\"经历一次真实支持事故后，你会添加哪条断言，又如何保留其响应记录的来源？ 图表范围：固定比较 JSON 与来源子串两项检查，不执行完整用例列表、响应记录哈希及模型配置校验，也不代替实际门禁的阈值和空集检查。\"",
+          "afterOffset": 5660
+        }
+      ]
+    }
+  ],
+  "figureLimitations": {
+    "multi-agent-code-review-panel": "图表范围：仅按每位评审者成本为 1 简化计算支持人数和指标；不执行源码引文校验、不同成本调度或超时取消。零成本评审者等实际行为以 runPanel 测试为准。",
+    "postmortem-writer": "图表范围：这里只演示事件时间、引用和审批状态；不实际导入 JSONL、计算来源哈希或校验所有整数与文件写入边界。完整来源及批准检查由 Go 实现执行。",
+    "pr-review-reporter": "图表范围：此处只演示单条新增行的行号与 dynamic-eval 检查；完整 diff 解析、其余检测规则、候选对象校验和 SARIF 导出由实际程序执行。",
+    "prompt-regression-tester": "图表范围：固定比较 JSON 与来源子串两项检查，不执行完整用例列表、响应记录哈希及模型配置校验，也不代替实际门禁的阈值和空集检查。"
+  },
+  "preservedMachineNotes": {
+    "multi-agent-code-review-panel": "译注：评审者标识、检测规则、严重程度、状态、模型输入和 JSON 报告字段保留原值；HTML 固定说明已译。评审者 ID 不同并不能证明其判断相互独立，源码引文校验也不等于漏洞已确认。",
+    "postmortem-writer": "译注：JSON 字段、packet.txt 及其中的 SOURCE、IMPACT、DECISION 等凭据标记保留原值，HTML 固定文案与参数帮助已译。input line 的双语标注保留原定位测试契约。页面渲染通过不代表审批人身份已认证，也不保证多个导出文件在写入失败时整体原子提交。",
+    "pr-review-reporter": "译注：规则消息同时进入 JSON、SARIF 和下游评审组，故保留英文原值；页面标题与说明已译。findings 和 rejected 的双语计数保留现有测试契约。这里只核对本地补丁证据，不发布 PR 评论或认证漏洞。",
+    "prompt-regression-tester": "译注：检查类型、状态和发布决策保留机器值。stable_pass 为持续通过，stable_fail 为持续失败，regressed 为退化，improved 为改善；ship 表示放行，block 表示阻止。Markdown 标题和表头已译，样本提示词与响应记录不改写。"
+  }
+}

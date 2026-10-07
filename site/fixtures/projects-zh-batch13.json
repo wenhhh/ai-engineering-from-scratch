@@ -1,0 +1,4419 @@
+{
+  "upstream": "c02ca08d8a49ce24c3c1c1cf8e3b422f2c7393ca",
+  "projects": [
+    "doc-qa-with-citations",
+    "document-extraction-desk",
+    "durable-agent-jobs",
+    "feedback-theme-board"
+  ],
+  "files": {
+    "projects/doc-qa-with-citations/.gitignore": {
+      "sourceSha256": "e9961373d82abc70897edcee8c52159baf98a1dfa97fc41d4e5f0685244fa264",
+      "localizedSha256": "e9961373d82abc70897edcee8c52159baf98a1dfa97fc41d4e5f0685244fa264",
+      "kind": "preserved-contract"
+    },
+    "projects/doc-qa-with-citations/API.md": {
+      "sourceSha256": "79b8c6d6278ff098f8fd1bad61a375ba6c09eea442bec4f5a62da278b1a1a59d",
+      "localizedSha256": "67fb96d08ea339c16af2c5c8c59df97f1bead04dc5c5a1f7e6ac2aaef307f89a",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "python",
+            "def adapt_splits(doc, parts)\ndef framework_qa(question, doc, response)\n"
+          ],
+          [
+            "python",
+            "def answer(question, chunks, model)\n"
+          ],
+          [
+            "python",
+            "def load_documents(root)\ndef chunk_document(doc, size=200, overlap=30)\n"
+          ],
+          [
+            "python",
+            "def retrieve(chunks, query, k=3)\n"
+          ]
+        ],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [
+          "#",
+          "###",
+          "###",
+          "###",
+          "###"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/doc-qa-with-citations/README.md": {
+      "sourceSha256": "99db65af3fbb671c34ac0397a6c3ff2f1e9d1dbccbaacc709cb4df05b2b57862",
+      "localizedSha256": "645fef2406b1b9c5fca8f51684878d1669d4720ae8a6e5cb020d1c84672b4d33",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "bash",
+            "python3 scripts/project_test.py doc-qa-with-citations --init learning-artifacts/doc-qa-with-citations\npython3 scripts/project_test.py doc-qa-with-citations --stage 1 --path learning-artifacts/doc-qa-with-citations --strict\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py doc-qa-with-citations --all --path learning-artifacts/doc-qa-with-citations --strict\ncd learning-artifacts/doc-qa-with-citations\npython3 cli.py samples/docs \"When does cache expire?\" --output answer.json --html answer.html\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py doc-qa-with-citations --all --solution --strict\ncd projects/doc-qa-with-citations/solution\npython3 cli.py samples/docs \"When does cache expire?\" --output answer.json --html answer.html\n"
+          ],
+          [
+            "bash",
+            "python3 -m venv .venv\n.venv/bin/python -m pip install -r projects/doc-qa-with-citations/requirements-framework.txt\n.venv/bin/python scripts/project_test.py doc-qa-with-citations --solution --optional --strict\n.venv/bin/python projects/doc-qa-with-citations/solution/framework_demo.py\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "--optional"
+          ],
+          [
+            "`",
+            "--optional --strict"
+          ],
+          [
+            "`",
+            "langchain-text-splitters==1.1.2"
+          ]
+        ],
+        "links": [
+          "API.md",
+          "stages/01-documents/docs/en.md",
+          "stages/02-retrieval/docs/en.md",
+          "stages/03-answer/docs/en.md",
+          "stages/04-adapter/docs/en.md"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 4
+      }
+    },
+    "projects/doc-qa-with-citations/media/framework.gif": {
+      "sourceSha256": "3ad3c491ba891166232ec864de6d726c0441947ab04d778ec36467a7740850cf",
+      "localizedSha256": "3ad3c491ba891166232ec864de6d726c0441947ab04d778ec36467a7740850cf",
+      "kind": "original-recording"
+    },
+    "projects/doc-qa-with-citations/media/framework.json": {
+      "sourceSha256": "85a60c5036564ec7e62889cbc4bef95cf2b2767387aae4ab9cc41e2ed99d51f3",
+      "localizedSha256": "85a60c5036564ec7e62889cbc4bef95cf2b2767387aae4ab9cc41e2ed99d51f3",
+      "kind": "original-recording"
+    },
+    "projects/doc-qa-with-citations/media/framework.png": {
+      "sourceSha256": "7a14e0539541cf733bc8f318a7fbac83f05eaa686ddfeac379d1fffff81a4645",
+      "localizedSha256": "7a14e0539541cf733bc8f318a7fbac83f05eaa686ddfeac379d1fffff81a4645",
+      "kind": "original-recording"
+    },
+    "projects/doc-qa-with-citations/media/output.gif": {
+      "sourceSha256": "c713a1768a19a7fcd21a62479f3c982f55cd3a5fede7036c11b032669bf44933",
+      "localizedSha256": "c713a1768a19a7fcd21a62479f3c982f55cd3a5fede7036c11b032669bf44933",
+      "kind": "original-recording"
+    },
+    "projects/doc-qa-with-citations/media/output.json": {
+      "sourceSha256": "d3148c606b7f3ef5adf7bab2bb567de8ffe42442a1f04018d9f8b4c46c467050",
+      "localizedSha256": "d3148c606b7f3ef5adf7bab2bb567de8ffe42442a1f04018d9f8b4c46c467050",
+      "kind": "original-recording"
+    },
+    "projects/doc-qa-with-citations/media/output.png": {
+      "sourceSha256": "0c942bc511a4926e3004c773ef0ea03fcf0ee910e6380208e4783560648a07f8",
+      "localizedSha256": "0c942bc511a4926e3004c773ef0ea03fcf0ee910e6380208e4783560648a07f8",
+      "kind": "original-recording"
+    },
+    "projects/doc-qa-with-citations/media/run.gif": {
+      "sourceSha256": "c9fa527804ad3ac61284f0de52e644b341f1c0b6b2962f1a80ffb2ccbeb5d16b",
+      "localizedSha256": "c9fa527804ad3ac61284f0de52e644b341f1c0b6b2962f1a80ffb2ccbeb5d16b",
+      "kind": "original-recording"
+    },
+    "projects/doc-qa-with-citations/media/run.json": {
+      "sourceSha256": "fbdfffe5ca71f2cf1945961292f0b914aec4526b8eecf157167aca0ac59ae399",
+      "localizedSha256": "fbdfffe5ca71f2cf1945961292f0b914aec4526b8eecf157167aca0ac59ae399",
+      "kind": "original-recording"
+    },
+    "projects/doc-qa-with-citations/media/run.png": {
+      "sourceSha256": "1dc66ba65ef2c4cc871f0d78000b881c96f84a72f08682fd3bbe92e864646138",
+      "localizedSha256": "1dc66ba65ef2c4cc871f0d78000b881c96f84a72f08682fd3bbe92e864646138",
+      "kind": "original-recording"
+    },
+    "projects/doc-qa-with-citations/project.json": {
+      "sourceSha256": "52bf3ac5edbd02323f3fd6c68b05eb7d286f7ca2ccbaed4eb92c6af14dc8d687",
+      "localizedSha256": "6792a9e7f27ce1e77e808f88d6117ee589eefbd3d3e2afca5b70d7cb35db3043",
+      "kind": "manifest",
+      "contract": {
+        "id": "doc-qa-with-citations",
+        "title": "<translated-text>",
+        "level": 2,
+        "levelName": "Builder",
+        "tagline": "<translated-text>",
+        "summary": "<translated-text>",
+        "hours": 8,
+        "languages": [
+          "Python"
+        ],
+        "status": "ready",
+        "source": "core",
+        "author": {
+          "name": "AI Engineering from Scratch",
+          "github": "rohitg00"
+        },
+        "youWillBuild": "<translated-text>",
+        "usefulFor": [
+          "<translated-text>"
+        ],
+        "skills": [
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "prerequisites": [
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "figures": true,
+        "overviewFigure": "pj-doc-qa-with-citations-1",
+        "languageWhy": {
+          "Python": "<translated-text>"
+        },
+        "demo": {
+          "cwd": "solution",
+          "command": [
+            "python3",
+            "cli.py",
+            "samples/docs",
+            "When does cache expire?",
+            "--output",
+            "answer.json",
+            "--html",
+            "answer.html"
+          ]
+        },
+        "stages": [
+          {
+            "id": "01-documents",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "language": "python",
+            "languageWhy": "<translated-text>",
+            "hours": 2,
+            "difficulty": "starter",
+            "figure": "pj-doc-qa-with-citations-1",
+            "concepts": [
+              "load",
+              "local",
+              "documents",
+              "with"
+            ]
+          },
+          {
+            "id": "02-retrieval",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "language": "python",
+            "languageWhy": "<translated-text>",
+            "hours": 2,
+            "difficulty": "core",
+            "figure": "pj-doc-qa-with-citations-2",
+            "concepts": [
+              "rank",
+              "chunks",
+              "with",
+              "an"
+            ]
+          },
+          {
+            "id": "03-answer",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "language": "python",
+            "languageWhy": "<translated-text>",
+            "hours": 2,
+            "difficulty": "core",
+            "figure": "pj-doc-qa-with-citations-3",
+            "concepts": [
+              "accept",
+              "only",
+              "answers",
+              "grounded"
+            ]
+          },
+          {
+            "id": "04-adapter",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "language": "python",
+            "languageWhy": "<translated-text>",
+            "hours": 2,
+            "difficulty": "stretch",
+            "figure": "pj-doc-qa-with-citations-4",
+            "concepts": [
+              "use",
+              "a",
+              "framework",
+              "splitter"
+            ],
+            "runners": [
+              {
+                "language": "python"
+              },
+              {
+                "language": "python",
+                "optional": true,
+                "requires": [
+                  "python:langchain_text_splitters"
+                ],
+                "argv": [
+                  "{python}",
+                  "-m",
+                  "unittest",
+                  "discover",
+                  "-s",
+                  "{stage}/tests-framework",
+                  "-p",
+                  "test_framework.py"
+                ]
+              }
+            ]
+          }
+        ],
+        "demos": [
+          {
+            "gif": "media/run.gif",
+            "poster": "media/run.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          },
+          {
+            "gif": "media/output.gif",
+            "poster": "media/output.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          },
+          {
+            "gif": "media/framework.gif",
+            "poster": "media/framework.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          }
+        ]
+      }
+    },
+    "projects/doc-qa-with-citations/requirements-framework.txt": {
+      "sourceSha256": "8633e1bfa88a578e28df9527ab211c48ac1893ffb5fdb870b8044c14a88a4443",
+      "localizedSha256": "8633e1bfa88a578e28df9527ab211c48ac1893ffb5fdb870b8044c14a88a4443",
+      "kind": "preserved-contract"
+    },
+    "projects/doc-qa-with-citations/solution/adapter.py": {
+      "sourceSha256": "f105f1f6d5bdc0f3a18658f6b98dc392eb895c40b5c9c0b01971ed60669b5187",
+      "localizedSha256": "899f2d90cf52fa1e822109be7660d62c16a529596c7edb8e1a549e41917c80c8",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "Use a framework splitter without losing offsets.\n\nLesson: projects/doc-qa-with-citations/stages/04-adapter/docs/en.md\nThe implementation is original and uses explicit local data contracts.\nRun its tests through scripts/project_test.py.\n",
+          "使用框架切分器并保留偏移量\n\n阶段：projects/doc-qa-with-citations/stages/04-adapter/docs/en.md\n原创实现，采用明确的本地数据契约。\n通过 scripts/project_test.py 运行测试。\n"
+        ]
+      ]
+    },
+    "projects/doc-qa-with-citations/solution/answer.py": {
+      "sourceSha256": "cb82c06a1b88a1db2b2fe4a5902ed0a4b85863f4bb2de5cc5fdffd091ade9ae3",
+      "localizedSha256": "9d21b308f69792a6e2b82f7ca953152117a5e03c797eb84393fcb52c3f8d0b2d",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "Accept only answers grounded in retrieved spans.\n\nLesson: projects/doc-qa-with-citations/stages/03-answer/docs/en.md\nThe implementation is original and uses explicit local data contracts.\nRun its tests through scripts/project_test.py.\n",
+          "只接受检索区间能够支持的回答\n\n阶段：projects/doc-qa-with-citations/stages/03-answer/docs/en.md\n原创实现，采用明确的本地数据契约。\n通过 scripts/project_test.py 运行测试。\n"
+        ]
+      ]
+    },
+    "projects/doc-qa-with-citations/solution/cli.py": {
+      "sourceSha256": "903dfc0a6535009a6e261b7582566c08de5e9e9a7c44ba1d3f86842b5ed94c21",
+      "localizedSha256": "48878069d65904392c11aa75b06cfbf167af1ef9ca3203aaa85aa6ca9f1fd2ad",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "Search local text documents and retain exact source evidence.",
+          "搜索本地文本文档并保留精确来源证据。"
+        ],
+        [
+          "recorded model JSON, checked against retrieved sources",
+          "预先记录的模型 JSON，按检索来源核查"
+        ],
+        [
+          "Citation receipt",
+          "引用凭据（Citation receipt）"
+        ]
+      ]
+    },
+    "projects/doc-qa-with-citations/solution/demo.py": {
+      "sourceSha256": "4035c3605b5f66a019d6caa0ba1cc121dfdc2e86f020042c34221e26013f372e",
+      "localizedSha256": "4035c3605b5f66a019d6caa0ba1cc121dfdc2e86f020042c34221e26013f372e",
+      "kind": "preserved-contract"
+    },
+    "projects/doc-qa-with-citations/solution/documents.py": {
+      "sourceSha256": "8721c2d0abaf55212f38fd60f79154e95ae9fb4410c260eb397d7eeac9240d3c",
+      "localizedSha256": "5a87a493cb7bfc5ff09ab1ca980bacb0e987aad053de51f2a20c82e7ccf465a5",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "Load local documents with stable provenance.\n\nLesson: projects/doc-qa-with-citations/stages/01-documents/docs/en.md\nThe implementation is original and uses explicit local data contracts.\nRun its tests through scripts/project_test.py.\n",
+          "加载本地文档并保留稳定来源\n\n阶段：projects/doc-qa-with-citations/stages/01-documents/docs/en.md\n原创实现，采用明确的本地数据契约。\n通过 scripts/project_test.py 运行测试。\n"
+        ]
+      ]
+    },
+    "projects/doc-qa-with-citations/solution/framework_demo.py": {
+      "sourceSha256": "7385f1af7af119a5bd3b355e149bd04e62be24c942333d6dca2c2fee15b0307f",
+      "localizedSha256": "918b284201110cf9567973334d5c3ab17294d9040380cf9d3699d634078701bc",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "Real LangChain splitter and FakeListLLM, no network calls",
+          "通过真实 LangChain 组件运行本地夹具；不调用云服务（Real LangChain splitter and FakeListLLM, no network calls）"
+        ]
+      ]
+    },
+    "projects/doc-qa-with-citations/solution/retrieval.py": {
+      "sourceSha256": "e139ce2e99563269ce8ea14ee76dd7b9884669dbd272f39bea24aebf05136331",
+      "localizedSha256": "9f23139130c14974ac0441f14af9d74b7618e7afff805aec40e07165879e0de8",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "Rank chunks with an inspectable keyword score.\n\nLesson: projects/doc-qa-with-citations/stages/02-retrieval/docs/en.md\nThe implementation is original and uses explicit local data contracts.\nRun its tests through scripts/project_test.py.\n",
+          "用可检查的关键词分数排列文本块\n\n阶段：projects/doc-qa-with-citations/stages/02-retrieval/docs/en.md\n原创实现，采用明确的本地数据契约。\n通过 scripts/project_test.py 运行测试。\n"
+        ]
+      ]
+    },
+    "projects/doc-qa-with-citations/solution/samples/docs/cache.txt": {
+      "sourceSha256": "a79d26e83e350f271a671f10a819d5d78e3e6bbd27da328396c999cdab9d6591",
+      "localizedSha256": "a79d26e83e350f271a671f10a819d5d78e3e6bbd27da328396c999cdab9d6591",
+      "kind": "preserved-contract"
+    },
+    "projects/doc-qa-with-citations/solution/samples/docs/limits.txt": {
+      "sourceSha256": "d057a636d143dd6ece5555c3ca7275d3ddca34ae5e9779fe46d4a37cf0e76c58",
+      "localizedSha256": "d057a636d143dd6ece5555c3ca7275d3ddca34ae5e9779fe46d4a37cf0e76c58",
+      "kind": "preserved-contract"
+    },
+    "projects/doc-qa-with-citations/stages/01-documents/docs/en.md": {
+      "sourceSha256": "588745df20e36e67f80c84d47e9d7c8c928566a9dc1f6e01ca57403e3e3e8254",
+      "localizedSha256": "4c8b5c41342bd383a37c0c03f033cb65f617028c3c243b58ddd4ed423dec4d20",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-doc-qa-with-citations-1\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py doc-qa-with-citations --stage 1 --path learning-artifacts/doc-qa-with-citations --strict\n"
+          ],
+          [
+            "bash",
+            "cd learning-artifacts/doc-qa-with-citations\npython3 cli.py samples/docs \"When does cache expire?\" --output answer.json --html answer.html\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "chunk_document"
+          ],
+          [
+            "`",
+            "documents.py"
+          ],
+          [
+            "`",
+            "load_documents"
+          ],
+          [
+            "`",
+            "python3 scripts/project_test.py doc-qa-with-citations --init learning-artifacts/doc-qa-with-citations"
+          ]
+        ],
+        "links": [
+          "../../../API.md",
+          "../../../README.md",
+          "https://docs.langchain.com/oss/python/integrations/splitters/recursive_text_splitter"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/doc-qa-with-citations/stages/01-documents/starter/cli.py": {
+      "sourceSha256": "903dfc0a6535009a6e261b7582566c08de5e9e9a7c44ba1d3f86842b5ed94c21",
+      "localizedSha256": "48878069d65904392c11aa75b06cfbf167af1ef9ca3203aaa85aa6ca9f1fd2ad",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "Search local text documents and retain exact source evidence.",
+          "搜索本地文本文档并保留精确来源证据。"
+        ],
+        [
+          "recorded model JSON, checked against retrieved sources",
+          "预先记录的模型 JSON，按检索来源核查"
+        ],
+        [
+          "Citation receipt",
+          "引用凭据（Citation receipt）"
+        ]
+      ]
+    },
+    "projects/doc-qa-with-citations/stages/01-documents/starter/documents.py": {
+      "sourceSha256": "23d3c0cb3bb16a15f15bf8979d8d302e59f29dd530e7b8ad1831ebe24c872aad",
+      "localizedSha256": "c807acd5a4232759641c8b8c9403c3fb6721bd66d9c24d484a481c9c45b735da",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "Load local documents with stable provenance.\n\nLesson: projects/doc-qa-with-citations/stages/01-documents/docs/en.md\nThe implementation is original and uses explicit local data contracts.\nRun its tests through scripts/project_test.py.\n",
+          "加载本地文档并保留稳定来源\n\n阶段：projects/doc-qa-with-citations/stages/01-documents/docs/en.md\n原创实现，采用明确的本地数据契约。\n通过 scripts/project_test.py 运行测试。\n"
+        ]
+      ]
+    },
+    "projects/doc-qa-with-citations/stages/01-documents/starter/samples/docs/cache.txt": {
+      "sourceSha256": "a79d26e83e350f271a671f10a819d5d78e3e6bbd27da328396c999cdab9d6591",
+      "localizedSha256": "a79d26e83e350f271a671f10a819d5d78e3e6bbd27da328396c999cdab9d6591",
+      "kind": "preserved-contract"
+    },
+    "projects/doc-qa-with-citations/stages/01-documents/starter/samples/docs/limits.txt": {
+      "sourceSha256": "d057a636d143dd6ece5555c3ca7275d3ddca34ae5e9779fe46d4a37cf0e76c58",
+      "localizedSha256": "d057a636d143dd6ece5555c3ca7275d3ddca34ae5e9779fe46d4a37cf0e76c58",
+      "kind": "preserved-contract"
+    },
+    "projects/doc-qa-with-citations/stages/01-documents/tests/test_documents.py": {
+      "sourceSha256": "f0858473ebef8e4552445bbae8a2774835774204dadd62ac5c8ee8f42e3c6d86",
+      "localizedSha256": "f0858473ebef8e4552445bbae8a2774835774204dadd62ac5c8ee8f42e3c6d86",
+      "kind": "preserved-contract"
+    },
+    "projects/doc-qa-with-citations/stages/02-retrieval/docs/en.md": {
+      "sourceSha256": "e178eb32876b0079685b0356eefea7ebf57055b3811c5954e408627cc90f8eb6",
+      "localizedSha256": "ff9da4653f2304835f00c434b38f7bac73d16303dced94a0d1b6e2885897902d",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-doc-qa-with-citations-2\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py doc-qa-with-citations --stage 2 --path learning-artifacts/doc-qa-with-citations --strict\n"
+          ],
+          [
+            "bash",
+            "cd learning-artifacts/doc-qa-with-citations\npython3 cli.py samples/docs \"When does cache expire?\" --output answer.json --html answer.html\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "python3 scripts/project_test.py doc-qa-with-citations --init learning-artifacts/doc-qa-with-citations"
+          ],
+          [
+            "`",
+            "retrieval.py"
+          ],
+          [
+            "`",
+            "retrieve"
+          ]
+        ],
+        "links": [
+          "../../../API.md",
+          "../../../README.md",
+          "https://docs.langchain.com/oss/python/integrations/splitters/recursive_text_splitter"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/doc-qa-with-citations/stages/02-retrieval/starter/retrieval.py": {
+      "sourceSha256": "80d7f763f180eb11fc5fc1f51877fda3562661e7063e6c39dff1f9a66e227081",
+      "localizedSha256": "ebcfdf69188b01aa7869e94bba93f9c8e0fd9408d433673271464837d225ecbc",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "Rank chunks with an inspectable keyword score.\n\nLesson: projects/doc-qa-with-citations/stages/02-retrieval/docs/en.md\nThe implementation is original and uses explicit local data contracts.\nRun its tests through scripts/project_test.py.\n",
+          "用可检查的关键词分数排列文本块\n\n阶段：projects/doc-qa-with-citations/stages/02-retrieval/docs/en.md\n原创实现，采用明确的本地数据契约。\n通过 scripts/project_test.py 运行测试。\n"
+        ]
+      ]
+    },
+    "projects/doc-qa-with-citations/stages/02-retrieval/tests/test_retrieval.py": {
+      "sourceSha256": "84a19277c4070e1dbfc916ad0e5eeeaef47bf197c6d01c3b8310266584487e9d",
+      "localizedSha256": "84a19277c4070e1dbfc916ad0e5eeeaef47bf197c6d01c3b8310266584487e9d",
+      "kind": "preserved-contract"
+    },
+    "projects/doc-qa-with-citations/stages/03-answer/docs/en.md": {
+      "sourceSha256": "ce3eb69a79cbb52c96c601f4f2bedb46532351c834c55105813e0062dfc2f478",
+      "localizedSha256": "dca6c74c1befe5c8d056cb526b929dda23027b97ef0f30ec5120207c9ed98a10",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-doc-qa-with-citations-3\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py doc-qa-with-citations --stage 3 --path learning-artifacts/doc-qa-with-citations --strict\n"
+          ],
+          [
+            "bash",
+            "cd learning-artifacts/doc-qa-with-citations\npython3 cli.py samples/docs \"When does cache expire?\" --output answer.json --html answer.html\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "answer"
+          ],
+          [
+            "`",
+            "answer.py"
+          ],
+          [
+            "`",
+            "python3 scripts/project_test.py doc-qa-with-citations --init learning-artifacts/doc-qa-with-citations"
+          ]
+        ],
+        "links": [
+          "../../../API.md",
+          "../../../README.md",
+          "https://docs.langchain.com/oss/python/integrations/splitters/recursive_text_splitter"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/doc-qa-with-citations/stages/03-answer/starter/answer.py": {
+      "sourceSha256": "e941e1a686387b195eb1caa67852953dec06787f45de17a450fc62dee79acaf1",
+      "localizedSha256": "2a73306fad9aecffd73f01368a23bd995955a4448215fd490c09ab53d8993736",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "Accept only answers grounded in retrieved spans.\n\nLesson: projects/doc-qa-with-citations/stages/03-answer/docs/en.md\nThe implementation is original and uses explicit local data contracts.\nRun its tests through scripts/project_test.py.\n",
+          "只接受检索区间能够支持的回答\n\n阶段：projects/doc-qa-with-citations/stages/03-answer/docs/en.md\n原创实现，采用明确的本地数据契约。\n通过 scripts/project_test.py 运行测试。\n"
+        ]
+      ]
+    },
+    "projects/doc-qa-with-citations/stages/03-answer/tests/test_answer.py": {
+      "sourceSha256": "73d10e1a4f2234f6d763a5e0d7c01d00df75fa816cfe4125c66a90b8090ddd2f",
+      "localizedSha256": "73d10e1a4f2234f6d763a5e0d7c01d00df75fa816cfe4125c66a90b8090ddd2f",
+      "kind": "preserved-contract"
+    },
+    "projects/doc-qa-with-citations/stages/04-adapter/docs/en.md": {
+      "sourceSha256": "f7d1aa77fd4192a6d64cda96af3a31a119f589476193e1ec5cdcd9ef1b6988fc",
+      "localizedSha256": "0583c41adf926d9bcce6fb18a7e03d172158dc17ad216f416f66a44166bc5261",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-doc-qa-with-citations-4\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py doc-qa-with-citations --stage 4 --path learning-artifacts/doc-qa-with-citations --strict\n"
+          ],
+          [
+            "bash",
+            "cd learning-artifacts/doc-qa-with-citations\npython3 cli.py samples/docs \"When does cache expire?\" --output answer.json --html answer.html\n"
+          ],
+          [
+            "bash",
+            "python3 -m venv .venv\n.venv/bin/python -m pip install -r projects/doc-qa-with-citations/requirements-framework.txt\n.venv/bin/python scripts/project_test.py doc-qa-with-citations --solution --optional --strict\n.venv/bin/python projects/doc-qa-with-citations/solution/framework_demo.py\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "--path my-doc-qa-with-citations"
+          ],
+          [
+            "`",
+            "--solution"
+          ],
+          [
+            "`",
+            "adapt_splits"
+          ],
+          [
+            "`",
+            "adapter.py"
+          ],
+          [
+            "`",
+            "framework_qa"
+          ],
+          [
+            "`",
+            "langchain-text-splitters==1.1.2"
+          ],
+          [
+            "`",
+            "python3 scripts/project_test.py doc-qa-with-citations --init learning-artifacts/doc-qa-with-citations"
+          ]
+        ],
+        "links": [
+          "../../../API.md",
+          "../../../README.md",
+          "https://docs.langchain.com/oss/python/integrations/splitters/recursive_text_splitter"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/doc-qa-with-citations/stages/04-adapter/starter/adapter.py": {
+      "sourceSha256": "768c1728ac741df09bc74b84b6198762e71f2a5ecbad49b72e0611730a181c4c",
+      "localizedSha256": "308bf4c0f2e785137c4fb563d18cb855d68bd73b18d317cbdf3cdd0e07bd6a8f",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "Use a framework splitter without losing offsets.\n\nLesson: projects/doc-qa-with-citations/stages/04-adapter/docs/en.md\nThe implementation is original and uses explicit local data contracts.\nRun its tests through scripts/project_test.py.\n",
+          "使用框架切分器并保留偏移量\n\n阶段：projects/doc-qa-with-citations/stages/04-adapter/docs/en.md\n原创实现，采用明确的本地数据契约。\n通过 scripts/project_test.py 运行测试。\n"
+        ]
+      ]
+    },
+    "projects/doc-qa-with-citations/stages/04-adapter/tests-framework/test_framework.py": {
+      "sourceSha256": "956a8e2bd5706eae5fc9c2f90958145706f43541758be4fbe1e992c6f912a32a",
+      "localizedSha256": "956a8e2bd5706eae5fc9c2f90958145706f43541758be4fbe1e992c6f912a32a",
+      "kind": "preserved-contract"
+    },
+    "projects/doc-qa-with-citations/stages/04-adapter/tests/test_adapter.py": {
+      "sourceSha256": "2e2bde0e869fdc93d77b6f2746fa3efca6ff44217ff9a14d83b51e65259c6ace",
+      "localizedSha256": "2e2bde0e869fdc93d77b6f2746fa3efca6ff44217ff9a14d83b51e65259c6ace",
+      "kind": "preserved-contract"
+    },
+    "projects/doc-qa-with-citations/stages/04-adapter/tests/test_integration.py": {
+      "sourceSha256": "34d7ed0cad2acbc7861f3f9037641313bcd7ec060420b4c0b20023ad0df84fd7",
+      "localizedSha256": "34d7ed0cad2acbc7861f3f9037641313bcd7ec060420b4c0b20023ad0df84fd7",
+      "kind": "preserved-contract"
+    },
+    "projects/document-extraction-desk/README.md": {
+      "sourceSha256": "a29d52bd87e1ef332c98c9cc358b884783eab20ad5f50ed355c93b303d5dfd64",
+      "localizedSha256": "7b7d02a80a0188930ae293f2ab565052db133f33e9a6fc4868d18193d08ee0de",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "bash",
+            "cd projects/document-extraction-desk/solution\npython3 cli.py sample.txt --schema schema.json --output output/review.html\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py document-extraction-desk --init my-document-extraction-desk\npython3 scripts/project_test.py document-extraction-desk --stage 1 --path my-document-extraction-desk --strict\npython3 scripts/project_test.py document-extraction-desk --all --path my-document-extraction-desk --strict --report completion.json\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py document-extraction-desk --all --solution --strict\n"
+          ]
+        ],
+        "inlineCode": [],
+        "links": [
+          "../../phases/00-setup-and-tooling/01-dev-environment/docs/en.md",
+          "../../phases/00-setup-and-tooling/09-data-management/docs/en.md",
+          "https://docs.python.org/3/library/re.html#match-objects",
+          "stages/01-define-fields/docs/en.md",
+          "stages/02-retain-source-spans/docs/en.md",
+          "stages/03-review-and-approve/docs/en.md",
+          "stages/04-export-review-desk/docs/en.md"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 4
+      }
+    },
+    "projects/document-extraction-desk/media/output.gif": {
+      "sourceSha256": "7d5552c9f484983c35430a501819767525e17ddac1e3b0a32c0e0e312c215df0",
+      "localizedSha256": "7d5552c9f484983c35430a501819767525e17ddac1e3b0a32c0e0e312c215df0",
+      "kind": "original-recording"
+    },
+    "projects/document-extraction-desk/media/output.json": {
+      "sourceSha256": "9add8ee75a20f4fecb3430030433962ecff29bca742523d6d646d19afa7c83c1",
+      "localizedSha256": "9add8ee75a20f4fecb3430030433962ecff29bca742523d6d646d19afa7c83c1",
+      "kind": "original-recording"
+    },
+    "projects/document-extraction-desk/media/output.png": {
+      "sourceSha256": "598cb6025afce3c39c65d6ec2446379e61da1b9a24d99b65eb9a3f3e612eb349",
+      "localizedSha256": "598cb6025afce3c39c65d6ec2446379e61da1b9a24d99b65eb9a3f3e612eb349",
+      "kind": "original-recording"
+    },
+    "projects/document-extraction-desk/media/run.gif": {
+      "sourceSha256": "0f6df67229f1b8320df72683c19461ddd8b2c658de9f38721f2d981868d0ba80",
+      "localizedSha256": "0f6df67229f1b8320df72683c19461ddd8b2c658de9f38721f2d981868d0ba80",
+      "kind": "original-recording"
+    },
+    "projects/document-extraction-desk/media/run.json": {
+      "sourceSha256": "7ba28f2410543e57b6b96f7741653191623bcef7087de8171ff9a608ce6dd514",
+      "localizedSha256": "7ba28f2410543e57b6b96f7741653191623bcef7087de8171ff9a608ce6dd514",
+      "kind": "original-recording"
+    },
+    "projects/document-extraction-desk/media/run.png": {
+      "sourceSha256": "b924c967e04bfc79aa6c3d2c20c7765e9254cf9a5bfa98bd17779e40509f3875",
+      "localizedSha256": "b924c967e04bfc79aa6c3d2c20c7765e9254cf9a5bfa98bd17779e40509f3875",
+      "kind": "original-recording"
+    },
+    "projects/document-extraction-desk/project.json": {
+      "sourceSha256": "5333f1c187424ce400ea649d193b5e27fcc408acaca7176eda61f45e5750410e",
+      "localizedSha256": "2c2446cb31b0d8dfbdb7fd36acac9da3aa410692dac0d9de8a78aaad99cca5c1",
+      "kind": "manifest",
+      "contract": {
+        "id": "document-extraction-desk",
+        "title": "<translated-text>",
+        "level": 2,
+        "levelName": "Builder",
+        "tagline": "<translated-text>",
+        "summary": "<translated-text>",
+        "youWillBuild": "<translated-text>",
+        "usefulFor": [
+          "<translated-text>"
+        ],
+        "hours": 8,
+        "languages": [
+          "Python"
+        ],
+        "languageWhy": {
+          "Python": "<translated-text>"
+        },
+        "status": "ready",
+        "source": "core",
+        "author": {
+          "name": "AI Engineering from Scratch",
+          "github": "rohitg00"
+        },
+        "skills": [
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "prerequisites": [
+          {
+            "title": "<translated-text>",
+            "path": "phases/00-setup-and-tooling/01-dev-environment"
+          },
+          {
+            "title": "<translated-text>",
+            "path": "phases/00-setup-and-tooling/09-data-management"
+          }
+        ],
+        "figures": true,
+        "overviewFigure": "pj-document-extraction-desk-1",
+        "demo": {
+          "command": [
+            "python3",
+            "cli.py",
+            "sample.txt",
+            "--schema",
+            "schema.json",
+            "--output",
+            "output/review.html"
+          ],
+          "cwd": "solution"
+        },
+        "stages": [
+          {
+            "id": "01-define-fields",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "difficulty": "starter",
+            "language": "python",
+            "concepts": [
+              "<translated-text>"
+            ],
+            "figure": "pj-document-extraction-desk-1"
+          },
+          {
+            "id": "02-retain-source-spans",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "difficulty": "core",
+            "language": "python",
+            "concepts": [
+              "<translated-text>"
+            ],
+            "figure": "pj-document-extraction-desk-2"
+          },
+          {
+            "id": "03-review-and-approve",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "difficulty": "core",
+            "language": "python",
+            "concepts": [
+              "<translated-text>"
+            ],
+            "figure": "pj-document-extraction-desk-3"
+          },
+          {
+            "id": "04-export-review-desk",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "difficulty": "stretch",
+            "language": "python",
+            "concepts": [
+              "<translated-text>"
+            ],
+            "figure": "pj-document-extraction-desk-4"
+          }
+        ],
+        "demos": [
+          {
+            "gif": "media/run.gif",
+            "poster": "media/run.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          },
+          {
+            "gif": "media/output.gif",
+            "poster": "media/output.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          }
+        ]
+      },
+      "exactStageSummaries": [
+        "validate_schema(schema)",
+        "extract_candidates(text, schema)",
+        "typed_value(quote, kind); review_document(text, schema, candidates, decisions=None)",
+        "render_review(report)"
+      ]
+    },
+    "projects/document-extraction-desk/solution/cli.py": {
+      "sourceSha256": "b10b0a0515f0a76034f882571d516d7fdcb1f90ec2acd21bb6831abe98438b41",
+      "localizedSha256": "a66d6e36687a8dfaca9b4387c9d70548ecdfbe6b622101a8430df394b28d376c",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "Review structured fields with exact document evidence.",
+          "依据精确文档证据审阅结构化字段。"
+        ],
+        [
+          "Optional extractor/model JSON candidates; every span is independently checked",
+          "可选的抽取器／模型 JSON 候选；每个来源区间独立检查"
+        ],
+        [
+          "Reviewer decisions downloaded from the local HTML desk",
+          "从本地 HTML 审阅台下载的审阅决定"
+        ]
+      ]
+    },
+    "projects/document-extraction-desk/solution/main.py": {
+      "sourceSha256": "c775c7ddc82a5ba214ccebb223c7ad6fc54ceeed438f92e38827b51c330e7e7e",
+      "localizedSha256": "09a869a2678d29f2400f91f01191454e9d058b148eb729dec4c97d54ffbc6d3a",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "source characters {c['start']}..{c['end']}",
+          "来源字符 {c['start']}..{c['end']}"
+        ],
+        [
+          "No source candidate. Correct the input before approval.",
+          "未找到来源候选（No source candidate）。审批前请修正输入。"
+        ],
+        [
+          "Saved selected source spans. Apply approvals with the CLI to validate and export.",
+          "已保存所选来源区间。使用 CLI 应用审批，完成校验和导出。"
+        ],
+        [
+          "<html lang=\"en\">",
+          "<html lang=\"zh-CN\">"
+        ],
+        [
+          "<title>Document extraction review</title>",
+          "<title>文档抽取审阅</title>"
+        ],
+        [
+          "<h1>Review the field against its source</h1>",
+          "<h1>对照来源审阅字段</h1>"
+        ],
+        [
+          "<p>Status: <strong>",
+          "<p>状态：<strong>"
+        ],
+        [
+          ">Download selected approvals</button>",
+          ">下载所选审批决定</button>"
+        ]
+      ]
+    },
+    "projects/document-extraction-desk/solution/sample.txt": {
+      "sourceSha256": "d5cadf6cd3769fc0c52072dd059a9a1e8839e873aee316430122f50e4f0699ee",
+      "localizedSha256": "d5cadf6cd3769fc0c52072dd059a9a1e8839e873aee316430122f50e4f0699ee",
+      "kind": "preserved-contract"
+    },
+    "projects/document-extraction-desk/solution/schema.json": {
+      "sourceSha256": "d38359cc648c6ae917b92008a92b25cb2baebe662086882aa891dcb822c842c1",
+      "localizedSha256": "d38359cc648c6ae917b92008a92b25cb2baebe662086882aa891dcb822c842c1",
+      "kind": "preserved-contract"
+    },
+    "projects/document-extraction-desk/stages/01-define-fields/docs/en.md": {
+      "sourceSha256": "db6985f1e54d2101fda4eb7384fc89423d00e2ce25efab3e7a9d9cbe19be208d",
+      "localizedSha256": "97e6e02df8d31e0595bd01fd972b2f9987a64646cc0baf30e49bb3835e1a29ba",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-document-extraction-desk-1\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py document-extraction-desk --init my-document-extraction-desk\npython3 scripts/project_test.py document-extraction-desk --stage 1 --path my-document-extraction-desk --strict\n"
+          ],
+          [
+            "bash",
+            "cd my-document-extraction-desk\npython3 cli.py sample.txt --schema schema.json --output output/review.html\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "main.py"
+          ],
+          [
+            "`",
+            "validate_schema(schema)"
+          ]
+        ],
+        "links": [
+          "../../../../../phases/00-setup-and-tooling/01-dev-environment/docs/en.md",
+          "../../../../../phases/00-setup-and-tooling/09-data-management/docs/en.md",
+          "https://docs.python.org/3/library/re.html#match-objects"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 5,
+        "listItems": 3
+      }
+    },
+    "projects/document-extraction-desk/stages/01-define-fields/starter/cli.py": {
+      "sourceSha256": "b10b0a0515f0a76034f882571d516d7fdcb1f90ec2acd21bb6831abe98438b41",
+      "localizedSha256": "a66d6e36687a8dfaca9b4387c9d70548ecdfbe6b622101a8430df394b28d376c",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "Review structured fields with exact document evidence.",
+          "依据精确文档证据审阅结构化字段。"
+        ],
+        [
+          "Optional extractor/model JSON candidates; every span is independently checked",
+          "可选的抽取器／模型 JSON 候选；每个来源区间独立检查"
+        ],
+        [
+          "Reviewer decisions downloaded from the local HTML desk",
+          "从本地 HTML 审阅台下载的审阅决定"
+        ]
+      ]
+    },
+    "projects/document-extraction-desk/stages/01-define-fields/starter/main.py": {
+      "sourceSha256": "88f323655e1d6fec89c23dc3898ae789f7557530000c43915a63a9691f89d360",
+      "localizedSha256": "88f323655e1d6fec89c23dc3898ae789f7557530000c43915a63a9691f89d360",
+      "kind": "preserved-contract"
+    },
+    "projects/document-extraction-desk/stages/01-define-fields/starter/sample.txt": {
+      "sourceSha256": "d5cadf6cd3769fc0c52072dd059a9a1e8839e873aee316430122f50e4f0699ee",
+      "localizedSha256": "d5cadf6cd3769fc0c52072dd059a9a1e8839e873aee316430122f50e4f0699ee",
+      "kind": "preserved-contract"
+    },
+    "projects/document-extraction-desk/stages/01-define-fields/starter/schema.json": {
+      "sourceSha256": "d38359cc648c6ae917b92008a92b25cb2baebe662086882aa891dcb822c842c1",
+      "localizedSha256": "d38359cc648c6ae917b92008a92b25cb2baebe662086882aa891dcb822c842c1",
+      "kind": "preserved-contract"
+    },
+    "projects/document-extraction-desk/stages/01-define-fields/starter/stage-1.md": {
+      "sourceSha256": "688d7f01690a712553ec4d52126b3da4e77240754cb304198a0ce827931c2660",
+      "localizedSha256": "8894f8155da03a9a747ebaa4b1010754725cbf200c5c633dd00332630de64c3b",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [
+          [
+            "`",
+            "validate_schema(schema)"
+          ]
+        ],
+        "links": [],
+        "math": [],
+        "headings": [
+          "#"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/document-extraction-desk/stages/01-define-fields/tests/test_stage.py": {
+      "sourceSha256": "14b7857bb9f9e1eef7431486e511b3a5bda1257b12b68d33c5f43d12b331dcf5",
+      "localizedSha256": "14b7857bb9f9e1eef7431486e511b3a5bda1257b12b68d33c5f43d12b331dcf5",
+      "kind": "preserved-contract"
+    },
+    "projects/document-extraction-desk/stages/02-retain-source-spans/docs/en.md": {
+      "sourceSha256": "12ad2bf245d6b521a3192757046b60d8e83256032031709410bd6cb41dadff81",
+      "localizedSha256": "d13a128e23b2cc13b87b185300aeda6d0dd2b363e004b08849a7702c4436b291",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-document-extraction-desk-2\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py document-extraction-desk --init my-document-extraction-desk\npython3 scripts/project_test.py document-extraction-desk --stage 2 --path my-document-extraction-desk --strict\n"
+          ],
+          [
+            "bash",
+            "cd my-document-extraction-desk\npython3 cli.py sample.txt --schema schema.json --output output/review.html\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "extract_candidates(text, schema)"
+          ],
+          [
+            "`",
+            "main.py"
+          ]
+        ],
+        "links": [
+          "../../../../../phases/00-setup-and-tooling/01-dev-environment/docs/en.md",
+          "../../../../../phases/00-setup-and-tooling/09-data-management/docs/en.md",
+          "https://docs.python.org/3/library/re.html#match-objects"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 5,
+        "listItems": 3
+      }
+    },
+    "projects/document-extraction-desk/stages/02-retain-source-spans/starter/stage-2.md": {
+      "sourceSha256": "d12e8728d5459bda51f173c55d5e6e6097d6e783d1baff62333f9947fd206599",
+      "localizedSha256": "6b03c67ea94186bc55d510189e9f51f857ea77897b239f57876b2e5d3c73bc35",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [
+          [
+            "`",
+            "extract_candidates(text, schema)"
+          ]
+        ],
+        "links": [],
+        "math": [],
+        "headings": [
+          "#"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/document-extraction-desk/stages/02-retain-source-spans/tests/test_stage.py": {
+      "sourceSha256": "cf469aa49ed00eacfe7f22ad97473e169eb52a492b0f2a489e428783725859cc",
+      "localizedSha256": "cf469aa49ed00eacfe7f22ad97473e169eb52a492b0f2a489e428783725859cc",
+      "kind": "preserved-contract"
+    },
+    "projects/document-extraction-desk/stages/03-review-and-approve/docs/en.md": {
+      "sourceSha256": "1a0bf04c02d27afcff585b3a5e4b75409ea5ebb1567ac3368bf833bb6f11a786",
+      "localizedSha256": "c4637356e8ff7377e0f29424527687d0bccf7a5c12f81159d775401eb8589bac",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-document-extraction-desk-3\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py document-extraction-desk --init my-document-extraction-desk\npython3 scripts/project_test.py document-extraction-desk --stage 3 --path my-document-extraction-desk --strict\n"
+          ],
+          [
+            "bash",
+            "cd my-document-extraction-desk\npython3 cli.py sample.txt --schema schema.json --output output/review.html\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "-2.5"
+          ],
+          [
+            "`",
+            ".5"
+          ],
+          [
+            "`",
+            "1,000"
+          ],
+          [
+            "`",
+            "1_000"
+          ],
+          [
+            "`",
+            "1e3"
+          ],
+          [
+            "`",
+            "1e309"
+          ],
+          [
+            "`",
+            "3.5 kg"
+          ],
+          [
+            "`",
+            "NaN"
+          ],
+          [
+            "`",
+            "float"
+          ],
+          [
+            "`",
+            "inf"
+          ],
+          [
+            "`",
+            "integer"
+          ],
+          [
+            "`",
+            "main.py"
+          ],
+          [
+            "`",
+            "number"
+          ],
+          [
+            "`",
+            "typed_value(quote, kind); review_document(text, schema, candidates, decisions=None)"
+          ]
+        ],
+        "links": [
+          "../../../../../phases/00-setup-and-tooling/01-dev-environment/docs/en.md",
+          "../../../../../phases/00-setup-and-tooling/09-data-management/docs/en.md",
+          "https://docs.python.org/3/library/re.html#match-objects"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 5,
+        "listItems": 3
+      }
+    },
+    "projects/document-extraction-desk/stages/03-review-and-approve/starter/stage-3.md": {
+      "sourceSha256": "ce4296f7a3ff4d5e4976f15f425bdac94659d9d1370905c945c613a8e665211b",
+      "localizedSha256": "0a9020c86dd9739651fe2d4214ea0b32f3bec48cb0de2f206edb80aeac88126c",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [
+          [
+            "`",
+            "typed_value(quote, kind); review_document(text, schema, candidates, decisions=None)"
+          ]
+        ],
+        "links": [],
+        "math": [],
+        "headings": [
+          "#"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/document-extraction-desk/stages/03-review-and-approve/tests/test_numeric_syntax.py": {
+      "sourceSha256": "ee20dc9ae3e63b2c19ca990ffff1c3c0e7df6dab9183714b340336141b47b8e2",
+      "localizedSha256": "ee20dc9ae3e63b2c19ca990ffff1c3c0e7df6dab9183714b340336141b47b8e2",
+      "kind": "preserved-contract"
+    },
+    "projects/document-extraction-desk/stages/03-review-and-approve/tests/test_stage.py": {
+      "sourceSha256": "dcef7e7efeae3817cf41568e583d3e906fd9a792d560fc661e3cebebc131745d",
+      "localizedSha256": "dcef7e7efeae3817cf41568e583d3e906fd9a792d560fc661e3cebebc131745d",
+      "kind": "preserved-contract"
+    },
+    "projects/document-extraction-desk/stages/04-export-review-desk/docs/en.md": {
+      "sourceSha256": "e6f16ead8210181814d11a8ddd3acb2417a869005c90d24b6e3190325e591561",
+      "localizedSha256": "3b97a39eaa5751f5afac3a144a0245c2dbe95ef2b4186fb26e3096a500c30701",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-document-extraction-desk-4\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py document-extraction-desk --init my-document-extraction-desk\npython3 scripts/project_test.py document-extraction-desk --stage 4 --path my-document-extraction-desk --strict\n"
+          ],
+          [
+            "bash",
+            "cd my-document-extraction-desk\npython3 cli.py sample.txt --schema schema.json --output output/review.html\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "main.py"
+          ],
+          [
+            "`",
+            "render_review(report)"
+          ],
+          [
+            "`",
+            "selected"
+          ]
+        ],
+        "links": [
+          "../../../../../phases/00-setup-and-tooling/01-dev-environment/docs/en.md",
+          "../../../../../phases/00-setup-and-tooling/09-data-management/docs/en.md",
+          "https://docs.python.org/3/library/re.html#match-objects"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 5,
+        "listItems": 3
+      }
+    },
+    "projects/document-extraction-desk/stages/04-export-review-desk/starter/stage-4.md": {
+      "sourceSha256": "1263a9daa036111fb4b37f4963434d42883b633ae57a60d7301a5b85d6cc7a04",
+      "localizedSha256": "1de6023646e0e6c8d38201db146adc5a03b45dce057c35be32a72f1ed8bd25c4",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [
+          [
+            "`",
+            "render_review(report)"
+          ]
+        ],
+        "links": [],
+        "math": [],
+        "headings": [
+          "#"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/document-extraction-desk/stages/04-export-review-desk/tests/test_stage.py": {
+      "sourceSha256": "540d60fc359140d28802ce62d55c197ebee09f154653e2aec75593bc326df18e",
+      "localizedSha256": "540d60fc359140d28802ce62d55c197ebee09f154653e2aec75593bc326df18e",
+      "kind": "preserved-contract"
+    },
+    "projects/durable-agent-jobs/API.md": {
+      "sourceSha256": "91f146a8680ef3cb48ff42f78a474773606b14b72c4056a63e590de8a7d12165",
+      "localizedSha256": "27e0384d68f931a88302e32a6bb26de8e74e946d650585437bf1a7644cb3f5da",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [
+          [
+            "`",
+            "--crash-after claim|effect"
+          ],
+          [
+            "`",
+            "--delay-ms"
+          ],
+          [
+            "`",
+            "--lease-ms"
+          ],
+          [
+            "`",
+            "--max-attempts"
+          ],
+          [
+            "`",
+            "--max-jobs"
+          ],
+          [
+            "`",
+            "--now-ms"
+          ],
+          [
+            "`",
+            "ClaimNext"
+          ],
+          [
+            "`",
+            "CompleteClaim"
+          ],
+          [
+            "`",
+            "Enqueue"
+          ],
+          [
+            "`",
+            "Finish"
+          ],
+          [
+            "`",
+            "Status"
+          ],
+          [
+            "`",
+            "Work"
+          ],
+          [
+            "`",
+            "[a-z][a-z0-9-]{0,63}"
+          ],
+          [
+            "`",
+            "demo --input FILE"
+          ],
+          [
+            "`",
+            "effects/<id>.json"
+          ],
+          [
+            "`",
+            "enqueue --store DIR --input FILE"
+          ],
+          [
+            "`",
+            "go build -o jobs ."
+          ],
+          [
+            "`",
+            "inputs/<id>.json"
+          ],
+          [
+            "`",
+            "jobs.json"
+          ],
+          [
+            "`",
+            "ledger.lock"
+          ],
+          [
+            "`",
+            "status --store DIR"
+          ],
+          [
+            "`",
+            "worker --store DIR"
+          ]
+        ],
+        "links": [],
+        "math": [],
+        "headings": [
+          "#"
+        ],
+        "tableRows": 6,
+        "listItems": 0
+      }
+    },
+    "projects/durable-agent-jobs/README.md": {
+      "sourceSha256": "7f21b29523dbad2efd8b8e286d07af30de178fbeb009009402b820bd63154905",
+      "localizedSha256": "91b8cac2f277ca1b73b3e1d8d7fadb1264d0f0027d7aa0c94c8a1702557858f2",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "bash",
+            "python3 scripts/project_test.py durable-agent-jobs --init /tmp/durable-agent-jobs-work\npython3 scripts/project_test.py durable-agent-jobs --stage 1 --path /tmp/durable-agent-jobs-work --strict\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py durable-agent-jobs --all --path /tmp/durable-agent-jobs-work --strict --report /tmp/durable-learner.json\ncd /tmp/durable-agent-jobs-work\ngo build -o /tmp/durable-learner .\n/tmp/durable-learner demo --input samples/jobs.json\n"
+          ],
+          [
+            "bash",
+            "cd projects/durable-agent-jobs/solution\ngo build -o /tmp/durable-jobs .\nSTORE=$(mktemp -d /tmp/durable-jobs.XXXXXX)\n/tmp/durable-jobs enqueue --store \"$STORE\" --input samples/jobs.json\n/tmp/durable-jobs worker --store \"$STORE\" --max-jobs 100\n/tmp/durable-jobs status --store \"$STORE\"\n"
+          ],
+          [
+            "bash",
+            "CRASH_STORE=$(mktemp -d /tmp/durable-crash.XXXXXX)\n/tmp/durable-jobs enqueue --store \"$CRASH_STORE\" --input samples/jobs.json\n/tmp/durable-jobs worker --store \"$CRASH_STORE\" --now-ms 100 --lease-ms 10 --crash-after effect\n/tmp/durable-jobs status --store \"$CRASH_STORE\"\n/tmp/durable-jobs worker --store \"$CRASH_STORE\" --now-ms 111 --lease-ms 10 --max-jobs 100\n/tmp/durable-jobs status --store \"$CRASH_STORE\"\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py durable-agent-jobs --all --solution --strict\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "--crash-after effect"
+          ],
+          [
+            "`",
+            "--delay-ms 500"
+          ],
+          [
+            "`",
+            "--now-ms"
+          ],
+          [
+            "`",
+            "claim"
+          ],
+          [
+            "`",
+            "go run . demo"
+          ],
+          [
+            "`",
+            "incident-summary"
+          ],
+          [
+            "`",
+            "reused_effect: true"
+          ],
+          [
+            "`",
+            "stage1.go"
+          ],
+          [
+            "`",
+            "{ \"id\": \"report-one\", \"text\": \"your report text\" }"
+          ]
+        ],
+        "links": [
+          "API.md",
+          "https://go.dev/tour/",
+          "https://pkg.go.dev/os",
+          "stages/01-create-jobs-with-stable-identity/docs/en.md",
+          "stages/02-claim-with-a-lease-and-version/docs/en.md",
+          "stages/03-finish-or-reclaim-expired-work/docs/en.md",
+          "stages/04-write-and-recover-atomic-snapshots/docs/en.md"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 4
+      }
+    },
+    "projects/durable-agent-jobs/media/output.gif": {
+      "sourceSha256": "7c2652eaa52837c45e5f1a563db6c7f578efd0cd48868c644bed14b1176e1610",
+      "localizedSha256": "7c2652eaa52837c45e5f1a563db6c7f578efd0cd48868c644bed14b1176e1610",
+      "kind": "original-recording"
+    },
+    "projects/durable-agent-jobs/media/output.json": {
+      "sourceSha256": "f141caada8ce9ee43d03e9dca6022f6ec8418c3526c72985b14aec24967a1878",
+      "localizedSha256": "f141caada8ce9ee43d03e9dca6022f6ec8418c3526c72985b14aec24967a1878",
+      "kind": "original-recording"
+    },
+    "projects/durable-agent-jobs/media/output.png": {
+      "sourceSha256": "87fbcc26c2d005c2ddd4988a5a5c5f56afa6cc23f151dcd8e06c3277d264e67b",
+      "localizedSha256": "87fbcc26c2d005c2ddd4988a5a5c5f56afa6cc23f151dcd8e06c3277d264e67b",
+      "kind": "original-recording"
+    },
+    "projects/durable-agent-jobs/media/run.gif": {
+      "sourceSha256": "fd9eb846ae6730de639f4acea46ecb75446780228b8f6dc9513c2c7211f0f934",
+      "localizedSha256": "fd9eb846ae6730de639f4acea46ecb75446780228b8f6dc9513c2c7211f0f934",
+      "kind": "original-recording"
+    },
+    "projects/durable-agent-jobs/media/run.json": {
+      "sourceSha256": "bdd17aa4d531e762fe2a86654233820037aca2ebff6693f71764509e5634ff32",
+      "localizedSha256": "bdd17aa4d531e762fe2a86654233820037aca2ebff6693f71764509e5634ff32",
+      "kind": "original-recording"
+    },
+    "projects/durable-agent-jobs/media/run.png": {
+      "sourceSha256": "7bef82bdd74d5d4c8709e687cf83a8d2b7ff2d2e6eefcb3c1b207343462ebf84",
+      "localizedSha256": "7bef82bdd74d5d4c8709e687cf83a8d2b7ff2d2e6eefcb3c1b207343462ebf84",
+      "kind": "original-recording"
+    },
+    "projects/durable-agent-jobs/project.json": {
+      "sourceSha256": "9c08dd5d707202b61e5f9de9ee72520cdf257c686b653cd6da863c891b4aa052",
+      "localizedSha256": "0c7e1151637f21796cfd0e87a24517cdd51c39d255b400e9bd4e8440a865ba10",
+      "kind": "manifest",
+      "contract": {
+        "id": "durable-agent-jobs",
+        "title": "<translated-text>",
+        "level": 4,
+        "levelName": "Systems",
+        "tagline": "<translated-text>",
+        "summary": "<translated-text>",
+        "usefulFor": [
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "youWillBuild": "<translated-text>",
+        "hours": 8,
+        "languages": [
+          "Go"
+        ],
+        "status": "ready",
+        "source": "core",
+        "author": {
+          "name": "AI Engineering from Scratch",
+          "github": "rohitg00"
+        },
+        "skills": [
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "prerequisites": [
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "inspiredBy": [],
+        "demo": {
+          "command": [
+            "go",
+            "run",
+            ".",
+            "demo"
+          ],
+          "cwd": "solution"
+        },
+        "stages": [
+          {
+            "id": "01-create-jobs-with-stable-identity",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "go",
+            "difficulty": "starter",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ]
+          },
+          {
+            "id": "02-claim-with-a-lease-and-version",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "go",
+            "difficulty": "core",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ]
+          },
+          {
+            "id": "03-finish-or-reclaim-expired-work",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "go",
+            "difficulty": "core",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ]
+          },
+          {
+            "id": "04-write-and-recover-atomic-snapshots",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "go",
+            "difficulty": "core",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ],
+            "timeout": 120
+          }
+        ],
+        "demos": [
+          {
+            "gif": "media/run.gif",
+            "poster": "media/run.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          },
+          {
+            "gif": "media/output.gif",
+            "poster": "media/output.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          }
+        ]
+      }
+    },
+    "projects/durable-agent-jobs/solution/go.mod": {
+      "sourceSha256": "baeb66d716e1dd6c1fdda8d2c629630163f1aaa3f7bf3e4d714375f9dfae0dce",
+      "localizedSha256": "baeb66d716e1dd6c1fdda8d2c629630163f1aaa3f7bf3e4d714375f9dfae0dce",
+      "kind": "preserved-contract"
+    },
+    "projects/durable-agent-jobs/solution/lock_other.go": {
+      "sourceSha256": "ba32e899ce3974be287e0a32dd8cc42770f0df05d5e6ad0b0bc40f2cc63c8894",
+      "localizedSha256": "ba32e899ce3974be287e0a32dd8cc42770f0df05d5e6ad0b0bc40f2cc63c8894",
+      "kind": "preserved-contract"
+    },
+    "projects/durable-agent-jobs/solution/lock_unix.go": {
+      "sourceSha256": "37cfca3d4c4e14839faa8d76389abd35fab7fe099c27af1ecdda956fd3d31915",
+      "localizedSha256": "37cfca3d4c4e14839faa8d76389abd35fab7fe099c27af1ecdda956fd3d31915",
+      "kind": "preserved-contract"
+    },
+    "projects/durable-agent-jobs/solution/main.go": {
+      "sourceSha256": "930af0961ca8a15f95fa3b868b067354ba43f9d069d076b272de40c3ee6ce748",
+      "localizedSha256": "c71536e219d03d80031c57f8a600c28d0a20d0146029e70eabc657dabd81a1e3",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "persistent local directory",
+          "持久化本地目录"
+        ],
+        [
+          "JSON array of id/text records",
+          "包含 id/text 记录的 JSON 数组"
+        ],
+        [
+          "explicit logical clock for recovery experiments; default uses wall time",
+          "恢复实验的显式逻辑时钟；默认使用墙上时钟"
+        ],
+        [
+          "claim lease milliseconds",
+          "领取租约的毫秒数"
+        ],
+        [
+          "attempt limit",
+          "尝试次数上限"
+        ],
+        [
+          "maximum jobs handled by this worker invocation",
+          "本次工作进程调用处理的最大任务数"
+        ],
+        [
+          "controlled delay after claiming for stale-worker experiments",
+          "领取后的受控延迟，用于旧工作进程实验"
+        ],
+        [
+          "claim or effect; abrupt exit86",
+          "claim 或 effect；直接以 86 退出"
+        ]
+      ]
+    },
+    "projects/durable-agent-jobs/solution/runner.go": {
+      "sourceSha256": "a5da67ce6361fe4d7f352df24ba57167c174ce698b3046c43f3b2e439646a69f",
+      "localizedSha256": "a5da67ce6361fe4d7f352df24ba57167c174ce698b3046c43f3b2e439646a69f",
+      "kind": "preserved-contract"
+    },
+    "projects/durable-agent-jobs/solution/samples/jobs.json": {
+      "sourceSha256": "2a7e6b632be5626f576f5f93506c7eba310f90509b9f8f16e3ab1845b5a06906",
+      "localizedSha256": "2a7e6b632be5626f576f5f93506c7eba310f90509b9f8f16e3ab1845b5a06906",
+      "kind": "preserved-contract"
+    },
+    "projects/durable-agent-jobs/solution/stage1.go": {
+      "sourceSha256": "cc64d1278702b51a7c5df2b0d1ceb44526ee953a0f6bcce9b8cc6b5f17836397",
+      "localizedSha256": "cc64d1278702b51a7c5df2b0d1ceb44526ee953a0f6bcce9b8cc6b5f17836397",
+      "kind": "preserved-contract"
+    },
+    "projects/durable-agent-jobs/solution/stage2.go": {
+      "sourceSha256": "ece5ef065be07f6dddf7e9fe8d2000655a9d8572300d3594f0b90111376ba81c",
+      "localizedSha256": "ece5ef065be07f6dddf7e9fe8d2000655a9d8572300d3594f0b90111376ba81c",
+      "kind": "preserved-contract"
+    },
+    "projects/durable-agent-jobs/solution/stage3.go": {
+      "sourceSha256": "067318374a122b00e4417218fac4dab3b4f71d11af8c0e5fd42d405df684b394",
+      "localizedSha256": "067318374a122b00e4417218fac4dab3b4f71d11af8c0e5fd42d405df684b394",
+      "kind": "preserved-contract"
+    },
+    "projects/durable-agent-jobs/solution/stage4.go": {
+      "sourceSha256": "1efde6938206d264c45386b2186d74a52843a6339da693ea4dd15e2ca697ca4a",
+      "localizedSha256": "1efde6938206d264c45386b2186d74a52843a6339da693ea4dd15e2ca697ca4a",
+      "kind": "preserved-contract"
+    },
+    "projects/durable-agent-jobs/solution/types.go": {
+      "sourceSha256": "ea78f3d7879c9270bc7cd41e578c0d5d7e8377187a26776cbf26f656e7f13c03",
+      "localizedSha256": "ea78f3d7879c9270bc7cd41e578c0d5d7e8377187a26776cbf26f656e7f13c03",
+      "kind": "preserved-contract"
+    },
+    "projects/durable-agent-jobs/stages/01-create-jobs-with-stable-identity/docs/en.md": {
+      "sourceSha256": "705727c41f71048bbcfc26938532886324bfe256cfdebcf22ab3616a811e3f8d",
+      "localizedSha256": "159c8a5f5608bf21c9b4770d936495691e4dea0679632b44568cb42ce605dc95",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-durable-agent-jobs-1\n"
+          ],
+          [
+            "go",
+            "func NewJob(id string) (Job, error)\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py durable-agent-jobs --stage 1 --path /tmp/durable-agent-jobs-work --strict\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "../report"
+          ],
+          [
+            "`",
+            "Attempts"
+          ],
+          [
+            "`",
+            "ID"
+          ],
+          [
+            "`",
+            "LeaseUntil"
+          ],
+          [
+            "`",
+            "State"
+          ],
+          [
+            "`",
+            "Version"
+          ],
+          [
+            "`",
+            "a"
+          ],
+          [
+            "`",
+            "a "
+          ],
+          [
+            "`",
+            "a/"
+          ],
+          [
+            "`",
+            "report-1"
+          ],
+          [
+            "`",
+            "stage1.go"
+          ],
+          [
+            "`",
+            "types.go"
+          ],
+          [
+            "`",
+            "{id,text}"
+          ]
+        ],
+        "links": [
+          "../../../API.md",
+          "https://go.dev/blog/pipelines",
+          "https://pkg.go.dev/context",
+          "https://pkg.go.dev/os"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/durable-agent-jobs/stages/01-create-jobs-with-stable-identity/starter/go.mod": {
+      "sourceSha256": "baeb66d716e1dd6c1fdda8d2c629630163f1aaa3f7bf3e4d714375f9dfae0dce",
+      "localizedSha256": "baeb66d716e1dd6c1fdda8d2c629630163f1aaa3f7bf3e4d714375f9dfae0dce",
+      "kind": "preserved-contract"
+    },
+    "projects/durable-agent-jobs/stages/01-create-jobs-with-stable-identity/starter/lock_other.go": {
+      "sourceSha256": "ba32e899ce3974be287e0a32dd8cc42770f0df05d5e6ad0b0bc40f2cc63c8894",
+      "localizedSha256": "ba32e899ce3974be287e0a32dd8cc42770f0df05d5e6ad0b0bc40f2cc63c8894",
+      "kind": "preserved-contract"
+    },
+    "projects/durable-agent-jobs/stages/01-create-jobs-with-stable-identity/starter/lock_unix.go": {
+      "sourceSha256": "37cfca3d4c4e14839faa8d76389abd35fab7fe099c27af1ecdda956fd3d31915",
+      "localizedSha256": "37cfca3d4c4e14839faa8d76389abd35fab7fe099c27af1ecdda956fd3d31915",
+      "kind": "preserved-contract"
+    },
+    "projects/durable-agent-jobs/stages/01-create-jobs-with-stable-identity/starter/main.go": {
+      "sourceSha256": "930af0961ca8a15f95fa3b868b067354ba43f9d069d076b272de40c3ee6ce748",
+      "localizedSha256": "c71536e219d03d80031c57f8a600c28d0a20d0146029e70eabc657dabd81a1e3",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "persistent local directory",
+          "持久化本地目录"
+        ],
+        [
+          "JSON array of id/text records",
+          "包含 id/text 记录的 JSON 数组"
+        ],
+        [
+          "explicit logical clock for recovery experiments; default uses wall time",
+          "恢复实验的显式逻辑时钟；默认使用墙上时钟"
+        ],
+        [
+          "claim lease milliseconds",
+          "领取租约的毫秒数"
+        ],
+        [
+          "attempt limit",
+          "尝试次数上限"
+        ],
+        [
+          "maximum jobs handled by this worker invocation",
+          "本次工作进程调用处理的最大任务数"
+        ],
+        [
+          "controlled delay after claiming for stale-worker experiments",
+          "领取后的受控延迟，用于旧工作进程实验"
+        ],
+        [
+          "claim or effect; abrupt exit86",
+          "claim 或 effect；直接以 86 退出"
+        ]
+      ]
+    },
+    "projects/durable-agent-jobs/stages/01-create-jobs-with-stable-identity/starter/runner.go": {
+      "sourceSha256": "a5da67ce6361fe4d7f352df24ba57167c174ce698b3046c43f3b2e439646a69f",
+      "localizedSha256": "a5da67ce6361fe4d7f352df24ba57167c174ce698b3046c43f3b2e439646a69f",
+      "kind": "preserved-contract"
+    },
+    "projects/durable-agent-jobs/stages/01-create-jobs-with-stable-identity/starter/samples/jobs.json": {
+      "sourceSha256": "2a7e6b632be5626f576f5f93506c7eba310f90509b9f8f16e3ab1845b5a06906",
+      "localizedSha256": "2a7e6b632be5626f576f5f93506c7eba310f90509b9f8f16e3ab1845b5a06906",
+      "kind": "preserved-contract"
+    },
+    "projects/durable-agent-jobs/stages/01-create-jobs-with-stable-identity/starter/stage1.go": {
+      "sourceSha256": "a374a5ab50d97d1b0fa0f76aabbf3db53fffa6b0fd2eeebbbccb3b2b8c3431fe",
+      "localizedSha256": "a374a5ab50d97d1b0fa0f76aabbf3db53fffa6b0fd2eeebbbccb3b2b8c3431fe",
+      "kind": "preserved-contract"
+    },
+    "projects/durable-agent-jobs/stages/01-create-jobs-with-stable-identity/starter/types.go": {
+      "sourceSha256": "ea78f3d7879c9270bc7cd41e578c0d5d7e8377187a26776cbf26f656e7f13c03",
+      "localizedSha256": "ea78f3d7879c9270bc7cd41e578c0d5d7e8377187a26776cbf26f656e7f13c03",
+      "kind": "preserved-contract"
+    },
+    "projects/durable-agent-jobs/stages/01-create-jobs-with-stable-identity/tests/stage_test.go": {
+      "sourceSha256": "139f8a4c8ccc60664d4a9ea492a208f3806d340da0aa0020e440d40297d7596f",
+      "localizedSha256": "139f8a4c8ccc60664d4a9ea492a208f3806d340da0aa0020e440d40297d7596f",
+      "kind": "preserved-contract"
+    },
+    "projects/durable-agent-jobs/stages/02-claim-with-a-lease-and-version/docs/en.md": {
+      "sourceSha256": "c9f88c715d47c003a26cb778807c1c3929e6569d0e6a5e926bf73fae5c2b9f4b",
+      "localizedSha256": "e9233a7167fae3f85a601d0e82a44b26a8d9c259edd1debe3ca3880b4605d3f5",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-durable-agent-jobs-2\n"
+          ],
+          [
+            "go",
+            "func ClaimJob(j *Job, expected int, now, ttl int64, maxAttempts int) error\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py durable-agent-jobs --stage 2 --path /tmp/durable-agent-jobs-work --strict\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "ClaimJob"
+          ],
+          [
+            "`",
+            "ClaimNext"
+          ],
+          [
+            "`",
+            "jobs.json"
+          ],
+          [
+            "`",
+            "ledger.lock"
+          ],
+          [
+            "`",
+            "now > MaxInt64-ttl"
+          ],
+          [
+            "`",
+            "stage2.go"
+          ],
+          [
+            "`",
+            "types.go"
+          ]
+        ],
+        "links": [
+          "../../../API.md",
+          "https://go.dev/blog/pipelines",
+          "https://pkg.go.dev/context",
+          "https://pkg.go.dev/os"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/durable-agent-jobs/stages/02-claim-with-a-lease-and-version/starter/stage2.go": {
+      "sourceSha256": "644d3ad95fa161bb37319d031e5486bf5d5ada885393f07c9ea68f39757dd0c9",
+      "localizedSha256": "644d3ad95fa161bb37319d031e5486bf5d5ada885393f07c9ea68f39757dd0c9",
+      "kind": "preserved-contract"
+    },
+    "projects/durable-agent-jobs/stages/02-claim-with-a-lease-and-version/tests/stage_test.go": {
+      "sourceSha256": "14101389059bf14a5dc9239c68465e5c26c23fd12cdab4d420014076289a8a16",
+      "localizedSha256": "14101389059bf14a5dc9239c68465e5c26c23fd12cdab4d420014076289a8a16",
+      "kind": "preserved-contract"
+    },
+    "projects/durable-agent-jobs/stages/03-finish-or-reclaim-expired-work/docs/en.md": {
+      "sourceSha256": "23dfaf4cce8605163ccf40d320d59f0007cf76d8e36cd40c7e8e725d82b8ea0e",
+      "localizedSha256": "5838869b66e92db54bb887fddb5aef4f1390044863ececd2dec609a8348e3230",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-durable-agent-jobs-3\n"
+          ],
+          [
+            "go",
+            "func Finish(j *Job, expected int, now int64) error\nfunc Reclaim(j *Job, now int64) bool\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py durable-agent-jobs --stage 3 --path /tmp/durable-agent-jobs-work --strict\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "--now-ms"
+          ],
+          [
+            "`",
+            "Finish"
+          ],
+          [
+            "`",
+            "stage3.go"
+          ],
+          [
+            "`",
+            "types.go"
+          ]
+        ],
+        "links": [
+          "../../../API.md",
+          "https://go.dev/blog/pipelines",
+          "https://pkg.go.dev/context",
+          "https://pkg.go.dev/os"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/durable-agent-jobs/stages/03-finish-or-reclaim-expired-work/starter/stage3.go": {
+      "sourceSha256": "95365b8362bb6d5c93468d6baf01c9b1e682dd7e10c084aa6a631c148ece56fc",
+      "localizedSha256": "95365b8362bb6d5c93468d6baf01c9b1e682dd7e10c084aa6a631c148ece56fc",
+      "kind": "preserved-contract"
+    },
+    "projects/durable-agent-jobs/stages/03-finish-or-reclaim-expired-work/tests/stage_test.go": {
+      "sourceSha256": "c1838ee3e3038826e2b92d511fcf063b751d1b622a20c451e7492cb76f343bbb",
+      "localizedSha256": "c1838ee3e3038826e2b92d511fcf063b751d1b622a20c451e7492cb76f343bbb",
+      "kind": "preserved-contract"
+    },
+    "projects/durable-agent-jobs/stages/04-write-and-recover-atomic-snapshots/docs/en.md": {
+      "sourceSha256": "f2d5b48811ab4b65aa80b5fbf742f21134313c973c6cac86e7e5ec1d3a080c9c",
+      "localizedSha256": "694435fcd65de42b7cc61b3e8cea59482753b8e3e7c90fb9efa3a0f5a3483871",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-durable-agent-jobs-4\n"
+          ],
+          [
+            "go",
+            "func ValidateJobs(jobs []Job) error\nfunc Save(file string, jobs []Job) error\nfunc Load(file string) ([]Job, error)\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py durable-agent-jobs --stage 4 --path /tmp/durable-agent-jobs-work --strict\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "effects/<id>.json"
+          ],
+          [
+            "`",
+            "go run . demo"
+          ],
+          [
+            "`",
+            "jobs.json"
+          ],
+          [
+            "`",
+            "reused_effect: true"
+          ],
+          [
+            "`",
+            "runner.go"
+          ],
+          [
+            "`",
+            "stage4.go"
+          ],
+          [
+            "`",
+            "types.go"
+          ]
+        ],
+        "links": [
+          "../../../API.md",
+          "https://go.dev/blog/pipelines",
+          "https://pkg.go.dev/context",
+          "https://pkg.go.dev/os"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/durable-agent-jobs/stages/04-write-and-recover-atomic-snapshots/starter/stage4.go": {
+      "sourceSha256": "842d0ba9ff60d2f8bf27750dce1988e436c9f78846f84cc98050f04cc61d009d",
+      "localizedSha256": "842d0ba9ff60d2f8bf27750dce1988e436c9f78846f84cc98050f04cc61d009d",
+      "kind": "preserved-contract"
+    },
+    "projects/durable-agent-jobs/stages/04-write-and-recover-atomic-snapshots/tests/integration_test.go": {
+      "sourceSha256": "c96f92458e4e4f7d59339e37b727ffd3236e1009e609a3ed93dd8407305b0b0d",
+      "localizedSha256": "c96f92458e4e4f7d59339e37b727ffd3236e1009e609a3ed93dd8407305b0b0d",
+      "kind": "preserved-contract"
+    },
+    "projects/durable-agent-jobs/stages/04-write-and-recover-atomic-snapshots/tests/stage_test.go": {
+      "sourceSha256": "ce3e3fbedf7da648d194741bbf4e57cd28dfd19d220e0bafcea543ff682bcacb",
+      "localizedSha256": "ce3e3fbedf7da648d194741bbf4e57cd28dfd19d220e0bafcea543ff682bcacb",
+      "kind": "preserved-contract"
+    },
+    "projects/feedback-theme-board/README.md": {
+      "sourceSha256": "772c0f570f47a07d640aaadc4aac7f9ea0f1823021ad45c35ca522603beeb133",
+      "localizedSha256": "a8bc157295cc5e1caef4c00659d3b9ef7178d5e8101f9915c3ce421c9b47d976",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "bash",
+            "cd projects/feedback-theme-board/solution\nnode cli.ts sample.jsonl themes.json output\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py feedback-theme-board --init my-feedback-theme-board\npython3 scripts/project_test.py feedback-theme-board --stage 1 --path my-feedback-theme-board --strict\npython3 scripts/project_test.py feedback-theme-board --all --path my-feedback-theme-board --strict --report completion.json\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py feedback-theme-board --all --solution --strict\n"
+          ]
+        ],
+        "inlineCode": [],
+        "links": [
+          "../../phases/00-setup-and-tooling/01-dev-environment/docs/en.md",
+          "../../phases/00-setup-and-tooling/09-data-management/docs/en.md",
+          "https://www.rfc-editor.org/rfc/rfc8259",
+          "stages/01-import-feedback/docs/en.md",
+          "stages/02-match-evidence/docs/en.md",
+          "stages/03-count-without-inflation/docs/en.md",
+          "stages/04-publish-and-integrate/docs/en.md"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 4
+      }
+    },
+    "projects/feedback-theme-board/media/output.gif": {
+      "sourceSha256": "b0c27399c2f2ac0e5a4e70162889a4eaf7fd74d73486df61b9a2215a854771b8",
+      "localizedSha256": "b0c27399c2f2ac0e5a4e70162889a4eaf7fd74d73486df61b9a2215a854771b8",
+      "kind": "original-recording"
+    },
+    "projects/feedback-theme-board/media/output.json": {
+      "sourceSha256": "1725ddb535aadd26366dd66023df02d1d3c2598baa7e43698d39beb9990d113d",
+      "localizedSha256": "1725ddb535aadd26366dd66023df02d1d3c2598baa7e43698d39beb9990d113d",
+      "kind": "original-recording"
+    },
+    "projects/feedback-theme-board/media/output.png": {
+      "sourceSha256": "279f3f556292f5c5fdbc5cea7a5d23298f78f595627ef17f50ac89e160bc1fc9",
+      "localizedSha256": "279f3f556292f5c5fdbc5cea7a5d23298f78f595627ef17f50ac89e160bc1fc9",
+      "kind": "original-recording"
+    },
+    "projects/feedback-theme-board/media/run.gif": {
+      "sourceSha256": "fa374169ac784f43ba4f2084aee84357f1704930ba18ab7fcc61742ee9e320a9",
+      "localizedSha256": "fa374169ac784f43ba4f2084aee84357f1704930ba18ab7fcc61742ee9e320a9",
+      "kind": "original-recording"
+    },
+    "projects/feedback-theme-board/media/run.json": {
+      "sourceSha256": "ac922066680378a56d4da6060e77a80e40ad8587f672006cb005258c1be8d2d2",
+      "localizedSha256": "ac922066680378a56d4da6060e77a80e40ad8587f672006cb005258c1be8d2d2",
+      "kind": "original-recording"
+    },
+    "projects/feedback-theme-board/media/run.png": {
+      "sourceSha256": "1a547636653a23265e34951fafeba4aa2bdd255dae04c558f5ce56506fa05002",
+      "localizedSha256": "1a547636653a23265e34951fafeba4aa2bdd255dae04c558f5ce56506fa05002",
+      "kind": "original-recording"
+    },
+    "projects/feedback-theme-board/project.json": {
+      "sourceSha256": "88550dee841cc662c7b1a20924a259d59fd51f3b60a7be641a37cd6db0f34ca2",
+      "localizedSha256": "d61fb090eb0ab38ef9637b943ff5ae755b9350843ac185bf42f530367ed11bfe",
+      "kind": "manifest",
+      "contract": {
+        "id": "feedback-theme-board",
+        "title": "<translated-text>",
+        "level": 2,
+        "levelName": "Builder",
+        "tagline": "<translated-text>",
+        "summary": "<translated-text>",
+        "youWillBuild": "<translated-text>",
+        "usefulFor": [
+          "<translated-text>"
+        ],
+        "hours": 8,
+        "languages": [
+          "TypeScript"
+        ],
+        "languageWhy": {
+          "TypeScript": "<translated-text>"
+        },
+        "status": "ready",
+        "source": "core",
+        "author": {
+          "name": "AI Engineering from Scratch",
+          "github": "rohitg00"
+        },
+        "skills": [
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "prerequisites": [
+          {
+            "title": "<translated-text>",
+            "path": "phases/00-setup-and-tooling/01-dev-environment"
+          },
+          {
+            "title": "<translated-text>",
+            "path": "phases/00-setup-and-tooling/09-data-management"
+          }
+        ],
+        "figures": true,
+        "overviewFigure": "pj-feedback-theme-board-1",
+        "demo": {
+          "command": [
+            "node",
+            "cli.ts",
+            "sample.jsonl",
+            "themes.json",
+            "output"
+          ],
+          "cwd": "solution"
+        },
+        "stages": [
+          {
+            "id": "01-import-feedback",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "difficulty": "starter",
+            "language": "typescript",
+            "concepts": [
+              "<translated-text>"
+            ],
+            "figure": "pj-feedback-theme-board-1"
+          },
+          {
+            "id": "02-match-evidence",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "difficulty": "core",
+            "language": "typescript",
+            "concepts": [
+              "<translated-text>"
+            ],
+            "figure": "pj-feedback-theme-board-2"
+          },
+          {
+            "id": "03-count-without-inflation",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "difficulty": "core",
+            "language": "typescript",
+            "concepts": [
+              "<translated-text>"
+            ],
+            "figure": "pj-feedback-theme-board-3"
+          },
+          {
+            "id": "04-publish-and-integrate",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "difficulty": "stretch",
+            "language": "typescript",
+            "concepts": [
+              "<translated-text>"
+            ],
+            "figure": "pj-feedback-theme-board-4"
+          }
+        ],
+        "demos": [
+          {
+            "gif": "media/run.gif",
+            "poster": "media/run.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          },
+          {
+            "gif": "media/output.gif",
+            "poster": "media/output.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          }
+        ]
+      },
+      "exactStageSummaries": [
+        "parseFeedback(text); validateThemes(value)",
+        "findEvidence(row, phrase)",
+        "buildBoard(rows, themes)",
+        "draftIssue(theme); renderBoard(board)"
+      ]
+    },
+    "projects/feedback-theme-board/solution/cli.ts": {
+      "sourceSha256": "b5f61fa39515f4a7a28b445105e828b2098f8da5748bf433602bb51f037bed50",
+      "localizedSha256": "09386d396835f17c236d7b9fd89aa704e70b935d4455090865047eb95258b778",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "(sends supplied text to configured model)",
+          "（将所提供文本发送到配置的模型）"
+        ],
+        [
+          "Saved themes.proposed.json. Review it, then use it as the theme configuration.",
+          "已保存 themes.proposed.json。请先审阅，再将其用作主题配置。"
+        ]
+      ]
+    },
+    "projects/feedback-theme-board/solution/main.ts": {
+      "sourceSha256": "006bac979562639ab59467cd76935a7ae0c07a04998623610e53128ac9ecaaaf",
+      "localizedSha256": "643089a8f1e9e4b6af39361cc260185215dc9c43a57a0660042e3e028fa53314",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "# Investigate: ",
+          "# 调查："
+        ],
+        [
+          "Status: local draft, not posted.",
+          "状态：本地草稿，未发布（local draft, not posted）。"
+        ],
+        [
+          " distinct source labels across ",
+          " distinct source labels（不同来源标签），对应 "
+        ],
+        [
+          " matched records. Source labels are not verified customer identities.",
+          " 条匹配记录。来源标签不代表已核实的客户身份。"
+        ],
+        [
+          "## Evidence",
+          "## 证据"
+        ],
+        [
+          "## Next step",
+          "## 下一步"
+        ],
+        [
+          "Reproduce the reported friction, review unmatched feedback, and validate a concrete acceptance criterion before changing the product.",
+          "先复现被报告的使用障碍、审阅未匹配反馈并确认具体验收标准，再修改产品。"
+        ],
+        [
+          " distinct source labels <small> / ",
+          " 个不同来源标签 <small> / "
+        ],
+        [
+          " records</small>",
+          " 条记录</small>"
+        ],
+        [
+          ">Inspect exact evidence</summary>",
+          ">检查精确证据</summary>"
+        ],
+        [
+          " · UTF-16 offsets ",
+          " · UTF-16 偏移量 "
+        ],
+        [
+          "<p>No matching evidence.</p>",
+          "<p>没有匹配证据。</p>"
+        ],
+        [
+          "<html lang=\"en\">",
+          "<html lang=\"zh-CN\">"
+        ],
+        [
+          "<title>Feedback evidence board</title>",
+          "<title>反馈证据看板</title>"
+        ],
+        [
+          "<p>FEEDBACK THEME BOARD</p>",
+          "<p>反馈主题看板</p>"
+        ],
+        [
+          "<h1>What people reported, with the source beside it</h1>",
+          "<h1>反馈内容与来源并列展示</h1>"
+        ],
+        [
+          " input records; ",
+          " input records（输入记录）；"
+        ],
+        [
+          " duplicate records excluded; ",
+          " 条重复记录已排除；"
+        ],
+        [
+          " records need classification. Counts overlap across themes and do not measure market demand.",
+          " 条记录待分类。主题之间计数可能重叠，不能用于衡量市场需求。"
+        ],
+        [
+          "<h2>Do not lose the unmatched feedback</h2>",
+          "<h2>保留未匹配的反馈</h2>"
+        ],
+        [
+          "<li>All unique records matched a theme.</li>",
+          "<li>所有去重后的记录均匹配到主题。</li>"
+        ],
+        [
+          "<p>Input fingerprint: <code>",
+          "<p>输入指纹：<code>"
+        ]
+      ]
+    },
+    "projects/feedback-theme-board/solution/sample.jsonl": {
+      "sourceSha256": "2202a0b56631d2c96c27ba8bfc7ad8ccbc6c902624fd55d15e1b992a977d77e4",
+      "localizedSha256": "2202a0b56631d2c96c27ba8bfc7ad8ccbc6c902624fd55d15e1b992a977d77e4",
+      "kind": "preserved-contract"
+    },
+    "projects/feedback-theme-board/solution/themes.json": {
+      "sourceSha256": "341def7c04e95dac1e4027e8c9701418cb062af4396b0c54355bd11a1ec5a428",
+      "localizedSha256": "341def7c04e95dac1e4027e8c9701418cb062af4396b0c54355bd11a1ec5a428",
+      "kind": "preserved-contract"
+    },
+    "projects/feedback-theme-board/stages/01-import-feedback/docs/en.md": {
+      "sourceSha256": "643ef5a9c2c38af4ec5819dc0ae29eda49ad1ee5a58cdb44029b336929f07814",
+      "localizedSha256": "6660ba2990745cb52b87d630da5afb1b67dea243b780d71cd2445c193fa7f203",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-feedback-theme-board-1\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py feedback-theme-board --init my-feedback-theme-board\npython3 scripts/project_test.py feedback-theme-board --stage 1 --path my-feedback-theme-board --strict\n"
+          ],
+          [
+            "bash",
+            "cd my-feedback-theme-board\nnode cli.ts sample.jsonl themes.json output\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "main.ts"
+          ],
+          [
+            "`",
+            "parseFeedback(text); validateThemes(value)"
+          ]
+        ],
+        "links": [
+          "../../../../../phases/00-setup-and-tooling/01-dev-environment/docs/en.md",
+          "../../../../../phases/00-setup-and-tooling/09-data-management/docs/en.md",
+          "https://www.rfc-editor.org/rfc/rfc8259"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 5,
+        "listItems": 3
+      }
+    },
+    "projects/feedback-theme-board/stages/01-import-feedback/starter/cli.ts": {
+      "sourceSha256": "b5f61fa39515f4a7a28b445105e828b2098f8da5748bf433602bb51f037bed50",
+      "localizedSha256": "09386d396835f17c236d7b9fd89aa704e70b935d4455090865047eb95258b778",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "(sends supplied text to configured model)",
+          "（将所提供文本发送到配置的模型）"
+        ],
+        [
+          "Saved themes.proposed.json. Review it, then use it as the theme configuration.",
+          "已保存 themes.proposed.json。请先审阅，再将其用作主题配置。"
+        ]
+      ]
+    },
+    "projects/feedback-theme-board/stages/01-import-feedback/starter/main.ts": {
+      "sourceSha256": "f6664375c83acb7097f680e139ba7270741c0130488281964a2fced4678324b4",
+      "localizedSha256": "f6664375c83acb7097f680e139ba7270741c0130488281964a2fced4678324b4",
+      "kind": "preserved-contract"
+    },
+    "projects/feedback-theme-board/stages/01-import-feedback/starter/sample.jsonl": {
+      "sourceSha256": "2202a0b56631d2c96c27ba8bfc7ad8ccbc6c902624fd55d15e1b992a977d77e4",
+      "localizedSha256": "2202a0b56631d2c96c27ba8bfc7ad8ccbc6c902624fd55d15e1b992a977d77e4",
+      "kind": "preserved-contract"
+    },
+    "projects/feedback-theme-board/stages/01-import-feedback/starter/stage-1.md": {
+      "sourceSha256": "8e40072ee74e72f22c914b0c1a44f59de7ed7325d6d628c711395bfe5d9414dc",
+      "localizedSha256": "28e0f84eeeb2251a0784dc7da3f108a05c9456cf653206bda4154616a28f4d27",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [
+          [
+            "`",
+            "parseFeedback(text); validateThemes(value)"
+          ]
+        ],
+        "links": [],
+        "math": [],
+        "headings": [
+          "#"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/feedback-theme-board/stages/01-import-feedback/starter/themes.json": {
+      "sourceSha256": "341def7c04e95dac1e4027e8c9701418cb062af4396b0c54355bd11a1ec5a428",
+      "localizedSha256": "341def7c04e95dac1e4027e8c9701418cb062af4396b0c54355bd11a1ec5a428",
+      "kind": "preserved-contract"
+    },
+    "projects/feedback-theme-board/stages/01-import-feedback/tests/stage.test.mjs": {
+      "sourceSha256": "ba0a48457d8183de390f84a9d95b70056d4b2dc6a2b772d9d51de4a410404c66",
+      "localizedSha256": "ba0a48457d8183de390f84a9d95b70056d4b2dc6a2b772d9d51de4a410404c66",
+      "kind": "preserved-contract"
+    },
+    "projects/feedback-theme-board/stages/02-match-evidence/docs/en.md": {
+      "sourceSha256": "4b84a8ffa549ff6acccd536c8b2d10671d98dedf29960634d3ae7070df829544",
+      "localizedSha256": "0334b8bdfb7041d629cef7ee1733b321f02b61e68c04e65684e97c878d071636",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-feedback-theme-board-2\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py feedback-theme-board --init my-feedback-theme-board\npython3 scripts/project_test.py feedback-theme-board --stage 2 --path my-feedback-theme-board --strict\n"
+          ],
+          [
+            "bash",
+            "cd my-feedback-theme-board\nnode cli.ts sample.jsonl themes.json output\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "findEvidence(row, phrase)"
+          ],
+          [
+            "`",
+            "main.ts"
+          ]
+        ],
+        "links": [
+          "../../../../../phases/00-setup-and-tooling/01-dev-environment/docs/en.md",
+          "../../../../../phases/00-setup-and-tooling/09-data-management/docs/en.md",
+          "https://www.rfc-editor.org/rfc/rfc8259"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 5,
+        "listItems": 3
+      }
+    },
+    "projects/feedback-theme-board/stages/02-match-evidence/starter/stage-2.md": {
+      "sourceSha256": "a327a6ca42d1525340b570d960cdf46681d7f2d814107adce86507260a1d1940",
+      "localizedSha256": "5b55284a4d992cd5028869291b43a0e16027f71dc51ac17ff6c36d40573d5d24",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [
+          [
+            "`",
+            "findEvidence(row, phrase)"
+          ]
+        ],
+        "links": [],
+        "math": [],
+        "headings": [
+          "#"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/feedback-theme-board/stages/02-match-evidence/tests/stage.test.mjs": {
+      "sourceSha256": "b0b8fb2fec0583f8e48149fda8cf62fe17f916332174f4083a18eafbf278a3e6",
+      "localizedSha256": "b0b8fb2fec0583f8e48149fda8cf62fe17f916332174f4083a18eafbf278a3e6",
+      "kind": "preserved-contract"
+    },
+    "projects/feedback-theme-board/stages/03-count-without-inflation/docs/en.md": {
+      "sourceSha256": "222e104f655c60d425f5f2adca9292c12af14cab85c5664b0a6164941ad912e9",
+      "localizedSha256": "0bbe79b45b4601ba4607f5ed4143342a206530ad26c8573bbdf2aae2096e0048",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-feedback-theme-board-3\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py feedback-theme-board --init my-feedback-theme-board\npython3 scripts/project_test.py feedback-theme-board --stage 3 --path my-feedback-theme-board --strict\n"
+          ],
+          [
+            "bash",
+            "cd my-feedback-theme-board\nnode cli.ts sample.jsonl themes.json output\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "buildBoard(rows, themes)"
+          ],
+          [
+            "`",
+            "main.ts"
+          ]
+        ],
+        "links": [
+          "../../../../../phases/00-setup-and-tooling/01-dev-environment/docs/en.md",
+          "../../../../../phases/00-setup-and-tooling/09-data-management/docs/en.md",
+          "https://www.rfc-editor.org/rfc/rfc8259"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 5,
+        "listItems": 3
+      }
+    },
+    "projects/feedback-theme-board/stages/03-count-without-inflation/starter/stage-3.md": {
+      "sourceSha256": "f88f41eead2d6bdc43423e60be059ebc933a89b2e40321ecebad077eeff2d5d0",
+      "localizedSha256": "824489947431325050fcf5c21affa21a5acd6f199170c9381f20c297179b0bc1",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [
+          [
+            "`",
+            "buildBoard(rows, themes)"
+          ]
+        ],
+        "links": [],
+        "math": [],
+        "headings": [
+          "#"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/feedback-theme-board/stages/03-count-without-inflation/tests/stage.test.mjs": {
+      "sourceSha256": "8520bebaa7250bb882277fc0636913ce0b69fcbe3fcd8b12e335e400959482a2",
+      "localizedSha256": "8520bebaa7250bb882277fc0636913ce0b69fcbe3fcd8b12e335e400959482a2",
+      "kind": "preserved-contract"
+    },
+    "projects/feedback-theme-board/stages/04-publish-and-integrate/docs/en.md": {
+      "sourceSha256": "e372fe78ac6a400bf7b60acce1c3e68814af3319471fbee391f0811b1e41d41a",
+      "localizedSha256": "dc33328d188baaccd7add7ba7c85e0e3af807b2a5510348538b2b4cd2fd82685",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-feedback-theme-board-4\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py feedback-theme-board --init my-feedback-theme-board\npython3 scripts/project_test.py feedback-theme-board --stage 4 --path my-feedback-theme-board --strict\n"
+          ],
+          [
+            "bash",
+            "cd my-feedback-theme-board\nnode cli.ts sample.jsonl themes.json output\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "draftIssue(theme); renderBoard(board)"
+          ],
+          [
+            "`",
+            "main.ts"
+          ]
+        ],
+        "links": [
+          "../../../../../phases/00-setup-and-tooling/01-dev-environment/docs/en.md",
+          "../../../../../phases/00-setup-and-tooling/09-data-management/docs/en.md",
+          "https://www.rfc-editor.org/rfc/rfc8259"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 6,
+        "listItems": 3
+      }
+    },
+    "projects/feedback-theme-board/stages/04-publish-and-integrate/starter/stage-4.md": {
+      "sourceSha256": "4bd4f9ca8968516e76130dbc9b87f000f066b85ca99489acd509994de261bf19",
+      "localizedSha256": "e85d3bb66ae204e08673044aee3db407713992d79188f86fb1eb54be6dc84650",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [
+          [
+            "`",
+            "draftIssue(theme); renderBoard(board)"
+          ]
+        ],
+        "links": [],
+        "math": [],
+        "headings": [
+          "#"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/feedback-theme-board/stages/04-publish-and-integrate/tests/model-wire.test.mjs": {
+      "sourceSha256": "6376d8d56133745506b2119850aa4959eba9d3e22f17ff3d01cc9e635474a9f5",
+      "localizedSha256": "6376d8d56133745506b2119850aa4959eba9d3e22f17ff3d01cc9e635474a9f5",
+      "kind": "preserved-contract"
+    },
+    "projects/feedback-theme-board/stages/04-publish-and-integrate/tests/stage.test.mjs": {
+      "sourceSha256": "0072f9cdcdf64a1fa6ab5521b9431623056774a0617d32492e140a4f41dd8316",
+      "localizedSha256": "0072f9cdcdf64a1fa6ab5521b9431623056774a0617d32492e140a4f41dd8316",
+      "kind": "preserved-contract"
+    }
+  },
+  "figures": [
+    {
+      "path": "site/figures/projects/doc-qa-with-citations.js",
+      "sourceSha256": "9219e3e476b1998e0e4e80d71498d4a191fe3745539398b68d16986ff63db951",
+      "localizedSha256": "4efce2bd085969c398c7d3474d056c2f5e7acfada81ee5096912c5e893824a48",
+      "edits": [
+        {
+          "offset": 82,
+          "before": "\"Question\"",
+          "after": "\"问题\"",
+          "afterOffset": 82
+        },
+        {
+          "offset": 171,
+          "before": "\"Source text\"",
+          "after": "\"来源文本\"",
+          "afterOffset": 165
+        },
+        {
+          "offset": 330,
+          "before": "\"Proposed quote\"",
+          "after": "\"候选引文\"",
+          "afterOffset": 317
+        },
+        {
+          "offset": 449,
+          "before": "\"Chunk characters\"",
+          "after": "\"文本块字符数\"",
+          "afterOffset": 426
+        },
+        {
+          "offset": 601,
+          "before": "\"Chunk overlap\"",
+          "after": "\"文本块重叠量\"",
+          "afterOffset": 568
+        },
+        {
+          "offset": 1121,
+          "before": "\"Reject overlap at or above chunk size\"",
+          "after": "\"拒绝大于或等于文本块大小的重叠量\"",
+          "afterOffset": 1081
+        },
+        {
+          "offset": 1520,
+          "before": "\"Reject unsupported quote\"",
+          "after": "\"拒绝缺少来源支持的引文\"",
+          "afterOffset": 1459
+        },
+        {
+          "offset": 1583,
+          "before": "\"Exact quote exists, but query relevance needs review\"",
+          "after": "\"存在逐字引文，但与问题的相关性仍需审阅\"",
+          "afterOffset": 1509
+        },
+        {
+          "offset": 1650,
+          "before": "\"Exact quote with lexical query overlap\"",
+          "after": "\"逐字引文与查询词存在重叠\"",
+          "afterOffset": 1543
+        },
+        {
+          "offset": 1726,
+          "before": "\"Quote start\"",
+          "after": "\"引文起点\"",
+          "afterOffset": 1593
+        },
+        {
+          "offset": 1775,
+          "before": "\"Query terms supported\"",
+          "after": "\"有对应词的查询词数\"",
+          "afterOffset": 1635
+        },
+        {
+          "offset": 1858,
+          "before": "\"Matched query terms\"",
+          "after": "\"匹配查询词数\"",
+          "afterOffset": 1706
+        },
+        {
+          "offset": 2118,
+          "before": "\"Load local documents with stable provenance\"",
+          "after": "\"加载本地文档并保留稳定来源\"",
+          "afterOffset": 1953
+        },
+        {
+          "offset": 2213,
+          "before": "\"Input\"",
+          "after": "\"输入\"",
+          "afterOffset": 2018
+        },
+        {
+          "offset": 2256,
+          "before": "\"Keep source identity, content hash and exact offsets before retrieving anything.\"",
+          "after": "\"检索前先保留来源标识、内容哈希和精确偏移量。\"",
+          "afterOffset": 2058
+        },
+        {
+          "offset": 2384,
+          "before": "\"Transform\"",
+          "after": "\"处理\"",
+          "afterOffset": 2128
+        },
+        {
+          "offset": 2431,
+          "before": "\"Keep source identity, content hash and exact offsets before retrieving anything. Character windows are an intentionally simple baseline: overlap preserves context near boundaries but does not create new evidence. The loader refuses symlinks that escape its root, so a document scan cannot silently read another directory.\"",
+          "after": "\"检索前先保留来源标识、内容哈希和精确偏移量。字符窗口是刻意保持简单的基线：重叠可保留边界附近的上下文，但不会创造新证据。加载器拒绝指向根目录之外的符号链接，防止文档扫描在不知情的情况下读取其他目录。\"",
+          "afterOffset": 2168
+        },
+        {
+          "offset": 2800,
+          "before": "\"Verify\"",
+          "after": "\"验证\"",
+          "afterOffset": 2315
+        },
+        {
+          "offset": 2844,
+          "before": "\"The second overlapping chunk of abcdef starts at offset 3 when size=4 and overlap=1.\"",
+          "after": "\"size=4、overlap=1 时，abcdef 的第二个重叠文本块从偏移量 3 开始。 图表限制：此 JavaScript 示例按 UTF-16 位置切片，并使用 ASCII 词匹配；Python 正文实现按 Unicode 字符切片和分词。emoji 或中文输入时不可将两者的位置与分数直接对等。\"",
+          "afterOffset": 2355
+        },
+        {
+          "offset": 2983,
+          "before": "\"The second overlapping chunk of abcdef starts at offset 3 when size=4 and overlap=1.\"",
+          "after": "\"size=4、overlap=1 时，abcdef 的第二个重叠文本块从偏移量 3 开始。 图表限制：此 JavaScript 示例按 UTF-16 位置切片，并使用 ASCII 词匹配；Python 正文实现按 Unicode 字符切片和分词。emoji 或中文输入时不可将两者的位置与分数直接对等。\"",
+          "afterOffset": 2561
+        },
+        {
+          "offset": 3246,
+          "before": "\"Rank chunks with an inspectable keyword score\"",
+          "after": "\"用可检查的关键词分数排列文本块\"",
+          "afterOffset": 2891
+        },
+        {
+          "offset": 3343,
+          "before": "\"Input\"",
+          "after": "\"输入\"",
+          "afterOffset": 2958
+        },
+        {
+          "offset": 3386,
+          "before": "\"Term frequency saturates through a logarithm, and document frequency reduces the weight of common words.\"",
+          "after": "\"词频通过对数抑制重复增益，文档频率降低常见词权重。\"",
+          "afterOffset": 2998
+        },
+        {
+          "offset": 3538,
+          "before": "\"Transform\"",
+          "after": "\"处理\"",
+          "afterOffset": 3071
+        },
+        {
+          "offset": 3585,
+          "before": "\"Term frequency saturates through a logarithm, and document frequency reduces the weight of common words. Return the whole chunk contract with its score, not just the text, because the next stage needs source offsets. This lexical baseline will miss synonyms; measure it before adding an embedding service.\"",
+          "after": "\"词频通过对数抑制重复出现带来的增益，文档频率降低常见词的权重。返回分数时保留完整文本块契约，不能只返回文本，因为下一阶段需要来源偏移量。这种词汇基线会漏掉同义词；接入嵌入服务前，先测量其表现。\"",
+          "afterOffset": 3111
+        },
+        {
+          "offset": 3938,
+          "before": "\"Verify\"",
+          "after": "\"验证\"",
+          "afterOffset": 3255
+        },
+        {
+          "offset": 3982,
+          "before": "\"A socket query selects the socket chunk, while an unknown term abstains.\"",
+          "after": "\"查询 socket 时选中对应文本块，遇到未知词则放弃作答。 图表限制：此 JavaScript 示例按 UTF-16 位置切片，并使用 ASCII 词匹配；Python 正文实现按 Unicode 字符切片和分词。emoji 或中文输入时不可将两者的位置与分数直接对等。\"",
+          "afterOffset": 3295
+        },
+        {
+          "offset": 4109,
+          "before": "\"A socket query selects the socket chunk, while an unknown term abstains.\"",
+          "after": "\"查询 socket 时选中对应文本块，遇到未知词则放弃作答。 图表限制：此 JavaScript 示例按 UTF-16 位置切片，并使用 ASCII 词匹配；Python 正文实现按 Unicode 字符切片和分词。emoji 或中文输入时不可将两者的位置与分数直接对等。\"",
+          "afterOffset": 3486
+        },
+        {
+          "offset": 4360,
+          "before": "\"Accept only answers grounded in retrieved spans\"",
+          "after": "\"只接受检索区间能够支持的回答\"",
+          "afterOffset": 3801
+        },
+        {
+          "offset": 4459,
+          "before": "\"Input\"",
+          "after": "\"输入\"",
+          "afterOffset": 3867
+        },
+        {
+          "offset": 4502,
+          "before": "\"Ask the model to select an exact quote and a source id, then validate both.\"",
+          "after": "\"要求模型选择逐字引文和来源 id，再分别校验。\"",
+          "afterOffset": 3907
+        },
+        {
+          "offset": 4625,
+          "before": "\"Transform\"",
+          "after": "\"处理\"",
+          "afterOffset": 3978
+        },
+        {
+          "offset": 4672,
+          "before": "\"Ask the model to select an exact quote and a source id, then validate both. A quoted substring gives a checkable span; it does not guarantee the source is true. Empty retrieval returns an explicit abstention without calling the model. A later paraphrasing writer would need a different support gate.\"",
+          "after": "\"要求模型选择逐字引文和来源 id，然后分别校验。引文子串提供可核对的区间，但不能保证来源本身真实。检索为空时明确放弃作答，不调用模型。以后若加入改写回答的生成器，需要另行设计证据支持门禁。\"",
+          "afterOffset": 4018
+        },
+        {
+          "offset": 5019,
+          "before": "\"Verify\"",
+          "after": "\"验证\"",
+          "afterOffset": 4160
+        },
+        {
+          "offset": 5063,
+          "before": "\"A model response containing words absent from its cited chunk is rejected.\"",
+          "after": "\"模型回复包含被引用文本块中不存在的文字时，拒绝该回复。 图表限制：此 JavaScript 示例按 UTF-16 位置切片，并使用 ASCII 词匹配；Python 正文实现按 Unicode 字符切片和分词。emoji 或中文输入时不可将两者的位置与分数直接对等。\"",
+          "afterOffset": 4200
+        },
+        {
+          "offset": 5192,
+          "before": "\"A model response containing words absent from its cited chunk is rejected.\"",
+          "after": "\"模型回复包含被引用文本块中不存在的文字时，拒绝该回复。 图表限制：此 JavaScript 示例按 UTF-16 位置切片，并使用 ASCII 词匹配；Python 正文实现按 Unicode 字符切片和分词。emoji 或中文输入时不可将两者的位置与分数直接对等。\"",
+          "afterOffset": 4388
+        },
+        {
+          "offset": 5445,
+          "before": "\"Use a framework splitter without losing offsets\"",
+          "after": "\"使用框架切分器并保留偏移量\"",
+          "afterOffset": 4700
+        },
+        {
+          "offset": 5544,
+          "before": "\"Input\"",
+          "after": "\"输入\"",
+          "afterOffset": 4765
+        },
+        {
+          "offset": 5587,
+          "before": "\"The adapter keeps the from-scratch retrieval and answer validator.\"",
+          "after": "\"适配器保留从零实现的检索器与回答校验器。\"",
+          "afterOffset": 4805
+        },
+        {
+          "offset": 5701,
+          "before": "\"Transform\"",
+          "after": "\"处理\"",
+          "afterOffset": 4873
+        },
+        {
+          "offset": 5748,
+          "before": "\"The adapter keeps the from-scratch retrieval and answer validator. The optional LangChain path contributes recursive splitting and a fake model interface, then converts every chunk back to exact source offsets. If a splitter rewrites text, reject it instead of inventing provenance. Repeated overlapping substrings must advance the search cursor by one position, not by the full chunk length.\"",
+          "after": "\"适配器保留从零实现的检索器与回答校验器。可选 LangChain 路径提供递归切分和模拟模型接口，再将每个文本块映射回精确来源偏移量。切分器若改写文本，应拒绝结果，不能编造来源。处理重复且重叠的子串时，搜索游标只向前移动一个位置，不能跳过整个文本块长度。\"",
+          "afterOffset": 4913
+        },
+        {
+          "offset": 6188,
+          "before": "\"Verify\"",
+          "after": "\"验证\"",
+          "afterOffset": 5088
+        },
+        {
+          "offset": 6232,
+          "before": "\"Framework chunks are converted to the same source-span contract used by the baseline.\"",
+          "after": "\"将框架生成的文本块转换为基础实现采用的同一来源区间契约。 图表限制：此 JavaScript 示例按 UTF-16 位置切片，并使用 ASCII 词匹配；Python 正文实现按 Unicode 字符切片和分词。emoji 或中文输入时不可将两者的位置与分数直接对等。\"",
+          "afterOffset": 5128
+        },
+        {
+          "offset": 6372,
+          "before": "\"Framework chunks are converted to the same source-span contract used by the baseline.\"",
+          "after": "\"将框架生成的文本块转换为基础实现采用的同一来源区间契约。 图表限制：此 JavaScript 示例按 UTF-16 位置切片，并使用 ASCII 词匹配；Python 正文实现按 Unicode 字符切片和分词。emoji 或中文输入时不可将两者的位置与分数直接对等。\"",
+          "afterOffset": 5317
+        }
+      ]
+    },
+    {
+      "path": "site/figures/projects/document-extraction-desk.js",
+      "sourceSha256": "c8ab4b758d84b5eab033ad5b64b6c1ac32855978cf0cb76d614a24a798d2d3df",
+      "localizedSha256": "93f7037c2eeb842b99f4013e8edbfc19d2b8b57e96c23805ab1a92a9aae1f4ae",
+      "edits": [
+        {
+          "offset": 81,
+          "before": "\"Define the fields before extracting values\"",
+          "after": "\"抽取前先定义字段\"",
+          "afterOffset": 81
+        },
+        {
+          "offset": 161,
+          "before": "\"Observe input\"",
+          "after": "\"观察输入\"",
+          "afterOffset": 127
+        },
+        {
+          "offset": 194,
+          "before": "\"Inspect the supplied values and name the contract.\"",
+          "after": "\"检查提供的值，说明适用契约。\"",
+          "afterOffset": 151
+        },
+        {
+          "offset": 275,
+          "before": "\"Compute state\"",
+          "after": "\"计算状态\"",
+          "afterOffset": 196
+        },
+        {
+          "offset": 362,
+          "before": "\"Check the result\"",
+          "after": "\"检查结果\"",
+          "afterOffset": 274
+        },
+        {
+          "offset": 398,
+          "before": "\"Change one input below, predict the outcome and explain the computed difference.\"",
+          "after": "\"修改下方一项输入，预测结果，再解释实际计算差异。\"",
+          "afterOffset": 298
+        },
+        {
+          "offset": 505,
+          "before": "\"An original worked mechanism. Inputs update the calculation immediately; the project tests verify the actual implementation.\"",
+          "after": "\"原创机制示例，修改输入会立即更新计算；项目测试负责验证实际实现。\"",
+          "afterOffset": 349
+        },
+        {
+          "offset": 671,
+          "before": "'Labels assigned to two fields'",
+          "after": "'分配给两个字段的标签'",
+          "afterOffset": 423
+        },
+        {
+          "offset": 942,
+          "before": "'Every normalized label has one destination.'",
+          "after": "'每个规范化标签只对应一个目标。'",
+          "afterOffset": 675
+        },
+        {
+          "offset": 988,
+          "before": "'Reject: repeated or empty labels create an ambiguous schema.'",
+          "after": "'拒绝：标签重复或为空会使模式含义不明确。'",
+          "afterOffset": 693
+        },
+        {
+          "offset": 1067,
+          "before": "'Labels'",
+          "after": "'标签数'",
+          "afterOffset": 732
+        },
+        {
+          "offset": 1104,
+          "before": "'Distinct labels'",
+          "after": "'不同标签数'",
+          "afterOffset": 766
+        },
+        {
+          "offset": 1151,
+          "before": "'Label'",
+          "after": "'标签'",
+          "afterOffset": 803
+        },
+        {
+          "offset": 1159,
+          "before": "'Occurrences'",
+          "after": "'出现次数'",
+          "afterOffset": 808
+        },
+        {
+          "offset": 1336,
+          "before": "\"Extract candidates without losing their evidence\"",
+          "after": "\"抽取候选值并保留证据\"",
+          "afterOffset": 978
+        },
+        {
+          "offset": 1422,
+          "before": "\"Observe input\"",
+          "after": "\"观察输入\"",
+          "afterOffset": 1026
+        },
+        {
+          "offset": 1455,
+          "before": "\"Inspect the supplied values and name the contract.\"",
+          "after": "\"检查提供的值，说明适用契约。\"",
+          "afterOffset": 1050
+        },
+        {
+          "offset": 1536,
+          "before": "\"Compute state\"",
+          "after": "\"计算状态\"",
+          "afterOffset": 1095
+        },
+        {
+          "offset": 1632,
+          "before": "\"Check the result\"",
+          "after": "\"检查结果\"",
+          "afterOffset": 1182
+        },
+        {
+          "offset": 1668,
+          "before": "\"Change one input below, predict the outcome and explain the computed difference.\"",
+          "after": "\"修改下方一项输入，预测结果，再解释实际计算差异。\"",
+          "afterOffset": 1206
+        },
+        {
+          "offset": 1775,
+          "before": "\"An original worked mechanism. Inputs update the calculation immediately; the project tests verify the actual implementation.\"",
+          "after": "\"原创机制示例，修改输入会立即更新计算；项目测试负责验证实际实现。\"",
+          "afterOffset": 1257
+        },
+        {
+          "offset": 1941,
+          "before": "'Source text'",
+          "after": "'来源文本'",
+          "afterOffset": 1331
+        },
+        {
+          "offset": 2024,
+          "before": "'Proposed quote'",
+          "after": "'候选引文'",
+          "afterOffset": 1407
+        },
+        {
+          "offset": 2302,
+          "before": "'One exact character span supports this quote.'",
+          "after": "'一个精确字符区间支持该引文。'",
+          "afterOffset": 1675
+        },
+        {
+          "offset": 2365,
+          "before": "'More than one span: keep the ambiguity visible.'",
+          "after": "'存在多个区间：应明确保留歧义。'",
+          "afterOffset": 1707
+        },
+        {
+          "offset": 2415,
+          "before": "'No exact span: reject the fabricated or missing quote.'",
+          "after": "'没有精确区间：拒绝编造或缺失的引文。'",
+          "afterOffset": 1725
+        },
+        {
+          "offset": 2488,
+          "before": "'Matches'",
+          "after": "'匹配数'",
+          "afterOffset": 1762
+        },
+        {
+          "offset": 2530,
+          "before": "'Start'",
+          "after": "'起点'",
+          "afterOffset": 1800
+        },
+        {
+          "offset": 2538,
+          "before": "'End'",
+          "after": "'终点'",
+          "afterOffset": 1805
+        },
+        {
+          "offset": 2544,
+          "before": "'Quote'",
+          "after": "'引文'",
+          "afterOffset": 1810
+        },
+        {
+          "offset": 2703,
+          "before": "\"Bind approval to one document version\"",
+          "after": "\"将审批绑定到单个文档版本\"",
+          "afterOffset": 1966
+        },
+        {
+          "offset": 2778,
+          "before": "\"Observe input\"",
+          "after": "\"观察输入\"",
+          "afterOffset": 2016
+        },
+        {
+          "offset": 2811,
+          "before": "\"Inspect the supplied values and name the contract.\"",
+          "after": "\"检查提供的值，说明适用契约。\"",
+          "afterOffset": 2040
+        },
+        {
+          "offset": 2892,
+          "before": "\"Compute state\"",
+          "after": "\"计算状态\"",
+          "afterOffset": 2085
+        },
+        {
+          "offset": 3039,
+          "before": "\"Check the result\"",
+          "after": "\"检查结果\"",
+          "afterOffset": 2223
+        },
+        {
+          "offset": 3075,
+          "before": "\"Change one input below, predict the outcome and explain the computed difference.\"",
+          "after": "\"修改下方一项输入，预测结果，再解释实际计算差异。\"",
+          "afterOffset": 2247
+        },
+        {
+          "offset": 3182,
+          "before": "\"An original worked mechanism. Inputs update the calculation immediately; the project tests verify the actual implementation.\"",
+          "after": "\"原创机制示例，修改输入会立即更新计算；项目测试负责验证实际实现。\"",
+          "afterOffset": 2298
+        },
+        {
+          "offset": 3347,
+          "before": "'Integer proposal'",
+          "after": "'整数候选'",
+          "afterOffset": 2371
+        },
+        {
+          "offset": 3412,
+          "before": "'Reviewer selected this span'",
+          "after": "'审阅者已选中该区间'",
+          "afterOffset": 2424
+        },
+        {
+          "offset": 3492,
+          "before": "'Source changed after approval'",
+          "after": "'批准后来源发生变化'",
+          "afterOffset": 2486
+        },
+        {
+          "offset": 3742,
+          "before": "'A valid source-bound value can be exported.'",
+          "after": "'有效且与来源绑定的值可以导出。'",
+          "afterOffset": 2716
+        },
+        {
+          "offset": 3788,
+          "before": "'Keep the value out of approved output until the failed boundary is resolved.'",
+          "after": "'解决失败的校验项之前，不将该值加入已批准输出。'",
+          "afterOffset": 2734
+        },
+        {
+          "offset": 3883,
+          "before": "'State'",
+          "after": "'状态'",
+          "afterOffset": 2776
+        },
+        {
+          "offset": 3911,
+          "before": "'Exported value'",
+          "after": "'导出值'",
+          "afterOffset": 2801
+        },
+        {
+          "offset": 3987,
+          "before": "'Boundary'",
+          "after": "'校验项'",
+          "afterOffset": 2866
+        },
+        {
+          "offset": 3998,
+          "before": "'Result'",
+          "after": "'结果'",
+          "afterOffset": 2872
+        },
+        {
+          "offset": 4015,
+          "before": "'Integer'",
+          "after": "'整数'",
+          "afterOffset": 2885
+        },
+        {
+          "offset": 4051,
+          "before": "'Source version'",
+          "after": "'来源版本'",
+          "afterOffset": 2916
+        },
+        {
+          "offset": 4097,
+          "before": "'Decision'",
+          "after": "'决定'",
+          "afterOffset": 2952
+        },
+        {
+          "offset": 4232,
+          "before": "\"Show evidence and export reviewed values\"",
+          "after": "\"展示证据并导出已审阅值\"",
+          "afterOffset": 3081
+        },
+        {
+          "offset": 4310,
+          "before": "\"Observe input\"",
+          "after": "\"观察输入\"",
+          "afterOffset": 3130
+        },
+        {
+          "offset": 4343,
+          "before": "\"Inspect the supplied values and name the contract.\"",
+          "after": "\"检查提供的值，说明适用契约。\"",
+          "afterOffset": 3154
+        },
+        {
+          "offset": 4424,
+          "before": "\"Compute state\"",
+          "after": "\"计算状态\"",
+          "afterOffset": 3199
+        },
+        {
+          "offset": 4509,
+          "before": "\"Check the result\"",
+          "after": "\"检查结果\"",
+          "afterOffset": 3275
+        },
+        {
+          "offset": 4545,
+          "before": "\"Change one input below, predict the outcome and explain the computed difference.\"",
+          "after": "\"修改下方一项输入，预测结果，再解释实际计算差异。\"",
+          "afterOffset": 3299
+        },
+        {
+          "offset": 4652,
+          "before": "\"An original worked mechanism. Inputs update the calculation immediately; the project tests verify the actual implementation.\"",
+          "after": "\"原创机制示例，修改输入会立即更新计算；项目测试负责验证实际实现。\"",
+          "afterOffset": 3350
+        },
+        {
+          "offset": 4820,
+          "before": "'Required fields'",
+          "after": "'必需字段数'",
+          "afterOffset": 3426
+        },
+        {
+          "offset": 4901,
+          "before": "'Approved required fields'",
+          "after": "'已批准的必需字段数'",
+          "afterOffset": 3497
+        },
+        {
+          "offset": 5082,
+          "before": "'The review remains incomplete; optional fields cannot compensate.'",
+          "after": "'审阅尚未完成；可选字段不能抵补必需字段。'",
+          "afterOffset": 3663
+        },
+        {
+          "offset": 5150,
+          "before": "'All required fields have source-bound decisions.'",
+          "after": "'全部必需字段都有与来源绑定的决定。'",
+          "afterOffset": 3686
+        },
+        {
+          "offset": 5217,
+          "before": "'Status'",
+          "after": "'状态'",
+          "afterOffset": 3722
+        },
+        {
+          "offset": 5274,
+          "before": "'Remaining'",
+          "after": "'剩余数量'",
+          "afterOffset": 3775
+        },
+        {
+          "offset": 5315,
+          "before": "'Required fields'",
+          "after": "'必需字段数'",
+          "afterOffset": 3811
+        },
+        {
+          "offset": 5358,
+          "before": "'Approved required fields'",
+          "after": "'已批准的必需字段数'",
+          "afterOffset": 3844
+        }
+      ]
+    },
+    {
+      "path": "site/figures/projects/durable-agent-jobs.js",
+      "sourceSha256": "f32f0507593d99d37e764215ef8197fb6cbd9916f49650e9a2b4a48d4c746d7e",
+      "localizedSha256": "079e3775ccd6c0116520aa554d14d695b95921484cd7058bd370459a4dbcdd0e",
+      "edits": [
+        {
+          "offset": 108,
+          "before": "\"A retry needs one stable identity\"",
+          "after": "\"重试需要稳定且唯一的标识\"",
+          "afterOffset": 108
+        },
+        {
+          "offset": 181,
+          "before": "\"Validate bytes\"",
+          "after": "\"校验字符\"",
+          "afterOffset": 160
+        },
+        {
+          "offset": 225,
+          "before": "\"The identifier must start with a lowercase letter, then contain lowercase letters, digits or hyphens, with at most 64 characters.\"",
+          "after": "\"标识符必须以小写字母开头，后接小写字母、数字或连字符，最多 64 个字符。\"",
+          "afterOffset": 194
+        },
+        {
+          "offset": 390,
+          "before": "\"Create intention\"",
+          "after": "\"记录执行意图\"",
+          "afterOffset": 267
+        },
+        {
+          "offset": 436,
+          "before": "\"A valid new job starts queued, version 0, attempts 0. It has no lease or output yet.\"",
+          "after": "\"有效新任务从 queued、版本 0、尝试次数 0 开始，尚无租约或输出。\"",
+          "afterOffset": 303
+        },
+        {
+          "offset": 556,
+          "before": "\"Bind input\"",
+          "after": "\"绑定输入\"",
+          "afterOffset": 376
+        },
+        {
+          "offset": 596,
+          "before": "\"The CLI binds an identifier to immutable text. Identical enqueue is safe; changed text conflicts.\"",
+          "after": "\"CLI 将标识符绑定到不可变文本。内容相同的重复入队可安全处理；文本变化会冲突。\"",
+          "afterOffset": 410
+        },
+        {
+          "offset": 732,
+          "before": "\"Change the identifier and payload relationship to compute whether creation or redelivery is permitted.\"",
+          "after": "\"改变标识符与载荷的关系，计算是否允许创建或重复投递。\"",
+          "afterOffset": 489
+        },
+        {
+          "offset": 895,
+          "before": "\"Job identifier\"",
+          "after": "\"任务标识符\"",
+          "afterOffset": 576
+        },
+        {
+          "offset": 1000,
+          "before": "\"ID already stored\"",
+          "after": "\"ID 已保存\"",
+          "afterOffset": 672
+        },
+        {
+          "offset": 1137,
+          "before": "\"Payload changed\"",
+          "after": "\"载荷已变化\"",
+          "afterOffset": 798
+        },
+        {
+          "offset": 1387,
+          "before": "\"Create queued version 0; no effect executed\"",
+          "after": "\"创建 queued、版本 0 的记录；尚未执行副作用\"",
+          "afterOffset": 1038
+        },
+        {
+          "offset": 1464,
+          "before": "\"Rejected: invalid identifier\"",
+          "after": "\"已拒绝：标识符无效\"",
+          "afterOffset": 1098
+        },
+        {
+          "offset": 1543,
+          "before": "\"Rejected: identity already binds different text\"",
+          "after": "\"已拒绝：该标识符已绑定其他文本\"",
+          "afterOffset": 1158
+        },
+        {
+          "offset": 1641,
+          "before": "\"Identical redelivery: retain existing job\"",
+          "after": "\"相同内容再次投递：保留已有任务\"",
+          "afterOffset": 1224
+        },
+        {
+          "offset": 1773,
+          "before": "\"Identifier length\"",
+          "after": "\"标识符长度\"",
+          "afterOffset": 1330
+        },
+        {
+          "offset": 1837,
+          "before": "\"New jobs added\"",
+          "after": "\"新增任务数\"",
+          "afterOffset": 1382
+        },
+        {
+          "offset": 1913,
+          "before": "\"Effects executed\"",
+          "after": "\"已执行的副作用数\"",
+          "afterOffset": 1449
+        },
+        {
+          "offset": 1984,
+          "before": "\"ID length /64\"",
+          "after": "\"ID 长度 /64\"",
+          "afterOffset": 1512
+        },
+        {
+          "offset": 2143,
+          "before": "\"Check authority before changing the ledger\"",
+          "after": "\"修改账本前先检查执行资格\"",
+          "afterOffset": 1667
+        },
+        {
+          "offset": 2225,
+          "before": "\"Compare version\"",
+          "after": "\"比较版本\"",
+          "afterOffset": 1719
+        },
+        {
+          "offset": 2270,
+          "before": "\"The caller's expected version must equal the queued record's current version.\"",
+          "after": "\"调用方的预期版本必须等于 queued 记录的当前版本。\"",
+          "afterOffset": 1753
+        },
+        {
+          "offset": 2383,
+          "before": "\"Check attempt cap\"",
+          "after": "\"检查尝试上限\"",
+          "afterOffset": 1817
+        },
+        {
+          "offset": 2430,
+          "before": "\"Recovery retains attempts. A queued job can still have exhausted its retry budget.\"",
+          "after": "\"恢复保留尝试计数；queued 任务也可能已经耗尽重试额度。\"",
+          "afterOffset": 1853
+        },
+        {
+          "offset": 2548,
+          "before": "\"Persist claim\"",
+          "after": "\"持久化领取记录\"",
+          "afterOffset": 1919
+        },
+        {
+          "offset": 2591,
+          "before": "\"A successful transition increments version and attempts, sets expiry, then saves while the ledger lock is held.\"",
+          "after": "\"转换成功时递增版本和尝试次数，设置到期时间，再于持有账本锁时保存。\"",
+          "afterOffset": 1956
+        },
+        {
+          "offset": 2741,
+          "before": "\"The lease interval is half open: expiry is the first millisecond at which completion is rejected.\"",
+          "after": "\"租约区间左闭右开：到期时间就是开始拒绝完成提交的首个毫秒。\"",
+          "afterOffset": 2028
+        },
+        {
+          "offset": 2924,
+          "before": "\"Current version\"",
+          "after": "\"当前版本\"",
+          "afterOffset": 2143
+        },
+        {
+          "offset": 3110,
+          "before": "\"Expected version\"",
+          "after": "\"预期版本\"",
+          "afterOffset": 2318
+        },
+        {
+          "offset": 3297,
+          "before": "\"Previous attempts\"",
+          "after": "\"已有尝试次数\"",
+          "afterOffset": 2493
+        },
+        {
+          "offset": 3478,
+          "before": "\"Attempt cap\"",
+          "after": "\"尝试上限\"",
+          "afterOffset": 2663
+        },
+        {
+          "offset": 3653,
+          "before": "\"Claim time ms\"",
+          "after": "\"领取时间（ms）\"",
+          "afterOffset": 2831
+        },
+        {
+          "offset": 3836,
+          "before": "\"Lease duration ms\"",
+          "after": "\"租约时长（ms）\"",
+          "afterOffset": 3009
+        },
+        {
+          "offset": 4096,
+          "before": "\"Claim accepted; persist before execution\"",
+          "after": "\"领取已接受；先持久化，再执行\"",
+          "afterOffset": 3260
+        },
+        {
+          "offset": 4198,
+          "before": "\"Conflict: stale expected version\"",
+          "after": "\"冲突：预期版本已过期\"",
+          "afterOffset": 3336
+        },
+        {
+          "offset": 4282,
+          "before": "\"Attempt cap reached; retain queued record\"",
+          "after": "\"达到尝试上限；保留 queued 记录\"",
+          "afterOffset": 3398
+        },
+        {
+          "offset": 4428,
+          "before": "\"Resulting version\"",
+          "after": "\"结果版本\"",
+          "afterOffset": 3522
+        },
+        {
+          "offset": 4552,
+          "before": "\"Resulting attempts\"",
+          "after": "\"结果尝试次数\"",
+          "afterOffset": 3633
+        },
+        {
+          "offset": 4664,
+          "before": "\"Lease expiry\"",
+          "after": "\"租约到期时间\"",
+          "afterOffset": 3733
+        },
+        {
+          "offset": 4785,
+          "before": "\"Attempts consumed\"",
+          "after": "\"已用尝试次数\"",
+          "afterOffset": 3848
+        },
+        {
+          "offset": 5024,
+          "before": "\"Time and version independently fence a worker\"",
+          "after": "\"分别通过时间和版本限制工作进程\"",
+          "afterOffset": 4076
+        },
+        {
+          "offset": 5109,
+          "before": "\"Try completion\"",
+          "after": "\"尝试提交完成\"",
+          "afterOffset": 4131
+        },
+        {
+          "offset": 5153,
+          "before": "\"A running worker needs both its current version and time strictly before expiry.\"",
+          "after": "\"running 工作进程既须提交当前版本，也须严格早于租约到期时间。\"",
+          "afterOffset": 4167
+        },
+        {
+          "offset": 5269,
+          "before": "\"Reclaim\"",
+          "after": "\"回收\"",
+          "afterOffset": 4237
+        },
+        {
+          "offset": 5306,
+          "before": "\"At expiry, running v1 becomes queued v2. This invalidates the old worker before another claim.\"",
+          "after": "\"到期时，running v1 转为 queued v2，在下一次领取前先使旧工作进程失效。\"",
+          "afterOffset": 4269
+        },
+        {
+          "offset": 5436,
+          "before": "\"Retry\"",
+          "after": "\"重试\"",
+          "afterOffset": 4350
+        },
+        {
+          "offset": 5471,
+          "before": "\"The new worker claims v3. Old v1 cannot finish, even if it reports an earlier clock.\"",
+          "after": "\"新工作进程领取 v3。即使旧 v1 报告更早的时钟，也无法提交完成。\"",
+          "afterOffset": 4382
+        },
+        {
+          "offset": 5594,
+          "before": "\"Move the clock to 110 and switch the submitted version to see the two independent checks.\"",
+          "after": "\"将时钟移至 110，并切换提交版本，观察两项独立检查。\"",
+          "afterOffset": 4455
+        },
+        {
+          "offset": 5765,
+          "before": "\"Completion time ms\"",
+          "after": "\"完成时间（ms）\"",
+          "afterOffset": 4564
+        },
+        {
+          "offset": 5956,
+          "before": "\"Submitted version\"",
+          "after": "\"提交的版本\"",
+          "afterOffset": 4745
+        },
+        {
+          "offset": 6140,
+          "before": "\"Replacement already claimed v3\"",
+          "after": "\"接替进程已领取 v3\"",
+          "afterOffset": 4917
+        },
+        {
+          "offset": 6432,
+          "before": "\"Completion accepted\"",
+          "after": "\"已接受完成提交\"",
+          "afterOffset": 5189
+        },
+        {
+          "offset": 6500,
+          "before": "\"Rejected: stale version\"",
+          "after": "\"已拒绝：版本过期\"",
+          "afterOffset": 5245
+        },
+        {
+          "offset": 6565,
+          "before": "\"Rejected: lease expired\"",
+          "after": "\"已拒绝：租约过期\"",
+          "afterOffset": 5295
+        },
+        {
+          "offset": 6679,
+          "before": "\"Current claim version\"",
+          "after": "\"当前领取版本\"",
+          "afterOffset": 5394
+        },
+        {
+          "offset": 6743,
+          "before": "\"Lease expires at\"",
+          "after": "\"租约到期时间\"",
+          "afterOffset": 5443
+        },
+        {
+          "offset": 6801,
+          "before": "\"Time remaining ms\"",
+          "after": "\"剩余时间（ms）\"",
+          "afterOffset": 5491
+        },
+        {
+          "offset": 6912,
+          "before": "\"Completion time\"",
+          "after": "\"完成时间\"",
+          "afterOffset": 5593
+        },
+        {
+          "offset": 6978,
+          "before": "\"Expiry\"",
+          "after": "\"到期时间\"",
+          "afterOffset": 5648
+        },
+        {
+          "offset": 7138,
+          "before": "\"Recover across the effect-completion gap\"",
+          "after": "\"恢复写出结果与标记完成之间的间隙\"",
+          "afterOffset": 5806
+        },
+        {
+          "offset": 7218,
+          "before": "\"Persist v1\"",
+          "after": "\"持久化 v1\"",
+          "afterOffset": 5862
+        },
+        {
+          "offset": 7258,
+          "before": "\"Save the running claim before executing the local text receipt.\"",
+          "after": "\"执行本地文本凭据操作前，保存 running 领取记录。\"",
+          "afterOffset": 5898
+        },
+        {
+          "offset": 7357,
+          "before": "\"Publish effect\"",
+          "after": "\"发布执行结果\"",
+          "afterOffset": 5962
+        },
+        {
+          "offset": 7401,
+          "before": "\"A synced temporary receipt is linked without overwriting an existing output.\"",
+          "after": "\"同步临时凭据后通过硬链接发布，不覆盖已有输出。\"",
+          "afterOffset": 5998
+        },
+        {
+          "offset": 7513,
+          "before": "\"Crash and retry\"",
+          "after": "\"崩溃与重试\"",
+          "afterOffset": 6057
+        },
+        {
+          "offset": 7558,
+          "before": "\"After expiry, recovery reaches v3, reuses an identical receipt when present and persists completed v4.\"",
+          "after": "\"租约到期后恢复至 v3，复用已有的相同凭据，并持久化 completed v4。\"",
+          "afterOffset": 6092
+        },
+        {
+          "offset": 7699,
+          "before": "\"This computes a one-job process-crash timeline. It does not simulate a filesystem power failure.\"",
+          "after": "\"计算单个任务的进程崩溃时间线，不模拟文件系统断电。\"",
+          "afterOffset": 6171
+        },
+        {
+          "offset": 7879,
+          "before": "\"Crash point\"",
+          "after": "\"崩溃点\"",
+          "afterOffset": 6280
+        },
+        {
+          "offset": 8005,
+          "before": "\"After claim\"",
+          "after": "\"领取之后\"",
+          "afterOffset": 6398
+        },
+        {
+          "offset": 8060,
+          "before": "\"After effect\"",
+          "after": "\"执行结果产生之后\"",
+          "afterOffset": 6446
+        },
+        {
+          "offset": 8155,
+          "before": "\"Recovery clock ms\"",
+          "after": "\"恢复时钟（ms）\"",
+          "afterOffset": 6537
+        },
+        {
+          "offset": 8428,
+          "before": "\"Lease still owned: replacement cannot execute\"",
+          "after": "\"租约仍由原进程持有：接替进程不能执行\"",
+          "afterOffset": 6801
+        },
+        {
+          "offset": 8528,
+          "before": "\"Reclaim, reuse the existing effect, complete v4\"",
+          "after": "\"回收、复用已有执行结果，完成 v4\"",
+          "afterOffset": 6874
+        },
+        {
+          "offset": 8625,
+          "before": "\"Reclaim, publish the first effect, complete v4\"",
+          "after": "\"回收、首次发布执行结果，完成 v4\"",
+          "afterOffset": 6941
+        },
+        {
+          "offset": 8762,
+          "before": "\"Effects before restart\"",
+          "after": "\"重启前的执行结果数\"",
+          "afterOffset": 7049
+        },
+        {
+          "offset": 8848,
+          "before": "\"New effects on restart\"",
+          "after": "\"重启后新增的执行结果数\"",
+          "afterOffset": 7122
+        },
+        {
+          "offset": 8959,
+          "before": "\"Completed jobs\"",
+          "after": "\"已完成任务数\"",
+          "afterOffset": 7222
+        },
+        {
+          "offset": 9036,
+          "before": "\"Moment\"",
+          "after": "\"时刻\"",
+          "afterOffset": 7291
+        },
+        {
+          "offset": 9046,
+          "before": "\"Version\"",
+          "after": "\"版本\"",
+          "afterOffset": 7297
+        },
+        {
+          "offset": 9057,
+          "before": "\"Effects\"",
+          "after": "\"执行结果\"",
+          "afterOffset": 7303
+        },
+        {
+          "offset": 9373,
+          "before": "\"Persisted effect count\"",
+          "after": "\"已持久化的执行结果数\"",
+          "afterOffset": 7616
+        }
+      ]
+    },
+    {
+      "path": "site/figures/projects/feedback-theme-board.js",
+      "sourceSha256": "98aab01d5453085015ab5afe0b92b6908cdfb4997e52ffccf33239efb5c32245",
+      "localizedSha256": "32c9af5f80940528e14fc42c8f8d624e4c296e6eab8ea9e0e54c14e76ac73465",
+      "edits": [
+        {
+          "offset": 77,
+          "before": "\"Import feedback with stable identities\"",
+          "after": "\"导入具有稳定标识的反馈\"",
+          "afterOffset": 77
+        },
+        {
+          "offset": 153,
+          "before": "\"Observe input\"",
+          "after": "\"观察输入\"",
+          "afterOffset": 126
+        },
+        {
+          "offset": 186,
+          "before": "\"Inspect the supplied values and name the contract.\"",
+          "after": "\"检查提供的值，说明适用契约。\"",
+          "afterOffset": 150
+        },
+        {
+          "offset": 267,
+          "before": "\"Compute state\"",
+          "after": "\"计算状态\"",
+          "afterOffset": 195
+        },
+        {
+          "offset": 373,
+          "before": "\"Check the result\"",
+          "after": "\"检查结果\"",
+          "afterOffset": 292
+        },
+        {
+          "offset": 409,
+          "before": "\"Change one input below, predict the outcome and explain the computed difference.\"",
+          "after": "\"修改下方一项输入，预测结果，再解释实际计算差异。\"",
+          "afterOffset": 316
+        },
+        {
+          "offset": 516,
+          "before": "\"An original worked mechanism. Inputs update the calculation immediately; the project tests verify the actual implementation.\"",
+          "after": "\"原创机制示例，修改输入会立即更新计算；项目测试负责验证实际实现。 图表限制：本示例只转小写，未执行实际 TypeScript 实现的 NFKC 规范化；全角等兼容字符可能得到不同匹配结果。\"",
+          "afterOffset": 367
+        },
+        {
+          "offset": 679,
+          "before": "'Record IDs (comma separated)'",
+          "after": "'记录 ID（以逗号分隔）'",
+          "afterOffset": 500
+        },
+        {
+          "offset": 906,
+          "before": "'Stable unique record identities are ready for evidence matching.'",
+          "after": "'记录标识稳定且唯一，可以匹配证据。'",
+          "afterOffset": 711
+        },
+        {
+          "offset": 973,
+          "before": "'Reject empty or duplicate record identities.'",
+          "after": "'拒绝空的或重复的记录标识。'",
+          "afterOffset": 731
+        },
+        {
+          "offset": 1036,
+          "before": "'Records'",
+          "after": "'记录数'",
+          "afterOffset": 763
+        },
+        {
+          "offset": 1071,
+          "before": "'Distinct IDs'",
+          "after": "'不同 ID 数'",
+          "afterOffset": 794
+        },
+        {
+          "offset": 1120,
+          "before": "'Occurrences'",
+          "after": "'出现次数'",
+          "afterOffset": 838
+        },
+        {
+          "offset": 1281,
+          "before": "\"Match phrases while preserving original spans\"",
+          "after": "\"匹配短语并保留原文区间\"",
+          "afterOffset": 992
+        },
+        {
+          "offset": 1364,
+          "before": "\"Observe input\"",
+          "after": "\"观察输入\"",
+          "afterOffset": 1041
+        },
+        {
+          "offset": 1397,
+          "before": "\"Inspect the supplied values and name the contract.\"",
+          "after": "\"检查提供的值，说明适用契约。\"",
+          "afterOffset": 1065
+        },
+        {
+          "offset": 1478,
+          "before": "\"Compute state\"",
+          "after": "\"计算状态\"",
+          "afterOffset": 1110
+        },
+        {
+          "offset": 1567,
+          "before": "\"Check the result\"",
+          "after": "\"检查结果\"",
+          "afterOffset": 1190
+        },
+        {
+          "offset": 1603,
+          "before": "\"Change one input below, predict the outcome and explain the computed difference.\"",
+          "after": "\"修改下方一项输入，预测结果，再解释实际计算差异。\"",
+          "afterOffset": 1214
+        },
+        {
+          "offset": 1710,
+          "before": "\"An original worked mechanism. Inputs update the calculation immediately; the project tests verify the actual implementation.\"",
+          "after": "\"原创机制示例，修改输入会立即更新计算；项目测试负责验证实际实现。 图表限制：本示例只转小写，未执行实际 TypeScript 实现的 NFKC 规范化；全角等兼容字符可能得到不同匹配结果。\"",
+          "afterOffset": 1265
+        },
+        {
+          "offset": 1874,
+          "before": "'Feedback text'",
+          "after": "'反馈文本'",
+          "afterOffset": 1399
+        },
+        {
+          "offset": 1969,
+          "before": "'Theme phrase'",
+          "after": "'主题短语'",
+          "afterOffset": 1485
+        },
+        {
+          "offset": 2422,
+          "before": "'A rule matched exact source words; interpretation still needs review.'",
+          "after": "'规则已匹配精确来源词语；含义解释仍需审阅。'",
+          "afterOffset": 1930
+        },
+        {
+          "offset": 2494,
+          "before": "'No consecutive word match. Keep this record unmatched.'",
+          "after": "'没有连续词匹配，保留为未匹配记录。'",
+          "afterOffset": 1954
+        },
+        {
+          "offset": 2567,
+          "before": "'Match'",
+          "after": "'匹配'",
+          "afterOffset": 1990
+        },
+        {
+          "offset": 2609,
+          "before": "'Start'",
+          "after": "'起点'",
+          "afterOffset": 2029
+        },
+        {
+          "offset": 2617,
+          "before": "'End'",
+          "after": "'终点'",
+          "afterOffset": 2034
+        },
+        {
+          "offset": 2623,
+          "before": "'Quote'",
+          "after": "'引文'",
+          "afterOffset": 2039
+        },
+        {
+          "offset": 2777,
+          "before": "\"Count evidence without inflating source support\"",
+          "after": "\"统计证据并避免夸大来源支持\"",
+          "afterOffset": 2190
+        },
+        {
+          "offset": 2862,
+          "before": "\"Observe input\"",
+          "after": "\"观察输入\"",
+          "afterOffset": 2241
+        },
+        {
+          "offset": 2895,
+          "before": "\"Inspect the supplied values and name the contract.\"",
+          "after": "\"检查提供的值，说明适用契约。\"",
+          "afterOffset": 2265
+        },
+        {
+          "offset": 2976,
+          "before": "\"Compute state\"",
+          "after": "\"计算状态\"",
+          "afterOffset": 2310
+        },
+        {
+          "offset": 3064,
+          "before": "\"Check the result\"",
+          "after": "\"检查结果\"",
+          "afterOffset": 2389
+        },
+        {
+          "offset": 3100,
+          "before": "\"Change one input below, predict the outcome and explain the computed difference.\"",
+          "after": "\"修改下方一项输入，预测结果，再解释实际计算差异。\"",
+          "afterOffset": 2413
+        },
+        {
+          "offset": 3207,
+          "before": "\"An original worked mechanism. Inputs update the calculation immediately; the project tests verify the actual implementation.\"",
+          "after": "\"原创机制示例，修改输入会立即更新计算；项目测试负责验证实际实现。 图表限制：本示例只转小写，未执行实际 TypeScript 实现的 NFKC 规范化；全角等兼容字符可能得到不同匹配结果。\"",
+          "afterOffset": 2464
+        },
+        {
+          "offset": 3374,
+          "before": "'Sources of matched records'",
+          "after": "'匹配记录的来源'",
+          "afterOffset": 2601
+        },
+        {
+          "offset": 3580,
+          "before": "'Repeated feedback from one source does not create another source label.'",
+          "after": "'同一来源的重复反馈不会增加新的来源标签。'",
+          "afterOffset": 2788
+        },
+        {
+          "offset": 3670,
+          "before": "'Matched records'",
+          "after": "'匹配记录数'",
+          "afterOffset": 2827
+        },
+        {
+          "offset": 3717,
+          "before": "'Distinct sources'",
+          "after": "'不同来源数'",
+          "afterOffset": 2864
+        },
+        {
+          "offset": 3769,
+          "before": "'Record count'",
+          "after": "'记录数量'",
+          "afterOffset": 2905
+        },
+        {
+          "offset": 3813,
+          "before": "'Distinct source count'",
+          "after": "'不同来源数量'",
+          "afterOffset": 2941
+        },
+        {
+          "offset": 3866,
+          "before": "'Source'",
+          "after": "'来源'",
+          "afterOffset": 2979
+        },
+        {
+          "offset": 3875,
+          "before": "'Records'",
+          "after": "'记录数'",
+          "afterOffset": 2984
+        },
+        {
+          "offset": 4033,
+          "before": "\"Publish evidence and reviewable investigation drafts\"",
+          "after": "\"发布证据与可审阅的调查草稿\"",
+          "afterOffset": 3138
+        },
+        {
+          "offset": 4123,
+          "before": "\"Observe input\"",
+          "after": "\"观察输入\"",
+          "afterOffset": 3189
+        },
+        {
+          "offset": 4156,
+          "before": "\"Inspect the supplied values and name the contract.\"",
+          "after": "\"检查提供的值，说明适用契约。\"",
+          "afterOffset": 3213
+        },
+        {
+          "offset": 4237,
+          "before": "\"Compute state\"",
+          "after": "\"计算状态\"",
+          "afterOffset": 3258
+        },
+        {
+          "offset": 4338,
+          "before": "\"Check the result\"",
+          "after": "\"检查结果\"",
+          "afterOffset": 3350
+        },
+        {
+          "offset": 4374,
+          "before": "\"Change one input below, predict the outcome and explain the computed difference.\"",
+          "after": "\"修改下方一项输入，预测结果，再解释实际计算差异。\"",
+          "afterOffset": 3374
+        },
+        {
+          "offset": 4481,
+          "before": "\"An original worked mechanism. Inputs update the calculation immediately; the project tests verify the actual implementation.\"",
+          "after": "\"原创机制示例，修改输入会立即更新计算；项目测试负责验证实际实现。 图表限制：本示例只转小写，未执行实际 TypeScript 实现的 NFKC 规范化；全角等兼容字符可能得到不同匹配结果。\"",
+          "afterOffset": 3425
+        },
+        {
+          "offset": 4648,
+          "before": "'Records with evidence'",
+          "after": "'有证据的记录数'",
+          "afterOffset": 3562
+        },
+        {
+          "offset": 4737,
+          "before": "'Unmatched records'",
+          "after": "'未匹配记录数'",
+          "afterOffset": 3637
+        },
+        {
+          "offset": 4902,
+          "before": "'Publish unmatched records beside the themes so missing coverage stays visible.'",
+          "after": "'将未匹配记录与主题并列展示，使覆盖缺口保持可见。'",
+          "afterOffset": 3791
+        },
+        {
+          "offset": 4983,
+          "before": "'No records: do not report perfect coverage.'",
+          "after": "'没有记录时，不能报告完美覆盖。'",
+          "afterOffset": 3818
+        },
+        {
+          "offset": 5045,
+          "before": "'Coverage'",
+          "after": "'覆盖率'",
+          "afterOffset": 3852
+        },
+        {
+          "offset": 5100,
+          "before": "'Needs review'",
+          "after": "'待审阅'",
+          "afterOffset": 3902
+        },
+        {
+          "offset": 5148,
+          "before": "'Matched'",
+          "after": "'已匹配'",
+          "afterOffset": 3941
+        },
+        {
+          "offset": 5182,
+          "before": "'Unmatched'",
+          "after": "'未匹配'",
+          "afterOffset": 3971
+        }
+      ]
+    }
+  ],
+  "figureLimitations": {
+    "qa": "图表限制：此 JavaScript 示例按 UTF-16 位置切片，并使用 ASCII 词匹配；Python 正文实现按 Unicode 字符切片和分词。emoji 或中文输入时不可将两者的位置与分数直接对等。",
+    "feedback": "图表限制：本示例只转小写，未执行实际 TypeScript 实现的 NFKC 规范化；全角等兼容字符可能得到不同匹配结果。"
+  }
+}

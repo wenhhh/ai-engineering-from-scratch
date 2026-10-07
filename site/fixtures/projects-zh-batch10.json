@@ -1,0 +1,2597 @@
+{
+  "upstream": "c02ca08d8a49ce24c3c1c1cf8e3b422f2c7393ca",
+  "projects": [
+    "browser-agent",
+    "calendar-focus-planner"
+  ],
+  "files": {
+    "projects/browser-agent/.gitignore": {
+      "sourceSha256": "f5cf5725dcd3c3d023d1854d9914f61144d76c99966f01675cbffaa3c11b0129",
+      "localizedSha256": "f5cf5725dcd3c3d023d1854d9914f61144d76c99966f01675cbffaa3c11b0129",
+      "kind": "preserved-contract"
+    },
+    "projects/browser-agent/API.md": {
+      "sourceSha256": "3f4ae63490c4faff7baaca362a7af474ae8e2a891623dbbe9219686bb54eb02b",
+      "localizedSha256": "d1b79422583514b4254292dddd01ca8f92ced9846c8e3e6ac87476cfe4253f6b",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "python",
+            "def inspect(data)\n"
+          ],
+          [
+            "typescript",
+            "export function parseObservation(raw: unknown): Observation\nexport function choose(observation: Observation, task: Task): Action\nexport function inspectPNG(file: string):\nexport async function runAgent(driver: Driver, task: Task, maxSteps = 5)\nexport function scoreRuns(statuses: string[])\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "inspectPNG"
+          ],
+          [
+            "`",
+            "null"
+          ],
+          [
+            "`",
+            "reason"
+          ],
+          [
+            "`",
+            "runAgent"
+          ],
+          [
+            "`",
+            "screenshot"
+          ],
+          [
+            "`",
+            "status: \"screenshot-error\""
+          ],
+          [
+            "`",
+            "trace"
+          ],
+          [
+            "`",
+            "visual"
+          ]
+        ],
+        "links": [],
+        "math": [],
+        "headings": [
+          "#",
+          "###",
+          "###"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/browser-agent/README.md": {
+      "sourceSha256": "1345a114ea1a1a5263c6e2ac31a6eb51454e4a56e62f5323267ba3d6f31e1db3",
+      "localizedSha256": "7c92cca1da9ae6d6f90ee6b866709fbc046a8344109dbd483314339126f6478c",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "bash",
+            "python3 scripts/project_test.py browser-agent --init learning-artifacts/browser-agent\npython3 scripts/project_test.py browser-agent --stage 1 --path learning-artifacts/browser-agent --strict\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py browser-agent --all --path learning-artifacts/browser-agent --strict\ncd learning-artifacts/browser-agent\nnode cli.ts --task samples/contact.json --output browser-run.json\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py browser-agent --all --solution --strict\ncd projects/browser-agent/solution\nnode cli.ts --task samples/contact.json --output browser-run.json\n"
+          ],
+          [
+            "bash",
+            "python3 -m http.server 8877 --bind 127.0.0.1\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "node cli.ts --task samples/contact.json --live"
+          ]
+        ],
+        "links": [
+          "API.md",
+          "https://chromedevtools.github.io/devtools-protocol/",
+          "https://html.spec.whatwg.org/multipage/forms.html",
+          "https://www.w3.org/TR/png-3/",
+          "stages/01-observations/docs/en.md",
+          "stages/02-bounded-loop/docs/en.md",
+          "stages/03-visual-proof/docs/en.md",
+          "stages/04-real-browser/docs/en.md"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 4
+      }
+    },
+    "projects/browser-agent/media/output.gif": {
+      "sourceSha256": "23047cf0774a35763e875706a62c50f2972ed7685959012dd5d92d6c64993d38",
+      "localizedSha256": "23047cf0774a35763e875706a62c50f2972ed7685959012dd5d92d6c64993d38",
+      "kind": "original-recording"
+    },
+    "projects/browser-agent/media/output.json": {
+      "sourceSha256": "ae9daa9e350f183128041ef8ce4008e357dfe02249523999654dc9ceb48e1f94",
+      "localizedSha256": "ae9daa9e350f183128041ef8ce4008e357dfe02249523999654dc9ceb48e1f94",
+      "kind": "original-recording"
+    },
+    "projects/browser-agent/media/output.png": {
+      "sourceSha256": "63b7c4556cc5a69ef36115661215629c658cd7ff3ee27b8e7ccb611c425fef46",
+      "localizedSha256": "63b7c4556cc5a69ef36115661215629c658cd7ff3ee27b8e7ccb611c425fef46",
+      "kind": "original-recording"
+    },
+    "projects/browser-agent/media/run.gif": {
+      "sourceSha256": "c2afcc56027a415454ba607f81e8fc34b6895c0ecad0d27d827d92fe94e30e74",
+      "localizedSha256": "c2afcc56027a415454ba607f81e8fc34b6895c0ecad0d27d827d92fe94e30e74",
+      "kind": "original-recording"
+    },
+    "projects/browser-agent/media/run.json": {
+      "sourceSha256": "1fdb3b2203beb1b1aeb757312d34d68259551e8af6a1803ef7151232aa71f8a0",
+      "localizedSha256": "1fdb3b2203beb1b1aeb757312d34d68259551e8af6a1803ef7151232aa71f8a0",
+      "kind": "original-recording"
+    },
+    "projects/browser-agent/media/run.png": {
+      "sourceSha256": "095304324ed187974f344d9a21e3aaffca7a75af5e5fc90b8d36ab37bb9be5a5",
+      "localizedSha256": "095304324ed187974f344d9a21e3aaffca7a75af5e5fc90b8d36ab37bb9be5a5",
+      "kind": "original-recording"
+    },
+    "projects/browser-agent/project.json": {
+      "sourceSha256": "fb9597179670c235f172bb4bf038a43a509d82993557267d932e62ed85b41fac",
+      "localizedSha256": "97898f78c782632264af1e0baed226e9289eef76fa6ab5a967c39341792d5464",
+      "kind": "manifest",
+      "contract": {
+        "id": "browser-agent",
+        "title": "<translated-text>",
+        "level": 5,
+        "levelName": "Frontier",
+        "tagline": "<translated-text>",
+        "summary": "<translated-text>",
+        "hours": 8,
+        "languages": [
+          "TypeScript",
+          "Python"
+        ],
+        "status": "ready",
+        "source": "core",
+        "author": {
+          "name": "AI Engineering from Scratch",
+          "github": "rohitg00"
+        },
+        "skills": [
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "prerequisites": [
+          "<translated-text>"
+        ],
+        "youWillBuild": "<translated-text>",
+        "usefulFor": [
+          "<translated-text>"
+        ],
+        "demo": {
+          "cwd": "solution",
+          "command": [
+            "node",
+            "cli.ts",
+            "--task",
+            "samples/contact.json",
+            "--output",
+            "browser-run.json"
+          ]
+        },
+        "stages": [
+          {
+            "id": "01-observations",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "typescript",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "parseObservation",
+              "choose"
+            ],
+            "difficulty": "starter",
+            "requires": [
+              "node",
+              "python3"
+            ],
+            "timeout": 90,
+            "figure": "pj-browser-agent-1"
+          },
+          {
+            "id": "02-bounded-loop",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "typescript",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "runAgent",
+              "FixtureDriver"
+            ],
+            "difficulty": "core",
+            "requires": [
+              "node",
+              "python3"
+            ],
+            "timeout": 90,
+            "figure": "pj-browser-agent-2"
+          },
+          {
+            "id": "03-visual-proof",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "typescript",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "inspectPNG"
+            ],
+            "difficulty": "core",
+            "requires": [
+              "node",
+              "python3"
+            ],
+            "timeout": 90,
+            "figure": "pj-browser-agent-3"
+          },
+          {
+            "id": "04-real-browser",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "typescript",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "GstackDriver",
+              "scoreRuns"
+            ],
+            "difficulty": "core",
+            "requires": [
+              "node",
+              "python3"
+            ],
+            "timeout": 90,
+            "figure": "pj-browser-agent-4"
+          }
+        ],
+        "demos": [
+          {
+            "gif": "media/run.gif",
+            "poster": "media/run.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          },
+          {
+            "gif": "media/output.gif",
+            "poster": "media/output.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          }
+        ]
+      }
+    },
+    "projects/browser-agent/solution/.gitignore": {
+      "sourceSha256": "05c2324df94a1ce6516867b993aa05a6376dea6bc12d0cdba6a26fb5008c5dcd",
+      "localizedSha256": "05c2324df94a1ce6516867b993aa05a6376dea6bc12d0cdba6a26fb5008c5dcd",
+      "kind": "preserved-contract"
+    },
+    "projects/browser-agent/solution/cli.ts": {
+      "sourceSha256": "b431e7fbb74096425afdbc4a16e2d68e6ef0649966ef83d2a4d5fd92493628bf",
+      "localizedSha256": "b431e7fbb74096425afdbc4a16e2d68e6ef0649966ef83d2a4d5fd92493628bf",
+      "kind": "preserved-contract"
+    },
+    "projects/browser-agent/solution/failure.png": {
+      "sourceSha256": "7dcdcda70bb2672deca8fddeefa9665ff96ef7afe607260582fb072a2e8e150b",
+      "localizedSha256": "7dcdcda70bb2672deca8fddeefa9665ff96ef7afe607260582fb072a2e8e150b",
+      "kind": "preserved-contract"
+    },
+    "projects/browser-agent/solution/fixture.html": {
+      "sourceSha256": "77c15602d22ddd98fa5c3ee262a44cc4a9aa30d6eebc1f6cface57b9a203364b",
+      "localizedSha256": "92534b8073273d807712efc6b2d23d7d97fced70590074b08701fe359e13a64d",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "<html lang=\"en\">",
+          "<html lang=\"zh-CN\">"
+        ],
+        [
+          "<title>Browser Agent Local Fixture</title>",
+          "<title>浏览器智能体本地测试页面</title>"
+        ],
+        [
+          "LOCAL EVALUATION FIXTURE",
+          "本地评估测试页面"
+        ],
+        [
+          "Create a support request",
+          "创建支持请求"
+        ],
+        [
+          "The agent must fill both fields, submit once, and verify the visible result.",
+          "智能体须填写两个字段、提交一次，再验证可见结果。字段英文标签属于精确匹配契约。"
+        ],
+        [
+          "Waiting for a completed request.",
+          "等待完成请求。"
+        ],
+        [
+          "'Request saved for '",
+          "'已保存请求，姓名：'"
+        ]
+      ]
+    },
+    "projects/browser-agent/solution/main.ts": {
+      "sourceSha256": "529cc5eb2137516e842726281c2064c798a4e68dc2a2b2f13b182fff64316374",
+      "localizedSha256": "cb640446b337bb3fbd2e587b5e14f7dee88dc691c1c1bf5eed768ec23d95f9ec",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "/*\n * Browser Agent reference implementation.\n * Follow stages in projects/browser-agent/stages/.\n * The demo is deterministic and requires no provider credentials.\n * Protocol references are listed in the project README.\n */",
+          "/*\n * 浏览器智能体参考实现。按 projects/browser-agent/stages/ 的阶段学习。\n * 离线演示使用确定性测试场景，无须服务商凭据；真实模式另需 gstack。\n * 协议资料见项目 README。Full name、Email address、Save request 为匹配契约。\n * 绿色像素只验证此测试页面；步骤额度不等于统一的异步超时或通用浏览器隔离。\n */"
+        ]
+      ]
+    },
+    "projects/browser-agent/solution/package.json": {
+      "sourceSha256": "a90fc33418afa2b9cbf4768524b021135b965ecdf993457505bfae3ac44a8428",
+      "localizedSha256": "a90fc33418afa2b9cbf4768524b021135b965ecdf993457505bfae3ac44a8428",
+      "kind": "preserved-contract"
+    },
+    "projects/browser-agent/solution/pixels.py": {
+      "sourceSha256": "ea607ca763df7cf6aa7f9762bf29638282b1c8c5f2fb7dd081564ca06293e6b6",
+      "localizedSha256": "9000d80ea2bf6686721734b8583e53fa7c1766bcf72d7d9c6f5a9be616f53878",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "\"\"\"Browser Agent screenshot verifier using the Python standard library.\nSee ../stages/03-visual-proof/docs/en.md for the RGB PNG subset.\nUnfilter Chromium screenshot pixels and count green success pixels.\nThis is visual state evidence, not OCR or a general vision model.\n\"\"\"",
+          "\"\"\"使用 Python 标准库检查浏览器智能体截图。\n支持的 RGB PNG 子集见 ../stages/03-visual-proof/docs/en.md。\n逆向恢复截图行滤波，统计测试页面的绿色成功像素。\n该信号仅反映特定像素状态，不执行 OCR，也不代表通用视觉理解。\n\"\"\""
+        ]
+      ]
+    },
+    "projects/browser-agent/solution/samples/accessibility.json": {
+      "sourceSha256": "bc85cc7612930f877a41400c64d9b41a1751faca56e09eb7bd5259f5518d18c3",
+      "localizedSha256": "bc85cc7612930f877a41400c64d9b41a1751faca56e09eb7bd5259f5518d18c3",
+      "kind": "preserved-contract"
+    },
+    "projects/browser-agent/solution/samples/contact.json": {
+      "sourceSha256": "6acf6031e7834fe77795cd991b520de0faa9ef53762d1b7d9f4d75bb3c43f8f3",
+      "localizedSha256": "6acf6031e7834fe77795cd991b520de0faa9ef53762d1b7d9f4d75bb3c43f8f3",
+      "kind": "preserved-contract"
+    },
+    "projects/browser-agent/solution/success.png": {
+      "sourceSha256": "93f8fdb5fd70f338783117a404a18c9f0b8c5e2bdd6851f497360037c7534258",
+      "localizedSha256": "93f8fdb5fd70f338783117a404a18c9f0b8c5e2bdd6851f497360037c7534258",
+      "kind": "preserved-contract"
+    },
+    "projects/browser-agent/stages/01-observations/docs/en.md": {
+      "sourceSha256": "437ea9f6c0c68a84c64d62c5e150dc0382ccc3f905d43d5703ea91adabda48ce",
+      "localizedSha256": "d4340faa062b28db9f96b548e9d8f483fd69a25974e47a37283179fbef3a91c1",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-browser-agent-1\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py browser-agent --stage 1 --path learning-artifacts/browser-agent --strict\n"
+          ],
+          [
+            "bash",
+            "cd learning-artifacts/browser-agent\nnode cli.ts --task samples/contact.json --output browser-run.json\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "main.ts"
+          ],
+          [
+            "`",
+            "parseObservation, choose"
+          ],
+          [
+            "`",
+            "parseObservation, choose"
+          ],
+          [
+            "`",
+            "python3 scripts/project_test.py browser-agent --init learning-artifacts/browser-agent"
+          ]
+        ],
+        "links": [
+          "../../../API.md",
+          "../../../README.md",
+          "https://chromedevtools.github.io/devtools-protocol/",
+          "https://html.spec.whatwg.org/multipage/forms.html",
+          "https://www.w3.org/TR/png-3/"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/browser-agent/stages/01-observations/starter/cli.ts": {
+      "sourceSha256": "b431e7fbb74096425afdbc4a16e2d68e6ef0649966ef83d2a4d5fd92493628bf",
+      "localizedSha256": "b431e7fbb74096425afdbc4a16e2d68e6ef0649966ef83d2a4d5fd92493628bf",
+      "kind": "preserved-contract"
+    },
+    "projects/browser-agent/stages/01-observations/starter/failure.png": {
+      "sourceSha256": "7dcdcda70bb2672deca8fddeefa9665ff96ef7afe607260582fb072a2e8e150b",
+      "localizedSha256": "7dcdcda70bb2672deca8fddeefa9665ff96ef7afe607260582fb072a2e8e150b",
+      "kind": "preserved-contract"
+    },
+    "projects/browser-agent/stages/01-observations/starter/fixture.html": {
+      "sourceSha256": "77c15602d22ddd98fa5c3ee262a44cc4a9aa30d6eebc1f6cface57b9a203364b",
+      "localizedSha256": "92534b8073273d807712efc6b2d23d7d97fced70590074b08701fe359e13a64d",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "<html lang=\"en\">",
+          "<html lang=\"zh-CN\">"
+        ],
+        [
+          "<title>Browser Agent Local Fixture</title>",
+          "<title>浏览器智能体本地测试页面</title>"
+        ],
+        [
+          "LOCAL EVALUATION FIXTURE",
+          "本地评估测试页面"
+        ],
+        [
+          "Create a support request",
+          "创建支持请求"
+        ],
+        [
+          "The agent must fill both fields, submit once, and verify the visible result.",
+          "智能体须填写两个字段、提交一次，再验证可见结果。字段英文标签属于精确匹配契约。"
+        ],
+        [
+          "Waiting for a completed request.",
+          "等待完成请求。"
+        ],
+        [
+          "'Request saved for '",
+          "'已保存请求，姓名：'"
+        ]
+      ]
+    },
+    "projects/browser-agent/stages/01-observations/starter/main.ts": {
+      "sourceSha256": "bb47a56568e807ec4e0154c91e772b7b4e90c1da7598c7baee38d9aee51e4861",
+      "localizedSha256": "bb47a56568e807ec4e0154c91e772b7b4e90c1da7598c7baee38d9aee51e4861",
+      "kind": "preserved-contract"
+    },
+    "projects/browser-agent/stages/01-observations/starter/package.json": {
+      "sourceSha256": "a90fc33418afa2b9cbf4768524b021135b965ecdf993457505bfae3ac44a8428",
+      "localizedSha256": "a90fc33418afa2b9cbf4768524b021135b965ecdf993457505bfae3ac44a8428",
+      "kind": "preserved-contract"
+    },
+    "projects/browser-agent/stages/01-observations/starter/pixels.py": {
+      "sourceSha256": "3567ab46aa05e462a27628a417624802161c41b071a936d4dd02c9470cacf9e5",
+      "localizedSha256": "3567ab46aa05e462a27628a417624802161c41b071a936d4dd02c9470cacf9e5",
+      "kind": "preserved-contract"
+    },
+    "projects/browser-agent/stages/01-observations/starter/samples/accessibility.json": {
+      "sourceSha256": "bc85cc7612930f877a41400c64d9b41a1751faca56e09eb7bd5259f5518d18c3",
+      "localizedSha256": "bc85cc7612930f877a41400c64d9b41a1751faca56e09eb7bd5259f5518d18c3",
+      "kind": "preserved-contract"
+    },
+    "projects/browser-agent/stages/01-observations/starter/samples/contact.json": {
+      "sourceSha256": "6acf6031e7834fe77795cd991b520de0faa9ef53762d1b7d9f4d75bb3c43f8f3",
+      "localizedSha256": "6acf6031e7834fe77795cd991b520de0faa9ef53762d1b7d9f4d75bb3c43f8f3",
+      "kind": "preserved-contract"
+    },
+    "projects/browser-agent/stages/01-observations/starter/stage-1.md": {
+      "sourceSha256": "7a76b0beb4b6ab78a32794a45a0d424ede39b7426f709804b27c5f459ac96dcf",
+      "localizedSha256": "611e9ac6e2a95a086d2cfa3c4cdcf02c522b3a197dc8b7ac8d796c8036b6ff7e",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/browser-agent/stages/01-observations/starter/success.png": {
+      "sourceSha256": "93f8fdb5fd70f338783117a404a18c9f0b8c5e2bdd6851f497360037c7534258",
+      "localizedSha256": "93f8fdb5fd70f338783117a404a18c9f0b8c5e2bdd6851f497360037c7534258",
+      "kind": "preserved-contract"
+    },
+    "projects/browser-agent/stages/01-observations/tests/stage.test.ts": {
+      "sourceSha256": "dc8c5caa29e112bd06e1747ac6f6cf30557a82905181608aad39c38ac83abf20",
+      "localizedSha256": "dc8c5caa29e112bd06e1747ac6f6cf30557a82905181608aad39c38ac83abf20",
+      "kind": "preserved-contract"
+    },
+    "projects/browser-agent/stages/02-bounded-loop/docs/en.md": {
+      "sourceSha256": "1ecbefed1a3ce80acd9dab6f90d182e04e1594acf4f645e03b390312abf82313",
+      "localizedSha256": "0043cc0ce6b5755ab5def3da23c96c024ad37b8bda195a3c63e0839ce8e6b8b2",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-browser-agent-2\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py browser-agent --stage 2 --path learning-artifacts/browser-agent --strict\n"
+          ],
+          [
+            "bash",
+            "cd learning-artifacts/browser-agent\nnode cli.ts --task samples/contact.json --output browser-run.json\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "inspectPNG"
+          ],
+          [
+            "`",
+            "main.ts"
+          ],
+          [
+            "`",
+            "null"
+          ],
+          [
+            "`",
+            "python3 scripts/project_test.py browser-agent --init learning-artifacts/browser-agent"
+          ],
+          [
+            "`",
+            "runAgent, FixtureDriver"
+          ],
+          [
+            "`",
+            "runAgent, FixtureDriver"
+          ],
+          [
+            "`",
+            "status: \"screenshot-error\""
+          ]
+        ],
+        "links": [
+          "../../../API.md",
+          "../../../README.md",
+          "https://chromedevtools.github.io/devtools-protocol/",
+          "https://html.spec.whatwg.org/multipage/forms.html",
+          "https://www.w3.org/TR/png-3/"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/browser-agent/stages/02-bounded-loop/starter/stage-2.md": {
+      "sourceSha256": "09dcf828ecfacd5ae245f90d6439fb123de6bb122796e2694e0a870f181d3374",
+      "localizedSha256": "7159a708a7119397f0311f92ecc3cea2b7e0134f7e83edc43c51e2d78d0b73c5",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/browser-agent/stages/02-bounded-loop/tests/stage.test.ts": {
+      "sourceSha256": "fef977ecec1d5636fd28877c927d293bf5123f61a4a43914299d576733eb05b8",
+      "localizedSha256": "fef977ecec1d5636fd28877c927d293bf5123f61a4a43914299d576733eb05b8",
+      "kind": "preserved-contract"
+    },
+    "projects/browser-agent/stages/03-visual-proof/docs/en.md": {
+      "sourceSha256": "db3d85b03fba33a37409188389e256e54e9c9f69fec678df682c72db6e32892c",
+      "localizedSha256": "62564b753a325e50e00d47942a29f3f63ea42727391a807f5fde1077a0cdda04",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-browser-agent-3\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py browser-agent --stage 3 --path learning-artifacts/browser-agent --strict\n"
+          ],
+          [
+            "bash",
+            "cd learning-artifacts/browser-agent\nnode cli.ts --task samples/contact.json --output browser-run.json\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "inspectPNG"
+          ],
+          [
+            "`",
+            "inspectPNG"
+          ],
+          [
+            "`",
+            "main.ts"
+          ],
+          [
+            "`",
+            "python3 scripts/project_test.py browser-agent --init learning-artifacts/browser-agent"
+          ]
+        ],
+        "links": [
+          "../../../API.md",
+          "../../../README.md",
+          "https://chromedevtools.github.io/devtools-protocol/",
+          "https://html.spec.whatwg.org/multipage/forms.html",
+          "https://www.w3.org/TR/png-3/"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/browser-agent/stages/03-visual-proof/starter/stage-3.md": {
+      "sourceSha256": "3e1ee0825745266cd6b8d1666043d127e058910e82257d8f90f05dfd56450441",
+      "localizedSha256": "2723cd244eac505be3ef1d9740dace668fbcd64fc481873111fea9363ee14bc7",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/browser-agent/stages/03-visual-proof/tests/screenshot-errors.test.ts": {
+      "sourceSha256": "8476bf9529cf379bf618f8755701a22dc308b72c28a4ddf4465fea77e1e4298f",
+      "localizedSha256": "8476bf9529cf379bf618f8755701a22dc308b72c28a4ddf4465fea77e1e4298f",
+      "kind": "preserved-contract"
+    },
+    "projects/browser-agent/stages/03-visual-proof/tests/stage.test.ts": {
+      "sourceSha256": "11aaf2cc8f8d323dd403fddb52b0915bf49660f9450a99e9fc2205771eea08d9",
+      "localizedSha256": "11aaf2cc8f8d323dd403fddb52b0915bf49660f9450a99e9fc2205771eea08d9",
+      "kind": "preserved-contract"
+    },
+    "projects/browser-agent/stages/04-real-browser/docs/en.md": {
+      "sourceSha256": "34160b7940f693cf958ff562cc19ea106766b600760a1ba28b51f5b7ab1466b2",
+      "localizedSha256": "bb4f795870a57d23b5ecaa2a20ec394e2d6ba0b4d1f5a64094a5c8649dfc878a",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-browser-agent-4\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py browser-agent --stage 4 --path learning-artifacts/browser-agent --strict\n"
+          ],
+          [
+            "bash",
+            "cd learning-artifacts/browser-agent\nnode cli.ts --task samples/contact.json --output browser-run.json\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "GstackDriver, scoreRuns"
+          ],
+          [
+            "`",
+            "GstackDriver, scoreRuns"
+          ],
+          [
+            "`",
+            "main.ts"
+          ],
+          [
+            "`",
+            "python3 scripts/project_test.py browser-agent --init learning-artifacts/browser-agent"
+          ]
+        ],
+        "links": [
+          "../../../API.md",
+          "../../../README.md",
+          "https://chromedevtools.github.io/devtools-protocol/",
+          "https://html.spec.whatwg.org/multipage/forms.html",
+          "https://www.w3.org/TR/png-3/"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/browser-agent/stages/04-real-browser/starter/stage-4.md": {
+      "sourceSha256": "8109f3b5dab90a09a827ded1f499f5608dcd21752c84781495db5d99d69fcb97",
+      "localizedSha256": "b97b5bc13273b8689a20c069b089a16bcdbf6beddbc16f7b40fdb3503738f5f8",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/browser-agent/stages/04-real-browser/tests/integration.test.ts": {
+      "sourceSha256": "900b534e137227cd585d5c755a1543c2143bbacf76e875d42fc9a39cabd52c12",
+      "localizedSha256": "900b534e137227cd585d5c755a1543c2143bbacf76e875d42fc9a39cabd52c12",
+      "kind": "preserved-contract"
+    },
+    "projects/browser-agent/stages/04-real-browser/tests/screenshot-cli.test.ts": {
+      "sourceSha256": "18f67433b91c47df698ab92786d2a8b4a49ba0daa57e73ac555cca51aebf6198",
+      "localizedSha256": "18f67433b91c47df698ab92786d2a8b4a49ba0daa57e73ac555cca51aebf6198",
+      "kind": "preserved-contract"
+    },
+    "projects/browser-agent/stages/04-real-browser/tests/stage.test.ts": {
+      "sourceSha256": "2e3400969b4bfe7fa1b312012948f24ad018bc777013cd8aa7ea862986777326",
+      "localizedSha256": "2e3400969b4bfe7fa1b312012948f24ad018bc777013cd8aa7ea862986777326",
+      "kind": "preserved-contract"
+    },
+    "projects/browser-agent/starter/cli.ts": {
+      "sourceSha256": "b431e7fbb74096425afdbc4a16e2d68e6ef0649966ef83d2a4d5fd92493628bf",
+      "localizedSha256": "b431e7fbb74096425afdbc4a16e2d68e6ef0649966ef83d2a4d5fd92493628bf",
+      "kind": "preserved-contract"
+    },
+    "projects/browser-agent/starter/failure.png": {
+      "sourceSha256": "7dcdcda70bb2672deca8fddeefa9665ff96ef7afe607260582fb072a2e8e150b",
+      "localizedSha256": "7dcdcda70bb2672deca8fddeefa9665ff96ef7afe607260582fb072a2e8e150b",
+      "kind": "preserved-contract"
+    },
+    "projects/browser-agent/starter/fixture.html": {
+      "sourceSha256": "77c15602d22ddd98fa5c3ee262a44cc4a9aa30d6eebc1f6cface57b9a203364b",
+      "localizedSha256": "92534b8073273d807712efc6b2d23d7d97fced70590074b08701fe359e13a64d",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "<html lang=\"en\">",
+          "<html lang=\"zh-CN\">"
+        ],
+        [
+          "<title>Browser Agent Local Fixture</title>",
+          "<title>浏览器智能体本地测试页面</title>"
+        ],
+        [
+          "LOCAL EVALUATION FIXTURE",
+          "本地评估测试页面"
+        ],
+        [
+          "Create a support request",
+          "创建支持请求"
+        ],
+        [
+          "The agent must fill both fields, submit once, and verify the visible result.",
+          "智能体须填写两个字段、提交一次，再验证可见结果。字段英文标签属于精确匹配契约。"
+        ],
+        [
+          "Waiting for a completed request.",
+          "等待完成请求。"
+        ],
+        [
+          "'Request saved for '",
+          "'已保存请求，姓名：'"
+        ]
+      ]
+    },
+    "projects/browser-agent/starter/main.ts": {
+      "sourceSha256": "bb47a56568e807ec4e0154c91e772b7b4e90c1da7598c7baee38d9aee51e4861",
+      "localizedSha256": "bb47a56568e807ec4e0154c91e772b7b4e90c1da7598c7baee38d9aee51e4861",
+      "kind": "preserved-contract"
+    },
+    "projects/browser-agent/starter/package.json": {
+      "sourceSha256": "a90fc33418afa2b9cbf4768524b021135b965ecdf993457505bfae3ac44a8428",
+      "localizedSha256": "a90fc33418afa2b9cbf4768524b021135b965ecdf993457505bfae3ac44a8428",
+      "kind": "preserved-contract"
+    },
+    "projects/browser-agent/starter/pixels.py": {
+      "sourceSha256": "3567ab46aa05e462a27628a417624802161c41b071a936d4dd02c9470cacf9e5",
+      "localizedSha256": "3567ab46aa05e462a27628a417624802161c41b071a936d4dd02c9470cacf9e5",
+      "kind": "preserved-contract"
+    },
+    "projects/browser-agent/starter/samples/accessibility.json": {
+      "sourceSha256": "bc85cc7612930f877a41400c64d9b41a1751faca56e09eb7bd5259f5518d18c3",
+      "localizedSha256": "bc85cc7612930f877a41400c64d9b41a1751faca56e09eb7bd5259f5518d18c3",
+      "kind": "preserved-contract"
+    },
+    "projects/browser-agent/starter/samples/contact.json": {
+      "sourceSha256": "6acf6031e7834fe77795cd991b520de0faa9ef53762d1b7d9f4d75bb3c43f8f3",
+      "localizedSha256": "6acf6031e7834fe77795cd991b520de0faa9ef53762d1b7d9f4d75bb3c43f8f3",
+      "kind": "preserved-contract"
+    },
+    "projects/browser-agent/starter/success.png": {
+      "sourceSha256": "93f8fdb5fd70f338783117a404a18c9f0b8c5e2bdd6851f497360037c7534258",
+      "localizedSha256": "93f8fdb5fd70f338783117a404a18c9f0b8c5e2bdd6851f497360037c7534258",
+      "kind": "preserved-contract"
+    },
+    "projects/calendar-focus-planner/README.md": {
+      "sourceSha256": "cce85f558804dc794e29c44a6e2d0cf7c3a3216942cb62ede072085b7747e82a",
+      "localizedSha256": "67ec8620dd2271f56173b1fceb94625444d3ca37774d8b2b03fbb56266e73dfe",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "bash",
+            "cd projects/calendar-focus-planner/solution\nnode cli.ts sample.ics tasks.json 2026-10-14 output 10\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py calendar-focus-planner --init my-calendar-focus-planner\npython3 scripts/project_test.py calendar-focus-planner --stage 1 --path my-calendar-focus-planner --strict\npython3 scripts/project_test.py calendar-focus-planner --all --path my-calendar-focus-planner --strict --report completion.json\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py calendar-focus-planner --all --solution --strict\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "20261014"
+          ],
+          [
+            "`",
+            "20261015"
+          ],
+          [
+            "`",
+            "DTEND"
+          ],
+          [
+            "`",
+            "DTEND"
+          ],
+          [
+            "`",
+            "DTEND;VALUE=DATE"
+          ],
+          [
+            "`",
+            "DTSTART"
+          ],
+          [
+            "`",
+            "DURATION"
+          ]
+        ],
+        "links": [
+          "../../phases/00-setup-and-tooling/01-dev-environment/docs/en.md",
+          "../../phases/00-setup-and-tooling/09-data-management/docs/en.md",
+          "https://www.rfc-editor.org/rfc/rfc5545",
+          "stages/01-read-calendar/docs/en.md",
+          "stages/02-compute-free-time/docs/en.md",
+          "stages/03-place-tasks/docs/en.md",
+          "stages/04-export-proposals/docs/en.md"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 4
+      }
+    },
+    "projects/calendar-focus-planner/media/output.gif": {
+      "sourceSha256": "8d66a8168d2098a56d16380e4e7a8da63c9083c970f25ea126cc1153f2d19d3e",
+      "localizedSha256": "8d66a8168d2098a56d16380e4e7a8da63c9083c970f25ea126cc1153f2d19d3e",
+      "kind": "original-recording"
+    },
+    "projects/calendar-focus-planner/media/output.json": {
+      "sourceSha256": "e23747a1d767bbbeaeabbb17d641227930c8cd24f09aa6eac1875850addd77f8",
+      "localizedSha256": "e23747a1d767bbbeaeabbb17d641227930c8cd24f09aa6eac1875850addd77f8",
+      "kind": "original-recording"
+    },
+    "projects/calendar-focus-planner/media/output.png": {
+      "sourceSha256": "c0b50847a1f0644a8ee0d0a1b9dddfc65eb332fd1eb15c9c156bf349fca9f0f6",
+      "localizedSha256": "c0b50847a1f0644a8ee0d0a1b9dddfc65eb332fd1eb15c9c156bf349fca9f0f6",
+      "kind": "original-recording"
+    },
+    "projects/calendar-focus-planner/media/run.gif": {
+      "sourceSha256": "ae4911967b19741d0356cc512d0cd96fccf539f83bb919dd41722e16a5a863dd",
+      "localizedSha256": "ae4911967b19741d0356cc512d0cd96fccf539f83bb919dd41722e16a5a863dd",
+      "kind": "original-recording"
+    },
+    "projects/calendar-focus-planner/media/run.json": {
+      "sourceSha256": "38a701c867219ce021ef5d1f5fb531b9e2a553600c4edcae118cca73bbee4b18",
+      "localizedSha256": "38a701c867219ce021ef5d1f5fb531b9e2a553600c4edcae118cca73bbee4b18",
+      "kind": "original-recording"
+    },
+    "projects/calendar-focus-planner/media/run.png": {
+      "sourceSha256": "c8144d5f014c26bdba18e378f5123df225be72e6e3393958f2a1ec028dddfcb4",
+      "localizedSha256": "c8144d5f014c26bdba18e378f5123df225be72e6e3393958f2a1ec028dddfcb4",
+      "kind": "original-recording"
+    },
+    "projects/calendar-focus-planner/project.json": {
+      "sourceSha256": "2fe5a4d4a4c672bf4212654b93728c5d1340aaa665ed9b486ba22ac99b76f5ad",
+      "localizedSha256": "009ffef073d6709f3fd65242993b7787dc90fa369ff6795d049c1a507cfe9455",
+      "kind": "manifest",
+      "contract": {
+        "id": "calendar-focus-planner",
+        "title": "<translated-text>",
+        "level": 2,
+        "levelName": "Builder",
+        "tagline": "<translated-text>",
+        "summary": "<translated-text>",
+        "youWillBuild": "<translated-text>",
+        "usefulFor": [
+          "<translated-text>"
+        ],
+        "hours": 8,
+        "languages": [
+          "TypeScript"
+        ],
+        "languageWhy": {
+          "TypeScript": "<translated-text>"
+        },
+        "status": "ready",
+        "source": "core",
+        "author": {
+          "name": "AI Engineering from Scratch",
+          "github": "rohitg00"
+        },
+        "skills": [
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "prerequisites": [
+          {
+            "title": "<translated-text>",
+            "path": "phases/00-setup-and-tooling/01-dev-environment"
+          },
+          {
+            "title": "<translated-text>",
+            "path": "phases/00-setup-and-tooling/09-data-management"
+          }
+        ],
+        "figures": true,
+        "overviewFigure": "pj-calendar-focus-planner-1",
+        "demo": {
+          "command": [
+            "node",
+            "cli.ts",
+            "sample.ics",
+            "tasks.json",
+            "2026-10-14",
+            "output",
+            "10"
+          ],
+          "cwd": "solution"
+        },
+        "stages": [
+          {
+            "id": "01-read-calendar",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "difficulty": "starter",
+            "language": "typescript",
+            "concepts": [
+              "<translated-text>"
+            ],
+            "figure": "pj-calendar-focus-planner-1"
+          },
+          {
+            "id": "02-compute-free-time",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "difficulty": "core",
+            "language": "typescript",
+            "concepts": [
+              "<translated-text>"
+            ],
+            "figure": "pj-calendar-focus-planner-2"
+          },
+          {
+            "id": "03-place-tasks",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "difficulty": "core",
+            "language": "typescript",
+            "concepts": [
+              "<translated-text>"
+            ],
+            "figure": "pj-calendar-focus-planner-3"
+          },
+          {
+            "id": "04-export-proposals",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "difficulty": "stretch",
+            "language": "typescript",
+            "concepts": [
+              "<translated-text>"
+            ],
+            "figure": "pj-calendar-focus-planner-4"
+          }
+        ],
+        "demos": [
+          {
+            "gif": "media/run.gif",
+            "poster": "media/run.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          },
+          {
+            "gif": "media/output.gif",
+            "poster": "media/output.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          }
+        ]
+      }
+    },
+    "projects/calendar-focus-planner/solution/cli.ts": {
+      "sourceSha256": "e560666e81a0004d5fa1d029990c4a4c0100f0991b28f30f158441675fdf9c27",
+      "localizedSha256": "e560666e81a0004d5fa1d029990c4a4c0100f0991b28f30f158441675fdf9c27",
+      "kind": "preserved-contract"
+    },
+    "projects/calendar-focus-planner/solution/main.ts": {
+      "sourceSha256": "3f0ceb7417e1ec6d2761a5c57df32c948fe5ef3f6b8be5cdd4e3e78ebf293480",
+      "localizedSha256": "367e01599196800002ba4a07ac9b24f913c3ee89a9f4536bf0dcb3a65f442170",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "<html lang=\"en\">",
+          "<html lang=\"zh-CN\">"
+        ],
+        [
+          "<title>Focus plan</title>",
+          "<title>专注时间计划</title>"
+        ],
+        [
+          "CALENDAR FOCUS PLANNER",
+          "日历专注规划器"
+        ],
+        [
+          "A plan that shows what does not fit",
+          "如实展示未排入任务的计划"
+        ],
+        [
+          "} proposed blocks; ${",
+          "} 个建议时段；${"
+        ],
+        [
+          "} left unscheduled. Existing events are untouched.",
+          "} 项尚未排入。现有事件保持不变。"
+        ],
+        [
+          "<th>Time</th><th>Task</th><th>Duration</th><th>Why here</th>",
+          "<th>时间</th><th>任务</th><th>时长</th><th>安排依据</th>"
+        ],
+        [
+          "} min</td><td>Priority ${",
+          "} 分钟</td><td>优先级 ${"
+        ],
+        [
+          "}; earliest fitting gap",
+          "}；最早可容纳的空档"
+        ],
+        [
+          "<h2>Needs another day</h2>",
+          "<h2>需要另选时间（Needs another day）</h2>"
+        ],
+        [
+          "<li>All tasks fit.</li>",
+          "<li>所有任务都已排入。</li>"
+        ],
+        [
+          "Download the companion focus.ics file and review its blocks before importing. This deterministic first-fit policy favors priority; it does not prove a globally optimal schedule.",
+          "下载配套 focus.ics，审阅各时段后再导入。此确定性的最早可容纳策略优先考虑任务优先级，不保证全局最优。未排入原因 No contiguous free interval is long enough 表示没有足够长的连续空档。"
+        ]
+      ]
+    },
+    "projects/calendar-focus-planner/solution/sample.ics": {
+      "sourceSha256": "d5a8f2b442fbec69559370b98875b0a10fd400b965e983a1aeb91f943306bdff",
+      "localizedSha256": "d5a8f2b442fbec69559370b98875b0a10fd400b965e983a1aeb91f943306bdff",
+      "kind": "preserved-contract"
+    },
+    "projects/calendar-focus-planner/solution/tasks.json": {
+      "sourceSha256": "43213ce30a420926e11e7d9f5c96d6546fe03c5f64022102b093742b13d4d020",
+      "localizedSha256": "43213ce30a420926e11e7d9f5c96d6546fe03c5f64022102b093742b13d4d020",
+      "kind": "preserved-contract"
+    },
+    "projects/calendar-focus-planner/stages/01-read-calendar/docs/en.md": {
+      "sourceSha256": "019ab7941fc3ca21b69ca380579cb8625b07e0051be77d84c864a0021e7ad33f",
+      "localizedSha256": "6612cc728f1abc95921428d8c47d8f31636e6cb92cfbfb19c9d63eb98ac044bb",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-calendar-focus-planner-1\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py calendar-focus-planner --init my-calendar-focus-planner\npython3 scripts/project_test.py calendar-focus-planner --stage 1 --path my-calendar-focus-planner --strict\n"
+          ],
+          [
+            "bash",
+            "cd my-calendar-focus-planner\nnode cli.ts sample.ics tasks.json 2026-10-14 output 10\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "20261014"
+          ],
+          [
+            "`",
+            "DTEND"
+          ],
+          [
+            "`",
+            "DTEND;VALUE=DATE:20261015"
+          ],
+          [
+            "`",
+            "DTSTART"
+          ],
+          [
+            "`",
+            "DURATION"
+          ],
+          [
+            "`",
+            "main.ts"
+          ],
+          [
+            "`",
+            "parseCalendar(text)"
+          ]
+        ],
+        "links": [
+          "../../../../../phases/00-setup-and-tooling/01-dev-environment/docs/en.md",
+          "../../../../../phases/00-setup-and-tooling/09-data-management/docs/en.md",
+          "https://www.rfc-editor.org/rfc/rfc5545"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 5,
+        "listItems": 3
+      }
+    },
+    "projects/calendar-focus-planner/stages/01-read-calendar/starter/cli.ts": {
+      "sourceSha256": "e560666e81a0004d5fa1d029990c4a4c0100f0991b28f30f158441675fdf9c27",
+      "localizedSha256": "e560666e81a0004d5fa1d029990c4a4c0100f0991b28f30f158441675fdf9c27",
+      "kind": "preserved-contract"
+    },
+    "projects/calendar-focus-planner/stages/01-read-calendar/starter/main.ts": {
+      "sourceSha256": "e9651f8195f752ba6ff10dfd491dc62fa9dfa3ff6d5c5a711b41195ba9034262",
+      "localizedSha256": "e9651f8195f752ba6ff10dfd491dc62fa9dfa3ff6d5c5a711b41195ba9034262",
+      "kind": "preserved-contract"
+    },
+    "projects/calendar-focus-planner/stages/01-read-calendar/starter/sample.ics": {
+      "sourceSha256": "d5a8f2b442fbec69559370b98875b0a10fd400b965e983a1aeb91f943306bdff",
+      "localizedSha256": "d5a8f2b442fbec69559370b98875b0a10fd400b965e983a1aeb91f943306bdff",
+      "kind": "preserved-contract"
+    },
+    "projects/calendar-focus-planner/stages/01-read-calendar/starter/stage-1.md": {
+      "sourceSha256": "f2761572f4f64f804082251580ada20817d3b186d980e67b5fd52a03799930c0",
+      "localizedSha256": "30d0edcab4b81e42a03fa8c2b1426defb40e7f0a4bb3641caa9142bf951359a0",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [
+          [
+            "`",
+            "parseCalendar(text)"
+          ]
+        ],
+        "links": [],
+        "math": [],
+        "headings": [
+          "#"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/calendar-focus-planner/stages/01-read-calendar/starter/tasks.json": {
+      "sourceSha256": "43213ce30a420926e11e7d9f5c96d6546fe03c5f64022102b093742b13d4d020",
+      "localizedSha256": "43213ce30a420926e11e7d9f5c96d6546fe03c5f64022102b093742b13d4d020",
+      "kind": "preserved-contract"
+    },
+    "projects/calendar-focus-planner/stages/01-read-calendar/tests/stage.test.mjs": {
+      "sourceSha256": "a4a132a9acc8fb322ea4d98fb80405c7fa363f86b15eae7c44fa540b1483a094",
+      "localizedSha256": "a4a132a9acc8fb322ea4d98fb80405c7fa363f86b15eae7c44fa540b1483a094",
+      "kind": "preserved-contract"
+    },
+    "projects/calendar-focus-planner/stages/02-compute-free-time/docs/en.md": {
+      "sourceSha256": "bc1ba1e65ff3c981ac365e1ca5208bd09f17779a42a307b592a866c55e5acc57",
+      "localizedSha256": "0ac5604c573dec36f10df76eda071fad21b12831321bf6effba563edf2f38ad7",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-calendar-focus-planner-2\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py calendar-focus-planner --init my-calendar-focus-planner\npython3 scripts/project_test.py calendar-focus-planner --stage 2 --path my-calendar-focus-planner --strict\n"
+          ],
+          [
+            "bash",
+            "cd my-calendar-focus-planner\nnode cli.ts sample.ics tasks.json 2026-10-14 output 10\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "availableSlots(events, window, bufferMinutes=0)"
+          ],
+          [
+            "`",
+            "main.ts"
+          ]
+        ],
+        "links": [
+          "../../../../../phases/00-setup-and-tooling/01-dev-environment/docs/en.md",
+          "../../../../../phases/00-setup-and-tooling/09-data-management/docs/en.md",
+          "https://www.rfc-editor.org/rfc/rfc5545"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 5,
+        "listItems": 3
+      }
+    },
+    "projects/calendar-focus-planner/stages/02-compute-free-time/starter/stage-2.md": {
+      "sourceSha256": "80a79f8950dcea30323fefc9316594d9931181a1b5d8ebc17bfe24b9f2d02af1",
+      "localizedSha256": "398a76209c100c5e62dfdc5ba4741bd9b5c8fa8f567947863b8522638006c1ee",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [
+          [
+            "`",
+            "availableSlots(events, window, bufferMinutes=0)"
+          ]
+        ],
+        "links": [],
+        "math": [],
+        "headings": [
+          "#"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/calendar-focus-planner/stages/02-compute-free-time/tests/stage.test.mjs": {
+      "sourceSha256": "e6504fd92b2572dca2641305aa3f01e621034c7d5d551cdad2d18eecff9a6f95",
+      "localizedSha256": "e6504fd92b2572dca2641305aa3f01e621034c7d5d551cdad2d18eecff9a6f95",
+      "kind": "preserved-contract"
+    },
+    "projects/calendar-focus-planner/stages/03-place-tasks/docs/en.md": {
+      "sourceSha256": "5c85f147bf68d4d96524a6d9be7378cb9a34b64b5c0429ab24ecb6abb6ebd908",
+      "localizedSha256": "87ebb71051699cb400f9fd707c0c51439308f7d99f529749740ef74ab7f270fd",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-calendar-focus-planner-3\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py calendar-focus-planner --init my-calendar-focus-planner\npython3 scripts/project_test.py calendar-focus-planner --stage 3 --path my-calendar-focus-planner --strict\n"
+          ],
+          [
+            "bash",
+            "cd my-calendar-focus-planner\nnode cli.ts sample.ics tasks.json 2026-10-14 output 10\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "main.ts"
+          ],
+          [
+            "`",
+            "schedule(tasks, events, window, bufferMinutes=0)"
+          ]
+        ],
+        "links": [
+          "../../../../../phases/00-setup-and-tooling/01-dev-environment/docs/en.md",
+          "../../../../../phases/00-setup-and-tooling/09-data-management/docs/en.md",
+          "https://www.rfc-editor.org/rfc/rfc5545"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 6,
+        "listItems": 3
+      }
+    },
+    "projects/calendar-focus-planner/stages/03-place-tasks/starter/stage-3.md": {
+      "sourceSha256": "2c317ad0b2184e7b504a12013083bcb01c0bb6ead8cd7a2b9b295bcd56c0f3ff",
+      "localizedSha256": "d7cb0820ff8443b6483533e7ec1c4d8c4a8dad414eb87ee4961075352f80bb44",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [
+          [
+            "`",
+            "schedule(tasks, events, window, bufferMinutes=0)"
+          ]
+        ],
+        "links": [],
+        "math": [],
+        "headings": [
+          "#"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/calendar-focus-planner/stages/03-place-tasks/tests/stage.test.mjs": {
+      "sourceSha256": "56d62b413f29620a6ef76a61bf0b5b32dcdc85eeca5da20a9761005902760e18",
+      "localizedSha256": "56d62b413f29620a6ef76a61bf0b5b32dcdc85eeca5da20a9761005902760e18",
+      "kind": "preserved-contract"
+    },
+    "projects/calendar-focus-planner/stages/04-export-proposals/docs/en.md": {
+      "sourceSha256": "93c524c9e80d0e0451c5892aefadf16f62d460de55dd205e35258f71e72ce3d6",
+      "localizedSha256": "4c648a418e52bc7c72451b74a318668ced780fab0e9a4caee0e75eac1d2615d5",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-calendar-focus-planner-4\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py calendar-focus-planner --init my-calendar-focus-planner\npython3 scripts/project_test.py calendar-focus-planner --stage 4 --path my-calendar-focus-planner --strict\n"
+          ],
+          [
+            "bash",
+            "cd my-calendar-focus-planner\nnode cli.ts sample.ics tasks.json 2026-10-14 output 10\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "exportCalendar(plan, createdAt); renderPlan(plan)"
+          ],
+          [
+            "`",
+            "main.ts"
+          ]
+        ],
+        "links": [
+          "../../../../../phases/00-setup-and-tooling/01-dev-environment/docs/en.md",
+          "../../../../../phases/00-setup-and-tooling/09-data-management/docs/en.md",
+          "https://www.rfc-editor.org/rfc/rfc5545"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 5,
+        "listItems": 3
+      }
+    },
+    "projects/calendar-focus-planner/stages/04-export-proposals/starter/stage-4.md": {
+      "sourceSha256": "7896be809edd6adef9490aafc378e33bb6cf01fdd0d8aa70334f28180a799575",
+      "localizedSha256": "e0050ab24deb48dbd96954efe6b747bb469cad1a0c0bb363231091090702c956",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [
+          [
+            "`",
+            "exportCalendar(plan, createdAt); renderPlan(plan)"
+          ]
+        ],
+        "links": [],
+        "math": [],
+        "headings": [
+          "#"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/calendar-focus-planner/stages/04-export-proposals/tests/stage.test.mjs": {
+      "sourceSha256": "aef2fa3990b6f634ba9787c1530c5b18b9bf29199a67bbd5528f97fff673dddf",
+      "localizedSha256": "aef2fa3990b6f634ba9787c1530c5b18b9bf29199a67bbd5528f97fff673dddf",
+      "kind": "preserved-contract"
+    }
+  },
+  "figures": [
+    {
+      "path": "site/figures/projects/browser-agent.js",
+      "sourceSha256": "4e582a38645a61e21fe608dafc523e49984054b527135ef6fa779a3472b9cbb2",
+      "localizedSha256": "242ad6419fa4f4f27f302d5a2ccac200425ef103d8fe53962fe7e65c90c48161",
+      "edits": [
+        {
+          "offset": 90,
+          "before": "\"Name already filled (0/1)\"",
+          "after": "\"姓名已填写（0/1）\"",
+          "afterOffset": 90
+        },
+        {
+          "offset": 245,
+          "before": "\"Email already filled (0/1)\"",
+          "after": "\"邮箱已填写（0/1）\"",
+          "afterOffset": 230
+        },
+        {
+          "offset": 402,
+          "before": "\"Observation budget\"",
+          "after": "\"观察次数额度\"",
+          "afterOffset": 371
+        },
+        {
+          "offset": 550,
+          "before": "\"Green pixels per ten thousand\"",
+          "after": "\"每万像素中的绿色像素数\"",
+          "afterOffset": 507
+        },
+        {
+          "offset": 704,
+          "before": "\"Origin changed\"",
+          "after": "\"来源已改变\"",
+          "afterOffset": 643
+        },
+        {
+          "offset": 799,
+          "before": "\"Submit marked dangerous\"",
+          "after": "\"提交按钮被标为危险\"",
+          "afterOffset": 729
+        },
+        {
+          "offset": 1275,
+          "before": "\"; completion requires values, allowed origin, DOM success and fixture pixel signal.\"",
+          "after": "\"；完成需同时满足字段值、允许来源、DOM 成功标记与测试页面像素信号。\"",
+          "afterOffset": 1191
+        },
+        {
+          "offset": 1396,
+          "before": "\"Required observations\"",
+          "after": "\"所需观察次数\"",
+          "afterOffset": 1264
+        },
+        {
+          "offset": 1461,
+          "before": "\"Green fraction\"",
+          "after": "\"绿色像素占比\"",
+          "afterOffset": 1314
+        },
+        {
+          "offset": 1545,
+          "before": "\"Fill actions\"",
+          "after": "\"填写动作\"",
+          "afterOffset": 1390
+        },
+        {
+          "offset": 1602,
+          "before": "\"Submit and verify\"",
+          "after": "\"提交与验证\"",
+          "afterOffset": 1439
+        },
+        {
+          "offset": 1660,
+          "before": "\"Available observations\"",
+          "after": "\"可用观察次数\"",
+          "afterOffset": 1485
+        },
+        {
+          "offset": 1840,
+          "before": "\"Turn DOM state into constrained actions\"",
+          "after": "\"将 DOM 状态转为受约束的动作\"",
+          "afterOffset": 1649
+        },
+        {
+          "offset": 1919,
+          "before": "\"Input contract\"",
+          "after": "\"输入契约\"",
+          "afterOffset": 1705
+        },
+        {
+          "offset": 2006,
+          "before": "\"Turn DOM state into constrained actions\"",
+          "after": "\"将 DOM 状态转为受约束的动作\"",
+          "afterOffset": 1782
+        },
+        {
+          "offset": 2083,
+          "before": "\"Read labels, values, disabled states and stable ids from a small form. Validate unique ids and field types. Choose one action at a time: fill the name, fill email, then click the uniquely identified Save request button. Page prose is never interpreted as instructions. Missing fields, ambiguous labels, dangerous buttons and unexpected origins cause an explicit blocked result.\"",
+          "after": "\"读取小型表单中的标签、字段值、禁用状态与稳定 id，校验 id 唯一性和字段类型。每次只选择一个动作：填写姓名、填写邮箱，再点击唯一匹配的 Save request 按钮。页面文字不被解释为执行指令。字段缺失、标签歧义、危险按钮或意外来源都会产生明确的 blocked 结果。\"",
+          "afterOffset": 1836
+        },
+        {
+          "offset": 2508,
+          "before": "\"Observe the result\"",
+          "after": "\"观察结果\"",
+          "afterOffset": 2022
+        },
+        {
+          "offset": 2564,
+          "before": "\"The action union contains fill and click only; injected page prose has no execution path.\"",
+          "after": "\"可执行动作限定为 fill 与 click；页面注入文字没有代码执行通道。\"",
+          "afterOffset": 2064
+        },
+        {
+          "offset": 2698,
+          "before": "\"Advance to inspect the boundary before the next effect.\"",
+          "after": "\"继续查看下一项副作用发生前的边界。\"",
+          "afterOffset": 2146
+        },
+        {
+          "offset": 2924,
+          "before": "\"Stop on completion, stalling or budget\"",
+          "after": "\"在完成、停滞或额度耗尽时停止\"",
+          "afterOffset": 2334
+        },
+        {
+          "offset": 3002,
+          "before": "\"Input contract\"",
+          "after": "\"输入契约\"",
+          "afterOffset": 2388
+        },
+        {
+          "offset": 3088,
+          "before": "\"Stop on completion, stalling or budget\"",
+          "after": "\"在完成、停滞或额度耗尽时停止\"",
+          "afterOffset": 2464
+        },
+        {
+          "offset": 3164,
+          "before": "\"Observe after every action. Stop if the state repeats, if policy blocks an action, or if the step budget is consumed. Completion requires the DOM success flag and a separate screenshot check. Trace every selected action before execution. The fixture backend is explicitly a simulator; it supplies deterministic observations to test the loop and does not claim browser coverage.\"",
+          "after": "\"每次动作后重新观察。状态重复、策略阻止动作或步骤额度耗尽时停止。完成需要 DOM 成功标记与独立截图检查同时满足；每个选定动作在执行前写入轨迹。测试后端是明确的模拟器，只提供确定性观察来验证循环，不宣称覆盖真实浏览器。\"",
+          "afterOffset": 2516
+        },
+        {
+          "offset": 3589,
+          "before": "\"Observe the result\"",
+          "after": "\"观察结果\"",
+          "afterOffset": 2673
+        },
+        {
+          "offset": 3645,
+          "before": "\"A successful run records name, email, submit and done. An unresponsive driver stops as stalled instead of clicking forever.\"",
+          "after": "\"成功轨迹记录姓名、邮箱、提交与 done；驱动无响应时以 stalled 停止，不会无限点击。\"",
+          "afterOffset": 2715
+        },
+        {
+          "offset": 3813,
+          "before": "\"Advance to inspect the boundary before the next effect.\"",
+          "after": "\"继续查看下一项副作用发生前的边界。\"",
+          "afterOffset": 2807
+        },
+        {
+          "offset": 4039,
+          "before": "\"Verify screenshot pixels in Python\"",
+          "after": "\"用 Python 检查截图像素\"",
+          "afterOffset": 2995
+        },
+        {
+          "offset": 4113,
+          "before": "\"Input contract\"",
+          "after": "\"输入契约\"",
+          "afterOffset": 3050
+        },
+        {
+          "offset": 4186,
+          "before": "\"Verify screenshot pixels in Python\"",
+          "after": "\"用 Python 检查截图像素\"",
+          "afterOffset": 3113
+        },
+        {
+          "offset": 4258,
+          "before": "\"Read the PNG signature, chunk lengths and CRCs, then decompress a bounded image payload. Reverse PNG row filters and count green success pixels. Combine this visual signal with the DOM flag; neither alone is sufficient. This is a narrow pixel-state detector for the authored fixture, not OCR or general vision. Corrupt, oversized, interlaced and unsupported color formats fail explicitly.\"",
+          "after": "\"读取 PNG 签名、数据块长度与 CRC，再在大小限制内解压图像数据。逆向恢复 PNG 行滤波，统计绿色成功像素。将该视觉信号与 DOM 标记结合，任何单项都不足以证明完成。此处只检测教学测试页面的特定像素状态，不进行 OCR 或通用视觉推断。损坏、超大、交错扫描或不支持的颜色格式均明确失败。\"",
+          "afterOffset": 3166
+        },
+        {
+          "offset": 4694,
+          "before": "\"Observe the result\"",
+          "after": "\"观察结果\"",
+          "afterOffset": 3361
+        },
+        {
+          "offset": 4750,
+          "before": "\"A green 4x4 fixture scores 1.0 and a red fixture scores zero; the real browser screenshot usually has a small positive success fraction.\"",
+          "after": "\"全绿的 4×4 测试图像得到 1.0，全红图像为零；真实浏览器截图中的成功绿色区域通常只占较小比例。\"",
+          "afterOffset": 3403
+        },
+        {
+          "offset": 4931,
+          "before": "\"Advance to inspect the boundary before the next effect.\"",
+          "after": "\"继续查看下一项副作用发生前的边界。\"",
+          "afterOffset": 3498
+        },
+        {
+          "offset": 5157,
+          "before": "\"Drive the real fixture and score the run\"",
+          "after": "\"驱动真实测试页面并为运行评分\"",
+          "afterOffset": 3686
+        },
+        {
+          "offset": 5237,
+          "before": "\"Input contract\"",
+          "after": "\"输入契约\"",
+          "afterOffset": 3740
+        },
+        {
+          "offset": 5323,
+          "before": "\"Drive the real fixture and score the run\"",
+          "after": "\"驱动真实测试页面并为运行评分\"",
+          "afterOffset": 3816
+        },
+        {
+          "offset": 5401,
+          "before": "\"Serve fixture.html over loopback and navigate to it with gstack browse. GstackDriver reads DOM observations, fills labels, clicks the observed button and captures a real screenshot. Commands use argument arrays instead of a shell. Run the same bounded policy with --live and compare its trace with the fixture backend. Keep completion scores separate for simulated and real-browser runs.\"",
+          "after": "\"通过回环地址提供 fixture.html，用 gstack browse 打开。GstackDriver 读取 DOM 观察，填写对应标签的字段，点击观察到的按钮并捕获真实截图。命令通过参数数组执行，不经 shell 解释。用 --live 运行同一套有界策略，对比它与模拟后端的轨迹；模拟和真实浏览器的完成得分分开记录。\"",
+          "afterOffset": 3868
+        },
+        {
+          "offset": 5836,
+          "before": "\"Observe the result\"",
+          "after": "\"观察结果\"",
+          "afterOffset": 4078
+        },
+        {
+          "offset": 5892,
+          "before": "\"Start `python3 -m http.server 8877 --bind 127.0.0.1 --directory projects/browser-agent/solution`, navigate with `$BROWSE_BIN goto http://127.0.0.1:8877/fixture.html`, then run `node projects/browser-agent/solution/main.ts --live`. The run saves browser-result.png and reports actual Chromium mode.\"",
+          "after": "\"先启动 `python3 -m http.server 8877 --bind 127.0.0.1 --directory projects/browser-agent/solution`，使用 `$BROWSE_BIN goto http://127.0.0.1:8877/fixture.html` 导航，再运行 `node projects/browser-agent/solution/main.ts --live`。运行会保存 browser-result.png，并报告真实 Chromium 模式。\"",
+          "afterOffset": 4120
+        },
+        {
+          "offset": 6234,
+          "before": "\"Advance to inspect the boundary before the next effect.\"",
+          "after": "\"继续查看下一项副作用发生前的边界。\"",
+          "afterOffset": 4421
+        }
+      ],
+      "displayPairs": [
+        [
+          "Name already filled (0/1)",
+          "姓名已填写（0/1）"
+        ],
+        [
+          "Email already filled (0/1)",
+          "邮箱已填写（0/1）"
+        ],
+        [
+          "Observation budget",
+          "观察次数额度"
+        ],
+        [
+          "Green pixels per ten thousand",
+          "每万像素中的绿色像素数"
+        ],
+        [
+          "Origin changed",
+          "来源已改变"
+        ],
+        [
+          "Submit marked dangerous",
+          "提交按钮被标为危险"
+        ],
+        [
+          "; completion requires values, allowed origin, DOM success and fixture pixel signal.",
+          "；完成需同时满足字段值、允许来源、DOM 成功标记与测试页面像素信号。"
+        ],
+        [
+          "Required observations",
+          "所需观察次数"
+        ],
+        [
+          "Green fraction",
+          "绿色像素占比"
+        ],
+        [
+          "Fill actions",
+          "填写动作"
+        ],
+        [
+          "Submit and verify",
+          "提交与验证"
+        ],
+        [
+          "Available observations",
+          "可用观察次数"
+        ],
+        [
+          "Turn DOM state into constrained actions",
+          "将 DOM 状态转为受约束的动作"
+        ],
+        [
+          "Input contract",
+          "输入契约"
+        ],
+        [
+          "Turn DOM state into constrained actions",
+          "将 DOM 状态转为受约束的动作"
+        ],
+        [
+          "Read labels, values, disabled states and stable ids from a small form. Validate unique ids and field types. Choose one action at a time: fill the name, fill email, then click the uniquely identified Save request button. Page prose is never interpreted as instructions. Missing fields, ambiguous labels, dangerous buttons and unexpected origins cause an explicit blocked result.",
+          "读取小型表单中的标签、字段值、禁用状态与稳定 id，校验 id 唯一性和字段类型。每次只选择一个动作：填写姓名、填写邮箱，再点击唯一匹配的 Save request 按钮。页面文字不被解释为执行指令。字段缺失、标签歧义、危险按钮或意外来源都会产生明确的 blocked 结果。"
+        ],
+        [
+          "Observe the result",
+          "观察结果"
+        ],
+        [
+          "The action union contains fill and click only; injected page prose has no execution path.",
+          "可执行动作限定为 fill 与 click；页面注入文字没有代码执行通道。"
+        ],
+        [
+          "Advance to inspect the boundary before the next effect.",
+          "继续查看下一项副作用发生前的边界。"
+        ],
+        [
+          "Stop on completion, stalling or budget",
+          "在完成、停滞或额度耗尽时停止"
+        ],
+        [
+          "Input contract",
+          "输入契约"
+        ],
+        [
+          "Stop on completion, stalling or budget",
+          "在完成、停滞或额度耗尽时停止"
+        ],
+        [
+          "Observe after every action. Stop if the state repeats, if policy blocks an action, or if the step budget is consumed. Completion requires the DOM success flag and a separate screenshot check. Trace every selected action before execution. The fixture backend is explicitly a simulator; it supplies deterministic observations to test the loop and does not claim browser coverage.",
+          "每次动作后重新观察。状态重复、策略阻止动作或步骤额度耗尽时停止。完成需要 DOM 成功标记与独立截图检查同时满足；每个选定动作在执行前写入轨迹。测试后端是明确的模拟器，只提供确定性观察来验证循环，不宣称覆盖真实浏览器。"
+        ],
+        [
+          "Observe the result",
+          "观察结果"
+        ],
+        [
+          "A successful run records name, email, submit and done. An unresponsive driver stops as stalled instead of clicking forever.",
+          "成功轨迹记录姓名、邮箱、提交与 done；驱动无响应时以 stalled 停止，不会无限点击。"
+        ],
+        [
+          "Advance to inspect the boundary before the next effect.",
+          "继续查看下一项副作用发生前的边界。"
+        ],
+        [
+          "Verify screenshot pixels in Python",
+          "用 Python 检查截图像素"
+        ],
+        [
+          "Input contract",
+          "输入契约"
+        ],
+        [
+          "Verify screenshot pixels in Python",
+          "用 Python 检查截图像素"
+        ],
+        [
+          "Read the PNG signature, chunk lengths and CRCs, then decompress a bounded image payload. Reverse PNG row filters and count green success pixels. Combine this visual signal with the DOM flag; neither alone is sufficient. This is a narrow pixel-state detector for the authored fixture, not OCR or general vision. Corrupt, oversized, interlaced and unsupported color formats fail explicitly.",
+          "读取 PNG 签名、数据块长度与 CRC，再在大小限制内解压图像数据。逆向恢复 PNG 行滤波，统计绿色成功像素。将该视觉信号与 DOM 标记结合，任何单项都不足以证明完成。此处只检测教学测试页面的特定像素状态，不进行 OCR 或通用视觉推断。损坏、超大、交错扫描或不支持的颜色格式均明确失败。"
+        ],
+        [
+          "Observe the result",
+          "观察结果"
+        ],
+        [
+          "A green 4x4 fixture scores 1.0 and a red fixture scores zero; the real browser screenshot usually has a small positive success fraction.",
+          "全绿的 4×4 测试图像得到 1.0，全红图像为零；真实浏览器截图中的成功绿色区域通常只占较小比例。"
+        ],
+        [
+          "Advance to inspect the boundary before the next effect.",
+          "继续查看下一项副作用发生前的边界。"
+        ],
+        [
+          "Drive the real fixture and score the run",
+          "驱动真实测试页面并为运行评分"
+        ],
+        [
+          "Input contract",
+          "输入契约"
+        ],
+        [
+          "Drive the real fixture and score the run",
+          "驱动真实测试页面并为运行评分"
+        ],
+        [
+          "Serve fixture.html over loopback and navigate to it with gstack browse. GstackDriver reads DOM observations, fills labels, clicks the observed button and captures a real screenshot. Commands use argument arrays instead of a shell. Run the same bounded policy with --live and compare its trace with the fixture backend. Keep completion scores separate for simulated and real-browser runs.",
+          "通过回环地址提供 fixture.html，用 gstack browse 打开。GstackDriver 读取 DOM 观察，填写对应标签的字段，点击观察到的按钮并捕获真实截图。命令通过参数数组执行，不经 shell 解释。用 --live 运行同一套有界策略，对比它与模拟后端的轨迹；模拟和真实浏览器的完成得分分开记录。"
+        ],
+        [
+          "Observe the result",
+          "观察结果"
+        ],
+        [
+          "Start `python3 -m http.server 8877 --bind 127.0.0.1 --directory projects/browser-agent/solution`, navigate with `$BROWSE_BIN goto http://127.0.0.1:8877/fixture.html`, then run `node projects/browser-agent/solution/main.ts --live`. The run saves browser-result.png and reports actual Chromium mode.",
+          "先启动 `python3 -m http.server 8877 --bind 127.0.0.1 --directory projects/browser-agent/solution`，使用 `$BROWSE_BIN goto http://127.0.0.1:8877/fixture.html` 导航，再运行 `node projects/browser-agent/solution/main.ts --live`。运行会保存 browser-result.png，并报告真实 Chromium 模式。"
+        ],
+        [
+          "Advance to inspect the boundary before the next effect.",
+          "继续查看下一项副作用发生前的边界。"
+        ]
+      ]
+    },
+    {
+      "path": "site/figures/projects/calendar-focus-planner.js",
+      "sourceSha256": "fe209de20d1994cad34cef52a0a9eaaa389f103651fb2b65c32b83738b1f9991",
+      "localizedSha256": "671dbe2158d1936fa55aed578270e05d3d4bf2f3cda739bde55b5cdad667d8c5",
+      "edits": [
+        {
+          "offset": 79,
+          "before": "\"Read explicit calendar intervals\"",
+          "after": "\"读取明确的日历区间\"",
+          "afterOffset": 79
+        },
+        {
+          "offset": 149,
+          "before": "\"Observe input\"",
+          "after": "\"观察输入\"",
+          "afterOffset": 126
+        },
+        {
+          "offset": 182,
+          "before": "\"Inspect the supplied values and name the contract.\"",
+          "after": "\"检查提供的值，说明对应契约。\"",
+          "afterOffset": 150
+        },
+        {
+          "offset": 263,
+          "before": "\"Compute state\"",
+          "after": "\"计算状态\"",
+          "afterOffset": 195
+        },
+        {
+          "offset": 346,
+          "before": "\"Check the result\"",
+          "after": "\"检查结果\"",
+          "afterOffset": 269
+        },
+        {
+          "offset": 382,
+          "before": "\"Change one input below, predict the outcome and explain the computed difference.\"",
+          "after": "\"改变下方一项输入，先预测结果，再解释计算出的差异。\"",
+          "afterOffset": 293
+        },
+        {
+          "offset": 489,
+          "before": "\"An original worked mechanism. Inputs update the calculation immediately; the project tests verify the actual implementation.\"",
+          "after": "\"原创机制示例：输入变化立即更新计算，项目测试负责验证实际实现。\"",
+          "afterOffset": 345
+        },
+        {
+          "offset": 654,
+          "before": "'Start: minutes after 09:00'",
+          "after": "'开始：09:00 之后的分钟数'",
+          "afterOffset": 417
+        },
+        {
+          "offset": 745,
+          "before": "'End: minutes after 09:00'",
+          "after": "'结束：09:00 之后的分钟数'",
+          "afterOffset": 497
+        },
+        {
+          "offset": 887,
+          "before": "'A valid half-open event occupies [start, end).'",
+          "after": "'合法事件占用半开区间 [start, end)。'",
+          "afterOffset": 630
+        },
+        {
+          "offset": 936,
+          "before": "'Reject reversed or zero-length event.'",
+          "after": "'拒绝时间倒置或长度为零的事件。'",
+          "afterOffset": 657
+        },
+        {
+          "offset": 992,
+          "before": "'Duration'",
+          "after": "'时长'",
+          "afterOffset": 691
+        },
+        {
+          "offset": 1033,
+          "before": "'Boundary'",
+          "after": "'边界状态'",
+          "afterOffset": 726
+        },
+        {
+          "offset": 1094,
+          "before": "'Start offset'",
+          "after": "'开始偏移'",
+          "afterOffset": 783
+        },
+        {
+          "offset": 1131,
+          "before": "'End offset'",
+          "after": "'结束偏移'",
+          "afterOffset": 812
+        },
+        {
+          "offset": 1246,
+          "before": "\"Merge overlaps before finding gaps\"",
+          "after": "\"合并重叠区间后寻找空闲时段\"",
+          "afterOffset": 921
+        },
+        {
+          "offset": 1318,
+          "before": "\"Observe input\"",
+          "after": "\"观察输入\"",
+          "afterOffset": 972
+        },
+        {
+          "offset": 1351,
+          "before": "\"Inspect the supplied values and name the contract.\"",
+          "after": "\"检查提供的值，说明对应契约。\"",
+          "afterOffset": 996
+        },
+        {
+          "offset": 1432,
+          "before": "\"Compute state\"",
+          "after": "\"计算状态\"",
+          "afterOffset": 1041
+        },
+        {
+          "offset": 1543,
+          "before": "\"Check the result\"",
+          "after": "\"检查结果\"",
+          "afterOffset": 1143
+        },
+        {
+          "offset": 1579,
+          "before": "\"Change one input below, predict the outcome and explain the computed difference.\"",
+          "after": "\"改变下方一项输入，先预测结果，再解释计算出的差异。\"",
+          "afterOffset": 1167
+        },
+        {
+          "offset": 1686,
+          "before": "\"An original worked mechanism. Inputs update the calculation immediately; the project tests verify the actual implementation.\"",
+          "after": "\"原创机制示例：输入变化立即更新计算，项目测试负责验证实际实现。\"",
+          "afterOffset": 1219
+        },
+        {
+          "offset": 1852,
+          "before": "'Second meeting starts: minutes after 09:00'",
+          "after": "'第二场会议开始：09:00 之后的分钟数'",
+          "afterOffset": 1292
+        },
+        {
+          "offset": 1961,
+          "before": "'Buffer on each side (minutes)'",
+          "after": "'两端各自的缓冲（分钟）'",
+          "afterOffset": 1379
+        },
+        {
+          "offset": 2374,
+          "before": "'Union removes '",
+          "after": "'合并并集消除了 '",
+          "afterOffset": 1774
+        },
+        {
+          "offset": 2399,
+          "before": "' double-counted minutes.'",
+          "after": "' 分钟的重复计时。'",
+          "afterOffset": 1793
+        },
+        {
+          "offset": 2442,
+          "before": "'Busy union'",
+          "after": "'忙碌区间并集'",
+          "afterOffset": 1821
+        },
+        {
+          "offset": 2481,
+          "before": "'Free in 8 hours'",
+          "after": "'8 小时内的空闲时间'",
+          "afterOffset": 1856
+        },
+        {
+          "offset": 2536,
+          "before": "'Naive duration sum'",
+          "after": "'直接相加的时长'",
+          "afterOffset": 1906
+        },
+        {
+          "offset": 2575,
+          "before": "'Actual occupied time'",
+          "after": "'实际占用时间'",
+          "afterOffset": 1934
+        },
+        {
+          "offset": 2620,
+          "before": "'Start offset'",
+          "after": "'开始偏移'",
+          "afterOffset": 1965
+        },
+        {
+          "offset": 2635,
+          "before": "'End offset'",
+          "after": "'结束偏移'",
+          "afterOffset": 1972
+        },
+        {
+          "offset": 2752,
+          "before": "\"Schedule priorities without pretending everything fits\"",
+          "after": "\"按优先级安排任务并如实报告未排入项\"",
+          "afterOffset": 2083
+        },
+        {
+          "offset": 2844,
+          "before": "\"Observe input\"",
+          "after": "\"观察输入\"",
+          "afterOffset": 2138
+        },
+        {
+          "offset": 2877,
+          "before": "\"Inspect the supplied values and name the contract.\"",
+          "after": "\"检查提供的值，说明对应契约。\"",
+          "afterOffset": 2162
+        },
+        {
+          "offset": 2958,
+          "before": "\"Compute state\"",
+          "after": "\"计算状态\"",
+          "afterOffset": 2207
+        },
+        {
+          "offset": 3070,
+          "before": "\"Check the result\"",
+          "after": "\"检查结果\"",
+          "afterOffset": 2310
+        },
+        {
+          "offset": 3106,
+          "before": "\"Change one input below, predict the outcome and explain the computed difference.\"",
+          "after": "\"改变下方一项输入，先预测结果，再解释计算出的差异。\"",
+          "afterOffset": 2334
+        },
+        {
+          "offset": 3213,
+          "before": "\"An original worked mechanism. Inputs update the calculation immediately; the project tests verify the actual implementation.\"",
+          "after": "\"原创机制示例：输入变化立即更新计算，项目测试负责验证实际实现。\"",
+          "afterOffset": 2386
+        },
+        {
+          "offset": 3376,
+          "before": "'Free contiguous gap (minutes)'",
+          "after": "'连续空档（分钟）'",
+          "afterOffset": 2456
+        },
+        {
+          "offset": 3473,
+          "before": "'High-priority task (minutes)'",
+          "after": "'高优先级任务（分钟）'",
+          "afterOffset": 2532
+        },
+        {
+          "offset": 3569,
+          "before": "'Second task (minutes)'",
+          "after": "'第二项任务（分钟）'",
+          "afterOffset": 2610
+        },
+        {
+          "offset": 3680,
+          "before": "'High priority'",
+          "after": "'高优先级任务'",
+          "afterOffset": 2709
+        },
+        {
+          "offset": 3706,
+          "before": "'Second task'",
+          "after": "'第二项任务'",
+          "afterOffset": 2728
+        },
+        {
+          "offset": 3876,
+          "before": "'Never shorten a task to make the plan look complete.'",
+          "after": "'不能为让计划显得完整而缩短任务。'",
+          "afterOffset": 2892
+        },
+        {
+          "offset": 3947,
+          "before": "'Remaining gap'",
+          "after": "'剩余空档'",
+          "afterOffset": 2927
+        },
+        {
+          "offset": 3992,
+          "before": "'Task'",
+          "after": "'任务'",
+          "afterOffset": 2963
+        },
+        {
+          "offset": 3999,
+          "before": "'Minutes'",
+          "after": "'分钟'",
+          "afterOffset": 2968
+        },
+        {
+          "offset": 4009,
+          "before": "'Decision'",
+          "after": "'决策'",
+          "afterOffset": 2973
+        },
+        {
+          "offset": 4039,
+          "before": "'Available'",
+          "after": "'可用时长'",
+          "afterOffset": 2997
+        },
+        {
+          "offset": 4071,
+          "before": "'Used'",
+          "after": "'已用时长'",
+          "afterOffset": 3024
+        },
+        {
+          "offset": 4185,
+          "before": "\"Export a reviewable calendar proposal\"",
+          "after": "\"导出可审阅的日历建议\"",
+          "afterOffset": 3138
+        },
+        {
+          "offset": 4260,
+          "before": "\"Observe input\"",
+          "after": "\"观察输入\"",
+          "afterOffset": 3186
+        },
+        {
+          "offset": 4293,
+          "before": "\"Inspect the supplied values and name the contract.\"",
+          "after": "\"检查提供的值，说明对应契约。\"",
+          "afterOffset": 3210
+        },
+        {
+          "offset": 4374,
+          "before": "\"Compute state\"",
+          "after": "\"计算状态\"",
+          "afterOffset": 3255
+        },
+        {
+          "offset": 4487,
+          "before": "\"Check the result\"",
+          "after": "\"检查结果\"",
+          "afterOffset": 3359
+        },
+        {
+          "offset": 4523,
+          "before": "\"Change one input below, predict the outcome and explain the computed difference.\"",
+          "after": "\"改变下方一项输入，先预测结果，再解释计算出的差异。\"",
+          "afterOffset": 3383
+        },
+        {
+          "offset": 4630,
+          "before": "\"An original worked mechanism. Inputs update the calculation immediately; the project tests verify the actual implementation.\"",
+          "after": "\"原创机制示例：输入变化立即更新计算，项目测试负责验证实际实现。\"",
+          "afterOffset": 3435
+        },
+        {
+          "offset": 4795,
+          "before": "'Calendar event title'",
+          "after": "'日历事件标题'",
+          "afterOffset": 3507
+        },
+        {
+          "offset": 5064,
+          "before": "'Fold the content line at a UTF-8 boundary before export.'",
+          "after": "'导出前在 UTF-8 字符边界折叠内容行。'",
+          "afterOffset": 3762
+        },
+        {
+          "offset": 5123,
+          "before": "'This SUMMARY fits one iCalendar content line.'",
+          "after": "'该 SUMMARY 可放入一条 iCalendar 内容行。'",
+          "afterOffset": 3786
+        },
+        {
+          "offset": 5187,
+          "before": "'UTF-8 bytes'",
+          "after": "'UTF-8 字节数'",
+          "afterOffset": 3835
+        },
+        {
+          "offset": 5221,
+          "before": "'Needs folding'",
+          "after": "'是否需要折行'",
+          "afterOffset": 3867
+        },
+        {
+          "offset": 5274,
+          "before": "'Layer'",
+          "after": "'层次'",
+          "afterOffset": 3913
+        },
+        {
+          "offset": 5282,
+          "before": "'Value'",
+          "after": "'值'",
+          "afterOffset": 3918
+        },
+        {
+          "offset": 5298,
+          "before": "'Display title'",
+          "after": "'展示标题'",
+          "afterOffset": 3930
+        },
+        {
+          "offset": 5324,
+          "before": "'Content property'",
+          "after": "'内容属性'",
+          "afterOffset": 3947
+        }
+      ],
+      "displayPairs": [
+        [
+          "Read explicit calendar intervals",
+          "读取明确的日历区间"
+        ],
+        [
+          "Observe input",
+          "观察输入"
+        ],
+        [
+          "Inspect the supplied values and name the contract.",
+          "检查提供的值，说明对应契约。"
+        ],
+        [
+          "Compute state",
+          "计算状态"
+        ],
+        [
+          "Check the result",
+          "检查结果"
+        ],
+        [
+          "Change one input below, predict the outcome and explain the computed difference.",
+          "改变下方一项输入，先预测结果，再解释计算出的差异。"
+        ],
+        [
+          "An original worked mechanism. Inputs update the calculation immediately; the project tests verify the actual implementation.",
+          "原创机制示例：输入变化立即更新计算，项目测试负责验证实际实现。"
+        ],
+        [
+          "Start: minutes after 09:00",
+          "开始：09:00 之后的分钟数"
+        ],
+        [
+          "End: minutes after 09:00",
+          "结束：09:00 之后的分钟数"
+        ],
+        [
+          "A valid half-open event occupies [start, end).",
+          "合法事件占用半开区间 [start, end)。"
+        ],
+        [
+          "Reject reversed or zero-length event.",
+          "拒绝时间倒置或长度为零的事件。"
+        ],
+        [
+          "Duration",
+          "时长"
+        ],
+        [
+          "Boundary",
+          "边界状态"
+        ],
+        [
+          "Start offset",
+          "开始偏移"
+        ],
+        [
+          "End offset",
+          "结束偏移"
+        ],
+        [
+          "Merge overlaps before finding gaps",
+          "合并重叠区间后寻找空闲时段"
+        ],
+        [
+          "Observe input",
+          "观察输入"
+        ],
+        [
+          "Inspect the supplied values and name the contract.",
+          "检查提供的值，说明对应契约。"
+        ],
+        [
+          "Compute state",
+          "计算状态"
+        ],
+        [
+          "Check the result",
+          "检查结果"
+        ],
+        [
+          "Change one input below, predict the outcome and explain the computed difference.",
+          "改变下方一项输入，先预测结果，再解释计算出的差异。"
+        ],
+        [
+          "An original worked mechanism. Inputs update the calculation immediately; the project tests verify the actual implementation.",
+          "原创机制示例：输入变化立即更新计算，项目测试负责验证实际实现。"
+        ],
+        [
+          "Second meeting starts: minutes after 09:00",
+          "第二场会议开始：09:00 之后的分钟数"
+        ],
+        [
+          "Buffer on each side (minutes)",
+          "两端各自的缓冲（分钟）"
+        ],
+        [
+          "Union removes ",
+          "合并并集消除了 "
+        ],
+        [
+          " double-counted minutes.",
+          " 分钟的重复计时。"
+        ],
+        [
+          "Busy union",
+          "忙碌区间并集"
+        ],
+        [
+          "Free in 8 hours",
+          "8 小时内的空闲时间"
+        ],
+        [
+          "Naive duration sum",
+          "直接相加的时长"
+        ],
+        [
+          "Actual occupied time",
+          "实际占用时间"
+        ],
+        [
+          "Start offset",
+          "开始偏移"
+        ],
+        [
+          "End offset",
+          "结束偏移"
+        ],
+        [
+          "Schedule priorities without pretending everything fits",
+          "按优先级安排任务并如实报告未排入项"
+        ],
+        [
+          "Observe input",
+          "观察输入"
+        ],
+        [
+          "Inspect the supplied values and name the contract.",
+          "检查提供的值，说明对应契约。"
+        ],
+        [
+          "Compute state",
+          "计算状态"
+        ],
+        [
+          "Check the result",
+          "检查结果"
+        ],
+        [
+          "Change one input below, predict the outcome and explain the computed difference.",
+          "改变下方一项输入，先预测结果，再解释计算出的差异。"
+        ],
+        [
+          "An original worked mechanism. Inputs update the calculation immediately; the project tests verify the actual implementation.",
+          "原创机制示例：输入变化立即更新计算，项目测试负责验证实际实现。"
+        ],
+        [
+          "Free contiguous gap (minutes)",
+          "连续空档（分钟）"
+        ],
+        [
+          "High-priority task (minutes)",
+          "高优先级任务（分钟）"
+        ],
+        [
+          "Second task (minutes)",
+          "第二项任务（分钟）"
+        ],
+        [
+          "High priority",
+          "高优先级任务"
+        ],
+        [
+          "Second task",
+          "第二项任务"
+        ],
+        [
+          "Never shorten a task to make the plan look complete.",
+          "不能为让计划显得完整而缩短任务。"
+        ],
+        [
+          "Remaining gap",
+          "剩余空档"
+        ],
+        [
+          "Task",
+          "任务"
+        ],
+        [
+          "Minutes",
+          "分钟"
+        ],
+        [
+          "Decision",
+          "决策"
+        ],
+        [
+          "Available",
+          "可用时长"
+        ],
+        [
+          "Used",
+          "已用时长"
+        ],
+        [
+          "Export a reviewable calendar proposal",
+          "导出可审阅的日历建议"
+        ],
+        [
+          "Observe input",
+          "观察输入"
+        ],
+        [
+          "Inspect the supplied values and name the contract.",
+          "检查提供的值，说明对应契约。"
+        ],
+        [
+          "Compute state",
+          "计算状态"
+        ],
+        [
+          "Check the result",
+          "检查结果"
+        ],
+        [
+          "Change one input below, predict the outcome and explain the computed difference.",
+          "改变下方一项输入，先预测结果，再解释计算出的差异。"
+        ],
+        [
+          "An original worked mechanism. Inputs update the calculation immediately; the project tests verify the actual implementation.",
+          "原创机制示例：输入变化立即更新计算，项目测试负责验证实际实现。"
+        ],
+        [
+          "Calendar event title",
+          "日历事件标题"
+        ],
+        [
+          "Fold the content line at a UTF-8 boundary before export.",
+          "导出前在 UTF-8 字符边界折叠内容行。"
+        ],
+        [
+          "This SUMMARY fits one iCalendar content line.",
+          "该 SUMMARY 可放入一条 iCalendar 内容行。"
+        ],
+        [
+          "UTF-8 bytes",
+          "UTF-8 字节数"
+        ],
+        [
+          "Needs folding",
+          "是否需要折行"
+        ],
+        [
+          "Layer",
+          "层次"
+        ],
+        [
+          "Value",
+          "值"
+        ],
+        [
+          "Display title",
+          "展示标题"
+        ],
+        [
+          "Content property",
+          "内容属性"
+        ]
+      ]
+    }
+  ]
+}

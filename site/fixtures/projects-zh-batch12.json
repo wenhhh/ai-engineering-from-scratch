@@ -1,0 +1,4838 @@
+{
+  "upstream": "c02ca08d8a49ce24c3c1c1cf8e3b422f2c7393ca",
+  "projects": [
+    "csv-sql-question-workbench",
+    "dataset-split-auditor",
+    "desktop-control",
+    "distributed-eval-farm"
+  ],
+  "files": {
+    "projects/csv-sql-question-workbench/README.md": {
+      "sourceSha256": "004bed208d71a1387f9f54396157a97a427cc48dd77720818a6bdcc6d1e4e93b",
+      "localizedSha256": "8c9fbdff7771e2aa51828ba2cad373a10e7ef1bce7b07a8aabdc8c5c8a545f74",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "bash",
+            "cd projects/csv-sql-question-workbench/solution\npython3 cli.py sample.csv --question \"sum units by region\" --output output/report.html\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py csv-sql-question-workbench --init my-csv-sql-question-workbench\npython3 scripts/project_test.py csv-sql-question-workbench --stage 1 --path my-csv-sql-question-workbench --strict\npython3 scripts/project_test.py csv-sql-question-workbench --all --path my-csv-sql-question-workbench --strict --report completion.json\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py csv-sql-question-workbench --all --solution --strict\n"
+          ]
+        ],
+        "inlineCode": [],
+        "links": [
+          "../../phases/00-setup-and-tooling/01-dev-environment/docs/en.md",
+          "../../phases/00-setup-and-tooling/09-data-management/docs/en.md",
+          "https://www.sqlite.org/c3ref/set_authorizer.html",
+          "stages/01-import-table/docs/en.md",
+          "stages/02-plan-question/docs/en.md",
+          "stages/03-enforce-read-boundary/docs/en.md",
+          "stages/04-publish-receipt/docs/en.md"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 4
+      }
+    },
+    "projects/csv-sql-question-workbench/media/output.gif": {
+      "sourceSha256": "64743c0d904f3d8c08692305065c7c7dbc55cb69f05aacd7ce58102a576aa854",
+      "localizedSha256": "64743c0d904f3d8c08692305065c7c7dbc55cb69f05aacd7ce58102a576aa854",
+      "kind": "original-recording"
+    },
+    "projects/csv-sql-question-workbench/media/output.json": {
+      "sourceSha256": "9d938ac5e2f92d08697e7c4c1cd9a00347339bb8326b3828acc4a11a97c1924d",
+      "localizedSha256": "9d938ac5e2f92d08697e7c4c1cd9a00347339bb8326b3828acc4a11a97c1924d",
+      "kind": "original-recording"
+    },
+    "projects/csv-sql-question-workbench/media/output.png": {
+      "sourceSha256": "49c844ba8bdb81adbf38747bf5191cad023052b802ebd0a5152a7794a0a6e981",
+      "localizedSha256": "49c844ba8bdb81adbf38747bf5191cad023052b802ebd0a5152a7794a0a6e981",
+      "kind": "original-recording"
+    },
+    "projects/csv-sql-question-workbench/media/run.gif": {
+      "sourceSha256": "88666a73bac63526d0a786be73215b8439d1e10cfebe01295e64245dc4448715",
+      "localizedSha256": "88666a73bac63526d0a786be73215b8439d1e10cfebe01295e64245dc4448715",
+      "kind": "original-recording"
+    },
+    "projects/csv-sql-question-workbench/media/run.json": {
+      "sourceSha256": "e9148fe2dd5c71736b4d907ccf45c19ae0def720ee365b490134f65305a2588e",
+      "localizedSha256": "e9148fe2dd5c71736b4d907ccf45c19ae0def720ee365b490134f65305a2588e",
+      "kind": "original-recording"
+    },
+    "projects/csv-sql-question-workbench/media/run.png": {
+      "sourceSha256": "07f74f61bbfac854a6dcbaf59834fa3efeb8bc3761d330b58e5d826a6070d01d",
+      "localizedSha256": "07f74f61bbfac854a6dcbaf59834fa3efeb8bc3761d330b58e5d826a6070d01d",
+      "kind": "original-recording"
+    },
+    "projects/csv-sql-question-workbench/project.json": {
+      "sourceSha256": "1d7588aa6dcf152ffd185eecc39183391a7ea52679da03dd8adeff267d9b0006",
+      "localizedSha256": "783c9fcff1c2debcb8a69303a08d982508d4f59e81eb4d6a61f916dc87c8a114",
+      "kind": "manifest",
+      "contract": {
+        "id": "csv-sql-question-workbench",
+        "title": "<translated-text>",
+        "level": 2,
+        "levelName": "Builder",
+        "tagline": "<translated-text>",
+        "summary": "<translated-text>",
+        "youWillBuild": "<translated-text>",
+        "usefulFor": [
+          "<translated-text>"
+        ],
+        "hours": 8,
+        "languages": [
+          "Python"
+        ],
+        "languageWhy": {
+          "Python": "<translated-text>"
+        },
+        "status": "ready",
+        "source": "core",
+        "author": {
+          "name": "AI Engineering from Scratch",
+          "github": "rohitg00"
+        },
+        "skills": [
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "prerequisites": [
+          {
+            "title": "<translated-text>",
+            "path": "phases/00-setup-and-tooling/01-dev-environment"
+          },
+          {
+            "title": "<translated-text>",
+            "path": "phases/00-setup-and-tooling/09-data-management"
+          },
+          {
+            "title": "<translated-text>",
+            "path": "phases/11-llm-engineering/03-structured-outputs"
+          }
+        ],
+        "figures": true,
+        "overviewFigure": "pj-csv-sql-question-workbench-1",
+        "demo": {
+          "command": [
+            "python3",
+            "cli.py",
+            "sample.csv",
+            "--question",
+            "sum units by region",
+            "--output",
+            "output/report.html"
+          ],
+          "cwd": "solution"
+        },
+        "stages": [
+          {
+            "id": "01-import-table",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "difficulty": "starter",
+            "language": "python",
+            "concepts": [
+              "<translated-text>"
+            ],
+            "figure": "pj-csv-sql-question-workbench-1"
+          },
+          {
+            "id": "02-plan-question",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "difficulty": "core",
+            "language": "python",
+            "concepts": [
+              "<translated-text>"
+            ],
+            "figure": "pj-csv-sql-question-workbench-2"
+          },
+          {
+            "id": "03-enforce-read-boundary",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "difficulty": "core",
+            "language": "python",
+            "concepts": [
+              "<translated-text>"
+            ],
+            "figure": "pj-csv-sql-question-workbench-3"
+          },
+          {
+            "id": "04-publish-receipt",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "difficulty": "stretch",
+            "language": "python",
+            "concepts": [
+              "<translated-text>"
+            ],
+            "figure": "pj-csv-sql-question-workbench-4"
+          }
+        ],
+        "demos": [
+          {
+            "gif": "media/run.gif",
+            "poster": "media/run.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          },
+          {
+            "gif": "media/output.gif",
+            "poster": "media/output.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          }
+        ]
+      },
+      "exactStageSummaries": [
+        "load_csv(text, max_rows=10000)",
+        "plan_question(question, data)",
+        "run_query(data, sql, max_rows=100, max_steps=100000)",
+        "render_report(report)"
+      ]
+    },
+    "projects/csv-sql-question-workbench/solution/cli.py": {
+      "sourceSha256": "8fdb3993da968f31cf2652c88d55a6bce815a0e00bf8fd5307ac3dca1bc7b872",
+      "localizedSha256": "8fcfa6e65321316a3485d6b011d25e756aec6e172e8eb7b4b7799bdbf746ddd2",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "Ask a small CSV a read-only question and keep the SQL receipt.",
+          "对小型 CSV 进行只读提问，并保留 SQL 凭据。"
+        ],
+        [
+          "Use the configured real model to propose SQL; the same read-only boundary still applies",
+          "使用已配置的真实模型提出 SQL，仍须经过相同的只读边界。"
+        ]
+      ]
+    },
+    "projects/csv-sql-question-workbench/solution/main.py": {
+      "sourceSha256": "fb647941f042c03f5bfef59b15ac931b3d87b2391289dd4ad2a4688a41491d01",
+      "localizedSha256": "319dbab7bd65390551e3c0359c87662fcc908e87a2ebf5af9169637b4701057f",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "<html lang=\"en\">",
+          "<html lang=\"zh-CN\">"
+        ],
+        [
+          "<title>Data question receipt</title>",
+          "<title>数据问答凭据</title>"
+        ],
+        [
+          "READ-ONLY DATA WORKBENCH",
+          "只读数据工作台"
+        ],
+        [
+          "Your question, with an inspectable query",
+          "你的问题与可检查的查询"
+        ],
+        [
+          " source records. ",
+          " 条来源记录。"
+        ],
+        [
+          "Result capped; narrow the query.",
+          "结果已截断（Result capped）；请缩小查询范围。"
+        ],
+        [
+          "Complete result within the row budget.",
+          "行数额度内的完整结果。"
+        ],
+        [
+          "Reproduce this answer",
+          "复现此答案"
+        ],
+        [
+          "Source fingerprint and full receipt",
+          "来源指纹与完整凭据"
+        ]
+      ]
+    },
+    "projects/csv-sql-question-workbench/solution/sample.csv": {
+      "sourceSha256": "1ee96571d615cdb49e6afc5b9d1f4c84af2aaad94b33186a0585a3eb8bbc1454",
+      "localizedSha256": "1ee96571d615cdb49e6afc5b9d1f4c84af2aaad94b33186a0585a3eb8bbc1454",
+      "kind": "preserved-contract"
+    },
+    "projects/csv-sql-question-workbench/stages/01-import-table/docs/en.md": {
+      "sourceSha256": "dc124976ea7d9560353d074a7a5eba158db54dddfefae7040612e66f09587924",
+      "localizedSha256": "5bf416cce14f194c2a78c78e8fba108213e17e034210124fbbcf9aa942eb0dee",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-csv-sql-question-workbench-1\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py csv-sql-question-workbench --init my-csv-sql-question-workbench\npython3 scripts/project_test.py csv-sql-question-workbench --stage 1 --path my-csv-sql-question-workbench --strict\n"
+          ],
+          [
+            "bash",
+            "cd my-csv-sql-question-workbench\npython3 cli.py sample.csv --question \"sum units by region\" --output output/report.html\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "load_csv(text, max_rows=10000)"
+          ],
+          [
+            "`",
+            "main.py"
+          ]
+        ],
+        "links": [
+          "../../../../../phases/00-setup-and-tooling/01-dev-environment/docs/en.md",
+          "../../../../../phases/00-setup-and-tooling/09-data-management/docs/en.md",
+          "https://www.sqlite.org/c3ref/set_authorizer.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 6,
+        "listItems": 3
+      }
+    },
+    "projects/csv-sql-question-workbench/stages/01-import-table/starter/cli.py": {
+      "sourceSha256": "8fdb3993da968f31cf2652c88d55a6bce815a0e00bf8fd5307ac3dca1bc7b872",
+      "localizedSha256": "8fcfa6e65321316a3485d6b011d25e756aec6e172e8eb7b4b7799bdbf746ddd2",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "Ask a small CSV a read-only question and keep the SQL receipt.",
+          "对小型 CSV 进行只读提问，并保留 SQL 凭据。"
+        ],
+        [
+          "Use the configured real model to propose SQL; the same read-only boundary still applies",
+          "使用已配置的真实模型提出 SQL，仍须经过相同的只读边界。"
+        ]
+      ]
+    },
+    "projects/csv-sql-question-workbench/stages/01-import-table/starter/main.py": {
+      "sourceSha256": "8d42ce60f39c4f7819694c432eae3aba9d910ccd2fc7d9b0acb8d65193672003",
+      "localizedSha256": "8d42ce60f39c4f7819694c432eae3aba9d910ccd2fc7d9b0acb8d65193672003",
+      "kind": "preserved-contract"
+    },
+    "projects/csv-sql-question-workbench/stages/01-import-table/starter/sample.csv": {
+      "sourceSha256": "1ee96571d615cdb49e6afc5b9d1f4c84af2aaad94b33186a0585a3eb8bbc1454",
+      "localizedSha256": "1ee96571d615cdb49e6afc5b9d1f4c84af2aaad94b33186a0585a3eb8bbc1454",
+      "kind": "preserved-contract"
+    },
+    "projects/csv-sql-question-workbench/stages/01-import-table/starter/stage-1.md": {
+      "sourceSha256": "144bc55fdef39860bfe315487c66c6afea03353aa184bc1713f8cbcc65698f77",
+      "localizedSha256": "38fb8102d01f0d19e3892503371fa829c2fa595692fb8eb2f00c215be1e76e58",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [
+          [
+            "`",
+            "load_csv(text, max_rows=10000)"
+          ]
+        ],
+        "links": [],
+        "math": [],
+        "headings": [
+          "#"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/csv-sql-question-workbench/stages/01-import-table/tests/test_identifiers.py": {
+      "sourceSha256": "f74b194051e3612298163363de2ffbe5a12ea3d79be96e1227ade34db1ba9207",
+      "localizedSha256": "f74b194051e3612298163363de2ffbe5a12ea3d79be96e1227ade34db1ba9207",
+      "kind": "preserved-contract"
+    },
+    "projects/csv-sql-question-workbench/stages/01-import-table/tests/test_stage.py": {
+      "sourceSha256": "34bfb3cb7d3d6a08e75c467bc024dfbb38180fef2b5e54d53a90f690fc52a917",
+      "localizedSha256": "34bfb3cb7d3d6a08e75c467bc024dfbb38180fef2b5e54d53a90f690fc52a917",
+      "kind": "preserved-contract"
+    },
+    "projects/csv-sql-question-workbench/stages/02-plan-question/docs/en.md": {
+      "sourceSha256": "5d79392f9c1f4c539acb8843ecbc8774edf013f6e0ca589a20fe315799ef3512",
+      "localizedSha256": "c406483d217705f35d68314036aee9b1c90fb237c5f04464ef8862b10b1311ef",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-csv-sql-question-workbench-2\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py csv-sql-question-workbench --init my-csv-sql-question-workbench\npython3 scripts/project_test.py csv-sql-question-workbench --stage 2 --path my-csv-sql-question-workbench --strict\n"
+          ],
+          [
+            "bash",
+            "cd my-csv-sql-question-workbench\npython3 cli.py sample.csv --question \"sum units by region\" --output output/report.html\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "main.py"
+          ],
+          [
+            "`",
+            "plan_question(question, data)"
+          ]
+        ],
+        "links": [
+          "../../../../../phases/00-setup-and-tooling/01-dev-environment/docs/en.md",
+          "../../../../../phases/00-setup-and-tooling/09-data-management/docs/en.md",
+          "https://www.sqlite.org/c3ref/set_authorizer.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 5,
+        "listItems": 3
+      }
+    },
+    "projects/csv-sql-question-workbench/stages/02-plan-question/starter/stage-2.md": {
+      "sourceSha256": "fdbd4562ba7b5ff30297fc3127f41c10def02d7bc7092fd4c1c73e9c1a0d4e10",
+      "localizedSha256": "3f74a760fed89f692df5a519fd804967cb6d4d74ed06f819cba678d1c1589549",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [
+          [
+            "`",
+            "plan_question(question, data)"
+          ]
+        ],
+        "links": [],
+        "math": [],
+        "headings": [
+          "#"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/csv-sql-question-workbench/stages/02-plan-question/tests/test_stage.py": {
+      "sourceSha256": "0025f6283aff7907be667bb91a2cca4a6265afe49abc7553bef89d0e2551ac55",
+      "localizedSha256": "0025f6283aff7907be667bb91a2cca4a6265afe49abc7553bef89d0e2551ac55",
+      "kind": "preserved-contract"
+    },
+    "projects/csv-sql-question-workbench/stages/03-enforce-read-boundary/docs/en.md": {
+      "sourceSha256": "9724b485be0c3d0b162d1355578ed0de22ff429f553d01a8af8d049d1637506a",
+      "localizedSha256": "b5024f95c79bd41af56c672aea3835e8b67017503483810267cffdfdcd57805e",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-csv-sql-question-workbench-3\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py csv-sql-question-workbench --init my-csv-sql-question-workbench\npython3 scripts/project_test.py csv-sql-question-workbench --stage 3 --path my-csv-sql-question-workbench --strict\n"
+          ],
+          [
+            "bash",
+            "cd my-csv-sql-question-workbench\npython3 cli.py sample.csv --question \"sum units by region\" --output output/report.html\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "main.py"
+          ],
+          [
+            "`",
+            "run_query(data, sql, max_rows=100, max_steps=100000)"
+          ]
+        ],
+        "links": [
+          "../../../../../phases/00-setup-and-tooling/01-dev-environment/docs/en.md",
+          "../../../../../phases/00-setup-and-tooling/09-data-management/docs/en.md",
+          "https://www.sqlite.org/c3ref/set_authorizer.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 5,
+        "listItems": 3
+      }
+    },
+    "projects/csv-sql-question-workbench/stages/03-enforce-read-boundary/starter/stage-3.md": {
+      "sourceSha256": "c0bca701d8f4a847995300978293637cbcaeb56fec264c936198263ec7bf6e34",
+      "localizedSha256": "cdc37507ea4d0e775ef9bdb9a04fadd9fe28c8653daa13be52a7d68451ae6895",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [
+          [
+            "`",
+            "run_query(data, sql, max_rows=100, max_steps=100000)"
+          ]
+        ],
+        "links": [],
+        "math": [],
+        "headings": [
+          "#"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/csv-sql-question-workbench/stages/03-enforce-read-boundary/tests/test_stage.py": {
+      "sourceSha256": "93827eee53a4704571de735d83133291c93df5c4f9ad351893030ad5d329c064",
+      "localizedSha256": "93827eee53a4704571de735d83133291c93df5c4f9ad351893030ad5d329c064",
+      "kind": "preserved-contract"
+    },
+    "projects/csv-sql-question-workbench/stages/04-publish-receipt/docs/en.md": {
+      "sourceSha256": "e617dab788e90cae2b8b5d06abbb50a6a2857cf6a8141b9c0a8505ee85318823",
+      "localizedSha256": "885e02b5cf03db780c540390ed6e07eb146f3d4f0b3bd23ad433506bd7b58024",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-csv-sql-question-workbench-4\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py csv-sql-question-workbench --init my-csv-sql-question-workbench\npython3 scripts/project_test.py csv-sql-question-workbench --stage 4 --path my-csv-sql-question-workbench --strict\n"
+          ],
+          [
+            "bash",
+            "cd my-csv-sql-question-workbench\npython3 cli.py sample.csv --question \"sum units by region\" --output output/report.html\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "main.py"
+          ],
+          [
+            "`",
+            "render_report(report)"
+          ]
+        ],
+        "links": [
+          "../../../../../phases/00-setup-and-tooling/01-dev-environment/docs/en.md",
+          "../../../../../phases/00-setup-and-tooling/09-data-management/docs/en.md",
+          "https://www.sqlite.org/c3ref/set_authorizer.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 5,
+        "listItems": 3
+      }
+    },
+    "projects/csv-sql-question-workbench/stages/04-publish-receipt/starter/stage-4.md": {
+      "sourceSha256": "e7235c3ec467c2875f4cc54112e1fe1353aaecb4fcb28523e518d09a36b9b469",
+      "localizedSha256": "f7c466a15cbe7c7f61ab66a72245554dea75ae2e0f001e19ac7b42655f9441ce",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [
+          [
+            "`",
+            "render_report(report)"
+          ]
+        ],
+        "links": [],
+        "math": [],
+        "headings": [
+          "#"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/csv-sql-question-workbench/stages/04-publish-receipt/tests/test_model_wire.py": {
+      "sourceSha256": "b09b875e7fdebefef9444f3ae79f12fc46bdf4e2b57764be942fbf224049be00",
+      "localizedSha256": "b09b875e7fdebefef9444f3ae79f12fc46bdf4e2b57764be942fbf224049be00",
+      "kind": "preserved-contract"
+    },
+    "projects/csv-sql-question-workbench/stages/04-publish-receipt/tests/test_stage.py": {
+      "sourceSha256": "919b37bf44eebe18785405e52b69972e5740cd8588e56820f7feff5407622d9b",
+      "localizedSha256": "919b37bf44eebe18785405e52b69972e5740cd8588e56820f7feff5407622d9b",
+      "kind": "preserved-contract"
+    },
+    "projects/dataset-split-auditor/.gitignore": {
+      "sourceSha256": "727160a967a68b9ddf12803a5810d1f1bc8f425c34e315ea9810cdc9beb6ce4f",
+      "localizedSha256": "727160a967a68b9ddf12803a5810d1f1bc8f425c34e315ea9810cdc9beb6ce4f",
+      "kind": "preserved-contract"
+    },
+    "projects/dataset-split-auditor/API.md": {
+      "sourceSha256": "88f8779e00e1c47274708fb2f46f1bd44e87a96f873063f72bb55f6fc00bc30e",
+      "localizedSha256": "01c7b77b9f8207a47acb2256ca609aae48976e5b7b55e093bdf0edb00fd81500",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "python",
+            "def fingerprint(text)\ndef validate(records)\ndef audit(train, test)\ndef split_groups(records, test_fraction=0.2, seed='course')\ndef summarize(train, test)\n"
+          ]
+        ],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [
+          "#",
+          "###"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/dataset-split-auditor/README.md": {
+      "sourceSha256": "f0653f98ccca04e22f21879b632c51c156904e06918ff096cccc96bfe5e539c4",
+      "localizedSha256": "df821123ffd54392def1b5267ed4948f029dc595556d03d3b2aa9e5932d64da2",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "bash",
+            "python3 scripts/project_test.py dataset-split-auditor --init learning-artifacts/dataset-split-auditor\npython3 scripts/project_test.py dataset-split-auditor --stage 1 --path learning-artifacts/dataset-split-auditor --strict\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py dataset-split-auditor --all --path learning-artifacts/dataset-split-auditor --strict\ncd learning-artifacts/dataset-split-auditor\npython3 cli.py samples/input.json --output split-audit.json --html split-audit.html\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py dataset-split-auditor --all --solution --strict\ncd projects/dataset-split-auditor/solution\npython3 cli.py samples/input.json --output split-audit.json --html split-audit.html\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "--dataset-audit split-audit.json"
+          ],
+          [
+            "`",
+            "python3 cli.py --train train.jsonl --test test.jsonl --check --output split-audit.json"
+          ]
+        ],
+        "links": [
+          "API.md",
+          "https://scikit-learn.org/stable/common_pitfalls.html",
+          "stages/01-fingerprint-records/docs/en.md",
+          "stages/02-audit-leakage/docs/en.md",
+          "stages/03-split-groups/docs/en.md",
+          "stages/04-report-distribution/docs/en.md"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 4
+      }
+    },
+    "projects/dataset-split-auditor/media/output.gif": {
+      "sourceSha256": "9f2d96107772ca697ed5b24a8389ad4f2dbd472b5dd7f50a74bcafdf972a92ae",
+      "localizedSha256": "9f2d96107772ca697ed5b24a8389ad4f2dbd472b5dd7f50a74bcafdf972a92ae",
+      "kind": "original-recording"
+    },
+    "projects/dataset-split-auditor/media/output.json": {
+      "sourceSha256": "277d4feca4a9d50ffbb5d0668f04ce537bd1c867cff8778975d952e9a48ae1ed",
+      "localizedSha256": "277d4feca4a9d50ffbb5d0668f04ce537bd1c867cff8778975d952e9a48ae1ed",
+      "kind": "original-recording"
+    },
+    "projects/dataset-split-auditor/media/output.png": {
+      "sourceSha256": "990b745ea68c1e5d14780ff6a22dc334abcaaecfaf129de8d364a32d573371ae",
+      "localizedSha256": "990b745ea68c1e5d14780ff6a22dc334abcaaecfaf129de8d364a32d573371ae",
+      "kind": "original-recording"
+    },
+    "projects/dataset-split-auditor/media/run.gif": {
+      "sourceSha256": "a4fc6756a4b9799e264b32514e1650d6ef3b0d9aa5a6f913a65a9f1eba2dd172",
+      "localizedSha256": "a4fc6756a4b9799e264b32514e1650d6ef3b0d9aa5a6f913a65a9f1eba2dd172",
+      "kind": "original-recording"
+    },
+    "projects/dataset-split-auditor/media/run.json": {
+      "sourceSha256": "6a0ac361a91a7267450a8aae04da4af5acdce130d85987e6fdbedad14af3e9d6",
+      "localizedSha256": "6a0ac361a91a7267450a8aae04da4af5acdce130d85987e6fdbedad14af3e9d6",
+      "kind": "original-recording"
+    },
+    "projects/dataset-split-auditor/media/run.png": {
+      "sourceSha256": "4c64fb355871ce38350e9bf3a49c9a107ffbf16ab893a306be4ad75f549f75b4",
+      "localizedSha256": "4c64fb355871ce38350e9bf3a49c9a107ffbf16ab893a306be4ad75f549f75b4",
+      "kind": "original-recording"
+    },
+    "projects/dataset-split-auditor/project.json": {
+      "sourceSha256": "d0351b2052ececa8f47114c9f8e17f07c49118ced87b64896c3a2843d29e1527",
+      "localizedSha256": "6d7f5cdb27e409550e193c58669ef52f32d42556d70c84d38490c119a9557aa5",
+      "kind": "manifest",
+      "contract": {
+        "id": "dataset-split-auditor",
+        "title": "<translated-text>",
+        "level": 1,
+        "levelName": "Starter",
+        "tagline": "<translated-text>",
+        "summary": "<translated-text>",
+        "youWillBuild": "<translated-text>",
+        "usefulFor": [
+          "<translated-text>"
+        ],
+        "hours": 8,
+        "languages": [
+          "Python"
+        ],
+        "languageWhy": {
+          "Python": "<translated-text>"
+        },
+        "status": "ready",
+        "source": "core",
+        "author": {
+          "name": "AI Engineering from Scratch",
+          "github": "rohitg00"
+        },
+        "skills": [
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "prerequisites": [
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "figures": true,
+        "overviewFigure": "pj-dataset-split-auditor-1",
+        "demo": {
+          "cwd": "solution",
+          "command": [
+            "python3",
+            "cli.py",
+            "samples/input.json",
+            "--output",
+            "split-audit.json",
+            "--html",
+            "split-audit.html"
+          ]
+        },
+        "stages": [
+          {
+            "id": "01-fingerprint-records",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "difficulty": "starter",
+            "language": "python",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>"
+            ],
+            "figure": "pj-dataset-split-auditor-1"
+          },
+          {
+            "id": "02-audit-leakage",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "difficulty": "core",
+            "language": "python",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ],
+            "figure": "pj-dataset-split-auditor-2"
+          },
+          {
+            "id": "03-split-groups",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "difficulty": "core",
+            "language": "python",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>"
+            ],
+            "figure": "pj-dataset-split-auditor-3"
+          },
+          {
+            "id": "04-report-distribution",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "difficulty": "stretch",
+            "language": "python",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>"
+            ],
+            "figure": "pj-dataset-split-auditor-4"
+          }
+        ],
+        "demos": [
+          {
+            "gif": "media/run.gif",
+            "poster": "media/run.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          },
+          {
+            "gif": "media/output.gif",
+            "poster": "media/output.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          }
+        ]
+      }
+    },
+    "projects/dataset-split-auditor/solution/cli.py": {
+      "sourceSha256": "e75e93658c4c06550516cbecd5e4eb2ce9c2af05c689506579e4a789dcfb430b",
+      "localizedSha256": "32b648cb280c86fb3ae7f275d877ce65f8d4dd5d71184cc6276c7c8f84e2dffc",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "Audit supplied partitions or build and audit a deterministic group split.",
+          "审计给定分区，或创建并审计确定性的按组划分。"
+        ],
+        [
+          "exit2 when the audit is not usable",
+          "审计结果不可用时以 2 退出"
+        ],
+        [
+          "<title>Split evidence</title>",
+          "<title>划分证据</title>"
+        ],
+        [
+          "<h1>Dataset split evidence</h1>",
+          "<h1>数据集划分证据</h1>"
+        ],
+        [
+          "<p>Usable: ",
+          "<p>是否可用："
+        ]
+      ]
+    },
+    "projects/dataset-split-auditor/solution/demo.py": {
+      "sourceSha256": "d1870d9603be7a6c1d8b596306ab45ba83a22693afb793ffa3b79d7b251751f9",
+      "localizedSha256": "d1870d9603be7a6c1d8b596306ab45ba83a22693afb793ffa3b79d7b251751f9",
+      "kind": "preserved-contract"
+    },
+    "projects/dataset-split-auditor/solution/main.py": {
+      "sourceSha256": "09963047ceb66f92571f1992afc6750d4aee4ba02ac4cbe4ce1ac79918ab44ac",
+      "localizedSha256": "09963047ceb66f92571f1992afc6750d4aee4ba02ac4cbe4ce1ac79918ab44ac",
+      "kind": "preserved-contract"
+    },
+    "projects/dataset-split-auditor/solution/samples/input.json": {
+      "sourceSha256": "fe898c6635415ac989914a6173c165a68c94ac031bc17a7279ca5bf066ed98d8",
+      "localizedSha256": "fe898c6635415ac989914a6173c165a68c94ac031bc17a7279ca5bf066ed98d8",
+      "kind": "preserved-contract"
+    },
+    "projects/dataset-split-auditor/stages/01-fingerprint-records/docs/en.md": {
+      "sourceSha256": "4ebde56f1f496bc0d1ed1141b10aef74cb1ca6b5548c4d228efbb3785567b656",
+      "localizedSha256": "dd3738a4441ec3822ecbb00c31c38f2580ea07576985b5a57abb9fd3e9176f56",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-dataset-split-auditor-1\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py dataset-split-auditor --stage 1 --path learning-artifacts/dataset-split-auditor --strict\n"
+          ],
+          [
+            "bash",
+            "cd learning-artifacts/dataset-split-auditor\npython3 cli.py samples/input.json --output split-audit.json --html split-audit.html\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "fingerprint"
+          ],
+          [
+            "`",
+            "python3 scripts/project_test.py dataset-split-auditor --init learning-artifacts/dataset-split-auditor"
+          ]
+        ],
+        "links": [
+          "../../../API.md",
+          "../../../README.md",
+          "https://scikit-learn.org/stable/common_pitfalls.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/dataset-split-auditor/stages/01-fingerprint-records/starter/cli.py": {
+      "sourceSha256": "e75e93658c4c06550516cbecd5e4eb2ce9c2af05c689506579e4a789dcfb430b",
+      "localizedSha256": "32b648cb280c86fb3ae7f275d877ce65f8d4dd5d71184cc6276c7c8f84e2dffc",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "Audit supplied partitions or build and audit a deterministic group split.",
+          "审计给定分区，或创建并审计确定性的按组划分。"
+        ],
+        [
+          "exit2 when the audit is not usable",
+          "审计结果不可用时以 2 退出"
+        ],
+        [
+          "<title>Split evidence</title>",
+          "<title>划分证据</title>"
+        ],
+        [
+          "<h1>Dataset split evidence</h1>",
+          "<h1>数据集划分证据</h1>"
+        ],
+        [
+          "<p>Usable: ",
+          "<p>是否可用："
+        ]
+      ]
+    },
+    "projects/dataset-split-auditor/stages/01-fingerprint-records/starter/main.py": {
+      "sourceSha256": "9ce56aa26c50e80cdcc1e2c4287991a88420d07e003e8e81c844c528725ab3ce",
+      "localizedSha256": "e05cf9b0a2827041b4b0016cc80d1fff4e378aacd0b7bbaf43ab4b84d2919358",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "Fill in the stage interfaces in your own workspace.",
+          "在自己的工作区中实现各阶段接口。"
+        ]
+      ]
+    },
+    "projects/dataset-split-auditor/stages/01-fingerprint-records/starter/samples/input.json": {
+      "sourceSha256": "fe898c6635415ac989914a6173c165a68c94ac031bc17a7279ca5bf066ed98d8",
+      "localizedSha256": "fe898c6635415ac989914a6173c165a68c94ac031bc17a7279ca5bf066ed98d8",
+      "kind": "preserved-contract"
+    },
+    "projects/dataset-split-auditor/stages/01-fingerprint-records/tests/test_stage_01.py": {
+      "sourceSha256": "90d24d358eafddfc8b70764c1f731cb3b4e40f605030be880485f749433f5c8d",
+      "localizedSha256": "90d24d358eafddfc8b70764c1f731cb3b4e40f605030be880485f749433f5c8d",
+      "kind": "preserved-contract"
+    },
+    "projects/dataset-split-auditor/stages/02-audit-leakage/docs/en.md": {
+      "sourceSha256": "f6ffe360f5365712bfbee41ba4304d5ec6ec817fbcbe9705d6f438ab13301cbf",
+      "localizedSha256": "7d06e215970684725b7c874d82acb57192aafb70fcb74c217b65ac235e6e66ac",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-dataset-split-auditor-2\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py dataset-split-auditor --stage 2 --path learning-artifacts/dataset-split-auditor --strict\n"
+          ],
+          [
+            "bash",
+            "cd learning-artifacts/dataset-split-auditor\npython3 cli.py samples/input.json --output split-audit.json --html split-audit.html\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "audit"
+          ],
+          [
+            "`",
+            "python3 scripts/project_test.py dataset-split-auditor --init learning-artifacts/dataset-split-auditor"
+          ]
+        ],
+        "links": [
+          "../../../API.md",
+          "../../../README.md",
+          "https://scikit-learn.org/stable/common_pitfalls.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/dataset-split-auditor/stages/02-audit-leakage/starter/STAGE.md": {
+      "sourceSha256": "de87d556ff420651ca3f56779d9ccc5ad04b3d08f79de33927207ae35b0562c4",
+      "localizedSha256": "cc45f43580f80796c85a27d3057e0e07eb48fbf3bea2b1f82383143ce9238ee7",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/dataset-split-auditor/stages/02-audit-leakage/tests/test_stage_02.py": {
+      "sourceSha256": "32c577ec8f651e843c2f88609e66d2da177eba5c9108708523b5fc043ad8e795",
+      "localizedSha256": "32c577ec8f651e843c2f88609e66d2da177eba5c9108708523b5fc043ad8e795",
+      "kind": "preserved-contract"
+    },
+    "projects/dataset-split-auditor/stages/03-split-groups/docs/en.md": {
+      "sourceSha256": "0356b43dcac35af392c789f5e6de6bc4ee0f4c78cd95e80c9878a37d845a42d5",
+      "localizedSha256": "40322af7636d637be5738d75b8d4b7bf84890a1fb721883a53cf9cbb3b67f004",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-dataset-split-auditor-3\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py dataset-split-auditor --stage 3 --path learning-artifacts/dataset-split-auditor --strict\n"
+          ],
+          [
+            "bash",
+            "cd learning-artifacts/dataset-split-auditor\npython3 cli.py samples/input.json --output split-audit.json --html split-audit.html\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "python3 scripts/project_test.py dataset-split-auditor --init learning-artifacts/dataset-split-auditor"
+          ],
+          [
+            "`",
+            "split_groups"
+          ]
+        ],
+        "links": [
+          "../../../API.md",
+          "../../../README.md",
+          "https://scikit-learn.org/stable/common_pitfalls.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/dataset-split-auditor/stages/03-split-groups/starter/STAGE.md": {
+      "sourceSha256": "de87d556ff420651ca3f56779d9ccc5ad04b3d08f79de33927207ae35b0562c4",
+      "localizedSha256": "cc45f43580f80796c85a27d3057e0e07eb48fbf3bea2b1f82383143ce9238ee7",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/dataset-split-auditor/stages/03-split-groups/tests/test_stage_03.py": {
+      "sourceSha256": "f73554a80b5af8ead62af0f4751b5cecf28e0ebe6dd9b81e2f8468c2674703f3",
+      "localizedSha256": "f73554a80b5af8ead62af0f4751b5cecf28e0ebe6dd9b81e2f8468c2674703f3",
+      "kind": "preserved-contract"
+    },
+    "projects/dataset-split-auditor/stages/04-report-distribution/docs/en.md": {
+      "sourceSha256": "9b855e1db37f2573a11210689b39c6a6c2f42e9182d1b0fbfb896584b438d323",
+      "localizedSha256": "37df8abb67f61f57d217140e39af99c34f3ae98be7b39af6a777bec697085b6f",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-dataset-split-auditor-4\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py dataset-split-auditor --stage 4 --path learning-artifacts/dataset-split-auditor --strict\n"
+          ],
+          [
+            "bash",
+            "cd learning-artifacts/dataset-split-auditor\npython3 cli.py samples/input.json --output split-audit.json --html split-audit.html\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "python3 scripts/project_test.py dataset-split-auditor --init learning-artifacts/dataset-split-auditor"
+          ],
+          [
+            "`",
+            "summarize"
+          ]
+        ],
+        "links": [
+          "../../../API.md",
+          "../../../README.md",
+          "https://scikit-learn.org/stable/common_pitfalls.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/dataset-split-auditor/stages/04-report-distribution/starter/STAGE.md": {
+      "sourceSha256": "de87d556ff420651ca3f56779d9ccc5ad04b3d08f79de33927207ae35b0562c4",
+      "localizedSha256": "cc45f43580f80796c85a27d3057e0e07eb48fbf3bea2b1f82383143ce9238ee7",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/dataset-split-auditor/stages/04-report-distribution/tests/test_integration.py": {
+      "sourceSha256": "977f48f9c80c994ffc8111b665052dbbf8e58e0fbc2450fb1029459d229a756d",
+      "localizedSha256": "977f48f9c80c994ffc8111b665052dbbf8e58e0fbc2450fb1029459d229a756d",
+      "kind": "preserved-contract"
+    },
+    "projects/dataset-split-auditor/stages/04-report-distribution/tests/test_stage_04.py": {
+      "sourceSha256": "576fea887e021c17985596e577c07759f37d40f3d735f202052180277643a453",
+      "localizedSha256": "576fea887e021c17985596e577c07759f37d40f3d735f202052180277643a453",
+      "kind": "preserved-contract"
+    },
+    "projects/desktop-control/.gitignore": {
+      "sourceSha256": "a7cb43d7e85784cde9bc3a49840aea1668bbf650a9016cf7852553b831437b8c",
+      "localizedSha256": "a7cb43d7e85784cde9bc3a49840aea1668bbf650a9016cf7852553b831437b8c",
+      "kind": "preserved-contract"
+    },
+    "projects/desktop-control/API.md": {
+      "sourceSha256": "a71494451fa23cdb5bfcf429ffeae517d27197a7994fcb63bb28c501da99f48e",
+      "localizedSha256": "a5f634e2be4bdaf710244c2a1b19bbe48c84c6852702ab47bfa5aca2f746b4a0",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [
+          [
+            "`",
+            "cli.rs"
+          ],
+          [
+            "`",
+            "main.rs"
+          ]
+        ],
+        "links": [],
+        "math": [],
+        "headings": [
+          "#"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/desktop-control/README.md": {
+      "sourceSha256": "a1c8ecc4d4b8cf2128e5dd8594b559432438d452055edaaa298720562de5deb3",
+      "localizedSha256": "3ba32a497818bf94b2f87cf3fa17668447cb802abe1e75b2a19e588beb8b77e0",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "bash",
+            "python3 scripts/project_test.py desktop-control --init learning-artifacts/desktop-control\npython3 scripts/project_test.py desktop-control --stage 1 --path learning-artifacts/desktop-control --strict\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py desktop-control --all --path learning-artifacts/desktop-control --strict\ncd learning-artifacts/desktop-control\nrustc --edition 2021 cli.rs -o desktop-cli\n./desktop-cli samples/actions.tsv desktop-frames\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py desktop-control --all --solution --strict\ncd projects/desktop-control/solution\nrustc --edition 2021 cli.rs -o desktop-cli\n./desktop-cli samples/actions.tsv desktop-frames\n"
+          ]
+        ],
+        "inlineCode": [],
+        "links": [
+          "API.md",
+          "https://developer.apple.com/library/archive/documentation/AppleScript/Conceptual/AppleScriptLangGuide/",
+          "https://doc.rust-lang.org/std/process/struct.Command.html",
+          "https://www.w3.org/TR/png-3/",
+          "stages/01-frame-contract/docs/en.md",
+          "stages/02-backend-trait/docs/en.md",
+          "stages/03-controller/docs/en.md",
+          "stages/04-native-adapter/docs/en.md"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 4
+      }
+    },
+    "projects/desktop-control/media/output.gif": {
+      "sourceSha256": "fed76c8f630d4368f1cb0f8d38a97e6d1103ce3f2ff33f8f535083c623dfdddc",
+      "localizedSha256": "fed76c8f630d4368f1cb0f8d38a97e6d1103ce3f2ff33f8f535083c623dfdddc",
+      "kind": "original-recording"
+    },
+    "projects/desktop-control/media/output.json": {
+      "sourceSha256": "1c8e7d1f725c85b64ead287c98bc74ce01d8848e6ad3a62aafacc06952716fc8",
+      "localizedSha256": "1c8e7d1f725c85b64ead287c98bc74ce01d8848e6ad3a62aafacc06952716fc8",
+      "kind": "original-recording"
+    },
+    "projects/desktop-control/media/output.png": {
+      "sourceSha256": "726d8cbd43ca73c3a901e350732471a26626d2ee27151594f7d84e97257ec605",
+      "localizedSha256": "726d8cbd43ca73c3a901e350732471a26626d2ee27151594f7d84e97257ec605",
+      "kind": "original-recording"
+    },
+    "projects/desktop-control/media/run.gif": {
+      "sourceSha256": "038846804377852156baae1801f955ccf786363783fc6f8502307e741e54318c",
+      "localizedSha256": "038846804377852156baae1801f955ccf786363783fc6f8502307e741e54318c",
+      "kind": "original-recording"
+    },
+    "projects/desktop-control/media/run.json": {
+      "sourceSha256": "98d89193aa72d18a71ef1e58c9a44be69b8cc9887f38112c147d5112cda48ac5",
+      "localizedSha256": "98d89193aa72d18a71ef1e58c9a44be69b8cc9887f38112c147d5112cda48ac5",
+      "kind": "original-recording"
+    },
+    "projects/desktop-control/media/run.png": {
+      "sourceSha256": "a22b2bfa58cf46e285a70e8c5cc8ccc10ef6d4b7cfd7d43ec98f4b4fff15f767",
+      "localizedSha256": "a22b2bfa58cf46e285a70e8c5cc8ccc10ef6d4b7cfd7d43ec98f4b4fff15f767",
+      "kind": "original-recording"
+    },
+    "projects/desktop-control/project.json": {
+      "sourceSha256": "6240eeaf5276d56a9e5eb104ab790128cc62505a4528e5332e8ae198854c4180",
+      "localizedSha256": "28d7f84412dbcb6e15111b865f5f70ac76c312879d01ceb2bbbb69bc9a1b305b",
+      "kind": "manifest",
+      "contract": {
+        "id": "desktop-control",
+        "title": "<translated-text>",
+        "level": 4,
+        "levelName": "Systems",
+        "tagline": "<translated-text>",
+        "summary": "<translated-text>",
+        "hours": 8,
+        "languages": [
+          "Rust"
+        ],
+        "status": "ready",
+        "source": "core",
+        "author": {
+          "name": "AI Engineering from Scratch",
+          "github": "rohitg00"
+        },
+        "skills": [
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "prerequisites": [
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "youWillBuild": "<translated-text>",
+        "usefulFor": [
+          "<translated-text>"
+        ],
+        "demo": {
+          "command": [
+            "python3",
+            "demo.py"
+          ],
+          "cwd": "solution"
+        },
+        "stages": [
+          {
+            "id": "01-frame-contract",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "rust",
+            "languageWhy": "<translated-text>",
+            "requires": [
+              "rustc"
+            ],
+            "difficulty": "starter",
+            "concepts": [
+              "Frame.validate",
+              "Frame.logical_point"
+            ],
+            "figure": "pj-desktop-control-1",
+            "timeout": 90
+          },
+          {
+            "id": "02-backend-trait",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "rust",
+            "languageWhy": "<translated-text>",
+            "requires": [
+              "rustc"
+            ],
+            "difficulty": "core",
+            "concepts": [
+              "Backend",
+              "FixtureBackend"
+            ],
+            "figure": "pj-desktop-control-2",
+            "timeout": 90
+          },
+          {
+            "id": "03-controller",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "rust",
+            "languageWhy": "<translated-text>",
+            "requires": [
+              "rustc"
+            ],
+            "difficulty": "core",
+            "concepts": [
+              "Controller.capture",
+              "Controller.click",
+              "Controller.type_text"
+            ],
+            "figure": "pj-desktop-control-3",
+            "timeout": 90
+          },
+          {
+            "id": "04-native-adapter",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "rust",
+            "languageWhy": "<translated-text>",
+            "requires": [
+              "rustc"
+            ],
+            "difficulty": "core",
+            "concepts": [
+              "click_argv",
+              "text_argv",
+              "png_dimensions",
+              "MacBackend"
+            ],
+            "figure": "pj-desktop-control-4",
+            "timeout": 90
+          }
+        ],
+        "demos": [
+          {
+            "gif": "media/run.gif",
+            "poster": "media/run.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          },
+          {
+            "gif": "media/output.gif",
+            "poster": "media/output.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          }
+        ]
+      }
+    },
+    "projects/desktop-control/solution/.gitignore": {
+      "sourceSha256": "4c35f70a833476431632c6382bf5ef27cc613ab3893f28ccc8724db77c00ec51",
+      "localizedSha256": "4c35f70a833476431632c6382bf5ef27cc613ab3893f28ccc8724db77c00ec51",
+      "kind": "preserved-contract"
+    },
+    "projects/desktop-control/solution/cli.rs": {
+      "sourceSha256": "60838ec52a63fe693458e518c8a3ff593076e1628b1ea856b0cdea37a58217b1",
+      "localizedSha256": "60838ec52a63fe693458e518c8a3ff593076e1628b1ea856b0cdea37a58217b1",
+      "kind": "preserved-contract"
+    },
+    "projects/desktop-control/solution/demo.py": {
+      "sourceSha256": "e3076852eccab89cee64d30096ac855c7fe3cb503fa9a403a4cd38c1e196e8eb",
+      "localizedSha256": "e3076852eccab89cee64d30096ac855c7fe3cb503fa9a403a4cd38c1e196e8eb",
+      "kind": "preserved-contract"
+    },
+    "projects/desktop-control/solution/main.rs": {
+      "sourceSha256": "76e92730d2b7a36022477cdc7b3c1cb2d9939ac9881c45d810a4ac4410378881",
+      "localizedSha256": "b8e29011e434c6dd3c747d26d5fc4259132ef935444cfee8fe90a53e3d5af434",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "// Desktop Control Backend from the standard library.",
+          "// 仅使用标准库实现的桌面控制后端。"
+        ],
+        [
+          "// Stage contracts live under projects/desktop-control/stages/.",
+          "// 阶段契约见 projects/desktop-control/stages/。"
+        ],
+        [
+          "// The default demo is bounded and uses only the local fixture.",
+          "// 默认演示有执行上限，只使用本地测试夹具，不控制真实桌面。"
+        ],
+        [
+          "// Official references are listed in README.md.",
+          "// 官方参考见 README.md；当前汉化环境无 Rust 编译器，原生执行尚未验证。"
+        ]
+      ]
+    },
+    "projects/desktop-control/solution/samples/actions.tsv": {
+      "sourceSha256": "dbf482050d28235771013f1e2909b98cfa91d88eb300f5885064ec7d2aaa4bb2",
+      "localizedSha256": "dbf482050d28235771013f1e2909b98cfa91d88eb300f5885064ec7d2aaa4bb2",
+      "kind": "preserved-contract"
+    },
+    "projects/desktop-control/stages/01-frame-contract/docs/en.md": {
+      "sourceSha256": "6ad0e74f2a1acd5d20172449beb4e5920bcb1f022365d7c67ba3be0cee8dadbd",
+      "localizedSha256": "e69206b392b3277616591b67755011a0cafe2ca2c58d3a80b5c0024e3c80bbd9",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-desktop-control-1\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py desktop-control --stage 1 --path learning-artifacts/desktop-control --strict\n"
+          ],
+          [
+            "bash",
+            "cd learning-artifacts/desktop-control\nrustc --edition 2021 cli.rs -o desktop-cli\n./desktop-cli samples/actions.tsv desktop-frames\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "Frame.validate, Frame.logical_point"
+          ],
+          [
+            "`",
+            "main.rs"
+          ],
+          [
+            "`",
+            "python3 scripts/project_test.py desktop-control --init learning-artifacts/desktop-control"
+          ]
+        ],
+        "links": [
+          "../../../API.md",
+          "../../../README.md",
+          "https://developer.apple.com/library/archive/documentation/AppleScript/Conceptual/AppleScriptLangGuide/",
+          "https://doc.rust-lang.org/std/process/struct.Command.html",
+          "https://www.w3.org/TR/png-3/"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/desktop-control/stages/01-frame-contract/starter/cli.rs": {
+      "sourceSha256": "60838ec52a63fe693458e518c8a3ff593076e1628b1ea856b0cdea37a58217b1",
+      "localizedSha256": "60838ec52a63fe693458e518c8a3ff593076e1628b1ea856b0cdea37a58217b1",
+      "kind": "preserved-contract"
+    },
+    "projects/desktop-control/stages/01-frame-contract/starter/demo.py": {
+      "sourceSha256": "e3076852eccab89cee64d30096ac855c7fe3cb503fa9a403a4cd38c1e196e8eb",
+      "localizedSha256": "e3076852eccab89cee64d30096ac855c7fe3cb503fa9a403a4cd38c1e196e8eb",
+      "kind": "preserved-contract"
+    },
+    "projects/desktop-control/stages/01-frame-contract/starter/main.rs": {
+      "sourceSha256": "edf9578fb0379d88f452c50316c4c88cd963619f5341e1d750dc603c0ce89def",
+      "localizedSha256": "edf9578fb0379d88f452c50316c4c88cd963619f5341e1d750dc603c0ce89def",
+      "kind": "preserved-contract"
+    },
+    "projects/desktop-control/stages/01-frame-contract/starter/samples/actions.tsv": {
+      "sourceSha256": "dbf482050d28235771013f1e2909b98cfa91d88eb300f5885064ec7d2aaa4bb2",
+      "localizedSha256": "dbf482050d28235771013f1e2909b98cfa91d88eb300f5885064ec7d2aaa4bb2",
+      "kind": "preserved-contract"
+    },
+    "projects/desktop-control/stages/01-frame-contract/tests/stage.rs": {
+      "sourceSha256": "1335fe55b610c1b44a17342f78d0403a1e07bf449c5f8eede923dd4069b46b29",
+      "localizedSha256": "1335fe55b610c1b44a17342f78d0403a1e07bf449c5f8eede923dd4069b46b29",
+      "kind": "preserved-contract"
+    },
+    "projects/desktop-control/stages/02-backend-trait/docs/en.md": {
+      "sourceSha256": "c0cac73fc9aa17092b32f2cf23aa3f879ccf84e6a6939037fd1a657c28cdea98",
+      "localizedSha256": "f20b0c2384d8d8b5d0bcf0985d5548786ac15485cce4611e9b04847fc2ccf3d2",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-desktop-control-2\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py desktop-control --stage 2 --path learning-artifacts/desktop-control --strict\n"
+          ],
+          [
+            "bash",
+            "cd learning-artifacts/desktop-control\nrustc --edition 2021 cli.rs -o desktop-cli\n./desktop-cli samples/actions.tsv desktop-frames\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "Backend, FixtureBackend"
+          ],
+          [
+            "`",
+            "main.rs"
+          ],
+          [
+            "`",
+            "python3 scripts/project_test.py desktop-control --init learning-artifacts/desktop-control"
+          ]
+        ],
+        "links": [
+          "../../../API.md",
+          "../../../README.md",
+          "https://developer.apple.com/library/archive/documentation/AppleScript/Conceptual/AppleScriptLangGuide/",
+          "https://doc.rust-lang.org/std/process/struct.Command.html",
+          "https://www.w3.org/TR/png-3/"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/desktop-control/stages/02-backend-trait/starter/stage-2.md": {
+      "sourceSha256": "ac36ed213974f55e6e87d04df2beb1c56ab0b2840f60d0aaf2f438758b281d8d",
+      "localizedSha256": "21961065340666c23b5a2a37d581cfd83b4ff4eb3e4ecfcef76c09eccd76cf89",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/desktop-control/stages/02-backend-trait/tests/stage.rs": {
+      "sourceSha256": "664d9d57158894e687ccea172829f5483cd4c7ab2fb86f609213e473d78c64c1",
+      "localizedSha256": "664d9d57158894e687ccea172829f5483cd4c7ab2fb86f609213e473d78c64c1",
+      "kind": "preserved-contract"
+    },
+    "projects/desktop-control/stages/03-controller/docs/en.md": {
+      "sourceSha256": "624b24f89d3d193583af219358847670da720928a40915703e70f1c3bb12e5f5",
+      "localizedSha256": "5ea795209604393735df1bd801319c6feb7af61efe210894bb18e105b1311b57",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-desktop-control-3\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py desktop-control --stage 3 --path learning-artifacts/desktop-control --strict\n"
+          ],
+          [
+            "bash",
+            "cd learning-artifacts/desktop-control\nrustc --edition 2021 cli.rs -o desktop-cli\n./desktop-cli samples/actions.tsv desktop-frames\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "Controller.capture, Controller.click, Controller.type_text"
+          ],
+          [
+            "`",
+            "main.rs"
+          ],
+          [
+            "`",
+            "python3 scripts/project_test.py desktop-control --init learning-artifacts/desktop-control"
+          ]
+        ],
+        "links": [
+          "../../../API.md",
+          "../../../README.md",
+          "https://developer.apple.com/library/archive/documentation/AppleScript/Conceptual/AppleScriptLangGuide/",
+          "https://doc.rust-lang.org/std/process/struct.Command.html",
+          "https://www.w3.org/TR/png-3/"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/desktop-control/stages/03-controller/starter/stage-3.md": {
+      "sourceSha256": "8ab3694e81d3782d0c20a8964034d2845a4961b054721b5827559188d5748089",
+      "localizedSha256": "32ca28be11f1b3eba74f5e811b1df6bacc133ce70d97fd97053bdb930f266039",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/desktop-control/stages/03-controller/tests/stage.rs": {
+      "sourceSha256": "b33edab6fd03c478f2a5f29fb1a5fafafe595cfdc92a8488129770a9b5405e61",
+      "localizedSha256": "b33edab6fd03c478f2a5f29fb1a5fafafe595cfdc92a8488129770a9b5405e61",
+      "kind": "preserved-contract"
+    },
+    "projects/desktop-control/stages/04-native-adapter/docs/en.md": {
+      "sourceSha256": "e44f616b99628657fd0e8006b2cc950df1e997821d307f972ae725606c6ad979",
+      "localizedSha256": "368c80b508b50f95fd543c0500422ee7daaf6ad020cc35ba1dc58a62b818e49c",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-desktop-control-4\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py desktop-control --stage 4 --path learning-artifacts/desktop-control --strict\n"
+          ],
+          [
+            "bash",
+            "cd learning-artifacts/desktop-control\nrustc --edition 2021 cli.rs -o desktop-cli\n./desktop-cli samples/actions.tsv desktop-frames\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "Mira \"quoted\""
+          ],
+          [
+            "`",
+            "click_argv, text_argv, png_dimensions, MacBackend"
+          ],
+          [
+            "`",
+            "main.rs"
+          ],
+          [
+            "`",
+            "python3 scripts/project_test.py desktop-control --init learning-artifacts/desktop-control"
+          ]
+        ],
+        "links": [
+          "../../../API.md",
+          "../../../README.md",
+          "https://developer.apple.com/library/archive/documentation/AppleScript/Conceptual/AppleScriptLangGuide/",
+          "https://doc.rust-lang.org/std/process/struct.Command.html",
+          "https://www.w3.org/TR/png-3/"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/desktop-control/stages/04-native-adapter/starter/stage-4.md": {
+      "sourceSha256": "04c6a3f4ca7a44ce4d403c19f3a372d6cb7148badc84ed79205f028916414dca",
+      "localizedSha256": "cd6a67841a4329e5fdf86785e319c979ac2986eb58a10b89dd0422b47b6923bf",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/desktop-control/stages/04-native-adapter/tests/integration.rs": {
+      "sourceSha256": "033e0746ae079a8a9648183b6890b77bc9ee8d68dc068d680b5376d8f9cbb318",
+      "localizedSha256": "033e0746ae079a8a9648183b6890b77bc9ee8d68dc068d680b5376d8f9cbb318",
+      "kind": "preserved-contract"
+    },
+    "projects/desktop-control/stages/04-native-adapter/tests/stage.rs": {
+      "sourceSha256": "f344039f1d15866d265dd162afaccd290fd1e54afa7b8bf33dd7f7c4626535c8",
+      "localizedSha256": "f344039f1d15866d265dd162afaccd290fd1e54afa7b8bf33dd7f7c4626535c8",
+      "kind": "preserved-contract"
+    },
+    "projects/distributed-eval-farm/API.md": {
+      "sourceSha256": "96911142a60b6aa3a8282b4e98c574a30977941d8ade8c86602528fde9c980bd",
+      "localizedSha256": "4269ef1ffc5a8c5af8488f7970e2d7c82e2a7de2a0db8d6361be3947a10b5485",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "json",
+            "[\n  {\"id\":\"case-one\",\"prompt\":\"Safe HTTP read verb?\",\"expected\":\"GET\",\"response\":\" get \"}\n]\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "--crash-after-claim"
+          ],
+          [
+            "`",
+            "--delay-ms"
+          ],
+          [
+            "`",
+            "--lease-ms"
+          ],
+          [
+            "`",
+            "--now-ms"
+          ],
+          [
+            "`",
+            "ClaimShard"
+          ],
+          [
+            "`",
+            "CompleteShard"
+          ],
+          [
+            "`",
+            "InitFarm"
+          ],
+          [
+            "`",
+            "Parallel"
+          ],
+          [
+            "`",
+            "Partition"
+          ],
+          [
+            "`",
+            "RunFarm"
+          ],
+          [
+            "`",
+            "Submit"
+          ],
+          [
+            "`",
+            "WorkShard"
+          ],
+          [
+            "`",
+            "demo --input FILE"
+          ],
+          [
+            "`",
+            "exec.CommandContext"
+          ],
+          [
+            "`",
+            "farm.json"
+          ],
+          [
+            "`",
+            "go build -o farm ."
+          ],
+          [
+            "`",
+            "init --store DIR --input FILE --shards N"
+          ],
+          [
+            "`",
+            "run --store DIR --input FILE --shards N --workers W"
+          ],
+          [
+            "`",
+            "status --store DIR"
+          ],
+          [
+            "`",
+            "worker --store DIR --worker-id NAME"
+          ],
+          [
+            "`",
+            "worker_processes"
+          ]
+        ],
+        "links": [],
+        "math": [],
+        "headings": [
+          "#"
+        ],
+        "tableRows": 7,
+        "listItems": 0
+      }
+    },
+    "projects/distributed-eval-farm/README.md": {
+      "sourceSha256": "95bebbe66672440c3a3b7c3c975a4631db48dff2eab0a4c5067ea7fc9a19d53f",
+      "localizedSha256": "1b77b6a4ac92ed70fd95c9dbad97921c83f3f55df8e63422347766b32b4aef08",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "bash",
+            "python3 scripts/project_test.py distributed-eval-farm --init /tmp/distributed-eval-farm-work\npython3 scripts/project_test.py distributed-eval-farm --stage 1 --path /tmp/distributed-eval-farm-work --strict\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py distributed-eval-farm --all --path /tmp/distributed-eval-farm-work --strict --report /tmp/farm-learner.json\ncd /tmp/distributed-eval-farm-work\ngo build -o /tmp/farm-learner .\n/tmp/farm-learner demo --input samples/cases.json --workers 2 --shards 4\n"
+          ],
+          [
+            "bash",
+            "cd projects/distributed-eval-farm/solution\ngo build -o /tmp/eval-farm .\nSTORE=$(mktemp -d /tmp/eval-farm.XXXXXX)\n/tmp/eval-farm init --store \"$STORE\" --input samples/cases.json --shards 4\n/tmp/eval-farm run --store \"$STORE\" --input samples/cases.json --shards 4 --workers 2\n/tmp/eval-farm status --store \"$STORE\"\n"
+          ],
+          [
+            "bash",
+            "CRASH_STORE=$(mktemp -d /tmp/eval-crash.XXXXXX)\n/tmp/eval-farm init --store \"$CRASH_STORE\" --input samples/cases.json --shards 1\n/tmp/eval-farm worker --store \"$CRASH_STORE\" --worker-id old --now-ms 100 --lease-ms 10 --crash-after-claim\n/tmp/eval-farm status --store \"$CRASH_STORE\"\n/tmp/eval-farm run --store \"$CRASH_STORE\" --input samples/cases.json --shards 1 --workers 2 --now-ms 110 --lease-ms 10\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py distributed-eval-farm --all --solution --strict\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "--delay-ms"
+          ],
+          [
+            "`",
+            "run"
+          ],
+          [
+            "`",
+            "stage1.go"
+          ]
+        ],
+        "links": [
+          "../durable-agent-jobs/README.md",
+          "API.md",
+          "https://go.dev/blog/pipelines",
+          "https://go.dev/tour/",
+          "stages/01-partition-stable-case-identities/docs/en.md",
+          "stages/02-fence-each-shard-lease/docs/en.md",
+          "stages/03-accept-idempotent-completion-receipts/docs/en.md",
+          "stages/04-run-a-bounded-local-worker-pool/docs/en.md"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 4
+      }
+    },
+    "projects/distributed-eval-farm/media/output.gif": {
+      "sourceSha256": "c86679ade5b225efa85ada9bb1530d2196516a5db5302cb3c48d2d6107e9dc1d",
+      "localizedSha256": "c86679ade5b225efa85ada9bb1530d2196516a5db5302cb3c48d2d6107e9dc1d",
+      "kind": "original-recording"
+    },
+    "projects/distributed-eval-farm/media/output.json": {
+      "sourceSha256": "c31ffe4a53fb6a88026d012c6fea03bba0997bca524afb81ef5a107b0b66edca",
+      "localizedSha256": "c31ffe4a53fb6a88026d012c6fea03bba0997bca524afb81ef5a107b0b66edca",
+      "kind": "original-recording"
+    },
+    "projects/distributed-eval-farm/media/output.png": {
+      "sourceSha256": "6eb6782e9434a37256e11ed3c0d43c170e3ad5a822ac8579fba40f13ccc4e8f5",
+      "localizedSha256": "6eb6782e9434a37256e11ed3c0d43c170e3ad5a822ac8579fba40f13ccc4e8f5",
+      "kind": "original-recording"
+    },
+    "projects/distributed-eval-farm/media/run.gif": {
+      "sourceSha256": "d60212e55efa00c053fedb78fcd17996a42f06bd5a5af53274960c7a4604c924",
+      "localizedSha256": "d60212e55efa00c053fedb78fcd17996a42f06bd5a5af53274960c7a4604c924",
+      "kind": "original-recording"
+    },
+    "projects/distributed-eval-farm/media/run.json": {
+      "sourceSha256": "a76a51fa5930a5e44ef12d5b41b2c802cc6966451b80d417ea9cdc370f2649fd",
+      "localizedSha256": "a76a51fa5930a5e44ef12d5b41b2c802cc6966451b80d417ea9cdc370f2649fd",
+      "kind": "original-recording"
+    },
+    "projects/distributed-eval-farm/media/run.png": {
+      "sourceSha256": "389af4dfb60849782e35eef885841d8d02b384282f6e997be317653737b6f926",
+      "localizedSha256": "389af4dfb60849782e35eef885841d8d02b384282f6e997be317653737b6f926",
+      "kind": "original-recording"
+    },
+    "projects/distributed-eval-farm/project.json": {
+      "sourceSha256": "273c19e25aef0f789ca87c8123d0e225ca7949f5db7433fa6b239a828a35a104",
+      "localizedSha256": "b09637445ce16fa6335a6dca7c1dda1ffcb0a104f8446036070d3cb302a87713",
+      "kind": "manifest",
+      "contract": {
+        "id": "distributed-eval-farm",
+        "title": "<translated-text>",
+        "level": 5,
+        "levelName": "Frontier",
+        "tagline": "<translated-text>",
+        "summary": "<translated-text>",
+        "usefulFor": [
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "youWillBuild": "<translated-text>",
+        "hours": 8,
+        "languages": [
+          "Go"
+        ],
+        "status": "ready",
+        "source": "core",
+        "author": {
+          "name": "AI Engineering from Scratch",
+          "github": "rohitg00"
+        },
+        "skills": [
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "prerequisites": [
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "inspiredBy": [],
+        "demo": {
+          "command": [
+            "go",
+            "run",
+            ".",
+            "demo"
+          ],
+          "cwd": "solution"
+        },
+        "stages": [
+          {
+            "id": "01-partition-stable-case-identities",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "go",
+            "difficulty": "starter",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ]
+          },
+          {
+            "id": "02-fence-each-shard-lease",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "go",
+            "difficulty": "core",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ]
+          },
+          {
+            "id": "03-accept-idempotent-completion-receipts",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "go",
+            "difficulty": "core",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ]
+          },
+          {
+            "id": "04-run-a-bounded-local-worker-pool",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "go",
+            "difficulty": "core",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ],
+            "timeout": 120
+          }
+        ],
+        "demos": [
+          {
+            "gif": "media/run.gif",
+            "poster": "media/run.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          },
+          {
+            "gif": "media/output.gif",
+            "poster": "media/output.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          }
+        ]
+      }
+    },
+    "projects/distributed-eval-farm/solution/go.mod": {
+      "sourceSha256": "92acb016359a197e476da3a39083b199789d619a283b0edf54bd956fc77b51c9",
+      "localizedSha256": "92acb016359a197e476da3a39083b199789d619a283b0edf54bd956fc77b51c9",
+      "kind": "preserved-contract"
+    },
+    "projects/distributed-eval-farm/solution/lock_other.go": {
+      "sourceSha256": "ba32e899ce3974be287e0a32dd8cc42770f0df05d5e6ad0b0bc40f2cc63c8894",
+      "localizedSha256": "ba32e899ce3974be287e0a32dd8cc42770f0df05d5e6ad0b0bc40f2cc63c8894",
+      "kind": "preserved-contract"
+    },
+    "projects/distributed-eval-farm/solution/lock_unix.go": {
+      "sourceSha256": "37cfca3d4c4e14839faa8d76389abd35fab7fe099c27af1ecdda956fd3d31915",
+      "localizedSha256": "37cfca3d4c4e14839faa8d76389abd35fab7fe099c27af1ecdda956fd3d31915",
+      "kind": "preserved-contract"
+    },
+    "projects/distributed-eval-farm/solution/main.go": {
+      "sourceSha256": "ffec96a3ead182409bc61e74c2da949e63b6844539bbd9a40976a0222394075b",
+      "localizedSha256": "6f1956f7da3950249483e4453e09a631833b5768de1dad20c7da4cffba0798d3",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "\"persistent same-host directory\"",
+          "\"同主机持久化目录\""
+        ],
+        [
+          "\"recorded prediction JSON array\"",
+          "\"已记录预测的 JSON 数组\""
+        ],
+        [
+          "\"fixed partition count\"",
+          "\"固定分片数\""
+        ],
+        [
+          "\"maximum concurrent worker processes\"",
+          "\"最大并发工作进程数\""
+        ],
+        [
+          "\"lease owner\"",
+          "\"租约持有者\""
+        ],
+        [
+          "\"logical test clock; default is wall-clock milliseconds\"",
+          "\"测试用逻辑时钟；默认使用实际时钟的毫秒值\""
+        ],
+        [
+          "\"claim duration\"",
+          "\"领取后的租约时长\""
+        ],
+        [
+          "\"injected delay after claim for failure experiments\"",
+          "\"领取后注入的延迟，用于故障实验\""
+        ],
+        [
+          "\"abruptly exit86 after durable claim\"",
+          "\"领取信息持久化后立即以 86 退出\""
+        ]
+      ]
+    },
+    "projects/distributed-eval-farm/solution/samples/cases.json": {
+      "sourceSha256": "c3d42f8eb47dadd4d9312d75fec29c5cbb7a4754d74c1f1c0f500f2f1f5e7490",
+      "localizedSha256": "c3d42f8eb47dadd4d9312d75fec29c5cbb7a4754d74c1f1c0f500f2f1f5e7490",
+      "kind": "preserved-contract"
+    },
+    "projects/distributed-eval-farm/solution/stage1.go": {
+      "sourceSha256": "48e2ffa336b97d25bb9bacf4b0f4e08c9e50e93d4e6ca2a44badc0f4641bd0fb",
+      "localizedSha256": "48e2ffa336b97d25bb9bacf4b0f4e08c9e50e93d4e6ca2a44badc0f4641bd0fb",
+      "kind": "preserved-contract"
+    },
+    "projects/distributed-eval-farm/solution/stage2.go": {
+      "sourceSha256": "98c0c43bd53266bcaf2b8a2dbddaf85b4d35e5704fec6f6f3dc099bfd7bbba92",
+      "localizedSha256": "98c0c43bd53266bcaf2b8a2dbddaf85b4d35e5704fec6f6f3dc099bfd7bbba92",
+      "kind": "preserved-contract"
+    },
+    "projects/distributed-eval-farm/solution/stage3.go": {
+      "sourceSha256": "fe68fa5e8bf94b813cf4061b6f76f4d1a00cb1768799fe01892f382795c7c601",
+      "localizedSha256": "fe68fa5e8bf94b813cf4061b6f76f4d1a00cb1768799fe01892f382795c7c601",
+      "kind": "preserved-contract"
+    },
+    "projects/distributed-eval-farm/solution/stage4.go": {
+      "sourceSha256": "672cbc4bdcd49764dbe9740534c4d0b4b2c9d659225b002cee2db2200abc12d5",
+      "localizedSha256": "672cbc4bdcd49764dbe9740534c4d0b4b2c9d659225b002cee2db2200abc12d5",
+      "kind": "preserved-contract"
+    },
+    "projects/distributed-eval-farm/solution/store.go": {
+      "sourceSha256": "2a52f1b8b3f3ac6673c23f550ad83e238c352c13d13f3e2fbbb648f2b3a5625b",
+      "localizedSha256": "2a52f1b8b3f3ac6673c23f550ad83e238c352c13d13f3e2fbbb648f2b3a5625b",
+      "kind": "preserved-contract"
+    },
+    "projects/distributed-eval-farm/solution/types.go": {
+      "sourceSha256": "7262362471512249379cf3b989da8e1068f421f0ff4be1717affc0a820c97ac7",
+      "localizedSha256": "7262362471512249379cf3b989da8e1068f421f0ff4be1717affc0a820c97ac7",
+      "kind": "preserved-contract"
+    },
+    "projects/distributed-eval-farm/solution/worker.go": {
+      "sourceSha256": "c14482850ab4c58ba06bc2b9aaafb2fac2f40d12aa045d8392488332fdbb6ecf",
+      "localizedSha256": "c14482850ab4c58ba06bc2b9aaafb2fac2f40d12aa045d8392488332fdbb6ecf",
+      "kind": "preserved-contract"
+    },
+    "projects/distributed-eval-farm/stages/01-partition-stable-case-identities/docs/en.md": {
+      "sourceSha256": "f0be26f331dcba61f955f39fc01a62b848dd562ccd205ef431d31196ab4feeb4",
+      "localizedSha256": "e11cefabe0caf00c68bd66432d9a066f2ea07bbc63c3a64bec79698ef5988198",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-distributed-eval-farm-1\n"
+          ],
+          [
+            "go",
+            "func Partition(ids []string, shards int) ([][]string, error)\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py distributed-eval-farm --stage 1 --path /tmp/distributed-eval-farm-work --strict\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "hash/fnv"
+          ],
+          [
+            "`",
+            "stage1.go"
+          ],
+          [
+            "`",
+            "types.go"
+          ]
+        ],
+        "links": [
+          "../../../API.md",
+          "https://go.dev/blog/pipelines",
+          "https://pkg.go.dev/context",
+          "https://pkg.go.dev/os"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/distributed-eval-farm/stages/01-partition-stable-case-identities/starter/go.mod": {
+      "sourceSha256": "92acb016359a197e476da3a39083b199789d619a283b0edf54bd956fc77b51c9",
+      "localizedSha256": "92acb016359a197e476da3a39083b199789d619a283b0edf54bd956fc77b51c9",
+      "kind": "preserved-contract"
+    },
+    "projects/distributed-eval-farm/stages/01-partition-stable-case-identities/starter/lock_other.go": {
+      "sourceSha256": "ba32e899ce3974be287e0a32dd8cc42770f0df05d5e6ad0b0bc40f2cc63c8894",
+      "localizedSha256": "ba32e899ce3974be287e0a32dd8cc42770f0df05d5e6ad0b0bc40f2cc63c8894",
+      "kind": "preserved-contract"
+    },
+    "projects/distributed-eval-farm/stages/01-partition-stable-case-identities/starter/lock_unix.go": {
+      "sourceSha256": "37cfca3d4c4e14839faa8d76389abd35fab7fe099c27af1ecdda956fd3d31915",
+      "localizedSha256": "37cfca3d4c4e14839faa8d76389abd35fab7fe099c27af1ecdda956fd3d31915",
+      "kind": "preserved-contract"
+    },
+    "projects/distributed-eval-farm/stages/01-partition-stable-case-identities/starter/main.go": {
+      "sourceSha256": "ffec96a3ead182409bc61e74c2da949e63b6844539bbd9a40976a0222394075b",
+      "localizedSha256": "6f1956f7da3950249483e4453e09a631833b5768de1dad20c7da4cffba0798d3",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "\"persistent same-host directory\"",
+          "\"同主机持久化目录\""
+        ],
+        [
+          "\"recorded prediction JSON array\"",
+          "\"已记录预测的 JSON 数组\""
+        ],
+        [
+          "\"fixed partition count\"",
+          "\"固定分片数\""
+        ],
+        [
+          "\"maximum concurrent worker processes\"",
+          "\"最大并发工作进程数\""
+        ],
+        [
+          "\"lease owner\"",
+          "\"租约持有者\""
+        ],
+        [
+          "\"logical test clock; default is wall-clock milliseconds\"",
+          "\"测试用逻辑时钟；默认使用实际时钟的毫秒值\""
+        ],
+        [
+          "\"claim duration\"",
+          "\"领取后的租约时长\""
+        ],
+        [
+          "\"injected delay after claim for failure experiments\"",
+          "\"领取后注入的延迟，用于故障实验\""
+        ],
+        [
+          "\"abruptly exit86 after durable claim\"",
+          "\"领取信息持久化后立即以 86 退出\""
+        ]
+      ]
+    },
+    "projects/distributed-eval-farm/stages/01-partition-stable-case-identities/starter/samples/cases.json": {
+      "sourceSha256": "c3d42f8eb47dadd4d9312d75fec29c5cbb7a4754d74c1f1c0f500f2f1f5e7490",
+      "localizedSha256": "c3d42f8eb47dadd4d9312d75fec29c5cbb7a4754d74c1f1c0f500f2f1f5e7490",
+      "kind": "preserved-contract"
+    },
+    "projects/distributed-eval-farm/stages/01-partition-stable-case-identities/starter/stage1.go": {
+      "sourceSha256": "6b7d7a2c4eabed657f75bba77774a594e0c85f7a936d919175d19a0cd51ff8fc",
+      "localizedSha256": "6b7d7a2c4eabed657f75bba77774a594e0c85f7a936d919175d19a0cd51ff8fc",
+      "kind": "preserved-contract"
+    },
+    "projects/distributed-eval-farm/stages/01-partition-stable-case-identities/starter/store.go": {
+      "sourceSha256": "2a52f1b8b3f3ac6673c23f550ad83e238c352c13d13f3e2fbbb648f2b3a5625b",
+      "localizedSha256": "2a52f1b8b3f3ac6673c23f550ad83e238c352c13d13f3e2fbbb648f2b3a5625b",
+      "kind": "preserved-contract"
+    },
+    "projects/distributed-eval-farm/stages/01-partition-stable-case-identities/starter/types.go": {
+      "sourceSha256": "7262362471512249379cf3b989da8e1068f421f0ff4be1717affc0a820c97ac7",
+      "localizedSha256": "7262362471512249379cf3b989da8e1068f421f0ff4be1717affc0a820c97ac7",
+      "kind": "preserved-contract"
+    },
+    "projects/distributed-eval-farm/stages/01-partition-stable-case-identities/starter/worker.go": {
+      "sourceSha256": "c14482850ab4c58ba06bc2b9aaafb2fac2f40d12aa045d8392488332fdbb6ecf",
+      "localizedSha256": "c14482850ab4c58ba06bc2b9aaafb2fac2f40d12aa045d8392488332fdbb6ecf",
+      "kind": "preserved-contract"
+    },
+    "projects/distributed-eval-farm/stages/01-partition-stable-case-identities/tests/stage_test.go": {
+      "sourceSha256": "43de68da5c8a7ac5cde2f18d82a1ce8ffb3d34c63a4e110d353aca65b0f99419",
+      "localizedSha256": "43de68da5c8a7ac5cde2f18d82a1ce8ffb3d34c63a4e110d353aca65b0f99419",
+      "kind": "preserved-contract"
+    },
+    "projects/distributed-eval-farm/stages/02-fence-each-shard-lease/docs/en.md": {
+      "sourceSha256": "414da3d2a102ba3edb3bec3687fbdb84c72c4613c479b961ebb878b57b3b752b",
+      "localizedSha256": "2c9ed75967d47199f124a9b3c75912e2192b322d4a48ef841815125c69b5b136",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-distributed-eval-farm-2\n"
+          ],
+          [
+            "go",
+            "func Acquire(l *Lease, worker string, now, ttl int64) error\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py distributed-eval-farm --stage 2 --path /tmp/distributed-eval-farm-work --strict\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "Acquire"
+          ],
+          [
+            "`",
+            "ClaimShard"
+          ],
+          [
+            "`",
+            "farm worker --crash-after-claim"
+          ],
+          [
+            "`",
+            "ledger.lock"
+          ],
+          [
+            "`",
+            "stage2.go"
+          ],
+          [
+            "`",
+            "types.go"
+          ]
+        ],
+        "links": [
+          "../../../API.md",
+          "https://go.dev/blog/pipelines",
+          "https://pkg.go.dev/context",
+          "https://pkg.go.dev/os"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/distributed-eval-farm/stages/02-fence-each-shard-lease/starter/stage2.go": {
+      "sourceSha256": "9b925b15ae3c560b7209d03271f8c6590c797d52c67658dcad894f24030eb9d9",
+      "localizedSha256": "9b925b15ae3c560b7209d03271f8c6590c797d52c67658dcad894f24030eb9d9",
+      "kind": "preserved-contract"
+    },
+    "projects/distributed-eval-farm/stages/02-fence-each-shard-lease/tests/stage_test.go": {
+      "sourceSha256": "62ef4e501852b235c058feaa75daa5fc8bb7c2278156821cc6af651d9dd0caac",
+      "localizedSha256": "62ef4e501852b235c058feaa75daa5fc8bb7c2278156821cc6af651d9dd0caac",
+      "kind": "preserved-contract"
+    },
+    "projects/distributed-eval-farm/stages/03-accept-idempotent-completion-receipts/docs/en.md": {
+      "sourceSha256": "49b2249ff5f46cfe5ad959b7985e8a8e46221d9d096700f0924e97df88dee9bf",
+      "localizedSha256": "1c7d2e28bfd7559d7b20f02f5dee5d605eb3f79b716ea14ec1f83c765536b22e",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-distributed-eval-farm-3\n"
+          ],
+          [
+            "go",
+            "func Submit(l *Lease, worker string, version int, now int64, result string) error\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py distributed-eval-farm --stage 3 --path /tmp/distributed-eval-farm-work --strict\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            " get "
+          ],
+          [
+            "`",
+            "GET"
+          ],
+          [
+            "`",
+            "no"
+          ],
+          [
+            "`",
+            "stage3.go"
+          ],
+          [
+            "`",
+            "types.go"
+          ],
+          [
+            "`",
+            "yes"
+          ]
+        ],
+        "links": [
+          "../../../API.md",
+          "https://go.dev/blog/pipelines",
+          "https://pkg.go.dev/context",
+          "https://pkg.go.dev/os"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/distributed-eval-farm/stages/03-accept-idempotent-completion-receipts/starter/stage3.go": {
+      "sourceSha256": "17a59a9bf799f0bac6c826e5ed995596dd1f118b5afe530dcfe3fd10d4dde926",
+      "localizedSha256": "17a59a9bf799f0bac6c826e5ed995596dd1f118b5afe530dcfe3fd10d4dde926",
+      "kind": "preserved-contract"
+    },
+    "projects/distributed-eval-farm/stages/03-accept-idempotent-completion-receipts/tests/stage_test.go": {
+      "sourceSha256": "b33614fbc8c76c5ed832e818478977eea0aacbbeb838331f7d56297f8cb41663",
+      "localizedSha256": "b33614fbc8c76c5ed832e818478977eea0aacbbeb838331f7d56297f8cb41663",
+      "kind": "preserved-contract"
+    },
+    "projects/distributed-eval-farm/stages/04-run-a-bounded-local-worker-pool/docs/en.md": {
+      "sourceSha256": "411278b4714c7a702b1be3f3f1d6f4afa233c3f1d7d9361e2c3bb373de6e4811",
+      "localizedSha256": "e5144bf396026867ab02af3909be599c34df5c9917621aca512e1e2e126192b4",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-distributed-eval-farm-4\n"
+          ],
+          [
+            "go",
+            "func Parallel(ctx context.Context, ids []string, workers int, run func(context.Context, string) (string, error)) ([]Item, error)\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py distributed-eval-farm --stage 4 --path /tmp/distributed-eval-farm-work --strict\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "run"
+          ],
+          [
+            "`",
+            "stage4.go"
+          ],
+          [
+            "`",
+            "types.go"
+          ]
+        ],
+        "links": [
+          "../../../API.md",
+          "https://go.dev/blog/pipelines",
+          "https://pkg.go.dev/context",
+          "https://pkg.go.dev/os"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/distributed-eval-farm/stages/04-run-a-bounded-local-worker-pool/starter/stage4.go": {
+      "sourceSha256": "e8eb5ef02927be5abfe8cf80678eafcacef3e7c9babb4a1f81c7ff6a02efaf31",
+      "localizedSha256": "e8eb5ef02927be5abfe8cf80678eafcacef3e7c9babb4a1f81c7ff6a02efaf31",
+      "kind": "preserved-contract"
+    },
+    "projects/distributed-eval-farm/stages/04-run-a-bounded-local-worker-pool/tests/integration_test.go": {
+      "sourceSha256": "47f6cb91cd79e848a562e605cf925e0e0f2401c29d7c45ac18b154f4bec912ae",
+      "localizedSha256": "47f6cb91cd79e848a562e605cf925e0e0f2401c29d7c45ac18b154f4bec912ae",
+      "kind": "preserved-contract"
+    },
+    "projects/distributed-eval-farm/stages/04-run-a-bounded-local-worker-pool/tests/stage_test.go": {
+      "sourceSha256": "99b48e73e9baeaafa5551d9b509e3814a8579afdb3951888225def02049018ad",
+      "localizedSha256": "99b48e73e9baeaafa5551d9b509e3814a8579afdb3951888225def02049018ad",
+      "kind": "preserved-contract"
+    }
+  },
+  "figures": [
+    {
+      "path": "site/figures/projects/csv-sql-question-workbench.js",
+      "sourceSha256": "ac80028fa7d95babf86f14e1b34e5107fbd4af503cc4628dd5dd116eaf9827e4",
+      "localizedSha256": "886e2c51e0d0fae571239afadf9447b90cbf290c1fadf10ea13d1bc66724ae4e",
+      "edits": [
+        {
+          "offset": 83,
+          "before": "\"Import a table without guessing away errors\"",
+          "after": "\"导入表格并明确拒绝错误\"",
+          "afterOffset": 83
+        },
+        {
+          "offset": 164,
+          "before": "\"Observe input\"",
+          "after": "\"观察输入\"",
+          "afterOffset": 132
+        },
+        {
+          "offset": 197,
+          "before": "\"Inspect the supplied values and name the contract.\"",
+          "after": "\"检查提供的值，说明对应契约。\"",
+          "afterOffset": 156
+        },
+        {
+          "offset": 278,
+          "before": "\"Compute state\"",
+          "after": "\"计算状态\"",
+          "afterOffset": 201
+        },
+        {
+          "offset": 372,
+          "before": "\"Check the result\"",
+          "after": "\"检查结果\"",
+          "afterOffset": 286
+        },
+        {
+          "offset": 408,
+          "before": "\"Change one input below, predict the outcome and explain the computed difference.\"",
+          "after": "\"改变下方一项输入，先预测结果，再解释计算出的差异。\"",
+          "afterOffset": 310
+        },
+        {
+          "offset": 515,
+          "before": "\"An original worked mechanism. Inputs update the calculation immediately; the project tests verify the actual implementation.\"",
+          "after": "\"原创机制示例：输入变化立即更新计算，项目测试负责验证实际实现。\"",
+          "afterOffset": 362
+        },
+        {
+          "offset": 680,
+          "before": "'CSV column values (comma separated)'",
+          "after": "'CSV 列值（逗号分隔）'",
+          "afterOffset": 434
+        },
+        {
+          "offset": 1138,
+          "before": "'All nonempty cells fit the conservative numeric contract: REAL column.'",
+          "after": "'所有非空单元格都符合保守的数值契约：列类型为 REAL。'",
+          "afterOffset": 869
+        },
+        {
+          "offset": 1211,
+          "before": "'Preserve TEXT when any cell is nonnumeric, zero-padded, too large or underflows.'",
+          "after": "'任一单元格非数值、带前导零、过大或下溢时，保留为 TEXT。'",
+          "afterOffset": 900
+        },
+        {
+          "offset": 1310,
+          "before": "'Nonempty cells'",
+          "after": "'非空单元格'",
+          "afterOffset": 949
+        },
+        {
+          "offset": 1355,
+          "before": "'Inferred type'",
+          "after": "'推断类型'",
+          "afterOffset": 985
+        },
+        {
+          "offset": 1410,
+          "before": "'Cell'",
+          "after": "'单元格'",
+          "afterOffset": 1031
+        },
+        {
+          "offset": 1417,
+          "before": "'Safe numeric conversion?'",
+          "after": "'可安全转为数值？'",
+          "afterOffset": 1037
+        },
+        {
+          "offset": 1481,
+          "before": "'preserve text'",
+          "after": "'保留文本'",
+          "afterOffset": 1085
+        },
+        {
+          "offset": 1591,
+          "before": "\"Translate a small question into an inspectable plan\"",
+          "after": "\"将简单问题转成可检查的计划\"",
+          "afterOffset": 1186
+        },
+        {
+          "offset": 1680,
+          "before": "\"Observe input\"",
+          "after": "\"观察输入\"",
+          "afterOffset": 1237
+        },
+        {
+          "offset": 1713,
+          "before": "\"Inspect the supplied values and name the contract.\"",
+          "after": "\"检查提供的值，说明对应契约。\"",
+          "afterOffset": 1261
+        },
+        {
+          "offset": 1794,
+          "before": "\"Compute state\"",
+          "after": "\"计算状态\"",
+          "afterOffset": 1306
+        },
+        {
+          "offset": 1887,
+          "before": "\"Check the result\"",
+          "after": "\"检查结果\"",
+          "afterOffset": 1390
+        },
+        {
+          "offset": 1923,
+          "before": "\"Change one input below, predict the outcome and explain the computed difference.\"",
+          "after": "\"改变下方一项输入，先预测结果，再解释计算出的差异。\"",
+          "afterOffset": 1414
+        },
+        {
+          "offset": 2030,
+          "before": "\"An original worked mechanism. Inputs update the calculation immediately; the project tests verify the actual implementation.\"",
+          "after": "\"原创机制示例：输入变化立即更新计算，项目测试负责验证实际实现。\"",
+          "afterOffset": 1466
+        },
+        {
+          "offset": 2199,
+          "before": "'Aggregate'",
+          "after": "'聚合'",
+          "afterOffset": 1542
+        },
+        {
+          "offset": 2265,
+          "before": "'Sum'",
+          "after": "'求和'",
+          "afterOffset": 1601
+        },
+        {
+          "offset": 2293,
+          "before": "'Count'",
+          "after": "'计数'",
+          "afterOffset": 1628
+        },
+        {
+          "offset": 2323,
+          "before": "'Column'",
+          "after": "'列'",
+          "afterOffset": 1655
+        },
+        {
+          "offset": 2534,
+          "before": "'Proposal ready for independent execution checks.'",
+          "after": "'提案已就绪，等待独立的执行检查。'",
+          "afterOffset": 1861
+        },
+        {
+          "offset": 2585,
+          "before": "'Reject: SUM needs a numeric column.'",
+          "after": "'拒绝：SUM 需要数值列。'",
+          "afterOffset": 1880
+        },
+        {
+          "offset": 2639,
+          "before": "'Decision'",
+          "after": "'判断'",
+          "afterOffset": 1912
+        },
+        {
+          "offset": 2692,
+          "before": "'Step'",
+          "after": "'步骤'",
+          "afterOffset": 1959
+        },
+        {
+          "offset": 2699,
+          "before": "'Value'",
+          "after": "'值'",
+          "afterOffset": 1964
+        },
+        {
+          "offset": 2715,
+          "before": "'Resolve'",
+          "after": "'解析'",
+          "afterOffset": 1976
+        },
+        {
+          "offset": 2735,
+          "before": "'Check type'",
+          "after": "'检查类型'",
+          "afterOffset": 1991
+        },
+        {
+          "offset": 2882,
+          "before": "'no query produced'",
+          "after": "'未生成查询'",
+          "afterOffset": 2132
+        },
+        {
+          "offset": 2996,
+          "before": "\"Execute a proposal inside a read-only boundary\"",
+          "after": "\"在只读边界内执行提案\"",
+          "afterOffset": 2234
+        },
+        {
+          "offset": 3080,
+          "before": "\"Observe input\"",
+          "after": "\"观察输入\"",
+          "afterOffset": 2282
+        },
+        {
+          "offset": 3113,
+          "before": "\"Inspect the supplied values and name the contract.\"",
+          "after": "\"检查提供的值，说明对应契约。\"",
+          "afterOffset": 2306
+        },
+        {
+          "offset": 3194,
+          "before": "\"Compute state\"",
+          "after": "\"计算状态\"",
+          "afterOffset": 2351
+        },
+        {
+          "offset": 3310,
+          "before": "\"Check the result\"",
+          "after": "\"检查结果\"",
+          "afterOffset": 2458
+        },
+        {
+          "offset": 3346,
+          "before": "\"Change one input below, predict the outcome and explain the computed difference.\"",
+          "after": "\"改变下方一项输入，先预测结果，再解释计算出的差异。\"",
+          "afterOffset": 2482
+        },
+        {
+          "offset": 3453,
+          "before": "\"An original worked mechanism. Inputs update the calculation immediately; the project tests verify the actual implementation.\"",
+          "after": "\"原创机制示例：输入变化立即更新计算，项目测试负责验证实际实现。\"",
+          "afterOffset": 2534
+        },
+        {
+          "offset": 3617,
+          "before": "'Matching rows'",
+          "after": "'匹配行数'",
+          "afterOffset": 2605
+        },
+        {
+          "offset": 3696,
+          "before": "'Returned row budget'",
+          "after": "'返回行数额度'",
+          "afterOffset": 2675
+        },
+        {
+          "offset": 3781,
+          "before": "'Proposal requests a write'",
+          "after": "'提案请求写入'",
+          "afterOffset": 2747
+        },
+        {
+          "offset": 3926,
+          "before": "'Authorizer denies the statement before an effect.'",
+          "after": "'授权器在任何效果发生前拒绝语句。'",
+          "afterOffset": 2873
+        },
+        {
+          "offset": 3993,
+          "before": "'Result is explicitly marked truncated.'",
+          "after": "'结果明确标记为已截断。'",
+          "afterOffset": 2907
+        },
+        {
+          "offset": 4034,
+          "before": "'Complete result fits the row budget.'",
+          "after": "'完整结果未超出行数额度。'",
+          "afterOffset": 2921
+        },
+        {
+          "offset": 4089,
+          "before": "'Returned'",
+          "after": "'已返回'",
+          "afterOffset": 2952
+        },
+        {
+          "offset": 4123,
+          "before": "'Hidden by cap'",
+          "after": "'因上限未显示'",
+          "afterOffset": 2981
+        },
+        {
+          "offset": 4153,
+          "before": "'query rejected'",
+          "after": "'查询已拒绝'",
+          "afterOffset": 3004
+        },
+        {
+          "offset": 4212,
+          "before": "'Matching rows'",
+          "after": "'匹配行数'",
+          "afterOffset": 3054
+        },
+        {
+          "offset": 4249,
+          "before": "'Returned rows'",
+          "after": "'返回行数'",
+          "afterOffset": 3082
+        },
+        {
+          "offset": 4374,
+          "before": "\"Publish an answer another developer can reproduce\"",
+          "after": "\"发布其他开发者可复现的答案\"",
+          "afterOffset": 3198
+        },
+        {
+          "offset": 4461,
+          "before": "\"Observe input\"",
+          "after": "\"观察输入\"",
+          "afterOffset": 3249
+        },
+        {
+          "offset": 4494,
+          "before": "\"Inspect the supplied values and name the contract.\"",
+          "after": "\"检查提供的值，说明对应契约。\"",
+          "afterOffset": 3273
+        },
+        {
+          "offset": 4575,
+          "before": "\"Compute state\"",
+          "after": "\"计算状态\"",
+          "afterOffset": 3318
+        },
+        {
+          "offset": 4660,
+          "before": "\"Check the result\"",
+          "after": "\"检查结果\"",
+          "afterOffset": 3394
+        },
+        {
+          "offset": 4696,
+          "before": "\"Change one input below, predict the outcome and explain the computed difference.\"",
+          "after": "\"改变下方一项输入，先预测结果，再解释计算出的差异。\"",
+          "afterOffset": 3418
+        },
+        {
+          "offset": 4803,
+          "before": "\"An original worked mechanism. Inputs update the calculation immediately; the project tests verify the actual implementation.\"",
+          "after": "\"原创机制示例：输入变化立即更新计算，项目测试负责验证实际实现。\"",
+          "afterOffset": 3470
+        },
+        {
+          "offset": 4967,
+          "before": "'Last West record: units'",
+          "after": "'最后一条 West 记录的 units'",
+          "afterOffset": 3541
+        },
+        {
+          "offset": 5088,
+          "before": "'Changing one source record changes the West aggregate and the grand total.'",
+          "after": "'修改一条来源记录，会同时改变 West 聚合值和总计。'",
+          "afterOffset": 3658
+        },
+        {
+          "offset": 5181,
+          "before": "'Grand total'",
+          "after": "'总计'",
+          "afterOffset": 3704
+        },
+        {
+          "offset": 5303,
+          "before": "'Evidence'",
+          "after": "'证据'",
+          "afterOffset": 3817
+        },
+        {
+          "offset": 5314,
+          "before": "'Value'",
+          "after": "'值'",
+          "afterOffset": 3822
+        },
+        {
+          "offset": 5330,
+          "before": "'West records'",
+          "after": "'West 记录'",
+          "afterOffset": 3834
+        },
+        {
+          "offset": 5366,
+          "before": "'Executed aggregate'",
+          "after": "'实际执行的聚合'",
+          "afterOffset": 3865
+        }
+      ]
+    },
+    {
+      "path": "site/figures/projects/dataset-split-auditor.js",
+      "sourceSha256": "6f133237f991152b57f0d1de639ee591da164248a5684d82368a3ea3d66967dc",
+      "localizedSha256": "c3e31a5750c43afab0841f62132b21fae1048d97447bc8115b766a8d753cf2a8",
+      "edits": [
+        {
+          "offset": 33,
+          "before": "// Generated from Python 3.14 str.casefold(), Unicode 16.0.0.",
+          "after": "// 由 Python 3.14 str.casefold()、Unicode 16.0.0 生成；本批保留原始映射表。",
+          "afterOffset": 33
+        },
+        {
+          "offset": 97,
+          "before": "// Ranges encode [first, last, stride, delta]; exceptions include full folds.",
+          "after": "// 范围编码为 [first, last, stride, delta]；例外表包含完整折叠。",
+          "afterOffset": 96
+        },
+        {
+          "offset": 4818,
+          "before": "\"Text must be a string.\"",
+          "after": "\"文本必须是字符串（Text must be a string.）。\"",
+          "afterOffset": 4788
+        },
+        {
+          "offset": 4963,
+          "before": "\"An unpaired surrogate cannot be encoded as Python UTF-8 text.\"",
+          "after": "\"未配对代理项无法编码为 Python UTF-8 文本（An unpaired surrogate cannot be encoded as Python UTF-8 text.）。\"",
+          "afterOffset": 4944
+        },
+        {
+          "offset": 5105,
+          "before": "// Python split includes U+001C..U+001F and U+0085, but excludes U+FEFF.",
+          "after": "// Python split 包括 U+001C..U+001F 和 U+0085，不包括 U+FEFF。",
+          "afterOffset": 5116
+        },
+        {
+          "offset": 5501,
+          "before": "\"SHA-256 requires Web Crypto. Open this page on HTTPS or localhost.\"",
+          "after": "\"SHA-256 requires Web Crypto. SHA-256 需要 Web Crypto，请通过 HTTPS 或 localhost 打开此页面。\"",
+          "afterOffset": 5494
+        },
+        {
+          "offset": 6526,
+          "before": "\"Each visible record needs a nonempty id, group and text.\"",
+          "after": "\"每条可见记录的 id、group 和 text 均须非空（Each visible record needs a nonempty id, group and text.）。\"",
+          "afterOffset": 6532
+        },
+        {
+          "offset": 6652,
+          "before": "\"Duplicate record id \"",
+          "after": "\"重复记录 ID（Duplicate record id \"",
+          "afterOffset": 6689
+        },
+        {
+          "offset": 6705,
+          "before": "\". Give each row its own identity before auditing.\"",
+          "after": "\"）。审计前请为每一行分配独立标识。\"",
+          "afterOffset": 6750
+        },
+        {
+          "offset": 7038,
+          "before": "\"Group: \"",
+          "after": "\"组别：\"",
+          "afterOffset": 7051
+        },
+        {
+          "offset": 7174,
+          "before": "\"Train\"",
+          "after": "\"训练集\"",
+          "afterOffset": 7183
+        },
+        {
+          "offset": 7232,
+          "before": "\"Test\"",
+          "after": "\"测试集\"",
+          "afterOffset": 7239
+        },
+        {
+          "offset": 8469,
+          "before": "\"Same normalized content\"",
+          "after": "\"规范化内容相同\"",
+          "afterOffset": 8475
+        },
+        {
+          "offset": 8515,
+          "before": "\"Same original group\"",
+          "after": "\"原始组别相同\"",
+          "afterOffset": 8505
+        },
+        {
+          "offset": 9078,
+          "before": "\"Group: \"",
+          "after": "\"组别：\"",
+          "afterOffset": 9055
+        },
+        {
+          "offset": 9139,
+          "before": "\"Content overlaps. \"",
+          "after": "\"内容重叠。\"",
+          "afterOffset": 9112
+        },
+        {
+          "offset": 9177,
+          "before": "\"Group overlaps.\"",
+          "after": "\"组别重叠。\"",
+          "afterOffset": 9137
+        },
+        {
+          "offset": 9305,
+          "before": "\"Shared fingerprints\"",
+          "after": "\"共有指纹\"",
+          "afterOffset": 9255
+        },
+        {
+          "offset": 9390,
+          "before": "\"Shared groups\"",
+          "after": "\"共有组别\"",
+          "afterOffset": 9325
+        },
+        {
+          "offset": 9467,
+          "before": "\"Audit clean\"",
+          "after": "\"审计无泄漏\"",
+          "afterOffset": 9393
+        },
+        {
+          "offset": 9537,
+          "before": "\"Evidence\"",
+          "after": "\"证据\"",
+          "afterOffset": 9457
+        },
+        {
+          "offset": 9549,
+          "before": "\"Exact key\"",
+          "after": "\"准确的键\"",
+          "afterOffset": 9463
+        },
+        {
+          "offset": 9562,
+          "before": "\"Train record IDs\"",
+          "after": "\"训练记录 ID\"",
+          "afterOffset": 9471
+        },
+        {
+          "offset": 9582,
+          "before": "\"Test record IDs\"",
+          "after": "\"测试记录 ID\"",
+          "afterOffset": 9482
+        },
+        {
+          "offset": 9652,
+          "before": "\"Content\"",
+          "after": "\"内容\"",
+          "afterOffset": 9544
+        },
+        {
+          "offset": 9784,
+          "before": "\"Group\"",
+          "after": "\"组别\"",
+          "afterOffset": 9671
+        },
+        {
+          "offset": 10181,
+          "before": "\"Row counts must be whole numbers between zero and twelve.\"",
+          "after": "\"行数必须为 0 到 12 的整数（Row counts must be whole numbers between zero and twelve.）。\"",
+          "afterOffset": 10065
+        },
+        {
+          "offset": 10346,
+          "before": "\"Watch two records become fingerprints\"",
+          "after": "\"观察两条记录如何变成指纹\"",
+          "afterOffset": 10249
+        },
+        {
+          "offset": 10400,
+          "before": "\"Follow actual text through normalization, Unicode casefolding, whitespace collapse and SHA-256.\"",
+          "after": "\"跟踪实际文本依次经过规范化、Unicode 大小写折叠、空白合并和 SHA-256。\"",
+          "afterOffset": 10278
+        },
+        {
+          "offset": 10526,
+          "before": "\"Will these two different text strings produce the same content fingerprint?\"",
+          "after": "\"这两个不同的文本字符串会生成相同内容指纹吗？\"",
+          "afterOffset": 10351
+        },
+        {
+          "offset": 10637,
+          "before": "\"Record A text\"",
+          "after": "\"记录 A 文本\"",
+          "afterOffset": 10409
+        },
+        {
+          "offset": 10684,
+          "before": "\"Record B text\"",
+          "after": "\"记录 B 文本\"",
+          "afterOffset": 10450
+        },
+        {
+          "offset": 10750,
+          "before": "\"German casefold\"",
+          "after": "\"德语大小写折叠\"",
+          "afterOffset": 10510
+        },
+        {
+          "offset": 10839,
+          "before": "\"Greek sigma\"",
+          "after": "\"希腊字母 sigma\"",
+          "afterOffset": 10591
+        },
+        {
+          "offset": 10911,
+          "before": "\"Compatible forms\"",
+          "after": "\"兼容形式\"",
+          "afterOffset": 10662
+        },
+        {
+          "offset": 10993,
+          "before": "\"Different meaning\"",
+          "after": "\"不同含义\"",
+          "afterOffset": 10732
+        },
+        {
+          "offset": 11496,
+          "before": "\"Raw text\"",
+          "after": "\"原始文本\"",
+          "afterOffset": 11222
+        },
+        {
+          "offset": 11515,
+          "before": "\"Start with two independent record IDs. Quotation marks make spaces and control characters visible.\"",
+          "after": "\"从两个独立记录 ID 开始；引号让空格和控制字符可见。\"",
+          "afterOffset": 11237
+        },
+        {
+          "offset": 11629,
+          "before": "\"Normalize compatible forms\"",
+          "after": "\"规范化兼容形式\"",
+          "afterOffset": 11280
+        },
+        {
+          "offset": 11667,
+          "before": "\"NFKC replaces compatible Unicode forms, such as full-width letters, before comparing content.\"",
+          "after": "\"比较内容前，NFKC 先替换全角字母等 Unicode 兼容形式。\"",
+          "afterOffset": 11299
+        },
+        {
+          "offset": 11776,
+          "before": "\"Apply Unicode casefold\"",
+          "after": "\"执行 Unicode 大小写折叠\"",
+          "afterOffset": 11348
+        },
+        {
+          "offset": 11812,
+          "before": "\"Python casefold can expand characters: ß becomes ss, and both Greek sigma forms become σ.\"",
+          "after": "\"Python casefold 可能展开字符：ß 变成 ss，两种希腊字母 sigma 都变成 σ。\"",
+          "afterOffset": 11378
+        },
+        {
+          "offset": 11917,
+          "before": "\"Collapse whitespace\"",
+          "after": "\"合并空白\"",
+          "afterOffset": 11444
+        },
+        {
+          "offset": 11954,
+          "before": "\"Python split/join reduces whitespace runs to a single space and removes leading and trailing whitespace.\"",
+          "after": "\"Python 的 split/join 将连续空白合为一个空格，并去掉首尾空白。\"",
+          "afterOffset": 11466
+        },
+        {
+          "offset": 12074,
+          "before": "\"Encode UTF-8\"",
+          "after": "\"编码为 UTF-8\"",
+          "afterOffset": 11522
+        },
+        {
+          "offset": 12098,
+          "before": "\"Hash these actual UTF-8 bytes. Byte values are hexadecimal; equal byte sequences produce equal digests.\"",
+          "after": "\"对这些实际 UTF-8 字节计算哈希。字节值以十六进制显示；相同字节序列得到相同摘要。\"",
+          "afterOffset": 11543
+        },
+        {
+          "offset": 12217,
+          "before": "\"Compute SHA-256\"",
+          "after": "\"计算 SHA-256\"",
+          "afterOffset": 11602
+        },
+        {
+          "offset": 12251,
+          "before": "\"The full SHA-256 digests below are computed by Web Crypto from the normalized UTF-8 bytes.\"",
+          "after": "\"下方完整 SHA-256 摘要由 Web Crypto 对规范化后的 UTF-8 字节实际计算。\"",
+          "afterOffset": 11631
+        },
+        {
+          "offset": 12622,
+          "before": "\"(zero bytes)\"",
+          "after": "\"（零字节）\"",
+          "afterOffset": 11960
+        },
+        {
+          "offset": 12650,
+          "before": "\"Record identity stays \"",
+          "after": "\"记录标识保持为 \"",
+          "afterOffset": 11981
+        },
+        {
+          "offset": 12876,
+          "before": "\"Two record identities share one content fingerprint.\"",
+          "after": "\"两个记录标识对应同一个内容指纹。\"",
+          "afterOffset": 12193
+        },
+        {
+          "offset": 12933,
+          "before": "\"The records have different content fingerprints.\"",
+          "after": "\"两条记录的内容指纹不同。\"",
+          "afterOffset": 12214
+        },
+        {
+          "offset": 13014,
+          "before": "\"Same normalized content\"",
+          "after": "\"规范化内容相同\"",
+          "afterOffset": 12259
+        },
+        {
+          "offset": 13311,
+          "before": "\"Find the records behind an overlap\"",
+          "after": "\"找出重叠背后的记录\"",
+          "afterOffset": 12540
+        },
+        {
+          "offset": 13362,
+          "before": "\"Content equality and group equality are separate checks. Every connection names the two records involved.\"",
+          "after": "\"内容相等与组别相等分别检查，每条连线都标明涉及的两条记录。\"",
+          "afterOffset": 12566
+        },
+        {
+          "offset": 13498,
+          "before": "\"Do these partitions share normalized content, a group identity, both, or neither?\"",
+          "after": "\"这些分区共享规范化内容、组标识、两者都有，还是都没有？\"",
+          "afterOffset": 12626
+        },
+        {
+          "offset": 13626,
+          "before": "\"Train record ID\"",
+          "after": "\"训练记录 ID\"",
+          "afterOffset": 12700
+        },
+        {
+          "offset": 13677,
+          "before": "\"Train group\"",
+          "after": "\"训练组别\"",
+          "afterOffset": 12743
+        },
+        {
+          "offset": 13734,
+          "before": "\"Train text\"",
+          "after": "\"训练文本\"",
+          "afterOffset": 12793
+        },
+        {
+          "offset": 13790,
+          "before": "\"Test record ID\"",
+          "after": "\"测试记录 ID\"",
+          "afterOffset": 12843
+        },
+        {
+          "offset": 13846,
+          "before": "\"Test group\"",
+          "after": "\"测试组别\"",
+          "afterOffset": 12892
+        },
+        {
+          "offset": 13893,
+          "before": "\"Test text\"",
+          "after": "\"测试文本\"",
+          "afterOffset": 12933
+        },
+        {
+          "offset": 13979,
+          "before": "\"Content only\"",
+          "after": "\"仅内容重叠\"",
+          "afterOffset": 13014
+        },
+        {
+          "offset": 14026,
+          "before": "\"Group only\"",
+          "after": "\"仅组别重叠\"",
+          "afterOffset": 13054
+        },
+        {
+          "offset": 14122,
+          "before": "\"Both\"",
+          "after": "\"两者重叠\"",
+          "afterOffset": 13145
+        },
+        {
+          "offset": 14186,
+          "before": "\"Clean\"",
+          "after": "\"无泄漏\"",
+          "afterOffset": 13209
+        },
+        {
+          "offset": 14252,
+          "before": "\"Duplicate ID\"",
+          "after": "\"重复 ID\"",
+          "afterOffset": 13273
+        },
+        {
+          "offset": 14647,
+          "before": "\"Validate record identities\"",
+          "after": "\"校验记录标识\"",
+          "afterOffset": 13661
+        },
+        {
+          "offset": 14702,
+          "before": "\"Both records have nonempty IDs, groups and text. Their IDs are unique across the combined train and test arrays.\"",
+          "after": "\"两条记录的 ID、组别和文本均非空，ID 在合并后的训练与测试数组中也保持唯一。\"",
+          "afterOffset": 13696
+        },
+        {
+          "offset": 14881,
+          "before": "\"Validated record IDs\"",
+          "after": "\"已校验记录 ID\"",
+          "afterOffset": 13803
+        },
+        {
+          "offset": 14987,
+          "before": "\"Index normalized content\"",
+          "after": "\"为规范化内容建立索引\"",
+          "afterOffset": 13897
+        },
+        {
+          "offset": 15040,
+          "before": "\"Each partition indexes full SHA-256 fingerprints. The record IDs remain separate even when their content keys match.\"",
+          "after": "\"每个分区都为完整 SHA-256 指纹建立索引。即使内容键相同，记录 ID 也保持独立。\"",
+          "afterOffset": 13936
+        },
+        {
+          "offset": 15265,
+          "before": "\"Normalized text: \"",
+          "after": "\"规范化文本：\"",
+          "afterOffset": 14089
+        },
+        {
+          "offset": 15356,
+          "before": "\"Partition\"",
+          "after": "\"分区\"",
+          "afterOffset": 14169
+        },
+        {
+          "offset": 15369,
+          "before": "\"Record ID\"",
+          "after": "\"记录 ID\"",
+          "afterOffset": 14175
+        },
+        {
+          "offset": 15382,
+          "before": "\"Normalized text\"",
+          "after": "\"规范化文本\"",
+          "afterOffset": 14184
+        },
+        {
+          "offset": 15401,
+          "before": "\"Content key\"",
+          "after": "\"内容键\"",
+          "afterOffset": 14193
+        },
+        {
+          "offset": 15679,
+          "before": "\"Index original groups\"",
+          "after": "\"为原始组别建立索引\"",
+          "afterOffset": 14463
+        },
+        {
+          "offset": 15729,
+          "before": "\"Group keys use the original strings. Unlike text fingerprints, group IDs are never casefolded or trimmed.\"",
+          "after": "\"组键使用原始字符串。与文本指纹不同，组 ID 从不进行大小写折叠或首尾空白移除。\"",
+          "afterOffset": 14501
+        },
+        {
+          "offset": 15953,
+          "before": "\"Group membership for \"",
+          "after": "\"记录的组归属：\"",
+          "afterOffset": 14660
+        },
+        {
+          "offset": 16046,
+          "before": "\"Intersect the two indexes\"",
+          "after": "\"对两份索引求交集\"",
+          "afterOffset": 14739
+        },
+        {
+          "offset": 16100,
+          "before": "\"Only keys present in both partitions are leaks. Follow each connection to inspect the named records.\"",
+          "after": "\"只有同时出现在两个分区的键才构成泄漏，沿连线检查对应记录。\"",
+          "afterOffset": 14776
+        },
+        {
+          "offset": 16247,
+          "before": "\"Both intersections are empty.\"",
+          "after": "\"两种交集均为空。\"",
+          "afterOffset": 14852
+        },
+        {
+          "offset": 16281,
+          "before": "\"The shared keys identify the records to investigate.\"",
+          "after": "\"共有键指向需要检查的记录。\"",
+          "afterOffset": 14865
+        },
+        {
+          "offset": 17184,
+          "before": "\"Members: \"",
+          "after": "\"成员：\"",
+          "afterOffset": 15729
+        },
+        {
+          "offset": 17363,
+          "before": "\"Move whole groups across the split\"",
+          "after": "\"将完整组移入分区\"",
+          "afterOffset": 15902
+        },
+        {
+          "offset": 17414,
+          "before": "\"A stable hash chooses a partition for every group. Group size changes the resulting row balance, not its bucket.\"",
+          "after": "\"稳定哈希为每组选择分区；组大小改变最终行数比例，不改变其哈希桶值。\"",
+          "afterOffset": 15927
+        },
+        {
+          "offset": 17557,
+          "before": "\"Where will each incident group go, and why can the row split differ from the requested threshold?\"",
+          "after": "\"每个事件组将进入哪一侧？行数比例为何可能与请求的阈值不同？\"",
+          "afterOffset": 15991
+        },
+        {
+          "offset": 17698,
+          "before": "\"Split seed\"",
+          "after": "\"划分种子\"",
+          "afterOffset": 16064
+        },
+        {
+          "offset": 17761,
+          "before": "\"Requested test threshold\"",
+          "after": "\"请求的测试阈值\"",
+          "afterOffset": 16121
+        },
+        {
+          "offset": 17880,
+          "before": "\"Rows in incident-A\"",
+          "after": "\"incident-A 行数\"",
+          "afterOffset": 16223
+        },
+        {
+          "offset": 17930,
+          "before": "\"Rows in incident-B\"",
+          "after": "\"incident-B 行数\"",
+          "afterOffset": 16268
+        },
+        {
+          "offset": 17997,
+          "before": "\"Reverse input row order\"",
+          "after": "\"反转输入行序\"",
+          "afterOffset": 16330
+        },
+        {
+          "offset": 18103,
+          "before": "\"Nine plus one\"",
+          "after": "\"九行加一行\"",
+          "afterOffset": 16419
+        },
+        {
+          "offset": 18143,
+          "before": "\"Change the seed\"",
+          "after": "\"修改种子\"",
+          "afterOffset": 16451
+        },
+        {
+          "offset": 18215,
+          "before": "\"Equal group sizes\"",
+          "after": "\"组大小相同\"",
+          "afterOffset": 16512
+        },
+        {
+          "offset": 18297,
+          "before": "\"Reverse rows\"",
+          "after": "\"反转行序\"",
+          "afterOffset": 16582
+        },
+        {
+          "offset": 18355,
+          "before": "\"No records\"",
+          "after": "\"没有记录\"",
+          "afterOffset": 16632
+        },
+        {
+          "offset": 18518,
+          "before": "\"Seed must be text.\"",
+          "after": "\"种子必须为文本（Seed must be text.）。\"",
+          "afterOffset": 16789
+        },
+        {
+          "offset": 18676,
+          "before": "\"Test fraction must be strictly between zero and one.\"",
+          "after": "\"测试比例必须严格位于 0 和 1 之间（Test fraction must be strictly between zero and one.）。\"",
+          "afterOffset": 16957
+        },
+        {
+          "offset": 19328,
+          "before": "\"Read the input rows\"",
+          "after": "\"读取输入行\"",
+          "afterOffset": 17631
+        },
+        {
+          "offset": 19376,
+          "before": "\"These are the actual synthetic fixture records. Row order may change, but each ID and group travels together.\"",
+          "after": "\"这些是实际的合成测试记录。行序可以变化，但每个 ID 与组归属始终一起传递。\"",
+          "afterOffset": 17665
+        },
+        {
+          "offset": 19531,
+          "before": "\"Input rows\"",
+          "after": "\"输入行\"",
+          "afterOffset": 17749
+        },
+        {
+          "offset": 19593,
+          "before": "\"Input records\"",
+          "after": "\"输入记录\"",
+          "afterOffset": 17804
+        },
+        {
+          "offset": 19677,
+          "before": "\"Collect whole groups\"",
+          "after": "\"收集完整组\"",
+          "afterOffset": 17879
+        },
+        {
+          "offset": 19726,
+          "before": "\"Collect all record IDs with the same incident key. The split will make one decision for each complete group.\"",
+          "after": "\"收集同一事件键下的所有记录 ID，划分会为每个完整组作出一次决定。\"",
+          "afterOffset": 17913
+        },
+        {
+          "offset": 19882,
+          "before": "\"Groups awaiting a decision\"",
+          "after": "\"等待决定的组\"",
+          "afterOffset": 17994
+        },
+        {
+          "offset": 19996,
+          "before": "\"Distinct groups\"",
+          "after": "\"不同组数\"",
+          "afterOffset": 18088
+        },
+        {
+          "offset": 20084,
+          "before": "\"Hash seed, NUL and group\"",
+          "after": "\"对种子、NUL 和组计算哈希\"",
+          "afterOffset": 18165
+        },
+        {
+          "offset": 20137,
+          "before": "\"The separator is a real NUL byte, shown escaped below. Interpret the full digest as an integer and divide by 2^256.\"",
+          "after": "\"分隔符是实际的 NUL 字节，下方以转义形式显示。将完整摘要解释为整数，再除以 2^256。\"",
+          "afterOffset": 18208
+        },
+        {
+          "offset": 20391,
+          "before": "\"Stable group buckets\"",
+          "after": "\"稳定组桶值\"",
+          "afterOffset": 18393
+        },
+        {
+          "offset": 20546,
+          "before": "\"Group\"",
+          "after": "\"组别\"",
+          "afterOffset": 18533
+        },
+        {
+          "offset": 20555,
+          "before": "\"Exact hash input\"",
+          "after": "\"准确哈希输入\"",
+          "afterOffset": 18539
+        },
+        {
+          "offset": 20575,
+          "before": "\"Full SHA-256\"",
+          "after": "\"完整 SHA-256\"",
+          "afterOffset": 18549
+        },
+        {
+          "offset": 20591,
+          "before": "\"Bucket\"",
+          "after": "\"桶值\"",
+          "afterOffset": 18563
+        },
+        {
+          "offset": 20752,
+          "before": "\"Compare with the threshold\"",
+          "after": "\"与阈值比较\"",
+          "afterOffset": 18720
+        },
+        {
+          "offset": 20807,
+          "before": "\"A group enters test only when its bucket is strictly less than the requested threshold. Equality goes to train.\"",
+          "after": "\"只有桶值严格小于请求阈值时，整组才进入测试集；相等时进入训练集。\"",
+          "afterOffset": 18754
+        },
+        {
+          "offset": 20943,
+          "before": "\"test if bucket < \"",
+          "after": "\"进入 test 的条件：bucket < \"",
+          "afterOffset": 18811
+        },
+        {
+          "offset": 20987,
+          "before": "\"; otherwise train\"",
+          "after": "\"；否则进入 train\"",
+          "afterOffset": 18859
+        },
+        {
+          "offset": 21052,
+          "before": "\"Computed decisions\"",
+          "after": "\"计算出的决定\"",
+          "afterOffset": 18918
+        },
+        {
+          "offset": 21436,
+          "before": "\"Move \"",
+          "after": "\"移动 \"",
+          "afterOffset": 19290
+        },
+        {
+          "offset": 21514,
+          "before": "\" records move together into \"",
+          "after": "\" 条记录一起进入 \"",
+          "afterOffset": 19366
+        },
+        {
+          "offset": 21570,
+          "before": "\". No row is moved separately to force a balanced count.\"",
+          "after": "\"。不会为了强行平衡数量而单独移动某行。\"",
+          "afterOffset": 19403
+        },
+        {
+          "offset": 21927,
+          "before": "\"Not moved yet\"",
+          "after": "\"尚未移动\"",
+          "afterOffset": 19724
+        },
+        {
+          "offset": 21969,
+          "before": "\"Train\"",
+          "after": "\"训练集\"",
+          "afterOffset": 19757
+        },
+        {
+          "offset": 21979,
+          "before": "\"Test\"",
+          "after": "\"测试集\"",
+          "afterOffset": 19765
+        },
+        {
+          "offset": 22048,
+          "before": "\"Bucket: \"",
+          "after": "\"桶值：\"",
+          "afterOffset": 19833
+        },
+        {
+          "offset": 22717,
+          "before": "\"Measure the resulting rows\"",
+          "after": "\"统计最终行数\"",
+          "afterOffset": 20497
+        },
+        {
+          "offset": 22770,
+          "before": "\"The threshold controls each group's decision, not an exact row quota. An empty partition is a valid split result and must be reported honestly.\"",
+          "after": "\"阈值控制每组的分区决定，不能保证精确行数配额。空分区也可以是合法划分结果，必须如实报告。\"",
+          "afterOffset": 20530
+        },
+        {
+          "offset": 22964,
+          "before": "\" of \"",
+          "after": "\" / \"",
+          "afterOffset": 20625
+        },
+        {
+          "offset": 22987,
+          "before": "\" rows are in test (\"",
+          "after": "\" 行进入 test（\"",
+          "afterOffset": 20647
+        },
+        {
+          "offset": 23048,
+          "before": "\"%).\"",
+          "after": "\"%）。\"",
+          "afterOffset": 20699
+        },
+        {
+          "offset": 23056,
+          "before": "\"No records were supplied; there is no observed row fraction.\"",
+          "after": "\"没有提供记录，无法计算实际行数比例。\"",
+          "afterOffset": 20707
+        },
+        {
+          "offset": 23233,
+          "before": "\"Train\"",
+          "after": "\"训练集\"",
+          "afterOffset": 20842
+        },
+        {
+          "offset": 23243,
+          "before": "\"Test\"",
+          "after": "\"测试集\"",
+          "afterOffset": 20850
+        },
+        {
+          "offset": 23354,
+          "before": "\"Bucket: \"",
+          "after": "\"桶值：\"",
+          "afterOffset": 20960
+        },
+        {
+          "offset": 23446,
+          "before": "\"Train rows\"",
+          "after": "\"训练行数\"",
+          "afterOffset": 21047
+        },
+        {
+          "offset": 23492,
+          "before": "\"Test rows\"",
+          "after": "\"测试行数\"",
+          "afterOffset": 21087
+        },
+        {
+          "offset": 23536,
+          "before": "\"Groups crossing partitions\"",
+          "after": "\"跨分区组数\"",
+          "afterOffset": 21126
+        },
+        {
+          "offset": 23618,
+          "before": "\"Requested test threshold\"",
+          "after": "\"请求的测试阈值\"",
+          "afterOffset": 21187
+        },
+        {
+          "offset": 23758,
+          "before": "\"Observed test row share\"",
+          "after": "\"实际测试行占比\"",
+          "afterOffset": 21310
+        },
+        {
+          "offset": 24346,
+          "before": "\"Decide whether the split is usable\"",
+          "after": "\"判断划分是否可用\"",
+          "afterOffset": 21882
+        },
+        {
+          "offset": 24397,
+          "before": "\"Count the visible records, inspect leakage evidence, and require two nonempty partitions plus a clean audit.\"",
+          "after": "\"统计可见记录并检查泄漏证据，要求两个分区都非空，且审计无泄漏。\"",
+          "afterOffset": 21907
+        },
+        {
+          "offset": 24536,
+          "before": "\"Can a clean audit still produce an unusable evaluation split?\"",
+          "after": "\"无泄漏的审计结果也可能对应不可用的评估划分吗？\"",
+          "afterOffset": 21969
+        },
+        {
+          "offset": 24646,
+          "before": "\"Train record count\"",
+          "after": "\"训练记录数\"",
+          "afterOffset": 22041
+        },
+        {
+          "offset": 24693,
+          "before": "\"Test record count\"",
+          "after": "\"测试记录数\"",
+          "afterOffset": 22075
+        },
+        {
+          "offset": 24749,
+          "before": "\"Train group\"",
+          "after": "\"训练组别\"",
+          "afterOffset": 22119
+        },
+        {
+          "offset": 24798,
+          "before": "\"Test group\"",
+          "after": "\"测试组别\"",
+          "afterOffset": 22161
+        },
+        {
+          "offset": 24854,
+          "before": "\"Text in each train record\"",
+          "after": "\"每条训练记录的文本\"",
+          "afterOffset": 22211
+        },
+        {
+          "offset": 24923,
+          "before": "\"Text in each test record\"",
+          "after": "\"每条测试记录的文本\"",
+          "afterOffset": 22264
+        },
+        {
+          "offset": 25013,
+          "before": "\"Clean and nonempty\"",
+          "after": "\"无泄漏且非空\"",
+          "afterOffset": 22339
+        },
+        {
+          "offset": 25058,
+          "before": "\"Empty test\"",
+          "after": "\"测试集为空\"",
+          "afterOffset": 22372
+        },
+        {
+          "offset": 25116,
+          "before": "\"Content leakage\"",
+          "after": "\"内容泄漏\"",
+          "afterOffset": 22425
+        },
+        {
+          "offset": 25197,
+          "before": "\"Group leakage\"",
+          "after": "\"组别泄漏\"",
+          "afterOffset": 22495
+        },
+        {
+          "offset": 25262,
+          "before": "\"Both empty\"",
+          "after": "\"两侧均空\"",
+          "afterOffset": 22551
+        },
+        {
+          "offset": 26149,
+          "before": "\"Train rows\"",
+          "after": "\"训练行数\"",
+          "afterOffset": 23432
+        },
+        {
+          "offset": 26201,
+          "before": "\"Test rows\"",
+          "after": "\"测试行数\"",
+          "afterOffset": 23478
+        },
+        {
+          "offset": 26261,
+          "before": "\"Train groups\"",
+          "after": "\"训练组数\"",
+          "afterOffset": 23533
+        },
+        {
+          "offset": 26317,
+          "before": "\"Test groups\"",
+          "after": "\"测试组数\"",
+          "afterOffset": 23581
+        },
+        {
+          "offset": 26483,
+          "before": "\"Train is nonempty\"",
+          "after": "\"训练集非空\"",
+          "afterOffset": 23740
+        },
+        {
+          "offset": 26611,
+          "before": "\"Test is nonempty\"",
+          "after": "\"测试集非空\"",
+          "afterOffset": 23856
+        },
+        {
+          "offset": 26737,
+          "before": "\"Audit is clean\"",
+          "after": "\"审计无泄漏\"",
+          "afterOffset": 23971
+        },
+        {
+          "offset": 26828,
+          "before": "\" content leaks; \"",
+          "after": "\" 项内容泄漏；\"",
+          "afterOffset": 24053
+        },
+        {
+          "offset": 26884,
+          "before": "\" group leaks\"",
+          "after": "\" 项组别泄漏\"",
+          "afterOffset": 24100
+        },
+        {
+          "offset": 27024,
+          "before": "\"Read the visible records\"",
+          "after": "\"读取可见记录\"",
+          "afterOffset": 24234
+        },
+        {
+          "offset": 27065,
+          "before": "\"Only these rows enter the report. Setting a count to zero removes those records entirely.\"",
+          "after": "\"只有这些行进入报告，将数量设为零就会完全移除对应记录。\"",
+          "afterOffset": 24257
+        },
+        {
+          "offset": 27186,
+          "before": "\"Count rows and groups\"",
+          "after": "\"统计行数与组数\"",
+          "afterOffset": 24316
+        },
+        {
+          "offset": 27224,
+          "before": "\"Count rows directly, then count the unique original group strings in each partition. Empty partitions have zero groups.\"",
+          "after": "\"直接统计行数，再统计每个分区中不同的原始组字符串。空分区的组数为零。\"",
+          "afterOffset": 24340
+        },
+        {
+          "offset": 27392,
+          "before": "\"Inspect cross-partition evidence\"",
+          "after": "\"检查跨分区证据\"",
+          "afterOffset": 24423
+        },
+        {
+          "offset": 27441,
+          "before": "\"Run the content and group intersections against only the visible rows. Empty partitions cannot contribute an overlap.\"",
+          "after": "\"仅根据可见行计算内容与组的交集，空分区不会贡献重叠项。\"",
+          "afterOffset": 24447
+        },
+        {
+          "offset": 27618,
+          "before": "\"Require all three conditions\"",
+          "after": "\"要求三个条件全部成立\"",
+          "afterOffset": 24534
+        },
+        {
+          "offset": 27675,
+          "before": "\"A clean audit alone is insufficient. Both partitions must contain records, and neither kind of leakage may be present.\"",
+          "after": "\"仅仅审计无泄漏还不够：两个分区必须都有记录，且两种泄漏均不存在。\"",
+          "afterOffset": 24573
+        },
+        {
+          "offset": 27844,
+          "before": "\"Required conditions\"",
+          "after": "\"必需条件\"",
+          "afterOffset": 24656
+        },
+        {
+          "offset": 28013,
+          "before": "\"Write the audit receipt\"",
+          "after": "\"写入审计凭据\"",
+          "afterOffset": 24810
+        },
+        {
+          "offset": 28065,
+          "before": "\"This is the complete report produced from the visible records. The usable field is the Boolean conjunction of all three conditions.\"",
+          "after": "\"这是从可见记录生成的完整报告，usable 字段取三个条件的布尔合取。\"",
+          "afterOffset": 24845
+        },
+        {
+          "offset": 28238,
+          "before": "\"This split passes the three usability conditions.\"",
+          "after": "\"该划分满足三项可用性条件。\"",
+          "afterOffset": 24922
+        },
+        {
+          "offset": 28292,
+          "before": "\"This split is not usable; inspect the failed condition.\"",
+          "after": "\"该划分不可用，请检查未通过的条件。\"",
+          "afterOffset": 24940
+        },
+        {
+          "offset": 28398,
+          "before": "\"Required conditions\"",
+          "after": "\"必需条件\"",
+          "afterOffset": 25008
+        },
+        {
+          "offset": 28472,
+          "before": "\"Usable\"",
+          "after": "\"是否可用\"",
+          "afterOffset": 25067
+        }
+      ]
+    },
+    {
+      "path": "site/figures/projects/desktop-control.js",
+      "sourceSha256": "a77b8314cb7ca1f2147363f44a21574ed4032a93c3b48cc5fdc43ece14a5f596",
+      "localizedSha256": "c7eaa49b724b7794e07d70e2b4256f26dda4d758f7a07717134b7cf5e40b0ae7",
+      "edits": [
+        {
+          "offset": 87,
+          "before": "\"Screenshot x coordinate\"",
+          "after": "\"截图 x 坐标\"",
+          "afterOffset": 87
+        },
+        {
+          "offset": 240,
+          "before": "\"Screenshot y coordinate\"",
+          "after": "\"截图 y 坐标\"",
+          "afterOffset": 224
+        },
+        {
+          "offset": 397,
+          "before": "\"Display scale\"",
+          "after": "\"显示缩放倍率\"",
+          "afterOffset": 365
+        },
+        {
+          "offset": 545,
+          "before": "\"Captured generation\"",
+          "after": "\"已捕获的 generation\"",
+          "afterOffset": 506
+        },
+        {
+          "offset": 696,
+          "before": "\"Required generation\"",
+          "after": "\"所需 generation\"",
+          "afterOffset": 653
+        },
+        {
+          "offset": 845,
+          "before": "\"Calls already consumed\"",
+          "after": "\"已消耗调用数\"",
+          "afterOffset": 796
+        },
+        {
+          "offset": 1136,
+          "before": "\"Reject point outside frame\"",
+          "after": "\"拒绝帧外坐标\"",
+          "afterOffset": 1071
+        },
+        {
+          "offset": 1193,
+          "before": "\"Reject stale observation\"",
+          "after": "\"拒绝过期观察\"",
+          "afterOffset": 1108
+        },
+        {
+          "offset": 1259,
+          "before": "\"Reject exhausted action budget\"",
+          "after": "\"拒绝已耗尽的动作额度\"",
+          "afterOffset": 1156
+        },
+        {
+          "offset": 1306,
+          "before": "\"Allow click using converted logical coordinates\"",
+          "after": "\"允许使用转换后的逻辑坐标点击\"",
+          "afterOffset": 1183
+        },
+        {
+          "offset": 1391,
+          "before": "\"Logical x\"",
+          "after": "\"逻辑 x\"",
+          "afterOffset": 1235
+        },
+        {
+          "offset": 1457,
+          "before": "\"Logical y\"",
+          "after": "\"逻辑 y\"",
+          "afterOffset": 1296
+        },
+        {
+          "offset": 1523,
+          "before": "\"Generation matches\"",
+          "after": "\"generation 一致\"",
+          "afterOffset": 1357
+        },
+        {
+          "offset": 1602,
+          "before": "\"Consumed calls\"",
+          "after": "\"已消耗调用\"",
+          "afterOffset": 1431
+        },
+        {
+          "offset": 1663,
+          "before": "\"Remaining calls\"",
+          "after": "\"剩余调用\"",
+          "afterOffset": 1483
+        },
+        {
+          "offset": 1841,
+          "before": "\"Validate frames and coordinate spaces\"",
+          "after": "\"校验图像帧与坐标空间\"",
+          "afterOffset": 1650
+        },
+        {
+          "offset": 1930,
+          "before": "\"Validate input\"",
+          "after": "\"校验输入\"",
+          "afterOffset": 1712
+        },
+        {
+          "offset": 2051,
+          "before": "\"Apply the boundary\"",
+          "after": "\"执行边界检查\"",
+          "afterOffset": 1823
+        },
+        {
+          "offset": 2107,
+          "before": "\"A screenshot has physical pixel dimensions while native desktop clicks may use logical coordinates. Validate positive bounded dimensions and a finite display scale, then reject points outside the frame before converting by floor division. The frame generation identifies which observation justified an action.\"",
+          "after": "\"截图尺寸使用物理像素，原生桌面点击则可能使用逻辑坐标。先校验尺寸为有上限的正数、显示缩放为有限值，再拒绝帧外坐标，最后进行除法并向下取整。帧的 generation 标明该动作依据的是哪一次观察。\"",
+          "afterOffset": 1867
+        },
+        {
+          "offset": 2464,
+          "before": "\"Inspect output\"",
+          "after": "\"检查输出\"",
+          "afterOffset": 2013
+        },
+        {
+          "offset": 2516,
+          "before": "\"A pixel at 200,100 on a scale-two display maps to logical point 100,50; a point exactly on the right boundary is rejected.\"",
+          "after": "\"缩放倍率为 2 时，像素 (200,100) 映射到逻辑坐标 (100,50)；恰好位于右边界的点会被拒绝。\"",
+          "afterOffset": 2055
+        },
+        {
+          "offset": 2683,
+          "before": "\"Reject invalid input before the side effect.\"",
+          "after": "\"在副作用发生前拒绝无效输入。\"",
+          "afterOffset": 2154
+        },
+        {
+          "offset": 2900,
+          "before": "\"Render and manipulate a fixture scene\"",
+          "after": "\"渲染并操作测试场景\"",
+          "afterOffset": 2341
+        },
+        {
+          "offset": 2977,
+          "before": "\"Validate input\"",
+          "after": "\"校验输入\"",
+          "afterOffset": 2390
+        },
+        {
+          "offset": 3063,
+          "before": "\"Apply the boundary\"",
+          "after": "\"执行边界检查\"",
+          "afterOffset": 2466
+        },
+        {
+          "offset": 3119,
+          "before": "\"Define capture, click and type_text behind one Backend trait. The fixture draws a real PPM image from its state: a text field, a submit region and a green completed scene. Clicking the field changes focus, typing requires focus, and clicking submit completes only after text exists. The fixture makes transition bugs reproducible without controlling the user desktop.\"",
+          "after": "\"用一个 Backend trait 统一定义 capture、click 和 type_text。测试后端根据自身状态绘制实际 PPM 图像，包含文本框、提交区域和绿色完成场景。点击文本框改变焦点，输入要求先获得焦点，提交也只有在存在文本后才会完成。这样的夹具无需控制用户桌面，就能复现状态转换错误。\"",
+          "afterOffset": 2510
+        },
+        {
+          "offset": 3534,
+          "before": "\"Inspect output\"",
+          "after": "\"检查输出\"",
+          "afterOffset": 2708
+        },
+        {
+          "offset": 3586,
+          "before": "\"The final PPM is a real rendered artifact. Fixture completion establishes backend logic only, not native OS control.\"",
+          "after": "\"最终 PPM 是实际渲染的交付物。测试场景完成只验证后端逻辑，不证明原生操作系统控制。\"",
+          "afterOffset": 2750
+        },
+        {
+          "offset": 3747,
+          "before": "\"Reject invalid input before the side effect.\"",
+          "after": "\"在副作用发生前拒绝无效输入。\"",
+          "afterOffset": 2838
+        },
+        {
+          "offset": 3964,
+          "before": "\"Reject stale observations and exhausted budgets\"",
+          "after": "\"拒绝过期观察和耗尽的额度\"",
+          "afterOffset": 3025
+        },
+        {
+          "offset": 4063,
+          "before": "\"Validate input\"",
+          "after": "\"校验输入\"",
+          "afterOffset": 3089
+        },
+        {
+          "offset": 4221,
+          "before": "\"Apply the boundary\"",
+          "after": "\"执行边界检查\"",
+          "afterOffset": 3237
+        },
+        {
+          "offset": 4277,
+          "before": "\"Place a Controller around the backend. Reserve action budget before each backend call, require a captured frame before clicks, and invalidate that frame after a mutation. A stale generation must fail before clicking. Keep a trace of successful actions and count attempted backend calls even when the backend returns an error.\"",
+          "after": "\"在后端外包一层 Controller。每次后端调用前先预留动作额度，点击前必须已有捕获帧，修改状态后令该帧失效。过期 generation 必须在点击前被拒绝。记录成功动作的轨迹，即使后端返回错误，也应计入已经尝试的调用次数。\"",
+          "afterOffset": 3281
+        },
+        {
+          "offset": 4650,
+          "before": "\"Inspect output\"",
+          "after": "\"检查输出\"",
+          "afterOffset": 3442
+        },
+        {
+          "offset": 4702,
+          "before": "\"A second click cannot reuse the pre-click screenshot. The caller must capture the changed scene first.\"",
+          "after": "\"第二次点击不能复用点击前的截图，调用方必须先捕获变化后的场景。\"",
+          "afterOffset": 3484
+        },
+        {
+          "offset": 4849,
+          "before": "\"Reject invalid input before the side effect.\"",
+          "after": "\"在副作用发生前拒绝无效输入。\"",
+          "afterOffset": 3560
+        },
+        {
+          "offset": 5066,
+          "before": "\"Build an opt-in native boundary\"",
+          "after": "\"构建显式启用的原生操作边界\"",
+          "afterOffset": 3747
+        },
+        {
+          "offset": 5149,
+          "before": "\"Validate input\"",
+          "after": "\"校验输入\"",
+          "afterOffset": 3812
+        },
+        {
+          "offset": 5284,
+          "before": "\"Apply the boundary\"",
+          "after": "\"执行边界检查\"",
+          "afterOffset": 3937
+        },
+        {
+          "offset": 5340,
+          "before": "\"Construct macOS screencapture and AppleScript argument arrays without a shell. Pass typed text as an argument, never as executable script content. Read PNG dimensions from native screenshot headers and preserve the actual image payload. The default demo remains the fixture. Native capture requires an explicit --native-capture flag, OS permissions and a caller-supplied DESKTOP_SCALE when the display is scaled. Native click and typing are library methods, not automatic demo actions.\"",
+          "after": "\"使用参数数组构造 macOS screencapture 和 AppleScript 调用，不经过 shell。把待输入文本作为参数传递，绝不能把它作为可执行脚本内容。读取原生截图头部中的 PNG 尺寸，并保留实际图像载荷。默认演示仍使用夹具。原生捕获必须显式提供 --native-capture、获得操作系统权限；显示缩放启用时，还需由调用方提供 DESKTOP_SCALE。原生点击和输入仅作为库方法提供，不是演示会自动执行的动作。\"",
+          "afterOffset": 3981
+        },
+        {
+          "offset": 5873,
+          "before": "\"Inspect output\"",
+          "after": "\"检查输出\"",
+          "afterOffset": 4248
+        },
+        {
+          "offset": 5925,
+          "before": "\"The tests verify native argument construction and image metadata parsing. Native macOS execution is explicitly unverified by the fixture suite; use it only against a disposable test application.\"",
+          "after": "\"测试校验原生参数构造和图像元数据解析；夹具测试明确不验证原生 macOS 执行，只应对可丢弃的测试应用尝试原生功能。\"",
+          "afterOffset": 4290
+        },
+        {
+          "offset": 6164,
+          "before": "\"Reject invalid input before the side effect.\"",
+          "after": "\"在副作用发生前拒绝无效输入。\"",
+          "afterOffset": 4393
+        }
+      ]
+    },
+    {
+      "path": "site/figures/projects/distributed-eval-farm.js",
+      "sourceSha256": "f571b43032315976b9fbc0741c7e001f087721d1f99ef0ea0aa8223a172c3c14",
+      "localizedSha256": "6efb7341de7ce79c85ce84c35780544a7e009d00aa1dd9a9c805b6ae887f8445",
+      "edits": [
+        {
+          "offset": 111,
+          "before": "\"Hash case identity into one bucket\"",
+          "after": "\"将用例标识哈希到一个桶\"",
+          "afterOffset": 111
+        },
+        {
+          "offset": 185,
+          "before": "\"Read IDs\"",
+          "after": "\"读取 ID\"",
+          "afterOffset": 162
+        },
+        {
+          "offset": 223,
+          "before": "\"Identifiers are unique, nonempty UTF-8 strings. Prompt changes alter dataset identity but do not change the ID's bucket.\"",
+          "after": "\"标识符是唯一、非空的 UTF-8 字符串。提示词变化会改变数据集标识，但不改变该 ID 所属的桶。\"",
+          "afterOffset": 197
+        },
+        {
+          "offset": 379,
+          "before": "\"Hash bytes\"",
+          "after": "\"对字节计算哈希\"",
+          "afterOffset": 282
+        },
+        {
+          "offset": 419,
+          "before": "\"FNV-1a XORs each byte then multiplies modulo 2^32. The hash is independent of input arrival order.\"",
+          "after": "\"FNV-1a 对每个字节异或，再乘法并按 2^32 取模；哈希不受输入到达顺序影响。\"",
+          "afterOffset": 319
+        },
+        {
+          "offset": 553,
+          "before": "\"Take modulo\"",
+          "after": "\"取模\"",
+          "afterOffset": 397
+        },
+        {
+          "offset": 594,
+          "before": "\"The shard index is hash modulo shard count. Changing shard count requires a new run.\"",
+          "after": "\"分片索引等于哈希对分片数取模，更改分片数需要新建运行。\"",
+          "afterOffset": 429
+        },
+        {
+          "offset": 717,
+          "before": "\"These buckets use the same FNV-1a 32 byte operations as the Go core, including UTF-8 inputs.\"",
+          "after": "\"桶分配使用与 Go 核心相同的 FNV-1a 32 位字节操作，包括 UTF-8 输入。\"",
+          "afterOffset": 495
+        },
+        {
+          "offset": 891,
+          "before": "\"Comma-separated case IDs\"",
+          "after": "\"用例 ID（逗号分隔）\"",
+          "afterOffset": 621
+        },
+        {
+          "offset": 1054,
+          "before": "\"Shard count\"",
+          "after": "\"分片数\"",
+          "afterOffset": 771
+        },
+        {
+          "offset": 1378,
+          "before": "\"Reject empty or repeated identifiers\"",
+          "after": "\"拒绝空或重复标识符\"",
+          "afterOffset": 1087
+        },
+        {
+          "offset": 1449,
+          "before": "\"Records\"",
+          "after": "\"记录数\"",
+          "afterOffset": 1131
+        },
+        {
+          "offset": 1949,
+          "before": "\"Every case belongs to exactly one bucket\"",
+          "after": "\"每个用例恰好属于一个桶\"",
+          "afterOffset": 1627
+        },
+        {
+          "offset": 2035,
+          "before": "\"Cases\"",
+          "after": "\"用例数\"",
+          "afterOffset": 1684
+        },
+        {
+          "offset": 2100,
+          "before": "\"Active shards\"",
+          "after": "\"活动分片\"",
+          "afterOffset": 1747
+        },
+        {
+          "offset": 2226,
+          "before": "\"Case\"",
+          "after": "\"用例\"",
+          "afterOffset": 1864
+        },
+        {
+          "offset": 2234,
+          "before": "\"32-bit hash\"",
+          "after": "\"32 位哈希\"",
+          "afterOffset": 1870
+        },
+        {
+          "offset": 2249,
+          "before": "\"Shard\"",
+          "after": "\"分片\"",
+          "afterOffset": 1880
+        },
+        {
+          "offset": 2335,
+          "before": "\"Shard \"",
+          "after": "\"分片 \"",
+          "afterOffset": 1963
+        },
+        {
+          "offset": 2535,
+          "before": "\"Persist the lease before the worker starts\"",
+          "after": "\"工作进程启动前持久化租约\"",
+          "afterOffset": 2160
+        },
+        {
+          "offset": 2617,
+          "before": "\"Read current owner\"",
+          "after": "\"读取当前持有者\"",
+          "afterOffset": 2212
+        },
+        {
+          "offset": 2665,
+          "before": "\"The coordinator reloads the shared snapshot while holding the stable ledger lock.\"",
+          "after": "\"协调器在持有稳定账本锁期间重新加载共享快照。\"",
+          "afterOffset": 2249
+        },
+        {
+          "offset": 2782,
+          "before": "\"Check expiry\"",
+          "after": "\"检查到期时间\"",
+          "afterOffset": 2307
+        },
+        {
+          "offset": 2824,
+          "before": "\"An unfinished shard becomes claimable at the exact expiry boundary.\"",
+          "after": "\"未完成的分片在准确的到期边界变为可领取。\"",
+          "afterOffset": 2343
+        },
+        {
+          "offset": 2927,
+          "before": "\"Advance version\"",
+          "after": "\"推进版本\"",
+          "afterOffset": 2399
+        },
+        {
+          "offset": 2972,
+          "before": "\"The replacement owner receives the next version, then the snapshot is saved before work begins.\"",
+          "after": "\"接替者获得下一版本，并在工作开始之前保存快照。\"",
+          "afterOffset": 2433
+        },
+        {
+          "offset": 3106,
+          "before": "\"Old owns v1 until 110. Compute whether new can claim and which version becomes authoritative.\"",
+          "after": "\"old 持有 v1，直到 110。计算 new 能否领取，以及哪个版本将成为当前有效版本。\"",
+          "afterOffset": 2495
+        },
+        {
+          "offset": 3281,
+          "before": "\"Replacement claim time\"",
+          "after": "\"接替者领取时刻\"",
+          "afterOffset": 2622
+        },
+        {
+          "offset": 3473,
+          "before": "\"Replacement lease length\"",
+          "after": "\"接替者租约时长\"",
+          "afterOffset": 2799
+        },
+        {
+          "offset": 3664,
+          "before": "\"Old already completed\"",
+          "after": "\"old 已经完成\"",
+          "afterOffset": 2973
+        },
+        {
+          "offset": 3853,
+          "before": "\"Old owner retains v1\"",
+          "after": "\"旧持有者保留 v1\"",
+          "afterOffset": 3149
+        },
+        {
+          "offset": 3907,
+          "before": "\"Completed shard remains closed\"",
+          "after": "\"已完成分片保持关闭\"",
+          "afterOffset": 3192
+        },
+        {
+          "offset": 3977,
+          "before": "\"New owner acquires v2\"",
+          "after": "\"新持有者获得 v2\"",
+          "afterOffset": 3241
+        },
+        {
+          "offset": 4089,
+          "before": "\"Current version\"",
+          "after": "\"当前版本\"",
+          "afterOffset": 3341
+        },
+        {
+          "offset": 4155,
+          "before": "\"Expiry\"",
+          "after": "\"到期时间\"",
+          "afterOffset": 3396
+        },
+        {
+          "offset": 4226,
+          "before": "\"Remaining old lease\"",
+          "after": "\"旧租约剩余时间\"",
+          "afterOffset": 3465
+        },
+        {
+          "offset": 4336,
+          "before": "\"Claim time\"",
+          "after": "\"领取时刻\"",
+          "afterOffset": 3563
+        },
+        {
+          "offset": 4411,
+          "before": "\"Resulting expiry\"",
+          "after": "\"更新后的到期时间\"",
+          "afterOffset": 3632
+        },
+        {
+          "offset": 4648,
+          "before": "\"Redelivery acknowledges the same evidence\"",
+          "after": "\"重新交付只确认同一份证据\"",
+          "afterOffset": 3861
+        },
+        {
+          "offset": 4729,
+          "before": "\"Check owner and version\"",
+          "after": "\"检查持有者与版本\"",
+          "afterOffset": 3913
+        },
+        {
+          "offset": 4772,
+          "before": "\"An old lease cannot write even if its answer is correct.\"",
+          "after": "\"即使答案正确，旧租约也无法写入。\"",
+          "afterOffset": 3941
+        },
+        {
+          "offset": 4864,
+          "before": "\"Handle receipt redelivery\"",
+          "after": "\"处理凭据重新交付\"",
+          "afterOffset": 3993
+        },
+        {
+          "offset": 4919,
+          "before": "\"An identical completed receipt is acknowledged without reopening the shard.\"",
+          "after": "\"确认完全相同的已完成凭据，不重新开启分片。\"",
+          "afterOffset": 4031
+        },
+        {
+          "offset": 5030,
+          "before": "\"Apply expiry to first completion\"",
+          "after": "\"仅对首次完成检查到期\"",
+          "afterOffset": 4088
+        },
+        {
+          "offset": 5092,
+          "before": "\"A first result must arrive before expiry; a later duplicate only acknowledges the existing result.\"",
+          "after": "\"首次结果必须在到期前到达，稍后的相同副本只确认已有结果。\"",
+          "afterOffset": 4128
+        },
+        {
+          "offset": 5229,
+          "before": "\"Current owner is new at v2, expiry 120. Identity, result equality and first-completion time have separate roles.\"",
+          "after": "\"当前持有者为 new，版本 v2，到期时间 120。身份、结果相等性与首次完成时间分别承担不同职责。\"",
+          "afterOffset": 4195
+        },
+        {
+          "offset": 5427,
+          "before": "\"Submitted version\"",
+          "after": "\"提交版本\"",
+          "afterOffset": 4331
+        },
+        {
+          "offset": 5609,
+          "before": "\"Submit as old owner\"",
+          "after": "\"以旧持有者身份提交\"",
+          "afterOffset": 4500
+        },
+        {
+          "offset": 5745,
+          "before": "\"Receipt already committed\"",
+          "after": "\"凭据已经提交\"",
+          "afterOffset": 4626
+        },
+        {
+          "offset": 5886,
+          "before": "\"Identical result bytes\"",
+          "after": "\"结果字节完全相同\"",
+          "afterOffset": 4748
+        },
+        {
+          "offset": 6023,
+          "before": "\"Arrival time\"",
+          "after": "\"到达时刻\"",
+          "afterOffset": 4871
+        },
+        {
+          "offset": 6330,
+          "before": "\"Reject expired first completion\"",
+          "after": "\"拒绝到期后的首次完成\"",
+          "afterOffset": 5170
+        },
+        {
+          "offset": 6398,
+          "before": "\"Fenced: wrong owner or version\"",
+          "after": "\"版本令牌拒绝：持有者或版本错误\"",
+          "afterOffset": 5217
+        },
+        {
+          "offset": 6489,
+          "before": "\"Idempotent acknowledgement; no new result\"",
+          "after": "\"幂等确认，不产生新结果\"",
+          "afterOffset": 5293
+        },
+        {
+          "offset": 6571,
+          "before": "\"Accept first completion\"",
+          "after": "\"接受首次完成\"",
+          "afterOffset": 5345
+        },
+        {
+          "offset": 6633,
+          "before": "\"Reject conflicting receipt\"",
+          "after": "\"拒绝冲突凭据\"",
+          "afterOffset": 5390
+        },
+        {
+          "offset": 6750,
+          "before": "\"Accepted\"",
+          "after": "\"已接受\"",
+          "afterOffset": 5487
+        },
+        {
+          "offset": 6810,
+          "before": "\"New receipts\"",
+          "after": "\"新凭据数\"",
+          "afterOffset": 5542
+        },
+        {
+          "offset": 6899,
+          "before": "\"Result writes after decision\"",
+          "after": "\"决策后的结果写入数\"",
+          "afterOffset": 5623
+        },
+        {
+          "offset": 7047,
+          "before": "\"Arrival\"",
+          "after": "\"到达时刻\"",
+          "afterOffset": 5752
+        },
+        {
+          "offset": 7105,
+          "before": "\"Expiry\"",
+          "after": "\"到期时间\"",
+          "afterOffset": 5807
+        },
+        {
+          "offset": 7265,
+          "before": "\"Compute bounded worker waves\"",
+          "after": "\"计算有并发上限的工作批次\"",
+          "afterOffset": 5965
+        },
+        {
+          "offset": 7333,
+          "before": "\"Bound callbacks\"",
+          "after": "\"限制回调并发\"",
+          "afterOffset": 6017
+        },
+        {
+          "offset": 7378,
+          "before": "\"At most the configured number of pool callbacks launch a child process at once.\"",
+          "after": "\"同时启动子进程的工作池回调数，不超过配置的上限。\"",
+          "afterOffset": 6053
+        },
+        {
+          "offset": 7493,
+          "before": "\"Claim and score\"",
+          "after": "\"领取并评分\"",
+          "afterOffset": 6113
+        },
+        {
+          "offset": 7538,
+          "before": "\"Each child claims one persisted shard, compares recorded answers and submits a fenced receipt.\"",
+          "after": "\"每个子进程领取一个持久化分片，比较已记录答案，并提交带版本令牌校验的凭据。\"",
+          "afterOffset": 6148
+        },
+        {
+          "offset": 7668,
+          "before": "\"Collect each wave\"",
+          "after": "\"收集每批结果\"",
+          "afterOffset": 6221
+        },
+        {
+          "offset": 7715,
+          "before": "\"The coordinator waits for the current wave before dispatching another; completed runs retain all receipts.\"",
+          "after": "\"协调器等当前批次结束后才派发下一批，已完成运行保留所有凭据。\"",
+          "afterOffset": 6257
+        },
+        {
+          "offset": 7860,
+          "before": "\"A scheduling calculation with supplied shard durations. It estimates wave time, not measured model throughput.\"",
+          "after": "\"根据给定分片时长进行调度计算；它估计批次用时，不表示测得的模型吞吐量。\"",
+          "afterOffset": 6326
+        },
+        {
+          "offset": 8058,
+          "before": "\"Shard durations ms\"",
+          "after": "\"分片时长（ms）\"",
+          "afterOffset": 6449
+        },
+        {
+          "offset": 8200,
+          "before": "\"Concurrent process slots\"",
+          "after": "\"并发进程槽位\"",
+          "afterOffset": 6581
+        },
+        {
+          "offset": 8609,
+          "before": "\"Enter 1 to 32 positive durations\"",
+          "after": "\"请输入 1 至 32 个正时长\"",
+          "afterOffset": 6972
+        },
+        {
+          "offset": 9147,
+          "before": "\"Wave barriers wait for the slowest shard in each batch\"",
+          "after": "\"每批屏障等待该批最慢的分片\"",
+          "afterOffset": 7493
+        },
+        {
+          "offset": 9247,
+          "before": "\"Estimated wall time ms\"",
+          "after": "\"预计总用时（ms）\"",
+          "afterOffset": 7552
+        },
+        {
+          "offset": 9309,
+          "before": "\"Total child processes\"",
+          "after": "\"子进程总数\"",
+          "afterOffset": 7601
+        },
+        {
+          "offset": 9396,
+          "before": "\"Maximum concurrent children\"",
+          "after": "\"最大并发子进程数\"",
+          "afterOffset": 7672
+        },
+        {
+          "offset": 9523,
+          "before": "\"Waves\"",
+          "after": "\"批次数\"",
+          "afterOffset": 7780
+        },
+        {
+          "offset": 9615,
+          "before": "\"Shard\"",
+          "after": "\"分片\"",
+          "afterOffset": 7870
+        },
+        {
+          "offset": 9624,
+          "before": "\"Slot\"",
+          "after": "\"槽位\"",
+          "afterOffset": 7876
+        },
+        {
+          "offset": 9632,
+          "before": "\"Start ms\"",
+          "after": "\"开始（ms）\"",
+          "afterOffset": 7882
+        },
+        {
+          "offset": 9644,
+          "before": "\"Finish ms\"",
+          "after": "\"完成（ms）\"",
+          "afterOffset": 7892
+        },
+        {
+          "offset": 9713,
+          "before": "\"Serial time\"",
+          "after": "\"串行用时\"",
+          "afterOffset": 7958
+        },
+        {
+          "offset": 9779,
+          "before": "\"Bounded-wave time\"",
+          "after": "\"有界分批用时\"",
+          "afterOffset": 8017
+        }
+      ]
+    }
+  ],
+  "existingTestDisplayChange": {
+    "path": "site/test_dataset_project_figures.js",
+    "changes": [
+      [
+        "scenario.label !== \"Duplicate ID\"",
+        "scenario.label !== \"重复 ID\""
+      ],
+      [
+        "frame.label === \"Move incident-A\"",
+        "frame.label === \"移动 incident-A\""
+      ]
+    ],
+    "sourceSha256": "f8779081b0e582726ae4134344e64f3157e948a08f5efbc98536ccaf99e47bdd",
+    "localizedSha256": "3230367111d3e750e38f5830f947074cb9777ae1b0be4c0e0f7057518b0762de"
+  }
+}

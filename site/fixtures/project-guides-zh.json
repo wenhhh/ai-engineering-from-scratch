@@ -1,0 +1,1054 @@
+{
+  "schemaVersion": 1,
+  "batch": "2026-10-07-24",
+  "sourceCommit": "a0e66d592f386879b262739a5ca0df2960ffdf71",
+  "upstreamCommit": "c02ca08d8a49ce24c3c1c1cf8e3b422f2c7393ca",
+  "documents": {
+    "projects/README.md": {
+      "sourceSha256": "bebad4e4e269594cb731dd17ddcc09b273dffe89bb7834d1b3181dad7acdef1d",
+      "localizedSha256": "bcf52978ebb73b9432d0a2e3dc31618497fcb7150b5e9eb5ab38e77705470942",
+      "sourceText": "# Projects\n\nBuild useful AI engineering tools from scratch, one tested stage at a time. The catalog covers 100 projects across Python, Rust, TypeScript, and Go: 48 ready to build and 52 on the [roadmap](ROADMAP.md).\n\nEach ready project includes a working reference implementation, a learner starter, cumulative stage tests, mechanism diagrams, explanations, and recorded run/output GIFs. Core tests use local fixtures and require no model credentials. Optional framework comparisons use real SDKs with deterministic fake models. Planned projects have proposed outcomes and learning milestones; their implementations and completion tests are still to come.\n\n## Start\n\n```bash\npython3 scripts/project_test.py semantic-notes-search --list\npython3 scripts/project_test.py semantic-notes-search --init my-semantic-notes-search\npython3 scripts/project_test.py semantic-notes-search --stage 1 --path my-semantic-notes-search\n```\n\nUse Python 3.12+, Node 22.18+ for TypeScript, rustc with edition 2021, and Go 1.23+. Install only the toolchains the project's language badges require. The reference solution is an instructor artifact:\n\n```bash\npython3 scripts/project_test.py research-report-agent --all --solution --strict\npython3 scripts/project_test.py --all --solution --strict --report project-results.json\n```\n\nThe site is built with `node site/build-projects.js --strict`. It bundles project lessons and recordings for static hosting, so preview branches do not depend on unpublished GitHub main files.\n\n## Learn with an agent\n\nIn Claude Code, use `/build-project <id>`. In Codex or another compatible host, ask it to use the `build-project` skill for the selected project. The tutor teaches one stage at a time: predict, build, test, reflect. It keeps learning notes in your own `PROJECTS-LEARNING.md`.\n\n## Completion evidence\n\n```bash\npython3 scripts/project_test.py semantic-notes-search --all --strict --path my-semantic-notes-search --report completion.json\n```\n\nImport `completion.json` on the project page and enter your name to download a printable HTML certificate. Every stage must pass with nonzero tests and no skips. Reference solutions, partial runs, and outdated manifests cannot qualify. The certificate is a local, self-attested community course record, not a proctored or vendor credential. Optional SDK verification is separate from core completion.\n\n## Ready catalog\n\n| Project | Level | Languages | Stages | Estimate |\n|---|---|---|---|---|\n| [Dataset Split Auditor](dataset-split-auditor/) | 1 | Python | 4 | ~8h |\n| [JSON Schema Output Guard](json-schema-output-guard/) | 1 | TypeScript | 4 | ~8h |\n| [Prompt Regression Tester](prompt-regression-tester/) | 1 | Python | 4 | ~8h |\n| [Semantic Notes Search](semantic-notes-search/) | 1 | Python | 4 | ~8h |\n| [SKILL.md Validator and Loader](skill-validator/) | 1 | Rust | 4 | ~8h |\n| [Tiny Coding Agent](tiny-coding-agent/) | 1 | Python | 4 | ~8h |\n| [Token Counter and Cost Meter](token-counter-and-cost-meter/) | 1 | Rust | 4 | ~8h |\n| [Calendar Focus Planner](calendar-focus-planner/) | 2 | TypeScript | 4 | ~8h |\n| [Changelog Writer From Git](changelog-writer-from-git/) | 2 | Go | 4 | ~8h |\n| [CSV Question Workbench](csv-sql-question-workbench/) | 2 | Python | 4 | ~8h |\n| [Document Extraction Review Desk](document-extraction-desk/) | 2 | Python | 4 | ~8h |\n| [Document QA With Citations and LangChain](doc-qa-with-citations/) | 2 | Python | 4 | ~8h |\n| [Feedback Theme Board](feedback-theme-board/) | 2 | TypeScript | 4 | ~8h |\n| [Inbox Triage Desk](inbox-triage-desk/) | 2 | Python | 4 | ~8h |\n| [Incident Postmortem Writer](postmortem-writer/) | 2 | Go | 4 | ~8h |\n| [Local Model Evaluation Harness](local-model-eval-harness/) | 2 | Python | 4 | ~8h |\n| [Meeting Notes to Actions](meeting-notes-to-actions/) | 2 | Python | 4 | ~8h |\n| [PR Review Reporter](pr-review-reporter/) | 2 | Python, TypeScript | 4 | ~8h |\n| [Research Report Agent](research-report-agent/) | 2 | Rust, Python, TypeScript | 7 | ~20h |\n| [Retrieval Evaluation Lab](retrieval-evaluation-lab/) | 2 | Python | 4 | ~8h |\n| [Skill Router](skill-router/) | 2 | TypeScript | 4 | ~8h |\n| [Source-Grounded Study Coach](source-grounded-study-coach/) | 2 | TypeScript | 4 | ~8h |\n| [Agent Budget Planner](agent-budget-planner/) | 3 | Python | 4 | ~8h |\n| [Agent Trace Debugger](agent-trace-debugger/) | 3 | TypeScript | 4 | ~8h |\n| [Cross-Agent Skill Installer](skill-installer/) | 3 | TypeScript | 4 | ~8h |\n| [Harness Bench](harness-bench/) | 3 | Go | 4 | ~8h |\n| [LLM Gateway With Fallbacks](llm-gateway-with-fallbacks/) | 3 | Go | 4 | ~8h |\n| [Multi-Agent Code Review Panel](multi-agent-code-review-panel/) | 3 | TypeScript | 4 | ~8h |\n| [Persistent Memory Server](memory-server/) | 3 | TypeScript, Rust | 4 | ~8h |\n| [RAG Freshness Pipeline](rag-freshness-pipeline/) | 3 | Python | 4 | ~8h |\n| [Report Judge](report-judge/) | 3 | Python | 4 | ~8h |\n| [Self-Correcting Workflow Hooks](workflow-hooks/) | 3 | TypeScript | 4 | ~8h |\n| [Skill Supply-Chain Scanner](skill-scanner/) | 3 | Rust | 4 | ~8h |\n| [Support Agent With Google ADK](support-agent-with-google-adk/) | 3 | Python | 4 | ~8h |\n| [Typed Workflow Agent with Mastra](typed-workflow-agent-with-mastra/) | 3 | TypeScript | 4 | ~8h |\n| [Visual Evidence Library](visual-evidence-library/) | 3 | Python | 4 | ~8h |\n| [Voice Note Transcriber Pipeline](voice-note-transcriber-pipeline/) | 3 | Python | 4 | ~8h |\n| [Web Change Brief](web-change-brief/) | 3 | Go | 4 | ~8h |\n| [Cloud Agent With AWS Strands](cloud-agent-with-aws-strands/) | 4 | Python | 4 | ~8h |\n| [Desktop Control Backend](desktop-control/) | 4 | Rust | 4 | ~8h |\n| [Durable Agent Jobs](durable-agent-jobs/) | 4 | Go | 4 | ~8h |\n| [MCP Tool Discovery Workbench](mcp-at-scale/) | 4 | Python, TypeScript | 5 | ~10h |\n| [Sandbox Policy Planner](sandbox-ladder/) | 4 | Rust | 4 | ~8h |\n| [Streaming Agent Shell in Rust](rust-agent-shell/) | 4 | Rust | 4 | ~8h |\n| [Tool Call Firewall](tool-call-firewall/) | 4 | Rust | 4 | ~8h |\n| [Browser Agent](browser-agent/) | 5 | TypeScript, Python | 4 | ~8h |\n| [Distributed Eval Farm Coordinator](distributed-eval-farm/) | 5 | Go | 4 | ~8h |\n| [Self-Improving Skill Loop](self-improving-skill-loop/) | 5 | Python | 4 | ~8h |\n\n## Roadmap\n\nThe [52 planned projects](ROADMAP.md) extend all five levels with practical applications, data and multimodal workflows, developer tooling, DevOps, and agent systems. Each brief names its deliverable, prerequisites, first demo and four proposed milestones. The website marks these cards as planned; they do not count toward completed stages or certificates.\n\n## Build an application you can use\n\nThe application track adds eight projects: CSV Question Workbench, Document Extraction Review Desk, Calendar Focus Planner, Feedback Theme Board, Inbox Triage Desk, Source-Grounded Study Coach, Visual Evidence Library and Web Change Brief. Each accepts your own input and exports a reviewable artifact such as HTML, JSON, iCalendar or unsent email drafts.\n\nStart with the stated prerequisites, run a fixture, change one input and predict the result. Then implement the stages in your own workspace. Editable mechanism figures show intermediate values; passing tests and explicit limits make the artifact easier for another developer to integrate. Popularity is an outcome to measure after release, not a guarantee attached to a lesson.\n\n## Framework comparisons\n\nDocument QA uses LangChain for splitters and model interfaces. Support routing uses Google ADK for real specialist handoffs. The cloud inspection project uses AWS Strands with a local model and keeps cloud calls opt-in. Typed workflows compare the hand-built executor with Mastra. Framework use is limited to those concrete jobs; standard-library implementations remain visible.\n\nAll four framework projects document their dependency setup and use `--optional --strict`. Missing modules produce a skip with an install hint; strict mode fails. Tests using fake models verify SDK integration, not live provider behavior.\n\n## Scope and evidence\n\nPublished fixtures are reviewable, not secret. Evaluation scores describe those fixtures and do not establish production performance. The sandbox project plans policies; it does not provide OS isolation. Desktop control verifies its fixture backend and keeps native access explicit. The browser project includes a real browser adapter in addition to deterministic fixtures. Voice processing includes real PCM segmentation and a multipart HTTP recognition adapter; the offline spoken fixture uses an explicitly supplied reference transcript.\n\n## Contribute\n\nRead [AUTHORING.md](AUTHORING.md) and [SUBMITTING.md](SUBMITTING.md). Copy [_template/](_template/), write an original useful artifact, and add stages that test learner code.\n",
+      "contract": {
+        "fences": [
+          [
+            "bash",
+            "python3 scripts/project_test.py semantic-notes-search --list\npython3 scripts/project_test.py semantic-notes-search --init my-semantic-notes-search\npython3 scripts/project_test.py semantic-notes-search --stage 1 --path my-semantic-notes-search\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py research-report-agent --all --solution --strict\npython3 scripts/project_test.py --all --solution --strict --report project-results.json\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py semantic-notes-search --all --strict --path my-semantic-notes-search --report completion.json\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "--optional --strict"
+          ],
+          [
+            "`",
+            "/build-project <id>"
+          ],
+          [
+            "`",
+            "PROJECTS-LEARNING.md"
+          ],
+          [
+            "`",
+            "build-project"
+          ],
+          [
+            "`",
+            "completion.json"
+          ],
+          [
+            "`",
+            "node site/build-projects.js --strict"
+          ]
+        ],
+        "links": [
+          "AUTHORING.md",
+          "ROADMAP.md",
+          "ROADMAP.md",
+          "SUBMITTING.md",
+          "_template/",
+          "agent-budget-planner/",
+          "agent-trace-debugger/",
+          "browser-agent/",
+          "calendar-focus-planner/",
+          "changelog-writer-from-git/",
+          "cloud-agent-with-aws-strands/",
+          "csv-sql-question-workbench/",
+          "dataset-split-auditor/",
+          "desktop-control/",
+          "distributed-eval-farm/",
+          "doc-qa-with-citations/",
+          "document-extraction-desk/",
+          "durable-agent-jobs/",
+          "feedback-theme-board/",
+          "harness-bench/",
+          "inbox-triage-desk/",
+          "json-schema-output-guard/",
+          "llm-gateway-with-fallbacks/",
+          "local-model-eval-harness/",
+          "mcp-at-scale/",
+          "meeting-notes-to-actions/",
+          "memory-server/",
+          "multi-agent-code-review-panel/",
+          "postmortem-writer/",
+          "pr-review-reporter/",
+          "prompt-regression-tester/",
+          "rag-freshness-pipeline/",
+          "report-judge/",
+          "research-report-agent/",
+          "retrieval-evaluation-lab/",
+          "rust-agent-shell/",
+          "sandbox-ladder/",
+          "self-improving-skill-loop/",
+          "semantic-notes-search/",
+          "skill-installer/",
+          "skill-router/",
+          "skill-scanner/",
+          "skill-validator/",
+          "source-grounded-study-coach/",
+          "support-agent-with-google-adk/",
+          "tiny-coding-agent/",
+          "token-counter-and-cost-meter/",
+          "tool-call-firewall/",
+          "typed-workflow-agent-with-mastra/",
+          "visual-evidence-library/",
+          "voice-note-transcriber-pipeline/",
+          "web-change-brief/",
+          "workflow-hooks/"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 50,
+        "listItems": 0
+      }
+    },
+    "projects/AUTHORING.md": {
+      "sourceSha256": "95556920a7c9119ef0a286aa26b692c329a2c80097989008c58618788a66cb31",
+      "localizedSha256": "0564644d320a9d379c2a26ababfbd35e4f8ae90f2da28fefc66da8dff07b36ce",
+      "sourceText": "# Project authoring contract\n\nEach project teaches a useful artifact through four to eight incremental stages. Each stage adds a distinct behavior, explains a concrete example, and tests the learner's implementation. Reference solutions and demonstrations run offline with standard libraries. A policy simulator must identify itself as a simulator; never claim it provides operating-system isolation.\n\n## Planned projects\n\nKeep unbuilt ideas in `projects/roadmap.json` under `planned`. Give each a unique `id`, `title`, `level`, `languages`, `source`, `tagline`, `summary`, concrete `output`, four proposed `milestones`, and `prerequisiteProjects` IDs. Add `distinctFrom` and `firstDemo` to explain its independent teaching focus. A starter plan may have no project prerequisite. Planned prerequisite links must resolve and must not form cycles.\n\nKeep the readable briefs in [ROADMAP.md](ROADMAP.md) aligned with that metadata. Use `status: \"planned\"`; do not create empty reference implementations or completion claims. When a real project satisfies the ready contract, its ready manifest replaces the planned card in the built catalog.\n\n## Files and metadata\n\n`projects/<id>/project.json` owns the catalog metadata. `id` matches the directory and uses lowercase words separated by hyphens. Required fields are `title`, `tagline`, `summary`, `level` (1 through 5), `hours`, `languages`, `status` (`draft` or `ready`), `source` (`core` or `community`), and a nonempty `stages` array. Stage IDs are unique. README, solution, each stage's documentation, tests, and starter files must exist before `ready` is accepted. Draft projects never appear as ready.\n\n```json\n{\n  \"id\": \"example-project\",\n  \"title\": \"Example Project\",\n  \"tagline\": \"A concrete useful artifact.\",\n  \"summary\": \"What you build and how you verify it.\",\n  \"level\": 2,\n  \"hours\": 8,\n  \"languages\": [\"Python\", \"TypeScript\"],\n  \"status\": \"draft\",\n  \"source\": \"community\",\n  \"author\": {\"name\": \"Your Name\", \"github\": \"your-handle\"},\n  \"demo\": {\"command\": [\"python3\", \"demo.py\"], \"cwd\": \"solution\"},\n  \"stages\": [\n    {\n      \"id\": \"01-first-stage\",\n      \"title\": \"First stage\",\n      \"summary\": \"One specific new capability.\",\n      \"hours\": 2,\n      \"difficulty\": \"starter\",\n      \"concepts\": [\"input validation\"],\n      \"language\": \"python\",\n      \"timeout\": 60\n    }\n  ]\n}\n```\n\nEach stage lives at `stages/<stage-id>/`, with `docs/en.md`, `starter/`, and `tests/`. The cumulative reference implementation lives in `solution/`. Starter paths are relative to the learner's workspace. Initialization copies every regular file, including `.rs`, `.ts`, `.go`, fixtures and module files. It preserves existing files unless `--force` is explicit. Avoid repeating evolving source files in later starters: scaffolding should accumulate without overwriting the learner's work.\n\n## Grader runners\n\nEach stage declares `language`: `python`, `typescript`, `rust`, or `go`. Mixed stages use `language: \"rust+python\"` plus `runners: [{\"language\":\"rust\"},{\"language\":\"python\"}]`. The grader sets `PROJECT_WORKSPACE`, `PROJECT_ROOT`, and `PROJECT_STAGE` to absolute paths for every runner, and prepends the workspace to `PYTHONPATH`.\n\n- Python discovers `tests/test_*.py` with `unittest`. Import the learner's package normally.\n- TypeScript uses Node 22.18 or later, `--experimental-strip-types`, and `node --test` with `tests/*.test.ts` or `tests/*.test.mjs`. Import the learner's file using `pathToFileURL(path.join(process.env.PROJECT_WORKSPACE, 'main.ts'))`. Use erasable TypeScript syntax.\n- Rust compiles each `tests/*.rs` separately with `rustc --edition 2021 --test`, then runs the binary. Import learner code with `include!(concat!(env!(\"PROJECT_WORKSPACE\"), \"/main.rs\"));`, usually inside a module. No Cargo dependency is required.\n- Go copies the workspace and stage `tests/*.go` into a temporary directory and runs `go test -json ./...`. Include `go.mod` for modular workspaces; without it the runner uses `GO111MODULE=off`. Stage test paths relative to `tests/` are preserved in the temporary workspace.\n\nAn explicit single runner is an argv array: `\"runner\": [\"node\", \"--experimental-strip-types\", \"--test\", \"{tests}/stage.test.ts\"]`. Multiple runners use `\"runners\": [{\"language\":\"python\",\"argv\":[\"python3\",\"-m\",\"unittest\",\"discover\",\"-s\",\"{tests}\"]}]`. Supported substitutions are `{workspace}`, `{project}`, `{stage}`, and `{tests}`. Commands run without a shell. Custom runners must emit the selected language's standard test-runner summary; exit status zero with no tests is a failure.\n\nOptional `requires: [\"rustc\"]` lists executable prerequisites. Runner settings inherit stage `requires` and `timeout` (seconds, positive, maximum 600). Missing tools produce `skip`; normal grading can continue with exit status zero, but `--strict` makes any skip fail the command. Test-level skips always prevent completion evidence. Timeouts and failed tests fail the command. Tool detection, test counts, skipped tests, and each runner's status are written into the report.\n\n## Commands and completion evidence\n\n```bash\npython3 scripts/project_test.py example-project --init /tmp/example-work\npython3 scripts/project_test.py example-project --stage 2 --path /tmp/example-work\npython3 scripts/project_test.py example-project --all --solution --strict\npython3 scripts/project_test.py --all --solution --strict\npython3 scripts/project_test.py example-project --all --path /tmp/example-work --strict --report /tmp/example-result.json\n```\n\n`--stage N` checks stages 1 through N; `--only` checks just the selected stage. `--all` without a project checks every published ready project. A JSON report has `schemaVersion: 1`, `generatedAt`, `projects`, and aggregate `certificateEligible`. Each project contains `id`, `title`, `mode`, `manifestHash`, `selectedStages`, `stages`, `allStagesPassed`, and `certificateEligible`. Each stage contains `id`, `number`, `language`, `status` (`pass`, `fail`, or `skip`), `tests`, `skippedTests`, `durationMs`, `reason`, and `runners`.\n\nA learner is eligible only when every declared stage ran and passed at least one test with no skipped test. Reference-solution runs, missing runtimes, partial selections, and failed stages never grant a certificate. This is local, self-reported evidence, not a cryptographic identity or anti-cheating system.\n\n## Documentation, figures, and demos\n\nEvery lesson explains what you build, why it matters, a worked example, exact function contracts, test commands, failure cases, and extensions. Include a registered mechanism in a `figure` fence. Use an original SVG figure provider at `site/figures/projects/<id>.js`, calling `window.AIFSProjectFigures.register('pj-<id>-1', {title, steps: [{label, detail}], caption})`. Each figure should explain the stage's specific mechanism and state transitions. Give learners editable inputs and computed intermediate values; a row of boxes that only changes its highlighted label is not enough.\n\nAdd a `lab` to the registration for a calculated mechanism:\n\n```javascript\nlab: {\n  controls: [\n    {key: 'events', label: 'Completed events', type: 'range', value: 3, min: 0, max: 10, step: 1}\n  ],\n  calculate(values, stepIndex) {\n    return {\n      summary: values.events + ' receipts remain available for inspection.',\n      metrics: [{label: 'Receipts', value: values.events}],\n      bars: [{label: 'Completed events', value: values.events, max: 10}]\n    };\n  }\n}\n```\n\nControls support `range`, `number`, `text`, `select` and `checkbox`. Select options contain `value` and `label`. Calculations may also return `columns` and `rows` for an evidence table. The shared runtime validates finite numeric inputs, escapes displayed text, preserves focus and offers reset. Use domain-specific calculations that agree with the taught contract. Existing custom SVG providers can call `window.AIFSProjectFigures.mountLab(host, lab)` without replacing their animation.\n\nOptional stage `figure` identifies a registered mechanism. The builder also extracts figures from documentation and emits `figures` and `figureScripts`. Unknown figure IDs fail a ready build. Demo metadata uses an argv `command` and project-relative `cwd`, commonly `solution`. Optional `path`, `poster`, or `video` fields refer to files inside the project. Demos terminate and show real output. Path traversal and symlink escapes are rejected.\n\n## Publication checks\n\nWrite at least five meaningful tests per stage: ordinary inputs, boundaries, malformed inputs, and a failure or adversarial case. Keep a held-out case separate from the demonstration fixtures. Test observable contracts, not copies of the reference algorithm. All advertised languages must exercise real implementation code. Cite current official specifications and documentation for protocols, with original lesson prose and original code.\n\nRequire a documented command that accepts the learner's own input and composes the taught functions. A hardcoded demo alone does not establish a reusable tool. Name the output schema, integration command and scope of any live adapter. Confirm that one exported artifact can be consumed by its intended next step, including approval or progress files downloaded from an HTML interface.\n\nStage tests must depend only on behavior already taught or explicitly supplied scaffolding. Keep function signatures precise in starters, explain every hidden prerequisite and show one complete worked input through its intermediate values. A beginner should be able to locate a failure without guessing the intended return shape.\n\nRun the solution with `--all --solution --strict`, initialize a fresh workspace, and confirm its first stage fails clearly. Run `node --test site/test_projects_data.js site/test_project_certificates.js` and `node site/build-projects.js --strict` before review. Inspect the served page in Chromium at desktop and mobile widths, in both themes. Check that controls change calculated output and that recordings match the current commands. HTML output recordings should show the actual generated interface and its evidence interactions. Generated `site/projects-data.js` is not committed. Community submissions retain their author credit and are reviewed through a pull request.\n\n## Optional framework comparisons\n\nA stage can add an optional SDK comparison without making the offline core depend on a framework:\n\n```json\n{\n  \"runners\": [\n    {\"language\": \"python\"},\n    {\n      \"language\": \"python\",\n      \"optional\": true,\n      \"requires\": [\"python:google.adk\"],\n      \"argv\": [\"{python}\", \"-m\", \"unittest\", \"discover\", \"-s\", \"{stage}/tests-framework\", \"-p\", \"test_framework.py\"]\n    }\n  ]\n}\n```\n\n`{python}` uses the current grader interpreter. Dependency declarations accept executable names, `python:module.name`, and `node:package-name`. Python and Node probes resolve package locations without importing the dependency. Missing packages produce `skip` with an installation hint; authors document pinned, supported dependency versions separately because import names and distribution names can differ.\n\nRun `--optional` to include these runners. `--optional --strict` fails on an absent dependency. Default completion evidence covers the required offline core only; it does not claim framework proficiency. If optional runners are selected, their failures or skips also prevent completion. Keep optional instructor tests under the stage's `tests-framework/`, separate from the core `tests/`, and import learner implementation code from `PROJECT_WORKSPACE`.\n",
+      "contract": {
+        "fences": [
+          [
+            "json",
+            "{\n  \"id\": \"example-project\",\n  \"title\": \"Example Project\",\n  \"tagline\": \"A concrete useful artifact.\",\n  \"summary\": \"What you build and how you verify it.\",\n  \"level\": 2,\n  \"hours\": 8,\n  \"languages\": [\"Python\", \"TypeScript\"],\n  \"status\": \"draft\",\n  \"source\": \"community\",\n  \"author\": {\"name\": \"Your Name\", \"github\": \"your-handle\"},\n  \"demo\": {\"command\": [\"python3\", \"demo.py\"], \"cwd\": \"solution\"},\n  \"stages\": [\n    {\n      \"id\": \"01-first-stage\",\n      \"title\": \"First stage\",\n      \"summary\": \"One specific new capability.\",\n      \"hours\": 2,\n      \"difficulty\": \"starter\",\n      \"concepts\": [\"input validation\"],\n      \"language\": \"python\",\n      \"timeout\": 60\n    }\n  ]\n}\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py example-project --init /tmp/example-work\npython3 scripts/project_test.py example-project --stage 2 --path /tmp/example-work\npython3 scripts/project_test.py example-project --all --solution --strict\npython3 scripts/project_test.py --all --solution --strict\npython3 scripts/project_test.py example-project --all --path /tmp/example-work --strict --report /tmp/example-result.json\n"
+          ],
+          [
+            "javascript",
+            "lab: {\n  controls: [\n    {key: 'events', label: 'Completed events', type: 'range', value: 3, min: 0, max: 10, step: 1}\n  ],\n  calculate(values, stepIndex) {\n    return {\n      summary: values.events + ' receipts remain available for inspection.',\n      metrics: [{label: 'Receipts', value: values.events}],\n      bars: [{label: 'Completed events', value: values.events, max: 10}]\n    };\n  }\n}\n"
+          ],
+          [
+            "json",
+            "{\n  \"runners\": [\n    {\"language\": \"python\"},\n    {\n      \"language\": \"python\",\n      \"optional\": true,\n      \"requires\": [\"python:google.adk\"],\n      \"argv\": [\"{python}\", \"-m\", \"unittest\", \"discover\", \"-s\", \"{stage}/tests-framework\", \"-p\", \"test_framework.py\"]\n    }\n  ]\n}\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "\"runner\": [\"node\", \"--experimental-strip-types\", \"--test\", \"{tests}/stage.test.ts\"]"
+          ],
+          [
+            "`",
+            "\"runners\": [{\"language\":\"python\",\"argv\":[\"python3\",\"-m\",\"unittest\",\"discover\",\"-s\",\"{tests}\"]}]"
+          ],
+          [
+            "`",
+            "--all"
+          ],
+          [
+            "`",
+            "--all --solution --strict"
+          ],
+          [
+            "`",
+            "--experimental-strip-types"
+          ],
+          [
+            "`",
+            "--force"
+          ],
+          [
+            "`",
+            "--only"
+          ],
+          [
+            "`",
+            "--optional"
+          ],
+          [
+            "`",
+            "--optional --strict"
+          ],
+          [
+            "`",
+            "--stage N"
+          ],
+          [
+            "`",
+            "--strict"
+          ],
+          [
+            "`",
+            ".go"
+          ],
+          [
+            "`",
+            ".rs"
+          ],
+          [
+            "`",
+            ".ts"
+          ],
+          [
+            "`",
+            "GO111MODULE=off"
+          ],
+          [
+            "`",
+            "PROJECT_ROOT"
+          ],
+          [
+            "`",
+            "PROJECT_STAGE"
+          ],
+          [
+            "`",
+            "PROJECT_WORKSPACE"
+          ],
+          [
+            "`",
+            "PROJECT_WORKSPACE"
+          ],
+          [
+            "`",
+            "PYTHONPATH"
+          ],
+          [
+            "`",
+            "allStagesPassed"
+          ],
+          [
+            "`",
+            "certificateEligible"
+          ],
+          [
+            "`",
+            "certificateEligible"
+          ],
+          [
+            "`",
+            "checkbox"
+          ],
+          [
+            "`",
+            "columns"
+          ],
+          [
+            "`",
+            "command"
+          ],
+          [
+            "`",
+            "community"
+          ],
+          [
+            "`",
+            "core"
+          ],
+          [
+            "`",
+            "cwd"
+          ],
+          [
+            "`",
+            "distinctFrom"
+          ],
+          [
+            "`",
+            "docs/en.md"
+          ],
+          [
+            "`",
+            "draft"
+          ],
+          [
+            "`",
+            "durationMs"
+          ],
+          [
+            "`",
+            "fail"
+          ],
+          [
+            "`",
+            "figure"
+          ],
+          [
+            "`",
+            "figure"
+          ],
+          [
+            "`",
+            "figureScripts"
+          ],
+          [
+            "`",
+            "figures"
+          ],
+          [
+            "`",
+            "firstDemo"
+          ],
+          [
+            "`",
+            "generatedAt"
+          ],
+          [
+            "`",
+            "go"
+          ],
+          [
+            "`",
+            "go test -json ./..."
+          ],
+          [
+            "`",
+            "go.mod"
+          ],
+          [
+            "`",
+            "hours"
+          ],
+          [
+            "`",
+            "id"
+          ],
+          [
+            "`",
+            "id"
+          ],
+          [
+            "`",
+            "id"
+          ],
+          [
+            "`",
+            "id"
+          ],
+          [
+            "`",
+            "include!(concat!(env!(\"PROJECT_WORKSPACE\"), \"/main.rs\"));"
+          ],
+          [
+            "`",
+            "lab"
+          ],
+          [
+            "`",
+            "label"
+          ],
+          [
+            "`",
+            "language"
+          ],
+          [
+            "`",
+            "language"
+          ],
+          [
+            "`",
+            "language: \"rust+python\""
+          ],
+          [
+            "`",
+            "languages"
+          ],
+          [
+            "`",
+            "languages"
+          ],
+          [
+            "`",
+            "level"
+          ],
+          [
+            "`",
+            "level"
+          ],
+          [
+            "`",
+            "manifestHash"
+          ],
+          [
+            "`",
+            "milestones"
+          ],
+          [
+            "`",
+            "mode"
+          ],
+          [
+            "`",
+            "node --test"
+          ],
+          [
+            "`",
+            "node --test site/test_projects_data.js site/test_project_certificates.js"
+          ],
+          [
+            "`",
+            "node site/build-projects.js --strict"
+          ],
+          [
+            "`",
+            "node:package-name"
+          ],
+          [
+            "`",
+            "number"
+          ],
+          [
+            "`",
+            "number"
+          ],
+          [
+            "`",
+            "output"
+          ],
+          [
+            "`",
+            "pass"
+          ],
+          [
+            "`",
+            "path"
+          ],
+          [
+            "`",
+            "pathToFileURL(path.join(process.env.PROJECT_WORKSPACE, 'main.ts'))"
+          ],
+          [
+            "`",
+            "planned"
+          ],
+          [
+            "`",
+            "poster"
+          ],
+          [
+            "`",
+            "prerequisiteProjects"
+          ],
+          [
+            "`",
+            "projects"
+          ],
+          [
+            "`",
+            "projects/<id>/project.json"
+          ],
+          [
+            "`",
+            "projects/roadmap.json"
+          ],
+          [
+            "`",
+            "python"
+          ],
+          [
+            "`",
+            "python:module.name"
+          ],
+          [
+            "`",
+            "range"
+          ],
+          [
+            "`",
+            "ready"
+          ],
+          [
+            "`",
+            "ready"
+          ],
+          [
+            "`",
+            "reason"
+          ],
+          [
+            "`",
+            "requires"
+          ],
+          [
+            "`",
+            "requires: [\"rustc\"]"
+          ],
+          [
+            "`",
+            "rows"
+          ],
+          [
+            "`",
+            "runners"
+          ],
+          [
+            "`",
+            "runners: [{\"language\":\"rust\"},{\"language\":\"python\"}]"
+          ],
+          [
+            "`",
+            "rust"
+          ],
+          [
+            "`",
+            "rustc --edition 2021 --test"
+          ],
+          [
+            "`",
+            "schemaVersion: 1"
+          ],
+          [
+            "`",
+            "select"
+          ],
+          [
+            "`",
+            "selectedStages"
+          ],
+          [
+            "`",
+            "site/figures/projects/<id>.js"
+          ],
+          [
+            "`",
+            "site/projects-data.js"
+          ],
+          [
+            "`",
+            "skip"
+          ],
+          [
+            "`",
+            "skip"
+          ],
+          [
+            "`",
+            "skip"
+          ],
+          [
+            "`",
+            "skippedTests"
+          ],
+          [
+            "`",
+            "solution"
+          ],
+          [
+            "`",
+            "solution/"
+          ],
+          [
+            "`",
+            "source"
+          ],
+          [
+            "`",
+            "source"
+          ],
+          [
+            "`",
+            "stages"
+          ],
+          [
+            "`",
+            "stages"
+          ],
+          [
+            "`",
+            "stages/<stage-id>/"
+          ],
+          [
+            "`",
+            "starter/"
+          ],
+          [
+            "`",
+            "status"
+          ],
+          [
+            "`",
+            "status"
+          ],
+          [
+            "`",
+            "status: \"planned\""
+          ],
+          [
+            "`",
+            "summary"
+          ],
+          [
+            "`",
+            "summary"
+          ],
+          [
+            "`",
+            "tagline"
+          ],
+          [
+            "`",
+            "tagline"
+          ],
+          [
+            "`",
+            "tests"
+          ],
+          [
+            "`",
+            "tests-framework/"
+          ],
+          [
+            "`",
+            "tests/"
+          ],
+          [
+            "`",
+            "tests/"
+          ],
+          [
+            "`",
+            "tests/"
+          ],
+          [
+            "`",
+            "tests/*.go"
+          ],
+          [
+            "`",
+            "tests/*.rs"
+          ],
+          [
+            "`",
+            "tests/*.test.mjs"
+          ],
+          [
+            "`",
+            "tests/*.test.ts"
+          ],
+          [
+            "`",
+            "tests/test_*.py"
+          ],
+          [
+            "`",
+            "text"
+          ],
+          [
+            "`",
+            "timeout"
+          ],
+          [
+            "`",
+            "title"
+          ],
+          [
+            "`",
+            "title"
+          ],
+          [
+            "`",
+            "title"
+          ],
+          [
+            "`",
+            "typescript"
+          ],
+          [
+            "`",
+            "unittest"
+          ],
+          [
+            "`",
+            "value"
+          ],
+          [
+            "`",
+            "video"
+          ],
+          [
+            "`",
+            "window.AIFSProjectFigures.mountLab(host, lab)"
+          ],
+          [
+            "`",
+            "window.AIFSProjectFigures.register('pj-<id>-1', {title, steps: [{label, detail}], caption})"
+          ],
+          [
+            "`",
+            "{project}"
+          ],
+          [
+            "`",
+            "{python}"
+          ],
+          [
+            "`",
+            "{stage}"
+          ],
+          [
+            "`",
+            "{tests}"
+          ],
+          [
+            "`",
+            "{workspace}"
+          ]
+        ],
+        "links": [
+          "ROADMAP.md"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 4
+      }
+    },
+    "projects/SUBMITTING.md": {
+      "sourceSha256": "5cee50bc2569181e92e3b3387f7fa03841b61995f13f27bbc6366070c45c5563",
+      "localizedSha256": "0af893dba120b7e3e29e4be3cfc8927fd3ca0a16c504d09081e96e54ddfb6752",
+      "sourceText": "# Submitting a project\n\nBuild an artifact somebody can use after finishing the course. Teach it through four to eight stages, and make the entire reference path runnable offline without API keys. See [AUTHORING.md](AUTHORING.md) for the exact manifest, runner, figure, demonstration, and completion-evidence contracts.\n\n## Pick a useful outcome\n\nGood projects deliver a report generator, evidence index, skill validator, memory service, workflow tool, protocol server, or evaluation harness. Bound the scope honestly. A fixture backend teaches a desktop protocol; label it clearly rather than describing it as an operating-system integration.\n\nProjects must use original implementations and lessons. Cite official documentation, specifications, and research papers for technical facts. Avoid personal-data scraping, security-control evasion, or a hosted-model call with no substantive engineering exercise.\n\n## Create the project\n\n```bash\ncp -R projects/_template projects/your-project-id\n```\n\nUse a lowercase, hyphenated ID matching the directory. Set `source` to `community` and retain your name and GitHub handle in `author`. Keep `status` as `draft` while you develop the stages. The catalog preserves authorship and never promotes drafts automatically.\n\nThe template has one small Python stage to demonstrate the contract. Extend it to four to eight stages and replace the example with your own artifact. Python, TypeScript, Rust, and Go use standard-library runners. Mixed projects declare the real runner for each stage. Include every module and fixture a fresh learner workspace needs.\n\n## Teach and verify each stage\n\nExplain the useful behavior, the governing invariant, one worked example, exact public function signatures, errors, and a command the learner can copy. Every stage needs five meaningful tests, a failure case, a starter that clearly fails, and an original registered mechanism figure. Tests must load the learner's workspace, never quietly import the checked-in solution.\n\nLater starters add files without overwriting earlier work. The initializer preserves existing files, including learner implementations, unless the learner explicitly passes `--force`. Include a held-out test or dataset, a measured evaluation result, and named end states for loops and budgets.\n\n## Demonstrate the artifact\n\nDeclare a terminating argv command under `demo`, for example `{\"command\":[\"python3\",\"demo.py\"],\"cwd\":\"solution\"}`. Record real output and commit the GIF or video and its poster under the project's `media/` directory. Declare those relative paths in `demos`. The site bundles lessons and recordings with its build so a preview does not depend on unpublished files on GitHub main.\n\n## Validate and submit\n\n```bash\npython3 scripts/project_test.py your-project-id --all --solution --strict\npython3 scripts/project_test.py your-project-id --init /tmp/your-project-check\npython3 scripts/project_test.py your-project-id --stage 1 --path /tmp/your-project-check\nnode --test site/test_projects_data.js\nnode site/build-projects.js --strict\n```\n\nThe reference solution must pass every stage without skipped tests. The fresh starter must fail with an actionable implementation message. Strict mode rejects missing runtimes, empty suites, skipped tests, missing figures, and absent recordings. Do not commit generated `site/projects-data.js` or `site/project-content/` files.\n\nOpen a feature-branch pull request. A maintainer reviews the original lessons, tests the reference artifact, tries the first stages as a learner, and checks the rendered project on the website. Completion certificates use full learner grading reports; reference-solution results and manual checkboxes do not establish completion.\n",
+      "contract": {
+        "fences": [
+          [
+            "bash",
+            "cp -R projects/_template projects/your-project-id\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py your-project-id --all --solution --strict\npython3 scripts/project_test.py your-project-id --init /tmp/your-project-check\npython3 scripts/project_test.py your-project-id --stage 1 --path /tmp/your-project-check\nnode --test site/test_projects_data.js\nnode site/build-projects.js --strict\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "--force"
+          ],
+          [
+            "`",
+            "author"
+          ],
+          [
+            "`",
+            "community"
+          ],
+          [
+            "`",
+            "demo"
+          ],
+          [
+            "`",
+            "demos"
+          ],
+          [
+            "`",
+            "draft"
+          ],
+          [
+            "`",
+            "media/"
+          ],
+          [
+            "`",
+            "site/project-content/"
+          ],
+          [
+            "`",
+            "site/projects-data.js"
+          ],
+          [
+            "`",
+            "source"
+          ],
+          [
+            "`",
+            "status"
+          ],
+          [
+            "`",
+            "{\"command\":[\"python3\",\"demo.py\"],\"cwd\":\"solution\"}"
+          ]
+        ],
+        "links": [
+          "AUTHORING.md"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/ROADMAP.md": {
+      "sourceSha256": "26bb29df2aa7e3ff7852e585081e8f33b4b230672592393101a94820a8af1331",
+      "localizedSha256": "43ed37871a10d31b8fb5b3f5cd1f702150d6e4b0bb2c1838694bc67ce257008b",
+      "sourceText": "# Project roadmap\n\nThe catalog contains **100 projects: 48 ready to build and 52 planned**. The plans below describe future work; they do not have runnable stages, completion tests or certificates yet.\n\n`roadmap.json` is the catalog source of truth. These briefs give each plan a concrete deliverable, a starting path through existing projects and four proposed milestones. Milestones can expand into four to eight tested stages during implementation. No delivery dates are promised.\n\n| Level | Ready | Planned | Total |\n|---|---:|---:|---:|\n| 1. Starter | 7 | 6 | 13 |\n| 2. Builder | 15 | 15 | 30 |\n| 3. Engineer | 16 | 13 | 29 |\n| 4. Systems | 7 | 14 | 21 |\n| 5. Frontier | 3 | 4 | 7 |\n\n## Build order\n\nStart with a project at your level and complete its linked prerequisites. Links identify whether a prerequisite is ready or also planned. Starter plans with no project prerequisite assume basic familiarity with their chosen language. Every future implementation should first produce a useful result on an authored local fixture, then explain one visible failure, and finally add a reusable export or adapter. External SDK and provider checks stay explicit.\n\nEach brief defines its own task and acceptance boundary. During implementation, add original fixtures, a held-out case, source-backed explanations, an editable mechanism figure and a recording of the real output. Reference links describe protocols and formats, not evidence that the planned tool is already implemented.\n\n## Level 1: Starter\n\n<a id=\"bookmark-path-organizer\"></a>\n\n### Bookmark Path Organizer\n\nHelp a reader recover a useful collection from an exported bookmark pile. Normalize URLs conservatively, merge exact duplicates, score user-defined topics from saved titles and notes, and export an editable reading path as HTML and JSON.\n\n**Distinct focus:** Semantic Notes Search retrieves passages; this organizes link collections and produces an ordered reading artifact.\n\n**First demo to build:** Turn twelve authored links about community mapping into a short beginner reading path with duplicate explanations.\n\n**Languages:** TypeScript\n\n**Deliverable:** A standalone reading-path page and bookmarks.json with retained original URLs\n\n**Builds on:** None; begin with the basics of the selected language.\n\nProposed milestones:\n\n1. Import bookmarks with their original hierarchy\n2. Normalize links and explain duplicate groups\n3. Rank topics and assemble a reading path\n4. Export an editable collection and progress file\n\n<a id=\"csv-repair-workbench\"></a>\n\n### CSV Repair Workbench\n\nHelp a spreadsheet owner repair inconsistent labels, dates and missing values through an explicit sequence of transformations. Preview every changed cell, keep ambiguous cases for review, and export a cleaned CSV with a reusable transformation recipe and HTML comparison.\n\n**Distinct focus:** CSV Question Workbench queries a table; this project creates a reviewed, replayable data-cleaning workflow.\n\n**First demo to build:** Normalize three spellings of a community garden location while preserving two ambiguous dates for review.\n\n**Languages:** Python\n\n**Deliverable:** cleaned.csv, recipe.json and a cell-level HTML before/after report\n\n**Builds on:** None; begin with the basics of the selected language.\n\nProposed milestones:\n\n1. Profile columns and retain original cells\n2. Propose explicit normalization rules\n3. Preview changes and review ambiguous values\n4. Export a reusable repair recipe and cleaned table\n\n<a id=\"download-folder-sort-desk\"></a>\n\n### Download Folder Sort Desk\n\nHelp someone organize local downloads by combining file metadata, content hashes and an explainable category score. Generate collision-free destination proposals and duplicate groups, then export an HTML review desk and a JSON move plan that another file manager can consume.\n\n**Distinct focus:** Inbox Triage Desk works with message threads and replies; this handles local file identity, duplicate content and destination planning.\n\n**First demo to build:** Organize an authored folder of workshop handouts, images and duplicate attachments into an inspectable plan.\n\n**Languages:** Python\n\n**Deliverable:** A searchable HTML filing plan, duplicate groups and moves.json\n\n**Builds on:** None; begin with the basics of the selected language.\n\nProposed milestones:\n\n1. Inventory files and compute content identities\n2. Score categories from visible file features\n3. Plan destinations and surface naming conflicts\n4. Export a reviewed filing plan for a file manager\n\n<a id=\"glossary-hovercard-publisher\"></a>\n\n### Glossary Hovercard Publisher\n\nHelp an educator add contextual definitions to existing lesson HTML using a reviewed glossary and longest-phrase matching. Preserve code and links, support keyboard-accessible definitions, and export a standalone annotated lesson with a reusable glossary file.\n\n**Distinct focus:** Source-Grounded Study Coach schedules practice; this improves comprehension inside an existing reading surface.\n\n**First demo to build:** Add five original mapping definitions to a short lesson while leaving its code example untouched.\n\n**Languages:** TypeScript\n\n**Deliverable:** An annotated HTML lesson, glossary.json and a term-coverage report\n\n**Builds on:** None; begin with the basics of the selected language.\n\nProposed milestones:\n\n1. Validate terms, aliases and original definitions\n2. Match phrases inside eligible text nodes\n3. Render accessible definitions in context\n4. Export the lesson and a reusable glossary bundle\n\n<a id=\"photo-burst-contact-sheet\"></a>\n\n### Photo Burst Contact Sheet\n\nHelp a creator review repeated shots by computing simple pixel fingerprints and an inspectable sharpness measure. Group candidate duplicates, preserve the photographer's final choice, and export a contact sheet plus a selection manifest for an editor.\n\n**Distinct focus:** Visual Evidence Library searches supplied text regions; this compares actual image pixels for photo selection.\n\n**First demo to build:** Group original geometric scene images with blur, crop and exposure variations while leaving a different scene separate.\n\n**Languages:** Python\n\n**Deliverable:** HTML and PNG contact sheets, similarity explanations and selections.json\n\n**Builds on:** None; begin with the basics of the selected language.\n\nProposed milestones:\n\n1. Decode images and preserve source dimensions\n2. Compute pixel fingerprints and sharpness measures\n3. Group similar shots for manual selection\n4. Export a contact sheet and editor selection manifest\n\n<a id=\"vocabulary-autocomplete-pad\"></a>\n\n### Vocabulary Autocomplete Pad\n\nHelp a writer reuse their own terminology with a small local autocomplete model built from token counts, prefixes and short word histories. Show the evidence behind each suggestion and export an interactive writing pad plus a portable vocabulary model for another editor.\n\n**Distinct focus:** Semantic Notes Search returns documents; this learns conditional next-word suggestions for a text input.\n\n**First demo to build:** Teach the pad a fictional garden club's vocabulary and inspect why a two-word continuation appears.\n\n**Languages:** TypeScript\n\n**Deliverable:** A local autocomplete writing page and vocabulary-model.json\n\n**Builds on:** None; begin with the basics of the selected language.\n\nProposed milestones:\n\n1. Tokenize an authored corpus and count word histories\n2. Rank prefix and next-word candidates\n3. Accept suggestions in a local writing pad\n4. Export the learned model and editor-facing suggestion function\n\n## Level 2: Builder\n\n<a id=\"api-tutorial-runner\"></a>\n\n### API Tutorial Runner\n\nHelp a documentation author verify a sequence of HTTP examples. Parse explicit request blocks, substitute only declared variables from prior responses, and run against a local fixture or an opted-in test endpoint. Produce a source-linked report that exposes stale examples and lets an assistant propose a reviewed correction.\n\n**Distinct focus:** MCP Tool Discovery imports endpoint descriptions; this executes an ordered tutorial with response variables and source-linked assertions.\n\n**First demo to build:** Replay a fictional lending API tutorial and identify the first request broken by an outdated field name.\n\n**Languages:** TypeScript\n\n**Deliverable:** Replayable request manifest, JUnit results and annotated tutorial HTML\n\n**Builds on:** [JSON Schema Output Guard](json-schema-output-guard/)\n\nProposed milestones:\n\n1. Extract explicit requests from an authored tutorial\n2. Resolve typed variables across steps\n3. Run bounded requests against a test service\n4. Export source-linked failures and correction proposals\n\n<a id=\"catalog-record-linker\"></a>\n\n### Catalog Record Linker\n\nHelp a librarian or organizer reconcile inconsistent item records from two CSV exports. Generate candidate pairs using normalized fields and token similarity, collect explicit match decisions, and export a source-preserving crosswalk and reviewed merged catalog.\n\n**Distinct focus:** CSV Repair Workbench transforms individual cells; this resolves entity identity across separate collections.\n\n**First demo to build:** Link differently named items in two original lending-library catalogs and preserve a near-match as a separate item.\n\n**Languages:** Python\n\n**Deliverable:** An HTML pair-review queue, crosswalk.csv and merged-catalog.json\n\n**Builds on:** [CSV Repair Workbench](#csv-repair-workbench) (planned)\n\nProposed milestones:\n\n1. Import two catalogs with stable source identifiers\n2. Generate candidate pairs and explain similarity\n3. Review matches and resolve conflicting fields\n4. Export the crosswalk and merged catalog\n\n<a id=\"chart-storyboard-builder\"></a>\n\n### Chart Storyboard Builder\n\nHelp a community organizer explain a small dataset by selecting explicit aggregations and chart forms from column roles. Tie each annotation to the plotted values, expose missing data and axis choices, and export an SVG chart sequence with HTML and machine-readable chart specifications.\n\n**Distinct focus:** CSV Question Workbench answers with a query and table; this teaches visual encoding, annotation grounding and portable chart publication.\n\n**First demo to build:** Explain an authored repair-event attendance dataset with two charts and reveal how a missing week changes the story.\n\n**Languages:** Python\n\n**Deliverable:** SVG charts, a standalone HTML storyboard and chart-specs.json\n\n**Builds on:** [CSV Question Workbench](csv-sql-question-workbench/)\n\nProposed milestones:\n\n1. Profile columns and declare their roles and units\n2. Compute aggregates and choose a chart grammar\n3. Attach annotations to the actual plotted values\n4. Export an accessible visual storyboard and data receipt\n\n<a id=\"configuration-drift-explainer\"></a>\n\n### Configuration Drift Explainer\n\nHelp a developer compare declared defaults, environment overrides and observed JSON configuration. Preserve precedence and redaction rules, expose shadowed values, and attach every explanation to its source file or variable name. Export a drift report that an assistant can consume without receiving secret values.\n\n**Distinct focus:** JSON Schema Output Guard checks data shape; this explains effective values through layered precedence and environment drift.\n\n**First demo to build:** Compare two authored environments and reveal a stale override that shadows the shared timeout setting.\n\n**Languages:** Go\n\n**Deliverable:** Redacted configuration diff and precedence evidence JSON\n\n**Builds on:** [JSON Schema Output Guard](json-schema-output-guard/)\n\nProposed milestones:\n\n1. Load named configuration layers\n2. Resolve precedence with provenance\n3. Compare expected and observed effective values\n4. Export a redacted explanation and CI result\n\n<a id=\"dependency-upgrade-impact-map\"></a>\n\n### Dependency Upgrade Impact Map\n\nHelp a maintainer review an upgrade using supplied before/after API signatures and a bounded source parser. Map changed symbols to actual call sites, distinguish confirmed incompatibilities from unresolved uses, and emit a targeted test checklist. An optional model can explain evidence but cannot invent removed APIs.\n\n**Distinct focus:** PR Review Reporter checks changed lines; this connects old and new dependency contracts to call sites throughout a repository.\n\n**First demo to build:** Change an authored library signature and identify two affected callers plus one unresolved dynamic call.\n\n**Languages:** Python, TypeScript\n\n**Deliverable:** Call-site impact graph, SARIF findings and targeted test checklist\n\n**Builds on:** [PR Review Reporter](pr-review-reporter/)\n\nProposed milestones:\n\n1. Read supplied old and new API contracts\n2. Index supported import and call-site forms\n3. Link changed signatures to affected code\n4. Export findings with unresolved cases visible\n\n<a id=\"diagram-reading-companion\"></a>\n\n### Diagram Reading Companion\n\nHelp an educator turn an authored SVG diagram and an explicit node-edge manifest into a keyboard-navigable explanation. Check that referenced nodes exist, expose branches and cycles, let the author review the reading order, and export an accessible HTML walkthrough plus graph JSON.\n\n**Distinct focus:** Visual Evidence Library indexes text rectangles; this works with explicitly declared diagram relationships and reading order.\n\n**First demo to build:** Navigate an original seed-exchange process diagram and reveal a branch that a linear paragraph would omit.\n\n**Languages:** TypeScript\n\n**Deliverable:** A navigable HTML diagram walkthrough and a reviewed graph manifest\n\n**Builds on:** [Glossary Hovercard Publisher](#glossary-hovercard-publisher) (planned)\n\nProposed milestones:\n\n1. Load an SVG and validate its declared nodes and edges\n2. Compute branches, cycles and candidate reading order\n3. Review explanations beside highlighted diagram parts\n4. Export the navigable walkthrough and graph data\n\nPrimary references: [Reference 1](https://svgwg.org/svg2-draft/struct.html).\n\n<a id=\"field-notes-map-builder\"></a>\n\n### Field Notes Map Builder\n\nHelp a community mapping group explore observations supplied as coordinates, notes and optional photos. Validate locations, group nearby records using an explicit distance rule, preserve original observations during review, and export GeoJSON with a standalone map and observation table.\n\n**Distinct focus:** Visual Evidence Library locates text inside images; this organizes supplied geographic observations and produces a mapping interchange artifact.\n\n**First demo to build:** Map authored bench and shade observations, then inspect why two nearby records are grouped without merging their evidence.\n\n**Languages:** TypeScript\n\n**Deliverable:** A GeoJSON FeatureCollection, a standalone HTML map and reviewed observation groups\n\n**Builds on:** [CSV Repair Workbench](#csv-repair-workbench) (planned)\n\nProposed milestones:\n\n1. Import coordinates, timestamps and observation evidence\n2. Compute distances and explain nearby-record groups\n3. Review the map alongside the original observations\n4. Export GeoJSON and a portable map report\n\nPrimary references: [Reference 1](https://www.rfc-editor.org/rfc/rfc7946).\n\n<a id=\"gesture-shortcut-pad\"></a>\n\n### Gesture Shortcut Pad\n\nHelp a presenter or educator control a local practice application with a few self-recorded gestures. Normalize pointer strokes, compare them with an explicit sequence-distance algorithm, expose uncertain matches, and export a portable gesture profile plus a small browser integration demo.\n\n**Distinct focus:** Desktop Control executes coordinate actions; this learns labels from pointer gestures and integrates them into a local application.\n\n**First demo to build:** Draw three original gesture classes to navigate a fictional slide deck and inspect an ambiguous stroke.\n\n**Languages:** TypeScript\n\n**Deliverable:** An interactive gesture pad, gesture-profile.json and label events for another browser app\n\n**Builds on:** None; begin with the basics of the selected language.\n\nProposed milestones:\n\n1. Capture and normalize original pointer strokes\n2. Compare strokes with an inspectable distance function\n3. Review uncertain matches and add better examples\n4. Export the gesture profile and demonstrate app integration\n\n<a id=\"infrastructure-plan-explainer\"></a>\n\n### Infrastructure Plan Explainer\n\nRead a saved Terraform plan JSON for a developer reviewing a proposed change. Preserve unknown and sensitive-value markers, separate replacement from in-place updates, and trace declared dependencies. Produce a review brief whose explanations link to exact plan addresses; never apply the plan.\n\n**Distinct focus:** Cloud Agent reads runtime state; this explains proposed infrastructure changes and values that cannot yet be known.\n\n**First demo to build:** Inspect a plan that replaces a service dependency while one computed endpoint remains unknown.\n\n**Languages:** Python\n\n**Deliverable:** Markdown change brief and JSON resource-impact graph\n\n**Builds on:** [JSON Schema Output Guard](json-schema-output-guard/)\n\nProposed milestones:\n\n1. Load a versioned plan without exposing sensitive values\n2. Classify create, update, replace and delete actions\n3. Trace declared dependencies and unknown outcomes\n4. Export address-linked review explanations\n\nPrimary references: [Reference 1](https://developer.hashicorp.com/terraform/internals/json-format).\n\n<a id=\"log-volume-reduction-lab\"></a>\n\n### Log Volume Reduction Lab\n\nHelp an engineer build compact log context for an assistant. Learn bounded template grouping, counts and representative examples, then compare uniform and rarity-aware sampling on authored failure fixtures. Export compressed JSONL and a coverage report showing which important events were lost.\n\n**Distinct focus:** Agent Trace Debugger analyzes structured spans; this compresses repetitive log text and measures loss of rare diagnostic events.\n\n**First demo to build:** Shrink an authored 200-line retry burst while retaining a single disk-full event that uniform sampling misses.\n\n**Languages:** Rust, Python\n\n**Deliverable:** Compact log context JSONL and rare-event coverage comparison\n\n**Builds on:** [Token Counter and Cost Meter](token-counter-and-cost-meter/)\n\nProposed milestones:\n\n1. Parse and bound log records\n2. Group repeated templates with source locators\n3. Compare sampling policies on rare events\n4. Export compact context with retained-coverage evidence\n\n<a id=\"plain-language-rewrite-desk\"></a>\n\n### Plain Language Rewrite Desk\n\nHelp a technical author revise dense prose using visible sentence and vocabulary measures, protected terms and an optional real rewriting provider. Compare original and proposed paragraphs, surface changed numbers and missing definitions, and export only the author's accepted revisions with a Markdown change record.\n\n**Distinct focus:** Report Judge audits citations across reports; this is an authoring workflow for paragraph revisions and technical vocabulary preservation.\n\n**First demo to build:** Rewrite an original map-projection explanation while catching a changed numeric example before acceptance.\n\n**Languages:** TypeScript\n\n**Deliverable:** Accepted Markdown, a paragraph-level HTML comparison and revision-decisions.json\n\n**Builds on:** [Glossary Hovercard Publisher](#glossary-hovercard-publisher) (planned)\n\nProposed milestones:\n\n1. Segment prose and record protected terms and facts\n2. Produce simpler candidate paragraphs\n3. Compare omissions, numbers and readability measures\n4. Export accepted revisions and an editorial change record\n\n<a id=\"service-ownership-navigator\"></a>\n\n### Service Ownership Navigator\n\nCombine an authored service catalog, repository ownership rules and runbook links into a local directory. Resolve ownership at the requested path, surface conflicts and missing runbooks, and answer handoff questions with file-level evidence. Export a static site and JSON lookup interface without sending notifications.\n\n**Distinct focus:** Document QA searches prose; this resolves explicit ownership rules and service relationships with conflict handling.\n\n**First demo to build:** Find the owner and runbook of a fictional image service while surfacing two conflicting path rules.\n\n**Languages:** TypeScript\n\n**Deliverable:** Static service directory and source-backed ownership lookup JSON\n\n**Builds on:** [Semantic Notes Search](semantic-notes-search/), [Document QA With Citations and LangChain](doc-qa-with-citations/)\n\nProposed milestones:\n\n1. Load service metadata and a documented ownership-rule subset\n2. Resolve paths and conflicting ownership evidence\n3. Check runbook references\n4. Export a searchable directory and cited handoff packet\n\n<a id=\"subtitle-localization-desk\"></a>\n\n### Subtitle Localization Desk\n\nHelp a course creator localize supplied WebVTT captions through a glossary, an optional real translation provider and an explicit review step. Preserve cue identities and timestamps, flag text that exceeds the chosen reading budget, and export reviewed captions with a side-by-side HTML desk.\n\n**Distinct focus:** Voice Note Transcriber Pipeline obtains and reviews source speech; this starts from captions and manages language localization and timing constraints.\n\n**First demo to build:** Review an authored six-cue lesson translation and fix one overlong caption without shifting the audio timeline.\n\n**Languages:** Python\n\n**Deliverable:** Reviewed WebVTT files, translation-decisions.json and a bilingual HTML review page\n\n**Builds on:** None; begin with the basics of the selected language.\n\nProposed milestones:\n\n1. Parse subtitle cues and preserve their timing\n2. Apply a glossary to translation proposals\n3. Review cue length, terminology and meaning\n4. Export localized captions and their review decisions\n\nPrimary references: [Reference 1](https://www.w3.org/TR/webvtt1/).\n\n<a id=\"ui-string-localization-workbench\"></a>\n\n### UI String Localization Workbench\n\nHelp a small product team localize JSON message catalogs while retaining stable keys, variable placeholders and contextual notes. Compare recorded or real provider proposals in a UI preview, require review of ambiguous strings, and export an approved locale catalog and unresolved-string queue.\n\n**Distinct focus:** Subtitle Localization Desk preserves temporal cues; this preserves message keys, interpolation contracts and interface context.\n\n**First demo to build:** Translate a fictional borrowing app's strings and catch a proposal that drops its item-count placeholder.\n\n**Languages:** TypeScript\n\n**Deliverable:** Reviewed locale JSON, an interactive message preview and unresolved-strings.json\n\n**Builds on:** [Glossary Hovercard Publisher](#glossary-hovercard-publisher) (planned)\n\nProposed milestones:\n\n1. Read message keys, placeholders and context\n2. Generate bounded translation proposals\n3. Review strings in a rendered interface preview\n4. Export the approved locale catalog and remaining questions\n\nPrimary references: [Reference 1](https://html.spec.whatwg.org/multipage/dom.html#the-lang-and-xml:lang-attributes).\n\n<a id=\"workshop-materials-planner\"></a>\n\n### Workshop Materials Planner\n\nHelp a workshop host reconcile per-participant materials, reusable equipment and an inventory snapshot. Use explicit unit conversions and declared sharing rules to compute shortages, keep unconvertible quantities visible, and export a packing list with a participant-count comparison.\n\n**Distinct focus:** Calendar Focus Planner allocates time; this reconciles material quantities and equipment-sharing constraints.\n\n**First demo to build:** Change an original paper-craft workshop from eight participants to twelve and inspect the exact extra supplies required.\n\n**Languages:** Python\n\n**Deliverable:** packing-list.csv, shortages.json and an HTML what-if planner\n\n**Builds on:** [CSV Repair Workbench](#csv-repair-workbench) (planned)\n\nProposed milestones:\n\n1. Model participants, materials and inventory units\n2. Scale consumables and shared equipment separately\n3. Compute shortages and review uncertain conversions\n4. Export packing lists and participant-count scenarios\n\n## Level 3: Engineer\n\n<a id=\"ci-failure-reproducer\"></a>\n\n### CI Failure Reproducer\n\nHelp a contributor reproduce a failed job from an exported workflow log, commit identity and declared environment. Identify the first failing command, distinguish infrastructure failures from test failures, and produce an allowlisted local replay recipe. Retain the original log lines beside every generated instruction.\n\n**Distinct focus:** Tiny Coding Agent patches a local workspace; this recovers the environment and minimal replay steps from a failed CI job.\n\n**First demo to build:** Reduce an authored failed job to a three-step local reproduction while retaining the original failure lines.\n\n**Languages:** Python, TypeScript\n\n**Deliverable:** Reproduction manifest, shell-free replay CLI and HTML failure brief\n\n**Builds on:** [Tiny Coding Agent](tiny-coding-agent/), [PR Review Reporter](pr-review-reporter/)\n\nProposed milestones:\n\n1. Normalize job steps and source line ranges\n2. Separate the initiating failure from downstream noise\n3. Build an explicit replay recipe\n4. Run an approved local command and compare evidence\n\nPrimary references: [Reference 1](https://docs.github.com/en/actions/how-tos/monitor-workflows/use-workflow-run-logs).\n\n<a id=\"community-learning-path-finder\"></a>\n\n### Community Learning Path Finder\n\nHelp a learner choose a feasible sequence from an explicit catalog of workshops and resources. Combine prerequisite graphs, stated goals and a time budget, explain why each resource was selected, and export an editable HTML learning map with a machine-readable path for another course platform.\n\n**Distinct focus:** Source-Grounded Study Coach schedules cards within a reading; this plans prerequisite-aware progression across complete learning resources.\n\n**First demo to build:** Plan a short route through an authored neighborhood-mapping curriculum and explain the extra prerequisite required for one advanced workshop.\n\n**Languages:** Python\n\n**Deliverable:** An HTML learning map, path.json and unmet-prerequisites.json\n\n**Builds on:** [Bookmark Path Organizer](#bookmark-path-organizer) (planned), [Semantic Notes Search](semantic-notes-search/)\n\nProposed milestones:\n\n1. Model resources, goals and prerequisite relationships\n2. Find feasible paths and expose missing prerequisites\n3. Rank alternatives under an explicit time budget\n4. Export an editable learning map and integration contract\n\n<a id=\"database-migration-rehearsal\"></a>\n\n### Database Migration Rehearsal\n\nLet a developer or coding agent propose SQLite migrations against a disposable database copy. Record schema and row-count invariants before and after, test declared rollback steps, and expose irreversible changes. Export a machine-readable rehearsal receipt and review page without touching the source database.\n\n**Distinct focus:** CSV Question Workbench performs read-only queries; this rehearses schema writes and checks rollback on a disposable database.\n\n**First demo to build:** Rehearse an authored column migration, catch a lost row and demonstrate the failed rollback check.\n\n**Languages:** Python\n\n**Deliverable:** Schema diff, invariant results and reversible-migration receipt\n\n**Builds on:** [CSV Question Workbench](csv-sql-question-workbench/), [JSON Schema Output Guard](json-schema-output-guard/)\n\nProposed milestones:\n\n1. Snapshot a local database and define invariants\n2. Apply migrations only to the disposable copy\n3. Exercise rollback and detect data loss\n4. Export evidence for an explicit release decision\n\n<a id=\"decision-tradeoff-explorer\"></a>\n\n### Decision Tradeoff Explorer\n\nHelp a community team compare practical project options using a user-supplied criteria table and supporting notes. Apply explicit constraints, weighted scores and sensitivity analysis, keep missing values visible, and export an interactive HTML decision board and a reusable decision record.\n\n**Distinct focus:** Research Report Agent gathers and cites evidence; this begins with an explicit evidence table and computes how stated preferences affect a decision.\n\n**First demo to build:** Compare three original community exhibition layouts and reveal which priority change reverses their ranking.\n\n**Languages:** TypeScript\n\n**Deliverable:** An interactive tradeoff board, criteria.csv and decision-record.json\n\n**Builds on:** [CSV Question Workbench](csv-sql-question-workbench/), [Chart Storyboard Builder](#chart-storyboard-builder) (planned)\n\nProposed milestones:\n\n1. Declare options, criteria, constraints and source notes\n2. Compute comparable scores while preserving unknowns\n3. Explore weight sensitivity and dominated options\n4. Export the chosen scenario and its assumptions\n\n<a id=\"kubernetes-event-storyboard\"></a>\n\n### Kubernetes Event Storyboard\n\nHelp an on-call engineer inspect exported Kubernetes events and workload snapshots. Group repeated events, distinguish observation time from occurrence time, and link each suggested investigation to object identity and rollout revision. Export an HTML timeline and a redacted JSON context pack for an assistant.\n\n**Distinct focus:** Incident Postmortem Writer reviews an incident ledger; this reconstructs workload context from raw Kubernetes objects and event repetitions.\n\n**First demo to build:** Replay an authored rollout with a failed image pull, repeated warnings and a later successful pod.\n\n**Languages:** Go, TypeScript\n\n**Deliverable:** HTML workload timeline and versioned JSON context pack\n\n**Builds on:** [Agent Trace Debugger](agent-trace-debugger/), [Incident Postmortem Writer](postmortem-writer/)\n\nProposed milestones:\n\n1. Parse event and workload snapshots\n2. Group repetitions without losing timestamps\n3. Connect evidence to workload revisions\n4. Export a redacted assistant context pack\n\nPrimary references: [Reference 1](https://kubernetes.io/docs/reference/kubernetes-api/core/event-v1/).\n\n<a id=\"label-adjudication-desk\"></a>\n\n### Label Adjudication Desk\n\nHelp a small team create useful evaluation labels without silently replacing disagreement with majority vote. Import independently labeled records, blind annotator identities during review, group disagreements and capture an explicit final decision with its evidence. Export a local review page and versioned JSONL that preserves both original labels and adjudication history.\n\n**Distinct focus:** Dataset Split Auditor checks dataset separation and Feedback Theme Board groups comments; this project produces accountable human reference labels for evaluations.\n\n**First demo to build:** Review three disagreements in an authored annotation set and export both accepted decisions and one unresolved case.\n\n**Languages:** Python, TypeScript\n\n**Deliverable:** Local adjudication UI, agreement report and provenance-preserving labeled JSONL\n\n**Builds on:** [Dataset Split Auditor](dataset-split-auditor/), [Feedback Theme Board](feedback-theme-board/)\n\nProposed milestones:\n\n1. Import independent labels and preserve record provenance\n2. Measure agreement and build a blinded review queue\n3. Capture evidence-backed adjudication decisions\n4. Export versioned labels with unresolved cases visible\n\n**Scope boundary:** Retain unresolved judgments and raw agreement counts. Inter-annotator agreement measures consistency, not the objective truth of a label.\n\n<a id=\"lost-item-match-desk\"></a>\n\n### Lost Item Match Desk\n\nHelp a community venue match lost-item descriptions with photographed found objects. Combine explicit text features, simple image-color descriptors and optional reviewed vision proposals, then export an HTML candidate-pair desk and a decision file for the venue's existing records.\n\n**Distinct focus:** Catalog Record Linker reconciles structured records; this teaches multimodal candidate matching with separate text and image evidence.\n\n**First demo to build:** Compare original photos of two similar bottles and one umbrella against authored descriptions and leave an ambiguous bottle unresolved.\n\n**Languages:** Python\n\n**Deliverable:** An HTML object-pair review desk, feature explanations and match-decisions.json\n\n**Builds on:** [Catalog Record Linker](#catalog-record-linker) (planned), [Photo Burst Contact Sheet](#photo-burst-contact-sheet) (planned)\n\nProposed milestones:\n\n1. Import object descriptions, photos and intake identifiers\n2. Compute text and image features independently\n3. Rank candidate pairs and review conflicting evidence\n4. Export match decisions with their source records\n\n<a id=\"presentation-rehearsal-coach\"></a>\n\n### Presentation Rehearsal Coach\n\nHelp a speaker improve a rehearsal by aligning supplied slide text and timed transcript segments. Compute explicit pacing and topic-coverage signals, show the source phrases behind suggested practice targets, and export a slide-by-slide HTML report with a reusable rehearsal comparison file.\n\n**Distinct focus:** Meeting Notes to Actions extracts commitments; this aligns a speaker's delivery to planned visual material and supports deliberate rehearsal.\n\n**First demo to build:** Compare two original three-slide rehearsals and identify a skipped definition with its supporting transcript ranges.\n\n**Languages:** Python\n\n**Deliverable:** A slide-linked HTML rehearsal report, coverage.json and a comparison between two rehearsals\n\n**Builds on:** [Voice Note Transcriber Pipeline](voice-note-transcriber-pipeline/), [Semantic Notes Search](semantic-notes-search/)\n\nProposed milestones:\n\n1. Import slide text and timed rehearsal segments\n2. Align spoken segments to candidate slides\n3. Measure pacing and review apparent coverage gaps\n4. Export a rehearsal report and compare a second attempt\n\n<a id=\"retry-storm-lab\"></a>\n\n### Retry Storm Lab\n\nHelp SDK authors choose retry behavior when many clients fail together. Replay concurrent clients against a deterministic service model, compare bounded backoff and jitter with a shared retry budget, then run the same policy against a local HTTP fixture. Export amplification and recovery timelines with a reusable client policy.\n\n**Distinct focus:** LLM Gateway With Fallbacks follows one request through provider failures; this project measures the aggregate load created by many clients retrying together.\n\n**First demo to build:** Start twenty fixture clients at the same failure instant and compare synchronized retries with seeded jitter and a shared retry cap.\n\n**Languages:** Go, TypeScript\n\n**Deliverable:** Retry policy library, deterministic workload replay and amplification timeline\n\n**Builds on:** [LLM Gateway With Fallbacks](llm-gateway-with-fallbacks/), [Agent Budget Planner](agent-budget-planner/)\n\nProposed milestones:\n\n1. Model concurrent failures with a deterministic clock\n2. Compare bounded backoff and jitter\n3. Enforce shared retry budgets and server delays\n4. Replay the policy against a local HTTP service\n\n**Scope boundary:** Seeded simulation explains mechanisms; local measurements do not establish the capacity or recovery behavior of an external service.\n\n<a id=\"semantic-cache-correctness-lab\"></a>\n\n### Semantic Cache Correctness Lab\n\nBuild an opt-in answer cache that binds entries to tenant, model, source revision and expiry. Compare exact and semantic candidate matching using authored near-miss questions, including changed numbers and negation. Export a local HTTP adapter and a false-hit report; similarity alone must not authorize cross-user reuse.\n\n**Distinct focus:** RAG Freshness Pipeline versions source content; this decides whether a prior answer can be reused for a new query under identity and freshness constraints.\n\n**First demo to build:** Show a cache hit for a paraphrase and a miss when the question changes a critical number or tenant.\n\n**Languages:** Go, Python\n\n**Deliverable:** Local cache adapter and false-hit, latency and invalidation report\n\n**Builds on:** [Semantic Notes Search](semantic-notes-search/), [RAG Freshness Pipeline](rag-freshness-pipeline/)\n\nProposed milestones:\n\n1. Define identity, freshness and privacy boundaries\n2. Implement exact-match lookup and invalidation\n3. Evaluate semantic candidates against adversarial pairs\n4. Export a bounded HTTP adapter and reuse evidence\n\nPrimary references: [Reference 1](https://www.rfc-editor.org/rfc/rfc9111.html).\n\n<a id=\"streaming-answer-recovery\"></a>\n\n### Streaming Answer Recovery\n\nBuild a browser answer view and local event stream for developers integrating assistant output. Handle split UTF-8 bytes, event IDs, reconnection, cancellation and partial citations. Preserve the difference between an interrupted draft and a completed answer, with a downloadable event trace to reproduce rendering failures.\n\n**Distinct focus:** Streaming Agent Shell handles a terminal tool loop; this teaches browser rendering, reconnection and partial-answer state over an event stream.\n\n**First demo to build:** Disconnect an authored answer midway through a Unicode character, reconnect and replay without duplicate text.\n\n**Languages:** TypeScript, Go\n\n**Deliverable:** Reusable browser component, SSE fixture server and replayable event trace\n\n**Builds on:** [Agent Trace Debugger](agent-trace-debugger/), [JSON Schema Output Guard](json-schema-output-guard/)\n\nProposed milestones:\n\n1. Decode chunked bytes into complete events\n2. Render text and citations by stable event identity\n3. Handle reconnect and cancellation without duplicate output\n4. Export and replay an interrupted-answer trace\n\nPrimary references: [Reference 1](https://html.spec.whatwg.org/multipage/server-sent-events.html).\n\n<a id=\"tool-contract-migration-checker\"></a>\n\n### Tool Contract Migration Checker\n\nHelp tool authors evolve a callable interface while existing agents still hold old argument shapes. Compare a documented subset of before-and-after schemas, generate counterexamples for required fields and narrowed values, and replay saved calls through both validators. Export a compatibility report and reviewable migration fixtures for CI.\n\n**Distinct focus:** JSON Schema Output Guard validates one payload; this project reasons about compatibility between two tool contracts and supplies concrete calls that change validity. It does not map package upgrades to source call sites.\n\n**First demo to build:** Add a required argument to a fictional catalog tool and generate a saved call that passes the old contract but fails the new one.\n\n**Languages:** TypeScript, Python\n\n**Deliverable:** Schema compatibility CLI, breaking-call fixtures and CI report\n\n**Builds on:** [JSON Schema Output Guard](json-schema-output-guard/)\n\nProposed milestones:\n\n1. Load versioned tool contracts and saved calls\n2. Classify supported schema changes\n3. Generate and replay breaking-call counterexamples\n4. Export migration fixtures and a compatibility gate\n\n**Scope boundary:** Publish the supported schema subset and mark unhandled keywords unresolved instead of declaring full JSON Schema compatibility.\n\n<a id=\"video-highlight-storyboard\"></a>\n\n### Video Highlight Storyboard\n\nHelp a tutorial creator assemble short excerpts from a supplied video, frame samples and timed transcript. Combine visible shot changes with transcript topic scores, preserve exact source time ranges, and export a playable storyboard and edit-decision JSON for a video editor.\n\n**Distinct focus:** Voice Note Transcriber Pipeline creates captions; this combines visual and transcript timing to select an editable video sequence.\n\n**First demo to build:** Select a concise introduction and demonstration from an original paper-folding tutorial without cutting a sentence midway.\n\n**Languages:** Python\n\n**Deliverable:** A timestamped HTML storyboard, selected thumbnails and edit-decisions.json\n\n**Builds on:** [Voice Note Transcriber Pipeline](voice-note-transcriber-pipeline/), [Photo Burst Contact Sheet](#photo-burst-contact-sheet) (planned)\n\nProposed milestones:\n\n1. Align video metadata, frame samples and transcript time\n2. Generate shot and topic boundary candidates\n3. Review clip selections under a duration budget\n4. Export the storyboard and editor-facing time ranges\n\n## Level 4: Systems\n\n<a id=\"a2a-task-handoff-workbench\"></a>\n\n### A2A Task Handoff Workbench\n\nHelp teams connect agents that expose different capabilities and task lifecycles. Read Agent Cards, choose a mutually supported binding, and run a handoff that includes a request for more input, cancellation and a final artifact. Export a local client-server pair and a replayable receipt showing every state transition and artifact owner.\n\n**Distinct focus:** Multi-Agent Code Review Panel coordinates local reviewers for one purpose; this project tests task exchange between independent protocol participants.\n\n**First demo to build:** Have two local agents assemble an authored workshop brief, pause for one missing input and exchange the final artifact.\n\n**Languages:** Python, TypeScript\n\n**Deliverable:** Two local agent endpoints, handoff client and task/artifact replay bundle\n\n**Builds on:** [Typed Workflow Agent with Mastra](typed-workflow-agent-with-mastra/), [Agent Trace Debugger](agent-trace-debugger/)\n\nProposed milestones:\n\n1. Read Agent Cards and select supported interfaces\n2. Create a task and preserve message identity\n3. Handle input requests and cancellation\n4. Exchange artifacts and replay the complete handoff\n\n**Scope boundary:** Select and pin the A2A protocol revision, binding and SDK versions at implementation time. Verify their wire compatibility and capability declarations with real local endpoints before claiming support; optional extensions remain explicit.\n\nPrimary references: [Reference 1](https://a2a-protocol.org/latest/specification/).\n\n<a id=\"abstention-calibration-workbench\"></a>\n\n### Abstention Calibration Workbench\n\nHelp teams set a defensible accept-or-defer rule for a bounded task. Tune a score threshold on labeled development records under explicit error costs, freeze that policy, and evaluate held-out risk and coverage across slices. Export a decision-policy file and audit that shows how many requests need human review.\n\n**Distinct focus:** Local Model Evaluation Harness reports model performance and calibration; this project turns scores into an operational defer policy with a separate threshold-selection phase.\n\n**First demo to build:** Tune a defer threshold on an authored development split, freeze it and reveal its different coverage on the held-out split.\n\n**Languages:** Python\n\n**Deliverable:** Frozen accept/defer policy JSON, risk-coverage curves and held-out slice audit\n\n**Builds on:** [Dataset Split Auditor](dataset-split-auditor/), [Local Model Evaluation Harness](local-model-eval-harness/)\n\nProposed milestones:\n\n1. Validate separated development and holdout records\n2. Tune thresholds under declared error costs\n3. Freeze and evaluate the policy on holdout slices\n4. Export a decision adapter and review-volume estimate\n\n**Scope boundary:** Input scores are not automatically probabilities. Report empirical results and uncertainty without promising a deployment-wide error bound from a small dataset.\n\n<a id=\"artifact-provenance-gate\"></a>\n\n### Artifact Provenance Gate\n\nHelp a maintainer inspect a downloaded agent plugin or release artifact before integrating it. Verify the subject digest and attestation signature, evaluate declared builder and source identities against an explicit policy, and preserve the reason for every rejection. Export a CI gate with authored signed fixtures and a separately verified external-verifier adapter.\n\n**Distinct focus:** Cross-Agent Skill Installer writes a local skill package; this project checks artifact origin and build evidence before accepting a package or binary from an external build process.\n\n**First demo to build:** Verify an authored signed artifact, then change one byte and separately reject a signature from an untrusted builder.\n\n**Languages:** Go, Python\n\n**Deliverable:** Artifact verification CLI, trust-policy file and provenance decision JSON\n\n**Builds on:** [Cross-Agent Skill Installer](skill-installer/), [SKILL.md Validator and Loader](skill-validator/)\n\nProposed milestones:\n\n1. Bind artifact bytes to the attestation subject\n2. Verify signatures against an explicit trust root\n3. Evaluate builder and source-material policies\n4. Export a CI gate with reproducible rejection fixtures\n\n**Scope boundary:** Pin the supported attestation formats and verifier versions. Provenance verification establishes particular origin claims, not content safety or automatic SLSA certification.\n\nPrimary references: [Reference 1](https://slsa.dev/spec/v1.2/provenance).\n\n<a id=\"context-compaction-verifier\"></a>\n\n### Context Compaction Verifier\n\nHelp agent developers avoid losing a user constraint during a long session. Track explicit facts and constraints with source locators, create an extractive compressed context, and test candidate summaries against a declared retention contract. Export compaction middleware that keeps the prior snapshot when required evidence disappears.\n\n**Distinct focus:** Persistent Memory Server stores persistent records; this project validates one active-session compression step against explicit constraints before replacing working context.\n\n**First demo to build:** Compress an authored session whose required output format is easy to omit and restore the previous snapshot when that constraint disappears.\n\n**Languages:** Python, Rust\n\n**Deliverable:** Compaction middleware, constraint-retention receipt and restorable context snapshots\n\n**Builds on:** [Persistent Memory Server](memory-server/), [Token Counter and Cost Meter](token-counter-and-cost-meter/)\n\nProposed milestones:\n\n1. Build a source-linked fact and constraint ledger\n2. Create a bounded extractive context snapshot\n3. Check retention and authored contradiction cases\n4. Commit or restore context with an audit receipt\n\n**Scope boundary:** The baseline verifies explicit structured constraints and authored lexical relations. Optional model summaries require separate evaluation and do not turn these checks into general semantic-equivalence proof.\n\n<a id=\"hedged-request-lab\"></a>\n\n### Hedged Request Lab\n\nHelp client developers evaluate delayed duplicate requests for safe reads. Send a second attempt only after a configurable delay, accept the first valid response, and record cancellation, late completion and duplicate service work separately. Export a bounded HTTP client and a latency-versus-work report from controlled local endpoints.\n\n**Distinct focus:** LLM Gateway With Fallbacks makes sequential attempts after failure; this project studies overlapping attempts triggered by slowness and their additional resource cost.\n\n**First demo to build:** Delay one local read endpoint and measure how a second attempt changes both latency and total service work.\n\n**Languages:** Go\n\n**Deliverable:** Hedged-read client, controllable endpoint fixtures and latency/work comparison receipt\n\n**Builds on:** [LLM Gateway With Fallbacks](llm-gateway-with-fallbacks/), [Agent Trace Debugger](agent-trace-debugger/)\n\nProposed milestones:\n\n1. Measure the latency distribution of safe reads\n2. Schedule delayed duplicate attempts\n3. Validate winners and account for late work\n4. Export latency and duplicate-work tradeoffs\n\n**Scope boundary:** Restrict the default adapter to declared safe reads. Client cancellation does not prove that an upstream service stopped computation or billing.\n\n<a id=\"local-inference-capacity-planner\"></a>\n\n### Local Inference Capacity Planner\n\nHelp a team choose a concurrency limit for its own model endpoint. Replay an authored arrival schedule, record queue wait separately from service time, and compare observed percentiles and timeouts across bounded runs. Export a capacity curve and editable operating limit based on measured requests, not model-name lookup tables.\n\n**Distinct focus:** Local Model Evaluation Harness scores outputs; this measures queue behavior under controlled arrival schedules and concurrency.\n\n**First demo to build:** Replay the same authored arrivals at three concurrency limits and compare queue wait with service latency.\n\n**Languages:** Python, Go\n\n**Deliverable:** Load-replay manifest, capacity curve and measured operating-limit receipt\n\n**Builds on:** [Local Model Evaluation Harness](local-model-eval-harness/), [Agent Budget Planner](agent-budget-planner/)\n\nProposed milestones:\n\n1. Define an arrival schedule and resource limits\n2. Measure queue and service time independently\n3. Compare concurrency settings on the same workload\n4. Export a reproducible capacity decision\n\n<a id=\"mcp-protocol-compatibility-doctor\"></a>\n\n### MCP Compatibility Doctor\n\nHelp an integration author diagnose a client that connects but cannot use a server correctly. Run authored negotiation, request-correlation and capability probes through a bounded transport adapter. Export a compatibility matrix and the smallest wire transcript that explains a failure, with credentials removed.\n\n**Distinct focus:** MCP Tool Discovery Workbench teaches serving and discovering a tool inventory; this project diagnoses disagreements between independently implemented clients and servers.\n\n**First demo to build:** Connect two authored local participants whose declared capabilities disagree and export the first failing exchange.\n\n**Languages:** TypeScript, Python\n\n**Deliverable:** Protocol probe CLI, compatibility JSON and redacted reproduction transcript\n\n**Builds on:** [MCP Tool Discovery Workbench](mcp-at-scale/), [Agent Trace Debugger](agent-trace-debugger/)\n\nProposed milestones:\n\n1. Record initialization and negotiated capabilities\n2. Probe supported operations and request correlation\n3. Reduce a failing exchange to its required messages\n4. Export a client-server compatibility receipt\n\n**Scope boundary:** Pin the selected MCP specification revision and transport during implementation; validate probes against that revision and report unsupported capabilities explicitly. Planned probes are not a universal conformance certification.\n\nPrimary references: [Reference 1](https://modelcontextprotocol.io/specification/2025-11-25/basic/lifecycle).\n\n<a id=\"metamorphic-evaluation-workbench\"></a>\n\n### Metamorphic Evaluation Workbench\n\nHelp evaluators catch inconsistent behavior across related inputs. Author transformations such as unit conversion, record reordering and equivalent formatting, define the output relationship each should preserve, and shrink violating examples. Export a property-based evaluation runner and small failure bundles that can be consumed by CI.\n\n**Distinct focus:** Prompt Regression Tester compares known cases across prompt revisions; this project generates related inputs and checks domain invariants between their outputs.\n\n**First demo to build:** Reorder an authored table, change equivalent unit notation and isolate the transformation that violates the answer contract.\n\n**Languages:** Python, TypeScript\n\n**Deliverable:** Transformation/property runner, minimized counterexample JSON and CI results\n\n**Builds on:** [Prompt Regression Tester](prompt-regression-tester/), [JSON Schema Output Guard](json-schema-output-guard/)\n\nProposed milestones:\n\n1. Define input transformations and expected relations\n2. Run paired cases with recorded response provenance\n3. Check relations and shrink violations\n4. Export reproducible property failures for CI\n\n**Scope boundary:** Relations are authored assumptions about a particular task. Passing them does not establish general model quality, and stochastic adapters must retain repeated-run evidence.\n\n<a id=\"oauth-resource-boundary-lab\"></a>\n\n### OAuth Resource Boundary Lab\n\nHelp developers integrate delegated authorization without accepting a token intended for another service. Build local authorization and resource fixtures, follow metadata discovery, bind authorization to the requested resource, and check audience and scope at the server. Export reusable validation middleware and a redacted explanation of rejected requests.\n\n**Distinct focus:** Tool Call Firewall checks a proposed tool action; this project establishes which resource and permissions a delegated credential actually authorizes.\n\n**First demo to build:** Use a locally issued token against two fictional resources and explain why the second resource rejects it.\n\n**Languages:** Go, TypeScript\n\n**Deliverable:** Local authorization fixture, resource-server middleware and authorization decision transcript\n\n**Builds on:** [MCP Tool Discovery Workbench](mcp-at-scale/), [Tool Call Firewall](tool-call-firewall/)\n\nProposed milestones:\n\n1. Model the client, issuer and resource identities\n2. Discover metadata and bind a proof-key authorization flow\n3. Reject wrong audiences and insufficient scopes\n4. Integrate middleware and export redacted decisions\n\n**Scope boundary:** Pin the MCP authorization revision and underlying OAuth requirements before coding. Use a local issuer by default and verify any external identity-provider adapter separately; do not describe OAuth 2.1 draft material as a finalized RFC.\n\nPrimary references: [Reference 1](https://modelcontextprotocol.io/specification/2025-11-25/basic/authorization), [Reference 2](https://www.rfc-editor.org/info/rfc8707/).\n\n<a id=\"outbound-request-policy-proxy\"></a>\n\n### Outbound Request Policy Proxy\n\nHelp developers constrain a fetch tool that follows URLs supplied by untrusted documents. Evaluate the scheme, host, resolved address and each redirect, then connect using the validated destination under explicit size and time limits. Export a local egress adapter and loopback cases that reveal redirect and address-policy mistakes.\n\n**Distinct focus:** LLM Gateway With Fallbacks selects configured providers; this project constrains network destinations for arbitrary URL-fetch operations, including redirect transitions.\n\n**First demo to build:** Follow an authored local redirect chain whose final destination violates the declared address policy and inspect the blocked hop.\n\n**Languages:** Go\n\n**Deliverable:** Policy-aware HTTP adapter, destination decision receipts and adversarial local fixtures\n\n**Builds on:** [LLM Gateway With Fallbacks](llm-gateway-with-fallbacks/), [Tool Call Firewall](tool-call-firewall/)\n\nProposed milestones:\n\n1. Parse destinations and define address policies\n2. Bind resolution decisions to actual connections\n3. Revalidate redirects and bound responses\n4. Export an adapter and replay denied requests\n\n**Scope boundary:** Document the supported DNS, proxy and network assumptions. A process-level adapter is not an operating-system sandbox or a guarantee about traffic that bypasses it.\n\n<a id=\"release-canary-decision-lab\"></a>\n\n### Release Canary Decision Lab\n\nHelp a team decide whether an agent behavior change is ready for wider exposure. Assign stable request cohorts, compare candidate and baseline error and latency windows, and distinguish insufficient evidence from a failed gate. Export replayable decision receipts and a local shadow adapter that exercises the policy without deploying anything.\n\n**Distinct focus:** Harness Bench compares policies on a fixed dataset; this project studies sequential release decisions, cohort assignment and evidence accumulated over time.\n\n**First demo to build:** Replay authored baseline and candidate requests through windows that first lack evidence and then trigger an explicit stop decision.\n\n**Languages:** Python, Go\n\n**Deliverable:** Canary policy runner, local shadow adapter and stop/continue/insufficient-evidence receipts\n\n**Builds on:** [Harness Bench](harness-bench/), [Agent Trace Debugger](agent-trace-debugger/)\n\nProposed milestones:\n\n1. Assign stable cohorts and define release signals\n2. Accumulate comparable baseline and candidate windows\n3. Apply minimum-sample and stopping rules\n4. Replay decisions through a local shadow adapter\n\n**Scope boundary:** Export recommendations only. State the chosen statistical assumptions and do not interpret a small passing window as universal release safety.\n\n<a id=\"secret-injection-sidecar\"></a>\n\n### Secret Injection Sidecar\n\nHelp developers keep service credentials out of model-visible tool arguments and routine traces. Build a local broker that resolves opaque handles, binds each handle to a destination and operation, and inserts environment-supplied credentials at the network boundary. Test echoed credential markers and export decision receipts with bounded response filtering.\n\n**Distinct focus:** Tool Call Firewall authorizes actions, while this project removes raw credentials from the agent-facing interface and tests the broker's observable boundaries.\n\n**First demo to build:** Call a local fixture using an opaque handle and demonstrate that its exact echoed credential marker is absent from the returned trace.\n\n**Languages:** Rust, Python\n\n**Deliverable:** Local credential broker, handle-based client adapter and redacted request receipts\n\n**Builds on:** [Tool Call Firewall](tool-call-firewall/), [Streaming Agent Shell in Rust](rust-agent-shell/)\n\nProposed milestones:\n\n1. Define opaque handles and destination-bound grants\n2. Inject credentials inside the broker boundary\n3. Exercise response and trace redaction fixtures\n4. Integrate a client using handles alone\n\n**Scope boundary:** Use environment secrets and loopback test services. Exact-marker filtering demonstrates a bounded property and cannot guarantee that an arbitrary upstream service never leaks a transformed secret.\n\n<a id=\"signed-webhook-inbox\"></a>\n\n### Signed Webhook Inbox\n\nHelp developers feed external events into an agent workflow without losing retries or accepting altered payloads. Verify an authored signature scheme over the raw body, enforce timestamp bounds, and store stable delivery identities before dispatch. Export an HTTP receiver and a replay CLI that distinguishes a transport retry from a new business event.\n\n**Distinct focus:** Durable Agent Jobs handles work after submission; this project establishes delivery authenticity, identity and replay behavior at the inbound HTTP boundary.\n\n**First demo to build:** Deliver the same authored event twice, alter one payload byte and inspect which deliveries enter the durable inbox.\n\n**Languages:** Go\n\n**Deliverable:** Local webhook receiver, delivery ledger and explicit replay CLI\n\n**Builds on:** [Self-Correcting Workflow Hooks](workflow-hooks/), [Durable Agent Jobs](durable-agent-jobs/)\n\nProposed milestones:\n\n1. Preserve raw request bytes and delivery identity\n2. Verify signatures and bounded timestamps\n3. Deduplicate retries with a durable inbox\n4. Replay accepted deliveries with processing receipts\n\n**Scope boundary:** The default signature format is an explicitly authored teaching contract. Any provider adapter must implement and test that provider's actual signature rules.\n\n<a id=\"tenant-fairness-scheduler\"></a>\n\n### Tenant Fairness Scheduler\n\nHelp platform developers share a finite worker pool across tenants with different job sizes. Implement weighted deficit scheduling, bounded admission and aging, then compare per-tenant wait distributions under authored bursts. Export a queue adapter and workload receipts that make starvation and unused capacity visible.\n\n**Distinct focus:** Agent Budget Planner accounts for caller-supplied usage and deadlines; this project decides which tenant receives the next shared execution slot and measures fairness.\n\n**First demo to build:** Replay a burst from one fictional tenant while a second submits small jobs, then compare their waits under two queue policies.\n\n**Languages:** Rust, Python\n\n**Deliverable:** Fair queue adapter, workload replay CLI and per-tenant wait/throughput report\n\n**Builds on:** [Durable Agent Jobs](durable-agent-jobs/), [Agent Budget Planner](agent-budget-planner/)\n\nProposed milestones:\n\n1. Represent tenant queues and declared job costs\n2. Implement weighted deficit scheduling\n3. Bound admission and detect starvation\n4. Compare fairness on replayed burst workloads\n\n**Scope boundary:** Define fairness against declared or measured service units and expose errors in cost estimates. The local adapter does not claim distributed consensus.\n\n## Level 5: Frontier\n\n<a id=\"agent-resource-deadlock-lab\"></a>\n\n### Agent Resource Deadlock Lab\n\nHelp developers coordinate agents that need several exclusive resources, such as a browser session and a workspace. Build wait-for graphs, explore bounded schedules, and compare ordered acquisition with timeout-and-release policies. Export deadlock traces and a resource-coordinator adapter with explicit acquisition receipts.\n\n**Distinct focus:** Durable Agent Jobs coordinates queue leases; this project studies circular wait when tasks hold multiple scarce resources while requesting others.\n\n**First demo to build:** Replay two local agents acquiring a browser and workspace in opposite order, then demonstrate a schedule that completes.\n\n**Languages:** Rust, TypeScript\n\n**Deliverable:** Bounded schedule explorer, deadlock replay traces and resource-coordinator adapter\n\n**Builds on:** [Durable Agent Jobs](durable-agent-jobs/), [Multi-Agent Code Review Panel](multi-agent-code-review-panel/)\n\nProposed milestones:\n\n1. Model resource ownership and wait-for edges\n2. Explore bounded interleavings and detect cycles\n3. Compare ordering and timeout-release policies\n4. Export a coordinator and replayable deadlock evidence\n\n**Scope boundary:** A bounded explorer proves only the schedules it actually examines. Define resource semantics explicitly and distinguish deadlock from slow work, starvation and crashed ownership.\n\n<a id=\"judge-bias-calibration-lab\"></a>\n\n### Judge Bias Calibration Lab\n\nHelp evaluators decide whether an automated pairwise judge is useful for their task. Blind candidate identities, swap answer positions, run authored length counterfactuals and compare decisions with held-out human anchors. Export disagreement and bias breakdowns plus a versioned rubric and judge configuration receipt.\n\n**Distinct focus:** Report Judge checks report evidence and citation support; this project evaluates the reliability and biases of the evaluator itself.\n\n**First demo to build:** Swap the positions of two authored answers and expose a recorded judge that changes preference without new evidence.\n\n**Languages:** Python, TypeScript\n\n**Deliverable:** Pairwise judging runner, bias scorecard and versioned rubric/configuration bundle\n\n**Builds on:** [Report Judge](report-judge/), [Dataset Split Auditor](dataset-split-auditor/), [Local Model Evaluation Harness](local-model-eval-harness/)\n\nProposed milestones:\n\n1. Create blinded pairs and separated human anchors\n2. Run position swaps and length counterfactuals\n3. Measure disagreement and slice-specific bias\n4. Export a rubric with held-out validation evidence\n\n**Scope boundary:** Recorded judge responses form the offline baseline. Any live model judge must retain its model/configuration receipt, and calibration findings apply only to the tested task distribution.\n\n<a id=\"trajectory-counterexample-minimizer\"></a>\n\n### Trajectory Counterexample Minimizer\n\nHelp agent developers diagnose failures that depend on action order. Express bounded temporal rules such as approval preceding an effect, check event traces, and remove irrelevant events while preserving declared causal dependencies. Export a minimal replay bundle with the violated rule and exact event identities.\n\n**Distinct focus:** Agent Trace Debugger explains execution timing; this project checks event-order properties and automatically reduces a failing trajectory.\n\n**First demo to build:** Reduce a twenty-event authored run to the approval and effect events that reproduce a stale-approval violation.\n\n**Languages:** Rust, Python\n\n**Deliverable:** Temporal trace checker, dependency-preserving reducer and minimal replay bundle\n\n**Builds on:** [Agent Trace Debugger](agent-trace-debugger/), [Tool Call Firewall](tool-call-firewall/)\n\nProposed milestones:\n\n1. Normalize events and declared causal dependencies\n2. Check bounded temporal rules\n3. Minimize failures without breaking prerequisites\n4. Export the smallest reproducible violation\n\n**Scope boundary:** Causal preservation depends on recorded dependencies and the supported rule language. A minimal trace is relative to the chosen reducer and replay oracle, not a proof of global minimality.\n\n<a id=\"transactional-workspace-patch-broker\"></a>\n\n### Transactional Workspace Patch Broker\n\nHelp concurrent coding agents avoid overwriting each other's files halfway through a multi-file change. Bind a patch bundle to content hashes, apply it to a private versioned workspace, run declared checks, and publish by switching one workspace pointer. Export a transaction API with conflict evidence and an explicit rollback journal.\n\n**Distinct focus:** Tiny Coding Agent teaches a coding loop; this project makes publication and conflicts explicit when several agents produce overlapping multi-file changes.\n\n**First demo to build:** Let two local workers propose overlapping edits and show one complete publication alongside the other worker's revision conflict.\n\n**Languages:** Rust, TypeScript\n\n**Deliverable:** Workspace transaction API, reviewable patch bundle and conflict/rollback journal\n\n**Builds on:** [Tiny Coding Agent](tiny-coding-agent/), [Sandbox Policy Planner](sandbox-ladder/)\n\nProposed milestones:\n\n1. Bind a multi-file patch to its input revision\n2. Stage edits in a private versioned workspace\n3. Reject conflicts and run declared validation\n4. Publish a workspace pointer and record rollback\n\n**Scope boundary:** Atomicity applies to the versioned workspace pointer and readers that honor it. Do not claim arbitrary multi-file writes into an existing checkout are atomic.\n",
+      "contract": {
+        "fences": [],
+        "inlineCode": [
+          [
+            "`",
+            "roadmap.json"
+          ]
+        ],
+        "links": [
+          "#bookmark-path-organizer",
+          "#catalog-record-linker",
+          "#chart-storyboard-builder",
+          "#csv-repair-workbench",
+          "#csv-repair-workbench",
+          "#csv-repair-workbench",
+          "#glossary-hovercard-publisher",
+          "#glossary-hovercard-publisher",
+          "#glossary-hovercard-publisher",
+          "#photo-burst-contact-sheet",
+          "#photo-burst-contact-sheet",
+          "agent-budget-planner/",
+          "agent-budget-planner/",
+          "agent-budget-planner/",
+          "agent-trace-debugger/",
+          "agent-trace-debugger/",
+          "agent-trace-debugger/",
+          "agent-trace-debugger/",
+          "agent-trace-debugger/",
+          "agent-trace-debugger/",
+          "agent-trace-debugger/",
+          "csv-sql-question-workbench/",
+          "csv-sql-question-workbench/",
+          "csv-sql-question-workbench/",
+          "dataset-split-auditor/",
+          "dataset-split-auditor/",
+          "dataset-split-auditor/",
+          "doc-qa-with-citations/",
+          "durable-agent-jobs/",
+          "durable-agent-jobs/",
+          "durable-agent-jobs/",
+          "feedback-theme-board/",
+          "harness-bench/",
+          "https://a2a-protocol.org/latest/specification/",
+          "https://developer.hashicorp.com/terraform/internals/json-format",
+          "https://docs.github.com/en/actions/how-tos/monitor-workflows/use-workflow-run-logs",
+          "https://html.spec.whatwg.org/multipage/dom.html#the-lang-and-xml:lang-attributes",
+          "https://html.spec.whatwg.org/multipage/server-sent-events.html",
+          "https://kubernetes.io/docs/reference/kubernetes-api/core/event-v1/",
+          "https://modelcontextprotocol.io/specification/2025-11-25/basic/authorization",
+          "https://modelcontextprotocol.io/specification/2025-11-25/basic/lifecycle",
+          "https://slsa.dev/spec/v1.2/provenance",
+          "https://svgwg.org/svg2-draft/struct.html",
+          "https://www.rfc-editor.org/info/rfc8707/",
+          "https://www.rfc-editor.org/rfc/rfc7946",
+          "https://www.rfc-editor.org/rfc/rfc9111.html",
+          "https://www.w3.org/TR/webvtt1/",
+          "json-schema-output-guard/",
+          "json-schema-output-guard/",
+          "json-schema-output-guard/",
+          "json-schema-output-guard/",
+          "json-schema-output-guard/",
+          "json-schema-output-guard/",
+          "json-schema-output-guard/",
+          "llm-gateway-with-fallbacks/",
+          "llm-gateway-with-fallbacks/",
+          "llm-gateway-with-fallbacks/",
+          "local-model-eval-harness/",
+          "local-model-eval-harness/",
+          "local-model-eval-harness/",
+          "mcp-at-scale/",
+          "mcp-at-scale/",
+          "memory-server/",
+          "multi-agent-code-review-panel/",
+          "postmortem-writer/",
+          "pr-review-reporter/",
+          "pr-review-reporter/",
+          "prompt-regression-tester/",
+          "rag-freshness-pipeline/",
+          "report-judge/",
+          "rust-agent-shell/",
+          "sandbox-ladder/",
+          "semantic-notes-search/",
+          "semantic-notes-search/",
+          "semantic-notes-search/",
+          "semantic-notes-search/",
+          "skill-installer/",
+          "skill-validator/",
+          "tiny-coding-agent/",
+          "tiny-coding-agent/",
+          "token-counter-and-cost-meter/",
+          "token-counter-and-cost-meter/",
+          "tool-call-firewall/",
+          "tool-call-firewall/",
+          "tool-call-firewall/",
+          "tool-call-firewall/",
+          "typed-workflow-agent-with-mastra/",
+          "voice-note-transcriber-pipeline/",
+          "voice-note-transcriber-pipeline/",
+          "workflow-hooks/"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "###",
+          "###",
+          "###",
+          "###",
+          "###",
+          "###",
+          "##",
+          "###",
+          "###",
+          "###",
+          "###",
+          "###",
+          "###",
+          "###",
+          "###",
+          "###",
+          "###",
+          "###",
+          "###",
+          "###",
+          "###",
+          "###",
+          "##",
+          "###",
+          "###",
+          "###",
+          "###",
+          "###",
+          "###",
+          "###",
+          "###",
+          "###",
+          "###",
+          "###",
+          "###",
+          "###",
+          "##",
+          "###",
+          "###",
+          "###",
+          "###",
+          "###",
+          "###",
+          "###",
+          "###",
+          "###",
+          "###",
+          "###",
+          "###",
+          "###",
+          "###",
+          "##",
+          "###",
+          "###",
+          "###",
+          "###"
+        ],
+        "tableRows": 7,
+        "listItems": 208
+      }
+    }
+  },
+  "preservedFiles": {
+    "skills/build-project/SKILL.md": "6e3962779e30f74361e24e5f262a8505768a37082e1d2804961c3263eada85bc",
+    ".claude/skills/build-project/SKILL.md": "6e3962779e30f74361e24e5f262a8505768a37082e1d2804961c3263eada85bc",
+    "projects/roadmap.json": "09918b5c5d39dfe8d81e32fe8cff71d37798ddfbe27f1e5a3b0da6a81152040e",
+    "scripts/project_test.py": "a10754ff5050df1e7a32299142940c7895dec94c3d974f2b6a2b0c11bf60f5b9",
+    "site/project-ui.js": "c9b924dcaf8c2e2f2db878323e125576080159be08f4256121432dcd433fa5cd",
+    "site/build-projects.js": "f31f92ef0425143fff3af1d1a31d96742699a540ec6f6c3576148f97ecb82c6b",
+    "site/projects.js": "22191194ea557496a1e650bd95513606755d4d81b9abb80d31d9c50cade571af"
+  },
+  "translationsScope": {
+    "humanGuides": 4,
+    "agentInstructionFullTranslationRequired": false,
+    "agentInstructionPatchApplied": false,
+    "reason": "The attempted compatibility patch invocation was blocked before execution. Both original skill entry files are retained byte-for-byte."
+  },
+  "roadmap": {
+    "ids": [
+      "bookmark-path-organizer",
+      "csv-repair-workbench",
+      "download-folder-sort-desk",
+      "glossary-hovercard-publisher",
+      "photo-burst-contact-sheet",
+      "vocabulary-autocomplete-pad",
+      "api-tutorial-runner",
+      "catalog-record-linker",
+      "chart-storyboard-builder",
+      "configuration-drift-explainer",
+      "dependency-upgrade-impact-map",
+      "diagram-reading-companion",
+      "field-notes-map-builder",
+      "gesture-shortcut-pad",
+      "infrastructure-plan-explainer",
+      "log-volume-reduction-lab",
+      "plain-language-rewrite-desk",
+      "service-ownership-navigator",
+      "subtitle-localization-desk",
+      "ui-string-localization-workbench",
+      "workshop-materials-planner",
+      "ci-failure-reproducer",
+      "community-learning-path-finder",
+      "database-migration-rehearsal",
+      "decision-tradeoff-explorer",
+      "kubernetes-event-storyboard",
+      "label-adjudication-desk",
+      "lost-item-match-desk",
+      "presentation-rehearsal-coach",
+      "retry-storm-lab",
+      "semantic-cache-correctness-lab",
+      "streaming-answer-recovery",
+      "tool-contract-migration-checker",
+      "video-highlight-storyboard",
+      "a2a-task-handoff-workbench",
+      "abstention-calibration-workbench",
+      "artifact-provenance-gate",
+      "context-compaction-verifier",
+      "hedged-request-lab",
+      "local-inference-capacity-planner",
+      "mcp-protocol-compatibility-doctor",
+      "metamorphic-evaluation-workbench",
+      "oauth-resource-boundary-lab",
+      "outbound-request-policy-proxy",
+      "release-canary-decision-lab",
+      "secret-injection-sidecar",
+      "signed-webhook-inbox",
+      "tenant-fairness-scheduler",
+      "agent-resource-deadlock-lab",
+      "judge-bias-calibration-lab",
+      "trajectory-counterexample-minimizer",
+      "transactional-workspace-patch-broker"
+    ],
+    "planned": 52,
+    "milestones": 208,
+    "scopeBoundaries": 20,
+    "noProjectPrerequisites": 8
+  }
+}

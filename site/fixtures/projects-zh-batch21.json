@@ -1,0 +1,4836 @@
+{
+  "upstream": "c02ca08d8a49ce24c3c1c1cf8e3b422f2c7393ca",
+  "projects": [
+    "typed-workflow-agent-with-mastra",
+    "visual-evidence-library",
+    "voice-note-transcriber-pipeline",
+    "web-change-brief",
+    "workflow-hooks"
+  ],
+  "files": {
+    "projects/typed-workflow-agent-with-mastra/README.md": {
+      "sourceSha256": "82a44843dbe2b44b04065dd7ec1d3fa9d7b9711b38c2d9b0be6bf741abb8b27c",
+      "localizedSha256": "1d2e9cf3adc08e8618e8934740e1326a5f8c81a22e8d50a7f8bed838f6aaee0c",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "bash",
+            "python3 scripts/project_test.py typed-workflow-agent-with-mastra --init my-workflow\npython3 scripts/project_test.py typed-workflow-agent-with-mastra --stage 1 --path my-workflow --strict\npython3 scripts/project_test.py typed-workflow-agent-with-mastra --all --solution --strict\ncd projects/typed-workflow-agent-with-mastra/solution\nnode --experimental-strip-types cli.ts --ticket fixtures/ticket.json --out workflow-output\n"
+          ],
+          [
+            "bash",
+            "node --experimental-strip-types cli.ts --checkpoint workflow-output/checkpoint.json --approved --out resumed-output\n"
+          ],
+          [
+            "bash",
+            "npm install --prefix projects/typed-workflow-agent-with-mastra/solution --ignore-scripts --package-lock=false --save-exact @mastra/core@1.71.0 zod@4.3.6 @mastra/libsql@1.23.3\npython3 scripts/project_test.py typed-workflow-agent-with-mastra --all --solution --optional --strict\n"
+          ],
+          [
+            "bash",
+            "node --experimental-strip-types optional-mastra/cli.ts --ticket fixtures/ticket.json --db ./runs.db --out pending-output\n"
+          ],
+          [
+            "bash",
+            "node --experimental-strip-types optional-mastra/cli.ts --resume RUN_ID_FROM_OUTPUT --approval pending-output/approval.json --db ./runs.db --out resumed-output\n"
+          ]
+        ],
+        "inlineCode": [],
+        "links": [
+          "https://mastra.ai/docs/workflows/suspend-and-resume",
+          "stages/01-contracts/docs/en.md",
+          "stages/02-plan/docs/en.md",
+          "stages/03-runtime/docs/en.md",
+          "stages/04-framework-boundary/docs/en.md"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 4
+      }
+    },
+    "projects/typed-workflow-agent-with-mastra/media/framework.gif": {
+      "sourceSha256": "4e899a6d0e41711f098ec61bf5199d05861c21196422024018f28e256052f4c6",
+      "localizedSha256": "4e899a6d0e41711f098ec61bf5199d05861c21196422024018f28e256052f4c6",
+      "kind": "original-recording"
+    },
+    "projects/typed-workflow-agent-with-mastra/media/framework.json": {
+      "sourceSha256": "dd6b64ae63f4417f84957c3ac04fe134f64fdb525cb5898a4a2ebce26b615633",
+      "localizedSha256": "dd6b64ae63f4417f84957c3ac04fe134f64fdb525cb5898a4a2ebce26b615633",
+      "kind": "original-recording"
+    },
+    "projects/typed-workflow-agent-with-mastra/media/framework.png": {
+      "sourceSha256": "8297dcf59aaf1c87a8d80481b7f1a75971acd99f3bc5da477a703806067aa145",
+      "localizedSha256": "8297dcf59aaf1c87a8d80481b7f1a75971acd99f3bc5da477a703806067aa145",
+      "kind": "original-recording"
+    },
+    "projects/typed-workflow-agent-with-mastra/media/output.gif": {
+      "sourceSha256": "09bc8744897d2c7992941516918505cc1dabcb6d0eeebbbbf76ea21c3c70142d",
+      "localizedSha256": "09bc8744897d2c7992941516918505cc1dabcb6d0eeebbbbf76ea21c3c70142d",
+      "kind": "original-recording"
+    },
+    "projects/typed-workflow-agent-with-mastra/media/output.json": {
+      "sourceSha256": "e80e5fa41d32ab94734bd61eed19cd9bafde8af3b50d29086f71139ef8cd8824",
+      "localizedSha256": "e80e5fa41d32ab94734bd61eed19cd9bafde8af3b50d29086f71139ef8cd8824",
+      "kind": "original-recording"
+    },
+    "projects/typed-workflow-agent-with-mastra/media/output.png": {
+      "sourceSha256": "3a0b3b59906743ad64061637e22d73927dd849add9ab8243aa6d5b168f19251d",
+      "localizedSha256": "3a0b3b59906743ad64061637e22d73927dd849add9ab8243aa6d5b168f19251d",
+      "kind": "original-recording"
+    },
+    "projects/typed-workflow-agent-with-mastra/media/run.gif": {
+      "sourceSha256": "dd6618e4ea8d9c3395ac951e8f0dcf64b64d3126345923429b2b9f1034b6e8b8",
+      "localizedSha256": "dd6618e4ea8d9c3395ac951e8f0dcf64b64d3126345923429b2b9f1034b6e8b8",
+      "kind": "original-recording"
+    },
+    "projects/typed-workflow-agent-with-mastra/media/run.json": {
+      "sourceSha256": "1cb4bb60178dc2537fba6974894fff886ef04f06011230c16c14ed912667dd6c",
+      "localizedSha256": "1cb4bb60178dc2537fba6974894fff886ef04f06011230c16c14ed912667dd6c",
+      "kind": "original-recording"
+    },
+    "projects/typed-workflow-agent-with-mastra/media/run.png": {
+      "sourceSha256": "a13dbbc94722c00557bf290cc64778fb2735ebf9b4af50f6eae9de7bd1232ebb",
+      "localizedSha256": "a13dbbc94722c00557bf290cc64778fb2735ebf9b4af50f6eae9de7bd1232ebb",
+      "kind": "original-recording"
+    },
+    "projects/typed-workflow-agent-with-mastra/project.json": {
+      "sourceSha256": "010e265cdbfb3e2750ba9fda4956e7c4a43a89b6b1e26ad64813bc2178f51dfa",
+      "localizedSha256": "bfc754a221db6a2f77bef6818ae8b36c0b521041a29312b290da4173becd0a71",
+      "kind": "manifest",
+      "contract": {
+        "id": "typed-workflow-agent-with-mastra",
+        "title": "<translated-text>",
+        "level": 3,
+        "levelName": "Engineer",
+        "tagline": "<translated-text>",
+        "summary": "<translated-text>",
+        "hours": 8,
+        "languages": [
+          "TypeScript"
+        ],
+        "status": "ready",
+        "source": "core",
+        "author": {
+          "name": "AI Engineering from Scratch",
+          "github": "rohitg00"
+        },
+        "skills": [
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "prerequisites": [
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "youWillBuild": "<translated-text>",
+        "usefulFor": [
+          "<translated-text>"
+        ],
+        "demo": {
+          "command": [
+            "node",
+            "--experimental-strip-types",
+            "demo.ts"
+          ],
+          "cwd": "solution"
+        },
+        "stages": [
+          {
+            "id": "01-contracts",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "typescript",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ],
+            "difficulty": "starter",
+            "runner": [
+              "node",
+              "--experimental-strip-types",
+              "--test",
+              "{tests}/stage.test.ts"
+            ],
+            "requires": [
+              "node"
+            ],
+            "timeout": 90,
+            "figure": "pj-typed-workflow-agent-with-mastra-1"
+          },
+          {
+            "id": "02-plan",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "typescript",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ],
+            "difficulty": "core",
+            "runner": [
+              "node",
+              "--experimental-strip-types",
+              "--test",
+              "{tests}/stage.test.ts"
+            ],
+            "requires": [
+              "node"
+            ],
+            "timeout": 90,
+            "figure": "pj-typed-workflow-agent-with-mastra-2"
+          },
+          {
+            "id": "03-runtime",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "typescript",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ],
+            "difficulty": "core",
+            "runner": [
+              "node",
+              "--experimental-strip-types",
+              "--test",
+              "{tests}/stage.test.ts"
+            ],
+            "requires": [
+              "node"
+            ],
+            "timeout": 90,
+            "figure": "pj-typed-workflow-agent-with-mastra-3"
+          },
+          {
+            "id": "04-framework-boundary",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "typescript",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ],
+            "difficulty": "core",
+            "requires": [
+              "node"
+            ],
+            "timeout": 90,
+            "figure": "pj-typed-workflow-agent-with-mastra-4",
+            "runners": [
+              {
+                "language": "typescript",
+                "argv": [
+                  "node",
+                  "--experimental-strip-types",
+                  "--test",
+                  "{tests}/stage.test.ts"
+                ]
+              },
+              {
+                "language": "typescript",
+                "optional": true,
+                "requires": [
+                  "node:@mastra/core",
+                  "node:zod",
+                  "node:@mastra/libsql"
+                ],
+                "argv": [
+                  "node",
+                  "--experimental-strip-types",
+                  "--test",
+                  "{stage}/tests-framework/adapter.test.ts"
+                ]
+              }
+            ]
+          }
+        ],
+        "demos": [
+          {
+            "gif": "media/run.gif",
+            "poster": "media/run.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          },
+          {
+            "gif": "media/output.gif",
+            "poster": "media/output.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          },
+          {
+            "gif": "media/framework.gif",
+            "poster": "media/framework.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          }
+        ]
+      }
+    },
+    "projects/typed-workflow-agent-with-mastra/solution/cli.ts": {
+      "sourceSha256": "18188663edb4ffaa403e233db02729739f80fab1b2abc744947b2a5d66ae7d97",
+      "localizedSha256": "14af051298c1e92e2243eed0ccc75eda10742358008893458d5c7db813a2eacb",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "import { readFileSync, writeFileSync, mkdirSync } from \"node:fs\";",
+          "// 本地审批教学流程；工具响应、计划、摘要与模拟数据保持原契约。\nimport { readFileSync, writeFileSync, mkdirSync } from \"node:fs\";"
+        ],
+        [
+          "<html lang=\"en\">",
+          "<html lang=\"zh-CN\">"
+        ],
+        [
+          "<title>Workflow review</title>",
+          "<title>工作流审阅</title>"
+        ],
+        [
+          "<h1>Workflow review</h1>",
+          "<h1>工作流审阅</h1>"
+        ],
+        [
+          "Local simulated tool; no external account changed.",
+          "本地模拟工具；没有修改外部账户。状态 complete 表示完成，suspended 表示待审暂停，failed 表示失败。"
+        ]
+      ]
+    },
+    "projects/typed-workflow-agent-with-mastra/solution/demo.ts": {
+      "sourceSha256": "7a0bd8f6ccb21f34186c5becbbd455e21c4c7eb873e234a388f34d530fdacfad",
+      "localizedSha256": "523fcbf22a20455526590846ef0fa48e4b24cb7c35be2315fd68eac9ebd15bfb",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "import { execFileSync } from \"node:child_process\";",
+          "// 本地审批教学流程；工具响应、计划、摘要与模拟数据保持原契约。\nimport { execFileSync } from \"node:child_process\";"
+        ]
+      ]
+    },
+    "projects/typed-workflow-agent-with-mastra/solution/fixtures/ticket.json": {
+      "sourceSha256": "cfd3035098825aae49c058457721248c7480d4d02e98538a594ddd6bd66256f4",
+      "localizedSha256": "cfd3035098825aae49c058457721248c7480d4d02e98538a594ddd6bd66256f4",
+      "kind": "preserved-contract"
+    },
+    "projects/typed-workflow-agent-with-mastra/solution/main.ts": {
+      "sourceSha256": "50ce92b9e01777fef28cb6ce06ed7149d51c5ffb761871e68ae02b1cd79dcd0e",
+      "localizedSha256": "bd7c4133f1b42816c4050bfeb8160bd1656d3e206d7492d122f0823a67a39762",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "/*\n * Typed Workflow Agent with Mastra reference implementation.\n * Follow stages in projects/typed-workflow-agent-with-mastra/stages/.\n * The demo is deterministic and requires no provider credentials.\n * Protocol references are listed in the project README.\n */",
+          "/*\n * 类型化工作流智能体参考实现。\n * 课程：projects/typed-workflow-agent-with-mastra/stages/。\n * 演示使用确定性夹具，无需服务商凭据。\n * 公开接口、规则和错误消息保留原契约。\n */"
+        ]
+      ]
+    },
+    "projects/typed-workflow-agent-with-mastra/solution/optional-mastra/.gitignore": {
+      "sourceSha256": "88b6b09796bc021a6f46b5964be1cbe30ef7a25d613ee43f868e720ee4d15587",
+      "localizedSha256": "88b6b09796bc021a6f46b5964be1cbe30ef7a25d613ee43f868e720ee4d15587",
+      "kind": "preserved-contract"
+    },
+    "projects/typed-workflow-agent-with-mastra/solution/optional-mastra/adapter.ts": {
+      "sourceSha256": "75964e70c55fce1d1aa949e04100b1601fe2f18db47f7ab0f79cbf5799c897fa",
+      "localizedSha256": "6f0be70ab7717e3cdebf0a223affe28661ad8cf8c6db4ccb14171b0855adf6ae",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "import { createStep, createWorkflow } from \"@mastra/core/workflows\";",
+          "// 本地审批教学流程；工具响应、计划、摘要与模拟数据保持原契约。\nimport { createStep, createWorkflow } from \"@mastra/core/workflows\";"
+        ]
+      ]
+    },
+    "projects/typed-workflow-agent-with-mastra/solution/optional-mastra/cli.ts": {
+      "sourceSha256": "623ebab98dcaae5bb9e6e9f4de946b001f971b2ce270f8a77ccf0755f554315d",
+      "localizedSha256": "3ca006b5252ebcf4013f591779df6cff9a4474eeba1f272b9ff7ff10eb0c5f2e",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "import { readFileSync, writeFileSync, mkdirSync } from \"node:fs\";",
+          "// 本地审批教学流程；工具响应、计划、摘要与模拟数据保持原契约。\nimport { readFileSync, writeFileSync, mkdirSync } from \"node:fs\";"
+        ]
+      ]
+    },
+    "projects/typed-workflow-agent-with-mastra/solution/optional-mastra/package.json": {
+      "sourceSha256": "b20244a6b2983a3a7bd6ea1cc9dc0daaeae653614d3e9df414407186d24a7e23",
+      "localizedSha256": "b20244a6b2983a3a7bd6ea1cc9dc0daaeae653614d3e9df414407186d24a7e23",
+      "kind": "preserved-contract"
+    },
+    "projects/typed-workflow-agent-with-mastra/solution/package.json": {
+      "sourceSha256": "eeae59c65f61a49c48ef9efe37e08b2da7bdcdd29535f7770cf4d3a626423ad4",
+      "localizedSha256": "eeae59c65f61a49c48ef9efe37e08b2da7bdcdd29535f7770cf4d3a626423ad4",
+      "kind": "preserved-contract"
+    },
+    "projects/typed-workflow-agent-with-mastra/stages/01-contracts/docs/en.md": {
+      "sourceSha256": "18e65d0fffc00364851696f57383306f70e8245798058b46935a3e30c8ee9223",
+      "localizedSha256": "a2e513d63318a468efcdc4a60f21832d91776432aead2922663b9e3ace1a0b00",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-typed-workflow-agent-with-mastra-1\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py typed-workflow-agent-with-mastra --init my-typed-workflow-agent-with-mastra\npython3 scripts/project_test.py typed-workflow-agent-with-mastra --stage 1 --path my-typed-workflow-agent-with-mastra --strict\n"
+          ],
+          [
+            "bash",
+            "cd projects/typed-workflow-agent-with-mastra/solution\nnode --experimental-strip-types cli.ts --ticket fixtures/ticket.json --out workflow-output\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "parseTicket(raw), classify(raw) in main.ts"
+          ]
+        ],
+        "links": [
+          "https://mastra.ai/docs/workflows/suspend-and-resume"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/typed-workflow-agent-with-mastra/stages/01-contracts/starter/fixtures/ticket.json": {
+      "sourceSha256": "cfd3035098825aae49c058457721248c7480d4d02e98538a594ddd6bd66256f4",
+      "localizedSha256": "cfd3035098825aae49c058457721248c7480d4d02e98538a594ddd6bd66256f4",
+      "kind": "preserved-contract"
+    },
+    "projects/typed-workflow-agent-with-mastra/stages/01-contracts/starter/main.ts": {
+      "sourceSha256": "af0d2951512963a7ae40af33e26a3666cc47e36674cd2a6f700c2d21b256e241",
+      "localizedSha256": "d9d4ce55670d800816336fe231a585945eb41fec71e3b677c60d7d2c6e1028f4",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "import { pathToFileURL } from \"node:url\";",
+          "// 本地审批教学流程；工具响应、计划、摘要与模拟数据保持原契约。\nimport { pathToFileURL } from \"node:url\";"
+        ]
+      ]
+    },
+    "projects/typed-workflow-agent-with-mastra/stages/01-contracts/starter/package.json": {
+      "sourceSha256": "eeae59c65f61a49c48ef9efe37e08b2da7bdcdd29535f7770cf4d3a626423ad4",
+      "localizedSha256": "eeae59c65f61a49c48ef9efe37e08b2da7bdcdd29535f7770cf4d3a626423ad4",
+      "kind": "preserved-contract"
+    },
+    "projects/typed-workflow-agent-with-mastra/stages/01-contracts/starter/stage-1.md": {
+      "sourceSha256": "261a8ac58dedc3ebb325b0317d423069806d2bb71df5e1a48d0976e491cf2229",
+      "localizedSha256": "3a996c53721c701fb6fb9ca248edf5914b7d1850d635edc52da6b1198dec0a40",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/typed-workflow-agent-with-mastra/stages/01-contracts/tests/stage.test.ts": {
+      "sourceSha256": "7a37bc4c2dbc1c27c841064bea294fb1ddd6774109bfc8a9e43a52dd05dc5ead",
+      "localizedSha256": "7a37bc4c2dbc1c27c841064bea294fb1ddd6774109bfc8a9e43a52dd05dc5ead",
+      "kind": "preserved-contract"
+    },
+    "projects/typed-workflow-agent-with-mastra/stages/02-plan/docs/en.md": {
+      "sourceSha256": "c0a18a2e158af1a476b151cbc10729c1ed4dde6244a25a7f2690a3c858fa0dc0",
+      "localizedSha256": "f9412db4416328a50da462ff05dece5869ffd450f76b34fdbdde6c2900bb409a",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-typed-workflow-agent-with-mastra-2\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py typed-workflow-agent-with-mastra --init my-typed-workflow-agent-with-mastra\npython3 scripts/project_test.py typed-workflow-agent-with-mastra --stage 2 --path my-typed-workflow-agent-with-mastra --strict\n"
+          ],
+          [
+            "bash",
+            "cd projects/typed-workflow-agent-with-mastra/solution\nnode --experimental-strip-types cli.ts --ticket fixtures/ticket.json --out workflow-output\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "makePlan(classification), validatePlan(plan) in main.ts"
+          ]
+        ],
+        "links": [
+          "https://mastra.ai/docs/workflows/suspend-and-resume"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/typed-workflow-agent-with-mastra/stages/02-plan/starter/stage-2.md": {
+      "sourceSha256": "2793933047271a21cfaf3137d19dc65be62a9afcbd3d608bb5fb84bb4044ec87",
+      "localizedSha256": "19950df800254d12eb8ca9429482dd6b7e0b36fc961174eec4b54b25c05da325",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/typed-workflow-agent-with-mastra/stages/02-plan/tests/stage.test.ts": {
+      "sourceSha256": "21a46b5a654007d51cd96ddd21fb0899355769efcd48994d39aa737e187d8fd5",
+      "localizedSha256": "21a46b5a654007d51cd96ddd21fb0899355769efcd48994d39aa737e187d8fd5",
+      "kind": "preserved-contract"
+    },
+    "projects/typed-workflow-agent-with-mastra/stages/03-runtime/docs/en.md": {
+      "sourceSha256": "667c8369721ee33142387ec8697fcb33d6bd2192062bb14b51f9682457849e4e",
+      "localizedSha256": "591e89e7635e6c05f79bc209ce91b425b1746189ceff5e06f556a476c2dd6bc1",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-typed-workflow-agent-with-mastra-3\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py typed-workflow-agent-with-mastra --init my-typed-workflow-agent-with-mastra\npython3 scripts/project_test.py typed-workflow-agent-with-mastra --stage 3 --path my-typed-workflow-agent-with-mastra --strict\n"
+          ],
+          [
+            "bash",
+            "cd projects/typed-workflow-agent-with-mastra/solution\nnode --experimental-strip-types cli.ts --ticket fixtures/ticket.json --out workflow-output\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "executePlan(plan, tool, options), runTicket(raw, tool, options) in main.ts"
+          ]
+        ],
+        "links": [
+          "https://mastra.ai/docs/workflows/suspend-and-resume"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/typed-workflow-agent-with-mastra/stages/03-runtime/starter/stage-3.md": {
+      "sourceSha256": "659818d7bfdbbe5814a72c2f6f351b2f1781659eb1adcf322d826ae584d2ab72",
+      "localizedSha256": "30934ab7d11802264d54df8a2e24281e0257932feb2ca54cd85fd708fcacd3b9",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/typed-workflow-agent-with-mastra/stages/03-runtime/tests/stage.test.ts": {
+      "sourceSha256": "b314d0761eb37f910df6a05a3f5b7eaf32e041a2a4827681a9172c899724c94f",
+      "localizedSha256": "b314d0761eb37f910df6a05a3f5b7eaf32e041a2a4827681a9172c899724c94f",
+      "kind": "preserved-contract"
+    },
+    "projects/typed-workflow-agent-with-mastra/stages/04-framework-boundary/docs/en.md": {
+      "sourceSha256": "01a3b9e5a37712d931c6170e1d7ea6e51d13292a7872bfc09abb38ca8e63b322",
+      "localizedSha256": "e062968ecd7741e1d4219b34b124ce097d7eadba19e1e163c4d6730c11f34c54",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-typed-workflow-agent-with-mastra-4\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py typed-workflow-agent-with-mastra --init my-typed-workflow-agent-with-mastra\npython3 scripts/project_test.py typed-workflow-agent-with-mastra --stage 4 --path my-typed-workflow-agent-with-mastra --strict\n"
+          ],
+          [
+            "bash",
+            "cd projects/typed-workflow-agent-with-mastra/solution\nnode --experimental-strip-types cli.ts --ticket fixtures/ticket.json --out workflow-output\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "createTicketWorkflow, planHash, persistentWorkflow in optional-mastra/adapter.ts"
+          ]
+        ],
+        "links": [
+          "https://mastra.ai/docs/workflows/suspend-and-resume"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/typed-workflow-agent-with-mastra/stages/04-framework-boundary/starter/cli.ts": {
+      "sourceSha256": "18188663edb4ffaa403e233db02729739f80fab1b2abc744947b2a5d66ae7d97",
+      "localizedSha256": "14af051298c1e92e2243eed0ccc75eda10742358008893458d5c7db813a2eacb",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "import { readFileSync, writeFileSync, mkdirSync } from \"node:fs\";",
+          "// 本地审批教学流程；工具响应、计划、摘要与模拟数据保持原契约。\nimport { readFileSync, writeFileSync, mkdirSync } from \"node:fs\";"
+        ],
+        [
+          "<html lang=\"en\">",
+          "<html lang=\"zh-CN\">"
+        ],
+        [
+          "<title>Workflow review</title>",
+          "<title>工作流审阅</title>"
+        ],
+        [
+          "<h1>Workflow review</h1>",
+          "<h1>工作流审阅</h1>"
+        ],
+        [
+          "Local simulated tool; no external account changed.",
+          "本地模拟工具；没有修改外部账户。状态 complete 表示完成，suspended 表示待审暂停，failed 表示失败。"
+        ]
+      ]
+    },
+    "projects/typed-workflow-agent-with-mastra/stages/04-framework-boundary/starter/optional-mastra/adapter.ts": {
+      "sourceSha256": "ee18c6fda4e60d6206aae8844b31f65aa440ba372dafc6cdeee9a5a2b0004708",
+      "localizedSha256": "202c31b155bd1dab0ab79ab217e4aa1fa860380427460e679a0b968f6b03a7b9",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "import type { createWorkflow } from \"@mastra/core/workflows\";",
+          "// 本地审批教学流程；工具响应、计划、摘要与模拟数据保持原契约。\nimport type { createWorkflow } from \"@mastra/core/workflows\";"
+        ]
+      ]
+    },
+    "projects/typed-workflow-agent-with-mastra/stages/04-framework-boundary/starter/optional-mastra/cli.ts": {
+      "sourceSha256": "623ebab98dcaae5bb9e6e9f4de946b001f971b2ce270f8a77ccf0755f554315d",
+      "localizedSha256": "3ca006b5252ebcf4013f591779df6cff9a4474eeba1f272b9ff7ff10eb0c5f2e",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "import { readFileSync, writeFileSync, mkdirSync } from \"node:fs\";",
+          "// 本地审批教学流程；工具响应、计划、摘要与模拟数据保持原契约。\nimport { readFileSync, writeFileSync, mkdirSync } from \"node:fs\";"
+        ]
+      ]
+    },
+    "projects/typed-workflow-agent-with-mastra/stages/04-framework-boundary/starter/optional-mastra/package.json": {
+      "sourceSha256": "b20244a6b2983a3a7bd6ea1cc9dc0daaeae653614d3e9df414407186d24a7e23",
+      "localizedSha256": "b20244a6b2983a3a7bd6ea1cc9dc0daaeae653614d3e9df414407186d24a7e23",
+      "kind": "preserved-contract"
+    },
+    "projects/typed-workflow-agent-with-mastra/stages/04-framework-boundary/starter/stage-4.md": {
+      "sourceSha256": "cfc7f24ceecd9a51dca5499ceb68dd66285c790227c2b57411d496a13855393a",
+      "localizedSha256": "c4c897effb11607e0719bd83f8b4aa1eaa43f7972f63e2b070fb3a89ca2a1962",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/typed-workflow-agent-with-mastra/stages/04-framework-boundary/tests-framework/adapter.test.ts": {
+      "sourceSha256": "a77e83394a980145e9e2b96a960655320d2b77fb11125d94da14d070455f4672",
+      "localizedSha256": "a77e83394a980145e9e2b96a960655320d2b77fb11125d94da14d070455f4672",
+      "kind": "preserved-contract"
+    },
+    "projects/typed-workflow-agent-with-mastra/stages/04-framework-boundary/tests-framework/package.json": {
+      "sourceSha256": "609158e6c5fbc237939fa3ddf7faab80ab690bdc0c8d584414a885130103c4e8",
+      "localizedSha256": "609158e6c5fbc237939fa3ddf7faab80ab690bdc0c8d584414a885130103c4e8",
+      "kind": "preserved-contract"
+    },
+    "projects/typed-workflow-agent-with-mastra/stages/04-framework-boundary/tests/stage.test.ts": {
+      "sourceSha256": "5225a1717fd53d8c793ee57716d1ce6fc79182e8f425978da1fb88da488b1e17",
+      "localizedSha256": "5225a1717fd53d8c793ee57716d1ce6fc79182e8f425978da1fb88da488b1e17",
+      "kind": "preserved-contract"
+    },
+    "projects/typed-workflow-agent-with-mastra/starter/main.ts": {
+      "sourceSha256": "af0d2951512963a7ae40af33e26a3666cc47e36674cd2a6f700c2d21b256e241",
+      "localizedSha256": "d9d4ce55670d800816336fe231a585945eb41fec71e3b677c60d7d2c6e1028f4",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "import { pathToFileURL } from \"node:url\";",
+          "// 本地审批教学流程；工具响应、计划、摘要与模拟数据保持原契约。\nimport { pathToFileURL } from \"node:url\";"
+        ]
+      ]
+    },
+    "projects/typed-workflow-agent-with-mastra/starter/optional-mastra/adapter.ts": {
+      "sourceSha256": "ee18c6fda4e60d6206aae8844b31f65aa440ba372dafc6cdeee9a5a2b0004708",
+      "localizedSha256": "202c31b155bd1dab0ab79ab217e4aa1fa860380427460e679a0b968f6b03a7b9",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "import type { createWorkflow } from \"@mastra/core/workflows\";",
+          "// 本地审批教学流程；工具响应、计划、摘要与模拟数据保持原契约。\nimport type { createWorkflow } from \"@mastra/core/workflows\";"
+        ]
+      ]
+    },
+    "projects/typed-workflow-agent-with-mastra/starter/optional-mastra/package.json": {
+      "sourceSha256": "b20244a6b2983a3a7bd6ea1cc9dc0daaeae653614d3e9df414407186d24a7e23",
+      "localizedSha256": "b20244a6b2983a3a7bd6ea1cc9dc0daaeae653614d3e9df414407186d24a7e23",
+      "kind": "preserved-contract"
+    },
+    "projects/typed-workflow-agent-with-mastra/starter/package.json": {
+      "sourceSha256": "eeae59c65f61a49c48ef9efe37e08b2da7bdcdd29535f7770cf4d3a626423ad4",
+      "localizedSha256": "eeae59c65f61a49c48ef9efe37e08b2da7bdcdd29535f7770cf4d3a626423ad4",
+      "kind": "preserved-contract"
+    },
+    "projects/visual-evidence-library/README.md": {
+      "sourceSha256": "d2e52bb98e389bcab3f6e8ef7565250795c63bf9b7f49b5ce5206a47d4ea5d1d",
+      "localizedSha256": "da05c39f4ce1cd49b5d52df1ae9415e142743149e3b12fa145524ead13c9303e",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "bash",
+            "python3 scripts/project_test.py visual-evidence-library --init my-visual-evidence-library\npython3 scripts/project_test.py visual-evidence-library --stage 1 --path my-visual-evidence-library\npython3 scripts/project_test.py visual-evidence-library --all --solution --strict\n"
+          ],
+          [
+            "bash",
+            "cd projects/visual-evidence-library/solution\npython3 main.py --manifest ./fixtures/manifest.json --query \"return dry seeds\" --out ./visual-output\n"
+          ],
+          [
+            "bash",
+            "python3 demo.py\n"
+          ]
+        ],
+        "inlineCode": [],
+        "links": [
+          "https://docs.python.org/3/library/xml.etree.elementtree.html",
+          "stages/01-validate-evidence/docs/en.md",
+          "stages/02-search-text-regions/docs/en.md",
+          "stages/03-review-vision-proposals/docs/en.md",
+          "stages/04-export-the-gallery/docs/en.md"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 7
+      }
+    },
+    "projects/visual-evidence-library/media/output.gif": {
+      "sourceSha256": "5bdac9f57b61fd9ff167c06cd136726409e9916786ca6dcd556f929d84fd75d0",
+      "localizedSha256": "5bdac9f57b61fd9ff167c06cd136726409e9916786ca6dcd556f929d84fd75d0",
+      "kind": "original-recording"
+    },
+    "projects/visual-evidence-library/media/output.json": {
+      "sourceSha256": "29a927d3ccc8e771b4b2584991803d4d496b205f582c12c493d720e7451a8448",
+      "localizedSha256": "29a927d3ccc8e771b4b2584991803d4d496b205f582c12c493d720e7451a8448",
+      "kind": "original-recording"
+    },
+    "projects/visual-evidence-library/media/output.png": {
+      "sourceSha256": "1700e645c19d72d0233279d8f7a3486f6972ff920c0554f730f711fc0318fb78",
+      "localizedSha256": "1700e645c19d72d0233279d8f7a3486f6972ff920c0554f730f711fc0318fb78",
+      "kind": "original-recording"
+    },
+    "projects/visual-evidence-library/media/run.gif": {
+      "sourceSha256": "6f98d4dc7f2b58b2b19c0c6b5c026d921dba121d4a70899a89876eb5779db640",
+      "localizedSha256": "6f98d4dc7f2b58b2b19c0c6b5c026d921dba121d4a70899a89876eb5779db640",
+      "kind": "original-recording"
+    },
+    "projects/visual-evidence-library/media/run.json": {
+      "sourceSha256": "04e7af851616be80914a0df587770fe025e64f00ba8d06c5845830126124f2da",
+      "localizedSha256": "04e7af851616be80914a0df587770fe025e64f00ba8d06c5845830126124f2da",
+      "kind": "original-recording"
+    },
+    "projects/visual-evidence-library/media/run.png": {
+      "sourceSha256": "db88e777db81bfeee66fb14fdc4cda9989b1dd81526d92070d5a60b056fd857c",
+      "localizedSha256": "db88e777db81bfeee66fb14fdc4cda9989b1dd81526d92070d5a60b056fd857c",
+      "kind": "original-recording"
+    },
+    "projects/visual-evidence-library/project.json": {
+      "sourceSha256": "680154754b4f1950c43e8c38d97f978f2c4abebb2cf464f8d0c44c6520b91ae5",
+      "localizedSha256": "df8264c24b142d275361cb268dc67003312094d48dcdd0fdb94f54edaaa0704d",
+      "kind": "manifest",
+      "contract": {
+        "id": "visual-evidence-library",
+        "title": "<translated-text>",
+        "level": 3,
+        "levelName": "Engineer",
+        "tagline": "<translated-text>",
+        "summary": "<translated-text>",
+        "youWillBuild": "<translated-text>",
+        "usefulFor": [
+          "<translated-text>"
+        ],
+        "hours": 8,
+        "languages": [
+          "Python"
+        ],
+        "languageWhy": {
+          "Python": "<translated-text>"
+        },
+        "status": "ready",
+        "source": "core",
+        "author": {
+          "name": "AI Engineering from Scratch",
+          "github": "rohitg00"
+        },
+        "skills": [
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "prerequisites": [
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "figures": true,
+        "overviewFigure": "pj-visual-evidence-library-1",
+        "demo": {
+          "command": [
+            "python3",
+            "demo.py"
+          ],
+          "cwd": "solution"
+        },
+        "stages": [
+          {
+            "id": "01-validate-evidence",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "difficulty": "starter",
+            "language": "python",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ],
+            "figure": "pj-visual-evidence-library-1"
+          },
+          {
+            "id": "02-search-text-regions",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "difficulty": "core",
+            "language": "python",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ],
+            "figure": "pj-visual-evidence-library-2"
+          },
+          {
+            "id": "03-review-vision-proposals",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "difficulty": "core",
+            "language": "python",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ],
+            "figure": "pj-visual-evidence-library-3"
+          },
+          {
+            "id": "04-export-the-gallery",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "difficulty": "stretch",
+            "language": "python",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ],
+            "figure": "pj-visual-evidence-library-4"
+          }
+        ],
+        "demos": [
+          {
+            "gif": "media/run.gif",
+            "poster": "media/run.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          },
+          {
+            "gif": "media/output.gif",
+            "poster": "media/output.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          }
+        ]
+      }
+    },
+    "projects/visual-evidence-library/solution/demo.py": {
+      "sourceSha256": "3ac1f22ca745b391c862ad87cce8858014d284cd3a6dd8a289d6a172252644ee",
+      "localizedSha256": "6ad18b8f0cfb3211fa7fb1c8ace73a3ece25cbdfdaa681e733d10319bfe3eab7",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "import json",
+          "# 给定文本区域的证据库；不执行 OCR，模型提议必须经人工审阅。\nimport json"
+        ],
+        [
+          "Search original signs using explicitly supplied text rectangles:",
+          "使用明确给定的文本矩形检索原创标牌："
+        ],
+        [
+          " query coverage | ",
+          " 查询覆盖率 | "
+        ],
+        [
+          "No OCR ran. Every result points to provided evidence metadata.",
+          "没有执行 OCR。每个结果都指向给定的证据元数据。"
+        ],
+        [
+          "Run python3 main.py --query \"return dry seeds\" --out ./visual-output to keep the portable HTML gallery.",
+          "运行 python3 main.py --query \"return dry seeds\" --out ./visual-output，保存可移植 HTML 图库。"
+        ]
+      ]
+    },
+    "projects/visual-evidence-library/solution/fixtures/manifest.json": {
+      "sourceSha256": "e9216bf3c641ff3944fe1f882209ec45f62f4e46c010bb8d88af3f2de3cd99a8",
+      "localizedSha256": "e9216bf3c641ff3944fe1f882209ec45f62f4e46c010bb8d88af3f2de3cd99a8",
+      "kind": "preserved-contract"
+    },
+    "projects/visual-evidence-library/solution/fixtures/seed-sign.svg": {
+      "sourceSha256": "bb370f82393c94758bcd1cef81d68eb227a01ef5e9c0a8b383d891d8fb268bb8",
+      "localizedSha256": "bb370f82393c94758bcd1cef81d68eb227a01ef5e9c0a8b383d891d8fb268bb8",
+      "kind": "preserved-contract"
+    },
+    "projects/visual-evidence-library/solution/fixtures/tool-sign.svg": {
+      "sourceSha256": "80c056e6dc6e8198c5a997cfb0edd57ec3ca98f79bd266b2a7f0a5812d77e7f0",
+      "localizedSha256": "80c056e6dc6e8198c5a997cfb0edd57ec3ca98f79bd266b2a7f0a5812d77e7f0",
+      "kind": "preserved-contract"
+    },
+    "projects/visual-evidence-library/solution/main.py": {
+      "sourceSha256": "88f175a3548ad055f41031fee975e7692780c4fe449b89b72d013160fbcd4547",
+      "localizedSha256": "410dc7a0ab8371961c9e425d2b622cda176dacf2c5d796ec09766abdccaed307",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "from __future__ import annotations",
+          "# 给定文本区域的证据库；不执行 OCR，模型提议必须经人工审阅。\nfrom __future__ import annotations"
+        ],
+        [
+          "<html lang=\"en\">",
+          "<html lang=\"zh-CN\">"
+        ],
+        [
+          "<title>Visual evidence library</title>",
+          "<title>视觉证据库</title>"
+        ],
+        [
+          "<h1>Visual evidence library</h1>",
+          "<h1>视觉证据库</h1>"
+        ],
+        [
+          "<p>Query: ",
+          "<p>查询："
+        ],
+        [
+          "<p>Region ",
+          "<p>区域 "
+        ],
+        [
+          " | Query coverage ",
+          " | 查询覆盖率 "
+        ],
+        [
+          "Text and coordinates come from supplied metadata or explicit human review. Labels are not text evidence. This offline core does not perform OCR.",
+          "文本与坐标来自给定元数据或明确的人工审阅。分类标签不属于文本证据。离线核心不执行 OCR。"
+        ],
+        [
+          "No matching evidence regions.",
+          "没有匹配的证据区域。No matching evidence regions."
+        ],
+        [
+          "\"Search explicitly supplied image text regions and export a portable evidence gallery.\"",
+          "\"检索明确给定的图片文本区域，并导出可移植证据图库。\""
+        ]
+      ]
+    },
+    "projects/visual-evidence-library/stages/01-validate-evidence/docs/en.md": {
+      "sourceSha256": "0f9565764a21aec7a3d5f1bfeda8b11ca5147171e84689f0b81ae886c357c915",
+      "localizedSha256": "f007732e5b22fa91ef95409428c830dc10c0dbfa418b7336c542abcb9ff15c6d",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-visual-evidence-library-1\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py visual-evidence-library --init my-visual-evidence-library\npython3 scripts/project_test.py visual-evidence-library --stage 1 --path my-visual-evidence-library\n"
+          ],
+          [
+            "bash",
+            "cd my-visual-evidence-library\npython3 main.py --manifest ./fixtures/manifest.json --query \"return dry seeds\" --out ./visual-output\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "validate_manifest(manifest: dict, root: Path) -> list[dict]"
+          ]
+        ],
+        "links": [
+          "https://docs.python.org/3/library/xml.etree.elementtree.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 1
+      }
+    },
+    "projects/visual-evidence-library/stages/01-validate-evidence/starter/STAGE.md": {
+      "sourceSha256": "4555b8661466de41ba6df217498bfe27cc5478cc6edead3c889e84d3f0777bb8",
+      "localizedSha256": "9c9dabdde2032c297f2ef75c69906d934721e82b3323defa23f2e55a5236f065",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [
+          "#"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/visual-evidence-library/stages/01-validate-evidence/starter/fixtures/manifest.json": {
+      "sourceSha256": "e9216bf3c641ff3944fe1f882209ec45f62f4e46c010bb8d88af3f2de3cd99a8",
+      "localizedSha256": "e9216bf3c641ff3944fe1f882209ec45f62f4e46c010bb8d88af3f2de3cd99a8",
+      "kind": "preserved-contract"
+    },
+    "projects/visual-evidence-library/stages/01-validate-evidence/starter/fixtures/seed-sign.svg": {
+      "sourceSha256": "bb370f82393c94758bcd1cef81d68eb227a01ef5e9c0a8b383d891d8fb268bb8",
+      "localizedSha256": "bb370f82393c94758bcd1cef81d68eb227a01ef5e9c0a8b383d891d8fb268bb8",
+      "kind": "preserved-contract"
+    },
+    "projects/visual-evidence-library/stages/01-validate-evidence/starter/fixtures/tool-sign.svg": {
+      "sourceSha256": "80c056e6dc6e8198c5a997cfb0edd57ec3ca98f79bd266b2a7f0a5812d77e7f0",
+      "localizedSha256": "80c056e6dc6e8198c5a997cfb0edd57ec3ca98f79bd266b2a7f0a5812d77e7f0",
+      "kind": "preserved-contract"
+    },
+    "projects/visual-evidence-library/stages/01-validate-evidence/starter/main.py": {
+      "sourceSha256": "49d52e6f0e2942e7150f922a90a236a3cb22b605ab665f1113b43f7aaefd78e8",
+      "localizedSha256": "2de31671b5f389a287962015fc66b92de15858d8f82c84d40549471da56da7c4",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "from pathlib import Path",
+          "# 给定文本区域的证据库；不执行 OCR，模型提议必须经人工审阅。\nfrom pathlib import Path"
+        ]
+      ]
+    },
+    "projects/visual-evidence-library/stages/01-validate-evidence/tests/test_stage.py": {
+      "sourceSha256": "0e2da33b25f1a539d09154a61f5be5623c9cd061ca07fd30db573f2926df7986",
+      "localizedSha256": "0e2da33b25f1a539d09154a61f5be5623c9cd061ca07fd30db573f2926df7986",
+      "kind": "preserved-contract"
+    },
+    "projects/visual-evidence-library/stages/02-search-text-regions/docs/en.md": {
+      "sourceSha256": "0517b8d5db7b6ffc323fee9a3e45f3251f0f8dc8ba3fdeec3722aee888f0d9bf",
+      "localizedSha256": "b0356a3a4238d0953cd4122ed96536df74aea50cf11c137273ef59309cc0d5ec",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-visual-evidence-library-2\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py visual-evidence-library --init my-visual-evidence-library\npython3 scripts/project_test.py visual-evidence-library --stage 2 --path my-visual-evidence-library\n"
+          ],
+          [
+            "bash",
+            "cd my-visual-evidence-library\npython3 main.py --manifest ./fixtures/manifest.json --query \"return dry seeds\" --out ./visual-output\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "search(assets, query: str, limit: int = 20) -> list[dict]"
+          ],
+          [
+            "`",
+            "terms(text: str) -> set[str]"
+          ]
+        ],
+        "links": [
+          "https://docs.python.org/3/library/xml.etree.elementtree.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 2
+      }
+    },
+    "projects/visual-evidence-library/stages/02-search-text-regions/starter/STAGE-2.md": {
+      "sourceSha256": "048a2bfb9bdf78f9f72b84dfc1d1d9fbfab9016c0249a5152a5ae162e5333ab4",
+      "localizedSha256": "d9cc4eb2979f5e11b94d1c7e6546ec81018ea23c0603062997adcb9b7aebfd00",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [
+          "#"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/visual-evidence-library/stages/02-search-text-regions/tests/test_stage.py": {
+      "sourceSha256": "40d284086b4c9ee23fa038e7edd0af026895a1e12651cd2a105f634ee28bb809",
+      "localizedSha256": "40d284086b4c9ee23fa038e7edd0af026895a1e12651cd2a105f634ee28bb809",
+      "kind": "preserved-contract"
+    },
+    "projects/visual-evidence-library/stages/03-review-vision-proposals/docs/en.md": {
+      "sourceSha256": "ae041138d21ea391b60c8379a61ac11d6dfc5c526442fea9e6c2efe05f2a4cb4",
+      "localizedSha256": "8800e79d6f9b68cc6a7eacb5485dcbb9ee474daee6135c9c8b73b9c01735d869",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-visual-evidence-library-3\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py visual-evidence-library --init my-visual-evidence-library\npython3 scripts/project_test.py visual-evidence-library --stage 3 --path my-visual-evidence-library\n"
+          ],
+          [
+            "bash",
+            "cd my-visual-evidence-library\npython3 main.py --manifest ./fixtures/manifest.json --query \"return dry seeds\" --out ./visual-output\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "request_vision(path, endpoint, model, width, height, api_key=\"\") -> dict"
+          ],
+          [
+            "`",
+            "validate_proposal(proposal: dict, width: int, height: int) -> dict"
+          ]
+        ],
+        "links": [
+          "https://docs.python.org/3/library/xml.etree.elementtree.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 2
+      }
+    },
+    "projects/visual-evidence-library/stages/03-review-vision-proposals/starter/STAGE-3.md": {
+      "sourceSha256": "0385e4dbfb00064f3fd0d9aa5494d4cbe7596ccb4057a4b37df695a530939257",
+      "localizedSha256": "25c16c8d61a92cc77cfdd1b3cb779d08aea7e81aeb746f8f98937199e703cca1",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [
+          "#"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/visual-evidence-library/stages/03-review-vision-proposals/tests/test_stage.py": {
+      "sourceSha256": "2e8d33c0e9b9a29a346006de5b810487c0c5b5d6b86cc0dc211b45b158abdd75",
+      "localizedSha256": "2e8d33c0e9b9a29a346006de5b810487c0c5b5d6b86cc0dc211b45b158abdd75",
+      "kind": "preserved-contract"
+    },
+    "projects/visual-evidence-library/stages/04-export-the-gallery/docs/en.md": {
+      "sourceSha256": "187d7f73ee61f408da03bf94eb098937e14366b1ebf312688e02a4d7eca496b2",
+      "localizedSha256": "9ae2e7100a75c10006f2ce2e31e683b32102277660bd00f8a1c239ede2be7859",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-visual-evidence-library-4\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py visual-evidence-library --init my-visual-evidence-library\npython3 scripts/project_test.py visual-evidence-library --stage 4 --path my-visual-evidence-library\n"
+          ],
+          [
+            "bash",
+            "cd my-visual-evidence-library\npython3 main.py --manifest ./fixtures/manifest.json --query \"return dry seeds\" --out ./visual-output\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "export_library(assets, query: str, out: Path) -> dict"
+          ],
+          [
+            "`",
+            "image_data(asset: dict) -> str"
+          ]
+        ],
+        "links": [
+          "https://docs.python.org/3/library/xml.etree.elementtree.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 2
+      }
+    },
+    "projects/visual-evidence-library/stages/04-export-the-gallery/starter/STAGE-4.md": {
+      "sourceSha256": "4b5e043824c31bb9cf851f542a4e2ff83578b93c9930d3111790fabfdd433997",
+      "localizedSha256": "e7c5cd333ea42b711331e7a6c11147458cb25634d5667eac2f13d45c54e16995",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [
+          "#"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/visual-evidence-library/stages/04-export-the-gallery/tests/test_stage.py": {
+      "sourceSha256": "133a001e55c92e4edc2a1309d415b54c5854e0b5214ed8ae8e04f735ce574095",
+      "localizedSha256": "133a001e55c92e4edc2a1309d415b54c5854e0b5214ed8ae8e04f735ce574095",
+      "kind": "preserved-contract"
+    },
+    "projects/voice-note-transcriber-pipeline/README.md": {
+      "sourceSha256": "2c30f9c375b9aed6ed76a99e20ebca0cc0db495a2dc6369e875eb3ddd9940e86",
+      "localizedSha256": "b7aac27a798c1a93a060d8df1c93b4ab3f776f47bfe48878821615d9279ac456",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "bash",
+            "python3 scripts/project_test.py voice-note-transcriber-pipeline --init my-voice-pipeline\npython3 scripts/project_test.py voice-note-transcriber-pipeline --stage 1 --path my-voice-pipeline --strict\npython3 scripts/project_test.py voice-note-transcriber-pipeline --all --solution --strict\ncd projects/voice-note-transcriber-pipeline/solution\npython3 pipeline.py --input fixtures/repair-note.wav --transcript-file fixtures/reference.json --out voice-output\n"
+          ],
+          [
+            "bash",
+            "python3 pipeline.py --input YOUR_NOTE.wav --endpoint http://127.0.0.1:8080/v1/audio/transcriptions --model YOUR_MODEL --out voice-output\n"
+          ],
+          [
+            "bash",
+            "ffmpeg -i YOUR_NOTE.m4a -ac 1 -ar 16000 -c:a pcm_s16le YOUR_NOTE.wav\n"
+          ],
+          [
+            "bash",
+            "python3 pipeline.py --input YOUR_NOTE.wav --review-file EDITED_TRANSCRIPT.json --out corrected-output\n"
+          ]
+        ],
+        "inlineCode": [],
+        "links": [
+          "https://docs.python.org/3/library/wave.html",
+          "https://www.w3.org/TR/webvtt1/",
+          "stages/01-pcm/docs/en.md",
+          "stages/02-activity/docs/en.md",
+          "stages/03-transcribe/docs/en.md",
+          "stages/04-captions/docs/en.md"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 4
+      }
+    },
+    "projects/voice-note-transcriber-pipeline/media/output.gif": {
+      "sourceSha256": "224a5e723d1c33c8171da28285dd274e7fded52d3ce1213495a5d71be09cd43e",
+      "localizedSha256": "224a5e723d1c33c8171da28285dd274e7fded52d3ce1213495a5d71be09cd43e",
+      "kind": "original-recording"
+    },
+    "projects/voice-note-transcriber-pipeline/media/output.json": {
+      "sourceSha256": "a3009516389cc2603fc27139c811fa08cae98b6e71a51532078c63a7c43775f5",
+      "localizedSha256": "a3009516389cc2603fc27139c811fa08cae98b6e71a51532078c63a7c43775f5",
+      "kind": "original-recording"
+    },
+    "projects/voice-note-transcriber-pipeline/media/output.png": {
+      "sourceSha256": "2131f148f0723c52d5d90f9dddff5a28f830b714cb86b945a9607de738596291",
+      "localizedSha256": "2131f148f0723c52d5d90f9dddff5a28f830b714cb86b945a9607de738596291",
+      "kind": "original-recording"
+    },
+    "projects/voice-note-transcriber-pipeline/media/run.gif": {
+      "sourceSha256": "eb00e52061e7d24eef37e8b77173949811e76c5bf7a15c61ac022f5ed3296372",
+      "localizedSha256": "eb00e52061e7d24eef37e8b77173949811e76c5bf7a15c61ac022f5ed3296372",
+      "kind": "original-recording"
+    },
+    "projects/voice-note-transcriber-pipeline/media/run.json": {
+      "sourceSha256": "7f0f9b6d87d312e5768f0b0423b953f975ff17deae445d33a8ee6c9f6b51af09",
+      "localizedSha256": "7f0f9b6d87d312e5768f0b0423b953f975ff17deae445d33a8ee6c9f6b51af09",
+      "kind": "original-recording"
+    },
+    "projects/voice-note-transcriber-pipeline/media/run.png": {
+      "sourceSha256": "bcb154fdb37865a8bc0bb87f2bc5316abdbfd44fa6dbaf42346bab8e8014ca1f",
+      "localizedSha256": "bcb154fdb37865a8bc0bb87f2bc5316abdbfd44fa6dbaf42346bab8e8014ca1f",
+      "kind": "original-recording"
+    },
+    "projects/voice-note-transcriber-pipeline/project.json": {
+      "sourceSha256": "060f7a2edbc57db89fdb16830f18d845a0337c3d73617192ef8d8c7538a0db6d",
+      "localizedSha256": "3c59443cc702715a0c64248cf5d054b68e97930cc24a09a558a2319ab78fed97",
+      "kind": "manifest",
+      "contract": {
+        "id": "voice-note-transcriber-pipeline",
+        "title": "<translated-text>",
+        "level": 3,
+        "levelName": "Engineer",
+        "tagline": "<translated-text>",
+        "summary": "<translated-text>",
+        "hours": 8,
+        "languages": [
+          "Python"
+        ],
+        "status": "ready",
+        "source": "core",
+        "author": {
+          "name": "AI Engineering from Scratch",
+          "github": "rohitg00"
+        },
+        "youWillBuild": "<translated-text>",
+        "usefulFor": [
+          "<translated-text>"
+        ],
+        "skills": [
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "prerequisites": [
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "figures": true,
+        "overviewFigure": "pj-voice-note-transcriber-pipeline-1",
+        "languageWhy": {
+          "Python": "<translated-text>"
+        },
+        "demo": {
+          "command": [
+            "python3",
+            "demo.py"
+          ],
+          "cwd": "solution"
+        },
+        "stages": [
+          {
+            "id": "01-pcm",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "language": "python",
+            "languageWhy": "<translated-text>",
+            "hours": 2,
+            "difficulty": "starter",
+            "figure": "pj-voice-note-transcriber-pipeline-1",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ]
+          },
+          {
+            "id": "02-activity",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "language": "python",
+            "languageWhy": "<translated-text>",
+            "hours": 2,
+            "difficulty": "core",
+            "figure": "pj-voice-note-transcriber-pipeline-2",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ]
+          },
+          {
+            "id": "03-transcribe",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "language": "python",
+            "languageWhy": "<translated-text>",
+            "hours": 2,
+            "difficulty": "core",
+            "figure": "pj-voice-note-transcriber-pipeline-3",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ]
+          },
+          {
+            "id": "04-captions",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "language": "python",
+            "languageWhy": "<translated-text>",
+            "hours": 2,
+            "difficulty": "stretch",
+            "figure": "pj-voice-note-transcriber-pipeline-4",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ]
+          }
+        ],
+        "demos": [
+          {
+            "gif": "media/run.gif",
+            "poster": "media/run.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          },
+          {
+            "gif": "media/output.gif",
+            "poster": "media/output.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          }
+        ]
+      }
+    },
+    "projects/voice-note-transcriber-pipeline/solution/activity.py": {
+      "sourceSha256": "ae1a996ac113b9c4ddac10cba4cd74eb8772e1e7ce783a2a8eadf242512d84b9",
+      "localizedSha256": "e4b2e6c1a188e23a524c2beeba07de6cc4ee293c2c2f6e162a4fb4575f0da4ee",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "\"\"\"Segment speech candidates with RMS energy.\n\nLesson: projects/voice-note-transcriber-pipeline/stages/02-activity/docs/en.md\nThe implementation is original and uses explicit local data contracts.\nRun its tests through scripts/project_test.py.\n\"\"\"",
+          "\"\"\"使用均方根能量划分候选活动片段。\n\n课程： projects/voice-note-transcriber-pipeline/stages/02-activity/docs/en.md\n实现为原创，使用明确的本地数据契约。\n通过 scripts/project_test.py 运行测试。\n\"\"\""
+        ]
+      ]
+    },
+    "projects/voice-note-transcriber-pipeline/solution/captions.py": {
+      "sourceSha256": "9c8e0c88a0f643591160ba504a14b6a2d433db99add0f6d22fa8a2e13acb52be",
+      "localizedSha256": "f0db0b4509f551a9c516fc87027958984c54d2412ec72d34a160ad70d14a2f4c",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "\"\"\"Export validated WebVTT captions.\n\nLesson: projects/voice-note-transcriber-pipeline/stages/04-captions/docs/en.md\nThe implementation is original and uses explicit local data contracts.\nRun its tests through scripts/project_test.py.\n\"\"\"",
+          "\"\"\"导出经过校验的 WebVTT 字幕。\n\n课程： projects/voice-note-transcriber-pipeline/stages/04-captions/docs/en.md\n实现为原创，使用明确的本地数据契约。\n通过 scripts/project_test.py 运行测试。\n\"\"\""
+        ]
+      ]
+    },
+    "projects/voice-note-transcriber-pipeline/solution/demo.py": {
+      "sourceSha256": "331e6127063f4c6cee53d2ca19350cfb4c48dc6a614084ba562cded543f88c55",
+      "localizedSha256": "5345503ba5fa4bb0fdb897b537b53d20cb71d5224ff97b2ca05c2c099c1524d4",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "import subprocess",
+          "# 语音流水线教学实现；原音频、方法标签、字幕数据和协议字段保留原值。\nimport subprocess"
+        ]
+      ]
+    },
+    "projects/voice-note-transcriber-pipeline/solution/fixtures/reference.json": {
+      "sourceSha256": "3a27fea80c4a89f8664aa9c49e02df20eeb38d9fc94566e012c63954ef275c8d",
+      "localizedSha256": "3a27fea80c4a89f8664aa9c49e02df20eeb38d9fc94566e012c63954ef275c8d",
+      "kind": "preserved-contract"
+    },
+    "projects/voice-note-transcriber-pipeline/solution/fixtures/repair-note.wav": {
+      "sourceSha256": "0c875531008b10ec0f2b27b1b0e6cba6b7867276312eb24b85807c9e90d0e34d",
+      "localizedSha256": "0c875531008b10ec0f2b27b1b0e6cba6b7867276312eb24b85807c9e90d0e34d",
+      "kind": "preserved-contract"
+    },
+    "projects/voice-note-transcriber-pipeline/solution/pcm.py": {
+      "sourceSha256": "92a5ca7cfecadaf9603883556e083d78d932037c6c2b3cad24e43f4cd7220263",
+      "localizedSha256": "2ddb857755eb3c2d96c25d85344bba57e58fd8b09b58806cff1aea4a966f778d",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "\"\"\"Decode and validate PCM WAV samples.\n\nLesson: projects/voice-note-transcriber-pipeline/stages/01-pcm/docs/en.md\nThe implementation is original and uses explicit local data contracts.\nRun its tests through scripts/project_test.py.\n\"\"\"",
+          "\"\"\"解码并校验 PCM WAV 采样。\n\n课程： projects/voice-note-transcriber-pipeline/stages/01-pcm/docs/en.md\n实现为原创，使用明确的本地数据契约。\n通过 scripts/project_test.py 运行测试。\n\"\"\""
+        ]
+      ]
+    },
+    "projects/voice-note-transcriber-pipeline/solution/pipeline.py": {
+      "sourceSha256": "6c4f5aaa503db8845a71edefe00a3a06f18c7db7adc4a429314199eeb0cfc377",
+      "localizedSha256": "753128eacff094398be418adcb73dc4ebddfd342d5fba08f7751e17a1278c6ef",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "import argparse",
+          "# 语音流水线教学实现；原音频、方法标签、字幕数据和协议字段保留原值。\nimport argparse"
+        ],
+        [
+          "<html lang=\"en\">",
+          "<html lang=\"zh-CN\">"
+        ],
+        [
+          "<title>Voice note review</title>",
+          "<title>语音备忘录审阅</title>"
+        ],
+        [
+          "<h1>Voice note review</h1>",
+          "<h1>语音备忘录审阅</h1>"
+        ],
+        [
+          "Review the words against playback. Edit transcript.json and rerender to apply corrections. Timestamps mark segment boundaries, not word alignments.",
+          "对照播放内容检查文字。编辑 transcript.json 后重新渲染以应用修正。时间戳标记片段边界，不表示逐词对齐。"
+        ],
+        [
+          "Download WebVTT",
+          "下载 WebVTT"
+        ],
+        [
+          "\"Transcribe a selected WAV through an explicit HTTP recognizer or review supplied transcript evidence.\"",
+          "\"通过明确指定的 HTTP 识别器转录 WAV，或审阅给定的转录证据。\""
+        ],
+        [
+          "\"Explicit multipart audio/transcriptions endpoint; uploads the selected audio\"",
+          "\"明确的 multipart audio/transcriptions 端点；将上传选定音频\""
+        ],
+        [
+          "\"Supplied reference transcript bound to an audio SHA256; no recognition occurs\"",
+          "\"与音频 SHA256 绑定的给定参考转录；不执行识别\""
+        ],
+        [
+          "\"Edited transcript.json from an earlier run, bound to the original audio hash\"",
+          "\"此前导出后编辑的 transcript.json，绑定原始音频哈希\""
+        ],
+        [
+          "\"Split by acoustic energy before real recognition; may cut quiet speech\"",
+          "\"真实识别前按声学能量切分，可能截断轻声语音\""
+        ]
+      ]
+    },
+    "projects/voice-note-transcriber-pipeline/solution/provider.py": {
+      "sourceSha256": "44df4438744a281e5aa8d3460d13f49b8896cccae1af89d678d09e6d00d5f31d",
+      "localizedSha256": "10c73404e49f7ecfa70b368a774fc1f6f68a9b0ddf42b0f50aa38e62d8667ca3",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "import json",
+          "# 语音流水线教学实现；原音频、方法标签、字幕数据和协议字段保留原值。\nimport json"
+        ]
+      ]
+    },
+    "projects/voice-note-transcriber-pipeline/solution/transcribe.py": {
+      "sourceSha256": "05cc65a5a00380534a0bacb2125287c2a4f0f436c666ce420ad748c7bc95ed81",
+      "localizedSha256": "2a85c58549e9fd52181237b5199a754d8d29ebd6c12f58348e6d20b2bf9480cc",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "\"\"\"Call an injected transcriber with bounded retries.\n\nLesson: projects/voice-note-transcriber-pipeline/stages/03-transcribe/docs/en.md\nThe implementation is original and uses explicit local data contracts.\nRun its tests through scripts/project_test.py.\n\"\"\"",
+          "\"\"\"通过有界重试调用注入的转录器。\n\n课程： projects/voice-note-transcriber-pipeline/stages/03-transcribe/docs/en.md\n实现为原创，使用明确的本地数据契约。\n通过 scripts/project_test.py 运行测试。\n\"\"\""
+        ]
+      ]
+    },
+    "projects/voice-note-transcriber-pipeline/stages/01-pcm/docs/en.md": {
+      "sourceSha256": "6b6a559d94ddd0da582178c725eacec14c3fb0d8fdf64ac3439570062e434481",
+      "localizedSha256": "d343758e7a3167d20f19571d41de8674c293cd052219ca2eb6890c99a4ac1fbb",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-voice-note-transcriber-pipeline-1\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py voice-note-transcriber-pipeline --init my-voice-note-transcriber-pipeline\npython3 scripts/project_test.py voice-note-transcriber-pipeline --stage 1 --path my-voice-note-transcriber-pipeline --strict\n"
+          ],
+          [
+            "bash",
+            "cd projects/voice-note-transcriber-pipeline/solution\npython3 pipeline.py --input fixtures/repair-note.wav --transcript-file fixtures/reference.json --out voice-output\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "decode_wav(data), encode_wav(samples, rate=16000) in pcm.py"
+          ]
+        ],
+        "links": [
+          "https://docs.python.org/3/library/wave.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/voice-note-transcriber-pipeline/stages/01-pcm/starter/fixtures/reference.json": {
+      "sourceSha256": "3a27fea80c4a89f8664aa9c49e02df20eeb38d9fc94566e012c63954ef275c8d",
+      "localizedSha256": "3a27fea80c4a89f8664aa9c49e02df20eeb38d9fc94566e012c63954ef275c8d",
+      "kind": "preserved-contract"
+    },
+    "projects/voice-note-transcriber-pipeline/stages/01-pcm/starter/fixtures/repair-note.wav": {
+      "sourceSha256": "0c875531008b10ec0f2b27b1b0e6cba6b7867276312eb24b85807c9e90d0e34d",
+      "localizedSha256": "0c875531008b10ec0f2b27b1b0e6cba6b7867276312eb24b85807c9e90d0e34d",
+      "kind": "preserved-contract"
+    },
+    "projects/voice-note-transcriber-pipeline/stages/01-pcm/starter/pcm.py": {
+      "sourceSha256": "fe622410aad38ea703ec2f58b6d14ac5e6db232a90ae63adea40a0520648be40",
+      "localizedSha256": "b67e77e9a4806ddd06e9d5f6b06e4b7746c32832f70c1ea46a83ac11c874071d",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "\"\"\"Decode and validate PCM WAV samples.\n\nLesson: projects/voice-note-transcriber-pipeline/stages/01-pcm/docs/en.md\nThe implementation is original and uses explicit local data contracts.\nRun its tests through scripts/project_test.py.\n\"\"\"",
+          "\"\"\"解码并校验 PCM WAV 采样。\n\n课程： projects/voice-note-transcriber-pipeline/stages/01-pcm/docs/en.md\n实现为原创，使用明确的本地数据契约。\n通过 scripts/project_test.py 运行测试。\n\"\"\""
+        ]
+      ]
+    },
+    "projects/voice-note-transcriber-pipeline/stages/01-pcm/tests/test_pcm.py": {
+      "sourceSha256": "643c8801a516cbb615bd9ccc05f5345dc8495da51be5aa3916be7b78def8c465",
+      "localizedSha256": "643c8801a516cbb615bd9ccc05f5345dc8495da51be5aa3916be7b78def8c465",
+      "kind": "preserved-contract"
+    },
+    "projects/voice-note-transcriber-pipeline/stages/02-activity/docs/en.md": {
+      "sourceSha256": "719ca21f94bccffb08a3f824717a77f9397767b0654a165f3f28393373666edd",
+      "localizedSha256": "6f4224e8bd49b50e0e46f248fa87e3590bb8abf026ed4cd7f29009b7aacef4a1",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-voice-note-transcriber-pipeline-2\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py voice-note-transcriber-pipeline --init my-voice-note-transcriber-pipeline\npython3 scripts/project_test.py voice-note-transcriber-pipeline --stage 2 --path my-voice-note-transcriber-pipeline --strict\n"
+          ],
+          [
+            "bash",
+            "cd projects/voice-note-transcriber-pipeline/solution\npython3 pipeline.py --input fixtures/repair-note.wav --transcript-file fixtures/reference.json --out voice-output\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "activity(samples, rate, frame_ms=20, threshold=0.02, min_ms=40, gap_ms=40) in activity.py"
+          ]
+        ],
+        "links": [
+          "https://docs.python.org/3/library/wave.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/voice-note-transcriber-pipeline/stages/02-activity/starter/activity.py": {
+      "sourceSha256": "36aaf6ffad2cb90652cb05b45a1596efb80ff18a95c4d86fe295365beddb29fe",
+      "localizedSha256": "fa3af7a27e187e7fefc534a10705c1bd08eed42b07ebc4cea811194abd321683",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "\"\"\"Segment speech candidates with RMS energy.\n\nLesson: projects/voice-note-transcriber-pipeline/stages/02-activity/docs/en.md\nThe implementation is original and uses explicit local data contracts.\nRun its tests through scripts/project_test.py.\n\"\"\"",
+          "\"\"\"使用均方根能量划分候选活动片段。\n\n课程： projects/voice-note-transcriber-pipeline/stages/02-activity/docs/en.md\n实现为原创，使用明确的本地数据契约。\n通过 scripts/project_test.py 运行测试。\n\"\"\""
+        ]
+      ]
+    },
+    "projects/voice-note-transcriber-pipeline/stages/02-activity/tests/test_activity.py": {
+      "sourceSha256": "31650a44ff7b64b9f0cd374d74115bfe96191ec8d0e27e3dec296710433cfd70",
+      "localizedSha256": "31650a44ff7b64b9f0cd374d74115bfe96191ec8d0e27e3dec296710433cfd70",
+      "kind": "preserved-contract"
+    },
+    "projects/voice-note-transcriber-pipeline/stages/03-transcribe/docs/en.md": {
+      "sourceSha256": "dd162ce728c20f9f50d26ba6e3b324bc36c2566206fc2fa13239ec63a0818898",
+      "localizedSha256": "397de84abdd99ea02d3c16df0c8c6f185100f88678df57bf26347d32169ac2ad",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-voice-note-transcriber-pipeline-3\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py voice-note-transcriber-pipeline --init my-voice-note-transcriber-pipeline\npython3 scripts/project_test.py voice-note-transcriber-pipeline --stage 3 --path my-voice-note-transcriber-pipeline --strict\n"
+          ],
+          [
+            "bash",
+            "cd projects/voice-note-transcriber-pipeline/solution\npython3 pipeline.py --input fixtures/repair-note.wav --transcript-file fixtures/reference.json --out voice-output\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "transcribe(...) in transcribe.py; http_recognizer(endpoint, model, api_key, timeout) in provider.py"
+          ]
+        ],
+        "links": [
+          "https://docs.python.org/3/library/wave.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/voice-note-transcriber-pipeline/stages/03-transcribe/starter/provider.py": {
+      "sourceSha256": "1fa1def85b4ea35da4934a957bd0e6f3c96933bad9670e9044f0298d5b5304f1",
+      "localizedSha256": "7963401f93c432c5c081412377a0bb1a8618eeda3fcf0cad0549bd17c465ebcd",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "def http_recognizer(endpoint, model=\"whisper-1\", api_key=\"\", timeout=30):",
+          "# 语音流水线教学实现；原音频、方法标签、字幕数据和协议字段保留原值。\ndef http_recognizer(endpoint, model=\"whisper-1\", api_key=\"\", timeout=30):"
+        ]
+      ]
+    },
+    "projects/voice-note-transcriber-pipeline/stages/03-transcribe/starter/transcribe.py": {
+      "sourceSha256": "e2944a7bb3d2b32a1769fb878419ff7b58f54200b06c2c59939e5feaecd934a1",
+      "localizedSha256": "3371c5363b76382c6e17f475bde7a779f7406aa63e453dff90eb69c483487071",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "\"\"\"Call an injected transcriber with bounded retries.\n\nLesson: projects/voice-note-transcriber-pipeline/stages/03-transcribe/docs/en.md\nThe implementation is original and uses explicit local data contracts.\nRun its tests through scripts/project_test.py.\n\"\"\"",
+          "\"\"\"通过有界重试调用注入的转录器。\n\n课程： projects/voice-note-transcriber-pipeline/stages/03-transcribe/docs/en.md\n实现为原创，使用明确的本地数据契约。\n通过 scripts/project_test.py 运行测试。\n\"\"\""
+        ]
+      ]
+    },
+    "projects/voice-note-transcriber-pipeline/stages/03-transcribe/tests/test_endpoint.py": {
+      "sourceSha256": "ef39fa9f929bec2870dc27b09be60098281b06f8d85d928a6d1780b1d4e5baf3",
+      "localizedSha256": "ef39fa9f929bec2870dc27b09be60098281b06f8d85d928a6d1780b1d4e5baf3",
+      "kind": "preserved-contract"
+    },
+    "projects/voice-note-transcriber-pipeline/stages/03-transcribe/tests/test_provider.py": {
+      "sourceSha256": "d9834c1b93b7555478b1342f1f78ba3c9c54cc9496a191aa288725b710f488b9",
+      "localizedSha256": "d9834c1b93b7555478b1342f1f78ba3c9c54cc9496a191aa288725b710f488b9",
+      "kind": "preserved-contract"
+    },
+    "projects/voice-note-transcriber-pipeline/stages/03-transcribe/tests/test_transcribe.py": {
+      "sourceSha256": "56233fa215ea8af78eb028caaa8823cce23134af86869760d5554f2f809879d5",
+      "localizedSha256": "56233fa215ea8af78eb028caaa8823cce23134af86869760d5554f2f809879d5",
+      "kind": "preserved-contract"
+    },
+    "projects/voice-note-transcriber-pipeline/stages/04-captions/docs/en.md": {
+      "sourceSha256": "60a4684b1831c68858b9921a64697d15b83de2026d536a82779f134f8f3a544d",
+      "localizedSha256": "8baf7a455af1ac860e21aa56725b13265ed7a88d9cf008afc96eaadf9ef0d9b8",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-voice-note-transcriber-pipeline-4\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py voice-note-transcriber-pipeline --init my-voice-note-transcriber-pipeline\npython3 scripts/project_test.py voice-note-transcriber-pipeline --stage 4 --path my-voice-note-transcriber-pipeline --strict\n"
+          ],
+          [
+            "bash",
+            "cd projects/voice-note-transcriber-pipeline/solution\npython3 pipeline.py --input fixtures/repair-note.wav --transcript-file fixtures/reference.json --out voice-output\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "audio_sha256"
+          ],
+          [
+            "`",
+            "duration_seconds"
+          ],
+          [
+            "`",
+            "export_transcript"
+          ],
+          [
+            "`",
+            "method"
+          ],
+          [
+            "`",
+            "rows"
+          ],
+          [
+            "`",
+            "schema_version=1"
+          ],
+          [
+            "`",
+            "stamp, captions in captions.py; export_transcript and the CLI in pipeline.py"
+          ]
+        ],
+        "links": [
+          "https://docs.python.org/3/library/wave.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/voice-note-transcriber-pipeline/stages/04-captions/starter/captions.py": {
+      "sourceSha256": "1f80c9b04e145a78cd48b400f095fbb88e0503d4ffa993a2ec9dd07a99a99d6c",
+      "localizedSha256": "69ccecc6568fd90860857265b1518faef1c60f2406063a96719c779c77c721fc",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "\"\"\"Export validated WebVTT captions.\n\nLesson: projects/voice-note-transcriber-pipeline/stages/04-captions/docs/en.md\nThe implementation is original and uses explicit local data contracts.\nRun its tests through scripts/project_test.py.\n\"\"\"",
+          "\"\"\"导出经过校验的 WebVTT 字幕。\n\n课程： projects/voice-note-transcriber-pipeline/stages/04-captions/docs/en.md\n实现为原创，使用明确的本地数据契约。\n通过 scripts/project_test.py 运行测试。\n\"\"\""
+        ]
+      ]
+    },
+    "projects/voice-note-transcriber-pipeline/stages/04-captions/starter/pipeline.py": {
+      "sourceSha256": "31aab1c02f7a46937791ceaa4a89151d53f6781a9def7c8af92e8663672d7909",
+      "localizedSha256": "cdb1bd2ed5b682a6d0a335b173b985b39d73053a4904a008bf343225aa36af12",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "def export_transcript(wav, rows, out, method):",
+          "# 语音流水线教学实现；原音频、方法标签、字幕数据和协议字段保留原值。\ndef export_transcript(wav, rows, out, method):"
+        ]
+      ]
+    },
+    "projects/voice-note-transcriber-pipeline/stages/04-captions/tests/test_captions.py": {
+      "sourceSha256": "7ec6d3bba6d155d83988369731e4345e2325cee5be539895f8e46daf100f87fe",
+      "localizedSha256": "7ec6d3bba6d155d83988369731e4345e2325cee5be539895f8e46daf100f87fe",
+      "kind": "preserved-contract"
+    },
+    "projects/voice-note-transcriber-pipeline/stages/04-captions/tests/test_export.py": {
+      "sourceSha256": "761435b8c31087b759ab3cf88d8df513ee68a59419438ef579a47fa4f23252ce",
+      "localizedSha256": "761435b8c31087b759ab3cf88d8df513ee68a59419438ef579a47fa4f23252ce",
+      "kind": "preserved-contract"
+    },
+    "projects/web-change-brief/README.md": {
+      "sourceSha256": "11e5632b396064b4b4e0d822d7162e5bbe32d2fcc01ce2dcf0029d67825b4759",
+      "localizedSha256": "c725fde8ac3cb3e624a8b875b507e29fcf1fa9d86d986f6e0a79eb3d13b15ec6",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "bash",
+            "python3 scripts/project_test.py web-change-brief --init my-web-change-brief\npython3 scripts/project_test.py web-change-brief --stage 1 --path my-web-change-brief\npython3 scripts/project_test.py web-change-brief --all --solution --strict\n"
+          ],
+          [
+            "bash",
+            "cd projects/web-change-brief/solution\ngo run . --before fixtures/before.html --after fixtures/after.html --url https://example.invalid/makerspace --out ./web-change-output\n"
+          ],
+          [
+            "bash",
+            "python3 demo.py\n"
+          ]
+        ],
+        "inlineCode": [],
+        "links": [
+          "https://pkg.go.dev/net/http",
+          "stages/01-extract-readable-blocks/docs/en.md",
+          "stages/02-compare-snapshots/docs/en.md",
+          "stages/03-fetch-and-save/docs/en.md",
+          "stages/04-export-change-evidence/docs/en.md"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 7
+      }
+    },
+    "projects/web-change-brief/media/output.gif": {
+      "sourceSha256": "02dfa47be1b9a7b92bc975b500597d429f06988622fe18456f226ff97d4bf584",
+      "localizedSha256": "02dfa47be1b9a7b92bc975b500597d429f06988622fe18456f226ff97d4bf584",
+      "kind": "original-recording"
+    },
+    "projects/web-change-brief/media/output.json": {
+      "sourceSha256": "9990e6e4342668e0a53ade135de82ae9821f290279fee40feaaaca2fcb886a14",
+      "localizedSha256": "9990e6e4342668e0a53ade135de82ae9821f290279fee40feaaaca2fcb886a14",
+      "kind": "original-recording"
+    },
+    "projects/web-change-brief/media/output.png": {
+      "sourceSha256": "f2a1f9b0d10aab54ced18d44b05b6fc44bb17b40026072b90c7f46b3de482a4f",
+      "localizedSha256": "f2a1f9b0d10aab54ced18d44b05b6fc44bb17b40026072b90c7f46b3de482a4f",
+      "kind": "original-recording"
+    },
+    "projects/web-change-brief/media/run.gif": {
+      "sourceSha256": "7d8afbf8496805405389897920878d5d6f2bb4eb361e7748a05156812ec8c431",
+      "localizedSha256": "7d8afbf8496805405389897920878d5d6f2bb4eb361e7748a05156812ec8c431",
+      "kind": "original-recording"
+    },
+    "projects/web-change-brief/media/run.json": {
+      "sourceSha256": "0fd5f0ab9a43b725860d70cee911bc234965917a328aa55b04377adf80f27e7f",
+      "localizedSha256": "0fd5f0ab9a43b725860d70cee911bc234965917a328aa55b04377adf80f27e7f",
+      "kind": "original-recording"
+    },
+    "projects/web-change-brief/media/run.png": {
+      "sourceSha256": "191459636079cf9edc214c43b6125927c8001451bd4f299aa262509b479f0e0f",
+      "localizedSha256": "191459636079cf9edc214c43b6125927c8001451bd4f299aa262509b479f0e0f",
+      "kind": "original-recording"
+    },
+    "projects/web-change-brief/project.json": {
+      "sourceSha256": "c71e86b9dfab5f059b871a741500797810234433d03b577573d7c038dee832e4",
+      "localizedSha256": "bc0d5ec80a52ba13f722330f44381478d6bd9558f5cd02f6641cf75ac77182ed",
+      "kind": "manifest",
+      "contract": {
+        "id": "web-change-brief",
+        "title": "<translated-text>",
+        "level": 3,
+        "levelName": "Engineer",
+        "tagline": "<translated-text>",
+        "summary": "<translated-text>",
+        "youWillBuild": "<translated-text>",
+        "usefulFor": [
+          "<translated-text>"
+        ],
+        "hours": 8,
+        "languages": [
+          "Go"
+        ],
+        "languageWhy": {
+          "Go": "<translated-text>"
+        },
+        "status": "ready",
+        "source": "core",
+        "author": {
+          "name": "AI Engineering from Scratch",
+          "github": "rohitg00"
+        },
+        "skills": [
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "prerequisites": [
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "figures": true,
+        "overviewFigure": "pj-web-change-brief-1",
+        "demo": {
+          "command": [
+            "python3",
+            "demo.py"
+          ],
+          "cwd": "solution"
+        },
+        "stages": [
+          {
+            "id": "01-extract-readable-blocks",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "difficulty": "starter",
+            "language": "go",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ],
+            "figure": "pj-web-change-brief-1"
+          },
+          {
+            "id": "02-compare-snapshots",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "difficulty": "core",
+            "language": "go",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ],
+            "figure": "pj-web-change-brief-2"
+          },
+          {
+            "id": "03-fetch-and-save",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "difficulty": "core",
+            "language": "go",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ],
+            "figure": "pj-web-change-brief-3"
+          },
+          {
+            "id": "04-export-change-evidence",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "difficulty": "stretch",
+            "language": "go",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ],
+            "figure": "pj-web-change-brief-4"
+          }
+        ],
+        "demos": [
+          {
+            "gif": "media/run.gif",
+            "poster": "media/run.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          },
+          {
+            "gif": "media/output.gif",
+            "poster": "media/output.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          }
+        ]
+      }
+    },
+    "projects/web-change-brief/solution/demo.py": {
+      "sourceSha256": "a95d66986f16a5e917074497480f877ad01baf946cb522ddb846ce54520e5d7a",
+      "localizedSha256": "d5b59e9a7c1f1598d70352f44e11d98e73eee430f9c3538cd941d20bd2f9de25",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "import subprocess",
+          "# 网页文本变化教学实现；不运行浏览器，不自动接受在线基线。\nimport subprocess"
+        ],
+        [
+          "Navigation counters and footer timestamps were filtered out.",
+          "导航计数和页脚时间戳已过滤。"
+        ],
+        [
+          "Run go run . --out ./web-change-output to keep the portable HTML, JSON and baseline.",
+          "运行 go run . --out ./web-change-output，保存 HTML、JSON 和基线。"
+        ]
+      ]
+    },
+    "projects/web-change-brief/solution/fixtures/after.html": {
+      "sourceSha256": "e2f1fec30ccc6d014f9fb90c256adfd6f6bda2af526fc04e6283db746694bbe0",
+      "localizedSha256": "e2f1fec30ccc6d014f9fb90c256adfd6f6bda2af526fc04e6283db746694bbe0",
+      "kind": "preserved-contract"
+    },
+    "projects/web-change-brief/solution/fixtures/before.html": {
+      "sourceSha256": "699daf95d39ba0edc22af8e9caad360bf4960b5b36ae22a19045598a745f6938",
+      "localizedSha256": "699daf95d39ba0edc22af8e9caad360bf4960b5b36ae22a19045598a745f6938",
+      "kind": "preserved-contract"
+    },
+    "projects/web-change-brief/solution/go.mod": {
+      "sourceSha256": "fcc9dcf5fb8444b1abacd302756ea9ae92af34d06ff31c2ee881b9566acade89",
+      "localizedSha256": "fcc9dcf5fb8444b1abacd302756ea9ae92af34d06ff31c2ee881b9566acade89",
+      "kind": "preserved-contract"
+    },
+    "projects/web-change-brief/solution/main.go": {
+      "sourceSha256": "118f4844ae6cbccd86643c6a13e8e841c2ca9c41ee8bbcd3f07ce74f69f69f09",
+      "localizedSha256": "239a1674cadf450bd70a79e5a4de2fea23f6824adcef1408b81dac4cd2f6dbc4",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "package main",
+          "// 网页文本变化教学实现；不运行浏览器，不自动接受在线基线。\npackage main"
+        ],
+        [
+          "<html lang=\"en\">",
+          "<html lang=\"zh-CN\">"
+        ],
+        [
+          "<title>Web change brief</title>",
+          "<title>网页变化简报</title>"
+        ],
+        [
+          "<h1>Web change brief</h1>",
+          "<h1>网页变化简报</h1>"
+        ],
+        [
+          "<p>Source: ",
+          "<p>来源："
+        ],
+        [
+          "Exact readable text changes. Navigation, scripts, styles and footer blocks are excluded. Block order changes do not count as text changes.",
+          "展示精确的可读文本变化。导航、脚本、样式及页脚块已排除。块顺序变化不算文本变化。"
+        ],
+        [
+          "<h2>Added</h2>",
+          "<h2>新增</h2>"
+        ],
+        [
+          "<h2>Removed</h2>",
+          "<h2>移除</h2>"
+        ],
+        [
+          " occurrence)",
+          " 次出现)"
+        ],
+        [
+          "No added text.",
+          "没有新增文本。No added text."
+        ],
+        [
+          "No removed text.",
+          "没有移除文本。No removed text."
+        ],
+        [
+          "<p>Unchanged blocks: ",
+          "<p>未变块数 / Unchanged blocks: "
+        ],
+        [
+          "<p>Before: ",
+          "<p>此前摘要："
+        ],
+        [
+          "<p>After: ",
+          "<p>之后摘要："
+        ],
+        [
+          "\"Saved HTML baseline\"",
+          "\"已保存的 HTML 基线\""
+        ],
+        [
+          "\"Saved new HTML\"",
+          "\"已保存的新 HTML\""
+        ],
+        [
+          "\"Source URL for saved files\"",
+          "\"已保存文件的来源 URL\""
+        ],
+        [
+          "\"Explicit live URL; requires --baseline with a previous saved snapshot\"",
+          "\"明确的在线 URL；必须通过 --baseline 指定此前保存的快照\""
+        ],
+        [
+          "\"Existing JSON snapshot for fetch mode\"",
+          "\"获取模式使用的已有 JSON 快照\""
+        ],
+        [
+          "\"Report directory\"",
+          "\"报告目录\""
+        ],
+        [
+          "\"Explicitly replace baseline after a successful fetch and report\"",
+          "\"获取并生成报告成功后，明确替换基线\""
+        ],
+        [
+          "\"Optional comma-separated phrases to omit (record your filter policy)\"",
+          "\"可选、以逗号分隔的过滤短语（请记录过滤策略）\""
+        ],
+        [
+          "Readable blocks: %d before, %d after\\n",
+          "可读块数：此前 %d，之后 %d\\n"
+        ],
+        [
+          "Removed (%d): %s\\n",
+          "移除 (%d)：%s\\n"
+        ],
+        [
+          "Added (%d): %s\\n",
+          "新增 (%d)：%s\\n"
+        ],
+        [
+          "Unchanged: %d | Report: %s\\n",
+          "未变：%d | 报告：%s\\n"
+        ]
+      ]
+    },
+    "projects/web-change-brief/stages/01-extract-readable-blocks/docs/en.md": {
+      "sourceSha256": "de75f93265e04d15c3cd81a5f5d142bca6377ab9acd6ae16cadd2fd1cc13a1a4",
+      "localizedSha256": "2f75b09a5bf0f2804dfa9f2958ef44e617dfda9ddaf4a211ed3bc121080f5c06",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-web-change-brief-1\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py web-change-brief --init my-web-change-brief\npython3 scripts/project_test.py web-change-brief --stage 1 --path my-web-change-brief\n"
+          ],
+          [
+            "bash",
+            "cd my-web-change-brief\ngo run . --before fixtures/before.html --after fixtures/after.html --url https://example.invalid/makerspace --out ./web-change-output\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "ExtractBlocks(input string, ignorePhrases []string) ([]string, error)"
+          ]
+        ],
+        "links": [
+          "https://pkg.go.dev/net/http"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 1
+      }
+    },
+    "projects/web-change-brief/stages/01-extract-readable-blocks/starter/STAGE.md": {
+      "sourceSha256": "eea6c938716aaeb7cc97e3cd9a6db995e8ee5a3c58f6da2630908ea64bc8f819",
+      "localizedSha256": "30e94b698dc6b7352fada988af97a167c888754c10f00a553a76c1e09fc1ea31",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [
+          "#"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/web-change-brief/stages/01-extract-readable-blocks/starter/fixtures/after.html": {
+      "sourceSha256": "e2f1fec30ccc6d014f9fb90c256adfd6f6bda2af526fc04e6283db746694bbe0",
+      "localizedSha256": "e2f1fec30ccc6d014f9fb90c256adfd6f6bda2af526fc04e6283db746694bbe0",
+      "kind": "preserved-contract"
+    },
+    "projects/web-change-brief/stages/01-extract-readable-blocks/starter/fixtures/before.html": {
+      "sourceSha256": "699daf95d39ba0edc22af8e9caad360bf4960b5b36ae22a19045598a745f6938",
+      "localizedSha256": "699daf95d39ba0edc22af8e9caad360bf4960b5b36ae22a19045598a745f6938",
+      "kind": "preserved-contract"
+    },
+    "projects/web-change-brief/stages/01-extract-readable-blocks/starter/go.mod": {
+      "sourceSha256": "fcc9dcf5fb8444b1abacd302756ea9ae92af34d06ff31c2ee881b9566acade89",
+      "localizedSha256": "fcc9dcf5fb8444b1abacd302756ea9ae92af34d06ff31c2ee881b9566acade89",
+      "kind": "preserved-contract"
+    },
+    "projects/web-change-brief/stages/01-extract-readable-blocks/starter/main.go": {
+      "sourceSha256": "773df38dbe609417e9e0d8ee08df2ca4bfcb70c226640e368f05175f26648795",
+      "localizedSha256": "9516bc3a1ee5037f7064580c8d378c70a2dd00886199f6f70025ab4fa45c782b",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "package main",
+          "// 网页文本变化教学实现；不运行浏览器，不自动接受在线基线。\npackage main"
+        ]
+      ]
+    },
+    "projects/web-change-brief/stages/01-extract-readable-blocks/tests/stage_test.go": {
+      "sourceSha256": "1a4bc7ff417e04bed503ed2266697705050a238eb77e6d58e91fe542dae2aea8",
+      "localizedSha256": "1a4bc7ff417e04bed503ed2266697705050a238eb77e6d58e91fe542dae2aea8",
+      "kind": "preserved-contract"
+    },
+    "projects/web-change-brief/stages/02-compare-snapshots/docs/en.md": {
+      "sourceSha256": "482c64439b07f73482fa236ff8999afb31b7481c38e91824f88d9e4154cbf786",
+      "localizedSha256": "29c21017a6574c4beb50e6458e54598918297444776ffb3e05dedeb20e46b18b",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-web-change-brief-2\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py web-change-brief --init my-web-change-brief\npython3 scripts/project_test.py web-change-brief --stage 2 --path my-web-change-brief\n"
+          ],
+          [
+            "bash",
+            "cd my-web-change-brief\ngo run . --before fixtures/before.html --after fixtures/after.html --url https://example.invalid/makerspace --out ./web-change-output\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "CanonicalURL(raw string) (string, error)"
+          ],
+          [
+            "`",
+            "Compare(before, after Snapshot) (Brief, error)"
+          ],
+          [
+            "`",
+            "NewSnapshot(rawURL, input string, ignores []string) (Snapshot, error)"
+          ]
+        ],
+        "links": [
+          "https://pkg.go.dev/net/http"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 3
+      }
+    },
+    "projects/web-change-brief/stages/02-compare-snapshots/starter/STAGE-2.md": {
+      "sourceSha256": "41e3b399b9bddcb90e8399cb9b51912a249f41f049bc037e9b077ae280b2dd70",
+      "localizedSha256": "90458708e195e6a6d2620ac2308e5605f18a5803bb72ace54be9d98938e3f9db",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [
+          "#"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/web-change-brief/stages/02-compare-snapshots/tests/stage_test.go": {
+      "sourceSha256": "536adf0f39f6cff06086ba5026d9c7e40751ed0d596f3191aee4ca6125f9f129",
+      "localizedSha256": "536adf0f39f6cff06086ba5026d9c7e40751ed0d596f3191aee4ca6125f9f129",
+      "kind": "preserved-contract"
+    },
+    "projects/web-change-brief/stages/03-fetch-and-save/docs/en.md": {
+      "sourceSha256": "13d7a82022cc279a6535f97da539f25205c36020456a1a6c7e667fe18302e737",
+      "localizedSha256": "f64c58faaab6404f3e2a610784c1ba8d965b1d8b6550e5bbe8b628b82a5d3167",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-web-change-brief-3\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py web-change-brief --init my-web-change-brief\npython3 scripts/project_test.py web-change-brief --stage 3 --path my-web-change-brief\n"
+          ],
+          [
+            "bash",
+            "cd my-web-change-brief\ngo run . --before fixtures/before.html --after fixtures/after.html --url https://example.invalid/makerspace --out ./web-change-output\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "FetchHTML(ctx context.Context, rawURL string, client *http.Client) (string, error)"
+          ],
+          [
+            "`",
+            "LoadSnapshot(path string) (Snapshot, error)"
+          ],
+          [
+            "`",
+            "SaveSnapshot(path string, snapshot Snapshot) error"
+          ]
+        ],
+        "links": [
+          "https://pkg.go.dev/net/http"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 3
+      }
+    },
+    "projects/web-change-brief/stages/03-fetch-and-save/starter/STAGE-3.md": {
+      "sourceSha256": "4667ce346452d87fa63f87b656d3e65b67a48e6a9259ccd0e817370bc9673764",
+      "localizedSha256": "04131e47a0d582274dd200d995f59dc51c51795c565140c3cf5e57462e8cbf4c",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [
+          "#"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/web-change-brief/stages/03-fetch-and-save/tests/redirect_test.go": {
+      "sourceSha256": "164aba973146ddd53cd3913d17583f63a6090d630a2de461d6820661b6646f27",
+      "localizedSha256": "164aba973146ddd53cd3913d17583f63a6090d630a2de461d6820661b6646f27",
+      "kind": "preserved-contract"
+    },
+    "projects/web-change-brief/stages/03-fetch-and-save/tests/stage_test.go": {
+      "sourceSha256": "f2b6f848af3043518fa878d5957715a84523b9a75c5fc034e37136d64cd50950",
+      "localizedSha256": "f2b6f848af3043518fa878d5957715a84523b9a75c5fc034e37136d64cd50950",
+      "kind": "preserved-contract"
+    },
+    "projects/web-change-brief/stages/04-export-change-evidence/docs/en.md": {
+      "sourceSha256": "94edfb0163a264d81753927d490abfc6edfa3891bebd270fc11b3ba4717dd042",
+      "localizedSha256": "9ba9d351f862bb7fffbebcab55ec3ecbd35d070682335c63162bb81df0ff2de1",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-web-change-brief-4\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py web-change-brief --init my-web-change-brief\npython3 scripts/project_test.py web-change-brief --stage 4 --path my-web-change-brief\n"
+          ],
+          [
+            "bash",
+            "cd my-web-change-brief\ngo run . --before fixtures/before.html --after fixtures/after.html --url https://example.invalid/makerspace --out ./web-change-output\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "CLI flags: --before, --after, --url, --out, --fetch, --baseline, --accept, --ignore"
+          ],
+          [
+            "`",
+            "ExportBrief(brief Brief, directory string) error"
+          ]
+        ],
+        "links": [
+          "https://pkg.go.dev/net/http"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 2
+      }
+    },
+    "projects/web-change-brief/stages/04-export-change-evidence/starter/STAGE-4.md": {
+      "sourceSha256": "b46e962864c06f8b4eeb66521156b778c5aa633c21b8cc5ef1a6b2a3fce50cd6",
+      "localizedSha256": "419155a027aa0375891feb3a716beb77a11b345d37f9c429c2872a0a019a566d",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [
+          "#"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/web-change-brief/stages/04-export-change-evidence/tests/stage_test.go": {
+      "sourceSha256": "b1ac6cfef88d3751f217ba71291caec79a8a6d812787dc631f1149953f1af497",
+      "localizedSha256": "b1ac6cfef88d3751f217ba71291caec79a8a6d812787dc631f1149953f1af497",
+      "kind": "preserved-contract"
+    },
+    "projects/workflow-hooks/README.md": {
+      "sourceSha256": "41c7524e80cf301447c1d30a92adbe4fdef9ed603d3ab364a1a82efa563bb470",
+      "localizedSha256": "6655dcc2cd97601d44744bd57c32a52c29e524ac0360bc73443185672d975cca",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "bash",
+            "python3 scripts/project_test.py workflow-hooks --init learning-artifacts/workflow-hooks\npython3 scripts/project_test.py workflow-hooks --stage 1 --path learning-artifacts/workflow-hooks\n"
+          ],
+          [
+            "bash",
+            "node learning-artifacts/workflow-hooks/cli.ts capture orchard-rules.json projects/workflow-hooks/examples/corrections.jsonl\nnode learning-artifacts/workflow-hooks/cli.ts inspect orchard-rules.json\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py workflow-hooks --all --solution --strict\npython3 scripts/project_test.py workflow-hooks --all --path learning-artifacts/workflow-hooks --strict\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "learning-artifacts/workflow-hooks"
+          ],
+          [
+            "`",
+            "projects/workflow-hooks/solution"
+          ],
+          [
+            "`",
+            "schema_version: 1"
+          ]
+        ],
+        "links": [
+          "../../phases/14-agent-engineering/34-repo-memory-and-state/docs/en.md",
+          "../../phases/14-agent-engineering/38-verification-gates/docs/en.md",
+          "https://nodejs.org/api/fs.html",
+          "https://www.rfc-editor.org/rfc/rfc8259",
+          "https://www.typescriptlang.org/docs/handbook/2/objects.html",
+          "stages/01-corrections/docs/en.md",
+          "stages/02-consolidate/docs/en.md",
+          "stages/03-policy/docs/en.md",
+          "stages/04-durability/docs/en.md"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 6
+      }
+    },
+    "projects/workflow-hooks/examples/corrections.jsonl": {
+      "sourceSha256": "71a8e2617fb19080781f52cf67a4ef4eb61e027fe7fd43e1ba5f450921a148c8",
+      "localizedSha256": "71a8e2617fb19080781f52cf67a4ef4eb61e027fe7fd43e1ba5f450921a148c8",
+      "kind": "preserved-contract"
+    },
+    "projects/workflow-hooks/media/output.gif": {
+      "sourceSha256": "f037098ec26c83bc83d8a6c5aef17b96cd8b7d45e3e942a92d0a799cf06ef60c",
+      "localizedSha256": "f037098ec26c83bc83d8a6c5aef17b96cd8b7d45e3e942a92d0a799cf06ef60c",
+      "kind": "original-recording"
+    },
+    "projects/workflow-hooks/media/output.json": {
+      "sourceSha256": "26c8d12018c439273e5454faab2fd9d1ae5ea109d505995a366dcb9f515c42b1",
+      "localizedSha256": "26c8d12018c439273e5454faab2fd9d1ae5ea109d505995a366dcb9f515c42b1",
+      "kind": "original-recording"
+    },
+    "projects/workflow-hooks/media/output.png": {
+      "sourceSha256": "74e1f9bb3144caf59a7799806358552c98d2a672d5c0b9dce2643e49f1755601",
+      "localizedSha256": "74e1f9bb3144caf59a7799806358552c98d2a672d5c0b9dce2643e49f1755601",
+      "kind": "original-recording"
+    },
+    "projects/workflow-hooks/media/run.gif": {
+      "sourceSha256": "3e590eb5c033e640e60d5784db5cadef156cba310ab763e6e97bee208b7834a3",
+      "localizedSha256": "3e590eb5c033e640e60d5784db5cadef156cba310ab763e6e97bee208b7834a3",
+      "kind": "original-recording"
+    },
+    "projects/workflow-hooks/media/run.json": {
+      "sourceSha256": "ca5013ce541570d1e949d814047110d3498cf7480386333b8d4ca417d876c862",
+      "localizedSha256": "ca5013ce541570d1e949d814047110d3498cf7480386333b8d4ca417d876c862",
+      "kind": "original-recording"
+    },
+    "projects/workflow-hooks/media/run.png": {
+      "sourceSha256": "0b2b3b37745354b83319538aa70a73450d741ecdfb5b7a34b44acb89e5b1fba4",
+      "localizedSha256": "0b2b3b37745354b83319538aa70a73450d741ecdfb5b7a34b44acb89e5b1fba4",
+      "kind": "original-recording"
+    },
+    "projects/workflow-hooks/project.json": {
+      "sourceSha256": "c0c89405d1f2ba3306514557b6f2f59d7f835b4251ce48858703062841f2d466",
+      "localizedSha256": "0090061144a36cf3a9fd9de0bbe065913030f640a74b03db9f4623a0ddb27806",
+      "kind": "manifest",
+      "contract": {
+        "id": "workflow-hooks",
+        "title": "<translated-text>",
+        "level": 3,
+        "levelName": "Engineer",
+        "tagline": "<translated-text>",
+        "summary": "<translated-text>",
+        "hours": 8,
+        "languages": [
+          "TypeScript"
+        ],
+        "status": "ready",
+        "source": "core",
+        "author": {
+          "name": "AI Engineering from Scratch",
+          "github": "rohitg00"
+        },
+        "skills": [
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "prerequisites": [
+          {
+            "title": "<translated-text>",
+            "path": "phases/14-agent-engineering/34-repo-memory-and-state"
+          },
+          {
+            "title": "<translated-text>",
+            "path": "phases/14-agent-engineering/38-verification-gates"
+          }
+        ],
+        "youWillBuild": "<translated-text>",
+        "usefulFor": [
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "demo": {
+          "command": [
+            "node",
+            "demo.ts"
+          ],
+          "cwd": "solution"
+        },
+        "stages": [
+          {
+            "id": "01-corrections",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "typescript",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "normalize",
+              "ingest"
+            ],
+            "difficulty": "starter",
+            "runner": [
+              "node",
+              "--experimental-strip-types",
+              "--test",
+              "{tests}/stage.test.ts"
+            ],
+            "requires": [
+              "node"
+            ],
+            "timeout": 90,
+            "figure": "pj-workflow-hooks-1"
+          },
+          {
+            "id": "02-consolidate",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "typescript",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "consolidate"
+            ],
+            "difficulty": "core",
+            "requires": [
+              "node"
+            ],
+            "timeout": 90,
+            "figure": "pj-workflow-hooks-2"
+          },
+          {
+            "id": "03-policy",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "typescript",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "transition",
+              "hook"
+            ],
+            "difficulty": "core",
+            "runner": [
+              "node",
+              "--experimental-strip-types",
+              "--test",
+              "{tests}/stage.test.ts"
+            ],
+            "requires": [
+              "node"
+            ],
+            "timeout": 90,
+            "figure": "pj-workflow-hooks-3"
+          },
+          {
+            "id": "04-durability",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "typescript",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "save",
+              "load"
+            ],
+            "difficulty": "core",
+            "requires": [
+              "node"
+            ],
+            "timeout": 90,
+            "figure": "pj-workflow-hooks-4"
+          }
+        ],
+        "demos": [
+          {
+            "gif": "media/run.gif",
+            "poster": "media/run.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          },
+          {
+            "gif": "media/output.gif",
+            "poster": "media/output.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          }
+        ]
+      }
+    },
+    "projects/workflow-hooks/solution/.gitignore": {
+      "sourceSha256": "0c91aca599582433ca7d64e2347f71fe1f580d21b7bd05c8888732ca22cacb59",
+      "localizedSha256": "0c91aca599582433ca7d64e2347f71fe1f580d21b7bd05c8888732ca22cacb59",
+      "kind": "preserved-contract"
+    },
+    "projects/workflow-hooks/solution/cli.ts": {
+      "sourceSha256": "0941be87196b5d2e8f27b93b87335e63fea775883e35470b2e396ff01cabe0d4",
+      "localizedSha256": "40bf80ff9eaf19fd0928471e7dfd7dca0170a7c25c246c0e473cb0c8dccce8c2",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "import fs from \"node:fs/promises\";",
+          "// 纠正台账教学实现；规则原文、来源、大小写和审批摘要保持不变。\nimport fs from \"node:fs/promises\";"
+        ]
+      ]
+    },
+    "projects/workflow-hooks/solution/demo.ts": {
+      "sourceSha256": "ae16625af64cd67a17cd06b41bbb546f3866e4d4745bda9f0a0fb1452922bb06",
+      "localizedSha256": "a962dc38643f3b12ba9612df9ccda50626b1d79b80d758b696eaef7bbc4cebbd",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "import fs from \"node:fs/promises\";",
+          "// 纠正台账教学实现；规则原文、来源、大小写和审批摘要保持不变。\nimport fs from \"node:fs/promises\";"
+        ]
+      ]
+    },
+    "projects/workflow-hooks/solution/main.ts": {
+      "sourceSha256": "ef3cc06e224b64e3a0046b3e1a0994af87629c7bc01dc925ad39e7b7ddf45749",
+      "localizedSha256": "5895a0851832c7503797666a02b9dff594983c089cc446ad751fbf87db040719",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "/*\n * Self-Correcting Workflow Hooks reference implementation.\n * Follow stages in projects/workflow-hooks/stages/.\n * The demo is deterministic and requires no provider credentials.\n * Protocol references are listed in the project README.\n */",
+          "/*\n * 自纠正工作流钩子参考实现。\n * 课程：projects/workflow-hooks/stages/。\n * 演示使用确定性夹具，无需服务商凭据。\n * 公开接口、规则和错误消息保留原契约。\n */"
+        ]
+      ]
+    },
+    "projects/workflow-hooks/solution/package.json": {
+      "sourceSha256": "a90fc33418afa2b9cbf4768524b021135b965ecdf993457505bfae3ac44a8428",
+      "localizedSha256": "a90fc33418afa2b9cbf4768524b021135b965ecdf993457505bfae3ac44a8428",
+      "kind": "preserved-contract"
+    },
+    "projects/workflow-hooks/stages/01-corrections/docs/en.md": {
+      "sourceSha256": "008d478f729c0098ba25a1af6a75656ef766ceeecf7753f263c9e23ac5d7a24d",
+      "localizedSha256": "cb93b4ad9bc8750cf1b865fc6735a9a74081e373cb320cf4e429c6e71cd0a8d0",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-workflow-hooks-1\n"
+          ],
+          [
+            "text",
+            "rule: Read API_KEY; never rename it to api_key.\nscope: Orchard -> orchard\nsource locator: local:orchard/config.py:12\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py workflow-hooks --init learning-artifacts/workflow-hooks\npython3 scripts/project_test.py workflow-hooks --stage 1 --path learning-artifacts/workflow-hooks\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "normalize, ingest"
+          ]
+        ],
+        "links": [
+          "../../../../../phases/14-agent-engineering/34-repo-memory-and-state/docs/en.md",
+          "https://www.typescriptlang.org/docs/handbook/2/objects.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/workflow-hooks/stages/01-corrections/starter/cli.ts": {
+      "sourceSha256": "0941be87196b5d2e8f27b93b87335e63fea775883e35470b2e396ff01cabe0d4",
+      "localizedSha256": "40bf80ff9eaf19fd0928471e7dfd7dca0170a7c25c246c0e473cb0c8dccce8c2",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "import fs from \"node:fs/promises\";",
+          "// 纠正台账教学实现；规则原文、来源、大小写和审批摘要保持不变。\nimport fs from \"node:fs/promises\";"
+        ]
+      ]
+    },
+    "projects/workflow-hooks/stages/01-corrections/starter/main.ts": {
+      "sourceSha256": "9ba354a6633ee523ab9853f6dd1e72d3ffbd40289a0c850a859c19578b26eb4b",
+      "localizedSha256": "598b4004a4367ebb01c51143089133d88c463f6a4fd0794d225f9bdc92f807d0",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "import { pathToFileURL } from \"node:url\";",
+          "// 纠正台账教学实现；规则原文、来源、大小写和审批摘要保持不变。\nimport { pathToFileURL } from \"node:url\";"
+        ]
+      ]
+    },
+    "projects/workflow-hooks/stages/01-corrections/starter/package.json": {
+      "sourceSha256": "a90fc33418afa2b9cbf4768524b021135b965ecdf993457505bfae3ac44a8428",
+      "localizedSha256": "a90fc33418afa2b9cbf4768524b021135b965ecdf993457505bfae3ac44a8428",
+      "kind": "preserved-contract"
+    },
+    "projects/workflow-hooks/stages/01-corrections/starter/stage-1.md": {
+      "sourceSha256": "910a5735544e758c1e990ce387cd81e8cfd0c56f92f66c013337d52f6dd7fad6",
+      "localizedSha256": "e4af2ab68500063336733048065c4bcec4310006d707bc72e20764e38d44611d",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/workflow-hooks/stages/01-corrections/tests/stage.test.ts": {
+      "sourceSha256": "f57d67466d94af4a07e41467927d2b3aaca0af31e54662d725f3a613b80df379",
+      "localizedSha256": "f57d67466d94af4a07e41467927d2b3aaca0af31e54662d725f3a613b80df379",
+      "kind": "preserved-contract"
+    },
+    "projects/workflow-hooks/stages/02-consolidate/docs/en.md": {
+      "sourceSha256": "0ef3bbd27546c9fcd32f7952039e31581a31529c4fe0b72531db0e03593e6b43",
+      "localizedSha256": "22253396e8f5601ec6c70198028e1098d00a730569f05aa38db0574153f18ca1",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-workflow-hooks-2\n"
+          ],
+          [
+            "text",
+            "events a1,a2 from session A -> sessions=[A]\nevent b1 from session B -> sessions=[A,B]\nrule remains candidate until approval\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py workflow-hooks --stage 2 --path learning-artifacts/workflow-hooks\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "consolidate"
+          ]
+        ],
+        "links": [
+          "../../../../../phases/14-agent-engineering/34-repo-memory-and-state/docs/en.md",
+          "../../01-corrections/docs/en.md",
+          "https://www.typescriptlang.org/docs/handbook/2/objects.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/workflow-hooks/stages/02-consolidate/starter/stage-2.md": {
+      "sourceSha256": "e79e3f492474bcbac7c759bb2c6fe09a06e1664c77dcfb3764e1a37c896d8d28",
+      "localizedSha256": "4c2a604d73e94bfe9b63a0adc2afaa4b6a68fc1410ccc810cf3aeddd8f2ca29b",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/workflow-hooks/stages/02-consolidate/tests/provenance.test.ts": {
+      "sourceSha256": "e1b4c3e78760a8f704e5981e869e876fcf43cb45de8d67a42d16415a24d874c0",
+      "localizedSha256": "e1b4c3e78760a8f704e5981e869e876fcf43cb45de8d67a42d16415a24d874c0",
+      "kind": "preserved-contract"
+    },
+    "projects/workflow-hooks/stages/02-consolidate/tests/stage.test.ts": {
+      "sourceSha256": "59b6b0f16426b330eddb7227aca0f9c1abb81d0fa07d187498f3ef087b2ad923",
+      "localizedSha256": "59b6b0f16426b330eddb7227aca0f9c1abb81d0fa07d187498f3ef087b2ad923",
+      "kind": "preserved-contract"
+    },
+    "projects/workflow-hooks/stages/03-policy/docs/en.md": {
+      "sourceSha256": "a3a98632648f15261d88b0681e14811af123d91d3820464f78c9e50a39a5a528",
+      "localizedSha256": "3b1cbd2bf3db53b0a22ca26bbf5142d6253ec046a04801c616a4d5c1f0ac05ca",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-workflow-hooks-3\n"
+          ],
+          [
+            "text",
+            "candidate -> inspect approval_digest\napprove exact digest -> approved\nemit orchard -> original rule + evidence\nretire -> next emit omits rule\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py workflow-hooks --stage 3 --path learning-artifacts/workflow-hooks\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "transition, hook"
+          ]
+        ],
+        "links": [
+          "../../../../../phases/14-agent-engineering/34-repo-memory-and-state/docs/en.md",
+          "../../02-consolidate/docs/en.md",
+          "https://www.typescriptlang.org/docs/handbook/2/objects.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/workflow-hooks/stages/03-policy/starter/stage-3.md": {
+      "sourceSha256": "9f0d8f5ede55b00cc0f1a4cc5cb759415e83cbde114ce0989109012706cdad0c",
+      "localizedSha256": "39422b6d2213c9d2164d33215b4f53265666959b9240b0807a108f3de6e6e59e",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/workflow-hooks/stages/03-policy/tests/stage.test.ts": {
+      "sourceSha256": "e92165120f4e8eed0597dca6f8b352f49612fecbc2bc62170c1fdd2548b1f7e1",
+      "localizedSha256": "e92165120f4e8eed0597dca6f8b352f49612fecbc2bc62170c1fdd2548b1f7e1",
+      "kind": "preserved-contract"
+    },
+    "projects/workflow-hooks/stages/04-durability/docs/en.md": {
+      "sourceSha256": "ee3918027a127880fe73ff3f90ccccbe8a5d9a785a7a3cb556bd27ad5557c7b3",
+      "localizedSha256": "5042e9a6662a2437a1c82ac67faf3ccce5d66e8ccf5d100a88bc64b01be81204",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-workflow-hooks-4\n"
+          ],
+          [
+            "text",
+            "capture -> store.json\napprove -> stored state approved\nemit -> additional_context plus evidence locators\nmalformed store -> error, not empty success\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py workflow-hooks --stage 4 --path learning-artifacts/workflow-hooks\n"
+          ],
+          [
+            "bash",
+            "node learning-artifacts/workflow-hooks/cli.ts capture orchard-rules.json projects/workflow-hooks/examples/corrections.jsonl\nnode learning-artifacts/workflow-hooks/cli.ts inspect orchard-rules.json\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "save, load"
+          ]
+        ],
+        "links": [
+          "../../../../../phases/14-agent-engineering/34-repo-memory-and-state/docs/en.md",
+          "../../03-policy/docs/en.md",
+          "https://www.typescriptlang.org/docs/handbook/2/objects.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/workflow-hooks/stages/04-durability/starter/stage-4.md": {
+      "sourceSha256": "b0f4e7038fdda8d3158d13d8ee932a0801730d2aa942404184177bb3a2106729",
+      "localizedSha256": "d81462e08033ee158a84b06a60d06d64f7363f3916cbfed94a2631a219d66317",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/workflow-hooks/stages/04-durability/tests/cli.test.ts": {
+      "sourceSha256": "19faaed0cecaa0205a78e4f6191287fe8ab292d5ad0a581d9afaffa353cbebaa",
+      "localizedSha256": "19faaed0cecaa0205a78e4f6191287fe8ab292d5ad0a581d9afaffa353cbebaa",
+      "kind": "preserved-contract"
+    },
+    "projects/workflow-hooks/stages/04-durability/tests/stage.test.ts": {
+      "sourceSha256": "09649704087b59a9caec437293039b8a5a23c85fd638467a390b091b18cb1e50",
+      "localizedSha256": "09649704087b59a9caec437293039b8a5a23c85fd638467a390b091b18cb1e50",
+      "kind": "preserved-contract"
+    },
+    "projects/workflow-hooks/starter/cli.ts": {
+      "sourceSha256": "0941be87196b5d2e8f27b93b87335e63fea775883e35470b2e396ff01cabe0d4",
+      "localizedSha256": "40bf80ff9eaf19fd0928471e7dfd7dca0170a7c25c246c0e473cb0c8dccce8c2",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "import fs from \"node:fs/promises\";",
+          "// 纠正台账教学实现；规则原文、来源、大小写和审批摘要保持不变。\nimport fs from \"node:fs/promises\";"
+        ]
+      ]
+    },
+    "projects/workflow-hooks/starter/main.ts": {
+      "sourceSha256": "9ba354a6633ee523ab9853f6dd1e72d3ffbd40289a0c850a859c19578b26eb4b",
+      "localizedSha256": "598b4004a4367ebb01c51143089133d88c463f6a4fd0794d225f9bdc92f807d0",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "import { pathToFileURL } from \"node:url\";",
+          "// 纠正台账教学实现；规则原文、来源、大小写和审批摘要保持不变。\nimport { pathToFileURL } from \"node:url\";"
+        ]
+      ]
+    },
+    "projects/workflow-hooks/starter/package.json": {
+      "sourceSha256": "a90fc33418afa2b9cbf4768524b021135b965ecdf993457505bfae3ac44a8428",
+      "localizedSha256": "a90fc33418afa2b9cbf4768524b021135b965ecdf993457505bfae3ac44a8428",
+      "kind": "preserved-contract"
+    }
+  },
+  "figures": [
+    {
+      "path": "site/figures/projects/typed-workflow-agent-with-mastra.js",
+      "sourceSha256": "d866453b80add32da02f9b57c438eed1a43ea45da41e293fa69300c18e18c313",
+      "localizedSha256": "71a15bd223190f3144c1592f30bcb6e4b9ccf143f94b2de1e66a2fbdc51bc90a",
+      "edits": [
+        {
+          "offset": 62,
+          "before": "\"Contract\"",
+          "after": "\"契约\"",
+          "afterOffset": 62
+        },
+        {
+          "offset": 82,
+          "before": "\"Validate the input and selected actions.\"",
+          "after": "\"校验输入及所选操作。\"",
+          "afterOffset": 76
+        },
+        {
+          "offset": 141,
+          "before": "\"State\"",
+          "after": "\"状态\"",
+          "afterOffset": 105
+        },
+        {
+          "offset": 158,
+          "before": "\"Keep waiting distinct from failure.\"",
+          "after": "\"区分等待和失败。\"",
+          "afterOffset": 119
+        },
+        {
+          "offset": 212,
+          "before": "\"Effect\"",
+          "after": "\"副作用\"",
+          "afterOffset": 146
+        },
+        {
+          "offset": 230,
+          "before": "\"Invoke tools only after the required gate.\"",
+          "after": "\"通过所需门禁后才调用工具。\"",
+          "afterOffset": 161
+        },
+        {
+          "offset": 374,
+          "before": "\"Types need runtime validation\"",
+          "after": "\"类型仍需要运行时校验\"",
+          "afterOffset": 276
+        },
+        {
+          "offset": 437,
+          "before": "\"This keyword classifier is an inspectable baseline; it is not an authorization system.\"",
+          "after": "\"关键词分类器是可检查的基线，不承担授权。\"",
+          "afterOffset": 320
+        },
+        {
+          "offset": 584,
+          "before": "\"Ticket ID\"",
+          "after": "\"工单 ID\"",
+          "afterOffset": 401
+        },
+        {
+          "offset": 685,
+          "before": "\"Message\"",
+          "after": "\"消息\"",
+          "afterOffset": 498
+        },
+        {
+          "offset": 1064,
+          "before": "\"Validated ticket with \"",
+          "after": "\"工单已校验，意图为 \"",
+          "afterOffset": 872
+        },
+        {
+          "offset": 1100,
+          "before": "\" intent.\"",
+          "after": "\"。\"",
+          "afterOffset": 896
+        },
+        {
+          "offset": 1125,
+          "before": "\"Reject malformed ticket before planning.\"",
+          "after": "\"制定计划前拒绝格式无效的工单。\"",
+          "afterOffset": 914
+        },
+        {
+          "offset": 1211,
+          "before": "\"Characters\"",
+          "after": "\"字符数\"",
+          "afterOffset": 975
+        },
+        {
+          "offset": 1270,
+          "before": "\"Intent\"",
+          "after": "\"意图\"",
+          "afterOffset": 1027
+        },
+        {
+          "offset": 1451,
+          "before": "\"Approval follows the selected tool\"",
+          "after": "\"审批要求由所选工具决定\"",
+          "afterOffset": 1204
+        },
+        {
+          "offset": 1519,
+          "before": "\"A saved checkpoint cannot disable approval by changing only its flag.\"",
+          "after": "\"不能只修改保存检查点的标志就关闭审批。\"",
+          "afterOffset": 1249
+        },
+        {
+          "offset": 1671,
+          "before": "\"Selected action\"",
+          "after": "\"所选操作\"",
+          "afterOffset": 1351
+        },
+        {
+          "offset": 1942,
+          "before": "\"requiresApproval flag\"",
+          "after": "\"requiresApproval 标志\"",
+          "afterOffset": 1611
+        },
+        {
+          "offset": 2204,
+          "before": "\"Plan contract is internally consistent.\"",
+          "after": "\"计划契约内部一致。\"",
+          "afterOffset": 1871
+        },
+        {
+          "offset": 2260,
+          "before": "\"Reject the edited checkpoint.\"",
+          "after": "\"拒绝被编辑的检查点。\"",
+          "afterOffset": 1897
+        },
+        {
+          "offset": 2335,
+          "before": "\"Expected flag\"",
+          "after": "\"预期标志\"",
+          "afterOffset": 1953
+        },
+        {
+          "offset": 2400,
+          "before": "\"Stored flag\"",
+          "after": "\"保存的标志\"",
+          "afterOffset": 2009
+        },
+        {
+          "offset": 2494,
+          "before": "\"review before effects\"",
+          "after": "\"副作用前先审阅\"",
+          "afterOffset": 2097
+        },
+        {
+          "offset": 2520,
+          "before": "\"read-only\"",
+          "after": "\"只读\"",
+          "afterOffset": 2109
+        },
+        {
+          "offset": 2555,
+          "before": "\"Action\"",
+          "after": "\"操作\"",
+          "afterOffset": 2137
+        },
+        {
+          "offset": 2565,
+          "before": "\"Policy\"",
+          "after": "\"策略\"",
+          "afterOffset": 2143
+        },
+        {
+          "offset": 2700,
+          "before": "\"Budget failed calls as well as successes\"",
+          "after": "\"成功和失败调用都计入预算\"",
+          "afterOffset": 2274
+        },
+        {
+          "offset": 2774,
+          "before": "\"The scratch runtime suspends before mutation. Retrying a real write still needs idempotency.\"",
+          "after": "\"手写运行时在修改前暂停。重试真实写入仍需幂等机制。\"",
+          "afterOffset": 2320
+        },
+        {
+          "offset": 2950,
+          "before": "\"Plan contains update\"",
+          "after": "\"计划包含 update\"",
+          "afterOffset": 2429
+        },
+        {
+          "offset": 3090,
+          "before": "\"Approval supplied\"",
+          "after": "\"已提供审批\"",
+          "afterOffset": 2560
+        },
+        {
+          "offset": 3228,
+          "before": "\"Failures before success\"",
+          "after": "\"成功前的失败次数\"",
+          "afterOffset": 2686
+        },
+        {
+          "offset": 3399,
+          "before": "\"Shared call budget\"",
+          "after": "\"共享调用预算\"",
+          "afterOffset": 2842
+        },
+        {
+          "offset": 3762,
+          "before": "\"Failed after the attempt or call limit.\"",
+          "after": "\"达到尝试或调用上限后失败。\"",
+          "afterOffset": 3193
+        },
+        {
+          "offset": 3835,
+          "before": "\"Suspended before the first tool call.\"",
+          "after": "\"第一次工具调用前暂停。\"",
+          "afterOffset": 3240
+        },
+        {
+          "offset": 3907,
+          "before": "\"Complete with a usable result.\"",
+          "after": "\"完成并取得可用结果。\"",
+          "afterOffset": 3286
+        },
+        {
+          "offset": 4019,
+          "before": "\"Observed calls\"",
+          "after": "\"调用次数\"",
+          "afterOffset": 3378
+        },
+        {
+          "offset": 4074,
+          "before": "\"Per-action attempts\"",
+          "after": "\"每操作尝试上限\"",
+          "afterOffset": 3423
+        },
+        {
+          "offset": 4148,
+          "before": "\"Consumed calls\"",
+          "after": "\"已消耗调用\"",
+          "afterOffset": 3485
+        },
+        {
+          "offset": 4322,
+          "before": "\"Resume the stored plan, not a new request\"",
+          "after": "\"恢复保存的计划，而非提交新请求\"",
+          "afterOffset": 3650
+        },
+        {
+          "offset": 4397,
+          "before": "\"The real SDK stores suspension in SQLite. These controls model the approval gate around the restored plan.\"",
+          "after": "\"真实 SDK 将暂停状态保存在 SQLite 中。这些控件仅模拟恢复计划周围的审批门禁。\"",
+          "afterOffset": 3699
+        },
+        {
+          "offset": 4590,
+          "before": "\"Reviewer approved\"",
+          "after": "\"审阅人已批准\"",
+          "afterOffset": 3830
+        },
+        {
+          "offset": 4726,
+          "before": "\"Ticket ID matches\"",
+          "after": "\"工单 ID 匹配\"",
+          "afterOffset": 3955
+        },
+        {
+          "offset": 4861,
+          "before": "\"Plan digest matches\"",
+          "after": "\"计划摘要匹配\"",
+          "afterOffset": 4081
+        },
+        {
+          "offset": 4998,
+          "before": "\"Run exists in local store\"",
+          "after": "\"运行存在于本地存储\"",
+          "afterOffset": 4205
+        },
+        {
+          "offset": 5332,
+          "before": "\"Reject recovery or mismatched approval.\"",
+          "after": "\"拒绝无效恢复或不匹配的审批。\"",
+          "afterOffset": 4523
+        },
+        {
+          "offset": 5429,
+          "before": "\"Resume execute with the original action and query.\"",
+          "after": "\"使用原始操作和查询恢复 execute。\"",
+          "afterOffset": 4595
+        },
+        {
+          "offset": 5544,
+          "before": "\"Keep the pending approval and perform no effect.\"",
+          "after": "\"继续等待审批，不执行副作用。\"",
+          "afterOffset": 4680
+        },
+        {
+          "offset": 5674,
+          "before": "\"SDK result\"",
+          "after": "\"SDK 结果\"",
+          "afterOffset": 4776
+        },
+        {
+          "offset": 5726,
+          "before": "\"Tool calls\"",
+          "after": "\"工具调用数\"",
+          "afterOffset": 4824
+        },
+        {
+          "offset": 5823,
+          "before": "\"Persistent context\"",
+          "after": "\"持久上下文\"",
+          "afterOffset": 4916
+        },
+        {
+          "offset": 5909,
+          "before": "\"Reviewer identity\"",
+          "after": "\"审阅人身份\"",
+          "afterOffset": 4989
+        },
+        {
+          "offset": 5944,
+          "before": "\"Must be authenticated by the integrating application\"",
+          "after": "\"必须由集成应用执行身份认证\"",
+          "afterOffset": 5012
+        },
+        {
+          "offset": 6048,
+          "before": "\"Boundary\"",
+          "after": "\"边界\"",
+          "afterOffset": 5077
+        },
+        {
+          "offset": 6060,
+          "before": "\"Stored or required data\"",
+          "after": "\"已保存或必需的数据\"",
+          "afterOffset": 5083
+        }
+      ]
+    },
+    {
+      "path": "site/figures/projects/visual-evidence-library.js",
+      "sourceSha256": "d32108c61e75b14efad9ed971f310838bbc320f88a0c5a4e2a351e7ef3998317",
+      "localizedSha256": "81a7d79d54d65cdbb1e5404a60aec34b1be75bade66d0dcbc72f5c92dcaa82b4",
+      "edits": [
+        {
+          "offset": 62,
+          "before": "\"Image\"",
+          "after": "\"图片\"",
+          "afterOffset": 62
+        },
+        {
+          "offset": 79,
+          "before": "\"Use source-image pixels, not screen pixels.\"",
+          "after": "\"使用原图像素，不使用屏幕像素。\"",
+          "afterOffset": 76
+        },
+        {
+          "offset": 141,
+          "before": "\"Region\"",
+          "after": "\"区域\"",
+          "afterOffset": 110
+        },
+        {
+          "offset": 159,
+          "before": "\"Preserve text and its rectangle.\"",
+          "after": "\"保留文本及对应矩形。\"",
+          "afterOffset": 124
+        },
+        {
+          "offset": 216,
+          "before": "\"Inspect\"",
+          "after": "\"检查\"",
+          "afterOffset": 159
+        },
+        {
+          "offset": 241,
+          "before": "\"Structural checks do not verify the text itself.\"",
+          "after": "\"结构检查不能验证文本本身。\"",
+          "afterOffset": 179
+        },
+        {
+          "offset": 387,
+          "before": "\"Does the rectangle fit?\"",
+          "after": "\"矩形是否位于图片内？\"",
+          "afterOffset": 290
+        },
+        {
+          "offset": 444,
+          "before": "\"The image is 600 by 320 pixels. A box must stay within all four edges.\"",
+          "after": "\"图片尺寸为 600×320 像素，矩形必须位于四条边界内。 图表限制：矩形控件模型未检查负的左上坐标；检索图使用 JavaScript 小写转换，实际 Python 实现使用 Unicode casefold。超出控件范围或涉及 ß 等字符时，两者结果可能不同。完整路径、类型及索引校验以实际实现为准。\"",
+          "afterOffset": 334
+        },
+        {
+          "offset": 594,
+          "before": "\"Left x\"",
+          "after": "\"左侧 x\"",
+          "afterOffset": 565
+        },
+        {
+          "offset": 746,
+          "before": "\"Top y\"",
+          "after": "\"上方 y\"",
+          "afterOffset": 715
+        },
+        {
+          "offset": 902,
+          "before": "\"Region width\"",
+          "after": "\"区域宽度\"",
+          "afterOffset": 870
+        },
+        {
+          "offset": 1066,
+          "before": "\"Region height\"",
+          "after": "\"区域高度\"",
+          "afterOffset": 1026
+        },
+        {
+          "offset": 1430,
+          "before": "\"Valid geometry; the supplied text still requires trust or review.\"",
+          "after": "\"几何有效；给定文本仍需要信任来源或人工审阅。\"",
+          "afterOffset": 1381
+        },
+        {
+          "offset": 1512,
+          "before": "\"Reject the rectangle rather than clipping evidence.\"",
+          "after": "\"拒绝该矩形，不裁切证据来迁就校验。\"",
+          "afterOffset": 1420
+        },
+        {
+          "offset": 1609,
+          "before": "\"Right edge\"",
+          "after": "\"右边缘\"",
+          "afterOffset": 1483
+        },
+        {
+          "offset": 1660,
+          "before": "\"Bottom edge\"",
+          "after": "\"下边缘\"",
+          "afterOffset": 1527
+        },
+        {
+          "offset": 1744,
+          "before": "\"Horizontal extent\"",
+          "after": "\"水平范围\"",
+          "afterOffset": 1603
+        },
+        {
+          "offset": 1812,
+          "before": "\"Vertical extent\"",
+          "after": "\"垂直范围\"",
+          "afterOffset": 1658
+        },
+        {
+          "offset": 2077,
+          "before": "\"Compute lexical query coverage\"",
+          "after": "\"计算词项查询覆盖率\"",
+          "afterOffset": 1912
+        },
+        {
+          "offset": 2141,
+          "before": "\"This is a token-overlap score over provided text. It is not OCR or an answer-confidence estimate.\"",
+          "after": "\"这是给定文本的词项重叠得分，不执行 OCR，也不估计答案置信度。 图表限制：矩形控件模型未检查负的左上坐标；检索图使用 JavaScript 小写转换，实际 Python 实现使用 Unicode casefold。超出控件范围或涉及 ß 等字符时，两者结果可能不同。完整路径、类型及索引校验以实际实现为准。\"",
+          "afterOffset": 1955
+        },
+        {
+          "offset": 2322,
+          "before": "\"Query\"",
+          "after": "\"查询\"",
+          "afterOffset": 2193
+        },
+        {
+          "offset": 2453,
+          "before": "\"Region text\"",
+          "after": "\"区域文本\"",
+          "afterOffset": 2321
+        },
+        {
+          "offset": 2853,
+          "before": "`${matches.length} of ${wanted.size} unique query tokens occur in this region.`",
+          "after": "`此区域命中 ${matches.length} 个词项，查询共 ${wanted.size} 个唯一词项。`",
+          "afterOffset": 2714
+        },
+        {
+          "offset": 2947,
+          "before": "\"An empty query returns no matches.\"",
+          "after": "\"空查询没有匹配结果。\"",
+          "afterOffset": 2784
+        },
+        {
+          "offset": 3027,
+          "before": "\"Query coverage\"",
+          "after": "\"查询覆盖率\"",
+          "afterOffset": 2840
+        },
+        {
+          "offset": 3107,
+          "before": "\"Matched tokens\"",
+          "after": "\"匹配词项\"",
+          "afterOffset": 2911
+        },
+        {
+          "offset": 3203,
+          "before": "\"Coverage\"",
+          "after": "\"覆盖率\"",
+          "afterOffset": 2997
+        },
+        {
+          "offset": 3355,
+          "before": "\"Separate proposal from accepted evidence\"",
+          "after": "\"区分候选提取与已接受证据\"",
+          "afterOffset": 3144
+        },
+        {
+          "offset": 3429,
+          "before": "\"Classification labels remain outside the text index. Human review is an explicit state transition.\"",
+          "after": "\"分类标签不进入文本索引。人工审阅是明确的状态转移。\"",
+          "afterOffset": 3190
+        },
+        {
+          "offset": 3610,
+          "before": "\"Proposed text\"",
+          "after": "\"候选文本\"",
+          "afterOffset": 3298
+        },
+        {
+          "offset": 3765,
+          "before": "\"Classification label\"",
+          "after": "\"分类标签\"",
+          "afterOffset": 3444
+        },
+        {
+          "offset": 3905,
+          "before": "\"Coordinates pass bounds checks\"",
+          "after": "\"坐标通过边界检查\"",
+          "afterOffset": 3568
+        },
+        {
+          "offset": 4055,
+          "before": "\"Person checked image and text\"",
+          "after": "\"已人工检查图片与文本\"",
+          "afterOffset": 3696
+        },
+        {
+          "offset": 4308,
+          "before": "\"Save the proposal separately for review.\"",
+          "after": "\"单独保存候选提取，等待审阅。\"",
+          "afterOffset": 3930
+        },
+        {
+          "offset": 4382,
+          "before": "\"Reject malformed extraction.\"",
+          "after": "\"拒绝格式无效的提取结果。\"",
+          "afterOffset": 3978
+        },
+        {
+          "offset": 4460,
+          "before": "\"The explicitly reviewed region may enter the text index.\"",
+          "after": "\"明确审阅后的区域可进入文本索引。\"",
+          "afterOffset": 4040
+        },
+        {
+          "offset": 4598,
+          "before": "\"Indexable regions\"",
+          "after": "\"可索引区域数\"",
+          "afterOffset": 4138
+        },
+        {
+          "offset": 4666,
+          "before": "\"Indexable classification labels\"",
+          "after": "\"可索引分类标签数\"",
+          "afterOffset": 4195
+        },
+        {
+          "offset": 4757,
+          "before": "\"Text\"",
+          "after": "\"文本\"",
+          "afterOffset": 4263
+        },
+        {
+          "offset": 4787,
+          "before": "\"Label only\"",
+          "after": "\"仅分类标签\"",
+          "afterOffset": 4291
+        },
+        {
+          "offset": 4824,
+          "before": "\"Origin\"",
+          "after": "\"来源\"",
+          "afterOffset": 4323
+        },
+        {
+          "offset": 4886,
+          "before": "\"Output kind\"",
+          "after": "\"输出类别\"",
+          "afterOffset": 4381
+        },
+        {
+          "offset": 4901,
+          "before": "\"Value\"",
+          "after": "\"值\"",
+          "afterOffset": 4389
+        },
+        {
+          "offset": 5026,
+          "before": "\"Keep the overlay aligned as the page resizes\"",
+          "after": "\"页面缩放时保持叠加层对齐\"",
+          "afterOffset": 4510
+        },
+        {
+          "offset": 5104,
+          "before": "\"A 600-pixel source image contains box [45,130,510,45]. Source coordinates remain unchanged in JSON.\"",
+          "after": "\"宽 600 像素的原图包含矩形 [45,130,510,45]。JSON 中的原图坐标保持不变。\"",
+          "afterOffset": 4556
+        },
+        {
+          "offset": 5289,
+          "before": "\"Displayed image width\"",
+          "after": "\"图片显示宽度\"",
+          "afterOffset": 4690
+        },
+        {
+          "offset": 5529,
+          "before": "\"Pixel positions scale for display while percentages remain stable.\"",
+          "after": "\"显示像素位置随尺寸缩放，百分比保持稳定。\"",
+          "afterOffset": 4915
+        },
+        {
+          "offset": 5641,
+          "before": "\"Scale\"",
+          "after": "\"缩放比例\"",
+          "afterOffset": 4981
+        },
+        {
+          "offset": 5698,
+          "before": "\"Left\"",
+          "after": "\"左侧位置\"",
+          "afterOffset": 5037
+        },
+        {
+          "offset": 5769,
+          "before": "\"Box width\"",
+          "after": "\"矩形宽度\"",
+          "afterOffset": 5108
+        },
+        {
+          "offset": 6067,
+          "before": "\"Style\"",
+          "after": "\"样式\"",
+          "afterOffset": 5401
+        },
+        {
+          "offset": 6076,
+          "before": "\"Source ratio\"",
+          "after": "\"原图比例\"",
+          "afterOffset": 5407
+        },
+        {
+          "offset": 6092,
+          "before": "\"CSS percentage\"",
+          "after": "\"CSS 百分比\"",
+          "afterOffset": 5415
+        }
+      ]
+    },
+    {
+      "path": "site/figures/projects/voice-note-transcriber-pipeline.js",
+      "sourceSha256": "180213c49629a149119724337aac105fb2cdf23aa220417affdd3bf48fa73cc3",
+      "localizedSha256": "99d4e882694620dc005cb68cadb135c4196ade3d1704b5e9bc63a405b0871827",
+      "edits": [
+        {
+          "offset": 62,
+          "before": "\"Audio\"",
+          "after": "\"音频\"",
+          "afterOffset": 62
+        },
+        {
+          "offset": 79,
+          "before": "\"Keep sample coordinates and source bytes.\"",
+          "after": "\"保留采样坐标和来源字节。\"",
+          "afterOffset": 76
+        },
+        {
+          "offset": 145,
+          "before": "\"Process\"",
+          "after": "\"处理\"",
+          "afterOffset": 113
+        },
+        {
+          "offset": 170,
+          "before": "\"Apply an explicit signal or transport contract.\"",
+          "after": "\"应用明确的信号或传输契约。\"",
+          "afterOffset": 133
+        },
+        {
+          "offset": 241,
+          "before": "\"Review\"",
+          "after": "\"审阅\"",
+          "afterOffset": 170
+        },
+        {
+          "offset": 259,
+          "before": "\"Compare transcript evidence with playback.\"",
+          "after": "\"对照播放内容检查转录证据。\"",
+          "afterOffset": 184
+        },
+        {
+          "offset": 402,
+          "before": "\"The sample rate defines the clock\"",
+          "after": "\"采样率定义时钟\"",
+          "afterOffset": 298
+        },
+        {
+          "offset": 469,
+          "before": "\"The same sample index produces a different time at a different rate.\"",
+          "after": "\"同一采样索引在不同采样率下对应不同时间。\"",
+          "afterOffset": 339
+        },
+        {
+          "offset": 621,
+          "before": "\"Sample index\"",
+          "after": "\"采样索引\"",
+          "afterOffset": 443
+        },
+        {
+          "offset": 787,
+          "before": "\"Sample rate Hz\"",
+          "after": "\"采样率（Hz）\"",
+          "afterOffset": 601
+        },
+        {
+          "offset": 1096,
+          "before": "\"Signed16-bit sample\"",
+          "after": "\"有符号 16 位采样\"",
+          "afterOffset": 903
+        },
+        {
+          "offset": 1290,
+          "before": "\"Timestamp = sample index / sample rate.\"",
+          "after": "\"时间戳 = 采样索引 / 采样率。\"",
+          "afterOffset": 1088
+        },
+        {
+          "offset": 1375,
+          "before": "\"Seconds\"",
+          "after": "\"秒\"",
+          "afterOffset": 1151
+        },
+        {
+          "offset": 1469,
+          "before": "\"Normalized amplitude\"",
+          "after": "\"归一化振幅\"",
+          "afterOffset": 1239
+        },
+        {
+          "offset": 1767,
+          "before": "\"Index\"",
+          "after": "\"索引\"",
+          "afterOffset": 1522
+        },
+        {
+          "offset": 1782,
+          "before": "\"Seconds\"",
+          "after": "\"秒\"",
+          "afterOffset": 1534
+        },
+        {
+          "offset": 1917,
+          "before": "\"Choose which acoustic frames survive\"",
+          "after": "\"选择保留哪些声学帧\"",
+          "afterOffset": 1663
+        },
+        {
+          "offset": 1987,
+          "before": "\"Frame energies are an authored example. Loud noise can pass; quiet words can fail.\"",
+          "after": "\"帧能量是人工构造的示例。响亮噪声可能通过，轻声语音可能被遗漏。\"",
+          "afterOffset": 1706
+        },
+        {
+          "offset": 2157,
+          "before": "\"RMS threshold\"",
+          "after": "\"RMS 阈值\"",
+          "afterOffset": 1825
+        },
+        {
+          "offset": 2342,
+          "before": "\"Maximum silent gap ms\"",
+          "after": "\"最大静音间隔（毫秒）\"",
+          "afterOffset": 2003
+        },
+        {
+          "offset": 3036,
+          "before": "`Keep ${kept.length} activity segments after the 40 ms minimum.`",
+          "after": "`应用 40 ms 最小时长后，保留 ${kept.length} 个活动片段。`",
+          "afterOffset": 2686
+        },
+        {
+          "offset": 3144,
+          "before": "\"Active frames\"",
+          "after": "\"活动帧数\"",
+          "afterOffset": 2771
+        },
+        {
+          "offset": 3220,
+          "before": "\"Kept milliseconds\"",
+          "after": "\"保留毫秒数\"",
+          "afterOffset": 2838
+        },
+        {
+          "offset": 3401,
+          "before": "\"Frame \"",
+          "after": "\"帧 \"",
+          "afterOffset": 3007
+        },
+        {
+          "offset": 3553,
+          "before": "\"Start ms\"",
+          "after": "\"开始毫秒\"",
+          "afterOffset": 3155
+        },
+        {
+          "offset": 3565,
+          "before": "\"End ms\"",
+          "after": "\"结束毫秒\"",
+          "afterOffset": 3163
+        },
+        {
+          "offset": 3699,
+          "before": "\"A recognizer request carries actual audio\"",
+          "after": "\"识别请求携带真实音频\"",
+          "afterOffset": 3295
+        },
+        {
+          "offset": 3774,
+          "before": "\"Only transient timeouts retry. Supplied reference mode makes no recognition request.\"",
+          "after": "\"只重试暂时超时。给定参考模式不发送识别请求。\"",
+          "afterOffset": 3339
+        },
+        {
+          "offset": 3946,
+          "before": "\"Use supplied reference text\"",
+          "after": "\"使用给定参考文本\"",
+          "afterOffset": 3449
+        },
+        {
+          "offset": 4094,
+          "before": "\"Timeouts before success\"",
+          "after": "\"成功前超时次数\"",
+          "afterOffset": 3578
+        },
+        {
+          "offset": 4266,
+          "before": "\"Allowed retries\"",
+          "after": "\"允许重试次数\"",
+          "afterOffset": 3734
+        },
+        {
+          "offset": 4597,
+          "before": "\"Timeout budget exhausted; retain a failure.\"",
+          "after": "\"超时重试预算已耗尽，保留失败状态。\"",
+          "afterOffset": 4056
+        },
+        {
+          "offset": 4689,
+          "before": "\"No recognizer call; label the supplied transcript.\"",
+          "after": "\"未调用识别器；明确标记给定转录。\"",
+          "afterOffset": 4122
+        },
+        {
+          "offset": 4789,
+          "before": "\"Record returned text and the exact segment audio hash.\"",
+          "after": "\"记录返回文本和精确片段音频哈希。\"",
+          "afterOffset": 4188
+        },
+        {
+          "offset": 4925,
+          "before": "\"HTTP attempts\"",
+          "after": "\"HTTP 尝试次数\"",
+          "afterOffset": 4286
+        },
+        {
+          "offset": 4996,
+          "before": "\"Recognition performed\"",
+          "after": "\"是否执行识别\"",
+          "afterOffset": 4353
+        },
+        {
+          "offset": 5139,
+          "before": "\"Payload\"",
+          "after": "\"请求体\"",
+          "afterOffset": 4481
+        },
+        {
+          "offset": 5150,
+          "before": "\"multipart model + WAV file\"",
+          "after": "\"multipart model 字段 + WAV 文件\"",
+          "afterOffset": 4488
+        },
+        {
+          "offset": 5194,
+          "before": "\"Evidence\"",
+          "after": "\"证据\"",
+          "afterOffset": 4533
+        },
+        {
+          "offset": 5206,
+          "before": "\"segment SHA256 and attempt count\"",
+          "after": "\"片段 SHA256 和尝试次数\"",
+          "afterOffset": 4539
+        },
+        {
+          "offset": 5276,
+          "before": "\"Contract\"",
+          "after": "\"契约\"",
+          "afterOffset": 4592
+        },
+        {
+          "offset": 5288,
+          "before": "\"Value\"",
+          "after": "\"值\"",
+          "afterOffset": 4598
+        },
+        {
+          "offset": 5421,
+          "before": "\"Convert a validated cue to WebVTT\"",
+          "after": "\"将已校验字幕转换为 WebVTT\"",
+          "afterOffset": 4727
+        },
+        {
+          "offset": 5488,
+          "before": "\"The review page links segment times to actual playback; it does not infer word alignment.\"",
+          "after": "\"审阅页将片段时间关联到实际播放，不推断逐词对齐。 图表限制：WebVTT 示意使用 JavaScript Math.round，真实 Python stamp 使用 round；恰好半毫秒时，向上舍入与偶数舍入可能产生 1 毫秒差异。声学图、请求计数和手动开关不能证明语音识别已经执行。\"",
+          "afterOffset": 4777
+        },
+        {
+          "offset": 5661,
+          "before": "\"Cue start seconds\"",
+          "after": "\"字幕开始秒数\"",
+          "afterOffset": 5004
+        },
+        {
+          "offset": 5852,
+          "before": "\"Cue end seconds\"",
+          "after": "\"字幕结束秒数\"",
+          "afterOffset": 5184
+        },
+        {
+          "offset": 6044,
+          "before": "\"Audio duration seconds\"",
+          "after": "\"音频时长（秒）\"",
+          "afterOffset": 5367
+        },
+        {
+          "offset": 6850,
+          "before": "\"Reject cue order or an endpoint beyond the audio.\"",
+          "after": "\"拒绝字幕顺序错误或超出音频范围的端点。\"",
+          "afterOffset": 6158
+        },
+        {
+          "offset": 6959,
+          "before": "\"Cue length seconds\"",
+          "after": "\"字幕时长（秒）\"",
+          "afterOffset": 6237
+        },
+        {
+          "offset": 7091,
+          "before": "\"Audio evidence\"",
+          "after": "\"音频证据\"",
+          "afterOffset": 6358
+        },
+        {
+          "offset": 7109,
+          "before": "\"original clip hash\"",
+          "after": "\"原始音频片段哈希\"",
+          "afterOffset": 6366
+        },
+        {
+          "offset": 7145,
+          "before": "\"Correction flow\"",
+          "after": "\"修正流程\"",
+          "afterOffset": 6392
+        },
+        {
+          "offset": 7164,
+          "before": "\"edit JSON, verify hash, rerender\"",
+          "after": "\"编辑 JSON、核验哈希、重新渲染\"",
+          "afterOffset": 6400
+        },
+        {
+          "offset": 7234,
+          "before": "\"Artifact\"",
+          "after": "\"交付物\"",
+          "afterOffset": 6455
+        },
+        {
+          "offset": 7246,
+          "before": "\"Preserved link\"",
+          "after": "\"保留的关联\"",
+          "afterOffset": 6462
+        }
+      ]
+    },
+    {
+      "path": "site/figures/projects/web-change-brief.js",
+      "sourceSha256": "e91438f607807ec33edbaaa82ad12e7df048c925ab60e5729793927c12d93c63",
+      "localizedSha256": "80fb0a69afb74fcb0e23698d6f07172f30fa59dbc00d4e7e89d8f01987b88c6d",
+      "edits": [
+        {
+          "offset": 68,
+          "before": "\"Snapshot\"",
+          "after": "\"快照\"",
+          "afterOffset": 68
+        },
+        {
+          "offset": 94,
+          "before": "\"Retain the declared source and extraction policy.\"",
+          "after": "\"保留声明的来源和提取策略。\"",
+          "afterOffset": 88
+        },
+        {
+          "offset": 167,
+          "before": "\"Compute\"",
+          "after": "\"计算\"",
+          "afterOffset": 125
+        },
+        {
+          "offset": 186,
+          "before": "\"Apply bounded, inspectable transformations.\"",
+          "after": "\"应用有边界且可检查的转换。\"",
+          "afterOffset": 139
+        },
+        {
+          "offset": 248,
+          "before": "\"Report\"",
+          "after": "\"报告\"",
+          "afterOffset": 171
+        },
+        {
+          "offset": 266,
+          "before": "\"Preserve exact change evidence.\"",
+          "after": "\"保留精确变化证据。\"",
+          "afterOffset": 185
+        },
+        {
+          "offset": 1099,
+          "before": "\"Filter readable blocks explicitly\"",
+          "after": "\"明确过滤可读文本块\"",
+          "afterOffset": 996
+        },
+        {
+          "offset": 1166,
+          "before": "\"Use | between already extracted blocks. This lab shows phrase filtering after HTML scanning.\"",
+          "after": "\"用 | 分隔已提取块。本实验展示 HTML 扫描之后的短语过滤。\"",
+          "afterOffset": 1039
+        },
+        {
+          "offset": 1341,
+          "before": "\"Extracted blocks separated by |\"",
+          "after": "\"以 | 分隔的已提取块\"",
+          "afterOffset": 1154
+        },
+        {
+          "offset": 1538,
+          "before": "\"Ignore phrase\"",
+          "after": "\"忽略短语\"",
+          "afterOffset": 1331
+        },
+        {
+          "offset": 1887,
+          "before": "`Keep ${kept.length} of ${input.length} readable blocks.`",
+          "after": "`保留 ${kept.length} 个块，原有 ${input.length} 个可读块。`",
+          "afterOffset": 1671
+        },
+        {
+          "offset": 1988,
+          "before": "\"Removed blocks\"",
+          "after": "\"移除块数\"",
+          "afterOffset": 1762
+        },
+        {
+          "offset": 2155,
+          "before": "\"Block\"",
+          "after": "\"文本块\"",
+          "afterOffset": 1919
+        },
+        {
+          "offset": 2164,
+          "before": "\"Decision\"",
+          "after": "\"决策\"",
+          "afterOffset": 1926
+        },
+        {
+          "offset": 2285,
+          "before": "\"Count text occurrences, not just membership\"",
+          "after": "\"统计文本出现次数，不只检查是否存在\"",
+          "afterOffset": 2041
+        },
+        {
+          "offset": 2362,
+          "before": "\"Use | between blocks. Reordering does not count as a text change, but duplicate counts do.\"",
+          "after": "\"用 | 分隔文本块。重排不算文本变化，但重复次数变化需要记录。\"",
+          "afterOffset": 2092
+        },
+        {
+          "offset": 2537,
+          "before": "\"Before blocks\"",
+          "after": "\"此前块数\"",
+          "afterOffset": 2208
+        },
+        {
+          "offset": 2670,
+          "before": "\"After blocks\"",
+          "after": "\"之后块数\"",
+          "afterOffset": 2332
+        },
+        {
+          "offset": 2910,
+          "before": "`${r.common} unchanged block occurrences.`",
+          "after": "`共有 ${r.common} 次文本块出现保持不变。`",
+          "afterOffset": 2564
+        },
+        {
+          "offset": 2996,
+          "before": "\"Before blocks\"",
+          "after": "\"此前块数\"",
+          "afterOffset": 2636
+        },
+        {
+          "offset": 3053,
+          "before": "\"After blocks\"",
+          "after": "\"之后块数\"",
+          "afterOffset": 2684
+        },
+        {
+          "offset": 3145,
+          "before": "\"Exact text\"",
+          "after": "\"精确文本\"",
+          "afterOffset": 2768
+        },
+        {
+          "offset": 3159,
+          "before": "\"Before count\"",
+          "after": "\"此前次数\"",
+          "afterOffset": 2776
+        },
+        {
+          "offset": 3175,
+          "before": "\"After count\"",
+          "after": "\"之后次数\"",
+          "afterOffset": 2784
+        },
+        {
+          "offset": 3190,
+          "before": "\"Change\"",
+          "after": "\"变化\"",
+          "afterOffset": 2792
+        },
+        {
+          "offset": 3309,
+          "before": "\"Do not accept a failed fetch as a baseline\"",
+          "after": "\"不要将失败获取当作基线\"",
+          "afterOffset": 2907
+        },
+        {
+          "offset": 3385,
+          "before": "\"HTTP success, supported media, size and cancellation are independent gates.\"",
+          "after": "\"HTTP 成功、受支持媒体、大小和取消分别构成门禁。 译注：实际 CLI 无条件把新快照写到输出目录的 baseline.json。若 --out 与已有 --baseline 的目录相同，即使没有 --accept，也会覆盖该基线。使用不同的新输出目录；本问题按上游原行为保留，未通过翻译修改。\"",
+          "afterOffset": 2952
+        },
+        {
+          "offset": 3545,
+          "before": "\"HTTP status\"",
+          "after": "\"HTTP 状态\"",
+          "afterOffset": 3185
+        },
+        {
+          "offset": 3863,
+          "before": "\"Response bytes\"",
+          "after": "\"响应字节数\"",
+          "afterOffset": 3499
+        },
+        {
+          "offset": 4195,
+          "before": "\"Request cancelled\"",
+          "after": "\"请求已取消\"",
+          "afterOffset": 3822
+        },
+        {
+          "offset": 4345,
+          "before": "\"Status 200\"",
+          "after": "\"状态 200\"",
+          "afterOffset": 3960
+        },
+        {
+          "offset": 4391,
+          "before": "\"HTML type\"",
+          "after": "\"HTML 类型\"",
+          "afterOffset": 4002
+        },
+        {
+          "offset": 4424,
+          "before": "\"At most 2 MB\"",
+          "after": "\"最多 2 MB\"",
+          "afterOffset": 4033
+        },
+        {
+          "offset": 4472,
+          "before": "\"Not cancelled\"",
+          "after": "\"未取消\"",
+          "afterOffset": 4076
+        },
+        {
+          "offset": 4626,
+          "before": "\"Fetch is eligible for extraction. Baseline replacement remains explicit.\"",
+          "after": "\"获取结果可进入提取步骤；替换基线仍需明确操作。\"",
+          "afterOffset": 4220
+        },
+        {
+          "offset": 4715,
+          "before": "\"Keep the prior baseline and report the fetch failure.\"",
+          "after": "\"保留原基线并报告获取失败。\"",
+          "afterOffset": 4260
+        },
+        {
+          "offset": 4814,
+          "before": "\"Passed gates\"",
+          "after": "\"通过门禁数\"",
+          "afterOffset": 4319
+        },
+        {
+          "offset": 4895,
+          "before": "\"Baseline replacements\"",
+          "after": "\"基线替换次数\"",
+          "afterOffset": 4393
+        },
+        {
+          "offset": 5033,
+          "before": "\"Gate\"",
+          "after": "\"门禁\"",
+          "afterOffset": 4516
+        },
+        {
+          "offset": 5041,
+          "before": "\"Result\"",
+          "after": "\"结果\"",
+          "afterOffset": 4522
+        },
+        {
+          "offset": 5160,
+          "before": "\"Show the changed statement itself\"",
+          "after": "\"展示变化语句本身\"",
+          "afterOffset": 4637
+        },
+        {
+          "offset": 5227,
+          "before": "\"The report carries exact text and counts. It does not infer the publisher’s intent.\"",
+          "after": "\"报告携带精确文本和次数，不推断发布者意图。\"",
+          "afterOffset": 4679
+        },
+        {
+          "offset": 5395,
+          "before": "\"Prior statement\"",
+          "after": "\"此前语句\"",
+          "afterOffset": 4785
+        },
+        {
+          "offset": 5550,
+          "before": "\"Current statement\"",
+          "after": "\"当前语句\"",
+          "afterOffset": 4929
+        },
+        {
+          "offset": 5844,
+          "before": "\"No text change.\"",
+          "after": "\"文本没有变化。\"",
+          "afterOffset": 5210
+        },
+        {
+          "offset": 5878,
+          "before": "\"Review the removed and added statements side by side.\"",
+          "after": "\"并排审阅移除和新增语句。\"",
+          "afterOffset": 5236
+        },
+        {
+          "offset": 5964,
+          "before": "\"Unchanged occurrences\"",
+          "after": "\"未变出现次数\"",
+          "afterOffset": 5281
+        },
+        {
+          "offset": 6053,
+          "before": "\"Exact evidence\"",
+          "after": "\"精确证据\"",
+          "afterOffset": 5355
+        },
+        {
+          "offset": 6071,
+          "before": "\"Before\"",
+          "after": "\"此前\"",
+          "afterOffset": 5363
+        },
+        {
+          "offset": 6081,
+          "before": "\"After\"",
+          "after": "\"之后\"",
+          "afterOffset": 5369
+        },
+        {
+          "offset": 6090,
+          "before": "\"Report action\"",
+          "after": "\"报告操作\"",
+          "afterOffset": 5375
+        },
+        {
+          "offset": 3684,
+          "afterOffset": 3684,
+          "before": "\"HTML Content-Type\"",
+          "after": "\"HTML 内容类型（Content-Type）\""
+        }
+      ]
+    },
+    {
+      "path": "site/figures/projects/workflow-hooks.js",
+      "sourceSha256": "8d90615811a6e5f8daf3337082239eaeeae3208b6c8db42d67a4139d7808adec",
+      "localizedSha256": "118dc830e5707a5046f2d46e7f1685e8a05024bb59bdf98deb4da34ea1ffb34f",
+      "edits": [
+        {
+          "offset": 1100,
+          "before": "\"Case-sensitive correction\"",
+          "after": "\"区分大小写的纠正\"",
+          "afterOffset": 1100
+        },
+        {
+          "offset": 1231,
+          "before": "\"Source sessions comma-separated\"",
+          "after": "\"来源会话（逗号分隔）\"",
+          "afterOffset": 1214
+        },
+        {
+          "offset": 1333,
+          "before": "\"Rule scope\"",
+          "after": "\"规则适用范围\"",
+          "afterOffset": 1295
+        },
+        {
+          "offset": 1385,
+          "before": "\"Current scope\"",
+          "after": "\"当前范围\"",
+          "afterOffset": 1343
+        },
+        {
+          "offset": 1436,
+          "before": "\"Rule state\"",
+          "after": "\"规则状态\"",
+          "afterOffset": 1385
+        },
+        {
+          "offset": 1559,
+          "before": "\"Required independent sessions\"",
+          "after": "\"所需独立会话数\"",
+          "afterOffset": 1502
+        },
+        {
+          "offset": 2145,
+          "before": "\"Stored rule preserves case: \"",
+          "after": "\"保存规则时保留大小写：\"",
+          "afterOffset": 2066
+        },
+        {
+          "offset": 2226,
+          "before": "\"Inject approved scoped rule with its evidence\"",
+          "after": "\"注入已批准且范围匹配的规则及证据\"",
+          "afterOffset": 2130
+        },
+        {
+          "offset": 2330,
+          "before": "\"Retired rule is excluded\"",
+          "after": "\"已退役规则被排除\"",
+          "afterOffset": 2205
+        },
+        {
+          "offset": 2402,
+          "before": "\"Scope mismatch\"",
+          "after": "\"范围不匹配\"",
+          "afterOffset": 2261
+        },
+        {
+          "offset": 2468,
+          "before": "\"Enough sessions; explicit approval still required\"",
+          "after": "\"会话支持足够，仍需明确审批\"",
+          "afterOffset": 2318
+        },
+        {
+          "offset": 2542,
+          "before": "\"Insufficient independent sessions\"",
+          "after": "\"独立会话不足\"",
+          "afterOffset": 2356
+        },
+        {
+          "offset": 2615,
+          "before": "\"Independent sessions\"",
+          "after": "\"独立会话数\"",
+          "afterOffset": 2402
+        },
+        {
+          "offset": 2687,
+          "before": "\"Repeated deliveries\"",
+          "after": "\"重复投递次数\"",
+          "afterOffset": 2459
+        },
+        {
+          "offset": 2838,
+          "before": "\"Scope matches\"",
+          "after": "\"范围匹配\"",
+          "afterOffset": 2597
+        },
+        {
+          "offset": 2880,
+          "before": "\"Inject rule\"",
+          "after": "\"注入规则\"",
+          "afterOffset": 2630
+        },
+        {
+          "offset": 2945,
+          "before": "\"Independent support\"",
+          "after": "\"独立支持\"",
+          "afterOffset": 2688
+        },
+        {
+          "offset": 3011,
+          "before": "\"Required support\"",
+          "after": "\"所需支持\"",
+          "afterOffset": 2739
+        },
+        {
+          "offset": 3072,
+          "before": "\"Session\"",
+          "after": "\"会话\"",
+          "afterOffset": 2788
+        },
+        {
+          "offset": 3083,
+          "before": "\"Evidence locator\"",
+          "after": "\"证据定位信息\"",
+          "afterOffset": 2794
+        },
+        {
+          "offset": 3350,
+          "before": "\"Capture corrections with provenance\"",
+          "after": "\"记录带来源的纠正\"",
+          "afterOffset": 3051
+        },
+        {
+          "offset": 3437,
+          "before": "\"Input contract\"",
+          "after": "\"输入契约\"",
+          "afterOffset": 3111
+        },
+        {
+          "offset": 3489,
+          "before": "\"A correction is evidence from a specific session and source locator. Preserve the exact case of API_KEY in the rule; case folding would turn a useful instruction into a contradictory one.\"",
+          "after": "\"纠正来自特定会话及来源定位信息，是一条证据。保留规则中 API_KEY 的精确大小写；大小写折叠会把有用指令变成相互矛盾的指令。\"",
+          "afterOffset": 3153
+        },
+        {
+          "offset": 3724,
+          "before": "\"Capture corrections with provenance\"",
+          "after": "\"记录带来源的纠正\"",
+          "afterOffset": 3265
+        },
+        {
+          "offset": 3963,
+          "before": "\"Observe the result\"",
+          "after": "\"观察结果\"",
+          "afterOffset": 3477
+        },
+        {
+          "offset": 4019,
+          "before": "\"Normalize scope for matching, but only collapse rule whitespace. Reject obvious credential-shaped data before it enters the durable store.\"",
+          "after": "\"规范化 scope 以便匹配；规则只合并空白。明显类似凭据的内容须在进入持久存储前拒绝。\"",
+          "afterOffset": 3519
+        },
+        {
+          "offset": 4212,
+          "before": "\"Which parts of a source excerpt must the caller sanitize before ingestion?\"",
+          "after": "\"调用方必须在导入前清理来源引文中的哪些内容？ 图表限制：控件展示会话支持和规则状态，不执行 ingest 的凭据模式／长度检查、真实摘要审批或持久存储。批准状态来自手动选择，不证明存在人工审批记录。\"",
+          "afterOffset": 3618
+        },
+        {
+          "offset": 4446,
+          "before": "\"Count independent sessions\"",
+          "after": "\"统计独立会话\"",
+          "afterOffset": 3877
+        },
+        {
+          "offset": 4524,
+          "before": "\"Input contract\"",
+          "after": "\"输入契约\"",
+          "afterOffset": 3935
+        },
+        {
+          "offset": 4576,
+          "before": "\"Repeated delivery is not independent evidence. Two distinct corrections in one session still contribute one supporting session. Keep excerpts and locators with the candidate so its source ids remain resolvable later.\"",
+          "after": "\"重复投递不是独立证据。同一会话中的两条不同纠正，仍只贡献一个支持会话。将引文及定位信息与候选规则放在一起，使来源 ID 后续仍可解析。\"",
+          "afterOffset": 3977
+        },
+        {
+          "offset": 4840,
+          "before": "\"Count independent sessions\"",
+          "after": "\"统计独立会话\"",
+          "afterOffset": 4092
+        },
+        {
+          "offset": 5077,
+          "before": "\"Observe the result\"",
+          "after": "\"观察结果\"",
+          "afterOffset": 4309
+        },
+        {
+          "offset": 5133,
+          "before": "\"Deduplicate event ids using their full validated content. Conflicting reuse of an id must fail rather than silently replace provenance.\"",
+          "after": "\"根据完整已校验内容对事件 ID 去重。同一 ID 的冲突复用必须失败，不能悄悄覆盖来源证据。\"",
+          "afterOffset": 4351
+        },
+        {
+          "offset": 5323,
+          "before": "\"Why should API_KEY and api_key rules remain separate candidates?\"",
+          "after": "\"为什么 API_KEY 与 api_key 规则应保持为不同候选？\"",
+          "afterOffset": 4452
+        },
+        {
+          "offset": 5547,
+          "before": "\"Approve and select scoped rules\"",
+          "after": "\"批准并选择限定范围的规则\"",
+          "afterOffset": 4645
+        },
+        {
+          "offset": 5630,
+          "before": "\"Input contract\"",
+          "after": "\"输入契约\"",
+          "afterOffset": 4709
+        },
+        {
+          "offset": 5682,
+          "before": "\"Approval applies to an exact candidate digest. A second source can change that digest and force another review. Retiring a rule removes it from emitted context while keeping its evidence available for inspection.\"",
+          "after": "\"审批针对准确的候选摘要。第二条来源可能改变摘要，需要重新审阅。退役规则后，后续输出上下文不再包含它，但证据仍可检查。\"",
+          "afterOffset": 4751
+        },
+        {
+          "offset": 5942,
+          "before": "\"Approve and select scoped rules\"",
+          "after": "\"批准并选择限定范围的规则\"",
+          "afterOffset": 4857
+        },
+        {
+          "offset": 6203,
+          "before": "\"Observe the result\"",
+          "after": "\"观察结果\"",
+          "afterOffset": 5099
+        },
+        {
+          "offset": 6259,
+          "before": "\"Apply state and scope filtering together. Never let a global or frequently repeated candidate bypass explicit approval.\"",
+          "after": "\"同时应用状态和 scope 过滤。不能让 global 候选或高频重复候选绕过明确审批。\"",
+          "afterOffset": 5141
+        },
+        {
+          "offset": 6433,
+          "before": "\"What should the CLI do when the user supplies yesterday's digest after new evidence arrived?\"",
+          "after": "\"新证据到达后，用户仍提供昨天的摘要，CLI 应如何处理？\"",
+          "afterOffset": 5240
+        },
+        {
+          "offset": 6685,
+          "before": "\"Persist rules across sessions\"",
+          "after": "\"跨会话持久化规则\"",
+          "afterOffset": 5428
+        },
+        {
+          "offset": 6766,
+          "before": "\"Input contract\"",
+          "after": "\"输入契约\"",
+          "afterOffset": 5488
+        },
+        {
+          "offset": 6818,
+          "before": "\"The CLI captures JSONL corrections, saves a versioned store, reloads it in another process and emits a neutral JSON hook payload. It retains evidence, supports retirement and preserves API_KEY exactly across restart.\"",
+          "after": "\"CLI 收集 JSONL 纠正并保存带版本的存储，再由另一个进程重新加载，输出中立的 JSON hook 载荷。它保留证据、支持退役，并在重启后精确保留 API_KEY。\"",
+          "afterOffset": 5530
+        },
+        {
+          "offset": 7082,
+          "before": "\"Persist rules across sessions\"",
+          "after": "\"跨会话持久化规则\"",
+          "afterOffset": 5663
+        },
+        {
+          "offset": 7348,
+          "before": "\"Observe the result\"",
+          "after": "\"观察结果\"",
+          "afterOffset": 5908
+        },
+        {
+          "offset": 7404,
+          "before": "\"Write a unique sibling temporary file and rename. This store has a single-writer contract; add locking before using simultaneous writers.\"",
+          "after": "\"写入唯一的同目录临时文件后重命名。此存储契约只允许单写者；支持同时写入前先增加锁。\"",
+          "afterOffset": 5950
+        },
+        {
+          "offset": 7596,
+          "before": "\"How would your agent integration map additional_context into its documented hook wire format?\"",
+          "after": "\"你的智能体集成如何将 additional_context 映射到文档规定的 hook 消息格式？\"",
+          "afterOffset": 6046
+        }
+      ]
+    }
+  ],
+  "figureLimitations": {
+    "visual-evidence-library": "图表限制：矩形控件模型未检查负的左上坐标；检索图使用 JavaScript 小写转换，实际 Python 实现使用 Unicode casefold。超出控件范围或涉及 ß 等字符时，两者结果可能不同。完整路径、类型及索引校验以实际实现为准。",
+    "voice-note-transcriber-pipeline": "图表限制：WebVTT 示意使用 JavaScript Math.round，真实 Python stamp 使用 round；恰好半毫秒时，向上舍入与偶数舍入可能产生 1 毫秒差异。声学图、请求计数和手动开关不能证明语音识别已经执行。",
+    "web-change-brief": "译注：实际 CLI 无条件把新快照写到输出目录的 baseline.json。若 --out 与已有 --baseline 的目录相同，即使没有 --accept，也会覆盖该基线。使用不同的新输出目录；本问题按上游原行为保留，未通过翻译修改。",
+    "workflow-hooks": "图表限制：控件展示会话支持和规则状态，不执行 ingest 的凭据模式／长度检查、真实摘要审批或持久存储。批准状态来自手动选择，不证明存在人工审批记录。"
+  },
+  "preservedMachineNotes": {
+    "typed-workflow-agent-with-mastra": "译注：分类词表、工具查询、模拟响应、状态、错误及计划摘要契约保留原值，中文页面不代表支持中文意图识别。手写检查点可由本地 CLI 重放，但不具有真实 SDK 的持久审批或身份认证能力；可选 Mastra 运行须单独安装依赖并验证。",
+    "visual-evidence-library": "译注：原图和给定文本区域保持不变；本次汉化没有执行 OCR 或真实视觉模型。JSON 方法、来源与错误字段保留原契约。无命中提示保留原测试所需英文，并附中文。视觉端点适配器只检查 HTTP(S) 协议，未采用语音适配器的远程 HTTPS／禁止重定向策略；不应上传敏感图片。",
+    "voice-note-transcriber-pipeline": "译注：音频、字幕文本、WAV／WebVTT／JSON 字段、哈希、服务商参数与方法标记保留原值。离线参考模式和人工审阅模式不执行语音识别；页面文案汉化不会改变录音或原字幕。",
+    "web-change-brief": "译注：输入网页、精确变化文本、JSON 字段、校验和及错误消息保留原值。没有新增后台监测；命令行固定展示与帮助已译。空变化及未变计数提示保留原测试需要的英文并附中文。",
+    "workflow-hooks": "译注：规则文本、来源引文、API_KEY 大小写、摘要、状态、CLI 子命令和 additional_context 保留原值。测试仅在隔离文件中生成、批准、退役候选，没有安装真实 hook 或改变当前智能体指令。"
+  }
+}

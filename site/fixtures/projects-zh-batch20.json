@@ -1,0 +1,4841 @@
+{
+  "upstream": "c02ca08d8a49ce24c3c1c1cf8e3b422f2c7393ca",
+  "projects": [
+    "source-grounded-study-coach",
+    "support-agent-with-google-adk",
+    "tiny-coding-agent",
+    "token-counter-and-cost-meter",
+    "tool-call-firewall"
+  ],
+  "files": {
+    "projects/source-grounded-study-coach/README.md": {
+      "sourceSha256": "06d86b2027347d86f1f7abfc89e7a28bf28f208e40a63b5f6e871ea3b10f39d0",
+      "localizedSha256": "ca7a108ab36e02728ddf68e4a81b7d0c7cd236849dc3d125f0abb4050bae425e",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "bash",
+            "python3 scripts/project_test.py source-grounded-study-coach --init my-source-grounded-study-coach\npython3 scripts/project_test.py source-grounded-study-coach --stage 1 --path my-source-grounded-study-coach\npython3 scripts/project_test.py source-grounded-study-coach --all --solution --strict\n"
+          ],
+          [
+            "bash",
+            "cd projects/source-grounded-study-coach/solution\nnode --experimental-strip-types main.ts --deck ./fixtures/deck.json --attempts ./fixtures/attempts.json --initial-date 2026-09-01 --date 2026-09-03 --out ./study-output\n"
+          ],
+          [
+            "bash",
+            "node --experimental-strip-types main.ts --deck ./fixtures/deck.json --attempts ./attempts.json --initial-date 2026-09-01 --date 2026-09-03 --out ./next-study-output\n"
+          ],
+          [
+            "bash",
+            "node --experimental-strip-types demo.ts\n"
+          ]
+        ],
+        "inlineCode": [],
+        "links": [
+          "https://nodejs.org/api/typescript.html",
+          "stages/01-ground-the-deck/docs/en.md",
+          "stages/02-grade-with-evidence/docs/en.md",
+          "stages/03-schedule-review/docs/en.md",
+          "stages/04-export-practice/docs/en.md"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 7
+      }
+    },
+    "projects/source-grounded-study-coach/media/output.gif": {
+      "sourceSha256": "3efdd09c34a62ffbf251e41886c43bc649628ca8df17675a86a0657c6f6f81b7",
+      "localizedSha256": "3efdd09c34a62ffbf251e41886c43bc649628ca8df17675a86a0657c6f6f81b7",
+      "kind": "original-recording"
+    },
+    "projects/source-grounded-study-coach/media/output.json": {
+      "sourceSha256": "5045afb04a23835cde6cd37b920c28c0a85c200ead5680ccd7988e1d0b4c528f",
+      "localizedSha256": "5045afb04a23835cde6cd37b920c28c0a85c200ead5680ccd7988e1d0b4c528f",
+      "kind": "original-recording"
+    },
+    "projects/source-grounded-study-coach/media/output.png": {
+      "sourceSha256": "bb460f069c47c95b3b927364b44663f3e6468ca13025ab8952044f426ae49a69",
+      "localizedSha256": "bb460f069c47c95b3b927364b44663f3e6468ca13025ab8952044f426ae49a69",
+      "kind": "original-recording"
+    },
+    "projects/source-grounded-study-coach/media/run.gif": {
+      "sourceSha256": "1fa6f1d680a03e7583ddb1daa449e4de958b049d8e66756e104196b079d4dec1",
+      "localizedSha256": "1fa6f1d680a03e7583ddb1daa449e4de958b049d8e66756e104196b079d4dec1",
+      "kind": "original-recording"
+    },
+    "projects/source-grounded-study-coach/media/run.json": {
+      "sourceSha256": "996709e9c9cbe95e339eb4341c66de9a3dd9362651d668a8d2621531f036e1e0",
+      "localizedSha256": "996709e9c9cbe95e339eb4341c66de9a3dd9362651d668a8d2621531f036e1e0",
+      "kind": "original-recording"
+    },
+    "projects/source-grounded-study-coach/media/run.png": {
+      "sourceSha256": "caffc5ecba49401f6a593c3541793921ae99169a32f23158abd14d828ba0521f",
+      "localizedSha256": "caffc5ecba49401f6a593c3541793921ae99169a32f23158abd14d828ba0521f",
+      "kind": "original-recording"
+    },
+    "projects/source-grounded-study-coach/project.json": {
+      "sourceSha256": "50ad9e76a6dcd4d458514dc25fe234bc56fa0eb6f7f944bc924d98d5aefa82e8",
+      "localizedSha256": "f21ee596656fb30f439a903dcb9a57dc344f49d8e43be8cd8bf18c40c8b5f6c9",
+      "kind": "manifest",
+      "contract": {
+        "id": "source-grounded-study-coach",
+        "title": "<translated-text>",
+        "level": 2,
+        "levelName": "Builder",
+        "tagline": "<translated-text>",
+        "summary": "<translated-text>",
+        "youWillBuild": "<translated-text>",
+        "usefulFor": [
+          "<translated-text>"
+        ],
+        "hours": 8,
+        "languages": [
+          "TypeScript"
+        ],
+        "languageWhy": {
+          "TypeScript": "<translated-text>"
+        },
+        "status": "ready",
+        "source": "core",
+        "author": {
+          "name": "AI Engineering from Scratch",
+          "github": "rohitg00"
+        },
+        "skills": [
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "prerequisites": [
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "figures": true,
+        "overviewFigure": "pj-source-grounded-study-coach-1",
+        "demo": {
+          "command": [
+            "node",
+            "--experimental-strip-types",
+            "demo.ts"
+          ],
+          "cwd": "solution"
+        },
+        "stages": [
+          {
+            "id": "01-ground-the-deck",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "difficulty": "starter",
+            "language": "typescript",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ],
+            "figure": "pj-source-grounded-study-coach-1"
+          },
+          {
+            "id": "02-grade-with-evidence",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "difficulty": "core",
+            "language": "typescript",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ],
+            "figure": "pj-source-grounded-study-coach-2"
+          },
+          {
+            "id": "03-schedule-review",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "difficulty": "core",
+            "language": "typescript",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ],
+            "figure": "pj-source-grounded-study-coach-3"
+          },
+          {
+            "id": "04-export-practice",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "difficulty": "stretch",
+            "language": "typescript",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ],
+            "figure": "pj-source-grounded-study-coach-4"
+          }
+        ],
+        "demos": [
+          {
+            "gif": "media/run.gif",
+            "poster": "media/run.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          },
+          {
+            "gif": "media/output.gif",
+            "poster": "media/output.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          }
+        ]
+      }
+    },
+    "projects/source-grounded-study-coach/solution/demo.ts": {
+      "sourceSha256": "3bfbf7b4bfe7d8f7a1eb4bd94461dc4af3761c517d10cf97fa2a93396dd7af7d",
+      "localizedSha256": "9b1382a2e43ff5d59e9431091c05972f4c78470b440e467165e25f95089e19c1",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "import { readFileSync, mkdtempSync, rmSync } from \"node:fs\";",
+          "// 使用原创固定题卡演示，不连接模型；题目和数值输出保持原值。\nimport { readFileSync, mkdtempSync, rmSync } from \"node:fs\";"
+        ]
+      ]
+    },
+    "projects/source-grounded-study-coach/solution/fixtures/attempts.json": {
+      "sourceSha256": "7bcb73b1e7a1350af199ecd23b19328a0e3f238d434a43199208d7a127d27041",
+      "localizedSha256": "7bcb73b1e7a1350af199ecd23b19328a0e3f238d434a43199208d7a127d27041",
+      "kind": "preserved-contract"
+    },
+    "projects/source-grounded-study-coach/solution/fixtures/deck.json": {
+      "sourceSha256": "489a56ef59c20f32e8292991266ac0debb383c3d1d3d5d7c09bc078354650cd8",
+      "localizedSha256": "489a56ef59c20f32e8292991266ac0debb383c3d1d3d5d7c09bc078354650cd8",
+      "kind": "preserved-contract"
+    },
+    "projects/source-grounded-study-coach/solution/main.ts": {
+      "sourceSha256": "7a3a1780c0f2121b7f22a4b8ec299f7bad15c849a96a755bbd6fc2da065c7e8c",
+      "localizedSha256": "987a9e2cb97709b5bbea0c13e90d3e4f6030737a8482c91e16a16959928b5cf5",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "import { readFileSync, writeFileSync, mkdirSync } from \"node:fs\";",
+          "// 学习教练参考实现：正文及步骤见 ../stages/；只翻译页面展示，题目、评分反馈字段和模型提示保持契约。\nimport { readFileSync, writeFileSync, mkdirSync } from \"node:fs\";"
+        ],
+        [
+          "\"Choose a real review date on or after \" + data.date + \".\"",
+          "\"请选择不早于 \" + data.date + \" 的有效复习日期。\""
+        ],
+        [
+          "\"Type an answer before recording this attempt.\"",
+          "\"记录本次答题前，请先输入答案。\""
+        ],
+        [
+          "\"Accepted by the authored answer policy.\"",
+          "\"Accepted：按作者设定的答案规则通过。\""
+        ],
+        [
+          "\"Review again: this answer did not match an authored answer.\"",
+          "\"请重新复习：本次答案未匹配作者设定的答案。\""
+        ],
+        [
+          "\" Recorded locally. Next due: \"",
+          "\" 已在本地记录。下次到期：\""
+        ],
+        [
+          "\" ready to download. Re-recording a card updates its current attempt.\"",
+          "\"，新增答题记录已可下载。同一卡片再次记录会更新当前答题。\""
+        ],
+        [
+          "\"Downloaded \"",
+          "\"已下载 \""
+        ],
+        [
+          "\" total attempts. Rerun the CLI with --attempts attempts.json and --date \"",
+          "\" 条完整答题记录。重新运行 CLI，使用 --attempts attempts.json 及 --date \""
+        ],
+        [
+          "\" to save the next schedule.\"",
+          "\" 保存下一份复习计划。\""
+        ],
+        [
+          "\"Due now\"",
+          "\"现在到期\""
+        ],
+        [
+          "\"Next due \"",
+          "\"下次到期 \""
+        ],
+        [
+          " | Box ${state.box} | Attempts ${state.attempts}",
+          " | 分盒 ${state.box} | 答题次数 ${state.attempts}"
+        ],
+        [
+          "<label>Your answer <input data-answer aria-label=\"Your answer\"",
+          "<label>你的答案 <input data-answer aria-label=\"你的答案\""
+        ],
+        [
+          "<summary>Reveal answer and evidence</summary>",
+          "<summary>揭示答案和证据</summary>"
+        ],
+        [
+          "<p>Source: ${escapeHTML(source.title)} | UTF-16 offsets ${card.start} to ${card.end}</p>",
+          "<p>来源：${escapeHTML(source.title)} | UTF-16 偏移 ${card.start} 至 ${card.end}</p>"
+        ],
+        [
+          "data-record>Check and record my answer</button>",
+          "data-record>检查并记录我的答案（Check and record my answer）</button>"
+        ],
+        [
+          "<html lang=\"en\">",
+          "<html lang=\"zh-CN\">"
+        ],
+        [
+          "<title>Source-grounded practice</title>",
+          "<title>有来源证据的练习</title>"
+        ],
+        [
+          "<h1>Source-grounded practice</h1>",
+          "<h1>有来源证据的练习</h1>"
+        ],
+        [
+          "Type your answer, reveal the source, then check and record it. Exact matching uses the authored answer and its approved variants. All processing stays in this page.",
+          "输入答案，揭示来源，再检查并记录。精确匹配使用作者编写的答案及其批准的变体。所有处理均在本页面完成。"
+        ],
+        [
+          "<label>Review date <input",
+          "<label>复习日期 <input"
+        ],
+        [
+          "<h2>Save this practice session</h2>",
+          "<h2>保存本次练习</h2>"
+        ],
+        [
+          "Record an answer to enable the download. New attempts remain in this page until you download them; reloading discards them.",
+          "记录答案后即可下载。新增答题记录在下载前仅保留于当前页面；重新加载会丢失它们。"
+        ],
+        [
+          "disabled>Download attempts JSON</button>",
+          "disabled>下载答题 JSON（Download attempts JSON）</button>"
+        ],
+        [
+          "The download includes prior attempts and your actual typed answers in the CLI schema. Rerun with --attempts attempts.json and the review date to save the next schedule.",
+          "下载内容使用 CLI 的结构定义，包含先前记录及本次实际输入的答案。使用 --attempts attempts.json 和复习日期重新运行，即可保存下一份计划。"
+        ]
+      ]
+    },
+    "projects/source-grounded-study-coach/stages/01-ground-the-deck/docs/en.md": {
+      "sourceSha256": "b8c75b381df51205d81b447522ac93c0e2c5fdfc97678a5d0ac557fa1da99be7",
+      "localizedSha256": "be9e04e04cb19c894c0b7b9690f3609ad8ce538c8814b7d28940bb9b384a473c",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-source-grounded-study-coach-1\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py source-grounded-study-coach --init my-source-grounded-study-coach\npython3 scripts/project_test.py source-grounded-study-coach --stage 1 --path my-source-grounded-study-coach\n"
+          ],
+          [
+            "bash",
+            "cd my-source-grounded-study-coach\nnode --experimental-strip-types main.ts --deck ./fixtures/deck.json --attempts ./fixtures/attempts.json --initial-date 2026-09-01 --date 2026-09-03 --out ./study-output\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "validateDeck(value: unknown): Deck"
+          ]
+        ],
+        "links": [
+          "https://nodejs.org/api/typescript.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 1
+      }
+    },
+    "projects/source-grounded-study-coach/stages/01-ground-the-deck/starter/STAGE.md": {
+      "sourceSha256": "f35939b8648a90a5a0938af8528385fcaed2de7e21cc349834cf8d7d13f2ab45",
+      "localizedSha256": "d23aba8773d6b1971524004828555747f57edad825d80082edd459fe24118563",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [
+          "#"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/source-grounded-study-coach/stages/01-ground-the-deck/starter/fixtures/attempts.json": {
+      "sourceSha256": "7bcb73b1e7a1350af199ecd23b19328a0e3f238d434a43199208d7a127d27041",
+      "localizedSha256": "7bcb73b1e7a1350af199ecd23b19328a0e3f238d434a43199208d7a127d27041",
+      "kind": "preserved-contract"
+    },
+    "projects/source-grounded-study-coach/stages/01-ground-the-deck/starter/fixtures/deck.json": {
+      "sourceSha256": "489a56ef59c20f32e8292991266ac0debb383c3d1d3d5d7c09bc078354650cd8",
+      "localizedSha256": "489a56ef59c20f32e8292991266ac0debb383c3d1d3d5d7c09bc078354650cd8",
+      "kind": "preserved-contract"
+    },
+    "projects/source-grounded-study-coach/stages/01-ground-the-deck/starter/main.ts": {
+      "sourceSha256": "f04bc39ab9feae646a464757e87e325a04770dceebae85b9965f60d5023a26fe",
+      "localizedSha256": "27de720df354c3722a4204e9d24db5d1c8978dab9b6630f8f3f1f933ddcb74b9",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "export type Source",
+          "// 按课程补全以下接口；公开类型、未实现错误和运行参数保持不变。\nexport type Source"
+        ]
+      ]
+    },
+    "projects/source-grounded-study-coach/stages/01-ground-the-deck/tests/stage.test.mjs": {
+      "sourceSha256": "093d3e0fe335d21e3a7a79817373011dfde900e24fb36ec8fd0f5810d186e8ae",
+      "localizedSha256": "093d3e0fe335d21e3a7a79817373011dfde900e24fb36ec8fd0f5810d186e8ae",
+      "kind": "preserved-contract"
+    },
+    "projects/source-grounded-study-coach/stages/02-grade-with-evidence/docs/en.md": {
+      "sourceSha256": "4f866b4004a2c8f742b118d9f4b1ad5c5a72248d3b19596439125fbbb3749647",
+      "localizedSha256": "a183e95fe868fdaad1f02bc349806ac4492a76c6118aad45de651421ebee8f99",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-source-grounded-study-coach-2\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py source-grounded-study-coach --init my-source-grounded-study-coach\npython3 scripts/project_test.py source-grounded-study-coach --stage 2 --path my-source-grounded-study-coach\n"
+          ],
+          [
+            "bash",
+            "cd my-source-grounded-study-coach\nnode --experimental-strip-types main.ts --deck ./fixtures/deck.json --attempts ./fixtures/attempts.json --initial-date 2026-09-01 --date 2026-09-03 --out ./study-output\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "gradeAnswer(deck, cardId, response)"
+          ],
+          [
+            "`",
+            "normalizeAnswer(answer: string): string"
+          ]
+        ],
+        "links": [
+          "https://nodejs.org/api/typescript.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 2
+      }
+    },
+    "projects/source-grounded-study-coach/stages/02-grade-with-evidence/starter/STAGE-2.md": {
+      "sourceSha256": "b6d22e823f1dea5786bc2aca20ec280c10855e462f6d675bad549d81d8953d19",
+      "localizedSha256": "586fff73488e6dd031d249d70116c2b8e256d3f60855bca41d0e3fbc8551cc8a",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [
+          "#"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/source-grounded-study-coach/stages/02-grade-with-evidence/tests/stage.test.mjs": {
+      "sourceSha256": "45dbc046d26c81bc0df83fe7059c41131741fb4a9bfc61ea42c518bd153b020f",
+      "localizedSha256": "45dbc046d26c81bc0df83fe7059c41131741fb4a9bfc61ea42c518bd153b020f",
+      "kind": "preserved-contract"
+    },
+    "projects/source-grounded-study-coach/stages/03-schedule-review/docs/en.md": {
+      "sourceSha256": "a0626289b4dbde5bd7da37060434d16525057b0e4d0d1f1cd484612139bf38ed",
+      "localizedSha256": "edf54d909b72b21423c448395e1d9a781367be1ef65eb5a248b360a359e00320",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-source-grounded-study-coach-3\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py source-grounded-study-coach --init my-source-grounded-study-coach\npython3 scripts/project_test.py source-grounded-study-coach --stage 3 --path my-source-grounded-study-coach\n"
+          ],
+          [
+            "bash",
+            "cd my-source-grounded-study-coach\nnode --experimental-strip-types main.ts --deck ./fixtures/deck.json --attempts ./fixtures/attempts.json --initial-date 2026-09-01 --date 2026-09-03 --out ./study-output\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "buildProgress(deck, attempts, initialDate): Progress[]"
+          ],
+          [
+            "`",
+            "dueCards(progress, date): Progress[]"
+          ],
+          [
+            "`",
+            "parseDay(value: string): number"
+          ]
+        ],
+        "links": [
+          "https://nodejs.org/api/typescript.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 3
+      }
+    },
+    "projects/source-grounded-study-coach/stages/03-schedule-review/starter/STAGE-3.md": {
+      "sourceSha256": "4535fe83e6359eba56ec5ab0a2e9c9cde644edfe1467fbe2c002b1405e1b9482",
+      "localizedSha256": "05c135990202add3f99ee01948fd3c9d0f76b5fc2cd224da0b5c78ec8fa90501",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [
+          "#"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/source-grounded-study-coach/stages/03-schedule-review/tests/stage.test.mjs": {
+      "sourceSha256": "261b117b08748212b34e3b8c637c3fea20c1f1d2f9de5395ef9c180727df5848",
+      "localizedSha256": "261b117b08748212b34e3b8c637c3fea20c1f1d2f9de5395ef9c180727df5848",
+      "kind": "preserved-contract"
+    },
+    "projects/source-grounded-study-coach/stages/04-export-practice/docs/en.md": {
+      "sourceSha256": "4f90cfdc410b53772941ded24e9562eb87d07964f25f2388ab3158ae8c0d4598",
+      "localizedSha256": "75d2b6e90ab0e604b5559b2c4c114222638da9ecd40953733a6fd1b7c693170e",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-source-grounded-study-coach-4\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py source-grounded-study-coach --init my-source-grounded-study-coach\npython3 scripts/project_test.py source-grounded-study-coach --stage 4 --path my-source-grounded-study-coach\n"
+          ],
+          [
+            "bash",
+            "cd my-source-grounded-study-coach\nnode --experimental-strip-types main.ts --deck ./fixtures/deck.json --attempts ./fixtures/attempts.json --initial-date 2026-09-01 --date 2026-09-03 --out ./study-output\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "exportPractice(deck, attempts, initialDate, date, out)"
+          ],
+          [
+            "`",
+            "proposeCard(source, endpoint, model, apiKey=\"\")"
+          ],
+          [
+            "`",
+            "renderPractice(deck, progress, date): string"
+          ]
+        ],
+        "links": [
+          "https://nodejs.org/api/typescript.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 3
+      }
+    },
+    "projects/source-grounded-study-coach/stages/04-export-practice/starter/STAGE-4.md": {
+      "sourceSha256": "3262be62f6d5136d240c7dfd60bce4f64c22e2406e9191af16a329d6b6642682",
+      "localizedSha256": "731eb962281dac08dee0e3f0fcb72d10f68404c35e98e5ccb73d920fc394ef41",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [
+          "#"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/source-grounded-study-coach/stages/04-export-practice/tests/stage.test.mjs": {
+      "sourceSha256": "337b79c3315098a4e7162ebaad8fe73d67a13e70afeb7979264ae8c7a10154f4",
+      "localizedSha256": "337b79c3315098a4e7162ebaad8fe73d67a13e70afeb7979264ae8c7a10154f4",
+      "kind": "preserved-contract"
+    },
+    "projects/support-agent-with-google-adk/README.md": {
+      "sourceSha256": "3e29da95c682a02859bac695044b0b1ce79892014d14bce7313160670ac5b6bd",
+      "localizedSha256": "7a3a6729aba8866f19570f60680fc3b428400465726efc6eb6e3dd8bfecd0df4",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "bash",
+            "python3 scripts/project_test.py support-agent-with-google-adk --init my-support\npython3 scripts/project_test.py support-agent-with-google-adk --stage 1 --path my-support --strict\npython3 scripts/project_test.py support-agent-with-google-adk --all --solution --strict\ncd projects/support-agent-with-google-adk/solution\npython3 main.py --ticket fixtures/ticket.json --out support-output\n"
+          ],
+          [
+            "bash",
+            "python3 -m venv .venv\n.venv/bin/python -m pip install -r projects/support-agent-with-google-adk/requirements-framework.txt\n.venv/bin/python scripts/project_test.py support-agent-with-google-adk --all --solution --optional --strict\n.venv/bin/python projects/support-agent-with-google-adk/solution/framework_demo.py\n"
+          ],
+          [
+            "bash",
+            ".venv/bin/python projects/support-agent-with-google-adk/solution/main.py --ticket YOUR_TICKET.json --adk --out support-adk-output\n"
+          ]
+        ],
+        "inlineCode": [],
+        "links": [
+          "https://google.github.io/adk-docs/",
+          "stages/01-intake/docs/en.md",
+          "stages/02-routing/docs/en.md",
+          "stages/03-handoff/docs/en.md",
+          "stages/04-adk-adapter/docs/en.md"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 4
+      }
+    },
+    "projects/support-agent-with-google-adk/media/framework.gif": {
+      "sourceSha256": "2409d5e39bb951383904fd173c88340d92f304bba8034f0dfa6b66cea13b1b92",
+      "localizedSha256": "2409d5e39bb951383904fd173c88340d92f304bba8034f0dfa6b66cea13b1b92",
+      "kind": "original-recording"
+    },
+    "projects/support-agent-with-google-adk/media/framework.json": {
+      "sourceSha256": "e5fcf4371d63c9eb0ad08c6faebe85166664950a12b79ccfd2eff97fc42ae4cc",
+      "localizedSha256": "e5fcf4371d63c9eb0ad08c6faebe85166664950a12b79ccfd2eff97fc42ae4cc",
+      "kind": "original-recording"
+    },
+    "projects/support-agent-with-google-adk/media/framework.png": {
+      "sourceSha256": "cd5907b0e179e70f23d183201b8ac29ca5d8413c15c32c7e320094852f62c915",
+      "localizedSha256": "cd5907b0e179e70f23d183201b8ac29ca5d8413c15c32c7e320094852f62c915",
+      "kind": "original-recording"
+    },
+    "projects/support-agent-with-google-adk/media/output.gif": {
+      "sourceSha256": "afa4a5024620522d3320d7d4a68e0391b25aeb5c9d381f103d5b65f96a6fe30f",
+      "localizedSha256": "afa4a5024620522d3320d7d4a68e0391b25aeb5c9d381f103d5b65f96a6fe30f",
+      "kind": "original-recording"
+    },
+    "projects/support-agent-with-google-adk/media/output.json": {
+      "sourceSha256": "10b597a11b7ec5d2a0eb4198ba79e53ee8d8988fd78d20c62e568da973e00ee5",
+      "localizedSha256": "10b597a11b7ec5d2a0eb4198ba79e53ee8d8988fd78d20c62e568da973e00ee5",
+      "kind": "original-recording"
+    },
+    "projects/support-agent-with-google-adk/media/output.png": {
+      "sourceSha256": "5a8eed3693d16a7c649a26e10a254f4feb70a7f53ff3e9081cedda511edf5ed4",
+      "localizedSha256": "5a8eed3693d16a7c649a26e10a254f4feb70a7f53ff3e9081cedda511edf5ed4",
+      "kind": "original-recording"
+    },
+    "projects/support-agent-with-google-adk/media/run.gif": {
+      "sourceSha256": "52f79683ff436106c0766d1e4262dbb4b7b6b128ea21d3235c783b890821f49b",
+      "localizedSha256": "52f79683ff436106c0766d1e4262dbb4b7b6b128ea21d3235c783b890821f49b",
+      "kind": "original-recording"
+    },
+    "projects/support-agent-with-google-adk/media/run.json": {
+      "sourceSha256": "e263516fd43ec3b097daaf67068f4467c81b5a04b49883c97c78043eec2aaf49",
+      "localizedSha256": "e263516fd43ec3b097daaf67068f4467c81b5a04b49883c97c78043eec2aaf49",
+      "kind": "original-recording"
+    },
+    "projects/support-agent-with-google-adk/media/run.png": {
+      "sourceSha256": "77e64d8ccd62e0ad2e5ba03c6a05e0b446070d4daef15a10649b5a6fd95bc63b",
+      "localizedSha256": "77e64d8ccd62e0ad2e5ba03c6a05e0b446070d4daef15a10649b5a6fd95bc63b",
+      "kind": "original-recording"
+    },
+    "projects/support-agent-with-google-adk/project.json": {
+      "sourceSha256": "d47f80a4c0bd07517f38bd8c8cee362d34bf5481f2ae38734b10808ca691bca0",
+      "localizedSha256": "5b4e8d0ad25f28deb5066c817abb596ec9d958f881960a953459bb202822ca17",
+      "kind": "manifest",
+      "contract": {
+        "id": "support-agent-with-google-adk",
+        "title": "<translated-text>",
+        "level": 3,
+        "levelName": "Engineer",
+        "tagline": "<translated-text>",
+        "summary": "<translated-text>",
+        "hours": 8,
+        "languages": [
+          "Python"
+        ],
+        "status": "ready",
+        "source": "core",
+        "author": {
+          "name": "AI Engineering from Scratch",
+          "github": "rohitg00"
+        },
+        "youWillBuild": "<translated-text>",
+        "usefulFor": [
+          "<translated-text>"
+        ],
+        "skills": [
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "prerequisites": [
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "figures": true,
+        "overviewFigure": "pj-support-agent-with-google-adk-1",
+        "languageWhy": {
+          "Python": "<translated-text>"
+        },
+        "demo": {
+          "command": [
+            "python3",
+            "demo.py"
+          ],
+          "cwd": "solution"
+        },
+        "stages": [
+          {
+            "id": "01-intake",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "language": "python",
+            "languageWhy": "<translated-text>",
+            "hours": 2,
+            "difficulty": "starter",
+            "figure": "pj-support-agent-with-google-adk-1",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ]
+          },
+          {
+            "id": "02-routing",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "language": "python",
+            "languageWhy": "<translated-text>",
+            "hours": 2,
+            "difficulty": "core",
+            "figure": "pj-support-agent-with-google-adk-2",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ]
+          },
+          {
+            "id": "03-handoff",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "language": "python",
+            "languageWhy": "<translated-text>",
+            "hours": 2,
+            "difficulty": "core",
+            "figure": "pj-support-agent-with-google-adk-3",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ]
+          },
+          {
+            "id": "04-adk-adapter",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "language": "python",
+            "languageWhy": "<translated-text>",
+            "hours": 2,
+            "difficulty": "stretch",
+            "figure": "pj-support-agent-with-google-adk-4",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ],
+            "runners": [
+              {
+                "language": "python"
+              },
+              {
+                "language": "python",
+                "optional": true,
+                "requires": [
+                  "python:google.adk"
+                ],
+                "argv": [
+                  "{python}",
+                  "-m",
+                  "unittest",
+                  "discover",
+                  "-s",
+                  "{stage}/tests-framework",
+                  "-p",
+                  "test_framework.py"
+                ]
+              }
+            ]
+          }
+        ],
+        "demos": [
+          {
+            "gif": "media/run.gif",
+            "poster": "media/run.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          },
+          {
+            "gif": "media/output.gif",
+            "poster": "media/output.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          },
+          {
+            "gif": "media/framework.gif",
+            "poster": "media/framework.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          }
+        ]
+      }
+    },
+    "projects/support-agent-with-google-adk/requirements-framework.txt": {
+      "sourceSha256": "20b075cc21d3e806285af00b3acd4f64729e5c97b62891865d1f347bd32218ab",
+      "localizedSha256": "20b075cc21d3e806285af00b3acd4f64729e5c97b62891865d1f347bd32218ab",
+      "kind": "preserved-contract"
+    },
+    "projects/support-agent-with-google-adk/solution/adk_adapter.py": {
+      "sourceSha256": "1fc22eeda33d9d049166c3e30bfbdbd0a7765f88091ed4f7dfa219f8c1abbd36",
+      "localizedSha256": "7efd02431c77fe0529ab79228e705e803fa2854a775c255fbbe179d2ebf5c71c",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "\"\"\"Run two actual ADK agents with a session handoff.\n\nLesson: projects/support-agent-with-google-adk/stages/04-adk-adapter/docs/en.md\nThe implementation is original and uses explicit local data contracts.\nRun its tests through scripts/project_test.py.\n\"\"\"",
+          "\"\"\"通过会话交接运行两个真实 ADK 智能体。\n\n课程：projects/support-agent-with-google-adk/stages/04-adk-adapter/docs/en.md\n实现为原创，使用明确的本地数据契约。\n通过 scripts/project_test.py 运行测试。\n\"\"\""
+        ]
+      ]
+    },
+    "projects/support-agent-with-google-adk/solution/demo.py": {
+      "sourceSha256": "3577208ad9a516a61b89c25b30e6d2d68404383ae255fbc939f9c8f5225eb853",
+      "localizedSha256": "40fa52cf06c9296724fd010cf2e43f7aad7c7fb5931ae8dd1b1cfdac3dbb4815",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "import json",
+          "# 源码与模型提示、错误和状态保持原契约；只添加中文说明，不连接真实账户。\nimport json"
+        ]
+      ]
+    },
+    "projects/support-agent-with-google-adk/solution/fixtures/ticket.json": {
+      "sourceSha256": "b2d2fbc8498b342f0fd1e6af034b4679936f074bd51ac3f96fe9d718847d2e30",
+      "localizedSha256": "b2d2fbc8498b342f0fd1e6af034b4679936f074bd51ac3f96fe9d718847d2e30",
+      "kind": "preserved-contract"
+    },
+    "projects/support-agent-with-google-adk/solution/framework_demo.py": {
+      "sourceSha256": "e6e079fc72c4bd691acddfb909259e1a9baa849ff9c968fb571a1fad6445bc01",
+      "localizedSha256": "3ef9d7b886bb78832ef0938ffcd069b354fc0ced625d97c73eff74503fce9be1",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "import asyncio",
+          "# 源码与模型提示、错误和状态保持原契约；只添加中文说明，不连接真实账户。\nimport asyncio"
+        ]
+      ]
+    },
+    "projects/support-agent-with-google-adk/solution/handoff.py": {
+      "sourceSha256": "9f39b000e8e262358cb697b1c2f3b4cbe3c9deff4833567c17e800ad27747c70",
+      "localizedSha256": "0f921c46a7b7d511ce0f75daa416b06fc2e3a8c8eaddcb4803bf1afef1a61806",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "\"\"\"Record allowed handoff state transitions.\n\nLesson: projects/support-agent-with-google-adk/stages/03-handoff/docs/en.md\nThe implementation is original and uses explicit local data contracts.\nRun its tests through scripts/project_test.py.\n\"\"\"",
+          "\"\"\"记录允许的交接状态转换。\n\n课程：projects/support-agent-with-google-adk/stages/03-handoff/docs/en.md\n实现为原创，使用明确的本地数据契约。\n通过 scripts/project_test.py 运行测试。\n\"\"\""
+        ]
+      ]
+    },
+    "projects/support-agent-with-google-adk/solution/intake.py": {
+      "sourceSha256": "e795d4fc54aad3c28175a9c4f118d4375584908ea2812f9289fb6a55b95476f7",
+      "localizedSha256": "aad948b93514588e01da722e06578852e6a51293e43cf2fa5f2de41a30f3a436",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "\"\"\"Validate and redact support tickets.\n\nLesson: projects/support-agent-with-google-adk/stages/01-intake/docs/en.md\nThe implementation is original and uses explicit local data contracts.\nRun its tests through scripts/project_test.py.\n\"\"\"",
+          "\"\"\"校验并脱敏支持工单。\n\n课程：projects/support-agent-with-google-adk/stages/01-intake/docs/en.md\n实现为原创，使用明确的本地数据契约。\n通过 scripts/project_test.py 运行测试。\n\"\"\""
+        ]
+      ]
+    },
+    "projects/support-agent-with-google-adk/solution/main.py": {
+      "sourceSha256": "e8d4cb910b7b83ce8307dfd461fbeb4e1a26bac4d4f53814a5c6eca2e0c29236",
+      "localizedSha256": "53ba70c69f65afb7351bdbfa7914b485eb5bb969dd6e58dcf2e4ecbde817ae71",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "import argparse",
+          "# 源码与模型提示、错误和状态保持原契约；只添加中文说明，不连接真实账户。\nimport argparse"
+        ],
+        [
+          "\"Prepare a redacted support reply or a human escalation. Never sends messages.\"",
+          "\"准备脱敏支持回复或转人工结果。绝不发送消息。\""
+        ],
+        [
+          "\"Explicit live ADK model; requires provider credentials and --adk\"",
+          "\"显式选择在线 ADK 模型；需要服务商凭据和 --adk\""
+        ],
+        [
+          "\"Optional requested read capability to check\"",
+          "\"可选：指定需要检查的只读能力\""
+        ]
+      ]
+    },
+    "projects/support-agent-with-google-adk/solution/routing.py": {
+      "sourceSha256": "0c9f4dfba36fa8e378fe9d16d985ff8c29558004d1cea0a33a33daa75c937c52",
+      "localizedSha256": "124d8a2286592476bed9c0bc3810461b3df6c89bfab2c42f6267da537338d508",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "\"\"\"Route tickets and enforce specialist capabilities.\n\nLesson: projects/support-agent-with-google-adk/stages/02-routing/docs/en.md\nThe implementation is original and uses explicit local data contracts.\nRun its tests through scripts/project_test.py.\n\"\"\"",
+          "\"\"\"路由工单并约束专员能力。\n\n课程：projects/support-agent-with-google-adk/stages/02-routing/docs/en.md\n实现为原创，使用明确的本地数据契约。\n通过 scripts/project_test.py 运行测试。\n\"\"\""
+        ]
+      ]
+    },
+    "projects/support-agent-with-google-adk/solution/support.py": {
+      "sourceSha256": "437a854216dfbb315a79a70df50b5d814937b7c50add5a4eb73f8406cfb049ef",
+      "localizedSha256": "a7411dbe4944fed3ab087a1e10029f340ae63efd53c22a6b90b2568fecc4b8d6",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "import html",
+          "# 源码与模型提示、错误和状态保持原契约；只添加中文说明，不连接真实账户。\nimport html"
+        ],
+        [
+          "A person must review this ticket before a reply is drafted.",
+          "生成回复草稿前，必须由人工审阅该工单。"
+        ],
+        [
+          "<html lang=\"en\">",
+          "<html lang=\"zh-CN\">"
+        ],
+        [
+          "<title>Support review</title>",
+          "<title>支持工单审阅</title>"
+        ],
+        [
+          "<h1>Support review</h1><p>State: ",
+          "<h1>支持工单审阅</h1><p>状态："
+        ],
+        [
+          "\" | Route: \"",
+          "\" | 路由：\""
+        ],
+        [
+          "<h2>Redacted ticket</h2>",
+          "<h2>脱敏工单</h2>"
+        ],
+        [
+          "<h2>Draft response</h2>",
+          "<h2>回复草稿</h2>"
+        ],
+        [
+          "</blockquote><p>Source: ",
+          "</blockquote><p>来源："
+        ],
+        [
+          "\"human review\"",
+          "\"人工审阅\""
+        ],
+        [
+          "Review before sending. No email or account changes were performed.",
+          "发送前必须审阅。没有发送邮件或更改账户。"
+        ]
+      ]
+    },
+    "projects/support-agent-with-google-adk/stages/01-intake/docs/en.md": {
+      "sourceSha256": "b91b0f8a8444d5d71356d93d622acbcd9ab18aa2e1337a1e122a085462001c48",
+      "localizedSha256": "a5ac29388abf8fd6f6b614d529f4a12e73a241b92dc49d8e4f1bfa4d214c1ef2",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-support-agent-with-google-adk-1\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py support-agent-with-google-adk --init my-support-agent-with-google-adk\npython3 scripts/project_test.py support-agent-with-google-adk --stage 1 --path my-support-agent-with-google-adk --strict\n"
+          ],
+          [
+            "bash",
+            "cd projects/support-agent-with-google-adk/solution\npython3 main.py --ticket fixtures/ticket.json --out support-output\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "ticket(raw) in intake.py"
+          ]
+        ],
+        "links": [
+          "https://google.github.io/adk-docs/"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/support-agent-with-google-adk/stages/01-intake/starter/intake.py": {
+      "sourceSha256": "f0ec198e8bde6c77917b8b5bf9884d670bd2f4f988448b866c137b4d0466ca72",
+      "localizedSha256": "04cccb067767f6541838b600138b6ff00f0cbc20f148e6b29b2a2ba679b20746",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "\"\"\"Validate and redact support tickets.\n\nLesson: projects/support-agent-with-google-adk/stages/01-intake/docs/en.md\nThe implementation is original and uses explicit local data contracts.\nRun its tests through scripts/project_test.py.\n\"\"\"",
+          "\"\"\"校验并脱敏支持工单。\n\n课程：projects/support-agent-with-google-adk/stages/01-intake/docs/en.md\n实现为原创，使用明确的本地数据契约。\n通过 scripts/project_test.py 运行测试。\n\"\"\""
+        ]
+      ]
+    },
+    "projects/support-agent-with-google-adk/stages/01-intake/tests/test_intake.py": {
+      "sourceSha256": "4eb513e6f5ff86d9b02bc3e7340cbc53757ba6af359268ad1dd312db06d19461",
+      "localizedSha256": "4eb513e6f5ff86d9b02bc3e7340cbc53757ba6af359268ad1dd312db06d19461",
+      "kind": "preserved-contract"
+    },
+    "projects/support-agent-with-google-adk/stages/02-routing/docs/en.md": {
+      "sourceSha256": "d67f69f517e3d0d53222041e46685816e9ebd72b80000afe4889ac2b8325169e",
+      "localizedSha256": "5bd5a84c3d31c7e774e3f06def4e05f1412b153a43ae515fc4d62a5b84984c13",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-support-agent-with-google-adk-2\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py support-agent-with-google-adk --init my-support-agent-with-google-adk\npython3 scripts/project_test.py support-agent-with-google-adk --stage 2 --path my-support-agent-with-google-adk --strict\n"
+          ],
+          [
+            "bash",
+            "cd projects/support-agent-with-google-adk/solution\npython3 main.py --ticket fixtures/ticket.json --out support-output\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "authorize"
+          ],
+          [
+            "`",
+            "human"
+          ],
+          [
+            "`",
+            "payment"
+          ],
+          [
+            "`",
+            "repayment"
+          ],
+          [
+            "`",
+            "route"
+          ],
+          [
+            "`",
+            "route(text), authorize(specialist, tool) in routing.py"
+          ]
+        ],
+        "links": [
+          "https://google.github.io/adk-docs/"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 5,
+        "listItems": 0
+      }
+    },
+    "projects/support-agent-with-google-adk/stages/02-routing/starter/routing.py": {
+      "sourceSha256": "fc9f0bcb0f63f3381f9949cdf0ff9aa523daf9098863247cdb2157f64f6a1a8a",
+      "localizedSha256": "a61eecdb302c0fc29ca29c9984292b2a682408a6d57675158e7ecf49e3cfa498",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "\"\"\"Route tickets and enforce specialist capabilities.\n\nLesson: projects/support-agent-with-google-adk/stages/02-routing/docs/en.md\nThe implementation is original and uses explicit local data contracts.\nRun its tests through scripts/project_test.py.\n\"\"\"",
+          "\"\"\"路由工单并约束专员能力。\n\n课程：projects/support-agent-with-google-adk/stages/02-routing/docs/en.md\n实现为原创，使用明确的本地数据契约。\n通过 scripts/project_test.py 运行测试。\n\"\"\""
+        ]
+      ]
+    },
+    "projects/support-agent-with-google-adk/stages/02-routing/tests/test_routing.py": {
+      "sourceSha256": "5bd210780be2b6bff2a2d05b094f1fb8d85dd0c03d8cd267e605158e7565b982",
+      "localizedSha256": "5bd210780be2b6bff2a2d05b094f1fb8d85dd0c03d8cd267e605158e7565b982",
+      "kind": "preserved-contract"
+    },
+    "projects/support-agent-with-google-adk/stages/03-handoff/docs/en.md": {
+      "sourceSha256": "48021f5491cf2bbe6cd226e4c8d257ce372b58be3f5bb3dbb0dec5ea198d2445",
+      "localizedSha256": "e99f9d2d477cabfb5b4a618caeec25951e1e9b54dc74c3962ee57da864ba3e04",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-support-agent-with-google-adk-3\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py support-agent-with-google-adk --init my-support-agent-with-google-adk\npython3 scripts/project_test.py support-agent-with-google-adk --stage 3 --path my-support-agent-with-google-adk --strict\n"
+          ],
+          [
+            "bash",
+            "cd projects/support-agent-with-google-adk/solution\npython3 main.py --ticket fixtures/ticket.json --out support-output\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "Human review required"
+          ],
+          [
+            "`",
+            "ValueError"
+          ],
+          [
+            "`",
+            "begin"
+          ],
+          [
+            "`",
+            "begin(ticket), transition(session, event, payload=None) in handoff.py"
+          ],
+          [
+            "`",
+            "history"
+          ],
+          [
+            "`",
+            "response"
+          ],
+          [
+            "`",
+            "route"
+          ],
+          [
+            "`",
+            "route=None"
+          ],
+          [
+            "`",
+            "state=\"received\""
+          ],
+          [
+            "`",
+            "ticket_id"
+          ],
+          [
+            "`",
+            "{\"event\": event, \"state\": next_state}"
+          ]
+        ],
+        "links": [
+          "https://google.github.io/adk-docs/"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/support-agent-with-google-adk/stages/03-handoff/starter/handoff.py": {
+      "sourceSha256": "770d9d35d92fb5df5494dea7cd727978b55fc1084b152e48b266c78939d48801",
+      "localizedSha256": "7bb5e70b114c8cdb82da68bec6a40166c4b7182107e5f1623f642d41536af023",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "\"\"\"Record allowed handoff state transitions.\n\nLesson: projects/support-agent-with-google-adk/stages/03-handoff/docs/en.md\nThe implementation is original and uses explicit local data contracts.\nRun its tests through scripts/project_test.py.\n\"\"\"",
+          "\"\"\"记录允许的交接状态转换。\n\n课程：projects/support-agent-with-google-adk/stages/03-handoff/docs/en.md\n实现为原创，使用明确的本地数据契约。\n通过 scripts/project_test.py 运行测试。\n\"\"\""
+        ]
+      ]
+    },
+    "projects/support-agent-with-google-adk/stages/03-handoff/tests/test_handoff.py": {
+      "sourceSha256": "9f09cdf9cd81bc060113fad1042ea8a38b3a6ad4d70058a91e14e66eda93aa47",
+      "localizedSha256": "9f09cdf9cd81bc060113fad1042ea8a38b3a6ad4d70058a91e14e66eda93aa47",
+      "kind": "preserved-contract"
+    },
+    "projects/support-agent-with-google-adk/stages/04-adk-adapter/docs/en.md": {
+      "sourceSha256": "51d9a3fd1f17d8500cc497c0c1eb623a97bb20dc012e61e7c53880a19f8f5a5a",
+      "localizedSha256": "423339a2e9399f9b2bdde48315e7a022fb91fe25c23f9c1fc117bd8facfbd244",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-support-agent-with-google-adk-4\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py support-agent-with-google-adk --init my-support-agent-with-google-adk\npython3 scripts/project_test.py support-agent-with-google-adk --stage 4 --path my-support-agent-with-google-adk --strict\n"
+          ],
+          [
+            "bash",
+            "cd projects/support-agent-with-google-adk/solution\npython3 main.py --ticket fixtures/ticket.json --out support-output\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "KNOWLEDGE"
+          ],
+          [
+            "`",
+            "PermissionError"
+          ],
+          [
+            "`",
+            "Use the route billing"
+          ],
+          [
+            "`",
+            "access-recovery"
+          ],
+          [
+            "`",
+            "agent"
+          ],
+          [
+            "`",
+            "author"
+          ],
+          [
+            "`",
+            "billing-receipts"
+          ],
+          [
+            "`",
+            "collect_events"
+          ],
+          [
+            "`",
+            "events"
+          ],
+          [
+            "`",
+            "evidence"
+          ],
+          [
+            "`",
+            "export_support"
+          ],
+          [
+            "`",
+            "handoff_prompt"
+          ],
+          [
+            "`",
+            "method"
+          ],
+          [
+            "`",
+            "model_requests"
+          ],
+          [
+            "`",
+            "platform-status"
+          ],
+          [
+            "`",
+            "prepare_support"
+          ],
+          [
+            "`",
+            "prepare_support, support_ticket, export_support in support.py; collect_events, run_adk in adk_adapter.py"
+          ],
+          [
+            "`",
+            "session"
+          ],
+          [
+            "`",
+            "state"
+          ],
+          [
+            "`",
+            "state_delta"
+          ],
+          [
+            "`",
+            "state_delta"
+          ],
+          [
+            "`",
+            "support_ticket"
+          ],
+          [
+            "`",
+            "text"
+          ],
+          [
+            "`",
+            "text"
+          ],
+          [
+            "`",
+            "ticket"
+          ],
+          [
+            "`",
+            "tool"
+          ],
+          [
+            "`",
+            "{\"source_id\": id, \"text\": guidance}"
+          ]
+        ],
+        "links": [
+          "https://google.github.io/adk-docs/"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/support-agent-with-google-adk/stages/04-adk-adapter/starter/adk_adapter.py": {
+      "sourceSha256": "c04d6f1f00c3c30ad0557b6a48c24e0fc0b626384e0f555f7b64d8bb7e07abf6",
+      "localizedSha256": "f0910de4f4deca0634fdce788c52444f8be9ddb703e4be6a04a53a2355a89c4d",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "\"\"\"Run two actual ADK agents with a session handoff.\n\nLesson: projects/support-agent-with-google-adk/stages/04-adk-adapter/docs/en.md\nThe implementation is original and uses explicit local data contracts.\nRun its tests through scripts/project_test.py.\n\"\"\"",
+          "\"\"\"通过会话交接运行两个真实 ADK 智能体。\n\n课程：projects/support-agent-with-google-adk/stages/04-adk-adapter/docs/en.md\n实现为原创，使用明确的本地数据契约。\n通过 scripts/project_test.py 运行测试。\n\"\"\""
+        ]
+      ]
+    },
+    "projects/support-agent-with-google-adk/stages/04-adk-adapter/starter/fixtures/ticket.json": {
+      "sourceSha256": "b2d2fbc8498b342f0fd1e6af034b4679936f074bd51ac3f96fe9d718847d2e30",
+      "localizedSha256": "b2d2fbc8498b342f0fd1e6af034b4679936f074bd51ac3f96fe9d718847d2e30",
+      "kind": "preserved-contract"
+    },
+    "projects/support-agent-with-google-adk/stages/04-adk-adapter/starter/main.py": {
+      "sourceSha256": "e8d4cb910b7b83ce8307dfd461fbeb4e1a26bac4d4f53814a5c6eca2e0c29236",
+      "localizedSha256": "53ba70c69f65afb7351bdbfa7914b485eb5bb969dd6e58dcf2e4ecbde817ae71",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "import argparse",
+          "# 源码与模型提示、错误和状态保持原契约；只添加中文说明，不连接真实账户。\nimport argparse"
+        ],
+        [
+          "\"Prepare a redacted support reply or a human escalation. Never sends messages.\"",
+          "\"准备脱敏支持回复或转人工结果。绝不发送消息。\""
+        ],
+        [
+          "\"Explicit live ADK model; requires provider credentials and --adk\"",
+          "\"显式选择在线 ADK 模型；需要服务商凭据和 --adk\""
+        ],
+        [
+          "\"Optional requested read capability to check\"",
+          "\"可选：指定需要检查的只读能力\""
+        ]
+      ]
+    },
+    "projects/support-agent-with-google-adk/stages/04-adk-adapter/starter/support.py": {
+      "sourceSha256": "f55f7be906133aad4f7d2e3c397c68d3e5a107372cb45a1ec2ec3f2dcbdf0d8b",
+      "localizedSha256": "e4572252994d20e639dec581940d96ac95fa1a45008fd88ed57e5769786f1f93",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "KNOWLEDGE = {",
+          "# 源码与模型提示、错误和状态保持原契约；只添加中文说明，不连接真实账户。\nKNOWLEDGE = {"
+        ]
+      ]
+    },
+    "projects/support-agent-with-google-adk/stages/04-adk-adapter/tests-framework/test_framework.py": {
+      "sourceSha256": "6166892e0fd227919c73889108f60643859ebeb677ced556303cb44b87621b1d",
+      "localizedSha256": "6166892e0fd227919c73889108f60643859ebeb677ced556303cb44b87621b1d",
+      "kind": "preserved-contract"
+    },
+    "projects/support-agent-with-google-adk/stages/04-adk-adapter/tests/test_adk_adapter.py": {
+      "sourceSha256": "42906f518e1e73ff8276af9be733149307c224ccdcb00a80b70fc4b4e34c8f84",
+      "localizedSha256": "42906f518e1e73ff8276af9be733149307c224ccdcb00a80b70fc4b4e34c8f84",
+      "kind": "preserved-contract"
+    },
+    "projects/support-agent-with-google-adk/stages/04-adk-adapter/tests/test_support.py": {
+      "sourceSha256": "92ba537f40d84d6e95e93c3dcfdd11d68b346c442fb8701733395fdb08206393",
+      "localizedSha256": "92ba537f40d84d6e95e93c3dcfdd11d68b346c442fb8701733395fdb08206393",
+      "kind": "preserved-contract"
+    },
+    "projects/tiny-coding-agent/README.md": {
+      "sourceSha256": "9b98516b32f34fd719d04b16c8fda4dd927d26836108e441923585b0e40d99f2",
+      "localizedSha256": "c3f856a4f4c137c3268d50b9848e1a1881bbd94b91a4e8dd2e1b3b3644fdca32",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "bash",
+            "python3 scripts/project_test.py tiny-coding-agent --init learning-artifacts/tiny-coding-agent\npython3 scripts/project_test.py tiny-coding-agent --stage 1 --path learning-artifacts/tiny-coding-agent\n"
+          ],
+          [
+            "bash",
+            "python3 learning-artifacts/tiny-coding-agent/cli.py projects/tiny-coding-agent/examples/workspace projects/tiny-coding-agent/examples/proposals.json --copy-to basket-repair --out repair-trace.json\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py tiny-coding-agent --all --solution --strict\npython3 scripts/project_test.py tiny-coding-agent --all --path learning-artifacts/tiny-coding-agent --strict\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "learning-artifacts/tiny-coding-agent"
+          ],
+          [
+            "`",
+            "projects/tiny-coding-agent/solution"
+          ],
+          [
+            "`",
+            "schema_version: 1"
+          ]
+        ],
+        "links": [
+          "../../phases/00-setup-and-tooling/09-data-management/docs/en.md",
+          "../../phases/14-agent-engineering/01-the-agent-loop/docs/en.md",
+          "https://docs.python.org/3/library/subprocess.html",
+          "https://docs.python.org/3/tutorial/datastructures.html",
+          "stages/01-confine-paths/docs/en.md",
+          "stages/02-apply-exact-patches/docs/en.md",
+          "stages/03-run-real-tests/docs/en.md",
+          "stages/04-bound-the-loop/docs/en.md"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 5
+      }
+    },
+    "projects/tiny-coding-agent/examples/proposals.json": {
+      "sourceSha256": "9962ef8096aa2480d20595ad2e520739fb234468acf78465b4cf98ef7ebdddd3",
+      "localizedSha256": "9962ef8096aa2480d20595ad2e520739fb234468acf78465b4cf98ef7ebdddd3",
+      "kind": "preserved-contract"
+    },
+    "projects/tiny-coding-agent/examples/workspace/basket.py": {
+      "sourceSha256": "678893c982c56d6b9cd51689a0f80c49e6b9b78ce5cf7dbe8fe7415e00ee6c2e",
+      "localizedSha256": "678893c982c56d6b9cd51689a0f80c49e6b9b78ce5cf7dbe8fe7415e00ee6c2e",
+      "kind": "preserved-contract"
+    },
+    "projects/tiny-coding-agent/examples/workspace/tests/test_basket.py": {
+      "sourceSha256": "c5d24fab9b736fd4ab21105af607d55d9a7b1767bcccf4e42dbd79b9a91e672a",
+      "localizedSha256": "c5d24fab9b736fd4ab21105af607d55d9a7b1767bcccf4e42dbd79b9a91e672a",
+      "kind": "preserved-contract"
+    },
+    "projects/tiny-coding-agent/media/output.gif": {
+      "sourceSha256": "07f0446800192102670d71ca1b4b0fc4c3909cc264323274fd6b5fe99ee8691b",
+      "localizedSha256": "07f0446800192102670d71ca1b4b0fc4c3909cc264323274fd6b5fe99ee8691b",
+      "kind": "original-recording"
+    },
+    "projects/tiny-coding-agent/media/output.json": {
+      "sourceSha256": "55db8c2dc78a00b3ea8b93c1c50913c81848f5adfb2c5b66fafc740a3d098b18",
+      "localizedSha256": "55db8c2dc78a00b3ea8b93c1c50913c81848f5adfb2c5b66fafc740a3d098b18",
+      "kind": "original-recording"
+    },
+    "projects/tiny-coding-agent/media/output.png": {
+      "sourceSha256": "1cdddd61454d5d2084238a4343460d2420ff20118574a424040e87564acaebc0",
+      "localizedSha256": "1cdddd61454d5d2084238a4343460d2420ff20118574a424040e87564acaebc0",
+      "kind": "original-recording"
+    },
+    "projects/tiny-coding-agent/media/run.gif": {
+      "sourceSha256": "3300bb17d3b0a48d5923a96baa8947546a149be6448bd6c8ab2829f330c2f3db",
+      "localizedSha256": "3300bb17d3b0a48d5923a96baa8947546a149be6448bd6c8ab2829f330c2f3db",
+      "kind": "original-recording"
+    },
+    "projects/tiny-coding-agent/media/run.json": {
+      "sourceSha256": "494cac3b2299d51e972aeb5c44638c6ba235646c07176e8138ac3db741ac89bb",
+      "localizedSha256": "494cac3b2299d51e972aeb5c44638c6ba235646c07176e8138ac3db741ac89bb",
+      "kind": "original-recording"
+    },
+    "projects/tiny-coding-agent/media/run.png": {
+      "sourceSha256": "74250f135eba1ed9c98be90b60a89fc00f4e415ee6f08687142214b39231bc9f",
+      "localizedSha256": "74250f135eba1ed9c98be90b60a89fc00f4e415ee6f08687142214b39231bc9f",
+      "kind": "original-recording"
+    },
+    "projects/tiny-coding-agent/project.json": {
+      "sourceSha256": "15be15305d1dabe7edf3cafa45bdfb3de8a0aa27a168d01e33346c53a592b928",
+      "localizedSha256": "48fbf8477aca2e5d726ec7fcfeceb63e2acead127a71c2d8f7e720b3a526aedd",
+      "kind": "manifest",
+      "contract": {
+        "id": "tiny-coding-agent",
+        "title": "<translated-text>",
+        "level": 1,
+        "levelName": "Starter",
+        "tagline": "<translated-text>",
+        "summary": "<translated-text>",
+        "youWillBuild": "<translated-text>",
+        "usefulFor": [
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "hours": 8,
+        "languages": [
+          "Python"
+        ],
+        "languageWhy": {
+          "Python": "<translated-text>"
+        },
+        "status": "ready",
+        "source": "core",
+        "author": {
+          "name": "AI Engineering from Scratch",
+          "github": "rohitg00"
+        },
+        "skills": [
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "prerequisites": [
+          {
+            "title": "<translated-text>",
+            "path": "phases/14-agent-engineering/01-the-agent-loop"
+          },
+          {
+            "title": "<translated-text>",
+            "path": "phases/00-setup-and-tooling/09-data-management"
+          }
+        ],
+        "figures": true,
+        "overviewFigure": "pj-tiny-coding-agent-1",
+        "demo": {
+          "command": [
+            "python3",
+            "demo.py"
+          ],
+          "cwd": "solution"
+        },
+        "stages": [
+          {
+            "id": "01-confine-paths",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "difficulty": "starter",
+            "language": "python",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>"
+            ],
+            "figure": "pj-tiny-coding-agent-1"
+          },
+          {
+            "id": "02-apply-exact-patches",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "difficulty": "core",
+            "language": "python",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>"
+            ],
+            "figure": "pj-tiny-coding-agent-2"
+          },
+          {
+            "id": "03-run-real-tests",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "difficulty": "core",
+            "language": "python",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ],
+            "figure": "pj-tiny-coding-agent-3"
+          },
+          {
+            "id": "04-bound-the-loop",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "difficulty": "stretch",
+            "language": "python",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ],
+            "figure": "pj-tiny-coding-agent-4"
+          }
+        ],
+        "demos": [
+          {
+            "gif": "media/run.gif",
+            "poster": "media/run.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          },
+          {
+            "gif": "media/output.gif",
+            "poster": "media/output.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          }
+        ]
+      }
+    },
+    "projects/tiny-coding-agent/solution/cli.py": {
+      "sourceSha256": "82e3e101a358585e92cf7820229036e81054c20bf09e2dcde84bc1a59a80bc89",
+      "localizedSha256": "9bc2478d9d53731a5b9dd1256e18bb337859caf9334568751c2c8258d59110ff",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "\"\"\"Repair a disposable copy of a trusted Python workspace using observed failures.\"\"\"",
+          "\"\"\"根据观察到的失败，修复可信 Python 工作区的可丢弃副本。\"\"\""
+        ]
+      ]
+    },
+    "projects/tiny-coding-agent/solution/demo.py": {
+      "sourceSha256": "7bac5bd0d5d8018d3a646e58e1ba6e7077dff39a260c0d7442e1b148071ed3f4",
+      "localizedSha256": "198c3427d3704aa2f7cb34fef20486446fb04546da6ec87df312cca873eceef3",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "from pathlib import Path",
+          "# 演示与测试在调用方指定的本地目录中运行；输入、机器输出及错误契约保持原值。\nfrom pathlib import Path"
+        ]
+      ]
+    },
+    "projects/tiny-coding-agent/solution/main.py": {
+      "sourceSha256": "ecba3a18ffa84063ae00d44fd0e66e3802431cfa6b563998c27e3c845e4e06eb",
+      "localizedSha256": "ebd991ba5b8a4a99c92e7fe35ec94ebf39d993e99f51e54b3796cddbcf51f6e6",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "from pathlib import Path",
+          "# 演示与测试在调用方指定的本地目录中运行；输入、机器输出及错误契约保持原值。\nfrom pathlib import Path"
+        ],
+        [
+          "\"\"\"Call the planner after every observation. Tests are executable trusted code.\"\"\"",
+          "\"\"\"每次观察后调用规划器。测试是可执行的可信代码，不是沙箱输入。\"\"\""
+        ],
+        [
+          "\"\"\"Select an exact repair only when its failure marker appears in a test result.\"\"\"",
+          "\"\"\"只有测试结果出现相应失败标记时，才选择该精确修复。\"\"\""
+        ]
+      ]
+    },
+    "projects/tiny-coding-agent/stages/01-confine-paths/docs/en.md": {
+      "sourceSha256": "0f81eb60714ecf46189378a7709c0f4d292fe97300a1cad9d5fca4ff73a9f0b2",
+      "localizedSha256": "c1a94f0216130114f26f7c2d6289c938c3c589b7f583f6ffbeb1fb45a63e2981",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-tiny-coding-agent-1\n"
+          ],
+          [
+            "text",
+            "basket.py -> contained existing file\n../basket.py -> reject\nsymlink to external file -> reject\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py tiny-coding-agent --init learning-artifacts/tiny-coding-agent\npython3 scripts/project_test.py tiny-coding-agent --stage 1 --path learning-artifacts/tiny-coding-agent\n"
+          ]
+        ],
+        "inlineCode": [],
+        "links": [
+          "../../../../../phases/14-agent-engineering/01-the-agent-loop/docs/en.md",
+          "https://docs.python.org/3/library/subprocess.html",
+          "https://docs.python.org/3/tutorial/datastructures.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/tiny-coding-agent/stages/01-confine-paths/starter/cli.py": {
+      "sourceSha256": "82e3e101a358585e92cf7820229036e81054c20bf09e2dcde84bc1a59a80bc89",
+      "localizedSha256": "9bc2478d9d53731a5b9dd1256e18bb337859caf9334568751c2c8258d59110ff",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "\"\"\"Repair a disposable copy of a trusted Python workspace using observed failures.\"\"\"",
+          "\"\"\"根据观察到的失败，修复可信 Python 工作区的可丢弃副本。\"\"\""
+        ]
+      ]
+    },
+    "projects/tiny-coding-agent/stages/01-confine-paths/starter/main.py": {
+      "sourceSha256": "cc8f331059d222a9eb206ef60010887f792ef8ea59eb0bd00d9263a0b4e1e9c5",
+      "localizedSha256": "54d1b6b984c99679d07446ccf154fcabc48956d26b8117a0bfbbff5d0decdaec",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "\"\"\"Fill in the stage interfaces in your own workspace.\"\"\"",
+          "\"\"\"在自己的工作区补全各阶段接口。\"\"\""
+        ]
+      ]
+    },
+    "projects/tiny-coding-agent/stages/01-confine-paths/tests/test_stage_01.py": {
+      "sourceSha256": "cc95e5854871103242cd458f6d883394f074b19fb2e5806617ff01151ee81d7f",
+      "localizedSha256": "cc95e5854871103242cd458f6d883394f074b19fb2e5806617ff01151ee81d7f",
+      "kind": "preserved-contract"
+    },
+    "projects/tiny-coding-agent/stages/02-apply-exact-patches/docs/en.md": {
+      "sourceSha256": "28a22c227d5d26438da43be86383e24e65c8810d348ff9e2b952aeb411d40830",
+      "localizedSha256": "baff72e8156dedcda68028f592dcb948c5b64b44be535b9ae09fa04b8c2b45ec",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-tiny-coding-agent-2\n"
+          ],
+          [
+            "text",
+            "old: price + quantity\nnew: price * quantity\noccurrences=1 -> write; occurrences=0 or 2 -> reject\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py tiny-coding-agent --stage 2 --path learning-artifacts/tiny-coding-agent\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "finally"
+          ]
+        ],
+        "links": [
+          "../../../../../phases/14-agent-engineering/01-the-agent-loop/docs/en.md",
+          "../../01-confine-paths/docs/en.md",
+          "https://docs.python.org/3/library/subprocess.html",
+          "https://docs.python.org/3/tutorial/datastructures.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/tiny-coding-agent/stages/02-apply-exact-patches/starter/STAGE.md": {
+      "sourceSha256": "de87d556ff420651ca3f56779d9ccc5ad04b3d08f79de33927207ae35b0562c4",
+      "localizedSha256": "32d7472579f64db2c83d693631cf101f7b4d06c0422a8bb6a98a69d3d67496cd",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/tiny-coding-agent/stages/02-apply-exact-patches/tests/test_cleanup.py": {
+      "sourceSha256": "c965b54ad135015ddbdb77b301dcb80ef4b7131702e0c177ad18e87abce74740",
+      "localizedSha256": "c965b54ad135015ddbdb77b301dcb80ef4b7131702e0c177ad18e87abce74740",
+      "kind": "preserved-contract"
+    },
+    "projects/tiny-coding-agent/stages/02-apply-exact-patches/tests/test_stage_02.py": {
+      "sourceSha256": "2061bdf9ec2ffcd7ad82d3eccf4ff76da95a811d43146d0c2fc006fe7674b64f",
+      "localizedSha256": "2061bdf9ec2ffcd7ad82d3eccf4ff76da95a811d43146d0c2fc006fe7674b64f",
+      "kind": "preserved-contract"
+    },
+    "projects/tiny-coding-agent/stages/03-run-real-tests/docs/en.md": {
+      "sourceSha256": "b42616e684bb6ccf5eb72c436ca55281abc0079a8b1b59fa477b92444d497d3b",
+      "localizedSha256": "b1508e2da87a294309a236a4352fb39a6d9fa27db44a5bd39cf91dead3b403ba",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-tiny-coding-agent-3\n"
+          ],
+          [
+            "text",
+            "before: 2 failed assertions\nafter: 2 executed tests, OK\nzero tests or skipped tests -> not success\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py tiny-coding-agent --stage 3 --path learning-artifacts/tiny-coding-agent\n"
+          ]
+        ],
+        "inlineCode": [],
+        "links": [
+          "../../../../../phases/14-agent-engineering/01-the-agent-loop/docs/en.md",
+          "../../02-apply-exact-patches/docs/en.md",
+          "https://docs.python.org/3/library/subprocess.html",
+          "https://docs.python.org/3/tutorial/datastructures.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/tiny-coding-agent/stages/03-run-real-tests/starter/STAGE.md": {
+      "sourceSha256": "de87d556ff420651ca3f56779d9ccc5ad04b3d08f79de33927207ae35b0562c4",
+      "localizedSha256": "32d7472579f64db2c83d693631cf101f7b4d06c0422a8bb6a98a69d3d67496cd",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/tiny-coding-agent/stages/03-run-real-tests/tests/test_stage_03.py": {
+      "sourceSha256": "51466e82792ba013eb821b697feb4e6d7524ec4a2cec5842e58fdbdfc1b325fd",
+      "localizedSha256": "51466e82792ba013eb821b697feb4e6d7524ec4a2cec5842e58fdbdfc1b325fd",
+      "kind": "preserved-contract"
+    },
+    "projects/tiny-coding-agent/stages/04-bound-the-loop/docs/en.md": {
+      "sourceSha256": "1d38a358119dfe9ce31d9d9320076158063c7970a1c8ae3b96637c6f8e7f4463",
+      "localizedSha256": "517d6aad7395ae76064c9bd4c080d0ab9ae131bd7f464eacfaab9a6b39319f84",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-tiny-coding-agent-4\n"
+          ],
+          [
+            "text",
+            "test -> AssertionError\nproposal marker matches -> patch\ntest -> OK -> completed\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py tiny-coding-agent --stage 4 --path learning-artifacts/tiny-coding-agent\n"
+          ],
+          [
+            "bash",
+            "python3 learning-artifacts/tiny-coding-agent/cli.py projects/tiny-coding-agent/examples/workspace projects/tiny-coding-agent/examples/proposals.json --copy-to basket-repair --out repair-trace.json\n"
+          ]
+        ],
+        "inlineCode": [],
+        "links": [
+          "../../../../../phases/14-agent-engineering/01-the-agent-loop/docs/en.md",
+          "../../03-run-real-tests/docs/en.md",
+          "https://docs.python.org/3/library/subprocess.html",
+          "https://docs.python.org/3/tutorial/datastructures.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/tiny-coding-agent/stages/04-bound-the-loop/starter/STAGE.md": {
+      "sourceSha256": "de87d556ff420651ca3f56779d9ccc5ad04b3d08f79de33927207ae35b0562c4",
+      "localizedSha256": "32d7472579f64db2c83d693631cf101f7b4d06c0422a8bb6a98a69d3d67496cd",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/tiny-coding-agent/stages/04-bound-the-loop/tests/test_feedback.py": {
+      "sourceSha256": "190e2a94e1f50925ce0a9e38c2941346d6f70d276041fbc872a72fa2db1f5d71",
+      "localizedSha256": "190e2a94e1f50925ce0a9e38c2941346d6f70d276041fbc872a72fa2db1f5d71",
+      "kind": "preserved-contract"
+    },
+    "projects/tiny-coding-agent/stages/04-bound-the-loop/tests/test_stage_04.py": {
+      "sourceSha256": "f86ed24163ab86881aa4f05ee62af7529c44a3082bde8241c55d0420c74a4d2e",
+      "localizedSha256": "f86ed24163ab86881aa4f05ee62af7529c44a3082bde8241c55d0420c74a4d2e",
+      "kind": "preserved-contract"
+    },
+    "projects/token-counter-and-cost-meter/README.md": {
+      "sourceSha256": "25fa8a340c080754f64d8f1521efce84fd5af0cf001971fa509c32e794a5050c",
+      "localizedSha256": "2d4796573b4034a28957f22d87e065956bfd7098bbee93cc0eb5fda8da5171ae",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "bash",
+            "python3 scripts/project_test.py token-counter-and-cost-meter --init learning-artifacts/token-counter-and-cost-meter\npython3 scripts/project_test.py token-counter-and-cost-meter --stage 1 --path learning-artifacts/token-counter-and-cost-meter\n"
+          ],
+          [
+            "bash",
+            "python3 learning-artifacts/token-counter-and-cost-meter/usage.py projects/token-counter-and-cost-meter/examples/usage.json --out usage-ledger.json\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py token-counter-and-cost-meter --all --solution --strict\npython3 scripts/project_test.py token-counter-and-cost-meter --all --path learning-artifacts/token-counter-and-cost-meter --strict\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "learning-artifacts/token-counter-and-cost-meter"
+          ],
+          [
+            "`",
+            "projects/token-counter-and-cost-meter/solution"
+          ],
+          [
+            "`",
+            "rustc"
+          ],
+          [
+            "`",
+            "schema_version: 1"
+          ]
+        ],
+        "links": [
+          "../../phases/10-llms-from-scratch/01-tokenizers/docs/en.md",
+          "../../phases/14-agent-engineering/38-verification-gates/docs/en.md",
+          "https://doc.rust-lang.org/book/ch04-00-understanding-ownership.html",
+          "https://doc.rust-lang.org/std/primitive.u64.html#method.checked_mul",
+          "stages/01-estimate-text-with-a-documented-bound/docs/en.md",
+          "stages/02-validate-recorded-usage/docs/en.md",
+          "stages/03-price-with-checked-integers/docs/en.md",
+          "stages/04-admit-work-against-a-ledger/docs/en.md"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 5
+      }
+    },
+    "projects/token-counter-and-cost-meter/examples/usage.json": {
+      "sourceSha256": "fb346fe856b078e24094544085a3ed05c3eeb11243e2ef01e507fc13c7877f83",
+      "localizedSha256": "fb346fe856b078e24094544085a3ed05c3eeb11243e2ef01e507fc13c7877f83",
+      "kind": "preserved-contract"
+    },
+    "projects/token-counter-and-cost-meter/media/output.gif": {
+      "sourceSha256": "c986ae11a19059ee71e850df8c41f80013735c151dae953f6d4df1369d4f92c3",
+      "localizedSha256": "c986ae11a19059ee71e850df8c41f80013735c151dae953f6d4df1369d4f92c3",
+      "kind": "original-recording"
+    },
+    "projects/token-counter-and-cost-meter/media/output.json": {
+      "sourceSha256": "2f5f34d8ac3737f83465df990f6c93613aa9f06d90a969ea366ad31eed2ec5e4",
+      "localizedSha256": "2f5f34d8ac3737f83465df990f6c93613aa9f06d90a969ea366ad31eed2ec5e4",
+      "kind": "original-recording"
+    },
+    "projects/token-counter-and-cost-meter/media/output.png": {
+      "sourceSha256": "9007c3419390e92fd14308a2fc11d3ae883ea93ffd5baa220bc47c31bc48fc4b",
+      "localizedSha256": "9007c3419390e92fd14308a2fc11d3ae883ea93ffd5baa220bc47c31bc48fc4b",
+      "kind": "original-recording"
+    },
+    "projects/token-counter-and-cost-meter/media/run.gif": {
+      "sourceSha256": "5f0a5d50676f72beace7c55af133ed2cb07f2c15ecde1e25beaec7b74eeaf919",
+      "localizedSha256": "5f0a5d50676f72beace7c55af133ed2cb07f2c15ecde1e25beaec7b74eeaf919",
+      "kind": "original-recording"
+    },
+    "projects/token-counter-and-cost-meter/media/run.json": {
+      "sourceSha256": "b581ebdfd74e99e9a9b142f5cc756885c3ab596d6e3ce13bbba15aaf26efcc83",
+      "localizedSha256": "b581ebdfd74e99e9a9b142f5cc756885c3ab596d6e3ce13bbba15aaf26efcc83",
+      "kind": "original-recording"
+    },
+    "projects/token-counter-and-cost-meter/media/run.png": {
+      "sourceSha256": "5fe4859f784f2dfcbfbab615c3b03ac5394c8f03b985078e87faad12d8486522",
+      "localizedSha256": "5fe4859f784f2dfcbfbab615c3b03ac5394c8f03b985078e87faad12d8486522",
+      "kind": "original-recording"
+    },
+    "projects/token-counter-and-cost-meter/project.json": {
+      "sourceSha256": "6cfbeb44d0678b44030963ae22b189716af3cc9b3de31086f123c14c21b44199",
+      "localizedSha256": "0bbcaeeb5efa15a04c94c3e0f9e57df92cd37b129273f69c3684b1bfd954f54c",
+      "kind": "manifest",
+      "contract": {
+        "id": "token-counter-and-cost-meter",
+        "title": "<translated-text>",
+        "level": 1,
+        "levelName": "Starter",
+        "tagline": "<translated-text>",
+        "summary": "<translated-text>",
+        "usefulFor": [
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "youWillBuild": "<translated-text>",
+        "hours": 8,
+        "languages": [
+          "Rust"
+        ],
+        "status": "ready",
+        "source": "core",
+        "author": {
+          "name": "AI Engineering from Scratch",
+          "github": "rohitg00"
+        },
+        "skills": [
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "prerequisites": [
+          {
+            "title": "<translated-text>",
+            "path": "phases/10-llms-from-scratch/01-tokenizers"
+          },
+          {
+            "title": "<translated-text>",
+            "path": "phases/14-agent-engineering/38-verification-gates"
+          }
+        ],
+        "inspiredBy": [],
+        "demo": {
+          "command": [
+            "python3",
+            "demo.py"
+          ],
+          "cwd": "solution"
+        },
+        "stages": [
+          {
+            "id": "01-estimate-text-with-a-documented-bound",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "rust",
+            "difficulty": "starter",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ]
+          },
+          {
+            "id": "02-validate-recorded-usage",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "rust",
+            "difficulty": "core",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ]
+          },
+          {
+            "id": "03-price-with-checked-integers",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "rust",
+            "difficulty": "core",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ]
+          },
+          {
+            "id": "04-admit-work-against-a-ledger",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "rust",
+            "difficulty": "core",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ]
+          }
+        ],
+        "demos": [
+          {
+            "gif": "media/run.gif",
+            "poster": "media/run.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          },
+          {
+            "gif": "media/output.gif",
+            "poster": "media/output.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          }
+        ]
+      }
+    },
+    "projects/token-counter-and-cost-meter/solution/cli.rs": {
+      "sourceSha256": "5c8442bd9dffc7a0e9a3894cbb53bfadbc7c34e8a98b7a38f882ba4976414c27",
+      "localizedSha256": "8261ee9fab0b27e553bce43997a576e6dd0cad3d29860dc00fae8bf813372041",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "pub mod types;",
+          "// 词元计量教学实现：整数单位、费用字段和错误保持原值；费率来自调用方夹具。\npub mod types;"
+        ]
+      ]
+    },
+    "projects/token-counter-and-cost-meter/solution/demo.py": {
+      "sourceSha256": "fe6d349eb04566075192238e4b80c0ae0c7acecd56cf25f6219789d2478bf37e",
+      "localizedSha256": "f2693c225d3877520937b1cca577386941a60e73489aeb28e8d20aa1e13b6523",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "from pathlib import Path",
+          "# 演示与测试在调用方指定的本地目录中运行；输入、机器输出及错误契约保持原值。\nfrom pathlib import Path"
+        ]
+      ]
+    },
+    "projects/token-counter-and-cost-meter/solution/main.rs": {
+      "sourceSha256": "d28cd77172322f47deb107dadf57bdc04c9c64f0fae7c68d69777742e10b1d6c",
+      "localizedSha256": "a508e9deb185b8ea5765f7df2dbea2678c94a22c9a403d96907a7d6c4b43a578",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "pub mod types;",
+          "// 词元计量教学实现：整数单位、费用字段和错误保持原值；费率来自调用方夹具。\npub mod types;"
+        ]
+      ]
+    },
+    "projects/token-counter-and-cost-meter/solution/stage1.rs": {
+      "sourceSha256": "88eae34c6c6f1e41bccfa17a0648209ff76a6a2861fbc08962c5ac947a22a99b",
+      "localizedSha256": "f237404961505d839cd81bfb727460f6e4dfe6daa23a6704ec662f769dc9b2be",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "use super::*;",
+          "// 词元计量教学实现：整数单位、费用字段和错误保持原值；费率来自调用方夹具。\nuse super::*;"
+        ]
+      ]
+    },
+    "projects/token-counter-and-cost-meter/solution/stage2.rs": {
+      "sourceSha256": "613ffc06b7c31cba39e4d970248bbd728183c540c8321797d1234af52bf1bd20",
+      "localizedSha256": "95d3acff7c0c1f10b8ebae5638ffc34ca1d0e694c7ad8aa1bf6f5be480ab4b99",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "use super::*;",
+          "// 词元计量教学实现：整数单位、费用字段和错误保持原值；费率来自调用方夹具。\nuse super::*;"
+        ]
+      ]
+    },
+    "projects/token-counter-and-cost-meter/solution/stage3.rs": {
+      "sourceSha256": "340ab70f94ae012de478042e268f18ab8e7357169541ec2f448597276125aff2",
+      "localizedSha256": "f56dd3cad771fe0ad1ff944abe8b1e16b876daa2eba288f777237f0028fae76a",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "use super::*;",
+          "// 词元计量教学实现：整数单位、费用字段和错误保持原值；费率来自调用方夹具。\nuse super::*;"
+        ]
+      ]
+    },
+    "projects/token-counter-and-cost-meter/solution/stage4.rs": {
+      "sourceSha256": "356171bb1b217a72b53696da1b172a5348110f7e614db692c031f4f1e3644761",
+      "localizedSha256": "093e05f15c6934d5d52d51ccc4f892615bd18672d56b5f103acbd876fee0c812",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "use super::*;",
+          "// 词元计量教学实现：整数单位、费用字段和错误保持原值；费率来自调用方夹具。\nuse super::*;"
+        ]
+      ]
+    },
+    "projects/token-counter-and-cost-meter/solution/types.rs": {
+      "sourceSha256": "264e678780dc5efeb85f8b31f622f0f2b175459f31de674a4eb114cc84ab51b4",
+      "localizedSha256": "264e678780dc5efeb85f8b31f622f0f2b175459f31de674a4eb114cc84ab51b4",
+      "kind": "preserved-contract"
+    },
+    "projects/token-counter-and-cost-meter/solution/usage.py": {
+      "sourceSha256": "545141b24c28ef761ab7ab50c9240241297962335352196c1fc81400e62532f1",
+      "localizedSha256": "7d9318893ade8ee3635c8f20e844b81ae382cae06d5f0192ed70a18201b2de4f",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "\"\"\"Replay recorded provider usage through Rust integer arithmetic and a reservation ledger.\"\"\"",
+          "\"\"\"通过 Rust 整数运算和预留账本回放已记录服务商用量。\"\"\""
+        ]
+      ]
+    },
+    "projects/token-counter-and-cost-meter/stages/01-estimate-text-with-a-documented-bound/docs/en.md": {
+      "sourceSha256": "e59a814fa2b8d76038fffac812dd48de9552649c9623c95bc64f01d065496f69",
+      "localizedSha256": "87459b8fb393ede8ef0e47c6f7f5fe61f467f29b487b383c4fd39a0dad31e339",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-token-counter-and-cost-meter-1\n"
+          ],
+          [
+            "rust",
+            "pub fn estimate(text:&str, chars_per_token:u64)->Result<u64,Error>\n"
+          ],
+          [
+            "text",
+            "characters=21; ratio=4\nceil(21/4)=6 estimated tokens\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py token-counter-and-cost-meter --init learning-artifacts/token-counter-and-cost-meter\npython3 scripts/project_test.py token-counter-and-cost-meter --stage 1 --path learning-artifacts/token-counter-and-cost-meter\n"
+          ]
+        ],
+        "inlineCode": [],
+        "links": [
+          "../../../../../phases/10-llms-from-scratch/01-tokenizers/docs/en.md",
+          "https://doc.rust-lang.org/book/ch04-00-understanding-ownership.html",
+          "https://doc.rust-lang.org/std/primitive.u64.html#method.checked_mul"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/token-counter-and-cost-meter/stages/01-estimate-text-with-a-documented-bound/starter/cli.rs": {
+      "sourceSha256": "5c8442bd9dffc7a0e9a3894cbb53bfadbc7c34e8a98b7a38f882ba4976414c27",
+      "localizedSha256": "8261ee9fab0b27e553bce43997a576e6dd0cad3d29860dc00fae8bf813372041",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "pub mod types;",
+          "// 词元计量教学实现：整数单位、费用字段和错误保持原值；费率来自调用方夹具。\npub mod types;"
+        ]
+      ]
+    },
+    "projects/token-counter-and-cost-meter/stages/01-estimate-text-with-a-documented-bound/starter/main.rs": {
+      "sourceSha256": "d28cd77172322f47deb107dadf57bdc04c9c64f0fae7c68d69777742e10b1d6c",
+      "localizedSha256": "a508e9deb185b8ea5765f7df2dbea2678c94a22c9a403d96907a7d6c4b43a578",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "pub mod types;",
+          "// 词元计量教学实现：整数单位、费用字段和错误保持原值；费率来自调用方夹具。\npub mod types;"
+        ]
+      ]
+    },
+    "projects/token-counter-and-cost-meter/stages/01-estimate-text-with-a-documented-bound/starter/stage1.rs": {
+      "sourceSha256": "a7572501657f624455038b6f9875773fe28fea81e890af572623645784009c1d",
+      "localizedSha256": "4616c8c145a262ce0a047176159686172bd177422f4f99b0db9ae6634c6c5365",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "use super::*;",
+          "// 词元计量教学实现：整数单位、费用字段和错误保持原值；费率来自调用方夹具。\nuse super::*;"
+        ]
+      ]
+    },
+    "projects/token-counter-and-cost-meter/stages/01-estimate-text-with-a-documented-bound/starter/types.rs": {
+      "sourceSha256": "264e678780dc5efeb85f8b31f622f0f2b175459f31de674a4eb114cc84ab51b4",
+      "localizedSha256": "264e678780dc5efeb85f8b31f622f0f2b175459f31de674a4eb114cc84ab51b4",
+      "kind": "preserved-contract"
+    },
+    "projects/token-counter-and-cost-meter/stages/01-estimate-text-with-a-documented-bound/starter/usage.py": {
+      "sourceSha256": "545141b24c28ef761ab7ab50c9240241297962335352196c1fc81400e62532f1",
+      "localizedSha256": "7d9318893ade8ee3635c8f20e844b81ae382cae06d5f0192ed70a18201b2de4f",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "\"\"\"Replay recorded provider usage through Rust integer arithmetic and a reservation ledger.\"\"\"",
+          "\"\"\"通过 Rust 整数运算和预留账本回放已记录服务商用量。\"\"\""
+        ]
+      ]
+    },
+    "projects/token-counter-and-cost-meter/stages/01-estimate-text-with-a-documented-bound/tests/stage.rs": {
+      "sourceSha256": "a37b0c1d1874e73d74f0ee4c133ce08caf6ecbacfb346a2928514fc05dfc3a09",
+      "localizedSha256": "a37b0c1d1874e73d74f0ee4c133ce08caf6ecbacfb346a2928514fc05dfc3a09",
+      "kind": "preserved-contract"
+    },
+    "projects/token-counter-and-cost-meter/stages/02-validate-recorded-usage/docs/en.md": {
+      "sourceSha256": "79fa8765b8e25ca93e4a88c51fc2fae9fc51729064c1d01d9552cec9e74b1ab5",
+      "localizedSha256": "16ff53f6bc54607f0cb12c9897d60db02987fffa12fd0f1a0b20d333d23ceee5",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-token-counter-and-cost-meter-2\n"
+          ],
+          [
+            "rust",
+            "pub fn parse_usage(line:&str)->Result<Usage,Error>\n"
+          ],
+          [
+            "text",
+            "input_tokens=100; output_tokens=20; cached_tokens=40\nwire=100,20,40\nuncached input=60\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py token-counter-and-cost-meter --stage 2 --path learning-artifacts/token-counter-and-cost-meter\n"
+          ]
+        ],
+        "inlineCode": [],
+        "links": [
+          "../../../../../phases/10-llms-from-scratch/01-tokenizers/docs/en.md",
+          "../../01-estimate-text-with-a-documented-bound/docs/en.md",
+          "https://doc.rust-lang.org/book/ch04-00-understanding-ownership.html",
+          "https://doc.rust-lang.org/std/primitive.u64.html#method.checked_mul"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/token-counter-and-cost-meter/stages/02-validate-recorded-usage/starter/stage2.rs": {
+      "sourceSha256": "2a97e57957b48ba212cb8dadec7d0f47afb046b8e1c41f4469b91534cbac44d7",
+      "localizedSha256": "f8e168604999e2cfb350579d0cdb76fd9d3bec4237f4d657d46f80db7a6cf151",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "use super::*;",
+          "// 词元计量教学实现：整数单位、费用字段和错误保持原值；费率来自调用方夹具。\nuse super::*;"
+        ]
+      ]
+    },
+    "projects/token-counter-and-cost-meter/stages/02-validate-recorded-usage/tests/stage.rs": {
+      "sourceSha256": "28d8a6122fb987eff7e418d2dc42321d7df2176629af1e551705317e31be5044",
+      "localizedSha256": "28d8a6122fb987eff7e418d2dc42321d7df2176629af1e551705317e31be5044",
+      "kind": "preserved-contract"
+    },
+    "projects/token-counter-and-cost-meter/stages/03-price-with-checked-integers/docs/en.md": {
+      "sourceSha256": "ea8e15a7c3372bd37517d009b0d1a51464636d84434c7ecf48edfec0a1d14193",
+      "localizedSha256": "49d6894cfdabfa58955800964f7d5687dda09bf394cc96468d470c507ba47618",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-token-counter-and-cost-meter-3\n"
+          ],
+          [
+            "rust",
+            "pub fn cost(usage:&Usage,rates:&Rates)->Result<u64,Error>\n"
+          ],
+          [
+            "text",
+            "60 uncached * 2 = 120\n40 cached * 1 = 40\n20 output * 5 = 100\ntotal=260 nano_dollars\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py token-counter-and-cost-meter --stage 3 --path learning-artifacts/token-counter-and-cost-meter\n"
+          ]
+        ],
+        "inlineCode": [],
+        "links": [
+          "../../../../../phases/10-llms-from-scratch/01-tokenizers/docs/en.md",
+          "../../02-validate-recorded-usage/docs/en.md",
+          "https://doc.rust-lang.org/book/ch04-00-understanding-ownership.html",
+          "https://doc.rust-lang.org/std/primitive.u64.html#method.checked_mul"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/token-counter-and-cost-meter/stages/03-price-with-checked-integers/starter/stage3.rs": {
+      "sourceSha256": "cd6c3c62908db5400e93239ed315ad56842b12de3c5b49aed4a4514307150618",
+      "localizedSha256": "d206230be47d933dd242984168607e758555e32babdf43eee86489c2b47fbf59",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "use super::*;",
+          "// 词元计量教学实现：整数单位、费用字段和错误保持原值；费率来自调用方夹具。\nuse super::*;"
+        ]
+      ]
+    },
+    "projects/token-counter-and-cost-meter/stages/03-price-with-checked-integers/tests/stage.rs": {
+      "sourceSha256": "60f137940045c59f095ee0be261312d02f1ea799263f7ae89ecae7b2462b6e46",
+      "localizedSha256": "60f137940045c59f095ee0be261312d02f1ea799263f7ae89ecae7b2462b6e46",
+      "kind": "preserved-contract"
+    },
+    "projects/token-counter-and-cost-meter/stages/04-admit-work-against-a-ledger/docs/en.md": {
+      "sourceSha256": "fe9749eb216794fcba995e4c26a816609d9ddd28ce8fe87ba5274aea40822ea4",
+      "localizedSha256": "b9f0e5a899fba9771b4a040223310e73e12a7d5708c05cc076e22f766d76dbe4",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-token-counter-and-cost-meter-4\n"
+          ],
+          [
+            "rust",
+            "pub fn reserve(spent:&mut u64,quote:u64,limit:u64)->Result<u64,Error>\n"
+          ],
+          [
+            "text",
+            "limit=1000\nrequest 1 reserved=600 actual=260 unused=340\nrequest 2 actual=310 -> spent=570\nremaining=430; larger reservation -> blocked\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py token-counter-and-cost-meter --stage 4 --path learning-artifacts/token-counter-and-cost-meter\n"
+          ],
+          [
+            "bash",
+            "python3 learning-artifacts/token-counter-and-cost-meter/usage.py projects/token-counter-and-cost-meter/examples/usage.json --out usage-ledger.json\n"
+          ]
+        ],
+        "inlineCode": [],
+        "links": [
+          "../../../../../phases/10-llms-from-scratch/01-tokenizers/docs/en.md",
+          "../../03-price-with-checked-integers/docs/en.md",
+          "https://doc.rust-lang.org/book/ch04-00-understanding-ownership.html",
+          "https://doc.rust-lang.org/std/primitive.u64.html#method.checked_mul"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/token-counter-and-cost-meter/stages/04-admit-work-against-a-ledger/starter/stage4.rs": {
+      "sourceSha256": "16cdc3263389f38c97c515acf0f3dd1cea1ff01bfc98235706532ba12256fea2",
+      "localizedSha256": "5313f50340beb85fe7707013753dad89b6e4ad323cd430c48d4d257cf94f86f7",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "use super::*;",
+          "// 词元计量教学实现：整数单位、费用字段和错误保持原值；费率来自调用方夹具。\nuse super::*;"
+        ]
+      ]
+    },
+    "projects/token-counter-and-cost-meter/stages/04-admit-work-against-a-ledger/tests/stage.rs": {
+      "sourceSha256": "bf358714000873002314166192b0bc5272fee9eceb3c5c31eee85634336aff4c",
+      "localizedSha256": "bf358714000873002314166192b0bc5272fee9eceb3c5c31eee85634336aff4c",
+      "kind": "preserved-contract"
+    },
+    "projects/tool-call-firewall/README.md": {
+      "sourceSha256": "368522166b2da22456626dd9fd6357da279540e6b17376ef0b11456edb8aa843",
+      "localizedSha256": "04ec2fd64a9de5deb87d4bae4a4957d1a8b1dfeb89cbad86d95bc33a36a073fe",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "bash",
+            "python3 scripts/project_test.py tool-call-firewall --init learning-artifacts/tool-call-firewall\npython3 scripts/project_test.py tool-call-firewall --stage 1 --path learning-artifacts/tool-call-firewall\n"
+          ],
+          [
+            "bash",
+            "rustc --edition=2021 learning-artifacts/tool-call-firewall/cli.rs -o learning-artifacts/tool-call-firewall/firewall\nlearning-artifacts/tool-call-firewall/firewall projects/tool-call-firewall/examples/workspace reader r1 read notes.md\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py tool-call-firewall --all --solution --strict\npython3 scripts/project_test.py tool-call-firewall --all --path learning-artifacts/tool-call-firewall --strict\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "learning-artifacts/tool-call-firewall"
+          ],
+          [
+            "`",
+            "projects/tool-call-firewall/solution"
+          ],
+          [
+            "`",
+            "rustc"
+          ],
+          [
+            "`",
+            "schema_version: 1"
+          ]
+        ],
+        "links": [
+          "../../phases/13-tools-and-protocols/05-tool-schema-design/docs/en.md",
+          "../../phases/17-infrastructure-and-production/25-security-secrets-audit/docs/en.md",
+          "https://doc.rust-lang.org/book/ch04-00-understanding-ownership.html",
+          "https://modelcontextprotocol.io/specification/2025-06-18/basic/security_best_practices",
+          "stages/01-validate-an-unambiguous-call-envelope/docs/en.md",
+          "stages/02-evaluate-role-and-path-policy/docs/en.md",
+          "stages/03-consume-a-request-bound-approval-once/docs/en.md",
+          "stages/04-record-bounded-audit-evidence/docs/en.md"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 5
+      }
+    },
+    "projects/tool-call-firewall/examples/approved-note.md": {
+      "sourceSha256": "464e228735dc7d8a3e4a36f085347a8fe1162c2f2c6196a5969ff8831172dd3b",
+      "localizedSha256": "464e228735dc7d8a3e4a36f085347a8fe1162c2f2c6196a5969ff8831172dd3b",
+      "kind": "preserved-contract"
+    },
+    "projects/tool-call-firewall/examples/workspace/notes.md": {
+      "sourceSha256": "156ee606eb96be1176aaf4b06a9c5c012556fda0ecd32b2df925b01fa9cab410",
+      "localizedSha256": "156ee606eb96be1176aaf4b06a9c5c012556fda0ecd32b2df925b01fa9cab410",
+      "kind": "preserved-contract"
+    },
+    "projects/tool-call-firewall/media/output.gif": {
+      "sourceSha256": "8884240e2e728586e7233329f7c873031bb783756f78eaf5d0e07936dff30361",
+      "localizedSha256": "8884240e2e728586e7233329f7c873031bb783756f78eaf5d0e07936dff30361",
+      "kind": "original-recording"
+    },
+    "projects/tool-call-firewall/media/output.json": {
+      "sourceSha256": "1a26ec8f79d7c03c4152fdc725a135342d276da93736a2f5b426c35110f9ec2c",
+      "localizedSha256": "1a26ec8f79d7c03c4152fdc725a135342d276da93736a2f5b426c35110f9ec2c",
+      "kind": "original-recording"
+    },
+    "projects/tool-call-firewall/media/output.png": {
+      "sourceSha256": "399325dab69e8059083ce3c46de80340003617b014f1771c4188170ec483f610",
+      "localizedSha256": "399325dab69e8059083ce3c46de80340003617b014f1771c4188170ec483f610",
+      "kind": "original-recording"
+    },
+    "projects/tool-call-firewall/media/run.gif": {
+      "sourceSha256": "04a5767f1a90171a3c8cef0f47ece58ab14c14fde9e702f855c0d6b3ddbec397",
+      "localizedSha256": "04a5767f1a90171a3c8cef0f47ece58ab14c14fde9e702f855c0d6b3ddbec397",
+      "kind": "original-recording"
+    },
+    "projects/tool-call-firewall/media/run.json": {
+      "sourceSha256": "cf97488477a0f27d85787479c839a83d7cecb866ac77483dca0de335b8c5db3f",
+      "localizedSha256": "cf97488477a0f27d85787479c839a83d7cecb866ac77483dca0de335b8c5db3f",
+      "kind": "original-recording"
+    },
+    "projects/tool-call-firewall/media/run.png": {
+      "sourceSha256": "d5906b6bf1c32aa4897f6fdbd0e9ce81f1be1ac9c56af7ff45a71e7845f3fdc8",
+      "localizedSha256": "d5906b6bf1c32aa4897f6fdbd0e9ce81f1be1ac9c56af7ff45a71e7845f3fdc8",
+      "kind": "original-recording"
+    },
+    "projects/tool-call-firewall/project.json": {
+      "sourceSha256": "3e4f332fb9fd481b04e31874c4baa2ddb52875d2bbad1a25db10a3e44934a28c",
+      "localizedSha256": "46848bfde8a64455806ead6a58ed97a2c5c256b1bcd19112bf93ff67ec04caa0",
+      "kind": "manifest",
+      "contract": {
+        "id": "tool-call-firewall",
+        "title": "<translated-text>",
+        "level": 4,
+        "levelName": "Systems",
+        "tagline": "<translated-text>",
+        "summary": "<translated-text>",
+        "usefulFor": [
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "youWillBuild": "<translated-text>",
+        "hours": 8,
+        "languages": [
+          "Rust"
+        ],
+        "status": "ready",
+        "source": "core",
+        "author": {
+          "name": "AI Engineering from Scratch",
+          "github": "rohitg00"
+        },
+        "skills": [
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "prerequisites": [
+          {
+            "title": "<translated-text>",
+            "path": "phases/13-tools-and-protocols/05-tool-schema-design"
+          },
+          {
+            "title": "<translated-text>",
+            "path": "phases/17-infrastructure-and-production/25-security-secrets-audit"
+          }
+        ],
+        "inspiredBy": [],
+        "demo": {
+          "command": [
+            "python3",
+            "demo.py"
+          ],
+          "cwd": "solution"
+        },
+        "stages": [
+          {
+            "id": "01-validate-an-unambiguous-call-envelope",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "rust",
+            "difficulty": "starter",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ]
+          },
+          {
+            "id": "02-evaluate-role-and-path-policy",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "rust",
+            "difficulty": "core",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ]
+          },
+          {
+            "id": "03-consume-a-request-bound-approval-once",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "rust",
+            "difficulty": "core",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ]
+          },
+          {
+            "id": "04-record-bounded-audit-evidence",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "rust",
+            "difficulty": "core",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ]
+          }
+        ],
+        "demos": [
+          {
+            "gif": "media/run.gif",
+            "poster": "media/run.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          },
+          {
+            "gif": "media/output.gif",
+            "poster": "media/output.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          }
+        ]
+      }
+    },
+    "projects/tool-call-firewall/solution/cli.rs": {
+      "sourceSha256": "1f88fed78e6d838338024f50323c531e124f8f91c1df95a4928d874a5e1d2007",
+      "localizedSha256": "1560c51466a1a0bbeb0ca2db0a29069b4fc009092b1ab66526fd22826d161ab8",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "pub mod types;",
+          "// 工具授权教学实现：角色由可信调用方提供；审批、路径与错误字段保持原契约。\npub mod types;"
+        ],
+        [
+          "// Role comes from the application invocation, never from an untrusted model response.",
+          "// 角色来自应用调用，绝不从不可信模型响应中取得。"
+        ]
+      ]
+    },
+    "projects/tool-call-firewall/solution/demo.py": {
+      "sourceSha256": "d7597354927d48e23a43a192d83d9d80e42d4a8efb33a9da9ef1945621c47fad",
+      "localizedSha256": "d595afa2804eca081ee13b118b78282b8c8e66260fb06e8a613e083924c188a6",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "from pathlib import Path",
+          "# 演示与测试在调用方指定的本地目录中运行；输入、机器输出及错误契约保持原值。\nfrom pathlib import Path"
+        ]
+      ]
+    },
+    "projects/tool-call-firewall/solution/main.rs": {
+      "sourceSha256": "089e1f3434a826eb7cf47a56a49edffd181caeb028549611c24f9df068552b85",
+      "localizedSha256": "64712fb51b90ed522cb7a5df5ded9d36995c5285f13dba3b1c4e6fb0c0c1dec4",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "pub mod types;",
+          "// 工具授权教学实现：角色由可信调用方提供；审批、路径与错误字段保持原契约。\npub mod types;"
+        ]
+      ]
+    },
+    "projects/tool-call-firewall/solution/stage1.rs": {
+      "sourceSha256": "d821612ac5c00fc81b9ce62df014a7d98e3052b3196ee65b3ee74a0ad4669182",
+      "localizedSha256": "8824f572c35595060607e7461a0d13845049f427565a03e3a4042ec8047fc6b6",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "use super::*;",
+          "// 工具授权教学实现：角色由可信调用方提供；审批、路径与错误字段保持原契约。\nuse super::*;"
+        ]
+      ]
+    },
+    "projects/tool-call-firewall/solution/stage2.rs": {
+      "sourceSha256": "b5e1c886dc663b643cfb7a0f8f4a71f5269cec9c8cccb76772a395edfb411bca",
+      "localizedSha256": "60c9cc2ec8ad77cc60c8eb59e1964b3eab8888b7e0b1953d5d45f913c8c2041e",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "use super::*;",
+          "// 工具授权教学实现：角色由可信调用方提供；审批、路径与错误字段保持原契约。\nuse super::*;"
+        ]
+      ]
+    },
+    "projects/tool-call-firewall/solution/stage3.rs": {
+      "sourceSha256": "2a73c9e0dfad523e5dc7cca23f7e2762d88d1ed807d83c0cfe3bd32e551c9b29",
+      "localizedSha256": "c453ecf029408af17acd57a7b935cf3e9ab5295543a11c6e5b6e453a6dbfede8",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "use super::*;",
+          "// 工具授权教学实现：角色由可信调用方提供；审批、路径与错误字段保持原契约。\nuse super::*;"
+        ]
+      ]
+    },
+    "projects/tool-call-firewall/solution/stage4.rs": {
+      "sourceSha256": "c88253780499ccf2ae682793a9d08142d094a897baf761c851ce348cccb7e767",
+      "localizedSha256": "bd92f0f49a30e0575bd0732f28bad6e87c26bcc795a127f90908bf0bf3971b54",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "use super::*;",
+          "// 工具授权教学实现：角色由可信调用方提供；审批、路径与错误字段保持原契约。\nuse super::*;"
+        ]
+      ]
+    },
+    "projects/tool-call-firewall/solution/types.rs": {
+      "sourceSha256": "796137ceba16bf343d5751c1b806d8b17856c6c2b1bbd1bd167f10e87d650dfe",
+      "localizedSha256": "796137ceba16bf343d5751c1b806d8b17856c6c2b1bbd1bd167f10e87d650dfe",
+      "kind": "preserved-contract"
+    },
+    "projects/tool-call-firewall/stages/01-validate-an-unambiguous-call-envelope/docs/en.md": {
+      "sourceSha256": "651e48cbf1303b963b2d2292059d6228378b90193ee0c1306c3dcd7b11d26800",
+      "localizedSha256": "42fbb84abcd4fb29192f00540c648503baca0ae9547d26a7817906c9f65d5cb1",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-tool-call-firewall-1\n"
+          ],
+          [
+            "rust",
+            "pub fn call(line:&str,max_bytes:usize)->Result<Call,Error>\n"
+          ],
+          [
+            "text",
+            "r1|reader|read|notes.md -> typed request\nr1|reader|read|notes.md|extra -> reject\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py tool-call-firewall --init learning-artifacts/tool-call-firewall\npython3 scripts/project_test.py tool-call-firewall --stage 1 --path learning-artifacts/tool-call-firewall\n"
+          ]
+        ],
+        "inlineCode": [],
+        "links": [
+          "../../../../../phases/13-tools-and-protocols/05-tool-schema-design/docs/en.md",
+          "https://doc.rust-lang.org/book/ch04-00-understanding-ownership.html",
+          "https://modelcontextprotocol.io/specification/2025-06-18/basic/security_best_practices"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/tool-call-firewall/stages/01-validate-an-unambiguous-call-envelope/starter/cli.rs": {
+      "sourceSha256": "1f88fed78e6d838338024f50323c531e124f8f91c1df95a4928d874a5e1d2007",
+      "localizedSha256": "1560c51466a1a0bbeb0ca2db0a29069b4fc009092b1ab66526fd22826d161ab8",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "pub mod types;",
+          "// 工具授权教学实现：角色由可信调用方提供；审批、路径与错误字段保持原契约。\npub mod types;"
+        ],
+        [
+          "// Role comes from the application invocation, never from an untrusted model response.",
+          "// 角色来自应用调用，绝不从不可信模型响应中取得。"
+        ]
+      ]
+    },
+    "projects/tool-call-firewall/stages/01-validate-an-unambiguous-call-envelope/starter/main.rs": {
+      "sourceSha256": "089e1f3434a826eb7cf47a56a49edffd181caeb028549611c24f9df068552b85",
+      "localizedSha256": "64712fb51b90ed522cb7a5df5ded9d36995c5285f13dba3b1c4e6fb0c0c1dec4",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "pub mod types;",
+          "// 工具授权教学实现：角色由可信调用方提供；审批、路径与错误字段保持原契约。\npub mod types;"
+        ]
+      ]
+    },
+    "projects/tool-call-firewall/stages/01-validate-an-unambiguous-call-envelope/starter/stage1.rs": {
+      "sourceSha256": "ec6e736e174511456609c5c007fd2fde1660173791c2d5561daa55de2eb37fcd",
+      "localizedSha256": "efe53e1a322369eba902f64bdc2375c46e72688140d5de97fae30838475c1cab",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "use super::*;",
+          "// 工具授权教学实现：角色由可信调用方提供；审批、路径与错误字段保持原契约。\nuse super::*;"
+        ]
+      ]
+    },
+    "projects/tool-call-firewall/stages/01-validate-an-unambiguous-call-envelope/starter/types.rs": {
+      "sourceSha256": "796137ceba16bf343d5751c1b806d8b17856c6c2b1bbd1bd167f10e87d650dfe",
+      "localizedSha256": "796137ceba16bf343d5751c1b806d8b17856c6c2b1bbd1bd167f10e87d650dfe",
+      "kind": "preserved-contract"
+    },
+    "projects/tool-call-firewall/stages/01-validate-an-unambiguous-call-envelope/tests/stage.rs": {
+      "sourceSha256": "2e348f339a159d8f2b8f74cdd55c516e22afd4d0cb85cc6c692b9b8faf37d2c1",
+      "localizedSha256": "2e348f339a159d8f2b8f74cdd55c516e22afd4d0cb85cc6c692b9b8faf37d2c1",
+      "kind": "preserved-contract"
+    },
+    "projects/tool-call-firewall/stages/02-evaluate-role-and-path-policy/docs/en.md": {
+      "sourceSha256": "e6c712c5229b7d7d33afac39e09a8b0250d52fe23e1f25fc41dd3a6400ffd21e",
+      "localizedSha256": "eed53212a68ae6018f3514ec60169d90ac910997b76b8c1fd92f87e1764a0c2d",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-tool-call-firewall-2\n"
+          ],
+          [
+            "rust",
+            "pub fn decide(c:&Call)->Decision\n"
+          ],
+          [
+            "text",
+            "reader + read notes.md -> Allow\nreader + write notes.md -> Deny\neditor + write notes.md -> ApprovalRequired\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py tool-call-firewall --stage 2 --path learning-artifacts/tool-call-firewall\n"
+          ]
+        ],
+        "inlineCode": [],
+        "links": [
+          "../../../../../phases/13-tools-and-protocols/05-tool-schema-design/docs/en.md",
+          "../../01-validate-an-unambiguous-call-envelope/docs/en.md",
+          "https://doc.rust-lang.org/book/ch04-00-understanding-ownership.html",
+          "https://modelcontextprotocol.io/specification/2025-06-18/basic/security_best_practices"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/tool-call-firewall/stages/02-evaluate-role-and-path-policy/starter/stage2.rs": {
+      "sourceSha256": "7535e71573d7ab923b4f1e8200d902964a3fcf3a5f671fc611a5342e406878db",
+      "localizedSha256": "1fbd02af1a1e1abd4aadfd6a3838d788629053ec635c6f521b0046ee6516cd6c",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "use super::*;",
+          "// 工具授权教学实现：角色由可信调用方提供；审批、路径与错误字段保持原契约。\nuse super::*;"
+        ]
+      ]
+    },
+    "projects/tool-call-firewall/stages/02-evaluate-role-and-path-policy/tests/stage.rs": {
+      "sourceSha256": "a595efdcbb82b2b90d6034a8b2a971902df90a03eb144a9505f8b88e81c8192c",
+      "localizedSha256": "a595efdcbb82b2b90d6034a8b2a971902df90a03eb144a9505f8b88e81c8192c",
+      "kind": "preserved-contract"
+    },
+    "projects/tool-call-firewall/stages/03-consume-a-request-bound-approval-once/docs/en.md": {
+      "sourceSha256": "3bb58017bdd5630c6f83dcac5d317338f9fb34661ef99694fa7f717af289799f",
+      "localizedSha256": "8e92248ee5976d5df2b6c3ba26d1267f46ba46bbd80e555e7f40800d9fe30990",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-tool-call-firewall-3\n"
+          ],
+          [
+            "rust",
+            "pub fn authorize(c:&Call,approval:Option<&mut Approval>)->Result<(),Error>\n"
+          ],
+          [
+            "text",
+            "approved content=\"approved after restore\"\nchanged content -> Conflict, file unchanged\nexact content -> write, used=true\nreplay -> Conflict\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py tool-call-firewall --stage 3 --path learning-artifacts/tool-call-firewall\n"
+          ]
+        ],
+        "inlineCode": [],
+        "links": [
+          "../../../../../phases/13-tools-and-protocols/05-tool-schema-design/docs/en.md",
+          "../../02-evaluate-role-and-path-policy/docs/en.md",
+          "https://doc.rust-lang.org/book/ch04-00-understanding-ownership.html",
+          "https://modelcontextprotocol.io/specification/2025-06-18/basic/security_best_practices"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/tool-call-firewall/stages/03-consume-a-request-bound-approval-once/starter/stage3.rs": {
+      "sourceSha256": "863615994aef5b203986f25057a4f98eb71777292ed81ff90d95781e9cf80448",
+      "localizedSha256": "af14d2a0c0ea948c2cb69203757281b61cd3af5bedf18369066fdac67c3fdc42",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "use super::*;",
+          "// 工具授权教学实现：角色由可信调用方提供；审批、路径与错误字段保持原契约。\nuse super::*;"
+        ]
+      ]
+    },
+    "projects/tool-call-firewall/stages/03-consume-a-request-bound-approval-once/tests/dispatch.rs": {
+      "sourceSha256": "953df81530a0222b1121a4e972260adcac4862d8fe54be665497dc7780bb2cc1",
+      "localizedSha256": "953df81530a0222b1121a4e972260adcac4862d8fe54be665497dc7780bb2cc1",
+      "kind": "preserved-contract"
+    },
+    "projects/tool-call-firewall/stages/03-consume-a-request-bound-approval-once/tests/stage.rs": {
+      "sourceSha256": "509178bc22e0bddd8a5c6e3b5dd53493727b9567b7bbbae435e008880b95b53c",
+      "localizedSha256": "509178bc22e0bddd8a5c6e3b5dd53493727b9567b7bbbae435e008880b95b53c",
+      "kind": "preserved-contract"
+    },
+    "projects/tool-call-firewall/stages/04-record-bounded-audit-evidence/docs/en.md": {
+      "sourceSha256": "d85c57723df5946fcf422feb53ed483ad13f9f4d9004243a68e36b3521335b9d",
+      "localizedSha256": "273b8c631e31570e5d50a66da7aa669223e75822f99df49f98694a3a19cfdd25",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-tool-call-firewall-4\n"
+          ],
+          [
+            "rust",
+            "pub fn audit(log:&mut Vec<String>,c:&Call,d:&Decision,max_entries:usize)->Result<(),Error>\n"
+          ],
+          [
+            "text",
+            "request r1 -> one policy row\nfile write succeeds -> approval_consumed=true\nsecond dispatch -> replay_denied=true\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py tool-call-firewall --stage 4 --path learning-artifacts/tool-call-firewall\n"
+          ],
+          [
+            "bash",
+            "rustc --edition=2021 learning-artifacts/tool-call-firewall/cli.rs -o learning-artifacts/tool-call-firewall/firewall\nlearning-artifacts/tool-call-firewall/firewall projects/tool-call-firewall/examples/workspace reader r1 read notes.md\n"
+          ]
+        ],
+        "inlineCode": [],
+        "links": [
+          "../../../../../phases/13-tools-and-protocols/05-tool-schema-design/docs/en.md",
+          "../../03-consume-a-request-bound-approval-once/docs/en.md",
+          "https://doc.rust-lang.org/book/ch04-00-understanding-ownership.html",
+          "https://modelcontextprotocol.io/specification/2025-06-18/basic/security_best_practices"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/tool-call-firewall/stages/04-record-bounded-audit-evidence/starter/stage4.rs": {
+      "sourceSha256": "c11d85189880ba078d0a13cc6ac78fc6d00d8da049a662ead1eba78b88b30162",
+      "localizedSha256": "9c6420401e4b3fcd015b205929ec6779a3b123c12455a942fa4e455535d5a70d",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "use super::*;",
+          "// 工具授权教学实现：角色由可信调用方提供；审批、路径与错误字段保持原契约。\nuse super::*;"
+        ]
+      ]
+    },
+    "projects/tool-call-firewall/stages/04-record-bounded-audit-evidence/tests/stage.rs": {
+      "sourceSha256": "cc312cf20442c2f6a31656b4e4d9d2daefe08dc62b56bf3e020df7fd0b7bf8fc",
+      "localizedSha256": "cc312cf20442c2f6a31656b4e4d9d2daefe08dc62b56bf3e020df7fd0b7bf8fc",
+      "kind": "preserved-contract"
+    }
+  },
+  "figures": [
+    {
+      "path": "site/figures/projects/source-grounded-study-coach.js",
+      "sourceSha256": "5bc343c3ae85cc2c9336421aab2412aaa1d544147f92b0e9268e2f5947480926",
+      "localizedSha256": "b4b9f9ab3b7621b66dbd0a0ef19df6f54b9c4f2767a0f4b718513c66561d96a4",
+      "edits": [
+        {
+          "offset": 68,
+          "before": "\"Source\"",
+          "after": "\"来源\"",
+          "afterOffset": 68
+        },
+        {
+          "offset": 92,
+          "before": "\"Keep the passage and authored policy visible.\"",
+          "after": "\"保持来源段落和作者设定的规则可见。\"",
+          "afterOffset": 88
+        },
+        {
+          "offset": 161,
+          "before": "\"Decision\"",
+          "after": "\"决策\"",
+          "afterOffset": 129
+        },
+        {
+          "offset": 181,
+          "before": "\"Apply the stated deterministic contract.\"",
+          "after": "\"应用已说明的确定性契约。\"",
+          "afterOffset": 143
+        },
+        {
+          "offset": 240,
+          "before": "\"Review\"",
+          "after": "\"审阅\"",
+          "afterOffset": 174
+        },
+        {
+          "offset": 258,
+          "before": "\"Explain the result with evidence.\"",
+          "after": "\"用证据解释结果。\"",
+          "afterOffset": 188
+        },
+        {
+          "offset": 550,
+          "before": "\"An answer needs a supporting quote\"",
+          "after": "\"答案需要支持引文\"",
+          "afterOffset": 455
+        },
+        {
+          "offset": 618,
+          "before": "\"The deck validates exact answer evidence before asking a question.\"",
+          "after": "\"提问前，题卡集先校验精确的答案证据。 图表范围：前三图分别演示局部证据、字符串匹配和一次间隔计算，第四图使用固定三张卡片到期日，不读取实际题卡与答题日志。它不替代完整去重、版本迁移或页面事件回放。\"",
+          "afterOffset": 497
+        },
+        {
+          "offset": 769,
+          "before": "\"Source passage\"",
+          "after": "\"来源段落\"",
+          "afterOffset": 680
+        },
+        {
+          "offset": 932,
+          "before": "\"Canonical answer\"",
+          "after": "\"标准答案\"",
+          "afterOffset": 833
+        },
+        {
+          "offset": 1071,
+          "before": "\"Evidence start\"",
+          "after": "\"证据起点\"",
+          "afterOffset": 960
+        },
+        {
+          "offset": 1234,
+          "before": "\"Evidence end\"",
+          "after": "\"证据终点\"",
+          "afterOffset": 1113
+        },
+        {
+          "offset": 1768,
+          "before": "\"The canonical answer has a valid source location.\"",
+          "after": "\"标准答案具有有效的来源位置。\"",
+          "afterOffset": 1639
+        },
+        {
+          "offset": 1834,
+          "before": "\"Reject this card: repair its offsets or answer evidence.\"",
+          "after": "\"拒绝该卡片：修正偏移量或答案证据。\"",
+          "afterOffset": 1670
+        },
+        {
+          "offset": 1936,
+          "before": "\"Source UTF-16 length\"",
+          "after": "\"来源 UTF-16 长度\"",
+          "afterOffset": 1733
+        },
+        {
+          "offset": 2007,
+          "before": "\"Valid offsets\"",
+          "after": "\"偏移量有效\"",
+          "afterOffset": 1796
+        },
+        {
+          "offset": 2100,
+          "before": "\"Quote\"",
+          "after": "\"引文\"",
+          "afterOffset": 1881
+        },
+        {
+          "offset": 2118,
+          "before": "\"(invalid range)\"",
+          "after": "\"（无效区间）\"",
+          "afterOffset": 1896
+        },
+        {
+          "offset": 2151,
+          "before": "\"Expected answer\"",
+          "after": "\"预期答案\"",
+          "afterOffset": 1920
+        },
+        {
+          "offset": 2214,
+          "before": "\"Field\"",
+          "after": "\"字段\"",
+          "afterOffset": 1972
+        },
+        {
+          "offset": 2223,
+          "before": "\"Text\"",
+          "after": "\"文本\"",
+          "afterOffset": 1978
+        },
+        {
+          "offset": 2351,
+          "before": "\"Grade the exact answer contract\"",
+          "after": "\"按精确答案契约评分\"",
+          "afterOffset": 2104
+        },
+        {
+          "offset": 2416,
+          "before": "\"A correct paraphrase can need manual review. This baseline does not grade arbitrary meaning.\"",
+          "after": "\"正确的改写也可能需要人工审阅。本基线不评判任意语义。 图表范围：前三图分别演示局部证据、字符串匹配和一次间隔计算，第四图使用固定三张卡片到期日，不读取实际题卡与答题日志。它不替代完整去重、版本迁移或页面事件回放。\"",
+          "afterOffset": 2147
+        },
+        {
+          "offset": 2593,
+          "before": "\"Canonical answer\"",
+          "after": "\"标准答案\"",
+          "afterOffset": 2338
+        },
+        {
+          "offset": 2738,
+          "before": "\"Learner response\"",
+          "after": "\"学习者响应\"",
+          "afterOffset": 2471
+        },
+        {
+          "offset": 2887,
+          "before": "\"Author-approved variant\"",
+          "after": "\"作者批准的变体\"",
+          "afterOffset": 2609
+        },
+        {
+          "offset": 3288,
+          "before": "\"Accepted by the explicit string-matching policy.\"",
+          "after": "\"按明确的字符串匹配策略接受。\"",
+          "afterOffset": 2994
+        },
+        {
+          "offset": 3353,
+          "before": "\"Review the source and compare the expected answer.\"",
+          "after": "\"阅读来源，再与预期答案对比。\"",
+          "afterOffset": 3025
+        },
+        {
+          "offset": 3436,
+          "before": "\"Accepted\"",
+          "after": "\"已接受\"",
+          "afterOffset": 3072
+        },
+        {
+          "offset": 3513,
+          "before": "\"Expected\"",
+          "after": "\"预期\"",
+          "afterOffset": 3144
+        },
+        {
+          "offset": 3555,
+          "before": "\"Response\"",
+          "after": "\"响应\"",
+          "afterOffset": 3180
+        },
+        {
+          "offset": 3591,
+          "before": "\"Approved variant\"",
+          "after": "\"已批准变体\"",
+          "afterOffset": 3210
+        },
+        {
+          "offset": 3662,
+          "before": "\"Comparison\"",
+          "after": "\"比较\"",
+          "afterOffset": 3270
+        },
+        {
+          "offset": 3676,
+          "before": "\"Normalized text\"",
+          "after": "\"规范化文本\"",
+          "afterOffset": 3276
+        },
+        {
+          "offset": 3815,
+          "before": "\"Calculate the next review date\"",
+          "after": "\"计算下次复习日期\"",
+          "afterOffset": 3405
+        },
+        {
+          "offset": 3879,
+          "before": "\"This is a visible teaching policy. Correctness changes the interval; it does not establish learning quality.\"",
+          "after": "\"这是可见的教学策略。答对与否改变复习间隔，但不能证明学习质量。 图表范围：前三图分别演示局部证据、字符串匹配和一次间隔计算，第四图使用固定三张卡片到期日，不读取实际题卡与答题日志。它不替代完整去重、版本迁移或页面事件回放。\"",
+          "afterOffset": 3447
+        },
+        {
+          "offset": 4069,
+          "before": "\"Current box\"",
+          "after": "\"当前分盒\"",
+          "afterOffset": 3640
+        },
+        {
+          "offset": 4229,
+          "before": "\"Answer accepted\"",
+          "after": "\"答案已接受\"",
+          "afterOffset": 3793
+        },
+        {
+          "offset": 4360,
+          "before": "\"Attempt date\"",
+          "after": "\"答题日期\"",
+          "afterOffset": 3914
+        },
+        {
+          "offset": 4745,
+          "before": "\"Reject an invalid calendar date.\"",
+          "after": "\"拒绝无效日期。\"",
+          "afterOffset": 4291
+        },
+        {
+          "offset": 4961,
+          "before": "\"Next due: \"",
+          "after": "\"下次到期：\"",
+          "afterOffset": 4482
+        },
+        {
+          "offset": 5095,
+          "before": "\"Next box\"",
+          "after": "\"下一分盒\"",
+          "afterOffset": 4611
+        },
+        {
+          "offset": 5142,
+          "before": "\"Interval days\"",
+          "after": "\"间隔天数\"",
+          "afterOffset": 4654
+        },
+        {
+          "offset": 5217,
+          "before": "\"Review interval\"",
+          "after": "\"复习间隔\"",
+          "afterOffset": 4720
+        },
+        {
+          "offset": 5384,
+          "before": "\"Choose the due queue for a report\"",
+          "after": "\"选择报告的到期队列\"",
+          "afterOffset": 4876
+        },
+        {
+          "offset": 5451,
+          "before": "\"The source passage remains available on every practice card. The page records actual typed answers locally and downloads the attempt log for the next CLI run.\"",
+          "after": "\"每张练习卡片都能查看来源段落。页面在本地记录实际输入，下载答题日志供下一次 CLI 运行使用。 图表范围：前三图分别演示局部证据、字符串匹配和一次间隔计算，第四图使用固定三张卡片到期日，不读取实际题卡与答题日志。它不替代完整去重、版本迁移或页面事件回放。\"",
+          "afterOffset": 4919
+        },
+        {
+          "offset": 5691,
+          "before": "\"Report day in September\"",
+          "after": "\"9 月报告日期\"",
+          "afterOffset": 5128
+        },
+        {
+          "offset": 6200,
+          "before": "`Show ${count} due cards for September ${v.day}.`",
+          "after": "`显示 ${count} 张到期卡片，报告日期为 9 月 ${v.day} 日。`",
+          "afterOffset": 5621
+        },
+        {
+          "offset": 6293,
+          "before": "\"Due cards\"",
+          "after": "\"到期卡片\"",
+          "afterOffset": 5706
+        },
+        {
+          "offset": 6343,
+          "before": "\"Future cards\"",
+          "after": "\"未到期卡片\"",
+          "afterOffset": 5751
+        },
+        {
+          "offset": 6428,
+          "before": "\"Card\"",
+          "after": "\"卡片\"",
+          "afterOffset": 5829
+        },
+        {
+          "offset": 6436,
+          "before": "\"Due date\"",
+          "after": "\"到期日期\"",
+          "afterOffset": 5835
+        },
+        {
+          "offset": 6448,
+          "before": "\"Queue\"",
+          "after": "\"队列\"",
+          "afterOffset": 5843
+        }
+      ]
+    },
+    {
+      "path": "site/figures/projects/support-agent-with-google-adk.js",
+      "sourceSha256": "e3f8c9fe8c8b34b95f37d40e75c62ddaf179716455f774579e3d5ee9b45f198e",
+      "localizedSha256": "9e87786dae5af0d545ca1f8d83226835d7df66ba8d71714c381ac914c7ec8c7a",
+      "edits": [
+        {
+          "offset": 62,
+          "before": "\"Validate\"",
+          "after": "\"校验\"",
+          "afterOffset": 62
+        },
+        {
+          "offset": 82,
+          "before": "\"Apply the shared deterministic boundary.\"",
+          "after": "\"应用共用的确定性边界。\"",
+          "afterOffset": 76
+        },
+        {
+          "offset": 141,
+          "before": "\"Choose\"",
+          "after": "\"选择\"",
+          "afterOffset": 106
+        },
+        {
+          "offset": 159,
+          "before": "\"Keep route and capability separate.\"",
+          "after": "\"将路由与能力分开。\"",
+          "afterOffset": 120
+        },
+        {
+          "offset": 219,
+          "before": "\"Retain\"",
+          "after": "\"保留\"",
+          "afterOffset": 154
+        },
+        {
+          "offset": 243,
+          "before": "\"Store inspectable evidence and response state.\"",
+          "after": "\"保存可检查的证据和回复状态。\"",
+          "afterOffset": 174
+        },
+        {
+          "offset": 393,
+          "before": "\"Redact before any model request\"",
+          "after": "\"在任何模型请求前脱敏\"",
+          "afterOffset": 292
+        },
+        {
+          "offset": 458,
+          "before": "\"The two documented patterns are a limited example, not a complete privacy filter.\"",
+          "after": "\"这两种文档规定的模式仅为有限示例，不是完整隐私过滤器。 图表范围：JavaScript 字符长度采用 UTF-16，词边界为 ASCII；Python 的长度和词元采用 Unicode 字符语义。四图为本地模型，显示两次调用不代表实际执行 ADK 或验证脱敏完整性。\"",
+          "afterOffset": 336
+        },
+        {
+          "offset": 622,
+          "before": "\"Ticket text\"",
+          "after": "\"工单文本\"",
+          "afterOffset": 552
+        },
+        {
+          "offset": 1078,
+          "before": "\"Only the cleaned text may enter the session.\"",
+          "after": "\"只有清理后的文本可进入会话。\"",
+          "afterOffset": 1001
+        },
+        {
+          "offset": 1139,
+          "before": "\"Reject the ticket.\"",
+          "after": "\"拒绝该工单。\"",
+          "afterOffset": 1032
+        },
+        {
+          "offset": 1203,
+          "before": "\"Input characters\"",
+          "after": "\"输入字符数\"",
+          "afterOffset": 1084
+        },
+        {
+          "offset": 1282,
+          "before": "\"Changed by filter\"",
+          "after": "\"经过过滤发生变化\"",
+          "afterOffset": 1152
+        },
+        {
+          "offset": 1403,
+          "before": "\"Cleaned ticket\"",
+          "after": "\"清理后的工单\"",
+          "afterOffset": 1264
+        },
+        {
+          "offset": 1450,
+          "before": "\"Boundary\"",
+          "after": "\"边界\"",
+          "afterOffset": 1303
+        },
+        {
+          "offset": 1462,
+          "before": "\"Text\"",
+          "after": "\"文本\"",
+          "afterOffset": 1309
+        },
+        {
+          "offset": 2275,
+          "before": "\"Separate a routing score from permission\"",
+          "after": "\"将路由分数与权限分开\"",
+          "afterOffset": 2120
+        },
+        {
+          "offset": 2349,
+          "before": "\"Ties escalate. A valid specialist cannot use another specialist’s tool.\"",
+          "after": "\"同分时转人工。有效专员也不能使用另一专员的工具。 图表范围：JavaScript 字符长度采用 UTF-16，词边界为 ASCII；Python 的长度和词元采用 Unicode 字符语义。四图为本地模型，显示两次调用不代表实际执行 ADK 或验证脱敏完整性。\"",
+          "afterOffset": 2164
+        },
+        {
+          "offset": 2503,
+          "before": "\"Ticket text\"",
+          "after": "\"工单文本\"",
+          "afterOffset": 2377
+        },
+        {
+          "offset": 2637,
+          "before": "\"Requested capability\"",
+          "after": "\"请求的能力\"",
+          "afterOffset": 2504
+        },
+        {
+          "offset": 2984,
+          "before": "\"Reject the requested capability.\"",
+          "after": "\"拒绝请求的能力。\"",
+          "afterOffset": 2836
+        },
+        {
+          "offset": 3076,
+          "before": "\"Escalate before a model or read capability runs.\"",
+          "after": "\"在运行模型或只读能力前转人工。\"",
+          "afterOffset": 2904
+        },
+        {
+          "offset": 3164,
+          "before": "\"Authorize \"",
+          "after": "\"授权 \"",
+          "afterOffset": 2959
+        },
+        {
+          "offset": 3265,
+          "before": "\"Route\"",
+          "after": "\"路由\"",
+          "afterOffset": 3053
+        },
+        {
+          "offset": 3316,
+          "before": "\"Allowed\"",
+          "after": "\"已允许\"",
+          "afterOffset": 3101
+        },
+        {
+          "offset": 3572,
+          "before": "\"A response must survive the transition\"",
+          "after": "\"回复必须在状态转换后保留\"",
+          "afterOffset": 3353
+        },
+        {
+          "offset": 3644,
+          "before": "\"Terminal states cannot accept another event. Human routing permits escalation, not an automatic answer.\"",
+          "after": "\"终止状态不能接收下一事件。human 路由只允许转人工，不能自动回答。 图表范围：JavaScript 字符长度采用 UTF-16，词边界为 ASCII；Python 的长度和词元采用 Unicode 字符语义。四图为本地模型，显示两次调用不代表实际执行 ADK 或验证脱敏完整性。\"",
+          "afterOffset": 3399
+        },
+        {
+          "offset": 3831,
+          "before": "\"Current state\"",
+          "after": "\"当前状态\"",
+          "afterOffset": 3624
+        },
+        {
+          "offset": 4098,
+          "before": "\"Event\"",
+          "after": "\"事件\"",
+          "afterOffset": 3882
+        },
+        {
+          "offset": 4336,
+          "before": "\"Human route\"",
+          "after": "\"人工路由\"",
+          "afterOffset": 4117
+        },
+        {
+          "offset": 4435,
+          "before": "\"Reply text\"",
+          "after": "\"回复文本\"",
+          "afterOffset": 4209
+        },
+        {
+          "offset": 4886,
+          "before": "\"Transition to \"",
+          "after": "\"转换为 \"",
+          "afterOffset": 4654
+        },
+        {
+          "offset": 4924,
+          "before": "\"Reject the transition and preserve prior state.\"",
+          "after": "\"拒绝转换，保留此前状态。\"",
+          "afterOffset": 4682
+        },
+        {
+          "offset": 5004,
+          "before": "\"Next state\"",
+          "after": "\"下一状态\"",
+          "afterOffset": 4727
+        },
+        {
+          "offset": 5098,
+          "before": "\"Retained response\"",
+          "after": "\"保留的回复\"",
+          "afterOffset": 4815
+        },
+        {
+          "offset": 5238,
+          "before": "\"Session field\"",
+          "after": "\"会话字段\"",
+          "afterOffset": 4943
+        },
+        {
+          "offset": 5255,
+          "before": "\"Value\"",
+          "after": "\"值\"",
+          "afterOffset": 4951
+        },
+        {
+          "offset": 5386,
+          "before": "\"Apply the same gate before ADK\"",
+          "after": "\"调用 ADK 前应用同一门禁\"",
+          "afterOffset": 5078
+        },
+        {
+          "offset": 5450,
+          "before": "\"Real SDK tests establish graph behavior. A deterministic fixture model is labeled; it does not establish language-model quality.\"",
+          "after": "\"真实 SDK 测试验证图的行为。确定性夹具模型已明确标识，不证明语言模型质量。 图表范围：JavaScript 字符长度采用 UTF-16，词边界为 ASCII；Python 的长度和词元采用 Unicode 字符语义。四图为本地模型，显示两次调用不代表实际执行 ADK 或验证脱敏完整性。\"",
+          "afterOffset": 5126
+        },
+        {
+          "offset": 5661,
+          "before": "\"Ticket topic\"",
+          "after": "\"工单主题\"",
+          "afterOffset": 5354
+        },
+        {
+          "offset": 5800,
+          "before": "\"Model-proposed route\"",
+          "after": "\"模型建议的路由\"",
+          "afterOffset": 5485
+        },
+        {
+          "offset": 6179,
+          "before": "\"Reject the route override before running ADK.\"",
+          "after": "\"运行 ADK 前拒绝路由覆盖。\"",
+          "afterOffset": 5851
+        },
+        {
+          "offset": 6284,
+          "before": "\"Human escalation: no ADK model calls.\"",
+          "after": "\"转人工：没有 ADK 模型调用。\"",
+          "afterOffset": 5926
+        },
+        {
+          "offset": 6381,
+          "before": "\"Run triage and specialist on cleaned text and authorized guidance.\"",
+          "after": "\"用清理后的文本和已授权指引运行分流与专员。\"",
+          "afterOffset": 6002
+        },
+        {
+          "offset": 6529,
+          "before": "\"Allowed route\"",
+          "after": "\"获准路由\"",
+          "afterOffset": 6105
+        },
+        {
+          "offset": 6588,
+          "before": "\"Model calls\"",
+          "after": "\"模型调用次数\"",
+          "afterOffset": 6155
+        },
+        {
+          "offset": 6671,
+          "before": "\"Read capability\"",
+          "after": "\"只读能力\"",
+          "afterOffset": 6233
+        },
+        {
+          "offset": 6755,
+          "before": "\"Reply state\"",
+          "after": "\"回复状态\"",
+          "afterOffset": 6306
+        },
+        {
+          "offset": 6792,
+          "before": "\"answered with retained draft\"",
+          "after": "\"已回答并保留草稿\"",
+          "afterOffset": 6336
+        },
+        {
+          "offset": 6825,
+          "before": "\"no automatic answer\"",
+          "after": "\"没有自动回答\"",
+          "afterOffset": 6349
+        },
+        {
+          "offset": 6896,
+          "before": "\"Gate result\"",
+          "after": "\"门禁结果\"",
+          "afterOffset": 6407
+        },
+        {
+          "offset": 6911,
+          "before": "\"Value\"",
+          "after": "\"值\"",
+          "afterOffset": 6415
+        }
+      ]
+    },
+    {
+      "path": "site/figures/projects/tiny-coding-agent.js",
+      "sourceSha256": "91237e779a3a1c8c28fb0219d8ab120ef3aa450a472cedce2a61fd3f00c9d698",
+      "localizedSha256": "56f48e8a80a18d74b195b4c04b78fe6b8eac42d0ae6801cf5c206157c113027f",
+      "edits": [
+        {
+          "offset": 1100,
+          "before": "\"Workspace file text\"",
+          "after": "\"工作区文件文本\"",
+          "afterOffset": 1100
+        },
+        {
+          "offset": 1213,
+          "before": "\"Exact old expression\"",
+          "after": "\"精确的旧表达式\"",
+          "afterOffset": 1201
+        },
+        {
+          "offset": 1284,
+          "before": "\"Proposed replacement\"",
+          "after": "\"候选替换内容\"",
+          "afterOffset": 1259
+        },
+        {
+          "offset": 1351,
+          "before": "\"Observed test output\"",
+          "after": "\"观察到的测试输出\"",
+          "afterOffset": 1312
+        },
+        {
+          "offset": 1425,
+          "before": "\"Proposal failure marker\"",
+          "after": "\"提案的失败标记\"",
+          "afterOffset": 1374
+        },
+        {
+          "offset": 1492,
+          "before": "\"Actions used\"",
+          "after": "\"已用动作数\"",
+          "afterOffset": 1425
+        },
+        {
+          "offset": 1541,
+          "before": "\"Action budget\"",
+          "after": "\"动作预算\"",
+          "afterOffset": 1467
+        },
+        {
+          "offset": 1590,
+          "before": "\"Test price\"",
+          "after": "\"测试单价\"",
+          "afterOffset": 1507
+        },
+        {
+          "offset": 1640,
+          "before": "\"Test quantity\"",
+          "after": "\"测试数量\"",
+          "afterOffset": 1551
+        },
+        {
+          "offset": 2164,
+          "before": "\"Planner abstains: marker absent\"",
+          "after": "\"规划器放弃：缺少标记\"",
+          "afterOffset": 2066
+        },
+        {
+          "offset": 2244,
+          "before": "\"Patch precondition fails: \"",
+          "after": "\"补丁前置条件失败：\"",
+          "afterOffset": 2125
+        },
+        {
+          "offset": 2283,
+          "before": "\" matches\"",
+          "after": "\" 处匹配\"",
+          "afterOffset": 2147
+        },
+        {
+          "offset": 2340,
+          "before": "\"Apply exact proposal, then rerun real tests\"",
+          "after": "\"应用精确提案，再运行真实测试\"",
+          "afterOffset": 2200
+        },
+        {
+          "offset": 2454,
+          "before": "\"Exact matches\"",
+          "after": "\"精确匹配次数\"",
+          "afterOffset": 2285
+        },
+        {
+          "offset": 2496,
+          "before": "\"Observed failure matches\"",
+          "after": "\"观察到的失败匹配\"",
+          "afterOffset": 2320
+        },
+        {
+          "offset": 2552,
+          "before": "\"Expected test value\"",
+          "after": "\"预期测试值\"",
+          "afterOffset": 2360
+        },
+        {
+          "offset": 2616,
+          "before": "\"Predicted proposed value\"",
+          "after": "\"预测的提案值\"",
+          "afterOffset": 2410
+        },
+        {
+          "offset": 2678,
+          "before": "\"not interpreted\"",
+          "after": "\"未解释\"",
+          "afterOffset": 2454
+        },
+        {
+          "offset": 2751,
+          "before": "\"Broken addition output\"",
+          "after": "\"错误的加法输出\"",
+          "afterOffset": 2515
+        },
+        {
+          "offset": 2800,
+          "before": "\"Expected product\"",
+          "after": "\"预期乘积\"",
+          "afterOffset": 2549
+        },
+        {
+          "offset": 2860,
+          "before": "\"Observation\"",
+          "after": "\"观察\"",
+          "afterOffset": 2597
+        },
+        {
+          "offset": 2875,
+          "before": "\"State\"",
+          "after": "\"状态\"",
+          "afterOffset": 2603
+        },
+        {
+          "offset": 2925,
+          "before": "\"Test before\"",
+          "after": "\"修改前测试\"",
+          "afterOffset": 2650
+        },
+        {
+          "offset": 2974,
+          "before": "\"fixture passes accidentally\"",
+          "after": "\"夹具偶然通过\"",
+          "afterOffset": 2693
+        },
+        {
+          "offset": 3041,
+          "before": "\"Patch\"",
+          "after": "\"补丁\"",
+          "afterOffset": 2739
+        },
+        {
+          "offset": 3096,
+          "before": "\"Test after\"",
+          "after": "\"修改后测试\"",
+          "afterOffset": 2791
+        },
+        {
+          "offset": 3110,
+          "before": "\"must execute; prediction is not proof\"",
+          "after": "\"必须执行；预测不是证明\"",
+          "afterOffset": 2800
+        },
+        {
+          "offset": 3295,
+          "before": "\"Confine file tools to a workspace\"",
+          "after": "\"将文件工具限制在工作区内\"",
+          "afterOffset": 2959
+        },
+        {
+          "offset": 3380,
+          "before": "\"Relative path\"",
+          "after": "\"相对路径\"",
+          "afterOffset": 3023
+        },
+        {
+          "offset": 3431,
+          "before": "\"The Orchard basket repair runs in a disposable copy of a trusted Python workspace. Resolve every requested file under that root before opening it. A path may look local while a symlink redirects it outside the workspace.\"",
+          "after": "\"Orchard 购物篮修复在可信 Python 工作区的可丢弃副本中运行。打开文件前，将每个请求路径解析到该根目录之下。路径看起来位于本地，符号链接却可能将其重定向到工作区之外。\"",
+          "afterOffset": 3065
+        },
+        {
+          "offset": 3699,
+          "before": "\"Resolve\"",
+          "after": "\"解析\"",
+          "afterOffset": 3202
+        },
+        {
+          "offset": 3888,
+          "before": "\"Containment\"",
+          "after": "\"范围限制\"",
+          "afterOffset": 3386
+        },
+        {
+          "offset": 3937,
+          "before": "\"Compare resolved path components, not string prefixes. The caller chooses the workspace; a model response must not choose a new root.\"",
+          "after": "\"比较解析后的路径组件，不要比较字符串前缀。工作区由调用方选择，模型响应不能选择新根目录。\"",
+          "afterOffset": 3428
+        },
+        {
+          "offset": 4125,
+          "before": "\"Why does copying a trusted repository not turn its tests into sandboxed code?\"",
+          "after": "\"复制可信仓库为什么不能让其中测试自动成为沙箱内代码？ 图表范围：只估算词法补丁条件与固定加法／乘法结果，不读取文件或运行测试，也不验证符号链接、文件权限或进程组超时。实际路径、替换和完成证据以 Python 运行结果为准。\"",
+          "afterOffset": 3527
+        },
+        {
+          "offset": 4365,
+          "before": "\"Apply exact patches with preconditions\"",
+          "after": "\"按前置条件应用精确补丁\"",
+          "afterOffset": 3801
+        },
+        {
+          "offset": 4455,
+          "before": "\"Precondition\"",
+          "after": "\"前置条件\"",
+          "afterOffset": 3864
+        },
+        {
+          "offset": 4505,
+          "before": "\"A patch states exactly what it expects to replace. The broken basket multiplies neither price nor quantity: it returns price + quantity. Replace that expression only when it appears once.\"",
+          "after": "\"补丁明确声明要替换的内容。出错的购物篮函数没有将单价乘以数量，而是返回 price + quantity。仅当该表达式出现一次时才替换。\"",
+          "afterOffset": 3906
+        },
+        {
+          "offset": 4740,
+          "before": "\"Replacement\"",
+          "after": "\"替换\"",
+          "afterOffset": 4022
+        },
+        {
+          "offset": 4935,
+          "before": "\"Atomic write\"",
+          "after": "\"原子写入\"",
+          "afterOffset": 4208
+        },
+        {
+          "offset": 4985,
+          "before": "\"Count exact matches before opening a temporary output file. Preserve file permissions when replacing the original.\"",
+          "after": "\"打开临时输出文件前统计精确匹配次数。替换原文件时保留权限。\"",
+          "afterOffset": 4250
+        },
+        {
+          "offset": 5154,
+          "before": "\"What should happen when another editor fixes the file after the planner proposes a patch?\"",
+          "after": "\"规划器提出补丁后，另一位编辑者先修好了文件，此时应该怎样处理？ 图表范围：只估算词法补丁条件与固定加法／乘法结果，不读取文件或运行测试，也不验证符号链接、文件权限或进程组超时。实际路径、替换和完成证据以 Python 运行结果为准。\"",
+          "afterOffset": 4334
+        },
+        {
+          "offset": 5406,
+          "before": "\"Run real tests through one allowed command\"",
+          "after": "\"通过唯一允许的命令运行真实测试\"",
+          "afterOffset": 4613
+        },
+        {
+          "offset": 5500,
+          "before": "\"Argv\"",
+          "after": "\"参数数组\"",
+          "afterOffset": 4680
+        },
+        {
+          "offset": 5542,
+          "before": "\"Run the actual unittest suite before claiming a repair. In the original basket example, total(7,3) returns 10 instead of 21; total(7,0) returns 7 instead of 0. Both failures should disappear after the patch.\"",
+          "after": "\"声明修复成功前，运行真实 unittest 测试。原始购物篮示例的 total(7,3) 返回 10 而非 21，total(7,0) 返回 7 而非 0。应用补丁后，这两个失败都应消失。\"",
+          "afterOffset": 4722
+        },
+        {
+          "offset": 5797,
+          "before": "\"Timeout\"",
+          "after": "\"超时\"",
+          "afterOffset": 4864
+        },
+        {
+          "offset": 5990,
+          "before": "\"Evidence\"",
+          "after": "\"证据\"",
+          "afterOffset": 5052
+        },
+        {
+          "offset": 6036,
+          "before": "\"Read the final unittest summary from stderr and require a positive executed test count. On POSIX, stop the process group when the test deadline expires.\"",
+          "after": "\"从 stderr 读取最终 unittest 摘要，要求实际测试数量大于零。在 POSIX 上，测试期限到达时停止整个进程组。\"",
+          "afterOffset": 5092
+        },
+        {
+          "offset": 6243,
+          "before": "'Why must a printed \"Ran 999 tests\" line not count as test evidence?'",
+          "after": "'为什么打印的“Ran 999 tests”不能被当作测试证据？ 图表范围：只估算词法补丁条件与固定加法／乘法结果，不读取文件或运行测试，也不验证符号链接、文件权限或进程组超时。实际路径、替换和完成证据以 Python 运行结果为准。'",
+          "afterOffset": 5210
+        },
+        {
+          "offset": 6473,
+          "before": "\"Stop the coding loop on evidence or budget\"",
+          "after": "\"根据证据或预算停止编程循环\"",
+          "afterOffset": 5489
+        },
+        {
+          "offset": 6567,
+          "before": "\"Action\"",
+          "after": "\"动作\"",
+          "afterOffset": 5554
+        },
+        {
+          "offset": 6611,
+          "before": "\"The planner now receives each observation. It tests first, selects a supplied exact repair only when its failure marker appears, then tests again. This transparent rule planner does not claim to invent code from a model.\"",
+          "after": "\"规划器现在接收每次观察结果。先运行测试，只在失败标记出现时选择随附精确修复，再运行测试。这个透明的规则规划器不声称通过模型创造代码。\"",
+          "afterOffset": 5594
+        },
+        {
+          "offset": 6879,
+          "before": "\"Observation\"",
+          "after": "\"观察\"",
+          "afterOffset": 5708
+        },
+        {
+          "offset": 7057,
+          "before": "\"Stop\"",
+          "after": "\"停止\"",
+          "afterOffset": 5877
+        },
+        {
+          "offset": 7099,
+          "before": "\"Call the planner again after every tool result. Retain the requested action with each observation and stop on abstention or exhausted steps.\"",
+          "after": "\"每次工具返回结果后重新调用规划器。保留每次请求的动作及其观察；规划器放弃或步数耗尽时停止。\"",
+          "afterOffset": 5917
+        },
+        {
+          "offset": 7294,
+          "before": "\"How would you plug in a model while keeping the same patch preconditions and completion rule?\"",
+          "after": "\"如何接入模型，同时保留相同的补丁前置条件和完成规则？ 图表范围：只估算词法补丁条件与固定加法／乘法结果，不读取文件或运行测试，也不验证符号链接、文件权限或进程组超时。实际路径、替换和完成证据以 Python 运行结果为准。\"",
+          "afterOffset": 6017
+        }
+      ]
+    },
+    {
+      "path": "site/figures/projects/token-counter-and-cost-meter.js",
+      "sourceSha256": "85bb5d6d0256181db025005c83cfa9a15e08dbd4ed9123c470e1570c542f6896",
+      "localizedSha256": "cff6621da13310a268211f31beb7a556009302b799f8f60a29f997597a0edd47",
+      "edits": [
+        {
+          "offset": 1083,
+          "before": "\"Text to estimate\"",
+          "after": "\"待估算文本\"",
+          "afterOffset": 1083
+        },
+        {
+          "offset": 1158,
+          "before": "\"Characters per estimated token\"",
+          "after": "\"每个估算词元的字符数\"",
+          "afterOffset": 1147
+        },
+        {
+          "offset": 1224,
+          "before": "\"Recorded input tokens\"",
+          "after": "\"记录中的输入词元\"",
+          "afterOffset": 1193
+        },
+        {
+          "offset": 1286,
+          "before": "\"Cached input tokens\"",
+          "after": "\"缓存输入词元\"",
+          "afterOffset": 1242
+        },
+        {
+          "offset": 1345,
+          "before": "\"Recorded output tokens\"",
+          "after": "\"记录中的输出词元\"",
+          "afterOffset": 1288
+        },
+        {
+          "offset": 1410,
+          "before": "\"Input nano-dollars/token\"",
+          "after": "\"输入费率（纳美元／词元）\"",
+          "afterOffset": 1339
+        },
+        {
+          "offset": 1476,
+          "before": "\"Cached nano-dollars/token\"",
+          "after": "\"缓存费率（纳美元／词元）\"",
+          "afterOffset": 1393
+        },
+        {
+          "offset": 1543,
+          "before": "\"Output nano-dollars/token\"",
+          "after": "\"输出费率（纳美元／词元）\"",
+          "afterOffset": 1447
+        },
+        {
+          "offset": 1611,
+          "before": "\"Reserved nano-dollars\"",
+          "after": "\"已预留纳美元\"",
+          "afterOffset": 1502
+        },
+        {
+          "offset": 2025,
+          "before": "\"Approximation: \"",
+          "after": "\"近似估算：\"",
+          "afterOffset": 1901
+        },
+        {
+          "offset": 2115,
+          "before": "\" tokens, not a provider count\"",
+          "after": "\" 个词元，不是服务商计数\"",
+          "afterOffset": 1981
+        },
+        {
+          "offset": 2199,
+          "before": "\"Recorded usage exceeds reservation\"",
+          "after": "\"记录的实际用量超过预留\"",
+          "afterOffset": 2048
+        },
+        {
+          "offset": 2252,
+          "before": "\"Settle recorded usage and release unused reservation\"",
+          "after": "\"结算实际用量并释放未使用预留\"",
+          "afterOffset": 2078
+        },
+        {
+          "offset": 2344,
+          "before": "\"Estimated tokens\"",
+          "after": "\"估算词元数\"",
+          "afterOffset": 2132
+        },
+        {
+          "offset": 2423,
+          "before": "\"Actual nano-dollars\"",
+          "after": "\"实际纳美元\"",
+          "afterOffset": 2200
+        },
+        {
+          "offset": 2471,
+          "before": "\"Unused reservation\"",
+          "after": "\"未使用预留\"",
+          "afterOffset": 2234
+        },
+        {
+          "offset": 2547,
+          "before": "\"Overrun\"",
+          "after": "\"超支\"",
+          "afterOffset": 2297
+        },
+        {
+          "offset": 2636,
+          "before": "\"Uncached input charge\"",
+          "after": "\"未缓存输入费用\"",
+          "afterOffset": 2381
+        },
+        {
+          "offset": 2686,
+          "before": "\"Cached input charge\"",
+          "after": "\"缓存输入费用\"",
+          "afterOffset": 2417
+        },
+        {
+          "offset": 2731,
+          "before": "\"Output charge\"",
+          "after": "\"输出费用\"",
+          "afterOffset": 2449
+        },
+        {
+          "offset": 2786,
+          "before": "\"Component\"",
+          "after": "\"分项\"",
+          "afterOffset": 2495
+        },
+        {
+          "offset": 2799,
+          "before": "\"Tokens\"",
+          "after": "\"词元\"",
+          "afterOffset": 2501
+        },
+        {
+          "offset": 2809,
+          "before": "\"Rate\"",
+          "after": "\"费率\"",
+          "afterOffset": 2507
+        },
+        {
+          "offset": 2817,
+          "before": "\"Charge\"",
+          "after": "\"费用\"",
+          "afterOffset": 2513
+        },
+        {
+          "offset": 2855,
+          "before": "\"Input\"",
+          "after": "\"输入\"",
+          "afterOffset": 2547
+        },
+        {
+          "offset": 2919,
+          "before": "\"Cached\"",
+          "after": "\"缓存\"",
+          "afterOffset": 2608
+        },
+        {
+          "offset": 2972,
+          "before": "\"Output\"",
+          "after": "\"输出\"",
+          "afterOffset": 2657
+        },
+        {
+          "offset": 3169,
+          "before": "\"Estimate text with a documented bound\"",
+          "after": "\"在已说明的范围内估算文本\"",
+          "afterOffset": 2850
+        },
+        {
+          "offset": 3258,
+          "before": "\"Count scalars\"",
+          "after": "\"统计标量值\"",
+          "afterOffset": 2914
+        },
+        {
+          "offset": 3309,
+          "before": "\"Start with a visible approximation. At four characters per token, 21 Unicode scalar values estimate six tokens. This is a baseline for preflight planning; actual provider counts can differ by language, punctuation and tokenizer.\"",
+          "after": "\"从可见的近似计算开始。每词元四字符时，21 个 Unicode 标量值估算为六个词元。这是事前规划基线；服务商实际计数可能随语言、标点和分词器而变化。\"",
+          "afterOffset": 2957
+        },
+        {
+          "offset": 3585,
+          "before": "\"Read ratio\"",
+          "after": "\"读取比率\"",
+          "afterOffset": 3080
+        },
+        {
+          "offset": 3720,
+          "before": "\"Ceiling division\"",
+          "after": "\"向上取整除法\"",
+          "afterOffset": 3209
+        },
+        {
+          "offset": 3774,
+          "before": "\"Use quotient plus a remainder check, avoiding overflow from adding ratio-1. Never label this result a provider tokenizer count.\"",
+          "after": "\"使用商和余数判断实现向上取整，避免加上 ratio-1 时溢出。不能把这个结果标为服务商分词器计数。\"",
+          "afterOffset": 3253
+        },
+        {
+          "offset": 3956,
+          "before": "\"Why might the same number of characters cost different token counts in two languages?\"",
+          "after": "\"两种语言字符数相同，为何词元数可能不同？ 图表范围：使用 JavaScript Number 演示一条请求的费用和预留，不执行 Rust 的 u64 溢出与输入类型校验，也不回放整个账本。估算不是服务商词元计数，夹具费率不是当前报价。\"",
+          "afterOffset": 3358
+        },
+        {
+          "offset": 4215,
+          "before": "\"Validate recorded usage\"",
+          "after": "\"校验已记录的用量\"",
+          "afterOffset": 3649
+        },
+        {
+          "offset": 4290,
+          "before": "\"Parse counters\"",
+          "after": "\"解析计数器\"",
+          "afterOffset": 3709
+        },
+        {
+          "offset": 4342,
+          "before": "\"The JSON adapter reads recorded input/output usage and cached input details. Rust validates the corresponding input,output,cached triplet. Cached tokens are a subset of input tokens, not an additional input charge.\"",
+          "after": "\"JSON 适配器读取记录中的输入、输出用量及缓存输入详情；Rust 校验对应的 input,output,cached 三元组。缓存词元属于输入词元子集，不能另加一笔输入费用。\"",
+          "afterOffset": 3752
+        },
+        {
+          "offset": 4604,
+          "before": "\"Check unsigned\"",
+          "after": "\"检查无符号值\"",
+          "afterOffset": 3888
+        },
+        {
+          "offset": 4791,
+          "before": "\"Cached subset\"",
+          "after": "\"缓存子集\"",
+          "afterOffset": 4067
+        },
+        {
+          "offset": 4842,
+          "before": "\"Reject booleans, negative values and cached counts above input. Keep provider response normalization outside the arithmetic core.\"",
+          "after": "\"拒绝布尔值、负值以及超过输入总数的缓存计数。服务商响应规范化放在运算核心之外。\"",
+          "afterOffset": 4109
+        },
+        {
+          "offset": 5026,
+          "before": "\"What should happen when a provider response omits required input usage?\"",
+          "after": "\"服务商响应缺少必需输入用量时，应如何处理？ 图表范围：使用 JavaScript Number 演示一条请求的费用和预留，不执行 Rust 的 u64 溢出与输入类型校验，也不回放整个账本。估算不是服务商词元计数，夹具费率不是当前报价。\"",
+          "afterOffset": 4203
+        },
+        {
+          "offset": 5271,
+          "before": "\"Price with checked integers\"",
+          "after": "\"用带溢出检查的整数计价\"",
+          "afterOffset": 4495
+        },
+        {
+          "offset": 5350,
+          "before": "\"Uncached charge\"",
+          "after": "\"未缓存费用\"",
+          "afterOffset": 4558
+        },
+        {
+          "offset": 5403,
+          "before": "\"Use supplied integer rate cards in nano-dollars per token. With input=2, output=5 and cached=1, the recorded request costs 260 nano-dollars. These fixture rates are not current provider prices.\"",
+          "after": "\"使用提供的整数费率表，单位为每词元纳美元。当费率 input=2、output=5、cached=1 时，该已记录请求的费用为 260 纳美元。这些夹具费率不是当前服务商价格。\"",
+          "afterOffset": 4601
+        },
+        {
+          "offset": 5644,
+          "before": "\"Cache charge\"",
+          "after": "\"缓存费用\"",
+          "afterOffset": 4737
+        },
+        {
+          "offset": 5828,
+          "before": "\"Output charge\"",
+          "after": "\"输出费用\"",
+          "afterOffset": 4913
+        },
+        {
+          "offset": 5879,
+          "before": "\"Multiply and add with checked u64 operations. Do not round each component through floating-point dollars.\"",
+          "after": "\"使用带溢出检查的 u64 乘法与加法。不要将各部分先转成浮点美元再舍入。\"",
+          "afterOffset": 4955
+        },
+        {
+          "offset": 6039,
+          "before": "\"How would an overflow affect budget admission if arithmetic wrapped silently?\"",
+          "after": "\"如果整数运算静默回绕，溢出会怎样影响预算准入？ 图表范围：使用 JavaScript Number 演示一条请求的费用和预留，不执行 Rust 的 u64 溢出与输入类型校验，也不回放整个账本。估算不是服务商词元计数，夹具费率不是当前报价。\"",
+          "afterOffset": 5046
+        },
+        {
+          "offset": 6290,
+          "before": "\"Admit work against a ledger\"",
+          "after": "\"根据账本决定是否接纳任务\"",
+          "afterOffset": 5340
+        },
+        {
+          "offset": 6369,
+          "before": "\"Read ledger\"",
+          "after": "\"读取账本\"",
+          "afterOffset": 5404
+        },
+        {
+          "offset": 6418,
+          "before": "\"Replay reservations against recorded usage. The first Orchard request reserves 600 and settles 260, releasing 340. A later request requiring 1,500 is blocked when only 430 remains. Saved JSON retains request ids and all settlement fields.\"",
+          "after": "\"根据记录用量回放预留。第一个 Orchard 请求预留 600，实际结算 260，释放 340。之后仅剩 430 时，需要 1,500 的请求会被阻止。保存的 JSON 保留请求 ID 和全部结算字段。\"",
+          "afterOffset": 5446
+        },
+        {
+          "offset": 6704,
+          "before": "\"Checked addition\"",
+          "after": "\"带溢出检查的加法\"",
+          "afterOffset": 5595
+        },
+        {
+          "offset": 6943,
+          "before": "\"Compare limit\"",
+          "after": "\"比较上限\"",
+          "afterOffset": 5826
+        },
+        {
+          "offset": 6994,
+          "before": "\"A settlement must record actual usage even when it exceeds the estimate. Mark an overrun explicitly; do not hide it by capping the billed cost.\"",
+          "after": "\"即使实际用量超过估算，结算也必须记录它。明确标记超支，不要通过截断计费值来隐藏。\"",
+          "afterOffset": 5868
+        },
+        {
+          "offset": 7192,
+          "before": "\"Which fields can the agent-budget-planner reuse without confusing a quote with actual usage?\"",
+          "after": "\"agent-budget-planner 可以复用哪些字段，才能避免将报价混同于实际用量？ 图表范围：使用 JavaScript Number 演示一条请求的费用和预留，不执行 Rust 的 u64 溢出与输入类型校验，也不回放整个账本。估算不是服务商词元计数，夹具费率不是当前报价。\"",
+          "afterOffset": 5963
+        }
+      ]
+    },
+    {
+      "path": "site/figures/projects/tool-call-firewall.js",
+      "sourceSha256": "28f0fac5a61810c426625ce43396ac98d6ff762cb40053340c79ca6202713c9d",
+      "localizedSha256": "b360e4a7058362784920ac49ca2f97f975d90ca3359693c1d346bc7c4d065b1c",
+      "edits": [
+        {
+          "offset": 1085,
+          "before": "\"Trusted role\"",
+          "after": "\"可信角色\"",
+          "afterOffset": 1085
+        },
+        {
+          "offset": 1166,
+          "before": "\"Requested tool\"",
+          "after": "\"请求的工具\"",
+          "afterOffset": 1158
+        },
+        {
+          "offset": 1241,
+          "before": "\"Relative path\"",
+          "after": "\"相对路径\"",
+          "afterOffset": 1224
+        },
+        {
+          "offset": 1298,
+          "before": "\"Approved content\"",
+          "after": "\"已批准内容\"",
+          "afterOffset": 1272
+        },
+        {
+          "offset": 1366,
+          "before": "\"Proposed content\"",
+          "after": "\"候选内容\"",
+          "afterOffset": 1329
+        },
+        {
+          "offset": 1436,
+          "before": "\"Approval receipt exists\"",
+          "after": "\"审批凭据存在\"",
+          "afterOffset": 1387
+        },
+        {
+          "offset": 1490,
+          "before": "\"Receipt already used\"",
+          "after": "\"凭据已经使用\"",
+          "afterOffset": 1424
+        },
+        {
+          "offset": 1546,
+          "before": "\"Audit entries\"",
+          "after": "\"审计条数\"",
+          "afterOffset": 1466
+        },
+        {
+          "offset": 1594,
+          "before": "\"Audit capacity\"",
+          "after": "\"审计容量\"",
+          "afterOffset": 1505
+        },
+        {
+          "offset": 2368,
+          "before": "\"audit limit\"",
+          "after": "\"审计已达上限\"",
+          "afterOffset": 2269
+        },
+        {
+          "offset": 2426,
+          "before": "\"policy denied\"",
+          "after": "\"策略拒绝\"",
+          "afterOffset": 2322
+        },
+        {
+          "offset": 2484,
+          "before": "\"approval missing, changed or consumed\"",
+          "after": "\"审批缺失、变化或已消费\"",
+          "afterOffset": 2371
+        },
+        {
+          "offset": 2540,
+          "before": "\"eligible for canonical containment and dispatch\"",
+          "after": "\"可进行规范路径范围检查和分派\"",
+          "afterOffset": 2401
+        },
+        {
+          "offset": 2667,
+          "before": "\"Policy\"",
+          "after": "\"策略\"",
+          "afterOffset": 2495
+        },
+        {
+          "offset": 2703,
+          "before": "\"Payload matches\"",
+          "after": "\"载荷匹配\"",
+          "afterOffset": 2527
+        },
+        {
+          "offset": 2770,
+          "before": "\"Can authorize\"",
+          "after": "\"可授权\"",
+          "afterOffset": 2583
+        },
+        {
+          "offset": 2830,
+          "before": "\"After write\"",
+          "after": "\"写入之后\"",
+          "afterOffset": 2633
+        },
+        {
+          "offset": 2906,
+          "before": "\"no consumption\"",
+          "after": "\"未消费\"",
+          "afterOffset": 2702
+        },
+        {
+          "offset": 2978,
+          "before": "\"Audit entries\"",
+          "after": "\"审计条数\"",
+          "afterOffset": 2763
+        },
+        {
+          "offset": 3028,
+          "before": "\"Audit capacity\"",
+          "after": "\"审计容量\"",
+          "afterOffset": 2804
+        },
+        {
+          "offset": 3083,
+          "before": "\"Boundary\"",
+          "after": "\"边界\"",
+          "afterOffset": 2849
+        },
+        {
+          "offset": 3095,
+          "before": "\"Result\"",
+          "after": "\"结果\"",
+          "afterOffset": 2855
+        },
+        {
+          "offset": 3133,
+          "before": "\"Identity\"",
+          "after": "\"身份\"",
+          "afterOffset": 2889
+        },
+        {
+          "offset": 3165,
+          "before": "\"Lexical path\"",
+          "after": "\"词法路径\"",
+          "afterOffset": 2915
+        },
+        {
+          "offset": 3199,
+          "before": "\"Approval replay\"",
+          "after": "\"审批重放\"",
+          "afterOffset": 2941
+        },
+        {
+          "offset": 3266,
+          "before": "\"Actual filesystem\"",
+          "after": "\"实际文件系统\"",
+          "afterOffset": 2997
+        },
+        {
+          "offset": 3287,
+          "before": "\"checked by native dispatch\"",
+          "after": "\"由原生 dispatch 检查\"",
+          "afterOffset": 3007
+        },
+        {
+          "offset": 3462,
+          "before": "\"Validate an unambiguous call envelope\"",
+          "after": "\"校验无歧义的调用封套\"",
+          "afterOffset": 3171
+        },
+        {
+          "offset": 3551,
+          "before": "\"Byte budget\"",
+          "after": "\"字节预算\"",
+          "afterOffset": 3233
+        },
+        {
+          "offset": 3600,
+          "before": "\"The caller application supplies identity; the model supplies only a proposed operation. The compact Rust envelope carries a stable request id, role, tool and relative argument without ambiguous delimiters or controls.\"",
+          "after": "\"调用方应用提供身份，模型只提出操作建议。紧凑的 Rust 消息封套携带稳定请求 ID、角色、工具和相对参数，不允许有歧义的分隔符或控制字符。\"",
+          "afterOffset": 3275
+        },
+        {
+          "offset": 3865,
+          "before": "\"Envelope fields\"",
+          "after": "\"封套字段\"",
+          "afterOffset": 3393
+        },
+        {
+          "offset": 4047,
+          "before": "\"Control gate\"",
+          "after": "\"控制字符门禁\"",
+          "afterOffset": 3564
+        },
+        {
+          "offset": 4097,
+          "before": "\"Validate the entire bounded envelope before policy evaluation. In the CLI, trusted-role is an operator argument, not a field accepted from model text.\"",
+          "after": "\"评估策略前校验整个有界封套。在 CLI 中，trusted-role 是操作者参数，不是从模型文本接收的字段。\"",
+          "afterOffset": 3608
+        },
+        {
+          "offset": 4302,
+          "before": "\"What would break if a model could replace reader with editor?\"",
+          "after": "\"如果模型能把 reader 换成 editor，会破坏什么？ 图表范围：只演示角色、词法路径和布尔审批输入，不访问文件系统。审计已满时可能仍显示可授权或 used=true 的预测；真实 CLI 在审计失败时不会执行 dispatch，不能把该显示视为实际副作用证据。\"",
+          "afterOffset": 3718
+        },
+        {
+          "offset": 4527,
+          "before": "\"Evaluate role and path policy\"",
+          "after": "\"评估角色与路径策略\"",
+          "afterOffset": 4016
+        },
+        {
+          "offset": 4608,
+          "before": "\"Known role\"",
+          "after": "\"已知角色\"",
+          "afterOffset": 4077
+        },
+        {
+          "offset": 4656,
+          "before": "\"Policy denies unknown roles, unsupported tools and unsafe path components. A reader may read a contained note; an editor write needs approval. A lexical allow is still followed by actual filesystem containment in dispatch.\"",
+          "after": "\"策略拒绝未知角色、不支持的工具和不安全路径组件。reader 可读取根目录内的便笺；editor 写入需要审批。词法判断允许后，dispatch 仍要检查实际文件系统路径是否位于根目录内。\"",
+          "afterOffset": 4119
+        },
+        {
+          "offset": 4926,
+          "before": "\"Path components\"",
+          "after": "\"路径组件\"",
+          "afterOffset": 4261
+        },
+        {
+          "offset": 5136,
+          "before": "\"Tool permission\"",
+          "after": "\"工具权限\"",
+          "afterOffset": 4460
+        },
+        {
+          "offset": 5189,
+          "before": "\"Make Deny the default branch. Check canonical paths before real file access; do not mistake a policy verdict for OS isolation.\"",
+          "after": "\"默认分支为 Deny。真实访问文件前检查规范路径，不要把策略判断当作操作系统隔离。\"",
+          "afterOffset": 4502
+        },
+        {
+          "offset": 5370,
+          "before": "\"Why can a symlink escape even when its relative name contains no parent component?\"",
+          "after": "\"相对名称不含父目录组件时，符号链接为何仍可能越界？ 图表范围：只演示角色、词法路径和布尔审批输入，不访问文件系统。审计已满时可能仍显示可授权或 used=true 的预测；真实 CLI 在审计失败时不会执行 dispatch，不能把该显示视为实际副作用证据。\"",
+          "afterOffset": 4598
+        },
+        {
+          "offset": 5616,
+          "before": "\"Consume a request-bound approval once\"",
+          "after": "\"一次性消费绑定请求的审批\"",
+          "afterOffset": 4891
+        },
+        {
+          "offset": 5705,
+          "before": "\"Decision gate\"",
+          "after": "\"决策门禁\"",
+          "afterOffset": 4955
+        },
+        {
+          "offset": 5756,
+          "before": "\"The real file dispatcher binds approval to the typed request and write content. It consumes the receipt before executing the write. A changed payload or replay fails and cannot write again.\"",
+          "after": "\"真实文件分派器把审批绑定到带类型请求及写入内容，在执行写入前消费凭据。载荷变化或重放都会失败，不能再次写入。\"",
+          "afterOffset": 4997
+        },
+        {
+          "offset": 5993,
+          "before": "\"Match identity\"",
+          "after": "\"匹配身份\"",
+          "afterOffset": 5099
+        },
+        {
+          "offset": 6234,
+          "before": "\"Check unused\"",
+          "after": "\"检查未使用\"",
+          "afterOffset": 5330
+        },
+        {
+          "offset": 6284,
+          "before": "\"Validate payload size and actual containment before consuming approval. Keep the single-use receipt in the same trusted application boundary as dispatch.\"",
+          "after": "\"消费审批前先校验载荷大小和实际路径边界。一次性凭据应与 dispatch 位于同一个可信应用边界。\"",
+          "afterOffset": 5373
+        },
+        {
+          "offset": 6492,
+          "before": "\"What persistent receipt store would you need before allowing approval reuse across process restarts?\"",
+          "after": "\"允许在进程重启后继续使用审批之前，需要怎样的持久化凭据存储？ 图表范围：只演示角色、词法路径和布尔审批输入，不访问文件系统。审计已满时可能仍显示可授权或 used=true 的预测；真实 CLI 在审计失败时不会执行 dispatch，不能把该显示视为实际副作用证据。\"",
+          "afterOffset": 5477
+        },
+        {
+          "offset": 6756,
+          "before": "\"Record bounded audit evidence\"",
+          "after": "\"记录有界审计证据\"",
+          "afterOffset": 5775
+        },
+        {
+          "offset": 6837,
+          "before": "\"Unique call\"",
+          "after": "\"唯一调用\"",
+          "afterOffset": 5835
+        },
+        {
+          "offset": 6886,
+          "before": "\"The compact audit records outcomes without copying file contents. The executable returns request id, relative argument, decision, output and whether approval was consumed and replay denied. Record request identity with the application result when integrating it.\"",
+          "after": "\"紧凑审计记录结果，不复制文件内容。可执行程序返回请求 ID、相对参数、决策、输出、审批是否已消费以及重放是否被拒绝。集成时应把请求身份与应用结果一起记录。\"",
+          "afterOffset": 5877
+        },
+        {
+          "offset": 7196,
+          "before": "\"Capacity check\"",
+          "after": "\"容量检查\"",
+          "afterOffset": 6002
+        },
+        {
+          "offset": 7410,
+          "before": "\"Omit arguments\"",
+          "after": "\"省略参数\"",
+          "afterOffset": 6206
+        },
+        {
+          "offset": 7462,
+          "before": "\"Reject duplicate audit ids and full logs before appending. This bounded in-memory audit is not a durable tamper-evident log.\"",
+          "after": "\"追加前拒绝重复审计 ID 和已满日志。有界内存审计不等于持久化防篡改日志。\"",
+          "afterOffset": 6248
+        },
+        {
+          "offset": 7641,
+          "before": "\"Which nonsecret fields would you hash to connect a durable approval receipt with an execution result?\"",
+          "after": "\"应对哪些非秘密字段计算哈希，才能关联持久审批凭据与执行结果？ 图表范围：只演示角色、词法路径和布尔审批输入，不访问文件系统。审计已满时可能仍显示可授权或 used=true 的预测；真实 CLI 在审计失败时不会执行 dispatch，不能把该显示视为实际副作用证据。\"",
+          "afterOffset": 6340
+        }
+      ]
+    }
+  ],
+  "figureLimitations": {
+    "source-grounded-study-coach": "图表范围：前三图分别演示局部证据、字符串匹配和一次间隔计算，第四图使用固定三张卡片到期日，不读取实际题卡与答题日志。它不替代完整去重、版本迁移或页面事件回放。",
+    "support-agent-with-google-adk": "图表范围：JavaScript 字符长度采用 UTF-16，词边界为 ASCII；Python 的长度和词元采用 Unicode 字符语义。四图为本地模型，显示两次调用不代表实际执行 ADK 或验证脱敏完整性。",
+    "tiny-coding-agent": "图表范围：只估算词法补丁条件与固定加法／乘法结果，不读取文件或运行测试，也不验证符号链接、文件权限或进程组超时。实际路径、替换和完成证据以 Python 运行结果为准。",
+    "token-counter-and-cost-meter": "图表范围：使用 JavaScript Number 演示一条请求的费用和预留，不执行 Rust 的 u64 溢出与输入类型校验，也不回放整个账本。估算不是服务商词元计数，夹具费率不是当前报价。",
+    "tool-call-firewall": "图表范围：只演示角色、词法路径和布尔审批输入，不访问文件系统。审计已满时可能仍显示可授权或 used=true 的预测；真实 CLI 在审计失败时不会执行 dispatch，不能把该显示视为实际副作用证据。"
+  },
+  "preservedMachineNotes": {
+    "source-grounded-study-coach": "展示范围：原测试依赖 Check and record my answer、Download attempts JSON 及 Accepted 标签，页面保留这些英文并附中文说明，未修改测试。题卡、答案、评分反馈字段和模型提示保留原值。可选提议适配器允许任意 HTTP(S) 端点，未显式禁止重定向，且在完整读取响应后才检查字符串长度；这些行为不构成安全的远程服务边界。",
+    "support-agent-with-google-adk": "展示范围：领域词、状态、知识指引、模型提示与 JSON 回复正文保留原值，以保护路由及证据契约。支持页面固定文案和帮助已译。离线路由通过不代表已验证真实 Google ADK；必须单独安装声明依赖并执行可选测试。",
+    "tiny-coding-agent": "展示范围：错误标记、补丁内容和测试输出参与规划器匹配，保留原值。运行测试会执行目标仓库中的 Python；子进程超时控制不是恶意代码隔离，输出与内存也没有硬配额。",
+    "token-counter-and-cost-meter": "展示范围：纳美元为十亿分之一美元，费率仅是输入夹具，不是当前报价。账本回放按实际用量记录超支；被预算阻止的请求不核验其后续实际用量，超过总额度后还会停止遍历，不能作为完整账单审计。",
+    "tool-call-firewall": "展示范围：批准在文件写入前标为已消费；写入失败不会自动恢复审批。文件写入不是原子替换，也没有关闭规范化后路径被并发替换的竞态。CLI 的 --approve 仅演示可信调用方创建内存凭据，不证明已完成真实用户认证或跨进程审批。"
+  }
+}

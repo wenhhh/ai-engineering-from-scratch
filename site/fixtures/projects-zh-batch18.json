@@ -1,0 +1,3387 @@
+{
+  "upstream": "c02ca08d8a49ce24c3c1c1cf8e3b422f2c7393ca",
+  "projects": [
+    "rust-agent-shell",
+    "sandbox-ladder",
+    "self-improving-skill-loop",
+    "semantic-notes-search"
+  ],
+  "files": {
+    "projects/rust-agent-shell/README.md": {
+      "sourceSha256": "70519f83e1cf2b7fd7bbe2ff49d77c8e78ab0882b98bc5447a27b30ff76e4a84",
+      "localizedSha256": "c6b0a0ed115c75caf9339811099c89013d043bac20c4ba1cdd98f30a5fcaea5c",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "bash",
+            "python3 scripts/project_test.py rust-agent-shell --init learning-artifacts/rust-agent-shell\npython3 scripts/project_test.py rust-agent-shell --stage 1 --path learning-artifacts/rust-agent-shell\n"
+          ],
+          [
+            "bash",
+            "python3 learning-artifacts/rust-agent-shell/client.py projects/rust-agent-shell/examples/workspace projects/rust-agent-shell/examples/requests.jsonl --limit 8 --out observations.jsonl\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py rust-agent-shell --all --solution --strict\npython3 scripts/project_test.py rust-agent-shell --all --path learning-artifacts/rust-agent-shell --strict\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "learning-artifacts/rust-agent-shell"
+          ],
+          [
+            "`",
+            "projects/rust-agent-shell/solution"
+          ],
+          [
+            "`",
+            "rustc"
+          ],
+          [
+            "`",
+            "schema_version: 1"
+          ]
+        ],
+        "links": [
+          "../../phases/00-setup-and-tooling/09-data-management/docs/en.md",
+          "../../phases/13-tools-and-protocols/05-tool-schema-design/docs/en.md",
+          "https://doc.rust-lang.org/book/ch04-00-understanding-ownership.html",
+          "https://doc.rust-lang.org/std/io/trait.BufRead.html",
+          "https://doc.rust-lang.org/std/path/struct.Path.html",
+          "https://www.rfc-editor.org/rfc/rfc8259",
+          "stages/01-grammar/docs/en.md",
+          "stages/02-filesystem/docs/en.md",
+          "stages/03-session/docs/en.md",
+          "stages/04-streaming/docs/en.md"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 7
+      }
+    },
+    "projects/rust-agent-shell/examples/requests.jsonl": {
+      "sourceSha256": "e5f4da6f2999ea0404cff1c916ac07e9c577a4000ba733e8dfd0bb60152f5722",
+      "localizedSha256": "e5f4da6f2999ea0404cff1c916ac07e9c577a4000ba733e8dfd0bb60152f5722",
+      "kind": "preserved-contract"
+    },
+    "projects/rust-agent-shell/examples/workspace/release.md": {
+      "sourceSha256": "7a3f865f96cd0dd1e1cff9c459c941f2deefa9ea61d1b60c341f8e36260351aa",
+      "localizedSha256": "7a3f865f96cd0dd1e1cff9c459c941f2deefa9ea61d1b60c341f8e36260351aa",
+      "kind": "preserved-contract"
+    },
+    "projects/rust-agent-shell/media/output.gif": {
+      "sourceSha256": "7aeaaf6c268665c447d47062a5d49ebb2e1887c45ab55f05d2216a91257d1c7a",
+      "localizedSha256": "7aeaaf6c268665c447d47062a5d49ebb2e1887c45ab55f05d2216a91257d1c7a",
+      "kind": "original-recording"
+    },
+    "projects/rust-agent-shell/media/output.json": {
+      "sourceSha256": "98fedbfceb71e601d4eb3615eeaa116446c0f1ce653ff7297d7bb2caddd15eef",
+      "localizedSha256": "98fedbfceb71e601d4eb3615eeaa116446c0f1ce653ff7297d7bb2caddd15eef",
+      "kind": "original-recording"
+    },
+    "projects/rust-agent-shell/media/output.png": {
+      "sourceSha256": "e444eaa114c622ea49dfdc8ea38bc414d528ee3e5a2ad271ab8a98176e368cad",
+      "localizedSha256": "e444eaa114c622ea49dfdc8ea38bc414d528ee3e5a2ad271ab8a98176e368cad",
+      "kind": "original-recording"
+    },
+    "projects/rust-agent-shell/media/run.gif": {
+      "sourceSha256": "83673b941d128cdea48f804a6874114d9e39ebccc8e80b7d4209374a2be2fbb5",
+      "localizedSha256": "83673b941d128cdea48f804a6874114d9e39ebccc8e80b7d4209374a2be2fbb5",
+      "kind": "original-recording"
+    },
+    "projects/rust-agent-shell/media/run.json": {
+      "sourceSha256": "2b2c9c5fc4b29966d56359e8da9b75d3deada23e5a566d52c7abe6dcf5025081",
+      "localizedSha256": "2b2c9c5fc4b29966d56359e8da9b75d3deada23e5a566d52c7abe6dcf5025081",
+      "kind": "original-recording"
+    },
+    "projects/rust-agent-shell/media/run.png": {
+      "sourceSha256": "558412789f241bdc19153457001090f4dda185bf5872ccb403b663746ed696be",
+      "localizedSha256": "558412789f241bdc19153457001090f4dda185bf5872ccb403b663746ed696be",
+      "kind": "original-recording"
+    },
+    "projects/rust-agent-shell/project.json": {
+      "sourceSha256": "eb92fa5cdf8776bd91fd7ead41d52cb734a6c7c87e18292d2296014f54c12306",
+      "localizedSha256": "5826df435e7cd656a12da52753d36c951145845d08588b85416fb4257d04bc06",
+      "kind": "manifest",
+      "contract": {
+        "id": "rust-agent-shell",
+        "title": "<translated-text>",
+        "level": 4,
+        "levelName": "Systems",
+        "tagline": "<translated-text>",
+        "summary": "<translated-text>",
+        "hours": 8,
+        "languages": [
+          "Rust"
+        ],
+        "status": "ready",
+        "source": "core",
+        "author": {
+          "name": "AI Engineering from Scratch",
+          "github": "rohitg00"
+        },
+        "skills": [
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "prerequisites": [
+          {
+            "title": "<translated-text>",
+            "path": "phases/00-setup-and-tooling/09-data-management"
+          },
+          {
+            "title": "<translated-text>",
+            "path": "phases/13-tools-and-protocols/05-tool-schema-design"
+          }
+        ],
+        "youWillBuild": "<translated-text>",
+        "usefulFor": [
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "demo": {
+          "command": [
+            "python3",
+            "demo.py"
+          ],
+          "cwd": "solution"
+        },
+        "stages": [
+          {
+            "id": "01-grammar",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "rust",
+            "languageWhy": "<translated-text>",
+            "requires": [
+              "rustc"
+            ],
+            "difficulty": "starter",
+            "concepts": [
+              "Action",
+              "parse_action"
+            ],
+            "figure": "pj-rust-agent-shell-1",
+            "timeout": 90
+          },
+          {
+            "id": "02-filesystem",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "rust",
+            "languageWhy": "<translated-text>",
+            "requires": [
+              "rustc"
+            ],
+            "difficulty": "core",
+            "concepts": [
+              "contained",
+              "read_text",
+              "execute"
+            ],
+            "figure": "pj-rust-agent-shell-2",
+            "timeout": 90
+          },
+          {
+            "id": "03-session",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "rust",
+            "languageWhy": "<translated-text>",
+            "requires": [
+              "rustc"
+            ],
+            "difficulty": "core",
+            "concepts": [
+              "Session.new",
+              "Session.handle"
+            ],
+            "figure": "pj-rust-agent-shell-3",
+            "timeout": 90
+          },
+          {
+            "id": "04-streaming",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "rust+python",
+            "runners": [
+              {
+                "language": "rust"
+              },
+              {
+                "language": "python"
+              }
+            ],
+            "languageWhy": "<translated-text>",
+            "requires": [
+              "rustc"
+            ],
+            "difficulty": "core",
+            "concepts": [
+              "read_bounded",
+              "json_string",
+              "Event.json",
+              "run_loop"
+            ],
+            "figure": "pj-rust-agent-shell-4",
+            "timeout": 90
+          }
+        ],
+        "demos": [
+          {
+            "gif": "media/run.gif",
+            "poster": "media/run.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          },
+          {
+            "gif": "media/output.gif",
+            "poster": "media/output.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          }
+        ]
+      }
+    },
+    "projects/rust-agent-shell/solution/client.py": {
+      "sourceSha256": "42e33ca44e34ef5d526227a190d995711b998b6e396e9ed78b70582a4114d3e8",
+      "localizedSha256": "b7c06d44e1c66e1f0a50a868e67e85a5c27f01914d331241dac1bf86ce03d28a",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "Send versioned JSON requests through the bounded Rust action loop.",
+          "通过有界 Rust 动作循环发送带版本的 JSON 请求。"
+        ],
+        [
+          "def receipts(rows, stdout, reason, abnormal=False):",
+          "# 缺失响应只说明没有执行证据；not-executed 名称不能证明外部动作从未发生。\ndef receipts(rows, stdout, reason, abnormal=False):"
+        ]
+      ]
+    },
+    "projects/rust-agent-shell/solution/demo.py": {
+      "sourceSha256": "68e851689c133401fac10419cea5142c72c9800a52ae1c57c7f9e9a71bf88a91",
+      "localizedSha256": "68e851689c133401fac10419cea5142c72c9800a52ae1c57c7f9e9a71bf88a91",
+      "kind": "preserved-contract"
+    },
+    "projects/rust-agent-shell/solution/main.rs": {
+      "sourceSha256": "4207af019f5210e30fce8a86af5084b1af79a2e928862bdea85bf80f04fd629d",
+      "localizedSha256": "1c29a30e02e6ff0cbdebe6f4cf877aef97b1a15094e8d07919979ccf87b33c2d",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "// Streaming Agent Shell in Rust from the standard library.\n// Stage contracts live under projects/rust-agent-shell/stages/.\n// The default demo is bounded and uses only the local fixture.\n// Official references are listed in README.md.",
+          "// 使用标准库实现的 Rust 流式智能体执行器。\n// 阶段契约位于 projects/rust-agent-shell/stages/。\n// 默认演示有界，只使用本地测试夹具。\n// 官方参考资料见 README.md；命令与事件字符串保留原值。"
+        ]
+      ]
+    },
+    "projects/rust-agent-shell/stages/01-grammar/docs/en.md": {
+      "sourceSha256": "fa5f618bd8934dc352be42f3f7fbcf371ef660c09065c236dc04cc5b6e3407f2",
+      "localizedSha256": "603517f62446b0ce9b2837f1a62c2593a8909ae7ea8efb2b56b96986e5368fc5",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-rust-agent-shell-1\n"
+          ],
+          [
+            "text",
+            "{\"id\":\"evidence\",\"tool\":\"search\",\"arguments\":{\"pattern\":\"Restore\",\"path\":\"release.md\"}}\nwire: search Restore<TAB>release.md\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py rust-agent-shell --init learning-artifacts/rust-agent-shell\npython3 scripts/project_test.py rust-agent-shell --stage 1 --path learning-artifacts/rust-agent-shell\n"
+          ]
+        ],
+        "inlineCode": [],
+        "links": [
+          "../../../../../phases/00-setup-and-tooling/09-data-management/docs/en.md",
+          "https://doc.rust-lang.org/book/ch04-00-understanding-ownership.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/rust-agent-shell/stages/01-grammar/starter/client.py": {
+      "sourceSha256": "42e33ca44e34ef5d526227a190d995711b998b6e396e9ed78b70582a4114d3e8",
+      "localizedSha256": "7ec36858a15b2b60eceb2f4de1d5d9157e6aec19fd856a11f719b4a9261194c4",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "Send versioned JSON requests through the bounded Rust action loop.",
+          "通过有界 Rust 动作循环发送带版本的 JSON 请求。"
+        ]
+      ]
+    },
+    "projects/rust-agent-shell/stages/01-grammar/starter/demo.py": {
+      "sourceSha256": "a0c727748189d9dbea9f8df7a4f60996716fc0cb87b9941a23573a7f5df484ab",
+      "localizedSha256": "a0c727748189d9dbea9f8df7a4f60996716fc0cb87b9941a23573a7f5df484ab",
+      "kind": "preserved-contract"
+    },
+    "projects/rust-agent-shell/stages/01-grammar/starter/main.rs": {
+      "sourceSha256": "f1c85b0c7427bb90648ef24d1eedb7a35d51468d9080da2d3c5523fb2aa3a6bc",
+      "localizedSha256": "f1c85b0c7427bb90648ef24d1eedb7a35d51468d9080da2d3c5523fb2aa3a6bc",
+      "kind": "preserved-contract"
+    },
+    "projects/rust-agent-shell/stages/01-grammar/tests/stage.rs": {
+      "sourceSha256": "09431dd8cd39e38e3e18fd9e44286be74d255de2e76b09630733633b30573f30",
+      "localizedSha256": "09431dd8cd39e38e3e18fd9e44286be74d255de2e76b09630733633b30573f30",
+      "kind": "preserved-contract"
+    },
+    "projects/rust-agent-shell/stages/02-filesystem/docs/en.md": {
+      "sourceSha256": "3ee1ec957dca5306dbf4d3d8c29b95dd34047ef266f71ea91b994dce46651436",
+      "localizedSha256": "0e1b69328f6f9fe5a9a72b1ba7f593e834b9f878783b4e7c68a63aa66b5febc8",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-rust-agent-shell-2\n"
+          ],
+          [
+            "text",
+            "workspace=/work/orchard\nrelease.md -> /work/orchard/release.md -> allowed\nlink.md -> /outside/credentials -> rejected\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py rust-agent-shell --stage 2 --path learning-artifacts/rust-agent-shell\n"
+          ]
+        ],
+        "inlineCode": [],
+        "links": [
+          "../../../../../phases/00-setup-and-tooling/09-data-management/docs/en.md",
+          "../../01-grammar/docs/en.md",
+          "https://doc.rust-lang.org/book/ch04-00-understanding-ownership.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/rust-agent-shell/stages/02-filesystem/starter/stage-2.md": {
+      "sourceSha256": "a8a136498f8fee6812428e2a58f16d7c42a629ba3705b8d5d150076dd865d147",
+      "localizedSha256": "3e661cc2df081038c9585754f0dd1dada1ea17ef0d5bad29b183fbeaf22df7f5",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/rust-agent-shell/stages/02-filesystem/tests/stage.rs": {
+      "sourceSha256": "3602fabbc5eafb1b512bb1eb7df35a154e5742d8ac676863f47b385046d6f82e",
+      "localizedSha256": "3602fabbc5eafb1b512bb1eb7df35a154e5742d8ac676863f47b385046d6f82e",
+      "kind": "preserved-contract"
+    },
+    "projects/rust-agent-shell/stages/03-session/docs/en.md": {
+      "sourceSha256": "f5121c345ee1f553603ef41b847a6a580e4f8d6cdbf22a022ef6dce5340237ce",
+      "localizedSha256": "93777f5abec0f04412252056af7e3269b1d6c3db7268f8e402725325c42d153f",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-rust-agent-shell-3\n"
+          ],
+          [
+            "text",
+            "limit=2\nrequest 1: list -> step 1\nrequest 2: rejected grammar -> step 2\nrequest 3 -> terminal budget_exhausted\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py rust-agent-shell --stage 3 --path learning-artifacts/rust-agent-shell\n"
+          ]
+        ],
+        "inlineCode": [],
+        "links": [
+          "../../../../../phases/00-setup-and-tooling/09-data-management/docs/en.md",
+          "../../02-filesystem/docs/en.md",
+          "https://doc.rust-lang.org/book/ch04-00-understanding-ownership.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/rust-agent-shell/stages/03-session/starter/stage-3.md": {
+      "sourceSha256": "8820ea18b22aed85e8df8bfe8aca0d3283a3e0d7a40fdd48ca679caeb8a4c723",
+      "localizedSha256": "84b0a55706401ec754092be8c827a9b02f87412e58cc640f3580cdcacd25d764",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/rust-agent-shell/stages/03-session/tests/stage.rs": {
+      "sourceSha256": "68c0becc7f20f005e3fe0b163391a872220341d9c14fa93caa1190d2496f37f2",
+      "localizedSha256": "68c0becc7f20f005e3fe0b163391a872220341d9c14fa93caa1190d2496f37f2",
+      "kind": "preserved-contract"
+    },
+    "projects/rust-agent-shell/stages/04-streaming/docs/en.md": {
+      "sourceSha256": "a7910136bd7b0dd70a7faa919503df420089e7dc495610e9b269ede2391c01c8",
+      "localizedSha256": "59d14dcfc4a5ac2b4263d17668b1dc857ccf52e746c968f5d757009ec1cc5086",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-rust-agent-shell-4\n"
+          ],
+          [
+            "text",
+            "request evidence -> {request_id:evidence, seq:2, kind:ok}\noutput: 2:Restore evidence: rehearsal completed at 09:20 UTC.\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py rust-agent-shell --stage 4 --path learning-artifacts/rust-agent-shell\n"
+          ],
+          [
+            "bash",
+            "python3 learning-artifacts/rust-agent-shell/client.py projects/rust-agent-shell/examples/workspace projects/rust-agent-shell/examples/requests.jsonl --limit 8 --out observations.jsonl\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "kind: \"not-executed\""
+          ]
+        ],
+        "links": [
+          "../../../../../phases/00-setup-and-tooling/09-data-management/docs/en.md",
+          "../../03-session/docs/en.md",
+          "https://doc.rust-lang.org/book/ch04-00-understanding-ownership.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/rust-agent-shell/stages/04-streaming/starter/stage-4.md": {
+      "sourceSha256": "1b95c43efd025fca261068edb88f10c397c9c4131a8bc609f520779ba092f1ef",
+      "localizedSha256": "6a7c552084c2f1c22bb6298de0ad85227a0c8142f5d86cf85a1bfb3e9d5e6649",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/rust-agent-shell/stages/04-streaming/tests/stage.rs": {
+      "sourceSha256": "a54e3b8476eb84ed1f1b32667d9c47920b0368b4b7b373c5a5bfc41668a3241d",
+      "localizedSha256": "a54e3b8476eb84ed1f1b32667d9c47920b0368b4b7b373c5a5bfc41668a3241d",
+      "kind": "preserved-contract"
+    },
+    "projects/rust-agent-shell/stages/04-streaming/tests/test_client.py": {
+      "sourceSha256": "c6cb16eff9abd0212dfc7bd4647b7463d1515a27498699be8e3241751d0fabb8",
+      "localizedSha256": "c6cb16eff9abd0212dfc7bd4647b7463d1515a27498699be8e3241751d0fabb8",
+      "kind": "preserved-contract"
+    },
+    "projects/rust-agent-shell/stages/04-streaming/tests/test_interrupted_receipts.py": {
+      "sourceSha256": "cec80f72f707c992c14d4c8a48b8459d42bc4f86b6c5468a040162fecc44fdc9",
+      "localizedSha256": "cec80f72f707c992c14d4c8a48b8459d42bc4f86b6c5468a040162fecc44fdc9",
+      "kind": "preserved-contract"
+    },
+    "projects/sandbox-ladder/README.md": {
+      "sourceSha256": "06297331d343904ebe468db285431b9199dd3cea249eb1cde6eb475cf246b0f1",
+      "localizedSha256": "e468e89cb474e367af7e7f11266960578d8affa8780043ff8f4d6e0ab20fe515",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "bash",
+            "python3 scripts/project_test.py sandbox-ladder --init learning-artifacts/sandbox-ladder\npython3 scripts/project_test.py sandbox-ladder --stage 1 --path learning-artifacts/sandbox-ladder\n"
+          ],
+          [
+            "bash",
+            "python3 learning-artifacts/sandbox-ladder/cli.py untrusted=true,secrets=true,network=true,host_kernel=false --budget 3\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py sandbox-ladder --all --solution --strict\npython3 scripts/project_test.py sandbox-ladder --all --path learning-artifacts/sandbox-ladder --strict\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "learning-artifacts/sandbox-ladder"
+          ],
+          [
+            "`",
+            "projects/sandbox-ladder/solution"
+          ],
+          [
+            "`",
+            "rustc"
+          ],
+          [
+            "`",
+            "schema_version: 1"
+          ]
+        ],
+        "links": [
+          "../../phases/00-setup-and-tooling/07-docker-for-ai/docs/en.md",
+          "../../phases/17-infrastructure-and-production/25-security-secrets-audit/docs/en.md",
+          "https://doc.rust-lang.org/book/ch04-00-understanding-ownership.html",
+          "https://docs.docker.com/engine/security/",
+          "stages/01-parse-the-capability-request/docs/en.md",
+          "stages/02-define-modeled-control-profiles/docs/en.md",
+          "stages/03-select-the-least-costly-sufficient-profile/docs/en.md",
+          "stages/04-report-residual-assumptions/docs/en.md"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 5
+      }
+    },
+    "projects/sandbox-ladder/media/output.gif": {
+      "sourceSha256": "3d682e15b23d44a084c842779c8a55a9718dac5887e5ead587696d6464272f73",
+      "localizedSha256": "3d682e15b23d44a084c842779c8a55a9718dac5887e5ead587696d6464272f73",
+      "kind": "original-recording"
+    },
+    "projects/sandbox-ladder/media/output.json": {
+      "sourceSha256": "19c18001156d073a2776d02dbbd52c59c9c84869ec7538ed2273b51f8d639b59",
+      "localizedSha256": "19c18001156d073a2776d02dbbd52c59c9c84869ec7538ed2273b51f8d639b59",
+      "kind": "original-recording"
+    },
+    "projects/sandbox-ladder/media/output.png": {
+      "sourceSha256": "c2645ad6b0e6f62d81fbffe50f5f001fdc302f01168c56e978bc8d26ca80d4ed",
+      "localizedSha256": "c2645ad6b0e6f62d81fbffe50f5f001fdc302f01168c56e978bc8d26ca80d4ed",
+      "kind": "original-recording"
+    },
+    "projects/sandbox-ladder/media/run.gif": {
+      "sourceSha256": "964adff07e04e132430cfb19c83622a3308ce7d04ac75a42e1ee58dce227ce86",
+      "localizedSha256": "964adff07e04e132430cfb19c83622a3308ce7d04ac75a42e1ee58dce227ce86",
+      "kind": "original-recording"
+    },
+    "projects/sandbox-ladder/media/run.json": {
+      "sourceSha256": "a2fa2010f9e8a9e239affd0a9351f713d37d66f9eb4daf5ed721c82243608b2d",
+      "localizedSha256": "a2fa2010f9e8a9e239affd0a9351f713d37d66f9eb4daf5ed721c82243608b2d",
+      "kind": "original-recording"
+    },
+    "projects/sandbox-ladder/media/run.png": {
+      "sourceSha256": "bb745255f109863d0241a9005c6e5f2a7a7a80c9a84a017a8e7422a82f315bbf",
+      "localizedSha256": "bb745255f109863d0241a9005c6e5f2a7a7a80c9a84a017a8e7422a82f315bbf",
+      "kind": "original-recording"
+    },
+    "projects/sandbox-ladder/project.json": {
+      "sourceSha256": "3b4f6aa734f1df34bef6f49045661af9923b87a902cd5fd73232b82af46f499a",
+      "localizedSha256": "5c8d7504d3657ef9331d360b57bf7654ad1f9ae65d682f8a4a27e30b04b38a7e",
+      "kind": "manifest",
+      "contract": {
+        "id": "sandbox-ladder",
+        "title": "<translated-text>",
+        "level": 4,
+        "levelName": "Systems",
+        "tagline": "<translated-text>",
+        "summary": "<translated-text>",
+        "usefulFor": [
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "youWillBuild": "<translated-text>",
+        "hours": 8,
+        "languages": [
+          "Rust"
+        ],
+        "status": "ready",
+        "source": "core",
+        "author": {
+          "name": "AI Engineering from Scratch",
+          "github": "rohitg00"
+        },
+        "skills": [
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "prerequisites": [
+          {
+            "title": "<translated-text>",
+            "path": "phases/00-setup-and-tooling/07-docker-for-ai"
+          },
+          {
+            "title": "<translated-text>",
+            "path": "phases/17-infrastructure-and-production/25-security-secrets-audit"
+          }
+        ],
+        "inspiredBy": [],
+        "demo": {
+          "command": [
+            "python3",
+            "demo.py"
+          ],
+          "cwd": "solution"
+        },
+        "stages": [
+          {
+            "id": "01-parse-the-capability-request",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "rust",
+            "difficulty": "starter",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ]
+          },
+          {
+            "id": "02-define-modeled-control-profiles",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "rust",
+            "difficulty": "core",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ]
+          },
+          {
+            "id": "03-select-the-least-costly-sufficient-profile",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "rust",
+            "difficulty": "core",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ]
+          },
+          {
+            "id": "04-report-residual-assumptions",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "rust",
+            "difficulty": "core",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ]
+          }
+        ],
+        "demos": [
+          {
+            "gif": "media/run.gif",
+            "poster": "media/run.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          },
+          {
+            "gif": "media/output.gif",
+            "poster": "media/output.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          }
+        ]
+      }
+    },
+    "projects/sandbox-ladder/solution/cli.py": {
+      "sourceSha256": "0a663c6da1b2278b886b71914a1be859fc49a9cc7d69afe6954ba81b48cd0bbd",
+      "localizedSha256": "80198cebff0a3bc50670992819cc981c2c345959bd09a819ccc870b8519873b1",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "Choose a modeled policy; optionally verify one local Docker container boundary.",
+          "选择模拟策略；可选验证一个本地 Docker 容器边界。"
+        ]
+      ]
+    },
+    "projects/sandbox-ladder/solution/cli.rs": {
+      "sourceSha256": "feafa52ae33bfefbf1a73cfc11d84f3a223750166e14b0ee2f8de480ef391a27",
+      "localizedSha256": "feafa52ae33bfefbf1a73cfc11d84f3a223750166e14b0ee2f8de480ef391a27",
+      "kind": "preserved-contract"
+    },
+    "projects/sandbox-ladder/solution/demo.py": {
+      "sourceSha256": "873c7a71a1dabda300bdefea0dfe94eea65076f393a5c62e7dfb4d5b01944b28",
+      "localizedSha256": "873c7a71a1dabda300bdefea0dfe94eea65076f393a5c62e7dfb4d5b01944b28",
+      "kind": "preserved-contract"
+    },
+    "projects/sandbox-ladder/solution/main.rs": {
+      "sourceSha256": "893bc21cfea4c67b6141138faf33aa48f744d61d81652d9cc0d7be82e696cac8",
+      "localizedSha256": "893bc21cfea4c67b6141138faf33aa48f744d61d81652d9cc0d7be82e696cac8",
+      "kind": "preserved-contract"
+    },
+    "projects/sandbox-ladder/solution/stage1.rs": {
+      "sourceSha256": "28d0f31f5f82d4c4aecbc03a65657329344893725382241595ce4e56b50ef343",
+      "localizedSha256": "3eb6a77b2aa122d0128bbdf2b34444672a3ce30845d943dce21fd70d16b1ee66",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "use super::*;",
+          "// 解析精确布尔需求，拒绝重复键与未知能力。\nuse super::*;"
+        ]
+      ]
+    },
+    "projects/sandbox-ladder/solution/stage2.rs": {
+      "sourceSha256": "d19105f928197483a974b4d652c53883959aa826e7741f054d2d4d6f928bc027",
+      "localizedSha256": "30b0f330c8cf780f8f44a559c09c26b1a443a21eba7298d255d0ceb2038e5bc4",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "use super::*;",
+          "// 能力配置仅是模型；配置名称与示意成本不证明实际隔离。\nuse super::*;"
+        ]
+      ]
+    },
+    "projects/sandbox-ladder/solution/stage3.rs": {
+      "sourceSha256": "9bcdf26de24446ec20aa886799f1a546547ed22ef397d084e5fea179a775c038",
+      "localizedSha256": "9395789ec3ab435576efccc61a54329ac3487fd7f75b998f56fd9e885717e584",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "use super::*;",
+          "// 先满足能力与预算，再按成本和名称选择；不能自动降低需求。\nuse super::*;"
+        ]
+      ]
+    },
+    "projects/sandbox-ladder/solution/stage4.rs": {
+      "sourceSha256": "d9bd300f158e11e40d8e405917cb50f8f6a237d4b98eb2e0f7c6df61229053af",
+      "localizedSha256": "06ab2fe1a8e857025227aaeb6634e33322b16de8d7077d1b200ae54eea8cfda9",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "use super::*;",
+          "// 保留机器可读策略与剩余风险字段，不把模拟输出当作运行时验证。\nuse super::*;"
+        ]
+      ]
+    },
+    "projects/sandbox-ladder/solution/types.rs": {
+      "sourceSha256": "84da0d9baa7da586b2e2ebb0ccc6876c8469141be0678e674cb37d3288f4a65d",
+      "localizedSha256": "84da0d9baa7da586b2e2ebb0ccc6876c8469141be0678e674cb37d3288f4a65d",
+      "kind": "preserved-contract"
+    },
+    "projects/sandbox-ladder/stages/01-parse-the-capability-request/docs/en.md": {
+      "sourceSha256": "d68d66605054bd1bb86d459b3776207357f997127c89d55c46248a14b388b020",
+      "localizedSha256": "d3a2e173dc898e3600a5cd61b424e8553774b090b8477911e06b528bacff4f1c",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-sandbox-ladder-1\n"
+          ],
+          [
+            "rust",
+            "pub fn needs(text:&str)->Result<Needs,Error>\n"
+          ],
+          [
+            "text",
+            "untrusted=true,secrets=true,network=true,host_kernel=false\nrequired: filesystem boundary + denied network\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py sandbox-ladder --init learning-artifacts/sandbox-ladder\npython3 scripts/project_test.py sandbox-ladder --stage 1 --path learning-artifacts/sandbox-ladder\n"
+          ]
+        ],
+        "inlineCode": [],
+        "links": [
+          "../../../../../phases/00-setup-and-tooling/07-docker-for-ai/docs/en.md",
+          "https://doc.rust-lang.org/book/ch04-00-understanding-ownership.html",
+          "https://docs.docker.com/engine/security/"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/sandbox-ladder/stages/01-parse-the-capability-request/starter/cli.py": {
+      "sourceSha256": "0a663c6da1b2278b886b71914a1be859fc49a9cc7d69afe6954ba81b48cd0bbd",
+      "localizedSha256": "80198cebff0a3bc50670992819cc981c2c345959bd09a819ccc870b8519873b1",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "Choose a modeled policy; optionally verify one local Docker container boundary.",
+          "选择模拟策略；可选验证一个本地 Docker 容器边界。"
+        ]
+      ]
+    },
+    "projects/sandbox-ladder/stages/01-parse-the-capability-request/starter/cli.rs": {
+      "sourceSha256": "feafa52ae33bfefbf1a73cfc11d84f3a223750166e14b0ee2f8de480ef391a27",
+      "localizedSha256": "feafa52ae33bfefbf1a73cfc11d84f3a223750166e14b0ee2f8de480ef391a27",
+      "kind": "preserved-contract"
+    },
+    "projects/sandbox-ladder/stages/01-parse-the-capability-request/starter/main.rs": {
+      "sourceSha256": "893bc21cfea4c67b6141138faf33aa48f744d61d81652d9cc0d7be82e696cac8",
+      "localizedSha256": "893bc21cfea4c67b6141138faf33aa48f744d61d81652d9cc0d7be82e696cac8",
+      "kind": "preserved-contract"
+    },
+    "projects/sandbox-ladder/stages/01-parse-the-capability-request/starter/stage1.rs": {
+      "sourceSha256": "5b4c13f43ed74ce5ba78f7ae64783e0c16dd1d8c72c01187024868adea8f0f56",
+      "localizedSha256": "5b4c13f43ed74ce5ba78f7ae64783e0c16dd1d8c72c01187024868adea8f0f56",
+      "kind": "preserved-contract"
+    },
+    "projects/sandbox-ladder/stages/01-parse-the-capability-request/starter/types.rs": {
+      "sourceSha256": "84da0d9baa7da586b2e2ebb0ccc6876c8469141be0678e674cb37d3288f4a65d",
+      "localizedSha256": "84da0d9baa7da586b2e2ebb0ccc6876c8469141be0678e674cb37d3288f4a65d",
+      "kind": "preserved-contract"
+    },
+    "projects/sandbox-ladder/stages/01-parse-the-capability-request/tests/stage.rs": {
+      "sourceSha256": "6e872a62d58eaf66a102c6198f2883db3d07c8dfea4c31ef43b2552a09f0823a",
+      "localizedSha256": "6e872a62d58eaf66a102c6198f2883db3d07c8dfea4c31ef43b2552a09f0823a",
+      "kind": "preserved-contract"
+    },
+    "projects/sandbox-ladder/stages/02-define-modeled-control-profiles/docs/en.md": {
+      "sourceSha256": "66b45815c053ba6128e0b54f63bdf3c00a9c7be23d0f7b6e7e7ceb60d7688f1b",
+      "localizedSha256": "caeaa229ed6fa7d0ca3f3d78d761a8f5ba4ef3ee18f8bb695f6a6ce44ce373f0",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-sandbox-ladder-2\n"
+          ],
+          [
+            "rust",
+            "pub fn profiles()->Vec<Profile>\npub fn satisfies(n:&Needs,p:&Profile)->bool\n"
+          ],
+          [
+            "text",
+            "process: filesystem=false, network=false, kernel=false\ncontainer: filesystem=true, network=true, kernel=false\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py sandbox-ladder --stage 2 --path learning-artifacts/sandbox-ladder\n"
+          ]
+        ],
+        "inlineCode": [],
+        "links": [
+          "../../../../../phases/00-setup-and-tooling/07-docker-for-ai/docs/en.md",
+          "../../01-parse-the-capability-request/docs/en.md",
+          "https://doc.rust-lang.org/book/ch04-00-understanding-ownership.html",
+          "https://docs.docker.com/engine/security/"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/sandbox-ladder/stages/02-define-modeled-control-profiles/starter/stage2.rs": {
+      "sourceSha256": "8ffcc8c17819621e71cfc6137721fc8d8dbf1f96330a49f3aaebd864c545ba9c",
+      "localizedSha256": "8ffcc8c17819621e71cfc6137721fc8d8dbf1f96330a49f3aaebd864c545ba9c",
+      "kind": "preserved-contract"
+    },
+    "projects/sandbox-ladder/stages/02-define-modeled-control-profiles/tests/stage.rs": {
+      "sourceSha256": "ea10af9a6b2d9ca9037510476c61642e1a9df9ad0b0223f0b939b8ea13ced4e9",
+      "localizedSha256": "ea10af9a6b2d9ca9037510476c61642e1a9df9ad0b0223f0b939b8ea13ced4e9",
+      "kind": "preserved-contract"
+    },
+    "projects/sandbox-ladder/stages/03-select-the-least-costly-sufficient-profile/docs/en.md": {
+      "sourceSha256": "4ab88c229048a32a0f78a9e89aa2f04f933c1e306ba9a1da736cfccaa13db2a8",
+      "localizedSha256": "41cacf9b2bc869a5d3a327eef1f7eba53cd495bf1d0563a3080c6b10221de1ff",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-sandbox-ladder-3\n"
+          ],
+          [
+            "rust",
+            "pub fn select(n:&Needs,candidates:&[Profile],budget:u32)->Result<Profile,Error>\n"
+          ],
+          [
+            "text",
+            "kernel separation required; candidates costs 1,2,3,5\nbudget 4 -> no sufficient profile\nbudget 5 -> microvm-fixture\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py sandbox-ladder --stage 3 --path learning-artifacts/sandbox-ladder\n"
+          ]
+        ],
+        "inlineCode": [],
+        "links": [
+          "../../../../../phases/00-setup-and-tooling/07-docker-for-ai/docs/en.md",
+          "../../02-define-modeled-control-profiles/docs/en.md",
+          "https://doc.rust-lang.org/book/ch04-00-understanding-ownership.html",
+          "https://docs.docker.com/engine/security/"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/sandbox-ladder/stages/03-select-the-least-costly-sufficient-profile/starter/stage3.rs": {
+      "sourceSha256": "70ddeda18492e1677c814d67f1a248f621ee1b298e1f10d8e1186bccd9381114",
+      "localizedSha256": "70ddeda18492e1677c814d67f1a248f621ee1b298e1f10d8e1186bccd9381114",
+      "kind": "preserved-contract"
+    },
+    "projects/sandbox-ladder/stages/03-select-the-least-costly-sufficient-profile/tests/stage.rs": {
+      "sourceSha256": "5f8db04a8d42f57575993970469922f07f80bc30d3124df3c8b739486e91f78f",
+      "localizedSha256": "5f8db04a8d42f57575993970469922f07f80bc30d3124df3c8b739486e91f78f",
+      "kind": "preserved-contract"
+    },
+    "projects/sandbox-ladder/stages/04-report-residual-assumptions/docs/en.md": {
+      "sourceSha256": "da8551322e5428ce072c766966a877606ac1e3b30bf3d542256ecfade20b310b",
+      "localizedSha256": "069324348e2d80b8f4fb1e3a291243db35d4e67df35f1ed4c778d2679f6831de",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-sandbox-ladder-4\n"
+          ],
+          [
+            "rust",
+            "pub fn plan(n:&Needs,p:&Profile)->Result<String,Error>\n"
+          ],
+          [
+            "text",
+            "--docker-image alpine:local -> command preview\n--execute -> docker_probe with observed stdout\nshared host kernel remains a residual\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py sandbox-ladder --stage 4 --path learning-artifacts/sandbox-ladder\n"
+          ],
+          [
+            "bash",
+            "python3 learning-artifacts/sandbox-ladder/cli.py untrusted=true,secrets=true,network=true,host_kernel=false --budget 3\n"
+          ]
+        ],
+        "inlineCode": [],
+        "links": [
+          "../../../../../phases/00-setup-and-tooling/07-docker-for-ai/docs/en.md",
+          "../../03-select-the-least-costly-sufficient-profile/docs/en.md",
+          "https://doc.rust-lang.org/book/ch04-00-understanding-ownership.html",
+          "https://docs.docker.com/engine/security/"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/sandbox-ladder/stages/04-report-residual-assumptions/starter/stage4.rs": {
+      "sourceSha256": "a018cdcecc9dbeb1f18698a79d07ab3804da64924c617a2e4f89e1b630e28eab",
+      "localizedSha256": "a018cdcecc9dbeb1f18698a79d07ab3804da64924c617a2e4f89e1b630e28eab",
+      "kind": "preserved-contract"
+    },
+    "projects/sandbox-ladder/stages/04-report-residual-assumptions/tests/stage.rs": {
+      "sourceSha256": "929533d715b1c4fe1da987a3b9f6c5b18295cf185cbd78fbb9bf4200af9a38c3",
+      "localizedSha256": "929533d715b1c4fe1da987a3b9f6c5b18295cf185cbd78fbb9bf4200af9a38c3",
+      "kind": "preserved-contract"
+    },
+    "projects/self-improving-skill-loop/README.md": {
+      "sourceSha256": "3b1df60f4513f6a8a25c3e38970049c3c4049e56b875c9a75ff34262f86487bc",
+      "localizedSha256": "af102620ea559a584bdbbbac6e3df66c6d1b52def5c394970fb546895107604f",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "bash",
+            "python3 scripts/project_test.py self-improving-skill-loop --init learning-artifacts/self-improving-skill-loop\npython3 scripts/project_test.py self-improving-skill-loop --stage 1 --path learning-artifacts/self-improving-skill-loop\n"
+          ],
+          [
+            "bash",
+            "python3 learning-artifacts/self-improving-skill-loop/cli.py projects/self-improving-skill-loop/examples/support-cases.json --out experiment.json\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py self-improving-skill-loop --all --solution --strict\npython3 scripts/project_test.py self-improving-skill-loop --all --path learning-artifacts/self-improving-skill-loop --strict\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "--dataset-audit audit.json"
+          ],
+          [
+            "`",
+            "--export-skill orchard-routing"
+          ],
+          [
+            "`",
+            "SKILL.md"
+          ],
+          [
+            "`",
+            "learning-artifacts/self-improving-skill-loop"
+          ],
+          [
+            "`",
+            "partitions.test"
+          ],
+          [
+            "`",
+            "partitions.train"
+          ],
+          [
+            "`",
+            "projects/self-improving-skill-loop/solution"
+          ],
+          [
+            "`",
+            "references/rules.json"
+          ],
+          [
+            "`",
+            "schema_version: 1"
+          ]
+        ],
+        "links": [
+          "../../phases/02-ml-fundamentals/09-model-evaluation/docs/en.md",
+          "../../phases/14-agent-engineering/34-repo-memory-and-state/docs/en.md",
+          "../../phases/14-agent-engineering/38-verification-gates/docs/en.md",
+          "https://docs.python.org/3/tutorial/datastructures.html",
+          "stages/01-dataset/docs/en.md",
+          "stages/02-skill/docs/en.md",
+          "stages/03-propose/docs/en.md",
+          "stages/04-promotion/docs/en.md"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 4
+      }
+    },
+    "projects/self-improving-skill-loop/examples/support-cases.json": {
+      "sourceSha256": "253e8ecaaa6ad9e3b35ff49f3da6d1454924a3b44df7fe7d7928129a99369524",
+      "localizedSha256": "253e8ecaaa6ad9e3b35ff49f3da6d1454924a3b44df7fe7d7928129a99369524",
+      "kind": "preserved-contract"
+    },
+    "projects/self-improving-skill-loop/media/output.gif": {
+      "sourceSha256": "27df51fd521f0ead8ea0dde1ca7fb146e0d793dd45b2ffac5e36c602fe87c932",
+      "localizedSha256": "27df51fd521f0ead8ea0dde1ca7fb146e0d793dd45b2ffac5e36c602fe87c932",
+      "kind": "original-recording"
+    },
+    "projects/self-improving-skill-loop/media/output.json": {
+      "sourceSha256": "db0d55b27e12f0346319babdc43509a61d136e8233f4e4538c18390014d79e77",
+      "localizedSha256": "db0d55b27e12f0346319babdc43509a61d136e8233f4e4538c18390014d79e77",
+      "kind": "original-recording"
+    },
+    "projects/self-improving-skill-loop/media/output.png": {
+      "sourceSha256": "96dc5ed3b14175dc7dfad038ff953f750c45f4b398fe25503ca9283fedc001c7",
+      "localizedSha256": "96dc5ed3b14175dc7dfad038ff953f750c45f4b398fe25503ca9283fedc001c7",
+      "kind": "original-recording"
+    },
+    "projects/self-improving-skill-loop/media/run.gif": {
+      "sourceSha256": "9a700b4d4ddcc9a9491f5d508282f4789b5a3e581fdb80305d952bf07f0501ba",
+      "localizedSha256": "9a700b4d4ddcc9a9491f5d508282f4789b5a3e581fdb80305d952bf07f0501ba",
+      "kind": "original-recording"
+    },
+    "projects/self-improving-skill-loop/media/run.json": {
+      "sourceSha256": "8049fade2e8c4058d63a72ae6e52069e1c5de254b017a733d41381b7a61d7728",
+      "localizedSha256": "8049fade2e8c4058d63a72ae6e52069e1c5de254b017a733d41381b7a61d7728",
+      "kind": "original-recording"
+    },
+    "projects/self-improving-skill-loop/media/run.png": {
+      "sourceSha256": "3715c76a659c36fee6dd6bd2b2ad799a6a5ad6869a9624f619604f462f9bbb1a",
+      "localizedSha256": "3715c76a659c36fee6dd6bd2b2ad799a6a5ad6869a9624f619604f462f9bbb1a",
+      "kind": "original-recording"
+    },
+    "projects/self-improving-skill-loop/project.json": {
+      "sourceSha256": "6e94c89a103c05bf6d90a965b7d7b0a2bd84391cac7bacd81ce092059b67ae54",
+      "localizedSha256": "153f753d11727cb628d221cbc1111b9514228eec412e32c154398da4e7ada423",
+      "kind": "manifest",
+      "contract": {
+        "id": "self-improving-skill-loop",
+        "title": "<translated-text>",
+        "level": 5,
+        "levelName": "Frontier",
+        "tagline": "<translated-text>",
+        "summary": "<translated-text>",
+        "hours": 8,
+        "languages": [
+          "Python"
+        ],
+        "status": "ready",
+        "source": "core",
+        "author": {
+          "name": "AI Engineering from Scratch",
+          "github": "rohitg00"
+        },
+        "youWillBuild": "<translated-text>",
+        "usefulFor": [
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "skills": [
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "prerequisites": [
+          {
+            "title": "<translated-text>",
+            "path": "phases/02-ml-fundamentals/09-model-evaluation"
+          },
+          {
+            "title": "<translated-text>",
+            "path": "phases/14-agent-engineering/34-repo-memory-and-state"
+          },
+          {
+            "title": "<translated-text>",
+            "path": "phases/14-agent-engineering/38-verification-gates"
+          }
+        ],
+        "figures": true,
+        "overviewFigure": "pj-self-improving-skill-loop-1",
+        "languageWhy": {
+          "Python": "<translated-text>"
+        },
+        "demo": {
+          "command": [
+            "python3",
+            "demo.py"
+          ],
+          "cwd": "solution"
+        },
+        "stages": [
+          {
+            "id": "01-dataset",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "language": "python",
+            "languageWhy": "<translated-text>",
+            "hours": 2,
+            "difficulty": "starter",
+            "figure": "pj-self-improving-skill-loop-1",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ]
+          },
+          {
+            "id": "02-skill",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "language": "python",
+            "languageWhy": "<translated-text>",
+            "hours": 2,
+            "difficulty": "core",
+            "figure": "pj-self-improving-skill-loop-2",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ]
+          },
+          {
+            "id": "03-propose",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "language": "python",
+            "languageWhy": "<translated-text>",
+            "hours": 2,
+            "difficulty": "core",
+            "figure": "pj-self-improving-skill-loop-3",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ]
+          },
+          {
+            "id": "04-promotion",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "language": "python",
+            "languageWhy": "<translated-text>",
+            "hours": 2,
+            "difficulty": "stretch",
+            "figure": "pj-self-improving-skill-loop-4",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ]
+          }
+        ],
+        "demos": [
+          {
+            "gif": "media/run.gif",
+            "poster": "media/run.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          },
+          {
+            "gif": "media/output.gif",
+            "poster": "media/output.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          }
+        ]
+      }
+    },
+    "projects/self-improving-skill-loop/solution/cli.py": {
+      "sourceSha256": "02ed99d629643dc7a65d3866d3c336a4389cefeb9d81a25edf318ddcf2005920",
+      "localizedSha256": "58b200640c52c578b6e6048fa36f7b762cdb7fe99b747a076c0b2605683a2835",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "Inspect a candidate, then promote only its exact approved digest.",
+          "检查候选，只有精确摘要得到批准后才晋升。"
+        ],
+        [
+          "    instructions = (",
+          "    # 导出的 SKILL.md 会被代理读取；英文行为指令、规则内容和摘要保留上游契约。\n    # 这里只导出草稿，不将其安装到用户技能目录。\n    instructions = ("
+        ]
+      ]
+    },
+    "projects/self-improving-skill-loop/solution/dataset.py": {
+      "sourceSha256": "4b54e5b1affaa931559a77206e6fed3e07fff11b9238faef9485d70738f79d04",
+      "localizedSha256": "551fcc1e7fe85bd9457a40e167a3d75201f095070c08dd4a6eac1ce0021203db",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "Leakage-aware development split: identities, content and groups form components.",
+          "防泄漏开发集划分：身份、内容与分组组成连通分量。"
+        ]
+      ]
+    },
+    "projects/self-improving-skill-loop/solution/demo.py": {
+      "sourceSha256": "3406d83bdd1718f511d9639de5c3b0cb9c5859c63f4948545d91192eb0a59f87",
+      "localizedSha256": "3406d83bdd1718f511d9639de5c3b0cb9c5859c63f4948545d91192eb0a59f87",
+      "kind": "preserved-contract"
+    },
+    "projects/self-improving-skill-loop/solution/promotion.py": {
+      "sourceSha256": "21519cfd8101b8c423d13668cf8f90d10f3300ba8df2c2147be1b7414c34f8fd",
+      "localizedSha256": "a64847d0a55ea95e287c73b911e3743165477e0d44d9dd93d5657fd0c68478e1",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "Require a separate gate before promotion.\n\nLesson: projects/self-improving-skill-loop/stages/04-promotion/docs/en.md\nThe implementation is original and uses explicit local data contracts.\nRun its tests through scripts/project_test.py.\n",
+          "晋升之前要求独立门禁。\n\n课程： projects/self-improving-skill-loop/stages/04-promotion/docs/en.md\n实现为原创，采用明确的本地数据契约。\n通过 scripts/project_test.py 运行测试。\n"
+        ]
+      ]
+    },
+    "projects/self-improving-skill-loop/solution/propose.py": {
+      "sourceSha256": "62daa20d238245421b95b8d15929c0b05aa281034460f63a4c11bb4b3bff1378",
+      "localizedSha256": "84e74b49cfc0fe17bcfff0774e71fc4cca499a5c01c78fb65ea7a6f36ee459d7",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "Propose rules from development errors only.\n\nLesson: projects/self-improving-skill-loop/stages/03-propose/docs/en.md\nThe implementation is original and uses explicit local data contracts.\nRun its tests through scripts/project_test.py.\n",
+          "仅从开发集错误提出规则。\n\n课程： projects/self-improving-skill-loop/stages/03-propose/docs/en.md\n实现为原创，采用明确的本地数据契约。\n通过 scripts/project_test.py 运行测试。\n"
+        ]
+      ]
+    },
+    "projects/self-improving-skill-loop/solution/skill.py": {
+      "sourceSha256": "157f4a15822b26bf28b708952f110d84e8f75bd112fa0e7dea401a563fadd8cf",
+      "localizedSha256": "ccfa22b69375dbb93281035949a345e6bcb2a54daa0de80ebdff9159faf893bf",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "Execute and score a transparent routing skill.\n\nLesson: projects/self-improving-skill-loop/stages/02-skill/docs/en.md\nThe implementation is original and uses explicit local data contracts.\nRun its tests through scripts/project_test.py.\n",
+          "执行并评估透明的路由技能。\n\n课程： projects/self-improving-skill-loop/stages/02-skill/docs/en.md\n实现为原创，采用明确的本地数据契约。\n通过 scripts/project_test.py 运行测试。\n"
+        ]
+      ]
+    },
+    "projects/self-improving-skill-loop/stages/01-dataset/docs/en.md": {
+      "sourceSha256": "c14887613c022952e666c4d72687c03d5972658b3411afdb045927445888e32a",
+      "localizedSha256": "ad5b0a3fc28795c65ac036c28663147f2714653290178e7877b7e194250cbd4b",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-self-improving-skill-loop-1\n"
+          ],
+          [
+            "python",
+            "def split_cases(cases,holdout_fraction=.25):\n    raise NotImplementedError(\"Implement the stage contract\")\n"
+          ],
+          [
+            "text",
+            "id d1: \"Invoice wrong\"\nid h1: \"INVOICE   wrong\"\nfingerprint equal -> one partition, or reject explicit split\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py self-improving-skill-loop --init learning-artifacts/self-improving-skill-loop\npython3 scripts/project_test.py self-improving-skill-loop --stage 1 --path learning-artifacts/self-improving-skill-loop\n"
+          ]
+        ],
+        "inlineCode": [],
+        "links": [
+          "../../../../../phases/02-ml-fundamentals/09-model-evaluation/docs/en.md",
+          "https://docs.python.org/3/library/hashlib.html",
+          "https://docs.python.org/3/tutorial/datastructures.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/self-improving-skill-loop/stages/01-dataset/starter/cli.py": {
+      "sourceSha256": "02ed99d629643dc7a65d3866d3c336a4389cefeb9d81a25edf318ddcf2005920",
+      "localizedSha256": "58b200640c52c578b6e6048fa36f7b762cdb7fe99b747a076c0b2605683a2835",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "Inspect a candidate, then promote only its exact approved digest.",
+          "检查候选，只有精确摘要得到批准后才晋升。"
+        ],
+        [
+          "    instructions = (",
+          "    # 导出的 SKILL.md 会被代理读取；英文行为指令、规则内容和摘要保留上游契约。\n    # 这里只导出草稿，不将其安装到用户技能目录。\n    instructions = ("
+        ]
+      ]
+    },
+    "projects/self-improving-skill-loop/stages/01-dataset/starter/dataset.py": {
+      "sourceSha256": "ba3428bcb7c41a3c3de071dfe071c46815d537b14fc9e42b3e209e3d7ca65904",
+      "localizedSha256": "344c0848758fa7119e7664f7fbfe3986c8d76216d1c1ed91d9f536f053e740cf",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "Split labeled cases without identity leakage.\n\nLesson: projects/self-improving-skill-loop/stages/01-dataset/docs/en.md\nThe implementation is original and uses explicit local data contracts.\nRun its tests through scripts/project_test.py.\n",
+          "划分标注用例并避免身份泄漏。\n\n课程： projects/self-improving-skill-loop/stages/01-dataset/docs/en.md\n实现为原创，采用明确的本地数据契约。\n通过 scripts/project_test.py 运行测试。\n"
+        ]
+      ]
+    },
+    "projects/self-improving-skill-loop/stages/01-dataset/tests/test_dataset.py": {
+      "sourceSha256": "a586fe0d2cb3251af6ae98ca5e78cdbe5b48eea1f5d61f9aaacc64323f74902c",
+      "localizedSha256": "a586fe0d2cb3251af6ae98ca5e78cdbe5b48eea1f5d61f9aaacc64323f74902c",
+      "kind": "preserved-contract"
+    },
+    "projects/self-improving-skill-loop/stages/01-dataset/tests/test_leakage.py": {
+      "sourceSha256": "98c6857d07e5c217785b6900cb22a716b6245242d0186f66b87be4fa09fc4c68",
+      "localizedSha256": "98c6857d07e5c217785b6900cb22a716b6245242d0186f66b87be4fa09fc4c68",
+      "kind": "preserved-contract"
+    },
+    "projects/self-improving-skill-loop/stages/02-skill/docs/en.md": {
+      "sourceSha256": "f3437f1db3d450d671283bd4839575c2b946cae9a7b544e41981cc5ae0b1b50c",
+      "localizedSha256": "d5ead442531c5aaa03fe33996e498fccc1a6cb0bccb78f76d749956f657dfe22",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-self-improving-skill-loop-2\n"
+          ],
+          [
+            "python",
+            "def route(text,rules,default='unknown'):\n    raise NotImplementedError(\"Implement the stage contract\")\n"
+          ],
+          [
+            "text",
+            "rule terms=[password,reset], label=access\n\"password reset expired\" -> access\n\"password rejected\" -> unknown\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py self-improving-skill-loop --stage 2 --path learning-artifacts/self-improving-skill-loop\n"
+          ]
+        ],
+        "inlineCode": [],
+        "links": [
+          "../../../../../phases/02-ml-fundamentals/09-model-evaluation/docs/en.md",
+          "../../01-dataset/docs/en.md",
+          "https://docs.python.org/3/library/hashlib.html",
+          "https://docs.python.org/3/tutorial/datastructures.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/self-improving-skill-loop/stages/02-skill/starter/skill.py": {
+      "sourceSha256": "7270237b77077fe3be90860ae5ee94d3f6e6a47e53c2655b305fa9ef96ac7400",
+      "localizedSha256": "de36f2828a2bc8256e08fe016b396f2c49b89cf75d78f186d0a3ab8d5f5c5c3c",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "Execute and score a transparent routing skill.\n\nLesson: projects/self-improving-skill-loop/stages/02-skill/docs/en.md\nThe implementation is original and uses explicit local data contracts.\nRun its tests through scripts/project_test.py.\n",
+          "执行并评估透明的路由技能。\n\n课程： projects/self-improving-skill-loop/stages/02-skill/docs/en.md\n实现为原创，采用明确的本地数据契约。\n通过 scripts/project_test.py 运行测试。\n"
+        ]
+      ]
+    },
+    "projects/self-improving-skill-loop/stages/02-skill/tests/test_skill.py": {
+      "sourceSha256": "c24000e8a6a79b4847f3c31c0d0616b86dbd88dae8699380e8d3dee11037635f",
+      "localizedSha256": "c24000e8a6a79b4847f3c31c0d0616b86dbd88dae8699380e8d3dee11037635f",
+      "kind": "preserved-contract"
+    },
+    "projects/self-improving-skill-loop/stages/03-propose/docs/en.md": {
+      "sourceSha256": "8d3175921d5e6613c1b8daeb98394c546d8e927bd146c95ca0210b95c8fe4954",
+      "localizedSha256": "7d9920c7184df6fa8c69125f3da04f4c950f5c29b576d971667cf47b9b6bc402",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-self-improving-skill-loop-3\n"
+          ],
+          [
+            "python",
+            "def propose(development,rules,min_support=2):\n    raise NotImplementedError(\"Implement the stage contract\")\n"
+          ],
+          [
+            "text",
+            "development: invoice wrong; invoice late -> billing\nmin_support=2 -> candidate terms=[invoice]\nholdout: invoice missing -> used only after proposal\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py self-improving-skill-loop --stage 3 --path learning-artifacts/self-improving-skill-loop\n"
+          ]
+        ],
+        "inlineCode": [],
+        "links": [
+          "../../../../../phases/02-ml-fundamentals/09-model-evaluation/docs/en.md",
+          "../../02-skill/docs/en.md",
+          "https://docs.python.org/3/library/hashlib.html",
+          "https://docs.python.org/3/tutorial/datastructures.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/self-improving-skill-loop/stages/03-propose/starter/propose.py": {
+      "sourceSha256": "b65f176f1807490e17d2106218f9bc40d427df4596e0388ea63331674da7e521",
+      "localizedSha256": "52021458ad7d6b994661ab39ebc6c85d1fb4d9162af321f59a44c8867f3269b3",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "Propose rules from development errors only.\n\nLesson: projects/self-improving-skill-loop/stages/03-propose/docs/en.md\nThe implementation is original and uses explicit local data contracts.\nRun its tests through scripts/project_test.py.\n",
+          "仅从开发集错误提出规则。\n\n课程： projects/self-improving-skill-loop/stages/03-propose/docs/en.md\n实现为原创，采用明确的本地数据契约。\n通过 scripts/project_test.py 运行测试。\n"
+        ]
+      ]
+    },
+    "projects/self-improving-skill-loop/stages/03-propose/tests/test_propose.py": {
+      "sourceSha256": "ad04490f1cf1cf5fa7ad2190d5b8495c78d58e3951aba043c59d49f93ab56f68",
+      "localizedSha256": "ad04490f1cf1cf5fa7ad2190d5b8495c78d58e3951aba043c59d49f93ab56f68",
+      "kind": "preserved-contract"
+    },
+    "projects/self-improving-skill-loop/stages/04-promotion/docs/en.md": {
+      "sourceSha256": "028a43dc0f663fe2f84717264325bf624d05f211dd76317548d657742b326057",
+      "localizedSha256": "0152f8ac59597a92f1f4c405fb7bf39e6128f4a80f9567f7878a739e3ad9494f",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-self-improving-skill-loop-4\n"
+          ],
+          [
+            "python",
+            "def gate(holdout,baseline,candidate,min_gain=.05):\n    raise NotImplementedError(\"Implement the stage contract\")\n"
+          ],
+          [
+            "text",
+            "baseline accuracy=0; candidate accuracy=1; no regression -> eligible\nwrong digest -> no write\nexact digest -> promote and retain .previous\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py self-improving-skill-loop --stage 4 --path learning-artifacts/self-improving-skill-loop\n"
+          ],
+          [
+            "bash",
+            "python3 learning-artifacts/self-improving-skill-loop/cli.py projects/self-improving-skill-loop/examples/support-cases.json --out experiment.json\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "--dataset-audit audit.json"
+          ],
+          [
+            "`",
+            "--export-skill orchard-routing"
+          ],
+          [
+            "`",
+            "SKILL.md"
+          ],
+          [
+            "`",
+            "partitions.test"
+          ],
+          [
+            "`",
+            "partitions.train"
+          ],
+          [
+            "`",
+            "references/rules.json"
+          ]
+        ],
+        "links": [
+          "../../../../../phases/02-ml-fundamentals/09-model-evaluation/docs/en.md",
+          "../../03-propose/docs/en.md",
+          "https://docs.python.org/3/library/hashlib.html",
+          "https://docs.python.org/3/tutorial/datastructures.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/self-improving-skill-loop/stages/04-promotion/starter/promotion.py": {
+      "sourceSha256": "501199c5a850b4f114617cf84886b72274121451e117b2b7be83c46e5027df14",
+      "localizedSha256": "1fd65af989df68b116ad817e6b4a5b267e27b4a5d89b6b6863d28fb647f621d4",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "Require a separate gate before promotion.\n\nLesson: projects/self-improving-skill-loop/stages/04-promotion/docs/en.md\nThe implementation is original and uses explicit local data contracts.\nRun its tests through scripts/project_test.py.\n",
+          "晋升之前要求独立门禁。\n\n课程： projects/self-improving-skill-loop/stages/04-promotion/docs/en.md\n实现为原创，采用明确的本地数据契约。\n通过 scripts/project_test.py 运行测试。\n"
+        ]
+      ]
+    },
+    "projects/self-improving-skill-loop/stages/04-promotion/tests/test_pipeline.py": {
+      "sourceSha256": "bd425174276629a0cbb78ca8c1acb84a8f6248099ac59b88e2e94b978b7003f4",
+      "localizedSha256": "bd425174276629a0cbb78ca8c1acb84a8f6248099ac59b88e2e94b978b7003f4",
+      "kind": "preserved-contract"
+    },
+    "projects/self-improving-skill-loop/stages/04-promotion/tests/test_promotion.py": {
+      "sourceSha256": "5ad12a1b64a71e818b25cfeefc06bbd7ff839618c6bc7a39a0ddbf35f145ada6",
+      "localizedSha256": "5ad12a1b64a71e818b25cfeefc06bbd7ff839618c6bc7a39a0ddbf35f145ada6",
+      "kind": "preserved-contract"
+    },
+    "projects/semantic-notes-search/README.md": {
+      "sourceSha256": "0d293fbf34b00194e44982270222e3ab319ce8aa99df8459b0bc3e8e75122968",
+      "localizedSha256": "c3c3e0ab338eb1ac5dd2ec664a49347233747f8751c6227b3fb0e4a103e774fb",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "bash",
+            "python3 scripts/project_test.py semantic-notes-search --init learning-artifacts/semantic-notes-search\npython3 scripts/project_test.py semantic-notes-search --stage 1 --path learning-artifacts/semantic-notes-search\n"
+          ],
+          [
+            "bash",
+            "python3 learning-artifacts/semantic-notes-search/cli.py projects/semantic-notes-search/examples/notes \"release replicas\" --aliases projects/semantic-notes-search/examples/aliases.json --out matches.json\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py semantic-notes-search --all --solution --strict\npython3 scripts/project_test.py semantic-notes-search --all --path learning-artifacts/semantic-notes-search --strict\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "learning-artifacts/semantic-notes-search"
+          ],
+          [
+            "`",
+            "projects/semantic-notes-search/solution"
+          ],
+          [
+            "`",
+            "schema_version: 1"
+          ]
+        ],
+        "links": [
+          "../../phases/00-setup-and-tooling/09-data-management/docs/en.md",
+          "../../phases/11-llm-engineering/06-rag/docs/en.md",
+          "https://docs.python.org/3/tutorial/datastructures.html",
+          "https://nlp.stanford.edu/IR-book/html/htmledition/the-vector-space-model-for-scoring-1.html",
+          "stages/01-normalize-notes/docs/en.md",
+          "stages/02-weight-the-index/docs/en.md",
+          "stages/03-rank-queries/docs/en.md",
+          "stages/04-measure-recall/docs/en.md"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 5
+      }
+    },
+    "projects/semantic-notes-search/examples/aliases.json": {
+      "sourceSha256": "566701eaebd55ddfa86228a50cb1108b0cce7785761fda4ed0db295458e41c40",
+      "localizedSha256": "566701eaebd55ddfa86228a50cb1108b0cce7785761fda4ed0db295458e41c40",
+      "kind": "preserved-contract"
+    },
+    "projects/semantic-notes-search/examples/notes/backup.md": {
+      "sourceSha256": "6e0684513716b05c8b558f283528e1defbae04c3992803c5185f3a17afe82c60",
+      "localizedSha256": "6e0684513716b05c8b558f283528e1defbae04c3992803c5185f3a17afe82c60",
+      "kind": "preserved-contract"
+    },
+    "projects/semantic-notes-search/examples/notes/café.md": {
+      "sourceSha256": "c01fbd8210867ea92e9a72e37614cb8743df96058b2af71a660d044489a921b5",
+      "localizedSha256": "c01fbd8210867ea92e9a72e37614cb8743df96058b2af71a660d044489a921b5",
+      "kind": "preserved-contract"
+    },
+    "projects/semantic-notes-search/examples/notes/release.md": {
+      "sourceSha256": "d7aa99c5b25ef4be2ffca1d6afa303c12544f98c7ce537759589c20f00b48a07",
+      "localizedSha256": "d7aa99c5b25ef4be2ffca1d6afa303c12544f98c7ce537759589c20f00b48a07",
+      "kind": "preserved-contract"
+    },
+    "projects/semantic-notes-search/media/output.gif": {
+      "sourceSha256": "49df98ea414aafedd28c905df7438bb80b6828c7de84bcdc4af89ba3b9120a48",
+      "localizedSha256": "49df98ea414aafedd28c905df7438bb80b6828c7de84bcdc4af89ba3b9120a48",
+      "kind": "original-recording"
+    },
+    "projects/semantic-notes-search/media/output.json": {
+      "sourceSha256": "d76d3e93169453ce377e7f91ec038b567d3b666ccbc88f261e2a4893791f163d",
+      "localizedSha256": "d76d3e93169453ce377e7f91ec038b567d3b666ccbc88f261e2a4893791f163d",
+      "kind": "original-recording"
+    },
+    "projects/semantic-notes-search/media/output.png": {
+      "sourceSha256": "c5c7f5e6058036bac2491c8c9c16948361239648388104105325301ef2386376",
+      "localizedSha256": "c5c7f5e6058036bac2491c8c9c16948361239648388104105325301ef2386376",
+      "kind": "original-recording"
+    },
+    "projects/semantic-notes-search/media/run.gif": {
+      "sourceSha256": "cda510dfcd85ab0378d78ec02f01b10e01a98445238a58643ebfed4834e498e8",
+      "localizedSha256": "cda510dfcd85ab0378d78ec02f01b10e01a98445238a58643ebfed4834e498e8",
+      "kind": "original-recording"
+    },
+    "projects/semantic-notes-search/media/run.json": {
+      "sourceSha256": "d5962853af85629a09055e5379ab5b4e9f105edb7c3baeaa9d02a0ddfa1c7728",
+      "localizedSha256": "d5962853af85629a09055e5379ab5b4e9f105edb7c3baeaa9d02a0ddfa1c7728",
+      "kind": "original-recording"
+    },
+    "projects/semantic-notes-search/media/run.png": {
+      "sourceSha256": "a4fdbb71110c4b860741bebcda7500521c80d0a41068e171f69a7796f597bef8",
+      "localizedSha256": "a4fdbb71110c4b860741bebcda7500521c80d0a41068e171f69a7796f597bef8",
+      "kind": "original-recording"
+    },
+    "projects/semantic-notes-search/project.json": {
+      "sourceSha256": "8f1057579a72ac135d4b3697e9d479dadf875eb094d843d0fc98eaa2d80ad873",
+      "localizedSha256": "680e59df91c9db64508ad83badf15132b62dc13c9123088ceb27a9be40bfdacb",
+      "kind": "manifest",
+      "contract": {
+        "id": "semantic-notes-search",
+        "title": "<translated-text>",
+        "level": 1,
+        "levelName": "Starter",
+        "tagline": "<translated-text>",
+        "summary": "<translated-text>",
+        "youWillBuild": "<translated-text>",
+        "usefulFor": [
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "hours": 8,
+        "languages": [
+          "Python"
+        ],
+        "languageWhy": {
+          "Python": "<translated-text>"
+        },
+        "status": "ready",
+        "source": "core",
+        "author": {
+          "name": "AI Engineering from Scratch",
+          "github": "rohitg00"
+        },
+        "skills": [
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "prerequisites": [
+          {
+            "title": "<translated-text>",
+            "path": "phases/00-setup-and-tooling/09-data-management"
+          },
+          {
+            "title": "<translated-text>",
+            "path": "phases/11-llm-engineering/06-rag"
+          }
+        ],
+        "figures": true,
+        "overviewFigure": "pj-semantic-notes-search-1",
+        "demo": {
+          "command": [
+            "python3",
+            "demo.py"
+          ],
+          "cwd": "solution"
+        },
+        "stages": [
+          {
+            "id": "01-normalize-notes",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "difficulty": "starter",
+            "language": "python",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ],
+            "figure": "pj-semantic-notes-search-1"
+          },
+          {
+            "id": "02-weight-the-index",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "difficulty": "core",
+            "language": "python",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ],
+            "figure": "pj-semantic-notes-search-2"
+          },
+          {
+            "id": "03-rank-queries",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "difficulty": "core",
+            "language": "python",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ],
+            "figure": "pj-semantic-notes-search-3"
+          },
+          {
+            "id": "04-measure-recall",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "difficulty": "stretch",
+            "language": "python",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ],
+            "figure": "pj-semantic-notes-search-4"
+          }
+        ],
+        "demos": [
+          {
+            "gif": "media/run.gif",
+            "poster": "media/run.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          },
+          {
+            "gif": "media/output.gif",
+            "poster": "media/output.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          }
+        ]
+      }
+    },
+    "projects/semantic-notes-search/solution/cli.py": {
+      "sourceSha256": "ff382586c7d0501c7b1a1cec5f21fa989bdbd151eb0da44a3b7d24a8569b8137",
+      "localizedSha256": "668c71961abd1c17a25e54364fb4f2a47d218a4989d5f8b32ef948a1a9089c4c",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "Search a caller-owned markdown folder; no service or model required.",
+          "检索调用方拥有的 Markdown 目录，无需服务或模型。"
+        ]
+      ]
+    },
+    "projects/semantic-notes-search/solution/demo.py": {
+      "sourceSha256": "204a2053a06f3d74fb15a49ef360b9bcb2dbf225c84c89cc6bd08ba5e2f6db19",
+      "localizedSha256": "204a2053a06f3d74fb15a49ef360b9bcb2dbf225c84c89cc6bd08ba5e2f6db19",
+      "kind": "preserved-contract"
+    },
+    "projects/semantic-notes-search/solution/main.py": {
+      "sourceSha256": "467a1d8d62224cfd06ffb323ff9676487e5512f5abfeecb6ff30a19ef4f9fc45",
+      "localizedSha256": "42b2ac406e3a52836a13a16cc4487e7639305d78a351b70e1364331ce39ff58e",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "import math",
+          "# 可解释的词汇 TF-IDF 基线：Unicode 词项不等于中文分词或语义嵌入。\nimport math"
+        ]
+      ]
+    },
+    "projects/semantic-notes-search/stages/01-normalize-notes/docs/en.md": {
+      "sourceSha256": "7f6d7db7f2ee16147fb86dbffa473edc04031fab9dd8f77af5aa5c4168b5af42",
+      "localizedSha256": "a6daa24d2e0a64a78e42570c8fdba23817c428769d7739ef6544cc53e5d295a1",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-semantic-notes-search-1\n"
+          ],
+          [
+            "text",
+            "\"CAFE\\u0301\" -> [\"café\"]\nalias release -> deploy\n\"release café\" -> [\"deploy\",\"café\"]\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py semantic-notes-search --init learning-artifacts/semantic-notes-search\npython3 scripts/project_test.py semantic-notes-search --stage 1 --path learning-artifacts/semantic-notes-search\n"
+          ]
+        ],
+        "inlineCode": [],
+        "links": [
+          "../../../../../phases/00-setup-and-tooling/09-data-management/docs/en.md",
+          "https://docs.python.org/3/tutorial/datastructures.html",
+          "https://nlp.stanford.edu/IR-book/html/htmledition/the-vector-space-model-for-scoring-1.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/semantic-notes-search/stages/01-normalize-notes/starter/cli.py": {
+      "sourceSha256": "ff382586c7d0501c7b1a1cec5f21fa989bdbd151eb0da44a3b7d24a8569b8137",
+      "localizedSha256": "668c71961abd1c17a25e54364fb4f2a47d218a4989d5f8b32ef948a1a9089c4c",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "Search a caller-owned markdown folder; no service or model required.",
+          "检索调用方拥有的 Markdown 目录，无需服务或模型。"
+        ]
+      ]
+    },
+    "projects/semantic-notes-search/stages/01-normalize-notes/starter/main.py": {
+      "sourceSha256": "7f52c748c284c9f3328fb9e4c92d6cf13dcbcc2775b024d7fde2e45e52e3786f",
+      "localizedSha256": "1ce0d0a2f435e9c764d37ad57560160572da574930f2b3292fe4314e07304ce8",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "Fill in the stage interfaces in your own workspace.",
+          "在自己的工作区中补全各阶段接口。"
+        ]
+      ]
+    },
+    "projects/semantic-notes-search/stages/01-normalize-notes/tests/test_equivalence.py": {
+      "sourceSha256": "7c1f0c2537905a7d99e3b375bded1837ad5934488899cdc039a3d3a182d04975",
+      "localizedSha256": "7c1f0c2537905a7d99e3b375bded1837ad5934488899cdc039a3d3a182d04975",
+      "kind": "preserved-contract"
+    },
+    "projects/semantic-notes-search/stages/01-normalize-notes/tests/test_stage_01.py": {
+      "sourceSha256": "4128da020348ac7869b11348f84c9c21f38ea606ac35b834a77362f563b658dd",
+      "localizedSha256": "4128da020348ac7869b11348f84c9c21f38ea606ac35b834a77362f563b658dd",
+      "kind": "preserved-contract"
+    },
+    "projects/semantic-notes-search/stages/02-weight-the-index/docs/en.md": {
+      "sourceSha256": "f8041d10010e220767a038914f3e76857edd5ca429fe0df83d4f99b98bb700f7",
+      "localizedSha256": "97f05ec0cee4b78a14192a9dc4644b8af9a1e32e24302bbf6ad0ac96f2c0d6b7",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-semantic-notes-search-2\n"
+          ],
+          [
+            "text",
+            "N=3; df(orchard)=3 -> idf=1\ndf(restore)=1 -> idf=log(4/2)+1=1.6931\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py semantic-notes-search --stage 2 --path learning-artifacts/semantic-notes-search\n"
+          ]
+        ],
+        "inlineCode": [],
+        "links": [
+          "../../../../../phases/00-setup-and-tooling/09-data-management/docs/en.md",
+          "../../01-normalize-notes/docs/en.md",
+          "https://docs.python.org/3/tutorial/datastructures.html",
+          "https://nlp.stanford.edu/IR-book/html/htmledition/the-vector-space-model-for-scoring-1.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/semantic-notes-search/stages/02-weight-the-index/starter/STAGE.md": {
+      "sourceSha256": "de87d556ff420651ca3f56779d9ccc5ad04b3d08f79de33927207ae35b0562c4",
+      "localizedSha256": "0f21473ad1c534debc7b5aa27f26fdd0ba4d84f6a63a8375d7cdfc6b5a8e6644",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/semantic-notes-search/stages/02-weight-the-index/tests/test_stage_02.py": {
+      "sourceSha256": "f42f68aeace4c6e3cae1b56a0734744eafb85faaa2ebfca6bad1bcb90fc75768",
+      "localizedSha256": "f42f68aeace4c6e3cae1b56a0734744eafb85faaa2ebfca6bad1bcb90fc75768",
+      "kind": "preserved-contract"
+    },
+    "projects/semantic-notes-search/stages/03-rank-queries/docs/en.md": {
+      "sourceSha256": "03ba19d3697be4ad59e6b0743f173b3c2ffaaa927c82cf7476a0a4c9a50e5c08",
+      "localizedSha256": "f55081edc545907661d0b8dd1e7d65d0acf2ab324e82c13d96d6062b184b7ef8",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-semantic-notes-search-3\n"
+          ],
+          [
+            "text",
+            "query=release replicas\nalias release=deploy\nmatching note: release.md; matched terms: deploy\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py semantic-notes-search --stage 3 --path learning-artifacts/semantic-notes-search\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "deploy replicas"
+          ],
+          [
+            "`",
+            "replica"
+          ],
+          [
+            "`",
+            "replicas"
+          ]
+        ],
+        "links": [
+          "../../../../../phases/00-setup-and-tooling/09-data-management/docs/en.md",
+          "../../02-weight-the-index/docs/en.md",
+          "https://docs.python.org/3/tutorial/datastructures.html",
+          "https://nlp.stanford.edu/IR-book/html/htmledition/the-vector-space-model-for-scoring-1.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/semantic-notes-search/stages/03-rank-queries/starter/STAGE.md": {
+      "sourceSha256": "de87d556ff420651ca3f56779d9ccc5ad04b3d08f79de33927207ae35b0562c4",
+      "localizedSha256": "0f21473ad1c534debc7b5aa27f26fdd0ba4d84f6a63a8375d7cdfc6b5a8e6644",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/semantic-notes-search/stages/03-rank-queries/tests/test_stage_03.py": {
+      "sourceSha256": "1d756ca757974c574d8b29633de254c85ab4e0d2fdfe1d2b79478a001c314e30",
+      "localizedSha256": "1d756ca757974c574d8b29633de254c85ab4e0d2fdfe1d2b79478a001c314e30",
+      "kind": "preserved-contract"
+    },
+    "projects/semantic-notes-search/stages/04-measure-recall/docs/en.md": {
+      "sourceSha256": "19f470411518b66753f0cf3ceadd23602ea1dd47d966b56d18e627712ade97b2",
+      "localizedSha256": "db175331e61480791260885fe947a0811d41334b484ce305ab0d4b9582a62746",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-semantic-notes-search-4\n"
+          ],
+          [
+            "text",
+            "labels: restore -> backup.md; café -> café.md\nhits=2,total=2,k=1 -> recall=1\nadd a misleading alias -> inspect changed hit ids\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py semantic-notes-search --stage 4 --path learning-artifacts/semantic-notes-search\n"
+          ],
+          [
+            "bash",
+            "python3 learning-artifacts/semantic-notes-search/cli.py projects/semantic-notes-search/examples/notes \"release replicas\" --aliases projects/semantic-notes-search/examples/aliases.json --out matches.json\n"
+          ]
+        ],
+        "inlineCode": [],
+        "links": [
+          "../../../../../phases/00-setup-and-tooling/09-data-management/docs/en.md",
+          "../../03-rank-queries/docs/en.md",
+          "https://docs.python.org/3/tutorial/datastructures.html",
+          "https://nlp.stanford.edu/IR-book/html/htmledition/the-vector-space-model-for-scoring-1.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/semantic-notes-search/stages/04-measure-recall/starter/STAGE.md": {
+      "sourceSha256": "de87d556ff420651ca3f56779d9ccc5ad04b3d08f79de33927207ae35b0562c4",
+      "localizedSha256": "0f21473ad1c534debc7b5aa27f26fdd0ba4d84f6a63a8375d7cdfc6b5a8e6644",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/semantic-notes-search/stages/04-measure-recall/tests/test_folder_cli.py": {
+      "sourceSha256": "ee593eaa1b620a878690eefcd902ae9e16fe339c0a8f3a0b2b70272865763295",
+      "localizedSha256": "ee593eaa1b620a878690eefcd902ae9e16fe339c0a8f3a0b2b70272865763295",
+      "kind": "preserved-contract"
+    },
+    "projects/semantic-notes-search/stages/04-measure-recall/tests/test_stage_04.py": {
+      "sourceSha256": "e4d455472bacaf4623b13cc4e1a4588310509831b159e4a6cdc9aff7c1430734",
+      "localizedSha256": "e4d455472bacaf4623b13cc4e1a4588310509831b159e4a6cdc9aff7c1430734",
+      "kind": "preserved-contract"
+    }
+  },
+  "figures": [
+    {
+      "path": "site/figures/projects/rust-agent-shell.js",
+      "sourceSha256": "d5c4f370b4acde4ebcbe400d36fce89cfd93de2124623df8c3ec55f1f36a6cb1",
+      "localizedSha256": "7f94ee6c17d20113d7c96cc5f07cb9cfab93c0896d63dc49f6d6906e93813c20",
+      "edits": [
+        {
+          "offset": 1086,
+          "before": "\"Proposed action\"",
+          "after": "\"候选动作\"",
+          "afterOffset": 1086
+        },
+        {
+          "offset": 1175,
+          "before": "\"release.md text\"",
+          "after": "\"release.md 文本\"",
+          "afterOffset": 1164
+        },
+        {
+          "offset": 1279,
+          "before": "\"Actions already used\"",
+          "after": "\"已用动作数\"",
+          "afterOffset": 1266
+        },
+        {
+          "offset": 1336,
+          "before": "\"Action limit\"",
+          "after": "\"动作上限\"",
+          "afterOffset": 1308
+        },
+        {
+          "offset": 1389,
+          "before": "\"File byte budget\"",
+          "after": "\"文件字节预算\"",
+          "afterOffset": 1353
+        },
+        {
+          "offset": 2768,
+          "before": "\"Input bytes\"",
+          "after": "\"输入字节数\"",
+          "afterOffset": 2722
+        },
+        {
+          "offset": 2845,
+          "before": "\"File bytes\"",
+          "after": "\"文件字节数\"",
+          "afterOffset": 2793
+        },
+        {
+          "offset": 2884,
+          "before": "\"Next sequence\"",
+          "after": "\"下个序号\"",
+          "afterOffset": 2827
+        },
+        {
+          "offset": 2950,
+          "before": "\"Path model\"",
+          "after": "\"路径模型\"",
+          "afterOffset": 2884
+        },
+        {
+          "offset": 2964,
+          "before": "\"lexical only; runtime also canonicalizes\"",
+          "after": "\"图中仅检查路径字符串；运行时还会求规范路径\"",
+          "afterOffset": 2892
+        },
+        {
+          "offset": 3050,
+          "before": "\"Actions used\"",
+          "after": "\"已用动作数\"",
+          "afterOffset": 2959
+        },
+        {
+          "offset": 3098,
+          "before": "\"Action limit\"",
+          "after": "\"动作上限\"",
+          "afterOffset": 3000
+        },
+        {
+          "offset": 3138,
+          "before": "\"File bytes\"",
+          "after": "\"文件字节数\"",
+          "afterOffset": 3032
+        },
+        {
+          "offset": 3202,
+          "before": "\"Boundary\"",
+          "after": "\"边界\"",
+          "afterOffset": 3091
+        },
+        {
+          "offset": 3214,
+          "before": "\"Value\"",
+          "after": "\"值\"",
+          "afterOffset": 3097
+        },
+        {
+          "offset": 3251,
+          "before": "\"Grammar\"",
+          "after": "\"语法\"",
+          "afterOffset": 3130
+        },
+        {
+          "offset": 3300,
+          "before": "\"Path\"",
+          "after": "\"路径\"",
+          "afterOffset": 3174
+        },
+        {
+          "offset": 3326,
+          "before": "\"Result\"",
+          "after": "\"结果\"",
+          "afterOffset": 3198
+        },
+        {
+          "offset": 3497,
+          "before": "\"Parse a deliberately small action language\"",
+          "after": "\"解析刻意限定的动作语言\"",
+          "afterOffset": 3365
+        },
+        {
+          "offset": 3591,
+          "before": "\"Validate input\"",
+          "after": "\"校验输入\"",
+          "afterOffset": 3428
+        },
+        {
+          "offset": 3643,
+          "before": "\"The Rust process accepts a deliberately small tool language. Its Python adapter accepts JSONL with caller ids and tool arguments, then translates only known commands. No argument becomes an operating-system shell command.\"",
+          "after": "\"Rust 进程只接受刻意限定的工具语言。Python 适配器接收含调用方 ID 与工具参数的 JSONL，再仅转换已知命令。任何参数都不会变成操作系统 shell 命令。\"",
+          "afterOffset": 3470
+        },
+        {
+          "offset": 3912,
+          "before": "\"Apply the boundary\"",
+          "after": "\"应用边界\"",
+          "afterOffset": 3603
+        },
+        {
+          "offset": 4140,
+          "before": "\"Inspect output\"",
+          "after": "\"检查输出\"",
+          "afterOffset": 3817
+        },
+        {
+          "offset": 4192,
+          "before": "\"Reject control characters in adapter arguments so a path cannot inject a second command. Distinguish parse rejection from execution failure.\"",
+          "after": "\"拒绝适配器参数中的控制字符，避免路径注入第二条命令。区分解析拒绝和执行失败。\"",
+          "afterOffset": 3859
+        },
+        {
+          "offset": 4387,
+          "before": "\"Why must a literal newline in a caller path be rejected before stdin serialization?\"",
+          "after": "\"为什么必须在标准输入序列化之前拒绝调用方路径中的字面换行符？ 图表边界：这是单步语法与预算示意，不访问文件、不解析符号链接，也没有持久会话。它对 read 缺参或 pwd 附参的判断与真实 Rust 解析器不同；错误枚举和样本命令保留英文，实际边界以程序测试为准。\"",
+          "afterOffset": 3952
+        },
+        {
+          "offset": 4632,
+          "before": "\"Confine file tools to a bounded root\"",
+          "after": "\"将文件工具限制在有界根目录内\"",
+          "afterOffset": 4246
+        },
+        {
+          "offset": 4720,
+          "before": "\"Validate input\"",
+          "after": "\"校验输入\"",
+          "afterOffset": 4312
+        },
+        {
+          "offset": 4772,
+          "before": "\"Resolve release.md under the workspace root before reading it. A lexical path can look harmless while a symlink targets a file outside the workspace. The result is application-level containment, not a process sandbox.\"",
+          "after": "\"读取 release.md 前，先在工作区根目录下解析它。路径字符串可能看似无害，但符号链接可能指向工作区外的文件。这提供应用层范围约束，不构成进程沙箱。\"",
+          "afterOffset": 4354
+        },
+        {
+          "offset": 5037,
+          "before": "\"Apply the boundary\"",
+          "after": "\"应用边界\"",
+          "afterOffset": 4479
+        },
+        {
+          "offset": 5260,
+          "before": "\"Inspect output\"",
+          "after": "\"检查输出\"",
+          "afterOffset": 4688
+        },
+        {
+          "offset": 5312,
+          "before": "\"Canonicalize the root and target, then compare path components. Bound the bytes read as well as the initial metadata length.\"",
+          "after": "\"规范化根目录和目标后，比较路径组成部分。除最初元数据记录的长度外，也要限制实际读取字节数。\"",
+          "afterOffset": 4730
+        },
+        {
+          "offset": 5491,
+          "before": "\"Which race remains if another process replaces a path after canonicalization?\"",
+          "after": "\"若另一个进程在路径规范化之后替换该路径，还会存在什么竞态？ 图表边界：这是单步语法与预算示意，不访问文件、不解析符号链接，也没有持久会话。它对 read 缺参或 pwd 附参的判断与真实 Rust 解析器不同；错误枚举和样本命令保留英文，实际边界以程序测试为准。\"",
+          "afterOffset": 4830
+        },
+        {
+          "offset": 5730,
+          "before": "\"Track budgets and terminal state\"",
+          "after": "\"跟踪预算与终止状态\"",
+          "afterOffset": 5123
+        },
+        {
+          "offset": 5814,
+          "before": "\"Validate input\"",
+          "after": "\"校验输入\"",
+          "afterOffset": 5184
+        },
+        {
+          "offset": 5866,
+          "before": "\"The session owns a request budget and terminal state. Invalid requests consume an attempt too. Expose the budget through the executable argument and adapter --limit so callers can reason about bounded work.\"",
+          "after": "\"会话持有请求预算和终止状态。无效请求也消耗一次尝试。通过可执行程序参数和适配器 --limit 暴露预算，让调用方能够判断工作的上限。\"",
+          "afterOffset": 5226
+        },
+        {
+          "offset": 6120,
+          "before": "\"Apply the boundary\"",
+          "after": "\"应用边界\"",
+          "afterOffset": 5341
+        },
+        {
+          "offset": 6337,
+          "before": "\"Inspect output\"",
+          "after": "\"检查输出\"",
+          "afterOffset": 5544
+        },
+        {
+          "offset": 6389,
+          "before": "\"Increment once per received request, before dispatch. Once closed, the session must not read more files.\"",
+          "after": "\"每收到一个请求，在分派前增加一次计数。会话关闭后，不得继续读取文件。\"",
+          "afterOffset": 5586
+        },
+        {
+          "offset": 6548,
+          "before": "\"How should a client handle output ending before its request id receives an event?\"",
+          "after": "\"若输出在某个请求 ID 收到事件前就结束，客户端应怎样处理？ 图表边界：这是单步语法与预算示意，不访问文件、不解析符号链接，也没有持久会话。它对 read 缺参或 pwd 附参的判断与真实 Rust 解析器不同；错误枚举和样本命令保留英文，实际边界以程序测试为准。\"",
+          "afterOffset": 5675
+        },
+        {
+          "offset": 6791,
+          "before": "\"Stream bounded JSON events through real stdin\"",
+          "after": "\"通过实际标准输入流式输出有界 JSON 事件\"",
+          "afterOffset": 5969
+        },
+        {
+          "offset": 6888,
+          "before": "\"Validate input\"",
+          "after": "\"校验输入\"",
+          "afterOffset": 6043
+        },
+        {
+          "offset": 6940,
+          "before": "\"A client reads one JSON event at a time and matches it to the request id added by the adapter. Flushing every line allows a UI to display observations without waiting for the process to exit.\"",
+          "after": "\"客户端每次读取一个 JSON 事件，并将其与适配器添加的请求 ID 对应。每行刷新让界面无须等待进程退出，就能显示观察结果。\"",
+          "afterOffset": 6085
+        },
+        {
+          "offset": 7179,
+          "before": "\"Apply the boundary\"",
+          "after": "\"应用边界\"",
+          "afterOffset": 6195
+        },
+        {
+          "offset": 7403,
+          "before": "\"Inspect output\"",
+          "after": "\"检查输出\"",
+          "afterOffset": 6405
+        },
+        {
+          "offset": 7455,
+          "before": "\"Use BufRead chunks to bound allocation before constructing a command string. JSON-escape tool output rather than concatenating raw file text.\"",
+          "after": "\"使用 BufRead 数据块，在构造命令字符串前限制分配量。工具输出必须进行 JSON 转义，不得直接拼接原始文件文本。\"",
+          "afterOffset": 6447
+        },
+        {
+          "offset": 7641,
+          "before": "\"What happens if a file contains quotes, tabs or a newline?\"",
+          "after": "\"文件包含引号、制表符或换行符时，会发生什么？ 图表边界：这是单步语法与预算示意，不访问文件、不解析符号链接，也没有持久会话。它对 read 缺参或 pwd 附参的判断与真实 Rust 解析器不同；错误枚举和样本命令保留英文，实际边界以程序测试为准。\"",
+          "afterOffset": 6552
+        }
+      ]
+    },
+    {
+      "path": "site/figures/projects/sandbox-ladder.js",
+      "sourceSha256": "fb9112c4cbb081a1ae74c24c9bdb8acbaac658749341e619c77fef56ebec7e6a",
+      "localizedSha256": "809f87876f0eeb6b6a151f739b33be4fbd87b0dc8c0337c3a68ab9370ac30679",
+      "edits": [
+        {
+          "offset": 1089,
+          "before": "\"Untrusted code\"",
+          "after": "\"不可信代码\"",
+          "afterOffset": 1089
+        },
+        {
+          "offset": 1137,
+          "before": "\"Secret-bearing host\"",
+          "after": "\"含密钥的宿主机\"",
+          "afterOffset": 1128
+        },
+        {
+          "offset": 1190,
+          "before": "\"Require denied network\"",
+          "after": "\"要求禁用网络\"",
+          "afterOffset": 1169
+        },
+        {
+          "offset": 1245,
+          "before": "\"Require separate kernel\"",
+          "after": "\"要求独立内核\"",
+          "afterOffset": 1208
+        },
+        {
+          "offset": 1303,
+          "before": "\"Modeled cost budget\"",
+          "after": "\"模拟成本预算\"",
+          "afterOffset": 1249
+        },
+        {
+          "offset": 1368,
+          "before": "\"Probe: root write denied\"",
+          "after": "\"探针输入：根目录写入被拒绝\"",
+          "afterOffset": 1301
+        },
+        {
+          "offset": 1434,
+          "before": "\"Probe: default route absent\"",
+          "after": "\"探针输入：不存在默认路由\"",
+          "afterOffset": 1356
+        },
+        {
+          "offset": 2010,
+          "before": "\"Observed probes: \"",
+          "after": "\"探针观察：\"",
+          "afterOffset": 1917
+        },
+        {
+          "offset": 2105,
+          "before": "\"two checks pass; escape resistance unproven\"",
+          "after": "\"两项检查通过；未证明可抵御逃逸\"",
+          "afterOffset": 2000
+        },
+        {
+          "offset": 2169,
+          "before": "\"requested controls are not both observed\"",
+          "after": "\"尚未同时观察到这两项控制\"",
+          "afterOffset": 2036
+        },
+        {
+          "offset": 2250,
+          "before": "\"Least-cost sufficient model: \"",
+          "after": "\"成本最低且足够的模型：\"",
+          "afterOffset": 2089
+        },
+        {
+          "offset": 2310,
+          "before": "\"No sufficient model within budget\"",
+          "after": "\"预算内没有足够的模型\"",
+          "afterOffset": 2131
+        },
+        {
+          "offset": 2383,
+          "before": "\"Selected\"",
+          "after": "\"选中配置\"",
+          "afterOffset": 2181
+        },
+        {
+          "offset": 2449,
+          "before": "\"OS enforcement\"",
+          "after": "\"操作系统强制隔离\"",
+          "afterOffset": 2243
+        },
+        {
+          "offset": 2493,
+          "before": "\"probe inputs only\"",
+          "after": "\"仅为探针输入\"",
+          "afterOffset": 2281
+        },
+        {
+          "offset": 2515,
+          "before": "\"not established\"",
+          "after": "\"尚未建立\"",
+          "afterOffset": 2292
+        },
+        {
+          "offset": 2564,
+          "before": "\"Kernel requirement\"",
+          "after": "\"内核需求\"",
+          "afterOffset": 2330
+        },
+        {
+          "offset": 2649,
+          "before": "\" cost\"",
+          "after": "\" 成本\"",
+          "afterOffset": 2401
+        },
+        {
+          "offset": 2698,
+          "before": "\"Profile\"",
+          "after": "\"配置\"",
+          "afterOffset": 2448
+        },
+        {
+          "offset": 2719,
+          "before": "\"Filesystem\"",
+          "after": "\"文件系统\"",
+          "afterOffset": 2464
+        },
+        {
+          "offset": 2743,
+          "before": "\"Network denial\"",
+          "after": "\"禁用网络\"",
+          "afterOffset": 2482
+        },
+        {
+          "offset": 2771,
+          "before": "\"Separate kernel\"",
+          "after": "\"独立内核\"",
+          "afterOffset": 2500
+        },
+        {
+          "offset": 2800,
+          "before": "\"Cost\"",
+          "after": "\"成本\"",
+          "afterOffset": 2518
+        },
+        {
+          "offset": 2818,
+          "before": "\"Sufficient\"",
+          "after": "\"足够\"",
+          "afterOffset": 2534
+        },
+        {
+          "offset": 2986,
+          "before": "\"Parse the capability request\"",
+          "after": "\"解析能力需求\"",
+          "afterOffset": 2694
+        },
+        {
+          "offset": 3066,
+          "before": "\"Parse keys\"",
+          "after": "\"解析键\"",
+          "afterOffset": 2752
+        },
+        {
+          "offset": 3114,
+          "before": "\"Write the threat requirement as booleans before selecting a runtime. Here network=true means network denial is required, and host_kernel=true means a separate kernel is required. Neither name grants access.\"",
+          "after": "\"选择运行时之前，先将威胁需求写成布尔值。这里 network=true 表示要求禁用网络，host_kernel=true 表示要求独立内核。这两个名称都不表示授予访问权限。\"",
+          "afterOffset": 2793
+        },
+        {
+          "offset": 3368,
+          "before": "\"Reject duplicates\"",
+          "after": "\"拒绝重复项\"",
+          "afterOffset": 2928
+        },
+        {
+          "offset": 3577,
+          "before": "\"Exact booleans\"",
+          "after": "\"精确布尔值\"",
+          "afterOffset": 3125
+        },
+        {
+          "offset": 3629,
+          "before": "\"Reject duplicate keys and values other than exact true/false. Do not guess what network=yes means.\"",
+          "after": "\"拒绝重复键，以及并非精确 true/false 的值。不要猜测 network=yes 的含义。\"",
+          "afterOffset": 3168
+        },
+        {
+          "offset": 3782,
+          "before": "\"Which additional requirement would make a shared-kernel container insufficient?\"",
+          "after": "\"增加哪项需求后，共享内核的容器将不再足够？ 图表边界：探针值来自手动开关，不会运行 Docker。控制模型不等同于实际配置，两个探针都为真也不能证明微型虚拟机或容器逃逸防护。\"",
+          "afterOffset": 3271
+        },
+        {
+          "offset": 4021,
+          "before": "\"Define modeled control profiles\"",
+          "after": "\"定义控制能力的模拟配置\"",
+          "afterOffset": 3518
+        },
+        {
+          "offset": 4104,
+          "before": "\"Filesystem control\"",
+          "after": "\"文件系统控制\"",
+          "afterOffset": 3581
+        },
+        {
+          "offset": 4160,
+          "before": "\"Profiles are modeled capabilities with illustrative costs. A process boundary has no filesystem or network isolation in this model; the container profile models both but shares its host kernel.\"",
+          "after": "\"配置描述模拟能力，并使用示意成本。在这个模型中，进程边界没有文件系统或网络隔离；容器配置模拟这两种能力，但仍共享宿主机内核。\"",
+          "afterOffset": 3625
+        },
+        {
+          "offset": 4401,
+          "before": "\"Network control\"",
+          "after": "\"网络控制\"",
+          "afterOffset": 3735
+        },
+        {
+          "offset": 4612,
+          "before": "\"Kernel control\"",
+          "after": "\"内核控制\"",
+          "afterOffset": 3935
+        },
+        {
+          "offset": 4664,
+          "before": "\"Test requirements independently. A low cost is irrelevant when one required capability is absent.\"",
+          "after": "\"独立测试各项需求。只要缺少一项必需能力，低成本就没有意义。\"",
+          "afterOffset": 3977
+        },
+        {
+          "offset": 4816,
+          "before": "\"Why is the model not evidence that a running container has these settings?\"",
+          "after": "\"为什么这个模型不能证明实际运行的容器具有这些设置？ 图表边界：探针值来自手动开关，不会运行 Docker。控制模型不等同于实际配置，两个探针都为真也不能证明微型虚拟机或容器逃逸防护。\"",
+          "afterOffset": 4061
+        },
+        {
+          "offset": 5050,
+          "before": "\"Select the least costly sufficient profile\"",
+          "after": "\"选择成本最低且足够的配置\"",
+          "afterOffset": 4312
+        },
+        {
+          "offset": 5144,
+          "before": "\"Filter controls\"",
+          "after": "\"筛选控制能力\"",
+          "afterOffset": 4376
+        },
+        {
+          "offset": 5197,
+          "before": "\"The cheapest sufficient profile may exceed the allowed budget. When kernel separation is required, budget 4 cannot silently downgrade to a container costing 3.\"",
+          "after": "\"足够的最低成本配置仍可能超出预算。要求内核分离时，预算 4 不能静默降级为成本 3 的容器。\"",
+          "afterOffset": 4420
+        },
+        {
+          "offset": 5404,
+          "before": "\"Apply budget\"",
+          "after": "\"应用预算\"",
+          "afterOffset": 4514
+        },
+        {
+          "offset": 5618,
+          "before": "\"Stable minimum\"",
+          "after": "\"稳定的最低成本选择\"",
+          "afterOffset": 4720
+        },
+        {
+          "offset": 5670,
+          "before": "\"Filter by capabilities first, then cost, then stable name ordering. Return a limit error if the remaining set is empty.\"",
+          "after": "\"先按能力过滤，再检查成本，最后采用稳定名称排序。如果剩余集合为空，返回限额错误。\"",
+          "afterOffset": 4767
+        },
+        {
+          "offset": 5844,
+          "before": "\"What should change when two sufficient profiles have the same modeled cost?\"",
+          "after": "\"两个足够的配置具有相同模拟成本时，应如何处理？ 图表边界：探针值来自手动开关，不会运行 Docker。控制模型不等同于实际配置，两个探针都为真也不能证明微型虚拟机或容器逃逸防护。\"",
+          "afterOffset": 4862
+        },
+        {
+          "offset": 6079,
+          "before": "\"Report residual assumptions\"",
+          "after": "\"报告剩余假设\"",
+          "afterOffset": 5111
+        },
+        {
+          "offset": 6158,
+          "before": "\"Recheck requirements\"",
+          "after": "\"重新检查需求\"",
+          "afterOffset": 5169
+        },
+        {
+          "offset": 6216,
+          "before": "\"The optional Docker adapter produces an inspectable argument list and only runs a caller-selected image already present locally. Its harmless probes test a denied root write and absence of a default route. No microVM implementation is included.\"",
+          "after": "\"可选 Docker 适配器生成可检查的参数列表，只运行调用方选择且本地已存在的镜像。其无害探针检查根目录写入被拒绝，以及不存在默认路由。项目没有包含微型虚拟机实现。\"",
+          "afterOffset": 5213
+        },
+        {
+          "offset": 6508,
+          "before": "\"Name model\"",
+          "after": "\"标明模型\"",
+          "afterOffset": 5343
+        },
+        {
+          "offset": 6737,
+          "before": "\"List residuals\"",
+          "after": "\"列出剩余风险\"",
+          "afterOffset": 5566
+        },
+        {
+          "offset": 6789,
+          "before": "\"Keep policy_simulation and docker_probe results distinct. A successful probe is evidence for those checks only, not proof against container escape.\"",
+          "after": "\"区分 policy_simulation 和 docker_probe 结果。探针成功仅为这些检查提供证据，不能证明可以抵御容器逃逸。\"",
+          "afterOffset": 5610
+        },
+        {
+          "offset": 6991,
+          "before": "\"If root_write becomes allowed, which runtime setting would you inspect first?\"",
+          "after": "\"如果 root_write 变为 allowed，你会先检查哪个运行时设置？ 图表边界：探针值来自手动开关，不会运行 Docker。控制模型不等同于实际配置，两个探针都为真也不能证明微型虚拟机或容器逃逸防护。\"",
+          "afterOffset": 5732
+        }
+      ]
+    },
+    {
+      "path": "site/figures/projects/self-improving-skill-loop.js",
+      "sourceSha256": "2aadeb2530060fe97a27a5f7c23414555d09c9c27564ae6c0597cdf3c0c61f38",
+      "localizedSha256": "8b69ea0ddd754a8848b451280a85d1c2038454d356acf036887b5b22f75f0b0f",
+      "edits": [
+        {
+          "offset": 1090,
+          "before": "\"Development message\"",
+          "after": "\"开发集消息\"",
+          "afterOffset": 1090
+        },
+        {
+          "offset": 1153,
+          "before": "\"Holdout message\"",
+          "after": "\"留出集消息\"",
+          "afterOffset": 1139
+        },
+        {
+          "offset": 1211,
+          "before": "\"Development/holdout group ids\"",
+          "after": "\"开发集／留出集分组 ID\"",
+          "afterOffset": 1187
+        },
+        {
+          "offset": 1283,
+          "before": "\"Baseline correctness per case\"",
+          "after": "\"各用例的基线正确性\"",
+          "afterOffset": 1242
+        },
+        {
+          "offset": 1350,
+          "before": "\"Candidate correctness per case\"",
+          "after": "\"各用例的候选正确性\"",
+          "afterOffset": 1289
+        },
+        {
+          "offset": 1418,
+          "before": "\"Minimum accuracy gain\"",
+          "after": "\"最小准确率增益\"",
+          "afterOffset": 1336
+        },
+        {
+          "offset": 1486,
+          "before": "\"Exact candidate approved\"",
+          "after": "\"精确候选已批准\"",
+          "afterOffset": 1390
+        },
+        {
+          "offset": 2496,
+          "before": "\"Leakage blocks evaluation\"",
+          "after": "\"泄漏导致评估被阻止\"",
+          "afterOffset": 2383
+        },
+        {
+          "offset": 2592,
+          "before": "\"Candidate eligible and explicitly approved\"",
+          "after": "\"候选符合条件且已明确批准\"",
+          "afterOffset": 2463
+        },
+        {
+          "offset": 2655,
+          "before": "\"Candidate eligible; awaiting exact approval\"",
+          "after": "\"候选符合条件，等待精确批准\"",
+          "afterOffset": 2496
+        },
+        {
+          "offset": 2717,
+          "before": "\"Gate blocks promotion\"",
+          "after": "\"门禁阻止晋升\"",
+          "afterOffset": 2528
+        },
+        {
+          "offset": 2778,
+          "before": "\"Content leak\"",
+          "after": "\"内容泄漏\"",
+          "afterOffset": 2574
+        },
+        {
+          "offset": 2825,
+          "before": "\"Group leak\"",
+          "after": "\"分组泄漏\"",
+          "afterOffset": 2613
+        },
+        {
+          "offset": 2868,
+          "before": "\"Gain\"",
+          "after": "\"增益\"",
+          "afterOffset": 2650
+        },
+        {
+          "offset": 2923,
+          "before": "\"Regressions\"",
+          "after": "\"退化数\"",
+          "afterOffset": 2703
+        },
+        {
+          "offset": 2993,
+          "before": "\"Baseline accuracy\"",
+          "after": "\"基线准确率\"",
+          "afterOffset": 2765
+        },
+        {
+          "offset": 3040,
+          "before": "\"Candidate accuracy\"",
+          "after": "\"候选准确率\"",
+          "afterOffset": 2800
+        },
+        {
+          "offset": 3102,
+          "before": "\"Case\"",
+          "after": "\"用例\"",
+          "afterOffset": 2849
+        },
+        {
+          "offset": 3110,
+          "before": "\"Baseline correct\"",
+          "after": "\"基线正确\"",
+          "afterOffset": 2855
+        },
+        {
+          "offset": 3130,
+          "before": "\"Candidate correct\"",
+          "after": "\"候选正确\"",
+          "afterOffset": 2863
+        },
+        {
+          "offset": 3345,
+          "before": "\"Split labeled cases without identity leakage\"",
+          "after": "\"划分标注用例并避免身份泄漏\"",
+          "afterOffset": 3065
+        },
+        {
+          "offset": 3441,
+          "before": "\"Input\"",
+          "after": "\"输入\"",
+          "afterOffset": 3130
+        },
+        {
+          "offset": 3484,
+          "before": "\"Holdout separation must follow content and groups, not just ids. Two tickets with different ids can repeat the same customer message. Normalize content and union related records before assigning the component to a partition.\"",
+          "after": "\"留出集隔离必须依据内容和分组，不能只看 ID。两个 ID 不同的工单也可能重复同一条客户消息。先规范化内容并合并相关记录，再将整个连通分量分配到一个分区。\"",
+          "afterOffset": 3170
+        },
+        {
+          "offset": 3756,
+          "before": "\"Transform\"",
+          "after": "\"变换\"",
+          "afterOffset": 3295
+        },
+        {
+          "offset": 3961,
+          "before": "\"Verify\"",
+          "after": "\"验证\"",
+          "afterOffset": 3493
+        },
+        {
+          "offset": 4005,
+          "before": "\"Union both duplicate-content edges and group edges before hashing a component. Reject conflicting labels for identical normalized content.\"",
+          "after": "\"对连通分量计算哈希前，同时合并内容重复边和分组边。相同规范化内容若具有冲突标签，必须拒绝。\"",
+          "afterOffset": 3533
+        },
+        {
+          "offset": 4198,
+          "before": "\"Can two distinct messages from one customer thread safely be treated as independent examples?\"",
+          "after": "\"同一个客户线程中的两条不同消息，能否安全地视为独立样例？ 图表边界：只演示两条消息与手填正确性数组，不执行真实候选生成和文件晋升。JavaScript 小写转换不等同于 Python casefold；如 Straße 与 STRASSE，图中可能漏报实现能识别的内容重复。\"",
+          "afterOffset": 3633
+        },
+        {
+          "offset": 4462,
+          "before": "\"Execute and score a transparent routing skill\"",
+          "after": "\"执行并评估透明的路由技能\"",
+          "afterOffset": 3941
+        },
+        {
+          "offset": 4559,
+          "before": "\"Input\"",
+          "after": "\"输入\"",
+          "afterOffset": 4005
+        },
+        {
+          "offset": 4602,
+          "before": "\"The routing skill is a transparent ordered list. A rule requires every term, and the first matching rule wins. Record each expected/predicted pair before calculating accuracy so errors can drive a proposal.\"",
+          "after": "\"路由技能是透明的有序列表。一条规则要求所有词项均出现，首个匹配规则获胜。计算准确率前，先记录每个预期／预测对，使错误能够驱动候选提案。\"",
+          "afterOffset": 4045
+        },
+        {
+          "offset": 4856,
+          "before": "\"Transform\"",
+          "after": "\"变换\"",
+          "afterOffset": 4160
+        },
+        {
+          "offset": 5060,
+          "before": "\"Verify\"",
+          "after": "\"验证\"",
+          "afterOffset": 4357
+        },
+        {
+          "offset": 5104,
+          "before": "\"Normalize input words once. Empty term sets must never become match-everything rules.\"",
+          "after": "\"对输入词项执行一次规范化。空词项集绝不能成为匹配一切的规则。\"",
+          "afterOffset": 4397
+        },
+        {
+          "offset": 5244,
+          "before": "\"What happens when a broad early rule shadows a more precise later rule?\"",
+          "after": "\"宽泛的前置规则遮蔽更精确的后置规则时，会发生什么？ 图表边界：只演示两条消息与手填正确性数组，不执行真实候选生成和文件晋升。JavaScript 小写转换不等同于 Python casefold；如 Straße 与 STRASSE，图中可能漏报实现能识别的内容重复。\"",
+          "afterOffset": 4482
+        },
+        {
+          "offset": 5486,
+          "before": "\"Propose rules from development errors only\"",
+          "after": "\"仅从开发集错误中提出规则\"",
+          "afterOffset": 4787
+        },
+        {
+          "offset": 5580,
+          "before": "\"Input\"",
+          "after": "\"输入\"",
+          "afterOffset": 4851
+        },
+        {
+          "offset": 5623,
+          "before": "\"Propose from development errors only. Invoice appears in two billing examples and can become a rule; a term used by both billing and access examples is ambiguous. Keep the holdout text out of this function.\"",
+          "after": "\"仅从开发集错误提出候选。Invoice 出现在两个 billing 样例中，可以成为规则；同时用于 billing 和 access 样例的词项则存在歧义。不要将留出文本传入该函数。\"",
+          "afterOffset": 4891
+        },
+        {
+          "offset": 5877,
+          "before": "\"Transform\"",
+          "after": "\"变换\"",
+          "afterOffset": 5030
+        },
+        {
+          "offset": 6121,
+          "before": "\"Verify\"",
+          "after": "\"验证\"",
+          "afterOffset": 5267
+        },
+        {
+          "offset": 6165,
+          "before": "\"Count each term once per case and collect all associated labels. Require a unique label and enough independent support before proposing it.\"",
+          "after": "\"每个词项在每个用例中只计一次，收集其关联的全部标签。提出规则前，要求标签唯一且具有足够的独立支持。\"",
+          "afterOffset": 5307
+        },
+        {
+          "offset": 6359,
+          "before": "\"What failure would repeated copies of one development message cause without deduplication?\"",
+          "after": "\"如果不去重，同一条开发消息被多次复制会导致什么问题？ 图表边界：只演示两条消息与手填正确性数组，不执行真实候选生成和文件晋升。JavaScript 小写转换不等同于 Python casefold；如 Straße 与 STRASSE，图中可能漏报实现能识别的内容重复。\"",
+          "afterOffset": 5411
+        },
+        {
+          "offset": 6620,
+          "before": "\"Require a separate gate before promotion\"",
+          "after": "\"晋升前要求独立门禁\"",
+          "afterOffset": 5717
+        },
+        {
+          "offset": 6712,
+          "before": "\"Input\"",
+          "after": "\"输入\"",
+          "afterOffset": 5778
+        },
+        {
+          "offset": 6755,
+          "before": "\"A passing holdout gate produces a candidate digest for human review. Promotion requires that exact digest, writes a versioned rules file, and preserves the previous file for rollback. Published sample tickets are examples, not an unseen benchmark.\"",
+          "after": "\"留出门禁通过后，生成候选摘要供人工审阅。晋升要求精确匹配该摘要，写入带版本的规则文件，并保留旧文件用于回退。公开样本工单属于示例，不是未公开基准。\"",
+          "afterOffset": 5818
+        },
+        {
+          "offset": 7050,
+          "before": "\"Transform\"",
+          "after": "\"变换\"",
+          "afterOffset": 5939
+        },
+        {
+          "offset": 7285,
+          "before": "\"Verify\"",
+          "after": "\"验证\"",
+          "afterOffset": 6167
+        },
+        {
+          "offset": 7329,
+          "before": "\"Bind approval to serialized rule content and recompute the digest before writing. Never infer approval from a good score.\"",
+          "after": "\"将批准绑定到序列化规则内容，并在写入前重新计算摘要。不能从高分推断用户已经批准。\"",
+          "afterOffset": 6207
+        },
+        {
+          "offset": 7505,
+          "before": "\"How would you freeze the next holdout before editing the skill again?\"",
+          "after": "\"再次编辑技能前，你会如何固定下一批留出数据？ 图表边界：只演示两条消息与手填正确性数组，不执行真实候选生成和文件晋升。JavaScript 小写转换不等同于 Python casefold；如 Straße 与 STRASSE，图中可能漏报实现能识别的内容重复。\"",
+          "afterOffset": 6302
+        }
+      ]
+    },
+    {
+      "path": "site/figures/projects/semantic-notes-search.js",
+      "sourceSha256": "1af4c5bd304d4573faaccd1ddce69200dfcbff23ce731bdd7f2074aec24dcdf6",
+      "localizedSha256": "9e410b0a6fec231909edc52bf80bd5beb680ec7b8e6775696756b5887325edab",
+      "edits": [
+        {
+          "offset": 1084,
+          "before": "\"Query\"",
+          "after": "\"查询\"",
+          "afterOffset": 1084
+        },
+        {
+          "offset": 1151,
+          "before": "\"Notes separated by |\"",
+          "after": "\"以 | 分隔的笔记\"",
+          "afterOffset": 1148
+        },
+        {
+          "offset": 1267,
+          "before": "\"One alias from=to\"",
+          "after": "\"一个别名 from=to\"",
+          "afterOffset": 1253
+        },
+        {
+          "offset": 1325,
+          "before": "\"Results k\"",
+          "after": "\"结果数 k\"",
+          "afterOffset": 1306
+        },
+        {
+          "offset": 1373,
+          "before": "\"Expected note number\"",
+          "after": "\"预期笔记编号\"",
+          "afterOffset": 1350
+        },
+        {
+          "offset": 2906,
+          "before": "\"Canonical query tokens: \"",
+          "after": "\"规范查询词项：\"",
+          "afterOffset": 2869
+        },
+        {
+          "offset": 3004,
+          "before": "\"Expected note \"",
+          "after": "\"预期笔记 \"",
+          "afterOffset": 2950
+        },
+        {
+          "offset": 3129,
+          "before": "\" is retrieved\"",
+          "after": "\" 已检索到\"",
+          "afterOffset": 3066
+        },
+        {
+          "offset": 3165,
+          "before": "\" is missed\"",
+          "after": "\" 未检索到\"",
+          "afterOffset": 3094
+        },
+        {
+          "offset": 3195,
+          "before": "\"Sparse cosine scores computed from your notes.\"",
+          "after": "\"根据你的笔记计算稀疏余弦分数。\"",
+          "afterOffset": 3119
+        },
+        {
+          "offset": 3281,
+          "before": "\"Notes\"",
+          "after": "\"笔记数\"",
+          "afterOffset": 3174
+        },
+        {
+          "offset": 3390,
+          "before": "\"Hit at k\"",
+          "after": "\"前 k 个结果中命中\"",
+          "afterOffset": 3281
+        },
+        {
+          "offset": 3515,
+          "before": "\"Note \"",
+          "after": "\"笔记 \"",
+          "afterOffset": 3408
+        },
+        {
+          "offset": 3599,
+          "before": "\"Term\"",
+          "after": "\"词项\"",
+          "afterOffset": 3490
+        },
+        {
+          "offset": 3607,
+          "before": "\"Document frequency\"",
+          "after": "\"文档频率\"",
+          "afterOffset": 3496
+        },
+        {
+          "offset": 3651,
+          "before": "\"Note\"",
+          "after": "\"笔记\"",
+          "afterOffset": 3526
+        },
+        {
+          "offset": 3659,
+          "before": "\"Score\"",
+          "after": "\"分数\"",
+          "afterOffset": 3532
+        },
+        {
+          "offset": 3668,
+          "before": "\"Matched terms\"",
+          "after": "\"匹配词项\"",
+          "afterOffset": 3538
+        },
+        {
+          "offset": 4082,
+          "before": "\"Normalize notes without losing identity\"",
+          "after": "\"规范化笔记并保留标识\"",
+          "afterOffset": 3943
+        },
+        {
+          "offset": 4173,
+          "before": "\"Text\"",
+          "after": "\"文本\"",
+          "afterOffset": 4005
+        },
+        {
+          "offset": 4215,
+          "before": "\"Orchard operators type café with different Unicode encodings. Apply case folding and NFC normalization to both text and alias keys so equivalent spellings share tokens. An alias is one explicit lexical substitution.\"",
+          "after": "\"Orchard 操作者输入 café 时可能使用不同 Unicode 编码。对文本和别名键都执行大小写折叠与 NFC 规范化，让等价写法得到相同词项。一个别名只执行一次明确的词汇替换。\"",
+          "afterOffset": 4045
+        },
+        {
+          "offset": 4478,
+          "before": "\"Case fold\"",
+          "after": "\"大小写折叠\"",
+          "afterOffset": 4185
+        },
+        {
+          "offset": 4660,
+          "before": "\"Alias\"",
+          "after": "\"别名\"",
+          "afterOffset": 4363
+        },
+        {
+          "offset": 4703,
+          "before": "\"Normalize before the Unicode word regex; otherwise a combining mark can disappear. Do not recursively expand aliases into cycles.\"",
+          "after": "\"在 Unicode 单词正则表达式之前进行规范化，否则组合附加符号可能丢失。不要递归扩展别名，以免形成循环。\"",
+          "afterOffset": 4403
+        },
+        {
+          "offset": 4887,
+          "before": "\"When would mapping release to deploy harm retrieval rather than help it?\"",
+          "after": "\"什么情况下，将 release 映射到 deploy 会损害检索，而不是改善它？ 图表边界：采用简化小写转换，且别名键没有执行完整规范化；大写别名或 Straße／STRASSE 可能与 Python 的 casefold 结果不同。图上编号排序也不同于文件 ID 排序，精度与输入词项均按各自实现保留。 指标 Query terms 表示查询词项数，保留该名称供既有消费者定位。\"",
+          "afterOffset": 4512
+        },
+        {
+          "offset": 5126,
+          "before": "\"Weight terms by document rarity\"",
+          "after": "\"按文档稀有程度为词项加权\"",
+          "afterOffset": 4869
+        },
+        {
+          "offset": 5209,
+          "before": "\"Count\"",
+          "after": "\"计数\"",
+          "afterOffset": 4933
+        },
+        {
+          "offset": 5252,
+          "before": "\"Rare operational terms separate notes better than common project names. Count document frequency once per note, multiply frequency by smoothed rarity, then normalize each sparse vector.\"",
+          "after": "\"罕见运维词项比常见项目名称更能区分笔记。每份笔记对文档频率只计一次，用词频乘以平滑稀有度，再归一化各稀疏向量。\"",
+          "afterOffset": 4973
+        },
+        {
+          "offset": 5485,
+          "before": "\"Weight\"",
+          "after": "\"加权\"",
+          "afterOffset": 5076
+        },
+        {
+          "offset": 5644,
+          "before": "\"Normalize\"",
+          "after": "\"归一化\"",
+          "afterOffset": 5231
+        },
+        {
+          "offset": 5691,
+          "before": "\"Build a set of words per document for document frequency. Repeating orchard ten times in one note does not make it occur in ten documents.\"",
+          "after": "\"为每份文档构建词项集合来统计文档频率。同一笔记重复 orchard 十次，不等于它出现在十份文档中。\"",
+          "afterOffset": 5272
+        },
+        {
+          "offset": 5884,
+          "before": "\"Why normalize vector length before comparing a short note with a long runbook?\"",
+          "after": "\"比较短笔记和长操作手册之前，为什么要归一化向量长度？ 图表边界：采用简化小写转换，且别名键没有执行完整规范化；大写别名或 Straße／STRASSE 可能与 Python 的 casefold 结果不同。图上编号排序也不同于文件 ID 排序，精度与输入词项均按各自实现保留。 指标 Query terms 表示查询词项数，保留该名称供既有消费者定位。\"",
+          "afterOffset": 5377
+        },
+        {
+          "offset": 6129,
+          "before": "\"Rank queries with a stable tie rule\"",
+          "after": "\"用稳定的同分规则排列查询结果\"",
+          "afterOffset": 5720
+        },
+        {
+          "offset": 6216,
+          "before": "\"Query\"",
+          "after": "\"查询\"",
+          "afterOffset": 5786
+        },
+        {
+          "offset": 6259,
+          "before": "\"The CLI returns paths, previews and matching tokens for your own markdown folder. Query and note vectors use the same alias map and IDF table; unknown terms contribute no weight.\"",
+          "after": "\"CLI 为你自己的 Markdown 目录返回路径、预览和匹配词项。查询与笔记向量使用同一别名映射和 IDF 表，未知词项没有权重。\"",
+          "afterOffset": 5826
+        },
+        {
+          "offset": 6485,
+          "before": "\"Dot product\"",
+          "after": "\"点积\"",
+          "afterOffset": 5940
+        },
+        {
+          "offset": 6718,
+          "before": "\"Top k\"",
+          "after": "\"前 k 个结果\"",
+          "afterOffset": 6164
+        },
+        {
+          "offset": 6761,
+          "before": "\"Compute the query vector using index IDF, then dot products against note vectors. Break equal scores by document id.\"",
+          "after": "\"使用索引 IDF 计算查询向量，再与笔记向量求点积。分数相同时，按文档 ID 决定顺序。\"",
+          "afterOffset": 6209
+        },
+        {
+          "offset": 6932,
+          "before": "\"What does an empty result mean if the note uses a synonym absent from the alias map?\"",
+          "after": "\"笔记使用了别名映射中没有的同义词时，空结果意味着什么？ 图表边界：采用简化小写转换，且别名键没有执行完整规范化；大写别名或 Straße／STRASSE 可能与 Python 的 casefold 结果不同。图上编号排序也不同于文件 ID 排序，精度与输入词项均按各自实现保留。 指标 Query terms 表示查询词项数，保留该名称供既有消费者定位。\"",
+          "afterOffset": 6308
+        },
+        {
+          "offset": 7183,
+          "before": "\"Measure retrieval before adding embeddings\"",
+          "after": "\"引入嵌入前先测量检索效果\"",
+          "afterOffset": 6652
+        },
+        {
+          "offset": 7277,
+          "before": "\"Labels\"",
+          "after": "\"标签\"",
+          "afterOffset": 6716
+        },
+        {
+          "offset": 7321,
+          "before": "\"Measure whether the intended note appears near the top before adding a different retrieval backend. The supplied notes span deployment, restore and guest Wi-Fi so an alias can help one topic while harming another.\"",
+          "after": "\"加入不同检索后端前，先测量目标笔记是否靠前。随附笔记涵盖部署、恢复和访客 Wi-Fi，因此别名可能改善一个主题，却损害另一个主题。\"",
+          "afterOffset": 6756
+        },
+        {
+          "offset": 7582,
+          "before": "\"Retrieve\"",
+          "after": "\"检索\"",
+          "afterOffset": 6869
+        },
+        {
+          "offset": 7804,
+          "before": "\"Score\"",
+          "after": "\"分数\"",
+          "afterOffset": 7085
+        },
+        {
+          "offset": 7847,
+          "before": "\"Keep labeled queries outside the tuning examples. Call the actual search function inside evaluation instead of reconstructing a separate scorer.\"",
+          "after": "\"将已标注查询与调参示例分开。在评估中调用真实搜索函数，不要另外重建一个评分器。\"",
+          "afterOffset": 7125
+        },
+        {
+          "offset": 8046,
+          "before": "\"How many new labels would you collect before claiming improved retrieval for beginners?\"",
+          "after": "\"声称改善新手的检索效果之前，你会再收集多少新标签？ 图表边界：采用简化小写转换，且别名键没有执行完整规范化；大写别名或 Straße／STRASSE 可能与 Python 的 casefold 结果不同。图上编号排序也不同于文件 ID 排序，精度与输入词项均按各自实现保留。 指标 Query terms 表示查询词项数，保留该名称供既有消费者定位。\"",
+          "afterOffset": 7219
+        }
+      ]
+    }
+  ],
+  "figureLimitations": {
+    "rust-agent-shell": "图表边界：这是单步语法与预算示意，不访问文件、不解析符号链接，也没有持久会话。它对 read 缺参或 pwd 附参的判断与真实 Rust 解析器不同；错误枚举和样本命令保留英文，实际边界以程序测试为准。",
+    "sandbox-ladder": "图表边界：探针值来自手动开关，不会运行 Docker。控制模型不等同于实际配置，两个探针都为真也不能证明微型虚拟机或容器逃逸防护。",
+    "self-improving-skill-loop": "图表边界：只演示两条消息与手填正确性数组，不执行真实候选生成和文件晋升。JavaScript 小写转换不等同于 Python casefold；如 Straße 与 STRASSE，图中可能漏报实现能识别的内容重复。",
+    "semantic-notes-search": "图表边界：采用简化小写转换，且别名键没有执行完整规范化；大写别名或 Straße／STRASSE 可能与 Python 的 casefold 结果不同。图上编号排序也不同于文件 ID 排序，精度与输入词项均按各自实现保留。 指标 Query terms 表示查询词项数，保留该名称供既有消费者定位。"
+  },
+  "preservedMachineNotes": {
+    "rust-agent-shell": "译注：命令语法、事件字段、错误及测试用文件正文保留原值。Rust 原生循环逐行刷新，但随附 Python client.py 使用 capture_output，完成后才组装并输出凭据，不提供同样的逐行界面流式体验。not-executed 表示没有收到对应响应，不能据此证明动作未发生。应用层路径检查不抵御检查与使用之间的恶意替换。",
+    "sandbox-ladder": "译注：配置名、Docker 参数和探针脚本保留原值。图中的探针开关为手动输入，不是实测结果；本项目的微型虚拟机配置只有策略数据。只有明确执行 Docker 才可能得到实际探针输出，且两项通过也不能证明完整隔离安全。",
+    "self-improving-skill-loop": "译注：输入标签、规则、审批摘要及导出的 SKILL.md 行为指令保留原值，中文说明不改变代理消费的指令。第 1 阶段开头沿用“按 ID 哈希”的上游概述，当前实现实际先按内容／分组形成连通分量，再用分量内最小内容指纹分区。分区隔离不会删除同一分区中的重复记录；propose 仍逐记录计数，重复内容可能抬高支持数，不能把 min_support 自动理解为独立样本数。",
+    "semantic-notes-search": "译注：示例 Markdown 是检索输入，正文与文件名保留原值。Unicode 词项匹配不包含中文分词：无空格的连续中文可能作为一个词项，局部词语查询不一定命中。它也不做词干提取；别名是单次显式替换，不是学习得到的语义关系。"
+  },
+  "supportWarning": "译注：当前实现按记录累计支持，同一分区内的重复内容未自动去重。两个不同 ID 的重复消息可能满足 min_support=2；因此上文的“独立支持”需要额外的数据去重保证。此限制保留原算法，并在汉化回归中复现。",
+  "datasetNote": "译注：上面的 ID 哈希概述来自上游早期描述。当前 split_cases 在合并内容和分组后，使用连通分量中最小的内容指纹选择分区；ID 用于验证身份与确定输出顺序，不能用逐 ID 独立分区替代现实现。"
+}

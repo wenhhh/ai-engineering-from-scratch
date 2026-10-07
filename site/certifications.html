@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=VT323&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css?v=20260824a">
-  <link rel="stylesheet" href="certifications.css?v=20260809a">
+  <link rel="stylesheet" href="certifications.css?v=20260925a">
 </head>
 <body data-cert-page="catalog">
   <a href="#main" class="skip-link">跳转到正文</a>
@@ -41,121 +41,162 @@
       <p class="cert-lede" id="certProgramSummary">面向 AI 工程领域认证的免费、独立学习路径。</p>
       <div class="cert-meta-row" id="certProgramMeta"></div>
       <div class="cert-track-hero-actions" aria-label="认证学习选项">
-        <a class="cert-action" href="https://github.com/rohitg00/ai-engineering-from-scratch/blob/main/certifications/claude/GETTING_STARTED.md" target="_blank" rel="noopener" aria-label="在 GitHub 使用 AI 导师学习，在新标签页打开">在 GitHub 使用 AI 导师学习</a>
-        <a class="cert-action secondary" href="https://github.com/rohitg00/ai-engineering-from-scratch/blob/main/skills/claude-certification/SKILL.md" target="_blank" rel="noopener" aria-label="在 GitHub 阅读导师技能，在新标签页打开">阅读导师技能（Skill）</a>
+        <a class="cert-action" href="#certProgramSections">选择认证</a>
+        <a class="cert-action secondary" href="https://github.com/rohitg00/ai-engineering-from-scratch/blob/main/certifications/README.md" target="_blank" rel="noopener" aria-label="在 GitHub 浏览全部认证课程（在新标签页打开）">在 GitHub 浏览课程</a>
         <span class="cert-action cert-coming-soon" role="status">更多认证即将推出</span>
       </div>
     </section>
 
-    <aside class="cert-container cert-access-notice" id="certAccessNotice" aria-label="当前官方考试访问情况" hidden></aside>
-
-    <section class="cert-container cert-section" aria-labelledby="tracksTitle">
-      <div class="cert-section-heading">
-        <div>
-          <div class="cert-eyebrow">现已可用</div>
-          <h2 id="tracksTitle">Claude 认证路径</h2>
-        </div>
-        <p>每条路径将官方领域映射到课程、练习及可衡量的备考就绪计划。</p>
-      </div>
-      <div class="cert-track-grid" id="certTrackGrid" aria-live="polite">
+    <div class="cert-program-sections" id="certProgramSections" aria-live="polite">
           <!-- GENERATED:CERTIFICATION-DISCOVERY:START -->
-        <article class="cert-track-card" data-generated-discovery="certification">
-          <h3><a href="certification?id=claude-ccao-f">Claude 认证助理基础级（Claude Certified Associate - Foundations）</a></h3>
-          <p>Claude 认证助理基础级（Claude Certified Associate - Foundations）: 在业务、研究、分析和提升生产力的工作流中，安全且有效地使用 Claude。 面向运营、项目、销售、市场、财务、支持、研究及其他知识工作专业人员，不要求软件开发经验。</p>
-          <ul aria-label="Claude 认证助理基础级（Claude Certified Associate - Foundations） lessons">
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F00-certification-strategy">学会决策，而不只是记住术语（Study the Decisions, Not the Vocabulary）</a></li>
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F01-claude-product-and-model-landscape">选择足以承载工作的最小产品形态（Choose the Smallest Surface That Can Carry the Work）</a></li>
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F02-model-selection-and-token-economics">将能力投入到失败代价高的地方（Spend Capability Where Failure Is Expensive）</a></li>
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F03-prompting-and-task-decomposition">将请求转化为可测试的契约（Turn a Request Into a Testable Contract）</a></li>
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F04-context-knowledge-memory-and-caching">将每项事实放入合适的上下文（Put Each Fact in the Right Kind of Context）</a></li>
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F05-output-evaluation-and-validation">验证主张，而不是相信自信语气（Validate the Claim, Not the Confidence）</a></li>
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F06-governance-safety-and-responsible-use">用授权约束能力（Put Authority Around Capability）</a></li>
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F07-workflow-design-and-human-handoffs">先设计交接，再设计自动化（Design the Handoff Before the Automation）</a></li>
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F29-associate-workflow-capstone">交付一周工作，而非完美提示词（Ship a Week of Work, Not a Perfect Prompt）</a></li>
-          </ul>
-        </article>
-        <article class="cert-track-card" data-generated-discovery="certification">
-          <h3><a href="certification?id=claude-ccdv-f">Claude 认证开发者基础级（Claude Certified Developer - Foundations）</a></h3>
-          <p>Claude 认证开发者基础级（Claude Certified Developer - Foundations）: 构建、集成、保护、测试并交付 Claude 应用、智能体、工作流、工具和 MCP 服务器。 面向拥有 Python 或 TypeScript 经验，并具备 REST API…</p>
-          <ul aria-label="Claude 认证开发者基础级（Claude Certified Developer - Foundations） lessons">
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F00-certification-strategy">学会决策，而不只是记住术语（Study the Decisions, Not the Vocabulary）</a></li>
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F01-claude-product-and-model-landscape">选择足以承载工作的最小产品形态（Choose the Smallest Surface That Can Carry the Work）</a></li>
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F02-model-selection-and-token-economics">将能力投入到失败代价高的地方（Spend Capability Where Failure Is Expensive）</a></li>
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F03-prompting-and-task-decomposition">将请求转化为可测试的契约（Turn a Request Into a Testable Contract）</a></li>
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F04-context-knowledge-memory-and-caching">将每项事实放入合适的上下文（Put Each Fact in the Right Kind of Context）</a></li>
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F05-output-evaluation-and-validation">验证主张，而不是相信自信语气（Validate the Claim, Not the Confidence）</a></li>
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F08-messages-api-and-application-lifecycle">Messages API 是状态机（The Messages API Is a State Machine）</a></li>
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F09-structured-output-and-defensive-parsing">结构化输出是不可信契约（Structured Output Is an Untrusted Contract）</a></li>
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F10-tool-use-and-agentic-loops">工具循环是受控委派（A Tool Loop Is Controlled Delegation）</a></li>
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F11-mcp-server-design-and-integration">MCP 将能力与宿主分离（MCP Separates Capability From Host）</a></li>
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F12-claude-agent-sdk-and-hooks">Agent SDK 是运行框架，不是行动授权（The Agent SDK Is a Harness, Not Permission）</a></li>
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F13-application-security-and-secrets">安全保障在提示词之外（Security Lives Outside the Prompt）</a></li>
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F14-evals-testing-debugging-and-observability">评测将智能体行为转化为工程证据（Evals Turn Agent Behavior Into Engineering Evidence）</a></li>
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F15-claude-code-for-development-teams">Claude Code 通过共享约束支持团队协作（Claude Code Scales Through Shared Constraints）</a></li>
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F30-developer-application-capstone">交付一个能经得起审查的 Claude 应用（Ship a Claude Application You Can Defend）</a></li>
-          </ul>
-        </article>
-        <article class="cert-track-card" data-generated-discovery="certification">
-          <h3><a href="certification?id=claude-ccar-f">Claude 认证架构师基础级（Claude Certified Architect - Foundations）</a></h3>
-          <p>Claude 认证架构师基础级（Claude Certified Architect - Foundations）: 在 Claude Code、Claude Agent SDK、Claude API 和 MCP 之间做出合理的生产环境权衡。 面向设计生产级 Claude…</p>
-          <ul aria-label="Claude 认证架构师基础级（Claude Certified Architect - Foundations） lessons">
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F00-certification-strategy">学会决策，而不只是记住术语（Study the Decisions, Not the Vocabulary）</a></li>
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F01-claude-product-and-model-landscape">选择足以承载工作的最小产品形态（Choose the Smallest Surface That Can Carry the Work）</a></li>
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F02-model-selection-and-token-economics">将能力投入到失败代价高的地方（Spend Capability Where Failure Is Expensive）</a></li>
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F03-prompting-and-task-decomposition">将请求转化为可测试的契约（Turn a Request Into a Testable Contract）</a></li>
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F04-context-knowledge-memory-and-caching">将每项事实放入合适的上下文（Put Each Fact in the Right Kind of Context）</a></li>
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F05-output-evaluation-and-validation">验证主张，而不是相信自信语气（Validate the Claim, Not the Confidence）</a></li>
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F08-messages-api-and-application-lifecycle">Messages API 是状态机（The Messages API Is a State Machine）</a></li>
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F09-structured-output-and-defensive-parsing">结构化输出是不可信契约（Structured Output Is an Untrusted Contract）</a></li>
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F10-tool-use-and-agentic-loops">工具循环是受控委派（A Tool Loop Is Controlled Delegation）</a></li>
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F11-mcp-server-design-and-integration">MCP 将能力与宿主分离（MCP Separates Capability From Host）</a></li>
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F12-claude-agent-sdk-and-hooks">Agent SDK 是运行框架，不是行动授权（The Agent SDK Is a Harness, Not Permission）</a></li>
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F13-application-security-and-secrets">安全保障在提示词之外（Security Lives Outside the Prompt）</a></li>
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F14-evals-testing-debugging-and-observability">评测将智能体行为转化为工程证据（Evals Turn Agent Behavior Into Engineering Evidence）</a></li>
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F15-claude-code-for-development-teams">Claude Code 通过共享约束支持团队协作（Claude Code Scales Through Shared Constraints）</a></li>
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F16-multi-agent-orchestration-and-delegation">多智能体编排与委托（Multi-Agent Orchestration and Delegation）</a></li>
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F17-agent-sdk-sessions-subagents-and-context">Agent SDK 会话、子智能体与上下文（Agent SDK Sessions, Subagents, and Context）</a></li>
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F18-tool-contracts-errors-and-progressive-discovery">工具契约、错误与渐进式发现（Tool Contracts, Errors, and Progressive Discovery）</a></li>
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F19-claude-code-memory-rules-skills-and-ci">Claude Code 记忆、规则、技能与 CI（Claude Code Memory, Rules, Skills, and CI）</a></li>
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F20-reliable-extraction-batch-and-reviewers">可靠提取、批处理与独立评审者（Reliable Extraction, Batch, and Independent Reviewers）</a></li>
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F21-long-context-reliability-provenance-and-escalation">让大型上下文可观测（Make Large Context Observable）</a></li>
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F31-architect-foundations-scenario-capstone">在六种情境中论证同一套架构（Defend One Architecture Across Six Contexts）</a></li>
-          </ul>
-        </article>
-        <article class="cert-track-card" data-generated-discovery="certification">
-          <h3><a href="certification?id=claude-ccar-p">Claude 认证架构师专业级（Claude Certified Architect - Professional）</a></h3>
-          <p>Claude 认证架构师专业级（Claude Certified Architect - Professional）: 负责安全、可观测的生产级 Claude 系统从需求探索到迭代的整个生命周期。 面向负责端到端生产系统和跨职能决策的中高级解决方案架构师、AI 工程师、技术负责人和高级软件工程师。</p>
-          <ul aria-label="Claude 认证架构师专业级（Claude Certified Architect - Professional） lessons">
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F00-certification-strategy">学会决策，而不只是记住术语（Study the Decisions, Not the Vocabulary）</a></li>
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F22-business-discovery-requirements-and-slas">业务调研、需求与 SLA（Business Discovery, Requirements, and SLAs）</a></li>
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F23-end-to-end-architecture-and-value-tradeoffs">端到端架构与价值取舍（End-to-End Architecture and Value Tradeoffs）</a></li>
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F01-claude-product-and-model-landscape">选择足以承载工作的最小产品形态（Choose the Smallest Surface That Can Carry the Work）</a></li>
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F02-model-selection-and-token-economics">将能力投入到失败代价高的地方（Spend Capability Where Failure Is Expensive）</a></li>
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F03-prompting-and-task-decomposition">将请求转化为可测试的契约（Turn a Request Into a Testable Contract）</a></li>
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F04-context-knowledge-memory-and-caching">将每项事实放入合适的上下文（Put Each Fact in the Right Kind of Context）</a></li>
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F05-output-evaluation-and-validation">验证主张，而不是相信自信语气（Validate the Claim, Not the Confidence）</a></li>
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F06-governance-safety-and-responsible-use">用授权约束能力（Put Authority Around Capability）</a></li>
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F08-messages-api-and-application-lifecycle">Messages API 是状态机（The Messages API Is a State Machine）</a></li>
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F09-structured-output-and-defensive-parsing">结构化输出是不可信契约（Structured Output Is an Untrusted Contract）</a></li>
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F10-tool-use-and-agentic-loops">工具循环是受控委派（A Tool Loop Is Controlled Delegation）</a></li>
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F11-mcp-server-design-and-integration">MCP 将能力与宿主分离（MCP Separates Capability From Host）</a></li>
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F12-claude-agent-sdk-and-hooks">Agent SDK 是运行框架，不是行动授权（The Agent SDK Is a Harness, Not Permission）</a></li>
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F13-application-security-and-secrets">安全保障在提示词之外（Security Lives Outside the Prompt）</a></li>
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F14-evals-testing-debugging-and-observability">评测将智能体行为转化为工程证据（Evals Turn Agent Behavior Into Engineering Evidence）</a></li>
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F15-claude-code-for-development-teams">Claude Code 通过共享约束支持团队协作（Claude Code Scales Through Shared Constraints）</a></li>
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F16-multi-agent-orchestration-and-delegation">多智能体编排与委托（Multi-Agent Orchestration and Delegation）</a></li>
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F18-tool-contracts-errors-and-progressive-discovery">工具契约、错误与渐进式发现（Tool Contracts, Errors, and Progressive Discovery）</a></li>
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F24-rag-retrieval-and-data-pipelines">RAG、检索与数据流水线（RAG, Retrieval, and Data Pipelines）</a></li>
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F25-integration-protocols-identity-and-least-privilege">集成协议、身份与最小权限（Integration Protocols, Identity, and Least Privilege）</a></li>
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F26-production-observability-latency-and-cost">生产可观测性、延迟与成本（Production Observability, Latency, and Cost）</a></li>
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F27-enterprise-governance-compliance-and-hitl">企业治理、合规与人工评审（Enterprise Governance, Compliance, and Human Review）</a></li>
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F28-stakeholder-communication-adrs-and-lifecycle">相关方沟通、ADR 与生命周期归属（Stakeholder Communication, ADRs, and Lifecycle Ownership）</a></li>
-              <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F32-architect-professional-system-capstone">架构师专业级系统综合项目（Architect Professional System Capstone）</a></li>
-          </ul>
-        </article>
+        <section class="cert-container cert-section cert-program-section" data-generated-discovery="certification-program" aria-labelledby="certProgram-claude-certifications">
+          <div class="cert-section-heading"><div><div class="cert-eyebrow">Anthropic</div><h2 id="certProgram-claude-certifications">Claude 认证课程（Claude Certification Curriculum）</h2></div><p>一条免费、开源的学习路径，从最初的 Claude 工作流延伸到生产架构，与全部四份公开的 Claude 认证考试大纲逐一对应。</p></div>
+          <div class="cert-track-hero-actions cert-program-actions"><a class="cert-action secondary" href="https://github.com/rohitg00/ai-engineering-from-scratch/blob/main/certifications/claude/GETTING_STARTED.md" target="_blank" rel="noopener" aria-label="学习 Claude：在 GitHub 使用 AI 导师（在新标签页打开）">在 GitHub 使用 AI 导师学习</a><a class="cert-action secondary" href="https://github.com/rohitg00/ai-engineering-from-scratch/blob/main/skills/claude-certification/SKILL.md" target="_blank" rel="noopener" aria-label="阅读 Claude 的导师技能：GitHub（在新标签页打开）">阅读导师技能</a></div>
+          <div class="cert-track-grid">
+            <article class="cert-track-card" data-generated-discovery="certification">
+              <h3><a href="certification?id=claude-ccao-f">Claude 认证助理基础级（Claude Certified Associate - Foundations）</a></h3>
+              <p>Claude 认证助理基础级（Claude Certified Associate - Foundations）: 在业务、研究、分析和提升生产力的工作流中，安全且有效地使用 Claude。 面向运营、项目、销售、市场、财务、支持、研究及其他知识工作专业人员，不要求软件开发经验。</p>
+              <ul aria-label="Claude 认证助理基础级（Claude Certified Associate - Foundations） 节课程">
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F00-certification-strategy">学会决策，而不只是记住术语（Study the Decisions, Not the Vocabulary）</a></li>
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F01-claude-product-and-model-landscape">选择足以承载工作的最小产品形态（Choose the Smallest Surface That Can Carry the Work）</a></li>
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F02-model-selection-and-token-economics">将能力投入到失败代价高的地方（Spend Capability Where Failure Is Expensive）</a></li>
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F03-prompting-and-task-decomposition">将请求转化为可测试的契约（Turn a Request Into a Testable Contract）</a></li>
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F04-context-knowledge-memory-and-caching">将每项事实放入合适的上下文（Put Each Fact in the Right Kind of Context）</a></li>
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F05-output-evaluation-and-validation">验证主张，而不是相信自信语气（Validate the Claim, Not the Confidence）</a></li>
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F06-governance-safety-and-responsible-use">用授权约束能力（Put Authority Around Capability）</a></li>
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F07-workflow-design-and-human-handoffs">先设计交接，再设计自动化（Design the Handoff Before the Automation）</a></li>
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F29-associate-workflow-capstone">交付一周工作，而非完美提示词（Ship a Week of Work, Not a Perfect Prompt）</a></li>
+              </ul>
+            </article>
+            <article class="cert-track-card" data-generated-discovery="certification">
+              <h3><a href="certification?id=claude-ccdv-f">Claude 认证开发者基础级（Claude Certified Developer - Foundations）</a></h3>
+              <p>Claude 认证开发者基础级（Claude Certified Developer - Foundations）: 构建、集成、保护、测试并交付 Claude 应用、智能体、工作流、工具和 MCP 服务器。 面向拥有 Python 或 TypeScript 经验，并具备 REST API…</p>
+              <ul aria-label="Claude 认证开发者基础级（Claude Certified Developer - Foundations） 节课程">
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F00-certification-strategy">学会决策，而不只是记住术语（Study the Decisions, Not the Vocabulary）</a></li>
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F01-claude-product-and-model-landscape">选择足以承载工作的最小产品形态（Choose the Smallest Surface That Can Carry the Work）</a></li>
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F02-model-selection-and-token-economics">将能力投入到失败代价高的地方（Spend Capability Where Failure Is Expensive）</a></li>
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F03-prompting-and-task-decomposition">将请求转化为可测试的契约（Turn a Request Into a Testable Contract）</a></li>
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F04-context-knowledge-memory-and-caching">将每项事实放入合适的上下文（Put Each Fact in the Right Kind of Context）</a></li>
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F05-output-evaluation-and-validation">验证主张，而不是相信自信语气（Validate the Claim, Not the Confidence）</a></li>
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F08-messages-api-and-application-lifecycle">Messages API 是状态机（The Messages API Is a State Machine）</a></li>
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F09-structured-output-and-defensive-parsing">结构化输出是不可信契约（Structured Output Is an Untrusted Contract）</a></li>
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F10-tool-use-and-agentic-loops">工具循环是受控委派（A Tool Loop Is Controlled Delegation）</a></li>
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F11-mcp-server-design-and-integration">MCP 将能力与宿主分离（MCP Separates Capability From Host）</a></li>
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F12-claude-agent-sdk-and-hooks">Agent SDK 是运行框架，不是行动授权（The Agent SDK Is a Harness, Not Permission）</a></li>
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F13-application-security-and-secrets">安全保障在提示词之外（Security Lives Outside the Prompt）</a></li>
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F14-evals-testing-debugging-and-observability">评测将智能体行为转化为工程证据（Evals Turn Agent Behavior Into Engineering Evidence）</a></li>
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F15-claude-code-for-development-teams">Claude Code 通过共享约束支持团队协作（Claude Code Scales Through Shared Constraints）</a></li>
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F30-developer-application-capstone">交付一个能经得起审查的 Claude 应用（Ship a Claude Application You Can Defend）</a></li>
+              </ul>
+            </article>
+            <article class="cert-track-card" data-generated-discovery="certification">
+              <h3><a href="certification?id=claude-ccar-f">Claude 认证架构师基础级（Claude Certified Architect - Foundations）</a></h3>
+              <p>Claude 认证架构师基础级（Claude Certified Architect - Foundations）: 在 Claude Code、Claude Agent SDK、Claude API 和 MCP 之间做出合理的生产环境权衡。 面向设计生产级 Claude…</p>
+              <ul aria-label="Claude 认证架构师基础级（Claude Certified Architect - Foundations） 节课程">
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F00-certification-strategy">学会决策，而不只是记住术语（Study the Decisions, Not the Vocabulary）</a></li>
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F01-claude-product-and-model-landscape">选择足以承载工作的最小产品形态（Choose the Smallest Surface That Can Carry the Work）</a></li>
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F02-model-selection-and-token-economics">将能力投入到失败代价高的地方（Spend Capability Where Failure Is Expensive）</a></li>
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F03-prompting-and-task-decomposition">将请求转化为可测试的契约（Turn a Request Into a Testable Contract）</a></li>
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F04-context-knowledge-memory-and-caching">将每项事实放入合适的上下文（Put Each Fact in the Right Kind of Context）</a></li>
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F05-output-evaluation-and-validation">验证主张，而不是相信自信语气（Validate the Claim, Not the Confidence）</a></li>
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F08-messages-api-and-application-lifecycle">Messages API 是状态机（The Messages API Is a State Machine）</a></li>
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F09-structured-output-and-defensive-parsing">结构化输出是不可信契约（Structured Output Is an Untrusted Contract）</a></li>
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F10-tool-use-and-agentic-loops">工具循环是受控委派（A Tool Loop Is Controlled Delegation）</a></li>
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F11-mcp-server-design-and-integration">MCP 将能力与宿主分离（MCP Separates Capability From Host）</a></li>
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F12-claude-agent-sdk-and-hooks">Agent SDK 是运行框架，不是行动授权（The Agent SDK Is a Harness, Not Permission）</a></li>
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F13-application-security-and-secrets">安全保障在提示词之外（Security Lives Outside the Prompt）</a></li>
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F14-evals-testing-debugging-and-observability">评测将智能体行为转化为工程证据（Evals Turn Agent Behavior Into Engineering Evidence）</a></li>
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F15-claude-code-for-development-teams">Claude Code 通过共享约束支持团队协作（Claude Code Scales Through Shared Constraints）</a></li>
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F16-multi-agent-orchestration-and-delegation">多智能体编排与委托（Multi-Agent Orchestration and Delegation）</a></li>
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F17-agent-sdk-sessions-subagents-and-context">Agent SDK 会话、子智能体与上下文（Agent SDK Sessions, Subagents, and Context）</a></li>
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F18-tool-contracts-errors-and-progressive-discovery">工具契约、错误与渐进式发现（Tool Contracts, Errors, and Progressive Discovery）</a></li>
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F19-claude-code-memory-rules-skills-and-ci">Claude Code 记忆、规则、技能与 CI（Claude Code Memory, Rules, Skills, and CI）</a></li>
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F20-reliable-extraction-batch-and-reviewers">可靠提取、批处理与独立评审者（Reliable Extraction, Batch, and Independent Reviewers）</a></li>
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F21-long-context-reliability-provenance-and-escalation">让大型上下文可观测（Make Large Context Observable）</a></li>
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F31-architect-foundations-scenario-capstone">在六种情境中论证同一套架构（Defend One Architecture Across Six Contexts）</a></li>
+              </ul>
+            </article>
+            <article class="cert-track-card" data-generated-discovery="certification">
+              <h3><a href="certification?id=claude-ccar-p">Claude 认证架构师专业级（Claude Certified Architect - Professional）</a></h3>
+              <p>Claude 认证架构师专业级（Claude Certified Architect - Professional）: 负责安全、可观测的生产级 Claude 系统从需求探索到迭代的整个生命周期。 面向负责端到端生产系统和跨职能决策的中高级解决方案架构师、AI 工程师、技术负责人和高级软件工程师。</p>
+              <ul aria-label="Claude 认证架构师专业级（Claude Certified Architect - Professional） 节课程">
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F00-certification-strategy">学会决策，而不只是记住术语（Study the Decisions, Not the Vocabulary）</a></li>
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F22-business-discovery-requirements-and-slas">业务调研、需求与 SLA（Business Discovery, Requirements, and SLAs）</a></li>
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F23-end-to-end-architecture-and-value-tradeoffs">端到端架构与价值取舍（End-to-End Architecture and Value Tradeoffs）</a></li>
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F01-claude-product-and-model-landscape">选择足以承载工作的最小产品形态（Choose the Smallest Surface That Can Carry the Work）</a></li>
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F02-model-selection-and-token-economics">将能力投入到失败代价高的地方（Spend Capability Where Failure Is Expensive）</a></li>
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F03-prompting-and-task-decomposition">将请求转化为可测试的契约（Turn a Request Into a Testable Contract）</a></li>
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F04-context-knowledge-memory-and-caching">将每项事实放入合适的上下文（Put Each Fact in the Right Kind of Context）</a></li>
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F05-output-evaluation-and-validation">验证主张，而不是相信自信语气（Validate the Claim, Not the Confidence）</a></li>
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F06-governance-safety-and-responsible-use">用授权约束能力（Put Authority Around Capability）</a></li>
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F08-messages-api-and-application-lifecycle">Messages API 是状态机（The Messages API Is a State Machine）</a></li>
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F09-structured-output-and-defensive-parsing">结构化输出是不可信契约（Structured Output Is an Untrusted Contract）</a></li>
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F10-tool-use-and-agentic-loops">工具循环是受控委派（A Tool Loop Is Controlled Delegation）</a></li>
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F11-mcp-server-design-and-integration">MCP 将能力与宿主分离（MCP Separates Capability From Host）</a></li>
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F12-claude-agent-sdk-and-hooks">Agent SDK 是运行框架，不是行动授权（The Agent SDK Is a Harness, Not Permission）</a></li>
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F13-application-security-and-secrets">安全保障在提示词之外（Security Lives Outside the Prompt）</a></li>
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F14-evals-testing-debugging-and-observability">评测将智能体行为转化为工程证据（Evals Turn Agent Behavior Into Engineering Evidence）</a></li>
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F15-claude-code-for-development-teams">Claude Code 通过共享约束支持团队协作（Claude Code Scales Through Shared Constraints）</a></li>
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F16-multi-agent-orchestration-and-delegation">多智能体编排与委托（Multi-Agent Orchestration and Delegation）</a></li>
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F18-tool-contracts-errors-and-progressive-discovery">工具契约、错误与渐进式发现（Tool Contracts, Errors, and Progressive Discovery）</a></li>
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F24-rag-retrieval-and-data-pipelines">RAG、检索与数据流水线（RAG, Retrieval, and Data Pipelines）</a></li>
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F25-integration-protocols-identity-and-least-privilege">集成协议、身份与最小权限（Integration Protocols, Identity, and Least Privilege）</a></li>
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F26-production-observability-latency-and-cost">生产可观测性、延迟与成本（Production Observability, Latency, and Cost）</a></li>
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F27-enterprise-governance-compliance-and-hitl">企业治理、合规与人工评审（Enterprise Governance, Compliance, and Human Review）</a></li>
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F28-stakeholder-communication-adrs-and-lifecycle">相关方沟通、ADR 与生命周期归属（Stakeholder Communication, ADRs, and Lifecycle Ownership）</a></li>
+                <li><a href="lesson?path=certifications%2Fclaude%2Flessons%2F32-architect-professional-system-capstone">架构师专业级系统综合项目（Architect Professional System Capstone）</a></li>
+              </ul>
+            </article>
+          </div>
+        </section>
+        <section class="cert-container cert-section cert-program-section" data-generated-discovery="certification-program" aria-labelledby="certProgram-mcpa-certification">
+          <div class="cert-section-heading"><div><div class="cert-eyebrow">Agentic AI Foundation</div><h2 id="certProgram-mcpa-certification">MCPA 认证课程（MCPA Certification Curriculum）</h2></div><p>面向 Model Context Protocol Associate 考试的免费开源学习路线，通过依据 2026-07-28 规范实现 MCP 宿主、客户端、服务器和工具来学习。</p></div>
+          <div class="cert-track-hero-actions cert-program-actions"><a class="cert-action secondary" href="https://github.com/rohitg00/ai-engineering-from-scratch/blob/main/certifications/mcpa/GETTING_STARTED.md" target="_blank" rel="noopener" aria-label="学习 MCPA：在 GitHub 使用 AI 导师（在新标签页打开）">在 GitHub 使用 AI 导师学习</a><a class="cert-action secondary" href="https://github.com/rohitg00/ai-engineering-from-scratch/blob/main/skills/mcpa-certification/SKILL.md" target="_blank" rel="noopener" aria-label="阅读 MCPA 的导师技能：GitHub（在新标签页打开）">阅读导师技能</a></div>
+          <div class="cert-track-grid">
+            <article class="cert-track-card" data-generated-discovery="certification">
+              <h3><a href="certification?id=mcpa-f">模型上下文协议助理认证（Model Context Protocol Associate）</a></h3>
+              <p>模型上下文协议助理认证（Model Context Protocol Associate）: 证明你理解模型上下文协议的工作原理：宿主、客户端、服务器和工具，连接各组件的消息流与原语，以及保障连接安全的信任边界。 需要将智能体连接到外部系统，并理解协议原理与组件通信方式的 AI 工程师、平台工程师和 AI…</p>
+              <ul aria-label="模型上下文协议助理认证（Model Context Protocol Associate） 节课程">
+                <li><a href="lesson?path=certifications%2Fmcpa%2Flessons%2F00-mcp-exam-strategy">MCPA 考试大纲应指导学习预算，而非充当勾选清单</a></li>
+                <li><a href="lesson?path=certifications%2Fmcpa%2Flessons%2F01-reading-the-specification">阅读 MCP 规范（Reading the MCP Specification）</a></li>
+                <li><a href="lesson?path=certifications%2Fmcpa%2Flessons%2F02-the-integration-problem">MCP 解决的集成问题（The Integration Problem MCP Solves）</a></li>
+                <li><a href="lesson?path=certifications%2Fmcpa%2Flessons%2F03-json-rpc-and-meta">JSON-RPC 消息封套（The JSON-RPC Envelope）</a></li>
+                <li><a href="lesson?path=certifications%2Fmcpa%2Flessons%2F04-the-stateless-core">MCP 的无状态核心（The Stateless Core of MCP）</a></li>
+                <li><a href="lesson?path=certifications%2Fmcpa%2Flessons%2F05-protocol-eras-and-compatibility">区分现代与旧版 MCP 服务器（Telling a Modern MCP Server From a Legacy One）</a></li>
+                <li><a href="lesson?path=certifications%2Fmcpa%2Flessons%2F06-hosts-clients-and-servers">宿主、客户端与服务器：MCP 的进程拓扑（Hosts, Clients, and Servers: MCP&#39;s Process Topology）</a></li>
+                <li><a href="lesson?path=certifications%2Fmcpa%2Flessons%2F07-discovery-and-capability-negotiation">发现服务器并协商能力（Discovering a Server and Negotiating What It Can Do）</a></li>
+                <li><a href="lesson?path=certifications%2Fmcpa%2Flessons%2F08-tool-schemas-and-structured-content">工具定义中的契约（The Contract Inside a Tool Definition）</a></li>
+                <li><a href="lesson?path=certifications%2Fmcpa%2Flessons%2F09-reading-server-manifests">像评审者一样阅读服务器清单（Reading a Server Manifest Like a Reviewer）</a></li>
+                <li><a href="lesson?path=certifications%2Fmcpa%2Flessons%2F10-model-interaction-flow">模型交互流程（The Model Interaction Flow）</a></li>
+                <li><a href="lesson?path=certifications%2Fmcpa%2Flessons%2F11-the-tools-primitive">工具原语：执行动作并读取结果（The Tools Primitive: Calling Actions and Reading Their Results）</a></li>
+                <li><a href="lesson?path=certifications%2Fmcpa%2Flessons%2F12-the-resources-primitive">资源：无状态服务器中的可寻址内容（Resources: Addressable Content for a Stateless Server）</a></li>
+                <li><a href="lesson?path=certifications%2Fmcpa%2Flessons%2F13-prompts-and-completion">提示词模板与参数补全（Prompt Templates and Argument Completion）</a></li>
+                <li><a href="lesson?path=certifications%2Fmcpa%2Flessons%2F14-multi-round-trip-requests-and-elicitation">多轮往返请求与信息征询（Multi Round-Trip Requests and Elicitation）</a></li>
+                <li><a href="lesson?path=certifications%2Fmcpa%2Flessons%2F15-deprecated-client-features">已弃用但仍可用：Roots、Sampling 与 Logging（Deprecated, Not Removed: Roots, Sampling, and Logging）</a></li>
+                <li><a href="lesson?path=certifications%2Fmcpa%2Flessons%2F16-notifications-and-subscriptions">订阅流：通知、进度与取消（The Subscription Stream: Notifications, Progress, and Cancellation）</a></li>
+                <li><a href="lesson?path=certifications%2Fmcpa%2Flessons%2F17-tool-invocation-lifecycle">工具调用生命周期（The Tool Invocation Lifecycle）</a></li>
+                <li><a href="lesson?path=certifications%2Fmcpa%2Flessons%2F18-error-handling">请求失败的两个通道（Two Ways for a Request to Fail）</a></li>
+                <li><a href="lesson?path=certifications%2Fmcpa%2Flessons%2F19-transports-and-http-headers">传输与 HTTP 请求头契约（Transports and the HTTP Header Contract）</a></li>
+                <li><a href="lesson?path=certifications%2Fmcpa%2Flessons%2F20-caching-and-pagination">缓存新鲜度与游标分页（Cache Freshness and Cursor-Based Pagination）</a></li>
+                <li><a href="lesson?path=certifications%2Fmcpa%2Flessons%2F21-long-running-work-and-tasks">长时间运行的工作与任务扩展（Long-Running Work and the Tasks Extension）</a></li>
+                <li><a href="lesson?path=certifications%2Fmcpa%2Flessons%2F22-trust-boundaries">MCP 交互中的信任区域（Trust Zones in an MCP Exchange）</a></li>
+                <li><a href="lesson?path=certifications%2Fmcpa%2Flessons%2F23-oauth-authorization">为 MCP 服务器访问授权（Authorizing Access to an MCP Server）</a></li>
+                <li><a href="lesson?path=certifications%2Fmcpa%2Flessons%2F24-client-registration-and-identity">向授权服务器证明客户端身份（Proving a Client&#39;s Identity to an Authorization Server）</a></li>
+                <li><a href="lesson?path=certifications%2Fmcpa%2Flessons%2F25-consent-and-least-privilege">同意授权与最小权限（Consent and Least Privilege）</a></li>
+                <li><a href="lesson?path=certifications%2Fmcpa%2Flessons%2F26-risk-and-safety-controls">MCP 工具调用的风险与安全控制（Risk and Safety Controls for MCP Tool Calls）</a></li>
+                <li><a href="lesson?path=certifications%2Fmcpa%2Flessons%2F27-auditability-and-observability">用同一个追踪 ID 关联审计与可观测性（One Trace ID Ties Auditability to Observability）</a></li>
+                <li><a href="lesson?path=certifications%2Fmcpa%2Flessons%2F28-roles-and-adoption">每条 MUST 都需要负责人（Every MUST Needs an Owner）</a></li>
+                <li><a href="lesson?path=certifications%2Fmcpa%2Flessons%2F29-operational-use-cases">按工作需求选择 MCP 方案（Choosing MCP&#39;s Shape for the Job）</a></li>
+                <li><a href="lesson?path=certifications%2Fmcpa%2Flessons%2F30-the-extensions-framework">扩展框架（The Extensions Framework）</a></li>
+                <li><a href="lesson?path=certifications%2Fmcpa%2Flessons%2F31-mcp-apps">对话中的交互界面（Interactive Interfaces Inside the Conversation）</a></li>
+                <li><a href="lesson?path=certifications%2Fmcpa%2Flessons%2F32-registry-gateways-and-sdk-tiers">发现服务器、路由请求与判断可信度（Finding, Routing To, and Trusting a Server）</a></li>
+                <li><a href="lesson?path=certifications%2Fmcpa%2Flessons%2F33-mcpa-capstone-readiness">从头到尾读懂一段 MCP 交互（Reading One MCP Exchange End to End）</a></li>
+              </ul>
+            </article>
+          </div>
+        </section>
           <!-- GENERATED:CERTIFICATION-DISCOVERY:END -->
-      </div>
-    </section>
+    </div>
 
     <section class="cert-container cert-section cert-method" aria-labelledby="methodTitle">
       <div class="cert-eyebrow">学习方式</div>
@@ -169,18 +210,18 @@
 
     <aside class="cert-container cert-notice" id="certProgramNotice" aria-label="重要认证声明">
       <strong>独立备考</strong>
-      <p>这是独立开源学习资源，并非官方考试，与认证提供方无隶属关系，也未获其认可，不能保证通过考试。报名、资格、费用和官方量表评分仍由考试提供方负责。</p>
+      <p>这是一份独立、开源的学习资源，与 Anthropic、Agentic AI Foundation 和 Linux Foundation 均无隶属关系，也未获其背书。它不属于官方考试，不能保证通过。报名、资格、费用和官方评分均由各考试提供方决定。</p>
     </aside>
   </main>
 
-  <footer class="site-footer"><div class="container footer-inner"><p>AI Engineering from Scratch · 开源 · 永久免费.</p><div class="footer-links"><a href="index.html">首页</a><a href="catalog.html">课程目录</a><a href="https://github.com/rohitg00/ai-engineering-from-scratch" target="_blank" rel="noopener">GitHub</a></div></div></footer>
+  <footer class="site-footer"><div class="container footer-inner"><p>AI Engineering from Scratch · 开源 · 永久免费.</p><div class="footer-links"><a href="index.html">首页</a><a href="catalog.html">课程目录</a><a href="https://github.com/rohitg00/ai-engineering-from-scratch" target="_blank" rel="noopener">GitHub</a><a href="sponsors.html">赞助我们</a></div></div></footer>
 
   <script src="data.js?v=20260821c"></script>
-  <script src="certification-data.js?v=20260809c"></script>
+  <script src="certification-data.js?v=20260925a"></script>
   <script src="progress.js?v=20260822a"></script>
   <script src="certification-progress.js?v=20260808c"></script>
-  <script src="header.js?v=20260829b" defer></script>
+  <script src="header.js?v=20260927a" defer></script>
   <script src="cmdpalette.js?v=20260821a" defer></script>
-  <script src="certifications.js?v=20260809a" defer></script>
+  <script src="certification-ui.js?v=20261007a"></script><script src="certifications.js?v=20260925b" defer></script>
 </body>
 </html>

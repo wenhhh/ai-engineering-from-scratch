@@ -1,0 +1,69 @@
+{
+  "upstream": "c02ca08d8a49ce24c3c1c1cf8e3b422f2c7393ca",
+  "baselineCommit": "22165bfb9533b5144e0ce9d1313c7db4abffec80",
+  "documents": {
+    "certifications/mcpa/README.md": {
+      "sourceSha256": "6530731488389f439f6de3ca2f4de87187da4fb3f0ae287b68782b363fc9b795",
+      "projectionSha256": "76df29872e6c8bdd854942c95a930e559bade42010cb141ddf224f412357a2e9",
+      "fenceKinds": [
+        "exact",
+        "exact",
+        "mermaid-labels-only"
+      ]
+    },
+    "certifications/mcpa/GETTING_STARTED.md": {
+      "sourceSha256": "151627be20270a29c0f2f3aaa3ac74c2effb27a37d20fc8bbf662a31b766db11",
+      "projectionSha256": "f529aeff1eb5146e1dd236f7d50305a50998308dd96e87d2f18c6e12728e4b7b",
+      "fenceKinds": [
+        "exact",
+        "exact",
+        "exact",
+        "learner-prompt",
+        "learner-prompt",
+        "file-tree-labels-only",
+        "exact",
+        "exact",
+        "exact"
+      ]
+    },
+    "certifications/mcpa/research/mcp-2026-07-28-brief.md": {
+      "sourceSha256": "7e7f13145f946764320b895a18cc2958ea163182bafe4e4c96c935ef005154b3",
+      "projectionSha256": "e255f9c33346f72b6ac347e6209575f305d890e7797b2379020966f3458a9730",
+      "fenceKinds": [
+        "exact"
+      ]
+    },
+    "certifications/mcpa/research/source-verification-ledger.md": {
+      "sourceSha256": "7e1f0f0431ac09a471cd906c76d1af6a251c531225cb99cbcd563a38fde88d7b",
+      "projectionSha256": "19fb5c4d2b4651fcd4dc19bda573060ed954cc22bc0574a1a1e2eb12a1af0314",
+      "fenceKinds": []
+    },
+    "skills/mcpa-certification/SKILL.md": {
+      "sourceSha256": "61aa9168f7c7304c175c5666d00b0807010a66693b701982cb697492ad8f1b87",
+      "projectionSha256": "587926e869e7aa72267f1834ebf73ac22f03192c7cff95d03803dee51d23578b",
+      "fenceKinds": [
+        "exact",
+        "exact",
+        "progress-template-prose",
+        "exact",
+        "exact"
+      ]
+    },
+    ".claude/skills/mcpa-certification/SKILL.md": {
+      "sourceSha256": "61aa9168f7c7304c175c5666d00b0807010a66693b701982cb697492ad8f1b87",
+      "projectionSha256": "587926e869e7aa72267f1834ebf73ac22f03192c7cff95d03803dee51d23578b",
+      "fenceKinds": [
+        "exact",
+        "exact",
+        "progress-template-prose",
+        "exact",
+        "exact"
+      ]
+    }
+  },
+  "unchangedFiles": {
+    "certifications/mcpa/program.json": "062b4cbab3043fec4b039d7dc86e9db570d463f95ca91eaf6d1e0ab04a789a04",
+    "certifications/mcpa/prerequisites.json": "54c65c8470040ee121d1242f4bb165b3bc180cfcf8748366db579360c273b7d8",
+    "certifications/mcpa/tracks/mcpa-f.json": "dac95a6c00d1550f1516551a2b6007e462bb330cfe66cfb4863059185e230319"
+  }
+}

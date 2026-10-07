@@ -3,7 +3,8 @@
 
   var root = document.documentElement;
   var assessmentTimer = null;
-  var TUTOR_GUIDE_URL = 'https://github.com/rohitg00/ai-engineering-from-scratch/blob/main/certifications/claude/GETTING_STARTED.md';
+  function ui(value) { return window.AIFSCertificationUI ? window.AIFSCertificationUI.text(value) : value; }
+  var GITHUB_BLOB_BASE = 'https://github.com/rohitg00/ai-engineering-from-scratch/blob/main/';
 
   function esc(value) {
     var div = document.createElement('div');
@@ -18,11 +19,24 @@
   function data() {
     return typeof CERTIFICATIONS !== 'undefined' && CERTIFICATIONS
       ? CERTIFICATIONS
-      : { program: null, tracks: [], lessonsByPath: {}, assessmentsById: {} };
+      : { programs: [], tracks: [], lessonsByPath: {}, assessmentsById: {} };
   }
 
   function tracks() {
     return Array.isArray(data().tracks) ? data().tracks : [];
+  }
+
+  function programs() {
+    return Array.isArray(data().programs) ? data().programs : [];
+  }
+
+  function programForTrack(track) {
+    var id = track && track.programId;
+    return programs().find(function (program) { return program.id === id; }) || {};
+  }
+
+  function githubBlobUrl(relativePath) {
+    return relativePath ? GITHUB_BLOB_BASE + relativePath : '';
   }
 
   function query(name) {
@@ -120,7 +134,7 @@
 
   function validatedInternalLessonReference(ref) {
     var path = lessonRefPath(ref);
-    if (!/^(?:certifications\/claude\/lessons\/[^/?#]+|phases\/[^/?#]+\/[^/?#]+)$/.test(path)) return null;
+    if (!/^(?:certifications\/[a-z0-9][a-z0-9-]*\/lessons\/[^/?#]+|phases\/[^/?#]+\/[^/?#]+)$/.test(path)) return null;
     var lesson = findKnownLesson(path);
     if (!lesson) return null;
     return {
@@ -147,7 +161,7 @@
     if (!validated) return '';
     var crossTrack = !!(sourceTrack && !trackContainsLesson(sourceTrack, validated.path));
     var label = validated.label || validated.lesson.name;
-    if (crossTrack) label += ' · Supplemental to ' + (sourceTrack.examCode || sourceTrack.shortName || sourceTrack.id);
+    if (crossTrack) label += ui(' · Supplemental to ') + (sourceTrack.examCode || sourceTrack.shortName || sourceTrack.id);
     return '<a href="' + attr(lessonReferenceHref(validated.path, sourceTrack)) + '">' + esc(label) + ' →</a>';
   }
 
@@ -164,11 +178,17 @@
     return examValue(track, ['durationMinutes', 'minutes', 'timeLimitMinutes'], '未列出');
   }
 
+  function unpublished(track, flag) {
+    return !!(track && track.exam && track.exam[flag] === false);
+  }
+
   function questions(track) {
+    if (unpublished(track, 'itemCountPublished')) return '未公布';
     return examValue(track, ['questionCount', 'questions', 'items'], '未列出');
   }
 
   function passing(track) {
+    if (unpublished(track, 'passingScorePublished')) return '未公布';
     return examValue(track, ['passingScaledScore', 'passingScore', 'passingScaled'], '参见官方指南');
   }
 
@@ -179,6 +199,7 @@
   }
 
   function formatDate(value) {
+    if (window.AIFSCertificationUI) return window.AIFSCertificationUI.formatDate(value);
     if (!value) return '';
     var date = new Date(value);
     if (isNaN(date.getTime())) return String(value);
@@ -213,17 +234,17 @@
 
   function examFacts(track) {
     return [
-      { value: questions(track), label: '题目数' },
+      { value: questions(track), label: '题目数', unpublished: unpublished(track, 'itemCountPublished') },
       { value: String(minutes(track)).match(/^\d+$/) ? minutes(track) + ' 分钟' : minutes(track), label: '时限' },
-      { value: passing(track), label: '及格分数' },
+      { value: passing(track), label: '及格分数', unpublished: unpublished(track, 'passingScorePublished') },
       { value: price(track), label: '考试费用' },
-      { value: ({'Multiple-choice and multiple-response': '单选与多选（Multiple-choice and Multiple-response）', 'Scenario-based multiple-choice and multiple-response; four scenarios drawn from six': '基于场景的单选与多选：从六个场景中抽取四个'})[examValue(track, ['format'], '闭卷')] || examValue(track, ['format'], '闭卷'), label: '形式' },
+      { value: ({'Multiple-choice and multiple-response': '单选与多选（Multiple-choice and Multiple-response）', 'Scenario-based multiple-choice and multiple-response; four scenarios drawn from six': '基于场景的单选与多选：从六个场景中抽取四个'})[examValue(track, ['format'], '闭卷')] || ui(examValue(track, ['format'], '闭卷')), label: '形式' },
       { value: examValue(track, ['validityMonths', 'validForMonths'], '参见提供方'), label: '有效期' },
     ];
   }
 
   function renderCardFacts(track, limit) {
-    return examFacts(track).slice(0, limit || 3).map(function (fact) {
+    return examFacts(track).filter(function (fact) { return !fact.unpublished; }).slice(0, limit || 3).map(function (fact) {
       var value = fact.value;
       if (fact.label === '有效期' && typeof value === 'number') value += ' 个月';
       return '<div class="cert-card-fact"><strong>' + esc(value) + '</strong><span class="cert-fact-label">' + esc(fact.label) + '</span></div>';
@@ -235,72 +256,128 @@
     if (!badge || !badge.imageUrl) return '';
     var width = Number(badge.width) || 600;
     var height = Number(badge.height) || width;
-    return '<img class="cert-track-badge" src="' + attr(badge.imageUrl) + '" width="' + width + '" height="' + height + '" loading="lazy" decoding="async" referrerpolicy="no-referrer" alt="" aria-hidden="true">';
+    var shapeClass = badge.shape === 'square' ? ' cert-track-badge--square' : '';
+    return '<img class="cert-track-badge' + shapeClass + '" src="' + attr(badge.imageUrl) + '" width="' + width + '" height="' + height + '" loading="lazy" decoding="async" referrerpolicy="no-referrer" alt="" aria-hidden="true">';
   }
 
-  function renderAccessNotice(id, program, includeAllLinks) {
-    var mount = document.getElementById(id);
-    if (!mount) return;
+  function accessNoticeHtml(program, includeAllLinks) {
     var notice = program && program.accessNotice;
-    if (!notice) {
-      mount.hidden = true;
-      mount.innerHTML = '';
-      return;
-    }
+    if (!notice) return '';
     var links = Array.isArray(program.officialLinks) ? program.officialLinks.filter(function (link) {
       if (!link || !link.url) return false;
       return includeAllLinks || String(link.label || '').toLowerCase().indexOf('faq') !== -1;
     }) : [];
-    mount.hidden = false;
-    mount.innerHTML = '<div><strong>目前官方考试访问受限</strong><p>' + esc(notice) + '</p></div>' +
+    return '<div><strong>' + esc(program.accessNoticeTitle || '官方考试报考资格') + '</strong><p>' + esc(notice) + '</p></div>' +
       (links.length ? '<div class="cert-source-links" aria-label="官方认证来源">' + links.map(function (link) {
         return '<a href="' + attr(link.url) + '" target="_blank" rel="noopener">' + esc(link.label || '官方来源') + ' ↗</a>';
       }).join('') + '</div>' : '');
   }
 
+  function renderAccessNotice(id, program, includeAllLinks) {
+    var mount = document.getElementById(id);
+    if (!mount) return;
+    var html = accessNoticeHtml(program, includeAllLinks);
+    mount.hidden = !html;
+    mount.innerHTML = html;
+  }
+
+  function disclaimerParagraphsHtml(program) {
+    return '<p>' + esc(program.disclaimer) + '</p>' +
+      (program.scoringNotice ? '<p>' + esc(program.scoringNotice) + '</p>' : '');
+  }
+
+  function programNoticeHtml(program, heading) {
+    return '<strong>' + esc(heading) + '</strong>' + disclaimerParagraphsHtml(program);
+  }
+
+  function renderProgramNotice(id, program, heading) {
+    var mount = document.getElementById(id);
+    if (!mount || !program || !program.disclaimer) return;
+    mount.innerHTML = programNoticeHtml(program, heading);
+  }
+
+  function programLinksHtml(program) {
+    var label = program.shortName || program.name || ui('this certification');
+    var links = [];
+    if (program.learnerGuidePath) {
+      links.push('<a class="cert-action secondary" href="' + attr(githubBlobUrl(program.learnerGuidePath)) + '" target="_blank" rel="noopener" aria-label="' + attr(ui('Learn ') + label + ui(' with an AI tutor on GitHub, opens in a new tab')) + ui('">Learn with an AI tutor on GitHub ↗</a>'));
+    }
+    if (program.tutorSkillPath) {
+      links.push('<a class="cert-action secondary" href="' + attr(githubBlobUrl(program.tutorSkillPath)) + '" target="_blank" rel="noopener" aria-label="' + attr(ui('Read the ') + label + ui(' tutor skill on GitHub, opens in a new tab')) + ui('">Read the tutor skill ↗</a>'));
+    }
+    return links.length ? '<div class="cert-track-hero-actions cert-program-actions">' + links.join('') + '</div>' : '';
+  }
+
+  function joinLabels(labels) {
+    if (window.AIFSCertificationUI) return window.AIFSCertificationUI.joinLabels(labels);
+    if (labels.length < 2) return labels.join('');
+    return labels.slice(0, -1).join(', ') + ' and ' + labels[labels.length - 1];
+  }
+
+  function latestVerified(list) {
+    return list.map(function (program) {
+      return program.verifiedAt || program.lastVerified || program.updatedAt || '';
+    }).filter(Boolean).sort().pop() || '';
+  }
+
+  function renderTrackCard(track, index) {
+    var domains = Array.isArray(track.domains) ? track.domains.length : 0;
+    var lessonCount = Array.isArray(track.lessons) ? track.lessons.length : 0;
+    var delay = Math.min(index * 30, 80);
+    var badge = renderTrackBadge(track);
+    return '<a class="cert-track-card cert-catalog-arrival" style="--cert-arrival-delay:' + delay + 'ms" href="certification?id=' + encodeURIComponent(track.id) + '">' +
+      '<div class="cert-card-top"><span class="cert-card-code">' + esc(track.examCode || track.shortName || track.slug) + '</span><span class="cert-status">' + esc(ui(track.level || ui('Study path'))) + '</span></div>' +
+      '<div class="cert-card-identity' + (badge ? ' has-badge' : '') + '"><h3>' + esc(track.credential || track.title || track.shortName || track.id) + '</h3>' + badge + '</div>' +
+      '<p>' + esc(track.summary || track.audience || ui('A practical route through this certification blueprint.')) + '</p>' +
+      '<div class="cert-card-facts">' + renderCardFacts(track, 3) + '</div>' +
+      '<div class="cert-card-footer"><span>' + lessonCount + ui(' lessons · ') + domains + ui(' domains</span><span>Open path →</span></div>') +
+    '</a>';
+  }
+
   function renderCatalog() {
     var certs = data();
-    var program = certs.program || {};
-    var title = document.getElementById('certProgramTitle');
     var summary = document.getElementById('certProgramSummary');
     var meta = document.getElementById('certProgramMeta');
-    var grid = document.getElementById('certTrackGrid');
-    if (!grid) return;
+    var mount = document.getElementById('certProgramSections');
+    if (!mount) return;
 
-    if (!certs.program || !tracks().length) {
-      grid.innerHTML = '<div class="cert-empty">认证路径正在整理中。添加项目清单后，请运行 <code>node site/build.js</code>。</div>';
+    var available = programs().filter(function (program) {
+      return tracks().some(function (track) { return track.programId === program.id; });
+    });
+    if (!available.length) {
+      mount.innerHTML = '<div class="cert-container cert-section"><div class="cert-empty">认证路线正在整理。添加项目清单后，请运行 <code>node site/build.js</code>。</div></div>';
       if (summary) summary.textContent = '本地认证目录尚未生成。';
       return;
     }
 
-    if (title) title.textContent = 'AI 认证课程';
-    if (summary) summary.textContent = '免费、独立、开源的 AI 工程（AI Engineering）认证备考课程。从 Claude 开始，后续将加入更多认证系列。';
+    var labels = joinLabels(available.map(function (program) { return program.shortName || program.name || program.id; }));
+    if (summary) summary.textContent = '免费的独立开源 AI 工程认证备考资料。' + labels + ' 路线现已开放，后续还会加入更多认证系列。';
     if (meta) {
-      var verified = program.verifiedAt || program.lastVerified || program.updatedAt;
-      meta.innerHTML = metaChip('Claude 课程现已可用') +
+      var verified = latestVerified(available);
+      meta.innerHTML = metaChip(labels + ' 已开放') +
         metaChip(tracks().length + ' 条按岗位划分的路径') +
         metaChip(Object.keys(certs.lessonsByPath || {}).length + ' 节认证课程') +
         metaChip(verified ? '已核验 ' + formatDate(verified) : '已版本化的来源材料');
     }
-    renderAccessNotice('certAccessNotice', program, true);
     var notice = document.getElementById('certProgramNotice');
-    if (notice && program.disclaimer) {
-      notice.innerHTML = '<strong>独立备考</strong><p>' + esc(program.disclaimer) + '</p>' +
-        (program.scoringNotice ? '<p>' + esc(program.scoringNotice) + '</p>' : '');
+    var disclaimed = available.filter(function (program) { return program.disclaimer; });
+    if (notice && disclaimed.length) {
+      notice.innerHTML = '<strong>独立备考</strong>' + disclaimed.map(disclaimerParagraphsHtml).join('');
     }
 
-    grid.innerHTML = tracks().map(function (track, index) {
-      var domains = Array.isArray(track.domains) ? track.domains.length : 0;
-      var lessonCount = Array.isArray(track.lessons) ? track.lessons.length : 0;
-      var delay = Math.min(index * 30, 80);
-      var badge = renderTrackBadge(track);
-      return '<a class="cert-track-card cert-catalog-arrival" style="--cert-arrival-delay:' + delay + 'ms" href="certification?id=' + encodeURIComponent(track.id) + '">' +
-        '<div class="cert-card-top"><span class="cert-card-code">' + esc(track.examCode || track.shortName || track.slug) + '</span><span class="cert-status">' + esc(({Foundations: '基础（Foundations）', Foundational: '基础（Foundational）', Professional: '专业（Professional）', 'Foundational architecture': '基础架构（Foundational Architecture）', 'Professional architecture': '专业架构（Professional Architecture）', 'Foundational technical': '技术基础（Foundational Technical）', Associate: '助理（Associate）', Advanced: '高级（Advanced）', Intermediate: '中级（Intermediate）'})[track.level] || track.level || '学习路径') + '</span></div>' +
-        '<div class="cert-card-identity' + (badge ? ' has-badge' : '') + '"><h3>' + esc(track.credential || track.title || track.shortName || track.id) + '</h3>' + badge + '</div>' +
-        '<p>' + esc(track.summary || track.audience || '覆盖本认证考纲的实践路径。') + '</p>' +
-        '<div class="cert-card-facts">' + renderCardFacts(track, 3) + '</div>' +
-        '<div class="cert-card-footer"><span>' + lessonCount + ' 节课 · ' + domains + ' 个领域</span><span>打开路径 →</span></div>' +
-      '</a>';
+    var cardIndex = 0;
+    mount.innerHTML = available.map(function (program) {
+      var headingId = 'certProgram-' + program.id;
+      var access = accessNoticeHtml(program, true);
+      var cards = tracks().filter(function (track) { return track.programId === program.id; }).map(function (track) {
+        return renderTrackCard(track, cardIndex++);
+      }).join('');
+      return '<section class="cert-container cert-section cert-program-section" aria-labelledby="' + attr(headingId) + '">' +
+        '<div class="cert-section-heading"><div><div class="cert-eyebrow">' + esc(program.provider || '认证项目') + '</div><h2 id="' + attr(headingId) + '">' + esc(program.name || program.id) + '</h2></div><p>' + esc(program.summary || '') + '</p></div>' +
+        (access ? '<aside class="cert-access-notice" aria-label="' + attr((program.shortName || program.name || ui('Certification')) + ' 官方考试报考资格') + '">' + access + '</aside>' : '') +
+        programLinksHtml(program) +
+        '<div class="cert-track-grid">' + cards + '</div>' +
+      '</section>';
     }).join('');
   }
 
@@ -387,6 +464,8 @@
     }
 
     renderTrackSeo(track);
+    var program = programForTrack(track);
+    var tutorUrl = githubBlobUrl(program.learnerGuidePath);
     var breadcrumb = document.getElementById('trackBreadcrumb');
     if (breadcrumb) breadcrumb.textContent = track.examCode || track.shortName || track.id;
     var refs = Array.isArray(track.lessons) ? track.lessons : [];
@@ -408,11 +487,12 @@
       '<div class="cert-track-hero-actions">' +
         (firstPath ? '<a class="cert-action" href="lesson?path=' + encodeURIComponent(firstPath) + '&track=' + encodeURIComponent(track.id) + '">' + (complete ? '继续路径' : '开始学习') + '</a>' : '') +
         '<a class="cert-action secondary" href="#trackAssessments">备考就绪度练习</a>' +
-        '<a class="cert-action secondary" href="' + attr(TUTOR_GUIDE_URL) + '" target="_blank" rel="noopener" aria-label="在 GitHub 使用 AI 导师学习（在新标签页打开）">在 GitHub 使用 AI 导师学习 ↗</a>' +
+        (tutorUrl ? '<a class="cert-action secondary" href="' + attr(tutorUrl) + '" target="_blank" rel="noopener" aria-label="在 GitHub 使用 AI 导师学习（在新标签页打开）">在 GitHub 使用 AI 导师学习 ↗</a>' : '') +
         (track.exam && track.exam.officialGuideUrl ? '<a class="cert-action secondary" href="' + attr(track.exam.officialGuideUrl) + '" target="_blank" rel="noopener">官方考试指南</a>' : '') +
       '</div>';
 
-    renderAccessNotice('trackAccessNotice', data().program || {}, false);
+    renderAccessNotice('trackAccessNotice', program, false);
+    renderProgramNotice('trackProgramNotice', program, '独立备考');
     renderTrackProgress(track);
     renderDomains(track);
     renderLessons(track);
@@ -464,7 +544,7 @@
       var lesson = findLesson(path);
       var done = lessonIsComplete(path);
       var domains = Array.isArray(normalized.domains) ? normalized.domains : [];
-      var origin = path.indexOf('phases/') === 0 ? '核心课程' : (({orientation: '入门导览（Orientation）', core: '核心课程', capstone: '综合实践（Capstone）', Learn: '学习', Build: '动手实现（Build）', Reference: '参考'})[normalized.role || lesson.type] || normalized.role || lesson.type || '认证课程');
+      var origin = path.indexOf('phases/') === 0 ? '核心课程' : (({orientation: '入门导览（Orientation）', core: '核心课程', capstone: '综合实践（Capstone）', Learn: '学习', Build: '动手实现（Build）', Reference: '参考'})[normalized.role || lesson.type] || ui(normalized.role || lesson.type) || '认证课程');
       return '<article class="cert-lesson-row' + (done ? ' is-complete' : '') + '">' +
         '<div class="cert-lesson-num">' + String(index + 1).padStart(2, '0') + '</div>' +
         '<div class="cert-lesson-copy"><h3>' + esc(lesson.name) + '</h3><p>' + esc((done ? '已完成 · ' : '') + origin + (lesson.summary ? ' · ' + lesson.summary : '')) + '</p></div>' +
@@ -491,7 +571,7 @@
       var title = normalized.label || lesson.name;
       var reason = normalized.reason || lesson.summary || '来自《从零开始的 AI 工程》核心课程的补充背景。';
       return '<article class="cert-deep-dive-row">' +
-        '<div class="cert-deep-dive-badge">OPTIONAL</div>' +
+        ui('<div class="cert-deep-dive-badge">OPTIONAL</div>') +
         '<div class="cert-lesson-copy"><h3>' + esc(title) + '</h3><p>' + esc(reason) + '</p></div>' +
         '<a class="cert-lesson-open" href="' + attr(lessonReferenceHref(path, track)) + '">打开课程 →</a>' +
       '</article>';
@@ -502,7 +582,7 @@
     var mount = document.getElementById('trackAssessments');
     if (!mount) return;
     var assessments = Array.isArray(track.assessments) ? track.assessments : [];
-    mount.classList.toggle('cert-two-card-grid', assessments.length === 2);
+    mount.classList.toggle('cert-two-card-grid', assessments.length === 2 || assessments.length === 4);
     mount.innerHTML = assessments.length ? assessments.map(function (meta) {
       var assessment = data().assessmentsById[meta.id] || meta;
       var best = assessmentBest(meta.id);
@@ -655,6 +735,7 @@
   }
 
   function renderAssessmentLoaded(mount, assessment, track, forceForm) {
+    renderProgramNotice('assessmentProgramNotice', programForTrack(track), ui('Independent practice'));
     var questions = (assessment.questions || []).map(normalizeQuestion);
     if (!questions.length) {
       mount.innerHTML = '<div class="cert-error"><h1>练习正在编写中</h1><p>此评估已有元数据，但尚无题目。</p><a class="cert-action" href="' + (track ? 'certification?id=' + encodeURIComponent(track.id) : 'certifications.html') + '">返回路径</a></div>';
@@ -741,6 +822,7 @@
 
   function startTimer(mount, assessment, track, questions, draft) {
     if (assessmentTimer) clearInterval(assessmentTimer);
+    assessmentTimer = null;
     if (!draft.deadlineAt) return;
     function tick() {
       var remaining = draft.deadlineAt - Date.now();
@@ -754,8 +836,9 @@
         submitAssessment(mount, assessment, track, questions, draft, true);
       }
     }
-    tick();
+    // Register before the initial tick so an already-expired draft can clear it.
     assessmentTimer = setInterval(tick, 1000);
+    tick();
   }
 
   function submitAssessment(mount, assessment, track, questions, draft, timedOut) {
@@ -878,7 +961,7 @@
         return '<li>' + esc(ref) + '</li>';
       }
       if (!ref) return '';
-      var label = ref.label || ref.title || ref.url || ref.path || 'Reference';
+      var label = ref.label || ref.title || ref.url || ref.path || ui('Reference');
       if (ref.url) return '<li><a href="' + attr(ref.url) + '" target="_blank" rel="noopener">' + esc(label) + ' ↗</a></li>';
       if (ref.path) {
         var objectLink = renderInternalLessonReference(ref, track);

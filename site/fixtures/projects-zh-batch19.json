@@ -1,0 +1,3535 @@
+{
+  "upstream": "c02ca08d8a49ce24c3c1c1cf8e3b422f2c7393ca",
+  "projects": [
+    "skill-installer",
+    "skill-router",
+    "skill-scanner",
+    "skill-validator"
+  ],
+  "files": {
+    "projects/skill-installer/README.md": {
+      "sourceSha256": "65b5f1653d08a6b6b506dd9cd83c43f9b39d6b274f57f5b86a4ebff834a968b5",
+      "localizedSha256": "b1aa5f952373811ac6c469e5739ece7259aa13e933622cd82b9c279a22324065",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "bash",
+            "python3 scripts/project_test.py skill-installer --init learning-artifacts/skill-installer\npython3 scripts/project_test.py skill-installer --stage 1 --path learning-artifacts/skill-installer\n"
+          ],
+          [
+            "bash",
+            "node learning-artifacts/skill-installer/cli.ts inspect projects/skill-installer/examples/orchard-release.json codex\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py skill-installer --all --solution --strict\npython3 scripts/project_test.py skill-installer --all --path learning-artifacts/skill-installer --strict\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "learning-artifacts/skill-installer"
+          ],
+          [
+            "`",
+            "projects/skill-installer/solution"
+          ],
+          [
+            "`",
+            "schema_version: 1"
+          ]
+        ],
+        "links": [
+          "../../phases/00-setup-and-tooling/09-data-management/docs/en.md",
+          "../../phases/17-infrastructure-and-production/25-security-secrets-audit/docs/en.md",
+          "https://agentskills.io/specification",
+          "https://nodejs.org/api/crypto.html",
+          "https://nodejs.org/api/fs.html",
+          "https://www.typescriptlang.org/docs/handbook/2/objects.html",
+          "stages/01-bundle/docs/en.md",
+          "stages/02-translate/docs/en.md",
+          "stages/03-install/docs/en.md",
+          "stages/04-upgrades/docs/en.md"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 7
+      }
+    },
+    "projects/skill-installer/examples/orchard-release.json": {
+      "sourceSha256": "7bd9239b6b96ad7a53ccc7a3f21d2af144c2c37225421592045525323f2e014e",
+      "localizedSha256": "7bd9239b6b96ad7a53ccc7a3f21d2af144c2c37225421592045525323f2e014e",
+      "kind": "preserved-contract"
+    },
+    "projects/skill-installer/media/output.gif": {
+      "sourceSha256": "1890ead08b2696f7376602405916d05bb696e1c6da791c2375a17a226e76ded5",
+      "localizedSha256": "1890ead08b2696f7376602405916d05bb696e1c6da791c2375a17a226e76ded5",
+      "kind": "original-recording"
+    },
+    "projects/skill-installer/media/output.json": {
+      "sourceSha256": "b2391b1b95c4a12acaaaa6c328cf10457eb78feb83c6fc872de1cf1069688ab3",
+      "localizedSha256": "b2391b1b95c4a12acaaaa6c328cf10457eb78feb83c6fc872de1cf1069688ab3",
+      "kind": "original-recording"
+    },
+    "projects/skill-installer/media/output.png": {
+      "sourceSha256": "aeacde1cf3411e9be4890409961c341b7c346340ad5173b6a75c796666216434",
+      "localizedSha256": "aeacde1cf3411e9be4890409961c341b7c346340ad5173b6a75c796666216434",
+      "kind": "original-recording"
+    },
+    "projects/skill-installer/media/run.gif": {
+      "sourceSha256": "9942cd7be8fe306cac740f372b9f3f11ef7edaee7dc296bcb55900ac3440d810",
+      "localizedSha256": "9942cd7be8fe306cac740f372b9f3f11ef7edaee7dc296bcb55900ac3440d810",
+      "kind": "original-recording"
+    },
+    "projects/skill-installer/media/run.json": {
+      "sourceSha256": "5f98bc5b0a8694f14488db620e4567466aa9d00c756fa7c50d4f834c283c0d9e",
+      "localizedSha256": "5f98bc5b0a8694f14488db620e4567466aa9d00c756fa7c50d4f834c283c0d9e",
+      "kind": "original-recording"
+    },
+    "projects/skill-installer/media/run.png": {
+      "sourceSha256": "484306167f6a345a34b8477da5bd62ec34852e9f9b755fe6008b28768a3cb1bb",
+      "localizedSha256": "484306167f6a345a34b8477da5bd62ec34852e9f9b755fe6008b28768a3cb1bb",
+      "kind": "original-recording"
+    },
+    "projects/skill-installer/project.json": {
+      "sourceSha256": "4a9ee9baec7fc22b6713ee8067a4fe9390e4a4a57c83ee3c5c0995a5412e6ef9",
+      "localizedSha256": "3c55f6fca588a095488b763a23043780c41c582bee27d85370222aaefdc3ec0f",
+      "kind": "manifest",
+      "contract": {
+        "id": "skill-installer",
+        "title": "<translated-text>",
+        "level": 3,
+        "levelName": "Engineer",
+        "tagline": "<translated-text>",
+        "summary": "<translated-text>",
+        "hours": 8,
+        "languages": [
+          "TypeScript"
+        ],
+        "status": "ready",
+        "source": "core",
+        "author": {
+          "name": "AI Engineering from Scratch",
+          "github": "rohitg00"
+        },
+        "skills": [
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "prerequisites": [
+          {
+            "title": "<translated-text>",
+            "path": "phases/00-setup-and-tooling/09-data-management"
+          },
+          {
+            "title": "<translated-text>",
+            "path": "phases/17-infrastructure-and-production/25-security-secrets-audit"
+          }
+        ],
+        "youWillBuild": "<translated-text>",
+        "usefulFor": [
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "demo": {
+          "command": [
+            "node",
+            "demo.ts"
+          ],
+          "cwd": "solution"
+        },
+        "stages": [
+          {
+            "id": "01-bundle",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "typescript",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "safePath",
+              "validate"
+            ],
+            "difficulty": "starter",
+            "runner": [
+              "node",
+              "--experimental-strip-types",
+              "--test",
+              "{tests}/stage.test.ts"
+            ],
+            "requires": [
+              "node"
+            ],
+            "timeout": 90,
+            "figure": "pj-skill-installer-1"
+          },
+          {
+            "id": "02-translate",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "typescript",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "digest",
+              "translate"
+            ],
+            "difficulty": "core",
+            "runner": [
+              "node",
+              "--experimental-strip-types",
+              "--test",
+              "{tests}/stage.test.ts"
+            ],
+            "requires": [
+              "node"
+            ],
+            "timeout": 90,
+            "figure": "pj-skill-installer-2"
+          },
+          {
+            "id": "03-install",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "typescript",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "install"
+            ],
+            "difficulty": "core",
+            "runner": [
+              "node",
+              "--experimental-strip-types",
+              "--test",
+              "{tests}/stage.test.ts"
+            ],
+            "requires": [
+              "node"
+            ],
+            "timeout": 90,
+            "figure": "pj-skill-installer-3"
+          },
+          {
+            "id": "04-upgrades",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "typescript",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "install"
+            ],
+            "difficulty": "core",
+            "requires": [
+              "node"
+            ],
+            "timeout": 90,
+            "figure": "pj-skill-installer-4"
+          }
+        ],
+        "demos": [
+          {
+            "gif": "media/run.gif",
+            "poster": "media/run.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          },
+          {
+            "gif": "media/output.gif",
+            "poster": "media/output.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          }
+        ]
+      }
+    },
+    "projects/skill-installer/solution/.gitignore": {
+      "sourceSha256": "d46c39164f11d0748941037de1364b0c7261f4d7db7b91574423af77841b5c83",
+      "localizedSha256": "d46c39164f11d0748941037de1364b0c7261f4d7db7b91574423af77841b5c83",
+      "kind": "preserved-contract"
+    },
+    "projects/skill-installer/solution/cli.ts": {
+      "sourceSha256": "87d21c39935d308e68f645f2ec5d1974eb39df76a5f6045845f90215db1cd6a6",
+      "localizedSha256": "34a165fb7806a5a7cf723513e77534d3e58a5f14e23d8a482990c06397468286",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "import fs from \"node:fs/promises\";",
+          "// 命令行帮助中的英文异常保留原契约，参数及输出解释见中文 README。\n// 这里的 translate 表示转换技能元数据格式，不是自然语言翻译。来源摘要只覆盖 files 的排序映射，不绑定顶层 name 和 description；顶层元数据必须另行从可信渠道核实。模板正文、参考材料、异常和 JSON 字段保留原值。更新采用先移走旧目录、再移入新目录的两次重命名，不能将其理解为对并发读取者无间隙的替换或断电事务。\nimport fs from \"node:fs/promises\";"
+        ]
+      ]
+    },
+    "projects/skill-installer/solution/demo.ts": {
+      "sourceSha256": "f76e739489e45aaaf0f7a79ff760db1d2ac06837ef42fe516956ed4468fbe74b",
+      "localizedSha256": "288ec10e65f2f0b72fdb29b3ca13998e72b695ea85b2172b9cf94613ff0f20c5",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "import fs from \"node:fs/promises\";",
+          "// 使用本地原创夹具运行演示；操作范围以显式测试目录为准。\n// 这里的 translate 表示转换技能元数据格式，不是自然语言翻译。来源摘要只覆盖 files 的排序映射，不绑定顶层 name 和 description；顶层元数据必须另行从可信渠道核实。模板正文、参考材料、异常和 JSON 字段保留原值。更新采用先移走旧目录、再移入新目录的两次重命名，不能将其理解为对并发读取者无间隙的替换或断电事务。\nimport fs from \"node:fs/promises\";"
+        ]
+      ]
+    },
+    "projects/skill-installer/solution/main.ts": {
+      "sourceSha256": "7ff8b2023c736c17a8fe86f60ef6653250e4f04862d608eaafca961c93c71407",
+      "localizedSha256": "f946dcd6de703ce83fd32daaa691078540520aaac2d0926ad23118469bd1b7a3",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "/*\n * Cross-Agent Skill Installer reference implementation.\n * Follow stages in projects/skill-installer/stages/.\n * The demo is deterministic and requires no provider credentials.\n * Protocol references are listed in the project README.\n */",
+          "/*\n * 跨智能体技能安装器参考实现。\n * 阶段说明见 projects/skill-installer/stages/。\n * 演示不需要外部服务商凭据；官方参考列于 README。\n * 这里的 translate 表示转换技能元数据格式，不是自然语言翻译。来源摘要只覆盖 files 的排序映射，不绑定顶层 name 和 description；顶层元数据必须另行从可信渠道核实。模板正文、参考材料、异常和 JSON 字段保留原值。更新采用先移走旧目录、再移入新目录的两次重命名，不能将其理解为对并发读取者无间隙的替换或断电事务。\n */"
+        ]
+      ]
+    },
+    "projects/skill-installer/solution/package.json": {
+      "sourceSha256": "a90fc33418afa2b9cbf4768524b021135b965ecdf993457505bfae3ac44a8428",
+      "localizedSha256": "a90fc33418afa2b9cbf4768524b021135b965ecdf993457505bfae3ac44a8428",
+      "kind": "preserved-contract"
+    },
+    "projects/skill-installer/stages/01-bundle/docs/en.md": {
+      "sourceSha256": "c871d7c3a2ff61643759a47fdb7a2444c1d6796430aed08b44565085f55b84fc",
+      "localizedSha256": "c2c2ba6fb5a7e9e607baca7275be5796a40b2fbc81b19cacae48503b3a90545c",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-skill-installer-1\n"
+          ],
+          [
+            "text",
+            "name=orchard-release\nfiles: SKILL.md, references/checklist.md\n../settings.json -> rejected\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py skill-installer --init learning-artifacts/skill-installer\npython3 scripts/project_test.py skill-installer --stage 1 --path learning-artifacts/skill-installer\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "safePath, validate"
+          ]
+        ],
+        "links": [
+          "../../../../../phases/00-setup-and-tooling/09-data-management/docs/en.md",
+          "https://www.typescriptlang.org/docs/handbook/2/objects.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/skill-installer/stages/01-bundle/starter/cli.ts": {
+      "sourceSha256": "87d21c39935d308e68f645f2ec5d1974eb39df76a5f6045845f90215db1cd6a6",
+      "localizedSha256": "34a165fb7806a5a7cf723513e77534d3e58a5f14e23d8a482990c06397468286",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "import fs from \"node:fs/promises\";",
+          "// 命令行帮助中的英文异常保留原契约，参数及输出解释见中文 README。\n// 这里的 translate 表示转换技能元数据格式，不是自然语言翻译。来源摘要只覆盖 files 的排序映射，不绑定顶层 name 和 description；顶层元数据必须另行从可信渠道核实。模板正文、参考材料、异常和 JSON 字段保留原值。更新采用先移走旧目录、再移入新目录的两次重命名，不能将其理解为对并发读取者无间隙的替换或断电事务。\nimport fs from \"node:fs/promises\";"
+        ]
+      ]
+    },
+    "projects/skill-installer/stages/01-bundle/starter/main.ts": {
+      "sourceSha256": "78a737938d4e70de96964189acd7572fe1a4aee7f6cc5354a99bf83b9e7c72bc",
+      "localizedSha256": "70785672de3122a3612e96a798b17f5d40919df0039f85817c764758b35ce5ae",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "import { pathToFileURL } from \"node:url\";",
+          "// 在学习者工作区补全函数；未实现错误保持原值。\n// 这里的 translate 表示转换技能元数据格式，不是自然语言翻译。来源摘要只覆盖 files 的排序映射，不绑定顶层 name 和 description；顶层元数据必须另行从可信渠道核实。模板正文、参考材料、异常和 JSON 字段保留原值。更新采用先移走旧目录、再移入新目录的两次重命名，不能将其理解为对并发读取者无间隙的替换或断电事务。\nimport { pathToFileURL } from \"node:url\";"
+        ]
+      ]
+    },
+    "projects/skill-installer/stages/01-bundle/starter/package.json": {
+      "sourceSha256": "a90fc33418afa2b9cbf4768524b021135b965ecdf993457505bfae3ac44a8428",
+      "localizedSha256": "a90fc33418afa2b9cbf4768524b021135b965ecdf993457505bfae3ac44a8428",
+      "kind": "preserved-contract"
+    },
+    "projects/skill-installer/stages/01-bundle/starter/stage-1.md": {
+      "sourceSha256": "d594bcbf9aa584f7b6f27f84363b706210c55523771857e30d653994295a3af6",
+      "localizedSha256": "5245466d1443438858a2edc918bf4804fd71753db099d2bf6745dadc7feb516d",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/skill-installer/stages/01-bundle/tests/stage.test.ts": {
+      "sourceSha256": "6a8136546e7d426427254c73b5a74aeef6655a5cecdbadd2c5ee252eebb20e06",
+      "localizedSha256": "6a8136546e7d426427254c73b5a74aeef6655a5cecdbadd2c5ee252eebb20e06",
+      "kind": "preserved-contract"
+    },
+    "projects/skill-installer/stages/02-translate/docs/en.md": {
+      "sourceSha256": "a6ae6f5cd53fda5a13b873366598fde2c7165087ba8f5121b48705566e23f17d",
+      "localizedSha256": "1e6e4243538b195e5cf6ea0bf81a442080c690039c4261d0b4e0ea7003a35ee4",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-skill-installer-2\n"
+          ],
+          [
+            "text",
+            "source bundle digest -> expected source identity\ntranslated SKILL.md: name: \"orchard-release\"\ntranslated digest -> installed content identity\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py skill-installer --stage 2 --path learning-artifacts/skill-installer\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "digest, translate"
+          ]
+        ],
+        "links": [
+          "../../../../../phases/00-setup-and-tooling/09-data-management/docs/en.md",
+          "../../01-bundle/docs/en.md",
+          "https://www.typescriptlang.org/docs/handbook/2/objects.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/skill-installer/stages/02-translate/starter/stage-2.md": {
+      "sourceSha256": "a798c96a4664e9a2b264acd77d59f6f6247c5a8750c20e1f36c53fcb5f3338b9",
+      "localizedSha256": "eb835ce3815f460553a7f030dfed6af08a86d44534f2c3eae297a828d3d18f93",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/skill-installer/stages/02-translate/tests/stage.test.ts": {
+      "sourceSha256": "f4b8123aaeb1550009140e39dfcc52b6b68e876354c86056b83116ae52ae57b8",
+      "localizedSha256": "f4b8123aaeb1550009140e39dfcc52b6b68e876354c86056b83116ae52ae57b8",
+      "kind": "preserved-contract"
+    },
+    "projects/skill-installer/stages/03-install/docs/en.md": {
+      "sourceSha256": "03f1cdbc7dbcb0b2b85eddf64f3ffe51c16e1528cb4678b186027f5efcf20277",
+      "localizedSha256": "b182bd3c17199b5653d9b4325dca2a2a63f38dff249ab1af6b5478057d2307de",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-skill-installer-3\n"
+          ],
+          [
+            "text",
+            "root/.agents/skills/orchard-release/\nSKILL.md + references/checklist.md + .installed.json\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py skill-installer --stage 3 --path learning-artifacts/skill-installer\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "install"
+          ]
+        ],
+        "links": [
+          "../../../../../phases/00-setup-and-tooling/09-data-management/docs/en.md",
+          "../../02-translate/docs/en.md",
+          "https://www.typescriptlang.org/docs/handbook/2/objects.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/skill-installer/stages/03-install/starter/stage-3.md": {
+      "sourceSha256": "1f10afa23372737f6f19f024d8c667ef56f0b1a3e0f4761ce2087c51bc9a1e3f",
+      "localizedSha256": "c6f6e748f9bc3877e2ab766285988e1140b4e464ddf7833d5e3ef942299a6353",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/skill-installer/stages/03-install/tests/stage.test.ts": {
+      "sourceSha256": "09fce0c7bc7b8ad2fa9a81d6cc48d2a14a3d060fadb1c0466e1971e1807f38e2",
+      "localizedSha256": "09fce0c7bc7b8ad2fa9a81d6cc48d2a14a3d060fadb1c0466e1971e1807f38e2",
+      "kind": "preserved-contract"
+    },
+    "projects/skill-installer/stages/04-upgrades/docs/en.md": {
+      "sourceSha256": "be7885fee5703bab9fa3cc64bd89052fac588ef3a0fe103dd2934cb04bfe65d2",
+      "localizedSha256": "de6035a62ff260be1ccf51c2f045e29988041f00ec83e168a3e06968debfbfd7",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-skill-installer-4\n"
+          ],
+          [
+            "text",
+            "installed checklist hash=A\nlocal edit -> current hash=B\nupgrade -> modified installation; local text remains\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py skill-installer --stage 4 --path learning-artifacts/skill-installer\n"
+          ],
+          [
+            "bash",
+            "node learning-artifacts/skill-installer/cli.ts inspect projects/skill-installer/examples/orchard-release.json codex\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "install"
+          ]
+        ],
+        "links": [
+          "../../../../../phases/00-setup-and-tooling/09-data-management/docs/en.md",
+          "../../03-install/docs/en.md",
+          "https://www.typescriptlang.org/docs/handbook/2/objects.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/skill-installer/stages/04-upgrades/starter/stage-4.md": {
+      "sourceSha256": "b2acf425720a46969a8be81b88825f0f541dd770fcb20cecc2d66be37ba1ef56",
+      "localizedSha256": "9529c9b5cf707eb6eae6b97d80e63187d759c5e3de3ad3e10e22fd9afca269ec",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/skill-installer/stages/04-upgrades/tests/cli.test.ts": {
+      "sourceSha256": "b277066378fcd48367aa86f1c9ff096cce2beae06ecd0b0bd4ac1378b872b4ab",
+      "localizedSha256": "b277066378fcd48367aa86f1c9ff096cce2beae06ecd0b0bd4ac1378b872b4ab",
+      "kind": "preserved-contract"
+    },
+    "projects/skill-installer/stages/04-upgrades/tests/stage.test.ts": {
+      "sourceSha256": "bb1ae240a43b2b36c20f31bbf9432e3df546599a4244002b3d04c7be656736e7",
+      "localizedSha256": "bb1ae240a43b2b36c20f31bbf9432e3df546599a4244002b3d04c7be656736e7",
+      "kind": "preserved-contract"
+    },
+    "projects/skill-installer/starter/cli.ts": {
+      "sourceSha256": "87d21c39935d308e68f645f2ec5d1974eb39df76a5f6045845f90215db1cd6a6",
+      "localizedSha256": "34a165fb7806a5a7cf723513e77534d3e58a5f14e23d8a482990c06397468286",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "import fs from \"node:fs/promises\";",
+          "// 命令行帮助中的英文异常保留原契约，参数及输出解释见中文 README。\n// 这里的 translate 表示转换技能元数据格式，不是自然语言翻译。来源摘要只覆盖 files 的排序映射，不绑定顶层 name 和 description；顶层元数据必须另行从可信渠道核实。模板正文、参考材料、异常和 JSON 字段保留原值。更新采用先移走旧目录、再移入新目录的两次重命名，不能将其理解为对并发读取者无间隙的替换或断电事务。\nimport fs from \"node:fs/promises\";"
+        ]
+      ]
+    },
+    "projects/skill-installer/starter/main.ts": {
+      "sourceSha256": "78a737938d4e70de96964189acd7572fe1a4aee7f6cc5354a99bf83b9e7c72bc",
+      "localizedSha256": "70785672de3122a3612e96a798b17f5d40919df0039f85817c764758b35ce5ae",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "import { pathToFileURL } from \"node:url\";",
+          "// 在学习者工作区补全函数；未实现错误保持原值。\n// 这里的 translate 表示转换技能元数据格式，不是自然语言翻译。来源摘要只覆盖 files 的排序映射，不绑定顶层 name 和 description；顶层元数据必须另行从可信渠道核实。模板正文、参考材料、异常和 JSON 字段保留原值。更新采用先移走旧目录、再移入新目录的两次重命名，不能将其理解为对并发读取者无间隙的替换或断电事务。\nimport { pathToFileURL } from \"node:url\";"
+        ]
+      ]
+    },
+    "projects/skill-installer/starter/package.json": {
+      "sourceSha256": "a90fc33418afa2b9cbf4768524b021135b965ecdf993457505bfae3ac44a8428",
+      "localizedSha256": "a90fc33418afa2b9cbf4768524b021135b965ecdf993457505bfae3ac44a8428",
+      "kind": "preserved-contract"
+    },
+    "projects/skill-router/README.md": {
+      "sourceSha256": "6997843c1fb777dd0d3b272c33b7ea0d980df27df4ea22cf49bfd3754bb9566e",
+      "localizedSha256": "fa26e4179fb26f2080eed44b3c8eb141409389b5d96d3ebb212d57a68f1eb97e",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "bash",
+            "python3 scripts/project_test.py skill-router --init learning-artifacts/skill-router\npython3 scripts/project_test.py skill-router --stage 1 --path learning-artifacts/skill-router\n"
+          ],
+          [
+            "bash",
+            "node learning-artifacts/skill-router/cli.ts projects/skill-router/examples/skills projects/skill-router/examples/request.json\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py skill-router --all --solution --strict\npython3 scripts/project_test.py skill-router --all --path learning-artifacts/skill-router --strict\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "learning-artifacts/skill-router"
+          ],
+          [
+            "`",
+            "projects/skill-router/solution"
+          ],
+          [
+            "`",
+            "schema_version: 1"
+          ]
+        ],
+        "links": [
+          "../../phases/13-tools-and-protocols/05-tool-schema-design/docs/en.md",
+          "../../phases/14-agent-engineering/38-verification-gates/docs/en.md",
+          "https://agentskills.io/specification",
+          "https://nodejs.org/api/path.html",
+          "https://www.typescriptlang.org/docs/handbook/2/objects.html",
+          "stages/01-catalog/docs/en.md",
+          "stages/02-score/docs/en.md",
+          "stages/03-dependencies/docs/en.md",
+          "stages/04-route/docs/en.md"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 6
+      }
+    },
+    "projects/skill-router/examples/request.json": {
+      "sourceSha256": "76be7f3e52dea5e270231cc858592e47c182e0f01d2a577246d97109de3c6dbc",
+      "localizedSha256": "76be7f3e52dea5e270231cc858592e47c182e0f01d2a577246d97109de3c6dbc",
+      "kind": "preserved-contract"
+    },
+    "projects/skill-router/examples/skills/check-tests/SKILL.md": {
+      "sourceSha256": "58dfa5a33f8a22a1a28b7a8a1280e81e12574bd16be603d82c813291238f1b73",
+      "localizedSha256": "58dfa5a33f8a22a1a28b7a8a1280e81e12574bd16be603d82c813291238f1b73",
+      "kind": "preserved-contract"
+    },
+    "projects/skill-router/examples/skills/check-tests/routing.json": {
+      "sourceSha256": "5df7affeb17b3a1b0990eb909ba3a5f8096ac2a1693506fe09f7c36ac5f19390",
+      "localizedSha256": "5df7affeb17b3a1b0990eb909ba3a5f8096ac2a1693506fe09f7c36ac5f19390",
+      "kind": "preserved-contract"
+    },
+    "projects/skill-router/examples/skills/release-publish/SKILL.md": {
+      "sourceSha256": "d7f573eebe75bbedb34195e495bcfcb984d9388b0c36a1bc5c275a8c03902451",
+      "localizedSha256": "d7f573eebe75bbedb34195e495bcfcb984d9388b0c36a1bc5c275a8c03902451",
+      "kind": "preserved-contract"
+    },
+    "projects/skill-router/examples/skills/release-publish/routing.json": {
+      "sourceSha256": "f2ae04dfb11f8e2e39be7fcfc10163d9661a7550c3a1f973c10e54ea05a856fd",
+      "localizedSha256": "f2ae04dfb11f8e2e39be7fcfc10163d9661a7550c3a1f973c10e54ea05a856fd",
+      "kind": "preserved-contract"
+    },
+    "projects/skill-router/examples/skills/release-review/SKILL.md": {
+      "sourceSha256": "d9645d9c68716e47b6e1f4ccaf71489e1a8798769fb79b01d25dfbeb8b9cfe8d",
+      "localizedSha256": "d9645d9c68716e47b6e1f4ccaf71489e1a8798769fb79b01d25dfbeb8b9cfe8d",
+      "kind": "preserved-contract"
+    },
+    "projects/skill-router/examples/skills/release-review/routing.json": {
+      "sourceSha256": "fb8e02ec9e27547f782ed126a40cd95f3e3b5921b0cb37c88969a05a24d199a8",
+      "localizedSha256": "fb8e02ec9e27547f782ed126a40cd95f3e3b5921b0cb37c88969a05a24d199a8",
+      "kind": "preserved-contract"
+    },
+    "projects/skill-router/media/output.gif": {
+      "sourceSha256": "acb30cc09ec4bf12fb75b30634c28922795c5c67015e5acf87bf054438c83947",
+      "localizedSha256": "acb30cc09ec4bf12fb75b30634c28922795c5c67015e5acf87bf054438c83947",
+      "kind": "original-recording"
+    },
+    "projects/skill-router/media/output.json": {
+      "sourceSha256": "c3324ccdc8f4675bac22f0c63d57719d9651731501fedaf677de92919b76bee8",
+      "localizedSha256": "c3324ccdc8f4675bac22f0c63d57719d9651731501fedaf677de92919b76bee8",
+      "kind": "original-recording"
+    },
+    "projects/skill-router/media/output.png": {
+      "sourceSha256": "d898f200c1483c5e0b2bb4810debf88536015bca75a0a1ff491ca1335019a866",
+      "localizedSha256": "d898f200c1483c5e0b2bb4810debf88536015bca75a0a1ff491ca1335019a866",
+      "kind": "original-recording"
+    },
+    "projects/skill-router/media/run.gif": {
+      "sourceSha256": "9f41e74139a557ee43f15f780f95f4aa6fce0840d028b18e63c884d4feb20d1b",
+      "localizedSha256": "9f41e74139a557ee43f15f780f95f4aa6fce0840d028b18e63c884d4feb20d1b",
+      "kind": "original-recording"
+    },
+    "projects/skill-router/media/run.json": {
+      "sourceSha256": "4e9b8a42dd0e40c39b1cd12eed5fff48dcfe6a37d2c6fa0ffc90a0a3bf38b2f2",
+      "localizedSha256": "4e9b8a42dd0e40c39b1cd12eed5fff48dcfe6a37d2c6fa0ffc90a0a3bf38b2f2",
+      "kind": "original-recording"
+    },
+    "projects/skill-router/media/run.png": {
+      "sourceSha256": "69a3311911fe47e842d3195a5d0bc244f7e69f4fb0877b1425ec6a82a3a939b4",
+      "localizedSha256": "69a3311911fe47e842d3195a5d0bc244f7e69f4fb0877b1425ec6a82a3a939b4",
+      "kind": "original-recording"
+    },
+    "projects/skill-router/project.json": {
+      "sourceSha256": "e09ceec02ac4b1f2e90a5382613947f08f9da41159165e6cf4082a939d44ca37",
+      "localizedSha256": "4fe29b994cb06830c47c41763b4ffa8de9f543ba02dcdce2c118bcedf136c33b",
+      "kind": "manifest",
+      "contract": {
+        "id": "skill-router",
+        "title": "<translated-text>",
+        "level": 2,
+        "levelName": "Builder",
+        "tagline": "<translated-text>",
+        "summary": "<translated-text>",
+        "hours": 8,
+        "languages": [
+          "TypeScript"
+        ],
+        "status": "ready",
+        "source": "core",
+        "author": {
+          "name": "AI Engineering from Scratch",
+          "github": "rohitg00"
+        },
+        "skills": [
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "prerequisites": [
+          {
+            "title": "<translated-text>",
+            "path": "phases/13-tools-and-protocols/05-tool-schema-design"
+          },
+          {
+            "title": "<translated-text>",
+            "path": "phases/14-agent-engineering/38-verification-gates"
+          }
+        ],
+        "youWillBuild": "<translated-text>",
+        "usefulFor": [
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "demo": {
+          "command": [
+            "node",
+            "demo.ts"
+          ],
+          "cwd": "solution"
+        },
+        "stages": [
+          {
+            "id": "01-catalog",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "typescript",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "parseSkill",
+              "tokens"
+            ],
+            "difficulty": "starter",
+            "requires": [
+              "node"
+            ],
+            "timeout": 90,
+            "figure": "pj-skill-router-1"
+          },
+          {
+            "id": "02-score",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "typescript",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "matchPath",
+              "rank"
+            ],
+            "difficulty": "core",
+            "requires": [
+              "node"
+            ],
+            "timeout": 90,
+            "figure": "pj-skill-router-2"
+          },
+          {
+            "id": "03-dependencies",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "typescript",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "plan"
+            ],
+            "difficulty": "core",
+            "requires": [
+              "node"
+            ],
+            "timeout": 90,
+            "figure": "pj-skill-router-3"
+          },
+          {
+            "id": "04-route",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "typescript",
+            "languageWhy": "<translated-text>",
+            "concepts": [
+              "route"
+            ],
+            "difficulty": "core",
+            "requires": [
+              "node"
+            ],
+            "timeout": 90,
+            "figure": "pj-skill-router-4"
+          }
+        ],
+        "demos": [
+          {
+            "gif": "media/run.gif",
+            "poster": "media/run.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          },
+          {
+            "gif": "media/output.gif",
+            "poster": "media/output.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          }
+        ]
+      }
+    },
+    "projects/skill-router/solution/cli.ts": {
+      "sourceSha256": "3c94d4cd3a849f1f85f19ce4d7f3a60b377a9c7bbb57c578f93fa12c34fc19fe",
+      "localizedSha256": "ea99bea3bf92652c07dc39365cdc6d00b144738329a988b7ca184a7dfb6f429d",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "import fs from \"node:fs/promises\";",
+          "// 命令行帮助中的英文异常保留原契约，参数及输出解释见中文 README。\n// 路由结果只表示选择建议，不会执行技能。目录中的技能指令、名称、描述、关键词、权限、请求夹具和错误值均保留原值，避免改变评分及返回 JSON。分词只识别 ASCII 字母与数字；纯中文请求不代表具备中文词法或语义路由能力。\nimport fs from \"node:fs/promises\";"
+        ]
+      ]
+    },
+    "projects/skill-router/solution/demo.ts": {
+      "sourceSha256": "5be926b037b6119e1faac466743ed09d02d656b3bb7d7402360b07c25004fb0e",
+      "localizedSha256": "cfbb8f0965ea0e8908b4f549dc309ab3fc8ebed952489d1ff5d99287ef88c588",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "import fs from \"node:fs/promises\";",
+          "// 使用本地原创夹具运行演示；操作范围以显式测试目录为准。\n// 路由结果只表示选择建议，不会执行技能。目录中的技能指令、名称、描述、关键词、权限、请求夹具和错误值均保留原值，避免改变评分及返回 JSON。分词只识别 ASCII 字母与数字；纯中文请求不代表具备中文词法或语义路由能力。\nimport fs from \"node:fs/promises\";"
+        ]
+      ]
+    },
+    "projects/skill-router/solution/main.ts": {
+      "sourceSha256": "17a1c5bd57b9a1b947f6f5374c19c449e5061c1517e3db737fe0304a7a490052",
+      "localizedSha256": "b76a1c55480f9e44428324e068f6f46e50eaa8a0242071e2824163a586b7e5fc",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "/*\n * Skill Router reference implementation.\n * Follow stages in projects/skill-router/stages/.\n * The demo is deterministic and requires no provider credentials.\n * Protocol references are listed in the project README.\n */",
+          "/*\n * 技能路由器参考实现。\n * 阶段说明见 projects/skill-router/stages/。\n * 演示不需要外部服务商凭据；官方参考列于 README。\n * 路由结果只表示选择建议，不会执行技能。目录中的技能指令、名称、描述、关键词、权限、请求夹具和错误值均保留原值，避免改变评分及返回 JSON。分词只识别 ASCII 字母与数字；纯中文请求不代表具备中文词法或语义路由能力。\n */"
+        ]
+      ]
+    },
+    "projects/skill-router/solution/package.json": {
+      "sourceSha256": "a90fc33418afa2b9cbf4768524b021135b965ecdf993457505bfae3ac44a8428",
+      "localizedSha256": "a90fc33418afa2b9cbf4768524b021135b965ecdf993457505bfae3ac44a8428",
+      "kind": "preserved-contract"
+    },
+    "projects/skill-router/stages/01-catalog/docs/en.md": {
+      "sourceSha256": "e8cb3597ccf199c1c363a43cba2174c4aaafdb7ad8579aa76c4e0879174e6c64",
+      "localizedSha256": "f872daf9961a5fd52813016a9011d0cf2f9a4db097b713cc3b5deab1671f02c8",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-skill-router-1\n"
+          ],
+          [
+            "text",
+            "skills/release-review/SKILL.md -> name release-review\nrouting.json -> keywords,paths,priority,requires,permissions\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py skill-router --init learning-artifacts/skill-router\npython3 scripts/project_test.py skill-router --stage 1 --path learning-artifacts/skill-router\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "parseSkill, tokens"
+          ]
+        ],
+        "links": [
+          "../../../../../phases/13-tools-and-protocols/05-tool-schema-design/docs/en.md",
+          "https://www.typescriptlang.org/docs/handbook/2/objects.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/skill-router/stages/01-catalog/starter/cli.ts": {
+      "sourceSha256": "3c94d4cd3a849f1f85f19ce4d7f3a60b377a9c7bbb57c578f93fa12c34fc19fe",
+      "localizedSha256": "ea99bea3bf92652c07dc39365cdc6d00b144738329a988b7ca184a7dfb6f429d",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "import fs from \"node:fs/promises\";",
+          "// 命令行帮助中的英文异常保留原契约，参数及输出解释见中文 README。\n// 路由结果只表示选择建议，不会执行技能。目录中的技能指令、名称、描述、关键词、权限、请求夹具和错误值均保留原值，避免改变评分及返回 JSON。分词只识别 ASCII 字母与数字；纯中文请求不代表具备中文词法或语义路由能力。\nimport fs from \"node:fs/promises\";"
+        ]
+      ]
+    },
+    "projects/skill-router/stages/01-catalog/starter/main.ts": {
+      "sourceSha256": "ebf7ac31556a5f024f4b4fab65d8043e002552ae38cb2212b8286cebf17b8d91",
+      "localizedSha256": "e5739bb093fe131845bd61598695476229e69d64f9e4b86065425e2020363b19",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "import { pathToFileURL } from \"node:url\";",
+          "// 在学习者工作区补全函数；未实现错误保持原值。\n// 路由结果只表示选择建议，不会执行技能。目录中的技能指令、名称、描述、关键词、权限、请求夹具和错误值均保留原值，避免改变评分及返回 JSON。分词只识别 ASCII 字母与数字；纯中文请求不代表具备中文词法或语义路由能力。\nimport { pathToFileURL } from \"node:url\";"
+        ]
+      ]
+    },
+    "projects/skill-router/stages/01-catalog/starter/package.json": {
+      "sourceSha256": "a90fc33418afa2b9cbf4768524b021135b965ecdf993457505bfae3ac44a8428",
+      "localizedSha256": "a90fc33418afa2b9cbf4768524b021135b965ecdf993457505bfae3ac44a8428",
+      "kind": "preserved-contract"
+    },
+    "projects/skill-router/stages/01-catalog/starter/stage-1.md": {
+      "sourceSha256": "2fc45266fbfea1b3815861736457a530d4c3b71299bbae465a35f1e9c5fd9858",
+      "localizedSha256": "cdc55053e54579edf04182ba2526cd879d80e2654da21d720445f402d02aedb1",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/skill-router/stages/01-catalog/tests/stage.test.ts": {
+      "sourceSha256": "a8c104f6555143507f37eeb2857e0db2ab9856e48347c9d277e3ac7ae6e3e5f3",
+      "localizedSha256": "a8c104f6555143507f37eeb2857e0db2ab9856e48347c9d277e3ac7ae6e3e5f3",
+      "kind": "preserved-contract"
+    },
+    "projects/skill-router/stages/02-score/docs/en.md": {
+      "sourceSha256": "11af8ce7926c6809f73ddef44efbcc44f2a159fb681322fa7cbf18b481fdf0ce",
+      "localizedSha256": "853fd4a43bb6f4cd9f87595f61a27749e54186298501adb81613a8356c4a4998",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-skill-router-2\n"
+          ],
+          [
+            "text",
+            "keywords release,replicas -> 4 points\nfiles deploy/orchard.yaml repeated twice -> 3 points\nscore=7, not 10\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py skill-router --stage 2 --path learning-artifacts/skill-router\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "**/"
+          ],
+          [
+            "`",
+            "**/*.ts"
+          ],
+          [
+            "`",
+            "main.ts"
+          ],
+          [
+            "`",
+            "matchPath, rank"
+          ],
+          [
+            "`",
+            "src/**/*.ts"
+          ],
+          [
+            "`",
+            "src/lib/main.ts"
+          ],
+          [
+            "`",
+            "src/main.ts"
+          ]
+        ],
+        "links": [
+          "../../../../../phases/13-tools-and-protocols/05-tool-schema-design/docs/en.md",
+          "../../01-catalog/docs/en.md",
+          "https://www.typescriptlang.org/docs/handbook/2/objects.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/skill-router/stages/02-score/starter/stage-2.md": {
+      "sourceSha256": "6e745e1ed369c7064407d5e6a58e0f240ec7b75429ba20e41245ad9dbeca56bf",
+      "localizedSha256": "b30257b571b798263f67d7d8c11c405e9580644dc048d43f44f908805e94f024",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/skill-router/stages/02-score/tests/duplicate.test.ts": {
+      "sourceSha256": "49104cb7d6f3b7b4825467a834673528b16bd321f38471f4dcf5f3ca97431714",
+      "localizedSha256": "49104cb7d6f3b7b4825467a834673528b16bd321f38471f4dcf5f3ca97431714",
+      "kind": "preserved-contract"
+    },
+    "projects/skill-router/stages/02-score/tests/globstar.test.ts": {
+      "sourceSha256": "2ae3cdc93eb05bd9a2278d9c59b54b728e90b2b5ba13f8929f4a31c4690d4702",
+      "localizedSha256": "2ae3cdc93eb05bd9a2278d9c59b54b728e90b2b5ba13f8929f4a31c4690d4702",
+      "kind": "preserved-contract"
+    },
+    "projects/skill-router/stages/02-score/tests/stage.test.ts": {
+      "sourceSha256": "d68bc4938b104ff69b3efca65f2479a045cfdf7f43d53adfed0e3fedab1ae4a4",
+      "localizedSha256": "d68bc4938b104ff69b3efca65f2479a045cfdf7f43d53adfed0e3fedab1ae4a4",
+      "kind": "preserved-contract"
+    },
+    "projects/skill-router/stages/03-dependencies/docs/en.md": {
+      "sourceSha256": "f4d17f506f205e38ca42232e9618927bdd2b88e4def7bb78ea6606dbd09e1b27",
+      "localizedSha256": "69c729af056aa12701cbf27466cc82bd8a7d8dee68b0804e74378c9bc094944c",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-skill-router-3\n"
+          ],
+          [
+            "text",
+            "release-review requires check-tests\nallowed=[read]\nplan=[check-tests,release-review]\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py skill-router --stage 3 --path learning-artifacts/skill-router\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "plan"
+          ]
+        ],
+        "links": [
+          "../../../../../phases/13-tools-and-protocols/05-tool-schema-design/docs/en.md",
+          "../../02-score/docs/en.md",
+          "https://www.typescriptlang.org/docs/handbook/2/objects.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/skill-router/stages/03-dependencies/starter/stage-3.md": {
+      "sourceSha256": "1e82f41ed1fdb6d6067215e0820fbeed08ca47aea4b68afbfe3b529488634511",
+      "localizedSha256": "2e8c3b8245c778e987b4f9f6ef10bf67589663f0d6666e38589a4f6bcbabc424",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/skill-router/stages/03-dependencies/tests/stage.test.ts": {
+      "sourceSha256": "1d60453041dd608021faa16824ee3ac03172a731c45fa3bfb605aef1c9bedd6a",
+      "localizedSha256": "1d60453041dd608021faa16824ee3ac03172a731c45fa3bfb605aef1c9bedd6a",
+      "kind": "preserved-contract"
+    },
+    "projects/skill-router/stages/04-route/docs/en.md": {
+      "sourceSha256": "a809cd812e8c8b2b0a7cc86a57d61c974f8eea6c415850143f4e73d3cb51dd3a",
+      "localizedSha256": "e2ed6aeaaca1d791ee39812b711d3786f3765e2db498e50aa70e4904ce088c22",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-skill-router-4\n"
+          ],
+          [
+            "text",
+            "publish request -> release-publish score 2\nallowed=[read]; publish requires network\nstatus=blocked, no execution plan\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py skill-router --stage 4 --path learning-artifacts/skill-router\n"
+          ],
+          [
+            "bash",
+            "node learning-artifacts/skill-router/cli.ts projects/skill-router/examples/skills projects/skill-router/examples/request.json\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "route"
+          ]
+        ],
+        "links": [
+          "../../../../../phases/13-tools-and-protocols/05-tool-schema-design/docs/en.md",
+          "../../03-dependencies/docs/en.md",
+          "https://www.typescriptlang.org/docs/handbook/2/objects.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/skill-router/stages/04-route/starter/stage-4.md": {
+      "sourceSha256": "641f696273b3cbbe90851b084d8b47654c90affda920b997bcdc6ce628855ecf",
+      "localizedSha256": "3e73a88903f17c51414735cff33a1f76e609ef09e62d7c647fcdf4ffc217e5f6",
+      "kind": "markdown",
+      "contract": {
+        "fences": [],
+        "inlineCode": [],
+        "links": [],
+        "math": [],
+        "headings": [],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/skill-router/stages/04-route/tests/discovery.test.ts": {
+      "sourceSha256": "2d2a775164caff4534b2e2414231d262e8340460091ad851212625d4fba541f8",
+      "localizedSha256": "2d2a775164caff4534b2e2414231d262e8340460091ad851212625d4fba541f8",
+      "kind": "preserved-contract"
+    },
+    "projects/skill-router/stages/04-route/tests/root-path.test.ts": {
+      "sourceSha256": "59016d9eae662b15cfa4fadbd93f87980bec9d017e54a43c06708d6891932f64",
+      "localizedSha256": "59016d9eae662b15cfa4fadbd93f87980bec9d017e54a43c06708d6891932f64",
+      "kind": "preserved-contract"
+    },
+    "projects/skill-router/stages/04-route/tests/stage.test.ts": {
+      "sourceSha256": "d20e9a6dc9aa027b9fcb44b22f87745e0e62c6d39baca0a091805fb39129c506",
+      "localizedSha256": "d20e9a6dc9aa027b9fcb44b22f87745e0e62c6d39baca0a091805fb39129c506",
+      "kind": "preserved-contract"
+    },
+    "projects/skill-router/starter/cli.ts": {
+      "sourceSha256": "3c94d4cd3a849f1f85f19ce4d7f3a60b377a9c7bbb57c578f93fa12c34fc19fe",
+      "localizedSha256": "ea99bea3bf92652c07dc39365cdc6d00b144738329a988b7ca184a7dfb6f429d",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "import fs from \"node:fs/promises\";",
+          "// 命令行帮助中的英文异常保留原契约，参数及输出解释见中文 README。\n// 路由结果只表示选择建议，不会执行技能。目录中的技能指令、名称、描述、关键词、权限、请求夹具和错误值均保留原值，避免改变评分及返回 JSON。分词只识别 ASCII 字母与数字；纯中文请求不代表具备中文词法或语义路由能力。\nimport fs from \"node:fs/promises\";"
+        ]
+      ]
+    },
+    "projects/skill-router/starter/main.ts": {
+      "sourceSha256": "ebf7ac31556a5f024f4b4fab65d8043e002552ae38cb2212b8286cebf17b8d91",
+      "localizedSha256": "e5739bb093fe131845bd61598695476229e69d64f9e4b86065425e2020363b19",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "import { pathToFileURL } from \"node:url\";",
+          "// 在学习者工作区补全函数；未实现错误保持原值。\n// 路由结果只表示选择建议，不会执行技能。目录中的技能指令、名称、描述、关键词、权限、请求夹具和错误值均保留原值，避免改变评分及返回 JSON。分词只识别 ASCII 字母与数字；纯中文请求不代表具备中文词法或语义路由能力。\nimport { pathToFileURL } from \"node:url\";"
+        ]
+      ]
+    },
+    "projects/skill-router/starter/package.json": {
+      "sourceSha256": "a90fc33418afa2b9cbf4768524b021135b965ecdf993457505bfae3ac44a8428",
+      "localizedSha256": "a90fc33418afa2b9cbf4768524b021135b965ecdf993457505bfae3ac44a8428",
+      "kind": "preserved-contract"
+    },
+    "projects/skill-scanner/README.md": {
+      "sourceSha256": "88e4353296e0baf53afd7be6c4de3da56160d001d54f77dacd227449ad889169",
+      "localizedSha256": "d13601540656407cd5ef080f722c7b27918c48bfb79059e521a22d1f9b17c779",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "bash",
+            "python3 scripts/project_test.py skill-scanner --init learning-artifacts/skill-scanner\npython3 scripts/project_test.py skill-scanner --stage 1 --path learning-artifacts/skill-scanner\n"
+          ],
+          [
+            "bash",
+            "rustc --edition=2021 learning-artifacts/skill-scanner/cli.rs -o learning-artifacts/skill-scanner/scanner\nlearning-artifacts/skill-scanner/scanner projects/skill-scanner/examples/reviewable 3\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py skill-scanner --all --solution --strict\npython3 scripts/project_test.py skill-scanner --all --path learning-artifacts/skill-scanner --strict\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "learning-artifacts/skill-scanner"
+          ],
+          [
+            "`",
+            "projects/skill-scanner/solution"
+          ],
+          [
+            "`",
+            "rustc"
+          ],
+          [
+            "`",
+            "schema_version: 1"
+          ]
+        ],
+        "links": [
+          "../../phases/00-setup-and-tooling/09-data-management/docs/en.md",
+          "../../phases/17-infrastructure-and-production/25-security-secrets-audit/docs/en.md",
+          "https://agentskills.io/specification",
+          "https://doc.rust-lang.org/book/ch04-00-understanding-ownership.html",
+          "stages/01-retain-byte-accurate-source-spans/docs/en.md",
+          "stages/02-detect-named-advisory-patterns/docs/en.md",
+          "stages/03-score-distinct-evidence-without-inflation/docs/en.md",
+          "stages/04-build-an-explicit-review-gate/docs/en.md"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 5
+      }
+    },
+    "projects/skill-scanner/examples/benign/SKILL.md": {
+      "sourceSha256": "97e9f2f8defb990685846d76e4f103b7cae341e7aff9dacedf724658c315b168",
+      "localizedSha256": "97e9f2f8defb990685846d76e4f103b7cae341e7aff9dacedf724658c315b168",
+      "kind": "preserved-contract"
+    },
+    "projects/skill-scanner/examples/reviewable/SKILL.md": {
+      "sourceSha256": "607b1ca440ed1ba74e6def3dd24181fe643f394abbf91d1dcfb746595d2ecff4",
+      "localizedSha256": "607b1ca440ed1ba74e6def3dd24181fe643f394abbf91d1dcfb746595d2ecff4",
+      "kind": "preserved-contract"
+    },
+    "projects/skill-scanner/media/output.gif": {
+      "sourceSha256": "1af8fc187effbbfe88209d3fe0119d0ea9f40f007c9a7c47790320e627849da6",
+      "localizedSha256": "1af8fc187effbbfe88209d3fe0119d0ea9f40f007c9a7c47790320e627849da6",
+      "kind": "original-recording"
+    },
+    "projects/skill-scanner/media/output.json": {
+      "sourceSha256": "57e11a7ac5964e2836c2b053ccd3bac793be614f8a1c8c08bfb8ae737f25914c",
+      "localizedSha256": "57e11a7ac5964e2836c2b053ccd3bac793be614f8a1c8c08bfb8ae737f25914c",
+      "kind": "original-recording"
+    },
+    "projects/skill-scanner/media/output.png": {
+      "sourceSha256": "bc430508abdeb22e30eb4ee524b8edd0c4a6da142db9d3a02fbaa439b35c0d7d",
+      "localizedSha256": "bc430508abdeb22e30eb4ee524b8edd0c4a6da142db9d3a02fbaa439b35c0d7d",
+      "kind": "original-recording"
+    },
+    "projects/skill-scanner/media/run.gif": {
+      "sourceSha256": "f64656b1576adec5bc07d1433df54bd4c27f990d3cccafcfa5b1247e6257d243",
+      "localizedSha256": "f64656b1576adec5bc07d1433df54bd4c27f990d3cccafcfa5b1247e6257d243",
+      "kind": "original-recording"
+    },
+    "projects/skill-scanner/media/run.json": {
+      "sourceSha256": "647eec5673f14f99dcbd319fbd2cbbea3d664711dd8d04ac7a1d499a2edf20e0",
+      "localizedSha256": "647eec5673f14f99dcbd319fbd2cbbea3d664711dd8d04ac7a1d499a2edf20e0",
+      "kind": "original-recording"
+    },
+    "projects/skill-scanner/media/run.png": {
+      "sourceSha256": "6034c18b2aa02853a56a328dbcc19a24d9cf4321e7a73e056b116b92ae6ee559",
+      "localizedSha256": "6034c18b2aa02853a56a328dbcc19a24d9cf4321e7a73e056b116b92ae6ee559",
+      "kind": "original-recording"
+    },
+    "projects/skill-scanner/project.json": {
+      "sourceSha256": "5f71ac0cbf532af0d7b4927a4125b16ad2e3871079e99122c89364bfaed43ba9",
+      "localizedSha256": "18483108c301268f07561d0039357e11cec3dbca61e8420e7de90cb06b88d8ca",
+      "kind": "manifest",
+      "contract": {
+        "id": "skill-scanner",
+        "title": "<translated-text>",
+        "level": 3,
+        "levelName": "Engineer",
+        "tagline": "<translated-text>",
+        "summary": "<translated-text>",
+        "usefulFor": [
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "youWillBuild": "<translated-text>",
+        "hours": 8,
+        "languages": [
+          "Rust"
+        ],
+        "status": "ready",
+        "source": "core",
+        "author": {
+          "name": "AI Engineering from Scratch",
+          "github": "rohitg00"
+        },
+        "skills": [
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "prerequisites": [
+          {
+            "title": "<translated-text>",
+            "path": "phases/00-setup-and-tooling/09-data-management"
+          },
+          {
+            "title": "<translated-text>",
+            "path": "phases/17-infrastructure-and-production/25-security-secrets-audit"
+          }
+        ],
+        "inspiredBy": [],
+        "demo": {
+          "command": [
+            "python3",
+            "demo.py"
+          ],
+          "cwd": "solution"
+        },
+        "stages": [
+          {
+            "id": "01-retain-byte-accurate-source-spans",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "rust",
+            "difficulty": "starter",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ]
+          },
+          {
+            "id": "02-detect-named-advisory-patterns",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "rust",
+            "difficulty": "core",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ]
+          },
+          {
+            "id": "03-score-distinct-evidence-without-inflation",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "rust",
+            "difficulty": "core",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ]
+          },
+          {
+            "id": "04-build-an-explicit-review-gate",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "rust",
+            "difficulty": "core",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ]
+          }
+        ],
+        "demos": [
+          {
+            "gif": "media/run.gif",
+            "poster": "media/run.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          },
+          {
+            "gif": "media/output.gif",
+            "poster": "media/output.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          }
+        ]
+      }
+    },
+    "projects/skill-scanner/solution/cli.rs": {
+      "sourceSha256": "9a32ac6799389d160023b0339b84ae7f16ec59af95d1b7b5b088c1d264cfb5c0",
+      "localizedSha256": "4b88566587413358ab89fe7ea9a607978cfc61697326466a8fd99f1ef8d75dc6",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "pub mod types;",
+          "// 只读扫描调用方文件，输出版本化 JSON；文本中的命令不执行。\npub mod types;"
+        ]
+      ]
+    },
+    "projects/skill-scanner/solution/demo.py": {
+      "sourceSha256": "e4aead64e35612484527f3374770e89ceb676c0f7570aef1d04d86ee562d619e",
+      "localizedSha256": "d77035c3b1f08d6b3a2285d0eb1999810cff1a57ca66d80cc8fa7b767d0816bf",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "from pathlib import Path",
+          "# 在私有临时目录编译原生程序，原始扫描或上下文输出保持机器契约。\nfrom pathlib import Path"
+        ]
+      ]
+    },
+    "projects/skill-scanner/solution/main.rs": {
+      "sourceSha256": "a713ff12339ecb5370073d673cf075341c896da815da5fd4ae22966982f23bec",
+      "localizedSha256": "a713ff12339ecb5370073d673cf075341c896da815da5fd4ae22966982f23bec",
+      "kind": "preserved-contract"
+    },
+    "projects/skill-scanner/solution/stage1.rs": {
+      "sourceSha256": "8a77f8ead2ceb9a068552bb0e58fd9d2af443ac4921064a0be9533bf1ae10594",
+      "localizedSha256": "0ff822976c49b7c16c785eb3b760134c66ca96b2ccf1fc5aa888f827a9548eef",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "use super::*;",
+          "// 保留原始 UTF-8 字节区间，逐行拆分并处理行结束符。\nuse super::*;"
+        ]
+      ]
+    },
+    "projects/skill-scanner/solution/stage2.rs": {
+      "sourceSha256": "cf1f0e2a2ffabe30d8423df22243b873467788ee80b10aab5b26fbde3c74245a",
+      "localizedSha256": "863ba2b106a5ec6dd800f315079729b734b3493f6a95f8f22880fe2f0055ef5b",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "use super::*;",
+          "// 以显式具名模式给出风险提示；原始引文、规则字符串与偏移不改。\nuse super::*;"
+        ]
+      ]
+    },
+    "projects/skill-scanner/solution/stage3.rs": {
+      "sourceSha256": "31893df743e8c9b797f2abe9c9d5678c9bf53b9727cca9efd0f7740a2b7fbbed",
+      "localizedSha256": "50a9461ca46fceae988fd523e00a4a0edf7477ae41e0525ded20a3289f356e7f",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "use super::*;",
+          "// 按规则与行号去重，检查严重程度范围并对累加值检测溢出。\nuse super::*;"
+        ]
+      ]
+    },
+    "projects/skill-scanner/solution/stage4.rs": {
+      "sourceSha256": "93ae91ce376f879cc594eb857b076e3bbb3c12932de0b40ce236e27a2ea626b2",
+      "localizedSha256": "52393bb13f785092e97e1db52078594086352a04734c38b349483aae34373816",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "use super::*;",
+          "// 校验来源切片、数量与阈值，输出人工审阅提示，不执行技能内容。\nuse super::*;"
+        ]
+      ]
+    },
+    "projects/skill-scanner/solution/types.rs": {
+      "sourceSha256": "ba33d7c0b76ccfa9478597af8d7dbb22f2b1e1bdf25f92cb8d029aa6941f421a",
+      "localizedSha256": "ba33d7c0b76ccfa9478597af8d7dbb22f2b1e1bdf25f92cb8d029aa6941f421a",
+      "kind": "preserved-contract"
+    },
+    "projects/skill-scanner/stages/01-retain-byte-accurate-source-spans/docs/en.md": {
+      "sourceSha256": "7573ec14ae3147c23973bee3a6869b20516f1d6b34dedebb82774c1ea2ba0285",
+      "localizedSha256": "c4fb4f8e8ad64b310d0dcfc5bf1fcf92e8df4c07e00e19b742b5d7d56c068e8b",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-skill-scanner-1\n"
+          ],
+          [
+            "rust",
+            "pub fn spans(text:&str,max_bytes:usize)->Result<Vec<Span>,Error>\n"
+          ],
+          [
+            "text",
+            "text=\"café\\n.env\"\nfirst line bytes [0,5)\nsecond line bytes [6,10)\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py skill-scanner --init learning-artifacts/skill-scanner\npython3 scripts/project_test.py skill-scanner --stage 1 --path learning-artifacts/skill-scanner\n"
+          ]
+        ],
+        "inlineCode": [],
+        "links": [
+          "../../../../../phases/00-setup-and-tooling/09-data-management/docs/en.md",
+          "https://agentskills.io/specification",
+          "https://doc.rust-lang.org/book/ch04-00-understanding-ownership.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/skill-scanner/stages/01-retain-byte-accurate-source-spans/starter/cli.rs": {
+      "sourceSha256": "9a32ac6799389d160023b0339b84ae7f16ec59af95d1b7b5b088c1d264cfb5c0",
+      "localizedSha256": "865d28ed166175f3963ec1ed406b2d591cbd9b4232988a2ffc890e9989f843db",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "pub mod types;",
+          "// 阶段接口：只读扫描调用方文件，输出版本化 JSON；文本中的命令不执行。 保留未实现占位与诊断，完成实现后再评分。\npub mod types;"
+        ]
+      ]
+    },
+    "projects/skill-scanner/stages/01-retain-byte-accurate-source-spans/starter/main.rs": {
+      "sourceSha256": "a713ff12339ecb5370073d673cf075341c896da815da5fd4ae22966982f23bec",
+      "localizedSha256": "a713ff12339ecb5370073d673cf075341c896da815da5fd4ae22966982f23bec",
+      "kind": "preserved-contract"
+    },
+    "projects/skill-scanner/stages/01-retain-byte-accurate-source-spans/starter/stage1.rs": {
+      "sourceSha256": "d2d0ac1508f18ff8fb164ad7cda138e3017432f2cf34d3472b3b2d200bababad",
+      "localizedSha256": "2d367c1ad67ec42067a10caf199a3ddd0b0d1c9b98ed5e03f70786b6167c8c20",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "use super::*;",
+          "// 阶段接口：保留原始 UTF-8 字节区间，逐行拆分并处理行结束符。 保留未实现占位与诊断，完成实现后再评分。\nuse super::*;"
+        ]
+      ]
+    },
+    "projects/skill-scanner/stages/01-retain-byte-accurate-source-spans/starter/types.rs": {
+      "sourceSha256": "ba33d7c0b76ccfa9478597af8d7dbb22f2b1e1bdf25f92cb8d029aa6941f421a",
+      "localizedSha256": "ba33d7c0b76ccfa9478597af8d7dbb22f2b1e1bdf25f92cb8d029aa6941f421a",
+      "kind": "preserved-contract"
+    },
+    "projects/skill-scanner/stages/01-retain-byte-accurate-source-spans/tests/stage.rs": {
+      "sourceSha256": "a57d8cdb0185eacf76d4a175711121c3d441fdca06d318fff28c988b794106c9",
+      "localizedSha256": "a57d8cdb0185eacf76d4a175711121c3d441fdca06d318fff28c988b794106c9",
+      "kind": "preserved-contract"
+    },
+    "projects/skill-scanner/stages/02-detect-named-advisory-patterns/docs/en.md": {
+      "sourceSha256": "f34dae043072706e9aa44fdea55c39bacefe1e1808c7919ff9e4f1d0c414bb7f",
+      "localizedSha256": "435258e7ed607244a0675f9e4daacd91d8d5630621b59f7faf1b5272a2cc4275",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-skill-scanner-2\n"
+          ],
+          [
+            "rust",
+            "pub fn scan(lines:&[Span])->Vec<Finding>\n"
+          ],
+          [
+            "text",
+            "Ignore previous instructions. -> instruction-override, severity 3\ncurl https://... < .env -> secret-access 2 + network-command 2\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py skill-scanner --stage 2 --path learning-artifacts/skill-scanner\n"
+          ]
+        ],
+        "inlineCode": [],
+        "links": [
+          "../../../../../phases/00-setup-and-tooling/09-data-management/docs/en.md",
+          "../../01-retain-byte-accurate-source-spans/docs/en.md",
+          "https://agentskills.io/specification",
+          "https://doc.rust-lang.org/book/ch04-00-understanding-ownership.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/skill-scanner/stages/02-detect-named-advisory-patterns/starter/stage2.rs": {
+      "sourceSha256": "67550d7d585d2589d09c0ed9b79ee90ed6256e5611410dce25ccb01ecdc362ab",
+      "localizedSha256": "989c4ada471b1cd52c5eff97ed677881def928a187f0da790aafee72d74c09a7",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "use super::*;",
+          "// 阶段接口：以显式具名模式给出风险提示；原始引文、规则字符串与偏移不改。 保留未实现占位与诊断，完成实现后再评分。\nuse super::*;"
+        ]
+      ]
+    },
+    "projects/skill-scanner/stages/02-detect-named-advisory-patterns/tests/stage.rs": {
+      "sourceSha256": "3103066b6a8408ef88957dc69d6bf92b7c7cbc8d70acf26d379c5332952b644c",
+      "localizedSha256": "3103066b6a8408ef88957dc69d6bf92b7c7cbc8d70acf26d379c5332952b644c",
+      "kind": "preserved-contract"
+    },
+    "projects/skill-scanner/stages/03-score-distinct-evidence-without-inflation/docs/en.md": {
+      "sourceSha256": "32759427994e4693e4dac85789f88d7cddb448fb0d4c9a1cf1545dc0b76eb31e",
+      "localizedSha256": "3f04bf0e70520177fd246379f42f224c54da8c3ae60c3b8c58561ff11ba47fbd",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-skill-scanner-3\n"
+          ],
+          [
+            "rust",
+            "pub fn risk_score(findings:&[Finding])->Result<u32,Error>\n"
+          ],
+          [
+            "text",
+            "line 7 secret-access severity 2, repeated twice -> 2\nline 7 network-command severity 2 -> total 4\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py skill-scanner --stage 3 --path learning-artifacts/skill-scanner\n"
+          ]
+        ],
+        "inlineCode": [],
+        "links": [
+          "../../../../../phases/00-setup-and-tooling/09-data-management/docs/en.md",
+          "../../02-detect-named-advisory-patterns/docs/en.md",
+          "https://agentskills.io/specification",
+          "https://doc.rust-lang.org/book/ch04-00-understanding-ownership.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/skill-scanner/stages/03-score-distinct-evidence-without-inflation/starter/stage3.rs": {
+      "sourceSha256": "603349ff8f47521f5fc36a15f5af21997f33c43cb56a8ec08cf3304ec3cd5f02",
+      "localizedSha256": "34ae52e78af2e9e20e1e131ccd8fa5f7ab764e6a39f9008d83863877aab708cf",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "use super::*;",
+          "// 阶段接口：按规则与行号去重，检查严重程度范围并对累加值检测溢出。 保留未实现占位与诊断，完成实现后再评分。\nuse super::*;"
+        ]
+      ]
+    },
+    "projects/skill-scanner/stages/03-score-distinct-evidence-without-inflation/tests/stage.rs": {
+      "sourceSha256": "8a8d8f63061bc60d5069fd1175c25aef28842d176a402ddebfddfd1eebc40c56",
+      "localizedSha256": "8a8d8f63061bc60d5069fd1175c25aef28842d176a402ddebfddfd1eebc40c56",
+      "kind": "preserved-contract"
+    },
+    "projects/skill-scanner/stages/04-build-an-explicit-review-gate/docs/en.md": {
+      "sourceSha256": "b75f3b26a078b5314f76764f71cc55468328c67613b266034df177354713ca78",
+      "localizedSha256": "6b6b938af78627d79e0a0c4527cad3f743664a6965bf2c095667afd43060f36e",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-skill-scanner-4\n"
+          ],
+          [
+            "rust",
+            "pub fn review(text:&str,findings:&[Finding],threshold:u32,max_findings:usize)->Result<String,Error>\n"
+          ],
+          [
+            "text",
+            "benign bundle -> below-threshold\nreviewable bundle -> review-required\nfindings retain path + exact source slice\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py skill-scanner --stage 4 --path learning-artifacts/skill-scanner\n"
+          ],
+          [
+            "bash",
+            "rustc --edition=2021 learning-artifacts/skill-scanner/cli.rs -o learning-artifacts/skill-scanner/scanner\nlearning-artifacts/skill-scanner/scanner projects/skill-scanner/examples/reviewable 3\n"
+          ]
+        ],
+        "inlineCode": [],
+        "links": [
+          "../../../../../phases/00-setup-and-tooling/09-data-management/docs/en.md",
+          "../../03-score-distinct-evidence-without-inflation/docs/en.md",
+          "https://agentskills.io/specification",
+          "https://doc.rust-lang.org/book/ch04-00-understanding-ownership.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/skill-scanner/stages/04-build-an-explicit-review-gate/starter/stage4.rs": {
+      "sourceSha256": "af4171513da9c7fdafbcaa6da81377de920923cb7d628c1ef93afae6bde06eb1",
+      "localizedSha256": "54d1d949146e2689bac87972f1a406ca9b4477b216e4457deb691774ec5b90e4",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "use super::*;",
+          "// 阶段接口：校验来源切片、数量与阈值，输出人工审阅提示，不执行技能内容。 保留未实现占位与诊断，完成实现后再评分。\nuse super::*;"
+        ]
+      ]
+    },
+    "projects/skill-scanner/stages/04-build-an-explicit-review-gate/tests/stage.rs": {
+      "sourceSha256": "f6de3933ef7bc29664867d4d02abea69c2410b6959d86a80de1afce744922c25",
+      "localizedSha256": "f6de3933ef7bc29664867d4d02abea69c2410b6959d86a80de1afce744922c25",
+      "kind": "preserved-contract"
+    },
+    "projects/skill-validator/README.md": {
+      "sourceSha256": "8734ebe341e78031d316c07582fc102a26f21cd1fc2277568537c05a5b2043bb",
+      "localizedSha256": "c3a8f8a0e0ec64a3cc1637549d673eb42c04e42f56ed80b7d3331c35959896f6",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "bash",
+            "python3 scripts/project_test.py skill-validator --init learning-artifacts/skill-validator\npython3 scripts/project_test.py skill-validator --stage 1 --path learning-artifacts/skill-validator\n"
+          ],
+          [
+            "bash",
+            "rustc --edition=2021 learning-artifacts/skill-validator/cli.rs -o learning-artifacts/skill-validator/validator\nlearning-artifacts/skill-validator/validator projects/skill-validator/examples/orchard-release 2000 --activate references/restore.md\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py skill-validator --all --solution --strict\npython3 scripts/project_test.py skill-validator --all --path learning-artifacts/skill-validator --strict\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "learning-artifacts/skill-validator"
+          ],
+          [
+            "`",
+            "projects/skill-validator/solution"
+          ],
+          [
+            "`",
+            "rustc"
+          ],
+          [
+            "`",
+            "schema_version: 1"
+          ]
+        ],
+        "links": [
+          "../../phases/00-setup-and-tooling/09-data-management/docs/en.md",
+          "../../phases/11-llm-engineering/03-structured-outputs/docs/en.md",
+          "https://agentskills.io/specification",
+          "https://doc.rust-lang.org/book/ch04-00-understanding-ownership.html",
+          "stages/01-parse-an-explicit-frontmatter-subset/docs/en.md",
+          "stages/02-validate-names-and-descriptions/docs/en.md",
+          "stages/03-contain-resource-paths/docs/en.md",
+          "stages/04-load-context-within-a-character-budget/docs/en.md"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 5
+      }
+    },
+    "projects/skill-validator/examples/orchard-release/SKILL.md": {
+      "sourceSha256": "1bb1002563be42cfcc70b6321f540c94a258dd87588eb293a335b861236d39ba",
+      "localizedSha256": "1bb1002563be42cfcc70b6321f540c94a258dd87588eb293a335b861236d39ba",
+      "kind": "preserved-contract"
+    },
+    "projects/skill-validator/examples/orchard-release/references/restore.md": {
+      "sourceSha256": "3c3ede7c1fb2a2d50caf23c5abad3c527c585e73d79d7c6e39eaa92f2b607344",
+      "localizedSha256": "3c3ede7c1fb2a2d50caf23c5abad3c527c585e73d79d7c6e39eaa92f2b607344",
+      "kind": "preserved-contract"
+    },
+    "projects/skill-validator/media/output.gif": {
+      "sourceSha256": "a68ce4d26c94f6516a4021e019453d6d3ddf93463741a6686c3044bec2d097bb",
+      "localizedSha256": "a68ce4d26c94f6516a4021e019453d6d3ddf93463741a6686c3044bec2d097bb",
+      "kind": "original-recording"
+    },
+    "projects/skill-validator/media/output.json": {
+      "sourceSha256": "9a2a71c1329890ec109c3789d6360c1d296a3ba8bae7cc4fa3f34d6906f9c2d7",
+      "localizedSha256": "9a2a71c1329890ec109c3789d6360c1d296a3ba8bae7cc4fa3f34d6906f9c2d7",
+      "kind": "original-recording"
+    },
+    "projects/skill-validator/media/output.png": {
+      "sourceSha256": "98da921dd3e72176739945deedd02ffc647ba08e0d2b9a3ca5e38bf43ea9b73a",
+      "localizedSha256": "98da921dd3e72176739945deedd02ffc647ba08e0d2b9a3ca5e38bf43ea9b73a",
+      "kind": "original-recording"
+    },
+    "projects/skill-validator/media/run.gif": {
+      "sourceSha256": "2831550169e301b62cbd06ef3bf44e761ae41766fee8aa48764d416210ed0a8d",
+      "localizedSha256": "2831550169e301b62cbd06ef3bf44e761ae41766fee8aa48764d416210ed0a8d",
+      "kind": "original-recording"
+    },
+    "projects/skill-validator/media/run.json": {
+      "sourceSha256": "53388e8698f465eb476c254a6790f02e005fea1d65af0c1efc68b2a0d796fdc4",
+      "localizedSha256": "53388e8698f465eb476c254a6790f02e005fea1d65af0c1efc68b2a0d796fdc4",
+      "kind": "original-recording"
+    },
+    "projects/skill-validator/media/run.png": {
+      "sourceSha256": "bea38807dcbe20c99042da6b5055ab986e8e5787ff910de49521acfd15da9f8e",
+      "localizedSha256": "bea38807dcbe20c99042da6b5055ab986e8e5787ff910de49521acfd15da9f8e",
+      "kind": "original-recording"
+    },
+    "projects/skill-validator/project.json": {
+      "sourceSha256": "f46d9c701c2de80a9b1a84df1474b90a26bb61af762e6eef37b2cb49042c63f8",
+      "localizedSha256": "f9ca6ec034d04ba08bb9bd867b25df058927e93c3bf716026ba54454c1fc45b4",
+      "kind": "manifest",
+      "contract": {
+        "id": "skill-validator",
+        "title": "<translated-text>",
+        "level": 1,
+        "levelName": "Starter",
+        "tagline": "<translated-text>",
+        "summary": "<translated-text>",
+        "usefulFor": [
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "youWillBuild": "<translated-text>",
+        "hours": 8,
+        "languages": [
+          "Rust"
+        ],
+        "status": "ready",
+        "source": "core",
+        "author": {
+          "name": "AI Engineering from Scratch",
+          "github": "rohitg00"
+        },
+        "skills": [
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>",
+          "<translated-text>"
+        ],
+        "prerequisites": [
+          {
+            "title": "<translated-text>",
+            "path": "phases/00-setup-and-tooling/09-data-management"
+          },
+          {
+            "title": "<translated-text>",
+            "path": "phases/11-llm-engineering/03-structured-outputs"
+          }
+        ],
+        "inspiredBy": [],
+        "demo": {
+          "command": [
+            "python3",
+            "demo.py"
+          ],
+          "cwd": "solution"
+        },
+        "stages": [
+          {
+            "id": "01-parse-an-explicit-frontmatter-subset",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "rust",
+            "difficulty": "starter",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ]
+          },
+          {
+            "id": "02-validate-names-and-descriptions",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "rust",
+            "difficulty": "core",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ]
+          },
+          {
+            "id": "03-contain-resource-paths",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "rust",
+            "difficulty": "core",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ]
+          },
+          {
+            "id": "04-load-context-within-a-character-budget",
+            "title": "<translated-text>",
+            "summary": "<translated-text>",
+            "hours": 2,
+            "language": "rust",
+            "difficulty": "core",
+            "concepts": [
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>",
+              "<translated-text>"
+            ]
+          }
+        ],
+        "demos": [
+          {
+            "gif": "media/run.gif",
+            "poster": "media/run.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          },
+          {
+            "gif": "media/output.gif",
+            "poster": "media/output.png",
+            "title": "<translated-text>",
+            "caption": "<translated-text>"
+          }
+        ]
+      }
+    },
+    "projects/skill-validator/solution/cli.rs": {
+      "sourceSha256": "26b39bf9fffb38baba9728cfc93e80d859e74aa31ef4258b2a0830b2f5b4cab0",
+      "localizedSha256": "3142a97dd4152f7bf032fe332e5dec191989723a0d9dcd3dfc507158f112dc4d",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "pub mod types;",
+          "// 只读加载元数据、正文与指定参考文件；activate 不会在外部智能体中启用技能。\npub mod types;"
+        ]
+      ]
+    },
+    "projects/skill-validator/solution/demo.py": {
+      "sourceSha256": "0b5088c9f9b939c4eeecdb5086300afcdcd6989a8b470921e363f37b6f0bd712",
+      "localizedSha256": "4ca1a52488527d63379b401f6e9e2fc63fbfc77037a8407b727e88b9814116da",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "from pathlib import Path",
+          "# 在私有临时目录编译原生程序，原始扫描或上下文输出保持机器契约。\nfrom pathlib import Path"
+        ]
+      ]
+    },
+    "projects/skill-validator/solution/main.rs": {
+      "sourceSha256": "e7795a880b00bd31b00f165fbe069f79621e7dd404a0a4aaa38746371bb3a8ea",
+      "localizedSha256": "e7795a880b00bd31b00f165fbe069f79621e7dd404a0a4aaa38746371bb3a8ea",
+      "kind": "preserved-contract"
+    },
+    "projects/skill-validator/solution/stage1.rs": {
+      "sourceSha256": "0a9b2e883f7f120ad5df02920f32537002075c5d2ac3e68b90b314a8d8bfdb92",
+      "localizedSha256": "24bcc35b8eaa75de9f83c346d6da54ddad9b960a0c2f2683ea8dfa1b16c44861",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "use super::*;",
+          "// 解析明确限定的元数据头与双引号转义，拒绝不支持的 YAML 语法。\nuse super::*;"
+        ]
+      ]
+    },
+    "projects/skill-validator/solution/stage2.rs": {
+      "sourceSha256": "13c47eff2eb5ed81e0a6a6290a88d7ea38feba6abed33be98644cd541becf0fa",
+      "localizedSha256": "bb0c0b585bcd59cf9fb3579d3e215b47ef8ff13a60aabfa148b894576fe7a43b",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "use super::*;",
+          "// 校验名称、目录一致性和描述长度，保留原始正文及说明。\nuse super::*;"
+        ]
+      ]
+    },
+    "projects/skill-validator/solution/stage3.rs": {
+      "sourceSha256": "e059c31f1aab81c3be3b6de2702858faf653a3d65f3e60f8d558cdf8f3b84e80",
+      "localizedSha256": "93ea58bb159d7276cadd94a1250ccb9d40489fa1f2dca3b70ab9da65956303b9",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "use super::*;",
+          "// 限制相对资源路径并检查规范化后的根目录边界，不消除并发替换竞态。\nuse super::*;"
+        ]
+      ]
+    },
+    "projects/skill-validator/solution/stage4.rs": {
+      "sourceSha256": "397b823728031c14743cfdfa18137cab1762d23d5c99cbd7f87fe49aee6e4f79",
+      "localizedSha256": "4c53598e2eafa3406ed3080be33f4175a25afcd525f7bbc47a90bbf1340761a7",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "use super::*;",
+          "// 按 Unicode 标量值计算字符预算，完整返回上下文或拒绝加载。\nuse super::*;"
+        ]
+      ]
+    },
+    "projects/skill-validator/solution/types.rs": {
+      "sourceSha256": "e18968ec345c7808c3862e3beeb8c0a1417034ece0053aa0236a3d90f571560b",
+      "localizedSha256": "e18968ec345c7808c3862e3beeb8c0a1417034ece0053aa0236a3d90f571560b",
+      "kind": "preserved-contract"
+    },
+    "projects/skill-validator/stages/01-parse-an-explicit-frontmatter-subset/docs/en.md": {
+      "sourceSha256": "696dd364c2b1f0c29e8f71b47e2acbf56c4887fa59cd5e84fcb68bcda7dbc133",
+      "localizedSha256": "e5d96a230d6a34e3a0ef960c2eaf1a71f08b3f01fe199cd761aaae5437c929fc",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-skill-validator-1\n"
+          ],
+          [
+            "rust",
+            "pub fn parse(text: &str) -> Result<std::collections::BTreeMap<String,String>, Error>\n"
+          ],
+          [
+            "text",
+            "description: \"Check \\\"replicas\\\" first\"\nparsed description: Check \"replicas\" first\ndescription: | -> unsupported syntax\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py skill-validator --init learning-artifacts/skill-validator\npython3 scripts/project_test.py skill-validator --stage 1 --path learning-artifacts/skill-validator\n"
+          ]
+        ],
+        "inlineCode": [],
+        "links": [
+          "../../../../../phases/00-setup-and-tooling/09-data-management/docs/en.md",
+          "https://agentskills.io/specification",
+          "https://doc.rust-lang.org/book/ch04-00-understanding-ownership.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/skill-validator/stages/01-parse-an-explicit-frontmatter-subset/starter/cli.rs": {
+      "sourceSha256": "26b39bf9fffb38baba9728cfc93e80d859e74aa31ef4258b2a0830b2f5b4cab0",
+      "localizedSha256": "f0c890a51fdd0e2aefb21aabaefd0d769c67bdaff823fce785a5c892653cdcc3",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "pub mod types;",
+          "// 阶段接口：只读加载元数据、正文与指定参考文件；activate 不会在外部智能体中启用技能。 保留未实现占位与诊断，完成实现后再评分。\npub mod types;"
+        ]
+      ]
+    },
+    "projects/skill-validator/stages/01-parse-an-explicit-frontmatter-subset/starter/main.rs": {
+      "sourceSha256": "e7795a880b00bd31b00f165fbe069f79621e7dd404a0a4aaa38746371bb3a8ea",
+      "localizedSha256": "e7795a880b00bd31b00f165fbe069f79621e7dd404a0a4aaa38746371bb3a8ea",
+      "kind": "preserved-contract"
+    },
+    "projects/skill-validator/stages/01-parse-an-explicit-frontmatter-subset/starter/stage1.rs": {
+      "sourceSha256": "30ee570119699bc34a0923b2c6039d4aca2aeffd9b2e60e43d26f26b1d5c7b08",
+      "localizedSha256": "c5801717ed7112ec3974a573327316e8b3c340fb1d0a4b4fb52ac8b67a932174",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "use super::*;",
+          "// 阶段接口：解析明确限定的元数据头与双引号转义，拒绝不支持的 YAML 语法。 保留未实现占位与诊断，完成实现后再评分。\nuse super::*;"
+        ]
+      ]
+    },
+    "projects/skill-validator/stages/01-parse-an-explicit-frontmatter-subset/starter/types.rs": {
+      "sourceSha256": "e18968ec345c7808c3862e3beeb8c0a1417034ece0053aa0236a3d90f571560b",
+      "localizedSha256": "e18968ec345c7808c3862e3beeb8c0a1417034ece0053aa0236a3d90f571560b",
+      "kind": "preserved-contract"
+    },
+    "projects/skill-validator/stages/01-parse-an-explicit-frontmatter-subset/tests/quoted.rs": {
+      "sourceSha256": "accd1c82731a628969db8e69084cb6049ce05bdd80bb3e71fb0e1a6676c408be",
+      "localizedSha256": "accd1c82731a628969db8e69084cb6049ce05bdd80bb3e71fb0e1a6676c408be",
+      "kind": "preserved-contract"
+    },
+    "projects/skill-validator/stages/01-parse-an-explicit-frontmatter-subset/tests/stage.rs": {
+      "sourceSha256": "0ac444433875e41463873d7a63f634ad4fed495ffcdde53324a59fe509027a69",
+      "localizedSha256": "0ac444433875e41463873d7a63f634ad4fed495ffcdde53324a59fe509027a69",
+      "kind": "preserved-contract"
+    },
+    "projects/skill-validator/stages/02-validate-names-and-descriptions/docs/en.md": {
+      "sourceSha256": "860374883b8a298768b35f4cccef2f2b908fc2d76ce27850b2c4eca5a06d8641",
+      "localizedSha256": "637f3c6b6fb830ba9c355a95bb87ca789d55bf04afab79e3f6c2020003c3de4f",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-skill-validator-2\n"
+          ],
+          [
+            "rust",
+            "pub fn validate(fields: &std::collections::BTreeMap<String,String>, directory: &str) -> Result<Skill, Error>\n"
+          ],
+          [
+            "text",
+            "directory=orchard-release\nname=orchard-release -> valid\nname=orchard--release -> invalid name\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py skill-validator --stage 2 --path learning-artifacts/skill-validator\n"
+          ]
+        ],
+        "inlineCode": [],
+        "links": [
+          "../../../../../phases/00-setup-and-tooling/09-data-management/docs/en.md",
+          "../../01-parse-an-explicit-frontmatter-subset/docs/en.md",
+          "https://agentskills.io/specification",
+          "https://doc.rust-lang.org/book/ch04-00-understanding-ownership.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/skill-validator/stages/02-validate-names-and-descriptions/starter/stage2.rs": {
+      "sourceSha256": "e934c45e2351143d628944e42a71b7d65a8e98031657aeb06f5f8e2a69b4a2cf",
+      "localizedSha256": "7b23c5579b8842bb8c5ac704b65c4789527cf35c8224b0aa5a72700b327c32ff",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "use super::*;",
+          "// 阶段接口：校验名称、目录一致性和描述长度，保留原始正文及说明。 保留未实现占位与诊断，完成实现后再评分。\nuse super::*;"
+        ]
+      ]
+    },
+    "projects/skill-validator/stages/02-validate-names-and-descriptions/tests/stage.rs": {
+      "sourceSha256": "7ab0bedd2493fedaf77392c4bc616bccba49eb0f3b179620ba041edfe321be76",
+      "localizedSha256": "7ab0bedd2493fedaf77392c4bc616bccba49eb0f3b179620ba041edfe321be76",
+      "kind": "preserved-contract"
+    },
+    "projects/skill-validator/stages/03-contain-resource-paths/docs/en.md": {
+      "sourceSha256": "042718b9eb1d0c1c9ac58bb0700d8b98304dbfd90042f0dd3684f8e8552bf56b",
+      "localizedSha256": "1f0196aee0bbdcd3753e481c33045f9cc8c9738401b2bb3f07747083d1f62980",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-skill-validator-3\n"
+          ],
+          [
+            "rust",
+            "pub fn reference_path(root: &std::path::Path, resource: &str) -> Result<std::path::PathBuf, Error>\n"
+          ],
+          [
+            "text",
+            "resource references/restore.md -> contained file\nresource ../private.md -> invalid component\nsymlink outside root -> escapes root\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py skill-validator --stage 3 --path learning-artifacts/skill-validator\n"
+          ]
+        ],
+        "inlineCode": [],
+        "links": [
+          "../../../../../phases/00-setup-and-tooling/09-data-management/docs/en.md",
+          "../../02-validate-names-and-descriptions/docs/en.md",
+          "https://agentskills.io/specification",
+          "https://doc.rust-lang.org/book/ch04-00-understanding-ownership.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/skill-validator/stages/03-contain-resource-paths/starter/stage3.rs": {
+      "sourceSha256": "6e3c5fd09500047f82bbae400375f0dee275ce9e41d90d0f8d5b4b8e50a4f0cd",
+      "localizedSha256": "9d2c2f9b1c04067ebec4100c68d30bde05c050f1454301f158eaad3a19076bdf",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "use super::*;",
+          "// 阶段接口：限制相对资源路径并检查规范化后的根目录边界，不消除并发替换竞态。 保留未实现占位与诊断，完成实现后再评分。\nuse super::*;"
+        ]
+      ]
+    },
+    "projects/skill-validator/stages/03-contain-resource-paths/tests/stage.rs": {
+      "sourceSha256": "cc0c0fa0498b41d3ee54c655e4beefd6805a884626f2a8c9728c46e4146bb43f",
+      "localizedSha256": "cc0c0fa0498b41d3ee54c655e4beefd6805a884626f2a8c9728c46e4146bb43f",
+      "kind": "preserved-contract"
+    },
+    "projects/skill-validator/stages/04-load-context-within-a-character-budget/docs/en.md": {
+      "sourceSha256": "9f192d6fa9df96a0c50bcd721dd3f56cbe7b97f2fe93f2c28692ab5d1deb6ec7",
+      "localizedSha256": "bd821aef6a79d9c7b7acfd8f15d8f486c75e5eec204c159b6bbec4202e6a97e0",
+      "kind": "markdown",
+      "contract": {
+        "fences": [
+          [
+            "figure",
+            "pj-skill-validator-4\n"
+          ],
+          [
+            "rust",
+            "pub fn disclose(skill: &Skill, activate: bool, budget: usize) -> Result<String, Error>\n"
+          ],
+          [
+            "text",
+            "metadata length=80; body=120; separators=2\nactivation needs 202 characters\nbudget 200 -> Limit\n"
+          ],
+          [
+            "bash",
+            "python3 scripts/project_test.py skill-validator --stage 4 --path learning-artifacts/skill-validator\n"
+          ],
+          [
+            "bash",
+            "rustc --edition=2021 learning-artifacts/skill-validator/cli.rs -o learning-artifacts/skill-validator/validator\nlearning-artifacts/skill-validator/validator projects/skill-validator/examples/orchard-release 2000 --activate references/restore.md\n"
+          ]
+        ],
+        "inlineCode": [],
+        "links": [
+          "../../../../../phases/00-setup-and-tooling/09-data-management/docs/en.md",
+          "../../03-contain-resource-paths/docs/en.md",
+          "https://agentskills.io/specification",
+          "https://doc.rust-lang.org/book/ch04-00-understanding-ownership.html"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 0,
+        "listItems": 0
+      }
+    },
+    "projects/skill-validator/stages/04-load-context-within-a-character-budget/starter/stage4.rs": {
+      "sourceSha256": "8760e5f5be48f5f142b827cdebbc09eb06bf8b4cafa3b282c1599a3f8b54cec0",
+      "localizedSha256": "4b2e17b85d0ff3e7d3dcce282f07856cd37745e7139a11e0f942bdf5dab89894",
+      "kind": "code-prose",
+      "replacements": [
+        [
+          "use super::*;",
+          "// 阶段接口：按 Unicode 标量值计算字符预算，完整返回上下文或拒绝加载。 保留未实现占位与诊断，完成实现后再评分。\nuse super::*;"
+        ]
+      ]
+    },
+    "projects/skill-validator/stages/04-load-context-within-a-character-budget/tests/stage.rs": {
+      "sourceSha256": "49612cadafcb2999be4f32d8042fb9fea1fed2d8ca1bc40b488450b4ee297005",
+      "localizedSha256": "49612cadafcb2999be4f32d8042fb9fea1fed2d8ca1bc40b488450b4ee297005",
+      "kind": "preserved-contract"
+    }
+  },
+  "figures": [
+    {
+      "path": "site/figures/projects/skill-installer.js",
+      "sourceSha256": "13022bb78511ae605f7cef1484129ac8e763bb09f747dff3ae2537e7fc1e7cee",
+      "localizedSha256": "90833c4b8dd3f4d2cd3cf9db9819133b80553a8fac9db5ba82f1e1b88ed5dc93",
+      "edits": [
+        {
+          "offset": 1083,
+          "before": "\"Skill name\"",
+          "after": "\"技能名称\"",
+          "afterOffset": 1083
+        },
+        {
+          "offset": 1143,
+          "before": "\"Description\"",
+          "after": "\"描述\"",
+          "afterOffset": 1137
+        },
+        {
+          "offset": 1208,
+          "before": "\"Resource path\"",
+          "after": "\"资源路径\"",
+          "afterOffset": 1193
+        },
+        {
+          "offset": 1275,
+          "before": "\"Target agent\"",
+          "after": "\"目标智能体\"",
+          "afterOffset": 1251
+        },
+        {
+          "offset": 1356,
+          "before": "\"Installed file text\"",
+          "after": "\"已安装文件文本\"",
+          "afterOffset": 1325
+        },
+        {
+          "offset": 1420,
+          "before": "\"Current local file text\"",
+          "after": "\"当前本地文件文本\"",
+          "afterOffset": 1377
+        },
+        {
+          "offset": 1489,
+          "before": "\"Incoming upgrade text\"",
+          "after": "\"待升级文件文本\"",
+          "afterOffset": 1431
+        },
+        {
+          "offset": 1574,
+          "before": "\"Trusted source digest matches\"",
+          "after": "\"可信来源摘要匹配\"",
+          "afterOffset": 1502
+        },
+        {
+          "offset": 2369,
+          "before": "\"Bundle rejected\"",
+          "after": "\"技能包已拒绝\"",
+          "afterOffset": 2276
+        },
+        {
+          "offset": 2434,
+          "before": "\"Integrity mismatch\"",
+          "after": "\"完整性不匹配\"",
+          "afterOffset": 2332
+        },
+        {
+          "offset": 2498,
+          "before": "\"Upgrade blocked: preserve local edit\"",
+          "after": "\"升级已阻止：保留本地修改\"",
+          "afterOffset": 2384
+        },
+        {
+          "offset": 2587,
+          "before": "\"Quoted metadata is compatible with the validator\"",
+          "after": "\"带引号的元数据兼容校验器\"",
+          "afterOffset": 2449
+        },
+        {
+          "offset": 2658,
+          "before": "\"Bundle can be staged at \"",
+          "after": "\"技能包可暂存至 \"",
+          "afterOffset": 2484
+        },
+        {
+          "offset": 2736,
+          "before": "\"Metadata valid\"",
+          "after": "\"元数据有效\"",
+          "afterOffset": 2546
+        },
+        {
+          "offset": 2779,
+          "before": "\"Path contained lexically\"",
+          "after": "\"路径在词法检查中受限\"",
+          "afterOffset": 2580
+        },
+        {
+          "offset": 2831,
+          "before": "\"Local edit conflict\"",
+          "after": "\"本地修改冲突\"",
+          "afterOffset": 2618
+        },
+        {
+          "offset": 2906,
+          "before": "\"Current characters\"",
+          "after": "\"当前字符数\"",
+          "afterOffset": 2680
+        },
+        {
+          "offset": 2966,
+          "before": "\"Upgrade characters\"",
+          "after": "\"升级字符数\"",
+          "afterOffset": 2727
+        },
+        {
+          "offset": 3042,
+          "before": "\"Field\"",
+          "after": "\"字段\"",
+          "afterOffset": 2790
+        },
+        {
+          "offset": 3051,
+          "before": "\"Value\"",
+          "after": "\"值\"",
+          "afterOffset": 2796
+        },
+        {
+          "offset": 3088,
+          "before": "\"Destination\"",
+          "after": "\"目标位置\"",
+          "afterOffset": 2829
+        },
+        {
+          "offset": 3128,
+          "before": "\"YAML name\"",
+          "after": "\"YAML 名称\"",
+          "afterOffset": 2862
+        },
+        {
+          "offset": 3188,
+          "before": "\"YAML description\"",
+          "after": "\"YAML 描述\"",
+          "afterOffset": 2920
+        },
+        {
+          "offset": 3282,
+          "before": "\"Upgrade diff\"",
+          "after": "\"升级差异\"",
+          "afterOffset": 3005
+        },
+        {
+          "offset": 3566,
+          "before": "\"Validate a portable bundle\"",
+          "after": "\"校验可移植技能包\"",
+          "afterOffset": 3281
+        },
+        {
+          "offset": 3644,
+          "before": "\"Input contract\"",
+          "after": "\"输入契约\"",
+          "afterOffset": 3341
+        },
+        {
+          "offset": 3696,
+          "before": "\"A portable bundle carries metadata and relative UTF-8 files. Treat SKILL.md as an entry document and reject any resource name that could escape the selected install root. The original Orchard bundle includes a restore checklist.\"",
+          "after": "\"可移植技能包包含元数据和相对路径下的 UTF-8 文件。将 SKILL.md 作为入口文档，拒绝任何可能越出所选安装根目录的资源名称。Orchard 原创技能包附带恢复检查清单。\"",
+          "afterOffset": 3383
+        },
+        {
+          "offset": 3972,
+          "before": "\"Validate a portable bundle\"",
+          "after": "\"校验可移植技能包\"",
+          "afterOffset": 3520
+        },
+        {
+          "offset": 4176,
+          "before": "\"Observe the result\"",
+          "after": "\"观察结果\"",
+          "afterOffset": 3706
+        },
+        {
+          "offset": 4232,
+          "before": "\"Validate every file path before creating directories. Reserve .installed.json for the installer receipt.\"",
+          "after": "\"创建目录前校验每个文件路径。将 .installed.json 保留给安装器凭据使用。\"",
+          "afterOffset": 3748
+        },
+        {
+          "offset": 4391,
+          "before": "\"Why must a Windows backslash be rejected even when the current machine uses slash paths?\"",
+          "after": "\"即使当前机器使用斜杠路径，为什么仍须拒绝 Windows 反斜杠？ 图表范围：哈希匹配来自勾选项，未计算摘要或写入文件；路径模型未拒绝保留的 .installed.json 和 NUL。实际完整性、文件限制与升级恢复行为以 TypeScript 实现为准。\"",
+          "afterOffset": 3846
+        },
+        {
+          "offset": 4640,
+          "before": "\"Translate metadata and hash content\"",
+          "after": "\"转换元数据并计算内容哈希\"",
+          "afterOffset": 4135
+        },
+        {
+          "offset": 4727,
+          "before": "\"Input contract\"",
+          "after": "\"输入契约\"",
+          "afterOffset": 4199
+        },
+        {
+          "offset": 4779,
+          "before": "\"Serialize name and description as JSON-compatible double-quoted YAML scalars. The Rust validator accepts that same subset, including escapes. Source and translated digests differ because translation rewrites metadata.\"",
+          "after": "\"将 name 和 description 序列化为与 JSON 兼容的双引号 YAML 标量。Rust 校验器接受相同子集，包括转义字符。由于转换会重写元数据，来源摘要与转换后摘要不同。\"",
+          "afterOffset": 4241
+        },
+        {
+          "offset": 5044,
+          "before": "\"Translate metadata and hash content\"",
+          "after": "\"转换元数据并计算内容哈希\"",
+          "afterOffset": 4382
+        },
+        {
+          "offset": 5308,
+          "before": "\"Observe the result\"",
+          "after": "\"观察结果\"",
+          "afterOffset": 4623
+        },
+        {
+          "offset": 5364,
+          "before": "\"Sort file entries before hashing. A digest verifies content against a trusted expectation; computing it from untrusted bytes does not establish publisher identity.\"",
+          "after": "\"计算哈希前先排序文件条目。摘要只能将内容与可信预期进行比较；从不可信字节直接计算摘要，不能证明发布者身份。\"",
+          "afterOffset": 4665
+        },
+        {
+          "offset": 5582,
+          "before": "\"How should a description containing a quote survive installer-to-validator round trip?\"",
+          "after": "\"描述中含有引号时，安装器与校验器之间的往返应如何保留它？ 图表范围：哈希匹配来自勾选项，未计算摘要或写入文件；路径模型未拒绝保留的 .installed.json 和 NUL。实际完整性、文件限制与升级恢复行为以 TypeScript 实现为准。\"",
+          "afterOffset": 4773
+        },
+        {
+          "offset": 5829,
+          "before": "\"Install atomically within a root\"",
+          "after": "\"在指定根目录内原子安装\"",
+          "afterOffset": 5057
+        },
+        {
+          "offset": 5913,
+          "before": "\"Input contract\"",
+          "after": "\"输入契约\"",
+          "afterOffset": 5120
+        },
+        {
+          "offset": 5965,
+          "before": "\"Install into a caller-owned disposable root. The installer writes every file to a private sibling directory and renames it into the agent discovery path only after the bundle is complete.\"",
+          "after": "\"安装到调用方拥有、可丢弃的根目录。安装器先将每个文件写入私有的同级目录，技能包完整后才重命名至智能体的发现路径。\"",
+          "afterOffset": 5162
+        },
+        {
+          "offset": 6200,
+          "before": "\"Install atomically within a root\"",
+          "after": "\"在指定根目录内原子安装\"",
+          "afterOffset": 5266
+        },
+        {
+          "offset": 6408,
+          "before": "\"Observe the result\"",
+          "after": "\"观察结果\"",
+          "afterOffset": 5453
+        },
+        {
+          "offset": 6464,
+          "before": "\"Check parent directories for symlinks before staging. Keep the agent directory mapping separate from portable skill content.\"",
+          "after": "\"暂存前检查父目录是否为符号链接。将智能体目录映射与可移植技能内容分开。\"",
+          "afterOffset": 5495
+        },
+        {
+          "offset": 6643,
+          "before": "\"What should a reader observe if a write fails before the rename?\"",
+          "after": "\"重命名之前发生写入失败时，读取方应观察到什么？ 图表范围：哈希匹配来自勾选项，未计算摘要或写入文件；路径模型未拒绝保留的 .installed.json 和 NUL。实际完整性、文件限制与升级恢复行为以 TypeScript 实现为准。\"",
+          "afterOffset": 5585
+        },
+        {
+          "offset": 6868,
+          "before": "\"Protect edits during upgrades\"",
+          "after": "\"升级时保护本地修改\"",
+          "afterOffset": 5864
+        },
+        {
+          "offset": 6949,
+          "before": "\"Input contract\"",
+          "after": "\"输入契约\"",
+          "afterOffset": 5925
+        },
+        {
+          "offset": 7001,
+          "before": "\"An upgrade must preserve local edits. Compare the current files with the previous installed digest and reject modified or unmanaged files. The demo edits the checklist, retries installation, and retains the edit.\"",
+          "after": "\"升级必须保留本地修改。将当前文件与此前安装摘要比较，拒绝已修改或不受管理的文件。演示会编辑检查清单，再尝试安装，并保留该修改。\"",
+          "afterOffset": 5967
+        },
+        {
+          "offset": 7261,
+          "before": "\"Protect edits during upgrades\"",
+          "after": "\"升级时保护本地修改\"",
+          "afterOffset": 6078
+        },
+        {
+          "offset": 7486,
+          "before": "\"Observe the result\"",
+          "after": "\"观察结果\"",
+          "afterOffset": 6283
+        },
+        {
+          "offset": 7542,
+          "before": "\"Read the existing receipt and verify its file list before moving the destination. Restore a moved backup if the final rename fails.\"",
+          "after": "\"移动目标目录前，读取现有凭据并校验文件清单。如果最终重命名失败，恢复此前移走的备份。\"",
+          "afterOffset": 6325
+        },
+        {
+          "offset": 7728,
+          "before": "\"What would a reviewable merge need to show before replacing a locally edited checklist?\"",
+          "after": "\"在替换经过本地编辑的检查清单前，可审阅的合并需要展示哪些信息？ 图表范围：哈希匹配来自勾选项，未计算摘要或写入文件；路径模型未拒绝保留的 .installed.json 和 NUL。实际完整性、文件限制与升级恢复行为以 TypeScript 实现为准。\"",
+          "afterOffset": 6422
+        }
+      ]
+    },
+    {
+      "path": "site/figures/projects/skill-router.js",
+      "sourceSha256": "2eeef182433e72aca0949df6c3900f8bf6d7b096448757141b85e48f343d7b5d",
+      "localizedSha256": "918d1cd107e31e229efe69b196f1742164f2aad9b678332e52bec147ef1c5567",
+      "edits": [
+        {
+          "offset": 1084,
+          "before": "\"Request\"",
+          "after": "\"请求\"",
+          "afterOffset": 1084
+        },
+        {
+          "offset": 1156,
+          "before": "\"Skill keywords comma-separated\"",
+          "after": "\"技能关键词（逗号分隔）\"",
+          "afterOffset": 1151
+        },
+        {
+          "offset": 1272,
+          "before": "\"Changed paths comma-separated\"",
+          "after": "\"变更路径（逗号分隔）\"",
+          "afterOffset": 1248
+        },
+        {
+          "offset": 1392,
+          "before": "\"Second skill score\"",
+          "after": "\"第二个技能的分数\"",
+          "afterOffset": 1349
+        },
+        {
+          "offset": 1448,
+          "before": "\"Required score margin\"",
+          "after": "\"必需分数差\"",
+          "afterOffset": 1395
+        },
+        {
+          "offset": 1509,
+          "before": "\"Dependency read permission available\"",
+          "after": "\"依赖项具有读取权限\"",
+          "afterOffset": 1440
+        },
+        {
+          "offset": 2517,
+          "before": "\"Keyword points\"",
+          "after": "\"关键词分\"",
+          "afterOffset": 2421
+        },
+        {
+          "offset": 2574,
+          "before": "\"Path points\"",
+          "after": "\"路径分\"",
+          "afterOffset": 2468
+        },
+        {
+          "offset": 2625,
+          "before": "\"Duplicates contribute\"",
+          "after": "\"重复项贡献\"",
+          "afterOffset": 2511
+        },
+        {
+          "offset": 2673,
+          "before": "\"Margin\"",
+          "after": "\"分数差\"",
+          "afterOffset": 2543
+        },
+        {
+          "offset": 2746,
+          "before": "\"Release review\"",
+          "after": "\"发布审阅\"",
+          "afterOffset": 2613
+        },
+        {
+          "offset": 2776,
+          "before": "\"Other skill\"",
+          "after": "\"其他技能\"",
+          "afterOffset": 2633
+        },
+        {
+          "offset": 2825,
+          "before": "\"Evidence\"",
+          "after": "\"证据\"",
+          "afterOffset": 2675
+        },
+        {
+          "offset": 2837,
+          "before": "\"Contribution\"",
+          "after": "\"分数贡献\"",
+          "afterOffset": 2681
+        },
+        {
+          "offset": 3102,
+          "before": "\"Parse a typed skill catalog\"",
+          "after": "\"解析带类型的技能目录\"",
+          "afterOffset": 2938
+        },
+        {
+          "offset": 3181,
+          "before": "\"Input contract\"",
+          "after": "\"输入契约\"",
+          "afterOffset": 3000
+        },
+        {
+          "offset": 3233,
+          "before": "\"Discover a skill from its SKILL.md name and description, then read routing.json as a local routing extension. The directory name must match the skill name. Routing metadata is not part of the portable skill format.\"",
+          "after": "\"从 SKILL.md 中的名称与描述发现技能，再将 routing.json 作为本地路由扩展读取。目录名必须与技能名一致。路由元数据不属于可移植技能格式。\"",
+          "afterOffset": 3042
+        },
+        {
+          "offset": 3495,
+          "before": "\"Parse a typed skill catalog\"",
+          "after": "\"解析带类型的技能目录\"",
+          "afterOffset": 3168
+        },
+        {
+          "offset": 3723,
+          "before": "\"Observe the result\"",
+          "after": "\"观察结果\"",
+          "afterOffset": 3379
+        },
+        {
+          "offset": 3779,
+          "before": "\"Validate the merged record with parseSkill. Refuse symlinked or oversized discovery files before parsing them.\"",
+          "after": "\"使用 parseSkill 校验合并后的记录。解析发现文件前，拒绝符号链接和超大文件。\"",
+          "afterOffset": 3421
+        },
+        {
+          "offset": 3944,
+          "before": "\"What should happen when directory release-review declares name publish?\"",
+          "after": "\"目录 release-review 声明名称为 publish 时，应如何处理？ 图表范围：只演示固定 deploy/ 路径和两个候选分数，不执行完整 glob、依赖图或权限遍历；图中使用 Unicode 单词，实际路由分词只识别 ASCII 字母与数字。\"",
+          "afterOffset": 3519
+        },
+        {
+          "offset": 4173,
+          "before": "\"Score words and repository paths\"",
+          "after": "\"为关键词与仓库路径评分\"",
+          "afterOffset": 3805
+        },
+        {
+          "offset": 4257,
+          "before": "\"Input contract\"",
+          "after": "\"输入契约\"",
+          "afterOffset": 3868
+        },
+        {
+          "offset": 4309,
+          "before": "\"Repeated evidence must not inflate a match. The Orchard request repeats the same changed path, but it should earn its path contribution only once. Keywords contribute two points and distinct matched paths contribute three.\"",
+          "after": "\"重复证据不能抬高匹配分数。Orchard 请求重复列出同一条变更路径，但路径分只能计一次。关键词每项计两分，不同的匹配路径每条计三分。\"",
+          "afterOffset": 3910
+        },
+        {
+          "offset": 4579,
+          "before": "\"Score words and repository paths\"",
+          "after": "\"为关键词与仓库路径评分\"",
+          "afterOffset": 4025
+        },
+        {
+          "offset": 4805,
+          "before": "\"Observe the result\"",
+          "after": "\"观察结果\"",
+          "afterOffset": 4230
+        },
+        {
+          "offset": 4861,
+          "before": "\"Canonicalize separators and deduplicate before scoring. Keep reasons aligned with the exact evidence counted.\"",
+          "after": "\"评分前先规范化路径分隔符并去重。每条计分原因都必须对应实际计入的证据。\"",
+          "afterOffset": 4272
+        },
+        {
+          "offset": 5025,
+          "before": "\"Should two different path rules matching one file count as two independent observations?\"",
+          "after": "\"两条不同的路径规则命中同一个文件，应算作两次独立观察吗？ 图表范围：只演示固定 deploy/ 路径和两个候选分数，不执行完整 glob、依赖图或权限遍历；图中使用 Unicode 单词，实际路由分词只识别 ASCII 字母与数字。\"",
+          "afterOffset": 4362
+        },
+        {
+          "offset": 5271,
+          "before": "\"Resolve dependencies before execution\"",
+          "after": "\"执行前解析依赖关系\"",
+          "afterOffset": 4636
+        },
+        {
+          "offset": 5360,
+          "before": "\"Input contract\"",
+          "after": "\"输入契约\"",
+          "afterOffset": 4697
+        },
+        {
+          "offset": 5412,
+          "before": "\"Selecting release-review first requires check-tests. A depth-first traversal emits dependencies before the selected skill and validates permissions throughout the graph. A denied dependency blocks the whole plan.\"",
+          "after": "\"选中 release-review 后，需要先处理 check-tests。深度优先遍历将依赖项放在选中技能之前，并检查整个依赖图中的权限。任一依赖项被拒绝，都会阻断整个计划。\"",
+          "afterOffset": 4739
+        },
+        {
+          "offset": 5672,
+          "before": "\"Resolve dependencies before execution\"",
+          "after": "\"执行前解析依赖关系\"",
+          "afterOffset": 4875
+        },
+        {
+          "offset": 5881,
+          "before": "\"Observe the result\"",
+          "after": "\"观察结果\"",
+          "afterOffset": 5056
+        },
+        {
+          "offset": 5937,
+          "before": "\"Track active and visited sets separately: active finds cycles, visited prevents repeated execution. Do not append a parent before its dependencies.\"",
+          "after": "\"分别维护 active 和 visited 集合：前者检测环，后者避免重复执行。在依赖项之前，不能先把父技能加入输出。\"",
+          "afterOffset": 5098
+        },
+        {
+          "offset": 6139,
+          "before": "\"What would happen if check-tests secretly required a network permission?\"",
+          "after": "\"如果 check-tests 还需要网络权限，会发生什么？ 图表范围：只演示固定 deploy/ 路径和两个候选分数，不执行完整 glob、依赖图或权限遍历；图中使用 Unicode 单词，实际路由分词只识别 ASCII 字母与数字。\"",
+          "afterOffset": 5212
+        },
+        {
+          "offset": 6369,
+          "before": "\"Abstain on ambiguous or blocked requests\"",
+          "after": "\"遇到歧义或阻断时放弃路由\"",
+          "afterOffset": 5487
+        },
+        {
+          "offset": 6461,
+          "before": "\"Input contract\"",
+          "after": "\"输入契约\"",
+          "afterOffset": 5551
+        },
+        {
+          "offset": 6513,
+          "before": "\"Abstain when two skills score too closely or the chosen plan needs unavailable permissions. An explanation of why routing stopped is more useful than an arbitrary winning skill.\"",
+          "after": "\"两个技能分数过于接近，或选中计划需要尚未授予的权限时，应放弃路由。解释为何停止，比随意指定一个获胜技能更有用。\"",
+          "afterOffset": 5593
+        },
+        {
+          "offset": 6738,
+          "before": "\"Abstain on ambiguous or blocked requests\"",
+          "after": "\"遇到歧义或阻断时放弃路由\"",
+          "afterOffset": 5696
+        },
+        {
+          "offset": 6983,
+          "before": "\"Observe the result\"",
+          "after": "\"观察结果\"",
+          "afterOffset": 5913
+        },
+        {
+          "offset": 7039,
+          "before": "\"Apply the score margin before dependency planning. Treat ranking as evidence for selection, not authority to execute a tool.\"",
+          "after": "\"依赖规划之前先应用分数差门槛。排名提供选择依据，并不授予工具执行权限。\"",
+          "afterOffset": 5955
+        },
+        {
+          "offset": 7218,
+          "before": "\"How would you tune one ambiguous keyword without overfitting to the example request?\"",
+          "after": "\"如何调整一个有歧义的关键词，同时避免对示例请求过拟合？ 图表范围：只演示固定 deploy/ 路径和两个候选分数，不执行完整 glob、依赖图或权限遍历；图中使用 Unicode 单词，实际路由分词只识别 ASCII 字母与数字。\"",
+          "afterOffset": 6045
+        }
+      ]
+    },
+    {
+      "path": "site/figures/projects/skill-scanner.js",
+      "sourceSha256": "43078a4274a42e8fbfa3ffa7628ef6550c9e9e0596eff9ce30678485e8998d96",
+      "localizedSha256": "a64fb795f2d183815f778f83482cf6de63c9740c7621ab7ad2986336bff93011",
+      "edits": [
+        {
+          "offset": 1102,
+          "before": "\"Skill source (use | for newline)\"",
+          "after": "\"技能源文本（用 | 表示换行）\"",
+          "afterOffset": 1102
+        },
+        {
+          "offset": 1274,
+          "before": "\"Review threshold\"",
+          "after": "\"审阅阈值\"",
+          "afterOffset": 1257
+        },
+        {
+          "offset": 1330,
+          "before": "\"Replay first detection\"",
+          "after": "\"重复第一条检测结果\"",
+          "afterOffset": 1301
+        },
+        {
+          "offset": 2736,
+          "before": "\"; advisory findings are not a safety verdict.\"",
+          "after": "\"；风险提示不构成安全结论。\"",
+          "afterOffset": 2694
+        },
+        {
+          "offset": 2821,
+          "before": "\"UTF-8 bytes\"",
+          "after": "\"UTF-8 字节数\"",
+          "afterOffset": 2747
+        },
+        {
+          "offset": 2895,
+          "before": "\"Detections\"",
+          "after": "\"检测结果数\"",
+          "afterOffset": 2819
+        },
+        {
+          "offset": 2944,
+          "before": "\"Distinct findings\"",
+          "after": "\"去重问题数\"",
+          "afterOffset": 2863
+        },
+        {
+          "offset": 3000,
+          "before": "\"Risk points\"",
+          "after": "\"风险分\"",
+          "afterOffset": 2907
+        },
+        {
+          "offset": 3091,
+          "before": "\" line \"",
+          "after": "\" 第 \"",
+          "afterOffset": 2990
+        },
+        {
+          "offset": 3155,
+          "before": "\"Rule\"",
+          "after": "\"规则\"",
+          "afterOffset": 3051
+        },
+        {
+          "offset": 3163,
+          "before": "\"Line\"",
+          "after": "\"行号\"",
+          "afterOffset": 3057
+        },
+        {
+          "offset": 3171,
+          "before": "\"Byte span\"",
+          "after": "\"字节区间\"",
+          "afterOffset": 3063
+        },
+        {
+          "offset": 3184,
+          "before": "\"Exact quote\"",
+          "after": "\"逐字引文\"",
+          "afterOffset": 3071
+        },
+        {
+          "offset": 3476,
+          "before": "\"Retain byte-accurate source spans\"",
+          "after": "\"保留精确到字节的来源区间\"",
+          "afterOffset": 3356
+        },
+        {
+          "offset": 3561,
+          "before": "\"Read bytes\"",
+          "after": "\"读取字节\"",
+          "afterOffset": 3420
+        },
+        {
+          "offset": 3609,
+          "before": "\"Source evidence uses byte offsets. A line containing café occupies more UTF-8 bytes than visible letters, so character indices cannot safely slice a Rust string. Preserve start and end offsets while splitting lines.\"",
+          "after": "\"来源证据使用字节偏移量。包含 café 的一行所占 UTF-8 字节数多于可见字母数，因此不能用字符索引安全切片 Rust 字符串。分行时保留起点和终点偏移量。\"",
+          "afterOffset": 3462
+        },
+        {
+          "offset": 3872,
+          "before": "\"Split terminators\"",
+          "after": "\"分离行结束符\"",
+          "afterOffset": 3590
+        },
+        {
+          "offset": 4043,
+          "before": "\"Track offsets\"",
+          "after": "\"跟踪偏移量\"",
+          "afterOffset": 3750
+        },
+        {
+          "offset": 4094,
+          "before": "\"Advance the cursor by the original line bytes, including the newline. Strip CRLF only from the displayed quote.\"",
+          "after": "\"按原始行的字节数推进游标，包含换行符。只在展示引文时移除 CRLF 行结束符。\"",
+          "afterOffset": 3793
+        },
+        {
+          "offset": 4260,
+          "before": "\"How would a wrong offset turn an otherwise correct finding into invalid evidence?\"",
+          "after": "\"错误偏移量会如何使原本正确的问题记录变成无效证据？ 图表范围：竖线被替换为换行，仅扫描一个文本框，不检查目录、文件数量与真实路径；直接输入 CRLF 时，图中引文会保留 CR，真实 Rust 区间不包含行结束符。\"",
+          "afterOffset": 3887
+        },
+        {
+          "offset": 4500,
+          "before": "\"Detect named advisory patterns\"",
+          "after": "\"检测具名的风险提示模式\"",
+          "afterOffset": 4152
+        },
+        {
+          "offset": 4582,
+          "before": "\"Normalize view\"",
+          "after": "\"规范化匹配视图\"",
+          "afterOffset": 4215
+        },
+        {
+          "offset": 4634,
+          "before": "\"Flag explicit capabilities for review. The Orchard review bundle contains an instruction override and a command that reads .env into a network client. Each pattern yields a named advisory finding.\"",
+          "after": "\"将显式能力标记出来供人审阅。Orchard 待审技能包包含一条覆盖指令，以及一条把 .env 读入网络客户端的命令。每个模式都会产生具有名称的风险提示。\"",
+          "afterOffset": 4260
+        },
+        {
+          "offset": 4878,
+          "before": "\"Match named rule\"",
+          "after": "\"匹配具名规则\"",
+          "afterOffset": 4384
+        },
+        {
+          "offset": 5109,
+          "before": "\"Retain evidence\"",
+          "after": "\"保留证据\"",
+          "afterOffset": 4605
+        },
+        {
+          "offset": 5162,
+          "before": "\"Keep matching rules small and named. Documentation may legitimately mention these strings; obfuscated commands may evade them.\"",
+          "after": "\"让匹配规则保持简短并具有明确名称。文档可能出于正当用途提到这些字符串；混淆后的命令可能绕过检测。\"",
+          "afterOffset": 4647
+        },
+        {
+          "offset": 5343,
+          "before": "\"Write one benign documentation example and one evasion that expose the heuristic limits.\"",
+          "after": "\"写出一个无害的文档示例和一个漏检示例，展示启发式规则的局限。 图表范围：竖线被替换为换行，仅扫描一个文本框，不检查目录、文件数量与真实路径；直接输入 CRLF 时，图中引文会保留 CR，真实 Rust 区间不包含行结束符。\"",
+          "afterOffset": 4750
+        },
+        {
+          "offset": 5590,
+          "before": "\"Score distinct evidence without inflation\"",
+          "after": "\"对不同证据计分，避免重复抬分\"",
+          "afterOffset": 5020
+        },
+        {
+          "offset": 5683,
+          "before": "\"Validate finding\"",
+          "after": "\"校验问题记录\"",
+          "afterOffset": 5086
+        },
+        {
+          "offset": 5737,
+          "before": "\"A finding earns its severity once per rule and source line. Duplicating the same detection must not increase risk, while two distinct capabilities on one line remain separate evidence.\"",
+          "after": "\"同一规则在同一来源行中只获得一次对应严重程度分数。重复检测不能增加风险分，但一行中的两种不同能力仍属于不同证据。\"",
+          "afterOffset": 5130
+        },
+        {
+          "offset": 5969,
+          "before": "\"Rule-line identity\"",
+          "after": "\"规则与行号标识\"",
+          "afterOffset": 5234
+        },
+        {
+          "offset": 6171,
+          "before": "\"Deduplicate\"",
+          "after": "\"去重\"",
+          "afterOffset": 5425
+        },
+        {
+          "offset": 6220,
+          "before": "\"Deduplicate by rule and line after validating ranges and severity. Use checked addition for the total.\"",
+          "after": "\"校验区间与严重程度后，再按规则和行号去重。累加总分时检查溢出。\"",
+          "afterOffset": 5465
+        },
+        {
+          "offset": 6377,
+          "before": "\"Why would deduplicating only by line hide a second capability?\"",
+          "after": "\"为什么只按行去重会掩盖第二种能力？ 图表范围：竖线被替换为换行，仅扫描一个文本框，不检查目录、文件数量与真实路径；直接输入 CRLF 时，图中引文会保留 CR，真实 Rust 区间不包含行结束符。\"",
+          "afterOffset": 5551
+        },
+        {
+          "offset": 6598,
+          "before": "\"Build an explicit review gate\"",
+          "after": "\"建立明确的审阅门禁\"",
+          "afterOffset": 5808
+        },
+        {
+          "offset": 6679,
+          "before": "\"Check bounds\"",
+          "after": "\"检查边界\"",
+          "afterOffset": 5869
+        },
+        {
+          "offset": 6729,
+          "before": "\"Traverse the caller bundle and emit file paths, line numbers, byte offsets and quoted source in versioned JSON. The threshold requests a review; falling below it is not a declaration that a skill is safe.\"",
+          "after": "\"遍历调用方提供的技能包，以带版本号的 JSON 输出文件路径、行号、字节偏移量和来源引文。阈值用于请求审阅；低于阈值不构成技能安全声明。\"",
+          "afterOffset": 5911
+        },
+        {
+          "offset": 6981,
+          "before": "\"Validate slices\"",
+          "after": "\"校验切片\"",
+          "afterOffset": 6027
+        },
+        {
+          "offset": 7195,
+          "before": "\"Compare threshold\"",
+          "after": "\"比较阈值\"",
+          "afterOffset": 6230
+        },
+        {
+          "offset": 7250,
+          "before": "\"Reject symlinks and bound file count and bytes before scanning. Keep review state separate from installer integrity checks.\"",
+          "after": "\"扫描前拒绝符号链接，并限制文件数量和字节数。将审阅状态与安装器完整性校验分开。\"",
+          "afterOffset": 6272
+        },
+        {
+          "offset": 7428,
+          "before": "\"Which newly introduced finding would you discuss before approving an upgrade?\"",
+          "after": "\"批准升级之前，你会讨论哪一种新出现的问题？ 图表范围：竖线被替换为换行，仅扫描一个文本框，不检查目录、文件数量与真实路径；直接输入 CRLF 时，图中引文会保留 CR，真实 Rust 区间不包含行结束符。\"",
+          "afterOffset": 6366
+        }
+      ]
+    },
+    {
+      "path": "site/figures/projects/skill-validator.js",
+      "sourceSha256": "fcdc7b79d5e0f374370297cf9e709fbfeb680da5be969abc2b7650ba8a9ea473",
+      "localizedSha256": "3a67ce199a3bb55c00f97b9d99e098aeda13c32c24d83fe82befe28f643be7c2",
+      "edits": [
+        {
+          "offset": 1083,
+          "before": "\"Metadata name\"",
+          "after": "\"元数据名称\"",
+          "afterOffset": 1083
+        },
+        {
+          "offset": 1144,
+          "before": "\"Directory name\"",
+          "after": "\"目录名称\"",
+          "afterOffset": 1136
+        },
+        {
+          "offset": 1208,
+          "before": "\"Description\"",
+          "after": "\"描述\"",
+          "afterOffset": 1190
+        },
+        {
+          "offset": 1272,
+          "before": "\"Instructions\"",
+          "after": "\"指令正文\"",
+          "afterOffset": 1245
+        },
+        {
+          "offset": 1354,
+          "before": "\"Resource path\"",
+          "after": "\"资源路径\"",
+          "afterOffset": 1319
+        },
+        {
+          "offset": 1421,
+          "before": "\"Activate instructions\"",
+          "after": "\"加载指令正文\"",
+          "afterOffset": 1377
+        },
+        {
+          "offset": 1476,
+          "before": "\"Character budget\"",
+          "after": "\"字符预算\"",
+          "afterOffset": 1417
+        },
+        {
+          "offset": 2097,
+          "before": "\"Invalid name\"",
+          "after": "\"名称无效\"",
+          "afterOffset": 2026
+        },
+        {
+          "offset": 2148,
+          "before": "\"Directory identity conflict\"",
+          "after": "\"目录标识冲突\"",
+          "afterOffset": 2069
+        },
+        {
+          "offset": 2214,
+          "before": "\"Resource path rejected\"",
+          "after": "\"资源路径已拒绝\"",
+          "afterOffset": 2114
+        },
+        {
+          "offset": 2290,
+          "before": "\"Limit: complete context does not fit\"",
+          "after": "\"超出限制：无法容纳完整上下文\"",
+          "afterOffset": 2175
+        },
+        {
+          "offset": 2347,
+          "before": "\"Complete context accepted by the modeled checks\"",
+          "after": "\"完整上下文通过模拟检查\"",
+          "afterOffset": 2210
+        },
+        {
+          "offset": 2434,
+          "before": "\"Name valid\"",
+          "after": "\"名称有效\"",
+          "afterOffset": 2261
+        },
+        {
+          "offset": 2475,
+          "before": "\"Directory matches\"",
+          "after": "\"目录匹配\"",
+          "afterOffset": 2296
+        },
+        {
+          "offset": 2524,
+          "before": "\"Characters\"",
+          "after": "\"字符数\"",
+          "afterOffset": 2332
+        },
+        {
+          "offset": 2563,
+          "before": "\"Tokens\"",
+          "after": "\"词元数\"",
+          "afterOffset": 2364
+        },
+        {
+          "offset": 2573,
+          "before": "\"not measured\"",
+          "after": "\"未测量\"",
+          "afterOffset": 2371
+        },
+        {
+          "offset": 2631,
+          "before": "\"Context characters\"",
+          "after": "\"上下文字符数\"",
+          "afterOffset": 2420
+        },
+        {
+          "offset": 2685,
+          "before": "\"Allowed characters\"",
+          "after": "\"允许字符数\"",
+          "afterOffset": 2462
+        },
+        {
+          "offset": 2747,
+          "before": "\"Boundary\"",
+          "after": "\"边界\"",
+          "afterOffset": 2511
+        },
+        {
+          "offset": 2759,
+          "before": "\"Value\"",
+          "after": "\"值\"",
+          "afterOffset": 2517
+        },
+        {
+          "offset": 2796,
+          "before": "\"Quoted metadata\"",
+          "after": "\"带引号的元数据\"",
+          "afterOffset": 2550
+        },
+        {
+          "offset": 2862,
+          "before": "\"Discovery\"",
+          "after": "\"发现结果\"",
+          "afterOffset": 2608
+        },
+        {
+          "offset": 2898,
+          "before": "\"Context\"",
+          "after": "\"上下文\"",
+          "afterOffset": 2639
+        },
+        {
+          "offset": 2943,
+          "before": "\"Resource\"",
+          "after": "\"资源\"",
+          "afterOffset": 2680
+        },
+        {
+          "offset": 2988,
+          "before": "\"lexically relative; filesystem must be checked\"",
+          "after": "\"词法上为相对路径，仍须检查文件系统\"",
+          "afterOffset": 2719
+        },
+        {
+          "offset": 3219,
+          "before": "\"Parse an explicit frontmatter subset\"",
+          "after": "\"解析明确限定的元数据头子集\"",
+          "afterOffset": 2921
+        },
+        {
+          "offset": 3307,
+          "before": "\"Header boundary\"",
+          "after": "\"元数据头边界\"",
+          "afterOffset": 2986
+        },
+        {
+          "offset": 3360,
+          "before": "\"The installer emits quoted metadata. Accept plain single-line scalars and JSON-compatible double-quoted scalars, including escaped quotes and Unicode. Reject tags, aliases and multiline YAML rather than silently reinterpreting them.\"",
+          "after": "\"安装器输出带引号的元数据。接受普通单行标量，以及与 JSON 兼容的双引号标量，包括转义引号和 Unicode。拒绝标签、别名和多行 YAML，避免静默改变其解释。\"",
+          "afterOffset": 3030
+        },
+        {
+          "offset": 3640,
+          "before": "\"Key split\"",
+          "after": "\"分离键值\"",
+          "afterOffset": 3160
+        },
+        {
+          "offset": 3858,
+          "before": "\"Duplicate gate\"",
+          "after": "\"重复键门禁\"",
+          "afterOffset": 3373
+        },
+        {
+          "offset": 3910,
+          "before": "\"Split a header line at its first colon. Decode quoted values before metadata validation; duplicate keys are conflicts.\"",
+          "after": "\"在元数据头一行的第一个冒号处分割。元数据校验前先解码带引号的值；重复键视为冲突。\"",
+          "afterOffset": 3416
+        },
+        {
+          "offset": 4083,
+          "before": "\"Why does a standards-compatible subset need an explicit unsupported-syntax error?\"",
+          "after": "\"为什么一个兼容标准的子集解析器需要明确的不支持语法错误？ 图表范围：不解析真实元数据头，不检查描述非空及 1024 字符上限，也不访问资源文件；资源正文不计入图中预算。完整加载与路径校验由 Rust 实现执行。\"",
+          "afterOffset": 3511
+        },
+        {
+          "offset": 4325,
+          "before": "\"Validate names and descriptions\"",
+          "after": "\"校验名称和描述\"",
+          "afterOffset": 3777
+        },
+        {
+          "offset": 4408,
+          "before": "\"Read fields\"",
+          "after": "\"读取字段\"",
+          "afterOffset": 3836
+        },
+        {
+          "offset": 4457,
+          "before": "\"Metadata identifies a package. Orchard-release with an uppercase letter fails the portable lowercase grammar; orchard-release in a differently named directory fails identity validation.\"",
+          "after": "\"元数据标识技能包。Orchard-release 含有大写字母，不符合可移植的小写名称语法；名为 orchard-release 的技能若放在其他名称的目录中，则无法通过身份一致性校验。\"",
+          "afterOffset": 3878
+        },
+        {
+          "offset": 4690,
+          "before": "\"Name grammar\"",
+          "after": "\"名称语法\"",
+          "afterOffset": 4019
+        },
+        {
+          "offset": 4883,
+          "before": "\"Folder identity\"",
+          "after": "\"目录标识\"",
+          "afterOffset": 4204
+        },
+        {
+          "offset": 4936,
+          "before": "\"Count name bytes and description Unicode scalar values according to the contract. Preserve the human description after parsing.\"",
+          "after": "\"按契约统计名称字节数和描述的 Unicode 标量值数量。解析后保留人类可读描述。\"",
+          "afterOffset": 4246
+        },
+        {
+          "offset": 5118,
+          "before": "\"Why should changing a directory name require changing metadata too?\"",
+          "after": "\"为什么更改目录名时也需要更改元数据？ 图表范围：不解析真实元数据头，不检查描述非空及 1024 字符上限，也不访问资源文件；资源正文不计入图中预算。完整加载与路径校验由 Rust 实现执行。\"",
+          "afterOffset": 4342
+        },
+        {
+          "offset": 5346,
+          "before": "\"Contain resource paths\"",
+          "after": "\"将资源路径限制在根目录内\"",
+          "afterOffset": 4598
+        },
+        {
+          "offset": 5420,
+          "before": "\"Relative input\"",
+          "after": "\"相对路径输入\"",
+          "afterOffset": 4662
+        },
+        {
+          "offset": 5472,
+          "before": "\"Resource lookup is relative to the skill folder. Resolve references/restore.md and verify its canonical path stays within that folder; reject parent traversal before reading anything.\"",
+          "after": "\"相对于技能目录查找资源。解析 references/restore.md，并校验规范化路径仍在该目录内；任何读取开始前，先拒绝父目录穿越。\"",
+          "afterOffset": 4706
+        },
+        {
+          "offset": 5703,
+          "before": "\"Component gate\"",
+          "after": "\"路径段门禁\"",
+          "afterOffset": 4823
+        },
+        {
+          "offset": 5934,
+          "before": "\"Canonicalize\"",
+          "after": "\"路径规范化\"",
+          "afterOffset": 5045
+        },
+        {
+          "offset": 5984,
+          "before": "\"Validate path components before joining, then canonicalize. This educational loader does not close adversarial path-replacement races.\"",
+          "after": "\"拼接前校验路径段，再进行路径规范化。这个教学加载器不能消除对抗性的路径替换竞态。\"",
+          "afterOffset": 5088
+        },
+        {
+          "offset": 6173,
+          "before": "\"Why is starts_with on raw path text insufficient for containment?\"",
+          "after": "\"为什么仅对原始路径文本使用 starts_with 不足以证明路径被限制在根目录内？ 图表范围：不解析真实元数据头，不检查描述非空及 1024 字符上限，也不访问资源文件；资源正文不计入图中预算。完整加载与路径校验由 Rust 实现执行。\"",
+          "afterOffset": 5183
+        },
+        {
+          "offset": 6399,
+          "before": "\"Load context within a character budget\"",
+          "after": "\"在字符预算内加载上下文\"",
+          "afterOffset": 5463
+        },
+        {
+          "offset": 6489,
+          "before": "\"Discover metadata\"",
+          "after": "\"发现元数据\"",
+          "afterOffset": 5526
+        },
+        {
+          "offset": 6544,
+          "before": "\"Discovery loads metadata only; activation appends instructions. The CLI can then append one explicit reference if the complete context fits. Count characters, not bytes or model tokens, and never truncate half an instruction.\"",
+          "after": "\"发现只加载元数据，激活再追加指令。若完整上下文仍能放入预算，命令行程序随后可追加一份明确指定的参考材料。计数字符，不计字节或模型词元；绝不截断半条指令。\"",
+          "afterOffset": 5569
+        },
+        {
+          "offset": 6817,
+          "before": "\"Choose activation\"",
+          "after": "\"选择是否激活\"",
+          "afterOffset": 5693
+        },
+        {
+          "offset": 7016,
+          "before": "\"Count characters\"",
+          "after": "\"统计字符\"",
+          "afterOffset": 5881
+        },
+        {
+          "offset": 7070,
+          "before": "\"Assemble the complete context before comparing its character count with the budget. Include separators and requested resource text.\"",
+          "after": "\"先拼接完整上下文，再将字符数与预算比较。必须计入分隔符和请求的资源文本。\"",
+          "afterOffset": 5923
+        },
+        {
+          "offset": 7256,
+          "before": "\"How would you expose a tokenizer-based budget without confusing it with this character limit?\"",
+          "after": "\"如何提供基于分词器的预算，同时避免与这里的字符限制混淆？ 图表范围：不解析真实元数据头，不检查描述非空及 1024 字符上限，也不访问资源文件；资源正文不计入图中预算。完整加载与路径校验由 Rust 实现执行。\"",
+          "afterOffset": 6014
+        }
+      ]
+    }
+  ],
+  "figureLimitations": {
+    "skill-installer": "图表范围：哈希匹配来自勾选项，未计算摘要或写入文件；路径模型未拒绝保留的 .installed.json 和 NUL。实际完整性、文件限制与升级恢复行为以 TypeScript 实现为准。",
+    "skill-router": "图表范围：只演示固定 deploy/ 路径和两个候选分数，不执行完整 glob、依赖图或权限遍历；图中使用 Unicode 单词，实际路由分词只识别 ASCII 字母与数字。",
+    "skill-scanner": "图表范围：竖线被替换为换行，仅扫描一个文本框，不检查目录、文件数量与真实路径；直接输入 CRLF 时，图中引文会保留 CR，真实 Rust 区间不包含行结束符。",
+    "skill-validator": "图表范围：不解析真实元数据头，不检查描述非空及 1024 字符上限，也不访问资源文件；资源正文不计入图中预算。完整加载与路径校验由 Rust 实现执行。"
+  },
+  "preservedMachineNotes": {
+    "skill-installer": "译注：这里的 translate 表示转换技能元数据格式，不是自然语言翻译。来源摘要只覆盖 files 的排序映射，不绑定顶层 name 和 description；顶层元数据必须另行从可信渠道核实。模板正文、参考材料、异常和 JSON 字段保留原值。更新采用先移走旧目录、再移入新目录的两次重命名，不能将其理解为对并发读取者无间隙的替换或断电事务。",
+    "skill-router": "译注：路由结果只表示选择建议，不会执行技能。目录中的技能指令、名称、描述、关键词、权限、请求夹具和错误值均保留原值，避免改变评分及返回 JSON。分词只识别 ASCII 字母与数字；纯中文请求不代表具备中文词法或语义路由能力。",
+    "skill-scanner": "译注：英文匹配短语、规则 ID、严重程度、来源样本和输出字段保留原值。技能内容仅作为待扫描文本，不执行其中的命令。根路径会先规范化，因此顶层符号链接可被跟随；目录内部遇到符号链接会被拒绝。低于阈值只表示此规则集合未达到门槛。",
+    "skill-validator": "译注：原样保留技能描述、正文、参考材料、解析错误和上下文字段，避免改变字符预算或下游模型输入。activate 只将指令加载进返回上下文，不表示已在任何智能体中启用。字符数按 Unicode 标量值统计，不等同于字节、模型词元或用户感知字符。"
+  }
+}

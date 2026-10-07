@@ -1,0 +1,139 @@
+{
+  "schemaVersion": 1,
+  "sourceCommit": "a41d4590dbe23494d5774640425e481a3fa11607",
+  "upstreamCommit": "c02ca08d8a49ce24c3c1c1cf8e3b422f2c7393ca",
+  "documents": {
+    "projects/PLAN.md": {
+      "sourceText": "# Real Projects Section Plan\n\nThe Projects section connects the course's individual mechanisms to useful artifacts. It is a separate staged catalog, with the same visual language, interactive SVG figures, agent tutor workflow, and explicit verification used by the rest of the course.\n\n## Delivery contract\n\nEach ready project has four to eight ordered stages, a real reference implementation, intentionally incomplete starters, deterministic tests against the learner workspace, original explanations, a mechanism figure per stage, and recorded run/output demos. Readiness validation checks file paths, stage identity, figure registration, and media. The grader independently runs the actual language toolchains; an empty suite is never a pass.\n\nPython handles parsing, model-facing coordination, and evaluation. Rust handles bounded parsers, search loops, policy tools, and terminal interfaces. TypeScript handles typed contracts, browser artifacts, and workflow interfaces. Go handles concurrent workers, gateways, queues, and network-oriented tools. Mixed-language projects use explicit process or JSON contracts.\n\n## Five-level ladder\n\n1. Starter: one useful input/output tool and its basic contracts.\n2. Builder: a pipeline that combines several mechanisms.\n3. Engineer: state, budgets, retries, and measured outcomes.\n4. Systems: protocol boundaries, concurrency, tool policy, and process control.\n5. Frontier: reproducible comparisons, distributed evaluation, browser control, and trace diagnosis.\n\nProjects are scoped learning artifacts, not claims of production completeness. Estimates reflect the supplied stages; production hardening and live integrations are separate work.\n\n## Ready catalog\n\n| Project | Level | Languages | Stages | Estimate |\n|---|---|---|---|---|\n| [Dataset Split Auditor](dataset-split-auditor/) | 1 | Python | 4 | ~8h |\n| [JSON Schema Output Guard](json-schema-output-guard/) | 1 | TypeScript | 4 | ~8h |\n| [Prompt Regression Tester](prompt-regression-tester/) | 1 | Python | 4 | ~8h |\n| [Semantic Notes Search](semantic-notes-search/) | 1 | Python | 4 | ~8h |\n| [SKILL.md Validator and Loader](skill-validator/) | 1 | Rust | 4 | ~8h |\n| [Tiny Coding Agent](tiny-coding-agent/) | 1 | Python | 4 | ~8h |\n| [Token Counter and Cost Meter](token-counter-and-cost-meter/) | 1 | Rust | 4 | ~8h |\n| [Calendar Focus Planner](calendar-focus-planner/) | 2 | TypeScript | 4 | ~8h |\n| [Changelog Writer From Git](changelog-writer-from-git/) | 2 | Go | 4 | ~8h |\n| [CSV Question Workbench](csv-sql-question-workbench/) | 2 | Python | 4 | ~8h |\n| [Document Extraction Review Desk](document-extraction-desk/) | 2 | Python | 4 | ~8h |\n| [Document QA With Citations and LangChain](doc-qa-with-citations/) | 2 | Python | 4 | ~8h |\n| [Feedback Theme Board](feedback-theme-board/) | 2 | TypeScript | 4 | ~8h |\n| [Inbox Triage Desk](inbox-triage-desk/) | 2 | Python | 4 | ~8h |\n| [Incident Postmortem Writer](postmortem-writer/) | 2 | Go | 4 | ~8h |\n| [Local Model Evaluation Harness](local-model-eval-harness/) | 2 | Python | 4 | ~8h |\n| [Meeting Notes to Actions](meeting-notes-to-actions/) | 2 | Python | 4 | ~8h |\n| [PR Review Reporter](pr-review-reporter/) | 2 | Python, TypeScript | 4 | ~8h |\n| [Research Report Agent](research-report-agent/) | 2 | Rust, Python, TypeScript | 7 | ~20h |\n| [Retrieval Evaluation Lab](retrieval-evaluation-lab/) | 2 | Python | 4 | ~8h |\n| [Skill Router](skill-router/) | 2 | TypeScript | 4 | ~8h |\n| [Source-Grounded Study Coach](source-grounded-study-coach/) | 2 | TypeScript | 4 | ~8h |\n| [Agent Budget Planner](agent-budget-planner/) | 3 | Python | 4 | ~8h |\n| [Agent Trace Debugger](agent-trace-debugger/) | 3 | TypeScript | 4 | ~8h |\n| [Cross-Agent Skill Installer](skill-installer/) | 3 | TypeScript | 4 | ~8h |\n| [Harness Bench](harness-bench/) | 3 | Go | 4 | ~8h |\n| [LLM Gateway With Fallbacks](llm-gateway-with-fallbacks/) | 3 | Go | 4 | ~8h |\n| [Multi-Agent Code Review Panel](multi-agent-code-review-panel/) | 3 | TypeScript | 4 | ~8h |\n| [Persistent Memory Server](memory-server/) | 3 | TypeScript, Rust | 4 | ~8h |\n| [RAG Freshness Pipeline](rag-freshness-pipeline/) | 3 | Python | 4 | ~8h |\n| [Report Judge](report-judge/) | 3 | Python | 4 | ~8h |\n| [Self-Correcting Workflow Hooks](workflow-hooks/) | 3 | TypeScript | 4 | ~8h |\n| [Skill Supply-Chain Scanner](skill-scanner/) | 3 | Rust | 4 | ~8h |\n| [Support Agent With Google ADK](support-agent-with-google-adk/) | 3 | Python | 4 | ~8h |\n| [Typed Workflow Agent with Mastra](typed-workflow-agent-with-mastra/) | 3 | TypeScript | 4 | ~8h |\n| [Visual Evidence Library](visual-evidence-library/) | 3 | Python | 4 | ~8h |\n| [Voice Note Transcriber Pipeline](voice-note-transcriber-pipeline/) | 3 | Python | 4 | ~8h |\n| [Web Change Brief](web-change-brief/) | 3 | Go | 4 | ~8h |\n| [Cloud Agent With AWS Strands](cloud-agent-with-aws-strands/) | 4 | Python | 4 | ~8h |\n| [Desktop Control Backend](desktop-control/) | 4 | Rust | 4 | ~8h |\n| [Durable Agent Jobs](durable-agent-jobs/) | 4 | Go | 4 | ~8h |\n| [MCP Tool Discovery Workbench](mcp-at-scale/) | 4 | Python, TypeScript | 5 | ~10h |\n| [Sandbox Policy Planner](sandbox-ladder/) | 4 | Rust | 4 | ~8h |\n| [Streaming Agent Shell in Rust](rust-agent-shell/) | 4 | Rust | 4 | ~8h |\n| [Tool Call Firewall](tool-call-firewall/) | 4 | Rust | 4 | ~8h |\n| [Browser Agent](browser-agent/) | 5 | TypeScript, Python | 4 | ~8h |\n| [Distributed Eval Farm Coordinator](distributed-eval-farm/) | 5 | Go | 4 | ~8h |\n| [Self-Improving Skill Loop](self-improving-skill-loop/) | 5 | Python | 4 | ~8h |\n\n## Planned expansion\n\nThe catalog now has 100 entries: 48 ready projects and 52 planned projects across the same five levels. [ROADMAP.md](ROADMAP.md) contains each planned project's useful outcome, prerequisite path, original first-demo concept and four proposed milestones. `roadmap.json` supplies the planned cards on the website. Plans become ready only after satisfying the implementation, lesson, test, figure and recording contract.\n\n## Research Report Agent pilot\n\nThe pilot has seven stages and three languages. Rust implements BM25 search behind newline-delimited JSON. Python extracts exact Unicode source spans, plans facets, writes cited claims, verifies evidence, applies budgets, and computes evaluation metrics. TypeScript validates the report contract and renders an interactive HTML report with hover/focus citations and an expandable run trace.\n\nIts core grader includes native Rust and TypeScript tests, plus a prompt-injection and cache-boundary regression suite. Evaluation receipts include the supplied dataset and explicit scoring components; their scores describe that fixture, not unseen production accuracy. The demo recordings show starter initialization/failure, passing reference tests, and real browser inspection of report evidence.\n\n## Completion and community submissions\n\nProgress checkboxes are self-reported browser-local notes. Certificates require a complete strict learner report matching the project manifest, and remain clearly labeled local community evidence. Optional SDK checks are not implied by core completion. Contributors retain author attribution; community projects use the same readiness gate and grading contract.\n\n## Verification and rollout\n\nThe shared build bundles docs and media inside the site output. CI validates manifests, grader contracts, certificates, and every reference stage. Browser verification covers desktop/mobile, light/dark, stage navigation, figure mounting, recordings, and certificate import. A feature PR is the review boundary; deployment and merge remain separate actions.\n\n## Originality and references\n\nAll implementations and exercises are original. Cite primary papers, official API documentation, and standards where they explain the mechanism. No outside curriculum repository is used as a model. Framework names appear only where a requested integration is actually implemented and tested.\n",
+      "sourceSha256": "52eb44074898bf6920ea0ea3bcd3851ea81e8e3e31367d5fac6e9730f7e74d0b",
+      "localizedSha256": "fb667b49490c43fd7a31359938a609195ee47ba8fb3d1222e08eeb2142deb517",
+      "contract": {
+        "fences": [],
+        "inlineCode": [
+          [
+            "`",
+            "roadmap.json"
+          ]
+        ],
+        "links": [
+          "ROADMAP.md",
+          "agent-budget-planner/",
+          "agent-trace-debugger/",
+          "browser-agent/",
+          "calendar-focus-planner/",
+          "changelog-writer-from-git/",
+          "cloud-agent-with-aws-strands/",
+          "csv-sql-question-workbench/",
+          "dataset-split-auditor/",
+          "desktop-control/",
+          "distributed-eval-farm/",
+          "doc-qa-with-citations/",
+          "document-extraction-desk/",
+          "durable-agent-jobs/",
+          "feedback-theme-board/",
+          "harness-bench/",
+          "inbox-triage-desk/",
+          "json-schema-output-guard/",
+          "llm-gateway-with-fallbacks/",
+          "local-model-eval-harness/",
+          "mcp-at-scale/",
+          "meeting-notes-to-actions/",
+          "memory-server/",
+          "multi-agent-code-review-panel/",
+          "postmortem-writer/",
+          "pr-review-reporter/",
+          "prompt-regression-tester/",
+          "rag-freshness-pipeline/",
+          "report-judge/",
+          "research-report-agent/",
+          "retrieval-evaluation-lab/",
+          "rust-agent-shell/",
+          "sandbox-ladder/",
+          "self-improving-skill-loop/",
+          "semantic-notes-search/",
+          "skill-installer/",
+          "skill-router/",
+          "skill-scanner/",
+          "skill-validator/",
+          "source-grounded-study-coach/",
+          "support-agent-with-google-adk/",
+          "tiny-coding-agent/",
+          "token-counter-and-cost-meter/",
+          "tool-call-firewall/",
+          "typed-workflow-agent-with-mastra/",
+          "visual-evidence-library/",
+          "voice-note-transcriber-pipeline/",
+          "web-change-brief/",
+          "workflow-hooks/"
+        ],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 50,
+        "listItems": 5
+      }
+    },
+    "projects/VALIDATION.md": {
+      "sourceText": "# Project validation\n\nCore grading and review regressions were reverified locally on 2026-09-29. These results describe the checked implementations and supplied fixtures, not production performance or a hosted assessment. Initial catalog sweeps and optional SDK checks are distinguished from the latest targeted follow-up below.\n\n| Surface | Result |\n|---|---|\n| Core project grader | 48 projects, 196 stages, 1,382 tests pass, zero skips after review corrections |\n| Grader, builder, certificate and figure contracts | 65 tests pass |\n| Optional framework SDK integrations | Initial acceptance: 29 additional tests pass: LangChain 5, Google ADK 10, AWS Strands 5, Mastra 9 |\n| Fresh learner workspaces | Initial acceptance: all 48 initialize and fail their unfinished first stage; seven affected starters rechecked after corrections |\n| Mechanism figures | Initial sweep: all 197 mount and update visible calculated results in Chromium; changed figures rechecked after corrections |\n| Project pages | Initial sweep: all 48 load bundled lessons, figures, and recordings |\n| Recordings | 100 GIFs with static posters and command/capture provenance |\n| Course invariants | 523 lessons and 67 certification lessons pass audits; README/book counts match |\n\n## Reproduce\n\n```bash\nnode site/build.js\nnode site/build-projects.js --strict\nnode --test site/test_projects_data.js site/test_project_certificates.js site/test_project_figure_runtime.js site/test_dataset_project_figures.js site/test_budget_project_figures.js site/test_semantic_project_figures.js\npython3 scripts/project_test.py --all --solution --strict --report /tmp/project-results.json\npython3 scripts/audit_lessons.py\npython3 scripts/audit_certifications.py\npython3 scripts/check_readme_counts.py\n```\n\nThe local core run used Python 3.12.12, Node 25.6.1, Rust 1.95.0, and Go 1.26.0 on macOS arm64. The optional Python SDK suites used Python 3.12 in an isolated environment. Framework versions and installation commands are pinned in each project's dependency files. The project CI separately uses Python 3.12, Node 24, Go 1.23, and the runner's Rust toolchain; a local pass does not establish remote CI status.\n\n## Browser and artifact checks\n\nDuring initial acceptance, the served catalog, pilot and document-extraction page were inspected at 1440x950 in light mode and 390x950 in dark mode, extending earlier checks of both themes at both widths. All 48 project pages were opened independently to exercise dynamic provider loading. All 197 mechanism figures mounted, accepted changed inputs and updated their visible calculations without initial errors. Earlier interface checks covered project filtering, stage navigation and browser history, saved completion, recording play/stop, and certificate import.\n\nThe eight new application outputs were inspected at 1120 and 390 pixels. The document review check selected a source span after a Unicode character, downloaded the actual approval, applied it through the CLI, and reopened the approved page without losing the choice. The study coach recorded an incorrect answer and a correct answer in the browser; its downloaded attempt events replayed through the CLI into the expected schedule.\n\nCertificate import rejected reference-solution evidence and accepted a complete learner-mode QA report. The QA workspace intentionally copied a reference implementation solely to exercise the interface; no learner achievement is claimed. Certificates remain local self-attested community records. They cannot establish identity or prevent a user from copying code or modifying JSON.\n\nThe browser-agent adapter drove real Chromium against its local fixture and captured its result. The Rust shell was exercised through actual stdin/stdout and a PTY. The pilot report was opened in Chromium with citation inspection and its trace expanded. Terminal GIFs render captured command output; application output GIFs use actual browser frame captures. The four framework GIFs record the current optional graders, with core and additional SDK test counts distinguished.\n\n## Review follow-up checks\n\nAfter the corrections, the submission card, budget stage 4 and semantic-search stage 3 passed 12 route/width/theme checks at 1280 and 390 pixels in both themes. The served budget receipt uses `events[].status`. The semantic figure preserves the literal plural match in its editable example, explains the different file fixture, and correctly ranks `constructor` and `__proto__` as ordinary search terms. No document overflow or console errors appeared in these checks.\n\nGenerated meeting HTML preserves approved and rejected selections through its actual download handler. Mixed malformed and valid PR candidates produce consistent HTML and JSON. The actual Browser Agent CLI completed its local Chromium fixture in four steps and produced a valid screenshot; separate corrupt-screenshot tests preserve the failure receipt. Fixture success is not a general browser-accuracy claim.\n\nRegression tests exercise provider HTTPS and redirect boundaries, gateway request replay after a real transport retry, bounded HTTP connection closure, split UTF-8 request bodies, optional cloud log windows, atomic-patch cleanup, root-level glob matching and native-process terminal receipts. Single-file runner overrides were removed where they omitted existing stage tests. The full grader also exposed a parallel desktop-fixture directory collision; an atomic sequence fixes it, and 30 repeated integration runs passed all 150 tests before the final full gate.\n\nThe calendar retains its documented explicit-endpoint subset, including exclusive all-day ends. Numeric extraction retains finite Python float syntax, with acceptance and rejection cases. These two review suggestions required clearer contracts, not broader parsers. Optional SDK tracks were not rerun during this follow-up because their integration code was unchanged.\n\n## Integration and regression checks\n\nDurable jobs and the evaluation farm ran real child processes, crashed at documented boundaries, recovered persisted work and rejected stale completions. Harness and gateway binaries made actual loopback HTTP requests with call budgets, distinct credentials, deadlines and bounded response bodies. Mastra suspended a workflow in one process and resumed the same stored run in another. Official MCP clients exercised the teaching servers over stdio and HTTP.\n\nCross-project checks include audited dataset partitions into evaluation, PR findings into the review panel, installed skill bundles into the native Rust validator, and research reports into the judge. Independent application review reproduced and fixed three additional defects: large CSV identifiers merging, approved extraction selections disappearing on export, and postmortem text dropping review metadata. Regression tests and the original reproductions pass.\n\n## Limits\n\nNative macOS desktop control was not executed. Fixture-backend success does not verify Accessibility permissions or native interactions. Optional framework suites import and execute real SDKs with deterministic local models; no live model-provider, Bedrock, or other cloud calls were made. Voice tests verify real WAV/multipart transport with controlled responses; the offline transcript is explicitly supplied, so these tests do not measure recognition accuracy. Visual search uses supplied text rectangles rather than claiming OCR.\n\nSandbox stages teach policy planning; the optional Docker probe was not exercised. Queue and farm recovery covers cooperating processes on a local filesystem, not distributed storage or exactly-once external effects. Evaluation datasets are public teaching fixtures, and their scores do not establish unseen performance. Source hashes bind content, not reviewer identity. Local drafts do not send email, publish issues or change an account calendar.\n",
+      "sourceSha256": "22cb3d3484fb9e66d5e56633ac98b4dadfbf915d757a4dd568a8c12846b24662",
+      "localizedSha256": "3d54889829c45bc807b49a9d79cc5b45fa7696593625040af7d8f5c5a8783f7a",
+      "contract": {
+        "fences": [
+          [
+            "bash",
+            "node site/build.js\nnode site/build-projects.js --strict\nnode --test site/test_projects_data.js site/test_project_certificates.js site/test_project_figure_runtime.js site/test_dataset_project_figures.js site/test_budget_project_figures.js site/test_semantic_project_figures.js\npython3 scripts/project_test.py --all --solution --strict --report /tmp/project-results.json\npython3 scripts/audit_lessons.py\npython3 scripts/audit_certifications.py\npython3 scripts/check_readme_counts.py\n"
+          ]
+        ],
+        "inlineCode": [
+          [
+            "`",
+            "__proto__"
+          ],
+          [
+            "`",
+            "constructor"
+          ],
+          [
+            "`",
+            "events[].status"
+          ]
+        ],
+        "links": [],
+        "math": [],
+        "headings": [
+          "#",
+          "##",
+          "##",
+          "##",
+          "##",
+          "##"
+        ],
+        "tableRows": 10,
+        "listItems": 0
+      }
+    }
+  },
+  "fileHashes": {
+    "README.md": "07974093c5d697d7d5aee0c7af32bfefe8187d9beb78c49b08cbb734c6eb14da",
+    "i18n/zh/README.md": "b6fdd91bb6a9a62ff7e1f939e387615d22aa4d0aaaaa1eccfc42988b7ad9815a",
+    "scripts/readme_translations.py": "dc634104e08fc6e0cd2c7e6d2001d5136b9d93548a6e133fc4198681f3ee6bf0",
+    "scripts/build_readme_i18n.py": "3cd86e5dd87d3e9322294c6b313f43e61163bbea5be987700f1433d083426181",
+    "scripts/audit_incremental_translation.py": "8ac4ab30b7192b57b7fbb5f7a6eff786be6ccfc7a3359f203ec818263c8cae69"
+  },
+  "readmeNoteChange": {
+    "before": "社区翻译，以<a href=\"../../README.md\">英文原文为准</a>",
+    "after": "中文阅读入口；完整课程见<a href=\"../../README.md\">仓库主 README</a>，版本与翻译范围见<a href=\"../../TRANSLATION.md\">翻译说明</a>",
+    "sourceSha256": "d4c8d6695e59dc60cf5cd3f49262ac0c4d1a3ceea9abcc2ff07a90d06e89cadf"
+  },
+  "unchangedGeneratorSha256": "3cd86e5dd87d3e9322294c6b313f43e61163bbea5be987700f1433d083426181",
+  "scope": "Pinned reader-facing incremental translation only; agent instructions, historical evidence and machine fixtures may intentionally remain in their original language."
+}
