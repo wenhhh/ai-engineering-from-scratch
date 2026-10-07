@@ -82,9 +82,10 @@ def synthetic_loader(batch_size: int, num_batches: int, in_dim: int, out_dim: in
 
 
 def capture_rng_state() -> Dict[str, Any]:
+    name, keys, pos, has_gauss, cached_gaussian = np.random.get_state()
     state: Dict[str, Any] = {
         "python": random.getstate(),
-        "numpy": np.random.get_state(),
+        "numpy": (name, keys.tolist(), int(pos), int(has_gauss), float(cached_gaussian)),
         "torch_cpu": torch.get_rng_state().tolist(),
     }
     if torch.cuda.is_available():
@@ -204,9 +205,10 @@ def load_checkpoint(
     optimizer: torch.optim.Optimizer,
     scheduler: torch.optim.lr_scheduler._LRScheduler,
 ) -> TrainState:
-    payload = torch.load(path, map_location="cpu", weights_only=False)
-    # 未知的检查点模式；此处仅检查名称是否以 ckpt 开头。
-    assert payload["schema"].startswith("ckpt"), f"unknown schema {payload['schema']}"
+    # 仅加载权重及基本容器；使用显式异常，避免校验被 python -O 移除。
+    payload = torch.load(path, map_location="cpu", weights_only=True)
+    if not str(payload.get("schema", "")).startswith("ckpt"):
+        raise ValueError(f"unknown schema {payload.get('schema')}")
     model.load_state_dict(payload["model"])
     optimizer.load_state_dict(payload["optimizer"])
     scheduler.load_state_dict(payload["scheduler"])
@@ -300,17 +302,23 @@ def load_sharded_checkpoint(
     expected_sha = index["meta_sha256"]
     meta_path = ckpt_dir / "meta.pt"
     actual_sha = file_sha256(meta_path)
-    # 元数据文件的 SHA-256 与索引记录不符。
-    assert actual_sha == expected_sha, f"meta sha mismatch: {actual_sha} != {expected_sha}"
-    meta = torch.load(meta_path, map_location="cpu", weights_only=False)
+    # 合并前校验元数据哈希，并建立分片路径的真实目录边界。
+    if actual_sha != expected_sha:
+        raise ValueError(f"meta sha mismatch: {actual_sha} != {expected_sha}")
+    meta = torch.load(meta_path, map_location="cpu", weights_only=True)
+    root = ckpt_dir.resolve()
     merged: Dict[str, torch.Tensor] = {}
     for shard in meta["shards"]:
-        shard_path = ckpt_dir / shard["path"]
+        shard_path = (ckpt_dir / shard["path"]).resolve()
+        if not shard_path.is_relative_to(root):
+            raise ValueError(f"shard path escapes the checkpoint directory: {shard['path']}")
         actual = file_sha256(shard_path)
-        # 分片文件的 SHA-256 与元数据记录不符。
-        assert actual == shard["sha256"], f"shard sha mismatch: {shard['path']}"
-        body = torch.load(shard_path, map_location="cpu", weights_only=False)
-        assert body["schema"] == SHARD_SCHEMA
+        # 分片哈希与模式均须校验通过；不反序列化任意 Python 对象。
+        if actual != shard["sha256"]:
+            raise ValueError(f"shard sha mismatch: {shard['path']}")
+        body = torch.load(shard_path, map_location="cpu", weights_only=True)
+        if body["schema"] != SHARD_SCHEMA:
+            raise ValueError(f"unknown shard schema {body['schema']}")
         merged.update(body["tensors"])
     model.load_state_dict(merged)
     optimizer.load_state_dict(meta["optimizer"])

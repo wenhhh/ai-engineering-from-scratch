@@ -36,7 +36,8 @@ tags: [training, durability, resume, sharded-state]
 - 每分片一个 `model.shard-NNN.pt`，按键轮询或按参数组拆分。
 - `meta.pt` 保存优化器、调度器、训练状态、RNG 和分片清单。
 - `index.json` 保存每分片及 `meta.pt` 的 `sha256`。
-- 加载器合并前验证所有哈希。
+- 加载器在合并前校验每个哈希值，并拒绝位于检查点目录之外的分片路径。
+- 使用 `torch.load(path, map_location="cpu", weights_only=True)` 加载每个文件。将 RNG 状态保存为普通列表，以便通过仅权重加载器恢复。
 
 ## 轮中恢复（Mid-epoch resume）
 
@@ -50,3 +51,4 @@ tags: [training, durability, resume, sharded-state]
 - 忘记 RNG：恢复损失偏离基线。运行演示断言。
 - 忘记优化器状态：下一步突然偏移，同样导致差值暴增。
 - 清理错误检查点：保留最近 K 个及最佳检查点。
+- 使用 `weights_only=False` 加载：`.pt` 文件采用 pickle 格式，不可信检查点会在加载时执行代码。

@@ -36,7 +36,7 @@
         "压缩文件"
       ],
       "correct": 0,
-      "explanation": "load_sharded_checkpoint 断言各分片实际哈希与记录相符，也检查元数据文件哈希。静默损坏是最坏失败模式。"
+      "explanation": "load_sharded_checkpoint 会将每个分片的实际哈希与记录值比较，同时检查元数据文件哈希；发现任何不匹配，都会在合并前抛出异常。静默损坏是最糟糕的失效模式。"
     },
     {
       "stage": "check",
