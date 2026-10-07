@@ -1,0 +1,121 @@
+{
+  "id": "inbox-triage-desk",
+  "title": "邮件分流审阅台（Inbox Triage Desk）",
+  "level": 2,
+  "levelName": "Builder",
+  "tagline": "将导出的邮件整理成有证据支持的审阅队列，并生成尚未发送的回复草稿。",
+  "summary": "将导出的邮件整理成有证据支持的审阅队列，并生成尚未发送的回复草稿。",
+  "youWillBuild": "HTML 审阅台、triage.json，以及可下载但尚未发送的 .eml 草稿。",
+  "usefulFor": [
+    "一个导出的 .eml 邮件目录。只对纯文本正文分类；仅含 HTML 的邮件仍会显示，供人工审阅。"
+  ],
+  "hours": 8,
+  "languages": [
+    "Python"
+  ],
+  "languageWhy": {
+    "Python": "Python 标准库提供 MIME 解析、结构化邮件生成以及可移植文档导出功能。"
+  },
+  "status": "ready",
+  "source": "core",
+  "author": {
+    "name": "AI Engineering from Scratch",
+    "github": "rohitg00"
+  },
+  "skills": [
+    "读取 MIME 并保留邮件标识",
+    "按引用关系分组并解释队列",
+    "生成带来源引文的未发送草稿",
+    "导出可审计的邮件审阅台"
+  ],
+  "prerequisites": [
+    "能够在 Python 中读写字典和列表。",
+    "理解函数返回值及抛出 ValueError 的行为。",
+    "知道邮件头与 MIME 正文采用不同的数据结构。"
+  ],
+  "figures": true,
+  "overviewFigure": "pj-inbox-triage-desk-1",
+  "demo": {
+    "command": [
+      "python3",
+      "demo.py"
+    ],
+    "cwd": "solution"
+  },
+  "stages": [
+    {
+      "id": "01-parse-messages",
+      "title": "读取 MIME 并保留邮件标识",
+      "summary": "解析导出的邮件，保留精确的纯文本证据。",
+      "hours": 2,
+      "difficulty": "starter",
+      "language": "python",
+      "languageWhy": "Python 标准库提供 MIME 解析、结构化邮件生成以及可移植文档导出功能。",
+      "concepts": [
+        "MIME",
+        "邮件标识",
+        "输入边界"
+      ],
+      "figure": "pj-inbox-triage-desk-1"
+    },
+    {
+      "id": "02-group-and-triage",
+      "title": "按引用关系分组并解释队列",
+      "summary": "利用邮件引用组织线程，利用明确短语执行分流。",
+      "hours": 2,
+      "difficulty": "core",
+      "language": "python",
+      "languageWhy": "Python 标准库提供 MIME 解析、结构化邮件生成以及可移植文档导出功能。",
+      "concepts": [
+        "并查集（Union find）",
+        "规则冲突",
+        "证据区间"
+      ],
+      "figure": "pj-inbox-triage-desk-2"
+    },
+    {
+      "id": "03-draft-for-review",
+      "title": "生成带来源引文的未发送草稿",
+      "summary": "生成可审阅的邮件草稿，不虚构承诺。",
+      "hours": 2,
+      "difficulty": "core",
+      "language": "python",
+      "languageWhy": "Python 标准库提供 MIME 解析、结构化邮件生成以及可移植文档导出功能。",
+      "concepts": [
+        "邮件序列化",
+        "证据校验",
+        "服务商建议"
+      ],
+      "figure": "pj-inbox-triage-desk-3"
+    },
+    {
+      "id": "04-export-the-desk",
+      "title": "导出可审计的邮件审阅台",
+      "summary": "基于同一批审阅记录导出可移植的 HTML、JSON 和草稿文件。",
+      "hours": 2,
+      "difficulty": "stretch",
+      "language": "python",
+      "languageWhy": "Python 标准库提供 MIME 解析、结构化邮件生成以及可移植文档导出功能。",
+      "concepts": [
+        "HTML 转义",
+        "稳定文件名",
+        "可移植交付物"
+      ],
+      "figure": "pj-inbox-triage-desk-4"
+    }
+  ],
+  "demos": [
+    {
+      "gif": "media/run.gif",
+      "poster": "media/run.png",
+      "title": "构建与评分（上游原始录屏）",
+      "caption": "上游原始录屏：全新起始代码失败，完整原始参考实现通过全部四个阶段。"
+    },
+    {
+      "gif": "media/output.gif",
+      "poster": "media/output.png",
+      "title": "检查应用输出（上游原始录屏）",
+      "caption": "上游原始录屏中的原创离线夹具实际输出。服务商与证据边界见 README。"
+    }
+  ]
+}
