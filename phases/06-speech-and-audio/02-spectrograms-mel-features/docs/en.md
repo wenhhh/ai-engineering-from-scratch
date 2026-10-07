@@ -170,5 +170,5 @@ def dct_ii(x, n_coeffs):
 - [Davis、Mermelstein（1980）：单音节词识别的参数表示比较](https://ieeexplore.ieee.org/document/1163420)：MFCC 论文。
 - [Stevens、Volkmann、Newman（1937）：测量音高心理量值的刻度](https://pubs.aip.org/asa/jasa/article-abstract/8/3/185/735757/)：梅尔刻度的原始论文。
 - [OpenAI：Whisper 源码中的 log_mel_spectrogram](https://github.com/openai/whisper/blob/main/whisper/audio.py)：阅读参考实现。
-- [librosa 特征提取文档](https://librosa.org/doc/main/feature.html)：`mfcc`、`melspectrogram` 以及帧移和窗函数的参考。
+- [librosa 特征提取文档](https://librosa.org/doc/latest/api/feature.html)：`mfcc`、`melspectrogram` 以及帧移和窗函数的参考。
 - [NVIDIA NeMo：音频预处理](https://docs.nvidia.com/deeplearning/nemo/user-guide/docs/en/main/asr/asr_all.html#featurizers)：面向 Parakeet 和 Canary 模型的生产级流水线。
