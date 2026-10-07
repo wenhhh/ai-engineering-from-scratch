@@ -664,9 +664,13 @@ def run_demo(cfg: Optional[SFTConfig] = None) -> int:
     print("")
     print(f"最终完全匹配率 = {report.final_em:.3f}（未训练基线为 {initial_em:.3f})")
 
-    if report.final_em <= initial_em:
-        # 错误契约保留原文：训练后的完全匹配率没有严格超过未训练模型的基线。
-        print("ERROR: training did not improve EM over the untrained baseline", file=sys.stderr)
+    # 上游改为验证有限且下降的训练损失；错误字符串保持上游原值。
+    if (
+        len(report.losses) < 2
+        or not math.isfinite(report.losses[-1])
+        or report.losses[-1] >= report.losses[0]
+    ):
+        print("ERROR: training loss did not decrease over the run", file=sys.stderr)
         return 1
     return 0
 
