@@ -202,7 +202,7 @@ tags: [rl, dynamic-programming, bellman]
 ## 延伸阅读（Further Reading）
 
 - [Sutton 与 Barto（2018）：第 4 章，动态规划](http://incompleteideas.net/book/RLbook2020.pdf)：策略迭代与价值迭代的经典讲解。
-- [Bertsekas（2019）：《强化学习与最优控制》](http://www.athenasc.com/rlbook.html)：严格讨论压缩映射论证。
+- [Bertsekas（2019）：《强化学习与最优控制》](http://www.athenasc.com/rlbook_athena.html)：严格讨论压缩映射论证。
 - [Puterman（2005）：《马尔可夫决策过程》](https://onlinelibrary.wiley.com/doi/book/10.1002/9780470316887)：修正策略迭代及其收敛分析。
 - [Howard（1960）：《动态规划与马尔可夫过程》](https://mitpress.mit.edu/9780262582300/dynamic-programming-and-markov-processes/)：最早提出策略迭代的论文。
 - [Bertsekas 与 Tsitsiklis（1996）：《神经动态规划》](http://www.athenasc.com/ndpbook.html)：连接 DP 与近似 DP / 深度强化学习，是后续每课的基础。
