@@ -1,0 +1,150 @@
+{
+  "id": "skill-installer",
+  "title": "跨智能体技能安装器（Cross-Agent Skill Installer）",
+  "level": 3,
+  "levelName": "Engineer",
+  "tagline": "校验本地技能包、转换智能体元数据、核对内容摘要，并在不覆盖学习者修改的条件下执行原子安装。",
+  "summary": "校验本地技能包、转换智能体元数据、核对内容摘要，并在不覆盖学习者修改的条件下执行原子安装。",
+  "hours": 8,
+  "languages": [
+    "TypeScript"
+  ],
+  "status": "ready",
+  "source": "core",
+  "author": {
+    "name": "AI Engineering from Scratch",
+    "github": "rohitg00"
+  },
+  "skills": [
+    "校验可移植技能包",
+    "转换元数据并计算内容哈希",
+    "在指定根目录内原子安装",
+    "升级时保护本地修改"
+  ],
+  "prerequisites": [
+    {
+      "title": "数据管理",
+      "path": "phases/00-setup-and-tooling/09-data-management"
+    },
+    {
+      "title": "安全与密钥审计",
+      "path": "phases/17-infrastructure-and-production/25-security-secrets-audit"
+    }
+  ],
+  "youWillBuild": "一个跨智能体升级工具，目标是提供可审阅的差异，并且不丢失本地修改。",
+  "usefulFor": [
+    "一个跨智能体升级工具，目标是提供可审阅的差异，并且不丢失本地修改。",
+    "inspect 只执行预演。"
+  ],
+  "demo": {
+    "command": [
+      "node",
+      "demo.ts"
+    ],
+    "cwd": "solution"
+  },
+  "stages": [
+    {
+      "id": "01-bundle",
+      "title": "校验可移植技能包",
+      "summary": "接收具名技能包，其中包含 SKILL.md 和可选参考文件。访问磁盘前先校验所有相对路径。拒绝点路径段、绝对路径、盘符前缀、反斜杠和保留的安装元数据。每个文本文件限制为 100 KB。安装器读取内存中的技能包；网络获取与签名信任由其他组件负责。",
+      "hours": 2,
+      "language": "typescript",
+      "languageWhy": "TypeScript 为技能包和智能体目标提供明确契约。",
+      "concepts": [
+        "safePath",
+        "validate"
+      ],
+      "difficulty": "starter",
+      "runner": [
+        "node",
+        "--experimental-strip-types",
+        "--test",
+        "{tests}/stage.test.ts"
+      ],
+      "requires": [
+        "node"
+      ],
+      "timeout": 90,
+      "figure": "pj-skill-installer-1"
+    },
+    {
+      "id": "02-translate",
+      "title": "转换元数据并计算内容哈希",
+      "summary": "保留同一份指令正文，同时重新生成简短且带引号的元数据头。参考文件逐字节保留。对排序后的路径／内容对计算 SHA-256 摘要，避免文件插入顺序影响完整性。摘要能够检测内容变化，却不能证明发布者身份；调用方负责取得可信的预期摘要。",
+      "hours": 2,
+      "language": "typescript",
+      "languageWhy": "带类型的目标名称将支持的适配器限定为三种已知智能体。",
+      "concepts": [
+        "digest",
+        "translate"
+      ],
+      "difficulty": "core",
+      "runner": [
+        "node",
+        "--experimental-strip-types",
+        "--test",
+        "{tests}/stage.test.ts"
+      ],
+      "requires": [
+        "node"
+      ],
+      "timeout": 90,
+      "figure": "pj-skill-installer-2"
+    },
+    {
+      "id": "03-install",
+      "title": "在指定根目录内原子安装",
+      "summary": "创建目录前检查预期摘要。使用 lstat 检查每一级智能体目录并拒绝符号链接。将完整转换后的技能包暂存于目标目录旁，再通过重命名完成安装。已有受管理安装会先移到临时备份，因此最终重命名失败时可以恢复。这种教学事务假定只有一个可信的本地写入方；对抗恶意并发文件替换需要操作系统级隔离。",
+      "hours": 2,
+      "language": "typescript",
+      "languageWhy": "Node 提供 lstat、排他写入和目录重命名，用于有界的本地事务。",
+      "concepts": [
+        "install"
+      ],
+      "difficulty": "core",
+      "runner": [
+        "node",
+        "--experimental-strip-types",
+        "--test",
+        "{tests}/stage.test.ts"
+      ],
+      "requires": [
+        "node"
+      ],
+      "timeout": 90,
+      "figure": "pj-skill-installer-3"
+    },
+    {
+      "id": "04-upgrades",
+      "title": "升级时保护本地修改",
+      "summary": "替换安装前，校验所有受跟踪文件仍与此前摘要一致，并确认没有新增不受管理的文件。如果用户编辑了受跟踪文件或新增自己的文件，拒绝升级。用户可以主动将这些修改合入源技能包。多次成功安装后，不应留下暂存目录或备份目录。",
+      "hours": 2,
+      "language": "typescript",
+      "languageWhy": "通过摘要比较明确更新行为，而不依赖时间戳。",
+      "concepts": [
+        "install"
+      ],
+      "difficulty": "core",
+      "requires": [
+        "node"
+      ],
+      "timeout": 90,
+      "figure": "pj-skill-installer-4"
+    }
+  ],
+  "demos": [
+    {
+      "gif": "media/run.gif",
+      "poster": "media/run.png",
+      "title": "初始化与评分（上游原始录屏）",
+      "caption": "上游原始录屏：先记录起始代码失败，再记录参考实现全部阶段通过。参考实现通过不授予学习者证书。"
+    },
+    {
+      "gif": "media/output.gif",
+      "poster": "media/output.png",
+      "title": "检查输出（上游原始录屏）",
+      "caption": "上游原始录屏中的本地确定性演示实际输出。夹具与在线适配器的限制见 README。"
+    }
+  ]
+}
