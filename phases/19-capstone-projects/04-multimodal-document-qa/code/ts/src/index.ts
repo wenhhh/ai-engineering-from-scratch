@@ -8,7 +8,7 @@
 // 来源：../../docs/en.md，查看器界面与证据区域画布覆盖层。
 // 固定原文参考：
 //   ColPali 后期交互检索 https://arxiv.org/abs/2407.01449
-//   Qwen3-VL 边界框输出说明  https://qwenlm.github.io/blog/qwen3-vl/
+//   Qwen3-VL 边界框输出说明  https://github.com/QwenLM/Qwen3-VL/blob/main/cookbooks/2d_grounding.ipynb
 //   Canvas 2D 渲染上下文（MDN）  https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D
 
 import { createServer, IncomingMessage, ServerResponse } from "node:http";
