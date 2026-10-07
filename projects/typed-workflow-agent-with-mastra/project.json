@@ -1,0 +1,183 @@
+{
+  "id": "typed-workflow-agent-with-mastra",
+  "title": "使用 Mastra 的类型化工作流智能体（Typed Workflow Agent with Mastra）",
+  "level": 3,
+  "levelName": "Engineer",
+  "tagline": "构建类型化审批工作流，通过本地 SQLite 存储保存并恢复真实 Mastra 暂停状态。",
+  "summary": "构建类型化审批工作流，通过本地 SQLite 存储保存并恢复真实 Mastra 暂停状态。",
+  "hours": 8,
+  "languages": [
+    "TypeScript"
+  ],
+  "status": "ready",
+  "source": "core",
+  "author": {
+    "name": "AI Engineering from Scratch",
+    "github": "rohitg00"
+  },
+  "skills": [
+    "运行时校验带类型的步骤输入",
+    "在计划中明确审批不变条件",
+    "副作用前暂停，并统计失败尝试",
+    "持久化真实 Mastra 审批状态并恢复"
+  ],
+  "prerequisites": [
+    "掌握 TypeScript 对象类型、联合类型和异步函数。",
+    "对未知 JSON 输入执行运行时校验。",
+    "明确的审批决策和本地数据库文件。"
+  ],
+  "youWillBuild": "手写运行时的 HTML／JSON 工作流审阅材料，以及保存在 SQLite 中、带有计划绑定审批文档的真实 Mastra 运行。",
+  "usefulFor": [
+    "手写运行时的 HTML／JSON 工作流审阅材料，以及保存在 SQLite 中、带有计划绑定审批文档的真实 Mastra 运行。"
+  ],
+  "demo": {
+    "command": [
+      "node",
+      "--experimental-strip-types",
+      "demo.ts"
+    ],
+    "cwd": "solution"
+  },
+  "stages": [
+    {
+      "id": "01-contracts",
+      "title": "运行时校验带类型的步骤输入",
+      "summary": "Find the workshop policy 产生 read 意图；Update the workshop label 产生 write 意图。空白 ID 在选择工具前失败。unchanged 中的 change 不满足修改动词的单词边界。",
+      "hours": 2,
+      "language": "typescript",
+      "languageWhy": "TypeScript 可辨识联合类型让编译器识别工作流状态和工具名称。",
+      "concepts": [
+        "运行时契约",
+        "意图基线",
+        "带类型的输出"
+      ],
+      "difficulty": "starter",
+      "runner": [
+        "node",
+        "--experimental-strip-types",
+        "--test",
+        "{tests}/stage.test.ts"
+      ],
+      "requires": [
+        "node"
+      ],
+      "timeout": 90,
+      "figure": "pj-typed-workflow-agent-with-mastra-1"
+    },
+    {
+      "id": "02-plan",
+      "title": "在计划中明确审批不变条件",
+      "summary": "update 操作搭配 requiresApproval=false 会失败。仅有 lookup 的计划却设置 requiresApproval=true，同样违反约定的表示规则。允许一至十个操作，每个操作都必须使用受支持的工具和非空查询。",
+      "hours": 2,
+      "language": "typescript",
+      "languageWhy": "带类型的 Plan 同时明确操作结构及必须与之匹配的审批标志。",
+      "concepts": [
+        "计划校验",
+        "能力选择",
+        "审批不变条件"
+      ],
+      "difficulty": "core",
+      "runner": [
+        "node",
+        "--experimental-strip-types",
+        "--test",
+        "{tests}/stage.test.ts"
+      ],
+      "requires": [
+        "node"
+      ],
+      "timeout": 90,
+      "figure": "pj-typed-workflow-agent-with-mastra-2"
+    },
+    {
+      "id": "03-runtime",
+      "title": "副作用前暂停，并统计失败尝试",
+      "summary": "lookup 返回结果时，一次调用即可完成。工具连续两次返回空文本，则在两次调用后失败。未经批准的写入返回检查点，调用次数为零；使用 approved=true 恢复该检查点时，执行原始查询。",
+      "hours": 2,
+      "language": "typescript",
+      "languageWhy": "异步函数支持工具适配器注入，结果联合类型保留各类终止状态。",
+      "concepts": [
+        "重试上限",
+        "调用预算",
+        "检查点结果"
+      ],
+      "difficulty": "core",
+      "runner": [
+        "node",
+        "--experimental-strip-types",
+        "--test",
+        "{tests}/stage.test.ts"
+      ],
+      "requires": [
+        "node"
+      ],
+      "timeout": 90,
+      "figure": "pj-typed-workflow-agent-with-mastra-3"
+    },
+    {
+      "id": "04-framework-boundary",
+      "title": "持久化真实 Mastra 审批状态并恢复",
+      "summary": "启动原创工坊更新示例，观察 status=suspended 且工具调用为零。关闭本地 LibSQL 存储，使用同一 SQLite 文件创建新的工作流，再按 runId 恢复。在恢复测试中，匹配的审批产生 success，并恰好观察到一次本地工具调用；错误摘要在零次调用时失败。",
+      "hours": 2,
+      "language": "typescript",
+      "languageWhy": "理解契约后，可选适配器使用真正导入的 createStep 和 createWorkflow。",
+      "concepts": [
+        "Mastra 暂停",
+        "绑定计划的审批",
+        "SQLite 恢复"
+      ],
+      "difficulty": "core",
+      "requires": [
+        "node"
+      ],
+      "timeout": 90,
+      "figure": "pj-typed-workflow-agent-with-mastra-4",
+      "runners": [
+        {
+          "language": "typescript",
+          "argv": [
+            "node",
+            "--experimental-strip-types",
+            "--test",
+            "{tests}/stage.test.ts"
+          ]
+        },
+        {
+          "language": "typescript",
+          "optional": true,
+          "requires": [
+            "node:@mastra/core",
+            "node:zod",
+            "node:@mastra/libsql"
+          ],
+          "argv": [
+            "node",
+            "--experimental-strip-types",
+            "--test",
+            "{stage}/tests-framework/adapter.test.ts"
+          ]
+        }
+      ]
+    }
+  ],
+  "demos": [
+    {
+      "gif": "media/run.gif",
+      "poster": "media/run.png",
+      "title": "初始化与评分（上游原始录屏）",
+      "caption": "上游原始录屏：先记录起始代码失败，再记录参考实现全部阶段通过。参考实现通过不授予学习者证书。"
+    },
+    {
+      "gif": "media/output.gif",
+      "poster": "media/output.png",
+      "title": "检查输出（上游原始录屏）",
+      "caption": "上游原始录屏中的本地确定性演示实际输出。夹具和在线适配器限制见 README。"
+    },
+    {
+      "gif": "media/framework.gif",
+      "poster": "media/framework.png",
+      "title": "验证真实 SDK（上游原始录屏）",
+      "caption": "上游原始录屏：安装依赖后执行可选真实 SDK 测试，使用确定性本地模型，没有在线云服务或模型服务商调用。"
+    }
+  ]
+}
