@@ -303,4 +303,4 @@ def should_recompute(layer_type, activation_bytes, recompute_flops_ratio):
 - [Pudipeddi 等人，2020：使用新执行算法以恒定内存训练大型神经网络](https://arxiv.org/abs/2002.05645)：通过反向模式重新物化实现恒定内存的替代方案。
 - [Ren 等人，2021：ZeRO-Offload，让十亿级模型训练普及](https://arxiv.org/abs/2101.06840)：大规模激活卸载。
 - [PyTorch torch.utils.checkpoint 文档](https://pytorch.org/docs/stable/checkpoint.html)：标准应用程序接口（Application Programming Interface，API）。
-- [Megatron-Core 激活重计算文档](https://docs.nvidia.com/nemo-framework/user-guide/latest/nemotoolkit/features/memory_optimizations.html)：selective、full、block 模式。
+- [Megatron Bridge 激活重计算文档](https://docs.nvidia.com/nemo/megatron-bridge/latest/training/activation-recomputation.html) -- 选择性、全量和分块模式。
