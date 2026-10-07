@@ -1,0 +1,125 @@
+{
+  "id": "prompt-regression-tester",
+  "title": "提示词回归测试器（Prompt Regression Tester）",
+  "level": 1,
+  "levelName": "Starter",
+  "tagline": "基于已记录的响应比较提示词修订版，使用明确检查项、配对回归和可复现的发布门禁。",
+  "summary": "基于已记录的响应比较提示词修订版，使用明确检查项、配对回归和可复现的发布门禁。",
+  "youWillBuild": "审阅提示词变更的工具包，准确找出哪些向用户承诺的行为发生了退化。",
+  "usefulFor": [
+    "审阅提示词变更的工具包，准确找出哪些向用户承诺的行为发生了退化。",
+    "随附响应记录是人工编写的测试夹具。"
+  ],
+  "hours": 8,
+  "languages": [
+    "Python"
+  ],
+  "languageWhy": {
+    "Python": "标准库让解析、评分和失败处理清晰可见，不把机制隐藏在框架之后。"
+  },
+  "status": "ready",
+  "source": "core",
+  "author": {
+    "name": "AI Engineering from Scratch",
+    "github": "rohitg00"
+  },
+  "skills": [
+    "评分前校验用例",
+    "无需模型即可为记录输出评分",
+    "跨修订版比较相同用例",
+    "根据明确容限设置发布门禁"
+  ],
+  "prerequisites": [
+    {
+      "title": "结构化输出",
+      "path": "phases/11-llm-engineering/03-structured-outputs"
+    },
+    {
+      "title": "模型评估",
+      "path": "phases/02-ml-fundamentals/09-model-evaluation"
+    }
+  ],
+  "figures": true,
+  "overviewFigure": "pj-prompt-regression-tester-1",
+  "demo": {
+    "command": [
+      "python3",
+      "demo.py"
+    ],
+    "cwd": "solution"
+  },
+  "stages": [
+    {
+      "id": "01-validate-cases",
+      "title": "评分前校验用例",
+      "summary": "校验唯一用例 ID、提示词，以及受支持的 contains、excludes 和 json 检查。",
+      "hours": 2,
+      "difficulty": "starter",
+      "language": "python",
+      "languageWhy": "使用明确的数据结构和确定性的标准库操作。",
+      "concepts": [
+        "评估契约",
+        "结构校验"
+      ],
+      "figure": "pj-prompt-regression-tester-1"
+    },
+    {
+      "id": "02-score-recordings",
+      "title": "无需模型即可为记录输出评分",
+      "summary": "为 contains、excludes 和有效 JSON 检查评分。",
+      "hours": 2,
+      "difficulty": "core",
+      "language": "python",
+      "languageWhy": "使用明确的数据结构和确定性的标准库操作。",
+      "concepts": [
+        "回放",
+        "断言",
+        "失败证据"
+      ],
+      "figure": "pj-prompt-regression-tester-2"
+    },
+    {
+      "id": "03-pair-revisions",
+      "title": "跨修订版比较相同用例",
+      "summary": "返回配对用例结果，以及回归与改善的数量。",
+      "hours": 2,
+      "difficulty": "core",
+      "language": "python",
+      "languageWhy": "使用明确的数据结构和确定性的标准库操作。",
+      "concepts": [
+        "配对比较",
+        "回归检测"
+      ],
+      "figure": "pj-prompt-regression-tester-3"
+    },
+    {
+      "id": "04-gate-releases",
+      "title": "根据明确容限设置发布门禁",
+      "summary": "对比较报告应用有限的最低通过比例和整数回归预算。",
+      "hours": 2,
+      "difficulty": "stretch",
+      "language": "python",
+      "languageWhy": "使用明确的数据结构和确定性的标准库操作。",
+      "concepts": [
+        "发布门禁",
+        "预算",
+        "空证据"
+      ],
+      "figure": "pj-prompt-regression-tester-4"
+    }
+  ],
+  "demos": [
+    {
+      "gif": "media/run.gif",
+      "poster": "media/run.png",
+      "title": "初始化与评分（上游原始录屏）",
+      "caption": "上游原始录屏：先记录起始代码失败，再记录参考实现全部阶段通过。参考实现通过不授予学习者证书。"
+    },
+    {
+      "gif": "media/output.gif",
+      "poster": "media/output.png",
+      "title": "检查输出（上游原始录屏）",
+      "caption": "上游原始录屏中的本地确定性演示实际输出。测试夹具及在线适配器限制见 README。"
+    }
+  ]
+}
