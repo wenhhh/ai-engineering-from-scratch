@@ -71,7 +71,7 @@ print(result)
 #  {'label': 'contradiction', 'score': 0.01}]
 ```
 
-生产 NLI 的开放默认选择是 `facebook/bart-large-mnli` 和 `microsoft/deberta-v3-large-mnli`。DeBERTa-v3 位居排行榜前列。
+生产 NLI 的开放默认选择是 `facebook/bart-large-mnli` 和 `MoritzLaurer/DeBERTa-v3-large-mnli-fever-anli-ling-wanli`。DeBERTa-v3 位居排行榜前列。
 
 ### 步骤 2：零样本分类（Zero-Shot Classification）
 
@@ -118,7 +118,7 @@ def is_faithful(answer, context, threshold=0.5):
 
 | 用例 | 模型 |
 |---------|-------|
-| 通用 NLI | `microsoft/deberta-v3-large-mnli` |
+| 通用 NLI | `MoritzLaurer/DeBERTa-v3-large-mnli-fever-anli-ling-wanli` |
 | 快速 / 边缘场景 | `cross-encoder/nli-deberta-v3-base` |
 | 轻量零样本分类 | `facebook/bart-large-mnli` |
 | 文档级 NLI | `MoritzLaurer/DeBERTa-v3-large-mnli-fever-anli-ling-wanli` |
