@@ -1,0 +1,78 @@
+{
+  "lesson": "18-error-handling",
+  "title": "请求失败的两个通道（Two Ways for a Request to Fail）",
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "tools/call 指定的工具从未在该服务器上注册。MCP 2026-07-28 中哪个响应正确？",
+      "options": [
+        "返回 JSON-RPC 错误 -32601，表示方法未找到",
+        "返回 JSON-RPC 错误 -32602，表示请求参数无效",
+        "返回普通结果并设置 isError true，附简短解释",
+        "返回 JSON-RPC 错误 -32002，沿用旧资源编号"
+      ],
+      "correct": 1,
+      "explanation": "未知工具属于协议错误，使用 -32602（Invalid params）。-32601 表示方法本身未找到；旧的资源未找到编号 -32002 已不能由 2026-07-28 实现发送。"
+    },
+    {
+      "stage": "check",
+      "question": "客户端省略请求 _meta 中的 io.modelcontextprotocol/clientCapabilities。服务器必须如何处理？",
+      "options": [
+        "以 -32021 拒绝，认定某项客户端能力缺失",
+        "等待同一连接上的下个请求补充这个字段",
+        "以 -32602 拒绝，认定必需请求字段缺失",
+        "假定客户端能力为空集合，继续处理请求"
+      ],
+      "correct": 2,
+      "explanation": "clientCapabilities 本身是必需 _meta 字段，缺少整个字段会使请求格式无效，必须返回 -32602。不能补一个默认值，也不能依赖之后的请求修补当前请求。"
+    },
+    {
+      "stage": "check",
+      "question": "以下哪对 JSON-RPC 错误码不能由 2026-07-28 实现发送？",
+      "options": [
+        "-32601 和 -32603，均为标准 JSON-RPC 编号",
+        "-32700 和 -32600，均为标准 JSON-RPC 编号",
+        "-32020 和 -32021，均由当前规范正式定义",
+        "-32002 和 -32042，均已被当前版本明确退役"
+      ],
+      "correct": 3,
+      "explanation": "-32002 曾表示旧版资源未找到，-32042 曾表示 2025-11-25 的 URL 信息征询要求，两者均退役。-32020 至 -32022 仍是当前编号，标准 JSON-RPC 编号也继续使用。"
+    },
+    {
+      "stage": "check",
+      "question": "工具参数没有通过已声明的输入结构定义，例如缺少必需字段。符合规范的服务器怎样报告？",
+      "options": [
+        "返回正常结果，设置 isError true 并解释原因",
+        "返回 JSON-RPC 错误 -32602，表示 Invalid params",
+        "直接关闭连接，让客户端必须重新建立连接",
+        "返回 JSON-RPC 错误 -32600，表示 Invalid Request"
+      ],
+      "correct": 0,
+      "explanation": "SEP-1303 将工具输入校验失败归入工具执行错误，通过 isError true 的正常结果返回。模型可以读取原因，在后续调用中修正参数，而不必猜测协议错误含义。"
+    },
+    {
+      "stage": "post",
+      "question": "MCP-Protocol-Version 请求头与正文协议版本不一致，Streamable HTTP 服务器拒绝请求。哪组状态和编号正确？",
+      "options": [
+        "HTTP 401 Unauthorized，错误码为 -32021",
+        "HTTP 400 Bad Request，错误码为 -32020",
+        "HTTP 403 Forbidden，错误码为 -32022",
+        "HTTP 404 Not Found，错误码为 -32601"
+      ],
+      "correct": 1,
+      "explanation": "头部与正文不一致属于 HeaderMismatch（-32020），服务器必须配套返回 400 Bad Request。它不同于方法未知、身份授权失败或服务器不支持某个版本。"
+    },
+    {
+      "stage": "post",
+      "question": "服务器完成请求需要 elicitation，但当前请求的 clientCapabilities 没有这项能力。必须返回什么？",
+      "options": [
+        "错误 -32602，用 data.uri 指出缺少的资源",
+        "input_required 结果，附一个空的 inputRequests 映射",
+        "错误 -32021，用 data.requiredCapabilities 指出缺失项",
+        "正常结果，设置 isError true 且不提供其他数据"
+      ],
+      "correct": 2,
+      "explanation": "服务器不能依赖当前请求未声明的能力。它返回 MissingRequiredClientCapabilityError（-32021），并在 data.requiredCapabilities 列出重试前需要声明的能力。"
+    }
+  ]
+}
