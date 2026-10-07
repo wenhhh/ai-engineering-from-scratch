@@ -1,0 +1,78 @@
+{
+  "lesson": "07-discovery-and-capability-negotiation",
+  "title": "发现服务器并协商能力（Discovering a Server and Negotiating What It Can Do）",
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "客户端希望发送其他请求前，通过一次往返获得服务器身份、支持版本和能力。哪个请求同时提供这三类信息？",
+      "options": [
+        "resources/list，返回服务器的可读资源及其对应 URI",
+        "server/discover，同时返回支持版本、能力和身份",
+        "prompts/list，返回供用户显式选择的可复用模板",
+        "initialize 握手，连接在任意其他请求之前完成它"
+      ],
+      "correct": 1,
+      "explanation": "server/discover 专门用于一次获取这些信息。DiscoverResult 携带 supportedVersions、capabilities 和服务器自报身份，而 2026-07-28 已完整移除 initialize 握手。"
+    },
+    {
+      "stage": "check",
+      "question": "哪项正确说明 server/discover 何时必须实现、何时必须调用？",
+      "options": [
+        "双方都无须支持，因为它只是实验性工具功能",
+        "客户端必须首先调用，服务器则可以不实现",
+        "服务器必须实现，客户端可以调用或完全跳过",
+        "双方都必须实现，并且每条连接恰好调用一次"
+      ],
+      "correct": 2,
+      "explanation": "规范要求每台服务器实现 server/discover，但客户端调用它属于可选行为。客户端也可以直接发送实际请求，收到版本错误时再按错误信息进行处理。"
+    },
+    {
+      "stage": "check",
+      "question": "tools/call 请求的 clientCapabilities 未声明 elicitation，但目标工具需要它在调用中追问用户。符合规范的服务器如何处理？",
+      "options": [
+        "继续执行并静默跳过追问，避免额外延迟影响调用速度",
+        "返回 tools/call 错误 -32602，认定参数不符合输入模式",
+        "将调用排队，等待客户端重新连接并启用 elicitation",
+        "返回 -32021（MissingRequiredClientCapabilityError），指出缺失能力"
+      ],
+      "correct": 3,
+      "explanation": "服务器不能依赖当前请求未声明的客户端能力。它返回 -32021，并在 data.requiredCapabilities 中准确列出缺失项，让客户端在重试请求中声明所需能力。"
+    },
+    {
+      "stage": "check",
+      "question": "客户端请求较旧协议版本，但服务器的 supportedVersions 不包含它。客户端接下来应该怎样做？",
+      "options": [
+        "使用错误数据中列出的版本重试同一请求",
+        "认定服务器不可达，并停止发送所有后续请求",
+        "回退到更早版本采用的 initialize 初始化握手",
+        "原封不动重发请求，因为服务器会自动重试"
+      ],
+      "correct": 0,
+      "explanation": "UnsupportedProtocolVersionError 携带 data.supported 和 data.requested。客户端应从 data.supported 选择版本，使用新 id 重试，不应直接假定服务器属于旧版或不可达。"
+    },
+    {
+      "stage": "post",
+      "question": "客户端发现服务器提供 tools 及 listChanged 通知，随后发送 tools/call。处理这次调用时，服务器可以依赖哪些客户端能力？",
+      "options": [
+        "客户端迄今所有请求中 clientCapabilities 的并集",
+        "仅依赖当前请求自己 _meta 中重新检查的 clientCapabilities",
+        "服务器先前在自身 DiscoverResult 中发布的全部能力",
+        "客户端与它交互时第一个请求所声明的所有能力"
+      ],
+      "correct": 1,
+      "explanation": "即使位于同一连接，服务器也不得从先前请求推断客户端能力。它只能依赖正在处理的请求自身 _meta 中声明的 clientCapabilities，不能混同服务器能力与客户端能力。"
+    },
+    {
+      "stage": "post",
+      "question": "DiscoverResult 的 _meta 中包含 io.modelcontextprotocol/serverInfo，记录服务器自报名称与版本。这个字段适合用于什么？",
+      "options": [
+        "决定客户端应向授权服务器请求哪些 OAuth 权限范围",
+        "判断是否授予该服务器更高等级的工具访问权限",
+        "仅用于展示、日志和调试，不能用于安全或授权决策",
+        "在客户端发送第一个实际请求前完成服务器身份认证"
+      ],
+      "correct": 2,
+      "explanation": "serverInfo 由服务器自行报告，协议不验证其真实性。因此规范仅将它用于展示、日志和调试，不能据此认证服务器或作出安全、授权决策。"
+    }
+  ]
+}
