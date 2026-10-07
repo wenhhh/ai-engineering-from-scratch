@@ -145,4 +145,4 @@ def make_tokens(style, length, vocab_size, rng):
 - [Wang 等（2023）：神经编解码器语言模型是零样本文本转语音合成器（Neural Codec Language Models are Zero-Shot Text to Speech Synthesizers，VALL-E）](https://arxiv.org/abs/2301.02111)：VALL-E。
 - [Copet 等（2023）：简单且可控的音乐生成（Simple and Controllable Music Generation，MusicGen）](https://arxiv.org/abs/2306.05284)：MusicGen。
 - [Liu 等（2023）：AudioLDM 2：通过自监督预训练学习整体音频生成（AudioLDM 2: Learning Holistic Audio Generation with Self-supervised Pretraining）](https://arxiv.org/abs/2308.05734)：AudioLDM 2。
-- [Stability AI（2024）：Stable Audio 2.5](https://stability.ai/news/introducing-stable-audio-2-5)：2025 年采用流匹配的文本到音乐。
+- [Stability AI（2025）：Stable Audio 2.5](https://stability.ai/news-updates/stability-ai-introduces-stable-audio-25-the-first-audio-model-built-for-enterprise-sound-production-at-scale) — 2025 年采用流匹配的文本生成音乐模型。
