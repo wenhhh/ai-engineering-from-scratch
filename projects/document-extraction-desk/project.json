@@ -1,0 +1,119 @@
+{
+  "id": "document-extraction-desk",
+  "title": "文档抽取审阅台（Document Extraction Review Desk）",
+  "level": 2,
+  "levelName": "Builder",
+  "tagline": "从文本文档抽取结构化字段，检查精确来源区间，并在导出前批准存在歧义的值。",
+  "summary": "从文本文档抽取结构化字段，检查精确来源区间，并在导出前批准存在歧义的值。",
+  "youWillBuild": "本地 HTML 审阅台，下载与来源绑定的审批决定及已批准值的 JSON 映射。",
+  "usefulFor": [
+    "使用自己的输入，生成可审阅且能供其他应用使用的交付物。"
+  ],
+  "hours": 8,
+  "languages": [
+    "Python"
+  ],
+  "languageWhy": {
+    "Python": "通过标准库解析、明确契约和可移植交付物，使机制保持可见。"
+  },
+  "status": "ready",
+  "source": "core",
+  "author": {
+    "name": "AI Engineering from Scratch",
+    "github": "rohitg00"
+  },
+  "skills": [
+    "抽取前先定义字段",
+    "抽取候选值并保留证据",
+    "将审批绑定到单个文档版本",
+    "展示证据并导出已审阅值"
+  ],
+  "prerequisites": [
+    {
+      "title": "开发环境",
+      "path": "phases/00-setup-and-tooling/01-dev-environment"
+    },
+    {
+      "title": "数据管理",
+      "path": "phases/00-setup-and-tooling/09-data-management"
+    }
+  ],
+  "figures": true,
+  "overviewFigure": "pj-document-extraction-desk-1",
+  "demo": {
+    "command": [
+      "python3",
+      "cli.py",
+      "sample.txt",
+      "--schema",
+      "schema.json",
+      "--output",
+      "output/review.html"
+    ],
+    "cwd": "solution"
+  },
+  "stages": [
+    {
+      "id": "01-define-fields",
+      "title": "抽取前先定义字段",
+      "summary": "validate_schema(schema)",
+      "hours": 2,
+      "difficulty": "starter",
+      "language": "python",
+      "concepts": [
+        "抽取前先定义字段"
+      ],
+      "figure": "pj-document-extraction-desk-1"
+    },
+    {
+      "id": "02-retain-source-spans",
+      "title": "抽取候选值并保留证据",
+      "summary": "extract_candidates(text, schema)",
+      "hours": 2,
+      "difficulty": "core",
+      "language": "python",
+      "concepts": [
+        "抽取候选值并保留证据"
+      ],
+      "figure": "pj-document-extraction-desk-2"
+    },
+    {
+      "id": "03-review-and-approve",
+      "title": "将审批绑定到单个文档版本",
+      "summary": "typed_value(quote, kind); review_document(text, schema, candidates, decisions=None)",
+      "hours": 2,
+      "difficulty": "core",
+      "language": "python",
+      "concepts": [
+        "将审批绑定到单个文档版本"
+      ],
+      "figure": "pj-document-extraction-desk-3"
+    },
+    {
+      "id": "04-export-review-desk",
+      "title": "展示证据并导出已审阅值",
+      "summary": "render_review(report)",
+      "hours": 2,
+      "difficulty": "stretch",
+      "language": "python",
+      "concepts": [
+        "展示证据并导出已审阅值"
+      ],
+      "figure": "pj-document-extraction-desk-4"
+    }
+  ],
+  "demos": [
+    {
+      "gif": "media/run.gif",
+      "poster": "media/run.png",
+      "title": "初始化与评分（上游原始录屏）",
+      "caption": "保留上游录制的起始代码失败和参考解答评分输出；参考通过不授予学习者证书。本批未重录中文视频。"
+    },
+    {
+      "gif": "media/output.gif",
+      "poster": "media/output.png",
+      "title": "查看交付物输出（上游原始录屏）",
+      "caption": "保留上游输入、计算输出及本地交付物的原始记录；适用范围见 README，本批未将旧日志改写成新运行证据。"
+    }
+  ]
+}
