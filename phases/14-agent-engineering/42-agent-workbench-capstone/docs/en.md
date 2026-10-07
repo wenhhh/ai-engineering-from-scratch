@@ -150,7 +150,6 @@ python3 code/main.py
 - [Nx Blog：教 AI 智能体如何在单仓库中工作（Teach Your AI Agent How to Work in a Monorepo）](https://nx.dev/blog/nx-ai-agent-skills) —— 面向六种工具的单一来源生成器
 - [agents.md：开放规格（The Open Spec）](https://agents.md/) —— 包的路由入口必须实现的要求
 - [HKUDS/OpenHarness](https://github.com/HKUDS/OpenHarness) —— 等效工作台包的参考实现
-- [andrewgarst/agentic_harness](https://github.com/andrewgarst/agentic_harness) —— 基于 Redis、包含评估套件的参考实现
 - [Augment Code：好的 AGENTS.md 就是模型升级（A Good AGENTS.md Is a Model Upgrade）](https://www.augmentcode.com/blog/how-to-write-good-agents-dot-md-files) —— 包文档的质量标准
 - [Anthropic：长时间运行智能体的有效执行框架（Effective Harnesses for Long-running Agents）](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents)
 - [Anthropic：长时间应用开发的执行框架设计（Harness Design for Long-running Application Development）](https://www.anthropic.com/engineering/harness-design-long-running-apps)
