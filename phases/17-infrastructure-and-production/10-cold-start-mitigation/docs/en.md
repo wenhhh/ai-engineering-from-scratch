@@ -125,6 +125,6 @@ cold-start-pipeline
 - [Modal：冷启动性能](https://modal.com/docs/guide/cold-start)：公开基准与检查点架构。
 - [AWS Bottlerocket 仓库](https://github.com/bottlerocket-os/bottlerocket)：预置数据卷快照模式。
 - [NVIDIA Run:ai Model Streamer 仓库](https://github.com/run-ai/runai-model-streamer)：重叠权重加载与计算准备。
-- [Baseten：冷启动缓解](https://www.baseten.co/blog/cold-start-mitigation/)：预热操作指南。
+- [Baseten — 冷启动（Cold starts）](https://docs.baseten.co/deployment/autoscaling/cold-starts) — 预热操作指南。
 - [ServerlessLLM 论文（USENIX OSDI'24）](https://www.usenix.org/conference/osdi24/presentation/fu)：分层加载设计。
 - [NVIDIA：Kubernetes 上的分离式 LLM 推理](https://developer.nvidia.com/blog/deploying-disaggregated-llm-inference-workloads-on-kubernetes/)：分离式部署的在线迁移。
