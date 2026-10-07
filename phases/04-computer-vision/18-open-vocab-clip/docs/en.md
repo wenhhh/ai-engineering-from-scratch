@@ -224,4 +224,4 @@ SigLIP 更新，在小规模下训练更好，新工作优先选择它：`google
 - [CLIP：从自然语言监督学习可迁移视觉模型（Radford 等，2021）](https://arxiv.org/abs/2103.00020)
 - [SigLIP：用于语言图像预训练的 Sigmoid 损失（Zhai 等，2023）](https://arxiv.org/abs/2303.15343)
 - [OpenCLIP](https://github.com/mlfoundations/open_clip)：社区代码库
-- [DINOv2、CLIP 与 MAE 特征比较](https://huggingface.co/blog/dinov2)：Hugging Face 指南，并列展示使用场景
+- [Oquab 等（2023）：DINOv2：无监督学习稳健的视觉特征（DINOv2: Learning Robust Visual Features without Supervision）](https://arxiv.org/abs/2304.07193) — 原论文包含与 CLIP 类和 MAE 类模型的特征基准对比。
