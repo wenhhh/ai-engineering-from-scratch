@@ -214,7 +214,6 @@ python3 code/main.py
 - [preprints.org《语言智能体执行框架工程》（Harness Engineering for Language Agents，2026 年 3 月）](https://www.preprints.org/manuscript/202603.1756)：控制、自主性、运行时的学术表述
 - [walkinglabs/awesome-harness-engineering](https://github.com/walkinglabs/awesome-harness-engineering)：涵盖上下文、评估、可观测性、编排的精选阅读列表
 - [ai-boost/awesome-harness-engineering](https://github.com/ai-boost/awesome-harness-engineering)：另一精选列表，涵盖工具、评估、记忆、MCP、权限
-- [andrewgarst/agentic_harness](https://github.com/andrewgarst/agentic_harness)：具备 Redis 记忆后端和评估套件的生产就绪参考实现
 - [HKUDS/OpenHarness](https://github.com/HKUDS/OpenHarness)：内置个人智能体的开放执行框架
 
 值得阅读分歧而非共识的 Hacker News 讨论：
