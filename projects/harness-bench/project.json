@@ -1,0 +1,120 @@
+{
+  "id": "harness-bench",
+  "title": "执行框架评测台（Harness Bench）",
+  "level": 3,
+  "levelName": "Engineer",
+  "tagline": "在相同任务与调用预算下比较执行框架行为。",
+  "summary": "使用相同且顺序固定的用例和模型配置，对比基线、错误重试与证据补充三种策略。统计实际调用次数，拒绝不可比较的凭据，并支持回放有限响应记录或调用已配置的 HTTP 模型。",
+  "usefulFor": [
+    "在固定调用预算下，判断重试或补充证据能否改善助手表现",
+    "导出每次调用的可审阅轨迹，并附带数据集与模型凭据"
+  ],
+  "youWillBuild": "使用相同且顺序固定的用例和模型配置，对比基线、错误重试与证据补充三种策略。统计实际调用次数，拒绝不可比较的凭据，并支持回放有限响应记录或调用已配置的 HTTP 模型。",
+  "hours": 8,
+  "languages": [
+    "Go"
+  ],
+  "status": "ready",
+  "source": "core",
+  "author": {
+    "name": "AI Engineering from Scratch",
+    "github": "rohitg00"
+  },
+  "skills": [
+    "加载未见过的基准用例",
+    "精确定义正确答案",
+    "在调用预算内运行执行框架",
+    "在相同分母下比较运行结果"
+  ],
+  "prerequisites": [
+    {
+      "title": "模型评估",
+      "path": "phases/02-ml-fundamentals/09-model-evaluation"
+    },
+    {
+      "title": "结构化输出",
+      "path": "phases/11-llm-engineering/03-structured-outputs"
+    }
+  ],
+  "inspiredBy": [],
+  "demo": {
+    "command": [
+      "go",
+      "run",
+      "."
+    ],
+    "cwd": "solution"
+  },
+  "stages": [
+    {
+      "id": "01-load-unseen-benchmark-cases",
+      "title": "加载未见过的基准用例",
+      "summary": "比较策略之前，先固定用例。",
+      "hours": 2,
+      "language": "go",
+      "difficulty": "starter",
+      "concepts": [
+        "JSON 字段",
+        "用例预算",
+        "唯一标识",
+        "留出记录"
+      ]
+    },
+    {
+      "id": "02-define-exactly-what-a-correct-answer-means",
+      "title": "精确定义正确答案",
+      "summary": "看到分数之前，先定义答案契约。",
+      "hours": 2,
+      "language": "go",
+      "difficulty": "core",
+      "concepts": [
+        "空白规范化",
+        "转为小写",
+        "保留内容",
+        "精确相等"
+      ]
+    },
+    {
+      "id": "03-run-a-harness-under-a-call-budget",
+      "title": "在调用预算内运行执行框架",
+      "summary": "将调用用于执行策略，避免预期答案泄漏。",
+      "hours": 2,
+      "language": "go",
+      "difficulty": "core",
+      "concepts": [
+        "仅提示词输入",
+        "计入尝试",
+        "评估答案",
+        "具名终止状态"
+      ]
+    },
+    {
+      "id": "04-compare-runs-on-equal-denominators",
+      "title": "在相同分母下比较运行结果",
+      "summary": "排名之前，先证明各次运行可以比较。",
+      "hours": 2,
+      "language": "go",
+      "difficulty": "core",
+      "concepts": [
+        "计数器不变条件",
+        "相同数据集大小",
+        "稳定排序",
+        "限定范围的测量"
+      ]
+    }
+  ],
+  "demos": [
+    {
+      "gif": "media/run.gif",
+      "poster": "media/run.png",
+      "title": "初始化与评分（上游原始录屏）",
+      "caption": "上游原始录屏：先记录起始代码失败，再记录参考实现全部阶段通过。参考实现通过不授予学习者证书。"
+    },
+    {
+      "gif": "media/output.gif",
+      "poster": "media/output.png",
+      "title": "检查输出（上游原始录屏）",
+      "caption": "上游原始录屏中的本地确定性演示实际输出。测试夹具及在线适配器限制见 README。"
+    }
+  ]
+}
