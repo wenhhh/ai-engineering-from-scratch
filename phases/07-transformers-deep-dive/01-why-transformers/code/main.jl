@@ -2,7 +2,7 @@
 # 注意力（Attention）风格并行归约（Parallel reduction），验证 Hillis-Steele
 # 并行前缀扫描（Parallel prefix scan）与串行扫描一致。仅用标准库。来源:
 #   https://docs.julialang.org/en/v1/manual/control-flow/
-#   https://docs.julialang.org/en/v1/stdlib/Base/
+#   https://docs.julialang.org/en/v1/base/base/
 #   https://en.wikipedia.org/wiki/Prefix_sum
 
 using Printf
