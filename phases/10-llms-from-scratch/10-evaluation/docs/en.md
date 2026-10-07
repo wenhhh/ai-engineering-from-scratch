@@ -516,4 +516,4 @@ RAGAS 衡量通用评估遗漏的方面：模型答案是否以检索到的上�
 - [Hendrycks 等，2021：《衡量大规模多任务语言理解》](https://arxiv.org/abs/2009.03300)：MMLU 论文，尽管测试已饱和，它仍是引用最多的大语言模型基准测试
 - [Chen 等，2021：《评估在代码上训练的大语言模型》](https://arxiv.org/abs/2107.03374)：OpenAI 的 HumanEval 论文，确立了代码生成评估方法
 - [Zheng 等，2023：《评判大语言模型裁判》](https://arxiv.org/abs/2306.05685)：系统分析用大语言模型评估大语言模型的方法，包含位置偏差和冗长偏差的发现
-- [LMSYS Chatbot Arena](https://chat.lmsys.org/)：拥有 200 多万次投票的众包模型比较平台，提供最受信任的现实场景大语言模型排名
+- [Arena（原 LMSYS Chatbot Arena）](https://arena.ai/leaderboard) -- 拥有超过 200 万次投票的众包模型比较平台，也是最受信赖的真实场景大语言模型排行榜。
