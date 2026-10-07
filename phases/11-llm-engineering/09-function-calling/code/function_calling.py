@@ -1,3 +1,7 @@
+"""从零实现函数调用：工具注册表、模型到工具的分派循环，以及带防护的工具实现。
+完整讲解见 docs/en.md；进程内过滤器不提供真正的安全隔离。"""
+
+import ast
 import json
 import math
 import re
@@ -101,10 +105,19 @@ def read_file(path):
 def run_code(code, language="python"):
     if language != "python":
         return {"error": True, "message": f"不支持语言 '{language}'。仅支持 'python'。"}
-    forbidden = ["import os", "import sys", "import subprocess", "exec(", "eval(", "__import__", "open("]
-    for pattern in forbidden:
-        if pattern in code:
-            return {"error": True, "message": f"禁止的操作： {pattern}", "code": "SECURITY_VIOLATION"}
+    # 按语法树拒绝导入、双下划线属性与不安全内置名称；错误码沿用上游契约。
+    try:
+        tree = ast.parse(code)
+    except SyntaxError as e:
+        return {"error": True, "message": f"SyntaxError: {e}", "code": "SYNTAX_ERROR"}
+    unsafe_names = {"exec", "eval", "compile", "__import__", "open", "globals", "locals", "vars", "getattr", "setattr", "delattr"}
+    for node in ast.walk(tree):
+        if isinstance(node, (ast.Import, ast.ImportFrom)):
+            return {"error": True, "message": "Forbidden operation: import is not allowed", "code": "SECURITY_VIOLATION"}
+        if isinstance(node, ast.Attribute) and node.attr.startswith("__") and node.attr.endswith("__"):
+            return {"error": True, "message": "Forbidden operation: dunder attribute access is not allowed", "code": "SECURITY_VIOLATION"}
+        if isinstance(node, ast.Name) and node.id in unsafe_names:
+            return {"error": True, "message": f"Forbidden operation: {node.id} is not allowed", "code": "SECURITY_VIOLATION"}
     try:
         local_vars = {}
         exec(
@@ -184,7 +197,7 @@ def register_all_tools():
     )
     register_tool(
         "run_code",
-        "Execute Python code in a sandboxed environment. Set a 'result' variable to return output.",
+        "Run a small Python snippet behind a static-analysis guard and a restricted interpreter. This is a teaching filter, not real isolation. Set a 'result' variable to return output.",
         {
             "type": "object",
             "properties": {
