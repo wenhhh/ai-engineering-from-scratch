@@ -1,0 +1,78 @@
+{
+  "lesson": "30-the-extensions-framework",
+  "title": "扩展框架（The Extensions Framework）",
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "团队要添加核心原语之外的扩展，并避免与其他厂商同名冲突。扩展标识必须包含什么？",
+      "options": [
+        "对它携带的设置对象计算得到的校验和",
+        "紧接扩展名称之后的数字版本后缀",
+        "位于斜杠和扩展名称之前的供应商前缀",
+        "标识该字段为实验能力的前导下划线"
+      ],
+      "correct": 2,
+      "explanation": "扩展标识遵循 vendor-prefix/extension-name，前缀不能像普通 _meta 键那样省略。必需命名空间用于区分官方和不同厂商的同名能力，版本后缀则不是所有标识都必需。"
+    },
+    {
+      "stage": "check",
+      "question": "在 2026-07-28 中，客户端在哪里声明某一次 tools/call 希望启用的扩展？",
+      "options": [
+        "连接刚打开时唯一一次 initialize 的 capabilities 中",
+        "这个 HTTP 请求专有的 Mcp-Extensions 请求头中",
+        "紧接本次调用之前发送的独立 extensions 协商方法中",
+        "当前请求的 _meta 内，clientCapabilities 的 extensions 中"
+      ],
+      "correct": 3,
+      "explanation": "该版本没有 initialize 握手或协议会话。客户端在每个请求的 io.modelcontextprotocol/clientCapabilities.extensions 中重新声明支持，不能依赖连接早期的声明。"
+    },
+    {
+      "stage": "check",
+      "question": "当前请求声明 A、B，服务器声明 B、C。假定标识都合法，哪项扩展生效？",
+      "options": [
+        "仅 B，因为只有它被双方同时声明",
+        "全部不生效，因为还需另行发送确认请求",
+        "A、B、C 全部生效，因为任一声明都会扩散",
+        "仅 A，因为只由客户端决定服务器的行为"
+      ],
+      "correct": 0,
+      "explanation": "有效扩展集合按双方声明的合法标识取交集。B 同时被客户端和服务器声明，A 与 C 只出现在一侧，因此当前调用只启用 B。"
+    },
+    {
+      "stage": "check",
+      "question": "工具必须依赖一个扩展，无法提供有意义的核心回退；当前客户端未声明它。服务器应返回什么？",
+      "options": [
+        "JSON-RPC 错误 -32001，作为旧式工具失败代码",
+        "JSON-RPC 错误 -32021，并明确指出缺失扩展",
+        "JSON-RPC 错误 -32601，认定方法本身无法识别",
+        "没有更多说明、只设 isError true 的普通结果"
+      ],
+      "correct": 1,
+      "explanation": "缺少当前调用必需的扩展属于能力门禁，使用 MissingRequiredClientCapabilityError（-32021），由 data.requiredCapabilities 指出缺失项。它既不是未知方法，也不需要创造旧版自定义代码。"
+    },
+    {
+      "stage": "post",
+      "question": "Core Maintainer 开始评审新的官方扩展提案前，必须已经有什么？",
+      "options": [
+        "所有已注册服务器运营者参加的公开投票",
+        "整整一年的草案版本生产流量日志",
+        "在官方 SDK 中能够工作的参考实现",
+        "显示所有主要客户端已支持的完整矩阵"
+      ],
+      "correct": 2,
+      "explanation": "Extensions Track SEP 在进入核心维护者评审前，需要官方 SDK 中可工作的参考实现。这与核心 Standards Track 的流程不同，也不要求所有客户端事先支持。"
+    },
+    {
+      "stage": "post",
+      "question": "官方扩展需要删除既有实现依赖的字段。框架要求怎样发布这项变更？",
+      "options": [
+        "要求每个客户端厂商在同一天同时升级",
+        "只等待与核心相同的十二个月弃用窗口",
+        "直接静默发布，因为扩展无需核心再评审",
+        "采用新扩展标识，不能修改旧标识的契约"
+      ],
+      "correct": 3,
+      "explanation": "删除依赖字段属于破坏性变更，须使用新标识，例如加 v2 后缀。仍声明旧标识的实现继续得到原行为，不能仅凭扩展独立发布就悄悄改变其契约。"
+    }
+  ]
+}
