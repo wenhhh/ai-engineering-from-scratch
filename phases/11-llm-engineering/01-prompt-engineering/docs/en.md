@@ -937,24 +937,24 @@ OpenAI 会先处理系统消息，并赋予其较高的注意力权重。Tempera
 ### Google：带安全设置的 Gemini（Google: Gemini with Safety Settings）
 
 ```python
-# import google.generativeai as genai
+# from google import genai
+# from google.genai import types
 #
-# genai.configure(api_key="your-key")
+# client = genai.Client()
 #
-# model = genai.GenerativeModel(
-#     "gemini-1.5-pro",
-#     system_instruction="You are a technical analyst. Be precise and cite sources.",
-#     generation_config=genai.GenerationConfig(
+# response = client.models.generate_content(
+#     model="gemini-3.8-flash",
+#     contents="Compare PostgreSQL and MySQL for write-heavy workloads.",
+#     config=types.GenerateContentConfig(
+#         system_instruction="You are a technical analyst. Be precise and cite sources.",
 #         temperature=0.3,
 #         max_output_tokens=2048,
 #     ),
 # )
-#
-# response = model.generate_content("Compare PostgreSQL and MySQL for write-heavy workloads.")
 # print(response.text)
 ```
 
-Gemini 将系统指令作为模型配置的一部分处理，而不是消息。2M 词元的上下文窗口意味着你可以放入海量少样本示例集，而 GPT-4o 或 Claude 无法容纳这些内容。
+Gemini 将系统指令作为模型配置的一部分处理，而非放在消息中。其 100 万词元上下文窗口可容纳大量少样本示例，这些示例无法放入 GPT-4o 的 128K 窗口。
 
 ### 与提供商无关的提示词模板（Provider-Agnostic Prompt Templates）
 
@@ -1023,6 +1023,6 @@ Python 代码（`code/prompt_engineering.py`）是一个独立测试框架。将
 - [Wei 等，2022：《思维链提示激发大语言模型的推理能力》（Chain-of-Thought Prompting Elicits Reasoning in Large Language Models）](https://arxiv.org/abs/2201.11903)：奠基论文，表明“逐步思考”使 LLM 在推理任务上的准确率提高 10-40%
 - [Zamfirescu-Pereira 等，2023：《为什么 Johnny 不会写提示词》（Why Johnny Can't Prompt）](https://arxiv.org/abs/2304.13529)：研究非专家在提示词工程中遇到的困难，以及提示词有效的原因
 - [Shin 等，2023：《用提示词工程打造提示词工程师》（Prompt Engineering a Prompt Engineer）](https://arxiv.org/abs/2311.05661)：使用 LLM 自动优化提示词，是元提示的基础
-- [LMSYS Chatbot Arena](https://chat.lmsys.org/)：LLM 实时盲测比较平台，可在不同模型上测试同一提示词，并投票选出更好的回答
+- [Arena（原 LMSYS Chatbot Arena）](https://arena.ai/) -- 实时大语言模型盲测平台，可将相同提示词交给不同模型，并投票选择更好的回答。
 - [DAIR.AI 提示词工程指南（Prompt Engineering Guide）](https://www.promptingguide.ai/)：详尽收录提示词技术及示例（零样本、少样本、CoT、ReAct、自一致性）；是从业者了解更广泛提示词工程内容的参考。
 - [Anthropic 提示词库（Prompt library）](https://docs.anthropic.com/en/prompt-library)：按场景精选且已知有效的提示词，展示用于生产环境的结构模式。
