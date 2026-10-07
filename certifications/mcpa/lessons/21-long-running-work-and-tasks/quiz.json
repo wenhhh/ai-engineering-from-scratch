@@ -1,0 +1,78 @@
+{
+  "lesson": "21-long-running-work-and-tasks",
+  "title": "长时间运行的工作与任务扩展（Long-Running Work and the Tasks Extension）",
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "服务器为什么不能只保持连接打开，直到运行二十分钟的流水线完成？",
+      "options": [
+        "会遇到传输超时，执行中缺少输入通道，断连后也难以恢复",
+        "因为 MCP 要求所有工具的每次调用都必须使用任务扩展",
+        "因为客户端每完成一个请求，就必然关闭整个服务器连接",
+        "因为 JSON-RPC 禁止任何请求超过一秒后才返回响应"
+      ],
+      "correct": 0,
+      "explanation": "长期阻塞会碰到客户端、代理和负载均衡器各自的超时限制，还缺少合适的中途输入与恢复机制。持久任务句柄让客户端能够跨请求查询工作，而不依赖原连接一直存在。"
+    },
+    {
+      "stage": "check",
+      "question": "客户端应在哪里声明当前请求支持 io.modelcontextprotocol/tasks？",
+      "options": [
+        "放在服务器先前 tools/list 响应的 tasks 字段中",
+        "放在本请求 params._meta 中的 clientCapabilities.extensions 下",
+        "放在首次工具调用成功后由服务器签发的会话请求头中",
+        "在一次性 initialize 握手的 clientCapabilities 中声明，之后整条连接一直复用"
+      ],
+      "correct": 1,
+      "explanation": "扩展通过当前请求 params._meta 内的 clientCapabilities.extensions 声明。协议没有会话或初始化握手来保存先前声明，后续需要扩展的请求也必须分别声明。"
+    },
+    {
+      "stage": "check",
+      "question": "tasks/get 返回 resultType 为 complete，同时其中的 status 为 working。这表示什么？",
+      "options": [
+        "本次轮询请求与底层作业都已经完整结束",
+        "客户端必须再次发送 tools/call 才能推进原作业",
+        "轮询请求已成功完成，但底层作业仍在运行",
+        "服务器因为任务尚未就绪而拒绝了此次轮询"
+      ],
+      "correct": 2,
+      "explanation": "tasks/get 的 RPC 自身正常完成，因此 resultType 为 complete。底层工作的状态由独立的 status 字段描述，此处 working 表示仍在运行，客户端不能据外层 complete 就停止轮询。"
+    },
+    {
+      "stage": "check",
+      "question": "任务进入 input_required，tasks/get 返回 inputRequests 映射。客户端应如何作答？",
+      "options": [
+        "继续等待，因为该状态的任务无须回复便会自动恢复",
+        "使用新的 id 和相同输入请求键重试原来的 tools/call",
+        "自行向服务器直接发起一条新的 elicitation/create 请求",
+        "通过 tasks/update 提交与未满足输入项键名一致的 inputResponses"
+      ],
+      "correct": 3,
+      "explanation": "任务执行中的输入通过 tasks/update 提交，inputResponses 与服务器尚未满足的输入项使用相同键。它不同于核心 MRTR 的原请求重试，客户端不重新发送最初的 tools/call。"
+    },
+    {
+      "stage": "post",
+      "question": "工具调用结束时返回带有 isError true 的正常结果，对应任务应进入什么状态？",
+      "options": [
+        "completed，因为工具仍返回了协议规定的正常结果结构",
+        "cancelled，因为结果中的错误会隐式取消整个任务",
+        "input_required，因为模型必须先批准错误才算处理完成",
+        "failed，因为结果中任何位置的错误都属于 JSON-RPC 失败"
+      ],
+      "correct": 0,
+      "explanation": "isError true 属于工具执行结果，协议交互本身仍成功完成，因此任务状态为 completed。只有执行中出现 JSON-RPC 错误，才使用 failed，不能把业务失败与协议失败混淆。"
+    },
+    {
+      "stage": "post",
+      "question": "哪项工作最适合任务扩展，而非普通调用或一次 MRTR 往返？",
+      "options": [
+        "读取一份在不同请求之间内容始终不变的资源",
+        "可能等待审批并超过请求超时的部署流水线",
+        "向刚连接的客户端列出服务器当前提供的工具",
+        "完成当前请求之前，请用户确认一个简短参数值"
+      ],
+      "correct": 1,
+      "explanation": "工作可能超过请求时限、执行中暂停等待输入，或需要跨客户端重启继续追踪时，任务扩展才值得增加的复杂度。简短读取、列举或一次确认通常不需要持久任务。"
+    }
+  ]
+}
