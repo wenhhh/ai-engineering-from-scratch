@@ -1,0 +1,78 @@
+{
+  "lesson": "33-mcpa-capstone-readiness",
+  "title": "从头到尾读懂一段 MCP 交互（Reading One MCP Exchange End to End）",
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "沿 MCP 报文排查事故时，为定位失败所在层次，应先检查哪项区别？",
+      "options": [
+        "是否只使用 stdio，因为 Streamable HTTP 完全不会产生这种失败",
+        "消息是否超过数条，因为报文长度本身就能准确判断所属考试领域",
+        "连接是否保留协商会话，因为丢失会话能解释服务器几乎所有错误",
+        "协议 error 对象，或含 isError true 的普通结果"
+      ],
+      "correct": 3,
+      "explanation": "协议错误采用有代码的 JSON-RPC error 对象；工具执行错误是带 isError true 的正常结果。两者指向不同问题和处理路径，不能只凭连接、消息数量或传输形式判断。"
+    },
+    {
+      "stage": "check",
+      "question": "客户端配置为 2025-11-25，向本课 incident-console 调用 server/discover。正确的后续过程是什么？",
+      "options": [
+        "返回版本不支持错误（-32022），由客户端按列出的可用版本重新发出请求",
+        "服务器把此后同一连接上的所有请求都降为客户端第一次使用的版本",
+        "服务器启动旧式 initialize，让双方先通过握手共同保存一个会话版本",
+        "服务器静默采用自己的默认版本，只写入客户端不一定看到的告警"
+      ],
+      "correct": 0,
+      "explanation": "版本不支持时返回 -32022，由 data.supported 列出可用版本。客户端用新请求选择受支持版本重试即可；无状态模型没有需要重协商的连接会话，也不应静默改写请求版本。"
+    },
+    {
+      "stage": "check",
+      "question": "bob-readonly 为 restart_service 提供了完整合法参数，但这次请求没有声明 elicitation。服务器返回什么？",
+      "options": [
+        "isError true，声称已提供的 environment 不符合工具模式",
+        "-32021（MissingRequiredClientCapability），明确指出缺少 elicitation",
+        "仍返回 input_required，并假设客户端总能找到办法回答",
+        "-32602，因为缺少能力与调用未知工具属于同一种问题"
+      ],
+      "correct": 1,
+      "explanation": "服务器不能假定当前请求未声明的客户端能力。参数已合法时，缺少 elicitation 通过 -32021 报告，并在 requiredCapabilities 中明确指出，不能误报为输入模式或工具名称错误。"
+    },
+    {
+      "stage": "check",
+      "question": "alice 接受 restart_service 确认后，重试携带正确 requestState，却复用了首次请求的 JSON-RPC ID。问题在哪里？",
+      "options": [
+        "应完全省略 requestState，因为服务器已记录全部原始参数",
+        "应改用共享会话标识，证明重试仍来自原先连接",
+        "MRTR 重试必须分配新 JSON-RPC ID，不能复用首次 ID",
+        "没有问题，重用原 ID 正是服务器关联重试的唯一方式"
+      ],
+      "correct": 2,
+      "explanation": "MRTR 的后续尝试是独立请求，需要新 ID；关联原始逻辑调用使用服务器发出的 requestState，并按键回传 inputResponses。正确回传状态不能免除新 ID 要求。"
+    },
+    {
+      "stage": "post",
+      "question": "同样参数两次调用 run_full_diagnostics，一次未声明 tasks，一次声明 io.modelcontextprotocol/tasks。为什么本课返回不同 resultType？",
+      "options": [
+        "第一次其实静默失败，客户端随后自动修改能力并重新调用",
+        "服务器完全随机交替两种结果，与客户端能力没有关系",
+        "客户端必须先执行 tasks/get 登记兴趣，服务器才能创建任务",
+        "能力按每次请求声明，本例只有主动启用且双方支持时才返回任务"
+      ],
+      "correct": 3,
+      "explanation": "能力不随整条连接继承。服务器已声明支持 tasks 后，本课实现仅对当前请求主动声明扩展的调用返回 task；未声明的调用继续同步完成，不借用前次能力。"
+    },
+    {
+      "stage": "post",
+      "question": "完整运行后，只原地修改审计日志某个较早条目的字段，未更新摘要，再调用 audit.verify()。会得到什么？",
+      "options": [
+        "返回 False，指出被改条目的索引，因为内容与其保存摘要不匹配",
+        "返回 True，因为 verify 只重算最后一条记录而不访问早期条目",
+        "返回 False，但总是指向被改条目前一条的索引",
+        "返回 True，因为所编辑字段都不属于哈希函数覆盖范围"
+      ],
+      "correct": 0,
+      "explanation": "在此题限定的局部字段修改中，重算摘要首先在被修改条目处不匹配，verify 返回该索引。它不会错误指向前条；这也不代表内部哈希链能发现攻击者一致重算整链的情况。"
+    }
+  ]
+}
