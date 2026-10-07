@@ -264,4 +264,4 @@ python code/main.py gate    # 读取 manifest.out.yaml，应用评估门槛，�
 - [Kaplan 等，2020：《神经语言模型的缩放定律》](https://arxiv.org/abs/2001.08361)：最初的计算、数据与参数缩放关系
 - [Hoffmann 等，2022：《训练计算最优的大语言模型（Chinchilla）》](https://arxiv.org/abs/2203.15556)：对 Kaplan 的修正，重新校准现代数据预算
 - [PyTorch FSDP2 文档](https://pytorch.org/docs/stable/fsdp.html)：在 PyTorch 2.4+ 中替代 FSDP1 的分布式训练原语
-- [Weights & Biases 大语言模型报告](https://wandb.ai/site/llms)：开源大语言模型运行的真实清单与实验跟踪输出，可用作直接借鉴的模板
+- [Weights & Biases 大语言模型报告](https://wandb.ai/site/solutions/llms/)：开源大语言模型运行的真实清单与实验跟踪输出，可用作直接借鉴的模板
