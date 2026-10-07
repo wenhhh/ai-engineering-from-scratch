@@ -1,0 +1,78 @@
+{
+  "lesson": "24-client-registration-and-identity",
+  "title": "向授权服务器证明客户端身份（Proving a Client's Identity to an Authorization Server）",
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "客户端首次使用某授权服务器，但已保存为它预先配置的客户端信息。按注册优先级，应怎么做？",
+      "options": [
+        "重新走动态客户端注册，避免使用任何已保存凭据",
+        "使用已经为这台授权服务器保存的预注册凭据",
+        "先请用户手工输入 client id，再允许发出后续请求",
+        "无论是否有预注册信息，都优先获取 CIMD 文档"
+      ],
+      "correct": 1,
+      "explanation": "预注册信息在规定的优先顺序中排第一。只有该签发者没有可用预注册信息时，客户端才依次考虑 CIMD、已弃用 DCR，最后再询问用户，不能跳过已有信息。"
+    },
+    {
+      "stage": "check",
+      "question": "授权服务器从 https://app.example.com/oauth/client.json 获取 CIMD。信任它之前必须确认哪一项？",
+      "options": [
+        "文档通过普通 HTTP 获取，以便授权服务器缓存响应",
+        "文档已事先经 registration_endpoint 注册请求提交",
+        "文档内 client_id 与实际获取 URL 逐字符完全一致",
+        "文档包含授权服务器能够本地验证的 client secret"
+      ],
+      "correct": 2,
+      "explanation": "授权服务器必须把文档内的 client_id 与实际获取的 HTTPS URL 精确比较。字段声称的身份与来源地址不一致时，不能将该文档接受为这个客户端的注册身份。"
+    },
+    {
+      "stage": "check",
+      "question": "桌面 CLI 经 DCR 注册，并回调到 http://127.0.0.1:PORT/callback。application_type 应填什么？",
+      "options": [
+        "confidential，因为 CLI 总能在本地磁盘安全保存秘密",
+        "省略该字段，因为非 OIDC 服务器无论如何都会忽略它",
+        "web，因为授权服务器只对浏览器应用读取此参数",
+        "native，因为 CLI 属于使用 localhost 回调的本地应用"
+      ],
+      "correct": 3,
+      "explanation": "桌面工具、CLI 和 localhost 上的本地应用应声明 native。OIDC 将省略字段的情况默认视为 web，可能因此对回环重定向采用不适合本地应用的规则并拒绝注册。"
+    },
+    {
+      "stage": "check",
+      "question": "已保存凭据由授权服务器 A 签发，同一 MCP 服务器的资源元数据如今改为授权服务器 B。客户端必须怎么做？",
+      "options": [
+        "将旧凭据视为不适用于 B，并向正确授权服务器重新注册",
+        "将 A 与 B 合并为共享同一 client id 的单一信任域",
+        "先把 A 的凭据发给 B，让 B 决定是否愿意接受",
+        "继续使用 A 的凭据，因为 MCP 资源服务器本身没变"
+      ],
+      "correct": 0,
+      "explanation": "凭据绑定的是签发它们的授权服务器，而非抽象的 MCP 部署。资源元数据改指其他签发者后，客户端不得向新服务器复用旧凭据，应按正确注册路径重新建立关系。"
+    },
+    {
+      "stage": "post",
+      "question": "MCP 代理用同一个静态 client id，代表多个动态注册客户端访问第三方授权服务器。代理必须做什么？",
+      "options": [
+        "无须额外处理，因为静态 client id 已代表全部下游客户端",
+        "转发前分别获得用户对每个动态注册下游客户端的同意",
+        "完全禁用所有下游客户端的 DCR，拒绝任何动态注册",
+        "每出现一个新下游客户端，就轮换一次共享静态 client id"
+      ],
+      "correct": 1,
+      "explanation": "共享静态 client id 的代理存在混淆代理风险。用户曾批准代理本身，不代表批准其背后每个下游客户端；转发某个客户端的授权请求前，必须取得针对它的明确同意。"
+    },
+    {
+      "stage": "post",
+      "question": "CI 流水线每晚调用 MCP，届时没有用户进行交互式批准。适用哪种机制，如何声明支持？",
+      "options": [
+        "使用 DCR，因为只有动态注册能够服务无人值守客户端",
+        "使用企业托管授权，因为它完全取消了访问令牌的需要",
+        "使用 OAuth 客户端凭据扩展，并在每个请求的能力中声明",
+        "使用普通交互式授权码流程，由管理员预先批准一次即可"
+      ],
+      "correct": 2,
+      "explanation": "无交互式用户的机器间访问适合 OAuth 客户端凭据扩展。客户端通过每请求 io.modelcontextprotocol/clientCapabilities.extensions 声明支持；扩展需要显式选择，不会默认启用。"
+    }
+  ]
+}
