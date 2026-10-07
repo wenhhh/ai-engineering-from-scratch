@@ -137,6 +137,6 @@ def dft(x):
 
 - [Shannon（1949）：噪声存在时的通信](https://people.math.harvard.edu/~ctm/home/text/others/shannon/entropy/entropy.pdf)：采样定理的理论来源论文。
 - [Smith：《科学家与工程师数字信号处理指南》](https://www.dspguide.com/ch8.htm)：免费、经典的 DSP 教材。
-- [librosa 文档：音频入门](https://librosa.org/doc/latest/tutorial.html)：包含代码的实践教程。
-- [Heinrich Kuttruff：《室内声学》第 6 版](https://www.routledge.com/Room-Acoustics/Kuttruff/p/book/9781482260434)：解释真实音频为何不是纯净正弦波的参考书。
+- [librosa 文档：音频入门](https://librosa.org/doc/latest/auto_tutorials/index.html)：包含代码的实践教程。
+- [Heinrich Kuttruff：《室内声学》第 6 版](https://www.taylorfrancis.com/books/mono/10.1201/9781315372150/room-acoustics-heinrich-kuttruff)：解释真实音频为何不是纯净正弦波的参考书。
 - [Steve Eddins：FFT 解读笔记](https://blogs.mathworks.com/steve/2020/03/30/fft-spectrum-and-spectral-densities/)：用 10 分钟厘清对频率桶的直觉。
