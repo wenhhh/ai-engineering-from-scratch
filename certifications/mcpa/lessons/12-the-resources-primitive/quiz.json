@@ -1,0 +1,78 @@
+{
+  "lesson": "12-the-resources-primitive",
+  "title": "资源：无状态服务器中的可寻址内容（Resources: Addressable Content for a Stateless Server）",
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "客户端使用 resources/read 请求服务器无法识别的 URI。符合 2026-07-28 的服务器必须返回什么？",
+      "options": [
+        "JSON-RPC 错误 -32602，并在 data 中指出请求的 URI",
+        "JSON-RPC 错误 -32601，因为读取方法无法识别",
+        "返回 complete 结果，并将 contents 数组留空",
+        "返回工具执行错误结果，将 isError 设置为 true"
+      ],
+      "correct": 0,
+      "explanation": "缺失资源使用 JSON-RPC 错误 -32602，并由 data.uri 标明目标。空 contents 无法区分不存在的资源与空文档，因此不能用于表达资源缺失。"
+    },
+    {
+      "stage": "check",
+      "question": "SEP-2164 之前，服务器常用 -32002 表示资源不存在。2026-07-28 应如何处理这个代码？",
+      "options": [
+        "stdio 继续发 -32002，Streamable HTTP 则改发 -32602",
+        "今后返回 -32602，客户端仍识别旧版对端的 -32002",
+        "将 -32002 与 -32602 都当作毫不相关的未知错误码",
+        "只要资源使用 file 方案，就应继续返回 -32002"
+      ],
+      "correct": 1,
+      "explanation": "SEP-2164 将资源不存在规范为普通 Invalid params 代码 -32602。2026-07-28 服务器不再发送 -32002，但客户端为兼容旧版对端，仍应识别它。"
+    },
+    {
+      "stage": "check",
+      "question": "resources/read 成功返回 resultType complete。除 contents 外，结果必须包含哪两个字段？",
+      "options": [
+        "nextCursor 和 pageSize，用于让客户端继续分页读取内容",
+        "supportedVersions 和 capabilities，用于重新协商协议版本",
+        "ttlMs 和 cacheScope，提供缓存新鲜度与共享范围提示",
+        "inputRequests 和 requestState，用于客户端补充输入重试"
+      ],
+      "correct": 2,
+      "explanation": "resources/read 属于六种可缓存操作。完整结果必须包含 ttlMs，说明可视为新鲜内容的时长，以及 public 或 private 的 cacheScope，说明缓存共享范围。"
+    },
+    {
+      "stage": "check",
+      "question": "某文档只有服务器能访问，客户端无法直接从公开网页获取相同字节。应遵循哪种 URI 方案建议？",
+      "options": [
+        "使用 https，因为任意 URI 都可以标成客户端可直接获取",
+        "只有资源确实纳入真实版本控制时，才选择 git 方案",
+        "使用 https，再通过额外请求头让客户端不要直接获取",
+        "使用 file 或自定义方案，将 https 留给可直接获取的内容"
+      ],
+      "correct": 3,
+      "explanation": "规范建议只有客户端能够直接从网页获取相同内容时才使用 https。仅能通过服务器访问的内容，应使用 file、git 或适当的自定义方案，避免错误暗示直接获取能力。"
+    },
+    {
+      "stage": "post",
+      "question": "一次资源读取返回属于某位已认证用户的笔记。哪个 cacheScope 可避免把缓存交给其他用户？",
+      "options": [
+        "private，使缓存副本不跨不同的授权上下文共享",
+        "public，因为笔记体积足够小，能够安全共享",
+        "private，但只有通过 stdio 传输时才这样处理",
+        "public，同时设置非常短的 ttlMs 来限制风险"
+      ],
+      "correct": 0,
+      "explanation": "private 允许在同一授权上下文复用缓存，但禁止向不同调用方共享副本，适用于用户专属内容。它不替代服务器逐次授权，也不能靠缩短 public 有效期替代。"
+    },
+    {
+      "stage": "post",
+      "question": "客户端需要获知某个资源何时变化。2026-07-28 版本下应发送什么？",
+      "options": [
+        "发送 server/discover，并设置 capabilities.resources.subscribe true",
+        "发送 subscriptions/listen，将 URI 列入 resourceSubscriptions",
+        "继续发送 resources/subscribe，像更早版本一样指定 URI",
+        "按较短时间间隔反复调用 resources/read 来轮询内容"
+      ],
+      "correct": 1,
+      "explanation": "独立的 resources/subscribe 已被移除。客户端如今使用 subscriptions/listen，在 resourceSubscriptions 过滤器中列出希望接收更新的 URI。"
+    }
+  ]
+}
