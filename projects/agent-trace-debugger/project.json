@@ -1,0 +1,157 @@
+{
+  "id": "agent-trace-debugger",
+  "title": "智能体追踪调试器（Agent Trace Debugger）",
+  "level": 3,
+  "levelName": "Engineer",
+  "tagline": "生成前后对照的回归报告，解释时间区间重叠、自身耗时，以及失败调用消耗的词元。",
+  "summary": "生成前后对照的回归报告，解释时间区间重叠、自身耗时，以及失败调用消耗的词元。 从埋点系统逐行导出 Span JSON 对象，并在持续集成中将 trace.json 与 trace.html 一起保存。",
+  "hours": 8,
+  "languages": [
+    "TypeScript"
+  ],
+  "status": "ready",
+  "source": "core",
+  "author": {
+    "name": "AI Engineering from Scratch",
+    "github": "rohitg00"
+  },
+  "skills": [
+    "读取 JSONL 追踪记录",
+    "校验父子关系",
+    "区分自身耗时与等待时间",
+    "渲染可检查的时间线"
+  ],
+  "prerequisites": [
+    "Node 22.18+；评分器还需 Python 3",
+    "TypeScript 对象、数组、Map、排序与区间运算基础。"
+  ],
+  "youWillBuild": "生成前后对照的回归报告，解释时间区间重叠、自身耗时，以及失败调用消耗的词元。",
+  "usefulFor": [
+    "从埋点系统逐行导出 Span JSON 对象，并在持续集成中将 trace.json 与 trace.html 一起保存。"
+  ],
+  "demo": {
+    "cwd": "solution",
+    "command": [
+      "node",
+      "cli.ts",
+      "--input",
+      "samples/trace.jsonl",
+      "--baseline",
+      "samples/before.jsonl",
+      "--output",
+      "trace.html",
+      "--json",
+      "trace.json"
+    ]
+  },
+  "stages": [
+    {
+      "id": "01-parse",
+      "title": "读取 JSONL 追踪记录",
+      "summary": "逐个非空行解析 JSON 对象。要求稳定的 ID、名称、有限的起止时间、非负词元数，以及明确的 ok 或 error 状态。遇到格式错误的行，应停止处理并报告行号；静默丢弃坏跨度会扭曲耗时和费用结论。时间采用相对毫秒，不采用绝对时钟时间戳。",
+      "hours": 2,
+      "language": "typescript",
+      "languageWhy": "使用 TypeScript 描述跨度，同时在日志输入边界保留运行时校验。",
+      "concepts": [
+        "parseTrace"
+      ],
+      "difficulty": "starter",
+      "runner": [
+        "node",
+        "--experimental-strip-types",
+        "--test",
+        "{tests}/stage.test.ts"
+      ],
+      "requires": [
+        "node"
+      ],
+      "timeout": 90,
+      "figure": "pj-agent-trace-debugger-1"
+    },
+    {
+      "id": "02-tree",
+      "title": "校验父子关系",
+      "summary": "子跨度必须引用存在的父跨度，且时间区间完全位于父区间之内。检查每条祖先链中的环，并拒绝重复 ID。追踪可包含重叠的独立运行，因此允许多个根。先校验再聚合，避免损坏的关系图生成看似可信的图表。",
+      "hours": 2,
+      "language": "typescript",
+      "languageWhy": "用 Map 稳定查找标识，用集合检测关系环。",
+      "concepts": [
+        "validateTree"
+      ],
+      "difficulty": "core",
+      "runner": [
+        "node",
+        "--experimental-strip-types",
+        "--test",
+        "{tests}/stage.test.ts"
+      ],
+      "requires": [
+        "node"
+      ],
+      "timeout": 90,
+      "figure": "pj-agent-trace-debugger-2"
+    },
+    {
+      "id": "03-timing",
+      "title": "区分自身耗时与等待时间",
+      "summary": "包含子调用的总耗时为 end 减 start。自身耗时应减去直接子跨度区间的并集长度；并行子跨度可能重叠，因此不能减去它们的时长之和。根区间的并集给出跨多次运行的总历时。词元按跨度自身用量只累计一次。slowest 指向自身耗时最大的跨度，避免将主要在等待子调用的根误判为最慢工作。",
+      "hours": 2,
+      "language": "typescript",
+      "languageWhy": "通过区间运算呈现并发，无须依赖追踪库。",
+      "concepts": [
+        "unionDuration",
+        "analyze"
+      ],
+      "difficulty": "core",
+      "runner": [
+        "node",
+        "--experimental-strip-types",
+        "--test",
+        "{tests}/stage.test.ts"
+      ],
+      "requires": [
+        "node"
+      ],
+      "timeout": 90,
+      "figure": "pj-agent-trace-debugger-3"
+    },
+    {
+      "id": "04-timeline",
+      "title": "渲染可检查的时间线",
+      "summary": "生成独立 HTML 时间线，每个跨度占一行，用按比例缩放的条形和错误颜色展示。跨度名称插入 HTML 前必须转义。报告包含自身耗时、总耗时、总历时、词元数和错误数。空追踪也应生成可读成果。输出为本地静态报告，不加载第三方脚本。",
+      "hours": 2,
+      "language": "typescript",
+      "languageWhy": "用 HTML 展示同一份有类型的分析结果，无须构建流水线或图表依赖。",
+      "concepts": [
+        "render"
+      ],
+      "difficulty": "core",
+      "runner": [
+        "node",
+        "--experimental-strip-types",
+        "--test",
+        "{tests}/stage.test.ts",
+        "{tests}/integration.test.ts"
+      ],
+      "requires": [
+        "node"
+      ],
+      "timeout": 90,
+      "figure": "pj-agent-trace-debugger-4"
+    }
+  ],
+  "demos": [
+    {
+      "gif": "media/run.gif",
+      "poster": "media/run.png",
+      "title": "初始化与评分（上游原始录屏）",
+      "caption": "保留上游录制的起始代码失败及随后参考解答全部阶段通过的原始过程。参考解答通过不代表学习者完成项目，也不能据此领取学习者证书。"
+    },
+    {
+      "gif": "media/output.gif",
+      "poster": "media/output.png",
+      "title": "检查输出（上游原始录屏）",
+      "caption": "保留上游本地演示命令的原始输出录屏及其英文记录。样本和适配器的能力边界见 README；录屏不是本轮重新运行的证据。"
+    }
+  ]
+}
