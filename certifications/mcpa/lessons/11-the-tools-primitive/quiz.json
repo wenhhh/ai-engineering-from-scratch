@@ -1,0 +1,78 @@
+{
+  "lesson": "11-the-tools-primitive",
+  "title": "工具原语：执行动作并读取结果（The Tools Primitive: Calling Actions and Reading Their Results）",
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "tools/list 已返回一页工具，结果包含 nextCursor，但其值为空字符串。客户端下一步应怎么做？",
+      "options": [
+        "继续发送 tools/list，将 cursor 设为空字符串，因为键存在就表示还有后续页",
+        "不带 cursor 原样重复请求，因为空字符串永远不能成为合法游标",
+        "先等待 notifications/tools/list_changed，收到通知后才能请求下一页",
+        "立刻结束分页，因为空 nextCursor 必然表示服务器已经没有内容可发"
+      ],
+      "correct": 0,
+      "explanation": "nextCursor 只要存在，即使是空字符串，也表示可能有更多工具。只有该字段缺失才表示列表结束，因此客户端应检查键是否存在，不能只检查其真假值。"
+    },
+    {
+      "stage": "check",
+      "question": "工具调用成功，服务器结果完全省略 isError。符合规范的客户端应如何理解？",
+      "options": [
+        "按 isError true 处理，因为缺失字段总应采用更谨慎的解释",
+        "按 isError false 处理，省略该字段表示本次工具调用成功",
+        "将结果判为无效，因为 CallToolResult 每次都必须包含 isError",
+        "视为未定义，并再次询问服务器究竟希望表达哪个值"
+      ],
+      "correct": 1,
+      "explanation": "CallToolResult 中缺失的 isError 按 false 理解。普通成功结果可以省略该字段，工具执行遇到需要说明的问题时，才应通过 true 标记失败。"
+    },
+    {
+      "stage": "check",
+      "question": "客户端以 tools/call 调用了服务器从未注册的工具。哪种响应符合 MCP 2026-07-28？",
+      "options": [
+        "返回正常结果，将 isError 设为 true，并携带空的 content 列表",
+        "返回 JSON-RPC 错误 -32601，因为服务器未能定位该方法",
+        "返回 JSON-RPC 错误 -32602，因为指定的工具没有注册",
+        "返回 input_required，要求客户端立刻选择另一个工具"
+      ],
+      "correct": 2,
+      "explanation": "未知工具属于协议错误，使用 -32602 Invalid params。-32601 用于服务器未实现的 JSON-RPC 方法，tools/call 方法存在而工具名称未知时不应使用它。"
+    },
+    {
+      "stage": "check",
+      "question": "工具定义完全没有 annotations 对象，客户端应如何假定其行为？",
+      "options": [
+        "沿用上次工具的 readOnlyHint、destructiveHint 等全部注解值",
+        "暂不列出工具，直到服务器明确提供 annotations 后才能显示",
+        "默认 readOnlyHint true、destructiveHint false，采用最安全组合",
+        "采用默认 readOnlyHint false、destructiveHint true、idempotentHint false、openWorldHint true"
+      ],
+      "correct": 3,
+      "explanation": "ToolAnnotations 的四项默认值分别是 readOnlyHint false、destructiveHint true、idempotentHint false、openWorldHint true。省略整个对象仍需应用这些谨慎默认值，不能据此认定工具安全。"
+    },
+    {
+      "stage": "post",
+      "question": "客户端已用 toolsListChanged true 打开 subscriptions/listen，此时服务器新增一个工具。客户端如何得知？",
+      "options": [
+        "服务器在该流发送 notifications/tools/list_changed，并附带对应订阅 id",
+        "服务器不经任何请求，主动在同一条流上重发整个 tools/list 结果",
+        "下一次 tools/call 响应会在自己的 content 中悄悄加入新工具",
+        "客户端必须彻底关闭再重建整个连接，之后新工具才会变得可见"
+      ],
+      "correct": 0,
+      "explanation": "订阅客户端通过 notifications/tools/list_changed 得知集合变化。通知携带与原监听请求相同的 subscriptionId，客户端再用普通 tools/list 获取更新后的列表。"
+    },
+    {
+      "stage": "post",
+      "question": "工具需要让模型引用一个大文件，而不把全部内容直接放进结果。应选哪种内容块，至少携带什么？",
+      "options": [
+        "使用 image，将整个文件渲染成较小的预览缩略图返回",
+        "使用 resource_link，至少携带该文件的 uri 和 name",
+        "使用 text，只将文件路径作为普通字符串，不带其他字段",
+        "使用 resource，将完整文本或 base64 blob 内联到结果"
+      ],
+      "correct": 1,
+      "explanation": "resource_link 通过 uri 和 name 指向资源，无须内联完整内容，适用于较大文件或模型可能无需完整读取的资源。resource 块则用于直接嵌入资源内容。"
+    }
+  ]
+}
