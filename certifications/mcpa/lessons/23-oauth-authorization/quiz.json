@@ -1,0 +1,78 @@
+{
+  "lesson": "23-oauth-authorization",
+  "title": "为 MCP 服务器访问授权（Authorizing Access to an MCP Server）",
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "客户端尚未向某台 MCP 服务器认证时，什么首先表明该服务器要求授权？",
+      "options": [
+        "tools/list 在登录完成之前悄悄省略全部工具",
+        "tools/call 收到普通 HTTP 401，且没有 JSON-RPC 正文",
+        "服务器要求先完成旧式 initialize 握手才签发令牌",
+        "连接尝试持续超时，直到客户端最终提供凭据"
+      ],
+      "correct": 1,
+      "explanation": "未认证请求在 HTTP 授权层就被拒绝，返回 401，尚未进入普通 JSON-RPC 方法处理。因此这里没有协议 result 或 error 正文，客户端应读取认证挑战并开始授权发现。"
+    },
+    {
+      "stage": "check",
+      "question": "401 的 WWW-Authenticate 请求头没有 resource_metadata 参数。客户端应如何寻找受保护资源元数据？",
+      "options": [
+        "让用户手工把授权服务器地址粘贴进配置文件",
+        "立即终止，因为规范只允许从这一请求头发现元数据",
+        "构造 well-known URI，先尝试路径专用位置，再尝试根位置",
+        "构造 well-known URI，先尝试根位置，再尝试路径专用位置"
+      ],
+      "correct": 2,
+      "explanation": "缺少 resource_metadata 时，客户端必须按规定构造回退地址。顺序先是 MCP 端点路径对应的 well-known 位置，再是根位置，不能交换两者或直接要求用户补全。"
+    },
+    {
+      "stage": "check",
+      "question": "授权服务器的 issuer 是含路径的 https://auth.example.com/tenant1。元数据端点应按什么顺序尝试？",
+      "options": [
+        "只尝试根位置的 oauth-authorization-server，并先去掉 tenant1 路径",
+        "先尝试路径在前的 OIDC，再尝试路径在后的 OAuth，最后路径在后的 OIDC",
+        "只尝试路径在后的 openid-configuration，因为 MCP 没有 OAuth 元数据后缀",
+        "先尝试路径在后的 OAuth，再尝试路径在后的 OIDC，最后路径在前的 OIDC"
+      ],
+      "correct": 3,
+      "explanation": "带路径签发者先尝试 /.well-known/oauth-authorization-server/tenant1，再尝试 /.well-known/openid-configuration/tenant1，最后尝试 /tenant1/.well-known/openid-configuration。此顺序兼容不同元数据布局。"
+    },
+    {
+      "stage": "check",
+      "question": "MCP 服务器接受 bearer 令牌前必须校验 audience。这项检查实际验证什么？",
+      "options": [
+        "令牌是否专为本服务器的规范 URI 签发",
+        "令牌是否包含目标工具将来可能需要的全部权限范围",
+        "令牌自授权服务器签发以来是否仍未超过有效期",
+        "令牌是否由客户端以前曾经使用过的授权服务器签发"
+      ],
+      "correct": 0,
+      "explanation": "受众校验检查令牌的目标是否为本服务器的规范资源 URI。过期检查和权限范围检查属于其他验证；即使令牌格式正确、签名有效且未过期，面向其他服务器时也不能接受。"
+    },
+    {
+      "stage": "post",
+      "question": "客户端准备在本次流程中首次将用户浏览器重定向到授权服务器。为防御混淆攻击，应先做什么？",
+      "options": [
+        "先申请一枚新访问令牌，重定向返回后再丢弃它",
+        "从已验证元数据记录预期 issuer，用于与返回的 iss 精确比较",
+        "缓存授权服务器的 TLS 证书指纹，重定向返回时仅用指纹完成身份核验",
+        "为每次授权尝试注册一个全新、仅使用一次的重定向 URI"
+      ],
+      "correct": 1,
+      "explanation": "RFC 9207 的混淆攻击防护依赖重定向前保存的预期签发者。客户端返回后按规定精确核对 iss，不得临时从返回内容本身推断自己原本打算信任哪台授权服务器。"
+    },
+    {
+      "stage": "post",
+      "question": "令牌格式正确、尚未过期，但 audience 指向另一台 MCP 服务器。当前资源服务器应如何处理？",
+      "options": [
+        "接受调用，因为来自已知授权服务器的合法令牌都可信",
+        "把令牌转发给它指向的服务器，再代理响应给调用者",
+        "返回 401，因为这枚令牌对本服务器无效",
+        "返回 403 Forbidden，因为它只是缺少当前操作的权限范围"
+      ],
+      "correct": 2,
+      "explanation": "受众不匹配意味着令牌对本服务器无效，无论签名和有效期是否正常，都应返回 401。403 表示有效令牌缺少所需权限范围，不能拿它替代目标受众错误。"
+    }
+  ]
+}
