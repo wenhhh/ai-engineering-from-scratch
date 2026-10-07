@@ -1,0 +1,121 @@
+{
+  "id": "voice-note-transcriber-pipeline",
+  "title": "语音备忘录转录流水线（Voice Note Transcriber Pipeline）",
+  "level": 3,
+  "levelName": "Engineer",
+  "tagline": "通过真实可选 HTTP 识别器，将选定 WAV 转为可检查的转录和字幕审阅页，并明确标注离线语音夹具的性质。",
+  "summary": "通过真实可选 HTTP 识别器，将选定 WAV 转为可检查的转录和字幕审阅页，并明确标注离线语音夹具的性质。",
+  "hours": 8,
+  "languages": [
+    "Python"
+  ],
+  "status": "ready",
+  "source": "core",
+  "author": {
+    "name": "AI Engineering from Scratch",
+    "github": "rohitg00"
+  },
+  "youWillBuild": "audio.wav、captions.vtt、transcript.json，以及内嵌播放和字幕片段跳转按钮的 HTML 页面。",
+  "usefulFor": [
+    "audio.wav、captions.vtt、transcript.json，以及内嵌播放和字幕片段跳转按钮的 HTML 页面。"
+  ],
+  "skills": [
+    "处理前先解码音频时钟",
+    "测量声学活动，不将其等同于语音检测",
+    "通过识别器接口发送真实 WAV 字节",
+    "导出可试听并修正的转录"
+  ],
+  "prerequisites": [
+    "掌握 Python 字节、列表和上下文管理器。",
+    "理解采样率、声道和有符号整数音频采样。",
+    "理解可调用的服务商接口及基本 HTTP 请求结构。"
+  ],
+  "figures": true,
+  "overviewFigure": "pj-voice-note-transcriber-pipeline-1",
+  "languageWhy": {
+    "Python": "使用标准库数据结构、明确算法和确定性本地测试。"
+  },
+  "demo": {
+    "command": [
+      "python3",
+      "demo.py"
+    ],
+    "cwd": "solution"
+  },
+  "stages": [
+    {
+      "id": "01-pcm",
+      "title": "处理前先解码音频时钟",
+      "summary": "整数采样 0、16384 和 -16384 分别变为 0、0.5 和 -0.5。在 16000 Hz 下，采样索引 800 表示 0.05 秒。若按 8000 Hz 解释同一个索引，即使字节完全未变，时间戳也会翻倍。",
+      "language": "python",
+      "languageWhy": "Python 标准库集合、字节和文件操作直接呈现本阶段机制。",
+      "hours": 2,
+      "difficulty": "starter",
+      "figure": "pj-voice-note-transcriber-pipeline-1",
+      "concepts": [
+        "PCM WAV",
+        "采样归一化",
+        "采样时钟"
+      ]
+    },
+    {
+      "id": "02-activity",
+      "title": "测量声学活动，不将其等同于语音检测",
+      "summary": "在 1000 Hz 下，四十个振幅为 0.5 的采样、二十个静音采样和四十个活动采样，在 gap_ms=40 时合并为 [0,100]，持续 100 ms。min_ms=40 时，单独的 20 ms 短脉冲被丢弃。",
+      "language": "python",
+      "languageWhy": "Python 标准库集合、字节和文件操作直接呈现本阶段机制。",
+      "hours": 2,
+      "difficulty": "core",
+      "figure": "pj-voice-note-transcriber-pipeline-2",
+      "concepts": [
+        "均方根能量",
+        "间隔合并",
+        "活动检测边界"
+      ]
+    },
+    {
+      "id": "03-transcribe",
+      "title": "通过识别器接口发送真实 WAV 字节",
+      "summary": "服务商先超时后成功时，记录 attempts=2。每行输出保留 start、end、text 及准确编码片段的 SHA256。第二个片段不能与前一个重叠，采样索引也不能是小数。",
+      "language": "python",
+      "languageWhy": "Python 标准库集合、字节和文件操作直接呈现本阶段机制。",
+      "hours": 2,
+      "difficulty": "core",
+      "figure": "pj-voice-note-transcriber-pipeline-3",
+      "concepts": [
+        "多部分 HTTP",
+        "有界重试",
+        "音频哈希"
+      ]
+    },
+    {
+      "id": "04-captions",
+      "title": "导出可试听并修正的转录",
+      "summary": "夹具 CLI 将原创语音片段与提供的参考文本配对，并清楚标记方法。真实识别使用 --endpoint。检查播放内容后，编辑 transcript.json 中的行，再通过 --review-file 重新渲染；报告必须匹配原始音频哈希。",
+      "language": "python",
+      "languageWhy": "Python 标准库集合、字节和文件操作直接呈现本阶段机制。",
+      "hours": 2,
+      "difficulty": "stretch",
+      "figure": "pj-voice-note-transcriber-pipeline-4",
+      "concepts": [
+        "WebVTT",
+        "音频审阅",
+        "可移植导出"
+      ]
+    }
+  ],
+  "demos": [
+    {
+      "gif": "media/run.gif",
+      "poster": "media/run.png",
+      "title": "初始化与评分（上游原始录屏）",
+      "caption": "上游原始录屏：先记录起始代码失败，再记录参考实现全部阶段通过。参考实现通过不授予学习者证书。"
+    },
+    {
+      "gif": "media/output.gif",
+      "poster": "media/output.png",
+      "title": "检查输出（上游原始录屏）",
+      "caption": "上游原始录屏中的本地确定性演示实际输出。夹具和在线适配器限制见 README。"
+    }
+  ]
+}
