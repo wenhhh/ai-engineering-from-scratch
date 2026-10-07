@@ -170,7 +170,7 @@ STT（Kyutai、Deepgram、AssemblyAI）必须支持刷新，这才有效。Whisp
 ## 延伸阅读（Further Reading）
 
 - [Silero VAD 项目](https://github.com/snakers4/silero-vad)：参考开放 VAD。
-- [Picovoice Cobra VAD 产品](https://picovoice.ai/products/cobra/)：商业准确率领先者。
+- [Picovoice Cobra VAD 产品](https://picovoice.ai/products/voice/voice-activity-detection/)：商业准确率领先者。
 - [Kyutai：Unmute 与刷新技巧](https://kyutai.org/stt)：低于 200 ms 的工程技巧。
 - [LiveKit：轮次检测](https://docs.livekit.io/agents/logic/turns/)：生产中的语义端点检测。
 - [WebRTC VAD 源码](https://webrtc.googlesource.com/src/)：旧版基线。
