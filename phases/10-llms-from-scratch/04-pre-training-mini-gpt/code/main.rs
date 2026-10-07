@@ -2,7 +2,7 @@
 // 主题: 嵌入（Embedding）+ 位置嵌入，N 个 Transformer 块（LayerNorm、MHA、FFN），语言模型头（LM head）。
 // 参考资料（借鉴思路，不作为依赖）:
 //   - Karpathy nanoGPT / llm.c:    https://github.com/karpathy/llm.c/blob/master/train_gpt2.c
-//   - candle gpt-2:                https://github.com/huggingface/candle/blob/main/candle-transformers/src/models/gpt2.rs
+//   - candle gpt-bigcode:          https://github.com/huggingface/candle/blob/main/candle-transformers/src/models/bigcode.rs
 //   - GPT-2 论文:                 https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf
 //
 // 编译并运行:  rustc --edition 2021 main.rs -o /tmp/mini && /tmp/mini
