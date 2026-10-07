@@ -193,4 +193,4 @@ def safe_tts(text, voice, clone_reference=None):
 - [Chen 等（2025）：WaveVerify 论文](https://arxiv.org/abs/2507.21150)：应对时间攻击的混合专家检测器。
 - [Jung 等（2022）：AASIST 论文](https://arxiv.org/abs/2110.01200)：最先进检测骨干。
 - [AudioMarkBench 基准（2024）](https://proceedings.neurips.cc/paper_files/paper/2024/file/5d9b7775296a641a1913ab6b4425d5e8-Paper-Datasets_and_Benchmarks_Track.pdf)：稳健性评估。
-- [C2PA 规范](https://c2pa.org/specifications/specifications/)：来源清单格式。
+- [C2PA 规范](https://spec.c2pa.org/specifications/specifications/2.4/index.html)：来源清单格式。
