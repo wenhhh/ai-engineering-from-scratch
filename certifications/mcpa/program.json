@@ -1,0 +1,45 @@
+{
+  "id": "mcpa-certification",
+  "name": "MCPA 认证课程（MCPA Certification Curriculum）",
+  "shortName": "MCPA",
+  "accessNoticeTitle": "官方考试已开放报名",
+  "provider": "Agentic AI Foundation",
+  "publisher": "AI Engineering from Scratch",
+  "version": "1.0.0-local-preview",
+  "lastVerified": "2026-09-24",
+  "guideVersion": "1.0",
+  "guideEffective": "September 2026",
+  "summary": "面向 Model Context Protocol Associate 考试的免费开源学习路线，通过依据 2026-07-28 规范实现 MCP 宿主、客户端、服务器和工具来学习。",
+  "promise": "亲手实现考试所描述的协议，掌握考试要检验的判断能力。",
+  "accessNotice": "上游于 2026 年 9 月 24 日核实时，MCPA 考试已通过 Linux Foundation Training and Certification 向公众开放报名。本开源课程向所有人开放。预约考试前，请在官方页面核查最新价格、形式和报考资格，因为项目细节可能变化。",
+  "disclaimer": "本课程由独立社区编写，与 Agentic AI Foundation 和 Linux Foundation 无隶属关系，未获其背书、赞助或授权。不包含真实考试试题。官方考试页面及当前项目政策始终优先。",
+  "scoringNotice": "本课程的练习百分比根据原创题目计算原始得分。MCPA 官方及格分数和评分区间尚未公布，因此练习结果不能预测官方考试结果。",
+  "sourcePolicy": "各项考试信息均对应官方 MCPA 认证页面和发布公告，检索日期记录在 research/source-verification-ledger.md。协议信息对应 MCP 2026-07-28 规范。课程与题目均为原创。",
+  "prerequisitesPath": "certifications/mcpa/prerequisites.json",
+  "specVersion": "2026-07-28",
+  "officialLinks": [
+    {
+      "label": "MCPA 认证页面",
+      "url": "https://training.linuxfoundation.org/certification/model-context-protocol-associate-mcpa/"
+    },
+    {
+      "label": "MCPA 发布公告",
+      "url": "https://www.linuxfoundation.org/press/agentic-ai-foundation-launches-mcpa-certification-to-validate-mcp-expertise"
+    },
+    {
+      "label": "模型上下文协议 2026-07-28 规范",
+      "url": "https://modelcontextprotocol.io/specification/2026-07-28"
+    },
+    {
+      "label": "模型上下文协议文档",
+      "url": "https://modelcontextprotocol.io/docs/getting-started/intro"
+    },
+    {
+      "label": "Agentic AI Foundation",
+      "url": "https://aaif.io/"
+    }
+  ],
+  "tracks": [
+    "mcpa-f"
+  ]
+}

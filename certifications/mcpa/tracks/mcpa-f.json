@@ -1,0 +1,492 @@
+{
+  "id": "mcpa-f",
+  "slug": "mcpa-f",
+  "examCode": "MCPA",
+  "credential": "模型上下文协议助理认证（Model Context Protocol Associate）",
+  "shortName": "MCP 助理认证",
+  "level": "Foundational",
+  "accent": "blue",
+  "badge": {
+    "imageUrl": "https://training.linuxfoundation.org/wp-content/uploads/2026/06/MCPA_Badge-1.png",
+    "width": 300,
+    "height": 300,
+    "shape": "square"
+  },
+  "summary": "证明你理解模型上下文协议的工作原理：宿主、客户端、服务器和工具，连接各组件的消息流与原语，以及保障连接安全的信任边界。",
+  "audience": "需要将智能体连接到外部系统，并理解协议原理与组件通信方式的 AI 工程师、平台工程师和 AI 治理专业人员。",
+  "recommendedExperience": [
+    "具备 JSON-RPC 或类似消息协议的基础知识",
+    "有调用 OpenAI、Anthropic 或本地模型等 LLM API 的经验",
+    "理解工具使用、思考—行动—观察循环等智能体模式",
+    "具备 API 密钥、OAuth 2.1、词元处理及身份验证请求头等安全基础知识",
+    "能够阅读 MCP 服务器清单及其能力定义"
+  ],
+  "exam": {
+    "items": 60,
+    "timeLimitMinutes": 90,
+    "feeUsd": 250,
+    "validityMonths": 24,
+    "eligibilityMonths": 12,
+    "retakes": 1,
+    "level": "Beginner",
+    "specVersion": "2026-07-28",
+    "itemCountPublished": false,
+    "passingScorePublished": false,
+    "format": "Multiple choice",
+    "delivery": "Online proctored",
+    "effective": "September 2026",
+    "officialGuideUrl": "https://training.linuxfoundation.org/certification/model-context-protocol-associate-mcpa/"
+  },
+  "domains": [
+    {
+      "id": "mcp-fundamentals",
+      "name": "MCP 基础（MCP Fundamentals）",
+      "weight": 16,
+      "objectives": [
+        "解释 MCP 的目的与范围，以及它统一 AI 应用和外部系统集成的方式（Explain the purpose and scope of MCP and the integration problem it standardizes between AI applications and external systems）",
+        "描述宿主、客户端、服务器、原语及无状态 JSON-RPC 请求模型等核心概念（Describe the core MCP concepts of hosts, clients, servers, primitives, and the stateless JSON-RPC request model）",
+        "分析互操作性、协议版本管理，以及开放协议相较定制集成的价值（Reason about interoperability, protocol versioning, and the value of one open protocol over per-system custom integrations）",
+        "阅读规范、修订历史与功能生命周期，区分当前、已弃用和已移除行为（Read the MCP specification, its revision history, and its feature lifecycle to tell current, deprecated, and removed behavior apart）"
+      ]
+    },
+    {
+      "id": "architecture-and-components",
+      "name": "架构与组件（Architecture and Components）",
+      "weight": 14,
+      "objectives": [
+        "阅读定义 MCP 消息、工具、能力与服务器清单的模式和结构化数据（Read the schemas and structured data that define MCP messages, tool definitions, capabilities, and server manifests）",
+        "区分宿主、客户端与服务器的职责，以及发现和能力协商如何连接各方（Distinguish the responsibilities of MCP hosts, clients, and servers and how discovery and capability negotiation connect them）",
+        "追踪用户请求经宿主、模型、客户端和服务器后返回模型上下文的交互流程（Trace the model interaction flow from a user request through the host, model, client, and server and back into model context）"
+      ]
+    },
+    {
+      "id": "interactions-and-execution",
+      "name": "交互与执行（Interactions and Execution）",
+      "weight": 26,
+      "objectives": [
+        "应用请求、通知、订阅和多轮往返模式，并处理各类结果（Apply the request, notification, subscription, and multi round-trip interaction patterns and handle each result type）",
+        "处理协议错误与工具执行错误，包括版本、能力、请求头和校验失败（Handle protocol errors and tool execution errors, including version, capability, header, and validation failures）",
+        "分析工具从发现、选择、调用到用户输入、进度、取消和结果的完整生命周期（Walk the tool invocation lifecycle from discovery and selection through call, user input, progress, cancellation, and result）",
+        "识别工具、资源、提示词、补全、缓存、分页、传输及已弃用客户端功能（Identify the protocol primitives and utilities, including tools, resources, prompts, completion, caching, pagination, transports, and deprecated client features）"
+      ]
+    },
+    {
+      "id": "security-and-governance",
+      "name": "安全与治理（Security and Governance）",
+      "weight": 24,
+      "objectives": [
+        "定位宿主、客户端、服务器、模型及服务器工具和内容之间的信任边界（Locate the trust boundaries between host, client, server, model, and the tools and content a server exposes）",
+        "应用 OAuth 授权、客户端注册、权限范围与用户同意，限定服务器可见数据和操作（Apply OAuth-based authorization, client registration, scopes, and user consent so a user approves what a server may see and do）",
+        "选择防范工具投毒、注入、令牌滥用及过度授权的风险控制措施（Choose risk and safety controls against tool poisoning, injection, token misuse, and over-broad access）",
+        "设计可审计性与可观测性，使协议活动可以追踪、归因和复核（Design auditability and observability so protocol activity can be traced, attributed, and reviewed）"
+      ]
+    },
+    {
+      "id": "use-cases-and-ecosystem",
+      "name": "用例与生态（Use Cases and Ecosystem）",
+      "weight": 20,
+      "objectives": [
+        "梳理 MCP 建设与部署团队的角色、职责、治理和采用模式（Map the roles, responsibilities, governance, and adoption patterns of teams building and deploying MCP）",
+        "选择实际用例及与之匹配的原语或扩展（Select operational use cases and the primitives or extensions that fit each one）",
+        "分析客户端、服务器、SDK、扩展、网关和注册目录之间的生态可移植性（Reason about ecosystem portability across clients, servers, SDKs, extensions, gateways, and registries）"
+      ]
+    }
+  ],
+  "lessons": [
+    {
+      "path": "certifications/mcpa/lessons/00-mcp-exam-strategy",
+      "domains": [
+        "mcp-fundamentals"
+      ],
+      "role": "orientation",
+      "required": true
+    },
+    {
+      "path": "certifications/mcpa/lessons/01-reading-the-specification",
+      "domains": [
+        "mcp-fundamentals"
+      ],
+      "role": "core",
+      "required": true
+    },
+    {
+      "path": "certifications/mcpa/lessons/02-the-integration-problem",
+      "domains": [
+        "mcp-fundamentals"
+      ],
+      "role": "core",
+      "required": true
+    },
+    {
+      "path": "certifications/mcpa/lessons/03-json-rpc-and-meta",
+      "domains": [
+        "mcp-fundamentals",
+        "architecture-and-components"
+      ],
+      "role": "core",
+      "required": true
+    },
+    {
+      "path": "certifications/mcpa/lessons/04-the-stateless-core",
+      "domains": [
+        "mcp-fundamentals"
+      ],
+      "role": "core",
+      "required": true
+    },
+    {
+      "path": "certifications/mcpa/lessons/05-protocol-eras-and-compatibility",
+      "domains": [
+        "mcp-fundamentals"
+      ],
+      "role": "core",
+      "required": true
+    },
+    {
+      "path": "certifications/mcpa/lessons/06-hosts-clients-and-servers",
+      "domains": [
+        "architecture-and-components"
+      ],
+      "role": "core",
+      "required": true
+    },
+    {
+      "path": "certifications/mcpa/lessons/07-discovery-and-capability-negotiation",
+      "domains": [
+        "architecture-and-components"
+      ],
+      "role": "core",
+      "required": true
+    },
+    {
+      "path": "certifications/mcpa/lessons/08-tool-schemas-and-structured-content",
+      "domains": [
+        "architecture-and-components"
+      ],
+      "role": "core",
+      "required": true
+    },
+    {
+      "path": "certifications/mcpa/lessons/09-reading-server-manifests",
+      "domains": [
+        "architecture-and-components"
+      ],
+      "role": "core",
+      "required": true
+    },
+    {
+      "path": "certifications/mcpa/lessons/10-model-interaction-flow",
+      "domains": [
+        "architecture-and-components"
+      ],
+      "role": "core",
+      "required": true
+    },
+    {
+      "path": "certifications/mcpa/lessons/11-the-tools-primitive",
+      "domains": [
+        "interactions-and-execution"
+      ],
+      "role": "core",
+      "required": true
+    },
+    {
+      "path": "certifications/mcpa/lessons/12-the-resources-primitive",
+      "domains": [
+        "interactions-and-execution"
+      ],
+      "role": "core",
+      "required": true
+    },
+    {
+      "path": "certifications/mcpa/lessons/13-prompts-and-completion",
+      "domains": [
+        "interactions-and-execution"
+      ],
+      "role": "core",
+      "required": true
+    },
+    {
+      "path": "certifications/mcpa/lessons/14-multi-round-trip-requests-and-elicitation",
+      "domains": [
+        "interactions-and-execution"
+      ],
+      "role": "core",
+      "required": true
+    },
+    {
+      "path": "certifications/mcpa/lessons/15-deprecated-client-features",
+      "domains": [
+        "interactions-and-execution"
+      ],
+      "role": "core",
+      "required": true
+    },
+    {
+      "path": "certifications/mcpa/lessons/16-notifications-and-subscriptions",
+      "domains": [
+        "interactions-and-execution"
+      ],
+      "role": "core",
+      "required": true
+    },
+    {
+      "path": "certifications/mcpa/lessons/17-tool-invocation-lifecycle",
+      "domains": [
+        "interactions-and-execution"
+      ],
+      "role": "core",
+      "required": true
+    },
+    {
+      "path": "certifications/mcpa/lessons/18-error-handling",
+      "domains": [
+        "interactions-and-execution"
+      ],
+      "role": "core",
+      "required": true
+    },
+    {
+      "path": "certifications/mcpa/lessons/19-transports-and-http-headers",
+      "domains": [
+        "interactions-and-execution",
+        "architecture-and-components"
+      ],
+      "role": "core",
+      "required": true
+    },
+    {
+      "path": "certifications/mcpa/lessons/20-caching-and-pagination",
+      "domains": [
+        "interactions-and-execution"
+      ],
+      "role": "core",
+      "required": true
+    },
+    {
+      "path": "certifications/mcpa/lessons/21-long-running-work-and-tasks",
+      "domains": [
+        "interactions-and-execution"
+      ],
+      "role": "core",
+      "required": true
+    },
+    {
+      "path": "certifications/mcpa/lessons/22-trust-boundaries",
+      "domains": [
+        "security-and-governance"
+      ],
+      "role": "core",
+      "required": true
+    },
+    {
+      "path": "certifications/mcpa/lessons/23-oauth-authorization",
+      "domains": [
+        "security-and-governance"
+      ],
+      "role": "core",
+      "required": true
+    },
+    {
+      "path": "certifications/mcpa/lessons/24-client-registration-and-identity",
+      "domains": [
+        "security-and-governance"
+      ],
+      "role": "core",
+      "required": true
+    },
+    {
+      "path": "certifications/mcpa/lessons/25-consent-and-least-privilege",
+      "domains": [
+        "security-and-governance"
+      ],
+      "role": "core",
+      "required": true
+    },
+    {
+      "path": "certifications/mcpa/lessons/26-risk-and-safety-controls",
+      "domains": [
+        "security-and-governance"
+      ],
+      "role": "core",
+      "required": true
+    },
+    {
+      "path": "certifications/mcpa/lessons/27-auditability-and-observability",
+      "domains": [
+        "security-and-governance"
+      ],
+      "role": "core",
+      "required": true
+    },
+    {
+      "path": "certifications/mcpa/lessons/28-roles-and-adoption",
+      "domains": [
+        "use-cases-and-ecosystem"
+      ],
+      "role": "core",
+      "required": true
+    },
+    {
+      "path": "certifications/mcpa/lessons/29-operational-use-cases",
+      "domains": [
+        "use-cases-and-ecosystem"
+      ],
+      "role": "core",
+      "required": true
+    },
+    {
+      "path": "certifications/mcpa/lessons/30-the-extensions-framework",
+      "domains": [
+        "use-cases-and-ecosystem"
+      ],
+      "role": "core",
+      "required": true
+    },
+    {
+      "path": "certifications/mcpa/lessons/31-mcp-apps",
+      "domains": [
+        "use-cases-and-ecosystem"
+      ],
+      "role": "core",
+      "required": true
+    },
+    {
+      "path": "certifications/mcpa/lessons/32-registry-gateways-and-sdk-tiers",
+      "domains": [
+        "use-cases-and-ecosystem"
+      ],
+      "role": "core",
+      "required": true
+    },
+    {
+      "path": "certifications/mcpa/lessons/33-mcpa-capstone-readiness",
+      "domains": [
+        "mcp-fundamentals",
+        "architecture-and-components",
+        "interactions-and-execution",
+        "security-and-governance",
+        "use-cases-and-ecosystem"
+      ],
+      "role": "capstone",
+      "required": true
+    }
+  ],
+  "deepDives": [
+    {
+      "path": "phases/13-tools-and-protocols/06-mcp-fundamentals",
+      "label": "无状态请求与发现（Stateless Requests and Discovery）",
+      "reason": "从原理构建每请求元数据模型与 server/discover。"
+    },
+    {
+      "path": "phases/13-tools-and-protocols/07-building-an-mcp-server",
+      "label": "构建服务器（Building a Server）",
+      "reason": "在无状态核心之上实现工具、资源与提示词。"
+    },
+    {
+      "path": "phases/13-tools-and-protocols/08-building-an-mcp-client",
+      "label": "构建客户端（Building a Client）",
+      "reason": "通过发现和能力协商驱动他人实现的服务器。"
+    },
+    {
+      "path": "phases/13-tools-and-protocols/09-mcp-transports",
+      "label": "传输方式（Transports）",
+      "reason": "正确实现 stdio 与 Streamable HTTP 分帧，包括必需请求头。"
+    },
+    {
+      "path": "phases/13-tools-and-protocols/10-mcp-resources-and-prompts",
+      "label": "资源与提示词（Resources and Prompts）",
+      "reason": "深入理解应用驱动的上下文和用户控制的模板。"
+    },
+    {
+      "path": "phases/13-tools-and-protocols/11-mcp-sampling",
+      "label": "通过客户端调用模型（Model Completions Through the Client）",
+      "reason": "理解已弃用 sampling 在 MRTR 下的行为与迁移路径。"
+    },
+    {
+      "path": "phases/13-tools-and-protocols/12-mcp-roots-and-elicitation",
+      "label": "访问范围与用户输入（Scope and User Input）",
+      "reason": "深入理解 roots、信息征询和多轮往返请求。"
+    },
+    {
+      "path": "phases/13-tools-and-protocols/13-mcp-async-tasks",
+      "label": "可持续跟踪的长工作（Durable Long-Running Work）",
+      "reason": "掌握任务句柄、轮询和执行中的输入交互。"
+    },
+    {
+      "path": "phases/13-tools-and-protocols/14-mcp-apps",
+      "label": "交互界面（Interactive Interfaces）",
+      "reason": "理解宿主如何在沙箱中渲染 UI 资源。"
+    },
+    {
+      "path": "phases/13-tools-and-protocols/15-mcp-security-tool-poisoning",
+      "label": "防范工具投毒（Tool Poisoning Defenses）",
+      "reason": "处理不可信描述、结果和工具定义变化。"
+    },
+    {
+      "path": "phases/13-tools-and-protocols/16-mcp-security-oauth-2-1",
+      "label": "授权机制（Authorization）",
+      "reason": "掌握 OAuth 2.1、受保护资源元数据和受众绑定。"
+    },
+    {
+      "path": "phases/13-tools-and-protocols/18-mcp-auth-production",
+      "label": "生产环境令牌管理（Production Tokens）",
+      "reason": "处理部署系统中的令牌、轮换与权限升级授权。"
+    },
+    {
+      "path": "phases/13-tools-and-protocols/17-mcp-gateways-and-registries",
+      "label": "网关与注册目录（Gateways and Registries）",
+      "reason": "理解路由、策略执行与目录准入。"
+    },
+    {
+      "path": "phases/13-tools-and-protocols/28-mcp-tool-contracts-and-content",
+      "label": "工具契约与内容（Tool Contracts and Content）",
+      "reason": "检查实际负载下的模式、结构化内容及内容块。"
+    },
+    {
+      "path": "phases/13-tools-and-protocols/29-mcp-reliability-cancellation-and-flow-control",
+      "label": "可靠性与流量控制（Reliability and Flow Control）",
+      "reason": "处理取消竞态、进度和超时。"
+    },
+    {
+      "path": "phases/13-tools-and-protocols/30-mcp-registry-supply-chain-and-drift",
+      "label": "供应链与定义变化（Supply Chain and Drift）",
+      "reason": "检查目录信任与定义变化检测。"
+    },
+    {
+      "path": "phases/13-tools-and-protocols/31-mcp-conformance-versioning-and-operations",
+      "label": "符合性与运维（Conformance and Operations）",
+      "reason": "管理版本、符合性测试和发布证据。"
+    }
+  ],
+  "assessments": [
+    {
+      "id": "mcpa-f-diagnostic",
+      "path": "certifications/mcpa/assessments/mcpa-f/diagnostic.json",
+      "kind": "diagnostic",
+      "title": "MCPA 基础诊断测评（MCPA Foundations Diagnostic）",
+      "timeLimitMinutes": 30
+    },
+    {
+      "id": "mcpa-f-mock-01",
+      "path": "certifications/mcpa/assessments/mcpa-f/mock-01.json",
+      "kind": "mock",
+      "title": "MCPA 全长模拟卷 1：运行场景（MCPA Full-Length Mock 1: Operational Scenarios）",
+      "timeLimitMinutes": 90
+    },
+    {
+      "id": "mcpa-f-mock-02",
+      "path": "certifications/mcpa/assessments/mcpa-f/mock-02.json",
+      "kind": "mock",
+      "title": "MCPA 全长模拟卷 2：报文分析（MCPA Full-Length Mock 2: Wire-Level Messages）",
+      "timeLimitMinutes": 90
+    },
+    {
+      "id": "mcpa-f-mock-03",
+      "path": "certifications/mcpa/assessments/mcpa-f/mock-03.json",
+      "kind": "mock",
+      "title": "MCPA 全长模拟卷 3：设计与安全取舍（MCPA Full-Length Mock 3: Design and Security Trade-offs）",
+      "timeLimitMinutes": 90
+    }
+  ]
+}

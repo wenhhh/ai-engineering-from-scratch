@@ -1,6 +1,8 @@
 {
   "id": "claude-certifications",
   "name": "Claude 认证课程（Claude Certification Curriculum）",
+  "shortName": "Claude",
+  "accessNoticeTitle": "官方考试目前仍限制报考资格",
   "provider": "Anthropic",
   "publisher": "AI Engineering from Scratch",
   "version": "1.0.0-local-preview",
