@@ -1,0 +1,145 @@
+{
+  "id": "workflow-hooks",
+  "title": "自纠正工作流钩子（Self-Correcting Workflow Hooks）",
+  "level": 3,
+  "levelName": "Engineer",
+  "tagline": "将重复出现且带来源的纠正整理为限定范围的规则，以原子方式持久化，仅应用明确批准的规则。",
+  "summary": "将重复出现且带来源的纠正整理为限定范围的规则，以原子方式持久化，仅应用明确批准的规则。",
+  "hours": 8,
+  "languages": [
+    "TypeScript"
+  ],
+  "status": "ready",
+  "source": "core",
+  "author": {
+    "name": "AI Engineering from Scratch",
+    "github": "rohitg00"
+  },
+  "skills": [
+    "记录带来源的纠正",
+    "统计独立会话",
+    "批准并选择限定范围的规则",
+    "跨会话持久化规则"
+  ],
+  "prerequisites": [
+    {
+      "title": "仓库记忆与状态",
+      "path": "phases/14-agent-engineering/34-repo-memory-and-state"
+    },
+    {
+      "title": "验证门禁",
+      "path": "phases/14-agent-engineering/38-verification-gates"
+    }
+  ],
+  "youWillBuild": "构建纠正台账，说明规则为何存在、改变了什么，以及如何撤销。",
+  "usefulFor": [
+    "构建纠正台账，说明规则为何存在、改变了什么，以及如何撤销。",
+    "capture、inspect、approve、retire 和 emit 都是基于文件的命令。"
+  ],
+  "demo": {
+    "command": [
+      "node",
+      "demo.ts"
+    ],
+    "cwd": "solution"
+  },
+  "stages": [
+    {
+      "id": "01-corrections",
+      "title": "记录带来源的纠正",
+      "summary": "保留区分大小写的规则文本，以及带稳定定位信息的来源引文。",
+      "hours": 2,
+      "language": "typescript",
+      "languageWhy": "TypeScript 明确区分原始 hook 输入与已校验纠正。",
+      "concepts": [
+        "normalize",
+        "ingest"
+      ],
+      "difficulty": "starter",
+      "runner": [
+        "node",
+        "--experimental-strip-types",
+        "--test",
+        "{tests}/stage.test.ts"
+      ],
+      "requires": [
+        "node"
+      ],
+      "timeout": 90,
+      "figure": "pj-workflow-hooks-1"
+    },
+    {
+      "id": "02-consolidate",
+      "title": "统计独立会话",
+      "summary": "按 scope 及保留大小写、合并空白后的规则文本分组。对事件 ID 去重，拒绝同一 ID 对应不同内容。统计唯一会话，而非事件次数，使重复 hook 投递不能推动规则晋升。每个来源 ID 都保留在候选规则上，最终输出排序，以生成可复现文件。",
+      "hours": 2,
+      "language": "typescript",
+      "languageWhy": "映射和集合帮助区分重复事件与独立支持证据。",
+      "concepts": [
+        "consolidate"
+      ],
+      "difficulty": "core",
+      "requires": [
+        "node"
+      ],
+      "timeout": 90,
+      "figure": "pj-workflow-hooks-2"
+    },
+    {
+      "id": "03-policy",
+      "title": "批准并选择限定范围的规则",
+      "summary": "明确转入批准状态前，要求独立会话支持。已退役规则不能悄悄复活。hook 执行时，只纳入已经批准且匹配当前 scope 或 global scope 的规则。将来源 ID 与注入的规则文本一并返回，让用户能追溯持久指引的来源。",
+      "hours": 2,
+      "language": "typescript",
+      "languageWhy": "状态联合类型明确 candidate、approved 和 retired 的行为。",
+      "concepts": [
+        "transition",
+        "hook"
+      ],
+      "difficulty": "core",
+      "runner": [
+        "node",
+        "--experimental-strip-types",
+        "--test",
+        "{tests}/stage.test.ts"
+      ],
+      "requires": [
+        "node"
+      ],
+      "timeout": 90,
+      "figure": "pj-workflow-hooks-3"
+    },
+    {
+      "id": "04-durability",
+      "title": "跨会话持久化规则",
+      "summary": "将带版本的 JSON 快照写入唯一的同目录临时文件，权限仅限文件所有者，再重命名到目标位置。读者看到旧文件或新完整文件。存储不存在表示空集合；格式损坏则是错误。此快照存储只支持一个写进程，跨进程合并和加锁属于独立扩展。",
+      "hours": 2,
+      "language": "typescript",
+      "languageWhy": "Node 文件系统 API 无需其他依赖即可支持原子替换。",
+      "concepts": [
+        "save",
+        "load"
+      ],
+      "difficulty": "core",
+      "requires": [
+        "node"
+      ],
+      "timeout": 90,
+      "figure": "pj-workflow-hooks-4"
+    }
+  ],
+  "demos": [
+    {
+      "gif": "media/run.gif",
+      "poster": "media/run.png",
+      "title": "初始化与评分（上游原始录屏）",
+      "caption": "上游原始录屏：先记录起始代码失败，再记录参考实现全部阶段通过。参考实现通过不授予学习者证书。"
+    },
+    {
+      "gif": "media/output.gif",
+      "poster": "media/output.png",
+      "title": "检查输出（上游原始录屏）",
+      "caption": "上游原始录屏中的本地确定性演示实际输出。夹具和在线适配器限制见 README。"
+    }
+  ]
+}
