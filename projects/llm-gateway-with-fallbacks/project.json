@@ -1,0 +1,116 @@
+{
+  "id": "llm-gateway-with-fallbacks",
+  "title": "支持故障切换的 LLM 网关（LLM Gateway With Fallbacks）",
+  "level": 3,
+  "levelName": "Engineer",
+  "tagline": "以明确的故障语义，将有界请求路由至服务商。",
+  "summary": "构建本地非流式 HTTP 代理，实现服务商故障切换、各服务商独立的环境变量凭据、响应大小限制，以及统一的总期限。通过回环服务器验证完整的 HTTP 通信链路。",
+  "usefulFor": [
+    "将现有 chat-completions 客户端连接到本地故障切换端点",
+    "跟踪服务商故障，同时避免转发调用方凭据"
+  ],
+  "youWillBuild": "构建本地非流式 HTTP 代理，实现服务商故障切换、各服务商独立的环境变量凭据、响应大小限制，以及统一的总期限。通过回环服务器验证完整的 HTTP 通信链路。",
+  "hours": 8,
+  "languages": [
+    "Go"
+  ],
+  "status": "ready",
+  "source": "core",
+  "author": {
+    "name": "AI Engineering from Scratch",
+    "github": "rohitg00"
+  },
+  "skills": [
+    "校验服务商端点",
+    "对故障分类，避免无差别重试",
+    "发送一次有界 HTTP 请求",
+    "在总尝试预算内路由"
+  ],
+  "prerequisites": [
+    {
+      "title": "结构化输出",
+      "path": "phases/11-llm-engineering/03-structured-outputs"
+    }
+  ],
+  "inspiredBy": [],
+  "demo": {
+    "command": [
+      "go",
+      "run",
+      "."
+    ],
+    "cwd": "solution"
+  },
+  "stages": [
+    {
+      "id": "01-validate-provider-endpoints",
+      "title": "校验服务商端点",
+      "summary": "将服务商列表视为受信任的配置。",
+      "hours": 2,
+      "language": "go",
+      "difficulty": "starter",
+      "concepts": [
+        "解析 URL",
+        "传输规则",
+        "禁止内嵌凭据",
+        "稳定端点列表"
+      ]
+    },
+    {
+      "id": "02-classify-failures-without-retrying-everything",
+      "title": "对故障分类，避免无差别重试",
+      "summary": "区分可以恢复的服务故障与有问题的请求。",
+      "hours": 2,
+      "language": "go",
+      "difficulty": "core",
+      "concepts": [
+        "状态码范围",
+        "2xx 成功",
+        "429 与 5xx",
+        "终止路由的客户端错误"
+      ]
+    },
+    {
+      "id": "03-send-one-bounded-http-request",
+      "title": "发送一次有界 HTTP 请求",
+      "summary": "同时限制一次请求的字节数和耗时。",
+      "hours": 2,
+      "language": "go",
+      "difficulty": "core",
+      "concepts": [
+        "受上下文约束的 POST",
+        "HTTP 传输",
+        "上限加一",
+        "关闭响应体"
+      ]
+    },
+    {
+      "id": "04-route-with-a-total-attempt-budget",
+      "title": "在总尝试预算内路由",
+      "summary": "转发调用方正文，同时保护凭据。",
+      "hours": 2,
+      "language": "go",
+      "difficulty": "core",
+      "concepts": [
+        "服务商顺序",
+        "尝试预算",
+        "故障类别",
+        "终止结果"
+      ]
+    }
+  ],
+  "demos": [
+    {
+      "gif": "media/run.gif",
+      "poster": "media/run.png",
+      "title": "初始化与评分（上游原始录屏）",
+      "caption": "上游原始录屏：先记录起始代码失败，再记录参考实现全部阶段通过。参考实现通过不授予学习者证书。"
+    },
+    {
+      "gif": "media/output.gif",
+      "poster": "media/output.png",
+      "title": "检查输出（上游原始录屏）",
+      "caption": "上游原始录屏中的本地确定性演示实际输出。测试夹具及在线适配器限制见 README。"
+    }
+  ]
+}
