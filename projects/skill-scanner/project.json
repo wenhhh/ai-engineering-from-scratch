@@ -1,0 +1,119 @@
+{
+  "id": "skill-scanner",
+  "title": "技能供应链扫描器（Skill Supply-Chain Scanner）",
+  "level": 3,
+  "levelName": "Engineer",
+  "tagline": "以精确来源证据发现风险指令模式。",
+  "summary": "构建离线风险提示扫描器，保留 UTF-8 偏移，报告明确的规则模式，为不同问题计分并生成审阅门禁。它采用可检查的启发式规则，不能检测所有恶意软件，也不保证未被标记的技能安全。",
+  "usefulFor": [
+    "一个引用新增能力证据、辅助审阅技能变化的工具。",
+    "扫描器输出带版本号的 JSON，包含文件路径、精确的 UTF-8 字节区间与风险提示规则。"
+  ],
+  "youWillBuild": "一个引用新增能力证据、辅助审阅技能变化的工具。",
+  "hours": 8,
+  "languages": [
+    "Rust"
+  ],
+  "status": "ready",
+  "source": "core",
+  "author": {
+    "name": "AI Engineering from Scratch",
+    "github": "rohitg00"
+  },
+  "skills": [
+    "保留精确到字节的来源区间",
+    "检测具名的风险提示模式",
+    "对不同证据计分，避免重复抬分",
+    "建立明确的审阅门禁"
+  ],
+  "prerequisites": [
+    {
+      "title": "数据管理",
+      "path": "phases/00-setup-and-tooling/09-data-management"
+    },
+    {
+      "title": "安全与密钥审计",
+      "path": "phases/17-infrastructure-and-production/25-security-secrets-audit"
+    }
+  ],
+  "inspiredBy": [],
+  "demo": {
+    "command": [
+      "python3",
+      "demo.py"
+    ],
+    "cwd": "solution"
+  },
+  "stages": [
+    {
+      "id": "01-retain-byte-accurate-source-spans",
+      "title": "保留精确到字节的来源区间",
+      "summary": "将 UTF-8 源文本拆成带编号的行，保留原始缓冲区中的字节区间，终点不包含在区间内。",
+      "hours": 2,
+      "language": "rust",
+      "difficulty": "starter",
+      "concepts": [
+        "读取字节",
+        "分离行结束符",
+        "跟踪偏移量",
+        "精确来源切片"
+      ]
+    },
+    {
+      "id": "02-detect-named-advisory-patterns",
+      "title": "检测具名的风险提示模式",
+      "summary": "规则检查小写行文本，报告原始偏移量。",
+      "hours": 2,
+      "language": "rust",
+      "difficulty": "core",
+      "concepts": [
+        "规范化匹配视图",
+        "匹配具名规则",
+        "保留证据",
+        "输出问题记录"
+      ]
+    },
+    {
+      "id": "03-score-distinct-evidence-without-inflation",
+      "title": "对不同证据计分，避免重复抬分",
+      "summary": "同一规则在同一来源行只计一次，即使收集器重复提交该问题。",
+      "hours": 2,
+      "language": "rust",
+      "difficulty": "core",
+      "concepts": [
+        "校验问题记录",
+        "规则与行号标识",
+        "去重",
+        "带溢出检查的计分"
+      ]
+    },
+    {
+      "id": "04-build-an-explicit-review-gate",
+      "title": "建立明确的审阅门禁",
+      "summary": "达到阈值时要求审阅；低于阈值只表示这些规则没有达到配置门槛。",
+      "hours": 2,
+      "language": "rust",
+      "difficulty": "core",
+      "concepts": [
+        "检查边界",
+        "校验切片",
+        "比较阈值",
+        "人工审阅报告"
+      ]
+    }
+  ],
+  "demos": [
+    {
+      "gif": "media/run.gif",
+      "poster": "media/run.png",
+      "title": "初始化与评分（上游原始录屏）",
+      "caption": "上游原始录屏：先记录起始代码失败，再记录参考实现全部阶段通过。参考实现通过不授予学习者证书。"
+    },
+    {
+      "gif": "media/output.gif",
+      "poster": "media/output.png",
+      "title": "检查输出（上游原始录屏）",
+      "caption": "上游原始录屏中的本地确定性演示实际输出。夹具与在线适配器的限制见 README。"
+    }
+  ]
+}
