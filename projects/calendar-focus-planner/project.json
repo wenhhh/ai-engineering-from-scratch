@@ -1,0 +1,119 @@
+{
+  "id": "calendar-focus-planner",
+  "title": "日历专注规划器（Calendar Focus Planner）",
+  "level": 2,
+  "levelName": "Builder",
+  "tagline": "找出日历中的实际空闲时间，按优先级安排任务，并说明哪些任务无法排入。",
+  "summary": "找出日历中的实际空闲时间，按优先级安排任务，并说明哪些任务无法排入。",
+  "youWillBuild": "可检查的 HTML 计划、机器可读排程，以及供手工导入的通用 ICS 日程建议。",
+  "usefulFor": [
+    "使用自己的输入，生成可审阅且能被其他应用使用的交付物。"
+  ],
+  "hours": 8,
+  "languages": [
+    "TypeScript"
+  ],
+  "languageWhy": {
+    "TypeScript": "用标准库解析、明确契约和可移植交付物，让实现机制始终可见。"
+  },
+  "status": "ready",
+  "source": "core",
+  "author": {
+    "name": "AI Engineering from Scratch",
+    "github": "rohitg00"
+  },
+  "skills": [
+    "读取明确的日历区间",
+    "合并重叠区间后寻找空闲时段",
+    "按优先级安排任务并如实报告未排入项",
+    "导出可审阅的日历建议"
+  ],
+  "prerequisites": [
+    {
+      "title": "开发环境（Development environment）",
+      "path": "phases/00-setup-and-tooling/01-dev-environment"
+    },
+    {
+      "title": "数据管理（Data management）",
+      "path": "phases/00-setup-and-tooling/09-data-management"
+    }
+  ],
+  "figures": true,
+  "overviewFigure": "pj-calendar-focus-planner-1",
+  "demo": {
+    "command": [
+      "node",
+      "cli.ts",
+      "sample.ics",
+      "tasks.json",
+      "2026-10-14",
+      "output",
+      "10"
+    ],
+    "cwd": "solution"
+  },
+  "stages": [
+    {
+      "id": "01-read-calendar",
+      "title": "读取明确的日历区间",
+      "summary": "parseCalendar(text)",
+      "hours": 2,
+      "difficulty": "starter",
+      "language": "typescript",
+      "concepts": [
+        "读取明确的日历区间"
+      ],
+      "figure": "pj-calendar-focus-planner-1"
+    },
+    {
+      "id": "02-compute-free-time",
+      "title": "合并重叠区间后寻找空闲时段",
+      "summary": "availableSlots(events, window, bufferMinutes=0)",
+      "hours": 2,
+      "difficulty": "core",
+      "language": "typescript",
+      "concepts": [
+        "合并重叠区间后寻找空闲时段"
+      ],
+      "figure": "pj-calendar-focus-planner-2"
+    },
+    {
+      "id": "03-place-tasks",
+      "title": "按优先级安排任务并如实报告未排入项",
+      "summary": "schedule(tasks, events, window, bufferMinutes=0)",
+      "hours": 2,
+      "difficulty": "core",
+      "language": "typescript",
+      "concepts": [
+        "按优先级安排任务并如实报告未排入项"
+      ],
+      "figure": "pj-calendar-focus-planner-3"
+    },
+    {
+      "id": "04-export-proposals",
+      "title": "导出可审阅的日历建议",
+      "summary": "exportCalendar(plan, createdAt); renderPlan(plan)",
+      "hours": 2,
+      "difficulty": "stretch",
+      "language": "typescript",
+      "concepts": [
+        "导出可审阅的日历建议"
+      ],
+      "figure": "pj-calendar-focus-planner-4"
+    }
+  ],
+  "demos": [
+    {
+      "gif": "media/run.gif",
+      "poster": "media/run.png",
+      "title": "构建与验证（上游原始录屏）",
+      "caption": "上游原始录屏中的实际起始失败与参考评分输出；参考解答通过不能获得学习者证书，不代表本轮新运行。"
+    },
+    {
+      "gif": "media/output.gif",
+      "poster": "media/output.png",
+      "title": "使用完整交付物（上游原始录屏）",
+      "caption": "上游原始录屏记录输入、计算输出和最终可移植报告，画面保留英文；中文版新录屏另列待办。"
+    }
+  ]
+}
