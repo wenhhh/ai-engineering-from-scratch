@@ -1,0 +1,123 @@
+{
+  "id": "csv-sql-question-workbench",
+  "title": "CSV 问答工作台（CSV Question Workbench）",
+  "level": 2,
+  "levelName": "Builder",
+  "tagline": "向 CSV 提问，检查实际执行的 SQL，并保留可复现的只读答案凭据。",
+  "summary": "向 CSV 提问，检查实际执行的 SQL，并保留可复现的只读答案凭据。",
+  "youWillBuild": "包含准确 SQL 与来源指纹的独立 HTML 结果表和 JSON 凭据。",
+  "usefulFor": [
+    "使用自己的输入生成可审阅、可供其他应用消费的交付物。"
+  ],
+  "hours": 8,
+  "languages": [
+    "Python"
+  ],
+  "languageWhy": {
+    "Python": "标准库解析、明确的契约和可移植交付物，使运行机制清晰可见。"
+  },
+  "status": "ready",
+  "source": "core",
+  "author": {
+    "name": "AI Engineering from Scratch",
+    "github": "rohitg00"
+  },
+  "skills": [
+    "导入表格并明确拒绝错误",
+    "将简单问题转成可检查的计划",
+    "在只读边界内执行提案",
+    "发布其他开发者可复现的答案"
+  ],
+  "prerequisites": [
+    {
+      "title": "开发环境",
+      "path": "phases/00-setup-and-tooling/01-dev-environment"
+    },
+    {
+      "title": "数据管理",
+      "path": "phases/00-setup-and-tooling/09-data-management"
+    },
+    {
+      "title": "结构化输出",
+      "path": "phases/11-llm-engineering/03-structured-outputs"
+    }
+  ],
+  "figures": true,
+  "overviewFigure": "pj-csv-sql-question-workbench-1",
+  "demo": {
+    "command": [
+      "python3",
+      "cli.py",
+      "sample.csv",
+      "--question",
+      "sum units by region",
+      "--output",
+      "output/report.html"
+    ],
+    "cwd": "solution"
+  },
+  "stages": [
+    {
+      "id": "01-import-table",
+      "title": "导入表格并明确拒绝错误",
+      "summary": "load_csv(text, max_rows=10000)",
+      "hours": 2,
+      "difficulty": "starter",
+      "language": "python",
+      "concepts": [
+        "导入表格并明确拒绝错误"
+      ],
+      "figure": "pj-csv-sql-question-workbench-1"
+    },
+    {
+      "id": "02-plan-question",
+      "title": "将简单问题转成可检查的计划",
+      "summary": "plan_question(question, data)",
+      "hours": 2,
+      "difficulty": "core",
+      "language": "python",
+      "concepts": [
+        "将简单问题转成可检查的计划"
+      ],
+      "figure": "pj-csv-sql-question-workbench-2"
+    },
+    {
+      "id": "03-enforce-read-boundary",
+      "title": "在只读边界内执行提案",
+      "summary": "run_query(data, sql, max_rows=100, max_steps=100000)",
+      "hours": 2,
+      "difficulty": "core",
+      "language": "python",
+      "concepts": [
+        "在只读边界内执行提案"
+      ],
+      "figure": "pj-csv-sql-question-workbench-3"
+    },
+    {
+      "id": "04-publish-receipt",
+      "title": "发布其他开发者可复现的答案",
+      "summary": "render_report(report)",
+      "hours": 2,
+      "difficulty": "stretch",
+      "language": "python",
+      "concepts": [
+        "发布其他开发者可复现的答案"
+      ],
+      "figure": "pj-csv-sql-question-workbench-4"
+    }
+  ],
+  "demos": [
+    {
+      "gif": "media/run.gif",
+      "poster": "media/run.png",
+      "title": "上游原始录屏：初始化与评分",
+      "caption": "保留上游原始录屏、日期与日志。其中参考实现通过不计为学习者完成。"
+    },
+    {
+      "gif": "media/output.gif",
+      "poster": "media/output.png",
+      "title": "上游原始录屏：检查输出",
+      "caption": "保留上游原始录屏、日期与日志。演示来自上游本地样本，本轮未重录；实际范围以 README 与本批验证记录为准。"
+    }
+  ]
+}
