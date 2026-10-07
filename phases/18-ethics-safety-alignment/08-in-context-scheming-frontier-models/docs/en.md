@@ -109,5 +109,5 @@ al-scheming-probe
 
 - [Meinke、Schoen、Scheurer、Balesni、Shah、Hobbhahn：前沿模型具有上下文内密谋能力（Frontier Models are Capable of In-context Scheming，arXiv:2412.04984）](https://arxiv.org/abs/2412.04984)：Apollo 的经典论文。
 - [Apollo Research：迈向针对 AI 密谋的安全论证（Towards Safety Cases For AI Scheming）](https://www.apolloresearch.ai/research/towards-safety-cases-for-ai-scheming)：安全论证框架。
-- [Schoen 等：对反密谋训练的审慎对齐进行压力测试（Stress Testing Deliberative Alignment for Anti-Scheming Training）](https://www.apolloresearch.ai/blog/stress-testing-deliberative-alignment-for-anti-scheming-training)：2025 年 OpenAI 与 Apollo 的合作。
+- [Schoen 等：对反密谋训练的审慎对齐进行压力测试（Stress Testing Deliberative Alignment for Anti-Scheming Training）](https://www.apolloresearch.ai/science/stress-testing-deliberative-alignment-for-anti-scheming-training)：2025 年 OpenAI 与 Apollo 的合作。
 - [METR：前沿 AI 安全政策的共同要素（Common Elements of Frontier AI Safety Policies）](https://metr.org/blog/2025-03-26-common-elements-of-frontier-ai-safety-policies/)：三个支柱框架的背景。
