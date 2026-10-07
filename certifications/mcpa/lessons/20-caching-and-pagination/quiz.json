@@ -1,0 +1,78 @@
+{
+  "lesson": "20-caching-and-pagination",
+  "title": "缓存新鲜度与游标分页（Cache Freshness and Cursor-Based Pagination）",
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "完成的 resources/read 或 resources/list 结果始终携带哪两个字段？",
+      "options": [
+        "一个 cursor 值，以及从先前调用回传的 requestState",
+        "Mcp-Session-Id 的头部值，以及 Last-Event-ID 流标记",
+        "_meta 中的 protocolVersion 字符串与 clientCapabilities 对象",
+        "整数 ttlMs，以及取 public 或 private 的 cacheScope"
+      ],
+      "correct": 3,
+      "explanation": "六种可缓存操作返回 complete 时，必须携带非负整数 ttlMs 和取 public 或 private 的 cacheScope。这些字段对应 SEP-2549 引入的 2026-07-28 缓存规则。"
+    },
+    {
+      "stage": "check",
+      "question": "resources/read 返回调用方的私人笔记，cacheScope 为 private。这个字段实际控制什么？",
+      "options": [
+        "限定在同一授权上下文内复用已经缓存的字节",
+        "要求客户端先加密缓存字节，然后才能写入磁盘",
+        "授予复用缓存的任意调用方完整读取该笔记权限",
+        "取代服务器对之后每次调用进行访问权限检查"
+      ],
+      "correct": 0,
+      "explanation": "cacheScope 只告诉缓存谁可以复用已存储字节。private 不允许跨授权上下文共享，但它不能替代服务器对每个请求、每项功能的访问控制。"
+    },
+    {
+      "stage": "check",
+      "question": "resources/list 响应的 nextCursor 是空字符串。符合规范的客户端下一步应该怎样做？",
+      "options": [
+        "报告 -32602，因为空游标绝不属于合法报文值",
+        "原样传回这个空字符串，它表示合法的列表位置",
+        "将空字符串视为列表末尾，并立即停止继续分页",
+        "完全省略 cursor 字段，重新从列表最开始遍历"
+      ],
+      "correct": 1,
+      "explanation": "空字符串是合法的不透明游标。只有 nextCursor 字段缺失才表示列表结束；把空值当作结束条件，会导致客户端提前停止分页。"
+    },
+    {
+      "stage": "check",
+      "question": "客户端回答 input_required 信息征询后重试 resources/read。按照 2026-07-28 规则，返回的完成结果如何缓存？",
+      "options": [
+        "只有服务器同时声明 listChanged 为 true 才缓存",
+        "无论资源真实范围如何，都以 public 范围缓存",
+        "不缓存，因为它依赖常规缓存键之外的 inputResponses",
+        "按原始请求 id 缓存，保证以后不必再重复重试"
+      ],
+      "correct": 2,
+      "explanation": "MRTR 重试结果依赖不在常规缓存键中的 inputResponses，因此客户端必须跳过缓存。即使完成结果仍按规范报告 ttlMs 和 cacheScope，也不能据此认定它可复用。"
+    },
+    {
+      "stage": "post",
+      "question": "缓存的 tools/list 距 ttlMs 到期还有两分钟，此时监听流收到 notifications/tools/list_changed。客户端应怎样处理？",
+      "options": [
+        "延长 TTL，因为通知证明服务器目前仍然可达",
+        "等待原 TTL 自然到期，再把缓存条目标为过期",
+        "忽略通知，因为当前条目还处在有效 TTL 范围",
+        "立即将缓存视为过期，下次需要时重新获取"
+      ],
+      "correct": 3,
+      "explanation": "TTL 与通知互为补充。相关 list_changed 一到达就立即使缓存失效，其优先级高于剩余 TTL，不应继续把这两分钟当作可安全复用的保证。"
+    },
+    {
+      "stage": "post",
+      "question": "除使客户端缓存和分页更可预测外，tools/list 保持确定性顺序还有什么收益？",
+      "options": [
+        "稳定前缀提高上游模型服务商提示缓存的命中机会",
+        "相同顺序允许客户端在重复调用时省略 clientCapabilities",
+        "只有顺序稳定，服务器才获准声明 listChanged 能力",
+        "顺序稳定是让客户端把游标视为不透明值的唯一办法"
+      ],
+      "correct": 0,
+      "explanation": "工具目录每次以相同顺序序列化，会形成逐字节一致的前缀，让模型服务商复用提示缓存而不重新处理。这种延迟和成本收益，与 MCP 自身的 ttlMs 缓存机制不同。"
+    }
+  ]
+}
