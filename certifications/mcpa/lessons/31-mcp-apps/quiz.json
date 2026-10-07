@@ -1,0 +1,78 @@
+{
+  "lesson": "31-mcp-apps",
+  "title": "对话中的交互界面（Interactive Interfaces Inside the Conversation）",
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "服务器为什么会选择交互界面，而不只返回普通工具内容？",
+      "options": [
+        "让用户探索或配置纯文本难以表达的内容",
+        "强制每次调用工具前都先完成额外登录流程",
+        "允许模型在用户不知情时改写工具输入参数",
+        "将对话中所有文本统一替换成单个二进制块"
+      ],
+      "correct": 0,
+      "explanation": "MCP Apps 适合钻取图表、填写表单等需要直接探索或配置的结果。普通文本已经足够的场景无需使用它，交互界面也不授予偷偷改写参数的权限。"
+    },
+    {
+      "stage": "check",
+      "question": "获取任何 UI 资源之前，客户端在哪里声明支持交互界面？",
+      "options": [
+        "在工具列表之前发送的专用 `ui/register` 调用中",
+        "在当前请求的 `io.modelcontextprotocol/clientCapabilities.extensions` 中",
+        "在 HTTP `Accept` 中，与 `text/event-stream` 永远并列",
+        "在所有请求之前只执行一次的 `initialize` 握手中"
+      ],
+      "correct": 1,
+      "explanation": "扩展通过每请求 clientCapabilities.extensions 声明，沿用 2026-07-28 的无状态能力机制。没有必须先执行的一次性 UI 注册或核心初始化握手。"
+    },
+    {
+      "stage": "check",
+      "question": "工具定义携带 `_meta.ui.resourceUri`。宿主应如何使用这个字段？",
+      "options": [
+        "当作预先随宿主应用打包的本地模板路径",
+        "当作工具下次 `structuredContent` 结果的缓存键",
+        "通过普通 `resources/read` 获取它指向的 `ui://` 资源",
+        "始终在对话外新开浏览器标签访问该地址"
+      ],
+      "correct": 2,
+      "explanation": "该字段指向 ui:// 资源，宿主沿用普通 resources/read 获取。它不是客户端本地文件路径，也不需要额外发明一种资源读取方法。"
+    },
+    {
+      "stage": "check",
+      "question": "宿主获取 `ui://` 资源后，`mimeType` 仅为 `text/html`。应得出什么结论？",
+      "options": [
+        "既然 URI 采用 `ui://`，它已经是合法应用",
+        "只要 `_meta.ui.csp` 声明域可信，就可作为应用",
+        "普通 `text/html` 足够安全，因此可按应用加载",
+        "缺少必需 profile 参数，不能当作合法 MCP App"
+      ],
+      "correct": 3,
+      "explanation": "可渲染应用的类型必须精确为 text/html;profile=mcp-app。普通 text/html 仍是普通 HTML 文档，正确的 URI 方案或 CSP 无法补足 MIME 类型要求。"
+    },
+    {
+      "stage": "post",
+      "question": "宿主没有声明交互界面扩展，却调用了具备 UI 的工具，会发生什么？",
+      "options": [
+        "工具仍返回普通结果，文本内容保持有用",
+        "服务器静默提升能力，视为已声明扩展",
+        "立即失败并返回未知方法错误 `-32601`",
+        "返回 `input_required` 要求宿主添加扩展"
+      ],
+      "correct": 0,
+      "explanation": "UI 工具应为没有扩展的宿主保留有意义的文本结果。缺少可选界面支持时回退核心路径，不擅自提升能力，也不把普通调用变成未知方法。"
+    },
+    {
+      "stage": "post",
+      "question": "为什么交互界面要放在沙箱 iframe 中，而不直接嵌入宿主页面上下文？",
+      "options": [
+        "让应用自由读取宿主 cookies 和本地存储",
+        "隔离应用与宿主，让特权操作仍经过同意门禁",
+        "让模型在宿主上下文直接执行应用的 JavaScript",
+        "让服务器从此完全省略所有工具文本结果"
+      ],
+      "correct": 1,
+      "explanation": "正确配置的沙箱阻止应用直接接触宿主存储、cookies 和 DOM。需要权限的操作通过宿主中介与同意流程，而不是由 iframe 自己批准；文本回退仍应保留。"
+    }
+  ]
+}
