@@ -100,6 +100,6 @@ a5-rsp-ladder
 
 - [Anthropic — 负责任扩展政策（Responsible Scaling Policy）v3.0](https://anthropic.com/responsible-scaling-policy/rsp-v3-0) — 完整的 32 页政策。
 - [Anthropic — RSP v3.0 公告（announcement）](https://www.anthropic.com/news/responsible-scaling-policy-v3) — 相比 v2 的变更摘要。
-- [Anthropic — 前沿安全路线图（Frontier Safety Roadmap）](https://www.anthropic.com/research/frontier-safety) — RSP v3.0 链接的持续维护文档。
-- [Anthropic — 风险报告（Risk Report）：Claude Opus 4.6](https://www.anthropic.com/research/risk-report-claude-opus-4-6) — 对当前前沿模型的回顾。
+- [Anthropic — 前沿安全路线图（Frontier Safety Roadmap）](https://www.anthropic.com/responsible-scaling-policy/roadmap) — RSP v3.0 引用的持续维护文档。
+- [Anthropic — 2026 年 2 月风险报告（Risk Report: February 2026）](https://www.anthropic.com/feb-2026-risk-report) — 回顾报告发布时的前沿模型 Claude Opus 4.6。
 - [Anthropic — 测量实际中的智能体自主性（Measuring agent autonomy in practice）](https://www.anthropic.com/research/measuring-agent-autonomy) — 将 AI R&D-4 与实测自主性联系起来。
