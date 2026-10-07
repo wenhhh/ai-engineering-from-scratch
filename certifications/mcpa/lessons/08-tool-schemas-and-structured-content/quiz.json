@@ -1,0 +1,78 @@
+{
+  "lesson": "08-tool-schemas-and-structured-content",
+  "title": "工具定义中的契约（The Contract Inside a Tool Definition）",
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "某工具不接收参数。为了只接受空对象，推荐采用哪种 inputSchema？",
+      "options": [
+        "使用 null 并完全省略定义，让客户端不再校验调用",
+        "只写 type object，接受包括带属性对象在内的所有对象",
+        "写 type object 并设置 additionalProperties false，只接受空对象",
+        "使用不含 type 的空模式，接受所有类型的 JSON 值"
+      ],
+      "correct": 2,
+      "explanation": "推荐的无参数模式为 type object 配合 additionalProperties false，明确只接受空对象。只约束对象类型仍会接受额外属性，而 inputSchema 绝不能为 null。"
+    },
+    {
+      "stage": "check",
+      "question": "工具的 inputSchema 完全没有 $schema 字段。2026-07-28 中应采用哪个方言校验参数？",
+      "options": [
+        "Draft-07，作为兼容更早服务器的默认回退方言",
+        "采用客户端自身 SDK 构建时碰巧使用的任意方言",
+        "OpenAPI 3.1 的模式对象，因为 MCP 的工具模式复用了它的对象模型",
+        "JSON Schema 2020-12，省略 $schema 时采用的默认方言"
+      ],
+      "correct": 3,
+      "explanation": "MCP 在模式省略 $schema 时默认采用 JSON Schema 2020-12。模式可以显式声明其他方言，但没有声明时，默认始终为 2020-12，不由客户端 SDK 自行决定。"
+    },
+    {
+      "stage": "check",
+      "question": "工具声明了 outputSchema，某次调用成功。按照 2026-07-28 工具规范，结果应包含什么？",
+      "options": [
+        "返回符合 outputSchema 的 structuredContent，并同时将同一份数据序列化为文本",
+        "只返回 structuredContent，因为满足模式后文本内容已经完全多余",
+        "返回 resource_link 指向 URI，让客户端以后再去获取该结构化值",
+        "只返回文本内容块，因为 structuredContent 只属于资源而不属于工具"
+      ],
+      "correct": 0,
+      "explanation": "结果应携带符合 outputSchema 的 structuredContent，并为向后兼容而将同一个值序列化到 TextContent 块中。文本镜像与结构化输出应表达相同数据，不能各自返回不同内容。"
+    },
+    {
+      "stage": "check",
+      "question": "tools/call 参数未通过工具 inputSchema 校验，例如缺少必需字段。符合 2026-07-28 规范的服务器应返回什么？",
+      "options": [
+        "正常结果，将 isError 设为 false，因为服务器已生成响应",
+        "正常结果，将 isError 设为 true，并用内容解释如何修正",
+        "JSON-RPC 错误 -32602，因为无效参数属于协议层故障",
+        "JSON-RPC 错误 -32601，因为服务器未能定位请求方法"
+      ],
+      "correct": 1,
+      "explanation": "SEP-1303 将输入校验失败归入工具执行错误。服务器返回 isError true 的正常结果并解释问题，让模型能够读取原因，在下一次调用时修正参数。"
+    },
+    {
+      "stage": "post",
+      "question": "工具 inputSchema 的 $ref 指向 https://schemas.example.com/common.json。符合规范的实现默认应怎样处理？",
+      "options": [
+        "直接拒绝整个工具定义，因为 inputSchema 绝不能包含引用",
+        "首次校验模式时自动获取 URL，然后把响应缓存起来",
+        "拒绝自动解引用，网络引用必须经过显式启用才能获取",
+        "将被引用属性视为没有约束，接受随后到达的任意值"
+      ],
+      "correct": 2,
+      "explanation": "实现不得自动解引用指向网络 URI 的 $ref。网络获取只能显式启用，默认必须关闭；即使提供该模式，也应有允许列表等保护，不能无条件访问任意目标。"
+    },
+    {
+      "stage": "post",
+      "question": "以下哪个候选工具名称符合 2026-07-28 服务器应遵循的命名规则？",
+      "options": [
+        "把描述工具用途的整句话拼接为一个 200 字符的名称",
+        "使用 \"get user\"，用普通空格分隔名称中的两个单词",
+        "使用 get/user@2026，在同一名称中同时加入斜杠和 @",
+        "使用 admin.tools.list，仅包含字母与点且没有空格"
+      ],
+      "correct": 3,
+      "explanation": "工具名称应为 1 至 128 个字符，只包含字母、数字、下划线、连字符和点。空格、@ 与斜杠均不在允许字符集中，admin.tools.list 则满足要求。"
+    }
+  ]
+}
