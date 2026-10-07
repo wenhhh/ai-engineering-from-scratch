@@ -5576,6 +5576,15 @@
 
         if (lessonQuizPromise) {
           lessonQuizPromise.then(function (data) {
+            var source = data && (data.questions || data);
+            var hasInlineQuiz = Array.isArray(source) && source.length > 0 && source.every(function (q) {
+              return q && q.question && Array.isArray(q.options) &&
+                typeof q.correct === 'number' && q.correct >= 0 && q.correct < q.options.length;
+            });
+            if (hasInlineQuiz) {
+              if (panel.parentNode) panel.parentNode.removeChild(panel);
+              return;
+            }
             var questions = lessonQuizPanelQuestions(data);
             if (!questions.length) questions = getQuizQuestions();
             fillQuizPanel(panel.querySelector('#quizContent'), questions);
