@@ -1,0 +1,154 @@
+{
+  "id": "multi-agent-code-review-panel",
+  "title": "多智能体代码评审组（Multi-Agent Code Review Panel）",
+  "level": 3,
+  "levelName": "Engineer",
+  "tagline": "用于审阅评审分歧的工作台，测量最低支持人数何时有帮助，以及何时会掩盖问题。",
+  "summary": "用于审阅评审分歧的工作台，测量最低支持人数何时有帮助，以及何时会掩盖问题。 输入中的 files 将文件名映射到文本或行数组。可选 reviewers 包含 id、cost 和 findings 记录。预期标签使用 {file,line,rule}；报告记录源码指纹，并对比各评审者与共识结果的指标。",
+  "hours": 8,
+  "languages": [
+    "TypeScript"
+  ],
+  "status": "ready",
+  "source": "core",
+  "author": {
+    "name": "AI Engineering from Scratch",
+    "github": "rohitg00"
+  },
+  "skills": [
+    "校验评审证据",
+    "汇总独立评审者的支持",
+    "预留成本并执行期限约束",
+    "测量评审组的精确率与召回率"
+  ],
+  "prerequisites": [
+    "评分器需要 Node 22.18+ 和 Python 3",
+    "掌握 TypeScript 对象、集合、Promise、AbortSignal，以及精确率和召回率。"
+  ],
+  "youWillBuild": "用于审阅评审分歧的工作台，测量最低支持人数何时有帮助，以及何时会掩盖问题。",
+  "usefulFor": [
+    "输入中的 files 将文件名映射到文本或行数组。可选 reviewers 包含 id、cost 和 findings 记录。预期标签使用 {file,line,rule}；报告记录源码指纹，并对比各评审者与共识结果的指标。"
+  ],
+  "demo": {
+    "cwd": "solution",
+    "command": [
+      "node",
+      "cli.ts",
+      "--input",
+      "samples/review.json",
+      "--output",
+      "panel.json",
+      "--html",
+      "panel.html"
+    ]
+  },
+  "stages": [
+    {
+      "id": "01-evidence",
+      "title": "校验评审证据",
+      "summary": "要求文件存在于所提供的快照中，行号为从 1 开始的正整数，引文逐字匹配且非空，规则 ID 稳定，严重程度为 1 至 3。所有评审者共用证据校验，阻止虚构位置进入聚合流程；即使多方同意且文本有出处，也不足以证明问题判断正确。",
+      "hours": 2,
+      "language": "typescript",
+      "languageWhy": "未知的评审输出必须通过运行时校验，才能转换为带类型的问题记录。",
+      "concepts": [
+        "validateFinding"
+      ],
+      "difficulty": "starter",
+      "runner": [
+        "node",
+        "--experimental-strip-types",
+        "--test",
+        "{tests}/stage.test.ts"
+      ],
+      "requires": [
+        "node"
+      ],
+      "timeout": 90,
+      "figure": "pj-multi-agent-code-review-panel-1"
+    },
+    {
+      "id": "02-agreement",
+      "title": "汇总独立评审者的支持",
+      "summary": "按文件、行号和规则对有效问题分组。每位评审者在每组只计一票，拒绝重复的评审者标识，并保留所有严重程度投票。达到最低支持人数后形成共识；只有一位评审者支持的问题仍以 needs-review 显示。形成共识后也保留分歧标记，便于用户检查严重程度判断的冲突。",
+      "hours": 2,
+      "language": "typescript",
+      "languageWhy": "集合明确表达评审者标识及单次评审中的去重。",
+      "concepts": [
+        "aggregate"
+      ],
+      "difficulty": "core",
+      "runner": [
+        "node",
+        "--experimental-strip-types",
+        "--test",
+        "{tests}/stage.test.ts"
+      ],
+      "requires": [
+        "node"
+      ],
+      "timeout": 90,
+      "figure": "pj-multi-agent-code-review-panel-2"
+    },
+    {
+      "id": "03-budgets",
+      "title": "预留成本并执行期限约束",
+      "summary": "启动每位评审者之前先预留其成本。剩余预算不足时跳过该工作并记录决策。为每位评审者设置期限，超时后中止其信号。失败记录保留在轨迹中，已完成的评审仍可聚合。适配器必须遵守 AbortSignal 才能停止外部工作；运行器无法强制远程服务取消。",
+      "hours": 2,
+      "language": "typescript",
+      "languageWhy": "Promise 和 AbortSignal 支持并发评审调用，并保留明确的终止状态。",
+      "concepts": [
+        "runPanel"
+      ],
+      "difficulty": "core",
+      "runner": [
+        "node",
+        "--experimental-strip-types",
+        "--test",
+        "{tests}/stage.test.ts"
+      ],
+      "requires": [
+        "node"
+      ],
+      "timeout": 90,
+      "figure": "pj-multi-agent-code-review-panel-3"
+    },
+    {
+      "id": "04-evaluate",
+      "title": "测量评审组的精确率与召回率",
+      "summary": "将唯一的问题 ID 与预期集合对照。精确率衡量预测问题中有多少属于预期；召回率衡量预期集合中有多少被发现。两个集合都要去重，避免重复评审者抬高指标。没有预测时精确率记为零，避免出现误导性的满分。调整最低支持人数前，先尝试留出输入。",
+      "hours": 2,
+      "language": "typescript",
+      "languageWhy": "通过简洁的纯函数指标，在接入模型前用确定性夹具建立基线。",
+      "concepts": [
+        "evaluate"
+      ],
+      "difficulty": "core",
+      "runner": [
+        "node",
+        "--experimental-strip-types",
+        "--test",
+        "{tests}/stage.test.ts",
+        "{tests}/integration.test.ts"
+      ],
+      "requires": [
+        "node"
+      ],
+      "timeout": 90,
+      "figure": "pj-multi-agent-code-review-panel-4"
+    }
+  ],
+  "demos": [
+    {
+      "gif": "media/run.gif",
+      "poster": "media/run.png",
+      "title": "初始化与评分（上游原始录屏）",
+      "caption": "上游原始录屏：先记录起始代码失败，再记录参考实现全部阶段通过。参考实现通过不授予学习者证书。"
+    },
+    {
+      "gif": "media/output.gif",
+      "poster": "media/output.png",
+      "title": "检查输出（上游原始录屏）",
+      "caption": "上游原始录屏中的本地确定性演示实际输出。测试夹具及在线适配器限制见 README。"
+    }
+  ]
+}
