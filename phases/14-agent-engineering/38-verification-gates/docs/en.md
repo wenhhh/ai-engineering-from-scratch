@@ -140,7 +140,6 @@ python3 code/main.py
 - [类型检查合规：确定性护栏（Type-Checked Compliance: Deterministic Guardrails，arXiv 2604.01483）](https://arxiv.org/pdf/2604.01483) —— Lean 4 作为确定性关卡的上界
 - [logi-cmd/agent-guardrails：合并关卡规格（Merge Gate Spec）](https://github.com/logi-cmd/agent-guardrails) —— 范围与变异测试关卡
 - [Guardrails AI x MLflow](https://guardrailsai.com/blog/guardrails-mlflow) —— 确定性验证器作为 CI 评分器
-- [Akira：智能体系统实时护栏（Real-Time Guardrails for Agentic Systems）](https://www.akira.ai/blog/real-time-guardrails-agentic-systems) —— 工具调用前后关卡
 - 阶段 14 · 27 —— 提示注入防御（关卡的对抗防御搭档）
 - 阶段 14 · 36 —— 该关卡执行的范围契约
 - 阶段 14 · 37 —— 该关卡评分的反馈日志
