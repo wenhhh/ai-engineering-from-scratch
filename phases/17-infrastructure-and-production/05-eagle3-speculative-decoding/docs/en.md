@@ -57,7 +57,7 @@ alpha 随工作负载变化。在 ShareGPT 式通用聊天上，使用 ShareGPT 
 
 ### EAGLE-3 已部署在哪里（Where EAGLE-3 is already deployed）
 
-Google 于 2025 年在 AI Overviews 部署推测解码，质量相同但响应更快。vLLM V1 提供文档化接口 `speculative_config`；V1 中的 N-gram GPU 推测解码兼容分块预填充。SGLang 支持 EAGLE-3，将其作为前缀密集工作负载的推荐草稿路径。
+Google 于 2025 年在 AI Overviews 中部署了推测解码，以相同质量提供更快响应。vLLM V1 将 `speculative_config` 作为文档化接口，其功能矩阵将推测解码与分块预填充标记为兼容。对于大量共享前缀的工作负载，SGLang 支持并推荐使用 EAGLE-3 作为草稿方案。
 
 ### 一行盈亏平衡计算（Break-even math in one line）
 
@@ -68,7 +68,7 @@ Google 于 2025 年在 AI Overviews 部署推测解码，质量相同但响应�
 - 延迟不重要、批次为 1 的离线生成，使用纯目标模型。
 - 输出很短，少于 50 词元时，草稿与验证成本占主导。
 - 专业领域没有领域训练的草稿头时，alpha 太低。
-- vLLM v0.18.0 加草稿模型推测解码，再加 `--enable-chunked-prefill`，此组合无法编译。文档中的例外是 V1 的 N-gram GPU 推测解码。
+- 想当然地认为任意两项功能都能组合。应核查所用版本的 vLLM 兼容性矩阵：v0.18.0 将推测解码与分块预填充标记为兼容。
 
 ```figure
 mx-speculative-tree
@@ -86,7 +86,7 @@ mx-speculative-tree
 
 1. 运行 `code/main.py`。K=5 时，2 倍和 3 倍加速分别需要多少 alpha？结果对 verify_overhead 有多敏感？
 2. 假设生产流量为 70% 通用聊天、30% 代码。ShareGPT 训练的 EAGLE-3 在聊天上 alpha 为 0.7，代码上为 0.4。混合 alpha 是多少？推测解码是否带来正收益？
-3. 阅读 vLLM `speculative_config` 文档。说出草稿模型、EAGLE、N-gram 三种模式，以及哪种兼容分块预填充。
+3. 阅读 vLLM 的 `speculative_config` 文档。列出三种模式（草稿模型、EAGLE、N-gram），并核查在你使用的 vLLM 版本中，它们分别可以与哪些功能组合。
 4. 开启 EAGLE-3 后，平均 ITL 降低 25%，但 P99 ITL 升高 15%。诊断并提出缓解措施。
 5. 计算 Llama 3.3 70B 的 EAGLE-3 草稿头显存成本，与运行 Llama 3.2 1B 作为经典草稿相比如何？
 

@@ -13,7 +13,7 @@ tags: [speculative-decoding, eagle-3, vllm, alpha, production-rollout]
 
 1. 基线测量计划。明确基准（LLMPerf、GenAI-Perf 或生产影子流量）、提示词分布、并发测试点和记录指标（TTFT 均值/P99、ITL 均值/P99、吞吐量、并发）。
 2. 草稿头选择。通用聊天选择 ShareGPT 训练的 EAGLE-3；代码、医疗、法律等专业流量选择领域训练的 EAGLE-3，或决定上线前先训练一个。
-3. 配置。给出精确 vLLM `speculative_config` 字段（method、model、num_speculative_tokens）。指出 v0.18.0 的兼容性：草稿模型推测不能与 `--enable-chunked-prefill` 组合，V1 中 N-gram GPU 推测解码是例外。
+3. 配置。给出准确的 vLLM `speculative_config` 字段（method、model、num_speculative_tokens）。对照已部署 vLLM 版本的兼容性矩阵核查组合（v0.18.0 将推测解码与分块预填充标记为兼容）。
 4. alpha 门禁。目标为生产并发下 alpha >= 0.55。测量步骤：运行 24 小时影子流量，记录 vLLM `spec_decode_metrics`，用接受词元数除以请求的草稿长度。任意 1 小时窗口内 alpha 低于 0.45 时触发紧急停止。
 5. 尾延迟监控。绘制 P99 ITL 差值（推测开启减推测关闭）。差值为正，说明被拒草稿的双遍执行正在造成影响。减小 K，或对此工作负载禁用推测。
 6. 盈亏平衡检查。在报告并发下，根据当前验证开销计算盈亏平衡 alpha。只有实测 alpha 至少高出盈亏平衡点 0.1 才上线。
@@ -22,7 +22,7 @@ tags: [speculative-decoding, eagle-3, vllm, alpha, production-rollout]
 - 未测量生产流量 alpha 就上线。拒绝，要求 24 小时影子测量。
 - 声称加速 2-3 倍，却不提供实测 alpha。
 - 对延迟并非约束的离线批处理作业开启推测解码。
-- 在 vLLM v0.18.0 上组合草稿模型推测与分块预填充，这是硬性不兼容。
+- 在 vLLM 0.15.0 或更早版本上，将推测解码与流水线并行组合使用。推测解码文档将该组合列为不兼容。
 
 拒绝规则：
 - 如果流量主要是很短的输出，平均少于 50 词元，拒绝启用。草稿开销占主导，应部署纯目标模型。

@@ -66,5 +66,5 @@
   <text x="60" y="490" class="small">2. 通过 speculative_config 启用 EAGLE-3 草稿，重跑基准</text>
   <text x="60" y="506" class="small">3. 记录 alpha（vLLM V1 报告每请求接受词元数），门禁为 alpha &gt;= 0.55</text>
   <text x="60" y="522" class="small">4. 观察 P99 ITL 而非 P50：被拒草稿双遍执行推高尾延迟</text>
-  <text x="60" y="538" class="small">5. vLLM v0.18.0：草稿模型推测解码不兼容分块预填充，V1 的 N-gram 是例外</text>
+  <text x="60" y="538" class="small">5. vLLM v0.18.0：核查功能矩阵；推测解码可与分块预填充组合</text>
 </svg>
