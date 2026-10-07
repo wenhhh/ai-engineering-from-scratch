@@ -90,7 +90,7 @@ python3 -m unittest discover code/tests -v
 ## 延伸阅读（Further Reading）
 
 - [Nuseibeh 与 Easterbrook：需求工程路线图（Requirements Engineering: A Roadmap）](https://www.cs.toronto.edu/~sme/papers/2000/ICSE2000.pdf)，讨论目标、精确规格、验证、共识与演进之间的关系。
-- [Zave 与 Jackson：需求工程的四个暗角（Four Dark Corners of Requirements Engineering）](https://doi.org/10.1145/267895.267896)，讨论区分环境假设、需求与规格。
+- [Zave 与 Jackson：需求工程的四个暗角（Four Dark Corners of Requirements Engineering）](https://doi.org/10.1145/237432.237434)，讨论区分环境假设、需求与规格。
 - [Gotel 与 Finkelstein：需求可追溯性问题分析（An Analysis of the Requirements Traceability Problem）](https://doi.org/10.1109/ICRE.1994.292398)，讨论保留需求为何存在及其来源。
 
 ## 保留产物（What You Keep）
