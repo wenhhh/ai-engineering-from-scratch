@@ -11,8 +11,8 @@
 // 演示只生成固定文本，不会读取或总结真实论文。
 //
 // 规范参考：
-//   A2A 协议            https://a2aproject.github.io/A2A/specification
-//   智能体名片结构       https://a2aproject.github.io/A2A/specification/#agent-card
+//   A2A 协议            https://a2a-protocol.org/latest/specification/
+//   智能体名片结构       https://a2a-protocol.org/latest/specification/#8-agent-discovery-the-agent-card
 //
 // 运行：npx tsx code/main.ts
 
