@@ -856,7 +856,7 @@ DeepEval 与 Pytest 集成。运行 `deepeval test run test_evals.py`，将评�
 - [DeepEval 文档](https://docs.confident-ai.com)：Python 原生评估框架，包含 14 项以上指标、Pytest 集成和幻觉检测。
 - [Braintrust 评估指南](https://www.braintrust.dev/docs)：提供实验跟踪、评分函数和数据集管理的生产评估平台。
 - [Ribeiro 等，2020，《超越准确率：用 CheckList 对 NLP 模型进行行为测试（Beyond Accuracy: Behavioral Testing of NLP Models with CheckList）》](https://arxiv.org/abs/2005.04118)：适用于大语言模型评估的系统行为测试方法（最小功能、不变性、方向性预期）。
-- [LMSYS Chatbot Arena](https://chat.lmsys.org)：用户对模型输出投票的实时人工评估平台，拥有最大的大语言模型成对比较数据集。
+- [Arena（原 LMSYS Chatbot Arena）](https://arena.ai/) -- 用户对模型输出进行投票的实时人工评估平台，也是最大的大语言模型成对比较数据集。
 - [Es 等，《RAGAS：检索增强生成的自动评估（RAGAS: Automated Evaluation of Retrieval Augmented Generation）》（EACL 2024 演示）](https://arxiv.org/abs/2309.15217)：无需参考答案的 RAG 指标（忠实度、答案相关性、上下文精确率/召回率）；无需标注者即可扩展到生产的评估模式。
 - [Liu 等，《G-Eval：使用 GPT-4 实现更符合人类判断的自然语言生成评估（G-Eval: NLG Evaluation using GPT-4 with Better Human Alignment）》（EMNLP 2023）](https://arxiv.org/abs/2303.16634)：以思维链 + 表单填写作为评判协议，提供评判器构建者需要的校准和偏见结果。
 - [Hugging Face 大语言模型评估指南](https://huggingface.co/spaces/OpenEvals/evaluation-guidebook)：Open LLM Leaderboard 维护团队提供的数据污染、指标选择与可复现性实践建议。
