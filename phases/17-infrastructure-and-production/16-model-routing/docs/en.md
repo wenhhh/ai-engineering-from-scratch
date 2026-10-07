@@ -109,7 +109,7 @@ model-cascade-router
 
 ## 延伸阅读（Further Reading）
 
-- [AbhyashSuchi：2026 年 LLM 模型路由最佳实践](https://abhyashsuchi.in/model-routing-llm-2026-best-practices/)
+- [AbhyashSuchi：2026 年 LLM 模型路由最佳实践](https://web.archive.org/web/20260413143335/https://abhyashsuchi.in/model-routing-llm-2026-best-practices/)
 - [Lukas Brunner：2026 年推理优化的兴起](https://dev.to/lukas_brunner/the-rise-of-inference-optimization-the-real-llm-infra-trend-shaping-2026-4e4o)
 - [RouteLLM 论文与代码](https://github.com/lm-sys/RouteLLM)
 - [Not Diamond：模型路由](https://www.notdiamond.ai/)
