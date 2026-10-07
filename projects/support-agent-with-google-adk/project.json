@@ -1,0 +1,149 @@
+{
+  "id": "support-agent-with-google-adk",
+  "title": "使用 Google ADK 的支持智能体（Support Agent With Google ADK）",
+  "level": 3,
+  "levelName": "Engineer",
+  "tagline": "构建脱敏且经过授权的支持审阅结果，保留回复和证据，再通过真实 Google ADK 智能体运行同一策略。",
+  "summary": "构建脱敏且经过授权的支持审阅结果，保留回复和证据，再通过真实 Google ADK 智能体运行同一策略。",
+  "hours": 8,
+  "languages": [
+    "Python"
+  ],
+  "status": "ready",
+  "source": "core",
+  "author": {
+    "name": "AI Engineering from Scratch",
+    "github": "rohitg00"
+  },
+  "youWillBuild": "HTML 审阅页面和 support.json，包含脱敏工单、所选能力、来源指引、回复或转人工结果，以及状态历史。",
+  "usefulFor": [
+    "HTML 审阅页面和 support.json，包含脱敏工单、所选能力、来源指引、回复或转人工结果，以及状态历史。"
+  ],
+  "skills": [
+    "创建会话前先校验",
+    "将路由与授权分开决策",
+    "在交接状态中保留实际回复",
+    "在真实 ADK 路径中复用策略"
+  ],
+  "prerequisites": [
+    "掌握 Python 字典、异常和模块导入。",
+    "理解异步函数和模型事件迭代器。",
+    "区分请求分类与能力授权。"
+  ],
+  "figures": true,
+  "overviewFigure": "pj-support-agent-with-google-adk-1",
+  "languageWhy": {
+    "Python": "使用标准库数据结构、明确算法和确定性的本地测试。"
+  },
+  "demo": {
+    "command": [
+      "python3",
+      "demo.py"
+    ],
+    "cwd": "solution"
+  },
+  "stages": [
+    {
+      "id": "01-intake",
+      "title": "创建会话前先校验",
+      "summary": "输入 invoice for sam@example.invalid api_key=EXAMPLE_TOKEN 时，可用工单文本变为 invoice for [email] api_key=[redacted]。空字符串在路由前失败。基线与 ADK 路径必须接收同一份清理后的文本。",
+      "language": "python",
+      "languageWhy": "Python 标准库的容器、字节和文件操作直接展示本阶段的机制。",
+      "hours": 2,
+      "difficulty": "starter",
+      "figure": "pj-support-agent-with-google-adk-1",
+      "concepts": [
+        "输入校验",
+        "脱敏",
+        "来源处理"
+      ]
+    },
+    {
+      "id": "02-routing",
+      "title": "将路由与授权分开决策",
+      "summary": "invoice refund 选择 billing，可使用 read_invoice；invoice login 使 billing 与 access 同分，因此转人工。billing 路由请求 read_account 时被拒绝，即使另一专员可以使用该工具。",
+      "language": "python",
+      "languageWhy": "Python 标准库的容器、字节和文件操作直接展示本阶段的机制。",
+      "hours": 2,
+      "difficulty": "core",
+      "figure": "pj-support-agent-with-google-adk-2",
+      "concepts": [
+        "路由评分",
+        "同分",
+        "能力允许列表"
+      ]
+    },
+    {
+      "id": "03-handoff",
+      "title": "在交接状态中保留实际回复",
+      "summary": "对 invoice 依次执行 begin、classify，再以 Check the invoice reference 执行 respond，得到 answered，并保留 response=\"Check the invoice reference\"。历史记录包含 classify 与 respond。对 invoice login 分类后执行 respond 会失败；有效转换应为 escalate。",
+      "language": "python",
+      "languageWhy": "Python 标准库的容器、字节和文件操作直接展示本阶段的机制。",
+      "hours": 2,
+      "difficulty": "core",
+      "figure": "pj-support-agent-with-google-adk-3",
+      "concepts": [
+        "状态转换",
+        "不可变历史",
+        "回复保留"
+      ]
+    },
+    {
+      "id": "04-adk-adapter",
+      "title": "在真实 ADK 路径中复用策略",
+      "summary": "login 工单选择 read_account 及 access-recovery 指引。夹具专员根据指引回复，最终交接状态保存该回复。在 access 路由下请求 read_invoice，会在运行图之前抛出 PermissionError。可选测试检查模型请求，确保原始邮箱和示例密钥没有越过边界。",
+      "language": "python",
+      "languageWhy": "Python 标准库的容器、字节和文件操作直接展示本阶段的机制。",
+      "hours": 2,
+      "difficulty": "stretch",
+      "figure": "pj-support-agent-with-google-adk-4",
+      "concepts": [
+        "ADK Workflow",
+        "共用策略边界",
+        "服务商注入"
+      ],
+      "runners": [
+        {
+          "language": "python"
+        },
+        {
+          "language": "python",
+          "optional": true,
+          "requires": [
+            "python:google.adk"
+          ],
+          "argv": [
+            "{python}",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "{stage}/tests-framework",
+            "-p",
+            "test_framework.py"
+          ]
+        }
+      ]
+    }
+  ],
+  "demos": [
+    {
+      "gif": "media/run.gif",
+      "poster": "media/run.png",
+      "title": "初始化与评分（上游原始录屏）",
+      "caption": "上游原始录屏：先记录起始代码失败，再记录参考实现全部阶段通过。参考实现通过不授予学习者证书。"
+    },
+    {
+      "gif": "media/output.gif",
+      "poster": "media/output.png",
+      "title": "检查输出（上游原始录屏）",
+      "caption": "上游原始录屏中的本地确定性演示实际输出。夹具和在线适配器限制见 README。"
+    },
+    {
+      "gif": "media/framework.gif",
+      "poster": "media/framework.png",
+      "title": "验证真实 SDK（上游原始录屏）",
+      "caption": "上游原始录屏：已安装依赖后执行可选 SDK 测试，使用确定性本地模型，没有调用在线云服务或模型服务商。"
+    }
+  ]
+}
