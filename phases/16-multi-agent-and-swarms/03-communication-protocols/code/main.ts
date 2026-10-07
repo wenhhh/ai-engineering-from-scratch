@@ -197,7 +197,7 @@ class TaskManager {
     task.history.push(message);
     task.status = { state: "submitted", timestamp: Date.now() };
 
-    this.processTask(task, handler, message).catch((err) => {
+    await this.processTask(task, handler, message).catch((err) => {
       task.status = {
         state: "failed",
         timestamp: Date.now(),
@@ -540,12 +540,12 @@ class ProtocolGateway {
       return { error: `Agent ${targetAgent} not found in registry` };
     }
 
+    const task = await this.taskManager.sendMessage(targetAgent, message);
     const audit = await this.auditRunner.run(
       targetAgent,
       [message],
       sessionId
     );
-    const task = await this.taskManager.sendMessage(targetAgent, message);
 
     return { task, audit };
   }
